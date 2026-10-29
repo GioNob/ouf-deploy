@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "MATERIAL_PREPARATION_QUALIFIED_OPERATOR_EXECUTION_REQUIRED",
+  "status": "MATERIAL_PREPARATION_TARGET_STOP_ROLE_ASSOCIATION_FIX_PENDING",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Operator must run the single qualified SSH material-preparation command once; preserve all consumed scopes and return only public JSON/footer. Then continue coordinated native installation integration from preparedInputsHash.",
+  "next": "Fix the role association in a separate immutable successor, qualify heterogeneous aliases and strict identity/generation denial, preserve consumed failed scope. No new operator command ready.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -612,8 +612,8 @@
       "nativePublisherTrustAccepted": false,
       "firstFailedRunPreserved": 40856064980
     },
-    "next": "Operator must run the single qualified SSH material-preparation command once; preserve all consumed scopes and return only public JSON/footer. Then continue coordinated native installation integration from preparedInputsHash.",
-    "currentOperatorCommandReady": true,
+    "next": "Fix the role association in a separate immutable successor, qualify heterogeneous aliases and strict identity/generation denial, preserve consumed failed scope. No new operator command ready.",
+    "currentOperatorCommandReady": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "stableCapabilitiesOperationalProven": false,
@@ -624,7 +624,7 @@
     "materialPreparation": {
       "evidence": "evidence/m2-discovery-material-preparation-qualified-20261029.json",
       "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md",
-      "status": "QUALIFIED_NOT_EXECUTED_OPERATOR_FILESYSTEM_REQUIRED",
+      "status": "TARGET_STOP_ROLE_IDENTITY_DEFECT_FAILED_CONSUMED",
       "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
       "expectedCandidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
       "wrapperSource": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
@@ -741,5 +741,45 @@
       "nativeChownAndProcEnvironment": "UNSUPPORTED_IN_LOCAL_MANAGED_SANDBOX",
       "hostedNativeQualification": "PASS_WITHOUT_WEAKENING_CHECKS"
     }
+  },
+  "discoveryMaterialPreparationTarget": {
+    "schema": "ouf.m2-discovery-material-preparation-target-observation.v1",
+    "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+    "independentHostLogOrPrivateRecordRead": false,
+    "result": {
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "counts": {
+        "applicationMacKeyReads": 0,
+        "bytes": 648347,
+        "credentialFileReads": 0,
+        "engineGets": 0,
+        "metadataReads": 3,
+        "preparedCopyReads": 0,
+        "privateCopiesPrepared": 0,
+        "publicCertificateCopiesPrepared": 0,
+        "publicCertificateReads": 0
+      },
+      "reasonCode": "INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT",
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-discovery-material-preparation-result.v1",
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+      "scopeConsumed": true,
+      "status": "STOP_RECONCILE",
+      "targetApplyAuthorized": false
+    },
+    "operatorExit": 1,
+    "operatorLog": "/usr/local/lib/ouf-m2-discovery-material-7f1c64c3f20f7c31/operator.log",
+    "deliveryExit": 1,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4/bootstrap.log",
+    "bootstrapDirectory": "/home/oufadmin/ouf-m2-material-bootstrap.SbYcgnP7",
+    "originalCustodyRemainsSuccessfulConsumed": true,
+    "scopeDisposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
+    "newOperatorCommandReady": false,
+    "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac"
   }
 }

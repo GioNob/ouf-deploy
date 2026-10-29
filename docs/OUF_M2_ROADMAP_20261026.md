@@ -1,4 +1,12 @@
-# CURRENT — preparazione materiali qualificata; unico comando SSH corrente
+# CURRENT — preparazione materiali STOP consumato; correzione associazione ruoli in corso
+
+29ottobre2026. [Esito target](../evidence/m2-discovery-material-preparation-target-stop-20261029.json). STOP_RECONCILE/INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT,3metadata/648347byte,0EngineGET/0credenziali/0MAC/0certificati/0copie. OperatorExit1/DeliveryExit1. FonteJSON/footer operatore, nessuna lettura indipendente log o inputprivati. Scope m2-discovery-material-preparation-eed64887-20261029-v1 FALLITO/CONSUMATO: NON rilanciare/cancellare/ricreare né sovrascriverelog. Launcher corrente ritirato. Custodiaeed e inputf759/14e restanoRIUSCITI/CONSUMATI.
+
+Difetto sorgente confermato: reader installazione associa i quattro nomi selezionati mediante containerId; preparatore presumeva erroneamente nomi uguali nelcohort13. Correggere perID univoco+bindingconfig/immagine/mount/rete+pin, senza attenuare guard. Non modificare i quattro moduli/capsule già pubblicati: aggiungere successore distinto, collegato alrisultato STOP esatto2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac, con scope NUOVO solo dopo qualifica. Test con alias diversi, ID mancanti/duplicati e drift reali obbligatori. Nessun comando successore pronto; proseguireautonomamente fino a necessità operatore.
+
+Nessun effetto applicativo/SQL/IAM/OAuth/grant/budget/authority nuovo; niente nuovechiavi/import/lifecycle. M2/8stabilità/E2E OPEN; discovery non esposta. Farmacie/decisioni invariati. Solochatbot→MCP→Gateway→Registry→OntoPiA; no bypass/merge/acceptance/subagenti/automazioni. Header/comandi successivi STORICI.
+
+# HISTORICAL — preparazione materiali qualificata; unico comando SSH corrente
 
 29ottobre2026. [Handoff e comando corrente](handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md), [qualifica](../evidence/m2-discovery-material-preparation-qualified-20261029.json). PR54 sourceae11054df297e14fa80a81c39432af5cebea5001.127PASS/0skip per push/PR, log letti;13peer Docker reali/27GET/copie/riletture e STOP supeer/replay qualificati. Consegna capsule byte-esattoHTTPS/nonroot/sudo/root0400, nonTTY/failedScope/priorLog/noReplay provati su4job, log letti.
 

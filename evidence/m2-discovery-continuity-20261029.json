@@ -115,8 +115,8 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Operator must run the single qualified SSH material-preparation command once; preserve all consumed scopes and return only public JSON/footer. Then continue coordinated native installation integration from preparedInputsHash.",
-  "currentOperatorCommandReady": true,
+  "next": "Implement and qualify a separate container-ID-bound successor; do not replay failed material scope.",
+  "currentOperatorCommandReady": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
@@ -127,12 +127,52 @@
   "materialPreparation": {
     "evidence": "evidence/m2-discovery-material-preparation-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md",
-    "status": "QUALIFIED_NOT_EXECUTED_OPERATOR_FILESYSTEM_REQUIRED",
+    "status": "TARGET_STOP_FAILED_CONSUMED",
     "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
     "expectedCandidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
     "wrapperSource": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
     "wrapperSha256": "7e25e9e150f3452dd0e6c994ae0d38cb3db803cfb2c0dae59b2baa75d787c0bd",
     "capsuleSource": "6f2cc38a07a2b56542959716967e183f59217713",
     "capsuleSha256": "7f1c64c3f20f7c31ee76799c3aad28bd4e8d6fcb7dbe688f1a02726cf6dd603b"
+  },
+  "materialPreparationTarget": {
+    "schema": "ouf.m2-discovery-material-preparation-target-observation.v1",
+    "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+    "independentHostLogOrPrivateRecordRead": false,
+    "result": {
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "counts": {
+        "applicationMacKeyReads": 0,
+        "bytes": 648347,
+        "credentialFileReads": 0,
+        "engineGets": 0,
+        "metadataReads": 3,
+        "preparedCopyReads": 0,
+        "privateCopiesPrepared": 0,
+        "publicCertificateCopiesPrepared": 0,
+        "publicCertificateReads": 0
+      },
+      "reasonCode": "INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT",
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-discovery-material-preparation-result.v1",
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+      "scopeConsumed": true,
+      "status": "STOP_RECONCILE",
+      "targetApplyAuthorized": false
+    },
+    "operatorExit": 1,
+    "operatorLog": "/usr/local/lib/ouf-m2-discovery-material-7f1c64c3f20f7c31/operator.log",
+    "deliveryExit": 1,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4/bootstrap.log",
+    "bootstrapDirectory": "/home/oufadmin/ouf-m2-material-bootstrap.SbYcgnP7",
+    "originalCustodyRemainsSuccessfulConsumed": true,
+    "scopeDisposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
+    "newOperatorCommandReady": false,
+    "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac"
   }
 }

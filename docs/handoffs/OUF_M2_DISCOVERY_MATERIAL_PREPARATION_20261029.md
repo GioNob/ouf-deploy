@@ -1,3 +1,7 @@
+# Stato corrente — STOP consumato, comando ritirato
+
+Il comando riportato sotto è STORICO e NON va rieseguito. Esito operatore STOP_RECONCILE/INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT dopo tre metadata, zero Engine o letture credenziali/copie. [Ricevuta](../../evidence/m2-discovery-material-preparation-target-stop-20261029.json). Correzione in corso con selezione per containerId e invarianti complete; nuovo successore da qualificare e collegare allo STOP esatto, preservando ogni scope consumato.
+
 # Preparazione privata discovery — unico passaggio operatore corrente
 
 29 ottobre 2026. La preparazione è qualificata in sorgente e **non è stata eseguita sul VPS**. [Evidenza completa](../../evidence/m2-discovery-material-preparation-qualified-20261029.json).
