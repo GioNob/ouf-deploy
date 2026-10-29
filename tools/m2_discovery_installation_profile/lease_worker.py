@@ -5,16 +5,60 @@ attachment or budget reset. The sealed process entrypoint supplies current runti
 admission, generation and custody guards; boot/rotation admission remains separate.
 """
 import copy,dataclasses,hashlib,json,os,re,stat,time,uuid
-from bounded_recovery import Policy,Permanent,fingerprint,require
+from bounded_recovery import Policy,Permanent,Recovery,fingerprint,require,number
 from recovery_journal import Journal
 from lease_recovery_budget import LeaseRecovery
 from continuous_supervisor import RenewingLeaseAdapter,Supervisor
+from adaptive_supervisor import window
 from tools.semantic_provider_lease_coordination import Coordinator
 from tools.semantic_policy_token_owner.producer import protected_directory,identity
 
 SCOPE_FIELDS={'sourceClosureHash','installationInputsHash','contextRef','generationRef','policyHash',
     'coordinatorBindingHash','configurationHash','dnsProfileHash','leaseStructureHash','pollSeconds','heartbeatSeconds'}
 
+
+
+class DiscoveryRecovery(LeaseRecovery):
+    """Only independently observed positive kernel TTL can count as healthy.
+
+    Unobserved downtime after a process crash or a delayed scheduler wake counts
+    against recovery time. It cannot extend the finite budget as a healthy gap.
+    """
+    PROFILE='ouf.discovery-lease-cumulative-recovery-time.v1'
+    def initial(self):
+        return {**super().initial(),'healthyUntilWall':None,'healthyUntilMonotonic':None}
+    def credit(self,row,wall,mono):
+        self.validate_time_accounting(row)
+        healthy_wall,healthy_mono=row['healthyWallSeconds'],row['healthyMonotonicSeconds']
+        if row['state']=='ACTIVE':
+            require(number(row.get('healthyUntilWall')) and number(row.get('healthyUntilMonotonic')),
+                'OBSERVED_HEALTHY_LEASE_DEADLINE_REQUIRED')
+            healthy_wall+=max(0,min(wall,row['healthyUntilWall'])-row['lastWall'])
+            healthy_mono+=max(0,min(mono,row['healthyUntilMonotonic'])-row['lastMonotonic'])
+        return healthy_wall,healthy_mono
+    def remaining(self,row):
+        wall,mono=self.now();healthy_wall,healthy_mono=self.credit(row,wall,mono)
+        wall_elapsed,mono_elapsed=wall-row['startedWall'],mono-row['startedMonotonic']
+        require(0<=healthy_wall<=wall_elapsed and 0<=healthy_mono<=mono_elapsed,
+            'DISCOVERY_RECOVERY_TIME_ACCOUNTING_UNPROVEN')
+        return min(self.policy.max_elapsed-(wall_elapsed-healthy_wall),
+            self.policy.max_elapsed-(mono_elapsed-healthy_mono))
+    def save(self,previous,state,reason,**values):
+        wall,mono=self.now();healthy_wall,healthy_mono=self.credit(previous,wall,mono)
+        count=previous.get('publicationCount')
+        require(type(count) is int and count>=0,'LEASE_PUBLICATION_COUNT_UNPROVEN')
+        values.update(healthyWallSeconds=healthy_wall,healthyMonotonicSeconds=healthy_mono,
+            publicationCount=count+(1 if state=='ACTIVE' and reason in {'RECOVERED','RENEWED'} else 0))
+        if state=='ACTIVE':
+            observed=window(self.coordinator,self.poll_seconds,clock=lambda:self.now()[1])
+            end_wall,end_mono=self.now()
+            require(end_wall>=wall and end_mono>=mono
+                and observed['deadlineMonotonic']>end_mono,'CURRENT_POSITIVE_HEALTHY_WINDOW_REQUIRED')
+            values.update(healthyUntilWall=end_wall+observed['deadlineMonotonic']-end_mono,
+                healthyUntilMonotonic=observed['deadlineMonotonic'])
+        # Bypass the legacy override which credits the entire ACTIVE interval.
+        # Journal CAS, cumulative counters and the common base state machine stay.
+        return Recovery.save(self,previous,state,reason,**values)
 
 def build_worker(coordinator,journal,policy,scope,*,runtime_guard,generation_guard,custody_guard,
                  dns,compiler,clock=lambda:(time.time(),time.monotonic()),random_value=None):
@@ -38,7 +82,7 @@ def build_worker(coordinator,journal,policy,scope,*,runtime_guard,generation_gua
         require(row.get('contextRef')==selected['contextRef'] and row.get('generationRef')==selected['generationRef']
             and row.get('policyHash')==selected['policyHash']
             and row.get('discoveryLeaseScopeHash')==scope_hash
-            and row.get('timeAccountingProfile')==LeaseRecovery.PROFILE,
+            and row.get('timeAccountingProfile')==DiscoveryRecovery.PROFILE,
             'RETAINED_DISCOVERY_LEASE_SCOPE_AND_ACCOUNTING_REQUIRED')
         return row
     immutable()
@@ -53,7 +97,8 @@ def build_worker(coordinator,journal,policy,scope,*,runtime_guard,generation_gua
     adapter=RenewingLeaseAdapter(coordinator,dns,compiler,guard,custody,lambda:clock()[1])
     random_value=__import__('random').SystemRandom().random if random_value is None else random_value
     require(callable(random_value),'BOUNDED_DISCOVERY_WORKER_JITTER_SOURCE_REQUIRED')
-    recovery=LeaseRecovery(journal,adapter,policy,selected['contextRef'],selected['generationRef'],clock,random_value)
+    recovery=DiscoveryRecovery(journal,adapter,policy,selected['contextRef'],selected['generationRef'],clock,random_value)
+    recovery.coordinator,recovery.poll_seconds=coordinator,selected['pollSeconds']
     recovery.validate_time_accounting(immutable())
     worker=Supervisor(recovery,coordinator,selected['pollSeconds'],heartbeat=selected['heartbeatSeconds'])
     worker.discovery_scope_hash=scope_hash

@@ -20,9 +20,11 @@ class Worker(unittest.TestCase):
             'policyHash':m.fingerprint(dataclasses.asdict(policy)),'coordinatorBindingHash':m.fingerprint(coordinator.binding),
             'configurationHash':m.fingerprint(coordinator.configuration),'dnsProfileHash':m.fingerprint(coordinator.owner.profile),
             'leaseStructureHash':'c'*64,'pollSeconds':1,'heartbeatSeconds':1}
-        recovery=m.LeaseRecovery(journal,None,policy,scope['contextRef'],scope['generationRef'],clock,lambda:.5)
+        recovery=m.DiscoveryRecovery(journal,None,policy,scope['contextRef'],scope['generationRef'],clock,lambda:.5)
         row={**recovery.initial(),'state':state,'attempts':5,'publicationCount':3,
-            'discoveryLeaseScopeHash':m.fingerprint(scope)}
+            'discoveryLeaseScopeHash':m.fingerprint(scope),
+            'healthyUntilWall':115.0 if state=='ACTIVE' else None,
+            'healthyUntilMonotonic':65.0 if state=='ACTIVE' else None}
         journal.initialize(row);calls=[]
         options=dict(runtime_guard=lambda value:calls.append(('runtime',value)) or True,
             generation_guard=lambda value:calls.append(('generation',value)) or True,
@@ -68,6 +70,26 @@ class Worker(unittest.TestCase):
         row=worker.tick()
         self.assertEqual(row['state'],'RECONCILE_REQUIRED');self.assertEqual(row['attempts'],5)
         self.assertEqual(row['publicationCount'],3);self.assertTrue(pauses)
+
+    def test_unobserved_downtime_after_positive_kernel_ttl_consumes_recovery_budget(self):
+        c,j,p,s,o,calls=self.fixture('ACTIVE')
+        o['clock']=lambda:(180.0,130.0)
+        worker=m.build_worker(c,j,p,s,**o)
+        self.assertEqual(worker.r.remaining(j.read()),p.max_elapsed-65)
+        pauses=[];worker.r.adapter=types.SimpleNamespace(pause=lambda:pauses.append(True))
+        row=worker.tick()
+        self.assertEqual(row['state'],'RECONCILE_REQUIRED')
+        self.assertEqual(row['healthyWallSeconds'],15)
+        self.assertEqual(row['healthyMonotonicSeconds'],15)
+        self.assertEqual(row['attempts'],5);self.assertEqual(row['publicationCount'],3)
+
+    def test_legacy_accounting_profile_is_not_silently_migrated(self):
+        c,j,p,s,o,calls=self.fixture()
+        old=j.read();changed={**old,'timeAccountingProfile':m.LeaseRecovery.PROFILE}
+        j.compare_and_save(old,changed)
+        with self.assertRaisesRegex(ValueError,'RETAINED_DISCOVERY_LEASE'):
+            m.build_worker(c,j,p,s,**o)
+        self.assertEqual(j.read(),changed);self.assertEqual(calls,[])
 
     def test_status_rejects_extra_private_fields_and_symlinks(self):
         c,j,p,s,o,calls=self.fixture();reporter=m.LeaseReporter(j,lambda _:None)
