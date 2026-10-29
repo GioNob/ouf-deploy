@@ -1,4 +1,14 @@
-# CURRENT — frame Docker reale qualificato; nuova verifica custodia pronta, operatore necessario
+# CURRENT — custodia acquisita e CONSUMATA; preparazione coordinata in corso
+
+29ottobre2026. [Esito target](evidence/m2-discovery-custody-target-20261029.json), [handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md). candidateBindingHash eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5, complete=true, OperatorExit0/DeliveryExit0,4file/4pin,33558byte,2metadata/1credenziale/2MACapp/1CA. Fonte JSON/footer operatore, nessuna lettura indipendente del log o record privato. Scope m2-discovery-custody-f759d397-20261029-v1 CONSUMATO. NON rilanciare/cancellare/ricreare; launcher corrente ritirato. Anchef759 restaRIUSCITO/CONSUMATO.
+
+ZeroEngine/SQL/IAM/OAuth/nuovechiavi/deployment-signing-key/firme/import/lifecycle/grant/budget/upload/job/resume/acquisizione. Continuità impronte e custodia dei candidati osservate, non attualeIAM/scope/providerTLS/DB/authority. MCP ouf.system.status suouf-admin letto:HEALTHY,actionRequired=false,partial=false,PUBLIC_OPERATIONAL/redacted. Non prova discovery disponibile o E2E.
+
+NEXT preparazione coordinata dal recordprivato esattoeed64887 e inputf759, senza richiedere file o segreti inchat. Proiezioni private di copiacredenziale/chiave verso la custody del nuovo profilo, conservando fonti storiche; Gateway slot discovery distinto; CApubblico verificato pertruststore; nuoveprove correntiIAM/provider/TLS/rete/DB/cohort, backup/fencing e review/HUMANauthority finite quando pronte. Il nuovo compilerproiezioni7c6c28399897e52e8c7c32156516e34a9884a69e èinCI, non ammissione/esecuzione. Nessun nuovo comando operatore pronto; proseguire finché utente necessario.
+
+FrameDocker reale e109test qualificati, pacchettiRegistry/MCP/Gateway riletti. M1/G4 acquisiti,M2/G5–G7/D5–D7/8criteristabilità/E2E OPEN;capabilities discovery non ancora esposte/stabilmenteoperative. Farmacie/decisioni confermate invariati. No merge/releaseacceptance/subagenti/automazioni. Flusso chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio. Header/comandi successivi STORICI.
+
+# HISTORICAL — frame Docker reale qualificato; nuova verifica custodia pronta, operatore necessario
 
 29ottobre2026. [Handoff e unico comando corrente](docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md), [qualifica custodia](evidence/m2-discovery-custody-capture-qualified-20261029.json), [frame Docker reale](evidence/m2-discovery-native-frame-qualified-20261029.json). Proseguire fino a necessità operatore: il prossimo passaggio richiede ora il filesystem VPS, non accessibile dal connector; nessun esecutoreSSH collegato.
 

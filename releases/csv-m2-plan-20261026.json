@@ -98,7 +98,7 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
+    "semanticExternalDiscovery": "CURRENT_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED_COORDINATED_PREPARATION_PENDING",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
@@ -125,8 +125,10 @@
     "discoveryNativeDockerProbePending": true,
     "discoveryNativeDockerFrameCiQualified": true,
     "discoveryCurrentCustodyCaptureQualified": true,
-    "discoveryCurrentCustodyCaptureTargetExecuted": false,
-    "operatorRequiredForCurrentCustody": true
+    "discoveryCurrentCustodyCaptureTargetExecuted": true,
+    "operatorRequiredForCurrentCustody": false,
+    "discoveryCurrentCustodyCaptureScopeConsumed": true,
+    "discoveryCurrentMaterialCandidateBinding": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5"
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1993,16 +1995,10 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Execute the NEW current custody capture once as oufadmin in interactive SSH. Exact provenance metadata plus1credential/2applicationMacKeys/publicCA are hashed privately; no values printed/spooled. Zero Engine/SQL/IAM/OAuth/authority/runtime effects. Return final JSON/footer. On STOP preserve/no replay. This is a NEW scope; previous f759 input scope remains consumed.",
-    "commandPath": "releases/OUF_M2_DISCOVERY_CUSTODY_COMMAND_20261029.sh",
-    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
-    "sourceCommit": "bab8d63a6d8e47cf0ae6ff0dc15841009748b417",
-    "sourceSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
-    "wrapperCommit": "a2473d8925eaa54924d76dd630566c848030c80d",
-    "wrapperSha256": "308b8e5b69a52e7ae6f5b8ed7898519a3a78e8d60b25a4597857752c98070226",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
-    "sshExecutionCommandUsable": true,
+    "action": "Complete coordinated private installation preparation from exact eed64887 candidates and f759 installation inputs; preserve historical source files, plan protected copies, finish candidate publisher/OCI/rootfs/current owner/IAM/scope/TLS/network/DB/cohort admission and finite native review. No current operator command is ready; no consumed capture may be replayed.",
+    "sourceCommit": "7c6c28399897e52e8c7c32156516e34a9884a69e",
+    "currentDeliveryUsable": false,
+    "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false,
     "targetApplyAuthorized": false
   },
@@ -2450,8 +2446,8 @@
   "currentCheckpoint": {
     "date": "2026-10-29",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md",
-    "next": "ONE_NEW_CURRENT_CUSTODY_CAPTURE_THEN_COORDINATED_REVIEW",
-    "evidence": "evidence/m2-discovery-custody-capture-qualified-20261029.json",
+    "next": "COMPLETE_COORDINATED_PRIVATE_INSTALLATION_PREPARATION",
+    "evidence": "evidence/m2-discovery-custody-target-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
@@ -5558,7 +5554,7 @@
   "discoveryCustodyCaptureQualification": {
     "schema": "ouf.m2-discovery-custody-capture-qualification.v1",
     "date": "2026-10-29",
-    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
+    "status": "SUCCESS_TARGET_SCOPE_CONSUMED_NOT_IAM_ADMISSION",
     "sourceCommit": "bab8d63a6d8e47cf0ae6ff0dc15841009748b417",
     "sourcePath": "tools/m2_discovery_installation_profile/custody_capture.py",
     "sourceSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
@@ -5568,10 +5564,10 @@
     "qualificationCommit": "5782af38ce1f7ed777094dcc56075741e7fa4801",
     "pullRequest": 54,
     "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
-    "targetExecuted": false,
+    "targetExecuted": true,
     "operatorAccount": "oufadmin",
     "interactiveSshAndLocalSudoRequired": true,
-    "currentDeliveryUsable": true,
+    "currentDeliveryUsable": false,
     "inputProvenance": {
       "installationInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
       "previousScopeConsumed": true,
@@ -5673,7 +5669,10 @@
     "targetApplyAuthorized": false,
     "automaticReplayAllowed": false,
     "budgetReset": false,
-    "releaseAcceptance": false
+    "releaseAcceptance": false,
+    "scopeConsumed": true,
+    "candidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "targetEvidence": "evidence/m2-discovery-custody-target-20261029.json"
   },
   "discoveryNativeDockerFrameQualification": {
     "schema": "ouf.m2-discovery-native-frame-qualification.v1",
@@ -5718,5 +5717,69 @@
       "Qualifier used old future-custody import; switched to self-contained discovery budget.",
       "CLI reordered creation Env; qualifier now exercises actual Unix Engine JSON API. No OCI comparison guard changed."
     ]
+  },
+  "discoveryCustodyTarget": {
+    "schema": "ouf.m2-discovery-custody-target-observation.v1",
+    "date": "2026-10-29",
+    "evidenceOrigin": "USER_PASTED_FINAL_JSON_AND_FOOTERS",
+    "independentHostLogRead": false,
+    "privateCandidateFileReadByAgent": false,
+    "result": {
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "budgetsGranted": 0,
+      "candidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+      "candidateFilesVerified": 4,
+      "complete": true,
+      "containerLifecycleOperations": 0,
+      "counts": {
+        "applicationMacKeyReads": 2,
+        "bytes": 33558,
+        "credentialFileReads": 1,
+        "metadataReads": 2,
+        "publicCertificateReads": 1
+      },
+      "currentProcessPinsObserved": 4,
+      "deploymentSigningKeyReads": 0,
+      "engineGets": 0,
+      "engineWrites": 0,
+      "historicalAuthorityReused": false,
+      "iamRequests": 0,
+      "imageImports": 0,
+      "matchedHistoricalHashesAreNotCurrentIamAdmission": true,
+      "newKeysGenerated": 0,
+      "oauthRequests": 0,
+      "rawCredentialOrKeyValuesPrinted": false,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-discovery-custody-capture-result.v1",
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
+      "scopeConsumed": true,
+      "signaturesIssued": 0,
+      "sqlSessions": 0,
+      "stableCapabilitiesOperationalProven": false,
+      "status": "MATERIAL_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED",
+      "targetApplyAuthorized": false
+    },
+    "operatorExit": 0,
+    "operatorLog": "/usr/local/lib/ouf-m2-discovery-custody-834dd9b0b7e9f7b0/operator.log",
+    "deliveryExit": 0,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-custody-delivery.3SS9XDP4",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-custody-delivery.3SS9XDP4/bootstrap.log",
+    "protectedCode": "/usr/local/lib/ouf-m2-discovery-custody-834dd9b0b7e9f7b0/capture.py",
+    "bootstrap": "/home/oufadmin/ouf-m2-custody-bootstrap.lWsTokAB/run.sh",
+    "checksumsReportedOk": true,
+    "priorInstallationInputsScopeStillConsumed": true,
+    "mcpOperationalRead": {
+      "capability": "ouf.system.status",
+      "account": "ouf-admin",
+      "status": "HEALTHY",
+      "actionRequired": false,
+      "partial": false,
+      "visibilityClass": "PUBLIC_OPERATIONAL",
+      "redacted": true,
+      "isProofOfDiscoveryAvailability": false
+    }
   }
 }

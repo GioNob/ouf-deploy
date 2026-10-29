@@ -1,4 +1,4 @@
-# OUF — verifica corrente della custodia discovery: operatore necessario
+# OUF — custodia discovery acquisita; scope consumato; preparazione coordinata
 
 29 ottobre2026. [PR54](https://github.com/GioNob/ouf-deploy/pull/54). [Qualifica custodia](../../evidence/m2-discovery-custody-capture-qualified-20261029.json), [frame Docker reale](../../evidence/m2-discovery-native-frame-qualified-20261029.json), [owner nodo](../../evidence/m2-discovery-node-owner-source-qualification-20261029.json), [pacchetti](../../evidence/m2-discovery-native-witness-and-packages-20261029.json).
 
@@ -12,7 +12,7 @@ Pacchetti MCP e Gateway prodotti e riletti indipendentemente: MCP imagea013bceb.
 
 109PASS/0errori/0skip per esecuzione su push40846711261/job123355871936 e PR40846716178/job123355889523:102regressioni/profilo/owner e7nuovi test della custodia. File POSIX e proprietari/modi reali nel runner root, process/boot fixture esplicita con un test separato sul proprio processo Linux reale. Il runtime locale cloud non supporta chown/proc necessari: nessuna pretesa di qualifica POSIX locale.
 
-## Perché serve ora l'operatore
+## Perché la lettura richiedeva l'operatore
 
 Il connector non espone accesso manutentivo al filesystem del VPS e non c'è un esecutore SSH collegato. La preparazione necessita della verifica locale dei candidati credenziale/chiave già creati dall'owner: non occorre scegliere nuovi segreti, recuperare budget o fare login IAM. Sono candidati storici, non authority corrente; la nuova lettura confronta impronte e metadata effettivi e ricontrolla i pin dei quattro processi e il boot prima/dopo.
 
@@ -20,30 +20,17 @@ Sono selezionati esattamente due metadata: inputsf759d397 e manifest732a633e del
 
 ZeroEngineGET/write/SQL/IAM/OAuth/login/chiavi nuove/chiavi di firma deployment/firme/import/lifecycle/grant/budget/upload/job/resume/acquisizione. Il successo dimostra soltanto continuità e custodia di candidati: non validitàIAM, scopeOAuth, providerTLS, ammissioneDB, tutti13peer correnti o authority. Queste verifiche restano nel percorso coordinato successivo.
 
-Il nuovo scope è `/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1`, ancora NON eseguito sul target. È diverso dal vecchio scope f759, consumato e non rilanciabile. Riferimenti storici sono input di provenienza, mai un reset o una ripetizione delle vecchie authority.
+Il nuovo scope è `/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1`, ora eseguito con successo e CONSUMATO sul target. È diverso dal vecchio scope f759, consumato e non rilanciabile. Riferimenti storici sono input di provenienza, mai un reset o una ripetizione delle vecchie authority.
 
-## Unico comando corrente
+## Esito target acquisito e comando ritirato
 
-Come `oufadmin` in SSH interattivo, UNA volta. Può essere richiesta soltanto la password sudo locale. Nessun APPROVO, token o login IAM. Restituire solo JSON finale e footer; non inviare gli inputs privati, file credenziale/chiave o configurazioni.
+[Esito completo](../../evidence/m2-discovery-custody-target-20261029.json): `MATERIAL_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED`, candidateBindingHash `eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5`, complete=true, scopeConsumed=true, OperatorExit=0/DeliveryExit=0. Quattro file e quattro pin di processo verificati,33558byte;2metadata,1credenziale,2copieMACapplicativa,1CApubblico. Nessun valore esposto;zeroEngine/SQL/IAM/OAuth/firme/nuovechiavi/import/lifecycle/grant/budget o effetti applicativi. La fonte è il JSON/footer incollato dall'operatore, non la lettura indipendente dei log o del record privato.
 
-```bash
-(
-  set -Eeuo pipefail
-  umask 077
-  ouf_custody_bootstrap=$(mktemp -d "$HOME/ouf-m2-custody-bootstrap.XXXXXXXX")
-  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
-    --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 16384 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/a2473d8925eaa54924d76dd630566c848030c80d/releases/read-m2-discovery-custody-20261029.sh' \
-    -o "$ouf_custody_bootstrap/run.sh"
-  printf '%s  %s\n' '308b8e5b69a52e7ae6f5b8ed7898519a3a78e8d60b25a4597857752c98070226' "$ouf_custody_bootstrap/run.sh" | sha256sum -c -
-  chmod 0400 "$ouf_custody_bootstrap/run.sh"
-  /usr/bin/bash "$ouf_custody_bootstrap/run.sh"
-)
-```
+Directory `/home/oufadmin/ouf-m2-discovery-custody-delivery.3SS9XDP4`; log operatore `/usr/local/lib/ouf-m2-discovery-custody-834dd9b0b7e9f7b0/operator.log`, log consegna `/home/oufadmin/ouf-m2-discovery-custody-delivery.3SS9XDP4/bootstrap.log`. Il nuovo scope è RIUSCITO e CONSUMATO: non rilanciare bootstrap/reader, non cancellare o ricreare lo scope. Launcher ritirato. Il vecchio f759 resta riuscito/consumato. Nessuna nuova istruzione operativa pronta.
 
-Sourcebab8d63a6d8e47cf0ae6ff0dc15841009748b417/SHA834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf; wrappera2473d8925eaa54924d76dd630566c848030c80d/SHA308b8e5b69a52e7ae6f5b8ed7898519a3a78e8d60b25a4597857752c98070226. Consegna qualificata5782af38ce1f7ed777094dcc56075741e7fa4801, push40847147152/job123357320519 e PR40847156690/job123357352454 SUCCESS, log letti. HTTPS reale,oufadmin/nonroot/sudo,codice root0400/checksum root,nonTTY prima del download/scope e accesso nonroot al codice negato. La consegna usa il source esatto e si ferma per assenza dei metadata target nel runner; la raccolta positiva è provata separatamente dai test POSIX. Lo scope di fallimento resta conservato e il replay è negato prima della riesecuzione protetta.
+Una lettura effettiva della capability `ouf.system.status` conaccount `ouf-admin` restituisce MCP HEALTHY/actionRequired=false/partial=false, proiezionePUBLIC_OPERATIONAL redatta. Non è una prova della disponibilità delle nuove capability discovery o degli owner provider.
 
-Se STOP, conservare l'esito e NON rilanciare, cancellare o ricreare lo scope. Il primo risultato f759d397 rimane riuscito: il duplicato1FN41iD7 rifiutato non lo sostituisce.
+La preparazione usa il record privato esatto e le relative impronte localmente: non richiedere credenziali, chiavi o file privati inchat. Le proiezioni proposte saranno copie nel nuovo ambito protetto, senza mutare i file sorgente o generare nuovechiavi. Rimangono necessarie verifica del CApubblico e truststore, validitàIAM/scope, TLS/provider,Native/DB/cohort correnti,backup/fencing, pubblicazione governata e review/authorityHUMAN finite. Il compilerproiezioni7c6c28399897e52e8c7c32156516e34a9884a69e è inqualificaCI; non è ancora esecuzione.
 
 ## Dopo il risultato
 

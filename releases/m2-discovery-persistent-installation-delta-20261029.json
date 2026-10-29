@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
+  "status": "CURRENT_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED_COORDINATED_PREPARATION_PENDING",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "ONE_NEW_CURRENT_CUSTODY_CAPTURE_THEN_COORDINATED_REVIEW",
+  "next": "COMPLETE_COORDINATED_PRIVATE_INSTALLATION_PREPARATION",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -329,7 +329,7 @@
   "currentCustodyCapture": {
     "schema": "ouf.m2-discovery-custody-capture-qualification.v1",
     "date": "2026-10-29",
-    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
+    "status": "SUCCESS_TARGET_SCOPE_CONSUMED_NOT_IAM_ADMISSION",
     "sourceCommit": "bab8d63a6d8e47cf0ae6ff0dc15841009748b417",
     "sourcePath": "tools/m2_discovery_installation_profile/custody_capture.py",
     "sourceSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
@@ -339,10 +339,10 @@
     "qualificationCommit": "5782af38ce1f7ed777094dcc56075741e7fa4801",
     "pullRequest": 54,
     "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
-    "targetExecuted": false,
+    "targetExecuted": true,
     "operatorAccount": "oufadmin",
     "interactiveSshAndLocalSudoRequired": true,
-    "currentDeliveryUsable": true,
+    "currentDeliveryUsable": false,
     "inputProvenance": {
       "installationInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
       "previousScopeConsumed": true,
@@ -444,7 +444,10 @@
     "targetApplyAuthorized": false,
     "automaticReplayAllowed": false,
     "budgetReset": false,
-    "releaseAcceptance": false
+    "releaseAcceptance": false,
+    "scopeConsumed": true,
+    "candidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "targetEvidence": "evidence/m2-discovery-custody-target-20261029.json"
   },
   "nativeDockerFrameCiQualification": {
     "schema": "ouf.m2-discovery-native-frame-qualification.v1",
@@ -489,5 +492,7 @@
       "Qualifier used old future-custody import; switched to self-contained discovery budget.",
       "CLI reordered creation Env; qualifier now exercises actual Unix Engine JSON API. No OCI comparison guard changed."
     ]
-  }
+  },
+  "custodyTargetEvidence": "evidence/m2-discovery-custody-target-20261029.json",
+  "candidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5"
 }
