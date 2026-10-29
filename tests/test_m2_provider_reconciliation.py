@@ -80,6 +80,17 @@ class ProviderRepresentation(unittest.TestCase):
         value=row();report=m.analyze(m.identity(value),value,{'1.44':value},'1.44')
         self.assertEqual(report['matchingCurrentApis'],['1.44']);self.assertFalse(report['resumeAllowed'])
 
+    def test_absent_and_reused_old_core_pids_are_incident_facts_not_admission(self):
+        pins={'peer-'+str(i):{'pid':i+10,'startTicks':100+i} for i in range(13)}
+        def current(pid):
+            if pid==10:raise FileNotFoundError()
+            if pid==11:return {'pid':pid,'startTicks':9999}
+            return pins['peer-'+str(pid-10)]
+        observations=m.core_pin_observations(pins,current)
+        self.assertEqual(observations['peer-0']['state'],'PROCESS_ABSENT')
+        self.assertEqual(observations['peer-1']['state'],'GENERATION_CHANGED')
+        self.assertEqual(sum(v['state']=='MATCHED' for v in observations.values()),11)
+
     def test_exact_consumed_stop_and_canonical_hash_are_bound(self):
         value=stop();m.verify_stop(value)
         self.assertEqual(m.digest(value),m.STOP_HASH)

@@ -74,6 +74,22 @@ def analyze(expected,captured,views,negotiated_api):
         'automaticReplayAllowed':False,'budgetReset':False,'applicationE2EProven':False}
 
 
+def core_pin_observations(pins,pin):
+    """Incident facts only; absent/reused old PIDs confer no current admission."""
+    require(type(pins) is dict and len(pins)==13,'EXACT_RETAINED_CORE_PIN_DOMAIN_REQUIRED')
+    result={}
+    for alias,expected in sorted(pins.items()):
+        require(type(expected) is dict and type(expected.get('pid')) is int and expected['pid']>=1,
+                'EXACT_RETAINED_CORE_PID_REQUIRED')
+        try:actual=pin(expected['pid'])
+        except (FileNotFoundError,ProcessLookupError):
+            result[alias]={'state':'PROCESS_ABSENT','observedHash':None}
+        else:
+            result[alias]={'state':'MATCHED' if actual==expected else 'GENERATION_CHANGED',
+                           'observedHash':digest(actual)}
+    return result
+
+
 def verify_stop(value):
     expected={'applicationMacKeyReads':0,'bytes':906004,'contextEngineGets':3,
         'credentialFileReads':0,'engineGets':27,'metadataReads':5,'nativeConfigurationReads':0,
@@ -191,11 +207,12 @@ def reconcile(c,*,stop_scope=STOP_SCOPE,stop_hash=STOP_HASH,material_root=MATERI
     require(len(pins)==len(material['currentObservations'])==13
             and set(pins)==set(material['currentObservations']) and set(roots)=={'pid1','engine'},
             'EXACT_RETAINED_THIRTEEN_CORE_PROCESS_PINS_REQUIRED')
+    core_before=core_pin_observations(pins,pin)
     def unchanged():
         c.guarded()
         require(boot_path.read_text().strip()==boot==material['bootId']
                 and pin(1)==roots['pid1'] and pin(material['engineBinding']['peerCredentials'][0])==roots['engine']
-                and all(pin(v['pid'])==v for v in pins.values())
+                and core_pin_observations(pins,pin)==core_before
                 and all(attrs(Path(p).lstat())==s for p,s in c.seals.items()),
                 'PROVIDER_RECONCILIATION_SOURCE_OR_CORE_GENERATION_CHANGED')
     unchanged();engine=engine_factory(c,material['engineBinding'],cid)
@@ -219,14 +236,17 @@ def reconcile(c,*,stop_scope=STOP_SCOPE,stop_hash=STOP_HASH,material_root=MATERI
         'preservedTrustInputsBinding':{'path':str(stop_scope/'public-trust-inputs.json'),'sha256':digest(trust)},
         'preservedPublicStore':store,'providerManifestBinding':{'path':str(manifest_root/'private-input-manifest.json'),'sha256':manifest_hash},
         'expectedHistoricalProvider':expected,'capturedProvider':captured,'currentViews':views,
-        'providerProcessPin':provider_pin,'engineVersion':version,'sourceSeals':dict(c.seals),
+        'providerProcessPin':provider_pin,'retainedCorePinObservations':core_before,
+        'engineVersion':version,'sourceSeals':dict(c.seals),
         'counts':dict(c.counts),'currentFullCohortConfigurationProven':False,
         'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'automaticReplayAllowed':False,'budgetReset':False}
     c.put('reconciliation.private.json',record)
     return {'schema':'ouf.m2-provider-reconciliation-result.v1','status':'READ_ONLY_PROVIDER_RECONCILIATION_COMPLETE',
         'complete':True,'scope':str(c.scope),'scopeConsumed':True,'reconciliationHash':digest(record),
         'preservedTrustInputsHash':digest(trust),'preservedPublicStoreSha256':store['sha256'],
-        'analysis':analysis,'counts':dict(c.counts),'historicalFilesAndPublicStorePreserved':True,
+        'analysis':analysis,'retainedCorePinStates':{state:sum(v['state']==state for v in core_before.values())
+            for state in ('MATCHED','PROCESS_ABSENT','GENERATION_CHANGED')},
+        'counts':dict(c.counts),'historicalFilesAndPublicStorePreserved':True,
         'rawCredentialOrKeyValuesPrinted':False,'newPublicStoresPrepared':0,
         'iamRequests':0,'oauthRequests':0,'sqlSessions':0,'engineWrites':0,'containerLifecycleOperations':0,
         'nativeConfigurationReads':0,'newKeysGenerated':0,'signaturesIssued':0,'budgetsGranted':0,

@@ -108,6 +108,11 @@ def main():
         try:m.reconcile(denied3,**args3);raise AssertionError('different predecessor accepted')
         except ValueError:pass
         assert denied3.counts['providerEngineGets']==0 and denied3.counts['recoveredPublicStoreReads']==0
+        cli('stop','--time','1',ids[0])
+        absent=m.ReconciliationCapture(base/'old-core-process-absent');absence=m.reconcile(absent,**args)
+        assert absence['retainedCorePinStates']['PROCESS_ABSENT']==1
+        assert not absence['currentFullCohortConfigurationProven'] and not absence['targetApplyAuthorized']
+        assert all(p.read_bytes()==raw for p,raw in before.items())
         print(json.dumps({'schema':'ouf.m2-provider-reconciliation-native-ci.v1',
             'actualDockerVersion':'29.8.1','actualCorePeers':13,'additionalProvider':1,
             'actualNegotiatedApi':a['negotiatedApi'],'cliNegotiatedIdentityMatchesExactHttpView':True,
@@ -116,7 +121,7 @@ def main():
             'fieldDroppingUsed':False,'metadataReads':6,'providerEngineGets':5,'recoveredPublicStoreReads':1,
             'realRestartPolicyDriftDoesNotMatchAnyView':True,'alteredStoreDeniedBeforeEngine':True,
             'otherStopDeniedBeforeEngineOrStoreRead':True,'priorFilesAndPublicStorePreserved':True,
-            'sameScopeReplayDenied':True,'fixtureCaAndHistoricalProvenanceAreSynthetic':True,
+            'sameScopeReplayDenied':True,'absentOldCoreProcessDiagnosedWithoutAdmission':True,'fixtureCaAndHistoricalProvenanceAreSynthetic':True,
             'targetExecuted':False,'resumeAllowed':False,'providerAdmissionProven':False,
             'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False},sort_keys=True))
     finally:
