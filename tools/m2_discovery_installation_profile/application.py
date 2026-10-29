@@ -48,7 +48,7 @@ class DiscoveryApplication:
                  retirement_channel,retirement_before_store,profile,authority,authority_raw,
                  verifier,attestation_signer,token_owner,node_recipe,node_directory,
                  readiness_scope,checkpoint,phase_checkpoint,backup_checkpoint,
-                 infrastructure_owners):
+                 infrastructure_owners,node_owner=None):
         require(type(profile) is DiscoveryProfile and type(transition) is Transition
             and transition.execution_profile is None and transition.profile_hash is None
             and transition.phases==PHASES and type(authority) is CutoverAuthority
@@ -95,8 +95,20 @@ class DiscoveryApplication:
         process=GatedProcessObservation(self.request)
         stage=GatedStageAdapter(engine,transition,self.request,store,process,native('STAGE_PAUSED_REPLACEMENT'))
         release=GatedReleaseAdapter(engine,transition,self.request,store,before_store,process,native('START_REPLACEMENT'))
-        node=DiscoveryNodeOwner(engine,transition,self.request,self.intents['ATTEST_NEW_OCI_PEER'],store,profile,
-            token_owner,authority,authority_raw,verifier,attestation_signer,node_recipe,node_directory)
+        if node_owner is None:
+            node=DiscoveryNodeOwner(engine,transition,self.request,self.intents['ATTEST_NEW_OCI_PEER'],store,profile,
+                token_owner,authority,authority_raw,verifier,attestation_signer,node_recipe,node_directory)
+        else:
+            require(type(node_owner) is DiscoveryNodeOwner and node_owner.engine is engine
+                and node_owner.transition is transition and node_owner.store is store
+                and node_owner.authority is authority and node_owner.raw==authority_raw
+                and node_owner.profile is profile and node_owner.token_owner is token_owner
+                and node_owner.verifier is verifier and node_owner.signer is attestation_signer
+                and node_owner.recipe==node_recipe and node_owner.root==__import__('pathlib').Path(node_directory)
+                and node_owner.request==self.request
+                and node_owner.intent==self.intents['ATTEST_NEW_OCI_PEER'],
+                'EXACT_SHARED_PRECONSTRUCTED_DISCOVERY_NODE_OWNER_REQUIRED')
+            node=node_owner
         readiness=ApplicationReadinessChannel(readiness_scope)
         owners={**self.infrastructure_owners,'ATTEST_NEW_OCI_PEER':node,
             'VERIFY_APPLICATION':ApplicationVerificationAdapter(engine,transition,self.request,self.intents['VERIFY_APPLICATION'],

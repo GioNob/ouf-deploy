@@ -69,10 +69,12 @@ class DiscoveryNodeObservation(NodeObservation):
             return bundle_reader(path)
         peers={peer['containerId']:collect(peer,str(root),self.cfg['runtimeBinding'],self.cfg['commands'],self.run,peer_bundle,
                 lambda pid:NativeBackend.generation(None,pid),self.budget) for peer in peer_declarations}
-        live_profile(candidate,oci,namespace,generation['namespaceInode'],children,hosts,peers)
+        transport=live_profile(candidate,oci,namespace,generation['namespaceInode'],children,hosts,peers)
         require(NativeBackend.generation(None,state['pid'])==generation and self.paused.observe()==before
                 and bundle_reader(bundle/'config.json')==raw,'PAUSED_NODE_CHANGED_DURING_COMPLETE_OBSERVATION')
         self.budget.check();require(digest(self.cfg)==self.configuration_hash,'PAUSED_NODE_CONFIGURATION_DRIFT');self.inputs.update(frame_inputs)
+        self.transport_profile={**transport,'applicationStartAuthorized':False,'infrastructureAuthorityComplete':False}
+        self.transport_generation=copy.deepcopy(generation)
         return {'schema':'ouf.semantic-paused-node-observation.v1','applicationHash':request['applicationHash'],'rootfsSeal':seal,
                 'generation':generation,'bundle':str(bundle),'rootfs':str(root_path),'state':state,'nativeStateContract':native_contract,
                 'peerObservations':peers,'creationFrameHash':frame_hash,'frameInputHashes':{str(p):hashlib.sha256(raw).hexdigest() for p,raw in frame_inputs.items()},
