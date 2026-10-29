@@ -10,6 +10,7 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tool
 from tools.m2_discovery_installation_profile import lease_capsule,lease_unit
 from tools.m2_discovery_installation_profile import native_generation_probe as native
 from tools.m2_discovery_installation_profile import lease_observation
+from tools.m2_discovery_installation_profile import lease_installation_template
 from tools.m2_discovery_installation_profile.lease_worker import DiscoveryRecovery
 from tools.semantic_provider_deployment_authentication import signing_bytes
 from tools.materialize_southbound_kernel import materialize
@@ -145,7 +146,7 @@ def main():
                 'roles':['CREATION_ATTESTATION'],'publicKey':public,'notBefore':now-30,'expiresAt':now+900,'state':'ACTIVE'}]}
         trust_path=install/'public-trust/policy.json';create(trust_path,trust)
         readonly_probe=install/'readonly-probe';create(readonly_probe,b'SYNTHETIC_CI_READ_ONLY')
-        refs=[py,nft_ref,openssl_ref,{'path':str(install/'capsule.py'),'sha256':sha(raw),'maximumBytes':2097152},
+        refs=[py,nft_ref,openssl_ref,{'path':str(install/'capsule.py'),'sha256':sha(raw),'maximumBytes':len(raw)},
             {'path':str(install/'worker-recipe.json'),'sha256':sha(encoded(recipe)),'maximumBytes':1048576},
             {'path':str(readonly_probe),'sha256':sha(readonly_probe.read_bytes()),'maximumBytes':4096}]
         c={'schema':'ouf.discovery-operational-lease-configuration.v1','installationInputsHash':scope['installationInputsHash'],
@@ -156,9 +157,18 @@ def main():
             'commonInvocationLock':str(logical),'commonLockIdentity':identity(logical),
             'generationReceiptPath':str(install/'current-generation.json'),'hostBootIdPath':str(install/'host-boot-id'),
             'ledgerRoot':str(ledger),'scopePolicyHash':scope['policyHash']}
-        compiled=lease_unit.compile_unit(c,recipe,snapshot,py,installation_root=str(install),
+        static_c,static_recipe=json.loads(encoded(c)),json.loads(encoded(recipe))
+        static_c['commonLockIdentity']=None;static_recipe['scope']['generationRef']=None
+        next(v for v in static_c['sources'] if v['path']==str(install/'worker-recipe.json'))['sha256']='0'*64
+        template=lease_installation_template.template(static_c,static_recipe,py,source_closure_hash='e'*64,
+            expected_images={role:value['imageId'] for role,value in snapshot['peers'].items()},
+            expected_node_profiles={role:{k:value[k] for k in lease_installation_template.INDEPENDENT_FIELDS}
+                for role,value in snapshot['profiles'].items()},installation_root=str(install),
             signing_key_paths=[str(key),str(private/'unrelated-credential')],engine_unit='ouf-docker-contract-daemon.service')
-        c['serviceUnitHash']=compiled['unitSha256']
+        materialized=lease_installation_template.materialize(template,snapshot,identity(logical))
+        assert materialized['templateHash']==lease_installation_template.parent_scope(template)['templateHash']
+        assert materialized['recipe']==recipe and materialized['currentNativeAdmissionStillRequired'] is True
+        c,compiled=materialized['configuration'],materialized['serviceUnit']
         assert lease_unit.compile_unit(c,recipe,snapshot,py,installation_root=str(install),
             signing_key_paths=[str(key)],engine_unit='ouf-docker-contract-daemon.service')['unitBody']==compiled['unitBody']
         create(install/'owner.service',compiled['unitBody'].encode(),0o644);create(install/'configuration.json',c)
@@ -262,6 +272,7 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
             'attemptsPublicationsStartedTimeAndHistoryPreserved':True,'blockedRemainsAliveNoQueriesAndNoAutomaticRearm':True,
             'actualDnsAndNft':True,'sourceModuleCount':len(manifest['sourceHashes']),
             'independentManagerProcessGenerationAndKernelObservationQualified':True,
+            'staticReviewedTemplateMaterializesExactGenerationWithoutBudgetChange':True,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
