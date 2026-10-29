@@ -53,3 +53,10 @@ jobs:
         run: |
           sudo journalctl --unit=ouf-docker-contract-daemon --no-pager --lines=70
           sudo find /var/lib -maxdepth 2 -type f -path '/var/lib/discovery-native-*/*-oci.json' -exec cp {} /tmp/ \;
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: discovery-native-frame-comparison-${{ github.run_id }}
+          path: /tmp/*-oci.json
+          if-no-files-found: warn
+          retention-days: 7
