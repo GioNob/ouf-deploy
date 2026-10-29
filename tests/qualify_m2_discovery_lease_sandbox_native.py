@@ -9,6 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from tools.m2_discovery_installation_profile import lease_capsule,lease_unit
 from tools.m2_discovery_installation_profile import native_generation_probe as native
+from tools.m2_discovery_installation_profile import lease_observation
 from tools.m2_discovery_installation_profile.lease_worker import DiscoveryRecovery
 from tools.semantic_provider_deployment_authentication import signing_bytes
 from tools.materialize_southbound_kernel import materialize
@@ -209,6 +210,11 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
         print(command('journalctl','-u',diagnostic_unit,'--no-pager','-n','8').decode(),flush=True)
         command('systemctl','daemon-reload');command('systemctl','start',unit)
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
+        manager_ref=program(str(Path(shutil.which('systemctl')).resolve()))
+        independent=lease_observation.observe(install/'configuration.json',compiled['configurationAnchor'],
+            unit_name=unit,systemctl=manager_ref)
+        assert independent['managerProcessId']==first_pid and independent['bothOwnedLeaseFamiliesPositive']
+        assert independent['applicationReady'] is False
         view=Path('/proc')/str(first_pid)/'root'
         process={k:v.strip() for k,v in (line.split(':',1) for line in (Path('/proc')/str(first_pid)/'status').read_text().splitlines() if ':' in line)}
         assert all(int(process[k],16)==1<<12 for k in ('CapEff','CapPrm','CapBnd','CapAmb')) and process['NoNewPrivs']=='1'
@@ -232,6 +238,9 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
         command('systemctl','start',unit)
         restarted=wait_for(lambda v:pid() not in (0,second_pid) and v['state']=='ACTIVE' and v['attempts']>stopped['attempts'])
         assert restarted['startedWall']==first['startedWall'] and restarted['publicationCount']>=stopped['publicationCount']
+        independent=lease_observation.observe(install/'configuration.json',compiled['configurationAnchor'],
+            unit_name=unit,systemctl=manager_ref)
+        assert independent['recoveryAttempts']>=restarted['attempts']
         replacement=trust_path.with_suffix('.replacement');create(replacement,b'SYNTHETIC_REVOKED_PUBLIC_POLICY');os.replace(replacement,trust_path)
         blocked=wait_for(lambda v:v['state']=='BLOCKED');assert sets_empty();queries=control['queries'];time.sleep(1.5)
         assert control['queries']==queries and pid()>1
@@ -252,6 +261,7 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
             'sameGenerationPausedToRunningAccepted':True,'sigkillReentryAndOrderlyManagerRestartQualified':True,
             'attemptsPublicationsStartedTimeAndHistoryPreserved':True,'blockedRemainsAliveNoQueriesAndNoAutomaticRearm':True,
             'actualDnsAndNft':True,'sourceModuleCount':len(manifest['sourceHashes']),
+            'independentManagerProcessGenerationAndKernelObservationQualified':True,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)

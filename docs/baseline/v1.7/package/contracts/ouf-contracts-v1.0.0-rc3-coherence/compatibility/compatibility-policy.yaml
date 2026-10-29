@@ -1,9 +1,0 @@
-repositoryVersion: '0.1'
-status: draft
-rules:
-  sameMajor: Additive optional fields only; no semantic repurpose of existing fields.
-  breakingChange: Requires a new major version and explicit consumer migration.
-  historicalReferences: Must remain resolvable while referenced by supported lineage/replay.
-  consumerDeclaration: Each consumer must declare accepted contract major versions.
-  unknownMandatorySemantics: Must fail safely; authorization/security semantics must
-    never be ignored.

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: ouf-service
-description: Common OUF service deployment skeleton
-type: application
-version: 0.1.0
-appVersion: "UNBOUND"

@@ -1,8 +1,0 @@
-{
-  "schema": "ouf.semantic-live-route-diagnostic-case.v1",
-  "inputsPath": "/etc/ouf/deploy-snapshots/semantic-registry-history-capture-r5cc0fjv/inputs.json",
-  "inputsHash": "8facd750a673d25c14bfc1a58c8c0ae28d63d8a5ce487ab956b8f2b23dc902c9",
-  "compositionPath": "/etc/ouf/deploy-snapshots/semantic-registry-recovery-composition-2pygojyp/composition.json",
-  "compositionHash": "65717005bcbcd03c342832193cabb5f23160583972635337159a0e5334de7e81",
-  "patchContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-stage8-execution-e1c13776c158064f9e1012a4993a409b459ae0711a77486dc59f7dd7a722ce92"
-}

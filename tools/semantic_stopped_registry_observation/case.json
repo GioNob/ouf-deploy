@@ -1,7 +1,0 @@
-{
-  "schema": "ouf.semantic-stopped-registry-observation-case.v1",
-  "contextPath": "/etc/ouf/deploy-snapshots/ingestion-readiness-stage8-execution-e1c13776c158064f9e1012a4993a409b459ae0711a77486dc59f7dd7a722ce92",
-  "since": 1792674720,
-  "until": 1792674900,
-  "historicalRegistryId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d"
-}

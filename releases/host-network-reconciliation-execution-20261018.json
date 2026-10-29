@@ -1,8 +1,0 @@
-{
- "schema":"ouf.host-network-reconciliation-execution.v1",
- "privateParent":"/etc/ouf/deploy-snapshots",
- "incidentPointer":"/etc/ouf/host-network-reconciliation-20261018.json",
- "maximumSeconds":300,
- "maximumEngineWrites":13,
- "finiteProfileReason":"One host-administrator correction of six retained backend endpoints plus one retained UDP start; no mutation replay, sleeps, provider lease or policy session."
-}
