@@ -24,6 +24,7 @@ class Session(unittest.TestCase):
         installed.Installed.setUp(self)
         guard,c,g,calls,receipt=installed.Installed.fixture(self)
         coordinator,journal,policy,scope,options,callbacks=factory.Worker.fixture(self,state)
+        coordinator.owner.backend.active_deadline=None
         scope['sourceClosureHash']=c['sourceManifest']['dependencyClosureHash']
         scope['installationInputsHash']=c['installationInputsHash']
         c['scopePolicyHash']=scope['policyHash'];c['ledgerRoot']=str(journal.root)
