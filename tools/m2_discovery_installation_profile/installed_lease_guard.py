@@ -10,13 +10,14 @@ from pathlib import Path
 from .custody_capture import digest,encoded,require
 from tools.semantic_registry_operational_owner.guard import protected_file,private_json
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,ancestors
+from .native_generation_probe import NativeLeaseGenerationProbe
 
 CONFIG_FIELDS={'schema','installationInputsHash','desiredProfileHash','sourceManifest','sources','verification',
     'serviceUnitPath','serviceUnitHash','commonInvocationLock','commonLockIdentity','generationReceiptPath',
     'hostBootIdPath','ledgerRoot','scopePolicyHash'}
 
 REQUIRED_MODULES={'tools.m2_discovery_installation_profile.installed_lease_guard',
-    'tools.m2_discovery_installation_profile.lease_worker'}
+    'tools.m2_discovery_installation_profile.lease_worker','tools.m2_discovery_installation_profile.native_generation_probe'}
 
 def boot_id(reference):
     path=Path(reference);ancestors(path)
@@ -39,7 +40,7 @@ def boot_id(reference):
 
 class InstalledLeaseGuard:
     def __init__(self,configuration_path,configuration_hash,*,generation_probe):
-        require(callable(generation_probe),'INDEPENDENT_NATIVE_GENERATION_PROBE_REQUIRED')
+        require(type(generation_probe) is NativeLeaseGenerationProbe,'INDEPENDENT_NATIVE_GENERATION_PROBE_REQUIRED')
         self.path,self.sha=Path(configuration_path),configuration_hash
         self.configuration=private_json(self.path,configuration_hash)
         c=self.configuration
@@ -53,6 +54,8 @@ class InstalledLeaseGuard:
             'EXACT_PUBLIC_DISCOVERY_LEASE_VERIFICATION_PROFILE_REQUIRED')
         self.verifier=DetachedAuthenticator(verification['trustPolicy'],str(self.path.parent/'receipt-signatures'),
             verification['openssl'])
+        require(generation_probe.root==Path(c['generationReceiptPath']).parent/'observations',
+            'EXACT_INSTALLED_NATIVE_GENERATION_OBSERVATION_ROOT_REQUIRED')
         self.probe=generation_probe;self.fd=None;self.pid=None;self.metadata_guard()
 
     def signature(self,value):
@@ -86,7 +89,7 @@ class InstalledLeaseGuard:
         require(type(manifest) is dict and set(manifest)=={'schema','sourceHashes','dependencyClosureHash'}
             and manifest['schema']=='ouf.discovery-operational-lease-sources.v1'
             and type(manifest['sourceHashes']) is dict and REQUIRED_MODULES<=set(manifest['sourceHashes'])
-            and 2<=len(manifest['sourceHashes'])<=64
+            and 3<=len(manifest['sourceHashes'])<=64
             and type(manifest['dependencyClosureHash']) is str and re.fullmatch('[0-9a-f]{64}',manifest['dependencyClosureHash']),
             'CLOSED_EXECUTING_DISCOVERY_LEASE_SOURCE_MANIFEST_REQUIRED')
         for name,sha in manifest['sourceHashes'].items():
@@ -124,6 +127,9 @@ class InstalledLeaseGuard:
 
     def current(self,scope_hash,generation_ref):
         require(self.fd is not None and self.pid==os.getpid(),'SAME_PROCESS_OPERATIONAL_LEASE_LIFETIME_FENCE_REQUIRED')
+        require(type(self.probe) is NativeLeaseGenerationProbe
+            and self.probe.root==Path(self.configuration['generationReceiptPath']).parent/'observations',
+            'EXACT_INSTALLED_NATIVE_GENERATION_PROBE_REQUIRED')
         self.metadata_guard();c=self.configuration
         s=os.fstat(self.fd);path=Path(c['commonInvocationLock'])
         require([s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink]==c['commonLockIdentity']

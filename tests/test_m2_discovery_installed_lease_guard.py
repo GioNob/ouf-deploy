@@ -1,5 +1,6 @@
 """Actual Ed25519 install/generation receipts; current native probe is synthetic."""
 import copy,hashlib,json,os,sys,unittest
+from unittest import mock
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_lease_recovery'),
@@ -64,9 +65,13 @@ class Installed(unittest.TestCase):
             'state':'NATIVE_GENERATION_ADMITTED','containerStartAuthorized':False}
         self.write(Path(c['generationReceiptPath']),self.signed_receipt(generation))
         calls=[]
-        def probe(value):
+        observations=self.root/'observations';observations.mkdir(mode=0o700)
+        probe=m.NativeLeaseGenerationProbe(observations)
+        def observe(instance,value):
             calls.append(copy.deepcopy(value))
             return {k:value[k] for k in ('nativeObservationHash','nativeProfileHash','generationRef','bootId')}
+        patch=mock.patch.object(m.NativeLeaseGenerationProbe,'__call__',observe)
+        patch.start();self.addCleanup(patch.stop)
         guard=m.InstalledLeaseGuard(path,sha,generation_probe=probe)
         return guard,c,generation,calls,receipt
 
@@ -76,6 +81,16 @@ class Installed(unittest.TestCase):
         self.key.rename(self.root/'unused-private-key')
         with guard.invocation():self.assertTrue(guard.current(generation['scopeHash'],generation['generationRef']))
         self.assertEqual(len(calls),1)
+
+    def test_noop_callback_cannot_replace_the_typed_native_probe(self):
+        guard,c,g,calls,_=self.fixture()
+        with self.assertRaisesRegex(ValueError,'INDEPENDENT_NATIVE_GENERATION_PROBE'):
+            m.InstalledLeaseGuard(guard.path,guard.sha,generation_probe=lambda value:value)
+        with guard.invocation():
+            guard.probe=lambda value:value
+            with self.assertRaisesRegex(ValueError,'EXACT_INSTALLED_NATIVE_GENERATION_PROBE'):
+                guard.current(g['scopeHash'],g['generationRef'])
+        self.assertEqual(calls,[])
 
     def test_same_process_lifetime_fence_is_required(self):
         guard,c,g,calls,_=self.fixture()
@@ -91,8 +106,11 @@ class Installed(unittest.TestCase):
 
     def test_current_native_probe_must_match_signed_generation(self):
         guard,c,g,calls,_=self.fixture()
-        guard.probe=lambda value:{'nativeObservationHash':'0'*64,'nativeProfileHash':value['nativeProfileHash'],
-            'generationRef':value['generationRef'],'bootId':value['bootId']}
+        def wrong(instance,value):
+            return {'nativeObservationHash':'0'*64,'nativeProfileHash':value['nativeProfileHash'],
+                'generationRef':value['generationRef'],'bootId':value['bootId']}
+        patch=mock.patch.object(m.NativeLeaseGenerationProbe,'__call__',wrong)
+        patch.start();self.addCleanup(patch.stop)
         with guard.invocation():
             with self.assertRaisesRegex(ValueError,'CURRENT_INDEPENDENT_NATIVE'):guard.current(g['scopeHash'],g['generationRef'])
 
