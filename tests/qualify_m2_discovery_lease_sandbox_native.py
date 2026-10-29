@@ -307,7 +307,16 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
         start_owner=lease_start_owner.LeaseStartAdapter(parent=parent,authority=child,authority_raw=child_raw,
             transition=transition,store=node.store,node_owner=node,template=template,proposal=materialized,
             scope=start_scope,intent=intent)
-        start_owner.apply(intent)
+        native_manager=start_owner.manager;manager_dispatches=[]
+        def lost_start_response(args):
+            result=native_manager(args)
+            if args[0]=='start':
+                manager_dispatches.append(list(args))
+                raise TimeoutError('CI_LOST_REPLY_AFTER_ACTUAL_MANAGER_START')
+            return result
+        start_owner.manager=lost_start_response
+        try:start_owner.apply(intent);raise AssertionError('CI_LOST_START_REPLY_NOT_INJECTED')
+        except TimeoutError as error:assert str(error)=='CI_LOST_REPLY_AFTER_ACTUAL_MANAGER_START'
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
         outcome,start_evidence=start_owner.observe(intent)
         assert outcome=='APPLIED' and start_evidence['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
@@ -315,6 +324,7 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
         try:start_owner.apply(intent);raise AssertionError('CONSUMED_MANAGER_START_REPLAYED')
         except (ValueError,OSError):pass
         assert pid()==first_pid
+        assert manager_dispatches==[['start','--no-block',unit]]
         independent=lease_observation.observe(install/'configuration.json',compiled['configurationAnchor'],
             unit_name=unit,systemctl=manager_ref)
         assert independent['managerProcessId']==first_pid and independent['bothOwnedLeaseFamiliesPositive']
@@ -369,6 +379,7 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             'staticReviewedTemplateMaterializesExactGenerationWithoutBudgetChange':True,
             'managerStopPreservesBoundedVerifierChildrenUntilMainQuiesces':True,
             'finiteParentOwnedStartAndIndependentPhaseObservationQualified':True,
+            'actualLostManagerStartReplyReconciledWithoutSecondStart':True,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
