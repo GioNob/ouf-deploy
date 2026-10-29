@@ -139,4 +139,6 @@ def serve_installed(worker,guard,scope,stop,reporter):
     require(type(stop) is threading.Event and type(reporter) is LeaseReporter
         and reporter.journal is worker.r.journal,'EXACT_INSTALLED_DISCOVERY_REPORTER_AND_STOP_REQUIRED')
     with installed_invocation(worker,guard,scope):
-        return _serve_claimed(worker,stop,reporter)
+        worker.r.installed_manager_stop=True
+        try:return _serve_claimed(worker,stop,reporter)
+        finally:worker.r.installed_manager_stop=False

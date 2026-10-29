@@ -91,6 +91,45 @@ class Worker(unittest.TestCase):
             m.build_worker(c,j,p,s,**o)
         self.assertEqual(j.read(),changed);self.assertEqual(calls,[])
 
+    def test_installed_manager_stop_revokes_and_preserves_active_history(self):
+        c,j,p,s,o,calls=self.fixture('ACTIVE');o['clock']=lambda:(180.0,130.0)
+        worker=m.build_worker(c,j,p,s,**o);before=j.read();pauses=[]
+        worker.r.adapter=types.SimpleNamespace(pause=lambda:pauses.append(True))
+        c.guard=lambda:{'state':'QUIESCED'};c.sets=lambda:[[]]
+        worker.r.installed_manager_stop=True
+        row=worker.r.step(cancelled=True)
+        self.assertEqual(row['state'],'NEW');self.assertEqual(row['reason'],'DISCOVERY_MANAGER_STOP_QUIESCENT')
+        self.assertEqual(row['attempts'],5);self.assertEqual(row['publicationCount'],3)
+        self.assertEqual(row['healthyWallSeconds'],15);self.assertEqual(row['healthyMonotonicSeconds'],15)
+        self.assertEqual(row['managerStopCount'],1);self.assertTrue(pauses)
+        archive=j.root/('manager-stop-predecessor-'+row['managerStopPredecessorHash']+'.json')
+        self.assertEqual(json.loads(archive.read_bytes()),before);self.assertEqual(calls,[])
+
+    def test_installed_manager_stop_preserves_wait_deadlines_and_parked_incidents(self):
+        for state in ('RETRY_WAIT','PAUSED_EXHAUSTED','BLOCKED','CANCELLED','RECONCILE_REQUIRED','PUBLISHING'):
+            c,j,p,s,o,calls=self.fixture(state)
+            if state=='RETRY_WAIT':
+                old=j.read();j.compare_and_save(old,{**old,'nextWall':120.0,'nextMonotonic':70.0})
+            worker=m.build_worker(c,j,p,s,**o);worker.r.installed_manager_stop=True;before=j.read()
+            worker.r.adapter=types.SimpleNamespace(pause=lambda:None)
+            c.guard=lambda:{'state':'QUIESCED'};c.sets=lambda:[[]]
+            row=worker.r.step(cancelled=True)
+            self.assertEqual(row['state'],state)
+            self.assertEqual(row['attempts'],5);self.assertEqual(row['publicationCount'],3)
+            if state=='RETRY_WAIT':
+                self.assertEqual(row['nextWall'],120);self.assertEqual(row['nextMonotonic'],70)
+            else:self.assertEqual(row,before)
+
+    def test_installed_manager_stop_failure_stays_pending_without_budget_reset(self):
+        c,j,p,s,o,calls=self.fixture('ACTIVE');worker=m.build_worker(c,j,p,s,**o)
+        worker.r.installed_manager_stop=True
+        def fail():raise RuntimeError('SYNTHETIC_REVOKE_FAILED')
+        worker.r.adapter=types.SimpleNamespace(pause=fail)
+        with self.assertRaises(RuntimeError):worker.r.step(cancelled=True)
+        row=j.read();self.assertEqual(row['state'],'RECONCILE_REQUIRED')
+        self.assertEqual(row['reason'],'DISCOVERY_MANAGER_STOP_IN_PROGRESS')
+        self.assertEqual(row['attempts'],5);self.assertEqual(row['publicationCount'],3)
+
     def test_status_rejects_extra_private_fields_and_symlinks(self):
         c,j,p,s,o,calls=self.fixture();reporter=m.LeaseReporter(j,lambda _:None)
         status={'state':'BLOCKED','reason':'AUTHORITY_REVOKED','attempts':5,'renewals':3,

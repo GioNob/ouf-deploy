@@ -25,8 +25,35 @@ class DiscoveryRecovery(LeaseRecovery):
     against recovery time. It cannot extend the finite budget as a healthy gap.
     """
     PROFILE='ouf.discovery-lease-cumulative-recovery-time.v1'
+    installed_manager_stop=False
     def initial(self):
         return {**super().initial(),'healthyUntilWall':None,'healthyUntilMonotonic':None}
+    def _step(self,*,cancelled=False):
+        if cancelled and self.installed_manager_stop is True:
+            return self.quiesce_for_manager_stop()
+        return super()._step(cancelled=cancelled)
+    def quiesce_for_manager_stop(self):
+        # Only serve_installed enables this mode while holding both lifetime
+        # fences. It narrows an owned lease; it cannot cancel or rearm a job.
+        row=self.journal.read();self.validate_time_accounting(row)
+        require(row.get('contextRef')==self.context and row.get('generationRef')==self.generation
+            and row.get('policyHash')==fingerprint(dataclasses.asdict(self.policy))
+            and row.get('discoveryLeaseScopeHash')==self.discovery_scope_hash,
+            'SAME_INSTALLED_DISCOVERY_STOP_SCOPE_REQUIRED')
+        if row['state'] not in {'NEW','RETRY_WAIT','ACTIVE'}:
+            self.adapter.pause();return row
+        count=row.get('managerStopCount',0)
+        require(type(count) is int and count>=0,'RETAINED_DISCOVERY_MANAGER_STOP_COUNT_REQUIRED')
+        reference=fingerprint(row)
+        raw=json.dumps(row,sort_keys=True,separators=(',',':'),allow_nan=False).encode()
+        self.journal.create(self.journal.root/('manager-stop-predecessor-'+reference+'.json'),raw);self.journal.sync()
+        pending=self.save(row,'RECONCILE_REQUIRED','DISCOVERY_MANAGER_STOP_IN_PROGRESS',
+            managerStopPredecessorHash=reference,managerStopCount=count+1)
+        self.adapter.pause()
+        require(self.coordinator.guard()['state']=='QUIESCED' and not any(self.coordinator.sets()),
+            'DISCOVERY_MANAGER_STOP_REVOCATION_UNPROVEN')
+        return self.save(pending,'NEW' if row['state']=='ACTIVE' else row['state'],
+            'DISCOVERY_MANAGER_STOP_QUIESCENT',healthyUntilWall=None,healthyUntilMonotonic=None)
     def credit(self,row,wall,mono):
         self.validate_time_accounting(row)
         healthy_wall,healthy_mono=row['healthyWallSeconds'],row['healthyMonotonicSeconds']
@@ -98,6 +125,7 @@ def build_worker(coordinator,journal,policy,scope,*,runtime_guard,generation_gua
     random_value=__import__('random').SystemRandom().random if random_value is None else random_value
     require(callable(random_value),'BOUNDED_DISCOVERY_WORKER_JITTER_SOURCE_REQUIRED')
     recovery=DiscoveryRecovery(journal,adapter,policy,selected['contextRef'],selected['generationRef'],clock,random_value)
+    recovery.discovery_scope_hash=scope_hash
     recovery.coordinator,recovery.poll_seconds=coordinator,selected['pollSeconds']
     recovery.validate_time_accounting(immutable())
     worker=Supervisor(recovery,coordinator,selected['pollSeconds'],heartbeat=selected['heartbeatSeconds'])
