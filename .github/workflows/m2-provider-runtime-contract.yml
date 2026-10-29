@@ -19,5 +19,4 @@ jobs:
           sudo install -d -m 700 "$fixture"
           sudo cp -a . "$fixture/repo"
           sudo chown -R root:root "$fixture"
-          cd "$fixture/repo"
-          sudo /usr/bin/python3 -I -B -S -m unittest discover -s tests -p test_m2_provider_runtime_contract.py -v
+          sudo /usr/bin/python3 -I -B -S "$fixture/repo/tests/test_m2_provider_runtime_contract.py" -v
