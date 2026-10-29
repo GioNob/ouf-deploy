@@ -143,7 +143,8 @@
     "discoveryParentGateWindowNativeQualified": true,
     "discoveryCapabilityCatalogueGatewaySourceQualified": true,
     "discoveryCapabilityCatalogueGatewaySourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
-    "discoveryCurrentGatewayArtifactRequired": true
+    "discoveryCurrentGatewayArtifactRequired": false,
+    "discoveryCurrentGatewayArtifactQualified": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -2009,7 +2010,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Completare la transazione unica di installazione dei byte/ledger firmati del worker e l'ammissione corrente del nuovo provider nella finestra gate-only già qualificata, poi ripausa prima di Registry ATTEST. Il nuovo LeaseStartAdapter governa solo l'avvio di file già installati e firmati; non sostituisce l'installer. Preparare la nuova closure/artifact Gateway c666c0f0 con contratto CAPABILITIES corretto: il vecchio pacchetto60788cf9 resta storico. Completare review/coordinatore13peer/TLS/IAM/DB/fencing/trust autorevole, controller boot/rotazione con contatori conservati, pubblicazione coordinata e ricerca OntoPiA/e2e reale tramite MCP/due client. Nessun nuovo comando operatore o finestra HUMAN pronta.",
+  "firstNextAction": "Completare la transazione unica di installazione dei byte/ledger firmati del worker e l'ammissione corrente del nuovo provider nella finestra gate-only qualificata, poi ripausa prima di Registry ATTEST. LeaseStartAdapter governa l'avvio di file già installati e firmati; l'installer resta da completare. Il nuovo pacchetto Gatewayc666c0f0 è disponibile e verificato: artifact12930098785/SHA22cd26a2,380blob confrontati con GitHub/10materializer; il vecchio607 resta storico. Non sono route target né ammissione runtime. Completare review/coordinatore13peer/TLS/IAM/DB/fencing/trust autorevole, controller boot/rotazione con contatori conservati, pubblicazione coordinata e ricerca OntoPiA/e2e reale via MCP/due client. Nessun nuovo comando operatore o finestra HUMAN pronta.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2467,9 +2468,10 @@
     "nativeDockerFrameEvidence": "evidence/m2-discovery-native-frame-qualified-20261029.json",
     "materialTargetEvidence": "evidence/m2-discovery-material-role-target-20261029.json",
     "targetStopEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json",
-    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "sourceCommit": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
     "currentSourceQualification": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json",
-    "catalogueContractQualification": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json"
+    "catalogueContractQualification": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
+    "gatewayPackageReadback": "evidence/m2-catalogue-gateway-offline-readback-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -6388,7 +6390,7 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Completare la transazione unica di installazione dei byte/ledger firmati del worker e l'ammissione corrente del nuovo provider nella finestra gate-only già qualificata, poi ripausa prima di Registry ATTEST. Il nuovo LeaseStartAdapter governa solo l'avvio di file già installati e firmati; non sostituisce l'installer. Preparare la nuova closure/artifact Gateway c666c0f0 con contratto CAPABILITIES corretto: il vecchio pacchetto60788cf9 resta storico. Completare review/coordinatore13peer/TLS/IAM/DB/fencing/trust autorevole, controller boot/rotazione con contatori conservati, pubblicazione coordinata e ricerca OntoPiA/e2e reale tramite MCP/due client. Nessun nuovo comando operatore o finestra HUMAN pronta.",
+  "next": "Completare la transazione unica di installazione dei byte/ledger firmati del worker e l'ammissione corrente del nuovo provider nella finestra gate-only qualificata, poi ripausa prima di Registry ATTEST. LeaseStartAdapter governa l'avvio di file già installati e firmati; l'installer resta da completare. Il nuovo pacchetto Gatewayc666c0f0 è disponibile e verificato: artifact12930098785/SHA22cd26a2,380blob confrontati con GitHub/10materializer; il vecchio607 resta storico. Non sono route target né ammissione runtime. Completare review/coordinatore13peer/TLS/IAM/DB/fencing/trust autorevole, controller boot/rotazione con contatori conservati, pubblicazione coordinata e ricerca OntoPiA/e2e reale via MCP/due client. Nessun nuovo comando operatore o finestra HUMAN pronta.",
   "discoveryTrustContextPreparation": {
     "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
@@ -6701,7 +6703,7 @@
     "parentGateAndPreinstalledWorkerStartEvidence": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json"
   },
   "discoveryOperationalLeaseSource": {
-    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "sourceCommit": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
     "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
     "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
     "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
@@ -6735,7 +6737,7 @@
     "scope": "MCP_ONLY_NOT_E2E"
   },
   "discoveryParentGateWorkerCheckpoint": {
-    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "sourceCommit": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
     "productionSourceCommit": "48c2bae347e07eeb5c83763a5a94510f3230d05b",
     "workerEvidence": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json",
     "gatePeerWindowNativeQualified": true,
@@ -6748,13 +6750,14 @@
     "gatewayEvidence": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
     "gatewaySelectedTestsPerJob": 222,
     "gatewayNativeApisixAndUdpPostgresqlQualified": true,
-    "newGatewayPackageStillRequired": true,
+    "newGatewayPackageStillRequired": false,
     "currentOperatorCommandReady": false,
     "targetInstalled": false,
     "bootOrRotationQualified": false,
     "applicationE2EProven": false,
     "stableCapabilitiesOperationalProven": false,
-    "releaseAcceptance": false
+    "releaseAcceptance": false,
+    "gatewayPackageReadbackEvidence": "evidence/m2-catalogue-gateway-offline-readback-20261029.json"
   },
   "capabilityCatalogueContract": {
     "evidence": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
@@ -6762,6 +6765,59 @@
     "sourceQualified": true,
     "targetInstalled": false,
     "liveCatalogueReadSucceeded": false,
-    "newGatewayPackageRequired": true
+    "newGatewayPackageRequired": false,
+    "packageEvidence": "evidence/m2-catalogue-gateway-offline-readback-20261029.json"
+  },
+  "currentGatewayCataloguePackage": {
+    "evidence": "evidence/m2-catalogue-gateway-offline-readback-20261029.json",
+    "applicationE2EProven": false,
+    "archiveBytes": 1658434,
+    "archiveEntryModesMatchGithubExecutableBitsAndAreNotGroupWritable": true,
+    "archiveSha256": "22cd26a29460de69d9aae9392cebad2a3eca28b3b6bc0153bbaab7b68aa24441",
+    "artifactId": 12930098785,
+    "cryptographicPublisherTrustAccepted": false,
+    "jobId": 123715265457,
+    "lowAndMediumAbsenceProven": false,
+    "materializerFilesVerified": 10,
+    "payloadHashesVerified": 7,
+    "permissionCatalogueAndDiscoveryMaterializersIncluded": true,
+    "producerCommit": "18773790fe0874486cf94abd8eb40be951d0788f",
+    "releaseAcceptance": false,
+    "reportedSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "runId": 40949998346,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.m2-catalogue-gateway-offline-readback.v1",
+    "severityFilteredReport": true,
+    "sourceBlobsCompared": 380,
+    "sourceBytesMatchGithubTree": true,
+    "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+    "sourceInventoryComplete": true,
+    "stableCapabilitiesOperationalProven": false,
+    "targetApplyAuthorized": false,
+    "targetRoutesMaterialized": false,
+    "transitiveRuntimeAdmissionProven": false,
+    "date": "2026-10-29",
+    "timezone": "Europe/Rome",
+    "archiveExpiresAt": "2026-11-28T20:33:06Z",
+    "publisherLogRead": true,
+    "readbackSourceCommit": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
+    "readbackSourcePath": "scripts/readback-m2-catalogue-gateway-40949998346.py",
+    "githubTree": "cbe0873a49b65d366b235a58a65c4eb9830d850f",
+    "initialArchiveReadback": {
+      "producerCommit": "0eb1cebd084395d09af86da10df5218b29fccc37",
+      "runId": 40949322853,
+      "jobId": 123712923911,
+      "artifactId": 12931630007,
+      "archiveSha256": "53abac4d7220a8a5c24cae5197f744d051329cc96f1af6d712b4644f744190f5",
+      "status": "RETAINED_NOT_CURRENT",
+      "reason": "Git archive default yielded group-writable0664/0775. Tightened tar.umask0022 and verified every tar member before sealing; strict readback guard retained.",
+      "documentation": "https://git-scm.com/docs/git-archive"
+    }
   }
 }

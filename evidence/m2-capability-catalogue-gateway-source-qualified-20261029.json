@@ -137,7 +137,15 @@
   },
   "packages": {
     "historicalGateway607PackageNotCurrentForThisDelta": true,
-    "newImmutableGatewayPackageRequired": true
+    "newImmutableGatewayPackageRequired": false,
+    "qualifiedSuccessor": {
+      "evidence": "evidence/m2-catalogue-gateway-offline-readback-20261029.json",
+      "artifactId": 12930098785,
+      "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+      "producerCommit": "18773790fe0874486cf94abd8eb40be951d0788f",
+      "archiveSha256": "22cd26a29460de69d9aae9392cebad2a3eca28b3b6bc0153bbaab7b68aa24441",
+      "installed": false
+    }
   },
   "targetInstalled": false,
   "currentLiveCatalogueReadFixed": false,
