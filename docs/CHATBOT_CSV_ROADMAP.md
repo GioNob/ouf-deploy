@@ -1,3 +1,24 @@
+# CURRENT — pubblicazione create-only del worker implementata; E2E CSV ancora aperto
+
+29 ottobre 2026. Obiettivo owner confermato: CSV→UDP→search interamente via
+chatbot/capability OUF, ripetibile/resiliente/fluido; mini-PET CSV1.1 e M2v1.3.
+[Continuazione](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+Deploy54 sourcecb6f2da6 aggiunge transazione file/ledger con tre attestazioni già
+emesse, claim esclusivo, inode/hash/custody, partial-write conservato e reconcile
+senza replay. 72test locali PASS/0skip (13nuovi+59regressioni); CI248test per push/PR PASS,
+sei log riletti, native Docker29/systemd/nft passate separatamente.
+[Evidenza](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/m2-discovery-worker-file-publication-qualified-20261029.json).
+Nessuna emissione di attestazioni o ammissione provider/controller completo.
+M1/G4 acquisiti, tecniche8/8funzionali6/6 del caso conservato; M2/G5–G7 e tutti8
+criteri discovery stabile OPEN. Farmacie stesso profilo61righe/10colonne e scelte
+STRING/OPEN preservate. MCP liveHEALTHY; searchCLASSFarmacia restituisce[], non
+prova discovery o assenza di equivalenti. Provider fermo nell’ultima ricevuta,
+input1868consumati, nessun comando operatore pronto. Next: issuer/ammissioni
+native+provider gated+registrazione manager/composizione, poi pubblicazione
+capability/OntoPiA/CSV/UDP/search/dueclient. Nessun merge/targetapply/nuovogrant,
+budget/upload/job/acquisizione/replay/reset/subagente/automazione. Header sotto
+STORICI per la sequenza corrente, invarianti generali ancora validi.
+
 # CURRENT — 29 ottobre: ripresa su M2 discovery, Farmacie già profilato
 
 [Punto di ripresa e riferimenti esatti](handoffs/OUF_CHAT_RECOVERY_20261029.md) · [roadmap M2 corrente](OUF_M2_ROADMAP_20261026.md). M1/G4 acquisiti; Farmacie SUCCEEDED con preview61righe/10colonne, chiave ministeriale STRING e10campi OPEN confermati. M2/G5–G7, D5–D7, otto criteri stabili e due client/E2E restano OPEN. Prossimo codice: installer unico dei byte/ledger firmati del worker PR54, poi nuova ammissione provider e coorte completa. Nessun nuovo comando operatore pronto, nessuna lettura VPS in questa ripresa; input1868 e predecessori consumati. Gli header e NEXT successivi sono storici, inclusa la diagnosi Farmacie ancora pendente del27ottobre. Non ripetere profilazione, grant, upload o vecchi controller.

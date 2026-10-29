@@ -1,3 +1,5 @@
+> Continuazione successiva: [CSV → UDP → search](OUF_CSV_E2E_CONTINUATION_20261029.md). Il componente di pubblicazione file è ora implementato; resta aperto il controller completo con ammissioni/provider/manager. Le indicazioni NEXT sottostanti descrivono il checkpoint precedente.
+
 # Ripresa del lavoro OUF dopo la perdita della chat — 29 ottobre 2026
 
 Questo è un indice di ripresa ricostruito da GitHub. La vecchia chat non è stata

@@ -1,3 +1,5 @@
+Ripresa corrente: [CSV → UDP → search, 29 ottobre](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Componente file installer su Deploy54/cb6f2da6,72test locali; E2E e ammissione target ancora aperti.
+
 > **29 ottobre — punto di ripresa corrente:** [stato verificato, rami attivi e prossimo incremento](docs/handoffs/OUF_CHAT_RECOVERY_20261029.md). Il lavoro successivo al14ottobre è nei rami PR50/54, non nel `main` fermo a quella data. Farmacie profiling/preview completati; M1/G4 acquisiti, M2/discovery stabile/E2E aperti. Il worker ha start singolo qualificato ma manca l’installer byte/ledger; nessun nuovo comando VPS pronto. Le istruzioni datate sotto sono storiche e non autorizzano replay.
 
 # Checkpoint — Onboarding V38 INSTALLATO/CONSUMATO; prossimo passo THS SOLO UTENTE

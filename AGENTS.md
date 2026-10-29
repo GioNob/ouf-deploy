@@ -1,3 +1,24 @@
+# CURRENT — pubblicazione create-only del worker implementata; E2E CSV ancora aperto
+
+29 ottobre 2026. Obiettivo owner confermato: CSV→UDP→search interamente via
+chatbot/capability OUF, ripetibile/resiliente/fluido; mini-PET CSV1.1 e M2v1.3.
+[Continuazione](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+Deploy54 sourcecb6f2da6 aggiunge transazione file/ledger con tre attestazioni già
+emesse, claim esclusivo, inode/hash/custody, partial-write conservato e reconcile
+senza replay. 72test locali PASS/0skip (13nuovi+59regressioni); CI248test per push/PR PASS,
+sei log riletti, native Docker29/systemd/nft passate separatamente.
+[Evidenza](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/m2-discovery-worker-file-publication-qualified-20261029.json).
+Nessuna emissione di attestazioni o ammissione provider/controller completo.
+M1/G4 acquisiti, tecniche8/8funzionali6/6 del caso conservato; M2/G5–G7 e tutti8
+criteri discovery stabile OPEN. Farmacie stesso profilo61righe/10colonne e scelte
+STRING/OPEN preservate. MCP liveHEALTHY; searchCLASSFarmacia restituisce[], non
+prova discovery o assenza di equivalenti. Provider fermo nell’ultima ricevuta,
+input1868consumati, nessun comando operatore pronto. Next: issuer/ammissioni
+native+provider gated+registrazione manager/composizione, poi pubblicazione
+capability/OntoPiA/CSV/UDP/search/dueclient. Nessun merge/targetapply/nuovogrant,
+budget/upload/job/acquisizione/replay/reset/subagente/automazione. Header sotto
+STORICI per la sequenza corrente, invarianti generali ancora validi.
+
 # CURRENT — ripresa verificata dopo perdita chat; indice compatto del 29 ottobre
 
 Leggere [il punto di ripresa](docs/handoffs/OUF_CHAT_RECOVERY_20261029.md) prima degli header storici. Repository accessibili con pull/push; PET completi già nel ramo PR50. Ultimi riferimenti verificati: Deploy54 `5e3f0f3e`, Gateway84 `c666c0f0`, Registry41 `1086f7ea`, MCP81 `09d1f521`. Ripetuti 13 test puri sul template/unità PR54, PASS/zero skip; nessuna nuova qualifica nativa o lettura VPS. L’installer byte/ledger del worker resta il prossimo incremento, non implementato da questa ripresa. M1/G4 acquisiti; Farmacie SUCCEEDED/61righe/10colonne e scelte dominio preservate. M2/G5–G7/8stabilità/dueclient/E2E OPEN. Input1868 consumati, provider fermo nell’ultima ricevuta; nessun nuovo comando operatore pronto. Autorizzazione repository rinnovata; nessun merge/acceptance/subagente/automazione o effetto runtime. Il checkpoint tecnico seguente resta valido; quelli successivi sono storia.

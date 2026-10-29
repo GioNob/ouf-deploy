@@ -1,3 +1,5 @@
+> Aggiornamento del 29 ottobre: [continuazione CSV→UDP→search](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
+
 > **Stato aggiornato29ottobre:** [checkpoint di ripresa verificato](handoffs/OUF_CHAT_RECOVERY_20261029.md). Farmacie profiling SUCCEEDED e preview61righe/10colonne già acquisiti; chiave ministeriale STRING e10campi OPEN confermati. Le descrizioni FAILED/causa ignota nelle sezioni di audit sotto sono la baseline storica del26ottobre. Il residuo corrente è discovery governata/stabile e completamento M2; nessun nuovo profiling richiesto. Requisiti e denominatori di accettazione restano invariati.
 
 # OUF — Mini-PET M2: CSV autoguidato fino a UDP

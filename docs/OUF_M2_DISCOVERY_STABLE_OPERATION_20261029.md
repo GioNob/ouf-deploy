@@ -1,3 +1,5 @@
+> Aggiornamento del 29 ottobre: [continuazione CSV→UDP→search](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
+
 # M2 — Requisito vincolante: discovery stabilmente operativa
 
 29 ottobre 2026, Europe/Rome. Estensione richiesta dall'owner al miniPET M2, versione1.3. Il prodotto deve eseguire il ciclo **chatbot → capability MCP OUF → Gateway → Registry → OntoPiA**. Una PR, un test isolato o una dimostrazione temporanea non chiudono questo obbligo.
