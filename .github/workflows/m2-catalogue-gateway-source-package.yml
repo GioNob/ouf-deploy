@@ -18,7 +18,7 @@ jobs:
           persist-credentials: false
       - name: Verify immutable source and portable catalogue contract
         run: |
-          python3 - <<'PY'
+          python3 -B - <<'PY'
           import importlib.util,json,subprocess
           from pathlib import Path
           source=Path('source')
@@ -51,8 +51,8 @@ jobs:
       - name: Enforce coverage and export complete source and materializer pins
         env: {PRODUCER: '${{ github.sha }}'}
         run: |
-          python3 - <<'PY'
-          import hashlib,json,os,runpy,subprocess
+          python3 -B - <<'PY'
+          import hashlib,json,os,runpy,subprocess,tarfile
           from pathlib import Path
           source=Path('source');output=Path('package')
           helpers=runpy.run_path('scripts/package-semantic-proposal-candidate.py',run_name='qualified_scan_primitives')
@@ -61,7 +61,7 @@ jobs:
           assert (output/'gateway-scan/requirements.txt').read_bytes()==(source/'requirements-dev.txt').read_bytes()
           assert any(r.get('Type')=='pip' and r.get('Target')=='requirements.txt' and r.get('Packages') for r in scan['Results'])
           commit='c666c0f0080b8802fc71daa27c32a0af2ed98544'
-          subprocess.run(['git','-C',str(source),'archive','--format=tar','-o',str((output/'source.tar').resolve()),commit],check=True)
+          subprocess.run(['git','-C',str(source),'-c','tar.umask=0022','archive','--format=tar','-o',str((output/'source.tar').resolve()),commit],check=True)
           paths=['tools/materialize_semantic_discovery.py','tools/delegation_functions.py','tools/lua/execute_semantic_discovery.lua',
               'tools/materialize_permission_proposals.py','tools/mcp_union_projection.py','tools/lua/execute_permissions.lua',
               'schemas/mcp-gateway-permissions-dispatch-v1.json']
@@ -80,6 +80,15 @@ jobs:
           put('producer.json',{'schema':'ouf.m2-discovery-offline-package-provenance.v1','module':'gateway',
               'producerCommit':os.environ['PRODUCER'],'applicationSourceCommit':commit,'runtimeAuthorityIssued':False,
               'targetApplyAuthorized':False,'stableCapabilitiesOperationalProven':False,'applicationE2EProven':False,'releaseAcceptance':False})
+          with tarfile.open(output/'source.tar',mode='r:') as archive:
+              entries=archive.getmembers()
+              assert all(e.isfile() or e.isdir() for e in entries)
+              members={e.name:e for e in entries if e.isfile()}
+              assert set(members)==set(all_files)
+              for name,entry in members.items():
+                  assert entry.mode== (0o755 if (source/name).stat().st_mode&0o111 else 0o644)
+                  assert archive.extractfile(entry).read()==(source/name).read_bytes()
+              assert all(e.mode==0o755 for e in entries if e.isdir())
           files=sorted(p for p in output.rglob('*') if p.is_file() and p.name!='SHA256SUMS')
           assert all(not p.is_symlink() for p in files)
           (output/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.relative_to(output).as_posix()+'\n' for p in files))
