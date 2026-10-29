@@ -1,4 +1,8 @@
-# CURRENT 29 ottobre 2026 — preparazione trust/contesto qualificata, intervento VPS necessario
+# CURRENT 29 ottobre2026 — trust/context STOP consumato, provider da riconciliare
+
+[Esito target](../evidence/m2-discovery-trust-context-target-stop-20261029.json): CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED,27+3GET/5metadata/906004byte,2CA/1storepubblico+rilettura,0OCI. Store preservato; scope FALLITO/CONSUMATO e comando ritirato. Non ripetere né cancellare scope/log. Riconciliare la risposta provider già acquisita con il contratto originale; causa non ancora provata, nessun nuovo comando pronto. Materiali68daa9 restano riusciti/consumati. Nessuna authority/apply/IAM/SQL/lifecycle nuova;13fasi/worker/stabilità/E2E OPEN. Le sezioni seguenti sono storiche.
+
+# HISTORICAL 29 ottobre 2026 — preparazione trust/contesto qualificata, intervento VPS necessario
 
 [Unico comando corrente](handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md), [qualifica](../evidence/m2-discovery-trust-context-preparation-qualified-20261029.json). Materiali68daa9 RIUSCITI/CONSUMATI. Nuovo scope trust-context-68daa9c9 NON ESEGUITO; serve operatore SSHoufadmin perché il connector non dispone di filesystem/executor VPS. Una passata90s/16MiB:32GET,5metadati,2CA/2OCI,PKCS12pubblico nuovo root:10001/0440. Nessun filecredenziali/chiavi o IAM/OAuth/SQL/lifecycle/apply; ancheSTOPconsuma, conservarelog/file. Test sorgenti/delivery e Docker29.8.1/Java21 qualificati, logletti; no ammissionetarget oE2E. Dopo JSON/footer completare esecutore13fasi/worker distinto/review coordinata. M2 e otto criteri stabilità OPEN; nessun merge/acceptance/replay/reset. Resto del documento conserva la storia.
 

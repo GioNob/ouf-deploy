@@ -1,3 +1,7 @@
+# STORICO — scope FALLITO/CONSUMATO: NON eseguire il comando sottostante
+
+Il target si è fermato su CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED dopo il PKCS12 pubblico e prima delle OCI; il materiale parziale e le risposte Engine restano preservati. [Esito](../../evidence/m2-discovery-trust-context-target-stop-20261029.json). Il launcher corrente è ritirato. Nessun nuovo comando è pronto; riconciliare il provider dai record già acquisiti, senza riaprire scope o azzerare budget.
+
 # Preparazione trust pubblico e contesto nativo corrente
 
 29 ottobre 2026. Stato: consegna qualificata, **NON eseguita sul VPS**. Il precedente scope materiali è RIUSCITO/CONSUMATO e resta in sola lettura. Non rilanciarlo.

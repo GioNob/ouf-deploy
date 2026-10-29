@@ -115,8 +115,8 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Execute the single qualified bounded public trust/current native context preparation once as oufadmin over interactive SSH; sanitized JSON/footer required. The connector has no VPS filesystem executor. No consumed scope replay, early IAM/OAuth window or application apply.",
-  "currentOperatorCommandReady": true,
+  "next": "Reconcile exact provider identity from the consumed trust/context result, its already captured Engine response and the historical producer contract. Preserve the public store and all scopes; no new command ready, no retry or early IAM/OAuth window.",
+  "currentOperatorCommandReady": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
@@ -259,7 +259,7 @@
     "targetTlsAdmissionProven": false
   },
   "discoveryTrustContextPreparation": {
-    "status": "SOURCE_AND_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
     "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
@@ -268,9 +268,10 @@
     "capsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
     "wrapperCommit": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
     "wrapperSha256": "cd8d4ea2a791a834db75e4022b290a1d037fce3f5445cffabf434399f1da8da5",
-    "targetExecuted": false,
-    "scopeConsumed": false,
-    "currentCommandReady": true
+    "targetExecuted": true,
+    "scopeConsumed": true,
+    "currentCommandReady": false,
+    "targetEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
   "discoveryMaterialRoleDuplicateDelivery": {
     "evidence": "evidence/m2-discovery-material-role-duplicate-delivery-20261029.json",
@@ -279,5 +280,52 @@
     "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-roles-delivery.qQDBrdmF",
     "priorMaterialSuccessPreserved": true,
     "trustContextExecutionReported": false
+  },
+  "discoveryTrustContextTarget": {
+    "schema": "ouf.m2-discovery-trust-context-target-stop-observation.v1",
+    "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+    "date": "2026-10-29",
+    "independentHostLogOrPrivateRecordRead": false,
+    "result": {
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "counts": {
+        "applicationMacKeyReads": 0,
+        "bytes": 906004,
+        "contextEngineGets": 3,
+        "credentialFileReads": 0,
+        "engineGets": 27,
+        "metadataReads": 5,
+        "nativeConfigurationReads": 0,
+        "preparedCopyReads": 0,
+        "privateCopiesPrepared": 0,
+        "publicCertificateCopiesPrepared": 0,
+        "publicCertificateReads": 2,
+        "publicTrustStoreReadbacks": 1,
+        "publicTrustStoresPrepared": 1
+      },
+      "partialPublicStorePreserved": true,
+      "rawCredentialOrKeyValuesPrinted": false,
+      "reasonCode": "CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED",
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-discovery-trust-context-preparation-result.v1",
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
+      "scopeConsumed": true,
+      "status": "STOP_RECONCILE",
+      "targetApplyAuthorized": false
+    },
+    "resultCanonicalSha256": "960507a9df468f100a91338819ec30fb95e098cabefe010c3335ebc60f9cbbfa",
+    "operatorExit": 1,
+    "operatorLog": "/usr/local/lib/ouf-m2-discovery-trust-context-5e93e2248307b2cd/operator.log",
+    "deliveryExit": 1,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-trust-context-delivery.2BxVmw9N",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-trust-context-delivery.2BxVmw9N/bootstrap.log",
+    "disposition": "FAILED_CONSUMED_PRESERVE_PUBLIC_STORE_AND_ALL_CAPTURED_RESPONSES_NO_REPLAY",
+    "priorMaterialScopeRemainsSuccessfulConsumed": true,
+    "providerMismatchCauseProven": false,
+    "newCommandReady": false
   }
 }
