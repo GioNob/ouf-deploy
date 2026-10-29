@@ -3,14 +3,18 @@
 Disposable CI only. Application admission profiles and installation authority
 are synthetic. This is not a target deployment, boot controller or E2E proof.
 """
-import dataclasses,errno,hashlib,json,os,re,shutil,socket,stat,struct,subprocess,sys,threading,time,uuid
+import copy,dataclasses,errno,hashlib,json,os,re,shutil,socket,stat,struct,subprocess,sys,threading,time,types,uuid
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT),str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
+    str(ROOT/'tools/semantic_frame_compiler'),str(ROOT/'tools/semantic_lease_recovery'),
+    str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+import test_m2_discovery_parent_authority as signed_parent
 from tools.m2_discovery_installation_profile import lease_capsule,lease_unit
 from tools.m2_discovery_installation_profile import native_generation_probe as native
 from tools.m2_discovery_installation_profile import lease_observation
 from tools.m2_discovery_installation_profile import lease_installation_template
+from tools.m2_discovery_installation_profile import lease_start_owner
 from tools.m2_discovery_installation_profile.lease_worker import DiscoveryRecovery
 from tools.semantic_provider_deployment_authentication import signing_bytes
 from tools.materialize_southbound_kernel import materialize
@@ -42,6 +46,7 @@ def identity(path):
 def main():
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert command('docker','version','--format','{{.Server.Version}}').strip()==b'29.8.1'
+    parent_fixture=signed_parent.Parent();parent_fixture.setUp()
     tag=uuid.uuid4().hex[:8];install=Path('/etc/ouf-lease-ci')/tag;ledger=Path('/var/lib/ouf-lease-ci')/tag
     sandbox=Path(str(install)+'-sandbox');private=Path('/etc/ouf-lease-private-ci')/tag
     fences=Path(str(ledger)+'-fences');kernel=Path(str(ledger)+'-kernel');unit='ouf-lease-sandbox-'+tag+'.service'
@@ -84,10 +89,11 @@ def main():
     try:
         for directory in (install,ledger,sandbox,private,fences,kernel):directory.mkdir(parents=True,mode=0o700);directory.chmod(0o700)
         (install/'receipt-signatures').mkdir(mode=0o700);(install/'observations').mkdir(mode=0o700)
-        create(install/'host-boot-id',b'BIND_TARGET_ONLY')
+        create(install/'host-boot-id',Path('/proc/sys/kernel/random/boot_id').read_bytes())
         cli('pull','alpine:3.22');peers={}
         for role in ('registry','provider'):
-            cid=cli('run','-d','--network','bridge','--user','10001:10001','--cap-drop','ALL',
+            names=['--name','ouf-semantic-cutover-'+'5'*64] if role=='registry' else []
+            cid=cli('run','-d',*names,'--network','bridge','--user','10001:10001','--cap-drop','ALL',
                 '--security-opt','no-new-privileges:true','alpine:3.22','sleep','600');ids.append(cid)
             value=json.loads(cli('inspect',cid))[0];ns=Path(value['NetworkSettings']['SandboxKey']).resolve();info=ns.stat()
             peers[role]={'containerId':cid,'imageId':value['Image'],
@@ -101,6 +107,10 @@ def main():
         assert int(command('systemctl','show','ouf-docker-contract-daemon.service','--property=MainPID','--value'))==credentials[0]
         profiles={role:{k:('1' if role=='registry' else '2')*64 for k in
             ('nodeRecipeHash','applicationHash','imageConfigurationHash','rootfsSealHash')} for role in peers}
+        ci_node_recipe={'schema':'synthetic-native-ci-node-recipe.v1','imageConfigurationHash':'1'*64,
+            'expectedRootfsSeal':{'synthetic':'not-current-application-admission'}}
+        profiles['registry'].update(nodeRecipeHash=sha(encoded(ci_node_recipe)),
+            rootfsSealHash=sha(encoded(ci_node_recipe['expectedRootfsSeal'])))
         snapshot={'schema':'ouf.discovery-lease-generation-observation.v1','desiredProfileHash':'3'*64,
             'nativeProfileHash':native.digest(profiles),'profiles':profiles,
             'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
@@ -140,7 +150,7 @@ def main():
         key=private/'native.pem';command(openssl,'genpkey','-algorithm','ED25519','-out',str(key));key.chmod(0o600)
         create(private/'unrelated-credential',b'SYNTHETIC_CI_PRIVATE_VALUE_NOT_FOR_WORKER')
         public=command(openssl,'pkey','-in',str(key),'-pubout','-outform','DER')[12:].hex();now=int(time.time())
-        context={'installationRef':'synthetic-ci-installation','entityRef':'synthetic-ci-entity','attestorRef':'synthetic-ci-attestor'}
+        context={k:parent_fixture.context[k] for k in ('installationRef','entityRef','attestorRef')}
         trust={'schema':'ouf.semantic-deployment-trust-policy.v1','installationRef':context['installationRef'],
             'entityRef':context['entityRef'],'keys':[{'keyRef':'synthetic-ci-key','issuerRef':context['attestorRef'],
                 'roles':['CREATION_ATTESTATION'],'publicKey':public,'notBefore':now-30,'expiresAt':now+900,'state':'ACTIVE'}]}
@@ -164,7 +174,8 @@ def main():
             expected_images={role:value['imageId'] for role,value in snapshot['peers'].items()},
             expected_node_profiles={role:{k:value[k] for k in lease_installation_template.INDEPENDENT_FIELDS}
                 for role,value in snapshot['profiles'].items()},installation_root=str(install),
-            signing_key_paths=[str(key),str(private/'unrelated-credential')],engine_unit='ouf-docker-contract-daemon.service')
+            signing_key_paths=[str(key),str(private/'unrelated-credential'),str(parent_fixture.key)],
+            engine_unit='ouf-docker-contract-daemon.service')
         materialized=lease_installation_template.materialize(template,snapshot,identity(logical))
         assert materialized['templateHash']==lease_installation_template.parent_scope(template)['templateHash']
         assert materialized['recipe']==recipe and materialized['currentNativeAdmissionStillRequired'] is True
@@ -260,9 +271,50 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             assert len(matches)==1;stop_results[kill_mode]=json.loads(matches[0])['childSurvivedManagerTerm']
         assert stop_results=={'control-group':False,'mixed':True},stop_results
         print('CI_MANAGER_STOP_CHILD_SCOPE='+json.dumps(stop_results,sort_keys=True),flush=True)
-        command('systemctl','daemon-reload');command('systemctl','start',unit)
-        first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
+        command('systemctl','daemon-reload')
         manager_ref=program(str(Path(shutil.which('systemctl')).resolve()))
+        start_directory=parent_fixture.root/'worker-start';start_directory.mkdir(mode=0o700)
+        evidence_directory=parent_fixture.root/'worker-evidence';evidence_directory.mkdir(mode=0o700)
+        start_scope=lease_start_owner.start_scope(template,unit_name=unit,manager=manager_ref,directory=str(start_directory))
+        # Full application predecessor/admission facts remain synthetic. The
+        # signatures, parent guards, native start and independent worker read
+        # below are the production classes operating on actual installed files.
+        request={'synthetic-ci-application-predecessor':tag};request_hash=sha(encoded(request))
+        intent={'creationRequestHash':request_hash,'nodeRecipeHash':sha(encoded(ci_node_recipe)),
+            'leaseInstallationScopeHash':sha(encoded(start_scope)),'priorEvidencePhase':'INSTALL_AUTHENTICATED_TRANSPORT'}
+        parent_fixture.review.update(sourceClosureHash='e'*64,installationInputsHash=c['installationInputsHash'],
+            desiredProfileHash=c['desiredProfileHash'])
+        phase_hashes={phase:request_hash if phase=='CREATE_REPLACEMENT' else sha(encoded(intent))
+            if phase==lease_start_owner.PHASE else '4'*64 for phase in lease_start_owner.PHASES}
+        child,child_raw=parent_fixture.child(creation_request_hash=request_hash,phase_intent_hashes=phase_hashes)
+        parent_fixture.review['components']['operationalLeaseInstallation']=start_scope
+        parent=parent_fixture.fixture();authority_hash=sha(child_raw)
+        transition=object.__new__(lease_start_owner.Transition);transition.execution_profile=None
+        transition.profile_hash=None;transition.context='5'*64
+        checkpoint={'state':'IN_FLIGHT','nextPhase':8,'creationRequestHash':request_hash,
+            'transitionAuthorityEvidenceHash':authority_hash,'effects':[
+                {'phase':phase,'state':'APPLIED' if i<8 else 'IN_FLIGHT','intentHash':phase_hashes[phase],
+                    'authorityEvidenceHash':authority_hash,'nativeEvidenceHash':'9'*64}
+                for i,phase in enumerate(lease_start_owner.PHASES[:9])]}
+        transition.read=lambda:copy.deepcopy(checkpoint)
+        from engine_creation import Engine
+        engine=Engine(str(sockpath),tuple(snapshot['engineBinding']['socketBinding']))
+        node=object.__new__(lease_start_owner.DiscoveryNodeOwner);node.transition=transition
+        node.store=lease_start_owner.NativeEvidenceStore(evidence_directory);node.authority=child;node.raw=child_raw
+        node.request=request;node.recipe=ci_node_recipe;node.engine=engine
+        node.adapter=types.SimpleNamespace(request={'applicationHash':profiles['registry']['applicationHash']})
+        node.verify_retained=lambda:{'syntheticApplicationAdmission':True}
+        start_owner=lease_start_owner.LeaseStartAdapter(parent=parent,authority=child,authority_raw=child_raw,
+            transition=transition,store=node.store,node_owner=node,template=template,proposal=materialized,
+            scope=start_scope,intent=intent)
+        start_owner.apply(intent)
+        first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
+        outcome,start_evidence=start_owner.observe(intent)
+        assert outcome=='APPLIED' and start_evidence['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
+        assert not start_evidence['applicationStartAuthorized']
+        try:start_owner.apply(intent);raise AssertionError('CONSUMED_MANAGER_START_REPLAYED')
+        except (ValueError,OSError):pass
+        assert pid()==first_pid
         independent=lease_observation.observe(install/'configuration.json',compiled['configurationAnchor'],
             unit_name=unit,systemctl=manager_ref)
         assert independent['managerProcessId']==first_pid and independent['bothOwnedLeaseFamiliesPositive']
@@ -316,6 +368,7 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             'independentManagerProcessGenerationAndKernelObservationQualified':True,
             'staticReviewedTemplateMaterializesExactGenerationWithoutBudgetChange':True,
             'managerStopPreservesBoundedVerifierChildrenUntilMainQuiesces':True,
+            'finiteParentOwnedStartAndIndependentPhaseObservationQualified':True,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
@@ -334,5 +387,6 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
         for cid in ids:subprocess.run(['docker','rm','-f',cid],capture_output=True,timeout=20)
         server.close()
         for directory in (install,ledger,sandbox,private,fences,kernel):shutil.rmtree(directory,ignore_errors=True)
+        parent_fixture.doCleanups()
 
 if __name__=='__main__':main()

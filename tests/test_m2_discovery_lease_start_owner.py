@@ -8,7 +8,8 @@ from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
-    str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+    str(ROOT/'tools/semantic_frame_compiler'),str(ROOT/'tools/semantic_lease_recovery'),
+    str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 import test_m2_discovery_parent_authority as signed
 import test_m2_discovery_lease_installation_template as templates
 from tools.m2_discovery_installation_profile import lease_start_owner as m

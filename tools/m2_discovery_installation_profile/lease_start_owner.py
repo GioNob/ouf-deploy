@@ -12,6 +12,7 @@ from .parent_authority import DiscoveryParentAuthority
 from .lease_installation_template import materialize,parent_scope,recompile,hashed
 from .node_owner import DiscoveryNodeOwner
 from .lease_service import build_installed
+from .installed_lease_guard import boot_id
 from . import lease_observation
 from .native_generation_probe import DOCKER_FIELDS
 from tools.semantic_registry_operational_owner.guard import protected_file,private_json
@@ -119,7 +120,8 @@ class LeaseStartAdapter:
         generation=private_json(guard.configuration['generationReceiptPath']);snapshot=self.proposal['nativeObservation']
         require(generation['nativeObservationHash']==digest(snapshot)
             and generation['nativeProfileHash']==snapshot['nativeProfileHash']
-            and generation['generationRef']==snapshot['generationRef'],
+            and generation['generationRef']==snapshot['generationRef']
+            and boot_id('/proc/sys/kernel/random/boot_id')==snapshot['bootId'],
             'EXACT_PREINSTALLED_DISCOVERY_GENERATION_REQUIRED')
         if before_start:
             with guard.invocation():guard.current(digest(scope),scope['generationRef'])
