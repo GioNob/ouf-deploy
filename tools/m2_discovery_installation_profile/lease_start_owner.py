@@ -191,7 +191,7 @@ class LeaseStartAdapter:
             'transitionContextHash':self.transition.context,'intentHash':self.intent_hash,
             'creationRequestHash':self.request_hash,'claimHash':digest(claim),'templateHash':self.template_hash,
             'configurationHash':digest(self.proposal['configuration']),'nodeProofBeforeHash':digest(before),
-            'nodeProofAfterHash':digest(after),'installedWorkerObservation':observed,
+            'nodeProofAfterHash':digest(after),'installedWorkerObservation':copy.deepcopy(observed),
             'managerEnableOrRestartPerformed':False,'containerLifecycleOperationsPerformed':False,
             'startReplayAllowed':False,'applicationStartAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
         path=self.store.path(PHASE)
