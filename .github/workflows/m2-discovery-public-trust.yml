@@ -1,0 +1,22 @@
+name: M2 explicit public Java truststore
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/public_truststore.py','tests/test_m2_discovery_public_truststore.py','tests/qualify_m2_discovery_public_trust_java.py','tests/fixtures/discovery-public-trust/**','.github/workflows/m2-discovery-public-trust.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/public_truststore.py','tests/test_m2_discovery_public_truststore.py','tests/qualify_m2_discovery_public_trust_java.py','tests/fixtures/discovery-public-trust/**','.github/workflows/m2-discovery-public-trust.yml']
+permissions: {contents: read}
+jobs:
+  java-public-ca:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21'}
+      - name: Explicit roots, private-key denial, canonical bytes and independent OpenSSL integrity
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_discovery_public_truststore.py -v
+      - name: Actual Java21 trust entries and isolated two-issuer TLS acceptance with outsider denial
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: python3 -I -B -S tests/qualify_m2_discovery_public_trust_java.py
