@@ -9,7 +9,7 @@ from contextlib import contextmanager
 import fcntl,stat
 from pathlib import Path
 import dns,readback_margin_compiler
-from deadline_backend import DeadlineNftBackend
+from .discovery_nft_backend import DiscoveryNftBackend
 from bounded_recovery import Policy,fingerprint
 from recovery_journal import Journal
 from tools.semantic_provider_lease_owner import LeaseOwner
@@ -23,6 +23,7 @@ from .lease_worker import build_worker,LeaseReporter
 
 MODULE='tools.m2_discovery_installation_profile.lease_service'
 SERVICE_MODULES={MODULE,'tools.m2_discovery_installation_profile.installed_lease_session',
+    'tools.m2_discovery_installation_profile.discovery_nft_backend',
     'dns','readback_margin_compiler','deadline_backend','nft_seconds_backend',
     'bounded_recovery','recovery_journal','lease_recovery_budget','continuous_supervisor',
     'resilient_lease_adapter','adaptive_supervisor','tools.semantic_provider_lease_owner',
@@ -90,7 +91,7 @@ def build_installed(configuration_path,anchor):
     def program():
         protected_file(nft['path'],nft['maximumBytes'],expected=nft['sha256'],modes=(0o755,))
     program()
-    backend=DeadlineNftBackend([nft['path']],recipe['kernel'],scope['leaseStructureHash'],5)
+    backend=DiscoveryNftBackend([nft['path']],recipe['kernel'],scope['leaseStructureHash'],5)
     owner=LeaseOwner(recipe['kernel'],recipe['dns'],backend)
     coordination=PrivateJournal(ledger/'coordination.json')
     coordinator=Coordinator(owner,recipe['binding'],

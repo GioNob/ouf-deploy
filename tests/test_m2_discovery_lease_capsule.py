@@ -20,7 +20,7 @@ class Capsule(unittest.TestCase):
     def test_reproducible_exact_closed_source_cold_load(self):
         second,manifest=m.build(ROOT);self.assertEqual(second,self.raw);self.assertEqual(manifest,self.manifest)
         result=self.run_capsule('self-check');self.assertEqual(result.returncode,0,result.stderr)
-        value=json.loads(result.stdout);self.assertEqual(value['moduleCount'],36)
+        value=json.loads(result.stdout);self.assertEqual(value['moduleCount'],37)
         self.assertEqual(value['sourceManifest'],self.manifest)
         self.assertFalse(value['runtimeAuthorityIssued']);self.assertFalse(value['targetApplyAuthorized'])
         self.assertEqual(result.stderr,'')

@@ -66,11 +66,11 @@ class Service(unittest.TestCase):
 
     def test_build_uses_actual_native_classes_without_dns_kernel_calls_or_journal_changes(self):
         journal,calls=self.fixture();before=journal.record.read_bytes()
-        with (mock.patch.object(m.DeadlineNftBackend,'run',side_effect=AssertionError('NO_NFT_DURING_BUILD')),
+        with (mock.patch.object(m.DiscoveryNftBackend,'run',side_effect=AssertionError('NO_NFT_DURING_BUILD')),
               mock.patch.object(m.dns,'exchange',side_effect=AssertionError('NO_DNS_DURING_BUILD'))):
             worker,guard,scope=m.build_installed(self.path,m.configuration_anchor(self.c))
         self.assertIs(type(worker.c),m.Coordinator);self.assertIs(type(worker.c.owner),m.LeaseOwner)
-        self.assertIs(type(worker.c.owner.backend),m.DeadlineNftBackend)
+        self.assertIs(type(worker.c.owner.backend),m.DiscoveryNftBackend)
         self.assertEqual(journal.record.read_bytes(),before);self.assertEqual(calls,[])
         self.assertEqual(worker.r.journal.read()['attempts'],7)
         self.assertEqual(worker.r.journal.read()['publicationCount'],4)
