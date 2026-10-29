@@ -1,4 +1,4 @@
-# CURRENT — one initial worker phase composed; native qualification pending
+# CURRENT — worker sequence qualified natively; provider target admission still open
 
 29 October 2026. Worker ATTEST→FILES→REGISTER→START now has a parent-reviewed
 sequence, one durable dispatch per substage and explicit continuation only for
@@ -8,10 +8,18 @@ separate and singular. Start evidence retains three initial-installation proofs;
 completed observation never restores or demands initial live journals. Read-only
 observers verify the existing logical fence inode without taking its lifetime
 flock; mutation fences remain exclusive. Frozen runtime capsule unchanged.
-55 local protocol/regression tests PASS, including 20 new registration/sequence
-tests; actual composed worker native CI pending. Provider application admission
-in fixtures remains synthetic; real provider child, full current cohort,
+Initial local protocol/regression suites passed; current validation includes the
+additional strict sequence-version denial. Actual composed worker native push/PR
+CI passed: real Ed25519 publication/manager registration/start, Docker29.8.1,
+systemd/DNS/nft, lost start reply and lifetime-lock observation. Provider application
+admission remains synthetic in fixtures; real provider child, full current cohort,
 boot/rotation, target capability publication and CSV→UDP E2E remain OPEN.
+The standalone read-only provider runtime-contract collector and protected HTTPS
+delivery are source-qualified separately; synthetic Engine metadata is explicit.
+The target effective named wrapper/configuration/Broker/profile schemas are not
+available via MCP and were not included in retained input1868. Before actual
+provider integration, use only the new bounded read-only handoff when qualified:
+[provider runtime contract](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md).
 No target effect, authority/grant/budget reset, replay, upload/job, merge or agents.
 Scope clarification below controls all historical search-as-phase labels.
 
