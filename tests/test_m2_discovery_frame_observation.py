@@ -14,6 +14,14 @@ from tools.m2_discovery_installation_profile.frame import compile_policy, valida
 from tools.m2_discovery_installation_profile import observation as m
 
 
+class DenyOwnerFixture(m.DomainOwner):
+    """Every real admission call fails; token mount leaf is explicitly mocked."""
+    def prepare(self,*a,**k):raise AssertionError('No real owner operation allowed')
+    def admit(self,*a,**k):raise AssertionError('No real owner admission allowed')
+    def guard(self,*a,**k):raise AssertionError('No real owner guard allowed')
+    def pause(self,*a,**k):raise AssertionError('No real owner mutation allowed')
+
+
 class Observation(unittest.TestCase):
     def prepared(self):
         self.assertEqual(os.geteuid(), 0, 'qualification must use the isolated root fixture')
@@ -41,7 +49,7 @@ class Observation(unittest.TestCase):
         paused=object.__new__(m.PausedWorkloadBinding); paused.transition=transition; paused.request_hash=profile.compiled['creationRequestHash']
         paused.observe=lambda:{'creationRequestHash':paused.request_hash,'runtimeBinding':{'pid':123}}
         budget=types.SimpleNamespace(check=lambda:None, remaining=lambda n:n)
-        observer=m.DiscoveryFrameObservation(cfg,budget,object.__new__(m.DomainOwner),paused,profile)
+        observer=m.DiscoveryFrameObservation(cfg,budget,DenyOwnerFixture(),paused,profile)
         return observer,policy,oci,generation,pol,owner
 
     def call(self,o,p,oci,g,*,mutate=None):
