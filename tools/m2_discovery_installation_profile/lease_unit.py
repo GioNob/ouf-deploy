@@ -130,7 +130,7 @@ def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signin
         'ReadWritePaths='+' '.join('+'+p for p in sorted(writable)),
         'NoExecPaths=/','ExecPaths='+' '.join('+'+p for p in executables),
         'Environment=PATH=/usr/bin:/usr/sbin:/bin LC_ALL=C OPENSSL_CONF=/dev/null',
-        'UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP SSLKEYLOGFILE SSL_CERT_FILE SSL_CERT_DIR HTTP_PROXY HTTPS_PROXY ALL_PROXY',
+        'UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GLIBC_TUNABLES OPENSSL_MODULES OPENSSL_ENGINES SSLKEYLOGFILE SSL_CERT_FILE SSL_CERT_DIR HTTP_PROXY HTTPS_PROXY ALL_PROXY',
         'StandardInput=null','StandardOutput=journal','StandardError=journal','LimitNOFILE=256','TasksMax=32','',
         '[Install]','WantedBy=multi-user.target','']
     raw='\n'.join(lines).encode('ascii')

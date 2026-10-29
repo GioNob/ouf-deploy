@@ -43,7 +43,8 @@ def main():
     tag=uuid.uuid4().hex[:8];install=Path('/etc/ouf-lease-ci')/tag;ledger=Path('/var/lib/ouf-lease-ci')/tag
     sandbox=Path(str(install)+'-sandbox');private=Path('/etc/ouf-lease-private-ci')/tag
     fences=Path(str(ledger)+'-fences');kernel=Path(str(ledger)+'-kernel');unit='ouf-lease-sandbox-'+tag+'.service'
-    link=Path('/etc/systemd/system')/unit;ids=[];interface='olci'+tag;table='ouf_ci_'+tag
+    link=Path('/etc/systemd/system')/unit;diagnostic_unit='ouf-lease-diagnostic-'+tag+'.service'
+    diagnostic_link=Path('/etc/systemd/system')/diagnostic_unit;ids=[];interface='olci'+tag;table='ouf_ci_'+tag
     nft=str(Path(shutil.which('nft')).resolve());openssl=str(Path(shutil.which('openssl')).resolve())
     python=str(Path(sys.executable).resolve());server=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     server.bind(('127.0.0.1',0));port=server.getsockname()[1];control={'queries':0,'ttl':30}
@@ -181,6 +182,31 @@ def main():
             'nativeProfileHash':snapshot['nativeProfileHash'],'ledgerRoot':str(ledger),
             'state':'NATIVE_GENERATION_ADMITTED','containerStartAuthorized':False}
         create(install/'current-generation.json',sign(generation));link.symlink_to(install/'owner.service')
+        # CI-only diagnosis uses the identical namespace/capability settings.
+        # Neither this helper nor its manager entry is exported for deployment.
+        batch='\n'.join('flush set '+f+' '+table+' provider_'+str(i) for f in ('inet','bridge') for i in range(2))+'\n'
+        diagnostic='''import json,os,subprocess,tempfile
+nft=__NFT__
+batch=__BATCH__
+def run(args,raw=None):
+ p=subprocess.run([nft]+args,input=raw,capture_output=True,text=True,timeout=5)
+ return {'returncode':p.returncode,'stderr':p.stderr[:1500]}
+stdin=run(['-f','-'],batch)
+with tempfile.TemporaryDirectory(prefix='ouf-ci-nft-input-') as d:
+ p=d+'/transaction.nft'
+ with open(p,'w') as f:f.write(batch)
+ os.chmod(p,0o600)
+ file=run(['-f',p])
+print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,'devStdinExists':os.path.exists('/dev/stdin')},sort_keys=True),flush=True)
+'''.replace('__NFT__',repr(nft)).replace('__BATCH__',repr(batch))
+        create(install/'diagnostic.py',diagnostic.encode(),0o400)
+        diagnostic_body='\n'.join(('Type=oneshot' if line=='Type=simple' else 'Restart=no' if line.startswith('Restart=')
+            else 'ExecStart=:'+python+' -I -B -S '+str(install/'diagnostic.py') if line.startswith('ExecStart=') else line)
+            for line in compiled['unitBody'].split('\n'))
+        create(install/'diagnostic.service',diagnostic_body.encode(),0o644)
+        diagnostic_link.symlink_to(install/'diagnostic.service');command('systemctl','daemon-reload')
+        command('systemctl','start',diagnostic_unit)
+        print(command('journalctl','-u',diagnostic_unit,'--no-pager','-n','8').decode(),flush=True)
         command('systemctl','daemon-reload');command('systemctl','start',unit)
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
         view=Path('/proc')/str(first_pid)/'root'
@@ -230,7 +256,8 @@ def main():
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
     finally:
-        command('systemctl','stop',unit,check=False);link.unlink(missing_ok=True)
+        command('systemctl','stop',unit,check=False);command('systemctl','stop',diagnostic_unit,check=False)
+        link.unlink(missing_ok=True);diagnostic_link.unlink(missing_ok=True)
         command('systemctl','daemon-reload',check=False);command('systemctl','reset-failed',unit,check=False)
         for family in ('inet','bridge'):command(nft,'delete','table',family,table,check=False)
         command('ip','link','delete',interface,check=False)
