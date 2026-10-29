@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Completare capsule con loader chiuso e unità sandbox per lease_service.execute: usare configuration_anchor (esclude solo serviceUnitHash, che resta coperto dalla receipt firmata) per evitare ciclo hash unit/config. Esporre al worker solo /proc/<2peerPID+daemonPID>/stat e namespace bind esatti della generazione, non l'intero /proc o chiavi private; qualificare con CAP_NET_ADMIN e isolamento reale. Integrare START_DISTINCT_LEASE_WORKER e coordinatore completo. Reentry corrente SOLO stessa generazione/boot; boot, rotazione e nuova generazione richiedono controller distinto con ammissione corrente e continuità dei contatori. Provider child: collector live congelato rifiuta Registry paused; finestra GATE-ONLY running sotto intent parent distinto senza SIGUSR1/Java/DB, nuova ammissione provider e ripausa prima di Registry ATTEST. Completare TLS/IAM/DB/fencing/cohort, capability publication e OntoPiA e2e reale/due client. Nessun nuovo comando operatore pronto.",
+  "next": "Integrare START_DISTINCT_LEASE_WORKER con installazione governata e review completa: capsule37moduli, controllo pubblico dedicato live (directory, non bind di singoli file), common fence e kernel lock su inode approvato, sandbox separata dai controlli e dal ledger. SourceReference92803ea9; capsule3b88cd8f/464208byte; generare unità dai due peer nuovi e daemon correnti. Non copiare una policy storica congelata come revoca corrente: pubblicazione trust/receipt deve restare autorevole e osservare sostituzioni atomiche, senza esporre chiavi. Poi provider child gated sotto intent parent distinto GATE-ONLY running/ripausa prima di Registry ATTEST (collector live congelato rifiuta paused), coordinatore13fasi/TLS/IAM/DB/fencing, controller boot/rotazione con ammissione corrente e contatori conservati, pubblicazione capability e OntoPiA e2e reale/due client. Nessun nuovo comando operatore pronto.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1389,7 +1389,7 @@
     "targetExecuted": false
   },
   "discoveryOperationalLeaseSource": {
-    "sourceCommit": "65d589b9e23ae56185116d1ce628ed708d43008f",
+    "sourceCommit": "9a70e2bce57446e481495a4c8645eb3a28e45a2a",
     "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
     "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
     "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
@@ -1404,6 +1404,16 @@
     "foregroundServiceEvidence": "evidence/m2-installed-discovery-lease-service-source-qualified-20261029.json",
     "sameGenerationReentryImplemented": true,
     "foregroundEntryImplemented": true,
-    "sealedRuntimeCapsuleOrUnitQualified": false
+    "sealedRuntimeCapsuleOrUnitQualified": true,
+    "runtimeSandboxEvidence": "evidence/m2-discovery-lease-runtime-sandbox-source-qualified-20261029.json",
+    "closedRuntimeModuleCount": 37,
+    "sameGenerationReentryNativeQualified": true,
+    "orderlyManagerRestartNativeQualified": true,
+    "bootOrRotationQualified": false
+  },
+  "mcpOperationalObservation": {
+    "evidence": "evidence/m2-mcp-operational-observation-20261029.json",
+    "moduleStatus": "HEALTHY",
+    "scope": "MCP_ONLY_NOT_E2E"
   }
 }
