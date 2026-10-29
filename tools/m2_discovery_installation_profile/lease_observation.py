@@ -24,13 +24,24 @@ def preload_runtime():
 
 
 def observe(configuration_path,anchor,*,unit_name,systemctl,seconds=15):
-    require(os.geteuid()==os.getegid()==0 and type(seconds) is int and 1<=seconds<=30
+    require(type(seconds) is int and 1<=seconds<=30,'BOUNDED_DISCOVERY_WORKER_OBSERVATION_REQUIRED')
+    deadline=time.monotonic()+seconds
+    for attempt in range(3):
+        try:return _observe(configuration_path,anchor,unit_name=unit_name,systemctl=systemctl,deadline=deadline)
+        except BlockingIOError:
+            if attempt==2 or deadline-time.monotonic()<=.05:raise
+            # Short journal/kernel-lock contention is read-only reconciliation,
+            # never permission to start a process or republish an earlier lease.
+            time.sleep(.02*(attempt+1))
+
+
+def _observe(configuration_path,anchor,*,unit_name,systemctl,deadline):
+    require(os.geteuid()==os.getegid()==0
         and type(unit_name) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.@-]{0,100}[.]service',unit_name),
         'ROOT_BOUNDED_DISCOVERY_WORKER_OBSERVATION_REQUIRED')
     require(type(systemctl) is dict and set(systemctl)=={'path','sha256','maximumBytes'}
         and type(systemctl['maximumBytes']) is int and 1<=systemctl['maximumBytes']<=67108864,
         'EXACT_DISCOVERY_MANAGER_READER_REQUIRED')
-    started=time.monotonic();deadline=started+seconds
     def remaining(maximum):
         value=deadline-time.monotonic();require(value>0,'DISCOVERY_WORKER_OBSERVATION_DEADLINE_MISSED')
         return min(maximum,value)
