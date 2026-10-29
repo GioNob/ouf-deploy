@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Continue combined public IAM/provider trust and coordinated executable installation integration from exact private preparedInputsHash68daa9c9; no new operator command ready.",
+  "next": "Integrate full thirteen-phase execution, distinct provider lease worker and coordinated current native preparation. No reexecution of consumed material scope; no early IAM/OAuth grant.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1077,5 +1077,13 @@
     "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-roles-delivery.7jHrtoaD",
     "deliveryLog": "/home/oufadmin/ouf-m2-discovery-material-roles-delivery.7jHrtoaD/bootstrap.log",
     "disposition": "SUCCESS_CONSUMED_NO_REPLAY"
+  },
+  "discoveryBoundPublicTrustSourceQualification": {
+    "evidence": "evidence/m2-discovery-bound-public-trust-source-qualified-20261029.json",
+    "sourceCommit": "a2ef7a732fbc3cd57f4bff4534fe8f3ee08aa0c0",
+    "testsPerJob": 10,
+    "java21TwoIssuerTlsAndOutsiderDenialQualified": true,
+    "targetTruststorePrepared": false,
+    "targetTlsAdmissionProven": false
   }
 }

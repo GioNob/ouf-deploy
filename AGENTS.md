@@ -1,4 +1,10 @@
-# CURRENT — materiali preparati e CONSUMATI; trust e installazione coordinata aperti
+# CURRENT — materiali CONSUMATI; trust pubblico Java qualificato nei sorgenti
+
+29 ottobre 2026. [Qualifica trust](evidence/m2-discovery-bound-public-trust-source-qualified-20261029.json): PR54 source a2ef7a7, 10 test per push/PR senza skip, log letti; Java21 verifica insieme esatto CA, zero chiavi private, TLS IAM/provider sintetici e rifiuto terza CA prima dei dati applicativi, MAC alterato rifiutato. Compiler puro collega record materiali68daa9 e configurazione owner IAM esatta, issuer/token endpoint e digest CA nativo. Nessun truststore preparato sul VPS o ammissione TLS/IAM/DB corrente dimostrata.
+
+Materiali target RIUSCITI/CONSUMATI: preparazione ruoli68daa9 e predecessori conservati, nessun replay. Continuare integrazione esecutore completo13fasi/worker provider distinto e preparazione coordinata rete/DB/cohort/fencing. Nessun comando operatore nuovo pronto, token/finestra prematuri vietati. M2/E2E/stabilità OPEN; discovery ancora non esposta. Nessun bypass/merge/acceptance/subagenti/automazioni. Proseguire autonomamente finché utente essenziale. Header successivi storici.
+
+# HISTORICAL — materiali preparati e CONSUMATI; trust e installazione coordinata aperti
 
 29ottobre2026. [Esito target](evidence/m2-discovery-material-role-target-20261029.json). Successo PRIVATE_MATERIAL_ROLE_COPIES_PREPARED_NOT_ADMITTED,complete=true/OperatorExit0/DeliveryExit0;13peer/27GET,4metadata/836914byte,1credenziale/2MACapp/1CA,2copie private+1pubblica/3riletture. preparedInputsHash68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392;roleMapHash104aabb7...,predecessoreSTOP2d133870... conservato. FonteJSON/footeroperatore, nessuna letturaindipendenteprivati/log. Scope material-roles-2d133870-20261029-v1 RIUSCITO/CONSUMATO, launcher ritirato; NONrilanciare/cancellare/ricreare o sovrascriverelog.
 
