@@ -9,7 +9,7 @@ import copy,dataclasses
 from pathlib import Path
 from .custody_capture import digest,encoded,require
 from .installed_lease_guard import InstalledLeaseGuard,boot_id
-from .lease_worker import DiscoveryRecovery,SCOPE_FIELDS
+from .lease_worker import DiscoveryRecovery,SCOPE_FIELDS,LeaseReporter,_serve_claimed
 from bounded_recovery import fingerprint,number
 from continuous_supervisor import Supervisor,RenewingLeaseAdapter
 from recovery_journal import Journal
@@ -116,7 +116,6 @@ def installed_invocation(worker,guard,scope):
     This function never initializes a journal or admits another generation.
     """
     selected=copy.deepcopy(scope);retained(worker,guard,selected)
-    previous=worker.r.adapter.scope_guard
     def current():
         retained(worker,guard,selected)
         require(scope==selected,'DISCOVERY_SESSION_SCOPE_CHANGED')
@@ -131,4 +130,13 @@ def installed_invocation(worker,guard,scope):
         finally:
             worker.active_here=False
             try:worker.r.adapter.pause()
-            finally:worker.r.adapter.scope_guard=previous
+            finally:worker.r.adapter.scope_guard=current
+
+
+def serve_installed(worker,guard,scope,stop,reporter):
+    """Use the parked-alive worker loop under both installed lifetime fences."""
+    import threading
+    require(type(stop) is threading.Event and type(reporter) is LeaseReporter
+        and reporter.journal is worker.r.journal,'EXACT_INSTALLED_DISCOVERY_REPORTER_AND_STOP_REQUIRED')
+    with installed_invocation(worker,guard,scope):
+        return _serve_claimed(worker,stop,reporter)

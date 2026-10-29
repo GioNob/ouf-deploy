@@ -159,21 +159,26 @@ def serve(worker,stop,reporter):
         and type(stop) is threading.Event and type(reporter) is LeaseReporter
         and reporter.journal is worker.r.journal,'EXACT_DISCOVERY_WORKER_AND_REPORTER_REQUIRED')
     with protected_directory(worker.r.journal.root),worker.r.journal.invocation():
+        return _serve_claimed(worker,stop,reporter)
+
+
+def _serve_claimed(worker,stop,reporter):
+    """Internal serve body: caller must retain the process invocation fence."""
+    try:
+        return worker._serve(stop,reporter.report)
+    except Exception:
+        worker.active_here=False
         try:
-            return worker._serve(stop,reporter.report)
+            row=worker.r.pause(worker.r.journal.read(),'BLOCKED','LOCAL_STATE_UNPROVEN')
+            reporter.report({'state':row['state'],'reason':row['reason'],'attempts':row['attempts'],
+                'renewals':worker.renewals,'incidentRef':worker.r.context,'ready':False,'live':True})
         except Exception:
-            worker.active_here=False
-            try:
-                row=worker.r.pause(worker.r.journal.read(),'BLOCKED','LOCAL_STATE_UNPROVEN')
-                reporter.report({'state':row['state'],'reason':row['reason'],'attempts':row['attempts'],
-                    'renewals':worker.renewals,'incidentRef':worker.r.context,'ready':False,'live':True})
-            except Exception:
-                try:worker.r.adapter.pause()
-                except Exception:pass
-            reporter.unavailable()
-            # Persistent liveness does not recover ambiguity or reset a budget.
-            while not stop.wait(worker.heartbeat):reporter.unavailable()
-        finally:
-            worker.active_here=False
             try:worker.r.adapter.pause()
-            except Exception:reporter.unavailable()
+            except Exception:pass
+        reporter.unavailable()
+        # Persistent liveness does not recover ambiguity or reset a budget.
+        while not stop.wait(worker.heartbeat):reporter.unavailable()
+    finally:
+        worker.active_here=False
+        try:worker.r.adapter.pause()
+        except Exception:reporter.unavailable()

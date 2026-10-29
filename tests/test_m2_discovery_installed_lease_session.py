@@ -126,6 +126,22 @@ class Session(unittest.TestCase):
             s['heartbeatSeconds']=2
             with self.assertRaisesRegex(ValueError,'SESSION_SCOPE_CHANGED'):w.r.adapter.guard()
 
+    def test_installed_serve_parks_alive_on_observer_failure_without_external_authority_callbacks(self):
+        import threading
+        w,g,s,calls,callbacks,events,c=self.fixture('NEW')
+        stop=threading.Event();waits=[]
+        def wait(delay):waits.append(delay);stop.set();return True
+        stop.wait=wait
+        def fail(*args):raise RuntimeError('SYNTHETIC_OBSERVER_FAILURE')
+        w._serve=fail
+        reporter=lease_worker.LeaseReporter(w.r.journal,lambda value:None)
+        m.serve_installed(w,g,s,stop,reporter)
+        row=w.r.journal.read();self.assertEqual(row['state'],'BLOCKED')
+        self.assertEqual(row['attempts'],5);self.assertEqual(row['publicationCount'],3)
+        self.assertEqual(waits,[1]);self.assertGreaterEqual(len(calls),4)
+        self.assertFalse(any(v[0] in {'runtime','generation'} for v in callbacks))
+        with self.assertRaisesRegex(ValueError,'LIFETIME_FENCE'):w.r.adapter.guard()
+
     def test_clock_regression_cannot_be_treated_as_same_boot_reentry(self):
         w,g,s,*_=self.fixture();w.r.clock=lambda:(99.0,1.0)
         with self.assertRaisesRegex(ValueError,'SAME_BOOT_NONREGRESSING'):
