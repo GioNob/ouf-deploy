@@ -115,7 +115,7 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Implement source-sealed native generation probe and installed operational worker entry/start/reentry preserving finite incident accounting; integrate fresh gated provider child and complete coordinated native review, no new operator command or human window ready.",
+  "next": "Completare entry/contratto/unità operativa e START_DISTINCT_LEASE_WORKER; reentry esplicito con revoca verificata e contatori preservati, senza adozione ACTIVE o migrazione implicita. Provider child: il collector live congelato rifiuta Registry paused; serve finestra GATE-ONLY running sotto intent parent distinto, senza SIGUSR1/Java/DB, nuova ammissione provider e ripausa prima di Registry ATTEST. Non nascondere lifecycle dentro attestazione. Poi closure/cohort/TLS/IAM/DB/fencing/boot/rotazione/key isolation, pubblicazione capability e OntoPiA e2e reale/due client. Nessun nuovo comando operatore pronto.",
   "currentOperatorCommandReady": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -568,13 +568,16 @@
     "targetExecuted": false
   },
   "discoveryOperationalLeaseSource": {
-    "sourceCommit": "8bc50da338ca6ff1af9c2d21d2433549e7b54dcc",
+    "sourceCommit": "3bdda10a20f13dab68b7262df1b534dd885a4ad7",
     "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
     "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
     "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
     "installedRuntimeTrustEvidence": "evidence/m2-installed-discovery-lease-trust-source-qualified-20261029.json",
     "nativeWorkerStartAdapterImplemented": false,
-    "nativeGenerationProbeImplemented": false,
-    "targetInstalled": false
+    "nativeGenerationProbeImplemented": true,
+    "targetInstalled": false,
+    "nativeGenerationProbeEvidence": "evidence/m2-native-lease-generation-probe-source-qualified-20261029.json",
+    "actualTwoPeerNativeProbeQualified": true,
+    "operationalReentryImplemented": false
   }
 }
