@@ -1,3 +1,7 @@
+# CURRENT — 29 ottobre: ripresa su M2 discovery, Farmacie già profilato
+
+[Punto di ripresa e riferimenti esatti](handoffs/OUF_CHAT_RECOVERY_20261029.md) · [roadmap M2 corrente](OUF_M2_ROADMAP_20261026.md). M1/G4 acquisiti; Farmacie SUCCEEDED con preview61righe/10colonne, chiave ministeriale STRING e10campi OPEN confermati. M2/G5–G7, D5–D7, otto criteri stabili e due client/E2E restano OPEN. Prossimo codice: installer unico dei byte/ledger firmati del worker PR54, poi nuova ammissione provider e coorte completa. Nessun nuovo comando operatore pronto, nessuna lettura VPS in questa ripresa; input1868 e predecessori consumati. Gli header e NEXT successivi sono storici, inclusa la diagnosi Farmacie ancora pendente del27ottobre. Non ripetere profilazione, grant, upload o vecchi controller.
+
 # CURRENT — peer storico riconciliato; continuazione diagnostica qualificata NON eseguita
 
 27 ottobre2026. VPS reader completo/Exit0/DeliveryExit0: unica differenza peerCredentials ASSENTE storico→presente cattura; stesso socket/custodia e profiloNATIVE, vecchiaauthority/journalassenti,3metadataread originali/zeroEngineSQL. ReportSHA be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c. [Ricevuta](evidence/onboarding-transport-stop-reconciled-target-20261027.json). Capture/preparazione/primoAPPLY/reader CONSUMATI, NON ripetere.
