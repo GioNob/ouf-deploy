@@ -271,5 +271,13 @@
     "targetExecuted": false,
     "scopeConsumed": false,
     "currentCommandReady": true
+  },
+  "discoveryMaterialRoleDuplicateDelivery": {
+    "evidence": "evidence/m2-discovery-material-role-duplicate-delivery-20261029.json",
+    "error": "MATERIAL_ROLE_PREPARATION_SCOPE_CONSUMED_NO_REPLAY",
+    "deliveryExit": 1,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-roles-delivery.qQDBrdmF",
+    "priorMaterialSuccessPreserved": true,
+    "trustContextExecutionReported": false
   }
 }

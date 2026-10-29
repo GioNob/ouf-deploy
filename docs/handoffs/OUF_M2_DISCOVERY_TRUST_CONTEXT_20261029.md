@@ -8,6 +8,10 @@ Il passaggio prepara il PKCS12 pubblico IAM/provider con i certificati esatti, c
 
 La prova usa Docker29.8.1 reale, tredici peer e un provider aggiuntivo, peer Unix root/pin kernel, due configurazioni OCI e namespace verificati. Quattro test del capsule per push/PR, sedici test del trust incluso filesystem root e Java21, due issuer TLS isolati e rifiuto terza CA/MAC alterato. Quattro job di consegna HTTPS/nonroot/sudo/root0400 provano il rifiuto senza TTY e la conservazione di log/scope precedenti. Regressione139 PASS per push/PR. Tutti i log citati sono stati letti. CA e provenienza della fixture sono sintetiche: questi esiti non sono ammissione target o E2E.
 
+## Ricevuta del comando precedente
+
+Il footer `MATERIAL_ROLE_PREPARATION_SCOPE_CONSUMED_NO_REPLAY` con directory `ouf-m2-discovery-material-roles-delivery.qQDBrdmF` appartiene al precedente material-roles già riuscito e consumato. Non è un esito di questo trust-context. Il successo68daa9 resta conservato. Non riaprire alcuno scope e non usare il vecchio launcher. La ricevuta duplicata è registrata separatamente; non prova un'esecuzione trust-context.
+
 ## Unico comando corrente
 
 Serve una sessione SSH interattiva sul VPS come `oufadmin`. Il connettore OUF non espone un esecutore remoto per questo filesystem; questo è il motivo dell'intervento operatore. Il flusso applicativo resta ChatGPT→MCP→Gateway→Registry→OntoPiA.

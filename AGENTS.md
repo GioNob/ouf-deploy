@@ -1,3 +1,7 @@
+# CURRENT NOTICE — ricevuta duplicata del vecchio material-roles
+
+29 ottobre 2026. [Ricevuta](evidence/m2-discovery-material-role-duplicate-delivery-20261029.json): MATERIAL_ROLE_PREPARATION_SCOPE_CONSUMED_NO_REPLAY, DeliveryExit1, delivery.qQDBrdmF. Stesso footer incollato più volte: non inferire più tentativi distinti. La guard pubblicata ferma prima del codice protetto; il successo materiali68daa9 resta valido/CONSUMATO. Non è un esito del nuovo trust-context. Nessuna lettura indipendente logVPS. Usare esclusivamente il comando trust-context qualificato dell'handoff corrente sotto; non eliminare scope, log o protezioni. Esecuzione trust-context non osservata da questa ricevuta.
+
 # CURRENT — unico comando trust pubblico/contesto nativo qualificato; operatore necessario
 
 29 ottobre 2026. [Handoff corrente con comando](docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md), [qualifica](evidence/m2-discovery-trust-context-preparation-qualified-20261029.json). Nuovo scope m2-discovery-trust-context-68daa9c9-20261029-v1 NON ESEGUITO. Nove moduli byte-esatti, capsule5e93e224…/102541byte, wrapper7d3c9cc…/cd8d4ea2…. Quattro test capsule e prova Docker29.8.1 reale (13peer+provider),32GET/5metadati/2OCI, pin/namespace e alias Docker esatti; sedici test trust/filesystemroot/Java21/TLS isolato; quattro job consegna HTTPS/nonroot/sudo/root0400, log/scope/replay guard;139regressioni perpush/PR. Tutti log citati letti. Prima fixture con schemaCLI diverso daHTTP1.44 fallita e conservata; fixture ora usa1.44, guard produzione invariato.
