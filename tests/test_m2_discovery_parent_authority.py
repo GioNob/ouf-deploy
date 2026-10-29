@@ -98,11 +98,11 @@ class Parent(unittest.TestCase):
             review=copy.deepcopy(self.review);review['operationalSemantics'][name]=value
             with self.assertRaisesRegex(ValueError,'EXACT_DISCOVERY_PARENT_INSTALLATION_REVIEW'):m.review_scope(review)
 
-    def child(self,expires=90,replay=False,creation_request_hash='2'*64):
+    def child(self,expires=90,replay=False,creation_request_hash='2'*64,phase_intent_hashes=None):
         expected={'intakeHash':'1'*64,'sourceClosureHash':self.review['sourceClosureHash'],'creationRequestHash':creation_request_hash,
             'predecessorHistoryHash':self.review['predecessorHistoryHash'],'predecessorIncidentRef':'3'*64}
         child_raw=m.encoded({'schema':'ouf.semantic-cutover-execution-authority.v1',**{k:v for k,v in expected.items() if k!='intakeHash'},
-            'issuedAt':self.now,'expiresAt':self.now+expires,'phaseIntentHashes':{
+            'issuedAt':self.now,'expiresAt':self.now+expires,'phaseIntentHashes':phase_intent_hashes or {
                 p:creation_request_hash if p=='CREATE_REPLACEMENT' else '4'*64 for p in PHASES},
             'newDistinctLeaseWorkerRequired':True,'automaticReplayAllowed':False,'databaseRestoreAuthorized':False,'r12ReplayAuthorized':replay})
         human={'schema':'ouf.semantic-cutover-human-mandate.v1','approvalRef':'SYNTHETIC_CHILD_NOT_TARGET_APPROVAL',
