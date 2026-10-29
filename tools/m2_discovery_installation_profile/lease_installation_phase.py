@@ -113,7 +113,9 @@ class WorkerInstallationPhase:
 
     def save(self,row,**changes):
         value={**row,**copy.deepcopy(changes),'version':row['version']+1}
-        self.journal.compare_and_save(row,value);return checked_row(self.start)
+        self.journal.compare_and_save(row,value);observed=checked_row(self.start)
+        require(observed==value,'WORKER_SEQUENCE_COMMIT_READBACK_DRIFT')
+        return observed
 
     def reconcile(self,intent,row):
         require(row['state']=='IN_FLIGHT','ATTEMPTED_WORKER_STAGE_REQUIRED_FOR_RECONCILIATION')
@@ -136,8 +138,9 @@ class WorkerInstallationPhase:
                 continue
             stage=STAGES[row['stageIndex']]
             effects=[*row['effects'],{'stage':stage,'dispatches':1,'state':'IN_FLIGHT','evidence':None}]
-            self.save(row,state='IN_FLIGHT',effects=effects)
+            dispatched=self.save(row,state='IN_FLIGHT',effects=effects)
             self.current(intent)
+            require(checked_row(self.start)==dispatched,'WORKER_SEQUENCE_DISPATCH_RECORD_DRIFT')
             if stage=='ATTEST':self.issuer.issue(intent)
             else:self.owners[stage].apply(intent)
 

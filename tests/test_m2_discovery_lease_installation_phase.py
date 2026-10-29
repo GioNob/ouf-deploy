@@ -125,6 +125,26 @@ class Sequence(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'SEQUENCE_VERSION_DRIFT'):owner.continue_installation(intent)
         self.assertEqual(calls,[])
 
+    def test_cas_acknowledgement_without_exact_readback_cannot_dispatch(self):
+        owner,intent,auth,calls,state=self.fixture();owner.journal.initialize(owner.initial())
+        row=m.checked_row(owner.start)
+        with patch.object(m,'checked_row',return_value=row):
+            with self.assertRaisesRegex(ValueError,'COMMIT_READBACK_DRIFT'):
+                owner.save(row,state='IN_FLIGHT',effects=[{'stage':'ATTEST','dispatches':1,'state':'IN_FLIGHT','evidence':None}])
+        self.assertEqual(calls,[]);self.assertFalse((owner.issuer.root/'claim.json').exists())
+
+    def test_changed_dispatch_record_after_authority_check_cannot_invoke_owner(self):
+        owner,intent,auth,calls,state=self.fixture();owner.journal.initialize(owner.initial())
+        real=owner.current;count=0
+        def changed(intent):
+            nonlocal count
+            real(intent);count+=1
+            if count==2:
+                row=owner.journal.read();owner.journal.compare_and_save(row,owner.initial())
+        with patch.object(owner,'current',side_effect=changed):
+            with self.assertRaisesRegex(ValueError,'DISPATCH_RECORD_DRIFT'):owner.drive(intent)
+        self.assertEqual(calls,[]);self.assertFalse((owner.issuer.root/'claim.json').exists())
+
     def test_read_only_completed_observation_works_while_worker_holds_lifetime_fence(self):
         owner,intent,auth,calls,state=self.fixture();owner.apply(intent)
         c=owner.start.proposal['configuration']
