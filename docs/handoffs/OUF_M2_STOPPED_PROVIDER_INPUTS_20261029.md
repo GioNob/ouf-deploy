@@ -1,3 +1,7 @@
+# STORICO — preparazione RIUSCITA/CONSUMATA: NON eseguire il comando sottostante
+
+[Esito target](../../evidence/m2-stopped-provider-inputs-target-20261029.json):11metadata/661574byte,27GETcore+5contesto,13core/1OCIRegistry/0OCIprovider,contratto storico verificato e storepreservato. installationInputsHash1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083. Fonte JSON/footerutente,nessuna letturaindipendenteprivati/log. Launcher ritirato e scope CONSUMATO. Nessun nuovo comando pronto; completareammissionecoordinataprovider+workerdistinto e13fasi/TLS/IAM/DB/boot/rotazione dai nuoviinput. Nessunrestart/driverstorico/authorityimplicita;M2/stabilità/E2E OPEN.
+
 # Provider fermo: input per la revisione coordinata
 
 29 ottobre 2026, Europe/Rome. Preparazione qualificata, **nuovo scope NON ESEGUITO sul VPS**. [Qualifica](../../evidence/m2-stopped-provider-inputs-qualified-20261029.json).
