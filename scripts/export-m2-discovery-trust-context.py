@@ -1,7 +1,7 @@
 """Export nine pinned modules; public trust/context preparation is not authority."""
 import argparse,base64,hashlib,json
 from pathlib import Path
-SOURCE="1d6335c015aa9fa7a09588bdf9c05f7217a3d84f"
+SOURCE="8cc42b0d1da35ce955e3c098a50486f2dd68d136"
 PINS={
     "tools/m2_discovery_installation_profile/audit.py": "e8b7813a8f6f009054593025dc2df9b79315bf2100a70f02a41973a0536658c3",
     "tools/m2_discovery_installation_profile/custody_capture.py": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
@@ -10,7 +10,7 @@ PINS={
     "tools/m2_discovery_installation_profile/public_truststore.py": "ade7e834d8b011da28534f416bfbb958d9cab1b1eb32dd94360c4c29dd589579",
     "tools/m2_discovery_installation_profile/trust_inputs.py": "e7c10917afa8da28027b9d880521d9df9f4d0121df69fbaa3417293511957e22",
     "tools/m2_discovery_installation_profile/trust_preparation.py": "89993271d36d63690e14ed8d2ced70fb0d12c88746f6d1a224ed5e02890797b2",
-    "tools/m2_discovery_installation_profile/native_context.py": "cb3c53351e982529e4375de6ace6593d15ab09cfc597321a1d8d6b2f4e9c5845",
+    "tools/m2_discovery_installation_profile/native_context.py": "c9de1861b0478177b82f7f6cff3835867dba0fcca724aaf34fe37b5ca08067e0",
     "tools/m2_discovery_installation_profile/trust_context_entry.py": "8da68a6cc391e105e7fd73858aeb7bb6f438fe46223c00f62a057f7c78f95cc6"
 }
 RUNTIME='''#!/usr/bin/env python3
