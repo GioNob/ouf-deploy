@@ -84,3 +84,29 @@ def compilation_receipt(template, launch, context, policy):
             'inputsAuthenticated': False, 'credentialCustodyProven': False, 'providerAdmissionProven': False,
             'nativeExecutorIntegrated': False, 'signaturesIssued': 0, 'startAuthorized': False,
             'runtimeAuthorityIssued': False, 'targetApplyAuthorized': False, 'releaseAcceptance': False}
+
+
+def validate_observation_policy(policy, profile):
+    """Bind a sealed native observation policy to the independently typed proposal."""
+    require(type(profile) is DiscoveryProfile, 'EXACT_TYPED_DISCOVERY_PROFILE_REQUIRED')
+    profile_hash = profile.verify(profile.request)
+    fields = {'schema', 'expectedOci', 'manifest', 'startup', 'approvedHooks', 'sources',
+              'executionProfileHash', 'fileBindings', 'configtree', 'renewableToken'}
+    require(type(policy) is dict and set(policy) == fields
+            and policy['schema'] == 'ouf.semantic-configured-discovery-seven-mount-frame-proposal.v1'
+            and policy['executionProfileHash'] == profile_hash, 'EXACT_DISCOVERY_OBSERVATION_POLICY_REQUIRED')
+    s = profile.selection
+    require(policy['fileBindings'] == s['files'] and policy['configtree'] == s['configtree']
+            and policy['renewableToken'] == s['renewable_token']
+            and policy['sources'] == [{k: v for k, v in s['files'][role].items() if k != 'metadataHash'} for role in FILE_ROLES]
+            and policy['manifest']['mounts'] == manifest_bindings(s['files'], s['configtree'], s['renewable_token']),
+            'DISCOVERY_OBSERVATION_ROLE_OR_CUSTODY_BINDING_DRIFT')
+    startup = policy['startup']; env = environment(startup['env'])
+    hostname = policy['expectedOci'].get('hostname')
+    import re
+    require(type(hostname) is str and re.fullmatch('[0-9a-f]{12}', hostname)
+            and env.pop('HOSTNAME', None) == hostname and env == environment(profile.request['Env'])
+            and startup['args'] == profile.request['Entrypoint'] + profile.request['Cmd']
+            and startup['uid'] == startup['gid'] == 10001 and startup['cwd'] == profile.request['WorkingDir'],
+            'DISCOVERY_OBSERVATION_PROCESS_BINDING_DRIFT')
+    return profile_hash

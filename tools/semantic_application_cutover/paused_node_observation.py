@@ -30,6 +30,9 @@ class PausedNodeObservation(NodeObservation):
         if type(frame_observer) not in allowed:
             from file_only_frame_observation import FileOnlyFrameObservation
             allowed=allowed+(FileOnlyFrameObservation,)
+        if type(frame_observer) not in allowed:
+            from tools.m2_discovery_installation_profile.observation import DiscoveryFrameObservation
+            allowed=allowed+(DiscoveryFrameObservation,)
         require(os.geteuid()==0 and type(paused_binding) is PausedWorkloadBinding
                 and type(frame_observer) in allowed,'TYPED_ROOT_PAUSED_NODE_OBSERVATION_REQUIRED')
         require(set(cfg)=={'runtimeBinding','runtimeRootParents','bundleParents','commands','candidate','rootfsLimits'}
