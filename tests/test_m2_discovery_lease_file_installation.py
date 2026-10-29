@@ -17,7 +17,7 @@ from tools.semantic_provider_deployment_authentication import signing_bytes
 
 
 class Files(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,provider_recipe=None):
         parent_case=starts.Start();base,auth,intent,row,calls,reads,obs=parent_case.fixture()
         self.addCleanup(parent_case.doCleanups)
         c=copy.deepcopy(base.template['configurationTemplate']);r=copy.deepcopy(base.template['recipeTemplate'])
@@ -42,9 +42,17 @@ class Files(unittest.TestCase):
         # This workspace does not expose host boot metadata. Native generation
         # and boot facts are deliberately synthetic in these protocol tests.
         boot=patch.object(m,'boot_id',return_value=snapshot['bootId']);boot.start();self.addCleanup(boot.stop)
+        expected_profiles=copy.deepcopy(base.template['expectedNodeProfiles'])
+        if provider_recipe is not None:
+            expected_profiles['provider']={'nodeRecipeHash':m.digest(provider_recipe),
+                'imageConfigurationHash':provider_recipe['imageConfigurationHash'],
+                'rootfsSealHash':m.digest(provider_recipe['expectedRootfsSeal'])}
+            snapshot['profiles']['provider']={**expected_profiles['provider'],
+                'applicationHash':snapshot['profiles']['provider']['applicationHash']}
+            snapshot['nativeProfileHash']=m.digest(snapshot['profiles'])
         snapshot['generationRef']=templates.generation_reference(snapshot)
         t=templates.template(c,r,py,source_closure_hash=base.template['sourceClosureHash'],
-            expected_images=base.template['expectedImages'],expected_node_profiles=base.template['expectedNodeProfiles'],
+            expected_images=base.template['expectedImages'],expected_node_profiles=expected_profiles,
             installation_root=install,signing_key_paths=[str(auth.key)])
         proposal=templates.materialize(t,snapshot,m.inode(lock))
         scope=starts.m.start_scope(t,unit_name=base.scope['unitName'],manager=base.scope['manager'],directory=str(base.root))

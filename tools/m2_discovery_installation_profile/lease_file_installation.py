@@ -148,7 +148,7 @@ class LeaseFileInstallation:
             and self.verifier.policy_binding['sha256']==c['verification']['trustPolicy']['sha256']
             and self.verifier.openssl_binding==c['verification']['openssl'],
             'CURRENT_TYPED_DISCOVERY_INSTALLATION_VERIFIERS_REQUIRED')
-        require(self.start.parent_component==publication_scope(self.start.template,self.start.scope,str(self.root))
+        require(self.start.installation_component==publication_scope(self.start.template,self.start.scope,str(self.root))
             and digest(m['seal'])==self.seal_hash,'EXACT_REVIEWED_DISCOVERY_FILE_PUBLICATION_REQUIRED')
         require(set(self.signatures)<={digest(m[k])+'.'+ROLE+'.json' for k in ('seal','receipt','generation')},
             'EXACT_DISCOVERY_ATTESTATION_FILE_SET_REQUIRED')

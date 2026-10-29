@@ -1,3 +1,29 @@
+# CURRENT — finite worker attestation issuer and retained provider admission composed
+
+29 October 2026. CSV→UDP→search remains fully chatbot/capability governed; M1/G4
+retained, M2/G5–G7/eight stability criteria/two real clients OPEN. New initial
+installation components reuse the signed provider deployment protocol, signed
+rootfs/creation mandate and STARTED consumption; bind independent recipe/image/
+artifact/transport/runtime to the worker generation; compose retained Registry
+acceptance and current native probe before the existing signer. Exact parent
+review explicitly binds the isolated existing key and three payloads. Durable
+claim+per-payload dispatch precede key use; partial/lost outcomes never re-sign,
+read-only reconciliation checks current proofs/signatures/owned inodes. Existing
+byte publisher consumes the results without signing again. Runtime capsule37
+modules unchanged. Local protocol tests use actual Ed25519/files/fsync/flock,
+synthetic native/app admissions and boot facts. Final CI/evidence and NEXT live in
+[the current continuation](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+No actual provider was created or admitted. Provider child/gate-only lifecycle,
+manager registration/reload, complete native controller/13peer/TLS/IAM/DB/fencing,
+authoritative trust distribution, boot/rotation and target capability publication
+remain OPEN; then actual OntoPiA/CSV/UDP/search/reimport/recovery/two-client proof.
+The provider component currently covers its retained admission reader; a future
+lifecycle controller must explicitly compose its separate review scope, not hide
+creation/start here. Input1868 consumed; no operator command ready. Same Farmacie
+profile61rows/10columns and STRING/OPEN choices retained. No target effect, new
+runtime authority/grant/budget/upload/job/acquisition/replay/reset/merge/subagent
+or automation. Earlier CURRENT headers below are historical for next selection.
+
 # CURRENT — worker file publication source-qualified; CSV→UDP→search M2 still OPEN
 
 29 October 2026. Source cb6f2da6 adds create-only attested byte/initial-ledger publication, one durable claim and read-only inode/custody/hash reconciliation; no signing or runtime command entry. 13 new protocol tests plus 59 local regressions PASS; CI248 tests per push/PR and separate native Docker29.8.1/systemd/DNS/nft regressions PASS, six logs read. Native/application admissions and boot/probe of publisher fixture remain synthetic; native sandbox still creates installed files separately. This is not target installer qualification. Full progress and next steps: [CSV E2E continuation](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). M1/G4 acquired; M2/G5–G7/eight stability criteria/two clients/E2E OPEN. Same Farmacie profile61rows/10columns and STRING/OPEN decisions retained. Input1868 consumed; no operator command ready. NEXT authoritative attestation issuer with independent current admissions, provider child/gate-only window, manager registration/reload and full controller composition. No merge, new target authority/apply/grant/budget/upload/job/acquisition/replay/reset/subagent/automation. Older CURRENT headers below are HISTORICAL for next-step selection; general invariants remain binding.

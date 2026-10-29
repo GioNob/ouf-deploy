@@ -46,7 +46,7 @@ def start_scope(template,*,unit_name,manager,directory):
 
 class LeaseStartAdapter:
     def __init__(self,*,parent,authority,authority_raw,transition,store,node_owner,
-                 template,proposal,scope,intent,publication_directory=None):
+                 template,proposal,scope,intent,publication_directory=None,attestation_scope=None):
         require(type(parent) is DiscoveryParentAuthority and type(authority) is CutoverAuthority
             and type(transition) is Transition and transition.execution_profile is None and transition.phases==PHASES
             and type(store) is NativeEvidenceStore and type(node_owner) is DiscoveryNodeOwner
@@ -71,10 +71,15 @@ class LeaseStartAdapter:
         self.authority_hash=hashlib.sha256(authority_raw).hexdigest();self.parent_hash=parent.sha
         self.template_hash,self.proposal_hash,self.scope_hash=digest(template),digest(proposal),digest(scope)
         self.publication_directory=publication_directory
-        if publication_directory is None:self.parent_component=copy.deepcopy(scope)
+        if publication_directory is None:self.installation_component=copy.deepcopy(scope)
         else:
             from .lease_file_installation import publication_scope
-            self.parent_component=publication_scope(template,scope,publication_directory)
+            self.installation_component=publication_scope(template,scope,publication_directory)
+        self.attestation_scope=copy.deepcopy(attestation_scope)
+        if attestation_scope is None:self.parent_component=copy.deepcopy(self.installation_component)
+        else:
+            from .lease_attestation import attested_component
+            self.parent_component=attested_component(template,self.installation_component,attestation_scope)
         self.root=Path(scope['journalDirectory']);self.journal=Journal(self.root)
         self.configuration_path=Path(template['installationRoot'])/'configuration.json'
         require(self.root!=store.root and not self.root.is_relative_to(store.root) and not store.root.is_relative_to(self.root),

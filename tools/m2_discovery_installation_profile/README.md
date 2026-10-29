@@ -95,3 +95,32 @@ available solely for already installed signed files. This does not implement
 service-manager unit registration/reload, fresh provider admission, attestation
 issuance, a complete installer controller, boot/rotation or target delivery.
 The 37-module runtime capsule and its pinned snapshot are unchanged.
+
+
+## Finite worker attestation issuer and retained provider admission
+
+`provider_admission.py` reuses the existing signed deployment protocol (v2
+creation-frame acceptance), the signed creation/rootfs mandate and a STARTED
+consumption journal. Independent image/recipe/rootfs/artifact/transport/runtime
+bindings and the exact worker peer generation must agree. Missing, expired,
+legacy-only or mismatched evidence is rejected. The reader creates no provider,
+updates no consumption record and proves no provider readiness.
+
+`lease_attestation.py` composes that reader with the retained Registry owner,
+current native two-peer probe and existing Ed25519 signer. A separately reviewed
+parent scope explicitly covers the pinned existing key and exactly three payloads:
+publication seal, generation and installation receipt. Its private transaction
+and each signing dispatch are durable before key use. Partial/ambiguous signing
+never re-signs or auto-completes; read-only reconciliation requires the same
+current provider proof, exact signatures and owned inodes. Existing byte publisher
+then consumes those signatures without a second signing path. The signer and
+installation/runtime worker remain separate, and the frozen capsule is unchanged.
+
+This is an initial finite installation component, not a boot/rotation controller
+or provider lifecycle implementation. The current source scope's provider slot
+covers the retained-admission reader; a future lifecycle controller must compose
+its separately reviewed installation scope explicitly, rather than hiding create
+or start in this reader. Actual provider child/gate-only integration, manager
+registration/reload, complete cohort and native composed installation remain OPEN.
+Protocol tests use real Ed25519/files/fsync/flock and signed deployment records,
+but model native observations/previous application admissions synthetically.
