@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.m2-installed-discovery-lease-service-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "65d589b9e23ae56185116d1ce628ed708d43008f",
+  "push": {
+    "run": 40923910913,
+    "job": 123624202455,
+    "tests": 183,
+    "conclusion": "success"
+  },
+  "pr": {
+    "run": 40923925560,
+    "job": 123624255354,
+    "tests": 183,
+    "conclusion": "success"
+  },
+  "newServiceTests": 6,
+  "logsRead": true,
+  "skips": 0,
+  "actualNativeCoordinatorLeaseOwnerAndDeadlineBackendConstructed": true,
+  "constructionCallsDnsOrKernel": false,
+  "actualEd25519InstallationSignatures": true,
+  "independentGenerationDataSynthetic": true,
+  "fixedRecipeHashBound": true,
+  "executingServiceModuleClosureRequired": true,
+  "oldCoordinationJournalPathDenied": true,
+  "missingRecoveryJournalNotInitialized": true,
+  "pinnedNftProgramDriftDenied": true,
+  "configurationAnchorAvoidsUnitHashCycle": true,
+  "unitHashRemainsBoundBySignedInstalledReceipt": true,
+  "rawNativeErrorPrinted": false,
+  "sealedRuntimeCapsuleOrUnitQualified": false,
+  "nativeWorkerStartAdapterImplemented": false,
+  "serviceInstalled": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

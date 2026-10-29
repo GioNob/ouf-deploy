@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.m2-installed-discovery-lease-session-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "8382105c38211a4a737f0e228d13a8fd998806af",
+  "push": {
+    "run": 40923241675,
+    "job": 123621816000,
+    "tests": 177,
+    "conclusion": "success"
+  },
+  "pr": {
+    "run": 40923251798,
+    "job": 123621852825,
+    "tests": 177,
+    "conclusion": "success"
+  },
+  "nativeWorkerRegressionPush": {
+    "run": 40923241701,
+    "job": 123621816043,
+    "tests": 10,
+    "conclusion": "success"
+  },
+  "nativeWorkerRegressionPr": {
+    "run": 40923251860,
+    "job": 123621853370,
+    "tests": 10,
+    "conclusion": "success"
+  },
+  "newSessionTests": 9,
+  "logsRead": true,
+  "skips": 0,
+  "actualEd25519InstalledAndGenerationReceipts": true,
+  "privateJournalAndBothInvocationLocksActual": true,
+  "reentryNativeCoordinatorFactsSynthetic": true,
+  "predecessorArchivedBeforePendingAndRevocation": true,
+  "activeLeaseNotAttached": true,
+  "attemptsPublicationsAbsoluteBackoffAndRecoveryTimePreserved": true,
+  "ambiguousExhaustedCancelledBlockedNotRearmed": true,
+  "scopeAuthorityCallbackBoundToActualInstalledGuard": true,
+  "parkedAliveLoopRetained": true,
+  "failedRunsPreserved": [
+    40922595074,
+    40922604001
+  ],
+  "fixtureFailure": "SYNTHETIC_BACKEND_MISSING_ACTIVE_DEADLINE_FIELD",
+  "fixtureFixCommit": "27469750fc5b71f4d83fecc7d29e9b63060c541d",
+  "productionGuardsWeakened": false,
+  "bootOrNewGenerationReentryImplemented": false,
+  "serviceInstalled": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}
