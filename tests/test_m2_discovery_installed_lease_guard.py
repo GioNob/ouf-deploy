@@ -6,6 +6,7 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_lease_recover
     str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 import test_cutover_authority_native as signed
 from tools.semantic_provider_deployment_authentication import signing_bytes
+from tools.semantic_registry_operational_owner.core import Denied as OperationalDenied
 from tools.m2_discovery_installation_profile import lease_worker
 from tools.m2_discovery_installation_profile import installed_lease_guard as m
 
@@ -112,7 +113,7 @@ class Installed(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'CURRENT_BOOT'):guard.current(g['scopeHash'],g['generationRef'])
         self.assertEqual(calls,[])
         self.write(Path(c['serviceUnitPath']),b'UNREVIEWED_SERVICE')
-        with self.assertRaises(ValueError):guard.metadata_guard()
+        with self.assertRaisesRegex(OperationalDenied,'OPERATIONAL_INPUT_HASH_CHANGED'):guard.metadata_guard()
 
     def test_process_start_permission_cannot_be_smuggled_into_generation_receipt(self):
         guard,c,g,calls,_=self.fixture();bad={**g,'containerStartAuthorized':True}
