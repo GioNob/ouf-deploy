@@ -37,7 +37,8 @@ class Service(unittest.TestCase):
         lock=self.root/'lease-common.lock';self.write(lock,b'')
         recipe={'schema':'ouf.discovery-operational-lease-recipe.v1','kernel':kernel,'dns':dns,'binding':binding,
             'policy':policy_dict,'scope':scope,'nft':{'path':str(program),'sha256':hashlib.sha256(program.read_bytes()).hexdigest(),
-            'maximumBytes':1048576},'coordinationJournal':str(ledger/'coordination.json'),'leaseCommonLock':str(lock)}
+            'maximumBytes':1048576},'coordinationJournal':str(ledger/'coordination.json'),'leaseCommonLock':str(lock),
+            'leaseCommonLockIdentity':[getattr(lock.stat(),k) for k in ('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink')]}
         self.write(ledger/'coordination.json',m.encoded({'schema':'ouf.semantic-lease-coordination.v1',**binding,
             'state':'QUIESCED','leaseAuthorized':False,'startAuthorized':False,'leaseAddresses':[[],[]]}))
         journal=m.Journal(ledger);recovery=DiscoveryRecovery(journal,None,policy,scope['contextRef'],scope['generationRef'],
@@ -107,6 +108,15 @@ class Service(unittest.TestCase):
         self.recipe['coordinationJournal']=str(self.root/'old-r12-journal.json');self.reseal()
         with self.assertRaisesRegex(ValueError,'DISTINCT_DISCOVERY_LEASE_LEDGER'):
             m.build_installed(self.path,m.configuration_anchor(self.c))
+
+    def test_read_only_kernel_lock_is_shared_and_replacement_is_denied(self):
+        self.fixture();path=Path(self.recipe['leaseCommonLock']);identity=self.recipe['leaseCommonLockIdentity']
+        with m.existing_kernel_lock(path,identity):
+            with self.assertRaises(BlockingIOError):
+                with m.existing_kernel_lock(path,identity):self.fail('parallel kernel lock accepted')
+        path.rename(path.with_suffix('.preserved'));self.write(path,b'')
+        with self.assertRaisesRegex(ValueError,'CURRENT_DISCOVERY_KERNEL_LOCK_INODE'):
+            with m.existing_kernel_lock(path,identity):self.fail('new inode adopted')
 
     def test_pinned_entry_reports_no_raw_exception_or_configuration(self):
         import contextlib,io

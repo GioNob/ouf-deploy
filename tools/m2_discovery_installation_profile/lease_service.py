@@ -5,13 +5,15 @@ distinct ledger are accepted. The manager's independent configuration anchor
 omits serviceUnitHash to avoid a unit/configuration hash dependency cycle.
 """
 import copy,dataclasses,os,re,signal,threading
+from contextlib import contextmanager
+import fcntl,stat
 from pathlib import Path
 import dns,readback_margin_compiler
 from deadline_backend import DeadlineNftBackend
 from bounded_recovery import Policy,fingerprint
 from recovery_journal import Journal
 from tools.semantic_provider_lease_owner import LeaseOwner
-from tools.semantic_provider_lease_coordination import Coordinator,PrivateJournal,hold_common_lock
+from tools.semantic_provider_lease_coordination import Coordinator,PrivateJournal
 from tools.semantic_registry_operational_owner.guard import private_json,protected_file
 from .custody_capture import digest,encoded,require
 from .installed_lease_guard import CONFIG_FIELDS,InstalledLeaseGuard
@@ -26,7 +28,28 @@ SERVICE_MODULES={MODULE,'tools.m2_discovery_installation_profile.installed_lease
     'resilient_lease_adapter','adaptive_supervisor','tools.semantic_provider_lease_owner',
     'tools.semantic_provider_lease_coordination','tools.semantic_provider_dns',
     'tools.materialize_southbound_kernel','tools.materialize_southbound_lease_refresh'}
-RECIPE_FIELDS={'schema','kernel','dns','binding','policy','scope','nft','coordinationJournal','leaseCommonLock'}
+RECIPE_FIELDS={'schema','kernel','dns','binding','policy','scope','nft','coordinationJournal',
+    'leaseCommonLock','leaseCommonLockIdentity'}
+
+
+@contextmanager
+def existing_kernel_lock(path,expected):
+    """Flock the approved inode through a read-only dedicated directory bind."""
+    from tools.semantic_provider_deployment_authentication import ancestors
+    path=Path(path);ancestors(path)
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    def identity(s):return [s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink]
+    try:
+        s=os.fstat(fd)
+        require(stat.S_ISREG(s.st_mode) and s.st_uid==s.st_gid==0
+            and stat.S_IMODE(s.st_mode)==0o600 and s.st_nlink==1
+            and type(expected) is list and len(expected)==6
+            and identity(s)==expected==identity(path.lstat()),'CURRENT_DISCOVERY_KERNEL_LOCK_INODE_REQUIRED')
+        fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        require(identity(path.lstat())==expected,'DISCOVERY_KERNEL_LOCK_REPLACED')
+        yield
+        require(identity(os.fstat(fd))==expected==identity(path.lstat()),'DISCOVERY_KERNEL_LOCK_REPLACED')
+    finally:os.close(fd)
 
 
 def configuration_anchor(configuration):
@@ -70,7 +93,8 @@ def build_installed(configuration_path,anchor):
     backend=DeadlineNftBackend([nft['path']],recipe['kernel'],scope['leaseStructureHash'],5)
     owner=LeaseOwner(recipe['kernel'],recipe['dns'],backend)
     coordination=PrivateJournal(ledger/'coordination.json')
-    coordinator=Coordinator(owner,recipe['binding'],lambda:hold_common_lock(Path(recipe['leaseCommonLock'])),
+    coordinator=Coordinator(owner,recipe['binding'],
+        lambda:existing_kernel_lock(recipe['leaseCommonLock'],recipe['leaseCommonLockIdentity']),
         coordination.read,coordination.write)
     policy=copy.deepcopy(recipe['policy'])
     require(type(policy) is dict and type(policy.get('delays')) is list,'EXACT_DISCOVERY_SERVICE_RETRY_POLICY_REQUIRED')
