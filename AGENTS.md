@@ -1,4 +1,16 @@
-# CURRENT — riferimenti target ACQUISITI e CONSUMATI; autorizzazione discovery qualificata in sorgente
+# CURRENT — proposta discovery completa qualificata in sorgente; integrazione nativa aperta
+
+29 ottobre 2026. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica PR54](evidence/m2-discovery-complete-profile-source-qualification-20261029.json), [delta](releases/m2-discovery-persistent-installation-delta-20261029.json).
+
+PR54 sopra PR53, sorgente db9555c92cd7c71292d6afd102ca151940176d76: DiscoveryProfile e compiler della proposta OCI completa, cinque ruoli file readonly + configtreeDB + token policy rinnovabile. Riferimenti provider/workload/TLS/rete espliciti, ambiente estraneo preservato, gate Java esatto, risorse finite, chiaviMAC distinte anche per identità contenuto. Tutte13fasi discovery preservate, incluse trasporto autenticato e nuovo worker distinto. Compiler generico/FileOnlyProfile/gate/journal byte-identici, nessuna proiezione temporanea di flag per passare guard file-only.
+
+87PASS/0errori/0skip per push40839724353/job123332897229 e PR40839794969/job123333126587, log diretti letti;14nuovi test puri+73regressioni. Nuovi request/template/file/context di fixture sintetica, non osservazione Docker o prova target. Proposta solo sorgente: nativeExecutorIntegrated=false, externalProviderCallsAllowed=false, nessun start/apply/authority. Boot/rotazione dichiarati requisiti, non implementati o provati.
+
+NEXT implementare/qualificare osservatore frame/nodo discovery e assemblaggio coordinato esecutivo/rinnovo13fasi, con custody owner attuale dei due riferimenti mancanti, accordo chiave APISIX/Registry, providerTLS/IAM/rete/DB e intero cohort/generazioni correnti. Pacchetti MCP/Gateway, review HUMAN nativa finita, installazione e pubblicazione governata ancora necessari. Nessun nuovo comando SSH pronto o login/token/finestra prematuri. Nessun merge/releaseacceptance.
+
+Successo f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d conservato, scope CONSUMATO; duplicato POLICY_READ_SCOPE_CONSUMED_NO_REPLAY non sostituisce il successo. Launcher ritirato; NON rilanciare/cancellare/ricreare scope. Nessuna nuova operazione target o effetto IAM/SQL/grant/budget/upload/job/resume/acquisizione. M1/G4 acquisiti;M2/G5/G6/G7/D5–D7/8criteri stabilità/E2E OPEN. Stesso Farmacie asset/job/profiloSUCCEEDED e scelte già confermate. Chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio, nessun web/Turtle/ontologia inventata sostitutivi. No subagenti/automazioni. Header e comandi successivi STORICI.
+
+# HISTORICAL — riferimenti target ACQUISITI e CONSUMATI; autorizzazione discovery qualificata in sorgente
 
 29 ottobre 2026. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [esito target](evidence/m2-discovery-installation-inputs-target-20261029.json), [duplicato rifiutato](evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json), [PR53/qualifica](evidence/m2-discovery-authorization-source-qualification-20261029.json).
 

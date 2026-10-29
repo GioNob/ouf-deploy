@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "INSTALLATION_REFERENCES_CAPTURED_CONSUMED_AUTHORIZATION_PROFILE_QUALIFIED_NATIVE_FULL_PROFILE_PENDING",
+  "status": "COMPLETE_DISCOVERY_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OWNER_INTEGRATION_AND_CUSTODY_OPEN",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -73,6 +73,17 @@
       "sourceQualified": true,
       "installed": false,
       "qualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json"
+    },
+    {
+      "module": "deployment-complete-discovery-proposal",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "db9555c92cd7c71292d6afd102ca151940176d76",
+      "pullRequest": 54,
+      "stackedBaseCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+      "sourceQualified": true,
+      "nativeExecutorIntegrated": false,
+      "installed": false,
+      "qualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json"
     }
   ],
   "capabilities": [
@@ -145,8 +156,8 @@
     },
     {
       "id": "M2-INSTALL-02",
-      "state": "OPEN",
-      "work": "Prepare qualified persistent Registry/Gateway/provider profile, actual TLS/workload identity/issuer/audience/scopes, distinct receipt secretRef custody, governed renewal/rotation, network and database admission. No shared local network/filesystem default."
+      "state": "COMPLETE_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OBSERVER_EXECUTOR_AND_CUSTODY_OPEN",
+      "work": "Wire and qualify discovery-specific full native frame/node observation and the coordinated13-phase execution/renewal assembly from the typed complete proposal. Resolve real current credential/key custody, APISIX key agreement, provider TLS/IAM/network/DB and preserved current cohort; no flag projection through file-only guards."
     },
     {
       "id": "M2-INSTALL-03",
@@ -183,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "QUALIFY_COMPLETE_DISCOVERY_INSTALLATION_PROFILE_AND_COORDINATED_NATIVE_MAINTENANCE_REVIEW",
+  "next": "QUALIFY_DISCOVERY_NATIVE_OBSERVER_AND_COORDINATED_EXECUTION_ASSEMBLY_WITH_CURRENT_OWNER_CUSTODY",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -222,5 +233,19 @@
     "testsPerJob": 73,
     "targetPublished": false,
     "ownerHumanConfirmationRequired": true
+  },
+  "completeNativeProfileProposal": {
+    "profile": "ouf.semantic-discovery-native-proposal.v1",
+    "frameSchema": "ouf.semantic-configured-discovery-seven-mount-frame-proposal.v1",
+    "sourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
+    "pullRequest": 54,
+    "sourceQualified": true,
+    "testsPerJob": 87,
+    "immutableFiles": 5,
+    "directories": 2,
+    "fullDiscoveryPhases": 13,
+    "nativeExecutorIntegrated": false,
+    "nativeDockerAcceptanceQualified": false,
+    "bootOrRotationImplemented": false
   }
 }

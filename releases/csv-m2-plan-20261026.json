@@ -98,7 +98,7 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "INSTALLATION_REFERENCES_CAPTURED_CONSUMED_AUTHORIZATION_PROFILE_QUALIFIED_NATIVE_FULL_PROFILE_PENDING",
+    "semanticExternalDiscovery": "COMPLETE_DISCOVERY_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OWNER_INTEGRATION_AND_CUSTODY_OPEN",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
@@ -111,7 +111,11 @@
     "discoveryAuthorizationSourceQualified": true,
     "discoveryAuthorizationSourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
     "discoveryAuthorizationTargetPublished": false,
-    "discoveryInstallationReviewReady": false
+    "discoveryInstallationReviewReady": false,
+    "discoveryCompleteProfileProposalSourceQualified": true,
+    "discoveryCompleteProfileProposalSourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
+    "discoveryNativeExecutorIntegrated": false,
+    "discoveryNativeFrameAcceptanceQualified": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1978,8 +1982,8 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Qualify the complete discovery installation profile and coordinated native maintenance review from the successful consumed f759d397 input provenance; resolve current credential/key owner custody, provider/TLS/network/DB, preserved file paths and fresh native generation/admission. No current operator command is ready. Do not replay consumed reader, obtain premature login/token or enable flags alone.",
-    "sourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+    "action": "Implement and qualify discovery-specific full native frame/node observation and the coordinated13-phase execution/renewal assembly for the typed complete proposal. Resolve current credential/key custody, provider/TLS/network/DB and fresh cohort generation/admission. No current operator command is ready; keep consumed f759d397 scope closed and do not request premature login/token or flip flags.",
+    "sourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
     "currentDeliveryUsable": false,
     "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false,
@@ -2431,13 +2435,14 @@
   "currentCheckpoint": {
     "date": "2026-10-29",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
-    "next": "QUALIFY_COMPLETE_DISCOVERY_INSTALLATION_PROFILE_AND_COORDINATED_NATIVE_MAINTENANCE_REVIEW",
+    "next": "QUALIFY_DISCOVERY_NATIVE_OBSERVER_AND_COORDINATED_EXECUTION_ASSEMBLY_WITH_CURRENT_OWNER_CUSTODY",
     "evidence": "evidence/m2-discovery-installation-inputs-target-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
     "installationDeltaDraft": "releases/m2-discovery-persistent-installation-delta-20261029.json",
-    "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json"
+    "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json",
+    "completeProfileProposalSourceQualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -5152,6 +5157,174 @@
       "runtimeAuthorityIssued": false,
       "targetApplyAuthorized": false,
       "installed": false,
+      "stableCapabilitiesOperationalProven": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false,
+      "mergeAuthorized": false
+    }
+  },
+  "discoveryCompleteProfileProposalSourceQualification": {
+    "schema": "ouf.m2-discovery-complete-profile-source-qualification.v1",
+    "date": "2026-10-29",
+    "status": "REGISTRY_NATIVE_PROPOSAL_COMPILER_QUALIFIED_NOT_RUNTIME_INTEGRATED",
+    "sourceRepository": "GioNob/ouf-deploy",
+    "sourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
+    "pullRequest": 54,
+    "stackedBaseCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+    "stackedBasePullRequest": 53,
+    "profile": "ouf.semantic-discovery-native-proposal.v1",
+    "frameProposalSchema": "ouf.semantic-configured-discovery-seven-mount-frame-proposal.v1",
+    "sourceFiles": [
+      "tools/m2_discovery_installation_profile/native_profile.py",
+      "tools/m2_discovery_installation_profile/frame.py",
+      "tools/m2_discovery_installation_profile/README.md",
+      "tests/test_m2_discovery_native_profile.py"
+    ],
+    "qualification": {
+      "testsPerJob": 87,
+      "newPureProposalTests": 14,
+      "retainedAuthorizationAndAuditTests": 73,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "localPureTests": {
+        "count": 14,
+        "conclusion": "success",
+        "isolatedPythonFlags": [
+          "-I",
+          "-B",
+          "-S"
+        ]
+      },
+      "jobs": [
+        {
+          "event": "push",
+          "runId": 40839724353,
+          "jobId": 123332897229,
+          "conclusion": "success",
+          "logRead": true,
+          "suiteCounts": [
+            22,
+            6,
+            11,
+            11,
+            14,
+            9,
+            14
+          ]
+        },
+        {
+          "event": "pull_request",
+          "runId": 40839794969,
+          "jobId": 123333126587,
+          "conclusion": "success",
+          "logRead": true,
+          "suiteCounts": [
+            22,
+            6,
+            11,
+            11,
+            14,
+            9,
+            14
+          ]
+        }
+      ],
+      "proposalFixtures": "SYNTHETIC_INDEPENDENT_TEMPLATE_REQUEST_FILES_AND_CONTEXT_NOT_TARGET",
+      "retainedOwnerQualification": "PINNED_HELPERS_ACTUAL_JAVA_CODEC_REAL_SIGNATURES_AND_JOURNAL_WITH_HTTP_IAM_HUMAN_FIXTURES",
+      "nativeDockerFrameAcceptanceExercised": false,
+      "unchangedSourceBlobs": [
+        {
+          "path": "tools/semantic_frame_compiler/compile_creation_frame_policy.py",
+          "blobSha": "8a337894ba0218ab5b9643c4aa4a28f9422bd7d9",
+          "comparedWith": "eba1f40b03377335675b7cbbc3769ee9212d6167",
+          "byteIdentity": true
+        },
+        {
+          "path": "tools/semantic_application_cutover/file_only_profile.py",
+          "blobSha": "ce773f9b33ae0ccefa91b2dc14c9f7968310f08b",
+          "comparedWith": "eba1f40b03377335675b7cbbc3769ee9212d6167",
+          "byteIdentity": true
+        },
+        {
+          "path": "tools/semantic_application_cutover/gated_creation_plan.py",
+          "blobSha": "0406fded295a900ad28579b7bef6dc43be131c63",
+          "comparedWith": "eba1f40b03377335675b7cbbc3769ee9212d6167",
+          "byteIdentity": true
+        },
+        {
+          "path": "tools/semantic_application_cutover/transition_journal.py",
+          "blobSha": "86100970345bd1d84631b9a68c47bc986533b2ca",
+          "comparedWith": "eba1f40b03377335675b7cbbc3769ee9212d6167",
+          "byteIdentity": true
+        }
+      ]
+    },
+    "contracts": {
+      "fileRoles": [
+        "consultationKey",
+        "proposalReceiptKey",
+        "providerCredential",
+        "discoveryReceiptKey",
+        "tlsTrustStore"
+      ],
+      "directoryRoles": [
+        "databaseOnlyConfigtree",
+        "renewableAuthorizationPolicyToken"
+      ],
+      "mountCount": 7,
+      "immutableFileCount": 5,
+      "explicitProviderAndWorkloadReferences": true,
+      "unrelatedEnvironmentPreserved": true,
+      "exactPreapplicationGate": true,
+      "closedHigherPriorityOverrideChannels": true,
+      "threeMacKeysHaveDistinctContentIdentities": true,
+      "fullDiscoveryPhaseCount": 13,
+      "transportInstallationPhasePreserved": true,
+      "newDistinctLeaseWorkerRequired": true,
+      "fileOnlyCodeAndGuardsUnchanged": true,
+      "oldFileOnlyExecutorRejectsNewType": true,
+      "noObservedReplacementOciAsTemplate": true,
+      "onlyExactGateArgvTemporarilyProjectedDuringClosedSlotValidation": true,
+      "receiptOmitsPrivatePathsAndEnvironment": true,
+      "rotationRequirement": "FENCED_COORDINATED_NATIVE_REPLACEMENT_PRESERVING_INCIDENT_HISTORY",
+      "bootRequirement": "FRESH_CURRENT_AUTHORITY_AND_GENERATION_ADMISSION",
+      "bootAndRotationImplementedByThisChange": false
+    },
+    "targetProvenance": {
+      "installationInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+      "scopeConsumed": true,
+      "newScopeCreated": false,
+      "targetPrivateInputsUsedForThisCompilation": false
+    },
+    "remainingNativeIntegration": [
+      "Implement and qualify the discovery-specific full-frame observer and complete node acceptance using unchanged root/process/mount/token owner primitives.",
+      "Bind the typed full proposal, full13-phase execution/renewal and current owner authority into the coordinated native maintenance assembly; old file-only paths cannot be used.",
+      "Resolve actual current provider credential/discovery key custody and APISIX/Registry key agreement, TLS/IAM/network/DB and preserved full cohort.",
+      "Produce coordinated MCP/Gateway packages, then native HUMAN review and finite current authority, installation, governed descriptor/route/role publication.",
+      "Prove actual chatbot OntoPiA discovery, adoption/publication, restart/reboot/rotation/fault and two independent clients."
+    ],
+    "runtime": {
+      "nativeExecutorIntegrated": false,
+      "targetInstalled": false,
+      "credentialCustodyProven": false,
+      "providerAdmissionProven": false,
+      "containerLifecycleOperations": 0,
+      "engineWrites": 0,
+      "credentialFileReads": 0,
+      "signingKeyReads": 0,
+      "sqlSessions": 0,
+      "iamRequests": 0,
+      "oauthRequests": 0,
+      "grants": 0,
+      "budgets": 0,
+      "uploads": 0,
+      "jobs": 0,
+      "resumes": 0,
+      "acquisitions": 0,
+      "scopeReplays": 0,
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
       "stableCapabilitiesOperationalProven": false,
       "applicationE2EProven": false,
       "releaseAcceptance": false,
