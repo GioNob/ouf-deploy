@@ -6,7 +6,8 @@ import copy, hashlib, json, os, sys, tempfile, types, unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT), str(ROOT/'tests'), str(ROOT/'tools/semantic_application_cutover')]
+sys.path[:0] = [str(ROOT), str(ROOT/'tests'), str(ROOT/'tools/semantic_application_cutover'),
+               str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from test_m2_discovery_native_profile import fixture
 from tools.m2_discovery_installation_profile.native_profile import DiscoveryProfile
 from tools.m2_discovery_installation_profile.frame import compile_policy, validate_observation_policy
