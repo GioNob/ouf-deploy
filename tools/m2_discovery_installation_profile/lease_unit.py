@@ -119,7 +119,10 @@ def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signin
         '[Service]','Type=simple','User=root','Group=root','RootDirectory='+sandbox,
         'ExecStart=:'+python['path']+' -I -B -S '+install+'/capsule.py worker --configuration '+install+
         '/configuration.json --configuration-anchor '+anchor,
-        'Restart=on-failure','RestartSec=15','TimeoutStopSec=45','KillMode=control-group','UMask=0077',
+        # Let bounded verifier/nft children finish after the main process gets
+        # its stop request. The manager still kills the complete group after
+        # the deadline or main exit; children cannot outlive the unit.
+        'Restart=on-failure','RestartSec=15','TimeoutStopSec=45','KillMode=mixed','UMask=0077',
         'NoNewPrivileges=yes','CapabilityBoundingSet=CAP_NET_ADMIN','AmbientCapabilities=CAP_NET_ADMIN',
         'MountAPIVFS=no','ProtectSystem=strict','ProtectHome=yes','PrivateDevices=yes','PrivateTmp=yes',
         'LockPersonality=yes','MemoryDenyWriteExecute=yes','RestrictRealtime=yes','RestrictSUIDSGID=yes',

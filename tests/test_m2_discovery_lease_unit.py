@@ -45,6 +45,7 @@ class Unit(unittest.TestCase):
         c,r,s,p,o=self.fixture();proposal=m.compile_unit(c,r,s,p,**o);body=proposal['unitBody']
         self.assertEqual(proposal['processStatPaths'],['/proc/101/stat','/proc/102/stat','/proc/99/stat'])
         self.assertIn('MountAPIVFS=no\n',body);self.assertIn('CapabilityBoundingSet=CAP_NET_ADMIN\n',body)
+        self.assertIn('KillMode=mixed\n',body);self.assertIn('TimeoutStopSec=45\n',body)
         self.assertNotIn('ProtectControlGroups=',body);self.assertNotIn('ProtectProc=',body)
         self.assertNotIn('/proc/1/root',body);self.assertNotIn('/proc:/proc',body)
         for broad in ('/proc','/etc','/run','/usr','/root','/home','/sys'):

@@ -218,6 +218,48 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
         diagnostic_link.symlink_to(install/'diagnostic.service');command('systemctl','daemon-reload')
         command('systemctl','start',diagnostic_unit)
         print(command('journalctl','-u',diagnostic_unit,'--no-pager','-n','8').decode(),flush=True)
+        # Deterministic reproduction of manager stop interrupting a bounded
+        # verifier child. Both cases use the actual compiled sandbox, changing
+        # only the helper command and KillMode. Helpers are CI-only material.
+        stop_results={}
+        for kill_mode in ('control-group','mixed'):
+            helper='''import json,signal,subprocess,sys,time
+stopped=False
+def stop(*_):
+ global stopped
+ stopped=True
+signal.signal(signal.SIGTERM,stop)
+child_code="import signal,sys,time; signal.signal(signal.SIGTERM,lambda *_:sys.exit(88)); print('READY',flush=True); time.sleep(30)"
+child=subprocess.Popen([sys.executable,'-I','-B','-S','-c',child_code],stdout=subprocess.PIPE)
+assert child.stdout.readline()==b'READY\\n'
+print('CI_STOP_READY___MODE__',flush=True)
+while not stopped:time.sleep(.02)
+time.sleep(.15)
+survived=child.poll() is None
+if survived:child.terminate()
+child.wait(timeout=2)
+print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived},sort_keys=True),flush=True)
+'''.replace('__MODE__',kill_mode)
+            replacement=install/'diagnostic.replacement';create(replacement,helper.encode(),0o400)
+            os.replace(replacement,install/'diagnostic.py')
+            helper_body='\n'.join(('Restart=no' if line.startswith('Restart=')
+                else 'KillMode='+kill_mode if line.startswith('KillMode=')
+                else 'ExecStart=:'+python+' -I -B -S '+str(install/'diagnostic.py') if line.startswith('ExecStart=') else line)
+                for line in compiled['unitBody'].split('\n'))
+            create(replacement,helper_body.encode(),0o644);os.replace(replacement,install/'diagnostic.service')
+            command('systemctl','daemon-reload');command('systemctl','start',diagnostic_unit)
+            deadline=time.monotonic()+10
+            while True:
+                log=command('journalctl','-u',diagnostic_unit,'--no-pager','-n','30').decode()
+                if 'CI_STOP_READY_'+kill_mode in log:break
+                assert time.monotonic()<deadline,'CI_STOP_HELPER_NOT_READY';time.sleep(.05)
+            command('systemctl','stop',diagnostic_unit)
+            log=command('journalctl','-u',diagnostic_unit,'--no-pager','-n','30').decode()
+            matches=[line.split('CI_STOP_SCOPE_'+kill_mode+'=',1)[1] for line in log.splitlines()
+                if 'CI_STOP_SCOPE_'+kill_mode+'=' in line]
+            assert len(matches)==1;stop_results[kill_mode]=json.loads(matches[0])['childSurvivedManagerTerm']
+        assert stop_results=={'control-group':False,'mixed':True},stop_results
+        print('CI_MANAGER_STOP_CHILD_SCOPE='+json.dumps(stop_results,sort_keys=True),flush=True)
         command('systemctl','daemon-reload');command('systemctl','start',unit)
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
         manager_ref=program(str(Path(shutil.which('systemctl')).resolve()))
@@ -273,10 +315,17 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
             'actualDnsAndNft':True,'sourceModuleCount':len(manifest['sourceHashes']),
             'independentManagerProcessGenerationAndKernelObservationQualified':True,
             'staticReviewedTemplateMaterializesExactGenerationWithoutBudgetChange':True,
+            'managerStopPreservesBoundedVerifierChildrenUntilMainQuiesces':True,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
     finally:
+        if sys.exc_info()[0] is not None:
+            try:
+                value=row();print('CI_FAILURE_WORKER_STATE='+json.dumps({k:value.get(k) for k in
+                    ('state','reason','attempts','publicationCount','reentryCount')},sort_keys=True),flush=True)
+            except (OSError,ValueError):pass
+            print(command('journalctl','-u',unit,'--no-pager','-n','40',check=False).decode(errors='replace'),flush=True)
         command('systemctl','stop',unit,check=False);command('systemctl','stop',diagnostic_unit,check=False)
         link.unlink(missing_ok=True);diagnostic_link.unlink(missing_ok=True)
         command('systemctl','daemon-reload',check=False);command('systemctl','reset-failed',unit,check=False)
