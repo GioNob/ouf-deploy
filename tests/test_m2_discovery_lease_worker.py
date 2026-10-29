@@ -14,7 +14,7 @@ class Worker(unittest.TestCase):
         coordinator=object.__new__(m.Coordinator)
         coordinator.configuration={'providerFlows':[{'endpoint':'https://synthetic.invalid'}]}
         coordinator.binding={'transactionId':'a'*64,'configurationHash':'b'*64,'leaseStructureHash':'c'*64}
-        coordinator.owner=types.SimpleNamespace(profile={'syntheticDns':True},backend=types.SimpleNamespace(expected='c'*64))
+        coordinator.owner=types.SimpleNamespace(configuration=copy.deepcopy(coordinator.configuration),profile={'syntheticDns':True},backend=types.SimpleNamespace(expected='c'*64))
         journal=m.Journal(root);policy=m.Policy();clock=lambda:(100.0,50.0)
         scope={'sourceClosureHash':'d'*64,'installationInputsHash':'e'*64,'contextRef':'a'*64,'generationRef':'b'*64,
             'policyHash':m.fingerprint(dataclasses.asdict(policy)),'coordinatorBindingHash':m.fingerprint(coordinator.binding),
