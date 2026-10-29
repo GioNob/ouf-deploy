@@ -1,9 +1,9 @@
 name: M2 read-only provider representation reconciliation
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/provider_reconciliation.py','tests/test_m2_provider_reconciliation.py','tests/qualify_m2_provider_reconciliation_native.py','.github/workflows/m2-provider-reconciliation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider_reconciliation.py','tests/test_m2_provider_reconciliation.py','scripts/export-m2-provider-reconciliation.py','releases/m2-provider-reconciliation-20261029.py','tests/test_m2_provider_reconciliation_capsule.py','tests/qualify_m2_provider_reconciliation_native.py','.github/workflows/m2-provider-reconciliation-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/provider_reconciliation.py','tests/test_m2_provider_reconciliation.py','tests/qualify_m2_provider_reconciliation_native.py','.github/workflows/m2-provider-reconciliation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider_reconciliation.py','tests/test_m2_provider_reconciliation.py','scripts/export-m2-provider-reconciliation.py','releases/m2-provider-reconciliation-20261029.py','tests/test_m2_provider_reconciliation_capsule.py','tests/qualify_m2_provider_reconciliation_native.py','.github/workflows/m2-provider-reconciliation-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -13,7 +13,9 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
       - name: Exact identity and consumed predecessor unit checks
-        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_provider_reconciliation.py -v
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_provider_reconciliation.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_provider_reconciliation_capsule.py -v
       - name: Use official Docker 29.8.1 in an isolated disposable data root
         run: |
           set -euo pipefail
