@@ -45,6 +45,14 @@ Pacchetti prodotti dal commit4829f9f84b12ae982e629faf730ca76238f66962, run408418
 
 [Evidenza completa](../../evidence/m2-discovery-native-witness-and-packages-20261029.json). Prossimo lavoro: owner del nodo discovery e assemblaggio completo della preparazione/review, con firme correnti vincolate a recipe/phase-intent e custody/provider/TLS/rete/DB/intero cohort effettivi. Nessuna nuova istruzione operativa pronta; scope consumato chiuso e nessun effetto target.
 
+## Owner del nodo discovery: guard di firma qualificati
+
+Sorgente PR54 `5929868ca9c7d592977177d8429a5d699343cc6d`: `DiscoveryNodeOwner` vincola recipe e relativo hash all'esatto phase-intent firmato, creationRequest/sourceClosure, tutte13fasi e nuovo worker distinto. Richiede la stessa authority/verifier/attestor scope, osservazione completa e rootfs indipendente prima della firma; l'issuance parziale resta da riconciliare e il rientro usa il nuovo checkpoint discovery. Nessun permissive wrapper o cambio del file-only.
+
+101PASS/0errori/0skip per push40843321800/job123344705333 e PR40843329502/job123344732264, log letti. Sei test nuovi usano firme Ed25519 e HUMAN fixture effettive per il guard: intent diverso firmato, recipe mutata, firma mancante, finestra scaduta e transizione file-only vengono respinti prima degli effetti. Non qualificano l'issuance completa del nuovo owner o l'Engine nativo; l'errore iniziale di import fixture è conservato.
+
+Sorgente successiva97415ba073c3e97740da93bb60a45f83edd3193f introduce `frame_inputs` dal baseline Docker29.8.1 indipendente e la prova su container CI realmente in pausa. Stato CI ancoraPENDING in questo checkpoint: nessuna promozione a prova nativa. Il qualifier usa immagine/credenziali sintetiche, non avvia Java e non prova IAM/provider/token owner. [Evidenza](../../evidence/m2-discovery-node-owner-source-qualification-20261029.json).
+
 ## Prossimo lavoro autorizzato
 
 Integrare e qualificare l'osservazione nativa e l'assemblaggio esecutivo della proposta discovery completa sopra i primitive esistenti: conservazione del file/onboarding, DB V1–V10 e aggiunta V11/V12, configurazione effettiva, mount e custody dei due riferimenti mancanti, chiave discovery distinta coerente tra APISIX e Registry, workload provider, TLS/rete/DB e rinnovo/rotazione. Il vecchio profilo file-only e il frame a sette mount del canale proposal non coprono automaticamente questa configurazione: nessun rilassamento dei guard e nessuna semplice accensione dei due flag.

@@ -1,4 +1,12 @@
-# CURRENT — witness/rientro discovery qualificati e pacchetti MCP/Gateway verificati; owner coordinato aperto
+# CURRENT — owner nodo discovery: guard firmati qualificati; prova Docker reale in corso
+
+29ottobre2026. [Handoff](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica](evidence/m2-discovery-node-owner-source-qualification-20261029.json). PR54 sorgente5929868ca9c7d592977177d8429a5d699343cc6d:101PASS/0errori/0skip per push/PR, log letti. RecipeHash/phase-intent/creation/sourceClosure firmati e13fasi/worker distinti obbligatori, stessaauthority/verifier/signer, guard prima degli effetti. Sei nuovi test con firmeEd25519/HUMANfixture reali; NativeEngine e issuance completa del nuovo owner NON provati.
+
+Sorgente97415ba073c3e97740da93bb60a45f83edd3193f aggiunge frame_inputs da baseline indipendenteDocker29.8.1 e qualifier su containerCIpaused; CI ancoraPENDING. Test locale15PASS per compiler/profile. Nuova prova deve confrontare OCI indipendente e cinque file readonly/configtree nativi senzaJava; non èIAM/provider/owneradmission/E2E. NEXT completare qualificaDocker, poi preparazione/review coordinata e custody corrente. Non fermarsi ai compiler, proseguire finché l'operatore non è necessario.
+
+PacchettiMCP/Gateway giàSUCCESS e verificati, dettagli nel precedentecheckpoint. f759d397CONSUMATO, launcher ritirato, nessun replay/reset/targeteffect/authority nuova. Nessun comando operatore pronto. M2/8criteri stabilità/E2E OPEN; Farmacie e decisioni invariati. No merge/releaseacceptance/subagenti/automazioni. Solo chatbot→MCP→Gateway→Registry→OntoPiA per il flusso applicativo. Header/comandi successivi STORICI.
+
+# HISTORICAL — witness/rientro discovery qualificati e pacchetti MCP/Gateway verificati; owner coordinato aperto
 
 29 ottobre2026. [Handoff](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [evidenza](evidence/m2-discovery-native-witness-and-packages-20261029.json). PR54 sorgente91a3b227b78f1210d9096622f72994e9f4499598.95PASS/0errori/0skip per push/PR, log letti. Witness discovery ora collegato aPausedNodeObservation, con controllo profilo/policy/generazione/metadati prima/dopo. Rientro discovery13fasi alle posizioni9/10 richiede trasporto e workerAPPLIED; vecchio rientro file-only7/8 separato. File POSIX e pin owner reali, Engine/mount/token di fixture: native Docker/admission NON provati.
 
