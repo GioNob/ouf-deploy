@@ -71,9 +71,14 @@ def main():
         c=m.ReconciliationCapture(base/'new');result=m.reconcile(c,**args)
         a=result['analysis']
         assert a['negotiatedApi']!='1.44',a
-        assert not a['identityChecks']['captured']['completeIdentityMatches'],a
-        assert a['matchingCurrentApis']==[a['negotiatedApi']],a
-        assert a['classification']=='HISTORICAL_IDENTITY_MATCHES_A_CURRENT_API_REPRESENTATION',a
+        # Native facts decide whether both representations actually have the
+        # same identity. A schema difference alone is not a configuration change.
+        captured_matches=m.identity(legacy)==m.identity(modern)
+        assert a['identityChecks']['captured']['completeIdentityMatches']==captured_matches
+        assert a['negotiatedApi'] in a['matchingCurrentApis'],a
+        assert ('1.44' in a['matchingCurrentApis']) is captured_matches
+        assert a['classification']==('HISTORICAL_IDENTITY_MATCHES_CURRENT_VIEW_NO_ADMISSION'
+            if captured_matches else 'HISTORICAL_IDENTITY_MATCHES_A_CURRENT_API_REPRESENTATION'),a
         assert c.counts['metadataReads']==6 and c.counts['providerEngineGets']==5
         assert c.counts['recoveredPublicStoreReads']==1
         assert c.counts['credentialFileReads']==c.counts['applicationMacKeyReads']==0
@@ -88,6 +93,11 @@ def main():
         assert changed['analysis']['matchingCurrentApis']==[]
         assert changed['analysis']['classification']=='HISTORICAL_PROVIDER_IDENTITY_HAS_NO_CURRENT_VIEW_MATCH'
         assert not changed['analysis']['resumeAllowed'] and all(p.read_bytes()==raw for p,raw in before.items())
+        cli('stop','--time','1',cid)
+        stopped=m.ReconciliationCapture(base/'current-stopped');stopped_result=m.reconcile(stopped,**args)
+        assert stopped_result['analysis']['classification']=='CURRENT_PROVIDER_STATE_BLOCKS_NATIVE_CONTEXT'
+        assert not stopped_result['analysis']['resumeAllowed']
+        assert all(p.read_bytes()==raw for p,raw in before.items())
         bad,old2,args2=fixture('store-drift');p=old2/'provider-trust.p12';p.write_bytes(p.read_bytes()+b'altered')
         denied=m.ReconciliationCapture(bad/'new')
         try:m.reconcile(denied,**args2);raise AssertionError('altered store accepted')
@@ -101,7 +111,8 @@ def main():
         print(json.dumps({'schema':'ouf.m2-provider-reconciliation-native-ci.v1',
             'actualDockerVersion':'29.8.1','actualCorePeers':13,'additionalProvider':1,
             'actualNegotiatedApi':a['negotiatedApi'],'cliNegotiatedIdentityMatchesExactHttpView':True,
-            'sameProviderCliVs144FullHashMismatchReproduced':True,'productionCauseProven':False,
+            'sameProviderCliVs144IdentityMismatchObserved':not captured_matches,'productionCauseProven':False,
+            'apiSchemaDifferenceDoesNotImplyIdentityChange':True,'stoppedProviderReportedWithoutRestart':True,
             'fieldDroppingUsed':False,'metadataReads':6,'providerEngineGets':5,'recoveredPublicStoreReads':1,
             'realRestartPolicyDriftDoesNotMatchAnyView':True,'alteredStoreDeniedBeforeEngine':True,
             'otherStopDeniedBeforeEngineOrStoreRead':True,'priorFilesAndPublicStorePreserved':True,
