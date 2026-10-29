@@ -62,6 +62,12 @@ def main():
             spec=native.decode(Path(row['configurationPath']).read_bytes())
             assert spec==row['oci'] and Path(row['rootfsPath']).is_dir()
             assert row['networkNamespaceIdentity']==trust.process_pin(row['runtimeBinding']['pid'])['namespaces']['net']
+            alias='/var/run/docker/netns/'+Path(row['networkNamespace']).name
+            assert native.canonical_sandbox(c,alias,row['runtimeBinding'])==(Path(row['networkNamespace']),row['networkNamespaceIdentity'])
+            try:
+                native.canonical_sandbox(c,'/proc/'+str(row['runtimeBinding']['pid'])+'/ns/net',row['runtimeBinding'])
+                raise AssertionError('unapproved namespace parent')
+            except ValueError:pass
         assert all(p.read_bytes()==raw for p,raw in before.items())
         positive={p:p.read_bytes() for p in c.scope.iterdir()}
         try:trust.TrustPreparation(c.scope);raise AssertionError('replayed')
@@ -81,6 +87,7 @@ def main():
             'actualDisposableCorePeers':13,'additionalProviderPeer':1,'rootUnixEngineAndKernelPinsObserved':True,
             'engineGets':27,'contextEngineGets':5,'nativeOciConfigurationsObserved':2,'metadataReads':5,
             'publicStoreRootGroupModeVerified':True,'applicationCredentialsAndKeysRead':0,
+            'exactDockerSystemNamespaceAliasesVerified':True,'unapprovedNamespaceParentDenied':True,
             'sourceFilesAndPositiveEvidencePreserved':True,'consumedScopeReplayDenied':True,
             'stoppedProviderRefusedWithPartialPublicStorePreserved':True,
             'syntheticCaAndHistoricalProvenance':True,'targetExecuted':False,'targetTlsAdmissionProven':False,

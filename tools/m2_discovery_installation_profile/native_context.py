@@ -21,6 +21,20 @@ def provider_identity(row):
                                   {'networks':row['NetworkSettings']['Networks']})}
 
 
+def canonical_sandbox(c,reference,pinned):
+    """Accept only Docker's two system aliases to the same protected namespace."""
+    observed=Path(path(reference))
+    require(observed.parent in (Path('/run/docker/netns'),Path('/var/run/docker/netns')),
+            'EXACT_DOCKER_NAMESPACE_PARENT_REQUIRED')
+    selected=observed.resolve(strict=True)
+    require(selected.parent==Path('/run/docker/netns') and selected.name==observed.name,
+            'EXACT_DOCKER_NAMESPACE_ALIAS_TARGET_REQUIRED')
+    c.ancestors(selected);s=selected.stat()
+    require([s.st_dev,s.st_ino]==pinned['namespaces']['net'],
+            'CURRENT_DOCKER_SANDBOX_NAMESPACE_MISMATCH')
+    return selected,[s.st_dev,s.st_ino]
+
+
 class ContextEngine:
     """Five exact local GET attempts; distinct from the frozen 27-GET reader."""
     def __init__(self,c,binding,provider,network):
@@ -126,20 +140,20 @@ def collect(c,*,material,trust_result,material_root=MATERIAL_ROOT,manifest_hash=
         root=Path(oci['root']['path'])
         require(root.is_absolute() and root!=storage and root.is_relative_to(storage),
                 'CURRENT_OCI_ROOTFS_OUTSIDE_ENGINE_STORAGE')
-        sandbox=Path(path(row['NetworkSettings']['SandboxKey']))
-        c.ancestors(sandbox);ns=sandbox.stat()
-        require([ns.st_dev,ns.st_ino]==pinned['namespaces']['net'],
-                'CURRENT_DOCKER_SANDBOX_NAMESPACE_MISMATCH')
-        require(sandbox.parent==Path('/run/docker/netns'),'EXACT_DOCKER_NAMESPACE_PARENT_REQUIRED')
+        sandbox,namespace_identity=canonical_sandbox(c,row['NetworkSettings']['SandboxKey'],pinned)
         nodes[role]={'containerId':cid,'runtimeBinding':copy.deepcopy(pinned),
             'engineBindingHash':digest(stable_binding(row)),'bundleParent':str(selected.parent.parent),
             'bundlePath':str(selected.parent),'configurationPath':str(selected),
             'configurationSha256':hashlib.sha256(oci_raw).hexdigest(),
             'oci':oci,'rootfsPath':str(root),'networkNamespace':str(sandbox),
-            'networkNamespaceIdentity':[ns.st_dev,ns.st_ino]}
+            'networkNamespaceIdentity':namespace_identity,
+            'observedSandboxKey':row['NetworkSettings']['SandboxKey']}
     require(stable_binding(engine.get('/v1.44/containers/'+provider['Id']+'/json'))==stable_binding(provider)
             and engine.get('/v1.44/networks/'+network_id)==network,'CONTEXT_PROVIDER_OR_NETWORK_CHANGED')
     unchanged()
+    require(all(canonical_sandbox(c,row['observedSandboxKey'],row['runtimeBinding'])
+                ==(Path(row['networkNamespace']),row['networkNamespaceIdentity']) for row in nodes.values()),
+            'NATIVE_CONTEXT_NAMESPACE_CHANGED_DURING_READ')
     record={'schema':'ouf.m2-discovery-current-native-context.v1',
         'trustPreparationResultHash':digest(trust_result),'materialBindingHash':digest(material),
         'providerManifestBinding':{'path':str(material_root/'private-input-manifest.json'),'sha256':manifest_hash},
