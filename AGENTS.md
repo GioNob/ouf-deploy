@@ -1,4 +1,12 @@
-# CURRENT — custodia acquisita e CONSUMATA; preparazione coordinata in corso
+# CURRENT — continuità salvata; custodia acquisita, qualifica installazione in corso
+
+29ottobre2026. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CONTINUITY_20261029.md), [checkpoint](evidence/m2-discovery-continuity-20261029.json). Nessuna perdita repository osservata dopo segnalazione UI chat. Custodia eed64887 RIUSCITA/CONSUMATA, NON rilanciare. PR54 source12ec4870a8febcebfa96a06ef43b233570e2dfc3;114testPASS/0skip, regressione585testPASS/2skipTLS espliciti; Docker paused/PG PASS. Attestazioni MCP/Gateway SUCCESS e19subject/receipt riletti, nativepublishertrust non ammessa.
+
+Rootfs Registry esatto: prima prova STOP perconfigID vsnativeManifestID Docker29; fix riusa primitive qualificate tagless/archive/nativeidentity, CI da verificare. Nessun rebuild/layer/configchange, nessun targetapply o Java. NEXT completare rootfs e preparazione coordinata esecutiva13fasi/worker distinto contrustIAM+provider/rete/DB/cohort/fencing correnti, poi HUMAN/authority finite. Nessun comando operatore pronto; proseguire finché utente necessario.
+
+Nessun nuovo targetread/effect/credenziale/OAuth/IAM/SQL/grant/budget/authority/merge. Farmacie/decisioni invariati. M2/8stabilità/E2E OPEN; capability discovery non ancoraesposte. Chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio; no bypass/subagenti/automazioni. Header successivi STORICI.
+
+# HISTORICAL — custodia acquisita e CONSUMATA; preparazione coordinata in corso
 
 29ottobre2026. [Esito target](evidence/m2-discovery-custody-target-20261029.json), [handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md). candidateBindingHash eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5, complete=true, OperatorExit0/DeliveryExit0,4file/4pin,33558byte,2metadata/1credenziale/2MACapp/1CA. Fonte JSON/footer operatore, nessuna lettura indipendente del log o record privato. Scope m2-discovery-custody-f759d397-20261029-v1 CONSUMATO. NON rilanciare/cancellare/ricreare; launcher corrente ritirato. Anchef759 restaRIUSCITO/CONSUMATO.
 

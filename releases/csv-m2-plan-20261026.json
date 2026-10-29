@@ -1994,14 +1994,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": {
-    "action": "Complete coordinated private installation preparation from exact eed64887 candidates and f759 installation inputs; preserve historical source files, plan protected copies, finish candidate publisher/OCI/rootfs/current owner/IAM/scope/TLS/network/DB/cohort admission and finite native review. No current operator command is ready; no consumed capture may be replayed.",
-    "sourceCommit": "7c6c28399897e52e8c7c32156516e34a9884a69e",
-    "currentDeliveryUsable": false,
-    "sshExecutionCommandUsable": false,
-    "currentRuntimeAuthorityUsable": false,
-    "targetApplyAuthorized": false
-  },
+  "firstNextAction": "Finish exact-image full seven-mount rootfs qualification, then complete coordinated preparation and real native installation integration. Do not replay consumed readers, request fresh tokens early, or claim E2E from CI.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -5781,5 +5774,107 @@
       "redacted": true,
       "isProofOfDiscoveryAvailability": false
     }
+  },
+  "discoveryContinuityCheckpoint": {
+    "schema": "ouf.m2-discovery-continuity-checkpoint.v1",
+    "date": "2026-10-29",
+    "request": "Preserve progress after reported chat display loss; continue governed industrialization.",
+    "custody": {
+      "status": "MATERIAL_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED",
+      "candidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+      "evidence": "evidence/m2-discovery-custody-target-20261029.json",
+      "scopeConsumed": true,
+      "replayAllowed": false,
+      "source": "USER_PASTED_OPERATOR_JSON_NOT_INDEPENDENT_HOST_READ"
+    },
+    "source": {
+      "repository": "GioNob/ouf-deploy",
+      "branch": "feat/m2-discovery-complete-profile-20261029",
+      "commit": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+      "pr": 54,
+      "merged": false
+    },
+    "qualification": {
+      "selected": {
+        "source": "fc6af59d96ed974c73dba29f53b77dcb8ac3ce47",
+        "run": 40854229009,
+        "job": 123381048153,
+        "tests": 114,
+        "skips": 0,
+        "conclusion": "success",
+        "logRead": true
+      },
+      "recovery": {
+        "source": "bcb645a9ec03dd5d4a2dc419649f3d55ae346e05",
+        "run": 40855597338,
+        "componentJob": 123385640094,
+        "tests": 585,
+        "intentionalNativeTlsSkips": 2,
+        "independentTestModuleProcesses": 63,
+        "conclusion": "success",
+        "logRead": true,
+        "nativePausedAndDatabaseJobsPassed": true,
+        "productionLoaderGuardsUnchanged": true,
+        "historicalPublishedCapsuleSourcesRestoredByteExactly": true
+      }
+    },
+    "attestations": {
+      "source": "fc6af59d96ed974c73dba29f53b77dcb8ac3ce47",
+      "run": 40854222625,
+      "jobs": [
+        123381025618,
+        123381026258
+      ],
+      "logsRead": true,
+      "readback": [
+        {
+          "module": "gateway",
+          "originalArtifactId": 12882339953,
+          "attestationArtifactId": 12888671353,
+          "attestationZipSha256": "57aa06468f813349627f5097618988955dda0e44982433cfd7ffcc82a83fb87b",
+          "subjectsVerified": 8,
+          "originalBytesPreserved": true,
+          "receiptAndStatementReadback": true,
+          "cryptographicVerificationPerformedInHostedCi": true,
+          "cryptographicVerificationRepeatedLocally": false,
+          "nativePublisherTrustAccepted": false
+        },
+        {
+          "module": "mcp",
+          "originalArtifactId": 12882394596,
+          "attestationArtifactId": 12888592058,
+          "attestationZipSha256": "1066ecea1d305cce81a0b68f3dffc70b21c31bb6af805a7f30dd09f9d42a9ec0",
+          "subjectsVerified": 11,
+          "originalBytesPreserved": true,
+          "receiptAndStatementReadback": true,
+          "cryptographicVerificationPerformedInHostedCi": true,
+          "cryptographicVerificationRepeatedLocally": false,
+          "nativePublisherTrustAccepted": false
+        }
+      ]
+    },
+    "rootfs": {
+      "status": "SOURCE_FIX_SUBMITTED_NOT_YET_QUALIFIED",
+      "firstRun": 40856064980,
+      "firstJob": 123387229694,
+      "firstConclusion": "failure",
+      "failure": "Docker29 containerd image identity is a native manifest, not the original configuration image digest.",
+      "fixSource": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+      "qualifiedPrimitive": "tools/semantic_application_cutover/image_custody.py",
+      "newPrimitiveIntroduced": false,
+      "exactConfigAndLayerBytesPreserved": true,
+      "syntheticPrivateInputs": true,
+      "targetMountSelectionApproved": false,
+      "latestCiPending": true
+    },
+    "next": "Finish exact-image full seven-mount rootfs qualification, then complete coordinated preparation and real native installation integration. Do not replay consumed readers, request fresh tokens early, or claim E2E from CI.",
+    "currentOperatorCommandReady": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false
   }
 }
