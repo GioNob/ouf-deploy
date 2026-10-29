@@ -98,7 +98,7 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "COMPLETE_DISCOVERY_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OWNER_INTEGRATION_AND_CUSTODY_OPEN",
+    "semanticExternalDiscovery": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
@@ -122,7 +122,11 @@
     "discoveryMcpGatewayPackagesQualified": true,
     "discoveryNodeOwnerGuardSourceQualified": true,
     "discoveryNodeOwnerGuardSourceCommit": "5929868ca9c7d592977177d8429a5d699343cc6d",
-    "discoveryNativeDockerProbePending": true
+    "discoveryNativeDockerProbePending": true,
+    "discoveryNativeDockerFrameCiQualified": true,
+    "discoveryCurrentCustodyCaptureQualified": true,
+    "discoveryCurrentCustodyCaptureTargetExecuted": false,
+    "operatorRequiredForCurrentCustody": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1989,14 +1993,18 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "FINISH_NATIVE_DOCKER_PROBE_THEN_COORDINATED_PREPARATION_AND_CURRENT_CUSTODY_REVIEW",
-    "sourceCommit": "97415ba073c3e97740da93bb60a45f83edd3193f",
-    "currentDeliveryUsable": false,
-    "sshExecutionCommandUsable": false,
+    "action": "Execute the NEW current custody capture once as oufadmin in interactive SSH. Exact provenance metadata plus1credential/2applicationMacKeys/publicCA are hashed privately; no values printed/spooled. Zero Engine/SQL/IAM/OAuth/authority/runtime effects. Return final JSON/footer. On STOP preserve/no replay. This is a NEW scope; previous f759 input scope remains consumed.",
+    "commandPath": "releases/OUF_M2_DISCOVERY_CUSTODY_COMMAND_20261029.sh",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
+    "sourceCommit": "bab8d63a6d8e47cf0ae6ff0dc15841009748b417",
+    "sourceSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
+    "wrapperCommit": "a2473d8925eaa54924d76dd630566c848030c80d",
+    "wrapperSha256": "308b8e5b69a52e7ae6f5b8ed7898519a3a78e8d60b25a4597857752c98070226",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "sshExecutionCommandUsable": true,
     "currentRuntimeAuthorityUsable": false,
-    "targetApplyAuthorized": false,
-    "priorScopeConsumed": true,
-    "priorInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d"
+    "targetApplyAuthorized": false
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2441,9 +2449,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-29",
-    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
-    "next": "FINISH_NATIVE_DOCKER_PROBE_THEN_COORDINATED_PREPARATION_AND_CURRENT_CUSTODY_REVIEW",
-    "evidence": "evidence/m2-discovery-installation-inputs-target-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md",
+    "next": "ONE_NEW_CURRENT_CUSTODY_CAPTURE_THEN_COORDINATED_REVIEW",
+    "evidence": "evidence/m2-discovery-custody-capture-qualified-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
@@ -2451,7 +2459,8 @@
     "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json",
     "completeProfileProposalSourceQualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json",
     "nativeWitnessAndPackageEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json",
-    "nodeOwnerQualification": "evidence/m2-discovery-node-owner-source-qualification-20261029.json"
+    "nodeOwnerQualification": "evidence/m2-discovery-node-owner-source-qualification-20261029.json",
+    "nativeDockerFrameEvidence": "evidence/m2-discovery-native-frame-qualified-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -5545,5 +5554,169 @@
       "releaseAcceptance": false
     },
     "next": "FINISH_NATIVE_DOCKER_PROBE_THEN_COORDINATED_PREPARATION_AND_CURRENT_CUSTODY_REVIEW"
+  },
+  "discoveryCustodyCaptureQualification": {
+    "schema": "ouf.m2-discovery-custody-capture-qualification.v1",
+    "date": "2026-10-29",
+    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_OPERATOR_REQUIRED",
+    "sourceCommit": "bab8d63a6d8e47cf0ae6ff0dc15841009748b417",
+    "sourcePath": "tools/m2_discovery_installation_profile/custody_capture.py",
+    "sourceSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
+    "wrapperCommit": "a2473d8925eaa54924d76dd630566c848030c80d",
+    "wrapperPath": "releases/read-m2-discovery-custody-20261029.sh",
+    "wrapperSha256": "308b8e5b69a52e7ae6f5b8ed7898519a3a78e8d60b25a4597857752c98070226",
+    "qualificationCommit": "5782af38ce1f7ed777094dcc56075741e7fa4801",
+    "pullRequest": 54,
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-custody-f759d397-20261029-v1",
+    "targetExecuted": false,
+    "operatorAccount": "oufadmin",
+    "interactiveSshAndLocalSudoRequired": true,
+    "currentDeliveryUsable": true,
+    "inputProvenance": {
+      "installationInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+      "previousScopeConsumed": true,
+      "materialManifestHash": "732a633e46cb06bb720352aa6a90946281ba6489e94aa35dc04820eae56b4a70",
+      "candidateRoot": "/etc/ouf/deploy-snapshots/semantic-discovery-runtime-inputs-682nr5ky",
+      "historicalReferencesAreNotCurrentAuthority": true
+    },
+    "maximums": {
+      "seconds": 45,
+      "totalBytes": 4194304,
+      "metadataReads": 2,
+      "credentialFileReads": 1,
+      "applicationMacKeyReads": 2,
+      "publicCertificateReads": 1,
+      "processPinChecks": 8
+    },
+    "qualification": {
+      "testsPerJob": 109,
+      "newCustodyTests": 7,
+      "priorTests": 102,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "localNativePosixNotSupported": true,
+      "realPosixOwnerModesHashDriftSymlinkAndReplayQualifiedInCi": true,
+      "sourceJobs": [
+        {
+          "event": "push",
+          "run": 40846711261,
+          "job": 123355871936,
+          "conclusion": "success",
+          "logRead": true
+        },
+        {
+          "event": "pull_request",
+          "run": 40846716178,
+          "job": 123355889523,
+          "conclusion": "success",
+          "logRead": true
+        }
+      ],
+      "deliveryJobs": [
+        {
+          "event": "push",
+          "run": 40847147152,
+          "job": 123357320519,
+          "conclusion": "success",
+          "logRead": true
+        },
+        {
+          "event": "pull_request",
+          "run": 40847156690,
+          "job": 123357352454,
+          "conclusion": "success",
+          "logRead": true
+        }
+      ],
+      "realPinnedHttpsNonrootSudoProtectedRoot400Checksum": true,
+      "nonTtyBeforeDownloadOrScope": true,
+      "nonrootProtectedSourceReadDenied": true,
+      "failedScopePreserved": true,
+      "replayBeforeProtectedExecution": true,
+      "exactProductionSourceUsedForDelivery": true,
+      "deliveryFixtureTargetMetadataAbsent": true,
+      "positiveCaptureCoveredBySeparateRealPosixFixture": true
+    },
+    "effects": {
+      "engineGets": 0,
+      "engineWrites": 0,
+      "sqlSessions": 0,
+      "iamRequests": 0,
+      "oauthRequests": 0,
+      "newKeysGenerated": 0,
+      "deploymentSigningKeyReads": 0,
+      "signaturesIssued": 0,
+      "containerLifecycleOperations": 0,
+      "imageImports": 0,
+      "budgetsGranted": 0,
+      "uploads": 0,
+      "newJobs": 0,
+      "resumes": 0,
+      "acquisitions": 0
+    },
+    "privacy": {
+      "rawCredentialOrKeyValuesPrinted": false,
+      "rawValuesSpooled": false,
+      "contentHashesOnlyInPrivateCandidateRecord": true,
+      "existingFilesChanged": false,
+      "readPurpose": "REVALIDATE_EXACT_EXISTING_CANDIDATE_CONTENT_IDENTITIES_AND_CUSTODY_ONLY"
+    },
+    "limits": {
+      "hashContinuityIsNotIamAdmission": true,
+      "providerTlsAndScopeNotProven": true,
+      "all13CurrentPeersNotReobserved": true,
+      "applicationE2EProven": false,
+      "stableCapabilitiesOperationalProven": false
+    },
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "releaseAcceptance": false
+  },
+  "discoveryNativeDockerFrameQualification": {
+    "schema": "ouf.m2-discovery-native-frame-qualification.v1",
+    "date": "2026-10-29",
+    "sourceCommit": "dd299c06c9ff9353bee78443d35845a52b5a782e",
+    "status": "INDEPENDENT_REAL_DOCKER_FRAME_FILES_AND_CONFIGTREE_QUALIFIED",
+    "jobs": [
+      {
+        "event": "push",
+        "run": 40845016640,
+        "job": 123350264235,
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "event": "pull_request",
+        "run": 40845022690,
+        "job": 123350284460,
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "engine": {
+      "serverVersion": "29.8.1",
+      "storageDriver": "overlayfs",
+      "cgroupDriver": "systemd",
+      "backend": "containerd-overlayfs"
+    },
+    "fullIndependentOciMatched": true,
+    "fiveNativeReadonlyFilesObserved": true,
+    "databaseConfigtreeNativeObserved": true,
+    "exactUnixEngineJsonContract": true,
+    "rootUnixPeerRequired": true,
+    "javaStarted": false,
+    "syntheticImageAndPrivateInputs": true,
+    "tokenOwnerAdmissionProven": false,
+    "providerTlsOrIamProven": false,
+    "signaturesIssued": 0,
+    "targetAcceptance": false,
+    "applicationE2EProven": false,
+    "intermediateFindings": [
+      "Qualifier used old future-custody import; switched to self-contained discovery budget.",
+      "CLI reordered creation Env; qualifier now exercises actual Unix Engine JSON API. No OCI comparison guard changed."
+    ]
   }
 }

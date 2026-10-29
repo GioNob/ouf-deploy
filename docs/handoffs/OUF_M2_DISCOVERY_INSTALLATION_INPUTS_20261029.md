@@ -1,3 +1,5 @@
+> SUPERSEDED — il nuovo passaggio corrente è [verifica custodia](OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md). Il vecchio scope resta consumato.
+
 # OUF — Scope consumato; autorizzazione e proposta installativa discovery qualificate
 
 29 ottobre 2026. Il risultato operativo riuscito è `f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d`. [Esito target](../../evidence/m2-discovery-installation-inputs-target-20261029.json), [rifiuto del duplicato](../../evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json), [qualifica sorgente PR53](../../evidence/m2-discovery-authorization-source-qualification-20261029.json).
