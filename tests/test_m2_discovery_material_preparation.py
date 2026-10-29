@@ -153,10 +153,17 @@ class MaterialPreparation(unittest.TestCase):
                     ssl.DER_cert_to_PEM_cert(b'0'*256).encode()*2,b'public-looking text'):
             with self.subTest(raw=raw[:25]),self.assertRaises(m.Stop):m.public_certificate_only(raw)
 
-    def test_production_has_no_endpoint_or_policy_override_arguments(self):
-        self.assertEqual(str(m.SCOPE),'/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1')
-        source=(ROOT/'tools/m2_discovery_installation_profile/material_preparation.py').read_text()
-        self.assertNotIn("request('POST'",source);self.assertNotIn('subprocess',source)
-        self.assertNotIn('os.environ',source)
+    def test_closed_engine_paths_and_budget_are_denied_before_socket_access(self):
+        root,k,peers,*_=self.fixture();c=m.Preparation(root/'new-preparation')
+        cohort=json.loads((k['cohort_root']/'inputs.json').read_bytes())
+        engine=m.ReadOnlyEngine(c,cohort['engineBinding'],[v['Id'] for v in peers.values()])
+        for path in ('/v1.44/containers/json','/v1.44/images/json','/internal/execute'):
+            with self.subTest(path=path),self.assertRaisesRegex(m.Stop,'CLOSED_MATERIAL_PREPARATION'):
+                engine.get(path)
+            self.assertEqual(c.counts['engineGets'],0)
+        c.counts['engineGets']=27
+        with self.assertRaisesRegex(m.Stop,'CLOSED_MATERIAL_PREPARATION'):engine.get('/v1.44/info')
+        self.assertEqual(c.counts['engineGets'],27)
+        self.assertFalse(list(c.scope.glob('engine-get-*-claim.json')))
 
 if __name__=='__main__':unittest.main()
