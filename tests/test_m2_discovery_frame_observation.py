@@ -46,7 +46,7 @@ class Observation(unittest.TestCase):
         generation={'pid':123,'startTicks':456,'namespaceInode':789}
         transition=types.SimpleNamespace(execution_profile=None, phases=m.PHASES,
             read=lambda:{'creationRequestHash':profile.compiled['creationRequestHash']})
-        paused=object.__new__(m.PausedWorkloadBinding); paused.transition=transition; paused.request_hash=profile.compiled['creationRequestHash']
+        paused=object.__new__(m.PausedWorkloadBinding); paused.transition=transition; paused.request_hash=profile.compiled['creationRequestHash'];paused.profile=profile
         paused.observe=lambda:{'creationRequestHash':paused.request_hash,'runtimeBinding':{'pid':123}}
         budget=types.SimpleNamespace(check=lambda:None, remaining=lambda n:n)
         observer=m.DiscoveryFrameObservation(cfg,budget,DenyOwnerFixture(),paused,profile)
@@ -148,8 +148,9 @@ class Observation(unittest.TestCase):
                 m.PausedWorkloadBinding.retained_discovery_at_checkpoint(engine,t,o.profile.request,store,
                     attestation_intent_hash='a'*64,checkpoint_row=row,execution_profile=o.profile)
         o,t,row,store,engine=self.checkpoint(9)
+        from paused_workload_binding import PausedWorkloadBinding as LegacyPausedBinding
         with self.assertRaises(ValueError):
-            m.PausedWorkloadBinding.retained_at_checkpoint(engine,t,o.profile.request,store,
+            LegacyPausedBinding.retained_at_checkpoint(engine,t,o.profile.request,store,
                 attestation_intent_hash='a'*64,checkpoint_row=row)
 
 

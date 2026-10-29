@@ -14,7 +14,6 @@ class PausedWorkloadBinding:
         self.engine,self.transition,self.store=engine,transition,store
         self.request_hash=digest(creation_request)
         self.retained_checkpoint=None
-        self.discovery_profile=None
     @classmethod
     def retained_at_checkpoint(cls,engine,transition,creation_request,store,*,attestation_intent_hash,checkpoint_row):
         """Observe one already accepted node before migration or unpause.
@@ -29,22 +28,6 @@ class PausedWorkloadBinding:
         value.retained_checkpoint=(digest(checkpoint_row),attestation_intent_hash)
         value.current_row()
         return value
-    @classmethod
-    def retained_discovery_at_checkpoint(cls,engine,transition,creation_request,store,*,attestation_intent_hash,checkpoint_row,execution_profile):
-        """Full discovery reentry after transport and distinct worker installation."""
-        from tools.m2_discovery_installation_profile.native_profile import DiscoveryProfile
-        from transition_journal import PHASES as DISCOVERY_PHASES
-        require(type(execution_profile) is DiscoveryProfile
-            and transition.execution_profile is None and transition.phases==DISCOVERY_PHASES
-            and execution_profile.verify(creation_request)==execution_profile.sha256,
-            'EXACT_FULL_DISCOVERY_REENTRY_PROFILE_REQUIRED')
-        require(hash_value(attestation_intent_hash) and checkpoint_row==transition.read(),
-            'CURRENT_DISCOVERY_RETAINED_CHECKPOINT_REQUIRED')
-        value=cls(engine,transition,creation_request,store)
-        value.discovery_profile=execution_profile
-        value.retained_checkpoint=(digest(checkpoint_row),attestation_intent_hash)
-        value.current_row()
-        return value
     def current_row(self):
         row=self.transition.read()
         require(row['creationRequestHash']==self.request_hash,'CURRENT_ATTESTATION_PHASE_AND_CREATION_SCOPE_REQUIRED')
@@ -53,20 +36,10 @@ class PausedWorkloadBinding:
                     'CURRENT_ATTESTATION_PHASE_AND_CREATION_SCOPE_REQUIRED')
         else:
             snapshot,intent_hash=self.retained_checkpoint
-            phases=PHASES;positions=(7,8)
-            if self.discovery_profile is not None:
-                from tools.m2_discovery_installation_profile.native_profile import DiscoveryProfile
-                from transition_journal import PHASES as DISCOVERY_PHASES
-                require(type(self.discovery_profile) is DiscoveryProfile
-                    and self.discovery_profile.verify(self.discovery_profile.request)==self.discovery_profile.sha256
-                    and self.discovery_profile.compiled['creationRequestHash']==self.request_hash
-                    and self.transition.execution_profile is None and self.transition.phases==DISCOVERY_PHASES,
-                    'DISCOVERY_REENTRY_PROFILE_OR_TRANSITION_DRIFT')
-                phases=DISCOVERY_PHASES;positions=(9,10)
             cursor=row.get('nextPhase');effects=row.get('effects')
-            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in positions
+            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in(7,8)
                 and type(effects)is list and len(effects)==cursor+1
-                and [e.get('phase')for e in effects]==list(phases[:cursor+1])
+                and [e.get('phase')for e in effects]==list(PHASES[:cursor+1])
                 and all(e.get('state')=='APPLIED'for e in effects[:cursor])
                 and effects[-1].get('state')=='IN_FLIGHT'
                 and effects[6].get('intentHash')==intent_hash

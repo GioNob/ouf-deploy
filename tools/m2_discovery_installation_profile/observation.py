@@ -7,9 +7,9 @@ import time
 from pathlib import Path
 from projected_frame_observation import ProjectedFrameObservation
 from configtree_mount_observation import ConfigtreeMountObservation
-from paused_workload_binding import PausedWorkloadBinding
+from tools.m2_discovery_installation_profile.paused_binding import DiscoveryPausedWorkloadBinding as PausedWorkloadBinding
 from transition_journal import PHASES, digest, hash_value, require
-from tools.semantic_policy_token_owner.mount_observation import RenewableTokenMountObservation, generation as token_generation
+from tools.m2_discovery_installation_profile.token_mount_observation import DiscoveryTokenMountObservation as RenewableTokenMountObservation, generation as token_generation
 from tools.semantic_policy_token_owner.producer import DomainOwner
 from tools.semantic_provider_deployment_authentication import decode, attributes
 from tools.m2_discovery_installation_profile.frame import validate_observation_policy
@@ -21,7 +21,7 @@ class DiscoveryFrameObservation(ProjectedFrameObservation):
         require(isinstance(owner_gate, DomainOwner) and type(paused_binding) is PausedWorkloadBinding
                 and type(execution_profile) is DiscoveryProfile, 'TYPED_DISCOVERY_FRAME_OWNER_AND_PROFILE_REQUIRED')
         transition = paused_binding.transition
-        require(transition.execution_profile is None and transition.phases == PHASES
+        require(paused_binding.profile is execution_profile and transition.execution_profile is None and transition.phases == PHASES
                 and transition.read()['creationRequestHash'] == execution_profile.compiled['creationRequestHash']
                 and paused_binding.request_hash == execution_profile.compiled['creationRequestHash'],
                 'DISCOVERY_REQUIRES_FULL_CURRENT_TRANSITION_AND_CREATION_BINDING')

@@ -11,8 +11,8 @@ from engine_creation import Engine
 from tools.m2_discovery_installation_profile.native_profile import DiscoveryProfile
 from transition_journal import PHASES as DISCOVERY_PHASES
 from tools.m2_discovery_installation_profile.observation import DiscoveryFrameObservation
-from paused_workload_binding import PausedWorkloadBinding
-from paused_node_observation import PausedNodeObservation
+from tools.m2_discovery_installation_profile.paused_binding import DiscoveryPausedWorkloadBinding as PausedWorkloadBinding
+from tools.m2_discovery_installation_profile.node_observation import DiscoveryNodeObservation as PausedNodeObservation
 from paused_node_acceptance import PausedNodeAcceptance
 from paused_attestation_adapter import PausedAttestationAdapter
 from native_evidence_store import NativeEvidenceStore
@@ -93,7 +93,7 @@ class DiscoveryNodeOwner:
         recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds'])
         paused=(PausedWorkloadBinding.retained_discovery_at_checkpoint(self.engine,self.transition,self.request,self.store,
             attestation_intent_hash=self.intent_hash,checkpoint_row=checkpoint_row,execution_profile=self.profile)if retained else
-            PausedWorkloadBinding(self.engine,self.transition,self.request,self.store))
+            PausedWorkloadBinding(self.engine,self.transition,self.request,self.store,execution_profile=self.profile))
         before=paused.observe();native=self.engine.inspect(self.transition);cid=before['runtimeBinding']['containerId']
         config=copy.deepcopy(recipe['observationConfiguration']);runner=NodeObservation(config,budget)
         state=decode(runner.run(config['runtimeBinding'],['--root',recipe['runtimeRoot'],'state',cid],16384),16384)
