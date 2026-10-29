@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "PRESERVED_PUBLIC_TRUST_PROVIDER_RECONCILIATION_QUALIFIED_AWAITING_TARGET",
+  "status": "PROVIDER_RECONCILIATION_SUCCESS_CONSUMED_STOPPED_PROVIDER_REVIEW_REQUIRED",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -151,8 +151,8 @@
   "requiredInstallationWork": [
     {
       "id": "M2-INSTALL-01",
-      "state": "PUBLIC_STORE_PRESERVED_PROVIDER_IDENTITY_STATE_RECONCILIATION_PENDING",
-      "work": "Run one read-only diagnosis from exact consumed STOP960507a9, material68daa9 and preserved store. Separate complete historical identity matches from provider state and absent old core processes. No admission, field dropping, store regeneration or old collector replay."
+      "state": "PUBLIC_STORE_RECOVERED_PROVIDER_STOPPED_IDENTITY_REVIEW_REQUIRED",
+      "work": "Use exact reconciliation84184832 and preserved trust inputafbbe480/store33418234 to prepare a stopped-provider/current native-context correction under the complete coordinated installation review. Provider is stopped; the historical combined configuration/network identity differs in both APIs. Static drift cause and lifecycle authority remain unproven. No new operator command ready; no restart, old-scope replay or store regeneration."
     },
     {
       "id": "M2-INSTALL-02",
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Execute the single qualified read-only provider reconciliation once as oufadmin over interactive SSH. Read exact consumed STOP/captured response and preserved public store; at most five GETs for one exact provider. Return minimized JSON/footer. No old collector replay, new store, restart, IAM/OAuth, application apply or admission.",
+  "next": "Use exact reconciliation84184832 and preserved trust inputafbbe480/store33418234 to prepare a stopped-provider/current native-context correction under the complete coordinated installation review. Provider is stopped; the historical combined configuration/network identity differs in both APIs. Static drift cause and lifecycle authority remain unproven. No new operator command ready; no restart, old-scope replay or store regeneration.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1101,7 +1101,7 @@
     "currentCommandReady": false,
     "targetEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
-  "currentOperatorCommandReady": true,
+  "currentOperatorCommandReady": false,
   "discoveryTrustContextTarget": {
     "schema": "ouf.m2-discovery-trust-context-target-stop-observation.v1",
     "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
@@ -1150,7 +1150,7 @@
     "newCommandReady": false
   },
   "discoveryProviderReconciliation": {
-    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "status": "TARGET_SUCCESS_CONSUMED_PROVIDER_STOPPED_HISTORICAL_IDENTITY_UNMATCHED",
     "evidence": "evidence/m2-provider-reconciliation-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md",
     "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
@@ -1159,8 +1159,135 @@
     "capsuleSha256": "a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f",
     "wrapperCommit": "4dcbdc900855f401c897f99d77fae68fb8816066",
     "wrapperSha256": "36895e6d53ed008670937b03a6bc947bb45c2ca6441cca34a9c0b371c21cc5ce",
-    "targetExecuted": false,
-    "scopeConsumed": false,
-    "currentCommandReady": true
+    "targetExecuted": true,
+    "scopeConsumed": true,
+    "currentCommandReady": false,
+    "targetEvidence": "evidence/m2-provider-reconciliation-target-20261029.json"
+  },
+  "discoveryProviderReconciliationTarget": {
+    "schema": "ouf.m2-provider-reconciliation-target-observation.v1",
+    "date": "2026-10-29",
+    "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+    "independentProtectedRecordOrHostLogRead": false,
+    "result": {
+      "analysis": {
+        "applicationE2EProven": false,
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "captureApi": "1.44",
+        "capturedIdentityEqualsCurrentCaptureApi": true,
+        "classification": "CURRENT_PROVIDER_STATE_BLOCKS_NATIVE_CONTEXT",
+        "currentStateBlocksNativeContext": true,
+        "currentViewBindings": {
+          "1.44": "8b9bc4c00c7fa3b540222d8fc081a95b61e08deeaef37604a8559915e46f180c",
+          "1.56": "d92935a683f9a89afa42d1c61ca681bc65669c333d3c9fd6c6e6104744332705"
+        },
+        "fieldsDroppedForMatching": [],
+        "historicalAuthorityReused": false,
+        "identityChecks": {
+          "1.44": {
+            "containerId": true,
+            "imageId": true,
+            "configurationHash": false,
+            "completeIdentityMatches": false
+          },
+          "1.56": {
+            "containerId": true,
+            "imageId": true,
+            "configurationHash": false,
+            "completeIdentityMatches": false
+          },
+          "captured": {
+            "containerId": true,
+            "imageId": true,
+            "configurationHash": false,
+            "completeIdentityMatches": false
+          }
+        },
+        "matchingCurrentApis": [],
+        "nativeContextAcceptanceGranted": false,
+        "negotiatedApi": "1.56",
+        "providerAdmissionProven": false,
+        "rawConfigurationOrEnvironmentValuesPrinted": false,
+        "resumeAllowed": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.m2-provider-representation-analysis.v1",
+        "stateChecks": {
+          "1.44": {
+            "Running": false,
+            "Paused": false,
+            "Restarting": false
+          },
+          "1.56": {
+            "Running": false,
+            "Paused": false,
+            "Restarting": false
+          },
+          "captured": {
+            "Running": false,
+            "Paused": false,
+            "Restarting": false
+          }
+        },
+        "targetApplyAuthorized": false
+      },
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "budgetsGranted": 0,
+      "complete": true,
+      "containerLifecycleOperations": 0,
+      "counts": {
+        "applicationMacKeyReads": 0,
+        "bytes": 386102,
+        "credentialFileReads": 0,
+        "engineGets": 0,
+        "metadataReads": 6,
+        "preparedCopyReads": 0,
+        "privateCopiesPrepared": 0,
+        "providerEngineGets": 5,
+        "publicCertificateCopiesPrepared": 0,
+        "publicCertificateReads": 0,
+        "recoveredPublicStoreReads": 1
+      },
+      "currentFullCohortConfigurationProven": false,
+      "engineWrites": 0,
+      "historicalFilesAndPublicStorePreserved": true,
+      "iamRequests": 0,
+      "nativeConfigurationReads": 0,
+      "newKeysGenerated": 0,
+      "newPublicStoresPrepared": 0,
+      "oauthRequests": 0,
+      "preservedPublicStoreSha256": "33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559",
+      "preservedTrustInputsHash": "afbbe4808075fdb4374e74615ec4e13ea89646b06a5787b20c2f2656c7367e4d",
+      "rawCredentialOrKeyValuesPrinted": false,
+      "reconciliationHash": "84184832451fed0828f6e56b7e0d6ffb3c582a4879849d8903eed296666fcb21",
+      "releaseAcceptance": false,
+      "retainedCorePinStates": {
+        "GENERATION_CHANGED": 0,
+        "MATCHED": 13,
+        "PROCESS_ABSENT": 0
+      },
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-provider-reconciliation-result.v1",
+      "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
+      "scopeConsumed": true,
+      "signaturesIssued": 0,
+      "sqlSessions": 0,
+      "status": "READ_ONLY_PROVIDER_RECONCILIATION_COMPLETE",
+      "targetApplyAuthorized": false
+    },
+    "operatorExit": 0,
+    "operatorLog": "/usr/local/lib/ouf-m2-provider-reconciliation-a3dc3693cb08e214/operator.log",
+    "deliveryExit": 0,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-provider-reconciliation-delivery.ipTJfGBx",
+    "deliveryLog": "/home/oufadmin/ouf-m2-provider-reconciliation-delivery.ipTJfGBx/bootstrap.log",
+    "bootstrapDirectory": "/home/oufadmin/ouf-m2-provider-reconcile-bootstrap.c0gwNuF8",
+    "disposition": "SUCCESS_CONSUMED_NO_REPLAY",
+    "staticConfigurationDriftCauseProven": false,
+    "configurationHashIncludesRuntimeNetworkState": true,
+    "restartOrAdmissionAuthorized": false,
+    "applicationE2EProven": false,
+    "resultCanonicalSha256": "f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f"
   }
 }

@@ -1,4 +1,8 @@
-# CURRENT 29 ottobre2026 — riconciliazione provider qualificata, unica lettura operatore
+# CURRENT 29 ottobre2026 — diagnosi riuscita/consumata, provider fermo
+
+[Esito](../evidence/m2-provider-reconciliation-target-20261029.json):6metadata/5GET/386102byte,store preservato e13pincoincidenti. Provider fermo inAPI1.44/1.56,ID/immagineuguali,hashconfig/rete diverso (non prova di deriva statica). Riconciliazione84184832/trustafbbe480/store33418234 vincolano il prossimo lavoro. Launcher ritirato e scopeCONSUMATO: non ripetere. Preparare correzione/providerreentry e revisione coordinata13fasi/worker/TLS/IAM/DB; nessunrestart/grant/authority implicito, nessun nuovo comando pronto. M2/stabilità/E2E OPEN. Sezioni successive storiche.
+
+# HISTORICAL 29 ottobre2026 — riconciliazione provider qualificata, unica lettura operatore
 
 [Comando corrente](handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md), [qualifica](../evidence/m2-provider-reconciliation-qualified-20261029.json). Trust/context STOP consumato960507a9 con store pubblico preservato. Nuovo scope provider-reconciliation NON ESEGUITO:45s/4MiB,6metadati,1riletturastore,max5GET/unprovider. Diagnosi identità/stato/processi, nessunrestart/grant/IAM/SQL/apply o rigenerazione.14test/Docker29.8.1/4consegne/139regressioni PASS;logletti. ServeSSHoufadmin perché il connector nonhaexecutor VPS. Conservare tutti scope/log, ancheSTOPnonrilanciare. Nessuna causaVPS/ammissione provata;13fasi/worker distinto/TLS/IAM/DB/stabilità/E2E OPEN. Le sezioni successive sono storiche.
 

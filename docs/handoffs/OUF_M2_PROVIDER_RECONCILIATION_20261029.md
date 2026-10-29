@@ -1,3 +1,7 @@
+# STORICO — riconciliazione RIUSCITA/CONSUMATA: NON eseguire il comando sottostante
+
+[Esito target](../../evidence/m2-provider-reconciliation-target-20261029.json). Provider fermo; ID/immagine uguali, hash combinato configurazione/rete diverso in entrambe le API.13pincohort coincidono e store pubblico preservato. Il launcher corrente è ritirato; non riaprire lo scope. Nessun nuovo comando pronto: preparare correzione e review coordinate senza inferire autorità di restart o deriva statica dal solo hash.
+
 # Riconciliazione provider in sola lettura
 
 29 ottobre2026. Consegna qualificata; nuovo scope **NON ESEGUITO sul VPS**.

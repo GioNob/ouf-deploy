@@ -1,4 +1,12 @@
-# CURRENT — unica lettura provider-reconciliation qualificata; operatore necessario
+# CURRENT — riconciliazione RIUSCITA/CONSUMATA; provider fermo, correzione coordinata da preparare
+
+29 ottobre2026. [Esito](evidence/m2-provider-reconciliation-target-20261029.json): READ_ONLY_PROVIDER_RECONCILIATION_COMPLETE/OperatorExit0/DeliveryExit0.6metadata/386102byte,5GETprovider,1riletturastore,0nuovistore/CA/OCI/credenziali/chiavi/IAM/OAuth/SQL/lifecycle.13pinMATCHED,0assenti/0cambiati (non prova configcohortcorrente). Provider Running=false/Paused=false/Restarting=false nello snapshot e nelle API1.44/1.56; ID e immagine coincidono, combinedconfigurationHash false inentrambe. L'hash includeNetworks di runtime: NON attribuire automaticamente la differenza a deriva statica o a API. NessunmatchAPI attuale. FonteJSON/footerutente, non lettura indipendente record/log.
+
+reconciliationHash84184832451fed0828f6e56b7e0d6ffb3c582a4879849d8903eed296666fcb21; trustInputsafbbe4808075fdb4374e74615ec4e13ea89646b06a5787b20c2f2656c7367e4d; PKCS12SHA33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559. Risultato canonico f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f. Scope provider-reconciliation-960507a9 RIUSCITO/CONSUMATO, launcher ritirato: NONrilanciare/cancellare/ricreare/osovrascriverelog. Store e scope predecessori preservati.
+
+NEXT dai record privati esatti preparare correzione provider fermo e contesto/review d'installazione coordinata completa; verificare contratto originale e dipendenze/native14peer senza presumere riavvio autorizzato, senza rigenerarestore o rileggere credenziali. Nessun nuovo comando pronto. Proseguire autonomamente sorgenti finché utente essenziale. Ancora13fasi/worker distinto/rete/TLS/IAM/DB/fencing/boot/rotazione/E2E OPEN;no finestra/tokenanticipati, authoritystorica, bypass/merge/acceptance/subagenti/automazioni. Header successivi STORICI.
+
+# HISTORICAL — unica lettura provider-reconciliation qualificata; operatore necessario
 
 29 ottobre2026. [Handoff corrente e comando](docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md), [qualifica](evidence/m2-provider-reconciliation-qualified-20261029.json). Nuovo scope m2-provider-reconciliation-960507a9-20261029-v1 NON ESEGUITO. Fontecd3eb87c…,capsule2248132… SHAa3dc3693…/81813byte/cinque moduli, wrapper4dcbdc9… SHA36895e6d….14test perpush/PR, Docker29.8.1 reale/13core+provider, API1.44 e negoziata1.56, deriveconfig/statofermato/processoassente rilevati senzaammissione, storealterato/predecessorediverso rifiutati primadiEngine. Quattro job HTTPS/nonroot/sudo/root0400/log/scope antiReplay PASS;139regressioni perpush/PR;logletti. Vecchi capsule consumati5e93/3f21 byte-esatti.
 
