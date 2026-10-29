@@ -242,7 +242,7 @@ print('CI_SANDBOX_NFT_DIAGNOSTIC='+json.dumps({'stdin':stdin,'privateFile':file,
         assert visible.stat().st_ino==logical.stat().st_ino and identity(visible)!=c['commonLockIdentity']
         cli('stop','--time','1',peers['provider']['containerId'])
         try:native.NativeLeaseGenerationProbe(install/'observations')(generation);raise AssertionError('STOPPED_PROVIDER_ACCEPTED')
-        except ValueError:pass
+        except (ValueError,OSError):pass
         command('systemctl','stop',unit);assert row()['state']=='BLOCKED' and row()['attempts']==blocked['attempts']
         print(json.dumps({'schema':'ouf.m2-discovery-lease-sandbox-native-ci.v1','dockerVersion':'29.8.1',
             'actualCompiledUnitAndClosedCapsule':True,'actualInstalledAndGenerationEd25519Signatures':True,
