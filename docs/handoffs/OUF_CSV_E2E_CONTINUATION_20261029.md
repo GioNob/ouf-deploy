@@ -1,10 +1,15 @@
-# CSV → UDP → search: continuazione del 29 ottobre 2026
+# Caricamento CSV → UDP e capabilities sugli oggetti caricati
 
 ## Obiettivo confermato dall’owner
 
 Il percorso ordinario deve essere integralmente governato da chatbot tramite le
 capability OUF: upload CSV, profiling, proposta semantica e mapping, review HUMAN,
-onboarding, Ingestion, materializzazione UDP e ricerca autorizzata dei risultati.
+onboarding, Ingestion e materializzazione UDP con esiti verificabili per ogni riga.
+Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati.
+Search non è una fase del caricamento: è una capability UDP da qualificare nel
+suo perimetro, separatamente dalla sequenza di ingestion. Il completamento del
+caricamento non dipende dall’invocazione di search; un diniego o guasto della
+consultazione non annulla gli oggetti persistiti e non riavvia l’acquisizione.
 Deve essere ripetibile, resiliente e fluido. Installazione/manutenzione sono un
 percorso operatore distinto, da non ripetere a ogni caricamento.
 
@@ -94,20 +99,52 @@ Il futuro controller deve comporre esplicitamente anche lo scope della propria
 installazione: create/start non possono essere nascosti dentro questo reader.
 L’issuer è finito e iniziale; boot, rotazione e rinnovo ordinario restano separati.
 
+## Continuazione: un’unica fase iniziale del worker
+
+La fase ATTEST → FILES → REGISTER → START ha ora scope parent unico, claim e
+dispatch persistenti per ogni sottopasso. Registrazione manager create-only e un
+solo daemon-reload; avvio singolo separato. Una risposta persa viene riconciliata
+senza rieseguire il comando. La continuazione esplicita può invocare solo un
+sottopasso mai tentato; un effetto parziale/ambiguo blocca il resto. Ogni commit
+richiede rilettura esatta, ogni dispatch ricontrolla il proprio record e la stessa
+invocazione rifiuta una regressione rispetto al suo ultimo stato conservato.
+
+Lo start richiede le tre prove iniziali; il suo hash coincide con quello
+conservato nel NativeEvidenceStore. Dopo l’avvio, l’osservazione mantiene la prova
+iniziale e legge il worker corrente senza pretendere il ledger iniziale o
+ripristinarlo. Gli osservatori read-only verificano l’inode del lock senza
+acquisirne il flock di durata del worker; le mutazioni conservano il fence esclusivo.
+
+CI del sorgente finale:287 test/33 suite per push e PR, zero skip; entrambi
+SUCCESS, log completi letti. La prova nativa esercita davvero issuer/Ed25519,
+publisher, registrazione, systemd,
+Docker29.8.1, DNS/nft, risposta start persa, SIGKILL/rientro e revoca della trust.
+Il seed manuale inutilizzato è conservato prima dell’installazione in destinazioni
+nuove. I contratti di ammissione applicativa Registry/provider del fixture restano
+sintetici: non equivale a provider ammesso sul target, installer completo o E2E.
+[Qualifica e limiti](../../evidence/m2-discovery-worker-sequence-qualified-20261029.json).
+
+Il contratto runtime effettivo del provider non è negli input storici e non è
+accessibile via MCP. È pronta la [sola lettura target qualificata](OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md),
+con quattro GET Engine e metadata selezionati, senza chiavi/credenziali/lifecycle.
+Il comando monouso è il solo intervento indispensabile all’owner; dopo l’esito si
+prosegue sul provider child. Non è un nuovo passo del caricamento CSV.
+
 ## Residuo, in ordine di dipendenza
 
 - Comporre e qualificare nativamente il nuovo provider nella finestra gate-only,
   il suo percorso reale di ammissione/consumo e la ripausa prima di Registry ATTEST.
   Collegare quelle prove reali al nuovo issuer; nessun vecchio provider o mandato
   scaduto può sostituirle.
-- Completare coordinatore/installazione: registrazione/reload unità manager,
-  transazione+start singolo,13peer/TLS/IAM/DB/fencing/trust, boot/rotazione con
-  continuità di budget e storia. Nessun nuovo comando operatore pronto.
+- Completare il coordinatore/installazione attorno alla fase worker ora qualificata:
+  13peer/TLS/IAM/DB/fencing/trust, boot/rotazione con continuità di budget e storia.
+  Il solo comando corrente è la lettura metadata del provider nel handoff dedicato.
 - Installazione governata e pubblicazione coordinata delle capability, grant
   di uso ordinario e rinnovi persistenti; verificare tutti8 M2-DISC-STABLE.
 - Eseguire la vera discovery OntoPiA, confronto/adozione/pubblicazione approvati,
   mapping pinned del CSV, Ingestion/UDP con contabilizzazione di ogni riga,
-  search tipizzata e provenienza.
+  provenienza ed esiti per riga. Qualificare separatamente le capabilities UDP
+  sugli oggetti caricati, compresa la ricerca tipizzata prevista dai contratti.
 - Completare vocaboli/relazioni managed, reimport invariato senza duplicati,
   fault/ripresa/cambio chat, due client reali e dossier HUMAN M2.
 

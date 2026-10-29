@@ -1,6 +1,8 @@
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
 > Delta successivo: issuer finito e reader di ammissione provider nel [checkpoint corrente](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio o requisito rimosso; M2/G5–G7 restano OPEN.
 
-> Aggiornamento del 29 ottobre: [continuazione CSV→UDP→search](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
+> Aggiornamento del 29 ottobre: [continuazione CSV→UDP e capabilities UDP](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
 
 > **Stato aggiornato29ottobre:** [checkpoint di ripresa verificato](handoffs/OUF_CHAT_RECOVERY_20261029.md). Farmacie profiling SUCCEEDED e preview61righe/10colonne già acquisiti; chiave ministeriale STRING e10campi OPEN confermati. Le descrizioni FAILED/causa ignota nelle sezioni di audit sotto sono la baseline storica del26ottobre. Il residuo corrente è discovery governata/stabile e completamento M2; nessun nuovo profiling richiesto. Requisiti e denominatori di accettazione restano invariati.
 
@@ -100,7 +102,24 @@ Il presente piano autorizza zero effetti runtime, acquisizioni, nuovi grant o pu
 | Revisione | Mostra riepilogo unico degli effetti; riusa scelte già confermate finché valide; collega la review giusta | Approva/rifiuta nel Trusted Approval Workspace | Decisione vincolata alla versione corrente |
 | Esecuzione | Pubblica/ammette esclusivamente gli effetti approvati, segue Ingestion e UDP, conserva il contesto se la chat termina | Può allontanarsi e tornare senza copiare identificativi | Stato owner durevole e progresso verificabile |
 | Eccezioni | Raccoglie le righe ambigue e spiega causa/opzioni/effetti; recupera automaticamente solo i transitori ammessi | Decide sui casi che richiedono realmente giudizio o nuova autorità | Decisione consumata una volta; resto del lavoro conservato |
-| Risultato | Riepiloga tutte le righe, mostra oggetti/variazioni/provenienza e capacità di ricerca disponibili | Consulta e verifica il risultato | Materializzazione owner, non solo ACK o container ready |
+| Risultato | Riepiloga tutte le righe e mostra oggetti/variazioni/provenienza; rende disponibili le capabilities UDP sugli oggetti caricati | Consulta e verifica il risultato | Materializzazione owner, non solo ACK o container ready |
+
+Il completamento del caricamento si basa sulla materializzazione UDP e sugli
+esiti delle righe. Non richiede una chiamata search. Un guasto o diniego di una
+capability di consultazione ha stato ed esito propri: non annulla gli oggetti
+caricati e non provoca una nuova acquisizione implicita.
+
+La qualifica delle capabilities sugli oggetti caricati è distinta dal caricamento:
+
+| Capability già prevista | Verifica sugli oggetti UDP caricati |
+| --- | --- |
+| `urban.object.search` | Tipo canonico esatto, oggetti e proprietà autorizzati, cursore opaco e parzialità dichiarata |
+| `urban.object.related_search` | Anchor noto e relazione ammessa; solo oggetti/relazioni autorizzati, senza query arbitrarie |
+| `urban.acquisition.read` | Fonte/run esatti, intake e materializzazione distinti, provenienza autorizzata e minimizzata |
+
+Questa allocazione concretizza M2-UX-07 e le prove CSV-AT-14/18/20 pertinenti;
+non aggiunge una fase, un’API o un nuovo denominatore. Presenza del tool nel
+catalogo e salute MCP non sono prove di riuscita su questi oggetti.
 
 Le fasi sono un modello di presentazione. Non impongono nuovi enum o un motore di workflow parallelo. Autoguidato significa che il backend procede entro l'intento già autorizzato e il client propone il prossimo passo valido. Non significa che la chat esegua in background dopo la sua chiusura o che il modello approvi al posto dell'utente.
 
@@ -116,7 +135,7 @@ Per una fonte senza ambiguità: una selezione del file, una proposta consolidata
 | M2-UX-04 | Link THS verificato per la decisione esatta, login e ritorno preservano contesto; telefono/desktop, scadenza e versione obsoleta hanno recupero comprensibile | 2,6 |
 | M2-UX-05 | Nuova chat ritrova il lavoro dagli owner con accessi correnti; nessuna dipendenza da memoria del modello o receipt browser scaduta; più lavori richiedono selezione breve | 2,5,6 |
 | M2-UX-06 | Ogni riga è contabilizzata; nessun «completato» con righe invisibili, in attesa, redatte senza copertura dichiarata o solo ACK ricevuto | 4,6 |
-| M2-UX-07 | Oggetti ritrovabili con la ricerca tipizzata disponibile; pagine/cursori/parzialità dichiarati, zero accessi a proprietà o conteggi non autorizzati | 4,6 |
+| M2-UX-07 | Capabilities UDP utilizzabili sugli oggetti caricati come qualifica distinta dal caricamento; pagine/cursori/parzialità dichiarati, zero accessi a proprietà o conteggi non autorizzati | 4,6 |
 | M2-UX-08 | Attesa mostra ultimo stato osservato e prossimo controllo previsto; errore non transitorio non entra in loop. Guasto di una dipendenza non genera un incidente per ogni riga | 1,2,5 |
 
 Nel collaudo si registrano azioni umane, round-trip THS, richieste di chiarimento, tempo attivo dell'utente, attese e interventi operatore. I criteri a zero sopra sono bloccanti. Tempi di profilazione/import e p50/p95 si misurano sul profilo finale; non si inventa oggi uno SLA. Soglie prestazionali contrattuali esistenti restano obbligatorie.
@@ -204,7 +223,7 @@ I sei WP sono contenitori di verifica e dei soli delta residui, non sei componen
 1. Attraverso le decisioni HUMAN pertinenti, pubblicare la configurazione esatta e ammettere una sola acquisizione Farmacie prevista. Nessuna acquisizione di prova nascosta dentro il profiling o una pubblicazione.
 2. Verificare run/bundle/pubblicazione e la catena riga → handoff → ACK durevole → intake → materializzazione → oggetto/revisione/provenienza. ACK e commit restano distinti.
 3. Riusare le suite identity/properties già verificate nell'audit e provare soltanto i casi mancanti o impattati della composizione finale: MATCH/NEW/REVIEW e due fonti distinte sullo stesso oggetto; contributi complementari, autorità, equivalenza, null/vuoto, conflitto, multivalore e cancellazione esplicita. La priorità è decisa dalla policy, non dal chatbot.
-4. Presentare resoconto completo, righe da decidere e collegamenti autorizzati. Verificare la ricerca tipizzata per ritrovare gli oggetti e la relazione semplice senza query arbitrarie o risultati troncati spacciati per completi.
+4. Presentare resoconto completo, righe da decidere e collegamenti autorizzati. Qualificare separatamente le capabilities UDP sugli oggetti caricati e sulla relazione semplice, senza query arbitrarie o risultati troncati spacciati per completi.
 
 **Output:** primo dossier Farmacie e test UDP; confronto con expected fissati prima dell'esecuzione. **Checkpoint M2.3:** Farmacie arrivato a UDP con tutte le righe rendicontate. Non è ancora M2: mancano ripetibilità, fault e prova completa sui due client.
 
@@ -307,7 +326,7 @@ Per ciascuno si eseguono tutte le precondizioni, i passi e le asserzioni del cat
 
 Ogni evidenza riporta requisito/test, scenario canonico quando applicabile, timestamp, ambiente, input/expected/hash, commit, immagini reali, profilo/contratti/pubblicazioni, assertion PASS/FAIL/BLOCKED, artifact, correlation e limiti. Per runtime aggiunge riferimenti decisione/authority/claim e postcondizioni, mai credenziali. Gli E2E usano il formato evidence-record-v1 della baseline.
 
-**Done M2:** CSV nuovo attraversa davvero chat → upload → semantica/review → Ingestion → UDP → consultazione; stessa configurazione invariata non duplica; errori/attese e ripresa sono gestiti; due client qualificati; tutte le righe e gli effetti spiegabili; nessun passo ordinario richiede terminale o intervento tecnico; G5/G6/G7 PASS e decisione finale HUMAN registrata. Una deroga a un obbligo richiede cambio esplicito del perimetro, non una nota che lo trasformi in PASS.
+**Done M2:** CSV nuovo attraversa davvero chat → upload → semantica/review → Ingestion → UDP; le capabilities UDP sono utilizzabili sugli oggetti caricati, con qualifica distinta dal flusso; stessa configurazione invariata non duplica; errori/attese e ripresa sono gestiti; due client qualificati; tutte le righe e gli effetti spiegabili; nessun passo ordinario richiede terminale o intervento tecnico; G5/G6/G7 PASS e decisione finale HUMAN registrata. Una deroga a un obbligo richiede cambio esplicito del perimetro, non una nota che lo trasformi in PASS.
 
 ## 11. Stima ritirata e metodo di ristima
 
@@ -347,7 +366,7 @@ Sviluppo, documentazione e GitHub proseguono nel mandato esistente. La pubblicaz
 
 STOP conserva prove e contatori; prima riconciliare l'effetto ambiguo, mai ripetere il wrapper consumato. Nessuna reinstallazione/riavvio Registry, reset, attivazione tecnica implicita, merge o release acceptance. Non cambiare classificazioni per aggirare una redazione. Autorizzazione a leggere repository e capability non equivale a grant runtime corrente.
 
-Deliverable finali: coorte/delta con pin; profilo CSV e fixture; percorso chat/THS e recovery; dossier per riga e ricerca minima; matrice test/canonici; guida utente breve; runbook operativo separato; consuntivo e registro residui. I file originali, dati e log privati non si pubblicano in GitHub.
+Deliverable finali: coorte/delta con pin; profilo CSV e fixture; percorso chat/THS e recovery; dossier per riga e qualifica delle capabilities UDP sugli oggetti caricati; matrice test/canonici; guida utente breve; runbook operativo separato; consuntivo e registro residui. I file originali, dati e log privati non si pubblicano in GitHub.
 
 ## 14. Primo tratto operativo
 

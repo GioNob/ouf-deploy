@@ -1,6 +1,8 @@
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
 > Delta issuer/provider reader: [stato e limiti](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). La qualifica sorgente non chiude nessuno degli8criteri stabili.
 
-> Aggiornamento del 29 ottobre: [continuazione CSV→UDP→search](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
+> Aggiornamento del 29 ottobre: [continuazione CSV→UDP e capabilities UDP](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
 
 # M2 — Requisito vincolante: discovery stabilmente operativa
 
@@ -44,3 +46,15 @@ Dopo le evidenze correnti: qualificare la coorte applicativa e la configurazione
 ## Checkpoint corrente dopo la ripresa del29ottobre
 
 La lettura PR52 e le successive preparazioni sono storiche; non riconsegnarne il comando. Gli ultimi input target1868 sono riusciti e consumati, provider fermo nella ricevuta conservata. [Ripresa, riferimenti e prossimo incremento](handoffs/OUF_CHAT_RECOVERY_20261029.md): PR54 qualifica gate-only e start singolo di un worker già installato e firmato; transazione byte/ledger e nuova ammissione provider restano da completare. Nessun nuovo comando operatore pronto, installazione o authority target provata. Tutti gli otto criteri rimangono OPEN.
+
+
+## Delta corrente: fase worker composta
+
+Attestazioni/publicazione/registrazione manager/start unico sono ora composti e
+qualificati con Docker29.8.1/systemd/DNS/nft reali, conservando la storia cumulativa.
+L’ammissione applicativa del provider nei fixture rimane sintetica; nessun criterio
+M2-DISC-STABLE è chiuso. Prima del provider child effettivo serve la sola
+[lettura del contratto runtime corrente](handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md),
+non disponibile tramite MCP. È manutenzione una tantum; non entra nel caricamento
+ordinario né sostituisce le capabilities. Input1868 e tutti i vecchi scope restano
+consumati. Il dettaglio del residuo vive nella continuazione corrente.

@@ -1,6 +1,10 @@
-Aggiornamento corrente: [issuer e percorso CSV→UDP→search](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md), Deploy54/f2dfa9c2.15nuovi+72regressioni locali; installazione nativa completa e M2 ancora aperti.
+> **Checkpoint corrente — worker composto e qualificato nativamente:** attestazioni, pubblicazione create-only, registrazione manager e start unico; nessuna ammissione provider target inferita. [Stato CSV→UDP e capabilities UDP](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Il solo prerequisito target non accessibile via MCP è ora una [lettura circoscritta del contratto runtime provider](docs/handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md), qualificata e con comando immutabile. Tutti i comandi dei checkpoint precedenti sono storici; non rilanciarli. M2 resta OPEN.
 
-Ripresa corrente: [CSV → UDP → search, 29 ottobre](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Componente file installer su Deploy54/cb6f2da6,72test locali; E2E e ammissione target ancora aperti.
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
+Aggiornamento corrente: [issuer e percorso CSV→UDP e capabilities UDP](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md), Deploy54/f2dfa9c2.15nuovi+72regressioni locali; installazione nativa completa e M2 ancora aperti.
+
+Ripresa corrente: [CSV → UDP e capabilities UDP, 29 ottobre](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Componente file installer su Deploy54/cb6f2da6,72test locali; E2E e ammissione target ancora aperti.
 
 > **29 ottobre — punto di ripresa corrente:** [stato verificato, rami attivi e prossimo incremento](docs/handoffs/OUF_CHAT_RECOVERY_20261029.md). Il lavoro successivo al14ottobre è nei rami PR50/54, non nel `main` fermo a quella data. Farmacie profiling/preview completati; M1/G4 acquisiti, M2/discovery stabile/E2E aperti. Il worker ha start singolo qualificato ma manca l’installer byte/ledger; nessun nuovo comando VPS pronto. Le istruzioni datate sotto sono storiche e non autorizzano replay.
 

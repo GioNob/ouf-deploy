@@ -1,3 +1,36 @@
+# CURRENT — CSV→UDP, capabilities UDP distinte; worker iniziale qualificato nativamente
+
+29 ottobre 2026. Il flusso ordinario termina con oggetti UDP ed esiti per riga;
+le capabilities UDP devono essere utilizzabili via chatbot su quegli oggetti.
+Search non è una fase di caricamento. Discovery Registry/OntoPiA resta necessaria
+al mapping governato. M1/G4 conservati; M2/G5–G7,24AT,8UX,8criteri stabili e due
+client reali ancora nel denominatore, senza accettazione E2E implicita.
+
+PR54 compone ATTEST→FILES→REGISTER→START: tre firme finite, pubblicazione
+create-only, un reload manager, uno start, claim/dispatch durabili, nessun replay
+di azioni tentate; continuazione esplicita dei soli sottopassi non tentati.
+Osservazione con worker attivo senza acquisirne il flock di durata o ripristinare
+i ledger iniziali. CI287test/33suite per push/PR PASS/0skip; prove native effettive
+Docker29.8.1/systemd/DNS/nft e issuer/publisher/registrazione/start PASS.
+Ammissioni applicative del provider/Registry dei fixture restano sintetiche;
+nessun provider target creato o ammesso, nessun gate M2 chiuso.
+[Stato e qualifica](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+
+NEXT indispensabile: [lettura corrente del contratto runtime provider](docs/handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md).
+Nuovo scope monouso,4GET Engine/18letture metadata/90s/16MiB; nessuna chiave o
+credenziale, lifecycle, runtime authority, SQL/IAM/OAuth o modifica applicativa.
+16test protocollo e4job delivery PASS,6log letti. Solo SSHoufadmin può eseguirla:
+nessun tool agente ha accesso privilegiato ai metadati target necessari.
+Il comando immutabile del nuovo handoff è l’unico corrente; dopo STOP non ripetere.
+Input1868 e tutti i predecessori restano consumati. Nessun nuovo upload/profiling,
+job/acquisizione, budget/grant, merge, subagente o automazione. Farmacie stesso
+profilo61righe/10colonne, codice ministerialeSTRING e10campiOPEN già confermati.
+Proseguire autonomamente dopo l’esito; chiedere intervento solo se indispensabile.
+Tutti i CURRENT e i comandi successivi sono storici per la scelta del prossimo passo;
+le invarianti generali rimangono vincolanti.
+
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
 # CURRENT — issuer finito del worker composto con ammissione provider conservata
 
 29 ottobre 2026. Deploy54 sourcef2dfa9c2: reader del protocollo deployment firmato,
