@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Finish exact-image full seven-mount rootfs qualification, then complete coordinated preparation and real native installation integration. Do not replay consumed readers, request fresh tokens early, or claim E2E from CI.",
+  "next": "Complete coordinated native preparation and executable thirteen-phase installation integration, including distinct worker, current IAM+provider public trust/network/DB/cohort and fencing. No current operator command; consumed scopes stay closed.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -516,9 +516,9 @@
     },
     "qualification": {
       "selected": {
-        "source": "fc6af59d96ed974c73dba29f53b77dcb8ac3ce47",
-        "run": 40854229009,
-        "job": 123381048153,
+        "source": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+        "run": 40856360971,
+        "job": 123388212143,
         "tests": 114,
         "skips": 0,
         "conclusion": "success",
@@ -574,20 +574,44 @@
       ]
     },
     "rootfs": {
-      "status": "SOURCE_FIX_SUBMITTED_NOT_YET_QUALIFIED",
-      "firstRun": 40856064980,
-      "firstJob": 123387229694,
-      "firstConclusion": "failure",
-      "failure": "Docker29 containerd image identity is a native manifest, not the original configuration image digest.",
-      "fixSource": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
-      "qualifiedPrimitive": "tools/semantic_application_cutover/image_custody.py",
-      "newPrimitiveIntroduced": false,
-      "exactConfigAndLayerBytesPreserved": true,
+      "status": "EXACT_IMAGE_FULL_DISCOVERY_ROOTFS_QUALIFIED_IN_DISPOSABLE_CI",
+      "source": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+      "run": 40856349702,
+      "job": 123388174354,
+      "conclusion": "success",
+      "logRead": true,
+      "artifactId": 12889536924,
+      "artifactZipSha256": "d5fd0fd34aa6573e1752ad82b16b0eef580e73613c43d8ab57f831150698607c",
+      "resultSha256": "23ef01af49ddd01517ad586a73d02d8963d5f443179d9df03b6e3be654ed1bee",
+      "zipAndStatementSubjectVerifiedLocally": true,
+      "resultSignedByHostedWorkflow": true,
+      "newRootfsSignatureCryptographicallyReverifiedLocally": false,
+      "originalImagePublisherCryptographicallyVerifiedInHostedCi": true,
+      "configurationImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+      "nativeImageId": "sha256:a6d25bdc1765452554ea950316d5e7419a8960dc6b7dfbc35d6e5c0ec50ddb8e",
+      "rootfsSeal": {
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "84c8dfa8124f9f991a79d7a64f74413b0047b1fa9d726084b5122522e87e1ee4",
+        "entries": 9302,
+        "bytes": 1719686972
+      },
+      "mountTargets": [
+        "/run/ouf/delegation.key",
+        "/run/ouf/proposal.key",
+        "/run/secrets/schema-gov-client-secret",
+        "/run/secrets/semantic-discovery-owner.key",
+        "/run/ouf/provider-trust.p12",
+        "/run/ouf/database",
+        "/run/ouf/policy"
+      ],
+      "noRootfsExclusions": true,
       "syntheticPrivateInputs": true,
+      "javaStarted": false,
       "targetMountSelectionApproved": false,
-      "latestCiPending": true
+      "nativePublisherTrustAccepted": false,
+      "firstFailedRunPreserved": 40856064980
     },
-    "next": "Finish exact-image full seven-mount rootfs qualification, then complete coordinated preparation and real native installation integration. Do not replay consumed readers, request fresh tokens early, or claim E2E from CI.",
+    "next": "Complete coordinated native preparation and executable thirteen-phase installation integration, including distinct worker, current IAM+provider public trust/network/DB/cohort and fencing. No current operator command; consumed scopes stay closed.",
     "currentOperatorCommandReady": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,

@@ -1,0 +1,225 @@
+{
+  "schema": "ouf.m2-discovery-registry-rootfs-qualification-evidence.v1",
+  "status": "EXACT_IMAGE_FULL_DISCOVERY_ROOTFS_QUALIFIED_IN_DISPOSABLE_CI",
+  "source": "12ec4870a8febcebfa96a06ef43b233570e2dfc3",
+  "run": 40856349702,
+  "job": 123388174354,
+  "conclusion": "success",
+  "logRead": true,
+  "artifactId": 12889536924,
+  "artifactZipSha256": "d5fd0fd34aa6573e1752ad82b16b0eef580e73613c43d8ab57f831150698607c",
+  "resultSha256": "23ef01af49ddd01517ad586a73d02d8963d5f443179d9df03b6e3be654ed1bee",
+  "zipAndStatementSubjectVerifiedLocally": true,
+  "resultSignedByHostedWorkflow": true,
+  "newRootfsSignatureCryptographicallyReverifiedLocally": false,
+  "originalImagePublisherCryptographicallyVerifiedInHostedCi": true,
+  "configurationImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+  "nativeImageId": "sha256:a6d25bdc1765452554ea950316d5e7419a8960dc6b7dfbc35d6e5c0ec50ddb8e",
+  "rootfsSeal": {
+    "schema": "ouf.semantic-rootfs-seal.v1",
+    "sha256": "84c8dfa8124f9f991a79d7a64f74413b0047b1fa9d726084b5122522e87e1ee4",
+    "entries": 9302,
+    "bytes": 1719686972
+  },
+  "mountTargets": [
+    "/run/ouf/delegation.key",
+    "/run/ouf/proposal.key",
+    "/run/secrets/schema-gov-client-secret",
+    "/run/secrets/semantic-discovery-owner.key",
+    "/run/ouf/provider-trust.p12",
+    "/run/ouf/database",
+    "/run/ouf/policy"
+  ],
+  "noRootfsExclusions": true,
+  "syntheticPrivateInputs": true,
+  "javaStarted": false,
+  "targetMountSelectionApproved": false,
+  "nativePublisherTrustAccepted": false,
+  "firstFailedRunPreserved": 40856064980,
+  "ciResult": {
+    "schema": "ouf.m2-discovery-registry-image-rootfs-ci.v1",
+    "engine": {
+      "serverVersion": "29.8.1",
+      "storageDriver": "overlayfs",
+      "cgroupDriver": "systemd",
+      "backend": "containerd-overlayfs"
+    },
+    "fullIndependentOciMatched": true,
+    "fiveNativeReadonlyFilesObserved": true,
+    "databaseConfigtreeNativeObserved": true,
+    "javaStarted": false,
+    "syntheticImageAndPrivateInputs": false,
+    "tokenOwnerAdmissionProven": false,
+    "providerTlsOrIamProven": false,
+    "signaturesIssued": 0,
+    "targetAcceptance": false,
+    "applicationE2EProven": false,
+    "imageId": "sha256:a6d25bdc1765452554ea950316d5e7419a8960dc6b7dfbc35d6e5c0ec50ddb8e",
+    "configurationImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+    "imageAudit": {
+      "schema": "ouf.image-archive-byte-custody.v1",
+      "imageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+      "sourceCommit": "4f8fb581916075a539bda4428be7bd8af073a569",
+      "archiveSha256": "4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c",
+      "configSha256": "a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+      "configBytes": 10312,
+      "layers": [
+        {
+          "blobSha256": "5cac300e390e2fd748b258618f403b7813229929ad6de903b0c52a210a930824",
+          "diffId": "sha256:5cac300e390e2fd748b258618f403b7813229929ad6de903b0c52a210a930824",
+          "archiveBytes": 112998400,
+          "expandedBytes": 112998400
+        },
+        {
+          "blobSha256": "5f4be2c3badedfd7149d008a4902427c98e708c70031dc19b4264160a545df19",
+          "diffId": "sha256:5f4be2c3badedfd7149d008a4902427c98e708c70031dc19b4264160a545df19",
+          "archiveBytes": 10240,
+          "expandedBytes": 10240
+        },
+        {
+          "blobSha256": "0b7fc218e8c7413269826424615130cd995545ce821f126a5ec5f4160b70edbb",
+          "diffId": "sha256:0b7fc218e8c7413269826424615130cd995545ce821f126a5ec5f4160b70edbb",
+          "archiveBytes": 54311424,
+          "expandedBytes": 54311424
+        },
+        {
+          "blobSha256": "5561f48e67c552cf14a45ab4e08f4fbe21a3ed710e2df8946064e8c4325d036a",
+          "diffId": "sha256:5561f48e67c552cf14a45ab4e08f4fbe21a3ed710e2df8946064e8c4325d036a",
+          "archiveBytes": 165497856,
+          "expandedBytes": 165497856
+        },
+        {
+          "blobSha256": "5273bde33e672cc8c0ef761974f5c80d0016e7e7c72f47d8e08b4b1fda745a17",
+          "diffId": "sha256:5273bde33e672cc8c0ef761974f5c80d0016e7e7c72f47d8e08b4b1fda745a17",
+          "archiveBytes": 2560,
+          "expandedBytes": 2560
+        },
+        {
+          "blobSha256": "b6668592ab18795adf1821670f88274b5ab17e15956b53f14b54d82f404ea30e",
+          "diffId": "sha256:b6668592ab18795adf1821670f88274b5ab17e15956b53f14b54d82f404ea30e",
+          "archiveBytes": 7680,
+          "expandedBytes": 7680
+        },
+        {
+          "blobSha256": "ec97db4841e705f8f9898a026ad5180455ff47987f2560ad0347739fa01e99ae",
+          "diffId": "sha256:ec97db4841e705f8f9898a026ad5180455ff47987f2560ad0347739fa01e99ae",
+          "archiveBytes": 11776,
+          "expandedBytes": 11776
+        },
+        {
+          "blobSha256": "37e4fb84c752b59836d3a9b592d3907b878fbf3b5aa2cd3691edd90a37a6ddf8",
+          "diffId": "sha256:37e4fb84c752b59836d3a9b592d3907b878fbf3b5aa2cd3691edd90a37a6ddf8",
+          "archiveBytes": 2560,
+          "expandedBytes": 2560
+        },
+        {
+          "blobSha256": "c4f2c2d32cf2f7e6e81d73b081ee3172ae743ad8d08490f833e61796e85b8172",
+          "diffId": "sha256:c4f2c2d32cf2f7e6e81d73b081ee3172ae743ad8d08490f833e61796e85b8172",
+          "archiveBytes": 1536,
+          "expandedBytes": 1536
+        },
+        {
+          "blobSha256": "dd2a3e06976836da520cb6a9092093da7fc24087de7eae6225dc1ffaa1bed109",
+          "diffId": "sha256:dd2a3e06976836da520cb6a9092093da7fc24087de7eae6225dc1ffaa1bed109",
+          "archiveBytes": 49790464,
+          "expandedBytes": 49790464
+        }
+      ],
+      "platform": "linux/amd64",
+      "repositoryTags": [
+        "ouf-cohort-semantic:4f8fb581916075a539bda4428be7bd8af073a569"
+      ],
+      "imageConfig": {
+        "User": "10001:10001",
+        "ExposedPorts": {
+          "8080/tcp": {}
+        },
+        "Env": [
+          "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "JAVA_HOME=/opt/java/openjdk",
+          "LANG=en_US.UTF-8",
+          "LANGUAGE=en_US:en",
+          "LC_ALL=en_US.UTF-8",
+          "JAVA_VERSION=jdk-21.0.12.1+1"
+        ],
+        "Entrypoint": [
+          "java",
+          "-XX:MaxRAMPercentage=75",
+          "-jar",
+          "/app/application.jar"
+        ],
+        "WorkingDir": "/app",
+        "Labels": {
+          "org.opencontainers.image.created": "2026-10-25T10:26:07.538865+00:00",
+          "org.opencontainers.image.description": "The Ubuntu container image maintained by Canonical\n\nUbuntu is a Debian-based Linux operating system that runs from the desktop to the cloud, to all your internet connected things.\nIt is the world's most popular operating system across public clouds and OpenStack clouds.\nIt is the number one platform for containers; from Docker to Kubernetes to LXD, Ubuntu can run your containers at scale.\nFast, secure and simple, Ubuntu powers millions of PCs worldwide.\n",
+          "org.opencontainers.image.revision": "4f8fb581916075a539bda4428be7bd8af073a569",
+          "org.opencontainers.image.title": "ubuntu",
+          "org.opencontainers.image.version": "26.04"
+        }
+      },
+      "configMember": "blobs/sha256/a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+      "layerMembers": [
+        "blobs/sha256/5cac300e390e2fd748b258618f403b7813229929ad6de903b0c52a210a930824",
+        "blobs/sha256/5f4be2c3badedfd7149d008a4902427c98e708c70031dc19b4264160a545df19",
+        "blobs/sha256/0b7fc218e8c7413269826424615130cd995545ce821f126a5ec5f4160b70edbb",
+        "blobs/sha256/5561f48e67c552cf14a45ab4e08f4fbe21a3ed710e2df8946064e8c4325d036a",
+        "blobs/sha256/5273bde33e672cc8c0ef761974f5c80d0016e7e7c72f47d8e08b4b1fda745a17",
+        "blobs/sha256/b6668592ab18795adf1821670f88274b5ab17e15956b53f14b54d82f404ea30e",
+        "blobs/sha256/ec97db4841e705f8f9898a026ad5180455ff47987f2560ad0347739fa01e99ae",
+        "blobs/sha256/37e4fb84c752b59836d3a9b592d3907b878fbf3b5aa2cd3691edd90a37a6ddf8",
+        "blobs/sha256/c4f2c2d32cf2f7e6e81d73b081ee3172ae743ad8d08490f833e61796e85b8172",
+        "blobs/sha256/dd2a3e06976836da520cb6a9092093da7fc24087de7eae6225dc1ffaa1bed109"
+      ],
+      "archiveByteCustodyProven": true,
+      "targetApplyAuthorized": false,
+      "nativeIdentity": {
+        "profile": "ouf.config-and-native-manifest-identity.v1",
+        "configurationImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+        "nativeImageId": "sha256:a6d25bdc1765452554ea950316d5e7419a8960dc6b7dfbc35d6e5c0ec50ddb8e",
+        "manifestBytes": 1845,
+        "platform": "linux/amd64"
+      }
+    },
+    "derivedEnvelope": {
+      "originalArchiveSha256": "4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c",
+      "derivedArchiveSha256": "33780cec2b716db440360dfaefc0932110ee7ff2c335d34deb5b79802e30733b",
+      "archiveBytes": 382658560,
+      "imageRebuilt": false,
+      "newSignatureIssued": false
+    },
+    "sourceCommit": "4f8fb581916075a539bda4428be7bd8af073a569",
+    "packageRecordHash": "fb49890ba3f99bd40aeb51b8aa87ff941177f1cb8d7a433e15cfe8b3ba0dedbb",
+    "rootfsSeal": {
+      "schema": "ouf.semantic-rootfs-seal.v1",
+      "sha256": "84c8dfa8124f9f991a79d7a64f74413b0047b1fa9d726084b5122522e87e1ee4",
+      "entries": 9302,
+      "bytes": 1719686972
+    },
+    "limits": {
+      "maxEntries": 100000,
+      "maxBytes": 8589934592,
+      "maxDepth": 64
+    },
+    "mountTargets": [
+      "/run/ouf/delegation.key",
+      "/run/ouf/proposal.key",
+      "/run/secrets/schema-gov-client-secret",
+      "/run/secrets/semantic-discovery-owner.key",
+      "/run/ouf/provider-trust.p12",
+      "/run/ouf/database",
+      "/run/ouf/policy"
+    ],
+    "exactCandidateImageUsed": true,
+    "syntheticPrivateInputs": true,
+    "derivation": "DOCKER29_CONTAINERD_OVERLAYFS_PAUSED_FULL_DISCOVERY_GATE",
+    "runtimeAuthorityIssued": false,
+    "nativePublisherTrustAccepted": false,
+    "targetApplyAuthorized": false,
+    "rootfsSealHasExclusions": false,
+    "targetMountSelectionApproved": false
+  },
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}
