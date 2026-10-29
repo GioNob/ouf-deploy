@@ -115,8 +115,8 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Integrate full thirteen-phase execution, distinct provider lease worker and coordinated current native preparation. No reexecution of consumed material scope; no early IAM/OAuth grant.",
-  "currentOperatorCommandReady": false,
+  "next": "Execute the single qualified bounded public trust/current native context preparation once as oufadmin over interactive SSH; sanitized JSON/footer required. The connector has no VPS filesystem executor. No consumed scope replay, early IAM/OAuth window or application apply.",
+  "currentOperatorCommandReady": true,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
@@ -257,5 +257,19 @@
     "java21TwoIssuerTlsAndOutsiderDenialQualified": true,
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
+  },
+  "discoveryTrustContextPreparation": {
+    "status": "SOURCE_AND_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
+    "sourceCommit": "8cc42b0d1da35ce955e3c098a50486f2dd68d136",
+    "capsuleCommit": "6bc5842c1570f2c158952466091de44a23b1065e",
+    "capsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
+    "wrapperCommit": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
+    "wrapperSha256": "cd8d4ea2a791a834db75e4022b290a1d037fce3f5445cffabf434399f1da8da5",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
   }
 }

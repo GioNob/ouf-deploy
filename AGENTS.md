@@ -1,4 +1,12 @@
-# CURRENT — materiali CONSUMATI; trust pubblico Java qualificato nei sorgenti
+# CURRENT — unico comando trust pubblico/contesto nativo qualificato; operatore necessario
+
+29 ottobre 2026. [Handoff corrente con comando](docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md), [qualifica](evidence/m2-discovery-trust-context-preparation-qualified-20261029.json). Nuovo scope m2-discovery-trust-context-68daa9c9-20261029-v1 NON ESEGUITO. Nove moduli byte-esatti, capsule5e93e224…/102541byte, wrapper7d3c9cc…/cd8d4ea2…. Quattro test capsule e prova Docker29.8.1 reale (13peer+provider),32GET/5metadati/2OCI, pin/namespace e alias Docker esatti; sedici test trust/filesystemroot/Java21/TLS isolato; quattro job consegna HTTPS/nonroot/sudo/root0400, log/scope/replay guard;139regressioni perpush/PR. Tutti log citati letti. Prima fixture con schemaCLI diverso daHTTP1.44 fallita e conservata; fixture ora usa1.44, guard produzione invariato.
+
+NEXT richiede filesystem VPS non accessibile dal connettore OUF: eseguire UNA VOLTA il comando dell'handoff comeoufadmin in SSH interattivo.90s/16MiB,32GET,5metadataesatti,2CApubbliche/2OCI,1PKCS12pubblico root:10001/0440+rilettura. Zero filecredenziali/chiavi, IAM/OAuth/login/SQL/firme/nuovechiavi/import/lifecycle/firewall/grant/budget/upload/job/resume/acquisizione/apply. Possibile sudo solo locale. Restituire JSON/footer, nessun fileprivato o segreto inchat. AncheSTOP consuma: NONrilanciare/cancellare/ricreare né sovrascriverelog.
+
+Preparazione materiali68daa9, vecchioSTOP2d133870, custodiaeed/inputf759/14e restano consumati/conservati. Nuovo contesto non è authority/TLS/IAM/DB admission né policy attesa. Dopo output continuare esecutorecoordinato13fasi/workerproviderdistinto e review nativa corrente; no token/finestra anticipati. M2/stabilità/E2E OPEN, discovery nonesposta. Farmacie/decisioni invariate. ChatGPT→MCP→Gateway→Registry→OntoPiA obbligatorio;no bypass/merge/acceptance/subagenti/automazioni. Header successivi STORICI.
+
+# HISTORICAL — materiali CONSUMATI; trust pubblico Java qualificato nei sorgenti
 
 29 ottobre 2026. [Qualifica trust](evidence/m2-discovery-bound-public-trust-source-qualified-20261029.json): PR54 source a2ef7a7, 10 test per push/PR senza skip, log letti; Java21 verifica insieme esatto CA, zero chiavi private, TLS IAM/provider sintetici e rifiuto terza CA prima dei dati applicativi, MAC alterato rifiutato. Compiler puro collega record materiali68daa9 e configurazione owner IAM esatta, issuer/token endpoint e digest CA nativo. Nessun truststore preparato sul VPS o ammissione TLS/IAM/DB corrente dimostrata.
 

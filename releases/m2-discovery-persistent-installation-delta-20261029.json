@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "MATERIAL_ROLE_COPIES_TARGET_SUCCESS_CONSUMED_COORDINATED_INSTALLATION_PENDING",
+  "status": "TRUST_CONTEXT_SOURCE_AND_DELIVERY_QUALIFIED_AWAITING_TARGET_PREPARATION",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -151,8 +151,8 @@
   "requiredInstallationWork": [
     {
       "id": "M2-INSTALL-01",
-      "state": "DECLARED_REFERENCES_CAPTURED_CONSUMED_EFFECTIVE_CONFIG_AND_CUSTODY_UNPROVEN",
-      "work": "Retain exact private inputs f759d397 as provenance. Two declared Registry credential/key paths have no covering mount observed; resolve owner custody and qualify complete discovery native frame without changing old file-only guards."
+      "state": "MATERIAL_ROLE_COPIES_PREPARED_TRUST_CONTEXT_SOURCE_QUALIFIED_AWAITING_TARGET",
+      "work": "Execute one qualified bounded public IAM/provider truststore and current Registry/provider OCI/network collection from exact prepared material record68daa9c9. Copies and current observations are preparation, not IAM/TLS/DB admission or executable cutover."
     },
     {
       "id": "M2-INSTALL-02",
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Integrate full thirteen-phase execution, distinct provider lease worker and coordinated current native preparation. No reexecution of consumed material scope; no early IAM/OAuth grant.",
+  "next": "Execute the single qualified bounded public trust/current native context preparation once as oufadmin over interactive SSH; sanitized JSON/footer required. The connector has no VPS filesystem executor. No consumed scope replay, early IAM/OAuth window or application apply.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1085,5 +1085,20 @@
     "java21TwoIssuerTlsAndOutsiderDenialQualified": true,
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
-  }
+  },
+  "discoveryTrustContextPreparation": {
+    "status": "SOURCE_AND_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
+    "sourceCommit": "8cc42b0d1da35ce955e3c098a50486f2dd68d136",
+    "capsuleCommit": "6bc5842c1570f2c158952466091de44a23b1065e",
+    "capsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
+    "wrapperCommit": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
+    "wrapperSha256": "cd8d4ea2a791a834db75e4022b290a1d037fce3f5445cffabf434399f1da8da5",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
+  },
+  "currentOperatorCommandReady": true
 }

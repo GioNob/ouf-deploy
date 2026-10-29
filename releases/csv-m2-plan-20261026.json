@@ -1994,7 +1994,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Continue combined public IAM/provider trust and coordinated executable installation integration from exact private preparedInputsHash68daa9c9; no new operator command ready.",
+  "firstNextAction": "Execute the single qualified bounded public trust/current native context preparation once as oufadmin over interactive SSH; sanitized JSON/footer required. The connector has no VPS filesystem executor. No consumed scope replay, early IAM/OAuth window or application apply.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2438,9 +2438,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-29",
-    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_CUSTODY_CAPTURE_20261029.md",
-    "next": "COMPLETE_COORDINATED_PRIVATE_INSTALLATION_PREPARATION",
-    "evidence": "evidence/m2-discovery-custody-target-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
+    "next": "ONE_BOUNDED_TRUST_CONTEXT_OPERATOR_PREPARATION_REQUIRED",
+    "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
@@ -2449,7 +2449,8 @@
     "completeProfileProposalSourceQualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json",
     "nativeWitnessAndPackageEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json",
     "nodeOwnerQualification": "evidence/m2-discovery-node-owner-source-qualification-20261029.json",
-    "nativeDockerFrameEvidence": "evidence/m2-discovery-native-frame-qualified-20261029.json"
+    "nativeDockerFrameEvidence": "evidence/m2-discovery-native-frame-qualified-20261029.json",
+    "materialTargetEvidence": "evidence/m2-discovery-material-role-target-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4600,8 +4601,9 @@
     "requiredRuntimeReviewReady": false,
     "requiredStableOperation": true,
     "currentBindingCapture": "evidence/m2-discovery-current-bindings-qualified-20261029.json",
-    "targetCaptureExecuted": false,
-    "runtimeReviewReady": false
+    "targetCaptureExecuted": true,
+    "runtimeReviewReady": false,
+    "targetTrustContextExecuted": false
   },
   "lastRevisedDate": "2026-10-29",
   "stableDiscoveryMandate": {
@@ -6366,5 +6368,20 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Integrate full thirteen-phase execution, distinct provider lease worker and coordinated current native preparation. No reexecution of consumed material scope; no early IAM/OAuth grant."
+  "next": "Execute the single qualified bounded public trust/current native context preparation once as oufadmin over interactive SSH; sanitized JSON/footer required. The connector has no VPS filesystem executor. No consumed scope replay, early IAM/OAuth window or application apply.",
+  "discoveryTrustContextPreparation": {
+    "status": "SOURCE_AND_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
+    "sourceCommit": "8cc42b0d1da35ce955e3c098a50486f2dd68d136",
+    "capsuleCommit": "6bc5842c1570f2c158952466091de44a23b1065e",
+    "capsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
+    "wrapperCommit": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
+    "wrapperSha256": "cd8d4ea2a791a834db75e4022b290a1d037fce3f5445cffabf434399f1da8da5",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
+  },
+  "currentOperatorCommandReady": true
 }

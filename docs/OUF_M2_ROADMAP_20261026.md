@@ -1,4 +1,8 @@
-# CURRENT — materiali preparati e CONSUMATI; trust e installazione coordinata aperti
+# CURRENT 29 ottobre 2026 — preparazione trust/contesto qualificata, intervento VPS necessario
+
+[Unico comando corrente](handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md), [qualifica](../evidence/m2-discovery-trust-context-preparation-qualified-20261029.json). Materiali68daa9 RIUSCITI/CONSUMATI. Nuovo scope trust-context-68daa9c9 NON ESEGUITO; serve operatore SSHoufadmin perché il connector non dispone di filesystem/executor VPS. Una passata90s/16MiB:32GET,5metadati,2CA/2OCI,PKCS12pubblico nuovo root:10001/0440. Nessun filecredenziali/chiavi o IAM/OAuth/SQL/lifecycle/apply; ancheSTOPconsuma, conservarelog/file. Test sorgenti/delivery e Docker29.8.1/Java21 qualificati, logletti; no ammissionetarget oE2E. Dopo JSON/footer completare esecutore13fasi/worker distinto/review coordinata. M2 e otto criteri stabilità OPEN; nessun merge/acceptance/replay/reset. Resto del documento conserva la storia.
+
+# HISTORICAL — materiali preparati e CONSUMATI; trust e installazione coordinata aperti
 
 29ottobre2026. [Esito target](../evidence/m2-discovery-material-role-target-20261029.json). Successo PRIVATE_MATERIAL_ROLE_COPIES_PREPARED_NOT_ADMITTED,complete=true/OperatorExit0/DeliveryExit0;13peer/27GET,4metadata/836914byte,1credenziale/2MACapp/1CA,2copie private+1pubblica/3riletture. preparedInputsHash68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392;roleMapHash104aabb7...,predecessoreSTOP2d133870... conservato. FonteJSON/footeroperatore, nessuna letturaindipendenteprivati/log. Scope material-roles-2d133870-20261029-v1 RIUSCITO/CONSUMATO, launcher ritirato; NONrilanciare/cancellare/ricreare o sovrascriverelog.
 
