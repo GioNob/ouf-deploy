@@ -3,7 +3,7 @@
 The runtime image and private inputs are synthetic. Java never executes. The
 independent committed Engine baseline supplies expected OCI, not the live OCI.
 """
-import hashlib,json,os,shutil,subprocess,sys,tempfile,time,uuid
+import hashlib,http.client,json,os,shutil,socket,struct,subprocess,sys,tempfile,time,uuid
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
@@ -48,13 +48,23 @@ def main():
         binds += [{k:tree[k] for k in ('source','target','readOnly')},{'source':token['source'],'target':token['target'],'readOnly':True}]
         request['HostConfig']['Mounts']=[{'Type':'bind','Source':b['source'],'Target':b['target'],'ReadOnly':True} for b in binds]
         profile=DiscoveryProfile(request,**selection)
-        args=['docker','create','--network',network,'--restart','no','--user','10001:10001','--cap-drop','ALL',
-            '--security-opt','no-new-privileges:true','--memory','2147483648','--memory-swap','2147483648',
-            '--cpus','2','--pids-limit','512','--workdir','/app','--entrypoint','/bin/sh']
-        for value in request['Env']:args+=['--env',value]
-        for b in binds:args+=['--mount','type=bind,source='+b['source']+',target='+b['target']+',readonly']
-        cid=run(*args,image,*ENTRY[1:],*JAVA);run('docker','start',cid);run('docker','pause',cid)
+        # Exercise the actual JSON Engine contract. CLI flag processing can
+        # reorder environment entries and is not the production create API.
+        class UnixConnection(http.client.HTTPConnection):
+            def connect(self):
+                self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);self.sock.settimeout(15)
+                self.sock.connect('/var/run/docker.sock')
+                peer=struct.unpack('3i',self.sock.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12))
+                assert peer[1]==0
+        connection=UnixConnection('localhost',timeout=15)
+        try:
+            connection.request('POST','/v1.44/containers/create',body=json.dumps(request).encode(),headers={'Content-Type':'application/json'})
+            response=connection.getresponse();body=response.read(2097153);assert response.status==201 and len(body)<=2097152
+            cid=json.loads(body)['Id']
+        finally:connection.close()
+        run('docker','start',cid);run('docker','pause',cid)
         actual=json.loads(run('docker','inspect',cid))[0];pid=actual['State']['Pid']
+        assert actual['Config']['Env']==request['Env']
         assert actual['State']['Paused'] and actual['RestartCount']==0 and actual['Image']==image
         cmdline=(Path('/proc')/str(pid)/'cmdline').read_bytes();assert cmdline==b'\0'.join(x.encode() for x in ENTRY+JAVA)+b'\0'
         state=json.loads(run('runc','--root','/run/docker/runtime-runc/moby','state',cid))
