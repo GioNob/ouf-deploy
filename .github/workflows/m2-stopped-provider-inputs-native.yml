@@ -1,9 +1,9 @@
 name: M2 stopped provider installation inputs
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/stopped_provider_preparation.py','tests/test_m2_stopped_provider_inputs.py','tests/qualify_m2_stopped_provider_inputs_native.py','.github/workflows/m2-stopped-provider-inputs-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/stopped_provider_preparation.py','tests/test_m2_stopped_provider_inputs.py','tests/test_m2_stopped_provider_inputs_capsule.py','scripts/export-m2-stopped-provider-inputs.py','releases/m2-stopped-provider-inputs-20261029.py','tests/qualify_m2_stopped_provider_inputs_native.py','.github/workflows/m2-stopped-provider-inputs-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/stopped_provider_preparation.py','tests/test_m2_stopped_provider_inputs.py','tests/qualify_m2_stopped_provider_inputs_native.py','.github/workflows/m2-stopped-provider-inputs-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/stopped_provider_preparation.py','tests/test_m2_stopped_provider_inputs.py','tests/test_m2_stopped_provider_inputs_capsule.py','scripts/export-m2-stopped-provider-inputs.py','releases/m2-stopped-provider-inputs-20261029.py','tests/qualify_m2_stopped_provider_inputs_native.py','.github/workflows/m2-stopped-provider-inputs-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -14,7 +14,7 @@ jobs:
         with: {persist-credentials: false}
       - name: Exact identity and consumed predecessor unit checks
         run: |
-          python3 -I -B -S -m unittest discover -s tests -p test_m2_stopped_provider_inputs.py -v
+          python3 -I -B -S -m unittest discover -s tests -p 'test_m2_stopped_provider_inputs*.py' -v
       - name: Use official Docker 29.8.1 in an isolated disposable data root
         run: |
           set -euo pipefail
