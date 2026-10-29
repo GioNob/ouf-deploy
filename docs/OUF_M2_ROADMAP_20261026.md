@@ -1,4 +1,28 @@
-# CURRENT — discovery stabilmente operativa obbligatoria; nuova lettura corrente QUALIFICATA, target non eseguito
+# CURRENT — binding acquisiti; Registry e Gateway discovery composti e qualificati
+
+29 ottobre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md), [esito target](evidence/m2-discovery-current-bindings-target-20261029.json), [qualifica sorgenti](evidence/m2-discovery-composition-20261029.json), [delta installativo NON eseguibile](releases/m2-discovery-persistent-installation-delta-20261029.json).
+
+La cattura è RIUSCITA e CONSUMATA: 13 binding, 27 GET Engine, 3 metadata, 720108 byte, Exit=0 e DeliveryExit=0. inputsHash `14e42ac96293d342cd71b7386360b976882ac7ec75a18838d3960999430f3a13`. Fonte: JSON/footer allegati dall'operatore, non lettura indipendente dei log VPS o dei private inputs. Nessun effetto applicativo, SQL, IAM/OAuth, grant o budget. NON riconsegnare o rilanciare reader, scope o controller V38.
+
+Registry osservato: image b61bc39c, binding 46b5e7de, PID1600272/start45983165; provider e worker dichiarati false, RestartPolicy=no. Le dichiarazioni Env non provano configurazione effettiva, reachability, custody o admission. MCP e Onboarding V38 conservati. Nessuna capability discovery installata o query Farmacie OntoPiA eseguita.
+
+Sorgenti qualificate:
+- Registry [PR41](https://github.com/GioNob/ouf-semantic-registry/pull/41), applicazione `4f8fb581916075a539bda4428be7bd8af073a569`, base eccef11a (non prova della sorgente runtime). Discovery durevole riusata da3ec99277. V1–V10 file immutate; due corpi migration discovery aggiunti come V11/V12 risolvendo il conflitto V10. 25 file di riuso byte-identici e una sola fixture test adattata; 42 file conservati confrontati invariati. 130 test PASS/0skip su push e PR, upgrade PG17 V10→V12/riapertura/budget, build nonroot e pairwise TLS/provider isolato PASS. Gateway del pairwise è una fixture minima, non MCP o IAM produzione.
+- Gateway [PR84](https://github.com/GioNob/ouf-api-gateway/pull/84), `60788cf965334441be0a33c345f5c0bcd66cbdde`, base c22fbf7f. Sette file discovery byte-identici, registrazione nel factory corrente; 180 test PASS/0skip su push e PR, inclusa conservazione dell'intera catena file/proposta/HUMAN/revisione. Tutti9 workflow di quella sorgente SUCCESS.
+- MCP [PR81](https://github.com/GioNob/ouf-mcp-server/pull/81), `09d1f521703f2e896398c751b41008f22c6dca0d`, qualificata in precedenza; descrittori ancora INACTIVE e non installati.
+
+Il producer offline Registry `1086f7ea5a3281dc7731ea28d258f8fead403d07` congela l'applicazione a4f8fb581; scansione dell'immagine esatta, migrazioni JAR e provenienza separati dall'autorità runtime. Stato dettagliato nel dossier di qualifica. Non riusare pacchetti discovery storici al posto della composizione nuova.
+
+Pacchetto Registry qualificato: workflow40826468452/job123290550271 SUCCESS, artifact12876846746 (scadenza28novembre2026), ZIP SHA256c464eb6cb165c305d376c000579089dfed3e5f6cb3f22c953a74f193747659f8. Image nativa sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e. Scansione immagine esatta:0HIGH/CRITICAL/UNKNOWN inclusi unfixed,53MEDIUM/4LOW; non dichiarare assenza di vulnerabilità. Download e rilettura indipendente:8hash payload,215blob sorgente contro albero GitHub4f8fb581,12migration JAR byte-identiche e assenza fixture/testSDK nell'artefatto produzione. Verifiche crittografiche GitHub eseguite dal runner per8subject,log e receipt riletti; nessuna riverifica crittografica locale dichiarata. [Evidenza pacchetto](evidence/m2-discovery-offline-package-readback-20261029.json). Nessun import VPS o admission/runtime authority.
+
+
+Lettura MCP OUF autorizzata e completata: policy59/hashd2e7e21e,9ruoli/13assegnazioni e138grant configurati del soggetto in2pagine complete. Nessun permesso discovery nei ruoli né nei grant nominali selezionati. È stato configurato, non una prova di permesso effettivo. Nessuna proposta o modifica policy creata. Pubblicare descrittori/scope/permessi attraverso i rispettivi owner e la review HUMAN prima dell'uso reale; non introdurre grant effimeri a ogni file.
+
+NEXT preparare e qualificare la configurazione installativa persistente e la concreta manutenzione coordinata: custody/secretRef distinti, provider/workload/TLS, rete, DB, nuova generazione/ammissione e review/authority finite. La cattura consumata è solo provenienza. Nessun nuovo comando VPS pronto e nessun login, flag flip, restart per prova, replay o reset autorizzati dalla qualifica sorgente. Gli8criteri di [stabilità](docs/OUF_M2_DISCOVERY_STABLE_OPERATION_20261029.md) restano OPEN, compresi reboot/rotazione e due client reali.
+
+Farmacie: stesso asset/job/profilo SUCCEEDED, preview61righe/10colonne e policy59 acquisite; codice ministeriale STRING e10campi OPEN già confermati. Non ripetere upload/profiling/budget/resume/acquisizione. M1/G4 acquisiti; M2/G5/G6/G7/D5–D7/E2E aperti. Nessun merge, release acceptance, subagente o automazione. Header e comandi successivi STORICI.
+
+# HISTORICAL — discovery stabilmente operativa obbligatoria; nuova lettura corrente QUALIFICATA, target non eseguito
 
 29 ottobre 2026, Europe/Rome. [Handoff/comando nuovo](handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md), [qualifica](../evidence/m2-discovery-current-bindings-qualified-20261029.json), [criteri bloccanti](OUF_M2_DISCOVERY_STABLE_OPERATION_20261029.md). MiniPET M2 aggiornato a1.3: l'owner impone disponibilità stabile delle capability OUF nel ciclo chatbot → MCP → Gateway → Registry → OntoPiA. Non bastano PR/CI o un'attivazione temporanea. Tutti i criteri reali di stabilità rimangono OPEN.
 

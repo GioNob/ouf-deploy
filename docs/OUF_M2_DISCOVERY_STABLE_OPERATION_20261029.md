@@ -28,10 +28,11 @@ Le prove devono distinguere: disponibilità del tool per l'utente autorizzato; r
 - Farmacie: stesso profiling completato,61righe/10colonne; policy59 e preview acquisite. Codice ministeriale stabile STRING e tutti10campi OPEN confermati.
 - MCP PR81/09d1f521: composizione sorgente delle tre capability candidate e contratti qualificati; restano INACTIVE, non installate.
 - Registry/file-only: il compilatore di quel profilo impone esplicitamente provider/worker discovery disabilitati. È un limite del profilo di installazione storico, non un risultato E2E accettabile per la nuova richiesta.
-- Nuova cattura corrente: sorgente/delivery qualificate nella PR Deploy51. Legge solo metadata/Engine della coorte conservata; nessuna attivazione, credenziale, SQL o discovery. Non è ancora stata eseguita sul target.
+- Nuova cattura corrente: sorgente/delivery qualificate nella PR Deploy51. Legge solo metadata/Engine della coorte conservata; nessuna attivazione, credenziale, SQL o discovery. È riuscita sul target:13binding/27GET/3metadata/zeroeffetti; scope consumato, nessun replay.
 
 ## Prossimo tratto concreto
 
-Eseguire una sola volta la [nuova cattura corrente](handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md). Il risultato vincola i delta da comporre e qualificare per Registry/Gateway/provider. Le sole dichiarazioni Env non provano configurazione effettiva, readiness, custody o autorità.
+La [cattura corrente](handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md) è riuscita e consumata. RegistryPR41 e GatewayPR84 compongono il riuso durabile con i percorsi file:130test Registry e180Gateway PASS/0skip, upgrade PostgreSQL V10→V12 preservando le migration file originali. Pacchetto immagine/provenienza separato; nessuna installazione o pubblicazione. Policy59 letta viaMCP: nessun permesso discovery nei9ruoli o138grant nominali osservati. Le sole dichiarazioni Env non provano configurazione effettiva, readiness, custody o autorità.
 
 Dopo le evidenze correnti: qualificare la coorte applicativa e la configurazione persistente, predisporre la concreta review della sola manutenzione necessaria, verificare readiness/ammissione e pubblicazione coordinata, quindi esercitare le vere capability dal chatbot. Nessuna attivazione di descrittori per far passare un test, nessun vecchio comando consumato, nessun aggiramento.
+
