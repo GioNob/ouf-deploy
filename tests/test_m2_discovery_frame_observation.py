@@ -116,5 +116,41 @@ class Observation(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'FULL_CURRENT_TRANSITION'):
                 m.DiscoveryFrameObservation(o.configured,o.budget,o.token_owner,o.pause_binding,o.profile)
 
+    def checkpoint(self, position):
+        o,*_=self.prepared(); t=o.pause_binding.transition; t.context='c'*64
+        effects=[{'phase':p,'state':'APPLIED','intentHash':'a'*64,'nativeEvidenceHash':'b'*64,
+                  'authorityEvidenceHash':'d'*64} for p in m.PHASES[:position+1]]
+        effects[-1]['state']='IN_FLIGHT'
+        row={'creationRequestHash':o.pause_binding.request_hash,'state':'IN_FLIGHT','nextPhase':position,'effects':effects}
+        t.read=lambda:copy.deepcopy(row)
+        store=types.SimpleNamespace(read=lambda phase,h:{'schema':'ouf.semantic-owner-signed-paused-node-phase.v1',
+            'transitionContextHash':t.context,'creationRequestHash':row['creationRequestHash'],'intentHash':'a'*64,
+            'completeNativeObservationPerformed':True,'currentScopedAcceptanceSignatureVerified':True})
+        from engine_creation import Engine
+        return o,t,row,store,object.__new__(Engine)
+
+    def test_full_reentry_requires_both_transport_and_worker_before_migration_or_release(self):
+        for pos in (9,10):
+            o,t,row,store,engine=self.checkpoint(pos)
+            value=m.PausedWorkloadBinding.retained_discovery_at_checkpoint(engine,t,o.profile.request,store,
+                attestation_intent_hash='a'*64,checkpoint_row=row,execution_profile=o.profile)
+            self.assertEqual(value.current_row(),row)
+            for phase in ('INSTALL_AUTHENTICATED_TRANSPORT','START_DISTINCT_LEASE_WORKER'):
+                for effect in row['effects']:
+                    if effect['phase']==phase:effect['state']='IN_FLIGHT'
+                with self.assertRaises(ValueError):value.current_row()
+                for effect in row['effects'][:-1]:effect['state']='APPLIED'
+
+    def test_full_reentry_rejects_legacy_positions_and_old_contract_stays_closed(self):
+        for pos in (7,8):
+            o,t,row,store,engine=self.checkpoint(pos)
+            with self.assertRaises(ValueError):
+                m.PausedWorkloadBinding.retained_discovery_at_checkpoint(engine,t,o.profile.request,store,
+                    attestation_intent_hash='a'*64,checkpoint_row=row,execution_profile=o.profile)
+        o,t,row,store,engine=self.checkpoint(9)
+        with self.assertRaises(ValueError):
+            m.PausedWorkloadBinding.retained_at_checkpoint(engine,t,o.profile.request,store,
+                attestation_intent_hash='a'*64,checkpoint_row=row)
+
 
 if __name__=='__main__':unittest.main()
