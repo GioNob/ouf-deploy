@@ -22,15 +22,19 @@ def beneath(value,parent):
     return value==parent or Path(parent) in Path(value).parents
 
 
-def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signing_key_paths,engine_unit='docker.service'):
+def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signing_key_paths,
+                 engine_unit='docker.service',sandbox_root=None):
     """Initial generation sandbox; new boot/peer identity requires new admission."""
     c=copy.deepcopy(configuration);r=copy.deepcopy(recipe);s=copy.deepcopy(snapshot)
     require(type(engine_unit) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.@-]{0,100}[.]service',engine_unit),
         'EXACT_DISCOVERY_ENGINE_MANAGER_UNIT_REQUIRED')
     anchor=configuration_anchor(c);install=path(installation_root);ledger=path(c['ledgerRoot'])
+    sandbox=path(sandbox_root or install+'-sandbox')
     require(len(Path(install).parts)>=4 and len(Path(ledger).parts)>=4
         and not beneath(ledger,install) and not beneath(install,ledger),
         'DISJOINT_INSTALLED_DISCOVERY_CODE_AND_LEDGER_REQUIRED')
+    require(not any(beneath(sandbox,p) or beneath(p,sandbox) for p in (install,ledger)),
+        'DISJOINT_EMPTY_DISCOVERY_SANDBOX_REQUIRED')
     require(type(r) is dict and set(r)==RECIPE_FIELDS and r['schema']=='ouf.discovery-operational-lease-recipe.v1'
         and r['coordinationJournal']==ledger+'/coordination.json',
         'EXACT_DISCOVERY_SERVICE_UNIT_RECIPE_REQUIRED')
@@ -39,7 +43,7 @@ def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signin
         and path(c['commonInvocationLock'])!=path(r['leaseCommonLock'])
         and all(len(Path(path(p)).parts)>=4 and p.endswith('.lock')
             for p in (c['commonInvocationLock'],r['leaseCommonLock']))
-        and path(c['serviceUnitPath']).endswith('.service'),
+        and beneath(path(c['serviceUnitPath']),install) and c['serviceUnitPath'].endswith('.service'),
         'FIXED_DISTINCT_DISCOVERY_SERVICE_PATHS_REQUIRED')
     refs={path(v['path']):v for v in c['sources']}
     require(len(refs)==len(c['sources']) and all(not beneath(p,ledger) for p in refs),
@@ -83,16 +87,23 @@ def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signin
         namespaces.append(p)
     require(len(set(namespaces))==2,'DISTINCT_DISCOVERY_SERVICE_PEER_NAMESPACES_REQUIRED')
     signatures=install+'/receipt-signatures';observations=install+'/observations'
-    directories={'/usr/lib','/lib','/usr/lib64','/lib64',signatures,observations}
+    control_dirs={install,str(Path(c['verification']['trustPolicy']['path']).parent),
+        str(Path(c['commonInvocationLock']).parent),str(Path(r['leaseCommonLock']).parent)}
+    require(all(len(Path(path(p)).parts)>=4 and not beneath(ledger,p) and not beneath(p,ledger)
+        for p in control_dirs),'DEDICATED_READ_ONLY_DISCOVERY_CONTROL_DIRECTORIES_REQUIRED')
+    directories={'/usr/lib','/lib','/usr/lib64','/lib64',*control_dirs}
     readonly=set(refs)|{install+'/configuration.json',install+'/installed.json',install+'/current-generation.json',
         signatures,observations,path(c['verification']['trustPolicy']['path']),path(c['serviceUnitPath']),
         path(c['commonInvocationLock']),socket,*stats,*namespaces,'/etc/ld.so.cache','/etc/passwd','/etc/group',
         '/etc/nsswitch.conf',*directories}
-    writable={ledger,path(r['leaseCommonLock'])}
+    # Directory views preserve atomic publication/revocation and lock inode
+    # replacement checks. Never shadow these paths with stale file bind mounts.
+    readonly={p for p in readonly if not any(p!=parent and beneath(p,parent) for parent in directories)}
+    writable={ledger}
     require(not readonly.intersection(writable),'DISCOVERY_READ_ONLY_AND_WRITE_BINDINGS_OVERLAP')
     require(type(signing_key_paths) is list and 1<=len(signing_key_paths)<=64,
         'EXPLICIT_DISCOVERY_SIGNING_KEY_ISOLATION_INPUTS_REQUIRED')
-    mounted=readonly|writable
+    mounted=readonly|writable|{sandbox}
     for key in signing_key_paths:
         key=path(key)
         require(not any(beneath(key,p) for p in mounted),
@@ -105,7 +116,7 @@ def compile_unit(configuration,recipe,snapshot,python,*,installation_root,signin
         '/usr/lib','/lib','/usr/lib64','/lib64'})
     lines=['[Unit]','Description=OUF installed discovery finite lease worker','After=network-online.target '+engine_unit,
         'Wants=network-online.target','BindsTo='+engine_unit,'StartLimitIntervalSec=300','StartLimitBurst=3','',
-        '[Service]','Type=simple','User=root','Group=root','RootDirectory='+install+'/sandbox',
+        '[Service]','Type=simple','User=root','Group=root','RootDirectory='+sandbox,
         'ExecStart=:'+python['path']+' -I -B -S '+install+'/capsule.py worker --configuration '+install+
         '/configuration.json --configuration-anchor '+anchor,
         'Restart=on-failure','RestartSec=15','TimeoutStopSec=45','KillMode=control-group','UMask=0077',

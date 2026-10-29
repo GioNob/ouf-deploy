@@ -26,14 +26,15 @@ class Unit(unittest.TestCase):
         snapshot['generationRef']=m.generation_reference(snapshot)
         recipe={'schema':'ouf.discovery-operational-lease-recipe.v1','kernel':{},'dns':{},'binding':{},'policy':{},
             'scope':{'generationRef':snapshot['generationRef']},'nft':nft,
-            'coordinationJournal':ledger+'/coordination.json','leaseCommonLock':'/var/lib/ouf-kernel/common.lock'}
+            'coordinationJournal':ledger+'/coordination.json','leaseCommonLock':'/var/lib/ouf-kernel/common.lock',
+            'leaseCommonLockIdentity':[1,2,0,0,33152,1]}
         refs=[python,nft,{k:v for k,v in openssl.items() if k!='version'}|{'maximumBytes':67108864},
             {'path':install+'/capsule.py','sha256':'4'*64,'maximumBytes':2097152},
             {'path':install+'/worker-recipe.json','sha256':m.digest(recipe),'maximumBytes':1048576}]
         c={'schema':'ouf.discovery-operational-lease-configuration.v1','installationInputsHash':'b'*64,
             'desiredProfileHash':snapshot['desiredProfileHash'],'sourceManifest':{'synthetic':True},'sources':copy.deepcopy(refs),
             'verification':{'openssl':openssl,'trustPolicy':{'path':'/etc/ouf/public-trust/policy.json','sha256':'5'*64},
-                'context':{}},'serviceUnitPath':'/etc/systemd/system/ouf-discovery-lease.service',
+                'context':{}},'serviceUnitPath':install+'/ouf-discovery-lease.service',
             'serviceUnitHash':'0'*64,'commonInvocationLock':'/var/lib/ouf-fences/discovery.lock','commonLockIdentity':[1,2,0,0,33152,1],
             'generationReceiptPath':install+'/current-generation.json','hostBootIdPath':install+'/host-boot-id',
             'ledgerRoot':ledger,'scopePolicyHash':'6'*64}
@@ -56,6 +57,16 @@ class Unit(unittest.TestCase):
         c['serviceUnitHash']=first['unitSha256'];second=m.compile_unit(c,r,s,p,**o)
         self.assertEqual(first,second)
         self.assertEqual(first['unitSha256'],hashlib.sha256(first['unitBody'].encode()).hexdigest())
+
+    def test_atomic_control_and_lock_updates_are_not_hidden_by_file_binds(self):
+        c,r,s,p,o=self.fixture();proposal=m.compile_unit(c,r,s,p,**o)
+        ro=proposal['readOnlyBindings'];rw=proposal['readWriteBindings']
+        for parent in (o['installation_root'],'/etc/ouf/public-trust','/var/lib/ouf-fences','/var/lib/ouf-kernel'):
+            self.assertIn(parent,ro)
+        for file in (c['commonInvocationLock'],r['leaseCommonLock'],c['generationReceiptPath'],c['serviceUnitPath']):
+            self.assertNotIn(file,ro);self.assertNotIn(file,rw)
+        self.assertEqual(rw,[c['ledgerRoot']])
+        self.assertIn('RootDirectory='+o['installation_root']+'-sandbox\n',proposal['unitBody'])
 
     def test_changed_generation_pid_or_namespace_is_not_silently_bound(self):
         for role,field,value in (('registry','pid',1234),('provider','namespace',{'path':'/run/docker/netns/replaced','identity':[1,3]})):
