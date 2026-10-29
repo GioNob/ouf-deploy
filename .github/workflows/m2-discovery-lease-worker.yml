@@ -12,6 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
       - name: Disposable kernel and namespace dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
       - name: Root-owned isolated fixture sources
@@ -23,4 +29,4 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_m2_discovery_lease_worker.py -v
-          sudo unshare --net /usr/bin/python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_lease_worker_native.py" "$fixture/repository/tools/semantic_cohort_admission/cohort-draft"
+          sudo unshare --net /usr/bin/python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_lease_worker_native.py" "$fixture/repository/lease-owner-source"
