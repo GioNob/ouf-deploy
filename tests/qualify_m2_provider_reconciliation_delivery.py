@@ -7,7 +7,7 @@ POSIX fixture tests. This is not target evidence or IAM admission.
 import hashlib,json,os,pwd,shutil,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-SOURCE_SHA='8facf88b7fe725d3a6f75ce494a3133d49d79e81972dfa8c318967a0919076ff'
+SOURCE_SHA='a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f'
 SCOPE=Path('/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1')
 CODE=Path('/usr/local/lib/ouf-m2-provider-reconciliation-'+SOURCE_SHA[:16])
 

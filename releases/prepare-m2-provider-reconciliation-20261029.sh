@@ -13,9 +13,9 @@ fi
 delivery=$(mktemp -d "$HOME/ouf-m2-provider-reconciliation-delivery.XXXXXXXX")
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
   --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 131072 \
-  'https://raw.githubusercontent.com/GioNob/ouf-deploy/e592351510b46837ea70d6e404b8eb7430fb29cf/releases/m2-provider-reconciliation-20261029.py' \
+  'https://raw.githubusercontent.com/GioNob/ouf-deploy/2248132a6d66444f47e5585b864787778c136a8b/releases/m2-provider-reconciliation-20261029.py' \
   -o "$delivery/prepare.py"
-printf '%s  %s\n' '8facf88b7fe725d3a6f75ce494a3133d49d79e81972dfa8c318967a0919076ff' "$delivery/prepare.py" | sha256sum -c -
+printf '%s  %s\n' 'a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f' "$delivery/prepare.py" | sha256sum -c -
 chmod 0400 "$delivery/prepare.py"
 sudo -v
 set +e
@@ -24,7 +24,7 @@ set -Eeuo pipefail
 umask 077
 candidate=$1
 scope='/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1'
-code_root='/usr/local/lib/ouf-m2-provider-reconciliation-8facf88b7fe725d3'
+code_root='/usr/local/lib/ouf-m2-provider-reconciliation-a3dc3693cb08e214'
 if [[ -e "$scope" || -L "$scope" ]]; then
   printf '%s\n' 'PROVIDER_RECONCILIATION_SCOPE_CONSUMED_NO_REPLAY' >&2
   exit 1
@@ -39,7 +39,7 @@ if [[ ! -e "$code_root/prepare.py" && ! -L "$code_root/prepare.py" ]]; then
 fi
 [[ ! -L "$code_root/prepare.py" ]]
 [[ "$(stat -c '%u:%g:%a' "$code_root/prepare.py")" = 0:0:400 ]]
-printf '%s  %s\n' '8facf88b7fe725d3a6f75ce494a3133d49d79e81972dfa8c318967a0919076ff' "$code_root/prepare.py" | sha256sum -c -
+printf '%s  %s\n' 'a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f' "$code_root/prepare.py" | sha256sum -c -
 [[ ! -e "$code_root/operator.log" && ! -L "$code_root/operator.log" ]] || {
   printf '%s\n' 'PROTECTED_PROVIDER_RECONCILIATION_INVOCATION_ALREADY_ATTEMPTED_NO_REPLAY' >&2
   exit 1
