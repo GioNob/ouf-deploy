@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "SOURCE_COMPOSITION_QUALIFIED_INSTALLATION_REVIEW_NOT_PREPARED",
+  "status": "SOURCE_COMPOSITION_AND_INSTALLATION_REFERENCE_READER_QUALIFIED_TARGET_INPUTS_PENDING",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -124,7 +124,7 @@
   "requiredInstallationWork": [
     {
       "id": "M2-INSTALL-01",
-      "state": "OPEN",
+      "state": "REFERENCE_READER_QUALIFIED_TARGET_PENDING",
       "work": "Resolve exact current private installation configuration and custody from selected captured bindings; seal fresh generations, source/OCI and mount provenance. Do not publish raw Engine/Env/config/credential values."
     },
     {
@@ -167,5 +167,11 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "QUALIFY_CURRENT_PERSISTENT_INSTALLATION_PROFILE_AND_CONCRETE_MAINTENANCE_REVIEW"
+  "next": "ONE_NEW_OPERATOR_INSTALLATION_REFERENCE_READ_THEN_BOUND_PERSISTENT_REVIEW",
+  "installationReferenceReader": {
+    "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1",
+    "targetExecuted": false
+  }
 }

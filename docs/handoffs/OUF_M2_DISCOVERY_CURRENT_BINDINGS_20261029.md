@@ -1,3 +1,5 @@
+> Checkpoint successivo: [nuova lettura installativa qualificata](OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md). La cattura descritta qui è riuscita e consumata; il comando successivo usa uno scope nuovo.
+
 # OUF — Cattura riuscita, composizione discovery qualificata
 
 29 ottobre 2026, Europe/Rome. [Esito pubblico](../../evidence/m2-discovery-current-bindings-target-20261029.json), [trascrizione operatore](../../evidence/m2-discovery-current-bindings-target-20261029.log), [qualifica sorgenti](../../evidence/m2-discovery-composition-20261029.json), [delta installativo non eseguibile](../../releases/m2-discovery-persistent-installation-delta-20261029.json).

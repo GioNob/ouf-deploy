@@ -36,3 +36,7 @@ La [cattura corrente](handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md) è
 
 Dopo le evidenze correnti: qualificare la coorte applicativa e la configurazione persistente, predisporre la concreta review della sola manutenzione necessaria, verificare readiness/ammissione e pubblicazione coordinata, quindi esercitare le vere capability dal chatbot. Nessuna attivazione di descrittori per far passare un test, nessun vecchio comando consumato, nessun aggiramento.
 
+
+## Lettura installativa qualificata, target ancora da eseguire
+
+PR52 prepara un nuovo scope di soli riferimenti:2metadata conservati e9GET su4componenti esatti.28test PASS/0skip, Docker29 reale e consegna protetta qualificati; tutti4job finali SUCCESS. [Comando e limiti](handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md). Il risultato vincola la successiva review installativa; non prova configurazione effettiva,custody oadmission e non modifica lo stato OPEN dei criteri stabili. La precedente cattura resta consumata.

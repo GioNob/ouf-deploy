@@ -98,13 +98,15 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "REGISTRY_GATEWAY_MCP_SOURCE_COMPOSITION_QUALIFIED_PERSISTENT_INSTALLATION_AND_DISCOVERY_PERMISSIONS_OPEN",
+    "semanticExternalDiscovery": "SOURCE_AND_REGISTRY_PACKAGE_QUALIFIED_INSTALLATION_REFERENCE_READER_QUALIFIED_TARGET_PENDING",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
     "discoveryConfiguredGrantObservationPolicy": "ouf-lab-authorization:59",
     "discoveryRegistryOfflinePackageQualified": true,
-    "discoveryRegistryCandidateImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e"
+    "discoveryRegistryCandidateImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+    "discoveryInstallationReferenceReaderQualified": true,
+    "discoveryInstallationReferenceTargetExecuted": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1971,15 +1973,19 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Qualify the persistent installation profile and concrete coordinated maintenance review with current effective configuration/custody/network/database admission, exact packages and native authority. The consumed binding capture is provenance only. Publish descriptors/routes/scopes/nominal permissions through owner/HUMAN paths before real MCP discovery. No VPS command or fresh login is ready yet.",
-    "targetExecuted": true,
-    "currentDeliveryUsable": false,
-    "sshExecutionCommandUsable": false,
+    "action": "Execute the NEW pinned installation reference inventory once as oufadmin in interactive SSH. Two exact consumed metadata records and9GET over4selected containers,90s/24MiB. No config/credential/key file contents, IAM/OAuth,SQL or runtime effects. Return only final JSON/footer. On STOP preserve/no replay. After success prepare the bound persistent installation review with actual configuration/custody/admission.",
+    "commandPath": "releases/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_COMMAND_20261029.sh",
+    "sourceCommit": "41e4dda40899c85307a79dbc90c4385355bdc52d",
+    "sourceSha256": "f9574bc696b34077e146f74810918625880a48d2108fc8038834eb23e45779ed",
+    "wrapperCommit": "c2035ca457e95f95d772b8e3660c241bfdec6e7b",
+    "wrapperSha256": "ec7775e982a705feb7a8ceaaa789397241d990eed36c7efefb26fde675dcb969",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1",
+    "targetExecuted": false,
+    "currentDeliveryUsable": true,
+    "sshExecutionCommandUsable": true,
+    "qualificationPending": false,
     "currentRuntimeAuthorityUsable": false,
-    "targetApplyAuthorized": false,
-    "captureConsumed": true,
-    "captureInputsHash": "14e42ac96293d342cd71b7386360b976882ac7ec75a18838d3960999430f3a13",
-    "captureScope": "/etc/ouf/deploy-snapshots/m2-discovery-current-bindings-0601fdfa-20261029-v1"
+    "targetApplyAuthorized": false
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2424,9 +2430,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-29",
-    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md",
-    "next": "QUALIFY_PERSISTENT_INSTALLATION_PROFILE_AND_CONCRETE_MAINTENANCE_REVIEW",
-    "evidence": "evidence/m2-discovery-current-bindings-target-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
+    "next": "ONE_NEW_OPERATOR_INSTALLATION_REFERENCE_READ_THEN_BOUND_PERSISTENT_REVIEW",
+    "evidence": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
     "installationDeltaDraft": "releases/m2-discovery-persistent-installation-delta-20261029.json",
     "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json"

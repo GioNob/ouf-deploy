@@ -1,4 +1,20 @@
-# CURRENT — binding acquisiti; Registry e Gateway discovery composti e qualificati
+# CURRENT — nuova lettura dei riferimenti installativi QUALIFICATA; target da eseguire
+
+29 ottobre 2026, Europe/Rome. [Handoff e unico comando corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica](evidence/m2-discovery-installation-inputs-qualified-20261029.json), [PR52](https://github.com/GioNob/ouf-deploy/pull/52).
+
+La cattura precedente13peer/27GET è riuscita e CONSUMATA: inputsHash14e42ac96293d342cd71b7386360b976882ac7ec75a18838d3960999430f3a13. Non ripeterla. Registry/MCP/Gateway sono composti e qualificati, pacchetto Registry esatto verificato; provider/worker target ancora dichiarati false, capability discovery non installate/pubblicate. Nessun grant discovery nei ruoli o nei138grant nominali policy59 osservati. La review installativa ha bisogno dei riferimenti correnti selezionati, non di credenziali nuove o di un flag flip.
+
+NUOVA operazione di sola lettura: due metadata esatti conservati come provenienza e9GET Engine su4componenti (Registry,MCP,Gateway owner,APISIX), osservati due volte. Riferimenti nonsegreti dichiarati, impronte mount e presenza override; contenuti config/credenziali/chiavi non letti. Env completi e sorgenti mount restano privati root0600. Altri9peer non riosservati. ZeroSQL/IAM/OAuth/write/lifecycle/import/grant/budget/resume/upload/job/acquisizione/attivazione. Non prova configurazione effettiva,custody,readiness,reachability,DBadmission oauthority.
+
+Source41e4dda40899c85307a79dbc90c4385355bdc52d/SHAf9574bc696b34077e146f74810918625880a48d2108fc8038834eb23e45779ed; wrapperc2035ca457e95f95d772b8e3660c241bfdec6e7b/SHAec7775e982a705feb7a8ceaaa789397241d990eed36c7efefb26fde675dcb969; qualifica5f558b4c070f02f04f85d8031a705acda4a1d3ef.28PASS/0skip (15nuovi+13regressioni); Docker29.8.1/root socket/pin reali con predecessore sintetico; lettura9GET/2metadata, vecchi file/binding preservati e drift/replay negati. Consegna HTTPS/nonroot/sudo/root0400/checksumroot/nonTTY-before-scope/failure-preserved provata. Tutti4job push/PR SUCCESS e4log letti direttamente. Nessuna prova target/E2E.
+
+NEXT consegnare soltanto il nuovo comando del handoff comeoufadmin inSSH interattivo, UNA volta. Non richiede IAM/APPROVO; eventuale password sudo locale. Nuovo scope /etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1 NON ancora eseguito. Restituire soloJSON finale efooter. Non chiedere inputs.json,Engine/Env completi,fileconfig,token ocredenziali. STOP conserva e consuma:NON rilanciare.90s/24MiB; massimo3metadata nel primitive immutato,2nel percorso esatto.
+
+Dopo il risultato vincolare configurazione persistente e concreta review/manutenzione coordinata con custody/admission/generazioni correnti. Nessun login/token/finestra prematuro o vecchieauthority/R9-R12/reset. Resta obbligatorio il percorso chatbot→MCP→Gateway→Registry→OntoPiA e gli8criteri di stabilità del miniPET1.3, tuttiOPEN. Nessun import web/Turtle o ontologia inventata sostitutivi. Manutenzione distinta dal normale caricamento fonte.
+
+Farmacie stesso asset/job/profiloSUCCEEDED,61righe/10colonne,chiave ministerialeSTRING e10campiOPEN confermati; nessun nuovo upload/profiling/budget/resume/acquisizione. M1/G4 acquisiti;M2/G5/G6/G7/D5–D7/dueclient/E2E aperti. Nessun merge/releaseacceptance/subagente/automazione. Header e comandi successivi STORICI.
+
+# HISTORICAL — binding acquisiti; Registry e Gateway discovery composti e qualificati
 
 29 ottobre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_CURRENT_BINDINGS_20261029.md), [esito target](evidence/m2-discovery-current-bindings-target-20261029.json), [qualifica sorgenti](evidence/m2-discovery-composition-20261029.json), [delta installativo NON eseguibile](releases/m2-discovery-persistent-installation-delta-20261029.json).
 
