@@ -48,15 +48,15 @@ jobs:
           assert record['sourceCommit']==producer['applicationSourceCommit']==source
           assert producer['producerCommit']=='4829f9f84b12ae982e629faf730ca76238f66962'
           assert record['targetApplyAuthorized'] is False and producer['targetApplyAuthorized'] is False
-          out=pathlib.Path('evidence');out.mkdir()
+          out=pathlib.Path('publisher-sidecar');out.mkdir()
           input={'schema':'ouf.m2-discovery-retained-package-attestation-input.v1','module':module,'applicationSourceCommit':source,'originalArtifactId':aid,'originalArtifactZipSha256':digest,'originalProducerCommit':producer['producerCommit'],'originalRunId':40841859485,'payloadSha256':{p.relative_to(root).as_posix():filehash(p) for p in paths},'nativePublisherTrustAccepted':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}
           (out/'attestation-input.json').write_text(json.dumps(input,indent=2,sort_keys=True)+'\n')
-          (out/'subject-checksums.sha256').write_text(''.join(filehash(p)+'  '+str(p)+'\n' for p in paths)+filehash(out/'attestation-input.json')+'  evidence/attestation-input.json\n')
+          (out/'subject-checksums.sha256').write_text(''.join(filehash(p)+'  '+str(p)+'\n' for p in paths)+filehash(out/'attestation-input.json')+'  publisher-sidecar/attestation-input.json\n')
           PY
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         id: provenance
         with:
-          subject-checksums: evidence/subject-checksums.sha256
+          subject-checksums: publisher-sidecar/subject-checksums.sha256
           create-storage-record: false
       - name: Verify exact hosted publisher and freeze sidecar receipts
         env:
@@ -65,10 +65,10 @@ jobs:
           MODULE: ${{ matrix.module }}
         run: |
           set -euo pipefail
-          cp "$PROVENANCE_BUNDLE" evidence/provenance.json
+          cp "$PROVENANCE_BUNDLE" publisher-sidecar/provenance.json
           python3 - <<'PY'
           import json,os,pathlib,subprocess
-          root=pathlib.Path('evidence');source=json.loads((root/'attestation-input.json').read_text())
+          root=pathlib.Path('publisher-sidecar');source=json.loads((root/'attestation-input.json').read_text())
           receipts={}
           for index,path in enumerate([*map(pathlib.Path,('candidate/'+p for p in source['payloadSha256'])) ,root/'attestation-input.json']):
               raw=subprocess.check_output(['gh','attestation','verify',str(path),'--repo','GioNob/ouf-deploy','--signer-workflow','GioNob/ouf-deploy/.github/workflows/m2-discovery-package-attestations.yml','--source-digest',os.environ['GITHUB_SHA'],'--source-ref',os.environ['GITHUB_REF'],'--deny-self-hosted-runners','--bundle',os.environ['PROVENANCE_BUNDLE'],'--format','json'])
@@ -79,13 +79,13 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: m2-discovery-package-attestation-${{ matrix.module }}-${{ github.run_id }}
-          path: evidence/
+          path: publisher-sidecar/
           if-no-files-found: error
           retention-days: 30
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure()
         with:
           name: m2-discovery-package-attestation-denial-${{ matrix.module }}-${{ github.run_id }}
-          path: evidence/
+          path: publisher-sidecar/
           if-no-files-found: warn
           retention-days: 7
