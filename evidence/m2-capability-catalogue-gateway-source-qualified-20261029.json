@@ -1,0 +1,151 @@
+{
+  "schema": "ouf.m2-capability-catalogue-gateway-source-qualification.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "repository": "GioNob/ouf-api-gateway",
+  "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+  "pullRequest": 84,
+  "draft": true,
+  "merged": false,
+  "status": "CATALOGUE_CONTRACT_ALIGNED_AND_NATIVE_APISIX_QUALIFIED_NOT_INSTALLED",
+  "observation": {
+    "channel": "OUF_MCP_CAPABILITIES_ONLY",
+    "account": "ouf-admin",
+    "systemStatus": {
+      "module": "MCP",
+      "status": "HEALTHY",
+      "actionRequired": false,
+      "partial": false
+    },
+    "correctCataloguePayload": {
+      "view": "CAPABILITIES"
+    },
+    "catalogueRead": {
+      "isError": true,
+      "errorCode": "INVALID_ARGUMENT",
+      "httpStatus": 400
+    },
+    "rolesControlRead": {
+      "arguments": {
+        "view": "ROLES"
+      },
+      "isError": false,
+      "catalogueBodyNotRetained": true
+    },
+    "earlierCallsWithCataloguePaginationWereInvalidClientArguments": true,
+    "grantOrPolicyChanges": 0,
+    "sourceMismatch": {
+      "mcp": "GioNob/ouf-mcp-server@09d1f521703f2e896398c751b41008f22c6dca0d",
+      "onboarding": "GioNob/ouf-source-onboarding@be388e1462778438a208c2e00e166370fee32189",
+      "missingInGateway": "GioNob/ouf-api-gateway@60788cf965334441be0a33c345f5c0bcd66cbdde",
+      "conclusion": "MCP and owner source accept CAPABILITIES; Gateway candidate only accepts GRANTS/ROLES.",
+      "liveFailureCause": "CONSISTENT_WITH_SOURCE_CONTRACT_MISMATCH_NOT_AN_INDEPENDENT_READ_OF_INSTALLED_APISIX_CONFIGURATION"
+    }
+  },
+  "contract": {
+    "mcpInputFixture": "tests/fixtures/permission-inputs-mcp-09d1f52.json",
+    "exactPreviousCommandSchemaPreserved": true,
+    "onlyCapabilityCatalogueSelectorAdded": true,
+    "cataloguePaginationAndGrantFiltersRemainRejected": true,
+    "confirmationAndArbitraryFieldsRemainRejected": true,
+    "existingReadScopeHumanIdentityDelegationAndOwnerReceiptStillRequired": true,
+    "noNewPermissionOrGrant": true,
+    "projection": "Factor only constraints already enforced by the enclosing closed object; branch selectors/prohibitions remain. Full MCP client union schemas are not directly portable to APISIX.",
+    "newExecutableOrNetworkBypass": false
+  },
+  "qualification": {
+    "selectedTestsPerJob": 222,
+    "selectedFailures": 0,
+    "selectedErrors": 0,
+    "selectedSkipped": 0,
+    "logsRead": true,
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40948250554,
+        "jobId": 123709186302
+      },
+      {
+        "event": "pull_request",
+        "runId": 40948260001,
+        "jobId": 123709220518
+      }
+    ],
+    "realApisixOidcAndDelegation": {
+      "version": "3.18.0-debian",
+      "testsPerJob": 1,
+      "jobs": [
+        {
+          "event": "push",
+          "runId": 40948250224,
+          "jobId": 123709186236
+        },
+        {
+          "event": "pull_request",
+          "runId": 40948259752,
+          "jobId": 123709219565
+        }
+      ],
+      "broaderPythonChecks": {
+        "passedPerJob": 590,
+        "skippedPerJob": 3,
+        "skipsAreNotProvenScenarios": true
+      }
+    },
+    "actualUdpPostgresqlNetwork": {
+      "testsPerJob": 1,
+      "jobs": [
+        {
+          "event": "push",
+          "runId": 40948250224,
+          "jobId": 123709186083
+        },
+        {
+          "event": "pull_request",
+          "runId": 40948259752,
+          "jobId": 123709220147
+        }
+      ]
+    },
+    "actualUdpJavaReceiptPairwise": {
+      "javaTestsPerJob": 3,
+      "jobs": [
+        {
+          "event": "push",
+          "runId": 40948250224,
+          "jobId": 123709186082
+        },
+        {
+          "event": "pull_request",
+          "runId": 40948259752,
+          "jobId": 123709220119
+        }
+      ]
+    },
+    "allEightWorkflowRunsAtSourceSuccessful": true,
+    "initialFailure": {
+      "sourceCommit": "fb7306078492ea10c766213bfdc0442af8372f5e",
+      "selectedTestsPassed": 221,
+      "actualApisixRejectedPreviouslyValidGrantSelector": true,
+      "failedRuns": [
+        40947732184,
+        40947741331
+      ],
+      "fixedByFactoringRepeatedConstraints": true,
+      "originalFailureLogsPreserved": true
+    }
+  },
+  "packages": {
+    "historicalGateway607PackageNotCurrentForThisDelta": true,
+    "newImmutableGatewayPackageRequired": true
+  },
+  "targetInstalled": false,
+  "currentLiveCatalogueReadFixed": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

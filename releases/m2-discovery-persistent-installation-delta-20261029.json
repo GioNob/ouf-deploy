@@ -61,9 +61,13 @@
     {
       "module": "gateway",
       "repository": "GioNob/ouf-api-gateway",
-      "commit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+      "commit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
       "pullRequest": 84,
-      "installed": false
+      "installed": false,
+      "historicalQualifiedCommit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+      "sourceQualified": true,
+      "qualification": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
+      "newImmutablePackageRequired": true
     },
     {
       "module": "deployment-authorization-and-installation-audit",
@@ -77,13 +81,14 @@
     {
       "module": "deployment-complete-discovery-proposal",
       "repository": "GioNob/ouf-deploy",
-      "commit": "db9555c92cd7c71292d6afd102ca151940176d76",
+      "commit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
       "pullRequest": 54,
       "stackedBaseCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
       "sourceQualified": true,
       "nativeExecutorIntegrated": false,
       "installed": false,
-      "qualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json"
+      "qualification": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json",
+      "historicalQualifiedCommit": "db9555c92cd7c71292d6afd102ca151940176d76"
     }
   ],
   "capabilities": [
@@ -194,7 +199,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Integrare START_DISTINCT_LEASE_WORKER con installazione governata e review completa: capsule37moduli, controllo pubblico dedicato live (directory, non bind di singoli file), common fence e kernel lock su inode approvato, sandbox separata dai controlli e dal ledger. SourceReference92803ea9; capsule3b88cd8f/464208byte; generare unità dai due peer nuovi e daemon correnti. Non copiare una policy storica congelata come revoca corrente: pubblicazione trust/receipt deve restare autorevole e osservare sostituzioni atomiche, senza esporre chiavi. Poi provider child gated sotto intent parent distinto GATE-ONLY running/ripausa prima di Registry ATTEST (collector live congelato rifiuta paused), coordinatore13fasi/TLS/IAM/DB/fencing, controller boot/rotazione con ammissione corrente e contatori conservati, pubblicazione capability e OntoPiA e2e reale/due client. Nessun nuovo comando operatore pronto.",
+  "next": "Completare la transazione unica di installazione dei byte/ledger firmati del worker e l'ammissione corrente del nuovo provider nella finestra gate-only già qualificata, poi ripausa prima di Registry ATTEST. Il nuovo LeaseStartAdapter governa solo l'avvio di file già installati e firmati; non sostituisce l'installer. Preparare la nuova closure/artifact Gateway c666c0f0 con contratto CAPABILITIES corretto: il vecchio pacchetto60788cf9 resta storico. Completare review/coordinatore13peer/TLS/IAM/DB/fencing/trust autorevole, controller boot/rotazione con contatori conservati, pubblicazione coordinata e ricerca OntoPiA/e2e reale tramite MCP/due client. Nessun nuovo comando operatore o finestra HUMAN pronta.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1384,17 +1389,18 @@
     "assemblyEvidence": "evidence/m2-discovery-application-assembly-source-qualified-20261029.json",
     "workerEvidence": "evidence/m2-discovery-distinct-lease-worker-source-qualified-20261029.json",
     "pausedAdapterEvidence": "evidence/m2-discovery-paused-adapter-source-qualified-20261029.json",
-    "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
+    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
     "fullNativeExecutorIntegrated": false,
-    "targetExecuted": false
+    "targetExecuted": false,
+    "parentGateAndPreinstalledWorkerStartEvidence": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json"
   },
   "discoveryOperationalLeaseSource": {
-    "sourceCommit": "9a70e2bce57446e481495a4c8645eb3a28e45a2a",
+    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
     "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
     "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
     "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
     "installedRuntimeTrustEvidence": "evidence/m2-installed-discovery-lease-trust-source-qualified-20261029.json",
-    "nativeWorkerStartAdapterImplemented": false,
+    "nativeWorkerStartAdapterImplemented": true,
     "nativeGenerationProbeImplemented": true,
     "targetInstalled": false,
     "nativeGenerationProbeEvidence": "evidence/m2-native-lease-generation-probe-source-qualified-20261029.json",
@@ -1409,11 +1415,47 @@
     "closedRuntimeModuleCount": 37,
     "sameGenerationReentryNativeQualified": true,
     "orderlyManagerRestartNativeQualified": true,
-    "bootOrRotationQualified": false
+    "bootOrRotationQualified": false,
+    "nativeWorkerStartEvidence": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json",
+    "independentWorkerObservationImplemented": true,
+    "staticInstallationTemplateQualified": true,
+    "oneUseWorkerByteInstallationTransactionImplemented": false,
+    "parentGateWindowNativeQualified": true,
+    "actualLostStartReplyReconciledWithoutReplay": true
   },
   "mcpOperationalObservation": {
     "evidence": "evidence/m2-mcp-operational-observation-20261029.json",
     "moduleStatus": "HEALTHY",
     "scope": "MCP_ONLY_NOT_E2E"
+  },
+  "discoveryParentGateWorkerCheckpoint": {
+    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "productionSourceCommit": "48c2bae347e07eeb5c83763a5a94510f3230d05b",
+    "workerEvidence": "evidence/m2-discovery-parent-gate-worker-source-qualified-20261029.json",
+    "gatePeerWindowNativeQualified": true,
+    "preinstalledWorkerStartNativeQualified": true,
+    "actualLostManagerStartReplyReconciledWithoutSecondStart": true,
+    "workerByteInstallationTransactionImplemented": false,
+    "selectedTestsPerJob": 235,
+    "explicitNormalOperationParentReviewRequired": true,
+    "gatewaySourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+    "gatewayEvidence": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
+    "gatewaySelectedTestsPerJob": 222,
+    "gatewayNativeApisixAndUdpPostgresqlQualified": true,
+    "newGatewayPackageStillRequired": true,
+    "currentOperatorCommandReady": false,
+    "targetInstalled": false,
+    "bootOrRotationQualified": false,
+    "applicationE2EProven": false,
+    "stableCapabilitiesOperationalProven": false,
+    "releaseAcceptance": false
+  },
+  "capabilityCatalogueContract": {
+    "evidence": "evidence/m2-capability-catalogue-gateway-source-qualified-20261029.json",
+    "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+    "sourceQualified": true,
+    "targetInstalled": false,
+    "liveCatalogueReadSucceeded": false,
+    "newGatewayPackageRequired": true
   }
 }
