@@ -7,7 +7,7 @@ POSIX fixture tests. This is not target evidence or IAM admission.
 import hashlib,json,os,pwd,shutil,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-SOURCE_SHA='c0df0cc0c9a24850c69ecfd18709b7f657bfef93f6cec7dfa17fb92e2be4bd92'
+SOURCE_SHA='5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519'
 SCOPE=Path('/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1')
 CODE=Path('/usr/local/lib/ouf-m2-discovery-trust-context-'+SOURCE_SHA[:16])
 

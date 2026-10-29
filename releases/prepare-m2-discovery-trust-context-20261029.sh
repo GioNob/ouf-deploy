@@ -13,9 +13,9 @@ fi
 delivery=$(mktemp -d "$HOME/ouf-m2-discovery-trust-context-delivery.XXXXXXXX")
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
   --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 131072 \
-  'https://raw.githubusercontent.com/GioNob/ouf-deploy/21c6c2f0e3563b11bfefb58419fefb7ecb461c50/releases/m2-discovery-trust-context-20261029.py' \
+  'https://raw.githubusercontent.com/GioNob/ouf-deploy/6bc5842c1570f2c158952466091de44a23b1065e/releases/m2-discovery-trust-context-20261029.py' \
   -o "$delivery/prepare.py"
-printf '%s  %s\n' 'c0df0cc0c9a24850c69ecfd18709b7f657bfef93f6cec7dfa17fb92e2be4bd92' "$delivery/prepare.py" | sha256sum -c -
+printf '%s  %s\n' '5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519' "$delivery/prepare.py" | sha256sum -c -
 chmod 0400 "$delivery/prepare.py"
 sudo -v
 set +e
@@ -24,7 +24,7 @@ set -Eeuo pipefail
 umask 077
 candidate=$1
 scope='/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1'
-code_root='/usr/local/lib/ouf-m2-discovery-trust-context-c0df0cc0c9a24850'
+code_root='/usr/local/lib/ouf-m2-discovery-trust-context-5e93e2248307b2cd'
 if [[ -e "$scope" || -L "$scope" ]]; then
   printf '%s\n' 'TRUST_CONTEXT_PREPARATION_SCOPE_CONSUMED_NO_REPLAY' >&2
   exit 1
@@ -39,7 +39,7 @@ if [[ ! -e "$code_root/prepare.py" && ! -L "$code_root/prepare.py" ]]; then
 fi
 [[ ! -L "$code_root/prepare.py" ]]
 [[ "$(stat -c '%u:%g:%a' "$code_root/prepare.py")" = 0:0:400 ]]
-printf '%s  %s\n' 'c0df0cc0c9a24850c69ecfd18709b7f657bfef93f6cec7dfa17fb92e2be4bd92' "$code_root/prepare.py" | sha256sum -c -
+printf '%s  %s\n' '5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519' "$code_root/prepare.py" | sha256sum -c -
 [[ ! -e "$code_root/operator.log" && ! -L "$code_root/operator.log" ]] || {
   printf '%s\n' 'PROTECTED_TRUST_CONTEXT_INVOCATION_ALREADY_ATTEMPTED_NO_REPLAY' >&2
   exit 1
