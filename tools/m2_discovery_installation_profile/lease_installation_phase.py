@@ -129,16 +129,20 @@ class WorkerInstallationPhase:
         return self.save(row,effects=effects,stageIndex=index,state='DONE' if index==len(STAGES) else 'READY'),outcome,evidence
 
     def drive(self,intent):
+        expected=checked_row(self.start)
         while True:
             self.current(intent);row=checked_row(self.start)
+            require(row==expected,'WORKER_SEQUENCE_INVOKING_RECORD_DRIFT')
             if row['state']=='DONE':return
             if row['state']=='IN_FLIGHT':
                 row,outcome,_=self.reconcile(intent,row)
                 require(outcome=='APPLIED','WORKER_SUBSTAGE_UNPROVEN_NO_REDISPATCH')
+                expected=row
                 continue
             stage=STAGES[row['stageIndex']]
             effects=[*row['effects'],{'stage':stage,'dispatches':1,'state':'IN_FLIGHT','evidence':None}]
             dispatched=self.save(row,state='IN_FLIGHT',effects=effects)
+            expected=dispatched
             self.current(intent)
             require(checked_row(self.start)==dispatched,'WORKER_SEQUENCE_DISPATCH_RECORD_DRIFT')
             if stage=='ATTEST':self.issuer.issue(intent)

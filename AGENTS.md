@@ -2,7 +2,9 @@
 
 29 October 2026. Worker ATTEST→FILES→REGISTER→START now has a parent-reviewed
 sequence, one durable dispatch per substage and explicit continuation only for
-untouched substages. Lost results are observed without replay. Manager registration
+untouched substages. Every sequence commit requires exact readback, each native
+dispatch rechecks its retained record, and the same invocation rejects any
+regression from its last committed state. Lost results are observed without replay. Manager registration
 creates only a fresh exact unit symlink plus one daemon-reload; start remains
 separate and singular. Start evidence retains three initial-installation proofs;
 completed observation never restores or demands initial live journals. Read-only

@@ -137,6 +137,8 @@ A lost result is observed, never followed by another reload.
 
 `lease_installation_phase.py` composes ATTEST → FILES → REGISTER → START as one
 parent-reviewed phase. Every substage has a durable dispatch before execution.
+Each commit requires exact readback; dispatch rechecks the retained claim and
+the invocation rejects a journal regression before any second effect.
 Read-only observation reconciles attempted stages; explicit same-authority
 continuation may dispatch only untouched stages. A partial or unknown action
 blocks progress and cannot be retried. Start requires all three immutable prefix

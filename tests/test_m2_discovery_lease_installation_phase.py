@@ -145,6 +145,15 @@ class Sequence(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'DISPATCH_RECORD_DRIFT'):owner.drive(intent)
         self.assertEqual(calls,[]);self.assertFalse((owner.issuer.root/'claim.json').exists())
 
+    def test_regressed_record_after_effect_cannot_dispatch_a_stage_twice(self):
+        owner,intent,auth,calls,state=self.fixture();real=owner.issuer.issue
+        def regressed(intent):
+            real(intent);row=owner.journal.read();owner.journal.compare_and_save(row,owner.initial())
+        with patch.object(owner.issuer,'issue',side_effect=regressed) as issue:
+            with self.assertRaisesRegex(ValueError,'INVOKING_RECORD_DRIFT'):owner.apply(intent)
+            self.assertEqual(issue.call_count,1)
+        self.assertTrue((owner.issuer.root/'claim.json').exists());self.assertEqual(calls,[])
+
     def test_read_only_completed_observation_works_while_worker_holds_lifetime_fence(self):
         owner,intent,auth,calls,state=self.fixture();owner.apply(intent)
         c=owner.start.proposal['configuration']
