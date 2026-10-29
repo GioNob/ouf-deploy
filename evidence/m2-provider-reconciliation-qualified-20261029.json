@@ -1,0 +1,153 @@
+{
+  "schema": "ouf.m2-provider-reconciliation-qualified.v1",
+  "date": "2026-10-29",
+  "repository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "sourceCommit": "cd3eb87c25874722d4dc2295f7210cb1b3d506ad",
+  "capsuleCommit": "2248132a6d66444f47e5585b864787778c136a8b",
+  "capsuleSha256": "a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f",
+  "capsuleBytes": 81813,
+  "moduleCount": 5,
+  "wrapperCommit": "4dcbdc900855f401c897f99d77fae68fb8816066",
+  "wrapperSha256": "36895e6d53ed008670937b03a6bc947bb45c2ca6441cca34a9c0b371c21cc5ce",
+  "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
+  "targetExecuted": false,
+  "scopeConsumed": false,
+  "predecessorResultHash": "960507a9df468f100a91338819ec30fb95e098cabefe010c3335ebc60f9cbbfa",
+  "predecessorStatus": "STOP_RECONCILE",
+  "predecessorReason": "CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED",
+  "failedTrustContextScopePreserved": true,
+  "preservedPublicStoreReusedReadOnly": true,
+  "newPublicStoresPrepared": 0,
+  "bounds": {
+    "seconds": 45,
+    "bytes": 4194304,
+    "exactMetadataReads": 6,
+    "recoveredPublicStoreReads": 1,
+    "providerEngineGetAttemptsMaximum": 5,
+    "exactProviderIds": 1,
+    "allowedApis": "CAPTURED_1.44_AND_EXACT_VERSION_REPORTED_BY_CURRENT_ROOT_ENGINE",
+    "newCredentialFileReads": 0,
+    "newApplicationMacKeyFileReads": 0,
+    "publicCaFileReads": 0,
+    "nativeOciConfigurationReads": 0,
+    "engineWrites": 0
+  },
+  "qualification": {
+    "head": "4dcbdc900855f401c897f99d77fae68fb8816066",
+    "localUnitAndCapsuleTests": 14,
+    "native": [
+      {
+        "run": 40880345869,
+        "job": 123469864759,
+        "event": "push",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40880355076,
+        "job": 123469899530,
+        "event": "pull_request",
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "testsPerNativeJob": 14,
+    "skips": 0,
+    "actualDockerVersion": "29.8.1",
+    "actualNegotiatedApi": "1.56",
+    "actualCorePeers": 13,
+    "additionalProvider": 1,
+    "fullCliIdentityMatchesNegotiatedHttpView": true,
+    "sameProviderCliVs144IdentityMismatchObserved": false,
+    "apiSchemaDifferenceDoesNotImplyIdentityChange": true,
+    "realRestartPolicyDriftDoesNotMatchAnyView": true,
+    "stoppedProviderReportedWithoutRestart": true,
+    "absentOldCoreProcessDiagnosedWithoutAdmission": true,
+    "alteredPublicStoreDeniedBeforeEngine": true,
+    "otherPredecessorDeniedBeforeEngineAndStoreRead": true,
+    "priorFilesAndPublicStorePreserved": true,
+    "sameScopeReplayDenied": true,
+    "fixtureCaAndHistoricalProvenanceSynthetic": true,
+    "productionCauseProven": false,
+    "protectedDelivery": [
+      {
+        "run": 40880345992,
+        "job": 123469866160,
+        "event": "push",
+        "case": "prior-log",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40880345992,
+        "job": 123469866412,
+        "event": "push",
+        "case": "missing-target",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40880354743,
+        "job": 123469897426,
+        "event": "pull_request",
+        "case": "missing-target",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40880354743,
+        "job": 123469897669,
+        "event": "pull_request",
+        "case": "prior-log",
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "immutableHttpsAndRoot0400ByteChecks": true,
+    "nonTtyRefusedBeforeCapsuleDownloadOrScope": true,
+    "priorLogsAndFailedScopesPreserved": true,
+    "regression": [
+      {
+        "run": 40880345965,
+        "job": 123469868335,
+        "tests": 139,
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40880354831,
+        "job": 123469898265,
+        "tests": 139,
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "initialRejectedHypothesis": {
+      "source": "762bd7a78501f4e905ce24e9898bbde4510d9468",
+      "run": 40878245402,
+      "job": 123462544460,
+      "logRead": true,
+      "preserved": true,
+      "reason": "A fixture incorrectly assumed the selected identity hash must differ across API versions. Real native observations showed complete identity equality in this fixture despite full response schema differences. Assertions now test observed facts and real configuration/state drift; no production equality guard was relaxed."
+    }
+  },
+  "consumedCollectorsRemainByteExact": {
+    "trustContextCapsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
+    "materialRolesCapsuleSha256": "3f213db3cc611490398a097ef334f874726af09c2f3de0344322ad604a108c65"
+  },
+  "operatorRequiredReason": "The OUF connector exposes no remote executor for these protected VPS files/current Unix Engine metadata; read only the exact consumed incident and one exact provider, returning minimized JSON/footer.",
+  "noRawConfigurationOrEnvironmentValuesPrinted": true,
+  "fieldsDroppedForIdentityMatching": [],
+  "providerAdmissionProven": false,
+  "currentFullCohortConfigurationProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "resumeAllowed": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "next": "Use the returned exact identity/state analysis and preserved public-store bindings to prepare a governed corrective native context/review; never replay the failed collector or infer admission from an API representation match."
+}

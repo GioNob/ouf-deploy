@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "TRUST_CONTEXT_TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
+  "status": "PRESERVED_PUBLIC_TRUST_PROVIDER_RECONCILIATION_QUALIFIED_AWAITING_TARGET",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -151,8 +151,8 @@
   "requiredInstallationWork": [
     {
       "id": "M2-INSTALL-01",
-      "state": "MATERIAL_ROLE_COPIES_PREPARED_TRUST_CONTEXT_SOURCE_QUALIFIED_AWAITING_TARGET",
-      "work": "Execute one qualified bounded public IAM/provider truststore and current Registry/provider OCI/network collection from exact prepared material record68daa9c9. Copies and current observations are preparation, not IAM/TLS/DB admission or executable cutover."
+      "state": "PUBLIC_STORE_PRESERVED_PROVIDER_IDENTITY_STATE_RECONCILIATION_PENDING",
+      "work": "Run one read-only diagnosis from exact consumed STOP960507a9, material68daa9 and preserved store. Separate complete historical identity matches from provider state and absent old core processes. No admission, field dropping, store regeneration or old collector replay."
     },
     {
       "id": "M2-INSTALL-02",
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Reconcile exact provider identity from the consumed trust/context result, its already captured Engine response and the historical producer contract. Preserve the public store and all scopes; no new command ready, no retry or early IAM/OAuth window.",
+  "next": "Execute the single qualified read-only provider reconciliation once as oufadmin over interactive SSH. Read exact consumed STOP/captured response and preserved public store; at most five GETs for one exact provider. Return minimized JSON/footer. No old collector replay, new store, restart, IAM/OAuth, application apply or admission.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1101,7 +1101,7 @@
     "currentCommandReady": false,
     "targetEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
-  "currentOperatorCommandReady": false,
+  "currentOperatorCommandReady": true,
   "discoveryTrustContextTarget": {
     "schema": "ouf.m2-discovery-trust-context-target-stop-observation.v1",
     "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
@@ -1148,5 +1148,19 @@
     "priorMaterialScopeRemainsSuccessfulConsumed": true,
     "providerMismatchCauseProven": false,
     "newCommandReady": false
+  },
+  "discoveryProviderReconciliation": {
+    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-provider-reconciliation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
+    "sourceCommit": "cd3eb87c25874722d4dc2295f7210cb1b3d506ad",
+    "capsuleCommit": "2248132a6d66444f47e5585b864787778c136a8b",
+    "capsuleSha256": "a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f",
+    "wrapperCommit": "4dcbdc900855f401c897f99d77fae68fb8816066",
+    "wrapperSha256": "36895e6d53ed008670937b03a6bc947bb45c2ca6441cca34a9c0b371c21cc5ce",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
   }
 }

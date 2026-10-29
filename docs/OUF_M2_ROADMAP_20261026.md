@@ -1,4 +1,8 @@
-# CURRENT 29 ottobre2026 — trust/context STOP consumato, provider da riconciliare
+# CURRENT 29 ottobre2026 — riconciliazione provider qualificata, unica lettura operatore
+
+[Comando corrente](handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md), [qualifica](../evidence/m2-provider-reconciliation-qualified-20261029.json). Trust/context STOP consumato960507a9 con store pubblico preservato. Nuovo scope provider-reconciliation NON ESEGUITO:45s/4MiB,6metadati,1riletturastore,max5GET/unprovider. Diagnosi identità/stato/processi, nessunrestart/grant/IAM/SQL/apply o rigenerazione.14test/Docker29.8.1/4consegne/139regressioni PASS;logletti. ServeSSHoufadmin perché il connector nonhaexecutor VPS. Conservare tutti scope/log, ancheSTOPnonrilanciare. Nessuna causaVPS/ammissione provata;13fasi/worker distinto/TLS/IAM/DB/stabilità/E2E OPEN. Le sezioni successive sono storiche.
+
+# HISTORICAL 29 ottobre2026 — trust/context STOP consumato, provider da riconciliare
 
 [Esito target](../evidence/m2-discovery-trust-context-target-stop-20261029.json): CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED,27+3GET/5metadata/906004byte,2CA/1storepubblico+rilettura,0OCI. Store preservato; scope FALLITO/CONSUMATO e comando ritirato. Non ripetere né cancellare scope/log. Riconciliare la risposta provider già acquisita con il contratto originale; causa non ancora provata, nessun nuovo comando pronto. Materiali68daa9 restano riusciti/consumati. Nessuna authority/apply/IAM/SQL/lifecycle nuova;13fasi/worker/stabilità/E2E OPEN. Le sezioni seguenti sono storiche.
 

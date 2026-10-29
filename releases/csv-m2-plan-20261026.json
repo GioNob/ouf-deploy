@@ -1994,7 +1994,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Reconcile exact provider identity from the consumed trust/context result, its already captured Engine response and the historical producer contract. Preserve the public store and all scopes; no new command ready, no retry or early IAM/OAuth window.",
+  "firstNextAction": "Execute the single qualified read-only provider reconciliation once as oufadmin over interactive SSH. Read exact consumed STOP/captured response and preserved public store; at most five GETs for one exact provider. Return minimized JSON/footer. No old collector replay, new store, restart, IAM/OAuth, application apply or admission.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2438,9 +2438,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-29",
-    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_TRUST_CONTEXT_20261029.md",
-    "next": "RECONCILE_EXACT_PROVIDER_IDENTITY_NO_REPLAY",
-    "evidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md",
+    "next": "ONE_READ_ONLY_PROVIDER_RECONCILIATION_OPERATOR_PASS_REQUIRED",
+    "evidence": "evidence/m2-provider-reconciliation-qualified-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
@@ -2450,7 +2450,8 @@
     "nativeWitnessAndPackageEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json",
     "nodeOwnerQualification": "evidence/m2-discovery-node-owner-source-qualification-20261029.json",
     "nativeDockerFrameEvidence": "evidence/m2-discovery-native-frame-qualified-20261029.json",
-    "materialTargetEvidence": "evidence/m2-discovery-material-role-target-20261029.json"
+    "materialTargetEvidence": "evidence/m2-discovery-material-role-target-20261029.json",
+    "targetStopEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4603,7 +4604,8 @@
     "currentBindingCapture": "evidence/m2-discovery-current-bindings-qualified-20261029.json",
     "targetCaptureExecuted": true,
     "runtimeReviewReady": false,
-    "targetTrustContextExecuted": false
+    "targetTrustContextExecuted": true,
+    "targetProviderReconciliationExecuted": false
   },
   "lastRevisedDate": "2026-10-29",
   "stableDiscoveryMandate": {
@@ -6368,7 +6370,7 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Reconcile exact provider identity from the consumed trust/context result, its already captured Engine response and the historical producer contract. Preserve the public store and all scopes; no new command ready, no retry or early IAM/OAuth window.",
+  "next": "Execute the single qualified read-only provider reconciliation once as oufadmin over interactive SSH. Read exact consumed STOP/captured response and preserved public store; at most five GETs for one exact provider. Return minimized JSON/footer. No old collector replay, new store, restart, IAM/OAuth, application apply or admission.",
   "discoveryTrustContextPreparation": {
     "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
@@ -6384,7 +6386,7 @@
     "currentCommandReady": false,
     "targetEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
-  "currentOperatorCommandReady": false,
+  "currentOperatorCommandReady": true,
   "discoveryMaterialRoleDuplicateDelivery": {
     "evidence": "evidence/m2-discovery-material-role-duplicate-delivery-20261029.json",
     "error": "MATERIAL_ROLE_PREPARATION_SCOPE_CONSUMED_NO_REPLAY",
@@ -6439,5 +6441,19 @@
     "priorMaterialScopeRemainsSuccessfulConsumed": true,
     "providerMismatchCauseProven": false,
     "newCommandReady": false
+  },
+  "discoveryProviderReconciliation": {
+    "status": "SOURCE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-provider-reconciliation-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
+    "sourceCommit": "cd3eb87c25874722d4dc2295f7210cb1b3d506ad",
+    "capsuleCommit": "2248132a6d66444f47e5585b864787778c136a8b",
+    "capsuleSha256": "a3dc3693cb08e2140cff764350529873c05ef52158b3e0440b3a904e2fe6b83f",
+    "wrapperCommit": "4dcbdc900855f401c897f99d77fae68fb8816066",
+    "wrapperSha256": "36895e6d53ed008670937b03a6bc947bb45c2ca6441cca34a9c0b371c21cc5ce",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
   }
 }
