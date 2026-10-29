@@ -131,7 +131,10 @@
     "discoveryCurrentMaterialCandidateBinding": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
     "discoveryStoppedProviderInputsSourceQualified": true,
     "discoveryStoppedProviderInputsTargetExecuted": true,
-    "discoveryStoppedProviderInputsScopeConsumed": true
+    "discoveryStoppedProviderInputsScopeConsumed": true,
+    "discoveryThirteenPhaseAssemblySourceQualified": true,
+    "discoveryLeaseWorkerComponentNativeQualified": true,
+    "discoveryPausedNodeAdapterDispatchFixed": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1997,7 +2000,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Use exact private installationInputsHash1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083 to complete a fresh coordinated gated provider dependency admission, distinct normal lease worker and complete thirteen-phase Registry/cohort execution assembly and native TLS/IAM/database/fencing/boot/rotation review. Stopped provider is provenance input only. No new operator command ready; no historical driver/authority or consumed scope replay.",
+  "firstNextAction": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -6373,7 +6376,7 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Use exact private installationInputsHash1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083 to complete a fresh coordinated gated provider dependency admission, distinct normal lease worker and complete thirteen-phase Registry/cohort execution assembly and native TLS/IAM/database/fencing/boot/rotation review. Stopped provider is provenance input only. No new operator command ready; no historical driver/authority or consumed scope replay.",
+  "next": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
   "discoveryTrustContextPreparation": {
     "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
@@ -6675,5 +6678,13 @@
     "targetApplyAuthorized": false,
     "stableCapabilitiesOperationalProven": false,
     "applicationE2EProven": false
+  },
+  "discoveryExecutionComponents": {
+    "assemblyEvidence": "evidence/m2-discovery-application-assembly-source-qualified-20261029.json",
+    "workerEvidence": "evidence/m2-discovery-distinct-lease-worker-source-qualified-20261029.json",
+    "pausedAdapterEvidence": "evidence/m2-discovery-paused-adapter-source-qualified-20261029.json",
+    "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
+    "fullNativeExecutorIntegrated": false,
+    "targetExecuted": false
   }
 }

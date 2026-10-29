@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Use exact private installationInputsHash1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083 to complete a fresh coordinated gated provider dependency admission, distinct normal lease worker and complete thirteen-phase Registry/cohort execution assembly and native TLS/IAM/database/fencing/boot/rotation review. Stopped provider is provenance input only. No new operator command ready; no historical driver/authority or consumed scope replay.",
+  "next": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -1379,5 +1379,13 @@
     "targetApplyAuthorized": false,
     "stableCapabilitiesOperationalProven": false,
     "applicationE2EProven": false
+  },
+  "discoveryExecutionComponents": {
+    "assemblyEvidence": "evidence/m2-discovery-application-assembly-source-qualified-20261029.json",
+    "workerEvidence": "evidence/m2-discovery-distinct-lease-worker-source-qualified-20261029.json",
+    "pausedAdapterEvidence": "evidence/m2-discovery-paused-adapter-source-qualified-20261029.json",
+    "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
+    "fullNativeExecutorIntegrated": false,
+    "targetExecuted": false
   }
 }
