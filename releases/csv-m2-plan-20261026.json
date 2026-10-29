@@ -98,7 +98,7 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "SOURCE_AND_REGISTRY_PACKAGE_QUALIFIED_INSTALLATION_REFERENCE_READER_QUALIFIED_TARGET_PENDING",
+    "semanticExternalDiscovery": "INSTALLATION_REFERENCES_CAPTURED_CONSUMED_AUTHORIZATION_PROFILE_QUALIFIED_NATIVE_FULL_PROFILE_PENDING",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
@@ -106,7 +106,12 @@
     "discoveryRegistryOfflinePackageQualified": true,
     "discoveryRegistryCandidateImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
     "discoveryInstallationReferenceReaderQualified": true,
-    "discoveryInstallationReferenceTargetExecuted": false
+    "discoveryInstallationReferenceTargetExecuted": true,
+    "discoveryInstallationReferenceScopeConsumed": true,
+    "discoveryAuthorizationSourceQualified": true,
+    "discoveryAuthorizationSourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+    "discoveryAuthorizationTargetPublished": false,
+    "discoveryInstallationReviewReady": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1973,19 +1978,14 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Execute the NEW pinned installation reference inventory once as oufadmin in interactive SSH. Two exact consumed metadata records and9GET over4selected containers,90s/24MiB. No config/credential/key file contents, IAM/OAuth,SQL or runtime effects. Return only final JSON/footer. On STOP preserve/no replay. After success prepare the bound persistent installation review with actual configuration/custody/admission.",
-    "commandPath": "releases/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_COMMAND_20261029.sh",
-    "sourceCommit": "41e4dda40899c85307a79dbc90c4385355bdc52d",
-    "sourceSha256": "f9574bc696b34077e146f74810918625880a48d2108fc8038834eb23e45779ed",
-    "wrapperCommit": "c2035ca457e95f95d772b8e3660c241bfdec6e7b",
-    "wrapperSha256": "ec7775e982a705feb7a8ceaaa789397241d990eed36c7efefb26fde675dcb969",
-    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
-    "sshExecutionCommandUsable": true,
-    "qualificationPending": false,
+    "action": "Qualify the complete discovery installation profile and coordinated native maintenance review from the successful consumed f759d397 input provenance; resolve current credential/key owner custody, provider/TLS/network/DB, preserved file paths and fresh native generation/admission. No current operator command is ready. Do not replay consumed reader, obtain premature login/token or enable flags alone.",
+    "sourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+    "currentDeliveryUsable": false,
+    "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "priorScopeConsumed": true,
+    "priorInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d"
   },
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
@@ -2431,8 +2431,10 @@
   "currentCheckpoint": {
     "date": "2026-10-29",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
-    "next": "ONE_NEW_OPERATOR_INSTALLATION_REFERENCE_READ_THEN_BOUND_PERSISTENT_REVIEW",
-    "evidence": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
+    "next": "QUALIFY_COMPLETE_DISCOVERY_INSTALLATION_PROFILE_AND_COORDINATED_NATIVE_MAINTENANCE_REVIEW",
+    "evidence": "evidence/m2-discovery-installation-inputs-target-20261029.json",
+    "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
+    "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
     "installationDeltaDraft": "releases/m2-discovery-persistent-installation-delta-20261029.json",
     "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json"
@@ -4645,7 +4647,7 @@
     "schema": "ouf.m2-discovery-current-bindings-qualification.v1",
     "date": "2026-10-29",
     "timezone": "Europe/Rome",
-    "status": "SOURCE_NATIVE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+    "status": "SUCCESS_CONSUMED_RETAINED_PROVENANCE_NOT_CURRENT_AUTHORITY",
     "sourceCommit": "8af878eca402bfe4598edb77ab0de239c575f506",
     "sourcePath": "scripts/read-m2-discovery-bindings-20261029.py",
     "sourceSha256": "788772e96f1e956e5439e2148b80bb825fda700e0a3a05a2021109b71823f215",
@@ -4759,13 +4761,401 @@
       "jobs": 0,
       "acquisitions": 0
     },
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "automaticReplayAllowed": false,
     "budgetReset": false,
     "applicationE2EProven": false,
+    "releaseAcceptance": false,
+    "scopeConsumed": true,
+    "targetEvidence": "evidence/m2-discovery-current-bindings-target-20261029.json"
+  },
+  "discoveryInstallationReferenceTarget": {
+    "schema": "ouf.m2-discovery-installation-inputs-target-observation.v1",
+    "date": "2026-10-29",
+    "timezone": "Europe/Rome",
+    "evidenceOrigin": "USER_PASTED_FINAL_JSON_AND_FOOTERS",
+    "representation": "MINIMIZED_TRANSCRIPTION_NOT_ORIGINAL_JSON_BYTES",
+    "independentHostLogRead": false,
+    "privateInputsReadByAgent": false,
+    "resultSchema": "ouf.m2-discovery-installation-inputs-result.v1",
+    "status": "M2_DISCOVERY_INSTALLATION_REFERENCES_CAPTURED_NOT_AUTHORIZED",
+    "complete": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1",
+    "sourceInputsHash": "14e42ac96293d342cd71b7386360b976882ac7ec75a18838d3960999430f3a13",
+    "inputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+    "counts": {
+      "bytes": 700148,
+      "engineGets": 9,
+      "privateMetadataReads": 2
+    },
+    "selectedTargetCount": 4,
+    "otherNinePeersReobserved": false,
+    "inventories": {
+      "semantic": {
+        "declaredStates": {
+          "OUF_DISCOVERY_WORKER_ENABLED": "FALSE",
+          "OUF_IAM_ENABLED": "TRUE",
+          "OUF_SCHEMA_GOV_ENABLED": "FALSE",
+          "OUF_SCHEMA_GOV_GATEWAY_AUTH_ENABLED": "TRUE"
+        },
+        "references": {
+          "OUF_IAM_AUDIENCE": "ouf-api-gateway",
+          "OUF_IAM_ISSUER": "https://auth.ouf-lab.it/realms/ouf",
+          "OUF_SCHEMA_GOV_CLIENT_ID": "ouf-semantic",
+          "OUF_SCHEMA_GOV_CLIENT_SECRET_FILE": "/run/secrets/schema-gov-client-secret",
+          "OUF_SCHEMA_GOV_FETCH_PATH": "/internal/providers/schema-gov/fetch",
+          "OUF_SCHEMA_GOV_GATEWAY_BASE_URL": "https://ouf-semantic-southbound-v2:10443",
+          "OUF_SCHEMA_GOV_SEARCH_PATH": "/internal/providers/schema-gov/search",
+          "OUF_SCHEMA_GOV_TOKEN_ENDPOINT": "https://auth.ouf-lab.it/realms/ouf/protocol/openid-connect/token",
+          "OUF_SCHEMA_GOV_WORKLOAD_SCOPE": "gateway.southbound.invoke",
+          "OUF_SEMANTIC_DISCOVERY_DELEGATION_KEY_FILE": "/run/secrets/semantic-discovery-owner.key",
+          "OUF_SEMANTIC_DISCOVERY_DELEGATION_WORKLOAD": "ouf-mcp-server"
+        },
+        "mounts": [
+          {
+            "destination": "/run/ouf-semantic-auth",
+            "sourceReferenceHash": "1de6761b81cc2f5d4bfc30b9125c695b06eb6820c55061efa28cc5e67553dc06",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/ouf-semantic-db",
+            "sourceReferenceHash": "15c3653d46df689c08ffa775dfc3e9707ee8ef0bc3896f06fddeed35cee1f74d",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/ouf/proposal.key",
+            "sourceReferenceHash": "1231edc8a5791f09043080738af0d6afd40e1a3d30441edd28e049c48460f825",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/secrets/semantic-read-owner.key",
+            "sourceReferenceHash": "7b1c6bf4a25ff0a090d89639d3673fe6196a9efa02cd9868c122b4e9ed467889",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          }
+        ],
+        "overrideSurfacePresent": {
+          "SPRING_CONFIG_IMPORT": true,
+          "SPRING_APPLICATION_JSON": false,
+          "JAVA_TOOL_OPTIONS": false,
+          "JDK_JAVA_OPTIONS": false,
+          "_JAVA_OPTIONS": false,
+          "JAVA_OPTS": false
+        }
+      },
+      "mcp": {
+        "references": {
+          "MCP_AUTHORIZATION_BUNDLE_ENDPOINT": "https://api.ouf-lab.it/internal/capabilities/v1/authorization/policy-bundle/active",
+          "MCP_FINGERPRINT_KEY_FILE": "/run/secrets/mcp-fingerprint-key",
+          "MCP_GATEWAY_ENDPOINT": "https://api.ouf-lab.it/internal/capabilities/v1/execute",
+          "MCP_GATEWAY_RECOVERY_ENDPOINT": "https://api.ouf-lab.it/internal/capabilities/v1/recovery",
+          "MCP_OIDC_CLIENT_ID": "ouf-mcp-server",
+          "MCP_OIDC_CLIENT_SECRET_FILE": "/run/secrets/mcp-client-secret",
+          "MCP_OIDC_TOKEN_ENDPOINT": "https://auth.ouf-lab.it/realms/ouf/protocol/openid-connect/token",
+          "MCP_REPROCESSING_EXISTING_POLICY_FILE": "/run/ouf-mcp-reprocessing/policy.json",
+          "MCP_REPROCESSING_KEY_PROFILE_FILE": "/run/ouf-mcp-reprocessing/profile.json",
+          "MCP_REPROCESSING_PERMIT_FILE": "/run/ouf-mcp-reprocessing/permit.json"
+        },
+        "mounts": [
+          {
+            "destination": "/run/ouf-mcp-reprocessing",
+            "sourceReferenceHash": "e0d1ae8318bdaf1169304e2d00331b25adcadb50d0d1e9ab8fb17865adcdf780",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/secrets/mcp-client-secret",
+            "sourceReferenceHash": "b85fbb596f43eab06f4cfcce2fb6c18a817a6162b34cfe3b72d34292c2ff7f62",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/secrets/mcp-fingerprint-key",
+            "sourceReferenceHash": "a50e5177d6d78823f71f21905861b973507015a71c6176968c5a152ec3d9c8bf",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          }
+        ],
+        "inlineCredentialEnvironmentPresent": {
+          "MCP_FINGERPRINT_KEY": false,
+          "MCP_WORKLOAD_TOKEN": false
+        },
+        "databaseUrlSettingPresent": true
+      },
+      "apisix": {
+        "environmentKeyNames": [
+          "GATEWAY_SUMMARY_RECEIPT_KEY",
+          "INGESTION_SUMMARY_RECEIPT_KEY",
+          "OUF_AUTHORIZATION_OWNER_KEY",
+          "OUF_GATEWAY_DELEGATION_KEY",
+          "OUF_GATEWAY_OIDC_CLIENT_SECRET",
+          "OUF_INGESTION_READ_OWNER_KEY",
+          "OUF_SEMANTIC_PROPOSAL_OWNER_KEY",
+          "OUF_SEMANTIC_READ_OWNER_KEY",
+          "OUF_UDP_SEARCH_OWNER_KEY",
+          "PATH"
+        ],
+        "mounts": [
+          {
+            "destination": "/usr/local/apisix/conf/config.yaml",
+            "sourceReferenceHash": "37e63c956f19607be1ae325fa1e7bf69c8b3461efaac363b0013d94ab8af6d7c",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/usr/local/apisix/conf/ouf_json_precision.lua",
+            "sourceReferenceHash": "5971ed99086c79193d41b2c52db3118d115b4713ffa76f7677b09cb2f962ca32",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua",
+            "sourceReferenceHash": "c3655a59e3d6df50aa9b1b220cb36a37a9452cc9e064ed30f3960cb48b76058a",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          }
+        ]
+      },
+      "gateway-owner": {
+        "environmentKeyNames": [
+          "JAVA_HOME",
+          "JAVA_VERSION",
+          "LANG",
+          "LANGUAGE",
+          "LC_ALL",
+          "PATH",
+          "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        ],
+        "mounts": [
+          {
+            "destination": "/run/ouf-gateway-auth",
+            "sourceReferenceHash": "02e120242dc161e490986795ab58f0900e54f8b68ae49bf14585dcd7b2e918e4",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/secrets/gateway-summary-receipt-key",
+            "sourceReferenceHash": "237b0517d43a28088b2cc35dca4c64dd7ed5ac9e8ee262ad92654a65e838ba7f",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/run/secrets/gateway-summary.properties",
+            "sourceReferenceHash": "e3c5f93b476f1d8a9e18a41b4816e9b0a2caf2d885d529cc0f4c063a77963694",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          },
+          {
+            "destination": "/var/lib/ouf-gateway-operations",
+            "sourceReferenceHash": "ed6b5c870a9d8134362fc962d7012f58aabec76befe030252efaded06e0ec5fb",
+            "readOnly": true,
+            "type": "bind",
+            "sourceContentRead": false
+          }
+        ]
+      }
+    },
+    "operatorExit": 0,
+    "deliveryExit": 0,
+    "operatorDirectory": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.FVZPP8BQ",
+    "operatorLog": "/usr/local/lib/ouf-m2-discovery-installation-inputs-f9574bc696b34077/operator.log",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.FVZPP8BQ/bootstrap.log",
+    "scopeConsumed": true,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "engineWrites": 0,
+    "configurationFileContentReads": 0,
+    "credentialFileReads": 0,
+    "signingKeyReads": 0,
+    "sqlSessions": 0,
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "imageImports": 0,
+    "containerLifecycleOperations": 0,
+    "newGrantsGranted": 0,
+    "humanBudgetsGranted": 0,
+    "uploads": 0,
+    "newJobs": 0,
+    "resumes": 0,
+    "acquisitionsExecuted": 0,
+    "sourceActivations": 0,
+    "effectiveProviderConfigurationProven": false,
+    "credentialCustodyProven": false,
+    "databaseAdmissionProven": false,
+    "applicationReadinessOrProviderReachabilityProven": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false,
+    "analysis": {
+      "mcpClientSecretAndFingerprintHaveDeclaredExactReadonlyMounts": true,
+      "mcpCredentialContentsOrCustodyNotProven": true,
+      "semanticProviderCredentialPathNotCoveredByObservedMountTargets": true,
+      "semanticDiscoveryReceiptKeyPathNotCoveredByObservedMountTargets": true,
+      "mountPathAbsenceDoesNotProveEntireContainerFilesystemAbsence": true,
+      "apisixNoDiscoveryKeyEnvironmentNameObserved": true,
+      "apisixConfigurationContentsNotRead": true,
+      "providerGatewayIsDeclaredReferenceOnly": true,
+      "providerIsNotOneOfFourReobservedContainers": true,
+      "secretsOrCustodyProven": false
+    }
+  },
+  "discoveryInstallationDuplicateDelivery": {
+    "schema": "ouf.m2-discovery-installation-inputs-duplicate-delivery-observation.v1",
+    "date": "2026-10-29",
+    "evidenceOrigin": "USER_PASTED_FOOTER",
+    "status": "REJECTED_CONSUMED_SCOPE_NO_REPLAY",
+    "reasonCode": "POLICY_READ_SCOPE_CONSUMED_NO_REPLAY",
+    "deliveryExit": 1,
+    "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.1FN41iD7",
+    "deliveryLog": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.1FN41iD7/bootstrap.log",
+    "bootstrapPath": "/home/oufadmin/ouf-m2-installation-bootstrap.wp8v83hD/run.sh",
+    "downloadedCodeChecksumReportedOk": true,
+    "successfulPriorInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+    "successfulPriorResultRemainsSelected": true,
+    "independentHostLogRead": false,
+    "codeBoundary": "WRAPPER_SCOPE_GUARD_BEFORE_PROTECTED_CODE_INSTALL_OR_READER_MAIN",
+    "laterFailureDoesNotReplaceSuccessfulResult": true,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
     "releaseAcceptance": false
+  },
+  "discoveryAuthorizationSourceQualification": {
+    "schema": "ouf.m2-discovery-authorization-source-qualification.v1",
+    "date": "2026-10-29",
+    "sourceRepository": "GioNob/ouf-deploy",
+    "sourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+    "pullRequest": 53,
+    "status": "SIGNED_OWNER_PROFILE_AND_PURE_INSTALLATION_AUDIT_QUALIFIED_NOT_INSTALLED",
+    "profile": "ouf.semantic-discovery-authorization.v1",
+    "capabilities": [
+      "ouf.semantic.discovery",
+      "ouf.semantic.discovery.status",
+      "ouf.semantic.discovery.candidates"
+    ],
+    "sharedOAuthScope": "ouf.semantic.discovery",
+    "qualification": {
+      "testsPerJob": 73,
+      "newTests": 23,
+      "retainedRegressionTests": 50,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "name": "chatbot_cohort_authorization",
+          "count": 22
+        },
+        {
+          "name": "chatbot_cohort_authorization_observation",
+          "count": 6
+        },
+        {
+          "name": "source_revision_authorization",
+          "count": 11
+        },
+        {
+          "name": "ingestion_read_authorization",
+          "count": 11
+        },
+        {
+          "name": "semantic_discovery_authorization",
+          "count": 14
+        },
+        {
+          "name": "m2_discovery_installation_audit",
+          "count": 9
+        }
+      ],
+      "jobs": [
+        {
+          "event": "push",
+          "runId": 40833391222,
+          "jobId": 123312473937,
+          "conclusion": "success",
+          "fullLogRead": true
+        },
+        {
+          "event": "pull_request",
+          "runId": 40833399252,
+          "jobId": 123312498723,
+          "conclusion": "success",
+          "fullLogRead": true
+        }
+      ],
+      "actualPinnedOwnerLifecycleHelpers": true,
+      "actualJavaOwnerConstraintCodec": true,
+      "actualSignedAggregateActionAndDurableJournal": true,
+      "httpAndIamTransport": "EXPLICIT_FIXTURES_NOT_TARGET",
+      "humanReview": "SYNTHETIC_FIXTURE_NOT_OWNER_CONFIRMATION",
+      "rootFixture": "ISOLATED_GITHUB_HOSTED_RUNNER",
+      "initialFailure": {
+        "sourceCommit": "0858999ac281ac6f6766887c5017971ac57eec82",
+        "runId": 40832453710,
+        "jobId": 123309540474,
+        "reason": "Java21 compiled owner codec invoked under sudo default Java17; explicit JAVA_HOME/PATH preserved in source1cc920 without changing tests or guards."
+      }
+    },
+    "preservation": {
+      "previousGrantsRolesAndAssignments": true,
+      "existingClientBindings": true,
+      "oldAuthorizationProfiles": true,
+      "noAdoptionApprovalOrPublicationPermissionsAdded": true,
+      "oneNewSharedScopeOnly": true,
+      "nativeHumanConfirmationStillRequired": true,
+      "ambiguousNonIdempotentDraftNotDuplicated": true,
+      "lostRegistrationReplyReconciled": true,
+      "expiredAssignmentDenied": true,
+      "revocationStopsBeforeTransport": true
+    },
+    "installationAudit": {
+      "kind": "PURE_HASH_BOUND_PRIVATE_CAPTURE_COMPILER",
+      "privateInputsSchema": "ouf.m2-discovery-private-installation-inputs.v1",
+      "publicTranscriptionRejected": true,
+      "executedOnTargetPrivateInputs": false,
+      "noCoveringMountIsNotProofOfWholeFilesystemAbsence": true,
+      "ancestorMountDoesNotProveDirectoryTypeOrCustody": true,
+      "allOutputsDenyNativeExecutionAndAuthority": true,
+      "selectedNewKeyEnvironmentReferenceIsNotCredentialCustody": true,
+      "fileOnlyProfileNotSufficient": true,
+      "sevenMountProposalFrameIsNotDiscoveryFrame": true
+    },
+    "runtime": {
+      "targetCalls": 0,
+      "oauthRequests": 0,
+      "iamRequests": 0,
+      "policyProposals": 0,
+      "policyPublications": 0,
+      "newGrantsGranted": 0,
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "installed": false,
+      "stableCapabilitiesOperationalProven": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false,
+      "mergeAuthorized": false
+    }
   }
 }
