@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.semantic-proposal-candidate-migration-review.v1",
+  "candidateJarSha256": "1038f6e04b852c810a8a5e3e7c10847d74ad3e39e0ee358b80417106e0094cc5",
+  "baselineRef": "evidence/discovery-remediated-application-qualification-20261009.json",
+  "baselineIsHistorical": true,
+  "currentDatabaseRead": false,
+  "retainedMigrationHashesUnchanged": {
+    "V1__semantic_registry.sql": "ef6e283fbb9e5f6c0843f565428b0a494a260fcff02a12eacc645d83b7025424",
+    "V2__governed_publication.sql": "3f860a682a1ce9e0e9c3688882ffacc13eadc26edb4fc78278e14eda24d3774b",
+    "V3__discovery_jobs.sql": "2243febe37b6b8859c116a1a96dcc2edee943a5578cb1a3f672a3f45ee0f3e45",
+    "V4__candidate_adoption.sql": "ebec889715f70df4cc41b08d362eea8b312b3ba8fa4feddf80ed5578c3a42f76",
+    "V5__validation_compatibility.sql": "6ec20c1b4fb90ec03fe9f01838f18cd2ece4fc0c6c693f0d0efed146e39a0ce1",
+    "V6__interchange_change_governance.sql": "221fa34694beae28e4479e4e77fe81d04fb173ba7e1c7365484604ee4f1adb98",
+    "V7__trusted_human_governance_audit.sql": "b72331f6dbcd2d7fd96244fcf153ec533fb1bb6fbb688a7fd83358420655b557",
+    "V8__governed_deprecation_retirement.sql": "ed53a72fa6fdc38511c995e87e1988eb6e1c51ffa234eed56b18b0c82b8de03f",
+    "V9__authorization_actor_type_canonicalization.sql": "4171a24e14ec92dcb1bfd908ad53403e82214d5702482816a31ea3a87f114eec"
+  },
+  "candidateMigrations": {
+    "V10__proposal_command_receipts.sql": "7ee3a19ad02cdc4ea5ccd58d8ab96268046bd114962c7d6cd5c8717c8c3b0820",
+    "V1__semantic_registry.sql": "ef6e283fbb9e5f6c0843f565428b0a494a260fcff02a12eacc645d83b7025424",
+    "V2__governed_publication.sql": "3f860a682a1ce9e0e9c3688882ffacc13eadc26edb4fc78278e14eda24d3774b",
+    "V3__discovery_jobs.sql": "2243febe37b6b8859c116a1a96dcc2edee943a5578cb1a3f672a3f45ee0f3e45",
+    "V4__candidate_adoption.sql": "ebec889715f70df4cc41b08d362eea8b312b3ba8fa4feddf80ed5578c3a42f76",
+    "V5__validation_compatibility.sql": "6ec20c1b4fb90ec03fe9f01838f18cd2ece4fc0c6c693f0d0efed146e39a0ce1",
+    "V6__interchange_change_governance.sql": "221fa34694beae28e4479e4e77fe81d04fb173ba7e1c7365484604ee4f1adb98",
+    "V7__trusted_human_governance_audit.sql": "b72331f6dbcd2d7fd96244fcf153ec533fb1bb6fbb688a7fd83358420655b557",
+    "V8__governed_deprecation_retirement.sql": "ed53a72fa6fdc38511c995e87e1988eb6e1c51ffa234eed56b18b0c82b8de03f",
+    "V9__authorization_actor_type_canonicalization.sql": "4171a24e14ec92dcb1bfd908ad53403e82214d5702482816a31ea3a87f114eec"
+  },
+  "newMigrations": [
+    "V10__proposal_command_receipts.sql"
+  ],
+  "targetApplyAuthorized": false,
+  "backupRestoreAndCurrentAdmissionRequired": true
+}

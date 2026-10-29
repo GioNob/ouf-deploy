@@ -1,0 +1,25 @@
+name: Provider v2 private trust preparation tests
+on:
+  push:
+    paths:
+      - 'scripts/prepare-provider-v2-trust.py'
+      - 'scripts/test-prepare-provider-v2-trust.py'
+      - 'scripts/bootstrap-provider-v2-private-trust.sh'
+      - '.github/workflows/provider-v2-private-trust.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test real key generation and numeric ownership inside a root-private fixture
+        run: |
+          sudo install -d -m 700 /root/ouf-provider-v2-trust-fixture
+          sudo install -m 600 scripts/prepare-provider-v2-trust.py scripts/test-prepare-provider-v2-trust.py /root/ouf-provider-v2-trust-fixture/
+          sudo /usr/bin/python3 -I -B /root/ouf-provider-v2-trust-fixture/test-prepare-provider-v2-trust.py
+      - run: bash -n scripts/bootstrap-provider-v2-private-trust.sh

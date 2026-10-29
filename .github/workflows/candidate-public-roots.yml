@@ -1,0 +1,28 @@
+name: OUF signed candidate public Java roots
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_java_trust/candidate_roots.py
+      - tools/semantic_java_trust/test_candidate_roots.py
+      - .github/workflows/candidate-public-roots.yml
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tools/semantic_java_trust/test_candidate_roots.py
+  capture:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Public cacerts from the exact signed archive, no import or image execution
+        run: python3 tools/semantic_java_trust/candidate_roots.py

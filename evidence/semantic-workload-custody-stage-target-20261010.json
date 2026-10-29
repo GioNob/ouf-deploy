@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.discovery.workload-custody-stage-target.v1",
+  "sourceCommit": "833d440264eaed55701de4ca29ced86ed222d30c",
+  "runId": 38041193466,
+  "jobId": 114181630410,
+  "targetResult": {
+    "administrativeLoginAttemptsIssued": 4,
+    "clientId": "ouf-semantic",
+    "containerLifecycleOperations": 0,
+    "evidenceDirectory": "/home/oufadmin/ouf-semantic-workload-custody-ukcp1fpq",
+    "existingConfigurationWrites": 0,
+    "externalProviderCalls": 0,
+    "gatewayContainerId": "dcbe26bed97dd5c7ac8a131ec2badf77b0291c2ef32907be639bfa09c36596d9",
+    "gatewayImageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+    "gatewayWorkerIdentity": {
+      "gid": 636,
+      "hostUserNamespaceTranslationRequired": false,
+      "observedNginxGids": [
+        636
+      ],
+      "observedNginxUids": [
+        636
+      ],
+      "uid": 636
+    },
+    "iamConfigurationWrites": 0,
+    "iamReadRequests": 4,
+    "notReleaseAcceptance": true,
+    "observedGatewayProcessNames": [
+      "openresty"
+    ],
+    "privateEnvelopeSha256": "39157d824a106eae23f7e11f2d3384d2606c3739eca2ed85c7e3ec8a14f7eab1",
+    "privateKeyFilesOpened": 0,
+    "privateValuesPrinted": false,
+    "profileHash": "05ac25e1dba32460d934865a0e2555ae22890eca7ce56392dfaa98aea7ed8a0b",
+    "roleOwnedRuntimeCredentialInstalled": false,
+    "schema": "ouf.discovery.semantic-workload-credential-stage.v1",
+    "secretRotated": false,
+    "sourceGenerationsUnchanged": true,
+    "status": "EXISTING_WORKLOAD_CREDENTIAL_STAGED_PRIVATELY_NOT_INSTALLED",
+    "workloadClientSecretRetrieved": true,
+    "workloadTokenGrantRequests": 0
+  },
+  "acceptanceGranted": false,
+  "next": "One-use root role-owned input preparation; no service mounting or cutover yet"
+}

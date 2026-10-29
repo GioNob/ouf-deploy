@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/discovery-candidate-v1.json",
+  "title": "OUF DiscoveryCandidate v1",
+  "type": "object",
+  "required": [
+    "candidateId",
+    "artifactType",
+    "providerId",
+    "providerTrust",
+    "sourceLocation",
+    "score",
+    "matchReasons",
+    "gaps",
+    "expiresAt"
+  ],
+  "properties": {
+    "candidateId": {
+      "type": "string"
+    },
+    "canonicalUri": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "ONTOLOGY",
+        "CLASS",
+        "PROPERTY",
+        "RELATIONSHIP",
+        "VOCABULARY",
+        "CONCEPT",
+        "RULE"
+      ]
+    },
+    "providerId": {
+      "type": "string"
+    },
+    "providerTrust": {
+      "type": "string",
+      "enum": [
+        "AUTHORITATIVE",
+        "TRUSTED",
+        "GENERIC"
+      ]
+    },
+    "sourceLocation": {
+      "type": "string"
+    },
+    "sourceRevision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contentHash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0
+    },
+    "matchReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "license": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "publisher": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "candidateId/candidateRef is temporary and is not an official semanticId",
+    "candidate becomes governed only after adoption, snapshot, validation and human-governed publication"
+  ]
+}

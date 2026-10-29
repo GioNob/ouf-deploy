@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.provider-dns-recovery-target-preflight.v1",
+  "reportedAt": "2026-10-10T07:53:38+02:00",
+  "deliveryCommit": "fcba567744ec4fc5e18fbc0d0b01d19e6ed5d819",
+  "entrypointCommit": "958e835c8d3222543c0801ff148f4c995575743f",
+  "downloadDirectory": "/home/oufadmin/ouf-dns-recovery-plan.VoJHs8W1",
+  "outputFile": "/home/oufadmin/ouf-dns-recovery-plan.VoJHs8W1/result.txt",
+  "deliveryChecks": {
+    "launcher": "OK",
+    "entrypoint": "OK",
+    "core": "OK",
+    "dnsReplacement": "OK",
+    "compiler": "OK",
+    "reader": "OK"
+  },
+  "receipt": {
+    "applyAuthorized": false,
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "dnsQueries": 0,
+    "existingConfigurationWrites": 0,
+    "expectedJournalHash": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+    "firewallWrites": 0,
+    "newHumanDecisionRequired": true,
+    "notReleaseAcceptance": true,
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "privateKeysRead": 0,
+    "programHashes": {
+      "activate.py": "e04f6e0abffe7cc15484c18f787d6b4a3ea392bcd03387aca4fea13213fb6342",
+      "activation_core.py": "3ea3c575da5a61b153294a10abf810811d846f04b64bd12d9a2b8dd5380879aa",
+      "dns.py": "f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f",
+      "materialize_southbound_lease_refresh.py": "c3160940cf79678cb8e44c036cb0d947016f885ab09acfe6cce571833db5b079",
+      "reader.py": "b9ea8aa1a8cf31d28dfa1df0960dcf6930880d11244fe1f84e710bfe0b9ec4cf"
+    },
+    "proposedClaimPath": "/etc/ouf/provider-dns-window-recovery-r9.claim",
+    "proposedServiceUnit": "ouf-semantic-provider-lease-dns-r9.service",
+    "providerCalls": 0,
+    "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+    "readOnlyRetrySafe": true,
+    "schema": "ouf.provider-dns-recovery-plan.v1",
+    "signaturesIssued": 0,
+    "status": "DNS_RECOVERY_PRECONDITIONS_CAPTURED"
+  },
+  "exitCode": 0,
+  "launcherPhase": "READ_ONLY_RECOVERY_PRECONDITIONS_NO_LOCK_NO_DNS_NO_GRANT",
+  "interpretation": {
+    "preflightPassed": true,
+    "claimCreated": false,
+    "serviceStarted": false,
+    "applyAttempted": false,
+    "newAuthorityIssued": false,
+    "notAtomicTransitionAuthority": true,
+    "activationMustRecheckCurrentState": true,
+    "validatedByPinnedEntrypoint": [
+      "Retained consumed R8 claim/authorization/cycle/failure hashes unchanged",
+      "Prior failed worker exact invocation, MainPID 0, Restart=no and no other loaded lease owner",
+      "Same running adapter/southbound generations and two-flow ownership",
+      "QUIESCED journal, authorization false and native provider sets empty",
+      "Exact DNS and compiler source-delta bindings and new service name absent"
+    ]
+  }
+}

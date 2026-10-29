@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.acquisition-redaction-update-capture-target.v1",
+  "origin": "OWNER_SUPPLIED_VPS_RESULT_NOT_ASSISTANT_READ_OF_PRIVATE_FILES",
+  "result": {
+    "schema": "ouf.acquisition-redaction-update-input-capture-result.v1",
+    "status": "ACQUISITION_REDACTION_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED",
+    "complete": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/acquisition-redaction-update-inputs-v1",
+    "inputsHash": "9bbe7298c2eff0be51bf943919c9db0044413256b08efe620a503f79aef4d7d2",
+    "counts": {
+      "bytes": 72997,
+      "engineGets": 10,
+      "privateMetadataReads": 4
+    },
+    "candidateSourceCommits": {
+      "ingestion": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+      "udp": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+    },
+    "unchangedOriginalsAndReadReplicas": 6,
+    "currentInstalledMcpMatched": true,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "historicalAuthorityReused": false,
+    "containerWrites": 0,
+    "imageImports": 0,
+    "gatewayRequests": 0,
+    "sqlSessions": 0,
+    "oauthRequests": 0,
+    "credentialFileReads": 0,
+    "installationSigningKeysRead": false,
+    "acquisitionsExecuted": 0,
+    "sourceActivations": 0,
+    "runtimeAuthorityIssued": false,
+    "continuationAuthorized": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "deliveryDirectory": "/home/oufadmin/ouf-redaction-inputs-delivery.2Qolb5ul",
+  "deliveryLog": "/home/oufadmin/ouf-redaction-inputs-delivery.2Qolb5ul/bootstrap.log",
+  "scopeConsumed": true,
+  "logContentsReadByAgent": false,
+  "next": "Exact two new CI artifact transport through existing runner, file writes only, then root-protected offline image/native plan preparation. No APPLY authority."
+}

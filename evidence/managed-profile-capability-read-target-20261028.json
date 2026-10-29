@@ -1,0 +1,125 @@
+{
+  "schema": "ouf.managed-profile-capability-read-target-evidence.v1",
+  "observedDate": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "origin": "OPERATOR_FINAL_JSON_AND_EXIT_LINES_READ_IN_FULL_NOT_INDEPENDENT_PRIVATE_LOG_READ",
+  "result": {
+    "acquisitionsExecuted": 0,
+    "activeResponseHash": "59856645ba247267a1e4839a4620f4ad70fe42d46d64fe6b7775b59c379ab912",
+    "administrativeWrites": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "catalogueHash": "ad928f1916a8b417aa0b2bde567ddf0924223863778ea96b22e98f4e8fb0f2d7",
+    "complete": true,
+    "counts": {
+      "bytes": 234465,
+      "iamGets": 1,
+      "iamPosts": 10,
+      "ownerGets": 3
+    },
+    "credentialFileReads": 0,
+    "descriptors": [
+      {
+        "activeDescriptor": {
+          "allowedActors": [
+            "HUMAN"
+          ],
+          "capabilityId": "ouf.managed-source.preview",
+          "operation": "READ",
+          "requiredScope": "ouf.managed-source.preview"
+        },
+        "activeHumanCompatible": true,
+        "capabilityId": "ouf.managed-source.preview",
+        "registeredDescriptor": {
+          "allowedActors": [
+            "HUMAN"
+          ],
+          "capabilityId": "ouf.managed-source.preview",
+          "operation": "READ",
+          "requiredScope": "ouf.managed-source.preview"
+        },
+        "registeredOwnerRef": "onboarding",
+        "sourceOwnerRef": "onboarding"
+      },
+      {
+        "activeDescriptor": {
+          "allowedActors": [
+            "HUMAN"
+          ],
+          "capabilityId": "ouf.managed-source.file.profile",
+          "operation": "COMMAND",
+          "requiredScope": "ouf.managed-source.file.profile"
+        },
+        "activeHumanCompatible": true,
+        "capabilityId": "ouf.managed-source.file.profile",
+        "registeredDescriptor": {
+          "allowedActors": [
+            "HUMAN"
+          ],
+          "capabilityId": "ouf.managed-source.file.profile",
+          "operation": "COMMAND",
+          "requiredScope": "ouf.managed-source.file.profile"
+        },
+        "registeredOwnerRef": "onboarding",
+        "sourceOwnerRef": "onboarding"
+      },
+      {
+        "activeDescriptor": null,
+        "activeHumanCompatible": false,
+        "capabilityId": "ouf.onboarding.quarantine.release",
+        "registeredDescriptor": null,
+        "registeredOwnerRef": null,
+        "sourceOwnerRef": "onboarding"
+      }
+    ],
+    "engineRequests": 0,
+    "fileContentReads": 0,
+    "humanBudgetsGranted": 0,
+    "invalidRoleCapabilities": [
+      "ouf.onboarding.quarantine.release"
+    ],
+    "newCredentialFileReads": 0,
+    "newJobs": 0,
+    "policyHash": "c52e856c8d95032f6942e1618fb0102f0b704acc5f41f044648e9466aaf9d323",
+    "policyRef": "ouf-lab-authorization:56",
+    "policyWrites": 0,
+    "releaseAcceptance": false,
+    "requiredRoleCapabilityCount": 41,
+    "resumes": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.managed-profile-control-capability-read.v1",
+    "signingKeyReads": 0,
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "MANAGED_PROFILE_CAPABILITY_STATE_OBSERVED_NO_AUTHORITY",
+    "uploads": 0
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "scope": "/etc/ouf/deploy-snapshots/managed-profile-capability-read-policy56-20261028-v1",
+  "scopeConsumed": true,
+  "commandMustNotBeRedelivered": true,
+  "deliveryDirectory": "/home/oufadmin/ouf-managed-profile-capability-delivery.JWXiKEkm",
+  "runtimeLog": "/usr/local/lib/ouf-managed-profile-capability-read-1243cdffacb4e559/operator.log",
+  "deliveryLog": "/home/oufadmin/ouf-managed-profile-capability-delivery.JWXiKEkm/bootstrap.log",
+  "interpretation": {
+    "onlyInvalidRequiredRoleCapability": "ouf.onboarding.quarantine.release",
+    "requiredRoleCapabilityCount": 41,
+    "registeredAndActiveMissing": true,
+    "profileAndPreviewAlreadyExactHumanCompatible": true,
+    "missingDescriptorSemanticsNotObservedBecauseAbsent": true,
+    "jobStateNotRead": true,
+    "lastJobStatus": "FAILED",
+    "lastCumulativeAttempts": 5,
+    "publicationExecuted": false,
+    "permissionProposalCreated": false,
+    "newHumanBudgetGranted": false,
+    "resumed": false,
+    "next": "QUALIFY_SINGLE_DESCRIPTOR_ADDITIVE_HUMAN_PUBLICATION_PRESERVING_ALL_GRANTS_THEN_SEPARATE_JOB_ROLE_THS",
+    "M2": "OPEN",
+    "G5": "OPEN",
+    "G6": "OPEN",
+    "G7": "OPEN"
+  }
+}

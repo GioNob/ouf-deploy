@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.ingestion-readiness-scoped-executor-qualification.v2",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "sourceCommit": "a79a03558c5d470bcd6e8426ebc03e7f14093e19",
+  "qualificationCommit": "837919827eeda090fca15f9762604ce03e36b138",
+  "privateReviewBinding": {
+    "path": "/etc/ouf/deploy-snapshots/ingestion-readiness-update-review-bovju9mj/review.json",
+    "sha256": "13decb74cba1e54382a4493d80ff4a99c030f98d6afebd91beba61687f8a2898"
+  },
+  "workflow": {
+    "run": 39015572693,
+    "job": 117346889726,
+    "conclusion": "success",
+    "rootTests": 17,
+    "realDockerAndNamespaceAdminFixturePassed": true,
+    "inputReconciliationRejectsChangedImageAndRouteInventory": true
+  },
+  "codePackageSha256": "12852b05f10d95fbb6c7ab45a5f871de5ac611f8623a8ce419bf6bed3f2f88da",
+  "targetRolloutPerformed": false,
+  "applicationHealthOnTargetProven": false,
+  "newWorkerStartedOnTarget": false,
+  "newFiniteBudget": {
+    "priorControlledAttempts": 188,
+    "maximumNewAttempts": 128,
+    "maximumCumulativeAttempts": 316,
+    "maximumSeconds": 3600,
+    "automaticRenewal": false
+  },
+  "limits": [
+    "Synthetic application health and Admin HTTP fixture; application/route semantics tested separately in candidate repositories",
+    "Retained single-host transport only",
+    "No generic launcher yet for every partial failure reconciliation/renewal"
+  ],
+  "semanticDispatchAllowed": false,
+  "databaseMigrationsAllowed": false,
+  "grantChangesAllowed": false
+}

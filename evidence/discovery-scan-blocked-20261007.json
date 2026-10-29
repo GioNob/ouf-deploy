@@ -1,0 +1,50 @@
+{
+  "runId": 37659421180,
+  "jobId": 112924411475,
+  "verifierSource": "620645aa74b161b53d7e8ec9e87e23b0e071f616",
+  "archiveBoundaryRegressionTestsPassed": 5,
+  "report": {
+    "acceptanceGranted": false,
+    "allSeverityThresholdsMet": false,
+    "images": [
+      {
+        "archiveBytesVerified": true,
+        "imageId": "sha256:f387ad437ae8e1b114c860fb4fd455d3ccdc5f0a934a64b0e6b7771951a05e5b",
+        "packageCount": 330,
+        "packagesWithoutVersion": 0,
+        "role": "semantic",
+        "severityCounts": {
+          "Critical": 8,
+          "High": 28,
+          "Low": 20,
+          "Medium": 204,
+          "Negligible": 0,
+          "Unknown": 0
+        },
+        "thresholdMet": false
+      },
+      {
+        "archiveBytesVerified": true,
+        "imageId": "sha256:045fb51d429a0ca11fcc4e20d0b3ad8fe432c952d9b26ac73630fb298acb4a8b",
+        "packageCount": 35,
+        "packagesWithoutVersion": 0,
+        "role": "mcp",
+        "severityCounts": {
+          "Critical": 0,
+          "High": 9,
+          "Low": 9,
+          "Medium": 13,
+          "Negligible": 0,
+          "Unknown": 0
+        },
+        "thresholdMet": false
+      }
+    ],
+    "networkIsolatedScanners": true,
+    "producerRun": "37658048241",
+    "publisherTrustAccepted": false,
+    "releaseApplied": false,
+    "scannerSource": "84e91e199892bfda1d116a49f53a9990f61724c7",
+    "schema": "ouf.discovery.candidate-scan.v1"
+  }
+}

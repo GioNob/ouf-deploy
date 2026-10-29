@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.semantic-provider-v2-dependency-freshness-ci.v1",
+  "sourceCommit": "abf0b0098c91d4e5fcf578fdb218e4a21b5b6ecb",
+  "workflowRun": 37847591864,
+  "jobs": [
+    {
+      "id": 113552232417,
+      "name": "profiles",
+      "conclusion": "success"
+    },
+    {
+      "id": 113552232702,
+      "name": "native-frame-profiles",
+      "conclusion": "success"
+    }
+  ],
+  "authenticatedTests": 30,
+  "sealedSourceFiles": 39,
+  "coverage": [
+    "Explicit role mandate cannot override stale or future DB",
+    "DB freshness covers complete authority window",
+    "Critical threshold denied before signer construction",
+    "Valid signed review cannot extend expired DB",
+    "Existing native nft/2-runc frame regressions"
+  ],
+  "realDockerCohortProven": false,
+  "targetAcceptanceGranted": false,
+  "targetLifecycleOperations": 0,
+  "notReleaseAcceptance": true
+}

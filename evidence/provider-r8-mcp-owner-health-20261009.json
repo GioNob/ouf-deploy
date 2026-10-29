@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.mcp-owner-health-observation.v1",
+  "observedAt": "2026-10-09T19:16:09.754753+00:00",
+  "source": "LIVE_CONNECTED_OUF_MCP_SYSTEM_STATUS",
+  "accountLinkName": "giovanni-chatgpt",
+  "response": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  },
+  "provesProviderReadiness": false,
+  "provesDiscoveryCapabilitiesInstalled": false,
+  "productMutationPerformed": false
+}

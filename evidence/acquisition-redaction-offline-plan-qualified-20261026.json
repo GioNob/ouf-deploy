@@ -1,0 +1,274 @@
+{
+  "schema": "ouf.acquisition-redaction-offline-plan-qualification.v1",
+  "recordedAt": "2026-10-26T14:21:52Z",
+  "capture": {
+    "evidence": "evidence/acquisition-redaction-inputs-target-20261026.json",
+    "inputsHash": "9bbe7298c2eff0be51bf943919c9db0044413256b08efe620a503f79aef4d7d2",
+    "scopeConsumed": true,
+    "repeatAllowed": false
+  },
+  "candidateSourceCommits": {
+    "ingestion": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+    "udp": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+  },
+  "correctedTransport": {
+    "sourceCommit": "8eac9ad661c1c3686f5ec70bcf50f8bc907de763",
+    "run": 40336259618,
+    "job": 121618723161,
+    "directLogRead": true,
+    "scopeConsumed": true,
+    "receipt": {
+      "applicationE2EProven": false,
+      "artifacts": {
+        "ingestion": {
+          "artifactId": 12653103275,
+          "verified": true,
+          "zipBytes": 140874962,
+          "zipSha256": "f3a42897aaf29fe93ecbb091072c1966881d8e2c8d83416c0debb8d841d4de63"
+        },
+        "udp": {
+          "artifactId": 12654597311,
+          "verified": true,
+          "zipBytes": 122385628,
+          "zipSha256": "ce5b44eb696a71e0be1ec862597c81443a234e684915a19a59269578b0bb2003"
+        }
+      },
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "caseHash": "5ab4bafadb29cdd51b8ddaa776ea9aaf4fdc410de675c746ad789f249273c64f",
+      "complete": true,
+      "containerWrites": 0,
+      "cumulativeGithubApiGetAttempts": 4,
+      "downloadDirectory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-acquisition-redaction-transport-5ab4bafadb29cdd5",
+      "engineGetAttempts": 0,
+      "githubApiGetAttempts": 2,
+      "imageImports": 0,
+      "oufOAuthRequests": 0,
+      "privateSigningKeysRead": 0,
+      "releaseAcceptance": false,
+      "retainedPriorTransport": {
+        "caseHash": "db8577ab3082fbc2308ae0a6d33eb55fffc85e3020f99a8623cf69b165d849aa",
+        "containerWrites": 0,
+        "githubApiGetAttempts": 2,
+        "imageImports": 0,
+        "reason": "PR_ARTIFACT_SOURCE_IS_MERGE_COMMIT_NOT_SELECTED_HEAD",
+        "scopeConsumed": true
+      },
+      "rootStagingInvoked": false,
+      "runnerReinstalled": false,
+      "runnerUid": 1000,
+      "runtimeAuthorityIssued": false,
+      "runtimeEffectsDispatched": 0,
+      "schema": "ouf.acquisition-redaction-artifact-transport-result.v1",
+      "serviceCredentialFilesOpened": 0,
+      "sqlSessions": 0,
+      "status": "EXACT_ARTIFACTS_DOWNLOADED_ON_EXISTING_RUNNER",
+      "targetApplyAuthorized": false
+    }
+  },
+  "nativeQualification": {
+    "sourceCommit": "8eac9ad661c1c3686f5ec70bcf50f8bc907de763",
+    "pushRun": 40336259669,
+    "pushJobs": [
+      121618538580,
+      121618539313
+    ],
+    "prRun": 40336269673,
+    "prJobs": [
+      121618575547,
+      121618576228
+    ],
+    "directLogsRead": true,
+    "testsPerJob": 7,
+    "skipped": 0,
+    "realDockerVersion": "29.8.1",
+    "actualImageImportInspectAndUnstartedCreate": true,
+    "candidateApplicationStarted": false,
+    "classicAndContainerd": true,
+    "pushAndPrIdentitiesEqual": true,
+    "identities": {
+      "schema": "ouf.acquisition-redaction-native-qualification.v1",
+      "caseHash": "5ab4bafadb29cdd51b8ddaa776ea9aaf4fdc410de675c746ad789f249273c64f",
+      "profiles": {
+        "containerd": {
+          "ingestion": {
+            "archiveBytes": 276520960,
+            "configurationImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+            "derivedArchiveSha256": "c0a94d767f3a666c93a465bbe4201fc6647a77be55f92b82b20ce19ae4b43280",
+            "nativeImageId": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385"
+          },
+          "udp": {
+            "archiveBytes": 257003520,
+            "configurationImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+            "derivedArchiveSha256": "a26d65e46da9f27eef9bd8fa076742ef1e28dde2a97fa90af2a13b0d80fc72c3",
+            "nativeImageId": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d"
+          }
+        },
+        "classic": {
+          "ingestion": {
+            "archiveBytes": 276510720,
+            "configurationImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+            "derivedArchiveSha256": "f95c5a97abeca78c14106a6ee5d3d9e387bd4b3e2202ae80505b987dd4000200",
+            "nativeImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a"
+          },
+          "udp": {
+            "archiveBytes": 257003520,
+            "configurationImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+            "derivedArchiveSha256": "827f83302d8f307802d57ad50f54113115104f1fa7e0d432e87df8508fbf2f11",
+            "nativeImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f"
+          }
+        }
+      }
+    }
+  },
+  "deliveryQualification": {
+    "commit": "905bcb8438418af95a9566e991de0f212abd8145",
+    "pushRun": 40338268100,
+    "pushJob": 121625600339,
+    "prRun": 40338282203,
+    "prJob": 121625643017,
+    "directLogsRead": true,
+    "pushProof": {
+      "actualEntryPointPositiveWithSyntheticCapture": true,
+      "applicationE2EProven": false,
+      "complete": true,
+      "consumedAndPartialScopesUnchanged": true,
+      "containerWrites": 0,
+      "engineGets": 0,
+      "exactWrapperRootCopierExecuted": true,
+      "imageImports": 0,
+      "nativeIdentityComparedToIndependentQualification": true,
+      "nonrootReadDenied": true,
+      "oldInputBytesUnchanged": true,
+      "productionRuntimeAccess": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.acquisition-redaction-plan-delivery-custody-ci.v1",
+      "sixRootCodeFiles0400": true,
+      "twoExactPublicPushArtifacts": true
+    },
+    "prProof": {
+      "actualEntryPointPositiveWithSyntheticCapture": true,
+      "applicationE2EProven": false,
+      "complete": true,
+      "consumedAndPartialScopesUnchanged": true,
+      "containerWrites": 0,
+      "engineGets": 0,
+      "exactWrapperRootCopierExecuted": true,
+      "imageImports": 0,
+      "nativeIdentityComparedToIndependentQualification": true,
+      "nonrootReadDenied": true,
+      "oldInputBytesUnchanged": true,
+      "productionRuntimeAccess": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.acquisition-redaction-plan-delivery-custody-ci.v1",
+      "sixRootCodeFiles0400": true,
+      "twoExactPublicPushArtifacts": true
+    },
+    "fullCurlAndSudoWrapperExecuted": false,
+    "actualWrapperRootCopierAndSealedEntrypointExecuted": true,
+    "bashSyntaxPassed": true,
+    "wrapperReadbackExact": true
+  },
+  "deliveryPins": {
+    "commit": "905bcb8438418af95a9566e991de0f212abd8145",
+    "wrapper": "releases/prepare-acquisition-redaction-image-plan-20261026.sh",
+    "wrapperSha256": "89cc15c8a24ade001c69a6cc884ac4a446923752a8a84fd4b47c4d2d76242618",
+    "sourceCommit": "f5bfd6f0d79cb4dd192913081c71a7a3abfd331e",
+    "prepareSha256": "16133fe2870bdb8c4757f8b22e010f29c69fadb80190e7db4504e3f2764cd38f",
+    "privateTargetScope": "/etc/ouf/deploy-snapshots/acquisition-redaction-image-plan-9bbe7298c2eff0be-v1",
+    "targetPreparationObserved": false
+  },
+  "rejectedQualification": [
+    {
+      "reason": "PR_ARTIFACT_SOURCE_IS_MERGE_COMMIT_NOT_SELECTED_HEAD",
+      "caseHash": "db8577ab3082fbc2308ae0a6d33eb55fffc85e3020f99a8623cf69b165d849aa",
+      "transportRun": 40333672069,
+      "transportJob": 121609598041,
+      "transportScopeConsumed": true,
+      "targetRuntimeEffects": 0
+    },
+    {
+      "reason": "EXACT_CI_SOURCE_REQUIRED_LOG_FAILURE_MASKED_BY_MISSING_PIPEFAIL",
+      "runs": [
+        40335388909,
+        40335396337
+      ],
+      "metadataSuccessIsQualification": false,
+      "fixedIn": "8eac9ad661c1c3686f5ec70bcf50f8bc907de763"
+    },
+    {
+      "reason": "SYNTHETIC_FIXTURE_GLOBAL_PATH_OVERRIDE_DID_NOT_OVERRIDE_BOUND_KEYWORD_DEFAULT",
+      "run": 40337203149,
+      "job": 121621855721,
+      "fixedOnlyTestIn": "905bcb8438418af95a9566e991de0f212abd8145",
+      "productionGuardsWeakened": false,
+      "targetPreparationExecuted": false
+    },
+    {
+      "reason": "HOSTED_ARTIFACT_TRANSPORT_STOP_BEFORE_NATIVE_TESTS_UNCLASSIFIED",
+      "run": 40338282130,
+      "job": 121625642224,
+      "selectedAsQualification": false,
+      "liveTargetEffects": 0
+    }
+  ],
+  "preservation": {
+    "twoReadReplicasOnly": true,
+    "envCmdJvmHostPolicyExact": true,
+    "memoryZeroExplicitlyAllowedWhenRetained": true,
+    "macLegacyAndEndpointOnlyProfilesExplicit": true,
+    "defaultMacStatesNotNormalized": true,
+    "noRebuildOrRelabel": true,
+    "noWorkerMcpGatewayPostgresRegistryChange": true
+  },
+  "nextTargetLimits": {
+    "seconds": 300,
+    "privateMetadataReads": 2,
+    "ciZipReads": 2,
+    "nativeArchivesPrepared": 2,
+    "minimumFreeDiskBytes": 3221225472,
+    "engineGets": 0,
+    "containerWrites": 0,
+    "imageImports": 0,
+    "sqlSessions": 0,
+    "oauthRequests": 0,
+    "credentialFileReads": 0,
+    "signingKeyReads": 0
+  },
+  "currentApplicationReadAuthority": {
+    "policyRef": "ouf-lab-authorization:51",
+    "expiredAt": "2026-10-26T14:14:26Z",
+    "validAtCheckpoint": false,
+    "automaticRenewalAllowed": false,
+    "newProposalCreated": false
+  },
+  "newApplicationReadsThisContinuation": 0,
+  "applicationCauseObserved": false,
+  "executionEntryQualified": false,
+  "fullReplacementLifecycleQualified": false,
+  "targetDiagnosticImagesInstalled": false,
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "acquisitionsExecuted": 0,
+  "sourceActivations": 0,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "gateState": {
+    "technical": "8/8",
+    "functional": "4/6",
+    "passed": [
+      "G0",
+      "G1",
+      "G2",
+      "G3"
+    ],
+    "open": [
+      "G4",
+      "M1",
+      "F5",
+      "F6"
+    ],
+    "supervisorAfterE2E": true
+  }
+}

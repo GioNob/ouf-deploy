@@ -1,0 +1,17 @@
+{
+  "runId": 37668331670,
+  "jobId": 112953255306,
+  "report": {
+    "status": "PASS",
+    "postgresVersion": "17",
+    "baselineMigrations": 9,
+    "additiveMigration": "V10__discovery_request_idempotency.sql",
+    "historicalContentPreserved": true,
+    "legacyWritesAfterMigration": true,
+    "legacyClaimCompleteFunctions": true,
+    "perActorIdempotencyEnforced": true,
+    "baselineBackupRestoredAndCompared": true,
+    "targetDatabaseTouched": false,
+    "targetBackupPerformed": false
+  }
+}

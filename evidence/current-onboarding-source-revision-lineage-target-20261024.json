@@ -1,0 +1,145 @@
+{
+  "schema": "ouf.current-onboarding-lineage-target-checkpoint.v1",
+  "observedDate": "2026-10-24",
+  "operatorReportedStatus": "CURRENT_SOURCE_REVISION_LINEAGE_OBSERVED",
+  "operatorExit": 0,
+  "operatorLog": "/home/oufadmin/ouf-current-lineage.Km3FiNwK/operator.log",
+  "publicResultProjection": {
+    "complete": true,
+    "privateLineageHash": "6c7aecaae138c31b35a7adbc20e2fa53c5657aba477f92d52e82c77d53fe8f32",
+    "privateLineagePath": "/etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6/current-source-revision-lineage-v1/lineage.json",
+    "declaredCapturedOnboardingSourceCommit": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+    "capturedOnboardingSourceLabelMatchesDocumentedDeployment": false,
+    "historicalOnboardingRuntimeMatchesCaptured": false,
+    "historicalPostgresRuntimeMatchesCaptured": true,
+    "sameBootAsSourceRevisionDeployment": true,
+    "currentDatabaseEnvMatchesSourceRevisionBinding": true,
+    "databaseEnvAssessment": "MATCHED_CURRENT_ENVIRONMENT_DECLARATION",
+    "currentPostgresAdminDeclarationMatchesSourceRevision": true,
+    "allCurrentConfigurationPrecedenceResolved": false,
+    "currentDatabaseSchemaRead": false,
+    "historicalMigrationV34IsSourcePropertyRevision": true,
+    "capturedProcessPins": {
+      "onboarding": {
+        "matchesCaptured": true,
+        "observable": true
+      },
+      "postgres": {
+        "matchesCaptured": true,
+        "observable": true
+      }
+    },
+    "historicalVsCapturedRuntime": {
+      "onboarding": {
+        "native": {
+          "changedFields": [
+            "configHash",
+            "containerId",
+            "imageId",
+            "networkSettingsHash",
+            "pid",
+            "startedAt"
+          ],
+          "equal": false
+        },
+        "sortedMounts": {
+          "changedFields": [
+            "configHash",
+            "containerId",
+            "imageId",
+            "networkSettingsHash",
+            "pid",
+            "startedAt"
+          ],
+          "equal": false
+        }
+      },
+      "postgres": {
+        "native": {
+          "changedFields": [],
+          "equal": true
+        },
+        "sortedMounts": {
+          "changedFields": [],
+          "equal": true
+        }
+      }
+    },
+    "sourceRevisionEngineComparison": {
+      "allSelectedPathsObserveSameCurrentSocket": true,
+      "allSelectedPathsResolveToCurrentSocket": true,
+      "classification": "STOP_NOT_REPRODUCED_FROM_RETAINED_METADATA",
+      "comparisons": {
+        "planVsCurrent": {
+          "changedFields": [],
+          "equal": true,
+          "socketBindingChanges": []
+        },
+        "preparedVsCurrent": {
+          "changedFields": [],
+          "equal": true,
+          "socketBindingChanges": []
+        },
+        "preparedVsPlan": {
+          "changedFields": [],
+          "equal": true,
+          "socketBindingChanges": []
+        }
+      },
+      "currentCapturedSocketBindingMatchesObserved": true,
+      "engineApiIdentityProvenByThisReader": false,
+      "failedComparisonReproduced": false,
+      "historicalSocketBindingsMatchObserved": {
+        "plan": true,
+        "prepared": true
+      },
+      "metadataClassificationDoesNotAuthorizeReplacement": true
+    },
+    "priorScopeState": {
+      "databaseCompleteMarkerPresent": false,
+      "databaseScopeExists": false,
+      "sqlAttemptMarkerPresent": false
+    },
+    "engineConnections": 0,
+    "engineGetAttempts": 0,
+    "sqlSessionAttempts": 0,
+    "containerExecAttempts": 0,
+    "subprocessesDispatched": 0,
+    "serviceCredentialFilesOpened": 0,
+    "bearerFilesOpened": 0,
+    "privateSigningKeysRead": 0,
+    "databaseMigrations": 0,
+    "imageImports": 0,
+    "containerWrites": 0,
+    "sourceActivations": 0,
+    "humanBudgetsGranted": 0,
+    "retainedFileWrites": 0,
+    "privateEvidenceWrites": true,
+    "readOnlyRuntime": true,
+    "oldBudgetImageBlocked": true,
+    "originalRequestRepeated": false,
+    "newBindingAcceptedForRuntime": false,
+    "newSqlAttemptAuthorized": false,
+    "engineApiIdentityProvenByThisReader": false,
+    "databaseAdmissionProven": false,
+    "lifecycleOwnershipProven": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "releaseAcceptance": false,
+    "addressesPrinted": false,
+    "credentialValuesPrinted": false
+  },
+  "repositoryReconciliation": {
+    "laterCompletedOwner": "/etc/ouf/deploy-snapshots/installation-owner-update-execution-hnfn0zwg",
+    "evidence": "evidence/installation-owner-completed-readback-20261019.json",
+    "candidateLock": "releases/installation-owner-candidate-20261019.json",
+    "currentLabelIsNotImageContentProof": true,
+    "newMetadataOrSqlFromServer": false
+  },
+  "doNotReplay": true,
+  "original502Evidence": "Retained actual original configured GET200 with current credential/TLS and exact ACTIVE reference; no new original GET or application E2E observation in this action.",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4
+}

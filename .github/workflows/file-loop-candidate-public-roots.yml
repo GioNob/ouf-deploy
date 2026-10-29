@@ -1,0 +1,59 @@
+name: Retained Semantic candidate public roots
+on:
+  push:
+    branches: [codex/file-loop-candidate-public-roots-20261010]
+    paths:
+      - .github/workflows/file-loop-candidate-public-roots.yml
+      - scripts/capture-retained-package-public-roots.py
+      - tools/file_loop_package/**
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+jobs:
+  capture-sign-public-bytes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify public-only extraction and layer deletion semantics
+        run: python3 -m unittest discover -s tools/file_loop_package -v
+      - name: Download and reverify retained candidate, no image build or import
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir roots-input
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/11676412613/zip > roots-input/semantic.zip
+          python3 scripts/verify-retained-file-loop-package.py --module semantic \
+            --zip roots-input/semantic.zip --output roots-input/continuity.json
+      - name: Capture public root bytes from the exact archive without extracting rootfs
+        run: |
+          python3 scripts/capture-retained-package-public-roots.py \
+            --zip roots-input/semantic.zip --continuity roots-input/continuity.json --output public-roots
+      - name: Install checksum-verified keyless publisher signer
+        uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
+        with:
+          cosign-release: v3.1.3
+      - name: Sign public bytes and receipt; verify exact identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          IDENTITY="https://github.com/GioNob/ouf-deploy/.github/workflows/file-loop-candidate-public-roots.yml@$GITHUB_REF"
+          for file in candidate-cacerts public-roots.json; do
+            cosign sign-blob --yes --bundle "public-roots/$file.sigstore.json" "public-roots/$file"
+            cosign verify-blob "public-roots/$file" --bundle "public-roots/$file.sigstore.json" \
+              --certificate-identity "$IDENTITY" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-github-workflow-repository GioNob/ouf-deploy \
+              --certificate-github-workflow-sha "$GITHUB_SHA" > "public-roots/$file.verification.txt" 2>&1
+          done
+          echo OUF_PUBLIC_ROOT_PUBLISHER_CRYPTO=PASS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: file-loop-candidate-public-roots-${{ github.run_id }}
+          path: public-roots/
+          if-no-files-found: error
+          retention-days: 30

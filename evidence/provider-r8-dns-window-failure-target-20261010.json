@@ -1,0 +1,304 @@
+{
+  "schema": "ouf.provider-r8-dns-window-failure-target-evidence.v1",
+  "source": "OPERATOR_PASTED_OUTPUT_OF_PINNED_DIAGNOSTIC_COMMAND",
+  "receivedAt": "2026-10-10T07:08:33+02:00",
+  "receipt": {
+    "applyAuthorized": false,
+    "authorizationHash": "087adc9fe21e445e5175bcef6789d8678f4a10dfc97ba94344b9a6c5be08bd07",
+    "claimHash": "0b2a96cf260e9127272ba9dbf260ca0ab33c42d9567e081b3171e65beaba942d",
+    "claimReset": false,
+    "commonLockAcquired": false,
+    "containerLifecycleOperations": 0,
+    "currentJournal": {
+      "leaseAuthorized": false,
+      "sha256": "a58f0cb6e011879fc22723356d19926adf8945c38dcdbf2d21ab3fa34dd6f7f1",
+      "startAuthorized": false,
+      "state": "QUIESCED"
+    },
+    "currentServices": {
+      "docker.service": {
+        "ActiveEnterTimestamp": "Thu 2026-09-17 17:44:14 CEST",
+        "ActiveExitTimestamp": "",
+        "ActiveState": "active",
+        "ExecMainCode": "0",
+        "ExecMainExitTimestamp": "",
+        "ExecMainStartTimestamp": "Thu 2026-09-17 17:44:13 CEST",
+        "ExecMainStatus": "0",
+        "InactiveEnterTimestamp": "",
+        "InvocationID": "bf337432b9d04ae7bc8470a23df284a0",
+        "LoadState": "loaded",
+        "MainPID": "1740",
+        "NRestarts": "0",
+        "Restart": "always",
+        "Result": "success",
+        "StateChangeTimestamp": "Thu 2026-10-08 06:19:08 CEST",
+        "SubState": "running",
+        "Transient": "no",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "ouf-semantic-provider-lease-r8.service": {
+        "ActiveEnterTimestamp": "Fri 2026-10-09 23:15:57 CEST",
+        "ActiveExitTimestamp": "Fri 2026-10-09 23:28:50 CEST",
+        "ActiveState": "failed",
+        "ExecMainCode": "1",
+        "ExecMainExitTimestamp": "Fri 2026-10-09 23:28:50 CEST",
+        "ExecMainStartTimestamp": "Fri 2026-10-09 23:15:57 CEST",
+        "ExecMainStatus": "1",
+        "InactiveEnterTimestamp": "Fri 2026-10-09 23:28:50 CEST",
+        "InvocationID": "df9a930eafbb4b56abc662319ba9888e",
+        "LoadState": "loaded",
+        "MainPID": "0",
+        "NRestarts": "0",
+        "Restart": "no",
+        "Result": "exit-code",
+        "StateChangeTimestamp": "Fri 2026-10-09 23:28:50 CEST",
+        "SubState": "failed",
+        "Transient": "yes",
+        "execStartMatchesConsumedSnapshot": true,
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "dnsQueries": 0,
+    "doNotRerunApply": true,
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-r8-lease-8wfsv1aa",
+    "executionWindowIsStartupGate": true,
+    "existingConfigurationWrites": 0,
+    "firewallWrites": 0,
+    "leaseGrantedHere": false,
+    "notReleaseAcceptance": true,
+    "ownerConfigurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+    "phase": "RECHECK_OBSERVATIONAL_RECORDS_WITHOUT_LOCK_OR_REPLAY",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "programClosureVerified": true,
+    "providerCalls": 0,
+    "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_TRANSITION_AUTHORITY",
+    "retainedRecords": {
+      "activation-receipt.json": {
+        "doNotRerunApply": true,
+        "flowAddressCounts": [
+          1,
+          1
+        ],
+        "present": true,
+        "refreshCount": 2,
+        "schema": "ouf.provider-r8-lease-activation.v1",
+        "sha256": "3827d2dbc2fc07cede5cc1b7e72043c987c06cbcd11b3be33668cdeea2730b6d",
+        "status": "TWO_FLOW_LEASE_ACTIVE_AND_RENEWED"
+      },
+      "cleanup-denial.json": {
+        "present": false
+      },
+      "cycle-1.json": {
+        "flowAddressCounts": [
+          1,
+          1
+        ],
+        "freshDnsObserved": true,
+        "journalHash": "fe44facb92c22af9db7a65012971ef046f7273bff6bde594aa671508fe063056",
+        "present": true,
+        "refreshCount": 1,
+        "schema": "ouf.provider-lease-worker-status.v1",
+        "sha256": "2f288379ab4d01801422010f083e41dd1bc793bc254b4d19285f3282cd93cfcc",
+        "startAuthorized": false,
+        "status": "LEASE_ACTIVE",
+        "workerPid": 1856196
+      },
+      "cycle-2.json": {
+        "flowAddressCounts": [
+          1,
+          1
+        ],
+        "freshDnsObserved": true,
+        "journalHash": "fe44facb92c22af9db7a65012971ef046f7273bff6bde594aa671508fe063056",
+        "present": true,
+        "refreshCount": 2,
+        "schema": "ouf.provider-lease-worker-status.v1",
+        "sha256": "e39cb00cf30f317dd1c5916b7d1c91e8d1c5d2824cc05c1370f33d5583f5c03b",
+        "startAuthorized": false,
+        "status": "LEASE_ACTIVE",
+        "workerPid": 1856196
+      },
+      "final-worker-readback.json": {
+        "present": true,
+        "sha256": "f23a58d0799426a0a81547e6b6726326dc07ee35317603465690c26c23dca483"
+      },
+      "operator-denial.json": {
+        "present": false
+      },
+      "worker-activation-claim.json": {
+        "present": true,
+        "schema": "ouf.provider-lease-worker-claim.v1",
+        "sha256": "8e5cf0a76886cfbf4fd9f4f742fac960a7f2a153b80a91159a27a7b1289ed810",
+        "startAuthorized": false
+      },
+      "worker-denial.json": {
+        "doNotRerunApply": true,
+        "exceptionChain": [
+          {
+            "errorType": "CoordinationDenied",
+            "exceptionPoints": [
+              {
+                "file": "activation_core.py",
+                "function": "supervise_claimed",
+                "line": 167
+              },
+              {
+                "file": "semantic_provider_coordinated_supervisor.py",
+                "function": "supervise",
+                "line": 21
+              },
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "refresh",
+                "line": 189
+              },
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "_refresh",
+                "line": 229
+              }
+            ],
+            "reason": "REFRESH_FAILED_GATE_BLOCKED"
+          },
+          {
+            "errorType": "LeaseDenied",
+            "exceptionPoints": [
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "_refresh",
+                "line": 215
+              },
+              {
+                "file": "semantic_provider_lease_owner.py",
+                "function": "refresh",
+                "line": 90
+              }
+            ],
+            "reason": "REFRESH_FAILED_SETS_REVOKED"
+          },
+          {
+            "errorType": "DNSDenied",
+            "exceptionPoints": [
+              {
+                "file": "semantic_provider_lease_owner.py",
+                "function": "refresh",
+                "line": 53
+              },
+              {
+                "file": "semantic_provider_dns.py",
+                "function": "observe",
+                "line": 198
+              }
+            ],
+            "reason": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE"
+          }
+        ],
+        "phase": "SUPERVISE_EXISTING_OWNER_FRESH_DNS_AND_FINITE_LEASES",
+        "present": true,
+        "refreshCount": 49,
+        "schema": "ouf.provider-lease-worker-status.v1",
+        "sha256": "5a41c81f7717665fac86cc3647f2154317727407fbef9fc62d4173c717e854c3",
+        "startAuthorized": false,
+        "status": "LEASE_WORKER_FAILED"
+      },
+      "worker-status.json": {
+        "doNotRerunApply": true,
+        "exceptionChain": [
+          {
+            "errorType": "CoordinationDenied",
+            "exceptionPoints": [
+              {
+                "file": "activation_core.py",
+                "function": "supervise_claimed",
+                "line": 167
+              },
+              {
+                "file": "semantic_provider_coordinated_supervisor.py",
+                "function": "supervise",
+                "line": 21
+              },
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "refresh",
+                "line": 189
+              },
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "_refresh",
+                "line": 229
+              }
+            ],
+            "reason": "REFRESH_FAILED_GATE_BLOCKED"
+          },
+          {
+            "errorType": "LeaseDenied",
+            "exceptionPoints": [
+              {
+                "file": "semantic_provider_lease_coordination.py",
+                "function": "_refresh",
+                "line": 215
+              },
+              {
+                "file": "semantic_provider_lease_owner.py",
+                "function": "refresh",
+                "line": 90
+              }
+            ],
+            "reason": "REFRESH_FAILED_SETS_REVOKED"
+          },
+          {
+            "errorType": "DNSDenied",
+            "exceptionPoints": [
+              {
+                "file": "semantic_provider_lease_owner.py",
+                "function": "refresh",
+                "line": 53
+              },
+              {
+                "file": "semantic_provider_dns.py",
+                "function": "observe",
+                "line": 198
+              }
+            ],
+            "reason": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE"
+          }
+        ],
+        "phase": "SUPERVISE_EXISTING_OWNER_FRESH_DNS_AND_FINITE_LEASES",
+        "present": true,
+        "refreshCount": 49,
+        "schema": "ouf.provider-lease-worker-status.v1",
+        "sha256": "5a41c81f7717665fac86cc3647f2154317727407fbef9fc62d4173c717e854c3",
+        "startAuthorized": false,
+        "status": "LEASE_WORKER_FAILED"
+      }
+    },
+    "schema": "ouf.provider-r8-worker-quiescence-read.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "CONSUMED_WORKER_DIAGNOSTICS_CAPTURED",
+    "workerAuthorityLifetime": "CURRENT_R8_PROCESS_GENERATIONS_UNTIL_STOP_FAILURE_OR_REBOOT"
+  },
+  "exit": {
+    "code": 0,
+    "phase": "READ_CONSUMED_WORKER_RECORDS_AND_SYSTEMD_ONLY",
+    "output": "/home/oufadmin/ouf-r8-worker-read.96rbZIgP/result.txt"
+  },
+  "interpretation": {
+    "cause": "DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE",
+    "observedDnsSubcase": "NOT_RECORDED_TTL_ZERO_VS_ELAPSED_EXPIRY_UNPROVEN",
+    "completedRenewals": 49,
+    "workerFailureAt": "2026-10-09T23:28:50+02:00",
+    "sourceAdmissionExpiryNotCause": true,
+    "revocationConsistent": true,
+    "currentLeaseState": "QUIESCED",
+    "dockerCurrentlyActive": true,
+    "workerAutomaticRestart": false,
+    "newLeaseAuthorizationGranted": false,
+    "doNotRerunApply": true
+  }
+}

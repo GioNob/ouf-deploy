@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.discovery.provider-v2-private-trust-target-attempt.v1",
+  "evidenceSource": "OPERATOR_SUPPLIED_OUTPUT",
+  "status": "BLOCKED",
+  "snapshotDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-dlz2t6B6",
+  "reportedSourceHashesPassed": true,
+  "partialEvidenceRetained": true,
+  "failingPhaseKnown": false,
+  "generatedFilesIndependentlyObserved": false,
+  "doNotRerunApply": true,
+  "installationComplete": false,
+  "acceptanceGranted": false,
+  "startAuthorized": false,
+  "diagnosticRevision": "5f16b4e79f3dd8d1c7cd71b52ec66636ba51f9d0",
+  "diagnosticSha256": "018ead4dd5c995537389fe06414609f7216ffa7de0f5d203b998a81ee2d8122c"
+}

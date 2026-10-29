@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.discovery.boot-reader-loader-correction.v1",
+  "rootCause": "Extensionless executable names have no inferred importlib spec loader.",
+  "originalAttemptFailedBeforeWrites": true,
+  "priorBootstrapWithdrawn": "4e9dafd319de5b1466ee11285c0a950426b0af63",
+  "unchangedTargetDiagnosis": {
+    "runId": 37684853514,
+    "jobId": 113009920494,
+    "readerVersion": "v2",
+    "dockerActive": true,
+    "oldCommandsLoaded": true,
+    "runtimeCustodyVerified": true,
+    "allThreeRuntimeHashesUnchanged": true
+  },
+  "correctedSourceCommit": "9db4d34100d4728f7cb8c19dcb11f5aae2d8c269",
+  "installerSha256": "4b6a7aacd6683332a303fbfef82ddc9b3eb3bcd25c9baf808efce321271fb46e",
+  "readerV3Sha256": "65c8caa661005a7bf4bfe7eb1c5f45932a32c3e024095db861882f6c52998618",
+  "bootstrapCommit": "a6ecdc25982d3b70d18d944961614b7977110c95",
+  "bootstrapSha256": "c6ad494f488920edcf06c74fee278f4ce20568eb39dc7016986e7c80f96d2c59",
+  "ci": {
+    "runId": 37685283731,
+    "jobId": 113011401986,
+    "conclusion": "success",
+    "unitTests": 13,
+    "nativeTests": 2,
+    "skips": 0,
+    "includesActualExtensionlessV2ReaderLoading": true,
+    "installationServiceAdaptersSimulated": true
+  },
+  "installationPerformed": false,
+  "startAuthorized": false,
+  "releaseApplied": false
+}

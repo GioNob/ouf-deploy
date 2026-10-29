@@ -1,0 +1,25 @@
+# Finite policy-token renewal worker — 12 October 2026
+
+Source 35dbc6f55c1fe324ae2beba5f95b8318e76ffe8c; [CI38294227923](https://github.com/GioNob/ouf-deploy/actions/runs/38294227923) SUCCESS: **23 tests, zero skipped**. [Byte-pinned qualification](../evidence/semantic-policy-token-finite-worker-qualified-20261012.json). Private component qualification only; no installer or target acceptance.
+
+## Implemented behavior
+
+ScheduledRecovery persists next-renewal and expiry windows in the SAME completion checkpoint as the successful publication. Interval defaults60seconds, shortened to half the remaining bounded protocol validity. Each scheduled attempt persists NEW/ATTEMPTING/PUBLISHING intent before grant; start times, attempt counters and publication counts are retained. No next-operation initializer or session grant exists. Missing legacy history is not created at zero.
+
+RenewalWorker holds the independent process invocation fence throughout serve, including waits. Journal transactions are short and free during waits/network. Local authority/revocation is checked each heartbeat; expired credential windows, changed context/generation, unknown custody and ambiguous effects cannot trigger another grant. A recovered ACTIVE record from another invocation requires reconciliation, even if its next scheduled time has arrived. RETRY_WAIT can resume a proven pre-effect attempt using the same context/history and finite remaining budget. Storage failure before a state read invokes the owner pause and exposes a safe error code; observer failure also invokes pause. Actual IAM deny/revocation remains the external owner's responsibility.
+
+The driver exposes only state/reason/attempt/publication counts and liveness; applicationReady and runtimeAuthorityIssued remain false. Tests cover short token expiry, successful successive requests, full-budget exhaustion, four-hour outage with simulated time, restarted ACTIVE, revocation/expired token, exclusive fence while waiting, observer failure and storage-read failure. Existing grant/publication crash, concurrency, custody and real loopback TLS tests also pass.
+
+## Explicit finite operation profile
+
+`ouf.policy-token-finite-owner-operation.v1` bounds ONE installed-owner operation. It conservatively counts **all grant attempts, including successful scheduled renewals**, and all elapsed time; defaults128 attempts/24hours including durations. This finite provider-call/worker cap is intentionally stronger than a failure-only incident budget. At one-minute intervals the attempt cap can stop healthy renewal after roughly two hours; it is NOT an indefinite production timer replacement. The owner must choose a reviewed finite operation scope within its actual authority window. A future governed next session must preserve history and must never bypass an OPEN exhausted/ambiguous incident. Neither automatic session creation nor HUMAN budget renewal is implemented here. Development authorization is not that runtime mandate.
+
+No existing recovery profile was reset or silently changed. The unchanged base Recovery/Journal are reused; historical15-test component evidence and prior22-test worker evidence remain distinct from final23-test source. Installed timer/code/credential, original gated intake and R12 history are unchanged.
+
+## Real IAM integration evidence and open boundary
+
+Pinned Gateway source 875db691e7c222bcf1ecd571cf9260706da86cee defines CredentialVerifier as an external protocol, not a cryptographic implementation. IdentityBoundary normalizes only verified credentials against governed issuer/subject/audience/tenant/actor bindings. Its record does not carry expiry or a revocation result. Southbound destination validation checks registered HTTPS host/port/address classes but does not itself pin the subsequent HTTP connection or create the existing nft/DNS transport lease. No production verification can be inferred from those source contracts.
+
+The token producer's mandatory DomainOwner therefore remains mandatory and unimplemented for the actual installation. Before apply it must bind the real existing verifier/current issuer keys and revocation, finite expiry, approved client/audience/scope, source/configuration/generation/current authority, legacy-writer quiescence, authenticated transport and owned deny on pause. Do not replace it with the fixture Owner, local JWT claim decoding or deployment Ed25519 roles: deployment signatures are not IAM token issuer authority. [Source review](../evidence/semantic-token-existing-iam-contract-review-20261012.json).
+
+The target's exact six-key producer configuration proves correspondence, not issuer/client/audience approval or a usable cryptographic verifier. Existing Ingestion HUMAN recovery-session code governs its own original run, not a token-owner session; it cannot automatically grant one here. The next integration must supply those existing owner contracts, protected installation/credential re-establishment and renewable six-mount acceptance before any cutover. Teatri CSV, durable ACK, objects and search remain unproduced.

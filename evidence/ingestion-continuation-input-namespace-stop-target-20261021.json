@@ -1,0 +1,27 @@
+{
+  "provenance": "PUBLIC_JSON_SUPPLIED_BY_OPERATOR",
+  "operatorLog": "/home/oufadmin/ouf-rollout-continuation-inputs.WLdvgBh9/reader.log",
+  "launcher": "/home/oufadmin/ouf-rollout-inputs-launcher.dko9I3Rm",
+  "sourceCommit": "1776f9461e83f83b3a79e4077df551cc9f7ffc4a",
+  "receipt": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "contextsAndClaimsRetained": true,
+    "newLoginPerformed": false,
+    "phase": "READ_RETAINED_PREFIX_AND_LIVE_METADATA",
+    "privateValuesPrinted": false,
+    "reasonCode": "REPLACEMENT_GATEWAY_MUST_USE_NEW_NAMESPACE",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-rollout-continuation-input-read.v1",
+    "status": "STOP_RECONCILE"
+  },
+  "exactTargetInvocationClocksAvailable": false,
+  "exactEngineGetsReported": false,
+  "sourceDiagnosis": "READ_ONLY_BRIDGE_INODE_INEQUALITY_DIFFERS_FROM_EXISTING_QUALIFIED_NAMESPACE_PREDICATE",
+  "targetRuntimeFailureProven": false,
+  "oldContextAndClaimsRetained": true,
+  "technicalCompleted": 8,
+  "functionalProven": 4,
+  "gate": "G3_OPEN"
+}

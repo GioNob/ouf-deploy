@@ -1,0 +1,109 @@
+name: OUF static MCP candidate
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/static-mcp-candidate.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ouf-static-mcp-candidate
+  cancel-in-progress: false
+jobs:
+  build-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: 3d51524eeddb539d6f78961447e64d9d640141c4
+          path: mcp-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: 84e91e199892bfda1d116a49f53a9990f61724c7
+          path: verification-source
+          persist-credentials: false
+      - name: Build and exercise static non-root binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C mcp-source rev-parse HEAD)" = 3d51524eeddb539d6f78961447e64d9d640141c4
+          docker build --label org.opencontainers.image.revision=3d51524eeddb539d6f78961447e64d9d640141c4 -t ouf-mcp:static-56783ce mcp-source
+          test "$(docker image inspect ouf-mcp:static-56783ce --format '{{.Config.User}}')" = 10005:10005
+          docker run --rm -e MCP_DATABASE_URL=unused-for-help ouf-mcp:static-56783ce server -h
+          mkdir package
+          docker save ouf-mcp:static-56783ce > package/mcp.image.tar
+          docker image inspect ouf-mcp:static-56783ce > package/build-image.json
+      - name: Prepare existing pinned offline scanners
+        run: sudo /usr/bin/python3 -B verification-source/tests/prepare_native_vulnerability_scanners.py --database-pin verification-source/docs/handoffs/receipts/SEMANTIC_IMAGE_VULNERABILITY_DATABASE_PIN_2026-10-07.json
+      - name: Verify image, CA roots, temporary directory and vulnerability threshold
+        shell: bash
+        run: |
+          sudo /usr/bin/python3 -B - <<'PY'
+          import ast, base64, gzip, hashlib, json, os, subprocess, sys, tarfile
+          from pathlib import Path
+          sys.path.insert(0, str(Path("verification-source").resolve()))
+          from tools import verify_semantic_image_archive as archive
+          node = next(n for n in ast.parse(Path("scripts/scan-discovery-candidate.py").read_text()).body if isinstance(n, ast.FunctionDef) and n.name == "verify_general_image")
+          scope = dict(archive=archive, gzip=gzip, hashlib=hashlib, tarfile=tarfile)
+          exec(compile(ast.Module(body=[node], type_ignores=[]), "archive-verifier", "exec"), scope)
+          verify = scope["verify_general_image"]
+          root = Path("/root/ouf-static-mcp")
+          root.mkdir(mode=0o700)
+          output = Path("package").resolve()
+          image = json.loads((output / "build-image.json").read_bytes())[0]
+          verified = verify(output / "mcp.image.tar", image["Id"])
+          home = root / "home"
+          home.mkdir(mode=0o700)
+          env = {"PATH":"/usr/bin:/bin", "HOME":str(home), "XDG_CONFIG_HOME":str(home), "SYFT_CHECK_FOR_APP_UPDATE":"false", "SYFT_PACKAGE_EXCLUDE_BINARY_OVERLAP_BY_OWNERSHIP":"false"}
+          syft = output / "mcp.syft.json"
+          subprocess.run(["/usr/bin/unshare","--net","--","/root/ouf-ci-vulnerability/syft","scan","docker-archive:"+str(output/"mcp.image.tar"),"--quiet","-o","syft-json="+str(syft)],env=env,check=True,timeout=180)
+          sbom = json.loads(syft.read_bytes())
+          assert sbom["source"]["metadata"]["imageID"] == "sha256:" + verified["configByteSha256"]
+          assert hashlib.sha256(base64.b64decode(sbom["source"]["metadata"]["config"],validate=True)).hexdigest() == verified["configByteSha256"]
+          assert not any(p["name"] in {"libcrypto3","libssl3","zlib"} for p in sbom["artifacts"])
+          scan = subprocess.run(["/usr/bin/python3","-B","verification-source/tests/scan_semantic_extended_inventory.py","--sbom",str(syft)],capture_output=True,check=True,timeout=400)
+          report = json.loads(scan.stdout)
+          (output / "mcp.grype.json").write_bytes(scan.stdout)
+          counts = {k:0 for k in ("Critical","High","Medium","Low","Negligible","Unknown")}
+          for match in report["matches"]:
+              counts[match["vulnerability"]["severity"]] += 1
+          accepted = not any(counts[k] for k in ("Critical","High","Unknown")) and not report.get("alertsByPackage")
+          result = {"schema":"ouf.mcp.static-candidate.v1","sourceCommit":"3d51524eeddb539d6f78961447e64d9d640141c4","imageId":image["Id"],"archiveByteVerified":True,"runtimeUser":image["Config"]["User"],"severityCounts":counts,"thresholdMet":accepted,"releaseApplied":False,"acceptanceGranted":False,"publisherTrustAccepted":False}
+          (output / "inventory.json").write_text(json.dumps(result,indent=2)+chr(10))
+          print("OUF_STATIC_MCP_CANDIDATE="+json.dumps(result,sort_keys=True))
+          if not accepted:
+              raise SystemExit("STATIC_MCP_SCAN_BLOCKED")
+          PY
+      - name: Check final runtime filesystem without starting the service
+        run: |
+          set -euo pipefail
+          docker create --name mcp-filesystem-proof ouf-mcp:static-56783ce
+          docker export mcp-filesystem-proof > package/rootfs.tar
+          docker rm mcp-filesystem-proof
+          python3 - <<'PY'
+          import tarfile
+          with tarfile.open("package/rootfs.tar") as root:
+              assert root.getmember("tmp").mode == 0o1777
+              assert root.getmember("etc/ssl/certs/ca-certificates.crt").size > 1024
+              assert root.getmember("usr/local/bin/ouf-mcp").mode & 0o111
+          print("STATIC_MCP_RUNTIME_FILES=PASS")
+          PY
+          rm package/rootfs.tar
+          gzip -n package/mcp.image.tar
+      - name: Make public build evidence readable
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" package
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: static-mcp-candidate-${{ github.run_id }}
+          path: package/
+          if-no-files-found: warn
+          retention-days: 7

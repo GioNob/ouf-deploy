@@ -1,0 +1,32 @@
+{
+  "acceptanceGranted": false,
+  "candidateCount": 2,
+  "candidatesNeverStarted": true,
+  "completeOciTemplateApproved": false,
+  "containerLifecycleOperations": 0,
+  "directory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-launch-inputs-7g1du3a6",
+  "frameObserverBinding": {
+    "installedInRuntime": false,
+    "path": "/etc/ouf/deploy-snapshots/semantic-v2-launch-source-x4kqhSOw/frame-observer.py",
+    "sha256": "122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc",
+    "sourceCommit": "72310a0f4b0d649854d3abc010509d6724617e4e"
+  },
+  "installationAuthorityKeysRead": 0,
+  "launchHashes": {
+    "adapter": "061e2bd245d45d7e435ff86e07a6897413ae6c164d2d2c9ade2d455d80846943",
+    "southbound": "cbc1f30c200a6a27e92b8055aa5542df30f7d124d08004d6f3bfe7dfb9ed2a39"
+  },
+  "maxSourceBytes": 1048576,
+  "preparerSourceHash": "0044f2e95873e236c25c3323c4bf54ac0748c87dd3468c12c58f2b22c81db1eb",
+  "privateEnvironmentRead": true,
+  "privateTlsAndReceiptFilesRead": true,
+  "providerCalls": 0,
+  "readerSourceHash": "2a9fc3d2861faa2e15370c70979b171cb63b2e09a2dfef1e2895ca27fa663861",
+  "rulesChanged": false,
+  "runtimeAllowlistChanged": false,
+  "schema": "ouf.semantic-provider-v2-private-launch-inputs.v1",
+  "secretValuesPrinted": false,
+  "signaturesIssued": 0,
+  "startAuthorized": false,
+  "status": "PRIVATE_LAUNCH_INPUTS_PREPARED"
+}

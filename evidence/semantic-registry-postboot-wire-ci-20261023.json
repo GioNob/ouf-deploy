@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.semantic-registry-frozen-wire-source-qualification.v1",
+  "sourceCommit": "6860d68886a25e52ef4e04fb638198d91cd0ccde",
+  "artifactCommit": "ec9cfa3a4c1347dc80b63a2c954c38e5282c04f1",
+  "capsuleSha256": "5ffd39fd9f1fe3db361711de5fbe74be5a43e5298d2c3a5970fbe5f3ad97b62e",
+  "closureSha256": "a895f58ddb334389f7e15d4287991bfc81593871061a354e0b482604d936dc62",
+  "sourceWorkflowRuns": {
+    "39976902080": "SUCCESS_ALL_7_JOBS",
+    "39976902372": "SUCCESS_ALL_3_JOBS",
+    "39976902557": "SUCCESS_BOTH_JOBS"
+  },
+  "sourceMembershipVerifiedModules": 136,
+  "isolatedPreload": true,
+  "localWrapperTestsPassed": 45,
+  "localPublishedArtifactTestsPassed": 5,
+  "wrapperBashSyntaxPassed": true,
+  "finalDeliveryCi": "PENDING_AT_GENERATION",
+  "realRegistryJvmFixturePassed": true,
+  "frozenEndpointIsSyntheticFixture": true,
+  "target502Resolved": false,
+  "fullTargetCliQualified": false,
+  "continuousTokenRenewalQualified": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

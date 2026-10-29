@@ -1,0 +1,191 @@
+{
+  "schema": "ouf.file-loop.target-package-continuity.v1",
+  "date": "2026-10-10",
+  "operatorReportedStage": {
+    "schema": "ouf.file-loop.offline-candidate-stage.v1",
+    "status": "UNSIGNED_PACKAGES_STAGED_NOT_IMPORTED",
+    "stageDirectory": "/home/oufadmin/ouf-file-loop-offline-stage.LMawhAuO",
+    "packages": [
+      {
+        "module": "semantic",
+        "sourceCommit": "622614b0040cf11be2f6c7e3568733a488ca4ca8",
+        "imageId": "sha256:e826bd9769a72e930e356f72c1c244007f9a34d065db94ca8113b064d10d8b85",
+        "checksumsVerified": true,
+        "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+      },
+      {
+        "module": "ingestion",
+        "sourceCommit": "8b908554314617298242eb2ae8312f734f55e817",
+        "imageId": "sha256:98af9d774e446ce621128a52bfa1f9faaa096052cdc185f17dc81f1ea76e9a05",
+        "checksumsVerified": true,
+        "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+      },
+      {
+        "module": "udp",
+        "sourceCommit": "bc336208ce41876f2854c3a4d8623fb6698bdcdd",
+        "imageId": "sha256:7a97979286113c4e3ef6bae87e1bf2d54d2f7195d447ce43b9329f3b90899d28",
+        "checksumsVerified": true,
+        "imageScanGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED"
+      }
+    ],
+    "imageImports": 0,
+    "containerLifecycleOperations": 0,
+    "applicationCutoverAuthorized": false,
+    "existingConfigurationWrites": 0,
+    "r9Touched": false,
+    "privateKeysRead": 0,
+    "signaturesIssued": 0,
+    "notReleaseAcceptance": true
+  },
+  "hostMetadata": {
+    "schema": "ouf.file-loop.package-host-metadata-read.v1",
+    "status": "HOST_METADATA_CAPTURED_NOT_TRANSITION_AUTHORITY",
+    "containerMetadataStable": true,
+    "containers": {
+      "adapter": {
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "generation": {
+          "networkNamespaceInode": 4026533292,
+          "pid": 1826443,
+          "startTicks": 191459195
+        },
+        "imageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+        "metadataHash": "009068ad82e6a84c23e31d2ca118c1d9b3e792f29549d856139ae339f2177872",
+        "present": true,
+        "restartPolicy": "no",
+        "status": "running",
+        "user": "10006:10006"
+      },
+      "semantic": {
+        "containerId": "7ae83be8c1fe9fe25774b7d748e35153652b29b2501886f89daeabb83bd1a147",
+        "generation": {
+          "networkNamespaceInode": 4026532695,
+          "pid": 3789123,
+          "startTicks": 128311383
+        },
+        "imageId": "sha256:f6525f2512c72a600ebcbc7060d55355d86e0627487b655e7c5c6288a0be7fc6",
+        "metadataHash": "3bf9b75280c2c6cb64bafa2b4bc0d8fa6d95eb84dbd71357c0c42a734e310e01",
+        "present": true,
+        "restartPolicy": "unless-stopped",
+        "status": "running",
+        "user": "10001:10001"
+      },
+      "southbound": {
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "generation": {
+          "networkNamespaceInode": 4026533228,
+          "pid": 1826422,
+          "startTicks": 191459190
+        },
+        "imageId": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+        "metadataHash": "874935d286755441a7481b5eb286b1187d21e5364976730b2937e43eae150de1",
+        "present": true,
+        "restartPolicy": "no",
+        "status": "running",
+        "user": "636:636"
+      }
+    },
+    "historicalSnapshotDirectories": [
+      {
+        "path": "/etc/ouf/deploy-snapshots/semantic-discovery-runtime-inputs-682nr5ky",
+        "mode": "0o700",
+        "present": true,
+        "rootOwnedDirectoryNotGroupWorldWritable": true
+      },
+      {
+        "path": "/etc/ouf/deploy-snapshots/semantic-discovery-java-trust-4pgerb71",
+        "mode": "0o700",
+        "present": true,
+        "rootOwnedDirectoryNotGroupWorldWritable": true
+      },
+      {
+        "path": "/etc/ouf/deploy-snapshots/semantic-discovery-protected-bindings-qb3381ho",
+        "mode": "0o700",
+        "present": true,
+        "rootOwnedDirectoryNotGroupWorldWritable": true
+      },
+      {
+        "path": "/etc/ouf/deploy-snapshots/semantic-discovery-runtime-declaration-nfggulwg",
+        "mode": "0o700",
+        "present": true,
+        "rootOwnedDirectoryNotGroupWorldWritable": true
+      },
+      {
+        "path": "/etc/ouf/deploy-snapshots/semantic-dns-recovery-r9-hkv5exgo",
+        "mode": "0o700",
+        "present": true,
+        "rootOwnedDirectoryNotGroupWorldWritable": true
+      }
+    ],
+    "r9ServiceMetadata": {
+      "ActiveState": "failed",
+      "InvocationID": "ba95ba7239664789ac68430107ac6dc8",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Restart": "no",
+      "Result": "exit-code",
+      "SubState": "failed"
+    },
+    "r9ServiceReadExit": 0,
+    "r9LeaseOrApplicationHealthProven": false,
+    "completeHostOciProven": false,
+    "readConsistencyMode": "STABLE_REREADS_NOT_ATOMIC_AUTHORITY",
+    "commonLockAcquired": false,
+    "privateKeysRead": 0,
+    "credentialFilesOpened": 0,
+    "privateSnapshotFilesOpened": 0,
+    "privateValuesPrinted": false,
+    "signaturesIssued": 0,
+    "dnsQueries": 0,
+    "providerCalls": 0,
+    "containerLifecycleOperations": 0,
+    "imageImports": 0,
+    "existingConfigurationWrites": 0,
+    "firewallWrites": 0,
+    "databaseWrites": 0,
+    "r9Touched": false,
+    "applyAuthorized": false,
+    "notReleaseAcceptance": true
+  },
+  "r9FailureCause": "NOT_YET_READ",
+  "automaticRestartAllowed": false,
+  "consumedR9ReplayAllowed": false,
+  "publisherVerification": {
+    "workflowRun": 38071155443,
+    "producerCommit": "cc39a2d9a20a3edeacb1594d34e0a1780e897113",
+    "status": "ALL_THREE_PACKAGES_SIGSTORE_SIGNED_AND_VERIFIED_HOSTED",
+    "method": "COSIGN_3_1_3_KEYLESS_FULCIO_REKOR",
+    "githubAttestationApiUnsupportedFailureRun": 38070844195,
+    "targetCryptoVerificationCompleted": false,
+    "installationAuthorityAccepted": false,
+    "artifacts": [
+      {
+        "id": 11676991790,
+        "name": "file-loop-publisher-provenance-ingestion-38071155443",
+        "zipDigest": "sha256:4b1fbb503887d84c70d8d3d0f43af8966de5b06ddf86e9fe0128de67d680bd81"
+      },
+      {
+        "id": 11676389122,
+        "name": "file-loop-publisher-provenance-udp-38071155443",
+        "zipDigest": "sha256:3cf01450fdcf0cc9e387872a44139e403f7b04b9d632fddddf10e659a098e047"
+      },
+      {
+        "id": 11676214297,
+        "name": "file-loop-publisher-provenance-semantic-38071155443",
+        "zipDigest": "sha256:28794642891694e7ac513dc4ccebcc51d681ad28d13a1784d3309f10d398047f"
+      }
+    ]
+  },
+  "notReleaseAcceptance": true,
+  "publicRoots": {
+    "workflowRun": 38071443267,
+    "producerCommit": "1cb25d6ad95e58d0405d01ea4a245ca85704ad11",
+    "artifactId": 11677280041,
+    "artifactZipDigest": "sha256:f77eae7c8a9d042431635008e3da683be15488011380507a64819a0d6ba837f6",
+    "publicStoreHash": "98d34a90fca2688ef5674862d2a484e09e5ca25d2f07c5d654aa28f1581f3419",
+    "baselineMatchesPreviouslyUsed": true,
+    "targetComparisonPending": true,
+    "noPreviousAuthorityInherited": true
+  }
+}

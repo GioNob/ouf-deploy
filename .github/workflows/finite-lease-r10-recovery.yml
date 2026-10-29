@@ -1,0 +1,44 @@
+name: New R10 finite lease recovery qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_lease_recovery/activate_finite_r10.py'
+      - 'tools/semantic_lease_recovery/activation_core.py'
+      - 'tools/semantic_lease_recovery/reader.py'
+      - 'tools/semantic_lease_recovery/dns.py'
+      - 'tools/semantic_lease_recovery/materialize_southbound_lease_refresh.py'
+      - 'tools/semantic_lease_recovery/test_r10_*.py'
+      - 'tools/semantic_lease_recovery/r10_native_fixture.py'
+      - '.github/workflows/finite-lease-r10-recovery.yml'
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: a10df126d229dfefd9e0a4d716a07f1f535b6cd6
+          path: lease-owner-source
+          persist-credentials: false
+      - name: Exact historical owner closure remains untouched
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          record=json.loads(Path('tools/semantic_lease_activation/installed-owner-source-bindings.json').read_bytes())
+          for name,digest in record['sourceHashes'].items():
+              assert hashlib.sha256((Path('lease-owner-source')/name).read_bytes()).hexdigest()==digest,name
+          PY
+      - name: New decision, old claim preservation and sealed deltas
+        run: python3 -B -m unittest discover -v -s tools/semantic_lease_recovery -p 'test_r10_*.py'
+      - name: Install isolated native dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq nftables iproute2
+      - name: New service process, real DNS and nft, finite expiry, stop and replay denial
+        run: sudo unshare --net /usr/bin/python3 -B tools/semantic_lease_recovery/r10_native_fixture.py lease-owner-source

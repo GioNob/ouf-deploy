@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.migration-admission-executor-qualification.v1",
+  "sourceCommit": "062f124a91a4620b29b3d911895981b7d32f0e41",
+  "workflowRunId": 38207193350,
+  "jobId": 114673182044,
+  "conclusion": "success",
+  "compositionTests": 3,
+  "nativeIntegrationTests": 2,
+  "actualFencedBackupPausedProcessAdmissionAndRelease": true,
+  "actualControllerDeath": true,
+  "admissionReplayDenied": true,
+  "sameProcessGenerationReleased": true,
+  "lateRowsPreserved": true,
+  "foreignSessionBlocksRelease": true,
+  "authorityAndLeaseAndAttestationAndTransportSynthetic": true,
+  "semanticJvmStarted": false,
+  "targetApplied": false,
+  "targetInstallerQualified": false,
+  "notReleaseAcceptance": true
+}

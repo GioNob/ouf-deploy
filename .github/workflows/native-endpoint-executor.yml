@@ -1,0 +1,24 @@
+name: OUF composed retained endpoint release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/producer_adapter.py
+      - tools/semantic_application_cutover/endpoint_adapter.py
+      - tests/test_endpoint_adapter.py
+      - tests/native_endpoint_executor.py
+      - tests/executor_composition_fixture.py
+      - .github/workflows/native-endpoint-executor.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_endpoint_adapter.py -v
+      - run: python3 tests/native_endpoint_executor.py

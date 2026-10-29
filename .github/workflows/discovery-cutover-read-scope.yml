@@ -1,0 +1,31 @@
+name: Discovery cutover input reader scope
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_target_review/read_cutover_inputs.py'
+      - 'tools/semantic_target_review/test_cutover_read_scope.py'
+      - 'tools/semantic_target_review/test_cutover_read_delivery.py'
+      - 'releases/discovery-cutover-input-read-20261010.sh'
+      - '.github/workflows/discovery-cutover-read-scope.yml'
+  pull_request:
+    paths:
+      - 'tools/semantic_target_review/read_cutover_inputs.py'
+      - 'tools/semantic_target_review/test_cutover_read_scope.py'
+      - 'tools/semantic_target_review/test_cutover_read_delivery.py'
+      - 'releases/discovery-cutover-input-read-20261010.sh'
+      - '.github/workflows/discovery-cutover-read-scope.yml'
+permissions:
+  contents: read
+jobs:
+  read-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject privileged mutation and unbounded reads before any I/O
+        run: python3 -B tools/semantic_target_review/test_cutover_read_scope.py
+      - name: Verify pinned delivery, tamper gate, failure propagation and isolated root flags
+        run: |
+          bash -n releases/discovery-cutover-input-read-20261010.sh
+          python3 -B tools/semantic_target_review/test_cutover_read_delivery.py

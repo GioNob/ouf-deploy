@@ -1,0 +1,9 @@
+{
+  "schema": "ouf.semantic-provider-v2-adapter-load-operator-output.v1",
+  "output": "Loaded image ID: sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+  "loadedImageId": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+  "expectedConfigDigest": "sha256:62e066bd021f386291f5de21ce0e1f9e67904a74b4146326070c7784493ad320",
+  "identityLinkProven": false,
+  "priorAbsenceProbeInterpretation": "Only expected config-digest reference was absent; this did not establish that all imports were absent.",
+  "startAuthorized": false
+}

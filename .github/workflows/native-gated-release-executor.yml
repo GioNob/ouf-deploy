@@ -1,0 +1,37 @@
+name: OUF preapplication gate release Executor qualification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/gated_creation_plan.py
+      - tools/semantic_application_cutover/gated_process_observation.py
+      - tools/semantic_application_cutover/gated_release_adapter.py
+      - tools/semantic_application_cutover/gated_stage_adapter.py
+      - tools/semantic_application_cutover/native_evidence_store.py
+      - tests/test_gated_creation_plan.py
+      - tests/test_gated_release_adapter.py
+      - tests/test_gated_process_observation.py
+      - tests/native_gated_release_executor.py
+      - .github/workflows/native-gated-release-executor.yml
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_gated_creation_plan.py -v
+      - run: python3 -m unittest discover -s tests -p test_gated_release_adapter.py -v
+      - run: python3 -m unittest discover -s tests -p test_native_evidence_store.py -v
+      - name: Actual hardened gate and release
+        run: |
+          set -euo pipefail
+          OUF_FIXTURE_ROOT="/var/lib/ouf-gated-release-${GITHUB_RUN_ID}"
+          sudo mkdir -m 700 "$OUF_FIXTURE_ROOT"
+          sudo cp -R . "$OUF_FIXTURE_ROOT/repository"
+          sudo chown -R root:root "$OUF_FIXTURE_ROOT"
+          sudo bash -c 'set -euo pipefail; cd "$1/repository"; python3 -m unittest discover -s tests -p test_gated_process_observation.py -v; python3 tests/native_gated_release_executor.py -v' _ "$OUF_FIXTURE_ROOT"

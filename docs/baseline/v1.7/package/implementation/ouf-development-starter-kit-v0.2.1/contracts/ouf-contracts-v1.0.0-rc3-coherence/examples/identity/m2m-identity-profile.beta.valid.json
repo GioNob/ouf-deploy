@@ -1,0 +1,50 @@
+{
+  "profileId": "m2m-tech-beta",
+  "profileVersion": "1.0",
+  "environment": "test-b",
+  "trust": {
+    "issuerRef": "env://technical-iam/issuer-beta",
+    "jwksRef": "env://technical-iam/jwks-beta",
+    "acceptedAudiences": [
+      "ouf-api"
+    ]
+  },
+  "tokenValidation": {
+    "requireSignedToken": true,
+    "requireIssuerMatch": true,
+    "requireAudienceMatch": true,
+    "clockSkewSeconds": 60,
+    "acceptedAlgorithms": [
+      "ES256"
+    ]
+  },
+  "principalMapping": {
+    "subjectClaim": "sub",
+    "clientIdClaim": "client_id",
+    "rolesClaim": "roles",
+    "organizationsClaim": "organization_refs",
+    "acrClaim": "acr",
+    "amrClaim": "amr",
+    "authTimeClaim": "auth_time",
+    "actorTypeRule": {
+      "mode": "FIXED_FOR_PROFILE",
+      "defaultActorType": "SERVICE_IDENTITY",
+      "claim": null,
+      "valueMap": null
+    }
+  },
+  "serviceIdentityPolicy": {
+    "clientCredentialsAllowed": true,
+    "serviceIdentityLifecycleExternal": true,
+    "credentialMaterialInContract": false,
+    "minimumScopes": [
+      "ouf.internal"
+    ]
+  },
+  "scenarioDecision": {
+    "status": "UNRESOLVED_EXTERNAL_GATE",
+    "selectedScenario": null,
+    "note": "No A/B/C selection encoded."
+  },
+  "status": "APPROVED"
+}

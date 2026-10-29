@@ -1,0 +1,22 @@
+name: Readiness native scoped update qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths: ['tools/ingestion_readiness_update/**', 'scripts/execute-ingestion-readiness-update-20261017.py', 'releases/ingestion-readiness-execution-selection-20261017.json', 'tests/test_readiness_update_*.py', '.github/workflows/ingestion-readiness-native-update.yml']
+permissions: {contents: read}
+jobs:
+  native-scoped-update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Pure closed graph with effects disabled
+        run: python3 -I -B -m unittest discover -s tests -p 'test_readiness_update_bootstrap.py' -v
+      - name: Real root custody, signatures, Docker replacements and namespace route publication
+        run: |
+          OUF_READINESS_ROOT="/var/lib/ouf-readiness-native-${{ github.run_id }}"
+          sudo mkdir -m700 "$OUF_READINESS_ROOT"
+          sudo cp -R . "$OUF_READINESS_ROOT/repository"
+          sudo chown -R root:root "$OUF_READINESS_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root OUF_READINESS_DOCKER_NATIVE=1 python3 -I -B -m unittest discover -s "$OUF_READINESS_ROOT/repository/tests" -p 'test_readiness_update_*.py' -v

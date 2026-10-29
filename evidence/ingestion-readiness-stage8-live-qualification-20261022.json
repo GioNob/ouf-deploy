@@ -1,0 +1,78 @@
+{
+  "schema": "ouf.ingestion-readiness-stage8-live-qualification.v1",
+  "sourceCommit": "fe173314353ff9ca320098c5f5461268c6e4c84f",
+  "unitRun": 39765003954,
+  "pythonJobs": [
+    {
+      "id": 119778154240,
+      "python": "3.12",
+      "tests": 110,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119778154404,
+      "python": "3.13.5",
+      "tests": 110,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "platformRun": 39765004003,
+  "platformJob": {
+    "id": 119778163251,
+    "tests": 1,
+    "skipped": 0,
+    "conclusion": "success"
+  },
+  "proof": {
+    "engineGets": 14,
+    "engineWrites": 0,
+    "sealedSourceModules": 118,
+    "oldPrefixBytesUnchanged": true,
+    "remainingStages": 4,
+    "fixtureAppliedStages": 9,
+    "targetAppliedStages": 8,
+    "syntheticStopAndExpiry": true,
+    "syntheticHumanAndOwner": true,
+    "targetEvidence": false
+  },
+  "productionDeliveryReproduction": "PASS_EXACT_CASE_CAPSULE_AND_LAUNCHER",
+  "target": {
+    "oauthAttempts": 300,
+    "oauthCeiling": 300,
+    "patchStagesApplied": 8,
+    "newBudgetGranted": false,
+    "newWindowOpened": false,
+    "runtimeAuthorityIssued": false,
+    "targetCapturePerformed": false,
+    "releaseAcceptance": false
+  },
+  "deliveryCommit": "2ef75b77e9bf259f79e4dc34b14bab61f0fa4b9a",
+  "deliveryUnitRun": 39766442749,
+  "deliveryPythonJobs": [
+    {
+      "id": 119782957857,
+      "python": "3.12",
+      "tests": 111,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119782957457,
+      "python": "3.13.5",
+      "tests": 111,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "deliveryPlatformRun": 39766442872,
+  "deliveryPlatformJob": {
+    "id": 119782957794,
+    "tests": 1,
+    "skipped": 0,
+    "conclusion": "success"
+  },
+  "recordedAt": "2026-10-22T11:01:57Z",
+  "futureFourStageRuntimeQualified": false
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.durable-v11-target-stage-evidence.v1",
+  "workflowSource": "7984f7d3c0c2d84362406dcac0845fa4739aa2f7",
+  "verifierSource": "37ff0eebcc5e100877f357ba791fe662b2deb508",
+  "run": 38162329087,
+  "job": 114537662589,
+  "conclusion": "success",
+  "receipt": {
+    "artifactId": 11710556577,
+    "budgetReset": false,
+    "containerLifecycleOperations": 0,
+    "databaseQueries": 0,
+    "databaseWrites": 0,
+    "firewallWrites": 0,
+    "imageId": "sha256:83635be46d1fe61dea08597ea4488980b4349e5f6e0ed8bbd3ab6f5e2686370e",
+    "imageImports": 0,
+    "migrationCount": 11,
+    "newCandidateImageCustodyProven": false,
+    "newClaimCreated": false,
+    "newTransportClosureProven": false,
+    "notReleaseAcceptance": true,
+    "productionApplyReady": false,
+    "protectedFileWrites": 0,
+    "publisherCommit": "3ec99277b8383e496913b9fd3bb05c877825abf5",
+    "r12Touched": false,
+    "schema": "ouf.durable-v11-target-offline-stage.v1",
+    "signedSubjectsVerified": 8,
+    "sourceCommit": "8a2e84b32d4ce2bdc3bc529b56afb5663ab133e3",
+    "stageDirectory": "/home/oufadmin/ouf-durable-v11-stage.drTnFl4m",
+    "status": "ORIGINAL_PACKAGE_AND_PUBLISHER_VERIFIED_NO_IMPORT_OR_APPLY",
+    "targetInstallationAuthorityGranted": false,
+    "zipSha256": "b6ae1051cee4ec9fb1b28f532622ecd39e038ec2e6a384d50565cbf92f2a0def"
+  },
+  "limits": [
+    "New private oufadmin stage only; does not write protected configuration or change target trust policy.",
+    "Eight original signed subjects freshly verified with exact producer commit/ref and hosted-publisher requirement.",
+    "Original signed vulnerability report verified; this stage does not rescan or prove target image import/custody, OCI/transport, runtime readiness or installation authority.",
+    "No retries, claims, imports, root access or budget reset."
+  ]
+}

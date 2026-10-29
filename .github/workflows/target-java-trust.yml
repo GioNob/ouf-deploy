@@ -1,0 +1,35 @@
+name: OUF offline target Java trust preparation qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_java_trust/prepare_target_trust.py
+      - tools/semantic_java_trust/test_target_trust_native.py
+      - tools/semantic_java_trust/test_target_trust_delivery.py
+      - releases/application-java-trust-preparation-20261010.sh
+      - .github/workflows/target-java-trust.yml
+permissions:
+  contents: read
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Disposable fixture Java21 image, never a target acceptance claim
+        run: docker pull eclipse-temurin:21-jre
+      - name: Actual offline tool isolation and cleanup, public root preservation, role UID and no overwrite
+        run: |
+          OUF_TEST_JAVA_IMAGE_ID="$(docker image inspect eclipse-temurin:21-jre --format '{{.Id}}')"
+          sudo env JAVA_HOME="$JAVA_HOME" OUF_TEST_JAVA_IMAGE_ID="$OUF_TEST_JAVA_IMAGE_ID" /usr/bin/python3 tools/semantic_java_trust/test_target_trust_native.py
+      - name: Immutable delivery when present
+        run: |
+          if [ -f tools/semantic_java_trust/test_target_trust_delivery.py ]; then
+            python3 tools/semantic_java_trust/test_target_trust_delivery.py
+          fi

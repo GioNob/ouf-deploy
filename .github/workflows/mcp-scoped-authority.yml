@@ -1,0 +1,42 @@
+name: Scoped MCP authority and exact private plan
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - tools/semantic_mcp_update/**
+      - scripts/execute-semantic-mcp-scoped-20261017.py
+      - scripts/launch-semantic-mcp-policy-remainder-20261017.sh
+      - tests/test_mcp_scoped_launcher.py
+      - tests/test_mcp_admin_secret_channel.py
+      - tests/test_mcp_update_plan.py
+      - tests/test_mcp_scoped_authority.py
+      - tests/test_mcp_reprocessing_permit_issuance.py
+      - tests/test_mcp_scoped_bootstrap.py
+      - tests/test_mcp_token_entry_composed.py
+      - .github/workflows/mcp-scoped-authority.yml
+permissions: {contents: read}
+jobs:
+  exact-action-and-existing-roles:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real stdlib custody and existing-key role signatures with fixture HUMAN boundary
+        run: |
+          sudo env OUF_TEST_ROOT=/root OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p test_mcp_scoped_authority.py -v
+          sudo env OUF_TEST_ROOT=/root OUF_NATIVE_UIDS=1 python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p test_mcp_reprocessing_permit_issuance.py -v
+          python3 -I -B -m unittest discover -s tests -p test_mcp_update_plan.py -v
+      - name: Complete sealed source graph with all import effects disabled
+        run: python3 -I -B -m unittest discover -s tests -p test_mcp_scoped_bootstrap.py -v
+      - name: Native root-owned composition fixture
+        run: |
+          OUF_SCOPED_ROOT="/var/lib/ouf-mcp-scoped-${GITHUB_RUN_ID}"
+          sudo mkdir -m700 "$OUF_SCOPED_ROOT"
+          sudo cp -R . "$OUF_SCOPED_ROOT/repository"
+          sudo chown -R root:root "$OUF_SCOPED_ROOT"
+          sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root python3 -I -B -m unittest discover -s "$OUF_SCOPED_ROOT/repository/tests" -p test_mcp_token_entry_composed.py -v
+      - name: Pinned launcher byte custody and isolated inert child
+        run: sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p test_mcp_scoped_launcher.py -v
+      - name: Configured admin secret custody and sanitized bootstrap failures
+        run: sudo env OUF_NATIVE_UIDS=1 OUF_TEST_ROOT=/root python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p test_mcp_admin_secret_channel.py -v

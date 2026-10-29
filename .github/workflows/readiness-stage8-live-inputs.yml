@@ -1,0 +1,71 @@
+name: Stage8 bounded live input capture
+on:
+  push:
+    branches: [feat/csv-e2e-owner-composition-20261020]
+    paths: ['tools/ingestion_readiness_patch_execution/stage8_live_*.py','tests/test_readiness_patch_stage8_live*.py','.github/workflows/readiness-stage8-live-inputs.yml']
+  pull_request:
+    paths: ['tools/ingestion_readiness_patch_execution/stage8_live_*.py','tests/test_readiness_patch_stage8_live*.py','.github/workflows/readiness-stage8-live-inputs.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  stage8-live-capture-platform:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: .pairwise/ingestion
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Existing qualified image artifact for isolated fixture only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/GioNob/ouf-ingestion-runtime/actions/artifacts/12370330790/zip > "$RUNNER_TEMP/ouf-candidate.zip"
+          printf '%s  %s\n' 'f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64' "$RUNNER_TEMP/ouf-candidate.zip" | sha256sum -c -
+      - name: Exact Flyway fixture
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -q -f tests/fixtures/ingestion-db-preflight/pom.xml compile org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.ingestion-db.classpath"
+      - name: Disposable Docker29 containerd Engine matching the qualified API adapter
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sha256sum --check <<'OUF_DOCKER_SHA'
+          d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  /tmp/ouf-docker-29.8.1.tgz
+          OUF_DOCKER_SHA
+          sudo install -d -m 755 /var/lib/ouf-docker29-tools
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /var/lib/ouf-docker29-tools
+          sudo chown -R root:root /var/lib/ouf-docker29-tools
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-rollout-docker-contract-daemon --property=Restart=no --setenv=PATH=/var/lib/ouf-docker29-tools:/usr/sbin:/usr/bin:/sbin:/bin /var/lib/ouf-docker29-tools/dockerd --config-file=/tmp/ouf-docker-29.json --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-rollout-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+      - name: Full finite native sequence and ambiguity/expiry boundaries
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-rollout-sequence-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env PATH=/var/lib/ouf-docker29-tools:/usr/sbin:/usr/bin:/sbin:/bin OUF_NATIVE_UIDS=1 OUF_ISOLATED_NATIVE_PLATFORM=1 OUF_TEST_ROOT="$fixture" \
+            OUF_QUALIFIED_DEPLOY_COMMIT="${{ github.event.pull_request.head.sha || github.sha }}" \
+            OUF_FIXTURE_APISIX_IMAGE=apache/apisix:3.18.0-debian OUF_FIXTURE_ETCD_IMAGE=quay.io/coreos/etcd:v3.5.17 OUF_FIXTURE_OWNER_IMAGE=python:3.12-alpine \
+            OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" OUF_FIXTURE_JAVA="$JAVA_HOME/bin/java" \
+            OUF_INGESTION_SQL_ROOT="$fixture/repository/.pairwise/ingestion/src/main/resources/db/migration" \
+            OUF_FLYWAY_CLASSPATH="$fixture/repository/tests/fixtures/ingestion-db-preflight/target/classes:$(cat .ingestion-db.classpath)" \
+            /usr/bin/python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_readiness_patch_stage8_live_platform.py -v
+

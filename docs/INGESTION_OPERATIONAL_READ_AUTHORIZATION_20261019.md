@@ -1,0 +1,59 @@
+# Azione amministrativa HUMAN per Ingestion operational READ
+
+
+### Preflight vincolato alla sessione già aperta — qualifica acquisita
+
+La [verifica nativa](https://github.com/GioNob/ouf-deploy/blob/0c654ff46d6a44de32557247ae0790873d67d079/scripts/diagnose-ingestion-administrative-preflight.py), SHA256661726c94b71aeb2b820ecf945ea5b15e7fdd9bca4b6f08f55275528f556da1b, passa12 test nella [run39226412775](https://github.com/GioNob/ouf-deploy/actions/runs/39226412775): binding alla medesima capsula/login, contatori cumulativi, scadenza/revoca, GET/MCP limitati e negazione dei comandi di mutazione. HTTP/IAM e sessione sono fixture, non prove di esito sul target.
+
+Il preflight non è una lettura filesystem pura: può creare un claim/snapshot diagnostico separato e aggiornare le credenziali tramite una sola invocazione del refresh nativo nella finestra HUMAN già approvata. Nessun login, finestra o budget nuovo; cumulativo256 invariato. Preserva la capsula originale e blocca qualsiasi emissione di authority o pubblicazione amministrativa. La sua esecuzione sul target e la causa esatta del precedente STOP restano da acquisire. Tecniche8/8, funzionali4/6.
+
+
+### Diagnosi dyvd8zal acquisita — 2026-10-19,10:43 Europe/Rome
+
+Il read sul target conferma: preparazione e closure181 moduli riuscite; claim logico/runtime presenti; ricevute di login native presenti; piano autorizzativo, review APPROVO, authority e journal degli effetti assenti. Lo STOP è nel tratto dopo il login riuscito e prima della pubblicazione del piano autorizzativo. Non rilanciare il launcher e non ripetere login.
+
+La verifica mirata `scripts/diagnose-ingestion-administrative-preflight.py` verifica per primi i primitivi owner puri; poi riusa il successore HUMAN esatto indicato dalle ricevute/claim. Ammette una sola invocazione di refresh nativo nella finestra già approvata: journal/counter credenziali possono avanzare, nessun login, nuova finestra o reset del cumulativo256. Scrive un claim diagnostico separato e snapshot privati; non modifica la capsula originale. Massimo180secondi,8GET owner,1lettura MCP ROLES e8GET IAM; guard bloccano ogni comando amministrativo/di firma/pubblicazione.12 test fixture locali PASS; target preflight non ancora eseguito. Tecniche8/8, funzionali4/6. Vedi `evidence/ingestion-administrative-stopped-context-dyvd8zal-20261019.json`.
+
+
+
+### STOP amministrativo da riconciliare — 2026-10-19,10:33 Europe/Rome
+
+Tecniche8/8, funzionali4/6. L'operatore ha riportato `STOP_RECONCILE / ValueError / PRIVATE_DETAILS_REDACTED` dopo il launcher amministrativo. La fase e gli eventuali effetti parziali restano sconosciuti; non dedurre assenza di effetti o autorizzare un rilancio. Installazione/readback uow4n8lp restano acquisiti.
+
+La diagnosi separata [read-ingestion-administration-stop.py](https://github.com/GioNob/ouf-deploy/blob/2d5739281ab33f024a560e340838c75f58d629e8/scripts/read-ingestion-administration-stop.py) ha superato8 test CI nella [run39224438289](https://github.com/GioNob/ouf-deploy/actions/runs/39224438289), job117967183765. SHA256069c189f29344ad4e508c0a78db246abf07b2abd1befaa4c99e3fe6f0fc35134. Legge solo il prefisso verificato precedente al primo claim e i metadati/journal della sola azione amministrativa; audit indipendente nega scritture, rete e processi esterni. Non chiama installer/runtime/preparer main, non apre credenziali HUMAN, non ripete readback, non riapre budget o authority. Il read sul target è ancora da acquisire.
+
+
+### STOP nativo riportato — 2026-10-19,10:33 Europe/Rome
+
+L'operatore ha eseguito la consegna b836891c7c899c549482f81945046ad592b92f6f e riportato `STOP_RECONCILE / ValueError / PRIVATE_DETAILS_REDACTED`. Non è dimostrata la fase del guasto né l'assenza di effetti parziali; nessun rilancio autorizzato dal solo STOP. Tecniche8/8, funzionali4/6.
+
+La diagnosi separata `scripts/read-ingestion-administration-stop.py` legge il codice/storia già sotto custodia e gli eventuali claim/journal della sola azione amministrativa. Compila soltanto il prefisso AST che termina prima di mkdtemp/claim; non chiama main/run del preparer, dell'installer o del runtime, non ripete installazione/readback e non apre token o journal HUMAN. L'audit nega scritture, rete e processi esterni; watchdog unico120secondi. Espone soltanto codici costanti dei sorgenti pubblici verificati, unità/riga del guard e metadati/stati autorizzativi minimizzati. Il test del canary privato rimane oscuro.8 test locali PASS; la qualifica CI e il read sul target sono distinti e vanno acquisiti.
+
+Nessuna riapertura di budget, nuova authority, nuova sessione/login, pubblicazione policy, grant, attivazione fonte o retry job durante la diagnosi. Consultati gli originali Matrix1.7 §1, Authorization1.5 §109.6 eTHS1.6 THS-A02/A08/A09. Vedi `evidence/ingestion-administration-stop-20261019.json`.
+
+
+Consegna finale qualificata: [run39223108393](https://github.com/GioNob/ouf-deploy/actions/runs/39223108393), job117962847831,6 test PASS (3 regressioni shim storico e3 controlli del nuovo launcher). Launcher immutabile: [b836891c7c899c549482f81945046ad592b92f6f](https://github.com/GioNob/ouf-deploy/blob/b836891c7c899c549482f81945046ad592b92f6f/scripts/launch-ingestion-human-administration-20261019.sh), SHA256 `636330a0b5d54dad590969d2ada8799bdb47b49c02aa8af297d65da199da16cd`. La qualifica conferma manifest, hash preparer e STOP prima di qualsiasi lettura privata su codice alterato. Il canary delle eccezioni resta oscurato. **La preparazione root e l'azione sul target attendono ancora il terminale HUMAN.**
+
+
+### Azione amministrativa HUMAN distinta — 2026-10-19, preparata per avvio nativo
+
+Tecniche **8/8**, funzionali **4/6**. Il codice standalone `1e1a9f9eddca649e64db36fe018f59f2f15a2105` ha superato73 test nella run [39222837925](https://github.com/GioNob/ouf-deploy/actions/runs/39222837925), con firme Ed25519 reali/journal privati e fixture HTTP/IAM esplicite. Il job117962337255 ha predisposto10 file pubblici qualificati sul server; nessun input privato letto, login, authority o effetto amministrativo eseguito.
+
+Lo stage è `/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-ingestion-read-administrative-code-39222837925`; manifest SHA256 `633bbf2a17dc0395dd362694833b2264e7aef9501a06d5ce3fc54a4569e879c2`. Il nuovo launcher `scripts/launch-ingestion-human-administration-20261019.sh` verifica gli hash prima del processo root. La preparazione privata verifica solo la storia/frozen custody già acquisita, costruisce una nuova closure isolata e non richiama installazione o readback uow4n8lp. Dopo PREPARED, la fase nativa verifica la sessione IAM e HUMAN; eventuale RIAPRO LOGIN conserva il cumulativo256, poi APPROVO vincola il piano corrente a massimo900secondi.
+
+Perimetro: registrazione `ingestion.operations.read`, aggiunta del descrittore nella policy immutabile e relativo scope OAuth del client ChatGPT. Ruoli, assegnazioni e grant rimangono invariati. Il successivo grant temporaneo sulla fonte `teatri-csv-6609b245` richiede una proposta e decisione THS distinte. Nessuna attivazione della revisione approvata, acquisizione, modifica infrastrutturale o retry job. Dopo STOP/interruzione: conservare il contesto e riconciliare, senza rilanciare il launcher.
+
+La preparazione root e l'esecuzione sul target restano **NON ESEGUITE**: dal CLOUD manca un terminale operatore autenticato per i gate nativi. CI e staging non dimostrano pubblicazione della capability o token aggiornati. Tappe5–6 ancora aperte.
+
+
+Il profilo installativo esplicito e versionato è `releases/ingestion-read-administrative-installation-20261019.json`: riusa i riferimenti IAM già qualificati di questa installazione, senza introdurli come default portabili. Endpoint/issuer/client/container/socket sono risolti dagli input originali sotto custodia e confrontati con il piano autorizzativo completato.
+
+Il nuovo esecutore riusa le due firme installer esistenti nel formato di authority finita, ma firma soltanto `chatbotFileAuthorization` e `ingestionReadAdministration`; nessuno scope infrastrutturale. Il piano firmato contiene baseline completa, hash delta, scope fonte e vincolo `roleProposal=null`; il token umano resta nel processo nativo. Nessun tool MCP di conferma o nuova API di amministrazione è introdotto.
+
+Verifiche:22 regressioni autorizzazione firmata,6 osservazioni durevoli,11 revisione,11 profilo READ,11 READ nel successore governato,5 authority amministrativa e7 custodia/session binding, tutti PASS. Le fixture verificano lost registration reply, draft ambiguo senza duplicati, revoca, grant/ruoli invariati, source scope, firme ed esclusione attestor. La qualifica della consegna verifica separatamente lo shim root e il blocco prima di letture private se il preparer è alterato. Il caricamento completo degli input sotto custodia e gli effetti owner/IAM sul target devono ancora avvenire nel gate nativo.
+
+Originali consultati per questo sprint: Matrix1.7 §1; Authorization1.5 §§20–22 e109.6; Onboarding/THS1.6 §103 eTHS-A02/A09; Ingestion1.3 §46 Persistent Operational Event Model/46.3 eOA-ING-05. Fonte: PET allegati, archivio e63df67e8817eec38a9d4b3eb736b020f693b932f3360dc02f4555330f2201ce. La lettura non costituisce accettazione completa del sistema.
+
+Gate successivi: dopo il risultato nativo riconciliato, creare un solo grant HUMAN24h con risorsa operational, module INGESTION, sourceRef teatri-csv-6609b245 e dettaglio TENANT_OPERATIONAL; decisione nella THS, rinnovo consapevole del token ChatGPT, lettura status/history, quindi attivazione governata e prove delle tappe5–6.
+
+La qualifica iniziale della consegna39222473524 ha rilevato che il diagnostico dello STOP poteva riportare un messaggio arbitrario maiuscolo. La correzione232535d2106f39bf46e8a4e4ee30b015365fdb06 oscura integralmente il testo dell'eccezione; il test corretto1e1a9f9eddca649e64db36fe018f59f2f15a2105 inietta un canary privato nel boundary nativo. La run39222837925 passa73 test e ristagia il codice corretto. Lo stage39221983431 e il launcher7f7773990f25a86c9a0c8ded945e79fa4e59c5c3 sono superati: non usare quella consegna. Nessuno dei due è stato eseguito sul target.

@@ -1,0 +1,21 @@
+name: Retained cohort capsule immutability
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['tests/test_chatbot_cohort_delivery_launcher.py', 'tests/fixtures/historical-cohort/**', '.github/workflows/source-revision-legacy-capsule.yml']
+permissions: {contents: read}
+jobs:
+  immutable-capsule:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact historical source custody and rejection of the new unauthorized bytes
+        run: |
+          fixture="/root/ouf-historical-capsule-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p 'test_chatbot_cohort_delivery_launcher.py' -v

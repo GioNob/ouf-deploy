@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.ingestion-rollout-stopped-reader-delivery.v1",
+  "sourceCommit": "78473183e164e41e590a5a137b9e379e73c0ad5c",
+  "pullRequest": 46,
+  "readerBlob": "44407f8ed2ba47fc755ee6fe886d8eb033eb4a2f",
+  "readerSha256": "57a5941574bf5beb0fcfe6e3d5465914a34673c651d74c892133be782e0a5e32",
+  "launcherBlob": "08afdb26f6ddd72ffa97545d55607febf6643b29",
+  "launcherSha256": "719d43ac7a085e7f38bcb32b7d0d3a538055c0d74114023ad369488e3e8e4c32",
+  "qualificationRun": 39559474164,
+  "jobs": [
+    {
+      "id": 119087002148,
+      "python": "3.13.5",
+      "tests": 17,
+      "skips": 0,
+      "conclusion": "success"
+    },
+    {
+      "id": 119087002475,
+      "python": "3.12",
+      "tests": 17,
+      "skips": 0,
+      "conclusion": "success"
+    }
+  ],
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

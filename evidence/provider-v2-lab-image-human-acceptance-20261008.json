@@ -1,0 +1,47 @@
+{
+  "schema": "ouf.semantic-provider-v2-lab-image-human-acceptance.v1",
+  "approvalRef": "OUF_PROVIDER_V2_LAB_IMAGE_REVIEW_20261008_233809",
+  "recordedUserMessageAt": "2026-10-08T23:38:09+02:00",
+  "decisionSource": "EXPLICIT_HUMAN_MESSAGE_IN_CURRENT_CONVERSATION",
+  "verbatimUserDecision": "accetto",
+  "proposal": {
+    "repository": "GioNob/ouf-deploy",
+    "commit": "97b33bea12eaaa04ff30f94d52435b1bf617b930",
+    "path": "releases/PROVIDER_V2_IMAGE_REVIEW_DRAFT_20261008.md",
+    "sha256": "d271259b43ed444708199e726f4a213b01599954b0c3c4b87338dd76fbd6e868"
+  },
+  "installationRef": "ouf-lab-netcup-01",
+  "scope": "OUF_LAB_IMAGES_CUSTOM_COMPONENTS_AND_DOCUMENTED_COVERAGE_LIMITATIONS",
+  "maintenanceOwnerAccepted": "OUF project / GioNob",
+  "wasmOmittedAccepted": true,
+  "images": [
+    {
+      "role": "adapter",
+      "manifestDigest": "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc",
+      "configDigest": "sha256:62e066bd021f386291f5de21ce0e1f9e67904a74b4146326070c7784493ad320",
+      "mediumFindings": 5
+    },
+    {
+      "role": "southbound",
+      "manifestDigest": "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366",
+      "configDigest": "sha256:d4c47bbeca75d94e2231e17ca14552885b7b339a5f33dbace411e275c79ded04",
+      "mediumFindings": 142
+    }
+  ],
+  "acceptedLimitations": [
+    "Development OpenResty and zlib snapshots",
+    "Build-generated APK key is not vendor approval",
+    "Custom OpenSSL patch requires OUF maintenance",
+    "Inherited PCRE/Brotli source provenance limits",
+    "LuaRocks associations do not prove universal upstream provenance",
+    "Measured inventory and scans do not prove universal advisory coverage"
+  ],
+  "freshnessRequirementsRemainMandatory": true,
+  "currentDatabaseFreshnessEnds": "2026-10-09T06:31:48Z",
+  "completeImageAndFrameAcceptanceGranted": false,
+  "rootfsAcceptanceGranted": false,
+  "roleSigningAuthorized": false,
+  "startAuthorized": false,
+  "leaseAuthorized": false,
+  "notReleaseAcceptance": true
+}

@@ -1,0 +1,19 @@
+name: Read current discovery rollout topology after R8
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/discovery-rollout-topology-read.yml'
+      - 'tools/semantic_target_review/read_discovery_rollout_topology.py'
+permissions:
+  contents: read
+jobs:
+  topology:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Observe current containers and retained Semantic bridge ingress
+        run: python3 -B tools/semantic_target_review/read_discovery_rollout_topology.py

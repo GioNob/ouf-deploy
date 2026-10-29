@@ -1,0 +1,419 @@
+version: 1.0.0-rc3-coherence
+status: internal-contract-freeze-eligible
+goldStandard: OUF PET Ingestion Runtime v1.2
+contracts:
+- name: CorrelationContext
+  path: common/correlation-context-v1.json
+  owner: OUF Common
+  producer: Gateway / initiating service
+  consumers:
+  - All modules
+- name: DataAccessLabel
+  path: common/data-access-label-v1.json
+  owner: OUF Common / Authorization
+  producer: Governed data owners
+  consumers:
+  - Authorization
+  - UDP
+  - serving modules
+- name: JobStatus
+  path: common/job-status-v1.json
+  owner: OUF Common profile
+  producer: Async modules
+  consumers:
+  - THS/UI
+  - Operations
+- name: HandoffPayload
+  path: ingestion/handoff-payload-v1.json
+  owner: Ingestion
+  producer: Ingestion
+  consumers:
+  - UDP
+  status: field-level-reconciled-draft
+  sourceBasis:
+  - Ingestion Runtime v1.2 §45/45.2/45.3/109/124.1
+  - UDP v1.2 downstream contract
+- name: TrustedHumanCardModel
+  path: trusted-human/trusted-human-card-model-v1.json
+  owner: THS Common Contract
+  producer: Backend owners
+  consumers:
+  - THS renderer
+- name: LineageRecord
+  path: ingestion/lineage-record-v1.json
+  owner: Ingestion
+  producer: Ingestion Runtime
+  consumers:
+  - UDP
+  - Ingestion lineage APIs / replay diagnostics
+  status: field-level-reconciled-draft
+  sourceBasis:
+  - Ingestion Runtime v1.2 §47/47.1/48/51/53/125
+- name: CanonicalDataEnvelope
+  path: ingestion/canonical-data-envelope-v1.json
+  owner: Ingestion
+  producer: Connector / Adapter
+  consumers:
+  - Ingestion processing pipeline
+  status: field-level-reconciled-draft
+  sourceBasis:
+  - Ingestion Runtime v1.2 §72/88/108/125/126
+- name: PublishedConfigurationBundle
+  path: onboarding/published-configuration-bundle-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion
+  - Gateway runtime publication
+  status: field-level-reconciled-draft
+- name: ExtractionProfile
+  path: onboarding/extraction-profile-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Source Sync/Ingestion
+  - Gateway southbound
+  status: field-level-reconciled-draft
+- name: SyncProfile
+  path: onboarding/sync-profile-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Source Sync/Ingestion
+  status: field-level-reconciled-draft
+- name: SourceObjectIdentityPolicy
+  path: onboarding/source-object-identity-policy-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion
+  - UDP evidence downstream
+  status: field-level-reconciled-draft
+- name: TemporalMapping
+  path: onboarding/temporal-mapping-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion
+  - UDP evidence downstream
+  status: field-level-reconciled-draft
+- name: ChangeRepresentationProfile
+  path: onboarding/change-representation-profile-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion
+  status: field-level-reconciled-draft
+- name: DeltaPatchContract
+  path: onboarding/delta-patch-contract-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion
+  status: field-level-reconciled-draft
+- name: SemanticMapping
+  path: onboarding/semantic-mapping-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion ETL/Semantic Processing
+  status: field-level-reconciled-draft
+- name: RelationshipMapping
+  path: onboarding/relationship-mapping-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion candidate builder
+  - UDP/Object Resolution
+  status: field-level-reconciled-draft
+- name: AuthorityPolicyDescriptor
+  path: onboarding/authority-policy-ref-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion evidence
+  - UDP/Object Resolution
+  status: field-level-reconciled-draft
+- name: DataAccessPolicy
+  path: onboarding/data-access-policy-v1.json
+  owner: Onboarding
+  producer: Source Onboarding / Configuration
+  consumers:
+  - Ingestion propagation
+  - Authorization/UDP enforcement
+  status: field-level-reconciled-draft
+- name: PrincipalContext
+  path: authorization/principal-context-v1.json
+  owner: Authorization
+  producer: Service Security Filter / Identity Context Adapter
+  consumers:
+  - Authorization SDK
+  - domain services
+  status: field-level-reconciled-draft
+- name: ResourceContext
+  path: authorization/resource-context-v1.json
+  owner: Authorization common contract
+  producer: resource-owning service
+  consumers:
+  - Authorization SDK
+  status: field-level-reconciled-draft
+- name: CapabilityDescriptor
+  path: authorization/capability-descriptor-v1.json
+  owner: module owner + Authorization catalog validation
+  producer: module owners
+  consumers:
+  - Authorization
+  - Gateway/MCP metadata consumers
+  status: field-level-reconciled-draft
+- name: PolicyGrant
+  path: authorization/policy-grant-v1.json
+  owner: Authorization Policy Registry
+  producer: Policy Registry
+  consumers:
+  - Policy Publisher/SDK
+  status: field-level-reconciled-draft
+- name: OrganizationScope
+  path: authorization/organization-scope-v1.json
+  owner: Authorization
+  producer: Policy Registry
+  consumers:
+  - Authorization SDK
+  status: field-level-reconciled-draft
+- name: AssuranceRequirement
+  path: authorization/assurance-requirement-v1.json
+  owner: Authorization
+  producer: Policy Registry
+  consumers:
+  - Authorization SDK / IAM integration
+  status: field-level-reconciled-draft
+- name: AuthorizationPolicyBundle
+  path: authorization/authorization-policy-bundle-v1.json
+  owner: Authorization
+  producer: Policy Publisher
+  consumers:
+  - OUF service Authorization SDKs
+  status: field-level-reconciled-draft
+- name: AuthorizationDecision
+  path: authorization/authorization-decision-v1.json
+  owner: Authorization
+  producer: Authorization SDK
+  consumers:
+  - domain guard
+  - audit
+  status: field-level-reconciled-draft
+- name: PolicyEvaluationEvidence
+  path: authorization/policy-evaluation-evidence-v1.json
+  owner: Authorization
+  producer: Authorization SDK / Audit Adapter
+  consumers:
+  - security audit/troubleshooting
+  status: field-level-reconciled-draft
+- name: SemanticReference
+  path: semantic/semantic-reference-v1.json
+  owner: Semantic Registry
+  producer: Semantic Registry
+  consumers:
+  - Onboarding
+  - Ingestion
+  - UDP
+  - MCP metadata consumers
+  status: field-level-reconciled-draft
+- name: ArtifactDetail
+  path: semantic/artifact-detail-v1.json
+  owner: Semantic Registry
+  producer: Semantic Registry
+  consumers:
+  - Onboarding
+  - Ingestion/UDP read paths
+  status: field-level-reconciled-draft
+- name: ArtifactRevision
+  path: semantic/artifact-revision-v1.json
+  owner: Semantic Registry
+  producer: Semantic Registry
+  consumers:
+  - governed consumers / historical resolution
+  status: field-level-reconciled-draft
+- name: SemanticPublicationMember
+  path: semantic/semantic-publication-member-v1.json
+  owner: Semantic Registry
+  producer: Semantic Registry
+  consumers:
+  - PublicationSet consumers
+  status: field-level-reconciled-draft
+- name: SemanticPublicationSet
+  path: semantic/semantic-publication-set-v1.json
+  owner: Semantic Registry
+  producer: Policy/Publication layer
+  consumers:
+  - Onboarding
+  - Ingestion
+  - UDP
+  status: field-level-reconciled-draft
+- name: SearchResult
+  path: semantic/search-result-v1.json
+  owner: Semantic Registry
+  producer: Search API
+  consumers:
+  - Onboarding
+  - MCP/AI read consumers
+  status: field-level-reconciled-draft
+- name: DiscoveryRequest
+  path: semantic/discovery-request-v1.json
+  owner: Semantic Registry
+  producer: Onboarding/Semantic editor
+  consumers:
+  - Semantic Registry discovery
+  status: field-level-reconciled-draft
+- name: DiscoveryCandidate
+  path: semantic/discovery-candidate-v1.json
+  owner: Semantic Registry
+  producer: Discovery providers/Registry
+  consumers:
+  - Onboarding/Semantic review
+  status: field-level-reconciled-draft
+- name: ExternalOrigin
+  path: semantic/external-origin-v1.json
+  owner: Semantic Registry
+  producer: Registry adoption
+  consumers:
+  - audit/impact consumers
+  status: field-level-reconciled-draft
+- name: SemanticChangeNotice
+  path: semantic/semantic-change-notice-v1.json
+  owner: Semantic Registry
+  producer: Registry upstream lifecycle
+  consumers:
+  - Onboarding
+  - Ingestion
+  - UDP
+  status: field-level-reconciled-draft
+- name: ImpactReport
+  path: semantic/impact-report-v1.json
+  owner: Semantic Registry
+  producer: Impact analysis
+  consumers:
+  - Onboarding
+  - Ingestion
+  - UDP
+  status: field-level-reconciled-draft
+- name: SemanticMigrationProposal
+  path: semantic/semantic-migration-proposal-v1.json
+  owner: Semantic Registry
+  producer: Registry governance
+  consumers:
+  - consumer owners
+  status: field-level-reconciled-draft
+- name: ProblemDetails
+  path: common/problem-details-v1.json
+  owner: OUF Common / Gateway boundary
+  producer: Gateway/backend error producers
+  consumers:
+  - All OUF API consumers
+  status: field-level-reconciled-draft
+- name: CapabilityManifest
+  path: gateway/capability-manifest-v1.json
+  owner: Capability owner + Gateway binding governance
+  producer: Module owners / Gateway config pipeline
+  consumers:
+  - Gateway
+  - Authorization metadata consumers
+  - MCP metadata consumers
+  status: field-level-reconciled-draft
+- name: SourceRuntimeProfile
+  path: gateway/source-runtime-profile-v1.json
+  owner: Source Onboarding runtime publication
+  producer: Source Onboarding
+  consumers:
+  - Gateway
+  status: field-level-reconciled-draft
+- name: ExtractionRuntimeProfile
+  path: gateway/extraction-runtime-profile-v1.json
+  owner: Source Onboarding runtime publication
+  producer: Source Onboarding
+  consumers:
+  - Gateway
+  status: field-level-reconciled-draft
+- name: RouteBinding
+  path: gateway/route-binding-v1.json
+  owner: Gateway derived configuration
+  producer: Gateway configuration generation
+  consumers:
+  - Gateway runtime
+  status: field-level-reconciled-draft
+- name: SourceSchemaBinding
+  path: gateway/source-schema-binding-v1.json
+  owner: Source Onboarding / API contract
+  producer: Source Onboarding
+  consumers:
+  - Gateway
+  - Connector
+  status: field-level-reconciled-draft
+- name: ClientCredentialBinding
+  path: gateway/client-credential-binding-v1.json
+  owner: IAM/Secret Management + Gateway
+  producer: IAM/Integration configuration
+  consumers:
+  - Gateway
+  status: field-level-reconciled-draft
+- name: HealthState
+  path: gateway/health-state-v1.json
+  owner: Operations / Source Onboarding
+  producer: Operations
+  consumers:
+  - Gateway routing
+  status: field-level-reconciled-draft
+- name: GatewayConnectorHandoff
+  path: gateway/gateway-connector-handoff-v1.json
+  owner: Gateway
+  producer: Gateway
+  consumers:
+  - Connector/Adapter
+  status: field-level-reconciled-draft
+- name: GatewayAuthorizationContext
+  path: gateway/gateway-authorization-context-v1.json
+  owner: Gateway boundary
+  producer: Gateway
+  consumers:
+  - Backend owners
+  status: field-level-reconciled-draft
+- name: GatewayPublicationManifest
+  path: gateway/gateway-publication-manifest-v1.json
+  owner: Gateway publication pipeline
+  producer: Gateway control plane
+  consumers:
+  - Operations
+  - GitOps evidence
+  status: field-level-reconciled-draft
+- name: McpCanonicalCapabilityManifest
+  path: mcp/canonical-capability-manifest-v1.json
+  owner: MCP Server capability governance
+  producer: MCP manifest publication pipeline / deterministic projection
+  consumers:
+  - MCP Server
+  - CI contract validation
+  - Gateway/Authorization compatibility checks
+  status: field-level-reconciled-draft
+- name: M2MIdentityIntegrationProfile
+  path: identity/m2m-identity-integration-profile-v1.json
+  owner: Platform Integration / Authorization trust boundary
+  producer: Environment integration configuration
+  consumers:
+  - Urban API Gateway
+  - Authorization identity adapter
+  - MCP/backend security context consumers
+  status: scenario-neutral-integration-contract
+consistencyArtifact: consistency/cross-contract-invariants.yaml
+crossModuleConsistencyArtifact: consistency/onboarding-runtime-contract-map.yaml
+authorizationConsistencyArtifact: consistency/authorization-contract-invariants.yaml
+semanticConsistencyArtifact: consistency/semantic-cross-module-invariants.yaml
+gatewayConsistencyArtifact: consistency/gateway-contract-invariants.yaml
+mcpIntegrationCheckArtifact: consistency/mcp-server-integration-invariants.yaml
+mcpContractizationGaps: []
+mcpCanonicalManifest: mcp/canonical-capability-manifest-v1.json
+mcpProjectionRules: consistency/mcp-capability-projection-rules-v1.yaml
+repositoryWideConsistencyArtifact: consistency/repository-wide-invariants.yaml
+freezeManifest: compatibility/v1.0-freeze-manifest.json
+sourceRuntimeProfileCanonical: gateway/source-runtime-profile-v1.json
+identityIntegrationGate: UNRESOLVED_EXTERNAL_A_B_C
+identityIntegrationContract: identity/m2m-identity-integration-profile-v1.json
+currentStatus: docs/CURRENT_STATUS.md

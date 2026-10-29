@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.semantic-provider-v2-producer-source-custody-ci.v1",
+  "manifestSha256": "c1c15a0d92ec7dc953f9f100b19f8426341b0c4ba9f2374d99c8473330eb9ffe",
+  "sourceCount": 26,
+  "gatewayCommit": "ace683b1019f79adaace86796b67e463b93ec12e",
+  "observerOwnerCommit": "3505a2f6bfde9c3905b76a5e670ebc30b40d3d6d",
+  "observerSha256": "d15d290e903e16f64b9d153658453f2b857c5241eb30ded961fd981a3ba436e4",
+  "runId": 37731379271,
+  "jobs": [
+    {
+      "id": 113161027352,
+      "conclusion": "success"
+    }
+  ],
+  "targetStaged": false,
+  "targetAcceptanceGranted": false
+}

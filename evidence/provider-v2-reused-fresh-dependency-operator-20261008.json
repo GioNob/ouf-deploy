@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.semantic-fresh-dependency-evidence-operator.v1",
+  "reportedAt": "2026-10-07T13:55:40+02:00",
+  "status": "PASS",
+  "evidenceDirectory": "/home/oufadmin/ouf-extended-fresh-v2.Bs2U5B",
+  "reportDirectory": "/home/oufadmin/ouf-extended-fresh-v2.Bs2U5B/reports",
+  "sourceArtifactSha256": "2cdd7a73c1fc2a710f1e6604eb6cab2988492e4c45b5252defffa9832b91d9d0",
+  "sidecarSha256": "a23ee77e6f2e21fc9a7ca1beb144d11f22228cc801693cac5fad47ee30e863ea",
+  "producerRun": 37613612404,
+  "independentReadbackRun": 37614224542,
+  "archiveHashVerified": true,
+  "verifierHashVerified": true,
+  "databasePinHashVerified": true,
+  "targetAttestationCryptoVerified": true,
+  "fiveSubjectsVerified": [
+    "inventory.json",
+    "adapter.extended.syft.json",
+    "southbound.extended.syft.json",
+    "adapter.extended.grype.json",
+    "southbound.extended.grype.json"
+  ],
+  "imageImportPerformed": false,
+  "containerOperations": 0,
+  "publisherTrustAccepted": false,
+  "dependencyCoverageAccepted": false,
+  "acceptanceGranted": false,
+  "runtimeRegistered": false,
+  "startAuthorized": false,
+  "discoveryRequestCreated": false
+}

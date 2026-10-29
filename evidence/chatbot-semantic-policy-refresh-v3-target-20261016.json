@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.chatbot-semantic-policy-refresh-v3-target.v1",
+  "source": "OPERATOR_SUPPLIED_OUTPUT",
+  "readerCommit": "8dcd8a610b98c075ff7bf32009390ed07958c06d",
+  "complete": true,
+  "allEndpointBindingChecksPassed": true,
+  "tokenCustody": {
+    "uid": 0,
+    "gid": 10001,
+    "modeOctal": "0440",
+    "regularFile": true,
+    "singleLink": true,
+    "sizeWithinBound": true
+  },
+  "tokenMetadata": {
+    "credentialFilesRead": 1,
+    "credentialValuesPrinted": false,
+    "expiredAtRead": true,
+    "expiryEpoch": 1792148493,
+    "expiryEuropeRome": "2026-10-16T13:01:33+02:00",
+    "signatureVerifiedLocally": false,
+    "claimsAreMetadataOnly": true
+  },
+  "configuredPolicyGet": {
+    "httpStatus": 401,
+    "activePolicyResponseProven": false,
+    "hostTransportOnly": true,
+    "registryTransportProven": false,
+    "noPolicyInstalledByReader": true
+  },
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "readOnly": true,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "grantRequests": 0,
+  "iamCalls": 0,
+  "databaseCalls": 0,
+  "mcpCalls": 0,
+  "serviceMutations": 0,
+  "reconciliationPerformed": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceGranted": false,
+  "first403CauseProven": false,
+  "loadedSnapshotProven": false
+}

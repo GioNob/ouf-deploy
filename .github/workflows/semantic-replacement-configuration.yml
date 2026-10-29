@@ -1,0 +1,37 @@
+name: OUF Semantic replacement configuration read
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/read-semantic-workload-client.py
+      - tests/test_semantic_workload_client.py
+      - scripts/plan-semantic-replacement-configuration.py
+      - tests/test_semantic_replacement_configuration.py
+      - .github/workflows/semantic-replacement-configuration.yml
+permissions:
+  contents: read
+concurrency:
+  group: ouf-semantic-replacement-configuration
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_semantic_replacement_configuration.py
+      - run: python3 tests/test_semantic_workload_client.py
+  read:
+    needs: qualification
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Freeze private configuration delta without lifecycle or key reads
+        run: python3 scripts/plan-semantic-replacement-configuration.py
+
+      - name: Read existing Semantic client metadata; no credentials or IAM writes
+        run: python3 scripts/read-semantic-workload-client.py

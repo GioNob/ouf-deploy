@@ -1,0 +1,74 @@
+version: '0.7'
+scope: Authorization common/runtime contracts only
+contracts:
+- PrincipalContext
+- ResourceContext
+- CapabilityDescriptor
+- PolicyGrant
+- OrganizationScope
+- AssuranceRequirement
+- AuthorizationPolicyBundle
+- AuthorizationDecision
+- PolicyEvaluationEvidence
+invariants:
+- id: AUTH-X01
+  rule: actorType comes from validated identity context, never application payload.
+- id: AUTH-X02
+  rule: SERVICE_IDENTITY, AI_AGENT, MCP_SERVER and EXTERNAL_SYSTEM cannot satisfy
+    humanRequired capability.
+- id: AUTH-X03
+  rule: toolEligibility is not authorization; false blocks exposure, true does not
+    imply ALLOW.
+- id: AUTH-X04
+  rule: unknown capability or capability absent from active policy bundle => DENY.
+- id: AUTH-X05
+  rule: no applicable grant => DENY; applicable explicit DENY overrides ALLOW.
+- id: AUTH-X06
+  rule: capabilityId in grant, capability descriptor and decision must refer to the
+    same stable capability.
+- id: AUTH-X07
+  rule: resource context is supplied by resource owner; client cannot lower DataAccessLabel.
+- id: AUTH-X08
+  rule: fine-grained authorization occurs in resource-owning service before serialization;
+    Gateway coarse allow never overrides backend DENY.
+- id: AUTH-X09
+  rule: one request captures one immutable AuthorizationPolicyBundle snapshot and
+    one policyVersion.
+- id: AUTH-X10
+  rule: AuthorizationDecision/evidence policyVersion and bundleContentHash must match
+    the snapshot used.
+- id: AUTH-X11
+  rule: bundle refresh is build -> validate -> atomic swap; partial bundle never becomes
+    ACTIVE.
+- id: AUTH-X12
+  rule: ordinary evaluation has no synchronous Policy Registry dependency.
+- id: AUTH-X13
+  rule: IAM/directory lookup needed for policy and unavailable beyond timeout => explicit
+    DENY/fail closed.
+- id: AUTH-X14
+  rule: delegatedVia is audit context; it does not transform AI/MCP/service actor
+    into HUMAN_USER.
+- id: AUTH-X15
+  rule: domain/state/ETag guards remain after Authorization ALLOW and may still reject
+    commit.
+- id: AUTH-X16
+  rule: Authorization and Query Complexity Governor are independent and cumulative.
+- id: AUTH-X17
+  rule: raw, lineage, history and export are separate capabilities; read permission
+    does not imply them.
+- id: AUTH-X18
+  rule: security context/evidence must not contain bearer tokens, secrets or full
+    sensitive payloads.
+externalGate:
+- M2M authority scenario A/B/C
+- real issuer/JWKS/audience values
+- claim names / stable role and org identifiers
+- service identity provisioning/rotation lifecycle
+explicitlyExcluded:
+- IAM vendor configuration values
+- Gateway route/capability binding DTOs
+- THS ApprovalChallenge/ApprovalDecision
+- Query Complexity Governor
+- MCP Server implementation
+- domain state machines
+- policy authoring API payloads beyond the shared runtime policy contracts

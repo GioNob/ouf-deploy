@@ -1,0 +1,27 @@
+name: Installation binding plan native HUMAN and read-only owner
+on:
+  push:
+    paths:
+      - 'tools/installation_binding_plan/**'
+      - 'scripts/prepare-installation-ingestion-binding-plan.py'
+      - 'scripts/execute-installation-ingestion-binding-plan.py'
+      - 'scripts/installation-binding-scope-constants.py'
+      - 'tests/test_installation_ingestion_binding_plan.py'
+      - '.github/workflows/installation-ingestion-binding-plan.yml'
+permissions: {contents: read}
+jobs:
+  finite-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual frozen HUMAN guard device flow cumulative CAS and owner drift denial
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-installation-plan-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_installation_ingestion_binding_plan.py -v

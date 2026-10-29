@@ -1,0 +1,177 @@
+{
+  "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_COMPOSITION_AND_INSTALLATION_REFERENCE_READER_QUALIFIED_TARGET_INPUTS_PENDING",
+  "executable": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false,
+  "provenance": {
+    "captureInputsHash": "14e42ac96293d342cd71b7386360b976882ac7ec75a18838d3960999430f3a13",
+    "captureConsumed": true,
+    "captureIsCurrentAuthority": false,
+    "retainedInstallationResultHash": "0601fdfadd157eedbdd35144e7913e152d3d1f1a67e4927317e2de6a566a61ca"
+  },
+  "sourceCandidates": [
+    {
+      "module": "mcp",
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+      "pullRequest": 81,
+      "installed": false,
+      "descriptors": "INACTIVE"
+    },
+    {
+      "module": "semantic",
+      "repository": "GioNob/ouf-semantic-registry",
+      "commit": "4f8fb581916075a539bda4428be7bd8af073a569",
+      "pullRequest": 41,
+      "installed": false,
+      "package": {
+        "publisherSource": "1086f7ea5a3281dc7731ea28d258f8fead403d07",
+        "runId": 40826468452,
+        "jobId": 123290550271,
+        "artifactId": 12876846746,
+        "artifactZipSha256": "c464eb6cb165c305d376c000579089dfed3e5f6cb3f22c953a74f193747659f8",
+        "artifactZipBytes": 203279361,
+        "imageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+        "runtimeUser": "10001:10001",
+        "fileSha256": {
+          "Dockerfile.resolved": "6127ffcb48da6ba569f8d22f5290f6b97f5bf970a9aa45f5e48b65aa3ad51345",
+          "application.jar": "69faab267f0ecca4b9775aa6004f474a8bd90220390658c901fb5436453dc2c2",
+          "image.docker.tar": "4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c",
+          "migration-continuity.json": "27bfd108c8c0fb36992e22c17f65ddc04560ca5161f684a46b23e2f17acf282b",
+          "package-record.json": "fb49890ba3f99bd40aeb51b8aa87ff941177f1cb8d7a433e15cfe8b3ba0dedbb",
+          "source-inventory.json": "8358799491fdb5f8d9a93d7f40c746f430a560092a266a7797423a56b9e5d7e1",
+          "source.tar": "64dff94de16bac72e213e7433ca38b4a3cc1dbd879d530db67f7df3c00deb55b",
+          "trivy-image.json": "1b2117760d772f6e0b1896418f870298f6841a408ffe1ff2cd3fa57aa80e3021"
+        },
+        "readbackEvidence": "evidence/m2-discovery-offline-package-readback-20261029.json",
+        "artifactExpiresAt": "2026-11-28T06:01:19Z"
+      }
+    },
+    {
+      "module": "gateway",
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+      "pullRequest": 84,
+      "installed": false
+    }
+  ],
+  "capabilities": [
+    {
+      "tool": "semantic.discovery.request",
+      "capabilityId": "ouf.semantic.discovery",
+      "operation": "COMMAND",
+      "scope": "ouf.semantic.discovery",
+      "idempotency": "STABLE_KEY_SAME_CALLER_INTENT"
+    },
+    {
+      "tool": "semantic.discovery.status",
+      "capabilityId": "ouf.semantic.discovery.status",
+      "operation": "READ",
+      "scope": "ouf.semantic.discovery",
+      "selector": "EXACT_REQUEST_ID_AND_TRUSTED_CALLER_NAMESPACE"
+    },
+    {
+      "tool": "semantic.discovery.candidates",
+      "capabilityId": "ouf.semantic.discovery.candidates",
+      "operation": "READ",
+      "scope": "ouf.semantic.discovery",
+      "selector": "EXACT_REQUEST_ID_AND_TRUSTED_CALLER_NAMESPACE"
+    }
+  ],
+  "preserve": {
+    "fileMigrationVersions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "appendedDiscoveryVersions": [
+      11,
+      12
+    ],
+    "farmacieAssetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+    "farmacieJobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "farmacieProfileId": "f3061699-4fde-4085-89c8-bc8703f65686",
+    "newUpload": false,
+    "newProfilingJob": false,
+    "newRecoveryBudget": false
+  },
+  "authorizationObservation": {
+    "policyRef": "ouf-lab-authorization:59",
+    "policyHash": "sha256:d2e7e21e49cf96ed529b27055d3e510770e7a928c21405bf4d430a4403107369",
+    "roleCount": 9,
+    "assignmentCount": 13,
+    "configuredGrantPages": 2,
+    "configuredGrantsObserved": 138,
+    "completeForSelectedSubject": true,
+    "nextAfter": null,
+    "discoveryRolePermissionsObserved": 0,
+    "discoveryConfiguredGrantsObserved": 0,
+    "configuredStateIsNotEffectivePermissionProof": true,
+    "proposalCreated": false,
+    "policyChanged": false
+  },
+  "requiredInstallationWork": [
+    {
+      "id": "M2-INSTALL-01",
+      "state": "REFERENCE_READER_QUALIFIED_TARGET_PENDING",
+      "work": "Resolve exact current private installation configuration and custody from selected captured bindings; seal fresh generations, source/OCI and mount provenance. Do not publish raw Engine/Env/config/credential values."
+    },
+    {
+      "id": "M2-INSTALL-02",
+      "state": "OPEN",
+      "work": "Prepare qualified persistent Registry/Gateway/provider profile, actual TLS/workload identity/issuer/audience/scopes, distinct receipt secretRef custody, governed renewal/rotation, network and database admission. No shared local network/filesystem default."
+    },
+    {
+      "id": "M2-INSTALL-03",
+      "state": "OPEN",
+      "work": "Package exact composed applications and current image scan/provenance; preserve file/semantic consultation/proposal/read/revision paths and old Flyway history."
+    },
+    {
+      "id": "M2-INSTALL-04",
+      "state": "OPEN",
+      "work": "Prepare concrete native maintenance review/finite authority, backup/fencing/reconciliation and fresh admission. Boot/restart must reacquire valid current generation/admission while preserving incident history."
+    },
+    {
+      "id": "M2-INSTALL-05",
+      "state": "OPEN",
+      "work": "Publish coordinated descriptors, fixed Gateway routes and nominal policy/scope projections through their owner/HUMAN paths. Stable discovery permission does not confer adoption/approve/publish or reset budgets."
+    },
+    {
+      "id": "M2-INSTALL-06",
+      "state": "OPEN",
+      "work": "Execute real OntoPiA request only through published MCP capabilities, preserve one idempotency key/requestId and canonical provenance/snapshot, then governed adoption/publication."
+    },
+    {
+      "id": "M2-INSTALL-07",
+      "state": "OPEN",
+      "work": "Prove restart/reboot/credential rotation, durable transient failure/revocation/exhaustion/ambiguity, two independent real clients and cross-tenant denial."
+    }
+  ],
+  "prohibitedShortcuts": [
+    "BARE_FLAG_FLIP",
+    "BARE_REGISTRY_RESTART_OR_REINSTALL",
+    "HISTORICAL_AUTHORITY_OR_CONSUMED_CAPTURE_REPLAY",
+    "BUDGET_RESET",
+    "MANUAL_WEB_OR_TURTLE_SUBSTITUTE",
+    "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
+    "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
+  ],
+  "next": "ONE_NEW_OPERATOR_INSTALLATION_REFERENCE_READ_THEN_BOUND_PERSISTENT_REVIEW",
+  "installationReferenceReader": {
+    "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-installation-inputs-14e42ac9-20261029-v1",
+    "targetExecuted": false
+  }
+}

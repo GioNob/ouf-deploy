@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.onboarding-v35-retained-reader-qualification.v1",
+  "codeCommit": "832b3fc230f5a7e4b43d2dd948b090155cead1d4",
+  "sourceSha256": "bf4b2bc711802b25c386f24da4e9733af79c895a9bf2b4e102749f0b69b90a32",
+  "bootstrapSha256": "54c82b3e7767f5302df347b10a7b8d793bf1fc369e36aaaeaa5391f54328fd62",
+  "sourceReadbackMatches": true,
+  "ci": [
+    {
+      "runId": 40132224481,
+      "jobId": 120986186658,
+      "passed": 8,
+      "skipped": 0,
+      "logsRead": true
+    },
+    {
+      "runId": 40132228292,
+      "jobId": 120986199872,
+      "passed": 8,
+      "skipped": 0,
+      "logsRead": true
+    }
+  ],
+  "limits": {
+    "seconds": 60,
+    "fileReads": 700,
+    "totalBytes": 134217728,
+    "individualFileBytes": 2097152
+  },
+  "qualification": "ACTUAL_ISOLATED_ENTRY_ROOT_FILESYSTEM_SYNTHETIC_RETAINED_DATA_PATH_HASH_BINDINGS_ONLY_SUBSTITUTED",
+  "targetReaderExecuted": false,
+  "currentRuntimeStateObserved": false,
+  "mutatingRecoveryQualified": false,
+  "engineConnections": 0,
+  "sqlSessionAttempts": 0,
+  "credentialFileReads": 0,
+  "privateSigningKeyReads": 0,
+  "oldJournalWrites": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

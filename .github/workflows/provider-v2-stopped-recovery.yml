@@ -1,0 +1,44 @@
+name: Provider v2 stopped recovery tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/resume-provider-v2-stopped.py'
+      - 'scripts/test-resume-stopped-native.py'
+      - '.github/workflows/provider-v2-stopped-recovery.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: ace683b1019f79adaace86796b67e463b93ec12e
+          path: gateway-fixture
+          persist-credentials: false
+      - name: Prepare root-private isolated fixtures
+        run: |
+          python3 -m py_compile scripts/resume-provider-v2-stopped.py scripts/test-resume-stopped-native.py
+          sudo install -d -m 700 /root/ouf-creation-fixture/registration/source/scripts /root/ouf-creation-fixture/registration/source/tools
+          sudo install -m 600 scripts/resume-provider-v2-stopped.py scripts/test-resume-stopped-native.py /root/ouf-creation-fixture/
+          sudo install -m 600 scripts/register-provider-v2-runtime.py /root/ouf-creation-fixture/registration/
+          sudo install -m 600 releases/provider-v2-runtime-registration-sources.json /root/ouf-creation-fixture/registration/sources.json
+          python3 - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          for p in json.loads(Path('releases/provider-v2-runtime-registration-sources.json').read_bytes())['sourceHashes']:
+              subprocess.run(['sudo','install','-m','600','gateway-fixture/'+p,'/root/ouf-creation-fixture/registration/source/'+p],check=True)
+          PY
+      - name: Real stopped creation, duplicate planned IP metadata, mount and startup readback, denied start
+        run: |
+          if test '${{ matrix.store }}' = containerd; then sudo env OUF_TEST_CONTAINERD=1 /usr/bin/python3 -I -B /root/ouf-creation-fixture/test-resume-stopped-native.py; else sudo /usr/bin/python3 -I -B /root/ouf-creation-fixture/test-resume-stopped-native.py; fi

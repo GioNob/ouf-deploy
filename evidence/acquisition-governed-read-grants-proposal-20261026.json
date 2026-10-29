@@ -1,0 +1,83 @@
+{
+  "schema": "ouf.acquisition-governed-read-grants-proposal.v1",
+  "account": "ouf-admin",
+  "basePolicyRef": "ouf-lab-authorization:49",
+  "basePolicyHash": "b4bed35f9fe591aa828a50f8d2fc7c7d8aeb054b88c320f0a66b9c51f2d50a8e",
+  "baselineRoleCatalogueSHA256": "7081ee0bbfef156d35d7d79d221a641b1dc91bd1bc540e81bdfeb902eee0b37d",
+  "subjectGrantsResponseSHA256": "1da47eb597b35e096648ed61495175d1b4a28cdb15c33540183e87ae8a7883ca",
+  "proposalArgumentsSHA256": "75e55007c3b6bb44bdb913c841d510bbc5bb09be189a7f2596e3fc93d26a153a",
+  "argumentsHashIsNotOwnerReviewHash": true,
+  "subjectGrantCount": 82,
+  "nextAfter": null,
+  "baselineRoles": 2,
+  "baselineAdminPermissions": 34,
+  "baselineAssignments": 2,
+  "originalCataloguePreserved": true,
+  "operation": "REPLACE_ROLES",
+  "addedRoleIds": [
+    "teatri-e2e-read-bb2e2af4-20261026",
+    "teatri-e2e-read-a3208f2f-20261026"
+  ],
+  "addedAssignments": [
+    {
+      "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-ouf-admin",
+      "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "externalRoleRef": null,
+      "validFrom": "2026-10-26T06:24:50Z",
+      "validUntil": "2026-10-26T08:24:50Z"
+    },
+    {
+      "assignmentId": "teatri-e2e-read-a3208f2f-20261026-ouf-admin",
+      "roleId": "teatri-e2e-read-a3208f2f-20261026",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "externalRoleRef": null,
+      "validFrom": "2026-10-26T06:24:50Z",
+      "validUntil": "2026-10-26T08:24:50Z"
+    }
+  ],
+  "sourceId": "teatri-csv-6609b245",
+  "runIds": [
+    "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+    "a3208f2f-ebfd-415d-bddc-79ab05dea78f"
+  ],
+  "capabilitiesPerRun": [
+    "ingestion.run.read",
+    "ingestion.contract.read",
+    "ingestion.lineage.read",
+    "urban.object.read",
+    "lineage.object.read",
+    "lineage.property.read"
+  ],
+  "addedPermissionEntries": 12,
+  "distinctCapabilities": 6,
+  "allowedDataLabels": [
+    "OPEN",
+    "ANONYMOUS"
+  ],
+  "detailLevel": "TENANT_OPERATIONAL",
+  "newAcquisitions": 0,
+  "newSourceActivations": 0,
+  "newSourceBudgets": 0,
+  "proposalReceipt": {
+    "proposalId": "64655de1-bf1e-4acd-aada-d2f27154539a",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-26T06:39:58.060790Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=64655de1-bf1e-4acd-aada-d2f27154539a",
+    "finalPolicyRef": null
+  },
+  "proposalReadState": "PENDING",
+  "proposalCreatedInvocations": 1,
+  "proposalReadInvocations": 1,
+  "freshRolesReads": 2,
+  "freshGrantsReads": 1,
+  "mcpOAuthScopesVerified": false,
+  "scopeInspectionLimit": "Available OUF capabilities do not expose live OAuth scope introspection; Plugin Management explicitly excludes OAuth/admin scopes. No token read or authentication bypass performed. Effective READ scope remains to be tested by governed calls after real HUMAN publication.",
+  "readAcquisitionsInvoked": false,
+  "humanApprovalReceived": false,
+  "newGrantsPublished": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false
+}

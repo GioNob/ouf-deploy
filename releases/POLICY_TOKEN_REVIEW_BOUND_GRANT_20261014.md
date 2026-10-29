@@ -1,0 +1,11 @@
+# Review-bound first controlled grant qualification — 2026-10-14
+
+The retained target input review is `92b3276992b3b3ec459e734196671728b8a49a99a02185e2c6f7c1da87ce82a1`; its source closure is `9b1d85c02dd0cf255138156d6334893cd6eeec120864ab80c8efea63e77e1958`. Collection completed and must not be repeated. The receipt grants no runtime authority.
+
+Source commit `c91006573e7bc4c98de4399b5ede9c3b8eaf3658` passed native owner qualification in final run [38518580922](https://github.com/GioNob/ouf-deploy/actions/runs/38518580922): 222 tests across 30 suites, zero skips. This includes 18 first-grant cases and a disposable real Keycloak protocol probe. Registry/systemd and administrative credential effects remain simulated boundaries in these tests; no VPS execution is implied.
+
+The v3 construction binds independently supplied review bytes/hash/source closure, three archive/source pins, candidate image, completed root identities and selected current Registry generation. It refuses review/generation/root drift before dependent effects. Historical v1/v2 paths remain available; deleting a binding from v3 does not downgrade it. Existing retirement, credential ambiguity and first-slot durable no-replay rules remain required.
+
+New immutable capsule: `releases/policy-token-review-bound-migration-capsule-20261014.json`, 462147 bytes, SHA-256 `58d9d3e54f35b5210f585700b7215a2a7bea0c5df246560db671a2cbc818c48b`; declaration SHA-256 `34bf1e65efefc20bd4ca093377197a50bc2b9d980b10127f9a0e92921a4f3d62`. All 29 module bytes were fetched from the pinned source commit. Only `first_controlled_grant` differs from the previous root-bound capsule; the loader is unchanged. The closed memory entry loaded under Python `-I -B -S`, without operations. The old root-bound capsule and completed root evidence remain unchanged.
+
+This is a qualified component closure, not a full owner installer. Actual empty output custody, current IAM/TLS/peer binding, current CutoverAuthority and fresh four-scope HUMAN/dual-role decisions are still required. No roots, grants, credentials, runtime services or budgets were changed. No target command is authorized by this document.

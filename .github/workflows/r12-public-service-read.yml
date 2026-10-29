@@ -1,0 +1,27 @@
+name: R12 paused or failed service read only
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/read-r12-service-public.py
+      - .github/workflows/r12-public-service-read.yml
+permissions:
+  contents: read
+concurrency:
+  group: ouf-r12-service-read
+  cancel-in-progress: false
+jobs:
+  read:
+    runs-on: [self-hosted, Linux, X64, ouf-vps-test]
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -B scripts/read-r12-service-public.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r12-public-service-read-${{ github.run_id }}
+          path: r12-public-service-read.json
+          if-no-files-found: error
+          retention-days: 30

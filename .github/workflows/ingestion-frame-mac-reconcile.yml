@@ -1,0 +1,63 @@
+name: Ingestion MAC parameterization and retained-frame reconciliation
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['tools/ingestion_rollout_preparation/frames.py', 'scripts/reconcile-ingestion-frame-mac-20261020.py', 'scripts/launch-ingestion-frame-mac-reconcile-20261020.sh', 'tests/test_ingestion_frame_mac*.py', '.github/workflows/ingestion-frame-mac-reconcile.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  native-frame:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Authenticate retained candidate for disposable CI fixture only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/GioNob/ouf-deploy/actions/artifacts/12245228551/zip > "$RUNNER_TEMP/ouf-candidate.zip"
+          printf '%s  %s\n' '02974a024e66d2f3adb9933f654954868598f6dfcec8899bf76daced9a1aeb02' "$RUNNER_TEMP/ouf-candidate.zip" | sha256sum -c -
+      - name: Parameterized MACs and full private reconciliation, real retained files and Unix HTTP
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-mac-frame-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_TEST_ROOT="$fixture" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_frame_mac_reconcile.py -v
+          sudo env OUF_TEST_ROOT="$fixture" OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_frame_mac_reconcile_native.py -v
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sha256sum /tmp/ouf-docker-29.8.1.tgz
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: API1.44 complete create templates with legacy MAC and two networks, CI only
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-mac-frame-${GITHUB_RUN_ID}"
+          sudo env PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin OUF_TEST_ROOT="$fixture" OUF_CANDIDATE_ZIP="$RUNNER_TEMP/ouf-candidate.zip" python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_ingestion_frame_mac_docker.py -v
+

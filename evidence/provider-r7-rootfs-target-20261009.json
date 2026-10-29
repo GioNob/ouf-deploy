@@ -1,0 +1,1968 @@
+{
+  "attachmentSha256": "0c4cf4010830364b3828d95d01a4ffcef897db3274d5fb54ff12a998255bff8c",
+  "canonicalDiagnosisSha256": "8ed76674a2d31377457d5942892c98310a4625ee96296492e9d07a41c1a22b72",
+  "exitCode": 0,
+  "origin": "USER_ATTACHMENT_NOT_INDEPENDENT_VPS_ACQUISITION",
+  "receipt": {
+    "allRecordedTaskPidsAbsent": true,
+    "brokerOperateInvoked": false,
+    "cleanupAuthorized": false,
+    "containerLifecycleOperations": 0,
+    "containerdEndpointSource": "LIVE_DOCKER_EXPLICIT_ARGV",
+    "containerdRequestedTasks": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "containerMetadataHash": "ffdcbe53176a3a0200da521e2f7e0731c27986c0dcd2a6e6e1edb4db0dfe7659",
+        "pid": 1806118,
+        "runtimeKind": "io.containerd.runc.v2",
+        "status": "STOPPED",
+        "taskPidPresent": false,
+        "taskPresent": true
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "containerMetadataHash": "cbdba850b09632b8e14948d19771e2d82ef9c64801176342dcec5ac147881f34",
+        "pid": 1806098,
+        "runtimeKind": "io.containerd.runc.v2",
+        "status": "STOPPED",
+        "taskPidPresent": false,
+        "taskPresent": true
+      }
+    },
+    "dockerStartRequests": 0,
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-r7-rootfs-read-cxgamg_7",
+    "existingConfigurationWrites": 0,
+    "historicalObservedRootfsSealRetained": false,
+    "installedWrapperHash": "050cb98116da36efd315d93f4e95471dfe0543c8447fd135b7b1261c7bf587e2",
+    "nativeEmptyGuardObservation": {
+      "candidateStateHashes": {
+        "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": "c24e76441100b442d6d0e0ea4f35f99ad5f240ff23803d73e7c9a951a7eed206",
+        "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": "0e9ecdbe10c3d67251032bb315c1b5ce8e1f1ae7ee1aa64f8d0efae30839a795"
+      },
+      "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "containerLifecycleOperations": 0,
+      "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+      "kernelTableName": "ouf_sem_provider",
+      "lockInodePreserved": true,
+      "notReleaseAcceptance": true,
+      "providerSetsEmpty": true
+    },
+    "notReleaseAcceptance": true,
+    "phase": "VERIFY_PRESERVATION_AND_CURRENT_NATIVE_ABSENCE",
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "requestedNativeEntries": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": [],
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": []
+    },
+    "retainedEvidencePreserved": true,
+    "roles": {
+      "adapter": {
+        "acceptanceGranted": false,
+        "acceptedV1Seal": {
+          "bytes": 46079786,
+          "entries": 3390,
+          "schema": "ouf.semantic-rootfs-seal.v1",
+          "sha256": "8744724088d02145b86b433058a4336fcb9c873a4a92e7009753209c284d3d73"
+        },
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "currentImageSeal": "0e2437dfbdd6225ee5d935270c14684865ba36f218c80e0d6a02ba3750e6c9dc",
+        "currentObservationIsHistoricalFailedObservation": false,
+        "currentV1Seal": {
+          "bytes": 46079786,
+          "entries": 3396,
+          "schema": "ouf.semantic-rootfs-seal.v1",
+          "sha256": "92c26698ef0899e909a503f5db856f55a1cc0cf44c8f6648ba4d498a6c2533c4"
+        },
+        "currentV1SealMatchesAccepted": false,
+        "imageDifferences": {
+          "acceptanceGranted": false,
+          "contentHashesPrinted": false,
+          "differentEntryCount": 6,
+          "fieldCounts": {
+            "UNEXPECTED_ENTRY": 6
+          },
+          "fileContentsPrinted": false,
+          "samples": [
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/adapter.json"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/provider-receipt.key"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/server.crt"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/server.key"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/trust-bundle.pem"
+            }
+          ],
+          "samplesTruncated": false,
+          "symlinkTargetsPrinted": false,
+          "unexpectedDeclaredMountOrCwdEntries": 6,
+          "xattrValuesPrinted": false
+        },
+        "imageSemanticsMatchRetainedBaseline": false,
+        "originalV1SealsRetained": true,
+        "priorExpectedImageSeal": "7984421ed76f37ae43681fd369b900c173e2e70a143f93517fed1c434ef578d9",
+        "strictOfflineDifferences": {
+          "acceptanceGranted": false,
+          "contentHashesPrinted": false,
+          "differentEntryCount": 43,
+          "fieldCounts": {
+            "UNEXPECTED_ENTRY": 6,
+            "links": 37,
+            "mode": 1
+          },
+          "fileContentsPrinted": false,
+          "samples": [
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links",
+                "mode"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 20,
+                "mode": 448,
+                "uid": 0
+              },
+              "imagePath": "."
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 365,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 365,
+                "uid": 0
+              },
+              "imagePath": "app"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 365,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 365,
+                "uid": 0
+              },
+              "imagePath": "app/tools"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "bin"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "dev"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 19,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/apk"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/apk/keys"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/apk/protected_paths.d"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/ssl"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/ssl/certs"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 6,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "lib"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "lib/apk"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "lib/apk/db"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "run"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/adapter.json"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/provider-receipt.key"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/server.crt"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/server.key"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/trust-bundle.pem"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 1023,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 1023,
+                "uid": 0
+              },
+              "imagePath": "tmp"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 8,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/bin"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 6,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/engines-3"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/ossl-modules"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 6,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/bin"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 40,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/__pycache__"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/collections"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/collections/__pycache__"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/encodings"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/encodings/__pycache__"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/re"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/lib/python3.13/re/__pycache__"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local/share"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/sbin"
+            }
+          ],
+          "samplesTruncated": true,
+          "symlinkTargetsPrinted": false,
+          "unexpectedDeclaredMountOrCwdEntries": 6,
+          "xattrValuesPrinted": false
+        }
+      },
+      "southbound": {
+        "acceptanceGranted": false,
+        "acceptedV1Seal": {
+          "bytes": 255900260,
+          "entries": 7458,
+          "schema": "ouf.semantic-rootfs-seal.v1",
+          "sha256": "52e06f47e1da5a107525e2260b9d375329997181dd13de7023654278aeaf3f39"
+        },
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "currentImageSeal": "d583def3576c619e0f61a10775061f02b1a6002ca5969776cc41320e2de18895",
+        "currentObservationIsHistoricalFailedObservation": false,
+        "currentV1Seal": {
+          "bytes": 255900260,
+          "entries": 7461,
+          "schema": "ouf.semantic-rootfs-seal.v1",
+          "sha256": "4236ebc8a571b5f177f2365ccfed78ba3b0bd43fce2ea75c1e34c0b90f7a844d"
+        },
+        "currentV1SealMatchesAccepted": false,
+        "imageDifferences": {
+          "acceptanceGranted": false,
+          "contentHashesPrinted": false,
+          "differentEntryCount": 3,
+          "fieldCounts": {
+            "UNEXPECTED_ENTRY": 3
+          },
+          "fileContentsPrinted": false,
+          "samples": [
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/trust-bundle.pem"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "usr/local/apisix/conf/apisix.yaml"
+            }
+          ],
+          "samplesTruncated": false,
+          "symlinkTargetsPrinted": false,
+          "unexpectedDeclaredMountOrCwdEntries": 3,
+          "xattrValuesPrinted": false
+        },
+        "imageSemanticsMatchRetainedBaseline": false,
+        "originalV1SealsRetained": true,
+        "priorExpectedImageSeal": "e979252f1b43958071d5e497c3753058c76a4071ec92df678299b0bf5c71cfea",
+        "strictOfflineDifferences": {
+          "acceptanceGranted": false,
+          "contentHashesPrinted": false,
+          "differentEntryCount": 550,
+          "fieldCounts": {
+            "UNEXPECTED_ENTRY": 3,
+            "links": 547,
+            "mode": 1
+          },
+          "fileContentsPrinted": false,
+          "samples": [
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links",
+                "mode"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 18,
+                "mode": 448,
+                "uid": 0
+              },
+              "imagePath": "."
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "dev"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 34,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/alternatives"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 8,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/apt"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/apt/sources.list.d"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/ld.so.conf.d"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/systemd"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "etc/systemd/user"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 448,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 448,
+                "uid": 0
+              },
+              "imagePath": "root"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 4,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "run"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "file",
+                "links": 1,
+                "mode": 420,
+                "size": 0,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "UNEXPECTED_ENTRY"
+              ],
+              "imagePath": "run/ouf-semantic-provider/trust-bundle.pem"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 1023,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 1023,
+                "uid": 0
+              },
+              "imagePath": "tmp"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 12,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/bin"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/include"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 15,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/ssl"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/ssl/misc"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/systemd"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/systemd/system"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 10,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/x86_64-linux-gnu"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/x86_64-linux-gnu/engines-3"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/x86_64-linux-gnu/ossl-modules"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/lib/x86_64-linux-gnu/pkgconfig"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 493,
+                "uid": 0
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 13,
+                "mode": 493,
+                "uid": 0
+              },
+              "imagePath": "usr/local"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": true,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 7,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 17,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/admin"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/balancer"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/cli"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/control"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 3,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/core"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/core/dns"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 9,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/discovery"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/discovery/consul"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/discovery/consul_kv"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/discovery/dns"
+            },
+            {
+              "actual": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 1,
+                "mode": 509,
+                "uid": 636
+              },
+              "declaredMountOrCwdPathOrAncestor": false,
+              "differentFields": [
+                "links"
+              ],
+              "expected": {
+                "gid": 0,
+                "kind": "directory",
+                "links": 2,
+                "mode": 509,
+                "uid": 636
+              },
+              "imagePath": "usr/local/apisix/apisix/discovery/eureka"
+            }
+          ],
+          "samplesTruncated": true,
+          "symlinkTargetsPrinted": false,
+          "unexpectedDeclaredMountOrCwdEntries": 3,
+          "xattrValuesPrinted": false
+        }
+      }
+    },
+    "runtimeRootHash": "c64c266a92b2d9ff052a8f2b817ee730406b2ddde47d550a52effb822b181342",
+    "schema": "ouf.semantic-r7-rootfs-read-only.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "R7_CURRENT_ROOTFS_DIFFERENCES_CAPTURED",
+    "stoppedContainerExports": 2,
+    "terminalTaskReview": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "shims": [
+          {
+            "argvHash": "f2a0198b8e06603b3daa6530a927e41e11184fbdae125a1018d81fe9dab3eebf",
+            "bundlePathHash": "2c3ffeeecb35f01208da3b49b60484443f2bf366b1962d8d904575f89075a314",
+            "exactBundleOwner": true,
+            "exactNamespace": true,
+            "executableHash": "e873923a2d5361f14494a8434543b5bb218aa15736b1ac5bb73dbce5ac9ea1cb",
+            "pid": 1806057,
+            "startTicks": 190930718
+          }
+        ]
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "shims": [
+          {
+            "argvHash": "762364382f44d3e488899586852dac34e4e1c0118d91239a4d178ff9e75825b1",
+            "bundlePathHash": "2898b0f8cec876f4828b6f2f294c36c17e2d05152817bff006e305b6e55462c9",
+            "exactBundleOwner": true,
+            "exactNamespace": true,
+            "executableHash": "e873923a2d5361f14494a8434543b5bb218aa15736b1ac5bb73dbce5ac9ea1cb",
+            "pid": 1806045,
+            "startTicks": 190930717
+          }
+        ]
+      }
+    }
+  },
+  "reportedAt": "2026-10-09T20:09:27+02:00",
+  "schema": "ouf.operator-reported-r7-rootfs-evidence.v1"
+}

@@ -1,0 +1,10 @@
+{
+  "runId": 37671280123,
+  "jobId": 112963359692,
+  "testsPassed": 8,
+  "status": "success",
+  "helperCommit": "b202829f9070777969a31755b8a5e679f09d4a37",
+  "helperSha256": "f005551b3dbabb5dfbe32ce8bcb07f87c745d97592abf249565fcb73def171da",
+  "bootstrapCommit": "443cea5e3ac94946b538c542269146a2c94bf6d0",
+  "installedOnTarget": false
+}

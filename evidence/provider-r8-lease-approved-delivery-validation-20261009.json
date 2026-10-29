@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.provider-r8-approved-lease-delivery-validation.v1",
+  "sourceCommit": "6aa13656205f5dc3f355954874d3324c354ed1da",
+  "deliveryCommit": "a7c7bbb1fbede02017adf6613a56c178471077f7",
+  "launcherSha256": "a304dae0cfd02b15e28c610d2fb48b9757e53a682a4e54a03b44b24b3c2ef386",
+  "runId": 37986516020,
+  "jobId": 114009741005,
+  "conclusion": "success",
+  "nativeMarkers": [
+    "R8_LEASE_NATIVE=ACTIVE_AND_RENEWED REAL_SYSTEMD=true REAL_DNS=true REAL_NFT=true",
+    "R8_LEASE_NATIVE=DNS_FAILURE_REVOKED ORIGINAL_CAUSE_RETAINED=true REPLAY_DENIED=true TARGET_ACTIONS=0"
+  ],
+  "scope": "CI_AND_DELIVERY_NOT_VPS_OBSERVATION",
+  "targetActions": 0,
+  "approvedEntrypointOnlyThreeAuthorityConstantsChanged": true,
+  "coreAndCompilerUnchanged": true,
+  "remoteEntrypointAndLauncherBytesMatched": true,
+  "firstInvocationDeadline": "2026-10-10T00:21:21+02:00",
+  "doNotRequestApprovalAgain": true,
+  "notReleaseAcceptance": true
+}

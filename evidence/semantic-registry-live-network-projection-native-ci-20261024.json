@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.registry-network-projection-native-qualification.v1",
+  "date": "2026-10-24",
+  "codeCommit": "a7de09a7d5fee0b41022ff450c6bb7e1c58ca0b1",
+  "script": "scripts/repair-registry-network-projection-20261024.py",
+  "sha256": "dbd7bccc32904974e0b9e85491c9dc3a5100c9c51d550e0951e773523fcbd808",
+  "publishedSourceReadbackMatches": true,
+  "runId": 40072536778,
+  "jobs": [
+    {
+      "id": 120808901590,
+      "conclusion": "success",
+      "componentsExecuted": 67,
+      "nativeExecuted": 14,
+      "nativeSeconds": 193.127
+    },
+    {
+      "id": 120808901748,
+      "conclusion": "success",
+      "focusedNativeExecuted": 2,
+      "seconds": 23.665
+    }
+  ],
+  "directLogsInspected": true,
+  "productionRepairDelivered": false,
+  "productionRepairObserved": false,
+  "originalSemanticGetSucceeded": false,
+  "applicationReadinessProven": false,
+  "permanentRenewalProven": false,
+  "releaseAcceptance": false,
+  "lastTargetCumulativeAttempts": 398,
+  "lastTargetPublications": 0,
+  "legacyDependenciesUnchanged": 142,
+  "operationalOwnerModulesUnchanged": 8,
+  "fixtureLimits": [
+    "Synthetic historical governance/issuer/Engine representations",
+    "Production entry/TTY/frozen profile not exercised end to end",
+    "Fixture-only reload/restart; no production restart",
+    "Fork-in-multithreaded-fixture warning present"
+  ],
+  "actualMechanisms": [
+    "Targeted kernel conntrack original/reply tuple",
+    "Targeted disposable OUTPUT DNAT",
+    "Original-origin TLS and public discovery",
+    "Real Ed25519 authority and attestation",
+    "One persistent live systemd IPAddressAllow change",
+    "Same worker PID and nondecreasing counters",
+    "Existing worker IAM publication",
+    "Persistent reload/restart readmission without grant",
+    "Wrong inspected container ID, missing final signature, legacy gate, extra IP and replay refused"
+  ],
+  "next": "Deliver new pinned repair once; obtain actual target JSON; then fresh bounded original caller verification"
+}

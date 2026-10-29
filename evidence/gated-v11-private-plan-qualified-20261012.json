@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.gated-v11-private-plan-qualification.v1",
+  "sourceCommit": "56813b8044bd24e75d2b402276aa19a2a59192fc",
+  "workflowRunId": 38239801029,
+  "jobId": 114779323383,
+  "conclusion": "success",
+  "preparationTests": 5,
+  "deliveryTests": 4,
+  "sourceDownloadAndDigestDenialSubcases": 10,
+  "rootRecheckTamperSubcases": 5,
+  "actualPrivatePosixAtomicPublication": true,
+  "syntheticParentIntakeAndInstallation": true,
+  "originalV11ConfigurationVerificationRunId": 38239085858,
+  "programCommit": "524f47c1c5a0b0082204302672dd5d53e5bd16b3",
+  "programSha256": "b69384d6756f14a141556b2bd0bf6c3f45a3914252c1cab058eae6b95c18345a",
+  "launcherSha256": "b7042685859f7dacbb4bb1bedafa0303e727593633b810038a6b5f9bb09c9b54",
+  "targetPreparationExecuted": false,
+  "targetApplicationApplied": false,
+  "signaturesIssued": 0,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true
+}

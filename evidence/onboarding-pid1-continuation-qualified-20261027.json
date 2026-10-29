@@ -1,0 +1,149 @@
+{
+  "schema": "ouf.onboarding-pid1-continuation-qualification.v1",
+  "date": "2026-10-27",
+  "sourceCommit": "fc40492ee048b6cb6521027c0f9c0b0e26739bcf",
+  "deliveryCommit": "cda3a58c46644f5692a4d7d9753a8ddadf8b57a7",
+  "wrapper": "releases/apply-onboarding-diagnostic-pid1-continuation-20261027.sh",
+  "wrapperSha256": "1f7c1a634ac74f99755f35907eb5405d915402742d5add755f44a8588f6b8dd2",
+  "sourceManifestSha256": "67bc4cd76ccb43526d52c331c5f04454a869d4611251a8cb7092ff8803470f88",
+  "rootCodeDirectory": "/usr/local/lib/ouf-onboarding-diagnostic-update-67bc4cd76ccb4352",
+  "newExclusiveExecutionRoot": "/etc/ouf/deploy-snapshots/onboarding-diagnostic-update-c22586172070809d-v1/retained-peer-credentials-continuation-v1/pid1-peer-continuation-v1",
+  "sourceCount": 21,
+  "allPinnedSourceBlobBytesIndependentlyVerified": true,
+  "pinnedWrapperReadbackIdentical": true,
+  "qualification": {
+    "status": "PASS",
+    "sourcePushRun": 40484538466,
+    "rootProtocol": {
+      "job": 122122915107,
+      "roleAndJournalTests": 11,
+      "compatibilityAndCumulativeAccountingTests": 17,
+      "retainedMacTests": 6,
+      "operationalFenceTests": 9,
+      "skips": 0,
+      "directLogRead": true
+    },
+    "native": [
+      {
+        "backend": "classic",
+        "job": 122122914709,
+        "tests": 7,
+        "skips": 0
+      },
+      {
+        "backend": "containerd",
+        "job": 122122915120,
+        "tests": 7,
+        "skips": 0
+      }
+    ],
+    "nativeCases": [
+      "four positive signed lifecycles: Memory positive/zero and explicit legacy/endpoint-only compatibility",
+      "pending profiling denied before runtime write",
+      "source drift denied before new owner start; no reset",
+      "real controller loss: stop only own candidate; old owner and other peers not restarted"
+    ],
+    "realKernelPid1": {
+      "jobs": [
+        122122914709,
+        122122915120
+      ],
+      "actualPeerCredentials": [
+        1,
+        0,
+        0
+      ],
+      "tupleHash": "7ff52993d5d3cb149089942de7fc7a6511db2671cf2125976c081ad6fff89772",
+      "exactLiveTupleAndRootUidChecked": true,
+      "isolatedUnixSocketServerRealPid1": true,
+      "notADockerEngineRequest": true,
+      "directLogsRead": true
+    },
+    "terminal": {
+      "jobs": [
+        122122915052,
+        122122915285
+      ],
+      "sudoModes": [
+        "use_pty",
+        "!use_pty"
+      ],
+      "casesEach": 11,
+      "canonicalEditingAndEnter": true,
+      "reviewLoggerActual": true,
+      "privateReviewAndCountsUnchanged": true,
+      "directLogsRead": true
+    },
+    "actualNewSealedDelivery": {
+      "run": 40484826693,
+      "job": 122123886839,
+      "status": "PASS",
+      "directLogRead": true,
+      "pinnedSourceDownload": true,
+      "nonrootWrapperWithGhAndTimeoutAbsent": true,
+      "root0400ClosedCode": true,
+      "privateRoot0600Log": true,
+      "actualProtectedMainAndForegroundTty": true,
+      "oldTwentyOneSourcesAndStopLogRevalidatedAndUnchanged": true,
+      "elevenOriginalReadsCumulative": true,
+      "sameMetadataMaximum": 64,
+      "negativeCase": "wrong synthetic prepared-input hash rejected after retained reconciliation, before HUMAN/authority/Engine/SQL/keys",
+      "humanApprovalRequested": false,
+      "runtimeAuthorityIssued": false,
+      "engineRequests": 0,
+      "newAttemptClaimsInclusiveRange": [
+        12,
+        49
+      ]
+    }
+  },
+  "retainedAccounting": {
+    "firstUnissuedReads": 3,
+    "secondUnissuedReads": 8,
+    "cumulativeRetainedReads": 11,
+    "maximumOwnerMetadataReads": 64,
+    "newRetainedVerificationReads": 37,
+    "preReviewMetadataReads": 54,
+    "postApprovalPublicAuthorityRevalidationReads": 2,
+    "oldFilesRewritten": false,
+    "oldAuthorityReused": false,
+    "historicalHashesRewritten": false,
+    "readerScopeConsumed": true
+  },
+  "historicalReuse": {
+    "evidence": "evidence/onboarding-pid1-peer-stop-target-20261027.json",
+    "invariant": "docs/OUF_LEARNED_NATIVE_TRANSPORT_INVARIANTS.md",
+    "liveTransportCodeUnchanged": true,
+    "fix": "allow the already reconciled positive PID1; exact full tuple and root UID remain mandatory"
+  },
+  "limits": {
+    "engineGets": 512,
+    "engineWrites": 10,
+    "imageLoadAttempts": 1,
+    "readinessGets": 96,
+    "adminGets": 0,
+    "adminPuts": 0,
+    "ownerConfigurationReads": 64,
+    "ownerConfigurationContentReads": 1,
+    "serviceCredentialFileReads": 0,
+    "quarantineStops": 1,
+    "sqlSessions": 4,
+    "reviewSeconds": 900,
+    "executionSeconds": 900,
+    "quarantineAdditionalSeconds": 30
+  },
+  "targetApplyExecuted": false,
+  "targetRuntimeAuthorityIssued": false,
+  "targetDiagnosticInstallationProven": false,
+  "applicationE2EProven": false,
+  "productionRuntimeAccessByCi": false,
+  "ciApplicationAndAuthoritiesSynthetic": true,
+  "freshConcreteTerminalHumanReviewRequired": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "M1Retained": true,
+  "M2Open": true,
+  "policy54Expired": true,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}

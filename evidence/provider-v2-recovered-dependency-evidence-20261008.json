@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.semantic-provider-v2-recovered-dependency-evidence.v1",
+  "sourceRepository": "GioNob/ouf-semantic-registry",
+  "sourceBranch": "codex/r4a-smoke-semantic-inventory",
+  "sourceHead": "ae099d218d0b453af4f5aa4f9a15aebfb7ca705b",
+  "pullRequest": 26,
+  "priorAuditDidNotInspectTheseReceipts": true,
+  "artifactsDownloadedAndHashCompared": [
+    {
+      "id": 11460989205,
+      "sha256": "479b761111fd20e192f8f195349107ee620b9b4f8c53453fc4557fe5a4d44797"
+    },
+    {
+      "id": 11478662099,
+      "sha256": "a23ee77e6f2e21fc9a7ca1beb144d11f22228cc801693cac5fad47ee30e863ea"
+    }
+  ],
+  "databasePin": {
+    "status": "active",
+    "schemaVersion": "v6.1.10",
+    "built": "2026-10-07T06:31:48Z",
+    "path": "vulnerability-db_v6.1.10_2026-10-07T00:34:45Z_1791354708.tar.zst",
+    "checksum": "sha256:008449eb30e10988569b3bd54eb46158f33187211ba723f41ed9326ccfa1e174"
+  },
+  "freshnessEnds": "2026-10-09T06:31:48Z",
+  "targetFreshEvidenceReportDirectory": "/home/oufadmin/ouf-extended-fresh-v2.Bs2U5B/reports",
+  "targetCryptoVerificationSource": "EXISTING_OPERATOR_REPORTED_RECEIPT",
+  "cloudCurrentWorkReverifiedCryptographicSignatures": false,
+  "cloudReportHashesAndInventoryCountsCompared": true,
+  "repeatExistingTargetVerificationNeeded": false,
+  "publisherTrustAccepted": false,
+  "dependencyCoverageAccepted": false,
+  "targetAcceptanceGranted": false,
+  "notReleaseAcceptance": true
+}

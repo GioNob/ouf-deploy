@@ -1,0 +1,17 @@
+name: Ingestion Gateway corrected custody immutable delivery
+on:
+  push:
+    paths:
+      - 'scripts/launch-ingestion-read-gateway-custody-20261019.sh'
+      - 'tests/test_ingestion_read_gateway_custody_delivery.py'
+      - '.github/workflows/ingestion-read-gateway-custody-delivery.yml'
+permissions:
+  contents: read
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: bash -n scripts/launch-ingestion-read-gateway-custody-20261019.sh
+      - run: python3 -m unittest discover -s tests -p test_ingestion_read_gateway_custody_delivery.py -v

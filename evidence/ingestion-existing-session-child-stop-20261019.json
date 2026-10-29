@@ -1,0 +1,46 @@
+{
+  "schema": "ouf.ingestion-existing-session-child-stop-evidence.v1",
+  "evidenceKind": "OPERATOR_SUPPLIED_NATIVE_RESULT",
+  "preparation": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "completedInstallationReadbackReplayed": false,
+    "completedTechnicalPhases": 8,
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-read-authorization-execution-ojz9hai3",
+    "functionalMilestonesProven": 4,
+    "maximumCumulativeOAuthAttempts": 256,
+    "newHumanLoginAllowed": false,
+    "packageHash": "b2b01238a1c760a5e0334f0ed7770b4d03746ee9fdfc271a96798ff282327e84",
+    "planHash": "9216f0bae1056f1a6f8c8bf8627915d9a70f126e476fe6700e65f0d58112b53b",
+    "priorOAuthAttempts": 212,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.ingestion-existing-session-preparation.v1",
+    "sourceClosureHash": "4152ca6bcd44e745ea3a03dc884b67a948d1f91536a80c752a82c27afd9fc657",
+    "sourceCommit": "37184220c2a565367a194d41e862a704f87dbdb8"
+  },
+  "stop": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "exceptionClass": "ValueError",
+    "reason": "PRIVATE_DETAILS_REDACTED",
+    "runtimeCompletionProven": false,
+    "schema": "ouf.ingestion-read-administrative-stop.v1",
+    "status": "STOP_RECONCILE"
+  },
+  "targetFailurePhaseProven": false,
+  "targetEffectsReconciled": false,
+  "targetOAuthAttemptsAfterProven": false,
+  "automaticReplayAllowed": false,
+  "doNotRerunLauncher": true,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "completedInstallationReadbackReplayed": false,
+  "diagnosticQualification": {
+    "commit": "3a2de521bdb0467791954bd56d74b38276e2ea17",
+    "sha256": "2a4d855d4a034673c3ec7bca933bb246a7a4ca38534597e7c3eb12ddb4a07074",
+    "runId": 39229041547,
+    "jobId": 117982270177,
+    "testsPassed": 8,
+    "targetReadComplete": false
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "schema": "ouf.managed-file-owner-v38-update-qualification.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "QUALIFIED_CONTROLLER_TARGET_INSTALLED_AND_CONSUMED_E2E_NOT_ACCEPTED",
+  "consumedPreparation": {
+    "receipt": "evidence/managed-file-owner-v38-image-plan-target-20261028.json",
+    "reportedOutput": "evidence/managed-file-owner-v38-image-plan-target-20261028.log",
+    "resultHash": "f71aa2e89b732312fb31bb3791564c4f1f7d6668dfaf45fdff5f44bc023485e9",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "currentDeliveryUsable": false,
+    "commandMustNotBeRedelivered": true,
+    "executionInputsHash": "b03d681a8070b31ab29ab9515846421e98ff55a197e963f447d645b1c824a120",
+    "conditionalNativePlanHash": "05e1398deae80106cbd9be45c04f9d9ffbe94303af882f06accb1f6d1a75b191",
+    "capturedInputsHash": "8a4c84756a663c3eb3a6b6c615d5efccf0c67b3c6ac2281ff9633c9a93de6224",
+    "counts": {
+      "privateMetadataReads": 3,
+      "privateMetadataBytes": 634542,
+      "ciZipReads": 1,
+      "nativeArchivesPrepared": 1,
+      "engineGets": 0,
+      "containerWrites": 0,
+      "imageImports": 0
+    },
+    "databaseMigrationIsConditionalOnly": {
+      "from": 36,
+      "to": 38,
+      "newMigrations": 2
+    },
+    "runtimeAuthorityIssued": false,
+    "currentJobOrBudgetStateObserved": false
+  },
+  "controller": {
+    "sourceCommit": "a9b5904c772c6cf93e34545163e72af5e6b4941f",
+    "wrapperCommit": "7ccfba0833cecc37b4cece37998326cd2a6ccc52",
+    "deliveryQualificationCommit": "6719e8ee2d3967994ba9773f39e8592de8591e5c",
+    "wrapper": "releases/apply-managed-file-owner-v38-20261028.sh",
+    "wrapperSha256": "f4c7d459d063bac62401656d9da4dfa64a35722b79e8d5f0a23f0e7da361b0d7",
+    "sourceClosureHash": "f00094e876add2eb729ef72dc83d60e446622bf6dead33b2992ad8f6d4b6a450",
+    "sourceFiles": 31,
+    "protectedFilesIncludingManifest": 32,
+    "codeRoot": "/usr/local/lib/ouf-managed-file-owner-v38-update-f00094e876add2eb",
+    "executionRoot": "/etc/ouf/deploy-snapshots/managed-file-owner-v38-update-b03d681a-20261028-v1",
+    "builder": "tools/build_managed_file_owner_update_delivery.py",
+    "pins": "releases/managed-file-owner-v38-update-delivery-pins-20261028.json",
+    "modules": [
+      "tools/managed_file_owner_update/authority.py",
+      "tools/managed_file_owner_update/context.py",
+      "tools/managed_file_owner_update/ports.py",
+      "tools/managed_file_owner_update/state_fence.py",
+      "tools/managed_file_owner_update/bundle.py"
+    ],
+    "candidateSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "candidateNativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "targetRoles": [
+      "onboarding"
+    ],
+    "unchangedPeers": 12,
+    "migration": {
+      "from": 36,
+      "to": 38,
+      "newMigrations": 2
+    },
+    "maintenanceSqlReadOnly": true,
+    "sqlWritesByController": 0,
+    "ownerStartupAppliesExactPackagedMigrations": true,
+    "stageCount": 16,
+    "maximums": {
+      "engineGets": 768,
+      "engineWrites": 10,
+      "imageLoadAttempts": 1,
+      "readinessGets": 96,
+      "adminGets": 0,
+      "adminPuts": 0,
+      "ownerConfigurationReads": 64,
+      "ownerConfigurationContentReads": 1,
+      "serviceCredentialFileReads": 0,
+      "quarantineStops": 1,
+      "sqlSessions": 7,
+      "backupProcesses": 2
+    },
+    "preflightSeconds": 300,
+    "humanReviewSeconds": 900,
+    "executionAuthoritySeconds": 900,
+    "candidateStartupSeconds": 180,
+    "negativeCleanupSeconds": 30,
+    "maximumBackupBytes": 268435456,
+    "maximumBackupSecondsPerProcess": 90,
+    "maximumSigningOperations": 3,
+    "maximumSigningKeyReadDispatches": 15,
+    "newConcreteHumanTerminalDecisionRequired": true,
+    "noSqlOrSigningPrivateKeyReadBeforeHumanDecision": true,
+    "ownerOverlayContentReadBeforeReview": 1,
+    "ownerOverlayValuesNeverPrinted": true,
+    "noServiceCredentialFileReads": true,
+    "noIamOrOAuthByController": true,
+    "normalOwnerOAuthBootstrapMayOccur": true,
+    "negativeWatchdogEphemeralOwnCandidateOnly": true,
+    "automaticRollbackAuthorized": false,
+    "postInstallOwnershipBudgetAndResumeSeparate": true,
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
+    "targetInstalled": true,
+    "runtimeAuthorityIssuedOnTarget": true,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true,
+    "reviewConsumed": true,
+    "authorityConsumed": true
+  },
+  "preservationFence": {
+    "boundedTables": 12,
+    "tables": [
+      "managed_file_asset",
+      "file_profile",
+      "file_profile_job",
+      "managed_file_quarantine",
+      "source",
+      "onboarding_version",
+      "managed_onboarding_review",
+      "managed_readiness_budget_session",
+      "source_property_revision",
+      "managed_file_upload_attempt",
+      "managed_profile_budget_session",
+      "managed_profile_event"
+    ],
+    "maximumRowsPerTable": 10000,
+    "fullV36JobRowsFingerprinted": true,
+    "onlyNewAssetTenantKeyProjectedOutOfRowHash": true,
+    "exactRetainedInputUploaderHashAndSizeRequired": true,
+    "legacyTenantMustRemainNull": true,
+    "newOwnerReceiptTableMustRemainEmpty": true,
+    "newOwnerGuardsMustBeEnabled": true,
+    "expectedJobState": "FAILED",
+    "expectedCumulativeAttempts": 5,
+    "expectedVersion": 0,
+    "expectedGeneration": 0,
+    "expectedRecoverySessionsAndEvents": 0,
+    "freshAdmissionAfterHumanDecision": true,
+    "entireDatabaseOrAllMountContentIdentityProven": false
+  },
+  "qualification": {
+    "pushRun": 40758383606,
+    "prRun": 40758393066,
+    "pushJobs": [
+      {
+        "id": 123063329321,
+        "name": "actual-new-review-sudo-terminal (use_pty)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329485,
+        "name": "actual-new-review-sudo-terminal (!use_pty)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329604,
+        "name": "exact-v38-jar-and-unchanged-request-config",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329608,
+        "name": "new-executor-native-lifecycle (containerd, test_partial_v37_is_preserved_without_rollback_or_replay)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329634,
+        "name": "new-executor-native-lifecycle (containerd, test_pending_profile_stops_before_any_write)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329656,
+        "name": "new-executor-native-lifecycle (containerd, test_zero_memory_retained)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329668,
+        "name": "new-root-crypto-and-preserved-contracts",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329715,
+        "name": "new-executor-native-lifecycle (containerd, test_external_change_before_start_is_retained)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329799,
+        "name": "new-executor-native-lifecycle (containerd, test_full36_to38_preserves_failed5_and_twelve_peers)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063329866,
+        "name": "new-executor-native-lifecycle (containerd, test_actual_lost_controller_stops_only_own_candidate)",
+        "conclusion": "success"
+      }
+    ],
+    "prJobs": [
+      {
+        "id": 123063364008,
+        "name": "actual-new-review-sudo-terminal (!use_pty)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364232,
+        "name": "new-executor-native-lifecycle (containerd, test_zero_memory_retained)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364304,
+        "name": "new-root-crypto-and-preserved-contracts",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364312,
+        "name": "actual-new-review-sudo-terminal (use_pty)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364420,
+        "name": "exact-v38-jar-and-unchanged-request-config",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364424,
+        "name": "new-executor-native-lifecycle (containerd, test_pending_profile_stops_before_any_write)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364475,
+        "name": "new-executor-native-lifecycle (containerd, test_partial_v37_is_preserved_without_rollback_or_replay)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364495,
+        "name": "new-executor-native-lifecycle (containerd, test_full36_to38_preserves_failed5_and_twelve_peers)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364636,
+        "name": "new-executor-native-lifecycle (containerd, test_external_change_before_start_is_retained)",
+        "conclusion": "success"
+      },
+      {
+        "id": 123063364716,
+        "name": "new-executor-native-lifecycle (containerd, test_actual_lost_controller_stops_only_own_candidate)",
+        "conclusion": "success"
+      }
+    ],
+    "allTwentyControllerJobsPassed": true,
+    "directFinalControllerJobLogsRead": 20,
+    "protocolCases": 15,
+    "stateFenceCases": 7,
+    "nativeCases": 6,
+    "terminalCases": 22,
+    "sudoVariants": [
+      "use_pty",
+      "!use_pty"
+    ],
+    "actualJavaJarAndNativeConfigurationVerifier": true,
+    "actualV38JarSha256": "152159de758ead299d53eaf9cf113c01445b7e1d6fa86590ba0a1248bf4ef681",
+    "installedEightScopeRequestRetained": true,
+    "migrationAndConfigurationOverridesRejected": true,
+    "actualDockerVersion": "29.8.1",
+    "actualPostgresMajor": 17,
+    "nativeApplicationWorkloadSynthetic": true,
+    "nativeMigrationsAppliedByExplicitCiHarness": true,
+    "actualPackagedV37AndV38SqlBytesUsed": true,
+    "syntheticCiDecisionsAndKeysOnly": true,
+    "noProductionHumanApprovalSimulated": true,
+    "nativePositiveSqlSessions": 7,
+    "nativePositiveEngineWrites": 8,
+    "nativePositiveImageLoadAttempts": 1,
+    "actualQuiescedBackupAndOfflineParse": true,
+    "fullUpgradeAndZeroMemoryCasesPassed": true,
+    "partialV37PreservedNoRollbackOrReplay": true,
+    "lostControllerOwnCandidateOnlyNegativePassed": true,
+    "pendingWorkDeniedBeforeWrite": true,
+    "externalBeforeStartDriftRetainedNotReset": true,
+    "livePolicyRevocationAndWrongOrStaleDecisionsDenied": true,
+    "sourceTamperAndAmbiguousClaimReplayDenied": true,
+    "realTerminalEditingAndEnterRequired": true,
+    "localProtocolAttemptBlockedByUnavailableProcBootId": true,
+    "localStateCases": 7,
+    "hostedProtocolTestsNoSkips": true,
+    "deliveryRuns": [
+      {
+        "run": 40759055775,
+        "job": 123065707432,
+        "event": "push",
+        "conclusion": "success"
+      },
+      {
+        "run": 40759070673,
+        "job": 123065766406,
+        "event": "pull_request",
+        "conclusion": "success"
+      }
+    ],
+    "directFinalDeliveryLogsRead": 2,
+    "actualPinnedHttpsSudoDirectTty": true,
+    "reproducedWrapperAndClosureByteIdentical": true,
+    "root400AndPrivate600LogsProven": true,
+    "wrongPrivateSealDeniedBeforeRuntimeOrReview": true,
+    "consumedScopeAndNonTtyDenied": true,
+    "ghAndTimeoutNotRequiredOnTarget": true,
+    "applicationE2EProven": false
+  },
+  "remaining": [
+    "USER reads current THS card and actual identity/tenant via Aggiorna stato",
+    "Separate USER-only ownership confirmation of exact legacy asset/job",
+    "Separate same-job budget3/900 and resume,cumulative6to8",
+    "Original/hash/parser/preview,Farmacie61rows toUDP,provenance,D5-D7,two real clients,fullE2E"
+  ],
+  "runtimeAuthorityIssuedOnTarget": true,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "qualificationStatusBeforeTarget": "FRESH_SINGLE_ONBOARDING36_TO38_CONTROLLER_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "targetEffectsByQualificationCheckpoint": {
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "imageImports": 0,
+    "lifecycleActions": 0,
+    "databaseMigrations": 0,
+    "ownershipReceipts": 0,
+    "newGrants": 0,
+    "humanBudgets": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "acquisitions": 0,
+    "sourceActivations": 0,
+    "registryWorkerTouched": false
+  },
+  "targetReceipt": "evidence/managed-file-owner-v38-update-target-20261028.json",
+  "targetReportedOutput": "evidence/managed-file-owner-v38-update-target-20261028.log",
+  "canonicalTargetResultHash": "0601fdfadd157eedbdd35144e7913e152d3d1f1a67e4927317e2de6a566a61ca",
+  "currentRuntimeAuthorityUsable": false,
+  "independentHostLogRead": false
+}

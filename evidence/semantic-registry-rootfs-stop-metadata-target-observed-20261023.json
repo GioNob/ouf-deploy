@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.semantic-registry-rootfs-stop-metadata-target-observed.v1",
+  "checkpoint": 4,
+  "recoveryState": "IN_FLIGHT",
+  "readAttempts": 5,
+  "nativeReadCounts": {
+    "databaseSessions": 1,
+    "gatewayAdminGets": 6,
+    "semanticGets": 0
+  },
+  "appliedStages": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "claimedStage": 4,
+  "nativeAttestationAttempted": false,
+  "ownerState": "CANCELLED",
+  "retainedServiceGrantAttempts": 1,
+  "retainedControlledGrantAttempts": 320,
+  "expectedSealEntries": 9302,
+  "expectedSealBytes": 1719645735,
+  "pausedObservationRetained": false,
+  "pausedAcceptanceRetained": false,
+  "currentContainerStateObserved": false,
+  "currentRootfsRead": false,
+  "rootfsMismatchCauseEstablished": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

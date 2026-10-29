@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.semantic-paused-diagnostic-target-stop.v1",
+  "source": "user supplied target receipt",
+  "retainedDirectory": "/home/oufadmin/ouf-paused-rootfs.Ku500MB1",
+  "reported": {
+    "schema": "ouf.semantic-registry-paused-rootfs-diagnostic.v1",
+    "status": "STOP_RECONCILE",
+    "reasonCode": "EXACT_PAUSED_READONLY_IMAGE_GENERATION_REQUIRED",
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeEffectsDispatched": 0
+  },
+  "failedPredicateIdentified": false,
+  "diagnosticSourceRequiresUnsupportedReadonlyTrue": true,
+  "currentContainerStateEstablished": false,
+  "rootfsReadEstablished": false,
+  "rootfsMismatchCauseEstablished": false,
+  "releaseAcceptance": false,
+  "serviceReadinessEstablished": false,
+  "oldClaimMustRemainConsumed": true
+}

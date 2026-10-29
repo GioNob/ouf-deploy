@@ -1,0 +1,82 @@
+{
+  "schema": "ouf.r12-complete-protected-readiness-target-checkpoint.v1",
+  "operatorSubmissionAt": "2026-10-11T23:22:02+02:00",
+  "status": "R12_PRIVATE_READINESS_AND_BUDGET_CAPTURED_NO_RECOVERY_AUTHORITY",
+  "service": {
+    "ActiveState": "active",
+    "LoadState": "loaded",
+    "MainPID": "2446150",
+    "NRestarts": "0",
+    "Restart": "no",
+    "SubState": "running"
+  },
+  "serviceInvocationBindingsMatch": true,
+  "workerBeforeAndAfterIdentical": true,
+  "journalBeforeAndAfterIdentical": true,
+  "allNineWorkerReadinessChecksBeforeAndAfterPassed": true,
+  "worker": {
+    "attempts": 12,
+    "doNotRerunApply": true,
+    "flowAddressCounts": [
+      1,
+      1
+    ],
+    "live": true,
+    "ready": true,
+    "reason": "RENEWED",
+    "recoveryBudgetRemainingSeconds": 78133.9408197403,
+    "refreshCount": 1943,
+    "renewals": 1931,
+    "startAuthorized": false,
+    "state": "ACTIVE",
+    "status": "LEASE_ACTIVE",
+    "workerPid": 2446150
+  },
+  "nativeLease": {
+    "flowCount": 2,
+    "flows": [
+      {
+        "approvedAddressCount": 1,
+        "bridgeAddressCount": 1,
+        "inetAddressCount": 1,
+        "leaseSeconds": 30,
+        "minRemainingTtlSeconds": 17
+      },
+      {
+        "approvedAddressCount": 1,
+        "bridgeAddressCount": 1,
+        "inetAddressCount": 1,
+        "leaseSeconds": 30,
+        "minRemainingTtlSeconds": 17
+      }
+    ],
+    "journalAndMembershipConsistent": true,
+    "journalState": "LEASE_READY",
+    "leaseAuthorized": true,
+    "nativeStructureVerified": true,
+    "providerSetsEmpty": false
+  },
+  "installedProgramCountVerified": 15,
+  "hostBootMatches": true,
+  "invocationBootMatches": true,
+  "invocationContextMatches": true,
+  "invocationPidMatchesWorker": true,
+  "journalContextMatchesAuthorization": true,
+  "journalGenerationMatchesAuthorization": true,
+  "revocationMarkerPresent": false,
+  "workerDenialPresent": false,
+  "startupWindowExpired": true,
+  "startupWindowIsNotWorkerLifetime": true,
+  "protectedFileWrites": 0,
+  "providerCalls": 0,
+  "databaseWrites": 0,
+  "imageImports": 0,
+  "containerLifecycleOperations": 0,
+  "firewallWrites": 0,
+  "diagnosisGrantsRecoveryAuthority": false,
+  "applicationCutoverAuthorized": false,
+  "productionApplyReady": false,
+  "budgetReset": false,
+  "notReleaseAcceptance": true,
+  "readConsistencyMode": "BEFORE_AFTER_OBSERVATIONS_NOT_ATOMIC_TRANSITION_AUTHORITY"
+}

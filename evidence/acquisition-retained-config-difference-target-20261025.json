@@ -1,0 +1,67 @@
+{
+  "operatorResult": {
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "capturedInputsHash": "c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6",
+    "complete": true,
+    "configurationValuesPrinted": false,
+    "containerWrites": 0,
+    "credentialValuesPrinted": false,
+    "currentRuntimeStateObserved": false,
+    "engineGetAttempts": 0,
+    "firstFailingRoleInOriginalOrder": "ingestion",
+    "gatewayAdminGetAttempts": 0,
+    "imageImports": 0,
+    "maximumPrivateReads": 6,
+    "networkNamespaceJoins": 0,
+    "oauthRequests": 0,
+    "originalGuardStopReproducedFromRetainedEvidence": true,
+    "parentFilesWritten": 0,
+    "privateMetadataReads": 6,
+    "releaseAcceptance": false,
+    "roleFields": {
+      "ingestion": [
+        {
+          "causesOriginalGuardStop": true,
+          "defaultEmptyUnderOriginalGuard": false,
+          "field": "MacAddress",
+          "fieldNameRecognized": true,
+          "type": "str"
+        }
+      ],
+      "mcp": [
+        {
+          "causesOriginalGuardStop": true,
+          "defaultEmptyUnderOriginalGuard": false,
+          "field": "MacAddress",
+          "fieldNameRecognized": true,
+          "type": "str"
+        }
+      ],
+      "udp": [
+        {
+          "causesOriginalGuardStop": true,
+          "defaultEmptyUnderOriginalGuard": false,
+          "field": "MacAddress",
+          "fieldNameRecognized": true,
+          "type": "str"
+        }
+      ]
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.acquisition-retained-config-difference.v1",
+    "serviceCredentialFilesOpened": 0,
+    "sqlSessions": 0,
+    "status": "RETAINED_CONTAINER_CONFIG_FIELDS_CLASSIFIED",
+    "targetApplyAuthorized": false
+  },
+  "canonicalResultHash": "21aff2ea7e8f90b3e7511cdf17a1e2b8043a51ca1116aa94923ff274dd6f982d",
+  "exit": 0,
+  "directory": "/home/oufadmin/ouf-acquisition-config-fields.BhwlCtLT",
+  "log": "/home/oufadmin/ouf-acquisition-config-fields.BhwlCtLT/operator.log",
+  "deliveryExit": 0,
+  "deliveryDirectory": "/home/oufadmin/ouf-acquisition-config-delivery.EjRHGszG",
+  "deliveryLog": "/home/oufadmin/ouf-acquisition-config-delivery.EjRHGszG/bootstrap.log",
+  "scopeConsumed": true
+}

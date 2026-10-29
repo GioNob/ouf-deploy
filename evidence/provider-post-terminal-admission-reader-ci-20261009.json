@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.semantic-post-terminal-admission-reader-ci.v1",
+  "commit": "4143a9219b8e7277bc25ad8dee792b804729fa78",
+  "runId": 37943394452,
+  "conclusion": "success",
+  "url": "https://github.com/GioNob/ouf-deploy/actions/runs/37943394452",
+  "readerSha256": "a7a1273456b170c20bff200154020b004ee1c43ba28f0cbcbac62fb1646854b9",
+  "localTests": 6,
+  "targetReadPerformedByAgent": false,
+  "operatorReadPending": true,
+  "startAuthorized": false,
+  "notReleaseAcceptance": true,
+  "jobs": [
+    {
+      "id": 113863277789,
+      "conclusion": "success",
+      "readerStep": [
+        {
+          "name": "Read-only post-terminal admission prerequisites",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.semantic-provider-v2-admission-manifest-reader-fix.v1",
+  "operatorOutput": [
+    "OUF_ADMISSION_MANIFEST_READER_HASH=PASS",
+    "OUF_PROVIDER_V2_ADMISSION_MANIFEST=BLOCKED REASON=BOUNDED_PRIVATE_MANIFEST_READ_FAILED NO_RAW_OUTPUT=true"
+  ],
+  "reproduction": "Frozen southbound Docker 29.8.1 expected root omits readonly. Original summary raises KeyError; corrected summary uses explicit boolean false when omitted, keeping original OCI bytes and hash unchanged.",
+  "targetCauseConfirmedByDetailedError": false,
+  "configurationWrites": 0,
+  "privateKeyFilesRead": 0,
+  "startAuthorized": false
+}

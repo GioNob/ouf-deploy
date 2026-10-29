@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.native-v11-private-plan-resume-qualification.v1",
+  "sourceCommit": "57296c0eb1a8cb5c8bfc371a1bf201a39763f94a",
+  "correctedDiagnosticLauncherCommit": "5aaa0dc3868402a9cd8b700a299c4446af81d51f",
+  "resumeLauncherCommit": "296ebbffa32633a67d9b1f520c6d19dfb641a576",
+  "resumeLauncherSha256": "20932811bfdeddfdd1c268759cee448b77a31e445bdfa43437f1c41e75a00f7f",
+  "workflowRunId": 38175477875,
+  "jobId": 114576853230,
+  "conclusion": "success",
+  "diagnosisDeliveryAndResumeTests": 19,
+  "retainedCustodyTests": 9,
+  "targetCorrectedDiagnosticExecuted": false,
+  "targetNewNativePlanPrepared": false,
+  "applicationCutoverAuthorized": false,
+  "productionApplyReady": false,
+  "notReleaseAcceptance": true,
+  "budgetReset": false
+}

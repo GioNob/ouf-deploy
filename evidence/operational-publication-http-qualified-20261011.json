@@ -1,0 +1,143 @@
+{
+  "schema": "ouf.operational-publication-http-qualification.v1",
+  "date": "2026-10-11",
+  "mcp": {
+    "pr": 61,
+    "candidate": "ee4691cfb0a68ae9da9eb4fc29bcc5a61a4dc727",
+    "merge": "d300d3154f63014cc4462e503590d03f79287e87",
+    "gateCount": 20,
+    "runs": [
+      {
+        "id": 38134481046,
+        "name": "MCP evidence and late recovery",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480807,
+        "name": "Authorization Java Go conformance",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480917,
+        "name": "Incident priority resilience v3",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480832,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480847,
+        "name": "Operational control budget PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480785,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480809,
+        "name": "Bounded publication composition qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480808,
+        "name": "Publication HTTP and MCP tool qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480982,
+        "name": "Operational incident cursor HTTP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134480815,
+        "name": "Operational aggregate delegated context qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478482,
+        "name": "Authorization Java Go conformance",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478476,
+        "name": "Incident priority resilience v3",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478435,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478454,
+        "name": "Operational control budget PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478455,
+        "name": "Bounded publication composition qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478465,
+        "name": "Operational aggregate delegated context qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478425,
+        "name": "Publication HTTP and MCP tool qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478442,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478444,
+        "name": "Operational incident cursor HTTP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 38134478484,
+        "name": "MCP evidence and late recovery",
+        "conclusion": "success"
+      }
+    ],
+    "newHttpRaceGroups": 3,
+    "newPostgresServiceGroups": 1,
+    "officialMcpSdkForwardingAndClosedSchema": "PASS",
+    "persistentAccounting": {
+      "windowCount": 1,
+      "consumedToolCalls": 9,
+      "reservedToolCalls": 0,
+      "rootCalls": 3,
+      "producerCalls": 6,
+      "retainedBookmarks": 1
+    },
+    "fullTestsRaceVetStaticcheck": "PASS",
+    "govulncheck": "No vulnerabilities found"
+  },
+  "pairwise": {
+    "gatewayCandidate": "46ec62f9658ec9c669d8ea6259fda40cc81c268e",
+    "ingestionCandidate": "527f6f9ebfc967bb186142f69001174734758432"
+  },
+  "limits": {
+    "historicalModulesCovered": [
+      "GATEWAY",
+      "INGESTION"
+    ],
+    "historicalMcpSelfEvents": false,
+    "clientReceipt": false,
+    "operatorCheckpoint": false,
+    "realAlerts": false,
+    "targetApplied": false,
+    "r10Touched": false,
+    "applicationHealthProven": false,
+    "releaseAcceptance": false
+  }
+}

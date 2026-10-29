@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.mcp-reauthentication-plan-denied-stop-evidence.v1",
+  "observedAt": "2026-10-19T13:15:25+02:00",
+  "status": "STOP_RECONCILE",
+  "exceptionClass": "PlanDenied",
+  "runtimeCompletionProven": false,
+  "exactStopPhaseProven": false,
+  "newHumanLoginCompletionProven": false,
+  "newHumanOAuthAttemptsProven": false,
+  "nativeEffectStateProven": false,
+  "runtimeAuthorityIssuedProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "lastProvenPredecessorOAuthAttempts": 217,
+  "maximumCumulativeOAuthAttempts": 256,
+  "readerSourceSha256": "4d956321e87f9d2202e25a80173f9ab33f0a355207dff3f2f360e8e735d15116",
+  "localTestsPassed": 7,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "readerQualificationRun": 39244135128,
+  "readerQualificationJob": 118031813793,
+  "readerTestsPassed": 7
+}

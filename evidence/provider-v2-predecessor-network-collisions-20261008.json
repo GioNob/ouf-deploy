@@ -1,0 +1,81 @@
+{
+  "diagnosis": {
+    "collisions": [
+      {
+        "allocatedIpv4": "",
+        "containerId": "10a6237447b83c6e67e134e9266a74f5247fb1fa1fbe2c4528ff92fd663f767b",
+        "declaredIpv4": "172.22.0.3",
+        "mac": "",
+        "name": "/ouf-semantic-provider",
+        "network": "ouf-semantic-provider-egress",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "runtime": "runc",
+        "status": "created"
+      },
+      {
+        "allocatedIpv4": "",
+        "containerId": "10a6237447b83c6e67e134e9266a74f5247fb1fa1fbe2c4528ff92fd663f767b",
+        "declaredIpv4": "172.21.0.3",
+        "mac": "",
+        "name": "/ouf-semantic-provider",
+        "network": "ouf-semantic-provider-internal",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "runtime": "runc",
+        "status": "created"
+      },
+      {
+        "allocatedIpv4": "",
+        "containerId": "0e636c96b81da5ed500cee114f1b0c83d5c4ed8e2741eb0a34865f8da8e38307",
+        "declaredIpv4": "172.18.0.14",
+        "mac": "",
+        "name": "/ouf-semantic-southbound",
+        "network": "ouf-backend",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "runtime": "runc",
+        "status": "created"
+      },
+      {
+        "allocatedIpv4": "",
+        "containerId": "0e636c96b81da5ed500cee114f1b0c83d5c4ed8e2741eb0a34865f8da8e38307",
+        "declaredIpv4": "172.22.0.2",
+        "mac": "",
+        "name": "/ouf-semantic-southbound",
+        "network": "ouf-semantic-provider-egress",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "runtime": "runc",
+        "status": "created"
+      },
+      {
+        "allocatedIpv4": "",
+        "containerId": "0e636c96b81da5ed500cee114f1b0c83d5c4ed8e2741eb0a34865f8da8e38307",
+        "declaredIpv4": "172.21.0.2",
+        "mac": "",
+        "name": "/ouf-semantic-southbound",
+        "network": "ouf-semantic-provider-internal",
+        "neverStarted": true,
+        "pid": 0,
+        "running": false,
+        "runtime": "runc",
+        "status": "created"
+      }
+    ],
+    "containerLifecycleOperations": 0,
+    "networkAttachmentOperations": 0,
+    "privateKeysRead": 0,
+    "startAuthorized": false,
+    "status": "READ_ONLY"
+  },
+  "source": "853c168ac3b09f7a43e2082e0b52acaebef761df",
+  "readRun": 37754751557,
+  "readJob": 113236434339,
+  "priorApplyRun": 37754568016,
+  "priorApplyBlockedBeforeMutation": true
+}

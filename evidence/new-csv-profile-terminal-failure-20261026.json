@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.new-csv-profile-terminal-failure.v1",
+  "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+  "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+  "status": "FAILED",
+  "errorCode": "ONB_FILE_PROFILE_FAILED",
+  "resultRef": null,
+  "analysisFailureHypothesisConfirmed": false,
+  "newJobCreated": false,
+  "budgetReset": false,
+  "rawLogsOrSqlRead": false,
+  "sourceRef": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+  "nextEvidence": "OWNER_ORIGINAL_CSV_FOR_LOCAL_EXACT_PARSER_REPRODUCTION"
+}

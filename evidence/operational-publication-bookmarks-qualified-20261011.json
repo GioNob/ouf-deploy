@@ -1,0 +1,59 @@
+{
+  "schema": "ouf.operational-publication-bookmarks-qualification.v1",
+  "date": "2026-10-11",
+  "ingestion": {
+    "pr": 38,
+    "candidate": "550759d421a157f615e2ab7fe5ea4c52ecfccf57",
+    "merge": "a4cfd2a8454dc98cd5b4f686582b88cdafb5eaca",
+    "gateCount": 18,
+    "focusedTests": 47,
+    "fullModuleTests": 163,
+    "runs": [
+      38128746240,
+      38128746383
+    ],
+    "publicationOrder": "tenant committed pending publication clock, not private bigserial",
+    "proofs": [
+      "late earlier private sequence transaction commits after bookmark",
+      "page expiry and login/recreation preserve publication boundary",
+      "complete nonredacted chain and current collection/row authority",
+      "finite quotas and independent incident writes",
+      "concurrent issuance, immutable frame, idle deduplication"
+    ]
+  },
+  "gateway": {
+    "prs": [
+      66,
+      67
+    ],
+    "candidate": "a9c4d3c29c945df9fa3967c516d331ac55ff604f",
+    "merge": "c0eb82a2dfd02396d597517e2fc6adb648c68c86",
+    "runs": [
+      38128964827,
+      38128962673
+    ],
+    "pythonPassed": 330,
+    "pythonSkipped": 2,
+    "authorizationPairwise": "PASS",
+    "realApisixOidc": "PASS",
+    "bookmarkTestGroups": 12,
+    "proofs": [
+      "captured frame integrity",
+      "legacy undigested scopes fail closed",
+      "same publication boundary reuses live token after idle login/resume",
+      "current authorization, quotas, history gap and expiry"
+    ]
+  },
+  "limits": {
+    "privateOwnerPrimitives": true,
+    "publicBookmarkTransport": false,
+    "globalVector": false,
+    "clientReceipt": false,
+    "operatorCheckpoint": false,
+    "historyCompactor": false,
+    "targetHostingHa": false,
+    "targetApplied": false,
+    "r10Touched": false,
+    "consultationRecorded": false
+  }
+}

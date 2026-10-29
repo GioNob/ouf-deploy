@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/semantic-publication-set-v1.json",
+  "title": "OUF SemanticPublicationSet v1",
+  "type": "object",
+  "required": [
+    "publicationSetId",
+    "version",
+    "sequence",
+    "status",
+    "publishedAt",
+    "artifacts",
+    "manifestHash"
+  ],
+  "properties": {
+    "publicationSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PUBLISHED",
+        "ACTIVE",
+        "SUPERSEDED",
+        "RETIRED"
+      ]
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "semantic-publication-member-v1.json"
+      },
+      "minItems": 1
+    },
+    "manifestHash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "manifest is canonical, deterministic and SHA-256 identified",
+    "membership becomes immutable after PUBLISHED/ACTIVE",
+    "ACTIVE pointer switch is atomic",
+    "runtime pins one exact publication set for the whole processing unit",
+    "historical resolve never falls back to latest/ACTIVE"
+  ],
+  "x-ouf-note": "The PET uses both 'checksum' in early examples and 'manifestHash' in the contract freeze. This schema standardizes the exact membership checksum as manifestHash while retaining version as the consumer pin."
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.postboot-json-stop-operator-evidence.v1",
+  "source": "operator pasted redacted result",
+  "contextPath": "/etc/ouf/deploy-snapshots/source-revision-postboot-prepared-q7bq1ex3",
+  "logPath": "/home/oufadmin/ouf-source-revision-postboot.LeOgnxSY/run.log",
+  "sourceCommit": "6c5d54953a661b0a01ad54a9aea52d5f23b8cbc1",
+  "deliveryCommit": "55e236da98b45321750dae570723234285df7b3f",
+  "checksObserved": [
+    "BEGIN",
+    "QUALIFIED_LIBRARIES_LOADED",
+    "PRIVATE_CONTEXT"
+  ],
+  "complete": false,
+  "exceptionClass": "UpdateDenied",
+  "failureLocation": "tools.source_revision_update.configuration.visit:85",
+  "reasonInferredFromExactQualifiedSource": "UNREVIEWED_OWNER_JSON_NAMESPACE",
+  "rejectedPropertyKnown": false,
+  "newContextCustodyIndependentlyRead": false,
+  "runtimeAuthorityIssued": false,
+  "automaticRetry": false,
+  "budgetReset": false,
+  "technicalPhases": 8,
+  "functionalMilestones": 4,
+  "propertyDiagnosticQualification": {
+    "sourceCommit": "2f5e21d6a13b68ab9a0844992281df8f85781531",
+    "runId": 39164070132,
+    "jobId": 117783229045,
+    "testsPassed": 11,
+    "status": "completed",
+    "conclusion": "success",
+    "scriptSha256": "22209dfec60a0578ca4fddb31fc3554fc23836b46448b3d1ef01792011b3bdac",
+    "targetReadPerformed": false
+  }
+}

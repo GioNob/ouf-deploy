@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.ingestion-administrative-stop-cloud-observation.v1",
+  "reportedAtLocal": "2026-10-19T10:33:53+02:00",
+  "reportedStop": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "exceptionClass": "ValueError",
+    "reason": "PRIVATE_DETAILS_REDACTED",
+    "runtimeCompletionProven": false,
+    "schema": "ouf.ingestion-read-administrative-stop.v1",
+    "status": "STOP_RECONCILE"
+  },
+  "executedDeliveryCommit": "b836891c7c899c549482f81945046ad592b92f6f",
+  "nativePhase": "UNKNOWN_PENDING_READ_ONLY_RECONCILIATION",
+  "privatePreparationCompletionProven": false,
+  "administrativeEffectCountsKnown": false,
+  "relaunchAllowed": false,
+  "diagnosis": {
+    "script": "scripts/read-ingestion-administration-stop.py",
+    "stageRun": 39222837925,
+    "onlyPreClaimAstPrefix": true,
+    "installerOrRuntimeMainCalled": false,
+    "filesystemWritesDeniedByAudit": true,
+    "networkAndChildProcessesDeniedByAudit": true,
+    "humanCredentialFilesOpened": 0,
+    "qualificationLocalTests": 8,
+    "targetDiagnosisExecuted": false,
+    "qualificationCI": {
+      "run": 39224438289,
+      "job": 117967183765,
+      "tests": 8,
+      "status": "PASS"
+    },
+    "sourceCommit": "2d5739281ab33f024a560e340838c75f58d629e8",
+    "scriptSha256": "069c189f29344ad4e508c0a78db246abf07b2abd1befaa4c99e3fe6f0fc35134"
+  },
+  "completedInstallationReadbackReplayed": false,
+  "technicalPhasesProven": 8,
+  "functionalMilestonesProven": 4,
+  "petConsulted": [
+    "Matrix1.7 §1",
+    "Authorization1.5 §109.6",
+    "Onboarding-THS1.6 THS-A02/A08/A09"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "acceptedSixteenInputsReused": true,
+  "approvalRef": "OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7",
+  "approvedAt": 1791566382,
+  "approvedExecutorSha256": "6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0",
+  "automaticRetryAuthorized": false,
+  "cleanupReplayAuthorized": false,
+  "containerIds": {
+    "adapter": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+    "southbound": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916"
+  },
+  "daemonRestartAuthorized": false,
+  "dependencyValidUntil": "2026-10-10T06:33:47Z",
+  "expiresAt": 1791573582,
+  "expiresAtLocal": "2026-10-09T21:19:42+02:00",
+  "generalSudoGranted": false,
+  "humanMessage": "Approvo",
+  "maximumExecutions": 1,
+  "notReleaseAcceptance": true,
+  "operationalMandateSeconds": 240,
+  "origin": "EXPLICIT_HUMAN_MESSAGE_IN_CURRENT_CONVERSATION",
+  "preparedExecutorCommit": "4c1b74c96d54e02f2d18f1248c0e1ea7a02ed46b",
+  "preparedExecutorSha256": "d8701f210d46cc882a785d05ab4959f23d62f857338804cda1b2bdeff78d443f",
+  "priorClaimsAndEvidencePreserved": true,
+  "providerLeaseAuthorized": false,
+  "reportedAt": "2026-10-09T19:19:42+02:00",
+  "reviewCommit": "cdd64ccfbf85bd38b4e4ebfa224587e59cab5ad2",
+  "reviewRef": "OUF_PROVIDER_AUDITED_RECOVERY_REVIEW_20261009_R7",
+  "schema": "ouf.semantic-provider-audited-recovery-human-approval.v1",
+  "scope": "ONE_FRESH_R7_SIGNED_PUBLICATION_AND_CONTROLLED_TWO_CID_COHORT",
+  "sourceClosureHash": "4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02",
+  "targetExecutionObserved": false
+}

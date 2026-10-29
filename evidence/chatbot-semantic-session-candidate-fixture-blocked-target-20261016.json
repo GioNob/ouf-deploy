@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.chatbot-semantic-session-candidate-fixture-blocked-target.v1",
+  "source": "OPERATOR_SUPPLIED_OUTPUT",
+  "preparerCommit": "8bcd9165385732549590bd750589aeb980194707",
+  "complete": false,
+  "reason": "NATIVE_PUBLICATION_CONTRACT_FAILED",
+  "candidatePublicationReached": false,
+  "pureScopeCompilationReached": true,
+  "privateReviewHash": "beefc7f2ee79fa70c5b416d6d3efe68d3b08d15f9bb07c96c3e837995b627803",
+  "runtimeAuthorityIssued": false,
+  "credentialFilesRead": 0,
+  "grantRequests": 0,
+  "serviceMutations": 0,
+  "budgetReset": false,
+  "automaticRetry": false,
+  "acceptanceGranted": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 0,
+  "locallyReproducedFixtureDefect": "MKDIR_0750_MASKED_TO_0700_UNDER_UMASK077",
+  "fixScope": "NEW_TEMPORARY_FIXTURE_DIRECTORY_ONLY",
+  "nativeUidGidQualificationProven": false
+}

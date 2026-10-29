@@ -1,0 +1,123 @@
+{
+  "schema": "ouf.existing-descriptor-draft-lookup-qualification.v1",
+  "qualificationOnly": true,
+  "targetResultReceived": false,
+  "runtime": {
+    "commit": "59fabcd9ca7545d876018c4e7d623774f846c0d5",
+    "path": "scripts/lookup-existing-descriptor-draft-20261025.py",
+    "sha256": "e2c61cb91291307a5b403ca2132b23ef927a8645a7356441ca963c610a565ec9"
+  },
+  "delivery": {
+    "commit": "7c8b152524c5b0c9d1d018e99a0ded3e0cc29f3e",
+    "path": "releases/lookup-existing-descriptor-draft-20261025.sh",
+    "sha256": "dde584912687df443beb17484324c0c7eacf3789672acad2ecc86998ddf59aba"
+  },
+  "ci": [
+    {
+      "event": "push",
+      "runId": 40233966844,
+      "jobId": 121291445850,
+      "conclusion": "success",
+      "directLogsRead": true,
+      "protocolTests": 18,
+      "nativeTests": 11,
+      "skips": 0
+    },
+    {
+      "event": "pull_request",
+      "runId": 40233970355,
+      "jobId": 121291455639,
+      "conclusion": "success",
+      "directLogsRead": true,
+      "protocolTests": 18,
+      "nativeTests": 11,
+      "skips": 0
+    }
+  ],
+  "realChecks": [
+    "Docker daemon API1.44 and native PostgreSQL17",
+    "exact owner V15/V16/V26 DDL; INSERT without revision produces0",
+    "one stdin-fed read-only repeatable-read query under retained runtimeRole; forbidden UPDATE rejected with42501",
+    "role without schema permission rejected",
+    "creator/tenant/full candidate JSONB equality; zero and multiple matches retained and denied",
+    "PostgreSQL generation drift before query prevents dispatch; after query retains receipt",
+    "root reading exact synthetic user600 review/state; no prior controller executed",
+    "actual root umask077 copier0400/dir0700, hash and root isolated execution; actual nonroot read denied; second copy rejected",
+    "owner GET transport closed to ACTIVE and one UUID; permanent denial blocks query, postquery revocation preserves evidence",
+    "finite transient GET backoff with jitter and Retry-After; no SQL retry, no reset",
+    "raw draft response and UUID durably retained before guard",
+    "all106 synthetic grants preserved; original administrative counters inherited"
+  ],
+  "syntheticComponents": [
+    "CI IAM token/account decisions",
+    "CI owner HTTP API responses and authorization decisions",
+    "CI policy/grants/old approval history/draft UUIDs"
+  ],
+  "primaryOwnerSource": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+    "files": [
+      "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminApi.java",
+      "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationAdminService.java",
+      "src/main/resources/db/migration/V15__authorization_policy_registry.sql",
+      "src/main/resources/db/migration/V16__authorization_admin_lifecycle.sql",
+      "src/main/resources/db/migration/V26__protected_superadmin_role.sql"
+    ]
+  },
+  "nativeProfile": {
+    "path": "/etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6/current-onboarding-database-snapshot-v1/snapshot-inputs.json",
+    "sha256": "000bf9de27a5a89d6132c2e594650282818957d322baa7b9166762fd0ac0eb0c",
+    "physicalTransportOnly": true,
+    "historicalAuthorityReused": false,
+    "currentApplicationConfigurationPrecedenceFullyProven": false,
+    "liveOwnerPolicyAndExactDraftRequired": true
+  },
+  "limits": {
+    "secondsAfterLogin": 90,
+    "iamSeconds": 600,
+    "iamMetadataGets": 1,
+    "iamPosts": 121,
+    "engineGets": 2,
+    "nativeSqlSessionAttempts": 1,
+    "containerExecAttempts": 1,
+    "maximumMatchingRows": 2,
+    "newAdministrativeWrites": 0,
+    "previewPosts": 0,
+    "publishRequests": 0,
+    "credentialFileReads": 0,
+    "originalCounters": {
+      "administrativeWrites": 6,
+      "ownerGets": 6,
+      "previewPosts": 0,
+      "bytes": 346780
+    },
+    "maximumCumulativeOwnerGets": 30,
+    "maximumCumulativeOwnerResponseBytes": 33554432,
+    "sqlStatementMs": 5000,
+    "sqlLockMs": 1000,
+    "sqlIdleMs": 5000
+  },
+  "previousCiFailuresPreserved": [
+    {
+      "commit": "633b701059ffe9ae2a50fc5f9be83a50af642457",
+      "runId": 40233401983,
+      "reason": "CI pg_isready accepted temporary initdb server before target database existed; fixed final TCP SELECT readiness"
+    },
+    {
+      "commit": "b6a2e5a0a3b59b83d79d1b2fdfe4522358137f96",
+      "runId": 40233588765,
+      "reason": "overstrict stderr guard rejected exact harmless libpq PGPASSFILE=/dev/null warning; fixed only exact warning, unknown stderr still denied"
+    }
+  ],
+  "targetScope": "/etc/ouf/deploy-snapshots/acquisition-existing-draft-lookup-5a31ae519ef9ee4e-v1",
+  "targetScopeExecutionReceived": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "continuationAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "registryWorkerTouched": false,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0
+}

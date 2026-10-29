@@ -1,0 +1,50 @@
+name: MCP reprocessing migration preflight qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/read-chatbot-semantic-mcp-reprocessing-preflight-20261016.py
+      - scripts/qualify-semantic-mcp-reprocessing-preflight.py
+      - tests/test_semantic_mcp_reprocessing_preflight_reader.py
+      - .github/workflows/semantic-reprocessing-preflight.yml
+  pull_request:
+    paths:
+      - scripts/read-chatbot-semantic-mcp-reprocessing-preflight-20261016.py
+      - scripts/qualify-semantic-mcp-reprocessing-preflight.py
+      - tests/test_semantic_mcp_reprocessing_preflight_reader.py
+      - .github/workflows/semantic-reprocessing-preflight.yml
+permissions: {contents: read}
+jobs:
+  native-postgres-and-bounded-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: mcp, POSTGRES_PASSWORD: mcp, POSTGRES_DB: preflight_fixture}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U mcp -d preflight_fixture"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      MCP_DATABASE_URL: postgres://mcp:mcp@localhost:5432/preflight_fixture?sslmode=disable
+      MCP_TEST_DATABASE_URL: postgres://mcp:mcp@localhost:5432/preflight_fixture?sslmode=disable
+      OUF_SYNTHETIC_PREFLIGHT_QUALIFICATION: POSTGRESQL17_FIXTURE_ONLY
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-mcp-server
+          ref: f249b3dcc58c2a96742092d90fa09fd90b705bd0
+          path: baseline
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with: {go-version: '1.26.9', cache-dependency-path: baseline/go.sum}
+      - name: Qualify bounded readback projection and unchanged readers
+        run: sudo python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p 'test_semantic_mcp_*reader.py' -v
+      - name: Initialize actual twelve-migration baseline in synthetic database
+        working-directory: baseline
+        run: go run ./cmd/ouf-mcp migrate
+      - name: Read native catalog facts and verify membership projection
+        run: python3 -I -B scripts/qualify-semantic-mcp-reprocessing-preflight.py

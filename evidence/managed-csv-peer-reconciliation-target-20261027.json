@@ -1,0 +1,70 @@
+{
+  "schema": "ouf.managed-csv-peer-reconciliation-target-evidence.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "origin": "OPERATOR_SUPPLIED_COMPLETE_OUTPUT_READ_IN_FULL",
+  "result": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "captureAccounting": {
+      "cumulativeCounts": {
+        "bytes": 1153763,
+        "engineGets": 27,
+        "privateMetadataReads": 8
+      },
+      "currentScopeCounts": {
+        "bytes": 670087,
+        "engineGets": 27,
+        "privateMetadataReads": 5
+      },
+      "retainedConsumedScopeCounts": {
+        "bytes": 483676,
+        "engineGets": 0,
+        "privateMetadataReads": 3
+      }
+    },
+    "cohortSize": 13,
+    "complete": true,
+    "containerWrites": 0,
+    "contextPath": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1",
+    "counts": {
+      "bytes": 670087,
+      "engineGets": 27,
+      "privateMetadataReads": 5
+    },
+    "credentialFileReads": 0,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "currentJobOrBudgetStateObserved": false,
+    "historicalAuthorityReused": false,
+    "humanBudgetsGranted": 0,
+    "imageImports": 0,
+    "inputsHash": "14a96f782827c8948fabd857d9e3958cbe588a38dc9bd0968c342467f09ca9c1",
+    "installationSigningKeysRead": false,
+    "newGrantsGranted": 0,
+    "oauthRequests": 0,
+    "releaseAcceptance": false,
+    "resumes": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.managed-csv-recovery-input-capture-result.v1",
+    "sourceActivations": 0,
+    "sqlSessions": 0,
+    "status": "MANAGED_CSV_RECOVERY_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED",
+    "targetRoles": [
+      "onboarding",
+      "mcp"
+    ]
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "allThreeRoot400ChecksumsPassed": true,
+  "protectedCodeDirectory": "/usr/local/lib/ouf-managed-csv-peer-reconcile-16b86a69f9c0ecf3",
+  "deliveryDirectory": "/home/oufadmin/ouf-managed-csv-peer-reconcile-delivery.ZWHbJGo8",
+  "deliveryLog": "/home/oufadmin/ouf-managed-csv-peer-reconcile-delivery.ZWHbJGo8/bootstrap.log",
+  "scopeConsumed": true,
+  "automaticReplayAllowed": false,
+  "applicationE2EProven": false,
+  "newAuthorityIssued": false,
+  "next": "Use captured inputs14a96f... as immutable provenance for a NEW metadata/image-only conditional plan preparation. Do not replay original capture, reconciliation, publishers or successful V36 APPLY. No current domain job/policy/readiness proof."
+}

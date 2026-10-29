@@ -1,0 +1,32 @@
+{
+  "schema": "ouf.resolution-ths-configuration-continuation-qualification.v1",
+  "sourceCommit": "d830edbcdbf41c495672833b86aa698546e215a6",
+  "packageCommit": "d2cbd3d27cb0e6486b67258152a322bb2e3c2453",
+  "ciRun": 39029245665,
+  "ciJob": 117386201568,
+  "tests": 26,
+  "failures": 0,
+  "skipped": 0,
+  "retainedPreparation": "/etc/ouf/deploy-snapshots/resolution-config-execution-e1zic7co",
+  "observedStop": "HUMAN_OAUTH_REVOKED_OR_PERMANENT_OR_UNKNOWN",
+  "oldPreparationAuthorityIssued": false,
+  "oldPreparationServiceMutations": 0,
+  "newSourceTargetExecuted": false,
+  "newPolicyWorkerStarted": false,
+  "failedRefreshReplayAllowed": false,
+  "oldCredentialsReusable": false,
+  "preserveCumulativeOAuthAttempts": true,
+  "maximumCumulativeOAuthAttempts": 128,
+  "maximumGatewayWrites": 3,
+  "sameImageOnly": true,
+  "maximumExecutionSeconds": 900,
+  "launcherSha256": "113bedf981f820a70985b483e45905da55054fce0ab20482c264b706d13293b0",
+  "packageSha256": "2262cd3114d8878297c6e62b813216e82639bebc12d3a18c33484cac2e3be29b",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "limits": [
+    "Received failed refresh is not independently proven revocation",
+    "Real target effective authorization and all13materializations remain unproven",
+    "Docker/netns/crypto qualification uses synthetic application and Admin HTTP contracts"
+  ]
+}

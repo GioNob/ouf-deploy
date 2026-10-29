@@ -1,0 +1,14 @@
+name: Ingestion rollout checkpoint delivery
+on:
+  push:
+    branches: [feat/chat-only-recovery-package-20261018]
+    paths: ['scripts/launch-ingestion-rollout-checkpoint-read-20261019.sh', 'tests/test_ingestion_rollout_checkpoint_delivery.py', '.github/workflows/ingestion-rollout-checkpoint-delivery.yml']
+permissions: {contents: read}
+jobs:
+  immutable-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_ingestion_rollout_checkpoint_delivery.py -v

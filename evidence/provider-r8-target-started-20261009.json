@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.semantic-r8-target-started-receipt.v1",
+  "reportedAt": "2026-10-09T21:11:30+02:00",
+  "observationSource": "OPERATOR_PASTED_OUTPUT",
+  "independentlyAcquiredFromVps": false,
+  "executorCommit": "54fbdf91ec61759704a47712cef5627d0127e842",
+  "executorSha256": "b8ca937be96cb92bd98519b837cc6c661ef22977be0a6668b7209b06b3a2caf9",
+  "launcherCommit": "82216a569763e1c604c88b892c635bc0cf6a0850",
+  "launcherSha256": "cadf60374c540e0195a1fedabff7f3b3648c28b181ff2e6ae28fef07158123b4",
+  "approvalRef": "OUF_PROVIDER_PREPARED_MOUNTPOINT_APPROVED_20261009T203804_CEST_R8",
+  "recoveryExit": 0,
+  "bootstrapExit": 0,
+  "receipt": {
+    "acceptedEmptyMountPlaceholders": {
+      "adapter": 6,
+      "southbound": 3
+    },
+    "automaticRetryPerformed": false,
+    "candidates": {
+      "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+        "adapterJournalHash": "73b1a6e1acaa3f86e1f3e9ccab28455786c41245419d584a5f81961c20ddf772",
+        "adapterState": "STARTED",
+        "nativeDenialReason": null,
+        "stateHash": "706e136d4a1d527a72decf9e19afedad48eda16d53895bc49c5e8abd467dd792"
+      },
+      "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+        "adapterJournalHash": "d13db4342dc696f0b4c3fce72763de30ca993aa90eaacf38eb5501b392e2b4a7",
+        "adapterState": "STARTED",
+        "nativeDenialReason": null,
+        "stateHash": "bf65686cd78979b6be70840a14e3084f599ab162c3142fdfa4b9d7bc33bbfdd1"
+      }
+    },
+    "containerLifecycleOperations": null,
+    "contextDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-approved-context-mf9x0eqd",
+    "daemonRestartRequested": false,
+    "daemonRestarted": false,
+    "doNotRerunApply": true,
+    "dockerStartRequests": 2,
+    "freshReviewDirectory": "/etc/ouf/deploy-snapshots/semantic-r7-rootfs-read-8zs3k9wz",
+    "maintenanceWrapperRestored": true,
+    "notReleaseAcceptance": true,
+    "postMaintenanceGuard": {
+      "candidateStateHashes": {
+        "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": "c24e76441100b442d6d0e0ea4f35f99ad5f240ff23803d73e7c9a951a7eed206",
+        "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": "0e9ecdbe10c3d67251032bb315c1b5ce8e1f1ae7ee1aa64f8d0efae30839a795"
+      },
+      "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "containerLifecycleOperations": 0,
+      "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+      "kernelTableName": "ouf_sem_provider",
+      "lockInodePreserved": true,
+      "notReleaseAcceptance": true,
+      "providerSetsEmpty": true
+    },
+    "priorR7EvidencePreserved": true,
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "providerLeaseIssuedByOrchestrator": false,
+    "schema": "ouf.semantic-provider-cohort-activation.v1",
+    "signaturesIssued": 0,
+    "sourcePackage": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-source-prepared-9jhyd181",
+    "startAuthorized": false,
+    "status": "TWO_CANDIDATE_RUNTIME_STARTED",
+    "taskDeleteRequests": 2
+  },
+  "interpretation": {
+    "r8ApprovalConsumed": true,
+    "rerunForbidden": true,
+    "containerRunningReadbackReported": true,
+    "applicationHealthNotProvenByReceipt": true,
+    "providerLeaseNotGrantedByOrchestrator": true,
+    "providerDiscoveryNotExecutedByThisTask": true,
+    "roleSigningTotalsNotEstablishedByOuterCounters": true,
+    "reasonForCounterQualification": "Outer R8 REPORT initializes zeros; execute_transaction returns a cohort report without aggregating role issuance. Preserve reported zeros but do not use them as transaction-wide totals.",
+    "aggregatePrivateKeyReads": null,
+    "aggregateSignaturesIssued": null,
+    "currentAfterStartGuardNotEstablishedByPostMaintenanceGuard": true,
+    "postMaintenanceGuardPhase": "AFTER_TASK_REMOVAL_BEFORE_NEW_TRANSACTION",
+    "inferredOutputRoot": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd",
+    "outputRootInferenceSource": "Executor derivation from context directory; not a separate field of the pasted receipt",
+    "notReleaseAcceptance": true
+  }
+}

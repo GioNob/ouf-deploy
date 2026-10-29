@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.discovery.protected-binding-launcher-delivery-correction.v1",
+  "observedAt": "2026-10-10T14:44:15+02:00",
+  "status": "CHECKSUM_DENIED_BEFORE_EXECUTION",
+  "rootReadExecuted": false,
+  "sudoInvoked": false,
+  "launcherCommit": "e42721c2b9f3e15fd1c32c2165cde206eaa31248",
+  "launcherPath": "releases/replacement-protected-bindings-read-20261010.sh",
+  "publishedBlobSha": "498c8f6558535a851e3c34dbe4333135032a4d44",
+  "publishedBytes": 2098,
+  "correctPublishedSha256": "598c1d946f5860f4765a78d509bea4590b6ef854bdc8bcf016e5d4fa699cafd3",
+  "incorrectLocalSha256": "b6711ea8442ae27e1930bc7e148e1c02d374cdeea9610e3c884ba13f67e2a7bc",
+  "cause": "Local apply_patch artifact had one extra trailing newline; published Git blob has one final newline. No script code changes.",
+  "dependencyBlobsAndSha256Verified": true,
+  "integrityCheckRetained": true,
+  "readOnlyRetrySafe": true,
+  "notReleaseAcceptance": true
+}

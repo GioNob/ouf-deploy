@@ -1,0 +1,23 @@
+name: Stage8 exact production delivery reproduction
+on:
+  push:
+    branches: [feat/csv-e2e-owner-composition-20261020]
+    paths: ['scripts/*ingestion-stage8*','releases/ingestion-readiness-stage8-*.json','evidence/ingestion-readiness-stage8-production-pins-*.json','tools/ingestion_readiness_patch_execution/stage8_production.py','tests/test_readiness_patch_stage8_governance.py','.github/workflows/readiness-stage8-production.yml']
+  pull_request:
+    paths: ['scripts/*ingestion-stage8*','releases/ingestion-readiness-stage8-*.json','evidence/ingestion-readiness-stage8-production-pins-*.json','tools/ingestion_readiness_patch_execution/stage8_production.py','tests/test_readiness_patch_stage8_governance.py','.github/workflows/readiness-stage8-production.yml']
+permissions: {contents: read}
+jobs:
+  exact-production-caches:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12','3.13.5']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - name: Reproduce every pinned production case capsule and cached launcher
+        run: python3 -I -B -S -m unittest discover -s tests -p test_readiness_patch_stage8_governance.py -k every_exact -v

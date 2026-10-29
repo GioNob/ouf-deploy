@@ -1,0 +1,128 @@
+name: Scoped Ingestion readiness candidate packages
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths: ['.github/workflows/ingestion-readiness-candidates.yml', 'scripts/package-ingestion-readiness-candidate.py', 'scripts/materialize-ingestion-readiness-route.py', 'releases/ingestion-readiness-candidate-20261017.json']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: onboarding
+            repository: ouf-source-onboarding
+            commit: 382cbec488bf219d28326c9d59df4a4b95ac6876
+          - module: ingestion
+            repository: ouf-ingestion-runtime
+            commit: f869d8b86b892a0c03c147dac9bb40cd5f873ff2
+          - module: gateway
+            repository: ouf-api-gateway
+            commit: 425a0377c278ff52e00ce962ffd24809ee66f2e5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {path: deploy, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/${{ matrix.repository }}
+          ref: ${{ matrix.commit }}
+          path: source
+          persist-credentials: false
+      - name: Install exact Gateway materializer dependencies
+        if: matrix.module == 'gateway'
+        run: python3 -m pip install -r source/requirements-dev.txt
+      - name: Build exact source candidate without target access
+        run: python3 deploy/scripts/package-ingestion-readiness-candidate.py build --source source --module '${{ matrix.module }}' --output package
+      - name: Scan exact Java image
+        if: matrix.module != 'gateway'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: ouf-cohort-${{ matrix.module }}:${{ matrix.commit }}
+          format: json
+          output: package/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Scan exact Gateway dependencies
+        if: matrix.module == 'gateway'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: fs
+          scan-ref: package/gateway-scan
+          format: json
+          output: package/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Export source-locked candidate and verify every file
+        run: |
+          python3 deploy/scripts/package-ingestion-readiness-candidate.py export --source source --module '${{ matrix.module }}' --output package
+          cd package
+          sha256sum --check SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ingestion-readiness-part-${{ matrix.module }}-${{ github.run_id }}
+          path: package/
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0
+      - name: Retain bounded failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ingestion-readiness-denial-${{ matrix.module }}-${{ github.run_id }}
+          path: |
+            package/diagnostics.json
+            package/trivy-image.json
+            package/package-record.json
+          retention-days: 30
+  aggregate:
+    needs: package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions: {contents: read, id-token: write}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: {pattern: 'ingestion-readiness-part-*', path: complete/parts}
+      - name: Verify exact three module packages before sealing
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path('complete');lock=json.load(open('releases/ingestion-readiness-candidate-20261017.json'))
+          for row in lock['modules']:
+              part=root/'parts'/('ingestion-readiness-part-'+row['module']+'-'+os.environ['GITHUB_RUN_ID'])
+              manifest=json.loads((part/'candidate-manifest.json').read_text())
+              assert manifest['sourceCommit']==row['commit'] and manifest['module']==row['module']
+              assert manifest['targetApplyAuthorized'] is False
+              assert manifest['sourceLockSha256']==hashlib.sha256(Path('releases/ingestion-readiness-candidate-20261017.json').read_bytes()).hexdigest()
+              for line in (part/'SHA256SUMS').read_text().splitlines():
+                  wanted,relative=line.split('  ',1);path=part/relative
+                  assert not Path(relative).is_absolute() and '..' not in Path(relative).parts and not path.is_symlink()
+                  assert hashlib.sha256(path.read_bytes()).hexdigest()==wanted
+          assert len(list((root/'parts').iterdir()))==3
+          (root/'source-lock.json').write_bytes(Path('releases/ingestion-readiness-candidate-20261017.json').read_bytes())
+          files=sorted(p for p in root.rglob('*') if p.is_file())
+          (root/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(root))+'\n' for p in files))
+          PY
+      - uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
+        with: {cosign-release: v3.1.3}
+      - name: Attest publisher identity without issuing target authority
+        run: |
+          cosign sign-blob --yes --bundle complete/SHA256SUMS.sigstore.json complete/SHA256SUMS
+          cosign verify-blob complete/SHA256SUMS --bundle complete/SHA256SUMS.sigstore.json --certificate-identity "https://github.com/GioNob/ouf-deploy/.github/workflows/ingestion-readiness-candidates.yml@$GITHUB_REF" --certificate-oidc-issuer https://token.actions.githubusercontent.com --certificate-github-workflow-repository GioNob/ouf-deploy --certificate-github-workflow-sha "$GITHUB_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ingestion-readiness-candidates-${{ github.run_id }}
+          path: complete/
+          retention-days: 30
+          compression-level: 0

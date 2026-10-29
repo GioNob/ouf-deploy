@@ -1,0 +1,45 @@
+{
+  "schema": "ouf.udp-resolution-native-update-qualification.v1",
+  "sourceCommit": "198d0bd9c2968f1fa5bfa61d1c7da8efab2c13bb",
+  "runId": 39035231628,
+  "jobId": 117403587830,
+  "conclusion": "success",
+  "tests": 23,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "nativeDocker": true,
+  "realRootCustody": true,
+  "realExistingRoleSignatures": true,
+  "syntheticApplicationAndGatewayFixtures": true,
+  "scope": {
+    "applications": [
+      "udp"
+    ],
+    "maximumGatewayWrites": 0,
+    "newPolicyWorkerStarted": false,
+    "identityDecisionsAllowed": false,
+    "databaseMigrationsAllowed": false,
+    "maximumExecutionSeconds": 900,
+    "maximumEffectAttemptsPerStage": 1
+  },
+  "candidateRunId": 39034093831,
+  "candidateArtifactId": 12101592347,
+  "packageSha256": "7206968444cf40b778efc75b7bb4243d1ba26aeebf800de60c9c0de87ae46903",
+  "targetDeploymentPerformed": false,
+  "endToEndResolutionAccessProven": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 2,
+  "installationSpecific": true,
+  "independentMultiHostQualificationProven": false,
+  "delivery": {
+    "commit": "0b35f5b77809cf2c3b3f3446a25fbea09e0ea24e",
+    "runId": 39035578424,
+    "jobId": 117404579373,
+    "tests": 3,
+    "conclusion": "success",
+    "launcherSha256": "6f053134dca15c5ebc9464db017bbdd8d4868879a9a6c04f73862da3502d1b8a",
+    "remoteLauncherBytesRechecked": true,
+    "all45SourceBlobsMatchQualifiedRef": true
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.semantic-provider-r5-human-approval-witness.v1",
+  "approvalRef": "OUF_PROVIDER_V2_BROKER_SOURCE_RECOVERY_HUMAN_APPROVAL_20261009_130246",
+  "approvedAt": 1791543766,
+  "humanMessage": "approvo",
+  "reviewCommit": "41494d032de58822733a513a598d883788176832",
+  "implementationCommit": "600415529f5761f4c8c9bcf9c9396e39f0ae7896",
+  "sourceClosureHash": "702403e9cd99ddc4ddeed7166f3f408c55657fc690e475e0b35bb5d2c2242bb3",
+  "scope": "Exact reviewed two-source repair and one controlled recovery; reuse all sixteen accepted inputs and retained bridges; no cleanup or automatic retry.",
+  "targetExecutionObserved": false,
+  "notReleaseAcceptance": true
+}

@@ -1,0 +1,41 @@
+name: Detached MCP recovery immutable delivery
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['releases/recover-acquisition-detached-mcp-20261025.sh','.github/workflows/acquisition-detached-recovery-delivery.yml']
+  pull_request:
+    paths: ['releases/recover-acquisition-detached-mcp-20261025.sh','.github/workflows/acquisition-detached-recovery-delivery.yml']
+permissions: {contents: read}
+jobs:
+  download-root-copy-and-no-original-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real immutable download and protected copy; absent production scope must STOP before authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n releases/recover-acquisition-detached-mcp-20261025.sh
+          sudo install -d -m 700 /etc/ouf /etc/ouf/deploy-snapshots
+          set +e
+          bash releases/recover-acquisition-detached-mcp-20261025.sh > /tmp/ouf-residual-delivery-ci.log 2>&1
+          OUF_DELIVERY_RC=$?
+          set -e
+          cat /tmp/ouf-residual-delivery-ci.log
+          test "$OUF_DELIVERY_RC" = 2
+          sudo python3 -I -S -B - <<'PY'
+          import hashlib,json,stat
+          from pathlib import Path
+          root=Path('/etc/ouf/deploy-snapshots/acquisition-detached-recovery-code-4633a0f61b564aa4')
+          raw=(root/'sources.json').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='4633a0f61b564aa4a50abba6ae41467a4648a3dbdb34d9f4d41b01672aea5d70'
+          manifest=json.loads(raw);assert len(manifest)==19
+          assert set(p.name for p in root.iterdir())==set(manifest)|{'sources.json'}
+          for name,digest in manifest.items():
+              path=root/name;s=path.lstat();assert s.st_uid==s.st_gid==0 and stat.S_IMODE(s.st_mode)==0o400 and s.st_nlink==1
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==digest
+          assert not Path('/etc/ouf/deploy-snapshots/acquisition-read-apply-5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591').exists()
+          print(json.dumps({'schema':'ouf.synthetic-detached-delivery-ci.v1','complete':True,'realPinnedSourceDownloads':19,'protectedRootCopyVerified':True,'isolatedEntrypointStoppedWithoutOriginalScope':True,'newRuntimeAuthority':False,'newRuntimeEffects':False,'productionRuntimeAccess':False}))
+          PY

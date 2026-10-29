@@ -1,0 +1,68 @@
+name: Native V11 private plan and original-byte Engine qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/native-v11-plan.yml
+      - scripts/prepare-native-v11-plan.py
+      - tools/semantic_application_cutover/rebase_native_manifest.py
+      - tests/test_native_v11*.py
+      - tests/native_v11_plan_native.py
+      - tests/native_v11_cutover_executor.py
+      - tests/test_cutover_executor.py
+      - tools/semantic_application_cutover/cutover_executor.py
+      - tools/semantic_application_cutover/creation_adapter.py
+      - releases/native-v11-plan-20261011.sh
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  attestations: read
+jobs:
+  qualify:
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Byte custody, bounded parsing and native projection denials
+        run: python3 -m unittest discover -s tests -p 'test_native_v11*.py' -v
+      - run: python3 -m unittest discover -s tests -p test_cutover_executor.py -v
+      - run: python3 -m unittest discover -s tests -p test_semantic_creation_plan.py -v
+      - run: python3 -m unittest discover -s tests -p test_current_r12_custody_read.py -v
+      - name: Verify original publisher and every layer; compare actual hosted Engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          gh api repos/GioNob/ouf-semantic-registry/actions/artifacts/11710556577/zip > semantic.zip
+          if [ '${{ matrix.backend }}' = containerd ]; then
+            OUF_ENGINE_ROOT="$(mktemp -d "$RUNNER_TEMP/ouf-containerd-engine.XXXXXXXX")"
+            printf '%s\n' '{"features":{"containerd-snapshotter":true}}' > "$OUF_ENGINE_ROOT/daemon.json"
+            sudo dockerd --config-file "$OUF_ENGINE_ROOT/daemon.json" --data-root "$OUF_ENGINE_ROOT/data" \
+              --exec-root "$OUF_ENGINE_ROOT/exec" --pidfile "$OUF_ENGINE_ROOT/docker.pid" \
+              --host "unix://$OUF_ENGINE_ROOT/docker.sock" --bridge=none --iptables=false --ip6tables=false \
+              --ip-masq=false > "$OUF_ENGINE_ROOT/daemon.log" 2>&1 &
+            OUF_DAEMON_PID=$!
+            trap 'sudo kill "$OUF_DAEMON_PID" 2>/dev/null || true' EXIT
+            export OUF_CUSTODY_SOCKET="$OUF_ENGINE_ROOT/docker.sock" OUF_CUSTODY_MANIFEST_STORE=true
+            OUF_READY=false
+            for OUF_PROBE in {1..30}; do
+              if docker --host "unix://$OUF_CUSTODY_SOCKET" version --format '{{.Server.Version}}' > /dev/null 2>&1; then OUF_READY=true; break; fi
+              sleep 1
+            done
+            if [ "$OUF_READY" != true ]; then echo OUF_ISOLATED_FIXTURE_ENGINE_NOT_READY; exit 1; fi
+          fi
+          python3 tests/native_v11_plan_native.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-v11-plan-${{ github.run_id }}
+          path: native-v11-plan-qualification-receipt.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,90 @@
+{
+  "sha256": "97c7140eb114db415d5b98d44ecdf5e924ac3933cc071de0e140f4cf8e31655e",
+  "blob": "950b5b8994c651f955f4ac352abf9c19da6c42ad",
+  "bytes": 91092,
+  "declaration": {
+    "schema": "ouf.iam-explicit-api-delivery.v1",
+    "caseHash": "d75de37f607377620a8fe62ce9e6aff9cc54a7fcaa3477780ce4c040fa218141",
+    "sourceHashes": {
+      "api": "531ab7cade26b1cbaeed72ad3db6f57a838050e6d3418b4a4590e6c40b81246e",
+      "process": "70d607be21d70b26d36f8e0dc87088f6c44aa7ec74db5123878c867e446fb21e",
+      "reader": "fc3e01f0be9a9bbeefc1169e8f88f885d9ff86f7183aa185b25f9b07c33aaf91",
+      "files": "005d00847e9a86c25b06a301d4421f3f1de5aff6b896d69d0492b1d39702202b",
+      "journal": "43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d"
+    },
+    "bootstrapHash": "b9d12efbc60798353499349599e058c63cfae7fa168900f58012410bb7bf9e07",
+    "maximumSeconds": 240,
+    "maximumNewOAuthRequests": 1,
+    "maximumNewAdminGets": 4,
+    "maximumNewEngineGets": 2,
+    "originalEngineBudgetUnchanged": true,
+    "automaticLoginAllowed": false,
+    "refreshAllowed": false,
+    "runtimeAuthorityIssued": false
+  },
+  "launcherSha256": "b56bce948d5611a9ce73be46bb6096cd50e4edf44c2db8071e388fdb5a4842e3",
+  "launcherGitBlob": "ca5886901b7ad41b1fdc18933c69b5bd502643e9",
+  "targetExecuted": true,
+  "runtimeAuthorityIssued": false,
+  "sourceCommit": "3b205c44e983184e90baf31230b7f5ec1affb6b7",
+  "qualificationRunId": 39541264244,
+  "qualificationJobs": [
+    {
+      "python": "3.12",
+      "jobId": 119029299415,
+      "tests": 11,
+      "skips": 0,
+      "conclusion": "success",
+      "testsFinishedAt": "2026-10-21T03:56:38.6108210Z"
+    },
+    {
+      "python": "3.13.5",
+      "jobId": 119029299586,
+      "tests": 11,
+      "skips": 0,
+      "conclusion": "success",
+      "testsFinishedAt": "2026-10-21T03:56:51.2897650Z"
+    }
+  ],
+  "localPassed": 9,
+  "localPhysicalSkips": 2,
+  "realDockerAndControllingTtyQualified": true,
+  "realKeycloakProviderQualified": true,
+  "realKeycloakFixtureImage": "quay.io/keycloak/keycloak:26.2.5",
+  "realKeycloakFixtureScope": "DISPOSABLE_MASTER_REALM_ADMIN_CLI_NOT_TARGET_OUF_REALM",
+  "syntheticMasterToTargetRealmProtocolQualified": true,
+  "nativeFrozenGitBlobMatches": 115,
+  "retainedApiAndReconciliationSourcesUnchanged": true,
+  "productionMarginGuardUnchanged": true,
+  "requiredProductionTokenMarginSeconds": 930,
+  "reviewHash": "a3f8c162dd272e2486c35da7c00a2a96d0d810648a55ab876435f9a276e1dbf4",
+  "terminalConsentPhrase": "AUTORIZZO LETTURA IAM API a3f8c162dd272e2486c35da7c00a2a96d0d810648a55ab876435f9a276e1dbf4",
+  "regressionRuns": {
+    "human": 39541264048,
+    "capture": 39541264035,
+    "profiles": 39541264030,
+    "timing": 39541264098,
+    "originalIamReader": 39541264054,
+    "retainedContextReconciliation": 39541264162,
+    "production": 39541264004
+  },
+  "allRegressionConclusions": "success",
+  "initialRealProviderFailure": {
+    "sourceCommit": "1eaae33becab92fb8160bed9d0b62c0d97125b73",
+    "runId": 39540849781,
+    "reasonCode": "FRESH_ADMIN_PROVIDER_RESPONSE_CONTEXT_REQUIRED",
+    "causeConfirmedByPassingCorrectedRealProviderTest": "LIGHTWEIGHT_ACCESS_TOKEN_SUBJECT_NOT_ASSUMED_PRESENT_ID_TOKEN_RESPONSE_USED"
+  },
+  "currentProviderPolicyProven": true,
+  "notReleaseAcceptance": true,
+  "targetComplete": true,
+  "targetStatus": "CURRENT_ADMIN_IDENTITY_AND_IAM_POLICY_READ_NO_AUTHORITY",
+  "targetReceiptRef": "evidence/iam-explicit-api-target-20261021.json",
+  "targetContextPath": "/etc/ouf/deploy-snapshots/iam-policy-read-7120rnka/explicit-admin-api-successor",
+  "targetCumulativeAttempts": 283,
+  "targetRemainingAttempts": 5,
+  "currentProviderTimeoutMetadataRead": true,
+  "currentProviderRevocationPolicyProven": false,
+  "futureHumanIssuedLifetimeProven": false,
+  "mustNotReplay": true
+}

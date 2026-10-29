@@ -1,0 +1,54 @@
+{
+  "approvalRef": "OUF_PROVIDER_AUDITED_RECOVERY_APPROVED_20261009T191942_CEST_R7",
+  "approvalWitness": "evidence/provider-r7-human-approval-20261009.json",
+  "approvedExecutorCommit": "f869679b7bf81d930a925508e0fee48eab25612d",
+  "approvedExecutorSha256": "6ce5addae1df8a418bc3dfead347c5d6acbd51d5607c436260aadef741cbcfc0",
+  "ciGrantsAuthority": false,
+  "executorOnlyChanges": [
+    "APPROVAL_REF",
+    "APPROVED_AT",
+    "APPROVAL_EXPIRES_AT"
+  ],
+  "focusedRecoveryAndDeliveryTests": 14,
+  "independentlyAcquiredVpsEvidence": false,
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 113940171457,
+      "name": "native-authenticated-docker-cohort"
+    },
+    {
+      "conclusion": "success",
+      "id": 113940171759,
+      "name": "native-frame-profiles"
+    },
+    {
+      "conclusion": "success",
+      "id": 113940171778,
+      "name": "native-docker-creation-window"
+    },
+    {
+      "conclusion": "success",
+      "id": 113940171920,
+      "name": "profiles"
+    }
+  ],
+  "launcherCommit": "9b68070ae40a8fcc3752837b8d91be64ab38ebde",
+  "launcherSha256": "3bdf5318b8d83e2e52f4cd57b8e8429b75d75fa346285b6ab645dec318387d81",
+  "nativeAssertions": [
+    "PRODUCTION_PUBLICATION=PASS SIGNED_INPUTS=true EMPTY_RESULT_DIRECTORIES=true DIRECT_PRODUCTION_BROKER=true CI_ONLY=true TARGET_AUTHORITY=false",
+    "PUBLISHED_DOCKER_COHORT=PASS TWO_APPLICATION_MARKERS=true PRODUCTION_NODE_APPROVAL_PREPARER_DRIVER=true ROOTFS_ENTRIES=7521 ROOTFS_BYTES=264328608 CI_ONLY=true TARGET_AUTHORITY=false"
+  ],
+  "nativeJobLogSha256": "3b9ffd98cd9a9f952ea81fbb5e0e76fd74eb45caf1582700c9b0cd715033571c",
+  "notReleaseAcceptance": true,
+  "operatorCommandDeliveredForOneExecution": true,
+  "operatorCommandShellSyntaxPassed": true,
+  "profilesJobLogSha256": "1dec318f519bff32e18eafe1996c9cef016da2d61d84caefea60a14f991bf07b",
+  "remoteExecutorAndLauncherBytesMatched": true,
+  "runId": 37965938237,
+  "runtimeSourceClosureUnchanged": "4b9fbd3149b417a2a696302784aa54d0569b5e87ddc66ac439c153c9ab16bc02",
+  "schema": "ouf.semantic-provider-r7-approved-delivery-validation.v1",
+  "targetExecutionObserved": false,
+  "targetOperationsPerformedHere": 0,
+  "workflowConclusion": "success"
+}

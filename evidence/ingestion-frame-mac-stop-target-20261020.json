@@ -1,0 +1,16 @@
+{
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "checkpoint": {
+    "contextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-packet-reconcile-0wd4wyuf",
+    "phase": "COMPLETE_FRAME_TEMPLATES",
+    "retainedContextPath": "/etc/ouf/deploy-snapshots/ingestion-rollout-packet-kkj_njiz"
+  },
+  "complete": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "reasonCode": "ENDPOINT_MAC_ONLY_PROFILE_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.ingestion-rollout-private-packet-reconcile.v1",
+  "status": "STOP_RECONCILE"
+}

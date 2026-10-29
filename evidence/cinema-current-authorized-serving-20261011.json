@@ -1,0 +1,147 @@
+{
+  "schema": "ouf.csv-cinema-authorized-serving-evidence.v1",
+  "status": "CURRENT_BOUNDED_SERVING_PASS_EXACT_RUN_LINEAGE_JOIN_OPEN",
+  "observedDate": "2026-10-11",
+  "channel": "OUF_MCP_GATEWAY_UDP_OWNER",
+  "account": "ouf-admin",
+  "query": {
+    "type": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+    "pageSize": 20
+  },
+  "response": {
+    "itemCount": 8,
+    "nextCursor": null,
+    "partial": false,
+    "items": [
+      {
+        "urbanObjectId": "0418930b-0929-47fb-bab9-a1bc5d6d3fdb",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "070a6a44-a934-4f82-aec9-5723762fa908",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "44d19ec1-0b63-49c9-a758-da4b37e90f84",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "4594e467-cc1d-45f9-be3b-93ad3cc19d20",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "4613bce3-29c3-48f9-b2e7-882d7c9c4449",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "659eaa85-7f0b-49e2-bade-42728ebfb12d",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "65e7da72-6ff5-4b37-b9cb-54fc89a10a33",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      },
+      {
+        "urbanObjectId": "feb48d73-0195-4ddf-84b2-abdfb75cbc36",
+        "status": "ACTIVE",
+        "revision": 1,
+        "canonicalType": "https://api.ouf-lab.it/semantic/cinema#Cinema",
+        "visiblePropertyIris": [
+          "https://api.ouf-lab.it/semantic/cinema#nome",
+          "https://api.ouf-lab.it/semantic/cinema#indirizzo"
+        ]
+      }
+    ]
+  },
+  "historicalFixture": {
+    "assetId": "8ec8ae90-808a-4d9e-907c-d56de119e376",
+    "profileId": "4462692b-9c85-446b-b6fd-779f01eab64d",
+    "sourceId": "managed-cinema-8ec8ae90",
+    "sourceVersionId": "68394f42-5c82-4127-a1f3-126516665749",
+    "runId": "86809c17-3354-45ca-a7e6-57e903944b24",
+    "documentedRunState": "SUCCEEDED",
+    "documentedDurableAckCount": 8,
+    "documentedLineageCount": 8,
+    "documentedMaterializedObjectCount": 8,
+    "schedule": "TRIGGER_ONCE_CONSUMED_DISABLED",
+    "evidenceDate": "2026-10-01",
+    "freshlyReverified": false
+  },
+  "semanticReference": {
+    "semanticId": "https://api.ouf-lab.it/semantic/cinema",
+    "revisionId": "51706bed-81e4-4306-aca1-70119821727d",
+    "publicationSetId": "f92a2e17-30c9-456f-bb12-63afa84f41e6",
+    "assertedStatementCount": 17,
+    "partial": false
+  },
+  "currentHistoryAndStatusReads": {
+    "capabilities": [
+      "ouf.ingestion.history",
+      "ouf.ingestion.status"
+    ],
+    "requiredOwnerCapability": "ingestion.operations.read",
+    "result": "AUTHORIZATION_DENIED",
+    "retryable": false,
+    "returnedWrapperCode": "INVALID_ARGUMENT",
+    "automaticRetryPerformed": false,
+    "alternativeAccountAttempted": false,
+    "grantOrRouteChanged": false
+  },
+  "mutations": {
+    "upload": 0,
+    "profile": 0,
+    "sourceActivation": 0,
+    "ingestionRun": 0,
+    "handoffReplay": 0
+  },
+  "limits": [
+    "Search proves current owner-authorized serving of eight objects of the exact published Cinema type with bounded complete pagination.",
+    "Historical October1 evidence proves delivery/materialization separately; result IDs have not yet been joined to that run through a current authorized lineage read.",
+    "No new Teatri source/run/object or new-candidate installation is inferred.",
+    "Property values are deliberately omitted from repository evidence.",
+    "Read denial does not prove which IAM/MCP/Gateway/owner layer denied or imply that adding a grant alone fixes readiness.",
+    "Search-specific negative authorization and independent storage byte/hash verification remain separate gates."
+  ]
+}

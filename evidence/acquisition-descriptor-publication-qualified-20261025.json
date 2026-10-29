@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.acquisition-descriptor-publication-qualified.v1",
+  "codeCommit": "3f0b407d01a34967e03e02ecc5bf441963704e7c",
+  "codeSHA256": "1cbb40dd80d9e258d55de530096fb139f7ae193df1a62c912ea24509f43ca284",
+  "deliveryCommit": "4ccff5b125e8fc9cb4ae2785807bb9677ba2bdc8",
+  "wrapper": "releases/publish-acquisition-read-descriptors-20261025.sh",
+  "wrapperSHA256": "810fac40f995797c50d9b6122d65b052070f9e1069bfacffd322db7b028fabbc",
+  "publicLoginDependency": {
+    "commit": "d2e80980f7575ce1e71627632eeba515441d84be",
+    "path": "/usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py",
+    "sha256": "062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad",
+    "usesLoginOnly": true,
+    "oldMainOrScopeReexecuted": false
+  },
+  "privateContext": "/home/oufadmin/ouf-acquisition-descriptor-publication-20261025",
+  "baseline": {
+    "policyRef": "ouf-lab-authorization:48",
+    "policyHash": "6209fe7a832a4b92fcd543304a5480edb85f6f66dfe8476245075509e2c7f46b",
+    "activeResponseHash": "5de0b80b176ab6cbcb4b0e933d7408558731610c50521c466736d7464578ef70"
+  },
+  "addedDescriptors": [
+    "ingestion.contract.read",
+    "ingestion.lineage.read",
+    "urban.object.read",
+    "lineage.object.read",
+    "lineage.property.read"
+  ],
+  "grantsAdded": 0,
+  "rolesOrAssignmentsEdited": 0,
+  "oauthConfigurationEdited": 0,
+  "qualification": {
+    "protocol": {
+      "localTests": 19,
+      "syntheticOwnerAndApprovalDecisions": true,
+      "realPtyParser": true,
+      "pushRun": 40224066964,
+      "pushJob": 121261613335,
+      "prRun": 40224071597,
+      "prJob": 121261626270,
+      "passed": true,
+      "skips": 0,
+      "directLogsRead": true
+    },
+    "delivery": {
+      "pushRun": 40224228906,
+      "pushJobs": [
+        121262089953,
+        121262089966
+      ],
+      "prRun": 40224232648,
+      "prJobs": [
+        121262100817,
+        121262100630
+      ],
+      "passed": true,
+      "directLogsRead": true,
+      "actualPinnedCodeDownload": true,
+      "rootPublicCopyAndUnprivilegedChecksum": true,
+      "actualRestrictiveRootUmask077": true,
+      "explicitFdMode0444": true,
+      "noTtyStopsBeforeLoginOrPrivateContext": true
+    }
+  },
+  "limits": {
+    "administrativeWrites": 7,
+    "previewPosts": 2,
+    "ownerGets": 160,
+    "iamMetadataGets": 1,
+    "iamPosts": 121,
+    "responseBytes": 5242880,
+    "totalBytes": 33554432,
+    "reviewAndExecutionSeconds": 900,
+    "totalSeconds": 1800,
+    "readAttemptsPerStage": 8,
+    "tokenExpiryFurtherRestrictsWindow": true
+  },
+  "humanApprovalOnlyExactRealTerminal": true,
+  "automaticMutationReplayAllowed": false,
+  "ambiguousMutationRemainsClaimed": true,
+  "automaticRollbackAllowed": false,
+  "targetPublicationExecuted": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

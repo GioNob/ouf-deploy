@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.semantic-token-static-public-facts-qualification.v1",
+  "sourceCommit": "d8c9f2c2a8e18d9cc19c8a910f6a2d338d084052",
+  "sourceSha256": "6f18f8809dfeaf6ed35a1e1e9e17e25b39e2c0ea641fedd34ac4538313823282",
+  "observedProducerSha256": "728b4c44d0e24b3c3bfc31769346c0c05752e870e93c096fac1c2897250e5c79",
+  "ciCommit": "5ea6d15d075fa19b69d863041b801ae88e3bc284",
+  "ciRun": 38280356209,
+  "ciJob": 114915882023,
+  "conclusion": "success",
+  "nativeBoundaryTestsPassed": 9,
+  "publicFactsTestsPassed": 3,
+  "skipped": 0,
+  "targetPublicFactsObserved": false,
+  "sourceAuthenticationProven": false,
+  "writerAuthorityProven": false,
+  "outputBindingProven": false,
+  "notReleaseAcceptance": true
+}

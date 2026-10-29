@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.semantic-provider-v2-stopped-creation-operator-outcome.v1",
+  "status": "BLOCKED",
+  "stage": "IMAGE_IMPORT_ADAPTER",
+  "reason": "BOUNDED_COMMAND_FAILED",
+  "sourceSnapshot": "/etc/ouf/deploy-snapshots/semantic-v2-creation-source-8kXA9P5O",
+  "snapshotDirectory": "/etc/ouf/deploy-snapshots/semantic-provider-v2-stopped-create-a2kbzv6l",
+  "sourceHash": "998c43c244be4fe8aca229114580577a0800a9c7b230dc0eec89dd7d61661d05",
+  "imageImportOutcome": "UNDETERMINED",
+  "candidateCreationReached": false,
+  "doNotRerunApply": true,
+  "startAuthorized": false,
+  "acceptanceGranted": false
+}

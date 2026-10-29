@@ -1,0 +1,16 @@
+# Protected policy-token source staging — 12 October 2026
+
+Source87cd35823536905f4c286e44f1630fd46468cd70; [CI38302541520](https://github.com/GioNob/ouf-deploy/actions/runs/38302541520) SUCCESS53 tests/zero skips.9 new source-stage cases plus10 existing real-crypto authority cases,23 token/worker,6 mount and5 compiler cases. [Qualification](../evidence/semantic-token-protected-source-stage-qualified-20261012.json).
+
+ProtectedTokenSourceStage reuses existing CutoverAuthority (explicit finite HUMAN hash and both DEPLOYMENT_INTENT/FINAL_DEPLOYMENT_APPROVAL signatures) and atomic_review_intake no-replace publication. The approved sourceClosureHash must equal the complete declaration: exact source bytes/hashes/commit, closed filenames, destination and independently supplied destination device/inode. No lambda/default authority or hash-only bypass. Root:root0700 destination/protected ancestry must already exist; no shared parent creation/chown/chmod.
+
+Candidate source bodies are compiled for syntax, never imported/executed. A complete root700/root600 source intake is published atomically. A root600 durable intent precedes effects and owns an exclusive invocation fence. An interrupted attempt with no final artifact blocks restaging, including new worker objects/job IDs. Exact completed publication after a checkpoint gap is reconciled without rewriting; an empty/foreign final is denied. The claim remains retained; no automatic cleanup, reset or replacement. Clock/duration cap<=120seconds and current authority are checked before/after checkpoints and local signature verification. This single-attempt preparation profile deliberately has no automatic retry.
+
+The native9-case fixture proves real crypto, root custody, atomicity, revocation before publication, source/destination mismatch, no source-body execution, no-op/credential-slot denial, publication gap and incomplete-attempt blocking. Decisions/signing keys are synthetic disposable fixtures, not target authority. The first standalone fixture failed because owner imports replaced the tools namespace; source package lookup is now bound after the existing owner fixture bootstrap. Intent writes are included in protectedFileWrites.
+
+This component stages a private flat source package ONLY. It is not an executable installed worker: credential re-establishment, installed-owner binding, executable module layout/entry/reporter, governed session advancement and unit registration remain open. It opens no credential/private signing key, changes no unit, invokes no grant/provider, initializes no recovery journal and leaves R12 untouched. It never issues authority or promotes source staging to application readiness.
+
+No VPS execution/installation has been performed. The real current HUMAN/raw authority/approved declaration are mandatory inputs for target staging; repository development permission and disposable CI signatures do not provide them. No apply-ready VPS launcher or completed CSV result is claimed.
+
+
+A competing publisher is also tested while the first intent fence is held: it fails non-blockingly before another source publication. The final53-test run includes19 source/authority cases (9 new stage and10 existing authority),23 token/worker,6 mount and5 compiler; zero skips. The stage component remains source-only, not a complete executable/runtime installer.

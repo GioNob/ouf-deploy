@@ -1,0 +1,26 @@
+name: OUF composed native pause and release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_application_cutover/native_evidence_store.py
+      - tools/semantic_application_cutover/runtime_adapters.py
+      - tools/semantic_application_cutover/creation_adapter.py
+      - tests/test_native_evidence_store.py
+      - tests/native_runtime_executor.py
+      - .github/workflows/native-runtime-executor.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Private phase payload custody and no replacement
+        run: python3 -m unittest discover -s tests -p test_native_evidence_store.py -v
+      - name: Actual pause and release controller process deaths
+        run: python3 tests/native_runtime_executor.py

@@ -1,0 +1,4051 @@
+OPEN URBAN FRAMEWORK (OUF)
+PROGETTO ESECUTIVO TECNOLOGICO
+SEMANTIC MODEL / REGISTRY
+System of record della semantica OUF: ontologie, vocabolari, relazioni, riferimenti storici e publication set — progetto esecutivo development-ready
+Campo
+Valore
+Versione documento
+1.3 — Implementation Readiness Consolidation / DEVELOPMENT READY
+Data
+Settembre 2026
+Stato
+DEVELOPMENT READY v1.3 — baseline architetturale v1.2 invariata; contratti, BOM, configuration, failure/recovery, DR, observability, compatibility, CI/CD e integration gates allineati al gold standard Ingestion.
+Modulo
+Semantic Model / Registry
+Ruolo
+System of record della semantica OUF; non contiene istanze urbane operative
+Principio
+Discovery on demand; Registry persistente solo per artefatti adottati o in adozione formale
+Decisione architetturaleIl Semantic Model / Registry conserva esclusivamente semantica OUF adottata, governata o in processo formale di adozione. Ontologie e vocabolari esterni non adottati non vengono catalogati stabilmente: sono ricercati on demand dal Semantic Discovery e restano candidati effimeri fino a una decisione di adozione.
+Executive delta v1.3 — Implementation Readiness Consolidation
+La v1.3 assume l’Ingestion Runtime v1.2 come gold standard di completezza esecutiva e non modifica il ruolo del Semantic Model / Registry come system of record della TBox OUF. La revisione consolida artefatti contrattuali machine-readable, physical persistence ownership, failure taxonomy, retry/circuit breaker, lifecycle dei job, support window N/N+1, security/input hardening, configuration catalog, technology BOM, capacity/load profile, backup/restore, observability, runbook, CI/CD, evidence package e gate cross-module di risoluzione dei SemanticReference. Le dipendenze esterne di piattaforma sono environment bindings verificabili e non decisioni lasciate al fornitore del modulo.
+Executive delta v1.2 — Cross-Module Alignment Freeze
+La v1.2 costituisce un delta deliberatamente leggero. Il Semantic Model / Registry resta il system of record della TBox OUF: ontologie, classi, proprietà, vocabulari controllati, concept, relation semantics, publication set, revisioni e provenance semantica. L'allineamento con UDP v1.2, Ingestion Runtime v1.2 EF, Source Onboarding & Configuration v1.3 EF, Authorization & Access Control v1.3 EF e Urban API Gateway v1.2 EF congela soprattutto i riferimenti semantici stabili nei Candidate Urban Object/lineage/replay e i confini di ownership. Il Registry NON diventa owner di authority, DataAccessLabel, ChangeRepresentationProfile, object resolution, query planning, Query Complexity Governor, capability routing o Agent retry/remediation.
+1. Scopo del documento
+Questo documento definisce la baseline esecutiva tecnologica v1.2 del modulo Semantic Model / Registry dell’Open Urban Framework. La v1.2 incorpora integralmente la baseline precedente e chiude il delta della Cross-Module Alignment Matrix v1.1 senza ampliare il perimetro funzionale: il Registry resta system of record della TBox, dei vocabolari e delle relation semantics, con PublicationSet e SemanticReference immutabili e storicamente risolvibili. Sono esplicitati i confini con Onboarding, Ingestion, UDP, Authorization, Gateway e futuro MCP/Agent Host.
+Obiettivo della baselineFissare una struttura tecnologica coerente e implementabile senza anticipare complessità non necessarie: nessun knowledge graph runtime nel Registry, nessun catalogo permanente di ontologie esterne non adottate e nessun graph database obbligatorio nella prima implementazione.
+1.1 Risultati attesi
+• API-first registry di classi, proprietà, relazioni, vocabolari e concetti.
+• Ricerca semantica sul patrimonio OUF già adottato.
+• Semantic Discovery on demand quando il Registry non contiene un artefatto adeguato.
+• Workflow governato di proposta, revisione, adozione, pubblicazione, deprecazione e ritiro.
+• Riferimenti semantici stabili e versionati consumabili da Source Onboarding, ETL/ingestion, UDP e MCP.
+• Serializzazione RDF/OWL/SKOS interoperabile senza vincolare la persistenza a un triple store.
+1.2 Non-obiettivi
+• Non contiene gli oggetti urbani istanziati né le loro relazioni runtime: questi appartengono a Urban Data Platform / Urban Object Registry.
+• Non conserva i mapping source-field→property o source-value→concept: questi appartengono a Source Onboarding & Configuration.
+• Non esegue object resolution o matching fra istanze.
+• Non è un motore ETL e non interroga direttamente i verticali operativi.
+• Non costruisce una ontologia universale della città prima dell’onboarding delle fonti.
+• Non adotta automaticamente artefatti trovati sul web o in repository esterni.
+2. Posizionamento architetturale
+SOURCE ONBOARDING & CONFIGURATION      │ search / select / gap      ▼SEMANTIC MODEL / REGISTRY      │ stable semantic references      ├────────► ETL / INGESTION      ├────────► URBAN DATA PLATFORM / OBJECT REGISTRY      └────────► MCP / governed capabilitiesExternal semantic repositories      ▲      │ on-demand search onlySEMANTIC DISCOVERY      │      └──► candidate(s) → review/adoption → Registry
+2.1 Confini
+Funzione
+Semantic Model / Registry
+Altro modulo
+Definire ouf:Dehor
+SÌ — artefatto semantico adottato
+—
+Definire ouf:locatedOn, domain/range
+SÌ
+—
+Mappare SUO.cod_via → ouf:locatedOn
+NO
+Source Onboarding
+Associare DEHOR-471 → STREET-123 / SQUARE-045
+NO
+UDP / Object Registry + resolution runtime
+Trovare una ontologia esterna candidata
+Semantic Discovery
+—
+Conservare permanentemente candidato non adottato
+NO
+nessuno; solo cache tecnica effimera
+Pubblicare riferimenti ACTIVE
+SÌ
+consumer runtime
+3. Principi architetturali
+ID
+Principio
+Vincolo esecutivo
+SEM-01
+System of record unico
+Ogni artefatto semantico OUF ufficiale è identificato e governato nel Registry.
+SEM-02
+Reuse → Align → Extend
+Prima si riusa; poi si allinea; si estende OUF solo se necessario.
+SEM-03
+Catalogo interno ristretto
+Persistenza permanente solo per artefatti adottati/in adozione formale.
+SEM-04
+Discovery dinamica e provider-based
+Le fonti esterne sono interrogate on demand; i candidati restano temporanei finché non vengono adottati.
+SEM-05
+TBox ≠ ABox
+Il Registry governa schema/conoscenza; le istanze operative vivono nella UDP.
+SEM-06
+API-first
+Nessun consumer accede direttamente al database.
+SEM-07
+Versioning esplicito
+Breaking semantic change non modifica silenziosamente una semantica ACTIVE.
+SEM-08
+Human governance
+AI può proporre/valutare; l’adozione/publish ad alto impatto richiede autorità umana.
+SEM-09
+Technology Reuse
+PostgreSQL e componenti OSS condivisi prima di introdurre nuovi prodotti.
+SEM-10
+Interoperabilità
+Import/export RDF/OWL/SKOS; SHACL opzionale, senza dipendenza obbligatoria da graph DB.
+SEM-11
+Identità ≠ location
+L’identità primaria di un artefatto esterno è il canonical URI; repository e URL fisici sono origine tecnica, non semanticId.
+SEM-12
+Snapshot immutabile
+Ogni adozione esterna congela contenuto, media type, hash, origine e revisione tecnica per riproducibilità.
+SEM-13
+No auto-update
+Una modifica upstream non cambia mai automaticamente il modello ACTIVE; genera una change notice e una valutazione d’impatto.
+SEM-14
+No destructive withdrawal
+Un ritiro upstream non cancella la semantica già adottata da OUF; la copia locale resta risolvibile per compatibilità e audit.
+4. Architettura interna del modulo
+Semantic Model / Registry Service│├─ Semantic Artifact Registry├─ Ontology Registry├─ Vocabulary Registry├─ Relationship Registry├─ Semantic Search├─ Semantic Discovery├─ Governance & Versioning├─ Domain Validation├─ Optional SHACL interoperability└─ Publication APIPersistence: PostgreSQLInterchange: RDF / OWL / SKOS / JSON; SHACL opzionaleExternal calls: through Urban API Gateway
+4.1 Componenti logici
+Componente
+Responsabilità
+Non fa
+Artifact Registry
+CRUD governato e identificazione degli artefatti
+mapping source-specific
+Ontology Registry
+namespace, moduli ontologici, import, versioni
+istanze urbane
+Vocabulary Registry
+vocabolari e concetti controllati
+mapping valori sorgente
+Relationship Registry
+domain/range, inverse, cardinalità e metadati
+creazione di edge runtime
+Semantic Search
+ricerca interna su ACTIVE/DEPRECATED e bozze autorizzate
+web crawling
+Semantic Discovery
+interroga provider esterni quando necessario
+catalogazione stabile dei candidati
+Governance & Versioning
+workflow, approval, deprecation, change impact
+workflow di onboarding fonte
+Validation
+consistenza, URI, riferimenti e vincoli applicativi; SHACL opzionale
+quality dei dati operativi
+Publication API
+snapshot/riferimenti immutabili consumabili
+esposizione diretta DB
+5. Modello di dominio
+5.1 Gerarchia degli artefatti
+SemanticArtifact├── Ontology├── SemanticClass├── SemanticProperty├── SemanticRelationship├── Vocabulary├── VocabularyConcept├── Constraint├── Equivalence└── SemanticRule
+5.2 Attributi comuni
+Campo
+Tipo
+Obbl.
+Descrizione
+semanticId
+string/URI
+SÌ
+Identificatore semantico stabile, es. ouf:Dehor.
+artifactType
+enum
+SÌ
+CLASS, PROPERTY, RELATIONSHIP, VOCABULARY, CONCEPT, ...
+namespace
+string
+SÌ
+Namespace gestito o adottato.
+localName
+string
+SÌ
+Nome locale leggibile e stabile.
+preferredLabel
+langString
+SÌ
+Etichetta principale.
+alternativeLabels
+langString[]
+NO
+Sinonimi/varianti linguistiche.
+description
+text
+SÌ
+Definizione semantica.
+status
+enum
+SÌ
+DRAFT, UNDER_REVIEW, ACTIVE, DEPRECATED, RETIRED.
+version
+string
+SÌ
+Versione logica dell’artefatto o del modulo ontologico.
+owner
+subject/ref
+SÌ
+Responsabile gestionale.
+authority
+subject/ref
+SÌ
+Autorità che approva la semantica.
+provenance
+json
+SÌ
+Origine: OUF-native, adopted, aligned, external authoritative.
+validFrom/validTo
+timestamp
+NO
+Validità temporale.
+createdAt/updatedAt
+timestamp
+SÌ
+Audit tecnico.
+revision
+integer
+SÌ
+Optimistic locking.
+6. Ontologie e modello attivo
+OUF non adotta una mega-ontologia monolitica. Il Registry deve supportare più moduli ontologici coerenti, namespace distinti e import controllati. Un tipo urbano può essere descritto mediante più classi compatibili, purché la multi-classificazione sia esplicita e semanticamente coerente.
+EsempioUn Dehor può essere classificato come ouf:Dehor, urban:PublicSpaceOccupation e geo:Feature. Il Registry conserva le classi e gli allineamenti; Source Onboarding decide quali riferimenti usare per uno specifico tipo sorgente.
+6.1 Politica di adozione
+• Riutilizzare artefatti già ACTIVE nel Registry.
+• Valutare standard/autorevolezza esterna solo in assenza di corrispondenza adeguata.
+• Preferire allineamento/equivalenza a duplicazione semantica.
+• Creare un artefatto OUF-native solo quando nessun artefatto esterno o interno soddisfa il requisito.
+• Documentare sempre la motivazione di una nuova estensione OUF.
+7. Controlled Vocabularies
+I vocabolari controllati sono artefatti governati di primo livello. Il Registry gestisce il significato canonico dei concetti; Source Onboarding conserva i mapping dai codici nativi delle fonti ai concetti adottati.
+Vocabulary: economicActivityType  ├─ retail.neighbourhood  ├─ retail.medium  └─ retail.largeSource Onboarding mapping (fuori dal Registry):  SUAP.tipo_attivita = "02" → economicActivityType:retail.medium
+7.1 Modello Concept
+Campo
+Descrizione
+conceptId
+Identificatore stabile nel vocabolario.
+code
+Codice canonico esposto ai consumer.
+preferredLabel
+Etichetta principale multilingua.
+alternativeLabels
+Sinonimi e alias.
+broader/narrower
+Gerarchia SKOS-like.
+exactMatch/closeMatch
+Allineamenti verso concetti esterni.
+status
+Lifecycle del concetto.
+validity
+Intervallo di validità se applicabile.
+8. Relazioni semantiche
+Le relazioni sono entità semantiche di primo livello e non semplici proprietà stringa. Il Registry definisce il significato e i vincoli della relazione; la UDP materializza gli edge fra istanze.
+SemanticRelationshipsemanticId: ouf:locatedOndomain: ouf:Dehorrange: ouf:UrbanPlacecardinality: 0..Nstatus: ACTIVE
+Regola TBox/ABoxSemantic Model / Registry: “Dehor locatedOn UrbanPlace”. Urban Object Registry: “DEHOR-000471 locatedOn STREET-00123” e, se applicabile, “DEHOR-000471 locatedOn SQUARE-00045”. Non confondere mai definizione semantica e relazione istanziata.
+8.1 Validazioni relazionali
+• domain e range devono riferire classi esistenti e non RETIRED;
+• inverse deve essere coerente e non creare cicli semantici incoerenti;
+• cardinalità e constraint devono essere compatibili con la definizione pubblicata;
+• breaking changes richiedono nuova versione e impact analysis.
+9. Lifecycle e governance
+DRAFT  ↓ submitUNDER_REVIEW  ├─ reject → DRAFT  └─ approve/publish → ACTIVE                         ↓                    DEPRECATED                         ↓                      RETIRED
+9.1 Regole di stato
+Stato
+Utilizzabile runtime
+Modificabile
+Note
+DRAFT
+NO
+SÌ
+Lavoro editoriale/proposta.
+UNDER_REVIEW
+NO
+Solo correzioni controllate
+In attesa di decisione.
+ACTIVE
+SÌ
+Solo non-breaking o nuova versione
+Riferimento ufficiale.
+DEPRECATED
+SÌ, con warning
+NO
+Ancora risolvibile per compatibilità.
+RETIRED
+NO per nuovi usi
+NO
+Solo storico/audit.
+9.2 Autorità e approvazione
+L’AI può proporre artefatti, confrontare candidati, suggerire equivalenze e motivare una scelta. Non può autonomamente trasformare una proposta in semantica ACTIVE. La pubblicazione è una capability privilegiata del modulo e richiede identità umana autorizzata; quando integrata nell’esperienza AI, la conferma passa da trusted approval surface e IAM OUF.
+10. Semantic Search
+La ricerca interna deve essere veloce e autosufficiente, senza consultare provider esterni. Ricerca per label, alias, URI, descrizione, tipo, namespace, broader/narrower, domain/range e stato.
+10.1 API di ricerca
+GET /api/semantic/v1/search?q=dehor&type=CLASS&status=ACTIVEGET /api/semantic/v1/classes?label=streetGET /api/semantic/v1/relationships?domain=ouf:DehorGET /api/semantic/v1/vocabularies/{id}/concepts?q=retail
+10.2 Ranking minimo
+Segnale
+Peso indicativo
+exact semanticId/localName
+molto alto
+preferredLabel exact/prefix
+alto
+alternativeLabel
+medio-alto
+description full-text
+medio
+namespace/ontology affinity
+medio
+status ACTIVE
+boost
+DEPRECATED
+penalty
+La v1.0 usa PostgreSQL full-text search + pg_trgm. Non viene introdotto Elasticsearch/OpenSearch finché volumi e requisiti non lo giustificano.
+11. Semantic Discovery
+La Discovery viene invocata solo quando la ricerca interna non restituisce una semantica adeguata. È un processo on demand e provider-based. I risultati esterni sono candidati temporanei, non artefatti del Registry.
+Onboarding / Semantic Editor      ↓ search internalSemantic Registry      ↓ no adequate matchDiscoveryRequest      ↓Discovery Provider Adapters  ├─ schema.gov.it / cataloghi nazionali  ├─ EU vocabularies / repository configurati  └─ altri provider autorizzati      ↓CandidateSet (temporary)      ↓ compare/rank/explainHuman decision  ├─ reject → discard  └─ adopt → DRAFT artifact → review → ACTIVE
+11.1 Persistenza dei candidati
+Decisione approvataNessun catalogo permanente dei candidati esterni non adottati. È ammessa esclusivamente una cache tecnica con TTL per performance e ripetibilità della sessione di discovery. Scaduto il TTL, il candidato viene ricalcolato dal provider.
+Oggetto
+Persistenza
+Retention
+DiscoveryRequest
+SÌ
+audit e riproducibilità
+CandidateSet
+cache tecnica
+TTL configurabile, default 24h
+Raw external payload
+opzionale/cache
+TTL breve, mai fonte ufficiale
+AdoptionProposal
+SÌ
+fino a decisione + audit
+Rejected external candidate
+NO catalogo
+solo impronta/decision reference se necessario per audit
+Adopted artifact
+SÌ
+Registry governato
+11.2 Ranking discovery
+• match lessicale e semantico con il bisogno dichiarato;
+• compatibilità di domain/range o datatype;
+• autorevolezza del provider;
+• licenza/riusabilità;
+• stabilità/versionamento della risorsa;
+• adozione precedente di namespace correlati in OUF;
+• assenza di conflitti con semantica ACTIVE.
+12. Validation e consistenza
+Ogni artefatto candidato alla pubblicazione viene validato tecnicamente e semanticamente tramite regole applicative del dominio. SHACL è supportato come formato interoperabile opzionale quando presente nell’asset sorgente o utile a export/gap analysis, ma non è requisito per la v1.0, non è usato come filtro obbligatorio della Semantic Discovery e non può causare da solo lo scarto di un candidato semanticamente valido.
+Check
+Esempio
+Bloccante
+URI/semanticId uniqueness
+nessun duplicato ACTIVE incompatibile
+SÌ
+Reference integrity
+domain/range esistenti
+SÌ
+Status compatibility
+non dipendere da RETIRED
+SÌ
+Vocabulary hierarchy
+no broader cycle illegittimo
+SÌ
+Label/description completeness
+label IT + definizione
+SÌ
+External provenance
+origine e licenza se adottato
+SÌ
+Domain validation; SHACL conformance solo se esplicitamente richiesta
+shape valida e serializzabile
+SÌ
+Equivalence conflict
+exactMatch incompatibile
+SÌ
+13. Publication model
+I consumer runtime non devono dipendere da bozze o da query aperte sul modello editoriale. Il modulo pubblica viste/versioni immutabili del modello attivo.
+13.1 Semantic Publication Set
+SemanticPublicationSet{  "publicationId": "sem-pub-2026-08-001",  "version": "2026.08.1",  "status": "ACTIVE",  "artifacts": [    {"semanticId":"ouf:Dehor","version":"1.0"},    {"semanticId":"ouf:locatedOn","version":"1.0"},    {"semanticId":"ouf:UrbanPlace","version":"1.0"}  ],  "checksum": "sha256:...",  "publishedAt": "..."}
+Il Publication Set non duplica necessariamente tutti i payload nel database; materializza un insieme immutabile e verificabile di revisioni pubblicate. Source Onboarding può referenziare semanticId + version o un publicationId compatibile.
+14. Contratti API
+14.1 Resource API
+Metodo
+Endpoint
+Scopo
+GET
+/api/semantic/v1/search
+ricerca interna
+GET
+/api/semantic/v1/artifacts/{semanticId}
+risoluzione artefatto
+POST
+/api/semantic/v1/classes
+crea bozza class
+POST
+/api/semantic/v1/relationships
+crea bozza relazione
+POST
+/api/semantic/v1/vocabularies
+crea vocabolario
+POST
+/api/semantic/v1/discovery-requests
+avvia discovery esterna
+GET
+/api/semantic/v1/discovery-requests/{id}
+stato/candidati
+POST
+/api/semantic/v1/adoption-proposals
+trasforma candidato in proposta
+POST
+/api/semantic/v1/artifacts/{id}:submit
+invia a review
+POST
+/api/semantic/v1/artifacts/{id}:approve
+approva
+POST
+/api/semantic/v1/publications
+pubblica set
+POST
+/api/semantic/v1/artifacts/{id}:deprecate
+depreca
+GET
+/api/semantic/v1/publications/{id}
+recupera publication set
+14.2 Error model
+{  "errorCode": "SEMANTIC_REFERENCE_CONFLICT",  "message": "...",  "correlationId": "...",  "details": { ... }}
+Codice
+HTTP
+Significato
+SEMANTIC_NOT_FOUND
+404
+Riferimento inesistente.
+SEMANTIC_NOT_ACTIVE
+409
+Artefatto non utilizzabile runtime.
+SEMANTIC_REFERENCE_CONFLICT
+409
+Conflitto con artefatto esistente.
+VALIDATION_FAILED
+422
+Vincoli semantici/strutturali non soddisfatti.
+DISCOVERY_PROVIDER_UNAVAILABLE
+503
+Provider esterno non disponibile.
+DISCOVERY_NO_CANDIDATE
+200
+Discovery completata senza candidato adeguato.
+APPROVAL_REQUIRED
+403
+Operazione richiede approvazione umana.
+VERSION_CONFLICT
+409
+Optimistic lock / revisione superata.
+15. Persistenza
+La baseline v1.0 usa PostgreSQL 17.x come store primario. Il modello è relazionale per identità, lifecycle, versioni, governance e riferimenti; JSONB è usato solo per metadata variabili e serializzazioni tecniche. RDF/OWL/SKOS sono formati di interoperabilità, non il formato fisico obbligatorio dello store.
+15.1 Tabelle principali
+semantic_namespacesemantic_artifactsemantic_artifact_revisionsemantic_class_detailsemantic_property_detailsemantic_relationship_detailsemantic_vocabularysemantic_conceptsemantic_concept_relationsemantic_equivalencesemantic_constraintsemantic_discovery_requestsemantic_adoption_proposalsemantic_publicationsemantic_publication_itemsemantic_approval_decisionsemantic_audit_event
+15.2 DDL indicativo
+CREATE TABLE semantic_artifact (  id uuid PRIMARY KEY,  semantic_id text NOT NULL UNIQUE,  artifact_type varchar(32) NOT NULL,  namespace_id uuid NOT NULL REFERENCES semantic_namespace(id),  local_name text NOT NULL,  preferred_label jsonb NOT NULL,  description jsonb NOT NULL,  status varchar(24) NOT NULL,  current_revision integer NOT NULL DEFAULT 1,  owner_subject text NOT NULL,  authority_subject text NOT NULL,  provenance jsonb NOT NULL,  created_at timestamptz NOT NULL DEFAULT now(),  updated_at timestamptz NOT NULL DEFAULT now(),  UNIQUE(namespace_id, local_name));CREATE INDEX idx_semantic_artifact_status_type  ON semantic_artifact(status, artifact_type);CREATE INDEX idx_semantic_artifact_search  ON semantic_artifact USING gin  (to_tsvector('simple', coalesce(local_name,'') || ' ' || coalesce(preferred_label::text,'') || ' ' || coalesce(description::text,'')));
+15.3 Nessun graph DB obbligatorio
+Technology decisionNon viene introdotto Neo4j, GraphDB, Fuseki o altro graph/triple store come requisito di base. Se in seguito emergono requisiti reali di SPARQL federato, inferenza intensiva o traversal semantico su grandi volumi, il Registry potrà pubblicare/sincronizzare una proiezione RDF verso un componente condiviso.
+16. Stack tecnologico
+Layer
+Tecnologia baseline
+Motivazione
+Runtime
+Java 21 LTS + Spring Boot 3.x
+allineamento con Source Onboarding e baseline OUF
+API
+REST JSON + OpenAPI 3.1
+contratti espliciti e interoperabili
+Persistence
+PostgreSQL 17.x + Flyway
+riuso piattaforma, transazioni, JSONB, search
+Semantic library
+Apache Jena
+RDF/OWL/SKOS parsing e serialization; SHACL opzionale
+Search
+PostgreSQL FTS + pg_trgm
+evita motore dedicato nella v1.0
+Async discovery
+PostgreSQL job table + worker
+nessun broker dedicato iniziale
+IAM
+OIDC/OAuth2 via IAM OUF / Keycloak
+identità umane e M2M
+Secrets
+OpenBao o secret manager piattaforma
+nessun secret nel DB/app config
+Gateway
+Apache APISIX / Urban API Gateway
+confine di esposizione governato
+Deployment
+Kubernetes piattaforma OUF
+coerenza con i moduli core
+Telemetry
+OpenTelemetry
+riuso osservabilità condivisa
+16.1 Struttura applicativa
+it.comune.trieste.ouf.semantic├── api├── application│   ├── artifact│   ├── vocabulary│   ├── discovery│   ├── governance│   └── publication├── domain├── ports├── adapters│   ├── persistence│   ├── rdf│   ├── discovery│   ├── iam│   └── gateway└── worker
+17. Discovery Provider Framework
+La Discovery deve essere estendibile tramite adapter, senza codificare nel dominio i singoli repository. Ogni provider implementa un contratto uniforme e restituisce candidati normalizzati.
+interface SemanticDiscoveryProvider {  ProviderId id();  CandidatePage search(DiscoveryQuery query);  CandidateDetail fetch(CandidateRef ref);  ProviderHealth health();}
+17.1 Candidate normalizzato
+{  "provider": "schema-gov-it",  "candidateRef": "...",  "artifactType": "CLASS",  "uri": "...",  "label": {"it":"..."},  "description": {"it":"..."},  "license": "...",  "sourceAuthority": "...",  "score": 0.89,  "rationale": ["label-match","domain-compatible"]}
+Il candidateRef non è semanticId OUF e non può essere usato da runtime o onboarding come riferimento ufficiale finché non viene adottato.
+18. Integrazione con Source Onboarding
+1. Onboarding: search("dehor")2. Registry: nessun match adeguato3. Onboarding: create SemanticGap4. Registry/Discovery: search external providers5. AI/human: compare candidate(s)6. Human: choose candidate / choose OUF-native extension7. Registry: create DRAFT artifact8. Review + approval + publish9. Artifact becomes ACTIVE10. Onboarding resumes and stores semantic reference
+18.1 Contratto di riferimento
+{  "semanticId": "ouf:Dehor",  "artifactType": "CLASS",  "version": "1.0",  "status": "ACTIVE",  "publicationId": "sem-pub-2026-08-001"}
+Source Onboarding conserva i mapping specifici di fonte e referenzia artefatti ACTIVE; il Registry non conosce sourceId, typeCode o fieldCode salvo informazioni descrittive incluse in una richiesta di discovery.
+19. Integrazione runtime
+Consumer
+Uso del Registry
+Regola
+Connector/Adapter
+nessuna semantica decisionale; può leggere riferimenti inclusi nel bundle
+non effettua semantic mapping
+ETL/Ingestion
+applica mapping/configurazioni che referenziano semanticId
+non modifica Registry
+UDP/Object Registry
+valida classi/proprietà/relazioni istanziate
+ABox fuori dal Registry
+MCP Server
+espone capability che possono usare semanticId/conceptId
+nessun accesso DB diretto
+Source Onboarding
+search, discovery, adopt, reference
+system of record dei source mappings
+20. Sicurezza e controllo accessi
+Ruolo
+Permessi principali
+semantic.viewer
+search/read ACTIVE/DEPRECATED
+semantic.editor
+create/edit DRAFT
+semantic.reviewer
+review/comment/validate
+semantic.approver
+approve/reject
+semantic.publisher
+publish/deprecate/retire
+semantic.discovery.service
+invoke provider adapters, no publish
+service.onboarding
+search/read references + create discovery requests
+Le identità sono derivate dal token IAM. Actor/approver non viene accettato come dato autoritativo dal payload. Publish/deprecate/retire sono operazioni auditate e non vengono esposte come tool autonomamente invocabili da un AI Agent.
+20.1 Threat model focalizzato
+• adozione automatica di semantica esterna malevola o non autorevole;
+• confusione fra candidateRef esterno e semanticId ufficiale;
+• modifica non autorizzata di un artefatto ACTIVE;
+• deprecazione che rompe mapping già pubblicati;
+• provider discovery compromesso o indisponibile;
+• prompt injection in descrizioni/label recuperate esternamente;
+• esfiltrazione di secret/provider credential.
+Contromisura AI/DiscoveryTutti i testi esterni sono dati non fidati. Non possono alterare policy, autorizzazioni o workflow. Un candidato può diventare artefatto governato solo tramite normalizzazione, validazione e decisione di adozione.
+21. Transazioni e concorrenza
+• optimistic locking su revision e versioni;
+• publish atomico del SemanticPublicationSet;
+• nessuna chiamata HTTP a provider esterni dentro una transazione DB lunga;
+• discovery job idempotente con request fingerprint;
+• approval legata a revision/hash dell’artefatto; modifica successiva invalida l’approvazione;
+• deprecation impedita se impact analysis rileva consumer bloccanti senza policy di compatibilità.
+22. Osservabilità e audit
+Il modulo riusa la piattaforma OUF di osservabilità. Non introduce stack dedicati.
+Segnale
+Esempi
+Metriche
+search latency, discovery latency, provider error rate, publish count, validation failures
+Trace
+correlationId fra Onboarding → Registry → Discovery provider
+Log
+eventi tecnici strutturati senza secret
+Audit
+create/edit/submit/approve/publish/deprecate/retire, actor, hash, revision
+Alert
+provider failure persistente, publish failure, DB unavailable, queue stalled
+23. Performance e dimensionamento iniziale
+Il Registry gestisce metadati semantici, non dati urbani operativi: i volumi attesi sono relativamente piccoli. La priorità è consistenza e qualità dei contratti, non throughput massivo.
+Parametro
+Baseline v1.0
+Artefatti governati
+fino a 100.000 senza tecnologia aggiuntiva
+Concetti vocabolari
+fino a 1.000.000 complessivi con indici adeguati
+Search p95 target
+< 500 ms sul catalogo interno
+Read artifact p95
+< 200 ms
+Discovery
+asincrona; SLA dipende dai provider esterni
+Publication
+operazione rara, consistenza > velocità
+24. Deployment
+Il modulo viene distribuito come servizio applicativo OUF con API stateless e worker asincrono per discovery/import/validation pesanti. Entrambi usano lo stesso schema PostgreSQL e la stessa codebase, con profili runtime distinti.
+semantic-registry-api  replicas: 2 baseline  readiness: DB + migrations ready  liveness: process healthsemantic-registry-worker  replicas: 1 baseline  workload: discovery / import / validationPostgreSQL  shared platform service / dedicated schema+database logical boundary
+Un broker condiviso potrà sostituire la job table quando il core OUF selezionerà un Event Mesh comune; il modulo non introduce autonomamente Kafka/NATS/RabbitMQ.
+25. API Gateway e comunicazioni esterne
+Le API del modulo sono esposte ai consumer autorizzati tramite Urban API Gateway. Le chiamate del Semantic Discovery verso repository esterni transitano anch’esse dal profilo southbound del Gateway, così da centralizzare autenticazione, allowlist, TLS, rate limiting e audit tecnico.
+Onboarding / MCP / Admin client        ↓Urban API Gateway (northbound)        ↓Semantic Model / Registry        ↓Urban API Gateway (southbound)        ↓External semantic repository
+26. Discovery & Upstream Lifecycle — Contract Freeze
+La v1.0 rende esecutivo il ciclo completo degli artefatti semantici esterni: ricerca on demand, acquisizione controllata, adozione, snapshot immutabile, monitoraggio dell’origine, rilevazione delle variazioni, impact analysis e gestione di deprecazione o ritiro. Discovery e monitoraggio upstream sono due processi distinti e non devono condividere implicitamente stato editoriale o autorità.
+Decisione congelataDiscovery trova candidati. Il Registry governa solo ciò che OUF adotta. Upstream Lifecycle Monitoring osserva ciò che OUF ha già adottato, ma non modifica mai automaticamente il modello ACTIVE.
+26.1 Modello operativo della Discovery
+La Discovery viene attivata quando Semantic Search non restituisce un artefatto ACTIVE adeguato o quando un utente autorizzato richiede esplicitamente una ricerca esterna. La richiesta contiene il bisogno semantico, non istruzioni libere da eseguire sui provider.
+Internal Search → no adequate match        ↓DiscoveryRequest        ↓Provider Orchestrator        ↓[provider authoritative] → [provider secondary] → ...        ↓normalized CandidateSet (temporary)        ↓compare / explain / select        ↓AdoptionProposal        ↓review + approval        ↓immutable snapshot + DRAFT artifact        ↓validate → publish → ACTIVE
+Fase
+Input
+Output
+Persistenza
+1. Trigger
+semantic need + artifact type + optional domain/range
+DiscoveryRequest
+SÌ — audit/riproducibilità
+2. Search providers
+DiscoveryQuery normalizzata
+CandidateSet
+cache TTL
+3. Fetch candidate
+candidateRef
+raw payload + metadata
+cache breve
+4. Evaluate
+candidate + bisogno
+score + explanation
+Proposal se selezionato
+5. Adopt
+approved candidate
+ExternalOrigin + Snapshot + DRAFT
+SÌ
+6. Publish
+validated DRAFT
+ACTIVE artifact + PublicationSet
+SÌ, immutabile
+26.2 Provider priority e trust
+Ogni provider è configurato con trustLevel, tipi di artefatto supportati, meccanismo di interrogazione e policy di rete. Il ranking può usare il trustLevel, ma un provider autorevole non rende automaticamente adottabile qualunque candidato: restano obbligatorie compatibilità semantica, licenza e validazione.
+Trust level
+Uso
+Esempio
+AUTHORITATIVE
+prima scelta per asset ufficiali del dominio
+schema.gov.it / OntoPiA per risorse semantiche nazionali
+TRUSTED_STANDARD
+standard riconosciuti e repository istituzionali
+W3C, UE, organismi standard configurati
+CURATED
+fonti ammesse dall’amministrazione
+repository selezionati
+EXPLORATORY
+solo suggerimento; mai auto-adoption
+ricerca web controllata, se abilitata
+26.3 Provider OntoPiA / schema.gov.it
+Per gli asset semantici nazionali il provider deve trattare separatamente identità, discovery e acquisizione tecnica. Gli URI w3id.org/italia sono l’identità semantica persistente; schema.gov.it e gli endpoint/cataloghi ufficiali sono canali di discovery e metadatazione; il repository GitHub italia/dati-semantic-assets è una sorgente tecnica utile per struttura, serializzazioni e revisione Git. Il path GitHub non diventa semanticId OUF.
+Canale
+Ruolo nel provider
+Regola OUF
+Canonical URI w3id.org
+identità e dereferenziazione
+riferimento primario dell’artefatto esterno
+schema.gov.it / catalogo
+search, metadata e navigazione
+preferito per discovery ufficiale
+SPARQL endpoint ufficiale
+query machine-to-machine
+usato se disponibile e configurato
+Content negotiation HTTP
+fetch RDF/OWL/SKOS
+Accept esplicito; timeout e size limit
+GitHub dati-semantic-assets
+revisione tecnica e fallback controllato
+commit SHA registrato quando usato come origine
+GET https://w3id.org/italia/onto/CLVAccept: text/turtle→ RDF/Turtle della risorsa canonica→ canonicalUri = https://w3id.org/italia/onto/CLV→ sourceLocation = URL effettivamente risolto→ sourceRevision = commit/tag, se acquisito da repository Git
+26.4 Contratto SemanticDiscoveryProvider v1.0
+interface SemanticDiscoveryProvider {  ProviderId id();  CandidatePage search(DiscoveryQuery query);  CandidateDescriptor describe(CandidateRef ref);  FetchedArtifact fetch(CandidateRef ref, MediaType preferred);  UpstreamStatus check(ExternalOrigin origin);}UpstreamStatus = UNCHANGED | UPDATED | DEPRECATED | WITHDRAWN | UNREACHABLE
+search() non deve scaricare indiscriminatamente interi repository. fetch() viene invocato solo sui candidati selezionati per valutazione o adozione. check() opera su origini già adottate e appartiene al processo di Upstream Lifecycle Monitoring.
+27. Adozione e snapshot immutabile
+L’adozione di un artefatto esterno è il punto in cui OUF assume una dipendenza semantica governata. Da quel momento il funzionamento del Registry non deve dipendere dalla disponibilità corrente del provider esterno.
+27.1 ExternalOrigin
+Campo
+Obbl.
+Descrizione
+providerId
+SÌ
+provider da cui è stato acquisito
+canonicalUri
+SÌ
+URI semantico persistente
+sourceLocation
+SÌ
+URL tecnico effettivamente usato
+sourceRevision
+NO
+commit SHA, tag o versione provider quando disponibile
+publisher
+SÌ
+ente/organizzazione responsabile dichiarata
+license
+SÌ
+licenza rilevata e approvata
+retrievedAt
+SÌ
+istante di acquisizione
+lastCheckedAt
+SÌ
+ultimo controllo upstream
+upstreamStatus
+SÌ
+stato osservato, separato dallo stato OUF
+27.2 ImmutableSemanticSnapshot
+Campo
+Descrizione
+snapshotId
+UUID immutabile
+artifactId/revisionId
+revisione OUF che dipende dallo snapshot
+mediaType
+es. text/turtle, application/ld+json
+content
+bytes acquisiti; baseline PostgreSQL BYTEA
+sha256
+hash del contenuto originale
+normalizedGraphHash
+hash opzionale del grafo RDF normalizzato per semantic diff
+retrievedAt
+timestamp
+sourceRevision
+revisione tecnica upstream se disponibile
+Regola di riproducibilitàUn PublicationSet deve poter essere ricostruito usando esclusivamente dati e snapshot locali. La scomparsa temporanea o definitiva della sorgente upstream non deve impedire la risoluzione di semanticId già pubblicati.
+27.3 Import e normalizzazione
+Apache Jena effettua parsing, validazione sintattica e conversione in un modello RDF interno. Il contenuto originale viene conservato immutato; l’eventuale normalizzazione serve al confronto semantico e non sostituisce la copia acquisita. Import OWL devono essere risolti secondo allowlist e policy esplicite, evitando fetch ricorsivi incontrollati.
+28. Upstream Lifecycle Monitoring
+Il monitoraggio upstream è un job del Semantic Model / Registry dedicato esclusivamente agli artefatti esterni già adottati. Non è Semantic Discovery e non introduce nuove risorse nel Registry.
+ACTIVE external artifact       ↓ scheduled/manual checkExternalOrigin.check()       ↓UNCHANGED ───────────────→ update lastCheckedAtUPDATED ─────────────────→ ChangeNotice + semantic diffDEPRECATED ──────────────→ ChangeNotice + impact analysisWITHDRAWN ───────────────→ ChangeNotice + compatibility holdUNREACHABLE ─────────────→ retry/backoff; no semantic state change
+28.1 Frequenza e trigger
+Trigger
+Baseline v1.0
+Scheduled
+settimanale per artefatti ACTIVE esterni; configurabile per provider
+Manual
+check immediato da semantic.editor/reviewer
+Pre-publish
+check opzionale prima di pubblicare una nuova revisione dipendente
+Provider notification
+supportabile in futuro; non requisito v1.0
+28.2 Distinzione fra upstreamStatus e OUF status
+Upstream status
+Effetto automatico su OUF
+Azione
+UNCHANGED
+nessuno
+aggiorna timestamp
+UPDATED
+nessuno
+crea SemanticChangeNotice
+DEPRECATED
+nessuno
+warning + impact analysis + eventuale migration proposal
+WITHDRAWN
+nessuna cancellazione/depubblicazione
+mantieni snapshot; valuta replacement
+UNREACHABLE
+nessuno
+retry/backoff; non confondere indisponibilità con ritiro
+InvarianteupstreamStatus e lifecycleStatus OUF sono indipendenti. Un artefatto può essere upstream WITHDRAWN e restare OUF DEPRECATED per anni per preservare mapping e dati storici.
+28.3 Change detection e semantic diff
+Un cambiamento di bytes non equivale necessariamente a un cambiamento semantico. Il monitor applica due livelli: content hash per rilevare variazioni tecniche e semantic diff sul grafo RDF normalizzato per classificare gli effetti sul modello.
+Classe
+Esempi
+Default
+NO_SEMANTIC_CHANGE
+riordino triple, commenti o serializzazione equivalente
+nessuna proposta di migrazione
+NON_BREAKING
+nuova classe, nuova label, nuovo concept non sostitutivo
+change notice informativa
+POTENTIALLY_BREAKING
+domain/range più restrittivo, deprecazione concept, cardinalità cambiata
+impact analysis obbligatoria
+BREAKING
+rimozione/ritiro di URI usato, datatype incompatibile, replacement esplicito con perdita di compatibilità
+blocco auto-update; migration proposal
+28.4 SemanticChangeNotice
+Campo
+Descrizione
+noticeId
+UUID
+artifactId
+artefatto OUF interessato
+externalOriginId
+origine osservata
+oldSnapshotId/newSnapshotCandidateId
+versioni confrontate
+upstreamStatus
+UPDATED/DEPRECATED/WITHDRAWN
+changeClass
+classificazione del diff
+detectedAt
+timestamp
+impactSummary
+consumer/mapping potenzialmente coinvolti
+decision
+OPEN/ACCEPTED/REJECTED/IGNORED/SUPERSEDED
+28.5 Withdrawal e replacement
+WITHDRAWN non produce DELETE. Il Registry conserva l’ultima revisione adottata e il relativo snapshot. Se upstream dichiara un replacement (per esempio mediante metadata o relazioni semanticamente interpretabili), il sistema crea una SemanticMigrationProposal, mai una migrazione automatica.
+OldConcept (OUF ACTIVE/DEPRECATED)    ↓ upstream withdrawal / replacement hintSemanticChangeNotice    ↓Impact Analysis    ↓SemanticMigrationProposal    ├─ candidate replacement    ├─ affected source mappings    ├─ affected PublicationSets    └─ compatibility notes    ↓ human decisionnew OUF revision / old remains resolvable
+28.6 Impact analysis sui consumer
+Il Registry deve sapere chi referenzia semanticId/revisionId senza appropriarsi dei mapping source-specific. Source Onboarding espone o registra dependency references verso il Registry. L’impact analysis interroga tali riferimenti e restituisce dipendenze; non modifica direttamente i bundle o i mapping.
+Consumer
+Dipendenza da verificare
+Source Onboarding
+field/property, vocabulary e relationship mapping che referenziano semanticId
+PublishedConfigurationBundle
+revisioni semantiche congelate
+UDP/Object Registry
+tipi/proprietà/relazioni utilizzati nelle istanze
+MCP/capability metadata
+semantic references esposte agli agenti
+PublicationSet
+inclusione della revisione interessata
+28.7 Persistenza v1.0
+external_semantic_originimmutable_semantic_snapshotupstream_monitor_statesemantic_change_noticesemantic_migration_proposaldiscovery_requestdiscovery_candidate_cache  -- TTL, NON Registry ufficiale
+I candidati discovery restano in una cache tecnica separata e cancellabile; external_semantic_origin e immutable_semantic_snapshot sono invece record normativi perché documentano una dipendenza adottata.
+28.8 DDL indicativo aggiuntivo
+CREATE TABLE external_semantic_origin (  id uuid PRIMARY KEY,  artifact_revision_id uuid NOT NULL,  provider_id text NOT NULL,  canonical_uri text NOT NULL,  source_location text NOT NULL,  source_revision text NULL,  publisher text NOT NULL,  license text NOT NULL,  retrieved_at timestamptz NOT NULL,  last_checked_at timestamptz,  upstream_status varchar(24) NOT NULL);CREATE TABLE immutable_semantic_snapshot (  id uuid PRIMARY KEY,  external_origin_id uuid NOT NULL REFERENCES external_semantic_origin(id),  media_type text NOT NULL,  content bytea NOT NULL,  sha256 char(64) NOT NULL,  normalized_graph_hash char(64),  created_at timestamptz NOT NULL,  UNIQUE(external_origin_id, sha256));CREATE TABLE semantic_change_notice (  id uuid PRIMARY KEY,  external_origin_id uuid NOT NULL REFERENCES external_semantic_origin(id),  upstream_status varchar(24) NOT NULL,  change_class varchar(32) NOT NULL,  detected_at timestamptz NOT NULL,  decision varchar(24) NOT NULL DEFAULT 'OPEN',  impact_summary jsonb NOT NULL DEFAULT '{}'::jsonb);
+28.9 API aggiuntive v1.0
+Metodo
+Endpoint
+Scopo
+POST
+/api/semantic/v1/discovery-requests
+avvia discovery
+GET
+/api/semantic/v1/discovery-requests/{id}
+stato e candidati temporanei
+POST
+/api/semantic/v1/discovery-requests/{id}/adoption-proposals
+seleziona candidato e crea proposta
+GET
+/api/semantic/v1/artifacts/{id}/external-origin
+origine e snapshot adottato
+POST
+/api/semantic/v1/artifacts/{id}/upstream-check
+check manuale
+GET
+/api/semantic/v1/upstream-change-notices
+elenco variazioni
+GET
+/api/semantic/v1/upstream-change-notices/{id}/impact
+impact analysis
+POST
+/api/semantic/v1/upstream-change-notices/{id}/migration-proposals
+crea proposta migrazione
+28.10 Error model aggiuntivo
+Codice
+HTTP
+Significato
+DISCOVERY_PROVIDER_TIMEOUT
+504
+provider non risponde entro timeout
+EXTERNAL_ARTIFACT_TOO_LARGE
+422
+payload oltre limite configurato
+EXTERNAL_ARTIFACT_INVALID
+422
+RDF/OWL/SKOS non parsabile o non conforme al tipo atteso
+CANONICAL_URI_MISMATCH
+409
+identità dichiarata incompatibile con il candidato
+SNAPSHOT_HASH_MISMATCH
+409
+integrità dello snapshot non verificata
+UPSTREAM_UNREACHABLE
+503
+origine temporaneamente non raggiungibile
+UPSTREAM_WITHDRAWN
+409
+origine ritirata; richiede decisione governata
+MIGRATION_IMPACT_BLOCKING
+409
+dipendenze bloccanti rilevate
+28.11 Sicurezza del discovery/fetch
+Gli asset semantici esterni sono input non fidati. Il provider framework applica allowlist di host, timeout, limite dimensione, numero massimo di redirect, content-type ammessi e parsing senza esecuzione di contenuto attivo. Gli URI/import RDF non possono diventare un meccanismo di SSRF o di crawling ricorsivo. Label, commenti e descrizioni recuperati non sono istruzioni per l’AI.
+Rischio
+Contromisura
+SSRF tramite URI/import
+allowlist host + resolver controllato + blocco reti private
+payload enorme / decompression bomb
+size limit prima e dopo decompressione
+redirect malevolo
+max redirect + re-check host
+prompt injection nei metadata
+testo esterno classificato come data; nessuna escalation di policy
+supply-chain repository
+snapshot hash + sourceRevision + publisher/license
+provider compromesso
+nessuna auto-adoption/auto-update; review + audit
+28.11.1 Parser RDF/OWL hardened e import isolation
+Il fetch di asset semantici remoti e il parsing RDF/OWL sono due capability separate. Il provider/discovery layer acquisisce i byte esclusivamente attraverso il percorso di rete governato; il parser Jena lavora poi su uno snapshot locale immutabile e NON dispone di capacità autonoma di rete. URI, owl:imports, riferimenti esterni e identifier presenti nel documento sono trattati come dati finché una nuova DiscoveryRequest governata non ne autorizza esplicitamente l'acquisizione.
+SEM-FETCH-01 — owl:imports e costrutti equivalenti possono essere rilevati e registrati come dipendenze candidate, ma non vengono dereferenziati automaticamente o ricorsivamente dal parser.
+SEM-FETCH-02 — RDF/XML, XML parser e librerie collegate devono avere DTD, external general entities, external parameter entities e qualunque external entity resolution disabilitati. Un input che richiede XXE non viene risolto.
+SEM-FETCH-03 — Jena FileManager/LocationMapper/StreamManager, URLConnection o resolver equivalenti non devono poter aprire autonomamente URI http:, https:, file:, jar:, ftp: o altri scheme durante parse/validation. Il parser riceve InputStream/bytes già acquisiti.
+SEM-FETCH-04 — Ogni import esterno richiesto diventa una nuova DiscoveryRequest che ripassa da allowlist, Gateway southbound, timeout, redirect policy, size/content-type controls e snapshotting. Le catene cicliche sono rilevate e bounded.
+SEM-FETCH-05 — Link-local, loopback, metadata endpoint, RFC1918 non censite e destinazioni non approvate restano irraggiungibili anche se compaiono in owl:imports, rdf:resource o altri URI del documento.
+SEM-FETCH-06 — Il parsing fallisce in modo deterministico se un import è obbligatorio per una validazione ma non è stato acquisito come snapshot governato; non esiste fallback di rete implicito.
+28.12 Job asincroni
+Job type
+Idempotency key
+Retry
+DISCOVERY_SEARCH
+fingerprint(query, providers)
+sì, bounded
+FETCH_CANDIDATE
+providerId + candidateRef + requestedMediaType
+sì
+IMPORT_VALIDATE
+snapshot sha256
+sì
+UPSTREAM_CHECK
+originId + checkWindow
+sì
+SEMANTIC_DIFF
+oldHash + newHash
+sì
+IMPACT_ANALYSIS
+noticeId + registryRevision
+sì
+29. Conformance v1.0 — Discovery e Lifecycle
+ID
+Scenario
+Esito atteso
+SEM-D01
+Internal search trova ACTIVE
+nessuna chiamata esterna
+SEM-D02
+No-match → OntoPiA discovery
+CandidateSet temporaneo con canonical URI
+SEM-D03
+Fetch via content negotiation
+snapshot valido e media type registrato
+SEM-D04
+Candidate rifiutato
+nessun SemanticArtifact ufficiale creato
+SEM-D05
+Candidate adottato da Git revisionata
+canonicalUri + sourceRevision + sha256 persistiti
+SEM-D06
+Provider indisponibile
+request fallisce controllatamente; nessuna semantica inventata
+SEM-U01
+Upstream bytes uguali
+UNCHANGED
+SEM-U02
+Serializzazione cambia ma grafo equivalente
+NO_SEMANTIC_CHANGE
+SEM-U03
+Nuovo concept upstream
+NON_BREAKING notice
+SEM-U04
+Domain/range incompatibile
+POTENTIALLY_BREAKING + impact analysis
+SEM-U05
+Artifact ritirato upstream
+WITHDRAWN; snapshot locale resta risolvibile
+SEM-U06
+Provider non raggiungibile
+UNREACHABLE; nessun cambio lifecycle OUF
+SEM-U07
+Replacement dichiarato
+MigrationProposal, nessuna migrazione automatica
+SEM-U08
+Mapping Onboarding dipendente
+impact report identifica il mapping senza modificarlo
+SEM-S01
+URI esterno tenta accesso rete privata
+fetch bloccato
+SEM-S02
+Metadata contiene istruzioni per agent
+trattate come dati, nessun cambio policy
+30. Test di conformità complessivi v1.0
+ID
+Scenario
+Esito atteso
+SEM-T01
+Create DRAFT class
+artefatto creato, non visibile runtime
+SEM-T02
+Search ACTIVE concept
+ranking corretto
+SEM-T03
+Discovery after no-match
+CandidateSet temporaneo
+SEM-T04
+Reject candidate
+nessun artefatto persistente ufficiale
+SEM-T05
+Adopt candidate
+DRAFT con provenance completa
+SEM-T06
+Approve/publish
+ACTIVE + publication immutable
+SEM-T07
+AI attempts publish
+negato senza human authorization
+SEM-T08
+Relationship invalid range
+422 validation failed
+SEM-T09
+Deprecate referenced artifact
+impact analysis + policy
+SEM-T10
+Provider unavailable
+job retry/error senza corrompere Registry
+SEM-T11
+Concurrent edit
+VERSION_CONFLICT
+SEM-T12
+RDF/SKOS export-import
+round-trip semantico coerente
+SEM-T13
+No catalog persistence
+candidate cache scade senza Registry artifact
+SEM-T14
+Onboarding resume after adoption
+semantic reference ACTIVE disponibile
+31. Criteri di uscita v1.0
+• Confini del modulo approvati e non sovrapposti a Source Onboarding/UDP.
+• Modello di dominio minimo approvato.
+• Lifecycle DRAFT→ACTIVE→DEPRECATED→RETIRED approvato.
+• Decisione “no permanent external candidate catalog” congelata.
+• Stack PostgreSQL + Jena + Spring Boot approvato come baseline.
+• API principali e SemanticPublicationSet accettati.
+• Discovery provider framework e human adoption flow accettati.
+• Nessun graph DB introdotto senza requisito misurabile.
+• Provider OntoPiA/schema.gov.it/GitHub definito come composizione di canali, senza usare il path GitHub come identità semantica.
+• Snapshot immutabile e ExternalOrigin obbligatori per ogni artefatto esterno adottato.
+• UpstreamStatus separato dal lifecycle OUF; nessun auto-update o auto-delete.
+• Semantic diff, ChangeNotice e MigrationProposal approvati come meccanismi di evoluzione.
+• Withdrawal e UNREACHABLE gestiti senza rompere PublicationSet o mapping storici.
+Tema
+Decisione v1.0
+Quando rivalutare
+Triple store/graph DB
+NON richiesto
+SPARQL/inference/traversal reali
+Reasoner OWL completo
+NON richiesto
+use case formale di inferenza
+Search engine dedicato
+NON richiesto
+PostgreSQL non rispetta target
+Event broker
+riuso futuro broker OUF
+quando Event Mesh condiviso è selezionato
+Automated adoption
+vietata
+non prevista senza policy esplicita
+Public semantic portal
+fuori scope
+solo dopo maturità interna
+Provider notification/webhook
+NON richiesto
+quando un provider autorevole offre un contratto stabile
+Object storage per snapshot
+NON richiesto
+quando BYTEA/PostgreSQL supera soglie operative misurate
+33. Domain Model & Persistence — Contract Freeze
+La v1.0 congela il modello di dominio persistente del Semantic Model / Registry. La finalità è eliminare ambiguità fra identità semantica, revisioni editoriali, versioni pubblicate, origini esterne e snapshot, rendendo il modulo implementabile su PostgreSQL senza introdurre graph database, triple store o constraint engine obbligatori.
+Decisione v1.0PostgreSQL è il system of record del Registry. RDF/OWL/SKOS sono rappresentazioni semantiche interoperabili. Il grafo runtime degli oggetti urbani non viene persistito in questo modulo.
+33.1 Obiettivi del freeze
+• Definire aggregate root, entità, value object e identità persistenti.
+• Separare semanticId stabile, artifactId tecnico, revisionId editoriale e publicationRevision.
+• Congelare vincoli relazionali, indici, uniqueness e regole di cancellazione.
+• Rendere immutabili le revisioni pubblicate e gli snapshot esterni adottati.
+• Formalizzare transazioni, optimistic locking e concorrenza editoriale.
+• Definire retention e compatibilità storica per DEPRECATED/RETIRED/WITHDRAWN.
+• Mantenere SHACL opzionale e fuori dal percorso critico del semantic matching.
+34. Aggregate e confini transazionali
+Aggregate root
+Contenuto
+Invarianti principali
+SemanticArtifact
+Identità semantica e metadati stabili
+semanticId unico; artifactType immutabile dopo prima pubblicazione
+ArtifactRevision
+Contenuto editoriale versionato
+immutabile dopo publish; hash deterministico; optimistic lock solo su draft corrente
+OntologyModule
+Namespace, imports, ownership
+namespace unico; imports espliciti e versionati
+Vocabulary
+Metadati del vocabolario
+concept code univoco nel vocabolario/versione
+RelationshipDefinition
+domain/range/inverse/cardinalità
+riferimenti solo a artefatti non RETIRED nel momento della pubblicazione
+SemanticPublicationSet
+insieme coerente di revisioni ACTIVE
+immutabile; checksum; attivazione atomica
+ExternalOrigin
+origine di un artefatto adottato
+canonical URI + provider + provenance
+ImmutableSemanticSnapshot
+bytes adottati dall’origine
+content hash unico; mai sovrascritto
+SemanticChangeNotice
+variazione upstream rilevata
+non modifica automaticamente lo stato OUF
+SemanticMigrationProposal
+proposta replacement/migrazione
+nessuna applicazione automatica
+35. Modello delle identità
+La v1.0 distingue quattro identificatori con scopi differenti. Confonderli è un errore di implementazione.
+Identificatore
+Tipo
+Esempio
+Semantica
+semanticId
+URI/IRI stabile
+https://w3id.org/italia/onto/CLV/City oppure https://.../ouf/Dehor
+identità concettuale usata nei contratti
+artifactId
+UUID
+7f…
+identità tecnica del record Registry
+revisionId
+UUID
+a3…
+identità immutabile di una revisione editoriale
+publicationSetId
+UUID
+e1…
+identità di una fotografia coerente pubblicata
+Regola fondamentaleUn consumer non deve utilizzare artifactId/revisionId come significato semantico. Il riferimento interoperabile resta semanticId; revisionId serve a riproducibilità, audit e freeze.
+35.1 URI OUF-native
+Gli artefatti creati nativamente da OUF devono usare un namespace configurato centralmente e URI stabili. La struttura fisica del repository, il nome della tabella e l’URL dell’API non devono entrare nell’identità semantica.
+semanticId = {semanticBaseUri}/{artifactKind}/{localName}Esempio: https://semantic.comune.trieste.it/ouf/class/Dehor
+36. Revisioni, versioni e lifecycle
+Concetto
+Mutabile?
+Regola
+SemanticArtifact identity
+NO
+semanticId non cambia per modifiche compatibili
+DRAFT revision
+SÌ
+modificabile con optimistic locking
+UNDER_REVIEW revision
+limitata
+ogni modifica sostanziale invalida approvazioni precedenti
+Published revision
+NO
+content hash e contenuto immutabili
+ACTIVE pointer
+SÌ, governato
+può puntare a nuova revisione solo tramite publish atomico
+DEPRECATED/RETIRED history
+NO delete
+resta risolvibile per compatibilità storica
+36.1 Breaking e non-breaking change
+Cambiamento
+Classe
+Azione
+aggiunta label/altLabel
+NON_BREAKING
+nuova revisione compatibile
+correzione descrizione senza cambio significato
+NON_BREAKING
+nuova revisione compatibile
+aggiunta proprietà opzionale
+NON_BREAKING o POTENTIALLY_BREAKING
+impact analysis
+cambio datatype
+BREAKING
+nuova major semantic version / migration proposal
+restrizione domain/range
+BREAKING
+impact analysis obbligatoria
+rimozione concept usato
+BREAKING
+deprecation + replacement/migration
+cambio significato mantenendo stesso URI
+VIETATO
+creare nuova identità semantica o versione major esplicita
+37. Modello persistente degli artefatti
+Campo
+Tipo logico
+Obbl.
+Note
+artifact_id
+UUID
+SÌ
+PK tecnica
+semantic_id
+TEXT/IRI
+SÌ
+UNIQUE globale
+artifact_type
+ENUM
+SÌ
+ONTOLOGY, CLASS, PROPERTY, RELATIONSHIP, VOCABULARY, CONCEPT, RULE
+namespace
+TEXT
+SÌ
+namespace logico
+local_name
+TEXT
+SÌ
+stabile dopo publish
+owner_ref
+TEXT
+SÌ
+owner organizzativo
+authority_ref
+TEXT
+SÌ
+autorità semantica
+origin_kind
+ENUM
+SÌ
+OUF_NATIVE, EXTERNAL_ADOPTED
+created_at
+TIMESTAMPTZ
+SÌ
+audit tecnico
+retired_at
+TIMESTAMPTZ
+NO
+solo se RETIRED
+37.1 ArtifactRevision
+Campo
+Tipo
+Vincolo
+revision_id
+UUID
+PK
+artifact_id
+UUID
+FK semantic_artifact
+revision_no
+INTEGER
+UNIQUE(artifact_id, revision_no)
+lifecycle_status
+ENUM
+DRAFT/UNDER_REVIEW/ACTIVE/DEPRECATED/RETIRED
+semantic_version
+TEXT
+versione leggibile; non usata come PK
+label_json
+JSONB
+label multilingua
+description_json
+JSONB
+descrizioni multilingua
+definition_json
+JSONB
+payload variabile per tipo
+content_hash
+CHAR(64)
+obbligatorio da UNDER_REVIEW
+row_version
+BIGINT
+optimistic locking
+created_by_subject
+TEXT
+identity IAM
+created_at
+TIMESTAMPTZ
+audit
+published_at
+TIMESTAMPTZ
+nullable
+38. Modelli specializzati
+38.1 Class e Property
+Artefatto
+Attributi specifici
+CLASS
+superClassRefs[], equivalentClassRefs[], externalAlignmentRefs[]
+PROPERTY
+propertyKind (DATATYPE|OBJECT), datatype, domainRefs[], rangeRefs[], cardinalityHint
+RELATIONSHIP
+domainRefs[], rangeRefs[], inverseRef, symmetric, transitive, cardinalityHint
+Domain/range e cardinalità sono metadati semantici governati. Il Registry può validarli applicativamente senza richiedere SHACL.
+38.2 Vocabulary e Concept
+Entità
+Regole
+Vocabulary
+semanticId stabile; owner/authority; eventuale scheme URI esterno
+Concept
+semanticId o conceptId stabile; prefLabel obbligatoria almeno in una lingua; code opzionale
+Hierarchy
+broader/narrower coerenti; niente cicli se il vocabolario dichiara gerarchia aciclica
+Alignment
+exactMatch/closeMatch/broadMatch/narrowMatch come riferimenti espliciti e versionati
+39. Dipendenze semantiche e imports
+Le dipendenze fra revisioni vengono persistite separatamente dal contenuto JSONB per consentire impact analysis SQL, validazione referenziale e costruzione del Publication Set senza parsing RDF a runtime.
+dependency_type
+Esempio
+Direzione
+IMPORTS
+ouf module importa CLV
+revision → ontology/module revision
+SUPERCLASS
+Dehor → PublicSpaceOccupation
+class revision → class revision
+DOMAIN
+locatedOn → Dehor
+relationship revision → class revision
+RANGE
+locatedOn → UrbanPlace
+relationship revision → class revision
+INVERSE
+locatedOn → (eventuale relazione inversa esplicita)
+relationship revision → relationship revision
+BROADER
+retail.medium → retail
+concept revision → concept revision
+EQUIVALENT
+ouf:Street ↔ external:Street
+revision → revision/external semanticId
+REPLACED_BY
+old concept → new concept
+deprecated revision → active revision
+40. Schema PostgreSQL — freeze
+Il seguente schema rappresenta la baseline implementativa. I nomi possono essere prefissati secondo convenzioni di progetto, ma PK, FK, uniqueness e semantica non devono essere alterati senza change request.
+CREATE TABLE semantic_artifact (  artifact_id uuid PRIMARY KEY,  semantic_id text NOT NULL UNIQUE,  artifact_type varchar(32) NOT NULL,  namespace text NOT NULL,  local_name text NOT NULL,  owner_ref text NOT NULL,  authority_ref text NOT NULL,  origin_kind varchar(32) NOT NULL,  created_at timestamptz NOT NULL DEFAULT now(),  retired_at timestamptz NULL,  UNIQUE(namespace, local_name, artifact_type));CREATE TABLE artifact_revision (  revision_id uuid PRIMARY KEY,  artifact_id uuid NOT NULL REFERENCES semantic_artifact(artifact_id),  revision_no integer NOT NULL,  lifecycle_status varchar(24) NOT NULL,  semantic_version text NULL,  label_json jsonb NOT NULL DEFAULT '{}'::jsonb,  description_json jsonb NOT NULL DEFAULT '{}'::jsonb,  definition_json jsonb NOT NULL DEFAULT '{}'::jsonb,  content_hash char(64) NULL,  row_version bigint NOT NULL DEFAULT 0,  created_by_subject text NOT NULL,  created_at timestamptz NOT NULL DEFAULT now(),  published_at timestamptz NULL,  UNIQUE(artifact_id, revision_no));
+40.1 Active revision pointer
+CREATE TABLE artifact_active_revision (  artifact_id uuid PRIMARY KEY REFERENCES semantic_artifact(artifact_id),  revision_id uuid NOT NULL UNIQUE REFERENCES artifact_revision(revision_id),  activated_at timestamptz NOT NULL,  activated_by_subject text NOT NULL);
+Il puntatore ACTIVE è separato dalla revisione per consentire attivazione atomica e rollback governato senza mutare revisioni pubblicate.
+40.2 Dependency table
+CREATE TABLE semantic_dependency (  source_revision_id uuid NOT NULL REFERENCES artifact_revision(revision_id),  dependency_type varchar(32) NOT NULL,  target_semantic_id text NOT NULL,  target_revision_id uuid NULL REFERENCES artifact_revision(revision_id),  metadata_json jsonb NOT NULL DEFAULT '{}'::jsonb,  PRIMARY KEY (source_revision_id, dependency_type, target_semantic_id));
+40.3 Publication Set
+CREATE TABLE semantic_publication_set (  publication_set_id uuid PRIMARY KEY,  publication_no bigint NOT NULL UNIQUE,  checksum char(64) NOT NULL UNIQUE,  created_at timestamptz NOT NULL DEFAULT now(),  created_by_subject text NOT NULL,  status varchar(16) NOT NULL);CREATE TABLE semantic_publication_member (  publication_set_id uuid NOT NULL REFERENCES semantic_publication_set(publication_set_id),  semantic_id text NOT NULL,  revision_id uuid NOT NULL REFERENCES artifact_revision(revision_id),  PRIMARY KEY(publication_set_id, semantic_id));
+40.4 External origin e snapshot
+CREATE TABLE external_semantic_origin (  origin_id uuid PRIMARY KEY,  artifact_id uuid NOT NULL REFERENCES semantic_artifact(artifact_id),  canonical_uri text NOT NULL,  provider_id text NOT NULL,  source_revision text NULL,  source_url text NULL,  license_ref text NULL,  publisher text NULL,  upstream_status varchar(24) NOT NULL,  last_checked_at timestamptz NULL);CREATE TABLE immutable_semantic_snapshot (  snapshot_id uuid PRIMARY KEY,  origin_id uuid NOT NULL REFERENCES external_semantic_origin(origin_id),  content_hash char(64) NOT NULL,  media_type text NOT NULL,  content_bytes bytea NOT NULL,  retrieved_at timestamptz NOT NULL,  UNIQUE(origin_id, content_hash));
+41. Vincoli e indici
+Vincolo/indice
+Motivazione
+UNIQUE semantic_artifact.semantic_id
+una sola identità governata per semanticId
+UNIQUE artifact_id + revision_no
+sequenza revisioni deterministica
+UNIQUE active pointer per artifact
+una sola revisione ACTIVE effettiva
+GIN label_json/description_json
+ricerca multilingua
+pg_trgm su semantic_id/local_name
+ricerca fuzzy senza motore dedicato
+INDEX semantic_dependency.target_semantic_id
+impact analysis
+INDEX lifecycle_status
+workflow e publication build
+UNIQUE snapshot origin+hash
+deduplica snapshot senza sovrascrittura
+42. Transazioni e concorrenza
+• Editing DRAFT: UPDATE condizionato da row_version; conflitto restituisce HTTP 409/ETag mismatch.
+• Submit for review: calcolo content_hash e chiusura dell’editing libero della revisione.
+• Publish: validazione dipendenze + inserimento PublicationSet + members + aggiornamento active pointers nella stessa transazione.
+• Fetch/provider call: mai dentro la transazione di publish.
+• Deprecate/retire: impact analysis prima del commit; nessun cascade delete su revisioni storiche.
+• Snapshot esterni: insert-only; nessun UPDATE del content_bytes.
+43. Regole di cancellazione e retention
+Oggetto
+DELETE fisico
+Policy
+DRAFT mai sottoposto
+SÌ, governato
+solo se non referenziato e senza audit rilevante
+Revision UNDER_REVIEW
+NO
+reject/cancel e retention audit
+Revision pubblicata
+NO
+immutabile
+SemanticArtifact già pubblicato
+NO
+DEPRECATED/RETIRED
+External snapshot adottato
+NO
+retention permanente o secondo policy archivistica
+Discovery candidate effimero
+SÌ
+TTL/cache purge
+ChangeNotice chiuso
+NO
+retention audit
+44. Search projection
+La ricerca semantica interna non deve leggere o traversare indiscriminatamente JSONB. Una projection SQL denormalizzata mantiene label, altLabel, descrizione, namespace, tipo e stato della revisione ACTIVE. La projection è ricostruibile dal system of record e non costituisce una seconda autorità.
+semantic_search_document(semantic_id, revision_id, artifact_type, locale, label, alt_labels, description, search_vector)
+45. RDF/OWL/SKOS serialization
+Apache Jena costruisce una rappresentazione RDF a partire dalla revisione pubblicata o importa RDF verso il modello editoriale. La serializzazione non sostituisce le tabelle governate: è una rappresentazione interoperabile derivabile e verificabile tramite content hash/versione.
+• RDF/Turtle: formato preferito per export tecnico leggibile.
+• RDF/XML e JSON-LD: supportati quando richiesti dai consumer/provider.
+• OWL: usato per classi/proprietà/relazioni quando semanticamente appropriato.
+• SKOS: usato per vocabolari e concept scheme.
+• SHACL: opzionale; import/export se presente, gap analysis eventuale, mai filtro obbligatorio di discovery/matching.
+46. Politica SHACL congelata
+No scope creepLa v1.0 del Semantic Model / Registry non richiede un motore SHACL per funzionare. I vincoli core sono applicati dal dominio e dal database. SHACL può essere conservato o esportato quando disponibile, ma non definisce l’ammissibilità di un candidato durante la Discovery.
+Uso SHACL
+v1.0
+Scartare candidati Discovery non conformi
+VIETATO
+Semantic ranking
+non determinante
+Gap analysis
+OPZIONALE
+Import di shape pubblicate da provider
+OPZIONALE
+Export verso consumer che lo richiedono
+OPZIONALE
+Validazione core del Registry
+NO — regole applicative/DB
+Prerequisito per publication
+NO
+47. Flyway e migrazioni
+Tutte le modifiche allo schema sono versionate con Flyway. Le migration già applicate non vengono riscritte. Ogni modifica distruttiva richiede migration esplicita, backup verificato e compatibility assessment con la versione applicativa.
+V001__semantic_core.sqlV002__artifact_revision.sqlV003__dependencies.sqlV004__publication_set.sqlV005__external_origin_snapshot.sqlV006__search_projection.sql
+48. Contratto repository applicativo
+Port
+Responsabilità
+SemanticArtifactRepository
+identity lookup/create; nessuna logica di publish
+ArtifactRevisionRepository
+draft/revision persistence + optimistic lock
+DependencyRepository
+dependency graph e impact lookup
+PublicationRepository
+build e lettura PublicationSet immutabili
+ExternalOriginRepository
+origin/snapshot/upstream state
+SemanticSearchRepository
+search projection e ranking SQL
+49. Test di conformità
+ID
+Scenario
+Esito atteso
+SEM-P01
+creazione artifact con semanticId duplicato
+rifiuto per uniqueness
+SEM-P02
+due update concorrenti sullo stesso DRAFT
+uno solo riesce; altro 409
+SEM-P03
+modifica revisione già pubblicata
+rifiuto
+SEM-P04
+publish con dependency target inesistente
+rifiuto
+SEM-P05
+publish atomico di più revisioni
+PublicationSet completo o rollback
+SEM-P06
+ritiro artefatto referenziato
+nessun delete; impact analysis
+SEM-P07
+nuovo snapshot stesso hash
+deduplica
+SEM-P08
+upstream WITHDRAWN
+snapshot e revisioni restano leggibili
+SEM-P09
+ricerca su label/alias
+risultati da projection ACTIVE
+SEM-P10
+candidate esterno semanticamente valido ma non conforme a una shape SHACL locale
+non scartato per SHACL
+SEM-P11
+export SKOS di vocabolario
+serializzazione coerente con revisionId
+SEM-P12
+rollback transazione publish
+nessun active pointer parziale
+50. Criteri di conformità
+• Identity model semanticId/artifactId/revisionId/publicationSetId approvato.
+• Aggregate e confini transazionali approvati.
+• Schema PostgreSQL, PK/FK/unique/index e retention policy congelati.
+• PublicationSet e active revision pointer formalizzati.
+• ExternalOrigin e snapshot immutabile integrati nel modello persistente.
+• Dependency graph persistito per impact analysis senza graph DB.
+• SHACL esplicitamente opzionale e non bloccante per Discovery/matching.
+• Nessun requisito richiede triple store o graph database nella baseline.
+• Suite SEM-P01…SEM-P12 accettata.
+Riferimenti tecnici esterni
+• OntoPiA — italia/dati-semantic-assets Wiki: principi FAIR, URI persistenti w3id.org/italia, content negotiation, dereferenziazione e interrogazione SPARQL.
+• schema.gov.it — Catalogo Nazionale Dati e risorse semantiche per l’interoperabilità.
+• GitHub italia/dati-semantic-assets — repository delle risorse semantiche nazionali italiane; usato come origine tecnica/versionata quando applicabile.
+• W3C RDF / OWL / SKOS — standard semantici core; SHACL supportato in modo opzionale e non vincolante per discovery/matching.
+Nota: gli endpoint fisici e i provider URL sono configurazione operativa; i canonical URI restano il riferimento semantico.
+Appendice A — Esempio completo: Dehor
+{  "semanticId": "ouf:Dehor",  "artifactType": "CLASS",  "namespace": "ouf",  "localName": "Dehor",  "preferredLabel": {"it": "Dehor"},  "description": {"it": "Occupazione attrezzata di spazio pubblico ..."},  "status": "ACTIVE",  "version": "1.0",  "provenance": {    "kind": "OUF_NATIVE",    "rationale": "..."  },  "superClasses": [    "urban:PublicSpaceOccupation",    "geo:Feature"  ]}
+Appendice B — Esempio relazione
+{  "semanticId": "ouf:locatedOn",  "artifactType": "RELATIONSHIP",  "domain": ["ouf:Dehor"],  "range": ["ouf:UrbanPlace"],  "cardinality": {"min": 0},  "status": "ACTIVE",  "version": "1.0"}
+Appendice C — Esempio vocabolario
+Vocabulary: economicActivityTypeConcept:{  "conceptId": "retail.medium",  "preferredLabel": {"it":"Media struttura di vendita"},  "broader": ["retail"],  "status": "ACTIVE"}
+Appendice D — Checklist implementativa
+Check
+Esito
+Schema PostgreSQL creato via Flyway
+□
+Artifact CRUD + optimistic locking
+□
+Search FTS/trigram
+□
+Vocabulary/Concept API
+□
+Relationship validation
+□
+Discovery Provider SPI
+□
+Candidate TTL cache
+□
+Adoption workflow
+□
+Human approval scopes
+□
+SemanticPublicationSet
+□
+RDF/OWL/SKOS import/export
+□
+SHACL opzionale; non blocca discovery/matching
+□
+Onboarding integration test
+□
+Gateway northbound/southbound policies
+□
+52. API & Contract Freeze
+La v1.0 congela la superficie contrattuale del Semantic Model / Registry. Da questa versione, i consumer OUF possono implementare integrazioni stabili senza conoscere la persistenza interna del modulo. Il contratto distingue API di consultazione, comandi di governance, Discovery, Upstream Lifecycle e pubblicazione runtime.
+Decisione architetturale v1.0
+Tutte le comunicazioni applicative verso il Semantic Model / Registry attraversano l’Urban API Gateway. Nessun consumer accede direttamente al database PostgreSQL, agli snapshot RDF o ai provider esterni. I contratti pubblicati sono versionati, machine-readable e indipendenti dalla tecnologia di persistenza.
+52.1 Obiettivi del freeze
+• Congelare URI base, naming, risorse, payload e semantica HTTP.
+• Congelare il contratto SemanticReference consumato da Source Onboarding e dai moduli runtime.
+• Definire ETag/If-Match, idempotenza e regole di concorrenza.
+• Definire i comandi di review, approval, publish, deprecate e retire senza consentire scorciatoie agentiche.
+• Definire contratti di Discovery, Upstream Monitoring, semantic diff e migration proposal.
+• Definire content negotiation ed export RDF/OWL/SKOS senza rendere SHACL obbligatorio.
+• Produrre una baseline OpenAPI 3.1 e JSON Schema direttamente implementabile.
+53. Convenzioni API
+Voce
+Decisione v1.0
+Base path
+/api/semantic/v1
+Protocollo
+HTTPS tramite Urban API Gateway
+Formato default
+application/json; charset=utf-8
+OpenAPI
+3.1.x
+JSON Schema
+2020-12
+Time format
+RFC 3339 / UTC per eventi persistiti
+Problem details
+application/problem+json
+Pagination
+cursor-based per collezioni potenzialmente grandi
+Concurrency
+ETag + If-Match sui comandi che mutano revisioni
+Idempotenza
+Idempotency-Key sui comandi non naturalmente idempotenti
+53.1 Regole di naming
+Le collection API utilizzano nomi plurali e stabili. semanticId e canonicalUri non vengono inseriti direttamente nel path se contengono URI arbitrari: vengono risolti mediante artifactId/revisionId oppure query parameter URL-encoded. Gli identificatori tecnici sono UUID; gli identificatori semantici restano URI canonici persistenti.
+54. Modello contrattuale minimo
+54.1 SemanticReference v1
+{  "semanticId": "https://w3id.org/italia/onto/CLV/City",  "artifactId": "0d2d7a2c-...",  "revisionId": "d7a1b9f0-...",  "artifactType": "CLASS",  "semanticVersion": "1.0.0",  "status": "ACTIVE",  "canonicalUri": "https://w3id.org/italia/onto/CLV/City",  "namespace": "https://w3id.org/italia/onto/CLV/",  "localName": "City",  "label": {"it": "Città", "en": "City"},  "publicationSetId": "9c38..."}
+SemanticReference v1 è il contratto compatto usato dagli altri moduli. Non espone dettagli di persistenza, snapshot fisici, commit Git o strutture interne del Registry. Le informazioni di origine esterna restano interrogabili tramite endpoint dedicati.
+54.2 ArtifactDetail v1
+Campo
+Obbligatorio
+Descrizione
+semanticId
+Sì
+Identità semantica stabile, tipicamente URI canonico.
+artifactId
+Sì
+Identificatore tecnico immutabile OUF.
+revisionId
+Sì
+Revisione specifica consultata.
+artifactType
+Sì
+ONTOLOGY, CLASS, PROPERTY, RELATIONSHIP, VOCABULARY, CONCEPT, RULE.
+labels
+Sì
+Etichette multilingua.
+description
+No
+Definizione o descrizione governata.
+domain/range
+Condizionale
+Per proprietà e relazioni.
+broader/narrower
+Condizionale
+Per concetti/vocabolari.
+origin
+No
+Provenienza esterna o OUF-native.
+dependencies
+No
+Import/referenze semantiche persistite.
+status
+Sì
+DRAFT, UNDER_REVIEW, ACTIVE, DEPRECATED, RETIRED.
+55. API di consultazione
+Metodo
+Endpoint
+Scopo
+GET
+/artifacts
+Elenco/filtri degli artefatti adottati o in adozione.
+GET
+/artifacts/{artifactId}
+Dettaglio della revisione attiva o draft autorizzata.
+GET
+/artifacts/{artifactId}/revisions
+Storico revisioni.
+GET
+/revisions/{revisionId}
+Revisione specifica immutabile.
+GET
+/ontologies
+Ontologie adottate.
+GET
+/classes
+Classi semantiche.
+GET
+/properties
+Proprietà.
+GET
+/relationships
+Relazioni semantiche.
+GET
+/vocabularies
+Vocabolari controllati.
+GET
+/vocabularies/{id}/concepts
+Concept del vocabolario.
+GET
+/semantic-references/{artifactId}
+SemanticReference compatto per consumer.
+GET
+/publication-sets/{id}
+Manifest immutabile pubblicato.
+55.1 Filtri comuni
+I filtri minimi sono status, artifactType, namespace, ontologyId, language, updatedSince e semanticId. Il server rifiuta filtri non supportati anziché interpretarli implicitamente.
+56. Semantic Search API
+GET /api/semantic/v1/search?q=dehor&type=CLASS&status=ACTIVE&limit=20
+{  "items": [    {      "reference": {"semanticId":"https://example.ouf/onto/Dehor","artifactType":"CLASS","status":"ACTIVE"},      "score": 0.94,      "reasons": ["preferredLabel", "description", "relationshipContext"]    }  ],  "nextCursor": null}
+Lo score è un supporto al ranking e non è una prova di equivalenza semantica. Il consumer deve ricevere anche reasons e, quando disponibili, segnali di compatibilità strutturale. SHACL non è un filtro di ammissibilità della ricerca.
+57. Comandi di authoring e governance
+Metodo
+Endpoint
+Effetto
+POST
+/artifacts
+Crea artefatto OUF-native in DRAFT.
+POST
+/artifacts/{id}/revisions
+Crea nuova revisione DRAFT.
+PATCH
+/revisions/{revisionId}
+Modifica revisione DRAFT con If-Match.
+POST
+/revisions/{revisionId}:submit-review
+Porta la revisione in UNDER_REVIEW.
+POST
+/revisions/{revisionId}:approve
+Registra approvazione umana.
+POST
+/revisions/{revisionId}:reject
+Rifiuta con motivazione.
+POST
+/revisions/{revisionId}:publish
+Pubblica e aggiorna atomicamente il riferimento attivo.
+POST
+/revisions/{revisionId}:deprecate
+Depreca una revisione pubblicata.
+POST
+/artifacts/{id}:retire
+Ritira logicamente l’artefatto senza cancellazione fisica.
+Confine AI/MCP
+AI e MCP possono creare draft, proporre modifiche, eseguire search/discovery, confrontare candidati e predisporre una submission. Gli endpoint approve, publish e retire non sono tool-eligible per un agente autonomo: richiedono identità umana autorizzata e contesto di approvazione verificabile.
+58. Concorrenza, ETag e idempotenza
+58.1 ETag
+Ogni rappresentazione mutabile di una revisione DRAFT espone ETag. PATCH e comandi che dipendono dallo stato corrente richiedono If-Match. Un ETag obsoleto produce 412 PRECONDITION_FAILED e non sovrascrive modifiche concorrenti.
+58.2 Idempotency-Key
+POST di publish, discovery request, refresh upstream e migration proposal accettano Idempotency-Key. La stessa chiave con lo stesso principal e payload hash restituisce lo stesso esito; la stessa chiave con payload differente produce 409 IDEMPOTENCY_KEY_REUSE.
+59. Semantic Discovery API
+Metodo
+Endpoint
+Scopo
+POST
+/discovery-requests
+Avvia discovery on demand.
+GET
+/discovery-requests/{id}
+Stato della richiesta.
+GET
+/discovery-requests/{id}/candidates
+Candidati normalizzati e ranked.
+GET
+/discovery-candidates/{id}
+Dettaglio candidato e provenance.
+POST
+/discovery-candidates/{id}:adopt
+Avvia il processo formale di adozione creando draft + snapshot.
+POST
+/discovery-candidates/{id}:dismiss
+Scarta il candidato per la richiesta corrente.
+59.1 DiscoveryRequest v1
+{  "requestedArtifactType": "CLASS",  "intent": "occupazione di suolo pubblico per dehors",  "preferredLanguages": ["it", "en"],  "expectedProperties": ["geometry", "status", "validFrom"],  "expectedRelationships": [{"predicate":"locatedOn", "targetHint":"UrbanPlace"}],  "providerPolicy": "AUTHORITATIVE_FIRST"}
+expectedProperties ed expectedRelationships sono hint di ranking e gap analysis, non vincoli SHACL e non determinano automaticamente il rigetto del candidato.
+60. Contratto DiscoveryCandidate v1
+Campo
+Descrizione
+candidateId
+Identificatore temporaneo della discovery.
+canonicalUri
+URI canonico se determinabile.
+artifactType
+Tipo semantico normalizzato.
+providerId
+Provider che ha prodotto il risultato.
+providerTrust
+AUTHORITATIVE, TRUSTED, GENERIC.
+sourceLocation
+Posizione tecnica della rappresentazione.
+sourceRevision
+Commit/tag/versione se disponibile.
+contentHash
+Hash della rappresentazione recuperata.
+score
+Ranking normalizzato.
+matchReasons
+Motivi del ranking.
+gaps
+Differenze strutturali note.
+license/publisher
+Metadata di provenienza quando disponibili.
+expiresAt
+Scadenza del candidato temporaneo/cache.
+61. Upstream Lifecycle API
+Metodo
+Endpoint
+Scopo
+GET
+/external-origins/{id}/status
+Stato upstream noto.
+POST
+/external-origins/{id}:check
+Richiede un controllo esplicito.
+GET
+/semantic-change-notices
+Elenca notice aperte/chiuse.
+GET
+/semantic-change-notices/{id}
+Dettaglio change notice e semantic diff.
+POST
+/semantic-change-notices/{id}:acknowledge
+Presa visione governata.
+POST
+/semantic-change-notices/{id}:create-migration-proposal
+Crea proposta di migrazione.
+GET
+/migration-proposals/{id}
+Analisi impatto e replacement proposto.
+Il comando :check non modifica il modello ACTIVE. Anche quando lo stato upstream è WITHDRAWN, l’artefatto adottato e il relativo snapshot locale restano disponibili finché la governance OUF non decide una transizione.
+62. Publication API e runtime contract
+Il runtime non deve ricostruire autonomamente il modello ACTIVE interrogando molte collection. Il Registry pubblica un SemanticPublicationSet immutabile che rappresenta una fotografia coerente dei riferimenti utilizzabili.
+{  "publicationSetId": "9c38...",  "sequence": 42,  "publishedAt": "2026-08-31T08:00:00Z",  "artifacts": [    {"semanticId":"https://example.ouf/onto/Dehor","revisionId":"...","contentHash":"..."},    {"semanticId":"https://w3id.org/italia/onto/CLV/City","revisionId":"...","contentHash":"..."}  ],  "manifestHash": "sha256:..."}
+62.1 Endpoint publication
+Metodo
+Endpoint
+Scopo
+GET
+/publication-sets/current
+Publication Set corrente.
+GET
+/publication-sets/{id}
+Publication Set specifico.
+GET
+/publication-sets/{id}/manifest
+Manifest machine-readable.
+GET
+/publication-sets/{id}/artifacts/{artifactId}
+Rappresentazione congelata dell’artefatto nel set.
+62.2 Canonical manifest, SHA-256 e immutabilità transazionale
+La compilazione di un SemanticPublicationSet DEVE produrre un manifest canonico e deterministico delle revisioni incluse. Il manifest viene costruito da revisioni APPROVED/ACTIVE risolte esattamente, ordinato secondo regole stabili, serializzato in forma canonica e sottoposto a SHA-256. manifestHash è parte del contratto pubblicato e identifica la membership esatta del PublicationSet.
+TX PUBLISH1. acquire publication-head concurrency guard2. resolve exact approved revisionIds3. build canonical manifest4. sort deterministically5. serialize canonical representation6. manifestHash = SHA-256(manifest)7. INSERT semantic_publication_set8. INSERT publication_set_revision rows9. atomically switch ACTIVE pointer old -> new10. COMMIT
+SEM-PUB-01 — Il canonical manifest contiene almeno semanticId/artifactId, artifactType, revisionId e contentHash; l'ordinamento è deterministico e indipendente dall'ordine di lettura DB o dalla serializzazione Jackson.
+SEM-PUB-02 — Dopo lo stato PUBLISHED/ACTIVE, SemanticPublicationSet e publication_set_revision sono immutabili. Non sono ammessi UPDATE/DELETE della membership; una variazione produce sempre un nuovo PublicationSet.
+SEM-PUB-03 — L'immutabilità è protetta anche a livello repository/DB tramite privilegi, trigger/constraint o altra guard equivalente; non dipende esclusivamente dalla disciplina del codice Spring.
+SEM-PUB-04 — Il puntatore ACTIVE viene commutato atomicamente nella stessa unità transazionale della publication. Non sono ammessi stati osservabili in cui ACTIVE punti a un set parziale o con membership non verificata.
+SEM-PUB-05 — Due publisher concorrenti non usano last-writer-wins cieco. Il publication head è protetto da optimistic/pessimistic concurrency guard; un publisher stale deve rileggere lo stato, ricostruire il manifest e ripetere il publish.
+SEM-PUB-06 — PublicationSet già referenziati da Onboarding, Ingestion, lineage o replay restano risolvibili per id/version/checksum anche dopo cambio ACTIVE. Il cambio ACTIVE non muta il set precedente.
+SEM-PUB-07 — manifestHash e publicationSetVersion/checksum sono registrati nell'audit e nei riferimenti consumer necessari al version pinning.
+63. Content negotiation ed export semantico
+Accept
+Risposta
+application/json
+Rappresentazione API OUF.
+application/ld+json
+JSON-LD quando disponibile/generabile.
+text/turtle
+RDF Turtle.
+application/rdf+xml
+RDF/XML.
+application/n-triples
+N-Triples per elaborazioni semplici.
+text/csv
+Solo per export tabellare di controlled vocabulary quando semanticamente appropriato.
+Le rappresentazioni RDF sono viste interoperabili dello stesso artefatto governato. Il Registry non crea identità semantiche differenti per ciascuna serializzazione. SHACL può essere restituito solo se l’artefatto possiede shape adottate; la sua assenza non rende incompleto il contratto v1.
+64. Error model
+Gli errori applicativi usano application/problem+json. Il campo type identifica stabilmente la classe di errore OUF; detail non deve essere usato dal client come codice macchina.
+{  "type": "https://errors.ouf.example/semantic/etag-mismatch",  "title": "Revision has changed",  "status": 412,  "code": "SEMANTIC_ETAG_MISMATCH",  "traceId": "...",  "artifactId": "...",  "revisionId": "..."}
+HTTP
+Codice OUF
+Quando
+400
+SEMANTIC_VALIDATION_ERROR
+Payload sintatticamente o semanticamente invalido.
+401
+AUTHENTICATION_REQUIRED
+Principal assente/non valido.
+403
+SEMANTIC_FORBIDDEN
+Scope/ruolo insufficiente.
+404
+SEMANTIC_NOT_FOUND
+Risorsa inesistente/non visibile.
+409
+SEMANTIC_STATE_CONFLICT
+Comando incompatibile con lifecycle corrente.
+409
+IDEMPOTENCY_KEY_REUSE
+Chiave riutilizzata con payload differente.
+412
+SEMANTIC_ETAG_MISMATCH
+If-Match non corrisponde.
+422
+SEMANTIC_INCOMPATIBLE_CHANGE
+Modifica non pubblicabile senza nuova revisione/versione.
+502
+SEMANTIC_PROVIDER_ERROR
+Provider Discovery non utilizzabile.
+503
+SEMANTIC_PROVIDER_UNREACHABLE
+Provider temporaneamente non raggiungibile.
+65. Authorization contract e scopes
+Scope
+Uso
+semantic.read
+Consultazione Registry ACTIVE.
+semantic.search
+Semantic Search.
+semantic.discovery.request
+Avvio/lettura Discovery.
+semantic.propose
+Creazione/modifica draft e proposte.
+semantic.review
+Submit/review/reject.
+semantic.approve
+Approvazione umana.
+semantic.publish
+Pubblicazione ACTIVE.
+semantic.deprecate
+Deprecate/retire governato; il check upstream usa semantic.lifecycle.check.
+semantic.admin
+Configurazione provider e policy; uso ristretto.
+Il backend deriva sempre l’identità dal token validato dal Gateway/IAM. Campi come approvedBy, publishedBy o actorId eventualmente presenti nei payload descrittivi non hanno valore autorizzativo.
+66. Contratti verso Source Onboarding & Configuration
+Capability
+Contratto Semantic Registry
+Cercare semantica esistente
+GET /search
+Leggere classi/proprietà/vocabolari
+Read API + SemanticReference v1
+Aprire semantic gap
+Onboarding mantiene il gap; invoca POST /discovery-requests
+Adottare candidato
+Discovery candidate → processo governato nel Registry
+Riprendere onboarding
+Solo dopo riferimento ACTIVE/pubblicato
+Persistenza mapping
+Resta nel Source Onboarding, non nel Registry
+Relationship mapping
+Registry espone definizione domain/range; Onboarding configura resolution strategy
+67. Contratti verso runtime OUF
+Consumer
+Uso consentito
+Source Connector & Adapter
+Legge solo riferimenti/configurazioni già pubblicati; non fa semantic discovery.
+ETL / Ingestion
+Usa SemanticReference e Publication Set per trasformazioni/classificazione.
+UDP / Urban Object Registry
+Usa semanticId/revisionId per tipizzazione e relazioni istanziate.
+MCP Server
+Espone capability di consultazione governata; nessun accesso DB diretto.
+AI Agent
+Può usare search/discovery/proposal via capability autorizzate; non pubblica autonomamente.
+68. OpenAPI 3.1 e JSON Schema — contract freeze
+La v1.0 congela il contratto logico; il repository applicativo dovrà contenere una specifica OpenAPI 3.1 versionata e schemi JSON riusabili. Le implementazioni server e client vengono generate o validate contro la stessa baseline contrattuale.
+68.1 Component schemas minimi
+• SemanticReference
+• ArtifactDetail
+• ArtifactRevision
+• SearchResult
+• DiscoveryRequest
+• DiscoveryCandidate
+• ExternalOrigin
+• SemanticChangeNotice
+• SemanticMigrationProposal
+• SemanticPublicationSet
+• ProblemDetail
+• PageCursor
+68.2 Compatibilità contrattuale
+Aggiungere campi opzionali è normalmente backward compatible; rinominare/rimuovere campi, cambiare tipo o semantica di un campo, cambiare un enum in modo incompatibile o modificare la meaning di un endpoint richiede una nuova versione contrattuale. I consumer non devono dipendere da campi non documentati.
+69. Caching e consistenza dei consumer
+Le GET su risorse ACTIVE e publication set possono usare Cache-Control ed ETag. Le revisioni immutabili possono essere cacheate più aggressivamente; current publication set deve essere rinnovato secondo policy. I consumer persistenti devono registrare publicationSetId/revisionId usati per produrre un risultato, così da mantenere la riproducibilità.
+70. Casi esecutivi
+70.1 Ricerca e riuso
+Onboarding → GET /search?q=dehor&type=CLASS&status=ACTIVERegistry → candidato ACTIVE + SemanticReferenceOnboarding → salva mapping verso semanticId/revisionId
+70.2 Gap → discovery → adozione
+Onboarding → POST /discovery-requestsRegistry → provider search → candidatesHuman/AI review → POST /discovery-candidates/{id}:adoptRegistry → snapshot immutabile + DRAFTHuman review/approval → publishRegistry → nuovo Publication SetOnboarding → riprende usando SemanticReference ACTIVE
+70.3 Upstream withdrawal
+Upstream Watch → WITHDRAWNRegistry → SemanticChangeNoticeACTIVE OUF remains unchangedImpact analysis → migration proposal (optional)Human governance → deprecate/replace when approved
+71. Test di conformità
+ID
+Test
+Esito atteso
+SEM-A01
+GET SemanticReference ACTIVE
+Contratto v1 completo e stabile.
+SEM-A02
+PATCH con ETag valido
+Aggiornamento DRAFT e nuovo ETag.
+SEM-A03
+PATCH con ETag obsoleto
+412 senza overwrite.
+SEM-A04
+Publish ripetuto con stessa Idempotency-Key
+Stesso esito, nessun doppio publication set.
+SEM-A05
+Idempotency-Key con payload diverso
+409.
+SEM-A06
+Discovery con hint non soddisfatti
+Candidato può restare valido con gaps espliciti.
+SEM-A07
+SHACL assente
+Nessun fallimento della discovery o del publish core.
+SEM-A08
+Approve via principal AI_AGENT
+403.
+SEM-A09
+Withdrawn upstream
+Artefatto ACTIVE non cancellato.
+SEM-A10
+Content negotiation Turtle
+Stesso semanticId della rappresentazione JSON.
+SEM-A11
+Publication Set immutabile
+Manifest e hash invariati.
+SEM-A12
+Consumer richiede revisionId storico
+Rappresentazione disponibile se non soggetta a retention eccezionale.
+SEM-A13
+Problem detail
+code/type/traceId conformi.
+SEM-A14
+Cursor pagination
+Nessun duplicato/perdita nel percorso stabile.
+SEM-A15
+Accesso diretto DB da consumer
+Non previsto/negato dall’architettura.
+72. Criteri di conformità
+• SemanticReference v1 congelato.
+• Read/Search/Discovery/Lifecycle/Publication API definite.
+• ETag, If-Match e Idempotency-Key definiti.
+• Problem Details e codici errore congelati.
+• Scope di autorizzazione definiti a livello contrattuale.
+• Content negotiation RDF definita senza SHACL obbligatorio.
+• Contratti Source Onboarding e runtime esplicitati.
+• OpenAPI 3.1 e JSON Schema considerati artefatti normativi della successiva implementazione.
+• Suite SEM-A01…SEM-A15 definita.
+73. Decisioni consolidate — API & Contracts
+La v1.0 chiude il dettaglio Identity & Human Governance indicato dalla v1.0: ruoli organizzativi, ApprovalChallenge, Trusted Approval Surface, evidenze di audit, delega Agent/MCP, step-up e workflow umano di adozione/pubblicazione. Restano non obbligatori triple store, reasoning OWL avanzato e motore SHACL.
+Riferimenti tecnici esterni
+Riferimento
+Uso nel progetto
+OpenAPI Specification 3.1
+Contratto machine-readable REST.
+JSON Schema 2020-12
+Schema dei payload API.
+HTTP Semantics / conditional requests
+ETag, If-Match, cache e concorrenza.
+Problem Details for HTTP APIs
+Formato uniforme degli errori.
+RDF 1.1 / JSON-LD / Turtle
+Serializzazioni semantiche interoperabili.
+OWL / SKOS
+Ontologie e controlled vocabularies.
+OntoPiA / schema.gov.it
+Provider autorevole nazionale per discovery e lifecycle di asset semantici; repository Git dati-semantic-assets usato come sorgente tecnica/versionata complementare, non come identità semantica.
+74. Identity & Human Governance — Contract Freeze
+La v1.0 congela il modello di fiducia che governa le modifiche alla semantica OUF. Il principio è: UX unica, autorità separata. L’utente può lavorare interamente nell’esperienza dell’AI Agent, ma le operazioni che trasformano una proposta in semantica ufficiale devono essere eseguite da una superficie fiduciaria controllata dalla piattaforma e autorizzate con identità umana verificata.
+Principio vincolanteL’AI può cercare, confrontare, spiegare, proporre e predisporre modifiche. Non può approvare né pubblicare autonomamente semantica ACTIVE. Il backend riconosce l’approvazione solo quando esiste una ApprovalDecision valida collegata a una identità HUMAN_USER autenticata e al contenuto esatto approvato.
+Tema
+Decisione v1.0
+Identità umana
+Federata tramite LoginFVG → IAM OUF/Keycloak; il Registry non mantiene password o profili di identità propri.
+Identità macchina
+AI_AGENT, MCP_SERVER e SERVICE_IDENTITY sono principal distinti; nessuno equivale a HUMAN_USER.
+Approvazione
+Human-only; challenge legata a revisionId/contentHash e con scadenza.
+Pubblicazione
+Human-only e soggetta a policy; non è una capability MCP tool-eligible.
+UX
+La Trusted Approval Surface può essere embedded nell’Agent Host, ma non è renderizzata né controllata dal modello AI.
+Audit
+Identity evidence + challenge + decision + hash + publication event costituiscono la catena probatoria minima.
+75. Modello delle identità e trust boundary
+Il Semantic Model / Registry distingue rigidamente il soggetto umano dal software che opera per suo conto. L’identità applicativa non viene inferita da campi del payload e non può essere auto-dichiarata dal client.
+Principal
+Descrizione
+Può approvare?
+Può pubblicare?
+HUMAN_USER
+Persona autenticata tramite IAM OUF e sessione federata LoginFVG.
+Sì, con scope/policy
+Sì, con scope/policy
+AI_AGENT
+Agent o modello che prepara ricerca, confronto, gap analysis e proposte.
+No
+No
+MCP_SERVER
+Mediatore di tool/capability verso l’Agent Host.
+No
+No
+SERVICE_IDENTITY
+Worker/job interno per discovery, upstream watch, export e manutenzione.
+No
+No
+HUMAN_USER != AI_AGENT != MCP_SERVER != SERVICE_IDENTITYactor = identity validated from tokendelegatedVia = optional technical mediation contextapprovedBy from request body = NEVER authoritative
+76. Federazione SSO e autenticazione
+La baseline assume il riuso dell’IAM OUF con Keycloak come riferimento tecnologico e LoginFVG come identità federata dell’utente. Il dettaglio del protocollo effettivo di federazione LoginFVG (OIDC/SAML o meccanismo già disponibile nell’Ente) è un parametro di integrazione IAM e non modifica il contratto del Registry.
+Utente  ↓Agent Host / Trusted Approval Surface  ↓ redirect / sessione SSOLoginFVG  ↓ federazioneIAM OUF / Keycloak  ↓ token HUMAN_USERUrban API Gateway  ↓Semantic Model / Registry
+Scenario
+Meccanismo
+Browser / Trusted Approval Surface
+OAuth 2.0 / OpenID Connect Authorization Code + PKCE.
+MCP / agent backend
+Client Credentials o identità workload; mai token umano “trasformato” in identità agente.
+Service-to-service
+Client Credentials e, ove previsto dalla baseline di piattaforma, mTLS.
+Sessione umana
+Riutilizzo della sessione SSO valida; nessun nuovo login per ogni approvazione.
+Niente autenticazione ripetitivaLa conferma di una decisione non deve obbligare l’utente a riautenticarsi ogni volta. Lo step-up è richiesto solo quando la policy classifica l’operazione come ad alto impatto o quando la sessione non soddisfa più i requisiti di freschezza/assurance.
+77. Modello di autorizzazione
+L’autorizzazione è scope-based e può essere arricchita da ruoli organizzativi. Il Gateway valida il token e applica i controlli di bordo; il Registry applica l’autorizzazione applicativa sulla risorsa e sullo stato del workflow.
+Scope
+Uso
+Agent/MCP
+semantic.read
+Consultazione artefatti, revisioni e publication set.
+Ammesso
+semantic.search
+Semantic Search nel modello adottato.
+Ammesso
+semantic.discovery.request
+Apertura/consultazione discovery request.
+Ammesso
+semantic.propose
+Creazione di draft/proposte e migration proposal.
+Ammesso
+semantic.review
+Revisione tecnica/semantica e commenti.
+Ammesso come supporto; decisione finale umana
+semantic.approve
+Emissione ApprovalDecision positiva/negativa.
+HUMAN_USER only
+semantic.publish
+Transizione governata verso ACTIVE / publication set.
+HUMAN_USER only
+semantic.deprecate
+Deprecazione/ritiro governato.
+HUMAN_USER only
+semantic.lifecycle.check
+Check upstream e change notice tecnici.
+SERVICE_IDENTITY
+semantic.admin
+Operazioni amministrative eccezionali.
+HUMAN_USER privilegiato
+78. Ruoli organizzativi e separazione dei compiti
+La v1.0 non impone un’organizzazione pesante. I ruoli sono profili di autorizzazione riusabili; l’Ente può assegnare più ruoli alla stessa persona quando la struttura organizzativa lo richiede, mantenendo audit e policy. Per operazioni HIGH la policy può richiedere separazione fra autore e approvatore.
+Ruolo
+Scope tipici
+Responsabilità
+Semantic Reader
+read, search
+Consulta il modello semantico pubblicato.
+Semantic Curator
+read, search, discovery.request, propose
+Prepara/aggiorna draft, valuta candidati, documenta gap e provenance.
+Semantic Reviewer
+read, search, review, approve
+Valuta coerenza e decide sull’adozione secondo policy.
+Semantic Publisher
+read, approve, publish, deprecate
+Rende effettiva una decisione approvata; governa activation/deprecation.
+Semantic Administrator
+admin + privilegi espliciti
+Gestisce configurazioni eccezionali; non bypassa audit/challenge.
+Regola pragmaticaLa separazione dei compiti è policy-driven, non un vincolo burocratico universale. Nelle normali modifiche NON_BREAKING una persona autorizzata può ricoprire più ruoli; per operazioni HIGH o BREAKING può essere richiesto approvatore diverso dall’autore.
+79. Workflow umano di adozione e pubblicazione
+Il lifecycle semantico rimane DRAFT → UNDER_REVIEW → ACTIVE → DEPRECATED → RETIRED. La v1.0 non introduce uno stato APPROVED nel lifecycle: l’approvazione è una evidenza separata, collegata alla revisione esatta e richiesta come guard per la transizione ad ACTIVE.
+AI / Curator   ↓ crea/propostaDRAFT   ↓ submitUNDER_REVIEW   ↓ review umanoApprovalDecision(APPROVE, revisionHash)   ↓ publish human commandACTIVESe cambia il contenuto dopo l’approvazione:ApprovalDecision precedente → non più utilizzabile
+Momento
+Oggetto
+Decisione
+Proposal review
+Uno o più suggerimenti AI / mapping semantici candidati
+Può essere batch review; non rende nulla ACTIVE.
+Revision approval
+Una ArtifactRevision immutabile logicamente identificata dal contentHash
+Crea ApprovalDecision vincolata al contenuto.
+Publication
+Una revisione approvata o un SemanticPublicationSet
+Comando umano che attiva/pubbica solo contenuti validamente approvati.
+80. ApprovalChallenge
+Prima di raccogliere una decisione umana, il backend genera una ApprovalChallenge. La challenge rende esplicito cosa viene approvato, evita replay su contenuti differenti e consente alla Trusted Approval Surface di mostrare un riepilogo verificabile.
+Campo
+Obbligo
+Descrizione
+challengeId
+Sì
+Identificatore UUID della challenge.
+operation
+Sì
+APPROVE_REVISION, PUBLISH_REVISION, PUBLISH_SET, DEPRECATE, RETIRE, APPLY_MIGRATION.
+targetId
+Sì
+revisionId / publicationSetId / migrationProposalId.
+contentHash
+Sì
+SHA-256 del contenuto/manifest su cui verte la decisione.
+riskLevel
+Sì
+LOW, MEDIUM, HIGH.
+requiredScope
+Sì
+Scope necessario per completare l’operazione.
+createdAt
+Sì
+Timestamp server-side.
+expiresAt
+Sì
+Scadenza della challenge.
+requestedBy
+Sì
+Principal che ha richiesto la challenge; può essere HUMAN_USER o mediatore tecnico.
+invalidatedAt
+No
+Valorizzato se il target cambia o la challenge viene revocata.
+Guard anti-TOCTOUQualsiasi modifica alla revisione, al publication set o all’oggetto di migrazione che alteri il contentHash invalida la challenge. La Trusted Approval Surface deve ottenere una nuova challenge e mostrare nuovamente il contenuto aggiornato.
+81. Trusted Approval Surface
+La Trusted Approval Surface è il componente UI fiduciario che raccoglie la decisione umana. Può essere incorporata visivamente nell’esperienza del chatbot/Agent Host, ma deve essere servita o controllata dalla piattaforma OUF e non generata dal modello AI.
+Chat / Agent Host  ├─ contenuto conversazionale generato dall’AI  └─ Trusted Approval Card [OUF controlled]        ├─ target / diff / provenienza        ├─ contentHash / riskLevel        ├─ Approva / Rifiuta        └─ chiamata diretta → Gateway → Registry
+• La card visualizza almeno titolo, tipo artefatto, revisione, origine, sintesi del diff, impatti noti e livello di rischio.
+• Il pulsante Approva non invoca un tool MCP “approve”. Esegue una chiamata autenticata della superficie fiduciaria.
+• L’AI può spiegare il contenuto della proposta, ma non può sostituire o nascondere il riepilogo fiduciario.
+• Il backend deriva sempre HUMAN_USER dal token; non accetta approvedBy come fonte di identità.
+82. Delega AI/MCP e capability eligibility
+MCP è un canale di esposizione di capability, non un meccanismo per trasferire autorità umana all’Agent. La v1.0 congela l’elenco delle operazioni che possono essere rese tool-eligible e quelle che devono restare fuori dall’MCP.
+Operazione
+MCP tool-eligible
+Note
+semantic.search
+Sì
+Read-only.
+semantic.get
+Sì
+Read-only.
+semantic.discovery.request
+Sì
+Può aprire una ricerca; nessuna adozione automatica.
+semantic.discovery.compare
+Sì
+Confronto/ranking/spiegazione.
+semantic.propose
+Sì
+Crea DRAFT/proposta con provenance del principal tecnico/delegato.
+semantic.review.prepare
+Sì
+Prepara diff, gap e impatti; non emette decisione.
+semantic.approve
+No
+Human-only; tool MCP vietato.
+semantic.publish
+No
+Human-only; tool MCP vietato.
+semantic.deprecate / retire
+No
+Human-only; tool MCP vietato.
+Delega senza impersonazioneQuando l’Agent opera nel contesto di una sessione utente, l’audit può registrare actor=HUMAN_USER e delegatedVia=MCP_SERVER/AI_AGENT solo per le capability che ammettono delega. L’Agent non ottiene mai semantic.approve o semantic.publish per il solo fatto di essere stato invocato dall’utente.
+83. Step-up e freshness della sessione
+Lo step-up non è richiesto per ogni conferma. La policy valuta rischio dell’operazione, assurance/freschezza della sessione, entità dell’impatto e natura breaking/non-breaking della modifica.
+Risk
+Esempi
+Requisito di conferma
+LOW
+Ricerca, discovery, preparazione proposta
+Nessuna approvazione; normale autenticazione tecnica/utente.
+MEDIUM
+Approvazione di revisione NON_BREAKING con impatto limitato
+Sessione HUMAN_USER valida e scope semantic.approve.
+HIGH
+Pubblicazione di nuova semantica, BREAKING change, retirement, migration con impatto diffuso
+Sessione HUMAN_USER + semantic.publish/deprecate + eventuale step-up secondo policy IAM.
+• Il Registry restituisce STEP_UP_REQUIRED quando il token non soddisfa assurance/freshness richiesta.
+• Il redirect/step-up è responsabilità dell’Agent Host/Trusted Approval Surface e IAM, non del modello AI.
+84. ApprovalDecision e catena delle evidenze
+ApprovalDecision è append-only e descrive una decisione umana verificata. Non è modificabile in place; eventuali correzioni producono una nuova decisione/evento.
+Campo
+Descrizione
+decisionId
+UUID della decisione.
+challengeId
+Challenge validata e non scaduta.
+decision
+APPROVE o REJECT.
+actorSubject
+sub del HUMAN_USER derivato dal token.
+issuer
+Issuer IAM del token.
+clientId
+Client/surface che ha raccolto la decisione.
+authTime
+Timestamp di autenticazione disponibile nel contesto IAM.
+assurance
+acr/amr o indicatore equivalente quando disponibile.
+targetId
+Target approvato.
+contentHash
+Hash verificato al momento della decisione.
+delegatedVia
+Eventuale contesto tecnico; non sostituisce actorSubject.
+decidedAt
+Timestamp server-side.
+reason
+Motivazione opzionale/obbligatoria secondo policy, soprattutto per REJECT/override.
+EVIDENCE CHAINIAM identity + validated token context + authorization result + ApprovalChallenge + target contentHash + ApprovalDecision + publish/deprecate event = evidenza verificabile della decisione
+85. API di governance
+Gli endpoint seguenti completano il Contract Freeze v1.0. Tutte le rotte esterne attraversano l’Urban API Gateway.
+POST /api/semantic/v1/approval-challengesGET  /api/semantic/v1/approval-challenges/{challengeId}POST /api/semantic/v1/approval-challenges/{challengeId}/decisionsGET  /api/semantic/v1/revisions/{revisionId}/approval-statusPOST /api/semantic/v1/revisions/{revisionId}:publishPOST /api/semantic/v1/publication-sets/{publicationSetId}:publishPOST /api/semantic/v1/artifacts/{artifactId}:deprecatePOST /api/semantic/v1/artifacts/{artifactId}:retire
+Endpoint/command
+Principal ammesso
+Guard principale
+create approval challenge
+HUMAN_USER / client autorizzato
+Target stabile e policy risolvibile.
+submit decision
+HUMAN_USER
+Token umano, scope, challenge valida, hash invariato.
+:publish
+HUMAN_USER
+ApprovalDecision valida + scope + step-up se richiesto.
+:deprecate / :retire
+HUMAN_USER
+Scope, impact analysis, challenge/decision secondo risk.
+86. Persistenza — Identity & Governance
+La v1.0 aggiunge solo le strutture necessarie a challenge, decisioni e audit di governance. Il Registry non duplica l’anagrafica IAM: conserva subject e attributi tecnici minimi necessari alla prova della decisione.
+semantic_approval_challenge  challenge_id UUID PK  operation VARCHAR(40) NOT NULL  target_id UUID NOT NULL  content_hash CHAR(64) NOT NULL  risk_level VARCHAR(10) NOT NULL  required_scope VARCHAR(120) NOT NULL  requested_by VARCHAR(255) NOT NULL  created_at TIMESTAMPTZ NOT NULL  expires_at TIMESTAMPTZ NOT NULL  invalidated_at TIMESTAMPTZ NULLsemantic_approval_decision  decision_id UUID PK  challenge_id UUID NOT NULL FK  decision VARCHAR(10) NOT NULL  actor_subject VARCHAR(255) NOT NULL  issuer VARCHAR(500) NOT NULL  client_id VARCHAR(255) NULL  auth_time TIMESTAMPTZ NULL  assurance JSONB NULL  target_id UUID NOT NULL  content_hash CHAR(64) NOT NULL  delegated_via JSONB NULL  reason TEXT NULL  decided_at TIMESTAMPTZ NOT NULL
+• Una challenge può avere al massimo una decisione finale valida per il medesimo intento, salvo policy esplicita di retry dopo REJECT.
+• Le decisioni e gli eventi di pubblicazione non vengono cancellati durante la retention ordinaria del modello.
+• Indici minimi: challenge(target_id, expires_at), decision(challenge_id), decision(actor_subject, decided_at).
+87. Error model Identity & Governance
+Code
+HTTP
+Significato
+HUMAN_IDENTITY_REQUIRED
+403
+Operazione human-only invocata con principal non umano.
+INSUFFICIENT_SCOPE
+403
+Principal autenticato ma privo dello scope richiesto.
+APPROVAL_CHALLENGE_EXPIRED
+409
+Challenge scaduta.
+APPROVAL_CHALLENGE_INVALIDATED
+409
+Target modificato/revocato dopo creazione challenge.
+APPROVAL_HASH_MISMATCH
+409
+contentHash target diverso da quello approvato.
+APPROVAL_REQUIRED
+409
+Tentativo di publish senza ApprovalDecision valida.
+STEP_UP_REQUIRED
+403
+Assurance/freshness IAM insufficiente per il risk level.
+SEPARATION_OF_DUTIES_REQUIRED
+409
+Policy richiede approvatore differente dall’autore.
+MCP_OPERATION_NOT_ALLOWED
+403
+Operazione non eleggibile come tool MCP.
+APPROVAL_REPLAY_DETECTED
+409
+Decision/challenge già consumata o riutilizzo non valido.
+88. Threat model focalizzato
+Minaccia
+Contromisura
+AI dichiara falsamente “approvato”
+L’unica fonte autorevole è ApprovalDecision server-side collegata a HUMAN_USER.
+Impersonazione tramite payload approvedBy
+Actor derivato esclusivamente dal token validato.
+Replay di una vecchia approvazione
+Challenge monouso/consumabile, expiry e contentHash.
+TOCTOU: contenuto cambia dopo la review
+Hash mismatch invalida challenge/decision per il nuovo contenuto.
+Agent ottiene scope umano
+Client/principal separation; approve/publish non tool-eligible e non assegnati a AI_AGENT/MCP_SERVER.
+UI conversazionale nasconde il diff
+Trusted Approval Surface controllata dalla piattaforma mostra target/diff/hash/risk.
+Token umano riutilizzato oltre freshness
+Policy step-up/freshness e validazione auth_time/acr/amr.
+Audit alterato
+Decisioni append-only, correlation ID e forwarding al sistema di audit centralizzato.
+Batch approval eccessivo
+Limiti quantitativi, riepilogo completo e hash del batch/publication set.
+89. Audit events normativi
+Evento
+Campi minimi
+SEMANTIC_PROPOSAL_CREATED
+actor/delegatedVia, artifactId, revisionId, correlationId
+SEMANTIC_REVIEW_SUBMITTED
+actor, revisionId, review outcome, correlationId
+APPROVAL_CHALLENGE_CREATED
+challengeId, targetId, contentHash, riskLevel, requestedBy
+APPROVAL_DECISION_RECORDED
+decisionId, challengeId, actorSubject, decision, contentHash
+SEMANTIC_REVISION_PUBLISHED
+actorSubject, revisionId, decisionId, publicationSetId, contentHash
+SEMANTIC_ARTIFACT_DEPRECATED
+actorSubject, artifactId, revisionId, reason, decisionId
+SEMANTIC_ARTIFACT_RETIRED
+actorSubject, artifactId, replacement, reason, decisionId
+SEMANTIC_GOVERNANCE_DENIED
+principal, operation, errorCode, targetId, correlationId
+90. Casi esecutivi
+90.1 AI propone una nuova classe
+L’Agent esegue search/discovery, confronta candidati e crea una proposta DRAFT con provenance. Il Curator porta la revisione a UNDER_REVIEW. La Trusted Approval Surface mostra diff e impatti; il Reviewer umano approva la revisione. Il Publisher umano pubblica con challenge valida. L’Agent non riceve mai un tool approve/publish.
+90.2 Approvazione dentro il chatbot
+L’utente resta nella stessa esperienza conversazionale. La richiesta di approvazione compare come trusted card embedded. Se la sessione SSO è valida e l’operazione è MEDIUM, l’utente conferma senza nuovo login; per HIGH la card può avviare step-up IAM e poi riprendere la conferma.
+90.3 Modifica dopo approvazione
+Dopo l’ApprovalDecision viene cambiata una property della revisione. Il contentHash varia, la challenge/decision precedente non soddisfa più la guard di pubblicazione e il backend richiede una nuova review/challenge. Nessun dato di audit viene sovrascritto.
+90.4 Batch di proposte AI
+L’AI può preparare più proposte e un riepilogo. La review può essere batch per ridurre attrito umano, ma il target approvato deve essere identificato da un hash del batch/publication set. Un elemento modificato dopo la conferma invalida la firma logica dell’insieme.
+91. Test di conformità
+ID
+Test
+Esito atteso
+SEM-G01
+AI_AGENT invoca semantic.approve
+403 HUMAN_IDENTITY_REQUIRED/MCP_OPERATION_NOT_ALLOWED.
+SEM-G02
+MCP_SERVER invoca semantic.publish
+403; operazione non tool-eligible.
+SEM-G03
+HUMAN_USER con scope corretto crea ApprovalDecision
+Decisione append-only registrata.
+SEM-G04
+Payload contiene approvedBy diverso dal token
+approvedBy ignorato come autorità; actor dal token.
+SEM-G05
+Challenge scaduta
+409 APPROVAL_CHALLENGE_EXPIRED.
+SEM-G06
+Target cambia dopo challenge
+Challenge invalidata / hash mismatch.
+SEM-G07
+Publish senza decisione
+409 APPROVAL_REQUIRED.
+SEM-G08
+Publish HIGH con sessione non sufficientemente fresh
+403 STEP_UP_REQUIRED.
+SEM-G09
+NON_BREAKING MEDIUM con sessione valida
+Nessun re-login non necessario.
+SEM-G10
+Policy SoD richiede approvatore differente
+Autore non può auto-approvare.
+SEM-G11
+Trusted surface approva revisione corretta
+decisionId e audit correlati a revisionId/hash.
+SEM-G12
+Replay della stessa challenge consumata
+409 APPROVAL_REPLAY_DETECTED.
+SEM-G13
+Batch approval con elemento modificato
+Hash batch non valido; nuova challenge richiesta.
+SEM-G14
+REJECT con motivazione
+Revision resta non ACTIVE; decision auditata.
+SEM-G15
+Service identity esegue upstream check
+Ammesso senza capability di approvazione.
+SEM-G16
+End-to-end Agent → trusted card → publish
+UX unica; autorità HUMAN_USER separata e verificabile.
+92. Criteri di conformità
+• Principal HUMAN_USER, AI_AGENT, MCP_SERVER e SERVICE_IDENTITY formalmente distinti.
+• Federazione SSO/IAM e meccanismi human/M2M definiti senza duplicare l’IAM nel Registry.
+• Scope e ruoli organizzativi congelati.
+• ApprovalChallenge v1 e invalidazione su contentHash definite.
+• Trusted Approval Surface separata dall’AI ma integrabile nella stessa UX.
+• semantic.approve, semantic.publish, semantic.deprecate e semantic.retire non MCP tool-eligible.
+• ApprovalDecision append-only e catena di evidenze definite.
+• Step-up risk-based e non richiesto per ogni conferma.
+• Error model, threat model, audit events e persistenza v1.0 definiti.
+• Suite SEM-G01…SEM-G16 definita.
+93. Decisioni consolidate — Identity & Human Governance
+La v1.0 chiude le decisioni rinviate dalla v1.0: regole di coerenza applicativa, domain/range, cardinalità di base, classificazione breaking/non-breaking, dependency/impact analysis e compatibilità dei consumer. SHACL resta opzionale e non costituisce un prerequisito del matching o della Discovery; triple store e reasoning OWL avanzato restano capability evolutive non richieste per il core v1.0.
+Riferimenti tecnici esterni
+• OAuth 2.0 / OpenID Connect — autenticazione e autorizzazione federata tramite IAM OUF.
+• RFC 7636 — PKCE per Authorization Code nei client interattivi.
+• OpenAPI 3.1 — contratti HTTP già congelati dalla v1.0.
+• RFC 9457 — Problem Details per error model HTTP.
+• RDF / OWL / SKOS — interoperabilità semantica; SHACL opzionale come da decisione v1.0/v1.0.
+94. Semantic Validation & Compatibility — Contract Freeze
+Decisione architetturaleLa validazione v1.0 protegge coerenza e compatibilità del modello pubblicato, ma non deve irrigidire la Semantic Discovery. Un candidato esterno semanticamente valido può essere riusato, allineato o esteso anche quando non soddisfa integralmente vincoli locali OUF. I vincoli bloccanti si applicano alla pubblicazione del modello governato, non alla fase di ricerca dei candidati.
+La v1.0 introduce un modello di validation progressivo e verificabile. La finalità non è costruire un reasoner generale né imporre una conformità OWL/SHACL completa: il core deve impedire incoerenze che romperebbero mapping, runtime e consumer già attivi, mantenendo invece flessibile il matching semantico.
+Ambito
+v1.0
+Non richiesto nel core
+Coerenza interna
+Sì: identità, riferimenti, domain/range, cardinalità base, vocabularies, dependency
+Reasoning OWL DL completo
+Compatibility
+Sì: breaking/non-breaking e consumer impact
+Dimostrazione formale di equivalenza ontologica
+Discovery matching
+Ranking + gap analysis; nessun hard-fail per mismatch locale
+SHACL come filtro obbligatorio
+Publication
+Gate deterministico e auditabile
+Triple store dedicato
+Runtime data validation
+Solo contratti pubblicati e regole minime
+Validazione massiva ABox nel Registry
+95. Modello di validazione a livelli
+Ogni revisione attraversa livelli distinti. Il risultato di un livello non deve essere confuso con il giudizio di compatibilità complessiva.
+Livello
+Domanda
+Esito
+Bloccante per publish
+L0 — Sintassi
+L’artefatto è parseable e i riferimenti sono ben formati?
+PASS / FAIL
+Sì
+L1 — Integrità
+Gli identificativi e i riferimenti interni risolvono?
+PASS / FAIL
+Sì
+L2 — Coerenza base
+Domain/range, cardinalità e datatype sono coerenti?
+PASS / WARN / FAIL
+FAIL sì; WARN no
+L3 — Compatibility
+La revisione rompe contratti o dipendenze esistenti?
+NON_BREAKING / POTENTIALLY_BREAKING / BREAKING
+BREAKING richiede migration/approval
+L4 — Consumer impact
+Quali mapping, publication set e consumer sono impattati?
+ImpactReport
+Se impatti non risolti
+Regola di fail-closedIl publication gate deve fallire quando una condizione bloccante è oggettivamente violata o quando un BREAKING change non dispone di un piano di migrazione approvato. Le warning non sono trasformate automaticamente in errori.
+96. Regole di coerenza applicativa
+ID
+Regola
+Severità
+VAL-001
+semanticId e canonical URI devono essere univoci nel namespace governato.
+ERROR
+VAL-002
+Una revisione ACTIVE non può referenziare una revisione DRAFT non inclusa nello stesso publication set.
+ERROR
+VAL-003
+Ogni Relationship deve avere domain e range risolvibili.
+ERROR
+VAL-004
+Una Property con datatype dichiarato non può avere contemporaneamente range di classe incompatibile.
+ERROR
+VAL-005
+Un Concept deve appartenere a un Vocabulary governato e non RETIRED.
+ERROR
+VAL-006
+broader/narrower e inverse relation devono essere reciprocamente coerenti quando entrambe dichiarate.
+WARN/ERROR se contraddizione
+VAL-007
+Una revisione non può creare dipendenza ciclica hard se la dipendenza è marcata REQUIRED.
+ERROR
+VAL-008
+Label e description mancanti non invalidano la semantica ma generano warning di qualità.
+WARN
+97. Domain, range e cardinalità di base
+La v1.0 supporta vincoli semplici sufficienti a proteggere i contratti OUF. Non viene introdotto un constraint language custom complesso.
+Vincolo
+Rappresentazione minima
+Regola
+domain
+semanticId di una o più classi
+Il subject atteso deve essere compatibile con almeno un domain dichiarato.
+range class
+semanticId di classe
+Il target di una relazione deve essere compatibile con il range.
+range datatype
+URI datatype
+La property literal deve usare datatype compatibile.
+minCardinality
+intero >= 0
+Usata come requisito del profilo OUF, non per scartare candidate discovery.
+maxCardinality
+intero >= min
+Riduzioni possono essere breaking.
+ouf:locatedOn  domain = ouf:Dehor  range  = ouf:UrbanPlace  minCardinality = 0  maxCardinality = unspecified
+Separazione matching / conformanceSe un’ontologia esterna non dichiara la cardinalità richiesta da OUF, il candidato resta valido per la Discovery. Il gap viene esplicitato e può portare a ALIGN o EXTEND. Solo il modello OUF pubblicato deve rispettare le proprie regole bloccanti.
+98. Compatibilità dei vocabolari controllati
+Modifica
+Classificazione predefinita
+Nota
+Aggiunta Concept ACTIVE
+NON_BREAKING
+Salvo consumer con enumeration chiusa non dichiarata.
+Aggiunta altLabel/description
+NON_BREAKING
+Solo arricchimento.
+Deprecazione Concept
+POTENTIALLY_BREAKING
+Dipende dai mapping attivi che lo referenziano.
+Ritiro Concept senza replacement
+BREAKING se referenziato
+Richiede migrazione o mantenimento storico.
+Cambio semanticId/code stabile
+BREAKING
+Non consentito come semplice edit.
+Aggiunta exactMatch/closeMatch
+NON_BREAKING
+Informazione di allineamento.
+Cambio broader/narrower
+POTENTIALLY_BREAKING
+Può alterare classificazioni o query gerarchiche.
+99. Semantic matching e gap analysis
+La v1.0 congela un principio: compatibility validation e discovery ranking sono due funzioni diverse. Il matching deve conservare candidati utili anche se incompleti rispetto al profilo locale.
+Dimensione di matching
+Uso
+Hard filter?
+Label / synonym similarity
+Ranking
+No
+Definition similarity
+Ranking e spiegazione
+No
+Class/property neighborhood
+Structural compatibility
+No
+Domain/range overlap
+Structural compatibility
+No
+Vocabulary alignment
+Gap analysis
+No
+Licenza / publisher trust
+Eligibility policy
+Sì solo se policy OUF lo richiede
+Sintassi illeggibile / artefatto corrotto
+Technical eligibility
+Sì
+Candidate: external:PublicSpaceOccupationsemanticSimilarity: 0.92structuralCompatibility: 0.81gaps:  - missing ouf:locatedOn UrbanPlace  - status vocabulary differsrecommendation: REUSE_AND_EXTEND
+100. Classificazione delle modifiche semantiche
+Classe
+Definizione
+Esempi
+NO_SEMANTIC_CHANGE
+Serializzazione o metadata tecnici cambiano senza alterare il significato.
+Riordinamento triple, formatting, timestamp tecnico.
+NON_BREAKING
+Estensione compatibile con i consumer esistenti.
+Nuova classe, nuova property opzionale, nuova label.
+POTENTIALLY_BREAKING
+Impatto dipendente dall’uso effettivo.
+Deprecazione, cambio hierarchy, range ampliato/ridotto in modo contestuale.
+BREAKING
+Può rendere invalido un riferimento o contratto già pubblicato.
+Rimozione property usata, cambio semanticId, range incompatibile, cardinalità più restrittiva.
+La classificazione automatica è una proposta deterministica basata su regole; una decisione umana può sovrascriverla solo con motivazione auditata. Il sistema conserva entrambe: computedClassification e approvedClassification.
+101. Dependency graph e Impact Analysis
+Il dependency graph persistito dalla v1.0 diventa nella v1.0 il fondamento dell’impact analysis. Non è un knowledge graph runtime: è una struttura di dipendenze tecniche e semantiche necessaria alla governance delle revisioni.
+Dependency type
+Esempio
+Impact
+IMPORTS
+Ontology A importa Ontology B
+Cambio B può impattare A.
+USES_CLASS
+Relationship R usa Class Street come range
+R deve essere rivalidata se Street cambia.
+USES_PROPERTY
+Profile usa property status
+Rimozione property è breaking.
+USES_VOCABULARY
+Property status usa vocabulary OccupationStatus
+Cambio concept può impattare mapping.
+REPLACES
+Concept nuovo sostituisce concept deprecato
+Supporta migration proposal.
+PUBLISHED_WITH
+Revision fa parte di PublicationSet
+Identifica consumer runtime potenzialmente impattati.
+Confine del RegistryIl Registry calcola impatti sui propri artefatti e sui riferimenti consumer registrati. Non modifica autonomamente mapping di Source Onboarding, dati UDP o configurazioni runtime: emette ImpactReport e SemanticChangeNotice consumabili dai rispettivi owner.
+102. ImpactReport
+{  "changeId": "chg-2026-0042",  "artifact": "ouf:UrbanPlace",  "fromRevision": "1.3",  "toRevision": "2.0",  "classification": "BREAKING",  "impacts": {    "semanticArtifacts": 7,    "onboardingMappings": 4,    "publicationSets": 2,    "runtimeConsumers": 3  },  "blockingIssues": [    "relationship ouf:locatedOn range no longer compatible"  ]}
+Campo
+Obbligo
+Descrizione
+changeId
+Sì
+Identificatore stabile dell’analisi.
+artifact/from/to
+Sì
+Oggetto e revisioni confrontate.
+classification
+Sì
+Classe di compatibility calcolata/approvata.
+impacts
+Sì
+Conteggi e riferimenti agli elementi impattati.
+blockingIssues
+Sì
+Elenco anche vuoto delle condizioni bloccanti.
+migrationProposalId
+No
+Presente quando serve una migrazione governata.
+103. Compatibilità dei consumer
+Ogni consumer che dipende da un SemanticPublicationSet deve poter dichiarare almeno il publicationSetId/version usato. Il Registry non deve conoscere il dettaglio implementativo del consumer.
+Consumer
+Contratto minimo verso Registry
+Comportamento su breaking change
+Source Onboarding
+semanticReference + revision/publicationSet
+Blocca nuova attivazione finché mapping incompatibile non è risolto.
+ETL / Semantic Processing
+publicationSetId
+Mantiene versione precedente finché non aggiornata.
+UDP / Object Registry
+semantic references materializzati
+Preserva storico; migrazione separata.
+MCP / capability layer
+semantic profile/version
+Non espone automaticamente significati incompatibili.
+104. Publication Compatibility Gate
+Gate
+Condizione
+Esito
+G1 Syntax
+Parsing e identificatori validi
+FAIL blocca
+G2 Integrity
+Riferimenti REQUIRED risolvibili
+FAIL blocca
+G3 Base semantics
+Domain/range/cardinality senza contraddizioni bloccanti
+FAIL blocca
+G4 Dependency
+Dependency graph aggiornato
+FAIL blocca
+G5 Compatibility
+Breaking change classificato
+BREAKING richiede migration decision
+G6 Consumer impact
+ImpactReport completo
+Impatti non risolti bloccano
+G7 Governance
+ApprovalChallenge/Decision validi
+FAIL blocca
+DRAFT → VALIDATE → IMPACT_ANALYSIS → UNDER_REVIEW      → APPROVE → PUBLICATION_GATE → ACTIVE/PUBLISHED
+AtomicitàIl Publication Set viene reso ACTIVE solo dopo il superamento dell’intero gate. Un fallimento non deve lasciare revisioni parzialmente pubblicate o consumer che vedono combinazioni incoerenti di versioni.
+105. Politica SHACL
+Uso SHACL
+Core v1.0
+Regola
+Import shape esterne
+Opzionale
+Possono essere conservate come metadata/snapshot.
+Gap analysis
+Opzionale
+Può produrre warning utili.
+Filtro Discovery
+NO
+Mai requisito obbligatorio.
+Matching score
+NO obbligatorio
+Può essere segnale secondario futuro.
+Publication gate
+NO nel core
+Il gate usa regole applicative v1.0.
+Runtime ABox validation
+Fuori scope Registry core
+Eventuale capability downstream.
+Decisione congelataLa v1.0 del Semantic Model / Registry deve essere implementabile senza motore SHACL. L’adozione futura di SHACL non può cambiare retroattivamente l’eligibility dei candidati Discovery già validamente considerati.
+106. API Validation & Compatibility
+Metodo / path
+Scopo
+POST /api/semantic/v1/revisions/{id}/validate
+Esegue validation L0–L2.
+GET /api/semantic/v1/validations/{validationId}
+Restituisce ValidationReport.
+POST /api/semantic/v1/revisions/{id}/compatibility
+Confronta con una baseline/revision.
+POST /api/semantic/v1/revisions/{id}/impact-analysis
+Calcola dipendenze e consumer impact.
+GET /api/semantic/v1/impact-reports/{id}
+Restituisce ImpactReport v1.
+POST /api/semantic/v1/revisions/{id}/publication-gate
+Valuta precondizioni di pubblicazione.
+IdempotenzaValidation e impact analysis sono operazioni pure rispetto al modello: a parità di revisioni, regole e dependency snapshot devono produrre lo stesso risultato. I risultati possono essere cacheati per contentHash + rulesetVersion.
+107. Contratti ValidationReport e CompatibilityReport
+ValidationReport v1- validationId- revisionId- contentHash- rulesetVersion- status: PASS | WARN | FAIL- findings[]: {ruleId, severity, semanticId, message}CompatibilityReport v1- baselineRevisionId- candidateRevisionId- computedClassification- approvedClassification?- changes[]- requiresImpactAnalysis: true|false
+108. Persistenza — Validation & Compatibility
+Tabella
+Scopo
+semantic_validation_run
+Esecuzione validation con hash e rulesetVersion.
+semantic_validation_finding
+Finding strutturati per ruleId/severity/artifact.
+semantic_compatibility_report
+Confronto revisioni e classificazione.
+semantic_impact_report
+Sintesi dell’impact analysis.
+semantic_impact_item
+Dipendenza/consumer impattato con severity e resolution state.
+semantic_ruleset
+Versione delle regole applicative di validazione.
+I report che hanno supportato una ApprovalDecision o una publication devono essere immutabili e conservati come evidenza. Nuove esecuzioni producono nuovi record; non sovrascrivono la base probatoria storica.
+109. Ruleset versioning
+Le regole di validation sono parte del comportamento contrattuale del Registry e devono essere versionate. Un artefatto già pubblicato non diventa retroattivamente “non valido” solo perché una nuova ruleset introduce controlli più severi.
+Caso
+Comportamento
+Nuova rule WARN
+Applicabile alle nuove validation; nessun impatto retroattivo automatico.
+Nuova rule ERROR
+Applicabile alla prossima revisione/pubblicazione; gli ACTIVE esistenti generano al massimo advisory.
+Correzione bug rule
+Nuova rulesetVersion; eventuale revalidation esplicita.
+Publication evidence
+Conserva rulesetVersion effettivamente usata.
+110. Error model — Validation & Compatibility
+Codice
+HTTP
+Significato
+SEM_VALIDATION_FAILED
+422
+La revisione viola una o più regole bloccanti.
+SEM_COMPATIBILITY_BREAKING
+409
+Breaking change privo di decisione/migrazione necessaria.
+SEM_IMPACT_UNRESOLVED
+409
+Esistono impatti consumer bloccanti non risolti.
+SEM_DEPENDENCY_UNRESOLVED
+422
+Dipendenza REQUIRED non risolvibile.
+SEM_PUBLICATION_GATE_FAILED
+409
+Una o più precondizioni del gate non sono soddisfatte.
+SEM_RULESET_NOT_FOUND
+500
+Ruleset richiesta non disponibile; errore operativo/configurativo.
+111. Casi esecutivi
+111.1 Estensione non breaking
+• Viene aggiunta una property opzionale ouf:surfaceArea a ouf:Dehor.
+• Validation PASS; Compatibility NON_BREAKING; ImpactReport senza blocking issue.
+• La revisione può procedere al normale workflow di review/approval/publish.
+111.2 Riduzione del range
+• Una relationship passa da range ouf:UrbanPlace a ouf:Street, restringendo un dominio prima valido anche per Square e altri luoghi urbani.
+• Compatibility = POTENTIALLY_BREAKING o BREAKING in base alle dipendenze reali.
+• Impact analysis identifica mapping/consumer che usano target non Street, ad esempio Square; publication bloccata finché gli impatti non sono risolti.
+111.3 Candidato Discovery imperfetto
+• Un candidato esterno è semanticamente molto vicino a PublicSpaceOccupation ma non dichiara una relazione equivalente a locatedOn verso un UrbanPlace.
+• Il candidato NON viene scartato. La Discovery restituisce gap e recommendation REUSE_AND_EXTEND.
+• La futura revisione OUF che adotta/estende il candidato deve invece superare il Publication Compatibility Gate.
+111.4 Deprecazione di concept usato
+• Upstream depreca un concept di vocabolario già adottato.
+• Upstream Lifecycle crea SemanticChangeNotice; compatibility POTENTIALLY_BREAKING.
+• Impact analysis individua mapping attivi; il concept storico resta risolvibile e si prepara migration proposal.
+112. Test di conformità
+ID
+Test
+Esito atteso
+SEM-V01
+Relationship senza domain
+FAIL VAL-003
+SEM-V02
+Range referenzia artifact inesistente
+FAIL dependency/integrity
+SEM-V03
+Aggiunta property opzionale
+NON_BREAKING
+SEM-V04
+Rimozione property referenziata
+BREAKING + ImpactReport
+SEM-V05
+Riduzione maxCardinality con consumer attivo
+BREAKING/POTENTIALLY_BREAKING motivato
+SEM-V06
+Deprecazione concept non usato
+POTENTIALLY_BREAKING senza blocker
+SEM-V07
+Ritiro concept usato
+BREAKING + migration required
+SEM-V08
+Candidate discovery non conforme a vincolo locale
+Candidate conservato + gap analysis
+SEM-V09
+SHACL assente
+Nessun impedimento a discovery/publish core
+SEM-V10
+Ruleset nuova su artifact già ACTIVE
+Nessuna invalidazione retroattiva automatica
+SEM-V11
+Impact report con mapping consumer non risolto
+Publication gate FAIL
+SEM-V12
+Tutti i gate soddisfatti
+Publication atomica
+SEM-V13
+Override umano classification
+Motivazione e audit obbligatori
+SEM-V14
+Validation ripetuta stesso hash/ruleset
+Risultato deterministico/cacheable
+SEM-V15
+Publication evidence
+Report immutabili e referenziati da approval/publication
+113. Criteri di conformità
+• Modello L0–L4 di validation congelato.
+• Regole domain/range/cardinalità di base definite senza introdurre un constraint engine custom.
+• Classificazione NO_SEMANTIC_CHANGE / NON_BREAKING / POTENTIALLY_BREAKING / BREAKING congelata.
+• Dependency graph collegato formalmente all’Impact Analysis.
+• ImpactReport v1 e consumer compatibility definiti.
+• Publication Compatibility Gate atomico definito.
+• SHACL confermato opzionale e non utilizzato come hard filter della Discovery.
+• API, report model, persistenza, ruleset versioning ed error model v1.0 definiti.
+• Suite SEM-V01…SEM-V15 definita.
+114. Decisioni consolidate — Validation & Compatibility
+La v1.0 chiude la Implementation Specification con una baseline volutamente minimale: una sola applicazione Java/Spring, PostgreSQL, Flyway, provider adapter essenziali, job asincroni persistenti e riuso dei servizi OUF condivisi. Non introduce nuove capability semantiche né componenti infrastrutturali dedicati non richiesti dalla baseline v1.0–v1.0.
+Riferimenti tecnici esterni
+• RDF / RDFS / OWL — rappresentazione interoperabile di classi, proprietà e relazioni.
+• SKOS — vocabolari controllati, concept e relazioni di mapping.
+• SHACL — capability opzionale; non prerequisito del core v1.0 né hard filter della Discovery.
+• OpenAPI 3.1 / JSON Schema — contratti API già congelati dalla v1.0.
+• PostgreSQL — system of record di artefatti, revisioni, dipendenze, report e publication evidence.
+115. Implementation Specification minimale — Freeze
+La v1.0 definisce come implementare il Semantic Model / Registry senza introdurre componenti non necessari. Il criterio di progetto è: implementare soltanto ciò che serve a rendere operative le decisioni già congelate nelle v1.0–v1.0, rimandando ogni tecnologia aggiuntiva finché un requisito misurabile non la renda necessaria.
+115.1 Principio anti-scope-creep
+• Un solo servizio applicativo deployable per il Semantic Model / Registry nella baseline iniziale.
+• PostgreSQL resta il system of record; nessun graph DB o triple store dedicato richiesto.
+• Nessun broker dedicato: i job asincroni usano una coda persistente PostgreSQL dietro una porta applicativa sostituibile.
+• Nessun workflow engine: lifecycle e approval sono gestiti dalla state machine applicativa già definita.
+• Nessun motore SHACL obbligatorio e nessun reasoning OWL general-purpose nella baseline.
+• Nessun motore di ricerca esterno: ricerca iniziale su PostgreSQL con indici testuali/trigram e metadata normalizzati.
+• IAM, Gateway, secret management, logging/tracing e deployment Kubernetes sono servizi di piattaforma riusati, non sottosistemi del modulo.
+116. Unità di deployment
+La baseline prevede un’unica applicazione Spring Boot, eseguita in una o più repliche stateless. Le funzioni asincrone sono eseguite dallo stesso codice applicativo tramite worker logici separabili per configurazione, senza creare un prodotto distinto.
+semantic-registry-service  ├─ REST API  ├─ application/domain  ├─ persistence PostgreSQL  ├─ semantic parser/serializer  ├─ discovery provider adapters  └─ async job worker
+Se il carico futuro lo richiederà, API e worker potranno essere scalati separatamente usando la stessa codebase. Tale separazione non è requisito della v1.0.
+117. Struttura applicativa minima
+Package logico
+Responsabilità
+api
+Controller REST, DTO, error mapping, ETag e idempotency.
+application
+Use case: search, propose, review, publish, discovery, lifecycle check.
+domain
+Artefatti, revisioni, lifecycle, compatibility gate, invarianti.
+persistence
+Repository PostgreSQL e Flyway.
+semantic
+Parsing/serializzazione RDF, OWL e SKOS strettamente necessari.
+discovery
+Provider SPI e adapter configurati.
+jobs
+Esecuzione discovery/lifecycle/impact asincroni.
+security
+Integrazione OIDC/OAuth2 e policy di scope.
+Non sono previsti moduli separati per graph analytics, vector search, reasoning, SHACL engine o semantic ML. Eventuali funzioni AI sono consumer delle API del Registry o assistenti esterni governati.
+118. Stack tecnologico congelato
+Area
+Scelta minima
+Runtime
+Java 21 LTS + Spring Boot 3.x
+API
+REST/JSON, OpenAPI 3.1
+Persistenza
+PostgreSQL 17.x
+Migrazioni
+Flyway 11.x
+RDF/OWL/SKOS
+Apache Jena per parsing, normalizzazione e serializzazione essenziale
+AuthN/AuthZ
+OIDC/OAuth2 tramite IAM OUF; nessun IAM locale
+Secret
+secretRef verso servizio di piattaforma
+Async
+job table PostgreSQL; AsyncExecutionPort astratta
+Deployment
+Kubernetes della piattaforma OUF; nessun orchestratore aggiuntivo
+119. Persistenza operativa e job asincroni
+La v1.0 non aggiunge un nuovo modello dati rispetto al freeze v1.0–v1.0. Introduce soltanto la convenzione operativa per i job lunghi: discovery remota, fetch/snapshot, upstream check e impact analysis.
+semantic_job- job_id UUID PK- job_type VARCHAR- status VARCHAR   -- READY/RUNNING/SUCCEEDED/FAILED- payload JSONB- result_ref UUID NULL- attempts INT- available_at TIMESTAMPTZ- locked_at TIMESTAMPTZ NULL- locked_by VARCHAR NULL- created_at TIMESTAMPTZ- updated_at TIMESTAMPTZ
+• Acquisizione concorrente tramite SELECT ... FOR UPDATE SKIP LOCKED.
+• Ogni job deve essere idempotente rispetto al proprio business key.
+• Retry con backoff per errori transient; nessun retry infinito.
+• Lo stato business non dipende dalla presenza di un broker esterno.
+120. Provider Discovery: implementazione minima
+La SPI di Discovery resta quella definita in v1.0. La v1.0 richiede soltanto adapter sufficienti a coprire le fonti autorevoli effettivamente usate nel primo ciclo di onboarding.
+Adapter
+Baseline
+OntoPiA/schema.gov.it
+Sì: ricerca metadati, URI canonico, dereferenziazione/fetch.
+GitHub dati-semantic-assets
+Sì come sorgente tecnica/versionata complementare, non come identità semantica.
+Generic RDF URL
+Sì, solo per URI esplicitamente indicati e allowlistati.
+Cataloghi generici/Web crawling
+No.
+LLM web research autonoma
+No nel core; eventuale assistenza esterna produce solo proposte.
+Il numero di provider non è un KPI: un nuovo adapter viene aggiunto solo se una fonte autorevole necessaria non è coperta da quelli esistenti.
+121. Semantic parsing e normalizzazione
+Apache Jena viene usato in modo circoscritto: parsing delle serializzazioni RDF accettate, estrazione degli elementi necessari, canonicalizzazione sufficiente al content hash/diff e serializzazione di export. Non viene introdotto un motore di inferenza persistente.
+• Formati minimi: Turtle, RDF/XML e JSON-LD quando disponibili.
+• OWL e SKOS sono interpretati solo per i costrutti supportati dal modello OUF congelato.
+• Costrutti non supportati sono preservabili nello snapshot ma non diventano automaticamente regole operative.
+• SHACL può essere preservato come allegato semantico opzionale; non blocca discovery o publication core.
+122. Transazioni e publication path
+Le scritture governate rimangono transazionali in PostgreSQL. Le chiamate remote non devono essere eseguite dentro transazioni lunghe.
+fetch remoto  ↓staging/snapshot candidate  ↓validation + compatibility  ↓ApprovalDecision valida  ↓BEGIN  registra revision/publication set  aggiorna active pointer  registra audit referenceCOMMIT
+Se il commit fallisce, nessuna revisione diventa ACTIVE. Lo snapshot remoto può restare come evidenza tecnica riutilizzabile dal retry.
+123. Deployment minimale
+Il modulo usa il profilo Kubernetes comune OUF. La specifica v1.0 non introduce componenti infrastrutturali dedicati.
+Oggetto
+Baseline
+Deployment
+semantic-registry-service, almeno 1 replica; replica aggiuntiva secondo profilo ambiente.
+Service
+ClusterIP interno; esposizione esclusivamente tramite Urban API Gateway.
+Config
+ConfigMap per configurazione non sensibile; secretRef per credenziali/provider token.
+Database
+Istanza/schema PostgreSQL governato dalla piattaforma.
+Health
+/actuator/health/liveness e /readiness.
+Network
+Egress consentito solo verso Gateway/provider autorizzati secondo policy di piattaforma.
+HPA, PDB e replica multipla sono configurazioni del profilo di esercizio, non requisiti funzionali del modulo. Nessun cluster dedicato è richiesto.
+124. Osservabilità minima necessaria
+Il modulo deve integrarsi con l’osservabilità OUF già disponibile, senza creare dashboard o stack dedicati. Il set minimo di segnali applicativi è limitato a ciò che serve per esercizio e diagnosi.
+• request count/latency/error rate delle API principali;
+• numero job READY/RUNNING/FAILED;
+• discovery/fetch falliti per provider;
+• publication success/failure;
+• correlationId nei log strutturati e audit reference per operazioni governate.
+Metriche semantiche avanzate, analytics sui grafi e dashboard specialistiche sono fuori scope della v1.0.
+125. Sicurezza implementativa minima
+• Il servizio accetta esclusivamente token emessi/validati secondo IAM OUF e scope definiti in v1.0.
+• Nessuna credenziale provider è memorizzata nel database in chiaro.
+• Fetch esterni limitati a provider configurati/allowlistati; redirect e dimensione payload soggetti a limiti.
+• Snapshot e content hash vengono conservati secondo le regole v1.0; nessun artefatto remoto modifica direttamente il modello ACTIVE.
+• AI/MCP non ricevono scope approve/publish e non possono aggirare la Trusted Approval Surface.
+126. Test implementativi
+ID
+Verifica
+SEM-I01
+Avvio applicazione con schema Flyway pulito e health READY.
+SEM-I02
+CRUD DRAFT e ricerca su PostgreSQL senza motore di ricerca esterno.
+SEM-I03
+Discovery OntoPiA produce candidato normalizzato e snapshot hashato.
+SEM-I04
+Job concorrenti non vengono eseguiti due volte grazie a SKIP LOCKED/idempotenza.
+SEM-I05
+Publication atomica aggiorna publication set e active pointer oppure rollback completo.
+SEM-I06
+Provider remoto indisponibile non altera artefatti ACTIVE.
+SEM-I07
+Token privo di scope publish riceve 403.
+SEM-I08
+SHACL assente o non conforme non impedisce il matching/discovery core.
+SEM-I09
+Export Turtle/JSON-LD di un artefatto ACTIVE è riproducibile.
+SEM-I10
+Servizio opera senza broker, graph DB, Elasticsearch e workflow engine.
+127. Criteri di conformità implementativa
+• Applicazione costruibile e avviabile con Java 21, PostgreSQL e servizi OUF condivisi.
+• Schema e migrazioni Flyway applicabili da zero.
+• Discovery, adozione, validation, approval e publication eseguibili end-to-end con almeno un provider autorevole.
+• Nessuna dipendenza obbligatoria da graph DB, triple store, broker, search engine, workflow engine o SHACL engine.
+• API e contratti v1.0–v1.0 restano invariati o compatibili.
+• Suite SEM-I01…SEM-I10 verde.
+128. Decisioni esplicitamente fuori scope
+Per evitare crescita non necessaria, la v1.0 congela come NON richiesti per la prima release:
+• triple store o graph database dedicato;
+• reasoning OWL general-purpose;
+• motore SHACL obbligatorio;
+• vector database o semantic embeddings persistenti;
+• Elasticsearch/OpenSearch;
+• Kafka/NATS/RabbitMQ dedicati al modulo;
+• workflow/BPM engine;
+• catalogo locale permanente di ontologie esterne non adottate;
+• web crawler semantico general-purpose;
+• UI amministrativa dedicata: l’operatività può essere esposta via API e Trusted Approval Surface comune.
+Qualunque introduzione futura di uno di questi componenti richiede un requisito misurabile non soddisfatto dalla baseline e una decisione architetturale esplicita di piattaforma.
+130. Conformance & End-to-End minimale
+La v1.0 non introduce nuove capability architetturali. Definisce esclusivamente il set minimo di prove necessario a dimostrare che la baseline congelata fino alla v1.0 è coerente, integrabile e realmente eseguibile. Il criterio resta anti-scope-creep: collaudare ciò che esiste, non costruire una piattaforma di test separata.
+130.1 Principio di collaudo
+• Ogni requisito di collaudo deve corrispondere a una decisione o a un contratto già congelato nelle v1.0–v1.0.
+• La v1.0 non richiede ambienti dedicati oltre al normale ambiente di integrazione OUF.
+• Un solo provider semantico autorevole è sufficiente per il gate iniziale, purché copra discovery, fetch, snapshot e lifecycle.
+• Il collaudo privilegia percorsi end-to-end riproducibili rispetto a test esaustivi su grandi corpus ontologici.
+• SHACL, reasoning OWL general-purpose, graph DB, vector DB e motori di ricerca esterni restano fuori scope.
+131. Ambiente minimo di collaudo
+Il collaudo può essere eseguito nello stesso profilo Kubernetes/integrazione già previsto dalla piattaforma. Non è richiesto un laboratorio prestazionale dedicato.
+Elemento
+Baseline minima
+Semantic Registry
+1 deployment applicativo della codebase v1.0
+Database
+PostgreSQL con schema Flyway da zero
+Gateway/IAM
+Servizi OUF condivisi già disponibili
+Provider Discovery
+Almeno 1 provider autorevole configurato
+Source Onboarding
+Istanza o stub contrattuale capace di consumare SemanticReference
+Consumer runtime
+Stub o servizio che risolva un SemanticPublicationSet ACTIVE
+AI/MCP
+Opzionale per i test core; utile solo per verificare proposta non autoritativa
+132. Fixture semantiche minime
+La suite usa un dataset piccolo e stabile. Lo scopo non è rappresentare tutta la città, ma coprire i principali tipi di artefatto e le transizioni di lifecycle.
+Fixture
+Contenuto minimo
+Scopo
+F1 — modello locale
+Classi Dehor, UrbanPlace, Street, Square; relationship locatedOn; property status
+authoring, validation, publication
+F2 — vocabolario
+Vocabulary Status con ACTIVE/CLOSED
+concept lifecycle e mapping consumer
+F3 — candidato esterno
+1 ontologia/vocabolario autorevole non ancora adottato
+discovery e adoption
+F4 — update upstream
+Seconda revisione del candidato con modifica non breaking
+upstream monitoring e semantic diff
+F5 — withdrawal/replacement
+Artefatto marcato deprecated/withdrawn con eventuale replacement
+non-distruttività e migration proposal
+133. Scenari end-to-end obbligatori
+133.1 Cold start e discovery
+Il Registry non contiene il concetto richiesto. Source Onboarding esegue una ricerca locale, riceve esito vuoto e apre una SemanticDiscoveryRequest. Il provider restituisce candidati; nessun candidato viene persistito nel Registry fino all’avvio formale dell’adozione.
+133.2 Adozione e snapshot
+Un candidato viene selezionato. Il Registry recupera la rappresentazione remota, registra canonical URI, ExternalOrigin, revision/source reference e content hash, crea lo snapshot immutabile e apre una revisione DRAFT. La scomparsa successiva della risorsa remota non deve rendere il contenuto adottato irrisolvibile.
+133.3 Review, approval e publication
+La revisione supera validation e compatibility. Una HUMAN_USER autorizzata approva tramite ApprovalChallenge legata al contentHash. La publication crea un SemanticPublicationSet immutabile e aggiorna atomicamente l’active pointer. AI_AGENT e MCP_SERVER devono risultare tecnicamente incapaci di eseguire approve/publish.
+133.4 Consumo downstream
+Source Onboarding e un consumer runtime risolvono semanticId/version/publicationSet senza accesso al database del Registry. Devono ottenere soltanto artefatti ACTIVE o versioni storiche esplicitamente richieste.
+134. Upstream lifecycle — scenari obbligatori
+Scenario
+Esito atteso
+UNCHANGED
+nessuna modifica del modello ACTIVE; aggiornato solo il controllo tecnico
+UPDATED non breaking
+SemanticChangeNotice + diff; nessun auto-update; possibile nuova revisione
+UPDATED breaking
+ImpactReport evidenzia dipendenze; publication della nuova revisione bloccata finché non risolta
+DEPRECATED
+artefatto locale resta risolvibile; stato upstream separato dal lifecycle OUF
+WITHDRAWN
+snapshot locale preservato; nessuna cancellazione; eventuale migration proposal
+UNREACHABLE
+errore transient; modello ACTIVE continua a funzionare senza dipendere dal provider remoto
+135. Conformance delle interfacce
+La v1.0 verifica i contratti già congelati dalla v1.0 senza introdurre nuove API. I test minimi riguardano:
+• SemanticReference v1 e risoluzione per semanticId/versione;
+• Semantic Search locale;
+• DiscoveryRequest e DiscoveryCandidate;
+• ApprovalChallenge e ApprovalDecision;
+• ValidationReport, CompatibilityReport e ImpactReport;
+• SemanticPublicationSet e content negotiation supportata;
+• error model, ETag/If-Match e idempotenza dei comandi già definiti.
+136. Suite di conformità
+ID
+Verifica
+Gate
+SEM-E01
+Cold start: ricerca locale senza match apre discovery
+PASS
+SEM-E02
+Candidate esterno resta effimero finché non adottato
+PASS
+SEM-E03
+Adozione registra canonical URI, origin, hash e snapshot immutabile
+PASS
+SEM-E04
+Validation/compatibility producono report versionati
+PASS
+SEM-E05
+AI/MCP non possono approvare o pubblicare
+PASS
+SEM-E06
+ApprovalChallenge invalida se cambia contentHash
+PASS
+SEM-E07
+Publication atomica crea publication set ACTIVE
+PASS
+SEM-E08
+Consumer risolve semantic reference senza DB direct access
+PASS
+SEM-E09
+Update upstream non modifica automaticamente ACTIVE
+PASS
+SEM-E10
+Withdrawal non cancella artefatto/snapshot locale
+PASS
+SEM-E11
+UNREACHABLE non interrompe risoluzione del modello già pubblicato
+PASS
+SEM-E12
+Breaking change produce impact blocking quando dipendenze attive esistono
+PASS
+SEM-E13
+Candidato semanticamente valido non è scartato per assenza di SHACL
+PASS
+SEM-E14
+Restart del servizio preserva job/state e publication set
+PASS
+137. Criteri GO / NO-GO
+Il modulo è GO per il passaggio alla baseline finale solo se tutti i test SEM-E01…SEM-E14 sono verdi e non esistono difetti che consentano pubblicazione non autorizzata, perdita di snapshot adottati o modifica implicita del modello ACTIVE.
+Severità
+Definizione
+Effetto
+BLOCKER
+violazione governance, perdita/alterazione semantica, bypass approval, publication non atomica
+NO-GO
+HIGH
+contratto core non rispettato o lifecycle errato con impatto consumer
+NO-GO
+MEDIUM
+difetto non bloccante con workaround documentato
+GO condizionato
+LOW
+difetto editoriale/diagnostico senza impatto funzionale
+GO
+138. Evidenze minime di collaudo
+Non viene istituito un repository di evidence dedicato. Per ogni esecuzione sono sufficienti artefatti esportabili o riferimenti tracciabili già prodotti dal sistema:
+• test report con ID, esito, timestamp e build/versione;
+• correlationId/audit reference per i percorsi governati;
+• hash dello snapshot adottato e publicationSetId risultante;
+• ValidationReport/CompatibilityReport/ImpactReport quando applicabili;
+• evidenza dell’identità HUMAN_USER per approve/publish e dell’assenza dei relativi scope su AI/MCP.
+139. Prestazioni: verifica minima, non benchmark
+La v1.0 non introduce SLO specialistici del Semantic Registry. È sufficiente verificare che, con il piccolo dataset di fixture, search, resolve e publication completino senza errori e senza dipendenze non previste. Test di carico, graph benchmark, inferenza massiva e tuning su milioni di triple sono esplicitamente rinviati a quando esisterà un requisito misurabile.
+140. Decisioni esplicitamente fuori scope
+• test esaustivi di tutte le ontologie disponibili su OntoPiA o altri cataloghi;
+• benchmark comparativi fra PostgreSQL e triple store/graph database;
+• chaos engineering o fault injection infrastrutturale dedicata;
+• suite SHACL completa o reasoning OWL general-purpose;
+• quality scoring AI dei candidati come gate vincolante;
+• vector search/embedding benchmark;
+• portale amministrativo dedicato per il collaudo;
+• introduzione di broker, search engine o piattaforme di test separate.
+141. Criteri GO / NO-GO consolidati
+• Suite SEM-E01…SEM-E14 verde nel normale ambiente di integrazione OUF.
+• Cold start, discovery, adozione, approval, publication e consumo verificati end-to-end.
+• Update, deprecation, withdrawal e unreachable upstream verificati senza modifica automatica del modello ACTIVE.
+• Snapshot immutabile e compatibilità storica dimostrati.
+• Nessun nuovo componente infrastrutturale introdotto per superare il collaudo.
+• Nessun BLOCKER/HIGH aperto.
+142. Consolidamento e Relationship Semantics
+La baseline v1.0 non introduce nuovi sottosistemi né nuove tecnologie. Consolida in forma definitiva le decisioni maturate nel percorso esecutivo, elimina riferimenti transitori ormai superati e congela la disciplina delle relazioni semantiche affinché cardinalità e range siano sostenuti da regole di dominio verificabili.
+Principio congelato v1.0 — Le cardinalità e i range delle relazioni non devono essere dedotti per intuizione. Un vincolo massimo viene dichiarato solo quando è una regola di dominio verificata; in assenza di tale garanzia il modello resta aperto e il vincolo non viene imposto.
+143. Disciplina minima delle relazioni
+• Il Registry tratta le relazioni come artefatti semantici di primo livello, ma non introduce un motore topologico o spaziale dedicato.
+• Il domain e il range esprimono compatibilità semantica; non devono restringere artificialmente casi reali validi.
+• La cardinalità massima è opzionale. L’assenza di max significa “non vincolato dal modello”, non “infinito per definizione”.
+• Relazioni di appartenenza amministrativa/strutturale e relazioni spaziali/topologiche devono essere nominate secondo il loro significato, evitando di usare belongsTo come relazione universale.
+• Eventuali inverse vengono dichiarate solo se semanticamente corrette e governate; non sono obbligatorie per ogni relazione.
+144. Esempio Dehor corretto
+Un Dehor può insistere su più riferimenti urbani: due vie in corrispondenza di un incrocio, una via e una piazza, oppure altri luoghi canonici. Per questo l’esempio precedente Dehor → belongsTo → Street con max=1 viene ritirato come esempio normativo.
+{  "semanticId": "ouf:locatedOn",  "artifactType": "RELATIONSHIP",  "domain": ["ouf:Dehor"],  "range": ["ouf:UrbanPlace"],  "cardinality": {"min": 0},  "status": "ACTIVE",  "version": "1.0"}
+Nel modello istanziato la UDP / Urban Object Registry può quindi materializzare più edge, ad esempio DEHOR-992 → STREET-123 e DEHOR-992 → SQUARE-045. La relazione concreta deriva dal mapping e dalla resolution runtime, non dal Registry.
+145. Classificazione logica delle relazioni
+Per evitare ambiguità, la documentazione può classificare le relazioni in famiglie puramente descrittive. Questa classificazione non crea nuovi servizi né nuovi engine:
+Famiglia
+Esempi
+Uso
+STRUTTURALE / AMMINISTRATIVA
+belongsTo, partOf
+Appartenenza reale a una struttura, aggregato o dominio amministrativo.
+SPAZIALE DI RIFERIMENTO
+locatedOn, locatedIn
+Collega un oggetto a uno o più luoghi urbani canonici.
+TOPOLOGICA / DERIVATA
+intersects, adjacentTo
+Relazione calcolata o validata da geometria quando il caso d’uso lo richiede.
+La famiglia non modifica la semantica RDF dell’artefatto: serve a rendere più leggibile la governance e a prevenire l’uso indiscriminato di una relazione generica.
+146. Impatto su Discovery e matching
+La correzione non irrigidisce la Discovery. expectedRelationships e targetHint restano indizi di ranking e gap analysis. Un candidato che modella correttamente PublicSpaceOccupation ma usa un’altra relazione spaziale equivalente non viene scartato: viene confrontato, allineato o esteso secondo REUSE → ALIGN → EXTEND.
+SHACL resta opzionale e non viene utilizzato come hard filter. La cardinalità del candidato esterno non deve coincidere perfettamente con quella locale per essere considerato semanticamente valido.
+147. Conformance delle relazioni
+• Fixture F1 include UrbanPlace, Street e Square e verifica una relazione Dehor → locatedOn → UrbanPlace senza max cardinality.
+• Il test deve accettare un Dehor con due o più target spatial reference validi.
+• Un restringimento del range da UrbanPlace a Street deve essere classificato come potenzialmente breaking/breaking quando esistono target Square o altri sottotipi.
+• La publication non può introdurre max=1 senza una decisione semantica esplicita e relativa impact analysis.
+• I contratti runtime continuano a pubblicare riferimenti semantici; nessuna nuova API è richiesta.
+148. Gate di conformità delle relazioni
+• Nessun TBD bloccante sui confini del modulo, Discovery, lifecycle upstream, persistenza, API, governance, validation, implementation e conformance.
+• Nessun esempio normativo contiene cardinalità massime non giustificate dal dominio.
+• Suite SEM-E01…SEM-E14 più i casi di regressione relazione multi-target verdi.
+• Nessun nuovo componente infrastrutturale introdotto nella v1.0.
+• La v1.0 è il consolidamento editoriale e contrattuale definitivo del perimetro core, senza ampliamento funzionale.
+149. Test di regressione
+ID
+Scenario
+Atteso
+SEM-R01
+Dehor localizzato su due Street
+Entrambe le relazioni sono valide e pubblicabili.
+SEM-R02
+Dehor localizzato su Street + Square
+Range UrbanPlace accetta entrambi i target.
+SEM-R03
+Tentativo di introdurre max=1 su locatedOn con dipendenze multi-target
+Compatibility/Impact gate segnala breaking o blocco.
+SEM-R04
+Discovery trova relazione spaziale equivalente con nome diverso
+Candidato non scartato; gap/alignment proposto.
+149.1 Allineamento storico con Ingestion Runtime v1.2 EF
+L’Ingestion Runtime consuma la semantica pubblicata come contratto immutabile. Il Semantic Model / Registry resta l’autorità della TBox e dei vocabolari; il Runtime non effettua authoring, discovery o auto-migrazione semantica durante l’elaborazione. La v1.1 non introduce nuove capability sostanziali nel Registry: rende normativi pinning, compatibilità storica e lineage reference verso i consumer runtime.
+150.1 PublicationSet pinning
+Ogni IngestionRun che usa riferimenti semantici deve registrare il semanticPublicationSetId/version/checksum effettivamente risolto all’avvio.
+Il PublicationSet pinning resta invariato per tutta la run, inclusi pause/resume e retry dello stesso processing attempt salvo nuova run/reprocess esplicito.
+La variazione dell’ACTIVE pointer nel Registry non modifica una run già iniziata e non altera gli oggetti o le evidence storiche già prodotti.
+Il Runtime può leggere una versione storica esplicitamente referenziata; non deve sostituirla con latest/ACTIVE in modo implicito.
+IngestionRun  ├─ bundleId/version  ├─ sourceSchemaId/version  └─ semanticPublicationSetId/version/checksum  <-- PINNED                         │                         ▼                Semantic Model / Registry                  resolve exact versionACTIVE pointer changes later -> NO retroactive effect
+149.2 Breaking semantic change e stabilità storica
+Una modifica semantica classificata BREAKING produce ImpactReport/SemanticChangeNotice e può bloccare nuove attivazioni o richiedere migrazione governata, ma non modifica retroattivamente il significato operativo registrato da run già completate. Il riferimento storico continua a risolversi alla revisione/pubblicazione usata all’epoca.
+Scenario
+Comportamento Registry
+Effetto su run/lineage storico
+Nuova revisione NON_BREAKING
+Può diventare ACTIVE secondo governance
+Nessuna reinterpretazione automatica; nuove run seguono il bundle approvato
+Nuova revisione BREAKING
+Impact analysis + migration decision obbligatoria
+Run storiche restano legate al PublicationSet originario
+Artefatto DEPRECATED
+Resta risolvibile; warning/change notice per consumer
+Lineage storico resta leggibile
+Artefatto RETIRED
+No delete delle revisioni referenziate
+Riproducibilità storica preservata; nuove attivazioni seguono policy
+PublicationSet superseded
+Nuovo ACTIVE pointer atomico
+Nessun hot swap nella run corrente
+149.3 Consumer runtime read-only
+Consumer
+Uso consentito
+Uso vietato
+Ingestion Runtime
+resolve SemanticReference/PublicationSet esatti; leggere classi/proprietà/vocabolari/relazioni pubblicate
+discovery, adoption, draft edit, approve, publish
+Source Onboarding
+search/discovery/adoption governata; reference di artefatti ACTIVE
+modifica diretta dello storage Registry
+UDP / Urban Object Registry
+validazione tipizzazione/relazioni e lineage semantic refs
+authoring TBox implicito
+MCP / Agent
+capability search/read/propose secondo policy
+approve/publish senza HUMAN_USER
+149.4 Lineage semantico e riferimenti verificabili
+Il Registry non diventa il repository del lineage dei dati. Deve però rendere risolvibili e verificabili gli identificativi semantici che Ingestion e UDP registrano nella provenance. Una risposta di lineage può quindi collegare un valore o una revisione di Urban Object al PublicationSet e alla revisione semantica applicata, senza interrogare direttamente le tabelle interne del Registry.
+Campo lineage
+Owner della evidence
+Contratto verso Registry
+semanticPublicationSetId/version
+Ingestion / UDP
+resolve publication set esatto
+semanticId + revisionId/version
+Ingestion / UDP
+resolve artefatto storico
+mappingId/version
+Source Onboarding
+riferimento al target semanticId/revision
+ingestionRunId / handoffId
+Ingestion Runtime
+nessuna persistenza nel Registry
+UrbanObject revision/property lineage
+UDP / Object Registry
+può includere semantic refs verificabili
+Regola: il Registry fornisce fatti deterministici (identity, revision, publication status, checksum, provenance semantica). L’Agent può sintetizzare tali fatti ma non deve inventare equivalenze, versioni o significati assenti dalla risposta delle capability.
+149.5 SemanticChangeNotice verso i consumer
+Quando una revisione pubblicata cambia stato o una nuova versione può impattare consumer registrati, il Registry può emettere/fornire un SemanticChangeNotice o un ImpactReport. Tale segnale non aggiorna autonomamente i bundle Onboarding né le run: abilita una review governata nel modulo owner.
+Semantic change      │      ▼Semantic Model / Registry      │ ImpactReport / SemanticChangeNotice      ├────────► Source Onboarding -> review mapping / new bundle      ├────────► Ingestion Runtime -> observe compatibility for next run      └────────► UDP/Object Registry -> migration analysis if requiredNO automatic rewrite of historical data or lineage
+149.6 Conformance storica v1.1
+ID
+Scenario
+Esito richiesto
+SEM-A01
+Run pinna PublicationSet e ACTIVE cambia durante l’elaborazione
+La run continua a risolvere la versione pinnata
+SEM-A02
+Breaking change su artefatto usato da run storica
+Impact report disponibile; storico non reinterpretato
+SEM-A03
+Resolve di PublicationSet superseded ma referenziato
+Risoluzione consentita secondo retention/history policy
+SEM-A04
+Runtime tenta semantic discovery/authoring
+DENY per capability/principal runtime
+SEM-A05
+Lineage query risolve semanticId/revision storico
+Identità/versione/checksum deterministici e verificabili
+SEM-A06
+Deprecazione concept usato da mapping storico
+Mapping/run storici restano spiegabili; nuove attivazioni ricevono warning/gate
+SEM-A07
+PublicationSet non più risolvibile durante historical replay
+Replay bloccato esplicitamente; nessun fallback a latest
+SEM-A08
+SemanticChangeNotice ricevuto da Onboarding/Runtime
+Nessuna modifica automatica; apertura review/migration governata
+150. Allineamento cross-module v1.2
+Il Registry pubblica contratti semantici immutabili e storicamente risolvibili. I consumer registrano riferimenti esatti alla semantica applicata; nessun consumer può sostituire implicitamente una revisione pinnata con latest/ACTIVE. La semantica delle relazioni è separata dalla strategia di risoluzione e dall'edge istanziato.
+Elemento
+Owner normativo
+Consumer / effetto
+Class / Property / Concept / Vocabulary
+Semantic Model / Registry
+Onboarding mappa; Ingestion/UDP referenziano.
+Relation IRI + domain/range + semantic constraints
+Semantic Model / Registry
+Onboarding sceglie mapping/strategy; UDP istanzia edge.
+Resolution strategy / matching policy
+Source Onboarding & Configuration
+UDP/Object Resolution esegue.
+Relationship instance / edge
+UDP / Urban Object Registry
+Registry non materializza ABox.
+AuthorityPolicy
+Onboarding governance metadata + UDP runtime
+Registry può essere referenziato ma non decide authority.
+DataAccessLabel
+Onboarding/Authorization/UDP
+Registry non classifica né enforce.
+ChangeRepresentationProfile
+Source Onboarding
+Ingestion trasporta; UDP materializza/change-detect.
+Query planning / budget / retry logic
+UDP / MCP Agent Host
+Fuori perimetro Registry.
+150.1 SemanticReference e PublicationSet come riferimenti stabili
+SEM-REF-01 — Candidate Urban Object, HandoffPayload/lineage e Canonical Revision che dipendono da artefatti semantici devono poter registrare semanticPublicationSetId, publicationSetVersion/checksum e SemanticReference esatte.
+SEM-REF-02 — SemanticReference identifica in modo risolvibile artifactId/URI + revision/version + publication context quando necessario. Un riferimento storico non viene risolto verso latest/ACTIVE.
+SEM-REF-03 — Il Registry mantiene la risolvibilità dei riferimenti usati da bundle, run, lineage o dati soggetti a retention. SUPERSEDED/RETIRED non equivale a cancellabile.
+SEM-REF-04 — Checksum/version consentono al consumer di verificare che il PublicationSet risolto sia esattamente quello atteso; mismatch produce errore deterministico e non fallback implicito.
+150.2 PublicationSet pinning e historical replay
+Ogni run/processo che usa semantica pubblicata pinna un solo PublicationSet per l'intera unità di elaborazione. Pause/resume/retry dello stesso attempt mantengono il pin; un reprocess esplicito può scegliere un nuovo PublicationSet solo come nuova execution evidence. Il replay storico usa il contract chain originale.
+IngestionRun / Candidate Urban Object  -> semanticPublicationSetId  -> publicationSetVersion  -> publicationSetChecksum  -> SemanticReference[]          |          vSemantic Model / Registryresolve EXACT revision/publicationACTIVE changes later -> NO retroactive reinterpretation
+151. Relationship semantics — boundary normativo
+Il Registry è autorità della semantica della relazione: IRI, label, description, domain, range, inverse/symmetry/transitivity quando dichiarate, cardinality/SHACL constraints e revisioni. Non è autorità del matching tra istanze e non crea edge concreti.
+Livello
+Esempio Dehor
+Owner
+TBox relation
+ouf:locatedOnStreet domain Dehor range Street
+Semantic Registry
+Source mapping
+codice_via -> locatedOnStreet
+Onboarding
+Resolution strategy
+canonical key / reference table / spatial / manual
+Onboarding contract; UDP runtime
+Candidate relation evidence
+sourceObjectId + target evidence
+Ingestion
+ABox edge
+DEHOR-471 --locatedOnStreet--> STREET-82
+UDP / Urban Object Registry
+REL-SEM-01 — Semantic hints nelle capability MCP possono contenere SemanticReference/Relation IRI, ma non duplicano domain/range, labels o lifecycle come una seconda fonte autoritativa.
+REL-SEM-02 — Se una relation revision cambia in modo BREAKING, ImpactReport/SemanticChangeNotice identifica i consumer; non riscrive edge storici né bundle già pubblicati.
+REL-SEM-03 — Una strategy di resolution non entra nel Registry come proprietà semantica della relazione salvo eventuale metadata documentale non autoritativo.
+152. Semantic hints per MCP / Agent Host
+Il futuro MCP Server / Agent Host può usare semantic hints per migliorare tool selection e spiegazioni, ma il Capability Manifest non replica il catalogo semantico. I manifest referenziano il Registry tramite URI/SemanticReference stabili. L'Agent può presentare label/descrizioni ottenute dal Registry, ma non inventa equivalenze, class hierarchy, domain/range o relazioni non restituite dalle capability semantiche.
+MCP-SEM-01 — purpose/useWhen/doNotUseWhen del tool restano metadata del Capability Manifest; class/property/relation semantics restano nel Registry.
+MCP-SEM-02 — Un semantic hint stale/non risolvibile non abilita fallback semantico inventato dall'Agent: il tool può degradare l'explainability o restituire SEMANTIC_REFERENCE_NOT_RESOLVABLE secondo contratto.
+MCP-SEM-03 — Il Registry non vede prompt utente, session budget, retry fingerprint o Query Complexity Governor state.
+153. Metadata esterni al Registry
+Metadata
+Owner
+Regola
+DataAccessLabel
+Onboarding + Authorization + UDP
+Può accompagnare una SemanticReference nei consumer, ma non è definito dal Registry.
+AuthorityPolicy
+Onboarding + UDP
+Non è proprietà della TBox; può referenziare class/property/relation IRI.
+ChangeRepresentationProfile
+Onboarding
+FULL_SNAPSHOT/DELTA_PATCH/PROPERTY_EVENTS non sono semantic artifact.
+SourceObjectIdentityPolicy
+Onboarding
+Identità nativa/source-specific, non semantic identity.
+Query capability / budget
+Authorization + UDP
+Non entra nel lifecycle semantico.
+Agent remediation state
+MCP/Agent Host
+Mai persistito nel Registry.
+EXTMETA-01 — L'API del Registry non deve accettare payload che rendano authority, DataAccessLabel o ChangeRepresentationProfile parte autoritativa di ArtifactRevision/PublicationSet. Eventuali link documentali devono essere chiaramente non-authoritative.
+154. SemanticChangeNotice e consumer impact v1.2
+SemanticChangeNotice/ImpactReport restano segnali governati. Una modifica pubblicata può richiedere review in Onboarding, valutazione per run future in Ingestion e migration analysis in UDP; non produce auto-remapping, auto-migration o rewrite dei dati/lineage storici.
+Semantic Model / Registry     | ImpactReport / SemanticChangeNotice     +--> Source Onboarding: mapping review / new bundle     +--> Ingestion: next-run compatibility observation     +--> UDP: migration / impact analysisNO automatic:- PublishedConfigurationBundle rewrite- active run semantic hot-swap- historical lineage rewrite- canonical edge rewrite
+155. Conformance aggiuntiva v1.2
+ID
+Scenario
+Criterio
+SEM-A01
+Exact publication resolution
+PublicationSet id/version/checksum risolve esattamente la revisione attesa; nessun latest fallback.
+SEM-A02
+Run pinning
+Cambio ACTIVE durante una IngestionRun non cambia i SemanticReference della run.
+SEM-A03
+Historical replay
+Bundle/run storico continua a risolvere PublicationSet SUPERSEDED/RETIRED ancora soggetto a retention.
+SEM-A04
+Candidate lineage
+Candidate Urban Object/lineage conserva semanticPublicationSetId e SemanticReference sufficienti al replay.
+SEM-A05
+Relation ownership
+Registry valida IRI/domain/range ma non contiene UrbanObjectId source/target di edge runtime.
+SEM-A06
+Resolution boundary
+Modifica resolution strategy avviene in Onboarding senza creare nuova ArtifactRevision semantica se TBox invariata.
+SEM-A07
+Authority externality
+AuthorityPolicy può referenziare property/relation IRI ma non diventa parte autoritativa del PublicationSet.
+SEM-A08
+DataAccessLabel externality
+DataAccessLabel non altera checksum/revision del semantic artifact salvo metadata documentale esplicitamente non autoritativo.
+SEM-A09
+Change representation externality
+FULL_SNAPSHOT/DELTA_PATCH/PROPERTY_EVENTS non sono accettati come proprietà normative di SemanticPublicationSet.
+SEM-A10
+MCP hint reference
+Capability Manifest usa SemanticReference/IRI; modifica del manifest non modifica Registry.
+SEM-A11
+Breaking semantic change
+Change BREAKING produce ImpactReport/Notice senza rewrite di bundle, lineage o edge storici.
+SEM-A12
+Agent non-authority
+Un hint/prompt AI non crea equivalenza, subclass o relation revision senza normale workflow di authoring/approval.
+SEM-A13
+Consumer read-only
+Ingestion/UDP non dispongono di capability authoring attraverso il runtime contract.
+SEM-A14
+Cross-module version chain
+Fixture E2E risolve Bundle v1.3 -> Ingestion v1.2 -> Semantic PublicationSet -> UDP v1.2 con checksum coerenti.
+SEM-A15
+Retention guard
+Delete di artifact/revision referenziato da bundle/lineage/replay viene rifiutato finché il riferimento deve restare risolvibile.
+SEM-A16 — SSRF import isolation: RDF/Turtle con owl:imports verso 169.254.169.254, loopback o RFC1918 non allowlistata non genera alcuna connessione dal parser.
+SEM-A17 — XXE hardening: RDF/XML con external entity/DTD viene rifiutato o trattato senza external resolution; nessun file locale o endpoint remoto viene letto.
+SEM-A18 — Recursive import cycle: A importa B e B importa A; la discovery governata rileva il ciclo e non produce crawling infinito.
+SEM-A19 — Parser local-only: test strumentato dimostra che Jena parsing/validation usa esclusivamente bytes/snapshot locali e non apre socket/URLConnection.
+SEM-A20 — Canonical manifest determinism: stesso insieme logico di revisioni produce lo stesso manifestHash indipendentemente dall'ordine di query/serializzazione.
+SEM-A21 — Publication immutability: UPDATE/DELETE di membership su PublicationSet PUBLISHED/ACTIVE viene rifiutato da repository/DB guard.
+SEM-A22 — Concurrent publishers: due publish concorrenti non producono ACTIVE parziale o last-writer-wins silenzioso; uno dei publisher stale ricostruisce il manifest.
+SEM-A23 — ACTIVE swap atomicity: nessun consumer osserva un PublicationSet ACTIVE prima che tutte le membership rows e il manifestHash siano persistiti.
+SEM-A24 — Ingestion pinning during ACTIVE switch: una run Ingestion già pinnata continua a risolvere il vecchio PublicationSet dopo la pubblicazione del nuovo ACTIVE.
+156. Technology Economy Gate v1.2
+La v1.2 non introduce graph database, triple store, vector database, broker, cache distribuita o nuovo deployable. PostgreSQL resta il system of record; RDF/OWL/SKOS/SHACL restano formati/modelli di interoperabilità e validation secondo la baseline già congelata. Un eventuale motore semantico specializzato futuro è una projection/optimization soggetta a evidenza di carico e Technology Economy Gate, non una nuova source of truth.
+157. Executive Freeze v1.2 — dichiarazione finale
+La v1.2 costituisce l'Executive Freeze del Semantic Model / Registry per la Cross-Module Alignment Matrix v1.1. Restano congelati system of record TBox/vocabularies/relation semantics, immutable revisions, PublicationSet pinning, historical resolution, SemanticReference verificabili, Discovery/Upstream Lifecycle, validation/compatibility, human governance e implementation minimale. La v1.2 chiarisce definitivamente che relation IRI/domain/range appartengono al Registry, resolution strategy all'Onboarding e l'edge istanziato alla UDP; authority, DataAccessLabel, ChangeRepresentationProfile, query governance e Agent retry/remediation restano esterni. Semantic hints MCP referenziano il Registry e non lo duplicano. Sono inoltre normativi il parser RDF/OWL hardened senza dereference/import automatici o XXE e la compilazione transazionale del SemanticPublicationSet tramite canonical manifest SHA-256, membership immutabile e atomic ACTIVE swap con concurrency guard.
+Area
+Stato v1.2
+Ontologie / classi / proprietà / vocabolari
+FROZEN
+Relation semantics IRI/domain/range
+FROZEN
+Revision / PublicationSet / checksum
+FROZEN
+Historical resolution / retention
+FROZEN
+SemanticReference in lineage/replay
+FROZEN
+Discovery / upstream lifecycle
+FROZEN
+Human governance / approval
+FROZEN
+Authority / DataAccessLabel
+OUT OF SCOPE — governance/security metadata
+ChangeRepresentationProfile
+OUT OF SCOPE — Onboarding
+Resolution strategy / ABox edge
+OUT OF SCOPE — Onboarding / UDP
+Query planning / Governor / Agent retry
+OUT OF SCOPE — UDP / MCP
+158. Historical compatibility note — baseline v1.1
+Le decisioni della v1.1 su PublicationSet pinning, breaking semantic change, lineage references e SemanticChangeNotice restano integralmente valide e sono incorporate nella baseline v1.2. La v1.2 non modifica retroattivamente artefatti, revisioni, checksum o PublicationSet già pubblicati.
+159. Implementation Readiness Alignment — Ingestion Gold Standard
+Questa parte consolida il documento secondo lo standard esecutivo adottato per OUF prendendo come gold standard l'Ingestion Runtime. Non modifica i bounded context o le decisioni architetturali già definite: rende invece espliciti gli artefatti che un team di sviluppo deve ricevere, i gate di build/release, le responsabilità implementative, le failure semantics, la compatibilità e le evidence richieste. In caso di conflitto editoriale con descrizioni storiche o baseline intermedie, prevalgono le decisioni tecniche correnti del modulo e i contratti cross-module versionati.
+159.1 Repository e contract artifacts
+ouf-semantic-registry/├── src/├── db/migration/├── openapi/semantic-registry-v1.yaml├── schemas/│   ├── semantic-reference-v1.json│   ├── semantic-publication-set-v1.json│   ├── semantic-candidate-v1.json│   ├── semantic-change-notice-v1.json│   └── migration-proposal-v1.json├── examples/├── helm/├── docs/runbook/├── tests/contract/├── tests/security/├── tests/e2e/└── sbom/
+OpenAPI 3.1 e JSON Schema sono release artifact e vengono validati insieme al codice.
+RDF/OWL/SKOS snapshot usati come fixture di test devono essere versionati o referenziati con checksum e license/provenance.
+SemanticReference e PublicationSet costituiscono i contratti runtime stabili; candidate esterni non sono riferimenti runtime.
+159.2 CI/CD e supply-chain gate
+Stage
+Controllo
+Compile/unit
+Java 21, unit test, static analysis.
+Contract
+OpenAPI/JSON Schema; manifest determinism; fixture RDF/OWL/SKOS.
+DB
+Flyway fresh/upgrade; publication atomicity e constraints.
+Integration
+PostgreSQL + Gateway/Semantic provider stubs + Onboarding consumer.
+Security
+SAST/SCA; SSRF/XXE/import isolation/decompression/redirect tests.
+E2E
+gap→discovery→adoption→publish→Onboarding resume; upstream change→impact→migration proposal.
+Performance
+search/read baseline, publication, large vocabulary, job backlog.
+Package
+OCI, Helm, SBOM, artifact/checksum provenance.
+Acceptance
+restore, concurrent publishers, old PublicationSet resolution, runbook/evidence package.
+159.3 Failure taxonomy
+Failure
+Semantica
+External provider timeout/down
+job retryable/bounded; nessuna auto-adoption; ACTIVE invariato.
+Invalid/untrusted RDF
+reject/quarantine tecnico; nessuna rete autonoma dal parser.
+Concurrent publish
+un solo ACTIVE switch valido; publisher stale ricostruisce manifest.
+DB failure during publish
+nessun PublicationSet parziale ACTIVE.
+Gateway southbound unavailable
+discovery/fetch non bypassa Gateway.
+Upstream withdrawn
+snapshot adottato resta risolvibile; change notice governata.
+Worker crash
+job idempotente e reclaim via lease/SKIP LOCKED.
+Restore
+PublicationSet/revision/contentHash e active pointer verificati prima del healthy completo.
+159.4 Compatibility policy
+SemanticReference identifica una revisione esatta e deve restare risolvibile per replay/audit finché referenziata.
+PublicationSet pubblicato è immutabile; una modifica produce un nuovo set e un nuovo manifestHash.
+Nuovi campi API additive sono compatibili nella stessa major; rimozione o cambio semantico richiede major contract change.
+Costrutti RDF non supportati possono essere preservati nello snapshot ma non diventano automaticamente regole operative OUF.
+159.5 Operations, observability e DR
+Dashboard minime: API latency/error, search latency, job backlog/age, provider failure rate, publication duration/conflicts, parser rejection/security events.
+Alert minimi: Publication failure/stuck, job backlog oltre recovery window, provider degradation sostenuta, DB pool saturation, repeated SSRF/invalid payload blocks.
+Backup include PostgreSQL e snapshot/artefatti adottati secondo storage scelto; restore test deve provare exact-resolution delle revisioni e active pointer.
+RPO/RTO definitivi seguono il profilo infrastrutturale OUF e devono essere misurati in acceptance, non solo dichiarati.
+159.6 Deliverable e Definition of Done
+Repository completo, OpenAPI/schema, Flyway, provider SPI, adapter iniziali, Helm, SBOM e runbook.
+BOM con versione Apache Jena e dipendenze parser effettivamente pinnate nella release.
+Test di sicurezza SSRF/XXE/import isolation e manifest determinism verdi.
+Discovery/adoption/publication e historical resolution E2E verdi.
+Restore e concurrent publication test verdi; evidence package con checksum, versioni e report performance.
+159.7 Decisioni da chiudere
+Decisione
+Quando
+Nota
+Versione esatta Apache Jena/BOM
+prima del primo build baseline
+Deve essere pinnata e supportata; il documento definisce la libreria ma non una versione normativa unica.
+RPO/RTO definitivo
+prima dell’acceptance di produzione
+Allineato al profilo DR OUF.
+Provider esterni iniziali effettivamente abilitati
+prima della prima release
+Solo quelli necessari alle fonti autorevoli realmente usate.
+160. Implementation Readiness Closure — Ingestion-equivalent depth
+Norma di lettura. Le sezioni 160.x sono normative per l’implementazione v1.3 e completano la baseline v1.2 e l’allineamento 159. Non modificano ownership semantica, modello di pubblicazione o principio di Technology Economy. Per packaging, configurazione, compatibilità, operatività, collaudo e supplier handoff, in caso di ambiguità prevale la regola 160.x.
+160.1 Inventario canonico dei contratti e degli artefatti
+Artefatto
+Owner
+Consumer principali
+Regola di compatibilità
+openapi/semantic-registry-v1.yaml
+Semantic Registry
+Onboarding, THS/admin, Gateway, client OUF autorizzati
+SemVer; breaking route/payload change = nuova major.
+schemas/semantic-reference-v1.json
+Semantic Registry
+Onboarding, Ingestion, UDP, lineage/replay
+Riferimento esatto e storico; semanticId + revision/version/hash risolvibili.
+schemas/semantic-publication-set-v1.json
+Semantic Registry
+Onboarding/runtime consumer
+PublicationSet PUBLISHED/ACTIVE immutabile; membership exact.
+schemas/semantic-artifact-v1.json
+Semantic Registry
+Admin/governance/search
+Campi additivi nella major; identity semantica non riusata con significato diverso.
+schemas/semantic-candidate-v1.json
+Semantic Registry
+Discovery/Onboarding
+CandidateRef non è SemanticReference runtime.
+schemas/semantic-change-notice-v1.json
+Semantic Registry
+Governance/Onboarding
+Notice additive; lifecycle/status machine-readable.
+schemas/migration-proposal-v1.json
+Semantic Registry
+Governance/Onboarding
+Proposal non modifica ACTIVE senza approvazione/publication.
+schemas/semantic-job-status-v1.json
+Semantic Registry
+Operations/UI
+Status, attempts, availableAt, resultRef ed errorCode coerenti.
+schemas/problem-details-v1.json
+OUF common profile implementato dal Registry
+Tutti i consumer
+Reason code esistente non cambia semantica nella major.
+schemas/semantic-capability-manifest-v1.json
+Semantic Registry
+Gateway / Capability Registry
+Ogni capability mappa schema input/output, authz e operation class.
+Gli schema macchina e l’OpenAPI sono release artifact nel repository; il testo del PET non è la sola fonte eseguibile del contratto.
+examples/ contiene fixture valide e invalide per search, exact read, discovery, adoption, publication, deprecate/retire, stale ETag, approval stale e provider failure.
+RDF/OWL/SKOS fixture esterne sono versionate o referenziate tramite sourceRevision/contentHash/license/provenance; nessuna fixture remota flottante è accettata come prova di build.
+160.2 Physical persistence e migration ownership
+Famiglia
+Persistenza normativa
+Invarianti
+Artifact/revision
+semantic_artifact, semantic_revision, namespace/identity metadata, source/provenance snapshot refs
+Revision immutabile dopo publication; UNIQUE identity coerente con namespace/local identity policy.
+Vocabulary/concept
+vocabulary/concept/revision/label/provenance structures secondo modello già definito
+Concept identity/version non dipende dal solo label.
+Relations
+relation semantic definition/domain/range/cardinality metadata
+Il Registry definisce semantica della relazione, non edge istanziati.
+Publication
+semantic_publication_set, membership rows, ACTIVE pointer, canonical manifest/hash
+Build manifest + membership + pointer switch atomici.
+Discovery/upstream
+external_origin, snapshot/provenance refs, change notice, migration proposal
+Remote fetch non avviene dentro transazioni DB lunghe.
+Governance
+approval challenge/decision/audit refs
+Token umani non persistiti; hash/target/version binding anti-TOCTOU.
+Jobs
+semantic_job con lease/attempt/retry metadata
+Claim concorrente SKIP LOCKED; retry idempotente per business key.
+Le migration Flyway complete sono artefatti repository e costituiscono la specifica fisica autoritativa del DB.
+Le modifiche DB incompatibili seguono expand -> rollout N+1 -> backfill/verify -> contract in release successiva.
+Parser/fetch/provider adapter non accedono direttamente a tabelle bypassando repository/domain invariants.
+160.3 Failure taxonomy e retry/circuit breaker
+Failure class
+Retryable
+Comportamento richiesto
+DISCOVERY_PROVIDER_TIMEOUT / 5xx
+Sì, bounded
+Backoff + jitter; circuit per provider; job resta retryable fino a maxAttempts.
+UPSTREAM_UNREACHABLE
+Sì, bounded
+Nessuna modifica dell’artefatto ACTIVE; stato upstream diagnostico.
+EXTERNAL_ARTIFACT_INVALID / TOO_LARGE
+No
+Reject terminale; evidence conservata; nessun retry automatico.
+SSRF/blocked host/redirect policy
+No
+Security reject + audit/metric; nessun fallback a fetch diretto.
+XXE/import isolation violation
+No
+Parser reject; nessuna rete/file access; security evidence.
+SNAPSHOT_HASH_MISMATCH
+No salvo nuovo fetch governato
+Snapshot non adottabile; nuova DiscoveryRequest se appropriato.
+DB deadlock/serialization/transient
+Sì, bounded
+Retry transazionale solo se operation idempotente/precondition coerente.
+Publication stale/concurrent publisher
+No automatic blind retry
+Uno publisher vince; stale publisher ricostruisce manifest su stato corrente.
+Authorization/IAM failure
+Dipende
+Fail closed per operazioni privilegiate; nessun publish/deprecate/retire senza evidenza valida.
+Job lease orphan
+Sì
+Dopo lease expiry torna eleggibile; side effect protetti da idempotency/business key.
+Parametri runtime. Timeout, maxAttempts, backoff base/max, circuit threshold, half-open probes e concurrency limits sono definiti nel Configuration Catalog §160.10. Retry infinito o fallback che cambia automaticamente source/provenance sono vietati.
+160.4 Lifecycle dei job, cancellation e partial-result semantics
+Job
+Pause/Cancel
+Partial result
+Recovery
+Discovery search/fetch
+CANCEL ammesso prima dell’adoption; PAUSE operativo tra step persistiti.
+Candidate parziali possono restare evidence/cache ma non diventano artefatti adottati.
+Retry dal job/business key; remote snapshot riusabile se hash/provenance validi.
+Upstream check
+CANCEL ammesso; nessun impatto su ACTIVE.
+Stato diagnostico incompleto non modifica lifecycle editoriale.
+Nuovo check governato.
+Impact analysis
+CANCEL ammesso; risultato parziale non autorizza migration.
+ResultRef solo se stato SUCCEEDED/COMPLETE secondo schema.
+Re-run su revision set pinned.
+Import/validation
+Abort prima della publication transaction.
+Snapshot può restare STAGED/evidence.
+Re-validate idempotente sullo stesso contentHash.
+Publication
+No user pause dentro la transazione finale.
+Nessun ACTIVE parziale.
+Se commit fallisce, rebuild/retry governato su stato corrente.
+Maintenance/cleanup
+Scheduler sospendibile per change window.
+Delete/GC vietata per revision/ref ancora referenziati.
+Re-run con retention/reference guard.
+160.5 Compatibility e support window N/N+1
+Dimensione
+Regola v1.3
+Breaking / removal
+REST/OpenAPI
+N e N+1 della stessa major devono coesistere durante rolling rollout.
+Rename/rimozione/cambio semantico = nuova major.
+DB schema
+Expand-compatible finché workload N è attivo.
+CONTRACT solo dopo verifica assenza N.
+SemanticReference
+Exact historical resolution obbligatoria per i riferimenti supportati.
+GC vietata mentre bundle/lineage/replay la referenziano.
+PublicationSet
+PUBLISHED/ACTIVE immutabile; nuovo set per ogni membership change.
+Mai update in-place della membership pubblicata.
+RDF model support
+Costrutti non supportati possono restare nello snapshot senza diventare operativi.
+Nuova interpretazione operativa richiede nuova revision/versione e compatibility review.
+Provider SPI
+DTO normalizzato stabile nella major; adapter possono evolvere dietro la SPI.
+Breaking SPI = nuova major dell’artifact Java/provider contract.
+160.6 Security, network e parser/input hardening
+Flusso / componente
+Regola normativa
+Consumer -> Registry
+Solo tramite Urban API Gateway; OIDC/OAuth2; fine-grained authorization nel servizio.
+Registry -> external provider
+Solo tramite southbound Gateway/route allowlistata; timeout, host allowlist, redirect cap, content-type e byte limits.
+Jena parser
+Opera esclusivamente su snapshot locale immutabile; nessun socket/URLConnection/file external entity.
+owl:imports / URI embedded
+Trattati come dati; nessuna acquisizione automatica senza nuova DiscoveryRequest governata.
+RDF/XML
+DTD/external entity resolution disabilitata; XXE fixture deve fallire senza side effect.
+Compressed payload
+Limite byte pre/post decompression; decompression bomb rifiutata prima di resource amplification.
+Text metadata
+Label/comment/description sono dati non trusted; mai istruzioni per AI/policy.
+Admin/governance input
+Bean/JSON Schema validation, ETag/If-Match, max payload/list cardinality; no arbitrary query/expression language.
+160.7 Authorization e identity integration contract
+Binding
+Obbligo
+HUMAN_USER
+Issuer/audience/subject/role-org mapping e assurance sufficienti per approve/publish/deprecate/retire.
+SERVICE_IDENTITY
+OIDC/workload identity secondo scenario M2M OUF selezionato; nessuna trusted-network identity.
+Authorization SDK
+Versione pin-nata; evaluation locale sul policy bundle coerente; default deny per capability sconosciuta.
+Capability mapping
+semantic.read/search/discovery/propose vs semantic.approve/publish/deprecate/retire con actor/risk class espliciti.
+Audit
+policyVersion, subject, actorType, correlationId, target/revision/contentHash e outcome per decisioni critiche.
+Environment gate. Issuer, audience e scenario M2M effettivi sono binding di piattaforma da valorizzare prima dell’integrazione reale. Il modulo non introduce un IAM locale e non deve scegliere autonomamente lo scenario A/B/C.
+160.8 Observability, SLO e acceptance workload
+Area
+Metriche/evidence minime
+Acceptance profile
+API read/search
+RPS, p50/p95/p99, errors, result count, cache/search plan class
+Catalogo fino a 100k artefatti e 1M concept; p95 search target già definito dal PET.
+Discovery
+provider latency, bytes, timeout, circuit state, candidate count, rejection reason
+Fault mix: slow/down/invalid provider senza degradare API locali oltre soglia.
+Parser/security
+parse duration, bytes, format, rejected SSRF/XXE/import/oversize
+Security fixture suite obbligatoria.
+Jobs
+queue depth, oldest age, running, attempts, lease expiry, failure code
+Backlog recovery entro finestra dichiarata.
+Publication
+duration, manifest size/hash, conflict/stale publisher, pointer switch outcome
+Concurrent publisher e atomic ACTIVE tests.
+DB/storage
+pool, tx latency, DB size/bloat, snapshot/object bytes if externalized
+Capacity report con crescita e restore.
+Il performance fixture manifest è versionato e dichiara numero di artifact, revisioni, concept, vocabularies, relationships, PublicationSet size e provider response profiles.
+Dashboard/alert rules sono repository artifacts; i nomi metrici definitivi devono essere quelli realmente emessi dalla release.
+Publication privilegia consistenza sulla velocità, ma la durata massima accettata e il dataset fixture sono registrati nel report di collaudo.
+160.9 Capacity, admission e fairness
+Classe
+Controllo
+Interactive search/read
+Pool/threads protetti rispetto ai job remoti; page/result cap server-side.
+Discovery
+Global concurrency + per-provider cap; circuit breaker; queue bounded.
+Import/validation
+Job concurrency distinta; max bytes e parser time budget.
+Impact analysis
+Async oltre soglia; max dependency fan-out e revision set size.
+Publication
+Low concurrency, serializzazione/guard sul publication head; no burst parallelo incontrollato.
+Maintenance
+Batch bounded e schedulato; nessun GC che compete con publication senza capacity guard.
+Capacity fixture iniziale. Il collaudo usa almeno il profilo già previsto dal PET (100.000 artefatti, 1.000.000 concept) e aggiunge un mix realistico di revision history, PublicationSet, discovery concorrente e provider failure. Il report registra CPU/RAM, DB version/indexes, worker concurrency e dimensione storage.
+160.10 Configuration Catalog v1
+Famiglia
+Property / gruppo
+Vincolo
+API
+max-page-size, max-request-bytes, max-response-bytes
+Mai unlimited in produzione.
+Search
+query-timeout, max-result-count, trigram/FTS thresholds
+Bounded; operatori supportati dal contratto.
+Discovery
+provider-timeout, max-redirects, max-bytes, max-uncompressed-bytes, host allowlist ref
+Security-critical; config invalida blocca startup/route use.
+Parser
+allowed-media-types, parse-timeout, max-statements/nodes, import-network-disabled
+Import network resta sempre disabled nel parser.
+Jobs
+lease-timeout, heartbeat, max-attempts, backoff-base/max, worker-concurrency
+Retry infinito vietato.
+Circuit
+failure-threshold, open-duration, half-open-probes per provider
+Provider isolati tra loro.
+Publication
+max-membership, manifest-size-limit, publication-lock-timeout
+No ACTIVE parziale.
+IAM/Authz
+issuer/audience bindings, policy-bundle-refresh/cache TTL, directory timeout
+Fail closed per privileged operations.
+Shutdown
+termination-grace, worker-drain-timeout
+Stop new claims; job safely completed/released.
+Ogni property ha tipo, unità, default, min/max, startup-only/reloadable e owner operativo nel configuration-reference del repository.
+Secret/credential non sono config plaintext ma secretRef/workload identity.
+Configurazioni di sicurezza e hard maxima non hanno fallback permissivi.
+160.11 Technology BOM e version policy
+Layer
+Baseline normativa
+Regola
+Runtime
+Java 21 LTS + Spring Boot 3.x
+Patch/minor effettive pin-nate nel build descriptor.
+Database
+PostgreSQL 17.x + Flyway
+Versioni server/driver/migration validate in CI e startup diagnostics.
+Semantic library
+Apache Jena
+Versione esatta pin-nata nella BOM; upgrade solo con parser/security/regression suite verde.
+API/schema
+OpenAPI 3.1 + JSON Schema
+Tooling effettivo riproducibile e versionato.
+Security
+Spring Security/OIDC + shared Authorization SDK
+Artifact/version pin-nati; no local IAM.
+Deployment
+Kubernetes OUF
+Helm/GitOps artifact versionato.
+Observability
+OpenTelemetry/Micrometer + platform backend
+No vendor-specific exporter hard-coded nel dominio.
+BOM autoritativa. La release è riproducibile dal build descriptor e produce SBOM corrispondente all’immagine OCI. Dipendenze floating o Jena non pin-nata sono release blocker.
+160.12 Backup, restore e disaster recovery
+Ambito
+Restore / reconciliation requirement
+PostgreSQL
+Full backup + WAL/PITR secondo servizio; Flyway history coerente; restore test periodico.
+Adopted external snapshots
+Snapshot/contentHash/sourceRevision necessari a historical resolution devono essere inclusi o ricostruibili da storage durevole governato.
+PublicationSet
+ACTIVE pointer, membership rows e manifestHash devono risultare coerenti dopo restore.
+Approval/audit
+Decisioni storiche necessarie alla retention restano risolvibili; challenge scadute non tornano valide.
+External upstream
+Restore non rifetch-a automaticamente il web per ricostruire una revision storica già adottata.
+RPO/RTO sono misurati in acceptance e allineati al profilo infrastrutturale OUF; il documento non li considera soddisfatti solo perché dichiarati.
+Il restore exercise comprende exact SemanticReference resolution, PublicationSet manifest verification, search smoke test e publication dry-run/guard.
+Restore failure o hash inconsistency impediscono il servizio di publication finché la reconciliation non è conclusa; read historical può essere degradato solo in modo esplicito e sicuro.
+160.13 Runbook operativo minimo
+Scenario
+Diagnosi
+Azione standard
+Provider down/slow
+provider metrics, circuit state, job age, route health
+Bounded retry/circuit; non cambiare ACTIVE; isolare provider.
+Invalid/oversize RDF
+errorCode, contentHash, size/media type
+Reject terminale; correggere fonte/input; nessun retry automatico cieco.
+SSRF/XXE security event
+security event + provider/source ref
+Block; audit; verificare route/allowlist; nessun parser network fallback.
+Job stuck/lease orphan
+locked_by, heartbeat, attempts, available_at
+Attendere lease expiry o recovery operation governata; no UPDATE manuale non auditato.
+Concurrent publication conflict
+publication head/version + manifestHash
+Stale publisher ricostruisce proposta; mai last-writer-wins silenzioso.
+DB failover/migration failure
+pool/Flyway history/locks
+Stop rollout; bounded retry; forward-fix/rollback solo con schema compatible.
+ACTIVE/hash inconsistency
+membership, manifest canonicalization, active pointer
+Bloccare publication; reconciliation; non servire manifest incoerente.
+Restore
+backup target, DB/storage snapshots, manifest verification
+Restore isolato -> reconciliation -> smoke/contract -> controlled cut-over.
+160.14 CI/CD, Secure SDLC, traceability ed evidence package
+Stage
+Blocking checks
+Compile/unit
+Java build, unit test, static analysis.
+Contract
+OpenAPI lint, JSON Schema/examples, RDF fixture metadata/checksum, compatibility diff.
+DB
+Flyway clean install + upgrade N/N+1 + migration validate.
+Integration
+PostgreSQL Testcontainers + Gateway/Onboarding/Auth stubs + provider mock/fault profiles.
+Security
+SAST/SCA/container/secret scan; SSRF, XXE, recursive import, decompression/oversize, parser-no-network tests.
+Concurrency
+Concurrent publishers, ACTIVE atomicity, job lease race, request pinned version, stale ETag.
+E2E
+Discovery -> adoption -> approval -> publication -> Onboarding exact reference -> historical resolution.
+Recovery
+Provider outage, DB failure, orphan job, failed publication, backup/restore/reconciliation.
+Performance
+Versioned 100k/1M capacity fixture + p95/p99 + job/provider isolation.
+Package
+OCI, Helm, OpenAPI/schemas/examples, migration scripts, dashboards/alerts, runbook, SBOM/provenance.
+SEM-Axx e ulteriori acceptance ID sono mappati a tests/contract, tests/integration, tests/e2e, tests/security o a evidence manuale nominata.
+L’evidence package registra versioni esatte di Jena, PostgreSQL, Authorization SDK/policy bundle, Gateway e Onboarding consumer usati.
+Un provider mock permissivo non sostituisce i negative security test su route/allowlist/parser isolation.
+160.15 Cross-module startup e reference-integrity gate
+Gate
+Verifica
+Failure semantics
+LOCAL-READY
+DB/migrations/config locale, parser initialization, schema artifacts e worker scheduler.
+Pod non READY per failure locale necessaria al servizio.
+AUTHZ-READY
+Policy bundle/version comprende capability invocata e principal context valido.
+Fail closed per capability protetta.
+GATEWAY-BINDING
+Northbound/southbound binding logico disponibile per consumer/provider richiesto.
+Capability/provider path non disponibile; no direct bypass.
+PUBLICATION-INTEGRITY
+Membership exact, canonical manifest, hash, ACTIVE pointer e revision status coerenti.
+Publication/read current bloccati se incoerenti.
+CONSUMER-REFERENCE
+Onboarding/Ingestion/UDP possono risolvere exact SemanticReference supportato.
+Release/integration gate fallisce; nessun fallback a ACTIVE corrente.
+HISTORICAL-RETENTION
+Revision/snapshot referenziati da bundle/lineage/replay non sono eliminabili.
+Delete/GC reject.
+Readiness principle. L’indisponibilità di un provider esterno non rende non-ready l’intero Registry: read/search su patrimonio già adottato devono restare disponibili. I gate vengono applicati al path che necessita la dipendenza e producono errore/stato diagnostico machine-readable.
+160.16 Gap closure register rispetto al gold standard Ingestion
+GS ID
+Gap precedente
+Esito v1.3
+GS-06
+Schema runtime non completamente enumerati
+CHIUSO — §160.1
+GS-07
+DDL/migration ownership dispersa
+CHIUSO — §160.2
+GS-11/12
+Failure taxonomy e retry/circuit incompleti
+CHIUSO — §160.3
+GS-13
+Cancellation/partial result non sistematici
+CHIUSO — §160.4
+GS-14
+Recovery operativo insufficiente
+CHIUSO — §§160.12-160.13
+GS-16
+Support window/deprecation non espliciti
+CHIUSO — §160.5
+GS-18
+Dettaglio IAM/M2M non pin-nato
+ESTERNO MA GOVERNATO — §160.7
+GS-20
+Hard limits parser/input non centralizzati
+CHIUSO — §§160.6, 160.10
+GS-22
+Metric/alert catalog incompleto
+CHIUSO — §160.8 + repository artifact requirement
+GS-24
+Admission/fairness job incompleti
+CHIUSO — §160.9
+GS-27
+Jena/BOM non pin-nata
+CHIUSO COME RELEASE RULE — §160.11
+GS-28
+Runtime properties disperse
+CHIUSO — §160.10
+GS-31
+DR/restore non sufficientemente esecutivo
+CHIUSO — §160.12
+GS-32
+Secure SDLC/gate incompleti
+CHIUSO — §160.14
+GS-33
+Runbook incompleto
+CHIUSO — §160.13
+GS-34
+Evidence package non formalizzato
+CHIUSO — §160.14
+GS-36
+Cross-module reference gate non eseguibile
+CHIUSO — §160.15
+160.17 Definition of Done v1.3 — handoff allo sviluppo
+Repository contiene OpenAPI, JSON Schema, examples, Flyway, provider SPI/adapters iniziali, configuration reference, Helm/GitOps, dashboard/alerts, runbook e SBOM.
+Apache Jena e le dipendenze parser effettive sono pin-nate nella BOM di build e coperte da regression/security test.
+Discovery, adoption, approval, publication, deprecation/retire e historical resolution passano contract/E2E test con exact SemanticReference.
+SSRF, XXE, recursive import, parser local-only, size/decompression limits e prompt-injection-as-data invariants passano test bloccanti.
+PublicationSet membership/hash/ACTIVE pointer sono atomici anche sotto concurrent publisher e rolling release.
+Job lease/retry/circuit breaker/cancellation semantics sono bounded e osservabili.
+Backup/restore/reconciliation è provato su dataset rappresentativo e preserva exact historical resolution.
+Il cross-module gate impedisce release/consumer integration quando SemanticReference, policy/capability o Gateway binding sono incompatibili.
+Non restano TBD implementativi interni al modulo. Gli unici elementi valorizzabili a deployment/integration time sono environment bindings esterni già modellati: IAM/M2M issuer/audience, Gateway routes/provider allowlist, DB/storage/secret-manager endpoints e parametri DR di piattaforma.
+Stato reale della specifica v1.3: development-ready per il perimetro Semantic Model / Registry. La baseline tecnologica resta volutamente semplice (Spring Boot/PostgreSQL/Jena, nessun triple store/graph DB/broker obbligatorio) ma ora dispone del livello di completezza esecutiva necessario per sviluppo, integrazione, collaudo e operations.

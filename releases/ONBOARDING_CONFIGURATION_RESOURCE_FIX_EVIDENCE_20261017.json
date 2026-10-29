@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.onboarding-configuration-resource-context-fix.v1",
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 1,
+  "source": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "e02def25b47f653a1800db854594c73fadd9ba87",
+    "realPostgresRun": 39018776436,
+    "browserRun": 39018776668
+  },
+  "targetBefore": {
+    "configurationGet": 403,
+    "code": "ONB_INGESTION_CONFIGURATION_DENIED",
+    "policyBundleVersion": 40,
+    "grantCapability": "ouf.onboarding.configuration.read",
+    "serviceGrantPresent": true,
+    "resourceType": "published-configuration",
+    "resourceAttributes": {
+      "module": "ONBOARDING"
+    },
+    "oldApiResourceType": "source",
+    "oldApiResourceAttributes": [
+      "onboardingVersionId"
+    ],
+    "scopesAndActorCorrect": true
+  },
+  "correction": {
+    "resourceType": "published-configuration",
+    "fixedModule": "ONBOARDING",
+    "retainsOnboardingVersionAttribute": true,
+    "usesGrantToConstructResource": false,
+    "grantChanges": false,
+    "scopeChanges": false,
+    "databaseMigrations": false
+  },
+  "predecessor": {
+    "context": "/etc/ouf/deploy-snapshots/onboarding-audit-execution-md__yy6p",
+    "reviewSha256": "b0e04a406ccda2dbfc6dd5743373866fa5ac1417b42ebfcbd57b2c3b6370e3ca",
+    "journalVersion": 31,
+    "sourceActivationProven": false
+  },
+  "qualification": {
+    "nativeExecutorRun": 39018828469,
+    "rootTestsPassed": 27,
+    "actualDocker": true,
+    "serviceFixturesSynthetic": true
+  },
+  "targetExecutionProven": false,
+  "candidate": {
+    "runId": 39018776176,
+    "artifactId": 12095189192,
+    "bytes": 554159333,
+    "sha256": "e83b63904b0fe05b67c82a61f1c6290a1ba3d0dfdd2334e65594d294629194cb",
+    "sourceLockSha256": "d755bc32ea467a5aa91160c3fb3002bdc867b8742647757621c956e3b5900e40",
+    "scanPassed": true,
+    "publisherAttestationVerifiedInCi": true
+  },
+  "executor": {
+    "sourceCommit": "ed1fd76d5b77e4033f90b4010d4ca1e08f44ecea",
+    "sourceFilesRemotelyCompared": 29,
+    "manifestSha256": "32ab03f9215fe9db7ef41589936527c993dfe0ce9dc2dca897bdd306cc8ee67e",
+    "qualificationRun": 39019042132,
+    "maximumGatewayWrites": 0,
+    "newLogin": false,
+    "newWorker": false,
+    "maximumSeconds": 900,
+    "existingPolicyExpiresAt": 1792227882
+  }
+}

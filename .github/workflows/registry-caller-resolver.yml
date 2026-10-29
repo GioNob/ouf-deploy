@@ -1,0 +1,58 @@
+name: Registry configured caller resolver view
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths:
+      - tools/semantic_registry_recovery_execution/**
+      - releases/semantic-registry-postboot-resolver*
+      - scripts/observe-registry-frozen-response-20261023.py
+      - releases/semantic-registry-frozen-response-20261023.sh
+      - scripts/verify-registry-caller-resolver-20261023.py
+      - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
+      - releases/semantic-registry-caller-resolver-20261023.sh
+      - .github/workflows/registry-caller-resolver.yml
+  pull_request:
+    paths:
+      - tools/semantic_registry_recovery_execution/**
+      - releases/semantic-registry-postboot-resolver*
+      - scripts/observe-registry-frozen-response-20261023.py
+      - releases/semantic-registry-frozen-response-20261023.sh
+      - scripts/verify-registry-caller-resolver-20261023.py
+      - tools/semantic_registry_recovery_execution/tests/test_caller_resolver_view.py
+      - releases/semantic-registry-caller-resolver-20261023.sh
+      - .github/workflows/registry-caller-resolver.yml
+permissions:
+  contents: read
+concurrency:
+  group: registry-caller-resolver-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  configured-caller-resolver:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Real private mount, configured DNS and verified TLS
+        run: |
+          ouf_resolver_python="$(command -v python)"
+          sudo install -d -m 0700 /root/ouf-caller-resolver-tests
+          sudo cp -a . /root/ouf-caller-resolver-tests/repository
+          sudo chown -R root:root /root/ouf-caller-resolver-tests
+          sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
+            -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
+            -p test_caller_resolver_view.py -v
+          sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
+            -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
+            -p test_lookup_transport.py -v
+          sudo "$ouf_resolver_python" -I -B -S -m unittest discover \
+            -s /root/ouf-caller-resolver-tests/repository/tools/semantic_registry_recovery_execution/tests \
+            -p test_frozen_response_observer.py -v

@@ -1,0 +1,97 @@
+{
+  "operatorEvidence": true,
+  "independentlyFetchedTargetReceipt": false,
+  "readerSource": "01d0ea4c9603e34a387b7b607db4ed9a6d3c1f43",
+  "readerHashCheck": "PASS",
+  "manifest": {
+    "acceptanceGranted": false,
+    "authorities": {
+      "approvalIssuerRef": "ouf-lab-infrastructure-installer",
+      "attestorRef": "ouf-lab-node-attestor",
+      "entityRef": "ouf-lab",
+      "installationRef": "ouf-lab-netcup-01",
+      "intentIssuerRef": "ouf-lab-infrastructure-installer"
+    },
+    "authorityProfileHash": "7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18",
+    "configurationWrites": 0,
+    "containerLifecycleOperations": 0,
+    "contextAuthenticated": false,
+    "keyBindings": {
+      "attestor": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-authority-provisioning-20261004-164654/attestor.pem",
+        "sha256": "645adf38f765505a3e60043472ef2ae2e041a2269b0a761721916cbac6b473c6"
+      },
+      "installer": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-authority-provisioning-20261004-164654/installer.pem",
+        "sha256": "ca1a806f0fedf5958bf78de2e375072f1ff58d0e1adabfd495ee761b43d85731"
+      }
+    },
+    "keyRefs": {
+      "attestor": "ouf-lab-attestor-ed25519-1",
+      "installer": "ouf-lab-installer-ed25519-1"
+    },
+    "policyBinding": {
+      "path": "/etc/ouf/deploy-snapshots/semantic-trust-policy-preparation-20261004-172336/trust-policy.json",
+      "sha256": "21122630e52cb63c3744fee89f5c81ed926dad55231190243ca11be6d481bd42"
+    },
+    "privateApplicationPolicyRead": true,
+    "privateKeyFilesRead": 0,
+    "roles": {
+      "adapter": {
+        "approvedHooksHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "artifactHash": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd",
+        "completeTemplateApprovalProven": false,
+        "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "contextHash": "ede2f4ee4de3b869d11e125cad094cbc5bad900bdb365a10d5d365d3104853ca",
+        "expectedApplicationHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+        "expectedRootfsPath": "/var/lib/docker/rootfs/overlayfs/f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+        "gid": 10006,
+        "manifestHash": "3f3a8a218a7471a0d999a5587b0297e0b072a8bd3177f9bc27a88623ba5bfa08",
+        "memory": {
+          "limit": 268435456,
+          "swap": 268435456
+        },
+        "mountCount": 15,
+        "pids": {
+          "limit": 128
+        },
+        "readOnlyRoot": true,
+        "sealedSourceCount": 5,
+        "startupHash": "7f09043451f924fd908704dfab16c8574157a9c27b987c40982d1935f0fd19e6",
+        "templateHash": "bf536f60c1d511f4cdbeb8546e84f46d426f693019938a0a9b4dbf76b3308e01",
+        "uid": 10006
+      },
+      "southbound": {
+        "approvedHooksHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "artifactHash": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822",
+        "completeTemplateApprovalProven": false,
+        "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "contextHash": "e515366dbe8412bf261711ea98bcaac3e6d9e9d8bc3f77109829613ec166f4eb",
+        "expectedApplicationHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+        "expectedRootfsPath": "/var/lib/docker/rootfs/overlayfs/1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+        "gid": 636,
+        "manifestHash": "4019012308f553801ff248388642ed9caf8df047dd514cb4837ffb0ea593d0af",
+        "memory": {
+          "limit": 536870912,
+          "swap": 536870912
+        },
+        "mountCount": 13,
+        "pids": {
+          "limit": 128
+        },
+        "readOnlyRoot": false,
+        "sealedSourceCount": 3,
+        "startupHash": "68e1491aad96db69c154440a83b5d58a5f34d838eec58f2783a911d514149f9a",
+        "templateHash": "0ef8aa503bfb6a5c789000cd73de6e987d1a55688894475e555f4d566581ad05",
+        "uid": 636
+      }
+    },
+    "rootfsAcceptanceProven": false,
+    "schema": "ouf.semantic-provider-v2-admission-input-manifest.v1",
+    "secretValuesPrinted": false,
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "HASH_BOUND_PRIVATE_INPUTS_READ",
+    "transactionConfigured": false
+  }
+}

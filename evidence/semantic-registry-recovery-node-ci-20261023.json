@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.semantic-registry-recovery-node-component-qualification.v1",
+  "sourceCommit": "1769d3446fa69e40f3525c7c2a116a2093ab8365",
+  "workflowRun": 39867055213,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39867055213",
+  "conclusion": "SUCCESS",
+  "componentAndRegressionTests": 60,
+  "realDockerGenerationTests": 3,
+  "skips": 0,
+  "localCoreTests": 15,
+  "nativeDockerBoundaryProven": [
+    "distinct fresh PID after restart",
+    "current Engine paused state and kernel generation",
+    "unpause invalidates paused binding",
+    "readonly mounted token file identity through distinct recovery binding"
+  ],
+  "fixtureLimits": [
+    "Docker workload is an Alpine shell gate, not the Semantic JVM",
+    "Docker fixture preflight substitutes production DB/token/OCI owners",
+    "mounted-token admission in Docker fixture is synthetic",
+    "node signing tests use actual Ed25519 with synthetic paused reports and disposable HUMAN mandates",
+    "full production Ports/factory/issuer/source loader/delivery/final authenticated request remain absent"
+  ],
+  "frozenOriginalBlobIdentities": [
+    {
+      "path": "tools/semantic_application_cutover/file_only_frame_observation.py",
+      "sha": "1cd9dd050f2ecaacd12ccdb1da05ce5aacd75ac8"
+    },
+    {
+      "path": "tools/semantic_application_cutover/paused_node_observation.py",
+      "sha": "a1652e1dfcd1e3648ab5b41f9940b4a1cd32c898"
+    },
+    {
+      "path": "tools/semantic_policy_token_owner/mount_observation.py",
+      "sha": "653cd1e679220471127513bec494bcde2f08f675"
+    }
+  ],
+  "mountOrderFinding": {
+    "nativeFailureRun": 39866886955,
+    "confirmedChangedFields": [
+      "mountsHash"
+    ],
+    "correction": "distinct MOUNTS_SORTED_BY_DESTINATION_V1 recovery binding; full entries preserved; original Engine bindings unchanged"
+  },
+  "runtimeEffectsDispatchedOnTarget": 0,
+  "nativeExecutorQualified": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "originalSemanticRequestVerified": false,
+  "http502Resolved": false,
+  "completedTechnicalPhases": 8,
+  "functionalMilestonesProven": 4,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

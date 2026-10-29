@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.semantic-provider-r8-human-approval.v1",
+  "approvalRef": "OUF_PROVIDER_PREPARED_MOUNTPOINT_APPROVED_20261009T203804_CEST_R8",
+  "reviewRef": "OUF_PROVIDER_PREPARED_MOUNTPOINT_REVIEW_20261009_R8",
+  "humanMessage": "Approvo",
+  "messageTimestamp": "2026-10-09T20:38:04+02:00",
+  "issuedAt": 1791571084,
+  "expiresAt": 1791578284,
+  "expiresAtLocal": "2026-10-09T22:38:04+02:00",
+  "reviewCommit": "b599df24ef3ef820688d6ff4278be4d0453541aa",
+  "reviewPath": "releases/PROVIDER_R8_PREPARED_MOUNTPOINT_REVIEW_20261009.md",
+  "scopeSha256": "24f6c5a25893e1757bb903b74b90155e39d19864d377ed3a31a94e80bfce1a86",
+  "reviewedExecutorSha256": "7a4d68895c33c01562298948cfdb2c65c18c1b3525eeb34e8bc36891a998ba3e",
+  "approvedExecutorSha256": "89cba73a29f3e4def5af40f991720766b51a379c6a441c502d2240f4d17f9214",
+  "onlyExecutorChanges": [
+    "APPROVAL_REF",
+    "APPROVED_AT",
+    "APPROVAL_EXPIRES_AT"
+  ],
+  "authoritySource": "EXPLICIT_HUMAN_CHAT_APPROVAL_OF_EXACT_PUBLISHED_R8_REVIEW",
+  "recordIsCryptographicHumanSignature": false,
+  "approvedScope": [
+    "EXACT_NINE_EMPTY_MOUNTPOINT_ENTRIES_AND_TWO_NEW_V1_ROOTFS_SEALS",
+    "EXACT_TWO_REVIEWED_R7_STOPPED_TASK_REMOVALS_CONTAINERS_PRESERVED",
+    "ONE_FRESH_SIGNED_GUARDED_TWO_CID_TRANSACTION"
+  ],
+  "oldClaimsRemainConsumed": true,
+  "automaticRetryAuthorized": false,
+  "roleMandateSeconds": 240,
+  "targetExecutionStatus": "PENDING_OPERATOR",
+  "targetExecutionPerformedHere": false,
+  "notReleaseAcceptance": true
+}

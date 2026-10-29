@@ -1,0 +1,190 @@
+{
+  "schema": "ouf.m2-typed-recovery-composition-checkpoint.v1",
+  "date": "2026-10-26",
+  "timezone": "Europe/Rome",
+  "status": "CORE_COMPOSITION_QUALIFIED_BROWSER_PENDING",
+  "auditCommit": "3f25c33be6e75872365a3a185e40f3d97c7e3c7d",
+  "deltas": [
+    "D2",
+    "D3_FIXTURE_ONLY"
+  ],
+  "runtimeEffects": 0,
+  "farmacieCauseObserved": false,
+  "applicationM2Proven": false,
+  "releaseAcceptance": false,
+  "components": [
+    {
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "1a5acb8ab531472eb8dc25470211e36db5c022cf",
+      "baseCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+      "reusedCandidate": "0a76376a7c6a0f07597c1c3aaf447b29deed597f",
+      "pullRequest": 80,
+      "changes": [
+        "ASSETS bounded owner discovery contract",
+        "LATEST coarse source lookup with owner exact-version checks",
+        "Existing decimal/date review properties",
+        "items response assertion in real SDK synthetic-owner test"
+      ],
+      "preserved": [
+        "Acquisition READ manifest entries unchanged",
+        "Safe denial diagnostics",
+        "All other manifest entries",
+        "Current Go 1.26.10 qualification"
+      ],
+      "ci": [
+        {
+          "runId": 40377495828,
+          "jobId": 121764446644,
+          "status": "success",
+          "directLogReviewed": true
+        },
+        {
+          "runId": 40377496197,
+          "jobId": 121764448072,
+          "status": "success",
+          "directLogReviewed": true
+        },
+        {
+          "runId": 40377504930,
+          "jobIds": [
+            121764481943,
+            121764482541
+          ],
+          "status": "success",
+          "directLogReviewed": true
+        },
+        {
+          "runId": 40377505208,
+          "jobId": 121764479078,
+          "status": "success",
+          "directLogReviewed": true,
+          "limit": "Selected package run skips optional pairwise test; full CI executes pairwise separately"
+        },
+        {
+          "runId": 40377495833,
+          "jobId": 121764446768,
+          "status": "success",
+          "directLogReviewed": true
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 12675780998,
+          "name": "mcp-release-evidence-40377495833",
+          "digest": "sha256:58e1d58832a9972dd7f796ce68e30463f96b418b55a4a09cfe4204b4fe2efd20",
+          "archiveIndependentlyDownloaded": false
+        },
+        {
+          "id": 12674468718,
+          "name": "acquisition-mcp-image-40377495833",
+          "digest": "sha256:9e022791ba4580676503eef2f095778ed562b89da03b64e91e1ed13b9501330a",
+          "archiveIndependentlyDownloaded": false
+        }
+      ],
+      "changedFiles": [
+        ".github/workflows/csv-recovery.yml",
+        ".github/workflows/semantic-gateway-schema.yml",
+        "docs/M2_TYPED_RECOVERY_COMPOSITION_20261026.md",
+        "internal/kernel/managed_file_recovery_test.go",
+        "internal/kernel/source_recovery_authorization_test.go",
+        "internal/kernel/source_review_authorization.go",
+        "internal/kernel/source_review_test.go",
+        "internal/manifest/capabilities.json"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "6f318865330602f3cde6bc5b52092e7585c70bde",
+      "baseCommit": "a5ed8b05c264a8221783a6e323ba00117aed891d",
+      "reusedCandidate": "7b04d36fd8462616514cca956fd973c9bd01c1e7",
+      "pullRequest": 53,
+      "changes": [
+        "ASSETS tenant/subject durable proof and bounded paging",
+        "LATEST owner version read",
+        "Existing decimal/date compiler and validation"
+      ],
+      "preserved": [
+        "Finite readiness budget and fencing",
+        "Both readiness and latest-read test groups",
+        "Safe failed-profile diagnostic category"
+      ],
+      "ci": [
+        {
+          "runId": 40377764748,
+          "jobId": 121765386547,
+          "status": "success",
+          "directLogReviewed": true,
+          "tests": 9,
+          "skipped": 0
+        },
+        {
+          "runId": 40377764772,
+          "jobId": 121765384154,
+          "status": "success",
+          "directLogReviewed": true,
+          "moduleTests": 293,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "selectedTests": {
+            "readinessReview": 18,
+            "ownerRecovery": 2,
+            "typedCompiler": 9
+          }
+        },
+        {
+          "runId": 40377764880,
+          "jobId": 121765384593,
+          "status": "in_progress",
+          "currentStep": "npx playwright install --with-deps chromium",
+          "accepted": false
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 12678025040,
+          "name": "source-onboarding-evidence-40377764772",
+          "digest": "sha256:aacefa320de1d46b520d10a6e8a4e0663090c853598cb75467bf003c4f469cb7",
+          "kind": "evidence_not_image",
+          "archiveIndependentlyDownloaded": false
+        }
+      ],
+      "changedFiles": [
+        "docs/M2_TYPED_RECOVERY_COMPOSITION_20261026.md",
+        "docs/contracts/managed-file-execution-proposal.schema.json",
+        "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileMcpApi.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingReviewApi.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/ConfigurationValidator.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposal.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileService.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedOnboardingReviewService.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/ConfigurationValidatorContractTest.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileMcpApiTest.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileRecoveryRuntimeTest.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/ManagedOnboardingReviewRuntimeTest.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingReviewApiTest.java",
+        "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposalTest.java"
+      ]
+    }
+  ],
+  "remaining": [
+    "D2 remaining Gateway/Ingestion/UDP cohort integration and cross-owner qualification",
+    "D3 owner projection of failed/in-progress job and work label",
+    "D4 profile error classification and cumulative HUMAN recovery",
+    "D5 managed CSV vocabulary/relationship mapping",
+    "D1 exact retained Farmacie cause and causal fix",
+    "D6/D7 autoguided real-client composition and final qualification"
+  ],
+  "authority": "No merge, deployment, profiling replay, new job, acquisition, grant or acceptance.",
+  "validation": {
+    "manifestUnchangedExceptThreeEntries": true,
+    "acquisitionReadEntriesExact": true,
+    "readinessTestsPreserved": true,
+    "latestReadTestsAdded": true,
+    "diagnosticCategoryPreserved": true,
+    "migrationsChanged": false,
+    "profileWorkerChanged": false,
+    "localGoAvailable": false,
+    "localJavaAvailable": false
+  }
+}

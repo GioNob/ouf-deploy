@@ -1,0 +1,21 @@
+{
+  "workflowRun": 37695629985,
+  "workflowJob": 113046537179,
+  "sourceCommit": "587b8a2121cad1f6e8c4e10460e861c54919f554",
+  "runtimeCatalogue": {
+    "io.containerd.runc.v2": {
+      "path": "runc",
+      "runtimeArgumentsPresent": false,
+      "runtimeType": null
+    },
+    "runc": {
+      "path": "runc",
+      "runtimeArgumentsPresent": false,
+      "runtimeType": null
+    }
+  },
+  "interpretation": "Only standard runtimes are registered. The source-sealed OUF adapter has not been registered. Do not create an application-startable candidate using the default runtime as a substitute. Daemon configuration and exact sealed guard fields require bounded root read before preparing registration.",
+  "containerLifecycleOperations": 0,
+  "configurationWrites": 0,
+  "startAuthorized": false
+}

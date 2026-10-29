@@ -1,0 +1,19 @@
+{
+  "containerLifecycleOperations": 0,
+  "deliveryScenarios": 4,
+  "deliverySha256": "ba1394dc23b46ccf70d4fcd3b9da1aa61de3110ac604e81b5c69c5bf15cee215",
+  "independentRunningEvidence": "provider-r8-independent-runtime-readback-20261009.json",
+  "leaseGranted": false,
+  "localCollectorTestsPassed": 5,
+  "localDeliveryTestsPassed": 3,
+  "notReleaseAcceptance": true,
+  "pendingOperatorAction": "RUN_PINNED_READ_ONLY_POST_START_READER",
+  "providerCalls": 0,
+  "readerCommit": "a5d849de41c11d1218df393d8c8685f1f63e236d",
+  "readerSha256": "ab61835ef55396ddacf4513acc0f21adbaab1b50ac32ad2fdc4c80a23d1835c8",
+  "remoteReaderBytesMatched": true,
+  "rootTargetReadPerformed": false,
+  "schema": "ouf.semantic-r8-post-start-reader-validation.v1",
+  "scope": "IMPLEMENTATION_ONLY_NATIVE_COMMANDS_SIMULATED",
+  "startAuthorized": false
+}

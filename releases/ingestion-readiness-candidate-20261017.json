@@ -1,0 +1,28 @@
+{
+  "schema": "ouf.ingestion-readiness-source-lock.v1",
+  "cohortId": "ingestion-readiness-20261017",
+  "modules": [
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "commit": "382cbec488bf219d28326c9d59df4a4b95ac6876",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "ingestion",
+      "repository": "ouf-ingestion-runtime",
+      "commit": "f869d8b86b892a0c03c147dac9bb40cd5f873ff2",
+      "kind": "DOCKER_SAVE"
+    },
+    {
+      "module": "gateway",
+      "repository": "ouf-api-gateway",
+      "commit": "425a0377c278ff52e00ce962ffd24809ee66f2e5",
+      "kind": "SOURCE_AND_ROUTE_PACKAGE"
+    }
+  ],
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "budgetReset": false,
+  "scope": "Two application images and one isolated Gateway read route; no migration, IAM change or activation"
+}

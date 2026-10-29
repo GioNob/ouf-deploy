@@ -1,0 +1,248 @@
+{
+  "schema": "ouf.operator-reported-target-observation.v1",
+  "reportedAt": "2026-10-13T20:32:51+02:00",
+  "source": "USER_PASTED_VPS_RECEIPT",
+  "independentTargetReadback": false,
+  "qualifiedScriptCommit": "c33d39c6922fbcd87a853c8b9f12e6bbb193e22a",
+  "receipt": {
+    "additionalTokenNamedUnits": [],
+    "allConsumerDiscoveryProven": false,
+    "baselineRefreshed": false,
+    "budgetReset": false,
+    "clientPolicyObservationHash": "3aef37971d405e0a84c60e0e110f7ababdba8e5c62cbda815e44e9ea5077d060",
+    "configurationFilesRead": 1,
+    "credentialConsumerScopeProven": false,
+    "credentialFilesRead": 0,
+    "embeddedCredentialAbsenceProven": false,
+    "hostInputsHash": "93fa9bc8fe4d90fe445bb310363f11966f9ed89df74d169ad925cda0a157acc4",
+    "iamMutations": 0,
+    "mountedTokenFilesRead": 0,
+    "notReleaseAcceptance": true,
+    "observationHasFindings": false,
+    "observationProfile": "ouf.policy-token-known-consumer-review.single-attempt.v1",
+    "phase": "OBSERVED_NOT_ACCEPTED",
+    "privateEvidenceHash": "603a7e11a9e3d5c444accd4f198d30cb721a5f816a4b00d7d200cadde068c325",
+    "privateEvidencePath": "/etc/ouf/deploy-snapshots/policy-token-consumer-review-603a7e11a9e3d5c444accd4f198d30cb721a5f816a4b00d7d200cadde068c325.private.json",
+    "privateEvidenceWrites": 1,
+    "privateKeysRead": 0,
+    "productionApplyReady": false,
+    "providerCalls": 0,
+    "r12Touched": false,
+    "rawSourceOrEnvironmentPrinted": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.policy-token-consumer-review-receipt.v1",
+    "serviceMutations": 0,
+    "sourceCodeExecuted": false,
+    "sourceFilesRead": 4,
+    "staticSelectedClientWriterCount": 1,
+    "status": "KNOWN_CONSUMER_REVIEW_OBSERVED_NOT_ACCEPTED",
+    "systemctlReadAttempts": 9,
+    "tokenGrantRequests": 0,
+    "tokenNamedUnitInventoryObserved": true,
+    "writers": [
+      {
+        "configurations": [
+          {
+            "findings": [],
+            "metadata": {
+              "executionCustodyAccepted": false,
+              "gid": 0,
+              "modeOctal": "0600",
+              "rootControlledAncestryAndFile": true,
+              "uid": 0
+            },
+            "referenceSha256": "ac1b7f2c562cc61b6e75c942f286998f5933bbc629e8637f7fcf254a43ae38f4"
+          }
+        ],
+        "credentialConsumerScopeProven": false,
+        "environmentFilesPropertyReturned": true,
+        "expectedTimerAssociationObserved": true,
+        "findings": [],
+        "knownSourcePath": "/opt/ouf/ops/refresh-policy-token.py",
+        "knownSourcePathMentionedInExecStart": true,
+        "namespaceOverridesObserved": false,
+        "service": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        "sourceMetadata": {
+          "executionCustodyAccepted": false,
+          "gid": 0,
+          "modeOctal": "0755",
+          "rootControlledAncestryAndFile": false,
+          "uid": 0
+        },
+        "staticSource": {
+          "astNodeCount": 786,
+          "clientIdExpressionCount": 2,
+          "distinctStaticClientIdentifierCount": 1,
+          "effectiveDataFlowProven": false,
+          "otherStaticClientIdentifierCount": 0,
+          "resolvedClientIdExpressionCount": 1,
+          "selectedClientIdentifierObserved": true,
+          "selectedClientInSupportedConfiguration": true,
+          "sourceSha256": "728b4c44d0e24b3c3bfc31769346c0c05752e870e93c096fac1c2897250e5c79",
+          "staticIssuerMatchesRetained": false,
+          "supportedConfigurationKeysReferenced": [
+            "OUF_POLICY_TOKEN_CLIENT_ID",
+            "OUF_POLICY_TOKEN_ENDPOINT",
+            "OUF_POLICY_TOKEN_REQUIRED_SCOPE",
+            "OUF_POLICY_TOKEN_RUNTIME_DIR",
+            "OUF_POLICY_TOKEN_RUNTIME_GID",
+            "OUF_POLICY_TOKEN_SECRET_FILE"
+          ],
+          "unresolvedClientExpressionKinds": [
+            "Subscript"
+          ],
+          "unresolvedClientIdExpressionCount": 1
+        },
+        "timer": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "SubState": "waiting",
+          "UnitFileState": "enabled"
+        },
+        "unit": "ouf-policy-token@semantic.service"
+      },
+      {
+        "configurations": [],
+        "credentialConsumerScopeProven": false,
+        "environmentFilesPropertyReturned": false,
+        "expectedTimerAssociationObserved": true,
+        "findings": [],
+        "knownSourcePath": "/opt/ouf/ops/refresh-gateway-policy-token.py",
+        "knownSourcePathMentionedInExecStart": true,
+        "namespaceOverridesObserved": false,
+        "service": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        "sourceMetadata": {
+          "executionCustodyAccepted": false,
+          "gid": 0,
+          "modeOctal": "0755",
+          "rootControlledAncestryAndFile": false,
+          "uid": 0
+        },
+        "staticSource": {
+          "astNodeCount": 391,
+          "clientIdExpressionCount": 1,
+          "distinctStaticClientIdentifierCount": 1,
+          "effectiveDataFlowProven": false,
+          "otherStaticClientIdentifierCount": 1,
+          "resolvedClientIdExpressionCount": 1,
+          "selectedClientIdentifierObserved": false,
+          "selectedClientInSupportedConfiguration": false,
+          "sourceSha256": "3a1532d372ef442a6a09989b57a917343e5bef8096567875537a632bfe0e4818",
+          "staticIssuerMatchesRetained": false,
+          "supportedConfigurationKeysReferenced": [],
+          "unresolvedClientExpressionKinds": [],
+          "unresolvedClientIdExpressionCount": 0
+        },
+        "timer": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "SubState": "waiting",
+          "UnitFileState": "enabled"
+        },
+        "unit": "ouf-gateway-policy-token.service"
+      },
+      {
+        "configurations": [],
+        "credentialConsumerScopeProven": false,
+        "environmentFilesPropertyReturned": false,
+        "expectedTimerAssociationObserved": true,
+        "findings": [],
+        "knownSourcePath": "/opt/ouf/ops/refresh-ingestion-policy-token.py",
+        "knownSourcePathMentionedInExecStart": true,
+        "namespaceOverridesObserved": false,
+        "service": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        "sourceMetadata": {
+          "executionCustodyAccepted": false,
+          "gid": 0,
+          "modeOctal": "0700",
+          "rootControlledAncestryAndFile": false,
+          "uid": 0
+        },
+        "staticSource": {
+          "astNodeCount": 359,
+          "clientIdExpressionCount": 1,
+          "distinctStaticClientIdentifierCount": 1,
+          "effectiveDataFlowProven": false,
+          "otherStaticClientIdentifierCount": 1,
+          "resolvedClientIdExpressionCount": 1,
+          "selectedClientIdentifierObserved": false,
+          "selectedClientInSupportedConfiguration": false,
+          "sourceSha256": "3f500e1f517a98658856e036aa2eb8d31e5999cb28d47b51913e85858f21b391",
+          "staticIssuerMatchesRetained": false,
+          "supportedConfigurationKeysReferenced": [],
+          "unresolvedClientExpressionKinds": [],
+          "unresolvedClientIdExpressionCount": 0
+        },
+        "timer": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "SubState": "waiting",
+          "UnitFileState": "enabled"
+        },
+        "unit": "ouf-ingestion-policy-token.service"
+      },
+      {
+        "configurations": [],
+        "credentialConsumerScopeProven": false,
+        "environmentFilesPropertyReturned": false,
+        "expectedTimerAssociationObserved": true,
+        "findings": [],
+        "knownSourcePath": "/var/lib/ouf-r4a-identity/r4a_onboarding_token_runtime.py",
+        "knownSourcePathMentionedInExecStart": true,
+        "namespaceOverridesObserved": false,
+        "service": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        "sourceMetadata": {
+          "executionCustodyAccepted": false,
+          "gid": 0,
+          "modeOctal": "0600",
+          "rootControlledAncestryAndFile": true,
+          "uid": 0
+        },
+        "staticSource": {
+          "astNodeCount": 1620,
+          "clientIdExpressionCount": 1,
+          "distinctStaticClientIdentifierCount": 1,
+          "effectiveDataFlowProven": false,
+          "otherStaticClientIdentifierCount": 1,
+          "resolvedClientIdExpressionCount": 1,
+          "selectedClientIdentifierObserved": false,
+          "selectedClientInSupportedConfiguration": false,
+          "sourceSha256": "7cd1969fa0773da3243c4d6aeac033e81e90788658dbaccba0440bccbb4bbbd7",
+          "staticIssuerMatchesRetained": true,
+          "supportedConfigurationKeysReferenced": [],
+          "unresolvedClientExpressionKinds": [],
+          "unresolvedClientIdExpressionCount": 0
+        },
+        "timer": {
+          "ActiveState": "active",
+          "LoadState": "loaded",
+          "SubState": "waiting",
+          "UnitFileState": "enabled"
+        },
+        "unit": "ouf-onboarding-identity-token.service"
+      }
+    ]
+  },
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true
+}

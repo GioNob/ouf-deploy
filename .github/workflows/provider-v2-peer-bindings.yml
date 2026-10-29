@@ -1,0 +1,27 @@
+name: Provider candidate peer binding tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/semantic_peer_bindings/**'
+      - '.github/workflows/provider-v2-peer-bindings.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -B -m unittest discover -v -s tools/semantic_peer_bindings -p test_semantic_provider_peer_bindings.py
+      - name: Install hosted-only native fixture dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq busybox-static iproute2 runc
+      - name: Real runc-created peer; no application start
+        run: |
+          sudo install -d -m 700 /root/ouf-peer-bindings-fixture
+          sudo install -m 600 tools/semantic_peer_bindings/*.py /root/ouf-peer-bindings-fixture/
+          sudo /usr/bin/python3 -I -B /root/ouf-peer-bindings-fixture/test_semantic_provider_peer_bindings_native.py

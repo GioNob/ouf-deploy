@@ -1,0 +1,103 @@
+"""Bounded existing-owner accounting observation; no grants or runtime authority."""
+import base64
+import hashlib
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+
+CAPSULE_COMMIT='1aa054279ad2d4f21bc27b65585be7dc40cb6f79'
+CAPSULE_SHA='e6fe660992f5f018975de73aaf9c83dfe4df9036620257735a5f59b7cf60379d'
+CAPSULE_PATH='releases/policy-token-iam-action-source-capsule-20261013.json'
+REVIEW_HASH='8bbc31ce396711acf94ebbc6b541ba60cd99d715315c29736ab697b62b6f78bc'
+CLOSURE_HASH='bf9c2aad3ff684a9e2b8fced56d7c0e76e0e7647e7309dc66739d5be3e6db4e6'
+OBSERVER_HASH='2cc7c37f96929c918c559be4fad4df7aee540ee17ee6e1da4a2858d5418ad44e'
+OBSERVER_SOURCE='IiIiUmVhZC1vbmx5IGF1ZGl0IGF2YWlsYWJpbGl0eSwgbmV2ZXIgYWNjb3VudGluZyBpbml0aWFsaXphdGlvbiBvciB0b2tlbiBhZG1pc3Npb24uCgpBIGJvdW5kZWQgc2FtcGxlIG9mIENMSUVOVF9MT0dJTiBldmVudHMgaXMgbm90IGFuIGFsbC10aW1lIGdyYW50IGNvdW50ZXIuIEVtcHR5LApkaXNhYmxlZCwgZmlsdGVyZWQgb3IgdHJ1bmNhdGVkIGV2ZW50IHN0b3JhZ2UgbmV2ZXIgbWVhbnMgemVybyBoaXN0b3JpY2FsIHVzYWdlLgoiIiIKaW1wb3J0IHJlCmltcG9ydCBzdWJwcm9jZXNzCmltcG9ydCB0ZW1wZmlsZQppbXBvcnQgcmVzb3VyY2UKaW1wb3J0IHRpbWUKaW1wb3J0IGlhbV9iaW5kaW5nX2NhbmRpZGF0ZSBhcyBiaW5kaW5nCgpDT05GSUdfRklFTERTPSdldmVudHNFbmFibGVkLGV2ZW50c0V4cGlyYXRpb24sZW5hYmxlZEV2ZW50VHlwZXMnCkVWRU5UX0ZJRUxEUz0ndGltZSx0eXBlLGNsaWVudElkJwpFVkVOVF9UWVBFUz0oJ0NMSUVOVF9MT0dJTicsJ0NMSUVOVF9MT0dJTl9FUlJPUicpClNBTVBMRV9MSU1JVD0xMDAKCmRlZiBjYXRlZ29yaWVzKHJhdyk6CiAgICB0ZXh0PXJhdy5kZWNvZGUoJ3V0Zi04JywncmVwbGFjZScpLmxvd2VyKCkKICAgIHBhdHRlcm5zPSgocidzZXNzaW9uICg/OmhhcyApP2V4cGlyZWR8ZmFpbGVkIHRvIHJlZnJlc2ggYWNjZXNzIHRva2VufGludmFsaWRfZ3JhbnR8bm90IGxvZ2dlZCBpbnxubyB0b2tlbiBzcGVjaWZpZWQnLCdTRVNTSU9OX0FVVEhfRkFJTFVSRV9URVhUX09CU0VSVkVEJyksCiAgICAgICAgKHIndW5hdXRob3JpemVkfFxiNDAxXGInLCdVTkFVVEhPUklaRURfVEVYVF9PQlNFUlZFRCcpLChyJ2ZvcmJpZGRlbnxcYjQwM1xiJywnRk9SQklEREVOX1RFWFRfT0JTRVJWRUQnKSwKICAgICAgICAocidjb25uZWN0aW9uIHJlZnVzZWR8Y29ubmVjdGV4Y2VwdGlvbicsJ0NPTk5FQ1RJT05fUkVGVVNFRF9URVhUX09CU0VSVkVEJyksCiAgICAgICAgKHIndGltZWQgb3V0fHRpbWVvdXQnLCdDT05ORUNUSU9OX1RJTUVPVVRfVEVYVF9PQlNFUlZFRCcpLAogICAgICAgIChyJ25vIHN1Y2ggY29udGFpbmVyfGlzIG5vdCBydW5uaW5nJywnQ09OVEFJTkVSX1VOQVZBSUxBQkxFX1RFWFRfT0JTRVJWRUQnKSwKICAgICAgICAocidwZXJtaXNzaW9uIGRlbmllZCcsJ0xPQ0FMX1BFUk1JU1NJT05fRkFJTFVSRV9URVhUX09CU0VSVkVEJykpCiAgICByZXR1cm4gW2xhYmVsIGZvciBwYXR0ZXJuLGxhYmVsIGluIHBhdHRlcm5zIGlmIHJlLnNlYXJjaChwYXR0ZXJuLHRleHQpXSBvciBbJ1VOQ0xBU1NJRklFRF9DTElfRkFJTFVSRSddCgpjbGFzcyBBdWRpdFJlYWRlcjoKICAgIGRlZiBfX2luaXRfXyhzZWxmLGNsaWVudCxyZXBvcnQsY2xvY2s9dGltZS5tb25vdG9uaWMpOgogICAgICAgIGJpbmRpbmcucmVxdWlyZSh0eXBlKGNsaWVudClpcyBzdHIgYW5kIHJlLmZ1bGxtYXRjaCgnW0EtWmEtejAtOV8uOi1dezEsMTI4fScsY2xpZW50KSwnRVhBQ1RfQUNDT1VOVElOR19DTElFTlRfUkVGRVJFTkNFX1JFUVVJUkVEJykKICAgICAgICBzZWxmLmNsaWVudCxzZWxmLnJlcG9ydCxzZWxmLmNsb2NrPWNsaWVudCxyZXBvcnQsY2xvY2s7c2VsZi5kZWFkbGluZT1jbG9jaygpKzcwCiAgICBkZWYgZ2V0KHNlbGYscGF0aCxmaWVsZHMscXVlcmllcz0oKSk6CiAgICAgICAgYWxsb3dlZD1wYXRoPT0nZXZlbnRzL2NvbmZpZycgYW5kIGZpZWxkcz09Q09ORklHX0ZJRUxEUyBhbmQgbm90IHF1ZXJpZXMKICAgICAgICBhbGxvd2VkPWFsbG93ZWQgb3IgKHBhdGg9PSdldmVudHMnIGFuZCBmaWVsZHM9PUVWRU5UX0ZJRUxEUyBhbmQgbGVuKHF1ZXJpZXMpPT00CiAgICAgICAgICAgIGFuZCBxdWVyaWVzWzozXT09KCdjbGllbnQ9JytzZWxmLmNsaWVudCwnZmlyc3Q9MCcsJ21heD0xMDEnKQogICAgICAgICAgICBhbmQgcXVlcmllc1szXSBpbiB0dXBsZSgndHlwZT0nK2tpbmQgZm9yIGtpbmQgaW4gRVZFTlRfVFlQRVMpKQogICAgICAgIGJpbmRpbmcucmVxdWlyZShhbGxvd2VkLCdFWEFDVF9SRUFEX09OTFlfQUNDT1VOVElOR19SRVNPVVJDRV9SRVFVSVJFRCcpCiAgICAgICAgdGltZW91dD1taW4oMTUsc2VsZi5kZWFkbGluZS1zZWxmLmNsb2NrKCkpO2JpbmRpbmcucmVxdWlyZSh0aW1lb3V0PjAsJ0ZJTklURV9BQ0NPVU5USU5HX09CU0VSVkFUSU9OX0RFQURMSU5FJykKICAgICAgICBhcmd2PVsnL3Vzci9iaW4vZG9ja2VyJywnZXhlYycsJ291Zi1rZXljbG9haycsJy9vcHQva2V5Y2xvYWsvYmluL2tjYWRtLnNoJywnZ2V0JyxwYXRoLAogICAgICAgICAgICAnLS1zZXJ2ZXInLCdodHRwOi8vbG9jYWxob3N0OjgwODAnLCctcicsJ291ZicsJy0tZmllbGRzJyxmaWVsZHNdCiAgICAgICAgZm9yIHF1ZXJ5IGluIHF1ZXJpZXM6YXJndis9WyctcScscXVlcnldCiAgICAgICAgZGVmIGNoaWxkX2NhcCgpOnJlc291cmNlLnNldHJsaW1pdChyZXNvdXJjZS5STElNSVRfRlNJWkUsKDEwNDg1NzYsMTA0ODU3NikpCiAgICAgICAgc2VsZi5yZXBvcnRbJ2lhbU1ldGFkYXRhR2V0QXR0ZW1wdHMnXSs9MQogICAgICAgIHdpdGggdGVtcGZpbGUuVGVtcG9yYXJ5RmlsZSgpYXMgc3Rkb3V0LHRlbXBmaWxlLlRlbXBvcmFyeUZpbGUoKWFzIHN0ZGVycjoKICAgICAgICAgICAgdHJ5OnJlc3VsdD1zdWJwcm9jZXNzLnJ1bihhcmd2LHN0ZGluPXN1YnByb2Nlc3MuREVWTlVMTCxzdGRvdXQ9c3Rkb3V0LHN0ZGVycj1zdGRlcnIsdGltZW91dD10aW1lb3V0LHByZWV4ZWNfZm49Y2hpbGRfY2FwKQogICAgICAgICAgICBleGNlcHQgc3VicHJvY2Vzcy5UaW1lb3V0RXhwaXJlZDoKICAgICAgICAgICAgICAgIHNlbGYucmVwb3J0WydkaWFnbm9zdGljQ2F0ZWdvcmllcyddPVsnQ0xJX1RJTUVPVVRfT0JTRVJWRUQnXTtyYWlzZSBiaW5kaW5nLkNhbmRpZGF0ZURlbmllZCgnQUNDT1VOVElOR19HRVRfVElNRU9VVCcpIGZyb20gTm9uZQogICAgICAgICAgICBzdGRvdXQuc2VlaygwKTtzdGRlcnIuc2VlaygwKTtyYXc9c3Rkb3V0LnJlYWQoMjYyMTQ1KTtlcnI9c3RkZXJyLnJlYWQoNjU1MzcpCiAgICAgICAgc2VsZi5yZXBvcnQudXBkYXRlKGxhc3RJYW1HZXRFeGl0Q29kZT1yZXN1bHQucmV0dXJuY29kZSxkaWFnbm9zdGljVGV4dFRydW5jYXRlZD1sZW4oZXJyKT42NTUzNikKICAgICAgICBpZiByZXN1bHQucmV0dXJuY29kZToKICAgICAgICAgICAgc2VsZi5yZXBvcnRbJ2RpYWdub3N0aWNDYXRlZ29yaWVzJ109Y2F0ZWdvcmllcyhlcnJbOjY1NTM2XSkKICAgICAgICAgICAgYmluZGluZy5yZXF1aXJlKEZhbHNlLCdFWElTVElOR19JQU1fQVVESVRfR0VUX1VOQVZBSUxBQkxFJykKICAgICAgICBiaW5kaW5nLnJlcXVpcmUoMDxsZW4ocmF3KTw9MjYyMTQ0LCdBQ0NPVU5USU5HX1JFU1BPTlNFX1VOQk9VTkRFRCcpCiAgICAgICAgcmV0dXJuIGJpbmRpbmcuZGVjb2RlKHJhdykKCmRlZiBjb25maWdfc2hhcGUodmFsdWUpOgogICAgYmluZGluZy5yZXF1aXJlKHR5cGUodmFsdWUpaXMgZGljdCBhbmQgc2V0KHZhbHVlKTw9c2V0KENPTkZJR19GSUVMRFMuc3BsaXQoJywnKSkKICAgICAgICBhbmQgdHlwZSh2YWx1ZS5nZXQoJ2V2ZW50c0VuYWJsZWQnKSlpcyBib29sLCdDT01QTEVURV9BVURJVF9FTkFCTEVNRU5UX1NDSEVNQV9SRVFVSVJFRCcpCiAgICBpZiAnZXZlbnRzRXhwaXJhdGlvbidpbiB2YWx1ZTpiaW5kaW5nLnJlcXVpcmUodHlwZSh2YWx1ZVsnZXZlbnRzRXhwaXJhdGlvbiddKWlzIGludCBhbmQgdmFsdWVbJ2V2ZW50c0V4cGlyYXRpb24nXT49MCwnQVVESVRfUkVURU5USU9OX1NDSEVNQV9SRVFVSVJFRCcpCiAgICBpZiAnZW5hYmxlZEV2ZW50VHlwZXMnaW4gdmFsdWU6CiAgICAgICAgYmluZGluZy5yZXF1aXJlKHR5cGUodmFsdWVbJ2VuYWJsZWRFdmVudFR5cGVzJ10paXMgbGlzdCBhbmQgbGVuKHZhbHVlWydlbmFibGVkRXZlbnRUeXBlcyddKTw9MjU2CiAgICAgICAgICAgIGFuZCBhbGwodHlwZSh0KWlzIHN0ciBhbmQgcmUuZnVsbG1hdGNoKCdbQS1aXVtBLVowLTlfXXswLDk1fScsdClmb3IgdCBpbiB2YWx1ZVsnZW5hYmxlZEV2ZW50VHlwZXMnXSkKICAgICAgICAgICAgYW5kIGxlbihzZXQodmFsdWVbJ2VuYWJsZWRFdmVudFR5cGVzJ10pKT09bGVuKHZhbHVlWydlbmFibGVkRXZlbnRUeXBlcyddKSwnQVVESVRfRVZFTlRfVFlQRV9TQ0hFTUFfUkVRVUlSRUQnKQogICAgcmV0dXJuIHZhbHVlCgpkZWYgZXZhbHVhdGUocmVhZGVyLHJlcG9ydCk6CiAgICByZXBvcnRbJ3BoYXNlJ109J0VYSVNUSU5HX0lBTV9BVURJVF9DT05GSUdVUkFUSU9OX1JFQUQnCiAgICBjb25maWc9Y29uZmlnX3NoYXBlKHJlYWRlci5nZXQoJ2V2ZW50cy9jb25maWcnLENPTkZJR19GSUVMRFMpKQogICAgc2FtcGxlcz17fTtlbmFibGVkPWNvbmZpZy5nZXQoJ2VuYWJsZWRFdmVudFR5cGVzJykKICAgIHNlbGVjdGVkPVtraW5kIGZvciBraW5kIGluIEVWRU5UX1RZUEVTIGlmIGNvbmZpZ1snZXZlbnRzRW5hYmxlZCddIGFuZCB0eXBlKGVuYWJsZWQpaXMgbGlzdCBhbmQga2luZCBpbiBlbmFibGVkXQogICAgZm9yIGtpbmQgaW4gc2VsZWN0ZWQ6CiAgICAgICAgcmVwb3J0WydwaGFzZSddPSdCT1VOREVEX1NFTEVDVEVEX0NMSUVOVF9FVkVOVF9TQU1QTEUnCiAgICAgICAgcm93cz1yZWFkZXIuZ2V0KCdldmVudHMnLEVWRU5UX0ZJRUxEUywoJ2NsaWVudD0nK3JlYWRlci5jbGllbnQsJ2ZpcnN0PTAnLCdtYXg9MTAxJywndHlwZT0nK2tpbmQpKQogICAgICAgIGJpbmRpbmcucmVxdWlyZSh0eXBlKHJvd3MpaXMgbGlzdCBhbmQgbGVuKHJvd3MpPD1TQU1QTEVfTElNSVQrMSwnQk9VTkRFRF9BVURJVF9FVkVOVF9TQU1QTEVfUkVRVUlSRUQnKQogICAgICAgIGZvciByb3cgaW4gcm93czoKICAgICAgICAgICAgYmluZGluZy5yZXF1aXJlKHR5cGUocm93KWlzIGRpY3QgYW5kIHNldChyb3cpPT1zZXQoRVZFTlRfRklFTERTLnNwbGl0KCcsJykpCiAgICAgICAgICAgICAgICBhbmQgcm93Wyd0eXBlJ109PWtpbmQgYW5kIHJvd1snY2xpZW50SWQnXT09cmVhZGVyLmNsaWVudAogICAgICAgICAgICAgICAgYW5kIHR5cGUocm93Wyd0aW1lJ10paXMgaW50IGFuZCByb3dbJ3RpbWUnXT49MCwnRVhBQ1RfU0VMRUNURURfQVVESVRfRVZFTlRfUkVRVUlSRUQnKQogICAgICAgIHRpbWVzPVtyb3dbJ3RpbWUnXWZvciByb3cgaW4gcm93c1s6U0FNUExFX0xJTUlUXV0KICAgICAgICBzYW1wbGVzW2tpbmRdPXsnc2FtcGxlRXZlbnRDb3VudCc6bGVuKHRpbWVzKSwnc2FtcGxlVHJ1bmNhdGVkJzpsZW4ocm93cyk+U0FNUExFX0xJTUlULAogICAgICAgICAgICAnb2xkZXN0U2FtcGxlVGltZU1pbGxpcyc6bWluKHRpbWVzKWlmIHRpbWVzIGVsc2UgTm9uZSwnbmV3ZXN0U2FtcGxlVGltZU1pbGxpcyc6bWF4KHRpbWVzKWlmIHRpbWVzIGVsc2UgTm9uZX0KICAgIGlmIHNlbGVjdGVkOgogICAgICAgIHJlcG9ydFsncGhhc2UnXT0nQVVESVRfQ09ORklHVVJBVElPTl9TVEFCSUxJVFlfUkVBRCcKICAgICAgICBiaW5kaW5nLnJlcXVpcmUoY29uZmlnX3NoYXBlKHJlYWRlci5nZXQoJ2V2ZW50cy9jb25maWcnLENPTkZJR19GSUVMRFMpKT09Y29uZmlnLCdBVURJVF9DT05GSUdVUkFUSU9OX0NIQU5HRUQnKQogICAgcmVwb3J0LnVwZGF0ZShhdWRpdFN0b3JhZ2VFbmFibGVkPWNvbmZpZ1snZXZlbnRzRW5hYmxlZCddLHJlcXVpcmVkQ2xpZW50TG9naW5FdmVudFR5cGVzRW5hYmxlZD1zZXQoRVZFTlRfVFlQRVMpPD1zZXQoZW5hYmxlZCBvciBbXSksCiAgICAgICAgYXVkaXRSZXRlbnRpb25TZWNvbmRzPWNvbmZpZy5nZXQoJ2V2ZW50c0V4cGlyYXRpb24nKSxhdWRpdFJldGVudGlvblZhbHVlT2JzZXJ2ZWQ9J2V2ZW50c0V4cGlyYXRpb24naW4gY29uZmlnLAogICAgICAgIHNhbXBsZWRFdmVudFR5cGVzPWxpc3Qoc2FtcGxlcyksZXZlbnRTYW1wbGVDb3VudHM9e2tpbmQ6dmFsdWVbJ3NhbXBsZUV2ZW50Q291bnQnXWZvciBraW5kLHZhbHVlIGluIHNhbXBsZXMuaXRlbXMoKX0sCiAgICAgICAgZXZlbnRTYW1wbGVUcnVuY2F0ZWQ9YW55KHZbJ3NhbXBsZVRydW5jYXRlZCddZm9yIHYgaW4gc2FtcGxlcy52YWx1ZXMoKSksCiAgICAgICAgZW1wdHlFdmVudFNhbXBsZUlzTm90WmVyb0hpc3RvcmljYWxVc2FnZT1UcnVlLGhpc3RvcmljYWxBY2NvdW50aW5nUmVjb25jaWxlZD1GYWxzZSwKICAgICAgICBoaXN0b3JpY2FsR3JhbnRBdHRlbXB0Q291bnQ9Tm9uZSxhY3R1YWxUb2tlbkludHJvc3BlY3Rpb25Qcm92ZW49RmFsc2UsCiAgICAgICAgcmVhc29uPSdBVURJVF9TVE9SQUdFX0RJU0FCTEVEX0hJU1RPUllfVU5QUk9WRU4naWYgbm90IGNvbmZpZ1snZXZlbnRzRW5hYmxlZCddZWxzZQogICAgICAgICAgICAnUkVRVUlSRURfQVVESVRfRVZFTlRfVFlQRVNfVU5QUk9WRU4naWYgc2V0KHNlbGVjdGVkKSE9c2V0KEVWRU5UX1RZUEVTKWVsc2UKICAgICAgICAgICAgJ0JPVU5ERURfQVVESVRfU0FNUExFX05PVF9DT01QTEVURV9HUkFOVF9ISVNUT1JZJyxzdGF0dXM9J0FDQ09VTlRJTkdfU09VUkNFX09CU0VSVkVEX05PVF9SRUNPTkNJTEVEJykKICAgIHJldHVybiB7J3NjaGVtYSc6J291Zi5wb2xpY3ktdG9rZW4tYWNjb3VudGluZy1zb3VyY2Utb2JzZXJ2YXRpb24udjEnLCdhdWRpdENvbmZpZ3VyYXRpb24nOmNvbmZpZywnc2FtcGxlcyc6c2FtcGxlcywKICAgICAgICAnc2FtcGxlTGltaXRQZXJFdmVudFR5cGUnOlNBTVBMRV9MSU1JVCwnY29tcGxldGVIaXN0b3J5Q292ZXJhZ2VQcm92ZW4nOkZhbHNlLAogICAgICAgICdjbGllbnRMb2dpbkV2ZW50SXNOb3RJbmRlcGVuZGVudGx5UHJvdmVuR3JhbnRBdHRlbXB0JzpUcnVlLCdoaXN0b3JpY2FsR3JhbnRBdHRlbXB0Q291bnQnOk5vbmUsCiAgICAgICAgJ2hpc3RvcmljYWxBY2NvdW50aW5nUmVjb25jaWxlZCc6RmFsc2UsJ2F1dG9tYXRpY0FjY291bnRpbmdJbml0aWFsaXphdGlvbkFsbG93ZWQnOkZhbHNlLAogICAgICAgICdydW50aW1lQXV0aG9yaXR5SXNzdWVkJzpGYWxzZSwncHJvZHVjdGlvbkFwcGx5UmVhZHknOkZhbHNlLCdidWRnZXRSZXNldCc6RmFsc2UsJ3IxMlRvdWNoZWQnOkZhbHNlLCdub3RSZWxlYXNlQWNjZXB0YW5jZSc6VHJ1ZX0K'
+ROOT_BODY=r'''
+import base64,hashlib,json,sys,types
+raw=sys.stdin.buffer.read(1048577)
+if not 0<len(raw)<=1048576 or hashlib.sha256(raw).hexdigest()!=CAPSULE_SHA:raise SystemExit('phase=ROOT_DELIVERY reason=FULL_CAPSULE_HASH_MISMATCH')
+p=json.loads(raw)
+if type(p)is not dict or set(p)!={'schema','sourceCommit','loader','sources','declarationHash'} or p['schema']!='ouf.policy-token-iam-action-memory-capsule.v1':raise SystemExit('phase=ROOT_DELIVERY reason=EXACT_FULL_CAPSULE_REQUIRED')
+loader=base64.b64decode(p['loader'],validate=True)
+if not 0<len(loader)<=65536:raise SystemExit('phase=ROOT_DELIVERY reason=LOADER_UNBOUNDED')
+sources={n:base64.b64decode(v,validate=True) for n,v in p['sources'].items()}
+runtime=types.ModuleType('verified_iam_action_loader')
+exec(compile(loader,'verified-iam-action-loader','exec'),runtime.__dict__)
+entry,manifest=runtime.load_entry(p['sourceCommit'],sources,loader,p['declarationHash'])
+import os,re,signal
+binding=entry.binding
+report={'schema':'ouf.policy-token-accounting-observation-receipt.v1','status':'BLOCKED',
+    'phase':'EXACT_RETAINED_OWNER_REVIEW_READ','iamMetadataGetAttempts':0,'privateEvidenceWrites':0,
+    'credentialFilesRead':0,'mountedTokenFilesRead':0,'privateKeyReadCount':0,
+    'installationKeyAccessAttempted':False,'signaturesIssued':0,'iamMutations':0,'serviceMutations':0,
+    'tokenGrantRequests':0,'providerCalls':0,'runtimeAuthorityIssued':False,'productionApplyReady':False,
+    'budgetReset':False,'r12Touched':False,'notReleaseAcceptance':True,'rawDiagnosticTextPrinted':False,
+    'diagnosticCategoriesAreNotRootCauseProof':True,'baselineRefreshed':False,
+    'historicalAccountingReconciled':False,'historicalGrantAttemptCount':None,
+    'priorAppliedIamMutationsReported':1,'additionalReadOnlyObserverHash':OBSERVER_HASH}
+try:
+    binding.require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site
+        and sys.dont_write_bytecode,'ROOT_ISOLATED_ACCOUNTING_OBSERVATION_REQUIRED')
+    def deadline(*_):raise binding.CandidateDenied('FINITE_ACCOUNTING_OWNER_OBSERVATION_DEADLINE')
+    signal.signal(signal.SIGALRM,deadline);signal.alarm(120)
+    with binding.protected_parent()as directory:
+        name='policy-token-iam-action-review-'+REVIEW_HASH+'.private.json'
+        review_raw=binding.read_member(directory,name)
+        binding.require(binding.sha(review_raw)==REVIEW_HASH,'RETAINED_OWNER_REVIEW_HASH_DRIFT')
+        review=binding.decode(review_raw)
+        intake,plan,snapshot,profile=entry.inputs(directory)
+        binding.require(review.get('sourceClosureHash')==CLOSURE_HASH
+            and review['sourceClosure']['declaration']==manifest
+            and review['sourceClosure']['executables']==intake['executablesProposedNotAccepted']
+            and binding.sha(binding.encoded(review['sourceClosure']))==CLOSURE_HASH
+            and review['stdlib']==entry.stdlib_binding(),'OWNER_REVIEW_SOURCE_OR_HOST_DRIFT')
+        observer_raw=base64.b64decode(OBSERVER_SOURCE,validate=True)
+        binding.require(binding.sha(observer_raw)==OBSERVER_HASH,'ACCOUNTING_OBSERVER_SOURCE_HASH_DRIFT')
+        observer=types.ModuleType('verified_read_only_accounting_observer')
+        exec(compile(observer_raw,'verified-accounting-observer','exec'),observer.__dict__)
+        reader=observer.AuditReader(snapshot['client']['clientId'],report)
+        value=observer.evaluate(reader,report)
+        value.update(reviewHash=REVIEW_HASH,sourceClosureHash=CLOSURE_HASH,observerSourceHash=OBSERVER_HASH,
+            governanceIntakeHash=entry.INTAKE_HASH,snapshotHash=entry.governance.SNAPSHOT_HASH,
+            priorIamActionEvidence='operator-reported APPLIED_RECONCILED, two signatures, one POST; not independently read back',
+            priorIamSignedContext='/etc/ouf/deploy-snapshots/policy-token-iam-signed-context-de54361718af9ab4f2ebd735f0d07576735f7e62abaa2922f3038d0a154214e0')
+        binding.require(binding.read_member(directory,name)==review_raw,'OWNER_REVIEW_CHANGED_DURING_AUDIT_OBSERVATION')
+        raw=binding.encoded(value);digest=binding.sha(raw)
+        report['phase']='PRIVATE_ACCOUNTING_SOURCE_OBSERVATION_PUBLICATION'
+        name='policy-token-owner-accounting-observation-'+digest+'.private.json'
+        wrote=entry.publish(directory,name,raw)
+        report.update(privateEvidenceWrites=int(wrote),privateEvidenceHash=digest,
+            privateEvidencePath=str(binding.PARENT/name),phase='ACCOUNTING_SOURCE_OBSERVED_NOT_RECONCILED')
+    code=0
+except Exception as error:
+    reason=str(error)
+    report.update(status='BLOCKED',reason=reason if re.fullmatch('[A-Z][A-Z0-9_]{0,127}',reason)else type(error).__name__,
+        evidencePublicationMayBePartial=report['phase']=='PRIVATE_ACCOUNTING_SOURCE_OBSERVATION_PUBLICATION')
+    if isinstance(error,OSError):report['errno']=error.errno
+    code=1
+finally:signal.alarm(0)
+print(binding.encoded(report).decode());raise SystemExit(code)
+'''
+
+def main():
+    if not re.fullmatch('[0-9a-f]{40}',CAPSULE_COMMIT) or not re.fullmatch('[0-9a-f]{64}',CAPSULE_SHA):
+        raise SystemExit('phase=DELIVERY reason=FULL_CAPSULE_NOT_QUALIFIED; no sudo executed')
+    preferred=Path.home()/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
+    gh=str(preferred) if preferred.is_file() and os.access(preferred,os.X_OK) else shutil.which('gh')
+    if not gh:raise SystemExit('phase=DELIVERY reason=EXISTING_GH_UNAVAILABLE; no sudo executed')
+    endpoint='repos/GioNob/ouf-deploy/contents/'+CAPSULE_PATH+'?ref='+CAPSULE_COMMIT
+    try:
+        result=subprocess.run([gh,'api',endpoint,'--jq','.content'],check=True,stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,timeout=30)
+        if len(result.stdout)>1500000:raise ValueError()
+        raw=base64.b64decode(b''.join(result.stdout.split()),validate=True)
+    except Exception:raise SystemExit('phase=DELIVERY reason=FULL_CAPSULE_UNAVAILABLE; no sudo executed') from None
+    if not 0<len(raw)<=1048576 or hashlib.sha256(raw).hexdigest()!=CAPSULE_SHA:
+        raise SystemExit('phase=DELIVERY reason=FULL_CAPSULE_HASH_MISMATCH; no sudo executed')
+    root_code='CAPSULE_SHA='+repr(CAPSULE_SHA)+'\nREVIEW_HASH='+repr(REVIEW_HASH)+'\nCLOSURE_HASH='+repr(CLOSURE_HASH)+'\nOBSERVER_HASH='+repr(OBSERVER_HASH)+'\nOBSERVER_SOURCE='+repr(OBSERVER_SOURCE)+'\n'+ROOT_BODY
+    try:return subprocess.run(['sudo','--','/usr/bin/python3','-I','-B','-S','-c',root_code],input=raw,timeout=140).returncode
+    except Exception:raise SystemExit('phase=ROOT_EXECUTION reason=ACCOUNTING_OBSERVATION_RESULT_UNAVAILABLE; preserve output, do not automatically rerun') from None
+
+if __name__=='__main__':raise SystemExit(main())

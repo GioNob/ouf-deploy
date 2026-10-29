@@ -1,0 +1,109 @@
+name: Exact published chatbot registry frame and TLS
+on:
+  push:
+    branches: [codex/retained-inspection-channel-20261015]
+    paths: [.github/workflows/chatbot-exact-image-environment.yml]
+permissions: {contents: read, actions: read}
+jobs:
+  read-published-config:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download the existing exact semantic artifact without rebuilding
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: '11907831957'
+          run-id: '38584614991'
+          github-token: ${{ github.token }}
+          path: published
+          merge-multiple: true
+      - name: Read image configuration and compare the current preparation predicate
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib,re,tarfile
+          root=pathlib.Path('published')
+          records=list(root.rglob('package-record.json'))
+          assert len(records)==1, 'ONE_EXACT_PACKAGE_RECORD_REQUIRED'
+          package=records[0].parent
+          record=json.loads(records[0].read_text())
+          assert record['sourceCommit']=='eccef11a97367f20e278db40b9ed6f45dd980c37'
+          image_id=record['imageId']
+          assert re.fullmatch('sha256:[0-9a-f]{64}',image_id)
+          sums=(package/'SHA256SUMS').read_text().splitlines()
+          selected=[line.split('  ',1)[0] for line in sums if line.endswith('  image.docker.tar')]
+          assert len(selected)==1
+          archive=package/'image.docker.tar'
+          with archive.open('rb') as src:
+              assert hashlib.file_digest(src,'sha256').hexdigest()==selected[0], 'IMAGE_ARCHIVE_HASH_DRIFT'
+          with tarfile.open(archive,'r:') as tar:
+              members=tar.getmembers()
+              assert len({m.name for m in members})==len(members)
+              def small(name,limit):
+                  member=tar.getmember(name)
+                  assert member.isfile() and member.size<=limit
+                  return tar.extractfile(member).read(limit+1)
+              manifest=json.loads(small('manifest.json',131072))
+              assert len(manifest)==1
+              raw=small(manifest[0]['Config'],2097152)
+              assert 'sha256:'+hashlib.sha256(raw).hexdigest()==image_id
+              native=json.loads(raw)
+          config=native['config']
+          assert config['Labels']['org.opencontainers.image.revision']==record['sourceCommit']
+          env={}
+          for item in config.get('Env',[]):
+              key,sep,value=item.partition('=')
+              assert sep and key not in env and re.fullmatch('[A-Za-z_][A-Za-z0-9_]*',key)
+              env[key]=value
+          allowed={'PATH','JAVA_HOME','JAVA_VERSION','LANG','LANGUAGE','LC_ALL','TZ'}
+          report={'schema':'ouf.exact-published-image-environment-read.v1',
+              'producerCommit':'8bff54a52a0ce15daccaf2aee932004f106dd178',
+              'runId':38584614991,'artifactId':11907831957,'module':'semantic',
+              'sourceCommit':record['sourceCommit'],'imageId':image_id,
+              'imageArchiveSha256':selected[0],'environmentNames':sorted(env),
+              'unexpectedImageEnvironmentNames':sorted(set(env)-allowed),
+              'currentImageEnvironmentPredicatePasses':set(env)<=allowed,
+              'environmentValueSha256':{k:hashlib.sha256(v.encode()).hexdigest() for k,v in sorted(env.items())},
+              'retainedApplicationEnvironmentObserved':False,
+              'serviceMutations':0,'databaseMutations':0,'runtimeAuthorityIssued':False,
+              'chatbotEndToEndProven':False,'notReleaseAcceptance':True}
+          print('OUF_EXACT_IMAGE_ENVIRONMENT='+json.dumps(report,sort_keys=True))
+          pathlib.Path('image-environment-read.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          PY
+      - name: Compile creation through full gated frame with the real image configuration
+        run: python3 tests/qualify_retained_registry_environment.py published
+      - name: Test default Java TLS of this exact image against public Keycloak discovery
+        run: |
+          set -euo pipefail
+          docker load --input published/image.docker.tar
+          mkdir -p tls-probe
+          cat > tls-probe/Verify.java <<'JAVA'
+          import java.net.URI;
+          import javax.net.ssl.HttpsURLConnection;
+          import java.nio.charset.StandardCharsets;
+          public class Verify {
+            public static void main(String[] args) throws Exception {
+              String issuer="https://auth.ouf-lab.it/realms/ouf";
+              HttpsURLConnection c=(HttpsURLConnection)URI.create(issuer+"/.well-known/openid-configuration").toURL().openConnection();
+              c.setConnectTimeout(10000);c.setReadTimeout(15000);c.setInstanceFollowRedirects(false);
+              if(c.getResponseCode()!=200)throw new IllegalStateException("OIDC_DISCOVERY_200_REQUIRED");
+              byte[] bytes=c.getInputStream().readNBytes(131073);
+              if(bytes.length>131072)throw new IllegalStateException("BOUNDED_DISCOVERY_REQUIRED");
+              String body=new String(bytes,StandardCharsets.UTF_8).replaceAll("\\s+","");
+              if(!body.contains("\"issuer\":\""+issuer+"\""))throw new IllegalStateException("EXACT_ISSUER_REQUIRED");
+              System.out.println("OUF_EXACT_IMAGE_DEFAULT_JAVA_TLS=PASS PUBLIC_DISCOVERY_GET_ONLY "+c.getCipherSuite());
+              c.disconnect();
+            }
+          }
+          JAVA
+          javac --release 17 -d tls-probe tls-probe/Verify.java
+          docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --memory 256m --pids-limit 64 --tmpfs /tmp:rw,noexec,nosuid,size=16m \
+            --mount "type=bind,src=$PWD/tls-probe,dst=/probe,readonly" --entrypoint java \
+            sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489 -cp /probe Verify
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: exact-image-environment-read-${{ github.run_id }}
+          path: image-environment-read.json
+          retention-days: 30

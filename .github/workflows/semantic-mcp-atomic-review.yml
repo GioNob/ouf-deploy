@@ -1,0 +1,41 @@
+name: Atomic MCP successor review qualification
+on:
+  push:
+    branches: [fix/cohort-mcp-backup-recovery-20261016]
+    paths:
+      - scripts/prepare-chatbot-semantic-mcp-atomic-review-20261017.py
+      - scripts/qualify-semantic-mcp-atomic-image.py
+      - scripts/read-chatbot-semantic-mcp-reprocessing-preflight-20261016.py
+      - tests/test_semantic_mcp_atomic_review.py
+      - .github/workflows/semantic-mcp-atomic-review.yml
+  pull_request:
+    paths:
+      - scripts/prepare-chatbot-semantic-mcp-atomic-review-20261017.py
+      - scripts/qualify-semantic-mcp-atomic-image.py
+      - tests/test_semantic_mcp_atomic_review.py
+      - .github/workflows/semantic-mcp-atomic-review.yml
+permissions: {contents: read, actions: read}
+jobs:
+  private-plan-and-real-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 38938286063
+          name: semantic-reprocessing-unsigned-mcp-38938286063
+          path: actual-package
+      - name: Verify private-only candidate preparation on both archive profiles
+        env:
+          MCP_REPROCESSING_PACKAGE_DIRECTORY: ${{ github.workspace }}/actual-package
+        run: |
+          sudo python3 -I -B -m unittest discover -s "$GITHUB_WORKSPACE/tests" -p 'test_semantic_mcp_*reader.py' -v
+          python3 -I -B -m unittest discover -s tests -p test_semantic_mcp_atomic_review.py -v
+      - name: Import tagless candidate on native ephemeral runner image store
+        env:
+          MCP_REPROCESSING_PACKAGE_DIRECTORY: ${{ github.workspace }}/actual-package
+          OUF_CI_UNSIGNED_IMAGE_IMPORT: SYNTHETIC_RUNNER_ONLY
+        run: python3 -I -B scripts/qualify-semantic-mcp-atomic-image.py

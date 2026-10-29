@@ -1,0 +1,163 @@
+{
+  "backupRegression": {
+    "conclusion": "success",
+    "jobId": 116876299223,
+    "runId": 38871464977
+  },
+  "budgetReset": false,
+  "completedTechnicalPhases": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "fullRegression": {
+    "runId": 38871464818,
+    "jobId": 116876298761,
+    "conclusion": "success",
+    "reportedTests": 487,
+    "reportedSuites": 65,
+    "failures": 0,
+    "skips": 0
+  },
+  "functionalMilestonesProven": 0,
+  "installationScope": "EXACT_RETAINED_DOCKER_NETNS_INSTALLATION_NOT_GENERAL_DISTRIBUTED_TRANSPORT",
+  "latestTargetAttempt": {
+    "newGrantRequests": 0,
+    "phase": "BLOCKED",
+    "progressAdvanced": false,
+    "reason": "PREGRANT_APISIX_GENERATION_DRIFT",
+    "runtimeAuthorityIssued": false,
+    "sourceCommit": "495d46f6ff7320c6d6248438895a52c8dc4c0818"
+  },
+  "launcher": {
+    "deliverySha256": "59d0950b636e0881ee6d8f1045bf1095bba8e2f9872dfd57b5ea069dc60bbfd0",
+    "path": "scripts/launch-chatbot-gateway-retained-20261016.sh",
+    "sha256": "5fb2c9f42e28b18f4e16705642587322f227d889b27f4a375d78e338e7183ed2"
+  },
+  "launcherReleased": true,
+  "nativeQualification": {
+    "conclusion": "success",
+    "jobs": [
+      {
+        "additionalLifecycleOperations": 0,
+        "adoptedRuntimeSteps": 8,
+        "historicalClaimUnchanged": true,
+        "id": 116876301244,
+        "name": "governed-native",
+        "newRouteWrites": 28,
+        "pregrantSuccessorLineageCheckedBeforeAdoption": true,
+        "retainedRouteChanges": 9,
+        "syntheticFixtureRouteCount": 37
+      },
+      {
+        "followingActualTlsGrant": 9,
+        "id": 116876301590,
+        "name": "finite-history",
+        "observationTests": 6,
+        "orchestrationTests": 2,
+        "retainedActualTlsGrants": 8,
+        "retainedBoundaryTests": 5
+      }
+    ],
+    "runId": 38871464959
+  },
+  "pregrantCorrection": {
+    "newLifecycleOperations": 0,
+    "oldPredicatesRetainedWithoutExactSuccessorReceipt": true,
+    "originalImageAndOlderRetiredAncestorProofsPreserved": true,
+    "requiresExactOriginalEffectToSuccessorPlanBinding": true,
+    "requiresRetiredOriginalGenerationUnchanged": true,
+    "requiresStableCompletedSuccessor": true
+  },
+  "previousQualifiedSource": {
+    "sourceCommit": "495d46f6ff7320c6d6248438895a52c8dc4c0818",
+    "sourceCapsuleSha256": "ae6cb82723a0273e64a198354eb5ed2d826b8a80f8a3db201a2a8d6deb73db8d",
+    "fullRegression": {
+      "conclusion": "success",
+      "failures": 0,
+      "jobId": 116856053854,
+      "reportedSuites": 65,
+      "reportedTests": 484,
+      "runId": 38865027539,
+      "skips": 0
+    },
+    "backupRegression": {
+      "conclusion": "success",
+      "runId": 38865028729
+    },
+    "nativeQualification": {
+      "conclusion": "success",
+      "jobs": [
+        {
+          "additionalLifecycleOperations": 0,
+          "adoptedRuntimeSteps": 8,
+          "historicalClaimUnchanged": true,
+          "id": 116855740434,
+          "name": "governed-native",
+          "newRouteWrites": 28,
+          "retainedRouteChanges": 9,
+          "syntheticFixtureRouteCount": 37
+        },
+        {
+          "followingActualTlsGrant": 9,
+          "id": 116855740112,
+          "name": "finite-history",
+          "observationTests": 6,
+          "orchestrationTests": 2,
+          "retainedActualTlsGrants": 8,
+          "retainedBoundaryTests": 3
+        }
+      ],
+      "runId": 38865027512
+    },
+    "launcher": {
+      "deliverySha256": "1619e91ae502454b83f20f417f5f54019221a7bd57f174ca995e2764201cf83b",
+      "path": "scripts/launch-chatbot-gateway-retained-20261016.sh",
+      "sha256": "d3f2f1b24a14475fc02a5074d53dd9483480e0860b7c9d519d55823ef470db13"
+    }
+  },
+  "readiness": {
+    "automaticRenewalAllowed": false,
+    "backoffSeconds": [
+      5,
+      15,
+      60,
+      300,
+      900
+    ],
+    "crashRequiresReconciliation": true,
+    "maximumAttempts": 128,
+    "maximumJitterPercent": 20,
+    "maximumSeconds": 3600,
+    "profile": "ouf.authorization-finite-observation.v1",
+    "respectRetryAfter": true
+  },
+  "roleObservation": {
+    "forcedFreshMcpReadBeforeProducerRelease": true,
+    "newMcpReadWhileQuiescent": false,
+    "ownerAtomicPublicationSource": "GioNob/ouf-source-onboarding@84828f74ac586bae09a78f0fb197b75b1a3d98d1",
+    "profile": "ouf.authorization-retained-role-observation.v1",
+    "requiresExactCurrentOwnerPolicyRefAndHash": true,
+    "source": "PRE_QUIESCENCE_IMMUTABLE_OWNER_RECEIPT"
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.chatbot-retained-gateway-authorization-qualification.v1",
+  "sourceCapsuleMemberCount": 129,
+  "sourceCapsuleSha256": "9ca1c537e02de4fb2fa988edd244a46613fa115332d9a16de32db4fd0bd49991",
+  "sourceCommit": "e2252339dcc127e9237b8120727bf27439f506f0",
+  "targetAccess": false,
+  "targetReadback": {
+    "completedRuntimeSteps": 8,
+    "controlledGrantAttempts": 8,
+    "existingInventoryRouteCount": 64,
+    "newWorkerInstalled": false,
+    "observedMcpHttpStatus": 503,
+    "remainingRouteChanges": 28,
+    "responseBodyRetained": false,
+    "retainedAppliedRouteChanges": 9,
+    "runtimeBindingHash": "456f99eb1c0d071d188194ba30c0cb1e73b9665e6a89ac03b21c9e2e3451e354",
+    "runtimeJournalHash": "1505050a950b8a9d9565eff9fb95301d5193baa55ad8fc76dbb3acac3f362b18"
+  },
+  "technicalPhase": 5
+}

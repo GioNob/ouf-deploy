@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.semantic-terminal-alias-recovery-ci.v1",
+  "codeCommit": "ccdbe282927a771b6547b3ecc3ec70d602358252",
+  "workflowRunId": 37940907012,
+  "jobId": 113854740720,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/37940907012",
+  "conclusion": "success",
+  "localTestsPassed": 10,
+  "nativeFixture": {
+    "exactLexicalAliasDenialReproduced": true,
+    "correctedGateRemovedTwoStoppedTasks": true,
+    "containerMetadataPreserved": true,
+    "imagesListingPreserved": true,
+    "snapshotMetadataPreserved": true,
+    "noForceOrKillByGate": true,
+    "targetAuthority": false
+  },
+  "targetRecoveryExecuted": false,
+  "startAuthorized": false,
+  "approvalPending": true,
+  "notReleaseAcceptance": true,
+  "executorSha256": "f07e2b7efeca863f05e11c8e1c53d56d660aa2cc413a724df483c0753f815af9",
+  "gateSha256": "a23f71e7fbe29fc3df4f138f41d35b4b5a3c63f14f1f15bc1c9e3d62644c9cfe",
+  "humanDeadlineEuropeRome": "2026-10-09T17:20:18+02:00",
+  "doNotReplayOriginalClaim": true
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.operator-reported-systemd-routing-observation.v1",
+  "reportedAt": "2026-10-13T20:03:53+02:00",
+  "source": "USER_PASTED_SYSTEMCTL_OUTPUT",
+  "independentTargetReadback": false,
+  "units": [
+    {
+      "Id": "ouf-policy-token@semantic.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "FragmentPath": "/etc/systemd/system/ouf-policy-token@.service",
+      "DropInPaths": []
+    },
+    {
+      "Id": "ouf-gateway-policy-token.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "FragmentPath": "/etc/systemd/system/ouf-gateway-policy-token.service",
+      "DropInPaths": []
+    },
+    {
+      "Id": "ouf-ingestion-policy-token.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "FragmentPath": "/etc/systemd/system/ouf-ingestion-policy-token.service",
+      "DropInPaths": []
+    },
+    {
+      "Id": "ouf-onboarding-identity-token.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "FragmentPath": "/etc/systemd/system/ouf-onboarding-identity-token.service",
+      "DropInPaths": []
+    }
+  ],
+  "environmentFilesPropertyReturned": false,
+  "environmentFilesAbsenceProven": false,
+  "quiescenceProven": false,
+  "credentialConsumerScopeProven": false,
+  "serviceMutations": 0,
+  "runtimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "nextStep": "Read ExecStart metadata with arguments redacted and TriggeredBy timer references; do not print unit contents or credentials."
+}

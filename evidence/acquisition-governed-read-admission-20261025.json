@@ -1,0 +1,66 @@
+{
+  "schema": "ouf.acquisition-governed-read-admission-observation.v1",
+  "observedDate": "2026-10-25",
+  "account": "ouf-admin",
+  "sourceId": "teatri-csv-6609b245",
+  "runIds": [
+    "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+    "a3208f2f-ebfd-415d-bddc-79ab05dea78f"
+  ],
+  "clientAcquisitionToolsNowAvailable": true,
+  "proposal": {
+    "operation": "REPLACE_ROLES",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"Type\":\"\",\"Title\":\"ONB_BAD_REQUEST\",\"Code\":\"ONB_BAD_REQUEST\",\"Detail\":\"AUTH_ROLE_CAPABILITY_INVALID\",\"Status\":400,\"RetryAfter\":\"\"}"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "receiptReceived": false,
+    "automaticallyResubmitted": false
+  },
+  "firstIngestionRead": {
+    "runId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+    "limit": 100,
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"code\":\"authorization denied\",\"retryable\":false}"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "automaticallyRetried": false
+  },
+  "diagnosis": {
+    "roleErrorMeans": "AT_LEAST_ONE_ROLE_PERMISSION_DESCRIPTOR_ABSENT_OR_NOT_HUMAN_IN_ACTIVE_POLICY",
+    "exactCapabilityNotYetObserved": true,
+    "ownerCapabilitiesViewExists": true,
+    "installedMcpManifestExcludesCapabilitiesView": true,
+    "historicalMcpFix": "354755001c962e4fe88c400f0996a03cd5977735",
+    "restoredMcpCandidate": "165696a9bb59ca60f752defe0b7851232f0dde9c",
+    "mcpPr": 78,
+    "ci": {
+      "prRun": 40220299700,
+      "prJob": 121250229342,
+      "tests": 3,
+      "allPass": true,
+      "skips": 0,
+      "targetDeployment": false
+    }
+  },
+  "newGrantPublished": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

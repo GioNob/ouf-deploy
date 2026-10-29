@@ -1,0 +1,57 @@
+{
+  "schema": "ouf.operator-reported-evidence.v1",
+  "reportedAt": "2026-10-09T15:24:48+02:00",
+  "evidenceSource": "USER_PASTED_OPERATOR_OUTPUT_NOT_INDEPENDENTLY_ACQUIRED",
+  "launcherCommit": "d4196d83eb61f1cede53cbcaccaafe6b311f1eee",
+  "executorCommit": "68bd005a9dabb56ebecb2d77b8fc189ef3617b12",
+  "approvalRef": "OUF_TERMINAL_TASK_CLEANUP_HUMAN_APPROVAL_20261009_152018",
+  "launcherExitCode": 1,
+  "launcherExitPhase": "EXECUTE_EXPLICITLY_APPROVED_TERMINAL_MAINTENANCE",
+  "receipt": {
+    "automaticRetryPerformed": false,
+    "containerLifecycleOperations": null,
+    "daemonRestarted": false,
+    "doNotRerunApply": true,
+    "dockerStartRequests": 0,
+    "errorType": "Denied",
+    "evidenceDirectory": "/etc/ouf/deploy-snapshots/semantic-terminal-task-cleanup-uoq_m_o7",
+    "exceptionPoints": [
+      {
+        "file": "execute.py",
+        "function": "main",
+        "line": 140
+      },
+      {
+        "file": "execute.py",
+        "function": "require",
+        "line": 25
+      }
+    ],
+    "notReleaseAcceptance": true,
+    "phase": "DELETE_EXACT_STOPPED_TASKS_WITHOUT_FORCE",
+    "postMaintenanceEmptyGuard": {
+      "candidateStateHashes": {
+        "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": "02d11a458636fedb4377f8a191e696589b1d0b92e0c272b471f0b03f2f8d92ad",
+        "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": "daa3f41b98479f443d597bbebb28154a16db0192751feec466db843755be35b1"
+      },
+      "configurationHash": "656c23f18e3f3eb4c1ce630f5056be87f7883eab7b048065092dafbd018284a8",
+      "containerLifecycleOperations": 0,
+      "kernelConfigurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+      "kernelTableName": "ouf_sem_provider",
+      "lockInodePreserved": true,
+      "notReleaseAcceptance": true,
+      "providerSetsEmpty": true
+    },
+    "priorJournalsPreserved": false,
+    "privateKeysRead": 0,
+    "privateValuesPrinted": false,
+    "providerCalls": 0,
+    "reason": "TERMINAL_TASK_DELETE_UNPROVEN",
+    "schema": "ouf.semantic-terminal-task-cleanup.v1",
+    "signaturesIssued": 0,
+    "startAuthorized": false,
+    "status": "BLOCKED",
+    "taskDeleteRequests": 1,
+    "wrapperRestored": true
+  }
+}

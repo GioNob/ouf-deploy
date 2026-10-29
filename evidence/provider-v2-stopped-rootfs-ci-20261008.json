@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.provider-v2-stopped-rootfs-ci-evidence.v1",
+  "sourceCommit": "396e1bbfedb897403f442cf44fac3b72dff3cd6b",
+  "runId": 37773347766,
+  "jobId": 113298059628,
+  "conclusion": "success",
+  "proof": {
+    "actualSeal": {
+      "bytes": 19922944,
+      "entries": 17,
+      "schema": "ouf.semantic-rootfs-seal.v1",
+      "sha256": "f54ae737a2d424af519a7f862b8d39f1f96e913c17ac8709d95f1f41ecaa4d84"
+    },
+    "directMountedRootfsObserved": true,
+    "engineVersion": "29.8.1",
+    "expectedSeal": {
+      "bytes": 19922944,
+      "entries": 17,
+      "schema": "ouf.semantic-rootfs-seal.v1",
+      "sha256": "f54ae737a2d424af519a7f862b8d39f1f96e913c17ac8709d95f1f41ecaa4d84"
+    },
+    "fixedEntrypointExercised": true,
+    "independentExpectedOverlayView": true,
+    "metadataDifferences": [],
+    "mountReleased": true,
+    "neverStarted": true,
+    "originalOfflineSeal": {
+      "bytes": 19922944,
+      "entries": 17,
+      "schema": "ouf.semantic-rootfs-seal.v1",
+      "sha256": "d1a82cb8421558db9b82ed2ed47692021935ad462a41dc11d6e18390a8625afb"
+    },
+    "privateBindContentRead": false,
+    "productionComparisonFunctionsUsed": true,
+    "schema": "ouf.stopped-export-mount-ci.v1",
+    "strictSealMatches": true,
+    "targetAcceptance": false,
+    "targetOperations": 0,
+    "unapprovedContentDetected": true
+  },
+  "scope": "DISPOSABLE_HOSTED_CI_ONLY",
+  "targetComparisonPerformed": false,
+  "targetAcceptance": false,
+  "startAuthorized": false,
+  "limitations": [
+    "CI entrypoint fixture uses one CI-owned candidate and substituted module constants; shipped target entrypoint accepts no runtime overrides and fixes two exact target CIDs.",
+    "Target kernel/snapshot filesystem comparison remains operator-only and may fail; no mismatch is accepted.",
+    "This does not approve full target OCI/context, publisher trust, deployment signatures or infrastructure/runtime admission."
+  ],
+  "metadataHandling": "The initial strict filesystem comparison found only merged-root st_nlink drift. Retain original offline seal and derive a complete independent OverlayFS view from the expected tree, copying its root ownership/mode/all xattrs. No observed target metadata is adopted or omitted.",
+  "targetOperatorScript": "releases/provider-v2-stopped-rootfs-comparison.sh",
+  "scriptSha256": "c4a804d3b7369d04a7e00fe0d6cf769d64fcc8d5b00299334be3333ff1b2ed7c"
+}

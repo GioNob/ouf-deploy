@@ -1,0 +1,12 @@
+{
+  "schema": "ouf.semantic-provider-approved-operator-ci.v1",
+  "headSha": "7e4d87983a1c67c689d87651f0b15033b974344d",
+  "runId": 37891798745,
+  "jobId": 113694151600,
+  "conclusion": "success",
+  "testsPassed": 7,
+  "helperSha256": "40585829c940685cce8ba82203d4bb057a94dc9ba6ca286dc935aa9581251cbe",
+  "approvalRef": "OUF_PROVIDER_V2_SIGN_START_HUMAN_APPROVAL_20261009_075624",
+  "targetExecutedHere": false,
+  "notReleaseAcceptance": true
+}

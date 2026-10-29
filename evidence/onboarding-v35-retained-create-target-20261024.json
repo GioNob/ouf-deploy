@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.onboarding-v35-retained-create-target-evidence.v1",
+  "evidenceSource": "operator-pasted-terminal-json",
+  "status": "RETAINED_CREATED_CONFIG_DIFFERENCE_OBSERVED",
+  "complete": true,
+  "exitCode": 0,
+  "operatorLog": "/home/oufadmin/ouf-v35-retained-reader.ahKgZSQy/operator.log",
+  "reviewHash": "828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b",
+  "authorityHash": "af9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63",
+  "retainedJournalHash": "255437a61e8b435862e85ddffa5edfef7365a42735301cefffbc299a9d149879",
+  "onlyConfigDifference": {
+    "field": "Hostname",
+    "expectedType": "str",
+    "expectedEmpty": true,
+    "expectedNull": false,
+    "observedType": "str",
+    "observedEmpty": false,
+    "observedNull": false,
+    "shortIdEqualityNotYetObservedOnTarget": true
+  },
+  "effectStates": [
+    "APPLIED",
+    "APPLIED",
+    "APPLIED",
+    "APPLIED",
+    "APPLIED",
+    "APPLIED",
+    "APPLIED",
+    "CLAIMED"
+  ],
+  "retainedCumulativeCounts": {
+    "backupProcesses": 2,
+    "engineGets": 139,
+    "engineWrites": 4,
+    "imageLoadAttempts": 1,
+    "ownerConfigurationReads": 18,
+    "quarantineStops": 0,
+    "readinessGets": 0,
+    "sqlSessions": 5
+  },
+  "newEngineGets": 0,
+  "newSqlSessionAttempts": 0,
+  "oldJournalWrites": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeEffectsDispatched": 0,
+  "currentRuntimeStateObserved": false,
+  "applicationReadinessProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false,
+  "readerScopeConsumed": true
+}

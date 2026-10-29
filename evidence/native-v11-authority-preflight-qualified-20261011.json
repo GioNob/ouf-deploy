@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.native-v11-authority-preflight-qualification.v1",
+  "authoritySourceCommit": "38f3fd0a250a8e4a64f37908e923fea3ebdd979d",
+  "preflightSourceCommit": "7decb29bd88696569346f4ff490fdf9f3c64e9f8",
+  "launcherCommit": "30becfec5408f6d1de4715fc98ba8724d26f7f51",
+  "launcherSha256": "906bdca332d37def9c43d94cd81196b0e7ab1f3083d53a6a2d12f9608daa0e68",
+  "workflowRunId": 38179920440,
+  "jobId": 114590111922,
+  "conclusion": "success",
+  "realCryptoTests": 10,
+  "scopeEntryAndDeliveryTests": 11,
+  "targetIntakeHash": "9ec18cf053e5925e42df93b75990343cc1d09696975fc2a224d76b4b28becdae",
+  "targetPolicyReadExecuted": true,
+  "targetCutoverInstallerQualified": false,
+  "targetRuntimeAuthorityIssued": false,
+  "notReleaseAcceptance": true,
+  "targetPolicyReceipt": "native-v11-transition-preflight-target-20261012.json"
+}

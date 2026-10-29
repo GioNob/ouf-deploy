@@ -1,0 +1,24 @@
+name: OUF Java public trust merge qualification
+on:
+  push:
+    branches: [main]
+    paths:
+      - tools/semantic_java_trust/merge_public_roots.py
+      - tools/semantic_java_trust/test_merge_public_roots.py
+      - .github/workflows/java-public-trust-qualification.yml
+permissions:
+  contents: read
+jobs:
+  native-java:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Real keytool PKCS12 and Java trust manager, baseline and provider accepted unknown denied
+        run: python3 tools/semantic_java_trust/test_merge_public_roots.py
