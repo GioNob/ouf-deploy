@@ -14,7 +14,7 @@ from tools.m2_discovery_installation_profile.frame_inputs import compile_inputs,
 from tools.m2_discovery_installation_profile.frame import compile_policy
 from projected_frame_observation import ProjectedFrameObservation
 from configtree_mount_observation import ConfigtreeMountObservation
-from file_only_node_owner import ObservationBudget
+from tools.m2_discovery_installation_profile.node_owner import ObservationBudget
 from tools.semantic_provider_deployment_authentication import attributes
 
 def run(*args):
