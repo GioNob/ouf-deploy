@@ -114,9 +114,15 @@ class Sequence(unittest.TestCase):
 
     def test_changed_order_or_dispatch_count_blocks_before_native_commands(self):
         owner,intent,auth,calls,state=self.fixture();owner.journal.initialize(owner.initial())
-        row=owner.journal.read();wrong={**row,'state':'IN_FLIGHT','effects':[{'stage':'FILES','dispatches':2,'state':'IN_FLIGHT','evidence':None}]}
+        row=owner.journal.read();wrong={**row,'version':1,'state':'IN_FLIGHT','effects':[{'stage':'FILES','dispatches':2,'state':'IN_FLIGHT','evidence':None}]}
         owner.journal.compare_and_save(row,wrong)
         with self.assertRaisesRegex(ValueError,'STAGE_ORDER'):owner.continue_installation(intent)
+        self.assertEqual(calls,[])
+
+    def test_sequence_version_cannot_drift_without_dispatch_or_observation(self):
+        owner,intent,auth,calls,state=self.fixture();owner.journal.initialize(owner.initial())
+        row=owner.journal.read();owner.journal.compare_and_save(row,{**row,'version':1})
+        with self.assertRaisesRegex(ValueError,'SEQUENCE_VERSION_DRIFT'):owner.continue_installation(intent)
         self.assertEqual(calls,[])
 
     def test_read_only_completed_observation_works_while_worker_holds_lifetime_fence(self):
