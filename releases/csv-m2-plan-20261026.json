@@ -98,7 +98,7 @@
     "profilePreviewPermissionPublished": true,
     "farmacieRowsReportedByOwner": 61,
     "farmacieMappingState": "DOMAIN_CONFIRMED_OPEN_AND_MINISTERIAL_ID_ONTOPIA_DISCOVERY_COMPOSITION_QUALIFIED_RUNTIME_BLOCKED",
-    "semanticExternalDiscovery": "CURRENT_CUSTODY_CANDIDATES_CAPTURED_NOT_ADMITTED_COORDINATED_PREPARATION_PENDING",
+    "semanticExternalDiscovery": "STOPPED_PROVIDER_INPUT_PREPARATION_QUALIFIED_TARGET_PENDING_COORDINATED_EXECUTOR_OPEN",
     "stableCapabilitiesMandatory": true,
     "stableCapabilitiesOperationalProven": false,
     "discoveryConfiguredGrantGapObserved": true,
@@ -128,7 +128,9 @@
     "discoveryCurrentCustodyCaptureTargetExecuted": true,
     "operatorRequiredForCurrentCustody": false,
     "discoveryCurrentCustodyCaptureScopeConsumed": true,
-    "discoveryCurrentMaterialCandidateBinding": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5"
+    "discoveryCurrentMaterialCandidateBinding": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "discoveryStoppedProviderInputsSourceQualified": true,
+    "discoveryStoppedProviderInputsTargetExecuted": false
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1994,7 +1996,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Use exact reconciliation84184832 and preserved trust inputafbbe480/store33418234 to prepare a stopped-provider/current native-context correction under the complete coordinated installation review. Provider is stopped; the historical combined configuration/network identity differs in both APIs. Static drift cause and lifecycle authority remain unproven. No new operator command ready; no restart, old-scope replay or store regeneration.",
+  "firstNextAction": "Execute the one qualified stopped-provider installation-input preparation over interactive SSH as oufadmin: eleven exact metadata reads, preserved public store, 27 core plus five context GETs, actual Registry OCI/namespace, no provider live admission or lifecycle. Connector lacks privileged VPS execution. Preserve all consumed scopes and logs. Then complete coordinated gated provider dependency/distinct lease worker and thirteen-phase installation/TLS/IAM/DB/boot/rotation review; no historical authority or early human window.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -2438,9 +2440,9 @@
   "compositionCheckpoint": "evidence/csv-m2-typed-recovery-composition-20261026.json",
   "currentCheckpoint": {
     "date": "2026-10-29",
-    "handoff": "docs/handoffs/OUF_M2_PROVIDER_RECONCILIATION_20261029.md",
-    "next": "PREPARE_STOPPED_PROVIDER_CORRECTION_AND_COORDINATED_NATIVE_REVIEW",
-    "evidence": "evidence/m2-provider-reconciliation-target-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_STOPPED_PROVIDER_INPUTS_20261029.md",
+    "next": "ONE_QUALIFIED_STOPPED_PROVIDER_INPUT_PREPARATION_THEN_COORDINATED_INSTALLATION_REVIEW",
+    "evidence": "evidence/m2-stopped-provider-inputs-qualified-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
@@ -6370,7 +6372,7 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Use exact reconciliation84184832 and preserved trust inputafbbe480/store33418234 to prepare a stopped-provider/current native-context correction under the complete coordinated installation review. Provider is stopped; the historical combined configuration/network identity differs in both APIs. Static drift cause and lifecycle authority remain unproven. No new operator command ready; no restart, old-scope replay or store regeneration.",
+  "next": "Execute the one qualified stopped-provider installation-input preparation over interactive SSH as oufadmin: eleven exact metadata reads, preserved public store, 27 core plus five context GETs, actual Registry OCI/namespace, no provider live admission or lifecycle. Connector lacks privileged VPS execution. Preserve all consumed scopes and logs. Then complete coordinated gated provider dependency/distinct lease worker and thirteen-phase installation/TLS/IAM/DB/boot/rotation review; no historical authority or early human window.",
   "discoveryTrustContextPreparation": {
     "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
@@ -6386,7 +6388,7 @@
     "currentCommandReady": false,
     "targetEvidence": "evidence/m2-discovery-trust-context-target-stop-20261029.json"
   },
-  "currentOperatorCommandReady": false,
+  "currentOperatorCommandReady": true,
   "discoveryMaterialRoleDuplicateDelivery": {
     "evidence": "evidence/m2-discovery-material-role-duplicate-delivery-20261029.json",
     "error": "MATERIAL_ROLE_PREPARATION_SCOPE_CONSUMED_NO_REPLAY",
@@ -6582,5 +6584,19 @@
     "restartOrAdmissionAuthorized": false,
     "applicationE2EProven": false,
     "resultCanonicalSha256": "f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f"
+  },
+  "discoveryStoppedProviderInputPreparation": {
+    "status": "QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-stopped-provider-inputs-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_STOPPED_PROVIDER_INPUTS_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-stopped-provider-inputs-84184832-20261029-v1",
+    "sourceCommit": "a1a24e923ea4169c97e7c82a8b497cf200bd7522",
+    "capsuleCommit": "cc20f661eae3afbd7e5b11f642a5e81c4848f93b",
+    "capsuleSha256": "f312b973e0692495838c1e61ed9617bcd35099b5ee795f5a95dee7e52eeaad08",
+    "wrapperCommit": "0c29421d39190f784f62c3928ac69c9c1138587d",
+    "wrapperSha256": "7b56c3eb8128085ce5704432ac87f2f6e3b89e9c06375517521fa9e8a2280a39",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
   }
 }

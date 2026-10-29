@@ -13,7 +13,7 @@
   "source": {
     "repository": "GioNob/ouf-deploy",
     "branch": "feat/m2-discovery-complete-profile-20261029",
-    "commit": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
+    "commit": "0c29421d39190f784f62c3928ac69c9c1138587d",
     "pr": 54,
     "merged": false
   },
@@ -115,8 +115,8 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Use exact reconciliation84184832 and preserved trust inputafbbe480/store33418234 to prepare a stopped-provider/current native-context correction under the complete coordinated installation review. Provider is stopped; the historical combined configuration/network identity differs in both APIs. Static drift cause and lifecycle authority remain unproven. No new operator command ready; no restart, old-scope replay or store regeneration.",
-  "currentOperatorCommandReady": false,
+  "next": "Execute the one qualified stopped-provider installation-input preparation over interactive SSH as oufadmin: eleven exact metadata reads, preserved public store, 27 core plus five context GETs, actual Registry OCI/namespace, no provider live admission or lifecycle. Connector lacks privileged VPS execution. Preserve all consumed scopes and logs. Then complete coordinated gated provider dependency/distinct lease worker and thirteen-phase installation/TLS/IAM/DB/boot/rotation review; no historical authority or early human window.",
+  "currentOperatorCommandReady": true,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
@@ -468,5 +468,19 @@
     "restartOrAdmissionAuthorized": false,
     "applicationE2EProven": false,
     "resultCanonicalSha256": "f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f"
+  },
+  "discoveryStoppedProviderInputPreparation": {
+    "status": "QUALIFIED_TARGET_NOT_EXECUTED",
+    "evidence": "evidence/m2-stopped-provider-inputs-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_STOPPED_PROVIDER_INPUTS_20261029.md",
+    "scope": "/etc/ouf/deploy-snapshots/m2-stopped-provider-inputs-84184832-20261029-v1",
+    "sourceCommit": "a1a24e923ea4169c97e7c82a8b497cf200bd7522",
+    "capsuleCommit": "cc20f661eae3afbd7e5b11f642a5e81c4848f93b",
+    "capsuleSha256": "f312b973e0692495838c1e61ed9617bcd35099b5ee795f5a95dee7e52eeaad08",
+    "wrapperCommit": "0c29421d39190f784f62c3928ac69c9c1138587d",
+    "wrapperSha256": "7b56c3eb8128085ce5704432ac87f2f6e3b89e9c06375517521fa9e8a2280a39",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "currentCommandReady": true
   }
 }

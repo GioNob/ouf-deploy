@@ -1,3 +1,7 @@
+# Aggiornamento corrente — provider fermo, input coordinati qualificati
+
+[Unico comando corrente e rientro](OUF_M2_STOPPED_PROVIDER_INPUTS_20261029.md), [qualifica](../../evidence/m2-stopped-provider-inputs-qualified-20261029.json). Nuovo scope stopped-provider-inputs-84184832 NON ESEGUITO.8test+Docker29.8.1 reale/13core+provider,4consegne protette,139regressioni PASS;logletti. Richiede SSHoufadmin per filesystemVPS protetto,non disponibile dalconnector. Nessunrestart,driverstorico,authority,segreti o nuovo store. Tutti scopeprecedenti e logpreservati,ancheSTOPnonrilanciare. Dopooutput completareammissioneprovider/worker distinto e review13fasi/TLS/IAM/DB/boot/rotazione;M2/stabilità/E2E OPEN. Le sezioni successive sono STORICHE.
+
 # Aggiornamento corrente — preparazione materiali qualificata
 
 Il prossimo passaggio richiede ora il filesystem VPS. [Unico comando corrente e rientro](OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md). Sorgenteae11054d;127PASS/0skip,13peerDocker reali,consegna protetta e antiReplay qualificati. Nuovo scope NON eseguito, vecchi scope CONSUMATI e preservati. E2E ancoraOPEN.

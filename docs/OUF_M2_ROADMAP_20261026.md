@@ -1,3 +1,9 @@
+# CURRENT 29 ottobre2026 — input provider fermo qualificati, preparazione target pendente
+
+[Unico comando e rientro](handoffs/OUF_M2_STOPPED_PROVIDER_INPUTS_20261029.md), [qualifica](../evidence/m2-stopped-provider-inputs-qualified-20261029.json). Sei moduli/97372byte,8test perpush/PR e Docker29.8.1 reale/13core+provider,4jobconsegnaHTTPS/root0400/replay/log,139regressioni PASS;logletti. Nuovo scope stopped-provider-inputs-84184832 NON ESEGUITO:90s/16MiB,11metadata,27+5GET,storepubblicopreservato e OCI/namespaceRegistry. Nessuna OCI/providerlive inventata,authority/lifecycle/credenziali/IAM/SQL o nuovo store. SSHoufadmin essenziale: connectorprivoexecutorVPS. AncheSTOPconsuma;nonrilanciare/cancellare/ricreare/logoverwrite. Tutti predecessoriconsumati conservati.
+
+Providerfermo e vecchiohashreti diversi sono fattidiagnostici; deriva statica nonprovata. Contratti storici e policy pubblica sonoinput,non vecchiaauthority. Dopooutput completareammissionedipendenzaprovider conworkerdistinto e installazionecoordinata13fasi/TLS/IAM/DB/fencing/boot/rotazione,poi capabilitygovernate e OntoPiAE2E. M2/stabilità/E2E OPEN;sezioni successive STORICHE.
+
 # CURRENT 29 ottobre2026 — diagnosi riuscita/consumata, provider fermo
 
 [Esito](../evidence/m2-provider-reconciliation-target-20261029.json):6metadata/5GET/386102byte,store preservato e13pincoincidenti. Provider fermo inAPI1.44/1.56,ID/immagineuguali,hashconfig/rete diverso (non prova di deriva statica). Riconciliazione84184832/trustafbbe480/store33418234 vincolano il prossimo lavoro. Launcher ritirato e scopeCONSUMATO: non ripetere. Preparare correzione/providerreentry e revisione coordinata13fasi/worker/TLS/IAM/DB; nessunrestart/grant/authority implicito, nessun nuovo comando pronto. M2/stabilità/E2E OPEN. Sezioni successive storiche.
