@@ -1,0 +1,16 @@
+name: M2 stable discovery binding protected delivery
+on:
+  push:
+    paths: ['releases/read-m2-discovery-installation-inputs-20261029.sh','tests/qualify_m2_discovery_installation_inputs_delivery.py','.github/workflows/m2-discovery-installation-inputs-delivery.yml']
+  pull_request:
+    paths: ['releases/read-m2-discovery-installation-inputs-20261029.sh','tests/qualify_m2_discovery_installation_inputs_delivery.py','.github/workflows/m2-discovery-installation-inputs-delivery.yml']
+permissions: {contents: read}
+jobs:
+  pinned-https-root-custody:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual HTTPS, nonroot, sudo, root0400 verification and failed-scope preservation
+        run: sudo /usr/bin/python3 -I -S -B tests/qualify_m2_discovery_installation_inputs_delivery.py
