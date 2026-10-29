@@ -1,4 +1,14 @@
-# CURRENT — preparazione materiali STOP consumato; correzione associazione ruoli in corso
+# CURRENT — successore ruoli qualificato; unico NUOVO comando operatore
+
+29ottobre2026. [Handoff corrente e comando](handoffs/OUF_M2_DISCOVERY_MATERIAL_ROLES_20261029.md), [qualifica](../evidence/m2-discovery-material-role-successor-qualified-20261029.json), [STOP conservato](../evidence/m2-discovery-material-preparation-target-stop-20261029.json). Difetto nomi ruolo risolto con associazione percontainerId univoco, immagine/config/mount/rete/pin completi e provenienza originale. Moduli/capsule precedenti byte-esatti.139PASS/0skip perpush/PR,13peerDocker reali conaliasdiversi e4jobconsegnaHTTPS/sudo/root0400/antiReplay/priorLog PASS; log letti.
+
+NEXT richiede filesystemVPS non accessibile dal connector: eseguire UNA VOLTA il NUOVO comando dell'handoff comeoufadminSSH. Successore m2-discovery-material-roles-2d133870-20261029-v1 NON eseguito. LeggeprimaricevutaSTOPesatta2d133870..., zeroeffetti/Engine/segreti/copie obbligatori; poi3inputesatti,27GET/13peer,2copie private+1certificato+3riletture.4metadata/90s/16MiB. Nessunlogin/OAuth/IAM/SQL/grant/budget/nuovachiave/firma/import/lifecycle/applyapp/upload/job/resume/acquisizione. Soloeventualesudo locale, nessunsegreto inchat. RestituireJSON/footer;ancheSTOPconsumaNONrilanciare/cancellare/ricreare/osovrascriverelog.
+
+Il vecchio scope preparazioneeed restaFALLITO/CONSUMATO e comando ritirato;custodiaeed e inputf759/14e restanoRIUSCITI/CONSUMATI. Non riaprirealcunvecchio scope. Nuovo contesto collegatoall'esattoSTOP, non reset/authority. Copie nonprovanoIAM/TLS/CA/DB oE2E. Poi continuarepreparazione coordinata13fasi/worker distinto,trustIAM+provider/rete/DB/fencing correnti, HUMAN/authority finite soloquando pronti.
+
+M2/8stabilità/E2E OPEN;discovery nonesposta. Farmacie/decisioni invariati. Solochatbot→MCP→Gateway→Registry→OntoPiA; no bypass/merge/acceptance/subagenti/automazioni. Header/comandi successivi STORICI.
+
+# HISTORICAL — preparazione materiali STOP consumato; correzione associazione ruoli in corso
 
 29ottobre2026. [Esito target](../evidence/m2-discovery-material-preparation-target-stop-20261029.json). STOP_RECONCILE/INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT,3metadata/648347byte,0EngineGET/0credenziali/0MAC/0certificati/0copie. OperatorExit1/DeliveryExit1. FonteJSON/footer operatore, nessuna lettura indipendente log o inputprivati. Scope m2-discovery-material-preparation-eed64887-20261029-v1 FALLITO/CONSUMATO: NON rilanciare/cancellare/ricreare né sovrascriverelog. Launcher corrente ritirato. Custodiaeed e inputf759/14e restanoRIUSCITI/CONSUMATI.
 

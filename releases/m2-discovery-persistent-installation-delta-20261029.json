@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "MATERIAL_PREPARATION_TARGET_STOP_ROLE_ASSOCIATION_FIX_PENDING",
+  "status": "ROLE_CORRECTION_SUCCESSOR_QUALIFIED_OPERATOR_REQUIRED",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "Fix the role association in a separate immutable successor, qualify heterogeneous aliases and strict identity/generation denial, preserve consumed failed scope. No new operator command ready.",
+  "next": "Run the new qualified predecessor-bound role successor once via operator SSH; old failed and successful scopes stay consumed. Return public JSON/footer, then continue coordinated installation.",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -510,7 +510,7 @@
     "source": {
       "repository": "GioNob/ouf-deploy",
       "branch": "feat/m2-discovery-complete-profile-20261029",
-      "commit": "ae11054df297e14fa80a81c39432af5cebea5001",
+      "commit": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
       "pr": 54,
       "merged": false
     },
@@ -612,8 +612,8 @@
       "nativePublisherTrustAccepted": false,
       "firstFailedRunPreserved": 40856064980
     },
-    "next": "Fix the role association in a separate immutable successor, qualify heterogeneous aliases and strict identity/generation denial, preserve consumed failed scope. No new operator command ready.",
-    "currentOperatorCommandReady": false,
+    "next": "Run the new qualified predecessor-bound role successor once via operator SSH; old failed and successful scopes stay consumed. Return public JSON/footer, then continue coordinated installation.",
+    "currentOperatorCommandReady": true,
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
     "stableCapabilitiesOperationalProven": false,
@@ -624,13 +624,63 @@
     "materialPreparation": {
       "evidence": "evidence/m2-discovery-material-preparation-qualified-20261029.json",
       "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_PREPARATION_20261029.md",
-      "status": "TARGET_STOP_ROLE_IDENTITY_DEFECT_FAILED_CONSUMED",
+      "status": "TARGET_STOP_FAILED_CONSUMED",
       "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
       "expectedCandidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
       "wrapperSource": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
       "wrapperSha256": "7e25e9e150f3452dd0e6c994ae0d38cb3db803cfb2c0dae59b2baa75d787c0bd",
       "capsuleSource": "6f2cc38a07a2b56542959716967e183f59217713",
       "capsuleSha256": "7f1c64c3f20f7c31ee76799c3aad28bd4e8d6fcb7dbe688f1a02726cf6dd603b"
+    },
+    "materialPreparationTarget": {
+      "schema": "ouf.m2-discovery-material-preparation-target-observation.v1",
+      "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+      "independentHostLogOrPrivateRecordRead": false,
+      "result": {
+        "applicationE2EProven": false,
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "complete": false,
+        "counts": {
+          "applicationMacKeyReads": 0,
+          "bytes": 648347,
+          "credentialFileReads": 0,
+          "engineGets": 0,
+          "metadataReads": 3,
+          "preparedCopyReads": 0,
+          "privateCopiesPrepared": 0,
+          "publicCertificateCopiesPrepared": 0,
+          "publicCertificateReads": 0
+        },
+        "reasonCode": "INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT",
+        "releaseAcceptance": false,
+        "runtimeAuthorityIssued": false,
+        "schema": "ouf.m2-discovery-material-preparation-result.v1",
+        "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+        "scopeConsumed": true,
+        "status": "STOP_RECONCILE",
+        "targetApplyAuthorized": false
+      },
+      "operatorExit": 1,
+      "operatorLog": "/usr/local/lib/ouf-m2-discovery-material-7f1c64c3f20f7c31/operator.log",
+      "deliveryExit": 1,
+      "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4",
+      "deliveryLog": "/home/oufadmin/ouf-m2-discovery-material-delivery.zB0Q4bE4/bootstrap.log",
+      "bootstrapDirectory": "/home/oufadmin/ouf-m2-material-bootstrap.SbYcgnP7",
+      "originalCustodyRemainsSuccessfulConsumed": true,
+      "scopeDisposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
+      "newOperatorCommandReady": false,
+      "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac"
+    },
+    "materialRoleSuccessor": {
+      "status": "QUALIFIED_NOT_EXECUTED_OPERATOR_REQUIRED",
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-roles-2d133870-20261029-v1",
+      "evidence": "evidence/m2-discovery-material-role-successor-qualified-20261029.json",
+      "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_ROLES_20261029.md",
+      "predecessorResultHash": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac",
+      "capsuleSha256": "3f213db3cc611490398a097ef334f874726af09c2f3de0344322ad604a108c65",
+      "wrapperSource": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
+      "wrapperSha256": "06ca017cd74cf3cc87a81c32787a1ea2ab3929453809599bc682067f14fdcb69"
     }
   },
   "discoveryMaterialPreparation": {
@@ -781,5 +831,121 @@
     "scopeDisposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
     "newOperatorCommandReady": false,
     "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac"
+  },
+  "discoveryMaterialRoleSuccessor": {
+    "schema": "ouf.m2-discovery-material-role-successor-qualification.v1",
+    "date": "2026-10-29",
+    "problem": {
+      "targetEvidence": "evidence/m2-discovery-material-preparation-target-stop-20261029.json",
+      "reasonCode": "INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT",
+      "rootCause": "The four-role producer selects by unique container ID and renames roles. The original preparer incorrectly assumed these labels already existed in the thirteen-peer producer.",
+      "sourceDefectAcknowledged": true
+    },
+    "predecessor": {
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+      "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac",
+      "disposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
+      "reportedMetadataReads": 3,
+      "reportedBytes": 648347,
+      "reportedEngineGets": 0,
+      "reportedSecretReads": 0,
+      "reportedCopies": 0,
+      "independentHostRead": false
+    },
+    "source": {
+      "production": "5de8a6224aa7e5b410044a12a76136056cc62064",
+      "nativeQualifier": "ae8745c86d90266f49f3df4abbc4bffc18f10ce6",
+      "capsule": "339f3ee1f8a1dd2053448b9a1d05b278b6495b47",
+      "delivery": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
+      "newModuleSha256": "87d4a9d941c210f5f4b5bfa2f894d84aa95855533997cd7d52ae8f469bc3cfc4",
+      "originalFourModulesAndCapsuleByteExact": true
+    },
+    "capsule": {
+      "sha256": "3f213db3cc611490398a097ef334f874726af09c2f3de0344322ad604a108c65",
+      "bytes": 74753,
+      "moduleCount": 5
+    },
+    "wrapper": {
+      "sha256": "06ca017cd74cf3cc87a81c32787a1ea2ab3929453809599bc682067f14fdcb69",
+      "file": "releases/prepare-m2-discovery-material-roles-20261029.sh"
+    },
+    "selected": {
+      "pushRun": 40864412321,
+      "pushJob": 123415421260,
+      "prRun": 40864419812,
+      "prJob": 123415447362,
+      "latestPrRun": 40864636805,
+      "latestPrJob": 123416176800,
+      "testsPerJob": 139,
+      "errors": 0,
+      "skips": 0,
+      "logsRead": true,
+      "newRegressionTests": 7,
+      "newCapsuleTests": 5,
+      "oldCapsuleReproducibilityStillPasses": true,
+      "oldAndNewScopeReplayDeniedByRegressionTests": true,
+      "nonselectedPeerDriftDeniedBeforeSecretReads": true
+    },
+    "native": {
+      "pushRun": 40863972102,
+      "pushJob": 123413909601,
+      "prRun": 40863982982,
+      "prJob": 123413944028,
+      "logsRead": true,
+      "actualDockerPeers": 13,
+      "rootUnixEnginePeer": true,
+      "kernelPins": true,
+      "allInstallationAndCohortLabelsDifferent": true,
+      "selectedByUniqueContainerId": true,
+      "imageConfigMountNetworkAndPinChecksPreserved": true,
+      "engineGets": 27,
+      "metadataReads": 4,
+      "privateCopies": 2,
+      "publicCertificateCopies": 1,
+      "oldFailureAndSourcesAndPositivePeersPreserved": true,
+      "syntheticPrivateInputsAndProvenance": true,
+      "targetExecuted": false,
+      "newScopeReplayDenied": true,
+      "stoppedPeerDeniedBeforeCopies": true
+    },
+    "delivery": {
+      "pushRun": 40864627473,
+      "pushJobs": [
+        123416146376,
+        123416146795
+      ],
+      "prRun": 40864636679,
+      "prJobs": [
+        123416176695,
+        123416177270
+      ],
+      "allFourJobsSuccess": true,
+      "logsRead": true,
+      "pinnedHttpsNonrootSudoRoot400Checksum": true,
+      "nonTtyRejectedBeforeDownloadOrScope": true,
+      "missingPredecessorFailsBeforeSecretReads": true,
+      "priorProtectedLogAndFailureScopePreserved": true,
+      "replayDeniedBeforeExecution": true,
+      "productionCapsuleByteExact": true,
+      "positivePreparationQualifiedSeparatelyWithActualDocker": true
+    },
+    "target": {
+      "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-roles-2d133870-20261029-v1",
+      "executed": false,
+      "metadataReads": 4,
+      "maximumEngineGets": 27,
+      "maximumSeconds": 90,
+      "maximumBytes": 16777216,
+      "originalCustodyCandidateHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+      "predecessorResultMustMatchExactlyBeforeFurtherReads": true
+    },
+    "publicCertificateEnvelopeOnlyNotCaValidityOrIamTlsAdmission": true,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false
   }
 }

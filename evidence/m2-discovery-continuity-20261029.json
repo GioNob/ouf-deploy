@@ -13,7 +13,7 @@
   "source": {
     "repository": "GioNob/ouf-deploy",
     "branch": "feat/m2-discovery-complete-profile-20261029",
-    "commit": "ae11054df297e14fa80a81c39432af5cebea5001",
+    "commit": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
     "pr": 54,
     "merged": false
   },
@@ -115,8 +115,8 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Implement and qualify a separate container-ID-bound successor; do not replay failed material scope.",
-  "currentOperatorCommandReady": false,
+  "next": "Run the new qualified predecessor-bound role successor once via operator SSH; old failed and successful scopes stay consumed. Return public JSON/footer, then continue coordinated installation.",
+  "currentOperatorCommandReady": true,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "stableCapabilitiesOperationalProven": false,
@@ -174,5 +174,15 @@
     "scopeDisposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
     "newOperatorCommandReady": false,
     "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac"
+  },
+  "materialRoleSuccessor": {
+    "status": "QUALIFIED_NOT_EXECUTED_OPERATOR_REQUIRED",
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-roles-2d133870-20261029-v1",
+    "evidence": "evidence/m2-discovery-material-role-successor-qualified-20261029.json",
+    "handoff": "docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_ROLES_20261029.md",
+    "predecessorResultHash": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac",
+    "capsuleSha256": "3f213db3cc611490398a097ef334f874726af09c2f3de0344322ad604a108c65",
+    "wrapperSource": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
+    "wrapperSha256": "06ca017cd74cf3cc87a81c32787a1ea2ab3929453809599bc682067f14fdcb69"
   }
 }

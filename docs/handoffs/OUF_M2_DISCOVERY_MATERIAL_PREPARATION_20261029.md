@@ -1,3 +1,7 @@
+# Successore corretto disponibile
+
+Il vecchio tentativo e il vecchio comando sotto restano CONSUMATI. [Unico NUOVO comando corrente, legato allo STOP esatto](OUF_M2_DISCOVERY_MATERIAL_ROLES_20261029.md). Non rieseguire il precedente.
+
 # Stato corrente — STOP consumato, comando ritirato
 
 Il comando riportato sotto è STORICO e NON va rieseguito. Esito operatore STOP_RECONCILE/INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT dopo tre metadata, zero Engine o letture credenziali/copie. [Ricevuta](../../evidence/m2-discovery-material-preparation-target-stop-20261029.json). Correzione in corso con selezione per containerId e invarianti complete; nuovo successore da qualificare e collegare allo STOP esatto, preservando ogni scope consumato.
