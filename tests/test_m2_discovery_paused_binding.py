@@ -12,6 +12,11 @@ from transition_journal import PHASES,digest
 
 
 class PausedBinding(unittest.TestCase):
+    def bind(self,args,options,row):
+        if row['nextPhase'] in (7,8):
+            return Binding.retained_infrastructure_at_checkpoint(*args,**options,
+                phase=row['effects'][-1]['phase'],phase_intent_hash=row['effects'][-1]['intentHash'])
+        return Binding.retained_discovery_at_checkpoint(*args,**options)
     def fixture(self,cursor,**receipt_changes):
         request,selection,*_=fixture();profile=DiscoveryProfile(request,**selection)
         temp=tempfile.TemporaryDirectory(dir=ROOT,prefix='discovery-retained-binding-');self.addCleanup(temp.cleanup)
@@ -33,7 +38,7 @@ class PausedBinding(unittest.TestCase):
     def test_retained_attestation_is_available_to_transport_worker_migration_and_unpause(self):
         for cursor in (7,8,9,10):
             args,options,row=self.fixture(cursor)
-            binding=Binding.retained_discovery_at_checkpoint(*args,**options)
+            binding=self.bind(args,options,row)
             self.assertEqual(binding.current_row(),row)
             self.assertEqual(row['effects'][-1]['phase'],PHASES[cursor])
 
@@ -41,19 +46,27 @@ class PausedBinding(unittest.TestCase):
         for cursor in (5,6,11,12):
             args,options,row=self.fixture(cursor)
             with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_PAUSED'):
-                Binding.retained_discovery_at_checkpoint(*args,**options)
+                self.bind(args,options,row)
 
     def test_missing_native_or_signature_evidence_is_not_replaced_by_a_cursor(self):
         for changes in ({'completeNativeObservationPerformed':False},{'currentScopedAcceptanceSignatureVerified':False}):
             args,options,row=self.fixture(7,**changes)
             with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_PAUSED_ATTESTATION_RECEIPT'):
-                Binding.retained_discovery_at_checkpoint(*args,**options)
+                self.bind(args,options,row)
 
     def test_scope_authority_or_checkpoint_change_after_binding_is_denied(self):
         for change in ('authority','checkpoint'):
-            args,options,row=self.fixture(8);binding=Binding.retained_discovery_at_checkpoint(*args,**options)
+            args,options,row=self.fixture(8);binding=self.bind(args,options,row)
             if change=='authority':row['effects'][-1]['authorityEvidenceHash']='d'*64
             else:row['effects'][0]['state']='IN_FLIGHT'
             with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_PAUSED'):binding.current_row()
+
+    def test_original_mode_stays_closed_and_infrastructure_phase_cannot_be_substituted(self):
+        args,options,row=self.fixture(7)
+        with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_PAUSED'):
+            Binding.retained_discovery_at_checkpoint(*args,**options)
+        with self.assertRaisesRegex(ValueError,'EXACT_RETAINED_INFRASTRUCTURE_PHASE_AND_INTENT'):
+            Binding.retained_infrastructure_at_checkpoint(*args,**options,
+                phase='START_DISTINCT_LEASE_WORKER',phase_intent_hash=row['effects'][-1]['intentHash'])
 
 if __name__=='__main__':unittest.main()

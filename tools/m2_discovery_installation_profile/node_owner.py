@@ -91,9 +91,17 @@ class DiscoveryNodeOwner:
         checkpoint_row=self.current(intent,retained)
         if self.adapter is not None and not retained:return self.adapter
         recipe=self.recipe;budget=ObservationBudget(recipe['observationSeconds'])
-        paused=(PausedWorkloadBinding.retained_discovery_at_checkpoint(self.engine,self.transition,self.request,self.store,
-            attestation_intent_hash=self.intent_hash,checkpoint_row=checkpoint_row,execution_profile=self.profile)if retained else
-            PausedWorkloadBinding(self.engine,self.transition,self.request,self.store,execution_profile=self.profile))
+        if retained and checkpoint_row['nextPhase'] in (7,8):
+            current_effect=checkpoint_row['effects'][-1]
+            paused=PausedWorkloadBinding.retained_infrastructure_at_checkpoint(
+                self.engine,self.transition,self.request,self.store,attestation_intent_hash=self.intent_hash,
+                checkpoint_row=checkpoint_row,execution_profile=self.profile,
+                phase=current_effect['phase'],phase_intent_hash=current_effect['intentHash'])
+        elif retained:
+            paused=PausedWorkloadBinding.retained_discovery_at_checkpoint(self.engine,self.transition,self.request,self.store,
+                attestation_intent_hash=self.intent_hash,checkpoint_row=checkpoint_row,execution_profile=self.profile)
+        else:
+            paused=PausedWorkloadBinding(self.engine,self.transition,self.request,self.store,execution_profile=self.profile)
         before=paused.observe();native=self.engine.inspect(self.transition);cid=before['runtimeBinding']['containerId']
         config=copy.deepcopy(recipe['observationConfiguration']);runner=NodeObservation(config,budget)
         state=decode(runner.run(config['runtimeBinding'],['--root',recipe['runtimeRoot'],'state',cid],16384),16384)

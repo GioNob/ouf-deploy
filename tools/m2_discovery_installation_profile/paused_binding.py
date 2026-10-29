@@ -19,6 +19,7 @@ class DiscoveryPausedWorkloadBinding:
         self.engine,self.transition,self.store=engine,transition,store
         self.request_hash=digest(creation_request)
         self.retained_checkpoint=None
+        self.infrastructure_checkpoint=None
     @classmethod
     def retained_discovery_at_checkpoint(cls,engine,transition,creation_request,store,*,attestation_intent_hash,checkpoint_row,execution_profile):
         """Observe one already accepted node before migration or unpause.
@@ -33,6 +34,22 @@ class DiscoveryPausedWorkloadBinding:
         value.retained_checkpoint=(digest(checkpoint_row),attestation_intent_hash)
         value.current_row()
         return value
+    @classmethod
+    def retained_infrastructure_at_checkpoint(cls,engine,transition,creation_request,store,*,
+            attestation_intent_hash,checkpoint_row,execution_profile,phase,phase_intent_hash):
+        """Separate read mode for the two signed infrastructure phases.
+
+        Migration/unpause mode retains its original closed cursor contract.
+        The infrastructure owner supplies its exact current phase and intent.
+        """
+        require(phase in ('INSTALL_AUTHENTICATED_TRANSPORT','START_DISTINCT_LEASE_WORKER')
+            and hash_value(phase_intent_hash) and hash_value(attestation_intent_hash),
+            'EXACT_RETAINED_INFRASTRUCTURE_INTENT_REQUIRED')
+        value=cls(engine,transition,creation_request,store,execution_profile=execution_profile)
+        require(checkpoint_row==transition.read(),'CURRENT_RETAINED_PAUSED_CHECKPOINT_REQUIRED')
+        value.retained_checkpoint=(digest(checkpoint_row),attestation_intent_hash)
+        value.infrastructure_checkpoint=(phase,phase_intent_hash)
+        value.current_row();return value
     def current_row(self):
         require(type(self.profile) is DiscoveryProfile and self.profile.verify(self.profile.request)==self.profile_hash
             and self.profile.compiled['creationRequestHash']==self.request_hash
@@ -46,7 +63,9 @@ class DiscoveryPausedWorkloadBinding:
         else:
             snapshot,intent_hash=self.retained_checkpoint
             cursor=row.get('nextPhase');effects=row.get('effects')
-            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in(7,8,9,10)
+            infrastructure=self.infrastructure_checkpoint
+            allowed=(9,10) if infrastructure is None else (7,8)
+            require(digest(row)==snapshot and row['state']=='IN_FLIGHT' and type(cursor)is int and cursor in allowed
                 and type(effects)is list and len(effects)==cursor+1
                 and [e.get('phase')for e in effects]==list(PHASES[:cursor+1])
                 and all(e.get('state')=='APPLIED'for e in effects[:cursor])
@@ -56,6 +75,11 @@ class DiscoveryPausedWorkloadBinding:
                 and hash_value(effects[6].get('authorityEvidenceHash'))
                 and effects[-1].get('authorityEvidenceHash')==effects[6]['authorityEvidenceHash'],
                 'EXACT_RETAINED_PAUSED_PRE_MIGRATION_OR_UNPAUSE_CHECKPOINT_REQUIRED')
+            if infrastructure is not None:
+                phase,phase_intent=infrastructure
+                require(PHASES[cursor]==phase and effects[-1]['phase']==phase
+                    and effects[-1]['intentHash']==phase_intent,
+                    'EXACT_RETAINED_INFRASTRUCTURE_PHASE_AND_INTENT_REQUIRED')
             evidence=self.store.read('ATTEST_NEW_OCI_PEER',effects[6]['nativeEvidenceHash'])
             require(evidence.get('schema')=='ouf.semantic-owner-signed-paused-node-phase.v1'
                 and evidence.get('transitionContextHash')==self.transition.context

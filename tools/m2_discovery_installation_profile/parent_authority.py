@@ -115,6 +115,7 @@ class DiscoveryParentAuthority:
         require(value.get('schema')=='ouf.semantic-cutover-execution-authority.v1'
             and value.get('newDistinctLeaseWorkerRequired') is True
             and set(value.get('phaseIntentHashes',{}))==set(PHASES)
+            and value['phaseIntentHashes']['CREATE_REPLACEMENT']==child.expected['creationRequestHash']
             and all(value.get(k) is False for k in ('automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized'))
             and parent['issuedAt']<=value['issuedAt']<value['expiresAt']<=parent['expiresAt'],
             'FULL_DISCOVERY_CHILD_WITHIN_PARENT_WINDOW_REQUIRED')
