@@ -1,4 +1,12 @@
-# CURRENT — successore ruoli qualificato; unico NUOVO comando operatore
+# CURRENT — materiali preparati e CONSUMATI; trust e installazione coordinata aperti
+
+29ottobre2026. [Esito target](evidence/m2-discovery-material-role-target-20261029.json). Successo PRIVATE_MATERIAL_ROLE_COPIES_PREPARED_NOT_ADMITTED,complete=true/OperatorExit0/DeliveryExit0;13peer/27GET,4metadata/836914byte,1credenziale/2MACapp/1CA,2copie private+1pubblica/3riletture. preparedInputsHash68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392;roleMapHash104aabb7...,predecessoreSTOP2d133870... conservato. FonteJSON/footeroperatore, nessuna letturaindipendenteprivati/log. Scope material-roles-2d133870-20261029-v1 RIUSCITO/CONSUMATO, launcher ritirato; NONrilanciare/cancellare/ricreare o sovrascriverelog.
+
+Vecchi scope preparazioneFALLITO/CONSUMATO e custodia/inputRIUSCITI/CONSUMATI conservati. ZeroOAuth/IAM/SQL/grant/budget/nuovechiavi/firme/import/lifecycle/applyapp/upload/job/resume/acquisizione. Copie/custody/13peer osservati non provanoIAM/provider/CAvalidità/TLS/DB/authority oE2E. Non token/finestra anticipati.
+
+NEXT dal recordprivato68daa9... completaretrustIAM+provider, integrazioneesecutiva13fasi/worker distinto e preparazione/review coordinata conrete/DB/cohort/fencing correnti. Non chiederefileprivati/segreti inchat;nessunnuovocomandooperatorepronto. Proseguireautonomamente finchéutenteessenziale. M2/8stabilità/E2E OPEN;discovery nonesposta. Farmacie/decisioni invariati. Chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio; no bypass/merge/acceptance/subagenti/automazioni. Header successivi STORICI.
+
+# HISTORICAL — successore ruoli qualificato; unico NUOVO comando operatore
 
 29ottobre2026. [Handoff corrente e comando](docs/handoffs/OUF_M2_DISCOVERY_MATERIAL_ROLES_20261029.md), [qualifica](evidence/m2-discovery-material-role-successor-qualified-20261029.json), [STOP conservato](evidence/m2-discovery-material-preparation-target-stop-20261029.json). Difetto nomi ruolo risolto con associazione percontainerId univoco, immagine/config/mount/rete/pin completi e provenienza originale. Moduli/capsule precedenti byte-esatti.139PASS/0skip perpush/PR,13peerDocker reali conaliasdiversi e4jobconsegnaHTTPS/sudo/root0400/antiReplay/priorLog PASS; log letti.
 

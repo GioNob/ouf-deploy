@@ -1,3 +1,7 @@
+# Stato corrente — successo acquisito, scope CONSUMATO
+
+[Esito target](../../evidence/m2-discovery-material-role-target-20261029.json): preparedInputsHash68daa9c9...,complete=true,13peer/27GET/2copie private+1pubblica/3riletture,exit0. FonteJSON/footeroperatore. Comando sotto STORICO, ritirato e NON rieseguibile. Proseguire preparazione trust/integrazione coordinata dal record privato esatto senza chiedere segreti inchat; nessun nuovo comando pronto, E2E aperto.
+
 # Successore materiali: associazione per identità — 29 ottobre 2026
 
 Questo è l'unico comando operatore corrente. [Qualifica](../../evidence/m2-discovery-material-role-successor-qualified-20261029.json), [STOP precedente](../../evidence/m2-discovery-material-preparation-target-stop-20261029.json).
