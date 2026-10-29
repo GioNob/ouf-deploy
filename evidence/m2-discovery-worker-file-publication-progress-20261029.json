@@ -2,7 +2,7 @@
   "schema": "ouf.discovery-worker-file-publication-source-progress.v1",
   "date": "2026-10-29",
   "baseSource": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
-  "stage": "LOCAL_PASS_CI_PENDING",
+  "stage": "SOURCE_QUALIFIED_TARGET_OPEN",
   "localNewTests": 13,
   "localNewTestSkips": 0,
   "files": {
@@ -35,9 +35,9 @@
     "actual OntoPiA discovery and CSV UDP search on two clients"
   ],
   "originalBaselineConsulted": [
-    "Matrix1.7 DOCX \u00a7\u00a71,7 with text replica",
-    "SemanticRegistry1.3 DOCX \u00a726 including 26.3 with text replica",
-    "CSV miniPET1.1 \u00a7\u00a71\u20136",
+    "Matrix1.7 DOCX §§1,7 with text replica",
+    "SemanticRegistry1.3 DOCX §26 including 26.3 with text replica",
+    "CSV miniPET1.1 §§1–6",
     "M2 miniPET1.3 and M2-DISC-STABLE criteria"
   ],
   "developmentFailuresPreservedAsFindings": [
@@ -53,5 +53,69 @@
   "budgetReset": false,
   "localRegressionTests": 59,
   "localRegressionSkips": 0,
-  "localTotalTests": 72
+  "localTotalTests": 72,
+  "qualifiedSource": "cb6f2da62f5974ca1a9eaee0352f21e4a7cfaccb",
+  "ci": [
+    {
+      "run": 40955303703,
+      "event": "pull_request",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123733743508,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": 248
+    },
+    {
+      "run": 40955303819,
+      "event": "pull_request",
+      "name": "M2 discovery native Docker frame",
+      "id": 123733743725,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955303964,
+      "event": "pull_request",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123733744364,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955295627,
+      "event": "push",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123733714555,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": 248
+    },
+    {
+      "run": 40955295662,
+      "event": "push",
+      "name": "M2 discovery native Docker frame",
+      "id": 123733715020,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955295629,
+      "event": "push",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123733714308,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    }
+  ],
+  "nativeRegressionLimit": "Separate existing Docker29.8.1/systemd/DNS/nft sandbox and OCI frame passed unchanged. It still manually creates installed files and does not exercise the new publisher in the complete native installation controller."
 }
