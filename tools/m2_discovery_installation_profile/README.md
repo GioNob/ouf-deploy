@@ -54,3 +54,17 @@ the real unchanged compiler/gate/profile modules. It never reads target secrets,
 starts containers or exercises a production provider. Qualification of these
 pure proposals is separate from actual native frame acceptance and application
 E2E. No command should be delivered for the consumed f759d397 capture scope.
+
+Public CA trust preparation is separate from current admission. `public_truststore.py`
+compiles the exact approved IAM CA set and single currently valid provider CA into
+certificate-only PKCS12, rejecting ambient trust roots and private keys. Real
+Java21/OpenSSL CI verifies both isolated issuer chains, outsider rejection before
+application data and tampered integrity. `trust_inputs.py` additionally binds the
+exact prepared material role record and deployed IAM owner configuration, matching
+issuer/token endpoint and native owner CA digest. `trust_preparation.py` stages a
+new root:10001/0440 public store only after exact review/configuration/file custody
+and all thirteen current native peers agree, then reobserves peers and source seals.
+It reads no application credential or key and has no CLI or operator delivery.
+Consumed scope/claims and partial output remain preserved on failure. These
+source/fixture checks do not prove target TLS/IAM admission, executable coordinated
+installation, distinct lease worker or E2E.
