@@ -1,13 +1,13 @@
 """Export five exact modules for read-only provider reconciliation, never authority."""
 import argparse,base64,hashlib,json
 from pathlib import Path
-SOURCE="3e91722878fcfdcb89475c261682fd1cc5bc861c"
+SOURCE="cd3eb87c25874722d4dc2295f7210cb1b3d506ad"
 PINS={
     "tools/m2_discovery_installation_profile/audit.py": "e8b7813a8f6f009054593025dc2df9b79315bf2100a70f02a41973a0536658c3",
     "tools/m2_discovery_installation_profile/custody_capture.py": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
     "tools/m2_discovery_installation_profile/projections.py": "4076c25e3258bf06afc25babf5d86755e55ffb97ac5bc0c634960061bcd71352",
     "tools/m2_discovery_installation_profile/material_preparation.py": "7e342cf4d9bee25515a6b924bd5086352f8c5c660870b3ef7928046ba9285462",
-    "tools/m2_discovery_installation_profile/provider_reconciliation.py": "fb846481897d82e0cdf44d0922205011fc5a53cf5d8a58e7e612e1fc36a94621"
+    "tools/m2_discovery_installation_profile/provider_reconciliation.py": "c4e10334a5c606f0f4dcfa0866ae6628f9e35134243a6b4c0565ad4aef990434"
 }
 RUNTIME='''#!/usr/bin/env python3
 """Exact closed read-only provider reconciliation; no deployment or authentication authority."""
