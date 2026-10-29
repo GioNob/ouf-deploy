@@ -115,7 +115,11 @@
     "discoveryCompleteProfileProposalSourceQualified": true,
     "discoveryCompleteProfileProposalSourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
     "discoveryNativeExecutorIntegrated": false,
-    "discoveryNativeFrameAcceptanceQualified": false
+    "discoveryNativeFrameAcceptanceQualified": false,
+    "discoveryNativeWitnessSourceQualified": true,
+    "discoveryNativeWitnessSourceCommit": "91a3b227b78f1210d9096622f72994e9f4499598",
+    "discoveryFullReentrySourceQualified": true,
+    "discoveryMcpGatewayPackagesQualified": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1982,8 +1986,8 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Implement and qualify discovery-specific full native frame/node observation and the coordinated13-phase execution/renewal assembly for the typed complete proposal. Resolve current credential/key custody, provider/TLS/network/DB and fresh cohort generation/admission. No current operator command is ready; keep consumed f759d397 scope closed and do not request premature login/token or flip flags.",
-    "sourceCommit": "db9555c92cd7c71292d6afd102ca151940176d76",
+    "action": "Implement and qualify the discovery node owner and coordinated preparation/review, preserving signed recipe/phase intent, complete native observations and current owner custody/provider/TLS/network/DB/cohort admission. No operator command is ready and no consumed scope may be replayed.",
+    "sourceCommit": "91a3b227b78f1210d9096622f72994e9f4499598",
     "currentDeliveryUsable": false,
     "sshExecutionCommandUsable": false,
     "currentRuntimeAuthorityUsable": false,
@@ -2435,14 +2439,15 @@
   "currentCheckpoint": {
     "date": "2026-10-29",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
-    "next": "QUALIFY_DISCOVERY_NATIVE_OBSERVER_AND_COORDINATED_EXECUTION_ASSEMBLY_WITH_CURRENT_OWNER_CUSTODY",
+    "next": "IMPLEMENT_AND_QUALIFY_DISCOVERY_NODE_OWNER_AND_COORDINATED_PREPARATION_WITH_CURRENT_CUSTODY",
     "evidence": "evidence/m2-discovery-installation-inputs-target-20261029.json",
     "duplicateEvidence": "evidence/m2-discovery-installation-inputs-duplicate-delivery-20261029.json",
     "authorizationSourceQualification": "evidence/m2-discovery-authorization-source-qualification-20261029.json",
     "sourceCompositionEvidence": "evidence/m2-discovery-composition-20261029.json",
     "installationDeltaDraft": "releases/m2-discovery-persistent-installation-delta-20261029.json",
     "packageReadback": "evidence/m2-discovery-offline-package-readback-20261029.json",
-    "completeProfileProposalSourceQualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json"
+    "completeProfileProposalSourceQualification": "evidence/m2-discovery-complete-profile-source-qualification-20261029.json",
+    "nativeWitnessAndPackageEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -5330,5 +5335,148 @@
       "releaseAcceptance": false,
       "mergeAuthorized": false
     }
+  },
+  "discoveryNativeWitnessAndPackages": {
+    "schema": "ouf.m2-discovery-native-witness-and-package-checkpoint.v1",
+    "date": "2026-10-29",
+    "status": "PAUSED_NODE_WITNESS_AND_FULL_REENTRY_QUALIFIED_COORDINATED_OWNER_PENDING",
+    "sourceCommit": "91a3b227b78f1210d9096622f72994e9f4499598",
+    "pullRequest": 54,
+    "qualification": {
+      "testsPerJob": 95,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "newWitnessAndReentryTests": 8,
+      "priorTests": 87,
+      "jobs": [
+        {
+          "run": 40842164274,
+          "job": 123340875709,
+          "event": "push",
+          "conclusion": "success",
+          "logRead": true
+        },
+        {
+          "run": 40842170160,
+          "job": 123340896751,
+          "event": "pull_request",
+          "conclusion": "success",
+          "logRead": true
+        }
+      ],
+      "realProtectedPosixFilesAndEmbeddedOwnerSourcePins": true,
+      "engineMountAndTokenLeaves": "EXPLICIT_FIXTURES_NOT_NATIVE_DOCKER_OR_ADMISSION",
+      "denyOnlyOwnerFixture": true,
+      "nativeDockerFrameAcceptanceProven": false,
+      "fullDiscoveryReentryPositions": [
+        9,
+        10
+      ],
+      "legacyFileOnlyPositionsUnchanged": [
+        7,
+        8
+      ],
+      "transportAndDistinctWorkerMustBeAppliedBeforeReentry": true,
+      "intermediateFailures": [
+        {
+          "commit": "f051e0c4be5f2b5286b53b88b20ebd7b03e55825",
+          "reason": "Qualification lacked retained native owner namespace",
+          "correctedWithoutChangingProductionGuard": true
+        },
+        {
+          "commit": "a154ddb0891882b20c67b3c8bbf99c39310e4047",
+          "reason": "Abstract DomainOwner cannot be instantiated; replaced by explicit deny-only fixture with mocked token leaf",
+          "correctedWithoutChangingProductionGuard": true
+        }
+      ]
+    },
+    "packages": {
+      "producerCommit": "4829f9f84b12ae982e629faf730ca76238f66962",
+      "runId": 40841859485,
+      "jobs": [
+        {
+          "module": "mcp",
+          "job": 123339886141,
+          "conclusion": "success",
+          "logRead": true
+        },
+        {
+          "module": "gateway",
+          "job": 123339885533,
+          "conclusion": "success",
+          "logRead": true
+        }
+      ],
+      "readback": {
+        "mcp": {
+          "artifactId": 12882394596,
+          "archiveSha256": "e779fcb822dd8aa074f20ef6a08b13e48363ec15aa27f2d6c09319ed384e22bf",
+          "archiveBytes": 38679087,
+          "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+          "sourceBlobsCompared": 261,
+          "payloadHashesVerified": 9,
+          "sourceBytesMatchGithubTree": true,
+          "reportedSeverityCounts": {
+            "LOW": 0,
+            "MEDIUM": 0,
+            "HIGH": 0,
+            "CRITICAL": 0,
+            "UNKNOWN": 0
+          },
+          "severityFilteredReport": true,
+          "imageId": "sha256:a013bceb49696a72853948b14f802e479e268e02046a889f142500d3022f5580",
+          "runtimeUser": "10005:10005",
+          "installed": false,
+          "targetApplyAuthorized": false,
+          "releaseAcceptance": false,
+          "executableSha256": "8e35d3aa389a7f0aaba66d69177c6a7c1db467d39b3973f5578160e045c4190f",
+          "binaryComparedWithImageLayer": true,
+          "allLayerDiffIdsVerified": true,
+          "imageConfigBytesVerified": true,
+          "goVersion": "1.26.10"
+        },
+        "gateway": {
+          "artifactId": 12882339953,
+          "archiveSha256": "09df2dbd4de6d51a45ee4094aed177e555e877d56f1b3dcf2456618360da26b4",
+          "archiveBytes": 1551524,
+          "sourceCommit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+          "sourceBlobsCompared": 378,
+          "payloadHashesVerified": 6,
+          "sourceBytesMatchGithubTree": true,
+          "reportedSeverityCounts": {
+            "LOW": 0,
+            "MEDIUM": 0,
+            "HIGH": 0,
+            "CRITICAL": 0,
+            "UNKNOWN": 0
+          },
+          "severityFilteredReport": true,
+          "imageId": null,
+          "runtimeUser": null,
+          "installed": false,
+          "targetApplyAuthorized": false,
+          "releaseAcceptance": false,
+          "materializerFilesVerified": 6,
+          "targetRoutesMaterialized": false,
+          "transitiveRuntimeAdmissionProven": false
+        }
+      },
+      "scanThreshold": "NO_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+      "lowAndMediumAbsenceNotProvenByFilteredReports": true,
+      "cryptographicPublisherTrustAccepted": false,
+      "hostOciOrRootfsAdmissionProven": false
+    },
+    "target": {
+      "priorInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+      "scopeConsumed": true,
+      "newReadsOrEffects": 0,
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "stableCapabilitiesOperationalProven": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false
+    },
+    "next": "IMPLEMENT_AND_QUALIFY_DISCOVERY_NODE_OWNER_AND_COORDINATED_PREPARATION_WITH_CURRENT_CUSTODY"
   }
 }

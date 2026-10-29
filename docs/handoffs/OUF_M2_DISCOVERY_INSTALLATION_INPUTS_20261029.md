@@ -32,6 +32,19 @@ Il profilo preserva le impostazioni estranee alla discovery, impone IAM/auth/pro
 
 Qualifica push40839724353/job123332897229 e PR40839794969/job123333126587: 87PASS/0errori/0skip per esecuzione (14nuovi test puri e73regressioni), log riletti. I nuovi template/request/mount/context sono fixture sintetiche dichiarate; nessuna osservazione Docker nativa, custodia o chiamata provider è stata eseguita da questa qualifica. Il codice produce una proposta completa, con nativeExecutorIntegrated=false, externalProviderCallsAllowed=false e nessuna authority/start/apply. Reboot/rotazione sono requisiti dichiarati, non meccanismi installati.
 
+## Osservazione del nodo, rientro e pacchetti coordinati
+
+Sorgente PR54 `91a3b227b78f1210d9096622f72994e9f4499598`: `DiscoveryFrameObservation` usa i primitive nativi esistenti per OCI completo, cinque file, configtree e token owner. Policy, hash del profilo, generazione e metadati sono ricontrollati prima/dopo; l'osservatore è ammesso esplicitamente da `PausedNodeObservation`. Nessuna firma/lease/start è concessa dal witness. Il nuovo `retained_discovery_at_checkpoint` richiede le posizioni9/10 del percorso13fasi e il completamento di trasporto e worker; il vecchio rientro file-only7/8 resta distinto.
+
+Push40842164274/job123340875709 e PR40842170160/job123340896751:95PASS/0errori/0skip per esecuzione, log letti. Otto test witness/rientro aggiunti agli87 precedenti. File POSIX protetti e caricamento sorgenti owner sono reali; Engine, mount/token e alcuni effetti sono fixture esplicite. Non è prova di osservazione Docker, native admission o runtime target. Due errori intermedi di fixture (namespace/import e classe astratta) sono conservati nella qualifica, corretti senza rilassare i guard di produzione.
+
+Pacchetti prodotti dal commit4829f9f84b12ae982e629faf730ca76238f66962, run40841859485, entrambi jobSUCCESS e log letti:
+- MCP artifact12882394596,ZIP SHA256e779fcb822dd8aa074f20ef6a08b13e48363ec15aa27f2d6c09319ed384e22bf,38679087byte; image sha256:a013bceb49696a72853948b14f802e479e268e02046a889f142500d3022f5580,user10005:10005,Go1.26.10 statico. Nove checksum payload,261blob sorgenti,config e tutti i diff-id layer verificati indipendentemente; binario confrontato con quello nel layer.
+- Gateway artifact12882339953,ZIP SHA25609df2dbd4de6d51a45ee4094aed177e555e877d56f1b3dcf2456618360da26b4,1551524byte. Sei checksum payload,378blob sorgenti e sei file materializer/schema verificati. Contiene sorgenti/materializer, non route materializzate per target.
+- Artefatti scadono28novembre2026. Gate immagine MCP/dipendenze Gateway:zeroHIGH/CRITICAL/UNKNOWN inclusi unfixed. I report sono filtrati: non dimostrano assenza diLOW/MEDIUM o ammissione transitiva del runtime Gateway. Nessuna firma publisher accettata né ammissioneOCI/rootfs host.
+
+[Evidenza completa](../../evidence/m2-discovery-native-witness-and-packages-20261029.json). Prossimo lavoro: owner del nodo discovery e assemblaggio completo della preparazione/review, con firme correnti vincolate a recipe/phase-intent e custody/provider/TLS/rete/DB/intero cohort effettivi. Nessuna nuova istruzione operativa pronta; scope consumato chiuso e nessun effetto target.
+
 ## Prossimo lavoro autorizzato
 
 Integrare e qualificare l'osservazione nativa e l'assemblaggio esecutivo della proposta discovery completa sopra i primitive esistenti: conservazione del file/onboarding, DB V1–V10 e aggiunta V11/V12, configurazione effettiva, mount e custody dei due riferimenti mancanti, chiave discovery distinta coerente tra APISIX e Registry, workload provider, TLS/rete/DB e rinnovo/rotazione. Il vecchio profilo file-only e il frame a sette mount del canale proposal non coprono automaticamente questa configurazione: nessun rilassamento dei guard e nessuna semplice accensione dei due flag.

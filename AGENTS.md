@@ -1,4 +1,12 @@
-# CURRENT — proposta discovery completa qualificata in sorgente; integrazione nativa aperta
+# CURRENT — witness/rientro discovery qualificati e pacchetti MCP/Gateway verificati; owner coordinato aperto
+
+29 ottobre2026. [Handoff](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [evidenza](evidence/m2-discovery-native-witness-and-packages-20261029.json). PR54 sorgente91a3b227b78f1210d9096622f72994e9f4499598.95PASS/0errori/0skip per push/PR, log letti. Witness discovery ora collegato aPausedNodeObservation, con controllo profilo/policy/generazione/metadati prima/dopo. Rientro discovery13fasi alle posizioni9/10 richiede trasporto e workerAPPLIED; vecchio rientro file-only7/8 separato. File POSIX e pin owner reali, Engine/mount/token di fixture: native Docker/admission NON provati.
+
+Pacchetti MCP/Gateway run40841859485 producer4829f9f84b12ae982e629faf730ca76238f66962 SUCCESS, scaricati e verificati. MCP artifact12882394596/imagea013bceb...,9payload/261blob/config/layer/binario verificati,Go1.26.10/user10005:10005; Gateway artifact12882339953,6payload/378blob/6materializer verificati,non route target. Scansione HIGH/CRITICAL/UNKNOWN inclusi unfixed PASS; report filtrati non provano assenzaLOW/MEDIUM. Non prova publisher trust néOCI/rootfs host. Dettagli/digest completi nell'evidenza.
+
+NEXT implementare/qualificare owner nodo discovery e preparazione/review coordinata con recipe/phase-intent firmati, custody/provider/TLS/rete/DB/cohort correnti. Nessun nuovo comando operatore pronto. Full executor/boot/rotazione/runtime/E2E ancora non provati. Nessun targetread/effect/grant/budget/login/authority nuovo. f759d397 resta successo CONSUMATO, duplicato anti-replay conservato; NON rilanciare/cancellare/ricreare scope. M1/G4 acquisiti,M2/G5–G7/D5–D7/8criteri stabilità/E2E OPEN; stesso Farmacie e decisioni confermate. Nessun merge/releaseacceptance/subagente/automazione. Percorso chatbot→MCP→Gateway→Registry→OntoPiA obbligatorio. Header/comandi successivi STORICI.
+
+# HISTORICAL — proposta discovery completa qualificata in sorgente; integrazione nativa aperta
 
 29 ottobre 2026. [Handoff corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica PR54](evidence/m2-discovery-complete-profile-source-qualification-20261029.json), [delta](releases/m2-discovery-persistent-installation-delta-20261029.json).
 

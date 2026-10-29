@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-persistent-installation-delta-draft.v1",
   "date": "2026-10-29",
   "timezone": "Europe/Rome",
-  "status": "COMPLETE_DISCOVERY_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OWNER_INTEGRATION_AND_CUSTODY_OPEN",
+  "status": "PAUSED_NODE_WITNESS_AND_FULL_REENTRY_QUALIFIED_COORDINATED_OWNER_PENDING",
   "executable": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -156,12 +156,12 @@
     },
     {
       "id": "M2-INSTALL-02",
-      "state": "COMPLETE_PROPOSAL_SOURCE_QUALIFIED_NATIVE_OBSERVER_EXECUTOR_AND_CUSTODY_OPEN",
+      "state": "NATIVE_WITNESS_AND_REENTRY_SOURCE_QUALIFIED_SIGNED_NODE_OWNER_AND_COORDINATED_ASSEMBLY_OPEN",
       "work": "Wire and qualify discovery-specific full native frame/node observation and the coordinated13-phase execution/renewal assembly from the typed complete proposal. Resolve real current credential/key custody, APISIX key agreement, provider TLS/IAM/network/DB and preserved current cohort; no flag projection through file-only guards."
     },
     {
       "id": "M2-INSTALL-03",
-      "state": "REGISTRY_PACKAGE_QUALIFIED_MCP_GATEWAY_COORDINATED_PACKAGES_OPEN",
+      "state": "REGISTRY_MCP_GATEWAY_PACKAGES_QUALIFIED_HOST_ADMISSION_OPEN",
       "work": "Package exact composed applications and current image scan/provenance; preserve file/semantic consultation/proposal/read/revision paths and old Flyway history."
     },
     {
@@ -194,7 +194,7 @@
     "LOCAL_ONTOLOGY_INVENTED_TO_SKIP_ONTOPIA",
     "CI_AS_PRODUCTION_E2E_ACCEPTANCE"
   ],
-  "next": "QUALIFY_DISCOVERY_NATIVE_OBSERVER_AND_COORDINATED_EXECUTION_ASSEMBLY_WITH_CURRENT_OWNER_CUSTODY",
+  "next": "IMPLEMENT_AND_QUALIFY_DISCOVERY_NODE_OWNER_AND_COORDINATED_PREPARATION_WITH_CURRENT_CUSTODY",
   "installationReferenceReader": {
     "qualification": "evidence/m2-discovery-installation-inputs-qualified-20261029.json",
     "handoff": "docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md",
@@ -247,5 +247,82 @@
     "nativeExecutorIntegrated": false,
     "nativeDockerAcceptanceQualified": false,
     "bootOrRotationImplemented": false
+  },
+  "nativeWitnessAndPackageEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json",
+  "runtimePackages": {
+    "producerCommit": "4829f9f84b12ae982e629faf730ca76238f66962",
+    "runId": 40841859485,
+    "jobs": [
+      {
+        "module": "mcp",
+        "job": 123339886141,
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "module": "gateway",
+        "job": 123339885533,
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "readback": {
+      "mcp": {
+        "artifactId": 12882394596,
+        "archiveSha256": "e779fcb822dd8aa074f20ef6a08b13e48363ec15aa27f2d6c09319ed384e22bf",
+        "archiveBytes": 38679087,
+        "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+        "sourceBlobsCompared": 261,
+        "payloadHashesVerified": 9,
+        "sourceBytesMatchGithubTree": true,
+        "reportedSeverityCounts": {
+          "LOW": 0,
+          "MEDIUM": 0,
+          "HIGH": 0,
+          "CRITICAL": 0,
+          "UNKNOWN": 0
+        },
+        "severityFilteredReport": true,
+        "imageId": "sha256:a013bceb49696a72853948b14f802e479e268e02046a889f142500d3022f5580",
+        "runtimeUser": "10005:10005",
+        "installed": false,
+        "targetApplyAuthorized": false,
+        "releaseAcceptance": false,
+        "executableSha256": "8e35d3aa389a7f0aaba66d69177c6a7c1db467d39b3973f5578160e045c4190f",
+        "binaryComparedWithImageLayer": true,
+        "allLayerDiffIdsVerified": true,
+        "imageConfigBytesVerified": true,
+        "goVersion": "1.26.10"
+      },
+      "gateway": {
+        "artifactId": 12882339953,
+        "archiveSha256": "09df2dbd4de6d51a45ee4094aed177e555e877d56f1b3dcf2456618360da26b4",
+        "archiveBytes": 1551524,
+        "sourceCommit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+        "sourceBlobsCompared": 378,
+        "payloadHashesVerified": 6,
+        "sourceBytesMatchGithubTree": true,
+        "reportedSeverityCounts": {
+          "LOW": 0,
+          "MEDIUM": 0,
+          "HIGH": 0,
+          "CRITICAL": 0,
+          "UNKNOWN": 0
+        },
+        "severityFilteredReport": true,
+        "imageId": null,
+        "runtimeUser": null,
+        "installed": false,
+        "targetApplyAuthorized": false,
+        "releaseAcceptance": false,
+        "materializerFilesVerified": 6,
+        "targetRoutesMaterialized": false,
+        "transitiveRuntimeAdmissionProven": false
+      }
+    },
+    "scanThreshold": "NO_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+    "lowAndMediumAbsenceNotProvenByFilteredReports": true,
+    "cryptographicPublisherTrustAccepted": false,
+    "hostOciOrRootfsAdmissionProven": false
   }
 }
