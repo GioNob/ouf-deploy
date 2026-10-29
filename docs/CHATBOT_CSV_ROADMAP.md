@@ -1,3 +1,24 @@
+# CURRENT — issuer finito del worker composto con ammissione provider conservata
+
+29 ottobre 2026. Deploy54 sourcef2dfa9c2: reader del protocollo deployment firmato,
+mandato rootfs/creazione e consumo STARTED, ricetta indipendente e generazione
+esatta; composizione con Registry owner/probe nativo e signer esistente. Tre
+payload soltanto, chiave isolata esplicitamente revisionata, claim e dispatch
+prima della firma, esiti parziali/persi senza re-signing, reconciliation read-only
+con prove/firme/inode correnti. Il publisher precedente consuma le attestazioni.
+15nuovi+72regressioni locali PASS/0skip; CI263test per push/PR PASS/0skip,
+sei log letti; native Docker29/systemd/nft passate separatamente. Evidenza nel handoff.
+Fatti nativi e ammissione applicativa del fixture restano sintetici; nessun nuovo
+provider creato/ammesso sul target, nessun controller nativo completo dimostrato.
+[Continuazione CSV→UDP→search](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+Next: provider child/gate-only e ammissione reali, ripausa prima Registry ATTEST,
+registrazione manager e installazione composta/13peer/TLS/IAM/DB/fencing/trust,
+boot/rotazione con storia; poi capability stabili/OntoPiA/CSV/UDP/search/dueclient.
+M1/G4 acquisiti, tecniche8/8funzionali6/6 del caso conservato; M2/G5–G7/eightstable
+OPEN. Farmacie stessi61righe/10colonne e scelteSTRING/OPEN; input1868consumati,
+nessun comando operatore pronto. Nessun targetapply/authority/grant/budget/upload/
+job/acquisizione/replay/reset/merge/subagente/automazione. Header sotto STORICI.
+
 # CURRENT — pubblicazione create-only del worker implementata; E2E CSV ancora aperto
 
 29 ottobre 2026. Obiettivo owner confermato: CSV→UDP→search interamente via

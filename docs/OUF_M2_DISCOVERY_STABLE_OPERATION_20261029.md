@@ -1,3 +1,5 @@
+> Delta issuer/provider reader: [stato e limiti](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). La qualifica sorgente non chiude nessuno degli8criteri stabili.
+
 > Aggiornamento del 29 ottobre: [continuazione CSV→UDP→search](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md). Nessun criterio eliminato o gate chiuso; installer file implementato nei sorgenti, integrazione/runtime ancora aperti.
 
 # M2 — Requisito vincolante: discovery stabilmente operativa

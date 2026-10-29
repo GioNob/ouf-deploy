@@ -61,11 +61,45 @@ Baseline originale effettivamente consultata: Matrix1.7 DOCX §§1,7 e Registry1
 DOCX §26/26.3, oltre alle repliche testuali; mini-PET CSV1.1 §§1–6 e mini-PET M2
 con criteri di stabilità. Non è una dichiarazione di conformità completa.
 
+## Continuazione: issuer finito e ammissione conservata del provider
+
+[Deploy54/f2dfa9c2](https://github.com/GioNob/ouf-deploy/commit/f2dfa9c2be348cfdfdeb4581228b3d1b1612d763)
+collega il reader di ammissione provider al signer esistente e al publisher:
+
+- Il reader riusa il protocollo deployment firmato, la creazione v2 con frame
+  autenticato, il mandato firmato di accettazione/rootfs e il registro di consumo
+  STARTED. Confronta ricetta indipendente, immagine, artifact, trasporto, runtime,
+  OCI applicativo, PID/startTicks/namespace con il peer del worker. Non crea o
+  ammette un provider e non ne prova la readiness.
+- Lo scope parent separato lega chiave esistente isolata e tre payload esatti.
+  Registry owner e probe nativo delle due generazioni sono ricontrollati prima
+  della firma; uno snapshot non firmato non raggiunge da solo il signer.
+- Claim esclusivo e dispatch per payload precedono ogni uso della chiave. Esiti
+  persi/parziali restano consumati; la reconciliation legge soltanto prove attuali,
+  firme e inode posseduti. Directory/chiave/scope cambiati bloccano la firma.
+- La prova composta arriva da contratti provider firmati a tre attestazioni reali
+  e pubblicazione tramite il componente precedente, senza un secondo signer.
+  Capsule37moduli invariata; nessun nuovo engine di ammissione o lifecycle.
+
+15nuovi test e72regressioni locali PASS/0skip, report completi. CI263test per
+push/PR PASS/0skip; sandbox/frame nativi passati, sei log letti. Ed25519, protocollo,
+file/fsync/flock e publisher sono reali; le prove della creazione applicativa e
+le osservazioni native/boot del fixture sono sintetiche. Il reader richiede i
+contratti di ammissione esistenti: averlo implementato non dimostra che un nuovo
+provider li abbia prodotti sul target. La qualifica CI corrente e i suoi limiti
+sono nel [record di evidenza](../../evidence/m2-discovery-worker-attestation-qualified-20261029.json).
+
+Lo slot provider del parent copre ora la lettura dell’ammissione conservata.
+Il futuro controller deve comporre esplicitamente anche lo scope della propria
+installazione: create/start non possono essere nascosti dentro questo reader.
+L’issuer è finito e iniziale; boot, rotazione e rinnovo ordinario restano separati.
+
 ## Residuo, in ordine di dipendenza
 
-- Qualificare/comporre l’issuer autorevole delle attestazioni con le due ammissioni
-  native indipendenti, il nuovo provider nella finestra gate-only e la ripausa
-  prima di Registry ATTEST. Il compilatore non può emettere quell’autorità.
+- Comporre e qualificare nativamente il nuovo provider nella finestra gate-only,
+  il suo percorso reale di ammissione/consumo e la ripausa prima di Registry ATTEST.
+  Collegare quelle prove reali al nuovo issuer; nessun vecchio provider o mandato
+  scaduto può sostituirle.
 - Completare coordinatore/installazione: registrazione/reload unità manager,
   transazione+start singolo,13peer/TLS/IAM/DB/fencing/trust, boot/rotazione con
   continuità di budget e storia. Nessun nuovo comando operatore pronto.
