@@ -43,7 +43,7 @@ jobs:
           test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
           test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
           test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
-      - name: Actual API representation mismatch, current drift and preserved public store
+      - name: Actual dual API views, drift and stopped-state diagnosis with preserved store
         run: |
           set -euo pipefail
           fixture="/var/lib/ouf-provider-reconcile-${GITHUB_RUN_ID}"
