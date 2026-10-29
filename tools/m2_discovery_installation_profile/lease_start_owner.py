@@ -46,7 +46,7 @@ def start_scope(template,*,unit_name,manager,directory):
 
 class LeaseStartAdapter:
     def __init__(self,*,parent,authority,authority_raw,transition,store,node_owner,
-                 template,proposal,scope,intent):
+                 template,proposal,scope,intent,publication_directory=None):
         require(type(parent) is DiscoveryParentAuthority and type(authority) is CutoverAuthority
             and type(transition) is Transition and transition.execution_profile is None and transition.phases==PHASES
             and type(store) is NativeEvidenceStore and type(node_owner) is DiscoveryNodeOwner
@@ -70,6 +70,11 @@ class LeaseStartAdapter:
         self.intent,self.intent_hash,self.request_hash=copy.deepcopy(intent),digest(intent),expected['creationRequestHash']
         self.authority_hash=hashlib.sha256(authority_raw).hexdigest();self.parent_hash=parent.sha
         self.template_hash,self.proposal_hash,self.scope_hash=digest(template),digest(proposal),digest(scope)
+        self.publication_directory=publication_directory
+        if publication_directory is None:self.parent_component=copy.deepcopy(scope)
+        else:
+            from .lease_file_installation import publication_scope
+            self.parent_component=publication_scope(template,scope,publication_directory)
         self.root=Path(scope['journalDirectory']);self.journal=Journal(self.root)
         self.configuration_path=Path(template['installationRoot'])/'configuration.json'
         require(self.root!=store.root and not self.root.is_relative_to(store.root) and not store.root.is_relative_to(self.root),
@@ -82,7 +87,7 @@ class LeaseStartAdapter:
             and hashlib.sha256(self.authority_raw).hexdigest()==self.authority_hash,
             'DISCOVERY_MANAGER_START_SCOPE_DRIFT')
         self.parent.registry_child(self.authority,self.authority_raw)
-        self.parent.guard('operationalLeaseInstallation',self.scope)
+        self.parent.guard('operationalLeaseInstallation',self.parent_component)
         from .custody_capture import decode
         signed=decode(self.authority_raw)
         row=self.transition.read();cursor=PHASES.index(PHASE);effects=row.get('effects',[])

@@ -1,0 +1,57 @@
+{
+  "schema": "ouf.discovery-worker-file-publication-source-progress.v1",
+  "date": "2026-10-29",
+  "baseSource": "5e3f0f3e860dab7a3d2e04c551e33e315f684444",
+  "stage": "LOCAL_PASS_CI_PENDING",
+  "localNewTests": 13,
+  "localNewTestSkips": 0,
+  "files": {
+    "tools/m2_discovery_installation_profile/lease_file_installation.py": "d83ef0f9d1d1ad0e443634a700b92aa9452cf755f8169901e663dc5280e0f3ad",
+    "tools/m2_discovery_installation_profile/lease_start_owner.py": "328ce4e50ff6e9cd7c4a83613a2c388c819c08c57cfc746a6bba6d49e289880a",
+    "tests/test_m2_discovery_lease_file_installation.py": "6c0e5e46bd7690bc55460f91b079d419be590c673255ce4760d18fdcea4f86de",
+    ".github/workflows/semantic-discovery-authorization.yml": "09132c130172fd84ea8046761c70c752620cdca5ce36734eea2855b412705d37",
+    "tools/m2_discovery_installation_profile/README.md": "5f63794d0c7eb1e7b94888e13e32a65fc7cb5494b198eb774ee83cbb76340457"
+  },
+  "actualProofs": [
+    "root-private files and create-only publication",
+    "Ed25519 signatures with ephemeral CI-only key",
+    "durable fsync/exclusive claim and initial ledger",
+    "same logical inode flock exclusion",
+    "partial write and lost completion reconciliation",
+    "runtime guard accepts published files"
+  ],
+  "syntheticFacts": [
+    "application/native admissions",
+    "native two-peer observations",
+    "host boot observation in protocol test"
+  ],
+  "stillOpen": [
+    "provider child and independent current application admissions",
+    "authoritative issuance of three attestations",
+    "manager unit registration/reload and complete controller",
+    "13-peer TLS/IAM/DB/fencing/cohort composition",
+    "boot and rotation with cumulative history",
+    "target install and capability publication",
+    "actual OntoPiA discovery and CSV UDP search on two clients"
+  ],
+  "originalBaselineConsulted": [
+    "Matrix1.7 DOCX \u00a7\u00a71,7 with text replica",
+    "SemanticRegistry1.3 DOCX \u00a726 including 26.3 with text replica",
+    "CSV miniPET1.1 \u00a7\u00a71\u20136",
+    "M2 miniPET1.3 and M2-DISC-STABLE criteria"
+  ],
+  "developmentFailuresPreservedAsFindings": [
+    "host boot metadata unavailable: explicitly synthetic fixture, production guard unchanged",
+    "nonempty-only operational reader unsuitable for empty locks: existing private byte reader used without weakening common guards",
+    "commit inode receipt encoded as list: changed to canonical object"
+  ],
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "localRegressionTests": 59,
+  "localRegressionSkips": 0,
+  "localTotalTests": 72
+}

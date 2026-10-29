@@ -68,3 +68,30 @@ It reads no application credential or key and has no CLI or operator delivery.
 Consumed scope/claims and partial output remain preserved on failure. These
 source/fixture checks do not prove target TLS/IAM admission, executable coordinated
 installation, distinct lease worker or E2E.
+
+
+## Create-only worker file publication (29 October continuation)
+
+`lease_file_installation.py` compiles exact installation/coordination/recovery
+bytes from the qualified static template and capsule. A separate parent-reviewed
+publication journal and the same existing logical lock fence one publication.
+The installer requires three **already issued** current CREATION_ATTESTATION
+signatures (publication seal, installation receipt, native-generation receipt),
+a current typed native two-peer probe, and the parent/child phase checks. It has
+no signing, manager, DNS, nft or container mutation entry point.
+
+The durable exclusive claim precedes destination writes. New directories and
+files are create-only; an existing ledger is preserved. The signed seal includes
+the exact initial recovery clocks/budget and every payload hash. The installed
+receipt is the final runtime-visible marker. Read-only reconciliation checks
+owned inode records, custody and exact bytes; partial/ambiguous installation
+never grants an automatic resume, overwrite, signature reissue or budget reset.
+This reconciliation is the **initial installation, before the worker runs**;
+it does not adopt or reset a live worker journal.
+
+`LeaseStartAdapter(publication_directory=...)` binds publication and its separate
+single-start scope in the same parent review. The old start-only scope remains
+available solely for already installed signed files. This does not implement
+service-manager unit registration/reload, fresh provider admission, attestation
+issuance, a complete installer controller, boot/rotation or target delivery.
+The 37-module runtime capsule and its pinned snapshot are unchanged.
