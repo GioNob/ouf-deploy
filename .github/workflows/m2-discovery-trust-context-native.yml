@@ -1,9 +1,9 @@
 name: M2 public trust and current native context
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/trust_preparation.py','tools/m2_discovery_installation_profile/native_context.py','tools/m2_discovery_installation_profile/trust_context_entry.py','tests/test_m2_discovery_trust_preparation.py','tests/qualify_m2_discovery_trust_context_native.py','.github/workflows/m2-discovery-trust-context-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:

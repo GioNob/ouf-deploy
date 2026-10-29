@@ -9,7 +9,8 @@ from tools.m2_discovery_installation_profile import native_context as native
 
 def main():
     assert os.geteuid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
-    def cli(*args):return subprocess.check_output(['docker',*args],text=True,stderr=subprocess.PIPE,timeout=45).strip()
+    def cli(*args):return subprocess.check_output(['docker',*args],text=True,stderr=subprocess.PIPE,timeout=45,
+        env={**os.environ,'DOCKER_API_VERSION':'1.44'}).strip()
     assert cli('version','--format','{{.Server.Version}}')=='29.8.1'
     PublicTrustPreparation.setUpClass();ids=[]
     try:
