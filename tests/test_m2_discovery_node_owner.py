@@ -2,7 +2,8 @@
 import copy,json,sys,types,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
+             str(ROOT/'tools/semantic_frame_compiler'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
 from test_m2_discovery_native_profile import fixture
 from test_m2_discovery_frame_observation import DenyOwnerFixture
 import test_cutover_authority_native as signed
