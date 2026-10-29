@@ -13,6 +13,7 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_c
 import test_cutover_authority_native as signed
 import test_m2_discovery_node_owner as node_fixture
 from tools.m2_discovery_installation_profile import application as m
+REAL_NODE_OWNER=m.DiscoveryNodeOwner
 
 class Assembly(unittest.TestCase):
     def setUp(self):pass
@@ -100,6 +101,20 @@ class Assembly(unittest.TestCase):
         app.release_after_cohort_verification();app.release_after_cohort_verification()
         self.assertEqual(calls,list(m.PHASES))
         self.assertIs(captured['owners']['START_DISTINCT_LEASE_WORKER'],owners['START_DISTINCT_LEASE_WORKER'])
+
+    def test_preconstructed_node_for_native_owners_must_share_all_exact_action_bindings(self):
+        options,calls,*_=self.fixture()
+        node=REAL_NODE_OWNER(options['engine'],options['transition'],options['request'],
+            options['intents']['ATTEST_NEW_OCI_PEER'],options['store'],options['profile'],
+            options['token_owner'],options['authority'],options['authority_raw'],options['verifier'],
+            options['attestation_signer'],options['node_recipe'],options['node_directory'])
+        with mock.patch.object(m,'DiscoveryNodeOwner',REAL_NODE_OWNER):
+            app=m.DiscoveryApplication(**options,node_owner=node)
+            self.assertIs(app.node_owner,node);self.assertEqual(calls,[])
+            node.store=options['before_store']
+            with self.assertRaisesRegex(ValueError,'SHARED_PRECONSTRUCTED_DISCOVERY_NODE_OWNER'):
+                m.DiscoveryApplication(**options,node_owner=node)
+            self.assertEqual(calls,[])
 
     def test_release_before_registry_verification_is_denied(self):
         options,calls,*_=self.fixture();app=m.DiscoveryApplication(**options)
