@@ -134,7 +134,9 @@
     "discoveryStoppedProviderInputsScopeConsumed": true,
     "discoveryThirteenPhaseAssemblySourceQualified": true,
     "discoveryLeaseWorkerComponentNativeQualified": true,
-    "discoveryPausedNodeAdapterDispatchFixed": true
+    "discoveryPausedNodeAdapterDispatchFixed": true,
+    "discoveryTransportPhaseSourceQualified": true,
+    "discoveryInstalledLeaseTrustSourceQualified": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -2000,7 +2002,7 @@
     "Supervisor",
     "Merge and release acceptance"
   ],
-  "firstNextAction": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
+  "firstNextAction": "Implement source-sealed native generation probe and installed operational worker entry/start/reentry preserving finite incident accounting; integrate fresh gated provider child and complete coordinated native review, no new operator command or human window ready.",
   "sourceRefs": [
     "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
     "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
@@ -6376,7 +6378,7 @@
     "targetTruststorePrepared": false,
     "targetTlsAdmissionProven": false
   },
-  "next": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
+  "next": "Implement source-sealed native generation probe and installed operational worker entry/start/reentry preserving finite incident accounting; integrate fresh gated provider child and complete coordinated native review, no new operator command or human window ready.",
   "discoveryTrustContextPreparation": {
     "status": "TARGET_STOP_FAILED_CONSUMED_PUBLIC_STORE_PRESERVED",
     "evidence": "evidence/m2-discovery-trust-context-preparation-qualified-20261029.json",
@@ -6686,5 +6688,15 @@
     "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
     "fullNativeExecutorIntegrated": false,
     "targetExecuted": false
+  },
+  "discoveryOperationalLeaseSource": {
+    "sourceCommit": "8bc50da338ca6ff1af9c2d21d2433549e7b54dcc",
+    "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
+    "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
+    "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
+    "installedRuntimeTrustEvidence": "evidence/m2-installed-discovery-lease-trust-source-qualified-20261029.json",
+    "nativeWorkerStartAdapterImplemented": false,
+    "nativeGenerationProbeImplemented": false,
+    "targetInstalled": false
   }
 }

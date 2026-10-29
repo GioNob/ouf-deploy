@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.m2-discovery-transport-phase-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "6b99876d00f3bbe344542d27f6e0120bbd488824",
+  "push": {
+    "run": 40913834494,
+    "job": 123588649381
+  },
+  "pr": {
+    "run": 40913846612,
+    "job": 123588692441
+  },
+  "testsPerJob": 158,
+  "newTransportTests": 6,
+  "logsRead": true,
+  "realDualSignatureAndPrivateJournal": true,
+  "nodeAndKernelFactsSynthetic": true,
+  "existingPreexecApplyProtocolReused": true,
+  "expectedTemplateIndependentNamespaceQualifiedSeparately": true,
+  "atomicKernelEffectAppliedOnceInProtocolFixture": true,
+  "crashAfterKernelWriteCommitsOnlyOwnedJournal": true,
+  "missingRulesAreNotRecreated": true,
+  "foreignRulesNotAdoptedOrOverwritten": true,
+  "partialPreparationNotRepaired": true,
+  "signatureLossStopsBeforeKernelEffect": true,
+  "profileCannotGrantApplicationStart": true,
+  "independentNodeRecipeAndCurrentLeaseGuardRequired": true,
+  "sourceIntegrationIncludesSharedPreconstructedNode": true,
+  "fullNativeTransportAndCohortAcceptanceProven": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "sharedNodeFollowup": {
+    "source": "faf1b712c3b1270860ec4222dd083e08b480c7c7",
+    "push": {
+      "run": 40915673984,
+      "job": 123595115198,
+      "conclusion": "success"
+    },
+    "pr": {
+      "run": 40915687026,
+      "job": 123595156720,
+      "conclusion": "success"
+    },
+    "testsPerJob": 159,
+    "logsRead": true
+  }
+}

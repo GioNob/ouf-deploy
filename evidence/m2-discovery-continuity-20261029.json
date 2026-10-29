@@ -115,7 +115,7 @@
     "nativePublisherTrustAccepted": false,
     "firstFailedRunPreserved": 40856064980
   },
-  "next": "Complete native transport and worker-start phase owners, gated provider child admission and source-sealed coordinated installation/boot/rotation from consumed installationInputsHash1868b57c; no new operator command or human window ready.",
+  "next": "Implement source-sealed native generation probe and installed operational worker entry/start/reentry preserving finite incident accounting; integrate fresh gated provider child and complete coordinated native review, no new operator command or human window ready.",
   "currentOperatorCommandReady": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
@@ -566,5 +566,15 @@
     "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
     "fullNativeExecutorIntegrated": false,
     "targetExecuted": false
+  },
+  "discoveryOperationalLeaseSource": {
+    "sourceCommit": "8bc50da338ca6ff1af9c2d21d2433549e7b54dcc",
+    "transportPhaseEvidence": "evidence/m2-discovery-transport-phase-source-qualified-20261029.json",
+    "isolatedExpectedTemplateEvidence": "evidence/m2-isolated-transport-template-source-qualified-20261029.json",
+    "boundedHealthyAccountingEvidence": "evidence/m2-discovery-healthy-time-accounting-qualified-20261029.json",
+    "installedRuntimeTrustEvidence": "evidence/m2-installed-discovery-lease-trust-source-qualified-20261029.json",
+    "nativeWorkerStartAdapterImplemented": false,
+    "nativeGenerationProbeImplemented": false,
+    "targetInstalled": false
   }
 }
