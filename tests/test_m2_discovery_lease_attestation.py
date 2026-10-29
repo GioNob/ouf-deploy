@@ -17,7 +17,7 @@ from tools.semantic_provider_deployment_authentication import signing_bytes
 
 
 class Attest(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,registration=False,sequence=False):
         recipe={'schema':'ouf.discovery-provider-independent-node-recipe.v1','sourceClosureHash':'f'*64,
             'qualifiedPackageHash':'7'*64,'imageConfigurationHash':'c'*64,
             'expectedRootfsSeal':{'schema':'ouf.semantic-rootfs-seal.v1','sha256':'9'*64,'entries':3,'bytes':64},
@@ -77,12 +77,27 @@ class Attest(unittest.TestCase):
             signature_directory=str(auth.signatures),observation_root=str(install.probe.root),
             key_binding=auth.binding(auth.key),key_ref='synthetic-attestor-key')
         auth.review['components']['providerInstallation']=provider_scope
-        auth.review['components']['operationalLeaseInstallation']=m.attested_component(install.start.template,
-            install.start.installation_component,issuance)
+        manager_component=install.start.installation_component;manager_scope=None;sequence_binding=None
+        if registration:
+            from tools.m2_discovery_installation_profile import lease_registration as reg
+            for name in ('registration','manager-units'):(auth.root/name).mkdir(mode=0o700)
+            unit_directory=str(auth.root/'manager-units')
+            allowed=patch.object(reg,'UNIT_DIRECTORIES',frozenset((unit_directory,)));allowed.start();self.addCleanup(allowed.stop)
+            manager_scope=reg.registration_scope(install.start.template,install.start.scope,unit_directory=unit_directory,
+                journal_directory=str(auth.root/'registration'))
+            manager_component=reg.registered_component(install.start.template,manager_component,manager_scope)
+        component=m.attested_component(install.start.template,manager_component,issuance)
+        if sequence:
+            from tools.m2_discovery_installation_profile import lease_installation_phase as seq
+            (auth.root/'installation-sequence').mkdir(mode=0o700)
+            sequence_binding=seq.sequence_scope(install.start.template,component,directory=str(auth.root/'installation-sequence'))
+            component=seq.sequenced_component(install.start.template,component,sequence_binding)
+        auth.review['components']['operationalLeaseInstallation']=component
         parent=auth.fixture();base=install.start
         start=files.starts.m.LeaseStartAdapter(parent=parent,authority=base.authority,authority_raw=base.authority_raw,
             transition=base.transition,store=base.store,node_owner=base.node_owner,template=base.template,proposal=base.proposal,
-            scope=base.scope,intent=intent,publication_directory=base.publication_directory,attestation_scope=issuance)
+            scope=base.scope,intent=intent,publication_directory=base.publication_directory,attestation_scope=issuance,
+            registration_scope=manager_scope,sequence_scope=sequence_binding)
         installer=files.m.LeaseFileInstallation(start,material,verifier=install.verifier,probe=install.probe)
         provider=p.RetainedProviderAdmission(parent=parent,template=start.template,recipe=recipe,records=records,configuration_hash='a'*64)
         signer=m.ExistingEd25519Signer(auth.binding(auth.key),'synthetic-attestor-key',installer.verifier,

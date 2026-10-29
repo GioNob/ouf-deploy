@@ -14,6 +14,7 @@ from .lease_file_installation import LeaseFileInstallation,inode,ROLE
 from .provider_admission import RetainedProviderAdmission
 from .native_generation_probe import NativeLeaseGenerationProbe
 from .lease_service import existing_kernel_lock
+from .installation_lock import observed_logical_inode
 from .installed_lease_guard import boot_id
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,private_bytes
 from tools.semantic_provider_deployment_protocol import identity
@@ -48,13 +49,20 @@ def issuance_scope(template,provider_scope,*,directory,signature_directory,obser
 
 
 def attested_component(template,installation,issuance):
-    require(type(installation) is dict and installation.get('schema')=='ouf.discovery-lease-files-and-start-scope.v1',
+    raw=installation
+    if type(installation) is dict and installation.get('schema')=='ouf.discovery-worker-registered-installation-and-start-scope.v1':
+        from .lease_registration import registered_component
+        require(installation==registered_component(template,installation['installation'],installation['registration']),
+            'REVIEWED_MANAGER_REGISTRATION_COMPONENT_CHANGED')
+        raw=installation['installation']
+    require(type(raw) is dict and raw.get('schema')=='ouf.discovery-lease-files-and-start-scope.v1',
         'FILE_PUBLICATION_AND_START_SCOPE_REQUIRED_BEFORE_ISSUANCE')
     expected=issuance_scope(template,issuance['providerAdmission'],directory=issuance['journalDirectory'],
         signature_directory=issuance['signatureDirectory'],observation_root=issuance['observationRoot'],
         key_binding=issuance['keyBinding'],key_ref=issuance['keyRef'])
     require(issuance==expected,'DISCOVERY_ISSUANCE_SCOPE_CHANGED')
-    roots=(installation['start']['journalDirectory'],installation['publication']['journalDirectory'])
+    roots=(raw['start']['journalDirectory'],raw['publication']['journalDirectory'])
+    if raw is not installation:roots=(*roots,installation['registration']['journalDirectory'])
     require(all(not beneath(issuance['journalDirectory'],p) and not beneath(p,issuance['journalDirectory']) for p in roots),
         'SEPARATE_SIGNING_PUBLICATION_AND_START_TRANSACTIONS_REQUIRED')
     return {'schema':'ouf.discovery-worker-attested-installation-and-start-scope.v1',
@@ -82,7 +90,7 @@ class LeaseAttestationIssuer:
             and type(i.probe) is NativeLeaseGenerationProbe and self.signer.verifier is i.verifier
             and i.start is s and self.provider.parent is s.parent and self.provider.template==s.template
             and scope==s.attestation_scope and digest(scope)==self.scope_hash
-            and s.parent_component==attested_component(s.template,s.installation_component,scope)
+            and s.attested_component==attested_component(s.template,s.manager_component,scope)
             and scope['providerAdmission']==self.provider.scope
             and self.signer.key==scope['keyBinding'] and self.signer.key_ref==scope['keyRef']
             and self.signer.scope=={'role':ROLE,'issuerRef':s.parent.context['attestorRef'],
@@ -150,7 +158,7 @@ class LeaseAttestationIssuer:
     def observe(self,intent):
         """Read only; missing signatures remain unknown with attempts consumed."""
         provider=self.current(intent);c=self.installation.material['proposal']['configuration']
-        with existing_kernel_lock(c['commonInvocationLock'],c['commonLockIdentity']),directory(self.root):
+        with observed_logical_inode(c['commonInvocationLock'],c['commonLockIdentity']),directory(self.root):
             claim=self.root/'claim.json'
             if not os.path.lexists(claim):return 'UNKNOWN',{'ownedIssuanceClaimPresent':False,'automaticReplayAllowed':False}
             require(private_json(claim)==self.claim(provider),'EXACT_RETAINED_WORKER_ISSUANCE_CLAIM_REQUIRED')

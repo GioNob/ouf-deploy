@@ -46,7 +46,7 @@ def start_scope(template,*,unit_name,manager,directory):
 
 class LeaseStartAdapter:
     def __init__(self,*,parent,authority,authority_raw,transition,store,node_owner,
-                 template,proposal,scope,intent,publication_directory=None,attestation_scope=None):
+                 template,proposal,scope,intent,publication_directory=None,attestation_scope=None,registration_scope=None,sequence_scope=None):
         require(type(parent) is DiscoveryParentAuthority and type(authority) is CutoverAuthority
             and type(transition) is Transition and transition.execution_profile is None and transition.phases==PHASES
             and type(store) is NativeEvidenceStore and type(node_owner) is DiscoveryNodeOwner
@@ -75,11 +75,21 @@ class LeaseStartAdapter:
         else:
             from .lease_file_installation import publication_scope
             self.installation_component=publication_scope(template,scope,publication_directory)
+        self.registration_scope=copy.deepcopy(registration_scope)
+        if registration_scope is None:self.manager_component=copy.deepcopy(self.installation_component)
+        else:
+            from .lease_registration import registered_component
+            self.manager_component=registered_component(template,self.installation_component,registration_scope)
         self.attestation_scope=copy.deepcopy(attestation_scope)
-        if attestation_scope is None:self.parent_component=copy.deepcopy(self.installation_component)
+        if attestation_scope is None:self.attested_component=copy.deepcopy(self.manager_component)
         else:
             from .lease_attestation import attested_component
-            self.parent_component=attested_component(template,self.installation_component,attestation_scope)
+            self.attested_component=attested_component(template,self.manager_component,attestation_scope)
+        self.sequence_scope=copy.deepcopy(sequence_scope)
+        if sequence_scope is None:self.parent_component=copy.deepcopy(self.attested_component)
+        else:
+            from .lease_installation_phase import sequenced_component
+            self.parent_component=sequenced_component(template,self.attested_component,sequence_scope)
         self.root=Path(scope['journalDirectory']);self.journal=Journal(self.root)
         self.configuration_path=Path(template['installationRoot'])/'configuration.json'
         require(self.root!=store.root and not self.root.is_relative_to(store.root) and not store.root.is_relative_to(self.root),
@@ -170,6 +180,9 @@ class LeaseStartAdapter:
             'configurationHash':digest(self.proposal['configuration']),'startAttempts':1,'automaticReplayAllowed':False}
 
     def apply(self,intent):
+        if self.sequence_scope is not None:
+            from .lease_installation_phase import read_prefix
+            read_prefix(self)
         self.current(intent);self.installed(before_start=True);self.inactive()
         with protected_directory(self.root):
             # Durable consumption precedes dispatch. A queued job, timeout or
@@ -204,10 +217,14 @@ class LeaseStartAdapter:
             'nodeProofAfterHash':digest(after),'installedWorkerObservation':copy.deepcopy(observed),
             'managerEnableOrRestartPerformed':False,'containerLifecycleOperationsPerformed':False,
             'startReplayAllowed':False,'applicationStartAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
+        sequence_fields=()
+        if self.sequence_scope is not None:
+            from .lease_installation_phase import read_prefix
+            prefix=read_prefix(self);evidence.update(prefix);sequence_fields=tuple(prefix)
         path=self.store.path(PHASE)
         if os.path.lexists(path):
             retained=self.store.read_baseline(PHASE,self.transition.context,self.intent_hash)
-            require(all(retained.get(k)==evidence[k] for k in ('schema','creationRequestHash','claimHash','templateHash','configurationHash'))
+            require(all(retained.get(k)==evidence[k] for k in ('schema','creationRequestHash','claimHash','templateHash','configurationHash',*sequence_fields))
                 and retained['installedWorkerObservation']['scopeHash']==observed['scopeHash']
                 and retained['installedWorkerObservation']['generationRef']==observed['generationRef']
                 and observed['recoveryAttempts']>=retained['installedWorkerObservation']['recoveryAttempts']

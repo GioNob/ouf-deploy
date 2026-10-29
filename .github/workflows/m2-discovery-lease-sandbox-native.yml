@@ -1,9 +1,9 @@
 name: M2 compiled discovery lease sandbox
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/**','tests/qualify_m2_discovery_lease_sandbox_native.py','.github/workflows/m2-discovery-lease-sandbox-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tests/qualify_m2_discovery_lease_sandbox_native.py','tests/fixtures/m2_worker_sequence_native.py','.github/workflows/m2-discovery-lease-sandbox-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/**','tests/qualify_m2_discovery_lease_sandbox_native.py','.github/workflows/m2-discovery-lease-sandbox-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tests/qualify_m2_discovery_lease_sandbox_native.py','tests/fixtures/m2_worker_sequence_native.py','.github/workflows/m2-discovery-lease-sandbox-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -50,3 +50,5 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_lease_sandbox_native.py"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_lease_sandbox_native.py" --composed-worker

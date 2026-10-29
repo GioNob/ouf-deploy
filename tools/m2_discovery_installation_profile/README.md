@@ -120,7 +120,38 @@ This is an initial finite installation component, not a boot/rotation controller
 or provider lifecycle implementation. The current source scope's provider slot
 covers the retained-admission reader; a future lifecycle controller must compose
 its separately reviewed installation scope explicitly, rather than hiding create
-or start in this reader. Actual provider child/gate-only integration, manager
-registration/reload, complete cohort and native composed installation remain OPEN.
+or start in this reader. Actual provider child/gate-only integration and complete cohort remain OPEN.
+Manager registration and composed initial worker installation are described below.
 Protocol tests use real Ed25519/files/fsync/flock and signed deployment records,
 but model native observations/previous application admissions synthetically.
+
+
+## One initial worker installation phase
+
+`lease_registration.py` creates an exclusive root-owned symlink for the exact
+installed unit in the explicitly reviewed system-manager unit directory. Its
+separate private claim, link inode and reload dispatch precede one daemon-reload;
+registration never enables, starts or restarts a service. Reconciliation verifies
+the owned link and loaded exact fragment, with no drop-ins or pending reload.
+A lost result is observed, never followed by another reload.
+
+`lease_installation_phase.py` composes ATTEST → FILES → REGISTER → START as one
+parent-reviewed phase. Every substage has a durable dispatch before execution.
+Read-only observation reconciles attempted stages; explicit same-authority
+continuation may dispatch only untouched stages. A partial or unknown action
+blocks progress and cannot be retried. Start requires all three immutable prefix
+proofs. The returned start evidence is exactly the record in NativeEvidenceStore,
+including the reviewed sequence and prefix hashes.
+
+Once started, the worker owns its cumulative mutable journals. Completed phase
+observation checks signatures, manager registration and current worker evidence,
+retaining the initial publication proof without reinitializing or demanding an
+initial ledger. Read-only observers verify the logical lock inode without
+acquiring the worker's lifetime flock; mutation paths keep the exclusive fence.
+The frozen 37-module runtime capsule remains unchanged.
+
+The optional native `--composed-worker` qualification uses the real signer,
+publisher, registration, systemd and Docker probe. It retires only an unused CI
+seed before installing into fresh destinations. Previous Registry/provider
+application admission remains synthetic: this proves worker composition, not
+fresh provider admission, target installation, boot/rotation or CSV E2E.

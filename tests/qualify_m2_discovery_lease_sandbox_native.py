@@ -43,7 +43,7 @@ def identity(path):
     s=Path(path).stat();return [s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink]
 
 
-def main():
+def main(compose_worker=False):
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert command('docker','version','--format','{{.Server.Version}}').strip()==b'29.8.1'
     parent_fixture=signed_parent.Parent();parent_fixture.setUp()
@@ -307,6 +307,14 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
         start_owner=lease_start_owner.LeaseStartAdapter(parent=parent,authority=child,authority_raw=child_raw,
             transition=transition,store=node.store,node_owner=node,template=template,proposal=materialized,
             scope=start_scope,intent=intent)
+        worker_phase=None
+        if compose_worker:
+            from fixtures.m2_worker_sequence_native import prepare
+            worker_phase,start_owner,template,materialized,intent=prepare(start_owner,parent_fixture,private,install,ledger,sandbox,
+                link,checkpoint,command,create)
+            c,compiled=materialized['configuration'],materialized['serviceUnit']
+            recipe=materialized['recipe'];scope=recipe['scope'];snapshot=materialized['nativeObservation']
+            snapshot_sha=native.digest(snapshot);profiles=snapshot['profiles'];generation=worker_phase.files.material['generation']
         native_manager=start_owner.manager;manager_dispatches=[]
         def lost_start_response(args):
             result=native_manager(args)
@@ -315,10 +323,12 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
                 raise TimeoutError('CI_LOST_REPLY_AFTER_ACTUAL_MANAGER_START')
             return result
         start_owner.manager=lost_start_response
-        try:start_owner.apply(intent);raise AssertionError('CI_LOST_START_REPLY_NOT_INJECTED')
+        try:
+            (worker_phase or start_owner).apply(intent)
+            raise AssertionError('CI_LOST_START_REPLY_NOT_INJECTED')
         except TimeoutError as error:assert str(error)=='CI_LOST_REPLY_AFTER_ACTUAL_MANAGER_START'
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
-        outcome,start_evidence=start_owner.observe(intent)
+        outcome,start_evidence=(worker_phase or start_owner).observe(intent)
         assert outcome=='APPLIED' and start_evidence['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
         assert not start_evidence['applicationStartAuthorized']
         try:start_owner.apply(intent);raise AssertionError('CONSUMED_MANAGER_START_REPLAYED')
@@ -380,6 +390,9 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             'managerStopPreservesBoundedVerifierChildrenUntilMainQuiesces':True,
             'finiteParentOwnedStartAndIndependentPhaseObservationQualified':True,
             'actualLostManagerStartReplyReconciledWithoutSecondStart':True,
+            'composedAttestationPublicationRegistrationStartExecuted':compose_worker,
+            'providerAdmissionReaderAndWorkerAttestationIssuerExecuted':compose_worker,
+            'nativeWorkerSequenceStillUsesSyntheticApplicationAdmission':compose_worker,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
             'releaseAcceptance':False},sort_keys=True),flush=True)
@@ -400,4 +413,4 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
         for directory in (install,ledger,sandbox,private,fences,kernel):shutil.rmtree(directory,ignore_errors=True)
         parent_fixture.doCleanups()
 
-if __name__=='__main__':main()
+if __name__=='__main__':main(compose_worker=sys.argv[1:]==['--composed-worker'])

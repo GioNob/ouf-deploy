@@ -1,3 +1,30 @@
+# CURRENT — one initial worker phase composed; native qualification pending
+
+29 October 2026. Worker ATTEST→FILES→REGISTER→START now has a parent-reviewed
+sequence, one durable dispatch per substage and explicit continuation only for
+untouched substages. Lost results are observed without replay. Manager registration
+creates only a fresh exact unit symlink plus one daemon-reload; start remains
+separate and singular. Start evidence retains three initial-installation proofs;
+completed observation never restores or demands initial live journals. Read-only
+observers verify the existing logical fence inode without taking its lifetime
+flock; mutation fences remain exclusive. Frozen runtime capsule unchanged.
+55 local protocol/regression tests PASS, including 20 new registration/sequence
+tests; actual composed worker native CI pending. Provider application admission
+in fixtures remains synthetic; real provider child, full current cohort,
+boot/rotation, target capability publication and CSV→UDP E2E remain OPEN.
+No target effect, authority/grant/budget reset, replay, upload/job, merge or agents.
+Scope clarification below controls all historical search-as-phase labels.
+
+# CURRENT — owner clarification: CSV ingestion ends at UDP; UDP capabilities operate on loaded objects
+
+29 October 2026. The authorized ordinary flow is CSV→governed processing→UDP
+objects with complete row outcomes. Search is not a loading phase. UDP
+capabilities must be usable through chatbot on loaded objects, qualified
+separately. Registry semantic discovery remains part of governed mapping.
+This clarification controls older CSV→UDP→search labels; no capability contract
+or owner boundary is removed. Continue autonomously; involve the owner only
+when their decision/access/authority is indispensable. M1/G4 retained; M2 open.
+
 # CURRENT — finite worker attestation issuer and retained provider admission composed
 
 29 October 2026. CSV→UDP→search remains fully chatbot/capability governed; M1/G4
