@@ -13,7 +13,7 @@ from tools.semantic_transaction_profiles.repair_broker_sources import repair
 from tools.semantic_registry_operational_owner.core import Denied as InputDenied
 
 class Profiles(unittest.TestCase):
-    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None):
+    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None,rootfs_limits=None):
         case=creates.Creation();old,w,auth,state,calls,*_=case.fixture(runtime_binding=runtime_binding,definition=definition,provider_inputs=provider_inputs);self.addCleanup(case.doCleanups)
         r,selection,t,l,c=(registry_fixture() if definition is None else definition);self.assertEqual(r,w.request)
         context={k:v for k,v in c.items() if k not in {'containerId','networkNamespaceName','rootfsPath'}}
@@ -78,7 +78,8 @@ class Profiles(unittest.TestCase):
                 'opensslBinding':auth.verifier.openssl_binding},frame_source_binding=auth.binding(frame),
             keys={'installer':auth.binding(auth.key),'attestor':auth.binding(auth.key)},
             key_refs={'installer':'synthetic-installer-key','attestor':'synthetic-attestor-key'},
-            runtime_root_parents=['/fixture/runc'],rootfs_limits={'maxEntries':10000,'maxBytes':1048576,'maxDepth':32},
+            runtime_root_parents=['/fixture/runc'],rootfs_limits=(rootfs_limits if rootfs_limits is not None else
+                {'maxEntries':10000,'maxBytes':1048576,'maxDepth':32}),
             transaction_id='f'*64,approval_ref='SYNTHETIC_PROVIDER_INITIAL_ONLY',preparer_template=prep)
         scope=m.profile_scope(old.template,old.scope,**opts)
         component={'schema':'ouf.discovery-composed-provider-installation-scope.v1','creation':old.scope,'installation':scope,

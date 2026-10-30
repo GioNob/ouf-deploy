@@ -21,7 +21,12 @@ from tools.semantic_provider_lease_nft import structure_hash
 from gated_process_observation import GatedProcessObservation
 
 def run(*args,raw=None,check=True):
-    p=subprocess.run(list(args),input=raw,capture_output=True,timeout=45)
+    # A created init inherits its stdio before exec. Files keep the runc
+    # control operation bounded even while that init remains alive.
+    with tempfile.TemporaryFile() as out,tempfile.TemporaryFile() as err:
+        process=subprocess.run(list(args),input=raw,stdout=out,stderr=err,timeout=45)
+        out.seek(0);err.seek(0)
+        p=subprocess.CompletedProcess(args,process.returncode,out.read(2097153),err.read(2097153))
     assert len(p.stdout)<=2097152 and len(p.stderr)<=2097152
     if check and p.returncode:raise RuntimeError('CI_NATIVE_COMMAND_FAILED:'+Path(args[0]).name+':'+p.stderr.decode()[-1600:])
     return p
@@ -103,7 +108,8 @@ def main():
                 if mount.get('source')==old:mount['source']=str(source)
             opts['frame_template']['expectedOci']['process'].pop('apparmorProfile',None)
             opts['expected_rootfs_seal']=rootfs_seal(pfs,{'maxEntries':10000,'maxBytes':16777216,'maxDepth':32},VerificationBudget(10))
-            old,w,auth,provider,calls,options,sources=case.fixture(definition=definition,provider_inputs=opts)
+            old,w,auth,provider,calls,options,sources=case.fixture(definition=definition,provider_inputs=opts,
+                rootfs_limits={'maxEntries':10000,'maxBytes':16777216,'maxDepth':32})
             prep=options['preparer_template'];prep.update(commands={k:commands[k] for k in prep['commands']},
                 commandHashes={k:pin(commands[k])['sha256'] for k in prep['commands']},hostNetworkNamespace=runtime.host_namespace())
             options['registry_recipe']['runtimeRoot']=str(state_root)
@@ -153,7 +159,7 @@ def main():
                     if src.is_dir():target.mkdir(parents=True,exist_ok=True)
                     else:target.parent.mkdir(parents=True,exist_ok=True);target.touch(exist_ok=True)
             rbundle=Path(rcontext['bundleParent'])/registry_id;private(rbundle/'config.json',runtime.encoded(rpolicy['expectedOci']))
-            run(commands['runc'],'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(rbundle),registry_id);created.append(registry_id)
+            created.append(registry_id);run(commands['runc'],'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(rbundle),registry_id)
             peer=old.template['transportTemplate'][0]['peerIngress']['declaration']['networkBindings'][0]
             attach(commands,state_root,registry_id,'ci_rhost','ci_rchild',peer['mac'],peer['ipv4'])
             run(commands['runc'],'--root',str(state_root),'start',registry_id)
@@ -186,7 +192,7 @@ def main():
                     for mnt in material['materialized']['framePolicy']['expectedOci']['mounts']:
                         if mnt['type']=='bind' and not Path(mnt['source']).exists():private(Path(mnt['source']),b'CI_METADATA',0o644)
                     private(bundle/'config.json',runtime.encoded(material['materialized']['framePolicy']['expectedOci']))
-                    run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(bundle),provider_id);created.append(provider_id)
+                    created.append(provider_id);run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(bundle),provider_id)
                     own=old.template['networkBindings'][0];attach(commands,state_root,provider_id,'ci_phost','ci_pchild',own['mac'],own['ipv4'])
                     run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'start',provider_id)
                     state=json.loads(run(commands['runc'],'--root',str(state_root),'state',provider_id).stdout)
