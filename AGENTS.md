@@ -22,6 +22,19 @@ and evidence/mcp-go127-offline-package-readback-20261030.json. Publisher trust,
 current private review/admission, full cohort and target E2E remain OPEN.
 No target authority/grant/budget/replay/reset or M2 acceptance follows.
 
+Current successor adds `gateway_runtime.py`: existing APISIX owner and actual
+AggregateAction over the same current child, parent checked at every internal
+guard, exact parent+child runtime scope, distinct reviewed journal, no historical
+post-grant adoption.8local cases PASS50.491s with actual signatures/files;
+Docker/Admin HTTP leaves modeled. Parent revocation blocks even with valid child,
+unknown connect is not resent, new journal/generation rejected. Original owner
+bytes unchanged; no new authority/issuer. Extended44suite protocol CI pending,
+expected373tests; native wrapper/full cohort/publication/CLI remain OPEN.
+A typed readonly namespace channel composes the supported existing I/O path with
+parent/journal/generation checks; it does not impersonate the legacy owner type.
+Actual channel construction tested with namespace observation modeled; route
+PUT denied, writes remain owned by separate capability publication.
+
 Sourcec62d0b2156e43943a50e13995092566c9fc99fb3 protocol push41039846376/
 job124009671934 and PR41039855443/job124009703393:365tests/43suites PASS,
 zero skips, all final reports read. Includes6selected Registry/MCP image cases

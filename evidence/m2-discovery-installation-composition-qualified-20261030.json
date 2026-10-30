@@ -172,5 +172,26 @@
     },
     "finalReportsRead": true,
     "combinedNativeProof": false
+  },
+  "discoveryGatewayRuntimeSuccessor": {
+    "localCases": 8,
+    "localSeconds": 50.491,
+    "actualParentChildEd25519AndDurableJournals": true,
+    "legacyOwnerSourceUnchanged": true,
+    "actualExistingAggregateActionNotSurrogate": true,
+    "sameParentChildAndEngineRequired": true,
+    "parentRevocationBlocksWithStillValidChild": true,
+    "reviewedDistinctJournalRequired": true,
+    "historicalPostGrantAdoptionRejected": true,
+    "unknownConnectNeverRetransmitted": true,
+    "staleGatewayGenerationRejected": true,
+    "dockerAndAdminHttpLeavesModeled": true,
+    "ciQualification": "PENDING_SUCCESSOR_44_SUITES",
+    "nativeCurrentParentGatewayWrapperQualified": false,
+    "fullCohortProven": false,
+    "realTransportConstructionWithModeledNamespaceObservation": true,
+    "legacyExactOwnerTypeNotImpersonated": true,
+    "namespaceReadinessChannelReadOnly": true,
+    "routePutDeniedWithoutSeparatePublicationOwner": true
   }
 }

@@ -358,3 +358,29 @@ stated scope; current private review/admission and full cohort remain required. 
 The sixth selected-image case deliberately regresses only a disposable mutable
 journal: the separate O_EXCL dispatch still blocks another CLI load. This proves
 that fence; it does not establish the cause of earlier observed row drift.
+
+
+## Existing Gateway runtime under the current discovery parent
+
+`gateway_runtime.py` composes the existing APISIX owner with an actual
+`AggregateAction` over the same current thirteen-phase child, and checks the
+current discovery parent in every internal owner guard. The reviewed component
+binds the exact legacy runtime scope and a distinct journal directory; the child
+also signs that exact runtime scope. No surrogate authority or additional issuer
+is introduced. Historical post-grant recovery adoption is rejected. The existing
+same-image/config/mount/network, one-use effect and finite readiness logic stays
+unchanged in its original module.
+
+Eight local cases pass with real parent/child Ed25519 and durable journals:
+normal repeated application, parent revocation while the child remains valid,
+child revocation, unreviewed fresh journal, historical-adoption rejection,
+unknown connect without retransmission, stale Gateway generation and actual
+transport construction. The old namespace constructor deliberately accepts only
+its exact legacy runtime-owner type. A new typed readonly channel composes its
+supported observed I/O path with current parent/journal/generation checks; no
+legacy type or runtime-owner flag is impersonated. Route PUT requires a separate
+current capability-publication owner and is denied here. Docker and
+Admin HTTP responses are modeled; this is not native APISIX/current full-cohort
+admission or an installation CLI. Extended protocol CI is pending. Registry+MCP
+image imports, the current MCP package and complete cohort/publication owners
+retain separate scopes and gates.
