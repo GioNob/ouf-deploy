@@ -3,18 +3,18 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
-    "testsPerEvent": 365,
-    "suitesPerEvent": 43,
+    "sourceCommit": "5b5be6ed55aa1b08a9c0ffd09ea2819c1548edc7",
+    "testsPerEvent": 373,
+    "suitesPerEvent": 44,
     "skips": 0,
     "push": {
-      "run": 41039846376,
-      "job": 124009671934,
+      "run": 41098250616,
+      "job": 124209523536,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41039855443,
-      "job": 124009703393,
+      "run": 41098262269,
+      "job": 124209564019,
       "conclusion": "success"
     },
     "finalReportsRead": true
@@ -186,12 +186,43 @@
     "unknownConnectNeverRetransmitted": true,
     "staleGatewayGenerationRejected": true,
     "dockerAndAdminHttpLeavesModeled": true,
-    "ciQualification": "PENDING_SUCCESSOR_44_SUITES",
+    "ciQualification": "QUALIFIED_AT_5B5BE6ED_373_TESTS_44_SUITES",
     "nativeCurrentParentGatewayWrapperQualified": false,
     "fullCohortProven": false,
     "realTransportConstructionWithModeledNamespaceObservation": true,
     "legacyExactOwnerTypeNotImpersonated": true,
     "namespaceReadinessChannelReadOnly": true,
     "routePutDeniedWithoutSeparatePublicationOwner": true
+  },
+  "previousProtocol": {
+    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
+    "testsPerEvent": 365,
+    "suitesPerEvent": 43,
+    "skips": 0,
+    "push": {
+      "run": 41039846376,
+      "job": 124009671934,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41039855443,
+      "job": 124009703393,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
+  },
+  "selectedImagePreparationSuccessor": {
+    "localCases": 5,
+    "actualArchivesAndCreateOnlyFiles": true,
+    "engineProfileReadsModeledLocally": true,
+    "exactTwoSelectedArchives": true,
+    "partialPreparationNeverOverwrittenOrAutomaticallyFinished": true,
+    "completedOriginalAndDerivedBytesRevalidatedOnRead": true,
+    "nativeQualifierNowUsesProductionPreparer": true,
+    "nativeAnd45SuiteProtocolCiQualification": "PENDING",
+    "publisherTrustAccepted": false,
+    "imageLoads": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false
   }
 }

@@ -381,6 +381,25 @@ supported observed I/O path with current parent/journal/generation checks; no
 legacy type or runtime-owner flag is impersonated. Route PUT requires a separate
 current capability-publication owner and is denied here. Docker and
 Admin HTTP responses are modeled; this is not native APISIX/current full-cohort
-admission or an installation CLI. Extended protocol CI is pending. Registry+MCP
+admission or an installation CLI. Source5b5be6ed passed373tests/44suites on push41098250616 and PR41098262269, no skips; final reports read. Registry+MCP
 image imports, the current MCP package and complete cohort/publication owners
 retain separate scopes and gates.
+
+
+## Selected archive preparation before review
+
+`selected_image_preparation.py` creates exactly two tagless archives from the
+selected Registry/MCP packages and an explicit native Engine profile. Each source
+is independently rehashed/audited against its pinned source/image identity and
+module runtime user. An exclusive preparation claim precedes create-only archive
+and receipt publication. Completed preparation can be read-reconciled only after
+both original and derived bytes/config/native identity are revalidated; partial
+preparation cannot be overwritten, automatically finished or rearmed. No image
+load, signing, publisher-trust acceptance or runtime authority is issued.
+
+Five local cases pass with real archives/custody/files and modeled Engine profile
+GET: complete readback/no overwrite, interrupted second write, original/derived
+tamper, profile/package drift and wrong user. The disposable native qualifier now
+uses this production preparer before real Engine/CLI imports of inert fixtures.
+Native and extended45suite protocol qualification are pending. This library is
+not yet a concrete current-target private profile compiler or operator command.

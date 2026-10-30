@@ -14,7 +14,8 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_c
 import test_m2_discovery_gate_peer_window as gates
 from test_m2_discovery_native_profile import fixture as definition
 from tools.m2_discovery_installation_profile import cohort_images as m
-from image_custody import archive,tagless_archive,native_identity,runtime_image_id
+from tools.m2_discovery_installation_profile.selected_image_preparation import prepare_archives,read_prepared_archives
+from image_custody import runtime_image_id
 
 
 class NativeImages(unittest.TestCase):
@@ -37,7 +38,7 @@ class NativeImages(unittest.TestCase):
             return subprocess.run([str(binary),'--host','unix://'+str(socket),'--config',str(config),*args],
                 input=data,check=check,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45,
                 env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LC_ALL':'C','DOCKER_API_VERSION':'1.44'}).stdout
-        rows=[]
+        inputs={}
         for module,user in (('semantic','10001:10001'),('mcp','10005:10005')):
             commit=hashlib.sha256((str(root)+module).encode()).hexdigest()[:40]
             stream=io.BytesIO()
@@ -54,17 +55,19 @@ class NativeImages(unittest.TestCase):
                 entry=json.load(tar.extractfile('manifest.json'))[0]
                 config_id='sha256:'+hashlib.sha256(tar.extractfile(entry['Config']).read()).hexdigest()
             original_hash=hashlib.sha256(source.read_bytes()).hexdigest()
-            derived=root/(module+'.tagless.tar')
-            with source.open('rb') as incoming,derived.open('w+b') as out:
-                original=archive(incoming,original_hash,config_id,commit)
-                result=tagless_archive(incoming,out,original,containerd=True);out.flush();os.fsync(out.fileno())
-                audited=archive(out,result['derivedArchiveSha256'],config_id,commit)
-            derived.chmod(0o600);audited['nativeIdentity']=native_identity(audited)
-            native_id=runtime_image_id(audited)
-            self.addCleanup(lambda image=native_id:docker('image','rm','-f',image,check=False))
-            rows.append({'module':module,'archivePath':str(derived),'audit':audited,
-                'originalArchiveSha256':original_hash,'modulePackageHash':m.digest({'syntheticFixture':module,'commit':commit})})
+            source.chmod(0o600)
+            inputs[module]={'archivePath':str(source),'archiveSha256':original_hash,
+                'imageId':config_id,'sourceCommit':commit,
+                'modulePackageHash':m.digest({'syntheticFixture':module,'commit':commit})}
             docker('image','rm','-f',identity)
+        prepared=root/'prepared';prepared.mkdir(mode=0o700)
+        preparation=prepare_archives(inputs=inputs,output_directory=prepared,engine=engine)
+        self.assertEqual(read_prepared_archives(inputs=inputs,output_directory=prepared,engine=engine),preparation)
+        with self.assertRaises(FileExistsError):prepare_archives(inputs=inputs,output_directory=prepared,engine=engine)
+        self.assertEqual(preparation['imageLoads'],0)
+        rows=preparation['images']
+        for row in rows:
+            self.addCleanup(lambda image=runtime_image_id(row['audit']):docker('image','rm','-f',image,check=False))
         declared=definition();declared[0]['Image']=runtime_image_id(rows[0]['audit'])
         fixture=gates.Window();window,auth,*_=fixture.fixture(definition=declared);self.addCleanup(fixture.doCleanups)
         window.engine=engine
@@ -112,6 +115,7 @@ if __name__=='__main__':
     if not result.wasSuccessful() or result.skipped:raise SystemExit(1)
     print(json.dumps({'schema':'ouf.m2-selected-images-native-ci.v1','actualDockerVersion':'29.8.1',
         'actualEngineAndCliAndArchiveIdentity':True,'actualOwnedLoads':2,'inertFixtureSeeds':2,
+        'actualCreateOnlySelectedArchivePreparationAndReadReconciliation':True,
         'lostRealLoadReplyReadReconciledWithoutReload':True,'secondApplyLeavesJournalsUnchanged':True,
         'revocationBlocksFurtherWork':True,'syntheticParentApplicationAndPackageReview':True,
         'applicationContainersStarted':0,'fullCohortProven':False,'applicationE2EProven':False,

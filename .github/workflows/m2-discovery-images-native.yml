@@ -3,6 +3,8 @@ name: M2 selected Registry MCP images native CLI
   push:
     paths: &id001
     - tools/m2_discovery_installation_profile/cohort_images.py
+    - tools/m2_discovery_installation_profile/selected_image_preparation.py
+    - tests/test_m2_selected_image_preparation.py
     - tests/qualify_m2_discovery_images_native.py
     - tests/test_m2_discovery_gate_peer_window.py
     - tests/test_m2_discovery_parent_authority.py

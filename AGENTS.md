@@ -1,3 +1,22 @@
+# CURRENT —373/44 protocol PASS; selected-archive preparation successor pending CI
+
+30 October2026, Europe/Rome. Gateway parent adapter and typed readonly namespace
+channel qualified at5b5be6ed on push41098250616/job124209523536 and
+PR41098262269/job124209564019:373tests/44suites,0skip, final reports read.
+Actual parent/child signatures and journals; Docker/Admin HTTP leaves modeled.
+New selected_image_preparation.py prepares exactly Registry+MCP tagless archives
+before private parent review; original hashes/source/config/users and the native
+image-store profile are verified. An exclusive claim and create-only outputs
+block restart/overwrite; completed bytes have a separate readonly reconciliation.
+No import/signing/authority or publisher-trust acceptance.5local cases PASS with
+real archives/files and modeled native-profile GET. The disposable native Docker
+qualifier now calls this production preparer before the two existing owned loads.
+Extended45suite protocol and native qualification pending; no target command yet.
+Current MCP9539cbb4/Go1.27.3/package12993233270 and Go decision remain acquired
+in their stated source/package scope. All target/full-cohort/boot/rotation/two-client
+and M2/G5–G7/24AT/8UX/8stability obligations remain OPEN. No merge, agents,
+automation, target apply, authority, reset/replay or new CSV acquisition.
+
 # CURRENT — Go1.27.3 source/package qualified; selected native imports PASS
 
 30 October2026, Europe/Rome. Owner: “Va benissimo usare l'ultima versione di go.
@@ -28,8 +47,8 @@ guard, exact parent+child runtime scope, distinct reviewed journal, no historica
 post-grant adoption.8local cases PASS50.491s with actual signatures/files;
 Docker/Admin HTTP leaves modeled. Parent revocation blocks even with valid child,
 unknown connect is not resent, new journal/generation rejected. Original owner
-bytes unchanged; no new authority/issuer. Extended44suite protocol CI pending,
-expected373tests; native wrapper/full cohort/publication/CLI remain OPEN.
+bytes unchanged; no new authority/issuer. Source5b5be6ed protocol push41098250616/job124209523536 and
+PR41098262269/job124209564019 PASS373tests/44suites,0skip, final reports read; native wrapper/full cohort/publication/CLI remain OPEN.
 A typed readonly namespace channel composes the supported existing I/O path with
 parent/journal/generation checks; it does not impersonate the legacy owner type.
 Actual channel construction tested with namespace observation modeled; route
