@@ -104,7 +104,7 @@ except Exception as error:
     p=run(str(Path('/usr/bin/python3').resolve()),'-I','-B','-c',code,material['root'],str(state_root),check=False)
     print(p.stdout.decode()[:1024],flush=True)
 
-def main():
+def main(*,worker_handoff=False):
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert Path('/proc/self/ns/net').stat().st_ino!=Path('/proc/1/ns/net').stat().st_ino
     commands={k:str(Path(shutil.which(k)).resolve()) for k in ('runc','nft','ip','nsenter','unshare','mount','umount','sysctl')}
@@ -284,6 +284,9 @@ def main():
             assert json.loads(run(commands['runc'],'--root',str(state_root),'state',provider_id).stdout)['status']=='running'
             assert sum(p.endswith('/start') for p in native_calls)==1
             assert runtime.private_json(Path(pub.material()['root'])/'attestation.json')['schema']=='ouf.semantic-created-candidate-attestation.v2'
+            if worker_handoff:
+                from fixtures.m2_provider_worker_handoff_native import qualify
+                print(json.dumps(qualify(phase,root,commands,state_root,run),sort_keys=True),flush=True)
             print(json.dumps({'schema':'ouf.m2-provider-installation-native-ci.v1','realV4NodeBrokerInstallerAdmission':True,
                 'realIndependentFullOciRootfsAndNativeNicObserved':True,'realRegistryGateClosedBeforeReturn':True,
                 'realNftAndCommonLock':True,'realWrapperCasAndEd25519':True,'lostNativeStartReplyReconciledWithoutReplay':True,
@@ -300,4 +303,6 @@ def main():
                 run(commands['nft'],'delete','table','inet',table,check=False);run(commands['nft'],'delete','table','bridge',table,check=False)
             case.doCleanups()
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    assert sys.argv[1:] in ([],['--worker-handoff']),'EXACT_DISPOSABLE_CI_MODE_REQUIRED'
+    main(worker_handoff=sys.argv[1:]==['--worker-handoff'])

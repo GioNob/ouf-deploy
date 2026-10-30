@@ -1,9 +1,9 @@
 name: M2 composed provider v4 native installation
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/semantic_transaction_profiles/assemble_provider_profiles_v2.py','tools/semantic_transaction_profiles/test_assemble_provider_profiles_v2.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/semantic_transaction_profiles/assemble_provider_profiles_v2.py','tools/semantic_transaction_profiles/test_assemble_provider_profiles_v2.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','.github/workflows/m2-provider-installation-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/semantic_transaction_profiles/assemble_provider_profiles_v2.py','tools/semantic_transaction_profiles/test_assemble_provider_profiles_v2.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/semantic_transaction_profiles/assemble_provider_profiles_v2.py','tools/semantic_transaction_profiles/test_assemble_provider_profiles_v2.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','.github/workflows/m2-provider-installation-native.yml']
 permissions: {contents: read}
 jobs:
   native-provider:
@@ -21,6 +21,7 @@ jobs:
           sudo apt-get install -y nftables iproute2 openssl busybox-static
           curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
             https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
           sudo install -d -m 755 /opt/ouf-provider-runc
           sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-provider-runc docker/runc
           sudo chown -R root:root /opt/ouf-provider-runc
@@ -35,3 +36,10 @@ jobs:
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-provider-runc:/usr/sbin:/usr/bin:/sbin:/bin \
             unshare --mount --net --propagation private \
             python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_installation_native.py"
+      - name: Same admitted provider and distinct worker with real DNS nft and preserved history
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-native-provider-${GITHUB_RUN_ID}"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-provider-runc:/usr/sbin:/usr/bin:/sbin:/bin \
+            unshare --mount --net --propagation private \
+            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_installation_native.py" --worker-handoff
