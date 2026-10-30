@@ -1,3 +1,35 @@
+# CURRENT — MCP minor-baseline decision pending; selected images owner in source qualification
+
+30 October2026. Original MCP PET1.4 Part II §65/Matrix1.7 constrain Go1.25
+and compatible patches; selectedMCP09d1f521/package12882394596 isGo1.26.10.
+Source/build/readback confirm it; older records explain security fixes, but no
+explicit minor-baseline decision found in consulted sources. Personal Context
+is disabled. Go1.25 unsupported under official release policy. Do not downgrade
+or silently mark PET updated. Concrete owner proposal on PR50:
+docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md
+APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10 is PROPOSED, not acquired. SDK1.7.0,
+ownership/contracts and all gates preserved. No target delivery before decision;
+no target apply/authority/grant/budget/replay/reset inferred. Original DOCX intact.
+
+Source5620ba82 protocol push41035568789/job123995434175 and PR41035577822/
+job123995465677:359tests/42suites PASS/0skip, final logs read. Native late worker
+push41035568774/job123995434068 and PR41035577984/job123995465778 PASS; app
+admissions synthetic, actual v4 provider native proof separate/modelDockerboundary.
+Current successor adds scoped Registry+MCP image owner reusing Import/archive/native
+identity/CAS, approved executable/journal paths, O_EXCL load dispatch and lost-load
+read reconciliation. Historical five-image intake/source unchanged.5local cases
+PASS with actual Ed25519/archives/files, Engine/CLI modeled. Other cohort sections
+remain separately owned/inert in fixtures; no native image CLI/full cohort proof.
+Successor CI pending.10late worker+7composition local cases remain qualified in
+their stated protocol scope. Local journal drift and first native UNKNOWN causes
+remain unestablished; later passes are not cause resolution or stability proof.
+M1/G4,technical8/8,functional6/6 retained; M2/G5–G7/24AT/8UX/8stability/two
+clients OPEN. CSV ends at UDP/all row outcomes; UDP capabilities on loaded objects
+qualified separately, search not loading. No operator command ready; all prior
+scopes consumed. No upload/job/acquisition/merge/agents/automation. Older CURRENT
+headers are historical for the next step; decision proposal supersedes package
+selection as an installable-baseline claim, not its measured source evidence.
+
 # CURRENT —358/42PASS; common-parent v2 worker and hidden-key successor pending CI
 
 30 October2026, Europe/Rome. Source92121207 push41033242607/job123987773868

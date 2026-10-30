@@ -321,3 +321,25 @@ Successor CI is pending. A local full-suite attempt reported row drift at
 `effects/2,state,version`; strict equality blocked, later diagnostic10-case run
 passed, cause unestablished. Neither that rerun nor native success establishes
 why the earlier observation changed. No target, full cohort or stability claim.
+
+
+## Selected images, bounded parent component (source qualification)
+
+`cohort_images.py` reuses the existing archive/native identity and one-use Import
+owner for only the selected Registry/MCP images. The reviewed plan binds Docker
+binary and both distinct private journal paths, native image store, exact Registry
+request and the MCP replacement image. An O_EXCL dispatch precedes each CLI load;
+uncertain loads are read-reconciled, never retransmitted. Tagless archive bytes
+are revalidated; the CLI receives an explicit local socket, private empty config
+root and minimal environment. No old five-image intake, source closure or action
+is repinned/replayed. Remaining cohort sections have their own owners and do not
+become admitted by this import receipt. Five local cases pass with real crypto,
+archives and journals plus modeled Engine/CLI. Native image CLI/full current
+cohort proof remains open; successor CI pending.
+
+The original PET MCP1.4 §65 minor-Go constraint and current1.26.10 candidate
+are now explicitly reconciled in a PROPOSED owner decision on PR50. Source
+qualification alone does not approve a normative baseline change. Go1.25 is
+unsupported; no downgrade is proposed. The original DOCX remains unchanged;
+source packet delivery/installation waits for the controlled decision and all
+existing gates, with no runtime authority implicit in that project decision.

@@ -3,32 +3,32 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "921212074a901b514794118083b37f0f60fe3e63",
-    "testsPerEvent": 358,
+    "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
+    "testsPerEvent": 359,
     "suitesPerEvent": 42,
     "skips": 0,
     "push": {
-      "run": 41033242607,
-      "job": 123987773868,
+      "run": 41035568789,
+      "job": 123995434175,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41033252084,
-      "job": 123987806200,
+      "run": 41035577822,
+      "job": 123995465677,
       "conclusion": "success"
     },
     "finalReportsRead": true
   },
   "nativeLateWorker": {
-    "sourceCommit": "921212074a901b514794118083b37f0f60fe3e63",
+    "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
     "push": {
-      "run": 41033242701,
-      "job": 123987774158,
+      "run": 41035568774,
+      "job": 123995434068,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41033252318,
-      "job": 123987806700,
+      "run": 41035577984,
+      "job": 123995465778,
       "conclusion": "success"
     },
     "finalReportsRead": true,
@@ -73,7 +73,7 @@
     "targetEffects": 0
   },
   "nextCommonParentAndKeyIsolationDelta": {
-    "ciQualification": "PENDING_SUCCESSOR",
+    "ciQualification": "QUALIFIED_AT_5620BA82_359_TESTS_42_SUITES",
     "localLateWorkerCases": 10,
     "localCompositionCases": 7,
     "lastBeforeCidVariantPassed": true,
@@ -94,5 +94,21 @@
     "diagnosticFullSuiteLaterPassed": 10,
     "causeEstablished": false,
     "noProductionGuardRelaxed": true
+  },
+  "selectedImagesSuccessor": {
+    "localCases": 5,
+    "engineAndCliEffects": "MODELED",
+    "realArchivesEd25519AndJournals": true,
+    "ciQualification": "PENDING_SUCCESSOR",
+    "nativeImageCliQualified": false,
+    "fullCohortProven": false,
+    "historicalFiveImageSourceUnchanged": true
+  },
+  "mcpMinorBaselineDecision": {
+    "status": "PENDING_OWNER_DECISION",
+    "originalPetMinor": "1.25",
+    "candidateGo": "1.26.10",
+    "proposal": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md",
+    "runtimeDeliveryAllowed": false
   }
 }
