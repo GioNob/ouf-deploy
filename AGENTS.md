@@ -1,3 +1,30 @@
+# CURRENT — provider initial mandates, v4 profiles and worker admission bridge under qualification
+
+30 October 2026. Target reader receipt and command remain CONSUMED (c14c8f4d docs).
+No target provider start/admission or new authority inferred. Provider template /
+one Engine create:25 local cases and CI312tests/35suites push+PR PASS, actual
+Docker29 creates in gate plus lost-create response after closure PASS. Fixture
+runtime alias never starts; this is not v4 provider admission.
+
+New source composes owned new creation + signed Registry recipe + independent
+full OCI compiler with existing broker/node-attestorv4/installer producers. Three
+initial mandates only, existing isolated keys, durable dispatch before signing,
+partial issuance never re-signs. Create-only publication preserves prior runtime
+configuration/all old candidates; initial mutable ledgers cannot be reset after
+start. Materialized admission reader requires owned new CID, exact recompiled
+artifact/transport/configuration, signed v2 creation/rootfs mandate, STARTED
+consumption AND adapter and same worker generation. Worker issuer explicitly
+accepts this typed reader beside the unchanged v1 reader; frozen capsule unchanged.
+17 new local profile/publication/admission cases PASS; native facts/admission in
+these fixtures are synthetic, real Ed25519/files/protocol remain explicit.
+NEXT reviewed wrapper CAS/native empty-guard proof, one start/current real v4
+admission and full provider sequence/gate closure; then native composed proof,
+full cohort, installation/boot/rotation and capability publication. Continue
+independently; no new target command is ready. CSV→UDP, capabilities on loaded
+objects separately qualified; no search-as-loading phase. No replay/reset/grant/
+budget/upload/profile/job/acquisition/merge/agents/automation.
+Older CURRENT headers are historical for next-step selection.
+
 # CURRENT — target runtime receipt consumed; provider template and one-use creation under qualification
 
 30 October 2026. Owner receipt READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED,

@@ -12,6 +12,7 @@ from .lease_installation_template import recompile,hashed
 from .lease_unit import path,beneath
 from .lease_file_installation import LeaseFileInstallation,inode,ROLE
 from .provider_admission import RetainedProviderAdmission
+from .provider_materialized_admission import MaterializedProviderAdmission
 from .native_generation_probe import NativeLeaseGenerationProbe
 from .lease_service import existing_kernel_lock
 from .installation_lock import observed_logical_inode
@@ -27,7 +28,8 @@ PAYLOADS=('seal','generation','receipt')
 
 def issuance_scope(template,provider_scope,*,directory,signature_directory,observation_root,key_binding,key_ref):
     t=recompile(template);c=t['configurationTemplate']
-    require(type(provider_scope) is dict and provider_scope.get('schema')=='ouf.discovery-retained-provider-admission-scope.v1'
+    require(type(provider_scope) is dict and provider_scope.get('schema') in {
+            'ouf.discovery-retained-provider-admission-scope.v1','ouf.discovery-materialized-provider-admission-scope.v1'}
         and provider_scope.get('templateHash')==digest(t)
         and provider_scope.get('nodeRecipeHash')==t['expectedNodeProfiles']['provider']['nodeRecipeHash'],
         'SAME_REVIEWED_INDEPENDENT_PROVIDER_ADMISSION_SCOPE_REQUIRED')
@@ -71,7 +73,7 @@ def attested_component(template,installation,issuance):
 
 class LeaseAttestationIssuer:
     def __init__(self,*,installation,provider,signer):
-        require(type(installation) is LeaseFileInstallation and type(provider) is RetainedProviderAdmission
+        require(type(installation) is LeaseFileInstallation and type(provider) in (RetainedProviderAdmission,MaterializedProviderAdmission)
             and type(signer) is ExistingEd25519Signer and provider.parent is installation.start.parent
             and provider.template==installation.start.template and signer.verifier is installation.verifier,
             'SHARED_TYPED_WORKER_INSTALLATION_PROVIDER_AND_ATTESTOR_REQUIRED')
@@ -85,7 +87,7 @@ class LeaseAttestationIssuer:
 
     def check_scope(self):
         i=self.installation;s=self.start;scope=self.scope
-        require(type(i) is LeaseFileInstallation and type(self.provider) is RetainedProviderAdmission
+        require(type(i) is LeaseFileInstallation and type(self.provider) in (RetainedProviderAdmission,MaterializedProviderAdmission)
             and type(self.signer) is ExistingEd25519Signer and type(i.verifier) is DetachedAuthenticator
             and type(i.probe) is NativeLeaseGenerationProbe and self.signer.verifier is i.verifier
             and i.start is s and self.provider.parent is s.parent and self.provider.template==s.template

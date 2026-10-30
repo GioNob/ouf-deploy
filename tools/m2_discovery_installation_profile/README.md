@@ -184,3 +184,29 @@ rootfs expectations remain synthetic. It qualifies creation only, not actual v4
 provider admission or the complete installer. Profile issuance/publication,
 reviewed wrapper switch, one start, signed admission and worker composition are
 separate remaining owners, not hidden callbacks in the creation primitive.
+
+
+## Initial provider mandates, profiles and materialized admission
+
+`provider_profiles.py` binds the owned new provider CID and the Registry's
+separately signed independent node recipe to the existing full-frame compiler.
+It reuses the qualified v4 runtime/Broker/node-attestor/installer format. Three
+finite initial mandates use pinned existing role keys with durable dispatches
+and owned signature/payload inodes; partial results cannot re-sign. The proposed
+runtime configuration adds exactly the new candidate and preserves every prior
+candidate and setting. Rootfs acceptance remains independently reviewed.
+
+`provider_profile_publication.py` publishes only fresh per-CID profiles and a
+separate configuration proposal. Prior configuration and journals are untouched.
+The owned-file commit reconciles a lost acknowledgement. Initial readback checks
+all STAGED bytes; completed observation never restores mutable runtime journals.
+No switch/start or new signing occurs in this publisher.
+
+`provider_materialized_admission.py` bridges the static v2 recipe to initial
+worker expectations. It rederives exact frame/transport/Broker hashes, checks
+signed v2 creation plus signed rootfs mandate and both STARTED consumption and
+v4 adapter, and binds the same current worker provider generation. It admits no
+old provider and performs no native observation or lifecycle operation. The
+worker's finite issuer accepts this exact typed reader as well as the retained
+v1 reader. Signature/IO tests model previous native admissions explicitly; real
+wrapper switch/start/v4 admission and complete provider composition remain OPEN.
