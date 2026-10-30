@@ -21,7 +21,7 @@ class NativeImages(unittest.TestCase):
     def test_real_cli_lost_reply_read_reconciliation_and_revocation(self):
         self.assertEqual(os.environ.get('GITHUB_ACTIONS'),'true')
         self.assertEqual(os.geteuid(),0)
-        binary=Path(shutil.which('docker')).resolve()
+        source_binary=Path(shutil.which('docker')).resolve()
         socket=Path('/var/run/docker.sock').resolve();info=socket.lstat()
         engine=m.Engine(str(socket),(info.st_dev,info.st_ino,info.st_uid,info.st_gid,stat.S_IMODE(info.st_mode)))
         profile=m.engine_image_profile(engine)
@@ -29,6 +29,10 @@ class NativeImages(unittest.TestCase):
         self.assertEqual(profile['profile'],'CONTAINERD_MANIFEST')
         temporary=tempfile.TemporaryDirectory(dir=ROOT,prefix='disposable-selected-images-');self.addCleanup(temporary.cleanup)
         root=Path(temporary.name);root.chmod(0o700);config=root/'seed-cli';config.mkdir(mode=0o700)
+        # Hosted /opt ancestry is writable by the runner. Bind an exact copy
+        # in this root-custodied CI tree; production custody guards stay intact.
+        binary=root/'docker';shutil.copyfile(source_binary,binary);binary.chmod(0o755)
+        self.assertEqual(hashlib.sha256(binary.read_bytes()).digest(),hashlib.sha256(source_binary.read_bytes()).digest())
         def docker(*args,data=None,check=True):
             return subprocess.run([str(binary),'--host','unix://'+str(socket),'--config',str(config),*args],
                 input=data,check=check,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45,
