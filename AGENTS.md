@@ -1,4 +1,4 @@
-# CURRENT — owner approves current stable Go; MCP1.27.3 qualification in progress
+# CURRENT — Go1.27.3 source/package qualified; selected native imports PASS
 
 30 October2026, Europe/Rome. Owner: “Va benissimo usare l'ultima versione di go.
 Anzi, direi che è auspicabile.” Controlled decision APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO
@@ -7,9 +7,19 @@ from official Go tags/VERSION at2aae1000; exact pins/checksum and all gates rema
 SDK1.7.0/protocol/ownership/contracts unchanged; original DOCX/checksums untouched.
 Do not ask owner again for routine Go version changes. Decision on PR50:
 docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md
-MCP5b4dc238/PR81 pins build/CI/verify1.27.3, verifies official distribution custody;
-full source/security/package qualification pending. Old09d1f521/12882394596 Go1.26.10
-package remains historical and cannot stand in for the required new build/package.
+MCP9539cbb4/PR81: full CI push41088404381/job124175536886 and
+PR41088414424/job124175572636 PASS, final logs read. Exact Go1.27.3 distribution
+and executable verified, SDK1.7.0, pairwise/race/DB/build, Staticcheck2026.2.2,
+independent nilness and pinned upstream govulncheck PASS/no vulnerabilities found.
+Earlier analyzer incompatibilities retained/resolved without suppression.
+New package12993233270 producer6aad7448/run41090381338/job124182417709:
+262source blobs/10payloads/exact644-755 modes/config/all layers/binary independently
+verified; ELF buildinfo1.27.3/SDK1.7.0, SBOM36components, full severity report0.
+Image2321c66f…, archive77178a7e… . Old1.26.10 package and new first artifact12993555804
+(group-writable source modes664/775) remain historical/excluded from delivery.
+Central evidence on PR50: evidence/mcp-go127-source-and-package-qualified-20261030.json
+and evidence/mcp-go127-offline-package-readback-20261030.json. Publisher trust,
+current private review/admission, full cohort and target E2E remain OPEN.
 No target authority/grant/budget/replay/reset or M2 acceptance follows.
 
 Sourcec62d0b2156e43943a50e13995092566c9fc99fb3 protocol push41039846376/
@@ -17,7 +27,13 @@ job124009671934 and PR41039855443/job124009703393:365tests/43suites PASS,
 zero skips, all final reports read. Includes6selected Registry/MCP image cases
 using real archives/Ed25519/files, modeled Engine/CLI, durable O_EXCL dispatch
 that denies second load even after deliberate mutable-record regression. Other
-cohort sections separately owned/inert fixtures; native image CLI/full cohort OPEN.
+cohort sections separately owned/inert fixtures; full cohort OPEN.
+Native image CLI source9c93274f PASS push41090657018/job124183350825 and
+PR41090667765/job124183389246; final logs read. Actual Docker29.8.1/Engine/CLI,
+two owned loads, lost real reply read-reconciled, repeat leaves journals unchanged,
+revocation blocks. Parent/application/package review synthetic, no application
+container started. Initial fixture import-path/root-binary-ancestry errors retained;
+fixed only isolated CI setup, no production custody guard relaxed.
 Native worker PR41039855426/job124009703075 and native provider PR41039855535/
 job124009704662 PASS separately, final reports read. Worker application admissions
 synthetic/provider Docker create-start modeled. Combined real provider/worker,

@@ -100,21 +100,63 @@
     "engineAndCliEffects": "MODELED",
     "realArchivesEd25519AndJournals": true,
     "ciQualification": "QUALIFIED_AT_C62D0B21_365_TESTS_43_SUITES",
-    "nativeImageCliQualified": false,
+    "nativeImageCliQualified": true,
     "fullCohortProven": false,
     "historicalFiveImageSourceUnchanged": true,
-    "durableDispatchBlocksDeliberateMutableRecordRegression": true
+    "durableDispatchBlocksDeliberateMutableRecordRegression": true,
+    "nativeQualification": {
+      "sourceCommit": "9c93274f22ffe8215cba7f5077a12fc5acd3d790",
+      "push": {
+        "run": 41090657018,
+        "job": 124183350825,
+        "conclusion": "success"
+      },
+      "pullRequest": {
+        "run": 41090667765,
+        "job": 124183389246,
+        "conclusion": "success"
+      },
+      "finalReportsRead": true,
+      "realEngineCliArchiveIdentity": true,
+      "ownedLoads": 2,
+      "lostReplyReconciledWithoutReload": true,
+      "secondApplyLeavesJournalsUnchanged": true,
+      "revocationBlocksFurtherWork": true,
+      "syntheticParentApplicationAndPackageReview": true,
+      "applicationContainersStarted": 0,
+      "fullCohortProven": false
+    },
+    "nativeFixtureFailures": [
+      {
+        "sourceCommit": "5bdb44a6037797b238cc99bdb278fb315c40a33a",
+        "run": 41089508763,
+        "job": 124179396571,
+        "cause": "ISOLATED_FIXTURE_MISSING_EXISTING_MODULE_IMPORT_PATH",
+        "productionEffects": 0
+      },
+      {
+        "sourceCommit": "d42b1696667d7fc5412d672c5229fba1a0cb5485",
+        "run": 41089896585,
+        "job": 124180726674,
+        "cause": "RUNNER_WRITABLE_OPT_ANCESTRY_REJECTED_BY_EXISTING_PRODUCTION_CUSTODY_GUARD",
+        "fix": "EXACT_DOCKER_BINARY_COPY_IN_ROOT_CUSTODIED_DISPOSABLE_CI_TREE",
+        "productionGuardWeakened": false
+      }
+    ]
   },
   "mcpMinorBaselineDecision": {
     "status": "APPROVED_OWNER_CURRENT_STABLE_SUPPORTED_GO",
     "decisionId": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
     "originalPetGoLine": "1.25",
     "resolvedCurrentStableGo": "1.27.3",
-    "mcpSuccessorSource": "5b4dc238d026d021d2d6d1600b38172c5afed708",
-    "mcpSourceQualification": "PENDING",
-    "mcpNewPackageRequired": true,
+    "mcpSuccessorSource": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+    "mcpSourceQualification": "PASS_FULL_CI_PUSH_AND_PR_WITH_STATED_SCOPE",
+    "mcpNewPackageRequired": false,
     "decision": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
-    "runtimeDeliveryAllowed": false
+    "runtimeDeliveryAllowed": false,
+    "mcpPackageArtifact": 12993233270,
+    "mcpPackageImage": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+    "qualificationEvidence": "https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/mcp-go127-source-and-package-qualified-20261030.json"
   },
   "latestSeparateNativeProofs": {
     "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",

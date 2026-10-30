@@ -335,17 +335,25 @@ root and minimal environment. No old five-image intake, source closure or action
 is repinned/replayed. Remaining cohort sections have their own owners and do not
 become admitted by this import receipt. Six cases pass with real crypto,
 archives and journals plus modeled Engine/CLI. Sourcec62d0b21 passed365tests/43suites
-on push and PR, no skips, final reports read. Native image CLI/full current
-cohort proof remains open.
+on push and PR, no skips, final reports read. Native CLI qualification at
+source9c93274f passed push41090657018 and PR41090667765: actual Docker29.8.1,
+two real loads, one lost load reply read-reconciled, unchanged second-apply
+journals and revocation denial. Parent/application/package context is synthetic;
+no application container runs and full current cohort remains open. Initial CI
+import-path and writable-/opt custody failures were corrected in fixture setup
+only; production guards are unchanged.
 
 Owner decision2026-10-30 approves the current stable supported Go release under
 exact version/checksum and all existing gates. Central controlled addendum on PR50:
 `docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md`.
-Initial resolved version1.27.3; MCP5b4dc238 build/CI/verify pins and official
-distribution custody are under qualification. SDK1.7.0/contracts/original DOCX
+Initial resolved version1.27.3; MCP9539cbb4 full CI passed on push and PR,
+including exact official distribution checksum, Staticcheck/nilness/current
+official pinned govulncheck. Corrected package12993233270 has independent
+262blob/10payload/modes/config/layer/binary/ELF readback, SBOM36components and
+all-severity scan0; details on PR50. SDK1.7.0/contracts/original DOCX
 unchanged. No renewed approval needed for routine Go-only updates. Old1.26.10
-package remains historical; a new source/build/package and current private
-admission are required. This decision grants no runtime authority or M2 acceptance.
+package remains historical. New source/build/package are acquired in their
+stated scope; current private review/admission and full cohort remain required. This decision grants no runtime authority or M2 acceptance.
 
 The sixth selected-image case deliberately regresses only a disposable mutable
 journal: the separate O_EXCL dispatch still blocks another CLI load. This proves
