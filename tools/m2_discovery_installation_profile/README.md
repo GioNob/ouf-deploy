@@ -459,3 +459,33 @@ real 503/Retry-After/backoff/reconstruction proof passes on push and PR at
 local `MCP_INVOKING_RECORD_DRIFT` remains unresolved; an isolated passing rerun
 is not a causal fix. The lost-reply protocol test now requires the exact transport
 error and proves the expected dispatch happened before it accepts reconciliation.
+
+## Selected runtime composition and Gateway dispatch custody
+
+`selected_runtime.py` composes the existing image, Registry/provider/worker,
+Gateway and single-MCP owners under the same parent, child, Engine, transition
+and reviewed component. It imports the two images, invokes Registry verification
+up to its release barrier, then installs Gateway and MCP. The Registry history
+must remain identical while those owners run. Completed imports and both runtime
+proofs are rechecked with read-only verifiers before the selected-owner receipt.
+No new journal, initialization, retry loop, clock/budget, authority, admission
+flag or producer-release method is introduced. Owner pauses propagate. The
+receipt deliberately does not assert full-cohort admission, physical quiescence,
+capability publication, target installation or application E2E.
+
+The discovery Gateway component is v2: each of its seven lifecycle dispatches
+requires an exclusive fsynced marker independently of the mutable owner journal,
+bound to the component and both authority hashes. Completed markers are read
+back on every record read. A claimed unknown effect only reconciles; deliberate
+journal regression cannot send another POST. The original GatewayRuntime source
+and historical scope/journals remain unchanged. Old v1 review values do not match
+this new component; it never silently adopts or repairs them.
+
+The controlled local pre-fix regression fails because a second connect is not
+blocked after a deliberate journal rewind. The successor covers retained marker
+bytes/inodes, lost start and owner reconstruction, changed marker denial,
+unclaimed writes and invocation fencing. These component tests use actual
+Ed25519/files/journals with modeled Docker/Admin HTTP. The selected composition
+suite models owner leaves and proves only ordering/binding/failure propagation.
+Combined native composition, the complete current cohort and target delivery
+remain separate mandatory qualifications.

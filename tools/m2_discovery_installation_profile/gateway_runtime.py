@@ -4,24 +4,27 @@ Uses the actual existing AggregateAction and GatewayRuntime, not an authority
 adapter or historical recovery adoption. Parent revocation is checked by the
 overridden guard on every internal owner step. No keys, authority or release.
 """
-import copy
+import copy,os
 from pathlib import Path
-from .custody_capture import decode,digest,require
+from .custody_capture import decode,digest,encoded,require
 from .cohort_images import DiscoveryImages,checked_component
 from .parent_authority import DiscoveryParentAuthority
-from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime,runtime_scope,proposed_transport
+from tools.chatbot_file_cohort.gateway_runtime import GatewayRuntime,runtime_scope,proposed_transport,STEPS
 from tools.chatbot_file_cohort.gateway import NamespaceAdmin,apisix_runtime_binding
 from tools.semantic_policy_token_owner.owner_installation import AggregateAction
 from tools.semantic_lease_recovery.recovery_journal import Journal
+from tools.semantic_registry_operational_owner.installation import directory,new_file
+from tools.semantic_registry_operational_owner.guard import private_json
 
 
 def component(plan,journal_directory):
     path=Path(journal_directory)
     require(path.is_absolute() and str(path)==str(journal_directory) and '..' not in path.parts,
         'EXACT_DISCOVERY_GATEWAY_JOURNAL_DIRECTORY_REQUIRED')
-    return {'schema':'ouf.discovery-gateway-runtime-component.v1','runtime':runtime_scope(plan),
+    return {'schema':'ouf.discovery-gateway-runtime-component.v2','runtime':runtime_scope(plan),
         'journalDirectory':str(path),'sameRegistryParentAndChildRequired':True,
-        'historicalRecoveryAdoptionAllowed':False,'automaticReplayAllowed':False}
+        'historicalRecoveryAdoptionAllowed':False,'automaticReplayAllowed':False,
+        'maximumDispatchAttemptsPerStep':1,'dispatchIndependentOfMutableJournal':True}
 
 
 class DiscoveryGatewayRuntime(GatewayRuntime):
@@ -60,6 +63,35 @@ class DiscoveryGatewayRuntime(GatewayRuntime):
         self.images.guard()
         self.parent.guard('cohortInstallation',self.cohort_component)
         super().guard()
+
+    def dispatch_claim(self,step):
+        require(step in STEPS and step!='ready','EXACT_DISCOVERY_GATEWAY_LIFECYCLE_STEP_REQUIRED')
+        return {'schema':'ouf.discovery-gateway-effect-dispatch.v1',
+            'componentHash':digest(self.discovery_scope),'parentAuthorityHash':self.parent.sha,
+            'childAuthorityHash':self.action.authority_hash,'step':step,'attempt':1,
+            'automaticReplayAllowed':False}
+
+    def record(self):
+        value=super().record()
+        for effect in value['effects']:
+            if effect['step']=='ready':continue
+            path=self.journal.root/(effect['step']+'-dispatch.json')
+            if effect['state']=='APPLIED' or os.path.lexists(path):
+                require(private_json(path)==self.dispatch_claim(effect['step']),
+                    'DISCOVERY_GATEWAY_DISPATCH_CUSTODY_OR_SCOPE_DRIFT')
+        return value
+
+    def mutation(self,step):
+        self.guard();before=self.record();index=before['nextStep']
+        require(0<=index<len(STEPS) and step==STEPS[index] and step!='ready'
+            and len(before['effects'])==index+1 and before['effects'][-1]['state']=='CLAIMED',
+            'CONSUMED_DISCOVERY_GATEWAY_STEP_REQUIRED_BEFORE_DISPATCH')
+        claim=self.dispatch_claim(step)
+        # This exclusive, fsynced marker survives regression of recovery.json.
+        # Missing/partial effects remain reconciliation-only, never another POST.
+        with directory(self.journal.root) as fd:new_file(fd,step+'-dispatch.json',encoded(claim))
+        require(self.record()==before,'DISCOVERY_GATEWAY_DISPATCH_INVOKING_RECORD_DRIFT')
+        self.guard();return super().mutation(step)
 
     def transport(self):
         self.guard();self.generation()

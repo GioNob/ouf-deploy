@@ -108,6 +108,19 @@ class Images(unittest.TestCase):
         with self.assertRaises(ValueError):owner.initialize()
         self.assertEqual(calls,[])
 
+    def test_readonly_verification_requires_complete_imports_and_never_loads(self):
+        owner,auth,images,calls,cli,_=self.fixture();owner.initialize()
+        with self.assertRaisesRegex(ValueError,'COMPLETED_DISCOVERY_IMAGE_IMPORT_REQUIRED'):owner.verify()
+        self.assertEqual(calls,[])
+        with patch.object(m,'subprocess',types.SimpleNamespace(run=cli,DEVNULL=m.subprocess.DEVNULL)):
+            proof=owner.apply()
+        history={k:j.read() for k,j in owner.journals.items()};self.assertEqual(owner.verify(),proof)
+        self.assertEqual({k:j.read() for k,j in owner.journals.items()},history)
+        row=owner.plan['images'][0];journal=owner.journals['semantic']
+        auth.write(journal.record,m.encoded(m.Import.initial(row['audit'],owner.parent.sha)))
+        with self.assertRaisesRegex(ValueError,'COMPLETED_DISCOVERY_IMAGE_IMPORT_REQUIRED'):owner.verify()
+        self.assertEqual(calls,list(m.MODULES))
+
     def test_regressed_mutable_record_cannot_bypass_durable_load_dispatch(self):
         owner,auth,images,calls,cli,_=self.fixture();owner.initialize()
         def fail(args,**kwargs):calls.append('failed');return types.SimpleNamespace(returncode=1)

@@ -152,3 +152,17 @@ class DiscoveryImages:
                 evidence.append({'module':row['module'],'evidenceHash':digest(proof)})
         return {'schema':'ouf.discovery-selected-image-import-receipt.v1','scopeHash':digest(self.scope),'images':evidence,
             'fullCohortProven':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}
+
+    def verify(self):
+        """Current read-only custody of completed imports; never dispatch load."""
+        self.guard();evidence=[]
+        for row in self.plan['images']:
+            journal=self.journals[row['module']];initial=Import.initial(row['audit'],self.parent.sha)
+            state=Import(journal,initial['contextHash']).read(row['audit'])
+            require(state['state']=='VERIFIED','COMPLETED_DISCOVERY_IMAGE_IMPORT_REQUIRED_FOR_READONLY_VERIFICATION')
+            proof=loaded(row['audit'],self.inspect(runtime_image_id(row['audit'])))
+            require(digest(proof)==state['nativeEvidenceHash'],'CURRENT_VERIFIED_DISCOVERY_IMAGE_EVIDENCE_REQUIRED')
+            evidence.append({'module':row['module'],'evidenceHash':digest(proof)})
+        self.guard()
+        return {'schema':'ouf.discovery-selected-image-import-receipt.v1','scopeHash':digest(self.scope),'images':evidence,
+            'fullCohortProven':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}

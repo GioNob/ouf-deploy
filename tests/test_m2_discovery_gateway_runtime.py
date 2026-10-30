@@ -12,6 +12,7 @@ import test_chatbot_cohort_gateway_runtime as gateway_fixture
 from tools.m2_discovery_installation_profile import gateway_runtime as m
 from tools.m2_discovery_installation_profile.gate_peer_window import GatePeerWindow
 from cutover_authority import CutoverAuthority
+from engine_creation import CreationDenied
 
 
 class Gateway(unittest.TestCase):
@@ -85,6 +86,56 @@ class Gateway(unittest.TestCase):
             with self.assertRaises(Exception):owner.apply()
         self.assertEqual(sum(c[0]=='connect' for c in native.calls),1)
         self.assertEqual(owner.record()['effects'][-1]['state'],'CLAIMED')
+
+    def test_regressed_mutable_journal_cannot_dispatch_a_second_connect(self):
+        owner,native,auth=self.fixture();native.omit_effect='connect'
+        with self.assertRaisesRegex(ValueError,'NETWORK_DRIFT'):owner.apply()
+        row=owner.record();self.assertEqual(row['effects'][-1]['step'],'connect')
+        self.assertEqual(row['effects'][-1]['state'],'CLAIMED')
+        row['effects'].pop();row['version']-=1
+        # Deliberate regression in the disposable fixture. There is no runtime
+        # repair/reset path: independent dispatch custody must survive this.
+        auth.write(owner.journal.record,image_fixture.m.encoded(row))
+        with self.assertRaises(FileExistsError):owner.apply()
+        self.assertEqual(sum(c[0]=='connect' for c in native.calls),1)
+
+    def test_all_dispatches_bind_both_authorities_and_remain_unchanged_on_reentry(self):
+        owner,native,_=self.fixture();owner.apply()
+        markers={step:owner.journal.root/(step+'-dispatch.json') for step in m.STEPS if step!='ready'}
+        before={step:(p.stat().st_ino,p.read_bytes()) for step,p in markers.items()}
+        self.assertEqual(len(before),7)
+        for step,path in markers.items():
+            self.assertEqual(m.private_json(path),owner.dispatch_claim(step))
+            self.assertEqual(m.private_json(path)['parentAuthorityHash'],owner.parent.sha)
+            self.assertEqual(m.private_json(path)['childAuthorityHash'],owner.action.authority_hash)
+        owner.apply()
+        self.assertEqual({step:(p.stat().st_ino,p.read_bytes()) for step,p in markers.items()},before)
+        self.assertEqual(len(native.calls),7)
+
+    def test_lost_start_reply_reconstructs_owner_without_another_dispatch(self):
+        owner,native,_=self.fixture();native.lose_ack='start'
+        with self.assertRaisesRegex(CreationDenied,'ENGINE_OUTCOME_REQUIRES_RECONCILIATION'):owner.apply()
+        marker=owner.journal.root/'start-dispatch.json';before=(marker.stat().st_ino,marker.read_bytes())
+        self.assertEqual(owner.record()['effects'][-1]['step'],'start')
+        resumed=m.DiscoveryGatewayRuntime(images=owner.images,plan=owner.plan,journal=owner.journal,boot=owner.boot)
+        resumed.transport=owner.transport;resumed.apply()
+        self.assertEqual(sum(c[0]=='start' for c in native.calls),1)
+        self.assertEqual((marker.stat().st_ino,marker.read_bytes()),before)
+
+    def test_changed_completed_marker_blocks_further_work(self):
+        owner,native,auth=self.fixture();owner.apply();count=len(native.calls)
+        marker=owner.journal.root/'connect-dispatch.json';value=m.private_json(marker)
+        value['parentAuthorityHash']='f'*64;auth.write(marker,m.encoded(value))
+        with self.assertRaisesRegex(ValueError,'DISCOVERY_GATEWAY_DISPATCH_CUSTODY_OR_SCOPE_DRIFT'):owner.apply()
+        self.assertEqual(len(native.calls),count)
+
+    def test_unclaimed_direct_mutation_and_concurrent_invocation_cannot_dispatch(self):
+        owner,native,_=self.fixture();before=owner.record()
+        with self.assertRaisesRegex(ValueError,'CONSUMED_DISCOVERY_GATEWAY_STEP_REQUIRED'):owner.mutation('start')
+        with owner.journal.invocation():
+            with self.assertRaises(BlockingIOError):owner.apply()
+        self.assertFalse(list(owner.journal.root.glob('*-dispatch.json')))
+        self.assertEqual(owner.record(),before);self.assertEqual(native.calls,[])
 
     def test_completed_owner_rejects_a_new_gateway_generation(self):
         owner,native,_=self.fixture();owner.apply();actual=native.find('ouf-apisix')
