@@ -157,3 +157,30 @@ publisher, registration, systemd and Docker probe. It retires only an unused CI
 seed before installing into fresh destinations. Previous Registry/provider
 application admission remains synthetic: this proves worker composition, not
 fresh provider admission, target installation, boot/rotation or CSV E2E.
+
+
+## Provider expectations before creation and one owned Engine create
+
+`provider_installation_template.py` reviews the complete provider request,
+independent frame template/launch, package/image/rootfs and explicit native NIC
+allocation before new identities exist. Only the Registry peer's CID and full
+OCI hash have two closed transport slots. Pure materialization reuses the full
+frame compiler, with no observed OCI input or admission flag. A static v2 node
+recipe keeps worker expectations stable while concrete artifact/transport hashes
+are derived after the owning creation receipts exist. This template alone does
+not authenticate those receipts or bind the Registry peer to the gate owner.
+
+`provider_creation.py` shares the typed parent, Engine and Registry gate window.
+It checks the current running wait gate, claims one exact new name/request and
+dispatches one Engine create. No start, key, broker, old-provider mutation or
+automatic retry is available. A lost result is observed by the exact owned name
+and created configuration; absence remains UNKNOWN. The same retained creation
+can be reconciled after the finally block has safely closed the Registry window.
+Stored creation ownership is available later without claiming running admission.
+
+The optional native creation fixture uses real Docker creates and root journal/
+signature/gate checks. Its named-runtime alias is never started; application and
+rootfs expectations remain synthetic. It qualifies creation only, not actual v4
+provider admission or the complete installer. Profile issuance/publication,
+reviewed wrapper switch, one start, signed admission and worker composition are
+separate remaining owners, not hidden callbacks in the creation primitive.

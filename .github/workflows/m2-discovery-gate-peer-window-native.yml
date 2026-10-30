@@ -1,9 +1,9 @@
 name: M2 parent-owned native gate peer window
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/gate_peer_window.py','tools/m2_discovery_installation_profile/parent_authority.py','tests/test_m2_discovery_parent_authority.py','tests/qualify_m2_discovery_gate_peer_window_native.py','.github/workflows/m2-discovery-gate-peer-window-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/gate_peer_window.py','tools/m2_discovery_installation_profile/provider_creation.py','tools/m2_discovery_installation_profile/provider_installation_template.py','tests/fixtures/m2_provider_creation_native.py','tests/test_m2_provider_installation_template.py','tests/test_m2_provider_creation.py','tools/m2_discovery_installation_profile/parent_authority.py','tests/test_m2_discovery_parent_authority.py','tests/qualify_m2_discovery_gate_peer_window_native.py','.github/workflows/m2-discovery-gate-peer-window-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/gate_peer_window.py','tools/m2_discovery_installation_profile/parent_authority.py','tests/test_m2_discovery_parent_authority.py','tests/qualify_m2_discovery_gate_peer_window_native.py','.github/workflows/m2-discovery-gate-peer-window-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/gate_peer_window.py','tools/m2_discovery_installation_profile/provider_creation.py','tools/m2_discovery_installation_profile/provider_installation_template.py','tests/fixtures/m2_provider_creation_native.py','tests/test_m2_provider_installation_template.py','tests/test_m2_provider_creation.py','tools/m2_discovery_installation_profile/parent_authority.py','tests/test_m2_discovery_parent_authority.py','tests/qualify_m2_discovery_gate_peer_window_native.py','.github/workflows/m2-discovery-gate-peer-window-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -31,7 +31,8 @@ jobs:
             /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
             --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
             --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
-            --containerd=/run/containerd/containerd.sock
+            --containerd=/run/containerd/containerd.sock \
+            --add-runtime=ouf-fixture-admitted=/opt/ouf-docker-29/runc
           for OUF_DOCKER_POLL in $(seq 1 60); do
             if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
             sleep 1
@@ -50,3 +51,5 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_gate_peer_window_native.py"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_gate_peer_window_native.py" --provider-creation

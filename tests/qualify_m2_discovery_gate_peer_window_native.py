@@ -22,7 +22,7 @@ def cli(*args):
     return result.stdout.strip()
 
 
-def main():
+def main(provider_creation=False):
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert cli('version','--format','{{.Server.Version}}')=='29.8.1'
     auth=signed.Parent();auth.setUp();root=auth.root;tag=uuid.uuid4().hex[:12]
@@ -113,16 +113,21 @@ def main():
         except ValueError:pass
         assert not any(method=='POST' for method,_ in calls[before:])
 
+        provider_results=[]
+        if provider_creation:
+            from fixtures.m2_provider_creation_native import qualify
+            provider_results=qualify(auth,window,engine,image,network,nid,ids,cli)
         final=engine.inspect(transition);assert final['State']['Paused'] is True
         assert engine.runtime_binding(final)==initial_binding
         assert process.observe(final['State']['Pid'])['generation']==initial_generation
         assert process.observe(final['State']['Pid'])['processKind']=='GATE_WAITING'
-        effects=[path.rsplit('/',1)[-1] for method,path in calls[mutations_start:] if method=='POST']
-        assert effects==['unpause','pause']*3,effects
+        effects=[path.rsplit('/',1)[-1] for method,path in calls[mutations_start:] if method=='POST' and path.endswith(('/unpause','/pause'))]
+        assert effects==['unpause','pause']*(3+len(provider_results)),effects
         assert transition.read()['nextPhase']==6
         print(json.dumps({'schema':'ouf.m2-discovery-gate-peer-window-native-ci.v1','dockerVersion':'29.8.1',
             'realParentAndChildEd25519Signatures':True,'realPrivateJournals':True,
-            'nativeSameGenerationGateObservation':True,'nativeUnpausePausePairs':3,
+            'nativeSameGenerationGateObservation':True,'nativeUnpausePausePairs':3+len(provider_results),
+            'providerCreationResults':provider_results,'providerCreationFixtureUsesUnstartedRuntimeAlias':provider_creation,
             'providerFailureContained':True,'ambiguousUnpauseContainedWithoutReplay':True,
             'nonRootCapabilitiesEmptyAndNoNewPrivileges':True,'javaExecOrSignalIssued':False,
             'syntheticReviewAndTransitionPredecessors':True,'providerAdmissionProven':False,
@@ -133,4 +138,6 @@ def main():
         auth.doCleanups()
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    assert sys.argv[1:] in ([],['--provider-creation'])
+    main(provider_creation=sys.argv[1:]==['--provider-creation'])

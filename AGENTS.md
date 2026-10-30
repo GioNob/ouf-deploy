@@ -1,3 +1,30 @@
+# CURRENT — target runtime receipt consumed; provider template and one-use creation under qualification
+
+30 October 2026. Owner receipt READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED,
+complete=true/OperatorExit0/DeliveryExit0,4GET/18metadata/469662bytes; current
+adapterv4/Brokerv1/node-attestorv4/approvalv1/preparer-templatev1. Provider still
+stopped. Source runtime7894d0e9 reproduces the existing hash-pinned broker repair;
+no independent VPS log read, admission or runtime authority inferred. Receipt:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/m2-provider-runtime-contract-target-20261030.json
+The reader scope/code/log are CONSUMED. Do not send or rerun its old command.
+
+Provider template now fixes request/independent OCI/rootfs/package/native NICs
+before new identities, permitting only two closed Registry peer identity slots.
+A v2 static node recipe keeps worker expectations independent of later CIDs;
+materialization grants no authority. New typed ProviderCreation shares parent,
+Engine and real gate window, owns one create/name/claim, reconciles lost replies
+without retransmission (also after window closure), and starts/adopts nothing.
+25 local cases PASS; native creation qualification pending. Native fixture's
+named-runtime alias is NEVER started and is not v4 admission evidence. Actual
+profile issuance/publication, runtime switch/start/admission, full provider-child
+composition, cohort and target CSV E2E remain OPEN. Frozen worker capsule unchanged.
+Continue autonomously; no new target command ready. CSV→governed processing→UDP;
+UDP capabilities on loaded objects are separately qualified, search not a loading
+phase. Same Farmacie61rows/10columns and STRING/OPEN decisions retained. M1/G4
+retained; M2/G5–G7/eight stability/two clients OPEN. No runtime apply, authority/
+grant/budget reset, replay, upload/job/acquisition, merge, agents or automation.
+Older CURRENT headers/commands are historical for next-step selection.
+
 # CURRENT — worker sequence qualified natively; provider target admission still open
 
 29 October 2026. Worker ATTEST→FILES→REGISTER→START now has a parent-reviewed
