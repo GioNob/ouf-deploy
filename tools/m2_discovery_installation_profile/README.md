@@ -286,3 +286,21 @@ publication/E2E remain open. The prior local concurrent row-drift/signature
 observation remains an unresolved local fixture concern; fresh CI success alone
 does not establish its cause. CSV loading ends at UDP materialization and all
 row outcomes. Capabilities on loaded UDP objects are qualified separately.
+
+
+Late-worker sourcec6227103 passed356tests/42suites on both events, no skips;
+safe-diagnostic successor eefcfb32 retained that protocol result. Native late
+materialization passed push41030898590 and PR41030907680 (logs read): actual
+Docker metadata capture, one fresh fence, real signer/publication/manager/start,
+lost-start reconciliation and the unchanged runtime sandbox/recovery probes.
+Its application admissions remain synthetic. The firstc622push native attempt
+returned UNKNOWN at final worker observation despite ACTIVE state; cause remains
+unestablished. Safe CI-only diagnostics preserve denial and print only codes and
+source frame names. Subsequent success is not cause resolution or stability proof.
+
+The newer source cross-checks materialized-provider and worker Registry recipe,
+kernel,DNS,coordination binding/journal,nft command and common-lock inode before
+materialization. New boot cannot reconstruct/rearm retained material. Nine late
+materialization cases and seven composition cases pass locally; these newer
+binding/boot changes await CI. Actual v4 provider and late worker native proofs
+remain separate; their complete common cohort is still open.

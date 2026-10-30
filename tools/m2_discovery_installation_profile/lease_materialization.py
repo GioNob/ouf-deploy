@@ -31,6 +31,23 @@ from transition_journal import PHASES
 
 PROVIDERS=(RetainedProviderAdmission,MaterializedProviderAdmission)
 
+def paired_native_inputs(template,profile_scope,registry_request,kernel_lock_identity):
+    """Cross-check already reviewed inputs; never admit observations or sign."""
+    t=recompile(template);r=t['recipeTemplate'];recipe=profile_scope['registryRecipe']
+    prep=profile_scope['preparerTemplate']
+    require(profile_scope.get('schema')=='ouf.discovery-provider-profile-installation-scope.v1'
+        and t['sourceClosureHash']==recipe['sourceClosureHash']
+        and t['expectedImages']['registry']==registry_request['Image']
+        and t['expectedNodeProfiles']['registry']=={'nodeRecipeHash':digest(recipe),
+            'imageConfigurationHash':recipe['imageConfigurationHash'],'rootfsSealHash':digest(recipe['expectedRootfsSeal'])},
+        'SAME_INDEPENDENT_REGISTRY_PROFILE_FOR_PROVIDER_AND_WORKER_REQUIRED')
+    require(r['kernel']==prep['kernel'] and r['dns']==prep['dns'] and r['binding']==prep['coordinationBinding']
+        and r['coordinationJournal']==prep['coordinationJournal'] and r['leaseCommonLock']==prep['lockFile']
+        and type(kernel_lock_identity) is list and len(kernel_lock_identity)==9
+        and r['leaseCommonLockIdentity']==kernel_lock_identity[:6]
+        and r['nft']['path']==prep['commands']['nft'] and r['nft']['sha256']==prep['commandHashes']['nft'],
+        'SAME_PROVIDER_AND_WORKER_NATIVE_KERNEL_DNS_COORDINATION_AND_LOCK_REQUIRED')
+
 def stable_native(value):
     return {k:value[k] for k in DOCKER_FIELDS}|{'RestartCount':value['RestartCount'],
         'State':{k:value['State'][k] for k in ('Pid','Running','Paused','Restarting','StartedAt')}}
@@ -83,6 +100,11 @@ class WorkerMaterialization:
             require(self.node.engine is creation.engine and self.node.authority is creation.window.child
                 and self.node.raw==creation.window.raw and self.node.recipe==self.provider.issuer.scope['registryRecipe'],
                 'SAME_NEW_PROVIDER_AND_REGISTRY_INSTALLATION_REQUIRED')
+            require(creation.component.get('schema')=='ouf.discovery-composed-provider-installation-scope.v2',
+                'COMPLETE_REVIEWED_PROVIDER_SEQUENCE_REQUIRED_FOR_LATE_WORKER')
+            self.provider.issuer.check_scope()
+            paired_native_inputs(self.template,self.provider.issuer.scope,self.node.request,
+                creation.component['installation']['commonLockIdentity'])
         start=start_scope(self.template,unit_name=self.start_scope['unitName'],manager=self.start_scope['manager'],
             directory=self.start_scope['journalDirectory'])
         bare=publication_scope(self.template,start,self.publication)
@@ -210,6 +232,8 @@ class WorkerMaterialization:
         path=self.probe.root/(owned['snapshotHash']+'.json')
         value=decode(protected_file(path,1048576,expected=owned['snapshotHash'],modes=(0o600,)))
         require(inode(path)==owned['snapshotIdentity'],'OWNED_WORKER_MATERIALIZATION_SNAPSHOT_INODE_DRIFT')
+        require(value['bootId']==boot_id('/proc/sys/kernel/random/boot_id'),
+            'ORIGINAL_WORKER_MATERIALIZATION_BOOT_REQUIRED_NO_REARM')
         lock=self.template['configurationTemplate']['commonInvocationLock']
         with observed_logical_inode(lock,owned['logicalLockIdentity']):
             proposal=materialize(self.template,value,owned['logicalLockIdentity'])

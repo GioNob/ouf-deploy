@@ -1,0 +1,68 @@
+{
+  "schema": "ouf.m2-discovery-installation-composition-source-qualification.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "protocol": {
+    "sourceCommit": "c622710396532b3ab08703df1348bdd903e12e29",
+    "testsPerEvent": 356,
+    "suitesPerEvent": 42,
+    "skips": 0,
+    "push": {
+      "run": 41030639884,
+      "job": 123979277726,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41030648972,
+      "job": 123979307642,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
+  },
+  "nativeLateWorker": {
+    "sourceCommit": "eefcfb325d8d3363b89c2e8b34ae26f8c44f9ba3",
+    "push": {
+      "run": 41030898590,
+      "job": 123980116054,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41030907680,
+      "job": 123980145228,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true,
+    "actualDockerCaptureAndFreshFence": true,
+    "actualEd25519PublicationRegistrationStart": true,
+    "actualSystemdDnsNft": true,
+    "lostManagerStartReplyReconciledWithoutSecondStart": true,
+    "frozenRuntimeModules": 37,
+    "syntheticApplicationAdmissionsAndAuthority": true
+  },
+  "retainedFailure": {
+    "sourceCommit": "c622710396532b3ab08703df1348bdd903e12e29",
+    "run": 41030639754,
+    "job": 123979277863,
+    "outcome": "UNKNOWN_AT_FINAL_WORKER_OBSERVATION_WHILE_WORKER_ACTIVE",
+    "causeEstablished": false,
+    "safeCiOnlyDiagnosticsAdded": true,
+    "subsequentSuccessDoesNotProveCauseResolution": true
+  },
+  "newerBindingAndBootDelta": {
+    "localLateMaterializationCases": 9,
+    "localCompositionCases": 7,
+    "ciQualification": "PENDING_SUCCESSOR",
+    "sameRegistryKernelDnsJournalNftAndCommonLockRequired": true,
+    "newBootCannotRearm": true
+  },
+  "realV4ProviderNativeEvidence": "evidence/m2-provider-native-qualified-20261030.json",
+  "combinedRealV4ProviderAndLateWorkerNativeProven": false,
+  "fullCohortProven": false,
+  "bootOrRotationQualified": false,
+  "applicationE2EProven": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

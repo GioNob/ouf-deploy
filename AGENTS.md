@@ -1,3 +1,27 @@
+# CURRENT — late native worker and356/42PASS; shared provider/worker binding checks pending CI
+
+30 October2026. Sourcec6227103 protocol push41030639884/job123979277726
+and PR41030648972/job123979307642:356tests/42suites PASS/0skip, final reports
+read. Diagnosticeefcfb32 PR41030907629/job123980145186 same356/42PASS.
+Native late worker push41030898590/job123980116054 and PR41030907680/
+job123980145228 PASS: actual Docker capture/fresh fence, Ed25519/files, one
+registration/start/lost-reply reconciliation, real systemd/DNS/nft and sealed37
+module capsule. Application admissions/authority remain synthetic in that worker
+fixture; the actual v4 provider proof is separate. Combined current real provider
+and worker/full cohort/target E2E are NOT proven. Firstc622native push failed on
+final UNKNOWN observation despite ACTIVE worker; preserved, cause not established.
+Added safe CI-only observer diagnostics, no production guard relaxation. Later
+PASS did not reproduce the denial and is not proof of its cause or8stability.
+
+Additional current delta requires the same provider/worker kernel,DNS,coordination
+binding/journal,nft and common-lock inode, plus exact independent Registry recipe;
+new boot denies retained material reconstruction/rearm.16new local cases total
+(9late materialization,7composition) PASS; successor CI pending. Complete v2
+provider/worker native composition and concrete private review remain OPEN.
+No target access/apply/authority inferred. Previous CURRENT remains valid subject
+to these newer counts and limits. Continue autonomously, no command ready; no
+replay/reset/grant/budget/upload/job/acquisition/merge/subagents/automation.
+
 # CURRENT — provider v4 native PASS; late worker and installation composition under qualification
 
 30 October 2026, Europe/Rome. Source33a268fc35bf300ded261b1cb132727d26c11113:

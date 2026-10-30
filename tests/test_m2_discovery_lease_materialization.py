@@ -68,6 +68,39 @@ class Materialization(unittest.TestCase):
             owner.prepare_once(intent)
         self.assertFalse((owner.root/'materialization-owned.json').exists())
 
+    def test_new_boot_cannot_reconstruct_or_rearm_the_retained_material(self):
+        owner,intent,auth,_=self.fixture();owner.prepare_once(intent)
+        with patch.object(m,'boot_id',return_value='new-boot'),self.assertRaisesRegex(ValueError,'NO_REARM'):
+            owner.prepared(intent)
+
+    def test_provider_and_worker_must_share_independent_recipe_and_actual_kernel_contract(self):
+        owner,_,_,_=self.fixture();t=owner.template;r=t['recipeTemplate'];recipe=copy.deepcopy(owner.node.recipe)
+        # Pure cross-input checks only. This partial profile is never an issuer
+        # input, native admission or substitute for recompile_scope/check_scope.
+        profile={'schema':'ouf.discovery-provider-profile-installation-scope.v1','registryRecipe':{
+            **recipe,'sourceClosureHash':t['sourceClosureHash']},'preparerTemplate':{
+            'kernel':r['kernel'],'dns':r['dns'],'coordinationBinding':r['binding'],
+            'coordinationJournal':r['coordinationJournal'],'lockFile':r['leaseCommonLock'],
+            'commands':{'nft':r['nft']['path']},'commandHashes':{'nft':r['nft']['sha256']}}}
+        # The Registry recipe must be the exact independent one fixed in t.
+        profile['registryRecipe']=recipe
+        recipe['sourceClosureHash']=t['sourceClosureHash']
+        from tools.m2_discovery_installation_profile import lease_installation_template as templates
+        options={k:t[k] for k in ('sourceClosureHash','expectedImages','expectedNodeProfiles','installationRoot','signingKeyPaths','engineUnit','sandboxRoot')}
+        options['expectedNodeProfiles']=copy.deepcopy(options['expectedNodeProfiles'])
+        options['expectedNodeProfiles']['registry']['nodeRecipeHash']=m.digest(recipe)
+        t=templates.template(t['configurationTemplate'],r,t['python'],**{
+            'source_closure_hash':options['sourceClosureHash'],'expected_images':options['expectedImages'],
+            'expected_node_profiles':options['expectedNodeProfiles'],'installation_root':options['installationRoot'],
+            'signing_key_paths':options['signingKeyPaths'],'engine_unit':options['engineUnit'],'sandbox_root':options['sandboxRoot']})
+        lock=[*r['leaseCommonLockIdentity'],0,1,1];request={'Image':t['expectedImages']['registry']}
+        m.paired_native_inputs(t,profile,request,lock)
+        for field in ('kernel','dns','coordinationBinding','coordinationJournal','lockFile','commands','commandHashes'):
+            wrong=copy.deepcopy(profile);wrong['preparerTemplate'][field]={} if type(wrong['preparerTemplate'][field]) is dict else '/other'
+            with self.assertRaises((ValueError,KeyError)):m.paired_native_inputs(t,wrong,request,lock)
+        with self.assertRaises(ValueError):m.paired_native_inputs(t,profile,request,[*lock[:1],lock[1]+1,*lock[2:]])
+        with self.assertRaises(ValueError):m.paired_native_inputs(t,profile,{'Image':'sha256:'+'f'*64},lock)
+
     def test_replaced_snapshot_and_invalid_reference_are_not_adopted(self):
         for change in ('inode','path'):
             owner,intent,auth,_=self.fixture();owner.prepare_once(intent)
