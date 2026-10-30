@@ -1,3 +1,56 @@
+# CURRENT — Composizione selezionata qualificata; Farmacie conserva il profilo
+
+30 ottobre2026, Europe/Rome. Teatri è completata a passi singoli: riusarne
+componenti e prove per il flusso completo, ripetibile e resiliente di ogni file.
+M1/G4,tecnico8/8,funzionale6/6 restano acquisiti per Teatri; M2 generale rimane
+aperto. Farmacie conserva lo stesso asset/job/profilo SUCCEEDED61righe/10colonne,
+codice ministeriale STRING e10campi OPEN. Nessun nuovo upload/profiling o terza
+acquisizione Teatri. La sequenza ordinaria termina in UDP con esiti per riga;
+search sugli oggetti e verticali/API/scheduler/delta restano successivi.
+
+[PR54](https://github.com/GioNob/ouf-deploy/pull/54), sorgente05456554:
+il coordinatore riusa immagini selezionate, Registry/provider/worker fino alla
+barriera, Gateway e MCP. Stessi parent/child/Engine/transizione/review obbligatori.
+Il lock dedicato della transizione impedisce un rilascio concorrente dei producer
+durante Gateway/MCP; le pause si propagano e lo rilasciano senza dormire.
+Prove finali in sola lettura e cronologia Registry invariata. Nessun nuovo motore
+retry, inizializzazione journal o metodo di rilascio. Barriera logica, non una
+nuova attestazione fisica di quiescenza o dell'intera coorte.
+
+Gateway discovery v2 consuma ogni dispatch con marker esclusivo/fsynced separato
+dal journal mutabile; riprodotta la regressione precedente del secondo connect,
+poi testata la correzione e la ricostruzione dopo start con risposta persa.
+Executor discovery vincola i due campi runtime del child al parent corrente
+autenticato; campi sconosciuti sono negati prima del claim. Il percorso constructor
+è testato con firme/journal reali. La CI intermedia4b71 ha rilevato il byte drift
+dell'executor condiviso rispetto all'artefatto immutabile: file ripristinato
+esattamente, specializzazione solo discovery, artefatto/test/pin intatti.
+Tutti142moduli congelati coincidono; esecuzione/CAS/riconciliazione ereditati.
+
+Protocollo05456554 PASS432test/50suite/zero skip per evento:
+push41133846758/job124331281185 e PR41133853136/job124331301342;
+entrambi i report finali letti. Qualifica dei componenti/composizione, non E2E target.
+65test locali pertinenti più7test artefatti PASS. Immagini native PR41133852958/
+job124331301145 e MCP PR41133853046/job124331301207 PASS/report finali letti:
+Docker29.8.1, due load senza replay, start perso riconciliato dopo ricostruzione,
+503/RetryAfter→204/backoff e tentativi originali. App MCP HTTP statica e
+parent/package/admission sintetici: non prova del vero MCP/coorte/composizione
+nativa completa. CI recovery41133852937 PASS586test/64suite con2skipTLS
+esplicitamente subordinati a scope nativo; altri2testDB e3paused-generation
+PASS; tutti report finali letti. Anomalie locali MCP/worker precedenti restano
+senza causa dimostrata, nessuna guardia indebolita.
+
+[Evidenza](../../evidence/m2-discovery-selected-runtime-qualified-20261030.json)
+e [checkpoint e prossimo lavoro](OUF_M2_SELECTED_RUNTIME_20261030.md).
+Prossima prova concreta: provider v4 e worker distinto reali insieme sullo stesso
+Registry/Engine/parent/child; poi coorte corrente completa e TLS/IAM/DB/fencing/
+trust, compiler/review privata/CLI sigillati e pubblicazione coordinata.
+Restano discovery reale Farmacie, mapping pinned/THS, Ingestion/UDP/esiti61righe,
+reimport invariato, fault/ripresa/cambio chat, boot/rotazione e due client.
+M2/G5–G7/24AT/8UX/8stabilità OPEN. Nessun comando operatore nuovo pronto:
+scope/input precedenti consumati. Nessuna nuova authority/grant/budget/reset/
+replay/merge/accettazione o effetto target dedotti. Header seguenti storici.
+
 # CURRENT — Teatri riusata per il flusso generale; Farmacie corrente; recupero MCP qualificato
 
 30 ottobre 2026, Europe/Rome. L'owner chiarisce: Teatri è completata a passi
