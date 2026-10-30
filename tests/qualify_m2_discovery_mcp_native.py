@@ -27,12 +27,16 @@ int main(void) {
     setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&one,sizeof(one));
     struct sockaddr_in a={.sin_family=AF_INET,.sin_port=htons(8080),.sin_addr={.s_addr=htonl(INADDR_ANY)}};
     if(bind(s,(struct sockaddr*)&a,sizeof(a)) || listen(s,16))return 2;
+    int readiness_requests=0;
     for(;;) {
         int c=accept(s,0,0); if(c<0)return 3;
         char b[4096]; ssize_t n=read(c,b,sizeof(b));
-        const char *r=n>=(ssize_t)(sizeof("GET /health/ready HTTP/")-1)
-            && !memcmp(b,"GET /health/ready HTTP/",sizeof("GET /health/ready HTTP/")-1)
-            ? "HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+        int ready=n>=(ssize_t)(sizeof("GET /health/ready HTTP/")-1)
+            && !memcmp(b,"GET /health/ready HTTP/",sizeof("GET /health/ready HTTP/")-1);
+        const char *r=ready
+            ? (readiness_requests++==0
+                ? "HTTP/1.1 503 Service Unavailable\r\nRetry-After: 1\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                : "HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
             : "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
         size_t left=strlen(r); while(left) {ssize_t w=write(c,r,left);if(w<=0)break;r+=w;left-=w;}
         close(c);
@@ -126,6 +130,21 @@ class NativeMcp(unittest.TestCase):
         # Reconstruct the production owner, preserving the same clocks/history.
         resumed=fixture.m.DiscoveryMcpRuntime(images=owner.images,plan=owner.plan,journal=owner.journal,
             readiness_journal=owner.readiness_journal,monotonic=time.monotonic,boot=context.boot)
+        with self.assertRaises(fixture.m.CohortPaused):resumed.apply()
+        waiting=resumed.readiness_journal.read();waiting_history=resumed.record()
+        self.assertEqual((waiting['state'],waiting['attempts']),('RETRY_WAIT',1))
+        def forbidden_health(*args):self.fail('no HTTP attempt is allowed during persisted backoff')
+        resumed.health=forbidden_health
+        with self.assertRaises(fixture.m.CohortPaused):resumed.apply()
+        self.assertEqual(resumed.readiness_journal.read(),waiting)
+        self.assertEqual(resumed.record(),waiting_history)
+        self.assertEqual(len(calls),3)
+        # Only the synthetic authority wall clock is advanced. The production
+        # monotonic clock/backoff elapses on the runner; no budget is rewritten.
+        delay=max(waiting['nextWall']-auth.now,waiting['nextMonotonic']-time.monotonic())+.05
+        self.assertLess(delay,7);time.sleep(max(0,delay));auth.now+=delay
+        resumed=fixture.m.DiscoveryMcpRuntime(images=owner.images,plan=owner.plan,journal=owner.journal,
+            readiness_journal=owner.readiness_journal,monotonic=time.monotonic,boot=context.boot)
         result=resumed.apply();history=resumed.record();ready=resumed.readiness_journal.read()
         self.assertTrue(result['replacementVerified']);self.assertFalse(result['fullCohortProven'])
         self.assertEqual([p.rsplit('/',1)[-1].split('?')[0] for p in calls],['rename','create','start','update'])
@@ -134,7 +153,9 @@ class NativeMcp(unittest.TestCase):
         actual=json.loads(docker('inspect','ouf-mcp'))[0]
         self.assertEqual(actual['Mounts'],old['Mounts']);self.assertEqual(data.read_text(),'nonsecret preservation fixture')
         self.assertEqual(actual['HostConfig']['RestartPolicy'],old['HostConfig']['RestartPolicy'])
-        self.assertEqual(ready['attempts'],1)
+        self.assertEqual(ready['attempts'],2)
+        self.assertEqual(ready['startedWall'],waiting['startedWall'])
+        self.assertEqual(ready['startedMonotonic'],waiting['startedMonotonic'])
         auth.write(Path(resumed.parent.binding['path']),b'REVOKED_SYNTHETIC_MCP_NATIVE_REVIEW')
         with self.assertRaises(ValueError):resumed.apply()
         self.assertEqual(len(calls),4)
@@ -147,6 +168,8 @@ if __name__=='__main__':
     print(json.dumps({'schema':'ouf.m2-discovery-mcp-native-ci.v1','actualDockerVersion':'29.8.1',
         'actualEngineLifecycleAndHealthHttp':True,'actualEd25519AndJournals':True,
         'lostStartReplyReadReconciledAfterOwnerReconstruction':True,'repeatLeavesJournalsUnchanged':True,
+        'actualHttp503RetryAfterThen204':True,'persistedBackoffBlocksExtraHealthAndLifecycle':True,
+        'originalReadinessStartAndCumulativeAttemptsPreserved':True,
         'lifecycleDispatches':4,'revocationBlocksFurtherWork':True,'staticHttpApplicationFixture':True,
         'syntheticRegistryAdmissionParentAndPackages':True,'realMcpApplicationProven':False,
         'fullCohortProven':False,'applicationE2EProven':False,'targetApplyAuthorized':False,
