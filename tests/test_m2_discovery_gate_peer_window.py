@@ -11,9 +11,9 @@ from tools.m2_discovery_installation_profile import gate_peer_window as m
 
 
 class Window(unittest.TestCase):
-    def fixture(self,kind='GATE_WAITING',unpause_status=204,pause_status=204):
+    def fixture(self,kind='GATE_WAITING',unpause_status=204,pause_status=204,definition=None):
         auth=signed.Parent();auth.setUp();self.addCleanup(auth.doCleanups)
-        request,selection,*_=fixture();profile=DiscoveryProfile(request,**selection)
+        request,selection,*_=(fixture() if definition is None else definition);profile=DiscoveryProfile(request,**selection)
         child,raw=auth.child(creation_request_hash=m.digest(request))
         root=auth.root/'window';root.mkdir(mode=0o700);evidence=auth.root/'evidence';evidence.mkdir(mode=0o700)
         store=m.NativeEvidenceStore(evidence);binding={'containerId':'f'*64,'pid':1234,'imageId':request['Image']}

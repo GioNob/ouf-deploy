@@ -14,6 +14,11 @@ class Sequence(unittest.TestCase):
         return m.ProviderInstallationPhase(owner),w,auth,state,calls
     def test_composed_sequence_closes_gate_and_reconciles_lost_start_without_replay(self):
         owner,w,auth,state,calls=self.fixture(lost=True)
+        native=owner.creation.engine.request
+        def redacted(method,path,body=None):
+            try:return native(method,path,body)
+            except TimeoutError:raise m.CreationDenied('ENGINE_OUTCOME_REQUIRES_RECONCILIATION') from None
+        owner.creation.engine.request=redacted
         owner.apply();outcome,evidence=owner.observe()
         self.assertEqual(outcome,'APPLIED');self.assertTrue(evidence['registryGateClosedBeforeReturn'])
         self.assertEqual(w.observe_closed()['state'],'CLOSED')
@@ -63,5 +68,12 @@ class Sequence(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'PARENT_REVIEWED_PROVIDER_SEQUENCE'):m.ProviderInstallationPhase(owner)
         sequence,w,auth,*_=self.fixture();sequence.scope['observationPolicy']['maximumObservationsPerStage']=4
         with self.assertRaisesRegex(ValueError,'SEQUENCE_SCOPE_OR_OWNER_DRIFT'):sequence.apply()
+    def test_only_typed_engine_transient_context_can_enter_read_reconciliation(self):
+        for reason,expected in ((TimeoutError('CI_LOST_RESPONSE'),True),(ValueError('CI_BAD_JSON'),False)):
+            try:
+                try:raise reason
+                except Exception:raise m.CreationDenied('ENGINE_OUTCOME_REQUIRES_RECONCILIATION') from None
+            except m.CreationDenied as error:self.assertIs(m.transient(error),expected)
+        self.assertFalse(m.transient(ValueError('ENGINE_OUTCOME_REQUIRES_RECONCILIATION')))
 
 if __name__=='__main__':unittest.main()

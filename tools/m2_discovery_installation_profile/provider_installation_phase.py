@@ -5,7 +5,7 @@ The short reconciliation profile deliberately fits the original maintenance
 window: only bounded read-only observations, cumulative durable counts and
 backoff/jitter; no mutation retry, expiry extension or closed-window reopening.
 """
-import copy,errno,os,secrets,time
+import copy,errno,http.client,os,secrets,time
 from pathlib import Path
 from .custody_capture import digest,require
 from .provider_creation import ProviderCreation,PROVIDER_STAGES,provider_sequence_scope
@@ -15,6 +15,7 @@ from .provider_profiles import ProviderInitialIssuer
 from .gate_peer_window import GatePeerWindow
 from tools.semantic_policy_token_owner.producer import protected_directory
 from recovery_journal import Journal
+from engine_creation import CreationDenied
 
 STAGES=PROVIDER_STAGES
 EVIDENCE_SCHEMAS=dict(zip(STAGES,('ouf.discovery-provider-created.v1',
@@ -22,6 +23,11 @@ EVIDENCE_SCHEMAS=dict(zip(STAGES,('ouf.discovery-provider-created.v1',
     'ouf.discovery-provider-runtime-wrapper-switched.v1','ouf.discovery-provider-started-and-admitted.v1')))
 
 def transient(error):
+    # Engine deliberately redacts its transport exception. Follow only that
+    # exact typed boundary's retained local context; malformed JSON, custody
+    # denials and arbitrary ValueErrors remain permanent/unknown and block.
+    if type(error) is CreationDenied and str(error)=='ENGINE_OUTCOME_REQUIRES_RECONCILIATION':
+        return isinstance(error.__context__,http.client.IncompleteRead) or transient(error.__context__)
     if isinstance(error,(TimeoutError,ConnectionError)):return True
     if isinstance(error,OSError):return error.errno in {errno.ECONNRESET,errno.ETIMEDOUT,errno.EPIPE,errno.ECONNABORTED}
     d=getattr(error,'diagnosis',None)

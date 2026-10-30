@@ -10,9 +10,9 @@ from test_m2_provider_installation_template import inputs
 from tools.m2_discovery_installation_profile import provider_creation as m
 
 class Creation(unittest.TestCase):
-    def fixture(self,*,runtime_binding=None):
-        fixture=gate.Window();w,auth,gate_calls,registry,process,boundary=fixture.fixture();self.addCleanup(fixture.doCleanups)
-        root=auth.root/'provider-create';root.mkdir(mode=0o700);options=inputs()
+    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None):
+        fixture=gate.Window();w,auth,gate_calls,registry,process,boundary=fixture.fixture(definition=definition);self.addCleanup(fixture.doCleanups)
+        root=auth.root/'provider-create';root.mkdir(mode=0o700);options=inputs() if provider_inputs is None else copy.deepcopy(provider_inputs)
         if runtime_binding is not None:options['runtime_binding']=runtime_binding
         template=m.templates.template(**options)
         scope=m.creation_scope(template,w.scope,root);auth.review['components']['providerInstallation']=scope

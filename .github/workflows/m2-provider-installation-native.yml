@@ -1,0 +1,35 @@
+name: M2 composed provider v4 native installation
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+permissions: {contents: read}
+jobs:
+  native-provider:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Native kernel, isolated runc and cryptography dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y nftables iproute2 openssl busybox-static
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          sudo install -d -m 755 /opt/ouf-provider-runc
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-provider-runc docker/runc
+          sudo chown -R root:root /opt/ouf-provider-runc
+          /opt/ouf-provider-runc/runc --version
+      - name: One composed provider installation with real v4 admission and lost reply
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-native-provider-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-provider-runc:/usr/sbin:/usr/bin:/sbin:/bin \
+            unshare --mount --net --propagation private \
+            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_installation_native.py"

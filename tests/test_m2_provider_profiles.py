@@ -13,9 +13,9 @@ from tools.semantic_transaction_profiles.repair_broker_sources import repair
 from tools.semantic_registry_operational_owner.core import Denied as InputDenied
 
 class Profiles(unittest.TestCase):
-    def fixture(self,*,runtime_binding=None):
-        case=creates.Creation();old,w,auth,state,calls,*_=case.fixture(runtime_binding=runtime_binding);self.addCleanup(case.doCleanups)
-        r,selection,t,l,c=registry_fixture();self.assertEqual(r,w.request)
+    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None):
+        case=creates.Creation();old,w,auth,state,calls,*_=case.fixture(runtime_binding=runtime_binding,definition=definition,provider_inputs=provider_inputs);self.addCleanup(case.doCleanups)
+        r,selection,t,l,c=(registry_fixture() if definition is None else definition);self.assertEqual(r,w.request)
         context={k:v for k,v in c.items() if k not in {'containerId','networkNamespaceName','rootfsPath'}}
         context['rootfsLayout']='docker-containerd-overlayfs-v1'
         recipe={'schema':'ouf.semantic-discovery-node-recipe.v1','sourceClosureHash':w.scope['sourceClosureHash'],
