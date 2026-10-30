@@ -58,7 +58,7 @@ def diagnose_broker(material,state_root):
     # invoke a producer or repair the consumed runtime. The production CLI's
     # deliberately redacted public error remains unchanged.
     code=r'''
-import importlib.util,json,re,sys,types
+import importlib.util,json,re,sys,types,traceback
 from pathlib import Path
 root=Path(sys.argv[1]);configuration=root/'broker.json';cfg=json.loads(configuration.read_bytes())
 try:
@@ -97,6 +97,9 @@ except Exception as error:
     reason=str(error)
     if not re.fullmatch('[A-Z][A-Z0-9_]{0,110}',reason):reason='CI_BROKER_READ_ONLY_DIAGNOSIS_UNPROVEN'
     print('CI_READ_ONLY_BROKER_DIAGNOSIS='+reason+' TYPE='+type(error).__name__)
+    print('CI_READ_ONLY_DIAGNOSIS_FRAMES='+json.dumps([
+        {'source':Path(f.filename).name,'line':f.lineno,'function':f.name}
+        for f in traceback.extract_tb(error.__traceback__)[-8:]],sort_keys=True))
 '''
     p=run(str(Path('/usr/bin/python3').resolve()),'-I','-B','-c',code,material['root'],str(state_root),check=False)
     print(p.stdout.decode()[:1024],flush=True)
