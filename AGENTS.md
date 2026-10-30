@@ -1,3 +1,20 @@
+# CURRENT — decisione owner necessaria sulla minor Go del PET MCP
+
+30 ottobre2026. I DOCX originali Matrix1.7 e MCP1.4 Parte II §65 prescrivono
+Go1.25/patch della stessa minor. Il candidato MCP09d1f521/pacchetto12882394596
+è Go1.26.10 (go.mod,Dockerfile,CI,verify e build info verificati). La cronologia
+spiega il fix di vulnerabilità, ma nei riferimenti consultati non è stata trovata
+un'approvazione esplicita di allineamento della baseline. Nessun downgrade
+proposto: Go1.25 è fuori supporto secondo policy/date ufficiali. [Proposta concreta](docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md):
+solo addendum Go1.26.10, SDK1.7.0/ownership/contratti e tutti i gate conservati.
+Decisione proposta APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10, NON acquisita;
+nessun deploy/grant/budget/replay/autorità runtime impliciti. Originali intatti.
+La selezione MCP è tecnicamente qualificata nel suo perimetro, con discrepanza
+normativa ancora aperta: nessuna consegna target prima della decisione.
+Sviluppo generico e CI restano distinti dalla decisione di baseline e dall'E2E.
+M1/G4 acquisiti, M2/G5–G7/24AT/8UX/8stabilità/due client OPEN. CSV→UDP/esiti
+per riga; capabilities UDP separate sugli oggetti caricati, search non loading.
+
 # CURRENT — provider e worker qualificati separatamente; composizione e coorte M2 ancora aperte
 
 30 ottobre 2026, Europe/Rome. [Deploy54](https://github.com/GioNob/ouf-deploy/pull/54):

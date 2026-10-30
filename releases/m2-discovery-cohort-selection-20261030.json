@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-cohort-selection-proposal.v1",
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
-  "status": "EXACT_SOURCE_PACKAGE_SELECTION_NOT_PRIVATE_INSTALLATION_REVIEW",
+  "status": "SOURCE_PACKAGE_SELECTION_WITH_MCP_MINOR_BASELINE_DECISION_PENDING",
   "selectionIsNotExecutionAuthority": true,
   "loadingContract": {
     "end": "UDP_MATERIALIZATION_AND_COMPLETE_ROW_OUTCOMES",
@@ -173,12 +173,25 @@
     "realClientsRequired": 2,
     "allRemainInDenominator": true
   },
-  "next": "BIND_CONCRETE_PRIVATE_INSTALLATION_REVIEW_AND_QUALIFY_CURRENT_COHORT_BEFORE_ANY_TARGET_APPLY",
+  "next": "OWNER_MCP_GO_MINOR_BASELINE_DECISION_THEN_CONCRETE_PRIVATE_REVIEW",
   "oldInputsAndCommandsRemainConsumed": true,
   "automaticReplayAllowed": false,
   "budgetReset": false,
   "runtimeAuthorityIssued": false,
   "targetApplyAuthorized": false,
   "applicationE2EProven": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "normativeDecision": {
+    "status": "PENDING_OWNER_DECISION",
+    "proposal": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md",
+    "petMcp": "1.4",
+    "section": "Part II §65",
+    "requiredGoMinor": "1.25",
+    "observedCandidateGo": "1.26.10",
+    "mcpSdk": "1.7.0",
+    "proposedDecision": "APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10",
+    "approved": false,
+    "sourceQualificationIsNotNormativeApproval": true,
+    "runtimeDeliveryAllowed": false
+  }
 }
