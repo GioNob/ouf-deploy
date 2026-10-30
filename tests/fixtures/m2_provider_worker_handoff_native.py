@@ -30,6 +30,27 @@ def qualify(phase,root,commands,state_root,run):
         for cid,s in identities.items()}
     assert identities[registry]['status']=='paused' and identities[provider]['status']=='running'
     assert owner.observe_started()[0]=='APPLIED' and window.observe_closed()['state']=='CLOSED'
+    # Full installation admission is a predecessor, not a health-check task.
+    # Validate its actual output once, then keep its exact current records,
+    # finite mandate and authority/generation checks. This CI-only seal is NOT
+    # the installed worker's operational trust/lifetime contract.
+    admission_started=time.monotonic();material=owner.publication.material();app=material['materialized']
+    snapshot={'desiredProfileHash':owner.admission.template['configurationTemplate']['desiredProfileHash'],
+        'profiles':{'provider':{**owner.admission.template['expectedNodeProfiles']['provider'],
+            'applicationHash':app['applicationHash']}},'peers':{'provider':{
+                'containerId':provider,'imageId':owner.admission.template['expectedImages']['provider'],
+                'pid':pins[provider][0],'startTicks':pins[provider][1],
+                'namespace':{'identity':[Path('/proc',str(pins[provider][0]),'ns/net').stat().st_dev,pins[provider][2]]}}}}
+    proof=owner.admission.current(snapshot);provider_root=Path(material['root'])
+    names={'intent':'intent.json','attestation':'attestation.json','approval':'approval.json',
+        'acceptanceMandate':'node-acceptance.json','consumption':'deployment.json'}
+    records={name:runtime.custody(provider_root/file,0o600)[0] for name,file in names.items()}
+    assert proof['recordsHash']==worker.fingerprint({k:__import__('hashlib').sha256(v).hexdigest() for k,v in records.items()})
+    assert proof['adapterHash']==__import__('hashlib').sha256(runtime.custody(provider_root/'adapter.json',0o600)[0]).hexdigest()
+    seals={p:runtime.custody(p,0o600) for directory_ in (provider_root,owner.root,phase.root,window.root)
+        for p in directory_.glob('*.json')}
+    expires=min(json.loads(records[name])['expiresAt'] for name in ('intent','approval','acceptanceMandate'))
+    admission_seconds=time.monotonic()-admission_started
     directory=root/'joint-worker';directory.mkdir(mode=0o700)
     ledger=directory/'ledger';ledger.mkdir(mode=0o700)
     journal=worker.Journal(ledger);coord_path=directory/'coordination.json'
@@ -71,7 +92,8 @@ def qualify(phase,root,commands,state_root,run):
         compiler=importlib.util.module_from_spec(spec);spec.loader.exec_module(compiler)
         def admission(_):
             parent.registry_child(window.child,window.raw)
-            return owner.observe_started()[0]=='APPLIED' and window.observe_closed()['state']=='CLOSED'
+            parent.guard('providerInstallation',owner.creation.component)
+            return time.time()<expires and all(runtime.custody(path,0o600)==seal for path,seal in seals.items())
         def current(_):
             for cid,expected in pins.items():
                 actual=native(cid);pid=actual['pid']
@@ -166,6 +188,8 @@ def qualify(phase,root,commands,state_root,run):
             'recoveryPreservesOriginalClocksIncidentAndCumulativeCounters':True,'concurrentInvocationDenied':True,
             'nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm':True,'registryRemainsPausedAtClosedGate':True,
             'finiteInstallerAdmissionOnly':True,'sealedWorkerInstallationProven':False,
+            'fullInitialAdmissionSeconds':round(admission_seconds,3),
+            'currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller':True,
             'modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor':True,
             'combinedNativeDockerCompositionProven':False,'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
@@ -174,5 +198,10 @@ def qualify(phase,root,commands,state_root,run):
             os.kill(pid,signal.SIGKILL);os.waitpid(pid,0)
         stream.close();left.close();done.set();thread.join(timeout=1);server.close()
         run(commands['runc'],'--root',str(state_root),'resume',provider,check=False)
-        # Explicit disposable-CI cleanup only; no recovery/installer path uses it.
-        owner.coordinator.quiesce()
+        # Revoke only through the new worker journal, preserving the provider's
+        # admission history even on failure. This is disposable-CI cleanup.
+        cleanup_backend=runtime.NftBackend([commands['nft']],cfg,binding['leaseStructureHash'],5)
+        cleanup_journal=runtime.PrivateJournal(coord_path)
+        cleanup=runtime.Coordinator(runtime.LeaseOwner(cfg,profile,cleanup_backend),binding,
+            lambda:runtime.hold_common_lock(common),cleanup_journal.read,cleanup_journal.write)
+        cleanup.quiesce()
