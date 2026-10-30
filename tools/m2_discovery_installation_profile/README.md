@@ -452,8 +452,10 @@ This is a disposable CI fixture, never a target entrypoint. The executable is a
 small static HTTP server with the MCP empty-204 readiness contract. Parent/HUMAN
 scope, package provenance and the Registry held-release transition are explicitly
 synthetic. The fixture does not qualify the real MCP binary, complete cohort,
-capability publication, semantic discovery or CSV-to-UDP. Native CI is pending
-until the associated job and final report are read. The earlier intermittent
+capability publication, semantic discovery or CSV-to-UDP. Native initial proof passes on both push and PR at `d4410db9`;
+real 503/Retry-After/backoff/reconstruction proof passes on push and PR at
+`dc16fa46`, with both final reports read. See
+`evidence/m2-discovery-mcp-native-qualified-20261030.json` for exact scopes. The earlier intermittent
 local `MCP_INVOKING_RECORD_DRIFT` remains unresolved; an isolated passing rerun
 is not a causal fix. The lost-reply protocol test now requires the exact transport
 error and proves the expected dispatch happened before it accepts reconciliation.

@@ -1,3 +1,39 @@
+# CURRENT — Teatri retained; general file flow on Farmacie; native MCP recovery PASS
+
+30 October 2026, Europe/Rome. Owner clarification: Teatri completed through individual
+steps. Reuse those components/evidence for the complete repeatable resilient flow
+for every managed file; Farmacie is the current representative file. Technical8/8,
+functional6/6 and M1/G4 remain acquired for Teatri, not general M2 acceptance.
+Farmacie keeps its SUCCEEDED61-row/10-column profile and confirmed ministerial
+STRING/all10OPEN choices. No repeat upload/profiling/Teatri acquisition.
+
+PR54 now adds native single-MCP qualification at d4410db9 and real503/Retry-After/
+persisted-backoff/reconstruction at dc16fa46. Both push and PR final reports read
+for each: real Docker29.8.1/Engine/HTTP/Ed25519/journals, lost start reconciled
+without another start, original readiness start/cumulative attempts retained,
+no health/lifecycle during persisted wait, repeat unchanged and revocation blocks.
+Application is a static HTTP fixture; Registry admission/parent/packages synthetic.
+Not real MCP application, combined provider-worker, full cohort, publication or CSV→UDP.
+Strict protocol lost-reply assertion now proves exact transport failure and dispatch.
+Local full suites retain MCP_INVOKING_RECORD_DRIFT then DETACHED_VERIFICATION_UNPROVEN
+on separate runs; causes unestablished, no guard weakened or full local PASS.
+Protocol d4410db9:391tests/46suites/0skip per push41123284691/job124295154658
+and PR41123296096/job124295188542 PASS, both final reports read. Same protocol
+sources in dc16fa46 native successor. This does not resolve the local anomalies.
+
+Evidence: evidence/m2-discovery-mcp-native-qualified-20261030.json.
+Scope/handoff: docs/handoffs/OUF_M2_SINGLE_MCP_NATIVE_20261030.md.
+Live ouf-admin: MCP status HEALTHY; Farmacia CLASS search [] only for that query;
+one ingestion status permanent DENY, no retry or Teatri regression inferred.
+Discovery tools still absent from the installed plugin. Next: combined provider/
+worker and full current cohort/TLS/IAM/DB/fencing/trust, sealed private compiler/
+review/CLI, coordinated publication, then Farmacie mapping/ingestion/UDP/all-row
+outcomes. Search on loaded objects is separate from loading. M2/G5–G7/24AT/8UX/
+8stability/two clients OPEN. No new operator command ready; prior scopes consumed.
+No target effect/authority/grant/budget/reset/replay/merge/agents/automation.
+Older CURRENT blocks below are historical; the current project continuation is
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+
 # CURRENT —378/45 PR and native selected preparation PASS; single MCP owner pending CI
 
 30 October2026, Europe/Rome. Selected archive preparation source535dd17e:
