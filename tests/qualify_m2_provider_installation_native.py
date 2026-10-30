@@ -206,6 +206,10 @@ def main():
             component={'schema':'ouf.discovery-composed-provider-installation-scope.v2','creation':old.creation.scope,'installation':rs,'admission':adm,
                 'sequence':sequence.provider_sequence_scope(old.creation.scope,rs,adm,journal_directory=seqroot)}
             auth.review['components']['providerInstallation']=component;parent=auth.fixture();w.parent=parent;w.parent_hash=parent.sha
+            # Pure protocol fixtures freeze their clock. Native producer
+            # observations use wall time, so the native parent/child/verifier
+            # must read that same current clock. Signed expiry bytes stay fixed.
+            parent.clock=w.child.clock=auth.verifier.clock=time.time
             creation=runtime.ProviderCreation(parent=parent,window=w,template=old.template,journal_directory=old.creation.root,installation_component=component)
             issuer=runtime.ProviderInitialIssuer(creation=creation,scope=ps,signers=old.signers)
             pub=runtime.ProviderProfilePublication(issuer);reader=runtime.MaterializedProviderAdmission(publication=pub,lease_template=lease)
