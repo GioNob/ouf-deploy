@@ -1,6 +1,6 @@
 # Caricamento CSV → UDP e capabilities sugli oggetti caricati
 
-# CURRENT — baseline Go approvata; candidato MCP Go 1.27.3 in qualifica
+# CURRENT — Go 1.27.3 e pacchetto MCP qualificati; import immagini nativo PASS
 
 30 ottobre 2026, Europe/Rome. L’owner approva l’ultima Go stabile/supportata:
 «Va benissimo usare l'ultima versione di go. Anzi, direi che è auspicabile.»
@@ -9,9 +9,18 @@ Versione corrente risolta nei tag/VERSION ufficiali:1.27.3, commit2aae1000.
 Pin esatto/checksum e tutti i gate restano obbligatori, SDK1.7.0/contratti invariati;
 originali DOCX/checksum intatti. Non chiedere nuovamente approvazione per la sola
 versione Go. Pacchetto MCP09d1f521/12882394596 Go1.26.10 conservato storico:
-nuovo candidato/build/pacchetto1.27.3 necessari prima della selezione eseguibile.
-MCP48e48532/PR81 pubblicato: tutti i pin di build/CI/verify1.27.3, checksum della
-distribuzione ufficiale verificato in CI; suite/SCA e nuovo pacchetto in qualifica.
+nuovo candidato/build/pacchetto1.27.3 acquisiti nel perimetro documentato seguente.
+MCP9539cbb4/PR81 qualificato: full CI push41088404381/job124175536886 e
+PR41088414424/job124175572636 PASS, report finali letti. Go1.27.3/checksum
+ufficiale/SDK1.7.0, race/DB/pairwise/build, Staticcheck2026.2.2+nilness e
+Govulncheck ufficiale pinnato: nessuna vulnerabilità rilevata. Le due precedenti
+incompatibilità degli analizzatori sono conservate e corrette senza suppression.
+Pacchetto12993233270 producer6aad7448/run41090381338/job124182417709 PASS:
+262blob/10payload/modi644-755/config/layer/binario verificati indipendentemente;
+ELF Go1.27.3/SDK1.7.0, SBOM36componenti, report tutte le severità0.
+Immagine2321c66f…; prima build12993555804 esclusa per tar664/775, mantenuta storica.
+Evidenze: evidence/mcp-go127-source-and-package-qualified-20261030.json e
+readback associato. La qualifica non è trust del publisher/ammissione target.
 Nessun grant/replay/reset/autorità runtime o accettazione M2 dedotti.
 
 Deploy54 sourcec62d0b2156e43943a50e13995092566c9fc99fb3:365test/43suite PASS
@@ -25,6 +34,11 @@ combinata/coorte target/E2E o8stabilità; cause UNKNOWN/drift storico non stabil
 M1/G4,technical8/8,functional6/6 e Farmacie61righe/10colonne/STRING/OPEN conservati.
 M2/G5–G7/24AT/8UX/8stabilità/due client OPEN. CSV→UDP/esiti per riga;
 capabilities UDP separate sugli oggetti caricati, search fuori dal caricamento.
+Import Registry+MCP su Docker29.8.1 reale PASS a source9c93274f: push41090657018/
+job124183350825 e PR41090667765/job124183389246, report letti. Una load ciascuno,
+risposta persa riconciliata via GET, seconda apply senza cambi di journal, revoca
+bloccante; parent/review/package/applicazioni sintetici, nessun container applicativo
+avviato. Coorte completa e CSV→UDP target ancora OPEN.
 Nessun comando operatore pronto; scope precedenti consumati. Proseguire autonomamente.
 Header CURRENT successivi sono cronologia, non richieste di nuova approvazione Go.
 

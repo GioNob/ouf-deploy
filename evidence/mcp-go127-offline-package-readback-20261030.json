@@ -1,0 +1,86 @@
+{
+  "allLayerDiffIdsVerified": true,
+  "applicationE2EProven": false,
+  "archiveBytes": 39583956,
+  "archiveSha256": "77178a7e2884829eb54c7fba080004734fd9ae2d656d01c5f82a7b17a3691f20",
+  "artifactId": 12993233270,
+  "baseImages": [
+    {
+      "imageId": "sha256:f0f96555233b6c3b36fd9b525e8d2abcfe6226c74b499bcc6702b49e0ff3fe3c",
+      "requested": "golang:1.27.3-alpine",
+      "resolved": "golang@sha256:d200d2dd76b03a99b52651fd1325aff7dcd35422c35c01bac56571b0507f3deb"
+    },
+    {
+      "imageId": "sha256:24ab38714e948bd49d24d566e97c1c104b63f85c2e642685e72393b37cfb9862",
+      "requested": "alpine:3.22",
+      "resolved": "alpine@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f"
+    }
+  ],
+  "binaryBytesMatchImageLayer": true,
+  "cryptographicPublisherTrustAccepted": false,
+  "currentNativeAdmissionProven": false,
+  "executableSha256": "cc0be792a4c7b0add150a9e323234bc0800f5564e8e5ce66c26e8094542de70f",
+  "fileSha256": {
+    "Dockerfile.resolved": "8938298f3a6d3b3ac5cf5d6a1c1cbc49a61d0040d61396656dfb75dbd06d11c5",
+    "go-build-info.txt": "e01b6831520fa3c27ad685def1b27cc7b73b103a78ed3af8017009efb9229c57",
+    "image.docker.tar": "2335591d842a37ac379a27077f54b6e99e0cb13e6f6d79ce9df9e876e3f37bcb",
+    "ouf-mcp": "cc0be792a4c7b0add150a9e323234bc0800f5564e8e5ce66c26e8094542de70f",
+    "package-record.json": "ea3dd5c10d9cc0371ffe694778abd16de04ff49fd758096ede511c1af4602985",
+    "producer.json": "c7754f0f53c84dcf8f1df3dcf664deea1550be3e05fb86b4da4f76258fe98116",
+    "sbom.cdx.json": "5742606a899ed485ece85013c395fa64f8dd63edc5fedaae705024da0ce7ca5c",
+    "source-inventory.json": "8e2d8203ce684e8f8243875dab541b2991ca8d79645df4231b25309b98307be9",
+    "source.tar": "f3a6b74d447fb94cf7b87e2f9ad5201fc89e7d87b3aaefc31556890832f7ff0a",
+    "trivy-image.json": "27b305c92e2050da16bb04c7a4b88a4648e5d350768c61c31bc0b265a9c379d3"
+  },
+  "goBuildInfoDecodedFromElf": {
+    "cgoEnabled": false,
+    "format": "ELF64_AMD64_GO_INLINE_BUILDINFO",
+    "goVersion": "go1.27.3",
+    "mcpSdk": "v1.7.0",
+    "mcpSdkChecksum": "h1:yqjY2dsbKAC0LSuWZVBMrHgiG8ukXv6NRo0JiALay44="
+  },
+  "imageConfigBytesVerified": true,
+  "imageId": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+  "payloadHashesVerified": 10,
+  "producerCommit": "6aad7448077d916090d8495ce09ce8881a601672",
+  "releaseAcceptance": false,
+  "reportedSeverityCounts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "LOW": 0,
+    "MEDIUM": 0,
+    "UNKNOWN": 0
+  },
+  "runtimeAuthorityIssued": false,
+  "runtimeUser": "10005:10005",
+  "sbomComponents": 36,
+  "sbomFormat": "CycloneDX",
+  "schema": "ouf.m2-mcp-go127-offline-readback.v1",
+  "severityFilteredReport": false,
+  "sourceBlobsCompared": 262,
+  "sourceBytesAndModesMatchGithubTree": true,
+  "sourceCommit": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+  "targetApplyAuthorized": false,
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "runId": 41090381338,
+  "jobId": 124182417709,
+  "artifactExpiresAt": "2026-11-29T16:30:49Z",
+  "sourceInventoryComplete": true,
+  "archiveEntryModesMatchGithubExecutableBitsAndAreNotGroupWritable": true,
+  "supersededPackage": {
+    "artifactId": 12993555804,
+    "runId": 41088968994,
+    "jobId": 124177474849,
+    "producerCommit": "9b6853e7b60b4a2b79203ed86b7989de87851feb",
+    "archiveSha256": "69d9b8fc8dce02579acf9e757dc6b861bb6d1cec44606ba9768bbf8b89dcb209",
+    "archiveBytes": 39583956,
+    "sourceArchiveModes": {
+      "0664": 260,
+      "0775": 2
+    },
+    "status": "EXCLUDED_FROM_DELIVERY_SOURCE_ARCHIVE_GROUP_WRITABLE",
+    "independentReadbackRejects": true,
+    "historicalHelperUnchanged": true
+  }
+}
