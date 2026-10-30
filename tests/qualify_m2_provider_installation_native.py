@@ -124,6 +124,16 @@ def main():
             auth.write(Path(prep['lockFile']),b'');auth.write(Path(prep['coordinationJournal']),runtime.encoded({
                 'schema':'ouf.semantic-lease-coordination.v1',**prep['coordinationBinding'],'state':'QUIESCED',
                 'leaseAuthorized':False,'startAuthorized':False,'leaseAddresses':[[]]}))
+            # The changed CI runtime root belongs in the independent Registry
+            # recipe BEFORE signing the replacement child review, too.
+            rr=options['registry_recipe'];intent={'creationRequestHash':w.request_hash,
+                **{k:rr[k] for k in ('sourceClosureHash','qualifiedPackageHash','imageConfigurationHash')},'nodeRecipeHash':runtime.digest(rr)}
+            phases=runtime.decode(w.raw)['phaseIntentHashes'];phases['ATTEST_NEW_OCI_PEER']=runtime.digest(intent)
+            child,raw=auth.child(creation_request_hash=w.request_hash,phase_intent_hashes=phases)
+            w.child,w.raw,w.child_hash=child,raw,hashlib.sha256(raw).hexdigest()
+            boundary=w.transition.read();boundary['transitionAuthorityEvidenceHash']=w.child_hash
+            for effect in boundary['effects']:effect.update(authorityEvidenceHash=w.child_hash,intentHash=phases[effect['phase']])
+            w.transition.read=lambda:copy.deepcopy(boundary)
             ps=fixtures.m.profile_scope(old.template,old.creation.scope,**options)
             co,recipe,snapshot,py,wo=workers.Template().fixture();wo.update(source_closure_hash=old.template['sourceClosureHash'],signing_key_paths=[str(auth.key)])
             wo['expected_images']['provider']=old.template['expectedImageId'];wo['expected_node_profiles']['provider']=fixtures.m.templates.expected_node_profile(old.template)
