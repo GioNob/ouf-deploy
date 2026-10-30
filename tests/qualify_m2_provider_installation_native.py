@@ -60,6 +60,13 @@ def main():
     case=fixtures.Profiles();auth=None;wrapper=None;state_root=None;created=[];table=None
     with tempfile.TemporaryDirectory(prefix='ouf-provider-native-',dir='/var/lib') as tmp:
         root=Path(tmp);root.chmod(0o700);provider_id='9'*64;registry_id='f'*64
+        # Hosted runners may make /opt group/world writable. Bind private
+        # root-owned copies of the exact native executable bytes instead of
+        # weakening production ancestry checks for that CI installation.
+        native=root/'commands';native.mkdir(mode=0o700)
+        for name,path in list(commands.items()):
+            destination=native/name;shutil.copyfile(path,destination);destination.chmod(0o755)
+            assert pin(destination)['sha256']==pin(path)['sha256'];commands[name]=str(destination)
         state_parent=root/'runc';state_parent.mkdir(mode=0o700);state_root=state_parent/'state';state_root.mkdir(mode=0o700)
         run(commands['ip'],'link','add','brfixture','type','bridge');run(commands['ip'],'link','set','brfixture','up')
         try:
