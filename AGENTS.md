@@ -1,3 +1,57 @@
+# CURRENT — Teatri retained; selected runtime composition qualified; Farmacie current
+
+30 October2026, Europe/Rome. Reuse Teatri's completed individual steps for the
+complete repeatable resilient managed-file flow. M1/G4,technical8/8,functional6/6
+remain acquired for Teatri, not general M2 acceptance. Farmacie retains the same
+SUCCEEDED61row/10column profile, ministerial STRING and all10OPEN decisions.
+No repeat upload/profile/acquisition. Search is separate from CSV→UDP; future
+vertical/API/scheduler/delta follows the complete file flow.
+
+PR54 source05456554 composes selected image imports → existing Registry/provider/
+distinct worker held → Gateway → MCP under exact current parent/child/Engine/
+transition/review. Dedicated Registry invocation fence excludes concurrent
+producer release during Gateway/MCP; component pauses propagate/release it
+without sleeping. Read-only final proofs and unchanged held history required.
+No new journal/retry engine/release method; this is a logical release barrier,
+not a physical quiescence/full admission assertion.
+Gateway discovery v2 independently consumes each lifecycle dispatch through an
+exclusive fsynced marker, including after mutable journal regression. Controlled
+pre-fix second-connect regression reproduced;13Gateway cases now PASS locally.
+Historical Gateway owner source remains unchanged. Completed image verifier
+reads without loading. Dedicated DiscoveryExecutor binds exactly the two child
+runtime fields to current dual-role parent; unknown fields denied before claim.
+Optional application constructor path tested with actual Ed25519 and journals.
+Shared Executor restored byte exact after CI4b71 caught immutable artifact drift;
+no frozen capsule/test/pin changed. Only discovery v1 validation specializes;
+ordered execution/CAS/reconciliation stays inherited.142frozen modules match.
+
+Source05456554 full protocol PASS432tests/50suites/0skip per event:
+push41133846758/job124331281185 and PR41133853136/job124331301342;
+both final reports read. Component/composition qualification only, no target E2E.
+Separate native current-source PR images41133852958/job124331301145 and
+MCP41133853046/job124331301207 PASS/final reports read: real Docker29.8.1,
+two owned loads, lost-start reconstruction, real503/RetryAfter→204/persisted
+backoff/original cumulative attempts. StaticHTTP MCP app; parent/packages/
+admission synthetic. Not a combined native installation or real MCP app proof.
+Recovery compatibility PR41133852937 PASS:586tests/64suites with2explicit
+scope-gated nativeTLS skips,2nativeDB tests and3paused-generation tests; all
+final reports read, including7immutable-artifact cases.65relevant local cases
+plus7artifact cases PASS. Prior MCP/worker local drift/UNKNOWN causes remain
+unestablished; positive CI does not resolve them or relax guards.
+
+Evidence:evidence/m2-discovery-selected-runtime-qualified-20261030.json.
+Handoff:docs/handoffs/OUF_M2_SELECTED_RUNTIME_20261030.md.
+Next concrete proof: combined real v4 provider/distinct worker with same Registry/
+parent/child/Engine, then full current cohort/TLS/IAM/DB/fencing/trust, sealed
+private compiler/review/CLI and coordinated capability publication. Actual
+Farmacie mapping/THS→Ingestion→UDP/all61row outcomes, unchanged reimport,
+fault/recovery/chat continuity/boot/rotation/two clients remain required.
+M2/G5–G7/24AT/8UX/8stability OPEN. No new operator command ready; prior scopes
+consumed. No target operation/authority/grant/budget/reset/replay/merge/agents/
+automation. Current project continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+Older CURRENT headers below are historical.
+
 # CURRENT — Teatri retained; general file flow on Farmacie; native MCP recovery PASS
 
 30 October 2026, Europe/Rome. Owner clarification: Teatri completed through individual

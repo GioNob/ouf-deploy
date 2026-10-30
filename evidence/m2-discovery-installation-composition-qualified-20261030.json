@@ -3,23 +3,22 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
-    "testsPerEvent": 391,
-    "suitesPerEvent": 46,
+    "sourceCommit": "05456554165d73731f8a259c35d9f2f5d696cb19",
+    "testsPerEvent": 432,
+    "suitesPerEvent": 50,
     "skips": 0,
     "push": {
-      "run": 41123284691,
-      "job": 124295154658,
+      "run": 41133846758,
+      "job": 124331281185,
       "conclusion": "success",
       "finalReportsRead": true
     },
     "pullRequest": {
-      "run": 41123296096,
-      "job": 124295188542,
+      "run": 41133853136,
+      "job": 124331301342,
       "conclusion": "success",
       "finalReportsRead": true
-    },
-    "sameProtocolSourcesInTransientNativeSuccessor": true
+    }
   },
   "nativeLateWorker": {
     "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
@@ -360,5 +359,43 @@
       "conclusion": "success"
     },
     "finalReportsRead": true
+  },
+  "protocolHistory": [
+    {
+      "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
+      "testsPerEvent": 391,
+      "suitesPerEvent": 46,
+      "skips": 0,
+      "push": {
+        "run": 41123284691,
+        "job": 124295154658,
+        "conclusion": "success",
+        "finalReportsRead": true
+      },
+      "pullRequest": {
+        "run": 41123296096,
+        "job": 124295188542,
+        "conclusion": "success",
+        "finalReportsRead": true
+      },
+      "sameProtocolSourcesInTransientNativeSuccessor": true
+    }
+  ],
+  "selectedRuntimeComposition": {
+    "sourceCommit": "05456554165d73731f8a259c35d9f2f5d696cb19",
+    "status": "QUALIFIED_432_TESTS_50_SUITES_PUSH_AND_PR_FINAL_REPORTS_READ",
+    "evidence": "evidence/m2-discovery-selected-runtime-qualified-20261030.json",
+    "gatewayComponentVersion": 2,
+    "durableDispatchIndependentOfMutableJournal": true,
+    "dedicatedRegistryInvocationFenceBeforeProducerRelease": true,
+    "closedCurrentParentBoundChildSections": true,
+    "sharedExecutorAnd142FrozenModulesUnchanged": true,
+    "combinedNativeCompositionProven": false,
+    "fullCohortProven": false,
+    "capabilitiesPublished": false,
+    "applicationE2EProven": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false
   }
 }
