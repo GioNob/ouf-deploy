@@ -4,6 +4,7 @@ Disposable CI only. Application admission profiles and installation authority
 are synthetic. This is not a target deployment, boot controller or E2E proof.
 """
 import copy,dataclasses,errno,hashlib,json,os,re,shutil,socket,stat,struct,subprocess,sys,threading,time,types,uuid
+import traceback
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
@@ -328,6 +329,19 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             raise AssertionError('CI_LOST_START_REPLY_NOT_INJECTED')
         except TimeoutError as error:assert str(error)=='CI_LOST_REPLY_AFTER_ACTUAL_MANAGER_START'
         first=wait_for(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2);first_pid=pid();assert first_pid>1
+        # CI-only safe diagnostics preserve the production observer's denial.
+        # No raw values, manager action, signature, claim repair or replay.
+        real_observe=lease_observation.observe
+        def diagnostic_observe(*args,**kwargs):
+            try:return real_observe(*args,**kwargs)
+            except Exception as error:
+                reason=str(error)
+                print('CI_WORKER_OBSERVATION_DENIED='+json.dumps({'type':type(error).__name__,
+                    'reason':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,160}',reason) else 'REDACTED',
+                    'frames':[{'source':Path(f.filename).name,'line':f.lineno,'function':f.name}
+                        for f in traceback.extract_tb(error.__traceback__)[-8:]]},sort_keys=True),flush=True)
+                raise
+        lease_observation.observe=diagnostic_observe
         outcome,start_evidence=(worker_phase or start_owner).observe(intent)
         assert outcome=='APPLIED' and start_evidence['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
         assert not start_evidence['applicationStartAuthorized']
