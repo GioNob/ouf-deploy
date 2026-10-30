@@ -70,8 +70,29 @@ try:
     broker=module.Broker(cfg,raw,configuration,args)
     from tools.semantic_provider_deployment_protocol import validate_intent
     validate_intent(broker.intent_raw,broker.ctx,broker.verifier,broker.clock)
-    broker.stable();broker.record();broker.gate.record()
+    broker.stable();br=broker.record();consumed=broker.gate.record()
     print('CI_READ_ONLY_BROKER_DIAGNOSIS=CONSTRUCTOR_SIGNATURE_AND_JOURNALS_VALID')
+    print('CI_READ_ONLY_BROKER_PHASE='+br['state']+' CONSUMPTION='+consumed['state'])
+    if br['state']=='PREPARING' and consumed['generation'] is not None:
+        # Reconstruct only the source-bound public request and reobserve the
+        # created frame. No emit/claim/key/sign/prepare/start operation occurs.
+        binding=cfg['producers']['attestation'];entry=Path(binding['source']['path'])
+        spec=importlib.util.spec_from_file_location('ci_read_only_node',entry)
+        node_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(node_module)
+        node_cfg,node_raw=node_module.load(binding['configuration']['path'])
+        from tools.semantic_provider_node_attestor import NodeAttestor
+        from tools.semantic_provider_deployment_protocol import validate_intent
+        node=NodeAttestor(node_cfg,node_raw,binding['configuration']['path'],binding)
+        facts={k:broker.intent[k] for k in ('containerId','transactionId','artifactHash','deploymentConstraintsHash','transportHash','runtimeExecutableHash')}
+        facts.update(intentHash=broker.binding['intentHash'],applicationHash=consumed['bundleHash'],generation=consumed['generation'])
+        request,request_raw=node.producer.request('CREATION_ATTESTATION',facts)
+        node.policy_raw=node.verifier.read_policy();node.producer.pinned();node.broker_claim(request,request_raw)
+        intent_raw=node.read(node_cfg['intentBinding']);intent=validate_intent(intent_raw,node.ctx,node.authenticate,node.clock)
+        mandate=node.acceptance(request,intent) if Path(node_cfg['acceptanceMandatePath']).exists() else node.live_authorization(request,intent)
+        journal=node.broker_state(request);observed=node.observe(request,journal)
+        if observed['rootfsSeal']!=mandate['rootfsSeal']:
+            print('CI_READ_ONLY_ROOTFS_MATCH=false EXPECTED='+mandate['rootfsSeal']['sha256']+' OBSERVED='+observed['rootfsSeal']['sha256'])
+        else:print('CI_READ_ONLY_NODE_FRAME_ROOTFS_AND_NATIVE_LINKS=VALID')
 except Exception as error:
     reason=str(error)
     if not re.fullmatch('[A-Z][A-Z0-9_]{0,110}',reason):reason='CI_BROKER_READ_ONLY_DIAGNOSIS_UNPROVEN'
