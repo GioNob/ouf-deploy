@@ -397,5 +397,16 @@
     "targetApplyAuthorized": false,
     "runtimeAuthorityIssued": false,
     "releaseAcceptance": false
+  },
+  "finiteProviderWorkerNativeHandoff": {
+    "date": "2026-10-31",
+    "sourceCommit": "099306196613e3ad5988f8d5e3d6d0806edd862e",
+    "status": "PASS_PUSH_AND_PR_FINAL_NATIVE_REPORTS_READ",
+    "evidence": "evidence/m2-provider-worker-native-handoff-qualified-20261031.json",
+    "realV4AdmissionAndDistinctWorkerWithSameNativeKernel": true,
+    "providerHistoryAndOriginalWorkerClocksPreserved": true,
+    "combinedRealDockerAndSealedWorkerInstallationProven": false,
+    "fullCohortProven": false,
+    "applicationE2EProven": false
   }
 }

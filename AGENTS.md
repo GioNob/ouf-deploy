@@ -1,3 +1,47 @@
+# CURRENT — Finite native provider → distinct worker handoff PASS
+
+31 October2026, Europe/Rome. Reuse completed stepwise Teatri for the complete
+repeatable resilient managed-file flow. Teatri M1/G4,technical8/8,functional6/6
+retained; Farmacie same SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN.
+No new upload/profiling/acquisition. M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
+
+PR54 source09930619 native push41144149193/job124365161963 and
+PR41144156259/job124365184371 PASS; both final reports read. Actual v4 runc
+provider admission now feeds a DISTINCT production worker-factory process in
+one finite proof: same Registry/provider/parent/child/kernel/DNS/binding/common
+inode, distinct worker journal and provider history preserved. Publication and
+renewal use real DNS/nft; noncacheable DNS revokes both families, persists
+backoff with no DNS/attempt during wait, then recovers with original clocks and
+cumulative counters. Concurrent invocation denied. Actual provider pause blocks
+worker/revokes leases; provider resume does NOT rearm BLOCKED. Registry remains
+paused at its closed gate; no producer release.
+Initial4d3965a9 native push/PR failed RETRY_WAIT/DNS_WINDOW_TOO_SHORT after
+~25seconds/1attempt/0publications: fixture recursively reran full installer
+admission at every guard. Successor validates actual admission once (2.526/2.113s)
+then checks exact current record custody/bytes, finite signed expiry, current
+parent/child and actual generations. No production guard, TTL or retry limit
+changed. Cleanup uses only the new worker coordination journal. Failure retained.
+
+This is FINITE INSTALLATION HANDOFF, not joint sealed-worker/Docker installation:
+Docker boundary, images/review/Registry predecessor still modeled; no
+WorkerMaterialization or signed systemd publication/registration/start in this
+joint proof. Earlier real-Docker/systemd proof with synthetic application
+admission remains separate. Production code/frozen capsules unchanged; prior
+432tests/50suites qualification at05456554 retained, no new full-protocol claim.
+13local worker cases PASS. Prior MCP/worker anomaly causes still unestablished.
+Evidence:evidence/m2-provider-worker-native-handoff-qualified-20261031.json.
+Handoff:docs/handoffs/OUF_M2_PROVIDER_WORKER_HANDOFF_20261031.md.
+
+Next: real Docker boundary with SAME v4 admission and late worker materialization/
+attestation/publication/registration/START in the sealed unit, then full current
+cohort/TLS/IAM/DB/fencing/trust and private compiler/review/CLI, coordinated
+capability publication, actual Farmacie→Ingestion→UDP/all61row outcomes,
+unchanged reimport/fault/recovery/chat continuity/boot/rotation/two clients.
+No new operator command ready; prior scopes consumed. No target operation,
+authority/grant/budget/reset/replay/merge/agents/automation/release acceptance.
+Older CURRENT headers below are historical; canonical project continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+
 # CURRENT — Teatri retained; selected runtime composition qualified; Farmacie current
 
 30 October2026, Europe/Rome. Reuse Teatri's completed individual steps for the
