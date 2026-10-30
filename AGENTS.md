@@ -1,3 +1,40 @@
+# CURRENT — provider v4 native PASS; late worker and installation composition under qualification
+
+30 October 2026, Europe/Rome. Source33a268fc35bf300ded261b1cb132727d26c11113:
+342tests/40suites push41022923269 and PR41022928944 SUCCESS, no skips;
+final reports read. Native provider push41022923110/PR41022928957 SUCCESS:
+actual v4 node/Broker/installer, independent OCI/rootfs/NIC, nft/common lock,
+wrapper CAS, real signatures, one runc start, lost reply reconciled, Registry
+gate closed. Docker provider create/start boundary, images/review/predecessors
+remain modeled; NOT full cohort, target or application E2E. Original assembler
+and historical intake source closure preserved byte-exact; new portable v2
+adapter qualifies explicit runtime parent and both journal configuration hashes.
+35 historical authenticated-transaction cases PASS locally; no consumed replay.
+
+New late WorkerMaterialization reuses reviewed worker scopes and typed current
+Registry/provider owners; one fresh logical fence, hash-only two-peer metadata,
+durable claim/owned material, original clocks and exact native generation probe.
+No signing or lifecycle in preparation; partial material is retained and blocks
+repreparation. Seven local cases PASS with real Ed25519/files and explicitly
+modeled native/admission leaves. DiscoveryInstallationApplication composes the
+same parent/child/Engine: paused Registry boundary, one provider sequence and
+current admission/closed gate before Registry attestation/late worker; existing
+sealed cohort release remains separate. Seven composition cases PASS with modeled
+native owners. Native worker fixture now uses actual late capture/fresh fence;
+this NEW delta's native/CI qualification is pending. Never call it E2E evidence.
+
+Matrix1.7 original DOCX §1/7.2 and Registry1.3 original DOCX §26.1/26.3/26.4
+reconsulted; miniPET1.3 §4/6 and resiliencev3 retained. No complete PET compliance
+claim. Technical8/8,functional6/6,M1/G4 retained; M2/G5–G7/eight stability/two
+clients OPEN. CSV→governed processing→UDP objects with complete row outcomes;
+UDP capabilities on loaded objects qualified separately, search not loading.
+Target receipt1868 and reader scope CONSUMED; provider remains observed stopped,
+no target apply/start/admission/authority inferred. No operator command ready.
+NEXT qualify late native worker composition, full cohort/transport/TLS/IAM/DB/
+fencing/trust/current capability publication, boot/rotation, then target proof.
+Continue independently; no replay/reset/grant/budget/upload/job/acquisition/
+merge/subagents/automation. Older CURRENT headers are historical for next action.
+
 # CURRENT — one provider wrapper switch/start and durable contained sequence under qualification
 
 30 October 2026. c75a951e profile/worker bridge CI329tests/38suites push+PR PASS;

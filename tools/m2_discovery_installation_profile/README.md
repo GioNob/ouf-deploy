@@ -245,3 +245,44 @@ target start. One early concurrent composed run reported a retained-row drift;
 the diagnostic full rerun passed without reproduction, so this remains an open
 qualification issue pending CI/native investigation. Deferred worker assembly
 from new peer generations and complete application/cohort composition remain open.
+
+
+## Provider v4 evidence and late worker composition (30 October)
+
+Source `33a268fc35bf300ded261b1cb132727d26c11113` passed 342 tests in 40 suites
+on push and PR. The separate native provider qualification passed both events:
+actual v4 node/Broker/installer admission, independent full OCI/rootfs/NIC,
+Ed25519, nft/common lock, wrapper CAS and one runc start with lost-reply
+reconciliation and Registry gate closure. Docker provider create/start remains
+modeled at that boundary; images/review/predecessors are synthetic. This does
+not prove full cohort, target deployment or CSV application E2E. The exact
+run/job references and limits are in `evidence/m2-provider-native-qualified-20261030.json`.
+The legacy profile assembler/intake closure is unchanged. `assemble_provider_profiles_v2.py`
+adds explicit approved runtime-parent selection and updates both initial journal
+configuration bindings; no old source manifest or consumed command was repinned.
+
+`lease_materialization.py` captures the actual paused Registry/running provider
+only after current admissions. It owns a fresh logical fence and immutable
+snapshot/material claim, retains original wall/monotonic clocks, validates the
+exact native probe result, and constructs the existing worker sequence. It reads
+no key and dispatches no lifecycle operation. An incomplete claim/fence cannot
+be recreated; lost completion is reconstructed without writes or new clocks.
+Seven protocol cases pass locally, including actual worker signatures and byte
+publication up to a modeled manager boundary. Native/application admissions are
+modeled in these local cases. The native worker fixture now exercises actual
+capture and fresh-fence preparation; its new qualification is pending.
+
+`installation_application.py` composes the existing Registry application,
+provider installation and late worker under the same typed owners and signed
+parent/child. Provider admission and retained closed gate precede Registry
+attestation. Existing sequences are only observed; permanent/unknown outcomes
+block dependent phases. Explicit worker continuation uses original stages and
+clocks. The existing sealed full-cohort checkpoint remains mandatory before
+producer release. Seven order/fault/identity cases pass with modeled native
+owners; this is not current full-cohort admission or an executable target CLI.
+
+Full current cohort, TLS/IAM/DB/fencing/trust, boot/rotation and target capability
+publication/E2E remain open. The prior local concurrent row-drift/signature
+observation remains an unresolved local fixture concern; fresh CI success alone
+does not establish its cause. CSV loading ends at UDP materialization and all
+row outcomes. Capabilities on loaded UDP objects are qualified separately.

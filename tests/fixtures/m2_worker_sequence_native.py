@@ -13,6 +13,7 @@ from tools.m2_discovery_installation_profile import lease_registration as regist
 from tools.m2_discovery_installation_profile import lease_attestation as attestation
 from tools.m2_discovery_installation_profile import lease_installation_phase as sequence
 from tools.m2_discovery_installation_profile import lease_start_owner as starts
+from tools.m2_discovery_installation_profile.lease_materialization import WorkerMaterialization
 from tools.m2_discovery_installation_profile.native_generation_probe import NativeLeaseGenerationProbe,generation_reference
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
 from tools.semantic_provider_deployment_signing import ExistingEd25519Signer
@@ -44,7 +45,6 @@ def prepare(base,auth,private,install,ledger,sandbox,link,checkpoint,command,cre
     snapshot['profiles']['provider']={'nodeRecipeHash':digest(provider_recipe),'applicationHash':'2'*64,
         'imageConfigurationHash':provider_recipe['imageConfigurationHash'],'rootfsSealHash':digest(provider_recipe['expectedRootfsSeal'])}
     snapshot['nativeProfileHash']=digest(snapshot['profiles']);snapshot['generationRef']=generation_reference(snapshot)
-    create(private/'observations'/(digest(snapshot)+'.json'),snapshot)
     static=copy.deepcopy(base.template['configurationTemplate']);recipe=copy.deepcopy(base.template['recipeTemplate'])
     options={k:copy.deepcopy(base.template[k]) for k in ('signingKeyPaths','engineUnit','sandboxRoot')}
     template=templates.template(static,recipe,base.template['python'],source_closure_hash=base.template['sourceClosureHash'],
@@ -52,8 +52,6 @@ def prepare(base,auth,private,install,ledger,sandbox,link,checkpoint,command,cre
             for role,v in snapshot['profiles'].items()},installation_root=str(install),signing_key_paths=options['signingKeyPaths'],
         engine_unit=options['engineUnit'],sandbox_root=options['sandboxRoot'])
     materialized=templates.materialize(template,snapshot,old['commonLockIdentity'])
-    material=files.compile_material(template,materialized,capsule,initial_time=(time.time(),time.monotonic()),
-        installation_sources={str(install/'public-trust/policy.json'):trust,str(install/'readonly-probe'):readonly})
     records={name:str(private/'provider-admission'/(name+'.json')) for name in admission.RECORDS}
     provider_scope=admission.admission_scope(template,provider_recipe,records,'c'*64)
     start_scope=starts.start_scope(template,unit_name=base.scope['unitName'],manager=base.scope['manager'],directory=str(base.root))
@@ -88,7 +86,6 @@ def prepare(base,auth,private,install,ledger,sandbox,link,checkpoint,command,cre
         node_owner=node,template=template,proposal=materialized,scope=start_scope,intent=intent,
         publication_directory=str(private/'file-publication'),registration_scope=manager_scope,
         attestation_scope=issue_scope,sequence_scope=seq_scope)
-    installation=files.LeaseFileInstallation(start,material,verifier=verifier,probe=NativeLeaseGenerationProbe(private/'observations'))
     provider=admission.RetainedProviderAdmission(parent=parent,template=template,recipe=provider_recipe,records=records,configuration_hash='c'*64)
     # Signed synthetic application admission records; real peer generation and
     # independent native probe are used. No real provider admission is claimed.
@@ -133,6 +130,11 @@ def prepare(base,auth,private,install,ledger,sandbox,link,checkpoint,command,cre
         'evidenceHash':digest(evidence),'approvalHash':evidence['approvalHash'],'driverHash':'f'*64}
     for name,payload in [('intent',request_raw),('attestation',attested_raw),('approval',approval_raw),
         ('acceptanceMandate',mandate_raw),('consumption',encoded(consumption))]:create(Path(records[name]),payload)
-    issuer=attestation.LeaseAttestationIssuer(installation=installation,provider=provider,signer=signer)
-    phase=sequence.WorkerInstallationPhase(issuer=issuer,registration=registration.LeaseRegistration(installation))
-    return phase,start,template,materialized,intent
+    # Preserve only this never-used CI seed fence. The production owner must
+    # create one new inode itself and capture both actual Docker generations.
+    Path(static['commonInvocationLock']).rename(seed/'logical-fence')
+    owner=WorkerMaterialization(node_owner=node,provider=provider,signer=signer,capsule=capsule,
+        installation_sources={str(install/'public-trust/policy.json'):trust,str(install/'readonly-probe'):readonly})
+    phase=owner.prepare_once(intent)
+    assert owner.prepared(intent).files.material==phase.files.material
+    return phase,phase.start,template,phase.start.proposal,intent

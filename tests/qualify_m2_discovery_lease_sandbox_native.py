@@ -392,6 +392,7 @@ print('CI_STOP_SCOPE___MODE__='+json.dumps({'childSurvivedManagerTerm':survived}
             'actualLostManagerStartReplyReconciledWithoutSecondStart':True,
             'composedAttestationPublicationRegistrationStartExecuted':compose_worker,
             'providerAdmissionReaderAndWorkerAttestationIssuerExecuted':compose_worker,
+            'lateWorkerMaterializationCapturesActualDockerPeersAndFreshFence':compose_worker,
             'nativeWorkerSequenceStillUsesSyntheticApplicationAdmission':compose_worker,
             'applicationAdmissionAndAuthorityFixturesSynthetic':True,'bootOrRotationQualified':False,
             'targetActions':0,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'applicationE2EProven':False,
