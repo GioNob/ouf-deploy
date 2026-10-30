@@ -12,7 +12,7 @@ from .provider_creation import ProviderCreation,creation_component
 from .parent_authority import DiscoveryParentAuthority
 from .frame import compile_policy as registry_policy
 from .lease_file_installation import inode
-from tools.semantic_transaction_profiles.assemble_provider_profiles import assemble_profiles,source_closure
+from tools.semantic_transaction_profiles.assemble_provider_profiles_v2 import assemble_profiles,source_closure
 from tools.semantic_registry_operational_owner.installation import directory,new_file
 from tools.semantic_registry_operational_owner.guard import private_json,protected_file
 from tools.semantic_provider_deployment_authentication import DetachedAuthenticator,private_bytes,binding

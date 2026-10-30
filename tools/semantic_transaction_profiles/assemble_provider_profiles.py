@@ -74,8 +74,7 @@ def approved_runtime_seal(comparison, cid, frame_policy, live_authorization):
 
 def assemble_profiles(root, source_root, sources, authority, python, crypto,
                       intent_binding, intent, template, final_mandate_binding,
-                      observer_binding, runtime_parents, bundle_parents, rootfs_limits,
-                      *, broker_runtime_root_parent=None):
+                      observer_binding, runtime_parents, bundle_parents, rootfs_limits):
     """Return exact CLI profiles and initial journals, without activating them.
 
     Signed-authority validation is deliberately left in the existing production
@@ -86,15 +85,6 @@ def assemble_profiles(root, source_root, sources, authority, python, crypto,
         require(PurePosixPath(path).is_absolute() and '..' not in PurePosixPath(path).parts,
                 'ABSOLUTE_PROFILE_ROOT_REQUIRED')
     root = str(PurePosixPath(root))
-    require(type(runtime_parents) is list and bool(runtime_parents)
-            and len(set(runtime_parents))==len(runtime_parents)
-            and all(type(p) is str and PurePosixPath(p).is_absolute() and p!='/'
-                    and str(PurePosixPath(p))==p and '..' not in PurePosixPath(p).parts for p in runtime_parents),
-            'EXPLICIT_APPROVED_RUNTIME_PARENTS_REQUIRED')
-    if broker_runtime_root_parent is None:
-        require(len(runtime_parents)==1,'EXPLICIT_UNAMBIGUOUS_BROKER_RUNTIME_PARENT_REQUIRED')
-        broker_runtime_root_parent=runtime_parents[0]
-    require(broker_runtime_root_parent in runtime_parents,'BROKER_RUNTIME_PARENT_OUTSIDE_APPROVED_NODE_PARENTS')
     require(set(authority) == {'authorities', 'keyBindings', 'keyRefs'}, 'AUTHORITY_BINDINGS_REQUIRED')
     authorities = authority['authorities']
     require(all(intent[k] == authorities[k] for k in ('installationRef', 'entityRef'))
@@ -150,7 +140,7 @@ def assemble_profiles(root, source_root, sources, authority, python, crypto,
               'sourceHashes': source_closure(sources, 'scripts/semantic_provider_deployment_broker.py'),
               'authorities': authorities, 'intentBinding': intent_binding, **crypto, 'producers': producers,
               'preparerTemplate': binding(root + '/preparer-template.json', template),
-              'candidateRoot': root, 'runtimeRootParent': broker_runtime_root_parent}
+              'candidateRoot': root, 'runtimeRootParent': '/run'}
     files['broker.json'] = broker
     scope = {k: intent[k] for k in ('installationRef', 'entityRef', 'containerId', 'transactionId')}
     scope.update(intentHash=intent_binding['sha256'], configurationHash=digest(encoded(broker)))
