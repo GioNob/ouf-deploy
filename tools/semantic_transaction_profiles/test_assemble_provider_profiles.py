@@ -86,6 +86,24 @@ class ProfilesTest(unittest.TestCase):
         self.assertEqual(raised.exception.diagnosis['reason'], 'SIGNED_TRANSPORT_SCOPE_DRIFT')
         self.assertFalse(raised.exception.diagnosis['secretValuesPrinted'])
 
+    def test_broker_and_both_initial_journals_use_the_selected_installation_runtime_parent(self):
+        inputs=self.inputs();inputs['runtime_parents']=['/private/installation/runtime']
+        files=assemble_profiles(**inputs);broker=files['broker.json']
+        self.assertEqual(broker['runtimeRootParent'],'/private/installation/runtime')
+        self.assertEqual(files['attestation-producer.json']['runtimeRootParents'],inputs['runtime_parents'])
+        for name in ('broker-state.json','deployment.json'):
+            self.assertEqual(files[name]['configurationHash'],digest(encoded(broker)))
+        self.assertNotEqual(broker['runtimeRootParent'],'/run')
+
+    def test_ambiguous_or_unapproved_runtime_parent_cannot_fall_back_to_host_default(self):
+        inputs=self.inputs();inputs['runtime_parents']=['/private/runtime-a','/private/runtime-b']
+        with self.assertRaisesRegex(AssemblyDenied,'UNAMBIGUOUS_BROKER_RUNTIME_PARENT'):
+            assemble_profiles(**inputs)
+        with self.assertRaisesRegex(AssemblyDenied,'OUTSIDE_APPROVED_NODE_PARENTS'):
+            assemble_profiles(**inputs,broker_runtime_root_parent='/run')
+        files=assemble_profiles(**inputs,broker_runtime_root_parent='/private/runtime-b')
+        self.assertEqual(files['broker.json']['runtimeRootParent'],'/private/runtime-b')
+
 
 if __name__ == '__main__':
     unittest.main()

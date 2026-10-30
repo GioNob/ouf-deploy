@@ -1,9 +1,9 @@
 name: M2 composed provider v4 native installation
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/provider*.py','tools/semantic_transaction_profiles/assemble_provider_profiles.py','tools/m2_discovery_installation_profile/gate_peer_window.py','tests/test_m2_provider*.py','tests/test_m2_discovery_gate_peer_window.py','tests/qualify_m2_provider_installation_native.py','.github/workflows/m2-provider-installation-native.yml']
 permissions: {contents: read}
 jobs:
   native-provider:

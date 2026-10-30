@@ -53,6 +53,33 @@ def attach(commands,root,cid,host,child,mac,ipv4):
     childrun('addr','add',ipv4+'/24','dev','eth0');childrun('link','set','eth0','up');childrun('link','set','lo','up')
     return state
 
+def diagnose_broker(material,state_root):
+    # CI-only read-only diagnosis: never operate(), authorize_create(), sign,
+    # invoke a producer or repair the consumed runtime. The production CLI's
+    # deliberately redacted public error remains unchanged.
+    code=r'''
+import importlib.util,json,re,sys,types
+from pathlib import Path
+root=Path(sys.argv[1]);configuration=root/'broker.json';cfg=json.loads(configuration.read_bytes())
+try:
+    source=Path(cfg['sourceRoot'])/'scripts/semantic_provider_deployment_broker.py'
+    spec=importlib.util.spec_from_file_location('ci_read_only_broker',source)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    cfg,raw=module.load(configuration)
+    args=types.SimpleNamespace(container_id=root.name,bundle=str(root/'bundle'),runtime_root=sys.argv[2],mode='authorize-create')
+    broker=module.Broker(cfg,raw,configuration,args)
+    from tools.semantic_provider_deployment_protocol import validate_intent
+    validate_intent(broker.intent_raw,broker.ctx,broker.verifier,broker.clock)
+    broker.stable();broker.record();broker.gate.record()
+    print('CI_READ_ONLY_BROKER_DIAGNOSIS=CONSTRUCTOR_SIGNATURE_AND_JOURNALS_VALID')
+except Exception as error:
+    reason=str(error)
+    if not re.fullmatch('[A-Z][A-Z0-9_]{0,110}',reason):reason='CI_BROKER_READ_ONLY_DIAGNOSIS_UNPROVEN'
+    print('CI_READ_ONLY_BROKER_DIAGNOSIS='+reason+' TYPE='+type(error).__name__)
+'''
+    p=run(str(Path('/usr/bin/python3').resolve()),'-I','-B','-c',code,material['root'],str(state_root),check=False)
+    print(p.stdout.decode()[:1024],flush=True)
+
 def main():
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert Path('/proc/self/ns/net').stat().st_ino!=Path('/proc/1/ns/net').stat().st_ino
@@ -213,9 +240,12 @@ def main():
                     for mnt in material['materialized']['framePolicy']['expectedOci']['mounts']:
                         if mnt['type']=='bind' and not Path(mnt['source']).exists():private(Path(mnt['source']),b'CI_METADATA',0o644)
                     private(bundle/'config.json',runtime.encoded(material['materialized']['framePolicy']['expectedOci']))
-                    created.append(provider_id);run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(bundle),provider_id)
+                    created.append(provider_id)
+                    try:run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'create','--bundle',str(bundle),provider_id)
+                    except Exception:diagnose_broker(material,state_root);raise
                     own=old.template['networkBindings'][0];attach(commands,state_root,provider_id,'ci_phost','ci_pchild',own['mac'],own['ipv4'])
-                    run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'start',provider_id)
+                    try:run(str(wrapper),'--systemd-cgroup','--root',str(state_root),'start',provider_id)
+                    except Exception:diagnose_broker(material,state_root);raise
                     state=json.loads(run(commands['runc'],'--root',str(state_root),'state',provider_id).stdout)
                     provider['native']['State'].update(Status='running',Running=True,Pid=state['pid'])
                     raise TimeoutError('CI_LOST_SUCCESSFUL_NATIVE_PROVIDER_START_REPLY')

@@ -93,7 +93,7 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
     roots=(root,registry,source,creation_scope['journalDirectory'])
     require(all(not Path(a).is_relative_to(b) and not Path(b).is_relative_to(a)
         for i,a in enumerate(roots) for b in roots[i+1:]),'DISTINCT_PROVIDER_PROFILE_CUSTODY_ROOTS_REQUIRED')
-    require(type(runtime_root_parents) is list and 1<=len(runtime_root_parents)<=8
+    require(type(runtime_root_parents) is list and len(runtime_root_parents)==1
         and all(templates.absolute(p) for p in runtime_root_parents),'EXPLICIT_PROVIDER_RUNC_PARENTS_REQUIRED')
     require(type(rootfs_limits) is dict and set(rootfs_limits)=={'maxEntries','maxBytes','maxDepth'}
         and all(type(v) is int for v in rootfs_limits.values())
