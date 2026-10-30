@@ -403,3 +403,37 @@ tamper, profile/package drift and wrong user. The disposable native qualifier no
 uses this production preparer before real Engine/CLI imports of inert fixtures.
 Native and extended45suite protocol qualification are pending. This library is
 not yet a concrete current-target private profile compiler or operator command.
+
+
+## Only the selected MCP replacement
+
+`mcp_runtime.py` compiles the current standalone offline MCP package record,
+including its actual artifact/scan vocabulary, through the existing pure
+replacement planner. The raw package-record hash is retained; no historical
+six-module source lock or four replacement action is fabricated. Offline
+compilation against the actual Go1.27.3 package12993233270 passed using a
+synthetic old-container observation, with no load or lifecycle operation.
+
+The owner uses the actual current parent/child AggregateAction and checks the
+exact same signed Registry transition at its verified, producers-held barrier.
+It reuses only the existing native process/config/mount/network comparisons.
+Rename/create/start/restart-policy changes each have an independent exclusive
+dispatch marker before effect; an ambiguous outcome is observed without resend.
+A distinct, reviewed readiness journal uses the existing Recovery protocol,
+128attempts/3600seconds maximum, backoff/jitter/Retry-After, the original parent
+and child expiry, and persisted wall/monotonic/boot checks. Readiness publishes
+only a local proof; it does not publish routes, traffic or capabilities. The old
+MCP container is retained and no other application is replaced here.
+
+Thirteen cases cover ordinary completion and repeat, lost create/start replies,
+unproven creation, preserved recovery wait across reconstruction, parent/child
+revocation, changed boot/monotonic deadline, unreviewed journal, historical
+adoption, stale process, unknown health failure, exact signed Registry history,
+mutable-record regression against exclusive dispatch, exhaustion and the empty
+HTTP204 contract. Signatures/archives/files are actual; Docker/health responses
+are modeled. Final local qualification and extended46suite CI are pending.
+Earlier local image-journal/state and detached-verification denials remain
+unresolved observations; guards were not relaxed. This is not native MCP owner,
+full cohort, target E2E, boot/rotation or coordinated publication acceptance.
+The ordinary MCP's three discovery descriptors remain INACTIVE; source/package
+qualification alone cannot make them production-visible.

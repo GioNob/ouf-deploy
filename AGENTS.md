@@ -1,3 +1,29 @@
+# CURRENT —378/45 PR and native selected preparation PASS; single MCP owner pending CI
+
+30 October2026, Europe/Rome. Selected archive preparation source535dd17e:
+PR41101672416/job124219834012 PASS378tests/45suites,0skip, final reports read.
+Native PR41101672408/job124219834081 PASS: real Docker29.8.1, production two-image
+create-only preparer/read reconciliation then2owned CLI loads, lost reply/read
+reconciliation/no second dispatch. Synthetic application/parent/package fixture;
+zero application containers. Native push41101665548 metadata SUCCESS, log reader
+internal error; do not claim its final reports read. Push protocol still pending.
+Successor mcp_runtime.py replaces ONLY selected MCP using actual parent/child,
+exact signed Registry verified/held history, existing native comparisons and
+Recovery, separate reviewed journals and original boot/wall/monotonic deadlines.
+Each lifecycle dispatch has an independent O_EXCL marker; uncertain effects only
+reconcile. Raw current offline package record is bound, no synthetic larger cohort.
+Actual package12993233270 offline planning PASS against synthetic old container.
+13case final local and46suite protocol CI pending. Earlier local journal/state
+drift and detached-verification denials remain unexplained, fail-closed; no guard
+relaxed and rerun success alone is not cause resolution. Full current-cohort,
+source-sealed complete private compiler/CLI and actual target/two-client/boot/
+rotation/publication remain open. MCP ordinary discovery descriptors remain
+INACTIVE until governed coordinated publication; don't equate image replacement
+with availability. Go1.27.3 decision/9539source/new package remain acquired in
+stated scopes. M1 retained; M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
+No owner command ready. Continue autonomously. No merge/agents/automation,
+new CSV acquisition, authority, target apply or budget reset/replay.
+
 # CURRENT —373/44 protocol PASS; selected-archive preparation successor pending CI
 
 30 October2026, Europe/Rome. Gateway parent adapter and typed readonly namespace

@@ -219,10 +219,90 @@
     "partialPreparationNeverOverwrittenOrAutomaticallyFinished": true,
     "completedOriginalAndDerivedBytesRevalidatedOnRead": true,
     "nativeQualifierNowUsesProductionPreparer": true,
-    "nativeAnd45SuiteProtocolCiQualification": "PENDING",
+    "nativeAnd45SuiteProtocolCiQualification": "PR_378_TESTS_45_SUITES_AND_NATIVE_REPORTS_PASS_PUSH_PROTOCOL_PENDING",
     "publisherTrustAccepted": false,
     "imageLoads": 0,
     "runtimeAuthorityIssued": false,
-    "targetApplyAuthorized": false
+    "targetApplyAuthorized": false,
+    "sourceCommit": "535dd17eda503e10fd661221194209613a2eae28",
+    "protocolPr": {
+      "run": 41101672416,
+      "job": 124219834012,
+      "tests": 378,
+      "suites": 45,
+      "skips": 0,
+      "conclusion": "success",
+      "finalReportsRead": true
+    },
+    "nativePr": {
+      "run": 41101672408,
+      "job": 124219834081,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "actualDockerVersion": "29.8.1",
+      "actualCreateOnlyPreparationAndReadReconciliation": true,
+      "actualOwnedLoads": 2,
+      "syntheticParentApplicationAndPackageReview": true,
+      "applicationContainersStarted": 0
+    },
+    "nativePush": {
+      "run": 41101665548,
+      "job": 124219814874,
+      "conclusion": "success",
+      "finalReportsRead": false,
+      "logReaderInternalError": true
+    }
+  },
+  "discoveryMcpRuntimeSuccessor": {
+    "localCases": 13,
+    "localQualification": "PENDING_FINAL_RAW_PACKAGE_SCHEMA_DELTA",
+    "actualParentChildEd25519AndJournals": true,
+    "dockerAndHttpLeavesModeled": true,
+    "onlySelectedMcpReplaced": true,
+    "frozenFourModuleActionNotReplayed": true,
+    "existingNativeComparisonsReusedExplicitly": true,
+    "currentRegistrySameChildHeldBarrierRequired": true,
+    "durableSeparateLifecycleDispatchMarkers": true,
+    "originalBootAndWallAndMonotonicDeadlinesRequired": true,
+    "readiness": "EXISTING_RECOVERY_128_ATTEMPTS_3600_SECONDS_MAXIMUM_WITH_ORIGINAL_PARENT_CHILD_EXPIRY",
+    "respectRetryAfterAndBackoffJitter": true,
+    "actualGo127PackageOfflineCompile": {
+      "status": "PASS",
+      "artifact": 12993233270,
+      "sourceCommit": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+      "imageId": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+      "rawPackageRecordHashPreserved": true,
+      "syntheticOldContainerObservation": true,
+      "imageLoads": 0,
+      "lifecycleOperations": 0
+    },
+    "localUnresolvedObservations": [
+      {
+        "reason": "MCP_INVOKING_RECORD_DRIFT",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      },
+      {
+        "reason": "CONSUMED_IMAGE_IMPORT_DISPATCH_REQUIRED",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      },
+      {
+        "reason": "DETACHED_VERIFICATION_UNPROVEN",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      }
+    ],
+    "fixtureCorrections": [
+      "REAL_CURRENT_TRANSITION_INITIALIZATION",
+      "FROZEN_ENGINE_RUNTIME_BINDING_COMPARISON"
+    ],
+    "ciQualification": "PENDING_46_SUITES",
+    "nativeMcpOwnerQualified": false,
+    "fullCohortProven": false,
+    "mcpOrdinaryDiscoveryDescriptors": "STILL_INACTIVE_UNTIL_COORDINATED_PUBLICATION",
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false
   }
 }
