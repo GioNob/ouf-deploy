@@ -1,5 +1,7 @@
 # Caricamento CSV → UDP e capabilities sugli oggetti caricati
 
+> **30 ottobre — runtime contract osservato, scope consumato.** [Ricevuta](../../evidence/m2-provider-runtime-contract-target-20261030.json) e [footer forniti dall’owner](../../evidence/m2-provider-runtime-contract-target-20261030.log): adapterv4/Brokerv1/profili attesi, provider ancora fermo,4GET/18metadata/zero lifecycle/chiavi/firme, exit0. Nessuna lettura indipendente del VPS; non è ammissione. Non rilanciare il vecchio comando. Prosegue autonomamente la composizione del provider child; nessun nuovo comando target pronto.
+
 ## Obiettivo confermato dall’owner
 
 Il percorso ordinario deve essere integralmente governato da chatbot tramite le
@@ -125,10 +127,11 @@ sintetici: non equivale a provider ammesso sul target, installer completo o E2E.
 [Qualifica e limiti](../../evidence/m2-discovery-worker-sequence-qualified-20261029.json).
 
 Il contratto runtime effettivo del provider non è negli input storici e non è
-accessibile via MCP. È pronta la [sola lettura target qualificata](OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md),
+accessibile via MCP. La [lettura target qualificata](OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md) è
+stata eseguita e consumata il30ottobre,
 con quattro GET Engine e metadata selezionati, senza chiavi/credenziali/lifecycle.
-Il comando monouso è il solo intervento indispensabile all’owner; dopo l’esito si
-prosegue sul provider child. Non è un nuovo passo del caricamento CSV.
+L’esito è acquisito e si prosegue sul provider child. Non ripetere il comando.
+Questa manutenzione non entra nel caricamento ordinario CSV.
 
 ## Residuo, in ordine di dipendenza
 
@@ -138,7 +141,7 @@ prosegue sul provider child. Non è un nuovo passo del caricamento CSV.
   scaduto può sostituirle.
 - Completare il coordinatore/installazione attorno alla fase worker ora qualificata:
   13peer/TLS/IAM/DB/fencing/trust, boot/rotazione con continuità di budget e storia.
-  Il solo comando corrente è la lettura metadata del provider nel handoff dedicato.
+  La lettura metadata è riuscita e consumata; nessun nuovo comando target pronto.
 - Installazione governata e pubblicazione coordinata delle capability, grant
   di uso ordinario e rinnovi persistenti; verificare tutti8 M2-DISC-STABLE.
 - Eseguire la vera discovery OntoPiA, confronto/adozione/pubblicazione approvati,

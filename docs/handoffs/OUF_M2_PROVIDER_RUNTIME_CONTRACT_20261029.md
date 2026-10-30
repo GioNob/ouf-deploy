@@ -1,5 +1,7 @@
 # M2 — Lettura del contratto runtime corrente del provider
 
+> **ESEGUITO E CONSUMATO — 30 ottobre 2026.** L’owner ha riportato complete=true, OperatorExit=0/DeliveryExit=0. [Risultato](../../evidence/m2-provider-runtime-contract-target-20261030.json), [footer](../../evidence/m2-provider-runtime-contract-target-20261030.log). I comandi qui sotto sono storici: **NON eseguirli di nuovo**. Provider ancora fermo; metadata non sono ammissione. [Sviluppo e residuo correnti](OUF_CSV_E2E_CONTINUATION_20261029.md).
+
 29 ottobre 2026. Operazione di sola lettura, distinta dall’uso ordinario delle
 capabilities. Il flusso di prodotto rimane CSV → lavorazione governata → oggetti
 UDP; le capabilities UDP operano poi sugli oggetti caricati. Search non è una fase

@@ -1,3 +1,29 @@
+# CURRENT — contratto runtime provider osservato; scope consumato, sviluppo autonomo
+
+30 ottobre 2026, Europe/Rome. L’owner riporta READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED,
+complete=true, OperatorExit0/DeliveryExit0. [Ricevuta normalizzata](evidence/m2-provider-runtime-contract-target-20261030.json)
+e [footer riportati](evidence/m2-provider-runtime-contract-target-20261030.log).
+Runtime adapterv4, Brokerv1, node-attestorv4, approval-producerv1 e preparer-templatev1
+sono metadata correnti legati agli hash; provider ancora fermo.4GET/18letture,
+469662byte, custody ricontrollata; zero lifecycle/writeEngine/credenziali/chiavi/firme.
+È output fornito dall’owner: nessuna lettura indipendente dei log VPS è inferita.
+Non è ammissione provider/readiness o authority runtime; M2/E2E ancora OPEN.
+
+Scope m2-provider-runtime-contract-1868-20261029-v1 e codice/log protetti CONSUMATI:
+NON riconsegnare il comando né rilanciarlo. Input1868 e tutti i predecessori
+rimangono consumati. NEXT comporre il provider child con la finestra gate-only,
+ammissione nativa indipendente/consumo, ripausa prima Registry ATTEST e worker;
+qualificare prima di una concreta review/manutenzione autorizzata. Nessun nuovo
+comando target è pronto. Fonte storica runtime7894d0e9 è riproducibile con la
+patch hash-pinned già conservata, non un nuovo protocollo supposto.
+
+Proseguire autonomamente fino a intervento davvero indispensabile. Flusso ordinario
+CSV→lavorazione governata→UDP con esiti per riga; capabilities UDP sugli oggetti
+caricati qualificate separatamente, search fuori dal caricamento. M1/G4 e stesso
+profilo Farmacie61righe/10colonne/STRING/OPEN conservati. Nessun upload/profiling/
+job/acquisizione/grant/budget/replay/reset/merge/subagente/automazione. Header e
+comandi successivi storici per il prossimo passo; invarianti generali vincolanti.
+
 # CURRENT — CSV→UDP, capabilities UDP distinte; worker iniziale qualificato nativamente
 
 29 ottobre 2026. Il flusso ordinario termina con oggetti UDP ed esiti per riga;
