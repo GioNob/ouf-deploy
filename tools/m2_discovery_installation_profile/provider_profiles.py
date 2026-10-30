@@ -55,6 +55,9 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
                   python_binding,crypto,frame_source_binding,keys,key_refs,runtime_root_parents,
                   rootfs_limits,transaction_id,approval_ref,preparer_template,maximum_seconds=90):
     t=templates.recompile(template);root=templates.absolute(str(journal_directory));source=templates.absolute(str(source_root))
+    require(type(registry_recipe) is dict and type(registry_recipe.get('dockerContext')) is dict,
+        'EXPLICIT_INDEPENDENT_REGISTRY_BUNDLE_CONTEXT_REQUIRED')
+    templates.absolute(registry_recipe['dockerContext']['bundleParent'])
     cfg=copy.deepcopy(runtime_configuration)
     fields={'schema','sourceHash','runtimePath','runtimeSha256','pythonPath','pythonSha256','driverPath','driverSha256',
         'admissionPath','admissionSha256','registryRoot','runtimeStateRoot','candidates'}
@@ -200,7 +203,8 @@ def compile_material(template,scope,sources,container_id,registry,context,issued
         {'path':root+'/final-approval-mandate.json','sha256':digest(approval)},
         {'python':scope['pythonBinding'],'source':scope['frameSourceBinding'],
             'configuration':{'path':root+'/frame-policy.json','sha256':m['artifactHash']}},
-        scope['runtimeRootParents'],[scope['registryRoot']],scope['rootfsLimits'])
+        scope['runtimeRootParents'],list(dict.fromkeys((scope['registryRoot'],
+            scope['registryRecipe']['dockerContext']['bundleParent']))),scope['rootfsLimits'])
     configuration=copy.deepcopy(scope['priorRuntimeConfiguration'])
     configuration['candidates'][container_id]={'intentRef':intent_hash,
         'bundleParents':[t['dockerContext']['bundleParent']],

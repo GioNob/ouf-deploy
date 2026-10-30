@@ -99,6 +99,8 @@ class Profiles(unittest.TestCase):
             issuer.creation.create_once();issuer.issue_once();self.assertEqual(issuer.observe()[0],'APPLIED')
             material=issuer.material(m.private_json(issuer.root/'issuance-claim.json'))
             self.assertEqual(material['profiles']['attestation-producer.json']['schema'],'ouf.semantic-node-attestor.v4')
+            self.assertEqual(material['profiles']['attestation-producer.json']['bundleParents'],list(dict.fromkeys((
+                issuer.scope['registryRoot'],issuer.scope['registryRecipe']['dockerContext']['bundleParent']))))
             self.assertEqual(material['profiles']['broker.json']['schema'],'ouf.semantic-deployment-broker.v1')
             self.assertEqual(material['profiles']['deployment.json']['state'],'STAGED')
             self.assertEqual(material['runtimeConfiguration']['candidates']['e'*64],opts['runtime_configuration']['candidates']['e'*64])
