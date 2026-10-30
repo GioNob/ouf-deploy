@@ -333,16 +333,19 @@ uncertain loads are read-reconciled, never retransmitted. Tagless archive bytes
 are revalidated; the CLI receives an explicit local socket, private empty config
 root and minimal environment. No old five-image intake, source closure or action
 is repinned/replayed. Remaining cohort sections have their own owners and do not
-become admitted by this import receipt. Five local cases pass with real crypto,
-archives and journals plus modeled Engine/CLI. Native image CLI/full current
-cohort proof remains open; successor CI pending.
+become admitted by this import receipt. Six cases pass with real crypto,
+archives and journals plus modeled Engine/CLI. Sourcec62d0b21 passed365tests/43suites
+on push and PR, no skips, final reports read. Native image CLI/full current
+cohort proof remains open.
 
-The original PET MCP1.4 §65 minor-Go constraint and current1.26.10 candidate
-are now explicitly reconciled in a PROPOSED owner decision on PR50. Source
-qualification alone does not approve a normative baseline change. Go1.25 is
-unsupported; no downgrade is proposed. The original DOCX remains unchanged;
-source packet delivery/installation waits for the controlled decision and all
-existing gates, with no runtime authority implicit in that project decision.
+Owner decision2026-10-30 approves the current stable supported Go release under
+exact version/checksum and all existing gates. Central controlled addendum on PR50:
+`docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md`.
+Initial resolved version1.27.3; MCP5b4dc238 build/CI/verify pins and official
+distribution custody are under qualification. SDK1.7.0/contracts/original DOCX
+unchanged. No renewed approval needed for routine Go-only updates. Old1.26.10
+package remains historical; a new source/build/package and current private
+admission are required. This decision grants no runtime authority or M2 acceptance.
 
 The sixth selected-image case deliberately regresses only a disposable mutable
 journal: the separate O_EXCL dispatch still blocks another CLI load. This proves

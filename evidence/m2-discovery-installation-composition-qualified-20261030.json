@@ -3,18 +3,18 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
-    "testsPerEvent": 359,
-    "suitesPerEvent": 42,
+    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
+    "testsPerEvent": 365,
+    "suitesPerEvent": 43,
     "skips": 0,
     "push": {
-      "run": 41035568789,
-      "job": 123995434175,
+      "run": 41039846376,
+      "job": 124009671934,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41035577822,
-      "job": 123995465677,
+      "run": 41039855443,
+      "job": 124009703393,
       "conclusion": "success"
     },
     "finalReportsRead": true
@@ -99,17 +99,36 @@
     "localCases": 6,
     "engineAndCliEffects": "MODELED",
     "realArchivesEd25519AndJournals": true,
-    "ciQualification": "PENDING_SUCCESSOR",
+    "ciQualification": "QUALIFIED_AT_C62D0B21_365_TESTS_43_SUITES",
     "nativeImageCliQualified": false,
     "fullCohortProven": false,
     "historicalFiveImageSourceUnchanged": true,
     "durableDispatchBlocksDeliberateMutableRecordRegression": true
   },
   "mcpMinorBaselineDecision": {
-    "status": "PENDING_OWNER_DECISION",
-    "originalPetMinor": "1.25",
-    "candidateGo": "1.26.10",
-    "proposal": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md",
+    "status": "APPROVED_OWNER_CURRENT_STABLE_SUPPORTED_GO",
+    "decisionId": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
+    "originalPetGoLine": "1.25",
+    "resolvedCurrentStableGo": "1.27.3",
+    "mcpSuccessorSource": "5b4dc238d026d021d2d6d1600b38172c5afed708",
+    "mcpSourceQualification": "PENDING",
+    "mcpNewPackageRequired": true,
+    "decision": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
     "runtimeDeliveryAllowed": false
+  },
+  "latestSeparateNativeProofs": {
+    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
+    "workerPr": {
+      "run": 41039855426,
+      "job": 124009703075,
+      "conclusion": "success"
+    },
+    "providerPr": {
+      "run": 41039855535,
+      "job": 124009704662,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true,
+    "combinedNativeProof": false
   }
 }
