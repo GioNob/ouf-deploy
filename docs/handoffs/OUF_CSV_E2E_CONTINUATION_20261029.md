@@ -1,22 +1,32 @@
 # Caricamento CSV → UDP e capabilities sugli oggetti caricati
 
-# CURRENT — decisione owner necessaria sulla minor Go del PET MCP
+# CURRENT — baseline Go approvata; candidato MCP Go 1.27.3 in qualifica
 
-30 ottobre2026. I DOCX originali Matrix1.7 e MCP1.4 Parte II §65 prescrivono
-Go1.25/patch della stessa minor. Il candidato MCP09d1f521/pacchetto12882394596
-è Go1.26.10 (go.mod,Dockerfile,CI,verify e build info verificati). La cronologia
-spiega il fix di vulnerabilità, ma nei riferimenti consultati non è stata trovata
-un'approvazione esplicita di allineamento della baseline. Nessun downgrade
-proposto: Go1.25 è fuori supporto secondo policy/date ufficiali. [Proposta concreta](../decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md):
-solo addendum Go1.26.10, SDK1.7.0/ownership/contratti e tutti i gate conservati.
-Decisione proposta APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10, NON acquisita;
-nessun deploy/grant/budget/replay/autorità runtime impliciti. Originali intatti.
-La selezione MCP è tecnicamente qualificata nel suo perimetro, con discrepanza
-normativa ancora aperta: nessuna consegna target prima della decisione.
-Sviluppo generico e CI restano distinti dalla decisione di baseline e dall'E2E.
-M1/G4 acquisiti, M2/G5–G7/24AT/8UX/8stabilità/due client OPEN. CSV→UDP/esiti
-per riga; capabilities UDP separate sugli oggetti caricati, search non loading.
+30 ottobre 2026, Europe/Rome. L’owner approva l’ultima Go stabile/supportata:
+«Va benissimo usare l'ultima versione di go. Anzi, direi che è auspicabile.»
+[Decisione acquisita](../decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md) supera il vincolo minor1.25 di Matrix1.7/MCP1.4 §65.
+Versione corrente risolta nei tag/VERSION ufficiali:1.27.3, commit2aae1000.
+Pin esatto/checksum e tutti i gate restano obbligatori, SDK1.7.0/contratti invariati;
+originali DOCX/checksum intatti. Non chiedere nuovamente approvazione per la sola
+versione Go. Pacchetto MCP09d1f521/12882394596 Go1.26.10 conservato storico:
+nuovo candidato/build/pacchetto1.27.3 necessari prima della selezione eseguibile.
+MCP48e48532/PR81 pubblicato: tutti i pin di build/CI/verify1.27.3, checksum della
+distribuzione ufficiale verificato in CI; suite/SCA e nuovo pacchetto in qualifica.
+Nessun grant/replay/reset/autorità runtime o accettazione M2 dedotti.
 
+Deploy54 sourcec62d0b2156e43943a50e13995092566c9fc99fb3:365test/43suite PASS
+su push41039846376/job124009671934 e PR41039855443/job124009703393,
+zero skip, tutti i report finali letti. Include6test import Registry+MCP con
+archivi/firme/journal reali e Engine/CLI modellati, anche regressione deliberata
+record senza seconda dispatch. Nativo worker PR41039855426/job124009703075 e
+provider PR41039855535/job124009704662 PASS separati, report letti; ammissioni
+applicative worker sintetiche/confine Docker provider modellato. Nessuna prova
+combinata/coorte target/E2E o8stabilità; cause UNKNOWN/drift storico non stabilite.
+M1/G4,technical8/8,functional6/6 e Farmacie61righe/10colonne/STRING/OPEN conservati.
+M2/G5–G7/24AT/8UX/8stabilità/due client OPEN. CSV→UDP/esiti per riga;
+capabilities UDP separate sugli oggetti caricati, search fuori dal caricamento.
+Nessun comando operatore pronto; scope precedenti consumati. Proseguire autonomamente.
+Header CURRENT successivi sono cronologia, non richieste di nuova approvazione Go.
 
 # CURRENT — provider e worker qualificati separatamente; composizione e coorte M2 ancora aperte
 

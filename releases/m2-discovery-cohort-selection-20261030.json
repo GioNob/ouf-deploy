@@ -2,7 +2,7 @@
   "schema": "ouf.m2-discovery-cohort-selection-proposal.v1",
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
-  "status": "SOURCE_PACKAGE_SELECTION_WITH_MCP_MINOR_BASELINE_DECISION_PENDING",
+  "status": "SOURCE_PACKAGE_SELECTION_WITH_MCP_GO_1_27_3_SUCCESSOR_REQUIRED",
   "selectionIsNotExecutionAuthority": true,
   "loadingContract": {
     "end": "UDP_MATERIALIZATION_AND_COMPLETE_ROW_OUTCOMES",
@@ -72,7 +72,9 @@
         "imageConfigBytesVerified": true,
         "goVersion": "1.26.10"
       },
-      "installedByThisWork": false
+      "installedByThisWork": false,
+      "selectionStatus": "HISTORICAL_PACKAGE_PENDING_GO_1_27_3_SUCCESSOR",
+      "currentSuccessorPackageRequired": true
     },
     {
       "module": "gateway",
@@ -173,7 +175,7 @@
     "realClientsRequired": 2,
     "allRemainInDenominator": true
   },
-  "next": "OWNER_MCP_GO_MINOR_BASELINE_DECISION_THEN_CONCRETE_PRIVATE_REVIEW",
+  "next": "QUALIFY_AND_PACKAGE_MCP_GO_1_27_3_THEN_CONCRETE_PRIVATE_REVIEW",
   "oldInputsAndCommandsRemainConsumed": true,
   "automaticReplayAllowed": false,
   "budgetReset": false,
@@ -182,16 +184,27 @@
   "applicationE2EProven": false,
   "releaseAcceptance": false,
   "normativeDecision": {
-    "status": "PENDING_OWNER_DECISION",
-    "proposal": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md",
-    "petMcp": "1.4",
-    "section": "Part II §65",
-    "requiredGoMinor": "1.25",
-    "observedCandidateGo": "1.26.10",
+    "status": "APPROVED_OWNER_CONVERSATION",
+    "decisionId": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
+    "approved": true,
+    "decision": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
+    "evidence": "evidence/mcp-go-baseline-alignment-decision-20261030.json",
+    "requiredGo": "CURRENT_STABLE_SUPPORTED_EXACT_PIN_PER_CANDIDATE",
+    "resolvedGo": "1.27.3",
     "mcpSdk": "1.7.0",
-    "proposedDecision": "APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10",
-    "approved": false,
-    "sourceQualificationIsNotNormativeApproval": true,
-    "runtimeDeliveryAllowed": false
+    "previousCandidateGo": "1.26.10",
+    "newMcpCandidateAndPackageRequired": true,
+    "runtimeDeliveryAllowed": false,
+    "reasonRuntimeDeliveryBlocked": "NEW_PACKAGE_AND_CURRENT_PRIVATE_REVIEW_ADMISSION_GATES_REMAIN_OPEN"
+  },
+  "mcpSuccessor": {
+    "sourceCommit": "48e48532ed5298bd3aae110f0d2a78e8393e5a30",
+    "go": "1.27.3",
+    "mcpSdk": "1.7.0",
+    "pullRequest": 81,
+    "sourceQualification": "IN_PROGRESS",
+    "packageQualification": "PENDING",
+    "packageAvailable": false,
+    "installedByThisWork": false
   }
 }
