@@ -496,8 +496,13 @@ fields; a parent-bound assembly must supply `discovery_parent` to
 DiscoveryApplication. Its dedicated `DiscoveryExecutor` authenticates the current
 parent/child and exact Gateway v2/MCP v1 sections before extending only that
 closed field set. It reuses all original phase/checkpoint/fencing logic. The
-legacy Executor's extension set remains empty and the file-only profile remains
-closed; no flag or temporary projection bypasses their validation. Unknown signed
+shared Executor bytes and file-only profile remain unchanged. Discovery specializes
+only the v1/13-phase validation branch locally; ordered dispatch/CAS/fencing and
+reconciliation are inherited. No flag or temporary projection bypasses validation. Unknown signed
 fields, mismatching sections, changed parent and revocation fail before a claim.
 The complete sealed private compiler/CLI and native cohort qualification remain
 mandatory; constructor support and synthetic phase tests do not supply them.
+
+The selected dependent-owner phase holds the existing Registry transition invocation
+fence, excluding concurrent producer release. No shared lease/network lock or DB
+transaction spans the phase; a paused owner raises immediately and releases the fence.

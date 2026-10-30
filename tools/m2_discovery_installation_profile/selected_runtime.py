@@ -50,15 +50,19 @@ class DiscoverySelectedRuntime:
 
     def apply(self):
         self.guard();image_proof=self.images.apply()
-        self.installation.verify_registry_and_hold();held=self.held()
-        gateway_proof=self.gateway.apply();self.held(held)
-        mcp_proof=self.mcp.apply();self.held(held)
-        # Rechecking completion may not import or create anything. A regressed
-        # image journal is rejected by verify(), not passed back to apply().
-        require(self.images.verify()==image_proof,'SELECTED_IMAGE_PROOF_CHANGED_DURING_INSTALLATION')
-        require(self.gateway.verify()==gateway_proof and self.mcp.report()==mcp_proof,
-            'SELECTED_RUNTIME_GENERATION_OR_COMPLETION_PROOF_CHANGED')
-        self.held(held)
+        self.installation.verify_registry_and_hold()
+        # The existing transition invocation fence excludes a concurrent release
+        # while dependent owners run. This is not the shared lease/network lock;
+        # owner pauses propagate immediately and release it, without sleeping.
+        with self.images.window.transition.invocation():
+            held=self.held()
+            gateway_proof=self.gateway.apply();self.held(held)
+            mcp_proof=self.mcp.apply();self.held(held)
+            # Completion checks may not import or create anything.
+            require(self.images.verify()==image_proof,'SELECTED_IMAGE_PROOF_CHANGED_DURING_INSTALLATION')
+            require(self.gateway.verify()==gateway_proof and self.mcp.report()==mcp_proof,
+                'SELECTED_RUNTIME_GENERATION_OR_COMPLETION_PROOF_CHANGED')
+            self.held(held)
         return {'schema':'ouf.discovery-selected-runtime-installation-receipt.v1',
             'componentHash':digest(self.mcp.cohort_component),'parentAuthorityHash':self.images.parent.sha,
             'childAuthorityHash':self.mcp.action.authority_hash,'registryHeldHistoryHash':digest(held),

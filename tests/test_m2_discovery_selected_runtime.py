@@ -4,6 +4,7 @@ Actual signatures/journals/native effects are qualified in the component suites.
 These tests do not prove current admission, a combined native cohort or E2E.
 """
 import copy,sys,unittest
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -28,8 +29,15 @@ class SelectedRuntime(unittest.TestCase):
         parent=SimpleNamespace(scope=bindings,review={'components':{'cohortInstallation':component}},sha='6'*64)
         row={'state':'READY','nextPhase':m.PHASES.index('RELEASE_PRODUCERS'),
             'creationRequestHash':'4'*64,'transitionAuthorityEvidenceHash':'5'*64,'version':42,'effects':[]}
+        occupied=[False]
+        @contextmanager
+        def invocation():
+            if occupied[0]:raise BlockingIOError('SYNTHETIC_OCCUPIED_TRANSITION_FENCE')
+            occupied[0]=True
+            try:yield
+            finally:occupied[0]=False
         window=SimpleNamespace(parent=parent,engine=engine,child=child,raw=b'synthetic-child',
-            request_hash='4'*64,transition=SimpleNamespace(read=lambda:copy.deepcopy(row)))
+            request_hash='4'*64,transition=SimpleNamespace(read=lambda:copy.deepcopy(row),invocation=invocation))
         images=object.__new__(m.DiscoveryImages);images.window=window;images.parent=parent
         images.engine=engine;images.scope=image_scope;images.guard=Mock()
         gateway=object.__new__(m.DiscoveryGatewayRuntime);mcp=object.__new__(m.DiscoveryMcpRuntime)
@@ -90,6 +98,12 @@ class SelectedRuntime(unittest.TestCase):
         owner,calls,_=self.fixture();owner.gateway.apply.side_effect=CohortPaused('SYNTHETIC_GATEWAY_WAIT')
         with self.assertRaises(CohortPaused):owner.apply()
         owner.mcp.apply.assert_not_called();owner.installation.release_after_cohort_verification.assert_not_called()
+
+    def test_occupied_registry_transition_fence_blocks_dependent_dispatch(self):
+        owner,calls,_=self.fixture()
+        with owner.images.window.transition.invocation():
+            with self.assertRaises(BlockingIOError):owner.apply()
+        owner.gateway.apply.assert_not_called();owner.mcp.apply.assert_not_called()
 
     def test_revocation_between_gateway_and_mcp_stops_mcp(self):
         owner,calls,_=self.fixture()
