@@ -13,12 +13,18 @@ from tools.m2_discovery_installation_profile import mcp_runtime as m
 from tools.m2_discovery_installation_profile.gate_peer_window import GatePeerWindow
 from cutover_authority import CutoverAuthority
 from transition_journal import Transition
+from engine_creation import CreationDenied
 
 
 class Mcp(unittest.TestCase):
-    def fixture(self,*,historical=False,construct=True,import_images=False):
-        case=image_fixture.Images();images,auth,native_images,calls,cli,_=case.fixture();self.addCleanup(case.doCleanups)
-        selected=images.plan['images'][1];audit=selected['audit'];old,_,_=old_container('mcp')
+    def fixture(self,*,historical=False,construct=True,import_images=False,native_context=None):
+        if native_context is None:
+            case=image_fixture.Images();images,auth,native_images,calls,cli,_=case.fixture();self.addCleanup(case.doCleanups)
+            old,_,_=old_container('mcp')
+        else:
+            images,auth=native_context.images, native_context.auth
+            old=copy.deepcopy(native_context.old)
+        selected=images.plan['images'][1];audit=selected['audit']
         package={'schema':'ouf.unsigned-offline-candidate-package.v1','module':'mcp','runtimeUser':'10005:10005',
             'imageId':audit['imageId'],'sourceCommit':audit['sourceCommit'],
             'artifactFormat':'DOCKER_SAVE_OFFLINE_ARCHIVE_NOT_HOST_OCI_DECLARATION',
@@ -32,12 +38,17 @@ class Mcp(unittest.TestCase):
         # Only the selected MCP generation is stopped by this explicit fixture.
         old['HostConfig']['RestartPolicy']={'Name':'no','MaximumRetryCount':0}
         old['State'].update(Running=False,Pid=0,Status='exited');old['RestartCount']=0
-        native=DockerFixture(auth.root,{old['Id']:old},{'replacements':[plan['replacement']]});self.addCleanup(native.close)
-        window=images.window;image_request=window.engine.request
-        def request(method,path,body=None):
-            if path=='/v1.44/info' or path.startswith('/v1.44/images/'):return image_request(method,path,body)
-            return native.engine.request(method,path,body)
-        window.engine.request=request;window.engine.check_socket=native.engine.check_socket;window.engine.path=native.engine.path
+        window=images.window
+        if native_context is None:
+            native=DockerFixture(auth.root,{old['Id']:old},{'replacements':[plan['replacement']]});self.addCleanup(native.close)
+            image_request=window.engine.request
+            def request(method,path,body=None):
+                if path=='/v1.44/info' or path.startswith('/v1.44/images/'):return image_request(method,path,body)
+                return native.engine.request(method,path,body)
+            window.engine.request=request;window.engine.check_socket=native.engine.check_socket;window.engine.path=native.engine.path
+        else:
+            native=native_context
+            native.stop_old()
         directories=[]
         for name in ('mcp-installation','mcp-readiness'):
             path=auth.root/name;path.mkdir(mode=0o700);directories.append(path)
@@ -60,7 +71,9 @@ class Mcp(unittest.TestCase):
             transition=transition,request=window.request,profile=window.profile,store=window.store,directory=window.root)
         images=image_fixture.m.DiscoveryImages(window=window,plan=images.plan,journals=images.journals,docker_binding=images.docker)
         images.initialize()
-        if import_images:
+        if native_context is not None:
+            images.apply()
+        elif import_images:
             with patch.object(image_fixture.m,'subprocess',type('Cli',(),{'run':staticmethod(cli),'DEVNULL':-3})):images.apply()
         else:
             # Independently qualified image owner may reuse already present,
@@ -82,9 +95,11 @@ class Mcp(unittest.TestCase):
         clock=[500.0]
         arguments={'images':images,'plan':plan,'journal':m.Journal(directories[0]),
             'readiness_journal':m.Journal(directories[1]),'monotonic':lambda:clock[0],'boot':'synthetic-boot'}
+        if native_context is not None:
+            arguments.update(monotonic=native_context.monotonic,boot=native_context.boot)
         if not construct:return arguments,native,auth,clock
         owner=m.DiscoveryMcpRuntime(**arguments);owner.initialize()
-        owner.health=lambda row,actual,deadline:{'httpStatus':204,'responseBytes':0}
+        if native_context is None:owner.health=lambda row,actual,deadline:{'httpStatus':204,'responseBytes':0}
         return owner,native,auth,clock
 
     def test_only_mcp_replaced_once_with_preserved_config_and_current_parent_child(self):
@@ -100,8 +115,14 @@ class Mcp(unittest.TestCase):
     def test_lost_create_or_start_reply_read_reconciles_without_redispatch(self):
         for stage in ('create','start'):
             owner,native,_,_=self.fixture();native.lose_ack=stage
-            with self.assertRaises(Exception):owner.apply()
-            self.assertEqual(owner.record()['effects'][-1]['state'],'CLAIMED')
+            with self.assertRaisesRegex(CreationDenied,'ENGINE_OUTCOME_REQUIRES_RECONCILIATION'):owner.apply()
+            # Prove that the deliberately lost effect actually happened. A
+            # preceding journal/authority failure is not a lost-reply test.
+            self.assertEqual(sum(c[0]==stage for c in native.calls),1)
+            self.assertIsNone(native.lose_ack)
+            pending=owner.record()
+            self.assertEqual((pending['effects'][-1]['step'],pending['effects'][-1]['state']),
+                ('mcp.'+stage,'CLAIMED'))
             self.assertTrue(owner.apply()['replacementVerified'])
             self.assertEqual(sum(c[0]==stage for c in native.calls),1)
 

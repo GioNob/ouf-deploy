@@ -437,3 +437,23 @@ unresolved observations; guards were not relaxed. This is not native MCP owner,
 full cohort, target E2E, boot/rotation or coordinated publication acceptance.
 The ordinary MCP's three discovery descriptors remain INACTIVE; source/package
 qualification alone cannot make them production-visible.
+
+
+## Native qualification of the single MCP replacement
+
+`tests/qualify_m2_discovery_mcp_native.py` exercises `DiscoveryMcpRuntime` with
+Docker 29.8.1, native Engine create/start/update, the original production HTTP
+readiness method, real Ed25519 and private journals. A deliberately lost start
+reply is reconciled after constructing a new owner; another apply leaves both
+journals and the effect count unchanged. Mount content and restart policy are
+preserved; parent revocation prevents further work.
+
+This is a disposable CI fixture, never a target entrypoint. The executable is a
+small static HTTP server with the MCP empty-204 readiness contract. Parent/HUMAN
+scope, package provenance and the Registry held-release transition are explicitly
+synthetic. The fixture does not qualify the real MCP binary, complete cohort,
+capability publication, semantic discovery or CSV-to-UDP. Native CI is pending
+until the associated job and final report are read. The earlier intermittent
+local `MCP_INVOKING_RECORD_DRIFT` remains unresolved; an isolated passing rerun
+is not a causal fix. The lost-reply protocol test now requires the exact transport
+error and proves the expected dispatch happened before it accepts reconciliation.
