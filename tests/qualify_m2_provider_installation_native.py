@@ -190,6 +190,10 @@ def main():
             import types
             creation.engine.matching_configuration=types.MethodType(__import__('engine_creation').Engine.matching_configuration,creation.engine)
             w.process=gate
+            # Preserve the earlier modeled fixture record. Native predecessor
+            # observations receive their own new evidence directory.
+            native_store=root/'native-predecessor-evidence';native_store.mkdir(mode=0o700)
+            w.store=type(w.store)(native_store)
             actual=registry_native();hash_=w.store.publish('STAGE_PAUSED_REPLACEMENT',actual)
             row=w.transition.read();row['effects'][-1]['nativeEvidenceHash']=runtime.digest(actual);w.transition.read=lambda:copy.deepcopy(row)
             def dispatch(method,path,body=None):
