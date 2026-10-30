@@ -1,3 +1,36 @@
+# CURRENT — provider e worker qualificati separatamente; composizione e coorte M2 ancora aperte
+
+30 ottobre 2026, Europe/Rome. [Deploy54](https://github.com/GioNob/ouf-deploy/pull/54):
+provider v4 nativo PASS su push/PR; cutover/worker356test/42suite PASS su push/PR,
+zero skip e report finali letti. Worker tardivo nativo PASS su entrambi gli eventi:
+cattura Docker reale, nuovo fence, firme/file/registrazione/start, risposta persa
+riconciliata senza secondo avvio, systemd/DNS/nft e capsule37moduli invariata.
+Le ammissioni applicative del fixture worker sono sintetiche; il confine Docker
+del fixture provider è modellato. NON è ancora la prova comune di provider v4
+reale+worker, coorte completa o target CSV→UDP. Un primo test nativo ha restituito
+UNKNOWN con worker ACTIVE: causa non stabilita, fallimento conservato; i PASS
+successivi e la diagnostica CI non provano da soli la stabilità.
+
+Source1e174c8839f66213e30f7363a04a752457c3cffd aggiunge uguaglianza esatta
+provider/worker di kernel,DNS,coordinamento,journal,nft e lock, oltre alla ricetta
+Registry, e rifiuta il riuso su boot diverso.16casi locali PASS; CI successore
+ancora in corso. [Evidenze e limiti](https://github.com/GioNob/ouf-deploy/blob/feat/m2-discovery-complete-profile-20261029/evidence/m2-discovery-installation-composition-qualified-20261030.json).
+[Selezione pacchetti corrente](../releases/m2-discovery-cohort-selection-20261030.json):
+Registry4f8fb581/MCP09d1f521/Gatewayc666c0f0; Gateway607 è storico. Selezione e
+qualifica sorgenti NON sono review privata eseguibile, installazione o authority.
+
+Technical8/8,functional6/6,M1/G4 acquisiti per il caso conservato; M2/G5–G7,
+24AT,8UX,8criteri stabili e due client reali restano OPEN e nel denominatore.
+Farmacie stesso profilo SUCCEEDED61righe/10colonne, STRING/OPEN già confermati.
+Caricamento termina con oggetti UDP ed esiti di tutte le righe; capabilities UDP
+sugli oggetti carichi qualificate separatamente, search non è una fase.
+Receipt1868/runtime contract CONSUMATI, provider target osservato fermo; nessun
+nuovo effetto target o lettura indipendente. Nessun comando operatore pronto.
+NEXT prova comune provider/worker e coorte corrente, binding/review privata,
+TLS/IAM/DB/fencing/trust, boot/rotation/pubblicazione e vero collaudo CSV→UDP.
+Continuare autonomamente; no replay/reset/grant/budget/upload/job/acquisizione/
+merge/subagenti/automazioni. Header successivi storici per il prossimo passo.
+
 # CURRENT — contratto runtime provider osservato; scope consumato, sviluppo autonomo
 
 30 ottobre 2026, Europe/Rome. L’owner riporta READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED,

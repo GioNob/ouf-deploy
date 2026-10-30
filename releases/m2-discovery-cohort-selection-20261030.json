@@ -1,0 +1,184 @@
+{
+  "schema": "ouf.m2-discovery-cohort-selection-proposal.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "status": "EXACT_SOURCE_PACKAGE_SELECTION_NOT_PRIVATE_INSTALLATION_REVIEW",
+  "selectionIsNotExecutionAuthority": true,
+  "loadingContract": {
+    "end": "UDP_MATERIALIZATION_AND_COMPLETE_ROW_OUTCOMES",
+    "searchIsLoadingPhase": false,
+    "udpCapabilitiesQualifiedSeparatelyOnLoadedObjects": true,
+    "registryDiscoveryRemainsGovernedMappingInfrastructure": true
+  },
+  "candidates": [
+    {
+      "module": "semantic",
+      "repository": "GioNob/ouf-semantic-registry",
+      "sourceCommit": "4f8fb581916075a539bda4428be7bd8af073a569",
+      "pullRequest": 41,
+      "package": {
+        "publisherSource": "1086f7ea5a3281dc7731ea28d258f8fead403d07",
+        "runId": 40826468452,
+        "jobId": 123290550271,
+        "artifactId": 12876846746,
+        "artifactZipSha256": "c464eb6cb165c305d376c000579089dfed3e5f6cb3f22c953a74f193747659f8",
+        "artifactZipBytes": 203279361,
+        "imageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+        "runtimeUser": "10001:10001",
+        "fileSha256": {
+          "Dockerfile.resolved": "6127ffcb48da6ba569f8d22f5290f6b97f5bf970a9aa45f5e48b65aa3ad51345",
+          "application.jar": "69faab267f0ecca4b9775aa6004f474a8bd90220390658c901fb5436453dc2c2",
+          "image.docker.tar": "4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c",
+          "migration-continuity.json": "27bfd108c8c0fb36992e22c17f65ddc04560ca5161f684a46b23e2f17acf282b",
+          "package-record.json": "fb49890ba3f99bd40aeb51b8aa87ff941177f1cb8d7a433e15cfe8b3ba0dedbb",
+          "source-inventory.json": "8358799491fdb5f8d9a93d7f40c746f430a560092a266a7797423a56b9e5d7e1",
+          "source.tar": "64dff94de16bac72e213e7433ca38b4a3cc1dbd879d530db67f7df3c00deb55b",
+          "trivy-image.json": "1b2117760d772f6e0b1896418f870298f6841a408ffe1ff2cd3fa57aa80e3021"
+        },
+        "readbackEvidence": "evidence/m2-discovery-offline-package-readback-20261029.json",
+        "artifactExpiresAt": "2026-11-28T06:01:19Z"
+      },
+      "installedByThisWork": false
+    },
+    {
+      "module": "mcp",
+      "repository": "GioNob/ouf-mcp-server",
+      "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+      "pullRequest": 81,
+      "package": {
+        "producerCommit": "4829f9f84b12ae982e629faf730ca76238f66962",
+        "runId": 40841859485,
+        "jobId": 123339886141,
+        "artifactId": 12882394596,
+        "archiveSha256": "e779fcb822dd8aa074f20ef6a08b13e48363ec15aa27f2d6c09319ed384e22bf",
+        "archiveBytes": 38679087,
+        "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+        "sourceBlobsCompared": 261,
+        "payloadHashesVerified": 9,
+        "sourceBytesMatchGithubTree": true,
+        "reportedSeverityCounts": {
+          "LOW": 0,
+          "MEDIUM": 0,
+          "HIGH": 0,
+          "CRITICAL": 0,
+          "UNKNOWN": 0
+        },
+        "severityFilteredReport": true,
+        "imageId": "sha256:a013bceb49696a72853948b14f802e479e268e02046a889f142500d3022f5580",
+        "runtimeUser": "10005:10005",
+        "executableSha256": "8e35d3aa389a7f0aaba66d69177c6a7c1db467d39b3973f5578160e045c4190f",
+        "binaryComparedWithImageLayer": true,
+        "allLayerDiffIdsVerified": true,
+        "imageConfigBytesVerified": true,
+        "goVersion": "1.26.10"
+      },
+      "installedByThisWork": false
+    },
+    {
+      "module": "gateway",
+      "repository": "GioNob/ouf-api-gateway",
+      "sourceCommit": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+      "pullRequest": 84,
+      "artifactKind": "SOURCE_AND_MATERIALIZERS_NOT_CONTAINER_IMAGE",
+      "package": {
+        "archiveBytes": 1658434,
+        "archiveEntryModesMatchGithubExecutableBitsAndAreNotGroupWritable": true,
+        "archiveSha256": "22cd26a29460de69d9aae9392cebad2a3eca28b3b6bc0153bbaab7b68aa24441",
+        "artifactId": 12930098785,
+        "jobId": 123715265457,
+        "materializerFilesVerified": 10,
+        "payloadHashesVerified": 7,
+        "producerCommit": "18773790fe0874486cf94abd8eb40be951d0788f",
+        "runId": 40949998346,
+        "sourceBlobsCompared": 380,
+        "sourceBytesMatchGithubTree": true,
+        "sourceInventoryComplete": true,
+        "archiveExpiresAt": "2026-11-28T20:33:06Z"
+      },
+      "supersedesSourceCommit": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+      "reason": "Preserve retained routes and align the CAPABILITIES selector with MCP/owner; earlier source package remains historical.",
+      "installedByThisWork": false
+    }
+  ],
+  "retainedOwners": [
+    "udp",
+    "ingestion",
+    "onboarding",
+    "authorization",
+    "iam",
+    "database",
+    "gateway-runtime"
+  ],
+  "retainedOwnerRule": "Retain current approved versions/generations unless a concrete reviewed delta proves replacement necessary; never reuse the old four-replacement M1 action or its authority.",
+  "providerAndWorker": {
+    "providerTargetLastObservation": "STOPPED",
+    "runtimeContractReceipt": "evidence/m2-provider-runtime-contract-target-20261030.json",
+    "runtimeContractScopeConsumed": true,
+    "newOwnedProviderRequired": true,
+    "currentIndependentRegistryAndProviderAdmissionRequired": true,
+    "sameNativeKernelDnsCoordinationAndLockRequired": true,
+    "freshWorkerLogicalFenceRequired": true,
+    "sameGenerationAndOriginalClocksRequired": true,
+    "bootAndRotationQualified": false
+  },
+  "capabilityCatalogue": "catalogue/m2-semantic-discovery-capabilities.json",
+  "descriptorsPublishedByThisWork": false,
+  "requiredPrivateReviewInputs": [
+    {
+      "owner": "Deploy",
+      "input": "CURRENT_APPROVED_INSTALLATION_PROFILE_AND_NETWORK_ALLOCATION",
+      "purpose": "Resolve actual domains, endpoint/TLS references, placement, NIC/MAC/IP bindings, storage and native socket from approved configuration; no reusable historical defaults."
+    },
+    {
+      "owner": "Deploy/Registry",
+      "input": "EXACT_REGISTRY_REQUEST_RECIPE_ROOTFS_AND_TRANSPORT",
+      "purpose": "Bind selected image and independent complete OCI/rootfs recipe, current gate and signed phase intents."
+    },
+    {
+      "owner": "Deploy/provider",
+      "input": "CURRENT_V4_CONFIGURATION_AND_PROFILE_BINDINGS",
+      "purpose": "Preserve existing candidates/wrapper; bind isolated existing signing references, source closure, native shared lock/journal and approved runtime parent. No key value in public output."
+    },
+    {
+      "owner": "Gateway/MCP/Authorization",
+      "input": "CURRENT_EFFECTIVE_BINDINGS_AND_COHORT_ADMISSION",
+      "purpose": "Materialize exact packaged fixed routes/descriptors and owner configuration; verify TLS/IAM/scope/trust and retained capabilities before coordinated publication."
+    },
+    {
+      "owner": "Database/Ingestion/UDP",
+      "input": "CURRENT_BACKUP_FENCING_MIGRATION_AND_RETAINED_WORK_EVIDENCE",
+      "purpose": "Preserve existing schemas/data/Farmacie profile and cumulative histories; prove only the proposed delta and full current cohort before release."
+    }
+  ],
+  "packageLimits": {
+    "cryptographicPublisherTrustAccepted": false,
+    "severityFilteredReportsDoNotProveLowOrMediumAbsence": true,
+    "currentArtifactAvailabilityMustBeRecheckedBeforeDelivery": true,
+    "sourceQualificationDoesNotProveTargetAdmission": true
+  },
+  "acceptance": {
+    "technicalRetained": {
+      "passed": 8,
+      "total": 8
+    },
+    "functionalRetained": {
+      "passed": 6,
+      "total": 6
+    },
+    "m1G4Retained": true,
+    "m2G5G6G7": "OPEN",
+    "canonicalAcceptanceTests": 24,
+    "uxCriteria": 8,
+    "stabilityCriteria": 8,
+    "realClientsRequired": 2,
+    "allRemainInDenominator": true
+  },
+  "next": "BIND_CONCRETE_PRIVATE_INSTALLATION_REVIEW_AND_QUALIFY_CURRENT_COHORT_BEFORE_ANY_TARGET_APPLY",
+  "oldInputsAndCommandsRemainConsumed": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}
