@@ -3,13 +3,14 @@
 Seed images contain one inert text file and are never executed. No application
 admission, package publisher trust, complete cohort or target acceptance follows.
 """
-import copy,hashlib,io,json,os,shutil,stat,subprocess,sys,tarfile,tempfile,types,unittest
+import hashlib,io,json,os,shutil,stat,subprocess,sys,tarfile,tempfile,types,unittest
 from pathlib import Path
 from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
-    str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft')]
+    str(ROOT/'tools/semantic_lease_recovery'),str(ROOT/'tools/semantic_cohort_admission/cohort-draft'),
+    str(ROOT/'tools/semantic_policy_token_owner'),str(ROOT/'tools/semantic_frame_compiler')]
 import test_m2_discovery_gate_peer_window as gates
 from test_m2_discovery_native_profile import fixture as definition
 from tools.m2_discovery_installation_profile import cohort_images as m
