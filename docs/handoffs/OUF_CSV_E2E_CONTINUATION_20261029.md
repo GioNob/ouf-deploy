@@ -13,9 +13,11 @@ reale+worker, coorte completa o target CSV→UDP. Un primo test nativo ha restit
 UNKNOWN con worker ACTIVE: causa non stabilita, fallimento conservato; i PASS
 successivi e la diagnostica CI non provano da soli la stabilità.
 
-Source1e174c8839f66213e30f7363a04a752457c3cffd aggiunge uguaglianza esatta
-provider/worker di kernel,DNS,coordinamento,journal,nft e lock, oltre alla ricetta
-Registry, e rifiuta il riuso su boot diverso.16casi locali PASS; CI successore
+Source921212074a901b514794118083b37f0f60fe3e63 aggiunge uguaglianza esatta
+provider/worker di kernel,DNS,binding,nft e lock, oltre alla ricetta
+Registry, e rifiuta il riuso su boot diverso. Journal provider conservato e
+ledger worker nuovo/distinto: il vincolo iniziale sullo stesso path è stato corretto
+prima di ogni consegna target.16casi locali PASS; CI successore
 ancora in corso. [Evidenze e limiti](https://github.com/GioNob/ouf-deploy/blob/feat/m2-discovery-complete-profile-20261029/evidence/m2-discovery-installation-composition-qualified-20261030.json).
 [Selezione pacchetti corrente](../../releases/m2-discovery-cohort-selection-20261030.json):
 Registry4f8fb581/MCP09d1f521/Gatewayc666c0f0; Gateway607 è storico. Selezione e
