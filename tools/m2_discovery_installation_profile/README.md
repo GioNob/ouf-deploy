@@ -210,3 +210,38 @@ old provider and performs no native observation or lifecycle operation. The
 worker's finite issuer accepts this exact typed reader as well as the retained
 v1 reader. Signature/IO tests model previous native admissions explicitly; real
 wrapper switch/start/v4 admission and complete provider composition remain OPEN.
+
+
+## Provider native boundaries and contained initial sequence
+
+`provider_runtime_installation.py` switches only the exact already registered
+OUF wrapper, using the existing atomic CAS primitive and one durable claim.
+The held common native inode protects a fresh QUIESCED journal, empty inet and
+bridge lease families, source/program custody, current gate and Engine runtime
+selection. The proposed configuration retains every old candidate and all prior
+configuration bytes. Start is a separate single POST for the new owned CID;
+the common lock is released before it, so Broker/preparer can acquire it. Neither
+daemon reload nor old candidate lifecycle is available. A lost switch or start
+acknowledgement is reconciled by owned claims, actual wrapper/runtime generation
+and the current signed v4 admission plus both STARTED ledgers, never retransmitted.
+
+`provider_installation_phase.py` requires an explicitly reviewed v2 component
+covering CREATE, ISSUE, PUBLISH, SWITCH and START. Each stage is dispatched once
+behind durable CAS and exact readback; an in-memory retained row rejects a journal
+regression within the invocation. The distinct short maintenance-window policy
+permits three cumulative read-only observations per stage, with delays 0/1/3s
+and up to20% jitter. Its deadline remains the same original parent/child/gate;
+it grants no mutation retry, automatic closed-window reopen or renewed budget.
+Permanent failures close the gate immediately. Ambiguous transient effects can
+only be observed; exhausted/partial effects block. The original gate's finally
+closure pauses the Registry before completion returns. Completed observation
+retains initial publication proofs without demanding/resetting live mutable
+journals. Provider readiness and full cohort release remain separate checks.
+
+Protocol tests exercise actual wrapper CAS, fsync, flock, private files and
+Ed25519. The provider Engine/nft responses and prior node admission in these
+fixtures are explicitly synthetic; this is not native provider admission or a
+target start. One early concurrent composed run reported a retained-row drift;
+the diagnostic full rerun passed without reproduction, so this remains an open
+qualification issue pending CI/native investigation. Deferred worker assembly
+from new peer generations and complete application/cohort composition remain open.

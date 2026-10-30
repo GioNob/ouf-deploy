@@ -10,9 +10,11 @@ from test_m2_provider_installation_template import inputs
 from tools.m2_discovery_installation_profile import provider_creation as m
 
 class Creation(unittest.TestCase):
-    def fixture(self):
+    def fixture(self,*,runtime_binding=None):
         fixture=gate.Window();w,auth,gate_calls,registry,process,boundary=fixture.fixture();self.addCleanup(fixture.doCleanups)
-        root=auth.root/'provider-create';root.mkdir(mode=0o700);template=m.templates.template(**inputs())
+        root=auth.root/'provider-create';root.mkdir(mode=0o700);options=inputs()
+        if runtime_binding is not None:options['runtime_binding']=runtime_binding
+        template=m.templates.template(**options)
         scope=m.creation_scope(template,w.scope,root);auth.review['components']['providerInstallation']=scope
         w.parent=auth.fixture();w.parent_hash=w.parent.sha
         owner=m.ProviderCreation(parent=w.parent,window=w,template=template,journal_directory=root)

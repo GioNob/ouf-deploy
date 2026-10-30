@@ -237,7 +237,8 @@ class ProviderInitialIssuer:
             and self.scope==recompile_scope(self.template,self.creation.scope,self.scope) and digest(self.scope)==self.scope_hash,
             'PROVIDER_ISSUER_SCOPE_DRIFT')
         installation=self.creation.component.get('installation',{})
-        require(self.creation.component.get('schema')=='ouf.discovery-composed-provider-installation-scope.v1'
+        require(self.creation.component.get('schema') in {'ouf.discovery-composed-provider-installation-scope.v1',
+            'ouf.discovery-composed-provider-installation-scope.v2'}
             and (installation==self.scope or installation.get('profiles')==self.scope),
             'EXPLICIT_PARENT_REVIEW_OF_PROVIDER_PROFILE_AND_KEY_SCOPE_REQUIRED')
         with directory(self.root) as fd:require(stat.S_IMODE(os.fstat(fd).st_mode)==0o700

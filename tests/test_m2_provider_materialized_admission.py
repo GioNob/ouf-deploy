@@ -30,8 +30,13 @@ class Admission(unittest.TestCase):
         pub=ProviderProfilePublication(issuer);reader=m.MaterializedProviderAdmission(publication=pub,lease_template=lease)
         with w.peer_window():
             creation.create_once();issuer.issue_once();pub.apply();material=pub.material()
+        return self.admit(reader,auth)
+    def admit(self,reader,auth,generation=None):
+        # Explicitly synthetic prior node/installer native acceptance; signatures
+        # and exact v4 protocol records are real. Never native proof.
+        issuer=reader.issuer;parent=reader.parent;material=reader.publication.material();lease=reader.template
         root=Path(material['root']);intent=material['payloads']['intent'];ctx=auth.context
-        generation={'pid':2345,'startTicks':6789,'namespaceInode':101}
+        generation=generation or {'pid':2345,'startTicks':6789,'namespaceInode':101}
         frame={'schema':'ouf.semantic-container-creation-acceptance.v2','containerId':intent['containerId'],
             'applicationHash':material['materialized']['applicationHash'],'transportHash':intent['transportHash'],
             'accepted':True,'artifactHash':intent['artifactHash'],'creationFrameHash':'7'*64}

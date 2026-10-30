@@ -1,3 +1,29 @@
+# CURRENT — one provider wrapper switch/start and durable contained sequence under qualification
+
+30 October 2026. c75a951e profile/worker bridge CI329tests/38suites push+PR PASS;
+final protocol and affected native gate/worker logs read. Target runtime-contract
+receipt remains CONSUMED; provider stopped, no target start/admission/E2E inferred.
+New source reuses the existing atomic wrapper CAS with native QUIESCED/empty
+both-family guard and exact existing lock. One provider start releases that lock
+before Docker/Broker/preparer; lost replies are only observed. Readback requires
+the new owned CID and current signed v4 admission plus STARTED adapter/consumption.
+Parent-reviewed v2 component adds CREATE→ISSUE→PUBLISH→SWITCH→START journal,
+one dispatch each, exact CAS readback/retained invocation row, three cumulative
+read-only observations per stage with short bounded backoff/jitter inside the
+original gate window. No closed-window reopen, mutation retry or budget reset.
+Registry gate is paused in finally before return; partial/unknown work blocks.
+Six runtime protocol cases and five composed cases PASS locally, with actual
+wrapper rename/fsync/flock/signatures/files; Engine/nft/node admissions modeled.
+An earlier composed run reported retained-row drift under concurrent suites;
+standalone diagnostic rerun passed, cause remains under investigation. Do not
+promote that to native qualification. Full current v4 provider native composition,
+application/deferred worker/full cohort, boot/rotation, capability publication and
+CSV→UDP target E2E remain OPEN. Continue independently; no target command ready.
+Technical8/8,functional6/6 and M1/G4 retained; M2/G5–G7/two clients/eight stability
+criteria OPEN. UDP capabilities operate on loaded objects; search is not loading.
+No replay/reset/grant/budget/upload/profile/job/acquisition/merge/agents/automation.
+Older CURRENT headers are historical for selecting the next action.
+
 # CURRENT — provider initial mandates, v4 profiles and worker admission bridge under qualification
 
 30 October 2026. Target reader receipt and command remain CONSUMED (c14c8f4d docs).

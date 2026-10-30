@@ -18,6 +18,27 @@ from recovery_journal import Journal
 
 ROW_FIELDS={'schema','scopeHash','parentAuthorityHash','creationRequestHash','windowHash',
     'registryRuntimeBinding','registryGeneration','state','version','containerId','nativeCreatedEvidenceHash'}
+PROVIDER_STAGES=('CREATE','ISSUE','PUBLISH','SWITCH','START')
+
+def provider_sequence_scope(creation,installation,admission,*,journal_directory):
+    root=templates.absolute(str(journal_directory))
+    require(type(creation) is dict and creation.get('schema')=='ouf.discovery-provider-creation-scope.v1'
+        and type(installation) is dict and installation.get('schema')=='ouf.discovery-provider-runtime-installation-scope.v1'
+        and type(admission) is dict and admission.get('schema')=='ouf.discovery-materialized-provider-admission-scope.v1'
+        and installation['profiles']['creationScopeHash']==admission['creationScopeHash']==digest(creation)
+        and admission['profileScopeHash']==digest(installation['profiles'])
+        and len(Path(root).parts)>=4,'EXACT_PROVIDER_SEQUENCE_COMPONENTS_REQUIRED')
+    roots=(creation['journalDirectory'],installation['profiles']['journalDirectory'],installation['profiles']['registryRoot'])
+    require(all(not Path(root).is_relative_to(p) and not Path(p).is_relative_to(root) for p in roots),
+        'DISTINCT_PROVIDER_SEQUENCE_JOURNAL_REQUIRED')
+    return {'schema':'ouf.discovery-provider-installation-sequence-scope.v1',
+        'creationScopeHash':digest(creation),'installationScopeHash':digest(installation),'admissionScopeHash':digest(admission),
+        'journalDirectory':root,'stages':list(PROVIDER_STAGES),'maximumDispatchesPerStage':1,
+        'observationPolicy':{'schema':'ouf.discovery-gate-window-reconciliation-policy.v1',
+            'maximumObservationsPerStage':3,'delaysSeconds':[0,1,3],'jitterFraction':0.2,
+            'deadline':'SAME_ORIGINAL_PARENT_CHILD_AND_GATE_WINDOW','mutationRetryAllowed':False},
+        'mustCloseRegistryGateBeforeReturn':True,'closedWindowReopenAuthorized':False,
+        'automaticReplayAllowed':False,'budgetReset':False}
 
 def creation_scope(template,gate_window_scope,journal_directory):
     t=templates.recompile(template);root=templates.absolute(str(journal_directory))
@@ -35,10 +56,15 @@ def creation_scope(template,gate_window_scope,journal_directory):
 
 def creation_component(scope,installation=None):
     if installation is None:return copy.deepcopy(scope)
-    require(type(installation) is dict and set(installation)=={'schema','creation','installation','admission'}
-        and installation['schema']=='ouf.discovery-composed-provider-installation-scope.v1'
+    require(type(installation) is dict and installation.get('schema') in {
+        'ouf.discovery-composed-provider-installation-scope.v1','ouf.discovery-composed-provider-installation-scope.v2'}
+        and set(installation)=={'schema','creation','installation','admission'}|(
+            {'sequence'} if installation['schema'].endswith('.v2') else set())
         and installation['creation']==scope and all(type(installation[k]) is dict and bool(installation[k]) for k in ('installation','admission')),
         'EXACT_EXPLICIT_PROVIDER_CREATION_INSTALLATION_AND_ADMISSION_REVIEW_REQUIRED')
+    if installation['schema'].endswith('.v2'):
+        require(installation['sequence']==provider_sequence_scope(scope,installation['installation'],installation['admission'],
+            journal_directory=installation['sequence']['journalDirectory']),'EXACT_REVIEWED_PROVIDER_SEQUENCE_REQUIRED')
     return copy.deepcopy(installation)
 
 class ProviderCreation:
