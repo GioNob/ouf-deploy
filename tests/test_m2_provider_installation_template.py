@@ -25,7 +25,7 @@ def inputs():
         'NetworkingConfig':{'EndpointsConfig':{'fixture-network':{'MacAddress':own['mac'],'IPAMConfig':{'IPv4Address':own['ipv4']}}}}}
     context={k:v for k,v in f.context.items() if k not in {'schema','containerId','rootfsPath'}}
     context.update(schema='ouf.discovery-provider-docker-context-template.v1',networkNamespaceName=None,rootfsLayout='bundle-rootfs-v1')
-    flow={'purpose':'REGISTRY_DEPENDENCY','authorityRef':'fixture-infrastructure','source':own['ipv4'],'destination':peer['ipv4'],
+    flow={'purpose':'GATEWAY_ADAPTER','authorityRef':'fixture-infrastructure','source':own['ipv4'],'destination':peer['ipv4'],
         'protocol':'tcp','port':9443,'peerIngress':{'kind':'CREATED_CANDIDATE','bindingRef':peer['bindingRef'],
             'declaration':{'containerId':m.CID_SLOT,'applicationHash':m.APP_SLOT,'networkBindings':[peer]}}}
     return dict(source_closure_hash='a'*64,qualified_package_hash='b'*64,image_configuration_hash='c'*64,
@@ -35,6 +35,10 @@ def inputs():
         runtime_binding={'path':'/usr/bin/runc','sha256':'e'*64})
 
 class Template(unittest.TestCase):
+    def test_invalid_transport_contract_is_rejected_before_native_allocation_or_signing(self):
+        for change in ({'purpose':'REGISTRY_DEPENDENCY'},{'protocol':'udp'},{'port':0},{'source':'10.77.0.99'}):
+            options=inputs();options['transport_template'][0].update(change)
+            with self.assertRaises(ValueError):m.template(**options)
     def test_static_review_predates_both_identities_and_materialization_grants_nothing(self):
         opts=inputs();before=copy.deepcopy(opts);t=m.template(**opts)
         self.assertEqual(opts,before);self.assertEqual(m.recompile(t),t)

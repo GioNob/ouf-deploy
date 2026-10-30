@@ -10,6 +10,7 @@ from .custody_capture import digest,encoded,require
 from tools.semantic_frame_compiler.compile_creation_frame_policy import compile_policy,environment,docker_context
 from tools.semantic_provider_peer_bindings import declaration,declarations
 from tools.semantic_provider_deployment_admission import transport_hash
+from tools.materialize_semantic_shared_faces import materialize as compile_shared_faces
 
 CID_SLOT='$REGISTRY_CONTAINER_ID'
 APP_SLOT='$REGISTRY_APPLICATION_HASH'
@@ -113,6 +114,26 @@ def launch_matches_request(request,launch,runtime):
         and [{'source':m['Source'],'target':m['Target'],'readOnly':m['ReadOnly']} for m in mounts]==manifest['mounts'],
         'EXACT_PROVIDER_PRIVATE_READONLY_MOUNTS_REQUIRED')
 
+def validate_transport_shape(bindings,flows,table):
+    """Run the existing pure kernel-policy validator before native identities.
+
+    Closed temporary link indexes exist only to validate the static contract;
+    neither indexes nor compiled rules are returned, installed or admitted.
+    Native peer collection must still supply real reciprocal indexes later.
+    """
+    reserved={f['peerIngress']['ifindex'] for f in flows if type(f['peerIngress'].get('ifindex')) is int}
+    free=[i for i in range(1,259) if i not in reserved][:2];own_index,peer_index=free
+    own=bindings[0];interface='review0' if own['bridge']!='review0' else 'review1'
+    attachment={k:own[k] for k in ('bridge','mac','ipv4','workloadRef','bindingRef')}
+    attachment.update(interface=interface,ifindex=own_index)
+    selected=copy.deepcopy(flows)
+    for flow in selected:
+        if flow['peerIngress']['kind']=='CREATED_CANDIDATE':flow['peerIngress']={'kind':'BRIDGE_PORT','ifindex':peer_index}
+    policy={'schema':'ouf.semantic-shared-faces.v1','tableName':table,'attachments':[attachment],'flows':selected}
+    if 'leaseGuard' in own:
+        policy.update(schema='ouf.semantic-shared-faces.v2',globalLeaseGuard={**own['leaseGuard'],'bridges':[own['bridge']]})
+    compile_shared_faces(policy)
+
 def template(*,source_closure_hash,qualified_package_hash,image_configuration_hash,expected_rootfs_seal,
              request,frame_template,launch,docker_context_template,network_bindings,transport_template,
              table_name,runtime_binding):
@@ -138,6 +159,7 @@ def template(*,source_closure_hash,qualified_package_hash,image_configuration_ha
     provider='0'*64;registry={'containerId':'1'*64,'applicationHash':'2'*64}
     declaration({'containerId':provider,'applicationHash':'3'*64,'networkBindings':network_bindings})
     concrete=rendered_transport(transport_template,registry);declarations(concrete,provider)
+    validate_transport_shape(network_bindings,concrete,table_name)
     compile_policy(frame_template,launch,context_for(docker_context_template,provider))
     value={'schema':'ouf.discovery-provider-installation-template.v1','sourceClosureHash':source_closure_hash,
         'qualifiedPackageHash':qualified_package_hash,'imageConfigurationHash':image_configuration_hash,
