@@ -1,3 +1,49 @@
+# CURRENT — Teatri riusata per il flusso generale; Farmacie corrente; recupero MCP qualificato
+
+30 ottobre 2026, Europe/Rome. L'owner chiarisce: Teatri è completata a passi
+singoli; riusare quanto realizzato per un flusso completo, ripetibile e resiliente
+per ogni file. Farmacie è il caso attuale. M1/G4, tecnico8/8 e funzionale6/6
+rimangono acquisiti per Teatri; non equivalgono all'accettazione generale M2.
+Nessuna terza acquisizione Teatri e nessun nuovo upload/profiling Farmacie:
+stesso profilo SUCCEEDED61righe/10colonne, codice ministeriale STRING e10campi
+OPEN già confermati.
+
+La sequenza ordinaria riusa asset/job, proposta e compiler, semantica locale
+pubblicata ed eventuale discovery OntoPiA governata, review/onboarding,
+Ingestion e riconciliazione/materializzazione UDP con esiti di tutte le righe.
+Search sugli oggetti caricati resta separata; verticali/API/scheduler/delta seguono
+questo percorso file. Non riscrivere pipeline o motori già esistenti.
+
+Nuovo incremento [PR54](https://github.com/GioNob/ouf-deploy/pull/54):
+test di risposta persa più rigoroso, che richiede errore Engine esatto e prova
+del dispatch; qualifica nativa del solo MCP con Docker29.8.1, Engine, HTTP,
+Ed25519 e journal reali. Risposta di start persa riconciliata dopo ricostruzione,
+nessun secondo avvio, montaggi/restart policy preservati, repeat senza cambi e
+revoca bloccante. Successore dc16fa46 prova davvero503/Retry-After→204:
+backoff persistito senza nuovi health/lifecycle, start e tentativi cumulativi
+conservati attraverso un'altra ricostruzione. Push41123600168/job124296302282 e
+PR41123610248/job124296342265 PASS; entrambi report finali letti.
+Protocollo d4410db9:391test/46suite/zero skip per evento, push41123284691/
+job124295154658 e PR41123296096/job124295188542 PASS/report finali letti.
+
+[Evidenze](../../evidence/m2-discovery-mcp-native-qualified-20261030.json) e
+[checkpoint di riuso e limiti](OUF_M2_SINGLE_MCP_NATIVE_20261030.md).
+L'app del fixture è HTTP statica; parent/pacchetti/ammissione Registry sintetici.
+Non prova il vero binario MCP, coorte completa, capability installate o CSV→UDP.
+Le due anomalie locali MCP_INVOKING_RECORD_DRIFT e DETACHED_VERIFICATION_UNPROVEN
+restano senza causa dimostrata; CI positiva non le cancella, guardie invariate.
+
+Sole letture live ouf-admin: MCP HEALTHY; Farmacia CLASS search [] per quella
+query; ingestion.status DENY permanente non ritentato, non regressione Teatri.
+Discovery non ancora esposta nel plugin installato. Prossimo: composizione
+provider/worker e coorte corrente, TLS/IAM/DB/fencing/trust, compilatore/review
+privata/CLI sigillati, pubblicazione coordinata; poi vera discovery Farmacie,
+mapping pinned, Ingestion/UDP, reimport invariato/fault/ripresa/cambio chat,
+boot/rotazione e due client. M2/G5–G7/24AT/8UX/8stabilità restano OPEN.
+Nessun nuovo comando operatore pronto o effetto target/authority/grant/reset/
+replay/merge/accettazione dedotto. Input/scope precedenti restano consumati.
+Header seguenti storici.
+
 # Caricamento CSV → UDP e capabilities sugli oggetti caricati
 
 # CURRENT — Go 1.27.3 e pacchetto MCP qualificati; import immagini nativo PASS
