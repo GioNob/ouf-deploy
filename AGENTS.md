@@ -1,3 +1,36 @@
+# CURRENT —358/42PASS; common-parent v2 worker and hidden-key successor pending CI
+
+30 October2026, Europe/Rome. Source92121207 push41033242607/job123987773868
+and PR41033252084/job123987806200:358tests/42suites PASS/0skip; final reports
+read. Native late worker at same source push41033242701/job123987774158 and
+PR41033252318/job123987806700 PASS, full reports read. Native provider v4 proof
+remains separate; Docker boundary modeled there and application admissions
+modeled in worker proof. Combined real v4 provider+worker/full cohort/target E2E
+remain OPEN, as do boot/rotation and all8stability criteria.
+
+Current successor checks ALL known provider and Registry signing-key paths are
+hidden by the compiled worker sandbox. New positive v2 protocol test constructs
+the worker owner BEFORE the provider CID exists, then uses the same current
+parent/child, materialized provider admission, independent Registry recipe and
+native kernel/DNS/binding/lock to issue real worker signatures and publish files.
+Provider admission journal is preserved; worker ledger is fresh/distinct. Stops
+at explicitly modeled manager boundary.10worker+7composition local cases PASS;
+last before-CID variant also PASS. Engine/nft/Registry/provider admission leaves
+in this protocol case are modeled, not native or target proof. Successor CI pending.
+
+Local suite additionally reproduced sequence row drift at effects/2,state,version;
+strict guard blocked. Diagnostic rerun10cases PASS, isolated before-CID PASS;
+cause remains unestablished. Retain diagnostics/history, do not label resolved or
+weaken equality/fencing. Native first UNKNOWN atc622 remains unresolved too.
+Blueprint0.3 original DOCX §§9–10 reconsulted beside Matrix1.7 §1/7.2,
+Registry1.3 §26.1/26.3/26.4, miniPET1.3 §4/6 and resiliencev3; no full compliance
+claim. New cohort selection/current docs on PR50; Gatewayc666 replaces historical
+607 candidate. No operator command ready. Continue independently, no target
+apply/authority/grant/budget/replay/reset/upload/job/acquisition/merge/agents/
+automation. Technical8/8,functional6/6,M1/G4 retained; M2/G5–G7/24AT/8UX/
+8stability/two clients OPEN. CSV ends at UDP/all row outcomes; UDP capabilities
+qualified separately on loaded objects, search not loading.
+
 # CURRENT — late native worker and356/42PASS; shared provider/worker binding checks pending CI
 
 30 October2026. Sourcec6227103 protocol push41030639884/job123979277726

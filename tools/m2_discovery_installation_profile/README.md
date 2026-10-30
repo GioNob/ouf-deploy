@@ -306,3 +306,18 @@ cannot reconstruct/rearm retained material. Nine late
 materialization cases and seven composition cases pass locally; these newer
 binding/boot changes await CI. Actual v4 provider and late worker native proofs
 remain separate; their complete common cohort is still open.
+
+
+Source92121207 passed358tests/42suites push41033242607/PR41033252084, zero
+skips; native late worker also passed both events at that source. Reports read.
+The successor adds known provider/Registry signing-key exclusion and one common
+parent v2 protocol case: worker owner constructed before future CID allocation,
+one provider sequence/current materialized admission, real worker signatures and
+create-only files, preserved provider journal and a distinct new worker ledger.
+All10 worker cases plus7 composition cases pass locally; the last before-CID
+variant passes separately. Engine/kernel/application admission remain modeled
+in that protocol case and manager dispatch stops at an explicit modeled boundary.
+Successor CI is pending. A local full-suite attempt reported row drift at
+`effects/2,state,version`; strict equality blocked, later diagnostic10-case run
+passed, cause unestablished. Neither that rerun nor native success establishes
+why the earlier observation changed. No target, full cohort or stability claim.

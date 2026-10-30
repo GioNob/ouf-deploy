@@ -3,32 +3,32 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "c622710396532b3ab08703df1348bdd903e12e29",
-    "testsPerEvent": 356,
+    "sourceCommit": "921212074a901b514794118083b37f0f60fe3e63",
+    "testsPerEvent": 358,
     "suitesPerEvent": 42,
     "skips": 0,
     "push": {
-      "run": 41030639884,
-      "job": 123979277726,
+      "run": 41033242607,
+      "job": 123987773868,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41030648972,
-      "job": 123979307642,
+      "run": 41033252084,
+      "job": 123987806200,
       "conclusion": "success"
     },
     "finalReportsRead": true
   },
   "nativeLateWorker": {
-    "sourceCommit": "eefcfb325d8d3363b89c2e8b34ae26f8c44f9ba3",
+    "sourceCommit": "921212074a901b514794118083b37f0f60fe3e63",
     "push": {
-      "run": 41030898590,
-      "job": 123980116054,
+      "run": 41033242701,
+      "job": 123987774158,
       "conclusion": "success"
     },
     "pullRequest": {
-      "run": 41030907680,
-      "job": 123980145228,
+      "run": 41033252318,
+      "job": 123987806700,
       "conclusion": "success"
     },
     "finalReportsRead": true,
@@ -51,7 +51,7 @@
   "newerBindingAndBootDelta": {
     "localLateMaterializationCases": 9,
     "localCompositionCases": 7,
-    "ciQualification": "PENDING_SUCCESSOR",
+    "ciQualification": "QUALIFIED_AT_92121207_358_TESTS_42_SUITES",
     "newBootCannotRearm": true,
     "sameRegistryKernelDnsBindingNftAndCommonLockRequired": true,
     "distinctNewWorkerLedgerAndPreservedProviderJournalRequired": true
@@ -71,5 +71,28 @@
     "status": "SUPERSEDED_BEFORE_TARGET_DELIVERY",
     "reason": "Shared coordination journal conflicts with create-only worker publication. Shared binding/kernel/lock retained; distinct journals required.",
     "targetEffects": 0
+  },
+  "nextCommonParentAndKeyIsolationDelta": {
+    "ciQualification": "PENDING_SUCCESSOR",
+    "localLateWorkerCases": 10,
+    "localCompositionCases": 7,
+    "lastBeforeCidVariantPassed": true,
+    "workerOwnerConstructedBeforeProviderCid": true,
+    "allKnownProviderAndRegistrySigningKeysHiddenRequired": true,
+    "realProtocolSignaturesAndFiles": true,
+    "nativeEngineKernelAndApplicationAdmissionLeavesModeled": true,
+    "managerBoundaryModeled": true
+  },
+  "localQualificationLimit": {
+    "fullSuiteIntermediateFailure": "PROVIDER_SEQUENCE_INVOKING_RECORD_DRIFT",
+    "differingFields": [
+      "effects/2",
+      "state",
+      "version"
+    ],
+    "guardBlocked": true,
+    "diagnosticFullSuiteLaterPassed": 10,
+    "causeEstablished": false,
+    "noProductionGuardRelaxed": true
   }
 }

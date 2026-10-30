@@ -53,6 +53,9 @@ def paired_native_inputs(template,profile_scope,registry_request,kernel_lock_ide
     require(r['coordinationJournal']==str(ledger/'coordination.json')
         and not Path(prep['coordinationJournal']).is_relative_to(ledger),
         'DISTINCT_NEW_WORKER_LEDGER_AND_PRESERVED_PROVIDER_JOURNAL_REQUIRED')
+    require(type(profile_scope.get('keys')) is dict and set(profile_scope['keys'])=={'installer','attestor'}
+        and all(v['path'] in t['signingKeyPaths'] for v in profile_scope['keys'].values()),
+        'ALL_PROVIDER_SIGNING_KEYS_MUST_BE_HIDDEN_FROM_WORKER_REQUIRED')
 
 def stable_native(value):
     return {k:value[k] for k in DOCKER_FIELDS}|{'RestartCount':value['RestartCount'],
@@ -108,6 +111,8 @@ class WorkerMaterialization:
                 'SAME_NEW_PROVIDER_AND_REGISTRY_INSTALLATION_REQUIRED')
             require(creation.component.get('schema')=='ouf.discovery-composed-provider-installation-scope.v2',
                 'COMPLETE_REVIEWED_PROVIDER_SEQUENCE_REQUIRED_FOR_LATE_WORKER')
+            require(type(self.node.signer) is ExistingEd25519Signer and self.node.signer.key['path'] in self.template['signingKeyPaths'],
+                'REGISTRY_SIGNING_KEY_MUST_BE_HIDDEN_FROM_WORKER_REQUIRED')
             self.provider.issuer.check_scope()
             paired_native_inputs(self.template,self.provider.issuer.scope,self.node.request,
                 creation.component['installation']['commonLockIdentity'])
