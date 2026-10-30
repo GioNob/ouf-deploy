@@ -30,6 +30,7 @@ class DiscoverySelectedRuntime:
             and gateway.images is mcp.images is images and gateway.window is mcp.window is window
             and gateway.parent is mcp.parent is images.parent is window.parent
             and install.provider.window is window and install.provider.parent is window.parent
+            and install.application.discovery_parent is window.parent
             and install.application.transition is window.transition
             and gateway.engine is mcp.engine is images.engine is window.engine
             and gateway.action.authority is mcp.action.authority is window.child

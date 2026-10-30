@@ -489,3 +489,15 @@ Ed25519/files/journals with modeled Docker/Admin HTTP. The selected composition
 suite models owner leaves and proves only ordering/binding/failure propagation.
 Combined native composition, the complete current cohort and target delivery
 remain separate mandatory qualifications.
+
+The selected owners' signed child carries `gatewayRuntimeInstallation` and
+`discoveryMcpInstallation`. The original Executor correctly rejects these extra
+fields; a parent-bound assembly must supply `discovery_parent` to
+DiscoveryApplication. Its dedicated `DiscoveryExecutor` authenticates the current
+parent/child and exact Gateway v2/MCP v1 sections before extending only that
+closed field set. It reuses all original phase/checkpoint/fencing logic. The
+legacy Executor's extension set remains empty and the file-only profile remains
+closed; no flag or temporary projection bypasses their validation. Unknown signed
+fields, mismatching sections, changed parent and revocation fail before a claim.
+The complete sealed private compiler/CLI and native cohort qualification remain
+mandatory; constructor support and synthetic phase tests do not supply them.

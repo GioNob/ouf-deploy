@@ -122,6 +122,49 @@ class Assembly(unittest.TestCase):
             app.release_after_cohort_verification()
         self.assertEqual(calls,[]);self.assertEqual(app.transition.read()['version'],0)
 
+    def test_current_parent_enables_exact_discovery_sections_without_relaxing_legacy_executor(self):
+        from test_m2_discovery_executor import fixture_component
+        from tools.m2_discovery_installation_profile.executor import DiscoveryExecutor,runtime_sections
+        from tools.m2_discovery_installation_profile import parent_authority as parent
+        from cutover_executor import CutoverDenied
+        holder={}
+        def extend(value):
+            holder['bindings']={'sourceClosureHash':self.expected['sourceClosureHash'],
+                'installationInputsHash':'1'*64,'desiredProfileHash':'2'*64}
+            holder['component']=fixture_component(self.root,holder['bindings'])
+            value.update(copy.deepcopy(runtime_sections(holder['component'])))
+        options,calls,*_=self.fixture(extend)
+        legacy=m.DiscoveryApplication(**options)
+        with self.assertRaisesRegex(CutoverDenied,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED'):legacy.executor.run(1)
+        self.assertEqual(calls,[]);self.assertEqual(legacy.transition.read()['version'],0)
+        review={'schema':'ouf.discovery-parent-installation-review.v1',**holder['bindings'],
+            'predecessorHistoryHash':self.expected['predecessorHistoryHash'],
+            'components':{k:{'schema':'synthetic-component'} for k in parent.COMPONENTS},
+            'operationalSemantics':copy.deepcopy(parent.SEMANTICS),'runtimeAuthorityIssued':False,
+            'targetApplyAuthorized':False,'releaseAcceptance':False}
+        review['components']['cohortInstallation']=holder['component']
+        review['components']['registryCutover']={'schema':'ouf.discovery-registry-child-scope.v1',
+            'authorityHash':signed.sha(self.authority),'humanManifestHash':options['authority'].approved,
+            **options['authority'].expected}
+        scope=parent.review_scope(review)
+        raw=parent.encoded({'schema':'ouf.discovery-parent-execution-authority.v1','scope':scope,
+            'issuedAt':self.now,'expiresAt':self.now+120,'installationRef':self.context['installationRef'],
+            'entityRef':self.context['entityRef'],'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False})
+        human={'schema':'ouf.discovery-parent-human-decision.v1','decision':parent.DECISION,'state':'ACTIVE',
+            'approvalRef':'SYNTHETIC_ASSEMBLY_PARENT_NOT_TARGET','scope':scope,'authorityHash':signed.sha(raw),
+            'issuedAt':self.now,'expiresAt':self.now+120}
+        path=self.root/'assembly-parent-human.json';self.write(path,parent.encoded(human))
+        original=self.authority
+        try:
+            self.authority=raw
+            for role in self.grant['roles']:self.sign(role)
+        finally:self.authority=original
+        current=parent.DiscoveryParentAuthority(options['verifier'],self.binding(path),self.binding(path)['sha256'],
+            self.context,review,raw,self.clock)
+        app=m.DiscoveryApplication(**options,discovery_parent=current)
+        self.assertIs(type(app.executor),DiscoveryExecutor);app.executor.run(1)
+        self.assertEqual(calls,[m.PHASES[0]])
+
     def test_missing_or_shared_transport_worker_owner_is_denied_before_claim(self):
         for change in ('missing','shared'):
             options,calls,_,owners,_=self.fixture()

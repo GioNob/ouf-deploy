@@ -40,6 +40,14 @@ class Executor:
             self.aggregate_scope=json.loads(json.dumps(aggregate_scope,allow_nan=False))
         else:require(aggregate_scope is None,'AGGREGATE_SCOPE_WITHOUT_TYPED_AUTHORITY_DENIED')
 
+    def additional_authority_fields(self):
+        """No extensions in the legacy/file-only executor.
+
+        A source-sealed specialized executor must independently authenticate
+        its exact additional scope; no caller-provided flag/callback extends it.
+        """
+        return set()
+
     def verify(self,phase,point,row):
         require(set(self.adapters)==set(self.intents)==set(self.phases) and all(digest(self.intents[p])==self.intent_hashes[p] for p in self.phases),'IMMUTABLE_PHASE_ADAPTER_OR_INTENT_DRIFT')
         # The external authenticator must verify the CURRENT signature, policy,
@@ -68,7 +76,7 @@ class Executor:
                 'policyTokenFiniteWorkerSession','tokenOwnerRuntime','applicationCohortInstallation','gatewayRoutePublication',
                 'chatbotFileAuthorization','finiteActionProcess','applicationRegistryCutover','cohortImageImport',
                 'gatewayRuntimeInstallation'}
-        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields|aggregate_fields,'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
+        require(set(authority)=={'schema','issuedAt','expiresAt','creationRequestHash','predecessorHistoryHash','predecessorIncidentRef','sourceClosureHash','phaseIntentHashes','automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized','newDistinctLeaseWorkerRequired'}|profile_fields|aggregate_fields|self.additional_authority_fields(),'EXACT_CUTOVER_AUTHORITY_SCOPE_REQUIRED')
         require(authority['schema']==('ouf.semantic-cutover-execution-authority.v1' if self.profile_hash is None else 'ouf.semantic-cutover-execution-authority.v2'),'EXACT_CUTOVER_AUTHORITY_SCHEMA_REQUIRED')
         require(hash_value(authority['sourceClosureHash']),'SIGNED_SOURCE_CLOSURE_HASH_REQUIRED')
         require(type(authority['issuedAt']) is int and type(authority['expiresAt']) is int and authority['issuedAt']<=now<authority['expiresAt'] and 0<authority['expiresAt']-authority['issuedAt']<=3600,'FINITE_CURRENT_CUTOVER_AUTHORITY_REQUIRED')

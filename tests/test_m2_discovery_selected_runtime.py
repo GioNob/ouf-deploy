@@ -39,7 +39,7 @@ class SelectedRuntime(unittest.TestCase):
             owner.cohort_component=copy.deepcopy(component);owner.guard=Mock();owner.initialize=Mock()
         installation=object.__new__(m.DiscoveryInstallationApplication)
         installation.provider=SimpleNamespace(window=window,parent=parent)
-        installation.application=SimpleNamespace(transition=window.transition)
+        installation.application=SimpleNamespace(transition=window.transition,discovery_parent=parent)
         installation.verify_scope=Mock();installation.release_after_cohort_verification=Mock()
         def operation(name):
             def run():calls.append(name);return {'schema':'synthetic-proof','owner':name.split('-')[0]}
@@ -61,10 +61,11 @@ class SelectedRuntime(unittest.TestCase):
         owner.gateway.initialize.assert_not_called();owner.mcp.initialize.assert_not_called()
 
     def test_different_engine_or_child_cannot_dispatch(self):
-        for field in ('engine','child'):
+        for field in ('engine','child','registry_parent'):
             owner,calls,_=self.fixture()
             if field=='engine':owner.mcp.engine=object()
-            else:owner.gateway.action.authority=object()
+            elif field=='child':owner.gateway.action.authority=object()
+            else:owner.installation.application.discovery_parent=object()
             with self.assertRaisesRegex(ValueError,'SAME_DISCOVERY_PARENT_CHILD_ENGINE'):owner.apply()
             self.assertEqual(calls,[])
 

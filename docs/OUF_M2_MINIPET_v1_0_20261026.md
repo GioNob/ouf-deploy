@@ -3,8 +3,22 @@
 **ID:** OUF-MP-CSV-M2 · **Versione:** 1.3 (percorso file conservato per i link esistenti) · **Data:** 29 ottobre 2026, Europe/Rome  
 **Stato:** piano del residuo M2; M1 acquisito, M2 aperto.  
 **Accettazione di prodotto:** Giovanni / HUMAN autorizzato. **Esecuzione:** agent principale, sequenziale, senza subagenti o automazioni operative.  
-**Stima residua:** inventario completato; restano da determinare causa Farmacie e impegno della composizione esatta. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.  
+**Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
+
+## Stato corrente del 30 ottobre 2026 — riuso di Teatri e prova Farmacie
+
+Teatri è completata a passi singoli: M1/G4, tecnico8/8 e funzionale6/6 acquisiti
+per quel caso. Se ne riusano componenti e prove per il percorso completo,
+ripetibile e resiliente per ogni file; non è accettazione generale M2.
+Farmacie conserva lo stesso profilo SUCCEEDED61righe/10colonne, codice
+ministeriale STRING e10campi OPEN già confermati. Non ripetere upload/profiling
+per superare il residuo installativo/discovery. [Continuazione corrente](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+
+Le sezioni di audit e stato iniziale sotto conservano le osservazioni datate del
+26ottobre, inclusi il FAILED precedente e la diagnosi allora aperta: sono storia,
+non istruzioni per ricominciare Farmacie. Restano invariati24AT,8UX,8criteri di
+stabilità e i gate M2/G5–G7, ancora OPEN fino alle rispettive prove e decisioni.
 
 ## Addendum vincolante del 29 ottobre 2026 — capability stabilmente operative
 

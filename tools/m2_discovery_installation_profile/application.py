@@ -48,7 +48,7 @@ class DiscoveryApplication:
                  retirement_channel,retirement_before_store,profile,authority,authority_raw,
                  verifier,attestation_signer,token_owner,node_recipe,node_directory,
                  readiness_scope,checkpoint,phase_checkpoint,backup_checkpoint,
-                 infrastructure_owners,node_owner=None):
+                 infrastructure_owners,node_owner=None,discovery_parent=None):
         require(type(profile) is DiscoveryProfile and type(transition) is Transition
             and transition.execution_profile is None and transition.profile_hash is None
             and transition.phases==PHASES and type(authority) is CutoverAuthority
@@ -76,6 +76,8 @@ class DiscoveryApplication:
             and all(signed.get(k) is False for k in ('automaticReplayAllowed','databaseRestoreAuthorized','r12ReplayAuthorized'))
             and row['transitionAuthorityEvidenceHash']==hashlib.sha256(authority_raw).hexdigest(),
             'EXACT_SIGNED_THIRTEEN_PHASE_DISCOVERY_ACTION_REQUIRED')
+        self.discovery_parent=discovery_parent
+        self.discovery_parent_id=None if discovery_parent is None else id(discovery_parent)
         self.profile,self.profile_hash,self.request=profile,profile_hash,copy.deepcopy(request)
         self.transition,self.authority,self.raw,self.store=transition,authority,authority_raw,store
         self.request_hash,self.raw_hash=request_hash,hashlib.sha256(authority_raw).hexdigest()
@@ -117,10 +119,22 @@ class DiscoveryApplication:
                 self.intents['QUIESCE_PRODUCERS'],store,before_store,readiness,native('RELEASE_PRODUCERS'))}
         adapters=configure_owned_core(engine,transition,self.request,store,admin,self.intents,owners,backup_checkpoint,
             retirement_channel,retirement_before_store,stage,release,execution_profile=None)
-        self.executor=Executor(transition,authority_raw,authority,checked_checkpoint,adapters,self.intents,authority.clock)
+        if discovery_parent is None:
+            self.executor=Executor(transition,authority_raw,authority,checked_checkpoint,adapters,self.intents,authority.clock)
+        else:
+            from .executor import DiscoveryExecutor
+            self.executor=DiscoveryExecutor(transition,authority_raw,authority,checked_checkpoint,adapters,self.intents,
+                authority.clock,parent=discovery_parent)
         self.node_owner=node
 
     def verify_scope(self):
+        if self.discovery_parent is not None:
+            from .parent_authority import DiscoveryParentAuthority
+            require(type(self.discovery_parent) is DiscoveryParentAuthority
+                and id(self.discovery_parent)==self.discovery_parent_id
+                and self.discovery_parent.verifier is self.authority.verifier
+                and self.discovery_parent.context==self.authority.context,
+                'SAME_CURRENT_DISCOVERY_APPLICATION_PARENT_REQUIRED')
         require(type(self.profile) is DiscoveryProfile and self.profile.verify(self.request)==self.profile_hash
             and digest(self.request)==self.request_hash
             and self.transition.execution_profile is None and self.transition.phases==PHASES
