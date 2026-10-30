@@ -108,4 +108,17 @@ class Images(unittest.TestCase):
         with self.assertRaises(ValueError):owner.initialize()
         self.assertEqual(calls,[])
 
+    def test_regressed_mutable_record_cannot_bypass_durable_load_dispatch(self):
+        owner,auth,images,calls,cli,_=self.fixture();owner.initialize()
+        def fail(args,**kwargs):calls.append('failed');return types.SimpleNamespace(returncode=1)
+        with patch.object(m,'subprocess',types.SimpleNamespace(run=fail,DEVNULL=m.subprocess.DEVNULL)):
+            with self.assertRaises(ValueError):owner.apply()
+            row=owner.plan['images'][0];journal=owner.journals['semantic']
+            # Deliberate disposable fixture regression. Production has no such
+            # reset/repair path; the independent O_EXCL dispatch must survive it.
+            auth.write(journal.record,m.encoded(m.Import.initial(row['audit'],owner.parent.sha)))
+            with self.assertRaises(FileExistsError):owner.apply()
+        self.assertEqual(calls,['failed'])
+        self.assertTrue((journal.root/'image-load-dispatch.json').exists())
+
 if __name__=='__main__':unittest.main()

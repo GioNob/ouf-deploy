@@ -96,13 +96,14 @@
     "noProductionGuardRelaxed": true
   },
   "selectedImagesSuccessor": {
-    "localCases": 5,
+    "localCases": 6,
     "engineAndCliEffects": "MODELED",
     "realArchivesEd25519AndJournals": true,
     "ciQualification": "PENDING_SUCCESSOR",
     "nativeImageCliQualified": false,
     "fullCohortProven": false,
-    "historicalFiveImageSourceUnchanged": true
+    "historicalFiveImageSourceUnchanged": true,
+    "durableDispatchBlocksDeliberateMutableRecordRegression": true
   },
   "mcpMinorBaselineDecision": {
     "status": "PENDING_OWNER_DECISION",

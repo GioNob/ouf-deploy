@@ -17,8 +17,9 @@ push41035568774/job123995434068 and PR41035577984/job123995465778 PASS; app
 admissions synthetic, actual v4 provider native proof separate/modelDockerboundary.
 Current successor adds scoped Registry+MCP image owner reusing Import/archive/native
 identity/CAS, approved executable/journal paths, O_EXCL load dispatch and lost-load
-read reconciliation. Historical five-image intake/source unchanged.5local cases
-PASS with actual Ed25519/archives/files, Engine/CLI modeled. Other cohort sections
+read reconciliation. Historical five-image intake/source unchanged.6local cases
+PASS with actual Ed25519/archives/files, Engine/CLI modeled; durable dispatch
+also denies a second load after deliberate mutable-record regression. Other cohort sections
 remain separately owned/inert in fixtures; no native image CLI/full cohort proof.
 Successor CI pending.10late worker+7composition local cases remain qualified in
 their stated protocol scope. Local journal drift and first native UNKNOWN causes

@@ -343,3 +343,7 @@ qualification alone does not approve a normative baseline change. Go1.25 is
 unsupported; no downgrade is proposed. The original DOCX remains unchanged;
 source packet delivery/installation waits for the controlled decision and all
 existing gates, with no runtime authority implicit in that project decision.
+
+The sixth selected-image case deliberately regresses only a disposable mutable
+journal: the separate O_EXCL dispatch still blocks another CLI load. This proves
+that fence; it does not establish the cause of earlier observed row drift.
