@@ -1,3 +1,45 @@
+# CURRENT — Passaggio iniziale nativo provider → worker qualificato
+
+31 ottobre2026, Europe/Rome. Teatri completata a passi singoli e M1/G4 acquisito:
+riusare componenti/prove per il flusso completo di ogni file. Farmacie conserva
+stesso profilo SUCCEEDED61righe/10colonne, codice ministeriale STRING e10campi
+OPEN. Nessun nuovo upload/profiling/acquisizione. M2/G5–G7/24AT/8UX/8stabilità
+e due client restano OPEN; search sugli oggetti e verticali/API/delta seguono.
+
+PR54 sorgente09930619: nuova prova congiunta del provider v4 runc realmente
+ammesso e della factory worker in un processo distinto. Stessi Registry/provider/
+parent/child/kernel/DNS/binding/lock, journal worker distinto e storico provider
+conservato. DNS/nft reali: pubblicazione/rinnovo, DNS non cacheabile→revoca delle
+due famiglie→backoff persistito senza query/tentativi→ripresa con clock iniziali
+e contatori cumulativi. Invocazione concorrente negata. Pausa reale provider:
+worker BLOCKED, lease revocate; ritorno provider non riarma. Registry resta
+paused e gate chiuso, nessun rilascio producer.
+Push41144149193/job124365161963 e PR41144156259/job124365184371 PASS;
+entrambi report finali letti,4test broker e due prove native per job.
+13test locali worker PASS. Produzione/capsule congelate intatte; qualifica
+432test/50suite a05456554 conservata, nessun nuovo full protocollo dichiarato.
+
+La prima variante4d3965a9 fallisce in sicurezza dopo circa25s:1tentativo,
+0pubblicazioni, RETRY_WAIT/DNS_WINDOW_TOO_SHORT. Ricalcolava l'intera ammissione
+installativa ad ogni guard. Il successore verifica l'ammissione iniziale reale
+(2.526s/2.113s) e mantiene sigilli/custodia/byte, scadenza firmata, autorità e
+generazioni correnti. Nessun timeout/TTL/guardia di produzione allentati.
+
+[Evidenza](../../evidence/m2-provider-worker-native-handoff-qualified-20261031.json)
+e [checkpoint](OUF_M2_PROVIDER_WORKER_HANDOFF_20261031.md).
+È una prova FINITA del passaggio iniziale: confine Docker e immagini/review/
+predecessore Registry ancora modellati. Non esegue WorkerMaterialization o
+attestazione/pubblicazione/registrazione/avvio della unit sigillata con questi peer.
+La qualifica Docker/systemd precedente con ammissione sintetica resta separata.
+
+Prossimo: confine Docker reale con stessa ammissione v4 e ciclo worker sigillato;
+poi coorte/TLS/IAM/DB/fencing/trust, compiler/review/CLI privati e pubblicazione
+coordinata. Restano mapping/THS Farmacie→Ingestion→UDP/esiti61righe,
+reimport invariato, fault/ripresa/cambio chat, boot/rotazione e due client.
+Nessun comando operatore pronto, scope precedenti consumati. Nessun effetto
+target/nuova authority/grant/budget/reset/replay/merge/accettazione. Cause delle
+precedenti anomalie locali MCP/worker restano non dimostrate. Header seguenti storici.
+
 # CURRENT — Composizione selezionata qualificata; Farmacie conserva il profilo
 
 30 ottobre2026, Europe/Rome. Teatri è completata a passi singoli: riusarne
