@@ -3,21 +3,23 @@
   "date": "2026-10-30",
   "timezone": "Europe/Rome",
   "protocol": {
-    "sourceCommit": "5b5be6ed55aa1b08a9c0ffd09ea2819c1548edc7",
-    "testsPerEvent": 373,
-    "suitesPerEvent": 44,
+    "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
+    "testsPerEvent": 391,
+    "suitesPerEvent": 46,
     "skips": 0,
     "push": {
-      "run": 41098250616,
-      "job": 124209523536,
-      "conclusion": "success"
+      "run": 41123284691,
+      "job": 124295154658,
+      "conclusion": "success",
+      "finalReportsRead": true
     },
     "pullRequest": {
-      "run": 41098262269,
-      "job": 124209564019,
-      "conclusion": "success"
+      "run": 41123296096,
+      "job": 124295188542,
+      "conclusion": "success",
+      "finalReportsRead": true
     },
-    "finalReportsRead": true
+    "sameProtocolSourcesInTransientNativeSuccessor": true
   },
   "nativeLateWorker": {
     "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
@@ -255,7 +257,7 @@
   },
   "discoveryMcpRuntimeSuccessor": {
     "localCases": 13,
-    "localQualification": "PENDING_FINAL_RAW_PACKAGE_SCHEMA_DELTA",
+    "localQualification": "STRICT_LOST_REPLY_CASE_PASS_FULL_LOCAL_NOT_PASS",
     "actualParentChildEd25519AndJournals": true,
     "dockerAndHttpLeavesModeled": true,
     "onlySelectedMcpReplaced": true,
@@ -297,12 +299,66 @@
       "REAL_CURRENT_TRANSITION_INITIALIZATION",
       "FROZEN_ENGINE_RUNTIME_BINDING_COMPARISON"
     ],
-    "ciQualification": "PENDING_46_SUITES",
-    "nativeMcpOwnerQualified": false,
+    "ciQualification": "QUALIFIED_AT_D4410DB9_391_TESTS_46_SUITES_PUSH_AND_PR_FINAL_REPORTS_READ",
+    "nativeMcpOwnerQualified": true,
     "fullCohortProven": false,
     "mcpOrdinaryDiscoveryDescriptors": "STILL_INACTIVE_UNTIL_COORDINATED_PUBLICATION",
     "runtimeAuthorityIssued": false,
     "targetApplyAuthorized": false,
-    "releaseAcceptance": false
+    "releaseAcceptance": false,
+    "nativeQualification": {
+      "sourceCommit": "dc16fa46e8162b0e984e80fe4f1272aa5b280c71",
+      "push": {
+        "run": 41123600168,
+        "job": 124296302282,
+        "conclusion": "success",
+        "finalReportsRead": true,
+        "testSeconds": 29.78
+      },
+      "pullRequest": {
+        "run": 41123610248,
+        "job": 124296342265,
+        "conclusion": "success",
+        "finalReportsRead": true,
+        "testSeconds": 28.443
+      },
+      "finalReportsRead": true,
+      "actualDockerEngineHttpEd25519AndJournals": true,
+      "lostStartReplyReconciledAfterReconstructionWithoutAnotherStart": true,
+      "real503RetryAfterAndPersistedBackoffThen204": true,
+      "originalStartAndCumulativeAttemptsPreserved": true,
+      "repeatLeavesJournalsUnchanged": true,
+      "staticHttpApplicationFixture": true,
+      "syntheticRegistryAdmissionParentAndPackages": true,
+      "realMcpApplicationProven": false,
+      "fullCohortProven": false,
+      "evidence": "evidence/m2-discovery-mcp-native-qualified-20261030.json"
+    },
+    "latestFullLocalSuite": {
+      "tests": 13,
+      "errors": 1,
+      "seconds": 207.59,
+      "reason": "DETACHED_VERIFICATION_UNPROVEN",
+      "case": "unreviewed_journal_and_historical_adoption",
+      "point": "fixture image guard before the actual negative assertion",
+      "causeEstablished": false
+    }
+  },
+  "previousProtocolBeforeMcpNative": {
+    "sourceCommit": "5b5be6ed55aa1b08a9c0ffd09ea2819c1548edc7",
+    "testsPerEvent": 373,
+    "suitesPerEvent": 44,
+    "skips": 0,
+    "push": {
+      "run": 41098250616,
+      "job": 124209523536,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41098262269,
+      "job": 124209564019,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
   }
 }
