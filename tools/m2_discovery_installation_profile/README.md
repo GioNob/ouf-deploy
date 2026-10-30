@@ -299,8 +299,10 @@ unestablished. Safe CI-only diagnostics preserve denial and print only codes and
 source frame names. Subsequent success is not cause resolution or stability proof.
 
 The newer source cross-checks materialized-provider and worker Registry recipe,
-kernel,DNS,coordination binding/journal,nft command and common-lock inode before
-materialization. New boot cannot reconstruct/rearm retained material. Nine late
+kernel,DNS,coordination binding,nft command and common-lock inode before
+materialization. The worker ledger stays distinct from the preserved provider
+journal; sharing the path would conflict with create-only publication. New boot
+cannot reconstruct/rearm retained material. Nine late
 materialization cases and seven composition cases pass locally; these newer
 binding/boot changes await CI. Actual v4 provider and late worker native proofs
 remain separate; their complete common cohort is still open.

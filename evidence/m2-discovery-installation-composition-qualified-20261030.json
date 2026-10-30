@@ -52,8 +52,9 @@
     "localLateMaterializationCases": 9,
     "localCompositionCases": 7,
     "ciQualification": "PENDING_SUCCESSOR",
-    "sameRegistryKernelDnsJournalNftAndCommonLockRequired": true,
-    "newBootCannotRearm": true
+    "newBootCannotRearm": true,
+    "sameRegistryKernelDnsBindingNftAndCommonLockRequired": true,
+    "distinctNewWorkerLedgerAndPreservedProviderJournalRequired": true
   },
   "realV4ProviderNativeEvidence": "evidence/m2-provider-native-qualified-20261030.json",
   "combinedRealV4ProviderAndLateWorkerNativeProven": false,
@@ -64,5 +65,11 @@
   "runtimeAuthorityIssued": false,
   "releaseAcceptance": false,
   "automaticReplayAllowed": false,
-  "budgetReset": false
+  "budgetReset": false,
+  "intermediateBindingGuard": {
+    "sourceCommit": "1e174c8839f66213e30f7363a04a752457c3cffd",
+    "status": "SUPERSEDED_BEFORE_TARGET_DELIVERY",
+    "reason": "Shared coordination journal conflicts with create-only worker publication. Shared binding/kernel/lock retained; distinct journals required.",
+    "targetEffects": 0
+  }
 }

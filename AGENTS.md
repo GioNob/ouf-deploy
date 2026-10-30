@@ -14,7 +14,8 @@ Added safe CI-only observer diagnostics, no production guard relaxation. Later
 PASS did not reproduce the denial and is not proof of its cause or8stability.
 
 Additional current delta requires the same provider/worker kernel,DNS,coordination
-binding/journal,nft and common-lock inode, plus exact independent Registry recipe;
+binding,nft and common-lock inode, plus exact independent Registry recipe;
+provider journal is preserved and the new worker ledger must be distinct.
 new boot denies retained material reconstruction/rearm.16new local cases total
 (9late materialization,7composition) PASS; successor CI pending. Complete v2
 provider/worker native composition and concrete private review remain OPEN.

@@ -80,7 +80,7 @@ class Materialization(unittest.TestCase):
         profile={'schema':'ouf.discovery-provider-profile-installation-scope.v1','registryRecipe':{
             **recipe,'sourceClosureHash':t['sourceClosureHash']},'preparerTemplate':{
             'kernel':r['kernel'],'dns':r['dns'],'coordinationBinding':r['binding'],
-            'coordinationJournal':r['coordinationJournal'],'lockFile':r['leaseCommonLock'],
+            'coordinationJournal':str(owner.root/'retained-provider-coordination.json'),'lockFile':r['leaseCommonLock'],
             'commands':{'nft':r['nft']['path']},'commandHashes':{'nft':r['nft']['sha256']}}}
         # The Registry recipe must be the exact independent one fixed in t.
         profile['registryRecipe']=recipe
@@ -95,11 +95,13 @@ class Materialization(unittest.TestCase):
             'signing_key_paths':options['signingKeyPaths'],'engine_unit':options['engineUnit'],'sandbox_root':options['sandboxRoot']})
         lock=[*r['leaseCommonLockIdentity'],0,1,1];request={'Image':t['expectedImages']['registry']}
         m.paired_native_inputs(t,profile,request,lock)
-        for field in ('kernel','dns','coordinationBinding','coordinationJournal','lockFile','commands','commandHashes'):
+        for field in ('kernel','dns','coordinationBinding','lockFile','commands','commandHashes'):
             wrong=copy.deepcopy(profile);wrong['preparerTemplate'][field]={} if type(wrong['preparerTemplate'][field]) is dict else '/other'
             with self.assertRaises((ValueError,KeyError)):m.paired_native_inputs(t,wrong,request,lock)
         with self.assertRaises(ValueError):m.paired_native_inputs(t,profile,request,[*lock[:1],lock[1]+1,*lock[2:]])
         with self.assertRaises(ValueError):m.paired_native_inputs(t,profile,{'Image':'sha256:'+'f'*64},lock)
+        wrong=copy.deepcopy(profile);wrong['preparerTemplate']['coordinationJournal']=r['coordinationJournal']
+        with self.assertRaisesRegex(ValueError,'PRESERVED_PROVIDER_JOURNAL'):m.paired_native_inputs(t,wrong,request,lock)
 
     def test_replaced_snapshot_and_invalid_reference_are_not_adopted(self):
         for change in ('inode','path'):

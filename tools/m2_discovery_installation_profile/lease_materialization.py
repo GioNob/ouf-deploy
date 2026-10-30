@@ -42,11 +42,17 @@ def paired_native_inputs(template,profile_scope,registry_request,kernel_lock_ide
             'imageConfigurationHash':recipe['imageConfigurationHash'],'rootfsSealHash':digest(recipe['expectedRootfsSeal'])},
         'SAME_INDEPENDENT_REGISTRY_PROFILE_FOR_PROVIDER_AND_WORKER_REQUIRED')
     require(r['kernel']==prep['kernel'] and r['dns']==prep['dns'] and r['binding']==prep['coordinationBinding']
-        and r['coordinationJournal']==prep['coordinationJournal'] and r['leaseCommonLock']==prep['lockFile']
+        and r['leaseCommonLock']==prep['lockFile']
         and type(kernel_lock_identity) is list and len(kernel_lock_identity)==9
         and r['leaseCommonLockIdentity']==kernel_lock_identity[:6]
         and r['nft']['path']==prep['commands']['nft'] and r['nft']['sha256']==prep['commandHashes']['nft'],
         'SAME_PROVIDER_AND_WORKER_NATIVE_KERNEL_DNS_COORDINATION_AND_LOCK_REQUIRED')
+    # Initial admission and the distinct worker retain separate histories.
+    # The create-only publisher must never overwrite/adopt the provider ledger.
+    ledger=Path(t['configurationTemplate']['ledgerRoot'])
+    require(r['coordinationJournal']==str(ledger/'coordination.json')
+        and not Path(prep['coordinationJournal']).is_relative_to(ledger),
+        'DISTINCT_NEW_WORKER_LEDGER_AND_PRESERVED_PROVIDER_JOURNAL_REQUIRED')
 
 def stable_native(value):
     return {k:value[k] for k in DOCKER_FIELDS}|{'RestartCount':value['RestartCount'],
