@@ -1,0 +1,115 @@
+name: M2 MCP Go 1.27.3 offline package
+'on':
+  push:
+    paths:
+    - .github/workflows/m2-mcp-go127-package.yml
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      with:
+        persist-credentials: false
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      with:
+        repository: GioNob/ouf-mcp-server
+        ref: 9539cbb40e09d10a76fb4b72368438f9772c7690
+        path: source
+        persist-credentials: false
+    - name: Check immutable clean application source
+      run: |
+        python3 - <<'PY'
+        import subprocess
+        assert subprocess.check_output(['git','-C','source','rev-parse','HEAD'],text=True).strip()=='9539cbb40e09d10a76fb4b72368438f9772c7690'
+        assert not subprocess.check_output(['git','-C','source','status','--porcelain','--untracked-files=all']).strip()
+        PY
+    - uses: actions/setup-go@v6
+      with:
+        go-version: 1.27.3
+        cache-dependency-path: source/go.sum
+    - name: Freeze bases and build exact nonroot MCP candidate
+      run: |
+        python3 scripts/package-file-loop-candidate.py build --source source --commit 9539cbb40e09d10a76fb4b72368438f9772c7690 --module mcp --output package
+        test "$(docker image inspect ouf-cohort-mcp:9539cbb40e09d10a76fb4b72368438f9772c7690 --format '{{.Config.User}}')" = 10005:10005
+        docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges -e MCP_DATABASE_URL=unused-for-help ouf-cohort-mcp:9539cbb40e09d10a76fb4b72368438f9772c7690 server -h
+    - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+      with:
+        image-ref: ouf-cohort-mcp:9539cbb40e09d10a76fb4b72368438f9772c7690
+        format: json
+        output: package/trivy-image.json
+        list-all-pkgs: true
+        scanners: vuln
+        severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+        ignore-unfixed: false
+        exit-code: 0
+    - name: Export complete image SBOM
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+      with:
+        image-ref: ouf-cohort-mcp:9539cbb40e09d10a76fb4b72368438f9772c7690
+        format: cyclonedx
+        output: package/sbom.cdx.json
+        list-all-pkgs: true
+        scanners: vuln
+        ignore-unfixed: false
+        exit-code: 0
+    - name: Enforce source and scan coverage before export
+      run: |
+        python3 - <<'PY'
+        import json,runpy
+        from pathlib import Path
+        out=Path('package');helpers=runpy.run_path('scripts/package-semantic-proposal-candidate.py',run_name='qualified_scan_primitives')
+        record=json.loads((out/'package-record.json').read_text());scan=json.loads((out/'trivy-image.json').read_text())
+        helpers['scan_gate'](scan,'mcp',record['imageId'])
+        assert all(v.get('Severity') in ('UNKNOWN','LOW','MEDIUM','HIGH','CRITICAL') for r in scan['Results'] for v in r.get('Vulnerabilities',[]))
+        assert json.loads((out/'sbom.cdx.json').read_text())['bomFormat']=='CycloneDX'
+        PY
+    - name: Export MCP archive and static executable
+      run: |
+        python3 scripts/package-file-loop-candidate.py export --source source --commit 9539cbb40e09d10a76fb4b72368438f9772c7690 --module mcp --output package
+        go version -m package/ouf-mcp > package/go-build-info.txt
+        python3 - <<'PY'
+        from pathlib import Path
+        info=Path('package/go-build-info.txt').read_text()
+        assert all(x in info for x in ('go1.27.3','GOOS=linux','GOARCH=amd64','CGO_ENABLED=0'))
+        PY
+    - name: Seal every payload hash and provenance boundary
+      env:
+        MODULE: mcp
+        PRODUCER: ${{ github.sha }}
+      run: |
+        python3 - <<'PY'
+        import hashlib,json,os,subprocess
+        from pathlib import Path
+        out=Path('package')
+        record={'schema':'ouf.m2-discovery-offline-package-provenance.v1','module':os.environ['MODULE'],'producerCommit':os.environ['PRODUCER'],'applicationSourceCommit':subprocess.check_output(['git','-C','source','rev-parse','HEAD'],text=True).strip(),'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'stableCapabilitiesOperationalProven':False,'applicationE2EProven':False,'releaseAcceptance':False}
+        (out/'producer.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
+        paths=sorted(p for p in out.rglob('*') if p.is_file() and p.name!='SHA256SUMS')
+        assert all(not p.is_symlink() for p in paths)
+        with (out/'SHA256SUMS').open('w') as f:
+            for p in paths:
+                h=hashlib.sha256()
+                with p.open('rb') as src:
+                    for chunk in iter(lambda:src.read(1048576),b''):h.update(chunk)
+                f.write(h.hexdigest()+'  '+p.relative_to(out).as_posix()+'\n')
+        PY
+        cd package
+        sha256sum -c SHA256SUMS
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: m2-discovery-mcp-go127-${{ github.run_id }}
+        path: package/
+        if-no-files-found: error
+        retention-days: 30
+        compression-level: 0
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: failure()
+      with:
+        name: m2-discovery-package-denial-mcp-go127-${{ github.run_id }}
+        path: |
+          package/package-record.json
+          package/trivy-image.json
+          package/Dockerfile.resolved
+        retention-days: 30
