@@ -75,6 +75,25 @@ jobs:
         info=Path('package/go-build-info.txt').read_text()
         assert all(x in info for x in ('go1.27.3','GOOS=linux','GOARCH=amd64','CGO_ENABLED=0'))
         PY
+    - name: Export source with exact Git executable modes and no group writes
+      run: |
+        git -C source -c tar.umask=0022 archive --format=tar -o "$PWD/package/source.tar" 9539cbb40e09d10a76fb4b72368438f9772c7690
+        python3 - <<'PYMODE'
+        import json,tarfile
+        from pathlib import Path
+        expected={e['path']:e for e in json.loads(Path('package/source-inventory.json').read_text())['tree'] if e['type']=='blob'}
+        seen=set()
+        with tarfile.open('package/source.tar') as archive:
+            for member in archive:
+                if member.isdir():
+                    assert not member.mode&0o022
+                    continue
+                assert member.isfile() and member.name in expected and member.name not in seen
+                assert member.mode&0o777==(0o755 if expected[member.name]['mode']=='100755' else 0o644)
+                seen.add(member.name)
+        assert seen==set(expected)
+        print('SOURCE_ARCHIVE_EXACT_GIT_MODES_AND_NO_GROUP_WRITES')
+        PYMODE
     - name: Seal every payload hash and provenance boundary
       env:
         MODULE: mcp
