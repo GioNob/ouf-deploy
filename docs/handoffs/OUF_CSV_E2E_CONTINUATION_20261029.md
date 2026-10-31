@@ -1,3 +1,53 @@
+# CURRENT — Installed Teatri V38 compatibility PASS49; current prerequisites PASS83
+
+31 October 2026, UTC. USER instruction: reuse actual Teatri experience and exact
+installed contracts to avoid VPS parameter/contract mismatches. CONTINUE SOURCE
+WORK autonomously/sequentially; no agents/automations or optional stop.
+No current VPS Quiesced incident demonstrated; do not ask more diagnostics for it.
+
+Compatibility sourcee311e933cd6b9574f57b56130263ee796391156d,
+CI41228418288/job124617330418 final log read PASS49/12suites/0fail/error/skip:
+SDK10/4suites; installed Onboarding source Java25/7suites; Discovery14/4.201s.
+Exact installed source9d19fad3dd750dd5b9e77253d3e7e82029c1aca7 and native image
+7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51 lineage
+checked. SDK/frozen contracts and publication helpers exact. Actual Java21/
+Postgres17 audited services, MVC controller envelopes, IAM JWT bridge units,
+schema/OpenAPI; actual installed role DTO/Jackson/helper byte roundtrips.
+Discovery owner HTTP/IAM transport modeled. Source MVC is not live TCP/APISIX/
+production image. Cross-module Ingestion HTTP client contract still OPEN.
+
+Current prerequisites sourceb564375593d01919fbaadcb86f84131fe7eef2d0,
+CI41227909361 PASS83/13suites/4jobs, all final logs read/zero failures/skips/
+ResourceWarning. Total complementary source qualifications132/25suites/5jobs;
+NOT one target run or full native/application E2E proof. IAM native exact target
+Keycloak26.7.4 digest; paused operational reader exactphase9/10 after8 uses
+current installed signatures and original clocks, no expired initial gate reuse.
+
+Teatri lesson: SERVICE route/scope and policy must match actual receiver;
+unexpired tokens/TLS/metadata are insufficient. Exact GET
+/api/internal/v1/onboarding/ingestion-configuration with sourceId,
+onboardingVersionId(UUID),configurationHash(sha256:hex64),
+ouf.onboarding.configuration.read. Compatibility GET same3fields, POST adds
+compatible/detail and ouf.ingestion.configuration.attest. Preserve actual
+RESTRICTED labels/governed grants,26receipt/ACK joins,13identities/20IRIs and
+EMPTY_STRING handling. No replay Teatri/Farmacie. Do not transplant HUMAN/service
+contracts or infer all historic403/502 share a cause. Preserve installed V38
+migrations/source/image, distinguish config image ID vs native manifest ID.
+
+Next: Ingestion actual client compatibility and remaining custody/supply-chain/
+retirement/backup/fencing predicates; concrete sealed checkpoints/controller and
+READY12 read-only continuation without initial provider barrier; complete sealed
+execution package/exact private review. Check retirement mode against actual
+already-retired predecessors: legacy apply requires a live worker; do not assume
+that old initialization contract fits an already retired current VPS generation.
+No old unit start, history adoption/reset, source activation or acceptance.
+Original37/108/128/136 closures/maps/pins/bodies and Registry child unchanged.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients/release acceptance OPEN.
+
+Evidence:evidence/m2-current-operational-iam-20261031.json
+Handoff:docs/handoffs/OUF_M2_TEATRI_COMPATIBILITY_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Prerequisites PASS83; reuse exact installed Teatri contracts before delivery
 
 31 October 2026, UTC. USER explicitly requires reuse of Teatri experience to
