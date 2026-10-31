@@ -1,5 +1,28 @@
 # Complete discovery installation proposal
 
+`current_review.py` composes a fresh six-part parent review with all five exact
+current input sets: databases, publisher custody, TLS, IAM v2 and retirement/
+backup. It binds the thirteen-peer runtime and cross-checks profile, truststore,
+Engine client, issuer/realm/scopes/audience, reviewed predecessors and signed
+child backup intent. Existing input bindings cannot be replaced. The Registry
+child bytes and other five parent components remain unchanged; the new cohort
+component requires a new exact HUMAN decision and role signatures.
+
+`current_review_capsule.py` seals a separate235-source closure, retaining every
+original136 binding and pinned public compiler. Export through
+`scripts/export-m2-discovery-current-review.py` with explicit root, source
+revision, gateway/onboarding roots and a new output path. The exported compiler
+has only `prepare` and read-only `inspect`, with explicit input path/hash and
+private output directory. Run with Python `-I -B -S`. Preparation is create-only;
+partial output is preserved and never repaired or replayed. Receipts expose
+hashes and explicit unproven flags, not private paths or input values.
+
+This is an offline review compiler, not a target installer. The source revision
+is unauthenticated provenance. Current native admission, publisher trust,
+artifact membership, actual workload bearer and the sealed checkpoint/controller
+remain separately required. Export/preparation never signs, logs in, refreshes
+tokens, executes target operations, activates sources or accepts M2.
+
 `native_profile.py` and `frame.py` compile a distinct, typed discovery launch and
 complete OCI proposal. They extend the audit/compiler work in PR53. They are not
 an operator launcher, credential owner, native observer or execution authority.

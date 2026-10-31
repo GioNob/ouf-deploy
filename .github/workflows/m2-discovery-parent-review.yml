@@ -1,9 +1,9 @@
 name: M2 sealed complete parent review
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','.github/workflows/m2-discovery-parent-review.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_current_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','scripts/export-m2-discovery-current-review.py','.github/workflows/m2-discovery-parent-review.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','.github/workflows/m2-discovery-parent-review.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_current_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','scripts/export-m2-discovery-current-review.py','.github/workflows/m2-discovery-parent-review.yml']
 permissions: {contents: read}
 jobs:
   complete-parent-review:
@@ -32,7 +32,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_discovery_publication_review.py test_m2_discovery_parent_review.py; do
+          for suite in test_m2_discovery_publication_review.py test_m2_discovery_parent_review.py test_m2_discovery_current_review.py; do
             sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 PATH=/usr/sbin:/usr/bin:/sbin:/bin \
               OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
               OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
@@ -44,10 +44,17 @@ jobs:
             --gateway-root "$fixture/repository/.pairwise/gateway" \
             --onboarding-root "$fixture/repository/.pairwise/onboarding" \
             --output "$GITHUB_WORKSPACE/parent-review-compiler.py" > parent-review-compiler.json
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-discovery-current-review.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --gateway-root "$fixture/repository/.pairwise/gateway" \
+            --onboarding-root "$fixture/repository/.pairwise/onboarding" \
+            --output "$GITHUB_WORKSPACE/current-parent-review-compiler.py" > current-parent-review-compiler.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: complete-parent-review-compiler
           path: |
             parent-review-compiler.py
             parent-review-compiler.json
+            current-parent-review-compiler.py
+            current-parent-review-compiler.json
           if-no-files-found: error
