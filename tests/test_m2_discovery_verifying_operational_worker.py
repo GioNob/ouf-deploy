@@ -12,7 +12,7 @@ class VerifyingWorker(unittest.TestCase):
     def prepared(self):
         case=fixtures.PausedWorker();old,w,auth,observed,calls,row=case.prepared(phase=m.PHASE)
         self.addCleanup(case.doCleanups)
-        p=patch.object(m,'RunningWorkloadBinding');running=p.start().return_value.observe
+        p=patch.object(m,'VerifyingRegistryBinding');running=p.start().return_value.observe
         running.return_value={'modeledSameRunningJavaGeneration':True};self.addCleanup(p.stop)
         return m.VerifyingOperationalWorker(old.app),w,auth,observed,calls,row,running
 

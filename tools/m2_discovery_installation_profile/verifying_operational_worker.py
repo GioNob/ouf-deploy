@@ -13,7 +13,7 @@ from .current_worker import read_installed_material
 from .current_operational_worker import verify_operational_installation
 from .node_owner import ObservationBudget
 from . import lease_observation
-from gated_process_observation import RunningWorkloadBinding
+from .verifying_registry_binding import VerifyingRegistryBinding
 from transition_journal import PHASES
 
 PHASE='VERIFY_APPLICATION'
@@ -54,7 +54,7 @@ class VerifyingOperationalWorker:
 
     def observe(self,phase,point,current_row):
         row=copy.deepcopy(current_row);budget=ObservationBudget(90);retained=self.guard(phase,point,row);w=self.worker
-        running=RunningWorkloadBinding(w.node.engine,w.transition,w.node.request,w.store).observe();budget.check()
+        running=VerifyingRegistryBinding(w.node.engine,w.transition,w.node.request,w.store).observe();budget.check()
         material,proposal,snapshot,configuration,prefix,claim_hash,completed_hash=read_installed_material(w,budget)
         require(retained['configurationHash']==digest(proposal['configuration']) and retained['claimHash']==claim_hash
             and completed_hash==digest(retained) and all(retained[k]==v for k,v in prefix.items()),
@@ -70,7 +70,7 @@ class VerifyingOperationalWorker:
         w.verify_generation(material)
         require(verify_operational_installation(w,material,proposal,configuration)==handoff
             and read_installed_material(w,budget)==(material,proposal,snapshot,configuration,prefix,claim_hash,completed_hash)
-            and RunningWorkloadBinding(w.node.engine,w.transition,w.node.request,w.store).observe()==running
+            and VerifyingRegistryBinding(w.node.engine,w.transition,w.node.request,w.store).observe()==running
             and self.guard(phase,point,row)==retained,'CURRENT_VERIFYING_OPERATIONAL_HANDOFF_CHANGED_DURING_READ')
         budget.check()
         return {'schema':'ouf.discovery-current-verifying-operational-worker.v1','phase':phase,'point':point,

@@ -729,3 +729,36 @@ create-only claims and compiler binding prevent overwrite, partial completion
 or adoption under another compiler. It remains a review fragment, with child,
 HUMAN, current cohort/admission and capability publication still required.
 See [the handoff](../../docs/handoffs/OUF_M2_INFRASTRUCTURE_REVIEW_20261031.md).
+
+
+## Native late checkpoints and fenced READY12 composition — 31 October 2026
+
+`operational_checkpoints.py` composes current signed installed material with the
+actual migration, gated release and verification contracts. It covers native
+execution/reconciliation points in phases9–11, the paused gate before unpause
+and the unpaused gate before SIGUSR1. Completed prefix payloads are read against
+their journal hashes. It returns an operational witness, never a complete cutover
+checkpoint or publication/release permission.
+
+A composition defect in the earlier verification predicate is corrected:
+`RunningWorkloadBinding` requires an APPLIED `VERIFY_APPLICATION` effect and
+cannot be used within that effect. `verifying_registry_binding.py` instead binds
+the completed signed-action `START_REPLACEMENT` receipt to the actual current
+process/configuration. It requires the exact IN_FLIGHT11 cursor, checks both
+native observations and never reads or creates a premature verification receipt.
+The retained completed-only reader and all frozen source manifests are unchanged.
+
+`held_native_controller.py` joins the existing Registry, image, operational
+worker, thirteen-peer runtime, publisher, database, TLS, IAM configuration,
+retirement, backup and producer readers under one transition invocation fence.
+Every reader shares the same parent, application, bound inputs and held history;
+volatile generations/leases are read again at the end. This is an observation
+interval, not an atomic distributed snapshot. Failure propagates without retry,
+repair, new authority, publication or producer release. This controller grants
+no admission for missing artifact membership, complete private custody or actual
+workload bearer. It is separate from the frozen current review compiler and is
+not a complete sealed execution package or a target command.
+
+The process native fixture uses a disposable non-root Python workload to qualify
+argv/generation/capabilities/NNP and receipt ordering. Engine I/O is modeled in
+that fixture. It proves neither Java/OCI/HTTP readiness nor application E2E.
