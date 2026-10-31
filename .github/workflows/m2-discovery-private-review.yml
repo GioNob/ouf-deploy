@@ -1,0 +1,34 @@
+name: M2 sealed private review assembly
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/private_review*.py','tools/m2_discovery_installation_profile/private_review_sources.json','scripts/export-m2-discovery-private-review.py','tests/test_m2_discovery_private_review.py','.github/workflows/m2-discovery-private-review.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/private_review*.py','tools/m2_discovery_installation_profile/private_review_sources.json','scripts/export-m2-discovery-private-review.py','tests/test_m2_discovery_private_review.py','.github/workflows/m2-discovery-private-review.yml']
+permissions: {contents: read}
+jobs:
+  private-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact source closure, cross-owner checks and hermetic private publication
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-private-review-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_m2_discovery_private_review.py -v
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-discovery-private-review.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --output "$GITHUB_WORKSPACE/private-review-compiler.py" > private-review-compiler.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: private-review-compiler
+          path: |
+            private-review-compiler.py
+            private-review-compiler.json
+          if-no-files-found: error

@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.m2-provider-native-source-qualification.v1",
+  "sourceCommit": "33a268fc35bf300ded261b1cb132727d26c11113",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "protocol": {
+    "testsPerEvent": 342,
+    "suitesPerEvent": 40,
+    "skips": 0,
+    "push": {
+      "run": 41022923269,
+      "job": 123954216804,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41022928944,
+      "job": 123954235980,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
+  },
+  "native": {
+    "push": {
+      "run": 41022923110,
+      "job": 123954216400,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41022928957,
+      "job": 123954235824,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true,
+    "realV4NodeBrokerInstallerAdmission": true,
+    "realIndependentFullOciRootfsAndNativeNicObserved": true,
+    "realNftAndCommonLock": true,
+    "realWrapperCasAndEd25519": true,
+    "lostNativeStartReplyReconciledWithoutReplay": true,
+    "realRegistryGateClosedBeforeReturn": true,
+    "modeledDockerProviderCreateStartBoundary": true,
+    "syntheticImagesReviewAndPredecessors": true
+  },
+  "legacyIntakeSourceClosurePreserved": true,
+  "localHistoricalAuthenticatedTransactionTests": 35,
+  "lateWorkerAndApplicationCompositionQualification": "PENDING_SEPARATE_SUCCESSOR",
+  "fullCohortProven": false,
+  "applicationE2EProven": false,
+  "providerTargetAdmissionProven": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}
