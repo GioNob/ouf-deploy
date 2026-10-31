@@ -5,7 +5,7 @@ Only the OCI reader and exact Docker namespace-alias access differ. The
 reviewed OCI/profile paths and every namespace/NIC/peer/generation check retain
 the original structure (qualified by parity test).
 """
-import os,re,stat
+import copy,os,re,stat
 from pathlib import Path
 from .custody_capture import decode,require
 from tools.semantic_provider_preexec_native import NativeBackend
@@ -16,11 +16,18 @@ import json
 
 
 class EngineTransportBackend(NativeBackend):
-    def __init__(self,profile,commands,budget,*,bundle_parent):
+    def __init__(self,profile,commands,budget,*,bundle_parent,namespace_reference,generation):
         parent=Path(bundle_parent)
         require(type(bundle_parent) is str and parent.is_absolute() and str(parent)==bundle_parent
             and '..' not in parent.parts and parent!=Path('/'), 'EXACT_DISCOVERY_ENGINE_BUNDLE_PARENT_REQUIRED')
         self.bundle_parent=bundle_parent;self.parent_seal=bundle_parent
+        require(type(namespace_reference) is str and type(generation) is dict
+            and set(generation)=={'pid','startTicks','namespaceInode'}
+            and all(type(v) is int and v>1 for v in generation.values())
+            and generation['namespaceInode']==profile['namespaceInode'],
+            'EXACT_DISCOVERY_DOCKER_NAMESPACE_GENERATION_REQUIRED')
+        self.namespace_reference=namespace_reference;self.namespace_generation=copy.deepcopy(generation)
+        self.namespace_seal=digest([namespace_reference,generation])
         super().__init__(profile,commands,budget)
 
     def engine_bundle(self,profile):
@@ -45,21 +52,33 @@ class EngineTransportBackend(NativeBackend):
         return bundle
 
     def engine_namespace(self,profile):
-        """Only Docker's two aliases, same name and already signed inode.
+        """Same admitted process + Docker namespace; no expected-policy edit.
 
         Expected OCI and the reviewed profile keep their original exact path.
         Native file/command reads use the authenticated canonical namespace.
         """
-        require(digest(profile)==self.seal,'DISCOVERY_ENGINE_NAMESPACE_PROFILE_DRIFT')
-        observed=Path(profile['namespacePath'])
+        require(digest(profile)==self.seal and self.namespace_seal==digest([
+            self.namespace_reference,self.namespace_generation]),'DISCOVERY_ENGINE_NAMESPACE_PROFILE_DRIFT')
+        generation=self.namespace_generation;observed=Path(self.namespace_reference)
         require(observed.parent in (Path('/run/docker/netns'),Path('/var/run/docker/netns')),
             'EXACT_DISCOVERY_DOCKER_NAMESPACE_PARENT_REQUIRED')
         selected=observed.resolve(strict=True)
         require(selected==Path('/run/docker/netns')/observed.name,
             'EXACT_DISCOVERY_DOCKER_NAMESPACE_ALIAS_REQUIRED')
+        expected=Path(profile['namespacePath'])
+        if profile.get('namespaceOrigin')=='OCI_CREATED':
+            require(expected==Path('/proc')/str(generation['pid'])/'ns/net',
+                'EXACT_DISCOVERY_CREATED_PROCESS_NAMESPACE_REQUIRED')
+        else:
+            require(profile.get('namespaceOrigin')=='PREPARED'
+                and expected.parent in (Path('/run/docker/netns'),Path('/var/run/docker/netns'))
+                and expected.resolve(strict=True)==selected,'SAME_REVIEWED_DISCOVERY_PREPARED_NAMESPACE_REQUIRED')
+        require(self.generation(generation['pid'])==generation,'CURRENT_DISCOVERY_NAMESPACE_GENERATION_REQUIRED')
         _ancestors(selected);value=selected.lstat()
         require(stat.S_ISREG(value.st_mode) and value.st_uid==0 and not value.st_mode&0o022
             and value.st_ino==profile['namespaceInode'],'DISCOVERY_DOCKER_NAMESPACE_IDENTITY_DRIFT')
+        require(value.st_ino==generation['namespaceInode'] and self.generation(generation['pid'])==generation,
+            'DISCOVERY_NAMESPACE_CHANGED_DURING_READ')
         return selected
 
     def bindings(self, profile, state):

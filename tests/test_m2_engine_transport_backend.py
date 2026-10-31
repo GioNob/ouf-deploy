@@ -49,16 +49,19 @@ class EngineBundle(unittest.TestCase):
 
     def test_only_exact_docker_alias_with_same_name_and_inode_is_canonicalized(self):
         b,profile,p,_=self.fixture();canonical=Path('/run/docker/netns/ci-fixture')
-        profile.update(namespacePath='/var/run/docker/netns/ci-fixture',namespaceInode=p.stat().st_ino)
+        profile.update(namespacePath='/var/run/docker/netns/ci-fixture',namespaceInode=p.stat().st_ino,namespaceOrigin='PREPARED')
+        b.namespace_reference=profile['namespacePath'];b.namespace_generation={'pid':1234,'startTicks':23,'namespaceInode':p.stat().st_ino}
+        b.namespace_seal=m.digest([b.namespace_reference,b.namespace_generation]);b.generation=lambda _:copy.deepcopy(b.namespace_generation)
         b.seal=m.digest(profile);before=copy.deepcopy(profile)
         with (patch.object(Path,'resolve',return_value=canonical) as resolve,
             patch.object(Path,'lstat',return_value=p.stat()),patch.object(m,'_ancestors') as ancestors):
             self.assertEqual(b.engine_namespace(profile),canonical)
-            resolve.assert_called_once_with(strict=True);ancestors.assert_called_once_with(canonical)
+            self.assertEqual(resolve.call_count,2);ancestors.assert_called_once_with(canonical)
         self.assertEqual(profile,before)
         for original,target,reason in (('/foreign/netns/ci-fixture',canonical,'PARENT_REQUIRED'),
             ('/var/run/docker/netns/ci-fixture',Path('/run/docker/netns/other'),'ALIAS_REQUIRED')):
-            profile['namespacePath']=original;b.seal=m.digest(profile)
+            profile['namespacePath']=original;b.namespace_reference=original
+            b.namespace_seal=m.digest([b.namespace_reference,b.namespace_generation]);b.seal=m.digest(profile)
             with patch.object(Path,'resolve',return_value=target),self.assertRaisesRegex(ValueError,reason):
                 b.engine_namespace(profile)
         profile.update(namespacePath='/run/docker/netns/ci-fixture',namespaceInode=p.stat().st_ino+1);b.seal=m.digest(profile)
@@ -78,5 +81,25 @@ class EngineBundle(unittest.TestCase):
             and any(isinstance(t,ast.Name) and t.id=='namespace' for t in n.targets))
         namespace.value=ast.parse('self.engine_namespace(profile)',mode='eval').body
         self.assertEqual(ast.dump(original,include_attributes=False),ast.dump(current,include_attributes=False))
+
+    def test_created_proc_reference_uses_same_docker_inode_without_relaxing_proc_ancestry(self):
+        b,profile,p,_=self.fixture();canonical=Path('/run/docker/netns/ci-fixture')
+        generation={'pid':1234,'startTicks':23,'namespaceInode':p.stat().st_ino}
+        profile.update(namespaceOrigin='OCI_CREATED',namespacePath='/proc/1234/ns/net',namespaceInode=p.stat().st_ino)
+        b.seal=m.digest(profile);b.namespace_generation=generation;b.namespace_reference=str(canonical)
+        b.namespace_seal=m.digest([b.namespace_reference,generation]);before=copy.deepcopy(profile)
+        with (patch.object(Path,'resolve',return_value=canonical),patch.object(Path,'lstat',return_value=p.stat()),
+            patch.object(m,'_ancestors') as ancestors,patch.object(b,'generation',return_value=copy.deepcopy(generation)) as current):
+            self.assertEqual(b.engine_namespace(profile),canonical)
+            self.assertEqual(current.call_count,2);ancestors.assert_called_once_with(canonical)
+        self.assertEqual(profile,before)
+        profile['namespacePath']='/proc/4321/ns/net';b.seal=m.digest(profile)
+        with patch.object(Path,'resolve',return_value=canonical),self.assertRaisesRegex(ValueError,'CREATED_PROCESS_NAMESPACE_REQUIRED'):
+            b.engine_namespace(profile)
+        profile['namespacePath']='/proc/1234/ns/net';b.seal=m.digest(profile)
+        with (patch.object(Path,'resolve',return_value=canonical),patch.object(Path,'lstat',return_value=p.stat()),
+            patch.object(m,'_ancestors'),patch.object(b,'generation',side_effect=[generation,{**generation,'startTicks':24}]),
+            self.assertRaisesRegex(ValueError,'CHANGED_DURING_READ')):
+            b.engine_namespace(profile)
 
 if __name__=='__main__':unittest.main()

@@ -98,8 +98,14 @@ class TransportInstallationAdapter:
     def backend(self,profile):
         budget=Budget(self.recipe['nativeBudgetSeconds'])
         paths={key:program(value,budget) for key,value in self.recipe['commands'].items()}
+        node=self.node_owner;generation=node.adapter.observer.transport_generation
+        actual=node.engine.matching_configuration(self.transition,node.request,node.engine.inspect(self.transition))
+        require(actual['Id']==profile['containerId'] and actual['State']['Pid']==generation['pid']
+            and actual['State']['Running'] is True and actual['State']['Paused'] is True,
+            'SAME_PAUSED_DISCOVERY_DOCKER_NAMESPACE_REFERENCE_REQUIRED')
         return EngineTransportBackend(profile,paths,self.recipe['nativeBudgetSeconds'],
-            bundle_parent=self.node_owner.recipe['dockerContext']['bundleParent'])
+            bundle_parent=node.recipe['dockerContext']['bundleParent'],
+            namespace_reference=actual['NetworkSettings']['SandboxKey'],generation=generation)
 
     def prepared(self,intent,base):
         values={name:decode(private_bytes(self.root/name,131072),131072) for name in FILES}
