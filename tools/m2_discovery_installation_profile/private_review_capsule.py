@@ -9,6 +9,7 @@ from pathlib import Path
 
 BASELINE='tools/semantic_frame_compiler/containerd-overlayfs-southbound.json'
 BASELINE_HASH='ea86df348ace963d41d3a24ab3b9bea693c3b3ba36e181a1aaec5f7e97333b63'
+SOURCE_MANIFEST_HASH='4258366534214845cea3e2757382752d479001bf28b4baa4cb5fcbd57bbbc6ec'
 ENTRY='tools.m2_discovery_installation_profile.private_review'
 MAXIMUM=4194304
 
@@ -77,7 +78,9 @@ def build(root,source_revision):
         if not ok:raise ValueError('EXACT_PRIVATE_REVIEW_SOURCE_REQUIRED')
     require(type(source_revision) is str and re.fullmatch('[0-9a-f]{40}',source_revision) is not None)
     root=Path(root)
-    pins=json.loads((root/'tools/m2_discovery_installation_profile/private_review_sources.json').read_text())
+    raw_pins=(root/'tools/m2_discovery_installation_profile/private_review_sources.json').read_bytes()
+    require(hashlib.sha256(raw_pins).hexdigest()==SOURCE_MANIFEST_HASH)
+    pins=json.loads(raw_pins)
     require(ENTRY in pins and 1<=len(pins)<=192)
     sources={}
     for name,binding in pins.items():

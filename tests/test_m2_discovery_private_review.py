@@ -187,11 +187,21 @@ class PrivateReview(unittest.TestCase):
         self.assertEqual(set(p.name for p in out.iterdir()),{'assembly.private.json','preparation.claim.json'})
 
     def test_packager_denies_changed_source_before_emitting_a_capsule(self):
-        original=Path.read_bytes
-        def changed(path):
-            raw=original(path)
-            return raw+b'\n' if str(path).endswith('/private_review.py') else raw
-        with patch.object(Path,'read_bytes',changed),self.assertRaisesRegex(ValueError,'SOURCE_REQUIRED'):
-            capsule.build(ROOT,'b'*40)
+        for change_manifest in (False,True):
+            with self.subTest(change_manifest=change_manifest):
+                t=tempfile.TemporaryDirectory(dir=ROOT);self.addCleanup(t.cleanup);alternate=Path(t.name)
+                manifest='tools/m2_discovery_installation_profile/private_review_sources.json'
+                pins=json.loads((ROOT/manifest).read_bytes())
+                for relative in {v['path'] for v in pins.values()}|{manifest,capsule.BASELINE}:
+                    target=alternate/relative;target.parent.mkdir(parents=True,exist_ok=True)
+                    target.write_bytes((ROOT/relative).read_bytes())
+                altered=alternate/'tools/m2_discovery_installation_profile/private_review.py'
+                altered.write_bytes(altered.read_bytes()+b'\n')
+                if change_manifest:
+                    for row in pins.values():
+                        if row['path']==str(altered.relative_to(alternate)):
+                            row['sha256']=hashlib.sha256(altered.read_bytes()).hexdigest()
+                    (alternate/manifest).write_text(json.dumps(pins,indent=2,sort_keys=True)+'\n')
+                with self.assertRaisesRegex(ValueError,'SOURCE_REQUIRED'):capsule.build(alternate,'b'*40)
 
 if __name__=='__main__':unittest.main()
