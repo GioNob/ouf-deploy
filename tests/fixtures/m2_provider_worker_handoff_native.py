@@ -10,7 +10,7 @@ import copy,dataclasses,fcntl,importlib.util,json,os,signal,socket,struct,sys,th
 from pathlib import Path
 
 
-def qualify(phase,root,commands,state_root,run):
+def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
     assert os.environ.get('GITHUB_ACTIONS')=='true' and os.geteuid()==0
     assert len(threading.enumerate())==1,'CI_FORK_REQUIRES_SINGLE_THREADED_PARENT'
     from tools.m2_discovery_installation_profile import lease_worker as worker
@@ -24,7 +24,17 @@ def qualify(phase,root,commands,state_root,run):
     preserved={Path(prep['coordinationJournal']):Path(prep['coordinationJournal']).read_bytes()}
     preserved.update({p:p.read_bytes() for p in phase.journal.root.glob('*.json')})
     provider=owner.creation.owned_id();registry=window.engine.inspect(window.transition)['Id']
-    def native(cid):return json.loads(run(commands['runc'],'--root',str(state_root),'state',cid).stdout)
+    def native(cid):
+        if docker_engine is None:return json.loads(run(commands['runc'],'--root',str(state_root),'state',cid).stdout)
+        status,value=docker_engine.request('GET','/v1.44/containers/'+cid+'/json')
+        assert status==200 and value['Id']==cid
+        state=value['State']
+        return {'pid':state['Pid'],'status':'paused' if state['Paused'] else 'running' if state['Running'] else 'stopped'}
+    def pause_provider(paused,*,check=True):
+        if docker_engine is None:
+            return run(commands['runc'],'--root',str(state_root),'pause' if paused else 'resume',provider,check=check)
+        status,_=docker_engine.request('POST','/v1.44/containers/'+provider+('/pause' if paused else '/unpause'))
+        if check:assert status==204
     identities={cid:native(cid) for cid in (registry,provider)}
     pins={cid:(s['pid'],ticks(s['pid']),Path('/proc',str(s['pid']),'ns/net').stat().st_ino)
         for cid,s in identities.items()}
@@ -169,10 +179,10 @@ def qualify(phase,root,commands,state_root,run):
         assert recovered['publicationCount']>second['publicationCount']
         assert recovered['startedWall']==first['startedWall']==initial['startedWall']
         assert recovered['startedMonotonic']==first['startedMonotonic']==initial['startedMonotonic']
-        run(commands['runc'],'--root',str(state_root),'pause',provider)
+        pause_provider(True)
         blocked=request('tick');assert blocked['state']=='BLOCKED' and blocked['reason']=='GENERATION_CHANGED',blocked
         assert not any(owner.coordinator.sets());free_locks()
-        run(commands['runc'],'--root',str(state_root),'resume',provider)
+        pause_provider(False)
         queries=control['queries'];again=request('tick')
         assert again['state']=='BLOCKED' and again['attempts']==blocked['attempts'] and control['queries']==queries
         assert all(p.read_bytes()==raw for p,raw in preserved.items())
@@ -190,14 +200,15 @@ def qualify(phase,root,commands,state_root,run):
             'finiteInstallerAdmissionOnly':True,'sealedWorkerInstallationProven':False,
             'fullInitialAdmissionSeconds':round(admission_seconds,3),
             'currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller':True,
-            'modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor':True,
-            'combinedNativeDockerCompositionProven':False,'fullCohortProven':False,'applicationE2EProven':False,
+            'modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor':docker_engine is None,
+            'actualDockerBoundary':docker_engine is not None,'syntheticImagesReviewRegistryPredecessor':True,
+            'combinedNativeDockerCompositionProven':docker_engine is not None,'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:
         if pid is not None:
             os.kill(pid,signal.SIGKILL);os.waitpid(pid,0)
         stream.close();left.close();done.set();thread.join(timeout=1);server.close()
-        run(commands['runc'],'--root',str(state_root),'resume',provider,check=False)
+        pause_provider(False,check=False)
         # Revoke only through the new worker journal, preserving the provider's
         # admission history even on failure. This is disposable-CI cleanup.
         cleanup_backend=runtime.NftBackend([commands['nft']],cfg,binding['leaseStructureHash'],5)
