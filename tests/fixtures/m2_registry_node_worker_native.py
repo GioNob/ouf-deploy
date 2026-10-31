@@ -102,7 +102,7 @@ def attest_and_install(provider_phase,auth,setup,boundary,token):
             'installationRef':auth.context['installationRef'],'entityRef':auth.context['entityRef']})
     intent={'creationRequestHash':window.request_hash,
         **{k:recipe[k] for k in ('sourceClosureHash','qualifiedPackageHash','imageConfigurationHash')},'nodeRecipeHash':digest(recipe)}
-    window.transition.phases=nodes.DISCOVERY_PHASES
+    assert window.transition.phases==nodes.DISCOVERY_PHASES
     node=nodes.DiscoveryNodeOwner(window.engine,window.transition,window.request,intent,window.store,window.profile,
         token.reader,window.child,window.raw,auth.verifier,signer,recipe,setup['nodeRoot'])
     enter(boundary,'ATTEST_NEW_OCI_PEER',window.raw)
