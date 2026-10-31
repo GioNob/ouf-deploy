@@ -448,5 +448,41 @@
     "targetApplyAuthorized": false,
     "runtimeAuthorityIssued": false,
     "releaseAcceptance": false
+  },
+  "nativeRegistryTokenTransportAndSealedWorker": {
+    "date": "2026-10-31",
+    "sourceCommit": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+    "evidence": "evidence/m2-registry-node-worker-native-20261031.json",
+    "status": "QUALIFIED_457_PROTOCOL_TESTS_54_SUITES_ALL_THREE_NATIVE_MODES_AND_IAM_251_TESTS_33_SUITES_FINAL_REPORTS_READ",
+    "nativeRun": 41165277183,
+    "registryWorkerJob": 124431388213,
+    "allThreeNativeModesFinalReportsRead": true,
+    "actualRegistryNodeAndTransport": true,
+    "actualInstalledTokenOwnerAndPinnedTls": true,
+    "sameProviderAndLateSealedWorker": true,
+    "oneInitialGrantAndRevocationReadbackDenied": true,
+    "registryJavaStarted": false,
+    "originalV1ProviderMaximum90Unchanged": true,
+    "separateV2InitialMaximum300RequiresNewExactReview": true,
+    "originalProtocolMaximum300Unchanged": true,
+    "hostObserverDoesNotTakeWriterKernelLock": true,
+    "controlledObserverWriterInterferenceMechanismProven": true,
+    "historicalUnknownCauseResolved": false,
+    "syntheticHumanIamRealmImagesPackagesAndEarlierTransitionPrefix": true,
+    "fullCohortProven": false,
+    "applicationE2EProven": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false,
+    "protocol": {
+      "run": 41165277205,
+      "job": 124431387665,
+      "tests": 457,
+      "suites": 54,
+      "failures": 0,
+      "skips": 0,
+      "conclusion": "success",
+      "finalLogRead": true
+    }
   }
 }

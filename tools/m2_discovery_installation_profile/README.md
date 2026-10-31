@@ -567,3 +567,58 @@ process/IO errors and the full consumed START sequence. A later separately
 requested read may reconcile the original claim; it cannot start again. This
 closes a diagnostic information loss, not the cause of the historical native
 UNKNOWN or the full stability/cohort/target requirements.
+
+## Concrete Registry node, token and transport before the sealed worker
+
+The Docker qualifier's third independent mode, `--registry-worker`, replaces the
+modeled Registry-admission predecessor with the actual DiscoveryNodeOwner and
+TransportInstallationAdapter. An independent Registry control-peer rootfs seal
+precedes review; the real five files, DB configtree, token, complete OCI/rootfs
+and reciprocal NICs are read natively. InstalledTokenOwner retains actual source
+custody, Ed25519, journals, pinned TLS and the masked legacy-unit fence on the
+disposable host. Later reads cannot renew its one initial token grant; final IAM
+revocation must deny Registry readback.
+
+`engine_transport_backend.py` reads the exact signed Engine OCI as a bounded,
+stable root-owned public file. It authenticates the current matching paused
+Engine SandboxKey and the same admitted PID/startTicks/inode before and after,
+then uses that canonical Docker namespace for native access. Expected OCI and
+reviewed paths stay unchanged, including OCI_CREATED proc paths. An AST parity
+test retains all original namespace/NIC/peer/generation guards except these two
+reader call sites. Original backend, private readers and frozen pins stay exact.
+
+The complete composition reached worker ATTEST but exhausted the original
+90-second provider profile. A separate v2 profile explicitly reviews a complete
+Registry/transport/sealed-worker window of at most 300 seconds, within the
+existing protocol hard ceiling. V1 retains its 90-second limit. The new scope
+requires new exact parent review before candidates; three exclusive signature
+claims still clip expiry to the original parent/child/gate. It cannot extend live
+authority or renew/adopt consumed claims.
+
+Native qualification and causal failures are recorded in
+`evidence/m2-registry-node-worker-native-20261031.json`. HUMAN/IAM realm,
+images/packages, earlier transition phases and host transport remain fixtures.
+Java stays paused. Real Gateway, full cohort, publication, target authority and
+Farmacie-to-UDP require separate qualification.
+
+
+The host-side worker observer no longer takes the nonblocking exclusive kernel
+writer lock. Controlled real-flock tests show that its former exclusive read can
+block both renewal and safe revocation, producing SAFE_PAUSE_UNPROVEN in the
+actual recovery protocol. The reader authenticates the same approved inode
+before/after without flock and retains the complete stable journal, ownership,
+positive equal two-family membership and receipt subset checks. An incomplete or
+changing publication is unproven; no retry/effect/reset budget is added. Process,
+manager, signed generation and nonregressing accounting checks remain required.
+The worker's frozen37pins and writer semantics are unchanged. This proves a
+concrete interference mechanism, not the cause of every historical UNKNOWN;
+current native and complete-protocol qualification must be read separately.
+
+
+At production/test/workflow source `bc82ccef0fadcdc4d669a1743f3d38cb6a288693`,
+PR41165277183 passes all three native modes; PR41165277205/job124431387665
+passes457tests/54suites/0fail/0skip, and IAM41165277274/job124431388446
+passes251tests/33suites/0skip plus actual disposable Keycloak. All those final
+logs/reports are read. The Registry/token/transport final report also proves IAM
+revocation denial with unchanged token/journals and one initial grant. These are
+the named qualified scopes; full target/cohort/product acceptance remains open.
