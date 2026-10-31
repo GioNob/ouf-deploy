@@ -1,3 +1,62 @@
+# CURRENT — Six-part parent review compiler PASS20; exact artifact verified; no target admission
+
+31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
+or automations. User explicitly says a stopped turn means their involvement is
+necessary: do not stop at optional checkpoints or imply background work.
+Teatri M1/G4 technical8/8 functional6/6 acquired. Same Farmacie SUCCEEDED61rows/
+10columns; ministerial STRING/all10OPEN; no upload/profile/acquisition replay.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two real clients remain OPEN.
+
+Source bcbc4aa86a6fc687929edac7649b9fb0af336364, PR54 draft/unmerged. New independent
+parent_review compiler recomposes all SIX exact parent sections, including
+governed Discovery publication proposals. Parent review parser accepts its shape;
+this is NOT authenticated current inputs, admission, authority or execution.
+Publication reuses pinned original Gateway7files at60788cf965334441be0a33c345f5c0bcd66cbdde
+and Onboarding2helpers atbe388e1462778438a208c2e00e166370fee32189 plus local catalogue.
+All10 public source bodies are checked before helper execution. Route/Lua reads
+use the verified in-memory snapshot. Exactly3 additive routes/3 capabilities/
+one shared discovery OAuth scope; retained routes/grants/assignments preserved.
+Registry/Gateway/authorization identities, distinct keys, template constants,
+selected Registry alias, complete route inventory and distinct journals bound.
+Child13phase original bytes are hashed without projection/signing, with exact
+Gateway/MCP sections and declared HUMAN binding. Current HUMAN/dual roles still
+require the actual existing verifier. Native input baselines remain fixtures.
+
+Local PASS8publication0.232s +12parent11.043s; old15infra9.141s,0fail/0skip.
+CI41202906043/job124542099651 PASS8/0.612s +12/11.669s,0fail/0skip, final log read.
+Artifact13042814391 downloaded/exact2ZIPmembers/all136source bodies/10public
+helper files/baseline/loader/metadata/exact local rebuild verified.
+ZIP688234bytes SHAe523964ba09276245b1c09c8ad63fc4c286d2917ab5bad1cda35592cfe179349.
+Capsule2295652bytes SHAd9c5b020e041ad83de7d19a24257d2d333e08d27b89bc8b6b57ca93f9b8ac5c7.
+Payload132444cd98b2746624399eb756a9a111c04ec671112e48b5f41e406707a9d644.
+Independent source-map anchor eaacfca7912e094b77f11528473bdcfe493bcf31f7eb50dee26d6d73bea7e36a.
+Loader242cce9f329499d68941732dca2e08c4f4c5fc76e751b589367b4c7e360ea8bc.
+Claimd7659f7046df772b6a846301dee404cef8c7155d matches PRmerge checkout;
+provenance NOT publisher trust. Original37/108/128 closures/pins unchanged.
+
+Create-only root-private prepare/inspect claims before payload; partial output
+is never completed/replayed, inspection never overwrites. Isolated CLI has no
+apply/signing mode, public hashes/flags only. CompleteParentReviewShape true;
+inputsAuthenticated/currentNativeAdmissionProven/publicationExecutorIntegrated/
+runtimeAuthorityIssued/targetApplyAuthorized/capabilitiesPublished/E2E/release
+acceptance all FALSE. Publication execution and full current admission still
+need integration/qualification; reviewed requirements are NOT native receipts.
+
+Concrete target compilation needs current private VPS inputs and exact new
+child/HUMAN selections. This session has GitHub + OUF MCP, no root host/file/
+service channel; MCP HEALTHY/actionRequired false is NOT target M2 admission.
+An operator channel is required for real VPS verification, but no new target
+command is ready yet. Never request secrets/tokens in chat or rerun consumed
+captures. Do independent source work before any necessary operator request.
+No target apply, authority/grant, reset, replay, merge or release acceptance.
+Other sourcebcbc general/native/protocol CI runs are separate, not automatically
+qualified by this20test review compiler result. Prior QUIESCED35eba/77eb causal
+fix/474protocol/native3/control/IAM251 evidence remains valid as below.
+Evidence:evidence/m2-complete-parent-review-20261031.json
+Handoff:docs/handoffs/OUF_M2_COMPLETE_PARENT_REVIEW_20261031.md
+Canonical continuation:docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md on PR50.
+Older CURRENT headers below are historical.
+
 # CURRENT — Recovery-reader QUIESCED defect fixed; protocol474/55 + native3/control PASS; M2 OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
