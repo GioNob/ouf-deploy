@@ -1,0 +1,39 @@
+name: M2 governed publication owner protocol
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_publication_owner.py','.github/workflows/m2-discovery-publication-owner.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_publication_owner.py','.github/workflows/m2-discovery-publication-owner.yml']
+permissions: {contents: read}
+jobs:
+  publication-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: be388e1462778438a208c2e00e166370fee32189
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 60788cf965334441be0a33c345f5c0bcd66cbdde
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Actual role signatures and one-use journals with explicit native and HTTP fixtures
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-publication-owner-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+            OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+            OUF_PUBLICATION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_m2_discovery_publication_owner.py -v
