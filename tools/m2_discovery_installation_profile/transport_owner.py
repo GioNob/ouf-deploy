@@ -17,6 +17,7 @@ from tools.semantic_provider_deployment_producer import program
 from tools.semantic_provider_lease_coordination import Coordinator,PrivateJournal
 from tools.semantic_provider_preexec import Preexec
 from tools.semantic_provider_preexec_native import NativeBackend
+from .engine_transport_backend import EngineTransportBackend
 
 PHASE='INSTALL_AUTHENTICATED_TRANSPORT'
 FILES=('claim.json','profile.json','template.json','profile-seal.json','preexec-journal.json')
@@ -97,7 +98,8 @@ class TransportInstallationAdapter:
     def backend(self,profile):
         budget=Budget(self.recipe['nativeBudgetSeconds'])
         paths={key:program(value,budget) for key,value in self.recipe['commands'].items()}
-        return NativeBackend(profile,paths,self.recipe['nativeBudgetSeconds'])
+        return EngineTransportBackend(profile,paths,self.recipe['nativeBudgetSeconds'],
+            bundle_parent=self.node_owner.recipe['dockerContext']['bundleParent'])
 
     def prepared(self,intent,base):
         values={name:decode(private_bytes(self.root/name,131072),131072) for name in FILES}
