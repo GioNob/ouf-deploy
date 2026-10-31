@@ -24,6 +24,8 @@ RETAINED={'onboarding','postgres','minio','keycloak','gateway-owner','udp','inge
 ROLES=REPLACED|RETAINED
 BINDING_FIELDS={'containerId','imageId','pid','startedAt','configHash','hostConfigHash','mountsHash','networkSettingsHash'}
 INPUT_SCHEMA='ouf.discovery-current-cohort-runtime-inputs.v1'
+INPUT_SCHEMA_V2='ouf.discovery-current-cohort-runtime-inputs.v2'
+ADDITIONAL_INPUTS={'databases','custody','tlsIam','retirementAndBackup'}
 REVIEW_SCHEMA='ouf.discovery-current-cohort-runtime-review.v2'
 
 
@@ -38,7 +40,13 @@ def pin_shape(pin):
 def validate_inputs(inputs):
     fields={'schema','sourceClosureHash','installationInputsHash','desiredProfileHash','cohortManifestHash',
         'bootId','engineBinding','rootProcessPins','peers'}
-    require(type(inputs) is dict and set(inputs)==fields and inputs['schema']==INPUT_SCHEMA
+    require(type(inputs) is dict and inputs.get('schema') in (INPUT_SCHEMA,INPUT_SCHEMA_V2),
+        'EXACT_CURRENT_COHORT_RUNTIME_INPUTS_VERSION_REQUIRED')
+    if inputs['schema']==INPUT_SCHEMA_V2:
+        fields.add('additionalInputsHashes');extra=inputs.get('additionalInputsHashes')
+        require(type(extra) is dict and bool(extra) and set(extra)<=ADDITIONAL_INPUTS
+            and all(hashed(v) for v in extra.values()),'EXACT_CURRENT_COHORT_ADDITIONAL_INPUT_BINDINGS_REQUIRED')
+    require(set(inputs)==fields
         and all(hashed(inputs[k]) for k in ('sourceClosureHash','installationInputsHash','desiredProfileHash','cohortManifestHash'))
         and type(inputs['bootId']) is str and re.fullmatch(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}',inputs['bootId'])
         and len(encoded(inputs))<=131072,'EXACT_CURRENT_COHORT_RUNTIME_INPUTS_REQUIRED')
