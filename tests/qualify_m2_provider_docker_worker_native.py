@@ -176,7 +176,15 @@ def main():
             phase=sequence.ProviderInstallationPhase(owner)
             try:phase.apply();outcome,proof=phase.observe();assert outcome=='APPLIED',proof
             except Exception:
-                try:diagnose_broker(publication.material(),STATE_ROOT)
+                try:
+                    material=publication.material();diagnose_broker(material,STATE_ROOT)
+                    for denial in Path(material['root']).glob('broker-denial-*.json'):
+                        value=runtime.private_json(denial)
+                        print('CI_RETAINED_BROKER_DENIAL='+json.dumps(value,sort_keys=True),flush=True)
+                    for selected in (STATE_ROOT,Path('/run/containerd/runc/moby')):
+                        result=run(commands['runc'],'--root',str(selected),'state',registry,check=False)
+                        print('CI_REGISTRY_RUNTIME_ROOT='+json.dumps({'root':str(selected),'returncode':result.returncode,
+                            'state':json.loads(result.stdout) if result.returncode==0 else None},sort_keys=True),flush=True)
                 except Exception:pass
                 raise
             provider=creation.owned_id()
