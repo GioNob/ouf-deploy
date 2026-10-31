@@ -1,3 +1,88 @@
+# CURRENT — Recovery-reader QUIESCED defect fixed; protocol474/55 + native3/control PASS; M2 OPEN
+
+31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
+or automations. Teatri M1/G4 technical8/8 functional6/6 acquired. Farmacie same
+SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN; no upload/profile/
+acquisition replay. M2/G5–G7/24AT/8UX/8stability/two real clients remain OPEN.
+
+Production fix source35eba47c33f46d111104a39d82c1e5d7b3b57929, PR54 draft/unmerged.
+External observers reused the runnable service factory and Journal.read(), an
+exclusive nonblocking recovery/CAS transaction. This can fail the actual worker's
+read/CAS, force correct kernel revocation, then prevent its blocked checkpoint
+from committing. The result is stale ACTIVE plus QUIESCED/nonpositive leases and
+parked-alive/unavailable reporting. This is DISTINCT from the already fixed
+kernel common-lock observer contention.
+
+Controlled local production failure path with real private journals/flock and
+modeled kernel reproduces ACTIVE16publications/1attempt + QUIESCED, unchanged
+recovery bytes and parked-alive. New build_observed host composition/RecoverySnapshot
+takes NO recovery lock, constructs no runnable supervisor, initializes/writes no
+ledger and preserves signed config/source/recipe/program/native checks and exact
+scope/generation/policy/accounting/counters. Valid atomic replacement is read
+contention under original3reads/single deadline/default15s/0.02+0.04s waits.
+Bad custody/foreign/malformed data and QUIESCED revocation still deny.
+Both host entrypoints changed; original37worker sources/pins/writer/capsule,
+operational budgets, service/reentry behavior and original108module compiler
+are unchanged. No automatic start, rearm, authority or reset.
+
+Local PASS:8recovery tests1.752s;16start/read4.281s;13signed-files18.420s;
+15infrastructure compiler8.472s, all0fail/0skip. Production source35eba protocol
+PR41198210299/job124528577718 PASS474tests/55suites/0fail/0skip822.874s,
+final log read. IAM41198210570/job124528578536 PASS251/33/0fail/0skip130.101s,
+final disposable Keycloak report read;0production calls/targetInstallerReady false.
+
+Native source35eba PR41198210406 PASS3ordinary modes plus separate legacy-reader
+negative control, all final reports read. CI-only control successor
+77eb62055ea603e64aebd82a4fabae60a24b77ed keeps the injected OLD reader lock THROUGH
+the causal observation, avoiding a late checkpoint race after release.
+No production byte changed. Control-source protocol PR41198710201/job124530033262
+PASS474/55/0fail/0skip766.744s, final log read.
+Native PR41198710075 PASS finite124530033033/
+sealed124530033078/registry124530032988 plus negative124530032815; all final logs/
+reports read. Each mode also PASS8recovery tests plus7diagnostic and7peer-source.
+Negative control ACTUALLY forces QUIESCED/unauthorized/nonpositive sets with
+stale ACTIVE and original CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED;
+no restart/rearm/reset or installation acceptance. Positive Registry control
+holds an UNLOCKED snapshot fd across ACTUAL renewal: publication advances with
+same original clocks/attempt count; atomic replacement is read contention only.
+Full Registry/token/transport/sealed-worker proof then passes; Java stays paused.
+HUMAN/IAM realm/images/packages/earlier phase prefix remain explicit CI fixtures.
+
+Compiler source35eba PR41198210468/job124528578309 PASS15/0fail/0skip6.655s;
+CI-only77eb PR41198710453/job124530034068 PASS15/0fail/0skip10.172s; logs read.
+New128module artifact13040793894 downloaded/all source bodies/ZIP members/
+baseline/loader/metadata/exact local rebuild verified. Capsule2038956bytes SHA
+dbf3575be272a48f26cd28bb87e04f8358d6fd85330378b85c27e8227f13667f.
+ZIP610442bytes SHA2096e72b48a494c2551a351cb59ee479374a706f566a38c51f90078f679a6138.
+Payload833a99693feeb6df62cb6ee5a6151df6c8282a5183ce33ee83d35ad50e9fe00c.
+Independent source-map anchor649322a5fa52193ca1b12efdf03901c0f30485a3051216465ebee299b40f778b.
+Claim5caeb8bcbaafc5a7ba160b6505c0a9b80b408a4e matches CI PR-merge checkout;
+it is provenance, NOT publisher trust or target admission. Original37module
+capsule remains464208bytes SHA3b88cd8f329ea5f143bed61906270070341a6cda9ebc534a2268d82eeada3262.
+
+This fixes a causally reproduced observer-induced QUIESCED defect. Historical
+source41f935 had the same state pair but did NOT capture the old flock owner;
+its precise old trigger and older UNKNOWN/MCP/worker incidents are not
+retrospectively proven or universally closed. Earlier31b v1-expiry/UNKNOWN
+evidence stays retained. Earlier27717b20 pending-publication read fix remains
+its own scope. Legitimate revocation must never become positive publication.
+
+Next: exact complete parent/child/HUMAN/governed publication assembly and current
+full cohort/private file/archive/Gateway/executable/TLS/IAM/DB/trust/fencing
+admission; real Farmacie→Ingestion→UDP/all61outcomes, reimport/fault/chat/boot/
+rotation/two real clients and stability. Private compiler outputs remain review
+FRAGMENTS, no complete parent/authority/current admission. Source35eba Chatbot
+run41198210321 was cancelled by a newer commit; later general runs are separate.
+Original v1 max90/v2 initial max300 unchanged, no live extension or consumed replay.
+No target apply, runtime authority/grant, reset, merge or release acceptance.
+Prior target scopes consumed; no new target command ready.
+Evidence:evidence/m2-quiesced-recovery-reader-20261031.json
+Handoff:docs/handoffs/OUF_M2_QUIESCED_RECOVERY_READER_20261031.md
+Prior:evidence/m2-infrastructure-review-20261031.json
+Canonical continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+Older CURRENT headers below are historical.
+
 # CURRENT — Infrastructure PASS15; native QUIESCED failure retained; M2 OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
