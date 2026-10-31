@@ -44,6 +44,7 @@ DENIAL_CODES=frozenset({
     'DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION',
     'CURRENT_DISCOVERY_KERNEL_LOCK_INODE_REQUIRED',
     'DISCOVERY_KERNEL_LOCK_REPLACED',
+    'DISCOVERY_PUBLICATION_IN_PROGRESS',
 })
 
 
@@ -88,16 +89,26 @@ def publication_snapshot(coordinator,path,identity):
         coordination=coordinator.journal();coordinator.owner.backend.verify_ownership(coordinator.configuration)
         values=coordinator.owner.backend.read_sets(coordinator.configuration)
         flows=coordinator.configuration['providerFlows']
-        require(coordination['state']=='LEASE_READY' and coordination['leaseAuthorized'] is True
-            and set(values)=={(f,i) for f in ('inet','bridge') for i in range(len(flows))},
+        require(set(values)=={(f,i) for f in ('inet','bridge') for i in range(len(flows))},
+            'CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED')
+        require(attributes(os.fstat(fd))==identity==attributes(path.lstat()),'DISCOVERY_KERNEL_LOCK_REPLACED')
+        if coordination['state']=='LEASE_UPDATING' and coordination['leaseAuthorized'] is False:
+            # A complete validated owner journal reports an in-flight update.
+            # Reuse only observe()'s ORIGINAL three read attempts/deadline.
+            # This is never a positive snapshot or an operational effect retry.
+            raise BlockingIOError('DISCOVERY_PUBLICATION_IN_PROGRESS')
+        require(coordination['state']=='LEASE_READY' and coordination['leaseAuthorized'] is True,
             'CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED')
         for i in range(len(flows)):
             left,right=values['inet',i],values['bridge',i]
             require(left and right and set(left)==set(right)
                 and set(left)<=set(coordination['leaseAddresses'][i]),'CURRENT_TWO_FAMILY_DISCOVERY_LEASE_REQUIRED')
         coordinator.owner.backend.verify_ownership(coordinator.configuration)
-        require(coordinator.journal()==coordination,'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION')
+        after=coordinator.journal()
         require(attributes(os.fstat(fd))==identity==attributes(path.lstat()),'DISCOVERY_KERNEL_LOCK_REPLACED')
+        if after['state']=='LEASE_UPDATING' and after['leaseAuthorized'] is False:
+            raise BlockingIOError('DISCOVERY_PUBLICATION_IN_PROGRESS')
+        require(after==coordination,'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION')
     finally:os.close(fd)
 
 

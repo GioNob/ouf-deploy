@@ -44,10 +44,11 @@ class ObservationPublication(unittest.TestCase):
         self.assertEqual(row['state'],'LEASE_READY')
 
     def test_unproven_publication_membership_or_lock_inode_never_passes(self):
-        for case in ('pending','receipt_drift','family','empty','foreign','lock_replaced'):
+        for case in ('receipt_drift','family','empty','foreign','lock_replaced','pending_bad_keys'):
             with self.subTest(case=case):
                 c,path,identity,lock,row,sets=self.fixture()
-                if case=='pending':row['state']='LEASE_UPDATING';row['leaseAuthorized']=False
+                if case=='pending_bad_keys':
+                    row.update(state='LEASE_UPDATING',leaseAuthorized=False);sets.pop(('inet',0))
                 elif case=='family':sets[('bridge',0)]={'8.8.8.8':10}
                 elif case=='empty':sets[('bridge',0)]={}
                 elif case=='foreign':row['leaseAddresses']=[['8.8.8.8']]
@@ -72,6 +73,42 @@ class ObservationPublication(unittest.TestCase):
         self.assertEqual(blocked['attempts'],initial['attempts']);self.assertNotIn('revoked',records)
         allowed=recovery.pause(initial,'BLOCKED','AUTHORITY_REVOKED')
         self.assertEqual(allowed['reason'],'AUTHORITY_REVOKED');self.assertIn('revoked',records)
+
+    def test_known_publication_in_progress_reconciles_only_inside_existing_read_attempts(self):
+        c,path,identity,lock,row,sets=self.fixture();row.update(state='LEASE_UPDATING',leaseAuthorized=False)
+        attempts=[];sleep=[];before=path.read_bytes()
+        def observed(*args,**kwargs):
+            attempts.append(kwargs['deadline'])
+            if len(attempts)==2:row.update(state='LEASE_READY',leaseAuthorized=True)
+            m.lease_observation.publication_snapshot(c,path,identity)
+            return {'positiveRead':True}
+        with patch.object(m.lease_observation,'_observe',side_effect=observed),patch.object(m.lease_observation.time,'sleep',side_effect=sleep.append):
+            self.assertEqual(m.lease_observation.observe('unused','unused',unit_name='unused.service',systemctl={}),{'positiveRead':True})
+        self.assertEqual(len(attempts),2);self.assertEqual(len(set(attempts)),1)
+        self.assertEqual(sleep,[.02]);self.assertEqual(path.read_bytes(),before)
+
+    def test_pending_publication_exhausts_the_same_three_reads_without_positive_receipt(self):
+        c,path,identity,lock,row,sets=self.fixture();row.update(state='LEASE_UPDATING',leaseAuthorized=False)
+        attempts=[];sleep=[]
+        def observed(*args,**kwargs):
+            attempts.append(kwargs['deadline']);m.lease_observation.publication_snapshot(c,path,identity)
+            self.fail('pending publication produced positive evidence')
+        with patch.object(m.lease_observation,'_observe',side_effect=observed),patch.object(m.lease_observation.time,'sleep',side_effect=sleep.append):
+            with self.assertRaises(BlockingIOError) as caught:
+                m.lease_observation.observe('unused','unused',unit_name='unused.service',systemctl={})
+        self.assertEqual(attempts,[attempts[0]]*3);self.assertEqual(sleep,[.02,.04])
+        self.assertEqual(m.lease_observation.failure(caught.exception),{
+            'schema':'ouf.discovery-worker-observation-failure.v1','kind':'READ_CONTENTION',
+            'reasonCode':'DISCOVERY_PUBLICATION_IN_PROGRESS'})
+
+    def test_pending_final_checkpoint_is_busy_but_revocation_is_not_retried(self):
+        c,path,identity,lock,row,sets=self.fixture()
+        def in_progress(_):row.update(state='LEASE_UPDATING',leaseAuthorized=False);return copy.deepcopy(sets)
+        c.owner.backend.read_sets=in_progress
+        with self.assertRaises(BlockingIOError):m.lease_observation.publication_snapshot(c,path,identity)
+        for state in ('QUIESCING','QUIESCED','BLOCKED'):
+            c,path,identity,lock,row,sets=self.fixture();row.update(state=state,leaseAuthorized=False)
+            with self.assertRaises(ValueError):m.lease_observation.publication_snapshot(c,path,identity)
 
 
 class Start(unittest.TestCase):
