@@ -18,6 +18,7 @@ sono un passaggio successivo, come richiesto dall'owner.
 | Lettura di READY12 con handoff corrente | `57b0dc8355a2bda49bcbbc87e73871c07c8cd126` | CI [41235431451](https://github.com/GioNob/ouf-deploy/actions/runs/41235431451): 98 test di protocollo/13 suite + DB2/TLS7/IAM2 =109/16 suite, quattro log finali letti, zero errori/failure/skip/ResourceWarning. Anche push41235426258 PASS; letto il protocollo98. |
 | Client e server installati uniti tramite TCP | `d50bb7f069b2e729a81b029b39ece84cc9564270` | Push [41235673020](https://github.com/GioNob/ouf-deploy/actions/runs/41235673020)/job124638824285 e PR [41235678562](https://github.com/GioNob/ouf-deploy/actions/runs/41235678562)/job124638839814: 3 casi PASS per evento, zero errori/failure/skip, entrambi i log finali letti. Client Ingestion non modificato, server Onboarding reale, catena Spring Security/bridge/policy/audit e PostgreSQL reali. Solo il decoder crittografico JWT è una fixture. Non prova APISIX, IAM reale o VPS. |
 | GET IAM senza rinnovo implicito | `916da45af3df78080de1bc12592fd3e62b7d8e6e` | CI [41236491041](https://github.com/GioNob/ouf-deploy/actions/runs/41236491041):105 protocollo/14 suite + DB2/TLS7/IAM4 =118/17 suite, quattro log finali letti, zero errori/failure/skip/ResourceWarning. Native IAM push41236486162/job124641243906:4 PASS, letto anche quel log finale. Nuovo profilo input v2 e trasporto namespace di sola lettura. |
+| Nuova review parent con tutti gli input correnti | `eb0eea3d313e169dd610670a3578f357501b6d24`, fix CI `4861d85d007faccc0129b26742770c738fe4f09e` | PR [41238086572](https://github.com/GioNob/ouf-deploy/actions/runs/41238086572)/job124645988302 e push [41238083267](https://github.com/GioNob/ouf-deploy/actions/runs/41238083267)/job124645978368:36 PASS per evento (pubblicazione8, parent12, nuova review16), zero errori/failure/skip/ResourceWarning, entrambi i log finali letti e artefatti pubblicati. Compilatore isolato235 sorgenti; tutte le136 associazioni congelate conservate. Non autentica input o autorità target. |
 
 La verifica Onboarding/Ingestion già presente in `291f34f1` è stata recuperata,
 non riscritta: CI41231189545/job124625573989 prova36 test client/consumer più10
@@ -78,6 +79,27 @@ job124641258797. Non sono stati indeboliti i guard per il sandbox. Gli otto
 casi di protocollo IAM passano anche localmente dopo la modifica.
 
 ## Continuazione richiesta
+
+`current_review.py` e il compilatore separato `current_review_capsule.py`
+completano l'assemblatura dichiarativa dei sei componenti parent con tutti e
+cinque gli input correnti: database, provenienza, TLS, IAM v2, retirement/backup.
+Verificano generazioni, profilo, truststore, client Engine, issuer/realm/scopi/
+audience, predecessori MCP/Gateway e intento backup del child firmato. Nessuna
+sostituzione di hash preesistenti. Cambia solo il componente coorte: il child e
+gli altri cinque componenti rimangono identici; serve una nuova decisione HUMAN
+e nuove firme parent sull'esatta nuova review.
+
+Il compilatore esportato ha solo `prepare`/`inspect`, richiede isolamento
+`-I -B -S`, input/hash e directory privata espliciti; crea una sola volta,
+preserva output parziali e non ripara né ripete. Receipt solo con hash e limiti.
+La prima CI41237953849 aveva36 test PASS ma upload negato per proprietà root
+del file0600. Il fix cambia il proprietario del solo artefatto pubblico CI al
+runner; non modifica la custodia degli input privati. La CI successiva prova
+anche l'upload. ZIP push/artifact13055982968 hash
+`e9508042669fb4d50f0b5058dbbf7f299079fd74f5b0b06c225e33f2a070a4a1`;
+ZIP PR/artifact13055623370 hash
+`242bf84521726378fb80f6c14c0f227a2d509a30cbca87a89c741e711c716d9c`.
+Sono artefatti CI distinti, non un pacchetto di esecuzione target approvato.
 
 Completare il checkpoint/controller nativo sigillato con i reader correnti,
 inclusi coorte, custody/provenance e appartenenza degli artefatti, backup e fence,

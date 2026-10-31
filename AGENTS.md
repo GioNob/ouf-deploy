@@ -1,3 +1,39 @@
+# CURRENT — Current parent review compiler PASS36; native controller still OPEN
+
+31 October 2026, UTC. Continue SOURCE work autonomously/sequentially, no
+agents/automations or optional stop. No new user action is needed for source
+composition; no current VPS QUIESCED incident demonstrated.
+Latest source4861d85d007faccc0129b26742770c738fe4f09e (compiler sourceeb0eea3).
+
+New current_review.py/current_review_capsule.py bind all five native input sets
+into a fresh six-part review: databases/custody/TLS/IAMv2/retirementAndBackup.
+Cross-owner profile/truststore/Engine/IAM identities/predecessors/signed backup
+intent must match. A separate235-source capsule retains every original136 pin.
+Original37/108/128/136 maps/pins/bodies and Registry child remain unchanged.
+Only cohortInstallation changes; actual exact new HUMAN decision and parent
+role signatures remain required. Preparation is create-only, inspect read-only;
+partial outputs retained, no replay/repair, receipts expose only hashes/limits.
+Not native admission, publisher trust, actual workload bearer or target package.
+
+CI41238086572/job124645988302 PR and41238083267/job124645978368 push PASS36
+each: publication8 + frozen parent12 + current review16. Both complete final
+logs read, zero failures/errors/skips/ResourceWarning; artifacts uploaded.
+Old41237953849 passed36 but artifact upload failed root0600 vs runner ownership;
+fix changes owner only for public exported CI artifact. No private modes changed.
+Earlier prerequisite118/17suites, installed TCP3 and offline publisher3 retained.
+
+Next: concrete sealed native phase checkpoints/controller, remaining artifact
+membership/private custody/actual workload admission, complete execution
+package and exact private review. No target command ready. Preserve acquired
+M1/Teatri and same Farmacie61rows/10columns/10OPEN. No upload/profile/acquisition
+replay, old authority reuse, source activation, release or acceptance.
+Loading ends UDP + every row outcome; graph search and API/delta scheduler later.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients remain OPEN.
+
+Evidence:evidence/m2-installed-contracts-held-handoff-qualified-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Installed HTTP contracts PASS3; current prerequisites PASS118; no-refresh IAM
 
 31 October 2026, UTC. Continue SOURCE work autonomously and sequentially; no

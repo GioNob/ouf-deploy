@@ -263,5 +263,72 @@
     "mergePerformed": false,
     "releaseAcceptance": false
   },
-  "handoff": "docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md"
+  "handoff": "docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md",
+  "latestSource": "4861d85d007faccc0129b26742770c738fe4f09e",
+  "currentParentReviewCompiler": {
+    "source": "eb0eea3d313e169dd610670a3578f357501b6d24",
+    "ciArtifactOwnershipFix": "4861d85d007faccc0129b26742770c738fe4f09e",
+    "sourceCount": 235,
+    "frozenParentSourceBindingsPreserved": 136,
+    "additionalInputSets": [
+      "databases",
+      "custody",
+      "tlsIam",
+      "iamWorkload",
+      "retirementAndBackup"
+    ],
+    "localTests": 16,
+    "localResult": "PASS",
+    "events": [
+      {
+        "event": "pull_request",
+        "runId": 41238086572,
+        "jobId": 124645988302,
+        "tests": 36,
+        "suites": 3,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "resourceWarnings": 0,
+        "finalLogRead": true,
+        "artifactId": 13055623370,
+        "artifactZipSha256": "242bf84521726378fb80f6c14c0f227a2d509a30cbca87a89c741e711c716d9c"
+      },
+      {
+        "event": "push",
+        "runId": 41238083267,
+        "jobId": 124645978368,
+        "tests": 36,
+        "suites": 3,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "resourceWarnings": 0,
+        "finalLogRead": true,
+        "artifactId": 13055982968,
+        "artifactZipSha256": "e9508042669fb4d50f0b5058dbbf7f299079fd74f5b0b06c225e33f2a070a4a1"
+      }
+    ],
+    "retainedFailedRun": {
+      "runId": 41237953849,
+      "jobId": 124645595569,
+      "testsPassed": 36,
+      "failure": "PUBLIC_CI_EXPORT_ROOT_0600_NOT_READABLE_BY_RUNNER",
+      "resolvedBy": "CI_ARTIFACT_OWNER_ONLY"
+    },
+    "currentNativeInputsBound": true,
+    "currentNativeInputsAuthenticated": false,
+    "nativeCheckpointControllerIntegrated": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false
+  },
+  "currentReviewSourceHashes": {
+    "tools/m2_discovery_installation_profile/current_review.py": "6260d41031916fa3665cb5bc43e7550d1591aaf8cc0d22603d23cb685bc682b9",
+    "tools/m2_discovery_installation_profile/current_review_capsule.py": "d7bff0abcdc0603c86a1335828d4dfbf9bcc815d649a0fd5460cf3ccc9afdce4",
+    "tools/m2_discovery_installation_profile/current_review_sources.json": "400910ada6d480cf5e7c788a28f0760bc9e95e5c373ba40a7b041c04d28b3918",
+    "scripts/export-m2-discovery-current-review.py": "52c226e265441d8d1d1fd6eb5b9f068db03a69966daa63221a63ade15942f14b",
+    "tests/test_m2_discovery_current_review.py": "56b0e86c4261ce9dd736b95b1850080e455d073a7ee6b1a6ec08480df81a982f",
+    ".github/workflows/m2-discovery-parent-review.yml": "8a09d8415a27b32507d7d70f6ee6a46b940799175d4eb45d56960e00f6891afb"
+  }
 }

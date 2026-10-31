@@ -3,6 +3,9 @@
 [Checkpoint corrente](handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md):
 contratti installati verificati via HTTP3PASS, prerequisiti118PASS/17suite,
 publisher offline3PASS, IAM senza refresh e lettura READY12 corrente.
+Il compilatore della nuova review parent lega ora tutti e cinque gli input:
+16 nuovi test/36 nella CI41238086572 PASS, pacchetto235 sorgenti pubblicato;
+non è ancora il controller o un pacchetto di esecuzione target approvato.
 Restano composizione del controller/checkpoint nativo sigillato, pacchetto/review
 privati esatti e prova target Farmacie→UDP con tutti gli esiti. M2 non accettato.
 Conservare Teatri e la stessa acquisizione Farmacie; nessun nuovo upload/profile.

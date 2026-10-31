@@ -3,6 +3,8 @@
 31 ottobre 2026. [Stato corrente](docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md)
 e [prove](evidence/m2-installed-contracts-held-handoff-qualified-20261031.json).
 Sorgente916da45:118 test/17 suite PASS, quattro log CI finali letti.
+Nuovo compilatore review corrente235 sorgenti:16 nuovi test,36 complessivi
+nella CI41238086572; artefatto pubblicato e log finale letto (fix4861d85).
 Client Ingestion e server Onboarding installati collegati via TCP:3 casi PASS.
 Publisher offline:3 casi PASS. Lettura READY12 senza riaprire l'autorità iniziale;
 IAM GET senza login/refresh. Non è ancora la pipeline E2E target.
