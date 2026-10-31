@@ -76,7 +76,7 @@ class CurrentWorker(unittest.TestCase):
     def test_quiesced_stale_scope_or_regressed_counters_cannot_prove_current_lease(self):
         reader,_,_,observed,_=self.prepared()
         for key,value in [('workerCheckpointActive',False),('bothOwnedLeaseFamiliesPositive',False),
-                          ('generationRef','f'*64),('managerProcessId',12346),('publications',0)]:
+                          ('generationRef','f'*64),('managerProcessId',12346),('publications',0),('recoveryAttempts',True)]:
             original=observed[key];observed[key]=value
             with self.subTest(key=key),self.assertRaisesRegex(ValueError,'POSITIVE_LEASES_REQUIRED'):reader.observe()
             observed[key]=original

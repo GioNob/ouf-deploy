@@ -23,6 +23,40 @@ from tools.semantic_provider_deployment_authentication import private_bytes
 from gated_process_observation import RunningWorkloadBinding
 
 
+def read_installed_material(worker,budget):
+    """Original owned material only; no issuance, publication or phase entry."""
+    w=worker;require(type(w) is WorkerMaterialization,'ACTUAL_ORIGINAL_WORKER_MATERIAL_OWNER_REQUIRED')
+    w.check_scope();budget.check();claim=private_json(w.root/'materialization-claim.json')
+    require(claim==w.claim(claim['initialTime']),'RETAINED_CURRENT_WORKER_MATERIALIZATION_CLAIM_CHANGED')
+    owned=private_json(w.root/'materialization-owned.json')
+    fields={'schema','claimHash','logicalLockIdentity','snapshotHash','snapshotIdentity','proposalHash','materialSealHash'}
+    require(set(owned)==fields and owned['schema']=='ouf.discovery-worker-materialization-owned.v1'
+        and owned['claimHash']==digest(claim) and all(hashed(owned[k]) for k in ('snapshotHash','proposalHash','materialSealHash')),
+        'EXACT_CURRENT_WORKER_OWNED_MATERIAL_REQUIRED')
+    path=w.probe.root/(owned['snapshotHash']+'.json');snapshot=private_json(path,owned['snapshotHash'])
+    require(inode(path)==owned['snapshotIdentity'] and snapshot['bootId']==boot_id('/proc/sys/kernel/random/boot_id'),
+        'CURRENT_WORKER_ORIGINAL_SNAPSHOT_OR_BOOT_CHANGED')
+    with observed_logical_inode(w.template['configurationTemplate']['commonInvocationLock'],owned['logicalLockIdentity']):
+        proposal=materialize(w.template,snapshot,owned['logicalLockIdentity'])
+        material=compile_material(w.template,proposal,w.capsule,initial_time=claim['initialTime'],installation_sources=w.extra)
+        require(digest(proposal)==owned['proposalHash'] and digest(material['seal'])==owned['materialSealHash'],
+            'CURRENT_WORKER_ORIGINAL_MATERIAL_OR_CLOCKS_CHANGED')
+    configuration=Path(w.template['installationRoot'])/'configuration.json'
+    require(private_bytes(configuration,1048576)==encoded(proposal['configuration']),
+        'CURRENT_WORKER_INSTALLED_CONFIGURATION_DIFFERS_FROM_OWNED_MATERIAL')
+    start=LeaseStartAdapter(parent=w.parent,authority=w.authority,authority_raw=w.authority_raw,
+        transition=w.transition,store=w.store,node_owner=w.node,template=w.template,proposal=proposal,
+        scope=w.start_scope,intent=w.intent,publication_directory=w.publication,
+        attestation_scope=w.issuance,registration_scope=w.registration,sequence_scope=w.sequence)
+    sequence=checked_row(start);require(sequence['state']=='DONE','COMPLETE_WORKER_INSTALLATION_SEQUENCE_REQUIRED')
+    prefix=read_prefix(start);start_claim=start.journal.read()
+    require(start_claim==start.claim() and protected_file(start.root/'start-dispatch.json',128,modes=(0o600,))==b'{"attempt":1}',
+        'ORIGINAL_ONE_USE_WORKER_START_CLAIM_REQUIRED')
+    budget.check()
+    return material,proposal,snapshot,configuration,prefix,digest(start_claim),digest(sequence['effects'][-1]['evidence'])
+
+
+
 class CurrentInstalledWorker:
     def __init__(self,selected):
         require(type(selected) is DiscoverySelectedRuntime,'ACTUAL_SELECTED_RUNTIME_FOR_CURRENT_WORKER_REQUIRED')
@@ -50,35 +84,7 @@ class CurrentInstalledWorker:
         return row,receipt
 
     def material(self,budget):
-        """Original owned material only; no issuance, publication or phase entry."""
-        w=self.worker;budget.check();claim=private_json(w.root/'materialization-claim.json')
-        require(claim==w.claim(claim['initialTime']),'RETAINED_CURRENT_WORKER_MATERIALIZATION_CLAIM_CHANGED')
-        owned=private_json(w.root/'materialization-owned.json')
-        fields={'schema','claimHash','logicalLockIdentity','snapshotHash','snapshotIdentity','proposalHash','materialSealHash'}
-        require(set(owned)==fields and owned['schema']=='ouf.discovery-worker-materialization-owned.v1'
-            and owned['claimHash']==digest(claim) and all(hashed(owned[k]) for k in ('snapshotHash','proposalHash','materialSealHash')),
-            'EXACT_CURRENT_WORKER_OWNED_MATERIAL_REQUIRED')
-        path=w.probe.root/(owned['snapshotHash']+'.json');snapshot=private_json(path,owned['snapshotHash'])
-        require(inode(path)==owned['snapshotIdentity'] and snapshot['bootId']==boot_id('/proc/sys/kernel/random/boot_id'),
-            'CURRENT_WORKER_ORIGINAL_SNAPSHOT_OR_BOOT_CHANGED')
-        with observed_logical_inode(w.template['configurationTemplate']['commonInvocationLock'],owned['logicalLockIdentity']):
-            proposal=materialize(w.template,snapshot,owned['logicalLockIdentity'])
-            material=compile_material(w.template,proposal,w.capsule,initial_time=claim['initialTime'],installation_sources=w.extra)
-            require(digest(proposal)==owned['proposalHash'] and digest(material['seal'])==owned['materialSealHash'],
-                'CURRENT_WORKER_ORIGINAL_MATERIAL_OR_CLOCKS_CHANGED')
-        configuration=Path(w.template['installationRoot'])/'configuration.json'
-        require(private_bytes(configuration,1048576)==encoded(proposal['configuration']),
-            'CURRENT_WORKER_INSTALLED_CONFIGURATION_DIFFERS_FROM_OWNED_MATERIAL')
-        start=LeaseStartAdapter(parent=w.parent,authority=w.authority,authority_raw=w.authority_raw,
-            transition=w.transition,store=w.store,node_owner=w.node,template=w.template,proposal=proposal,
-            scope=w.start_scope,intent=w.intent,publication_directory=w.publication,
-            attestation_scope=w.issuance,registration_scope=w.registration,sequence_scope=w.sequence)
-        sequence=checked_row(start);require(sequence['state']=='DONE','COMPLETE_WORKER_INSTALLATION_SEQUENCE_REQUIRED')
-        prefix=read_prefix(start);start_claim=start.journal.read()
-        require(start_claim==start.claim() and protected_file(start.root/'start-dispatch.json',128,modes=(0o600,))==b'{"attempt":1}',
-            'ORIGINAL_ONE_USE_WORKER_START_CLAIM_REQUIRED')
-        budget.check()
-        return material,proposal,snapshot,configuration,prefix,digest(start_claim),digest(sequence['effects'][-1]['evidence'])
+        return read_installed_material(self.worker,budget)
 
     def observe(self):
         budget=ObservationBudget(90);row,retained=self.guard();w=self.worker
@@ -95,7 +101,7 @@ class CurrentInstalledWorker:
         old=retained['installedWorkerObservation']
         require(all(observed[k]==old[k] for k in ('configurationHash','scopeHash','generationRef','managerProcessId'))
             and all(observed[k] is True for k in ('managerProcessRunning','workerCheckpointActive','bothOwnedLeaseFamiliesPositive'))
-            and observed['recoveryAttempts']>=old['recoveryAttempts'] and observed['publications']>=old['publications'],
+            and all(type(observed[k]) is int and observed[k]>=old[k] for k in ('recoveryAttempts','publications')),
             'CURRENT_WORKER_ORIGINAL_SCOPE_PROCESS_OR_POSITIVE_LEASES_REQUIRED')
         w.verify_generation(material);require(w.provider.current(snapshot)==provider,'CURRENT_PROVIDER_ADMISSION_CHANGED')
         again=self.material(budget)
