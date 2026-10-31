@@ -167,7 +167,7 @@ class CurrentTlsIdentities:
         material,proposal,snapshot,configuration,*_=o.base.material(budget);o.operational(material,proposal,configuration)
         w.verify_generation(material);cas,pins=self.trust(budget,proposal)
         running=RunningWorkloadBinding(w.node.engine,w.transition,w.node.request,w.store).observe()
-        pid=running['runtimeBinding']['pid'];fd=os.open('/proc/'+str(pid)+'/ns/net',os.O_RDONLY|os.O_CLOEXEC)
+        pid=running['runtimeBinding']['pid']
         provider=snapshot['peers']['provider'];iam_role=self.inputs['endpoints']['iam']['peerRole']
         iam=self.runtime.inputs['peers'][iam_role]['runtimeBinding']
         reader=CurrentTlsEngine(w.node.engine,self.runtime.inputs['engineBinding'],[provider['containerId'],iam['containerId']],budget)
@@ -194,6 +194,7 @@ class CurrentTlsIdentities:
                     'CURRENT_TLS_ENDPOINT_OUTSIDE_REVIEWED_PEER_NETWORK_OR_PORT')
                 values[role]={'ip':str(address),'bindingHash':digest(Engine.runtime_binding(actual))}
             return values
+        fd=os.open('/proc/'+str(pid)+'/ns/net',os.O_RDONLY|os.O_CLOEXEC)
         try:
             require(os.fstat(fd).st_ino==running['process']['generation']['namespaceInode'],'CURRENT_TLS_REGISTRY_NAMESPACE_CHANGED')
             peers=read_peers();sessions={}
@@ -210,6 +211,7 @@ class CurrentTlsIdentities:
                 and os.fstat(fd).st_ino==running['process']['generation']['namespaceInode'],
                 'CURRENT_TLS_IDENTITIES_OR_ADMISSION_CHANGED_DURING_READ')
             self.guard();self.runtime.selected.held(held);budget.check()
+            require(reader.reads==4,'EXACT_TWO_PASS_CURRENT_TLS_PEER_READS_REQUIRED')
         finally:os.close(fd)
         return {'schema':'ouf.discovery-current-tls-peer-identities.v1','inputHash':self.input_hash,
             'heldHistoryHash':digest(held),'tlsSessionsHash':digest(sessions),'operationalAdmissionHash':digest(current),
