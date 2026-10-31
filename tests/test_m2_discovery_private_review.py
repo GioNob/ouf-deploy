@@ -156,14 +156,16 @@ class PrivateReview(unittest.TestCase):
 
     def test_sealed_cli_denies_payload_drift_and_missing_isolation_without_private_errors(self):
         inputs,source,out=self.files();program=out.parent/'capsule.py'
-        for case in ('payload','isolation'):
+        for case in ('payload','isolation','bad_arguments'):
             raw=self.raw
             if case=='payload':raw=raw.replace(b"PAYLOAD='",b"PAYLOAD='!",1)
             program.write_bytes(raw)
-            args=[sys.executable]+(['-I','-B','-S'] if case=='payload' else [])+[str(program),'prepare',
+            args=[sys.executable]+(['-I','-B','-S'] if case!='isolation' else [])+[str(program),'prepare',
                 '--input',str(source),'--input-sha256',m.digest(inputs),'--output-directory',str(out)]
+            if case=='bad_arguments':args += ['--PRIVATE_ARGUMENT_SENTINEL='+str(source)]
             result=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
             self.assertEqual(result.returncode,1);self.assertNotIn(str(source),result.stdout.decode())
+            self.assertNotIn('PRIVATE_ARGUMENT_SENTINEL',result.stdout.decode())
             self.assertEqual(result.stderr,b'');self.assertFalse((out/'preparation.claim.json').exists())
 
     def test_changed_compiler_binding_cannot_adopt_a_previous_private_assembly(self):

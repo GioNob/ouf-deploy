@@ -48,12 +48,14 @@ def load():
     sys.meta_path.insert(0,Closed())
     return importlib.import_module(MANIFEST['entryModule']),baseline
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode',choices=('prepare','inspect'))
-    parser.add_argument('--input',required=True);parser.add_argument('--input-sha256',required=True)
-    parser.add_argument('--output-directory',required=True)
-    args=parser.parse_args()
     try:
+        class Parser(argparse.ArgumentParser):
+            def error(self,message):raise ValueError('PRIVATE_REVIEW_ARGUMENTS_UNPROVEN')
+        parser=Parser(prog='private-review',description=__doc__)
+        parser.add_argument('mode',choices=('prepare','inspect'))
+        parser.add_argument('--input',required=True);parser.add_argument('--input-sha256',required=True)
+        parser.add_argument('--output-directory',required=True)
+        args=parser.parse_args()
         module,baseline=load()
         def digest(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
         binding={'profile':'CLOSED_PRIVATE_REVIEW_CAPSULE','capsuleManifestHash':digest(MANIFEST),
