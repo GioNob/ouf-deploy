@@ -152,6 +152,10 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
         print(command('journalctl','-u',unit,'--no-pager','-n','35',check=False).decode(),flush=True)
         raise AssertionError('CI_ADMITTED_SEALED_WORKER_TIMEOUT')
     actual_observe=observation.observe
+    actual_snapshot=observation.publication_snapshot
+    def diagnostic_snapshot(coordinator,path,identity):
+        from fixtures.m2_publication_read_diagnostics import capture
+        return capture(actual_snapshot,coordinator,path,identity,lambda value:print(value,flush=True))
     def diagnostic_observe(*args,**kwargs):
         try:return actual_observe(*args,**kwargs)
         except Exception as error:
@@ -162,6 +166,7 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
                     for f in traceback.extract_tb(error.__traceback__)[-8:]]},sort_keys=True),flush=True)
             raise
     observation.observe=diagnostic_observe
+    observation.publication_snapshot=diagnostic_snapshot
     try:
         materializer=WorkerMaterialization(node_owner=node,provider=owner.admission,signer=setup['signer'],
             capsule=setup['capsule'],installation_sources=setup['sources'])
@@ -206,6 +211,7 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:
         observation.observe=actual_observe
+        observation.publication_snapshot=actual_snapshot
         try:print('CI_JOINT_SEALED_FINAL_STATE='+json.dumps({k:row().get(k) for k in
             ('state','reason','attempts','publicationCount','reentryCount')},sort_keys=True),flush=True)
         except (OSError,ValueError):pass
