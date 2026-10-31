@@ -1,3 +1,86 @@
+# CURRENT — Sealed private review PASS15; bounded read PASS463/54 + native; M2 OPEN
+
+31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
+or automations. Teatri M1/G4 technical8/8 functional6/6 acquired. Reuse its single
+steps for repeatable managed-file onboarding→Registry→governed OntoPiA discovery→
+Ingestion→UDP. Farmacie same SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN;
+no upload/profile/acquisition replay. M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
+Search on loaded objects and future APIs/scheduler/delta remain separate.
+
+PR54 private compiler source7fb1420e43db56cb1c8b122f65f02fc1399d5e6e:
+15local tests PASS2.868s and PR41177647675/job124468416188 PASS15/1suite/0skip2.624s;
+final log read. Capsule artifact13033249318 downloaded; ZIP membership/hash,
+all108embedded source bodies/fixed independent baseline/loader hash and exact
+local rebuild verified. Capsule1754221bytes SHA
+dcb00e22c1faf4365457a35d36eac4aed0e28825afcdde3b60d0ba74b332707a.
+Archive SHA475822d4c15c9ad9e2ebab1d95f16527889f110628619be7e29b02222ebcb513.
+Claimd41b771976edc8765581e8819b0d9aa91ee38713 matches CI checkout PR-merge commit;
+it is provenance, not authenticated publisher trust. Initial artifact13033046169
+is historical; current wrapper supersedes it. Independent source-map file anchor
+SHA4258366534214845cea3e2757382752d479001bf28b4baa4cb5fcbd57bbbc6ec rejects a
+changed source AND matching map in another root before packaging.
+
+PrivateReview reuses Registry/frame/MCP compilers and image/Gateway scopes:
+same Registry image/request/cohort manifest/MCP workload/discovery-key content,
+distinct nonshadowing journals/private inputs. Registry context is CID-free;
+a synthetic-CID structural policy is discarded. Only independent template/launch
+are published, real CID materialization/admission remains with existing owners.
+This output is a REVIEW FRAGMENT, rejected by full parent-review parser.
+Gateway YAML, archive/credential custody, current admission, interpreter/stdlib
+trust and parent/child/HUMAN/provider/gate/worker/publication integration remain
+separate mandatory inputs. No admission booleans substitute for those owners.
+
+The root -I -B -S capsule runs without repository source access, only prepare
+and read-only inspect. Input0600/output0700, protected ancestry/nofollow.
+O_EXCL/fsynced claim precedes payload; public receipt last. Partial output stays
+partial; no overwrite/completion on retry. Loader+source+payload binding prevents
+another compiler (even same claimed revision) adopting an earlier assembly.
+Stdout hashes/counts/closed safe flags only; malformed arguments/exception strings
+never echo private values. No signature/authority/installer execution mode.
+
+Host read successor27717b20a26d12a4191c65fe67539c4ec9d1abae:
+PR41176742954/job124465759690 PASS463tests/54suites/0fail/0skip837.574s, final log
+read. All3native Docker PR41176743013 finite124465760298/sealed124465759882/
+registry124465760019 PASS; IAM41176742864/job124465759218 PASS251/33/0skip;
+all final logs/reports read. Only a validated LEASE_UPDATING/leaseAuthorized=false
+journal is read contention, with original3reads/single deadline/default15s/
+0.02+0.04 waits. No extra operational attempt, DNS, write, start, authority or
+budget. Exhaustion UNKNOWN; revocation/BLOCKED/wrong set keys/other drift deny.
+16local start/read tests PASS6.367s;3controlled pre-fix failures reproduced.
+Native registry read ACTUALLY saw READY/authorized→positive owned exact-key sets→
+UPDATING/unauthorized and reconciled within the SAME bounded observe call, then
+complete Registry/token/transport/sealed-worker proof passed without second start.
+Original37worker pins/writer and original backend unchanged. Private compiler
+application108module payload does not contain this host observer and is unchanged.
+
+Retained initial31b344e0 native41175819397 was NOT GREEN: finitePASS; sealed
+124463044077 expired original v1 initial90s during attestation read, workerACTIVE/
+RECOVERED1attempt/1publication; registry124463044065 UNKNOWN publication read,
+workerACTIVE/RENEWED1attempt/3publications. Both failure logs read and preserved.
+Exact old journal state was not captured: its specific cause and historical
+UNKNOWN/MCP/worker anomalies are NOT retroactively closed. Diagnostic1194b5d3
+fresh scope passed3native modes without reproducing a failed snapshot; no causal
+closure inferred from that pass. Controlled and actual27717b20 pending-read proof
+is its own precise scope. No unreasoned rerun/reset/extended mandate.
+Original provider v1 remains90s; distinct v2 remains initial300s within original
+protocol ceiling300 and NEW exact review before candidates, never live extension.
+
+Previous head9c48c104 was rechecked29workflow-success, protocol457/54, IAM251/33,
+Chatbot505/69 and3native modes (final logs read, indicated suites0skip).
+Initial private source31b344e0 also protocol457/54PASS. These historical proofs
+remain scoped, not universal current stability or M2 acceptance.
+
+Next: complete private parent/child/provider/gate/worker assembly and current full
+cohort/TLS/IAM/DB/trust/fencing; governed capability publication; actual Farmacie→
+UDP/all61outcomes; reimport/fault/recovery/chat/boot/rotation/two real clients.
+No target apply, runtime authority/grant, budget reset, consumed replay, merge or
+release acceptance. Prior operator scopes consumed; no new target command ready.
+Evidence:evidence/m2-private-review-assembly-20261031.json
+Read:evidence/m2-publication-read-reconciliation-20261031.json
+Handoff:docs/handoffs/OUF_M2_PRIVATE_REVIEW_ASSEMBLY_20261031.md
+Older CURRENT headers below are historical. Canonical continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+
 # CURRENT — Native Registry/token/transport/provider/sealed worker PASS; protocol457/54 PASS; M2 OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously and sequentially, without
