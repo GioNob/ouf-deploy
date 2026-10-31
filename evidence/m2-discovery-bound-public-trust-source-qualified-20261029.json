@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.m2-discovery-bound-public-trust-source-qualification.v1",
+  "date": "2026-10-29",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "a2ef7a732fbc3cd57f4bff4534fe8f3ee08aa0c0",
+  "pullRequest": 54,
+  "scope": "SOURCE_AND_SYNTHETIC_LOCALHOST_CI_ONLY",
+  "materialPreparedInputsHash": "68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392",
+  "ownerConfigurationExpectedHash": "0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a",
+  "ownerReferenceIsNotCurrentAdmission": true,
+  "qualification": {
+    "push": {
+      "run": 40868660195,
+      "job": 123429778363,
+      "conclusion": "success",
+      "logRead": true
+    },
+    "pullRequest": {
+      "run": 40868670348,
+      "job": 123429813616,
+      "conclusion": "success",
+      "logRead": true
+    },
+    "publicTrustTestsPerJob": 7,
+    "boundInputsTestsPerJob": 3,
+    "skips": 0,
+    "javaVersion": "21.0.13+9",
+    "java21ExactPublicCertificateSetVerified": true,
+    "privateKeyEntries": 0,
+    "iamAndProviderIsolatedTlsAccepted": true,
+    "undeclaredIssuerRejectedBeforeApplicationByte": true,
+    "tamperedIntegrityRejected": true,
+    "syntheticCertificatesAndLocalhostPeers": true
+  },
+  "implementation": {
+    "explicitEmptyCaContextRequired": true,
+    "ambientCaRootsRejected": true,
+    "approvedIamCaSetPreserved": true,
+    "singleProviderCaBindingAndCurrentValidityChecked": true,
+    "exactPreparedRoleAndOwnerConfigHashesRequired": true,
+    "issuerAndTokenEndpointMustMatch": true,
+    "nativeOwnerTrustDigestMustMatch": true,
+    "publicCertificateOnlyPkcs12": true,
+    "fixedPublicPasswordIsNotAuthority": true,
+    "noIoOrProcessInCompiler": true
+  },
+  "targetTruststorePrepared": false,
+  "targetTlsAdmissionProven": false,
+  "nativeExecutorIntegrated": false,
+  "distinctProviderLeaseWorkerIntegrated": false,
+  "currentOperatorCommandReady": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "next": "Integrate full thirteen-phase execution, distinct provider lease worker and coordinated current native preparation. No reexecution of consumed material scope; no early IAM/OAuth grant."
+}

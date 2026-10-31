@@ -1,0 +1,89 @@
+{
+  "schema": "ouf.mcp-go127-source-and-package-qualification.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "ownerDecision": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
+  "decision": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
+  "sourceCommit": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+  "go": "1.27.3",
+  "mcpSdk": "1.7.0",
+  "protocol": "2026-07-28",
+  "fullCi": {
+    "push": {
+      "run": 41088404381,
+      "job": 124175536886,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41088414424,
+      "job": 124175572636,
+      "conclusion": "success"
+    },
+    "finalLogsRead": true,
+    "racePairwiseDatabaseBuildMigrationWorkerAndFormatGates": "PASS"
+  },
+  "m2Composition": {
+    "pullRequest": {
+      "run": 41088414078,
+      "job": 124175571188,
+      "conclusion": "success"
+    },
+    "finalLogsRead": true,
+    "realSdkAndGatewaySchemaRegressions": true,
+    "ownerResponsesSynthetic": true,
+    "candidateRemainsHiddenFromOrdinaryProductionHandler": true
+  },
+  "security": {
+    "staticcheck": "2026.2.2",
+    "nilness": "golang.org/x/tools/go/analysis/passes/nilness/cmd/nilness@v0.51.0",
+    "govulncheckCommit": "e672cbe8fbc8c76e28fcb6db0efd9ce354e0dac5",
+    "govulncheckResult": "NO_VULNERABILITIES_FOUND",
+    "noSuppressionAdded": true,
+    "officialDistributionArchiveSha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+    "officialDistributionArchiveBytes": 70588678,
+    "officialGoExecutableSha256": "5f5eb6d0b2fb6aa0bb5d5f8c5f1c944e0de955c925f0111af92a9d8f79680b5b",
+    "downloadedArchiveAndInstalledGoVerified": true
+  },
+  "retainedToolCompatibilityFailures": [
+    {
+      "sourceCommit": "48e48532ed5298bd3aae110f0d2a78e8393e5a30",
+      "push": 41086605357,
+      "pullRequest": 41086616627,
+      "cause": "STATICCHECK_2026_1_UNSUPPORTED_GO_EXPORT_DATA_VERSION_5",
+      "causeEstablished": true
+    },
+    {
+      "sourceCommit": "5b4dc238d026d021d2d6d1600b38172c5afed708",
+      "push": 41087570122,
+      "pullRequest": 41087579520,
+      "cause": "GOVULNCHECK_V1_1_4_OLD_X_TOOLS_SSA_PANIC_ON_GO_1_27_STDLIB",
+      "causeEstablished": true
+    }
+  ],
+  "package": {
+    "readbackEvidence": "evidence/mcp-go127-offline-package-readback-20261030.json",
+    "artifactId": 12993233270,
+    "run": 41090381338,
+    "job": 124182417709,
+    "producerCommit": "6aad7448077d916090d8495ce09ce8881a601672",
+    "archiveSha256": "77178a7e2884829eb54c7fba080004734fd9ae2d656d01c5f82a7b17a3691f20",
+    "imageId": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+    "sourceBlobsCompared": 262,
+    "payloadHashesVerified": 10,
+    "sbomComponents": 36,
+    "allReportedSeveritiesZero": true,
+    "severityFilteredReport": false
+  },
+  "allOriginalBaselineFilesRetained": true,
+  "fullOfficialMcpConformanceProven": false,
+  "twoRealClientGateProven": false,
+  "cryptographicPublisherTrustAccepted": false,
+  "currentNativeAdmissionProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "sdkAndApplicationSourceUnchangedByToolchainUpdate": true,
+  "applicationBehaviorStillRequiresTargetQualification": true,
+  "unchangedApplicationAndGoSumBlobsCompared": 153
+}

@@ -1,0 +1,23 @@
+name: Onboarding diagnostic operational state fence
+on:
+  push:
+    paths: ['tools/onboarding_diagnostic_update/state_fence.py', 'tests/test_onboarding_diagnostic_state_fence.py', 'tests/qualify_onboarding_diagnostic_state_fence.py', 'releases/onboarding-diagnostic-migration-fence-20261027.json', '.github/workflows/onboarding-diagnostic-state-fence.yml']
+  pull_request:
+    paths: ['tools/onboarding_diagnostic_update/state_fence.py', 'tests/test_onboarding_diagnostic_state_fence.py', 'tests/qualify_onboarding_diagnostic_state_fence.py', 'releases/onboarding-diagnostic-migration-fence-20261027.json', '.github/workflows/onboarding-diagnostic-state-fence.yml']
+permissions: {contents: read}
+jobs:
+  readonly-state:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_PASSWORD: ci-synthetic-not-production}
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -m unittest discover -s tests -p test_onboarding_diagnostic_state_fence.py -v
+      - run: python3 tests/qualify_onboarding_diagnostic_state_fence.py
+        env:
+          CI_POSTGRES_ID: ${{ job.services.postgres.id }}

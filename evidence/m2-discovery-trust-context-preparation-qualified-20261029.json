@@ -1,0 +1,164 @@
+{
+  "schema": "ouf.m2-discovery-trust-context-preparation-qualified.v1",
+  "date": "2026-10-29",
+  "sourceRepository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "sourceCommit": "8cc42b0d1da35ce955e3c098a50486f2dd68d136",
+  "capsuleCommit": "6bc5842c1570f2c158952466091de44a23b1065e",
+  "capsulePath": "releases/m2-discovery-trust-context-20261029.py",
+  "capsuleSha256": "5e93e2248307b2cd33edf60485eabe085df1c535431f061d34eddbf413641519",
+  "capsuleBytes": 102541,
+  "moduleCount": 9,
+  "wrapperCommit": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
+  "wrapperPath": "releases/prepare-m2-discovery-trust-context-20261029.sh",
+  "wrapperSha256": "cd8d4ea2a791a834db75e4022b290a1d037fce3f5445cffabf434399f1da8da5",
+  "scope": "/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1",
+  "targetExecuted": false,
+  "scopeConsumed": false,
+  "predecessorMaterialScopeConsumed": true,
+  "predecessorPreparedInputsHash": "68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392",
+  "existingIamOwnerReviewHash": "b67488693c49241d8b6bdf1691216847bd07d7057895a26aa35946442ee450fe",
+  "existingIamOwnerConfigurationHash": "0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a",
+  "historicalReferencesAreNotCurrentAdmission": true,
+  "bounds": {
+    "seconds": 90,
+    "bytes": 16777216,
+    "materialCohortEngineGets": 27,
+    "additionalClosedContextEngineGets": 5,
+    "totalEngineGets": 32,
+    "metadataReads": 5,
+    "publicCaFileReads": 2,
+    "completeOciConfigurationReads": 2,
+    "publicPkcs12FilesPrepared": 1,
+    "publicStoreReadbacks": 1,
+    "publicStoreUid": 0,
+    "publicStoreGid": 10001,
+    "publicStoreMode": "0440",
+    "credentialFileReads": 0,
+    "applicationMacKeyFileReads": 0
+  },
+  "qualification": {
+    "head": "7d3c9cc8cfc7f8385f3a697e08b1b94737a08d61",
+    "native": [
+      {
+        "run": 40872322878,
+        "job": 123442258371,
+        "event": "push",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40872332887,
+        "job": 123442293581,
+        "event": "pull_request",
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "capsuleTestsPerNativeJob": 4,
+    "actualCoreDockerPeers": 13,
+    "additionalProviderDockerPeer": 1,
+    "actualEngine": "29.8.1",
+    "rootUnixPeerAndKernelPinsVerified": true,
+    "actualCompleteOciFilesRead": 2,
+    "exactDockerNamespaceAliasesAndNamespaceIdentityVerified": true,
+    "unapprovedNamespaceParentDenied": true,
+    "stoppedProviderRefusedWithPartialStorePreserved": true,
+    "sourceFilesAndPriorScopesPreserved": true,
+    "syntheticCaAndHistoricalProvenance": true,
+    "targetTlsAdmissionProven": false,
+    "publicTrust": {
+      "run": 40872332881,
+      "job": 123442293861,
+      "conclusion": "success",
+      "logRead": true,
+      "tests": 16,
+      "skips": 0,
+      "actualJava21": true,
+      "isolatedIamAndProviderTlsAccepted": true,
+      "outsiderRejectedBeforeApplicationData": true,
+      "tamperedIntegrityDenied": true
+    },
+    "protectedDelivery": [
+      {
+        "run": 40872322867,
+        "job": 123442257983,
+        "event": "push",
+        "case": "prior-log",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40872322867,
+        "job": 123442258596,
+        "event": "push",
+        "case": "missing-target",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40872332958,
+        "job": 123442293890,
+        "event": "pull_request",
+        "case": "prior-log",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40872332958,
+        "job": 123442294248,
+        "event": "pull_request",
+        "case": "missing-target",
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "actualImmutableHttpsNonrootSudoRoot0400Delivery": true,
+    "noTtyRefusedBeforeCapsuleDownloadOrScope": true,
+    "missingMetadataDeniedBeforeSecretReads": true,
+    "existingProtectedLogAndConsumedScopePreserved": true,
+    "regression": [
+      {
+        "run": 40872322914,
+        "job": 123442258279,
+        "conclusion": "success",
+        "logRead": true,
+        "tests": 139,
+        "skips": 0
+      },
+      {
+        "run": 40872332901,
+        "job": 123442293462,
+        "conclusion": "success",
+        "logRead": true,
+        "tests": 139,
+        "skips": 0
+      }
+    ],
+    "firstNativeFailure": {
+      "source": "dc85f2d608aa9afaea53ea28ac1e153201d75102",
+      "pushRun": 40871129290,
+      "pushJob": 123438154963,
+      "prRun": 40871134245,
+      "prJob": 123438172096,
+      "reason": "Fixture mixed latest Docker CLI inspect schema with qualified v1.44 HTTP schema; fixture now explicitly uses DOCKER_API_VERSION=1.44. Production full-binding equality was retained.",
+      "pushLogRead": true,
+      "preserved": true
+    }
+  },
+  "applicationFlow": "CHATGPT_MCP_GATEWAY_REGISTRY_ONTOPIA_ONLY",
+  "maintenanceIsApplicationBypass": false,
+  "nativeExecutorIntegrated": false,
+  "distinctProviderLeaseWorkerIntegrated": false,
+  "targetTruststorePrepared": false,
+  "currentTlsOrIamAdmissionProven": false,
+  "currentDatabaseAdmissionProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "stableCapabilitiesOperationalProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "next": "One bounded operator preparation on VPS is required because the OUF connector has no remote filesystem executor. Return sanitized result JSON/footer only. Preserve successful or failed scope without replay; then use exact output hashes/current context to complete coordinated thirteen-phase native review and distinct provider worker."
+}

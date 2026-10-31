@@ -1,0 +1,105 @@
+{
+  "schema": "ouf.discovery-worker-file-publication-source-qualified.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "cb6f2da62f5974ca1a9eaee0352f21e4a7cfaccb",
+  "localTests": {
+    "new": 13,
+    "regressions": 59,
+    "total": 72,
+    "skipped": 0
+  },
+  "ci": [
+    {
+      "run": 40955303703,
+      "event": "pull_request",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123733743508,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": 248
+    },
+    {
+      "run": 40955303819,
+      "event": "pull_request",
+      "name": "M2 discovery native Docker frame",
+      "id": 123733743725,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955303964,
+      "event": "pull_request",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123733744364,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955295627,
+      "event": "push",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123733714555,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": 248
+    },
+    {
+      "run": 40955295662,
+      "event": "push",
+      "name": "M2 discovery native Docker frame",
+      "id": 123733715020,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    },
+    {
+      "run": 40955295629,
+      "event": "push",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123733714308,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTestCount": null
+    }
+  ],
+  "codeProof": "New file publisher exercises actual root-private files, Ed25519, fsync, flock and existing runtime guard; boot/native probe/application admissions remain synthetic in its protocol fixture.",
+  "nativeRegressionProof": "Separate existing Docker29.8.1/systemd/DNS/nft sandbox and OCI frame passed unchanged. It still manually creates installed files and does not exercise the new publisher in the complete native installation controller.",
+  "open": [
+    "authoritative current independent application admissions and attestation issuance",
+    "provider child gated installation and manager unit registration/reload",
+    "13-peer/TLS/IAM/DB/fencing/trust complete controller",
+    "boot/rotation history continuity",
+    "target capability publication and actual OntoPiA",
+    "CSV mapping Ingestion UDP search reimport resilience two real clients"
+  ],
+  "mcpObservations": {
+    "account": "ouf-admin",
+    "systemStatus": {
+      "module": "MCP",
+      "status": "HEALTHY",
+      "actionRequired": false,
+      "partial": false
+    },
+    "semanticSearch": {
+      "q": "Farmacia",
+      "type": "CLASS",
+      "limit": 5,
+      "response": [],
+      "equivalentSemanticsAbsenceProven": false
+    }
+  },
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

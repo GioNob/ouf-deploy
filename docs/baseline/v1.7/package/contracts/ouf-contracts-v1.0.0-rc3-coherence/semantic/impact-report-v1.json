@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/impact-report-v1.json",
+  "title": "OUF ImpactReport v1",
+  "type": "object",
+  "required": [
+    "changeId",
+    "artifact",
+    "fromRevision",
+    "toRevision",
+    "classification",
+    "impacts",
+    "blockingIssues"
+  ],
+  "properties": {
+    "changeId": {
+      "type": "string"
+    },
+    "artifact": {
+      "type": "string"
+    },
+    "fromRevision": {
+      "type": "string"
+    },
+    "toRevision": {
+      "type": "string"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "NO_SEMANTIC_CHANGE",
+        "NON_BREAKING",
+        "POTENTIALLY_BREAKING",
+        "BREAKING"
+      ]
+    },
+    "impacts": {
+      "type": "object"
+    },
+    "blockingIssues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "migrationProposalId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes."
+}

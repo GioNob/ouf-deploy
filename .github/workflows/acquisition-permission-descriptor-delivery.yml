@@ -1,0 +1,36 @@
+name: Acquisition permission descriptor read delivery
+on:
+  push:
+    paths:
+      - releases/read-acquisition-permission-descriptors-20261025.sh
+      - .github/workflows/acquisition-permission-descriptor-delivery.yml
+  pull_request:
+    paths:
+      - releases/read-acquisition-permission-descriptors-20261025.sh
+      - .github/workflows/acquisition-permission-descriptor-delivery.yml
+permissions: {contents: read}
+jobs:
+  root-copy-no-login:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: bash -n releases/read-acquisition-permission-descriptors-20261025.sh
+      - name: Real pinned download and protected public code; no TTY stops before login
+        shell: bash
+        run: |
+          set +e
+          bash releases/read-acquisition-permission-descriptors-20261025.sh > delivery-fixture.log 2>&1
+          observed=$?
+          set -e
+          cat delivery-fixture.log
+          test "$observed" = 2
+          grep -F 'INTERACTIVE_OPERATOR_TERMINAL_REQUIRED' delivery-fixture.log
+          test ! -e /home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025
+          code=/usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py
+          test "$(stat -c '%u:%a' "$code")" = '0:444'
+          test "$(stat -c '%u:%a' "$(dirname "$code")")" = '0:555'
+          printf '%s  %s\n' 062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad "$code" | sha256sum -c -
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: descriptor-delivery-fixture, path: delivery-fixture.log, retention-days: 30}

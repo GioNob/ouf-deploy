@@ -1,0 +1,82 @@
+{
+  "schema": "ouf.acquisition-policy52-diagnostic-read.v1",
+  "proposalId": "866fea4e-e1f3-4321-8c6c-54f74c953793",
+  "proposalRevision": 1,
+  "proposalState": "PUBLISHED",
+  "policyRef": "ouf-lab-authorization:52",
+  "ingestion": {
+    "schema": "ouf.ingestion.acquisition-evidence.v1",
+    "run": {
+      "run_id": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+      "source_id": "teatri-csv-6609b245",
+      "bundle_id": "bundle-teatri-csv-6609b245",
+      "bundle_version": "2",
+      "bundle_checksum": "sha256:7cebf0ba655d7f0f853b9dc647164de30f1f079e50281e36d24f05db57ad0d1f",
+      "mode": "MANAGED_ONCE",
+      "state": "SUCCEEDED",
+      "phase": "MANAGED_ONCE",
+      "failure_code": null,
+      "created_at": "2026-10-24T22:10:56.026+00:00",
+      "updated_at": "2026-10-24T22:11:11.024+00:00",
+      "snapshot_id": "575ed075-a235-4057-9c64-78277a4af4d2",
+      "snapshot_observed_at": "2026-10-26T15:34:57.061+00:00",
+      "read_only_snapshot": true,
+      "publication_id": "dffa2a5e-740b-4e3d-95a0-14c841940b72",
+      "managed_content_hash": "sha256:08b20658b2b4eadf34d25cd93eead2945096b353ae33b797cf3c41df5319c9e9",
+      "snapshot_matches_run": true
+    },
+    "counts": {
+      "attempts": 13,
+      "failed_attempts": 0,
+      "lineage_records": 13,
+      "handoffs": 13,
+      "unresolved_quarantines": 0
+    },
+    "items": [],
+    "partitions": [
+      {
+        "partition_key": "default",
+        "state": "SUCCEEDED",
+        "watermark_present": true,
+        "watermark_belongs_to_requested_run": true,
+        "committed_handoff_id": "6f129b72-d197-4f40-a223-796981030154",
+        "committed_sequence_no": 13,
+        "committed_handoff_has_ack": true,
+        "watermark_matches_candidate": true,
+        "watermark_not_before_ack": true,
+        "complete_ack_prefix": true
+      }
+    ],
+    "partitionTruncated": false,
+    "nextLineageId": null,
+    "partial": true,
+    "redactionReasons": [
+      "DATA_LABEL_NOT_AUTHORIZED"
+    ],
+    "authorization": "REDACTED",
+    "authorizationDecisionRef": "ouf-lab-authorization:52",
+    "downstreamMaterializationProven": false
+  },
+  "udp": {
+    "schema": "ouf.udp.acquisition-evidence.v1",
+    "sourceId": "teatri-csv-6609b245",
+    "runId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+    "items": [],
+    "nextHandoffId": null,
+    "redactionReasons": [
+      "DATA_LABEL_NOT_AUTHORIZED"
+    ],
+    "partial": true,
+    "authorization": "REDACTED",
+    "authorizationDecisionRef": "ouf-lab-authorization:52",
+    "ingestionAckProven": false
+  },
+  "distinctCalls": 2,
+  "runId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+  "secondRunRead": false,
+  "newAcquisitions": 0,
+  "grantChangesAfterPublication": 0,
+  "actualDeniedLabelObserved": false,
+  "applicationE2EProven": false,
+  "automaticRetryPerformed": false
+}

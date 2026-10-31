@@ -8,19 +8,22 @@ import copy,hashlib,json,os,re,subprocess,uuid
 from pathlib import PurePosixPath
 from urllib.parse import urlsplit
 from .core import require,digest,encoded,hashed
+from . import caller_lookup
 from .gateway import CurrentGateway
+from .caller_configuration import verify as verify_configuration
 from .read_budget import ReadBudget
 from tools.ingestion_readiness_patch_execution import private_file,runtime_guard
 from tools.semantic_live_route_diagnostic.reader import verify_program,process_ticks
 
 CLIENT_SOURCE='GioNob/ouf-ingestion-runtime@4165b9e149be467d5d7c6bed35e4e1af4e249db1:src/main/java/it/comune/trieste/ouf/ingestion/PublicationGatewayClient.java'
+OBSERVABLE_NON_SUCCESS = (403,429,502,503,504)
 
 CHILD_SOURCE=r'''import hashlib,http.client,ipaddress,json,os,re,signal,ssl,sys,uuid
 from urllib.parse import urlsplit,urlencode
 signal.alarm(9)
 try:
-    raw=sys.stdin.buffer.read(262145)
-    if not 0<len(raw)<=262144:raise ValueError()
+    raw=sys.stdin.buffer.read(2097153)
+    if not 0<len(raw)<=2097152:raise ValueError()
     v=json.loads(raw)
     if set(v)!={'origin','token','reference','ca','peerCertificateSha256'}:raise ValueError()
     u=urlsplit(v['origin']);b=v['reference'];token=v['token']
@@ -61,11 +64,14 @@ except BaseException:os._exit(1)
 os._exit(0)
 '''
 
+CHILD_SOURCE = caller_lookup.child(CHILD_SOURCE, "{'origin','token','reference','ca','peerCertificateSha256'}")
+
 def request_scope(gateway,profile):
     return {'schema':'ouf.semantic-registry-recovery-original-request-scope.v1',
         'planHash':digest(gateway.lifecycle.plan),'gatewayScopeHash':digest(gateway.scope),
         'requestProfileHash':digest(profile),'clientSource':CLIENT_SOURCE,'method':'GET',
         'path':'/api/semantic/v1/references:resolve','callerIdentity':'EXISTING_INGESTION_SERVICE',
+        'boundedObservationStatuses':list(OBSERVABLE_NON_SUCCESS),'nonSuccessIsReadinessProof':False,
         'sourceActivationAllowed':False,'credentialAcquisitionAllowed':False,'latestFallbackAllowed':False}
 
 class OriginalSemanticRequest:
@@ -75,7 +81,7 @@ class OriginalSemanticRequest:
         self.profile=copy.deepcopy(profile)
         fields={'caller','origin','tokenTarget','tokenSource','pythonExecutable','ca','peerCertificateSha256',
             'references','frozenConfigurationHash','onboardingVersionId','frozenConfiguration'}
-        require(type(profile) is dict and set(profile)==fields,'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
+        require(type(profile) is dict and set(profile) in (fields, fields | {'callerConfiguration'}, fields | {'callerConfiguration', 'callerLookup'}),'EXACT_ORIGINAL_SERVICE_REQUEST_PROFILE_REQUIRED')
         refs=profile['references']
         require(type(refs) is list and 1<=len(refs)<=32,'EXACT_BOUNDED_ORIGINAL_REFERENCES_REQUIRED')
         seen=set()
@@ -128,12 +134,8 @@ class OriginalSemanticRequest:
             'CURRENT_SIGNED_ORIGINAL_SERVICE_REQUEST_SCOPE_REQUIRED')
         status,actual=self.lifecycle.engine.request('GET','/v1.44/containers/'+p['caller']['binding']['containerId']+'/json')
         require(status==200,'CURRENT_ORIGINAL_SERVICE_CALLER_REQUIRED');runtime_guard.unchanged(actual,p['caller'])
-        env={}
-        for item in actual['Config']['Env']:
-            name,sep,value=item.partition('=');require(sep and name not in env,'UNIQUE_ORIGINAL_CALLER_ENV_REQUIRED');env[name]=value
-        require(env.get('OUF_INGESTION_ACTIVATION_GATEWAY_URL')==p['origin']
-            and env.get('OUF_INGESTION_ACTIVATION_TOKEN_FILE')==p['tokenTarget'],
-            'SAME_CONFIGURED_INGESTION_GATEWAY_AND_TOKEN_REQUIRED')
+        verify_configuration(actual,p)
+        caller_lookup.payload(actual, p.get('callerLookup'))
         gateway=self.gateway.guard();u=urlsplit(p['origin'])
         if u.scheme=='http':
             require(any(e.get('IPAddress')==u.hostname for e in gateway['NetworkSettings']['Networks'].values()),
@@ -162,8 +164,9 @@ class OriginalSemanticRequest:
                 pin=lambda s:(s.st_dev,s.st_ino);identity=pin(os.fstat(fd))
                 self.budget.reserve('semanticGets');self.guard()
                 request=encoded({'origin':p['origin'],'token':token,'reference':ref,'ca':ca,
-                    'peerCertificateSha256':p['peerCertificateSha256']})
-                require(len(request)<=262144,'BOUNDED_ORIGINAL_SERVICE_PRIVATE_REQUEST_REQUIRED')
+                    'peerCertificateSha256':p['peerCertificateSha256'],
+                    **caller_lookup.payload(actual, p.get('callerLookup'))})
+                require(len(request)<=2097152,'BOUNDED_ORIGINAL_SERVICE_PRIVATE_REQUEST_REQUIRED')
                 child=subprocess.Popen([p['pythonExecutable']['path'],'-I','-B','-S','-c',CHILD_SOURCE,str(fd)],
                     stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,pass_fds=(fd,),
                     close_fds=True,cwd='/',env={'LC_ALL':'C'})
@@ -192,7 +195,13 @@ class OriginalSemanticRequest:
         self.gateway.verify(endpoint_required=True);results=[]
         for ref in self.profile['references']:
             result=self._get(ref)
-            if result['status'] in (429,502,503,504):return 'UNKNOWN',{'httpStatus':result['status'],'originalSemanticGetSucceeded':False}
+            # Registry intentionally exposes the same 403 for a missing policy
+            # bundle and an actual capability denial. Neither is called healthy
+            # or classified transient. A finite controller may observe again
+            # with this exact SERVICE identity and the same durable read budget.
+            if result['status'] in OBSERVABLE_NON_SUCCESS:
+                return 'UNKNOWN',{'httpStatus':result['status'],'originalSemanticGetSucceeded':False,
+                    'policyAdmissionUnproven':result['status']==403}
             require(result['status']==200 and result['exactActiveReferenceMatched'] is True,
                 'ORIGINAL_EXACT_ACTIVE_SEMANTIC_REFERENCE_UNPROVEN')
             results.append(result)

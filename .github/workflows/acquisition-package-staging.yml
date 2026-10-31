@@ -1,0 +1,40 @@
+name: Exact acquisition read artifact staging
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/stage-acquisition-read-packages-20261025.py','tests/test_acquisition_package_staging.py','tests/qualify_acquisition_package_artifacts.py','releases/acquisition-read-package-case-20261025.json','.github/workflows/acquisition-package-staging.yml']
+  pull_request:
+    paths: ['scripts/stage-acquisition-read-packages-20261025.py','tests/test_acquisition_package_staging.py','tests/qualify_acquisition_package_artifacts.py','releases/acquisition-read-package-case-20261025.json','.github/workflows/acquisition-package-staging.yml']
+  workflow_dispatch:
+permissions: {contents: read, actions: read}
+jobs:
+  private-staging-and-real-artifacts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Qualify bounded custody, image config, archive rejection and no replay
+        run: |
+          sudo install -d -m 700 /var/lib/ouf-acquisition-stage-ci
+          sudo env OUF_CAPTURE_TEST_PARENT=/var/lib/ouf-acquisition-stage-ci python3 -B -m unittest discover -s tests -p test_acquisition_package_staging.py -v
+      - name: Download the exact retained CI artifacts without printing authentication
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          mkdir -p target/package-downloads
+          python3 - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          case=json.loads(Path('releases/acquisition-read-package-case-20261025.json').read_text())
+          for role,d in case['artifacts'].items():
+              with (Path('target/package-downloads')/(role+'.zip')).open('wb')as output:
+                  subprocess.run(['gh','api','repos/'+d['repository']+'/actions/artifacts/'+str(d['artifactId'])+'/zip'],stdout=output,check=True,timeout=120)
+          PY
+      - name: Verify all actual image bytes and additive source in root private staging
+        run: |
+          sudo env OUF_CAPTURE_TEST_PARENT=/var/lib/ouf-acquisition-stage-ci python3 -B tests/qualify_acquisition_package_artifacts.py "$PWD/target/package-downloads" | tee target/package-qualification.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: 'acquisition-read-staging-proof-${{ github.run_id }}', path: target/package-qualification.json, retention-days: 30}

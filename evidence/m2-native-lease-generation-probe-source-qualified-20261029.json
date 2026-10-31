@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.m2-native-lease-generation-probe-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "3bdda10a20f13dab68b7262df1b534dd885a4ad7",
+  "push": {
+    "run": 40921157027,
+    "job": 123614414997,
+    "conclusion": "success"
+  },
+  "pr": {
+    "run": 40921166688,
+    "job": 123614444553,
+    "conclusion": "success"
+  },
+  "regressionPush": {
+    "run": 40921156885,
+    "job": 123614414884,
+    "tests": 168,
+    "conclusion": "success"
+  },
+  "regressionPr": {
+    "run": 40921166451,
+    "job": 123614443879,
+    "tests": 168,
+    "conclusion": "success"
+  },
+  "logsRead": true,
+  "skips": 0,
+  "actualDockerVersion": "29.8.1",
+  "actualPeers": 2,
+  "getsPerSuccessfulProbe": 4,
+  "engineMutationsByProbe": 0,
+  "onlyCapNetAdminNoSysPtraceSucceeded": true,
+  "registryGatePausedAndSameGenerationRunningAccepted": true,
+  "providerPauseStoppedAndConfigurationDriftDenied": true,
+  "reusedPidTickAndNamespaceMismatchDenied": true,
+  "independentAdmissionProfilesAndReceiptSynthetic": true,
+  "typedProbeRequiredByInstalledGuard": true,
+  "noOpProbeRejected": true,
+  "frozenLivePeerCollectorUnchanged": true,
+  "operationalInstallationOrReentryProven": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+printf '%s\n' 'RETIRED_PROVIDER_RECONCILIATION_SCOPE_SUCCESS_CONSUMED_NO_REPLAY' >&2
+exit 1

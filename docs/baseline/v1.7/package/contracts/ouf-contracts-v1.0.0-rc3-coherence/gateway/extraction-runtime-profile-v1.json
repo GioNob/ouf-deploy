@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/gateway/extraction-runtime-profile-v1.json",
+  "title": "OUF Extraction Runtime Profile v1",
+  "description": "Compiled technical view of an approved Extraction Profile for Gateway PULL enforcement.",
+  "type": "object",
+  "required": [
+    "extractionProfileId",
+    "version",
+    "sourceId",
+    "mode",
+    "fieldProjection",
+    "incrementalStrategy"
+  ],
+  "properties": {
+    "extractionProfileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "PULL",
+        "MANAGED"
+      ]
+    },
+    "sourceTypeScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sourceStatusFilter": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fieldProjection": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "incrementalStrategy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pageSize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "queryTemplateRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "credentialRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "endpointRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Urban API Gateway v1.2"
+  ],
+  "x-ouf-scope-control": "Gateway boundary/runtime contracts only. No Query Complexity Governor, fine-grained data authorization, Durable ACK authority, schema-drift classification, ETL, semantic processing, Object Resolution, UDP materialization, THS decision logic or MCP Server implementation.",
+  "x-ouf-invariants": [
+    "contains compiled technical projection only",
+    "must not contain ontology, vocabulary, source field classification or semantic mapping rationale"
+  ]
+}

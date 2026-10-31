@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.m2-isolated-transport-template-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "63e75ed8842c9f20fb30e9b76e3c9202824c16e6",
+  "push": {
+    "run": 40912969362,
+    "job": 123585573737
+  },
+  "pr": {
+    "run": 40912977907,
+    "job": 123585605613
+  },
+  "logsRead": true,
+  "actualForkUnshareIpNft": true,
+  "sameTablePairPresentInParentPreserved": true,
+  "twoIndependentExpectedTemplatesEqual": true,
+  "wrongCommandAndMirrorDenied": true,
+  "childFailureHasNoHostReadbackFallback": true,
+  "inputsPreserved": true,
+  "fixturePoliciesSynthetic": true,
+  "hostRulesChanged": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,22 @@
+name: Managed-file owner V38 exact image and conditional plan
+on:
+  push:
+    paths: ['tools/managed_file_owner_recovery/image_plan.py','scripts/stage_managed_file_owner_image.py','scripts/prepare-managed-file-owner-image-plan.py','scripts/download-managed-file-owner-image.py','tests/*managed_file_owner_image_plan*','releases/managed-file-owner-v38-image-*.json','evidence/managed-file-owner-inputs-target-20261028.json','.github/workflows/managed-file-owner-image-plan.yml']
+  pull_request:
+    paths: ['tools/managed_file_owner_recovery/image_plan.py','scripts/stage_managed_file_owner_image.py','scripts/prepare-managed-file-owner-image-plan.py','scripts/download-managed-file-owner-image.py','tests/*managed_file_owner_image_plan*','releases/managed-file-owner-v38-image-*.json','evidence/managed-file-owner-inputs-target-20261028.json','.github/workflows/managed-file-owner-image-plan.yml']
+permissions: {contents: read}
+jobs:
+  original-ci-archive-and-protected-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -I -S -B -m unittest discover -s tests -p test_managed_file_owner_image_plan.py -v
+      - name: Download exact original CI ZIP from immutable delivery commit
+        run: |
+          mkdir -m 0700 "$RUNNER_TEMP/owner-v38-zip"
+          cp releases/managed-file-owner-v38-image-custody-20261028.json "$RUNNER_TEMP/owner-v38-zip/onboarding-custody.json"
+          python3 -I -S -B scripts/download-managed-file-owner-image.py "$RUNNER_TEMP/owner-v38-zip"
+      - name: Actual archive,JAR,38migrations,native manifest and protected conditional plan
+        run: sudo env OUF_EXACT_OWNER_ZIP="$RUNNER_TEMP/owner-v38-zip/onboarding.zip" /usr/bin/python3 -I -S -B tests/qualify_managed_file_owner_image_plan.py

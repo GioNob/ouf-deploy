@@ -1,0 +1,42 @@
+name: Onboarding diagnostic exact image inputs
+on:
+  push:
+    paths: ['scripts/prepare-onboarding-diagnostic-image-inputs-20261026.py', 'tests/test_onboarding_diagnostic_image_inputs.py', 'tests/qualify_onboarding_diagnostic_image_inputs.py', 'releases/onboarding-diagnostic-image-custody-20261026.json', '.github/workflows/onboarding-diagnostic-image-inputs.yml']
+  pull_request:
+    paths: ['scripts/prepare-onboarding-diagnostic-image-inputs-20261026.py', 'tests/test_onboarding_diagnostic_image_inputs.py', 'tests/qualify_onboarding_diagnostic_image_inputs.py', 'releases/onboarding-diagnostic-image-custody-20261026.json', '.github/workflows/onboarding-diagnostic-image-inputs.yml']
+permissions: {contents: read}
+jobs:
+  exact-archive-no-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -m unittest discover -s tests -p test_onboarding_diagnostic_image_inputs.py -v
+      - name: Download exact public custody chunks without credentials
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,urllib.request
+          from pathlib import Path
+          case=json.loads(Path('releases/onboarding-diagnostic-image-custody-20261026.json').read_text())
+          h=hashlib.sha256();size=0
+          with open('candidate.zip','xb') as out:
+              for part in case['parts']:
+                  url='https://raw.githubusercontent.com/GioNob/ouf-source-onboarding/'+case['deliveryCommit']+'/'+part['path']
+                  ph=hashlib.sha256();count=0
+                  with urllib.request.urlopen(url,timeout=60) as response:
+                      while data:=response.read(1048576):
+                          count+=len(data);assert count<=part['bytes'];out.write(data);ph.update(data);h.update(data)
+                  assert count==part['bytes'] and ph.hexdigest()==part['sha256'];size+=count
+          assert size==case['zipBytes'] and h.hexdigest()==case['zipSha256']
+          PY
+      - name: Root-protected disposable source and original archive
+        run: |
+          sudo install -d -m 0700 /root/ouf-diag-image-inputs-ci
+          sudo cp -a . /root/ouf-diag-image-inputs-ci/repo
+          sudo mv /root/ouf-diag-image-inputs-ci/repo/candidate.zip /root/ouf-diag-image-inputs-ci/candidate.zip
+          sudo chown -R root:root /root/ouf-diag-image-inputs-ci
+          sudo chmod -R go-w /root/ouf-diag-image-inputs-ci
+          sudo chmod 0400 /root/ouf-diag-image-inputs-ci/candidate.zip
+      - name: Actual image bytes, private owner inputs, no runtime capability
+        run: sudo /usr/bin/python3 -I -S -B /root/ouf-diag-image-inputs-ci/repo/tests/qualify_onboarding_diagnostic_image_inputs.py

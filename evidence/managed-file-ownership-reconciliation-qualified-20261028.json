@@ -1,0 +1,255 @@
+{
+  "schema": "ouf.managed-file-ownership-reconciliation-qualification.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "HISTORICAL_READER_TARGET_SUCCEEDED_CONSUMED_V38_SOURCE_SUPERSEDES_PREVENTION_ONLY",
+  "nativeDenial": {
+    "record": "evidence/managed-profile-ths-ownership-denial-20261028.json",
+    "code": "ONB_FILE_OWNER_SCOPE_UNPROVEN",
+    "correlationId": "e8c96213-6537-42c1-a726-311d6eb7898a",
+    "userObserved": true,
+    "browserIdentityObserved": false,
+    "explainedByBudgetExpiry": false
+  },
+  "causalCodeGap": {
+    "nativeIntakePersistedSubjectWithoutTenant": true,
+    "delegatedIntakeRetainedTenantReceipt": true,
+    "teatriReviewedSourceCanProvideLegacyTenantProof": true,
+    "currentFarmacieDatabaseCauseObserved": true,
+    "legacyTenantMustNotBeInferred": true
+  },
+  "preventiveSource": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "branch": "feat/m2-reuse-typed-recovery-20261026",
+    "pr": 53,
+    "commit": "bd113e7f8c428d7c167142e1f38df0db12b3b3e6",
+    "migration": "V37__managed_file_intake_tenant.sql",
+    "targetInstalled": false,
+    "testedImageArtifactPublication": {
+      "artifactId": 12832179081,
+      "name": "source-onboarding-governed-image-40726405468",
+      "bytes": 213051362,
+      "zipSha256ReportedByCi": "b4b9ac3a33c2de60533245970bdcf7202eb2c830181e3f1c7466f4c25a257a0a",
+      "downloadedOrImported": false,
+      "publicationOrigin": "Successful CI job log; archive custody and native manifest not independently inspected here"
+    },
+    "targetSchemaStill36": true,
+    "tenantAndUploaderImmutable": true,
+    "noLegacyBackfill": true,
+    "sharedPredicateForAssetsAndRecovery": true,
+    "conflictingLegacyReceiptCannotOverrideExplicitTenant": true,
+    "nativeTenantFromTrustedPrincipal": true,
+    "tests": {
+      "application": 347,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "newIntakeRuntimeCases": 7,
+      "newNativeBoundaryCase": 1,
+      "newUpgrade36To37Case": 1,
+      "retainedUpgrade35To36PinnedTo36": true
+    },
+    "runs": [
+      {
+        "id": 40726395480,
+        "event": "push",
+        "job": 122950728052,
+        "conclusion": "success"
+      },
+      {
+        "id": 40726405468,
+        "event": "pull_request",
+        "job": 122950760504,
+        "conclusion": "success"
+      }
+    ],
+    "directFinalJobLogsRead": 2,
+    "realJava21Postgres17": true,
+    "productionImageBuildNonroot": true,
+    "unchangedSecurityGate": {
+      "severity": [
+        "HIGH",
+        "CRITICAL",
+        "UNKNOWN"
+      ],
+      "ignoreUnfixed": false,
+      "exitCode": 1,
+      "passed": true
+    },
+    "stagingEnabledImageBootSmokePassed": true,
+    "applicationE2EProven": false
+  },
+  "sourceQualificationCorrections": {
+    "firstCommit": "0b037b2fd2bd9b506f3e8a3c40f5f0738a1934a7",
+    "firstPrRun": 40724747645,
+    "firstFailure": "Historical V36 upgrade test migrated all pending versions and counted2 instead of1. Pin historical test to36 and add distinct37 upgrade test.",
+    "secondCommit": "ac55f2b045994c02781648b467d3e246d5bcd6dd",
+    "secondPrRun": 40725269416,
+    "secondFailure": "347tests passed; production image scan rejected three HIGH transitive dependency findings.",
+    "scanArtifact": {
+      "id": 12832148833,
+      "downloadedZipSha256": "41c859f780eb3d200ef4d95892000297950e2ed4307596e8fd31dc0e63ed65e4",
+      "allApplicationXmlReportsRead": true,
+      "scanJsonReadInFull": true
+    },
+    "dependencyFixes": [
+      {
+        "package": "com.google.guava:guava",
+        "before": "33.4.8-jre",
+        "after": "33.7.2-jre",
+        "primary": "https://github.com/google/guava/releases"
+      },
+      {
+        "package": "org.xerial.snappy:snappy-java",
+        "before": "1.1.10.7",
+        "after": "1.1.10.9",
+        "primary": "https://github.com/xerial/snappy-java/security/advisories/GHSA-xqrx-qh46-34m7"
+      }
+    ],
+    "finalImageGatePassed": true,
+    "scannerExclusionsAdded": false
+  },
+  "reader": {
+    "sourceCommit": "f7a7199f26bc89a6533c4e7e17314af48d0d88b5",
+    "script": "scripts/read-managed-file-ownership-20261028.py",
+    "scriptSha256": "14ccad386c764663b6ce03ce23bb77fe134ab6bed6fcb5c67aeef30d9a79747a",
+    "builder": "tools/build_managed_file_ownership_reader.py",
+    "contract": "tools/managed_file_ownership/contract.py",
+    "controller": "tools/managed_file_ownership/reader.py",
+    "wrapperCommit": "0278b2c84c525cced1471d6ffa851ce8844580b8",
+    "wrapper": "releases/read-managed-file-ownership-20261028.sh",
+    "wrapperSha256": "292a16fd2abaf2057898f3238069c15173dbf4f7e1da4d709b39281023bed1e7",
+    "qualificationCommit": "3aab13a60b82717a1c489bbdd80d27a0c169e05c",
+    "scope": "/etc/ouf/deploy-snapshots/managed-file-ownership-read-0990401f-20261028-v1",
+    "currentDeliveryUsable": false,
+    "targetExecuted": true,
+    "maximums": {
+      "seconds": 90,
+      "totalBytes": 25165824,
+      "privateMetadataReads": 3,
+      "engineGets": 5,
+      "sqlSessions": 1,
+      "sqlProcessSeconds": 20,
+      "statementSeconds": 5,
+      "lockSeconds": 1
+    },
+    "metadata": "Only review/result/recovery from consumed successful THS request update, with exact hashes and complete journal binding. Historical authority never executed.",
+    "targets": {
+      "asset": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+      "job": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+      "teatriAsset": "6609b245-86ed-4315-8ce0-73f2a8555bf3",
+      "expectedSubject": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "expectedTenant": "ouf-lab",
+      "expectedPrincipalIsNotObservedBrowserIdentity": true
+    },
+    "dataMinimization": "Exact asset hash/size, ownership predicate booleans, receipt counts and bounded same-job state. No original file bytes or storage reference/foreign subject/filename/last_error.",
+    "oneReadOnlySnapshot": true,
+    "noAutomaticSqlRetry": true,
+    "claimBeforeDispatchAndReceiptBeforeParser": true,
+    "privateStateMode": "root0600",
+    "protectedSourceMode": "root0400",
+    "currentNativeGenerationsVerifiedBeforeAndAfter": true,
+    "engineEnvInPrivateMetadataMayContainRetainedCredentials": true,
+    "configurationOrCredentialTokenKeyFileContentReads": 0,
+    "newAuthenticationRequests": 0,
+    "databaseWrites": 0,
+    "engineWrites": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "acquisitions": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "scopeConsumed": true,
+    "commandMustNotBeRedelivered": true
+  },
+  "readerQualification": {
+    "unitTests": 7,
+    "skipped": 0,
+    "nativeFixture": "Docker29.8.1, actual Unix/SO_PEERCRED root peer, two actual containers and PostgreSQL17; minimal synthetic ownership tables and synthetic completed predecessor metadata. No production application or human authority.",
+    "casesPerRun": 3,
+    "cases": [
+      "legacy uploader matches but tenant proof absent; Teatri review proof present",
+      "preexisting exact upload receipt proves expected principal predicate",
+      "different expected subject remains denied"
+    ],
+    "assertions": [
+      "one SQL and five GET per case",
+      "source data and retained metadata unchanged",
+      "same-scope replay denied",
+      "ambiguous predecessor rejected before effects",
+      "browser identity remains unobserved"
+    ],
+    "runs": [
+      {
+        "id": 40725941412,
+        "event": "push",
+        "commit": "f7a7199f26bc89a6533c4e7e17314af48d0d88b5",
+        "job": 122949093675,
+        "conclusion": "success"
+      },
+      {
+        "id": 40725957075,
+        "event": "pull_request",
+        "commit": "f7a7199f26bc89a6533c4e7e17314af48d0d88b5",
+        "job": 122949152766,
+        "conclusion": "success"
+      },
+      {
+        "id": 40726539076,
+        "event": "push",
+        "commit": "3aab13a60b82717a1c489bbdd80d27a0c169e05c",
+        "job": 122951237974,
+        "conclusion": "success"
+      },
+      {
+        "id": 40726557591,
+        "event": "pull_request",
+        "commit": "3aab13a60b82717a1c489bbdd80d27a0c169e05c",
+        "job": 122951300678,
+        "conclusion": "success"
+      }
+    ],
+    "directJobLogsRead": 4
+  },
+  "deliveryQualification": {
+    "actualPinnedHttpsNonrootSudo": true,
+    "root400SourceChecksumVerifiedAsRoot": true,
+    "nonrootSourceReadDenied": true,
+    "nonTtyDeniedBeforeScopeOrSql": true,
+    "failedScopeAndReceiptsPreservedOnReplay": true,
+    "privateStateAndLog600": true,
+    "noGhOrTimeoutCliDependency": true,
+    "noIamOrEngineOrSqlTargetCall": true,
+    "qualificationTypoFixedBeforeUse": "Plural filename retained by test rename fixed in3aab13a6; wrapper and reader bytes unchanged.",
+    "runs": [
+      {
+        "id": 40726538968,
+        "event": "push",
+        "job": 122951237943,
+        "conclusion": "success"
+      },
+      {
+        "id": 40726552621,
+        "event": "pull_request",
+        "job": 122951286505,
+        "conclusion": "success"
+      }
+    ],
+    "directJobLogsRead": 2
+  },
+  "oldApplyConsumed": true,
+  "policy58StillAcquiredNoNewGrant": true,
+  "governedOufCallsThisChange": 0,
+  "agentBrowserAccess": false,
+  "legacyOwnershipRepairPerformed": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "supervisorDeferredUntilApplicationE2E": true,
+  "supersededBy": "evidence/managed-file-owner-recovery-v38-qualified-20261028.json",
+  "currentDeliveryUsable": false,
+  "targetExecuted": true,
+  "targetReceipt": "evidence/managed-file-ownership-read-target-20261028.json",
+  "scopeConsumed": true
+}

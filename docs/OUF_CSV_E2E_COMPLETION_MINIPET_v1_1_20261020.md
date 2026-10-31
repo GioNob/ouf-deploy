@@ -1,3 +1,5 @@
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
 # OUF — Mini-PET per il completamento del percorso CSV end-to-end
 
 **Identificativo:** OUF-MP-CSV-E2E  

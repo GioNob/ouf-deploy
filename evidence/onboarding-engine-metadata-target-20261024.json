@@ -1,0 +1,141 @@
+{
+  "schema": "ouf.onboarding-engine-metadata-target-evidence.v1",
+  "evidenceOrigin": "USER_REPORTED_VPS_OPERATOR_RESULT",
+  "status": "ONBOARDING_ENGINE_METADATA_RECONCILED",
+  "complete": true,
+  "operatorExit": 0,
+  "operatorDirectory": "/home/oufadmin/ouf-engine-reconciliation.nyUSqFTp",
+  "operatorLog": "/home/oufadmin/ouf-engine-reconciliation.nyUSqFTp/operator.log",
+  "privateReconciliationPath": "/etc/ouf/deploy-snapshots/onboarding-finite-session-ee8b7756f72f82a6/engine-binding-reconciliation-v1/reconciliation.json",
+  "privateReconciliationHash": "c831dc09f4f54c99f41d4ea563c7b0629c13648f0e8c82a5f00dba5c74f299d7",
+  "classification": "HISTORICAL_SOCKET_BINDING_DIFFERS_FROM_CURRENT",
+  "allSelectedPathsObserveSameCurrentSocket": true,
+  "allSelectedPathsResolveToCurrentSocket": true,
+  "currentCapturedSocketBindingMatchesObserved": true,
+  "failedComparisonReproduced": true,
+  "engineApiIdentityProvenByThisReader": false,
+  "comparisons": {
+    "preparedVsPlan": {
+      "changedFields": [],
+      "equal": true,
+      "socketBindingChanges": []
+    },
+    "preparedVsCurrent": {
+      "changedFields": [
+        "socketBinding"
+      ],
+      "equal": false,
+      "socketBindingChanges": [
+        "inode"
+      ]
+    },
+    "planVsCurrent": {
+      "changedFields": [
+        "socketBinding"
+      ],
+      "equal": false,
+      "socketBindingChanges": [
+        "inode"
+      ]
+    }
+  },
+  "capturedProcessPins": {
+    "onboarding": {
+      "matchesCaptured": true,
+      "observable": true
+    },
+    "postgres": {
+      "matchesCaptured": true,
+      "observable": true
+    }
+  },
+  "historicalVsCapturedRuntime": {
+    "onboarding": {
+      "native": {
+        "changedFields": [
+          "configHash",
+          "containerId",
+          "hostConfigHash",
+          "imageId",
+          "networkSettingsHash",
+          "pid",
+          "startedAt"
+        ],
+        "equal": false
+      },
+      "sortedMounts": {
+        "changedFields": [
+          "configHash",
+          "containerId",
+          "hostConfigHash",
+          "imageId",
+          "networkSettingsHash",
+          "pid",
+          "startedAt"
+        ],
+        "equal": false
+      }
+    },
+    "postgres": {
+      "native": {
+        "changedFields": [
+          "configHash",
+          "hostConfigHash",
+          "networkSettingsHash",
+          "pid",
+          "startedAt"
+        ],
+        "equal": false
+      },
+      "sortedMounts": {
+        "changedFields": [
+          "configHash",
+          "hostConfigHash",
+          "networkSettingsHash",
+          "pid",
+          "startedAt"
+        ],
+        "equal": false
+      }
+    }
+  },
+  "historicalSocketBindingsMatchObserved": {
+    "plan": false,
+    "prepared": false
+  },
+  "priorScopeState": {
+    "databaseCompleteMarkerPresent": false,
+    "databaseScopeExists": false,
+    "sqlAttemptMarkerPresent": false
+  },
+  "engineGetAttempts": 0,
+  "engineConnections": 0,
+  "sqlSessionAttempts": 0,
+  "containerExecAttempts": 0,
+  "subprocessesDispatched": 0,
+  "serviceCredentialFilesOpened": 0,
+  "bearerFilesOpened": 0,
+  "privateSigningKeysRead": 0,
+  "containerWrites": 0,
+  "databaseMigrations": 0,
+  "sourceActivations": 0,
+  "humanBudgetsGranted": 0,
+  "retainedFileWrites": 0,
+  "privateEvidenceWrites": true,
+  "readOnlyRuntime": true,
+  "addressesPrinted": false,
+  "credentialValuesPrinted": false,
+  "metadataClassificationDoesNotAuthorizeReplacement": true,
+  "newBindingAcceptedForRuntime": false,
+  "newSqlAttemptAuthorized": false,
+  "lifecycleMutationAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false,
+  "originalRequestRepeated": false,
+  "original502RootCauseNewlyEstablished": false,
+  "reconciliationScopeConsumed": true,
+  "interpretation": "Not an inode-only repair: old Oct17 application lineage is not current. Preserve all old roots and hashes, no guard weakening/replay. Repository documents later source-property-revision deployment; current exact generation still needs matching."
+}

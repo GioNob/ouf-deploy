@@ -95,12 +95,21 @@ class ServiceRequest(unittest.TestCase):
             with self.subTest(version=version,state=state),self.assertRaisesRegex(c.RecoveryDenied,'EXACT_ACTIVE'):
                 self.request.verify()
 
-    def test_redirect401_and403_do_not_refresh_or_fallback(self):
+    def test_redirect_and401_do_not_refresh_or_fallback(self):
         self.final_phase()
-        for status in (302,401,403):
+        for status in (302,401):
             self.server.status=status
             with self.subTest(status=status),self.assertRaisesRegex(c.RecoveryDenied,'EXACT_ACTIVE'):self.request.verify()
-        self.assertEqual(len(self.server.calls),3)
+        self.assertEqual(len(self.server.calls),2)
+
+    def test403_is_unproven_policy_not_success_or_automatic_retry(self):
+        self.final_phase();self.server.status=403
+        state,proof=self.request.verify()
+        self.assertEqual(state,'UNKNOWN');self.assertTrue(proof['policyAdmissionUnproven'])
+        self.assertFalse(proof['originalSemanticGetSucceeded'])
+        self.assertEqual(len(self.server.calls),1)
+        self.assertTrue(self.server.calls[0]['sameWorkloadBearer'])
+        self.assertEqual(self.budget.read()['counts']['semanticGets'],1)
 
     def test_same_frozen_configuration_references_and_checksum_are_required(self):
         for kind in ('reference','configuration','version','state'):

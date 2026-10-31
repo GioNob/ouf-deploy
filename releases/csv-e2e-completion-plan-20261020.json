@@ -141,7 +141,7 @@
         "scope issuer and immutable executable closure",
         "native no-replay qualification"
       ],
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-21",
@@ -176,6 +176,11 @@
       "startBounds": {
         "earliest": "2026-10-20T11:07:49+02:00",
         "latest": "2026-10-20T09:35:14Z"
+      },
+      "gateEvidence": {
+        "gate": "G2",
+        "status": "PASS",
+        "evidenceRef": "docs/CSV_E2E_G2_NATIVE_EXECUTOR_QUALIFICATION_20261020.md"
       }
     },
     {
@@ -206,13 +211,18 @@
         "current DB/readiness evidence",
         "native profile publication receipt"
       ],
-      "status": "PLANNED",
+      "status": "COMPLETE",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-07",
         "CSV-AT-08",
         "CSV-AT-23"
-      ]
+      ],
+      "gateEvidence": {
+        "gate": "G3",
+        "status": "PASS",
+        "evidenceRef": "evidence/csv-native-source-activation-owner-20261025.json"
+      }
     },
     {
       "id": "WP4",
@@ -236,12 +246,14 @@
         "F5 second acquisition evidence",
         "F6 two-run ACK/commit/lineage and preservation evidence"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-14",
         "CSV-AT-16"
-      ]
+      ],
+      "currentBlocker": "OWNER_DETAIL_REDACTION",
+      "evidenceRef": "evidence/acquisition-post-oauth-owner-redaction-20261026.json"
     },
     {
       "id": "WP5",
@@ -267,7 +279,7 @@
         "governed relation composition",
         "backward compatible contract/tests"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-03",
@@ -277,7 +289,9 @@
         "CSV-AT-09",
         "CSV-AT-12",
         "CSV-AT-13"
-      ]
+      ],
+      "exitGatePassed": false,
+      "progressNote": "Typed module deltas qualified historically; vocabulary/relation composition and G5 not closed."
     },
     {
       "id": "WP6",
@@ -307,7 +321,7 @@
         "durable resume",
         "two-client qualification"
       ],
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "entryAuthorizationGranted": false,
       "acceptanceTestRefs": [
         "CSV-AT-01",
@@ -316,7 +330,9 @@
         "CSV-AT-18",
         "CSV-AT-19",
         "CSV-AT-20"
-      ]
+      ],
+      "exitGatePassed": false,
+      "progressNote": "Governed owner acquisition READ surfaces installed/reached; detailed redaction and real two-client qualification remain open."
     },
     {
       "id": "WP7",
@@ -1000,7 +1016,7 @@
     "General multi-host installer qualification",
     "Merge of two pre-existing canonical objects as a separate governed operation"
   ],
-  "updatedDate": "2026-10-20",
+  "updatedDate": "2026-10-26",
   "previousPlan": {
     "version": "1.0",
     "document": "docs/OUF_CSV_E2E_COMPLETION_MINIPET_v1_0_20261020.md",
@@ -2403,8 +2419,8 @@
       "waitingIntervals": [],
       "runtimeBudgetsUnchanged": true,
       "executionBranch": "feat/csv-e2e-native-completion-20261020",
-      "lastObservedAt": "2026-10-20T10:45:39.678Z",
-      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 1.3028991666666667,
+      "lastObservedAt": "2026-10-26T13:36:14Z",
+      "activeTechnicalHoursPreciselyMeasuredAfterTracking": 9.450502026944442,
       "initialUnsegmentedHours": 0.14933416666666666,
       "perPackageAllocationPrecise": false,
       "currentOpenIntervalStartedAt": "2026-10-20T10:42:11.142Z",
@@ -2418,7 +2434,10 @@
           "includedInMeasuredEffort": false,
           "reason": "User reports chat connection interrupted; do not infer technical effort or passive/HUMAN wait from the unverified interval."
         }
-      ]
+      ],
+      "actualEffortCoverageComplete": false,
+      "measurementNote": "Closed explicitly measured intervals only. Historical work after21October is incompletely segmented; do not treat this subtotal as full effort spent or percent complete. Original baseline hours unchanged."
     }
-  }
+  },
+  "currentHandoff": "docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md"
 }

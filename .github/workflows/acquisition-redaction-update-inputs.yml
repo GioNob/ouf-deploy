@@ -1,0 +1,26 @@
+name: Acquisition redaction update input custody
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/prepare-acquisition-redaction-update-inputs-20261026.py', 'tests/test_acquisition_redaction_update_capture.py', 'tests/qualify_acquisition_redaction_capture.py', 'releases/prepare-acquisition-redaction-update-inputs-20261026.sh', '.github/workflows/acquisition-redaction-update-inputs.yml']
+  pull_request:
+    paths: ['scripts/prepare-acquisition-redaction-update-inputs-20261026.py', 'tests/test_acquisition_redaction_update_capture.py', 'tests/qualify_acquisition_redaction_capture.py', 'releases/prepare-acquisition-redaction-update-inputs-20261026.sh', '.github/workflows/acquisition-redaction-update-inputs.yml']
+permissions: {contents: read}
+jobs:
+  finite-metadata-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      CAPTURE_TEST_ROOT: /var/lib/ouf-redaction-capture-ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Prepare root-owned disposable fixture directory
+        run: sudo install -d -m 0700 /var/lib/ouf-redaction-capture-ci
+      - name: Prove exact retained lineage and finite one-shot reads
+        run: sudo -E python3 -B tests/test_acquisition_redaction_update_capture.py
+      - name: Prove real Unix root peer, exact root copier and nonroot denial
+        run: sudo -E python3 -B tests/qualify_acquisition_redaction_capture.py
+      - name: Check operator wrapper syntax
+        run: bash -n releases/prepare-acquisition-redaction-update-inputs-20261026.sh

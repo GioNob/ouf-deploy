@@ -1,0 +1,96 @@
+{
+  "schema": "ouf.m2-provider-runtime-contract-source-qualified.v1",
+  "date": "2026-10-29",
+  "readerCommit": "6ae7db0f157fb9fe84bdd01b2512445b7e0b184f",
+  "readerSha256": "ffa56e75f434893a7dc1f31e0a6078c2e3ec3a1f48cd019102e74a920334492b",
+  "launcherCommit": "af3e33e0ff1864df538e01a232846346a723562a",
+  "launcherSha256": "e5dfa9d2bcb5109158be6daa5d35017543c1e5baddf9903ccc3112a08794cc17",
+  "qualifiedCommit": "af3e33e0ff1864df538e01a232846346a723562a",
+  "ci": [
+    {
+      "run": 40964887018,
+      "event": "push",
+      "id": 123766734807,
+      "kind": "protocol",
+      "tests": 16,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40964893972,
+      "event": "pull_request",
+      "id": 123766758349,
+      "kind": "protocol",
+      "tests": 16,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40964887113,
+      "event": "push",
+      "id": 123766735564,
+      "kind": "delivery-missing-target",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40964887113,
+      "event": "push",
+      "id": 123766736001,
+      "kind": "delivery-prior-log",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40964894016,
+      "event": "pull_request",
+      "id": 123766759285,
+      "kind": "delivery-missing-target",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40964894016,
+      "event": "pull_request",
+      "id": 123766759719,
+      "kind": "delivery-prior-log",
+      "conclusion": "success",
+      "logsRead": true
+    }
+  ],
+  "scope": "/etc/ouf/deploy-snapshots/m2-provider-runtime-contract-1868-20261029-v1",
+  "retainedInputHash": "1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083",
+  "bounds": {
+    "runtimeSeconds": 90,
+    "engineGets": 4,
+    "distinctEnginePaths": 2,
+    "metadataReads": 18,
+    "totalBytes": 16777216
+  },
+  "proofs": [
+    "Root-private regular files, actual Unix HTTP and SO_PEERCRED, exact socket inode; no Engine mutation entry point",
+    "Same stopped provider, configuration and current boot; exact historical hashes confer provenance only",
+    "Closed nonexecuted wrapper and deterministic hash-bound runtime/Broker/preparer/attestation/approval metadata roles",
+    "Current metadata custody rechecked, including inode replacement and source/content drift denial",
+    "Key/credential bindings not traversed; minimized output excludes Config/Env/paths/raw profiles",
+    "Missing retained entry or builtin runtime reported without searching directories or inventing a contract",
+    "Source pinned HTTPS fetch, root0400 installation and checksum, nonroot/sudo/TTY boundary, consumed-scope and prior-log refusal"
+  ],
+  "limits": [
+    "Positive Engine response bodies and application profile metadata are synthetic in protocol fixture, transport/file/peer custody are real",
+    "Delivery uses real pinned HTTPS and stops on absent target metadata; it does not run against target metadata",
+    "Local workspace cannot create Unix sockets; protocol qualification therefore ran in disposable root CI VMs",
+    "First CI workflow used an unprivileged cd into the private fixture; corrected to invoke the absolute test path through sudo before qualifying"
+  ],
+  "targetExecuted": false,
+  "credentialFileReads": 0,
+  "privateKeyReads": 0,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "historicalAuthorityReused": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "providerAdmissionProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

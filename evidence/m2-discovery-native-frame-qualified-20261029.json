@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.m2-discovery-native-frame-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "dd299c06c9ff9353bee78443d35845a52b5a782e",
+  "status": "INDEPENDENT_REAL_DOCKER_FRAME_FILES_AND_CONFIGTREE_QUALIFIED",
+  "jobs": [
+    {
+      "event": "push",
+      "run": 40845016640,
+      "job": 123350264235,
+      "conclusion": "success",
+      "logRead": true
+    },
+    {
+      "event": "pull_request",
+      "run": 40845022690,
+      "job": 123350284460,
+      "conclusion": "success",
+      "logRead": true
+    }
+  ],
+  "engine": {
+    "serverVersion": "29.8.1",
+    "storageDriver": "overlayfs",
+    "cgroupDriver": "systemd",
+    "backend": "containerd-overlayfs"
+  },
+  "fullIndependentOciMatched": true,
+  "fiveNativeReadonlyFilesObserved": true,
+  "databaseConfigtreeNativeObserved": true,
+  "exactUnixEngineJsonContract": true,
+  "rootUnixPeerRequired": true,
+  "javaStarted": false,
+  "syntheticImageAndPrivateInputs": true,
+  "tokenOwnerAdmissionProven": false,
+  "providerTlsOrIamProven": false,
+  "signaturesIssued": 0,
+  "targetAcceptance": false,
+  "applicationE2EProven": false,
+  "intermediateFindings": [
+    "Qualifier used old future-custody import; switched to self-contained discovery budget.",
+    "CLI reordered creation Env; qualifier now exercises actual Unix Engine JSON API. No OCI comparison guard changed."
+  ]
+}

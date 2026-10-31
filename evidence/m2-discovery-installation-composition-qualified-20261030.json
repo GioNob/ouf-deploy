@@ -1,0 +1,412 @@
+{
+  "schema": "ouf.m2-discovery-installation-composition-source-qualification.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "protocol": {
+    "sourceCommit": "05456554165d73731f8a259c35d9f2f5d696cb19",
+    "testsPerEvent": 432,
+    "suitesPerEvent": 50,
+    "skips": 0,
+    "push": {
+      "run": 41133846758,
+      "job": 124331281185,
+      "conclusion": "success",
+      "finalReportsRead": true
+    },
+    "pullRequest": {
+      "run": 41133853136,
+      "job": 124331301342,
+      "conclusion": "success",
+      "finalReportsRead": true
+    }
+  },
+  "nativeLateWorker": {
+    "sourceCommit": "5620ba82fa0e66127479312e3ec8175187e0343a",
+    "push": {
+      "run": 41035568774,
+      "job": 123995434068,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41035577984,
+      "job": 123995465778,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true,
+    "actualDockerCaptureAndFreshFence": true,
+    "actualEd25519PublicationRegistrationStart": true,
+    "actualSystemdDnsNft": true,
+    "lostManagerStartReplyReconciledWithoutSecondStart": true,
+    "frozenRuntimeModules": 37,
+    "syntheticApplicationAdmissionsAndAuthority": true
+  },
+  "retainedFailure": {
+    "sourceCommit": "c622710396532b3ab08703df1348bdd903e12e29",
+    "run": 41030639754,
+    "job": 123979277863,
+    "outcome": "UNKNOWN_AT_FINAL_WORKER_OBSERVATION_WHILE_WORKER_ACTIVE",
+    "causeEstablished": false,
+    "safeCiOnlyDiagnosticsAdded": true,
+    "subsequentSuccessDoesNotProveCauseResolution": true
+  },
+  "newerBindingAndBootDelta": {
+    "localLateMaterializationCases": 9,
+    "localCompositionCases": 7,
+    "ciQualification": "QUALIFIED_AT_92121207_358_TESTS_42_SUITES",
+    "newBootCannotRearm": true,
+    "sameRegistryKernelDnsBindingNftAndCommonLockRequired": true,
+    "distinctNewWorkerLedgerAndPreservedProviderJournalRequired": true
+  },
+  "realV4ProviderNativeEvidence": "evidence/m2-provider-native-qualified-20261030.json",
+  "combinedRealV4ProviderAndLateWorkerNativeProven": false,
+  "fullCohortProven": false,
+  "bootOrRotationQualified": false,
+  "applicationE2EProven": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "intermediateBindingGuard": {
+    "sourceCommit": "1e174c8839f66213e30f7363a04a752457c3cffd",
+    "status": "SUPERSEDED_BEFORE_TARGET_DELIVERY",
+    "reason": "Shared coordination journal conflicts with create-only worker publication. Shared binding/kernel/lock retained; distinct journals required.",
+    "targetEffects": 0
+  },
+  "nextCommonParentAndKeyIsolationDelta": {
+    "ciQualification": "QUALIFIED_AT_5620BA82_359_TESTS_42_SUITES",
+    "localLateWorkerCases": 10,
+    "localCompositionCases": 7,
+    "lastBeforeCidVariantPassed": true,
+    "workerOwnerConstructedBeforeProviderCid": true,
+    "allKnownProviderAndRegistrySigningKeysHiddenRequired": true,
+    "realProtocolSignaturesAndFiles": true,
+    "nativeEngineKernelAndApplicationAdmissionLeavesModeled": true,
+    "managerBoundaryModeled": true
+  },
+  "localQualificationLimit": {
+    "fullSuiteIntermediateFailure": "PROVIDER_SEQUENCE_INVOKING_RECORD_DRIFT",
+    "differingFields": [
+      "effects/2",
+      "state",
+      "version"
+    ],
+    "guardBlocked": true,
+    "diagnosticFullSuiteLaterPassed": 10,
+    "causeEstablished": false,
+    "noProductionGuardRelaxed": true
+  },
+  "selectedImagesSuccessor": {
+    "localCases": 6,
+    "engineAndCliEffects": "MODELED",
+    "realArchivesEd25519AndJournals": true,
+    "ciQualification": "QUALIFIED_AT_C62D0B21_365_TESTS_43_SUITES",
+    "nativeImageCliQualified": true,
+    "fullCohortProven": false,
+    "historicalFiveImageSourceUnchanged": true,
+    "durableDispatchBlocksDeliberateMutableRecordRegression": true,
+    "nativeQualification": {
+      "sourceCommit": "9c93274f22ffe8215cba7f5077a12fc5acd3d790",
+      "push": {
+        "run": 41090657018,
+        "job": 124183350825,
+        "conclusion": "success"
+      },
+      "pullRequest": {
+        "run": 41090667765,
+        "job": 124183389246,
+        "conclusion": "success"
+      },
+      "finalReportsRead": true,
+      "realEngineCliArchiveIdentity": true,
+      "ownedLoads": 2,
+      "lostReplyReconciledWithoutReload": true,
+      "secondApplyLeavesJournalsUnchanged": true,
+      "revocationBlocksFurtherWork": true,
+      "syntheticParentApplicationAndPackageReview": true,
+      "applicationContainersStarted": 0,
+      "fullCohortProven": false
+    },
+    "nativeFixtureFailures": [
+      {
+        "sourceCommit": "5bdb44a6037797b238cc99bdb278fb315c40a33a",
+        "run": 41089508763,
+        "job": 124179396571,
+        "cause": "ISOLATED_FIXTURE_MISSING_EXISTING_MODULE_IMPORT_PATH",
+        "productionEffects": 0
+      },
+      {
+        "sourceCommit": "d42b1696667d7fc5412d672c5229fba1a0cb5485",
+        "run": 41089896585,
+        "job": 124180726674,
+        "cause": "RUNNER_WRITABLE_OPT_ANCESTRY_REJECTED_BY_EXISTING_PRODUCTION_CUSTODY_GUARD",
+        "fix": "EXACT_DOCKER_BINARY_COPY_IN_ROOT_CUSTODIED_DISPOSABLE_CI_TREE",
+        "productionGuardWeakened": false
+      }
+    ]
+  },
+  "mcpMinorBaselineDecision": {
+    "status": "APPROVED_OWNER_CURRENT_STABLE_SUPPORTED_GO",
+    "decisionId": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
+    "originalPetGoLine": "1.25",
+    "resolvedCurrentStableGo": "1.27.3",
+    "mcpSuccessorSource": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+    "mcpSourceQualification": "PASS_FULL_CI_PUSH_AND_PR_WITH_STATED_SCOPE",
+    "mcpNewPackageRequired": false,
+    "decision": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
+    "runtimeDeliveryAllowed": false,
+    "mcpPackageArtifact": 12993233270,
+    "mcpPackageImage": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+    "qualificationEvidence": "https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/mcp-go127-source-and-package-qualified-20261030.json"
+  },
+  "latestSeparateNativeProofs": {
+    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
+    "workerPr": {
+      "run": 41039855426,
+      "job": 124009703075,
+      "conclusion": "success"
+    },
+    "providerPr": {
+      "run": 41039855535,
+      "job": 124009704662,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true,
+    "combinedNativeProof": false
+  },
+  "discoveryGatewayRuntimeSuccessor": {
+    "localCases": 8,
+    "localSeconds": 50.491,
+    "actualParentChildEd25519AndDurableJournals": true,
+    "legacyOwnerSourceUnchanged": true,
+    "actualExistingAggregateActionNotSurrogate": true,
+    "sameParentChildAndEngineRequired": true,
+    "parentRevocationBlocksWithStillValidChild": true,
+    "reviewedDistinctJournalRequired": true,
+    "historicalPostGrantAdoptionRejected": true,
+    "unknownConnectNeverRetransmitted": true,
+    "staleGatewayGenerationRejected": true,
+    "dockerAndAdminHttpLeavesModeled": true,
+    "ciQualification": "QUALIFIED_AT_5B5BE6ED_373_TESTS_44_SUITES",
+    "nativeCurrentParentGatewayWrapperQualified": false,
+    "fullCohortProven": false,
+    "realTransportConstructionWithModeledNamespaceObservation": true,
+    "legacyExactOwnerTypeNotImpersonated": true,
+    "namespaceReadinessChannelReadOnly": true,
+    "routePutDeniedWithoutSeparatePublicationOwner": true
+  },
+  "previousProtocol": {
+    "sourceCommit": "c62d0b2156e43943a50e13995092566c9fc99fb3",
+    "testsPerEvent": 365,
+    "suitesPerEvent": 43,
+    "skips": 0,
+    "push": {
+      "run": 41039846376,
+      "job": 124009671934,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41039855443,
+      "job": 124009703393,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
+  },
+  "selectedImagePreparationSuccessor": {
+    "localCases": 5,
+    "actualArchivesAndCreateOnlyFiles": true,
+    "engineProfileReadsModeledLocally": true,
+    "exactTwoSelectedArchives": true,
+    "partialPreparationNeverOverwrittenOrAutomaticallyFinished": true,
+    "completedOriginalAndDerivedBytesRevalidatedOnRead": true,
+    "nativeQualifierNowUsesProductionPreparer": true,
+    "nativeAnd45SuiteProtocolCiQualification": "PR_378_TESTS_45_SUITES_AND_NATIVE_REPORTS_PASS_PUSH_PROTOCOL_PENDING",
+    "publisherTrustAccepted": false,
+    "imageLoads": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "sourceCommit": "535dd17eda503e10fd661221194209613a2eae28",
+    "protocolPr": {
+      "run": 41101672416,
+      "job": 124219834012,
+      "tests": 378,
+      "suites": 45,
+      "skips": 0,
+      "conclusion": "success",
+      "finalReportsRead": true
+    },
+    "nativePr": {
+      "run": 41101672408,
+      "job": 124219834081,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "actualDockerVersion": "29.8.1",
+      "actualCreateOnlyPreparationAndReadReconciliation": true,
+      "actualOwnedLoads": 2,
+      "syntheticParentApplicationAndPackageReview": true,
+      "applicationContainersStarted": 0
+    },
+    "nativePush": {
+      "run": 41101665548,
+      "job": 124219814874,
+      "conclusion": "success",
+      "finalReportsRead": false,
+      "logReaderInternalError": true
+    }
+  },
+  "discoveryMcpRuntimeSuccessor": {
+    "localCases": 13,
+    "localQualification": "STRICT_LOST_REPLY_CASE_PASS_FULL_LOCAL_NOT_PASS",
+    "actualParentChildEd25519AndJournals": true,
+    "dockerAndHttpLeavesModeled": true,
+    "onlySelectedMcpReplaced": true,
+    "frozenFourModuleActionNotReplayed": true,
+    "existingNativeComparisonsReusedExplicitly": true,
+    "currentRegistrySameChildHeldBarrierRequired": true,
+    "durableSeparateLifecycleDispatchMarkers": true,
+    "originalBootAndWallAndMonotonicDeadlinesRequired": true,
+    "readiness": "EXISTING_RECOVERY_128_ATTEMPTS_3600_SECONDS_MAXIMUM_WITH_ORIGINAL_PARENT_CHILD_EXPIRY",
+    "respectRetryAfterAndBackoffJitter": true,
+    "actualGo127PackageOfflineCompile": {
+      "status": "PASS",
+      "artifact": 12993233270,
+      "sourceCommit": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+      "imageId": "sha256:2321c66fa7de9450d7fb01694efa9f5138c0201e26542d7c7a03014cb084956b",
+      "rawPackageRecordHashPreserved": true,
+      "syntheticOldContainerObservation": true,
+      "imageLoads": 0,
+      "lifecycleOperations": 0
+    },
+    "localUnresolvedObservations": [
+      {
+        "reason": "MCP_INVOKING_RECORD_DRIFT",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      },
+      {
+        "reason": "CONSUMED_IMAGE_IMPORT_DISPATCH_REQUIRED",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      },
+      {
+        "reason": "DETACHED_VERIFICATION_UNPROVEN",
+        "strictGuardBlocked": true,
+        "causeEstablished": false
+      }
+    ],
+    "fixtureCorrections": [
+      "REAL_CURRENT_TRANSITION_INITIALIZATION",
+      "FROZEN_ENGINE_RUNTIME_BINDING_COMPARISON"
+    ],
+    "ciQualification": "QUALIFIED_AT_D4410DB9_391_TESTS_46_SUITES_PUSH_AND_PR_FINAL_REPORTS_READ",
+    "nativeMcpOwnerQualified": true,
+    "fullCohortProven": false,
+    "mcpOrdinaryDiscoveryDescriptors": "STILL_INACTIVE_UNTIL_COORDINATED_PUBLICATION",
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false,
+    "nativeQualification": {
+      "sourceCommit": "dc16fa46e8162b0e984e80fe4f1272aa5b280c71",
+      "push": {
+        "run": 41123600168,
+        "job": 124296302282,
+        "conclusion": "success",
+        "finalReportsRead": true,
+        "testSeconds": 29.78
+      },
+      "pullRequest": {
+        "run": 41123610248,
+        "job": 124296342265,
+        "conclusion": "success",
+        "finalReportsRead": true,
+        "testSeconds": 28.443
+      },
+      "finalReportsRead": true,
+      "actualDockerEngineHttpEd25519AndJournals": true,
+      "lostStartReplyReconciledAfterReconstructionWithoutAnotherStart": true,
+      "real503RetryAfterAndPersistedBackoffThen204": true,
+      "originalStartAndCumulativeAttemptsPreserved": true,
+      "repeatLeavesJournalsUnchanged": true,
+      "staticHttpApplicationFixture": true,
+      "syntheticRegistryAdmissionParentAndPackages": true,
+      "realMcpApplicationProven": false,
+      "fullCohortProven": false,
+      "evidence": "evidence/m2-discovery-mcp-native-qualified-20261030.json"
+    },
+    "latestFullLocalSuite": {
+      "tests": 13,
+      "errors": 1,
+      "seconds": 207.59,
+      "reason": "DETACHED_VERIFICATION_UNPROVEN",
+      "case": "unreviewed_journal_and_historical_adoption",
+      "point": "fixture image guard before the actual negative assertion",
+      "causeEstablished": false
+    }
+  },
+  "previousProtocolBeforeMcpNative": {
+    "sourceCommit": "5b5be6ed55aa1b08a9c0ffd09ea2819c1548edc7",
+    "testsPerEvent": 373,
+    "suitesPerEvent": 44,
+    "skips": 0,
+    "push": {
+      "run": 41098250616,
+      "job": 124209523536,
+      "conclusion": "success"
+    },
+    "pullRequest": {
+      "run": 41098262269,
+      "job": 124209564019,
+      "conclusion": "success"
+    },
+    "finalReportsRead": true
+  },
+  "protocolHistory": [
+    {
+      "sourceCommit": "d4410db9d812f5031a580a1643e59a38a26e3b35",
+      "testsPerEvent": 391,
+      "suitesPerEvent": 46,
+      "skips": 0,
+      "push": {
+        "run": 41123284691,
+        "job": 124295154658,
+        "conclusion": "success",
+        "finalReportsRead": true
+      },
+      "pullRequest": {
+        "run": 41123296096,
+        "job": 124295188542,
+        "conclusion": "success",
+        "finalReportsRead": true
+      },
+      "sameProtocolSourcesInTransientNativeSuccessor": true
+    }
+  ],
+  "selectedRuntimeComposition": {
+    "sourceCommit": "05456554165d73731f8a259c35d9f2f5d696cb19",
+    "status": "QUALIFIED_432_TESTS_50_SUITES_PUSH_AND_PR_FINAL_REPORTS_READ",
+    "evidence": "evidence/m2-discovery-selected-runtime-qualified-20261030.json",
+    "gatewayComponentVersion": 2,
+    "durableDispatchIndependentOfMutableJournal": true,
+    "dedicatedRegistryInvocationFenceBeforeProducerRelease": true,
+    "closedCurrentParentBoundChildSections": true,
+    "sharedExecutorAnd142FrozenModulesUnchanged": true,
+    "combinedNativeCompositionProven": false,
+    "fullCohortProven": false,
+    "capabilitiesPublished": false,
+    "applicationE2EProven": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false
+  },
+  "finiteProviderWorkerNativeHandoff": {
+    "date": "2026-10-31",
+    "sourceCommit": "099306196613e3ad5988f8d5e3d6d0806edd862e",
+    "status": "PASS_PUSH_AND_PR_FINAL_NATIVE_REPORTS_READ",
+    "evidence": "evidence/m2-provider-worker-native-handoff-qualified-20261031.json",
+    "realV4AdmissionAndDistinctWorkerWithSameNativeKernel": true,
+    "providerHistoryAndOriginalWorkerClocksPreserved": true,
+    "combinedRealDockerAndSealedWorkerInstallationProven": false,
+    "fullCohortProven": false,
+    "applicationE2EProven": false
+  }
+}

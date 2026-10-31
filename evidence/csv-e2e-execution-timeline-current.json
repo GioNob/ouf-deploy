@@ -14,7 +14,7 @@
     "isExactFirstToolStart": false
   },
   "trackingStartedAt": "2026-10-20T09:16:46.603Z",
-  "lastUpdatedAt": "2026-10-22T18:43:58Z",
+  "lastUpdatedAt": "2026-10-26T16:01:17Z",
   "initialUnsegmentedWindow": {
     "from": "2026-10-20T11:07:49+02:00",
     "to": "2026-10-20T09:16:46.603Z",
@@ -37,10 +37,14 @@
     },
     {
       "repo": "ouf-source-onboarding",
-      "ref": "fix/installation-active-precondition-20261019",
-      "selected": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
-      "head": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
-      "selectedMatches": true
+      "ref": "fix/managed-readiness-finite-budget-20261024",
+      "selected": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+      "head": "da274ab3f9cb303e3665fee0213f80979a9ed2e2",
+      "selectedMatches": false,
+      "previousSelectedBeforeV35": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "headDeltaScope": "WORKFLOW_ONLY_AFTER_SELECTED_PRODUCT_COMMIT",
+      "testedImageCommit": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+      "targetVersionEvidence": "evidence/onboarding-v35-existing-create-target-20261024.json"
     },
     {
       "repo": "ouf-ingestion-runtime",
@@ -1911,6 +1915,501 @@
       "reasonCode": "HISTORICAL_REGISTRY_NOT_RUNNING",
       "rootCauseEstablished": false,
       "newDiagnosticTargetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-REGISTRY-ORIGINAL-REQUEST-200-20261024",
+      "recordedAt": "2026-10-24T07:42:25Z",
+      "classification": "USER_REPORTED_TARGET_RESOURCE_RECOVERY_AND_CURRENT_OWNER_READ",
+      "evidenceRef": "evidence/registry-original-request-200-target-20261024.json",
+      "httpStatus": 200,
+      "exactActiveReferenceMatched": true,
+      "allConfiguredReferencesProven": true,
+      "normalOwnerPublications": 5,
+      "functionalMilestonesUnchanged": true,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-FINITE-SESSION-CI-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T08:20:48Z",
+      "classification": "DEVELOPMENT_CI_AND_ARTIFACT_VERIFICATION_NOT_TARGET_APPLY",
+      "evidenceRef": "evidence/onboarding-finite-session-qualified-20261024.json",
+      "sourceCommit": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "moduleTestsPassed": 252,
+      "browserCasesPassed": 3,
+      "targetNewBudgetGranted": false,
+      "targetMigrationExecuted": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-PACKAGE-STAGED-INPUTS-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T08:49:20Z",
+      "classification": "USER_REPORTED_VPS_STAGING_AND_DISTINCT_METADATA_CI_QUALIFICATION",
+      "targetEvidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-finite-session-inputs-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "sourceActivations": 0,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "targetMetadataCaptureExecuted": false,
+      "functionalMilestonesUnchanged": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-CURRENT-INPUTS-CAPTURED-DB-SNAPSHOT-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T09:39:14Z",
+      "classification": "USER_REPORTED_TARGET_METADATA_CAPTURE_AND_DISTINCT_NATIVE_DATABASE_READER_CI",
+      "targetEvidenceRef": "evidence/onboarding-finite-session-inputs-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-finite-database-snapshot-qualified-20261024.json",
+      "targetCaptureEngineGets": 14,
+      "targetCaptureComplete": true,
+      "targetDatabaseSnapshotExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "functionalMilestonesUnchanged": true
+    },
+    {
+      "id": "CSV-EVENT-ONBOARDING-DB-METADATA-STOP-RECONCILIATION-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T10:05:23Z",
+      "classification": "OPERATOR_REPORTED_ZERO_DISPATCH_METADATA_STOP_AND_DISTINCT_METADATA_CI",
+      "targetStopEvidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "qualificationEvidenceRef": "evidence/onboarding-engine-metadata-qualified-20261024.json",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "targetReconciliationExecuted": false,
+      "noEffortAllocationInferred": true,
+      "targetInvocationTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-CURRENT-LINEAGE-DRIFT-V34-COLLISION-CORRECTED-V35-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T11:49:20Z",
+      "classification": "USER_REPORTED_METADATA_LINEAGE_DRIFT_AND_CORRECTED_SOURCE_BASELINE_CI",
+      "targetEvidenceRef": "evidence/onboarding-engine-metadata-target-20261024.json",
+      "baselineBlockEvidenceRef": "evidence/onboarding-finite-session-baseline-incompatible-20261024.json",
+      "v35EvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json",
+      "lineageReaderQualificationRef": "evidence/current-onboarding-source-revision-lineage-qualified-20261024.json",
+      "oldCandidateImportBlocked": true,
+      "oldArtifactPreserved": true,
+      "correctedCandidateTargetStaged": false,
+      "currentLaterLineageTargetMatched": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-B0-CURRENT-OWNER-LINEAGE-V35-PRESERVED-DATABASE-READER-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T12:14:46Z",
+      "classification": "USER_REPORTED_CURRENT_SOURCE_DECLARATION_AND_MATCHED_PG_ENGINE_WITH_DISTINCT_SQL_CI",
+      "targetEvidenceRef": "evidence/current-onboarding-source-revision-lineage-target-20261024.json",
+      "sourceQualificationRef": "evidence/onboarding-finite-budget-b0-v35-qualified-20261024.json",
+      "databaseReaderQualificationRef": "evidence/current-onboarding-database-reader-qualified-20261024.json",
+      "targetInvocationTimestampProvided": false,
+      "currentOnboardingSourceDeclaration": "b0f5e3dacbe59ebf87e22dd6af2575e41249f51d",
+      "targetPostgresAndSourceRevisionEngineMetadataMatch": true,
+      "newTargetSqlExecuted": false,
+      "newOriginalRegistryGetExecuted": false,
+      "newImageTargetStaged": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACTUAL-CURRENT-ONBOARDING-V34-DB-SNAPSHOT-AND-CORRECTED-V35-PACKAGE-PROPOSAL-20261024",
+      "recordedAt": "2026-10-24T13:27:35Z",
+      "classification": "OPERATOR_REPORTED_ONE_READ_ONLY_SQL_AND_DISTINCT_OFFLINE_PREPARATION_CI",
+      "targetEvidenceRef": "evidence/current-onboarding-database-target-20261024.json",
+      "qualificationRef": "evidence/onboarding-v35-review-inputs-qualified-20261024.json",
+      "sqlSessionAttempts": 1,
+      "engineGetAttempts": 4,
+      "observedSqlVersion": 34,
+      "v35AlreadyRecorded": false,
+      "readinessAttempts": 3,
+      "readinessGeneration": 4,
+      "readinessPhase": "PAUSED",
+      "newTargetDeliveryExecuted": false,
+      "databaseMigrations": 0,
+      "sourceActivations": 0,
+      "humanBudgetsGranted": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "noEffortAllocationInferred": true,
+      "targetInvocationTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-V35-ACTUAL-PACKAGE-PROPOSAL-AND-CURRENT-CONFIG-PLAN-CI-20261024",
+      "recordedAt": "2026-10-24T14:33:29Z",
+      "classification": "USER_REPORTED_STAGED_CORRECTED_PACKAGE_AND_ALL34_SERVER_CHECKSUM_MATCH",
+      "targetEvidenceRef": "evidence/onboarding-v35-package-review-target-20261024.json",
+      "qualificationRef": "evidence/onboarding-v35-native-plan-qualified-20261024.json",
+      "imageLoaded": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "targetNativePlanExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "newOriginalRegistryGetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-V35-NATIVE-PLAN-TARGET-B17-20261024",
+      "recordedAt": "2026-10-24T16:48:29Z",
+      "classification": "OPERATOR_REPORTED_CURRENT_CONFIGURATION_AND_NATIVE_PLAN_FROZEN",
+      "targetEvidenceRef": "evidence/onboarding-v35-native-plan-target-20261024.json",
+      "privatePlanHash": "b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd",
+      "targetNativePlanExecuted": true,
+      "targetApplyExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true,
+      "newOriginalRegistryGetExecuted": false
+    },
+    {
+      "id": "CSV-EVENT-V35-NATIVE-ENTRY-QUALIFIED-DELIVERY-20261024",
+      "recordedAt": "2026-10-24T18:16:57Z",
+      "classification": "EXACT_RETAINED_PROFILE_NATIVE_ENTRY_CI_QUALIFIED_NOT_TARGET_APPLIED",
+      "sourceCommit": "4cc62e49539a8e52a823ac5cba95bf92d64613fd",
+      "qualificationRef": "evidence/onboarding-v35-native-entry-qualified-20261024.json",
+      "deliveryRef": "docs/handoffs/OUF_ONBOARDING_V35_NATIVE_APPLY_DELIVERY_20261024.md",
+      "ciRuns": [
+        40119375591,
+        40119378683
+      ],
+      "passedPerRun": 7,
+      "skippedPerRun": 0,
+      "targetImageLoaded": false,
+      "targetMigrations": 0,
+      "targetHumanBudgetsGranted": 0,
+      "targetSourceActivations": 0,
+      "newOriginalRegistryGetExecuted": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-V35-ORIGINAL-CREATE-FAILED-HOSTNAME-20261024",
+      "recordedAt": "2026-10-24T22:05:45Z",
+      "classification": "OPERATOR_REPORTED_PARTIAL_APPLY_AND_RETAINED_CONFIG_DELTA",
+      "evidenceRef": "evidence/onboarding-v35-native-target-failure-20261024.json",
+      "reconciliationEvidenceRef": "evidence/onboarding-v35-retained-create-target-20261024.json",
+      "onlyConfigDifference": "Hostname",
+      "parentJournalHash": "255437a61e8b435862e85ddffa5edfef7365a42735301cefffbc299a9d149879",
+      "appliedStages": 7,
+      "pendingStageClaim": true,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-V35-EXISTING-CANDIDATE-RECOVERY-CI-QUALIFIED-20261024",
+      "recordedAt": "2026-10-24T22:05:45Z",
+      "classification": "CI_QUALIFICATION_SEPARATE_FROM_TARGET",
+      "sourceCommit": "45842a2dd38a1fde1b25052d5118b9fd9621cb62",
+      "ciRuns": [
+        40135450245,
+        40135454733
+      ],
+      "passedPerRun": 5,
+      "skippedPerRun": 0,
+      "qualificationRef": "evidence/onboarding-v35-existing-create-recovery-qualified-20261024.json",
+      "historicalBindingsAreFixtures": true,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-V35-EXISTING-CANDIDATE-RECOVERED-TARGET-20261024",
+      "recordedAt": "2026-10-24T22:05:45Z",
+      "classification": "OPERATOR_CONFIRMED_TARGET_V35_AND_APPLICATION_READINESS",
+      "status": "ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED",
+      "evidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json",
+      "reviewHash": "82417e471e908c44884a7902796a34e6cddb1505257bb67c94c910cfbce3ab91",
+      "authorityHash": "5213fc7a2664eb1add76558f67fdc72810dd6b86bd53107485344dd924a2702b",
+      "journalVersion": 304,
+      "counts": {
+        "backupProcesses": 2,
+        "engineGets": 254,
+        "engineWrites": 6,
+        "imageLoadAttempts": 1,
+        "ownerConfigurationReads": 30,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "sqlSessions": 6
+      },
+      "sameCandidateAdopted": true,
+      "creationReplayed": false,
+      "oldStageReplayPerformed": false,
+      "maximumsUnchanged": true,
+      "budgetReset": false,
+      "releaseAcceptance": false,
+      "sourceHumanBudgetsGranted": 0,
+      "sourceActivations": 0,
+      "applicationE2EProven": false,
+      "targetInvocationTimestampProvided": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-V35-LIVE-OWNER-READ-HUMAN-BUDGET-AVAILABLE-20261024",
+      "recordedAt": "2026-10-24T22:05:45Z",
+      "classification": "GOVERNED_OWNER_READ_WITH_OUF_ADMIN_NO_HUMAN_DECISION_SUBMITTED",
+      "evidenceRef": "evidence/onboarding-v35-post-deploy-owner-20261024.json",
+      "sourceId": "teatri-csv-6609b245",
+      "onboardingVersionId": "c9fec43c-19b3-4ffb-9111-781bc347c5b0",
+      "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+      "state": "APPROVED",
+      "challengeStatus": "CONFIRMED",
+      "lockVersion": 3,
+      "readinessAttempts": 3,
+      "readinessGeneration": 4,
+      "budgetSessionId": null,
+      "humanBudgetGrantAvailable": true,
+      "maximumNewAttempts": 3,
+      "maximumNewSeconds": 900,
+      "humanBudgetGranted": false,
+      "sourceActivated": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-REVISED-SOURCE-ACTIVE-20261025",
+      "recordedAt": "2026-10-24T22:31:32Z",
+      "classification": "GOVERNED_LIVE_OWNER_READ_AFTER_EXPLICIT_HUMAN_BUDGET_AND_ACTIVATION",
+      "evidenceRef": "evidence/csv-native-source-activation-owner-20261025.json",
+      "sourceId": "teatri-csv-6609b245",
+      "onboardingVersionId": "c9fec43c-19b3-4ffb-9111-781bc347c5b0",
+      "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+      "publication": {
+        "publication_id": "dffa2a5e-740b-4e3d-95a0-14c841940b72",
+        "checksum": "sha256:7cebf0ba655d7f0f853b9dc647164de30f1f079e50281e36d24f05db57ad0d1f",
+        "active": true
+      },
+      "state": "ACTIVE",
+      "ingestionCompatibilityObserved": true,
+      "cumulativeAttemptsBefore": 3,
+      "cumulativeAttemptsAfter": 4,
+      "sessionAttempts": 1,
+      "generation": 6,
+      "gateG3NativePublicationProven": true,
+      "functionalMilestonesProven": 4,
+      "applicationE2EAcceptance": false,
+      "noEffortAllocationInferred": true,
+      "humanActionTimestampProvided": false
+    },
+    {
+      "id": "CSV-EVENT-POST-ACTIVATION-UDP-COMPARISON-20261025",
+      "recordedAt": "2026-10-24T22:31:32Z",
+      "classification": "AUTHORIZED_UDP_OBJECT_PROJECTION_NOT_RUN_OR_PROVENANCE_PROOF",
+      "evidenceRef": "evidence/csv-post-native-activation-objects-20261025.json",
+      "theaters": 13,
+      "theaterIdentitiesMatchRetainedF4": true,
+      "theaterRevisions": 2,
+      "propertyIriUnion": 20,
+      "propertiesPerObjectRange": [
+        11,
+        19
+      ],
+      "cinema": 8,
+      "cinemaIdsRevisionsAndKeysMatchRetainedBaseline": true,
+      "ingestionStatusDenied": true,
+      "denialRetried": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-SOURCE-INGESTION-READ-GRANT-PREPARED-20261025",
+      "recordedAt": "2026-10-24T22:31:32Z",
+      "classification": "LIVE_POLICY47_EXPIRED_SOURCE_READ_GRANT_NEW_FINITE_PROPOSAL_NOT_PUBLISHED",
+      "evidenceRef": "evidence/csv-ingestion-source-read-permission-proposal-20261025.json",
+      "previousGrantExpiredAt": "2026-10-20T09:34:16Z",
+      "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
+      "state": "PENDING",
+      "expiresAt": "2026-10-24T22:38:41.805479Z",
+      "newGrant": {
+        "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261025-2h",
+        "capabilityId": "ingestion.operations.read",
+        "tenantId": "ouf-lab",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "servicePrincipalId": null,
+        "organizationId": null,
+        "validFrom": "2026-10-24T22:23:34Z",
+        "validUntil": "2026-10-25T00:23:34Z",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "operational",
+          "resourceId": null,
+          "resourceAttributes": {
+            "module": "INGESTION",
+            "sourceRef": "teatri-csv-6609b245"
+          },
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      },
+      "oldGrantPreserved": true,
+      "rolesAndAssignmentsUnchanged": true,
+      "sourceActivationRepeated": false,
+      "permissionPublished": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-POLICY48-AND-TWO-RUNS-OWNER-READ-20261025",
+      "recordedAt": "2026-10-25T05:17:51.698Z",
+      "classification": "LIVE_AUTHORIZED_SOURCE_HEALTH_AND_TWO_SUCCEEDED_RUNS_NOT_ACK_MATERIALIZATION_ACCEPTANCE",
+      "evidenceRef": "evidence/csv-post-activation-ingestion-owner-20261025.json",
+      "policyRef": "ouf-lab-authorization:48",
+      "sourceHealthy": true,
+      "distinctSucceededRuns": 2,
+      "latestRunId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+      "newAcquisitionsRequested": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACQUISITION-READ-CANDIDATES-AND-INPUT-DELIVERY-20261025",
+      "recordedAt": "2026-10-25T06:40:00Z",
+      "classification": "DEDICATED_CI_QUALIFIED_READ_CANDIDATES_AND_ONE_SHOT_INPUT_READER_NOT_TARGET_APPLY",
+      "evidenceRef": "evidence/acquisition-evidence-read-qualification-20261025.json",
+      "targetDeployed": false,
+      "applicationE2EProven": false,
+      "newAcquisitionsRequested": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ACQUISITION-READ-INPUTS-TARGET-COMPLETE-20261025",
+      "recordedAt": "2026-10-25T06:47:53.539Z",
+      "classification": "USER_REPORTED_VPS_READ_ONLY_INPUT_CAPTURE_COMPLETE_NO_AUTHORITY",
+      "evidenceRef": "evidence/acquisition-read-current-inputs-target-20261025.json",
+      "scopeConsumed": true,
+      "engineGetAttempts": 10,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "targetApplyAuthorized": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-READ-PACKAGED-IMAGES-AND-EXACT-STAGING-QUALIFIED-20261025",
+      "recordedAt": "2026-10-25T07:06:31.505Z",
+      "classification": "CI_PACKAGED_OWNER_HTTP_AND_EXACT_ROOT_PRIVATE_STAGING_QUALIFIED_NOT_TARGET_APPLY",
+      "evidenceRef": "evidence/acquisition-read-packages-qualified-20261025.json",
+      "newAcquisitionsRequested": 0,
+      "targetDeployed": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-GH-MISSING-CONFIRMED-DIRECT-RUNNER-ARTIFACT-TRANSPORT-COMPLETE-20261025",
+      "recordedAt": "2026-10-25T07:26:19.629Z",
+      "classification": "ACTUAL_EXISTING_RUNNER_FILE_TRANSPORT_ONLY_NOT_ROOT_STAGING_OR_APPLY",
+      "evidenceRef": "evidence/acquisition-read-direct-transport-completed-20261025.json",
+      "workflowRun": 40172391065,
+      "job": 121105860334,
+      "oufOAuthRequests": 0,
+      "newAcquisitionsRequested": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-ROOT-READ-PACKAGES-STAGED-TARGET-20261025",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "classification": "USER_REPORTED_ROOT_PRIVATE_STAGING_COMPLETE_NO_RUNTIME_APPLY",
+      "evidenceRef": "evidence/acquisition-read-packages-staged-target-20261025.json",
+      "sourceIsUserVpsReceipt": true,
+      "scopeConsumed": true,
+      "imageImports": 0,
+      "engineGetAttempts": 0,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-NATIVE-READ-PLAN-PREPARATION-QUALIFIED-20261025",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "classification": "CI_FROZEN_CONTAINER_AND_ADDITIVE_ROUTE_PROPOSAL_WITH_ONE_FIXTURE_INFRASTRUCTURE_GET_NOT_APPLY",
+      "evidenceRef": "evidence/acquisition-read-native-plan-qualified-20261025.json",
+      "targetEvidence": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "recordedAt": "2026-10-25T13:25:22Z",
+      "occurredAt": null,
+      "type": "NATIVE_EXECUTION_PREPARATION_RECEIPT_AND_SIGNED_CONTROLLER_CI_QUALIFIED",
+      "scope": "ACQUISITION_READ_EVIDENCE",
+      "evidence": "evidence/acquisition-native-execution-inputs-target-20261025.json",
+      "qualificationEvidence": "evidence/acquisition-read-native-apply-qualified-20261025.json",
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "targetApplyExecuted": false,
+      "targetAuthorityIssued": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false
+    },
+    {
+      "type": "FIRST_ACQUISITION_APPLY_STOPPED_AT_AMBIGUOUS_APPROVAL_PROMPT",
+      "recordedAt": "2026-10-25T14:46:09.420Z",
+      "occurredAt": null,
+      "evidence": "evidence/acquisition-read-unapproved-review-stop-target-20261025.json",
+      "scopeConsumed": true,
+      "reviewHash": "4cdc8631745c00589e89c4763b34f57451032be714d168447df998dbbd1da328",
+      "targetAuthorityIssued": false,
+      "retainedOfflineReconciliationObserved": false,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "type": "UNAPPROVED_REVIEW_RECONCILIATION_TARGET_AND_CUMULATIVE_CONTINUATION_CI_QUALIFIED",
+      "recordedAt": "2026-10-25T15:09:46.845Z",
+      "occurredAt": null,
+      "targetEvidence": "evidence/acquisition-unapproved-review-reconciled-target-20261025.json",
+      "qualificationEvidence": "evidence/acquisition-reconciled-continuation-qualified-20261025.json",
+      "continuationExecuted": false,
+      "originalScopeConsumed": true,
+      "readerScopeConsumed": true,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "type": "TARGET_CUMULATIVE_CONTINUATION_STOPPED_AT_OLD_MCP_GUARD",
+      "recordedAt": "2026-10-25T15:27:34.172Z",
+      "occurredAt": null,
+      "evidenceRef": "evidence/acquisition-continuation-old-mcp-guard-stop-target-20261025.json",
+      "reviewHash": "7fcbce1f43fd99b4add8db9913b3dc2fe215836f16eecd8e8191f9e344e54aa9",
+      "authorityHash": "496dda9a7057f67c4ffb10e6ae4606d101479c905cad6a731907eaf4010d56a4",
+      "scopeConsumed": true,
+      "guardDifferenceNotYetObserved": true,
+      "quarantineResultNotYetObserved": true,
+      "noEffortAllocationInferred": true
+    },
+    {
+      "id": "CSV-EVENT-M1-OWNER-REDACTION-DIAGNOSTICS-QUALIFIED-20261026",
+      "recordedAt": "2026-10-26T13:36:14Z",
+      "classification": "OWNER_CI_QUALIFIED_TWO_READ_DIAGNOSTICS_NEW_METADATA_CAPTURE_READY_NOT_EXECUTED",
+      "evidenceRef": "evidence/acquisition-redaction-diagnostics-qualified-20261026.json",
+      "targetUpdated": false,
+      "targetAcquisitionReads": 0,
+      "technicalIntervalMeasuredSeconds": 935,
+      "noUnmeasuredHistoricalEffortInferred": true
+    },
+    {
+      "id": "CSV-EVENT-M1-REDACTION-CAPTURE-CONSUMED-OFFLINE-PLAN-READY-20261026",
+      "recordedAt": "2026-10-26T14:21:52Z",
+      "classification": "TARGET_CAPTURE_AND_DISTINCT_FILE_TRANSPORT_COMPLETE_OFFLINE_PLAN_DELIVERY_CI_QUALIFIED_NOT_EXECUTED",
+      "evidenceRef": "evidence/acquisition-redaction-offline-plan-qualified-20261026.json",
+      "captureScopeConsumed": true,
+      "transportScopesConsumed": 2,
+      "newApplicationReads": 0,
+      "targetRuntimeChanged": false,
+      "offlinePlanTargetExecuted": false,
+      "policy51Expired": true,
+      "technicalIntervalMeasuredSeconds": 2331,
+      "noUnmeasuredHistoricalEffortInferred": true
+    },
+    {
+      "id": "CSV-M1-G4-OWNER-PROVEN-20261026",
+      "recordedAt": "2026-10-26T16:01:17Z",
+      "kind": "GATE_DECISION",
+      "gate": "G4",
+      "status": "PASS",
+      "functionalMilestonesProven": 6,
+      "evidenceRef": "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+      "releaseAcceptance": false,
+      "noEffortAllocationInferred": true
     }
   ],
   "activeIntervals": [
@@ -2450,6 +2949,29 @@
       "classification": "ACTIVE_TECHNICAL",
       "workPackage": "WP3_STOP_RECONCILIATION",
       "activity": "STAGE18_GRANTED_BUDGET_HUMAN_CONTROLLER_SIGNED_PREFIX_IMPORT_CACHED_DELIVERY_TESTS_AND_TWO_PYTHON_CI_QUALIFICATION"
+    },
+    {
+      "id": "CSV-TIME-0055",
+      "startedAt": "2026-10-26T13:20:39Z",
+      "endedAt": "2026-10-26T13:36:14Z",
+      "seconds": 935,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP4",
+      "activity": "OWNER_REDACTION_DIAGNOSTICS_TESTS_AND_NEW_READ_ONLY_UPDATE_INPUT_CUSTODY",
+      "initialStartConfidence": "FIRST_EXPLICIT_UTC_OBSERVATION_AFTER_TASK_START",
+      "humanEffortMeasured": false
+    },
+    {
+      "id": "CSV-TIME-0056",
+      "startedAt": "2026-10-26T13:43:01Z",
+      "endedAt": "2026-10-26T14:21:52Z",
+      "seconds": 2331,
+      "classification": "ACTIVE_TECHNICAL",
+      "workPackage": "WP4",
+      "activity": "EXACT_PUSH_ARTIFACT_PROVENANCE_NATIVE_IMAGE_PLAN_AND_ROOT_DELIVERY_QUALIFICATION",
+      "initialStartConfidence": "FIRST_EXPLICIT_UTC_OBSERVATION_AFTER_TASK_START",
+      "humanEffortMeasured": false,
+      "ciWhileIndependentTechnicalWorkContinued": true
     }
   ],
   "waitingIntervals": [],
@@ -2524,13 +3046,13 @@
       "centralHour": 19,
       "prudentHour": 24,
       "milestone": null,
-      "status": "PLANNED",
+      "status": "PASSED",
       "baselineCentralHour": 19,
       "actualObservedAt": null,
       "actualEffortHours": null,
       "effortVarianceHours": null,
-      "observedStatus": "NOT_PASSED",
-      "measurementNote": "Native rollout completed on owner-reported target receipts; native profile publication/THS approval remains pending. No gate PASS, current readiness or per-WP effort inferred.",
+      "observedStatus": "NATIVE_PROFILE_ACTIVE_AND_COMPATIBILITY_TRUE_OWNER_READ",
+      "measurementNote": "Native ACTIVE publication and compatibility proven by owner read; G3 passed. Prior lastCheckpoint retained as historical, not current status; no per-WP effort inferred.",
       "lastCheckpoint": {
         "observedAt": "2026-10-21T17:15:44.514Z",
         "cumulativeMeasuredEffortHours": 8.130165915833333,
@@ -2567,7 +3089,9 @@
         "remainingOAuthAttempts": 0,
         "profilePublicationAndThsApprovalPending": true,
         "evidenceRef": "evidence/ingestion-rollout-stage18-completed-target-20261021.json"
-      }
+      },
+      "observationEvidenceRef": "evidence/csv-native-source-activation-owner-20261025.json",
+      "humanActionTimestampProvided": false
     },
     {
       "gate": "G4",
@@ -2575,13 +3099,14 @@
       "centralHour": 24,
       "prudentHour": 30,
       "milestone": "M1",
-      "status": "PLANNED",
+      "status": "PASSED",
       "baselineCentralHour": 24,
-      "actualObservedAt": null,
+      "actualObservedAt": "2026-10-26T16:01:17Z",
       "actualEffortHours": null,
       "effortVarianceHours": null,
-      "observedStatus": "NOT_PASSED",
-      "measurementNote": "Initial technical effort not retrospectively inferred from wall time"
+      "observedStatus": "PASS",
+      "measurementNote": "Owner evidence complete; historical effort gaps prevent total-effort variance.",
+      "observationEvidenceRef": "evidence/csv-m1-f5-f6-owner-verification-20261026.json"
     },
     {
       "gate": "G5",
@@ -2630,16 +3155,16 @@
     {
       "id": "F5",
       "baselineCentralHour": 22,
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "F6",
       "baselineCentralHour": 24,
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "M1",
@@ -2648,9 +3173,9 @@
         24,
         30
       ],
-      "status": "OPEN",
+      "status": "COMPLETE",
       "startedAt": null,
-      "completedAt": null
+      "completedAt": "2026-10-26T16:01:17Z"
     },
     {
       "id": "M2",
@@ -2673,7 +3198,7 @@
     "refreshPerformed": false,
     "budgetReset": false,
     "wp3Block": {
-      "status": "INFRASTRUCTURE_PATCH_COMPLETE_NATIVE_PROFILE_LIFECYCLE_PENDING",
+      "status": "NATIVE_PROFILE_PUBLISHED_ACTIVE_G3_PASSED",
       "nextStage": 28,
       "appliedStages": 28,
       "currentAuthorityProven": false,
@@ -2683,7 +3208,7 @@
         "WP5",
         "WP6"
       ],
-      "nextRequiredTargetAction": "DISTINCT_HISTORICAL_REGISTRY_LIFECYCLE_AND_SAME_LINE_LOG_OBSERVATION",
+      "nextRequiredTargetAction": "NO_REPEAT_ACTIVATION_QUALIFY_GOVERNED_OWNER_EVIDENCE_READ_FOR_EXISTING_RUN",
       "stoppedPrefixSnapshotProven": true,
       "pendingStageClaim": false,
       "latestInputReaderStatus": "RETAINED_STAGE18_LIVE_INPUTS_MATCHED_NO_AUTHORITY",
@@ -2703,10 +3228,12 @@
       "cachedProductionDeliveryQualified": true,
       "v2ProductionControllerQualified": true,
       "readinessPatchStagesCompleted": 12,
-      "readinessPatchComplete": true
+      "readinessPatchComplete": true,
+      "historical28StageCountersRetained": true,
+      "nativeProfilePublished": true
     },
     "agentDispatchedTargetOperations": 0,
-    "latestOperatorConfirmedOperation": "SEMANTIC_TRANSPORT_CORRELATION_STOP_RECONCILE",
+    "latestOperatorConfirmedOperation": "STOP_RECONCILE_OLD_MCP_CONFIG_GENERATION_REQUIRED",
     "latestOperatorConfirmedOperationPolicyMutations": 0,
     "loginPerformedScope": "COMPLETED_FRESH_STAGE18_HUMAN_PROVIDER_VERIFICATION_AT292_NO_CURRENT_AUTHORITY_INFERRED",
     "newHumanLoginPerformed": true,
@@ -2714,7 +3241,7 @@
     "currentRemainingAttempts": 0,
     "chatTransferPaused": false,
     "ownerConfirmedNextOpenWindowNotExecuted": false,
-    "currentHandoff": "docs/handoffs/OUF_SEMANTIC_HISTORICAL_REGISTRY_STOP_20261022.md",
+    "currentHandoff": "docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md",
     "runtimeAuthorityWasIssuedInRetainedRollout": true,
     "runtimeAuthorityCurrentlyProven": false,
     "maximumCumulativeOAuthAttempts": 304,
@@ -2723,14 +3250,14 @@
     "countsAsOfReadyReceipt": true,
     "runtimeAuthorityWasIssuedInSuccessor": true,
     "nativeRolloutComplete": true,
-    "nativeProfilePublished": false,
+    "nativeProfilePublished": true,
     "releaseAcceptance": false,
-    "nativeProfileStateAtLastOwnerRead": "APPROVED",
+    "nativeProfileStateAtLastOwnerRead": "ACTIVE",
     "activationProgressAtLastOwnerRead": {
-      "phase": "PAUSED",
-      "attempts": 2,
-      "generation": 3,
-      "lastCode": "ONB_READINESS_DEPENDENCY_503"
+      "phase": "ACTIVE",
+      "attempts": 4,
+      "generation": 6,
+      "lastCode": null
     },
     "runtimeContractFixInstalled": true,
     "readinessPatchInputContext": "/etc/ouf/deploy-snapshots/ingestion-readiness-patch-inputs-3fea910fc74b8ea6fcfd121fc0f8386a1ed78c5a89063a3e686053ca8180a317",
@@ -2786,10 +3313,289 @@
     "readinessPatchTargetRuntimeEffectsAcceptedByPorts": true,
     "readinessPatchStage8AuthorityWasIssued": true,
     "runtimeAuthorityWasIssuedInStage8Continuation": true,
-    "postPatchSourceStatusRead": "AUTHORIZATION_DENIED_NOT_RETRIED",
-    "postPatchSourceStatusRootCauseEstablished": false,
+    "postPatchSourceStatusRead": "AUTHORIZED_HEALTHY_LATEST_RUN_SUCCEEDED_UNDER_POLICY48",
+    "postPatchSourceStatusRootCauseEstablished": true,
     "semanticTransportCorrelationStopReason": "HISTORICAL_REGISTRY_NOT_RUNNING",
-    "semanticTransportCorrelationRootCauseEstablished": false
+    "semanticTransportCorrelationRootCauseEstablished": false,
+    "originalRequestResource200Proven": true,
+    "normalRegistryOwnerCumulativeAttempts": 420,
+    "normalRegistryOwnerPublications": 5,
+    "repeatedRegistryRenewalObserved": true,
+    "permanentRegistryRenewalProven": false,
+    "newHumanBudgetGranted": true,
+    "sourceProfilePublished": true,
+    "onboardingFiniteSessionImplementation": {
+      "state": "CI_QUALIFIED_NOT_DEPLOYED",
+      "sourcePr": 51,
+      "sourceCommit": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "moduleCi": 40076974373,
+      "browserCi": 40076974316,
+      "artifactId": 12553563263,
+      "protectedStagingObserved": false,
+      "humanBudgetGranted": false
+    },
+    "onboardingFiniteSessionTargetStaging": {
+      "status": "ONBOARDING_FINITE_SESSION_PACKAGE_STAGED",
+      "evidenceRef": "evidence/onboarding-finite-session-staged-target-20261024.json",
+      "imageLoaded": false,
+      "databaseMigrations": 0,
+      "humanBudgetsGranted": 0,
+      "sourceActivations": 0
+    },
+    "onboardingFiniteMetadataCapture": {
+      "qualifiedSource": "6061aea966cad60eadcac926ad74eda8f6e210e9",
+      "qualificationRuns": [
+        40079399435,
+        40079402575
+      ],
+      "targetExecuted": true,
+      "next": "ONE_PINNED_METADATA_OPERATOR_INVOCATION",
+      "databaseAdmissionProven": false,
+      "lifecycleOwnershipProven": false,
+      "complete": true,
+      "privateInputsHash": "b8040ef1c49af2455d9a28d26bac4ef4bbf297315c69c0b48256aa83f18b614b",
+      "evidenceRef": "evidence/onboarding-finite-session-inputs-target-20261024.json",
+      "scopeConsumed": true
+    },
+    "onboardingFiniteDatabaseSnapshot": {
+      "qualifiedSource": "65b12ea71a01c9745976588352473cafd8463ba1",
+      "qualificationRuns": [
+        40082658534,
+        40082662064
+      ],
+      "targetExecuted": true,
+      "maximumSqlAttempts": 1,
+      "maximumEngineGets": 4,
+      "scope": "onboarding-database-snapshot-v1",
+      "databaseIdentityFromOnboarding": true,
+      "legacyIngestionIdentityMustNotBeUsed": true,
+      "targetEntryInvoked": true,
+      "targetSqlDispatched": false,
+      "targetSnapshotObserved": false,
+      "status": "STOP_RECONCILE",
+      "reasonCode": "SAME_RETAINED_ONBOARDING_ENGINE_REQUIRED",
+      "engineGetAttempts": 0,
+      "sqlSessionAttempts": 0,
+      "containerExecAttempts": 0,
+      "evidenceRef": "evidence/onboarding-finite-database-stop-target-20261024.json",
+      "oldCommandMustNotBeReplayed": true
+    },
+    "onboardingEngineMetadataReconciliation": {
+      "qualifiedSource": "1a8b5c1bf6c34e856ee28666f76d7ffeac11c216",
+      "qualificationRuns": [
+        40084404503,
+        40084408317
+      ],
+      "targetExecuted": true,
+      "maximumEngineGets": 0,
+      "maximumSqlAttempts": 0,
+      "newBindingAcceptedForRuntime": false,
+      "newSqlAttemptAuthorized": false,
+      "complete": true,
+      "privateReconciliationHash": "c831dc09f4f54c99f41d4ea563c7b0629c13648f0e8c82a5f00dba5c74f299d7",
+      "classification": "HISTORICAL_SOCKET_BINDING_DIFFERS_FROM_CURRENT",
+      "oldOnboardingLineageMatches": false,
+      "scopeConsumed": true
+    },
+    "registryOriginal200ResolverPrecision": {
+      "actualCallerFilesCopiedUnchanged": true,
+      "differentDnsAnswersInjected": false,
+      "ordinaryApplicationProcessCallProven": false,
+      "newGetExecuted": false
+    },
+    "onboardingFiniteBudgetCandidate": {
+      "oldSource": "431c601de9b7faa9769b0a210300cd466bf82cfc",
+      "oldArtifactBlocked": true,
+      "reason": "V34_NUMBERING_AND_DEPLOYED_CONTRACTS_CONFLICT",
+      "correctedSource": "029c9670550a0a854a6b007011b2895acd72c5e0",
+      "base": "be388e1462778438a208c2e00e166370fee32189",
+      "migration": "V35__managed_readiness_budget_sessions.sql",
+      "ciQualified": true,
+      "targetStaged": false,
+      "targetApplied": false,
+      "targetBudgetGranted": false,
+      "qualificationEvidenceRef": "evidence/onboarding-finite-budget-v35-qualified-20261024.json"
+    },
+    "currentLaterOnboardingLineageRead": {
+      "qualifiedSource": "5a389f3bcc8d5b368c3ecd7f4683bad2a5164114",
+      "qualificationRuns": [
+        40091123700,
+        40091127068
+      ],
+      "targetExecuted": false,
+      "engineRequests": 0,
+      "sqlRequests": 0
+    },
+    "currentOnboardingContinuation": {
+      "actualPackageEvidence": "evidence/onboarding-v35-package-review-target-20261024.json",
+      "candidateSourceCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+      "targetPackageStaged": true,
+      "all34ServerChecksumsMatch": true,
+      "targetImageLoaded": true,
+      "observedSqlVersion": 35,
+      "v35Absent": false,
+      "readinessAttempts": 3,
+      "readinessGeneration": 4,
+      "currentConfigurationPrecedenceResolved": true,
+      "nativePlanFreezePending": false,
+      "applyEntryQualified": true,
+      "targetApplyAuthorized": true,
+      "doNotReplayConsumedScopes": true,
+      "targetApplyAuthorizationScope": "CONSUMED_SIGNED_REVIEW_82417_NOT_REPLAYABLE",
+      "v35AppliedOnTarget": true,
+      "applicationReadinessProven": true,
+      "recoveryScopeConsumed": true,
+      "humanBudgetGranted": false,
+      "sourceActivations": 0,
+      "evidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json"
+    },
+    "currentRequiredHumanAction": "ONE_NEW_FINITE_METADATA_CAPTURE_NO_APPLICATION_DATA_OR_RUNTIME_WRITES",
+    "oauthCounterScope": "LEGACY_HUMAN_SESSION_304_DISTINCT_FROM_NORMAL_REGISTRY_OWNER_420_AND_ONBOARDING_DEPLOYMENT_COUNTS",
+    "onboardingV35Target": {
+      "status": "ONBOARDING_V35_EXISTING_CANDIDATE_RECOVERED_SOURCE_PRESERVED",
+      "reviewHash": "82417e471e908c44884a7902796a34e6cddb1505257bb67c94c910cfbce3ab91",
+      "authorityHash": "5213fc7a2664eb1add76558f67fdc72810dd6b86bd53107485344dd924a2702b",
+      "journalVersion": 304,
+      "counts": {
+        "backupProcesses": 2,
+        "engineGets": 254,
+        "engineWrites": 6,
+        "imageLoadAttempts": 1,
+        "ownerConfigurationReads": 30,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "sqlSessions": 6
+      },
+      "sourceReadinessPhase": "PAUSED",
+      "sourceReadinessAttempts": 3,
+      "sourceReadinessGeneration": 4,
+      "budgetSessionCount": 0,
+      "applicationReadinessProven": true,
+      "applicationE2EProven": false,
+      "scopeConsumed": true,
+      "maximumsUnchanged": true,
+      "budgetReset": false
+    },
+    "currentOwnerSourceBudget": {
+      "evidenceRef": "evidence/csv-native-source-activation-owner-20261025.json",
+      "configurationHash": "sha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d",
+      "lockVersion": 4,
+      "humanApprovalRequired": false,
+      "challengeStatus": "CONFIRMED",
+      "humanBudgetGrantAvailable": false,
+      "profile": "managed-review-recovery.v1",
+      "maximumAttempts": 3,
+      "maximumElapsedSeconds": 900,
+      "sourceHumanBudgetGranted": true,
+      "sourceActivated": true,
+      "phase": "ACTIVE",
+      "sourceSessionId": "57474af7-8da7-4ee5-a69f-267cea5f5174",
+      "sourceDecisionRef": "c8634aa1-a744-4b91-a030-94840902fa55",
+      "cumulativeAttempts": 4,
+      "sessionAttempts": 1,
+      "readinessGeneration": 6,
+      "terminalActiveMustNotBeReactivated": true
+    },
+    "sourceHumanBudgetGranted": true,
+    "sourceActivated": true,
+    "currentActiveSourcePublication": {
+      "publication_id": "dffa2a5e-740b-4e3d-95a0-14c841940b72",
+      "checksum": "sha256:7cebf0ba655d7f0f853b9dc647164de30f1f079e50281e36d24f05db57ad0d1f",
+      "active": true
+    },
+    "gateG3NativePublicationProven": true,
+    "applicationE2EProven": false,
+    "postPatchSourceStatusRootCauseScope": "PRIOR_OPERATIONAL_READ_DENIAL_EXPIRED_GRANT_NOT_ORIGINAL502_ROOT_CAUSE",
+    "currentSourceOperationalRead": {
+      "policyRef": "ouf-lab-authorization:48",
+      "grantExpiresAt": "2026-10-25T07:10:14.933Z",
+      "latestRunId": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+      "latestRunState": "SUCCEEDED",
+      "health": "HEALTHY",
+      "distinctSucceededRunsObserved": 2,
+      "evidenceRef": "evidence/csv-post-activation-ingestion-owner-20261025.json",
+      "isFullApplicationAcceptance": false
+    },
+    "acquisitionNativeReadDeployment": {
+      "status": "STOP_RECONCILE_OLD_MCP_GUARD_BEFORE_RENAME",
+      "nativePreparationCompleted": true,
+      "nativePreparationEvidence": "evidence/acquisition-native-execution-inputs-target-20261025.json",
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "nativeProposalHash": "572da163cd8cb645762edc06b88aa0c54e34929824f888404563ac018795d595",
+      "frozenPlanHash": "47b206e2eb602c115ef9c7c67937f2b2aeeff645fb8b56347c81f546a4ba60ca",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "sourceManifestSha256": "49ef56c773b4bbb46e7be329931e41a3780fe58d022ff5d284b886c6cf0c0fe5",
+      "qualificationEvidence": "evidence/acquisition-read-native-apply-qualified-20261025.json",
+      "targetAuthorityIssued": true,
+      "targetApplyExecuted": true,
+      "applicationE2EProven": false,
+      "registryWorkerTouched": false,
+      "newSourceActivationOrBudgetGranted": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false,
+      "existingScopesConsumed": true,
+      "operatorResultTimestamp": null,
+      "operatorResultTimestampReason": "Operator receipt has no wall timestamp; no target time invented.",
+      "latestLogs": {
+        "operator": "/home/oufadmin/ouf-acquisition-continuation.z1OkfMYu/operator.log",
+        "delivery": "/home/oufadmin/ouf-continuation-delivery.6iRiaI7q/bootstrap.log"
+      },
+      "next": "Retained-only old MCP guard comparison/journal and negative markers. No replay or original restart.",
+      "targetApplyCompleted": false,
+      "reviewHash": "7fcbce1f43fd99b4add8db9913b3dc2fe215836f16eecd8e8191f9e344e54aa9",
+      "scopeConsumed": true,
+      "retainedOfflineReconciliationObserved": true,
+      "continuationSource": "a21f5bda87ee7ed2e499338d842cd207ba956b3c",
+      "continuationExecuted": true,
+      "retainedPreflightCounts": {
+        "adminGets": 1,
+        "adminPuts": 0,
+        "engineGets": 9,
+        "engineWrites": 0,
+        "imageLoadAttempts": 0,
+        "ownerConfigurationReads": 5,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 1
+      },
+      "additionalCredentialReadProposed": 1,
+      "cumulativeCredentialReadMaximumProposed": 2,
+      "additionalReadAuthorizedByAgent": false,
+      "allOtherMaximumsUnchanged": true,
+      "continuationCompleted": false,
+      "runtimeAuthorityCurrentlyProven": false,
+      "authorityHash": "496dda9a7057f67c4ffb10e6ae4606d101479c905cad6a731907eaf4010d56a4",
+      "continuationScopeConsumed": true,
+      "lastProgressCounters": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 119,
+        "engineWrites": 10,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 40,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "serviceCredentialFileReads": 2
+      },
+      "lastProgressCountersAreFinal": false,
+      "oldMcpStoppedAndDetachedInOrderedSequence": true,
+      "newMcpCreationProven": false,
+      "targetGuardDifferenceObserved": false,
+      "targetQuarantineResultObserved": false
+    },
+    "latestOwnerAcquisitionRead": {
+      "evidenceRef": "evidence/acquisition-post-oauth-owner-redaction-20261026.json",
+      "policyRef": "ouf-lab-authorization:51",
+      "status": "OWNER_REDACTED_DETAILS_AFTER_OAUTH_RECONNECT",
+      "newCallsDuringThisContinuation": 0
+    },
+    "acquisitionRedactionUpdateCapture": {
+      "scope": "acquisition-redaction-update-inputs-v1",
+      "sourceCommit": "102f5a212b1d9b818ea8842ab782367be2504b47",
+      "deliveryCommit": "d4118d861d14da33aecabd223f89c77f861d6544",
+      "targetExecuted": false
+    }
   },
   "unverifiedIntervals": [
     {
@@ -3806,6 +4612,709 @@
         "releaseAcceptance": false
       },
       "recordedAt": "2026-10-22T11:43:13Z"
+    },
+    "onboardingV35ExistingCreateRecovery": {
+      "codeCommit": "45842a2dd38a1fde1b25052d5118b9fd9621cb62",
+      "qualified": true,
+      "qualificationEvidenceRef": "evidence/onboarding-v35-existing-create-recovery-qualified-20261024.json",
+      "ciRuns": [
+        40135450245,
+        40135454733
+      ],
+      "passedPerRun": 5,
+      "skippedPerRun": 0,
+      "targetComplete": true,
+      "targetEvidenceRef": "evidence/onboarding-v35-existing-create-target-20261024.json",
+      "scopeConsumed": true,
+      "e2eAcceptance": false
+    },
+    "acquisitionEvidenceRead": {
+      "schema": "ouf.acquisition-evidence-read-qualification.v1",
+      "recordedAt": "2026-10-25T06:40:00Z",
+      "targetDeployed": false,
+      "targetApplyAuthorized": false,
+      "runtimeAuthorityIssued": false,
+      "releaseAcceptance": false,
+      "applicationE2EProven": false,
+      "preserved": {
+        "sourceId": "teatri-csv-6609b245",
+        "sourceState": "ACTIVE",
+        "G3": "PASSED",
+        "G4": "OPEN",
+        "functional": "4/6",
+        "technical": "8/8",
+        "newAcquisitions": 0,
+        "budgetReset": false,
+        "registryWorkerTouched": false
+      },
+      "candidates": [
+        {
+          "repository": "GioNob/ouf-ingestion-runtime",
+          "pr": 47,
+          "commit": "43bb56a3b460c39af1e5d479dc6cd15ae7937442",
+          "run": 40168252527,
+          "job": 121093617119,
+          "tests": 18,
+          "passed": 17,
+          "skipped": 1,
+          "skip": "External receipt vector supplied separately by composed Gateway qualification"
+        },
+        {
+          "repository": "GioNob/ouf-udp-object-resolution",
+          "pr": 48,
+          "commit": "241fd5f6cbb33eeea34f3271fde70a866ed15e87",
+          "run": 40168256907,
+          "job": 121093630037,
+          "tests": 8,
+          "passed": 8,
+          "skipped": 0
+        },
+        {
+          "repository": "GioNob/ouf-mcp-server",
+          "pr": 78,
+          "commit": "5452e1949aaca836fe6070bb2f94336d2a80bb64",
+          "run": 40167847007,
+          "job": 121092436909,
+          "dedicatedTests": "manifest/kernel/httpclient race PASS",
+          "generalSuiteBlocker": "40167847111: govulncheck GO-2026-6809 crypto/x509 go1.26.9; fixed go1.26.10"
+        },
+        {
+          "repository": "GioNob/ouf-api-gateway",
+          "pr": 83,
+          "commit": "0cd69c7a1317eac281c6529caff10de61f023d27",
+          "run": 40169283650,
+          "job": 121096672724,
+          "pythonTestsPassed": 99,
+          "nativeOwnerReceiptTestsPassed": 2,
+          "generalSuiteBlocker": "40169280919 signature negative case DID NOT RAISE; same-head PR40169283644 passed; cause unresolved, no rerun or waiver"
+        }
+      ],
+      "reader": {
+        "commit": "b1bc92695986e39e0800e7cf988b151f6adb4273",
+        "path": "scripts/read-acquisition-owner-inputs-20261025.py",
+        "sha256": "6034ac85c6401b7770bf40815780e168c3421d96de2166dd0d39c0059373bf3e",
+        "scope": "/etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1",
+        "runs": [
+          {
+            "run": 40169356354,
+            "job": 121096873080,
+            "passed": 12,
+            "skipped": 0
+          },
+          {
+            "run": 40169360123,
+            "job": 121096883465,
+            "passed": 12,
+            "skipped": 0
+          }
+        ],
+        "qualification": "11 custody/Unix/socket/guard cases plus actual Docker1.44 GET/proc test in CI; synthetic retained bootstrap seed. NOT production/VPS proof",
+        "maximumEngineGets": 10,
+        "sqlSessions": 0,
+        "oauthRequests": 0,
+        "containerWrites": 0,
+        "credentialFilesOpened": 0,
+        "privateConfigurationEvidence": true,
+        "launcherSha256": "b7f876991917ab3e805eca439865f0cc714eee01440a3609713817f560da8ec2",
+        "launcherValidation": "bash -n; custody helper inspected; full production bootstrap not executed"
+      },
+      "next": "One-shot readonly VPS input capture, reconcile current MCP authentication declarations and lifecycle; then finish qualification and concrete signed target review before any runtime mutation.",
+      "targetInputCapture": {
+        "schema": "ouf.acquisition-read-current-inputs-target-evidence.v1",
+        "source": "User-supplied VPS operator JSON and exit/log lines",
+        "status": "CURRENT_ACQUISITION_READ_OWNER_INPUTS_CAPTURED",
+        "complete": true,
+        "exit": 0,
+        "deliveryExit": 0,
+        "privateInputsPath": "/etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1/inputs.json",
+        "privateInputsHash": "c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6",
+        "readerSha256": "6034ac85c6401b7770bf40815780e168c3421d96de2166dd0d39c0059373bf3e",
+        "operatorLog": "/home/oufadmin/ouf-acquisition-inputs.e9Ibyqur/operator.log",
+        "deliveryLog": "/home/oufadmin/ouf-acquisition-delivery.kpnxkfd3/bootstrap.log",
+        "currentSelectedRoles": [
+          "ingestion",
+          "udp",
+          "mcp",
+          "gateway",
+          "postgres"
+        ],
+        "currentCohortStable": true,
+        "currentProcessPinsObserved": true,
+        "currentSocketMatchesRetainedSeed": true,
+        "rootEnginePeerObserved": true,
+        "engineGetAttempts": 10,
+        "privateMetadataReadPasses": 2,
+        "historicalComparedFields": [
+          "containerId",
+          "imageId",
+          "pid",
+          "startedAt"
+        ],
+        "historicalChangedFieldsByRole": {
+          "ingestion": [],
+          "udp": [],
+          "mcp": [],
+          "gateway": [],
+          "postgres": []
+        },
+        "mcpAuthenticationDeclaration": {
+          "clientCredentialsDeclared": true,
+          "staticWorkloadBearerDeclared": false,
+          "workloadTokenFileDeclared": false,
+          "multipleAuthenticationDeclarations": false,
+          "duplicateEnvironmentNames": false,
+          "effectiveConfigurationNotResolvedByThisReader": true
+        },
+        "lifecycleDeclarations": {
+          "ingestion": "NO_RECOGNIZED_MANAGER_LABEL",
+          "udp": "NO_RECOGNIZED_MANAGER_LABEL",
+          "mcp": "NO_RECOGNIZED_MANAGER_LABEL",
+          "gateway": "NO_RECOGNIZED_MANAGER_LABEL",
+          "postgres": "NO_RECOGNIZED_MANAGER_LABEL"
+        },
+        "lifecycleOwnershipProven": false,
+        "engineApiIdentityProvenByThisReader": false,
+        "effectiveConfigurationPrecedenceResolved": false,
+        "sourceImageProvenanceVerified": false,
+        "serviceCredentialFilesOpened": 0,
+        "bearerFilesOpened": 0,
+        "privateSigningKeysRead": 0,
+        "sqlSessions": 0,
+        "oauthRequests": 0,
+        "httpApplicationRequests": 0,
+        "containerWrites": 0,
+        "imageImports": 0,
+        "sourceActivations": 0,
+        "humanBudgetsGranted": 0,
+        "databaseMigrations": 0,
+        "retainedContextWrites": 0,
+        "engineConfigurationRetainedPrivately": true,
+        "credentialValuesPrinted": false,
+        "addressesPrinted": false,
+        "runtimeAuthorityIssued": false,
+        "targetApplyAuthorized": false,
+        "releaseAcceptance": false,
+        "applicationReadinessProven": false,
+        "applicationE2EProven": false,
+        "automaticReplayAllowed": false,
+        "budgetReset": false,
+        "scopeConsumed": true,
+        "originalRequestRepeated": false
+      }
+    },
+    "acquisitionReadPackages": {
+      "schema": "ouf.acquisition-read-packages-qualification.v1",
+      "recordedAt": "2026-10-25T07:06:31.505Z",
+      "sourceCase": {
+        "inputsPath": "/etc/ouf/deploy-snapshots/acquisition-evidence-current-inputs-v1/inputs.json",
+        "inputsHash": "c40ba6dc86e8be72ddcda2eaef65fe3eb8aa9f24b8ec4b0d5758b0bfeacf1da6",
+        "artifacts": {
+          "ingestion": {
+            "repository": "GioNob/ouf-ingestion-runtime",
+            "commit": "3ab998feb55ba0681d30635cdac35fac0f78e5db",
+            "runId": 40170276524,
+            "artifactId": 12590122027,
+            "zipBytes": 140853808,
+            "zipSha256": "db1db79a1d4f5efd37004bc9ddb84789269b361a8278f991a21ddabdbc331ac9",
+            "imageId": "sha256:3ae64b05d4fe93c8409605177444fb4f8edbfa4dd847d0de6247a7cd6cd35539",
+            "user": "10002:10002",
+            "entrypoint": [
+              "java",
+              "-Dloader.main=it.comune.trieste.ouf.evidence.IngestionAcquisitionReadApplication",
+              "-cp",
+              "/app/app.jar",
+              "org.springframework.boot.loader.launch.PropertiesLauncher"
+            ],
+            "cmd": null,
+            "imageConfigFile": "acquisition-image-config.json",
+            "members": [
+              "image.tar.gz",
+              "image-id.txt",
+              "acquisition-image-config.json",
+              "source-commit.txt",
+              "SHA256SUMS"
+            ]
+          },
+          "udp": {
+            "repository": "GioNob/ouf-udp-object-resolution",
+            "commit": "b6a9f36a4f98ae8a2aab3bd055e5703bd84a8fb7",
+            "runId": 40170281418,
+            "artifactId": 12589789326,
+            "zipBytes": 122368069,
+            "zipSha256": "c38246d7bc5a6fdb16482b06fc19521f1c58ca652dac1f7ea69fe29f513c2412",
+            "imageId": "sha256:97b67ccfd19764e19ce2bc690775696582c5256ddac5bc5182972d857c362878",
+            "user": "10004:10004",
+            "entrypoint": [
+              "java",
+              "-Dloader.main=it.comune.trieste.ouf.evidence.UdpAcquisitionReadApplication",
+              "-cp",
+              "/app/app.jar",
+              "org.springframework.boot.loader.launch.PropertiesLauncher"
+            ],
+            "cmd": null,
+            "imageConfigFile": "acquisition-image-config.json",
+            "members": [
+              "image.tar.gz",
+              "image-id.txt",
+              "acquisition-image-config.json",
+              "source-commit.txt",
+              "SHA256SUMS"
+            ]
+          },
+          "mcp": {
+            "repository": "GioNob/ouf-mcp-server",
+            "commit": "bd60ccd092b51557b280e533c8db6b3f98842f9e",
+            "runId": 40170429531,
+            "artifactId": 12589824695,
+            "zipBytes": 9616803,
+            "zipSha256": "9a4d629d729f30853ca9902e40c9c2474f6e9ea538fcb306eb3b955db106e860",
+            "imageId": "sha256:20bbbe2968b01bc18bf053985e7e5ca3f7ea7265e7467439f5275af2753f26f3",
+            "user": "10005:10005",
+            "entrypoint": [
+              "/usr/local/bin/ouf-mcp"
+            ],
+            "cmd": [
+              "server"
+            ],
+            "imageConfigFile": "image-config.json",
+            "members": [
+              "image.tar.gz",
+              "image-id.txt",
+              "image-config.json",
+              "source-commit.txt",
+              "SHA256SUMS",
+              "capabilities.json"
+            ]
+          },
+          "gateway": {
+            "repository": "GioNob/ouf-api-gateway",
+            "commit": "efe71dd9bef9d5ee70c0ef2acb11ea4169649baa",
+            "runId": 40170951051,
+            "artifactId": 12590580438,
+            "zipBytes": 84613,
+            "zipSha256": "dfcf3426786b5f371346ea5f4c5c64d8f1e47409000b784d23ccb47028c6e01d",
+            "members": [
+              "source.tar.gz",
+              "source-commit.txt",
+              "SHA256SUMS"
+            ]
+          }
+        }
+      },
+      "caseHash": "2f9a2336572e1bbc57215bc6fc7b4f3a5f9bc5fa74e160be751cc0f57dcb8a80",
+      "sourceCommit": "1b0efdaffc5f7e2b7c759281b90d8d2149559324",
+      "programSha256": "f2301a02b01730c41d5db85ac96d2da9eaabf94319e4d73020296848e4040bdf",
+      "launcherPath": "releases/stage-acquisition-read-packages-20261025.sh",
+      "launcherSha256": "4d62d58fc76c26a1d4bacc0dbdcaa49ad7ff87c28e123d965b7e8c6fe491521b",
+      "qualificationRun": 40171332577,
+      "qualificationJob": 121102593398,
+      "unitTests": 13,
+      "skipped": 0,
+      "actualArtifactRootStagingCompleted": true,
+      "exactProductionArtifactDescriptors": true,
+      "syntheticCapturedInputs": true,
+      "wholeRootLauncherExecutedInCi": false,
+      "launcherStaticCheck": "bash -n PASS",
+      "targetPackageStagingObserved": true,
+      "targetDeployed": false,
+      "targetApplyAuthorized": false,
+      "runtimeAuthorityIssued": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "priorRejectedProof": {
+        "run": 40171138927,
+        "reportedConclusion": "success",
+        "acceptedAsEvidence": false,
+        "reason": "Direct log showed STOP on omitted OCI Cmd versus inspect Cmd:null; shell pipeline lacked pipefail. Explicit default reconciliation, regression test and pipefail added before delivery."
+      },
+      "candidateQualifiedRuns": {
+        "ingestion": {
+          "run": 40170276524,
+          "job": 121099527756,
+          "suiteTotal": 19,
+          "passed": 17,
+          "skipped": 2,
+          "packagedDockerTestsPassed": 1,
+          "packagedDockerTestsSkipped": 0
+        },
+        "udp": {
+          "run": 40170281418,
+          "job": 121099541427,
+          "suiteTotal": 9,
+          "passed": 8,
+          "skipped": 1,
+          "packagedDockerTestsPassed": 1,
+          "packagedDockerTestsSkipped": 0
+        },
+        "mcp": {
+          "run": 40170429531,
+          "job": 121099976593,
+          "conclusion": "success",
+          "govulncheck": "No vulnerabilities found",
+          "goVersion": "1.26.10"
+        },
+        "gateway": {
+          "fullRun": 40170951052,
+          "fullJob": 121101482557,
+          "passed": 585,
+          "skipped": 3,
+          "pairedAndNetworkJobsPassed": true,
+          "composedRun": 40170951051,
+          "composedJob": 121101482465,
+          "pythonTestsPassed": 99,
+          "nativeReceiptTestsPassed": 2
+        }
+      },
+      "pending": [
+        "Target package staging output",
+        "Qualified concrete signed native lifecycle/controller review, freshness and admission",
+        "No parallel MCP OAuth manager",
+        "Human read grants for exact new owner scopes when ready",
+        "Live governed two-run bundle/ACK/watermark/object/property provenance evidence",
+        "E2E acceptance before Supervisor"
+      ]
+    },
+    "acquisitionReadDirectTransport": {
+      "schema": "ouf.acquisition-read-direct-transport-completed.v1",
+      "recordedAt": "2026-10-25T07:26:19.629Z",
+      "workflowCommit": "4f28e0fb25f89846282cf7c2e90642eae2471690",
+      "workflowRun": 40172391065,
+      "hostedQualification": {
+        "job": 121105797358,
+        "conclusion": "success",
+        "unitTestsPassed": 12,
+        "skipped": 0,
+        "actualFourPinnedArtifactDownloads": true,
+        "targetEvidence": false
+      },
+      "existingRunner": {
+        "job": 121105860334,
+        "runnerName": "ouf-vps-test",
+        "conclusion": "success",
+        "receiptLoggedAt": "2026-10-25T07:21:06.6768750Z",
+        "result": {
+          "applicationE2EProven": false,
+          "artifacts": {
+            "gateway": {
+              "artifactId": 12590580438,
+              "verified": true,
+              "zipBytes": 84613,
+              "zipSha256": "dfcf3426786b5f371346ea5f4c5c64d8f1e47409000b784d23ccb47028c6e01d"
+            },
+            "ingestion": {
+              "artifactId": 12590122027,
+              "verified": true,
+              "zipBytes": 140853808,
+              "zipSha256": "db1db79a1d4f5efd37004bc9ddb84789269b361a8278f991a21ddabdbc331ac9"
+            },
+            "mcp": {
+              "artifactId": 12589824695,
+              "verified": true,
+              "zipBytes": 9616803,
+              "zipSha256": "9a4d629d729f30853ca9902e40c9c2474f6e9ea538fcb306eb3b955db106e860"
+            },
+            "udp": {
+              "artifactId": 12589789326,
+              "verified": true,
+              "zipBytes": 122368069,
+              "zipSha256": "c38246d7bc5a6fdb16482b06fc19521f1c58ca652dac1f7ea69fe29f513c2412"
+            }
+          },
+          "automaticReplayAllowed": false,
+          "budgetReset": false,
+          "caseHash": "2f9a2336572e1bbc57215bc6fc7b4f3a5f9bc5fa74e160be751cc0f57dcb8a80",
+          "complete": true,
+          "containerWrites": 0,
+          "downloadDirectory": "/home/oufadmin/ouf-deploy-runner/_work/ouf-deploy/ouf-acquisition-read-transport-2f9a2336572e1bbc",
+          "engineGetAttempts": 0,
+          "githubApiGetAttempts": 4,
+          "imageImports": 0,
+          "oufOAuthRequests": 0,
+          "privateSigningKeysRead": 0,
+          "releaseAcceptance": false,
+          "rootStagingInvoked": false,
+          "runnerReinstalled": false,
+          "runnerUid": 1000,
+          "runtimeAuthorityIssued": false,
+          "runtimeEffectsDispatched": 0,
+          "schema": "ouf.acquisition-read-artifact-transport-result.v1",
+          "serviceCredentialFilesOpened": 0,
+          "sqlSessions": 0,
+          "status": "EXACT_ARTIFACTS_DOWNLOADED_ON_EXISTING_RUNNER",
+          "targetApplyAuthorized": false
+        },
+        "fileTransportEvidence": true,
+        "rootCustodyProven": false,
+        "applicationReadinessProven": false,
+        "engineIdentityProven": false,
+        "scopeConsumed": true
+      },
+      "rootContinuation": {
+        "path": "releases/continue-acquisition-read-root-staging-20261025.sh",
+        "sha256": "3a50a3efc72d2d20e35c4cf61dd87160ac9acae0cc8be989aafaa63ad804b18a",
+        "validation": "bash -n PASS; reviewed custody helper reused unchanged; whole continuation not executed in CI",
+        "retainedProgramPath": "/home/oufadmin/ouf-acquisition-packages.RecOgcbn/stage.py",
+        "retainedProgramSha256": "f2301a02b01730c41d5db85ac96d2da9eaabf94319e4d73020296848e4040bdf",
+        "programCommit": "1b0efdaffc5f7e2b7c759281b90d8d2149559324",
+        "caseHash": "2f9a2336572e1bbc57215bc6fc7b4f3a5f9bc5fa74e160be751cc0f57dcb8a80",
+        "rootStagingObserved": false,
+        "oldLogsOverwritten": false,
+        "archiveRedownloads": 0,
+        "ghDependency": false
+      },
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "releaseAcceptance": false,
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false
+    },
+    "acquisitionReadNativePlanPreparation": {
+      "schema": "ouf.acquisition-read-native-plan-qualification.v1",
+      "recordedAt": "2026-10-25T08:31:52.019Z",
+      "codeCommit": "294552df5db303e4da299682ef8b3c4094f97d6f",
+      "programSha256": "6ca60a5e25deaf9c7a718e6ee7fe01dad75b3fb45455129f131309bc988c5acd",
+      "launcherPath": "releases/prepare-acquisition-read-native-plan-20261025.sh",
+      "launcherSha256": "5634eeb1caa3ccf85eac28c5e498241a1857d41a4260250ab3407e5f31fc9bcd",
+      "runs": [
+        {
+          "run": 40176159073,
+          "job": 121117176140,
+          "passed": 16,
+          "skipped": 0
+        },
+        {
+          "run": 40176162042,
+          "job": 121117184910,
+          "passed": 16,
+          "skipped": 0
+        }
+      ],
+      "sources": {
+        "gatewayCommit": "efe71dd9bef9d5ee70c0ef2acb11ea4169649baa",
+        "boundSourceFiles": 12,
+        "nativeCustodyHelper": "Previously qualified named existing Gateway configuration custody selections, copied unchanged"
+      },
+      "scope": "PRIVATE_PLAN_AND_ONE_INFRASTRUCTURE_GET_ONLY",
+      "realKernelNamespaceJoinAndFixtureHttpGet": true,
+      "syntheticConfigurationAndProcessContext": true,
+      "actualDockerCreateControllerQualified": false,
+      "actualProductionBootstrapQualified": false,
+      "wholeRootLauncherExecuted": false,
+      "rootLauncherStaticCheck": "bash -n PASS",
+      "rootStagingTargetObserved": true,
+      "rootStagingScopeConsumed": true,
+      "stagedReceiptExpectedCanonicalHash": "11cdf347aa966b6b32bfa84f8c35a28b598e7563611bf5580282bbb36b3f6a70",
+      "targetPlanPreparationObserved": false,
+      "maximumAdminGets": 1,
+      "maximumServiceCredentialFilesOpened": 1,
+      "maximumSeconds": 90,
+      "engineGetAttempts": 0,
+      "sqlSessions": 0,
+      "oauthRequests": 0,
+      "containerWrites": 0,
+      "imageImports": 0,
+      "installationSigningKeysRead": false,
+      "executionEntryQualified": false,
+      "runtimeAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "applicationE2EProven": false,
+      "releaseAcceptance": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "normalMcpBootstrapOAuthExpectedOnlyInFutureReviewedReplacement": true
+    },
+    "acquisitionNativeReadApply": {
+      "schema": "ouf.acquisition-read-native-apply-qualified.v1",
+      "sourceCommit": "57424c1b8eea486cd7d1f2d88e7184791220b61e",
+      "sourceManifestSha256": "49ef56c773b4bbb46e7be329931e41a3780fe58d022ff5d284b886c6cf0c0fe5",
+      "sourceHashes": {
+        "apply.py": "4be58b96861d4123202036157ef353c90377f9b840f5f0c395f0ef2f7c480489",
+        "native_prepare.py": "f60ab449bb694465d520bfe40d1b992279df7391c8191c341fc43a6e10b11de1",
+        "runtime_binding.py": "291daecc2b541a7c7410cd9f7c22ec7fccc82568ae67b21b78148f939035c7de",
+        "protocol.py": "6e06d008aa2acc95c93be57dc7c27ac0c35f571fdefc5a6cefdcd2e338b83bbd",
+        "transport.py": "775b8d57f46c6f6a1dfb84bae5681a4751fb2a6d4cdac74324e6bac7773ec539",
+        "ports.py": "957d4db1429add9cf100a95692e3f1915abe2c4df0a489735a466601ca373acb",
+        "quarantine.py": "327508f265874f775b09c18bd3f330788bc73de08e816f80484b0ec962774be4",
+        "recovery_journal.py": "042c145f420dff0472036457f16dc4c41d56538e134aa89076dcb6e92953d4b7",
+        "engine_creation.py": "9d6149a0b3331666496583ebbaa9f43ed05d3039e7097861f3bd147f917ab3fb",
+        "plan_helper.py": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd",
+        "image_custody.py": "5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8",
+        "authentication.py": "7cb06f7976791abfc1ffac0e9660f3cdf603347f4514cd2bab7f55c6574e251d",
+        "signing.py": "81ad864e90b3efe17d65534ad4b1ccc187e60954f4f5d6244968d7809303a38f",
+        "auth_protocol.py": "cd5aa30c8c806942c53a306e76a641b876e07a12fbbc3c0d106ecf6b94e87a0d",
+        "auth_preexec.py": "95da7f53be88ac0e602e03acbdf6940a719e96a6fedb207693d23f59f0b31015",
+        "auth_producer.py": "dbfb365087fb532a0df66f66b6d72be7e04e2df4f31116631beb0b20a9f6f50f"
+      },
+      "nativeInputsHash": "5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591",
+      "nativeProposalHash": "572da163cd8cb645762edc06b88aa0c54e34929824f888404563ac018795d595",
+      "frozenPlanHash": "47b206e2eb602c115ef9c7c67937f2b2aeeff645fb8b56347c81f546a4ba60ca",
+      "CI": [
+        {
+          "runId": 40196961938,
+          "jobId": 121179775943,
+          "event": "pull_request",
+          "name": "real-engine-and-apisix (classic)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:49.1412535Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIGURATION_ID\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:14.4554765Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:15.1498546Z Ran 2 tests in 128.530s",
+            "2026-10-25T13:20:15.1498963Z OK"
+          ]
+        },
+        {
+          "runId": 40196961938,
+          "jobId": 121179776050,
+          "event": "pull_request",
+          "name": "real-engine-and-apisix (containerd)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:34.0334956Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIG_AND_NATIVE_MANIFEST\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:59.7971470Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:20:00.4816502Z Ran 2 tests in 120.140s",
+            "2026-10-25T13:20:00.4817613Z OK"
+          ]
+        },
+        {
+          "runId": 40196961938,
+          "jobId": 121179776093,
+          "event": "pull_request",
+          "name": "dual-signature-finite-protocol",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:18:02.6297325Z Ran 10 tests in 3.981s",
+            "2026-10-25T13:18:02.6297456Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179761818,
+          "event": "push",
+          "name": "real-engine-and-apisix (containerd)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:32.4931293Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIG_AND_NATIVE_MANIFEST\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:57.8260545Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:58.4702329Z Ran 2 tests in 121.693s",
+            "2026-10-25T13:19:58.4702780Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179762030,
+          "event": "push",
+          "name": "real-engine-and-apisix (classic)",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:19:27.2159967Z {\"schema\": \"ouf.synthetic-native-acquisition-apply-ci.v1\", \"complete\": true, \"profile\": \"CONFIGURATION_ID\", \"realEd25519DualSignatures\": true, \"realEngineImagesLoaded\": 3, \"realCandidatesCreatedAndStarted\": 3, \"realApisixOldRouteCount\": 82, \"realApisixAddedRouteCount\": 2, \"originalWorkersUnchanged\": true, \"singleMcpManager\": true, \"completedNegativeLeaseDoesNothing\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:51.1433951Z {\"schema\": \"ouf.synthetic-acquisition-negative-lease-ci.v1\", \"complete\": true, \"controllerKilled\": true, \"ownedCandidatesStopped\": 2, \"allOriginalOwnersStillRunning\": true, \"oldRoutesUnchanged\": 82, \"claimedEffectNotReplayed\": true, \"productionRuntimeAccess\": false}",
+            "2026-10-25T13:19:51.7644934Z Ran 2 tests in 116.248s",
+            "2026-10-25T13:19:51.7645400Z OK"
+          ]
+        },
+        {
+          "runId": 40196957444,
+          "jobId": 121179762061,
+          "event": "push",
+          "name": "dual-signature-finite-protocol",
+          "conclusion": "success",
+          "details": [
+            "2026-10-25T13:17:59.3852273Z Ran 10 tests in 4.173s",
+            "2026-10-25T13:17:59.3852473Z OK"
+          ]
+        }
+      ],
+      "directJobLogsRead": true,
+      "protocolTestsPerRun": 10,
+      "protocolSkipped": 0,
+      "nativeTestsPerStorePerRun": 2,
+      "nativeStores": [
+        "classic",
+        "containerd"
+      ],
+      "qualificationScope": "Real scoped Ed25519 installer signatures and final attestation, controlling-terminal exact hash parser, no unclaimed write, durable claimed-effect no replay, live-policy revocation, finite negative snapshot authorization,3actual image imports/3container transitions/real APISIX82retained+2routes, SIGKILL controller ->2owned candidates stopped with all old owners and routes unchanged.",
+      "qualificationLimits": "Native owners/data/keys are synthetic CI fixtures; APISIX3.18 and real Engine used. Full product images/SDKs have their separately retained qualifications. Production private configuration, issuer connectivity and application E2E are not proven by CI. The wrapper is syntax-checked/static-reviewed, not executed end-to-end in CI.",
+      "executionEntryQualified": true,
+      "targetExecuted": false,
+      "targetAuthorityIssued": false,
+      "targetApplyAuthorized": false,
+      "targetComponentReadinessProven": false,
+      "applicationE2EProven": false,
+      "requiredTerminalDecision": "APPROVO <exact freshly compiled review hash>",
+      "maximumSeconds": 900,
+      "negativeCleanupSeconds": 30,
+      "candidateStartupSeconds": 180,
+      "maximums": {
+        "engineGets": 500,
+        "engineWrites": 22,
+        "imageLoadAttempts": 3,
+        "readinessGets": 128,
+        "adminGets": 32,
+        "adminPuts": 2,
+        "ownerConfigurationReads": 64,
+        "serviceCredentialFileReads": 1,
+        "quarantineStops": 3
+      },
+      "existingScopesReplayed": false,
+      "budgetReset": false,
+      "releaseAcceptance": false,
+      "normalMcpOAuthMandateChanged": false,
+      "normalMcpBootstrapMayOccur": true,
+      "sourceCopyCustody": "16hash-pinned files+canonical manifest; root0400/0700; no-follow/fstat/hash source copy; source/parent fsync; prior logs and scopes retained",
+      "runtimeCustody": "Existing Python stdlib binder reused and source-sealed, executable/stdlib hashes+metadata included in signed native plan, Python-I-S-B, live policy positive gate and copied public policy for negative only",
+      "normalizations": [
+        {
+          "field": "OomKillDisable",
+          "profile": "DOCKER_ENABLED_OOM_DEFAULT_NULL_FALSE_V1",
+          "scope": "new candidates only",
+          "allowed": [
+            null,
+            false
+          ],
+          "disablingOomNeverAcceptedAsDefault": true,
+          "existingNativeHashesChanged": false
+        },
+        {
+          "field": "Mounts",
+          "profile": "qualified empty requested list may be absent/null",
+          "existingNativeHashesChanged": false
+        }
+      ],
+      "stops": "Exact graceful stop t10 uses15s response timeout; candidate quarantine t2 uses7s response timeout; every command dispatched within its finite lease and claimed stage; no effect retry",
+      "journal": "Only bounded lock acquisition retried; monitor reads atomically published immutable snapshots without mutating or contending for CAS; effect claims never replayed",
+      "launcherSha256": "5067506433800cd43b827a299ac2ed74943f255eee65e860d45d86113de40d5f",
+      "launcherWholeExecutedInCI": false,
+      "launcherBashSyntaxPassed": true,
+      "rejectedIntermediateRuns": [
+        "fd89 fixture stderr polluted resource ID",
+        "9b799 fixture APISIX file UID/startup",
+        "cc6bf fixture highest-API vs1.44 mismatch",
+        "e710 journal contention/new host defaults",
+        "70309 stop timeout",
+        "b99a transport edit syntax failure; not delivered",
+        "e63e OOM default in zero-memory MCP before-start; not delivered"
+      ]
+    },
+    "acquisitionOwnerRedactionDiagnostics": {
+      "evidenceRef": "evidence/acquisition-redaction-diagnostics-qualified-20261026.json",
+      "candidateCommits": {
+        "ingestion": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+        "udp": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+      },
+      "imagesCiQualified": true,
+      "targetInstalled": false
+    },
+    "acquisitionRedactionOfflinePlan": {
+      "evidenceRef": "evidence/acquisition-redaction-offline-plan-qualified-20261026.json",
+      "captureConsumed": true,
+      "correctedTransportConsumed": true,
+      "offlinePlanCiQualified": true,
+      "targetPlanPrepared": false,
+      "executionEntryQualified": false,
+      "targetImagesInstalled": false
     }
   },
   "developmentCandidates": [
@@ -3865,47 +5374,144 @@
     }
   ],
   "runtimeBlockers": {
-    "gate": "G3",
-    "humanInterventionRequired": true,
-    "reasons": [
-      "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
-      "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
-      "F5_F6_PROOF_PENDING",
-      "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
-    ],
-    "historicalAttempts": 304,
-    "maximumCumulativeAttempts": 304,
-    "remainingAttempts": 0,
-    "resetAllowed": false,
-    "automaticLoginAllowed": false,
-    "retainedClaimsPreserved": true,
-    "currentRequiredHumanAction": "ONE_NEW_PINNED_READ_ONLY_HISTORICAL_REGISTRY_OBSERVATION",
-    "maximumNewOAuthRequests": 0,
-    "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
-    "profileApplied": true,
-    "normalTokenFreshnessBoundApprovedSeconds": 1200,
-    "independentRemainingWork": [
-      "G5_VOCABULARY_AND_RELATIONSHIPS",
-      "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
-      "G7_ACCEPTANCE"
-    ],
-    "proposedAdditionalOAuthAttempts": 0,
-    "proposedCumulativeCeiling": 300,
-    "additionalBudgetGranted": true,
-    "countsAsOfGrant": false,
-    "subsequentConsumptionNotObserved": false,
-    "newWindowAuthorized": false,
-    "countsAsOfReadyReceipt": true,
-    "futurePatchBudgetProposal": {
-      "priorOAuthAttempts": 292,
-      "additionalOAuthAttempts": 4,
-      "proposedCumulativeCeiling": 296,
-      "granted": true,
-      "consumed": true,
-      "newWindowOpened": true,
-      "separateTerminalConsentRequired": true
+    "gate": "G5_G6_G7",
+    "M1Complete": true,
+    "previousM1Blockers": {
+      "gate": "G4",
+      "reasons": [
+        "OWNER_DETAIL_REDACTION_GUARD_REASON_NOT_EXPOSED_BY_INSTALLED_READ_IMAGES",
+        "ROW_IDENTITY_MATERIALIZATION_AND_TWO_RUN_PROVENANCE_NOT_PROVEN"
+      ],
+      "currentRequiredHumanAction": "ONE_FIRST_QUALIFIED_OFFLINE_IMAGE_AND_PLAN_PREPARATION_NO_RUNTIME_EFFECTS",
+      "newDiagnosticCiQualified": true,
+      "newDiagnosticTargetInstalled": false,
+      "sourceGrantOrActivationNeeded": false,
+      "policyRef": "ouf-lab-authorization:51",
+      "readGrantValidUntil": "2026-10-26T14:14:26Z",
+      "automaticRenewalAllowed": false,
+      "automaticReplayAllowed": false,
+      "budgetResetAllowed": false,
+      "supervisorAfterE2E": true,
+      "previousBlockersHistorical": {
+        "gate": "G4",
+        "humanInterventionRequired": true,
+        "reasons": [
+          "ACK_WATERMARK_AND_PER_ROW_MATERIALIZATION_PROVENANCE_NOT_EXPOSED_BY_AVAILABLE_MCP_TOOLS",
+          "NEW_RUN_BINDING_TO_REVIEWED_PUBLICATION_AND_SAME_CSV_NOT_PROVEN",
+          "CURRENT_THEATER_PROJECTION_11_TO_19_PROPERTIES_PER_OBJECT_CAUSE_UNPROVEN"
+        ],
+        "permissionProposalId": "f87e7260-a5ed-4c7a-80b6-9990e5ae0875",
+        "permissionProposalState": "PUBLISHED",
+        "policyRef": "ouf-lab-authorization:48",
+        "readGrantValidUntil": "2026-10-25T07:10:14.933Z",
+        "sourceGrantOrActivationNeeded": false,
+        "sourceActive": true,
+        "automaticReplayAllowed": false,
+        "budgetResetAllowed": false,
+        "supervisorAfterE2E": true,
+        "previousBlockersBeforePolicy48": {
+          "gate": "G4",
+          "humanInterventionRequired": true,
+          "reasons": [
+            "SOURCE_SCOPED_INGESTION_OPERATIONS_READ_GRANT_EXPIRED",
+            "ROW_RUN_ACK_COMMIT_AND_BOTH_ACQUISITION_PROVENANCE_NOT_YET_PROVEN",
+            "CURRENT_THEATER_PROJECTION_HAS_11_TO_19_FIELDS_PER_OBJECT_REQUIRES_RECONCILIATION"
+          ],
+          "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
+          "proposalState": "PENDING",
+          "sourceGrantOrActivationNeeded": false,
+          "sourceActive": true,
+          "automaticReplayAllowed": false,
+          "budgetResetAllowed": false,
+          "supervisorAfterE2E": true,
+          "previousBlockersBeforeNativeActivation": {
+            "gate": "G3",
+            "humanInterventionRequired": true,
+            "reasons": [
+              "DIRECT_HUMAN_FINITE_SOURCE_READINESS_SESSION_REQUIRED",
+              "SEPARATE_HUMAN_VERIFY_AND_ACTIVATE_REQUIRED",
+              "G3_F5_F6_APPLICATION_E2E_PROOF_PENDING"
+            ],
+            "currentRequiredHumanAction": "EXISTING_CONFIRMED_REVIEW_THS_BUDGET_3_ATTEMPTS_900_SECONDS_THEN_SEPARATE_ACTIVATION",
+            "sourceHumanBudgetGranted": false,
+            "sourceActivated": false,
+            "budgetResetAllowed": false,
+            "automaticLoginAllowed": false,
+            "automaticReplayAllowed": false,
+            "retainedClaimsPreserved": true,
+            "newIamOAuthRequestsRequired": 0,
+            "supervisorAfterE2E": true,
+            "previousBlockersBeforeV35TargetRecovery": {
+              "gate": "G3",
+              "humanInterventionRequired": true,
+              "reasons": [
+                "CURRENT_LATER_SOURCE_REVISION_DEPLOYMENT_LINEAGE_NOT_YET_MATCHED",
+                "CORRECTED_V35_IMAGE_NOT_STAGED_AND_CURRENT_DB_LIFECYCLE_ADMISSION_PENDING",
+                "G3_F5_F6_ORDINARY_APPLICATION_E2E_PENDING"
+              ],
+              "historicalAttempts": 304,
+              "maximumCumulativeAttempts": 304,
+              "remainingAttempts": 0,
+              "resetAllowed": false,
+              "automaticLoginAllowed": false,
+              "retainedClaimsPreserved": true,
+              "currentRequiredHumanAction": "ONE_PINNED_LATER_OWNER_LINEAGE_METADATA_READ_ZERO_ENGINE_SQL_NO_LOGIN_OR_APPLY",
+              "maximumNewOAuthRequests": 0,
+              "requiredPassword": "SUDO_IF_REQUIRED_NO_IAM_PASSWORD",
+              "profileApplied": true,
+              "normalTokenFreshnessBoundApprovedSeconds": 1200,
+              "independentRemainingWork": [
+                "G5_VOCABULARY_AND_RELATIONSHIPS",
+                "G6_REAL_OWNER_TWO_CLIENT_COMPOSITION",
+                "G7_ACCEPTANCE"
+              ],
+              "proposedAdditionalOAuthAttempts": 0,
+              "proposedCumulativeCeiling": 300,
+              "additionalBudgetGranted": true,
+              "countsAsOfGrant": false,
+              "subsequentConsumptionNotObserved": false,
+              "newWindowAuthorized": false,
+              "countsAsOfReadyReceipt": true,
+              "futurePatchBudgetProposal": {
+                "priorOAuthAttempts": 292,
+                "additionalOAuthAttempts": 4,
+                "proposedCumulativeCeiling": 296,
+                "granted": true,
+                "consumed": true,
+                "newWindowOpened": true,
+                "separateTerminalConsentRequired": true
+              },
+              "runtimeAuthorityIssued": false,
+              "previousReasonsAtPreOnboardingFiniteUpdate": [
+                "NATIVE_PROFILE_APPROVED_ACTIVATION_PAUSED",
+                "HISTORICAL_REGISTRY_PREDICATE_FAILED_CORRELATION_UNPROVEN",
+                "F5_F6_PROOF_PENDING",
+                "OAUTH_BUDGET_EXHAUSTED_NO_NEW_LOGIN_AUTHORIZED"
+              ]
+            }
+          }
+        },
+        "currentRequiredHumanAction": "ONE_QUALIFIED_OFFLINE_RETAINED_OLD_MCP_GUARD_READER_NO_APPLY",
+        "additionalCandidateBlockers": [
+          "OLD_MCP_GUARD_IMAGE_CONFIG_MOUNTS_STARTEDAT_EXACT_DIFFERENCE_UNOBSERVED",
+          "QUARANTINE_AND_FINAL_CUMULATIVE_COUNTS_UNOBSERVED",
+          "NEW_MCP_AND_READ_PATH_INSTALLATION_NOT_PROVEN",
+          "SIX_OWNER_READ_PERMISSIONS_ONLY_AFTER_INSTALLATION"
+        ],
+        "currentAgentWork": "QUALIFIED_OFFLINE_OLD_MCP_GUARD_READER_AWAITING_TARGET_OUTPUT",
+        "readGrantCurrentValidity": "EXPIRED_AFTER_2026_10_25T07_10_14_933Z_DO_NOT_USE"
+      },
+      "currentAgentWork": "OFFLINE_TWO_READ_REPLACEMENT_PLAN_DELIVERY_READY_NOT_TARGET_EXECUTED",
+      "readGrantCurrentValidity": "EXPIRED_2026_10_26T14_14_26Z_NO_AUTOMATIC_RENEWAL",
+      "additionalCandidateBlockers": [
+        "TWO_DIAGNOSTIC_READ_IMAGES_NOT_INSTALLED",
+        "FULL_REPLACEMENT_CONTROLLER_NOT_QUALIFIED",
+        "FRESH_APPLICATION_READ_AUTHORITY_REQUIRED_AFTER_POLICY51_EXPIRY"
+      ]
     },
-    "runtimeAuthorityIssued": false
+    "automaticReplayAllowed": false,
+    "budgetResetAllowed": false,
+    "supervisorAfterE2E": true
   },
   "unsegmentedFollowupWindows": [
     {
@@ -4113,5 +5719,14 @@
     "fractionIsMeasuredProjectStatistic": false,
     "automaticEstimateMultiplierApplied": false,
     "baselineForecastUnchanged": true
+  },
+  "effortCoverage": {
+    "measuredActiveHours": 10.098002026944442,
+    "measuredThroughLastClosedInterval": "2026-10-26T14:21:52Z",
+    "completeProjectActual": false,
+    "historicalGapsNotReconstructed": true,
+    "additionalHumanActualHours": null,
+    "baselineForecastRewritten": false,
+    "postCheckpointDocumentationEffortNotYetSegmented": true
   }
 }

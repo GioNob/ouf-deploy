@@ -1,0 +1,39 @@
+version: '1.0'
+scope: Scenario-neutral M2M identity integration only
+contract: identity/m2m-identity-integration-profile-v1.json
+invariants:
+- id: ID-X01
+  rule: Any supported IAM realization must normalize to authorization/PrincipalContext;
+    downstream modules do not read provider-specific claims directly.
+- id: ID-X02
+  rule: issuerRef, jwksRef, audiences and claim-path configuration are environment
+    bindings.
+- id: ID-X03
+  rule: actorType is derived from validated trust configuration; application payload
+    cannot override it.
+- id: ID-X04
+  rule: Scenario A/B/C remains unresolved and no code/config branch may treat scenario
+    name as authorization semantics.
+- id: ID-X05
+  rule: Gateway performs boundary token validation/coarse enforcement; backend Authorization
+    SDK remains fine-grained authority.
+- id: ID-X06
+  rule: MCP receives normalized audience-bound principal/delegation context and never
+    becomes IAM authority.
+- id: ID-X07
+  rule: service identity provisioning, client registration, secret rotation and issuer
+    ownership remain external platform concerns.
+- id: ID-X08
+  rule: credential/token material is excluded from contract artifacts and logs.
+- id: ID-X09
+  rule: Two materially different IAM mock profiles must produce the same normalized
+    PrincipalContext semantics for equivalent technical identities.
+explicitlyExcluded:
+- Selection of A/B/C
+- real issuer/JWKS URLs
+- real claim names
+- client provisioning
+- secret/certificate issuance and rotation
+- Keycloak realm design
+- Technical IAM deployment
+- changes to MCP Server

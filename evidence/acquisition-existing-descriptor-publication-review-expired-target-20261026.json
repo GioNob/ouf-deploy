@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.existing-descriptor-publication-expired-observation.v1",
+  "source": "operator-provided projection of existing root journal; not a new controller execution/result",
+  "observation": {
+    "counts": {
+      "administrativeWrites": 6,
+      "bytes": 744072,
+      "ownerGets": 13,
+      "previewPosts": 1
+    },
+    "humanReviewApproved": false,
+    "pendingReads": [],
+    "publishState": null,
+    "reasonCode": "FINITE_HUMAN_WINDOW_EXPIRED",
+    "state": "STOP_RECONCILE"
+  },
+  "contextPath": "/etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1",
+  "reviewHash": "6ff5fa76c217888e174d760b84a0ce8ad6e6242955546bd9ddcca050e7851ff7",
+  "scopeConsumed": true,
+  "noPublicationClaimInObservedJournal": true,
+  "nativeExitNotProvided": true,
+  "deliveryExitNotProvided": true,
+  "cancellationNotInferred": true,
+  "causeOfInputNonConsumptionUnproven": true,
+  "knownSeparateDiagnosticMcpGrantsInvocations": 2,
+  "diagnosticPolicyRef": "ouf-lab-authorization:48",
+  "diagnosticPolicyHash": "sha256:6209fe7a832a4b92fcd543304a5480edb85f6f66dfe8476245075509e2c7f46b",
+  "diagnosticWireRequestAndByteTotalsNotObserved": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

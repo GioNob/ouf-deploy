@@ -1,0 +1,80 @@
+{
+  "gatewayCapability": {
+    "capabilityId": "urban.object.read",
+    "version": "1.0",
+    "owner": "udp",
+    "operationType": "read",
+    "riskLevel": "low",
+    "input": {
+      "schemaRef": "schemas/urban-object-read-1.0.json"
+    },
+    "output": {
+      "schemaRef": "schemas/urban-object-view-1.0.json"
+    },
+    "authorization": {
+      "coarseScope": "ouf.read.objects",
+      "audience": "ouf-udp",
+      "backendCapabilityId": "urban.object.read"
+    },
+    "bindings": {
+      "rest": {
+        "method": "GET",
+        "path": "/api/urban/v1/objects/{id}"
+      }
+    },
+    "mcp": {
+      "toolEligible": true
+    }
+  },
+  "authorizationCapability": {
+    "capabilityId": "urban.object.read",
+    "version": "1.0",
+    "owner": "udp",
+    "operationType": "read",
+    "riskClass": "READ",
+    "humanRequired": false,
+    "toolEligibility": false,
+    "resourceTypes": [
+      "URBAN_OBJECT"
+    ]
+  },
+  "mcpDescriptor": {
+    "toolName": "urban.object.get",
+    "capabilityId": "urban.object.raw",
+    "capabilityVersion": "1.0",
+    "owner": "udp",
+    "operationClass": "COMMAND",
+    "mcpClass": "MCP_TOOL",
+    "publicationState": "ACTIVE",
+    "toolEligible": true,
+    "requiredAuthorizationCapability": "urban.object.history",
+    "gatewayBindingRef": "https://internal-host:9443/api",
+    "inputSchemaRef": "schemas/local-semantic-drift.json",
+    "outputSchemaRef": "schemas/urban-object-view-1.0.json",
+    "actorTypes": [
+      "HUMAN_USER",
+      "AI_AGENT"
+    ],
+    "baseCostEnvelope": {
+      "hardMaxToolCalls": 1,
+      "hardMaxGraphCalls": 0,
+      "hardMaxDistinctObjects": 1,
+      "hardMaxResultBytes": 1048576,
+      "hardMaxElapsedMs": 3000
+    },
+    "conditionalOutcomeCost": {
+      "mismatchCalls": 1,
+      "equivalentRetryCalls": 1
+    },
+    "purpose": "Recupera un Urban Object",
+    "useWhen": [
+      "Serve il dettaglio canonico di un oggetto"
+    ],
+    "doNotUseWhen": [
+      "Serve raw/history/export"
+    ],
+    "preferredAlternatives": [
+      "urban.object.search"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "ouf.onboarding-structural-object-read-proposal.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "status": "PUBLISHED_HUMAN_DIRECT_THS",
+  "evidence": "evidence/farmacie-service-policy-read-target-20261027.json",
+  "request": {
+    "operation": "UPSERT",
+    "grantId": "service-onboarding-managed-file-read-structural-v1",
+    "reason": "Correzione strutturale del permesso SERVICE di lettura staging. Policy55 osservata: unico grant per ouf-onboarding/ouf.object-storage.content.read scaduto25ottobre2026. Nuovo grant vincolato a questo solo servizio, capability READ e tenantouf-lab; validita fino15settembre2036, stesso orizzonte gia usato dai permessi strutturali della piattaforma, non un rinnovo per ogni CSV. Revocabile con nuova policy. Grant storico e tutti gli altri grant/ruoli/assegnazioni conservati, Ingestion escluso. Nessuna modifica token/IAM/client, attivazione, budget nuovo, reset contatori o rilancio del job FAILED. Pubblicazione solo HUMAN diretta THS.",
+    "grant": {
+      "grantId": "service-onboarding-managed-file-read-structural-v1",
+      "capabilityId": "ouf.object-storage.content.read",
+      "tenantId": "ouf-lab",
+      "subjectId": null,
+      "servicePrincipalId": "ouf-onboarding",
+      "organizationId": null,
+      "validFrom": "2026-10-27T14:14:50.000Z",
+      "validUntil": "2036-09-15T07:13:50.968730Z",
+      "constraints": null
+    }
+  },
+  "receipt": {
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "finalPolicyRef": null
+  },
+  "readback": {
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "finalPolicyRef": null
+  },
+  "sourceFailure": "OBJECT_READ_FORBIDDEN",
+  "historicalGrantPreserved": true,
+  "unrelatedGrantsRolesAssignmentsPreservedByAdditiveRequest": true,
+  "roleCatalogueReadBeforeProposal": {
+    "roles": 7,
+    "assignments": 11
+  },
+  "validityDesign": {
+    "mode": "STRUCTURAL_INSTALLATION_PERMISSION_REVOCABLE",
+    "contractRequiresValidUntil": true,
+    "horizon": "2036-09-15T07:13:50.968730Z",
+    "horizonBasis": "existing platform structural policy horizon, observed ouf-admin-nominal-2026 assignment; not a claim of a separate unbounded SERVICE contract",
+    "source": "https://github.com/GioNob/ouf-source-onboarding/blob/a5ed8b05c264a8221783a6e323ba00117aed891d/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationPolicy.java",
+    "accessTokenExpiryAndRotationUnchanged": true,
+    "grantNotAJobBudget": true,
+    "perUploadHumanPermissionRenewalNotIntended": true,
+    "longTermExpiryMonitoringNotProven": true
+  },
+  "changesNotAuthorizedByThisProposal": [
+    "new IAM scope or client change",
+    "new profiling session or job",
+    "resetting attempts or incident budgets",
+    "source activation or acquisition",
+    "worker/Registry restart or reinstall",
+    "HUMAN upload/profile permission renewal",
+    "Ingestion SERVICE grant change"
+  ],
+  "applicationOrGatewayReadIssued": false,
+  "newGrantPublishedByAssistant": false,
+  "humanConfirmationRequired": true,
+  "automaticReissueAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "publishedReceipt": {
+    "proposalId": "b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "revision": 1,
+    "state": "PUBLISHED",
+    "expiresAt": "2026-10-27T14:29:59.514655Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=b045ada2-f1d6-4e4e-9beb-acf85d6474f7",
+    "finalPolicyRef": "ouf-lab-authorization:56"
+  },
+  "publishedBy": "HUMAN_DIRECT_THS",
+  "publicationVerifiedByAssistant": true,
+  "jobRecoveryExecuted": false
+}

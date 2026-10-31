@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/discovery-request-v1.json",
+  "title": "OUF DiscoveryRequest v1",
+  "type": "object",
+  "required": [
+    "requestedArtifactType",
+    "intent",
+    "preferredLanguages",
+    "providerPolicy"
+  ],
+  "properties": {
+    "requestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "requestedArtifactType": {
+      "type": "string",
+      "enum": [
+        "ONTOLOGY",
+        "CLASS",
+        "PROPERTY",
+        "RELATIONSHIP",
+        "VOCABULARY",
+        "CONCEPT",
+        "RULE"
+      ]
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preferredLanguages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expectedProperties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expectedRelationships": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "providerPolicy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "expectedProperties/expectedRelationships are ranking/gap hints, not SHACL hard constraints",
+    "discovery request does not create an official semantic artifact"
+  ]
+}
