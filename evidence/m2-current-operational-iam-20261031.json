@@ -140,7 +140,88 @@
     },
     "publicationHelpersIdenticalToPinnedCompiler": true,
     "compatibilityWorkflowSource": "e311e933cd6b9574f57b56130263ee796391156d",
-    "compatibilityQualificationComplete": false
+    "compatibilityQualificationComplete": true,
+    "compatibilityQualification": {
+      "runId": 41228418288,
+      "jobId": 124617330418,
+      "sourceCommit": "e311e933cd6b9574f57b56130263ee796391156d",
+      "finalLogRead": true,
+      "tests": 49,
+      "suites": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSdk": {
+        "tests": 10,
+        "suites": 4
+      },
+      "sourceJava": {
+        "tests": 25,
+        "suites": 7,
+        "report": {
+          "ConfigurationValidatorContractTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 10
+          },
+          "IamJwtValidationTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 4
+          },
+          "IamPrincipalBridgeTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 3
+          },
+          "IngestionConfigurationAuditRuntimeTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 2
+          },
+          "ManagedFileOpenApiTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 2
+          },
+          "ManagedOnboardingReviewApiTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 2
+          },
+          "OpenApiContractTest": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 2
+          }
+        }
+      },
+      "discoveryPublication": {
+        "tests": 14,
+        "seconds": 4.201,
+        "actualInstalledOwnerDtoAndHelpers": true,
+        "ownerHttpAndIamTransportModeled": true
+      },
+      "actual": [
+        "exact installed9d19 source and unchanged compiler hashes",
+        "SDK checksum/frozen contract and Java DTO/Jackson",
+        "real PostgreSQL/proxied audited authorization service",
+        "actual source MVC controller parameter envelopes",
+        "JWT bridge unit contracts and schema/OpenAPI"
+      ],
+      "notProven": [
+        "actual target TCP/APISIX/JWT/Onboarding runtime interaction",
+        "cross-module Ingestion HTTP client compatibility",
+        "full thirteen-peer target native admission and new CSV E2E"
+      ]
+    }
   },
   "fullCohortProven": false,
   "currentTargetAdmissionProven": false,
