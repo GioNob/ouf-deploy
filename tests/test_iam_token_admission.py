@@ -33,7 +33,9 @@ def certificate(root):
     return ca,pem
 
 class Fixture:
-    def __init__(self,root):
+    def __init__(self,root,*,lifetime=300):
+        assert type(lifetime) is int and 90<=lifetime<=3600
+        self.lifetime=lifetime
         self.ca,self.key=certificate(root);self.calls=[];self.body_mode=None;self.code=200;self.after=None
         self.token_issued_at=int(time.time());self.connection_close=False;self.body_piece_bytes=None;self.body_delay=0
         fixture=self
@@ -47,7 +49,7 @@ class Fixture:
                 if self.path.endswith('/.well-known/openid-configuration'):
                     value={'issuer':fixture.profile.issuer,'token_endpoint':fixture.profile.token_endpoint,'introspection_endpoint':fixture.profile.introspection_endpoint}
                 elif self.path.endswith('/introspect'):value=copy.deepcopy(fixture.active())
-                else:value={'access_token':'FIXTURE_TOKEN','token_type':'Bearer','expires_in':300}
+                else:value={'access_token':'FIXTURE_TOKEN','token_type':'Bearer','expires_in':fixture.lifetime}
                 if fixture.body_mode=='changed':value['issuer']='https://other.invalid/realms/fixture'
                 if fixture.body_mode=='inactive':value={'active':False}
                 if type(fixture.body_mode) is tuple:value[fixture.body_mode[0]]=fixture.body_mode[1]
@@ -76,7 +78,7 @@ class Fixture:
         self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
     def active(self):
         now=self.token_issued_at
-        return {'active':True,'iss':self.profile.issuer,'client_id':self.profile.client_id,'sub':self.profile.subject_id,'tenant_id':self.profile.tenant_id,'ouf_actor_type':'SERVICE','aud':self.profile.audience,'scope':'authorization.bundle.read','iat':now,'exp':now+300}
+        return {'active':True,'iss':self.profile.issuer,'client_id':self.profile.client_id,'sub':self.profile.subject_id,'tenant_id':self.profile.tenant_id,'ouf_actor_type':'SERVICE','aud':self.profile.audience,'scope':'authorization.bundle.read','iat':now,'exp':now+self.lifetime}
     def close(self):self.server.shutdown();self.thread.join(2);self.server.server_close()
     def context(self):return ssl.create_default_context(cafile=str(self.ca))
 

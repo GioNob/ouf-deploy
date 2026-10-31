@@ -124,7 +124,10 @@ def main(*,sealed_worker=False,registry_node=False):
                 registry_rootfs=rootfs_seal(Path(STORAGE+'/rootfs/overlayfs/'+control_id),LIMITS,VerificationBudget(15))
             # The independent southbound baseline deliberately supplies all
             # Engine defaults, including seccomp, AppArmor and mount ordering.
-            issuer0,w,auth,_,_,options,_=case.fixture(definition=definition,provider_inputs=opts,rootfs_limits=LIMITS)
+            issuer0,w,auth,_,_,options,_=case.fixture(definition=definition,provider_inputs=opts,rootfs_limits=LIMITS,
+                gate_seconds=300 if registry_node else 120)
+            if registry_node:
+                options.update(maximum_seconds=300,handoff_window=copy.deepcopy(fixtures.m.FULL_HANDOFF_WINDOW))
             prep=options['preparer_template'];prep.update(commands={k:commands[k] for k in prep['commands']},
                 commandHashes={k:pin(commands[k])['sha256'] for k in prep['commands']},hostNetworkNamespace=runtime.host_namespace())
             if registry_node:

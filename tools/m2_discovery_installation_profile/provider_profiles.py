@@ -38,6 +38,11 @@ SCOPE_FIELDS={'schema','providerTemplateHash','creationScopeHash','registryRecip
     'priorRuntimeConfigurationBinding','priorRuntimeConfiguration','journalDirectory','registryRoot',
     'pythonBinding','crypto','frameSourceBinding','keys','keyRefs','runtimeRootParents','rootfsLimits',
     'transactionId','approvalRef','preparerTemplate','maximumSeconds','maximumSignatures','runtimeSwitchOrStartAuthorized'}
+PROFILE_V1='ouf.discovery-provider-profile-installation-scope.v1'
+PROFILE_V2='ouf.discovery-provider-profile-installation-scope.v2'
+FULL_HANDOFF_WINDOW={'schema':'ouf.discovery-complete-installation-handoff-window.v1',
+    'purpose':'REGISTRY_TRANSPORT_AND_SEALED_WORKER_INSTALLATION','maximumSeconds':300,
+    'requiresNewExactParentReview':True,'midflightExtensionAllowed':False,'automaticRenewalAllowed':False}
 
 def validate_registry_recipe(recipe,window_owner):
     require(type(recipe) is dict and recipe.get('schema')=='ouf.semantic-discovery-node-recipe.v1'
@@ -55,7 +60,10 @@ def validate_registry_recipe(recipe,window_owner):
 def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_hashes,
                   runtime_configuration_binding,runtime_configuration,journal_directory,
                   python_binding,crypto,frame_source_binding,keys,key_refs,runtime_root_parents,
-                  rootfs_limits,transaction_id,approval_ref,preparer_template,maximum_seconds=90):
+                  rootfs_limits,transaction_id,approval_ref,preparer_template,maximum_seconds=90,handoff_window=None):
+    require(handoff_window is None or handoff_window==FULL_HANDOFF_WINDOW,
+        'EXACT_SEPARATE_FULL_INSTALLATION_HANDOFF_WINDOW_REQUIRED')
+    full=handoff_window is not None
     t=templates.recompile(template);root=templates.absolute(str(journal_directory));source=templates.absolute(str(source_root))
     require(type(registry_recipe) is dict and type(registry_recipe.get('dockerContext')) is dict,
         'EXPLICIT_INDEPENDENT_REGISTRY_BUNDLE_CONTEXT_REQUIRED')
@@ -108,7 +116,8 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
         and 1<=rootfs_limits['maxDepth']<=64,'BOUNDED_PROVIDER_ROOTFS_VERIFICATION_REQUIRED')
     require(type(creation_scope) is dict and creation_scope.get('schema')=='ouf.discovery-provider-creation-scope.v1'
         and creation_scope['templateHash']==digest(t) and templates.hashed(transaction_id) and identity(approval_ref)
-        and type(maximum_seconds) is int and 1<=maximum_seconds<=90,'SAME_PROVIDER_CREATION_AND_FINITE_PROFILE_SCOPE_REQUIRED')
+        and type(maximum_seconds) is int and 1<=maximum_seconds<=(300 if full else 90),
+        'SAME_PROVIDER_CREATION_AND_FINITE_PROFILE_SCOPE_REQUIRED')
     preparer=copy.deepcopy(preparer_template)
     preparer_fields={'schema','pythonPath','pythonHash','commands','commandHashes','candidate','kernel','dns',
         'coordinationBinding','coordinationJournal','lockFile','budgetSeconds','hostNetworkNamespace'}
@@ -139,7 +148,7 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
     require(set(preparer['coordinationBinding'])=={'transactionId','configurationHash','leaseStructureHash'}
         and all(templates.hashed(v) for v in preparer['coordinationBinding'].values()),
         'EXACT_PROVIDER_NATIVE_COORDINATION_BINDING_REQUIRED')
-    value={'schema':'ouf.discovery-provider-profile-installation-scope.v1','providerTemplateHash':digest(t),
+    value={'schema':PROFILE_V2 if full else PROFILE_V1,'providerTemplateHash':digest(t),
         'creationScopeHash':digest(creation_scope),'registryRecipe':copy.deepcopy(registry_recipe),
         'sourceRoot':source,'sourceHashes':copy.deepcopy(source_hashes),'priorRuntimeConfigurationBinding':prior,
         'priorRuntimeConfiguration':cfg,'journalDirectory':root,'registryRoot':registry,
@@ -148,10 +157,13 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
         'rootfsLimits':copy.deepcopy(rootfs_limits),'transactionId':transaction_id,'approvalRef':approval_ref,
         'preparerTemplate':preparer,
         'maximumSeconds':maximum_seconds,'maximumSignatures':3,'runtimeSwitchOrStartAuthorized':False}
+    if full:value['handoffWindow']=copy.deepcopy(FULL_HANDOFF_WINDOW)
     require(len(encoded(value))<=131072,'BOUNDED_PROVIDER_PROFILE_REVIEW_REQUIRED');return value
 
 def recompile_scope(template,creation_scope,scope):
-    require(type(scope) is dict and set(scope)==SCOPE_FIELDS and scope.get('schema')=='ouf.discovery-provider-profile-installation-scope.v1',
+    full=type(scope) is dict and scope.get('schema')==PROFILE_V2
+    require(type(scope) is dict and set(scope)==SCOPE_FIELDS|({'handoffWindow'} if full else set())
+        and scope.get('schema') in (PROFILE_V1,PROFILE_V2),
         'EXACT_PROVIDER_PROFILE_INSTALLATION_SCOPE_REQUIRED')
     rebuilt=profile_scope(template,creation_scope,registry_recipe=scope['registryRecipe'],source_root=scope['sourceRoot'],
         source_hashes=scope['sourceHashes'],runtime_configuration_binding=scope['priorRuntimeConfigurationBinding'],
@@ -159,7 +171,8 @@ def recompile_scope(template,creation_scope,scope):
         python_binding=scope['pythonBinding'],crypto=scope['crypto'],frame_source_binding=scope['frameSourceBinding'],
         keys=scope['keys'],key_refs=scope['keyRefs'],runtime_root_parents=scope['runtimeRootParents'],
         rootfs_limits=scope['rootfsLimits'],transaction_id=scope['transactionId'],approval_ref=scope['approvalRef'],
-        preparer_template=scope['preparerTemplate'],maximum_seconds=scope['maximumSeconds'])
+        preparer_template=scope['preparerTemplate'],maximum_seconds=scope['maximumSeconds'],
+        handoff_window=scope['handoffWindow'] if full else None)
     require(rebuilt==scope,'PROVIDER_PROFILE_SCOPE_DRIFT');return rebuilt
 
 def registry_identity(creation,scope):

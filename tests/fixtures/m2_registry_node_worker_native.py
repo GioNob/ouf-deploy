@@ -28,7 +28,7 @@ class TokenFixture:
                 path.symlink_to('/dev/null');self.masks.append(path)
             run('systemctl','daemon-reload');assert LegacyWriterFence().guard()
             f,server,owner,recovery,_,output=self.case.fixture(scheduled=True,
-                authority_seconds=300,real_authority_clock=True)
+                authority_seconds=300,real_authority_clock=True,iam_lifetime=600)
             self.auth,self.server,self.owner,self.output=f,server,owner,output
             scheduled=ScheduledRecovery(recovery.journal,recovery.adapter,recovery.policy,
                 recovery.context,recovery.generation,recovery.clock,lambda:.5,interval_seconds=60)

@@ -11,7 +11,7 @@ from tools.m2_discovery_installation_profile import gate_peer_window as m
 
 
 class Window(unittest.TestCase):
-    def fixture(self,kind='GATE_WAITING',unpause_status=204,pause_status=204,definition=None):
+    def fixture(self,kind='GATE_WAITING',unpause_status=204,pause_status=204,definition=None,maximum_seconds=120):
         auth=signed.Parent();auth.setUp();self.addCleanup(auth.doCleanups)
         request,selection,*_=(fixture() if definition is None else definition);profile=DiscoveryProfile(request,**selection)
         child,raw=auth.child(creation_request_hash=m.digest(request))
@@ -36,10 +36,10 @@ class Window(unittest.TestCase):
             if path.endswith('/pause'):actual['State']['Paused']=True;return pause_status,{}
             raise AssertionError('UNREVIEWED_ENGINE_OPERATION')
         engine.request=dispatch
-        scope=m.window_scope(m.digest(request),profile.sha256,child.expected['sourceClosureHash'],root,120)
+        scope=m.window_scope(m.digest(request),profile.sha256,child.expected['sourceClosureHash'],root,maximum_seconds)
         auth.review['components']['registryGatePeerWindow']=scope;parent=auth.fixture()
         window=m.GatePeerWindow(parent=parent,child=child,child_raw=raw,engine=engine,transition=transition,
-            request=request,profile=profile,store=store,directory=root)
+            request=request,profile=profile,store=store,directory=root,maximum_seconds=maximum_seconds)
         observed={'generation':{'pid':1234,'startTicks':5678,'namespaceInode':99},'processKind':kind,
             'nonRootIdentityVerified':True,'capabilitiesEmpty':True,'noNewPrivileges':True}
         window.process.observe=lambda pid:copy.deepcopy(observed)

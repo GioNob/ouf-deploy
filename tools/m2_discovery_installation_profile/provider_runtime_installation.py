@@ -26,7 +26,8 @@ WRAPPER_DIRECTORIES=frozenset(('/usr/local/sbin',))
 def host_namespace():return os.stat('/proc/self/ns/net').st_ino
 def process_namespace(pid):return os.stat('/proc/'+str(pid)+'/ns/net')
 def runtime_scope(profile_scope,*,wrapper_binding,common_lock_identity,native_read_seconds=5):
-    require(type(profile_scope) is dict and profile_scope.get('schema')=='ouf.discovery-provider-profile-installation-scope.v1',
+    require(type(profile_scope) is dict and profile_scope.get('schema') in (
+        'ouf.discovery-provider-profile-installation-scope.v1','ouf.discovery-provider-profile-installation-scope.v2'),
         'EXACT_PROVIDER_PROFILE_SCOPE_REQUIRED_BEFORE_RUNTIME_INSTALLATION')
     require(type(wrapper_binding) is dict and set(wrapper_binding)=={'path','sha256'}
         and Path(wrapper_binding['path']).parent.as_posix() in WRAPPER_DIRECTORIES

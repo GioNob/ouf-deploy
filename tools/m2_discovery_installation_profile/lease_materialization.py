@@ -35,7 +35,8 @@ def paired_native_inputs(template,profile_scope,registry_request,kernel_lock_ide
     """Cross-check already reviewed inputs; never admit observations or sign."""
     t=recompile(template);r=t['recipeTemplate'];recipe=profile_scope['registryRecipe']
     prep=profile_scope['preparerTemplate']
-    require(profile_scope.get('schema')=='ouf.discovery-provider-profile-installation-scope.v1'
+    require(profile_scope.get('schema') in ('ouf.discovery-provider-profile-installation-scope.v1',
+        'ouf.discovery-provider-profile-installation-scope.v2')
         and t['sourceClosureHash']==recipe['sourceClosureHash']
         and t['expectedImages']['registry']==registry_request['Image']
         and t['expectedNodeProfiles']['registry']=={'nodeRecipeHash':digest(recipe),

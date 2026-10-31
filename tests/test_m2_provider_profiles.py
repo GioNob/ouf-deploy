@@ -14,8 +14,9 @@ from tools.semantic_transaction_profiles.repair_peer_bundle_sources import repai
 from tools.semantic_registry_operational_owner.core import Denied as InputDenied
 
 class Profiles(unittest.TestCase):
-    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None,rootfs_limits=None):
-        case=creates.Creation();old,w,auth,state,calls,*_=case.fixture(runtime_binding=runtime_binding,definition=definition,provider_inputs=provider_inputs);self.addCleanup(case.doCleanups)
+    def fixture(self,*,runtime_binding=None,definition=None,provider_inputs=None,rootfs_limits=None,gate_seconds=120):
+        case=creates.Creation();old,w,auth,state,calls,*_=case.fixture(runtime_binding=runtime_binding,
+            definition=definition,provider_inputs=provider_inputs,gate_seconds=gate_seconds);self.addCleanup(case.doCleanups)
         r,selection,t,l,c=(registry_fixture() if definition is None else definition);self.assertEqual(r,w.request)
         context={k:v for k,v in c.items() if k not in {'containerId','networkNamespaceName','rootfsPath'}}
         context['rootfsLayout']='docker-containerd-overlayfs-v1'
@@ -156,5 +157,32 @@ class Profiles(unittest.TestCase):
     def test_signed_other_registry_recipe_is_not_accepted(self):
         issuer,w,auth,*_=self.fixture();recipe=copy.deepcopy(issuer.scope['registryRecipe']);recipe['qualifiedPackageHash']='e'*64
         with self.assertRaisesRegex(ValueError,'REGISTRY_SIGNED_NODE_INTENT'):m.validate_registry_recipe(recipe,w)
+
+    def test_complete_handoff_is_separate_reviewed_v2_and_old_ninety_second_scope_stays_closed(self):
+        issuer,w,auth,_,calls,opts,_=self.fixture(gate_seconds=300)
+        with self.assertRaisesRegex(ValueError,'FINITE_PROFILE_SCOPE_REQUIRED'):
+            m.profile_scope(issuer.template,issuer.creation.scope,**opts,maximum_seconds=91)
+        full=m.profile_scope(issuer.template,issuer.creation.scope,**opts,maximum_seconds=300,
+            handoff_window=copy.deepcopy(m.FULL_HANDOFF_WINDOW))
+        self.assertEqual(full['schema'],m.PROFILE_V2);self.assertEqual(full['maximumSeconds'],300)
+        self.assertEqual(m.recompile_scope(issuer.template,issuer.creation.scope,full),full)
+        self.assertNotEqual(m.digest(full),m.digest(issuer.scope))
+        # A new static profile cannot use the old parent's reviewed component.
+        with self.assertRaisesRegex(ValueError,'EXPLICIT_PARENT_REVIEW'):
+            m.ProviderInitialIssuer(creation=issuer.creation,scope=full,signers=issuer.signers)
+        self.assertFalse((issuer.root/'issuance-claim.json').exists());self.assertEqual(calls,[])
+
+    def test_handoff_schema_policy_and_three_hundred_second_ceiling_cannot_drift(self):
+        issuer,w,auth,_,_,opts,_=self.fixture()
+        full=m.profile_scope(issuer.template,issuer.creation.scope,**opts,maximum_seconds=300,
+            handoff_window=copy.deepcopy(m.FULL_HANDOFF_WINDOW))
+        for case in ('old_schema','missing_policy','renewal','ceiling'):
+            with self.subTest(case=case):
+                bad=copy.deepcopy(full)
+                if case=='old_schema':bad['schema']=m.PROFILE_V1
+                elif case=='missing_policy':bad.pop('handoffWindow')
+                elif case=='renewal':bad['handoffWindow']['automaticRenewalAllowed']=True
+                else:bad['maximumSeconds']=301
+                with self.assertRaises(ValueError):m.recompile_scope(issuer.template,issuer.creation.scope,bad)
 
 if __name__=='__main__':unittest.main()

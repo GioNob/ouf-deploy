@@ -68,13 +68,13 @@ class InstalledOwnerTest(unittest.TestCase):
                 with self.assertRaises(Permanent):reader.await_active(owner.binding.digest(),1)
             self.assertEqual(len(server.calls),before)
 
-    def fixture(self,*,scheduled=False,authority_seconds=120,real_authority_clock=False):
+    def fixture(self,*,scheduled=False,authority_seconds=120,real_authority_clock=False,iam_lifetime=300):
         self.assertIs(type(authority_seconds),int);self.assertTrue(1<=authority_seconds<=300)
         self.assertIs(type(real_authority_clock),bool)
         f=SignedCutover();f.setUp();self.addCleanup(f.doCleanups)
         if real_authority_clock:
             f.clock=time.time;f.verifier.clock=time.time
-        server=Fixture(f.root);self.addCleanup(server.close)
+        server=Fixture(f.root,lifetime=iam_lifetime);self.addCleanup(server.close)
         credential=f.root/'credential';credential.write_text('DISPOSABLE_FIXTURE_SECRET');credential.chmod(0o400)
         output=f.root/'output';output.mkdir(mode=0o750)
         try:os.chown(output,0,10001)
