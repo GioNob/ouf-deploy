@@ -25,7 +25,7 @@ ROLES=REPLACED|RETAINED
 BINDING_FIELDS={'containerId','imageId','pid','startedAt','configHash','hostConfigHash','mountsHash','networkSettingsHash'}
 INPUT_SCHEMA='ouf.discovery-current-cohort-runtime-inputs.v1'
 INPUT_SCHEMA_V2='ouf.discovery-current-cohort-runtime-inputs.v2'
-ADDITIONAL_INPUTS={'databases','custody','tlsIam','retirementAndBackup'}
+ADDITIONAL_INPUTS={'databases','custody','tlsIam','iamWorkload','retirementAndBackup'}
 REVIEW_SCHEMA='ouf.discovery-current-cohort-runtime-review.v2'
 
 
