@@ -113,7 +113,21 @@ def attest_and_install(provider_phase,auth,setup,boundary,token):
     transport=transports.TransportInstallationAdapter(transition=window.transition,store=window.store,
         authority=window.child,authority_raw=window.raw,node_owner=node,coordinator=owner.coordinator,
         recipe=setup['transportRecipe'],directory=setup['transportRoot'],intent=setup['transportIntent'])
-    transport.apply(setup['transportIntent']);outcome,proof=transport.observe(setup['transportIntent']);assert outcome=='APPLIED'
+    try:
+        transport.apply(setup['transportIntent']);outcome,proof=transport.observe(setup['transportIntent']);assert outcome=='APPLIED'
+    except Exception:
+        observer=node.adapter.observer;profile=observer.transport_profile
+        ns=Path(profile['namespacePath'])
+        def metadata(p):
+            try:
+                s=p.lstat();return {'path':str(p),'uid':s.st_uid,'gid':s.st_gid,'mode':oct(s.st_mode),
+                    'inode':s.st_ino,'symlink':p.is_symlink()}
+            except OSError:return {'path':str(p),'unavailable':True}
+        print('CI_REGISTRY_TRANSPORT_NAMESPACE='+json.dumps({'origin':profile.get('namespaceOrigin'),
+            'path':str(ns),'expectedInode':profile['namespaceInode'],'generation':observer.transport_generation,
+            'dockerSandboxKey':window.engine.inspect(window.transition)['NetworkSettings']['SandboxKey'],
+            'metadata':[metadata(ns),*[metadata(p) for p in ns.parents]]},sort_keys=True),flush=True)
+        raise
     assert not proof['applicationStartAuthorized'] and not proof['applyReplayAllowed']
     applied(boundary,proof);token.unchanged()
     return node
