@@ -1,3 +1,48 @@
+# CURRENT — Current TLS composition PASS67; workload IAM source under qualification; full controller OPEN
+
+31 October 2026, UTC. Continue autonomously/sequentially; no agents/automations,
+optional stop or further VPS command for Quiesced clarification. No current VPS
+QUIESCED incident demonstrated; public MCP snapshot HEALTHY. Preserve Teatri and
+same Farmacie61rows/10columns/all10OPEN, no replay or source activation.
+
+Qualified source539332cd7c0423ef2cd8f7ce258530ac1c214b20,
+tree80d5f8605422bcbca22db5c040154be9f01fe529, CI41226588399 final logs read.
+PASS67/10suites/0fail/0skip/0ResourceWarning: protocol124611909546 PASS58,
+nativeDB124611909404 PASS2/11.232s, nativeTLS124611909540 PASS7/1.010s.
+TLS inputs exact parent-bound v2 additionalInputsHashes.tlsIam. Actual CA/P12
+parser rejects key bags/extra or missing roots; pinned isolated child enters
+actual namespace, exact explicit trust set/chain/SNI, four TLS handshakes and
+four closed Engine GETs. Actual wrapper observes current operational worker,
+same Registry namespace/generation, stable two peers/trust/current held history.
+Peer drift or modeled QUIESCED after successful TLS denies. Namespace FD closes
+on denial; failed Engine construction precedes open. No HTTP/OAuth/credentials.
+Native TLS test uses real current test namespace/Unix peer/TLS and synthetic
+Engine metadata plus modeled selected/profile/Java/worker lineage. NOT actual
+Registry Java namespace or complete target/current cohort admission.
+
+New source9ac569d70dc67eab760b79517fa0c95daa46fb72, local26e4408,
+treea985203880be436105907d8766b194f354056739: current_iam_workload.py and
+protocol8PASS11.658s; native Keycloak26.7.4 qualification PENDING at this entry.
+New explicit additionalInputsHashes.iamWorkload requires a NEW parent review.
+Actual current typed cohort/publication-owner lineage via window.lineage only,
+no recursive window.guard/checkpoint. Pinned Docker explicit same local Engine,
+retained current Keycloak CID, existing kcadm session; twelve allowlisted GETs.
+Root-protected mounted credential equals current Keycloak secret in memory.
+Example access-token JSON checks reviewed SERVICE subject/issuer/tenant/client/
+scope/audience, explicitly CONFIGURATION ONLY: no actual bearer/introspection/
+credential provenance proof. No new login/grant/rotation/mutation in observer.
+Protocol leaves IAM/Engine/profile modeled; real parent Ed25519/custody retained.
+
+Original37/108/128/136 maps/pins/bodies and child/finite initial provider paths
+unchanged. Separate signed current operational handoff remains mandatory after
+completed worker8; integrate paused9/10 and READY12 without initial-provider
+barrier reentry. Next current custody/supply-chain/retirement/backup/fencing,
+concrete sealed checkpoint/controller/package/exact review; M2 acceptance OPEN.
+No target apply/grant/restart/reset/replay/merge/producer release/acceptance.
+Evidence:evidence/m2-current-tls-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_TLS_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Current prerequisites PASS54 incl native PostgreSQL; normal handoff separated; full controller OPEN
 
 31 October 2026, UTC. Continue autonomously/sequentially; no agents/automations.
