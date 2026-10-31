@@ -1,3 +1,61 @@
+# CURRENT — Current prerequisites PASS54 incl native PostgreSQL; normal handoff separated; full controller OPEN
+
+31 October 2026, UTC. Continue autonomously/sequentially; no agents/automations.
+Do not stop at optional checkpoints or ask another root command just because
+source work remains. Teatri M1/G4 acquired; same Farmacie SUCCEEDED61rows/10cols,
+ministerial STRING/all10OPEN preserved, no upload/profile/acquisition replay.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two real clients remain OPEN.
+
+Source0efea488ed2c1e5f58c24d6987b7a1f6dd09ba27, local30708aa9b98b03c5242377be9376ce92671bedc7,
+tree341d9c8aa4f3efad9eb6d2cd574ed8bffde54e57, PR54 draft/unmerged.
+New current_databases.py binds exact private inputs via runtime inputs v2
+additionalInputsHashes.databases (new parent review required). Four current
+DB identities/OIDs/no prepared transactions + READ ONLY + exact migrations
+from reviewed JAR/MCP SQL artifact bytes, two passes/eight sessions. Pinned CLI
+must use the same local Engine. No migration/grant/restore/backup. Artifact
+publisher provenance is separately OPEN. New caller closes both owned Psql
+pipes; original frozen adapter unchanged.
+
+New current_operational_worker.py verifies current installed seal/commit/
+generation signatures with CURRENT policy/clock, completed original phase,
+material/initial clocks, same admitted two-peer generation, current positive
+worker/leases and parent/child NORMAL-USE decision. Initial provider current/start
+paths remain finite/unchanged. No backdating, window extension, new generation
+or effects. Fixture initial85s expiry denies initial gate; operational read at86s
+uses current signed installation, expired parent/missing signature still denies.
+This resolves the read contract after handoff; controller integration is OPEN.
+
+CI41221748282 final logs read: protocoljob124597563048 PASS52/7suites,
+running12/1.581s,cohort7/.401s,installedworker7/94.158s,operationalworker5/
+66.916s,databases7/1.680s,pausedframe8/.171s,pausednode6/.204s.
+Nativejob124597563226 PASS2/12.200s with actual isolated Docker29.8.1, Engine/
+CLI/Unix peer/PG/four databases/READ ONLY/artifacts/checksum drift denial.
+Other cohort peers/selected lineage and application artifacts synthetic.
+TOTAL54/8suites/0fail/0skip/0ResourceWarning, NOT target/full-cohort/E2E proof.
+Original37/108/128/136 maps/pins/bodies/Registry child untouched.
+
+Failed fixture attempts preserved:41219717334 native setup no tests; wait final
+TCP postmaster using original45s budget. 41220023987 default runner Engine custody
+denied; reused existing checksum-pinned isolated29.8.1 daemon without relaxing
+contract. 41220516244 native2 PASS had resource warnings; final source closes/
+asserts pipes on success and denial. Local data7PASS2.740s, operational5PASS75.066s.
+
+Renewed public MCP read HEALTHY/actionRequired=false/partial=false/redacted=true.
+VPS declared Registry running/unpaused with both discovery flags false. NO current
+VPS QUIESCED incident demonstrated; causal CI observer fix separate. No target
+service change, further diagnostic read/token/window request needed now.
+
+Next: TLS/IAM + custody/supply-chain/retirement/backup/fencing, concrete sealed
+checkpoint/controller, new sealed package/exact private review. Integrate normal
+handoff after completed worker phase8 for paused9/10 and running12; READY12
+continuation must not re-enter provider_barrier/finite initial protocol. Preserve
+current HUMAN parent/child limits and original recovery clocks. Keep retained
+Onboarding/control plane reachable at publication. No grant/apply/reset/replay/
+merge/producer release/source activation/release acceptance.
+Evidence:evidence/m2-current-prerequisites-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_PREREQUISITES_20261031.md
+Canonical continuation on PR50. Older CURRENT headers are historical.
+
 # CURRENT — Current installed-worker reader PASS40; full native controller remains OPEN
 
 31 October 2026, UTC. Continue autonomously/sequentially without agents or
