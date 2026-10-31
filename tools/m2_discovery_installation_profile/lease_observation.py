@@ -12,6 +12,7 @@ from .lease_service import build_installed
 from .installed_lease_guard import boot_id
 from .native_generation_probe import ticks
 from tools.semantic_registry_operational_owner.guard import protected_file,private_json
+from tools.semantic_provider_deployment_authentication import ancestors
 
 PROPERTIES={'LoadState','ActiveState','SubState','MainPID','FragmentPath','DropInPaths',
     'NeedDaemonReload','User','Group','NoNewPrivileges','CapabilityBoundingSet','AmbientCapabilities','RootDirectory'}
@@ -41,6 +42,8 @@ DENIAL_CODES=frozenset({
     'CURRENT_TWO_FAMILY_DISCOVERY_LEASE_REQUIRED',
     'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION',
     'DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION',
+    'CURRENT_DISCOVERY_KERNEL_LOCK_INODE_REQUIRED',
+    'DISCOVERY_KERNEL_LOCK_REPLACED',
 })
 
 
@@ -62,6 +65,40 @@ def preload_runtime():
     # The parent uses the same reviewed runtime modules. No ambient substitute
     # can satisfy the private installed manifest's executing-code checks.
     for name in sorted(PINS):importlib.import_module(name)
+
+
+def publication_snapshot(coordinator,path,identity):
+    """Read a stable positive publication without taking the writer's lock.
+
+    The worker deliberately uses nonblocking exclusive acquisition. A reader
+    taking that same lock can force its renewal AND safe revocation to fail.
+    Authenticate the approved inode without flock, and reject an incomplete or
+    changing publication. This performs no retry, DNS, kernel or journal write.
+    """
+    path=Path(path);ancestors(path)
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    def attributes(s):return [s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink]
+    try:
+        s=os.fstat(fd)
+        require(stat.S_ISREG(s.st_mode) and s.st_uid==s.st_gid==0
+            and stat.S_IMODE(s.st_mode)==0o600 and s.st_nlink==1
+            and type(identity) is list and len(identity)==6
+            and attributes(s)==identity==attributes(path.lstat()),
+            'CURRENT_DISCOVERY_KERNEL_LOCK_INODE_REQUIRED')
+        coordination=coordinator.journal();coordinator.owner.backend.verify_ownership(coordinator.configuration)
+        values=coordinator.owner.backend.read_sets(coordinator.configuration)
+        flows=coordinator.configuration['providerFlows']
+        require(coordination['state']=='LEASE_READY' and coordination['leaseAuthorized'] is True
+            and set(values)=={(f,i) for f in ('inet','bridge') for i in range(len(flows))},
+            'CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED')
+        for i in range(len(flows)):
+            left,right=values['inet',i],values['bridge',i]
+            require(left and right and set(left)==set(right)
+                and set(left)<=set(coordination['leaseAddresses'][i]),'CURRENT_TWO_FAMILY_DISCOVERY_LEASE_REQUIRED')
+        coordinator.owner.backend.verify_ownership(coordinator.configuration)
+        require(coordinator.journal()==coordination,'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION')
+        require(attributes(os.fstat(fd))==identity==attributes(path.lstat()),'DISCOVERY_KERNEL_LOCK_REPLACED')
+    finally:os.close(fd)
 
 
 def observe(configuration_path,anchor,*,unit_name,systemctl,seconds=15):
@@ -148,19 +185,10 @@ def _observe(configuration_path,anchor,*,unit_name,systemctl,deadline):
     guard.signature(generation);observed=guard.probe(generation)
     require(all(observed[k]==generation[k] for k in ('nativeObservationHash','nativeProfileHash','generationRef','bootId')),
         'CURRENT_NATIVE_DISCOVERY_WORKER_GENERATION_REQUIRED')
-    with worker.c.hold_lock():
-        coordination=worker.c.journal();worker.c.owner.backend.verify_ownership(worker.c.configuration)
-        values=worker.c.owner.backend.read_sets(worker.c.configuration)
-        flows=worker.c.configuration['providerFlows']
-        require(coordination['state']=='LEASE_READY' and coordination['leaseAuthorized'] is True
-            and set(values)=={(f,i) for f in ('inet','bridge') for i in range(len(flows))},
-            'CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED')
-        for i in range(len(flows)):
-            left,right=values['inet',i],values['bridge',i]
-            require(left and right and set(left)==set(right)
-                and set(left)<=set(coordination['leaseAddresses'][i]),'CURRENT_TWO_FAMILY_DISCOVERY_LEASE_REQUIRED')
-        worker.c.owner.backend.verify_ownership(worker.c.configuration)
-        require(worker.c.journal()==coordination,'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION')
+    recipe_path=Path(configuration_path).parent/'worker-recipe.json'
+    reference=next(v for v in c['sources'] if v['path']==str(recipe_path))
+    recipe=private_json(recipe_path,reference['sha256'])
+    publication_snapshot(worker.c,recipe['leaseCommonLock'],recipe['leaseCommonLockIdentity'])
     after_record=worker.r.journal.read();guard.metadata_guard()
     require(after_record['state']=='ACTIVE' and all(after_record[k]==record[k] for k in
         ('contextRef','generationRef','policyHash','discoveryLeaseScopeHash','startedWall','startedMonotonic'))

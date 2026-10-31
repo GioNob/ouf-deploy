@@ -3,7 +3,7 @@
 These protocol tests neither install a worker nor prove actual manager/provider
 or node admission. Native worker observation is qualified by a separate fixture.
 """
-import copy,subprocess,sys,types,unittest
+import copy,os,subprocess,sys,tempfile,types,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,6 +13,65 @@ sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_c
 import test_m2_discovery_parent_authority as signed
 import test_m2_discovery_lease_installation_template as templates
 from tools.m2_discovery_installation_profile import lease_start_owner as m
+
+
+class ObservationPublication(unittest.TestCase):
+    def fixture(self):
+        from tools.m2_discovery_installation_profile.lease_service import existing_kernel_lock
+        t=tempfile.TemporaryDirectory(dir=ROOT);self.addCleanup(t.cleanup)
+        root=Path(t.name);root.chmod(0o700);path=root/'kernel.lock';path.write_bytes(b'');path.chmod(0o600)
+        s=path.stat();identity=[s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink]
+        lock=lambda:existing_kernel_lock(path,identity)
+        row={'state':'LEASE_READY','leaseAuthorized':True,'leaseAddresses':[['1.1.1.1']]}
+        sets={('inet',0):{'1.1.1.1':10},('bridge',0):{'1.1.1.1':10}}
+        backend=types.SimpleNamespace(verify_ownership=lambda _:None,read_sets=lambda _:copy.deepcopy(sets))
+        c=types.SimpleNamespace(configuration={'providerFlows':[{}]},owner=types.SimpleNamespace(backend=backend),
+            journal=lambda:copy.deepcopy(row),hold_lock=lock)
+        return c,path,identity,lock,row,sets
+
+    def test_observer_does_not_deny_concurrent_native_writer_lock(self):
+        c,path,identity,lock,row,sets=self.fixture();calls=[]
+        def concurrent_writer(_):
+            with lock():calls.append('writer-lock-acquired')
+            return copy.deepcopy(sets)
+        c.owner.backend.read_sets=concurrent_writer
+        m.lease_observation.publication_snapshot(c,path,identity)
+        self.assertEqual(calls,['writer-lock-acquired']);self.assertEqual(row['state'],'LEASE_READY')
+
+    def test_reader_does_not_compete_with_already_running_writer(self):
+        c,path,identity,lock,row,sets=self.fixture()
+        with lock():m.lease_observation.publication_snapshot(c,path,identity)
+        self.assertEqual(row['state'],'LEASE_READY')
+
+    def test_unproven_publication_membership_or_lock_inode_never_passes(self):
+        for case in ('pending','receipt_drift','family','empty','foreign','lock_replaced'):
+            with self.subTest(case=case):
+                c,path,identity,lock,row,sets=self.fixture()
+                if case=='pending':row['state']='LEASE_UPDATING';row['leaseAuthorized']=False
+                elif case=='family':sets[('bridge',0)]={'8.8.8.8':10}
+                elif case=='empty':sets[('bridge',0)]={}
+                elif case=='foreign':row['leaseAddresses']=[['8.8.8.8']]
+                elif case=='lock_replaced':
+                    q=path.with_name('new');q.write_bytes(b'');q.chmod(0o600);q.replace(path)
+                else:
+                    def change(_):row['leaseAuthorized']=False;return copy.deepcopy(sets)
+                    c.owner.backend.read_sets=change
+                with self.assertRaises((ValueError,RuntimeError)):
+                    m.lease_observation.publication_snapshot(c,path,identity)
+
+    def test_original_exclusive_observer_forces_actual_recovery_safe_pause_denial(self):
+        from bounded_recovery import Recovery,Policy
+        c,path,identity,lock,row,sets=self.fixture();records=[]
+        def pause():
+            with lock():records.append('revoked')
+        journal=types.SimpleNamespace(compare_and_save=lambda before,after:records.append(copy.deepcopy(after)))
+        recovery=Recovery(journal,types.SimpleNamespace(pause=pause),Policy(),'a'*64,'b'*64,lambda:(10,10),lambda:.5)
+        initial=recovery.initial()
+        with lock():blocked=recovery.pause(initial,'BLOCKED','AUTHORITY_REVOKED')
+        self.assertEqual(blocked['state'],'BLOCKED');self.assertEqual(blocked['reason'],'SAFE_PAUSE_UNPROVEN')
+        self.assertEqual(blocked['attempts'],initial['attempts']);self.assertNotIn('revoked',records)
+        allowed=recovery.pause(initial,'BLOCKED','AUTHORITY_REVOKED')
+        self.assertEqual(allowed['reason'],'AUTHORITY_REVOKED');self.assertIn('revoked',records)
 
 
 class Start(unittest.TestCase):
