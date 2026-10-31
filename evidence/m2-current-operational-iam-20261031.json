@@ -1,0 +1,152 @@
+{
+  "schema": "ouf.discovery-current-operational-iam-source-evidence.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "b564375593d01919fbaadcb86f84131fe7eef2d0",
+  "sourceTree": "c2b32fe95664d7f4a4b10df6ca2cd29f55b39c0b",
+  "qualification": {
+    "runId": 41227909361,
+    "tests": 83,
+    "suites": 13,
+    "jobs": 4,
+    "finalLogsRead": true,
+    "failures": 0,
+    "skipped": 0,
+    "resourceWarnings": 0,
+    "protocolJob": {
+      "jobId": 124615825412,
+      "suites": [
+        {
+          "name": "runningRegistry",
+          "tests": 12,
+          "seconds": 1.553
+        },
+        {
+          "name": "currentCohort",
+          "tests": 7,
+          "seconds": 0.375
+        },
+        {
+          "name": "currentInstalledWorker",
+          "tests": 7,
+          "seconds": 96.877
+        },
+        {
+          "name": "currentOperationalWorker",
+          "tests": 5,
+          "seconds": 65.752
+        },
+        {
+          "name": "pausedOperationalWorker",
+          "tests": 6,
+          "seconds": 79.316
+        },
+        {
+          "name": "currentDatabases",
+          "tests": 7,
+          "seconds": 1.676
+        },
+        {
+          "name": "currentTlsTrust",
+          "tests": 6,
+          "seconds": 0.452
+        },
+        {
+          "name": "currentWorkloadIam",
+          "tests": 8,
+          "seconds": 8.245
+        },
+        {
+          "name": "pausedFrame",
+          "tests": 8,
+          "seconds": 0.171
+        },
+        {
+          "name": "pausedNode",
+          "tests": 6,
+          "seconds": 0.202
+        }
+      ]
+    },
+    "nativeDatabase": {
+      "jobId": 124615825176,
+      "tests": 2,
+      "seconds": 11.431
+    },
+    "nativeTls": {
+      "jobId": 124615825405,
+      "tests": 7,
+      "seconds": 1
+    },
+    "nativeIam": {
+      "jobId": 124615825493,
+      "tests": 2,
+      "seconds": 53.796,
+      "keycloakVersion": "26.7.4",
+      "image": "quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+      "matchesRetainedTargetCapturedKeycloakImage": true,
+      "actual": [
+        "current Docker Engine Unix peer and pinned CLI",
+        "real Keycloak service client/account/default/optional scopes and example metadata",
+        "existing kcadm session inside exact retained container",
+        "mounted secret comparison and changed issuer secret denial/preservation"
+      ],
+      "modeled": [
+        "other cohort/Registry/profile lineage",
+        "actual OUF realm, workload credentials and live target admission"
+      ]
+    }
+  },
+  "pausedHandoff": {
+    "module": "paused_operational_worker.py",
+    "completedWorkerPhaseRequired": 8,
+    "points": {
+      "ADMIT_MIGRATION": "BEFORE_NATIVE_EFFECT",
+      "START_REPLACEMENT": "BEFORE_UNPAUSE"
+    },
+    "currentSignedOperationalInstallationRequired": true,
+    "originalMaterialAndClocksRetained": true,
+    "initialMandateExtended": false,
+    "workerWriterLockAcquired": false,
+    "signaturesIssued": 0,
+    "nativePausedNodeAndLeaseLeavesModeledInTests": true,
+    "concreteSealedCheckpointIntegrated": false
+  },
+  "iamConfiguration": {
+    "additionalInputsBinding": "iamWorkload",
+    "iamMetadataGets": 12,
+    "engineGets": 2,
+    "configurationOnlyExamplePayload": true,
+    "actualBearerAdmissionProven": false,
+    "credentialPublisherProvenanceProven": false,
+    "productionTokenGrantProbesIssued": 0,
+    "productionIamMutations": 0
+  },
+  "teatriReuse": {
+    "explicitUserRequirement": true,
+    "currentInstalledOwnerSource": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "retainedNativeImage": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "historicalSources": [
+      "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+      "evidence/chatbot-teatri-readiness-service-route-diagnosis-20261017.json",
+      "evidence/teatri-native-private-review-qualified-20261013.json"
+    ],
+    "historicalAuthorityReused": false,
+    "replayedAcquisitions": 0,
+    "sourceContractFiles": {
+      "IngestionConfigurationApi": "50ddf3f808673b0a357a387b735fefc6f98792eb",
+      "ManagedOnboardingReviewService": "f5a05217825ce4cdd9eb5e055dfba7bb3397bb13",
+      "IamSecurityConfiguration": "95a935768daafc64bb74c50410444e69bbd8d28c",
+      "IngestionCompatibilityApi": "aa925779a3a41b7902f389c4cf3c5a6c15e52517"
+    },
+    "publicationHelpersIdenticalToPinnedCompiler": true,
+    "compatibilityWorkflowSource": "e311e933cd6b9574f57b56130263ee796391156d",
+    "compatibilityQualificationComplete": false
+  },
+  "fullCohortProven": false,
+  "currentTargetAdmissionProven": false,
+  "applicationE2EProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "producerReleaseDispatched": false,
+  "releaseAcceptance": false
+}

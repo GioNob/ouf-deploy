@@ -1,3 +1,75 @@
+# CURRENT — Prerequisites PASS83; reuse exact installed Teatri contracts before delivery
+
+31 October 2026, UTC. USER explicitly requires reuse of Teatri experience to
+prevent VPS parameter/contract mismatches. Continue autonomously/sequentially;
+no agents/automations or optional stop. Do not ask another Quiesced VPS command.
+Current VPS Quiesced incident is not demonstrated. Preserve Teatri M1/G4 and
+same Farmacie61rows/10columns/all10OPEN; no upload/profile/acquisition replay.
+
+Qualified sourceb564375593d01919fbaadcb86f84131fe7eef2d0,
+localfa26ed7,treec2b32fe95664d7f4a4b10df6ca2cd29f55b39c0b.
+CI41227909361 final4logs read PASS83/13suites/0fail/0skip/0ResourceWarning:
+protocol124615825412 PASS72/10suites, nativeDB124615825176 PASS2/11.431s,
+nativeTLS124615825405 PASS7/1.000s, nativeIAM124615825493 PASS2/53.796s.
+Current IAM parent-bound iamWorkload hash; same root Engine/pinned CLI/retained
+Keycloak CID,12allowlisted kcadmGETs using existing session; mounted secret
+matches Keycloak only in memory. Example payload is CONFIGURATION ONLY, not
+actual bearer/introspection or credential provenance. No production login/grant/
+rotation/mutation. Native fixture uses EXACT target-captured Keycloak26.7.4
+digest82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c.
+Real changed issuer secret denied/preserved; other cohort/profile lineage modeled.
+
+New paused_operational_worker.py reads current signed installed normal handoff
+at exact IN_FLIGHT9 ADMIT_MIGRATION/BEFORE_NATIVE_EFFECT and10
+START_REPLACEMENT/BEFORE_UNPAUSE after completed8. Actual DiscoveryApplication/
+WorkerMaterialization/current parent/child and retained paused node owner.
+Extracted typed pure material/operational-signature helpers shared with running
+readers, no unbound fake running/paused type. Native node/lease leaves modeled
+in protocol6; actual signatures/material/clocks/exclusive held writer fence.
+Initial85s gate still expires; signed operational read at86s succeeds, expired
+parent/missing installed signature/QUIESCED/native denial reject. No writer
+lock acquisition, initial gate reentry, signing/reset/restart/new generation.
+Local6PASS93.030s, CI6PASS79.316s. Sealed checkpoint/controller integration OPEN.
+
+Teatri evidence recovered from repo (Personal Context unavailable; no blocker):
+- M1 complete csv-m1-f5-f6-owner-verification-20261026.json:26exact joins/
+  ACK/output/receipt,13stable identities,20IRIs,EMPTY_STRING omissions only;
+  labels RESTRICTED legitimately needed policy53, never downgrade labels.
+-17Oct SERVICE called HUMAN lifecycle route despite unexpired tokens; do not
+  generalize this inferred source mismatch to every historic403/502 or claim
+  original denying hop independently proven.
+-Installed Onboarding V38 source9d19fad3dd750dd5b9e77253d3e7e82029c1aca7,
+  native image7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51.
+  Exact SERVICE GET /api/internal/v1/onboarding/ingestion-configuration:
+  sourceId,onboardingVersionId(UUID),configurationHash(sha256:hex64);
+  ouf.onboarding.configuration.read + actual policy/tenant/approved/hash/card.
+  Compatibility GET same3parameters; POST additionally compatible/detail,
+  separate ouf.ingestion.configuration.attest. Never substitute HUMAN route.
+  Auth bridge also requires subject/tenant/actor/acr/audience/current issuer;
+  each receiving API must be verified, not inferred from valid token/TLS.
+-Publication helpers at installed9d19 exactly match pinned be388 Git blob
+  06be6e57febbdccc5c52a138b81c24489c2961d0 and
+  6774993887bcb9f2c4250298c84b6582add5e9e9; unchanged expected SHA256.
+  Discovery catalogue is additive new review data; not already installed at9d19.
+
+New sourcee311e933cd6b9574f57b56130263ee796391156d (localcacd7c0),
+tree063552e0dc4621f82f1591ffae53f155fa67da9a adds installed-owner compatibility
+workflow. PENDING qualification at this entry. Exact9d19 checkout, SDK checksum/
+frozen contract, real Java21/Postgres17 seven source HTTP/identity/JWT/OpenAPI/
+schema suites, strict actual Surefire reports/no skips, current Discovery14
+against actual installed DTO/helper bytes. Does not replay Teatri or Farmacie.
+Do not count SQL-only old Teatri21 drafts, metadata or new CI as VPS admission.
+
+Original37/108/128/136 source maps/pins/bodies/child unchanged. Next finish exact
+installed-owner compatibility; custody/supply-chain/retirement/backup/fencing;
+concrete native checkpoints/controller, READY12 read-only continuation without
+initial provider barrier reentry, complete sealed package/exact private review.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients/release acceptance OPEN.
+No target apply/grant/reset/restart/replay/merge/producer release/acceptance.
+Evidence:evidence/m2-current-operational-iam-20261031.json
+Handoff:docs/handoffs/OUF_M2_TEATRI_COMPATIBILITY_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Current TLS composition PASS67; workload IAM source under qualification; full controller OPEN
 
 31 October 2026, UTC. Continue autonomously/sequentially; no agents/automations,
