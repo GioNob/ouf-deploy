@@ -71,7 +71,10 @@ def certificate_result(rows,subject):
     for row in rows:
         require(type(row) is dict and type(row.get('verificationResult')) is dict,'ACTUAL_GH_VERIFICATION_RESULT_REQUIRED')
         result=row['verificationResult'];certificate=result['signature']['certificate'];statement=result['statement']
-        require(certificate['issuer']==ISSUER and certificate['subjectAlternativeName']=={'type':'URI','value':identity}
+        # gh 2.97.0 uses sigstore-go 1.2.2 certificate.Summary: the SAN is
+        # one exact string, not the historical docs' {type,value} example.
+        # Reject other shapes rather than normalizing an unverified identity.
+        require(certificate['issuer']==ISSUER and certificate['subjectAlternativeName']==identity
             and all(certificate.get(k)==v for k,v in {
                 'sourceRepositoryURI':'https://github.com/'+subject['repository'],
                 'sourceRepositoryIdentifier':subject['repositoryId'],'sourceRepositoryOwnerIdentifier':subject['ownerId'],

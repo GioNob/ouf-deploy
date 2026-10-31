@@ -20,7 +20,7 @@ def ref(path,maximum):
 def response(row):
     identity='https://github.com/'+row['repository']+'/'+row['workflowPath']+'@'+row['sourceRef']
     return [{'verificationResult':{'signature':{'certificate':{'issuer':m.ISSUER,
-        'subjectAlternativeName':{'type':'URI','value':identity},'sourceRepositoryURI':'https://github.com/'+row['repository'],
+        'subjectAlternativeName':identity,'sourceRepositoryURI':'https://github.com/'+row['repository'],
         'sourceRepositoryIdentifier':row['repositoryId'],'sourceRepositoryOwnerIdentifier':row['ownerId'],
         'sourceRepositoryOwnerURI':'https://github.com/'+row['repository'].split('/')[0],
         'sourceRepositoryDigest':row['sourceCommit'],'sourceRepositoryRef':row['sourceRef'],
@@ -92,10 +92,19 @@ class Publisher(unittest.TestCase):
 
     def test_workflow_lookalike_and_predicate_claim_cannot_replace_certificate_scope(self):
         reader,row,_=self.prepared();body=response(row);value=body[0]['verificationResult']
-        value['signature']['certificate']['subjectAlternativeName']['value']=value['signature']['certificate']['subjectAlternativeName']['value'].replace('ouf-deploy','oufXdeploy')
+        value['signature']['certificate']['subjectAlternativeName']=value['signature']['certificate']['subjectAlternativeName'].replace('ouf-deploy','oufXdeploy')
         value['statement']['predicate'].update(trusted=True,repository=row['repository'])
         run,_=self.gh_fixture(reader,body)
         with patch.object(m.subprocess,'run',side_effect=run),self.assertRaisesRegex(ValueError,'CERTIFICATE_IDENTITY'):reader.observe()
+
+    def test_legacy_object_san_and_nonstring_shapes_are_denied_without_identity_coercion(self):
+        reader,row,_=self.prepared();identity=response(row)[0]['verificationResult']['signature']['certificate']['subjectAlternativeName']
+        for san in ({'type':'URI','value':identity},[identity],None,True):
+            body=response(row);body[0]['verificationResult']['signature']['certificate']['subjectAlternativeName']=san
+            run,_=self.gh_fixture(reader,body)
+            with self.subTest(san=san),patch.object(m.subprocess,'run',side_effect=run),self.assertRaisesRegex(ValueError,'CERTIFICATE_IDENTITY'):
+                reader.observe()
+            self.assertIsNone(reader.cache)
 
     def test_verified_subject_digest_and_witnessed_timestamp_are_required(self):
         reader,row,_=self.prepared()
