@@ -1,9 +1,9 @@
 name: M2 offline native publisher cryptography
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
   offline-publisher:
@@ -29,27 +29,38 @@ jobs:
           mkdir publisher-fixture
           printf '%s\n' 'OUF disposable source publisher fixture; no runtime or target admission' > publisher-fixture/artifact.bin
           sudo --preserve-env=GH_TOKEN /var/lib/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
+          python3 -I -B -S tests/qualify_m2_discovery_artifact_membership_native.py --prepare publisher-fixture/membership "$GITHUB_SHA"
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         id: provenance
         with:
           subject-path: publisher-fixture/artifact.bin
           create-storage-record: false
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: membership_provenance
+        with:
+          subject-path: publisher-fixture/membership/material/package/COHORT_SHA256SUMS
+          create-storage-record: false
       - name: Actual verification inside a fresh empty network namespace with no GitHub credential
         env:
           PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          MEMBERSHIP_BUNDLE: ${{ steps.membership_provenance.outputs.bundle-path }}
         run: |
           set -euo pipefail
           cp "$PROVENANCE_BUNDLE" publisher-fixture/bundle.json
+          cp "$MEMBERSHIP_BUNDLE" publisher-fixture/membership/bundle.json
           fixture="/var/lib/ouf-native-publisher-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
+          for suite in qualify_m2_discovery_current_publisher_native.py qualify_m2_discovery_artifact_membership_native.py; do
           sudo unshare --net -- env GITHUB_ACTIONS=true PATH=/usr/sbin:/usr/bin:/sbin:/bin \
             OUF_PUBLISHER_FIXTURE_ROOT="$fixture/repository/publisher-fixture" \
+            OUF_MEMBERSHIP_FIXTURE_ROOT="$fixture/repository/publisher-fixture/membership" \
             OUF_GH_PUBLISHER_BINARY=/var/lib/ouf-publisher-gh297/bin/gh \
             OUF_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" OUF_GITHUB_REPOSITORY_ID="$GITHUB_REPOSITORY_ID" \
             OUF_GITHUB_OWNER_ID="$GITHUB_REPOSITORY_OWNER_ID" OUF_GITHUB_SOURCE_REF="$GITHUB_REF" \
             OUF_GITHUB_SOURCE_SHA="$GITHUB_SHA" OUF_GITHUB_SIGNER_SHA="$GITHUB_WORKFLOW_SHA" \
             OUF_GITHUB_PUBLISHER_WORKFLOW_PATH=.github/workflows/m2-discovery-publisher-native.yml \
-            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_discovery_current_publisher_native.py -v
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
+          done
