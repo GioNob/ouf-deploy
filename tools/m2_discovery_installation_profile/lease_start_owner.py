@@ -11,7 +11,7 @@ from .custody_capture import digest,encoded,require
 from .parent_authority import DiscoveryParentAuthority
 from .lease_installation_template import materialize,parent_scope,recompile,hashed
 from .node_owner import DiscoveryNodeOwner
-from .lease_service import build_installed
+from .lease_observation_inputs import build_observed as build_installed
 from .installed_lease_guard import boot_id
 from . import lease_observation
 from .native_generation_probe import DOCKER_FIELDS

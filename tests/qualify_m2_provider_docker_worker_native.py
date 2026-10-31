@@ -33,7 +33,7 @@ def cli(*args):
     return run('docker',*args).stdout.decode().strip()
 
 
-def main(*,sealed_worker=False,registry_node=False):
+def main(*,sealed_worker=False,registry_node=False,legacy_reader_control=False):
     assert not registry_node or sealed_worker
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert cli('version','--format','{{.Server.Version}}')=='29.8.1'
@@ -281,8 +281,9 @@ def main(*,sealed_worker=False,registry_node=False):
                 if registry_node:
                     from fixtures.m2_registry_node_worker_native import attest_and_install
                     node=attest_and_install(phase,auth,registry_setup,boundary,token)
-                print(json.dumps(qualify(phase,auth,worker_setup,boundary,run,registry_node=node),sort_keys=True),flush=True)
-                if registry_node:
+                print(json.dumps(qualify(phase,auth,worker_setup,boundary,run,registry_node=node,
+                    legacy_reader_control=legacy_reader_control),sort_keys=True),flush=True)
+                if registry_node and not legacy_reader_control:
                     from fixtures.m2_registry_node_worker_native import final_read
                     print(json.dumps(final_read(node,token),sort_keys=True),flush=True)
             else:
@@ -295,7 +296,8 @@ def main(*,sealed_worker=False,registry_node=False):
                 'actualProviderCreateAttempts':1,'actualProviderStartAttempts':1,
                 'syntheticImagesReviewAndRegistryAdmissionPredecessor':not registry_node,
                 'syntheticImagesAndReview':True,'actualRegistryNodeAndTransport':registry_node,
-                'sealedWorkerInstallationProven':sealed_worker,
+                'sealedWorkerInstallationProven':sealed_worker and not legacy_reader_control,
+                'legacyRecoveryReaderNegativeControl':legacy_reader_control,
                 'fullCohortProven':False,'applicationE2EProven':False,'targetApplyAuthorized':False,
                 'runtimeAuthorityIssued':False,'releaseAcceptance':False},sort_keys=True),flush=True)
         finally:
@@ -311,5 +313,6 @@ def main(*,sealed_worker=False,registry_node=False):
             if token:token.close()
 
 if __name__=='__main__':
-    assert sys.argv[1:] in ([],['--sealed-worker'],['--registry-worker'])
-    main(sealed_worker=bool(sys.argv[1:]),registry_node=sys.argv[1:]==['--registry-worker'])
+    assert sys.argv[1:] in ([],['--sealed-worker'],['--registry-worker'],['--registry-worker','--legacy-recovery-reader-control'])
+    main(sealed_worker=bool(sys.argv[1:]),registry_node='--registry-worker' in sys.argv[1:],
+        legacy_reader_control='--legacy-recovery-reader-control' in sys.argv[1:])

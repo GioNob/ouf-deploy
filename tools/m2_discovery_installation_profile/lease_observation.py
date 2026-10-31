@@ -8,7 +8,7 @@ import importlib,os,re,stat,subprocess,time
 from pathlib import Path
 from .custody_capture import encoded,digest,require
 from .lease_capsule import PINS
-from .lease_service import build_installed
+from .lease_observation_inputs import build_observed as build_installed
 from .installed_lease_guard import boot_id
 from .native_generation_probe import ticks
 from tools.semantic_registry_operational_owner.guard import protected_file,private_json
@@ -45,6 +45,7 @@ DENIAL_CODES=frozenset({
     'CURRENT_DISCOVERY_KERNEL_LOCK_INODE_REQUIRED',
     'DISCOVERY_KERNEL_LOCK_REPLACED',
     'DISCOVERY_PUBLICATION_IN_PROGRESS',
+    'DISCOVERY_RECOVERY_CHANGED_DURING_READ',
 })
 
 

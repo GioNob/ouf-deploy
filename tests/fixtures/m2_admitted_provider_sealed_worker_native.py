@@ -87,7 +87,7 @@ def bind_review(auth,setup,provider_scope):
     return digest(start)
 
 
-def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
+def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None,legacy_reader_control=False):
     owner=provider_phase.runtime;window=owner.creation.window;engine=owner.creation.engine
     parent=owner.parent;template=setup['template'];recipe=owner.issuer.scope['registryRecipe']
     unit=setup['unit'];ledger=setup['ledger'];install=setup['install']
@@ -182,6 +182,14 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
         try:phase.apply(intent);raise AssertionError('CI_LOST_MANAGER_REPLY_NOT_INJECTED')
         except TimeoutError as error:assert str(error)=='CI_LOST_ACTUAL_SEALED_START_REPLY'
         first=wait(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=1)
+        reader_control={}
+        if registry_node is not None:
+            from fixtures.m2_recovery_reader_control import snapshot_progress,exclusive_negative_control
+            configuration=install/'configuration.json';anchor=phase.start.proposal['serviceUnit']['configurationAnchor']
+            if legacy_reader_control:
+                return exclusive_negative_control(configuration,anchor,lambda:observation.observe(configuration,anchor,
+                    unit_name=unit,systemctl=setup['start']['manager']))
+            reader_control=snapshot_progress(configuration,anchor)
         result,proof=phase.observe(intent)
         assert result=='APPLIED' and proof['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive'],proof
         assert len(dispatches)==1
@@ -209,6 +217,7 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
             'providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm':True,'providerHistoryAndRegistryPausePreserved':True,
             'syntheticRegistryAdmissionImagesAndReview':registry_node is None,
             'actualRegistryNodeAndTransport':registry_node is not None,'syntheticImagesAndReview':True,
+            'recoverySnapshotControl':reader_control,
             'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:

@@ -245,7 +245,11 @@
   },
   "tools.m2_discovery_installation_profile.lease_observation": {
     "path": "tools/m2_discovery_installation_profile/lease_observation.py",
-    "sha256": "9f89bdf124c4bb0efcf9898fdeb485e0b5762b00583f601ed2da96c3c343337d"
+    "sha256": "77fa1cc0033bbd184b0f3e117cab8efe63d3dabfaee75fefd829645258ceeab2"
+  },
+  "tools.m2_discovery_installation_profile.lease_observation_inputs": {
+    "path": "tools/m2_discovery_installation_profile/lease_observation_inputs.py",
+    "sha256": "646a13f58ddc116929537e933d901991ea86cd57714345a449e9a331ee8c8334"
   },
   "tools.m2_discovery_installation_profile.lease_registration": {
     "path": "tools/m2_discovery_installation_profile/lease_registration.py",
@@ -257,7 +261,7 @@
   },
   "tools.m2_discovery_installation_profile.lease_start_owner": {
     "path": "tools/m2_discovery_installation_profile/lease_start_owner.py",
-    "sha256": "75fd9c112a315984ecc9c87f404eb65d2dccebf1c236a57461ab211ce73428a3"
+    "sha256": "daca9560a4e304fe352e515d9208fe4923f59e8707d25db6f5c72e82f5c9ef5a"
   },
   "tools.m2_discovery_installation_profile.lease_unit": {
     "path": "tools/m2_discovery_installation_profile/lease_unit.py",

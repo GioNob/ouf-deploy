@@ -10,7 +10,7 @@ from .private_review_capsule import BASELINE,BASELINE_HASH,RUNTIME
 
 ENTRY='tools.m2_discovery_installation_profile.infrastructure_review'
 SOURCE_MANIFEST='tools/m2_discovery_installation_profile/infrastructure_review_sources.json'
-SOURCE_MANIFEST_HASH='215781561ee46ac2682079941b63c190bf7124596671957c484d3402e598d14e'
+SOURCE_MANIFEST_HASH='649322a5fa52193ca1b12efdf03901c0f30485a3051216465ebee299b40f778b'
 LOADER_HASH='6c12561e3cedc6e5faacd87a8c0acbfbe7408b3da9841e5907012fc02fd67c8f'
 
 
