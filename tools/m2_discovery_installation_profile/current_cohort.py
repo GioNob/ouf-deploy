@@ -109,8 +109,10 @@ def validate_requirements(value,component):
 
 class CurrentCohortEngine:
     """Fixed allowlist, maximum 26 GETs, no response spool or mutation API."""
+    TARGET_COUNT=13
+    MAX_GETS=26
     def __init__(self,engine,binding,ids,budget):
-        require(type(engine) is Engine and type(budget) is ObservationBudget and len(ids)==13 and len(set(ids))==13
+        require(type(engine) is Engine and type(budget) is ObservationBudget and len(ids)==self.TARGET_COUNT and len(set(ids))==self.TARGET_COUNT
             and all(hashed(cid) for cid in ids),
             'ACTUAL_ENGINE_AND_THIRTEEN_COHORT_READ_TARGETS_REQUIRED')
         self.engine,self.binding,self.budget=engine,copy.deepcopy(binding),budget
@@ -126,7 +128,7 @@ class CurrentCohortEngine:
             'CURRENT_COHORT_ENGINE_SOCKET_CUSTODY_CHANGED')
     def get(self,cid):
         path='/v1.44/containers/'+cid+'/json';self.guard()
-        require(path in self.allowed and self.reads<26,'CLOSED_CURRENT_COHORT_GET_ALLOWLIST_REQUIRED')
+        require(path in self.allowed and self.reads<self.MAX_GETS,'CLOSED_CURRENT_COHORT_GET_ALLOWLIST_REQUIRED')
         reader=self
         class Local(http.client.HTTPConnection):
             def connect(connection):
