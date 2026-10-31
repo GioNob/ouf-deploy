@@ -137,7 +137,12 @@ def main(*,sealed_worker=False):
                 lease=workers.m.template(co,worker_recipe,py,**wo)
             from tools.m2_discovery_installation_profile.provider_materialized_admission import admission_scope
             adm=admission_scope(lease,issuer0.template,issuer0.creation.scope,ps)
-            assert not WRAPPER.exists(),'DISPOSABLE_RUNTIME_WRAPPER_MUST_BE_NEW'
+            if WRAPPER.exists():
+                expected=b'#!/bin/sh\ncase "$1" in features|version|--version) exec /opt/ouf-docker-29/runc "$@";; *) exit 1;; esac\n'
+                assert runtime.custody(WRAPPER,0o755)[0]==expected,'EXACT_CI_FEATURE_ONLY_BOOTSTRAP_REQUIRED'
+                # This is pre-review disposable CI setup, not the production
+                # wrapper switch or adoption of any existing installation.
+                WRAPPER.unlink()
             with WRAPPER.open('xb') as stream:
                 wrapper_owned=True
                 stream.write(runtime.wrapper_bytes(ps['pythonBinding']['path'],ps['sourceRoot'],ps['priorRuntimeConfigurationBinding']['path']))
@@ -212,6 +217,8 @@ def main(*,sealed_worker=False):
                             elif expected!=actual:changes.append(path)
                         compare(expected_oci,actual_oci)
                         print('CI_INDEPENDENT_PROVIDER_OCI_DIFFERENCE_PATHS='+json.dumps(changes[:40]),flush=True)
+                        print('CI_PROVIDER_MOUNT_OPTIONS='+json.dumps({label:[{'target':v['destination'],'options':v.get('options',[])}
+                            for v in value['mounts']] for label,value in (('expected',expected_oci),('actual',actual_oci))},sort_keys=True),flush=True)
                     for denial in Path(material['root']).glob('broker-denial-*.json'):
                         value=runtime.private_json(denial)
                         print('CI_RETAINED_BROKER_DENIAL='+json.dumps(value,sort_keys=True),flush=True)
