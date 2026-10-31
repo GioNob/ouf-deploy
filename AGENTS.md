@@ -1,3 +1,57 @@
+# CURRENT — Real Docker admitted provider + late sealed worker PASS; M2 still OPEN
+
+31 October2026, Europe/Rome. Teatri M1/G4,technical8/8,functional6/6 acquired
+stepwise; reuse components for every-file flow. Farmacie same SUCCEEDED61rows/
+10columns,ministerial STRING/all10OPEN. No new upload/profiling/acquisition.
+M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
+
+PR54 source7d124c9c/run41152837404: finite124393038001 and sealed124393038158
+PASS, both final reports read. Actual Docker29/Engine/named v4 runtime/provider
+admission feeds late WorkerMaterialization and real attestation/create-only
+publication/registration/one systemd start, all over same Registry/provider/
+Engine/parent/child/kernel/common inode. One provider create/start; lost provider
+and manager start replies reconcile without another start. Actual sealed worker
+positive observation, renewal and SIGKILL/reentry preserve clocks/counters;
+provider kill revokes/blocks without restart/rearm. Key hidden/onlyCAP_NET_ADMIN/
+NoNewPrivileges checked; Registry stays paused. Separate finite worker proves
+DNS TTLzero/revocation/persisted backoff/no premature query/recovery/concurrency.
+Synthetic images/review and full Registry admission predecessor remain explicit.
+Full cohort and actual target/Farmacie→UDP NOT proven.
+
+Native integration exposed containerd peer OCI root0644 versus private0600 IO.
+Pure hash-bound peer-source revision accepts only exact CID/config.json,root
+nonwritable ancestry,root:root0644/one link/bounded stable bytes and signed fullOCI
+hash, with both native observations unchanged. Unknown errors never retry; all
+private credential/key/authority/journal readers and original frozen sources/
+repairs/capsules unchanged. Discovery requires exact new peer-source hash.
+Feature-only deny-lifecycle CI bootstrap before daemon runtime discovery fixes
+independently denied recursive-readonly mount mismatch; expected OCI unchanged.
+Adapter lacks pause/resume by design; Docker fault uses supported kill. Historical
+runc pause/resume remains a separate retained proof.
+
+Sealed attemptf6ace expired child90s after ACTIVE. New INITIAL child120s inside
+original parent120s is issued BEFORE reviewed candidate creation, not renewed
+midflight; no production limit/guard changed. Duplicate materializer reconstruction
+removed; initial start readback precedes operational renewal. Source5870 sealed
+readback UNKNOWN; diagnostic successor7d124 PASS without reproducing it. Cause
+still unestablished; preserve it and all earlier MCP/worker anomalies. Positive
+CI does not close full stability. Last sealed rowBLOCKED/LOCAL_AUTHORITY_UNPROVEN
+AFTER intentional provider kill:attempts2/publications5/reentries2.
+
+Production sourcee48e3fd7 protocol PR41151383885/job124388475217 PASS440tests/
+52suites/0skip, final log read. Later commits are native-fixture/workflow changes.
+Local13worker+8profiles+7OCI+1early-composition PASS;7immutable-artifact cases
+PASS19.773s. Runtime local suite interrupted after3printed PASS,no full claim.
+Evidence:evidence/m2-provider-docker-worker-20261031.json.
+Handoff:docs/handoffs/OUF_M2_DOCKER_PROVIDER_SEALED_WORKER_20261031.md.
+Next: current full cohort/TLS/IAM/DB/fencing/trust,private compiler-review-CLI,
+coordinated capability publication,actual Farmacie→UDP/all61row outcomes,
+reimport/fault/recovery/chat/boot/rotation/two clients and UNKNOWN-cause tracking.
+No operator command ready; prior scopes consumed. No target apply/grant/authority/
+budget/reset/replay/merge/agents/automation/release acceptance. Older CURRENT
+headers below are historical. Canonical project continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+
 # CURRENT — Finite native provider → distinct worker handoff PASS
 
 31 October2026, Europe/Rome. Reuse completed stepwise Teatri for the complete
@@ -1835,37 +1889,7 @@ NEXT docs/handoffs/OUF_ONBOARDING_V35_RETAINED_RECONCILIATION_20261024.md e rele
 
 CI push40132224481/job120986186658 e PR40132228292/job120986199872:8PASS ciascuno/0skip/logdiretti letti. Main eccezionale reale con error injection; lettore subprocessisolato/filesystemroot reali, dati privati storici sintetici e soli bindingpath/hash sostituiti. Nessuna prova target/recupero mutante/DB/E2E. Dopo vero confronto: correggere solo causa osservata e qualificare recupero della STESSAclaim, senza ripetere import/stop/create e senza reset, con nuova revisione firmata eAPPROVO prima di effetti. Conservare codice a0ce/backup/evidenze/contatori.
 
-502/403: proiezione rete applicata e GET originale200 provate sul VPS, applicazione/E2E/F5/F6 ancora aperti.8/8tecnico,4/6funzionale,G3OPEN. Worker Registry indipendente/intatto; Supervisor dopo E2E. Header sottostanti storici, nessuna vecchia consegna mutante da rilanciare.
-
----
-
-# CURRENT — applicazione V35 eseguita sul VPS e interrotta dopo CREATE; NON RILANCIARE
-
-Output operatore: review828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b / authorityaf9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63. Exit1, log /home/oufadmin/ouf-v35-native-apply.1XON8spN/operator.log. CREATE ha restituito un Id, salvato nel journal; candidate_guard ha poi negato EXACT_V35_REPLACEMENT_CONFIG_REQUIRED. START non raggiunto da questo ingresso. I sette stage precedenti risultano necessariamente attraversati secondo il codice ordinato, ma stato corrente e journal privato vanno ancora riconciliati: NON dichiarare vecchio container attualmente running, V35 applicata o readiness. Il gestore main aveva inoltre il refuso __name__in, che ha mascherato STOP_RECONCILE con AttributeError. CI precedente non copriva main eccezionale né provava la configurazione target.
-
-Scope APPLY CONSUMATO. Conservare root codice a0ce, root autorità logica, journal/claim, Engine responses, backup e log. Niente rilancio, nuovo import/create, vecchio restart, rollback, reset o modifica in-place del codice installato. Correzione main nel repository con test del percorso eccezionale reale (bootstrap/operator sostituiti solo per iniettare errore); PASS locale, non qualifica VPS. Reader scripts/read-onboarding-v35-created-config-20261024.py in SVILUPPO, NON CONSEGNABILE: confronto di review/authority/journal e create+inspect già trattenuti, nessuna connessione Engine/SQL/credenziali/chiavi o modifica del vecchio journal. Deve ancora essere qualificato prima di comando pinned. Non sostituire il confronto esatto con tolleranze ipotetiche e non consumare altra authority prima della causa osservata. Nessuna stima attendibile del tempo restante.
-
-502/403: conservate prove VPS della proiezione rete e GET originale200; processo applicativo/E2E/F5/F6 restano aperti. 8/8tecnico,4/6funzionale,G3OPEN. Worker Registry indipendente e intatto; Supervisor dopo E2E. Header sottostanti STORICI, in particolare comandi dichiarati pronti o target non eseguito.
-
----
-
-# CURRENT — ingresso V35 qualificato in CI; comando pinned pronto, target ancora da applicare
-
-VPS confermato fino al piano b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd, configurazione corrente interamente risolta/4GET/2letture owner private/0SQL/0effetti. Log /home/oufadmin/ouf-v35-native-plan.q7UJXZS8/operator.log. Scope freeze/stage/SQL/repair/GET CONSUMATI, MAI rilanciare/reset. Immagine54d86 ancora staged, nessun load/V35/grant/attivazione/authority/apply target osservato.
-
-NEXT docs/handoffs/OUF_ONBOARDING_V35_NATIVE_APPLY_DELIVERY_20261024.md: UN comando di applicazione,5sorgenti al commit4cc62e49539a8e52a823ac5cba95bf92d64613fd, checksum prima/dopo copia root0700/file0400 e log; nessun download immagine. Bundlea0ce9d7ffb2e4500549c6800ee0c5e30a8a62fa6239dd9060cb8c0c0b907f35e. Rootcodice /etc/ouf/deploy-snapshots/onboarding-v35-native-code-a0ce9d7ffb2e4500; rootautorità è quella LOGICA fissa del piano, nessun cambiohash la azzera. Prima di effetti: freshadmission/config/generazioni, nuova revisione privata completaAPPROVO hash dal controllingTTY e firme installer dual-role/attestor esistenti. InSTOP preservare tutto, NO rilancio/rollback/restore/vecchio restart.
-
-CI sorgente40119375591/job120947367347 e PR40119378683/job120947377574:7PASS ciascuno/zeroSkipped,137.251/137.102sec, log diretti letti. Nuovo Context constructor+operator reali dopo bootstrap storico fixture, Engine1.44/PG17/veraB0→immagineCI esatta/V35checksum1095739786, backup custom e parsing senza restore,13APPLIED/COMPLETE,3tentativi/gen4/PAUSED/tutti campi review e revisioni conservati/0sessioni,6peer invariati; firmeEd25519+TTY reali eSIGKILLparent→un solo stop candidato unproven/APPLIEDnegativeclaim, replay rifiutato. Bootstrap storico privato/identitàpiano/issuer e5servizi hold sono fixture; NON prova esecuzione target/wholeprivatebootstrap/E2E/guasto host/Engine/reboot/tenutapermanente. Sourceworkflowheadb1344c8df74c3927016ef3d2fc2bc16b621699ca aggiunge SOLA CI; prodotto1b/tested194b/artifact12559990549 invariati. Evidence evidence/onboarding-v35-native-entry-qualified-20261024.json.
-
-142sealed intatti/fallback vietato. Solo matched/load del helperoriginale2e7255c7222cfe69a2fd115fcb9b05cf4f31bd6cc24af6532718621bce9f112d caricati perAST con FIELDS originale. Config/manifestID nativo derivati dal completedownerB0, nessun rebuild/relabel dell'immagine. Richiesta b17 invariata salvoID immagine nativo; mappa EFFETTIVA label firmata separatamente: Docker può ereditare SOLA OCI source del candidato se assente, vecchie label conservate, confronto esatto/extra manager vietati. Nuovi defaultEnv non previsti rifiutati prima di effetti. Nessuna configurazione Flyway cambiata: V35 ESPLICITA via app, con backup quiescente primaavvio.900sec positivi+30solo negativo/180avvio, chiavi valide intero930prima firma, limiti durevoli/claimCAS; watchdog effimero ready/liveness, niente service install. Policy live perpositivo, copia pubblica firmata SOLO per minimo stop negativo (anche su revoca/interruzione); ambiguoCLAIMED senza retry. Prevista breve indisponibilità della SOLA Onboarding.
-
-502/403: rete applicata e veraGET originale200/exactACTIVE/currentcredential+TLS provate sul VPS. Questo non chiude processo applicativo/E2E/F5/F6/tenuta futura; nessuna nuovaGET da preparazione/V35.8/8tecnico4/6funzionale,G3OPEN. Dopo V35 TARGET provata: nuovo budgetHUMAN finito distinto e attivazione distinta stessa source/version/hash, storico/cumulativi/dedup conservati; poiE2E, Supervisor dopo. Registryworker indipendente/intatto, nessun restart/reinstall/reset. Due vecchie immagini bloccate preservate. Gli header sottostanti sono storia.
-
----
-
-# CURRENT — piano V35 congelato sul VPS; ingresso mutante in sviluppo, NON consegnabile
-
-VPS ONBOARDING_V35_CURRENT_CONFIGURATION_AND_PLAN_FROZEN / Exit0. Piano privato b17c2c99cc791cced8ee00ed190e30b75c518ae84e2dd4a9ae7eef521390c8bd nel package54d86/native-plan-v1/execution-plan.json; log /home/oufadmin/ouf-v35-native-plan.q7UJXZS8/operator.log. Precedenze correnti INTERAMENTE risolte, custodia nominativa/hash owner e JAR/YAML verificati, Onboarding/PG stabili; richiesta completa compilata, Env/mount/endpoint/altre label conservati, configurazione migrazioni invariata.4 GET Engine/2 letture dello STESSO ownerconfig sensibile tenuto privato,0 altri credentialfile/bearer/chiavi/SQL/exec/effetti.13 stage PLANNED; tentativi3/generazione4 trattenuti. Immagine NON loaded, V35 NON applicata,0 grant/attivazioni. Fresh DB admission/lifecycle/authority/targetApply/acceptance FALSE. Evidence evidence/onboarding-v35-native-plan-target-20261024.json. Scope CONSUMATO: MAI rilanciare il comando nativo di freeze, né stage/review/SQL/capture precedenti.
+502/403: proiezione rete applicata e GET originale200 provate sul VPS, applicazione/E…1617 tokens truncated…ner e JAR/YAML verificati, Onboarding/PG stabili; richiesta completa compilata, Env/mount/endpoint/altre label conservati, configurazione migrazioni invariata.4 GET Engine/2 letture dello STESSO ownerconfig sensibile tenuto privato,0 altri credentialfile/bearer/chiavi/SQL/exec/effetti.13 stage PLANNED; tentativi3/generazione4 trattenuti. Immagine NON loaded, V35 NON applicata,0 grant/attivazioni. Fresh DB admission/lifecycle/authority/targetApply/acceptance FALSE. Evidence evidence/onboarding-v35-native-plan-target-20261024.json. Scope CONSUMATO: MAI rilanciare il comando nativo di freeze, né stage/review/SQL/capture precedenti.
 
 NEXT comporre e qualificare l'ingresso esatto sul piano b17. Nuovi scripts/apply-onboarding-v35-native-20261024.py e tools/onboarding_v35_native/{protocol,ports,quarantine}.py sono SVILUPPO NON QUALIFICATO; NON eseguire sul VPS e nessun comando di delivery ancora autorizzato da queste prove. Revisione nuova concreta, firma dual-role esistente e APPROVO hash dal controlling TTY prima degli effetti; nessuna vecchia authority/claim riusata. Identità config/manifest nativo va provata dal profilo dell'owner b0, senza rebuild/relabel/alterazione dell'archivio CI. Backup quiescente verificato e V35 esplicita; contatori/storico/fontePAUSED preservati e0sessioni. Lease negativa finita proposta per fermare SOLO il nuovo candidato non provato se controller perso/avvio scaduto; nessun riavvio vecchio container/restore database. Da qualificare con Engine/PG17/Flyway/Ed25519/TTY/interruzione reali. Non dichiarare qualificato il bootstrap privato storico da fixture.
 

@@ -506,3 +506,45 @@ mandatory; constructor support and synthetic phase tests do not supply them.
 The selected dependent-owner phase holds the existing Registry transition invocation
 fence, excluding concurrent producer release. No shared lease/network lock or DB
 transaction spans the phase; a paused owner raises immediately and releases the fence.
+
+## Docker peer OCI custody and joint worker qualifier (31 October)
+
+The native Docker qualifier exposed a boundary hidden by the manually staged
+runc fixture: containerd owns the Registry peer's `config.json` as root `0644`,
+while the provider's private readers require `0600`. The new pure revision in
+`semantic_transaction_profiles/repair_peer_bundle_sources.py` changes only peer
+OCI collection. It accepts exactly `config.json` below the runtime-reported
+peer CID, with root-owned nonwritable ancestry, regular root:root `0644`, one
+link, bounded length, stable descriptor/path metadata and the signed expected
+full OCI hash. Both native peer observations still match the same generation,
+OCI and reciprocal NICs. Unknown errors are not retried/reclassified. Private
+keys, policies, authority records, journals and the candidate shadow bundle keep
+their original readers. The original draft and earlier repairs are byte exact.
+The selected discovery profile now requires the exact revised peer source hash;
+new source maps must explicitly apply the pure revision before hashing/review.
+No runtime source substitution or old installation adoption is authorized.
+
+`qualify_m2_provider_docker_worker_native.py` uses actual Docker29/Engine and
+v4 broker/node/installer/driver admission, a separately qualified control-peer
+rootfs seal, and independent committed expected OCI. Its finite process-worker
+mode reuses the earlier handoff assertions. `--sealed-worker` instead composes
+late WorkerMaterialization, three signatures, create-only file publication,
+unit registration and one systemd start with that same provider admission.
+The Registry complete-admission predecessor, images and parent review remain
+explicit CI fixtures; target/cohort/TLS/IAM/DB and application E2E are separate.
+The worker's shared kernel inode has a dedicated directory so its readonly
+sandbox never mounts the issuer's private signing directory. Candidate results,
+initial native denials and qualification status are recorded in
+`evidence/m2-provider-docker-worker-20261031.json`; source presence is not PASS.
+
+The daemon qualifier has a feature-only, lifecycle-denying runtime bootstrap
+before Docker discovers the named runtime. That bootstrap is authenticated and
+replaced during disposable CI setup before parent review; the production owner
+still performs its one guarded wrapper CAS. Registering an absent wrapper made
+Docker cache different recursive-readonly mount capabilities and caused the full
+OCI comparison to deny the candidate. Expected mount flags are not projected
+from actual OCI. The two worker modes run on independent disposable runners;
+failed/consumed fixtures are never reused. The admitted adapter intentionally
+does not implement pause/resume; the Docker fault case uses its supported kill
+operation and proves the worker cannot restart/rearm the terminated provider.
+The earlier native runc pause/resume proof remains a separate retained scope.

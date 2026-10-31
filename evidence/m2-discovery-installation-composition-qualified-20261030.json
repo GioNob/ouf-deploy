@@ -408,5 +408,17 @@
     "combinedRealDockerAndSealedWorkerInstallationProven": false,
     "fullCohortProven": false,
     "applicationE2EProven": false
+  },
+  "realDockerProviderAndSealedWorker": {
+    "date": "2026-10-31",
+    "sourceCommit": "7d124c9c967c5a5f43945e2f183ff8b68ffb6406",
+    "prRun": 41152837404,
+    "finiteJob": 124393038001,
+    "sealedJob": 124393038158,
+    "status": "BOTH_PASS_FINAL_NATIVE_REPORTS_READ",
+    "evidence": "evidence/m2-provider-docker-worker-20261031.json",
+    "historicalUnknownObservationCauseEstablished": false,
+    "fullCohortProven": false,
+    "applicationE2EProven": false
   }
 }
