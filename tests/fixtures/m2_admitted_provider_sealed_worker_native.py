@@ -87,7 +87,7 @@ def bind_review(auth,setup,provider_scope):
     return digest(start)
 
 
-def qualify(provider_phase,auth,setup,boundary,run):
+def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
     owner=provider_phase.runtime;window=owner.creation.window;engine=owner.creation.engine
     parent=owner.parent;template=setup['template'];recipe=owner.issuer.scope['registryRecipe']
     unit=setup['unit'];ledger=setup['ledger'];install=setup['install']
@@ -97,19 +97,32 @@ def qualify(provider_phase,auth,setup,boundary,run):
     preserved.update({p:p.read_bytes() for p in provider_phase.root.glob('*.json')})
     # The Registry full-admission predecessor is explicitly modeled here. Same
     # signed recipe, real Docker peer, parent/child and native provider are used.
-    node=object.__new__(starts.DiscoveryNodeOwner);node.engine=engine;node.recipe=copy.deepcopy(recipe)
-    node.authority=window.child;node.raw=window.raw;node.signer=setup['signer'];node.transition=window.transition
-    node.store=starts.NativeEvidenceStore(setup['dirs']['evidence']);node.request=copy.deepcopy(window.request)
-    identity=__import__('tools.m2_discovery_installation_profile.provider_profiles',fromlist=['registry_identity']).registry_identity(owner.creation,owner.issuer.scope)
-    node.adapter=types.SimpleNamespace(request={'applicationHash':identity['applicationHash']})
-    node.verify_retained=lambda:{'syntheticRegistryFullAdmissionPredecessor':True}
+    if registry_node is None:
+        node=object.__new__(starts.DiscoveryNodeOwner);node.engine=engine;node.recipe=copy.deepcopy(recipe)
+        node.authority=window.child;node.raw=window.raw;node.signer=setup['signer'];node.transition=window.transition
+        node.store=starts.NativeEvidenceStore(setup['dirs']['evidence']);node.request=copy.deepcopy(window.request)
+        identity=__import__('tools.m2_discovery_installation_profile.provider_profiles',fromlist=['registry_identity']).registry_identity(owner.creation,owner.issuer.scope)
+        node.adapter=types.SimpleNamespace(request={'applicationHash':identity['applicationHash']})
+        node.verify_retained=lambda:{'syntheticRegistryFullAdmissionPredecessor':True}
+    else:
+        node=registry_node
+        assert type(node) is starts.DiscoveryNodeOwner and node.engine is engine
+        assert node.authority is window.child and node.raw==window.raw and node.recipe==recipe
     intent={'creationRequestHash':digest(node.request),'nodeRecipeHash':digest(node.recipe),
         'leaseInstallationScopeHash':digest(setup['start']),'priorEvidencePhase':'INSTALL_AUTHENTICATED_TRANSPORT'}
     phases=json.loads(window.raw)['phaseIntentHashes'];index=starts.PHASES.index(starts.PHASE)
-    boundary.update(state='IN_FLIGHT',nextPhase=index,effects=[{
-        'phase':phase,'state':'APPLIED' if i<index else 'IN_FLIGHT','intentHash':phases[phase],
-        'authorityEvidenceHash':window.child_hash,'nativeEvidenceHash':'9'*64}
-        for i,phase in enumerate(starts.PHASES[:index+1])])
+    if registry_node is None:
+        boundary.update(state='IN_FLIGHT',nextPhase=index,effects=[{
+            'phase':phase,'state':'APPLIED' if i<index else 'IN_FLIGHT','intentHash':phases[phase],
+            'authorityEvidenceHash':window.child_hash,'nativeEvidenceHash':'9'*64}
+            for i,phase in enumerate(starts.PHASES[:index+1])])
+    else:
+        from fixtures.m2_registry_node_worker_native import enter
+        assert boundary['state']=='READY' and boundary['nextPhase']==index
+        for effect in boundary['effects'][6:]:
+            proof=node.store.read(effect['phase'],effect['nativeEvidenceHash'])
+            assert proof['creationRequestHash']==window.request_hash
+        enter(boundary,starts.PHASE,window.raw)
     server=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);server.bind(('192.0.2.53',53));server.settimeout(.1)
     done=threading.Event();queries=[0]
     def respond():
@@ -187,7 +200,9 @@ def qualify(provider_phase,auth,setup,boundary,run):
             'lateMaterializationAttestationPublicationRegistrationStart':True,'lostManagerReplyReconciledWithoutSecondStart':True,
             'sealedUnitOnlyCapNetAdminAndKeyHidden':True,'sigkillReentryRetainsStartedTimeAndCounters':True,
             'providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm':True,'providerHistoryAndRegistryPausePreserved':True,
-            'syntheticRegistryAdmissionImagesAndReview':True,'fullCohortProven':False,'applicationE2EProven':False,
+            'syntheticRegistryAdmissionImagesAndReview':registry_node is None,
+            'actualRegistryNodeAndTransport':registry_node is not None,'syntheticImagesAndReview':True,
+            'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:
         observation.observe=actual_observe

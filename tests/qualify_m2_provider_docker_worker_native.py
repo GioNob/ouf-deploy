@@ -15,7 +15,7 @@ from tools.m2_discovery_installation_profile import provider_installation_phase 
 from tools.m2_discovery_installation_profile.native_profile import DiscoveryProfile,FILE_ROLES
 from tools.m2_discovery_installation_profile.frame_inputs import compile_inputs,ENGINE
 from tools.semantic_provider_node_observation import rootfs_seal
-from tools.semantic_provider_deployment_authentication import VerificationBudget
+from tools.semantic_provider_deployment_authentication import VerificationBudget,attributes
 from tools.materialize_southbound_kernel import materialize
 from tools.semantic_provider_lease_nft import structure_hash
 from gated_process_observation import GatedProcessObservation
@@ -33,11 +33,13 @@ def cli(*args):
     return run('docker',*args).stdout.decode().strip()
 
 
-def main(*,sealed_worker=False):
+def main(*,sealed_worker=False,registry_node=False):
+    assert not registry_node or sealed_worker
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert cli('version','--format','{{.Server.Version}}')=='29.8.1'
     assert json.loads(cli('info','--format','{{json .}}'))['DockerRootDir']==STORAGE
     case=fixtures.Profiles();ids=[];auth=None;table=None;wrapper_owned=False;network='ouf-joint-'+uuid.uuid4().hex[:10]
+    token=None;registry_setup=None
     commands={k:str(Path(shutil.which(k)).resolve()) for k in ('runc','nft','ip','nsenter','unshare','mount','umount','sysctl')}
     with tempfile.TemporaryDirectory(prefix='ouf-joint-docker-',dir='/var/lib') as tmp:
         root=Path(tmp);root.chmod(0o700)
@@ -47,6 +49,9 @@ def main(*,sealed_worker=False):
             destination=native/name;shutil.copyfile(path,destination);destination.chmod(0o755)
             assert pin(destination)['sha256']==pin(path)['sha256'];commands[name]=str(destination)
         try:
+            if registry_node:
+                from fixtures.m2_registry_node_worker_native import TokenFixture
+                token=TokenFixture(run)
             cli('pull','alpine:3.22');image=cli('image','inspect','alpine:3.22','--format','{{.Id}}')
             nid=cli('network','create','--internal','--subnet','10.77.0.0/24',
                 '--opt','com.docker.network.bridge.name=brfixture',network)
@@ -58,10 +63,23 @@ def main(*,sealed_worker=False):
                 item=selection['files'][role];p=root/('registry-'+role)
                 private(p,('CI_SYNTHETIC_'+role).encode(),item['mode']);os.chown(p,item['uid'],item['gid'])
                 item['source']=str(p);item['sha256']=pin(p)['sha256']
+                if registry_node:item['metadataHash']=runtime.digest(attributes(p.lstat()))
                 request['HostConfig']['Mounts'][i]['Source']=str(p)
             for index,key in ((5,'configtree'),(6,'renewable_token')):
+                if registry_node and key=='renewable_token':
+                    p=token.output;s=p.stat();selection[key].update(source=str(p),
+                        fileName=token.owner.binding.output_member,directoryDevice=s.st_dev,directoryInode=s.st_ino,
+                        ownerBindingHash=token.owner.binding.digest())
+                    request['HostConfig']['Mounts'][index]['Source']=str(p)
+                    request['Env']=[('OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE='+selection[key]['target']+'/'+selection[key]['fileName'])
+                        if v.startswith('OUF_AUTHORIZATION_REGISTRY_TOKEN_FILE=') else v for v in request['Env']]
+                    continue
                 p=root/('registry-'+key);p.mkdir(mode=0o750);os.chown(p,0,10001)
                 selection[key]['source']=str(p);request['HostConfig']['Mounts'][index]['Source']=str(p)
+                if registry_node:
+                    p.chmod(0o500);os.chown(p,10001,10001)
+                    password=p/selection[key]['fileName'];private(password,b'CI_SYNTHETIC_DB_PASSWORD',0o400)
+                    os.chown(password,10001,10001);selection[key]['sha256']=pin(password)['sha256']
             profile=DiscoveryProfile(request,**selection)
             template,launch=compile_inputs((ROOT/'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes(),
                 request,execution_profile=profile,engine_profile=ENGINE)
@@ -95,11 +113,23 @@ def main(*,sealed_worker=False):
             assert engine.request('POST','/v1.44/containers/'+control_id+'/start')[0]==204
             assert engine.request('POST','/v1.44/containers/'+control_id+'/pause')[0]==204
             opts['expected_rootfs_seal']=rootfs_seal(Path(STORAGE+'/rootfs/overlayfs/'+control_id),LIMITS,VerificationBudget(15))
+            registry_rootfs=None
+            if registry_node:
+                control=copy.deepcopy(request)
+                control['NetworkingConfig']['EndpointsConfig'][network].update(MacAddress='02:00:00:00:01:05',IPAMConfig={'IPv4Address':'10.77.0.5'})
+                status,created=engine.request('POST','/v1.44/containers/create',control);assert status==201,created
+                control_id=created['Id'];ids.append(control_id)
+                assert engine.request('POST','/v1.44/containers/'+control_id+'/start')[0]==204
+                assert engine.request('POST','/v1.44/containers/'+control_id+'/pause')[0]==204
+                registry_rootfs=rootfs_seal(Path(STORAGE+'/rootfs/overlayfs/'+control_id),LIMITS,VerificationBudget(15))
             # The independent southbound baseline deliberately supplies all
             # Engine defaults, including seccomp, AppArmor and mount ordering.
             issuer0,w,auth,_,_,options,_=case.fixture(definition=definition,provider_inputs=opts,rootfs_limits=LIMITS)
             prep=options['preparer_template'];prep.update(commands={k:commands[k] for k in prep['commands']},
                 commandHashes={k:pin(commands[k])['sha256'] for k in prep['commands']},hostNetworkNamespace=runtime.host_namespace())
+            if registry_node:
+                prep['kernel']['staticFlows'].append({'purpose':'DNS','source':'10.77.0.3',
+                    'destination':'192.0.2.53','protocol':'udp','port':53})
             options['registry_recipe']['runtimeRoot']=str(STATE_ROOT)
             cfg=options['runtime_configuration'];cfg['runtimeStateRoot']=str(STATE_ROOT.parent)
             auth.write(Path(options['runtime_configuration_binding']['path']),runtime.encoded(cfg))
@@ -115,9 +145,13 @@ def main(*,sealed_worker=False):
             auth.write(Path(prep['lockFile']),b'');auth.write(Path(prep['coordinationJournal']),runtime.encoded({
                 'schema':'ouf.semantic-lease-coordination.v1',**prep['coordinationBinding'],'state':'QUIESCED',
                 'leaseAuthorized':False,'startAuthorized':False,'leaseAddresses':[[]]}))
+            if registry_node:
+                from fixtures.m2_registry_node_worker_native import configure_recipe
+                registry_setup=configure_recipe(auth,root,options,commands,registry_rootfs)
             recipe=options['registry_recipe'];node_intent={'creationRequestHash':w.request_hash,
                 **{k:recipe[k] for k in ('sourceClosureHash','qualifiedPackageHash','imageConfigurationHash')},'nodeRecipeHash':runtime.digest(recipe)}
             phases=runtime.decode(w.raw)['phaseIntentHashes'];phases['ATTEST_NEW_OCI_PEER']=runtime.digest(node_intent)
+            if registry_node:phases['INSTALL_AUTHENTICATED_TRANSPORT']=runtime.digest(registry_setup['transportIntent'])
             child,raw=auth.child(creation_request_hash=w.request_hash,phase_intent_hashes=phases)
             w.child,w.raw,w.child_hash=child,raw,hashlib.sha256(raw).hexdigest()
             boundary=w.transition.read();boundary['transitionAuthorityEvidenceHash']=w.child_hash
@@ -161,11 +195,12 @@ def main(*,sealed_worker=False):
                 # is created. Match the already finite parent120s window; no
                 # renewal, replay or extension after any installation effect.
                 auth.now=int(time.time())
-                child,raw=auth.child(expires=120,creation_request_hash=w.request_hash,phase_intent_hashes=phases)
+                child,raw=auth.child(expires=300 if registry_node else 120,
+                    creation_request_hash=w.request_hash,phase_intent_hashes=phases)
                 w.child,w.raw,w.child_hash=child,raw,hashlib.sha256(raw).hexdigest()
                 boundary['transitionAuthorityEvidenceHash']=w.child_hash
                 for effect in boundary['effects']:effect.update(authorityEvidenceHash=w.child_hash,intentHash=phases[effect['phase']])
-            parent=auth.fixture();w.parent=parent;w.parent_hash=parent.sha
+            parent=auth.fixture(seconds=300 if registry_node else 120);w.parent=parent;w.parent_hash=parent.sha
             parent.clock=w.child.clock=auth.verifier.clock=time.time
             # Replace the fixture transport in full: all HTTP results and
             # configuration/process/generation observations come from Docker.
@@ -239,7 +274,14 @@ def main(*,sealed_worker=False):
             if sealed_worker:
                 run(commands['ip'],'addr','add','192.0.2.53/32','dev','lo')
                 from fixtures.m2_admitted_provider_sealed_worker_native import qualify
-                print(json.dumps(qualify(phase,auth,worker_setup,boundary,run),sort_keys=True),flush=True)
+                node=None
+                if registry_node:
+                    from fixtures.m2_registry_node_worker_native import attest_and_install
+                    node=attest_and_install(phase,auth,registry_setup,boundary,token)
+                print(json.dumps(qualify(phase,auth,worker_setup,boundary,run,registry_node=node),sort_keys=True),flush=True)
+                if registry_node:
+                    from fixtures.m2_registry_node_worker_native import final_read
+                    print(json.dumps(final_read(node,token),sort_keys=True),flush=True)
             else:
                 from fixtures.m2_provider_worker_handoff_native import qualify
                 print(json.dumps(qualify(phase,root,commands,STATE_ROOT,run,docker_engine=engine),sort_keys=True),flush=True)
@@ -248,7 +290,9 @@ def main(*,sealed_worker=False):
                 'actualProviderV4AdmissionAndRegistryGate':True,'lostActualStartReplyReconciledWithoutReplay':True,
                 'independentControlPeerRootfsSealBeforeCandidateReview':True,'expectedOciFromIndependentCommittedBaseline':True,
                 'actualProviderCreateAttempts':1,'actualProviderStartAttempts':1,
-                'syntheticImagesReviewAndRegistryAdmissionPredecessor':True,'sealedWorkerInstallationProven':sealed_worker,
+                'syntheticImagesReviewAndRegistryAdmissionPredecessor':not registry_node,
+                'syntheticImagesAndReview':True,'actualRegistryNodeAndTransport':registry_node,
+                'sealedWorkerInstallationProven':sealed_worker,
                 'fullCohortProven':False,'applicationE2EProven':False,'targetApplyAuthorized':False,
                 'runtimeAuthorityIssued':False,'releaseAcceptance':False},sort_keys=True),flush=True)
         finally:
@@ -256,10 +300,13 @@ def main(*,sealed_worker=False):
             run('docker','network','rm',network,check=False)
             if table:
                 for family in ('inet','bridge'):run(commands['nft'],'delete','table',family,table,check=False)
+            if registry_setup:
+                for family in ('inet','bridge'):run(commands['nft'],'delete','table',family,'ci_registry_shared',check=False)
             if wrapper_owned:WRAPPER.unlink(missing_ok=True)
             if sealed_worker:run(commands['ip'],'addr','del','192.0.2.53/32','dev','lo',check=False)
             case.doCleanups()
+            if token:token.close()
 
 if __name__=='__main__':
-    assert sys.argv[1:] in ([],['--sealed-worker'])
-    main(sealed_worker=sys.argv[1:]==['--sealed-worker'])
+    assert sys.argv[1:] in ([],['--sealed-worker'],['--registry-worker'])
+    main(sealed_worker=bool(sys.argv[1:]),registry_node=sys.argv[1:]==['--registry-worker'])

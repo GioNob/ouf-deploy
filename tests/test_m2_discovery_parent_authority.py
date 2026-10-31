@@ -54,14 +54,15 @@ class Parent(unittest.TestCase):
         signature=self.native('pkeyutl','-sign','-rawin','-inkey',str(self.key),'-in',str(frame))
         self.write(self.signatures/(header['payloadHash']+'.'+role+'.json'),m.encoded({**header,'signature':signature.hex()}))
 
-    def fixture(self,decision=m.DECISION):
+    def fixture(self,decision=m.DECISION,*,seconds=120):
+        self.assertIs(type(seconds),int);self.assertTrue(1<=seconds<=300)
         scope=m.review_scope(self.review)
         raw=m.encoded({'schema':'ouf.discovery-parent-execution-authority.v1','scope':scope,
-            'issuedAt':self.now,'expiresAt':self.now+120,'installationRef':self.context['installationRef'],
+            'issuedAt':self.now,'expiresAt':self.now+seconds,'installationRef':self.context['installationRef'],
             'entityRef':self.context['entityRef'],'automaticReplayAllowed':False,'budgetReset':False,'releaseAcceptance':False})
         human={'schema':'ouf.discovery-parent-human-decision.v1','decision':decision,'state':'ACTIVE',
             'approvalRef':'SYNTHETIC_PARENT_NOT_TARGET_APPROVAL','scope':scope,'authorityHash':hashlib.sha256(raw).hexdigest(),
-            'issuedAt':self.now,'expiresAt':self.now+120}
+            'issuedAt':self.now,'expiresAt':self.now+seconds}
         path=self.root/'parent-human.json';self.write(path,m.encoded(human))
         for role in ('DEPLOYMENT_INTENT','FINAL_DEPLOYMENT_APPROVAL'):self.sign(raw,role)
         return m.DiscoveryParentAuthority(self.verifier,self.binding(path),self.binding(path)['sha256'],

@@ -1,9 +1,9 @@
 name: M2 real Docker admitted provider worker handoff
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/test_m2_admitted_provider_sealed_fixture.py','.github/workflows/m2-provider-docker-worker-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/test_m2_registry_node_worker_fixture.py','tests/fixtures/m2_registry_node_worker_native.py','tests/test_installed_token_owner.py','tests/test_m2_discovery_parent_authority.py','tests/test_m2_admitted_provider_sealed_fixture.py','.github/workflows/m2-provider-docker-worker-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/test_m2_admitted_provider_sealed_fixture.py','.github/workflows/m2-provider-docker-worker-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/test_m2_registry_node_worker_fixture.py','tests/fixtures/m2_registry_node_worker_native.py','tests/test_installed_token_owner.py','tests/test_m2_discovery_parent_authority.py','tests/test_m2_admitted_provider_sealed_fixture.py','.github/workflows/m2-provider-docker-worker-native.yml']
 permissions: {contents: read}
 jobs:
   native-material:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scenario: [finite-handoff, sealed-worker]
+        scenario: [finite-handoff, sealed-worker, registry-worker]
     env:
       OUF_NATIVE_SCENARIO: ${{ matrix.scenario }}
     steps:
@@ -51,7 +51,7 @@ jobs:
           test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
           test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
       - name: Install actual nftables and crypto tools
-        run: sudo apt-get update && sudo apt-get install -y nftables iproute2 openssl
+        run: sudo apt-get update && sudo apt-get install -y nftables iproute2 openssl python3-cryptography
       - name: Real admitted Docker provider and the selected distinct worker mode
         run: |
           set -euo pipefail
@@ -62,6 +62,13 @@ jobs:
           sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
             -s "$fixture/repository/tests" -p test_m2_public_peer_bundle_sources.py -v
           args=()
+          flags=(-I -B -S)
           if [ "$OUF_NATIVE_SCENARIO" = sealed-worker ]; then args+=(--sealed-worker); fi
-          sudo env GITHUB_ACTIONS=true DOCKER_API_VERSION=1.44 PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
-            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py" "${args[@]}"
+          if [ "$OUF_NATIVE_SCENARIO" = registry-worker ]; then
+            args+=(--registry-worker)
+            # Only the host-side disposable TLS certificate fixture uses the
+            # distro cryptography package. The sealed worker still runs -I -B -S.
+            flags=(-I -B)
+          fi
+          sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 DOCKER_API_VERSION=1.44 PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 "${flags[@]}" "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py" "${args[@]}"
