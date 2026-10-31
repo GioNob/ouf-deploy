@@ -200,6 +200,18 @@ def main(*,sealed_worker=False):
             except Exception:
                 try:
                     material=publication.material();diagnose_broker(material,STATE_ROOT)
+                    actual_path=Path(material['root'])/'bundle/config.json'
+                    if actual_path.exists():
+                        actual_oci=json.loads(actual_path.read_bytes());expected_oci=material['materialized']['framePolicy']['expectedOci']
+                        changes=[]
+                        def compare(expected,actual,path=''):
+                            if type(expected) is dict and type(actual) is dict:
+                                for key in sorted(set(expected)|set(actual)):
+                                    if key not in expected or key not in actual:changes.append(path+'/'+key)
+                                    else:compare(expected[key],actual[key],path+'/'+key)
+                            elif expected!=actual:changes.append(path)
+                        compare(expected_oci,actual_oci)
+                        print('CI_INDEPENDENT_PROVIDER_OCI_DIFFERENCE_PATHS='+json.dumps(changes[:40]),flush=True)
                     for denial in Path(material['root']).glob('broker-denial-*.json'):
                         value=runtime.private_json(denial)
                         print('CI_RETAINED_BROKER_DENIAL='+json.dumps(value,sort_keys=True),flush=True)
