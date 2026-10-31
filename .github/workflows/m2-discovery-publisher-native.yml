@@ -51,4 +51,5 @@ jobs:
             OUF_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" OUF_GITHUB_REPOSITORY_ID="$GITHUB_REPOSITORY_ID" \
             OUF_GITHUB_OWNER_ID="$GITHUB_REPOSITORY_OWNER_ID" OUF_GITHUB_SOURCE_REF="$GITHUB_REF" \
             OUF_GITHUB_SOURCE_SHA="$GITHUB_SHA" OUF_GITHUB_SIGNER_SHA="$GITHUB_WORKFLOW_SHA" \
+            OUF_GITHUB_PUBLISHER_WORKFLOW_PATH=.github/workflows/m2-discovery-publisher-native.yml \
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_discovery_current_publisher_native.py -v

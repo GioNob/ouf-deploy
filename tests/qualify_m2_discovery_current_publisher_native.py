@@ -24,7 +24,8 @@ class NativePublisher(unittest.TestCase):
         inputs['ghExecutable']=fixtures.ref(Path(os.environ['OUF_GH_PUBLISHER_BINARY']),134217728)
         row.update(repository=os.environ['OUF_GITHUB_REPOSITORY'],repositoryId=os.environ['OUF_GITHUB_REPOSITORY_ID'],
             ownerId=os.environ['OUF_GITHUB_OWNER_ID'],sourceRef=os.environ['OUF_GITHUB_SOURCE_REF'],
-            sourceCommit=os.environ['OUF_GITHUB_SOURCE_SHA'],signerCommit=os.environ['OUF_GITHUB_SIGNER_SHA'])
+            sourceCommit=os.environ['OUF_GITHUB_SOURCE_SHA'],signerCommit=os.environ['OUF_GITHUB_SIGNER_SHA'],
+            workflowPath=os.environ['OUF_GITHUB_PUBLISHER_WORKFLOW_PATH'])
         if wrong_id:row['repositoryId']='1'
         runtime=copy.deepcopy(old.runtime_inputs);runtime.pop('additionalInputsHashes');runtime['schema']=fixtures.cohort.m.INPUT_SCHEMA
         runtime=m.bind_publisher_inputs(runtime,inputs);review=copy.deepcopy(case.review)

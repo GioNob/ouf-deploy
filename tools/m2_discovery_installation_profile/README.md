@@ -23,6 +23,16 @@ artifact membership, actual workload bearer and the sealed checkpoint/controller
 remain separately required. Export/preparation never signs, logs in, refreshes
 tokens, executes target operations, activates sources or accepts M2.
 
+`verifying_operational_worker.py` reads the same signed normal handoff during
+the exact in-flight VERIFY_APPLICATION checkpoints, after Java starts and before
+READY12. It does not re-enter the paused owner or expired initial provider gate.
+`current_producer_fence.py` reads the actual quiescence adapter twice at READY12,
+compares its native evidence with the completed phase, and requires all three
+selected predecessors to remain retired. It dispatches no stop/update/start or
+release. The producer inventory itself remains independently reviewed; this
+reader does not discover or prove every possible database writer. These new
+controller predicates are separate from the sealed235-source review compiler.
+
 `native_profile.py` and `frame.py` compile a distinct, typed discovery launch and
 complete OCI proposal. They extend the audit/compiler work in PR53. They are not
 an operator launcher, credential owner, native observer or execution authority.
