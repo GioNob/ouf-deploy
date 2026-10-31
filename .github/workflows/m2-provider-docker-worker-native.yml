@@ -9,6 +9,12 @@ jobs:
   native-material:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [finite-handoff, sealed-worker]
+    env:
+      OUF_NATIVE_SCENARIO: ${{ matrix.scenario }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
@@ -46,7 +52,7 @@ jobs:
           test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
       - name: Install actual nftables and crypto tools
         run: sudo apt-get update && sudo apt-get install -y nftables iproute2 openssl
-      - name: Actual Docker v4 admission lost reply and distinct worker with retained history
+      - name: Real admitted Docker provider and the selected distinct worker mode
         run: |
           set -euo pipefail
           fixture="/var/lib/ouf-native-docker-provider-${GITHUB_RUN_ID}"
@@ -55,11 +61,7 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
             -s "$fixture/repository/tests" -p test_m2_public_peer_bundle_sources.py -v
+          args=()
+          if [ "$OUF_NATIVE_SCENARIO" = sealed-worker ]; then args+=(--sealed-worker); fi
           sudo env GITHUB_ACTIONS=true DOCKER_API_VERSION=1.44 PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
-            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py"
-      - name: Same admitted Docker provider and late sealed systemd worker
-        run: |
-          set -euo pipefail
-          fixture="/var/lib/ouf-native-docker-provider-${GITHUB_RUN_ID}"
-          sudo env GITHUB_ACTIONS=true DOCKER_API_VERSION=1.44 PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
-            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py" --sealed-worker
+            python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py" "${args[@]}"

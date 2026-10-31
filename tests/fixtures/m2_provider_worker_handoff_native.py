@@ -187,8 +187,9 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
             end=time.monotonic()+5
             while native(provider)['status']!='stopped':
                 assert time.monotonic()<end;time.sleep(.05)
-        blocked=request('tick');assert blocked['state']=='BLOCKED' and blocked['reason'] in (
-            'GENERATION_CHANGED','AUTHORITY_REVOKED') if docker_engine is not None else blocked['state']=='BLOCKED' and blocked['reason']=='GENERATION_CHANGED',blocked
+        blocked=request('tick');assert blocked['state']=='BLOCKED',blocked
+        reasons={'GENERATION_CHANGED','AUTHORITY_REVOKED'} if docker_engine is not None else {'GENERATION_CHANGED'}
+        assert blocked['reason'] in reasons,blocked
         assert not any(owner.coordinator.sets());free_locks()
         if docker_engine is None:pause_provider(False)
         queries=control['queries'];again=request('tick')
