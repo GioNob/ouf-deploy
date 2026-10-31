@@ -119,7 +119,9 @@ class CurrentRetirementAndBackup:
             and row['creationRequestHash']==self.request_hash
             and row['transitionAuthorityEvidenceHash']==hashlib.sha256(self.authority_raw).hexdigest(),
             'READONLY_FINAL_RETIREMENT_MODE_MUST_BE_SELECTED_BEFORE_TRANSITION_START')
-        self.app.executor.adapters[PHASE]=self;self.installed=True;self.guard()
+        proof=self.retired(ObservationBudget(90))
+        require(self.transition.read()==row,'RETIREMENT_READ_PREFLIGHT_HISTORY_CHANGED')
+        self.app.executor.adapters[PHASE]=self;self.installed=True;self.guard();return proof
 
     def retired(self,budget):
         self.guard();c=self.legacy.channel;r=self.inputs['retirement'];budget.check()

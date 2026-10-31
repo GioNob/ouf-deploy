@@ -84,6 +84,13 @@ class CurrentRetirement(unittest.TestCase):
         row['state']='READY';reader.inputs['retirement']['mode']='STOP_AND_RESTART'
         with self.assertRaises(ValueError):reader.attach_before_transition()
 
+    def test_final_state_mismatch_denies_before_owner_attachment_or_phase_claim(self):
+        reader,row,final,*_=self.prepared();before=copy.deepcopy(row);final['worker']['live']=True
+        with self.assertRaisesRegex(ValueError,'FINAL_RETIRED_WORKER'):reader.attach_before_transition()
+        self.assertEqual(row,before);self.assertFalse(reader.installed)
+        self.assertIs(reader.app.executor.adapters[m.PHASE],reader.legacy)
+        self.assertEqual(list(reader.store.root.iterdir()),[]);reader.legacy.channel.stop.assert_not_called()
+
     def test_live_worker_nonempty_sets_and_boolean_counters_never_mean_final_retirement(self):
         reader,_,final,_,_=self.prepared()
         cases=[('worker','live',True),('worker','attempts',True),('history','attempts',True),

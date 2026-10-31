@@ -21,14 +21,14 @@ jobs:
           sudo install -d -m 0700 /var/lib/ouf-publisher-gh297
           sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /var/lib/ouf-publisher-gh297
           sudo chown -R root:root /var/lib/ouf-publisher-gh297
-          /var/lib/ouf-publisher-gh297/bin/gh --version
+          sudo /var/lib/ouf-publisher-gh297/bin/gh --version
       - name: Prepare disposable public CI subject and explicit Sigstore trust roots
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
           set -euo pipefail
           mkdir publisher-fixture
           printf '%s\n' 'OUF disposable source publisher fixture; no runtime or target admission' > publisher-fixture/artifact.bin
-          /var/lib/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
+          sudo --preserve-env=GH_TOKEN /var/lib/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         id: provenance
         with:
