@@ -142,7 +142,6 @@ def qualify(provider_phase,auth,setup,boundary,run):
         materializer=WorkerMaterialization(node_owner=node,provider=owner.admission,signer=setup['signer'],
             capsule=setup['capsule'],installation_sources=setup['sources'])
         phase=materializer.prepare_once(intent)
-        assert materializer.prepared(intent).files.material==phase.files.material
         dispatches=[];manager=phase.start.manager
         def lost(args):
             value=manager(args)

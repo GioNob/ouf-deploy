@@ -157,7 +157,11 @@ def main(*,sealed_worker=False):
                 worker_intent={'creationRequestHash':w.request_hash,'nodeRecipeHash':runtime.digest(recipe),
                     'leaseInstallationScopeHash':start_hash,'priorEvidencePhase':'INSTALL_AUTHENTICATED_TRANSPORT'}
                 phases['START_DISTINCT_LEASE_WORKER']=runtime.digest(worker_intent)
-                child,raw=auth.child(creation_request_hash=w.request_hash,phase_intent_hashes=phases)
+                # Initial CI authority only, before either reviewed candidate
+                # is created. Match the already finite parent120s window; no
+                # renewal, replay or extension after any installation effect.
+                auth.now=int(time.time())
+                child,raw=auth.child(expires=120,creation_request_hash=w.request_hash,phase_intent_hashes=phases)
                 w.child,w.raw,w.child_hash=child,raw,hashlib.sha256(raw).hexdigest()
                 boundary['transitionAuthorityEvidenceHash']=w.child_hash
                 for effect in boundary['effects']:effect.update(authorityEvidenceHash=w.child_hash,intentHash=phases[effect['phase']])
