@@ -682,3 +682,17 @@ matches the local rebuild: capsule SHA
 The initial artifact is historical; the application108module payload remains
 unchanged. This is still a private review fragment, not a complete parent review
 or target execution approval.
+# Infrastructure review preparation
+
+The separate `infrastructure_review` compiler extends private preparation to
+the exact existing gate, provider v2 and sequenced worker parent components.
+It cross-checks the four-owner fragment, independent Registry recipe, native
+configuration/lock, public verification context, signing-key isolation and all
+owner roots. It retains protected ancestry metadata checks and performs no
+private content read, signature, Engine request, command or native admission.
+
+Its independent sealed compiler has only `prepare` and read-only `inspect`;
+create-only claims and compiler binding prevent overwrite, partial completion
+or adoption under another compiler. It remains a review fragment, with child,
+HUMAN, current cohort/admission and capability publication still required.
+See [the handoff](../../docs/handoffs/OUF_M2_INFRASTRUCTURE_REVIEW_20261031.md).
