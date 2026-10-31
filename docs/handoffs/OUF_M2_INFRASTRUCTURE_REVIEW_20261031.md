@@ -84,3 +84,35 @@ not authenticated publisher trust. Source-map anchor
 Full evidence: [qualification](../../evidence/m2-infrastructure-review-20261031.json).
 The general protocol/native/IAM runs are separate scopes and were still running
 at this qualification snapshot; their success is not inferred here.
+
+## General native regression retained separately
+
+The later final report for source41f935 is not all green. In native
+[run41183119362](https://github.com/GioNob/ouf-deploy/actions/runs/41183119362),
+finite124484438519 and sealed124484438360 passed; final logs/reports were read.
+Registry-worker124484438539 failed during START observation with
+`CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED`. The existing tap recorded
+QUIESCED/leaseAuthorized=false and two exact expected keys with nonpositive lease
+families; the separate final worker read was ACTIVE/RENEWED,1attempt,16publications,
+1reentry. These reads are not atomic. The positive-publication requirement was
+not satisfied: treating QUIESCED as retryable UPDATING would relax revocation.
+The reason for coordinator/worker divergence remains OPEN. Failure log SHA
+`660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5`.
+
+A CI-only follow-up now reads up to64recent service-log lines, with2s timeout,
+strictly after an observation failure. It accepts at most65536raw bytes and
+emits up to32strictly validated state/reason/counter records; raw messages,
+identities, paths and malformed/authorized rows are omitted. This is separate
+post-failure evidence, not an atomic account of the earlier publication.
+Snapshot taps add no reads; successful observations trigger no new command.
+Original errors survive unavailable logs or emitters. It changes no worker,
+production observer, budget, signature, start or observation-retry policy.
+7diagnostic/early-review tests PASS0.246s locally. The native follow-up requires
+its own final report; a passing fresh run would not close the recorded cause.
+
+Current IAM run41183119340/job124484438551 PASS251tests/33suites/0skip, final
+disposable Keycloak report read,0production calls/targetInstallerReady false.
+Protocol41183119606/job124484439255 was still running; Chatbot41183119318 was
+cancelled (its workflow cancels previous runs on the same PR). Neither is
+claimed qualified here. No all-green general qualification follows from the
+independent15-test compiler pass.

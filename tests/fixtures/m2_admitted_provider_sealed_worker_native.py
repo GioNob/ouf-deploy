@@ -164,6 +164,8 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None):
                 'reason':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,160}',reason) else 'REDACTED',
                 'frames':[{'source':Path(f.filename).name,'line':f.lineno,'function':f.name}
                     for f in traceback.extract_tb(error.__traceback__)[-8:]]},sort_keys=True),flush=True)
+            from fixtures.m2_publication_read_diagnostics import after_failure_status
+            after_failure_status(unit,lambda value:print(value,flush=True))
             raise
     observation.observe=diagnostic_observe
     observation.publication_snapshot=diagnostic_snapshot

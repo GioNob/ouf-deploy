@@ -127,12 +127,24 @@
     "interpreterStdlibPublisherTrust": false
   },
   "remainingRequirements": [
+    "Trace source41f revoked QUIESCED publication versus ACTIVE worker checkpoint without relaxing denial or replaying starts",
     "Separately authenticated Registry child/current HUMAN and governed capability-publication component in exact full parent review",
     "Current private file/archive/Gateway/executable custody and full cohort/TLS/IAM/DB/trust/fencing",
     "Real Farmacie to Ingestion to UDP/all61 outcomes; reimport/fault/recovery/chat/boot/rotation/two-client acceptance"
   ],
   "fullGeneralCiAtThisSnapshot": {
-    "status": "SEPARATE_STILL_RUNNING_NOT_PROMOTED_TO_QUALIFICATION",
+    "status": "NATIVE_REGISTRY_FAILED_PROTOCOL_RUNNING_CHATBOT_CANCELLED_NOT_ALL_GREEN",
+    "protocol": {
+      "run": 41183119606,
+      "job": 124484439255,
+      "status": "in_progress",
+      "notClaimedQualified": true
+    },
+    "chatbot": {
+      "run": 41183119318,
+      "conclusion": "cancelled",
+      "notClaimedQualified": true
+    },
     "notInferredFromDedicatedCompilerPass": true
   },
   "runtimeAuthorityIssued": false,
@@ -140,5 +152,90 @@
   "signaturesIssued": 0,
   "budgetReset": false,
   "automaticReplayAllowed": false,
-  "releaseAcceptance": false
+  "releaseAcceptance": false,
+  "source41fGeneralNative": {
+    "run": 41183119362,
+    "conclusion": "failure",
+    "allThreeModesQualified": false,
+    "finite": {
+      "job": 124484438519,
+      "conclusion": "success",
+      "finalLogAndReportRead": true
+    },
+    "sealed": {
+      "job": 124484438360,
+      "conclusion": "success",
+      "finalLogAndReportRead": true
+    },
+    "registryWorker": {
+      "run": 41183119362,
+      "job": 124484438539,
+      "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+      "mode": "registry-worker",
+      "conclusion": "failure",
+      "finalLogRead": true,
+      "phase": "Worker sequence START observation after the lost manager-start reply",
+      "reasonCode": "CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED",
+      "readKind": "READ_DENIED",
+      "snapshotTimeUtc": "2026-10-31T08:08:44.1749100Z",
+      "publicationSnapshot": {
+        "coordination": {
+          "state": "QUIESCED",
+          "leaseAuthorized": false
+        },
+        "sets": {
+          "exactExpectedKeys": true,
+          "expectedKeyCount": 2,
+          "allFamiliesPositive": false
+        }
+      },
+      "workerFinalRead": {
+        "state": "ACTIVE",
+        "reason": "RENEWED",
+        "attempts": 1,
+        "publicationCount": 16,
+        "reentryCount": 1
+      },
+      "snapshotAndWorkerFinalReadAreNotAtomic": true,
+      "failureLogSha256": "660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5",
+      "failureLogBytes": 24979,
+      "interpretation": "Observed revoked/nonpositive publication cannot satisfy positive lease proof. QUIESCED is denied, not retryable UPDATING. Why the worker/coordinator records diverged is not proven by this snapshot.",
+      "causalResolution": "OPEN",
+      "observerRulesRelaxed": false,
+      "workerPinsChanged": false,
+      "automaticObservationRetryAdded": false,
+      "manualCiRerunRequested": false,
+      "authorityExtended": false,
+      "operationalAttemptReplayed": false
+    }
+  },
+  "source41fIam": {
+    "run": 41183119340,
+    "job": 124484438551,
+    "conclusion": "success",
+    "tests": 251,
+    "suites": 33,
+    "skips": 0,
+    "finalLogAndRealDisposableKeycloakReportRead": true,
+    "productionCalls": 0,
+    "targetInstallerReady": false
+  },
+  "diagnosticFollowup": {
+    "scope": "CI_ONLY_BOUNDED_POST_FAILURE_STATUS_LOG_READ",
+    "localTests": 7,
+    "localSeconds": 0.246,
+    "failures": 0,
+    "skips": 0,
+    "nativeCiStatus": "PENDING_NEW_SOURCE_CUT",
+    "onlyAfterFailedObservation": true,
+    "maximumJournalLines": 64,
+    "maximumRawBytesAccepted": 65536,
+    "maximumEmittedRecords": 32,
+    "commandTimeoutSeconds": 2,
+    "privateAndMalformedMessagesFiltered": true,
+    "originalDenialPreserved": true,
+    "noObservationReplay": true,
+    "noWorkerOrProductionObserverChange": true,
+    "notCausalResolution": true
+  }
 }

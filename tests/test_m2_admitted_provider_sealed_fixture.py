@@ -7,7 +7,7 @@ import test_m2_provider_profiles as providers
 from fixtures.m2_admitted_provider_sealed_worker_native import review,bind_review
 from tools.m2_discovery_installation_profile import lease_materialization as materialization
 from tools.m2_discovery_installation_profile.provider_materialized_admission import admission_scope
-from fixtures.m2_publication_read_diagnostics import capture
+from fixtures.m2_publication_read_diagnostics import capture,after_failure_status
 
 
 class PublicationDiagnostics(unittest.TestCase):
@@ -40,6 +40,45 @@ class PublicationDiagnostics(unittest.TestCase):
         def emit(value):raise RuntimeError('UNRELATED_OUTPUT_ERROR')
         with self.assertRaises(ValueError) as caught:capture(actual,c,'unused',[],emit)
         self.assertIs(caught.exception,error);self.assertEqual(counts,[])
+
+    def test_after_failure_log_read_is_bounded_and_emits_only_valid_minimized_status(self):
+        calls=[];logs=[]
+        v={'state':'ACTIVE','reason':'RENEWED','attempts':1,'renewals':16,'incidentRef':'a'*64,
+            'ready':True,'live':True,'applicationReady':False,'runtimeAuthorityIssued':False}
+        invalid={**v,'private':'PRIVATE_SENTINEL'}
+        raw=('PRIVATE_NATIVE_LOG\nOUF_DISCOVERY_LEASE_WORKER_STATUS='+json.dumps(invalid)+
+            '\nOUF_DISCOVERY_LEASE_WORKER_STATUS='+json.dumps(v)+'\n').encode()
+        def read(args,**options):
+            calls.append((args,options));return types.SimpleNamespace(returncode=0,stdout=raw)
+        after_failure_status('ouf-admitted-worker-fixture.service',logs.append,read)
+        self.assertEqual(len(calls),1);self.assertEqual(calls[0][1]['timeout'],2)
+        self.assertIn('--lines=64',calls[0][0]);self.assertEqual(calls[0][0][0],'/usr/bin/journalctl')
+        self.assertNotIn('PRIVATE',logs[0]);self.assertNotIn('a'*64,logs[0])
+        value=json.loads(logs[0].split('=',1)[1]);self.assertEqual(value['status'],'CAPTURED')
+        self.assertEqual(value['records'],[{k:v[k] for k in ('state','reason','attempts','renewals','ready','live')}])
+        self.assertIn('NOT_ATOMIC',value['timing'])
+
+    def test_after_failure_unavailable_reader_or_emitter_never_changes_original_failure(self):
+        def read(*args,**kwargs):raise TimeoutError('PRIVATE_COMMAND_ERROR')
+        logs=[];after_failure_status('ouf-admitted-worker-fixture.service',logs.append,read)
+        self.assertEqual(json.loads(logs[0].split('=',1)[1])['status'],'UNAVAILABLE')
+        self.assertNotIn('PRIVATE',logs[0])
+        def emit(value):raise RuntimeError('PRIVATE_EMITTER_ERROR')
+        after_failure_status('ouf-admitted-worker-fixture.service',emit,read)
+        calls=[]
+        after_failure_status('unowned.service',logs.append,lambda *a,**k:calls.append(a))
+        self.assertEqual(calls,[])
+
+    def test_after_failure_oversized_log_and_duplicate_or_authorized_rows_are_denied(self):
+        prefix='OUF_DISCOVERY_LEASE_WORKER_STATUS='
+        v={'state':'ACTIVE','reason':'RENEWED','attempts':1,'renewals':1,'incidentRef':'a'*64,
+            'ready':True,'live':True,'applicationReady':False,'runtimeAuthorityIssued':True}
+        for raw in (b'x'*65537,(prefix+'{"state":"ACTIVE","state":"BLOCKED"}').encode(),
+            (prefix+json.dumps(v)).encode()):
+            logs=[]
+            after_failure_status('ouf-admitted-worker-fixture.service',logs.append,
+                lambda *a,**k:types.SimpleNamespace(returncode=0,stdout=raw))
+            self.assertEqual(json.loads(logs[0].split('=',1)[1])['records'],[])
 
 class EarlyReview(unittest.TestCase):
     def test_same_provider_and_registry_inputs_are_bound_before_cids_or_worker_ledger_exist(self):

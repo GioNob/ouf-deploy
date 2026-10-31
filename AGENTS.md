@@ -49,10 +49,26 @@ Prior host observation source27717b20 remains qualified463/54 protocol,
 read reconciliation only. Historical31b sealed-v1 expiry/Registry UNKNOWN and
 older UNKNOWN/MCP/worker causes remain OPEN: exact old journal absent; fresh
 passes do not prove historical causality. Original worker/writer/backend unchanged.
-New41f935 general protocol/native/IAM CI are separate scopes; use final reports,
-never infer their success from dedicated compiler qualification.
+Source41f935 native run41183119362 is NOT GREEN: finite124484438519 and
+sealed124484438360 PASS, final reports read; registry124484438539 FAILED
+CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED. Exact tapped snapshot:
+QUIESCED/leaseAuthorized=false, expected2setkeys, no positive families. The
+separate final worker record was ACTIVE/RENEWED1attempt/16publications/1reentry.
+Reads are not atomic. QUIESCED must deny, not be retried as UPDATING. Cause of
+this coordinator/worker divergence remains OPEN; no replay, budget/authority
+extension or observer-rule change. Failure log SHA660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5.
+CI-only follow-up reads at most64recent service lines, timeout2s, only AFTER a
+failed observation; emits32max strict minimized states, never private/raw logs.
+7local diagnostic/early-review tests PASS0.246s. Native follow-up pending;
+a fresh pass alone cannot close the original cause. Original37worker pins and
+production observer unchanged. Snapshot taps still add no reads before failure.
+Current IAM41183119340/job124484438551 PASS251/33/0skip, final real disposable
+Keycloak report read,0production calls/targetInstallerReady false. Current
+protocol41183119606/job124484439255 still running; Chatbot41183119318 cancelled.
+Neither is claimed qualified. No all-green claim.
 
-Next: assemble separately authenticated Registry child and governed publication
+Next: trace the recorded QUIESCED/ACTIVE divergence with failure-only diagnostics;
+assemble separately authenticated Registry child and governed publication
 with the exact full parent review; obtain current custody/cohort admission;
 actual Farmacie→Ingestion→UDP/all61outcomes, reimport/fault/recovery/chat, boot/
 rotation/two real clients and stability. Registry Java stays paused.

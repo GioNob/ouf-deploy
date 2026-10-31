@@ -61,6 +61,8 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
             -s "$fixture/repository/tests" -p test_m2_public_peer_bundle_sources.py -v
+          sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
+            -s "$fixture/repository/tests" -p test_m2_admitted_provider_sealed_fixture.py -v
           args=()
           flags=(-I -B -S)
           if [ "$OUF_NATIVE_SCENARIO" = sealed-worker ]; then args+=(--sealed-worker); fi
