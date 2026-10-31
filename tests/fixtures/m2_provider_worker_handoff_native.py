@@ -216,3 +216,4 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
         cleanup=runtime.Coordinator(runtime.LeaseOwner(cfg,profile,cleanup_backend),binding,
             lambda:runtime.hold_common_lock(common),cleanup_journal.read,cleanup_journal.write)
         cleanup.quiesce()
+        run(commands['ip'],'addr','del','192.0.2.53/32','dev','lo',check=False)

@@ -33,16 +33,17 @@ def cli(*args):
     return run('docker',*args).stdout.decode().strip()
 
 
-def main():
+def main(*,sealed_worker=False):
     assert os.geteuid()==os.getegid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     assert cli('version','--format','{{.Server.Version}}')=='29.8.1'
     assert json.loads(cli('info','--format','{{json .}}'))['DockerRootDir']==STORAGE
-    case=fixtures.Profiles();ids=[];auth=None;table=None;network='ouf-joint-'+uuid.uuid4().hex[:10]
+    case=fixtures.Profiles();ids=[];auth=None;table=None;wrapper_owned=False;network='ouf-joint-'+uuid.uuid4().hex[:10]
     commands={k:str(Path(shutil.which(k)).resolve()) for k in ('runc','nft','ip','nsenter','unshare','mount','umount','sysctl')}
     with tempfile.TemporaryDirectory(prefix='ouf-joint-docker-',dir='/var/lib') as tmp:
         root=Path(tmp);root.chmod(0o700)
         native=root/'commands';native.mkdir(mode=0o700)
         for name,path in list(commands.items()):
+            if name!='runc':continue
             destination=native/name;shutil.copyfile(path,destination);destination.chmod(0o755)
             assert pin(destination)['sha256']==pin(path)['sha256'];commands[name]=str(destination)
         try:
@@ -108,6 +109,9 @@ def main():
             run(commands['nft'],'-f','-',raw=materialize(prep['kernel'],empty_provider_sets=True)['nftRules'].encode())
             tables={family:json.loads(run(commands['nft'],'-j','list','table',family,table).stdout) for family in ('inet','bridge')}
             prep['coordinationBinding']['leaseStructureHash']=structure_hash(tables)
+            prep['coordinationBinding']['configurationHash']=runtime.digest(prep['kernel'])
+            kernel_root=root/'provider-kernel';kernel_root.mkdir(mode=0o700)
+            prep['lockFile']=str(kernel_root/'kernel.lock')
             auth.write(Path(prep['lockFile']),b'');auth.write(Path(prep['coordinationJournal']),runtime.encoded({
                 'schema':'ouf.semantic-lease-coordination.v1',**prep['coordinationBinding'],'state':'QUIESCED',
                 'leaseAuthorized':False,'startAuthorized':False,'leaseAddresses':[[]]}))
@@ -120,21 +124,39 @@ def main():
             for effect in boundary['effects']:effect.update(authorityEvidenceHash=w.child_hash,intentHash=phases[effect['phase']])
             w.transition.read=lambda:copy.deepcopy(boundary)
             ps=fixtures.m.profile_scope(issuer0.template,issuer0.creation.scope,**options)
-            co,worker_recipe,_,py,wo=workers.Template().fixture()
-            wo.update(source_closure_hash=issuer0.template['sourceClosureHash'],signing_key_paths=[str(auth.key)])
-            wo['expected_images']['provider']=issuer0.template['expectedImageId']
-            wo['expected_node_profiles']['provider']=fixtures.m.templates.expected_node_profile(issuer0.template)
-            co['verification']['context']={k:auth.context[k] for k in ('installationRef','entityRef','attestorRef')}
-            lease=workers.m.template(co,worker_recipe,py,**wo)
+            worker_setup=None
+            if sealed_worker:
+                from fixtures.m2_admitted_provider_sealed_worker_native import review,bind_review
+                lease,worker_setup=review(auth,root,issuer0.template,ps,request)
+            else:
+                co,worker_recipe,_,py,wo=workers.Template().fixture()
+                wo.update(source_closure_hash=issuer0.template['sourceClosureHash'],signing_key_paths=[str(auth.key)])
+                wo['expected_images']['provider']=issuer0.template['expectedImageId']
+                wo['expected_node_profiles']['provider']=fixtures.m.templates.expected_node_profile(issuer0.template)
+                co['verification']['context']={k:auth.context[k] for k in ('installationRef','entityRef','attestorRef')}
+                lease=workers.m.template(co,worker_recipe,py,**wo)
             from tools.m2_discovery_installation_profile.provider_materialized_admission import admission_scope
             adm=admission_scope(lease,issuer0.template,issuer0.creation.scope,ps)
             assert not WRAPPER.exists(),'DISPOSABLE_RUNTIME_WRAPPER_MUST_BE_NEW'
-            private(WRAPPER,runtime.wrapper_bytes(ps['pythonBinding']['path'],ps['sourceRoot'],ps['priorRuntimeConfigurationBinding']['path']),0o755)
+            with WRAPPER.open('xb') as stream:
+                wrapper_owned=True
+                stream.write(runtime.wrapper_bytes(ps['pythonBinding']['path'],ps['sourceRoot'],ps['priorRuntimeConfigurationBinding']['path']))
+            WRAPPER.chmod(0o755)
             rs=runtime.runtime_scope(ps,wrapper_binding=auth.binding(WRAPPER),common_lock_identity=list(runtime.custody(prep['lockFile'],0o600)[1]))
             seqroot=auth.root/'sequence';seqroot.mkdir(mode=0o700)
             component={'schema':'ouf.discovery-composed-provider-installation-scope.v2','creation':issuer0.creation.scope,'installation':rs,'admission':adm,
                 'sequence':sequence.provider_sequence_scope(issuer0.creation.scope,rs,adm,journal_directory=seqroot)}
-            auth.review['components']['providerInstallation']=component;parent=auth.fixture();w.parent=parent;w.parent_hash=parent.sha
+            auth.review['components']['providerInstallation']=component
+            if sealed_worker:
+                start_hash=bind_review(auth,worker_setup,adm)
+                worker_intent={'creationRequestHash':w.request_hash,'nodeRecipeHash':runtime.digest(recipe),
+                    'leaseInstallationScopeHash':start_hash,'priorEvidencePhase':'INSTALL_AUTHENTICATED_TRANSPORT'}
+                phases['START_DISTINCT_LEASE_WORKER']=runtime.digest(worker_intent)
+                child,raw=auth.child(creation_request_hash=w.request_hash,phase_intent_hashes=phases)
+                w.child,w.raw,w.child_hash=child,raw,hashlib.sha256(raw).hexdigest()
+                boundary['transitionAuthorityEvidenceHash']=w.child_hash
+                for effect in boundary['effects']:effect.update(authorityEvidenceHash=w.child_hash,intentHash=phases[effect['phase']])
+            parent=auth.fixture();w.parent=parent;w.parent_hash=parent.sha
             parent.clock=w.child.clock=auth.verifier.clock=time.time
             # Replace the fixture transport in full: all HTTP results and
             # configuration/process/generation observations come from Docker.
@@ -191,14 +213,19 @@ def main():
             assert len([p for p,s in mutations if '/containers/create?' in p])==1
             assert len([p for p,s in mutations if p.endswith('/start')])==1
             assert engine.inspect(w.transition)['State']['Paused'] and w.observe_closed()['state']=='CLOSED'
-            from fixtures.m2_provider_worker_handoff_native import qualify
-            print(json.dumps(qualify(phase,root,commands,STATE_ROOT,run,docker_engine=engine),sort_keys=True),flush=True)
+            if sealed_worker:
+                run(commands['ip'],'addr','add','192.0.2.53/32','dev','lo')
+                from fixtures.m2_admitted_provider_sealed_worker_native import qualify
+                print(json.dumps(qualify(phase,auth,worker_setup,boundary,run),sort_keys=True),flush=True)
+            else:
+                from fixtures.m2_provider_worker_handoff_native import qualify
+                print(json.dumps(qualify(phase,root,commands,STATE_ROOT,run,docker_engine=engine),sort_keys=True),flush=True)
             assert len([p for p,s in mutations if p.endswith('/start')])==1
             print(json.dumps({'schema':'ouf.m2-provider-docker-worker-ci.v1','actualDocker29Boundary':True,
                 'actualProviderV4AdmissionAndRegistryGate':True,'lostActualStartReplyReconciledWithoutReplay':True,
                 'independentControlPeerRootfsSealBeforeCandidateReview':True,'expectedOciFromIndependentCommittedBaseline':True,
                 'actualProviderCreateAttempts':1,'actualProviderStartAttempts':1,
-                'syntheticImagesReviewAndRegistryAdmissionPredecessor':True,'sealedWorkerInstallationProven':False,
+                'syntheticImagesReviewAndRegistryAdmissionPredecessor':True,'sealedWorkerInstallationProven':sealed_worker,
                 'fullCohortProven':False,'applicationE2EProven':False,'targetApplyAuthorized':False,
                 'runtimeAuthorityIssued':False,'releaseAcceptance':False},sort_keys=True),flush=True)
         finally:
@@ -206,7 +233,10 @@ def main():
             run('docker','network','rm',network,check=False)
             if table:
                 for family in ('inet','bridge'):run(commands['nft'],'delete','table',family,table,check=False)
-            WRAPPER.unlink(missing_ok=True)
+            if wrapper_owned:WRAPPER.unlink(missing_ok=True)
+            if sealed_worker:run(commands['ip'],'addr','del','192.0.2.53/32','dev','lo',check=False)
             case.doCleanups()
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    assert sys.argv[1:] in ([],['--sealed-worker'])
+    main(sealed_worker=sys.argv[1:]==['--sealed-worker'])
