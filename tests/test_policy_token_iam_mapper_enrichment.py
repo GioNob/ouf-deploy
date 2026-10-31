@@ -135,16 +135,21 @@ class MapperEnrichmentTest(unittest.TestCase):
             home = Path(temp); gh = home / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
             gh.parent.mkdir(parents=True); gh.write_text('UNEXECUTED_FIXTURE_GH'); gh.chmod(0o700)
             paths = ['iam_binding_candidate.py', 'iam_mapper_enrichment.py']; calls = []
+            sources={paths[0]:(ROOT/'tests/fixtures/policy_token_iam_binding_bcd20f30085.source').read_bytes(),
+                paths[1]:(ROOT/'tools/semantic_policy_token_owner'/paths[1]).read_bytes()}
+            # d3b3b066 pins the same binding bytes as bcd20f30. Current compiler
+            # behavior is tested separately; consumed delivery stays byte exact.
+            self.assertEqual(binding.sha(sources[paths[0]]),'a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d')
+            self.assertEqual(binding.sha(sources[paths[1]]),'6b6cbfdfd2a4b628c35d8a7eeb087339e15e0ae49aff8be1f359f74de7e0699e')
             def run(argv, **kwargs):
                 calls.append(argv)
                 if len(calls) <= 2:
                     self.assertEqual(argv[0], str(gh)); self.assertIn('d3b3b06657d756af297078fc9029f77f0524ba18', argv[2])
-                    path = ROOT / 'tools/semantic_policy_token_owner' / paths[len(calls) - 1]
-                    return subprocess.CompletedProcess(argv, 0, base64.b64encode(path.read_bytes()))
+                    return subprocess.CompletedProcess(argv, 0, base64.b64encode(sources[paths[len(calls)-1]]))
                 self.assertEqual(argv, ['sudo', '/usr/bin/python3', '-I', '-B', '-'])
                 tree = ast.parse(kwargs['input'].decode()); records = ast.literal_eval(tree.body[1].value)
                 for (_, payload, expected), path in zip(records, paths):
-                    raw = (ROOT / 'tools/semantic_policy_token_owner' / path).read_bytes()
+                    raw = sources[path]
                     self.assertEqual(base64.b64decode(payload), raw); self.assertEqual(binding.sha(raw), expected)
                 self.assertEqual(kwargs['timeout'], 195)
                 return subprocess.CompletedProcess(argv, 0)
