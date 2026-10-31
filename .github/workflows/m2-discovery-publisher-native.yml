@@ -1,0 +1,54 @@
+name: M2 offline native publisher cryptography
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  offline-publisher:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Install exact official patched gh verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
+          sudo install -d -m 0755 /opt/ouf-publisher-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-publisher-gh297
+          sudo chown -R root:root /opt/ouf-publisher-gh297
+          /opt/ouf-publisher-gh297/bin/gh --version
+      - name: Prepare disposable public CI subject and explicit Sigstore trust roots
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          mkdir publisher-fixture
+          printf '%s\n' 'OUF disposable source publisher fixture; no runtime or target admission' > publisher-fixture/artifact.bin
+          /opt/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: publisher-fixture/artifact.bin
+          create-storage-record: false
+      - name: Actual verification inside a fresh empty network namespace with no GitHub credential
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          cp "$PROVENANCE_BUNDLE" publisher-fixture/bundle.json
+          fixture="/var/lib/ouf-native-publisher-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo unshare --net -- env GITHUB_ACTIONS=true PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+            OUF_PUBLISHER_FIXTURE_ROOT="$fixture/repository/publisher-fixture" \
+            OUF_GH_PUBLISHER_BINARY=/opt/ouf-publisher-gh297/bin/gh \
+            OUF_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" OUF_GITHUB_REPOSITORY_ID="$GITHUB_REPOSITORY_ID" \
+            OUF_GITHUB_OWNER_ID="$GITHUB_REPOSITORY_OWNER_ID" OUF_GITHUB_SOURCE_REF="$GITHUB_REF" \
+            OUF_GITHUB_SOURCE_SHA="$GITHUB_SHA" OUF_GITHUB_SIGNER_SHA="$GITHUB_WORKFLOW_SHA" \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_discovery_current_publisher_native.py -v
