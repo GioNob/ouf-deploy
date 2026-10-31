@@ -1,3 +1,74 @@
+# CURRENT — Publication owner protocol PASS14; VPS flags false; native installation controller still OPEN
+
+31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
+or automations. Teatri M1/G4 technical8/8 functional6/6 acquired. Same Farmacie
+SUCCEEDED61rows/10columns; ministerial STRING/all10OPEN; no upload/profile/
+acquisition replay. M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients OPEN.
+
+User pasted fresh systemctl/Docker metadata. Registry790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d,
+imageb61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3,
+running=true/paused=false, declares OUF_DISCOVERY_WORKER_ENABLED=false and
+OUF_SCHEMA_GOV_ENABLED=false. Registry CID/image and MCP/Onboarding images match
+October29 capture; effective config/process generation/native admission remain
+UNPROVEN. Boot guard oneshot/RemainAfterExit yes/success/exit0/active-exited;
+historical R8/R9 units not-found. Old provider/southbound v2 exited13days ago;
+137 alone does not prove OOM or a current failure. NO current VPS QUIESCED
+incident demonstrated. Distinguish the causally reproduced CI defect/fix.
+This clarification needs NO further operator reads. No flag toggle, old worker/
+container restart, consumed capture replay or token/window request. Lack of SSH
+does not prevent further source implementation; do that work autonomously.
+
+New sourcee61d06fa81a0b89bf8a1e441938d39d748e0a732, PR54 draft/unmerged.
+publication_owner.py recomposes exact pinned publication plans, actual typed
+DiscoverySelectedRuntime/Application/Executor, authenticated current parent and
+unchanged13phase child. Parent separately authorizes capabilityPublication.
+Coordinator holds the Registry invocation fence across existing authorization
+and Gateway state machines/final verification. THS role confirmation remains
+the actual owner HUMAN operation; pending proposal exits without waiting.
+
+Root-private parent/child/component/plan/owner/directory binding precedes init.
+Each remote effect gets independent create-only fsynced dispatch marker before
+I/O. Mutable journal regression denies before another dispatch; lost registration/
+PUT reply resumes GET reconciliation only. Even deduplicated role proposal
+retains maximum1dispatch and ambiguous outcome requires explicit reconciliation.
+Actual M2 Gateway owner/generation/executable/admin binding, exact route/body
+and current durable claim required. Post-marker parent revocation stops before
+remote mutation. No old journals adopted or partial initialization completed.
+
+The NEW mandatory sealed app checkpoint is RELEASE_PRODUCERS /
+BEFORE_DISCOVERY_CAPABILITY_PUBLICATION, exact current receipt schema/phase/
+point/version/intent/child/source/evidencehash, same held Registry history.
+Concrete FULL NATIVE implementation of this checkpoint/controller remains OPEN.
+Tests model that checkpoint/native selected leaves/HTTP/IAM/Gateway/HUMAN role
+transition. Ed25519 parent/child, custody/files/fsync/journals and existing state
+machines are real. This is protocol composition, NOT current native admission.
+Receipt fullCohortProven/currentNativeAdmissionProven/targetApplyAuthorized/
+runtimeAuthorityIssued/producerReleaseDispatched/E2E/releaseAcceptance false.
+No executable target delivery or new CLI; previous136module compiler still
+reports publicationExecutorIntegrated false and does not load this new library.
+
+Local13tests PASS173.131s +new post-marker revocation1PASS3.739s +updated partial
+initialization1PASS2.802s =14distinct cases. Unified CI41210128164/job124563188217
+PASS14/1suite/0fail/0skip131.293s, final log/all14cases read. Previous Java role
+constraints remain separately qualified; this suite explicitly models HUMAN.
+Old37/108/128/136 source closures/pins unchanged and every source body verified.
+Current-source parent compiler regression41210128124/job124563188370 PASS8/0.610s
++12/11.186s,0fail/0skip, final log read. Old bcbc protocol474/55/0/0 in831.510s
+(run41202906193/job124542100170) and IAM251/33/0/0 in130.107s
+(run41202906104/job124542099737), final logs read in previous status turn.
+Other e61general/native workflows are independent, not qualified by these14tests.
+
+Next: concrete native checkpoint + coordinated installer/fencing/control-plane
+ordering; full current custody/TLS/IAM/DB/trust/cohort/lease admission; sealed
+source/package and exact private review; only then new finite HUMAN authority/
+target delivery. Preserve all histories and budgets. No target apply, grant,
+reset, replay, merge or release acceptance.
+Evidence:evidence/m2-governed-publication-owner-20261031.json
+Operator evidence:evidence/m2-vps-diagnostic-metadata-20261031.json
+Handoff:docs/handoffs/OUF_M2_GOVERNED_PUBLICATION_OWNER_20261031.md
+Canonical continuation:docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md on PR50.
+Older CURRENT headers below are historical.
+
 # CURRENT — Six-part parent review compiler PASS20; exact artifact verified; no target admission
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
