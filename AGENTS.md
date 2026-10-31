@@ -1,3 +1,47 @@
+# CURRENT — Native predicates PASS131; actual exported compiler provenance PASS39
+
+31 October 2026, UTC. Continue SOURCE work autonomously/sequentially; no agents,
+automations, optional stop or redundant VPS QUIESCED diagnostics. No user action
+needed for remaining source composition. Latest code60711ad94ea785e99169a486ef18c491d1436b43.
+Preserve M1/Teatri and same Farmacie61rows/10columns/10OPEN; no upload/profile/
+acquisition replay, no old authority replay, no source activation or acceptance.
+
+New VerifyingOperationalWorker handles four exact in-flight VERIFY_APPLICATION
+points after Java exec and before READY12. Real original material/current
+signatures/held worker fence qualified; native running/lease leaves modeled.
+CI41238636808 PASS124/18suites/four final logs read. Initial gate stays expired,
+no paused reentry/signing/reset/start or implied application readiness.
+New CurrentProducerFence uses actual ProducerAdapter twice against completed
+quiescence and requires all three selected predecessors retired. Known inventory
+is reviewed, not discovery/proof of all possible database writers.
+CI41239011363 PASS131/20suites/zero fail/error/skip/ResourceWarning, all4logs read:
+protocol124648766388 PASS116/16, DB+native fence124648766428 PASS4/2,
+TLS124648766443 PASS7, IAM124648766420 PASS4. Docker29.8.1 actual stopped
+generations and restarted-then-stopped denial; other owner lineage modeled.
+
+Separate235-source current review compiler retains every original136 binding;
+new phase11/fence predicates are outside that compiler, not an execution package.
+The exact exported compiler is now attested and verified OFFLINE without network
+or GitHub credentials, using pinned gh2.97.0 and explicit reviewed identity/root.
+CI41239432016/job124650015051 PR and41239426222/job124649997503 push PASS39
+each: publication8+frozen parent12+current review16+actual artifact crypto3.
+Both final logs read, zero failure/error/skip/ResourceWarning; compiler/bundle/
+explicit trust root uploaded. Separate publisher regression41239431999 PASS3,
+final log read. Outer CI provenance is not runtime authority, private input
+authentication, automatic target trust or HUMAN approval.
+
+Next: concrete sealed native phase checkpoint/controller, remaining artifact
+membership/private custody/actual workload admission, complete execution
+package and exact private target review. No target command ready. Do not claim
+all required native predicates or application E2E because individual readers pass.
+Frozen37/108/128/136 maps/pins/bodies/Registry child remain unchanged.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients OPEN. Loading ends UDP and
+every row outcome; graph search follows, then vertical/API scheduling with delta.
+
+Evidence:evidence/m2-installed-contracts-held-handoff-qualified-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Current parent review compiler PASS36; native controller still OPEN
 
 31 October 2026, UTC. Continue SOURCE work autonomously/sequentially, no

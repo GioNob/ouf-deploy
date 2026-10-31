@@ -1,6 +1,9 @@
 # Aggiornamento M2 — 31 ottobre 2026
 
 [Checkpoint corrente](handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md):
+reader qualificati131/20 suite, inclusi VERIFY_APPLICATION e fence producer
+con Docker reale; compilatore esportato attestato e verificato offline39PASS.
+CI41239011363/41239432016, log finali letti, source60711ad.
 contratti installati verificati via HTTP3PASS, prerequisiti118PASS/17suite,
 publisher offline3PASS, IAM senza refresh e lettura READY12 corrente.
 Il compilatore della nuova review parent lega ora tutti e cinque gli input:

@@ -2,6 +2,9 @@
 
 31 ottobre 2026. [Stato corrente](docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md)
 e [prove](evidence/m2-installed-contracts-held-handoff-qualified-20261031.json).
+Ultimi incrementi: handoff durante VERIFY_APPLICATION e fence producer corrente;
+131 test/20 suite PASS (CI41239011363). Compilatore235 sorgenti attestato e
+verificato offline:39 PASS (CI41239432016), log finali letti. Source60711ad.
 Sorgente916da45:118 test/17 suite PASS, quattro log CI finali letti.
 Nuovo compilatore review corrente235 sorgenti:16 nuovi test,36 complessivi
 nella CI41238086572; artefatto pubblicato e log finale letto (fix4861d85).

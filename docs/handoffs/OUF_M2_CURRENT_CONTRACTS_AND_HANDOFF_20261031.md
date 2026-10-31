@@ -19,6 +19,9 @@ sono un passaggio successivo, come richiesto dall'owner.
 | Client e server installati uniti tramite TCP | `d50bb7f069b2e729a81b029b39ece84cc9564270` | Push [41235673020](https://github.com/GioNob/ouf-deploy/actions/runs/41235673020)/job124638824285 e PR [41235678562](https://github.com/GioNob/ouf-deploy/actions/runs/41235678562)/job124638839814: 3 casi PASS per evento, zero errori/failure/skip, entrambi i log finali letti. Client Ingestion non modificato, server Onboarding reale, catena Spring Security/bridge/policy/audit e PostgreSQL reali. Solo il decoder crittografico JWT è una fixture. Non prova APISIX, IAM reale o VPS. |
 | GET IAM senza rinnovo implicito | `916da45af3df78080de1bc12592fd3e62b7d8e6e` | CI [41236491041](https://github.com/GioNob/ouf-deploy/actions/runs/41236491041):105 protocollo/14 suite + DB2/TLS7/IAM4 =118/17 suite, quattro log finali letti, zero errori/failure/skip/ResourceWarning. Native IAM push41236486162/job124641243906:4 PASS, letto anche quel log finale. Nuovo profilo input v2 e trasporto namespace di sola lettura. |
 | Nuova review parent con tutti gli input correnti | `eb0eea3d313e169dd610670a3578f357501b6d24`, fix CI `4861d85d007faccc0129b26742770c738fe4f09e` | PR [41238086572](https://github.com/GioNob/ouf-deploy/actions/runs/41238086572)/job124645988302 e push [41238083267](https://github.com/GioNob/ouf-deploy/actions/runs/41238083267)/job124645978368:36 PASS per evento (pubblicazione8, parent12, nuova review16), zero errori/failure/skip/ResourceWarning, entrambi i log finali letti e artefatti pubblicati. Compilatore isolato235 sorgenti; tutte le136 associazioni congelate conservate. Non autentica input o autorità target. |
+| Handoff durante VERIFY_APPLICATION | `ad924d830c12aaa9b4c00bd679c15e85ce09b8f6` | CI [41238636808](https://github.com/GioNob/ouf-deploy/actions/runs/41238636808):111 protocollo/15 suite + DB2/TLS7/IAM4 =124/18 suite, quattro log finali letti. Sei nuovi casi: materiale/firme/lock reali, generazioni e lease native simulate. Nessun rientro paused/initial provider, signing, start o prova readiness implicita. |
+| Fence corrente dei producer e tre predecessori ritirati | `09666364dc016a9ed1ce93fe829cf486d421bba8` | CI [41239011363](https://github.com/GioNob/ouf-deploy/actions/runs/41239011363):116 protocollo/16 suite + DB2/fence Docker2/TLS7/IAM4 =131/20 suite, quattro log finali letti, zero failure/error/skip/ResourceWarning. Cinque nuovi casi di protocollo e due Docker29.8.1 reali: generazioni ferme osservate; restart+stop negato senza riparazione. Authority/altre lineage restano simulate nella fixture Docker. |
+| Provenienza del compilatore esportato | `60711ad94ea785e99169a486ef18c491d1436b43` | PR [41239432016](https://github.com/GioNob/ouf-deploy/actions/runs/41239432016)/job124650015051 e push [41239426222](https://github.com/GioNob/ouf-deploy/actions/runs/41239426222)/job124649997503:39 PASS ciascuno (8+12+16+3 crittografici), zero failure/error/skip/ResourceWarning. Entrambi i log finali letti; compilatore, bundle e trust root esplicito pubblicati. Byte reali del compilatore235 sorgenti attestati/verificati offline, con repo/owner/workflow/source/signer esatti. Non è ammissione target o firma runtime. |
 
 La verifica Onboarding/Ingestion già presente in `291f34f1` è stata recuperata,
 non riscritta: CI41231189545/job124625573989 prova36 test client/consumer più10
@@ -79,6 +82,26 @@ job124641258797. Non sono stati indeboliti i guard per il sandbox. Gli otto
 casi di protocollo IAM passano anche localmente dopo la modifica.
 
 ## Continuazione richiesta
+
+I nuovi predicati `VerifyingOperationalWorker` e `CurrentProducerFence` sono
+qualificati separatamente dal compilatore235 sorgenti, il cui contenuto resta
+invariato. Il primo opera soltanto ai quattro punti in-flight espliciti della
+verifica applicativa dopo l'unpause; il secondo legge due volte, tramite il
+vero ProducerAdapter, lo stesso inventario di quiescenza, confronta l'evidenza
+durabile e impone che Registry/MCP/Gateway precedenti restino ritirati.
+L'inventario completo di tutti i possibili writer DB non è dimostrato qui.
+Nessuno dei due predicati è ancora una composizione completa del controller.
+
+Il workflow parent ora attesta gli esatti byte del compilatore ed esegue i tre
+casi crittografici in un namespace senza rete e senza credenziali GitHub:
+artefatto/bundle alterati e repository ID errato respinti. La fixture richiede
+il percorso workflow esplicito; anche il publisher originario passa3 casi
+in CI41239431999/job124650014570, log finale letto. Gli artefatti nuovi includono
+bundle e trust root da recensire esplicitamente; non concedono fiducia automatica.
+ZIP push/artifact13055694875 hash
+`03077f58020736902dfc20e8c0e5549f120446a4a50006ad109030875f559e81`;
+ZIP PR/artifact13055789782 hash
+`58e73e0ca3a2b3c2f51fae8c24b46da95d20019c53a08f9282ceb84b51f55574`.
 
 `current_review.py` e il compilatore separato `current_review_capsule.py`
 completano l'assemblatura dichiarativa dei sei componenti parent con tutti e

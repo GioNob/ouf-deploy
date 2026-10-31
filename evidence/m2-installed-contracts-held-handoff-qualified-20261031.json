@@ -264,7 +264,7 @@
     "releaseAcceptance": false
   },
   "handoff": "docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md",
-  "latestSource": "4861d85d007faccc0129b26742770c738fe4f09e",
+  "latestSource": "60711ad94ea785e99169a486ef18c491d1436b43",
   "currentParentReviewCompiler": {
     "source": "eb0eea3d313e169dd610670a3578f357501b6d24",
     "ciArtifactOwnershipFix": "4861d85d007faccc0129b26742770c738fe4f09e",
@@ -321,7 +321,52 @@
     "nativeCheckpointControllerIntegrated": false,
     "targetApplyAuthorized": false,
     "runtimeAuthorityIssued": false,
-    "releaseAcceptance": false
+    "releaseAcceptance": false,
+    "exportedArtifactPublisherQualification": {
+      "source": "60711ad94ea785e99169a486ef18c491d1436b43",
+      "subject": "EXACT_EXPORTED_CURRENT_PARENT_REVIEW_COMPILER_BYTES",
+      "realCryptoTests": 3,
+      "signatureWorkflow": ".github/workflows/m2-discovery-parent-review.yml",
+      "networkNamespace": "EMPTY_NO_NETWORK",
+      "githubCredentialsAvailableToVerifier": false,
+      "ghVersion": "2.97.0",
+      "ghReleaseArchiveSha256": "a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112",
+      "action": "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
+      "push": {
+        "runId": 41239426222,
+        "jobId": 124649997503,
+        "tests": 39,
+        "suites": 4,
+        "finalLogRead": true,
+        "artifactId": 13055694875,
+        "artifactZipSha256": "03077f58020736902dfc20e8c0e5549f120446a4a50006ad109030875f559e81",
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "resourceWarnings": 0
+      },
+      "separatePublisherRegression": {
+        "runId": 41239431999,
+        "jobId": 124650014570,
+        "tests": 3,
+        "result": "PASS",
+        "finalLogRead": true
+      },
+      "deploymentAuthorityOrReleaseAcceptanceGranted": false,
+      "pullRequest": {
+        "runId": 41239432016,
+        "jobId": 124650015051,
+        "tests": 39,
+        "suites": 4,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "resourceWarnings": 0,
+        "finalLogRead": true,
+        "artifactId": 13055789782,
+        "artifactZipSha256": "58e73e0ca3a2b3c2f51fae8c24b46da95d20019c53a08f9282ceb84b51f55574"
+      }
+    }
   },
   "currentReviewSourceHashes": {
     "tools/m2_discovery_installation_profile/current_review.py": "6260d41031916fa3665cb5bc43e7550d1591aaf8cc0d22603d23cb685bc682b9",
@@ -330,5 +375,119 @@
     "scripts/export-m2-discovery-current-review.py": "52c226e265441d8d1d1fd6eb5b9f068db03a69966daa63221a63ade15942f14b",
     "tests/test_m2_discovery_current_review.py": "56b0e86c4261ce9dd736b95b1850080e455d073a7ee6b1a6ec08480df81a982f",
     ".github/workflows/m2-discovery-parent-review.yml": "8a09d8415a27b32507d7d70f6ee6a46b940799175d4eb45d56960e00f6891afb"
+  },
+  "verificationPhaseOperationalHandoff": {
+    "source": "ad924d830c12aaa9b4c00bd679c15e85ce09b8f6",
+    "localTests": 6,
+    "localResult": "PASS",
+    "ci": {
+      "runId": 41238636808,
+      "event": "pull_request",
+      "tests": 124,
+      "suites": 18,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "resourceWarnings": 0,
+      "jobs": [
+        {
+          "id": 124647619260,
+          "tests": 111,
+          "suites": 15,
+          "finalLogRead": true
+        },
+        {
+          "id": 124647618994,
+          "tests": 2,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124647619101,
+          "tests": 7,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124647619164,
+          "tests": 4,
+          "suites": 1,
+          "finalLogRead": true
+        }
+      ]
+    },
+    "nativeGenerationAndLeaseLeavesModeled": true,
+    "originalMaterialAndCurrentSignaturesTested": true,
+    "applicationReadinessProven": false,
+    "fullCohortProven": false,
+    "nativeCheckpointControllerIntegrated": false,
+    "targetApplyAuthorized": false
+  },
+  "currentProducerFence": {
+    "source": "09666364dc016a9ed1ce93fe829cf486d421bba8",
+    "localTests": 5,
+    "localResult": "PASS",
+    "nativeFixture": {
+      "runId": 41239011363,
+      "jobId": 124648766428,
+      "tests": 2,
+      "result": "PASS",
+      "finalLogRead": true,
+      "dockerVersion": "29.8.1",
+      "actualDisposableContainerGenerations": true,
+      "actualQuiescenceAdapterAndStore": true,
+      "otherAuthorityAndSelectedLineageModeled": true
+    },
+    "completeDatabaseWriterInventoryProvenHere": false,
+    "nativeCheckpointControllerIntegrated": false,
+    "nativeMutationDispatchedByReader": false,
+    "targetApplyAuthorized": false,
+    "ci": {
+      "runId": 41239011363,
+      "event": "pull_request",
+      "tests": 131,
+      "suites": 20,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "resourceWarnings": 0,
+      "jobs": [
+        {
+          "id": 124648766388,
+          "tests": 116,
+          "suites": 16,
+          "finalLogRead": true
+        },
+        {
+          "id": 124648766428,
+          "tests": 4,
+          "suites": 2,
+          "finalLogRead": true
+        },
+        {
+          "id": 124648766443,
+          "tests": 7,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124648766420,
+          "tests": 4,
+          "suites": 1,
+          "finalLogRead": true
+        }
+      ]
+    }
+  },
+  "latestQualifiedSourceHashes": {
+    "tools/m2_discovery_installation_profile/verifying_operational_worker.py": "db10345f84b768c9c34934b1a1c39e586cca5917bcdb1174a21739f0f4f64c4f",
+    "tools/m2_discovery_installation_profile/current_producer_fence.py": "5e07db7affc0f8fbc964f51ddce6bf188eede9ee88b6a97a0ac75ae29cabdc56",
+    "tests/test_m2_discovery_verifying_operational_worker.py": "31e5734fdb0daaf757c19afebbb433e6bd41022cdf53e034fc7e7f462665c54d",
+    "tests/test_m2_discovery_current_producer_fence.py": "98e93df8b1899a76a2a34e93bf5c0fbe036bf5f68316e917dd1e1010c0c243cb",
+    "tests/qualify_m2_discovery_current_producer_fence_native.py": "98ee8273f48c829712bc13109e74e7e354a7bebfc86ea222376bfd54488be685",
+    "tests/qualify_m2_discovery_current_publisher_native.py": "835ad4fe7d10f843ccb896d8d183cad85ab278f4fb160aea4cfb509fca84c206",
+    ".github/workflows/m2-discovery-running-admission.yml": "c07a58a30591eccd84e82900f19baaf067e8f67f9b7d98bfe79d821a0e475bb7",
+    ".github/workflows/m2-discovery-parent-review.yml": "bb73d116fd94a3a83fb3bdb0350979818a9a8e9379eed2d997dfbaa8c6a6e82c",
+    ".github/workflows/m2-discovery-publisher-native.yml": "b70212623d425ae7d561d3bad3ec7d69aff0ccce30ccdc7cd08b1537f7049183"
   }
 }
