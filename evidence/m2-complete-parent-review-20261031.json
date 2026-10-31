@@ -96,5 +96,144 @@
     "newTargetCommandReady": false,
     "consumedScopesMustNotReplay": true
   },
-  "priorQuiescedEvidence": "evidence/m2-quiesced-recovery-reader-20261031.json"
+  "priorQuiescedEvidence": "evidence/m2-quiesced-recovery-reader-20261031.json",
+  "currentNativeRecoveryRegression": {
+    "runId": 41202906145,
+    "sourceCommit": "bcbc4aa86a6fc687929edac7649b9fb0af336364",
+    "jobs": [
+      {
+        "id": 124542099985,
+        "conclusion": "success",
+        "finalLogRead": true,
+        "tests": [
+          {
+            "tests": 7,
+            "seconds": 0.036
+          },
+          {
+            "tests": 7,
+            "seconds": 0.292
+          },
+          {
+            "tests": 8,
+            "seconds": 1.127
+          }
+        ],
+        "reportSchemas": [
+          "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+          "ouf.m2-provider-docker-worker-ci.v1"
+        ],
+        "recoverySnapshotControl": {}
+      },
+      {
+        "id": 124542100147,
+        "conclusion": "success",
+        "finalLogRead": true,
+        "tests": [
+          {
+            "tests": 7,
+            "seconds": 0.034
+          },
+          {
+            "tests": 7,
+            "seconds": 0.212
+          },
+          {
+            "tests": 8,
+            "seconds": 1.085
+          }
+        ],
+        "reportSchemas": [
+          "ouf.m2-exclusive-recovery-reader-negative-control.v1",
+          "ouf.m2-provider-docker-worker-ci.v1"
+        ],
+        "negativeControl": {
+          "activeRecoveryCheckpointRetainedBecauseCasBlocked": true,
+          "actualExclusiveReaderForcesKernelRevocation": true,
+          "applicationE2EProven": false,
+          "fullCohortProven": false,
+          "noManagerRedispatchOrWorkerRearm": true,
+          "noRecoveryClockAttemptOrPublicationReset": true,
+          "notInstallationAcceptance": true,
+          "originalReadDenialReproduced": true,
+          "releaseAcceptance": false,
+          "runtimeAuthorityIssued": false,
+          "schema": "ouf.m2-exclusive-recovery-reader-negative-control.v1",
+          "targetApplyAuthorized": false,
+          "workerAdmissionStillRequired": true
+        }
+      },
+      {
+        "id": 124542100183,
+        "conclusion": "success",
+        "finalLogRead": true,
+        "tests": [
+          {
+            "tests": 7,
+            "seconds": 0.162
+          },
+          {
+            "tests": 7,
+            "seconds": 0.267
+          },
+          {
+            "tests": 8,
+            "seconds": 1.483
+          }
+        ],
+        "reportSchemas": [
+          "ouf.m2-provider-worker-native-handoff-ci.v1",
+          "ouf.m2-provider-docker-worker-ci.v1"
+        ]
+      },
+      {
+        "id": 124542100195,
+        "conclusion": "success",
+        "finalLogRead": true,
+        "tests": [
+          {
+            "tests": 7,
+            "seconds": 0.05
+          },
+          {
+            "tests": 7,
+            "seconds": 0.291
+          },
+          {
+            "tests": 8,
+            "seconds": 1.499
+          }
+        ],
+        "reportSchemas": [
+          "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+          "ouf.m2-registry-node-transport-token-ci.v1",
+          "ouf.m2-provider-docker-worker-ci.v1"
+        ],
+        "recoverySnapshotControl": {
+          "atomicChangeWasReadContentionOnly": true,
+          "heldSnapshotFdAcrossActualRenewal": true,
+          "originalRecoveryClocksAndAttemptCountPreserved": true,
+          "publicationAdvancedWithoutReaderLock": true
+        },
+        "registryTransport": {
+          "actualAuthenticatedTransportNftApplyAndReadback": true,
+          "actualFiveFilesDbConfigtreeAndRenewableTokenMount": true,
+          "actualInstalledTokenOwnerSourceCustodyAndJournal": true,
+          "actualMaskedLegacyWriterUnitReadback": true,
+          "actualRegistryNodeAttestationAndRetainedRead": true,
+          "actualTlsDiscoveryIntrospectionAndOneInitialGrant": true,
+          "applicationE2EProven": false,
+          "currentTargetCohortProven": false,
+          "iamRevocationDeniesFinalRegistryRead": true,
+          "noGrantRenewalOrJournalResetDuringNativeReads": true,
+          "registryJavaStarted": false,
+          "releaseAcceptance": false,
+          "runtimeAuthorityIssued": false,
+          "schema": "ouf.m2-registry-node-transport-token-ci.v1",
+          "syntheticIamRealmHumanImagesPackagesAndEarlierTransitionPrefix": true,
+          "targetApplyAuthorized": false
+        }
+      }
+    ]
+  }
 }
