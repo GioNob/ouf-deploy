@@ -53,13 +53,16 @@ def exclusive_negative_control(configuration,anchor,observe):
                     time.sleep(.01)
                 assert coordination['state']=='QUIESCED' and coordination['leaseAuthorized'] is False
                 assert host.private_read()==before,'CI_EXPECTED_BLOCKED_RECOVERY_CAS_DID_NOT_REPRODUCE'
+                assert all(not row for row in view.c.owner.backend.read_sets(view.c.configuration).values())
+                # Retain the injected reader lock THROUGH the causal read.
+                # Releasing it earlier can let a late blocked-checkpoint CAS
+                # change the state before the original denial is observed.
+                try:observe();raise AssertionError('CI_REVOKED_LEASE_WAS_ACCEPTED')
+                except ValueError as error:assert error.args==('CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED',)
             break
         except BlockingIOError:
             if entered or time.monotonic()>=acquisition_end:raise
             time.sleep(.001)
-    assert all(not row for row in view.c.owner.backend.read_sets(view.c.configuration).values())
-    try:observe();raise AssertionError('CI_REVOKED_LEASE_WAS_ACCEPTED')
-    except ValueError as error:assert error.args==('CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED',)
     after=view.r.journal.read();assert after==before
     return {'schema':'ouf.m2-exclusive-recovery-reader-negative-control.v1',
         'actualExclusiveReaderForcesKernelRevocation':True,'activeRecoveryCheckpointRetainedBecauseCasBlocked':True,
