@@ -420,5 +420,33 @@
     "historicalUnknownObservationCauseEstablished": false,
     "fullCohortProven": false,
     "applicationE2EProven": false
+  },
+  "safeWorkerObservationDiagnostics": {
+    "sourceCommit": "07734a75aa4c2a2c8e2d87519974d04fd8ea590a",
+    "evidence": "evidence/m2-worker-observation-diagnostics-20261031.json",
+    "localTests": 24,
+    "controlledPreFixDiagnosticLossCases": 2,
+    "protocol": {
+      "event": "pull_request",
+      "run": 41153678695,
+      "job": 124395659985,
+      "conclusion": "success",
+      "tests": 443,
+      "suites": 52,
+      "skips": 0,
+      "finalLogRead": true
+    },
+    "dockerNative": {
+      "run": 41153678783,
+      "finiteJob": 124395660746,
+      "sealedJob": 124395660459,
+      "bothSuccessFinalReportsRead": true
+    },
+    "historicalNativeUnknownCauseProven": false,
+    "fullCohortProven": false,
+    "applicationE2EProven": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "releaseAcceptance": false
   }
 }

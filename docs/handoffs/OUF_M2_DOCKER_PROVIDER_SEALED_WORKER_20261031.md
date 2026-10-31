@@ -80,8 +80,9 @@ PASS locali completati:13worker,8profili provider,7lettore OCI pubblico,
 1composizione anticipata;7test degli artefatti immutabili in19.773s.
 La suite runtime locale è stata interrotta dopo tre casi stampati PASS:
 nessuna nuova qualifica di suite completa. CI estesa e48e3fd7 PASS:440test/52suite/zero skip, PR41151383885/
-job124388475217, report finale letto. I commit successivi cambiano fixture native
-e workflow, non i moduli di produzione. La qualifica432test/50suite del
+job124388475217, report finale letto. I commit successivi fino a7d124c9c cambiano fixture native
+e workflow. Il successore produttivo07734a75 conserva diagnostica sicura delle
+letture UNKNOWN e viene qualificato separatamente. La qualifica432test/50suite del
 precedente05456554 resta acquisita nel suo perimetro. Cause delle precedenti anomalie locali MCP/worker non risolte.
 
 [Evidenza e fallimenti conservati](../../evidence/m2-provider-docker-worker-20261031.json).
@@ -92,3 +93,26 @@ continuità chat/boot/rotazione e due client. Search sugli oggetti rimane separa
 dal caricamento; verticali/API/scheduler/delta seguono il flusso file completo.
 Nessun nuovo comando operatore pronto, apply target, grant/authority di produzione,
 reset/replay, merge o accettazione di rilascio.
+
+
+## Successore diagnostico07734a75
+
+La lettura privilegiata negata perdeva la causa nella conversione UNKNOWN del
+LeaseStartAdapter; la sequenza perdeva inoltre l'evidenza del sottopasso pendente.
+Ora conserva una categoria di lettura e un codice da vocabolario finito;
+nessun testo arbitrario, percorso, errno, argv o output processo viene esportato.
+Il sottopasso START resta consumato: nessun nuovo avvio, retry, ricevuta positiva,
+reset di contatori o nuovo permesso. Il ripristino in un processo di test dei
+soli due metodi precedenti riproduce entrambi i dettagli mancanti. Il successore
+passa9test start in6.760s e15test sequenza in173.703s, inclusa la conservazione
+byte per byte dei journal durante la lettura UNKNOWN e la successiva lettura
+positiva senza altro start. Non è la riproduzione del vecchio UNKNOWN nativo.
+
+Sorgente07734a75: Docker PR41153678783, finite124395660746 e
+sealed124395660459 entrambi PASS; report finali letti. Passano inoltre worker
+PR41153678754/job124395660081 e lifecycle MCP PR41153678861/job124395660872,
+con i rispettivi limiti di fixture. Protocollo esteso PR41153678695/
+job124395659985 PASS443test/52suite/0errori/0skip, report finale letto e
+tutti3nuovi casi di regressione eseguiti.
+[Evidenza diagnostica](../../evidence/m2-worker-observation-diagnostics-20261031.json).
+Le cause UNKNOWN/stabilità, coorte completa e percorso Farmacie→UDP restano aperti.
