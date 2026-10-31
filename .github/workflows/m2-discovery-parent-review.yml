@@ -49,6 +49,9 @@ jobs:
             --gateway-root "$fixture/repository/.pairwise/gateway" \
             --onboarding-root "$fixture/repository/.pairwise/onboarding" \
             --output "$GITHUB_WORKSPACE/current-parent-review-compiler.py" > current-parent-review-compiler.json
+          # The exported artifact contains sealed public source only. The upload
+          # action runs as runner; private preparation files stay root-owned.
+          sudo chown "$(id -u):$(id -g)" "$GITHUB_WORKSPACE/current-parent-review-compiler.py"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: complete-parent-review-compiler
