@@ -49,8 +49,16 @@ An operator channel is required for real VPS verification, but no new target
 command is ready yet. Never request secrets/tokens in chat or rerun consumed
 captures. Do independent source work before any necessary operator request.
 No target apply, authority/grant, reset, replay, merge or release acceptance.
-Other sourcebcbc general/native/protocol CI runs are separate, not automatically
-qualified by this20test review compiler result. Prior QUIESCED35eba/77eb causal
+Sourcebcbc native PR41202906145 PASS all3 ordinary modes plus the OLD exclusive-
+reader negative control. Final logs/reports read: finite124542100183,
+sealed124542099985, registry124542100195, negative124542100147. Each mode also
+PASS7diagnostic+7peer-source+8recovery tests. Registry positive control holds an
+UNLOCKED snapshot fd across actual renewal and preserves clocks/attempts;
+negative forces actual QUIESCED/stale ACTIVE/original denial without rearm/reset.
+Actual Registry/token/transport/sealed-worker proof passes; Java stays paused,
+HUMAN/IAM/images/packages/earlier transition prefix remain synthetic. No target
+cohort/E2E/authority/apply/release acceptance. Other sourcebcbc general/protocol
+CI runs are separate, not automatically qualified by this20test compiler result. Prior QUIESCED35eba/77eb causal
 fix/474protocol/native3/control/IAM251 evidence remains valid as below.
 Evidence:evidence/m2-complete-parent-review-20261031.json
 Handoff:docs/handoffs/OUF_M2_COMPLETE_PARENT_REVIEW_20261031.md
