@@ -56,6 +56,9 @@ class NativeDatabases(unittest.TestCase):
         with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as client:
             client.settimeout(2);client.connect(sock)
             credentials=list(struct.unpack('3i',client.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12)))
+        self.assertGreater(credentials[0],1,'DISPOSABLE_ENGINE_PEER_PID: '+str(credentials))
+        self.assertEqual(credentials[1:],[0,0],'DISPOSABLE_ENGINE_PEER_IDENTITY: '+str(credentials))
+        self.assertIn(stat.S_IMODE(s.st_mode),(0o600,0o660),'DISPOSABLE_ENGINE_SOCKET_MODE: '+str(stat.S_IMODE(s.st_mode)))
         engine_pin=cohort.process_pin(credentials[0]);inputs.update(
             bootId=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
             engineBinding={'socketPath':sock,'socketBinding':list(engine.binding),'peerCredentials':credentials,'startTicks':engine_pin['startTicks']},
