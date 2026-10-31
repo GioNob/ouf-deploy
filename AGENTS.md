@@ -1,3 +1,42 @@
+# CURRENT — Installed HTTP contracts PASS3; current prerequisites PASS118; no-refresh IAM
+
+31 October 2026, UTC. Continue SOURCE work autonomously and sequentially; no
+agents/automations or optional stop. Current code source916da45af3df78080de1bc12592fd3e62b7d8e6e.
+No current VPS QUIESCED incident demonstrated; do not ask extra diagnostics.
+Preserve acquired M1/Teatri and same Farmacie asset/job61rows/10columns/10OPEN.
+
+CI41236491041 PASS118/17suites/four jobs, all final logs read, zero failures,
+errors, skips or ResourceWarning: protocol105/14suites, PostgreSQL2, TLS7,
+exact target-digest Keycloak26.7.4 IAM4. Existing admin GET transport now reads
+the exact private cached session through pinned proc-root/FD and dispatches
+GET-only namespace HTTP; no kcadm, login, refresh, redirect or cache repair.
+IAM inputs v2 require new exact private review/hash; never coerce old v1.
+
+Installed Ingestion4165b9e149be467d5d7c6bed35e4e1af4e249db1 and Onboarding
+V38 9d19fad3dd750dd5b9e77253d3e7e82029c1aca7 now join through actual TCP,
+Spring Security/bridge/policy/audit/PostgreSQL: CI41235678562/job124638839814
+PASS3 and push41235673020/job124638824285 PASS3, both final logs read.
+JWT decoder fixture; not APISIX/real IAM/target or a completed ingestion run.
+
+Publisher exact SAN string contract fixed at54aece8; offline cryptographic
+CI41235043033/job124636905839 PASS3, final log read; retain denying old run.
+SelectedRuntime.observe_held() uses actual installed operational signatures
+and existing invocation fence after initial authority expiry, avoids initial
+provider barrier and paused Registry reentry. fullCohortProven remains false.
+
+Next: compose concrete sealed native checkpoints/controller and complete new
+execution package/exact private review, including cohort/custody/provenance/
+artifact membership/backup/fencing/TLS/IAM/actual workload bearer admission.
+No target command ready; do not invent one or repeat upload/profile/acquisition.
+Loading ends at UDP plus all row outcomes; graph search afterwards, then API/
+vertical scheduler delta. No target mutation, source activation or acceptance.
+Frozen37/108/128/136 closures/maps/pins/bodies and Registry child unchanged.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients remain OPEN.
+
+Evidence:evidence/m2-installed-contracts-held-handoff-qualified-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Installed Teatri V38 compatibility PASS49; current prerequisites PASS83
 
 31 October 2026, UTC. USER instruction: reuse actual Teatri experience and exact

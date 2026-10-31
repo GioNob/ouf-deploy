@@ -1,3 +1,16 @@
+# Checkpoint — M2: contratti installati qualificati, composizione controller aperta
+
+31 ottobre 2026. [Stato corrente](docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md)
+e [prove](evidence/m2-installed-contracts-held-handoff-qualified-20261031.json).
+Sorgente916da45:118 test/17 suite PASS, quattro log CI finali letti.
+Client Ingestion e server Onboarding installati collegati via TCP:3 casi PASS.
+Publisher offline:3 casi PASS. Lettura READY12 senza riaprire l'autorità iniziale;
+IAM GET senza login/refresh. Non è ancora la pipeline E2E target.
+Proseguire con checkpoint/controller sigillato e pacchetto/review esatti.
+M1/Teatri acquisito, stessa Farmacie61righe/10campiOPEN; niente replay.
+La pipeline di caricamento termina in UDP; ricerca sul grafo successivamente.
+I checkpoint precedenti riportati sotto sono storici.
+
 # Checkpoint — Onboarding V38 INSTALLATO/CONSUMATO; prossimo passo THS SOLO UTENTE
 
 28 ottobre2026,Europe/Rome. [Handoff corrente](docs/handoffs/OUF_MANAGED_FILE_OWNER_V38_INSTALLED_20261028.md),[ricevuta](evidence/managed-file-owner-v38-update-target-20261028.json),[JSONfinale/footer riportati](evidence/managed-file-owner-v38-update-target-20261028.log). MANAGED_FILE_OWNER_V38_INSTALLED_E2E_NOT_ACCEPTED,complete/readiness=true,Exit0/DeliveryExit0. Output utente letto integralmente;nessuna lettura indipendente del log VPS o verifica indipendente firma. Source9d19fad3/native7b9d3e91/schema38,2migrazioni owner. Backup quiescente735424byte/hashfcc9bff5.../parseOK,zero restore/rollback.12fingerprint operativi invariati,tenant legacyNULL/receipt ownership vuota/guard nuovi attivi;stessoFAILED5/version0/gen0/zero budget-eventi.300GET/8write/1load/3readiness/7metadata/1overlay/7SQL READ ONLY/2backup/3firme.12peer/MCP invariati,Registryworker intatto. Zeroownership/grant/budget/resume/job/upload/acquisizioni/attivazioni.

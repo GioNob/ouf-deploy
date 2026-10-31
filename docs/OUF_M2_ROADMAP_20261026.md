@@ -1,3 +1,14 @@
+# Aggiornamento M2 — 31 ottobre 2026
+
+[Checkpoint corrente](handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md):
+contratti installati verificati via HTTP3PASS, prerequisiti118PASS/17suite,
+publisher offline3PASS, IAM senza refresh e lettura READY12 corrente.
+Restano composizione del controller/checkpoint nativo sigillato, pacchetto/review
+privati esatti e prova target Farmacie→UDP con tutti gli esiti. M2 non accettato.
+Conservare Teatri e la stessa acquisizione Farmacie; nessun nuovo upload/profile.
+La ricerca sugli oggetti caricati e i verticali/API con delta seguono il file E2E.
+Le sezioni precedenti restano sotto come cronologia.
+
 # CURRENT — nuova lettura dei riferimenti installativi QUALIFICATA; target da eseguire
 
 29 ottobre 2026, Europe/Rome. [Handoff e unico comando corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica](evidence/m2-discovery-installation-inputs-qualified-20261029.json), [PR52](https://github.com/GioNob/ouf-deploy/pull/52).

@@ -1,0 +1,267 @@
+{
+  "schema": "ouf.m2-installed-contracts-and-held-handoff-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "currentCodeSource": "916da45af3df78080de1bc12592fd3e62b7d8e6e",
+  "sourceHashes": {
+    "tools/m2_discovery_installation_profile/current_publisher.py": "e3dd5838665426a86c9a75aba7dcf8f359a8abb5a7e8af40c93f349e6e4c6d55",
+    "tools/m2_discovery_installation_profile/selected_runtime.py": "0f9a6b5a357e3c141c8d73df4e46871ab82087b98068fd8bcb1cbf7d6a439076",
+    "tools/m2_discovery_installation_profile/current_iam_workload.py": "70894e283170d56918ba5c03466e5c15646ce9eb1670d5c699f59b5f427f7027",
+    "tools/m2_discovery_installation_profile/readonly_iam_admin.py": "e643a6cbd309c811194dddd8589fb7921e515057a4fa32dde6d8af1e196f1ec0",
+    ".github/workflows/m2-discovery-installed-owner-http.yml": "ae6240f2e0c0c6ccda97e7993fcbf1427a9025a4d2760c1430aac513276ccbf5",
+    "tests/fixtures/installed-ingestion-owner/InstalledIngestionOwnerHttpTest.java": "c684b28f43c489f8a12e925171fc2550a648ce7873b5682b51f9ce1d50db4ce5"
+  },
+  "qualifications": [
+    {
+      "scope": "offline real publisher certificate",
+      "source": "54aece8a1955fd5015621f8556d643ba15dd9a54",
+      "run": 41235043033,
+      "jobs": [
+        {
+          "id": 124636905839,
+          "tests": 3,
+          "suites": 1,
+          "finalLogRead": true
+        }
+      ],
+      "actual": [
+        "pinned gh2.97.0",
+        "Sigstore certificate/bundle/root",
+        "fresh empty network namespace",
+        "changed artifact/bundle/repository-ID denial"
+      ],
+      "modeled": [
+        "CI subject",
+        "current-parent/selected source fixtures"
+      ],
+      "targetPackageAdmissionProven": false
+    },
+    {
+      "scope": "held READY12 current runtime composition",
+      "source": "57b0dc8355a2bda49bcbbc87e73871c07c8cd126",
+      "run": 41235431451,
+      "jobs": [
+        {
+          "id": 124638090890,
+          "tests": 98,
+          "suites": 13,
+          "finalLogRead": true
+        },
+        {
+          "id": 124638091008,
+          "tests": 2,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124638090743,
+          "tests": 7,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124638090814,
+          "tests": 2,
+          "suites": 1,
+          "finalLogRead": true
+        }
+      ],
+      "tests": 109,
+      "suites": 16,
+      "modeled": [
+        "Registry/selected image leaves in new held test",
+        "other retained cohort/native lineages as declared by component suites"
+      ],
+      "noInitialProviderBarrierReentry": true,
+      "fullControllerProven": false
+    },
+    {
+      "scope": "pinned Ingestion client joined to actual Onboarding TCP server",
+      "source": "d50bb7f069b2e729a81b029b39ece84cc9564270",
+      "runs": [
+        {
+          "event": "push",
+          "id": 41235673020,
+          "job": 124638824285,
+          "tests": 3,
+          "finalLogRead": true
+        },
+        {
+          "event": "pull_request",
+          "id": 41235678562,
+          "job": 124638839814,
+          "tests": 3,
+          "finalLogRead": true
+        }
+      ],
+      "onboardingSource": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+      "ingestionSource": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "actual": [
+        "unmodified production Ingestion client classes",
+        "TCP",
+        "owner Spring Security/principal bridge",
+        "constrained SDK authorization",
+        "transactional audit/PostgreSQL17/V38",
+        "deduplicated compatibility attestation",
+        "frozen source/card preservation",
+        "401/403/412 denials"
+      ],
+      "modeled": [
+        "JWT cryptographic decoder",
+        "isolated human/configuration fixture"
+      ],
+      "gatewayAndRealIamProven": false,
+      "sourceActivationDispatched": false
+    },
+    {
+      "scope": "GET-only existing admin bearer/current prerequisite regressions",
+      "source": "916da45af3df78080de1bc12592fd3e62b7d8e6e",
+      "run": 41236491041,
+      "jobs": [
+        {
+          "id": 124641258797,
+          "tests": 105,
+          "suites": 14,
+          "finalLogRead": true
+        },
+        {
+          "id": 124641258601,
+          "tests": 2,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124641258761,
+          "tests": 7,
+          "suites": 1,
+          "finalLogRead": true
+        },
+        {
+          "id": 124641258731,
+          "tests": 4,
+          "suites": 1,
+          "finalLogRead": true
+        }
+      ],
+      "tests": 118,
+      "suites": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "resourceWarnings": 0,
+      "additionalNativePush": {
+        "run": 41236486162,
+        "job": 124641243906,
+        "tests": 4,
+        "finalLogRead": true
+      },
+      "actual": [
+        "Keycloak26.7.4 at retained target digest",
+        "original admin-session file/proc-root custody",
+        "namespace-bound GETs",
+        "expired session before GET",
+        "invalid bearer without login/refresh/cache repair",
+        "secret mismatch denial"
+      ],
+      "modeled": [
+        "other cohort/profile lineages in native IAM qualification"
+      ],
+      "actualWorkloadBearerAdmissionProven": false,
+      "runtimeInputSchema": "ouf.discovery-current-iam-workload-inputs.v2",
+      "newParentReviewRequired": true
+    }
+  ],
+  "localChecks": {
+    "publisherProtocol": {
+      "tests": 9,
+      "passed": true
+    },
+    "heldComposition": {
+      "tests": 8,
+      "passed": true
+    },
+    "existingSelectedComposition": {
+      "tests": 9,
+      "passed": true
+    },
+    "operationalWorkerIncludingActualSignedHeldJoin": {
+      "tests": 6,
+      "passed": true
+    },
+    "iamProtocolAfterGetOnlyChange": {
+      "tests": 8,
+      "passed": true
+    },
+    "procFileSuite": {
+      "tests": 7,
+      "locallyExecutedSuccessfully": false,
+      "reason": "sandbox has no /proc/<pid>/stat; no guard weakened",
+      "hostedQualificationPassed": true
+    },
+    "java": "local libjli.so unavailable; joined Java qualification executed in hosted CI"
+  },
+  "normativeSources": [
+    {
+      "document": "Blueprint0.3",
+      "sections": [
+        "3",
+        "4",
+        "9",
+        "10"
+      ],
+      "sha256": "732dbff800d5ea5b971125817dc383eab5d760a92d5c9749fc75825e956122fd"
+    },
+    {
+      "document": "Matrix1.7",
+      "sections": [
+        "7"
+      ],
+      "sha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b"
+    },
+    {
+      "document": "Registry1.3",
+      "sections": [
+        "159.2"
+      ],
+      "sha256": "c28c4dbb1ca04d877890c00e3cfe5a52725d3aa2a51f7afec9177cae11514175"
+    },
+    {
+      "document": "Mini-PET M2v1.3",
+      "path": "docs/OUF_M2_MINIPET_v1_0_20261026.md"
+    },
+    {
+      "document": "resilience policyv3",
+      "path": "docs/OUF_RESILIENCE_POLICY.md"
+    }
+  ],
+  "preserved": {
+    "M1": "Teatri acquired; technical8/8 functional6/6",
+    "Farmacie": "same retained SUCCEEDED profile,61rows/10columns, ministerial code STRING/all10OPEN",
+    "originalSourceClosures": "37/108/128/136 maps and sealed bodies untouched",
+    "registryChild": "unchanged original13phase authority bytes",
+    "sourceActivation": false,
+    "uploadOrProfileOrAcquisitionReplay": false
+  },
+  "remaining": [
+    "concrete sealed native checkpoint/controller",
+    "full current cohort and artifact membership/custody",
+    "actual workload bearer admission",
+    "new sealed execution package and exact private review, including readOnlyAdmin v2 inputs",
+    "governed OntoPiA after local semantic search",
+    "boot/rotation/recovery acceptance",
+    "Farmacie to UDP all-row outcomes",
+    "two real clients/24AT/8UX/8stability and explicit M2 acceptance"
+  ],
+  "claims": {
+    "targetApplyExecuted": false,
+    "runtimeAuthorityIssued": false,
+    "newLoginOrGrantOrBudgetReset": false,
+    "capabilitiesPublished": false,
+    "sourceActivationAuthorized": false,
+    "fullCohortProven": false,
+    "applicationE2EProven": false,
+    "mergePerformed": false,
+    "releaseAcceptance": false
+  },
+  "handoff": "docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md"
+}
