@@ -15,7 +15,10 @@ from database_gate import identifier,literal
 class NativeDatabases(unittest.TestCase):
     @classmethod
     def command(cls,*args,input=None):
-        return subprocess.check_output([cls.docker,*args],input=input,stderr=subprocess.PIPE,timeout=90)
+        try:return subprocess.check_output([cls.docker,*args],input=input,stderr=subprocess.PIPE,timeout=90)
+        except subprocess.CalledProcessError as error:
+            # Only disposable fixture metadata can enter this bounded diagnostic.
+            raise AssertionError('DISPOSABLE_DATABASE_FIXTURE_COMMAND_FAILED: '+error.stderr[-2048:].decode(errors='replace')) from None
     @classmethod
     def setUpClass(cls):
         if os.geteuid()!=0:raise AssertionError('ROOT_DISPOSABLE_NATIVE_DATABASE_FIXTURE_REQUIRED')
@@ -31,7 +34,10 @@ class NativeDatabases(unittest.TestCase):
         if not cohort.hashed(cls.cid):raise AssertionError('EXACT_DISPOSABLE_DATABASE_CONTAINER_ID_REQUIRED')
         deadline=time.monotonic()+45
         while True:
-            ready=subprocess.run([cls.docker,'exec',cls.cid,'pg_isready','-U','postgres'],
+            # The init-only temporary server listens on its Unix socket. TCP
+            # loopback readiness waits for the final postmaster, using the same
+            # original 45-second fixture deadline and no application restart.
+            ready=subprocess.run([cls.docker,'exec',cls.cid,'pg_isready','-h','127.0.0.1','-U','postgres'],
                 stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5)
             if ready.returncode==0:break
             if time.monotonic()>=deadline:raise AssertionError('DISPOSABLE_POSTGRES_READINESS_DEADLINE')
