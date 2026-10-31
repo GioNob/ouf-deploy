@@ -3,7 +3,7 @@
 Other ten peers and selected-owner lineage are fixtures; no target or full
 cohort admission. Only this suite's captured disposable container is removed.
 """
-import copy,hashlib,json,os,shutil,socket,stat,struct,subprocess,sys,time,unittest,uuid
+import copy,gc,hashlib,os,shutil,socket,stat,struct,subprocess,sys,time,unittest,uuid,warnings
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_m2_discovery_current_databases as fixtures
@@ -94,7 +94,9 @@ class NativeDatabases(unittest.TestCase):
         self.owner=m.CurrentCohortDatabases(self.runtime,data)
 
     def test_actual_four_databases_match_reviewed_artifacts_in_read_only_transactions(self):
-        proof=self.owner.observe()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter('always',ResourceWarning);proof=self.owner.observe();gc.collect()
+        self.assertFalse([w for w in caught if issubclass(w.category,ResourceWarning)])
         self.assertEqual(proof['databaseCount'],4);self.assertEqual(proof['moduleReadSessions'],8)
         self.assertTrue(proof['readOnlyTransactions']);self.assertTrue(proof['reviewedArtifactBytesMatchHistories'])
         for key in ('artifactPublisherProvenanceVerifiedHere','fullCohortProven','runtimeAuthorityIssued','targetApplyAuthorized','migrationDispatched','releaseAcceptance'):
@@ -104,7 +106,11 @@ class NativeDatabases(unittest.TestCase):
         row=self.owner.inputs['modules'][0];schema=identifier(m.SCHEMAS[row['module']])
         self.command('exec',self.cid,'psql','-X','-v','ON_ERROR_STOP=1','-U',row['user'],'-d',row['database'],
             '-c','UPDATE '+schema+'.flyway_schema_history SET checksum=checksum+1')
-        with self.assertRaisesRegex(ValueError,'PACKAGED_MIGRATIONS_CHANGED'):self.owner.observe()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter('always',ResourceWarning)
+            with self.assertRaisesRegex(ValueError,'PACKAGED_MIGRATIONS_CHANGED'):self.owner.observe()
+            gc.collect()
+        self.assertFalse([w for w in caught if issubclass(w.category,ResourceWarning)])
         current=int(self.command('exec',self.cid,'psql','-X','-A','-t','-U',row['user'],'-d',row['database'],
             '-c','SELECT checksum FROM '+schema+'.flyway_schema_history').decode().strip())
         self.assertEqual(current,row['expectedMigrations'][0]['checksum']+1)

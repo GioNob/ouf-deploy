@@ -1,6 +1,7 @@
 """Actual parent crypto and protected JAR/SQL sources; SQL/Engine leaves modeled."""
-import copy,hashlib,sys,unittest,zipfile
+import copy,hashlib,io,sys,unittest,zipfile
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests')]+[str(ROOT/'tools'/p) for p in
@@ -59,8 +60,10 @@ class DatabaseAdmission(unittest.TestCase):
     def sql(self,owner,*,drift=None):
         rows={r['database']:r for r in owner.inputs['modules']};calls=[]
         class Channel:
+            instances=[]
             def __init__(channel,cid,user,database,application):
                 channel.row=rows[database];channel.first=True
+                channel.process=SimpleNamespace(stdin=io.BytesIO(),stdout=io.BytesIO());Channel.instances.append(channel)
                 calls.append(('open',cid,user,database,application))
             def query(channel,expression,statement='',timeout=15):
                 calls.append(('query',expression,statement,timeout));row=channel.row
@@ -90,6 +93,7 @@ class DatabaseAdmission(unittest.TestCase):
         self.assertEqual([c[2] for c in queries][::2],["BEGIN READ ONLY; SET LOCAL statement_timeout='5s';"]*4)
         self.assertTrue(all(0<c[3]<=5 for c in queries))
         self.assertTrue(all(c[1].startswith('SELECT ') for c in queries))
+        self.assertTrue(all(c.process.stdin.closed and c.process.stdout.closed for c in Channel.instances))
 
     def test_database_identity_prepared_transaction_and_read_only_drift_deny(self):
         owner,_=self.prepared()
@@ -97,6 +101,7 @@ class DatabaseAdmission(unittest.TestCase):
             Channel,_=self.sql(owner,drift=lambda v,k=key,x=value:v.update({k:x}))
             with self.subTest(key=key,value=value),patch.object(m,'Psql',Channel),self.assertRaisesRegex(ValueError,'PACKAGED_MIGRATIONS_CHANGED'):
                 owner.database(owner.inputs['modules'][0],m.ObservationBudget(30))
+            self.assertTrue(all(c.process.stdin.closed and c.process.stdout.closed for c in Channel.instances))
 
     def test_artifact_custody_and_expected_history_cannot_be_substituted(self):
         owner,_=self.prepared();path=Path(owner.inputs['modules'][0]['artifact']['root']);original=path.read_bytes();path.write_bytes(b'unreviewed')

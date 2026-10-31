@@ -121,7 +121,15 @@ class CurrentCohortDatabases:
             expression=("SELECT COALESCE(json_agg(json_build_object('version',version,'checksum',checksum) ORDER BY version),'[]'::json) FROM "+schema+'.schema_migration'
                 if row['module']=='mcp' else "SELECT COALESCE(json_agg(json_build_object('version',version,'script',script,'type',type,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM "+schema+'.flyway_schema_history')
             migrations=channel.query(expression,timeout=budget.remaining(5))
-        finally:channel.close()
+        finally:
+            try:channel.close()
+            finally:
+                # The retained adapter owns process shutdown/temporary files;
+                # this caller also closes both pipes it opened, including when
+                # the subprocess exited before close() observed it.
+                for stream in (channel.process.stdin,channel.process.stdout):
+                    try:stream.close()
+                    except OSError:pass
         require(encoded(identity)==encoded({'name':row['database'],'oid':row['databaseOid'],'allowConnections':True,'prepared':0,'readOnly':True})
             and encoded(migrations)==encoded(row['expectedMigrations']),
             'CURRENT_DATABASE_IDENTITY_OR_PACKAGED_MIGRATIONS_CHANGED')
