@@ -1,3 +1,48 @@
+# CURRENT — Native controller witnesses PASS169; joined artifact crypto PASS6
+
+31 October 2026, Europe/Rome. Continue SOURCE work autonomously/sequentially;
+no agents/automations, optional stop or redundant VPS QUIESCED diagnostics.
+Latest source ed908d3f89b455ceb765660e49b23551ed88e140. M1/Teatri 8/8 technical,
+6/6 functional acquired; same Farmacie SUCCEEDED 61 rows/10 columns/10 OPEN.
+No upload/profile/acquisition replay, old-authority reuse, activation or acceptance.
+
+Corrected a real composition defect: the completed-only RunningWorkloadBinding
+cannot run inside IN_FLIGHT VERIFY_APPLICATION because it requires that same
+phase APPLIED. Separate VerifyingRegistryBinding uses the completed release and
+actual current process. Legacy reader/frozen maps stay unchanged. Native process
+UID10001/caps/NNP and no-premature-verification-receipt qualified; Engine modeled.
+NativeOperationalCheckpoints covers exact phases9-11, including unpaused gate
+before SIGUSR1 and read-only reconciliation without repeat unpause/signal.
+HeldNativeController joins18 named observations under one invocation fence;
+typed selected artifact membership is mandatory. It is not an atomic snapshot
+or a complete cutover/publication/release checkpoint.
+
+Source 3ab5efaf CI41242174196 PASS 169/25 suites; all 5 final logs read, zero
+failure/error/skip/ResourceWarning. Protocol152/20; native DB/fence4/2, TLS7,
+IAM4 and current non-root process2. Parent/other native leaves modeled where
+explicitly labeled. Source ed908d3f CI41242593604/job124659373661 PASS6:
+original offline publisher3 plus real parent Ed25519/Sigstore/selected archive
+and migration membership3, final log read. Disposable CI artifacts; Engine and
+remaining cohort admission modeled. CI41242593716/job124659373932 PASS39;
+actual exported235-source compiler still attested, all original136 pins retained.
+
+Membership requires a parent-reviewed cohortChecksums/COHORT_SHA256SUMS subject;
+no silent role/input/hash substitution. Proves only two selected images and four
+migration sources, not all runtime files. Streaming checks reject links, duplicate
+members, traversal, altered JAR/SQL/archive and file replacement. No extraction.
+Original 37/108/128/136 maps/pins/bodies/child stay unchanged;235 hashes checked.
+New native controllers/membership are outside that compiler, not a target package.
+
+Next: complete full-cohort artifact/private custody, actual workload bearer,
+sealed full phase controller and execution package/exact private review. No target
+command ready. No new user action needed for remaining SOURCE work. G5-G7/24AT/
+8UX/8stability/boot/rotation/two clients OPEN. Loading ends UDP + every row outcome;
+graph search follows, then vertical/API scheduling with delta.
+
+Evidence:evidence/m2-native-operational-controller-membership-qualified-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md
+Older CURRENT headers are historical.
+
 # CURRENT — Native predicates PASS131; actual exported compiler provenance PASS39
 
 31 October 2026, UTC. Continue SOURCE work autonomously/sequentially; no agents,

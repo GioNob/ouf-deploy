@@ -1,3 +1,76 @@
+# Continuazione corrente — checkpoint nativi e appartenenza degli artefatti
+
+31 ottobre 2026, Europe/Rome. Sorgente corrente `ed908d3f89b455ceb765660e49b23551ed88e140`.
+Lavoro autonomo sequenziale; nessun agente o automazione. Non è necessaria
+un'azione dell'owner per proseguire il residuo sorgente. Nessun nuovo comando
+VPS pronto. M1/Teatri resta 8/8 tecnico e 6/6 funzionale acquisito; stessa Farmacie
+SUCCEEDED 61 righe/10 colonne/10 OPEN, codice ministeriale STRING. Non ripetere upload,
+profiling o acquisizioni. M2/G5-G7 e gli altri criteri di accettazione restano OPEN.
+
+## Delta e prove nuove
+
+- `e1a0898f`: `NativeOperationalCheckpoints` compone i gate di migrazione,
+  unpause/segnale e verifica, comprese le riconciliazioni in-flight. È stato
+  corretto un blocco causale del reader precedente: `RunningWorkloadBinding`
+  richiede `VERIFY_APPLICATION` già APPLIED, quindi non può servire quella
+  stessa fase IN_FLIGHT. Il controllo negativo esegue il reader reale; quello
+  nuovo usa soltanto la ricevuta del rilascio completato e il processo corrente.
+  Non inventa readiness né scrive una ricevuta anticipata. Il reader storico
+  completato resta invariato. CI41241146386: 157 test/24 suite PASS,5 log finali letti.
+- `3ab5efaf`: `CurrentArtifactMembership` collega l'esatto subject publisher
+  `cohortChecksums`/`COHORT_SHA256SUMS` a manifest/source lock, immagini originali
+  e derivate Registry/MCP, JAR Onboarding/Ingestion/UDP e sorgenti SQL MCP.
+  Custodia FD e hash reali, parser tar senza estrazione/esecuzione, limiti finiti,
+  dinieghi per sostituzione, duplicati, link, traversal e contenuti diversi.
+  `HeldNativeController` richiede quell'owner, lo collega alla stessa prova
+  publisher e ripete le osservazioni volatili/appartenenza prima del ritorno:
+  18 osservazioni sotto un solo invocation fence. Ogni reader conserva i propri
+  guard prima/dopo I/O; nessuna moltiplicazione di tutti i guard nativi per ogni
+  reader estraneo. Non è uno snapshot distribuito atomico.
+- CI[41242174196](https://github.com/GioNob/ouf-deploy/actions/runs/41242174196),
+  sorgente 3ab5efaf: **169 test/25suite PASS**, cinque log finali letti, zero
+  failure/error/skip/ResourceWarning. Protocollo152/20; PostgreSQL/fence Docker4/2,
+  TLS7, IAM Keycloak26.7.4 senza refresh4, processo reale non-root2.
+- `ed908d3f`, CI[41242593604](https://github.com/GioNob/ouf-deploy/actions/runs/41242593604)/
+  job124659373661: **6 test crittografici reali PASS** (publisher originale3 +
+  composizione parent Ed25519/Sigstore/immagini/migrazioni3), log finale letto.
+  Namespace senza rete e senza credenziali GitHub; repository errato e revoca
+  parent respinti. Artefatti disposable CI, Engine e altri guard di coorte
+  simulati; nessuna ammissione di un pacchetto VPS o dell'intera coorte.
+- CI[41242593716](https://github.com/GioNob/ouf-deploy/actions/runs/41242593716)/
+  job124659373932: **39 PASS** per compilatore/publication/parent/export e verifica
+  crittografica offline; log finale letto, zero failure/error/skip/ResourceWarning.
+  I136 binding originali e tutti235 hash del compilatore corrente sono conservati.
+
+Il codice applicativo di 3ab5efaf è invariato in ed908d3f: il terzo commit aggiunge
+solo la qualifica CI congiunta. I risultati dei due scope non sono una prova E2E.
+Il dossier strutturato è [qui](../../evidence/m2-native-operational-controller-membership-qualified-20261031.json).
+
+## Autorità normativa e limiti ancora aperti
+
+Riletti dagli originali DOCX pubblicati nel repository, con confronto al manifest:
+Matrix1.7 §§7-7.2; Blueprint0.3 §§9-10; Gateway1.5 T33.5/T33.13; Semantic1.3
+§§20-20.1. Consultati anche mini-PET M2v1.3, addendum DISC-STABLE e policy di
+resilienza v3. Queste letture non sono una certificazione completa dei PET.
+Le firme di fixture sono esclusivamente CI; nessuna nuova autorità target.
+
+L'appartenenza provata riguarda **due immagini e quattro sorgenti di migrazione**.
+Restano completi inventario/custodia privata e appartenenza per la coorte intera,
+ammissione del vero bearer workload, checkpoint nativi delle fasi iniziali e
+composizione completa del controller, pacchetto di esecuzione sigillato e review
+privata esatta con autorità correnti. Il compilatore235 sorgenti non include i
+nuovi controller; non è diventato un installer. Se manca il ruolo/checksum
+publisher, preparare input espliciti da recensire: mai riscrivere vecchi hash.
+
+Nessun nuovo effetto target, activation, grant/reset, release producer o prova
+Farmacie→UDP. Restano24AT,8UX,8stabilità, boot/rotazione e due client indipendenti.
+Il caricamento termina in UDP con gli esiti di tutte le righe; search sul grafo e
+poi verticali/API con scheduler delta restano i passi successivi richiesti.
+
+Le sezioni successive conservano il checkpoint precedente e le sue prove.
+
+---
+
 # M2 — contratti installati, firme e handoff operativo
 
 31 ottobre 2026, Europe/Rome. Continuazione su PR54; PR50 conserva il raccordo
