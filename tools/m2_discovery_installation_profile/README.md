@@ -762,3 +762,27 @@ not a complete sealed execution package or a target command.
 The process native fixture uses a disposable non-root Python workload to qualify
 argv/generation/capabilities/NNP and receipt ordering. Engine I/O is modeled in
 that fixture. It proves neither Java/OCI/HTTP readiness nor application E2E.
+
+
+### Current selected artifact membership
+
+`artifact_membership.py` joins the parent-bound publisher, selected image plan
+and current database migration sources. An exact `cohortChecksums` publisher
+subject named `COHORT_SHA256SUMS` is required. Its authenticated bytes bind the
+same reviewed cohort manifest/source lock, the two original Registry/MCP image
+archives and the four migration sources (Onboarding/Ingestion/UDP/MCP). Actual
+original/derived Docker tar/config/layer audits are reused; the local JAR hashes
+and the exact MCP migration member set must match the signed package. Source
+archives are streamed without extraction or execution, with byte/time/member
+bounds, stable file identities and denial of links/duplicates/traversal.
+
+The READY12 controller now requires this typed owner and joins its publisher
+proof to the same publisher observation. Both membership and volatile native
+owners are read again before return:18 named observations under one invocation
+fence. This proves membership only for these two images/four migration sources.
+All-runtime membership, complete private custody, actual workload bearer and a
+complete publication/release checkpoint remain unproven. Missing publisher role
+requires explicit reviewed inputs; no existing parent/input hash is rewritten.
+The immutable235-source review compiler is unchanged and accepts no new runtime
+authority. Fixture publisher/parent cryptography is modeled in the membership
+suite; the actual offline cryptographic publisher suite remains separate.

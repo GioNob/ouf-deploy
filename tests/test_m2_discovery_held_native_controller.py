@@ -44,7 +44,7 @@ class HeldController(unittest.TestCase):
         for name, cls in (('runtime', m.CurrentCohortRuntime), ('databases', m.CurrentCohortDatabases),
             ('publisher', m.CurrentPublisherCustody), ('tls', m.CurrentTlsIdentities), ('iam', m.CurrentWorkloadIam),
             ('retirement', m.CurrentRetirementAndBackup), ('producers', m.CurrentProducerFence),
-            ('operational', m.CurrentOperationalWorker)):
+            ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership)):
             objects[name] = object.__new__(cls); objects[name].guard = Mock()
         runtime = objects['runtime']; runtime.selected = selected; runtime.input_hash = 'c'*64
         runtime.inputs = {'additionalInputsHashes': {k: 'd'*64 for k in m.ADDITIONAL_INPUTS}}
@@ -55,12 +55,18 @@ class HeldController(unittest.TestCase):
             objects[name].parent = parent; objects[name].runtime_inputs = copy.deepcopy(runtime.inputs)
         for name in ('producers', 'retirement'): objects[name].app = app
         objects['retirement'].installed = True
+        objects['membership'].publisher = objects['publisher']; objects['membership'].databases = objects['databases']
+        objects['membership'].images = selected.images
         def operation(name):
             def run(*args):
                 self.assertTrue(occupied[0], name+' must use the invocation fence')
-                calls.append(name); return {'schema': 'modeled-'+name, 'heldHistoryHash': m.digest(row)}
+                calls.append(name); result = {'schema': 'modeled-'+name, 'heldHistoryHash': m.digest(row)}
+                if name == 'membership':
+                    result.update(selectedImageAndMigrationMembershipProven=True,
+                        publisherEvidenceHash=m.digest({'schema':'modeled-publisher','heldHistoryHash':m.digest(row)}))
+                return result
             return Mock(side_effect=run)
-        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational'):
+        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership'):
             objects[name].observe = operation(name)
         objects['retirement'].retired = operation('retirement'); objects['retirement'].retained_backup = operation('backup')
         selected.images.verify = operation('images')
@@ -72,9 +78,9 @@ class HeldController(unittest.TestCase):
     def test_all_concrete_observers_share_one_fence_without_publication_or_release_receipt(self):
         controller, _, row, calls, occupied, _ = self.prepared(); original = copy.deepcopy(row)
         result = controller.observe()
-        self.assertEqual(calls, ['images','registry','operational','runtime','publisher','databases','tls','iam',
-            'retirement','backup','producers','registry','operational','runtime','producers','images'])
-        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 16)
+        self.assertEqual(calls, ['images','registry','operational','runtime','publisher','membership','databases','tls','iam',
+            'retirement','backup','producers','registry','operational','runtime','producers','membership','images'])
+        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 18)
         self.assertTrue(result['singleTransitionInvocationFenceHeld']); self.assertTrue(result['allBoundNativeObserversCompleted'])
         self.assertNotEqual(result['schema'], 'ouf.semantic-cutover-native-checkpoint.v1')
         for key in ('observationIntervalIsAtomicSnapshot', 'artifactMembershipProven', 'completePrivateCustodyProven',
@@ -121,11 +127,22 @@ class HeldController(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'SAME_HELD_CONTROLLER_NATIVE_WITNESS_HISTORY'): controller.observe()
         objects['databases'].observe.assert_not_called()
 
+    def test_membership_must_use_the_same_current_publisher_proof(self):
+        controller, objects, _, _, _, _ = self.prepared()
+        original = objects['membership'].observe.side_effect
+        def wrong_publisher():
+            result = original(); result['publisherEvidenceHash'] = 'f'*64; return result
+        objects['membership'].observe.side_effect = wrong_publisher
+        with self.assertRaisesRegex(ValueError, 'SAME_CURRENT_PUBLISHER_AND_SELECTED_ARTIFACT'): controller.observe()
+        objects['databases'].observe.assert_not_called()
+
     def test_revocation_after_native_read_stops_following_read_without_repair(self):
         controller, objects, _, _, occupied, registry = self.prepared()
         original = registry.observe.side_effect
         def revoke():
-            proof = original(); objects['publisher'].guard.side_effect = ValueError('CURRENT_PARENT_REVOKED'); return proof
+            proof = original()
+            controller.selected.installation.application.authority.side_effect = ValueError('CURRENT_PARENT_REVOKED')
+            return proof
         registry.observe.side_effect = revoke
         with self.assertRaisesRegex(ValueError, 'CURRENT_PARENT_REVOKED'): controller.observe()
         objects['operational'].observe.assert_not_called(); self.assertFalse(occupied[0])
