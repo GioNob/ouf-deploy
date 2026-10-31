@@ -107,6 +107,7 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
         def current(_):
             for cid,expected in pins.items():
                 actual=native(cid);pid=actual['pid']
+                if actual['status']!=('paused' if cid==registry else 'running'):return False
                 if (pid,ticks(pid),Path('/proc',str(pid),'ns/net').stat().st_ino)!=expected:return False
                 if actual['status']!=('paused' if cid==registry else 'running'):return False
             return True
@@ -179,16 +180,24 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
         assert recovered['publicationCount']>second['publicationCount']
         assert recovered['startedWall']==first['startedWall']==initial['startedWall']
         assert recovered['startedMonotonic']==first['startedMonotonic']==initial['startedMonotonic']
-        pause_provider(True)
-        blocked=request('tick');assert blocked['state']=='BLOCKED' and blocked['reason']=='GENERATION_CHANGED',blocked
+        if docker_engine is None:pause_provider(True)
+        else:
+            status,_=docker_engine.request('POST','/v1.44/containers/'+provider+'/kill?signal=SIGKILL')
+            assert status==204,'CI_ACTUAL_PROVIDER_KILL_FAILED'
+            end=time.monotonic()+5
+            while native(provider)['status']!='stopped':
+                assert time.monotonic()<end;time.sleep(.05)
+        blocked=request('tick');assert blocked['state']=='BLOCKED' and blocked['reason'] in (
+            'GENERATION_CHANGED','AUTHORITY_REVOKED') if docker_engine is not None else blocked['state']=='BLOCKED' and blocked['reason']=='GENERATION_CHANGED',blocked
         assert not any(owner.coordinator.sets());free_locks()
-        pause_provider(False)
+        if docker_engine is None:pause_provider(False)
         queries=control['queries'];again=request('tick')
         assert again['state']=='BLOCKED' and again['attempts']==blocked['attempts'] and control['queries']==queries
         assert all(p.read_bytes()==raw for p,raw in preserved.items())
         assert runtime.custody(common,0o600)[1]==original_lock
         assert window.observe_closed()['state']=='CLOSED' and native(registry)['status']=='paused'
-        assert native(provider)['status']=='running' and owner.observe_started()[0]=='APPLIED'
+        if docker_engine is None:assert native(provider)['status']=='running' and owner.observe_started()[0]=='APPLIED'
+        else:assert native(provider)['status']=='stopped'
         request_stop=b'stop\n';stream.write(request_stop)
         reaped,status=os.waitpid(pid,0);assert reaped==pid and os.waitstatus_to_exitcode(status)==0;pid=None
         return {'schema':'ouf.m2-provider-worker-native-handoff-ci.v1','realV4ProviderAdmissionFeedsWorkerGuard':True,
@@ -196,7 +205,8 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
             'sameKernelDnsBindingAndPreservedProviderJournal':True,'realDnsNftTwoFamilyPublicationAndRenewal':True,
             'dnsFailureRevokesBothFamiliesAndPersistsBackoff':True,'noDnsOrAttemptDuringPersistedWait':True,
             'recoveryPreservesOriginalClocksIncidentAndCumulativeCounters':True,'concurrentInvocationDenied':True,
-            'nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm':True,'registryRemainsPausedAtClosedGate':True,
+            'nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm':docker_engine is None,
+            'actualDockerProviderTerminationBlocksWithoutRestartOrRearm':docker_engine is not None,'registryRemainsPausedAtClosedGate':True,
             'finiteInstallerAdmissionOnly':True,'sealedWorkerInstallationProven':False,
             'fullInitialAdmissionSeconds':round(admission_seconds,3),
             'currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller':True,
@@ -208,7 +218,7 @@ def qualify(phase,root,commands,state_root,run,*,docker_engine=None):
         if pid is not None:
             os.kill(pid,signal.SIGKILL);os.waitpid(pid,0)
         stream.close();left.close();done.set();thread.join(timeout=1);server.close()
-        pause_provider(False,check=False)
+        if docker_engine is None:pause_provider(False,check=False)
         # Revoke only through the new worker journal, preserving the provider's
         # admission history even on failure. This is disposable-CI cleanup.
         cleanup_backend=runtime.NftBackend([commands['nft']],cfg,binding['leaseStructureHash'],5)

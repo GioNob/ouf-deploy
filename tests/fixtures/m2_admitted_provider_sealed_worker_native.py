@@ -165,9 +165,8 @@ def qualify(provider_phase,auth,setup,boundary,run):
         command('systemctl','kill','--signal=KILL','--kill-who=main',unit)
         recovered=wait(lambda v:v['state']=='ACTIVE' and v['attempts']>first['attempts'] and v['reentryCount']>first['reentryCount'])
         assert recovered['startedWall']==first['startedWall'] and recovered['publicationCount']>=first['publicationCount']
-        provider=owner.creation.owned_id();assert engine.request('POST','/v1.44/containers/'+provider+'/pause')[0]==204
+        provider=owner.creation.owned_id();assert engine.request('POST','/v1.44/containers/'+provider+'/kill?signal=SIGKILL')[0]==204
         blocked=wait(lambda v:v['state']=='BLOCKED');assert not any(owner.coordinator.sets())
-        assert engine.request('POST','/v1.44/containers/'+provider+'/unpause')[0]==204
         before=queries[0];time.sleep(1.5)
         assert row()['state']=='BLOCKED' and row()['attempts']==blocked['attempts'] and queries[0]==before
         assert all(p.read_bytes()==raw for p,raw in preserved.items())
@@ -175,7 +174,7 @@ def qualify(provider_phase,auth,setup,boundary,run):
         return {'schema':'ouf.m2-admitted-provider-sealed-worker-ci.v1','realDockerProviderV4Admission':True,
             'lateMaterializationAttestationPublicationRegistrationStart':True,'lostManagerReplyReconciledWithoutSecondStart':True,
             'sealedUnitOnlyCapNetAdminAndKeyHidden':True,'sigkillReentryRetainsStartedTimeAndCounters':True,
-            'providerPauseRevokesAndBlocksWithoutAutomaticRearm':True,'providerHistoryAndRegistryPausePreserved':True,
+            'providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm':True,'providerHistoryAndRegistryPausePreserved':True,
             'syntheticRegistryAdmissionImagesAndReview':True,'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:
