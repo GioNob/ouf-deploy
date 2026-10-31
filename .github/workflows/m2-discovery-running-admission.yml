@@ -1,14 +1,14 @@
 name: M2 running Registry admission protocol
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/running_admission.py','tools/m2_discovery_installation_profile/current_cohort.py','tests/test_m2_discovery_running_admission.py','tests/test_m2_discovery_current_cohort.py','.github/workflows/m2-discovery-running-admission.yml']
+    paths: ['tools/m2_discovery_installation_profile/running_admission.py','tools/m2_discovery_installation_profile/current_cohort.py','tools/m2_discovery_installation_profile/current_worker.py','tests/test_m2_discovery_running_admission.py','tests/test_m2_discovery_current_cohort.py','tests/test_m2_discovery_current_worker.py','.github/workflows/m2-discovery-running-admission.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/running_admission.py','tools/m2_discovery_installation_profile/current_cohort.py','tests/test_m2_discovery_running_admission.py','tests/test_m2_discovery_current_cohort.py','.github/workflows/m2-discovery-running-admission.yml']
+    paths: ['tools/m2_discovery_installation_profile/running_admission.py','tools/m2_discovery_installation_profile/current_cohort.py','tools/m2_discovery_installation_profile/current_worker.py','tests/test_m2_discovery_running_admission.py','tests/test_m2_discovery_current_cohort.py','tests/test_m2_discovery_current_worker.py','.github/workflows/m2-discovery-running-admission.yml']
 permissions: {contents: read}
 jobs:
   running-admission:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
@@ -20,6 +20,6 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_discovery_running_admission.py test_m2_discovery_current_cohort.py test_m2_discovery_frame_observation.py test_m2_discovery_node_owner.py; do
+          for suite in test_m2_discovery_running_admission.py test_m2_discovery_current_cohort.py test_m2_discovery_current_worker.py test_m2_discovery_frame_observation.py test_m2_discovery_node_owner.py; do
             sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
