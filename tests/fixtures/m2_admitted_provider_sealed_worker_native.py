@@ -4,7 +4,7 @@ Registry admission predecessors remain explicitly modeled. The provider reader,
 late native capture, signer, publisher, registration and systemd start are real.
 No installed/previous worker or ledger is adopted by this disposable fixture.
 """
-import copy,dataclasses,hashlib,json,os,socket,struct,threading,time,types
+import copy,dataclasses,hashlib,json,os,re,socket,struct,threading,time,traceback,types
 from pathlib import Path
 from tools.m2_discovery_installation_profile import lease_capsule as capsule
 from tools.m2_discovery_installation_profile import lease_installation_template as templates
@@ -138,6 +138,17 @@ def qualify(provider_phase,auth,setup,boundary,run):
             time.sleep(.1)
         print(command('journalctl','-u',unit,'--no-pager','-n','35',check=False).decode(),flush=True)
         raise AssertionError('CI_ADMITTED_SEALED_WORKER_TIMEOUT')
+    actual_observe=observation.observe
+    def diagnostic_observe(*args,**kwargs):
+        try:return actual_observe(*args,**kwargs)
+        except Exception as error:
+            reason=str(error)
+            print('CI_JOINT_SEALED_OBSERVATION_DENIED='+json.dumps({'type':type(error).__name__,
+                'reason':reason if re.fullmatch('[A-Z][A-Z0-9_]{0,160}',reason) else 'REDACTED',
+                'frames':[{'source':Path(f.filename).name,'line':f.lineno,'function':f.name}
+                    for f in traceback.extract_tb(error.__traceback__)[-8:]]},sort_keys=True),flush=True)
+            raise
+    observation.observe=diagnostic_observe
     try:
         materializer=WorkerMaterialization(node_owner=node,provider=owner.admission,signer=setup['signer'],
             capsule=setup['capsule'],installation_sources=setup['sources'])
@@ -152,7 +163,7 @@ def qualify(provider_phase,auth,setup,boundary,run):
         except TimeoutError as error:assert str(error)=='CI_LOST_ACTUAL_SEALED_START_REPLY'
         first=wait(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=1)
         result,proof=phase.observe(intent)
-        assert result=='APPLIED' and proof['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
+        assert result=='APPLIED' and proof['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive'],proof
         assert len(dispatches)==1
         observed=observation.observe(install/'configuration.json',phase.start.proposal['serviceUnit']['configurationAnchor'],
             unit_name=unit,systemctl=setup['start']['manager'])
@@ -179,6 +190,10 @@ def qualify(provider_phase,auth,setup,boundary,run):
             'syntheticRegistryAdmissionImagesAndReview':True,'fullCohortProven':False,'applicationE2EProven':False,
             'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'releaseAcceptance':False}
     finally:
+        observation.observe=actual_observe
+        try:print('CI_JOINT_SEALED_FINAL_STATE='+json.dumps({k:row().get(k) for k in
+            ('state','reason','attempts','publicationCount','reentryCount')},sort_keys=True),flush=True)
+        except (OSError,ValueError):pass
         command('systemctl','stop',unit,check=False)
         (Path('/etc/systemd/system')/unit).unlink(missing_ok=True)
         command('systemctl','daemon-reload',check=False);command('systemctl','reset-failed',unit,check=False)
