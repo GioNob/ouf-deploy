@@ -10,6 +10,7 @@ import test_m2_provider_creation as creates
 from test_m2_discovery_native_profile import fixture as registry_fixture
 from tools.m2_discovery_installation_profile import provider_profiles as m
 from tools.semantic_transaction_profiles.repair_broker_sources import repair
+from tools.semantic_transaction_profiles.repair_peer_bundle_sources import repair as peer_bundle_sources
 from tools.semantic_registry_operational_owner.core import Denied as InputDenied
 
 class Profiles(unittest.TestCase):
@@ -40,7 +41,7 @@ class Profiles(unittest.TestCase):
         w.transition.read=lambda:copy.deepcopy(boundary)
         source=auth.root/'provider-source';source.mkdir(mode=0o700)
         source_base=ROOT/'tools/semantic_cohort_admission/cohort-draft'
-        sources=repair({str(p.relative_to(source_base)):p.read_bytes() for p in source_base.rglob('*.py')})
+        sources=peer_bundle_sources(repair({str(p.relative_to(source_base)):p.read_bytes() for p in source_base.rglob('*.py')}))
         for name,content in sources.items():
             p=source/name;p.parent.mkdir(mode=0o700,parents=True,exist_ok=True);auth.write(p,content)
         registry=auth.root/'provider-registry';registry.mkdir(mode=0o700)

@@ -28,6 +28,8 @@ INSTALLER='scripts/semantic_provider_installer_approval.py'
 FRAME_SOURCE_SHA='122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc'
 RUNTIME_SHA='7894d0e942642d1daa5ae2e29c85cd7f0584b7cd285c539cab3ae624bab0bba9'
 BROKER_SHA='3069c3dbbb959d8e8d423f5fc0c22db65aa4a50e2ba1874ad26ccd3a928af0cf'
+PEER_SOURCE='tools/semantic_provider_peer_bindings.py'
+PEER_SOURCE_SHA='52ae9a32513addfab1f829bc800084121487f3783f45fc9a5a7134906f9ae9a8'
 PAYLOADS=('intent','live','approval')
 ROLES={'intent':('DEPLOYMENT_INTENT','intentIssuerRef','installer'),
     'live':('CREATION_ATTESTATION','attestorRef','attestor'),
@@ -73,7 +75,8 @@ def profile_scope(template,creation_scope,*,registry_recipe,source_root,source_h
         and all(type(k) is str and not Path(k).is_absolute() and '..' not in Path(k).parts
             and len(k)<=256 and templates.hashed(v) for k,v in source_hashes.items())
         and source_hashes.get(RUNTIME)==RUNTIME_SHA and source_hashes.get(BROKER)==BROKER_SHA
-        and source_hashes.get('scripts/semantic_provider_preexec_hook.py')==cfg['driverSha256'],
+        and source_hashes.get('scripts/semantic_provider_preexec_hook.py')==cfg['driverSha256']
+        and source_hashes.get(PEER_SOURCE)==PEER_SOURCE_SHA,
         'EXACT_PINNED_PROVIDER_SOURCE_PACKAGE_REQUIRED')
     require(type(python_binding) is dict and set(python_binding)=={'path','sha256'}
         and python_binding=={'path':cfg['pythonPath'],'sha256':cfg['pythonSha256']},
