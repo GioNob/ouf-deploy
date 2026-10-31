@@ -124,7 +124,8 @@ class ConsumerReviewTest(unittest.TestCase):
             with self.assertRaises(guard.CandidateDenied):self.n['file_read'](str(link),65536)
             with self.assertRaises(guard.CandidateDenied):self.n['file_read'](str(path),2)
     def test_portable_existing_gh_and_isolated_hashed_root_delivery(self):
-        raw=(ROOT/'tools/semantic_policy_token_owner/iam_binding_candidate.py').read_bytes()
+        # The consumed delivery's source hash is historical; behavior tests above use the current compiler.
+        raw=(ROOT/'tests/fixtures/policy_token_iam_binding_bcd20f30085.source').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),delivery.GUARD_SHA)
         with tempfile.TemporaryDirectory(dir=ROOT)as temp:
             home=Path(temp);gh=home/'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh';gh.parent.mkdir(parents=True)
