@@ -1,3 +1,55 @@
+# CURRENT — Running Registry/current 13-peer readers PASS33; MCP public HEALTHY; full native controller OPEN
+
+31 October 2026, UTC. Continue autonomously and sequentially; no agents or
+automations. A stopped turn means user involvement is necessary: do not stop at
+optional checkpoints. Teatri M1/G4 technical8/8 functional6/6 acquired. Same
+Farmacie SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN; no replay.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients remain OPEN.
+
+New source1e83328768cc1845f47c9571d59628a115534653, local8243910,
+tree04dc5ca0ffafa547b1ed004b662babab8772f99f, PR54 draft/unmerged.
+New running_admission.py checks independently recompiled seven-mount OCI/frame,
+current file custody/configtree/owner-admitted mounted token, exact retained
+creation acceptance/current attestor signature, same attested generation after
+gate exec, signed current readiness scope and direct actual Registry address.
+No mutable running-rootfs reseal; all full admission/authority/release flags false.
+
+New current_cohort.py binds private runtime input hash in an explicit parent
+currentAdmission v2; original six-part compiler and Registry child untouched.
+Actual selected owners plus ten retained generations/names/configuration hashes,
+current boot/root pins and Engine SO_PEERCRED; exactly26 GETs/two passes/13roles.
+No spooling, writes, locks or lifecycle. Retained-control-plane quiescence is
+rejected before reads: Onboarding must be reachable at publication, not bypassed
+with cached grants. This is runtime roster evidence, NOT complete admission.
+
+CI41216354395/job124581583544 PASS33/4suites/0fail/0skip in2.305s; final log read:
+running12/1.654s,cohort7/.335s,paused-frame8/.133s,paused-node6/.183s.
+Real protected custody/Ed25519/private evidence/embedded loader and real Unix
+socket/peer/26GET limits. Docker/process/mount/HTTP/DB and selected native owner
+leaves explicitly modeled. Local sandbox lacks UID10001 mapping/proc/Unix socket;
+local limited development checks are NOT full qualification. Original37/108/128/
+136 source closures/pins untouched. e6bb7cf prior-source publication regression
+41215723632/job124579707215 PASS14/126.266s and parent review41215723630/job
+124579707114 PASS8/.614s+12/11.185s, final logs read; no new artifact verification.
+
+Fresh governed public MCP read: HEALTHY/actionRequired=false/partial=false,
+PUBLIC_OPERATIONAL/redacted=true. Not Registry discovery/native/E2E admission.
+User VPS declarations remain running/unpaused, both discovery flags false.
+NO current VPS QUIESCED incident demonstrated. No further operator reads needed
+to clarify that, no toggle/restart/history cleanup/token/window request now.
+The causal CI QUIESCED observer fix is separate and retained.
+
+Next: complete sealed native checkpoint + coordinated controller; bind actual
+TLS/IAM/DB/backup/fencing/private custody/supply-chain/provider/worker/positive
+leases, then source-sealed execution package and exact private review. Initial
+finite provider window/authorization HUMAN preparation ordering remain OPEN.
+No target apply, grant, reset, replay, merge or release acceptance. Lack of SSH
+is not a reason to stop source work or request another root command now.
+Evidence:evidence/m2-current-runtime-admission-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_RUNTIME_ADMISSION_20261031.md
+Canonical continuation:docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md on PR50.
+Older CURRENT headers below are historical.
+
 # CURRENT — Publication owner protocol PASS14; VPS flags false; native installation controller still OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
