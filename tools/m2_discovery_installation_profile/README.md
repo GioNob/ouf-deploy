@@ -622,3 +622,63 @@ passes251tests/33suites/0skip plus actual disposable Keycloak. All those final
 logs/reports are read. The Registry/token/transport final report also proves IAM
 revocation denial with unchanged token/journals and one initial grant. These are
 the named qualified scopes; full target/cohort/product acceptance remains open.
+
+## Sealed private four-owner preparation
+
+`private_review.py` links the existing Registry/frame and MCP compilers with the
+selected-image and Gateway component scopes. Explicit hash-bound private inputs
+must agree on Registry image/request, cohort manifest, MCP discovery workload and
+Registry/Gateway discovery-key content. Owner journals cannot overlap each other
+or private input artifacts. The Registry context is a CID-free layout: structural
+validation uses a discarded synthetic CID policy, while only the independent
+template/launch are published for later real-CID materialization by the owner.
+
+The output is a review fragment, rejected by the full parent-review parser.
+Gateway YAML, file/credential/archive custody, current native admission and the
+provider/gate/worker/HUMAN/publication components still require their own complete
+review. The artifact explicitly declares those limits; no authority is inferred.
+
+`private_review_capsule.py` and `scripts/export-m2-discovery-private-review.py`
+package108 exact application modules and the fixed independent baseline. The
+isolated root CLI has only prepare and read-only inspect modes. Root-private
+metadata input, non-following reads and private output directories are mandatory.
+An exclusive fsynced claim precedes the payload; the receipt is last. Partial
+output cannot be completed or overwritten on retry. The compiler manifest/payload
+binding participates in the assembly hash, so a different compiler cannot adopt
+an earlier output. Public receipts contain only hashes/counts and safe flags.
+Interpreter/stdlib custody and publisher trust remain separate review inputs.
+
+Source31b344e0 passes15 local and15 CI tests, with final log read; downloaded
+artifact13033046169 exactly matches its local rebuild. This is the new preparation
+scope only. Its general native regressions include a v1 initial90s expiry and an
+UNKNOWN publication observation while the worker remains ACTIVE; no retry or
+guard limit is changed to turn those into PASS. See
+`evidence/m2-private-review-assembly-20261031.json` and
+`docs/handoffs/OUF_M2_PRIVATE_REVIEW_ASSEMBLY_20261031.md` for exact reports and gaps.
+
+The packager additionally pins the source-map file itself to the independent
+constant SHA42583665…. Changing both source and a matching map in another source
+root is rejected; the qualified application payload/capsule bytes are unchanged.
+
+The host observer now classifies only a validated LEASE_UPDATING journal with
+leaseAuthorized=false as read contention, reusing its original three attempts,
+single deadline and0.02/0.04-second waits. Revocation, BLOCKED, wrong set keys and
+other drift remain immediate denials; exhaustion is UNKNOWN, never a positive
+receipt or operational retry. Native27717b20 actually observed READY→UPDATING
+with positive owned sets during one read, reconciled it within the same call and
+passed all three native modes without another manager start. Specific31b and
+older UNKNOWN anomaly causes are not retroactively closed. See
+`evidence/m2-publication-read-reconciliation-20261031.json` for qualified scope.
+
+
+Final host-observation qualification at27717b20:463protocol tests/54suites/0skip
+(PR41176742954/job124465759690), all3native modes and IAM251/33/0skip; final logs
+read. The current private compiler/loader at7fb1420e passes15tests/0skip
+(PR41177647675/job124468416188). It binds the loader template hash as well as
+source/payload hashes, rejects malformed CLI arguments without echoing private
+values and preserves partial output. Downloaded artifact13033249318 exactly
+matches the local rebuild: capsule SHA
+`dcb00e22c1faf4365457a35d36eac4aed0e28825afcdde3b60d0ba74b332707a`.
+The initial artifact is historical; the application108module payload remains
+unchanged. This is still a private review fragment, not a complete parent review
+or target execution approval.

@@ -484,5 +484,35 @@
       "conclusion": "success",
       "finalLogRead": true
     }
+  },
+  "privateReviewFragment": {
+    "sourceCommit": "7fb1420e43db56cb1c8b122f65f02fc1399d5e6e",
+    "evidence": "evidence/m2-private-review-assembly-20261031.json",
+    "ciRun": 41177647675,
+    "ciJob": 124468416188,
+    "tests": 15,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true,
+    "artifactId": 13033249318,
+    "artifactExactRebuildMatched": true,
+    "completeParentReview": false,
+    "targetApplyAuthorized": false
+  },
+  "boundedPublicationReadReconciliation": {
+    "sourceCommit": "27717b20a26d12a4191c65fe67539c4ec9d1abae",
+    "evidence": "evidence/m2-publication-read-reconciliation-20261031.json",
+    "protocolTests": 463,
+    "protocolSuites": 54,
+    "failures": 0,
+    "skips": 0,
+    "allThreeNativeModesPass": true,
+    "actualReadyToUpdatingReadReconciledWithinOriginalBounds": true,
+    "finalLogsRead": true,
+    "historicalUnknownCausesResolved": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "fullCohortProven": false,
+    "releaseAcceptance": false
   }
 }
