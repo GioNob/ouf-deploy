@@ -73,6 +73,33 @@ class Sequence(unittest.TestCase):
         self.assertEqual(owner.observe(intent)[0],'APPLIED')
         self.assertEqual(sum(v[0]=='start' for v in calls),1)
 
+    def test_unproven_start_read_retains_safe_denial_through_sequence_without_changing_history(self):
+        owner,intent,auth,calls,state=self.fixture();real=owner.start.manager
+        def lose(args):
+            result=real(args)
+            if args[0]=='start':raise TimeoutError('SYNTHETIC_START_REPLY_LOST')
+            return result
+        with patch.object(owner.start,'manager',side_effect=lose),self.assertRaises(TimeoutError):owner.apply(intent)
+        before=owner.journal.record.read_bytes();start_before=owner.start.journal.record.read_bytes()
+        code='DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION'
+        with patch.object(starts.lease_observation,'observe',side_effect=ValueError(code)) as reader:
+            outcome,evidence=owner.observe(intent)
+        self.assertEqual(outcome,'UNKNOWN');self.assertEqual(reader.call_count,1)
+        self.assertEqual(evidence['unprovenStage'],'START');self.assertEqual(evidence['completedSubstages'],3)
+        self.assertFalse(evidence['automaticReplayAllowed'])
+        self.assertFalse(evidence['unattemptedSubstagesRequireExplicitContinuation'])
+        child=evidence['substageObservation']
+        self.assertEqual(child['workerObservationFailure']['reasonCode'],code)
+        self.assertFalse(child['startReplayAllowed']);self.assertTrue(child['positiveWorkerLeaseNotProven'])
+        self.assertEqual(owner.journal.record.read_bytes(),before)
+        self.assertEqual(owner.start.journal.record.read_bytes(),start_before)
+        self.assertFalse(owner.store.path(owner.phase).exists())
+        self.assertEqual(sum(v[0]=='start' for v in calls),1)
+        # A separately requested read can reconcile the original claim. It may
+        # not dispatch again or discard either the prefix or current counters.
+        self.assertEqual(owner.observe(intent)[0],'APPLIED')
+        self.assertEqual(sum(v[0]=='start' for v in calls),1)
+
     def test_crash_before_unattempted_files_stage_requires_explicit_continuation(self):
         owner,intent,auth,calls,state=self.fixture();owner.journal.initialize(owner.initial())
         row=m.checked_row(owner.start)

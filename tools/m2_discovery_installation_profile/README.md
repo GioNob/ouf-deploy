@@ -548,3 +548,22 @@ failed/consumed fixtures are never reused. The admitted adapter intentionally
 does not implement pause/resume; the Docker fault case uses its supported kill
 operation and proves the worker cannot restart/rearm the terminated provider.
 The earlier native runc pause/resume proof remains a separate retained scope.
+
+
+## Safe diagnostics for an unproven installed-worker read (31 October)
+
+An installed-worker read can remain UNKNOWN after an already consumed manager
+start. Previously its exact observation denial was discarded by the start owner,
+and the installation sequence also discarded the pending owner's evidence.
+The start owner now retains a finite allowlist of observation reason codes and
+a coarse read-failure category. Unknown messages, paths, errno, command arguments,
+stdout/stderr and arbitrary exception formatting are excluded. The sequence
+returns that structured pending-stage observation while keeping its original
+claim and history unchanged. Neither reader gains a retry, manager dispatch,
+positive receipt, new authority, budget or continuation permission.
+
+Controlled protocol cases cover known denials, custom exception text, private
+process/IO errors and the full consumed START sequence. A later separately
+requested read may reconcile the original claim; it cannot start again. This
+closes a diagnostic information loss, not the cause of the historical native
+UNKNOWN or the full stability/cohort/target requirements.

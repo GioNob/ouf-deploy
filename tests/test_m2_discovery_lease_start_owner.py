@@ -3,7 +3,7 @@
 These protocol tests neither install a worker nor prove actual manager/provider
 or node admission. Native worker observation is qualified by a separate fixture.
 """
-import copy,sys,types,unittest
+import copy,subprocess,sys,types,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -85,9 +85,47 @@ class Start(unittest.TestCase):
 
     def test_failed_worker_read_does_not_issue_another_manager_command(self):
         owner,auth,intent,row,calls,reads,observation=self.fixture();owner.apply(intent)
+        before=owner.journal.record.read_bytes()
         with patch.object(m.lease_observation,'observe',side_effect=ValueError('NATIVE_LEASE_NOT_READY')):
-            self.assertEqual(owner.observe(intent)[0],'UNKNOWN')
+            outcome,evidence=owner.observe(intent)
+        self.assertEqual(outcome,'UNKNOWN');self.assertFalse(evidence['startReplayAllowed'])
+        self.assertEqual(evidence['workerObservationFailure'],{
+            'schema':'ouf.discovery-worker-observation-failure.v1','kind':'READ_DENIED',
+            'reasonCode':'DISCOVERY_WORKER_OBSERVATION_UNPROVEN'})
         self.assertEqual(len(calls),1);self.assertFalse(owner.store.path(m.PHASE).exists())
+        self.assertEqual(owner.journal.record.read_bytes(),before)
+
+    def test_known_observation_denial_is_retained_without_a_new_start_or_positive_evidence(self):
+        owner,auth,intent,row,calls,reads,observation=self.fixture();owner.apply(intent)
+        before=owner.journal.record.read_bytes()
+        code='DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION'
+        with patch.object(m.lease_observation,'observe',side_effect=ValueError(code)) as reader:
+            outcome,evidence=owner.observe(intent)
+        self.assertEqual(outcome,'UNKNOWN');self.assertEqual(reader.call_count,1)
+        self.assertEqual(evidence['workerObservationFailure']['reasonCode'],code)
+        self.assertFalse(evidence['startReplayAllowed']);self.assertEqual(len(calls),1)
+        self.assertEqual(owner.journal.record.read_bytes(),before)
+        self.assertFalse(owner.store.path(m.PHASE).exists())
+
+    def test_unknown_process_io_and_custom_exception_values_never_leave_the_reader(self):
+        class PrivateError(ValueError):
+            def __str__(self):raise AssertionError('exception text must not be formatted')
+        cases=(
+            (ValueError('SYNTHETIC_SECRET_VALUE'),'READ_DENIED'),
+            (ValueError('/private/fixture/key=value'),'READ_DENIED'),
+            (PrivateError('SYNTHETIC_SECRET_VALUE'),'READ_DENIED'),
+            (BlockingIOError(11,'SYNTHETIC_SECRET_VALUE','/private/fixture'),'READ_CONTENTION'),
+            (FileNotFoundError(2,'SYNTHETIC_SECRET_VALUE','/private/fixture'),'IO_READ_UNPROVEN'),
+            (subprocess.TimeoutExpired(['/private/fixture','key=value'],1,output=b'SYNTHETIC_SECRET_VALUE'),
+                'PROCESS_READ_UNPROVEN'),
+            (subprocess.CalledProcessError(1,['/private/fixture'],stderr=b'SYNTHETIC_SECRET_VALUE'),
+                'PROCESS_READ_UNPROVEN'),
+        )
+        for error,kind in cases:
+            with self.subTest(kind=kind):
+                self.assertEqual(m.lease_observation.failure(error),{
+                    'schema':'ouf.discovery-worker-observation-failure.v1','kind':kind,
+                    'reasonCode':'DISCOVERY_WORKER_OBSERVATION_UNPROVEN'})
 
     def test_crash_before_dispatch_is_consumed_no_effect_and_never_replayed(self):
         owner,auth,intent,row,calls,reads,observation=self.fixture();owner.journal.initialize(owner.claim())

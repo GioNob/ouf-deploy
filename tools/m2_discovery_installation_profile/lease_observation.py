@@ -16,6 +16,47 @@ from tools.semantic_registry_operational_owner.guard import protected_file,priva
 PROPERTIES={'LoadState','ActiveState','SubState','MainPID','FragmentPath','DropInPaths',
     'NeedDaemonReload','User','Group','NoNewPrivileges','CapabilityBoundingSet','AmbientCapabilities','RootDirectory'}
 
+# Only this finite public vocabulary may leave the privileged reader. Exception
+# messages from a process, file or imported guard can contain private values.
+DENIAL_CODES=frozenset({
+    'BOUNDED_DISCOVERY_WORKER_OBSERVATION_REQUIRED',
+    'ROOT_BOUNDED_DISCOVERY_WORKER_OBSERVATION_REQUIRED',
+    'EXACT_DISCOVERY_MANAGER_READER_REQUIRED',
+    'DISCOVERY_WORKER_OBSERVATION_DEADLINE_MISSED',
+    'BOUNDED_DISCOVERY_MANAGER_READBACK_REQUIRED',
+    'EXACT_DISCOVERY_MANAGER_PROPERTY_RECORD_REQUIRED',
+    'EXACT_DISCOVERY_MANAGER_PROPERTIES_REQUIRED',
+    'EXACT_RUNNING_DISCOVERY_MANAGER_CONFIGURATION_REQUIRED',
+    'BOUNDED_DISCOVERY_WORKER_ARGUMENTS_REQUIRED',
+    'EXACT_DISCOVERY_WORKER_PROCESS_ARGUMENTS_REQUIRED',
+    'EXACT_DISCOVERY_WORKER_PROCESS_EXECUTABLE_REQUIRED',
+    'BOUNDED_DISCOVERY_WORKER_PROCESS_STATUS_REQUIRED',
+    'EXACT_DISCOVERY_WORKER_PROCESS_CAPABILITIES_REQUIRED',
+    'EXACT_DISCOVERY_WORKER_PROCESS_ROOT_CONFIGURATION_REQUIRED',
+    'EXACT_DISCOVERY_WORKER_PROCESS_ROOT_REQUIRED',
+    'POSITIVE_DISCOVERY_WORKER_CHECKPOINT_REQUIRED',
+    'CURRENT_SIGNED_DISCOVERY_WORKER_GENERATION_REQUIRED',
+    'CURRENT_NATIVE_DISCOVERY_WORKER_GENERATION_REQUIRED',
+    'CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED',
+    'CURRENT_TWO_FAMILY_DISCOVERY_LEASE_REQUIRED',
+    'DISCOVERY_LEASE_CHANGED_DURING_OBSERVATION',
+    'DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION',
+})
+
+
+def failure(error):
+    """Safe UNKNOWN diagnostics; no probe, retry, evidence or native effect."""
+    if isinstance(error,subprocess.SubprocessError):kind='PROCESS_READ_UNPROVEN'
+    elif isinstance(error,BlockingIOError):kind='READ_CONTENTION'
+    elif isinstance(error,OSError):kind='IO_READ_UNPROVEN'
+    elif isinstance(error,ValueError):kind='READ_DENIED'
+    else:kind='READ_UNPROVEN'
+    # Inspect only an exact string argument, never arbitrary __str__, paths,
+    # errno, stdout/stderr or an exception subclass's custom representation.
+    reason=error.args[0] if len(error.args)==1 and type(error.args[0]) is str else None
+    return {'schema':'ouf.discovery-worker-observation-failure.v1','kind':kind,
+        'reasonCode':reason if reason in DENIAL_CODES else 'DISCOVERY_WORKER_OBSERVATION_UNPROVEN'}
+
 
 def preload_runtime():
     # The parent uses the same reviewed runtime modules. No ambient substitute

@@ -207,8 +207,9 @@ class LeaseStartAdapter:
         try:
             observed=lease_observation.observe(self.configuration_path,self.proposal['serviceUnit']['configurationAnchor'],
                 unit_name=self.scope['unitName'],systemctl=self.scope['manager'])
-        except (ValueError,OSError,subprocess.SubprocessError):
-            return 'UNKNOWN',{'ownedStartClaimHash':digest(claim),'positiveWorkerLeaseNotProven':True,'startReplayAllowed':False}
+        except (ValueError,OSError,subprocess.SubprocessError) as error:
+            return 'UNKNOWN',{'ownedStartClaimHash':digest(claim),'positiveWorkerLeaseNotProven':True,
+                'workerObservationFailure':lease_observation.failure(error),'startReplayAllowed':False}
         after=self.current(intent)
         evidence={'schema':'ouf.discovery-distinct-installed-lease-worker-started.v1',
             'transitionContextHash':self.transition.context,'intentHash':self.intent_hash,

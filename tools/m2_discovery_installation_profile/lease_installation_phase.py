@@ -166,8 +166,11 @@ class WorkerInstallationPhase:
             row=checked_row(self.start)
             if row['state']=='IN_FLIGHT':row,outcome,evidence=self.reconcile(intent,row)
             if row['state']!='DONE':
-                return 'UNKNOWN',{'sequenceClaimPresent':True,'completedSubstages':row['stageIndex'],
+                unknown={'sequenceClaimPresent':True,'completedSubstages':row['stageIndex'],
                     'unattemptedSubstagesRequireExplicitContinuation':row['state']=='READY','automaticReplayAllowed':False}
+                if row['state']=='IN_FLIGHT':
+                    unknown.update(unprovenStage=STAGES[row['stageIndex']],substageObservation=copy.deepcopy(evidence))
+                return 'UNKNOWN',unknown
             # The worker now owns its mutable recovery/coordination records.
             # Keep the immutable initial-publication proof; never demand or
             # restore an initial ledger over a live worker's cumulative state.
