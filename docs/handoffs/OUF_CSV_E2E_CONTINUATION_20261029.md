@@ -1,55 +1,62 @@
-# CURRENT — Real Docker admitted provider + late sealed worker PASS; M2 still OPEN
+# CURRENT — Docker provider + sealed worker PASS; safe UNKNOWN diagnostics PASS443/52; M2 OPEN
 
-31 October2026, Europe/Rome. Teatri M1/G4,technical8/8,functional6/6 acquired
-stepwise; reuse components for every-file flow. Farmacie same SUCCEEDED61rows/
-10columns,ministerial STRING/all10OPEN. No new upload/profiling/acquisition.
-M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
+31 October 2026, Europe/Rome. Continue autonomously and sequentially, without
+agents or automations. Teatri's completed single steps remain acquired: M1/G4,
+technical8/8 and functional6/6. Reuse them for every-file onboarding→semantic
+registry→governed OntoPiA discovery→Ingestion→UDP. Farmacie retains the same
+SUCCEEDED61-row/10-column profile, ministerial STRING and all10OPEN; no upload,
+profiling or acquisition replay. M2/G5–G7/24AT/8UX/8stability/two clients OPEN.
 
-PR54 source7d124c9c/run41152837404: finite124393038001 and sealed124393038158
-PASS, both final reports read. Actual Docker29/Engine/named v4 runtime/provider
-admission feeds late WorkerMaterialization and real attestation/create-only
-publication/registration/one systemd start, all over same Registry/provider/
-Engine/parent/child/kernel/common inode. One provider create/start; lost provider
-and manager start replies reconcile without another start. Actual sealed worker
-positive observation, renewal and SIGKILL/reentry preserve clocks/counters;
-provider kill revokes/blocks without restart/rearm. Key hidden/onlyCAP_NET_ADMIN/
-NoNewPrivileges checked; Registry stays paused. Separate finite worker proves
-DNS TTLzero/revocation/persisted backoff/no premature query/recovery/concurrency.
-Synthetic images/review and full Registry admission predecessor remain explicit.
-Full cohort and actual target/Farmacie→UDP NOT proven.
+Current source07734a75aa4c2a2c8e2d87519974d04fd8ea590a (PR54 draft/unmerged)
+retains safe read diagnostics after a consumed sealed-worker start. Exact finite
+observation-denial vocabulary and coarse read categories replace discarded
+exception detail; pending sequence returns the same structured substage evidence.
+Private exception strings/paths/errno/argv/stdout/stderr/custom formatting never
+leave the reader. UNKNOWN creates no positive receipt, retry, start, authority,
+budget or history reset. Controlled pre-fix restoration of only both original
+observe methods reproduces two missing diagnostic fields; successor9start tests
+PASS6.760s and15sequence tests PASS173.703s. This proves diagnostic loss and its
+fix, NOT the cause of the older native UNKNOWN, still OPEN with earlier local
+MCP/worker causes. Evidence:evidence/m2-worker-observation-diagnostics-20261031.json.
 
-Native integration exposed containerd peer OCI root0644 versus private0600 IO.
-Pure hash-bound peer-source revision accepts only exact CID/config.json,root
-nonwritable ancestry,root:root0644/one link/bounded stable bytes and signed fullOCI
-hash, with both native observations unchanged. Unknown errors never retry; all
-private credential/key/authority/journal readers and original frozen sources/
-repairs/capsules unchanged. Discovery requires exact new peer-source hash.
-Feature-only deny-lifecycle CI bootstrap before daemon runtime discovery fixes
-independently denied recursive-readonly mount mismatch; expected OCI unchanged.
-Adapter lacks pause/resume by design; Docker fault uses supported kill. Historical
-runc pause/resume remains a separate retained proof.
+Current07734a75 native PR41153678783 finite124395660746 and sealed124395660459
+PASS; both final reports read. Actual Docker29/Engine/named v4 provider admission
+feeds late WorkerMaterialization→3signatures→create-only publication→registration→
+one systemd start under the same Registry/provider/parent/child/kernel/inode.
+Lost provider+manager replies reconcile without second start. Renewal and SIGKILL
+reentry preserve clocks/counters; provider kill revokes/blocks without restart or
+rearm. Key hidden, onlyCAP_NET_ADMIN/NoNewPrivileges; Registry stays paused.
+Synthetic images/review and Registry full-admission predecessor remain explicit;
+full cohort/target/Farmacie→UDP NOT proven. Current separate native worker
+PR41153678754/job124395660081 and static HTTP MCP lifecycle
+PR41153678861/job124395660872 PASS, final reports read; not real MCP application.
 
-Sealed attemptf6ace expired child90s after ACTIVE. New INITIAL child120s inside
-original parent120s is issued BEFORE reviewed candidate creation, not renewed
-midflight; no production limit/guard changed. Duplicate materializer reconstruction
-removed; initial start readback precedes operational renewal. Source5870 sealed
-readback UNKNOWN; diagnostic successor7d124 PASS without reproducing it. Cause
-still unestablished; preserve it and all earlier MCP/worker anomalies. Positive
-CI does not close full stability. Last sealed rowBLOCKED/LOCAL_AUTHORITY_UNPROVEN
-AFTER intentional provider kill:attempts2/publications5/reentries2.
+Current extended protocol PR41153678695/job124395659985 PASS443tests/52suites/
+0fail/0skip; final log read, including all3new regression cases.
+Prior productione48e3fd7 passed440tests/52suites/0skip (PR41151383885/
+job124388475217); later safe-diagnostic production source now has its own final
+qualification above. Prior native7d124c9c PR41152837404 finite/sealed PASS retained.
+Original peer source4d99b604… and all37frozen worker source pins unchanged now;
+previous7immutable-artifact cases PASS19.773s. Earlier local runtime suite was
+interrupted after3printed PASS: no complete suite claim.
 
-Production sourcee48e3fd7 protocol PR41151383885/job124388475217 PASS440tests/
-52suites/0skip, final log read. Later commits are native-fixture/workflow changes.
-Local13worker+8profiles+7OCI+1early-composition PASS;7immutable-artifact cases
-PASS19.773s. Runtime local suite interrupted after3printed PASS,no full claim.
-Evidence:evidence/m2-provider-docker-worker-20261031.json.
-Handoff:docs/handoffs/OUF_M2_DOCKER_PROVIDER_SEALED_WORKER_20261031.md.
-Next: current full cohort/TLS/IAM/DB/fencing/trust,private compiler-review-CLI,
-coordinated capability publication,actual Farmacie→UDP/all61row outcomes,
-reimport/fault/recovery/chat/boot/rotation/two clients and UNKNOWN-cause tracking.
-No operator command ready; prior scopes consumed. No target apply/grant/authority/
-budget/reset/replay/merge/agents/automation/release acceptance. Older CURRENT
-headers below are historical. Canonical project continuation:
+Provider peer revision accepts only signed fullOCI-matching exact CID/config.json
+root:root0644/one link/bounded stable bytes/root nonwritable ancestry. Private
+readers and frozen original repair/capsules unchanged. Features-only deny-lifecycle
+CI wrapper precedes daemon discovery; expected OCI never comes from candidate.
+New INITIAL fixture child120 fits original parent120 before candidates; no live
+extension/production guard change. Docker kill replaces unsupported adapter pause;
+retained native runc pause/resume is a separate scope. Full native proof and
+failure history:evidence/m2-provider-docker-worker-20261031.json and
+docs/handoffs/OUF_M2_DOCKER_PROVIDER_SEALED_WORKER_20261031.md.
+
+Next: compose complete current cohort/TLS/IAM/
+DB/fencing/trust, private compiler-review-CLI, coordinated capability publication,
+actual Farmacie→UDP/all61outcomes, reimport/fault/recovery/chat/boot/rotation/two
+clients. Search on loaded objects and future APIs/scheduler/delta are separate.
+No target apply/authority/grant/budget/reset/replay/merge/release acceptance.
+Prior operator scopes consumed; no new operator command ready. Older CURRENT
+headers below are historical. Canonical continuation:
 https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
 
 # CURRENT — Passaggio iniziale nativo provider → worker qualificato
