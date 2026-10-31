@@ -75,6 +75,7 @@ class Publisher(unittest.TestCase):
         args,kwargs=calls[1];self.assertEqual(args[1:3],['attestation','verify'])
         for flag in ('--bundle','--custom-trusted-root','--cert-identity','--source-digest','--source-ref','--signer-digest','--deny-self-hosted-runners'):
             self.assertIn(flag,args)
+        self.assertNotIn('--signer-workflow',args) # mutually exclusive with exact SAN in the pinned CLI
         self.assertFalse(set(kwargs['env'])&{'GH_TOKEN','GITHUB_TOKEN','GH_ENTERPRISE_TOKEN','HTTPS_PROXY'})
         self.assertTrue(first['selectedArtifactPublisherCryptographyVerified'])
         self.assertFalse(first['targetOciOrMigrationArtifactMembershipProvenHere']);self.assertFalse(first['fullCohortProven'])

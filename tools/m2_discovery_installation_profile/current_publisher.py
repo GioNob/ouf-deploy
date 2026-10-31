@@ -139,9 +139,12 @@ class CurrentPublisherCustody:
         gh=self.inputs['ghExecutable']['path'];identity='https://github.com/'+row['repository']+'/'+row['workflowPath']+'@'+row['sourceRef']
         args=[gh,'attestation','verify',row['subject']['path'],'--bundle',row['bundle']['path'],
             '--custom-trusted-root',self.inputs['trustedRoot']['path'],'--repo',row['repository'],
-            '--signer-workflow',row['repository']+'/'+row['workflowPath'],'--signer-digest',row['signerCommit'],
+            '--signer-digest',row['signerCommit'],
             '--source-digest',row['sourceCommit'],'--source-ref',row['sourceRef'],'--cert-identity',identity,
             '--cert-oidc-issuer',ISSUER,'--deny-self-hosted-runners','--predicate-type',PREDICATE,'--hostname','github.com','--format','json']
+        # gh2.97 makes --cert-identity and --signer-workflow mutually exclusive.
+        # Exact SAN plus the independent buildSignerURI check above binds the
+        # workflow without weakening either identity or repository policy.
         result=subprocess.run(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
             timeout=budget.remaining(20),env=self.environment(config))
         require(result.returncode==0 and 0<len(result.stdout)<=2097152,'CURRENT_OFFLINE_PUBLISHER_CRYPTOGRAPHY_UNPROVEN')
