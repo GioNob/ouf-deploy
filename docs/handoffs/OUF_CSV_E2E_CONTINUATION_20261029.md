@@ -1,3 +1,50 @@
+# CURRENT — Current installed-worker reader PASS40; full native controller remains OPEN
+
+31 October 2026, UTC. Continue autonomously/sequentially without agents or
+automations; do not stop at optional checkpoints. No operator involvement needed
+for further source implementation. Teatri M1/G4 acquired; same Farmacie61rows/
+10columns/all10OPEN preserved, no upload/profile/acquisition replay.
+M2/G5-G7/24AT/8UX/8stability/boot/rotation/two clients remain OPEN.
+
+New source1cf569c50e05aced3e9963ee81d28c99d833c92f, localb5575fc,
+tree1fcf4a891b4b7415972ccfc631d8700fc1fe592b. PR54 draft/unmerged.
+current_worker.py uses actual selected Registry/provider/WorkerMaterialization
+lineage and current parent/child at heldphase12. Reconstructs original owned
+material/capsule/sources/snapshot inode/initial clocks, exact installed config,
+installation prefix/start claim/dispatch and completed sequence vs native phase
+receipt. Current two-peer probe + signed provider protocol + existing installed
+observer authenticate manager/ACTIVE recovery/both positive owned lease families.
+Counters advance without regression. Checks current running Registry before/after.
+No paused-node reentry, signature, start/restart, file publication or budget reset.
+
+Logical lifetime inode is read without flock. No worker recovery/common/kernel
+writer lock. Existing initial provider mandate stays finite, never extended.
+Native failure is one observation, no repair/effect retry. Fullcohort/authority/
+apply/producerrelease/E2E/release flags false. No new executable package/CLI.
+
+Unified CI41217385264/job124584664498 PASS40/5suites/0fail/0skip98.140s,
+final log read:running12/1.572s,cohort7/.383s,currentworker7/95.802s,
+pausedframe8/.180s,pausednode6/.203s. Worker fixtures use real owned material,
+Ed25519/HUMAN/provider protocol/journals and real lifetime flock held during read.
+Manager/kernel/target native generation/selected native leaves are modeled.
+Local initial6PASS91.456s +updated success/new sequence drift2PASS34.785s;
+CI qualifies7distinct worker cases. Prior33 runtime qualification is retained.
+Original37/108/128/136 source closures/pins/bodies unchanged.
+
+Fresh public MCP read HEALTHY/actionRequired=false/partial=false, redacted=true;
+not proof Registry discovery is enabled. VPS declared running/unpaused and both
+flags false. NO current VPS QUIESCED incident demonstrated. Causal CI observer
+fix separate. No more operator reads/restart/toggle/token/window request now.
+
+Next: compose current DB/TLS/IAM/backup/fencing/custody/supply-chain with these
+native runtime/worker readers in the concrete sealed checkpoint/controller;
+resolve finite provider window/HUMAN authorization preparation ordering; then
+new sealed package/exact private review before any finite authority/target apply.
+No target apply, grant, reset, replay, merge or release acceptance.
+Evidence:evidence/m2-current-installed-worker-20261031.json
+Handoff:docs/handoffs/OUF_M2_CURRENT_INSTALLED_WORKER_20261031.md
+Canonical continuation remains on PR50. Older CURRENT headers are historical.
+
 # CURRENT — Running Registry/current 13-peer readers PASS33; MCP public HEALTHY; full native controller OPEN
 
 31 October 2026, UTC. Continue autonomously and sequentially; no agents or
