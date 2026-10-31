@@ -3,7 +3,7 @@
 Only a disposable CI artifact is attested by the workflow. Real current parent
 crypto/custody wraps its actual bundle/trust roots. No target package is admitted.
 """
-import copy,os,sys,unittest
+import copy,os,stat,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_m2_discovery_current_publisher as fixtures
@@ -31,7 +31,16 @@ class NativePublisher(unittest.TestCase):
         review['components']['cohortInstallation']['currentAdmission']=copy.deepcopy(
             review['components']['cohortInstallation']['currentAdmission']['requirements'])
         case.review=fixtures.cohort.m.bind_runtime_review(review,runtime);parent=case.authority(seconds=300)
-        return m.CurrentPublisherCustody(parent,runtime,inputs)
+        reader=m.CurrentPublisherCustody(parent,runtime,inputs)
+        # Fixture diagnosis only: never relax the production ancestry guard.
+        # This exposes only public path/uid/mode metadata, never signatures or
+        # credentials, if the hosted runner's preinstalled directory differs.
+        for _,selected in reader.files():
+            for path in Path(selected['path']).parents:
+                info=path.lstat()
+                if not stat.S_ISDIR(info.st_mode) or info.st_uid!=0 or info.st_mode&0o022:
+                    raise AssertionError('NATIVE_PUBLISHER_FIXTURE_ANCESTRY '+str(path)+' uid='+str(info.st_uid)+' mode='+oct(stat.S_IMODE(info.st_mode)))
+        return reader
 
     def test_real_offline_hosted_publisher_certificate_and_immutable_repository_ids(self):
         reader=self.prepared();first=reader.observe();self.assertEqual(reader.observe(),first)

@@ -18,17 +18,17 @@ jobs:
           curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
             https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
           printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
-          sudo install -d -m 0755 /opt/ouf-publisher-gh297
-          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-publisher-gh297
-          sudo chown -R root:root /opt/ouf-publisher-gh297
-          /opt/ouf-publisher-gh297/bin/gh --version
+          sudo install -d -m 0700 /var/lib/ouf-publisher-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /var/lib/ouf-publisher-gh297
+          sudo chown -R root:root /var/lib/ouf-publisher-gh297
+          /var/lib/ouf-publisher-gh297/bin/gh --version
       - name: Prepare disposable public CI subject and explicit Sigstore trust roots
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
           set -euo pipefail
           mkdir publisher-fixture
           printf '%s\n' 'OUF disposable source publisher fixture; no runtime or target admission' > publisher-fixture/artifact.bin
-          /opt/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
+          /var/lib/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         id: provenance
         with:
@@ -47,7 +47,7 @@ jobs:
           sudo chmod -R go-w "$fixture"
           sudo unshare --net -- env GITHUB_ACTIONS=true PATH=/usr/sbin:/usr/bin:/sbin:/bin \
             OUF_PUBLISHER_FIXTURE_ROOT="$fixture/repository/publisher-fixture" \
-            OUF_GH_PUBLISHER_BINARY=/opt/ouf-publisher-gh297/bin/gh \
+            OUF_GH_PUBLISHER_BINARY=/var/lib/ouf-publisher-gh297/bin/gh \
             OUF_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" OUF_GITHUB_REPOSITORY_ID="$GITHUB_REPOSITORY_ID" \
             OUF_GITHUB_OWNER_ID="$GITHUB_REPOSITORY_OWNER_ID" OUF_GITHUB_SOURCE_REF="$GITHUB_REF" \
             OUF_GITHUB_SOURCE_SHA="$GITHUB_SHA" OUF_GITHUB_SIGNER_SHA="$GITHUB_WORKFLOW_SHA" \
