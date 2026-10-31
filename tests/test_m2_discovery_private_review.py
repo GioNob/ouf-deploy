@@ -174,10 +174,14 @@ class PrivateReview(unittest.TestCase):
             '--input-sha256',m.digest(inputs),'--output-directory',str(out)]
         self.assertEqual(subprocess.run(args,stdout=subprocess.PIPE,timeout=30).returncode,0)
         before={p.name:p.read_bytes() for p in out.iterdir()}
-        other,_=capsule.build(ROOT,'c'*40);program.write_bytes(other);args[5]='inspect'
-        result=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
-        self.assertEqual(result.returncode,1);self.assertEqual(result.stderr,b'')
-        self.assertEqual({p.name:p.read_bytes() for p in out.iterdir()},before)
+        for case in ('revision','loader'):
+            if case=='revision':other,_=capsule.build(ROOT,'c'*40)
+            else:
+                with patch.object(capsule,'RUNTIME',capsule.RUNTIME+'\n'):other,_=capsule.build(ROOT,'b'*40)
+            program.write_bytes(other);args[5]='inspect'
+            result=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=30)
+            self.assertEqual(result.returncode,1);self.assertEqual(result.stderr,b'')
+            self.assertEqual({p.name:p.read_bytes() for p in out.iterdir()},before)
 
     def test_input_drift_after_payload_retains_partial_output_without_receipt(self):
         inputs,source,out=self.files();h=m.digest(inputs);original=m.new_file

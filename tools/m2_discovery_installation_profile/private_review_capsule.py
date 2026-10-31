@@ -96,6 +96,7 @@ def build(root,source_revision):
         sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
     require(len(payload)<=MAXIMUM)
     manifest={'schema':'ouf.discovery-private-review-capsule.v1','entryModule':ENTRY,
+        'loaderTemplateSha256':hashlib.sha256(RUNTIME.encode()).hexdigest(),
         'sourceRevisionClaim':source_revision,'sourceRevisionClaimAuthenticated':False,'sources':pins,
         'payloadSha256':hashlib.sha256(payload).hexdigest(),'baselineSha256':BASELINE_HASH,
         'completeParentReview':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,
