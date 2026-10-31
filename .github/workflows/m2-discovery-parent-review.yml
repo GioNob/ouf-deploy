@@ -1,0 +1,53 @@
+name: M2 sealed complete parent review
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','.github/workflows/m2-discovery-parent-review.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','.github/workflows/m2-discovery-parent-review.yml']
+permissions: {contents: read}
+jobs:
+  complete-parent-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: be388e1462778438a208c2e00e166370fee32189
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 60788cf965334441be0a33c345f5c0bcd66cbdde
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Pinned public compilers, six exact review parts and isolated private publication
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-parent-review-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          for suite in test_m2_discovery_publication_review.py test_m2_discovery_parent_review.py; do
+            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+              OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+              OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+              OUF_PUBLICATION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+              python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
+          done
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-discovery-parent-review.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --gateway-root "$fixture/repository/.pairwise/gateway" \
+            --onboarding-root "$fixture/repository/.pairwise/onboarding" \
+            --output "$GITHUB_WORKSPACE/parent-review-compiler.py" > parent-review-compiler.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: complete-parent-review-compiler
+          path: |
+            parent-review-compiler.py
+            parent-review-compiler.json
+          if-no-files-found: error
