@@ -70,3 +70,55 @@ class DiscoverySelectedRuntime:
             'selectedOwnersVerified':True,'registryReleaseBarrierHeld':True,'producerReleaseDispatched':False,
             'fullCohortProven':False,'capabilitiesPublished':False,'runtimeAuthorityIssued':False,
             'targetApplyAuthorized':False,'budgetReset':False,'releaseAcceptance':False}
+
+    def observe_held(self):
+        """Read READY12 under the existing fence, without initial admission.
+
+        The original provider mandate only installs the provider. Once the
+        worker phase has completed, current signed operational material proves
+        its normal handoff. Re-entering provider_barrier here would demand an
+        expired initial mandate and a paused Registry. This observation does
+        not dispatch dependent installation, publication or producer release.
+        """
+        from application_verification_adapter import ApplicationVerificationAdapter
+        from .running_admission import RunningRegistryAdmission
+        from .current_operational_worker import CurrentOperationalWorker
+        from .node_owner import ObservationBudget
+        self.guard();app=self.installation.application
+        adapter=app.executor.adapters['VERIFY_APPLICATION']
+        require(type(adapter) is ApplicationVerificationAdapter
+            and adapter.engine is self.images.engine and adapter.transition is app.transition
+            and adapter.store is app.store and adapter.request==app.request
+            and adapter.intent==app.intents['VERIFY_APPLICATION'],
+            'SAME_INSTALLED_REGISTRY_READINESS_OWNER_REQUIRED_FOR_HELD_CONTINUATION')
+        registry=RunningRegistryAdmission(app.node_owner,adapter.channel)
+        worker=CurrentOperationalWorker(self)
+        budget=ObservationBudget(180)
+        with self.images.window.transition.invocation():
+            row=self.held();images=self.images.verify();self.held(row);budget.check()
+            native=registry.observe();self.held(row);budget.check()
+            require(native['schema']=='ouf.discovery-current-running-registry-admission.v1'
+                and native['frame']['sameAttestedGenerationNowRunningJava'] is True
+                and native['frame']['sevenCurrentMountsObserved'] is True
+                and native['frame']['currentMountedTokenAdmissionObserved'] is True,
+                'CURRENT_RUNNING_REGISTRY_AND_SIGNED_OPERATIONAL_HANDOFF_REQUIRED')
+            operational=worker.observe();self.held(row);budget.check()
+            require(operational['schema']=='ouf.discovery-current-operational-worker-admission.v1'
+                and operational['heldHistoryHash']==digest(row)
+                and operational['currentSignedOperationalInstallationVerified'] is True
+                and operational['currentTwoPeerGenerationObserved'] is True
+                and operational['currentWorkerAndPositiveOwnedLeasesObserved'] is True
+                and operational['initialProviderMandateExtended'] is False
+                and operational['newGenerationAuthorized'] is False,
+                'CURRENT_RUNNING_REGISTRY_AND_SIGNED_OPERATIONAL_HANDOFF_REQUIRED')
+            require(self.images.verify()==images,'SELECTED_IMAGE_PROOF_CHANGED_DURING_HELD_OBSERVATION')
+            self.held(row);budget.check()
+        return {'schema':'ouf.discovery-held-runtime-continuation-witness.v1',
+            'componentHash':digest(self.mcp.cohort_component),'parentAuthorityHash':self.images.parent.sha,
+            'childAuthorityHash':self.mcp.action.authority_hash,'heldHistoryHash':digest(row),
+            'ownerEvidenceHashes':{'images':digest(images),'registry':digest(native),'worker':digest(operational)},
+            'currentRunningRegistryAndOperationalWorkerObserved':True,
+            'initialProviderBarrierReentered':False,'initialProviderMandateExtended':False,
+            'registryReleaseBarrierHeld':True,'fullCohortProven':False,'capabilitiesPublished':False,
+            'producerReleaseDispatched':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,
+            'budgetReset':False,'releaseAcceptance':False}

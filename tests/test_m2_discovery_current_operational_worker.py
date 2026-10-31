@@ -3,9 +3,11 @@
 The finite initial provider gate remains a separately tested negative control.
 No new provider start, real target admission or normal-operation E2E is tested.
 """
-import hashlib,sys,unittest
+import copy,fcntl,hashlib,os,sys,unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
+from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_m2_discovery_current_worker as current
 from tools.m2_discovery_installation_profile import current_operational_worker as m
@@ -50,5 +52,45 @@ class OperationalWorker(unittest.TestCase):
     def test_quiesced_operational_worker_has_no_positive_handoff(self):
         reader,_,_,_,observed,_=self.prepared();observed['workerCheckpointActive']=False
         with self.assertRaisesRegex(ValueError,'OPERATIONAL_WORKER_AND_POSITIVE_LEASES'):reader.observe()
+
+    def test_held_continuation_joins_actual_signed_worker_after_initial_expiry_under_real_fences(self):
+        reader,base,w,auth,_,calls=self.prepared();selected=base.selected;app=selected.installation.application
+        from application_verification_adapter import ApplicationVerificationAdapter
+        from tools.m2_discovery_installation_profile import running_admission
+        from tools.m2_discovery_installation_profile.selected_runtime import DiscoverySelectedRuntime
+        adapter=object.__new__(ApplicationVerificationAdapter)
+        adapter.engine=w.node.engine;adapter.transition=w.transition;adapter.store=w.store
+        adapter.request=copy.deepcopy(w.node.request);adapter.intent={'explicit':'modeled-readiness'};adapter.channel=object()
+        app.request=copy.deepcopy(adapter.request);app.intents={'VERIFY_APPLICATION':copy.deepcopy(adapter.intent)}
+        app.executor=SimpleNamespace(adapters={'VERIFY_APPLICATION':adapter})
+        selected.images.engine=w.node.engine;selected.images.verify=lambda:{'imageBoundaryModeled':True}
+        selected.images.window=SimpleNamespace(transition=w.transition)
+        selected.mcp=SimpleNamespace(cohort_component={'explicit':'modeled-cohort'},
+            action=SimpleNamespace(authority_hash=hashlib.sha256(w.authority_raw).hexdigest()))
+        fence=w.root/'held-invocation-fixture';fence.write_bytes(b'');fence.chmod(0o600)
+        @contextmanager
+        def invocation():
+            fd=os.open(fence,os.O_RDONLY)
+            try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB);yield
+            finally:os.close(fd)
+        w.transition.invocation=invocation
+        native={'schema':'ouf.discovery-current-running-registry-admission.v1','frame':{
+            'sameAttestedGenerationNowRunningJava':True,'sevenCurrentMountsObserved':True,
+            'currentMountedTokenAdmissionObserved':True}}
+        # Registry/selected leaves are modeled; worker files, signatures,
+        # clocks, journals and both independent file fences are real.
+        auth.now+=86;before=copy.deepcopy(calls);row=copy.deepcopy(w.transition.read())
+        fd=os.open(w.template['configurationTemplate']['commonInvocationLock'],os.O_RDONLY)
+        try:
+            fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            with patch.object(running_admission,'RunningRegistryAdmission') as registry, \
+                 patch.object(w.provider,'current',side_effect=AssertionError('INITIAL_GATE_FORBIDDEN')), \
+                 patch.object(w.signer,'sign',side_effect=AssertionError('SIGNING_FORBIDDEN')):
+                registry.return_value.observe.return_value=native
+                proof=DiscoverySelectedRuntime.observe_held(selected)
+        finally:os.close(fd)
+        self.assertTrue(proof['currentRunningRegistryAndOperationalWorkerObserved'])
+        self.assertFalse(proof['initialProviderBarrierReentered']);self.assertFalse(proof['fullCohortProven'])
+        self.assertEqual(calls,before);self.assertEqual(w.transition.read(),row)
 
 if __name__=='__main__':unittest.main()
