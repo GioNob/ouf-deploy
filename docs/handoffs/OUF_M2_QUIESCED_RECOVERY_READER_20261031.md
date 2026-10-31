@@ -62,3 +62,50 @@ No target apply, merge, runtime authority/grant, reset or consumed replay.
 M2/current full cohort/complete parent/child/HUMAN/publication/Farmacie→UDP,
 boot/rotation/two real clients and general acceptance remain OPEN. Historical
 UNKNOWN/MCP/worker cases retain their separate evidence and unresolved causes.
+
+## Completed qualification
+
+Production fix source `35eba47c33f46d111104a39d82c1e5d7b3b57929`: protocol
+[run41198210299](https://github.com/GioNob/ouf-deploy/actions/runs/41198210299),
+job124528577718, PASS474tests/55suites/0failures/0skips in822.874s, final log read.
+IAM run41198210570/job124528578536 PASS251/33/0failures/0skips in130.101s, final
+disposable Keycloak report read,0production calls/targetInstallerReady false.
+
+Source35eba native run41198210406 PASS3ordinary modes and the separate negative
+control, all final reports read. CI-only control successor
+`77eb62055ea603e64aebd82a4fabae60a24b77ed` retains the injected old reader lock
+THROUGH the causal observation; releasing it earlier could permit a late
+checkpoint commit before the denial was observed. Production bytes are unchanged.
+Its [native run41198710075](https://github.com/GioNob/ouf-deploy/actions/runs/41198710075)
+PASS finite124530033033/sealed124530033078/registry124530032988 and the separate
+negative124530032815, all final logs/reports read. Each mode also PASS8recovery
+reader,7diagnostic/early-review and7peer-source tests.
+
+The native negative control actually reproduces QUIESCED/unauthorized, two
+expected set keys with no positive families, a stale ACTIVE checkpoint and the
+original publication denial. Its consumed worker is neither restarted nor rearmed
+and its report explicitly grants no installation acceptance. The normal Registry
+mode holds an unlocked snapshot fd across actual renewal, proves publication
+progress with the original clocks and attempt count, classifies atomic replacement
+as read contention only, then passes the full Registry/token/transport/worker
+proof. Registry Java remains paused; target cohort and application E2E are unproven.
+
+Compiler source35eba run41198210468/job124528578309 PASS15/0failures/0skips in6.655s;
+CI-only77eb run41198710453/job124530034068 PASS15/0failures/0skips in10.172s, logs read.
+Downloaded artifact13040793894 verified both ZIP members, all128source bodies,
+baseline/loader/public metadata and byte-exact local rebuild. Capsule2,038,956bytes
+SHA `dbf3575be272a48f26cd28bb87e04f8358d6fd85330378b85c27e8227f13667f`;
+ZIP610,442bytes SHA
+`2096e72b48a494c2551a351cb59ee479374a706f566a38c51f90078f679a6138`.
+Claim `5caeb8bcbaafc5a7ba160b6505c0a9b80b408a4e` matches the CI PR-merge checkout;
+it does not authenticate publisher trust or approve a target operation.
+
+[Structured evidence](../../evidence/m2-quiesced-recovery-reader-20261031.json).
+The precise historical41f935 lock owner remains unknown; the compatible defect
+now has causal controlled/native proof and a qualified fix. Older incidents are
+not universally closed. Other ongoing general CI runs remain separate scopes.
+
+The CI-only77eb control successor also completed the full protocol regression:
+run41198710201/job124530033262 PASS474tests/55suites/0failures/0skips in766.744s,
+final log read. This validates the final control source as well as the unchanged
+production fix. Chatbot and later automatic general runs are separate scopes.

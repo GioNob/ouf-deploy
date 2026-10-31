@@ -1,0 +1,688 @@
+{
+  "schema": "ouf.m2-quiesced-recovery-reader-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "repository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "productionSourceCommit": "35eba47c33f46d111104a39d82c1e5d7b3b57929",
+  "causalControlCommit": "77eb62055ea603e64aebd82a4fabae60a24b77ed",
+  "status": "QUALIFIED_HOST_RECOVERY_READER_INTERFERENCE_REPRODUCED_AND_FIXED_TARGET_M2_OPEN",
+  "defect": {
+    "hostObserverPreviouslyUsedExclusiveNonblockingRecoveryRead": true,
+    "workerReadsAndCasCanFailUnderForeignReadLock": true,
+    "workerRevokesBeforeCheckpointCanCommit": true,
+    "staleActiveWithQuiescedAndParkedAliveReproduced": true,
+    "kernelCommonLockAndRecoveryCasLockAreDistinct": true,
+    "exactHistorical41fFlockOwnerCaptured": false,
+    "historicalSpecificCauseRetrospectivelyProven": false
+  },
+  "local": {
+    "recoveryReader": {
+      "tests": 8,
+      "seconds": 1.752,
+      "failures": 0,
+      "skips": 0,
+      "realJournalAndFlock": true,
+      "modeledKernel": true
+    },
+    "startRead": {
+      "tests": 16,
+      "seconds": 4.281,
+      "failures": 0,
+      "skips": 0
+    },
+    "signedFiles": {
+      "tests": 13,
+      "seconds": 18.42,
+      "failures": 0,
+      "skips": 0
+    },
+    "compiler": {
+      "tests": 15,
+      "seconds": 8.472,
+      "failures": 0,
+      "skips": 0
+    }
+  },
+  "fix": {
+    "bothHostEntrypointsUseStaticObservedInputs": true,
+    "hostRunnableSupervisorConstructionRemoved": true,
+    "noRecoveryLockOpenOrFlockInSnapshot": true,
+    "protectedRootAndPrivateNofollowCanonicalStableBytesRequired": true,
+    "scopeGenerationPolicyAccountingAndCountersRequired": true,
+    "programSourceRecipeKernelDnsAndNativeGuardsPreserved": true,
+    "atomicReplacementIsReadContentionOnly": true,
+    "originalReadAttempts": 3,
+    "originalReadDeadlineDefaultSeconds": 15,
+    "originalReadDelaysSeconds": [
+      0.02,
+      0.04
+    ],
+    "quiescedRevocationStillImmediateDenial": true,
+    "noNativeMutationFromReader": true,
+    "noNewOperationalAttempt": true,
+    "noStartRedispatch": true
+  },
+  "compilerCi": {
+    "run": 41198210468,
+    "job": 124528578309,
+    "tests": 15,
+    "suites": 1,
+    "seconds": 6.655,
+    "failures": 0,
+    "skips": 0,
+    "conclusion": "success",
+    "finalLogRead": true
+  },
+  "artifact": {
+    "artifactId": 13040793894,
+    "runId": 41198210468,
+    "jobId": 124528578309,
+    "archiveSha256": "2096e72b48a494c2551a351cb59ee479374a706f566a38c51f90078f679a6138",
+    "archiveBytes": 610442,
+    "capsuleSha256": "dbf3575be272a48f26cd28bb87e04f8358d6fd85330378b85c27e8227f13667f",
+    "capsuleBytes": 2038956,
+    "sourceModules": 128,
+    "sourceRevisionClaim": "5caeb8bcbaafc5a7ba160b6505c0a9b80b408a4e",
+    "sourceRevisionClaimAuthenticated": false,
+    "payloadSha256": "833a99693feeb6df62cb6ee5a6151df6c8282a5183ce33ee83d35ad50e9fe00c",
+    "baselineSha256": "ea86df348ace963d41d3a24ab3b9bea693c3b3ba36e181a1aaec5f7e97333b63",
+    "loaderTemplateSha256": "6c12561e3cedc6e5faacd87a8c0acbfbe7408b3da9841e5907012fc02fd67c8f",
+    "sourceMapFileSha256": "649322a5fa52193ca1b12efdf03901c0f30485a3051216465ebee299b40f778b",
+    "exactLocalRebuildVerified": true,
+    "exactZipMembershipVerified": true,
+    "allEmbeddedSourcesVerified": true,
+    "baselineAndLoaderVerified": true,
+    "publicMetadataVerified": true,
+    "publisherTrustAccepted": false
+  },
+  "initialNative": {
+    "run": 41198210406,
+    "positiveJobs": {
+      "finite": 124528578281,
+      "sealed": 124528578371,
+      "registry": 124528578092
+    },
+    "negativeControlJob": 124528578251,
+    "conclusion": "success",
+    "threePositiveModesPassed": true,
+    "separateDeliberateFaultPassed": true,
+    "allFinalLogsAndReportsRead": true,
+    "nativeReports": {
+      "124528578092": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "lateMaterializationAttestationPublicationRegistrationStart": true,
+            "lostManagerReplyReconciledWithoutSecondStart": true,
+            "providerHistoryAndRegistryPausePreserved": true,
+            "providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm": true,
+            "realDockerProviderV4Admission": true,
+            "recoverySnapshotControl": {
+              "atomicChangeWasReadContentionOnly": true,
+              "heldSnapshotFdAcrossActualRenewal": true,
+              "originalRecoveryClocksAndAttemptCountPreserved": true,
+              "publicationAdvancedWithoutReaderLock": true
+            },
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+            "sealedUnitOnlyCapNetAdminAndKeyHidden": true,
+            "sigkillReentryRetainsStartedTimeAndCounters": true,
+            "syntheticImagesAndReview": true,
+            "syntheticRegistryAdmissionImagesAndReview": false,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualAuthenticatedTransportNftApplyAndReadback": true,
+            "actualFiveFilesDbConfigtreeAndRenewableTokenMount": true,
+            "actualInstalledTokenOwnerSourceCustodyAndJournal": true,
+            "actualMaskedLegacyWriterUnitReadback": true,
+            "actualRegistryNodeAttestationAndRetainedRead": true,
+            "actualTlsDiscoveryIntrospectionAndOneInitialGrant": true,
+            "applicationE2EProven": false,
+            "currentTargetCohortProven": false,
+            "iamRevocationDeniesFinalRegistryRead": true,
+            "noGrantRenewalOrJournalResetDuringNativeReads": true,
+            "registryJavaStarted": false,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-registry-node-transport-token-ci.v1",
+            "syntheticIamRealmHumanImagesPackagesAndEarlierTransitionPrefix": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": true,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": false,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": [
+          {
+            "events": [
+              {
+                "kind": "coordination",
+                "leaseAuthorized": false,
+                "state": "LEASE_UPDATING"
+              },
+              {
+                "allFamiliesPositive": true,
+                "exactExpectedKeys": true,
+                "expectedKeyCount": 2,
+                "kind": "sets"
+              }
+            ]
+          }
+        ]
+      },
+      "124528578251": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "activeRecoveryCheckpointRetainedBecauseCasBlocked": true,
+            "actualExclusiveReaderForcesKernelRevocation": true,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "noManagerRedispatchOrWorkerRearm": true,
+            "noRecoveryClockAttemptOrPublicationReset": true,
+            "notInstallationAcceptance": true,
+            "originalReadDenialReproduced": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-exclusive-recovery-reader-negative-control.v1",
+            "targetApplyAuthorized": false,
+            "workerAdmissionStillRequired": true
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": true,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": false,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": [
+          {
+            "events": [
+              {
+                "kind": "coordination",
+                "leaseAuthorized": false,
+                "state": "QUIESCED"
+              },
+              {
+                "allFamiliesPositive": false,
+                "exactExpectedKeys": true,
+                "expectedKeyCount": 2,
+                "kind": "sets"
+              }
+            ]
+          }
+        ]
+      },
+      "124528578281": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualDockerBoundary": true,
+            "actualDockerProviderTerminationBlocksWithoutRestartOrRearm": true,
+            "applicationE2EProven": false,
+            "combinedNativeDockerCompositionProven": true,
+            "concurrentInvocationDenied": true,
+            "currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller": true,
+            "distinctWorkerProcess": true,
+            "dnsFailureRevokesBothFamiliesAndPersistsBackoff": true,
+            "finiteInstallerAdmissionOnly": true,
+            "fullCohortProven": false,
+            "fullInitialAdmissionSeconds": 2.484,
+            "modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor": false,
+            "nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm": false,
+            "noDnsOrAttemptDuringPersistedWait": true,
+            "realDnsNftTwoFamilyPublicationAndRenewal": true,
+            "realV4ProviderAdmissionFeedsWorkerGuard": true,
+            "recoveryPreservesOriginalClocksIncidentAndCumulativeCounters": true,
+            "registryRemainsPausedAtClosedGate": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "sameKernelDnsBindingAndPreservedProviderJournal": true,
+            "sameRegistryProviderParentChildAndCommonLock": true,
+            "schema": "ouf.m2-provider-worker-native-handoff-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesReviewRegistryPredecessor": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": true,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": []
+      },
+      "124528578371": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "lateMaterializationAttestationPublicationRegistrationStart": true,
+            "lostManagerReplyReconciledWithoutSecondStart": true,
+            "providerHistoryAndRegistryPausePreserved": true,
+            "providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm": true,
+            "realDockerProviderV4Admission": true,
+            "recoverySnapshotControl": {},
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+            "sealedUnitOnlyCapNetAdminAndKeyHidden": true,
+            "sigkillReentryRetainsStartedTimeAndCounters": true,
+            "syntheticImagesAndReview": true,
+            "syntheticRegistryAdmissionImagesAndReview": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": true,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": true,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": []
+      }
+    }
+  },
+  "controlFollowup": {
+    "sourceCommit": "77eb62055ea603e64aebd82a4fabae60a24b77ed",
+    "change": "CI_ONLY_KEEP_INJECTED_LEGACY_LOCK_THROUGH_CAUSAL_OBSERVATION",
+    "noProductionByteChange": true,
+    "run": 41198710075,
+    "status": "completed",
+    "finalReportNotYetClaimed": false,
+    "compiler": {
+      "run": 41198710453,
+      "job": 124530034068,
+      "tests": 15,
+      "suites": 1,
+      "seconds": 10.172,
+      "failures": 0,
+      "skips": 0,
+      "finalLogRead": true,
+      "conclusion": "success"
+    },
+    "conclusion": "success",
+    "allFinalLogsAndReportsRead": true,
+    "positiveJobs": {
+      "finite": 124530033033,
+      "sealed": 124530033078,
+      "registry": 124530032988
+    },
+    "negativeControlJob": 124530032815,
+    "threePositiveModesPassed": true,
+    "separateDeliberateFaultPassed": true,
+    "nativeReports": {
+      "124530032815": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "activeRecoveryCheckpointRetainedBecauseCasBlocked": true,
+            "actualExclusiveReaderForcesKernelRevocation": true,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "noManagerRedispatchOrWorkerRearm": true,
+            "noRecoveryClockAttemptOrPublicationReset": true,
+            "notInstallationAcceptance": true,
+            "originalReadDenialReproduced": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-exclusive-recovery-reader-negative-control.v1",
+            "targetApplyAuthorized": false,
+            "workerAdmissionStillRequired": true
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": true,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": false,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": [
+          {
+            "events": [
+              {
+                "kind": "coordination",
+                "leaseAuthorized": false,
+                "state": "QUIESCED"
+              },
+              {
+                "allFamiliesPositive": false,
+                "exactExpectedKeys": true,
+                "expectedKeyCount": 2,
+                "kind": "sets"
+              }
+            ]
+          }
+        ]
+      },
+      "124530032988": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "lateMaterializationAttestationPublicationRegistrationStart": true,
+            "lostManagerReplyReconciledWithoutSecondStart": true,
+            "providerHistoryAndRegistryPausePreserved": true,
+            "providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm": true,
+            "realDockerProviderV4Admission": true,
+            "recoverySnapshotControl": {
+              "atomicChangeWasReadContentionOnly": true,
+              "heldSnapshotFdAcrossActualRenewal": true,
+              "originalRecoveryClocksAndAttemptCountPreserved": true,
+              "publicationAdvancedWithoutReaderLock": true
+            },
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+            "sealedUnitOnlyCapNetAdminAndKeyHidden": true,
+            "sigkillReentryRetainsStartedTimeAndCounters": true,
+            "syntheticImagesAndReview": true,
+            "syntheticRegistryAdmissionImagesAndReview": false,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualAuthenticatedTransportNftApplyAndReadback": true,
+            "actualFiveFilesDbConfigtreeAndRenewableTokenMount": true,
+            "actualInstalledTokenOwnerSourceCustodyAndJournal": true,
+            "actualMaskedLegacyWriterUnitReadback": true,
+            "actualRegistryNodeAttestationAndRetainedRead": true,
+            "actualTlsDiscoveryIntrospectionAndOneInitialGrant": true,
+            "applicationE2EProven": false,
+            "currentTargetCohortProven": false,
+            "iamRevocationDeniesFinalRegistryRead": true,
+            "noGrantRenewalOrJournalResetDuringNativeReads": true,
+            "registryJavaStarted": false,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-registry-node-transport-token-ci.v1",
+            "syntheticIamRealmHumanImagesPackagesAndEarlierTransitionPrefix": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": true,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": true,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": false,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": []
+      },
+      "124530033033": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualDockerBoundary": true,
+            "actualDockerProviderTerminationBlocksWithoutRestartOrRearm": true,
+            "applicationE2EProven": false,
+            "combinedNativeDockerCompositionProven": true,
+            "concurrentInvocationDenied": true,
+            "currentFiniteAdmissionRecordSealsCheckedWithoutRecompilingInstaller": true,
+            "distinctWorkerProcess": true,
+            "dnsFailureRevokesBothFamiliesAndPersistsBackoff": true,
+            "finiteInstallerAdmissionOnly": true,
+            "fullCohortProven": false,
+            "fullInitialAdmissionSeconds": 2.533,
+            "modeledDockerBoundaryAndSyntheticImagesReviewRegistryPredecessor": false,
+            "nativeProviderPauseBlocksWorkerAndResumeDoesNotRearm": false,
+            "noDnsOrAttemptDuringPersistedWait": true,
+            "realDnsNftTwoFamilyPublicationAndRenewal": true,
+            "realV4ProviderAdmissionFeedsWorkerGuard": true,
+            "recoveryPreservesOriginalClocksIncidentAndCumulativeCounters": true,
+            "registryRemainsPausedAtClosedGate": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "sameKernelDnsBindingAndPreservedProviderJournal": true,
+            "sameRegistryProviderParentChildAndCommonLock": true,
+            "schema": "ouf.m2-provider-worker-native-handoff-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesReviewRegistryPredecessor": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": false,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": true,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": []
+      },
+      "124530033078": {
+        "finalLogRead": true,
+        "reports": [
+          {
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "fullCohortProven": false,
+            "lateMaterializationAttestationPublicationRegistrationStart": true,
+            "lostManagerReplyReconciledWithoutSecondStart": true,
+            "providerHistoryAndRegistryPausePreserved": true,
+            "providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm": true,
+            "realDockerProviderV4Admission": true,
+            "recoverySnapshotControl": {},
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+            "sealedUnitOnlyCapNetAdminAndKeyHidden": true,
+            "sigkillReentryRetainsStartedTimeAndCounters": true,
+            "syntheticImagesAndReview": true,
+            "syntheticRegistryAdmissionImagesAndReview": true,
+            "targetApplyAuthorized": false
+          },
+          {
+            "actualDocker29Boundary": true,
+            "actualProviderCreateAttempts": 1,
+            "actualProviderStartAttempts": 1,
+            "actualProviderV4AdmissionAndRegistryGate": true,
+            "actualRegistryNodeAndTransport": false,
+            "applicationE2EProven": false,
+            "expectedOciFromIndependentCommittedBaseline": true,
+            "fullCohortProven": false,
+            "independentControlPeerRootfsSealBeforeCandidateReview": true,
+            "legacyRecoveryReaderNegativeControl": false,
+            "lostActualStartReplyReconciledWithoutReplay": true,
+            "releaseAcceptance": false,
+            "runtimeAuthorityIssued": false,
+            "schema": "ouf.m2-provider-docker-worker-ci.v1",
+            "sealedWorkerInstallationProven": true,
+            "syntheticImagesAndReview": true,
+            "syntheticImagesReviewAndRegistryAdmissionPredecessor": true,
+            "targetApplyAuthorized": false
+          }
+        ],
+        "snapshots": []
+      }
+    },
+    "generalProtocol": {
+      "run": 41198710201,
+      "job": 124530033262,
+      "sourceCommit": "77eb62055ea603e64aebd82a4fabae60a24b77ed",
+      "conclusion": "success",
+      "tests": 474,
+      "suites": 55,
+      "seconds": 766.744,
+      "failures": 0,
+      "skips": 0,
+      "finalLogRead": true
+    }
+  },
+  "iam": {
+    "run": 41198210570,
+    "job": 124528578536,
+    "tests": 251,
+    "suites": 33,
+    "seconds": 130.101,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true,
+    "conclusion": "success",
+    "realDisposableKeycloakReportRead": true,
+    "productionCalls": 0,
+    "targetInstallerReady": false,
+    "reportStatus": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL"
+  },
+  "generalProtocol": {
+    "run": 41198210299,
+    "job": 124528577718,
+    "sourceCommit": "35eba47c33f46d111104a39d82c1e5d7b3b57929",
+    "conclusion": "success",
+    "tests": 474,
+    "suites": 55,
+    "seconds": 822.874,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true,
+    "notClaimedQualified": false
+  },
+  "preserved": {
+    "originalWorkerSourcePins": 37,
+    "originalWorkerSourcesChanged": false,
+    "originalWorkerCapsuleBytes": 464208,
+    "originalWorkerCapsuleSha256": "3b88cd8f329ea5f143bed61906270070341a6cda9ebc534a2268d82eeada3262",
+    "originalPrivateCompilerSourceModules": 108,
+    "originalPrivateCompilerPinsChanged": false,
+    "providerV1InitialMaximumSeconds": 90,
+    "providerV2InitialMaximumSeconds": 300,
+    "sameOriginalRecoveryClocksAndFiniteBudgets": true,
+    "teatri": "M1/G4 technical8/8 functional6/6 acquired.",
+    "farmacie": "Same SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN; no upload/profile/acquisition replay.",
+    "historicalUnknownMcpWorkerCauses": "OPEN"
+  },
+  "historical41f": {
+    "run": 41183119362,
+    "job": 124484438539,
+    "reasonCode": "CURRENT_OWNED_DISCOVERY_LEASE_PUBLICATION_REQUIRED",
+    "coordinationState": "QUIESCED",
+    "leaseAuthorized": false,
+    "positiveLeaseFamilies": false,
+    "separateRecoveryFinalState": "ACTIVE",
+    "attempts": 1,
+    "publications": 16,
+    "reentry": 1,
+    "readingsNotAtomic": true,
+    "exactOldFlockOwnerNotCaptured": true,
+    "failureLogSha256": "660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5"
+  },
+  "completeParentReview": false,
+  "currentFullCohortProven": false,
+  "applicationE2EProven": false,
+  "observerSignaturesIssued": 0,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "mergePerformed": false,
+  "releaseAcceptance": false
+}
