@@ -1,8 +1,9 @@
 """Discovery transport reads one signed Engine OCI, never a private journal.
 
 The historical NativeBackend and its credential/journal readers stay unchanged.
-Only bindings' OCI read differs; namespace, reciprocal NIC/peer and generation
-checks retain the exact original source structure (qualified by parity test).
+Only the OCI reader and exact Docker namespace-alias access differ. The
+reviewed OCI/profile paths and every namespace/NIC/peer/generation check retain
+the original structure (qualified by parity test).
 """
 import os,re,stat
 from pathlib import Path
@@ -43,6 +44,24 @@ class EngineTransportBackend(NativeBackend):
         require(digest(bundle)==profile['bundleHash'],'SIGNED_DISCOVERY_ENGINE_FULL_OCI_REQUIRED')
         return bundle
 
+    def engine_namespace(self,profile):
+        """Only Docker's two aliases, same name and already signed inode.
+
+        Expected OCI and the reviewed profile keep their original exact path.
+        Native file/command reads use the authenticated canonical namespace.
+        """
+        require(digest(profile)==self.seal,'DISCOVERY_ENGINE_NAMESPACE_PROFILE_DRIFT')
+        observed=Path(profile['namespacePath'])
+        require(observed.parent in (Path('/run/docker/netns'),Path('/var/run/docker/netns')),
+            'EXACT_DISCOVERY_DOCKER_NAMESPACE_PARENT_REQUIRED')
+        selected=observed.resolve(strict=True)
+        require(selected==Path('/run/docker/netns')/observed.name,
+            'EXACT_DISCOVERY_DOCKER_NAMESPACE_ALIAS_REQUIRED')
+        _ancestors(selected);value=selected.lstat()
+        require(stat.S_ISREG(value.st_mode) and value.st_uid==0 and not value.st_mode&0o022
+            and value.st_ino==profile['namespaceInode'],'DISCOVERY_DOCKER_NAMESPACE_IDENTITY_DRIFT')
+        return selected
+
     def bindings(self, profile, state):
         if digest(profile) != self.seal: raise PreexecDenied('PROFILE_BACKEND_BINDING_DRIFT')
         bundle = self.engine_bundle(profile)
@@ -53,7 +72,7 @@ class EngineTransportBackend(NativeBackend):
         if networks != expected_networks \
                 or set(bundle.get('hooks', {})) - {'prestart', 'createRuntime'}:
             raise PreexecDenied('PREPARED_NAMESPACE_AND_HOOK_ORDER_REQUIRED')
-        namespace = Path(profile['namespacePath']); _ancestors(namespace)
+        namespace = self.engine_namespace(profile); _ancestors(namespace)
         value = namespace.lstat()
         if not stat.S_ISREG(value.st_mode) or value.st_uid != 0 or value.st_mode & 0o022 \
                 or value.st_ino != profile['namespaceInode']:

@@ -47,6 +47,25 @@ class EngineBundle(unittest.TestCase):
         with patch.object(m.os,'read',side_effect=replace),self.assertRaisesRegex(ValueError,'CHANGED_DURING_READ'):
             b.engine_bundle(profile)
 
+    def test_only_exact_docker_alias_with_same_name_and_inode_is_canonicalized(self):
+        b,profile,p,_=self.fixture();canonical=Path('/run/docker/netns/ci-fixture')
+        profile.update(namespacePath='/var/run/docker/netns/ci-fixture',namespaceInode=p.stat().st_ino)
+        b.seal=m.digest(profile);before=copy.deepcopy(profile)
+        with (patch.object(Path,'resolve',return_value=canonical) as resolve,
+            patch.object(Path,'lstat',return_value=p.stat()),patch.object(m,'_ancestors') as ancestors):
+            self.assertEqual(b.engine_namespace(profile),canonical)
+            resolve.assert_called_once_with(strict=True);ancestors.assert_called_once_with(canonical)
+        self.assertEqual(profile,before)
+        for original,target,reason in (('/foreign/netns/ci-fixture',canonical,'PARENT_REQUIRED'),
+            ('/var/run/docker/netns/ci-fixture',Path('/run/docker/netns/other'),'ALIAS_REQUIRED')):
+            profile['namespacePath']=original;b.seal=m.digest(profile)
+            with patch.object(Path,'resolve',return_value=target),self.assertRaisesRegex(ValueError,reason):
+                b.engine_namespace(profile)
+        profile.update(namespacePath='/run/docker/netns/ci-fixture',namespaceInode=p.stat().st_ino+1);b.seal=m.digest(profile)
+        with (patch.object(Path,'resolve',return_value=canonical),patch.object(Path,'lstat',return_value=p.stat()),
+            patch.object(m,'_ancestors'),self.assertRaisesRegex(ValueError,'IDENTITY_DRIFT')):
+            b.engine_namespace(profile)
+
     def test_all_original_network_and_generation_guards_remain_exact(self):
         old=ROOT/'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py'
         self.assertEqual(hashlib.sha256(old.read_bytes()).hexdigest(),'ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528')
@@ -55,6 +74,9 @@ class EngineBundle(unittest.TestCase):
             return next(n for n in c.body if isinstance(n,ast.FunctionDef) and n.name=='bindings')
         original=method(old,'NativeBackend');current=method(Path(m.__file__),'EngineTransportBackend')
         original.body[1].value=ast.parse('self.engine_bundle(profile)',mode='eval').body
+        namespace=next(n for n in original.body if isinstance(n,ast.Assign)
+            and any(isinstance(t,ast.Name) and t.id=='namespace' for t in n.targets))
+        namespace.value=ast.parse('self.engine_namespace(profile)',mode='eval').body
         self.assertEqual(ast.dump(original,include_attributes=False),ast.dump(current,include_attributes=False))
 
 if __name__=='__main__':unittest.main()
