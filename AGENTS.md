@@ -1,3 +1,70 @@
+# CURRENT — Sealed infrastructure review PASS15; exact gate/provider/worker fragment; M2 OPEN
+
+31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
+or automations. Teatri M1/G4 technical8/8 functional6/6 acquired. Farmacie remains
+the same SUCCEEDED61rows/10columns, ministerial STRING/all10OPEN; no upload/profile/
+acquisition replay. M2/G5–G7/24AT/8UX/8stability/two real clients remain OPEN.
+Goal: repeatable managed-file onboarding→Registry→governed OntoPiA discovery→
+Ingestion→UDP. Search and future APIs/scheduler/delta remain separate.
+
+PR54 new infrastructure source41f935ecdec2716926d4b6947a6dd763e8124ec4:
+15local tests PASS8.145s; PR41183119468/job124484438883 PASS15/1suite/0fail/0skip
+7.214s, final log read. Existing four-owner compiler regression also PASS15local
+2.091s and PR41183119343/job124484438713 PASS15/0fail/0skip2.610s, final log read.
+
+Downloaded artifact13035554097: ZIP607139bytes SHA
+9b4c842d990453045c08540681cdec931207d1d58ca8d396298a4a01a1fd07ea;
+capsule2027433bytes SHA577ec0d4394b35acb9fba4482ba72064f67fdded1877c881ba9aa428d58d8ac7.
+Exact local rebuild, both ZIP members, all127embedded modules, fixed baseline,
+loader and metadata verified. Claimd47035b38474b06e8326e588c5435238933379b3 matches
+CI PR-merge checkout; provenance is NOT authenticated publisher trust.
+Independent map anchor215781561ee46ac2682079941b63c190bf7124596671957c484d3402e598d14e.
+Original108module compiler sources/pins and37worker pins unchanged.
+
+InfrastructureReview reuses existing exact scope compilers for
+registryGatePeerWindow/providerInstallation/operationalLeaseInstallation and
+cross-checks the existing four-owner assembly. Same independent Registry recipe,
+source/frame/profile, installation/desired hashes, public verification/context,
+provider/worker kernel/DNS/coordination/lock and isolated attestor bindings.
+All owner roots are distinct/nonshadowing. Registry CID and worker generation/
+new logical lock remain unmaterialized. v2 full-handoff initial max300 remains
+within the selected gate/original ceiling; original v1 max90 unchanged.
+No live extension, reset, replay, operational clock or runtime owner effect.
+Provider binding validation checks protected ancestor metadata; compilation
+does not read private contents, sign, run commands, call Engine or admit peers.
+
+Independent root -I-B-S sealed capsule only prepare/inspect; input0600/output0700.
+Exclusive fsynced claim before private payload, receipt last; partial stays
+partial, no overwrite/completion on retry. Another compiler cannot adopt an
+earlier assembly. Public hashes/counts/closed flags only, generic private errors.
+Existing real dual-role guards accept the exact parts in fixtures, but the full
+parent-review parser rejects this FRAGMENT. No complete parent or native
+executor/admission/authority/publication claim follows from these tests.
+Registry child/current HUMAN, capability publication, current private custody/
+executables, complete cohort/TLS/IAM/DB/trust/fencing and interpreter/stdlib/
+publisher trust remain required before target operation.
+
+Prior host observation source27717b20 remains qualified463/54 protocol,
+251/33IAM and3native modes, final logs/reports read; precise validated UPDATING
+read reconciliation only. Historical31b sealed-v1 expiry/Registry UNKNOWN and
+older UNKNOWN/MCP/worker causes remain OPEN: exact old journal absent; fresh
+passes do not prove historical causality. Original worker/writer/backend unchanged.
+New41f935 general protocol/native/IAM CI are separate scopes; use final reports,
+never infer their success from dedicated compiler qualification.
+
+Next: assemble separately authenticated Registry child and governed publication
+with the exact full parent review; obtain current custody/cohort admission;
+actual Farmacie→Ingestion→UDP/all61outcomes, reimport/fault/recovery/chat, boot/
+rotation/two real clients and stability. Registry Java stays paused.
+No target apply, runtime authority/grant, budget reset, consumed replay, merge
+or release acceptance. Prior operator scopes consumed; no new target command ready.
+Evidence:evidence/m2-infrastructure-review-20261031.json
+Handoff:docs/handoffs/OUF_M2_INFRASTRUCTURE_REVIEW_20261031.md
+Prior:evidence/m2-private-review-assembly-20261031.json
+Read:evidence/m2-publication-read-reconciliation-20261031.json
+Older CURRENT headers below are historical. Canonical continuation:
+https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md
+
 # CURRENT — Sealed private review PASS15; bounded read PASS463/54 + native; M2 OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents

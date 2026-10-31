@@ -66,3 +66,21 @@ consumed replay, merge or release acceptance is authorized by this fragment.
 Next: integrate the separately authenticated Registry child and governed
 capability-publication component with the exact full parent review, then obtain
 current native/cohort custody and admission before any target operation.
+
+CI qualification: source `41f935ecdec2716926d4b6947a6dd763e8124ec4`, PR run
+[41183119468](https://github.com/GioNob/ouf-deploy/actions/runs/41183119468),
+job124484438883, 15 tests/0 failures/0 skips in7.214s, final log read. Earlier
+four-owner compiler regression also PASS15/2.610s, run41183119343/job124484438713.
+
+Downloaded artifact13035554097: exact two ZIP members, all127source bodies,
+fixed baseline, loader, public metadata and byte-exact local rebuild verified.
+Capsule2,027,433bytes SHA
+`577ec0d4394b35acb9fba4482ba72064f67fdded1877c881ba9aa428d58d8ac7`;
+ZIP607,139bytes SHA
+`9b4c842d990453045c08540681cdec931207d1d58ca8d396298a4a01a1fd07ea`.
+The claim `d47035b38474b06e8326e588c5435238933379b3` is the CI PR-merge checkout,
+not authenticated publisher trust. Source-map anchor
+`215781561ee46ac2682079941b63c190bf7124596671957c484d3402e598d14e`.
+Full evidence: [qualification](../../evidence/m2-infrastructure-review-20261031.json).
+The general protocol/native/IAM runs are separate scopes and were still running
+at this qualification snapshot; their success is not inferred here.
