@@ -1,0 +1,110 @@
+{
+  "schema": "ouf.discovery-worker-attestation-source-qualified.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "f2dfa9c2be348cfdfdeb4581228b3d1b1612d763",
+  "sourceTree": "4367b6f12406a4ac2f26ba065ab1e68cada07097",
+  "sourceTreeMatchedLocally": true,
+  "localTests": {
+    "new": 15,
+    "regressions": 72,
+    "total": 87,
+    "skipped": 0
+  },
+  "ci": [
+    {
+      "run": 40959110838,
+      "event": "pull_request",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123746898510,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 263
+    },
+    {
+      "run": 40959111109,
+      "event": "pull_request",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123746899470,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": null
+    },
+    {
+      "run": 40959111106,
+      "event": "pull_request",
+      "name": "M2 discovery native Docker frame",
+      "id": 123746899368,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": null
+    },
+    {
+      "run": 40959102187,
+      "event": "push",
+      "name": "Discovery authorization and complete installation proposal",
+      "id": 123746869239,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 263
+    },
+    {
+      "run": 40959102213,
+      "event": "push",
+      "name": "M2 compiled discovery lease sandbox",
+      "id": 123746869026,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": null
+    },
+    {
+      "run": 40959102201,
+      "event": "push",
+      "name": "M2 discovery native Docker frame",
+      "id": 123746868713,
+      "status": "completed",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": null
+    }
+  ],
+  "proofs": [
+    "existing signed deployment protocol v2 and signed rootfs mandate bound to independent recipe and exact worker peer",
+    "existing STARTED consumption validated read-only, no provider adoption or lifecycle",
+    "parent-reviewed existing attestor key and exactly three payloads",
+    "independent retained Registry acceptance and current typed two-peer probe checked before signing",
+    "exclusive durable claim and per-payload signing dispatch before key access",
+    "partial/lost issuance never re-signs; complete lost reply reconciled read-only using signatures and owned inodes",
+    "composed verification to actual Ed25519 signatures to existing create-only byte publisher",
+    "private directory/key/scope/signature inode drift and revocation blocked"
+  ],
+  "syntheticFacts": [
+    "previous actual provider creation/native OCI/rootfs/application admission",
+    "native two-peer observations and boot in protocol test"
+  ],
+  "nativeRegressionLimit": "Existing Docker29.8.1/systemd/DNS/nft sandbox and OCI frame passed separately. They do not exercise this issuer against an actually created/admitted provider or the full composed native installer.",
+  "baselineOriginalsRead": [
+    "Matrix1.7 DOCX §§1,7",
+    "SemanticRegistry1.3 DOCX §26 including26.1/26.3"
+  ],
+  "stillOpen": [
+    "provider child lifecycle in gate-only window and real independent admission/consumption",
+    "explicit parent composition of provider lifecycle and retained-admission review scopes",
+    "manager registration/reload and complete native installer",
+    "13-peer TLS/IAM/database/fencing/cohort and authoritative trust distribution",
+    "boot/rotation with cumulative history",
+    "target capability publication and actual OntoPiA",
+    "CSV mapping Ingestion UDP search reimport resilience two real clients"
+  ],
+  "providerCreatedOrAdmittedOnTarget": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

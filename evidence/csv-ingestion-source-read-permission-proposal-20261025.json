@@ -1,0 +1,101 @@
+{
+  "schema": "ouf.csv-ingestion-source-read-permission-proposal.v1",
+  "observedLocalDate": "2026-10-25",
+  "account": "ouf-admin",
+  "policyRef": "ouf-lab-authorization:47",
+  "policyHash": "sha256:8aa234827edee9271548830a518407309d7042303a634a127ef46ec9e2371f00",
+  "rolesRead": {
+    "successful": true,
+    "roles": 2,
+    "assignments": 2,
+    "adminPermissions": 34,
+    "adminContainsIngestionOperationsRead": false,
+    "requestView": "ROLES",
+    "selectorsAndPaginationForbiddenForRoles": true
+  },
+  "grantsRead": {
+    "successful": true,
+    "count": 81,
+    "nextAfter": null
+  },
+  "expiredGrant": {
+    "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261019-24h",
+    "capabilityId": "ingestion.operations.read",
+    "tenantId": "ouf-lab",
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "servicePrincipalId": null,
+    "organizationId": null,
+    "validFrom": "2026-10-19T09:34:16Z",
+    "validUntil": "2026-10-20T09:34:16Z",
+    "constraints": {
+      "effect": "ALLOW",
+      "externalRoleRef": null,
+      "resourceType": "operational",
+      "resourceId": null,
+      "resourceAttributes": {
+        "module": "INGESTION",
+        "sourceRef": "teatri-csv-6609b245"
+      },
+      "allowedDataLabels": [],
+      "allowedDetailLevels": [
+        "TENANT_OPERATIONAL"
+      ],
+      "requiredAcr": null,
+      "requiredAmr": [],
+      "maxAuthenticationAgeSeconds": null
+    }
+  },
+  "proposal": {
+    "proposalId": "5e197733-4d4b-428b-bca0-c7267ad53df0",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-24T22:38:41.805479Z",
+    "finalPolicyRef": null,
+    "request": {
+      "operation": "UPSERT",
+      "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261025-2h",
+      "grant": {
+        "grantId": "grant-ingestion-operations-read-teatri-csv-6609b245-20261025-2h",
+        "capabilityId": "ingestion.operations.read",
+        "tenantId": "ouf-lab",
+        "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+        "servicePrincipalId": null,
+        "organizationId": null,
+        "validFrom": "2026-10-24T22:23:34Z",
+        "validUntil": "2026-10-25T00:23:34Z",
+        "constraints": {
+          "effect": "ALLOW",
+          "externalRoleRef": null,
+          "resourceType": "operational",
+          "resourceId": null,
+          "resourceAttributes": {
+            "module": "INGESTION",
+            "sourceRef": "teatri-csv-6609b245"
+          },
+          "allowedDataLabels": [],
+          "allowedDetailLevels": [
+            "TENANT_OPERATIONAL"
+          ],
+          "requiredAcr": null,
+          "requiredAmr": [],
+          "maxAuthenticationAgeSeconds": null
+        }
+      },
+      "reason": "Nuova autorizzazione di sola lettura per 2 ore sullo stato e sulla storia Ingestion della sola fonte Teatri dopo attivazione nativa riuscita. Il grant precedente è scaduto il 20 ottobre e resta conservato. Necessaria per verificare run e riferimenti ACK dell'E2E; nessuna attivazione, retry, IAM o modifica degli altri grant/ruoli."
+    }
+  },
+  "scopeChange": "ONE_NEW_TWO_HOUR_SOURCE_SCOPED_READ_GRANT_ONLY",
+  "oldGrantPreserved": true,
+  "rolesAndAssignmentsUnchanged": true,
+  "otherGrantsUnchanged": true,
+  "approvalPathReturnedByOwner": true,
+  "approvalPathPublished": false,
+  "humanConfirmationPending": true,
+  "permissionPublished": false,
+  "newIngestionRunAuthorized": false,
+  "newSourceActivationAuthorized": false,
+  "retryAuthorized": false,
+  "iamMutation": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

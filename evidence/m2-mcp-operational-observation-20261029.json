@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.m2-mcp-operational-observation.v1",
+  "date": "2026-10-29",
+  "source": "OUF_MCP_CAPABILITY_ouf.system.status",
+  "account": "ouf-admin",
+  "snapshot": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  },
+  "scope": "MCP_PUBLIC_OPERATIONAL_ONLY",
+  "discoveryProviderOrRegistryReachabilityProven": false,
+  "applicationE2EProven": false,
+  "targetApplyAuthorized": false
+}

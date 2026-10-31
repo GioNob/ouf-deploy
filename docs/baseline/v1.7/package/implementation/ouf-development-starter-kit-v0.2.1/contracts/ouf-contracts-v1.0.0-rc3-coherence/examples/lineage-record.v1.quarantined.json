@@ -1,0 +1,51 @@
+{
+  "lineageId": "lin-01JQ",
+  "ingestionRunId": "run-01JABC",
+  "ingestionId": "ing-01JQ",
+  "handoffId": "hof-01JQ",
+  "source": {
+    "sourceId": "suo-prod",
+    "typeCode": "DEHOR",
+    "sourceObjectId": "471",
+    "sourceRevision": "rev-17",
+    "sourceObservedAt": "2026-09-07T09:14:58Z"
+  },
+  "contracts": {
+    "sourceSchemaRef": "source-schema:suo/DEHOR@3",
+    "bundleRef": "published-config:suo-prod@12",
+    "mappingRefs": [
+      "mapping:suo-dehor@5"
+    ],
+    "semanticPublicationSetRef": "semantic-publication-set:urban-core@7",
+    "adapterProfileRef": "adapter:suo-json@2"
+  },
+  "processing": {
+    "pipelineVersion": "ingestion-pipeline@1.2",
+    "transformationIds": [
+      "transform:surface-normalization@1"
+    ],
+    "validationResultRef": "validation:ing-01JABC",
+    "processingAttemptId": "attempt-02"
+  },
+  "data": {
+    "rawObjectRef": "s3ref://raw/suo-prod/DEHOR/471/sha256-example",
+    "rawHash": "sha256:raw-example",
+    "normalizedHash": "sha256:norm-example",
+    "outputHash": null
+  },
+  "times": {
+    "acquiredAt": "2026-09-07T09:15:02Z",
+    "processedAt": "2026-09-07T09:15:03Z",
+    "handedOffAt": null
+  },
+  "trace": {
+    "correlationId": "corr-01JABC",
+    "traceId": "trace-01JABC"
+  },
+  "outcome": {
+    "status": "QUARANTINED",
+    "issueRefs": [
+      "issue:SCHEMA_INCOMPATIBLE:01JQ"
+    ]
+  }
+}

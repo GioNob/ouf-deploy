@@ -1,0 +1,41 @@
+{
+  "schema": "ouf.m2-installed-discovery-lease-trust-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "8bc50da338ca6ff1af9c2d21d2433549e7b54dcc",
+  "productionSourceCommit": "b04c7d3d0a9a2317ad426aafbb7d8a76e9588115",
+  "push": {
+    "run": 40917960090,
+    "job": 123603127034,
+    "conclusion": "success"
+  },
+  "pr": {
+    "run": 40917973792,
+    "job": 123603171944,
+    "conclusion": "success"
+  },
+  "testsPerJob": 167,
+  "newGuardTests": 8,
+  "skips": 0,
+  "logsRead": true,
+  "actualEd25519InstallationAndGenerationSignatures": true,
+  "nativeGenerationProbeSynthetic": true,
+  "finiteMaintenanceMandateNotUsedAsRuntimeAuthority": true,
+  "privateSigningKeyNotRequiredByRuntimeGuard": true,
+  "completedInstalledReceiptUnitCodeAndCurrentGenerationRequired": true,
+  "wrongRoleMissingSignatureForeignScopeGenerationBootUnitAndLockChangesDenied": true,
+  "sameProcessLifetimeFenceAndConcurrentOwnerDenial": true,
+  "containerStartPermissionRejected": true,
+  "operationalInstallationOrReentryProven": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "failedRunsPreserved": [
+    40917595039,
+    40917582068
+  ],
+  "failureReason": "TEST_EXPECTED_VALUEERROR_INSTEAD_OF_EXISTING_OPERATIONAL_CUSTODY_DENIED_EXCEPTION",
+  "productionGuardWeakened": false
+}

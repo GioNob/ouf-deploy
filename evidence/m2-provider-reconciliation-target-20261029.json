@@ -1,0 +1,126 @@
+{
+  "schema": "ouf.m2-provider-reconciliation-target-observation.v1",
+  "date": "2026-10-29",
+  "source": "USER_PASTED_OPERATOR_JSON_AND_FOOTER",
+  "independentProtectedRecordOrHostLogRead": false,
+  "result": {
+    "analysis": {
+      "applicationE2EProven": false,
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "captureApi": "1.44",
+      "capturedIdentityEqualsCurrentCaptureApi": true,
+      "classification": "CURRENT_PROVIDER_STATE_BLOCKS_NATIVE_CONTEXT",
+      "currentStateBlocksNativeContext": true,
+      "currentViewBindings": {
+        "1.44": "8b9bc4c00c7fa3b540222d8fc081a95b61e08deeaef37604a8559915e46f180c",
+        "1.56": "d92935a683f9a89afa42d1c61ca681bc65669c333d3c9fd6c6e6104744332705"
+      },
+      "fieldsDroppedForMatching": [],
+      "historicalAuthorityReused": false,
+      "identityChecks": {
+        "1.44": {
+          "containerId": true,
+          "imageId": true,
+          "configurationHash": false,
+          "completeIdentityMatches": false
+        },
+        "1.56": {
+          "containerId": true,
+          "imageId": true,
+          "configurationHash": false,
+          "completeIdentityMatches": false
+        },
+        "captured": {
+          "containerId": true,
+          "imageId": true,
+          "configurationHash": false,
+          "completeIdentityMatches": false
+        }
+      },
+      "matchingCurrentApis": [],
+      "nativeContextAcceptanceGranted": false,
+      "negotiatedApi": "1.56",
+      "providerAdmissionProven": false,
+      "rawConfigurationOrEnvironmentValuesPrinted": false,
+      "resumeAllowed": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-provider-representation-analysis.v1",
+      "stateChecks": {
+        "1.44": {
+          "Running": false,
+          "Paused": false,
+          "Restarting": false
+        },
+        "1.56": {
+          "Running": false,
+          "Paused": false,
+          "Restarting": false
+        },
+        "captured": {
+          "Running": false,
+          "Paused": false,
+          "Restarting": false
+        }
+      },
+      "targetApplyAuthorized": false
+    },
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "budgetsGranted": 0,
+    "complete": true,
+    "containerLifecycleOperations": 0,
+    "counts": {
+      "applicationMacKeyReads": 0,
+      "bytes": 386102,
+      "credentialFileReads": 0,
+      "engineGets": 0,
+      "metadataReads": 6,
+      "preparedCopyReads": 0,
+      "privateCopiesPrepared": 0,
+      "providerEngineGets": 5,
+      "publicCertificateCopiesPrepared": 0,
+      "publicCertificateReads": 0,
+      "recoveredPublicStoreReads": 1
+    },
+    "currentFullCohortConfigurationProven": false,
+    "engineWrites": 0,
+    "historicalFilesAndPublicStorePreserved": true,
+    "iamRequests": 0,
+    "nativeConfigurationReads": 0,
+    "newKeysGenerated": 0,
+    "newPublicStoresPrepared": 0,
+    "oauthRequests": 0,
+    "preservedPublicStoreSha256": "33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559",
+    "preservedTrustInputsHash": "afbbe4808075fdb4374e74615ec4e13ea89646b06a5787b20c2f2656c7367e4d",
+    "rawCredentialOrKeyValuesPrinted": false,
+    "reconciliationHash": "84184832451fed0828f6e56b7e0d6ffb3c582a4879849d8903eed296666fcb21",
+    "releaseAcceptance": false,
+    "retainedCorePinStates": {
+      "GENERATION_CHANGED": 0,
+      "MATCHED": 13,
+      "PROCESS_ABSENT": 0
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.m2-provider-reconciliation-result.v1",
+    "scope": "/etc/ouf/deploy-snapshots/m2-provider-reconciliation-960507a9-20261029-v1",
+    "scopeConsumed": true,
+    "signaturesIssued": 0,
+    "sqlSessions": 0,
+    "status": "READ_ONLY_PROVIDER_RECONCILIATION_COMPLETE",
+    "targetApplyAuthorized": false
+  },
+  "operatorExit": 0,
+  "operatorLog": "/usr/local/lib/ouf-m2-provider-reconciliation-a3dc3693cb08e214/operator.log",
+  "deliveryExit": 0,
+  "deliveryDirectory": "/home/oufadmin/ouf-m2-provider-reconciliation-delivery.ipTJfGBx",
+  "deliveryLog": "/home/oufadmin/ouf-m2-provider-reconciliation-delivery.ipTJfGBx/bootstrap.log",
+  "bootstrapDirectory": "/home/oufadmin/ouf-m2-provider-reconcile-bootstrap.c0gwNuF8",
+  "disposition": "SUCCESS_CONSUMED_NO_REPLAY",
+  "staticConfigurationDriftCauseProven": false,
+  "configurationHashIncludesRuntimeNetworkState": true,
+  "restartOrAdmissionAuthorized": false,
+  "applicationE2EProven": false,
+  "resultCanonicalSha256": "f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f"
+}

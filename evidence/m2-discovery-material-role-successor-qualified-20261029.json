@@ -1,0 +1,116 @@
+{
+  "schema": "ouf.m2-discovery-material-role-successor-qualification.v1",
+  "date": "2026-10-29",
+  "problem": {
+    "targetEvidence": "evidence/m2-discovery-material-preparation-target-stop-20261029.json",
+    "reasonCode": "INSTALLATION_ROLES_OUTSIDE_REVIEWED_COHORT",
+    "rootCause": "The four-role producer selects by unique container ID and renames roles. The original preparer incorrectly assumed these labels already existed in the thirteen-peer producer.",
+    "sourceDefectAcknowledged": true
+  },
+  "predecessor": {
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+    "resultCanonicalSha256": "2d13387053ab8bc824f64183a1efb00d038a117b2a3d28547237be6eca7247ac",
+    "disposition": "FAILED_CONSUMED_PRESERVE_NO_REPLAY",
+    "reportedMetadataReads": 3,
+    "reportedBytes": 648347,
+    "reportedEngineGets": 0,
+    "reportedSecretReads": 0,
+    "reportedCopies": 0,
+    "independentHostRead": false
+  },
+  "source": {
+    "production": "5de8a6224aa7e5b410044a12a76136056cc62064",
+    "nativeQualifier": "ae8745c86d90266f49f3df4abbc4bffc18f10ce6",
+    "capsule": "339f3ee1f8a1dd2053448b9a1d05b278b6495b47",
+    "delivery": "8bfaafed1b23b79500a3b4867a4f75112d87ca9e",
+    "newModuleSha256": "87d4a9d941c210f5f4b5bfa2f894d84aa95855533997cd7d52ae8f469bc3cfc4",
+    "originalFourModulesAndCapsuleByteExact": true
+  },
+  "capsule": {
+    "sha256": "3f213db3cc611490398a097ef334f874726af09c2f3de0344322ad604a108c65",
+    "bytes": 74753,
+    "moduleCount": 5
+  },
+  "wrapper": {
+    "sha256": "06ca017cd74cf3cc87a81c32787a1ea2ab3929453809599bc682067f14fdcb69",
+    "file": "releases/prepare-m2-discovery-material-roles-20261029.sh"
+  },
+  "selected": {
+    "pushRun": 40864412321,
+    "pushJob": 123415421260,
+    "prRun": 40864419812,
+    "prJob": 123415447362,
+    "latestPrRun": 40864636805,
+    "latestPrJob": 123416176800,
+    "testsPerJob": 139,
+    "errors": 0,
+    "skips": 0,
+    "logsRead": true,
+    "newRegressionTests": 7,
+    "newCapsuleTests": 5,
+    "oldCapsuleReproducibilityStillPasses": true,
+    "oldAndNewScopeReplayDeniedByRegressionTests": true,
+    "nonselectedPeerDriftDeniedBeforeSecretReads": true
+  },
+  "native": {
+    "pushRun": 40863972102,
+    "pushJob": 123413909601,
+    "prRun": 40863982982,
+    "prJob": 123413944028,
+    "logsRead": true,
+    "actualDockerPeers": 13,
+    "rootUnixEnginePeer": true,
+    "kernelPins": true,
+    "allInstallationAndCohortLabelsDifferent": true,
+    "selectedByUniqueContainerId": true,
+    "imageConfigMountNetworkAndPinChecksPreserved": true,
+    "engineGets": 27,
+    "metadataReads": 4,
+    "privateCopies": 2,
+    "publicCertificateCopies": 1,
+    "oldFailureAndSourcesAndPositivePeersPreserved": true,
+    "syntheticPrivateInputsAndProvenance": true,
+    "targetExecuted": false,
+    "newScopeReplayDenied": true,
+    "stoppedPeerDeniedBeforeCopies": true
+  },
+  "delivery": {
+    "pushRun": 40864627473,
+    "pushJobs": [
+      123416146376,
+      123416146795
+    ],
+    "prRun": 40864636679,
+    "prJobs": [
+      123416176695,
+      123416177270
+    ],
+    "allFourJobsSuccess": true,
+    "logsRead": true,
+    "pinnedHttpsNonrootSudoRoot400Checksum": true,
+    "nonTtyRejectedBeforeDownloadOrScope": true,
+    "missingPredecessorFailsBeforeSecretReads": true,
+    "priorProtectedLogAndFailureScopePreserved": true,
+    "replayDeniedBeforeExecution": true,
+    "productionCapsuleByteExact": true,
+    "positivePreparationQualifiedSeparatelyWithActualDocker": true
+  },
+  "target": {
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-roles-2d133870-20261029-v1",
+    "executed": false,
+    "metadataReads": 4,
+    "maximumEngineGets": 27,
+    "maximumSeconds": 90,
+    "maximumBytes": 16777216,
+    "originalCustodyCandidateHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "predecessorResultMustMatchExactlyBeforeFurtherReads": true
+  },
+  "publicCertificateEnvelopeOnlyNotCaValidityOrIamTlsAdmission": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

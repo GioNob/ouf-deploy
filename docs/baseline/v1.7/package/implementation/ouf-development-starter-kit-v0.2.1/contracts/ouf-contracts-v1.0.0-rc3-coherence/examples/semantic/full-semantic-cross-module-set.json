@@ -1,0 +1,241 @@
+{
+  "semanticReference": {
+    "semanticId": "https://example.ouf/onto/Dehor",
+    "artifactId": "art-dehor",
+    "revisionId": "rev-dehor-7",
+    "artifactType": "CLASS",
+    "semanticVersion": "1.7.0",
+    "status": "ACTIVE",
+    "canonicalUri": "https://example.ouf/onto/Dehor",
+    "namespace": "https://example.ouf/onto/",
+    "localName": "Dehor",
+    "label": {
+      "it": "Dehor"
+    },
+    "publicationSetId": "ps-42"
+  },
+  "publicationSet": {
+    "publicationSetId": "ps-42",
+    "version": "2026.09.1",
+    "sequence": 42,
+    "status": "ACTIVE",
+    "publishedAt": "2026-09-07T08:00:00Z",
+    "artifacts": [
+      {
+        "semanticId": "https://example.ouf/onto/Dehor",
+        "artifactId": "art-dehor",
+        "artifactType": "CLASS",
+        "revisionId": "rev-dehor-7",
+        "contentHash": "sha256:dehor-v7"
+      }
+    ],
+    "manifestHash": "sha256:manifest-42"
+  },
+  "artifactDetail": {
+    "semanticId": "https://example.ouf/onto/Dehor",
+    "artifactId": "art-dehor",
+    "revisionId": "rev-dehor-7",
+    "artifactType": "CLASS",
+    "labels": {
+      "it": "Dehor"
+    },
+    "description": "Occupazione esterna con struttura dedicata.",
+    "status": "ACTIVE",
+    "contentHash": "sha256:dehor-v7",
+    "semanticVersion": "1.7.0"
+  },
+  "artifactRevision": {
+    "revisionId": "rev-dehor-7",
+    "artifactId": "art-dehor",
+    "revisionNo": 7,
+    "status": "ACTIVE",
+    "semanticVersion": "1.7.0",
+    "contentHash": "sha256:dehor-v7",
+    "publishedAt": "2026-09-07T07:55:00Z"
+  },
+  "searchResult": {
+    "reference": {
+      "semanticId": "https://example.ouf/onto/Dehor",
+      "artifactId": "art-dehor",
+      "revisionId": "rev-dehor-7",
+      "artifactType": "CLASS",
+      "semanticVersion": "1.7.0",
+      "status": "ACTIVE",
+      "canonicalUri": "https://example.ouf/onto/Dehor",
+      "namespace": "https://example.ouf/onto/",
+      "localName": "Dehor",
+      "label": {
+        "it": "Dehor"
+      },
+      "publicationSetId": "ps-42"
+    },
+    "score": 0.94,
+    "reasons": [
+      "preferredLabel",
+      "description"
+    ]
+  },
+  "discoveryRequest": {
+    "requestId": "disc-1",
+    "requestedArtifactType": "CLASS",
+    "intent": "occupazione di suolo pubblico per dehors",
+    "preferredLanguages": [
+      "it",
+      "en"
+    ],
+    "expectedProperties": [
+      "geometry",
+      "status"
+    ],
+    "providerPolicy": "AUTHORITATIVE_FIRST",
+    "status": "RUNNING"
+  },
+  "discoveryCandidate": {
+    "candidateId": "cand-1",
+    "canonicalUri": "https://external.example/PublicSpaceOccupation",
+    "artifactType": "CLASS",
+    "providerId": "schema-gov",
+    "providerTrust": "AUTHORITATIVE",
+    "sourceLocation": "https://provider.example/resource",
+    "sourceRevision": "2026.09",
+    "contentHash": "sha256:candidate",
+    "score": 0.89,
+    "matchReasons": [
+      "label-match"
+    ],
+    "gaps": [
+      "missing locatedOn relation"
+    ],
+    "license": "CC-BY",
+    "publisher": "Example Authority",
+    "expiresAt": "2026-09-08T08:00:00Z"
+  },
+  "externalOrigin": {
+    "providerId": "schema-gov",
+    "canonicalUri": "https://external.example/PublicSpaceOccupation",
+    "sourceLocation": "https://provider.example/resource",
+    "sourceRevision": "2026.09",
+    "publisher": "Example Authority",
+    "license": "CC-BY",
+    "retrievedAt": "2026-09-07T08:10:00Z",
+    "upstreamStatus": "AVAILABLE",
+    "snapshotHash": "sha256:candidate"
+  },
+  "impactReport": {
+    "changeId": "chg-42",
+    "artifact": "https://example.ouf/onto/Dehor",
+    "fromRevision": "rev-dehor-7",
+    "toRevision": "rev-dehor-8",
+    "classification": "BREAKING",
+    "impacts": {
+      "semanticArtifacts": 2,
+      "onboardingMappings": 1,
+      "publicationSets": 1,
+      "runtimeConsumers": 2
+    },
+    "blockingIssues": [
+      "range no longer compatible"
+    ],
+    "migrationProposalId": "mig-42"
+  },
+  "changeNotice": {
+    "changeId": "chg-42",
+    "semanticId": "https://example.ouf/onto/Dehor",
+    "fromRevision": "rev-dehor-7",
+    "toRevision": "rev-dehor-8",
+    "classification": "BREAKING",
+    "detectedAt": "2026-09-07T09:00:00Z",
+    "decision": "OPEN",
+    "impactReportRef": "impact:chg-42",
+    "migrationProposalId": "mig-42"
+  },
+  "migrationProposal": {
+    "migrationProposalId": "mig-42",
+    "changeId": "chg-42",
+    "status": "PROPOSED",
+    "replacementRefs": [
+      {
+        "semanticId": "https://example.ouf/onto/Dehor",
+        "artifactId": "art-dehor",
+        "revisionId": "rev-dehor-7",
+        "artifactType": "CLASS",
+        "semanticVersion": "1.7.0",
+        "status": "ACTIVE",
+        "canonicalUri": "https://example.ouf/onto/Dehor",
+        "namespace": "https://example.ouf/onto/",
+        "localName": "Dehor",
+        "label": {
+          "it": "Dehor"
+        },
+        "publicationSetId": "ps-42"
+      }
+    ],
+    "rationale": "Consumer review required."
+  },
+  "consumerPins": {
+    "onboarding": {
+      "semanticRef": {
+        "semanticId": "https://example.ouf/onto/Dehor",
+        "artifactId": "art-dehor",
+        "revisionId": "rev-dehor-7",
+        "artifactType": "CLASS",
+        "semanticVersion": "1.7.0",
+        "status": "ACTIVE",
+        "canonicalUri": "https://example.ouf/onto/Dehor",
+        "namespace": "https://example.ouf/onto/",
+        "localName": "Dehor",
+        "label": {
+          "it": "Dehor"
+        },
+        "publicationSetId": "ps-42"
+      },
+      "publicationSetId": "ps-42",
+      "publicationSetVersion": "2026.09.1",
+      "publicationSetManifestHash": "sha256:manifest-42"
+    },
+    "ingestion": {
+      "semanticPublicationSetId": "ps-42",
+      "publicationSetVersion": "2026.09.1",
+      "publicationSetManifestHash": "sha256:manifest-42",
+      "semanticReferences": [
+        {
+          "semanticId": "https://example.ouf/onto/Dehor",
+          "artifactId": "art-dehor",
+          "revisionId": "rev-dehor-7",
+          "artifactType": "CLASS",
+          "semanticVersion": "1.7.0",
+          "status": "ACTIVE",
+          "canonicalUri": "https://example.ouf/onto/Dehor",
+          "namespace": "https://example.ouf/onto/",
+          "localName": "Dehor",
+          "label": {
+            "it": "Dehor"
+          },
+          "publicationSetId": "ps-42"
+        }
+      ]
+    },
+    "udp": {
+      "semanticPublicationSetId": "ps-42",
+      "publicationSetVersion": "2026.09.1",
+      "publicationSetManifestHash": "sha256:manifest-42",
+      "semanticReferences": [
+        {
+          "semanticId": "https://example.ouf/onto/Dehor",
+          "artifactId": "art-dehor",
+          "revisionId": "rev-dehor-7",
+          "artifactType": "CLASS",
+          "semanticVersion": "1.7.0",
+          "status": "ACTIVE",
+          "canonicalUri": "https://example.ouf/onto/Dehor",
+          "namespace": "https://example.ouf/onto/",
+          "localName": "Dehor",
+          "label": {
+            "it": "Dehor"
+          },
+          "publicationSetId": "ps-42"
+        }
+      ]
+    }
+  }
+}

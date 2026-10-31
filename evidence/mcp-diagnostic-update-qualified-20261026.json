@@ -1,0 +1,472 @@
+{
+  "schema": "ouf.mcp-diagnostic-update-qualified-delivery.v1",
+  "runtimeSourceCommit": "9c0f2b53b679ff7274e4454f55892dca58f66412",
+  "deliveryCommit": "21ab60aceb820a6531f525d4583c09f571af2d0f",
+  "wrapper": "releases/apply-mcp-diagnostic-update-20261026.sh",
+  "wrapperSha256": "e46c771d22bd80af6590d5848a506a15d0dfab474b581327203d37f3df466298",
+  "sourceManifestSha256": "1c9bc1010621eb159a81a486273497427b4119423880a8746c28f4191e2a08a7",
+  "sourceCount": 18,
+  "preparedInputsHash": "fb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4",
+  "preparedFrozenPlanHash": "d1baf924e456bd5d2ce5a9bd3b8cb6f12ea80016feb76cde3c1556eec497a142",
+  "preparedNativePlanHash": "ff06ec1afc5da65dc6b6c64edb9ab9ec87926f4a9de7aec355b69b96c4cd8653",
+  "candidateSourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+  "targetNativeImageId": "sha256:9a1af5be94ff3dda4084b829e824482c5cf863525375c6f104a3fe89517e781e",
+  "executionScope": "/etc/ouf/deploy-snapshots/mcp-diagnostic-update-ff06ec1afc5da65d-v1",
+  "qualificationRuns": [
+    {
+      "id": 40307849351,
+      "event": "pull_request",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 121521318444,
+          "name": "actual-new-review-sudo-terminal (!use_pty)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521318653,
+          "name": "root-crypto-and-journal",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521318692,
+          "name": "new-executor-native-lifecycle (classic)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521318762,
+          "name": "actual-new-review-sudo-terminal (use_pty)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521318763,
+          "name": "actual-sealed-delivery",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521318775,
+          "name": "new-executor-native-lifecycle (containerd)",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 40307841330,
+      "event": "push",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 121521290315,
+          "name": "root-crypto-and-journal",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521290487,
+          "name": "new-executor-native-lifecycle (containerd)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521290503,
+          "name": "actual-new-review-sudo-terminal (!use_pty)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521290548,
+          "name": "new-executor-native-lifecycle (classic)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521290650,
+          "name": "actual-new-review-sudo-terminal (use_pty)",
+          "conclusion": "success"
+        },
+        {
+          "id": 121521290792,
+          "name": "actual-sealed-delivery",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "directJobLogsRead": true,
+  "skips": 0,
+  "records": [
+    {
+      "jobId": 121521318444,
+      "name": "actual-new-review-sudo-terminal (!use_pty)",
+      "records": [],
+      "passLines": 11,
+      "skips": 0
+    },
+    {
+      "jobId": 121521318653,
+      "name": "root-crypto-and-journal",
+      "records": [],
+      "passLines": 19,
+      "skips": 0
+    },
+    {
+      "jobId": 121521318692,
+      "name": "new-executor-native-lifecycle (classic)",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-lost-controller-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "actualControllerExitAfterStartClaim": true,
+          "watchdogStoppedOnlyOwnMcp": true,
+          "oldNotRestarted": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "claimedStageRetained": true,
+          "syntheticAuthoritiesAndWorkload": true,
+          "productionRuntimeAccess": false
+        }
+      ],
+      "passLines": 5,
+      "skips": 0
+    },
+    {
+      "jobId": 121521318762,
+      "name": "actual-new-review-sudo-terminal (use_pty)",
+      "records": [],
+      "passLines": 11,
+      "skips": 0
+    },
+    {
+      "jobId": 121521318763,
+      "name": "actual-sealed-delivery",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-actual-sealed-delivery-ci.v1",
+          "complete": true,
+          "realPublicHttpsSourcesDownloaded": 18,
+          "nonrootWrapperWithGhAndTimeoutAbsent": true,
+          "realSudoRootCopier": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "actualMainWithControllingForegroundTty": true,
+          "operatorLog0600": true,
+          "preflightClaimBeforeWrongNativeHashRejection": true,
+          "syntheticNativeInputUnchanged": true,
+          "humanApprovalRequested": false,
+          "runtimeAuthorityIssued": false,
+          "engineRequests": 0,
+          "privateSigningKeysRead": false,
+          "productionRuntimeAccess": false,
+          "targetApplyExecuted": false
+        }
+      ],
+      "passLines": 0,
+      "skips": 0
+    },
+    {
+      "jobId": 121521318775,
+      "name": "new-executor-native-lifecycle (containerd)",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-lost-controller-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "actualControllerExitAfterStartClaim": true,
+          "watchdogStoppedOnlyOwnMcp": true,
+          "oldNotRestarted": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "claimedStageRetained": true,
+          "syntheticAuthoritiesAndWorkload": true,
+          "productionRuntimeAccess": false
+        }
+      ],
+      "passLines": 5,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290315,
+      "name": "root-crypto-and-journal",
+      "records": [],
+      "passLines": 19,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290487,
+      "name": "new-executor-native-lifecycle (containerd)",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-lost-controller-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "actualControllerExitAfterStartClaim": true,
+          "watchdogStoppedOnlyOwnMcp": true,
+          "oldNotRestarted": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "claimedStageRetained": true,
+          "syntheticAuthoritiesAndWorkload": true,
+          "productionRuntimeAccess": false
+        }
+      ],
+      "passLines": 5,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290503,
+      "name": "actual-new-review-sudo-terminal (!use_pty)",
+      "records": [],
+      "passLines": 11,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290548,
+      "name": "new-executor-native-lifecycle (classic)",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-synthetic-native-executor-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "realDualRoleAuthorityAndAttestation": true,
+          "oldLegacyMacInitiallyPresent": true,
+          "fullSignedLifecycle": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "endpointMacPreserved": true,
+          "endpointIpPreserved": true,
+          "oldRetainedStopped": true,
+          "commitAfterThirdSignature": true,
+          "applicationWorkloadSynthetic": true,
+          "productionRuntimeAccess": false,
+          "applicationE2EProven": false
+        },
+        {
+          "schema": "ouf.mcp-update-lost-controller-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "actualControllerExitAfterStartClaim": true,
+          "watchdogStoppedOnlyOwnMcp": true,
+          "oldNotRestarted": true,
+          "sixOtherContainersUnchanged": true,
+          "outsideScopeRegistryUnchanged": true,
+          "claimedStageRetained": true,
+          "syntheticAuthoritiesAndWorkload": true,
+          "productionRuntimeAccess": false
+        }
+      ],
+      "passLines": 5,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290650,
+      "name": "actual-new-review-sudo-terminal (use_pty)",
+      "records": [],
+      "passLines": 11,
+      "skips": 0
+    },
+    {
+      "jobId": 121521290792,
+      "name": "actual-sealed-delivery",
+      "records": [
+        {
+          "schema": "ouf.mcp-update-actual-sealed-delivery-ci.v1",
+          "complete": true,
+          "realPublicHttpsSourcesDownloaded": 18,
+          "nonrootWrapperWithGhAndTimeoutAbsent": true,
+          "realSudoRootCopier": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "actualMainWithControllingForegroundTty": true,
+          "operatorLog0600": true,
+          "preflightClaimBeforeWrongNativeHashRejection": true,
+          "syntheticNativeInputUnchanged": true,
+          "humanApprovalRequested": false,
+          "runtimeAuthorityIssued": false,
+          "engineRequests": 0,
+          "privateSigningKeysRead": false,
+          "productionRuntimeAccess": false,
+          "targetApplyExecuted": false
+        }
+      ],
+      "passLines": 0,
+      "skips": 0
+    }
+  ],
+  "coverage": {
+    "rootCryptoProtocolTests": 9,
+    "sharedMacNegativeTests": 6,
+    "nativeTestsPerBackend": 3,
+    "nativeBackends": [
+      "classic",
+      "containerd"
+    ],
+    "actualNewReviewCasesPerSudoVariant": 11,
+    "sudoVariants": [
+      "use_pty",
+      "!use_pty"
+    ],
+    "completePublicHttpRootCopyForegroundMainDelivery": true
+  },
+  "limits": [
+    "All installation keys/principals/policies/decisions and application workloads in these native/protocol fixtures are CI-only synthetic; Ed25519 signatures, Docker29.8.1 containers, process pins, bridge lifecycle, watchdog loss, filesystem fencing and sudo/TTY are real.",
+    "Both native creation profiles assert initially present legacy Config.MacAddress. Whole new signed lifecycle preserves endpointMAC/IP, six other containers and an outside-scope Registry fixture; no automatic rollback.",
+    "Actual product image9a374dd0 byte custody/import/unstarted config has separate qualification in evidence/mcp-denial-image-plan-qualified-20261026.json; new lifecycle workloads use synthetic Python HTTP services and do not prove production MCP OAuth/DB readiness.",
+    "Complete public HTTP delivery executes actual root-protected main with controlling foreground TTY and intentionally wrong synthetic native-plan hash: STOP before HUMAN approval, signing keys or Engine access. It does not assert a positive target invocation.",
+    "Canonical input test covers exact new prompt/logger and real sudo with CI-only review and additional2s test ceiling. Production review900s/hash/counters are not shortened/reset by the code.",
+    "The new command has NOT run on the VPS. No live approval, runtime authority or APPLY result is received. Policy50 READ grants remain expired; acquisition calls/grant renewal/E2E/release acceptance are not authorized by this runtime update."
+  ],
+  "developmentHistory": [
+    {
+      "commit": "e6d2142b5daa8a6e422a75265d168cd9c8cc3171",
+      "runs": [
+        40300169837,
+        40300179046
+      ],
+      "note": "Positive native lifecycle passed; actual lost-controller test failed. Inherited per-process receipt counter caused filename collision; fixed PID-qualified publishers and retained a real fork/filesystem collision reproducer in protocol tests. No target execution."
+    },
+    {
+      "commit": "30c62c49b65b408582095a69e4b886117823d094",
+      "runs": [
+        40301911587,
+        40301920184
+      ],
+      "note": "Native/watchdog passed; TTY harness lacked termios import. Harness corrected before delivery."
+    },
+    {
+      "commit": "2aef4617dcd5874e3565793b9ba39a6d03e2bf02",
+      "runs": [
+        40303194817,
+        40303202958
+      ],
+      "note": "Push all passed; PR classic observer directly read a nonblocking journal during publication and hit typed lock contention. Observer now uses bounded shared read-only snapshot; no custody exception or budget reset."
+    }
+  ],
+  "targetApplyExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

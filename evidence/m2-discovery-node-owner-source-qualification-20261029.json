@@ -1,0 +1,63 @@
+{
+  "schema": "ouf.m2-discovery-node-owner-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "5929868ca9c7d592977177d8429a5d699343cc6d",
+  "pullRequest": 54,
+  "status": "NODE_OWNER_CURRENT_SIGNED_RECIPE_GUARDS_QUALIFIED_NATIVE_DOCKER_PROBE_PENDING",
+  "qualification": {
+    "testsPerJob": 101,
+    "priorTests": 95,
+    "newNodeOwnerTests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "jobs": [
+      {
+        "run": 40843321800,
+        "job": 123344705333,
+        "event": "push",
+        "conclusion": "success",
+        "logRead": true
+      },
+      {
+        "run": 40843329502,
+        "job": 123344732264,
+        "event": "pull_request",
+        "conclusion": "success",
+        "logRead": true
+      }
+    ],
+    "actualDualEd25519SignaturesAndCurrentHumanFixture": true,
+    "nativeEngineNotExecutedByTheseTests": true,
+    "positiveNativeSigningIssuanceNotQualifiedForNewOwner": true,
+    "initialFixtureImportFailurePreserved": true
+  },
+  "contracts": {
+    "recipeHashBoundToExactSignedPhaseIntent": true,
+    "creationAndSourceClosureBound": true,
+    "all13PhasesAndDistinctLeaseWorkerRequired": true,
+    "revocationAndExpiredWindowFailClosed": true,
+    "noSignatureBeforeCompleteNativeObservation": true,
+    "partialIssuanceRequiresReconciliation": true,
+    "retainedReentryUsesFullDiscoveryCheckpoints": true
+  },
+  "nativeProbe": {
+    "sourceCommit": "97415ba073c3e97740da93bb60a45f83edd3193f",
+    "workflow": ".github/workflows/m2-discovery-native-frame.yml",
+    "state": "CI_PENDING",
+    "independentBaselineUsed": true,
+    "syntheticImageAndInputs": true,
+    "scope": "REAL_DOCKER_OCI_FIVE_FILES_AND_DB_CONFIGTREE_WITHOUT_JAVA_OR_OWNER_ADMISSION",
+    "targetAcceptance": false
+  },
+  "runtime": {
+    "targetReads": 0,
+    "targetWrites": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false
+  },
+  "next": "FINISH_NATIVE_DOCKER_PROBE_THEN_COORDINATED_PREPARATION_AND_CURRENT_CUSTODY_REVIEW"
+}

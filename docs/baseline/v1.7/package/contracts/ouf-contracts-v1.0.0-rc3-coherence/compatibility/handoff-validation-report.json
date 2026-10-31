@@ -1,0 +1,11 @@
+{
+  "repositoryVersion": "0.2",
+  "scope": "HandoffPayload v1 only",
+  "positiveFixturesValidated": [
+    "examples/handoff-payload.v1.upsert.json",
+    "examples/handoff-payload.v1.tombstone.json"
+  ],
+  "negativeFixtureValidated": "examples/handoff-payload.v1.invalid-upsert-no-canonical.json",
+  "negativeExpectedFailure": "UPSERT requires canonicalPayload",
+  "result": "PASS"
+}

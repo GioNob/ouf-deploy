@@ -1,0 +1,374 @@
+{
+  "schema": "ouf.m2-discovery-composition-qualification.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_COMPOSITION_QUALIFIED_RUNTIME_NOT_INSTALLED",
+  "normativeSourcesConsulted": [
+    {
+      "document": "Matrix",
+      "version": "1.7",
+      "sections": [
+        "1 Frozen ownership",
+        "7 Channel-neutral capability alignment"
+      ],
+      "path": "docs/baseline/v1.7/text/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.txt"
+    },
+    {
+      "document": "Semantic Model Registry PET",
+      "version": "1.3",
+      "sections": [
+        "11 Discovery and TTL",
+        "160.2 persistence",
+        "160.3 failures and retry",
+        "160.4 job lifecycle",
+        "160.7 IAM",
+        "160.9 admission"
+      ],
+      "path": "docs/baseline/v1.7/text/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.txt"
+    },
+    {
+      "document": "Blueprint",
+      "version": "0.3",
+      "sections": [
+        "7 Canonical E2E governance"
+      ],
+      "path": "docs/baseline/v1.7/text/OUF_System_Integration_Development_Blueprint_v0_3.txt"
+    }
+  ],
+  "registry": {
+    "pullRequest": 41,
+    "applicationSource": "4f8fb581916075a539bda4428be7bd8af073a569",
+    "baseSource": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+    "reusedDiscoverySource": "3ec99277b8383e496913b9fd3bb05c877825abf5",
+    "byteIdenticalReusedFiles": 25,
+    "adaptedJobTestFixtures": 1,
+    "retainedBaseFilesCompared": 42,
+    "retainedBaseFilesUnchanged": true,
+    "baseIsProductionImageSourceProof": false,
+    "migrationVersions": {
+      "retained": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "appended": [
+        11,
+        12
+      ],
+      "retainedV10Sha256": "7ee3a19ad02cdc4ea5ccd58d8ab96268046bd114962c7d6cd5c8717c8c3b0820",
+      "discoveryV11Sha256": "85708e1d37184177471f225806ca21c4088915f766197020f8fefe109407e911",
+      "discoveryV12Sha256": "04cf00b80724f4a47b8f920ca36384a176e40ea8efd3d84c4f404863bfd79d43"
+    },
+    "qualification": [
+      {
+        "run": 40826052866,
+        "event": "push",
+        "job": 123289225415,
+        "tests": 130,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "directLogRead": true,
+        "realPostgresql": true,
+        "upgradeV10toV12AndReconnect": true
+      },
+      {
+        "run": 40826057788,
+        "event": "pull_request",
+        "job": 123289242156,
+        "tests": 130,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "directLogRead": true
+      },
+      {
+        "run": 40826052866,
+        "job": 123289574611,
+        "productionImageBuilt": true,
+        "nonRootUser": "10001:10001",
+        "directLogRead": true
+      },
+      {
+        "run": 40826057788,
+        "job": 123289589648,
+        "productionImageBuilt": true,
+        "nonRootUser": "10001:10001",
+        "directLogRead": true
+      },
+      {
+        "run": 40826057761,
+        "job": 123289241364,
+        "liveProviderPairwise": "PASS",
+        "actualRegistryAndPostgres": true,
+        "gateway": "MINIMAL_TLS_WORKLOAD_FIXTURE",
+        "provider": "schema.gov.it",
+        "query": "CLV Address fixture, not Farmacie",
+        "mcpClient": false,
+        "productionIam": false,
+        "productionE2E": false,
+        "directLogRead": true
+      },
+      {
+        "run": 40826053020,
+        "job": 123289225903,
+        "fixtureTests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "nonRootUser": "10002:10002",
+        "directLogRead": true
+      }
+    ],
+    "allApplicationSourceWorkflowRuns": [
+      {
+        "id": 40826057879,
+        "name": "Authorization Semantic pairwise",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826057778,
+        "name": "Shared Authorization SDK pairwise",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826057905,
+        "name": "Semantic provider gateway fixture CI",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826057761,
+        "name": "Semantic Gateway live pairwise",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826057788,
+        "name": "Semantic Registry module CI",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826052864,
+        "name": "Authorization Semantic pairwise",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826052881,
+        "name": "Shared Authorization SDK pairwise",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826053020,
+        "name": "Semantic provider gateway fixture CI",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40826052866,
+        "name": "Semantic Registry module CI",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "providerAndWorkerNotEnabledOnTarget": true
+  },
+  "gateway": {
+    "pullRequest": 84,
+    "source": "60788cf965334441be0a33c345f5c0bcd66cbdde",
+    "baseSource": "c22fbf7f5593f612aba7e318797c9459d0b871a7",
+    "reusedSource": "ace683b1019f79adaace86796b67e463b93ec12e",
+    "byteIdenticalReusedFiles": 7,
+    "currentFunctionsPreserved": true,
+    "qualification": [
+      {
+        "run": 40825715728,
+        "event": "push",
+        "job": 123288167783,
+        "tests": 180,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "directLogRead": true
+      },
+      {
+        "run": 40825720444,
+        "event": "pull_request",
+        "job": 123288182230,
+        "tests": 180,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "directLogRead": true
+      }
+    ],
+    "allWorkflowRuns": [
+      {
+        "id": 40825720446,
+        "name": "Semantic proposal Gateway qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825720444,
+        "name": "M2 discovery and retained file composition",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825720450,
+        "name": "Generic source revision owner interoperability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825720442,
+        "name": "Gateway control-plane and MCP mediation",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825715773,
+        "name": "Ingestion READ materialization",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825715728,
+        "name": "M2 discovery and retained file composition",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825715759,
+        "name": "Semantic proposal Gateway qualification",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825715895,
+        "name": "Generic source revision owner interoperability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 40825715683,
+        "name": "Gateway control-plane and MCP mediation",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "routesPublished": false
+  },
+  "mcp": {
+    "pullRequest": 81,
+    "source": "09d1f521703f2e896398c751b41008f22c6dca0d",
+    "sourceQualificationRetained": true,
+    "descriptors": "INACTIVE",
+    "installed": false
+  },
+  "correctedFailures": [
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "source": "6f3a5674dcfe7730706a557ed8db3d5ca80cde38",
+      "run": 40825072458,
+      "job": 123286446402,
+      "reason": "Conflicting historical/current Python dependency pins for two fixture exporters.",
+      "correction": "Run both exporters under retained current pinned dependencies and test actual receipts.",
+      "directLogRead": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "source": "bbe85eb3fff05ee5a05853cba9de7140eae6fb13",
+      "run": 40825305699,
+      "job": 123286863639,
+      "reason": "Expected V10 digest incorrectly derived from a local copy with one extra newline; original V10 never modified.",
+      "correction": "Restore exact connector/source bytes for copied files and expected digest; retained migration guard unchanged.",
+      "directLogRead": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "source": "1c4a5742d78061a535eafc252665fe7d09b435bf",
+      "run": 40825453005,
+      "job": 123287337418,
+      "tests": 130,
+      "failures": 2,
+      "errors": 1,
+      "skips": 0,
+      "reason": "New job fixtures left runnable jobs in the shared test queue, interfering with existing adoption/concurrency fixtures.",
+      "correction": "AfterEach cancels only job fixture identities created by that test; production code/queues/budgets untouched.",
+      "directLogRead": true
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "source": "0f60913e571f762b72ac4d1ee34e892451eaa1d2",
+      "run": 40825537760,
+      "job": 123287607689,
+      "failures": 17,
+      "passed": 163,
+      "reason": "Discovery added to owner-key branch but omitted from the function allowlist.",
+      "correction": "Add the one function identity to the allowlist, preserve all previous registrations and guards.",
+      "directLogRead": true
+    },
+    {
+      "repository": "GioNob/ouf-semantic-registry",
+      "reason": "Inherited live fixture predated required provider workload authentication.",
+      "correction": "Reuse existing authenticated TLS/OAuth fixture and script from durable discovery source, retain production auth requirement."
+    }
+  ],
+  "authorization": {
+    "policyRef": "ouf-lab-authorization:59",
+    "policyHash": "sha256:d2e7e21e49cf96ed529b27055d3e510770e7a928c21405bf4d430a4403107369",
+    "source": "ACTUAL_OUF_MCP_PERMISSIONS_READ_OUF_ADMIN",
+    "roles": 9,
+    "assignments": 13,
+    "configuredGrantPages": 2,
+    "configuredGrants": 138,
+    "nextAfter": null,
+    "discoveryRolePermissions": 0,
+    "discoveryConfiguredGrantsForSelectedSubject": 0,
+    "configuredStateNotEffectivePermissions": true,
+    "policyChanged": false
+  },
+  "package": {
+    "publisherSource": "1086f7ea5a3281dc7731ea28d258f8fead403d07",
+    "applicationSource": "4f8fb581916075a539bda4428be7bd8af073a569",
+    "qualification": "PASS_EXACT_ARCHIVE_SOURCE_JAR_SCAN_AND_RUNNER_ATTESTATION_READBACK",
+    "workflow": ".github/workflows/m2-discovery-composed-candidate.yml",
+    "targetApplyAuthorized": false,
+    "run": 40826468452,
+    "job": 123290550271,
+    "artifactId": 12876846746,
+    "artifactExpiresAt": "2026-11-28T06:01:19Z",
+    "readbackEvidence": "evidence/m2-discovery-offline-package-readback-20261029.json",
+    "imageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
+    "artifactZipSha256": "c464eb6cb165c305d376c000579089dfed3e5f6cb3f22c953a74f193747659f8",
+    "sourceArchiveBlobsComparedLocally": 215,
+    "payloadHashesVerifiedLocally": 8,
+    "jarMigrationCountVerifiedLocally": 12,
+    "runnerAttestationVerificationsRead": 8,
+    "localCryptographicReverificationPerformed": false,
+    "vulnerabilityCounts": {
+      "MEDIUM": 53,
+      "LOW": 4
+    }
+  },
+  "stableCapabilitiesOperationalProven": false,
+  "realFarmacieOntopiaDiscoveryExecuted": false,
+  "applicationE2EProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false
+}

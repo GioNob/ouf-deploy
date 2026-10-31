@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.m2-discovery-distinct-lease-worker-source-qualification.v1",
+  "date": "2026-10-29",
+  "repository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "sourceCommit": "2492f3ff444c69ad578751809026bfa9c66a3699",
+  "productionWorkerSourceCommit": "317a3f5284659334747d8f333c57c601fc55f8c4",
+  "status": "DISTINCT_WORKER_COMPONENT_NATIVE_QUALIFIED_TARGET_INSTALLATION_AND_RUNTIME_ADMISSION_OPEN",
+  "push": {
+    "run": 40911030785,
+    "job": 123578724071
+  },
+  "pullRequestRun": {
+    "run": 40911039835,
+    "job": 123578756826
+  },
+  "testsPerJob": 8,
+  "skips": 0,
+  "logsRead": true,
+  "actualSystemdProcessDnsUdpAndNftTables": true,
+  "isolatedNetworkNamespace": true,
+  "outageVirtualHours": 4,
+  "sameWorkerRecoveredAndRenewed": true,
+  "expiredShortDnsWindowsFailClosed": true,
+  "exhaustedWorkerAliveAndRevokedNoQueries": true,
+  "concurrentWorkerDenied": true,
+  "oldClaimAndSourcesPreserved": true,
+  "retainedRecoveryAccountingNotInitializedOrResetByFactory": true,
+  "scopeAndPolicyGenerationBindingsExact": true,
+  "statusHasNoAddressesOrSecrets": true,
+  "observerFailureRevokesAndParksAlive": true,
+  "runtimeAdmissionAndGenerationGuardsSyntheticInNativeFixture": true,
+  "failedQualificationRunsPreserved": [
+    {
+      "commit": "317a3f5284659334747d8f333c57c601fc55f8c4",
+      "runs": [
+        40910545334,
+        40910552407
+      ],
+      "reason": "SYNTHETIC_OWNER_FIXTURE_MISSING_OWN_CONFIGURATION"
+    },
+    {
+      "commit": "ec59dba9520657c73939278a7e4490b11bf0b4d8",
+      "runs": [
+        40910746678,
+        40910762896
+      ],
+      "reason": "NATIVE_FIXTURE_MISSING_ORIGINAL_OWNER_SOURCE_SCRIPT"
+    }
+  ],
+  "productionGuardsWeakened": false,
+  "bootRotationAndHostAdmissionImplemented": false,
+  "systemdInstallationAdapterImplemented": false,
+  "targetExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

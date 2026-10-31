@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/authorization/capability-descriptor-v1.json",
+  "title": "OUF CapabilityDescriptor v1",
+  "description": "Authorization-facing capability catalog descriptor. Functional semantics remain owned by the module exposing the capability.",
+  "type": "object",
+  "required": [
+    "capabilityId",
+    "owner",
+    "operationType",
+    "riskClass",
+    "humanRequired",
+    "toolEligibility"
+  ],
+  "properties": {
+    "capabilityId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operationType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "riskClass": {
+      "type": "string",
+      "enum": [
+        "READ",
+        "PROPOSE",
+        "OPERATIONAL_WRITE",
+        "CONFIGURATION_WRITE",
+        "HIGH_IMPACT",
+        "READ_RESTRICTED",
+        "EXPLICIT_GRANT",
+        "EXPLAIN"
+      ]
+    },
+    "humanRequired": {
+      "type": "boolean"
+    },
+    "toolEligibility": {
+      "type": "boolean"
+    },
+    "resourceTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dataAccessModes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Authorization & Access Control Specification v1.3"
+  ],
+  "x-ouf-scope-control": "Authorization contracts only; no IAM vendor binding, Gateway route model, THS approval DTO, Query Governor model or MCP Server change.",
+  "x-ouf-invariants": [
+    "toolEligibility is exposure metadata, not an authorization grant",
+    "humanRequired capability cannot be confirmed by AI_AGENT, MCP_SERVER or SERVICE_IDENTITY",
+    "breaking semantic change requires a new version or capabilityId",
+    "no wildcard grant is implied by semantic similarity"
+  ]
+}

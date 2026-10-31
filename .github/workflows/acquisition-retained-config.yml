@@ -1,0 +1,20 @@
+name: Acquisition retained configuration classification
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/read-acquisition-retained-config-difference-20261025.py','tests/test_acquisition_retained_config.py','.github/workflows/acquisition-retained-config.yml']
+  pull_request:
+    paths: ['scripts/read-acquisition-retained-config-difference-20261025.py','tests/test_acquisition_retained_config.py','.github/workflows/acquisition-retained-config.yml']
+permissions: {contents: read}
+jobs:
+  retained-only-root-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root fixture, redaction, parent immutability and no replay
+        run: sudo env OUF_RETAINED_ROOT_FIXTURE=1 python3 -I -S -B -m unittest discover -s "$PWD/tests" -p test_acquisition_retained_config.py -v

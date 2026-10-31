@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/artifact-revision-v1.json",
+  "title": "OUF ArtifactRevision v1",
+  "type": "object",
+  "required": [
+    "revisionId",
+    "artifactId",
+    "revisionNo",
+    "status",
+    "contentHash"
+  ],
+  "properties": {
+    "revisionId": {
+      "type": "string"
+    },
+    "artifactId": {
+      "type": "string"
+    },
+    "revisionNo": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "ACTIVE",
+        "DEPRECATED",
+        "RETIRED"
+      ]
+    },
+    "semanticVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contentHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "etag": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "content": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "createdAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "publishedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "published revision is immutable",
+    "contentHash is deterministic",
+    "optimistic locking applies to mutable draft only"
+  ]
+}

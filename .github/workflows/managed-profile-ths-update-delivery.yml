@@ -1,0 +1,16 @@
+name: Protected same-image THS request update delivery
+on:
+  push:
+    paths: ['releases/apply-managed-profile-ths-request-20261028.sh','releases/managed-profile-ths-request-update-delivery-pins-20261028.json','tests/qualify_managed_profile_ths_update_delivery.py','.github/workflows/managed-profile-ths-update-delivery.yml']
+  pull_request:
+    paths: ['releases/apply-managed-profile-ths-request-20261028.sh','releases/managed-profile-ths-request-update-delivery-pins-20261028.json','tests/qualify_managed_profile_ths_update_delivery.py','.github/workflows/managed-profile-ths-update-delivery.yml']
+permissions: {contents: read}
+jobs:
+  exact-protected-main-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: bash -n releases/apply-managed-profile-ths-request-20261028.sh
+      - run: sudo /usr/bin/python3 -I -S -B tests/qualify_managed_profile_ths_update_delivery.py

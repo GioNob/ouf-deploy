@@ -1,0 +1,17 @@
+name: Retained two-owner CSV control actual protected delivery
+on:
+  push:
+    paths: ['releases/apply-managed-csv-control-update-20261027.sh','releases/managed-csv-control-update-delivery-pins-20261027.json','tests/qualify_managed_csv_control_update_delivery.py','.github/workflows/managed-csv-control-update-delivery.yml']
+  pull_request:
+    paths: ['releases/apply-managed-csv-control-update-20261027.sh','releases/managed-csv-control-update-delivery-pins-20261027.json','tests/qualify_managed_csv_control_update_delivery.py','.github/workflows/managed-csv-control-update-delivery.yml']
+permissions: {contents: read}
+jobs:
+  actual-protected-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: |
+          bash -n releases/apply-managed-csv-control-update-20261027.sh
+          sudo /usr/bin/python3 -I -S -B tests/qualify_managed_csv_control_update_delivery.py

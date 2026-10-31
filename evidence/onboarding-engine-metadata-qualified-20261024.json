@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.onboarding-engine-metadata-qualification.v1",
+  "sourceCommit": "1a8b5c1bf6c34e856ee28666f76d7ffeac11c216",
+  "script": "scripts/reconcile-onboarding-engine-metadata-20261024.py",
+  "scriptSha256": "16cbb89e42b8dfed0e3a32b9248224d86fa21ed000b5d1e10c95c5ca04461ded",
+  "publishedReadBackEqual": true,
+  "ci": [
+    {
+      "runId": 40084404503,
+      "jobId": 120844257867,
+      "event": "push",
+      "tests": 8,
+      "skipped": 0,
+      "seconds": 0.036,
+      "conclusion": "success",
+      "directLogsRead": true
+    },
+    {
+      "runId": 40084408317,
+      "jobId": 120844268630,
+      "event": "pull_request",
+      "testedMerge": "70771c23b03c39b9738fd7dc2209ffe5929992da",
+      "tests": 8,
+      "skipped": 0,
+      "seconds": 0.018,
+      "conclusion": "success",
+      "directLogsRead": true
+    }
+  ],
+  "nativeProofs": [
+    "actual root-custodied Unix socket filesystem inodes and root-owned alias; missing path, writable socket and mismatching retained pin",
+    "actual proc start ticks and net/mount namespace identities of fixture process",
+    "private files0400/root0700; exact retained hashes; immutable old bytes; fixed exclusive claim/no replay",
+    "Engine get, SQL transport, old DB prepare/query, subprocess Popen and socket constructor explicitly forbidden during complete capture",
+    "closed public comparisons contain only field names/equalities; no socket paths or private environment values",
+    "sealed caller_lookup policy copies original lookup files and forbids host resolver fallback"
+  ],
+  "limits": [
+    "historical Engine/runtime rows/reviews/journals/capture receipt are synthetic fixture inputs",
+    "no Docker containers or PostgreSQL sessions are created or queried by this suite; API continuity is not proven by filesystem metadata",
+    "full installation bootstrap/current target profile difference and daemon lineage are not CI-proven",
+    "classification does not accept a current runtime binding or authorize new SQL/migration/lifecycle/HUMAN budget"
+  ],
+  "limitsOnTarget": {
+    "maximumSeconds": 45,
+    "engineConnections": 0,
+    "engineGets": 0,
+    "sqlSessions": 0,
+    "containerExecs": 0,
+    "subprocesses": 0,
+    "credentialFiles": 0,
+    "privateKeys": 0
+  },
+  "targetReconciliationExecuted": false,
+  "newSqlAttemptAuthorized": false,
+  "newBindingAcceptedForRuntime": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

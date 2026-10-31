@@ -1,0 +1,71 @@
+name: Registry operational token owner components
+on:
+  push:
+    branches:
+      - fix/registry-bound-owner-lineage-20261023
+    paths:
+      - tools/semantic_registry_operational_owner/**
+      - scripts/build-registry-operational-owner-capsule.py
+      - scripts/build-registry-operational-owner-launcher.py
+      - scripts/observe-registry-operational-owner-20261024.py
+      - scripts/probe-registry-operational-network-20261024.py
+      - scripts/capture-registry-network-policy-20261024.py
+      - scripts/repair-registry-network-projection-20261024.py
+      - .github/workflows/semantic-registry-operational-owner.yml
+  pull_request:
+    paths:
+      - tools/semantic_registry_operational_owner/**
+      - scripts/build-registry-operational-owner-capsule.py
+      - scripts/build-registry-operational-owner-launcher.py
+      - scripts/observe-registry-operational-owner-20261024.py
+      - scripts/probe-registry-operational-network-20261024.py
+      - scripts/capture-registry-network-policy-20261024.py
+      - scripts/repair-registry-network-projection-20261024.py
+      - .github/workflows/semantic-registry-operational-owner.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: registry-operational-owner-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  ledger-and-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied disposable component source
+        run: |
+          sudo install -d -m 0700 /root/ouf-operational-owner-tests
+          sudo cp -a . /root/ouf-operational-owner-tests/repository
+          sudo chown -R root:root /root/ouf-operational-owner-tests
+      - name: Actual filesystem CAS, process exclusion and recovery components
+        run: |
+          sudo /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-operational-owner-tests/repository/tools/semantic_registry_operational_owner/tests \
+            -p 'test_*.py' -v
+      - name: Actual TLS IAM, scoped Ed25519 receipt and atomic UID publication
+        run: |
+          sudo env OUF_NATIVE_OPERATIONAL_OWNER=1 /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-operational-owner-tests/repository/tools/semantic_registry_operational_owner/tests \
+            -p 'test_native*.py' -v
+
+  network-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Root-custodied network projection fixture
+        run: |
+          sudo install -d -m 0700 /root/ouf-network-projection-tests
+          sudo cp -a . /root/ouf-network-projection-tests/repository
+          sudo chown -R root:root /root/ouf-network-projection-tests
+      - name: Actual kernel flow, signed live property change and normal publication
+        run: |
+          sudo env OUF_NATIVE_OPERATIONAL_OWNER=1 /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-network-projection-tests/repository/tools/semantic_registry_operational_owner/tests \
+            -p 'test_native_network_projection.py' -v

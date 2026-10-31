@@ -1,3 +1,608 @@
+# CURRENT — Go 1.27.3 e pacchetto MCP qualificati; import immagini nativo PASS
+
+30 ottobre 2026, Europe/Rome. L’owner approva l’ultima Go stabile/supportata:
+«Va benissimo usare l'ultima versione di go. Anzi, direi che è auspicabile.»
+[Decisione acquisita](decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md) supera il vincolo minor1.25 di Matrix1.7/MCP1.4 §65.
+Versione corrente risolta nei tag/VERSION ufficiali:1.27.3, commit2aae1000.
+Pin esatto/checksum e tutti i gate restano obbligatori, SDK1.7.0/contratti invariati;
+originali DOCX/checksum intatti. Non chiedere nuovamente approvazione per la sola
+versione Go. Pacchetto MCP09d1f521/12882394596 Go1.26.10 conservato storico:
+nuovo candidato/build/pacchetto1.27.3 acquisiti nel perimetro documentato seguente.
+MCP9539cbb4/PR81 qualificato: full CI push41088404381/job124175536886 e
+PR41088414424/job124175572636 PASS, report finali letti. Go1.27.3/checksum
+ufficiale/SDK1.7.0, race/DB/pairwise/build, Staticcheck2026.2.2+nilness e
+Govulncheck ufficiale pinnato: nessuna vulnerabilità rilevata. Le due precedenti
+incompatibilità degli analizzatori sono conservate e corrette senza suppression.
+Pacchetto12993233270 producer6aad7448/run41090381338/job124182417709 PASS:
+262blob/10payload/modi644-755/config/layer/binario verificati indipendentemente;
+ELF Go1.27.3/SDK1.7.0, SBOM36componenti, report tutte le severità0.
+Immagine2321c66f…; prima build12993555804 esclusa per tar664/775, mantenuta storica.
+Evidenze: evidence/mcp-go127-source-and-package-qualified-20261030.json e
+readback associato. La qualifica non è trust del publisher/ammissione target.
+Nessun grant/replay/reset/autorità runtime o accettazione M2 dedotti.
+
+Deploy54 sourcec62d0b2156e43943a50e13995092566c9fc99fb3:365test/43suite PASS
+su push41039846376/job124009671934 e PR41039855443/job124009703393,
+zero skip, tutti i report finali letti. Include6test import Registry+MCP con
+archivi/firme/journal reali e Engine/CLI modellati, anche regressione deliberata
+record senza seconda dispatch. Nativo worker PR41039855426/job124009703075 e
+provider PR41039855535/job124009704662 PASS separati, report letti; ammissioni
+applicative worker sintetiche/confine Docker provider modellato. Nessuna prova
+combinata/coorte target/E2E o8stabilità; cause UNKNOWN/drift storico non stabilite.
+M1/G4,technical8/8,functional6/6 e Farmacie61righe/10colonne/STRING/OPEN conservati.
+M2/G5–G7/24AT/8UX/8stabilità/due client OPEN. CSV→UDP/esiti per riga;
+capabilities UDP separate sugli oggetti caricati, search fuori dal caricamento.
+Import Registry+MCP su Docker29.8.1 reale PASS a source9c93274f: push41090657018/
+job124183350825 e PR41090667765/job124183389246, report letti. Una load ciascuno,
+risposta persa riconciliata via GET, seconda apply senza cambi di journal, revoca
+bloccante; parent/review/package/applicazioni sintetici, nessun container applicativo
+avviato. Coorte completa e CSV→UDP target ancora OPEN.
+Nessun comando operatore pronto; scope precedenti consumati. Proseguire autonomamente.
+Header CURRENT successivi sono cronologia, non richieste di nuova approvazione Go.
+
+# CURRENT — provider e worker qualificati separatamente; composizione e coorte M2 ancora aperte
+
+30 ottobre 2026, Europe/Rome. [Deploy54](https://github.com/GioNob/ouf-deploy/pull/54):
+provider v4 nativo PASS su push/PR; cutover/worker356test/42suite PASS su push/PR,
+zero skip e report finali letti. Worker tardivo nativo PASS su entrambi gli eventi:
+cattura Docker reale, nuovo fence, firme/file/registrazione/start, risposta persa
+riconciliata senza secondo avvio, systemd/DNS/nft e capsule37moduli invariata.
+Le ammissioni applicative del fixture worker sono sintetiche; il confine Docker
+del fixture provider è modellato. NON è ancora la prova comune di provider v4
+reale+worker, coorte completa o target CSV→UDP. Un primo test nativo ha restituito
+UNKNOWN con worker ACTIVE: causa non stabilita, fallimento conservato; i PASS
+successivi e la diagnostica CI non provano da soli la stabilità.
+
+Source921212074a901b514794118083b37f0f60fe3e63 aggiunge uguaglianza esatta
+provider/worker di kernel,DNS,binding,nft e lock, oltre alla ricetta
+Registry, e rifiuta il riuso su boot diverso. Journal provider conservato e
+ledger worker nuovo/distinto: il vincolo iniziale sullo stesso path è stato corretto
+prima di ogni consegna target.16casi locali PASS; CI successore
+ancora in corso. [Evidenze e limiti](https://github.com/GioNob/ouf-deploy/blob/feat/m2-discovery-complete-profile-20261029/evidence/m2-discovery-installation-composition-qualified-20261030.json).
+[Selezione pacchetti corrente](../releases/m2-discovery-cohort-selection-20261030.json):
+Registry4f8fb581/MCP09d1f521/Gatewayc666c0f0; Gateway607 è storico. Selezione e
+qualifica sorgenti NON sono review privata eseguibile, installazione o authority.
+
+Technical8/8,functional6/6,M1/G4 acquisiti per il caso conservato; M2/G5–G7,
+24AT,8UX,8criteri stabili e due client reali restano OPEN e nel denominatore.
+Farmacie stesso profilo SUCCEEDED61righe/10colonne, STRING/OPEN già confermati.
+Caricamento termina con oggetti UDP ed esiti di tutte le righe; capabilities UDP
+sugli oggetti carichi qualificate separatamente, search non è una fase.
+Receipt1868/runtime contract CONSUMATI, provider target osservato fermo; nessun
+nuovo effetto target o lettura indipendente. Nessun comando operatore pronto.
+NEXT prova comune provider/worker e coorte corrente, binding/review privata,
+TLS/IAM/DB/fencing/trust, boot/rotation/pubblicazione e vero collaudo CSV→UDP.
+Continuare autonomamente; no replay/reset/grant/budget/upload/job/acquisizione/
+merge/subagenti/automazioni. Header successivi storici per il prossimo passo.
+
+# CURRENT — contratto runtime provider osservato; scope consumato, sviluppo autonomo
+
+30 ottobre 2026, Europe/Rome. L’owner riporta READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED,
+complete=true, OperatorExit0/DeliveryExit0. [Ricevuta normalizzata](../evidence/m2-provider-runtime-contract-target-20261030.json)
+e [footer riportati](../evidence/m2-provider-runtime-contract-target-20261030.log).
+Runtime adapterv4, Brokerv1, node-attestorv4, approval-producerv1 e preparer-templatev1
+sono metadata correnti legati agli hash; provider ancora fermo.4GET/18letture,
+469662byte, custody ricontrollata; zero lifecycle/writeEngine/credenziali/chiavi/firme.
+È output fornito dall’owner: nessuna lettura indipendente dei log VPS è inferita.
+Non è ammissione provider/readiness o authority runtime; M2/E2E ancora OPEN.
+
+Scope m2-provider-runtime-contract-1868-20261029-v1 e codice/log protetti CONSUMATI:
+NON riconsegnare il comando né rilanciarlo. Input1868 e tutti i predecessori
+rimangono consumati. NEXT comporre il provider child con la finestra gate-only,
+ammissione nativa indipendente/consumo, ripausa prima Registry ATTEST e worker;
+qualificare prima di una concreta review/manutenzione autorizzata. Nessun nuovo
+comando target è pronto. Fonte storica runtime7894d0e9 è riproducibile con la
+patch hash-pinned già conservata, non un nuovo protocollo supposto.
+
+Proseguire autonomamente fino a intervento davvero indispensabile. Flusso ordinario
+CSV→lavorazione governata→UDP con esiti per riga; capabilities UDP sugli oggetti
+caricati qualificate separatamente, search fuori dal caricamento. M1/G4 e stesso
+profilo Farmacie61righe/10colonne/STRING/OPEN conservati. Nessun upload/profiling/
+job/acquisizione/grant/budget/replay/reset/merge/subagente/automazione. Header e
+comandi successivi storici per il prossimo passo; invarianti generali vincolanti.
+
+# CURRENT — CSV→UDP, capabilities UDP distinte; worker iniziale qualificato nativamente
+
+29 ottobre 2026. Il flusso ordinario termina con oggetti UDP ed esiti per riga;
+le capabilities UDP devono essere utilizzabili via chatbot su quegli oggetti.
+Search non è una fase di caricamento. Discovery Registry/OntoPiA resta necessaria
+al mapping governato. M1/G4 conservati; M2/G5–G7,24AT,8UX,8criteri stabili e due
+client reali ancora nel denominatore, senza accettazione E2E implicita.
+
+PR54 compone ATTEST→FILES→REGISTER→START: tre firme finite, pubblicazione
+create-only, un reload manager, uno start, claim/dispatch durabili, nessun replay
+di azioni tentate; continuazione esplicita dei soli sottopassi non tentati.
+Osservazione con worker attivo senza acquisirne il flock di durata o ripristinare
+i ledger iniziali. CI287test/33suite per push/PR PASS/0skip; prove native effettive
+Docker29.8.1/systemd/DNS/nft e issuer/publisher/registrazione/start PASS.
+Ammissioni applicative del provider/Registry dei fixture restano sintetiche;
+nessun provider target creato o ammesso, nessun gate M2 chiuso.
+[Stato e qualifica](handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+
+NEXT indispensabile: [lettura corrente del contratto runtime provider](handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md).
+Nuovo scope monouso,4GET Engine/18letture metadata/90s/16MiB; nessuna chiave o
+credenziale, lifecycle, runtime authority, SQL/IAM/OAuth o modifica applicativa.
+16test protocollo e4job delivery PASS,6log letti. Solo SSHoufadmin può eseguirla:
+nessun tool agente ha accesso privilegiato ai metadati target necessari.
+Il comando immutabile del nuovo handoff è l’unico corrente; dopo STOP non ripetere.
+Input1868 e tutti i predecessori restano consumati. Nessun nuovo upload/profiling,
+job/acquisizione, budget/grant, merge, subagente o automazione. Farmacie stesso
+profilo61righe/10colonne, codice ministerialeSTRING e10campiOPEN già confermati.
+Proseguire autonomamente dopo l’esito; chiedere intervento solo se indispensabile.
+Tutti i CURRENT e i comandi successivi sono storici per la scelta del prossimo passo;
+le invarianti generali rimangono vincolanti.
+
+> Chiarimento vincolante dell’owner — 29 ottobre 2026: il flusso è **CSV → lavorazione governata → oggetti UDP**. Search non è una fase del caricamento. Le capabilities UDP devono essere utilizzabili via chatbot sugli oggetti caricati; la loro qualifica è distinta dalla sequenza di ingestion. La discovery semantica del Registry rimane nel mapping governato. I requisiti/test di consultazione rimangono tracciati come qualifica delle capabilities, senza aggiungere uno step search al flusso.
+
+# CURRENT — issuer finito del worker composto con ammissione provider conservata
+
+29 ottobre 2026. Deploy54 sourcef2dfa9c2: reader del protocollo deployment firmato,
+mandato rootfs/creazione e consumo STARTED, ricetta indipendente e generazione
+esatta; composizione con Registry owner/probe nativo e signer esistente. Tre
+payload soltanto, chiave isolata esplicitamente revisionata, claim e dispatch
+prima della firma, esiti parziali/persi senza re-signing, reconciliation read-only
+con prove/firme/inode correnti. Il publisher precedente consuma le attestazioni.
+15nuovi+72regressioni locali PASS/0skip; CI263test per push/PR PASS/0skip,
+sei log letti; native Docker29/systemd/nft passate separatamente. Evidenza nel handoff.
+Fatti nativi e ammissione applicativa del fixture restano sintetici; nessun nuovo
+provider creato/ammesso sul target, nessun controller nativo completo dimostrato.
+[Continuazione CSV→UDP→search](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+Next: provider child/gate-only e ammissione reali, ripausa prima Registry ATTEST,
+registrazione manager e installazione composta/13peer/TLS/IAM/DB/fencing/trust,
+boot/rotazione con storia; poi capability stabili/OntoPiA/CSV/UDP/search/dueclient.
+M1/G4 acquisiti, tecniche8/8funzionali6/6 del caso conservato; M2/G5–G7/eightstable
+OPEN. Farmacie stessi61righe/10colonne e scelteSTRING/OPEN; input1868consumati,
+nessun comando operatore pronto. Nessun targetapply/authority/grant/budget/upload/
+job/acquisizione/replay/reset/merge/subagente/automazione. Header sotto STORICI.
+
+# CURRENT — pubblicazione create-only del worker implementata; E2E CSV ancora aperto
+
+29 ottobre 2026. Obiettivo owner confermato: CSV→UDP→search interamente via
+chatbot/capability OUF, ripetibile/resiliente/fluido; mini-PET CSV1.1 e M2v1.3.
+[Continuazione](docs/handoffs/OUF_CSV_E2E_CONTINUATION_20261029.md).
+Deploy54 sourcecb6f2da6 aggiunge transazione file/ledger con tre attestazioni già
+emesse, claim esclusivo, inode/hash/custody, partial-write conservato e reconcile
+senza replay. 72test locali PASS/0skip (13nuovi+59regressioni); CI248test per push/PR PASS,
+sei log riletti, native Docker29/systemd/nft passate separatamente.
+[Evidenza](https://github.com/GioNob/ouf-deploy/blob/fix/registry-bound-owner-lineage-20261023/evidence/m2-discovery-worker-file-publication-qualified-20261029.json).
+Nessuna emissione di attestazioni o ammissione provider/controller completo.
+M1/G4 acquisiti, tecniche8/8funzionali6/6 del caso conservato; M2/G5–G7 e tutti8
+criteri discovery stabile OPEN. Farmacie stesso profilo61righe/10colonne e scelte
+STRING/OPEN preservate. MCP liveHEALTHY; searchCLASSFarmacia restituisce[], non
+prova discovery o assenza di equivalenti. Provider fermo nell’ultima ricevuta,
+input1868consumati, nessun comando operatore pronto. Next: issuer/ammissioni
+native+provider gated+registrazione manager/composizione, poi pubblicazione
+capability/OntoPiA/CSV/UDP/search/dueclient. Nessun merge/targetapply/nuovogrant,
+budget/upload/job/acquisizione/replay/reset/subagente/automazione. Header sotto
+STORICI per la sequenza corrente, invarianti generali ancora validi.
+
+# CURRENT — 29 ottobre: ripresa su M2 discovery, Farmacie già profilato
+
+[Punto di ripresa e riferimenti esatti](handoffs/OUF_CHAT_RECOVERY_20261029.md) · [roadmap M2 corrente](OUF_M2_ROADMAP_20261026.md). M1/G4 acquisiti; Farmacie SUCCEEDED con preview61righe/10colonne, chiave ministeriale STRING e10campi OPEN confermati. M2/G5–G7, D5–D7, otto criteri stabili e due client/E2E restano OPEN. Prossimo codice: installer unico dei byte/ledger firmati del worker PR54, poi nuova ammissione provider e coorte completa. Nessun nuovo comando operatore pronto, nessuna lettura VPS in questa ripresa; input1868 e predecessori consumati. Gli header e NEXT successivi sono storici, inclusa la diagnosi Farmacie ancora pendente del27ottobre. Non ripetere profilazione, grant, upload o vecchi controller.
+
+# CURRENT — peer storico riconciliato; continuazione diagnostica qualificata NON eseguita
+
+27 ottobre2026. VPS reader completo/Exit0/DeliveryExit0: unica differenza peerCredentials ASSENTE storico→presente cattura; stesso socket/custodia e profiloNATIVE, vecchiaauthority/journalassenti,3metadataread originali/zeroEngineSQL. ReportSHA be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c. [Ricevuta](evidence/onboarding-transport-stop-reconciled-target-20261027.json). Capture/preparazione/primoAPPLY/reader CONSUMATI, NON ripetere.
+
+Fixsource0e5be010ee37479a49500afb70bbf13b26b40e8a, deliveryfd8313933609b53c98b691c675a7b8454f8e9364, wrapperSHA16fa7d0b398a3b5a54f371887855930db5edeeea7373a1a780fef5d79ffb64fc,21fonti root0400. Mantiene vecchi hash e tutti i campi; verifica peer corrente root esatto LIVE ogni connessione. Child retained-peer-credentials-continuation-v1 sotto vecchio contesto,3letture originali cumulative nei64massimi, reader7+22separato conservato. ProbeSpring /actuator/health/readiness riusato dal V35 qualificato. Nessun vecchio effetto runtime da ripetere.
+
+CI40479182671 PASS11protocollo/12compat-contatori/6MAC/9fence +7native per classic/containerd +11TTY per ciascun sudo; delivery40479720976/job122106687702 PASSrootcopy/checksum/contatori/TTY. Log diretti letti. Fixtureapp/schema/autorità sintetiche, Docker/PGreali: NON prove VPS/E2E. [Qualifica](evidence/onboarding-peer-continuation-qualified-20261027.json).
+
+NEXT solo prima esecuzione della NUOVA continuazione dal terminaleVPS, reviewconcreta fresca+APPROVOisolato+Invio, nessun consenso simulato. [Handoff/comando](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_PEER_CONTINUATION_20261027.md). Nessun risultato/authority della continuazione ricevuto. SeSTOPconservare eNONrilanciare. Stessa immagine074bd16e giàpreparata, stessaCFG/worker/Registry/MCP/Gateway,4SQLreadonlytecniche/zero nuovi job/attivazioni/grant/reset/replay/rollback. M1/G4acquisito, Farmaciecausaignota/M2aperto, policy54scaduta. No subagenti/automazioni/merge/releaseacceptance; Supervisor dopoE2E. Header successivi STORICI.
+
+# CURRENT — lettura conservata qualificata dopo STOP trasporto; NON rilanciare APPLY
+
+27 ottobre 2026. APPLY sourcee159/delivery15b2 consumato in STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2, prima della review. Nessuna autorità nuova. [Ricevuta](evidence/onboarding-diagnostic-transport-stop-target-20261027.json). Causa precisa fra schema/EngineBinding/profilo mount ancora non osservata; fixture precedente usava binding identici e non provava compatibilità storica.
+
+NEXT UNA sola lettura dei file conservati con reader b1618031d8c1d7ab10efd9c9742bc5c1b96131e8/SHAcd89338d; wrapper delivery5b91c2eb9302b8aaeb3a60cf45f26ce7b7951a1e/SHA2138066add8c89fec929b448f7dc8cf1205c2daa9ac400b49dbfb69b10af12e6. CI40467119923/jobs122065105823+122065106399 PASS12test/0skip+consegna curl/sudo/root0400/checksumroot/log0600; log diretti letti.7metadata+21fonti e manifesto,60s/8MiB, zero Engine/SQL/OAuth/configurazione/credenziali/chiavi; nessun APPROVO o continuazione. Scope onboarding-diagnostic-transport-stop-read-c2258617-v1 nuovo, mai eseguito secondo risultati ricevuti. [Handoff/comando](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md) · [Qualifica](evidence/onboarding-transport-stop-reader-qualified-20261027.json).
+
+Il reader riconcilia tre metadataread originali/assenza autorità e journal senza scrivere vecchi file. Zero runtime dispatch prima del guard è dedotto dal codice pinned; claim ancora da leggere. Non inferire deriva server, non allentare guard/hash, non rilanciare preparazioni5909/c225/APPLY. Dopo prova, fix mirato e qualifica del profilo reale prima di nuova review/mandato residuo cumulativo. M1/G4 acquisito, FarmacieFAILED causa ignota, M2 aperto. Nessun nuovo upload/job/acquisizione/fonte/attivazione/Registryrestart/merge/releaseacceptance; lavoro sequenziale senza subagenti/automazioni. Header successivi STORICI.
+
+# CURRENT — APPLY diagnostico Onboarding in STOP pre-review; scope consumato
+
+27 ottobre 2026. VPS STOP_RECONCILE/EXACT_RETAINED_NATIVE_DATABASE_TRANSPORT_REQUIRED, Exit2/DeliveryExit2. Delivery /home/oufadmin/ouf-onboarding-diagnostic-apply-delivery.V220onbW; log root /usr/local/lib/ouf-onboarding-diagnostic-update-687aefc7514bbe7b/operator.log, delivery bootstrap.log conservato.21fonti root0400/checksumOK. NON rilanciare APPLY né preparazioni5909/c225. Nessun APPROVO/review/autorità nuova ricevuto.
+
+Il guard pinned sourcee159 aggrega schema storico, uguaglianza bindingEngine e profilo mount NATIVE; fallisce prima di Engine/review/chiavi/SQL/lifecycle. Zero dispatch dedotto dal codice; claim conservate da riconciliare. Non inferire campo diverso o deriva server senza prova. La fixtureCI costruiva due profili con bindingEngine identico e non copriva compatibilità fra snapshot storici reali: qualifica precedente limitata, non risultato server.
+
+NEXT sola lettura finita dei file conservati: schema/binding/profile e claim/log esatti. Nuovo reader in qualifica; nessun nuovo APPLY consegnabile prima di evidenza e fix mirato. Nessuna normalizzazione generica, vecchi hash/contatori/file intatti. [STOP](evidence/onboarding-diagnostic-transport-stop-target-20261027.json) · [Handoff aggiornato](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md). M1/G4 restaPASS; FarmacieFAILED/causa ignota, M2 aperto. Niente nuovo upload/job/terzaTeatri/attivazione/Registryrestart/merge/releaseacceptance; senza subagenti/automazioni. Header successivi STORICI; vecchio NEXT prima esecuzioneAPPLY è consumato.
+
+# CURRENT — input diagnostici VPS consumati; primo APPLY minimo qualificato, NON eseguito
+
+27 ottobre 2026. Ricevuto ONBOARDING_DIAGNOSTIC_IMAGE_INPUTS_PREPARED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0: executionInputsHash c22586172070809d414d3654f3e002b7e1d84d749daae9b31dac8d1d14cbd0c0; capture5909d100 consumato, preparazione immagine consumata. Log /home/oufadmin/ouf-onboarding-diagnostic-image-delivery.ABE90yAu/bootstrap.log. NON ripetere entrambe. Nessun nuovo risultato APPLY/review/HUMAN/autorità runtime ricevuto.
+
+Controller minimo Onboarding source e1597e00ca069a33700fe1132b0cdf9658deacd1; delivery15b2bef894b9c5e6434999e3cae69c803e236f63; wrapper SHA b99cbeafc72ce65c48e452365ddcb4e654ff380773d9259aa7a7a9a2955bf291. 21 fonti pinned/root0400, tutti i blob verificati. CI40459311682 PASS: 11protocollo+6MACnegativi+9fence, 7lifecycle reali per classic/containerd, 11TTY per ciascun sudo use_pty/!use_pty; consegna esatta40459516054/job122040548190 PASS. Log diretti letti. Workload e autorità CI sintetici, SQL/Docker reali: NON prove VPS/E2E/causa Farmacie. Prima CI97ed fallita prima di Engine per risorsa migrazioni non aggiunta al closure; corretta9a4e con regressione, FAIL conservato.
+
+Nuova review concreta prima di sole mutazioni Onboarding; quattro NUOVE SQL tecniche read-only preservano FAILED/tentativi5, contatori, fonti e 35migrazioni; non leggono diagnosi/valori dominio. Unico YAML owner esistente verificato in memoria contro byte già classificati, Env/launch e seal conservati; altri file credenziali non letti. Vecchio owner trattenuto fermo, peer/Registry/MCP/worker/Gateway intatti; MAC/IP e policy Memory0 conservati. Nessun riuso autorità/budget V35, reset, rollback automatico o replay. Esecuzione900s+30 sola quarantena proprio candidato.
+
+NEXT fondamentale: prima esecuzione nel terminale VPS dell'owner, checksum/copia root/log e riga isolata APPROVO con hash fresco+Invio. Chat senza executorVPS. [Handoff completo e comando](docs/handoffs/OUF_FARMACIE_DIAGNOSTIC_APPLY_NEXT_20261027.md) · [Qualificazione](evidence/onboarding-diagnostic-apply-qualified-20261027.json) · [Ricevuta preparazione](evidence/onboarding-diagnostic-image-inputs-target-20261027.json). Se STOP conservare prove e NON rilanciare. Dopo APPLY provato, sola diagnosi owner governata sullo stesso job/asset con mandato READ finito valido: policy54 scaduta, nessun rinnovo o aggiramento SQL automatico.
+
+M1/G4 acquisito; M2/G5/G6/G7 aperti, Farmacie causa ignota. PR52 minima, NON candidato M2 più ampio. Nessun nuovo upload/job/acquisizione/fonte/attivazione, terza Teatri, merge/release acceptance o stima oraria inventata; Supervisor dopo E2E completo. Lavorare sequenzialmente senza subagenti/automazioni. Gli header successivi sono STORICI; i NEXT preparazione/assenza risultato immagine sono superati.
+
+# CURRENT — capture5909d100 VPS riuscito/consumato; pacchetto diagnostico minimo qualificato
+
+26 ottobre 2026. VPS ONBOARDING_DIAGNOSTIC_CURRENT_INPUTS_CAPTURED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0:inputsHash5909d1003e88231c1d41a799a12539127d27386f79a04ed345ad9d29eaaddb6d,3GET/3file/127338byte,zero runtimewrites/SQL/OAuth/credenziali. Log /home/oufadmin/ouf-onboarding-diagnostic-inputs-delivery.rJJwNGhc/bootstrap.log. Scope capture CONSUMATO: NON ripetere.
+
+Scelta minima D1: PR52 reviewedSourcea5ed8b05, immagine CI testata692277b1. Compare Git prova unica differenza workflowCI, applicazione identica; ZIP318a6370/210887971byte verificato, immagineconfig83c33ec9, native074bd16e/nativearchive87585bd8/441989120byte. Tutti gli strati verificati; tutte35SQL JAR uguali byte-per-byte al source installed194b586. Nessun rebuild/relabel o nuova migrazione. NON installare il più ampio candidato M2 solo per leggere la diagnosi. [Prova completa](../evidence/onboarding-diagnostic-image-inputs-qualified-20261026.json).
+
+Preparatore source4d57aeb0a62ccc6ca7d5d197d3c7e07cddcd56fe/SHA95f3b324f21196f336968198eb4e4263597130ee42f780e30aab58caa057c406. CI40391022677/job121811715549 e PR40391033583/job121811752888 PASS10test+archivio reale/root input sintetici; socket/subprocess vietati nel test. Wrapper delivery4eba27ed1413dceb34b708ffbc440a714e45f8db/SHA6d4307eaa579fb88052513e25949ed87c29fbfca39c954c435b16c30d8161056; codice2file root0400/checksumroot/log. Nuovo scope onboarding-diagnostic-image-inputs-5909d1003e88231c-v1:2file già raccolti/1ZIP/1archivionative,zeroEngine/SQL/OAuth/chiavi/credenziali/import/lifecycle. Max300s preparazione/2GiB liberi; download9parti con checksum (trasporto≤720s). NON APPLY, nessun APPROVO e nessuna authority nuova. Se STOP conservare e non rilanciare.
+
+NEXT eseguire UNA volta la preparazione immagine/input sulVPS; serve root locale con i file privati, chat senza executorVPS. Nessun risultato preparazione ricevuto. Poi qualificare controller Onboarding minimo con replica dei profili MAC legacy/endpoint e guard corretti, fresh admission/HUMAN review concreta; mai riusare controller/review V35 consumati. Farmacie stessoFAILED, causa ignota; M1/G4 acquisito/M2 aperto. Header seguenti storici.
+
+# CURRENT — D3 discovery job qualificata; serve nuova lettura VPS per D1
+
+26 ottobre 2026. Onboarding PR53/source976c478db7c7327e75da3e51aa4c00ca96ab1529: ASSETS ora include profileJob ultimo deterministico e stato preview-compatible, codice errore allowlisted e workLabel derivata solo da data/dimensione già autorizzate. Nessun job nuovo. CI push40385473455/job121792467212 PASS:296test/0failure/error/skip, recovery5. Browser40385473548/job121792467891 PASS4/0skip +2test latency; diagnostica40385473599/job121792467730 PASS9/0skip. Log diretti letti. I precedenti browser6f318865 erano CANCELLED per timeout durante downloadAPT; workflow aggiornato a immagine ufficiale Playwright1.62.1-noble, stessi test/limite10min, senza test disabilitati. La prima fixture RUNNING era invalida per lease: corretta usando claimProfile reale; vecchio FAIL non è PASS. Discovery nome Farmacie non dimostrata: filename originale non persistito, workLabel non inventa nome/dominio. Codice NON installato.
+
+[Checkpoint](../evidence/csv-m2-job-discovery-input-capture-20261026.json). Per D1 preparata NUOVA raccolta input del solo Onboarding installed retained194b586; source70d44fea97bc82014700ba19a988fdb7cfa9697b/SHA2561c7afc6e3fdb17b3f754a4714421b0f1568f9168a8ca7ac502cfd00326b7e422. Wrapper pinned delivery9e387308ac94d92fc1ad1b008d74d4ec6c0f2e1c/SHA256597c5dcb6bd43bf1e946881970d3a510ecf15e905c3f4eabf11dd8d8a49c4c89. CI40386074650/job121794563106 e PR40386082868/job121794593188 PASS:9test+Engine reale limite3GET. Scope nuovo onboarding-diagnostic-current-inputs-20261026-v1;3file metadata+3GET,24MiB/90s. Copia0400 root/verifica root/log conservati. Nessuna SQL/credenziale/chiave/OAuth/import/lifecycle/APPROVO/authority. NON APPLY. Se STOP conservare tutto e non rilanciare. Nessun risultato VPS ricevuto: richiede terminale owner perché chat non dispone accesso VPS.
+
+M1/G4 invariato; M2/G5/G6/G7 aperti. Farmacie stessoFAILED, causa owner NON osservata. D2 restante coorte/D3nome reale/D4profiling/D5vocab-relazioni/D6-D7 aperti. NEXT eseguire UNA volta il nuovo capture, leggere il solo JSON pubblico, preparare il delta diagnostico minimo sulla base degli input correnti; mai usare review/runtimeauthority storiche o replay V35. Gli header successivi sono storici.
+
+# CURRENT — M2 D2: prime composizioni MCP/Onboarding con CI core positiva
+
+26 ottobre 2026. Dall'audit si passa al codice riusato: MCP draft PR80/source1a5acb8ab531472eb8dc25470211e36db5c022cf e Onboarding draft PR53/source6f318865330602f3cde6bc5b52092e7585c70bde. [Checkpoint](../evidence/csv-m2-typed-recovery-composition-20261026.json). ASSETS/LATEST e decimal/date composti con diagnostica/READ MCP e finite readiness/diagnostica Onboarding; non sostituite intere linee e non fusa alcuna PR.
+
+MCP full CI push40377495833/job121764446768 PASS con log diretto: test/race/pairwise/build/staticcheck/govulncheck; recovery40377495828 e schema40377496197 PASS; diagnostica40377504930 e binding40377505208 PASS. Fixture items corretta e contenuto verificato. Le due entry acquisition READ sono identiche; tutto il resto del catalogo, salvo3entry managed, preservato. Test owner resta sintetico. L'optional pairwise skip della suite selezionata è coperto dalla distinta esecuzione nel full CI, non cancellato.
+
+Onboarding full push40377764772/job121765384154 PASS, log diretto:293 test modulo/0failure/error/skip; review18 (inclusi budget finiti+LATEST), recovery2, compiler9. Diagnostica mirata40377764748/job121765386547 PASS/9test senza skip. Build/scan PASS. Browser40377764880/job121765384593 ANCORA IN CORSO all'ultimo controllo durante installazione Chromium: non dichiararlo PASS. Artefatto push Onboarding è evidence, non image; immagine esatta/archivio non ancora scaricati/verificati per target.
+
+D2 PARZIALE: resta coorte Gateway/Ingestion/UDP e composizione owner reale. D3job/etichetta, D4profiling e D5vocab/relazioni NON chiusi. Nessuna migrazione/profile-worker cambiata. Farmacie stessoFAILED, causa NON osservata; M1/G4 invariato, M2/G5/G6/G7 aperti. Nessuna installazione, authority nuova, grant, profiling/acquisizione, reset, replay, merge o release acceptance. NEXT qualifica browser/coorte, quindi delta owner; D1 deve ottenere causa minimizzata dello stesso job. Non consegnare APPLY sulla base di CI/source readiness. Gli header seguenti sono storici rispetto a questo checkpoint.
+
+# CURRENT — Audit M2 completato: codice e CI riusabili, soli delta D1–D7
+
+26 ottobre 2026. Confronto puntuale richiesto dall'owner completato: [audit](OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md), [inventario](../evidence/csv-m2-code-evidence-gap-audit-20261026.json), [mini-PET 1.2](OUF_M2_MINIPET_v1_0_20261026.md), [roadmap](OUF_M2_ROADMAP_20261026.md). 63 file pinned di sei owner, cinque compare Git, otto log CI esistenti riletti; tutti i 24 AT e 8 UX mappati. Non ripetere l'inventario generico.
+
+Riuso certo: M1 retained; tipi decimal/date già composti su tre owner; ASSETS/LATEST candidati già CI; motori UDP proprietà/identità e recovery Ingestion/UDP. CI typed run39428578919 prova 2 acquisizioni, 1 oggetto/revisione e 2 osservazioni con RAW/lineage: no-revision isolato È PROVATO. M1 usa configurazioni differenti e non è quella prova; restano DS1R completo e coorte finale. CI non è VPS; test SDK owner sintetico non sono due client reali. Moduli Ingestion/UDP hanno 2 skip ciascuno e Gateway 3; suite mirate UDP97/recovery23 senza skip. Non attribuire SHA delle repliche READ ai worker.
+
+Lacune confermate: ASSETS owner non restituisce jobId/stato job/etichetta lavoro; mock MCP usa assets mentre owner usa items (gap fixture/composizione, non bug parser provato); profiling catch-all/delay fisso/5 tentativi per job e release quarantena senza sessione cumulativa finita; compiler managed rifiuta vocabularyMappings/relationshipMappings non vuoti. Registry/relationship/search/recovery engine esistono: collegarli, non ricrearli. Worker/service/compiler Onboarding source retained194b586 riletti, identici ai tre file in candidata diagnosticaa5ed8b.
+
+D1 causa/fix Farmacie; D2 composizione typed/resume/review con hardening successivi (preparabile indipendentemente); D3 discovery lavoro/job; D4 recovery profiling; D5 vocab/relazioni; D6 UX/resoconto; D7 qualifica residua. I cinque branch confrontati divergono: nessuna sostituzione integrale/fusione implicita. Causa Farmacie ancora NON osservata, PR52 non installata; stessi asset/job FAILED preservati. Stima34–58 ritirata, audit ora completo ma nessun totale sostitutivo inventato prima della causa e composizione esatta.
+
+M1/G4 invariato; M2/G5/G6/G7 aperti. Nessuna nuova CI o chiamata runtime per questo audit; solo documentazione. Nessun reupload/profile/reset/terza acquisizione Teatri/APPLY consumato, nuova attivazione, Registry restart/reinstall, merge/release acceptance. Operare sequenzialmente senza subagenti o automazioni. Gli header successivi sono STORICI; i NEXT “inventario da fare” e “no-revision mai provato” sono superati da questo audit.
+
+# CURRENT — Rettifica M2 v1.1: sviluppare soltanto i delta rispetto a M1
+
+[Mini-PET e matrice di riuso](OUF_M2_MINIPET_v1_0_20261026.md), [roadmap](OUF_M2_ROADMAP_20261026.md), [registro](../releases/csv-m2-plan-20261026.json). M1 acquisito e da riusare. Il requisito M2 non ancora accettato non dimostra implementazione assente. Prima inventario di componenti/prove, poi integrazione, collaudo e soli fix dimostrati.
+
+Stima v1.0 di 34–58 ore, centrale 46, e riserva 8–16 RITIRATE come forecast corrente, insieme alle finestre H+ derivate; nessun totale sostitutivo prima della diagnosi Farmacie e del confronto puntuale con quanto già fatto. G5/G6/G7 restano aperti, nessun criterio eliminato o M1 riaperto. Nessun effetto runtime eseguito. Header sotto storici.
+
+# CURRENT — Roadmap M2 autoguidato del 26 ottobre 2026
+
+M1/G4 acquisito sul caso Teatri; M2/G5/G6/G7 aperti. Il riferimento corrente per il residuo è il [mini-PET M2](OUF_M2_MINIPET_v1_0_20261026.md), con [roadmap sintetica](OUF_M2_ROADMAP_20261026.md) e [registro](../releases/csv-m2-plan-20261026.json). Sequenza: diagnosi/recupero Farmacie → percorso autoguidato → semantica generale → UDP e consultazione → ripetibilità/resilienza → due client e dossier M2. Stima residua preliminare 34–58 ore attive, centrale 46; riserva distinta 8–16. Ristima dopo causa owner; nessuna data garantita o consuntivo inventato.
+
+Farmacie conserva un solo asset/job FAILED. Causa runtime non ancora provata; diagnostica Onboarding PR52 qualificata in CI, non installata. Nessun upload/profiling/reset o vecchio APPLY da rilanciare. M2 richiede percorso ordinario senza terminale/SQL/log/ID manuali e senza “prosegui” tecnico, decisioni HUMAN reali, tutte le righe contabilizzate, reimport invariato e due client indipendenti. Nuovi effetti soltanto attraverso governance corrente; questo aggiornamento è documentale, senza authority o accettazione release. Le intestazioni successive sono cronologia, non il prossimo passo corrente.
+
+# CURRENT — G4 / M1 COMPLETATO, F5–F6 provate sul caso conservato
+
+Checkpoint26ottobre2026 17:01:17 Europe/Rome. Dossier evidence/csv-m1-f5-f6-owner-verification-20261026.json; handoff docs/handoffs/OUF_M1_COMPLETED_20261026.md. Policy53 verificata PUBLISHED su propostab7df94f4-10d8-4897-8655-42e3f6e27ba4 r1. Quattro READ distinte (due owner per ciascuna run) COMPLETE/AUTHORIZED/partialfalse/cursornull, nessun retry o nuova acquisizione.
+Stessi byteCSVhash08b206...; runa3208f2f del17ottobre/bundle1.0.0/pub996d58 e runbb2e2af4 del24ottobre/bundle2/pubdffa2 distinte.26handoff/lineage/outputHash/receiptHash join esatti, ACK durevoli, intake persistito/materializzazione osservata,13identità uguali anche per singolo row/contentHash; zeroissueaperte.20mappedIRI per riga e20proprietà correnti selezionate univoche per ciascuno dei13oggetti, provenienza di entrambe le run. Nuova run11–19contributi: omissioni rispetto20 sono TUTTE EMPTY_STRING; la selezione corrente mantiene i contributi precedenti complementari, non perdita di colonne.20IRI unione. Revisioni2 sotto profilo/pubblicazione diversi dal precedente: non dichiarare test same-configuration/no-revision o M2 superato.
+Label delle proprietà osservate RESTRICTED: policy52OPEN/ANONYMOUS redigeva correttamente;53dopo mandatoesplicito5label ha consentito le letture. Nessuna classificazione modificata, bypass, SQL o rawlog. Non attribuire questa causa a ogni vecchio502/403; prove GEToriginale200 e vecchi errori restano distinte.
+8Cinema letti tramite tipo canonico esatto semantic/cinema#Cinema: stessi8ID/ACTIVE/revisione1/2IRI del baseline18ottobre, partialfalse/cursornull. Nessun replay delle decisioni storiche o nuova attivazione durante la verifica: solo READ.
+G0–G4PASS; M1COMPLETE; tecnico8/8funzionale6/6 del caso conservato. M2/G5/G6/G7 e accettazione release NON concessi; WP5/WP6parziali, Supervisor dopo E2E completo. No merge/releaseacceptance/terzaacquisizione/Registryrestart/reinstall/reset. Mandato53scade18:33:12 Europe/Rome26ottobre, niente rinnovoautomatico. APPLY2READ e tutti scopeprecedenti CONSUMATI.
+Baseline miniPET1.1 invariata24hM1/55hM2centrali; consuntivo giorni21–26 incompleto, nessun totaleprogetto o percentualeoraria inventati. NEXT ripresaWP5/G5 eWP6/G6 dai gap correnti, poiG7/M2, Supervisor dopoE2E. Header sotto STORICI.
+
+# CURRENT — M1: piano immagini PREPARATO sul VPS; nessuna APPLY qualificata o autorizzata
+
+Ricevuta owner ACQUISITION_REDACTION_IMAGES_AND_PLAN_PREPARED_NOT_AUTHORIZED, complete=true, Exit0/DeliveryExit0; due metadata read/due ZIP/due archivi nativi, zero Engine/import/SQL/OAuth/credenziali/chiavi/runtime. Immagini native coincidono con qualifica containerd.
+Prova: evidence/acquisition-redaction-image-plan-target-20261026.json. frozenPlanHash d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2; nativePlanHash f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd.
+Scope /etc/ouf/deploy-snapshots/acquisition-redaction-image-plan-9bbe7298c2eff0be-v1 CONSUMATO. Log /home/oufadmin/ouf-redaction-plan-delivery.be68IBiz/bootstrap.log. NON ripetere preparazione, cattura o trasporti precedenti. Il comando del precedente handoff è ora storico.
+NEXT sviluppo/qualifica controller per SOLA sostituzione delle due READ esistenti. NESSUN nuovo comando VPS disponibile adesso; nessun APPROVO già ricevuto per questa operazione. Preflight corrente, review privata concreta e consenso terminale reale restano necessari prima di runtime. Piano privato non letto dalla chat.
+Policy51 scaduta14:14:26Z del26ottobre: nessun nuovo acquisitionREAD, rinnovo o proposta automatica. MCP9a/originali/READ attuali/Gateway/Postgres/Registry invariati. Causa live della redazione ancora ignota.
+G0–G3PASS,G4/M1/F5/F6OPEN; tecnico8/8funzionale4/6, Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Pins e prove precedenti: docs/handoffs/OUF_M1_REDACTION_OFFLINE_PLAN_READY_20261026.md. Header sotto STORICI.
+
+# CURRENT — M1: cattura consumata; due ZIP esatti presenti, prima preparazione offline pronta
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_M1_REDACTION_OFFLINE_PLAN_READY_20261026.md. Prove: evidence/acquisition-redaction-inputs-target-20261026.json e evidence/acquisition-redaction-offline-plan-qualified-20261026.json.
+VPS capture complete/Exit0/DeliveryExit0, inputsHash9bbe7298c2eff0be51bf943919c9db0044413256b08efe620a503f79aef4d7d2, quattro file/dieciGET, MCP corrente corrispondente/sei altri invariati. Scope acquisition-redaction-update-inputs-v1 CONSUMATO, non ripetere.
+I primi ZIP delle PR riportavano commit di merge: respinti dal guard esatto e conservati. Trasporto distinto dei due artefatti PUSH esatti già concluso sul runner esistente, run40336259618/job121618723161, case5ab4bafadb29cdd5, directory completa nell’handoff. Entrambi i trasporti CONSUMATI; quattro GitHubGET cumulativi, zero import/Engine/SQL/OUFOAuth/chiavi/runtime. Non riscaricare o riavviare runner.
+NEXT solo PRIMA preparazione privata di immagini/piano2READ con wrapper905bcb8438418af95a9566e991de0f212abd8145/SHA89cc15c8a24ade001c69a6cc884ac4a446923752a8a84fd4b47c4d2d76242618; comando unico nell’handoff. Source closuref5bfd6f0d79cb4dd192913081c71a7a3abfd331e, prepareSHA16133fe2870bdb8c4757f8b22e010f29c69fadb80190e7db4504e3f2764cd38f. Nuovo scope acquisition-redaction-image-plan-9bbe7298c2eff0be-v1 NON eseguito. Due metadata read/dueZIP/duearchivi/300s; zero Engine/appHTTP/SQL/OAuth/credenziali/chiavi/import/lifecycle. Nessun login o APPROVO. STOP conserva tutto, nessun rilancio.
+CI nativa Docker29 classic+containerd push40336259669/PR40336269673 positiva con logletti e7test/0skip perjob; veri import/inspect/create NON avviato solo in CI. Delivery root push40338268100/job121625600339 ePR40338282203/job121625643017 PASS, copier e entrypoint sigillato con cattura sintetica/ZIP reali. Wholecurl/sudo non eseguito come shell inCI. Due vecchi falsi green40335388909/40335396337 RESPINTI dai log: pipefail corretto, nessun indebolimento guard.
+Memory0/HostConfig/Env/Cmd/JVM conservati; MAC legacy e endpoint-only distinti, default assente/null/vuoto non normalizzati. Non fare del normale metadata MAC assente un nuovo falso drift; seguire docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md. Controller/ciclo completo sostituzione NON ancora qualificati: nuova APPLY solo dopo piano target provato, qualifica e review concreta APPROVO umano reale.
+Immagini diagnostiche7d85bfe/125510c NON installate. MCP9a, originali eREAD attuali invariati. ZERO nuove acquisitionREAD; ultima prova owner51 resta REDACTED con binding/ACKprefix/watermark positivi e motivo live non noto. Policy51 SCADUTA14:14:26Z/15:14:26CET26ottobre, nessun rinnovo/proposta automatico.
+G0–G3PASS; G4/M1/F5/F6OPEN, tecnico8/8funzionale4/6; WP5/6parziali, G5/G6nonchiusi,G7/M2nonaccettato. Baseline24h/55hcentrali invariata; consuntivo storico incompleto. SoloDUErunesistenti, nessuna terza acquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Supervisor DOPO E2E. Header sotto STORICI.
+
+# CURRENT — M1: diagnostica owner qualificata, pronta SOLA cattura metadata; NON eseguita
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_M1_REDACTION_DIAGNOSTICS_READY_20261026.md. Prova evidence/acquisition-redaction-diagnostics-qualified-20261026.json.
+IngestionPR47candidato7d85bfe eUDPPR48candidato125510c: redactionReasons categorie fisse senza label negate/ID/count/valori nascosti. GuardALLOW/cursor/minimizzazione invariati. CI PG17+immaginiHTTP reali positiva, logletti; alcuni altri vettoricondizionali dichiarati, nonPASSimpliciti. CandidatiNONinstallati; originaliREAD3ab998/b6a9f eMCP9a restano targetattuali.
+NEXT UNA cattura metadata reader102f5a/deliveryd4118d/SHAwrappera4af73fa6276a4351fe086254e0088ee2223adbea210f2b321bd314f16c04050. Comandoesattonellhandoff. Quattro fileconservati+10GETEngine/90s, verifica ultima installazioneMCP53baa/e2d940/f5a014 e6altriimmutati; zerodataapp/SQL/OAuth/credenzialifile/chiavi/lifecycle/import. Nuovoscopefissoacquisition-redaction-update-inputs-v1; NESSUNrisultatoVPSricevuto. STOPconsuma/no rerun. Qualifica8unit+2nativePASS/0skip perpush40331490696/PR40331500414; copiervalidatroot400/checksumROOT, noGH. WholewrappernonprovatoendtoendCI.
+Dopo ricevuta preparare pianoqualificatoSOLO2READnuoveimmagini; nessunMCP/Gateway/workerRegistryintervento. NuovaAPPLY solo dopoqualifica ereviewconcretaAPPROVO reale. TuttevecchieAPPLY/capture/prep/recoveryconsumateNONrilanciabili.
+Ultimalive51: Ingestionbindingpub/filehash+13handoff/ACKprefix/watermarkpositivi, itemsREDACTED; UDPREDACTED. NessunacquisitionREADnuovoora. Causeeffettiveancoranonnote; nessunallargamentogrant/nureauthcieco.51scade15:14:26CET26ottobre/no rinnovoautomatico.
+G0–G3PASS,G4/M1/F5/F6OPEN,G5/G6nonchiusi,G7/M2nonaccettato; tecnico8/8funzionale4/6,SupervisorDOPOE2E. Baselineore24/55centrali invariata; consuntivogiorni21–26incompleto, nuovointervalloWP4misurato935s senza backfill. Nessunaterzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+# CURRENT — OAuth riconnesso: owner READ raggiunti; dettagli REDACTED, E2E aperto
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_POST_OAUTH_OWNER_REDACTION_20261026.md. Evidence evidence/acquisition-post-oauth-owner-redaction-20261026.json.
+Owner conferma riconnessioneouf-admin dopoIAM39scope. DueREADdistinte Ingestion+UDP sullaSOLArunbb2.../teatri-csv-6609b245/limit100 a13:05Z conpolicy51valida: isErrorfalse/schemaowner/decisionRef51. VecchioSCOPE_MISSING MCP superato perquestechiamate; requireOPENowner di tutte6capability passa, nonJWTintrospection.
+IngestionSUCCEEDED/bundle2checksum7cebf/pubdffa2/managedhash08b206/snapshotmatches=true,13attempt/13lineage/13handoff/0failed/0quarantine,watermarkseq13/ACKprefix/matchesCandidate/notBeforeAcktrue. MA items0/partialtrue/REDACTED. UDPitems0/partialtrue/REDACTED: NONprovaassenzaintake/materializzazione. EntrambinextCursornull.
+Fontepinned: Ingestionredactsolo labelsVisible (labelmetadata assente/malformed/unknown odecisionperlabel); UDPanchetenantRAW/object eguardobject/property. Actualstoredlabel eguardesattoNONesposti; RESTRICTEDsolaipotesi, nonallargaregrantalla cieca. GRANTS51hash449d/READlabelsOPEN+ANONYMOUS,nessunamutazione.
+STOPnessunretry/cursor/secondarun. NEXTdiagnosiownerminimizzata della redazione senza rawSQL/token/log/APIbypass; nonaltrariconnessione oAPPLYconsumata. Eventualecodicediagnostico richiedequalifica epianoreviewHUMAN prima runtime. Policy51fino15:14:26CET26ottobre/14:14:26Z,nessunrinnovoautomatico.
+E2E/G4/F5/F6OPEN,SupervisorDOPOE2E. SoloDUErunesistenti,noattivazione/terzaacquisizione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+# CURRENT — IAM READ completato: 39 assegnazioni verificate, nuova autenticazione HUMAN richiesta
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_IAM_READ_SCOPES_COMPLETED_20261026.md.
+Evidence evidence/iam-read-client-scopes-completed-20261026.json. Consenso owner esplicito ricevuto per le due definizioni persistenti e sei assegnazioni Default. Create lineage.object.read=6c7af46b-e96b-40a1-954c-527993ea2fe9 e lineage.property.read=7523a2c6-088f-4478-9965-ed95412234eb, realm ouf/Type None/includeToken On. Tre definizioni precedenti e ingestion.run.read riusate, NON ricreare.
+Solo client ouf-chatgpt UUID3e64ac3a-eeaa-47bd-94ec-b78040b39e71: 39 assegnazioni=33 righe precedenti ESATTE+6 READ Default. Nessuna modifica ad altri client, mappers, ruoli, PKCE/audience/security. Nessun token/secret letto.
+NEXT normale NUOVA autenticazione della connessione OUF - MCP Server come ouf-admin; IAM console oufadmin distinta. Token corrente non attestato/rinnovato: ZERO acquisitionREAD in questa continuazione. Non dedurre scope effettivi dalla sola configurazione IAM. Solo dopo contesto HUMAN cambiato e grant51 ancora validi UNA nuova READ bounded runbb2..., primo DENY STOP senza retry.
+Policy51 finestra13:14:26→15:14:26CET26ottobre/12:14:26→14:14:26Z; nessuna estensione/proposta automatica. Precedente SCOPE_MISSING/MCP_PRE_ADMISSION/evaluated51 conservato. Due run esistenti soltanto; no nuova acquisizione/attivazione/reset/Registry restart/reinstall/merge/release acceptance. Tutti vecchi scope VPS consumati; E2E/G4/F5/F6 OPEN, Supervisor dopo E2E. Header sotto STORICI.
+
+# CURRENT — IAM browser autorizzato: 3 definizioni READ create, completamento bloccato da auto-review
+
+Handoff corrente INTEGRALE: docs/handoffs/OUF_IAM_READ_SCOPES_PARTIAL_REVIEW_20261026.md.
+Evidence evidence/iam-read-scope-definitions-partial-20261026.json. Login consoleIAM riuscito viaBrowserAuth dopo correzione esplicita credenziali dell’owner; accountIAMoufadmin distinto daappouf-admin. Nessuna credenziale/token/secret osservata o pubblicata. Browsercloudtab1 autenticata/markHandoff, ultimopageurban.object.readsettings, variabilitab/auth/createReadScope/createdReadScopes inREPL; ripresaread cua.rewriteDocumentation.
+Clientouf-chatgptLIVE UUID3e64ac3a-eeaa-47bd-94ec-b78040b39e71:callbackChatGPTesatta/enabled/OpenIDConnect/PKCEonS256/sessioniouf-admin visibili. Nonintrospezionetoken dello specificolink. Baseline33scopeclient completi nell’evidence,6READtuttiassenti. Realm avevaingestion.run.read UUID023b8792-3762-43e3-8f4f-e85bdad9d1f4/TypeNone/includeTokenOn/metadatiOn,nonmodificato;altre5definizionimancanti.
+GIAcreate/rilette3definizionipersistentiTypeNone(NORealmDefault)/includeTokenOn/metadataOn/consentOn:
+ingestion.contract.read=c3dfdd8a-f088-4639-beb4-0867076e3905; ingestion.lineage.read=fd654927-b341-416e-9c9d-4ccdf8f65092; urban.object.read=ac96ddab-a6b9-44a7-ae44-853edf64ef03. NONricreare/cancellare. ZEROassegnazioniclient/mappers/ruoli/workload-devicechange.
+Auto-review ha RIFIUTATO creazionelineage.object.read+lineage.property.read: autorizzazione generica alla correzione client non esplicita abbastanza per definizioniIAMpersistentinelrealm. Nessunbypass/rerun; osservazione successiva conferma3created/ultimaurban.object.read. NEXT chiedereconsensoesplicito per creareSOLO2restantiTypeNone eassegnare6READDefault alSOLOouf-chatgpt,preservando33precedenti/security/audience/mappers/PKCE,quindireadback39 e normale nuovaautenticazioneHUMANouf-admin. NoncambiareAPIperaggirareblocco. Screenshotacquisito ma syncfilefallita:nessunlinkinesistente.
+Policy51PUBLISHED/hash449d.../106grant=94vecchiESATTI+12READdue run,finestra13:14:26→15:14:26CET26ottobre(12:14:26→14:14:26Z). Nessunrinnovo/propostaautomatica. PrimoREADIngestionrunbb2...avevaSCOPE_MISSING/MCP_PRE_ADMISSION/evaluated51/retryablefalse; ZEROretry/UDP/secondarun eZEROacquisitionREADdurantebrowser. DopoIAM+nuovocontestoprovato e51ancoravalida considerareUNA nuovaREADbounded;nuovoDENYstop/noreauthloop.
+MCP9ainstallatoVPSpositivo/scopeconsumato,6componentiinvariati/Registryfalse. Tuttevecchiedelivery/APPLY/capture/prep/recovery/readerconsumate NONrilanciabili. E2E/G4/F5/F6OPEN,SupervisorDOPOE2E; nienteterzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+# CURRENT — diagnosi MCP qualificata; NEXT prima cattura READ dei suoi input correnti
+
+Policy49/VPS pubblicazione descrittori riuscita e policy50/HUMAN grant12READ verificati restano validi come prove storiche. Due READ distinte Ingestion/UDP runbb2e2af4... negano authorization denied/retryable=false; nessun retry e nessuna lettura runa320... successiva. Una nuova ouf.system.status con ouf-admin è HEALTHY/actionRequiredfalse/partialfalse/PUBLIC_OPERATIONAL/redactedtrue: prova solo quel percorso, non scopesREAD o bundle50 locale. La causa live dei dinieghi resta NON provata.
+
+**Handoff corrente INTEGRALE e nuovo comando di SOLA cattura:** docs/handoffs/OUF_MCP_DENIAL_DIAGNOSTICS_AND_READONLY_CAPTURE_20261026.md.
+Qualifica: evidence/mcp-denial-diagnostics-capture-qualified-20261026.json.
+Non chiedere all'owner una listaOAuth non esposta senza percorso verificato; questa richiesta del precedente handoff è superata. Nessun token/secret o auditprivato/SQL/rawlog va richiesto/letto per aggirare il diniego.
+
+PR draft GioNob/ouf-mcp-server#79, source9a374dd07745f059de3ad39757c68f02db6d29c3: solo due READ espongono reasonCode bounded/evaluatedPolicyVersion della decisione locale, con errore permanente e zero dispatch suDENY. Generictools/audit/errorcompatibilità/ownerdenials preservati. Non crea challengeOAuth, grant, retry o acceptance. CI SDK/cache/TLS e regressioni passate push40284011794/PR40284018756; fullCI Docker/Postgres/staticcheck/vuln push40284011851/PR40284018791 PASS/logdirettiletti. RuntimeMCP distribuito resta bd60ccd, non aggiornato.
+Artifact CI12633545900/source9a374dd0/configIDffc78.../zipSHA6c31.../tarGzSHA19fd... verificati, nessun rebuild/relabel. Nativeidentity per profiloEngine ancora da derivare/qualificare; CI non è provaVPS.
+
+Nuova cattura runtime6fc2aba137191411e4d22606957e0c4b24d687aa/SHA909611450683cae6ac15cc41f2e4f86c7eaad6585830dd15961f51916446a9e4;
+delivery28db992823d90069192e0eb2bb1c4c90de961c8a/wrapperSHA6e50d53c3772448e50b578817d29a46cf203250d42113975d30e37119e7e3461.
+Scope FISSO /etc/ouf/deploy-snapshots/mcp-denial-update-inputs-9a374dd07745f059-v1, codice root400/dir700/checksumROOT, fileprivati600. Legge5file della storia esatta installata e fa9GET attesi al socketEngine giàpinned (max10), verifica4originali invariati e3candidati installati stessa generazione. Max8file<=6MiB, Engine2MiB/risposta20MiBcumulativi,90scontroller. Claim durevoli PRIMA di ogni lettura, bytehash esatti/non JSONnormalizzato, originaliimmutabili.
+SOLO metadata: zero POST/import/containerlifecycle/namespacejoin/credenzialefile/OAuth/SQL/chiavifirma/routePUT/acquisizioni/attivazioni/grant/reset. Non importa/esegue vecchie entrypoint e preserva contatori installazione306GET/22writes ecc. Non rivela scopes/bundlelocali o causa del diniego; prepara futura reviewMCPconcreta.
+CI finale push40287470611/job121454430366 ePR40287477086/job121454450598:9unit+2native ROOT/DockerGET/peer/copia400/nonrootdenial PASS/0skip/logletti; storia/app fixture sintetiche, non provaVPS. Primo risultato della NUOVA cattura NON ricevuto. Positivo atteso MCP_DIAGNOSTIC_UPDATE_INPUTS_CAPTURED_NOT_AUTHORIZED/complete/Exit0/DeliveryExit0/inputsHash, runtimeAuthorityIssuedfalse/continuationAuthorizedfalse. Nessun APPROVO o login richiesti. STOPconsuma anche questo scope: conserva prove, nessun rilancio/cambiochild.
+
+NON esiste ancora consegna APPLY per il futuro aggiornamentoMCP. Dopo inputfreschi: stagingCI/nativeimageidentity, piano chiuso e nuova reviewHUMAN concreta, firme/authoritylive, watchdog, MAClegacy gate completo e1manager, zero originalworker/2READ/Gateway/Registrytouch. Vecchi rollout con rollback automatico non adatti. Tutti vecchi scope e controller consumati restano NONrilanciabili.
+GrantREAD50 scadono26ottobre2026 09:24:50CET/08:24:50Z: mai rinnovo o proposta automatica. Niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. E2E/G4/F5/F6 OPEN, Supervisor solo dopoE2E. Header sotto STORICI.
+
+# CURRENT — policy50 HUMAN pubblicata; due READ negate, NESSUN retry
+
+Proposta64655de1-bf1e-4acd-aada-d2f27154539a/rev1/PUBLISHED/finalPolicyRefouf-lab-authorization:50 confermata da proposal.read STESSOID dopo decisioneTHSowner. Policyhash067cb58da4e6f0278b5a81f4858646bb50222bb48e9cf63d3141621e9cfaf05f.4ruoli/4assegnazioni, originali2ruoli/34permissionadmin/2assegnazioni preservati;94subjectgrant=82originaliESATTI+12READvincolati. Finestra fino26ottobre2026 09:24:50EuropeRome(+01)/08:24:50Z, nessun rinnovo/reset automatico.
+
+**Handoff corrente INTEGRALE:** docs/handoffs/OUF_ACQUISITION_POLICY50_READ_DENIED_20261026.md.
+Prova evidence/acquisition-read-policy50-denied-target-20261026.json.
+Due invocazioniDISTINTE una pertool Ingestion eUDP sulla SOLArunbb2e2af4-9c0a-49ea-8ad9-a947987c1472/sourceIdteatri-csv-6609b245/limit100/accountouf-admin: entrambe {"code":"authorization denied","retryable":false}/isError/connectorINVALID_ARGUMENT. Nessunretry o lettura della secondaruna320...; nessunrecord acquisizione ottenuto. Non inventare HTTP403owner, nuovo502, scopeeffettivo o guardesatto.
+SourceMCPbd60... mostra erroregenerico di guarddelegazione/Authlocale primaAdmission, ma non espone decisioncode o bundlecaricato. SCOPE_MISSING ipotesi, non causa live provata; cachelocale eclaimscope/delegazione restano da distinguere. Nessun SQL/auditprivato/rawlog/tokenbypass orestart/reset.
+
+NEXT dato: soli NOMI degli ambitiOAuth configurati/richiesti nella connessione OUF-MCPServerouf-admin (seiREADprecisi nell'handoff), nessunbearer/secret. Nessun toolespostointrospectscopes; PluginManagementexcludesOAuth. Non allargare grant/amministrazione, cambiareaccount, provare tuttealtreREAD o ritentare dopoattesa senza prova di contestoautorizzativo cambiato.
+VPSpublication49 positiva resta valida(106grant/Exit0/DeliveryExit0); scopeeditableeTUTTIprecedenticonsumati, vecchi comandiNONrilanciabili. NessunnuovocomandoVPS. E2E/G4/F5/F6OPEN, Supervisor dopoE2E; niente terzaacquisizione/attivazione/sourcebudget/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+# CURRENT — descrittori PUBBLICATI sul VPS; proposta READ temporanee PENDING, solo conferma THS
+
+VPS EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete=true/Exit0/DeliveryExit0. DoppioincollaIDENTICO=UNA esecuzione. Reviewe16e816b6ab0c78c7645b22cb72aec357e2730ca133c68f32c0db538be6cbf07,TTY72byte+Enter/rejected0; draftcb75...revision1/policy49/hashb4bed35f9fe591aa828a50f8d2fc7c7d8aeb054b88c320f0a66b9c51f2d50a8e,106grantpreservati.7writes/27GET/2preview/1554476bytes/UNpublish/0register-create/grantnuovo/Engine/SQL/Registrytouch. StorieIAMeSQLstorica preservate. Scope editable-review-continuation-v1 CONSUMATO; NON rilanciaredelivery059ea7fc/runtime3d8408ac o precedenti. Nessun nuovo comandoVPS.
+
+**Handoff corrente INTEGRALE:** docs/handoffs/OUF_ACQUISITION_DESCRIPTORS_PUBLISHED_PENDING_READ_GRANTS_20261026.md.
+Receipt evidence/acquisition-existing-descriptors-published-target-20261026.json; proposta evidence/acquisition-governed-read-grants-proposal-20261026.json.
+MCPouf-admin ROLESduelettureidentiche2ruoli/34adminpermission/2assegnazioni(digest7081...invariato),GRANTS82/nextAfternull/policy49. Mancanti5READgrant, storicoingestion.run.readconservato. Esposizionetool eGRANTSconfigurati NON provanoALLOW/scopesOAuth. Scopeintrospection nonesposta; PluginManagementescludeOAuth, niente tokenread/reauth/bypass. NessunaREADacquisizione invocataora.
+
+UNA proposalREPLACE_ROLES64655de1-bf1e-4acd-aada-d2f27154539a/rev0/PENDING/finalPolicyRefnull, una proposal.read confermaPENDING. Catalogointero preservaoriginali;aggiunge2ruoli6READciascuno/2assegnazioninominaliouf-admin,runesattebb2...ea320.../sourceteatri-csv-6609b245/module/detailelabelsOPEN-ANONYMOUS. Validità07:24:50→09:24:50EuropeRome26ottobre2026(+01,CET),UT C06:24:50→08:24:50. Reviewscade07:39:58EuropeRome(06:39:58Z). approvalPathhttps://api.ouf-lab.it/trusted-human/authorization/?proposal=64655de1-bf1e-4acd-aada-d2f27154539a.
+DecisioneSOLOHUMANdirettaTHS conouf-admin, MAIagente/MCP/browserapprova. Nessungrantpubblicato oapprovazione ricevutaora. Noncrearealtreproposte/riusareexpired/rifiutate; seambiguoSTOPeproveconservate.
+
+NEXT: dopoHUMAN,proposal.readSTESSOID→PUBLISHED/finalPolicyRef,ROLES/GRANTSfreschi+preservazione/vincoli,POI4READbounded delleDUEacquisizioniesistenti ecorrelazionedurableACK/watermark/intake/materialization/provenance/13identità/20IRI/8Cinema. OAuthscopeeffettivo resta NONprovato; governatoREAD dopo grantvero potrà provarloo negarlo,403mai replayautomatico. Niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. E2E/G4/F5/F6OPEN,Supervisor dopoE2E. Header sotto STORICI.
+
+# CURRENT — STOP input consumato; continuazione con riga VISIBILE qualificata, prima esecuzione VPS attesa
+
+UltimoVPS STOP_RECONCILE/EXACT_TERMINAL_REVIEW_LENGTH_EXCEEDED, complete=false/Exit2/DeliveryExit2/publicationClaimed=false. Review9dce...NON acquisita;6writes/17GET/1preview/950031bytes. Receipt evidence/acquisition-descriptor-tty-input-stop-target-20261026.json. Scope tty-publication-continuation-v1 CONSUMATO. Nessun vecchio wrapper/review/login/token/register/create/SQL replay o reset. Causa dei byteextra non dimostrata; non attribuirla all'operatore.
+
+**Handoff corrente INTEGRALE e comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_EDITABLE_CONTINUATION_20261026.md.
+Runtime3d8408ac6154d667ab64042561f5d3d14b9f7a84/SHA5ad8bd38a51ba13aee3501c6dffe3629583c0eeb3fe20fdedac04f62f8d4884d;
+delivery059ea7fc60b19916bf484bd7bfc483407840540b/wrapperSHA8578584cb6b8ca33bafde94229406f8c1ab8da203c768053bcd688d72dcfce6a.
+Nuovo childFISSO editable-review-continuation-v1 sottoTTYconsumato; codiceROOT400/dir700/checksumROOT/logruntimeinterno600, sudo diretto SENZA pipe. Lettore canonicoVISIBILE: Backspace/CtrlU/Invio e righeerrate correggibili nella STESSA review/scadenza, nessun reset o approvazione implicita. EOF/scadenza/cancellazione restanoSTOP; mai riaprireSTOP. Solo NUOVO APPROVO hashfresco+Invio reale, nessuna approvazione agenteproduction.
+
+Cumulativi6/17/1/950031 e storiaIAM incorporati. Guard exactSTOP/result/review9dce/priorlookup/expired6ff/previewretained prima login, originaliimmutabili. PrepareSOLEGET, prima preview NON ripetuta. Unapreviewresidua2/2 eUNpublish6→7 dopoconsenso; stessi massimi7writes/160GET/2preview/32MiB,900sreview/1800total/tokenexp−15 senza estensione. NessunaREGISTER/CREATE/SQL/Engine/lifecycle/chiaviprivate/credfile/grantnuovo. Rawreceiptmutante privata prima guard, ambiguoCLAIMED/no replay.
+
+CI finalepush40278392372/PR40278398191:12unitPTY+25trasporti sudo reali PERbackenduse_pty/!use_pty PASS/0skip; push40278392359/PR40278398186:8protocol+6rootcustody+3ownerJava21/PG17 PASS/0skip, logdirettiletti. Vecchioerrorelunghezza evecchioTIMEOUTpipe riproduttori conservati; correction noncambiahash/deadline/counters. Ownerdeployed1b1222ce reale/SDK/serialization/transazioni/ETag0→1; principalIAM/storia/decisioniCI sintetici, externalRuntimeSynchronizer mocked. Non provaVPS/E2E/THSacceptance.
+Nessun risultatoVPS della nuova continuazione ricevuto. STOPconsuma nuovoscope, niente rerun/cambiopath/rollback.
+DopoPUBprovata: scopesMCP/ROLES/GRANTS fresche e nuova propostaHUMAN/THS su DUErun esistenti, poi4READ/correlazioneE2E. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; SupervisordopoE2E. Nessunaterzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+## Regola permanente — approvazione terminale recuperabile
+
+Non usare raw input nascosto con STOP a72byte per review che l'owner deve incollare da cellulare. Usare canonical line editing visibile e feedback recuperabile sulle righe complete errate entro la STESSA scadenza/hash/contatori; solo riga esatta+Invio acquisisce consenso. Non dedurre inputlive dal transcript o incolpare l'operatore. Qualificare duplicatoCtrlU, rigaerrata+correzione,Backspace,LF/CR/CRLF/frammentato/noEnter/scadenza/restauro su intera catena sudo reale con/senza use_pty; includere prova hash/deadline/counters immutati e conservarereproducervecchio. Questo NON riapre scopeSTOP, ampliaautorità o autorizza replay.
+
+# CURRENT — difetto sudo+pipe riprodotto; continuazioneTTY qualificata/consegnata, prima esecuzione VPS attesa
+
+UltimoVPS: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, nessunPUBLISHclaim,6writes/13GET/1preview/744072bytes. Scopeoriginale e review6ff5...CONSUMATI. Nessuna colpaoperatore dedotta; no vecchi wrapper/approval/login/token/register/create/lookupSQL replay/reset.
+
+**Handoff corrente e NUOVO comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_TTY_CONTINUATION_20261026.md INTEGRALE.
+Runtime d816b283a706e753d629e35e41c14cabdbbd247c/SHA174bdaefedf693e133a918c6f246e2c9e427b768c651764289379f87f5fbe0a0; deliveryed628178ee6e450b3c62a47b8e193130fa882879/wrapperSHAc44408931660941fdbd7d303b1152ebf61f223903a3896e54012b63e94be94dd.
+Nuovo childFISSO tty-publication-continuation-v1 sotto oldrootpubcb75; codiceROOT0400/dir0700/checksumROOT. Nuova intentoresidua e review concreta, non riapertura della precedente.
+
+DIFETTO RIPRODOTTO con rigaAPPROVO esatta+Invio: sudo use_pty+stdout|tee provoca timeout constdinIsTTYtrue ma stdinForegroundfalse/controlForegroundfalse. Il mio vecchio gate non copriva questa composizione. /dev/tty da solo non bastava. Fix: sudo INTERATTIVO diretto senza pipe; logging INTERNOruntime root600/contesto700; controllingTTYforeground guard primaIAM/scope e lettore exactbytes+Invio conflagsrestored. ACKimmediato Inputricevuto/APPROVAZIONEACQUISITA eheartbeat10s, fasiGET/retrypubvisibili. Niente sudoerschangeVPS. FlagliveVPSnonlettiretroattivamente: il reproducer è provaCI deldifetto, non osservazione deltermiosVPSstorico.
+
+Contatori6/13/1/744072 eprimepreviewownerPRIVATE incorporate. La prima preview NON si ripete: prepareSOLEGET, una sola previewRESIDUA2/2 dopo nuovaAPPROVO+UNPUBLISH6→7. Stessi massimi7writes/160GET/2preview/32MiB,900sreview/1800stotale/tokenexp−15. ProveSTOP/reviewhash6ff/candidato027f/UUIDcb75/rev0/previewretained esatte eoriginaliimmutabili, storieIAM conservate. Runtime ha soloGET e exactUUIDpreview/publish, nessunREGISTER/CREATE/SQL/Engine. Claim+fsync e rispostaPRIVATE prima guard, ambiguo restaCLAIMED/no retry. Sola reviewNUOVA IAMouf-admin+veroTTY, hashFRESCOsu riga isolata+Invio. Codice device SOLO browser.
+
+Qualifica puntuale: push40245135499 jobs121324991821/121324991979 ePR40245139357 jobs121325002894/121325002718:7protocol+5rootcustody+3ownerJava21/PG17 PASS/0skip/logletti. TTYcompletaPR40244833347 use_pty121324091729/!use_pty121324091591:8unitPTY+17trasporti PERbackend PASS/0skip/logletti, incluso vero sudo/usernonroot/root/logger econtinuazione0grant. ReproducerlegacyconInvio conservato anchepush40244418730/PR40244422632. IAM/principal/storia/decisioniCI sintetici; externalRuntimeSynchronizer mocked. No approvazioneproduction simulata o E2E/THSacceptance.
+
+Atteso soloVPS EXISTING_ACQUISITION_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete/Exit0/DeliveryExit0,7writes/2preview/retained1new1/106grant/ACTIVE49. Nessun risultato continuazioneVPS ricevutoora. Rootlog: oldscope/tty-publication-continuation-v1/operator.log; logbootstrapoperatoreconservato. NON pipeesternaalcomando. STOPconsumachild/no rerun/cambiopath/rollback.
+
+DopoPUBprovata: scopesMCP/ROLES/GRANTS fresche, nuova propostaHUMAN/THS ristretta alle DUErun esistenti, poi4READ/correlazioneE2E. DueinvocazioniMCPGRANTSdiagnostiche precedenti separate/contiwireignoti preservate. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN, Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+## Regola permanente — HUMAN terminale e sudo interattivo
+
+isatty() NON prova che un processo siaforeground o riceva l'input; echoAPPROVO non è consenso acquisito. Non collegare stdout di sudo interattivo atee/pipeline: use_pty può produrre il blocco pur conInvio corretto. Tenere stdout sulterminale, loggare dentro ilcontroller in fileprotetto, guardcontrollingTTYforeground prima di autenticazione/claim, readerexactbyte+Enter conriscontroimmediato, heartbeat eflagsrestored. Qualificare l'INTERAcomposizione su sudo realewith/withoutuse_pty, LF/CR/CRLF/pasteframmentato/noEnter/wrong/timeout, non soloPTYiniettata nella funzione. Conservare riproduttorenegativo delvecchiocodice. Non disattivaresudoPTYproduction o attribuire erroreutente senza prova.
+
+# CURRENT — STOP per reviewTTY NON acquisita confermato dal journal; nessun claimPUBLISH
+
+Owner ha restituito proiezionejournal: STOP_RECONCILE/FINITE_HUMAN_WINDOW_EXPIRED, humanReviewApprovedfalse, pendingReads[], publishStatenull, contatori6writes/13GET/1preview/744072bytes (identici alla review). Quindi questo controller non ha superato APPROVO né riservato/inviatoPUBLISH: nessuna settima scrittura o seconda preview neljournal osservato. Non attribuire causa aIAM, Registry, MacAddress o timeoutowner. RigaAPPROVO visibile era soltantoeco; non prova acquisizione. Causa precisa del mancato input/EOL non dimostrata.
+
+Receipt evidence/acquisition-existing-descriptor-publication-review-expired-target-20261026.json. Scope /etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1 e review6ff5... CONSUMATI. Nessun rilancio del wrapper24f2abbd, vecchiareview/login/token, REGISTER/CREATE/lookup/SQL o cambiochildperaggirare. Exit/DeliveryExit controller non forniti; non inventarli. NON serve ordinare Ctrl+C a un controller già STOP sulla base della nuova prova; cancellazione mai ricevuta e non inferita.
+
+Due invocazioni diagnosticheMCP GRANTSouf-admin separate osservavano ancora ACTIVE48/hash6209...; conteggi wire/byte non disponibili, non inventare totaliHTTP. Preservare questa storia oltre ai contatori nativi, nessun reset/budgetfonte. Draftesistente UUIDcb75ddb0-bd19-48fb-847f-1c47aff3207a/rev0 resta ultimoownerconfermato dal lookup; nessuna nuova conferma corrente del draft dalreadjournal.
+
+NEXT sviluppo/qualifica del percorsoTTY completo (sudo+pipeline+veroTTY, inputmobilecon/senzaInvio/CRLF/paste, heartbeat/ack immediato/restauroTTY), poi eventuale continuazione RESIDUA governata sullo stesso draft: incorporare6/13/1/744072 epreviewownergiàeseguita, UNA SOLA preview residua entro massimo2 eUNpublishresiduoentro7writes, reviewNUOVAeffettiva. Nessun comandoVPS nuovo o nuovaauthorityconsegnati ora. Terminale scaduto non va riaperto/riproposto. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; Supervisor dopoE2E, no terzaacquisizione/attivazione/Registryrestart/reinstall/merge/releaseacceptance. Header sotto STORICI.
+
+# CURRENT — pubblicazione RESIDUA avviata; scadenza superata senza risultato, NON rilanciare
+
+L'operatore da telefono ha eseguito la consegna24f2abbd/runtime144778..., contesto /etc/ouf/deploy-snapshots/acquisition-existing-draft-publish-cb75ddb0-v1. Preflight e prima preview owner riusciti: UUIDcb75ddb0-bd19-48fb-847f-1c47aff3207a/rev0/base48/candidato027f.../106grant, review6ff5fa76c217888e174d760b84a0ce8ad6e6242955546bd9ddcca050e7851ff7. Ultimi contatori OSSERVATI ALLA REVIEW:6writes/13ownerGET/1preview/744072bytes, NON finali. Scadenza mostrata2026-10-25T23:58:29.881352+01:00 Europe/Rome. RigaAPPROVO visibile in terminale ma la sola eco NON prova acquisizioneTTY o emissionePUBLISH.
+
+Owner riferisce alcuni minuti senza output, poi SCADENZA SUPERATA senza JSON/Exit. Nessuna ricevuta STOP/COMPLETE/claimfinale/ACK o lettura journal corrente ricevuta. NON affermare successo, assenza di effetti, fase esatta o causa dello stallo. Scope runtime e review CONSUMATI/IN_FLIGHT da riconciliare: nessun wrapper/review/token/login/REGISTER/CREATE/PUBLISH/SQL replay, nuovo child o reset.
+
+Due nuove letture governate MCPouf-admin GRANTS(limit1,subjectb93d8cf6-cd14-4ee6-91d7-84cd76c4f500), prima e dopo la scadenza riferita, restituiscono ancora ACTIVEouf-lab-authorization:48/hashsha256:6209fe7a832a4b92fcd543304a5480edb85f6f66dfe8476245075509e2c7f46b. Due ownerread diagnostiche SEPARATE e ADDIZIONALI ai contatori controller: non azzerarle/occultarle; non autorizzano nuove scritture. Snapshot non dimostra che un eventuale comando già inviato non possa completarsi dopo. Prima chiamata tool locale rifiutata per link_id mancante, corretta usando SOLO linkouf-admin già autorizzato; nessun accountalternativo o refresh.
+
+Operatore soloCELLULARE: non imporre secondo terminale o script lungo mentre il primo resta occupato. Passo pratico successivo: cancellare UNA volta il solo comando foreground scaduto con Ctrl+C nello stesso terminale e conservare tutte le nuove righe/JSON/Exit; esito di cancellazione ancora NON ricevuto. Nessun kill/restart servizi/Registryworker o rollback. Se non torna prompt, riferire il fatto; non inventare PID o fare kill ampi. Dopo prompt: eventuale lettura locale delimitata del journal, non replay. Lettore lungo proposto nella chat NON eseguito.
+
+CI16protocol+5custody+3ownerJava/PG17 resta qualifica, NON provaVPS. Occorre diagnosticare la divergenza di osservabilità/deadline prima di consegnare altro comando mutante. L'input/devicecode comparso in chat NON va ripubblicato in GitHub/log pubblici.
+Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; Supervisor dopoE2E. Nessuna terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Handoff precedente OUF_ACQUISITION_EXISTING_DESCRIPTOR_RESIDUAL_PUBLICATION_20261025.md ora STORICO: il comando NON va eseguito di nuovo.
+
+# CURRENT — sola pubblicazione RESIDUA qualificata/consegnata; prima esecuzione VPS attesa
+
+Ultimo VPS EXISTING_DESCRIPTOR_DRAFT_OWNER_CONFIRMED_NO_PUBLICATION/complete=true/Exit0/DeliveryExit0: UUIDcb75ddb0-bd19-48fb-847f-1c47aff3207a, revision0/DRAFT/base48/ETag0/candidato027f.../106grant esatti.6writes/9GET/0preview/537123bytes;2EngineGET/1SQL/1exec. Scope lookup root5a31...v1, publisher e reader precedenti CONSUMATI: non rilanciare, ripetere REGISTER/CREATE/SQL, riusare review5a31/token/login o reset.
+
+**NEXT/comando unico e handoff integrale:** docs/handoffs/OUF_ACQUISITION_EXISTING_DESCRIPTOR_RESIDUAL_PUBLICATION_20261025.md. Runtime d70cf9cbe816f41f76d08858084bd393ece45c69/SHA14477872585ad75bf96da5bb13ed6ee4381911d81ccb0ec76d7166f3ec744932; delivery24f2abbd08c5987cd47fce1d952e0549c493a584/wrapperSHA6842bbe509f105021bd4be6a24553230d41054db7e83e372c0c91a753b2f73ef. Nuovo contextroot acquisition-existing-draft-publish-cb75ddb0-v1; codiceroot0400/dir0700 ed esecuzioneROOT, fchmodFD+fsync e checksumROOT.
+
+SOLO GET governate+2preview+UNpublish dell'UUID/rev0 già confermato, nessuna rotta REGISTER/CREATE/SQL/Engine. Nuovo normale IAMouf-admin/sub esatto/HUMAN, niente refresh/tokenfile. Ricevuta lookup digest8f69dd... e proveoriginali immutabili vincolano candidato/contatori; storieIAM disponibili incorporate. Preflight ACTIVE48/capcatalog/draftfull/ETag0 epreview5aggiunte/0rimozioni/0grantchanges. Review NUOVA privata concreta connonce/UUID/candidato/preview/hashcodice/limiti/scadenza; SOLO veroTTY APPROVO hashFRESCO su riga isolata. Poi nuovicontrolli/previewidentica/ETag0 eclaim+counter6→7fsync primaPUBLISH. RispostaPRIVATE/status/ETag/body PRIMA parsing/guard ancheHTTPError. Persa/ambigua restaCLAIMED/no retry. Atteso PUBLISHEDrev1/ETag1 eACTIVE49 con106grant invariati. Pubblicare descriptor NON concede grantREAD/scopesMCP o E2E.
+
+Massimi originali7writes/160GET/2preview/32MiB,900sreviewexec/1800stotale/IAM600s, tokenexp−15 può ridurre; SIGALRM limitaI/Obloccato. SoloGETtransitoriretryfinitejitter;POST/permanenti/unknownnonripetuti. STOPconsuma fixedchild, conserva prove e nonrilanciare.
+
+CI finale push40240974039 (jobs121312457757/121312457646) ePR40240978367 (121312470986/121312470979):16protocol+5rootcustody+3ownerJava21/PG17 PASS/0skip, logdirettiletti. Owner DEPLOYED1b1222ce invariato/SDK/migrazioni/HTTPserialization/ETag0→1/transazioni/106grant reali; principalIAM/storia/TTYdecisionCI sintetici, externalRuntimeSynchronizer mocked. Successo/rifiuto/commitrispostapersa conunpublish e0REGISTER/CREATE. Root077/copia0400/esecuzione/nonrootdenial/replaynegati REALI. Non provaVPS orefreshMCP/JWTproduction/THSacceptance.
+
+Receiptlookup evidence/acquisition-existing-descriptor-draft-lookup-target-20261025.json; qualifica evidence/acquisition-existing-descriptor-residual-publication-qualified-20261025.json. BaselinePEToriginale allegata hash e63df... consultata: Matrix1.7§1/4/7, Authorization1.5§16–18/36.6–36.7, THS1.6§27.1–27.3. ReviewTTYperriparazione sotto mandatoowner nonchiude THS/ApprovalChallenge.
+
+Dopo risultatoPUBBLICAZIONEVPSpositivo: scopesMCP/ROLES/GRANTS fresche e nuova proposta HUMAN/THS ristretta alle DUErun esistenti, poi4READgovernate. Nessun replayproposalscadute/rifiutate oterzaacquisizione/attivazione/reset/Registryrestart/reinstall. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN, Supervisor dopoE2E. Nessunmerge/releaseacceptance. Header sottoSTORICI.
+
+# CURRENT — draft ESISTENTE confermato dall'owner sul VPS; NEXT sola pubblicazione residua
+
+Owner EXISTING_DESCRIPTOR_DRAFT_OWNER_CONFIRMED_NO_PUBLICATION/complete=true/Exit0/DeliveryExit0. UUID cb75ddb0-bd19-48fb-847f-1c47aff3207a, revision0/ETag0/DRAFT/base48/candidatohash027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b/106grant esatti. Cumulativi6administrativeWrites/9ownerGets/0previewPosts/537123bytes; lookup2EngineGET/1SQL/1exec, IAM1GET/10POST/13166bytes. Nessuna registrazione/CREATE/preview/pubblicazione/authority/grantnuovo. Scope lookup root5a31...v1 CONSUMATO; nessun rilancio o SQL/CREATE ripetuto. Receipt evidence/acquisition-existing-descriptor-draft-lookup-target-20261025.json; logdelivery49373j4a/operator.log ebootstrap.log. Il risultato NON autorizza pubblicazione e NON chiude E2E.
+
+NEXT: implementare/qualificare esecutore RESIDUO con SOLE GET owner, due preview e UNA pubblicazione dello stesso UUID/revision0, nessuna rotta REGISTER/CREATE. Nuovo login normaleouf-admin, contatori cumulativi incorporati, ACTIVE48 e registrazioni/draft/candidato esatti; review NUOVA concreta privata e APPROVO hash FRESCO su riga TTY isolata. Conservare receipt mutante PRIMA parsing/guard. Nuovo comando VPS non ancora consegnato. Tecnico8/8, funzionale4/6, E2E/G4/F5/F6OPEN, Supervisor dopoE2E; niente terzaacquisizione/attivazione/reset/Registryrestart/reinstall/merge/releaseacceptance. Header sottoSTORICI.
+
+# CURRENT — lookup esatto del draft ESISTENTE qualificato; prima esecuzione VPS attesa
+
+Ultimo target RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete=true/Exit0: cinque registrazioni APPLIED; CREATE_DRAFT CLAIMED/hash027f626d...; UUID/revisione/receipt assenti; nessun PUBLISH dispatch. Publisher e retained reader CONSUMATI, nessun replay/nuovoCREATE/register. Originali6writes/6GET/0preview/346780bytes e106grant preservati; lettore3file/94564bytes/zero reteSQLAuthority.
+
+**NEXT/comando unico:** docs/handoffs/OUF_ACQUISITION_EXISTING_DESCRIPTOR_DRAFT_LOOKUP_20261025.md INTEGRALE. Runtime59fabcd9ca7545d876018c4e7d623774f846c0d5/SHAe2c61cb91291307a5b403ca2132b23ef927a8645a7356441ca963c610a565ec9; delivery7c8b152524c5b0c9d1d018e99a0ded3e0cc29f3e/wrapperSHAdde584912687df443beb17484324c0c7eacf3789672acad2ecc86998ddf59aba. Copia root0400/dir0700 ed esecuzioneROOT, non checksum daoperatore sufileprivato. Nuovochildfisso /etc/ouf/deploy-snapshots/acquisition-existing-draft-lookup-5a31ae519ef9ee4e-v1. Un login IAM normaleouf-admin, GET ACTIVEownerHUMAN prima/dopo, una sessione SQL READONLY+SETROLE via profilo fisico storico hash000bf... NON autorità riusata;2EngineGET congenerazionePG esatta, unexec, zero credenzialifile/chiavifirma/lifecycle. QueryFISSA creator/tenant/base48/payloadCOMPLETOhash027f.../max2, zeroo2STOP; receiptUUIDprima guard/GET governato SOLOUUID/ETag0/DRAFT/candidato106grant. Nessuna REGISTER/CREATE/preview/publish/APPROVO o nuovaauthority. Risultatoatteso EXISTING_DESCRIPTOR_DRAFT_OWNER_CONFIRMED_NO_PUBLICATION/complete/Exit0/DeliveryExit0/continuationAuthorizedfalse. STOPconsuma senza replay.
+
+CI finalepush40233966844/job121291445850 ePR40233970355/job121291455639:18protocol+11nativePASS/0skip, logdirettiletti. Docker/PG17/DDLownerV15V16V26/readonly/SETROLE/Unixexec/STDIN/revisione0/umaskroot077/copia0400/negoNONroot REALI; owner/IAM/storiaCI sintetici, nessuna approvazioneproduction. Qualifica evidence/acquisition-existing-descriptor-draft-lookup-qualified-20261025.json. Nessun risultato lookupVPS ancora ricevuto, nessunaACTIVE49provata.
+
+Solo dopoUUIDownerconfermato: esecutore RESIDUO senzaREGISTER/CREATE, contatoricumulativi inclusolookup, previewcinqueaggiunte/zero grantchange, reviewNUOVAconcreta eAPPROVOhashfrescosurigaTTYisolata perUNAsolapubblicazione. Poi HUMANscope/granttemporaneoDUErun e4READ; no terzaacquisizione/reset/attivazione/Registryrestart/reinstall. Tecnico8/8funzionale4/6, E2E/G4/F5/F6OPEN; Supervisor dopoE2E. Nessunmerge/releaseacceptance. Header sottoSTORICI.
+
+# CURRENT — retained VPS letto: cinque registrazioni APPLIED, CREATE CLAIMED senza UUID
+
+Risultato owner RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete=true/Exit0; child retained-draft-read-v1 CONSUMATO. Leggere docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_DRAFT_ZERO_STOP_20261025.md e evidence/acquisition-descriptor-publication-retained-stop-target-20261025.json. Tutte le cinque registrazioni APPLIED; CREATE_DRAFT CLAIMED/hash027f626dce41cac0dc2d1dd9338bd2aeb20bc474a438e6e26a68d4214271b46b; nessun UUID/revisione/receipt conservato e nessuna dispatch PUBLISH. Revisione HUMAN esatta approvata retained; nessun errore operatore. Cumulativi originali 6 administrativeWrites/6 ownerGets/0 previewPosts/346780bytes, 106grant nel candidato. Il lettore ha letto3file/94564bytes, zero rete/OAuth/SQL/Engine, nessuna authority o modifica originali. Non prova stato runtime corrente o assenza del draft sul server.
+
+NON ripetere publisher/registrazioni/CREATE/lettore retained, non inventare UUID e non riutilizzare approvazione o token. NEXT: lookup governato del solo draft esistente, vincolato a creator/tenant/base48/candidato completo/hash approvato; zero o più corrispondenze impongono STOP senza scelta o CREATE sostitutivo. Valutazione in corso del percorso nativo read-only già qualificato per il DB Onboarding, con controllo HUMAN dell'owner e identità fisica corrente; nessun nuovo comando VPS consegnato. Solo dopo UUID+GET owner esatti si può preparare una review nuova della sola pubblicazione residua, con contatori originali conservati. Tecnico8/8, funzionale4/6, E2E/G4/F5/F6 OPEN, Supervisor dopo E2E; nessun merge/release acceptance.
+
+# CURRENT — STOP dopo APPROVO esatto; SOLO reader retained qualificato/consegnato, attende VPS
+
+Owner STOP_RECONCILE/EXACT_OWNER_DRAFT_REQUIRED/Exit2/DeliveryExit2 dopo approvazioneTTY5a31ae519ef9ee4e14cf9258f91739ba27aa07a290f5f07b277cb8d3a44de911; review106grant/5registrazioni. Scope /home/oufadmin/ouf-acquisition-descriptor-publication-20261025 CONSUMATO; logdelivery6WD1Ui9l/operator.log ebootstrap.log, bootstrap3KAvHaVh. NON publisher/wrapper/register/create/review/tokenreplay o scopedirreset. NuovaGRANTSownerouf-admin confermaACTIVE48/hashsha2566209.../82subjectgrant/nextNULL: nessunaACTIVE49osservata.
+
+Difettoassistente comprovato: migrationownerV16 DEFAULTrevision0, client3f0b407 e fixture richiedevano/partivano1. CorrezioneFUTURA>=0 connegativevietate; salva PRIVATErispostecreate/publishPRIMA parsing/guard. Non è esecutore di recovery. Vecchio codice non conservava receipt prima guard, UUID puòmancare; non inventarlo o ricreare draft. Faseesatta/effects/ID vanno letti nelretained, non inferiti dal reasonaggregato. Nessun erroreoperatore/approvazione.
+
+**Handoff corrente/comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_DRAFT_ZERO_STOP_20261025.md, integralmente. SOLO scripts/read-descriptor-publication-stop-20261025.py pinned3f9064f0ba7433155e536d0fd28f0f32bbbf451d/SHA256d453c5319a141fa41d606b80fcaa982330e6510358e25909a5794aeb46836abc; no sudo/login/APPROVO/rete/SQL/Engine/subprocess/oldmain/credenziali. Legge3filesesatti: publicstoppedcontrollerroot444/hash1cbb, review600/hash5a31, state600/STOP. Limite6MiBreview+128KiBstate+64KiBcode/60s. Auditnega oldfilewrites/metadata/enum/network/exec. Crea esclusivamente childfisso retained-draft-read-v1 conclaim/result600/fsync; sourcecode download/checksum e logbootstrapprivato. Originaliinvariati. STOPconsumachild, nonrilanciare o sceglierealtrodir.
+
+ProiettaAPPLIED/CLAIMED/counts/hashes/tipi, soloeventualeUUID/revisione0retained, create/publishflags, continuationAuthorizedfalse SEMPRE. Atteso RETAINED_DESCRIPTOR_PUBLICATION_STOP_OBSERVED/complete/Exit0; risultatoVPS diquestoreader ANCORA NON RICEVUTO. SeIDesiste poiGETgovernatosolodraft; seIDassente serve lookupOWNER delimitato creator/tenant/base/candidate, non SQLbypass/UUIDguess/nuovodraft. Nessuna pubblicazione automatica dal read.
+
+Qualifica 3f9064f0ba7433155e536d0fd28f0f32bbbf451d: push40228181751/PR40228185226 3jobpuntualiPASS/logdirettiletti.7retainedread+21futurepublisher/0skip, auditNONrootREALE e replaynegato, PostgreSQL17REALE conDDLownerDEFAULT0+INSERTsenzaRevision/JSONaccettato. Jobpush121274013295+121274013075+121274013220 ePR121274025283+121274025505+121274025463. Owner/storia/decisioniCI SINTETICI, nessuna approvazioneproduction simulata; non prova actualVPSdraft o authority. VecchioCItestdeliveryhead/pinned mismatch corretto separatamente, non replayautorizzato.
+
+READinstallazioneVPSpositiva e scopeprecedentiCONSUMATI/Registryintatto restano. OAuthscope/grant2run/4READ/E2E/G4/F5/F6OPEN tecnico8/8funzionale4/6; niente terzaacquisizione/reset/attivazione/Registryrestart/reinstall/merge/releaseacceptance; Supervisor dopoE2E. Header sotto STORICI.
+
+# CURRENT — diagnostico RIUSCITO; pubblicazione5descrittori qualificata/consegnata, attende HUMAN
+
+EvidenzaVPS DESCRIPTORS_OBSERVED_NO_AUTHORITY/complete/Exit0/ContinuationExit0, policy48/hash6209fe7.../fullresponse5de0b80...,153497byte/1IAMGET/5IAMPOST/3ownerGET, zero mutazioni/Engine/filecredenziale/fonte/acquisizioni. ingestion.run.read esatto registrato+ACTIVE/HUMAN;5assenti daENTRAMBI: ingestion.contract.read, ingestion.lineage.read, urban.object.read, lineage.object.read, lineage.property.read. Log XdyYVHv1/permission-mode-v1/operator.log ebootstrap.log. JSONriparazione nonfornito/completamento inferito dal codicepinned, non riletturajournal. Diagnostico/permission-mode-v1 e tutti scopevecchi CONSUMATI; NON ripetere wrapper/riparazioni/lettori o usare vecchi login/token.
+
+**Handoff corrente/comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_HUMAN_PUBLICATION_20261025.md, integralmente. Nuova azione amministrativaHUMAN tramiteAPIesistente. Codice3f0b407d01a34967e03e02ecc5bf441963704e7c/SHA2561cbb40dd80d9e258d55de530096fb139f7ae193df1a62c912ea24509f43ca284; delivery4ccff5b125e8fc9cb4ae2785807bb9677ba2bdc8/SHA256810fac40f995797c50d9b6122d65b052070f9e1069bfacffd322db7b028fabbc. Rootcopy pubblicaESCLUSIVA fchmod0444/dir0555 provata conrootumask077/checksumnonroot. Riusa SOLOfunzionelogin pubblico d2e8098/hash062b... verificato, mai oldmain o scope. Device login ordinarioouf-admin/tokenmemoria; nuova reviewprivata concreta e APPROVOhash mostrato dalVeroTTY suRIGAISOLATA prima diPOSTmutanti, nessuna approvazione agente.
+
+Nuovo scopefisso /home/oufadmin/ouf-acquisition-descriptor-publication-20261025 esclusivo0700, review/state/result0600/fsync. Baselinefresca esatta48/hash6209/fullsnapshot5de;5registrazioniREAD/requiredScopeugualeID/HUMAN, candidate49 aggiungeSOLO5capability e preserva intere capabilityvecchie/TUTTIgrantJSON, ruoli/assegnazioni noneditati. ROLESfresca2/admin34/2confermata. APIownerpreview2/readbackdraftETag eACTIVEfinale sucapability/grantsinteri. Max7POSTmutanti(5reg+draft+publish)+2preview/160GET/5MiBresponse/32MiBtotal/1800stotal/900sreview+exec, ulteriormente ridottoexpJWT-15s. GETtransitori max8/stage/backoff5/15/60/300/900+jitter/RetryAfter econtatori durevoli; nessunlocksuattese, nessunPOSTretry o rollback. Effettoambiguo restaCLAIMED; STOP/rifiuto/scadenza/crash consuma scope, conserva tutto/nonrilanciare/no nuovidirperbypass.
+
+Qualifica19testlocali+CI/0skip conowner/IAM/decisioniCI SINTETICI e parserPTYREALE: push40224066964/job121261613335 ePR40224071597/job121261626270 PASS/logdiretti. Consegna downloadREALE/rootcopy/noTTYstopPRElogin+scope, e copierVERBATIM sottoROOT077/checksumNONroot: push40224228906/jobs121262089953+121262089966 ePR40224232648/jobs121262100817+121262100630 PASS/logdiretti. Nessuna approvazioneproduction simulata, CI non prova targetpubblicazione. Atteso ACQUISITION_READ_DESCRIPTORS_PUBLISHED_GRANTS_UNCHANGED/complete/policy49/Exit0/DeliveryExit0 e0nuovigrantREAD. Risultato pubblicazione target ANCORA NON RICEVUTO; non trattarecodice/CIcomeseACTIVE49giàesistesse.
+
+Non editaOAuthIAM/ruoli/grant/superadmin/Engine/SQL/Registry, nonleggefilecredenziale/chiavi, nonnuoveattivazioni/acquisizioni o budgetfonte. ScopeOAuthMCP sono gateSEPARATO ancoraDAverificare, mcpOAuthScopesVerifiedfalse; mai abbassare requiredScope a mcp.connect. Dopo pubblicazioneprovata: policy49/ROLESpreservati, scopegovernati, nuova reviewTHSnominale2run/PUBLISHED e4READcorrelate; nessunaterzaacquisizione. InstallazioneVPSREADpositiva/Registryintatto; E2E/G4/F5/F6OPEN tecnico8/8funzionale4/6, Supervisor dopoE2E, nessunmerge/releaseacceptance. Headerseguenti STORICI.
+
+# CURRENT — STOP codice pubblico: continuazione esatta qualificata e consegnata, attende VPS
+
+OwnerDeliveryExit1/Permissiondenied al checksum nonroot dopo copiaRoot del solo codice pubblico. Diagnostico NON invocato dal flusso pinned: nessun login/ownerGET da quella esecuzione. Modo target0400/ACL/ancestor ancora NON osservati. Originali XdyYVHv1 e mIZy6zES trattenuti: NON rilanciare wrapper077065/5af3e992 né cancellare/cambiare directory. Errore codice/qualifica dell'assistente: os.open0444 mascherato da umaskroot, mancava fchmodFD; non errore operatore. Copier futuro corretto, ma non usarlo per replay.
+
+**Handoff corrente/comando unico:** docs/handoffs/OUF_ACQUISITION_DESCRIPTOR_PUBLIC_MODE_STOP_20261025.md, integralmente. Continuazione pinnedc11d9ce029da431f9f9b225e9f06ea10264c7ecb/SHA25624cdc955bf0fbe26818968ebdf2ac6f89c9a7572d69dd0d8baa2f60a53bc1528, releases/resume-acquisition-descriptor-read-mode-20261025.sh. Verifica originali pubblici/run.sh/read.py/hash e bootstraplogpreciso/assenzaoperator.log e claimdiagnostica. Parentroot/nonwritable e traversal provato comeoperatoreLinux/setuid/gruppireali; ACLparent rivalutate/preservate, ACLaccessfilecodice vietata prima chmod. SOLO fileesatto root0400/nlink1/hash062b.../rootdir0555: journalroot0400/fsyncCLAIMED e UNA fchmodFD0444, inode/byte/owner/mtime invariati. Non cambia codice/parent/ACL/owner né usaEngine/IAMadmin/SQL/chiavi. Altro modo/drift/CLAIMED/ACLfile/traversalnegato: STOP, nessuna riparazionealternativa/replay. Faseroot60s.
+
+ChildFISSO /home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1/permission-mode-v1 con nuovi bootstrap/operatorlog, originaliintatti. Journal /usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/permission-mode-v1.json. DopoAPPLIED e checksum nonroot: PRIMOavvio lettore d2e8098/SHA062b..., no download/ricopia/claimreopen/reset. Stessi600s/52ownerGET/1metadataIAMGET/121IAMPOST/16MB e claimdiagnosticafissa. LoginbrowserHUMANouf-admin, tokenmemoria, sole6descrittori, niente grant/pubblicazione/acquisizione. Attesi JSONAPPLIED/chmod1 e poi DESCRIPTORS_OBSERVED_NO_AUTHORITY/Exit0/ContinuationExit0. STOP/interruzione consuma child: conserva tutto, non rilanciare. Risultato targetcontinuazione ANCORA NON RICEVUTO.
+
+Qualifica c11d9ce029da431f9f9b225e9f06ea10264c7ecb: push40222432040 ePR40222436406,3jobpuntualiPASS/logdirettiletti.15protocollo/0skip (root077/file400/setuiddenial/read effettivi, negativi e ACLparentrealipositive/negative), wrappercompleto400→444/checksumoperatore/prima invocazionelettoreSTOP atteso senzaTTY/noIAMclaim/replaynegato, copier futurofchmodsotto077/checksumnonroot. Jobpush121256690689/121256690725/121256690522 ePR121256704384/121256704161/121256704335. StoriaownerSINTETICA; filesystemroot/ACL/umask/setuid reali; nessuna approvazioneproduction simulata. CI non prova targetmode/IAM/E2E. Candidato9a8e0b6 guardACL troppo generale superato/nonconsegnato, fallimenti conservati. Locale chown1001EINVAL, nessuno skip o falsoPASS.
+
+InstallazioneVPSREAD positiva e tutti gli scopeprecedentiCONSUMATI restano acquisiti, Registryworkerintatto. I2toolacquisizione disponibili; REPLACE_ROLES rifiutata AUTH_ROLE_CAPABILITY_INVALID e primaIngestionREAD negata retryablefalse, non ripetute. Dopo diagnostico eventuali registrazione+ACTIVEpublicationHUMAN ADDITIVE e poi granttemporanei2run/4READ; nessuna terzaacquisizione/budgetfonte/reset/Registryrestart/reinstall/merge/releaseacceptance. E2E/G4/F5/F6 OPEN, tecnico8/8 funzionale4/6; Supervisor dopo. Header seguenti STORICI.
+
+# CURRENT — diagnostico NON avviato: STOP permesso lettura codice pubblico; NON rilanciare wrapper
+
+Owner ha restituito checksumwrapper/read.py OK e ProtectedCode, poi sha256sum Permission denied sul codice root e DeliveryExit1. Delivery /home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1/bootstrap.log; bootstrap /home/oufadmin/ouf-descriptor-bootstrap.mIZy6zES. Codice pubblico /usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/read.py. Il flusso del wrapper pinned077065/5af3e992 prova che il diagnostico NON è stato invocato: nessun login/ownerGET/claimdiagnostica da quell'esecuzione. Non confondere il comando consegnato con un risultato diagnostico. Wrapper/delivery trattenuti: NON rilanciare né cancellare/cambiare directory. E2E resta OPEN.
+
+Difetto sorgente: os.open(...0444) era filtrato dall'umask di sudo, senza fchmod esplicito. VecchiaCI usava umaskrootdefault e non qualificava il caso077 reale. Ipotesi target0400 coerente, ma modo/ACL/ancestor esatti ancora NON osservati. Non usare chmod globale o sudo per eseguire il diagnostico: identità/login devono restare operatore.
+
+NEXT: qualificare la continuazione ESATTA releases/resume-acquisition-descriptor-read-mode-20261025.sh. Riusa codice/file/log trattenuti, verifica checksumcustodia/assenzaoperator.log e claimdiagnostica, parenttraversal e assenzaACL; SOLO se fileesatto root0400/nlink1/hash062b... procede a UNA fchmodFD0444 preservando inode/byte/owner. JournalCLAIMEDroot0400 prima effetto; CLAIMED/errore consuma, mai replay. Non cambia parent/owner/ACL né riscrive codice; non registra grant o policy. Childfisso permission-mode-v1 sotto deliveryoriginale, nessun reset vecchio scope. Dopo APPLIED e checksum nonroot: PRIMO avvio del diagnostico già pinned d2e8098, stessi600s/conteggi/claimfissa, loginIAMHUMAN nel browser. Se metadati diversi STOP senza riparazioni alternative.
+
+NuovaCI obbligatoria: umaskroot077 effettivo, rootfile0400 e lettura nonroot DAVVERO negata, poi0400→0444 e checksum nonroot, preservazione originali/no replay/casi negativi. Anche copier futuro usa fchmodFD; NON è permesso rilanciare wrapperoriginale. Codice in preparazione, qualificaCI e comando continuazione NON ancora consegnati a questo checkpoint. Workspace locale rootnamespace non consentechown1001: testnon simulati/nonskippati, qualifica reale spostata suUbuntuCI. Evidenza evidence/acquisition-descriptor-public-code-read-stop-20261025.json.
+
+Stato applicativo precedente conservato: installazione VPS riuscita/readiness/2READ+2rotte, tutti vecchi scopeCONSUMATI/Registry intatto. Toolacquisizione disponibili, proposta REPLACE_ROLES rifiutata AUTH_ROLE_CAPABILITY_INVALID e prima IngestionREAD negata retryablefalse, mai ripetute. Dopo risultato diagnostico: eventuale registrazione+ACTIVEpublicationHUMAN governate e poi grant2run/4READ; nessuna terza acquisizione/budgetfonte/reset/riavvio/reinstallazione/merge/releaseacceptance. E2E/G4/F5/F6 OPEN, Supervisor dopo.
+
+# CURRENT — diagnostico descrittori qualificato e consegnato; attende PRIMA esecuzione HUMAN
+
+Handoff corrente **docs/handoffs/OUF_ACQUISITION_PERMISSION_DESCRIPTOR_PREFLIGHT_20261025.md**, contiene comando completo pinned/checksum e istruzioni login separate. I2toolacquisizione sono ORA disponibili anche in questa chat; il blocco client sotto è STORICO. La singola REPLACE_ROLES delle2run è stata RIFIUTATA AUTH_ROLE_CAPABILITY_INVALID, nessuna receipt/link/proposalId. Prima IngestionREAD bounded sulla runbb2e2af4 negata authorization denied/retryable=false e NON ripetuta; nessunaUDP/secondarun letta. Non riproporre grant alla cieca o usare altri account.
+
+OwnerOufRoleCatalogue esige descrittoreACTIVE/HUMAN per OGNI permission; l'errore non identifica quale. Owner supporta già viewCAPABILITIES ma manifestinstallatobd60 espone soloGRANTS/ROLES. PRMCP47/3547550 aveva già risolto; perso nella ricostruzione e ripristinato su draft78/165696a9bb59ca60f752defe0b7851232f0dde9c:3testschema/SDKPASS push40220296266 ePR40220299700/logdiretti. Sorgente/CI, NON installato. Non inviare valori fuori schema o reinstallare MCP per questa diagnosi.
+
+NEXT PRIMA esecuzione del SOLO lettore amministrativo HUMAN ESISTENTE: codice d2e80980f7575ce1e71627632eeba515441d84be/SHA256062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad, wrapper 077065def9e06e743556c5e86f051238284b5a0d/SHA2565af3e992228a0fe57adf6db4a568d61624543ea00429e7f2463b5b2836276314. Rootcopy ESCLUSIVA root:0444/dir0555 sotto /usr/local/lib, controllo custodia/checksum/doppiofsync; esecuzione comeoperatore. Bootstrap/operator.log conservati, erroreteeSTOP. Device login ordinario ouf-human-admin nel browser/identitàouf-admin esatta; tokenmemoria, nessun filecredenziale/IAMadmin/Engine/SQL/firma/grant/pubblicazione/scopeedit. Mostra6descrittori ACTIVE+registrati, non rawgrant.600s/max52ownerGET/1metadataIAMGET/121IAMPOST/16MB; solo pending/slowdown OAuth nei limiti, nessun retryGET. Claimdiagnostica FISSA NUOVA /home/oufadmin/ouf-acquisition-permission-descriptor-read-20261025 esclusiva0700, state0600/counterfsync prima dispatch e parentclaimfsync. STOP/crash consuma/noreset/no nuovi dir per rilancio; non rimuovere rootcopy/claim.
+
+Qualifica15fixtureSINTETICHE PASS/0skip push40221093919/job121252624265 ePR40221182197/job121252893726/logdiretti. DeliveryREALE download/checksum/rootcopy/STOP atteso senzaTTY e senza login/claim: push40221177505/job121252878796 ePR40221182156/job121252893341 PASS/logdiretti. PrimaCI falliva solo su rgassenteDOPOpassicorretti, correttoagrepfisso; proveconservate, maiVPS. CI NON prova IAM/owner live. Codice stampa istruzioni conflush anche sotto tee. Nessuna approvazione production simulata. Atteso DESCRIPTORS_OBSERVED_NO_AUTHORITY/complete/Exit0/DeliveryExit0; risultato target ANCORA NON RICEVUTO.
+
+Installazione VPS riuscita/detached-mcp-recovery-v1 CONSUMATO restano acquisiti; NON ripetere APPLY/recovery/vecchilettori o vecchioMCP restart/ricollegamento. FonteACTIVE/workeroriginali invariati. Dopo diagnostico: eventuale registrazione+ACTIVEpublication ADDITIVA governata HUMAN conservando grant/ruoli/assegnazioni; poi finestraNUOVA per2ruolitemporanei/sole2run, THS/PUBLISHED verificata e4READcorrelate. Nessuna terza acquisizione/reset/budgetfonte/Registryrestart/reinstall, nessun merge/release acceptance. E2E/G4/F5/F6 OPEN, tecnico8/8 funzionale4/6, Supervisor dopo. Gli header seguenti sono STORICI.
+
+# CURRENT — installazione VPS riuscita; prove serving stabili, catalogo client da aggiornare
+
+Tecnico8/8/funzionale4/6, E2E/G4/F5/F6 OPEN. VPS completo/Exit0:2READ pronti/1MCPmanager/vecchioMCPfermo/82+2rotte, worker e storia invariati; scope consumato, non ripetere comandi. [Handoff corrente](handoffs/OUF_ACQUISITION_INSTALLED_NEXT_GOVERNED_READS_20261025.md). ROLES2/admin34/assegnazioni2 e GRANTS82/policy48 letti; fonteACTIVE riconfermata. Serving autorizzato: stessi8Cinema e13Teatri/ID/status/revisioni/chiavi della baseline;11–19property perTeatro/unione20IRI; niente prova ACK/watermark/run-provenance. I due nuovi tool acquisition READ non sono ancora esposti nella connessione della chat: nessuna invocation protetta, nessun diniego owner. Piano OFFLINE di due ruoli temporanei nominali/6READ perrun/2run esistenti, originali preservati; nessuna proposal a scadenza o grant pubblicato prima che i tool siano disponibili. Prossimo: aggiornare catalogo connessione OUF, poi freshROLES/GRANTS e UNA reviewHUMAN, letture2run, E2E e solo dopoSupervisor. Nessuna terza acquisizione, reset, Registry restart/reinstall, merge o acceptance. Header sotto storici.
+
+---
+
+# CURRENT — 25 ottobre: recupero residuo qualificato; attende prima esecuzione VPS e review TTY
+
+Tecnico8/8/funzionale4/6, E2E/G4/F5/F6 OPEN. [Handoff/comando corrente](handoffs/OUF_ACQUISITION_DETACHED_MCP_RESIDUAL_RECOVERY_20261025.md): solo residuo dopo13APPLIED e quarantena dei due READ propri, niente import/READCREATE/vecchioSTOP-DETACH ripetuto. VecchioMCP resta fermo; nuovo child/mandato cumulativo e APPROVO esatto nel terminale prima di fileadmin/effetti. Runtime389719d67ba4686a5d8082628a8bf6795cb2e744, delivery222a9a52fd2c18e95279a67acaebeb7af6579457:21+7protocollo e2+2+3native perbackend classic/containerd PASS su push+PR, log diretti/zero skip; copia protetta19sorgenti qualificata. Nessun risultato di questa recovery sul server ricevuto. Contatori storici, prove502/403/GET200, vecchi scope e log conservati; nessun reset/replay/Registry restart. Dopo installazione provata: ROLES, HUMAN e sole due acquisizioni esistenti; policy48 scaduta, nessuna terza. Supervisor dopo E2E; nessun merge o release acceptance. Header seguenti storici.
+
+---
+
+# CURRENT — 25 ottobre: diagnostica MAC retained conclusa; recupero residuo ancora da qualificare
+
+Tecnico8/8 e funzionale4/6 invariati; E2E/G4/F5/F6 OPEN. L'installazione delle letture non è completata sul VPS: continuazione fermata dopo13stageAPPLIED e prima della claim RENAME. La diagnostica successiva è completa e consumata: unico delta Config.MacAddress presente/coerente → ASSENTE dopo STOP/DETACH; due READ propri quarantinati. Stato corrente non osservato. La correzione guard/lifecycle è qualificata in CI sul Docker29.8.1 classic/containerd, ma non autorizza il replay dello scope. Nessun nuovo comando runtime consegnato. [Handoff corrente](handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md), AGENTS.md ed evidenze collegate conservano contatori/log/limiti. Prossimo lavoro: implementare/qualificare recovery del solo residuo con nuova review cumulativa e APPROVO esatto nel terminale prima di effetti. Nessun reset/import/READ CREATE/vecchio STOP-DETACH ripetuto, nessun vecchioMCP restart/reconnect. Dopo installazione provata: letture governate delle due acquisizioni esistenti; policy48 scaduta, nessuna terza acquisizione. Supervisor dopo E2E. Nessun merge o release acceptance. Le sezioni precedenti sotto sono storiche.
+
+---
+
+# CURRENT — policy 48 pubblicata; Ingestion HEALTHY, due run SUCCEEDED; prove dettagliate G4 ancora mancanti
+
+Conferma HUMAN riconciliata dall'owner: proposal f87e7260-a5ed-4c7a-80b6-9990e5ae0875 revision1 PUBLISHED/finalPolicyRef ouf-lab-authorization:48. Nuovo grant di sola lettura limitato ai Teatri, valido 2026-10-25T05:10:14.933Z–07:10:14.933Z (06:10–08:10 CET). Le proposal precedenti 5e197733 e fcbd1a23 sono EXPIRED senza pubblicazione; NON confermarle o rilanciarle. Non dedurre validità corrente del grant dopo la finestra.
+
+Nuova lettura autorizzata ingestion.status source-scoped limit1: HEALTHY, consecutive_failures0, error_code/next_retry/circuit null, run bb2e2af4-9c0a-49ea-8ad9-a947987c1472 SUCCEEDED, correlation635782b4-4cc5-44d4-a080-a62bc3c17657, ultimo aggiornamento2026-10-24T22:11:11.024Z. History limit10 dal18ottobre restituisce questa sola run; distinta lettura storica source-scoped limit20 senza since restituisce anche la prima run a3208f2f-ebfd-415d-bddc-79ab05dea78f SUCCEEDED del17ottobre, corrispondente alla prova storica. Entrambe risposte AUTHORIZED/partialfalse sotto policy48. Evidence evidence/csv-post-activation-ingestion-owner-20261025.json. Le due query hanno finestre diverse, non sono retry di un diniego.
+
+502/403: prove VPS rete+GET originale200 e V35/readiness conservate; ora compatibilità/attivazione ACTIVE e lettura operativa Ingestion riuscite, con nuova run SUCCEEDED osservata. Nessun nuovo errore502/403 in queste chiamate. Non promettere assenza globale/futura, rinnovo permanente o reboot. Fonte ACTIVE/G3PASSED già provati: nessun'altra concessione budget o attivazione richiesta. Nessuna acquisizione/retry/SQL/comando VPS/worker mutation in questo seguito.
+
+BLOCCO PRECISO: status/history espongono stato e riferimenti run, NON binding run→publication/CSV/bundle,13 esiti riga,ACK durable/watermark,UDP commit/provenienza. Due run SUCCEEDED NON bastano a provare F5/F6 né ad attribuire con certezza i13Teatri revision2 alla nuova pubblicazione. La precedente search resta13IDstabili/unione20IRI ma11–19proprietàvisibili/oggetto,8Cinema conservati ai limiti documentati. Causa differenza proprietà ancora NON stabilita.
+
+Audit sorgenti: OperationalAwarenessService al candidato Ingestion4165b9e149be467d5d7c6bed35e4e1af4e249db1 coincide con la proiezione storica f869 per status/history; manifestMCP1f2c28d7abadae78680b040ba7b58be62ef85ee9 non espone run/contract/lineage né UDP object/property lineage. Gli owner hanno API dedicate HistoricalContractApi/ServingApi con capability distinte: il nuovo grant ingestion.operations.read NON le autorizza per implicazione. Non allargare il tool operativo a raw/protected evidence e non usare SQL/API dirette/account alternativi per aggirare il confine. Nessun diniego è stato aggirato.
+
+NEXT tecnico: qualificare il minimo raccordo di lettura governata alle prove owner mancanti, riusando API e controlli esistenti quando sufficienti e dichiarando separatamente ciò che manca (ACK/watermark per run e materializzazione/provenienza per13righe). Prima di qualsiasi nuova acquisizione verificare i binding della run già avvenuta; non creare una terza run per ottenere prove della seconda. Ciò richiede implementazione/qualifica delle letture e, solo per eventuali nuovi effetti target, consegna/review concreta nel percorso vigente. Nessuna nuova lettura protetta è implicitamente concessa dalla policy48.8/8tecnico,4/6funzionale,F5/F6/G4OPEN; Supervisor DOPO E2E,releaseAcceptancefalse. Tutti scope precedenti CONSUMATI. Header sotto STORICI.
+
+---
+
+# CURRENT — fonte Teatri ACTIVE e compatibilità positiva; G3 nativo provato, F5/F6 in verifica
+
+Owner read con ouf-admin dopo messaggio HUMAN: source teatri-csv-6609b245/versionc9fec43c-19b3-4ffb-9111-781bc347c5b0/hashsha256:b13c5fe234168bdb8b315087917bccfe428ceaa8e136ed1c0f56f5bf43deed3d ACTIVE,lock4,CONFIRMED,ingestionCompatibilityObservedtrue. Nuova publicationdffa2a5e-740b-4e3d-95a0-14c841940b72/checksumsha256:7cebf0ba655d7f0f853b9dc647164de30f1f079e50281e36d24f05db57ad0d1f attiva. SessionHUMAN57474af7-8da7-4ee5-a69f-267cea5f5174/decisionRefc8634aa1-a744-4b91-a030-94840902fa55;1nuovo tentativo/cumulativo3→4/generazione4→6,started_at21ottobre invariato. PhaseACTIVE/lease e nextAt null/lastCodenull. budgetExhaustedtrue NON revoca ACTIVE e NON richiede un'altra concessione o attivazione. Evidence evidence/csv-native-source-activation-owner-20261025.json. Nessuna decisione HUMAN simulata dall'agente.
+
+La rete/GEToriginale200 e V35/readiness hanno già prove VPS; adesso riesce anche il percorso applicativo compatibilità+attivazione. G3pubblicazionenativa PROVATA;8/8tecnico4/6funzionale, G4/F5/F6 NON conclusi. Non confondere nuova pubblicazione con seconda acquisizione/ACK/commit/provenance. Tutti vecchi scope APPLY/repair/GET/reader/recovery/SQL6sono consumati e non si rilanciano; Registryworker intatto. Supervisor DOPO E2E.
+
+Nuove letture UDP autorizzate:13Teatri/distinti/stessi13ID della F4/revision2,unione20IRI ma11–19proprietà visibili per oggetto; F4storica aveva20/oggetto e revision1. Causa differenza NON stabilita, non dedurre perdita né promuovere a20prove.8Cinema,stessiID/statusACTIVE/revision1/chiaviproprietà della baseline; valori non nella baseline quindi uguaglianza byte dei valori non provata. Searchpartialfalse/nextCursornull. Nessuna attribuzione certa di questi oggetti alla nuova pubblicazione né prova run/ACK/provenance. Evidence evidence/csv-post-native-activation-objects-20261025.json.
+
+Un tentativo ingestion.status source-scopedlimit1 dopo NUOVApubblicazione ACTIVE è stato negato retryablefalse e NON ritentato. Consultati codice MCP deployed1f2 e policyLIVE47: richiesto ingestion.operations.read; ruoloadmin34permission NON lo include; unico grant diretto perquestaFonte scaduto20ottobre09:34:16Z. Vecchia proposalc94ca071-b465-47e6-a01d-06cc7984785a PUBLISHED/policy47 preservata. Nessun bypass DB/API o cambioaccount. ROLESview deve avere SOLO view=ROLES (niente limit/selector), e routinglink_idouf-admin serve al connettore;2precedenti richieste malformate si sono fermate alla validazione e non provano diniego owner.
+
+NEXT conferma HUMAN della NUOVA proposal5e197733-4d4b-428b-bca0-c7267ad53df0/revision0/PENDING,expiresAt2026-10-24T22:38:41.805479Z. OwnerapprovalPath restituita nella conversazione (THS Authorization). Nuovo grantId grant-ingestion-operations-read-teatri-csv-6609b245-20261025-2h: sola ingestion.operations.read/subjectouf-admin/tenantouf-lab/resourceoperational,moduleINGESTION,sourceRefesattoTeatri,detailTENANT_OPERATIONAL;validità2026-10-24T22:23:34Z→2026-10-25T00:23:34Z. Vecchio grant,2ruoli/2assignment/tutti altri grant conservati. NON pubblicato dall'agente, nessuna nuova acquisizione/retry/attivazione o modifica IAM. Evidence evidence/csv-ingestion-source-read-permission-proposal-20261025.json. Dopo conferma leggere proposal stessoID/policy risultante e poi un nuovo status/history limitato al source per run/ACK/lineage; non rinnovare fonte o replayvecchieclaim. Se proposal scade riconciliare, non riusare automaticamenteconsenso. Il caso13righe/20proprietà/provenienza entrambe/8Cinema resta aperto.
+
+---
+
+# CURRENT — V35 recuperata e readiness provata sul VPS; prossimo atto HUMAN per E2E
+
+Il recupero della CREATE esistente è COMPLETO/Exit0: V35checksum1095739786, readiness/Flyway/backup verificati, stesso candidato, nessun replay/reset, massimi conservati e SQL6/6. Fonte APPROVED/CONFIRMED/PAUSED,3tentativi/generazione4,0sessioni budget/attivazioni. Evidence: evidence/onboarding-v35-existing-create-target-20261024.json. Recovery, lettore e vecchio APPLY consumati: nessun rilancio o ulterioreSQL per ristampare prove.
+
+Nuova lettura owner con ouf-admin riuscita: stesso source/version/hash/lock3, counterLineageVerified=true e humanBudgetGrantAvailable=true per3tentativi/900secondi. NEXT: pagina HUMAN ESISTENTE, motivazione e “Concedi 3 tentativi per 15 minuti”; poi SEPARATAMENTE selezione e “Verifica e attiva la fonte approvata”. Nessuna riapprovazione/recreazione o MCPgrant/activation. La vecchia scadenza non revoca la conferma. Evidence: evidence/onboarding-v35-post-deploy-owner-20261024.json.
+
+502/403: proiezione rete+GET originale200 sono prove VPS; ora anche appV35/readiness. Il percorso completo compatibilità/Ingestion/UDP eF5/F6 non è ancora provato.8/8tecnico4/6funzionale,G3OPEN;13Teatri/13identità/20proprietà/ACKprovenienza entrambe/8Cinema da dimostrare. Supervisor dopoE2E. Nessun tempo/effort retrospettivo ricavato dal tempo trascorso; timestamp dell'invocazione target non fornito. Header sottostanti STORICI.
+
+---
+
 # CURRENT — all18 observed owners cancelled/blocked/previous-boot; coordinated bootstrap gap established
 
 Owner log /home/oufadmin/ouf-registry-owner-discovery.NKae4nGd/operator.log:18candidates,allCANCELLED/BLOCKED,sameCurrentBootfalse,noexclusiveworkerlock,no positive tokenwindow.72reads/64392bytes,1813dirs/13743entries;1450subdirsoutside depth3. No credentials/Engine/SQL/OAuth/effects. Evidence is owner-pasted,not independent readback. Other owners remain unexcluded;no current owner is selected. Preserve all paths/records. Do NOT ask the user for manager paths or rerun the completed discovery. Evidence: evidence/semantic-registry-owner-discovery-target-20261023.json.

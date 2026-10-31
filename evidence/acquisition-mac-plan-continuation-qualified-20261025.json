@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.acquisition-mac-plan-continuation-qualified.v1",
+  "sourceCommit": "a421e821d1d522de85aec1d3558f61076cceab99",
+  "sourceSha256": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd",
+  "targetDiagnosticReceiptHash": "21aff2ea7e8f90b3e7511cdf17a1e2b8043a51ca1116aa94923ff274dd6f982d",
+  "CI": [
+    {
+      "runId": 40179938616,
+      "jobId": 121128644330,
+      "event": "push",
+      "testsPassed": 24,
+      "testsSkipped": 0,
+      "syntheticRealDockerMacTransferPassed": true
+    },
+    {
+      "runId": 40179942002,
+      "jobId": 121128654279,
+      "event": "pull_request",
+      "testsPassed": 24,
+      "testsSkipped": 0,
+      "syntheticRealDockerMacTransferPassed": true
+    }
+  ],
+  "directLogsRead": true,
+  "kernelNamespaceGetProvenOnSyntheticLoopbackFixture": true,
+  "actualProductionApisisixTested": false,
+  "fixtureDockerApi": "1.44",
+  "fixtureImage": "busybox:1.37.0",
+  "fixtureImageId": "sha256:30ecbe1509090b38ef3260f3609d64d8261230464eaa4d235901db496e9647fb",
+  "nativeMacProofScope": "Synthetic containers only: dynamically distinct replica MACs; old stopped/detached before replacement adopts endpoint MAC. Does not qualify full product APPLY/lifecycle controller.",
+  "dockerPrimaryDocumentation": "https://docs.docker.com/reference/api/engine/version-history/",
+  "launcherSha256": "58897b1a57d84ffd200a4f0e3976ed9c75b7aca8bbdfce38291e143c21492c5e",
+  "launcherBashSyntaxPassed": true,
+  "wholeLauncherExecutedInCI": false,
+  "localPureMacAssertionsPassed": 11,
+  "fullNativeSuiteExecutedLocally": false,
+  "targetAlreadyExecuted": false,
+  "oldScopeReplayAuthorized": false,
+  "oldCountersRetained": {
+    "preparationPrivateMetadataReads": 11,
+    "preparationOwnerConfigurationReads": 1,
+    "diagnosticPrivateMetadataReads": 6,
+    "preparationAdminGets": 0,
+    "diagnosticAdminGets": 0
+  },
+  "newMaximumCumulativeAdminGets": 1,
+  "newMaximumCumulativeAdminCredentialFiles": 1,
+  "runtimeAuthorityIssued": false,
+  "executionEntryQualified": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "budgetReset": false
+}

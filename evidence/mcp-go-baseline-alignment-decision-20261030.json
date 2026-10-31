@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.mcp-go-baseline-alignment-decision.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "status": "APPROVED_OWNER_CONVERSATION",
+  "decisionId": "APPROVE_CURRENT_STABLE_SUPPORTED_MCP_GO",
+  "approved": true,
+  "ownerStatement": "Va benissimo usare l'ultima versione di go. Anzi, direi che è auspicabile.",
+  "supersedesConstraint": {
+    "matrix": "1.7",
+    "mcpPet": "1.4",
+    "section": "Part II §65",
+    "goLine": "1.25",
+    "sameLinePatchesOnly": true
+  },
+  "newConstraint": {
+    "currentStableSupportedGo": true,
+    "betaRcDevelAllowed": false,
+    "exactVersionAndChecksumRequiredPerCandidate": true,
+    "toolchainOnlyMinorUpdatesCovered": true,
+    "securityCompatibilityAndConformanceGatesPreserved": true
+  },
+  "resolvedVersion": {
+    "go": "1.27.3",
+    "officialRepository": "golang/go",
+    "releaseCommit": "2aae1000ea1d4b28923b96db28acf4e3b99d6aff",
+    "versionFile": "go1.27.3\ntime 2026-10-19T22:20:36Z\n",
+    "officialStableTagsRead": true
+  },
+  "preserved": {
+    "mcpSdk": "1.7.0",
+    "protocol": "2026-07-28",
+    "originalMatrixSha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+    "originalMcpPetSha256": "83165c93197bc4d9fca9bfbbb346b48977931b0e0527849e57b894078cec1008",
+    "originalBaselineFilesModified": false,
+    "ownershipContractsAndAllGates": true,
+    "historicalM1G4Evidence": true
+  },
+  "decisionDocument": {
+    "path": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_DECISION_20261030.md",
+    "sha256": "ea28644b29d17fe5b90aa8c0a7bc6e55721d145076dd749f3c265897fae5803a"
+  },
+  "newCandidateRequired": true,
+  "newPackageRequired": true,
+  "oldMcpPackageRemainsHistorical": 12882394596,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

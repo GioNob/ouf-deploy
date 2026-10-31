@@ -1,0 +1,260 @@
+version: '1.0'
+status: NORMATIVE_CURRENT_FOR_REALITY_BASELINE
+wbsBaseline: OUF_Development_Execution_Plan_WBS_v0_4_Semantic_Aligned.xlsx
+sourceWbsBaseline: OUF_Development_Execution_Plan_WBS_v0_3.xlsx
+e2eBaseline: ouf-e2e-integration-spec-v0.3
+contractBaseline: ouf-contracts-v1.0.0-rc3-coherence
+rule: Semantic task-to-scenario traceability is based on scenario behavior and participating modules, not numeric substitution.
+  Integration & QA tasks may map cross-cuttingly. Onboarding & THS tasks require Onboarding or THS participation. Abstract
+  scenario module labels MCP/Backend, Backend Owner and Ingestion/UDP are resolved only where the mapped task implements the
+  behavior asserted by the scenario.
+scopeControl:
+- No MCP Server semantic/design change.
+- No supplier vertical API guideline change.
+- No contract schema semantic change.
+- Only WBS-to-E2E traceability is normalized.
+scenarios:
+- id: OUF-E2E-001
+  wbsTasks:
+  - GW-010
+  - ONB-011
+  - ONB-013
+  - ONB-014
+  - ING-009
+  - ING-012
+  - INT-010
+- id: OUF-E2E-002
+  wbsTasks:
+  - GW-007
+  - ING-006
+  - ING-008
+  - ING-012
+  - UDP-003
+  - UDP-014
+  - INT-010
+- id: OUF-E2E-003
+  wbsTasks:
+  - ING-004
+  - ING-005
+  - ING-013
+  - UDP-004
+  - UDP-014
+- id: OUF-E2E-004
+  wbsTasks:
+  - ONB-012
+  - ING-005
+  - ING-006
+  - ING-008
+  - ING-012
+  - UDP-004
+  - UDP-014
+- id: OUF-E2E-005
+  wbsTasks:
+  - MCP-006
+  - MCP-007
+  - GW-004
+  - GW-006
+  - ONB-003
+  - ONB-005
+  - ONB-007
+  - ONB-008
+  - ONB-009
+  - ONB-010
+  - ONB-015
+  - SEM-003
+  - SEM-004
+  - ING-002
+  - ING-003
+  - UDP-004
+- id: OUF-E2E-006
+  wbsTasks:
+  - ONB-004
+  - ONB-006
+  - ING-007
+  - UDP-002
+  - UDP-005
+  - UDP-006
+  - UDP-015
+- id: OUF-E2E-007
+  wbsTasks:
+  - ONB-006
+  - ONB-007
+  - AUTH-005
+  - AUTH-006
+  - AUTH-008
+  - AUTH-011
+  - UDP-008
+  - UDP-011
+  - MCP-003
+  - MCP-006
+- id: OUF-E2E-008
+  wbsTasks:
+  - MCP-002
+  - MCP-005
+  - MCP-006
+  - GW-003
+  - UDP-009
+  - UDP-010
+- id: OUF-E2E-009
+  wbsTasks:
+  - MCP-004
+  - MCP-005
+  - MCP-009
+  - MCP-010
+- id: OUF-E2E-010
+  wbsTasks:
+  - MCP-004
+  - MCP-009
+  - MCP-010
+- id: OUF-E2E-011
+  wbsTasks:
+  - MCP-004
+  - MCP-009
+  - MCP-010
+- id: OUF-E2E-012
+  wbsTasks:
+  - MCP-004
+  - MCP-006
+  - MCP-010
+  - UDP-009
+  - UDP-010
+- id: OUF-E2E-013
+  wbsTasks:
+  - MCP-002
+  - MCP-005
+  - MCP-006
+  - GW-003
+  - GW-005
+  - UDP-009
+  - UDP-010
+- id: OUF-E2E-014
+  wbsTasks:
+  - MCP-003
+  - MCP-007
+  - GW-012
+  - ONB-009
+  - ONB-010
+  - AUTH-009
+  - AUTH-011
+  - UDP-006
+  - UDP-008
+  - UDP-014
+- id: OUF-E2E-015
+  wbsTasks:
+  - ING-007
+  - ING-010
+  - ING-012
+  - ONB-013
+  - SEM-003
+  - SEM-004
+  - SEM-010
+  - UDP-012
+  - UDP-014
+  - AUTH-005
+- id: OUF-E2E-016
+  wbsTasks:
+  - MCP-008
+  - MCP-010
+  - THS-001
+  - THS-002
+  - THS-003
+  - THS-004
+  - THS-005
+  - THS-006
+  - AUTH-005
+  - AUTH-006
+  - AUTH-008
+  - AUTH-009
+  - GW-002
+  - GW-005
+  - GW-008
+  - GW-012
+  - INT-005
+- id: OUF-E2E-017
+  wbsTasks:
+  - ONB-007
+  - ONB-008
+  - GW-004
+  - GW-007
+  - ING-002
+  - ING-003
+  - ING-006
+  - ING-007
+  - UDP-003
+  - UDP-004
+  - INT-009
+- id: OUF-E2E-018
+  wbsTasks:
+  - GW-005
+  - GW-008
+  - GW-012
+  - AUTH-005
+  - AUTH-007
+  - AUTH-008
+  - AUTH-011
+  - UDP-008
+- id: OUF-E2E-019
+  wbsTasks:
+  - SEM-004
+  - SEM-010
+  - ONB-005
+  - ONB-007
+  - ING-002
+  - ING-007
+  - UDP-005
+  - UDP-012
+- id: OUF-E2E-020
+  wbsTasks:
+  - ONB-004
+  - ING-003
+  - ING-007
+  - UDP-002
+  - UDP-005
+  - UDP-006
+  - UDP-015
+- id: OUF-E2E-021
+  wbsTasks:
+  - INT-004
+  - INT-006
+  - AUTH-002
+  - AUTH-009
+  - GW-002
+  - GW-012
+  - MCP-003
+- id: OUF-E2E-022
+  wbsTasks:
+  - MCP-002
+  - MCP-003
+  - GW-003
+  - GW-005
+  - AUTH-003
+  - AUTH-005
+  - INT-007
+- id: OUF-E2E-023
+  wbsTasks:
+  - GW-006
+  - GW-013
+  - ING-011
+  - MCP-003
+  - MCP-006
+  - INT-004
+  - INT-010
+- id: OUF-E2E-024
+  wbsTasks:
+  - GW-004
+  - GW-011
+  - GW-013
+  - ONB-008
+  - INT-010
+- id: OUF-E2E-025
+  wbsTasks:
+  - INT-005
+  - INT-009
+  - GW-008
+  - GW-012
+  - MCP-006
+  - MCP-009
+  - ING-007
+  - ING-011
+  - UDP-005
+  - AUTH-008

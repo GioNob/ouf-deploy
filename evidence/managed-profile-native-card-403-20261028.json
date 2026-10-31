@@ -1,0 +1,87 @@
+{
+  "schema": "ouf.managed-profile-native-card-denied.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "FOLLOWUP_RAW_SCOPE_DENIAL_OBSERVED",
+  "origin": "OPERATOR_EXACT_UI_MESSAGE_NOT_AGENT_BROWSER_ACCESS",
+  "reportedMessage": "Accesso negato (HTTP 403). Il controllo di accesso ha negato la richiesta; sessione, scope e permessi devono essere verificati. Un nuovo login non concede permessi. Il lavoro è conservato; nessuna azione è stata inviata.",
+  "httpStatusReported": 403,
+  "reportedNoMutationSent": true,
+  "assetId": "9c502da5-b5d8-405e-b3f5-60eb31ecb513",
+  "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+  "precedingVerifiedPolicy": {
+    "ref": "ouf-lab-authorization:58",
+    "hash": "sha256:e8c3401e1d3209f60af55c36bae25d8a1089d822dc129afbef6ae3a13cce6bfe",
+    "proposalId": "fb54d330-0ec2-400a-ae71-e4ac3cf45319",
+    "state": "PUBLISHED",
+    "evidence": "evidence/managed-profile-job-control-policy58-access-20261028.json"
+  },
+  "browserIdentityVerified": false,
+  "browserTokenScopesObserved": false,
+  "rawErrorBodyObserved": true,
+  "denyOriginOrCauseProven": false,
+  "gatewayRuntimeConfigurationRead": false,
+  "agentThsAccess": false,
+  "newLoginRequested": false,
+  "permissionProposalCreated": false,
+  "scopeChangePerformed": false,
+  "nativeMutationsSentByAgent": 0,
+  "humanBudgetsGranted": 0,
+  "resumes": 0,
+  "newJobs": 0,
+  "uploads": 0,
+  "acquisitionsExecuted": 0,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "sourceFindings": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "ref": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "path": "src/main/resources/ths/profile-recovery.js",
+      "finding": "request() drops all arbitrary error text, accepts only allowlisted code/Code and bounded UUID correlationId; generic403 matches only status and absence of a recognized cause. It does not prove missing grant, scope, expired session or ownership."
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "ref": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsSecurity.java",
+      "finding": "Native page/script/API require same session and validated HUMAN JWT. Catch-all failure currently sends403; therefore generic403 may be session authentication or downstream authorization, not enough evidence to pick one."
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "ref": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryThs.java",
+      "finding": "Native GET api/{assetId}/{jobId} relays a server-held ouf-ths token to existing Gateway. Upstream4xx returned; successful response wraps card plusCSRF. User should share only error fields or safe card state, never csrfToken/token/full successful wrapper."
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "ref": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryApi.java",
+      "finding": "Card binds owner/tenant exact retained resource then requires file.profile. Writes additionally require quarantine.release and fresh expected state/review."
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "ref": "bf179e96200deb84942ad32507edef52a4284cd0",
+      "path": "ouf-config/routes/northbound/trusted-human-managed-file-preview-get.yaml",
+      "finding": "Versioned GET wildcard binding requires preview descriptor/OIDC/HUMAN; this source read does not prove current target route realization."
+    }
+  ],
+  "teatriReuse": {
+    "readHandoffs": [
+      "docs/handoffs/OUF_POLICY51_SCOPE_MISSING_HANDOFF_20261026.md",
+      "docs/handoffs/OUF_IAM_READ_SCOPES_COMPLETED_20261026.md"
+    ],
+    "reusedConclusion": "Configured grant and OAuth scope/client/session are separate guards. Historical scope repair applied exact actual HUMAN client only after specific SCOPE_MISSING proof; old client/token/repair scopes must not be replayed.",
+    "currentClientOrScopesNotAssumedFromTeatri": true
+  },
+  "nextRead": {
+    "superseded": true,
+    "doNotRepeatDeniedNativeRead": true,
+    "next": "Qualified current scope request metadata capture"
+  },
+  "rawErrorBody": {
+    "error": "required scopes ouf.managed-source.preview not present"
+  },
+  "followupEvidence": "evidence/managed-profile-ths-preview-scope-denial-20261028.json"
+}

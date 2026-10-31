@@ -1,0 +1,101 @@
+{
+  "schema": "ouf.onboarding-profile-recovery-native-delivery-closure.v1",
+  "codeCommit": "e5410467a410188a3b7ee7ae3264c7b0782f7b4a",
+  "manifestSha256": "a46b19156c35cb915b0842e52a72a97bac691c0cd64676aaaa704eb285793cc2",
+  "files": {
+    "entry.py": {
+      "path": "scripts/apply-onboarding-profile-recovery-update-20261027.py",
+      "sha256": "a61b4e0e6dd416d65bf786e224150885b48237994dcdaf55f5bbb3f0acc8b873"
+    },
+    "authority.py": {
+      "path": "tools/onboarding_profile_recovery_update/authority.py",
+      "sha256": "6f3517ba8feb57c007832848b54eb9d7b63d4a5cf1e007a7286c427d4efe3f80"
+    },
+    "context.py": {
+      "path": "tools/onboarding_profile_recovery_update/context.py",
+      "sha256": "2333fecb92a20ca2d6d041087045f07f604aeab50fd66240483a63350bd66b36"
+    },
+    "transport.py": {
+      "path": "tools/onboarding_profile_recovery_update/transport.py",
+      "sha256": "3fc1f9243f739f47403ee8f6e8eec0d9a731160e9530b75e4a4c44055d8596dd"
+    },
+    "ports.py": {
+      "path": "tools/onboarding_profile_recovery_update/ports.py",
+      "sha256": "6d42d305815acc9f1735ca40e829a32c22d82f67e48d19ae8cc07b35e7c20f10"
+    },
+    "quarantine.py": {
+      "path": "tools/onboarding_profile_recovery_update/quarantine.py",
+      "sha256": "592639a3ea2dba5788653e7f00f3fe4fbaeadd823287136a5a122c164c696d42"
+    },
+    "state_fence.py": {
+      "path": "tools/onboarding_profile_recovery_update/state_fence.py",
+      "sha256": "3acf0e82bf75333a65bd6ec613851b051d6ad20eeab52b848af60b24d9d79173"
+    },
+    "database.py": {
+      "path": "tools/onboarding_profile_recovery_update/database.py",
+      "sha256": "973e7f786fbf81fa9856361276e1eeb4b38a9e4b46ea521b84f73f3232c9741e"
+    },
+    "backup.py": {
+      "path": "tools/onboarding_profile_recovery_update/backup.py",
+      "sha256": "2ba21542461887d206ee153599618357e7d061ea0c6524a635ebe57a62a5b2a9"
+    },
+    "recovery_journal.py": {
+      "path": "tools/acquisition_read_native/recovery_journal.py",
+      "sha256": "8050144514a60ba19e71650bb8320887fe1be763a333058c21d6e2c3a789a162"
+    },
+    "engine_creation.py": {
+      "path": "tools/acquisition_read_native/engine_creation.py",
+      "sha256": "9d6149a0b3331666496583ebbaa9f43ed05d3039e7097861f3bd147f917ab3fb"
+    },
+    "plan_helper.py": {
+      "path": "tools/acquisition_read_native/plan_helper.py",
+      "sha256": "09b892a89f7cd7fa31fbc891822445ed09554e9362e397bb9b12b98316e1d8dd"
+    },
+    "image_custody.py": {
+      "path": "tools/acquisition_read_native/image_custody.py",
+      "sha256": "5d0fc0edb1ebd9386326eadbbee08f2cf0a9fd1e122940c0661b5ac5e3655ed8"
+    },
+    "retained_mac.py": {
+      "path": "tools/acquisition_read_native/retained_mac.py",
+      "sha256": "cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce"
+    },
+    "migration-fence.json": {
+      "path": "releases/onboarding-profile-recovery-migration-fence-20261027.json",
+      "sha256": "77b9aa85288b405db00a7af5d0287e83e02bfbc49794d4cc32406bfcb742bf57"
+    },
+    "terminal.py": {
+      "path": "tools/human_terminal_line_review.py",
+      "sha256": "3e698faea1e933b9ce04ad7ed204ed44b60863ad8fac620385c37a10179bfbf5"
+    },
+    "configuration.py": {
+      "path": "tools/source_revision_update/configuration.py",
+      "sha256": "d3bb5a29d4e0e626cd34c797326e868050c3c16421901357faa8c73b48e83018"
+    },
+    "authentication.py": {
+      "path": "tools/acquisition_read_native/vendor/semantic_provider_deployment_authentication.py",
+      "sha256": "7cb06f7976791abfc1ffac0e9660f3cdf603347f4514cd2bab7f55c6574e251d"
+    },
+    "signing.py": {
+      "path": "tools/acquisition_read_native/vendor/semantic_provider_deployment_signing.py",
+      "sha256": "81ad864e90b3efe17d65534ad4b1ccc187e60954f4f5d6244968d7809303a38f"
+    },
+    "auth_protocol.py": {
+      "path": "tools/acquisition_read_native/vendor/semantic_provider_deployment_protocol.py",
+      "sha256": "cd5aa30c8c806942c53a306e76a641b876e07a12fbbc3c0d106ecf6b94e87a0d"
+    },
+    "auth_preexec.py": {
+      "path": "tools/acquisition_read_native/vendor/semantic_provider_preexec.py",
+      "sha256": "95da7f53be88ac0e602e03acbdf6940a719e96a6fedb207693d23f59f0b31015"
+    },
+    "auth_producer.py": {
+      "path": "tools/acquisition_read_native/vendor/semantic_provider_deployment_producer.py",
+      "sha256": "dbfb365087fb532a0df66f66b6d72be7e04e2df4f31116631beb0b20a9f6f50f"
+    },
+    "runtime_binding.py": {
+      "path": "tools/acquisition_read_native/vendor/runtime_binding_source.py",
+      "sha256": "291daecc2b541a7c7410cd9f7c22ec7fccc82568ae67b21b78148f939035c7de"
+    }
+  },
+  "targetRuntimeAuthorityIssued": false,
+  "releaseAcceptance": false
+}

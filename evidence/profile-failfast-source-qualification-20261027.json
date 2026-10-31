@@ -1,0 +1,86 @@
+{
+  "schema": "ouf.profile-failfast-source-qualification.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_CI_QUALIFIED_NOT_INSTALLED",
+  "repository": "GioNob/ouf-source-onboarding",
+  "pullRequest": 53,
+  "sourceCommit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
+  "retainedInstalledDiagnosticSource": "a5ed8b05c264a8221783a6e323ba00117aed891d",
+  "reuses": [
+    "typed CSV and tenant/subject-proven ASSETS/LATEST composition",
+    "existing PostgreSQL profiling/quarantine schema and retained readiness-session implementation",
+    "safe owner profile diagnostics"
+  ],
+  "implemented": [
+    "typed permanent Gateway status, known input and unknown/ambiguous failures stop automatic retries",
+    "only typed read-only HTTP429/502/503/504 transient failures request retries in the existing five-attempt profile",
+    "valid Retry-After delta/date respected; malformed or above24hours stops safely",
+    "non-2xx object-read failure before body reading",
+    "fresh idempotency keys share the sole retained logical profiling job",
+    "asset-row lock serializes concurrent new-key admission",
+    "multiple retained historical jobs plus new key require reconciliation",
+    "quarantine release preserves job and cumulative attempts"
+  ],
+  "ci": {
+    "module": {
+      "runId": 40524005251,
+      "jobId": 122258450075,
+      "event": "push",
+      "sourceCommit": "11e579366c90ace6dd67c3fec5643559b556f7d0",
+      "conclusion": "success",
+      "tests": 305,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "directJobLogRead": true,
+      "build": true,
+      "productionImageScanPassed": true,
+      "nonRootImageBootPassed": true
+    },
+    "diagnostic": {
+      "runId": 40524005177,
+      "jobId": 122258449645,
+      "conclusion": "success",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "directJobLogRead": true
+    },
+    "browser": {
+      "runId": 40524005299,
+      "jobId": 122258449858,
+      "conclusion": "success",
+      "tests": 4,
+      "failures": 0,
+      "skipped": 0,
+      "latencyTests": 2,
+      "directJobLogRead": true
+    }
+  },
+  "remaining": [
+    "versioned finite elapsed-time profile and progressive backoff/jitter",
+    "explicit bounded network transient classification",
+    "HUMAN profiling recovery session on the same job/operation with actor/reason/decisionRef/limits",
+    "atomic expected-version and worker generation fencing across recovery sessions",
+    "native review and final owner/Gateway/MCP cohort qualification",
+    "legacy multiple-job execution reconciliation and bounded quarantine/capacity integration"
+  ],
+  "target": {
+    "newRequests": 0,
+    "jobId": "677480c8-3d10-44fd-9dad-f72ddeed20a4",
+    "retainedState": "FAILED",
+    "retainedAttempts": 5,
+    "reset": false,
+    "newJob": false,
+    "newBudget": false,
+    "currentFileReadOrTokenSuccessProven": false
+  },
+  "databaseMigrationsAdded": 0,
+  "runtimeEffects": 0,
+  "automaticReplayAllowed": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}

@@ -1,0 +1,195 @@
+{
+  "schema": "ouf.managed-profile-ths-iam-binding-read-qualified.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "status": "QUALIFIED_AND_SUCCESSFULLY_CONSUMED_PROFILE_BLOCKED",
+  "source": {
+    "commit": "831a6c2268b5e5dc1138a86bec7e2c81c70d9965",
+    "path": "scripts/read-managed-profile-ths-iam-bindings-20261028.py",
+    "bytes": 51493,
+    "sha256": "c9d0f9bb73b41e70593a90277f4d326463151845a1244af5bf089e54650371df"
+  },
+  "wrapper": {
+    "commit": "b3038858a0c779d3ce3eb98fcb63f916f2bb350a",
+    "path": "releases/read-managed-profile-ths-iam-bindings-20261028.sh",
+    "sha256": "770712e37a90336b5433610e0adebd005399ef42536176170f61b778c50455a8"
+  },
+  "qualification": {
+    "commit": "dc3fdc88b105e6b07f1fd1dd841a5fbb2d213a03",
+    "pushRun": 40680109883,
+    "prRun": 40680120010,
+    "tests": {
+      "bindingLedgerAndIdentity": 22,
+      "preservedRequest": 22,
+      "preservedClient": 12,
+      "nativeInstallationGuard": 3
+    },
+    "skips": 0,
+    "conclusion": "success",
+    "pushJobs": [
+      122788377721,
+      122788378353
+    ],
+    "prJobs": [
+      122788416211,
+      122788416426
+    ],
+    "directLogsRead": 4,
+    "actualKeycloakVersion": "26.2.5",
+    "realDockerProcessRootMountNamespacePty": true,
+    "iamConfigurationBeforeAfterEqual": true,
+    "fixtureConsentOnly": true,
+    "productionConsentSimulated": false,
+    "actualPinnedHttpsNonrootSudoRoot400Delivery": true,
+    "allNewPrivateFiles600": true,
+    "noCredentialOrTokenMaterialPersisted": true,
+    "oldInputBytesUnchanged": true,
+    "replayDenied": true
+  },
+  "industrialization": {
+    "modules": [
+      "tools/managed_profile_ths_scopes/contract.py",
+      "tools/managed_profile_ths_scopes/client.py",
+      "tools/managed_profile_ths_scopes/overlay.py",
+      "tools/managed_profile_ths_scopes/bindings.py",
+      "tools/managed_profile_ths_scopes/iam_read.py"
+    ],
+    "actualNativeInstallationEntry": "tools/source_revision_update/configuration.py:verify",
+    "guardCommit": "117e40550c69b4cecfeae480d78daa7d925f8872",
+    "guard": "When the JAR contains ManagedProfileRecoveryThs.class, require the complete explicit scope request before native owner replacement review/start. No silent patch; legacy artifacts without that surface keep their contract.",
+    "twoParameterSetsQualified": true,
+    "twoRealExternalClientsProven": false,
+    "allBootstrapPathsProvenToUseGuard": false,
+    "configurationProfileConditionalNotExecutable": true
+  },
+  "reuse": {
+    "explicitApiSource": "3b205c44e983184e90baf31230b7f5ec1affb6b7",
+    "functions": [
+      "terminal",
+      "access"
+    ],
+    "oldEntrypointsInvoked": false,
+    "historicalAuthorityReused": false,
+    "namespaceAndIdentityPatternReused": true
+  },
+  "limits": {
+    "totalSeconds": 600,
+    "reviewInputSeconds": 90,
+    "passwordInputSeconds": 90,
+    "maximumSecondsAfterConsent": 210,
+    "maximumSecondsAfterPassword": 120,
+    "privateMetadataReads": 2,
+    "engineGets": 5,
+    "administrativeAuthenticationRequests": 1,
+    "normalAdminGets": 16,
+    "maximumAdminGetAttempts": 20,
+    "maximumGetRetryReservations": 4,
+    "maximumAttemptsPerStage": 3,
+    "totalBytes": 25165824
+  },
+  "resilience": {
+    "authenticationReplayAllowed": false,
+    "refreshAllowed": false,
+    "oldWindowsOrBudgetsReopened": false,
+    "appendOnlyFsyncedClaimsBeforeDispatch": true,
+    "ledgerReinitializationDenied": true,
+    "allowedRetryStatuses": [
+      0,
+      429,
+      502,
+      503,
+      504
+    ],
+    "retryDelaysSeconds": [
+      5,
+      15
+    ],
+    "maximumJitterFraction": 0.2,
+    "retryAfterHonoredWithinOriginalWindow": true,
+    "waitCanNeverExtendTokenOrDeadline": true,
+    "unknownPermanentOrAmbiguousAuthenticationStops": true
+  },
+  "dataBoundary": {
+    "standaloneCredentialTokenSigningKeyFileReads": 0,
+    "ownerConfigurationContentReads": 0,
+    "interactivePasswordHidden": true,
+    "passwordTokenOrTheirHashesInArgvEnvironmentJournal": false,
+    "rawIamEnvironmentRepersisted": false,
+    "rawIamObservationsReducedToBindingHashes": true,
+    "retainedOnboardingEnvironmentMayContainCredentials": true,
+    "conditionalProfileRoot600NotPublic": true,
+    "adminIdentityMustBeProtectedApiVerifiedBeforeClientRead": true,
+    "jwtSignatureIndependentlyVerified": false,
+    "effectiveBrowserTokenScopesProven": false
+  },
+  "newScope": "/etc/ouf/deploy-snapshots/managed-profile-ths-iam-binding-read-5dfd7b7a-20261028-v1",
+  "retainedInputsHash": "5dfd7b7a903c07f546c42ba1915bf6f8fd1430ab91addc4879988cd4c1727892",
+  "clientId": "ouf-authorization-ths",
+  "issuer": "https://auth.ouf-lab.it/realms/ouf",
+  "applicationHumanAccount": "ouf-admin",
+  "separateInstallationIamAdministrativeUser": "oufadmin",
+  "effects": {
+    "iamMutations": 0,
+    "engineWrites": 0,
+    "sqlSessions": 0,
+    "imageImports": 0,
+    "newGrantsGranted": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "sourceActivations": 0,
+    "acquisitionsExecuted": 0,
+    "scopePatchApplied": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false
+  },
+  "targetExecuted": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "failedPrequalification": [
+    {
+      "run": 40677998927,
+      "job": 122781209107,
+      "reason": "Fixture initially used a random IAM container name while the reader was bound to the installation's retained exact name; denied before Engine/API."
+    },
+    {
+      "run": 40678223553,
+      "job": 122781971577,
+      "reason": "Real Keycloak26 assignment endpoint returns only id/name; full definition attributes must be resolved by exact UUID. Fixed and regression added; no target execution."
+    },
+    {
+      "run": 40678923067,
+      "job": 122784325224,
+      "reason": "Docker fixture start exited125 before source execution; stderr was not exposed, exact cause not proven. Explicit IAM name moved into installation profile, enabling unique concurrent fixture identities without relaxing production pins."
+    }
+  ],
+  "primarySources": [
+    "https://github.com/keycloak/keycloak/blob/26.2.5/services/src/main/java/org/keycloak/services/resources/admin/ClientResource.java",
+    "https://github.com/keycloak/keycloak/blob/26.2.5/server-spi/src/main/java/org/keycloak/models/ClientScopeModel.java"
+  ],
+  "currentDeliveryUsable": false,
+  "targetFollowUp": {
+    "receipt": "evidence/managed-profile-ths-iam-binding-read-target-20261028.json",
+    "status": "THS_IAM_BINDINGS_OBSERVED_CONFIGURATION_PROFILE_BLOCKED",
+    "complete": true,
+    "exit": 0,
+    "deliveryExit": 0,
+    "scopeConsumed": true,
+    "replayAllowed": false,
+    "bindingSnapshotHash": "ba556e9fce5fb31de5f53af0bf6d3fe7a77e8e09d9048529d8283eaaa6afabc2",
+    "configurationProfilePrepared": false,
+    "configurationProfileHash": null,
+    "counts": {
+      "adminGetRetryReservations": 0,
+      "adminGetsReserved": 14,
+      "bytes": 135305,
+      "engineGets": 5,
+      "oauthRequestsReserved": 1,
+      "privateMetadataReads": 2
+    },
+    "nextQualifiedCorrection": "evidence/managed-profile-ths-iam-binding-correction-qualified-20261028.json"
+  }
+}

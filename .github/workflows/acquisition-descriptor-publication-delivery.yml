@@ -1,0 +1,55 @@
+name: Acquisition descriptor publication pinned delivery
+on:
+  push:
+    paths:
+      - releases/publish-acquisition-read-descriptors-20261025.sh
+      - .github/workflows/acquisition-descriptor-publication-delivery.yml
+  pull_request:
+    paths:
+      - releases/publish-acquisition-read-descriptors-20261025.sh
+      - .github/workflows/acquisition-descriptor-publication-delivery.yml
+permissions: {contents: read}
+jobs:
+  pinned-download-no-tty:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: bash -n releases/publish-acquisition-read-descriptors-20261025.sh
+      - name: Real download and root copy; no TTY stops before dependency, login or private scope
+        run: |
+          set +e
+          bash releases/publish-acquisition-read-descriptors-20261025.sh > publication-delivery.log 2>&1
+          observed=$?
+          set -e
+          cat publication-delivery.log
+          test "$observed" = 2
+          grep -F 'INTERACTIVE_OPERATOR_NOT_ROOT_REQUIRED' publication-delivery.log
+          test ! -e /home/oufadmin/ouf-acquisition-descriptor-publication-20261025
+          code=/usr/local/lib/ouf-acquisition-descriptor-publication-1cbb40dd80d9e258/publish.py
+          test "$(stat -c '%u:%a' "$code")" = '0:444'
+          printf '%s  %s\n' 1cbb40dd80d9e258d55de530096fb139f7ae193df1a62c912ea24509f43ca284 "$code" | sha256sum -c -
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: publication-delivery-fixture, path: publication-delivery.log, retention-days: 30}
+  actual-root-umask077:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Exact copier under real restrictive root umask and unprivileged read
+        run: |
+          umask 077
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 60 "https://raw.githubusercontent.com/GioNob/ouf-deploy/3f0b407d01a34967e03e02ecc5bf441963704e7c/scripts/publish-acquisition-read-descriptors-20261025.py" -o "$RUNNER_TEMP/publish.py"
+          sudo /usr/bin/python3 -I -S -B - "$PWD" "$RUNNER_TEMP/publish.py" "$(id -u)" <<'PY'
+          import os, pathlib, sys
+          repo, public_source, owner = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3]
+          text = (repo/'releases/publish-acquisition-read-descriptors-20261025.sh').read_text()
+          source = text[text.index('import hashlib, os, re, stat, sys'):text.index('\nPY\n')]
+          sys.argv = ['exact-publication-copier', public_source, '1cbb40dd80d9e258d55de530096fb139f7ae193df1a62c912ea24509f43ca284', owner]
+          os.umask(0o077)
+          exec(compile(source, 'exact-publication-copier', 'exec'), {'__name__':'__main__'})
+          PY
+          code=/usr/local/lib/ouf-acquisition-descriptor-publication-1cbb40dd80d9e258/publish.py
+          test "$(stat -c '%u:%a' "$code")" = '0:444'
+          printf '%s  %s\n' 1cbb40dd80d9e258d55de530096fb139f7ae193df1a62c912ea24509f43ca284 "$code" | sha256sum -c -

@@ -1,0 +1,15 @@
+name: Retained CSV recovery image custody
+on:
+  push:
+    paths: ['scripts/stage_managed_profile_control_image.py', 'tests/test_managed_profile_control_image.py', 'releases/managed-profile-control-*-image-case-20261027.json', '.github/workflows/managed-profile-control-custody.yml']
+  pull_request:
+    paths: ['scripts/stage_managed_profile_control_image.py', 'tests/test_managed_profile_control_image.py', 'releases/managed-profile-control-*-image-case-20261027.json', '.github/workflows/managed-profile-control-custody.yml']
+permissions: {contents: read}
+jobs:
+  custody-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - run: python3 -m unittest discover -s tests -p test_managed_profile_control_image.py -v

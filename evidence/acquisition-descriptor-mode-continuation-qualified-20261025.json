@@ -1,0 +1,77 @@
+{
+  "schema": "ouf.acquisition-descriptor-mode-continuation-qualified.v1",
+  "codeAndDeliveryCommit": "c11d9ce029da431f9f9b225e9f06ea10264c7ecb",
+  "wrapper": "releases/resume-acquisition-descriptor-read-mode-20261025.sh",
+  "wrapperSHA256": "24cdc955bf0fbe26818968ebdf2ac6f89c9a7572d69dd0d8baa2f60a53bc1528",
+  "retainedPublicReaderCommit": "d2e80980f7575ce1e71627632eeba515441d84be",
+  "retainedPublicReaderSHA256": "062b1e201904b9fd7a10efcad371de17d4c0fbc3411710c310186aa7381c5cad",
+  "retainedDelivery": "/home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1",
+  "retainedBootstrap": "/home/oufadmin/ouf-descriptor-bootstrap.mIZy6zES",
+  "continuation": "/home/oufadmin/ouf-acquisition-descriptor-read-delivery.XdyYVHv1/permission-mode-v1",
+  "repairJournal": "/usr/local/lib/ouf-acquisition-permission-descriptor-read-062b1e201904b9fd/permission-mode-v1.json",
+  "qualification": {
+    "pushRun": 40222432040,
+    "pushJobs": {
+      "nativeFilesystemProtocol": 121256690689,
+      "retainedDeliveryFirstRead": 121256690725,
+      "futureCopyRestrictiveUmask": 121256690522
+    },
+    "prRun": 40222436406,
+    "prJobs": {
+      "nativeFilesystemProtocol": 121256704384,
+      "retainedDeliveryFirstRead": 121256704161,
+      "futureCopyRestrictiveUmask": 121256704335
+    },
+    "unitTestsPerProtocolJob": 15,
+    "skips": 0,
+    "directLogsRead": true,
+    "allListedJobsPass": true,
+    "realRootUmask077": true,
+    "realRoot0400": true,
+    "actualUnprivilegedReadDeniedBefore": true,
+    "oneFdChmod0444": true,
+    "actualUnprivilegedChecksumAfter": true,
+    "realSetuidTraversal": true,
+    "realPositiveAndNegativeParentAclTests": true,
+    "retainedLogsAndBytesInodeOwnerPreserved": true,
+    "automaticReplayBlocked": true,
+    "actualCopierFchmodRegressedUnder077": true,
+    "fullWrapperFirstReaderInvocation": true,
+    "expectedNoTtyStopBeforeLogin": true,
+    "syntheticRetainedHistory": true,
+    "productionApprovalSimulated": false
+  },
+  "retainedFailedCandidate": {
+    "commit": "9a8e0b6d9875bbe0752148c5f46e5e4e705497fb",
+    "runs": [
+      40222206020,
+      40222209880
+    ],
+    "cause": "Blanket ACL absence guard stopped full fixture; retained history/owner directories can have ACLs. Corrected to prove traversal as actual Linux operator preserving ancestor ACLs, while still rejecting code-file access ACL before chmod.",
+    "deliveredToTarget": false
+  },
+  "localNativeFilesystemQualification": {
+    "passed": false,
+    "reason": "UID1001 unmapped in cloud namespace; chown returnsEINVAL. Required native tests run without skips on privileged Ubuntu CI."
+  },
+  "repairMetadataWindowSeconds": 60,
+  "maximumCodeModeChanges": 1,
+  "codeContentsRewritten": false,
+  "ancestorPermissionsChanged": false,
+  "aclChanged": false,
+  "ownerChanged": false,
+  "normalReaderFirstExecutionAfterRepair": true,
+  "readerWindowSeconds": 600,
+  "readerOwnerGetsMaximum": 52,
+  "readerIamMetadataGetsMaximum": 1,
+  "readerIamPostsMaximum": 121,
+  "readerRawByteMaximum": 16000000,
+  "sourceActivations": 0,
+  "acquisitionsExecuted": 0,
+  "registryWorkerTouched": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "targetModeStillUnobserved": true,
+  "targetContinuationExecuted": false
+}

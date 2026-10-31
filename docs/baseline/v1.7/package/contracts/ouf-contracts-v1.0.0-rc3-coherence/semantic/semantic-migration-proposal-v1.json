@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/semantic-migration-proposal-v1.json",
+  "title": "OUF SemanticMigrationProposal v1",
+  "type": "object",
+  "required": [
+    "migrationProposalId",
+    "changeId",
+    "status"
+  ],
+  "properties": {
+    "migrationProposalId": {
+      "type": "string"
+    },
+    "changeId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "replacementRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "semantic-reference-v1.json"
+      }
+    },
+    "rationale": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "proposal is governable advice; it never auto-migrates consumer mappings or data"
+  ]
+}

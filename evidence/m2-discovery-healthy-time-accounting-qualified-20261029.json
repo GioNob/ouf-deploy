@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.m2-discovery-healthy-time-accounting-qualified.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "81c57855bf9f44194b499f7433c3b7836425f5f7",
+  "profile": "ouf.discovery-lease-cumulative-recovery-time.v1",
+  "push": {
+    "run": 40916516517,
+    "job": 123598076019,
+    "conclusion": "success"
+  },
+  "pr": {
+    "run": 40916523026,
+    "job": 123598099708,
+    "conclusion": "success"
+  },
+  "testsPerWorkerJob": 10,
+  "logsRead": true,
+  "actualSystemdDnsNftOutageRecoveryAndExhaustionRerunPassed": true,
+  "healthyCreditBoundByObservedKernelDeadline": true,
+  "unobservedDowntimeConsumesRecoveryBudget": true,
+  "legacyAccountingProfileRequiresExplicitMigration": true,
+  "attemptsAndPublicationHistoryPreserved": true,
+  "journalInitializationByFactory": false,
+  "targetExecuted": false,
+  "budgetReset": false,
+  "automaticReplayAllowed": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

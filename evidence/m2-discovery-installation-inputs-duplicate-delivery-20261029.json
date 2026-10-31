@@ -1,0 +1,22 @@
+{
+  "schema": "ouf.m2-discovery-installation-inputs-duplicate-delivery-observation.v1",
+  "date": "2026-10-29",
+  "evidenceOrigin": "USER_PASTED_FOOTER",
+  "status": "REJECTED_CONSUMED_SCOPE_NO_REPLAY",
+  "reasonCode": "POLICY_READ_SCOPE_CONSUMED_NO_REPLAY",
+  "deliveryExit": 1,
+  "deliveryDirectory": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.1FN41iD7",
+  "deliveryLog": "/home/oufadmin/ouf-m2-discovery-installation-inputs-delivery.1FN41iD7/bootstrap.log",
+  "bootstrapPath": "/home/oufadmin/ouf-m2-installation-bootstrap.wp8v83hD/run.sh",
+  "downloadedCodeChecksumReportedOk": true,
+  "successfulPriorInputsHash": "f759d397c000eba5b3113bcfee44bedf215577c81e9c40eccd98616a38714c6d",
+  "successfulPriorResultRemainsSelected": true,
+  "independentHostLogRead": false,
+  "codeBoundary": "WRAPPER_SCOPE_GUARD_BEFORE_PROTECTED_CODE_INSTALL_OR_READER_MAIN",
+  "laterFailureDoesNotReplaceSuccessfulResult": true,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "ouf.m2-discovery-material-preparation-qualification.v1",
+  "date": "2026-10-29",
+  "source": {
+    "productionModules": "01641bd4b79661f2b21d72b785c84fa30f305773",
+    "capsule": "6f2cc38a07a2b56542959716967e183f59217713",
+    "delivery": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
+    "latest": "ae11054df297e14fa80a81c39432af5cebea5001",
+    "sourcePins": {
+      "audit.py": "e8b7813a8f6f009054593025dc2df9b79315bf2100a70f02a41973a0536658c3",
+      "custody_capture.py": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
+      "projections.py": "4076c25e3258bf06afc25babf5d86755e55ffb97ac5bc0c634960061bcd71352",
+      "material_preparation.py": "7e342cf4d9bee25515a6b924bd5086352f8c5c660870b3ef7928046ba9285462"
+    }
+  },
+  "capsuleSha256": "7f1c64c3f20f7c31ee76799c3aad28bd4e8d6fcb7dbe688f1a02726cf6dd603b",
+  "capsuleBytes": 56651,
+  "wrapperSha256": "7e25e9e150f3452dd0e6c994ae0d38cb3db803cfb2c0dae59b2baa75d787c0bd",
+  "selected": {
+    "source": "ae11054df297e14fa80a81c39432af5cebea5001",
+    "pushRun": 40860072911,
+    "pushJob": 123400765696,
+    "prRun": 40860080014,
+    "prJob": 123400789917,
+    "testsPerJob": 127,
+    "skips": 0,
+    "logsRead": true
+  },
+  "native": {
+    "source": "d72b662204308a71cfee3d8b3e808e0d63dd2206",
+    "pushRun": 40859066955,
+    "pushJob": 123397346293,
+    "prRun": 40859078235,
+    "prJob": 123397384148,
+    "logsRead": true,
+    "actualDisposableDockerPeers": 13,
+    "rootUnixEnginePeer": true,
+    "kernelProcessPins": true,
+    "engineGets": 27,
+    "privateCopiesPrepared": 2,
+    "publicCertificateCopiesPrepared": 1,
+    "sourceFilesAndPeerBindingsUnchanged": true,
+    "scopeReplayRefused": true,
+    "stoppedPeerRefusedBeforeCopies": true,
+    "syntheticPrivateInputsAndProvenance": true,
+    "targetExecuted": false
+  },
+  "delivery": {
+    "source": "369ccc5cdb972dd7e361659f1f3d9cd47c59fe22",
+    "pushRun": 40859857287,
+    "pushJobs": [
+      123400042223,
+      123400042904
+    ],
+    "prRun": 40859864249,
+    "prJobs": [
+      123400067637,
+      123400067010
+    ],
+    "allFourJobsSuccessAndLogsRead": true,
+    "actualPinnedHttpsNonrootSudoRoot400Checksum": true,
+    "nonTtyRefusedBeforeDownloadOrScope": true,
+    "nonrootCodeReadDenied": true,
+    "failedScopePreserved": true,
+    "replayRefusedBeforeExecution": true,
+    "existingProtectedLogBlocksExecutionAndIsPreserved": true,
+    "productionCapsuleByteExact": true,
+    "targetMetadataAbsentInDeliveryFixture": true,
+    "positiveNativePreparationQualifiedSeparately": true
+  },
+  "target": {
+    "executed": false,
+    "scope": "/etc/ouf/deploy-snapshots/m2-discovery-material-preparation-eed64887-20261029-v1",
+    "expectedCandidateBindingHash": "eed64887cfcf18dc4be6de32c954b67649adf72ff384c3296d4bfe21ba1188c5",
+    "maximumSeconds": 90,
+    "maximumBytes": 16777216,
+    "maximumEngineGets": 27,
+    "privateMetadataReads": 3,
+    "sourceCredentialReads": 1,
+    "sourceApplicationMacReads": 2,
+    "sourcePublicCertificateReads": 1,
+    "privateCopyReadbacks": 3,
+    "purpose": "PRIVATE_PREPARATION_ONLY_NO_APPLICATION_CUTOVER",
+    "newKeysGenerated": 0,
+    "applicationMutations": 0,
+    "sqlSessions": 0,
+    "iamRequests": 0,
+    "oauthRequests": 0,
+    "grants": 0,
+    "budgets": 0,
+    "scopeReplayAllowed": false
+  },
+  "publicCertificateEnvelopeOnlyNotCaValidityOrTlsAdmission": true,
+  "currentCombinedIamProviderTrustStorePrepared": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "localVerification": {
+    "capsuleTests": 5,
+    "projectionTests": 5,
+    "publicCertificateEnvelopeTest": 1,
+    "nativeChownAndProcEnvironment": "UNSUPPORTED_IN_LOCAL_MANAGED_SANDBOX",
+    "hostedNativeQualification": "PASS_WITHOUT_WEAKENING_CHECKS"
+  }
+}

@@ -1,0 +1,2006 @@
+OUF — AUTHORIZATION & ACCESS CONTROL
+Specifica trasversale di identità federata, policy applicative e controllo degli accessi
+Implementation & Runtime Authorization Specification — v1.5
+Campo
+Valore
+Versione documento
+1.4 — Implementation Readiness Consolidation / DEVELOPMENT READY
+Data
+Settembre 2026
+Stato
+DEVELOPMENT READY v1.4 — modello Authorization v1.3 preservato; SDK, contract artifacts, persistence, failure semantics, configuration, compatibility, observability, runbook, CI/CD e cross-module readiness allineati al gold standard Ingestion.
+Perimetro
+Authorization applicativa OUF; HUMAN federation con EVO; authority M2M configurabile A/B/C
+Collocazione fisica iniziale
+Authorization Policy Registry co-locato nel deployable Source Onboarding & Configuration
+Source of truth identità/organizzazione
+HUMAN: IAM centrale EVO/Maggioli. M2M: authority tecnica secondo scenario A/B/C.
+Design constraint
+Core OUF complessivo entro €150.000; preferire riuso IAM. Technical IAM separato solo minimale nello scenario C.
+Decisione architetturale
+OUF non duplica utenti, password, MFA, sessioni, struttura organizzativa o ruoli dell’Ente. L’IAM centrale resta autoritativo per identità e appartenenza organizzativa. OUF governa esclusivamente la mappatura ruolo/attributi → capability e i vincoli applicativi necessari ai propri moduli.
+Assunzione esterna da validare in integrazioneIl progetto EVO con Maggioli renderà disponibili Keycloak/IAM e struttura organizzativa/ruoli per HUMAN_USER. Va verificato separatamente se lo stesso perimetro supporta e governa M2M; in caso contrario si applicano scenario B o C.
+Executive delta v1.5 — Operational Awareness Authorization
+La v1.5 introduce le policy normative per la consultazione conversazionale dello stato operativo OUF. La lettura di health, fault, incidenti, retry ed evidence è una capability applicativa autorizzata, non un accesso implicito ai sistemi di monitoring. Il modello/chatbot non è un security boundary; tenant scope, source scope, visibility class e redaction sono applicati server-side.
+0. Executive Summary
+La presente specifica definisce il modello trasversale di Authorization & Access Control dell’Open Urban Framework. La v1.2 recepisce inoltre le capability operative e conversazionali introdotte dall’Ingestion Runtime v1.1 e dal Source Onboarding & Configuration v1.2, senza trasformare l’Authorization Policy Registry in un IAM completo o in un orchestratore di runtime. Per le identità umane mantiene un unico punto di verità per identità, struttura organizzativa e ruoli dell’Ente, riutilizzando l’IAM centrale previsto dal progetto EVO/Maggioli. Per le identità macchina non assume che EVO supporti M2M: congela tre scenari interoperabili di authority tecnica. In tutti i casi OUF conserva soltanto le regole applicative che stabiliscono cosa ciascun ruolo, attore o servizio può fare sulle capability OUF.
+La soluzione evita la creazione di un secondo IAM e, coerentemente con il vincolo economico complessivo del core OUF, non introduce un nuovo deployable nella baseline v1.0. Il componente logico Authorization Policy Registry è implementato nello stesso deployable del Source Onboarding & Configuration; l’enforcement resta distribuito nei servizi OUF attraverso una libreria comune e policy pubblicate/versionate.
+Autorità
+Responsabilità
+IAM centrale Ente / EVO [HUMAN]
+Identità umane, autenticazione, MFA, sessioni, struttura organizzativa, ruoli istituzionali e lifecycle degli account umani.
+Urban API Gateway
+Validazione token, issuer/audience/signature/exp, coarse scopes, route policy, rate limiting e boundary enforcement.
+OUF Authorization Policy Registry
+System of record delle policy applicative OUF: ruolo/attributi → capability, scope organizzativi, vincoli actor-type, segregation of duties, policy versioning.
+Servizi OUF
+Policy Enforcement Point per le autorizzazioni fini e per le guard di stato del dominio.
+Trusted Approval Surface
+Conferma umana delle operazioni autoritative; non sostituisce IAM e non può essere controllata dall’AI.
+M2M Identity Authority [A/B/C]
+Emette/riconosce service e workload identity OUF; può coincidere con EVO, usare un realm/perimetro tecnico separato sulla stessa infrastruttura o essere un Technical IAM OUF minimale.
+Principio fondamentale
+Authentication e organizational authority sono esterne e condivise; application authorization è OUF. Gateway = coarse enforcement. Servizi = fine-grained enforcement.
+0.1 Risultato della baseline
+Un solo source of truth per identità umane, ruoli organizzativi e struttura dell’Ente: EVO/IAM centrale.
+Nessun database locale OUF degli utenti o replica autoritativa del DB ruoli.
+Policy OUF versionate, approvate, auditabili e pubblicabili come bundle immutabili.
+Separazione verificabile HUMAN_USER / AI_AGENT / MCP_SERVER / SERVICE_IDENTITY.
+Azioni approve/publish/activate human-only quando richiesto dalla policy.
+Possibilità di usare claim del token e, solo quando necessario, lookup governato dell’organizzazione/ruoli.
+Integrazione fisica minimale: nessun nuovo microservizio IAM nella release iniziale.
+Executive delta v1.4 — Implementation Readiness Consolidation
+La v1.4 assume l’Ingestion Runtime v1.2 come gold standard di completezza esecutiva. Non modifica il trust model, la separazione HUMAN/SERVICE/AI_AGENT, la collocazione iniziale dell’Authorization Policy Registry nel control plane o il principio di enforcement locale tramite shared Authorization SDK. La revisione chiude i gap implementativi su contract artifacts, API/SPI Java, persistence/migrations, failure taxonomy, retry e cache semantics, compatibility N/N+1, runtime configuration, BOM, observability, runbook, recovery, CI/CD, supplier evidence e readiness gate dei policy bundle. La scelta M2M A/B/C resta una decisione di piattaforma obbligatoria prima dell’integrazione reale, non una scelta demandata al team Authorization.
+Executive delta v1.3 — UDP v1.2 / Cross-Module Alignment
+La v1.3 allinea Authorization & Access Control alla Cross-Module Alignment Matrix v1.1, alla UDP / Urban Object Registry v1.2 baseline, all'Ingestion Runtime v1.2 EF e al Source Onboarding & Configuration v1.3 EF. Il perimetro resta trasversale e lean: Authorization decide chi può invocare una capability e quali dati/risorse può vedere; il Query Complexity Governor decide invece se un workload autorizzato è ammissibile entro budget e limiti operativi. La revisione estende il capability catalog a object serving, relationship, graph, spatial, lineage, history, export, resolution e approval; rende normativo l'enforcement fine-grained server-side prima di MCP/AI e distingue esplicitamente raw, lineage, history ed export access. Non viene introdotto un nuovo deployable o un policy engine esterno obbligatorio.
+1. Scopo, perimetro e non-obiettivi
+1.1 Scopo
+La specifica stabilisce i contratti e i vincoli con cui OUF interpreta identità umane, ruoli e attributi provenienti dall’IAM centrale dell’Ente e identità tecniche provenienti dall’authority M2M selezionata, traducendoli in decisioni autorizzative sulle capability della piattaforma. Definisce inoltre il modello di policy, il lifecycle, la distribuzione, l’enforcement, l’audit e i criteri di collaudo.
+1.2 In scope
+Federazione OIDC/OAuth2 con l’IAM centrale dell’Ente per HUMAN_USER e con una authority M2M conforme per workload/service identity.
+Modello degli attori umani, agentici e service-to-service.
+Contratto minimo dei claim utilizzabili da OUF.
+Mappatura externalRoleRef / organizational attributes → OUF capability grants.
+Vincoli per unità organizzativa, dominio, risorsa, purpose e actor type quando necessari.
+Policy lifecycle DRAFT → IN_REVIEW → APPROVED → ACTIVE → SUPERSEDED/REVOKED.
+Policy publication bundle immutabile e distribuzione ai servizi.
+Fine-grained authorization nei moduli OUF.
+Segregation of duties e human-only operations.
+Authorization context nell’audit e nelle ApprovalDecision.
+Test di conformance e failure-mode.
+1.3 Out of scope
+Creazione o gestione di account utente, password, MFA, recovery o sessioni locali.
+Replica autoritativa della struttura organizzativa dell’Ente.
+Gestione anagrafica HR o lifecycle del personale.
+Sostituzione di Keycloak/IAM EVO o del database ruoli dell’Ente per le identità umane; è invece ammessa una Technical Identity Authority OUF minimale per le sole identità macchina nello scenario C.
+Implementazione di un prodotto IAM autonomo dentro OUF.
+Introduzione obbligatoria di un policy engine esterno (OPA, Cedar o equivalente).
+Autorizzazione di business specifica di domini non ancora progettati oltre alle regole trasversali congelate qui.
+2. Baseline, riferimenti e assunzioni
+La specifica consolida decisioni già presenti nei progetti esecutivi OUF. EVO/Maggioli è assunto come autorità per identità umane, autenticazione, struttura organizzativa e ruoli dell’Ente. La capacità di EVO di governare identità machine-to-machine non è assunta: viene verificata in integrazione e sono congelati tre scenari alternativi.
+Riferimento
+Decisione riusata
+Urban API Gateway v1.0.5
+IdP OIDC riusabile; Keycloak non va duplicato quando esiste IAM comunale compatibile; Gateway valida token e scopes, senza logica di business.
+Source Onboarding & Configuration v1.0
+SSO federato, actor separation HUMAN/AI/MCP/service, approval challenge, human-only approve/activate, audit append-only.
+Semantic Model / Registry v1.0
+HUMAN_USER distinto da AI_AGENT/MCP_SERVER/SERVICE_IDENTITY; approve/publish human-only secondo scope/policy.
+Blue Paper OUF
+Technology reuse, API-first, governance, separazione delle responsabilità e agent-readiness.
+Progetto EVO/Maggioli — assunzione del committente
+IAM/Keycloak e struttura organizzativa con ruoli/permessi come source of truth HUMAN. Supporto M2M da verificare; non assunto dalla baseline.
+2.1 Assunzioni da confermare prima del go-live
+L’IAM EVO espone, per HUMAN_USER, un issuer OIDC stabile e supportato con JWKS/discovery endpoint. Per M2M deve essere disponibile almeno una authority tecnica OIDC/OAuth2 conforme secondo uno dei tre scenari della sezione 6.
+I ruoli e/o gruppi organizzativi rilevanti possono essere esposti come claim token oppure interrogati tramite API governata.
+Esiste un identificatore stabile per ruolo e unità organizzativa, non basato sul solo label visuale.
+È definita una politica di revoca/aggiornamento dei token coerente con i tempi di propagazione accettabili delle variazioni di ruolo.
+OUF può ottenere ambienti/realm di collaudo equivalenti alla produzione sia per HUMAN_USER sia per service/workload identity secondo lo scenario M2M selezionato.
+3. Principi architetturali
+ID
+Principio
+Vincolo
+AUTH-01
+Single Human Identity Authority
+OUF riusa EVO/IAM centrale per HUMAN_USER; nessun secondo user store umano.
+AUTH-02
+Organizational Authority External
+Ruoli e struttura Ente restano governati dal sistema autoritativo dell’Ente.
+AUTH-03
+Application Authorization OUF
+OUF è system of record esclusivamente delle proprie policy applicative.
+AUTH-04
+Gateway ≠ Business Authorization
+Il Gateway applica controlli coarse-grained; la decisione fine resta nel servizio.
+AUTH-05
+Human ≠ Agent ≠ Service
+Actor type distinti e non convertibili tramite payload o delega.
+AUTH-06
+Least Privilege
+Default deny; grant espliciti; niente capability implicite.
+AUTH-07
+No Client Asserted Authority
+actor, role, orgUnit e approver derivano da token/contesto trusted, non dal body.
+AUTH-08
+Version Everything
+Policy ACTIVE immutabile; modifica = nuova draft/versione.
+AUTH-09
+Auditability
+Ogni decisione critica conserva policyVersion, subject, claims rilevanti e correlationId.
+AUTH-10
+Cost Constraint
+Nessun nuovo deployable o policy engine senza requisito misurabile non soddisfatto dalla baseline.
+AUTH-11
+Technology Reuse
+Spring Security/JWT/PostgreSQL e servizi OUF condivisi prima di nuovi prodotti.
+AUTH-12
+Fail Closed
+Su assenza o invalidità di evidenze necessarie, l’operazione privilegiata viene negata.
+AUTH-13
+M2M Identity Authority Pluggable
+SERVICE_IDENTITY usa una authority tecnica esplicita secondo scenario A/B/C; internal network trust non sostituisce autenticazione.
+4. Architettura logica e collocazione fisica
+4.1 Vista di insieme
+EVO / IAM centrale / Keycloak [HUMAN AUTHORITY]
+├─ utenti umani e autenticazione
+  ├─ MFA / sessioni
+  ├─ struttura organizzativa
+└─ ruoli istituzionaliM2M Identity Authority [scenario A / B / C]├─ stesso EVO IAM, oppure├─ realm/perimetro tecnico separato, oppure└─ Technical IAM OUF minimale│ service/workload token
+          │ OIDC/OAuth2 + claim / lookup governato
+          ▼
+Urban API Gateway
+  ├─ token validation
+  ├─ audience / scope coarse
+  └─ boundary enforcement
+          │
+          ▼
+OUF Services + shared authorization library
+  ├─ Source Onboarding & Configuration
+  │    └─ Authorization Policy Registry [physical owner]
+  ├─ Semantic Model / Registry
+  ├─ Ingestion Runtime
+  ├─ UDP / Object Service
+  └─ MCP Server
+          │
+          └─ fine-grained policy enforcement
+4.2 Decisione fisica v1.0
+Authorization Policy Registry è un componente logico trasversale ma viene implementato, nella prima release, nello stesso deployable del Source Onboarding & Configuration. La scelta riduce costi, infrastruttura, CI/CD, osservabilità e gestione operativa senza trasferire nel dominio Onboarding la semantica delle capability degli altri moduli.
+Confine importante
+Co-locazione fisica non significa ownership funzionale dell’Onboarding su tutte le autorizzazioni. Il componente Authorization possiede il modello di policy trasversale; ciascun modulo possiede il catalogo delle proprie capability e le proprie guard di dominio.
+4.3 Componenti logici
+Componente
+Responsabilità
+Identity Context Adapter
+Normalizza il contesto trusted ricavato dal JWT / security principal.
+Authorization Policy Registry
+CRUD governato di policy, grant, scope e riferimenti a ruoli esterni.
+Capability Catalog Aggregator
+Registra/valida le capability dichiarate dai moduli senza duplicarne la semantica.
+Policy Evaluator
+Valuta actor type, role grants, org scope e condizioni supportate.
+Policy Publisher
+Produce AuthorizationPolicyBundle immutabili e active pointer.
+Authorization SDK / Shared Library
+Enforcement locale nei servizi; caching e decision logging.
+Audit Adapter
+Registra decisioni critiche e authorization evidence.
+IAM Directory Adapter (optional)
+Lookup di ruolo/org quando i claim non sono sufficienti; cache tecnica non autoritativa.
+5. Trust boundary e modello delle identità
+5.1 Actor types normativi
+Actor type
+Fonte identità
+Uso
+Operazioni autoritative
+HUMAN_USER
+Token user-bound IAM centrale
+read/edit/review/approve secondo policy
+Sì, se capability e assurance richiesti sono soddisfatti.
+AI_AGENT
+client/workload identity o agent context
+search/propose/compute/assist
+No per approve/publish/activate human-only.
+MCP_SERVER
+service identity da authority M2M A/B/C
+mediazione tool/capability
+No; non trasforma una service identity in HUMAN_USER.
+SERVICE_IDENTITY
+client credentials/workload identity da authority M2M A/B/C
+job, sync, internal integration
+No per decisioni umane.
+EXTERNAL_SYSTEM
+client credentials/mTLS da authority tecnica configurata
+source/API integration
+Solo capability tecniche esplicitamente assegnate.
+5.2 Regole inderogabili
+Il tipo di attore deriva dal token validato e dal client trust model, non dal payload.
+Un AI_AGENT che opera in una sessione utente resta AI_AGENT salvo invocazione separata della trusted approval surface con token HUMAN_USER.
+Il campo delegatedVia può descrivere la mediazione tecnica ma non modifica l’autorità del subject.
+approvedBy, actor, role o orgUnit inviati nel body sono informativi e mai autoritativi.
+Una service identity non soddisfa mai una guard actorType=HUMAN_USER.
+6. Contratto con le Identity Authority: EVO per HUMAN e authority M2M configurabile
+6.1 Protocollo
+La baseline usa OIDC/OAuth2. Per HUMAN_USER: Authorization Code + PKCE tramite client trusted/BFF o Trusted Approval Surface, con EVO/IAM centrale come authority. Per M2M: Client Credentials, workload identity e/o mTLS secondo lo scenario selezionato. La scelta dell’authority M2M non modifica il modello di autorizzazione OUF né rende trusted una chiamata solo perché interna al cluster.
+6.2 Authority delle identità M2M: tre scenari ammessi
+La baseline non considera la rete interna o il namespace Kubernetes come prova di identità. Ogni modulo fisico che invoca capability di un altro modulo usa una service/workload identity distinta. L’authority che emette o riconosce tale identità è scelta tra i tre scenari seguenti senza modificare le policy applicative OUF.
+Scenario
+Authority M2M
+Quando usarlo
+Vantaggi
+Vincoli
+A — EVO supporta M2M
+Stesso IAM/Keycloak EVO per HUMAN_USER e SERVICE_IDENTITY.
+EVO espone e governa client OUF, OAuth2 Client Credentials o workload identity, audience/scopes e lifecycle adeguati.
+Massimo riuso; un solo IAM; costo minimo.
+Separazione rigorosa tra client umani e tecnici; lifecycle e rotazione devono essere realmente supportati da EVO.
+B — stesso Keycloak, perimetro tecnico separato
+Stessa infrastruttura Keycloak con realm/tenant/area tecnica OUF separata da EVO umano.
+EVO non governa client tecnici nel proprio dominio applicativo ma consente riuso dell’infrastruttura IAM.
+Riusa prodotto, operations e competenze; isola le workload identity.
+Trust multi-issuer/realm configurato in Gateway/SDK; policy OUF resta unica.
+C — Technical IAM OUF minimale
+Authority tecnica OUF separata e limitata a SERVICE_IDENTITY, MCP e client tecnici AI; EVO resta esclusivo per HUMAN_USER.
+EVO non supporta o non consente M2M esterno.
+Indipendenza del ciclo M2M; nessuna forzatura dell’architettura EVO.
+Nuovo componente operativo solo minimale; nessun user store umano, organigramma o ruolo HR duplicato.
+Regola di selezione: A è preferito; B è il compromesso preferenziale quando l’infrastruttura Keycloak è riusabile ma il perimetro EVO non deve governare workload OUF; C è ammesso quando A e B non sono praticabili. La scelta viene formalizzata con ADR/integration decision e non cambia capabilityId, principal logici o policy OUF.
+6.3 Claim contract minimo
+Claim logico
+Obbligo
+Uso OUF
+Nota
+iss
+DEVE
+trust issuer
+Validato dal Gateway e/o service framework.
+sub
+DEVE
+subject stabile
+Mai sostituito da userId payload.
+aud
+DEVE
+audience
+Deve includere audience OUF prevista.
+exp/iat
+DEVE
+freshness
+Usato per validità e step-up policy.
+client_id / azp
+DEVE per client
+identità tecnica
+Necessario per AI/MCP/service.
+roles / groups / externalRoleRefs
+DEVE o lookup equivalente
+mappatura policy
+Preferire identificatori stabili.
+orgUnit / orgPath / orgRef
+DOVREBBE
+scope organizzativo
+Può essere singolo o multiplo.
+acr/amr
+DOVREBBE
+assurance/step-up
+Necessario per operazioni ad alto impatto.
+purpose/domain
+PUÒ
+ABAC futuro
+Usato solo se policy OUF lo richiede.
+6.4 Ruoli: claim-first, lookup-second
+OUF preferisce usare ruoli e appartenenze organizzative presenti nel token. Se la cardinalità o la dinamica dei ruoli rende i token impraticabili, può essere usato un IAM Directory Adapter verso API EVO/Maggioli. Il risultato di lookup può essere cacheato con TTL breve ma non diventa source of truth locale.
+No role database replication
+Non è prevista una sincronizzazione autoritativa del DB ruoli EVO dentro OUF. Eventuali cache servono solo a performance/resilienza e devono essere invalidate o scadere in modo controllato.
+7. Modello di autorizzazione OUF
+7.1 Modello base
+La baseline adotta un modello RBAC applicativo con vincoli ABAC minimali. Il grant principale associa un externalRoleRef a una capability OUF. Condizioni aggiuntive possono restringere il grant per actor type, organizational scope, domain/resource scope o assurance level.
+externalRoleRef = EVO:RESPONSABILE_SUO
+capability      = onboarding.approve
+actorType       = HUMAN_USER
+orgScope        = ${subject.orgUnit}
+assurance       = normal
+effect          = ALLOW
+7.2 Default deny e deny-overrides
+In assenza di grant valido l’operazione è negata.
+Una regola DENY esplicita prevale sui grant ALLOW quando applicabile.
+Le capability human-only incorporano una guard actor type indipendente dal ruolo.
+Le guard di stato del dominio sono valutate dopo l’autorizzazione e possono negare l’operazione anche a un utente autorizzato.
+7.3 Policy decision
+Decision = evaluate(
+  subject,
+  actorType,
+  externalRoleRefs,
+  orgContext,
+  capabilityId,
+  resourceContext,
+  assuranceContext,
+  activePolicyVersion
+)
+=> ALLOW | DENY + reasonCode + policyVersion
+8. Capability Catalog e naming
+Ogni modulo OUF possiede semanticamente le capability che espone. L’Authorization Policy Registry mantiene riferimenti validati a tali capability e associa grant; non ridefinisce il comportamento funzionale degli endpoint.
+8.1 Naming convention
+Formato raccomandato: <domain>.<resource>.<action> oppure <module>.<action>.
+Gli identificatori sono stabili e non dipendono dal path HTTP.
+Breaking change del significato di una capability richiede nuova versione o nuovo capabilityId.
+Gli scope OAuth del Gateway possono essere più grossolani delle capability applicative.
+8.2 Esempi iniziali
+Capability
+Tipo
+Human-only?
+Owner logico
+source.create
+write
+No
+Onboarding
+source.discovery.run
+execute
+No
+Onboarding
+onboarding.mapping.propose
+write
+No
+Onboarding
+onboarding.review
+review
+Sì
+Onboarding
+source.onboarding.approve
+approve
+Sì
+Onboarding
+source.onboarding.activate
+activate
+Sì
+Onboarding
+semantic.search
+read
+No
+Semantic Registry
+semantic.adopt
+governance
+Sì
+Semantic Registry
+semantic.publish
+publish
+Sì
+Semantic Registry
+urban.objects.read
+read
+No
+UDP/Object Service
+mcp.tool.invoke
+execute
+No
+MCP Server
+Scope control
+La tabella è una baseline minima e non anticipa l’intero catalogo dei moduli ancora da progettare. Ogni nuovo progetto esecutivo aggiunge le proprie capability senza modificare il modello autorizzativo.
+9. Modello di dominio delle policy
+Entità
+Chiave
+Descrizione
+ExternalRoleReference
+externalRoleRef
+Riferimento stabile a ruolo/gruppo governato dall’IAM/organizzazione Ente.
+CapabilityReference
+capabilityId
+Riferimento alla capability posseduta dal modulo.
+AuthorizationPolicy
+policyId + version
+Aggregate root versionato della policy.
+PolicyGrant
+grantId
+ALLOW/DENY per ruolo/attore/capability con condizioni.
+OrganizationScope
+scopeId
+Regola di applicazione su unità organizzativa/path/domain.
+AssuranceRequirement
+assuranceId
+Requisito acr/amr/freshness per step-up.
+PolicyRevision
+revisionId
+Snapshot immutabile del contenuto policy.
+AuthorizationPolicyBundle
+publicationId
+Bundle immutabile pubblicato ai PEP.
+PolicyApprovalDecision
+decisionId
+Decisione umana auditabile sulla pubblicazione policy.
+PolicyEvaluationEvidence
+evaluationId
+Evidenza opzionale per operazioni critiche / audit.
+9.1 PolicyGrant v1
+{
+  "grantId": "g-001",
+  "effect": "ALLOW",
+  "subject": {"externalRoleRef": "EVO:RESPONSABILE_SUO"},
+  "capabilityId": "source.onboarding.approve",
+  "actorTypes": ["HUMAN_USER"],
+  "organizationScope": {"mode": "SUBJECT_ORG_TREE"},
+  "assurance": {"level": "NORMAL"},
+  "status": "ACTIVE"
+}
+10. Organizational scope e struttura dell’Ente
+10.1 Obiettivo
+La struttura organizzativa EVO può essere usata come attributo di autorizzazione senza essere duplicata. OUF conserva soltanto riferimenti stabili e regole di scope, non l’organigramma autoritativo.
+10.2 Scope mode supportati v1
+Mode
+Significato
+Esempio
+GLOBAL
+Valido sull’intero perimetro OUF
+Amministratore tecnico OUF.
+EXACT_ORG
+Solo unità organizzativa indicata
+Operatore di uno specifico Servizio.
+SUBJECT_ORG
+Risorsa appartenente alla stessa orgUnit del subject
+Istruttore gestisce le fonti del proprio ufficio.
+SUBJECT_ORG_TREE
+Stessa orgUnit o discendenti secondo struttura IAM
+Responsabile di area.
+DOMAIN
+Perimetro funzionale esplicito
+SUO, SUE, SUAP, semantic-governance.
+10.3 Ownership della risorsa
+Per applicare uno scope organizzativo, la risorsa OUF deve avere un attributo governato come ownerOrgRef o domainRef. Questo valore è dato applicativo OUF; non è una copia dell’organigramma e può essere validato rispetto all’IAM quando necessario.
+11. Human governance, approval e segregation of duties
+11.1 Operazioni human-only
+Le azioni che producono una decisione autoritativa della piattaforma possono essere marcate HUMAN_REQUIRED. Il semplice possesso di un ruolo non è sufficiente se il token rappresenta un AI_AGENT, MCP_SERVER o SERVICE_IDENTITY.
+11.2 Approval challenge
+Il meccanismo ApprovalChallenge resta implementato nel modulo di dominio che possiede l’operazione (es. Onboarding o Semantic Registry). Authorization determina se il subject può approvare; il challenge prova che la decisione riguarda esattamente la revisione/hash mostrati all’utente.
+authorize(HUMAN_USER, source.onboarding.approve)
+  + workflow guard
+  + ApprovalChallenge(configurationHash, expiresAt)
+  + trusted approval confirmation
+  => ApprovalDecision
+11.3 Segregation of Duties v1
+La baseline supporta una regola opzionale proposer != approver per capability ad alto impatto.
+È possibile vietare che lo stesso subject approvi una policy Authorization che gli assegna direttamente privilegi elevati, salvo break-glass governato.
+Le regole SoD devono essere esplicite; non sono inferite automaticamente dalla struttura organizzativa.
+Qualsiasi override richiede reasonCode e audit.
+12. AI Agent, MCP Server e delega
+12.1 Principio
+L’esperienza può essere agentica senza trasferire autorità all’Agent. AI e MCP possono leggere, proporre, calcolare, creare draft e preparare challenge quando la capability lo consente; non possono confermare operazioni marcate HUMAN_REQUIRED.
+12.2 Delegation context
+Campo
+Significato
+subject
+Identità effettivamente autorizzata dal token.
+actorType
+HUMAN_USER / AI_AGENT / MCP_SERVER / SERVICE_IDENTITY.
+delegatedVia
+Client/agent che ha mediato la richiesta, solo audit/context.
+sessionRef
+Riferimento tecnico alla sessione trusted quando applicabile.
+capabilityId
+Capability richiesta.
+policyVersion
+Versione della policy usata per la decisione.
+12.3 MCP tool eligibility
+L’Authorization specification introduce il flag toolEligibility come metadato della capability, ma la decisione finale di esposizione nel MCP manifest appartiene al MCP Server. Le capability approve/publish/activate human-only non sono tool-eligible nella baseline.
+13. Lifecycle, governance e versioning delle policy
+DRAFT
+  ↓ submit
+IN_REVIEW
+  ├─ reject → DRAFT
+  └─ approve → APPROVED
+                 ↓ publish
+               ACTIVE
+                 ↓
+             SUPERSEDED / REVOKED
+13.1 Regole
+Stato
+Modificabile
+Usabile per enforcement
+Note
+DRAFT
+Sì
+No
+Lavoro editoriale.
+IN_REVIEW
+Solo ritorno controllato
+No
+Frozen per review.
+APPROVED
+No
+No
+Pronta alla pubblicazione.
+ACTIVE
+No
+Sì
+Versione ufficiale.
+SUPERSEDED
+No
+Solo storico
+Sostituita da nuova ACTIVE.
+REVOKED
+No
+No
+Revoca urgente; fail closed verso grant revocati.
+13.2 Cambio ruolo esterno vs cambio policy OUF
+La modifica di un ruolo dell’utente nell’IAM centrale non richiede nuova versione delle policy OUF: cambia il subject context al rinnovo/lookup. La modifica della mappatura tra ruolo e capability è invece una modifica della policy OUF e segue il lifecycle sopra definito.
+14. Contratto API Authorization Policy Registry
+Le API sono esposte tramite Urban API Gateway. Nella baseline fisica sono implementate dal deployable Source Onboarding & Configuration, ma usano un prefisso e package separati per mantenere il confine logico.
+Prefisso baseline: /api/authz/v1
+Metodo
+Path
+Capability amministrativa
+Scopo
+GET
+/capabilities
+authz.capability.read
+Catalogo capability registrate.
+POST
+/policies
+authz.policy.create
+Crea draft policy.
+GET
+/policies
+authz.policy.read
+Ricerca/lista.
+GET
+/policies/{policyId}/versions/{version}
+authz.policy.read
+Dettaglio versione.
+PATCH
+/policies/{policyId}/draft
+authz.policy.edit
+Modifica draft.
+POST
+/policies/{policyId}/submit
+authz.policy.submit
+Invia in review.
+POST
+/policies/{policyId}/approve
+authz.policy.approve
+Human-only.
+POST
+/policies/{policyId}/publish
+authz.policy.publish
+Human-only / policy governance.
+POST
+/policies/evaluate
+authz.policy.simulate
+Simulazione non autoritativa.
+GET
+/publications/active
+authz.bundle.read
+Bundle ACTIVE per consumer interni.
+14.1 Evaluate API: uso limitato
+L’endpoint evaluate serve a test, simulazione e casi di policy centralizzata eccezionali. L’enforcement ordinario dei servizi non deve dipendere da una chiamata sincrona remota per ogni request: i servizi consumano il bundle ACTIVE e valutano localmente tramite Authorization SDK.
+15. Persistenza e schema fisico
+La baseline usa lo stesso PostgreSQL di piattaforma del deployable Onboarding, con schema logico separato authz. Non vengono create istanze database dedicate.
+Tabella
+Contenuto
+authz_policy
+aggregate root e metadati lifecycle.
+authz_policy_revision
+contenuto immutabile/version hash.
+authz_grant
+grant normalizzati per ruolo/capability/condizioni.
+authz_org_scope
+scope organizzativi.
+authz_capability_ref
+catalogo/riferimenti capability.
+authz_publication
+bundle pubblicati e active pointer.
+authz_approval_decision
+decisioni umane append-only.
+authz_audit_event
+eventi amministrativi e security-relevant.
+authz_directory_cache
+opzionale, TTL, non autoritativa.
+15.1 Vincoli transazionali
+Publication e aggiornamento active pointer sono atomici.
+Una policy ACTIVE non viene modificata in-place.
+Il contenuto pubblicato ha contentHash SHA-256.
+Le chiamate remote IAM non vengono eseguite dentro transazioni lunghe.
+La cache directory può essere persa e ricostruita senza perdita di authority.
+16. AuthorizationPolicyBundle e distribuzione
+16.1 Obiettivo
+I servizi OUF devono poter applicare policy senza una dipendenza runtime sincrona dal componente Authorization per ogni richiesta. Il Policy Publisher produce un bundle immutabile, firmabile/hashato, che i servizi caricano e cacheano.
+16.2 Contenuto minimo
+{
+  "publicationId": "authz-pub-2026-08-001",
+  "policyVersion": "1.0.3",
+  "createdAt": "2026-08-31T10:00:00Z",
+  "contentHash": "sha256:...",
+  "capabilitySchemaVersion": "1",
+  "grants": [ ... ],
+  "denyRules": [ ... ]
+}
+16.3 Refresh
+Pull iniziale e polling leggero dell’active pointer; eventuale evento futuro è solo acceleratore, non requisito.
+ETag/If-None-Match per evitare download inutili.
+Bundle precedente mantenuto per rollback/audit.
+Revoca urgente può forzare TTL breve o invalidazione tramite configurazione condivisa; nessun broker dedicato richiesto.
+16.1 Atomic policy snapshot per request
+Il refresh dell'AuthorizationPolicyBundle DEVE avvenire tramite pubblicazione atomica di un oggetto immutabile. Ogni richiesta cattura una singola reference del bundle attivo all'inizio dell'evaluation e usa esclusivamente quella policyVersion per capability check, ABAC, resource scope e DataAccessLabel fino alla produzione della decisione finale. Un refresh concorrente non può modificare la semantica di una request già in-flight.
+request startpolicySnapshot = activePolicyRef.get()evaluate capabilityevaluate ABAC/resource scopeevaluate DataAccessLabelbuild AuthorizationDecisionaudit policyVersionrequest endrefresh worker:build -> validate -> immutable bundleactivePolicyRef.set(newBundle)
+POLICY-ATOMIC-01 — Il runtime SHOULD usare AtomicReference<AuthorizationPolicyBundle> o meccanismo equivalente con atomic swap. Il bundle pubblicato è immutabile; non vengono mutate map/list interne dopo la publication.
+POLICY-ATOMIC-02 — Una singola request non deve richiamare activePolicyRef.get() in punti diversi dell'evaluation per ottenere la policy corrente. La reference viene acquisita una volta e propagata nell'AuthorizationContext.
+POLICY-ATOMIC-03 — Il refresh worker costruisce e valida completamente il nuovo bundle prima dello swap. Un bundle parziale o non validato non diventa mai ACTIVE.
+POLICY-ATOMIC-04 — AuthorizationDecision e audit evidence registrano policyVersion/bundle checksum usati dalla request, così da rendere riproducibile un ALLOW/DENY anche dopo refresh successivi.
+17. Enforcement nei moduli OUF
+17.1 Pattern
+Request
+  ↓
+Gateway token validation + coarse scope
+  ↓
+Service Security Filter
+  ↓
+Authorization SDK.evaluate(capability, resourceContext)
+  ↓ ALLOW
+Domain guard / state machine
+  ↓
+Use case
+17.2 Shared Authorization SDK
+Parsing e normalizzazione del principal trusted.
+Accesso ai claim ruolo/org già validati.
+Caricamento/cache del bundle ACTIVE.
+Evaluator deterministico e testabile.
+Annotazioni/helper per capability checks.
+Reason codes standardizzati.
+CorrelationId e policyVersion nei log security-relevant.
+17.3 Esempio Spring
+@RequiresCapability("semantic.publish")
+@RequiresActor(HUMAN_USER)
+public PublicationResult publish(...) {
+    // domain validation + approval challenge
+}
+18. Confine con Urban API Gateway
+18.1 Responsabilità Gateway
+Validare issuer, firma, audience, expiration e token format.
+Applicare coarse OAuth scopes e route-level policy.
+Gestire rate limiting, mTLS e boundary security.
+Propagare identity context e correlation ID in modo sicuro.
+18.2 Responsabilità escluse dal Gateway
+Interpretare la struttura organizzativa dell’Ente.
+Decidere se RESPONSABILE_SUO può approvare una specifica fonte.
+Gestire segregation of duties.
+Valutare workflow state o resource ownership.
+Contenere policy di business OUF in plugin custom.
+Invariante
+Il Gateway può negare prima; non può concedere un’operazione che il servizio applicativo nega.
+19. Confini con i moduli OUF
+Modulo
+Integrazione Authorization
+Source Onboarding & Configuration
+Ospita fisicamente APR; usa capability su source/mapping/workflow; produce ApprovalChallenge di dominio.
+Semantic Model / Registry
+Consuma bundle e applica semantic.*; adopt/publish human-only; nessun accesso diretto al DB authz.
+Ingestion Runtime
+Usa service identity e capability tecniche; nessun human approval.
+UDP / Urban Object Service
+Enforcement su read/query/admin e futuri write governati.
+MCP Server
+Filtra tool esponibili/invocabili secondo actor/client capability; mai bypass.
+Urban API Gateway
+Authentication e coarse scopes; non possiede le policy applicative.
+20. Amministrazione delle policy
+20.1 Chi può amministrare Authorization
+La baseline non definisce nomi organizzativi specifici del Comune; definisce capability amministrative OUF assegnate a ruoli EVO per gli utenti umani e capability tecniche assegnate a principal M2M stabili per i servizi. Questo evita hardcoding di denominazioni organizzative o credenziali nel software.
+Capability amministrativa
+Effetto
+Guard
+authz.policy.read
+Consulta policy e diff
+HUMAN_USER o service audit autorizzato.
+authz.policy.create/edit
+Crea/modifica draft
+HUMAN_USER con ruolo amministrativo.
+authz.policy.submit
+Invia in review
+HUMAN_USER.
+authz.policy.approve
+Approva policy
+HUMAN_USER; possibile SoD.
+authz.policy.publish
+Attiva policy
+HUMAN_USER; high impact / step-up configurabile.
+authz.policy.revoke
+Revoca urgente
+HUMAN_USER; reason obbligatorio; audit forte.
+20.2 Bootstrap
+L’installazione iniziale richiede una bootstrap policy minima firmata/versionata: attribuisce a uno o più ruoli EVO amministrativi le capability umane necessarie a governare le policy e, se richiesto, ai principal M2M iniziali le sole capability tecniche necessarie. Il bootstrap non crea utenti locali né conserva secret.
+21. Assurance, step-up e operazioni ad alto impatto
+L’Authorization layer può richiedere un livello minimo di assurance per specifiche capability. L’esecuzione del vero step-up resta nell’IAM centrale; OUF verifica i claim acr/amr/freshness risultanti.
+Risk class
+Esempi
+Baseline
+LOW
+read/search
+Nessun step-up.
+MEDIUM
+edit/submit
+Sessione SSO valida.
+HIGH
+activate/publish/policy change
+Step-up configurabile se richiesto dalla policy dell’Ente.
+CRITICAL
+break-glass/revoke broad policy
+Step-up + reason + audit obbligatori; eventuale dual control futuro.
+22. Break-glass e recovery amministrativo
+Per evitare lock-out totale dovuto a una policy errata, la piattaforma deve prevedere un percorso di recovery governato. La baseline preferisce un meccanismo IAM/operativo esterno al normale flusso applicativo, non una backdoor nel codice OUF.
+Account/ruolo break-glass gestito nell’IAM centrale secondo policy dell’Ente.
+Capability limitata a authz.policy.revoke / rollback publication.
+Accesso soggetto a forte assurance e logging.
+Nessuna password hardcoded o utenza locale nel database OUF.
+Ogni uso genera un security event ad alta priorità.
+23. Audit, evidence e accountability
+23.1 Audit minimo per operazioni privilegiate
+Campo
+Descrizione
+timestamp
+UTC server-side.
+subject
+sub IAM validato.
+actorType
+HUMAN_USER / AI_AGENT / MCP_SERVER / SERVICE_IDENTITY.
+clientId
+client/service che ha inviato la richiesta.
+delegatedVia
+eventuale mediazione agentica.
+externalRoleRefs
+ruoli rilevanti alla decisione, normalizzati.
+orgContext
+org scope rilevante.
+capabilityId
+azione richiesta.
+resourceRef
+oggetto/aggregate interessato.
+decision
+ALLOW/DENY.
+reasonCode
+motivazione deterministica.
+policyPublicationId
+bundle/versione applicata.
+correlationId
+tracciabilità end-to-end.
+approvalChallengeRef
+se applicabile.
+23.2 Privacy e minimizzazione
+L’audit conserva solo gli attributi necessari a provare la decisione. Non replica l’intero profilo utente o l’intero token. Token raw e secret non vengono registrati nei log.
+24. Security baseline
+JWT signature/issuer/audience/exp validati secondo configurazione IAM.
+JWKS refresh e key rotation supportati.
+No trust su X-User/X-Role header provenienti dall’esterno; eventuali header interni sono riscritti/protetti dal Gateway.
+External role references validate against configured namespace/source.
+Policy publication richiede content hash e optimistic locking.
+Endpoint amministrativi authz non sono MCP tool-eligible.
+Nessun secret IAM o M2M memorizzato in chiaro nel database o nei bundle Authorization; usare workload identity quando disponibile oppure secretRef verso OpenBao/secret manager condiviso.
+Fail closed su bundle assente/scaduto per operazioni write/governance.
+Read-only può usare last-known-good bundle entro una finestra controllata definita dal profilo di esercizio.
+25. Failure mode e resilienza
+Guasto
+Comportamento
+IAM indisponibile durante nuova autenticazione
+Nessun nuovo login; sessioni/token già validi continuano finché validi secondo IAM.
+Directory API ruoli indisponibile
+Usare claim token o cache non scaduta; se la decisione richiede lookup non disponibile → DENY.
+Authorization Policy Registry down
+I servizi usano last-known-good bundle già caricato; gestione policy non disponibile.
+Bundle fetch fallisce
+Mantiene bundle ACTIVE precedente; alert; nessun passaggio a policy parziale.
+Policy malformed
+Publication gate blocca; active pointer invariato.
+Role removed in IAM
+Effetto al rinnovo del token/lookup secondo freshness policy; nessuna modifica manuale OUF necessaria.
+Emergency revoke
+Nuova publication/revoke + invalidation/TTL accelerato secondo profilo.
+25.1 IAM Directory Adapter — bounded lookup e FAIL_CLOSED
+Quando una policy ABAC richiede un attributo non già disponibile in token/claim firmato o in cache autoritativa sufficientemente fresca, l'IAM Directory Adapter può eseguire un lookup remoto verso Keycloak/EVO. Tale lookup è security-critical e DEVE avere timeout stretto, bounded e configurabile, significativamente inferiore al timeout complessivo della request. Timeout, 5xx, risposta malformata, identità ambigua o attributo obbligatorio non risolvibile producono FAIL_CLOSED con DENY esplicito.
+IAM-LOOKUP-01 — Il profilo iniziale di collaudo SHOULD utilizzare timeout nell'ordine delle decine di millisecondi in LAN/datacenter (ad es. 50-100 ms), da tarare su p95/p99 reali. Il valore non è hard-coded nel dominio.
+IAM-LOOKUP-02 — Non sono ammessi retry sincroni lunghi o catene di fallback permissive. Un eventuale retry deve restare entro il budget della singola lookup e non può trasformare un errore IAM in ALLOW.
+IAM-LOOKUP-03 — Se l'attributo richiesto è già presente in un claim firmato, trusted e sufficientemente fresco secondo policy, il servizio SHOULD evitarne il lookup remoto per ridurre latenza e dipendenza runtime dall'IAM.
+IAM-LOOKUP-04 — Il lookup remoto usa bulkhead/concurrency limit e client pool dedicato o bounded; il degrado IAM non deve saturare worker thread, connection pool o risorse condivise del servizio.
+IAM-LOOKUP-05 — La decisione FAIL_CLOSED deve esporre un reason code tecnico non ambiguo, ad es. IAM_ATTRIBUTE_LOOKUP_TIMEOUT / IAM_ATTRIBUTE_UNAVAILABLE, senza rivelare dettagli sensibili al client finale.
+26. Deployment e Technology Reuse
+26.1 Baseline fisica
+Elemento
+Baseline
+Deployable
+Nessuno nuovo: componente authz nello Source Onboarding & Configuration service.
+Persistence
+Schema authz nello stesso PostgreSQL governato del control plane.
+IAM
+HUMAN: EVO/Maggioli IAM centrale. M2M: A same IAM; B realm/perimetro tecnico separato sulla stessa infrastruttura; C Technical IAM OUF minimale.
+Gateway
+Urban API Gateway/APISIX condiviso.
+Secrets
+OpenBao o secret manager di piattaforma.
+Observability
+OpenTelemetry + stack condiviso.
+CI/CD
+Pipeline e GitOps condivisi OUF.
+Policy engine
+Evaluator applicativo minimale; nessun OPA/Cedar obbligatorio nella v1.
+26.2 Trigger per separazione futura
+Un deployable Authorization autonomo o un policy engine dedicato può essere introdotto solo se metriche reali dimostrano almeno uno dei seguenti gap: throughput non sostenibile, necessità di decision point centralizzato multi-piattaforma, policy language non esprimibile dalla baseline, requisiti normativi/segregazione che richiedano prodotto dedicato.
+27. Observability e metriche
+authz_decision_total{decision,capability}
+authz_decision_latency_ms
+authz_bundle_version_loaded per servizio
+authz_bundle_refresh_failure_total
+authz_policy_publish_total{result}
+authz_directory_lookup_total{result}
+authz_denied_high_risk_total
+authz_breakglass_event_total
+I log applicativi includono correlationId e reasonCode; non includono token raw, secret o dati personali non necessari.
+28. Conformance e test di accettazione
+ID
+Scenario
+Criterio
+AUTH-E2E-01
+Federated SSO
+Utente EVO/Keycloak accede alle API OUF senza credenziali locali.
+AUTH-E2E-02
+Role grant
+Ruolo EVO autorizzato invoca capability prevista.
+AUTH-E2E-03
+Default deny
+Ruolo senza grant riceve 403.
+AUTH-E2E-04
+Org scope
+Utente autorizzato su org A non opera su risorsa org B.
+AUTH-E2E-05
+AI human-only
+AI_AGENT su approve/publish riceve HUMAN_ACTOR_REQUIRED/403.
+AUTH-E2E-06
+MCP no escalation
+MCP non trasforma service token in human authority.
+AUTH-E2E-07
+Client asserted role
+role/approvedBy nel body non modifica la decisione.
+AUTH-E2E-08
+Policy versioning
+Modifica ACTIVE crea nuova draft; ACTIVE precedente immutabile.
+AUTH-E2E-09
+Atomic publication
+Bundle valido diventa ACTIVE atomicamente; failure lascia active pointer precedente.
+AUTH-E2E-10
+Bundle local enforcement
+Servizio continua a valutare policy con APR temporaneamente down.
+AUTH-E2E-11
+Directory outage
+Lookup necessario e non disponibile → fail closed.
+AUTH-E2E-12
+Role change
+Cambio ruolo IAM si riflette al token refresh/lookup senza aggiornare DB OUF.
+AUTH-E2E-13
+Step-up
+Capability high-risk negata finché assurance claim non soddisfa policy.
+AUTH-E2E-14
+SoD
+Proposer non può auto-approvare quando regola SoD è attiva.
+AUTH-E2E-15
+Audit evidence
+Decisione critica registra subject, capability, policyVersion, reason e correlationId.
+AUTH-E2E-16
+Policy rollback
+Rollback a publication precedente ripristina comportamento previsto.
+AUTH-E2E-17
+M2M authenticated service call
+Ingestion Runtime chiama un modulo con service token valido; principal e capability sono auditabili.
+AUTH-E2E-18
+No network-only trust
+Chiamata interna senza token/identity tecnica viene rifiutata anche se proviene dal namespace OUF.
+AUTH-E2E-19
+M2M authority scenario portability
+Stesso principal logico e stesse policy OUF funzionano passando tra scenario A/B/C senza cambiare il dominio applicativo.
+29. Sizing e performance iniziale
+L’Authorization è un control-plane con enforcement locale. La baseline non richiede un cluster dedicato né performance da hyperscale.
+Profilo
+Carico iniziale
+Criterio
+Policy evaluation locale
+1.000 req/s per istanza come test sintetico indicativo
+p95 evaluator puro < 5 ms sul bundle in memoria.
+Policy administration
+20 utenti concorrenti
+p95 < 500 ms escluso IAM remoto.
+Policy bundle
+fino a 10.000 grant iniziali
+Load/validate entro pochi secondi; memoria prevedibile.
+Directory lookup
+dipende da IAM
+Cache/timeout; non nel path se claim sufficienti.
+Publication
+<= 5 MB baseline
+Hash/build/download ripetibile.
+Sizing non contrattuale esterno
+I numeri sono criteri iniziali di collaudo del componente OUF e vanno confermati con dati reali su numero di ruoli, grant e capability.
+30. Design constraint economico e anti-scope-creep
+Il core OUF complessivo deve restare implementabile entro il design constraint di €150.000. Authorization riusa obbligatoriamente EVO/IAM per HUMAN_USER, struttura organizzativa e ruoli. Per M2M privilegia il riuso dello stesso IAM o della stessa infrastruttura Keycloak; un Technical IAM OUF separato è ammesso solo nello scenario C, minimale e limitato alle identità macchina.
+Scelta
+Impatto costo
+Riuso EVO/Keycloak per HUMAN + preferenza M2M A/B
+Evita un secondo IAM quando EVO o la stessa infrastruttura possono governare le identità tecniche.
+No replica DB ruoli
+Evita sync engine, data ownership e problemi di coerenza.
+Authz co-locato Onboarding
+Riusa runtime, PostgreSQL, worker, CI/CD e observability.
+Enforcement locale
+Evita decision service sincrono ad alta disponibilità.
+No policy engine esterno obbligatorio
+Riduce stack, competenze, deployment e licenze/operations.
+Bundle immutabile
+Semplifica resilienza e testabilità.
+Scenario C minimale
+Se necessario introduce solo l’authority tecnica per pochi workload OUF, senza utenti umani, organigramma o policy applicative duplicate.
+OUF-COST-AUTH-01
+Qualunque proposta che introduca un IAM OUF separato, un database ruoli autoritativo locale, un nuovo microservizio Authorization o un policy engine dedicato richiede una gap analysis con requisito misurabile e impatto sul budget complessivo.
+31. Impatto sul Source Onboarding & Configuration
+La v1.0 attuale del Source Onboarding contiene già SSO, actor separation, trusted approval surface e autorizzazione applicativa. La presente specifica rende tali elementi parte di un modello trasversale e richiede una revisione del progetto esecutivo Onboarding.
+31.1 Modifiche richieste nella futura revisione Onboarding
+Rinominare il deployable fisico, se utile, in Source Onboarding, Configuration & Authorization senza cambiare il nome logico delle API onboarding.
+Aggiungere Authorization Policy Registry ai componenti interni.
+Aggiungere schema PostgreSQL authz e relative migration.
+Aggiungere /api/authz/v1 come API separata nello stesso servizio.
+Spostare dal capitolo IAM dell’Onboarding le regole trasversali qui congelate, mantenendo solo integrazione e use case specifici.
+Riferire ApprovalChallenge e workflow alle capability/guards definite da Authorization.
+Aggiornare conformance per usare ruoli/claim EVO e policy bundle.
+32. Sequenza di implementazione
+Confermare con il progetto EVO/Maggioli claim contract, role identifiers, org identifiers e supporto o meno a OAuth2 Client Credentials, service account e workload identity per client OUF.
+Implementare Identity Context Adapter e shared Authorization SDK.
+Implementare schema authz e API Policy Registry nel deployable Onboarding.
+Definire bootstrap policy con i primi ruoli EVO e i principal M2M iniziali, indipendentemente dall’authority tecnica scelta.
+Integrare Onboarding come primo Policy Enforcement Point reale.
+Integrare Semantic Registry e verificare human-only publish/adopt.
+Integrare Gateway coarse scopes mantenendo la logica fine fuori da APISIX.
+Produrre AuthorizationPolicyBundle ACTIVE e testare refresh/rollback.
+Estendere il catalogo capability ai moduli futuri man mano che vengono progettati.
+Eseguire suite AUTH-E2E e security con staging EVO per HUMAN_USER e con l’authority/realm M2M corrispondente allo scenario A, B o C.
+33. Parametri di integrazione non bloccanti
+Le seguenti variabili devono essere valorizzate nel progetto di integrazione ma non riaprono l’architettura della specifica.
+Parametro
+Decisione architetturale già congelata
+Issuer/realm HUMAN EVO
+Configurazione esterna; OUF usa OIDC standard per utenti umani.
+Nome claim ruoli
+Mappato da Identity Context Adapter.
+Nome claim orgUnit
+Mappato da adapter o lookup.
+Role ID format
+Deve essere stabile; label non autoritativa.
+Token TTL
+Policy IAM; OUF usa freshness prevista.
+Step-up mechanism
+IAM centrale; OUF verifica assurance result.
+Directory API
+Opzionale; claim-first.
+Break-glass role
+Governato IAM; OUF assegna capability limitate.
+Ruoli comunali iniziali
+Da mappare nel bootstrap policy senza hardcoding applicativo.
+M2M authority scenario
+A/B/C da scegliere dopo verifica EVO; issuer/realm tecnico configurabile senza cambiare policy model.
+M2M credential mode
+Client Credentials, workload identity e/o mTLS; secret mai nel DB OUF, solo secretRef quando necessario.
+34. Security conformance matrix
+ID
+Controllo
+Esito
+SEC-AUTH-01
+JWT con firma invalida
+401; nessuna evaluation.
+SEC-AUTH-02
+Audience errata
+401.
+SEC-AUTH-03
+Token scaduto
+401.
+SEC-AUTH-04
+Role claim forged nel body
+Ignorato; decisione invariata.
+SEC-AUTH-05
+AI_AGENT con ruolo umano nel payload
+403 human required.
+SEC-AUTH-06
+Service token su publish
+403.
+SEC-AUTH-07
+Bundle alterato/hash mismatch
+Rifiutato; last-known-good mantenuto.
+SEC-AUTH-08
+Policy self-escalation con SoD
+Bloccata o richiede approvatore distinto.
+SEC-AUTH-09
+Raw token nei log
+Assente.
+SEC-AUTH-10
+IAM directory response stale oltre TTL
+Non usata; lookup/deny.
+SEC-AUTH-11
+Gateway bypass tentato
+Network/Gateway policy impedisce path esterno.
+SEC-AUTH-12
+Break-glass use
+Audit high severity + reason obbligatorio.
+SEC-AUTH-13
+Internal call without service identity
+401/403; la provenienza dalla trusted network non attribuisce authority.
+SEC-AUTH-14
+Service credential in DB/config response
+Assente; solo secretRef o workload identity.
+35. Deliverable implementativi
+OpenAPI 3.1 /api/authz/v1.
+JSON Schema AuthorizationPolicy e AuthorizationPolicyBundle.
+Flyway migration schema authz.
+Authorization SDK/shared library con test.
+Identity Context Adapter configurabile per claim EVO e per issuer/claim tecnici M2M.
+Policy evaluator e reason codes.
+Bootstrap policy template.
+Bundle publication/active pointer/rollback.
+Integration test con Gateway e realm/tenant IAM staging.
+Runbook: policy rollback, IAM outage, bundle refresh, break-glass.
+SBOM e dependency list.
+Evidence package AUTH-E2E/SEC-AUTH.
+36. Allineamento operativo con Ingestion Runtime v1.1 e Onboarding v1.2
+La v1.2 estende il catalogo delle capability OUF e le relative guard per coprire quarantine, RuntimeIssue, schema surveillance, file intake INTERNAL_MANAGED e lineage conversazionale. Le capability restano possedute dai rispettivi moduli applicativi: Authorization ne governa l’uso, non ne implementa la logica di dominio.
+36.1 Principi di autorizzazione delle operazioni conversazionali
+Una capability invocabile da chatbot/MCP non diventa per questo autoritativa: tool eligibility e authorization decision sono controlli distinti.
+AI_AGENT e MCP_SERVER possono leggere, spiegare, proporre e preparare azioni nei limiti della policy; non possono auto-attribuirsi HUMAN_USER né trasformare una proposta in decisione umana.
+Le azioni che modificano stato operativo o configurazione possono essere eseguite durante la stessa esperienza chatbot quando il backend riceve un contesto HUMAN_USER valido e la capability lo consente.
+Ogni azione mutativa conserva actor, delegatedVia, target, version/ETag, correlationId e outcome; le operazioni idempotenti usano idempotency key quando previsto dal contratto del modulo.
+Default deny resta la regola anche per nuove capability aggiunte dopo il rilascio: l’assenza di grant esplicito produce DENY.
+36.2 Capability operative Ingestion: issue e quarantena
+Capability
+Scopo
+AI/MCP
+Guard minima
+ingestion.issue.search
+Ricerca RuntimeIssue filtrate per source/run/severity/status
+SÌ
+read scope + data/resource visibility
+ingestion.issue.read
+Dettaglio issue, evidence e remediation hints
+SÌ
+read scope + resource visibility
+ingestion.issue.explain
+Spiegazione assistita e proposta di remediation
+SÌ
+nessun effetto mutativo
+ingestion.quarantine.list
+Elenco item in quarantena
+SÌ
+read scope + source/org scope
+ingestion.quarantine.inspect
+Payload tecnico redatto, errori, schema/mapping refs
+SÌ
+classificazione dati + least privilege
+ingestion.quarantine.retry
+Retry tecnico con medesimo contratto pinnato
+CONDIZIONATO
+HUMAN_USER delegato o SERVICE_IDENTITY autorizzata; policy runtime
+ingestion.quarantine.reprocess
+Riprocessamento controllato con target contract esplicito
+CONDIZIONATO
+HUMAN_USER + capability + target version valida
+ingestion.issue.resolve
+Chiusura issue con reason/evidence
+CONDIZIONATO
+HUMAN_USER; optimistic concurrency/ETag
+ingestion.issue.dismiss
+Dismiss governato di issue non bloccante
+CONDIZIONATO
+HUMAN_USER + reason obbligatoria
+ingestion.onboarding-review.request
+Apertura richiesta di revisione Onboarding da drift/runtime issue
+SÌ come proposta
+crea richiesta; non approva nuova configurazione
+Regola: AI_AGENT puro non può eseguire retry/reprocess/resolve assumendo autorità umana. L’Agent Host può mediare la stessa capability quando il contesto di sicurezza rappresenta un HUMAN_USER autorizzato; l’audit conserva entrambe le identità.
+36.3 Schema surveillance e ritorno governato all’Onboarding
+La Schema Surveillance produce osservazioni e issue ma non modifica direttamente il PublishedConfigurationBundle ACTIVE. Authorization deve distinguere capacità di lettura/diagnosi dalla capacità di avviare una revisione dell’Onboarding.
+Capability
+Attore ammesso
+Effetto
+source.schema-drift.read
+HUMAN_USER / AI_AGENT / SERVICE_IDENTITY autorizzati
+Legge drift, diff e classificazione
+source.schema-drift.explain
+AI/MCP ammesso
+Genera spiegazione/proposta, nessuna modifica
+source.onboarding-review.request
+HUMAN_USER o AI in contesto delegato
+Apre una richiesta/draft di revisione; non approva
+source.onboarding.edit
+HUMAN_USER Editor; AI solo propose/edit controllato
+Modifica DRAFT
+source.onboarding.approve
+HUMAN_USER only
+Approva la nuova versione
+source.onboarding.activate
+HUMAN_USER autorizzato only
+Rende ACTIVE il nuovo bundle
+SchemaSurveillanceNotice        │        ├─ compatible/info ──> monitoraggio        └─ breaking/blocking ─> ingestion.onboarding-review.request                                   │                                   ▼                         OnboardingVersion DRAFT                                   │                         HUMAN review/approval                                   │                                   ▼                         new ACTIVE bundle
+36.4 INTERNAL_MANAGED File Intake: capability e guard
+Il caricamento di XLSX/CSV o altri file tabellari è una capability governata del bounded context managed source. Il file non viene promosso direttamente a dato canonico: viene prima sottoposto a staging, profiling e onboarding.
+Capability
+Uso
+Policy v1.2
+managed-source.upload
+Caricamento file in staging
+HUMAN_USER autenticato; limiti formato/dimensione/classificazione
+managed-source.profile
+Profiling schema, colonne, tipi, candidate key
+HUMAN_USER o AI/MCP autorizzato; non pubblica dati
+managed-source.onboarding.create
+Crea INTERNAL_MANAGED Source/OnboardingVersion DRAFT
+HUMAN_USER o delegated HUMAN context; AI può proporre
+managed-source.preview
+Anteprima mapping/righe campione
+read/propose; data minimization
+managed-source.ingest
+Avvia ingestione dopo bundle ACTIVE
+HUMAN_USER autorizzato o service runtime secondo policy; ACTIVE bundle obbligatorio
+36.5 Lineage conversazionale e data authorization
+Le capability lineage sono principalmente esposte da Data Lake / UDP / Urban Object Registry; Authorization governa l’accesso in base alla visibilità dell’oggetto e dei dati di provenienza. L’Ingestion Runtime produce gli identificativi e le evidence che alimentano il lineage end-to-end.
+Capability
+Owner logico
+Regola autorizzativa
+lineage.object.read
+UDP / Lineage service boundary
+richiede accesso all’Urban Object e alla relativa provenance
+lineage.property.read
+UDP / Lineage service boundary
+applica anche policy sul singolo attributo se presenti
+lineage.source.trace
+UDP/Data Lake
+non espone secret, endpoint sensibili o payload non autorizzati
+lineage.processing.trace
+UDP/Data Lake + Ingestion evidence
+consente run/mapping/schema refs secondo least privilege
+lineage.history.read
+UDP/Object Registry
+rispetta retention, historical contract visibility e data classification
+36.6 Concorrenza multiutente e optimistic authorization
+La policy decision è stateless rispetto alla sessione applicativa e deve supportare utenti, agenti e workload concorrenti.
+Authorization non serializza le operazioni di dominio: i moduli owner applicano ETag/lockVersion, idempotency e state guard. Un ALLOW non garantisce che il comando resti valido se la risorsa cambia prima del commit.
+Per azioni mutative, il servizio applicativo deve rivalutare authorization e guard sullo stato corrente nella stessa transazione logica del comando.
+Due utenti che operano sulla stessa issue/quarantena/configurazione possono ricevere entrambi ALLOW, ma solo il comando coerente con la versione corrente viene committato; l’altro riceve conflict/precondition failure.
+Policy bundle e cache possono essere letti concorrentemente; l’attivazione di una nuova policy version usa pointer/version atomici e non produce configurazioni miste.
+36.7 Capability risk classification aggiornata
+Classe
+Esempi
+Human confirmation
+READ
+issue.read, quarantine.list, lineage.object.read
+No, salvo step-up per dati classificati
+PROPOSE
+issue.explain, schema-drift.explain, onboarding-review.request
+No decisione autoritativa; audit della proposta
+OPERATIONAL_WRITE
+quarantine.retry, issue.resolve, managed-source.upload
+HUMAN_USER/delegated HUMAN o service identity espressamente autorizzata
+CONFIGURATION_WRITE
+onboarding.edit, policy draft
+HUMAN_USER; AI solo propose/edit controllato
+HIGH_IMPACT
+onboarding.approve/activate, semantic.publish, policy.activate
+HUMAN_USER only + challenge/step-up/SoD secondo policy
+36.8 Conformance aggiuntiva v1.2
+ID
+Scenario
+Esito richiesto
+AUTH-I01
+AI_AGENT tenta ingestion.issue.resolve senza user context
+DENY
+AUTH-I02
+HUMAN_USER via Agent Host risolve issue con grant valido
+ALLOW + actor/delegatedVia auditati
+AUTH-I03
+AI richiede onboarding-review da schema drift
+può creare proposal/request; non approva né attiva
+AUTH-I04
+Upload XLSX INTERNAL_MANAGED senza managed-source.upload
+DENY
+AUTH-I05
+Lineage read verso oggetto non visibile al subject
+DENY senza leakage di metadata sensibili
+AUTH-I06
+Due utenti risolvono la stessa issue con stesso ETag
+uno commit; secondo 409/412 senza doppio effetto
+AUTH-I07
+Service identity tenta human-only capability
+DENY indipendentemente dallo scope coarse del Gateway
+AUTH-I08
+Nuova capability non presente nel policy bundle
+default DENY
+AUTH-I09
+Cambio policy ACTIVE durante richieste concorrenti
+ogni decisione usa una versione coerente del bundle
+AUTH-I10
+Retry tecnico automatico eseguito dal runtime service
+ALLOW solo se service principal possiede grant specifico e retry policy lo consente
+36.9 UDP serving capability catalog v1.3
+Gruppo
+Capability indicative
+Default / guard
+Object serving
+urban.object.read, urban.object.search, urban.object.history
+READ; policy su object type, domain scope, DataAccessLabel.
+Relationships
+urban.graph.neighbors, urban.object.related_search
+READ; edge + target visibility entrambe valutate.
+Graph recursive
+urban.graph.traverse, urban.graph.path
+READ; capability distinta, bounded; Authorization non decide depth/fan-out.
+Spatial
+urban.spatial.nearby, urban.spatial.intersects, urban.spatial.intersection_search
+READ; geometry visibility e spatial scope server-side.
+Lineage
+urban.lineage.object, urban.lineage.property, urban.lineage.history
+READ_RESTRICTED; lineage non implica raw payload access.
+History
+urban.object.history, urban.relationship.history
+READ_RESTRICTED; capability distinta dal current-state read.
+Export / aggregate
+urban.export.create, urban.export.read, urban.aggregate.execute
+EXPLICIT_GRANT; quota/async policy separate.
+Resolution read
+urban.resolution.candidates, urban.resolution.explain
+READ/EXPLAIN; AI/MCP eligible secondo manifest.
+Resolution proposal
+urban.merge.plan/impact/propose, urban.split.plan/impact/propose
+PROPOSE; nessun commit autoritativo.
+Human-only resolution
+urban.merge.confirm, urban.split.confirm, urban.authority.override
+HUMAN_REQUIRED; non MCP tool-eligible per conferma.
+Onboarding / approval
+source.onboarding.approve, source.onboarding.activate
+HUMAN_REQUIRED; Trusted Approval Surface.
+Managed/GIS onboarding
+source.managed.upload/profile, source.gis.discovery, source.review.request
+Capability distinte per upload/discovery/review.
+AUTHZ13-01 — I nomi definitivi delle capability sono governati dal catalogo versionato; gli esempi sopra congelano i gruppi e la separazione di rischio, non autorizzano endpoint generici o wildcard implicite.
+AUTHZ13-02 — Default deny si applica anche a capability aggiunte dopo il rilascio. Un nuovo tool MCP o una nuova route non eredita automaticamente un grant da una capability semanticamente simile.
+36.10 Fine-grained data authorization e DataAccessLabel
+L'enforcement fine-grained deve avvenire nel servizio owner della risorsa, prima che proprietà, geometrie, relazioni, lineage o payload raggiungano MCP/AI. Il Gateway applica authn/authz coarse; il servizio UDP applica policy object/property/relationship/geometry/lineage e produce una risposta già minimizzata. Non è conforme inviare il record completo al modello e mascherarlo successivamente.
+Target
+Contesto minimo
+Regola v1.3
+Urban Object
+type/class, domain/organizational scope, DataAccessLabel
+ALLOW/DENY object-level prima del fetch/serialization finale.
+Property
+property IRI/key, label, authority/provenance refs
+Campi non visibili sono esclusi server-side; no post-mask LLM.
+Geometry
+geometry label, precision/scope policy
+Può essere negata o ridotta secondo policy senza implicare accesso alle altre proprietà.
+Relationship
+relation type, source+target visibility, relationship label
+Edge non visibile se policy dell'edge o del target lo impedisce.
+Lineage
+lineage class, source refs, access label
+Lineage summary e raw evidence hanno capability separate.
+Lake/raw artifact
+artifact class, source, retention/security label
+Accesso raw esplicito; non derivato da urban.object.read.
+History
+object/property/relationship history label
+Accesso storico esplicito; current-state permission non lo implica.
+Export
+dataset/result scope, result size class, sensitivity
+Grant esplicito e policy di export; eventuale async non modifica authz.
+DAL-AUTH-01 — OPEN/ANONYMOUS resta il profilo iniziale. L'estensione futura a PERSONAL/SENSITIVE/RESTRICTED non richiede un nuovo modello di Authorization: richiede nuovi DataAccessLabel/policy grant e una nuova OnboardingVersion quando cambia l'acquisizione dei campi.
+DAL-AUTH-02 — L'assenza o l'impossibilità di risolvere un DataAccessLabel richiesto da una policy produce DENY o risposta minimizzata secondo policy fail-closed; non produce accesso permissivo.
+36.11 Boundary Authorization vs Query Complexity Governor
+Authorization e Query Complexity Governor sono controlli indipendenti e cumulativi. Authorization risponde alla domanda "questo principal può eseguire questa capability su queste risorse?". Il Governor risponde alla domanda "questo workload autorizzato può essere eseguito ora entro il budget operativo?". Nessuno dei due sostituisce l'altro.
+request  -> Gateway coarse authn/authz  -> service fine-grained Authorization       DENY => stop  -> Capability Router  -> Query Complexity Governor       over budget => reject / async  -> Logical + Physical Query Planner  -> parameterized SQL / PostGIS / bounded CTE
+QAUTH-01 — Una query a costo minimo ma non autorizzata è DENY prima dell'esecuzione e prima dell'esposizione del dato.
+QAUTH-02 — Una query autorizzata ma oltre budget può essere rifiutata, ristretta o trasformata in job async secondo capability; l'ALLOW authz non costituisce bypass del Governor.
+QAUTH-03 — Rate limiting e coarse quota del Gateway non sostituiscono il Governor distribuito della UDP; il BudgetStore non appartiene ad Authorization.
+QAUTH-04 — Authorization non sceglie SQL, join, PostGIS operator, recursive CTE, fan-out, depth o physical plan.
+36.12 MCP/Agent security contract
+Capability Manifest, tool eligibility e Authorization sono distinti. Il manifest aiuta l'Agent a scegliere lo strumento; Authorization verifica il principal e il resource context; il servizio owner applica DataAccessLabel e redaction; il Governor applica i limiti operativi. Un Agent che sceglie il tool sbagliato non acquisisce privilegi aggiuntivi.
+Aspetto
+Regola
+toolEligible
+Metadato di esposizione MCP; non equivale ad ALLOW.
+securityNotes
+Descrive human-only, raw/lineage restrictions e redaction, ma non è enforcement.
+Delegation
+Actor umano e Agent/MCP restano distinguibili; audit conserva entrambi quando l'Agent media un'azione umana.
+Authoritative confirmation
+Trusted Approval Surface OUF-controlled con HUMAN_USER, capability, freshness/ETag e contenuto decisione.
+Retry/replanning
+Non altera il principal, non amplia scope e non crea nuovi grant.
+Correlation
+correlationId/authorization context propagati; nessun payload sensibile nei trace.
+MCPAUTH-01 — merge.confirm, split.confirm, authority.override, source.onboarding.approve/activate e altre capability marcate HUMAN_REQUIRED non possono essere confermate da AI_AGENT, MCP_SERVER o SERVICE_IDENTITY anche se il testo del prompt dichiara che l'utente ha approvato.
+MCPAUTH-02 — L'Agent Host non riceve e non conserva token umani privilegiati come credenziali riutilizzabili. L'azione autoritativa utilizza una sessione/trusted surface conforme al modello IAM e produce audit evidence.
+36.13 Raw, lineage, history ed export: separazione delle capability
+Accesso
+Non implica
+Controlli minimi
+urban.object.read
+raw payload, history completa, lineage raw, export massivo
+object/property/geometry labels
+urban.lineage.object/property
+lake raw artifact
+lineage label + source visibility
+urban.raw.read / lake artifact read
+export o bulk download
+explicit grant + source/artifact scope + audit
+urban.object.history
+raw historical payload
+history grant + property/relationship filters
+urban.export.create
+accesso a dati oltre la query sorgente
+re-evaluate authz sul result scope + quota/export policy
+urban.aggregate.execute
+row-level disclosure
+aggregate capability + minimum disclosure policy se applicabile
+RAW-01 — La capacità di spiegare provenance/lineage non autorizza a restituire automaticamente payload raw, secretRef, identificativi tecnici sensibili o dati esclusi dalla response policy.
+36.14 Policy context per authority e object resolution
+AuthorityPolicy proveniente dall'Onboarding è governance metadata usato dalla UDP per la materializzazione; Authorization governa chi può leggere tale evidence e chi può proporre o confermare override/merge/split. L'Authorization Registry non diventa owner della decisione di authority tra fonti e non esegue Object Resolution.
+RESAUTH-01 — urban.resolution.candidates/explain possono essere MCP-eligible con grant di lettura; plan/impact/propose richiedono grant separati.
+RESAUTH-02 — urban.merge.confirm / urban.split.confirm / urban.authority.override sono HUMAN_REQUIRED, auditabili e soggetti a resource-level authorization.
+RESAUTH-03 — Un ALLOW alla proposta non implica ALLOW alla conferma. L'identità e il contenuto della decisione vengono rivalutati al commit.
+36.15 Authorization context propagation
+Le decisioni security-relevant propagano correlationId, principal/service identity, actorType, policyVersion, capabilityId, resource scope e decision reason code. Il contesto è sufficiente per audit e troubleshooting, ma non include token, payload applicativi completi o dati sensibili. Il downstream non assume trust solo perché la chiamata proviene dal cluster interno.
+CTX-01 — Le chiamate service-to-service UDP/MCP/Ingestion sono autenticate con workload identity secondo lo scenario M2M A/B/C già congelato. Namespace Kubernetes, IP interno o mTLS di trasporto senza principal applicativo non sono da soli un'identità autorizzativa sufficiente.
+36.16 Conformance aggiuntiva v1.3
+ID
+Scenario
+Criterio
+AUTH-A01
+Object/property filtering
+Un principal autorizzato all'oggetto ma non a una proprietà riceve la response senza quella proprietà; il valore non raggiunge MCP/AI.
+AUTH-A02
+Geometry separation
+Geometry DENY non implica DENY dell'intero oggetto quando policy consente risposta senza geometria.
+AUTH-A03
+Relationship visibility
+Edge verso target non visibile non viene restituito né inferito nella response.
+AUTH-A04
+Raw separation
+urban.object.read non consente accesso al raw/lake artifact senza capability dedicata.
+AUTH-A05
+History separation
+Current-state read non consente automaticamente history/property history.
+AUTH-A06
+Export separation
+Export massivo richiede capability esplicita e nuova authz evaluation sul result scope.
+AUTH-A07
+Human-only merge
+AI_AGENT/MCP_SERVER con proposal grant non può invocare merge.confirm.
+AUTH-A08
+Authority override
+authority.override richiede HUMAN_USER autorizzato e audit evidence; service token è negato.
+AUTH-A09
+Governor independence
+Query ALLOW authz ma oltre budget viene rifiutata/async dal Governor; nessun bypass.
+AUTH-A10
+Authorization precedence
+Query non autorizzata non raggiunge planner/DB anche se sarebbe sotto budget.
+AUTH-A11
+DataAccessLabel fail-closed
+Label richiesto ma non risolvibile non produce risposta permissiva.
+AUTH-A12
+MCP manifest non-enforcement
+Modifica di securityNotes/tool description non cambia grant o decisione Authorization.
+AUTH-A13
+M2M internal trust
+Chiamata da Pod interno senza service identity valida è DENY.
+AUTH-A14
+Lineage minimization
+Lineage summary autorizzato non include raw payload o secretRef.
+AUTH-A15
+Policy bundle consistency
+Due Pod con refresh concorrente osservano una policyVersion coerente per singola request; nessun bundle misto.
+37. baseline v1.3
+La presente versione costituisce l'baseline trasversale dell'Authorization & Access Control OUF per il ciclo di allineamento UDP v1.2. Restano congelati: riuso IAM EVO/Keycloak per HUMAN_USER; tre scenari M2M A/B/C; RBAC con vincoli ABAC; default deny; actor separation; AuthorizationPolicyBundle immutabile con enforcement locale; human-only per operazioni autoritative; capability catalog esteso a object/relationship/graph/spatial/lineage/history/export/resolution/approval; DataAccessLabel e filtering server-side prima di MCP/AI; accessi raw/lineage/history/export distinti; indipendenza Authorization/Query Complexity Governor; Trusted Approval Surface; service identity obbligatoria anche intra-cluster. Nessun policy engine esterno o nuovo deployable è richiesto nella baseline. Sono inoltre normativi l'atomic policy snapshot per singola request con bundle immutabile e atomic swap, e il FAIL_CLOSED sui lookup IAM/Directory Adapter con timeout stretto e bounded.
+ID
+Decisione congelata
+F-01
+IAM centrale EVO/Ente è source of truth per identità umane, ruoli e struttura organizzativa; OUF non li duplica.
+F-02
+Authorization Policy Registry è system of record delle policy applicative OUF.
+F-03
+APR è co-locato nel deployable Source Onboarding & Configuration nella baseline iniziale.
+F-04
+Gateway valida autenticazione e coarse scopes; fine-grained authorization resta nei servizi.
+F-05
+RBAC con ABAC minimale; default deny; deny-overrides.
+F-06
+HUMAN_USER, AI_AGENT, MCP_SERVER e SERVICE_IDENTITY restano distinti e non intercambiabili.
+F-07
+Approve/publish/activate marcati human-only non sono invocabili da AI/MCP/service identity.
+F-08
+No client asserted authority: subject/role/org/approver derivano da evidenze trusted.
+F-09
+Policy ACTIVE immutabili; publication atomica in bundle versionato.
+F-10
+Enforcement ordinario locale tramite Authorization SDK; nessuna chiamata sincrona APR per ogni request.
+F-11
+No role DB replication autoritativa; claim-first, optional directory lookup con cache TTL.
+F-12
+Nessun OPA/Cedar/policy engine o microservizio Authorization obbligatorio nella v1.
+F-13
+Step-up eseguito dall’IAM centrale; OUF verifica assurance claims.
+F-14
+Il design constraint €150.000 governa le scelte: scenario A/B preferiti; scenario C solo minimale se richiesto da un gap M2M reale.
+F-15
+Le service/workload identity sono sempre esplicite e autenticate; la trusted network non sostituisce l’identità.
+F-16
+L’authority M2M è configurabile tra scenario A, B e C; la scelta non modifica capabilityId, policy model o principal logico OUF.
+F-17
+Le credenziali M2M sono custodite da secret manager/workload identity; APR conserva principal e policy, mai secret.
+Stato finaleAPPROVATO COME BASELINE v1.4 — pronto per integrazione con EVO HUMAN e selezione controllata dello scenario M2M A/B/C.
+37.1 Criteri GO
+Nessun TBD architetturale bloccante.
+Confini IAM centrale / Gateway / Authorization / servizi definiti.
+Policy model, lifecycle, API, persistence, publication ed enforcement definiti.
+Conformance e security test definiti.
+Collocazione fisica compatibile con il design constraint economico.
+Parametri EVO/Maggioli residui e scelta tra scenario M2M A/B/C classificati come integrazione controllata; il modello di trust e authorization resta invariato.
+37.2 Criteri GO aggiuntivi per allineamento Ingestion
+Capability issue/quarantena/file-intake/lineage presenti nel Capability Catalog con owner e risk class definiti.
+Default deny e actor separation verificati sui nuovi tool MCP.
+User-bound delegation conserva HUMAN_USER + delegatedVia senza impersonificazione.
+Policy bundle supporta evaluation concorrente e version pinning coerente.
+Test AUTH-I01…AUTH-I10 verdi in staging.
+A. Riferimenti interni OUF
+OUF — Progetto Esecutivo Tecnologico Urban API Gateway v1.0.5 — Agosto 2026.
+OUF — Progetto Esecutivo Source Onboarding & Configuration v1.0 — Agosto 2026.
+OUF — Progetto Esecutivo Tecnologico Semantic Model / Registry v1.0 — Agosto 2026.
+OUF Blue Paper — framework architetturale e principi di governance.
+OUF Master Template & Editorial Guidelines — stile documentale.
+Assunzione progettuale del committente: progetto EVO/Maggioli con IAM/Keycloak e struttura organizzativa/ruoli dell’Ente da riusare come source of truth per HUMAN_USER. Il supporto M2M di EVO è da verificare; in sua assenza è ammessa una authority tecnica separata secondo la presente specifica.
+AUTH-A16 — Atomic policy snapshot: durante refresh concorrente, una request lunga usa una sola policyVersion dalla prima evaluation alla decisione/audit finale.
+AUTH-A17 — No mixed bundle: stress test multi-thread dimostra che nessuna request combina regole provenienti da due AuthorizationPolicyBundle differenti.
+AUTH-A18 — IAM lookup timeout fail-closed: directory lenta/down oltre timeout produce DENY esplicito e nessun fallback permissivo.
+AUTH-A19 — IAM degradation isolation: storm di lookup in timeout non esaurisce thread/connection pool e non degrada le richieste che non richiedono directory lookup oltre la soglia definita.
+AUTH-A20 — Trusted claim shortcut: attributo ABAC presente in claim firmato/fresco evita lookup remoto senza cambiare l'esito rispetto alla stessa policy valutata via directory.
+37.3 Criteri GO v1.3
+Capability groups v1.3 registrati e versionati senza wildcard permissive.
+DataAccessLabel applicati server-side su object/property/geometry/relationship/lineage dove previsti.
+Raw, lineage, history ed export testati come capability separate.
+merge/split confirm, authority override, approve/activate verificati HUMAN_REQUIRED.
+Authorization e Query Complexity Governor verificati come controlli indipendenti e cumulativi.
+MCP/Agent riceve solo risposte già autorizzate/minimizzate; nessun post-mask di dati sensibili nel modello.
+M2M service identity e default deny verificati su chiamate intra-cluster.
+AUTH-A01…AUTH-A20 superati in staging integrato.
+38. Implementation Readiness Alignment — Ingestion Gold Standard
+Questa parte consolida il documento secondo lo standard esecutivo adottato per OUF prendendo come gold standard l'Ingestion Runtime. Non modifica i bounded context o le decisioni architetturali già definite: rende invece espliciti gli artefatti che un team di sviluppo deve ricevere, i gate di build/release, le responsabilità implementative, le failure semantics, la compatibilità e le evidence richieste. In caso di conflitto editoriale con descrizioni storiche o baseline intermedie, prevalgono le decisioni tecniche correnti del modulo e i contratti cross-module versionati.
+38.1 Packaging implementativo
+Authorization è un bounded context trasversale ma, nella baseline corrente, non costituisce un deployable autonomo. Il codice applicativo del Registry vive nel control-plane; l’enforcement vive nei moduli tramite shared SDK/library. Questa sezione rende implementabile tale ripartizione.
+ouf-control-plane/└── authorization/    ├── api    ├── application    ├── domain    ├── persistence    ├── publication    └── iam-adapterouf-authorization-sdk/├── principal├── evaluator├── annotations├── bundle-cache├── decision-evidence└── test-support
+38.2 Artefatti di contratto
+OpenAPI /api/authz/v1 e JSON Schema di AuthorizationPolicyBundle, principal context, decision evidence e standard reason codes.
+Capability catalog import/validation contract: Authorization registra riferimenti alle capability dichiarate dagli owner senza ridefinirne la semantica.
+Shared SDK con API stabile, conformance fixture e test support utilizzabile dagli altri moduli.
+Claim contract OIDC/OAuth2 separato dalla forma concreta dell’IAM; issuer/audience/role mapping sono configurazione di ambiente.
+38.3 CI/CD e conformance gate
+Stage
+Controllo
+Compile/unit
+control-plane authz + SDK, evaluator deterministic tests.
+Contract
+OpenAPI/schema, capability referential integrity, reason code fixtures.
+DB
+Flyway authz schema fresh/upgrade e bundle pointer atomicity.
+Integration
+IAM mock/realm test, Gateway context propagation, Onboarding co-location.
+Security
+default deny, actor separation, stale/missing claims, lookup timeout fail-closed, SoD/step-up cases.
+Concurrency
+policy refresh, no mixed bundle, long request version pinning.
+Performance
+evaluator p95 target e grant/bundle sizing definiti nel documento.
+Package
+library artifact + control-plane image/Helm + SBOM/provenance.
+Acceptance
+cross-module enforcement su UDP/Onboarding/Ingestion/Semantic/MCP binding.
+38.4 Failure semantics
+Failure
+Comportamento
+Invalid/missing token context
+DENY/fail closed.
+Capability sconosciuta
+default DENY; nessuna wildcard implicita.
+IAM lookup timeout
+DENY esplicito; isolation per non esaurire pool.
+Policy bundle refresh failure
+last-known-good ACTIVE resta utilizzabile se ancora valido; candidate non diventa ACTIVE.
+Concurrent policy activation
+atomic pointer; nessuna request combina due bundle.
+Service identity su human-only
+DENY indipendentemente dallo scope Gateway.
+Domain state changes after ALLOW
+backend owner revalida authorization e state/ETag al commit.
+38.5 M2M integration decision — stato reale
+La scelta tra scenario A/B/C non deve essere mascherata come dettaglio editoriale. Il software può essere sviluppato contro il claim/trust contract pluggable; la configurazione di integrazione e i test end-to-end con identità macchina richiedono però una decisione formale sull’authority M2M.
+Voce
+Stato richiesto
+Scenario M2M A/B/C
+ADR obbligatoria prima dell’integration environment condiviso.
+Issuer/audience/JWKS
+configurazione ambiente e fixture di test prima dell’E2E security.
+Role/group/org stable IDs
+conferma con EVO/IAM prima del collaudo HUMAN authorization.
+Token revocation/freshness/step-up
+policy operativa prima del go-live.
+Test realm/client workload
+disponibile in staging prima della release candidate.
+38.6 Deliverable & Definition of Done
+Repository/branch del bounded context authz, shared SDK artifact, OpenAPI/schema, Flyway e test fixtures.
+Capability/policy sample bundles con hash/version; migration e rollback procedure.
+Integration guide per ogni modulo: identity context, required capability, resource context, reason codes e audit fields.
+Security/concurrency/performance report e evidence package.
+E2E default-deny, actor separation, lookup failure, policy refresh e service-to-service identity verdi.
+109. Implementation Readiness Closure — Ingestion-equivalent depth
+Norma di lettura. Le sezioni 109.x sono normative per l’implementazione v1.4. Completano il modello di sicurezza e policy già definito senza introdurre un nuovo IAM o un nuovo deployable obbligatorio. Per packaging, contratti machine-readable, runtime, compatibilità, operations, collaudo e supplier handoff, in caso di ambiguità prevale la regola 109.x.
+109.1 Runtime topology e ownership
+Componente
+Collocazione
+Responsabilità
+Non responsabilità
+Authorization Policy Registry
+Co-locato nel control plane Source Onboarding/Configuration
+CRUD/versioning policy/grant, capability registration, bundle build/publication, audit refs
+Non autentica utenti; non valida il token per conto dei servizi runtime.
+Authorization Evaluator
+Libreria/shared SDK in-process nei servizi OUF
+Evaluate capability + PrincipalContext + ResourceContext contro snapshot policy coerente
+Non effettua round-trip sincrono al Policy Registry per ogni request.
+Policy Bundle Loader/Cache
+Shared SDK / service runtime
+Load/verify/swap atomico AuthorizationPolicyBundle
+Non mescola due policyVersion nella stessa decisione.
+IAM / Identity Provider
+Piattaforma esterna OUF/EVO o scenario M2M selezionato
+Authentication, token issuance, JWKS, identity claims/directory
+Non contiene la fine-grained policy OUF.
+Urban API Gateway
+Gateway OUF
+Token validation/coarse scope/routing/rate limits
+Non può concedere ciò che il backend service nega.
+Audit Adapter
+Shared infrastructure adapter
+Decision evidence, correlation, security events
+Non è il source of truth della policy.
+Il runtime authorization è local-first: nessun central authorization service è necessario sul critical path della singola business request.
+Il Policy Registry è authoring/publication plane; lo shared SDK è enforcement plane.
+Ogni servizio mantiene il proprio domain guard dopo Authorization SDK: l’SDK non sostituisce invarianti di stato, ownership o business rule del modulo.
+109.2 Contract artifacts canonici
+Artefatto
+Owner
+Consumer
+Regola
+openapi/authorization-admin-v1.yaml
+Authorization
+Control-plane admin/THS
+SemVer; write operations HUMAN_USER/admin capability only.
+schemas/principal-context-v1.json
+Authorization
+Gateway/security filter/shared SDK/tests
+actorType derivato da token validato, mai dal body.
+schemas/resource-context-v1.json
+Authorization common contract
+Tutti i servizi OUF
+Typed, bounded; DataAccessLabel e owner/tenant/source refs se applicabili.
+schemas/authorization-decision-v1.json
+Authorization
+Service guards/audit/tests
+decision, reasonCode, policyVersion, capabilityId, obligations/constraints bounded.
+schemas/authorization-policy-bundle-v1.json
+Authorization
+Shared SDK nei servizi
+Immutable, signed/hashed, exact policyVersion; atomic swap.
+schemas/capability-descriptor-v1.json
+Authorization / capability governance
+Tutti i moduli
+Stable capabilityId, owner, actorTypes, operation class, resource schema ref.
+schemas/grant-v1.json
+Authorization
+Policy Registry/admin
+Subject/role/org/capability/resource scope/version explicit.
+schemas/authorization-evidence-v1.json
+Authorization
+Audit/acceptance
+No bearer token; minimum evidence for replay/explain.
+schemas/problem-details-v1.json
+OUF common profile
+Admin API consumer
+Reason codes stable within major.
+OpenAPI/JSON Schema/examples sono repository artifacts e validati in CI; il PET non è l’unica definizione dei payload.
+Fixture obbligatorie: allow, deny, unknown capability, stale/missing bundle, actor type mismatch, tenant/org mismatch, DataAccessLabel deny, IAM directory unavailable, stale admin ETag.
+I moduli consumer non ridefiniscono PrincipalContext o AuthorizationDecision localmente: usano la versione common dichiarata.
+109.3 Shared Authorization SDK — API/SPI freeze
+API / type
+Contratto implementativo
+AuthorizationDecision evaluate(CapabilityId, PrincipalContext, ResourceContext)
+Operazione pura/local-first sullo snapshot ACTIVE caricato; no I/O remoto nel normale evaluation path.
+PolicySnapshot currentSnapshot()
+Snapshot immutabile con policyVersion, createdAt, source bundle hash/signature e capability catalog version.
+BundleRefreshResult refresh(BundleReference)
+Fetch/verify/parse/build fuori dal lock; swap atomico solo dopo validation completa.
+AuthorizationHealth health()
+Espone loaded policyVersion, age, refresh status, last error e compatibility state; non espone policy sensibile.
+DecisionReasonCode
+Enum/versioned catalog; codici nuovi additivi nella major; significato esistente immutabile.
+IdentityDirectoryPort
+Opzionale: lookup solo se la policy necessita attributi non presenti nel trusted token; timeout/cache/fail-closed definiti.
+AuditDecisionPort
+Emissione evidence asincrona/non-blocking dove possibile; failure audit non può trasformare DENY in ALLOW.
+Binary/source compatibility. Lo shared SDK è un artifact versionato. Una release N+1 mantiene source/binary compatibility per API pubbliche della stessa major; breaking signature/type changes richiedono nuova major e compatibility matrix con i servizi consumer. Nessun servizio accede direttamente alle tabelle del Policy Registry.
+109.4 Persistence e migration ownership
+Famiglia
+Persistenza minima
+Invarianti
+Policy
+authorization_policy, policy_revision, condition/resource scope representation
+Revision pubblicata immutabile; optimistic locking in authoring.
+Grant
+authorization_grant, subject/role/org refs, validity window, resource scope
+Stable external identifiers; revoke non cancella evidence storico.
+Capability
+capability_registration / catalog version
+Unknown capability = deny; capabilityId non riusato con altra semantica.
+Bundle
+authorization_policy_bundle, membership/manifest/hash, ACTIVE pointer
+Build+publish validati; ACTIVE pointer switch atomico.
+External mapping
+external_role_ref / org mapping refs se usati
+Non replicare password/credential; refs/version/provenance espliciti.
+Evidence/audit refs
+policyVersion/capability/subject/outcome refs
+No bearer token; retention secondo security/audit policy.
+Le migration sono fisicamente nello schema authz del control-plane repository e hanno owner Authorization.
+Expand -> rollout N+1 -> backfill/verify -> contract è obbligatorio per rolling compatibility.
+Restore/rollback non modifica in-place bundle storico pubblicato: si attiva un pointer/version governato.
+109.5 M2M/IAM binding — decision gate A/B/C
+Decisione
+Deve essere valorizzato
+Gate
+Scenario M2M
+A = stesso IAM EVO supporta M2M; B = stessa infrastruttura Keycloak con realm tecnico; C = Technical IAM OUF minimale
+P0 prima dell’integrazione reale
+Issuer/JWKS
+Issuer URI, JWKS trust/rotation, TLS/CA, accepted algorithms
+Security contract test
+Audience
+Audience per API/service class; no generic audience permissiva
+Token negative-path test
+Principal mapping
+sub/client_id/azp -> SERVICE_IDENTITY, MCP_SERVER, EXTERNAL_SYSTEM; HUMAN_USER separato
+Actor-type conformance test
+Claims / directory
+Role/group/org claims oppure lookup API + freshness/revocation semantics
+Authorization fixture + outage test
+Client lifecycle
+Provisioning, rotation, revoke, TTL, secret/workload identity, test realm
+Operational/security acceptance
+Norma. Lo sviluppo del motore policy e dello SDK può procedere contro fixture conformi al claim contract. La release non è dichiarata integrata finché A/B/C e tutti i binding sopra non sono formalmente configurati e testati. Nessun codice applicativo contiene branch architetturali specifici per A/B/C oltre agli adapter/configuration binding.
+109.6 Failure taxonomy, cache e retry semantics
+Failure
+Decision semantics
+Recovery
+NO_POLICY_BUNDLE
+DENY / capability unavailable; mai allow by default
+Load last-known-good solo se ancora compatible/within policy; altrimenti fail closed.
+INCOMPATIBLE_POLICY_BUNDLE
+DENY + health NOT_READY for protected capability
+Fetch compatible bundle; deployment gate blocks release.
+UNKNOWN_CAPABILITY
+DENY
+Capability registration/publication required.
+JWT_INVALID / ISSUER / AUDIENCE mismatch
+Authentication reject before SDK
+No retry applicativo.
+DIRECTORY_TIMEOUT
+DENY se attribute lookup è necessario; altrimenti evaluation solo con trusted token claims
+Bounded retry/circuit/cache secondo §109.9.
+JWKS_REFRESH_FAILURE
+Nuovi token non verificabili secondo cache/freshness policy; mai skip signature validation
+Use valid cached keys within configured freshness; alert.
+POLICY_REFRESH_FAILURE
+Continua last-known-good solo se compatible e non oltre max-staleness
+Retry bounded; alert; readiness degraded/blocked by capability class.
+AUDIT_SINK_FAILURE
+Decision resta quella calcolata; security-critical write può fail closed se audit mandatory by capability
+Buffered bounded retry; no unbounded queue.
+ADMIN_CONCURRENT_UPDATE
+409/412 stale ETag
+Reload revision; human re-review.
+109.7 Compatibility e support window
+Dimensione
+Regola v1.4
+Breaking/removal
+Authorization SDK
+N e N+1 stessa major supportati durante rolling upgrade dei servizi.
+Breaking API/SPI = nuova major.
+Policy bundle
+Consumer dichiara bundle schema major accettata; minor/additive compatible.
+Unknown/new mandatory condition not understood => reject bundle, mai ignore.
+Capability catalog
+Nuove capability default-deny; existing capability semantics immutable.
+Rename/removal/semantic repurpose = breaking.
+Decision reason codes
+Nuovi codici additivi; consumer deve gestire UNKNOWN_GENERIC safely.
+Cambio significato = breaking.
+DB schema
+Expand-compatible finché control-plane N è attivo.
+Contract solo dopo rollout completo.
+Identity claims
+Claim contract versionato; additive optional claims compatibili.
+Issuer/audience/actor mapping change richiede integration/security acceptance.
+109.8 Network, trust e input hardening
+Flusso
+Regola
+Gateway -> service
+Validated token/context; il service revalida authorization localmente. Gateway coarse scope non equivale ad allow business.
+Service -> Policy Registry
+Solo refresh/config path governato; non per ogni business request.
+Service -> IAM directory
+Solo se policy richiede attributi assenti dal token; egress allowlist, timeout, circuit e cache.
+Policy Registry -> IAM
+Solo admin/reference validation se necessaria; nessuna credential directory persistita.
+Browser/admin -> Policy Registry
+Solo via Gateway; HUMAN_USER capability; CSRF/ETag/validation per write.
+MCP Server
+Actor MCP_SERVER/AI_AGENT non può acquisire capability TRUSTED_HUMAN_ONLY; actorType da token.
+Policy/grant payload hanno limiti su cardinalità, nesting, string length, scope cardinality e bundle size; expression language arbitrario non è ammesso se non formalmente specificato e sandboxed.
+ResourceContext è DTO tipizzato per dominio/capability: nessun SQL/query predicate o serialized executable condition proveniente dal client.
+Log di authorization non includono bearer token, client secret, full sensitive resource payload o claim non necessari alla decisione.
+109.9 Configuration Catalog v1
+Famiglia
+Property / gruppo
+Regola
+Identity
+issuer, audience, allowed-algorithms, jwks-cache-ttl/max-stale
+Security-critical; valori mancanti bloccano startup/integration.
+Directory
+lookup-timeout, cache-ttl, negative-cache-ttl, max-concurrency, circuit threshold/open duration
+Fail closed quando attributo required non disponibile.
+Policy bundle
+refresh-interval, max-staleness, max-bytes, signature/hash requirements
+Atomic swap; invalid bundle mai ACTIVE.
+Evaluator
+max-grants, max-conditions, max-resource-scope-size, evaluation-time-budget
+Hard maxima; no unbounded evaluation.
+Admin API
+max-page-size, max-request-bytes, idempotency/ETag requirements
+Bounded; stale update reject.
+Audit
+decision-log-mode, buffer-size, retry/max-age, mandatory-capability classes
+No unbounded buffer; privacy minimization.
+Health
+bundle-ready threshold, directory dependency class, startup policy
+Readiness distingue local evaluator da optional remote lookup.
+Shutdown
+termination-grace, audit-flush-timeout
+No accept new admin writes; bounded flush.
+Ogni property ha tipo, unità, default, min/max, startup-only/reloadable e owner operativo nel configuration-reference.
+Secret/client credential non sono property plaintext: secretRef/workload identity only.
+Nessun default permissivo per issuer, audience, signature, unknown capability o bundle validation.
+109.10 Technology BOM e artifact packaging
+Layer
+Baseline
+Regola di release
+Runtime control plane
+Java 21 LTS + Spring Boot 3.x
+Patch/minor pin-nate nel build descriptor.
+Security
+Spring Security OAuth2 Resource Server / JOSE
+Versione pin-nata; CVE/high severity gate.
+Shared SDK
+ouf-authorization-sdk artifact Java
+Versione/coordinates immutabili per release; compatibility tests.
+Persistence
+PostgreSQL 17.x + Flyway
+Clean install + upgrade N/N+1 in CI.
+Caching
+In-process immutable snapshot; optional bounded directory cache
+Nessun Redis/remote cache obbligatorio nella baseline.
+API/schema
+OpenAPI 3.1 + JSON Schema
+Artifacts versionati/validated.
+Telemetry
+Micrometer/OpenTelemetry platform integration
+Metric names/dashboard versionati.
+Repository normativo minimo: src/policy-registry/, sdk/authorization-sdk/, db/migration/authz/, openapi/, schemas/, examples/, helm-or-control-plane-manifests/, docs/runbook/, tests/{unit,contract,integration,e2e,security,performance,compatibility}/, dashboards/, alerts/, sbom/.
+109.11 Deployment/readiness e policy bundle gate
+Gate
+Verifica
+Failure semantics
+CONTROL-PLANE LOCAL-READY
+DB/migration/config locale e admin API security initialized
+Control-plane Pod non READY se local state unsafe.
+SDK LOCAL-READY
+SDK initialized, supported schema/capability catalog loaded
+Protected capability non servibile.
+POLICY-BUNDLE READY
+Bundle hash/signature/schema/capability refs validi e policyVersion loaded atomically
+Fail closed; no mixed/partial snapshot.
+IDENTITY READY
+Issuer/JWKS/audience config valida; cached key freshness entro policy
+Authentication path fail closed.
+DIRECTORY DEPENDENCY
+Reachability solo per policies che richiedono lookup
+Non rende globalmente down capability indipendenti; quelle dipendenti deny/degrade.
+CROSS-MODULE CAPABILITY
+Ogni capabilityId richiesto da modulo consumer esiste nel catalog/versione compatibile
+Release/integration gate fallisce.
+Readiness principle. La health non deve eseguire un round-trip sincrono verso IAM/directory per ogni probe. Lo stato local evaluator/bundle è deterministico; le dipendenze remote sono diagnostiche e applicate al path che le richiede.
+109.12 Observability, SLO e capacity acceptance
+Area
+Metriche/evidence minime
+Acceptance
+Evaluator
+evaluation count, allow/deny/error, p50/p95/p99, capability class, reasonCode bounded
+>= 1.000 eval/s per instance profile e p95 pure evaluator <5 ms sul fixture dichiarato.
+Bundle
+loaded policyVersion, age, refresh success/failure, validation/signature error, swap duration
+Concurrent refresh/read no mixed version.
+Directory
+lookup latency/error/cache hit/miss/circuit state/concurrency
+Outage test dimostra fail-closed solo per capability dipendenti.
+Admin
+RPS, p95, ETag conflicts, publication duration, grant/policy count
+Fixture fino a 10k grants / policy bundle <=5MB iniziale come già previsto.
+Security
+JWT rejects, issuer/audience mismatch, unknown capability, actor mismatch, stale bundle
+Negative test coverage obbligatoria.
+Audit
+decision events emitted/dropped/retry queue age
+Nessuna perdita silenziosa oltre policy; PII minimization review.
+Capacity fixture. Il performance report dichiara numero capability, policy, grant, tenant/org/role cardinality, bundle bytes, resource-context size, cache settings, CPU/RAM e JVM. I target non sono validati su fixture vuote o triviali.
+109.13 Recovery, rollback e runbook
+Scenario
+Diagnosi
+Azione standard
+Bad policy publication
+bundle hash/version, validation result, active pointer
+Non attivare; mantenere last-known-good. Se già attivata tramite errore operativo, publish nuova corrective version/controlled pointer rollback con audit.
+Stale/incompatible bundle
+SDK health, schema/capability version, age
+Fail closed per capability non safely evaluable; fetch compatible bundle; block rollout.
+IAM/JWKS outage
+issuer/JWKS metrics, key cache age
+Use cached valid keys entro freshness policy; oltre soglia reject nuovi auth flows; alert.
+Directory outage
+lookup/circuit/cache metrics
+Capability che non richiedono lookup continuano; required lookup => deny.
+SDK cache corruption/parse error
+bundle validation/hash
+Discard candidate; keep immutable last-known-good only if valid/compatible.
+Policy Registry DB failure
+DB/Flyway/pool
+Admin publication unavailable; runtime services continuano su local snapshot entro max-staleness policy.
+Emergency revoke
+subject/client/policy refs
+Revoca in IAM per credential compromise + policy/grant revocation; refresh/propagation evidence misurata.
+Restore
+DB backup, ACTIVE bundle pointer, manifest/hash
+Restore isolato -> Flyway validate -> bundle rebuild/verify -> admin smoke -> controlled cut-over.
+109.14 CI/CD, Secure SDLC, compatibility ed evidence
+Stage
+Blocking checks
+Compile/unit
+Control-plane + SDK build, unit tests, static analysis.
+Contract
+OpenAPI/JSON Schema/examples + capability/reason-code catalog lint.
+SDK compatibility
+Binary/source API check same major + fixtures against N and N+1 policy bundle schemas.
+DB
+Flyway clean install + N/N+1 upgrade + expand/contract check.
+Integration
+PostgreSQL + OIDC/JWKS + directory fault profiles + consumer service fixture.
+Security
+SAST/SCA/container/secret scan; JWT negative cases, actor spoof, unknown capability, privilege escalation, bundle tamper/signature/hash.
+Concurrency
+Atomic bundle swap, simultaneous refresh/evaluate, admin ETag race, multi-service version mix.
+E2E
+Gateway token -> service security filter -> SDK -> domain guard -> audit; human admin policy publication; M2M actor tests.
+Recovery
+IAM outage, directory outage, bad bundle, DB outage, restore, emergency revoke propagation.
+Performance
+1k eval/s target, p95 pure evaluator target, 10k grant/5MB bundle fixture, refresh under load.
+Package
+SDK artifact, OCI/control-plane package, migrations, OpenAPI/schemas/examples, dashboards/alerts, runbook, SBOM/provenance.
+Ogni AUTH-I/A requirement è tracciato verso test executable o evidence manuale nominata.
+L’evidence package include versioni reali di IAM test realm/scenario, Gateway, Policy Registry, SDK e almeno un consumer service.
+La release è bloccata se il consumer usa capabilityId assente, schema bundle incompatibile o SDK fuori support window.
+109.15 Gap closure register rispetto al gold standard Ingestion
+GS ID
+Gap precedente
+Esito v1.4
+GS-06
+PrincipalContext/Decision/Bundle schema non completamente formalizzati
+CHIUSO — §109.2
+GS-07
+Persistence authz dispersa nel deployable Onboarding
+CHIUSO — §109.4
+GS-09
+Idempotency admin non esplicita
+CHIUSO tramite ETag/versioned publish/immutable bundle — §§109.2, 109.4
+GS-10
+Async model ambiguo
+CHIUSO COME N.A./LIMITATO — runtime evaluator sync/local; refresh/publication governati
+GS-11/12
+Failure/retry/circuit non sistematici
+CHIUSO — §109.6
+GS-14
+Rollback/recovery operativo incompleto
+CHIUSO — §109.13
+GS-16
+SDK/bundle/capability support window non esplicita
+CHIUSO — §109.7
+GS-18
+M2M A/B/C irrisolto
+ESTERNO MA GOVERNATO — §109.5; P0 integration gate
+GS-19/20
+Network/input bounds non consolidati
+CHIUSO — §109.8
+GS-22
+Metric/dashboard catalog incompleto
+CHIUSO — §109.12 + repository artifacts
+GS-24/25
+Admission/capacity poco sviluppati
+CHIUSO per evaluator/admin/directory — §§109.9, 109.12
+GS-27/28
+BOM/runtime configuration non consolidati
+CHIUSO — §§109.9-109.10
+GS-30
+Shared SDK API/SPI non congelata
+CHIUSO — §109.3
+GS-31
+Restore authz specifico incompleto
+CHIUSO — §109.13
+GS-33
+Runbook assente/concentrato in altri moduli
+CHIUSO — §109.13
+GS-34
+Supplier evidence non formalizzata
+CHIUSO — §109.14
+GS-36
+Policy bundle/capability readiness gate non eseguibile
+CHIUSO — §109.11
+109.16 Definition of Done v1.4 — handoff allo sviluppo
+Il shared Authorization SDK possiede API/SPI Java versionate, artifact coordinates, compatibility policy e consumer fixtures.
+PrincipalContext, ResourceContext, AuthorizationDecision, AuthorizationPolicyBundle, CapabilityDescriptor e Grant sono JSON Schema canonici nel repository.
+Policy/grant/bundle persistence e Flyway ownership sono implementabili senza inferire DDL dal testo del PET.
+Unknown capability, stale/missing/incompatible bundle, IAM/JWKS failure e required-directory failure sono fail-closed e coperti da test.
+Bundle refresh è validate-then-atomic-swap; una request usa una sola policyVersion coerente.
+Gateway coarse authorization non bypassa l’enforcement locale e ogni modulo mantiene il proprio domain guard.
+Runtime properties, BOM, metric/alert catalog, runbook, restore e supplier evidence sono parte della release.
+La pipeline dimostra SDK compatibility, policy bundle compatibility, security negative paths, concurrency, recovery e target performance.
+Prima dell’integrazione reale, scenario M2M A/B/C, issuer, audience, claim/directory mapping e client lifecycle sono valorizzati e verificati. Questi sono gli unici blocker esterni residui, non decisioni implementative interne all’Authorization.
+Stato reale della specifica v1.4: development-ready per Policy Registry, shared Authorization SDK e integrazione dei domain service OUF. La specifica rimane intenzionalmente priva di un central authorization microservice sul critical path e non introduce un secondo IAM. L’unica dipendenza architetturale ancora esterna è la selezione/configurazione dello scenario M2M A/B/C, ora esplicitamente trattata come integration gate.
+34. Authorization model for Operational Awareness
+34.1 Capability set
+Capability
+Default actor
+Note
+operations.status.read
+HUMAN_USER, MCP_SERVER on-behalf-of
+Stato aggregato safe-for-user
+operations.incident.read
+HUMAN_USER, MCP_SERVER on-behalf-of
+Incidenti nel perimetro tenant/source autorizzato
+operations.incident.explain
+HUMAN_USER, MCP_SERVER on-behalf-of
+Timeline/evidence redatta
+operations.security.read
+Privileged HUMAN_USER only
+Dettagli security-sensitive; mai AI_AGENT autonomo
+ingestion.operations.read
+HUMAN_USER, MCP_SERVER on-behalf-of
+Job/source status e history
+operations.protected-evidence.read
+Privileged HUMAN_USER / THS
+Dereference di evidence protetta, se policy consente
+34.2 Visibility and non-disclosure semantics
+Authorization decision DEVE includere resource scope (tenant, module, sourceRef/jobRef quando applicabile) e permitted detail level.
+Una denial non può essere trasformata dal MCP in “nessun incidente”: il protocollo deve preservare NOT_AUTHORIZED/REDACTED semantics.
+visibilityClass minima: PUBLIC_OPERATIONAL, TENANT_OPERATIONAL, RESTRICTED_OPERATIONAL, SECURITY_SENSITIVE.
+SECURITY_SENSITIVE richiede policy esplicita e, quando contiene dati personali o operazioni protette, accesso THS/HUMAN_USER conforme al PET.
+Nessuna capability operational-awareness consente secret material, token, password, private key o raw credential disclosure.
+34.3 Authorization evidence
+Ogni query MCP operational-awareness deve essere correlabile a authentication_context_ref e authorization_decision_ref.
+Il producer può filtrare ulteriormente i dati sulla base del backend owner enforcement; Gateway coarse authorization non sostituisce il controllo fine-grained.
+La redaction decision deve essere auditabile senza registrare il dato segreto rimosso.

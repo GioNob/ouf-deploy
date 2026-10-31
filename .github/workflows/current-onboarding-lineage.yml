@@ -1,0 +1,36 @@
+name: Current Onboarding source revision lineage
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths:
+      - scripts/read-current-onboarding-source-revision-lineage-20261024.py
+      - tools/ingestion_readiness_patch_execution/tests/test_current_onboarding_lineage.py
+      - .github/workflows/current-onboarding-lineage.yml
+  pull_request:
+    paths:
+      - scripts/read-current-onboarding-source-revision-lineage-20261024.py
+      - tools/ingestion_readiness_patch_execution/tests/test_current_onboarding_lineage.py
+      - .github/workflows/current-onboarding-lineage.yml
+permissions:
+  contents: read
+concurrency:
+  group: current-onboarding-lineage-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Protected disposable files
+        run: |
+          sudo install -d -m 0700 /root/ouf-current-lineage-tests
+          sudo cp -a . /root/ouf-current-lineage-tests/repository
+          sudo chown -R root:root /root/ouf-current-lineage-tests
+      - name: Source revision history and native metadata with zero dispatch
+        run: |
+          sudo env OUF_NATIVE_CURRENT_LINEAGE=1 /usr/bin/python3 -I -B -S -m unittest discover \
+            -s /root/ouf-current-lineage-tests/repository/tools/ingestion_readiness_patch_execution/tests \
+            -p 'test_current_onboarding_lineage.py' -v

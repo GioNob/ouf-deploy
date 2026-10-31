@@ -1,0 +1,113 @@
+{
+  "schema": "ouf.acquisition-redaction-apply-target-receipt.v1",
+  "source": "OWNER_ATTACHED_VPS_TRANSCRIPT",
+  "result": {
+    "acquisitionsExecuted": 0,
+    "applicationE2EProven": false,
+    "authorityHash": "dee3a62c5c242810ccd2b2e2e100da9a4f1316e8da9730dee87a1107b06ddc8f",
+    "automaticReplayAllowed": false,
+    "automaticRollbackPerformed": false,
+    "budgetReset": false,
+    "candidateSourceCommits": {
+      "ingestion": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+      "udp": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+    },
+    "complete": true,
+    "componentReadinessProven": true,
+    "contextPath": "/etc/ouf/deploy-snapshots/acquisition-redaction-update-f11dbe659ba4367a-v1",
+    "counts": {
+      "adminGets": 0,
+      "adminPuts": 0,
+      "engineGets": 219,
+      "engineWrites": 16,
+      "imageLoadAttempts": 2,
+      "ownerConfigurationReads": 7,
+      "quarantineStops": 0,
+      "readinessGets": 5,
+      "serviceCredentialFileReads": 0
+    },
+    "credentialFileReads": 0,
+    "currentApplicationPolicyOrLabelsObserved": false,
+    "databaseMigrationsByRepair": 0,
+    "fiveOtherComponentsUnchanged": true,
+    "frozenPlanHash": "d5ce0235cd9014656ceaacd0dcc984a5ff0db93e2be3cac9e67c18fc42f156e2",
+    "gatewayRequests": 0,
+    "installationSigningKeysRead": true,
+    "installationSigningOperations": 3,
+    "mcpUnchanged": true,
+    "mountSourceContentIdentityProven": false,
+    "nativeImages": {
+      "ingestion": {
+        "archiveBytes": 276520960,
+        "configurationImageId": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+        "derivedArchiveSha256": "c0a94d767f3a666c93a465bbe4201fc6647a77be55f92b82b20ce19ae4b43280",
+        "nativeImageId": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385"
+      },
+      "udp": {
+        "archiveBytes": 257003520,
+        "configurationImageId": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+        "derivedArchiveSha256": "a26d65e46da9f27eef9bd8fa076742ef1e28dde2a97fa90af2a13b0d80fc72c3",
+        "nativeImageId": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d"
+      }
+    },
+    "newGrantsGranted": 0,
+    "newReadReplicas": 2,
+    "oauthRequestsByRepair": 0,
+    "oldReadsRetainedStopped": 2,
+    "preparedNativePlanHash": "f11dbe659ba4367a1d873a8938f43546a6851bbdcbb907eb588cb1323122f5fd",
+    "readProofs": {
+      "ingestion": {
+        "generation": {
+          "namespaces": {
+            "mnt": [
+              4,
+              4026532766
+            ],
+            "net": [
+              4,
+              4026532771
+            ]
+          },
+          "pid": 2695170,
+          "startTicks": 71605835
+        },
+        "nativeBindingHash": "401696709abbd763a5be8f380aebf71331a15771229eb3eb8fce7bbf8572799a",
+        "oldRetainedStopped": true,
+        "readinessProven": true
+      },
+      "udp": {
+        "generation": {
+          "namespaces": {
+            "mnt": [
+              4,
+              4026533157
+            ],
+            "net": [
+              4,
+              4026533162
+            ]
+          },
+          "pid": 2696660,
+          "startTicks": 71609227
+        },
+        "nativeBindingHash": "b58743547f027e6a7d241b7668a4e8b7d28f10a590742d88579a312ba02f93ee",
+        "oldRetainedStopped": true,
+        "readinessProven": true
+      }
+    },
+    "registryWorkerTouched": false,
+    "releaseAcceptance": false,
+    "reviewHash": "22f8c0834cb1bc4584ec6998312feb9100f3d0b3cc064cf82820809b1529d1f2",
+    "runtimeAuthorityIssued": true,
+    "runtimeBindingHash": "05f8dab7097dd4a42d010b609d88b9be634d26b302222c67169a68377dd853d1",
+    "schema": "ouf.acquisition-redaction-update-result.v1",
+    "sourceActivations": 0,
+    "sqlSessionsByRepair": 0,
+    "status": "ACQUISITION_REDACTION_READS_INSTALLED_E2E_NOT_ACCEPTED"
+  },
+  "exit": 0,
+  "deliveryExit": 0,
+  "scopeConsumed": true,
+  "log": "/usr/local/lib/ouf-acquisition-redaction-update-a1a582d308f5ad04/operator.log",
+  "deliveryDirectory": "/home/oufadmin/ouf-redaction-apply-delivery.0MTGPZxQ"
+}

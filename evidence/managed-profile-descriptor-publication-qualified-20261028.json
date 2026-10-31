@@ -1,0 +1,155 @@
+{
+  "schema": "ouf.managed-profile-descriptor-publication-qualified.v1",
+  "date": "2026-10-28",
+  "timezone": "Europe/Rome",
+  "targetExecuted": true,
+  "currentDeliveryUsable": false,
+  "qualified": true,
+  "source": {
+    "commit": "9d7d83b3fc18950e2516e79cff30930d198c36d5",
+    "path": "scripts/publish-managed-profile-descriptor-20261028.py",
+    "sha256": "cba55b90eb3763a924db0ef0f27675272b854b9dbdb053f724c867effd6d07f6",
+    "bytes": 41533
+  },
+  "delivery": {
+    "commit": "06bed5dc9fde4c4a570aa629e0f4f5657a02efee",
+    "path": "releases/publish-managed-profile-descriptor-20261028.sh",
+    "sha256": "df9d3c507c4359c39d2c312def146427bbf6587b6062563b8bd24d00f32353b9",
+    "protectedCode": "/usr/local/lib/ouf-managed-profile-descriptor-publish-cba55b90eb3763a9/publish.py",
+    "codeOwner": "root:root",
+    "codeMode": "0400",
+    "directStdio": true,
+    "operator": "oufadmin"
+  },
+  "qualification": {
+    "commit": "fb7fc07f4bee1cf78bd6361d58d4e2da7279a7e8",
+    "pushRun": 40655599364,
+    "protocolJob": 122705746965,
+    "actualCurrentOwnerJob": 122705746549,
+    "actualDeliveryJob": 122705747127,
+    "protocolTests": 26,
+    "actualCurrentOwnerTests": 3,
+    "skips": 0,
+    "conclusion": "PASS",
+    "directLogsInspected": true,
+    "actualOwnerSource": "9890b31868641e5be43c949a56f4ef69dd23bdfd",
+    "ownerJava": 21,
+    "postgres": 17,
+    "iamAndTrustedPrincipalInCi": "SYNTHETIC_NOT_PRODUCTION_LOGIN",
+    "runtimeSynchronizerInCi": "MOCKED_NOT_LIVE_CONSUMER_CACHE_PROOF",
+    "ttyDecisionsInCi": "SYNTHETIC_USING_REAL_PTY_NOT_PRODUCTION_APPROVAL",
+    "actualHttpsNonrootSudoRoot400AndRootChecksum": true,
+    "noTtyBeforeLoginOrPrivateScope": true,
+    "failedScopeRetainedNoReplay": true,
+    "actualPrivateMode600": true,
+    "prRun": 40655609085,
+    "prProtocolJob": 122705777717,
+    "prActualCurrentOwnerJob": 122705777996,
+    "prActualDeliveryJob": 122705778260,
+    "prConclusion": "PASS",
+    "prDirectLogsInspected": true
+  },
+  "ownerCatalogue": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "2532c8c36c2dcefbff0315a2155b1af20c08ffec",
+    "path": "catalogue/r4a-managed-profile-recovery.json",
+    "descriptor": {
+      "ownerRef": "onboarding",
+      "descriptor": {
+        "capabilityId": "ouf.onboarding.quarantine.release",
+        "operation": "COMMAND",
+        "requiredScope": "ouf.onboarding.quarantine.release",
+        "allowedActors": [
+          "HUMAN"
+        ]
+      }
+    },
+    "tests": 4,
+    "pushRun": 40655391700,
+    "prRun": 40655398571,
+    "prJob": 122705089825,
+    "conclusion": "PASS",
+    "directLogsInspected": true,
+    "deltaPaths": [
+      ".github/workflows/managed-profile-recovery-catalogue.yml",
+      "catalogue/r4a-managed-profile-recovery.json",
+      "docs/MANAGED_PROFILE_CONTROL_AUTHORIZATION.md",
+      "tests/test_managed_profile_recovery_catalogue.py"
+    ],
+    "newOwnerBinaryRequired": false,
+    "registrationOrPublicationAutomatic": false
+  },
+  "reused": {
+    "publisher": "scripts/publish-acquisition-read-descriptors-20261025.py",
+    "revisionZeroAndReceipt": "corrected existing Teatri publisher",
+    "ttySource": "scripts/continue-existing-descriptor-publication-editable-20261026.py",
+    "ttySha256": "3e698faea1e933b9ce04ad7ed204ed44b60863ad8fac620385c37a10179bfbf5",
+    "loginAndRootCustody": "scripts/read-managed-profile-capabilities-20261028.py",
+    "oldEntrypointsInvoked": false,
+    "oldScopesOpened": false,
+    "oldTokensRead": false
+  },
+  "requiredBaseline": {
+    "policyRef": "ouf-lab-authorization:56",
+    "policyHash": "c52e856c8d95032f6942e1618fb0102f0b704acc5f41f044648e9466aaf9d323",
+    "activeResponseHash": "59856645ba247267a1e4839a4620f4ad70fe42d46d64fe6b7775b59c379ab912",
+    "catalogueHash": "ad928f1916a8b417aa0b2bde567ddf0924223863778ea96b22e98f4e8fb0f2d7"
+  },
+  "delta": {
+    "registrationCount": 1,
+    "descriptorIds": [
+      "ouf.onboarding.quarantine.release"
+    ],
+    "versionFrom": 56,
+    "versionTo": 57,
+    "allExistingCapabilitiesPreserved": true,
+    "allExistingGrantsPreservedExactlyIncludingOtherTenantsAndDeny": true,
+    "roleCatalogueMutations": 0,
+    "newGrantsGranted": 0,
+    "iamConfigurationMutations": 0,
+    "humanBudgetsGranted": 0,
+    "resumes": 0,
+    "newJobs": 0,
+    "uploads": 0,
+    "sourceActivations": 0,
+    "acquisitionsExecuted": 0
+  },
+  "limits": {
+    "totalSeconds": 1800,
+    "loginSeconds": 600,
+    "reviewAndExecutionSeconds": 900,
+    "furtherBoundBy": "current token exp minus15seconds",
+    "iamMetadataGets": 1,
+    "iamPosts": 121,
+    "ownerGets": 160,
+    "administrativeWrites": 3,
+    "previewPosts": 2,
+    "responseBytes": 5242880,
+    "totalBytes": 33554432,
+    "readAttemptsPerStage": 8,
+    "transientReadBackoffSeconds": [
+      5,
+      15,
+      60,
+      300,
+      900
+    ],
+    "jitterMaximumFraction": 0.2,
+    "postRetries": 0,
+    "refreshRequests": 0
+  },
+  "newContext": "/etc/ouf/deploy-snapshots/managed-profile-descriptor-publication-policy56-20261028-v1",
+  "freshHumanDeviceLoginRequired": true,
+  "freshConcreteTerminalReviewRequiredBeforeEffects": false,
+  "agentMayApprove": false,
+  "humanThsUserOnly": true,
+  "noSqlEngineCredentialSigningKeyFileReads": true,
+  "automaticReplayAllowed": false,
+  "automaticRollbackAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "targetReceipt": "evidence/managed-profile-descriptor-publication-target-20261028.json",
+  "scopeConsumed": true,
+  "commandMustNotBeRedelivered": true
+}

@@ -1,0 +1,299 @@
+{
+  "schema": "ouf.acquisition-continuation-old-mcp-guard-stop-target.v1",
+  "issued": {
+    "additionalCredentialReadNotYetDispatched": true,
+    "authorityHash": "496dda9a7057f67c4ffb10e6ae4606d101479c905cad6a731907eaf4010d56a4",
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "reviewHash": "7fcbce1f43fd99b4add8db9913b3dc2fe215836f16eecd8e8191f9e344e54aa9",
+    "runtimeAuthorityIssued": true,
+    "runtimeEffectsDispatched": 0,
+    "schema": "ouf.acquisition-read-native-issued.v1"
+  },
+  "progress": [
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 1,
+        "adminPuts": 0,
+        "engineGets": 27,
+        "engineWrites": 0,
+        "imageLoadAttempts": 0,
+        "ownerConfigurationReads": 13,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 1
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "LOAD_EXISTING_ADMIN_KEY"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 1,
+        "adminPuts": 0,
+        "engineGets": 32,
+        "engineWrites": 0,
+        "imageLoadAttempts": 0,
+        "ownerConfigurationReads": 16,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "VERIFY_CURRENT_ADMISSION"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 37,
+        "engineWrites": 0,
+        "imageLoadAttempts": 0,
+        "ownerConfigurationReads": 18,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "IMPORT_INGESTION"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 44,
+        "engineWrites": 1,
+        "imageLoadAttempts": 1,
+        "ownerConfigurationReads": 20,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "IMPORT_UDP"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 51,
+        "engineWrites": 2,
+        "imageLoadAttempts": 2,
+        "ownerConfigurationReads": 22,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "IMPORT_MCP"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 58,
+        "engineWrites": 3,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 24,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "CREATE_INGESTION_READ"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 64,
+        "engineWrites": 4,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 26,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "CREATE_UDP_READ"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 71,
+        "engineWrites": 5,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 28,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "START_INGESTION_READ"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 80,
+        "engineWrites": 6,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 30,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "START_UDP_READ"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 89,
+        "engineWrites": 7,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 32,
+        "quarantineStops": 0,
+        "readinessGets": 0,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "VERIFY_READ_REPLICAS"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 98,
+        "engineWrites": 7,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 34,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "DISABLE_OLD_MCP_RESTART"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 105,
+        "engineWrites": 8,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 36,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "STOP_OLD_MCP"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 112,
+        "engineWrites": 9,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 38,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "DETACH_OLD_MCP"
+    },
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "counts": {
+        "adminGets": 2,
+        "adminPuts": 0,
+        "engineGets": 119,
+        "engineWrites": 10,
+        "imageLoadAttempts": 3,
+        "ownerConfigurationReads": 40,
+        "quarantineStops": 0,
+        "readinessGets": 2,
+        "serviceCredentialFileReads": 2
+      },
+      "runtimeAuthorityIssued": true,
+      "schema": "ouf.acquisition-read-native-progress.v1",
+      "stage": "RENAME_OLD_MCP"
+    }
+  ],
+  "operatorResult": {
+    "addressesPrinted": false,
+    "applicationE2EProven": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "contextPath": "/etc/ouf/deploy-snapshots/acquisition-read-apply-5fa62e4f6869a6f40fb512878dcf65dcb6ffaf941be487e4189826f418046591/terminal-continuation-v1",
+    "credentialValuesPrinted": false,
+    "humanBudgetsGranted": 0,
+    "reasonCode": "OLD_MCP_CONFIG_GENERATION_REQUIRED",
+    "releaseAcceptance": false,
+    "runtimeEffectsMayBePartial": true,
+    "schema": "ouf.acquisition-read-native-result.v1",
+    "sourceActivations": 0,
+    "status": "STOP_RECONCILE"
+  },
+  "exit": 2,
+  "directory": "/home/oufadmin/ouf-acquisition-continuation.z1OkfMYu",
+  "log": "/home/oufadmin/ouf-acquisition-continuation.z1OkfMYu/operator.log",
+  "deliveryExit": 2,
+  "deliveryDirectory": "/home/oufadmin/ouf-continuation-delivery.6iRiaI7q",
+  "deliveryLog": "/home/oufadmin/ouf-continuation-delivery.6iRiaI7q/bootstrap.log",
+  "scopeConsumed": true,
+  "sourceCommit": "a21f5bda87ee7ed2e499338d842cd207ba956b3c",
+  "deliveryCommit": "738f6252e977fbd7c99d83489c3d2f83e11c581f",
+  "operatorTimestamp": null,
+  "attachmentSha256": "4895e98662b2242e2354cf896e1e736f5cc6a1b2bc792a8cd76e8381b0a14916",
+  "attachmentUploadedName": "Testo incollato(4).txt",
+  "quarantineResultNotYetObserved": true,
+  "exactGuardDifferenceNotYetObserved": true,
+  "currentRuntimeStateObserved": false,
+  "recordedAt": "2026-10-25T15:27:34.172Z"
+}

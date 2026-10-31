@@ -1,0 +1,32 @@
+{
+  "envelopeVersion": "1.0",
+  "ingestionId": "ing-01JENV",
+  "runId": "run-01JENV",
+  "sourceId": "suo-prod",
+  "typeCode": "DEHOR",
+  "sourceObjectId": "471",
+  "sourceSchemaId": "suo-dehor-schema",
+  "sourceSchemaVersion": "3",
+  "configurationBundleId": "suo-prod-bundle",
+  "configurationBundleVersion": "12",
+  "operation": "UPSERT",
+  "observedAt": "2026-09-07T09:14:58Z",
+  "acquiredAt": "2026-09-07T09:15:02Z",
+  "contentType": "application/json",
+  "data": {
+    "id": "471",
+    "surface": 24.5,
+    "status": "ACTIVE"
+  },
+  "provenance": {
+    "correlationId": "corr-01JENV",
+    "routeRef": "gateway://southbound/suo-prod/dehor",
+    "pageRef": "page:42"
+  },
+  "extensions": {
+    "ouf.example.note": "additive optional example"
+  },
+  "futureOptionalField": {
+    "example": true
+  }
+}

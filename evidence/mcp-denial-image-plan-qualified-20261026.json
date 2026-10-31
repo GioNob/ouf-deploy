@@ -1,0 +1,372 @@
+{
+  "schema": "ouf.mcp-denial-image-plan-qualification.v1",
+  "sourceCommit": "a82727760244183c1733b8d7619909a2821839ac",
+  "deliveryCommit": "39394ecef13f10e6431c53d689e3d8a9a7954084",
+  "runtimeSha256": "96cb2f55d3000d5408265f09a2bd615d902964398e97ba631a72b84a14379059",
+  "wrapperSha256": "20473f93d856b9a883661d86712d268866c3be3cef3901263b7a25a3f0722f60",
+  "capturedInputsHash": "fb4b7c9ae832e779192f1ff6e032e49c696752e182a57b8e9464f5a76000b3e4",
+  "candidateSourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+  "candidateArtifact": {
+    "repository": "GioNob/ouf-mcp-server",
+    "runId": 40284011851,
+    "artifactId": 12633545900,
+    "zipSha256": "6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a",
+    "compressedArchiveSha256": "19fd036f973e52734d209d20671240f8973cd55d7183968ce605254b94cbd5bb"
+  },
+  "qualificationRuns": [
+    {
+      "id": 40292394526,
+      "event": "push",
+      "jobs": [
+        121470284503,
+        121470285022
+      ]
+    },
+    {
+      "id": 40292401379,
+      "event": "pull_request",
+      "jobs": [
+        121470307487,
+        121470307758
+      ]
+    }
+  ],
+  "directJobLogsRead": true,
+  "testsPerBackend": {
+    "macNegativeTests": 6,
+    "imagePlanTests": 8,
+    "legacyLifecycleProfiles": 2,
+    "candidateNativeArchiveImportAndUnstartedConfig": true,
+    "rootStagingCustodyAndScopeGuards": true,
+    "skips": 0
+  },
+  "records": [
+    {
+      "jobId": 121470307487,
+      "records": [
+        {
+          "applicationE2EProven": false,
+          "applicationReadinessProven": false,
+          "artifactZipSha256": "6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a",
+          "backend": "classic",
+          "candidateStarted": false,
+          "complete": true,
+          "configurationImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "derivedArchiveSha256": "a7fd7391aca2d63207339c5cac689b221ea4759d25dc7a0ed112fdad41eba0fb",
+          "frozenCiPlanHash": "f27094f3cd552cf779fd85aceb79667c1bab305f8099830772ad053ceb8cf9ab",
+          "imageRebuilt": false,
+          "imageRelabelled": false,
+          "nativeImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "oauthRequests": 0,
+          "productionRuntimeAccess": false,
+          "rootfsLayerCount": 4,
+          "schema": "ouf.mcp-denial-candidate-native-ci.v1",
+          "serverVersion": "29.8.1",
+          "sourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+          "sqlSessions": 0,
+          "stagedReceiptHash": "ce2dea05abada9a938704f9263c2185420b887ab69e47decd519036e77c1d480",
+          "targetUpdateAuthorized": false,
+          "unstartedContainerConfigVerified": true
+        },
+        {
+          "schema": "ouf.native-mac-engine-profile.v1",
+          "serverVersion": "29.8.1",
+          "driver": "overlay2",
+          "expectedVersionMatched": true,
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.mcp-denial-plan-root-custody-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "realRetainedCiArtifact": true,
+          "privateCaptureMetadataSynthetic": true,
+          "exactWrapperRootCopierExecuted": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "inputBytesUnchanged": true,
+          "positiveStageAndNativePlan": true,
+          "scopeReplayDenied": true,
+          "wrongCaptureRejectedBeforeZipRead": true,
+          "containerWrites": 0,
+          "engineGets": 0,
+          "imageImports": 0,
+          "productionRuntimeAccess": false,
+          "targetUpdateAuthorized": false
+        }
+      ],
+      "skips": 0
+    },
+    {
+      "jobId": 121470307758,
+      "records": [
+        {
+          "applicationE2EProven": false,
+          "applicationReadinessProven": false,
+          "artifactZipSha256": "6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a",
+          "backend": "containerd",
+          "candidateStarted": false,
+          "complete": true,
+          "configurationImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "derivedArchiveSha256": "dafe0b0be9bf78717061923b1d1fe9feab2f01b81fd1e432a8b7a35a7677bcc3",
+          "frozenCiPlanHash": "d80cce0dcf9503838ec0d7fac2a6e009235fa997d91eeed46d07f8d7ce9843c1",
+          "imageRebuilt": false,
+          "imageRelabelled": false,
+          "nativeImageId": "sha256:9a1af5be94ff3dda4084b829e824482c5cf863525375c6f104a3fe89517e781e",
+          "oauthRequests": 0,
+          "productionRuntimeAccess": false,
+          "rootfsLayerCount": 4,
+          "schema": "ouf.mcp-denial-candidate-native-ci.v1",
+          "serverVersion": "29.8.1",
+          "sourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+          "sqlSessions": 0,
+          "stagedReceiptHash": "ce2dea05abada9a938704f9263c2185420b887ab69e47decd519036e77c1d480",
+          "targetUpdateAuthorized": false,
+          "unstartedContainerConfigVerified": true
+        },
+        {
+          "schema": "ouf.native-mac-engine-profile.v1",
+          "serverVersion": "29.8.1",
+          "driver": "overlayfs",
+          "expectedVersionMatched": true,
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.mcp-denial-plan-root-custody-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "realRetainedCiArtifact": true,
+          "privateCaptureMetadataSynthetic": true,
+          "exactWrapperRootCopierExecuted": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "inputBytesUnchanged": true,
+          "positiveStageAndNativePlan": true,
+          "scopeReplayDenied": true,
+          "wrongCaptureRejectedBeforeZipRead": true,
+          "containerWrites": 0,
+          "engineGets": 0,
+          "imageImports": 0,
+          "productionRuntimeAccess": false,
+          "targetUpdateAuthorized": false
+        }
+      ],
+      "skips": 0
+    },
+    {
+      "jobId": 121470284503,
+      "records": [
+        {
+          "applicationE2EProven": false,
+          "applicationReadinessProven": false,
+          "artifactZipSha256": "6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a",
+          "backend": "containerd",
+          "candidateStarted": false,
+          "complete": true,
+          "configurationImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "derivedArchiveSha256": "dafe0b0be9bf78717061923b1d1fe9feab2f01b81fd1e432a8b7a35a7677bcc3",
+          "frozenCiPlanHash": "d80cce0dcf9503838ec0d7fac2a6e009235fa997d91eeed46d07f8d7ce9843c1",
+          "imageRebuilt": false,
+          "imageRelabelled": false,
+          "nativeImageId": "sha256:9a1af5be94ff3dda4084b829e824482c5cf863525375c6f104a3fe89517e781e",
+          "oauthRequests": 0,
+          "productionRuntimeAccess": false,
+          "rootfsLayerCount": 4,
+          "schema": "ouf.mcp-denial-candidate-native-ci.v1",
+          "serverVersion": "29.8.1",
+          "sourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+          "sqlSessions": 0,
+          "stagedReceiptHash": "ce2dea05abada9a938704f9263c2185420b887ab69e47decd519036e77c1d480",
+          "targetUpdateAuthorized": false,
+          "unstartedContainerConfigVerified": true
+        },
+        {
+          "schema": "ouf.native-mac-engine-profile.v1",
+          "serverVersion": "29.8.1",
+          "driver": "overlayfs",
+          "expectedVersionMatched": true,
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.mcp-denial-plan-root-custody-ci.v1",
+          "complete": true,
+          "backend": "containerd",
+          "realRetainedCiArtifact": true,
+          "privateCaptureMetadataSynthetic": true,
+          "exactWrapperRootCopierExecuted": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "inputBytesUnchanged": true,
+          "positiveStageAndNativePlan": true,
+          "scopeReplayDenied": true,
+          "wrongCaptureRejectedBeforeZipRead": true,
+          "containerWrites": 0,
+          "engineGets": 0,
+          "imageImports": 0,
+          "productionRuntimeAccess": false,
+          "targetUpdateAuthorized": false
+        }
+      ],
+      "skips": 0
+    },
+    {
+      "jobId": 121470285022,
+      "records": [
+        {
+          "applicationE2EProven": false,
+          "applicationReadinessProven": false,
+          "artifactZipSha256": "6c31a1b5698942ddbb47b96ec1b49860c690c44aac8106beb1ca4b1ed7bba56a",
+          "backend": "classic",
+          "candidateStarted": false,
+          "complete": true,
+          "configurationImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "derivedArchiveSha256": "a7fd7391aca2d63207339c5cac689b221ea4759d25dc7a0ed112fdad41eba0fb",
+          "frozenCiPlanHash": "f27094f3cd552cf779fd85aceb79667c1bab305f8099830772ad053ceb8cf9ab",
+          "imageRebuilt": false,
+          "imageRelabelled": false,
+          "nativeImageId": "sha256:ffc78ca5e7fc1a1941cd4c4347d43e061df97d06c9fca44df0e8a5c47b5b839d",
+          "oauthRequests": 0,
+          "productionRuntimeAccess": false,
+          "rootfsLayerCount": 4,
+          "schema": "ouf.mcp-denial-candidate-native-ci.v1",
+          "serverVersion": "29.8.1",
+          "sourceCommit": "9a374dd07745f059de3ad39757c68f02db6d29c3",
+          "sqlSessions": 0,
+          "stagedReceiptHash": "ce2dea05abada9a938704f9263c2185420b887ab69e47decd519036e77c1d480",
+          "targetUpdateAuthorized": false,
+          "unstartedContainerConfigVerified": true
+        },
+        {
+          "schema": "ouf.native-mac-engine-profile.v1",
+          "serverVersion": "29.8.1",
+          "driver": "overlay2",
+          "expectedVersionMatched": true,
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "EXPLICIT_LEGACY_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.synthetic-legacy-mac-lifecycle-ci.v1",
+          "complete": true,
+          "creationProfile": "ENDPOINT_ONLY_COMPAT_CONFIG",
+          "legacyConfigMacInitiallyPresent": true,
+          "legacyConfigMacAbsentAfterStopDetach": true,
+          "sameOldCidImageMountsStartedAt": true,
+          "newEndpointMacPreserved": true,
+          "oldRetainedStopped": true,
+          "strictProjectionVerified": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+          "productionRuntimeAccess": false
+        },
+        {
+          "schema": "ouf.mcp-denial-plan-root-custody-ci.v1",
+          "complete": true,
+          "backend": "classic",
+          "realRetainedCiArtifact": true,
+          "privateCaptureMetadataSynthetic": true,
+          "exactWrapperRootCopierExecuted": true,
+          "rootCode0400": true,
+          "nonrootReadDenied": true,
+          "inputBytesUnchanged": true,
+          "positiveStageAndNativePlan": true,
+          "scopeReplayDenied": true,
+          "wrongCaptureRejectedBeforeZipRead": true,
+          "containerWrites": 0,
+          "engineGets": 0,
+          "imageImports": 0,
+          "productionRuntimeAccess": false,
+          "targetUpdateAuthorized": false
+        }
+      ],
+      "skips": 0
+    }
+  ],
+  "limitsAndScope": [
+    "Actual exact CI image bytes independently imported/inspected on Docker29.8.1 classic and containerd; candidate container CREATED but NOT STARTED; no OAuth/SQL/readiness claimed.",
+    "Legacy lifecycle uses disposable Busybox containers, with explicit assertions Config.MacAddress is initially present for both API1.44 creation profiles. Full create/start/inspect/stop/detach/inspect/rename/replacement/start/inspect and exact common projection; not MCP application startup.",
+    "Stage/copier test executes exact wrapper Python root copier, creates root0400 code/0700 dir, proves nonroot read denial, positive private stage/native plan, no replay and wrong captured hash rejection. Capture metadata for this fixture is synthetic, not the VPS configuration or authority.",
+    "Fixture frozen CI plan/staging receipt are genuine CI files hashed before archive binding; never used as a production plan or HUMAN approval.",
+    "No target image import/update/start/stop/restart, acquisition, new grant or authority has occurred. Production executor remains unimplemented/unqualified; this delivery only stages files and compiles a non-authorized plan."
+  ]
+}

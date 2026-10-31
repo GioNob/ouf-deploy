@@ -1,0 +1,116 @@
+{
+  "schema": "ouf.m2-discovery-authorization-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceRepository": "GioNob/ouf-deploy",
+  "sourceCommit": "1cc920deba64d09d2ed063045f93bbe5541a1a11",
+  "pullRequest": 53,
+  "status": "SIGNED_OWNER_PROFILE_AND_PURE_INSTALLATION_AUDIT_QUALIFIED_NOT_INSTALLED",
+  "profile": "ouf.semantic-discovery-authorization.v1",
+  "capabilities": [
+    "ouf.semantic.discovery",
+    "ouf.semantic.discovery.status",
+    "ouf.semantic.discovery.candidates"
+  ],
+  "sharedOAuthScope": "ouf.semantic.discovery",
+  "qualification": {
+    "testsPerJob": 73,
+    "newTests": 23,
+    "retainedRegressionTests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "name": "chatbot_cohort_authorization",
+        "count": 22
+      },
+      {
+        "name": "chatbot_cohort_authorization_observation",
+        "count": 6
+      },
+      {
+        "name": "source_revision_authorization",
+        "count": 11
+      },
+      {
+        "name": "ingestion_read_authorization",
+        "count": 11
+      },
+      {
+        "name": "semantic_discovery_authorization",
+        "count": 14
+      },
+      {
+        "name": "m2_discovery_installation_audit",
+        "count": 9
+      }
+    ],
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40833391222,
+        "jobId": 123312473937,
+        "conclusion": "success",
+        "fullLogRead": true
+      },
+      {
+        "event": "pull_request",
+        "runId": 40833399252,
+        "jobId": 123312498723,
+        "conclusion": "success",
+        "fullLogRead": true
+      }
+    ],
+    "actualPinnedOwnerLifecycleHelpers": true,
+    "actualJavaOwnerConstraintCodec": true,
+    "actualSignedAggregateActionAndDurableJournal": true,
+    "httpAndIamTransport": "EXPLICIT_FIXTURES_NOT_TARGET",
+    "humanReview": "SYNTHETIC_FIXTURE_NOT_OWNER_CONFIRMATION",
+    "rootFixture": "ISOLATED_GITHUB_HOSTED_RUNNER",
+    "initialFailure": {
+      "sourceCommit": "0858999ac281ac6f6766887c5017971ac57eec82",
+      "runId": 40832453710,
+      "jobId": 123309540474,
+      "reason": "Java21 compiled owner codec invoked under sudo default Java17; explicit JAVA_HOME/PATH preserved in source1cc920 without changing tests or guards."
+    }
+  },
+  "preservation": {
+    "previousGrantsRolesAndAssignments": true,
+    "existingClientBindings": true,
+    "oldAuthorizationProfiles": true,
+    "noAdoptionApprovalOrPublicationPermissionsAdded": true,
+    "oneNewSharedScopeOnly": true,
+    "nativeHumanConfirmationStillRequired": true,
+    "ambiguousNonIdempotentDraftNotDuplicated": true,
+    "lostRegistrationReplyReconciled": true,
+    "expiredAssignmentDenied": true,
+    "revocationStopsBeforeTransport": true
+  },
+  "installationAudit": {
+    "kind": "PURE_HASH_BOUND_PRIVATE_CAPTURE_COMPILER",
+    "privateInputsSchema": "ouf.m2-discovery-private-installation-inputs.v1",
+    "publicTranscriptionRejected": true,
+    "executedOnTargetPrivateInputs": false,
+    "noCoveringMountIsNotProofOfWholeFilesystemAbsence": true,
+    "ancestorMountDoesNotProveDirectoryTypeOrCustody": true,
+    "allOutputsDenyNativeExecutionAndAuthority": true,
+    "selectedNewKeyEnvironmentReferenceIsNotCredentialCustody": true,
+    "fileOnlyProfileNotSufficient": true,
+    "sevenMountProposalFrameIsNotDiscoveryFrame": true
+  },
+  "runtime": {
+    "targetCalls": 0,
+    "oauthRequests": 0,
+    "iamRequests": 0,
+    "policyProposals": 0,
+    "policyPublications": 0,
+    "newGrantsGranted": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "installed": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "releaseAcceptance": false,
+    "mergeAuthorized": false
+  }
+}

@@ -1,0 +1,46 @@
+name: Acquisition native execution input preparation
+on:
+  push:
+    branches: [fix/registry-bound-owner-lineage-20261023]
+    paths: ['scripts/prepare-acquisition-read-native-execution-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_native_execution.py','tests/qualify_acquisition_native_archive.py','.github/workflows/acquisition-native-execution.yml']
+  pull_request:
+    paths: ['scripts/prepare-acquisition-read-native-execution-20261025.py','tools/acquisition_read_native/**','tests/test_acquisition_native_execution.py','tests/qualify_acquisition_native_archive.py','.github/workflows/acquisition-native-execution.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  isolated-root-plan-and-namespace-get:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: efe71dd9bef9d5ee70c0ef2acb11ea4169649baa
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Select isolated hosted-runner Engine image store
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          sudo --preserve-env=SELECTED_STORE python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          path=Path('/etc/docker/daemon.json');value=json.loads(path.read_text())if path.exists()else{}
+          value.setdefault('features',{})['containerd-snapshotter']=os.environ['SELECTED_STORE']=='containerd'
+          path.write_text(json.dumps(value))
+          PY_CONFIG
+          sudo systemctl restart docker
+      - name: Root custody, exact proposal preservation and one real namespace GET
+        run: |
+          sudo install -d -m 700 /var/lib/ouf-acquisition-plan-ci
+          sudo env OUF_CAPTURE_TEST_PARENT=/var/lib/ouf-acquisition-plan-ci OUF_NATIVE_NAMESPACE_FIXTURE=1 OUF_GATEWAY_QUALIFIED_SOURCE="$PWD/.pairwise/gateway" python3 -I -S -B -m unittest discover -s "$PWD/tests" -p test_acquisition_native_execution.py -v
+      - name: Actual immutable MCP archive native identity and real Docker import
+        env: {GH_TOKEN: '${{ github.token }}', EXPECTED_STORE: '${{ matrix.store }}'}
+        run: sudo --preserve-env=GH_TOKEN,EXPECTED_STORE python3 -I -S -B tests/qualify_acquisition_native_archive.py

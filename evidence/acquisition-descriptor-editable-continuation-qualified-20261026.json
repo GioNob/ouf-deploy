@@ -1,0 +1,118 @@
+{
+  "schema": "ouf.acquisition-descriptor-editable-continuation-qualification.v1",
+  "date": "2026-10-26",
+  "runtimeCommit": "3d8408ac6154d667ab64042561f5d3d14b9f7a84",
+  "runtimePath": "scripts/continue-existing-descriptor-publication-editable-20261026.py",
+  "runtimeSHA256": "5ad8bd38a51ba13aee3501c6dffe3629583c0eeb3fe20fdedac04f62f8d4884d",
+  "deliveryCommit": "059ea7fc60b19916bf484bd7bfc483407840540b",
+  "wrapperSHA256": "8578584cb6b8ca33bafde94229406f8c1ab8da203c768053bcd688d72dcfce6a",
+  "terminalReaderPath": "tools/human_terminal_line_review.py",
+  "terminalReaderSHA256": "3e698faea1e933b9ce04ad7ed204ed44b60863ad8fac620385c37a10179bfbf5",
+  "qualificationCommit": "059ea7fc60b19916bf484bd7bfc483407840540b",
+  "runs": [
+    {
+      "event": "push",
+      "id": 40278392372,
+      "jobs": [
+        121426008789,
+        121426009037
+      ],
+      "perJob": {
+        "realPtyUnitTests": 12,
+        "actualSudoTransportCases": 25,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    },
+    {
+      "event": "pull_request",
+      "id": 40278398191,
+      "jobs": [
+        121426026426,
+        121426026711
+      ],
+      "perJob": {
+        "realPtyUnitTests": 12,
+        "actualSudoTransportCases": 25,
+        "skipped": 0,
+        "conclusion": "success"
+      }
+    },
+    {
+      "event": "push",
+      "id": 40278392359,
+      "protocolCustodyJob": 121426009103,
+      "ownerJob": 121426008892,
+      "protocolTests": 8,
+      "rootCustodyTests": 6,
+      "ownerTests": 3,
+      "skipped": 0,
+      "conclusion": "success"
+    },
+    {
+      "event": "pull_request",
+      "id": 40278398186,
+      "protocolCustodyJob": 121426026739,
+      "ownerJob": 121426026425,
+      "protocolTests": 8,
+      "rootCustodyTests": 6,
+      "ownerTests": 3,
+      "skipped": 0,
+      "conclusion": "success"
+    }
+  ],
+  "directJobLogsRead": true,
+  "remoteRuntimeAndWrapperReadbackEqual": true,
+  "terminalFix": {
+    "nativeCanonicalEditing": true,
+    "visibleEchoOnActualTerminal": true,
+    "incorrectLinesRecoverWithinSameReview": true,
+    "backspace": true,
+    "ctrlU": true,
+    "exactLineAndEnterRequired": true,
+    "deadlineNeverExtendedByInput": true,
+    "countsUnchangedWhileCorrectingInput": true,
+    "rejectedLinesCountOnlyPersisted": true,
+    "termiosRestored": true,
+    "oldLengthFailureReproducerRetained": true,
+    "oldSudoPipelineTimeoutReproducerRetained": true,
+    "productionSudoersChanged": false
+  },
+  "inheritedCounts": {
+    "administrativeWrites": 6,
+    "ownerGets": 17,
+    "previewPosts": 1,
+    "bytes": 950031
+  },
+  "maximums": {
+    "administrativeWrites": 7,
+    "ownerGets": 160,
+    "previewPosts": 2,
+    "totalBytes": 33554432
+  },
+  "retainedOwnerPreviewCount": 1,
+  "newPreviewsAllowed": 1,
+  "newPublishAllowed": 1,
+  "newRegisterAllowed": 0,
+  "newCreateAllowed": 0,
+  "ownerCommit": "1b1222ceaa5af85a25c20857e7c8c1b548b12dc1",
+  "realOwnerJava21Postgres17": true,
+  "ownerTests": [
+    "success revision0 to1 and ACTIVE49 all106grants",
+    "incorrect review no publish",
+    "committed publish lost response remains CLAIMED no retry"
+  ],
+  "limitations": [
+    "IAM/principal/account/policy/history/approval in CI synthetic only",
+    "External AuthorizationRuntimeSynchronizer mocked; no production consumer refresh proven",
+    "Transport tests exercise actual approve/logger through sudo with and without use_pty; bootstrap curl not executed against production",
+    "Root copier/checksum/custody/execution tested directly, native production IAM/Gateway not exercised",
+    "Live extra terminal bytes that caused VPS length error not observed; no operator blame or inferred exact cause",
+    "Production continuation has not run"
+  ],
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

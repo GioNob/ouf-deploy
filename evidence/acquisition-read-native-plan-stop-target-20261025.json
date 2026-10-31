@@ -1,0 +1,33 @@
+{
+  "operatorResult": {
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "complete": false,
+    "containerWrites": 0,
+    "engineGetAttempts": 0,
+    "gatewayAdminGetAttempts": 0,
+    "imageImports": 0,
+    "networkNamespaceJoins": 0,
+    "oauthRequests": 0,
+    "ownerConfigurationContentReads": 1,
+    "privateMetadataReads": 11,
+    "privatePlanMayBePartial": true,
+    "reasonCode": "NONDEFAULT_UNSUPPORTED_CONTAINER_CONFIG",
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.acquisition-read-native-plan-prepared.v1",
+    "serviceCredentialFilesOpened": 0,
+    "sqlSessions": 0,
+    "status": "STOP_RECONCILE",
+    "targetApplyAuthorized": false
+  },
+  "exit": 2,
+  "directory": "/home/oufadmin/ouf-acquisition-plan.krEmZVop",
+  "log": "/home/oufadmin/ouf-acquisition-plan.krEmZVop/operator.log",
+  "deliveryExit": 2,
+  "deliveryDirectory": "/home/oufadmin/ouf-acquisition-plan-delivery.L5q2SRp6",
+  "deliveryLog": "/home/oufadmin/ouf-acquisition-plan-delivery.L5q2SRp6/bootstrap.log",
+  "scopeConsumed": true,
+  "causeFieldNotYetObserved": true,
+  "CIQualificationDidNotProveCapturedProductionConfiguration": true
+}

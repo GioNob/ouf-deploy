@@ -1,0 +1,208 @@
+{
+  "schema": "ouf.m2-discovery-parent-gate-worker-source-qualification.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "48c2bae347e07eeb5c83763a5a94510f3230d05b",
+  "pullRequest": 54,
+  "draft": true,
+  "merged": false,
+  "status": "PARENT_GATE_AND_PREINSTALLED_WORKER_START_QUALIFIED_NOT_TARGET_INSTALLATION",
+  "selected": {
+    "testsPerJob": 235,
+    "skips": 0,
+    "failures": 0,
+    "errors": 0,
+    "logsRead": true,
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40947093784,
+        "jobId": 123705210903
+      },
+      {
+        "event": "pull_request",
+        "runId": 40947105362,
+        "jobId": 123705251521
+      }
+    ]
+  },
+  "nativeWorker": {
+    "dockerVersion": "29.8.1",
+    "logsRead": true,
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40947093787,
+        "jobId": 123705210560
+      },
+      {
+        "event": "pull_request",
+        "runId": 40947105327,
+        "jobId": 123705251674
+      }
+    ],
+    "actualCompiledUnitAndCapsule": true,
+    "actualParentAndChildEd25519Signatures": true,
+    "actualSingleOwnedManagerStart": true,
+    "independentProcessGenerationAndBothOwnedLeaseFamiliesObserved": true,
+    "consumedStartCannotBeReplayed": true,
+    "staticTemplateMaterializesExactCurrentGeneration": true,
+    "budgetsAndHistoryPreserved": true,
+    "sigkillAndOrderlyStopStart": true,
+    "atomicTrustAndFenceRevocationObserved": true,
+    "privateKeysHiddenFromWorker": true,
+    "onlyCapNetAdminAndNoNewPrivileges": true,
+    "applicationAdmissionAndTransitionPredecessors": "EXPLICIT_SYNTHETIC_CI_FIXTURES",
+    "targetAdmissionProven": false,
+    "note": "The adapter starts already installed and signed files. It does not implement the one-use byte installation transaction or the fresh provider child."
+  },
+  "nativeGateWindow": {
+    "sourceCommit": "29e9fedad3df530fc70ad22fcdd7566d3e657199",
+    "dockerVersion": "29.8.1",
+    "logsRead": true,
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40943882161,
+        "jobId": 123694019767
+      },
+      {
+        "event": "pull_request",
+        "runId": 40943899431,
+        "jobId": 123694079816
+      }
+    ],
+    "realWaitGateAndSameProcessGeneration": true,
+    "realParentAndChildSignatures": true,
+    "realPrivateJournals": true,
+    "nativeUnpausePausePairsPerJob": 3,
+    "providerFailureContained": true,
+    "lostUnpauseResponseContainedWithoutResend": true,
+    "noJavaExecOrApplicationSignal": true,
+    "applicationReviewAndTransitionPredecessors": "EXPLICIT_SYNTHETIC_CI_FIXTURES",
+    "providerAdmissionProven": false
+  },
+  "explicitParentReview": {
+    "normalOperationMustBeExplicitlyReviewed": true,
+    "legacyFiniteOnlyDecisionRejected": true,
+    "separateSixComponents": true,
+    "fullThirteenPhaseChildUnchanged": true,
+    "currentHumanAndBothScopedSignaturesRequired": true,
+    "runtimePrivateSigningKeyAccess": false,
+    "historicalAuthorityReuse": false,
+    "automaticBudgetReset": false
+  },
+  "retainedNodeBinding": {
+    "legacyMigrationAndUnpauseModeStillRejectsCursors7And8": true,
+    "infrastructureReadModeSeparatelyBindsCurrentPhaseAndIntent": true,
+    "nativeAndScopedSignatureEvidenceStillRequired": true
+  },
+  "workerRuntime": {
+    "snapshot": "92803ea99658c1aeba631bf4cc9ef3f9090098fe",
+    "moduleCount": 37,
+    "bytes": 464208,
+    "sha256": "3b88cd8f329ea5f143bed61906270070341a6cda9ebc534a2268d82eeada3262",
+    "dependencyClosureHash": "3bbdc0d9d4c9fc6a10aa1fb494615d4bec8342e555c98450a7bd517c854402ed",
+    "runtimeModuleBytesUnchanged": true
+  },
+  "managerStopCorrection": {
+    "initialFailure": {
+      "sourceCommit": "a3c359dd31c111985d8ded031c7deed7a4626504",
+      "runId": 40944968857,
+      "jobId": 123697846978,
+      "reason": "Orderly-stop native assertion failed; preserved."
+    },
+    "qualifiedSource": "03e104b17b5342bc5382084cf67be229cb512ad2",
+    "setting": "KillMode=mixed",
+    "deterministicSameSandboxDiagnostic": {
+      "controlGroupChildSurvivedManagerTerm": false,
+      "mixedChildSurvivedManagerTerm": true
+    },
+    "boundedWholeGroupKillStillEnabled": true,
+    "legacyUnitCompilersUnchanged": true,
+    "documentation": "https://www.freedesktop.org/software/systemd/man/248/systemd.kill.html"
+  },
+  "failedSourceChecksPreserved": [
+    {
+      "source": "a150d3a690f9e7e611fc1b415fe68b85fac0e5ce",
+      "reason": "Existing legacy cursor-rejection test caught an overly broad retained mode; fixed with explicit infrastructure mode, no test weakened.",
+      "fixedBy": "048172df8ec779cd85de8e8310d91d50d2ee8383"
+    },
+    {
+      "source": "c8e15ef569732c79a72e40d5e6b54082e7ad2eaa",
+      "reason": "New fixture omitted its frame-compiler import path.",
+      "fixedBy": "86e4eec9fb035749dc51ac5da92ed7172d7167b0"
+    },
+    {
+      "source": "86e4eec9fb035749dc51ac5da92ed7172d7167b0",
+      "reason": "Mutable synthetic observation exposed receipt ownership alias; first receipt now deep-copies the returned observation.",
+      "fixedBy": "48c2bae347e07eeb5c83763a5a94510f3230d05b"
+    }
+  ],
+  "repositoryTreeCorrection": {
+    "incompleteCommits": [
+      "4be2181ca45357c142960a392a1de7e531c61733",
+      "431487519c3639166ba41465c32948081deee4ea"
+    ],
+    "reason": "Missing cached base_tree_sha created incomplete trees. Complete tree restored without force; fresh explicit base/parent pins now checked before mutation.",
+    "restoredBy": "b7ad91e8d17bb99c5fe376c0b5f0fcb468806792",
+    "currentTree": "b207011aa4a442a23fe8bf1dcf9e6c933086df6d",
+    "currentEntryCount": 5451,
+    "recursiveTreeTruncated": false,
+    "comparisonAgainstNative9a70ContainsOnly18IntendedPaths": true,
+    "noTargetEffects": true
+  },
+  "target": {
+    "installationInputsHash": "1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083",
+    "status": "STOPPED_PROVIDER_INSTALLATION_INPUTS_PREPARED_NOT_ADMITTED",
+    "scopeConsumed": true,
+    "providerStopped": true,
+    "newOperatorCommandReady": false
+  },
+  "open": [
+    "One-use governed installation of exact worker bytes and initial ledger; no implicit reset or old R12 migration",
+    "Fresh separately authorized provider child admission inside the qualified gate-only window, then re-pause before Registry attestation",
+    "Complete thirteen-peer coordinated review, current authoritative trust, TLS/IAM/database/fencing and producer continuity",
+    "Boot/rotation/new-generation controller with current native admission and carried incident accounting",
+    "Coordinated capability publication, actual OntoPiA discovery and application E2E through OUF MCP, two clients and stability gates"
+  ],
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "latestFixtureSource": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+  "actualLostManagerStartReply": {
+    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "logsRead": true,
+    "jobs": [
+      {
+        "event": "push",
+        "runId": 40948509804,
+        "jobId": 123710086393
+      },
+      {
+        "event": "pull_request",
+        "runId": 40948522098,
+        "jobId": 123710128058
+      }
+    ],
+    "actualManagerCommandDispatched": 1,
+    "responseLossInjectedAfterRealQueue": true,
+    "positiveOwnedLeasesObservedIndependently": true,
+    "noSecondStart": true,
+    "productionSourceUnchangedSince": "48c2bae347e07eeb5c83763a5a94510f3230d05b"
+  },
+  "latestFixtureSelected": {
+    "sourceCommit": "9fff2c1252d18c857ad454ad3ff5f6734606f0e3",
+    "event": "pull_request",
+    "runId": 40948522009,
+    "jobId": 123710127206,
+    "tests": 235,
+    "skipped": 0,
+    "logsRead": true
+  }
+}

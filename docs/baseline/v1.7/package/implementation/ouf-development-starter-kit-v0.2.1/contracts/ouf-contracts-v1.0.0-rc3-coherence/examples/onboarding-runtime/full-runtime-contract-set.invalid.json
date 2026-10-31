@@ -1,0 +1,200 @@
+{
+  "syncProfile": {
+    "bootstrap": "FULL_SNAPSHOT",
+    "incremental": "CHANGE_TOKEN",
+    "pageSize": 500
+  },
+  "extractionProfile": {
+    "profileId": "ep-suap-2026-001",
+    "version": "4",
+    "sourceId": "suap-prod",
+    "selection": {
+      "procedureTypes": [
+        "PROC_047"
+      ],
+      "eligibleNativeStates": [
+        "CHIUSA_POS",
+        "ARCHIVIATA"
+      ]
+    },
+    "projection": {
+      "PROC_047": [
+        "id_pratica",
+        "indirizzo",
+        "categoria",
+        "data_fine"
+      ]
+    },
+    "sync": {
+      "bootstrap": "FULL_SNAPSHOT",
+      "incremental": "CHANGE_TOKEN",
+      "pageSize": 500
+    },
+    "runtime": {
+      "mode": "PULL",
+      "endpointRef": "suap-procedures-api",
+      "sourceTypeScope": [
+        "PROC_047"
+      ],
+      "sourceStatusFilter": [
+        "CHIUSA_POS",
+        "ARCHIVIATA"
+      ],
+      "fieldProjectionRef": "suap.allowed-fields.v1",
+      "incrementalStrategy": "CHANGE_TOKEN",
+      "pageSize": 500,
+      "credentialRef": "secret://suap-prod"
+    },
+    "processingRefs": {
+      "adapterProfileId": "suap-adapter-v1",
+      "semanticMappingSetId": "suap-semantic-mappings-v1"
+    }
+  },
+  "sourceRuntimeProfile": {
+    "sourceId": "suap-prod",
+    "profileVersion": "2",
+    "environment": "production",
+    "protocol": "REST",
+    "endpointRef": "suap-procedures-api",
+    "credentialRef": "secret://suap-prod",
+    "sourceSchemaRef": "suap.proc047@3.2",
+    "status": "ACTIVE"
+  },
+  "sourceSchemaBinding": {
+    "sourceId": "suap-prod",
+    "schemaName": "suap.proc047",
+    "schemaVersion": "3.2",
+    "protocol": "REST",
+    "mediaType": "application/json"
+  },
+  "semanticMapping": {
+    "mappingId": "sm-suap-proc047-v3",
+    "sourceType": {
+      "sourceId": "suap-prod",
+      "typeCode": "WRONG"
+    },
+    "targetClasses": [
+      {
+        "ontologyId": "ouf-core",
+        "ontologyVersion": "1.7",
+        "classIri": "...:Dehor"
+      }
+    ],
+    "propertyMappings": [
+      {
+        "sourceField": "superficie",
+        "targetPropertyIri": "...:area",
+        "transform": "IDENTITY"
+      }
+    ],
+    "vocabularyMappings": [
+      {
+        "sourceField": "stato_pratica",
+        "vocabularyId": "procedure-status",
+        "vocabularyVersion": "2026.1",
+        "valueMapRef": "vm-17"
+      }
+    ],
+    "semanticRefs": [
+      "ouf-core@1.7",
+      "procedure-status@2026.1"
+    ]
+  },
+  "relationshipMapping": {
+    "mappingId": "rel-dehor-street-v1",
+    "sourceField": "codice_via",
+    "relationIri": "...:belongsTo",
+    "targetClassIri": "...:Street",
+    "resolution": {
+      "strategy": "CANONICAL_KEY",
+      "targetKeyProperty": "streetCode",
+      "sourceValuePath": "codice_via",
+      "onNoMatch": "QUARANTINE_RELATION",
+      "onMultipleMatches": "REVIEW_REQUIRED"
+    },
+    "provenancePolicy": "SOURCE_DECLARED"
+  },
+  "routeBinding": {
+    "routeId": "source.suap.activities.pull",
+    "capabilityId": "source.suap.activities.ingest",
+    "sourceId": "suap-prod",
+    "dataset": "economic-activities",
+    "direction": "southbound",
+    "extractionProfileRef": "ep-wrong@99",
+    "backendBinding": {
+      "service": "apisix-southbound",
+      "operation": "pull",
+      "timeout": "10s"
+    },
+    "status": "ACTIVE"
+  },
+  "bundle": {
+    "bundleId": "pcb-suap-prod-0007",
+    "bundleVersion": "1.3.0",
+    "environment": "production",
+    "source": {
+      "sourceId": "suap-prod",
+      "typeCode": "PROC_047",
+      "sourceKind": "EXTERNAL_API",
+      "acquisitionMode": "PULL"
+    },
+    "sourceDefinitionRef": "source:suap-prod@4",
+    "bindingRef": "binding:suap-prod-main@2",
+    "sourceRuntimeProfileRef": "source-runtime:suap-prod@2",
+    "objectTypes": [
+      {
+        "typeCode": "PROC_047",
+        "schemaRef": "suap.proc047@3.2",
+        "semanticMappingRef": "sm-suap-proc047-v3",
+        "relationshipMappingRefs": [
+          "rel-dehor-street-v1"
+        ]
+      }
+    ],
+    "extractionProfileRef": "ep-suap-2026-001@4",
+    "syncProfile": {
+      "bootstrap": "FULL_SNAPSHOT",
+      "incremental": "CHANGE_TOKEN",
+      "pageSize": 500
+    },
+    "sourceObjectIdentityPolicy": {
+      "strategy": "NATIVE_KEY",
+      "sourceFields": [
+        "id_pratica"
+      ]
+    },
+    "temporalMapping": {
+      "mode": "SOURCE_EXPLICIT",
+      "validFromField": "data_inizio",
+      "validToField": "data_fine"
+    },
+    "changeRepresentationProfile": {
+      "mode": "DELTA_PATCH"
+    },
+    "semanticRefs": [
+      "ouf-core@1.7",
+      "procedure-status@2026.1"
+    ],
+    "authorityPolicies": [
+      {
+        "scope": "OBJECT",
+        "target": "PROC_047",
+        "authority": "AUTHORITATIVE"
+      }
+    ],
+    "dataAccessPolicies": [
+      {
+        "target": "PROC_047",
+        "label": "OPEN",
+        "scope": "OBJECT"
+      }
+    ],
+    "createdFromOnboardingVersion": "ov-suap-12",
+    "effectiveFrom": "2026-08-26T12:00:00Z",
+    "activatedAt": "2026-08-26T12:00:00Z",
+    "activatedBy": "human:reviewer",
+    "checksum": "sha256:example",
+    "configurationHash": "sha256:approval-example",
+    "status": "ACTIVE"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "ouf.acquisition-read-package-delivery-interruption.v1",
+  "recordedAt": "2026-10-25T07:11:27.728Z",
+  "source": "User-supplied terminal output",
+  "launcherCommit": "8fa9ab2e6e94ba2e07b506472b66413e81714492",
+  "launcherSha256Verified": true,
+  "programSha256Verified": true,
+  "programSha256": "f2301a02b01730c41d5db85ac96d2da9eaabf94319e4d73020296848e4040bdf",
+  "exit": 1,
+  "deliveryExit": 1,
+  "operatorLog": "/home/oufadmin/ouf-acquisition-packages.RecOgcbn/operator.log",
+  "deliveryLog": "/home/oufadmin/ouf-acquisition-package-delivery.x8EV2li0/bootstrap.log",
+  "archiveChecksumObserved": false,
+  "stagingJsonObserved": false,
+  "rootStagingObserved": false,
+  "classification": "DELIVERY_STOP_AFTER_VERIFIED_PROGRAM_BEFORE_OBSERVED_ARTIFACT_OR_ROOT_STAGING",
+  "likelyCause": "SILENT_GH_OR_TIMEOUT_PREREQUISITE_CHECK",
+  "causeEstablished": false,
+  "packageScopeStateIndependentlyObserved": false,
+  "stagingComplete": false,
+  "targetApplyAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "nextAction": "LOCAL_COMMAND_AVAILABILITY_AND_EXISTING_ZIP_METADATA_ONLY_NO_LOGIN_DOWNLOAD_SUDO_OR_STAGE",
+  "diagnosticGuardFixLocalTests": {
+    "passed": 3,
+    "ciRun": false
+  },
+  "ciIsVpsPrerequisiteProof": false
+}

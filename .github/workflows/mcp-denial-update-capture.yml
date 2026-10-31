@@ -1,0 +1,30 @@
+name: Read-only MCP diagnostic update inputs
+on:
+  push:
+    paths:
+      - scripts/prepare-mcp-denial-update-inputs-20261026.py
+      - releases/prepare-mcp-denial-update-inputs-20261026.sh
+      - tests/test_mcp_denial_update_capture.py
+      - tests/qualify_mcp_denial_capture_native.py
+      - .github/workflows/mcp-denial-update-capture.yml
+  pull_request:
+    paths:
+      - scripts/prepare-mcp-denial-update-inputs-20261026.py
+      - releases/prepare-mcp-denial-update-inputs-20261026.sh
+      - tests/test_mcp_denial_update_capture.py
+      - tests/qualify_mcp_denial_capture_native.py
+      - .github/workflows/mcp-denial-update-capture.yml
+permissions: {contents: read}
+jobs:
+  root-custody-and-read-only-engine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: bash -n releases/prepare-mcp-denial-update-inputs-20261026.sh
+      - run: sudo mkdir -m0700 /var/lib/ouf-mcp-input-capture-ci
+      - name: Private retained-history invariants and no replay
+        run: sudo env CAPTURE_TEST_ROOT=/var/lib/ouf-mcp-input-capture-ci python3 -I -S -B -m unittest discover -s tests -p test_mcp_denial_update_capture.py -v
+      - run: docker pull busybox:1.37
+      - name: Real root Engine GET transport, no writes; real copier and nonroot denial
+        run: sudo env CAPTURE_TEST_ROOT=/var/lib/ouf-mcp-input-capture-ci python3 -I -S -B tests/qualify_mcp_denial_capture_native.py

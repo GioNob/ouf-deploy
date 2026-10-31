@@ -1,0 +1,392 @@
+{
+  "schema": "ouf.post-mcp-existing-acquisitions-read-proposal.v1",
+  "explicitOperatorMandate": "autorizzo",
+  "account": "ouf-admin",
+  "linkId": "link_6aafef96b4148191b767e9af7b756a07",
+  "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+  "basePolicyRef": "ouf-lab-authorization:50",
+  "basePolicyHash": "sha256:067cb58da4e6f0278b5a81f4858646bb50222bb48e9cf63d3141621e9cfaf05f",
+  "baselineSubjectConfiguredGrants": 94,
+  "nextAfter": null,
+  "operation": "REPLACE_ROLES",
+  "proposalReceipt": {
+    "proposalId": "c1908145-5aa5-4dc4-a2fb-e8bf7ba5daf5",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-26T12:29:32.817993Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=c1908145-5aa5-4dc4-a2fb-e8bf7ba5daf5",
+    "finalPolicyRef": null
+  },
+  "sameIdReadback": {
+    "proposalId": "c1908145-5aa5-4dc4-a2fb-e8bf7ba5daf5",
+    "revision": 0,
+    "state": "PENDING",
+    "expiresAt": "2026-10-26T12:29:32.817993Z",
+    "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=c1908145-5aa5-4dc4-a2fb-e8bf7ba5daf5",
+    "finalPolicyRef": null
+  },
+  "proposalDispatches": 1,
+  "proposalReadDispatches": 1,
+  "oldRolesCount": 4,
+  "newRolesCount": 4,
+  "oldAssignmentsCount": 4,
+  "proposedAssignmentsCount": 6,
+  "allOldRolesPreservedExactly": true,
+  "allOldAssignmentsPreservedExactly": true,
+  "baselineCatalogueHash": "a8949e89cd30f81950eaa55d0ceb1113fb4ee041e8551f27d54f735a5432f4ad",
+  "proposedCatalogueHash": "270fbdf04ee7d16ecad14d0414fa6e0f665e35e19546474321cd05df0925db67",
+  "unchangedRolesHash": "57916160d6e17461d12757a719531c5234ad95f357aa490287c1af784984f435",
+  "unchangedOldAssignmentsHash": "d4b8615c9349f9a4cfc867e70b08ca0334d481e366544896c2858ce39e21565f",
+  "preservedOldAssignmentIds": [
+    "operational-viewer-collaudo-ruolo-iam",
+    "ouf-admin-nominal-2026",
+    "teatri-e2e-read-bb2e2af4-20261026-ouf-admin",
+    "teatri-e2e-read-a3208f2f-20261026-ouf-admin"
+  ],
+  "newAssignments": [
+    {
+      "assignmentId": "teatri-e2e-read-bb2e2af4-20261026-post-mcp-9a374dd0",
+      "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "externalRoleRef": null,
+      "validFrom": "2026-10-26T12:14:26Z",
+      "validUntil": "2026-10-26T14:14:26Z"
+    },
+    {
+      "assignmentId": "teatri-e2e-read-a3208f2f-20261026-post-mcp-9a374dd0",
+      "roleId": "teatri-e2e-read-a3208f2f-20261026",
+      "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+      "externalRoleRef": null,
+      "validFrom": "2026-10-26T12:14:26Z",
+      "validUntil": "2026-10-26T14:14:26Z"
+    }
+  ],
+  "exactReadRoles": [
+    {
+      "roleId": "teatri-e2e-read-bb2e2af4-20261026",
+      "displayName": "Letture E2E Teatri — run bb2e2af4",
+      "permissions": [
+        {
+          "capabilityId": "ingestion.run.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "ingestion.contract.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "ingestion.lineage.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "urban.object.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "lineage.object.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "lineage.property.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "bb2e2af4-9c0a-49ea-8ad9-a947987c1472",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        }
+      ]
+    },
+    {
+      "roleId": "teatri-e2e-read-a3208f2f-20261026",
+      "displayName": "Letture E2E Teatri — run a3208f2f",
+      "permissions": [
+        {
+          "capabilityId": "ingestion.run.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "ingestion.contract.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "ingestion.lineage.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "INGESTION",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "urban.object.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "lineage.object.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        {
+          "capabilityId": "lineage.property.read",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {
+              "detailLevel": "TENANT_OPERATIONAL",
+              "jobRef": "a3208f2f-ebfd-415d-bddc-79ab05dea78f",
+              "module": "UDP",
+              "sourceRef": "teatri-csv-6609b245"
+            },
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN"
+            ],
+            "allowedDetailLevels": [
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        }
+      ]
+    }
+  ],
+  "durationSeconds": 7200,
+  "validFrom": "2026-10-26T12:14:26Z",
+  "validUntil": "2026-10-26T14:14:26Z",
+  "humanReviewDecisionReceived": false,
+  "humanPublicationObserved": false,
+  "newGrantsGranted": 0,
+  "acquisitionsRead": 0,
+  "acquisitionsExecuted": 0,
+  "sourceActivations": 0,
+  "budgetReset": false,
+  "registryWorkerTouched": false,
+  "automaticRetryAllowed": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.current-onboarding-database-reader-qualification.v1",
+  "sourceCommit": "e8008bf40c99dfd5dc1af67da5c0966630b7290b",
+  "path": "scripts/read-current-onboarding-database-20261024.py",
+  "sha256": "7fa2cd6dae5d47306ebf8c1122643fa9a5449c3fbb43571b33c9bf856511588e",
+  "publishedReadbackEqual": true,
+  "ci": {
+    "pushRun": 40092794664,
+    "pushJob": 120868752132,
+    "pushSeconds": 13.494,
+    "prRun": 40092798636,
+    "prJob": 120868763599,
+    "prSeconds": 14.053,
+    "prTestedMerge": "059c5279003ba3b958914254bf329f478d439a04",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "directLogsRead": true,
+    "conclusion": "SUCCESS"
+  },
+  "realFixtureCoverage": [
+    "PostgreSQL17 one repeatable-read READ ONLY session through qualified Docker exec",
+    "V34 descriptor/checksum and enabled append-only trigger metadata",
+    "read-only PGOPTIONS actually rejects fixture write",
+    "actual Engine API1.44 GETs and two real generations/private claims/proc",
+    "configuration drift stops before SQL",
+    "failed SQL is claimed, not replayed",
+    "retained fixture bytes/counters/generations unchanged"
+  ],
+  "syntheticFixtureLimits": [
+    "historical owner/review/authority/bound database lineage and receipt",
+    "other cohort container IDs",
+    "full protected target bootstrap not qualified by fixture",
+    "no target engine/schema/current signatures/authority/admission or E2E result inferred"
+  ],
+  "runtimeLimits": {
+    "maximumSeconds": 90,
+    "maximumExactEngineGets": 4,
+    "maximumSqlSessionAttempts": 1,
+    "maximumContainerExecAttempts": 1,
+    "serviceCredentialFilesAllowed": 0,
+    "bearerFilesAllowed": 0,
+    "signingKeysAllowed": 0,
+    "scope": "current-onboarding-database-snapshot-v1"
+  },
+  "targetRun": false,
+  "targetApplyAuthorized": false,
+  "databaseAdmissionProven": false,
+  "lifecycleMutationAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

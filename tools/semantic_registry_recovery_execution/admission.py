@@ -4,8 +4,7 @@ from .core import require,digest
 from .database import CurrentDatabase
 from .node_owner import RecoveryNodeOwner
 from .process_binding import RecoveryProcessBinding
-from tools.semantic_policy_token_owner.installed_owner import InstalledTokenOwner
-from .installed_owner import guard_lease
+from .token_observer import require_observer,guard_lease
 
 def admission_scope(database,node):
     return {'schema':'ouf.semantic-registry-recovery-admission-scope.v1',
@@ -16,8 +15,8 @@ def admission_scope(database,node):
 class CurrentAdmission:
     def __init__(self,database,node):
         require(type(database) is CurrentDatabase and type(node) is RecoveryNodeOwner
-            and node.lifecycle is database.lifecycle and type(node.token_owner) is InstalledTokenOwner
-            and node.token_owner.observer is True,'ACTUAL_CURRENT_RECOVERY_ADMISSION_OWNERS_REQUIRED')
+            and node.lifecycle is database.lifecycle,'ACTUAL_CURRENT_RECOVERY_ADMISSION_OWNERS_REQUIRED')
+        require_observer(node.token_owner,node.lifecycle)
         self.database,self.node,self.lifecycle=database,node,node.lifecycle
         self.scope=admission_scope(database,node);self.guard()
 

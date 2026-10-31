@@ -1,0 +1,157 @@
+{
+  "schema": "ouf.discovery-worker-initial-sequence-source-qualified.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+  "sourceTree": "26108d933695737a2338928d436042e1d4e4ede1",
+  "sourceTreeMatchedLocally": true,
+  "ci": [
+    {
+      "run": 40966310021,
+      "id": 123771609942,
+      "event": "push",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "name": "Discovery authorization and complete installation proposal",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 287,
+      "suites": 33
+    },
+    {
+      "run": 40966316487,
+      "id": 123771631286,
+      "event": "pull_request",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "name": "Discovery authorization and complete installation proposal",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 287,
+      "suites": 33
+    },
+    {
+      "run": 40966310029,
+      "id": 123771609863,
+      "name": "M2 discovery native Docker frame",
+      "event": "push",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40966316606,
+      "id": 123771631418,
+      "name": "M2 compiled discovery lease sandbox",
+      "event": "pull_request",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40966310037,
+      "id": 123771610288,
+      "name": "M2 compiled discovery lease sandbox",
+      "event": "push",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "run": 40966316783,
+      "id": 123771632722,
+      "name": "M2 discovery native Docker frame",
+      "event": "pull_request",
+      "sourceCommit": "4160000bae13a2c87459cceb041f93ad8d6e0aa9",
+      "conclusion": "success",
+      "logsRead": true
+    }
+  ],
+  "newProtocolTests": 24,
+  "stages": [
+    "ATTEST",
+    "FILES",
+    "REGISTER",
+    "START"
+  ],
+  "proofs": [
+    "Exact sequence commit readback, exact current dispatch record and retained invocation state required before progressing; regression blocks redispatch",
+    "Parent-reviewed sequence and exact durable stage order/version with maximum one dispatch each",
+    "Create-only root unit symlink and owned inode, one daemon-reload, no enable/restart",
+    "Lost reload/start results observed without redispatch; explicit continuation only for untouched stages",
+    "Start verifies three immutable prefix proofs and returns exact NativeEvidenceStore evidence hash",
+    "Initial ledger evidence retained after start, never restored or required over cumulative live journals",
+    "Read-only issuer/registration observes existing logical inode while worker owns lifetime flock; mutation remains exclusive",
+    "Actual composed signer/publication/registration/start with real Docker29.8.1/systemd/DNS/nft",
+    "Lost native start reply, SIGKILL/reentry/restart, trust revocation and logical fence replacement, key/credential isolation"
+  ],
+  "qualificationCorrections": [
+    "Strict journal-version check initially changed the corrupted-order fixture's first rejection; corrected fixture to an internally consistent version and added a separate version-drift denial. Full 284-test CI then passed.",
+    "A later local repetition hit create-only claims already consumed within a sequence. The existing exclusive file claims blocked writes. No storage cause is asserted; added exact commit readback, dispatch-record and invocation-regression fences with three fault-injection tests. Local13-case phase suite passed after readback fences; the additional invocation-regression case passed separately. Final full CI is recorded below."
+  ],
+  "syntheticFacts": [
+    "Registry/provider application admission and parent HUMAN authority in native fixture",
+    "Native peer observations and boot in local protocol fixtures"
+  ],
+  "nativeLimit": "Real two-peer Docker/manager/crypto/kernel worker composition; not real provider creation/admission, full13peer cohort, target apply or boot/rotation",
+  "baselineOriginalsRead": [
+    "Matrix1.7 DOCX §§1,7",
+    "SemanticRegistry1.3 DOCX §26 including26.1/26.3"
+  ],
+  "remaining": [
+    "Actual provider child lifecycle and independent admission/consumption in parent-owned gate-only window, re-pause before Registry ATTEST",
+    "Full13peer TLS/IAM/database/trust/fencing and authoritative material configuration",
+    "Boot/rotation preserving cumulative history and current generation admission",
+    "Installed published capabilities and all eight stability criteria",
+    "Actual OntoPiA governed mapping and CSV materialization into UDP with per-row outcomes",
+    "Separate qualification of UDP capabilities on loaded objects; search is not a loading phase",
+    "Unchanged reimport/idempotence, recovery/change-chat and two real clients"
+  ],
+  "frozenWorkerCapsuleModuleCount": 37,
+  "frozenWorkerCapsuleChanged": false,
+  "providerCreatedOrAdmittedOnTarget": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "priorCompleteProtocolQualification": [
+    {
+      "run": 40965073901,
+      "id": 123767369931,
+      "event": "push",
+      "name": "Discovery authorization and complete installation proposal",
+      "sourceCommit": "dd95c933ef5cbc16e1b617de5c1abed05722b1c1",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 284,
+      "suites": 33
+    },
+    {
+      "run": 40965085483,
+      "id": 123767409847,
+      "event": "pull_request",
+      "name": "Discovery authorization and complete installation proposal",
+      "sourceCommit": "dd95c933ef5cbc16e1b617de5c1abed05722b1c1",
+      "conclusion": "success",
+      "logsRead": true,
+      "selectedTests": 284,
+      "suites": 33
+    }
+  ],
+  "localQualification": {
+    "initialSelectedSuites": 55,
+    "initialNewRegistrationAndSequenceCases": 20,
+    "readbackPhaseSuiteTests": 13,
+    "readbackPhaseSuitePassed": true,
+    "finalInvocationRegressionTargetedTestPassed": true,
+    "localUnixSocketTestsUnavailable": true
+  },
+  "readOnlyPrerequisite": "docs/handoffs/OUF_M2_PROVIDER_RUNTIME_CONTRACT_20261029.md",
+  "runtimeHealthObservation": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  }
+}

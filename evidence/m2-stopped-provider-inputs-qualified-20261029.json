@@ -1,0 +1,191 @@
+{
+  "schema": "ouf.m2-stopped-provider-inputs-qualification.v1",
+  "date": "2026-10-29",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_NATIVE_AND_PROTECTED_DELIVERY_QUALIFIED_TARGET_NOT_EXECUTED",
+  "purpose": "Prepare original independent provider contracts, preserved public trust, current public policy reference, fresh full thirteen-core observations and actual Registry OCI/namespace for a coordinated stopped-provider dependency installation review.",
+  "source": {
+    "repository": "GioNob/ouf-deploy",
+    "branch": "feat/m2-discovery-complete-profile-20261029",
+    "pullRequest": 54,
+    "draft": true,
+    "preparation": "a1a24e923ea4169c97e7c82a8b497cf200bd7522",
+    "capsule": "cc20f661eae3afbd7e5b11f642a5e81c4848f93b",
+    "delivery": "0c29421d39190f784f62c3928ac69c9c1138587d",
+    "merged": false
+  },
+  "capsule": {
+    "path": "releases/m2-stopped-provider-inputs-20261029.py",
+    "sha256": "f312b973e0692495838c1e61ed9617bcd35099b5ee795f5a95dee7e52eeaad08",
+    "bytes": 97372,
+    "moduleCount": 6,
+    "sourcePins": {
+      "tools/m2_discovery_installation_profile/audit.py": "e8b7813a8f6f009054593025dc2df9b79315bf2100a70f02a41973a0536658c3",
+      "tools/m2_discovery_installation_profile/custody_capture.py": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
+      "tools/m2_discovery_installation_profile/material_preparation.py": "7e342cf4d9bee25515a6b924bd5086352f8c5c660870b3ef7928046ba9285462",
+      "tools/m2_discovery_installation_profile/native_context.py": "c9de1861b0478177b82f7f6cff3835867dba0fcca724aaf34fe37b5ca08067e0",
+      "tools/m2_discovery_installation_profile/projections.py": "4076c25e3258bf06afc25babf5d86755e55ffb97ac5bc0c634960061bcd71352",
+      "tools/m2_discovery_installation_profile/stopped_provider_preparation.py": "337aaa1058b488ac3042393c910d9012cf5879ee4db1a28527d8e9f84b0e7cdd"
+    },
+    "isolatedNoSiteNoBytecode": true,
+    "noArguments": true,
+    "preloadedApplicationModulesDenied": true
+  },
+  "wrapper": {
+    "path": "releases/prepare-m2-stopped-provider-inputs-20261029.sh",
+    "sha256": "7b56c3eb8128085ce5704432ac87f2f6e3b89e9c06375517521fa9e8a2280a39",
+    "bytes": 2592
+  },
+  "native": {
+    "preparationPushRun": 40903690029,
+    "preparationPushJob": 123552543676,
+    "preparationPrRun": 40903700377,
+    "preparationPrJob": 123552578995,
+    "capsulePushRun": 40905969432,
+    "capsulePushJob": 123560686135,
+    "capsulePrRun": 40905978303,
+    "capsulePrJob": 123560717605,
+    "deliveryHeadPrRun": 40906052628,
+    "deliveryHeadPrJob": 123560985143,
+    "testsPerCapsuleJob": 8,
+    "errors": 0,
+    "skips": 0,
+    "logsRead": true,
+    "actualDockerVersion": "29.8.1",
+    "actualCorePeers": 13,
+    "additionalProvider": 1,
+    "kernelPinsAndActualRegistryOciNamespace": true,
+    "providerNativeContextInvented": false,
+    "syntheticHistoricalContractsAndPublicCa": true,
+    "staticDockerFieldsUnchangedAndRuntimeNetworkChangedOnFixtureStop": true,
+    "productionStaticConfigurationDriftCauseProven": false,
+    "historicalStartFlagAndExecutableNotReused": true,
+    "changedSourceAndStoreDeniedBeforeEngine": true,
+    "unexpectedRunningProviderDeniedBeforeRegistryOci": true,
+    "replayDenied": true,
+    "originalFilesPreserved": true
+  },
+  "delivery": {
+    "pushRun": 40906044351,
+    "pushJobs": [
+      123560956198,
+      123560956621
+    ],
+    "prRun": 40906052255,
+    "prJobs": [
+      123560983947,
+      123560984434
+    ],
+    "allFourJobsSuccess": true,
+    "logsRead": true,
+    "productionCapsuleByteExact": true,
+    "pinnedHttpsNonrootSudoRoot400Checksum": true,
+    "nonTtyDeniedBeforeDownloadAndScope": true,
+    "priorLogAndCodePreserved": true,
+    "missingTargetStopsBeforeSecretsOrEngine": true,
+    "consumedScopeRefusedBeforeExecution": true,
+    "positivePreparationQualifiedSeparatelyWithActualDocker": true
+  },
+  "regression": {
+    "run": 40906052196,
+    "job": 123560984071,
+    "conclusion": "success",
+    "tests": 139,
+    "errors": 0,
+    "skips": 0,
+    "logRead": true
+  },
+  "historicalPublishedModulesAndConsumedCapsulesUnchanged": true,
+  "comparison": {
+    "base": "4dcbdc900855f401c897f99d77fae68fb8816066",
+    "head": "0c29421d39190f784f62c3928ac69c9c1138587d",
+    "allTenChangedPathsAreAdditions": true,
+    "paths": [
+      {
+        "filename": ".github/workflows/m2-stopped-provider-inputs-delivery.yml",
+        "status": "added"
+      },
+      {
+        "filename": ".github/workflows/m2-stopped-provider-inputs-native.yml",
+        "status": "added"
+      },
+      {
+        "filename": "releases/m2-stopped-provider-inputs-20261029.py",
+        "status": "added"
+      },
+      {
+        "filename": "releases/prepare-m2-stopped-provider-inputs-20261029.sh",
+        "status": "added"
+      },
+      {
+        "filename": "scripts/export-m2-stopped-provider-inputs.py",
+        "status": "added"
+      },
+      {
+        "filename": "tests/qualify_m2_stopped_provider_inputs_delivery.py",
+        "status": "added"
+      },
+      {
+        "filename": "tests/qualify_m2_stopped_provider_inputs_native.py",
+        "status": "added"
+      },
+      {
+        "filename": "tests/test_m2_stopped_provider_inputs.py",
+        "status": "added"
+      },
+      {
+        "filename": "tests/test_m2_stopped_provider_inputs_capsule.py",
+        "status": "added"
+      },
+      {
+        "filename": "tools/m2_discovery_installation_profile/stopped_provider_preparation.py",
+        "status": "added"
+      }
+    ]
+  },
+  "target": {
+    "scope": "/etc/ouf/deploy-snapshots/m2-stopped-provider-inputs-84184832-20261029-v1",
+    "executed": false,
+    "maximumSeconds": 90,
+    "maximumBytes": 16777216,
+    "metadataReads": 11,
+    "maximumEngineGets": 32,
+    "coreEngineGets": 27,
+    "contextEngineGets": 5,
+    "recoveredPublicStoreReads": 1,
+    "nativeRegistryConfigurationReads": 1,
+    "providerNativeContextReads": 0,
+    "newPublicStores": 0,
+    "secretOrMacFileReads": 0,
+    "lifecycleOperations": 0,
+    "authorityOrIamOrSqlRequests": 0
+  },
+  "provenance": {
+    "successfulReconciliationPublicCanonicalSha256": "f6673b37e724f58d11553f98ea5c5efa83e42adb00038e90247a6ef7fe31121f",
+    "reconciliationHash": "84184832451fed0828f6e56b7e0d6ffb3c582a4879849d8903eed296666fcb21",
+    "materialInputsHash": "68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392",
+    "preservedTrustInputsHash": "afbbe4808075fdb4374e74615ec4e13ea89646b06a5787b20c2f2656c7367e4d",
+    "preservedPublicStoreSha256": "33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559",
+    "currentOwnerConfigurationHash": "0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a"
+  },
+  "requiredNextAfterTargetInput": "Fresh coordinated gated provider dependency admission with distinct normal lease worker before Registry ATTEST_NEW_OCI_PEER; complete thirteen-phase installation assembly and current TLS/IAM/database/fencing/boot/rotation review. No old driver execution or standalone restart.",
+  "remainingOpen": [
+    "coordinatedExecutableFullProfile",
+    "providerDependencyAdmission",
+    "distinctLeaseWorkerNormalBootAndRotation",
+    "currentTlsIamDatabaseAdmission",
+    "governedCapabilityPublication",
+    "realOntopiaDiscovery",
+    "twoIndependentClients",
+    "stableOperationEightCriteria",
+    "applicationE2E"
+  ],
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "providerAdmissionProven": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

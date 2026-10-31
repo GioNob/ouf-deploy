@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.semantic-registry-postboot-loader-target-observation.v1",
+  "status": "STOP_BEFORE_SEALED_APPLICATION_ENTRY",
+  "provenance": "OPERATOR_PASTED_RECEIPTS_NOT_INDEPENDENT_VPS_READBACK",
+  "operatorDirectory": "/home/oufadmin/ouf-registry-postboot-review.ZHJtALt7",
+  "operatorLog": "/home/oufadmin/ouf-registry-postboot-review.ZHJtALt7/operator.log",
+  "wrapperCommit": "5508e26cdbd9400679e7e75b0ab2459866de7a74",
+  "capsuleCommit": "03b995cf0da3ab93a30f82f5c1ee6080ab739ab7",
+  "sourceCommit": "2d860631ffaf837e15de0f8d5e285fe415fe0486",
+  "receipts": [
+    {
+      "automaticReplayAllowed": false,
+      "budgetReset": false,
+      "complete": false,
+      "contextsAndClaimsRetained": true,
+      "reasonCode": "INTERPRETER_STDLIB_SYSCONFIG_ORIGIN_REQUIRED",
+      "releaseAcceptance": false,
+      "runtimeEffectsMayBePartial": false,
+      "schema": "ouf.semantic-registry-postboot-operator-result.v1",
+      "status": "STOP_RECONCILE"
+    },
+    {
+      "schema": "ouf.semantic-registry-postboot-review-delivery-result.v1",
+      "status": "STOP_RECONCILE",
+      "reasonCode": "PREPARATION_OR_REVIEW_NOT_COMPLETED",
+      "automaticReplayAllowed": false
+    }
+  ],
+  "sourcePhaseInference": {
+    "applicationEntryReached": false,
+    "basis": "runtime.load_entry calls generated_stdlib_binding before installing application finder, importing entry, or invoking entry.execute",
+    "scope": "Pinned source ordering, not independent live tracing",
+    "targetPythonVersionEstablished": false,
+    "targetSysconfigLayoutEstablished": false,
+    "compatibleExplanation": "Existing guard permits only stdlib/sysconfig.py; official CPython 3.13 supplies stdlib/sysconfig/__init__.py",
+    "otherOriginDriftNotExcluded": true
+  },
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false,
+  "serviceReadinessEstablished": false,
+  "targetRecoveryEstablished": false
+}

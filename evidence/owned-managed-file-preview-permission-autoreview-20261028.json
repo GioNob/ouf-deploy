@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.permission-proposal-autoreview-rejection.v1",
+  "recordedAt": "2026-10-28T22:24:25Z",
+  "intent": "evidence/owned-managed-file-preview-permission-intent-20261028.json",
+  "intentCommit": "f68031ef40ca5cbe94f73816918020414cc1b261",
+  "status": "AUTOMATIC_REVIEW_REJECTED_NO_PROPOSAL_RECEIPT",
+  "proposalId": null,
+  "published": false,
+  "reason": "Persistent managed-file preview role assignment until2036 was judged broader than the single job needed and beyond explicit authorization.",
+  "action": "Do not retry or execute indirectly. Complete unaffected evidence updates, then request explicit authorization for the proposed stable owned-file READ scope, or implement and qualify a genuinely narrower resource binding.",
+  "requestedScope": {
+    "subjectId": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "capabilityId": "ouf.managed-source.preview",
+    "resourceType": "capability",
+    "validUntil": "2036-09-15T07:13:50.968730Z",
+    "ownershipTenantAndSubjectStillRequired": true
+  },
+  "automaticReplayAllowed": false,
+  "existingPermissionsUnchangedByRejectedAction": true
+}

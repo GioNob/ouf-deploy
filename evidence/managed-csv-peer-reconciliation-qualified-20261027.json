@@ -1,0 +1,106 @@
+{
+  "schema": "ouf.managed-csv-recovery-peer-reconciliation-qualification.v1",
+  "date": "2026-10-27",
+  "timezone": "Europe/Rome",
+  "qualificationStatus": "PASS_FIRST_CHILD_RECONCILIATION_TARGET_EXECUTION_PENDING",
+  "targetStopEvidence": "evidence/managed-csv-recovery-peer-map-stop-target-20261027.json",
+  "priorScope": {
+    "path": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1",
+    "consumed": true,
+    "counts": {
+      "bytes": 483676,
+      "engineGets": 0,
+      "privateMetadataReads": 3
+    },
+    "claimSha256": "0a58ae6c93f9e15e53f03c33aa07a7aeb848ec522370a55a64853927d44ce6f7",
+    "resultSha256": "325ca38f30d9ba87f46a46954cba6935fc50df9b3821828fbaa57f217841f429"
+  },
+  "rootCause": {
+    "consumerAssumedSemanticMcpKey": true,
+    "previousFixtureRepeatedConsumerAssumption": true,
+    "installedProducerPeerKey": "peer-<containerId[:16]>",
+    "producerCommit": "e5410467a410188a3b7ee7ae3264c7b0782f7b4a",
+    "producerPath": "tools/onboarding_profile_recovery_update/context.py",
+    "producerMethod": "Context.current"
+  },
+  "correction": {
+    "retainExactCohortSize": 13,
+    "requireDistinctCanonicalContainerIds": true,
+    "requireCanonicalRetainedPeerKeys": true,
+    "selectUniqueMcpByFullNativeBindingAndImage": true,
+    "existingPeersNotRenamed": true,
+    "retainedMcpBindingHash": "f5a014435647efb7aa059abb1ee84a60c347641399b2eef012c88c2a83d27550",
+    "retainedMcpNativeImageId": "sha256:9a1af5be94ff3dda4084b829e824482c5cf863525375c6f104a3fe89517e781e"
+  },
+  "source": {
+    "coreCodeCommit": "87eeda5a41a8b5ab2caac03c0741e681ae937415",
+    "finalEntryCodeCommit": "8d8f46e8b8a746e1a58f057bd8715e66a5759848",
+    "qualificationCommit": "b4eed9c30f3fa01570de174ad6ec29b5294fd1a0",
+    "wrapperCommit": "7d444e223e1e8d12484f5ec1320fb5a9e5fe99de",
+    "wrapperPath": "releases/reconcile-managed-csv-recovery-peer-binding-20261027.sh",
+    "wrapperSha256": "f5bdce6a4f1daef0c184140eebd74a0f3b49e90dd31ef9544adaf4f95de167d8",
+    "rootCodeDirectory": "/usr/local/lib/ouf-managed-csv-peer-reconcile-16b86a69f9c0ecf3",
+    "sourceClosureHash": "16b86a69f9c0ecf3095c6917c7b5fedc48265b9a91c9ae4130d69e693127b6b5",
+    "sourceFiles": {
+      "capture.py": "cf6ccef19b01a61d1443d9cc43995f986964a4d0f85201982d80e3a87c73ff9f",
+      "retained_inputs.py": "eaec0b13236dc465cbdf8b0d52108b13f65858a65a5f6497a681ef43d70a6764",
+      "case.json": "8d0e0dc04eaac9958055fa2185eaee68b1c8fcaa2fdc9cf5a89d714e7653c6b8"
+    }
+  },
+  "newScope": {
+    "path": "/etc/ouf/deploy-snapshots/managed-csv-recovery-control-inputs-20261027-v1/reconcile-retained-peer-binding-v1",
+    "targetExecuted": false,
+    "scopeConsumed": false,
+    "maximumSeconds": 90,
+    "newPrivateMetadataReads": 5,
+    "maximumEngineGets": 27,
+    "cumulativeMetadataReadsAfterSuccess": 8,
+    "priorBytesPreserved": true,
+    "priorFilesWritten": false,
+    "earlyUnverifiedPriorShowsDeclaredCountsAndNullCumulative": true
+  },
+  "qualification": {
+    "unitCases": 11,
+    "actualInstalledProducerAndStableBindingMethodUsed": true,
+    "exactOldConsumerRegressionReproducedBeforeEngine": true,
+    "firstNativeRun": 40582119441,
+    "firstNativeJob": 122463979514,
+    "firstNativeDirectLogRead": true,
+    "finalRun": 40582657076,
+    "finalJobs": {
+      "native": 122465865190,
+      "protectedReconcileDelivery": 122465865415,
+      "retainedOldDelivery": 122465864931
+    },
+    "finalDirectLogsRead": true,
+    "finalRunConclusion": "success",
+    "finalHead": "b4eed9c30f3fa01570de174ad6ec29b5294fd1a0",
+    "allThreeJobs": "PASS"
+  },
+  "unchanged": {
+    "nativeImagesRetained": true,
+    "installedV36ApplyRetainedConsumed": true,
+    "qualifiedCandidatesInstalled": false,
+    "farmacieLastVerifiedState": "FAILED",
+    "farmacieLastVerifiedCumulativeAttempts": 5,
+    "policy56StructuralServiceRetained": true
+  },
+  "runtimeEffectsByThisCorrection": {
+    "oufCalls": 0,
+    "targetEngineCalls": 0,
+    "sqlCalls": 0,
+    "grants": 0,
+    "humanBudgets": 0,
+    "resumes": 0,
+    "uploads": 0,
+    "jobs": 0,
+    "acquisitions": 0,
+    "registryWorkerTouched": false
+  },
+  "humanSurface": "USER_ONLY",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "mergeAuthorized": false
+}

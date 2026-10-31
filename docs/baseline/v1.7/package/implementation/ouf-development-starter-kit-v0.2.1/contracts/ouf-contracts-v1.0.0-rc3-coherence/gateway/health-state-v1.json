@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/gateway/health-state-v1.json",
+  "title": "OUF Gateway Health State v1",
+  "description": "Minimal operational routing state for a governed source/backend. It is not a domain health model.",
+  "type": "object",
+  "required": [
+    "targetRef",
+    "state",
+    "observedAt"
+  ],
+  "properties": {
+    "targetRef": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "ENABLED",
+        "DEGRADED",
+        "DISABLED"
+      ]
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reasonCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expiresAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Urban API Gateway v1.2"
+  ],
+  "x-ouf-scope-control": "Gateway boundary/runtime contracts only. No Query Complexity Governor, fine-grained data authorization, Durable ACK authority, schema-drift classification, ETL, semantic processing, Object Resolution, UDP materialization, THS decision logic or MCP Server implementation.",
+  "x-ouf-note": "Gateway v1.2 freezes Health State as a configuration object that can enable/disable routing, not an exhaustive schema."
+}

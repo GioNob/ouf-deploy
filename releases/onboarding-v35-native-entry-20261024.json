@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "4cc62e49539a8e52a823ac5cba95bf92d64613fd",
+  "bundleSha256": "a0ce9d7ffb2e4500549c6800ee0c5e30a8a62fa6239dd9060cb8c0c0b907f35e",
+  "codeRoot": "/etc/ouf/deploy-snapshots/onboarding-v35-native-code-a0ce9d7ffb2e4500",
+  "files": [
+    {
+      "repositoryPath": "scripts/apply-onboarding-v35-native-20261024.py",
+      "installedName": "apply.py",
+      "sha256": "55addc8768319abaecfd5501c489edeb6fba18aa5ca61ee1bed9b62b0f146eb2"
+    },
+    {
+      "repositoryPath": "tools/onboarding_v35_native/protocol.py",
+      "installedName": "protocol.py",
+      "sha256": "034bb7572905903cca52033e9af098fdbe351d244a531302bf30831df338e43d"
+    },
+    {
+      "repositoryPath": "tools/onboarding_v35_native/ports.py",
+      "installedName": "ports.py",
+      "sha256": "a3997298bdb5ff0675bdf81506ec36600d7f6783f741aeff4ee7960d414881be"
+    },
+    {
+      "repositoryPath": "tools/onboarding_v35_native/quarantine.py",
+      "installedName": "quarantine.py",
+      "sha256": "69dcb537d1e8d6b4603078339fc7eb1b79a74a8357666d60f7937693a44f69c2"
+    },
+    {
+      "repositoryPath": "tools/ingestion_readiness_patch_execution/image_import.py",
+      "installedName": "image_import.py",
+      "sha256": "2e7255c7222cfe69a2fd115fcb9b05cf4f31bd6cc24af6532718621bce9f112d"
+    }
+  ],
+  "commandSha256": "eb0455cf3a212012f1d711db7fee235bbe9dec719838b932968be2b5817da95e",
+  "qualified": true,
+  "targetExecuted": false,
+  "nativeQualificationRef": "evidence/onboarding-v35-native-entry-qualified-20261024.json",
+  "requiresFreshControllingTerminalDecision": true,
+  "requiresExistingDualRoleSignatures": true,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

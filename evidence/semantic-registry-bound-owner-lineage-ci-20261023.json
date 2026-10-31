@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.semantic-registry-bound-owner-lineage-qualification.v1",
+  "sourceRepository": "GioNob/ouf-deploy",
+  "sourceCommit": "f8afcf2a78f76f3a201162547ad575c8a02896c7",
+  "branch": "fix/registry-bound-owner-lineage-20261023",
+  "workflowRun": 39916642392,
+  "workflowJob": 120291527605,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/39916642392",
+  "jobConclusion": "success",
+  "testCount": 15,
+  "skippedTests": 0,
+  "qualificationScope": "BOUNDED_READ_ONLY_METADATA_RECONCILIATION_WITH_PROTECTED_DISPOSABLE_FILES",
+  "localTests": {
+    "passed": 15,
+    "skipped": 0
+  },
+  "independentStaticReview": "PASS_AFTER_MISSING_EARLIEST_ANCESTOR_FIX",
+  "immutableReadbackExactFiles": [
+    "AGENTS.md",
+    "scripts/read-registry-bound-owner-lineage-20261023.py",
+    "tests/test_registry_bound_owner_lineage.py",
+    "docs/handoffs/OUF_REGISTRY_BOUND_OWNER_LINEAGE_READMESPEC_20261023.md",
+    "docs/OUF_SEMANTIC_502_EVIDENCE_AND_REPAIR_20261023.md",
+    "evidence/semantic-502-reinvestigation-20261023.json",
+    ".github/workflows/registry-bound-owner-lineage.yml"
+  ],
+  "sourceFileSha256": {
+    "AGENTS.md": "669476314429f3ae349996bd06e044af936f2b7354dcdc00f5a700b7bd626f05",
+    "scripts/read-registry-bound-owner-lineage-20261023.py": "24739440479a105a211986ed8c2a5c936b76779b6d176aa22662c9fe77168fff",
+    "tests/test_registry_bound_owner_lineage.py": "0cd182a71e6eb66cb18f5d3424571970c556b0f7e5ff40e8ae1266dfb80eec9b",
+    "docs/handoffs/OUF_REGISTRY_BOUND_OWNER_LINEAGE_READMESPEC_20261023.md": "85d26b0bde47c24c01eecb451a27860785a435dda0f74e1df9e38fd1e460e776",
+    "docs/OUF_SEMANTIC_502_EVIDENCE_AND_REPAIR_20261023.md": "a09a6ac4d42706b825b67f3d99c4de9e073990018737474c6d391054797f15af",
+    "evidence/semantic-502-reinvestigation-20261023.json": "b39cdcd1615c2c3aa5b1607f9570dd87e70867b99ff9f9a75c708897779a6829",
+    ".github/workflows/registry-bound-owner-lineage.yml": "8e41fa2dcdbe9222049dc0ae2cd6c51ce7aefb11a91a065a5cbf762e378c40f1"
+  },
+  "wrapperValidation": {
+    "bashSyntax": "PASS",
+    "corruptSourceRejectedBeforeExecution": true,
+    "privilegedExecutionUsesHashVerifiedInMemoryBytes": true
+  },
+  "targetExecuted": false,
+  "targetMetadataAvailabilityProven": false,
+  "targetCredentialLineageReconciled": false,
+  "currentOwnerIdentityEstablished": false,
+  "currentTokenAdmissionProven": false,
+  "runtimeRecoveryQualified": false,
+  "runtimeEffectsDispatched": 0,
+  "oauthRequests": 0,
+  "budgetReset": false,
+  "automaticReplayAllowed": false,
+  "activationResubmitted": false,
+  "http502Resolved": false,
+  "releaseAcceptance": false
+}

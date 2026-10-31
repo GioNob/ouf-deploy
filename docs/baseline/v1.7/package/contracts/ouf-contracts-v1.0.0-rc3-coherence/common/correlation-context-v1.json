@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/common/correlation-context-v1.json",
+  "title": "OUF Correlation Context v1",
+  "type": "object",
+  "required": [
+    "correlationId"
+  ],
+  "properties": {
+    "correlationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "causationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "requestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "capabilityId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "policyVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "x-ouf-status": "draft",
+  "x-ouf-blueprint": "OUF System Integration & Development Blueprint v0.1",
+  "x-ouf-note": "Core fields only. Field-level contract freeze required before promotion to v1.0."
+}

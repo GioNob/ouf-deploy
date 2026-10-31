@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.m2-discovery-paused-adapter-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "7c793f9609aef10b6a2596cb6ccf7dd3dc3f180a",
+  "pullRequest": 54,
+  "status": "DISCOVERY_TYPED_ADAPTER_DISPATCH_FIXED_SOURCE_QUALIFIED",
+  "cause": "DiscoveryNodeOwner.resolve used the legacy PausedAttestationAdapter which requires exact legacy PausedNodeObservation; the distinct DiscoveryNodeObservation could never pass that guard.",
+  "change": "Add a separate closed DiscoveryPausedAttestationAdapter and wire DiscoveryNodeOwner to it; retain legacy adapter and node guards unchanged.",
+  "push": {
+    "run": 40911217557,
+    "job": 123579381148
+  },
+  "pr": {
+    "run": 40911229188,
+    "job": 123579420802
+  },
+  "testsPerJob": 152,
+  "newAdapterTests": 4,
+  "skips": 0,
+  "logsRead": true,
+  "actualScopedAcceptanceSignatures": true,
+  "nativeReportsSynthetic": true,
+  "legacyStillRejectsDiscovery": true,
+  "discoveryRejectsLegacy": true,
+  "changedGenerationIntentAndMissingSignatureDenied": true,
+  "nativeTargetProof": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

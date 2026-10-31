@@ -1,0 +1,97 @@
+{
+  "schema": "ouf.m2-discovery-lease-runtime-sandbox-source-qualification.v1",
+  "date": "2026-10-29",
+  "sourceCommit": "9a70e2bce57446e481495a4c8645eb3a28e45a2a",
+  "runtimeSourceSnapshot": "92803ea99658c1aeba631bf4cc9ef3f9090098fe",
+  "capsule": {
+    "moduleCount": 37,
+    "bytes": 464208,
+    "sha256": "3b88cd8f329ea5f143bed61906270070341a6cda9ebc534a2268d82eeada3262",
+    "dependencyClosureHash": "3bbdc0d9d4c9fc6a10aa1fb494615d4bec8342e555c98450a7bd517c854402ed",
+    "entry": "tools.m2_discovery_installation_profile.lease_service",
+    "coldClosedLoadAndAmbientInjectionDenialQualified": true
+  },
+  "selectedTests": {
+    "sourceCommit": "7c09af8fdeefe446430e48785fb1168139eb6976",
+    "push": {
+      "run": 40932026394,
+      "job": 123652656523,
+      "tests": 200,
+      "conclusion": "success"
+    },
+    "pr": {
+      "run": 40932038546,
+      "job": 123652701054,
+      "tests": 200,
+      "conclusion": "success"
+    },
+    "skips": 0,
+    "logsRead": true
+  },
+  "nativePush": {
+    "run": 40932387716,
+    "job": 123653916934,
+    "conclusion": "success"
+  },
+  "nativePr": {
+    "run": 40932396012,
+    "job": 123653945875,
+    "conclusion": "success"
+  },
+  "nativeLogsRead": true,
+  "actual": {
+    "compiledSystemdUnitAndClosedCapsule": true,
+    "installationAndGenerationEd25519Signatures": true,
+    "dockerVersion": "29.8.1",
+    "dockerPeers": 2,
+    "dnsAndNft": true,
+    "onlyCapNetAdminAndNoNewPrivileges": true,
+    "onlyThreePidStatFilesVisible": true,
+    "signingKeyUnrelatedCredentialShellAndDockerCliHidden": true,
+    "readOnlyControlBindingsEnforced": true,
+    "atomicTrustRevocationObserved": true,
+    "atomicLogicalFenceReplacementVisible": true,
+    "pausedToRunningSameGenerationAccepted": true,
+    "sigkillReentryAndOrderlyRestart": true,
+    "attemptsPublicationsStartTimeAndHistoryPreserved": true,
+    "blockedRemainsAliveNoQueriesAndNoAutomaticRearm": true
+  },
+  "admissionAndAuthorityFixturesSynthetic": true,
+  "ordinaryStopDistinctFromCancellation": true,
+  "existingKernelLockInodeBoundThroughReadOnlyDirectory": true,
+  "privateFileNftInputKeepsDeadlineAndCleanup": true,
+  "legacyNftBackendUnchanged": true,
+  "failuresPreserved": [
+    {
+      "runs": [
+        40930449293,
+        40930435104,
+        40931478732,
+        40931463884
+      ],
+      "cause": "NFT_STDIN_DEPENDS_ON_UNMOUNTED_PROCFS_DEV_STDIN",
+      "diagnostic": "NATIVE_STDIN_RC1_PRIVATE_FILE_RC0",
+      "resolution": "DISCOVERY_ONLY_PRIVATE_REGULAR_INPUT_FILE_WITH_ABSOLUTE_DEADLINE"
+    },
+    {
+      "runs": [
+        40932038866,
+        40932026533
+      ],
+      "cause": "FIXTURE_CAUGHT_VALUEERROR_BUT_MISSING_STOPPED_PROCESS_RETURNS_OSERROR",
+      "resolution": "ACCEPT_NATIVE_DENIAL_TYPES_IN_FIXTURE_ONLY",
+      "productionGuardWeakened": false
+    }
+  ],
+  "bootOrRotationQualified": false,
+  "nativeWorkerStartAdapterImplemented": false,
+  "targetInstalled": false,
+  "targetActions": 0,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "stableCapabilitiesOperationalProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false
+}

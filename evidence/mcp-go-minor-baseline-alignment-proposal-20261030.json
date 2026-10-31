@@ -1,0 +1,63 @@
+{
+  "schema": "ouf.mcp-go-minor-baseline-alignment-proposal.v1",
+  "date": "2026-10-30",
+  "timezone": "Europe/Rome",
+  "status": "PENDING_EXPLICIT_OWNER_DECISION",
+  "proposedDecision": "APPROVE_CONTROLLED_MCP_GO_BASELINE_1_26_10",
+  "approved": false,
+  "ownerDecision": null,
+  "originalBaseline": {
+    "matrixVersion": "1.7",
+    "matrixSha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+    "mcpPetVersion": "1.4",
+    "mcpPetSha256": "83165c93197bc4d9fca9bfbbb346b48977931b0e0527849e57b894078cec1008",
+    "section": "Part II §65",
+    "goMinor": "1.25",
+    "sameMinorCompatiblePatchesAllowed": true,
+    "originalFilesModified": false
+  },
+  "observedCandidate": {
+    "repository": "GioNob/ouf-mcp-server",
+    "sourceCommit": "09d1f521703f2e896398c751b41008f22c6dca0d",
+    "go": "1.26.10",
+    "mcpSdk": "1.7.0",
+    "goModDockerfileCiAndVerifyRead": true,
+    "artifactId": 12882394596,
+    "buildInfoReadbackEvidence": "evidence/m2-discovery-native-witness-and-packages-20261029.json"
+  },
+  "reason": {
+    "goReleasePolicy": "https://go.dev/doc/devel/release",
+    "go126Released": "2026-02-10",
+    "go127Released": "2026-08-19",
+    "go125UnsupportedInferredFromOfficialPolicyAndDates": true,
+    "officialVulnerabilityReport": "https://go.googlesource.com/vulndb/+/refs/heads/master/data/reports/GO-2026-6809.yaml",
+    "fixedVersions": [
+      "1.26.10",
+      "1.27.3"
+    ],
+    "projectTechnicalRationale": "docs/OUF_RESILIENCE_ADOPTION.md",
+    "priorExplicitNormativeApprovalFoundInConsultedSources": false,
+    "absenceEverywhereNotAsserted": true
+  },
+  "proposal": {
+    "path": "docs/decisions/OUF_MCP_GO_BASELINE_ALIGNMENT_PROPOSAL_20261030.md",
+    "sha256": "c0b69197b0d863170dea491d24f33aaa860faac23c4d92b74a04c6e50d2dbe2b"
+  },
+  "unchangedScope": [
+    "MCP_PROTOCOL_2026_07_28",
+    "MCP_GO_SDK_1_7_0",
+    "SINGLE_BINARY_TWO_PROCESS_ROLES",
+    "OWNERSHIP_API_CAPABILITY_GATEWAY_AUTHORIZATION_THS",
+    "ALL_SECURITY_CONFORMANCE_INTEROPERABILITY_AND_M2_GATES"
+  ],
+  "sourceCiIsNotNormativeApproval": true,
+  "officialConformanceOrTwoClientGateGrantedByProposal": false,
+  "m1EvidenceRetained": true,
+  "runtimeDeliveryAllowed": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

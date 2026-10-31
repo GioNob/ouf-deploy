@@ -1,0 +1,53 @@
+{
+  "acquisitionsExecuted": 0,
+  "applicationE2EProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "complete": true,
+  "continuationAuthorized": false,
+  "counts": {
+    "bytes": 120945,
+    "fileReads": 9
+  },
+  "credentialFileReads": 0,
+  "currentRuntimeStateObserved": false,
+  "failedGuardChecks": [
+    "memoryStrictlyPositive"
+  ],
+  "hostPolicy": {
+    "AutoRemove": {
+      "present": true,
+      "type": "bool",
+      "value": false
+    },
+    "Memory": {
+      "present": true,
+      "type": "int",
+      "value": 0
+    },
+    "OomKillDisable": {
+      "present": true,
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "networkRequests": 0,
+  "newEngineRequests": 0,
+  "oauthRequests": 0,
+  "oldFilesWritten": 0,
+  "releaseAcceptance": false,
+  "retainedClaimsAndPinnedCodeProveNoRuntimeDispatch": true,
+  "retainedHostPolicyCopyExact": true,
+  "retainedOriginalCounts": {
+    "engineGets": 0,
+    "engineWrites": 0,
+    "ownerConfigurationReads": 2
+  },
+  "retainedPreflightFileSetExact": true,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.mcp-host-policy-retained-stop-read.v1",
+  "signingKeyReads": 0,
+  "sourceActivations": 0,
+  "sqlSessions": 0,
+  "status": "RETAINED_MCP_HOST_POLICY_STOP_OBSERVED_NO_AUTHORITY"
+}

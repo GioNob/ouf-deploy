@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/semantic-reference-v1.json",
+  "title": "OUF SemanticReference v1",
+  "type": "object",
+  "required": [
+    "semanticId",
+    "artifactId",
+    "revisionId",
+    "artifactType",
+    "semanticVersion",
+    "status",
+    "canonicalUri",
+    "namespace",
+    "localName",
+    "label",
+    "publicationSetId"
+  ],
+  "properties": {
+    "semanticId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifactId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "ONTOLOGY",
+        "CLASS",
+        "PROPERTY",
+        "RELATIONSHIP",
+        "VOCABULARY",
+        "CONCEPT",
+        "RULE"
+      ]
+    },
+    "semanticVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "ACTIVE",
+        "DEPRECATED",
+        "RETIRED"
+      ]
+    },
+    "canonicalUri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1
+    },
+    "localName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "label": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "publicationSetId": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "semanticId is semantic identity; artifactId/revisionId are technical/reproducibility identities",
+    "historical reference resolves exact revision/publication context and never silently falls back to latest/ACTIVE"
+  ]
+}

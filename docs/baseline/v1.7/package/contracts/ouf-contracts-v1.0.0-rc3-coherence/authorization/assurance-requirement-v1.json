@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/authorization/assurance-requirement-v1.json",
+  "title": "OUF AssuranceRequirement v1",
+  "type": "object",
+  "properties": {
+    "level": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "NORMAL",
+        "STEP_UP",
+        "HIGH",
+        null
+      ]
+    },
+    "acr": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "amr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "maxAuthAgeSeconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Authorization & Access Control Specification v1.3"
+  ],
+  "x-ouf-scope-control": "Authorization contracts only; no IAM vendor binding, Gateway route model, THS approval DTO, Query Governor model or MCP Server change.",
+  "x-ouf-note": "The PET freezes assurance/acr/amr/freshness semantics but does not freeze a single exhaustive level enumeration; the schema keeps the DTO extensible."
+}

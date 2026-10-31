@@ -1,0 +1,88 @@
+{
+  "applicationE2EProven": false,
+  "appliedStages": 13,
+  "authorityHash": "496dda9a7057f67c4ffb10e6ae4606d101479c905cad6a731907eaf4010d56a4",
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "complete": true,
+  "configDifferences": [
+    {
+      "afterDefaultLike": true,
+      "afterPresent": false,
+      "afterType": "NoneType",
+      "beforeDefaultLike": false,
+      "beforeMatchesOriginalSingleEndpointMac": true,
+      "beforePresent": true,
+      "beforeType": "str",
+      "field": "MacAddress"
+    }
+  ],
+  "continuationAuthorized": false,
+  "currentRuntimeStateObserved": false,
+  "failedGuardComponents": [
+    "config"
+  ],
+  "guardChecks": {
+    "config": false,
+    "image": true,
+    "mounts": true,
+    "startedAt": true
+  },
+  "humanBudgetsGranted": 0,
+  "journalHash": "1fb1159ada9d78123d1a90985e8c6ba23a18648bd3b3f621406c43dc9f57817d",
+  "maximumPrivateMetadataReads": 640,
+  "maximums": {
+    "adminGets": 32,
+    "adminPuts": 2,
+    "engineGets": 500,
+    "engineWrites": 22,
+    "imageLoadAttempts": 3,
+    "ownerConfigurationReads": 64,
+    "quarantineStops": 3,
+    "readinessGets": 128,
+    "serviceCredentialFileReads": 2
+  },
+  "negativeCandidateStopsProvenInRetainedJournal": [
+    "ingestion",
+    "udp"
+  ],
+  "negativeJournalState": "APPLIED",
+  "negativeMarkers": {
+    "quarantine-result.json": {
+      "present": true,
+      "status": "OWNED_CANDIDATES_QUARANTINED"
+    }
+  },
+  "newAdminRequests": 0,
+  "newCredentialReads": 0,
+  "newEngineRequests": 0,
+  "newMcpCreated": false,
+  "newSigningKeyReads": 0,
+  "nextStage": "RENAME_OLD_MCP",
+  "oauthRequests": 0,
+  "oldMcpEndpointDetachedInRetainedResponse": true,
+  "oldMcpNamePreservedInRetainedResponse": true,
+  "oldMcpStoppedInRetainedResponse": true,
+  "originalRetainedFileWrites": 0,
+  "privateEvidenceHash": "e6b8642e1c04f510eabdddc6d038a87c9575e65be060928bf9981bd631eb4af2",
+  "privateMetadataReads": 129,
+  "recordedCounts": {
+    "adminGets": 2,
+    "adminPuts": 0,
+    "engineGets": 128,
+    "engineWrites": 14,
+    "imageLoadAttempts": 3,
+    "ownerConfigurationReads": 42,
+    "quarantineStops": 2,
+    "readinessGets": 2,
+    "serviceCredentialFileReads": 2
+  },
+  "releaseAcceptance": false,
+  "renameClaimed": false,
+  "retainedNetworkEndpointCount": 0,
+  "reviewHash": "7fcbce1f43fd99b4add8db9913b3dc2fe215836f16eecd8e8191f9e344e54aa9",
+  "schema": "ouf.acquisition-old-mcp-guard-retained-result.v1",
+  "sourceActivations": 0,
+  "sqlSessions": 0,
+  "status": "RETAINED_OLD_MCP_GUARD_DIFFERENCE_OBSERVED"
+}

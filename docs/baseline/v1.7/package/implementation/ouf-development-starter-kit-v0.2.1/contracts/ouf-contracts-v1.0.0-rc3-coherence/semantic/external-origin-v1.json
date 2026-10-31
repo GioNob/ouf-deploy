@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/external-origin-v1.json",
+  "title": "OUF ExternalOrigin v1",
+  "type": "object",
+  "required": [
+    "providerId",
+    "canonicalUri",
+    "sourceLocation",
+    "publisher",
+    "license",
+    "retrievedAt",
+    "upstreamStatus"
+  ],
+  "properties": {
+    "providerId": {
+      "type": "string"
+    },
+    "canonicalUri": {
+      "type": "string"
+    },
+    "sourceLocation": {
+      "type": "string"
+    },
+    "sourceRevision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "retrievedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastCheckedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "upstreamStatus": {
+      "type": "string",
+      "enum": [
+        "AVAILABLE",
+        "CHANGED",
+        "WITHDRAWN",
+        "UNREACHABLE"
+      ]
+    },
+    "snapshotHash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "canonical URI is semantic identity; source location is technical origin only",
+    "adopted content is resolvable from local immutable snapshot even if upstream disappears"
+  ]
+}

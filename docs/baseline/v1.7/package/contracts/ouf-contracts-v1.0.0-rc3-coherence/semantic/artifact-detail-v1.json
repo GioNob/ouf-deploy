@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/artifact-detail-v1.json",
+  "title": "OUF ArtifactDetail v1",
+  "type": "object",
+  "required": [
+    "semanticId",
+    "artifactId",
+    "revisionId",
+    "artifactType",
+    "labels",
+    "status"
+  ],
+  "properties": {
+    "semanticId": {
+      "type": "string"
+    },
+    "artifactId": {
+      "type": "string"
+    },
+    "revisionId": {
+      "type": "string"
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "ONTOLOGY",
+        "CLASS",
+        "PROPERTY",
+        "RELATIONSHIP",
+        "VOCABULARY",
+        "CONCEPT",
+        "RULE"
+      ]
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "domain": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "range": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "broader": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "narrower": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "origin": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "ACTIVE",
+        "DEPRECATED",
+        "RETIRED"
+      ]
+    },
+    "contentHash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "semanticVersion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes."
+}

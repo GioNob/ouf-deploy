@@ -1,0 +1,39 @@
+version: 1
+logging:
+  format: structured-json
+  requiredFields:
+  - timestamp
+  - service
+  - environment
+  - correlationId
+  - requestId
+  - level
+  - message
+  recommendedContext:
+  - traceId
+  - spanId
+  - actorType
+  - capabilityId
+  - runId
+  - ingestionId
+  - sourceId
+  - stage
+  prohibitedByDefault:
+  - bearerToken
+  - clientSecret
+  - privateKey
+  - fullPayload
+  - protectedHumanOperationPayload
+tracing:
+  standard: OpenTelemetry
+  propagation:
+  - trace context
+  - correlationId
+  rule: Preserve correlation across Gateway and backend/module boundaries.
+metrics:
+  requiredTechnical:
+  - http_server_requests
+  - process_jvm_health
+  - dependency_latency
+  - dependency_errors
+  moduleSpecific: Defined by each PET; starter kit does not invent domain metrics.

@@ -1,0 +1,75 @@
+{
+  "schema": "ouf.acquisition-unapproved-review-reader-qualified.v1",
+  "sourceCommit": "02eb3f45e0d91e5960c46b7bea0de6a5f11e1d4c",
+  "readerPath": "scripts/read-acquisition-unapproved-review-20261025.py",
+  "readerSha256": "7f5aca8e3fd2827b21c1d871e5a29749f52825f18cac4918ae921e0178408619",
+  "wrapperPath": "releases/read-acquisition-unapproved-review-20261025.sh",
+  "wrapperSha256": "8457f27548719d7c8a945e5ff2bdd24ebedc3d48d0294f22a95f91d053e606cb",
+  "directJobLogsRead": true,
+  "readerCI": [
+    {
+      "event": "push",
+      "runId": 40203542674,
+      "jobId": 121199574568,
+      "passed": 13,
+      "skipped": 0
+    },
+    {
+      "event": "pull_request",
+      "runId": 40203545825,
+      "jobId": 121199583966,
+      "passed": 13,
+      "skipped": 0
+    }
+  ],
+  "localReader": {
+    "passed": 13,
+    "skipped": 0,
+    "fixtureRoot": "workspace instead of /var/lib; no custody guard patched"
+  },
+  "promptProtocolCI": [
+    {
+      "event": "push",
+      "runId": 40203542573,
+      "jobId": 121199574567,
+      "passed": 10,
+      "skipped": 0
+    },
+    {
+      "event": "pull_request",
+      "runId": 40203545823,
+      "jobId": 121199583509,
+      "passed": 10,
+      "skipped": 0
+    }
+  ],
+  "qualificationScope": "Actual protected root filesystem, exact review/native/manifest hashes on synthetic history; exclusive child/no replay, no parent content changes, source/review drift, hardlink/symlink/writable custody denial, postreview marker denial, counts and serial gap denial, redaction, strict main rejection. Protocol PTY verifies separate exact command and denies copied prior suffix.",
+  "qualificationLimits": "No target execution. Reader core is exercised against synthetic prior metadata with explicit fixture path/hash inputs. Production main has no override arguments. Wrapper bash-n/static reviewed, not whole download/sudo execution in CI. No current runtime state evidence.",
+  "newReaderRuntimeCalls": 0,
+  "newReaderCredentialReads": 0,
+  "targetExecuted": false,
+  "continuationAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "oldScopeReset": false,
+  "wholeNewNativeApplyQualified": false,
+  "newNativeRegressionFailure": {
+    "runId": 40203545823,
+    "jobId": 121199583738,
+    "store": "classic",
+    "test": "test_real_native_lifecycle_and_additive_routes",
+    "reason": "LIVE_BOUND_NEGATIVE_WATCHDOG_REQUIRED",
+    "stage": "CREATE_MCP candidate_guard GET reserve",
+    "rootCauseEstablished": false,
+    "rerunPerformed": false,
+    "productionAccess": false,
+    "otherNativeJobsSucceeded": [
+      121199574320,
+      121199574526,
+      121199583712
+    ],
+    "negativeSIGKILLTestSucceededInFailedJob": true,
+    "blocksFutureMutatingContinuation": true
+  },
+  "localProtocolLimitation": "All ten test setups blocked by unavailable /proc/sys/kernel/random/boot_id; not counted PASS. Dedicated CI10PASS each."
+}

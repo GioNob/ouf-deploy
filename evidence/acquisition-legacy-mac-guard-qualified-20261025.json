@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.legacy-mac-guard-ci-qualification.v1",
+  "sourceCommit": "1141e89d69ad974b9c5ae6b6262d4cb6883d3575",
+  "productionRuntimeAccess": false,
+  "productionApprovalSimulated": false,
+  "syntheticOwnersDataKeysAndCiDecisions": true,
+  "engineVersion": "29.8.1",
+  "engineArchiveSha256": "d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70",
+  "directLogsRead": true,
+  "zeroSkipsInCitedTests": true,
+  "runs": [
+    {
+      "id": 40210134105,
+      "jobs": [
+        {
+          "id": 121219388422,
+          "store": "classic",
+          "pureTests": 6,
+          "nativeCreationProfiles": 2,
+          "result": "PASS"
+        },
+        {
+          "id": 121219388590,
+          "store": "containerd",
+          "pureTests": 6,
+          "nativeCreationProfiles": 2,
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "id": 40210134055,
+      "jobs": [
+        {
+          "id": 121219388574,
+          "protocolTests": 18,
+          "result": "PASS"
+        },
+        {
+          "id": 121219388620,
+          "store": "containerd",
+          "originalOperatorTests": 2,
+          "continuationOperatorTests": 2,
+          "result": "PASS"
+        },
+        {
+          "id": 121219388652,
+          "store": "classic",
+          "originalOperatorTests": 2,
+          "continuationOperatorTests": 2,
+          "result": "PASS"
+        }
+      ]
+    }
+  ],
+  "legacyConfigInitiallyPresent": true,
+  "configFieldAbsentAfterStopDetach": true,
+  "sameOldIdentityImageMountsStartedAt": true,
+  "replacementEndpointMacPreserved": true,
+  "oldRetainedStopped": true,
+  "guardRequiresSignedPolicyAndAppliedStopDetach": true,
+  "allCiGreen": false,
+  "otherFailedRun": {
+    "id": 40210133992,
+    "job": 121219388349,
+    "reason": "PROTECTED_METADATA_ANCESTRY_REQUIRED",
+    "tests": 560,
+    "failures": 3,
+    "errors": 11,
+    "skips": 2
+  },
+  "residualRecoveryQualified": false,
+  "mutatingRecoveryCommandDelivered": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

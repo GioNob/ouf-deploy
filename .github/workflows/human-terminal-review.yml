@@ -1,0 +1,46 @@
+name: HUMAN terminal complete sudo pipeline
+on:
+  push:
+    paths:
+      - tools/human_terminal_review.py
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
+      - tests/test_human_terminal_review.py
+      - tests/qualify_human_terminal_pipeline.py
+      - tests/fixtures/human_terminal_pipeline_probe.py
+      - .github/workflows/human-terminal-review.yml
+  pull_request:
+    paths:
+      - tools/human_terminal_review.py
+      - scripts/continue-existing-descriptor-publication-tty-20261026.py
+      - tests/test_human_terminal_review.py
+      - tests/qualify_human_terminal_pipeline.py
+      - tests/fixtures/human_terminal_pipeline_probe.py
+      - .github/workflows/human-terminal-review.yml
+permissions: {contents: read}
+jobs:
+  complete-real-sudo-tty:
+    strategy:
+      fail-fast: false
+      matrix:
+        sudo_pty: [use_pty, '!use_pty']
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    env:
+      CI_SUDO_PTY: ${{ matrix.sudo_pty }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Configure isolated CI sudo transport variant
+        env:
+          CI_SUDO_PTY: ${{ matrix.sudo_pty }}
+        run: |
+          sudo /usr/bin/python3 -I -S -B - "$(id -un)" "$CI_SUDO_PTY" <<'PY'
+          import os,re,sys
+          user,mode=sys.argv[1:]
+          assert re.fullmatch('[a-z_][a-z0-9_-]*',user) and mode in ('use_pty','!use_pty')
+          fd=os.open('/etc/sudoers.d/ouf-ci-terminal-test',os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o440)
+          os.fchmod(fd,0o440)
+          with os.fdopen(fd,'w') as out:
+              out.write('Defaults:'+user+' '+mode+'\n');out.flush();os.fsync(out.fileno())
+          PY
+      - run: python3 -I -S -B -m unittest discover -s tests -p test_human_terminal_review.py -v
+      - run: python3 -I -S -B tests/qualify_human_terminal_pipeline.py

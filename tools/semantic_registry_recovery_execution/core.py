@@ -180,7 +180,12 @@ def initial(plan,*,authority_hash,expires_unix,expires_monotonic,boot_id,predece
 def validate_current(plan,row,boot_id,clocks):
     """Shared read-only journal check for dispatch and native observers."""
     plan_hash=validate_plan(plan);wall,mono=clocks
-    require(row['schema']=='ouf.semantic-registry-recovery-journal.v1' and row['planHash']==plan_hash
+    epoch = row.get('schema') == 'ouf.semantic-registry-recovery-journal.v2'
+    old = None
+    if epoch:
+        from .resumption import validate_epoch
+        old = validate_epoch(plan, row)
+    require((epoch or row['schema']=='ouf.semantic-registry-recovery-journal.v1' and 'resumption' not in row) and row['planHash']==plan_hash
             and row['bootId']==boot_id and wall<row['expiresUnix'] and mono<row['expiresMonotonic']
             and wall>=row['lastUnix']>=row['createdUnix'] and mono>=row['lastMonotonic']>=row['createdMonotonic']
             and 0<row['expiresUnix']-row['createdUnix']<=900
@@ -195,7 +200,7 @@ def validate_current(plan,row,boot_id,clocks):
     for i,effect in enumerate(effects):
         stage=plan['stages'][i]
         require(effect['stage']==stage['name'] and effect['intentHash']==stage['intentHash']
-                and effect['authorityHash']==row['authorityHash']
+                and effect['authorityHash']==(old['authorityHash'] if epoch and i<=4 else row['authorityHash'])
                 and effect['state']==('APPLIED' if i<cursor else 'CLAIMED'),'SCOPED_DURABLE_RECOVERY_CLAIMS_REQUIRED')
         if i<cursor:
             require(type(effect['nativeEvidence']) is dict and effect['nativeEvidenceHash']==digest(effect['nativeEvidence']),
@@ -268,4 +273,6 @@ class Runner:
                 changes['originalSemanticGetSucceeded']=True
             effects=copy.deepcopy(row['effects']);effects[-1].update(state='APPLIED',nativeEvidence=copy.deepcopy(proof),
                                                                    nativeEvidenceHash=digest(proof))
+            if row.get('schema')=='ouf.semantic-registry-recovery-journal.v2' and index==4:
+                effects[-1]['completionAuthorityHash']=row['authorityHash']
             return self.save(row,effects=effects,nextStage=index+1,state='COMPLETED' if index+1==len(ORDER) else 'READY',**changes)

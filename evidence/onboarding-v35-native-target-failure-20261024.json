@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.onboarding-v35-native-target-failure.v1",
+  "evidenceSource": "operator-pasted-terminal-output",
+  "reviewHash": "828d9d6c5f04f8535801e45c2d284a71256232b778b3d6dc14afe6d468e5a94b",
+  "authorityHash": "af9a8fbd77a7d5d7caabb436360650eb9ab4ea126684ea15cc70c1fd42f37d63",
+  "exitCode": 1,
+  "operatorLog": "/home/oufadmin/ouf-v35-native-apply.1XON8spN/operator.log",
+  "firstStop": "EXACT_V35_REPLACEMENT_CONFIG_REQUIRED",
+  "secondaryFailure": "AttributeError: type object 'Stop' has no attribute '__name__in'",
+  "createdIdPersistedAccordingToStack": true,
+  "startReachedByEntry": false,
+  "currentRuntimeStateObserved": false,
+  "databaseMigrationProven": false,
+  "applicationReadinessProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "releaseAcceptance": false
+}

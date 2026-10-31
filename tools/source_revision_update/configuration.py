@@ -179,6 +179,26 @@ def verify(actual, candidate, postgres, binding, native_port, yaml_sha256, *, ro
         require(names == ['BOOT-INF/classes/application.yml'], 'ONE_QUALIFIED_SPRING_CONFIGURATION_REQUIRED')
         require(hashlib.sha256(archive.read(names[0])).hexdigest() == yaml_sha256, 'QUALIFIED_ONBOARDING_CONFIGURATION_CHANGED')
         require(any(n.startswith('BOOT-INF/lib/flyway-core-') for n in archive.namelist()), 'NATIVE_FLYWAY_LIBRARY_REQUIRED')
+        # This verifier is sealed into native owner-update preflights. A JAR
+        # that exposes managed-profile recovery must carry its complete THS
+        # request contract before a replacement can be reviewed or started.
+        # Do not silently patch here: the exact additive change belongs in the
+        # installation profile and its separate execution review.
+        recovery = [n for n in archive.namelist() if re.fullmatch(r'BOOT-INF/classes/.+/ManagedProfileRecoveryThs\.class',n)]
+        if recovery:
+            require(len(recovery)==1 and json_metadata is not None,'RECOVERY_THS_EXPLICIT_REQUEST_CONTRACT_REQUIRED')
+            pending=[('',json.loads(values['SPRING_APPLICATION_JSON']))];requested=None
+            while pending:
+                prefix,obj=pending.pop()
+                for key,item in obj.items():
+                    full=prefix+'.'+key if prefix else key
+                    if type(item)is dict:pending.append((full,item));continue
+                    if re.sub('[^a-z0-9]','',full.lower())=='springsecurityoauth2clientregistrationoufthsscope':
+                        require(requested is None,'RECOVERY_THS_UNIQUE_REQUEST_SCOPE_REQUIRED');requested=item
+            required={'ouf.managed-source.preview','ouf.managed-source.file.profile','ouf.onboarding.quarantine.release'}
+            require(type(requested)is list and all(type(s)is str for s in requested)
+                    and len(requested)==len(set(requested)) and required<=set(requested),
+                    'RECOVERY_THS_REQUEST_SCOPE_CONTRACT_INCOMPLETE')
     overlays = []
     if location is not None:
         matches = [m for m in actual['Mounts'] if m['Destination'] == location]

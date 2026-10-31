@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/semantic-change-notice-v1.json",
+  "title": "OUF SemanticChangeNotice v1",
+  "type": "object",
+  "required": [
+    "changeId",
+    "semanticId",
+    "fromRevision",
+    "toRevision",
+    "classification",
+    "detectedAt",
+    "decision"
+  ],
+  "properties": {
+    "changeId": {
+      "type": "string"
+    },
+    "semanticId": {
+      "type": "string"
+    },
+    "fromRevision": {
+      "type": "string"
+    },
+    "toRevision": {
+      "type": "string"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "NO_SEMANTIC_CHANGE",
+        "NON_BREAKING",
+        "POTENTIALLY_BREAKING",
+        "BREAKING"
+      ]
+    },
+    "detectedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "impactReportRef": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "migrationProposalId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes.",
+  "x-ouf-invariants": [
+    "notice does not auto-remap Onboarding, hot-swap active Ingestion runs, rewrite UDP data or historical lineage"
+  ]
+}

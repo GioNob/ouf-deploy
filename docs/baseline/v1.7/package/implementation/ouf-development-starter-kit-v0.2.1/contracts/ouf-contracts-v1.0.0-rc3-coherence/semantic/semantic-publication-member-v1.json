@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ouf.trieste.it/contracts/semantic/semantic-publication-member-v1.json",
+  "title": "OUF SemanticPublicationMember v1",
+  "type": "object",
+  "required": [
+    "semanticId",
+    "artifactId",
+    "artifactType",
+    "revisionId",
+    "contentHash"
+  ],
+  "properties": {
+    "semanticId": {
+      "type": "string"
+    },
+    "artifactId": {
+      "type": "string"
+    },
+    "artifactType": {
+      "type": "string",
+      "enum": [
+        "ONTOLOGY",
+        "CLASS",
+        "PROPERTY",
+        "RELATIONSHIP",
+        "VOCABULARY",
+        "CONCEPT",
+        "RULE"
+      ]
+    },
+    "revisionId": {
+      "type": "string"
+    },
+    "contentHash": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "x-ouf-status": "field-level-reconciled-draft",
+  "x-ouf-source-basis": [
+    "Semantic Model / Registry v1.2"
+  ],
+  "x-ouf-scope-control": "Semantic Registry cross-module contracts only. No THS approval DTOs, Authorization policy DTOs, Onboarding source-specific mappings, UDP ABox edges, Query Governor state or MCP Server implementation changes."
+}

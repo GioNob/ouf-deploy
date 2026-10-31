@@ -1,0 +1,52 @@
+{
+  "applicationE2EProven": false,
+  "automaticReplayAllowed": false,
+  "budgetReset": false,
+  "complete": true,
+  "contract": {
+    "adapterConfigurationHash": "7462e41e6b40a3bb1ac23760f223a34a958bcd34151ce165f6f4625d942740c5",
+    "adapterSchema": "ouf.semantic-docker-runtime-adapter.v4",
+    "adapterSourceHash": "7894d0e942642d1daa5ae2e29c85cd7f0584b7cd285c539cab3ae624bab0bba9",
+    "brokerConfigurationHash": "4a766a8826fe482eeb8721af3d16666421d4528cdb32db975eae55b0846a706a",
+    "brokerSchema": "ouf.semantic-deployment-broker.v1",
+    "classification": "BOUND_NAMED_RUNTIME_AND_RETAINED_PROVIDER_PROFILE_METADATA",
+    "profileHashes": {
+      "approval": "12f0b86c6221bb95df68733900b8f964027f6014458cf907ef458e2d6848f37e",
+      "attestation": "21eeef6a07153b9eeb876868306bc7d62ff8f29f15858e51455a10e05071e4d6",
+      "preparerTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894"
+    },
+    "profileSchemas": {
+      "approval": "ouf.semantic-installer-approval-producer.v1",
+      "attestation": "ouf.semantic-node-attestor.v4",
+      "preparerTemplate": "ouf.semantic-admission-preparer-template.v1"
+    },
+    "retainedProviderEntryPresent": true,
+    "runtimeContractBound": true,
+    "signingKeyBindingsFollowed": false,
+    "wrapperHash": "55de41662098c1059a03d06ffb77bc965e5b033b9c3529dcfc7143808324efdd"
+  },
+  "counts": {
+    "bytes": 469662,
+    "containerLifecycleOperations": 0,
+    "credentialFileReads": 0,
+    "engineGets": 4,
+    "engineWrites": 0,
+    "metadataReads": 18,
+    "privateKeyReads": 0,
+    "signaturesIssued": 0
+  },
+  "historicalAuthorityReused": false,
+  "metadataOnlyNotAdmission": true,
+  "providerAdmissionProven": false,
+  "providerStoppedObserved": true,
+  "rawConfigurationOrEnvironmentValuesPrinted": false,
+  "releaseAcceptance": false,
+  "retainedInputHash": "1868b57c9fbbb3f05b6f8b2eedeb2f1afe14c0ad4cf15cc7f3e039bbedd6d083",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-provider-runtime-contract-result.v1",
+  "scope": "/etc/ouf/deploy-snapshots/m2-provider-runtime-contract-1868-20261029-v1",
+  "scopeConsumed": true,
+  "sourceCustodyRechecked": true,
+  "status": "READ_ONLY_PROVIDER_RUNTIME_CONTRACT_OBSERVED",
+  "targetApplyAuthorized": false
+}

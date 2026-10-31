@@ -71,6 +71,11 @@ class ReadBudget:
             and type(value['counts']) is dict and set(value['counts'])==set(LIMITS)
             and all(type(value['counts'][k]) is int and 0<=value['counts'][k]<=v for k,v in LIMITS.items()),
             'FINITE_SCOPED_NATIVE_READ_COUNTERS_REQUIRED')
+        current=self.store.read()
+        if current.get('schema')=='ouf.semantic-registry-recovery-journal.v2':
+            previous=current['resumption']['predecessorNativeReads']
+            require(value['version']>previous['version'] and all(value['counts'][k]>=previous['counts'][k] for k in LIMITS),
+                    'SUCCESSOR_CANNOT_RESET_NATIVE_READ_COUNTERS')
         return value
     def reserve(self,name):
         require(name in LIMITS,'CLOSED_NATIVE_READ_REQUEST_REQUIRED');self.guard()
