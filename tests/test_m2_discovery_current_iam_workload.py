@@ -1,9 +1,9 @@
 """Real current parent crypto/custody; IAM/Engine and profile leaves modeled.
 
-The actual bounded kcadm argument builder and full reader run against explicit
+The bounded GET dispatcher and full reader run against explicit
 JSON fixtures. No live Keycloak, grant, real bearer or target admission is proved.
 """
-import copy,hashlib,os,sys,unittest
+import copy,hashlib,os,sys,time,unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock,patch
@@ -35,7 +35,11 @@ class WorkloadIam(unittest.TestCase):
         runtime.inputs['peers']['keycloak']['runtimeBinding']=m.Engine.runtime_binding(actual)
         inputs.update(schema=m.SCHEMA,executionProfileHash='e'*64,dockerBinding={'path':str(docker),
             'sha256':hashlib.sha256(docker.read_bytes()).hexdigest()},keycloakRuntimeBinding=m.Engine.runtime_binding(actual),
-            realm='ouf',clientUuid=CLIENT,serviceAccountUuid=SERVICE,expectedScopes=[SCOPE],expectedAudiences=['ouf-gateway'])
+            realm='ouf',clientUuid=CLIENT,serviceAccountUuid=SERVICE,expectedScopes=[SCOPE],expectedAudiences=['ouf-gateway'],
+            readOnlyAdmin={'schema':m.readonly_iam_admin.SCHEMA,'python':{'path':str(Path(sys.executable).resolve()),
+                'sha256':hashlib.sha256(Path(sys.executable).resolve().read_bytes()).hexdigest(),'maximumBytes':67108864},
+                'sessionFile':{'containerPath':'/opt/keycloak/.keycloak/kcadm.config','sha256':'1'*64,'metadataHash':'2'*64,'maximumBytes':262144},
+                'sessionServer':'http://localhost:8080','adminRealm':'master','port':8080})
         extended=m.bind_iam_workload_inputs(runtime.inputs,inputs)
         review=copy.deepcopy(self.review);review['components']['cohortInstallation']['currentAdmission']=copy.deepcopy(
             review['components']['cohortInstallation']['currentAdmission']['requirements'])
@@ -63,6 +67,8 @@ class WorkloadIam(unittest.TestCase):
         auth.window.guard=Mock(side_effect=AssertionError('RECURSIVE_PUBLICATION_CHECKPOINT_FORBIDDEN'))
         auth.owner_ids=tuple(map(id,(auth.window,auth.journal,transport,auth.action)))
         reader=m.CurrentWorkloadIam(runtime,auth,inputs)
+        session=patch.object(m.readonly_iam_admin,'read_session',return_value={'token':'fixture-admin-bearer',
+            'expiresAt':int(time.time()*1000)+300000,'sessionFileHash':'1'*64});session.start();self.addCleanup(session.stop);self.admin_session_patch=session
         payload={'iss':selection['issuer'],'sub':SERVICE,'azp':'ouf-semantic','tenant_id':selection['tenant'],
             'ouf_actor_type':'SERVICE','aud':'ouf-gateway','scope':SCOPE,'iat':123,'jti':'volatile'}
         rows={'clients/'+CLIENT:{'id':CLIENT,'clientId':'ouf-semantic','enabled':True,'serviceAccountsEnabled':True,
@@ -75,12 +81,14 @@ class WorkloadIam(unittest.TestCase):
         return reader,parent,path,actual,rows
 
     def native_gets(self,reader,actual,rows,drift=None):
-        calls=[];native_run=m.subprocess.run
-        def run(args,**kwargs):
-            if args[0]!=reader.inputs['dockerBinding']['path']:return native_run(args,**kwargs)
-            calls.append((args,kwargs));path=args[args.index('get')+1]
+        calls=[]
+        def run(profile,pin,session,path,query,budget):
+            self.assertEqual(profile,reader.inputs['readOnlyAdmin'])
+            self.assertEqual(pin,reader.runtime.inputs['peers']['keycloak']['processPin'])
+            self.assertEqual(session['token'],'fixture-admin-bearer')
+            calls.append((path,query));path=path.removeprefix('/admin/realms/ouf/')
             if drift:drift(path,len(calls),rows)
-            return SimpleNamespace(returncode=0,stdout=m.encoded(rows[path]))
+            return copy.deepcopy(rows[path])
         class Engine:
             def __init__(self,*args):self.reads=0
             def get(self,cid):self.reads+=1;return copy.deepcopy(actual)
@@ -89,14 +97,13 @@ class WorkloadIam(unittest.TestCase):
     def test_full_two_pass_read_uses_only_bound_local_gets_and_keeps_secret_out_of_receipt(self):
         reader,_,path,actual,rows=self.prepared();run,Engine,calls=self.native_gets(reader,actual,rows)
         before=path.read_bytes()
-        with patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine):proof=reader.observe()
+        with patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine):proof=reader.observe()
         self.assertEqual((proof['iamMetadataGets'],proof['engineGets'],len(calls)),(12,2,12))
         self.assertTrue(proof['currentMountedCredentialMatchesKeycloak']);self.assertTrue(proof['examplePayloadIsConfigurationOnly'])
-        for args,kwargs in calls:
-            self.assertEqual(args[1:4],['--host','unix:///run/reviewed.sock','--config'])
-            self.assertIn('get',args);self.assertNotIn(before.decode(),args)
-            self.assertEqual(args[args.index('--server')+1],'http://localhost:8080');self.assertLessEqual(kwargs['timeout'],15)
-            self.assertEqual(kwargs['env']['HOME'],args[4])
+        self.assertEqual(proof['kcadmInvocations'],0);self.assertFalse(proof['adminLoginOrRefreshDispatched'])
+        self.assertEqual(proof['existingAdminSessionFileReads'],2)
+        self.assertTrue(all(path.startswith('/admin/realms/ouf/clients/'+CLIENT) for path,query in calls))
+        self.assertTrue(all(set(query)<={'userId','scope'} for path,query in calls))
         self.assertNotIn(before,m.encoded(proof));self.assertEqual(path.read_bytes(),before)
         self.assertIs(proof['actualWorkloadBearerAdmissionProven'],False);self.assertIs(proof['fullCohortProven'],False)
         reader.authorization.window.guard.assert_not_called()
@@ -104,7 +111,7 @@ class WorkloadIam(unittest.TestCase):
     def test_rotated_or_wrong_current_secret_is_preserved_and_denied(self):
         reader,_,path,actual,rows=self.prepared();rows['clients/'+CLIENT+'/client-secret']['value']='different-credential'
         run,Engine,calls=self.native_gets(reader,actual,rows);before=path.read_bytes()
-        with patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
+        with patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
              self.assertRaisesRegex(ValueError,'CREDENTIAL_DIFFER') as error:reader.observe()
         self.assertEqual(path.read_bytes(),before);self.assertNotIn(before.decode(),str(error.exception));self.assertEqual(len(calls),5)
 
@@ -112,7 +119,7 @@ class WorkloadIam(unittest.TestCase):
         reader,_,_,actual,rows=self.prepared();run,Engine,_=self.native_gets(reader,actual,rows)
         for enabled in (False,1):
             rows['clients/'+CLIENT]['enabled']=enabled
-            with self.subTest(enabled=enabled),patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
+            with self.subTest(enabled=enabled),patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
                  self.assertRaisesRegex(ValueError,'CONFIDENTIAL_WORKLOAD'):reader.observe()
 
     def test_example_identity_audience_or_scope_cannot_replace_reviewed_application(self):
@@ -121,7 +128,7 @@ class WorkloadIam(unittest.TestCase):
         for key,changed in [('tenant_id','other'),('ouf_actor_type','HUMAN'),('sub',CLIENT),('iss','https://elsewhere.invalid'),
                             ('aud',['ouf-gateway','unreviewed']),('scope',SCOPE+' extra.scope')]:
             old=value[key];value[key]=changed
-            with self.subTest(key=key),patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
+            with self.subTest(key=key),patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
                  self.assertRaisesRegex(ValueError,'EFFECTIVE_EXAMPLE_IDENTITY_OR_SCOPES'):reader.observe()
             value[key]=old
 
@@ -130,35 +137,33 @@ class WorkloadIam(unittest.TestCase):
         def drift(path,count,values):
             if count==12:values[path]['tenant_id']='changed-after-first-pass'
         run,Engine,calls=self.native_gets(reader,actual,rows,drift)
-        with patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine),self.assertRaises(ValueError):reader.observe()
+        with patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine),self.assertRaises(ValueError):reader.observe()
         self.assertEqual(len(calls),12)
         actual['State']['Paused']=True;run,Engine,calls=self.native_gets(reader,actual,rows)
-        with patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
+        with patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
              self.assertRaisesRegex(ValueError,'KEYCLOAK_GENERATION_CHANGED'):reader.observe()
         self.assertEqual(calls,[])
 
     def test_parent_revocation_precedes_iam_read(self):
         reader,parent,_,actual,rows=self.prepared()
         (self.signatures/(parent.sha+'.FINAL_DEPLOYMENT_APPROVAL.json')).unlink()
-        native=m.subprocess.run
-        with patch.object(m.subprocess,'run',wraps=native) as command,self.assertRaises((OSError,ValueError)):reader.observe()
-        self.assertFalse([c for c in command.call_args_list if c.args[0][0]==reader.inputs['dockerBinding']['path']])
+        with patch.object(m.readonly_iam_admin,'dispatch') as command,self.assertRaises((OSError,ValueError)):reader.observe()
+        command.assert_not_called()
 
     def test_binding_drift_and_unreviewed_gets_cannot_enter_iam(self):
         reader,*_=self.prepared();changed=copy.deepcopy(reader.inputs);changed['expectedScopes'].append('unreviewed')
         with self.assertRaisesRegex(ValueError,'CANNOT_BE_REPLACED'):m.bind_iam_workload_inputs(reader.runtime.inputs,changed)
         reader.gets=reader.response_bytes=0
-        native=m.subprocess.run
         for path,query in [('clients/'+CLIENT+'/client-secret/rotated',[]),
                            ('clients/'+CLIENT+'/evaluate-scopes/generate-example-access-token',['-q','audience=forced'])]:
-            with patch.object(m.subprocess,'run',wraps=native) as command,self.assertRaisesRegex(ValueError,'GET_ALLOWLIST'):
+            with patch.object(m.readonly_iam_admin,'dispatch') as command,self.assertRaisesRegex(ValueError,'GET_ALLOWLIST'):
                 reader.get(path,query,m.ObservationBudget(30),'/unused')
-            self.assertFalse([c for c in command.call_args_list if c.args[0][0]==reader.inputs['dockerBinding']['path']])
+            command.assert_not_called()
 
     def test_credential_custody_change_is_denied_and_preserved(self):
         reader,_,path,actual,rows=self.prepared();path.chmod(0o400)
         run,Engine,_=self.native_gets(reader,actual,rows)
-        with patch.object(m.subprocess,'run',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
+        with patch.object(m.readonly_iam_admin,'dispatch',side_effect=run),patch.object(m,'CurrentIamEngine',Engine), \
              self.assertRaisesRegex(ValueError,'CREDENTIAL_CUSTODY_CHANGED'):reader.observe()
         self.assertEqual(path.stat().st_mode&0o777,0o400)
 

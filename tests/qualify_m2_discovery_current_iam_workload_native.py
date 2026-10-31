@@ -1,12 +1,12 @@
-"""Real disposable Keycloak26.7.4, local Engine and pinned Docker/kcadm.
+"""Real disposable Keycloak26.7.4, local Engine and GET-only namespace transport.
 
-Only fixture setup imports a realm and logs in. The production reader reuses
-that existing session and performs GETs. Other cohort/profile/Registry lineage
+Only fixture setup imports a realm and logs in. The production reader reads
+that exact existing session and performs namespace-bound GETs without kcadm. Other cohort/profile/Registry lineage
 is modeled; this does not qualify target IAM, a bearer or full M2 admission.
 """
 import copy,hashlib,json,os,shutil,socket,stat,struct,subprocess,sys,tempfile,time,unittest,uuid
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock,patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
 import test_m2_discovery_current_iam_workload as fixtures
 from tools.m2_discovery_installation_profile import current_iam_workload as m
@@ -74,9 +74,13 @@ class NativeWorkloadIam(unittest.TestCase):
 
     def prepared(self):
         case=fixtures.WorkloadIam();case.setUp();self.addCleanup(case.doCleanups)
-        old,_,_,_,_=case.prepared();selected=old.runtime.selected
+        old,_,_,_,_=case.prepared();case.admin_session_patch.stop();selected=old.runtime.selected
         actual=json.loads(self.command(['inspect',self.cid]))[0];binding=m.Engine.runtime_binding(actual)
-        inputs=copy.deepcopy(old.inputs);inputs.update(serviceAccountUuid=self.service,keycloakRuntimeBinding=binding,
+        inputs=copy.deepcopy(old.inputs)
+        session=Path('/proc')/str(binding['pid'])/'root/opt/keycloak/.keycloak/kcadm.config'
+        inputs['readOnlyAdmin']['sessionFile'].update(sha256=hashlib.sha256(session.read_bytes()).hexdigest(),
+            metadataHash=m.digest(m.readonly_iam_admin.attrs(session.stat())))
+        inputs.update(serviceAccountUuid=self.service,keycloakRuntimeBinding=binding,
             dockerBinding={'path':self.docker,'sha256':hashlib.sha256(Path(self.docker).read_bytes()).hexdigest()})
         runtime_inputs=copy.deepcopy(old.runtime.inputs);runtime_inputs.pop('additionalInputsHashes');runtime_inputs['schema']=fixtures.cohort.m.INPUT_SCHEMA
         runtime_inputs['peers']['keycloak']['runtimeBinding']=binding
@@ -102,6 +106,7 @@ class NativeWorkloadIam(unittest.TestCase):
         self.assertTrue(proof['currentMountedCredentialMatchesKeycloak']);self.assertTrue(proof['currentWorkloadConfigurationObserved'])
         self.assertEqual((proof['iamMetadataGets'],proof['engineGets'],proof['tokenGrantProbesIssued']),(12,2,0))
         self.assertFalse(proof['actualWorkloadBearerAdmissionProven']);self.assertFalse(proof['fullCohortProven'])
+        self.assertEqual(proof['kcadmInvocations'],0);self.assertFalse(proof['adminLoginOrRefreshDispatched'])
         self.assertNotIn(SECRET,m.encoded(proof).decode())
 
     def test_actual_changed_issuer_secret_is_denied_and_not_repaired(self):
@@ -112,5 +117,26 @@ class NativeWorkloadIam(unittest.TestCase):
             self.assertEqual(current['value'],'DIFFERENT_DISPOSABLE_CI_CREDENTIAL')
             self.assertEqual(Path(reader.runtime.selected.installation.application.profile.selection['files']['providerCredential']['source']).read_text(),SECRET)
         finally:self.kc('update','clients/'+fixtures.CLIENT,'-s','secret='+SECRET)
+
+    def test_expired_cached_admin_session_stops_before_get_and_does_not_refresh(self):
+        actual=json.loads(self.command(['inspect',self.cid]))[0]
+        path=Path('/proc')/str(actual['State']['Pid'])/'root/opt/keycloak/.keycloak/kcadm.config';original=path.read_bytes()
+        try:
+            value=json.loads(original);value['endpoints']['http://localhost:8080']['master']['expiresAt']=1
+            path.write_text(json.dumps(value));changed=path.read_bytes();reader=self.prepared()
+            with patch.object(m.readonly_iam_admin,'dispatch') as get, self.assertRaisesRegex(ValueError,'BEARER_REQUIRED_NO_REFRESH'):
+                reader.observe()
+            get.assert_not_called();self.assertEqual(path.read_bytes(),changed)
+        finally:path.write_bytes(original)
+
+    def test_invalid_existing_bearer_is_denied_without_login_refresh_or_cache_repair(self):
+        actual=json.loads(self.command(['inspect',self.cid]))[0]
+        path=Path('/proc')/str(actual['State']['Pid'])/'root/opt/keycloak/.keycloak/kcadm.config';original=path.read_bytes()
+        try:
+            value=json.loads(original);value['endpoints']['http://localhost:8080']['master']['token']='invalid.existing.token'
+            path.write_text(json.dumps(value));changed=path.read_bytes();reader=self.prepared()
+            with self.assertRaisesRegex(ValueError,'ADMIN_GET_UNPROVEN_NO_REFRESH'):reader.observe()
+            self.assertEqual(path.read_bytes(),changed)
+        finally:path.write_bytes(original)
 
 if __name__=='__main__':unittest.main()

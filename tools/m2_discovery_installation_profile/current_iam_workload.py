@@ -1,15 +1,15 @@
 """Current installed workload credential/configuration, without a grant probe.
 
-Parent-bound GETs use the selected existing kcadm session in the retained
-Keycloak generation through the same pinned local Engine. Secret bytes remain
+Parent-bound GETs use a current existing bearer in the retained Keycloak
+namespace. No kcadm invocation can refresh the session. Secret bytes remain
 in memory. Keycloak's example-token JSON is configuration evidence, never an
 issued bearer, introspection, provenance, HTTP readiness or complete admission.
 No login, secret rotation, scope/role write or publication is implemented here.
 """
-import copy,hmac,os,re,stat,subprocess,tempfile,uuid
+import copy,hmac,re,stat,uuid
 from pathlib import Path
 from urllib.parse import urlsplit
-from .custody_capture import decode,digest,encoded,require
+from .custody_capture import digest,encoded,require
 from .current_cohort import CurrentCohortRuntime,CurrentCohortEngine,INPUT_SCHEMA_V2,validate_inputs
 from .native_profile import DiscoveryProfile
 from .node_owner import ObservationBudget
@@ -18,8 +18,9 @@ from .publication_owner import DiscoveryAuthorization,OwnerTransport
 from tools.semantic_provider_deployment_authentication import attributes
 from tools.semantic_target_review.prepare_application_runtime_inputs import file_bytes
 from engine_creation import Engine
+from . import readonly_iam_admin
 
-SCHEMA='ouf.discovery-current-iam-workload-inputs.v1'
+SCHEMA='ouf.discovery-current-iam-workload-inputs.v2'
 IDENTITY=re.compile('[A-Za-z0-9][A-Za-z0-9_.:/@-]{0,255}')
 CORE='id,clientId,enabled,serviceAccountsEnabled,publicClient,clientAuthenticatorType,protocol'
 
@@ -32,7 +33,7 @@ def registered_id(value):
 def validate(inputs):
     fields={'schema','sourceClosureHash','installationInputsHash','desiredProfileHash','cohortManifestHash',
         'executionProfileHash','dockerBinding','keycloakRuntimeBinding','realm','clientUuid','serviceAccountUuid',
-        'expectedScopes','expectedAudiences'}
+        'expectedScopes','expectedAudiences','readOnlyAdmin'}
     require(type(inputs) is dict and set(inputs)==fields and inputs['schema']==SCHEMA
         and all(hashed(inputs[k]) for k in ('sourceClosureHash','installationInputsHash','desiredProfileHash',
             'cohortManifestHash','executionProfileHash')) and len(encoded(inputs))<=16384,
@@ -47,6 +48,7 @@ def validate(inputs):
         require(type(values) is list and 1<=len(values)<=32 and all(type(v) is str and IDENTITY.fullmatch(v) for v in values)
             and values==sorted(set(values)),'EXACT_REVIEWED_WORKLOAD_SCOPE_AND_AUDIENCE_SETS_REQUIRED')
     require(type(inputs['keycloakRuntimeBinding']) is dict,'REVIEWED_CURRENT_KEYCLOAK_GENERATION_REQUIRED')
+    readonly_iam_admin.validate(inputs['readOnlyAdmin'])
     return digest(inputs)
 
 
@@ -118,19 +120,25 @@ class CurrentWorkloadIam:
             client+'/evaluate-scopes/generate-example-access-token':[
                 '-q','userId='+i['serviceAccountUuid'],'-q','scope='+self.runtime.selected.installation.application.profile.selection['references']['OUF_SCHEMA_GOV_WORKLOAD_SCOPE']]}
         require(path in allowed and query==allowed[path] and self.gets<12,'CLOSED_CURRENT_IAM_WORKLOAD_GET_ALLOWLIST_REQUIRED')
-        self.gets+=1;engine=self.runtime.selected.images.engine
-        args=[i['dockerBinding']['path'],'--host','unix://'+engine.path,'--config',cli_config,'exec',
-            i['keycloakRuntimeBinding']['containerId'],'/opt/keycloak/bin/kcadm.sh','get',path,
-            '--server','http://localhost:8080','-r',i['realm'],*query]
-        if path==client:args+=['--fields',CORE]
-        elif path==client+'/service-account-user':args+=['--fields','id,enabled']
-        elif path.endswith('-client-scopes'):args+=['--fields','id,name,protocol']
-        result=subprocess.run(args,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
-            timeout=budget.remaining(15),env={'PATH':'/usr/bin:/bin','LC_ALL':'C','HOME':cli_config})
-        self.response_bytes+=len(result.stdout)
-        require(result.returncode==0 and 0<len(result.stdout)<=262144 and self.response_bytes<=2097152,
-            'BOUNDED_EXISTING_CURRENT_WORKLOAD_IAM_GET_REQUIRED')
-        budget.check();return decode(result.stdout)
+        self.gets+=1
+        q={}
+        for n in range(0,len(query),2):
+            key,value=query[n+1].split('=',1);q[key]=value
+        value=readonly_iam_admin.dispatch(i['readOnlyAdmin'],self.runtime.inputs['peers']['keycloak']['processPin'],
+            self.admin_session,'/admin/realms/'+i['realm']+'/'+path,q,budget)
+        self.response_bytes+=len(encoded(value))
+        require(self.response_bytes<=2097152,'BOUNDED_EXISTING_CURRENT_WORKLOAD_IAM_GET_REQUIRED')
+        # The HTTP API returns complete records; keep the same minimized DTO
+        # formerly requested through kcadm --fields, without invoking that CLI.
+        if path==client:
+            require(type(value) is dict,'CURRENT_WORKLOAD_CLIENT_METADATA_REQUIRED');value={k:value[k] for k in CORE.split(',') if k in value}
+        elif path==client+'/service-account-user':
+            require(type(value) is dict,'CURRENT_WORKLOAD_SERVICE_METADATA_REQUIRED');value={k:value[k] for k in ('id','enabled') if k in value}
+        elif path.endswith('-client-scopes'):
+            require(type(value) is list and len(value)<=64,'BOUNDED_CURRENT_WORKLOAD_SCOPE_METADATA_REQUIRED')
+            require(all(type(row) is dict for row in value),'CURRENT_WORKLOAD_SCOPE_METADATA_REQUIRED')
+            value=[{k:row[k] for k in ('id','name','protocol') if k in row} for row in value]
+        budget.check();return value
 
     def configuration(self,budget,cli_config):
         i=self.inputs;refs=self.guard().profile.selection['references'];client='clients/'+i['clientUuid']
@@ -178,16 +186,21 @@ class CurrentWorkloadIam:
             actual=reader.get(binding['containerId']);state=actual['State']
             require(Engine.runtime_binding(actual)==binding and state['Running'] is True and state['Paused'] is False
                 and state['Restarting'] is False and actual['RestartCount']==0,'CURRENT_WORKLOAD_KEYCLOAK_GENERATION_CHANGED')
-        peer()
-        with tempfile.TemporaryDirectory(prefix='ouf-current-iam-cli-') as config:
-            first=self.configuration(budget,config);require(self.configuration(budget,config)==first,
+        peer();pin=self.runtime.inputs['peers']['keycloak']['processPin']
+        self.admin_session=readonly_iam_admin.read_session(i['readOnlyAdmin'],pin,budget)
+        try:
+            first=self.configuration(budget,None);require(self.configuration(budget,None)==first,
                 'CURRENT_WORKLOAD_IAM_CHANGED_DURING_TWO_PASS_READ')
+            require(readonly_iam_admin.read_session(i['readOnlyAdmin'],pin,budget)==self.admin_session,
+                'CURRENT_EXISTING_ADMIN_SESSION_CHANGED_DURING_READ')
+        finally:self.admin_session=None
         peer();self.guard();self.runtime.selected.held(held);budget.check()
         require(self.gets==12 and reader.reads==2,'EXACT_TWO_PASS_CURRENT_WORKLOAD_IAM_OBSERVATION_REQUIRED')
         return {'schema':'ouf.discovery-current-workload-iam-configuration.v1','inputHash':self.input_hash,
             'heldHistoryHash':digest(held),'configurationHash':first['configurationHash'],
             'currentMountedCredentialMatchesKeycloak':True,'currentWorkloadConfigurationObserved':True,
             'examplePayloadIsConfigurationOnly':True,'iamMetadataGets':12,'engineGets':2,
+            'existingAdminSessionFileReads':2,'kcadmInvocations':0,'adminLoginOrRefreshDispatched':False,
             'actualWorkloadBearerAdmissionProven':False,'credentialPublisherProvenanceProvenHere':False,
             'tokenGrantProbesIssued':0,'iamMutations':0,'fullCohortProven':False,
             'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}
