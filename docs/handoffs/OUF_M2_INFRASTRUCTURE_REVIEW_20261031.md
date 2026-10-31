@@ -116,3 +116,29 @@ Protocol41183119606/job124484439255 was still running; Chatbot41183119318 was
 cancelled (its workflow cancels previous runs on the same PR). Neither is
 claimed qualified here. No all-green general qualification follows from the
 independent15-test compiler pass.
+
+## Completed follow-up reports
+
+Source41f935 protocol run41183119606/job124484439255 subsequently PASS463tests/
+54suites/0failures/0skips in746.315s, final log read. The earlier pending status
+above is historical; native Registry failure and Chatbot cancellation remain.
+
+CI-only follow-up source `11f80398c256b9c77da97ebc101164cfa6ae124a`, native
+[run41183954779](https://github.com/GioNob/ouf-deploy/actions/runs/41183954779),
+PASS finite124486929621/sealed124486929432/registry124486929518. All final logs
+and reports were read. Each mode ran7diagnostic/early-review tests successfully
+(.260/.215/.317s). The actual Registry/token/transport/sealed-worker report
+passed with Registry Java paused, modeled HUMAN/IAM realm/images/packages/earlier
+transition prefix, no target cohort/E2E/authority/release claim.
+
+This fresh scope did not reproduce the failed QUIESCED snapshot and never
+invoked post-failure service-log capture. The failure branch is proven by
+controlled tests only. The source41f935 divergence and historical causes remain
+OPEN; this pass is not a causal fix or permission to replay the failed scope.
+
+The compiler also PASS15tests/0failures/0skips in10.170s at source11f803,
+run41183954966/job124486930033, final log read. The previously downloaded and
+verified127module capsule remains byte-exact against the local source after
+these CI-only changes. Its original artifact/revision binding remains the one
+qualified above; a later generated artifact is not independently endorsed here.
+Later general CI runs remain separate scopes.

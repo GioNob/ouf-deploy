@@ -1,4 +1,4 @@
-# CURRENT — Sealed infrastructure review PASS15; exact gate/provider/worker fragment; M2 OPEN
+# CURRENT — Infrastructure PASS15; native QUIESCED failure retained; M2 OPEN
 
 31 October 2026, Europe/Rome. Continue autonomously/sequentially without agents
 or automations. Teatri M1/G4 technical8/8 functional6/6 acquired. Farmacie remains
@@ -59,13 +59,21 @@ this coordinator/worker divergence remains OPEN; no replay, budget/authority
 extension or observer-rule change. Failure log SHA660c963675bee1a91d70fc55e067548c509278c4b5a5cdfb82c16e93eb573ee5.
 CI-only follow-up reads at most64recent service lines, timeout2s, only AFTER a
 failed observation; emits32max strict minimized states, never private/raw logs.
-7local diagnostic/early-review tests PASS0.246s. Native follow-up pending;
-a fresh pass alone cannot close the original cause. Original37worker pins and
-production observer unchanged. Snapshot taps still add no reads before failure.
+7local diagnostic/early-review tests PASS0.246s. Follow-up11f80398c256b9c77da97ebc101164cfa6ae124a
+PR41183954779 all3native modes PASS: finite124486929621/sealed124486929432/
+registry124486929518; all final logs/reports read. New7diagnostic tests PASS
+in each mode(.260/.215/.317s). Actual Registry/token/transport/sealed worker proof
+passed. It did NOT reproduce QUIESCED or invoke post-failure status capture;
+failure branch has controlled tests only. No causal closure follows from a
+fresh pass. Original37worker pins and production observer unchanged; snapshot
+taps add no reads before failure. Follow-up compiler PR41183954966/job124486930033
+PASS15/0fail/0skip10.170s, final log read; prior verified127module capsule still
+rebuilds byte-exactly after these CI-only changes.
 Current IAM41183119340/job124484438551 PASS251/33/0skip, final real disposable
 Keycloak report read,0production calls/targetInstallerReady false. Current
-protocol41183119606/job124484439255 still running; Chatbot41183119318 cancelled.
-Neither is claimed qualified. No all-green claim.
+protocol41183119606/job124484439255 PASS463/54/0fail/0skip746.315s, final log
+read. Chatbot41183119318 cancelled/not qualified. Source41f935 is NOT all green;
+source11f803 general CI remains a separate scope, not inferred from3native passes.
 
 Next: trace the recorded QUIESCED/ACTIVE divergence with failure-only diagnostics;
 assemble separately authenticated Registry child and governed publication

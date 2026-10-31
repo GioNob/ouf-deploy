@@ -133,12 +133,19 @@
     "Real Farmacie to Ingestion to UDP/all61 outcomes; reimport/fault/recovery/chat/boot/rotation/two-client acceptance"
   ],
   "fullGeneralCiAtThisSnapshot": {
-    "status": "NATIVE_REGISTRY_FAILED_PROTOCOL_RUNNING_CHATBOT_CANCELLED_NOT_ALL_GREEN",
+    "status": "NATIVE_REGISTRY_FAILED_PROTOCOL_PASS_CHATBOT_CANCELLED_NOT_ALL_GREEN",
     "protocol": {
       "run": 41183119606,
       "job": 124484439255,
-      "status": "in_progress",
-      "notClaimedQualified": true
+      "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+      "conclusion": "success",
+      "tests": 463,
+      "suites": 54,
+      "seconds": 746.315,
+      "failures": 0,
+      "skips": 0,
+      "finalLogRead": true,
+      "notClaimedQualified": false
     },
     "chatbot": {
       "run": 41183119318,
@@ -226,7 +233,7 @@
     "localSeconds": 0.246,
     "failures": 0,
     "skips": 0,
-    "nativeCiStatus": "PENDING_NEW_SOURCE_CUT",
+    "nativeCiStatus": "PASS_THREE_FRESH_MODES_ORIGINAL_FAILURE_NOT_REPRODUCED_CAUSE_OPEN",
     "onlyAfterFailedObservation": true,
     "maximumJournalLines": 64,
     "maximumRawBytesAccepted": 65536,
@@ -236,6 +243,62 @@
     "originalDenialPreserved": true,
     "noObservationReplay": true,
     "noWorkerOrProductionObserverChange": true,
-    "notCausalResolution": true
+    "notCausalResolution": true,
+    "sourceCommit": "11f80398c256b9c77da97ebc101164cfa6ae124a",
+    "ci": {
+      "run": 41183954779,
+      "finite": {
+        "job": 124486929621,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.26,
+        "finalLogAndReportRead": true
+      },
+      "sealed": {
+        "job": 124486929432,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.215,
+        "finalLogAndReportRead": true
+      },
+      "registry": {
+        "job": 124486929518,
+        "conclusion": "success",
+        "diagnosticTests": 7,
+        "diagnosticSeconds": 0.317,
+        "finalLogAndReportRead": true
+      },
+      "actualRegistryTokenTransportAndSealedWorkerPassed": true,
+      "originalQuiescedFailureReproduced": false,
+      "postFailureStatusCommandInvokedInNativeRun": false,
+      "failureStatusBranchProvenByControlledTestsOnly": true
+    },
+    "sameOriginalFailedScopeReplayed": false
+  },
+  "source41fGeneralProtocol": {
+    "run": 41183119606,
+    "job": 124484439255,
+    "sourceCommit": "41f935ecdec2716926d4b6947a6dd763e8124ec4",
+    "conclusion": "success",
+    "tests": 463,
+    "suites": 54,
+    "seconds": 746.315,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true
+  },
+  "followupCompilerRegression": {
+    "sourceCommit": "11f80398c256b9c77da97ebc101164cfa6ae124a",
+    "run": 41183954966,
+    "job": 124486930033,
+    "conclusion": "success",
+    "tests": 15,
+    "suites": 1,
+    "seconds": 10.17,
+    "failures": 0,
+    "skips": 0,
+    "finalLogRead": true,
+    "qualifiedCapsuleStillByteExactAfterCiOnlyChanges": true,
+    "newArtifactNotClaimedIndependentlyVerified": true
   }
 }
