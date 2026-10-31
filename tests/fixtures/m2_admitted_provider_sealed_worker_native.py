@@ -150,13 +150,15 @@ def qualify(provider_phase,auth,setup,boundary,run):
         phase.start.manager=lost
         try:phase.apply(intent);raise AssertionError('CI_LOST_MANAGER_REPLY_NOT_INJECTED')
         except TimeoutError as error:assert str(error)=='CI_LOST_ACTUAL_SEALED_START_REPLY'
-        first=wait(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=2)
+        first=wait(lambda v:v['state']=='ACTIVE' and v['publicationCount']>=1)
         result,proof=phase.observe(intent)
         assert result=='APPLIED' and proof['installedWorkerObservation']['bothOwnedLeaseFamiliesPositive']
         assert len(dispatches)==1
         observed=observation.observe(install/'configuration.json',phase.start.proposal['serviceUnit']['configurationAnchor'],
             unit_name=unit,systemctl=setup['start']['manager'])
         pid=observed['managerProcessId'];assert pid>1
+        renewed=wait(lambda v:v['state']=='ACTIVE' and v['publicationCount']>first['publicationCount'])
+        assert renewed['startedWall']==first['startedWall'] and renewed['attempts']==first['attempts']
         view=Path('/proc')/str(pid)/'root'
         assert not (view/str(auth.key).lstrip('/')).exists()
         fields={k:v.strip() for k,v in (line.split(':',1) for line in Path('/proc',str(pid),'status').read_text().splitlines() if ':' in line)}
