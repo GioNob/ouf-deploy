@@ -1,0 +1,100 @@
+{
+  "schema": "ouf.m2-complete-parent-review-qualification.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "bcbc4aa86a6fc687929edac7649b9fb0af336364",
+  "pullRequest": 54,
+  "draft": true,
+  "merged": false,
+  "local": {
+    "publication": {
+      "tests": 8,
+      "seconds": 0.232
+    },
+    "parent": {
+      "tests": 12,
+      "seconds": 11.043
+    },
+    "previousInfrastructure": {
+      "tests": 15,
+      "seconds": 9.141
+    },
+    "failures": 0,
+    "skipped": 0
+  },
+  "ci": {
+    "runId": 41202906043,
+    "jobId": 124542099651,
+    "finalLogRead": true,
+    "tests": 20,
+    "suites": 2,
+    "failures": 0,
+    "skipped": 0,
+    "suiteSeconds": [
+      0.612,
+      11.669
+    ]
+  },
+  "artifact": {
+    "id": 13042814391,
+    "zipBytes": 688234,
+    "zipSha256": "e523964ba09276245b1c09c8ad63fc4c286d2917ab5bad1cda35592cfe179349",
+    "capsuleSha256": "d9c5b020e041ad83de7d19a24257d2d333e08d27b89bc8b6b57ca93f9b8ac5c7",
+    "capsuleBytes": 2295652,
+    "sourceModules": 136,
+    "publicHelperFiles": 10,
+    "signaturesIssued": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "publisherTrustAccepted": false,
+    "releaseAcceptance": false,
+    "payloadSha256": "132444cd98b2746624399eb756a9a111c04ec671112e48b5f41e406707a9d644",
+    "sourceManifestSha256": "eaacfca7912e094b77f11528473bdcfe493bcf31f7eb50dee26d6d73bea7e36a",
+    "loaderSha256": "242cce9f329499d68941732dca2e08c4f4c5fc76e751b589367b4c7e360ea8bc",
+    "baselineSha256": "ea86df348ace963d41d3a24ab3b9bea693c3b3ba36e181a1aaec5f7e97333b63",
+    "sourceRevisionClaim": "d7659f7046df772b6a846301dee404cef8c7155d",
+    "exactLocalRebuild": true,
+    "allEmbeddedSourcesCompared": true,
+    "zipMembers": [
+      "parent-review-compiler.py",
+      "parent-review-compiler.json"
+    ],
+    "targetAdmissionProven": false
+  },
+  "parentComponents": [
+    "registryCutover",
+    "providerInstallation",
+    "registryGatePeerWindow",
+    "operationalLeaseInstallation",
+    "cohortInstallation",
+    "capabilityPublication"
+  ],
+  "unchangedClosures": {
+    "workerModules": 37,
+    "earlierReviewModules": 108,
+    "infrastructureReviewModules": 128
+  },
+  "completeParentReviewShape": true,
+  "inputsAuthenticated": false,
+  "currentNativeAdmissionProven": false,
+  "publicationExecutorIntegrated": false,
+  "signaturesIssued": 0,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "capabilitiesPublished": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "remaining": [
+    "CURRENT_PRIVATE_TARGET_INPUTS_AND_CHILD_HUMAN_BINDINGS",
+    "PUBLICATION_EXECUTION_OWNER_INTEGRATION_AND_QUALIFICATION",
+    "FULL_CURRENT_COHORT_CUSTODY_TLS_IAM_DB_TRUST_AND_FENCING",
+    "FARMACIE_TO_INGESTION_UDP_ALL61_OUTCOMES",
+    "BOOT_ROTATION_FAULT_REIMPORT_CHAT_TWO_CLIENTS_AND_STABILITY"
+  ],
+  "operatorDependency": {
+    "hostChannelAvailable": false,
+    "githubAndOufMcpAreInsufficientForRootHostVerification": true,
+    "newTargetCommandReady": false,
+    "consumedScopesMustNotReplay": true
+  },
+  "priorQuiescedEvidence": "evidence/m2-quiesced-recovery-reader-20261031.json"
+}
