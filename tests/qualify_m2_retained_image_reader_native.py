@@ -35,6 +35,11 @@ class NativeReader(unittest.TestCase):
             self.assertEqual(proof['requestedImageId'],proof['nativeArchiveIdentityDigest']
                 if proof['requestedIdentityKind'] in ('OCI_MANIFEST','OCI_INDEX') else proof['configurationDigest'])
             self.assertFalse(proof['sourcePublisherAuthenticated']);self.assertGreater(proof['layerCount'],0)
+        self.assertGreater(sum(v['auxiliaryAttestationCount'] for v in private['images'].values()),0)
+        kinds={kind:sum(v['requestedIdentityKind']==kind for v in private['images'].values())
+            for kind in sorted({v['requestedIdentityKind'] for v in private['images'].values()})}
+        print(json.dumps({'fixtureIdentityKinds':kinds,'fixtureAuxiliaryAttestations':
+            sum(v['auxiliaryAttestationCount'] for v in private['images'].values()),'attestationTrustAccepted':False},sort_keys=True))
         for key in ('sourcePublisherAuthenticated','allRuntimeArtifactMembershipProven',
                 'currentApplicationConfigurationOrLivenessProven','completePrivateCustodyProven',
                 'newCaptureScopeCreated','runtimeAuthorityIssued','targetApplyAuthorized','releaseAcceptance'):

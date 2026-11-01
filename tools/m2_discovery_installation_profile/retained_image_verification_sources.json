@@ -13,7 +13,7 @@
   },
   "tools.m2_discovery_installation_profile.retained_image_identity": {
     "path": "tools/m2_discovery_installation_profile/retained_image_identity.py",
-    "sha256": "6f7da2b9271737f45e0709852a4334202dd8c6463001b824a0cff4c92a328d44"
+    "sha256": "e0ff0df5260cea80af8c5641f1fca5e3f084cf0ff0b9f54f72ac90e50898c9e8"
   },
   "tools.m2_discovery_installation_profile.retained_image_intake": {
     "path": "tools/m2_discovery_installation_profile/retained_image_intake.py",

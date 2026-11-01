@@ -3,7 +3,7 @@ import hashlib,io,json,sys,tarfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests/fixtures')]
-from retained_image_bytes import fixture,package,encoded,address
+from retained_image_bytes import fixture,attested_fixture,package,encoded,address
 from tools.m2_discovery_installation_profile import retained_image_identity as m
 
 
@@ -89,6 +89,20 @@ class ImageBytes(unittest.TestCase):
         _,image,entries=fixture();header=tarfile.TarInfo('pax');header.type=tarfile.XHDTYPE;header.size=1048576
         raw=header.tobuf()+b'\0'*1024
         with self.assertRaisesRegex(ValueError,'TAR_HEADER'):self.verify(raw,image)
+
+    def test_buildkit_modern_and_legacy_attestations_are_byte_checked_without_trusting_them(self):
+        for modern,inline in ((True,False),(True,True),(False,False)):
+            raw,image,_=attested_fixture(modern=modern,inline_empty=inline)
+            proof=self.verify(raw,image)
+            self.assertEqual(proof['requestedIdentityKind'],'OCI_INDEX')
+            self.assertEqual(proof['auxiliaryAttestationCount'],1)
+            self.assertFalse(proof['auxiliaryAttestationTrustAccepted']);self.assertFalse(proof['sourcePublisherAuthenticated'])
+            self.assertNotIn('PRIVATE_ATTESTATION_BODY',json.dumps(proof))
+
+    def test_changed_attestation_blob_subject_or_platform_denies(self):
+        for option in ('bad_blob','wrong_subject','wrong_platform'):
+            raw,image,_=attested_fixture(**{option:True})
+            with self.subTest(option=option),self.assertRaises(ValueError):self.verify(raw,image)
 
 
 if __name__=='__main__':unittest.main()

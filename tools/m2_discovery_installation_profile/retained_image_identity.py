@@ -3,8 +3,11 @@
 Authenticate the requested native/config digest, every referenced blob and every
 expanded layer. Source labels and vendor names do not establish publisher trust.
 This read-only helper does not replace any source/publisher admission contract.
+
+OCI manifest/empty descriptor: github.com/opencontainers/image-spec/manifest.md
+BuildKit artifact subjects: github.com/moby/buildkit/docs/attestations/attestation-storage.md
 """
-import gzip,hashlib,re,tarfile,time
+import base64,gzip,hashlib,re,tarfile,time
 from pathlib import PurePosixPath
 from .custody_capture import decode,digest,require
 
@@ -12,12 +15,15 @@ SHA=r'sha256:[a-f0-9]{64}'
 IMAGE_TYPES={'application/vnd.oci.image.manifest.v1+json','application/vnd.docker.distribution.manifest.v2+json'}
 INDEX_TYPES={'application/vnd.oci.image.index.v1+json','application/vnd.docker.distribution.manifest.list.v2+json'}
 CONFIG_TYPES={'application/vnd.oci.image.config.v1+json','application/vnd.docker.container.image.v1+json'}
+EMPTY='application/vnd.oci.empty.v1+json'
+ATTESTATION='application/vnd.docker.attestation.manifest.v1+json'
 LAYER_TYPES={'application/vnd.oci.image.layer.v1.tar','application/vnd.oci.image.layer.v1.tar+gzip',
     'application/vnd.docker.image.rootfs.diff.tar','application/vnd.docker.image.rootfs.diff.tar.gzip'}
 LIMITS={'schema':'ouf.retained-image-byte-verification-profile.v1','maximumSeconds':600,
     'maximumArchiveBytes':2147483648,'maximumArchiveSetBytes':8589934592,
     'maximumExpandedImageBytes':8589934592,'maximumExpandedSetBytes':34359738368,
-    'maximumMembers':2048,'maximumLayers':256,'maximumIndexDepth':4,'maximumDescriptors':64}
+    'maximumMembers':2048,'maximumLayers':256,'maximumIndexDepth':4,'maximumDescriptors':64,
+    'maximumAuxiliaryAttestationBytesPerImage':268435456}
 
 
 class VerificationBudget:
@@ -78,15 +84,24 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
             require(type(descriptor) is dict and re.fullmatch(SHA,descriptor.get('digest',''))
                 and type(descriptor.get('size')) is int and 0<descriptor['size']<=maximum,
                 'BOUNDED_CONTENT_ADDRESSED_IMAGE_DESCRIPTOR_REQUIRED')
-            name='blobs/sha256/'+descriptor['digest'][7:];raw,value=small(name,maximum)
+            name='blobs/sha256/'+descriptor['digest'][7:]
+            if name not in members:
+                require(descriptor.get('mediaType')==EMPTY and descriptor.get('data')=='e30=',
+                    'PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED')
+                raw=b'{}';value={}
+            else:raw,value=small(name,maximum)
             require(len(raw)==descriptor['size'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==descriptor['digest'],
                 'PRIVATE_IMAGE_DESCRIPTOR_CONTENT_DIGEST_DIFFERS')
+            if 'data' in descriptor:
+                data=descriptor['data']
+                require(type(data) is str and len(data)<=(maximum*4//3)+4
+                    and base64.b64decode(data,validate=True)==raw,'EXACT_INLINE_IMAGE_DESCRIPTOR_DATA_REQUIRED')
             return name,raw,value
-        manifest_digest=None;identity_kind='CLASSIC_CONFIGURATION';native_archive_digest=None
+        manifest_digest=None;identity_kind='CLASSIC_CONFIGURATION';native_archive_digest=None;attestations={};auxiliary_bytes=0
         if 'index.json' in members:
             _,layout=small('oci-layout',131072)
             require(layout=={'imageLayoutVersion':'1.0.0'},'PRIVATE_OCI_IMAGE_LAYOUT_REQUIRED')
-            _,index=small('index.json',131072);nodes={};seen=set()
+            _,index=small('index.json',131072);nodes={};descriptors={};seen=set()
             def visit(document,depth):
                 require(type(document) is dict and document.get('schemaVersion')==2
                     and type(document.get('manifests')) is list and 1<=len(document['manifests'])<=64
@@ -100,10 +115,53 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                     require(media in IMAGE_TYPES|INDEX_TYPES and node.get('mediaType') in (None,media)
                         and node.get('schemaVersion')==2,'PRIVATE_IMAGE_DESCRIPTOR_MEDIA_TYPE_REQUIRED')
                     nodes[address]=(media,node)
+                    descriptors[address]=descriptor
                     if media in INDEX_TYPES:visit(node,depth+1)
             visit(index,0)
+            for address,(media,node) in nodes.items():
+                descriptor=descriptors[address];annotations=descriptor.get('annotations')or{}
+                require(type(annotations) is dict,'TYPED_PRIVATE_IMAGE_DESCRIPTOR_ANNOTATIONS_REQUIRED')
+                marked=annotations.get('vnd.docker.reference.type')=='attestation-manifest'
+                if media not in IMAGE_TYPES or not (marked or node.get('artifactType')==ATTESTATION):continue
+                require(descriptor.get('platform')=={'architecture':'unknown','os':'unknown'}
+                    and node.get('artifactType') in (None,ATTESTATION),'EXPLICIT_NONRUNTIME_BUILDKIT_ATTESTATION_REQUIRED')
+                cfg=node.get('config',{})
+                require(cfg.get('mediaType') in CONFIG_TYPES|{EMPTY},'EXACT_ATTESTATION_CONFIG_DESCRIPTOR_REQUIRED')
+                _,raw,value=blob(cfg)
+                if cfg['mediaType']==EMPTY:
+                    require(raw==b'{}' and node.get('artifactType')==ATTESTATION,
+                        'EXACT_OCI_EMPTY_ATTESTATION_CONFIGURATION_REQUIRED')
+                else:
+                    require(value.get('os')==value.get('architecture')=='unknown',
+                        'NONRUNTIME_LEGACY_ATTESTATION_CONFIGURATION_REQUIRED')
+                subject=node.get('subject');target=annotations.get('vnd.docker.reference.digest')
+                if subject is not None:
+                    require(type(subject) is dict and subject.get('mediaType') in IMAGE_TYPES,
+                        'EXACT_ATTESTATION_SUBJECT_DESCRIPTOR_REQUIRED')
+                    blob(subject);require(target in (None,subject['digest']),
+                        'ATTESTATION_SUBJECT_AND_REFERENCE_MUST_AGREE');target=subject['digest']
+                require(type(target) is str and target in nodes and nodes[target][0] in IMAGE_TYPES
+                    and descriptors[target].get('platform',{}).get('os')!='unknown',
+                    'ATTESTATION_TARGET_MUST_BE_AN_INCLUDED_RUNTIME_IMAGE')
+                require(cfg['mediaType']!=EMPTY or subject is not None,'OCI_ARTIFACT_ATTESTATION_SUBJECT_REQUIRED')
+                layers=node.get('layers');proofs=[]
+                require(type(layers) is list and 1<=len(layers)<=16,'BOUNDED_BUILDKIT_ATTESTATION_LAYERS_REQUIRED')
+                for layer in layers:
+                    require(type(layer) is dict and layer.get('mediaType')=='application/vnd.in-toto+json'
+                        and re.fullmatch(SHA,layer.get('digest','')) and type(layer.get('size')) is int
+                        and 0<layer['size']<=83886080,'EXACT_BOUNDED_IN_TOTO_ATTESTATION_BLOB_REQUIRED')
+                    name='blobs/sha256/'+layer['digest'][7:];info=member(name)
+                    require(info.size==layer['size'],'ATTESTATION_BLOB_SIZE_CHANGED')
+                    with archive.extractfile(info) as content:actual,count=hashed(content,83886080)
+                    require('sha256:'+actual==layer['digest'],'ATTESTATION_BLOB_CONTENT_ADDRESS_CHANGED')
+                    auxiliary_bytes+=count
+                    require(auxiliary_bytes<=LIMITS['maximumAuxiliaryAttestationBytesPerImage'],
+                        'BOUNDED_AUXILIARY_ATTESTATION_BYTES_REQUIRED')
+                    proofs.append({'digest':layer['digest'],'bytes':count})
+                attestations[address]={'targetImage':target,'blobs':proofs,'attestationTrustAccepted':False}
             def leaves(address):
                 media,node=nodes[address]
+                if address in attestations:return []
                 if media in IMAGE_TYPES:return [(address,node)]
                 return [leaf for child in node['manifests'] for leaf in leaves(child['digest'])]
             if expected_image in nodes:
@@ -116,6 +174,9 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                         cfg=node.get('config',{})
                         require(cfg.get('mediaType') in CONFIG_TYPES,'PRIVATE_INDEX_IMAGE_CONFIG_DESCRIPTOR_REQUIRED')
                         _,_,value=blob(cfg)
+                        require(type(value.get('os')) is str and type(value.get('architecture')) is str
+                            and value['os']!='unknown' and value['architecture']!='unknown',
+                            'UNMARKED_NONRUNTIME_INDEX_MEMBER_DENIED')
                         if value.get('os')=='linux' and value.get('architecture')=='amd64':selected.append((address,node))
                     candidates=selected
             else:
@@ -124,9 +185,12 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                 # authenticated manifest; never guess from a tag or label.
                 identity_kind='OCI_CONFIGURATION'
                 candidates=[(address,node) for address,(media,node) in nodes.items()
-                    if media in IMAGE_TYPES and node.get('config',{}).get('digest')==expected_image]
+                    if media in IMAGE_TYPES and address not in attestations and node.get('config',{}).get('digest')==expected_image]
             require(len(candidates)==1,'EXACT_UNIQUE_REQUESTED_NATIVE_OR_CONFIGURATION_IMAGE_REQUIRED')
             manifest_digest,native=candidates[0]
+            platform=descriptors[manifest_digest].get('platform')
+            require(platform is None or (type(platform) is dict and platform.get('os')=='linux'
+                and platform.get('architecture')=='amd64'),'SELECTED_INDEX_PLATFORM_MUST_MATCH_LINUX_AMD64')
             cfg=native.get('config',{})
             require(cfg.get('mediaType') in CONFIG_TYPES,'PRIVATE_IMAGE_CONFIGURATION_DESCRIPTOR_REQUIRED')
             config_name,config_raw,config=blob(cfg)
@@ -179,5 +243,8 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
             'nativeManifestDigest':manifest_digest,'configurationDigest':config_digest,'archiveSha256':expected_sha,
             'archiveBytes':expected_bytes,'expandedBytes':expanded_total,'layersHash':digest(proofs),
             'layerCount':len(proofs),'executionConfigurationHash':digest(config['config']),
+            'auxiliaryAttestationCount':len(attestations),'auxiliaryAttestationBytes':auxiliary_bytes,
+            'auxiliaryAttestationBindingsHash':digest(attestations),
+            'auxiliaryAttestationTrustAccepted':False,
             'nativeOrClassicImageByteIdentityProven':True,'sourcePublisherAuthenticated':False,
             'scanAdmissionProven':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}

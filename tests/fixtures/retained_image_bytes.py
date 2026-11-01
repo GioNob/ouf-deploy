@@ -34,3 +34,31 @@ def fixture(*,native=True,compressed=True,role='fixture',bad_diff=False):
             ,(config_hash[7:]+'.json',config_raw),('layer.tar',layer)]
     raw=package(entries)
     return raw,image,entries
+
+
+def attested_fixture(*,modern=True,inline_empty=False,bad_blob=False,wrong_subject=False,wrong_platform=False):
+    _,image,entries=fixture()
+    manifest_body=entries[2][1]
+    descriptor=lambda media,raw:{'mediaType':media,'digest':address(raw),'size':len(raw)}
+    runtime=descriptor('application/vnd.oci.image.manifest.v1+json',manifest_body)
+    runtime['platform']={'architecture':'amd64','os':'linux'}
+    content=encoded({'_type':'https://in-toto.io/Statement/v1','predicateType':'https://slsa.dev/provenance/v1',
+        'subject':[{'name':'_','digest':{'sha256':image[7:]}}],'predicate':{'fixture':'PRIVATE_ATTESTATION_BODY'}})
+    raw_config=b'{}' if modern else encoded({'architecture':'unknown','os':'unknown','rootfs':{'type':'layers','diff_ids':[]}})
+    cfg=descriptor('application/vnd.oci.empty.v1+json' if modern else 'application/vnd.oci.image.config.v1+json',raw_config)
+    if modern:cfg['data']='e30='
+    artifact={'schemaVersion':2,'mediaType':'application/vnd.oci.image.manifest.v1+json',
+        'config':cfg,'layers':[descriptor('application/vnd.in-toto+json',content)]}
+    target=('sha256:'+'f'*64) if wrong_subject else image
+    if modern:artifact.update(artifactType='application/vnd.docker.attestation.manifest.v1+json',
+        subject={**runtime,'digest':target})
+    artifact_raw=encoded(artifact);attestation=descriptor(artifact['mediaType'],artifact_raw)
+    attestation['platform']={'architecture':'amd64' if wrong_platform else 'unknown','os':'unknown'}
+    attestation['annotations']={'vnd.docker.reference.type':'attestation-manifest','vnd.docker.reference.digest':target}
+    index_raw=encoded({'schemaVersion':2,'manifests':[runtime,attestation]})
+    root=descriptor('application/vnd.oci.image.index.v1+json',index_raw)
+    entries=[entries[0],('index.json',encoded({'schemaVersion':2,'manifests':[root]})),*entries[2:],
+        ('blobs/sha256/'+root['digest'][7:],index_raw),('blobs/sha256/'+address(artifact_raw)[7:],artifact_raw),
+        ('blobs/sha256/'+address(content)[7:],content+(b' ' if bad_blob else b''))]
+    if not inline_empty or not modern:entries.append(('blobs/sha256/'+address(raw_config)[7:],raw_config))
+    return package(entries),root['digest'],entries
