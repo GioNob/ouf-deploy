@@ -107,10 +107,10 @@
     "discoveryRegistryCandidateImageId": "sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e",
     "discoveryInstallationReferenceReaderQualified": true,
     "discoveryInstallationReferenceTargetExecuted": true,
-    "latestMaintenanceInput": "SIXTH_EFFECTIVE_VIEW_INPUT_SUCCEEDED_CONSUMED_9F1D571B_AC206493",
-    "latestMaintenanceInputEvidence": "evidence/m2-retained-view-capture-target-20261101.json",
+    "latestMaintenanceInput": "SEVENTH_IMAGE_ARCHIVES_SUCCEEDED_CONSUMED_FA95A719_9733FA7C",
+    "latestMaintenanceInputEvidence": "evidence/m2-native-image-archives-target-20261101.json",
     "nativeImageArchiveDeliveryQualified": true,
-    "nativeImageArchiveTargetExecuted": false
+    "nativeImageArchiveTargetExecuted": true
   },
   "retainedFarmacie": {
     "handoffId": "4da5410e-98de-472c-89b6-bc1cdae8ecf1",
@@ -1977,7 +1977,7 @@
     "Merge and release acceptance"
   ],
   "firstNextAction": {
-    "action": "Run the new pinned GET-only thirteen-image archive input once as oufadmin on the VPS. At least9GiB free;30minutes/2GiB each/8GiB total. Return public JSON/footer only; preserve STOP and never replay. This does not grant runtime authority or apply images.",
+    "action": "Continue source qualification of exact private image intake and native byte reader. Captured input succeeded and is consumed; no new operator command ready.",
     "commandPath": "releases/OUF_M2_NATIVE_IMAGE_ARCHIVES_COMMAND_20261101.sh",
     "sourceCommit": "4a1e7e23dd1b09ca4e3752dd148146275f24e415",
     "capsuleCommit": "a7cb69d8bab9bbefc3202f8008e2e744df85a5d5",
@@ -1985,9 +1985,9 @@
     "wrapperCommit": "1a519f533318d9274950b017b1fa2c4c928c70d1",
     "wrapperSha256": "ad50569c294bc39a541f0fdeefea4eac27331c03ebe9ab133dca3ac2adc1dd16",
     "scope": "/etc/ouf/deploy-snapshots/m2-native-image-archives-9f1d571b-20261101-v1",
-    "targetExecuted": false,
-    "currentDeliveryUsable": true,
-    "sshExecutionCommandUsable": true,
+    "targetExecuted": true,
+    "currentDeliveryUsable": false,
+    "sshExecutionCommandUsable": false,
     "qualificationPending": false,
     "currentRuntimeAuthorityUsable": false,
     "targetApplyAuthorized": false
@@ -2437,10 +2437,11 @@
     "date": "2026-11-01",
     "handoff": "docs/handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md",
     "evidence": "evidence/m2-native-image-archives-delivery-qualified-20261101.json",
-    "next": "ONE_NEW_EXACT_PRIVATE_THIRTEEN_IMAGE_INPUT_THEN_COMPLETE_COHORT_AND_PRIVATE_REVIEW",
-    "targetInputExecuted": false,
-    "priorScopesConsumed": 6,
-    "priorDirectEngineGets": 22
+    "next": "QUALIFY_EXACT_PRIVATE_IMAGE_INTAKE_AND_NATIVE_BYTE_READER_NO_CAPTURE_REPLAY",
+    "targetInputExecuted": true,
+    "priorScopesConsumed": 7,
+    "priorDirectEngineGets": 35,
+    "targetReceipt": "evidence/m2-native-image-archives-target-20261101.json"
   },
   "runtimeEffectsByThisCheckpoint": 0,
   "diagnosticApplyQualification": {
@@ -4811,7 +4812,7 @@
     "schema": "ouf.m2-native-image-archive-delivery-qualified.v1",
     "date": "2026-11-01",
     "timezone": "Europe/Rome",
-    "status": "SOURCE_NATIVE_AND_IMMUTABLE_DELIVERY_QUALIFIED_TARGET_INPUT_PENDING",
+    "status": "TARGET_CAPTURE_SUCCEEDED_CONSUMED_BYTE_IDENTITY_NOT_ADMITTED",
     "sourceCommit": "1a519f533318d9274950b017b1fa2c4c928c70d1",
     "deliveredCapsule": {
       "sourceCommit": "4a1e7e23dd1b09ca4e3752dd148146275f24e415",
@@ -4878,7 +4879,7 @@
     "operatorCommand": "releases/OUF_M2_NATIVE_IMAGE_ARCHIVES_COMMAND_20261101.sh",
     "handoff": "docs/handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md",
     "targetScope": "/etc/ouf/deploy-snapshots/m2-native-image-archives-9f1d571b-20261101-v1",
-    "targetScopeExecuted": false,
+    "targetScopeExecuted": true,
     "priorTargetControlAttempts": 6,
     "priorTargetDirectEngineGets": 22,
     "maximumNewImageGets": 13,
@@ -4915,6 +4916,65 @@
       "repeatability and fault recovery",
       "two external clients",
       "G5/G6/G7/M2 acceptance"
-    ]
+    ],
+    "targetEvidence": "evidence/m2-native-image-archives-target-20261101.json"
+  },
+  "nativeImageArchiveTarget": {
+    "schema": "ouf.m2-native-image-archives-target.v1",
+    "date": "2026-11-01",
+    "timezone": "Europe/Rome",
+    "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT_AND_EXIT_FOOTER",
+    "receipt": {
+      "allSixPriorScopesPreserved": true,
+      "automaticReplayAllowed": false,
+      "candidateHash": "fa95a7196e67dee8b0f94f5df223bb51bcf17feeb31bf2022626d0a7be81008e",
+      "completePrivateCustodyProven": false,
+      "counts": {
+        "applicationMacKeyReads": 0,
+        "bytes": 664133,
+        "credentialFileReads": 0,
+        "engineBytes": 2774726144,
+        "engineGets": 13,
+        "ephemeralMounts": 0,
+        "imageArchiveBytes": 2774726144,
+        "imageArchivesCaptured": 13,
+        "metadataReads": 5,
+        "mountFileContentBytesRead": 0,
+        "mutableMounts": 0,
+        "publicCertificateReads": 0,
+        "readonlyMounts": 0,
+        "specialSources": 0,
+        "staticEntries": 0
+      },
+      "cumulativeControlAttempts": 7,
+      "cumulativeDirectEngineGets": 35,
+      "currentContainerConfigurationFreshlyObserved": false,
+      "expectedPermissionOrContentPolicyEstablished": false,
+      "imageBytesRetainedPrivately": true,
+      "liveOwnerAuthenticated": false,
+      "mountedHostFileContentsObserved": false,
+      "nativeIdentityAndSourceAdmissionEstablished": false,
+      "privatePathsNamesValuesOrIndividualArchiveHashesPrinted": false,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "runtimeBudgetResetOrGrant": false,
+      "schema": "ouf.retained-native-image-archive-result.v1",
+      "status": "NATIVE_IMAGE_ARCHIVE_CANDIDATES_CAPTURED_NOT_ADMITTED",
+      "targetApplyAuthorized": false,
+      "viewCandidateHash": "9f1d571b1f38ace9ec5b5f52b157ed0c4de20c2e1a4553ccc6ae19f9ae04344a"
+    },
+    "publicResultCanonicalSha256": "9733fa7c6168a5073f06ea02b89cd015da505ce8bc0bbbbe4f95e614b2b5a4de",
+    "exitFooter": "ImageArchiveInputExit=0",
+    "scopeConsumed": true,
+    "scope": "/etc/ouf/deploy-snapshots/m2-native-image-archives-9f1d571b-20261101-v1",
+    "launcherCommit": "1a519f533318d9274950b017b1fa2c4c928c70d1",
+    "capsuleCommit": "a7cb69d8bab9bbefc3202f8008e2e744df85a5d5",
+    "privateRecordReadByAgent": false,
+    "independentTargetFilesystemRead": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "releaseAcceptance": false,
+    "automaticReplayAllowed": false,
+    "next": "Validate the same private archive index against exact receipt, seed and file metadata; verify native content-addressed image/config/layer identities; retain publisher/source/admission as separate gates. No replay of the capture."
   }
 }

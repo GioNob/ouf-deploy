@@ -1,3 +1,22 @@
+# CURRENT — Input immagini M2 riuscito e consumato; verifica dei byte in qualifica
+
+1 novembre 2026, Europe/Rome. Ricevuta operatore acquisita:
+[13 archivi / 2.774.726.144 byte](../evidence/m2-native-image-archives-target-20261101.json),
+candidate fa95a719, receipt9733fa7c, ImageArchiveInputExit=0. Tutti sei scope
+precedenti preservati; totale7controlli/35GET, zero credenziali o contenuti mount.
+NON rilanciare cattura/launcher o il vecchio comando: scope consumato.
+
+Prossimo passo autonomo: intake esatto indice/ricevuta/seed e verifica privata
+manifesti/configurazioni/layer senza Engine, estrazione o import. Nuovi sorgenti
+retained_image_intake/identity/reader e regressioni in qualifica; nessun nuovo
+comando operatore pronto. L'agente ha solo il JSON pubblico, non i file VPS.
+Identità nativa/source admission, publisher, scan, policy attesa e owner live,
+full custody/bearer, pacchetto/review correnti e authority restano distinti.
+M1/Teatri8/8 tecnico6/6 funzionale acquisiti, stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING. M2/G5/G6/G7 e due client aperti. Nessun nuovo upload,
+profiling, acquisizione, merge o release acceptance. UDP/tutti gli esiti, poi
+grafo/search e verticali/API delta. Header e comandi seguenti sono storici.
+
 # Checkpoint corrente — M2, 1 novembre 2026
 
 M1/Teatri tecnico8/8, funzionale6/6 acquisiti. M2 resta aperto; stessa Farmacie

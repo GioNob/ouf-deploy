@@ -1,3 +1,10 @@
+> CATTURA RIUSCITA E CONSUMATA: fa95a719 / 9733fa7c, 13 archivi,
+> 2.774.726.144 byte, totale7controlli/35GET, Exit0. Tutti sei scope precedenti
+> preservati. Non eseguire il vecchio comando collegato sotto. Ricevuta:
+> [evidenza target](../../evidence/m2-native-image-archives-target-20261101.json).
+> Verifica privata di identità dei byte in qualifica; nessuna source/runtime
+> admission o accettazione M2 dedotta. Nessun nuovo comando operatore pronto.
+
 # M2 — tredici immagini correnti: consegna qualificata, input VPS necessario
 
 1 novembre 2026, Europe/Rome. M1/Teatri resta acquisito: tecnico 8/8,

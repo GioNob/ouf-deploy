@@ -1,28 +1,21 @@
-# CURRENT — Tredici immagini M2: launcher e consegna QUALIFICATI, input VPS necessario
+# CURRENT — Input immagini M2 riuscito e consumato; verifica dei byte in qualifica
 
-1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
-e [prove](evidence/m2-native-image-archives-delivery-qualified-20261101.json).
-Source/launcher1a519f53: push41323332553 e PR41323339276 SUCCESS, ciascuno
-20 test/5 suite, zero failure/error/skip/ResourceWarning; tutti sei log finali letti.
-Include tre test Docker29.8.1 reali e consegna HTTPS pubblica esatta con sola
-ispezione non privilegiata. Capsula originale a7cb/3e281be8 conservata, 13 sorgenti.
+1 novembre 2026, Europe/Rome. Ricevuta operatore acquisita:
+[13 archivi / 2.774.726.144 byte](evidence/m2-native-image-archives-target-20261101.json),
+candidate fa95a719, receipt9733fa7c, ImageArchiveInputExit=0. Tutti sei scope
+precedenti preservati; totale7controlli/35GET, zero credenziali o contenuti mount.
+NON rilanciare cattura/launcher o il vecchio comando: scope consumato.
 
-NEXT solo nuovo comando fissato del handoff come oufadmin sul VPS, una volta.
-È l'input privato di 13 immagini originali CID-bound, GET-only, non un apply.
-9GiB liberi prima dello scope, massimo30min/2GiB per immagine/8GiB totali;
-archivi root-private0400, nessun contenuto mount host, estrazione o import.
-STOP/interruzione: preservare tutto e riconciliare, mai rilanciare/riarmare.
-Target ancora6 scope consumati/22GET; nuovo scope NON eseguito. L'agente non
-ha shell né record privati VPS. Non chiedere archivi/indice/config/credenziali.
-Nessun login/grant/budget/runtime authority o modifica applicativa.
-
-M1/Teatri tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso SUCCEEDED61righe,
-10colonne/10OPEN, ministeriale STRING. Nessun nuovo upload/profile/acquisizione.
-Coorte completa/private proposal/policy e owner live/custody/bearer/pacchetto e
-review privata/authority HUMAN+dual-role/E2E e due client restano OPEN.
-Caricamento fino a UDP e tutti gli esiti, poi grafo/search e verticali/API delta.
-Nessun merge, release acceptance, subagente o automazione. Gli header/comandi
-successivi sono cronologia; non riprendere vecchi launcher.
+Prossimo passo autonomo: intake esatto indice/ricevuta/seed e verifica privata
+manifesti/configurazioni/layer senza Engine, estrazione o import. Nuovi sorgenti
+retained_image_intake/identity/reader e regressioni in qualifica; nessun nuovo
+comando operatore pronto. L'agente ha solo il JSON pubblico, non i file VPS.
+Identità nativa/source admission, publisher, scan, policy attesa e owner live,
+full custody/bearer, pacchetto/review correnti e authority restano distinti.
+M1/Teatri8/8 tecnico6/6 funzionale acquisiti, stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING. M2/G5/G6/G7 e due client aperti. Nessun nuovo upload,
+profiling, acquisizione, merge o release acceptance. UDP/tutti gli esiti, poi
+grafo/search e verticali/API delta. Header e comandi seguenti sono storici.
 
 # CURRENT — Security repair scans and exact current MCP bridge PASS; next image bytes input in qualification
 
