@@ -1,3 +1,9 @@
+> CONSUMED successfully on target,1November2026. Candidate de4546d0/receipt39426368:
+> 13distinct static files/3937bytes,25RO4RW/7tokens1live store, zero new Engine or
+> live content. All five scopes consumed/preserved, cumulative22GETs. Do not run
+> the old command below again. Current-byte intake/controller integration is in
+> qualification; no new operator action required at this stage.
+
 # Retained static host-file input after metadata reconciliation
 
 1 November2026. The actual reconciliation executed: private candidate

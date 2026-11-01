@@ -1,3 +1,49 @@
+# CURRENT — Actual static host-file input succeeded; native byte continuity in qualification
+
+1 November2026, Europe/Rome. Actual operator success candidate
+ de4546d0ee39be6b3c3cca2e5d5307167564a953ca8428762840b0b205768023,
+receipt39426368418d74a71e894d82f88fed3f7fba40734d25269a18438a63adf14881.
+25RO/4RW/33captured nodes classified:7renewable token declarations,1live store,
+17static file declarations;13unique files/3937bytes actually hashed. ZERO new
+Engine/EngineBytes or live token/SQLite content,8metadata reads/648830bytes.
+All4predecessor scopes preserved, new5th scope consumed. Cumulative5controls/
+22directGET. All policy/admission/fullcustody/currentConfig/authority/apply/
+acceptance false. No old command retry/rearm/delete/reset. Evidence:
+evidence/m2-retained-static-custody-target-20261101.json, public pastedreceipt
+only; agent has not read the private target record/files.
+
+No new operator action needed yet. Continue autonomous source integration:
+retained_static_intake validates exact de4546/394263 capture/receipt/allowlist,
+lineage/full9frames/counts/lifecycle; CurrentRetainedStaticBytes shares the ACTUAL
+CurrentRetainedMountMetadata/current runtime owner. Read-only observe, no args/
+callbacks/path/hash overrides, zero Engine/new scope. Rehash only accepted static
+files, reject live/writable aliases before content, root/boot/all10process pins,
+static bytes/metadata and rootprivate input frames sealed before/after. This is
+current content continuity to the captured candidate, NOT independent expected
+permission/content policy or live membership/issuer/signature/audience/scope/
+expiry/revocation/effective mounted access. Live token/SQLite contents stay
+unobserved and require actual native owners. Constructor cannot take positive
+admission flags. Controller v6 joins14typed owners/26reads/one invocation fence,
+checks new static candidate/lifecycle/runtime identity at both boundaries;
+complete custody/bearer/checkpoint/fullcohort remain false.
+
+Local7intake/current-byte +15controller tests PASS on actual original five-stage
+producer outputs, target-shaped25RO4RW33node FS, atomic token rotation/SQLite WAL,
+shared owner-sidecar mounts, allowlist/link/hardlink/content/inode/mode/root/input/
+held/process/alias failures. Hosted native Docker29.8.1/ten UID10001scratch peers
+and general checks next. Old235/all8sealed static-input sources and all previous
+capsules unchanged. Last published launcher/capsule b90cb4a2/970b59a7/source7108c3ab
+are CONSUMED, never replay. New live/static contracts reused existing Teatri
+owner logic; current static bytes are not yet a target native checkpoint.
+
+Continue sequential/autonomous, no agents/automations/optional stops. Full
+private custody/live owner admission/workload bearer/all-runtime membership/
+complete current controller and execution package/private review/current HUMAN+
+role authority/E2E/two clients OPEN. Preserve M1/Teatri8/8technical6/6functional
+and same Farmacie61rows10cols10OPEN/ministerial STRING. No upload/profile/
+acquisition/activation/lifecycle replay. UDP/all61outcomes, then graph search,
+then vertical/API delta. All older CURRENT/READY/input pending headers historical.
+
 # CURRENT — Lifecycle fix and static-only host-file input qualified; new VPS input required
 
 1 November2026. Actual metadata reconciliation executed: candidate050ba14d,

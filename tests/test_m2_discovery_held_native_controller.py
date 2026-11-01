@@ -46,7 +46,7 @@ class HeldController(unittest.TestCase):
             ('retirement', m.CurrentRetirementAndBackup), ('producers', m.CurrentProducerFence),
             ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership),
             ('packages', m.CurrentPackageMembership), ('gateway_routes', m.CurrentGatewayRoutes),
-            ('mounts', m.CurrentRetainedMountMetadata)):
+            ('mounts', m.CurrentRetainedMountMetadata), ('static_bytes',m.CurrentRetainedStaticBytes)):
             objects[name] = object.__new__(cls); objects[name].guard = Mock()
         runtime = objects['runtime']; runtime.selected = selected; runtime.input_hash = 'c'*64
         runtime.inputs = {'additionalInputsHashes': {k: 'd'*64 for k in m.ADDITIONAL_INPUTS}}
@@ -60,6 +60,7 @@ class HeldController(unittest.TestCase):
         objects['membership'].publisher = objects['publisher']; objects['membership'].databases = objects['databases']
         objects['membership'].images = selected.images
         objects['mounts'].runtime = runtime
+        objects['static_bytes'].runtime=runtime;objects['static_bytes'].mounts=objects['mounts']
         objects['packages'].membership = objects['membership']; objects['packages'].runtime = runtime
         selected.gateway = object()
         objects['gateway_routes'].selected = selected; objects['gateway_routes'].runtime = selected.gateway
@@ -81,17 +82,24 @@ class HeldController(unittest.TestCase):
                     result.update(schema='ouf.discovery-current-retained-mount-metadata.v2',
                         currentRetainedStaticMetadataMatchesCapturedCandidate=True,
                         liveMountRootsMatchCapturedCustody=True,liveMembersObservedOrAdmitted=False,
-                        lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,
+                        lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,lifecyclePlanHash='e'*64,
                         nativeRuntimeInputsHash=runtime.input_hash,candidateHash=m.CANDIDATE_HASH,
                         captureResultHash=m.RESULT_HASH,expectedMountPolicyEstablished=False,
                         mountedFileContentBytesRead=0,newCaptureScopeCreated=False)
+                if name == 'static_bytes':
+                    result.update(schema='ouf.discovery-current-retained-static-bytes.v1',
+                        currentStaticFileBytesMatchCapturedCandidate=True,nativeRuntimeInputsHash=runtime.input_hash,
+                        candidateHash=m.STATIC_CANDIDATE_HASH,captureResultHash=m.STATIC_RESULT_HASH,
+                        metadataCandidateHash=m.CANDIDATE_HASH,lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,
+                        lifecyclePlanHash='e'*64,directEngineGets=0,liveTokenAndOperationalStoreContentBytesRead=0,
+                        liveMembersObservedOrAdmitted=False,expectedPermissionOrContentPolicyEstablished=False,newCaptureScopeCreated=False)
                 if name == 'gateway_routes':
                     result.update(currentRoutesMatchReviewedPublicationProgress=True,
                         currentGatewayConfigurationAndAdminExecutableObserved=True,
                         publicationCheckpointReentered=False, routeWrites=0)
                 return result
             return Mock(side_effect=run)
-        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes', 'mounts'):
+        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes', 'mounts', 'static_bytes'):
             objects[name].observe = operation(name)
         objects['retirement'].retired = operation('retirement'); objects['retirement'].retained_backup = operation('backup')
         selected.images.verify = operation('images')
@@ -103,9 +111,9 @@ class HeldController(unittest.TestCase):
     def test_all_concrete_observers_share_one_fence_without_publication_or_release_receipt(self):
         controller, _, row, calls, occupied, _ = self.prepared(); original = copy.deepcopy(row)
         result = controller.observe()
-        self.assertEqual(calls, ['images','registry','operational','runtime','mounts','gateway_routes','publisher','membership','packages','databases','tls','iam',
-            'retirement','backup','producers','registry','operational','runtime','mounts','gateway_routes','producers','membership','packages','images'])
-        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 24)
+        self.assertEqual(calls, ['images','registry','operational','runtime','mounts','static_bytes','gateway_routes','publisher','membership','packages','databases','tls','iam',
+            'retirement','backup','producers','registry','operational','runtime','mounts','static_bytes','gateway_routes','producers','membership','packages','images'])
+        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 26)
         self.assertTrue(result['singleTransitionInvocationFenceHeld']); self.assertTrue(result['allBoundNativeObserversCompleted'])
         self.assertNotEqual(result['schema'], 'ouf.semantic-cutover-native-checkpoint.v1')
         for key in ('observationIntervalIsAtomicSnapshot', 'artifactMembershipProven', 'completePrivateCustodyProven',
@@ -129,8 +137,29 @@ class HeldController(unittest.TestCase):
         with self.assertRaises(BlockingIOError): controller.observe()
         self.assertEqual(calls, [])
 
+    def test_static_witness_cannot_substitute_policy_live_admission_or_engine_access(self):
+        for field in ('candidateHash','metadataCandidateHash','captureResultHash','lifecyclePlanHash',
+            'currentStaticFileBytesMatchCapturedCandidate','liveMembersObservedOrAdmitted',
+            'expectedPermissionOrContentPolicyEstablished','directEngineGets','liveTokenAndOperationalStoreContentBytesRead'):
+            controller,objects,_,_,occupied,_=self.prepared();original=objects['static_bytes'].observe.side_effect
+            def changed():
+                proof=original();proof[field]=('f'*64 if field.endswith('Hash') else
+                    False if field=='currentStaticFileBytesMatchCapturedCandidate' else 1);return proof
+            objects['static_bytes'].observe.side_effect=changed
+            with self.subTest(field=field),self.assertRaisesRegex(ValueError,'CURRENT_STATIC_BYTE_CONTINUITY'):
+                controller.observe()
+            objects['gateway_routes'].observe.assert_not_called();self.assertFalse(occupied[0])
+
+    def test_static_byte_proof_must_remain_equal_at_both_interval_boundaries(self):
+        controller,objects,_,_,occupied,_=self.prepared();original=objects['static_bytes'].observe.side_effect;calls=[]
+        def changed():
+            proof=original();calls.append(1);proof['staticInputPinsHash']=str(len(calls))*64;return proof
+        objects['static_bytes'].observe.side_effect=changed
+        with self.assertRaisesRegex(ValueError,'NATIVE_GENERATIONS_CHANGED'):controller.observe()
+        self.assertFalse(occupied[0]);self.assertEqual(len(calls),2)
+
     def test_foreign_or_replaced_owner_or_input_cannot_join_native_witnesses(self):
-        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes', 'mounts'):
+        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes', 'mounts', 'static_bytes'):
             controller, objects, _, calls, _, _ = self.prepared()
             if failure == 'type': controller.publisher = SimpleNamespace(guard=Mock(), observe=Mock())
             elif failure == 'runtime': objects['tls'].runtime = object()
@@ -139,6 +168,7 @@ class HeldController(unittest.TestCase):
             elif failure == 'input': objects['publisher'].runtime_inputs['additionalInputsHashes']['custody'] = 'f'*64
             elif failure == 'packages': objects['packages'].membership = object()
             elif failure == 'mounts': objects['mounts'].runtime = object()
+            elif failure == 'static_bytes': objects['static_bytes'].mounts=object()
             elif failure == 'gateway_routes': objects['gateway_routes'].window.parent = object()
             else: objects['retirement'].installed = False
             with self.subTest(failure=failure), self.assertRaises(ValueError): controller.observe()
