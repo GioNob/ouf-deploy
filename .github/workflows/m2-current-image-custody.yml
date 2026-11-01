@@ -1,0 +1,29 @@
+name: M2 exact current MCP CI source custody bridge
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/current_image_custody.py','tests/test_m2_current_image_custody.py','.github/workflows/m2-current-image-custody.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  source-custody:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Preserve the generic interface and reject unregistered CI bindings before IO
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_current_image_custody.py -v
+      - name: Actual current original MCP archive and exact existing native transport envelope
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,resource,subprocess
+          case=json.load(open('releases/m2-current-core-artifact-origins-20261101.json'))['roles']['mcp']
+          def bounded_zip(): resource.setrlimit(resource.RLIMIT_FSIZE,(case['zipBytes'],case['zipBytes']))
+          with open('original.zip','wb') as destination:
+              subprocess.run(['gh','api','repos/'+case['repository']+'/actions/artifacts/'+str(case['artifactId'])+'/zip'],
+                  stdout=destination,check=True,timeout=120,preexec_fn=bounded_zip)
+          PY
+          python3 -I -B -S scripts/stage-m2-current-core-origin.py mcp original.zip prepared
+          python3 -I -B -S tests/test_m2_current_image_custody.py --actual-mcp \
+            prepared/image.docker.tar prepared/current-mcp-native.tar

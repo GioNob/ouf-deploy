@@ -1,0 +1,35 @@
+{
+  "allFinalLogsRead": true,
+  "apkSignaturesCheckedByOriginalApk": true,
+  "applicationMainStarted": false,
+  "buildNetwork": "none",
+  "candidateSelectionChanged": false,
+  "jobs": {
+    "ingestion": 124868428443,
+    "udp": 124868428187
+  },
+  "jvmVersionProbePassed": true,
+  "newScanQualified": false,
+  "nextCorrection": "Conventional scanner tar with identical config and each expanded layer byte, separately bound to untouched native candidate envelope",
+  "originalJarsAndAllMigrationsUnchanged": true,
+  "originalRootfsLayerPrefixAndExecutionConfigPreserved": true,
+  "releaseAcceptance": false,
+  "runId": 41313438125,
+  "runtimeAuthorityIssued": false,
+  "scannerFailure": "failed to extract the archive: archive/tar: invalid tar header",
+  "schema": "ouf.m2-runtime-os-repair-initial-qualification.v1",
+  "secondRawExportScanAlsoHeld": {
+    "bothFinalLogsRead": true,
+    "jobs": [
+      124870964594,
+      124870964915
+    ],
+    "runId": 41314293581,
+    "sourceCommit": "ee4b165ffb6f3833a3cba02f8df0d0f6665ea90c"
+  },
+  "sourceCommit": "3940e8acbe720b79c8b16fb17a19c2a1e487c21e",
+  "status": "NATIVE_BUILD_AND_BYTE_PRESERVATION_PASSED_SCANNER_ARCHIVE_FORMAT_HELD",
+  "targetApplyAuthorized": false,
+  "threePinnedPackagesChangedOnly": true,
+  "waiverOrIgnoredFindingAdded": false
+}

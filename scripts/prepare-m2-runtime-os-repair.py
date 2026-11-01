@@ -4,7 +4,7 @@
 The original JAR, migrations, source label, execution configuration and rootfs
 prefix stay unchanged. No target operation or candidate selection occurs.
 """
-import argparse, copy, hashlib, importlib.util, json, os, shutil, subprocess, sys, tarfile, urllib.request
+import argparse, copy, gzip, hashlib, importlib.util, io, json, os, shutil, subprocess, sys, tarfile, urllib.request
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
@@ -75,6 +75,44 @@ def changed_packages(before, after, case):
     return changed
 
 
+def classic_scan_archive(source, output, audit):
+    """Legacy scanner envelope with identical config and expanded layer bytes.
+
+    Docker29 native transport keeps compressed blobs. A conventional Docker
+    archive lets scanners consume plain layer.tar members without interpreting
+    Docker29 compression descriptors. The runnable candidate stays unchanged.
+    """
+    source.seek(0); require(custody.hashed(source, custody.LIMIT)[0] == audit['archiveSha256'],
+        'EXACT_BUILD_ARCHIVE_FOR_SCAN_REQUIRED'); source.seek(0)
+    names = ['layer-'+str(i)+'/layer.tar' for i in range(len(audit['layers']))]
+    with tarfile.open(fileobj=source, mode='r:') as original, \
+            tarfile.open(fileobj=output, mode='w', format=tarfile.USTAR_FORMAT) as target:
+        config = original.extractfile(audit['configMember']).read(2097153)
+        require(len(config) <= 2097152 and hashlib.sha256(config).hexdigest() == audit['configSha256'],
+            'EXACT_SCANNER_CONFIGURATION_BYTES_REQUIRED')
+        for name, raw in [('config.json', config), ('manifest.json', custody.encoded([
+            {'Config':'config.json', 'RepoTags':[], 'Layers':names}]))]:
+            entry = tarfile.TarInfo(name); entry.mode = 0o600; entry.size = len(raw)
+            target.addfile(entry, io.BytesIO(raw))
+        for name, member, layer in zip(names, audit['layerMembers'], audit['layers']):
+            with original.extractfile(member) as raw:
+                magic = raw.read(2); raw.seek(0)
+                expanded = gzip.GzipFile(fileobj=raw) if magic == b'\x1f\x8b' else raw
+                hashed = hashlib.sha256(); count = [0]
+                class Checked:
+                    def read(self, amount=-1):
+                        block = expanded.read(amount); hashed.update(block); count[0] += len(block); return block
+                try:
+                    entry = tarfile.TarInfo(name); entry.mode = 0o600; entry.size = layer['expandedBytes']
+                    target.addfile(entry, Checked())
+                    require(not expanded.read(1) and count[0] == layer['expandedBytes']
+                        and 'sha256:'+hashed.hexdigest() == layer['diffId'], 'EXACT_EXPANDED_LAYER_BYTES_FOR_SCAN_REQUIRED')
+                finally:
+                    if expanded is not raw: expanded.close()
+    output.flush(); output.seek(0); checksum, _ = custody.hashed(output, custody.LIMIT); output.seek(0)
+    return custody.archive(output, checksum, audit['imageId'], audit['sourceCommit'])
+
+
 def build(role, original, output):
     case = json.loads(CASE.read_bytes())
     require(os.geteuid() == 0 and os.environ.get('GITHUB_ACTIONS') == 'true'
@@ -117,10 +155,7 @@ def build(role, original, output):
     docker('run', '--rm', '--network=none', '--read-only', '--cap-drop=ALL', '--security-opt=no-new-privileges',
         '--pids-limit=64', '--memory=256m', '--entrypoint=java', tag,
         '-XX:ActiveProcessorCount=2', '-XX:ParallelGCThreads=2', '-XX:ConcGCThreads=1', '-version')
-    # Keep Docker's original LayerSources metadata for archive scanners. The
-    # separately checked tagless/native transport envelope preserves the exact
-    # same config and layer payloads, but is not the scanner's input format.
-    raw_save = output/'scan-input.docker.tar'; docker('save', '--output', str(raw_save), tag)
+    raw_save = output/'build-image.docker.tar'; docker('save', '--output', str(raw_save), tag)
     with tarfile.open(raw_save, 'r:') as saved:
         manifest = saved.extractfile('manifest.json').read(131073); entries = json.loads(manifest)
         require(len(entries) == 1, 'ONE_SECURITY_CANDIDATE_IMAGE_REQUIRED')
@@ -139,12 +174,16 @@ def build(role, original, output):
         envelope = custody.tagless_archive(source, target, after, containerd=True)
     identity = custody.native_identity(after); docker('load', '--input', str(candidate))
     custody.loaded(dict(after, nativeIdentity=identity), json.loads(docker('image', 'inspect', identity['nativeImageId']))[0])
+    scan_input = output/'scan-input.docker.tar'
+    with raw_save.open('rb') as source, scan_input.open('x+b') as target:
+        scanner = classic_scan_archive(source, target, after)
     proof = {'schema': 'ouf.m2-original-runtime-os-repair-candidate.v1', 'role': role,
         'repairCaseSha256': sha(CASE), 'originalOriginZipSha256': origin['zipSha256'],
         'applicationSourceCommit': origin['sourceCommit'], 'originalImageAudit': before, 'candidateImageAudit': after,
         'configurationImageId': config_id, 'nativeImageId': identity['nativeImageId'],
         'candidateArchiveSha256': envelope['derivedArchiveSha256'],
-        'scanInputArchiveSha256': sha(raw_save), 'scannerAndCandidateConfigAndLayerBytesMatch': True,
+        'scanInputArchiveSha256': sha(scan_input), 'scannerImageAudit': scanner,
+        'scannerAndCandidateConfigAndExpandedLayerBytesMatch': True,
         'applicationJarSha256': hashlib.sha256(jar).hexdigest(), 'applicationJarBytesUnchanged': True,
         'allApplicationMigrationsUnchanged': True, 'originalRootfsLayerPrefixUnchanged': True,
         'originalExecutionConfigurationUnchanged': True, 'changedPackageNames': sorted(changed),
@@ -164,10 +203,11 @@ def finalize(output, scan):
         and sha(output/'scan-input.docker.tar') == proof['scanInputArchiveSha256'], 'EXACT_REPAIR_CANDIDATE_BYTES_REQUIRED')
     with (output/'scan-input.docker.tar').open('rb') as original:
         audit = custody.archive(original, proof['scanInputArchiveSha256'], proof['configurationImageId'], proof['applicationSourceCommit'])
-    require(audit == proof['candidateImageAudit'], 'EXACT_SCANNED_BUILD_IMAGE_AUDIT_REQUIRED')
+    require(audit == proof['scannerImageAudit'], 'EXACT_SCANNED_BUILD_IMAGE_AUDIT_REQUIRED')
     with (output/'image.docker.tar').open('rb') as derived:
         candidate = custody.archive(derived, proof['candidateArchiveSha256'], proof['configurationImageId'], proof['applicationSourceCommit'])
-    require(candidate['imageConfig'] == audit['imageConfig'] and candidate['layers'] == audit['layers']
+    require(candidate['imageConfig'] == audit['imageConfig']
+        and [v['diffId'] for v in candidate['layers']] == [v['diffId'] for v in audit['layers']]
         and candidate['configSha256'] == audit['configSha256'], 'SCANNED_AND_TRANSPORTED_IMAGE_PAYLOADS_DIFFER')
     spec = importlib.util.spec_from_file_location('original_scan_gate', ROOT/'scripts/package-semantic-proposal-candidate.py')
     producer = importlib.util.module_from_spec(spec); spec.loader.exec_module(producer)

@@ -1,3 +1,50 @@
+# CURRENT — CorrectedcoreSem/MCP/Onboard PASS; OSrepair nativechecks PASS but scanner-format HOLD; exactMCP alias next
+
+1November2026,Europe/Rome. Correctedcore source3940e8ac/run41313438162:
+Sem124868429313/MCP124868429203/Onb124868429038 SUCCESS allfinal5logsread;
+Ing124868429353/UDP124868429334 stillcorrectlyHELD foractual3OSfindings.
+Semartifact13086527110 ZIP8fe0790c 362015534bytes, MCP13086467391 ZIP333c91bf
+18935283bytes, Onb13085824398 ZIP9570304d 426597635bytes. Newunsignedproducer
+records havefreshscan/sourceGit/checksumclosure; originalformats remainverbatim.
+No broad acceptance/source/publication/runtime authority inferred.
+
+OSrepair source3940e8ac/run41313438125 BOTHactualbuilds/3pinnedvendorAPKs/default
+signaturechecks/networkNONE/JDK21.0.12.1 versionprobe/fullJAR+allSQL equality/
+exactoriginalrootfsdiffIDprefix/executionconfig/user/packageversiondiff3 PASS.
+Nativecontrolledloadchecks PASS. ThenTrivy0.70 failedARCHIVEREAD, notfindingwaiver:
+invalidtarheader onnewcompressedlayers. OriginalDocker-save scanningsourceee4b/
+run41314293581 failedsameformat. All4finaljoblogsread. Theseearliercandidates
+are UNQUALIFIED/unselected; metadataevidence recordsfailedstageaccurately.
+
+Nextcorrectivecode generates CLASSIC uncompressed scannerarchive whilechecking
+EACH expandedlayer byte/hash+sameconfig againstnativecandidate. DoesNOTalter
+runnableimage orwaiveanyvulnerability. Finalizer reparses BOTH archives and
+requires sameconfiguration+orderedrootfsdiffIDs, exactrecordedhashes, actual
+originalproducer scan_gate.4localrepair testsPASS includingcompressed->classic
+byteequivalence andmutateddiffID denial. Newpublisherprovenance overchecksums
+usingactions/attest, NOTinstallationauthority. CandidateCI retry next.
+
+Added current_image_custody futureM2alias and3tests: ordinarylegacyAPI/results
+unchanged; exactcurrentMCPconfig47/sourceD245 andONLY originalb0fe/knownnative
+457d archivehashes mayuse EXISTING modernhelper5d0/CIBinding396300e8.
+Unknownsource/archive/mutatedbinding/caller-suppliedcallback rejected BEFOREIO.
+Actual23MBpublicMCPoriginal+exactderived457d/nativea521 validatedlocally; new
+focusedactualarchiveCI next. NO genericnil-label bypass. Frozen235alias/file
+remainbyteexact; wrapper isNOTinoldcompleteexecutioncompiler. NewsealedM2
+compiler mustexplicitlymapnewalias+old+qualifiedhelper dependencies. Historical
+artifactreceipt64ac/frozenplanbffe establishSOURCEBYTES only, never reuseHUMAN/
+dualrole/runtimeauthority. All235/frozen11 hashesunchanged.
+
+AutonomousworkcontinuesafteruserAggiornami answered: M2incomplete, noVPSchange
+andnooperatorcommandyet. Sixscopesconsumed/22GET; neverreplay/rearm/reset/grant.
+Publiccoreaggregation/Gatewayprivateproposal/vendor+sidecarbytecustody/full
+privatecustody/liveowner+expectedpolicy/bearer/completeexecution/privatecurrent
+review/currentHUMAN+dualrole/E2E/twoclients OPEN. Retainedrolecasesstilloriginal;
+securityrepaircandidates MUSTNOTautomaticallyreplaceIng/UDP. PreserveM1/Teatri
+8/8tech6/6functional/Farmacie61/10/10OPEN/ministerialSTRING. No reupload/profile/
+acquisition/activation. Noagents/automations/optionalstops. UDP/alloutcomes then
+graph thenvertical/APIdelta. Olderoperatorcommandheaders historical.
+
 # CURRENT — CurrentMCP/Onboard core stages+scans PASS; Ing/UDP actual OS findings, unselected repair in qualification
 
 1November2026,Europe/Rome. Source93d61391 run41311454637 all5logsread: MCP+

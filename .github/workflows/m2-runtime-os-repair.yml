@@ -3,7 +3,7 @@ on:
   push:
     branches: [feat/m2-discovery-complete-profile-20261029]
     paths: ['scripts/prepare-m2-runtime-os-repair.py','releases/m2-original-runtime-os-repair-case-20261101.json','tests/test_m2_runtime_os_repair.py','.github/workflows/m2-runtime-os-repair.yml']
-permissions: {contents: read, actions: read}
+permissions: {contents: read, actions: read, id-token: write, attestations: write}
 jobs:
   repair:
     runs-on: ubuntu-24.04
@@ -93,6 +93,13 @@ jobs:
           cd candidate
           sha256sum image.docker.tar scan-input.docker.tar repair-candidate.json Dockerfile trivy-image.json \
             m2-original-runtime-os-repair-case-20261101.json > SHA256SUMS
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: candidate/SHA256SUMS
+          create-storage-record: false
+      - name: Retain publisher provenance without issuing installation authority
+        run: cp '${{ steps.provenance.outputs.bundle-path }}' candidate/provenance.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: m2-runtime-repair-${{ matrix.role }}-${{ github.run_id }}
