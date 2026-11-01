@@ -6,6 +6,18 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
+## Checkpoint corrente — diagnosi acquisita, byte runtime in qualifica
+
+[Diagnosi riuscita](../evidence/m2-image-graph-target-20261101.json), Exit0,
+10 controlli/35 GET, scope consumato: 13 match classico→OCI univoci, nessun membro
+classico mancante, 22 manifesti assenti di altre piattaforme o ausiliari.
+[Verifica del runtime esatto](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md)
+in qualifica: digest nativo, classic binding, piattaforma, config e tutti i layer/
+diff ID, con dieci scope preservati. Nessuna ammissione dei rami non selezionati
+né del runtime. Nuovo controllo finito massimo 11/35, nessun comando pronto.
+Sempre riuso dei contratti/prove Teatri, M1 acquisito e stessa Farmacie preservata;
+tutti i gate M2 restano aperti. Checkpoint successivi storici, nessun replay.
+
 ## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 
 Secondo STOP immagini8bec8301/Exit1,9controlli/35GET e scope consumato.

@@ -1,3 +1,13 @@
+# SUPERATO — diagnosi ESEGUITA, riuscita e scope CONSUMATO
+
+[Ricevuta 95e66e21 / prova f54c14e3](../../evidence/m2-image-graph-target-20261101.json),
+ImageGraphDiagnosticExit=0: 13 match runtime classico→OCI, nessun membro classico
+mancante; 22 manifesti assenti di altre piattaforme o ausiliari nonruntime.
+Tutti i 9 scope precedenti preservati, cumulativi 10 controlli/35 GET.
+NON eseguire il comando sotto. [Passo corrente](OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md).
+Il successo è diagnostico: configurazioni/layer/diff ID non sono ancora verificati.
+Le qualifiche seguenti sono storia, non nuovi comandi da eseguire.
+
 # M2 — diagnosi della struttura degli archivi conservati
 
 1 novembre 2026, Europe/Rome. Sorgente e consegna QUALIFICATI; nuova diagnosi VPS NON eseguita.

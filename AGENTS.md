@@ -1,3 +1,33 @@
+# CURRENT — Diagnosi immagini riuscita; verifica dei byte del runtime in qualifica
+
+1 novembre 2026, Europe/Rome. [Ricevuta corrente](evidence/m2-image-graph-target-20261101.json): diagnosi completata,
+13 archivi / 2.774.726.144 byte; un solo match classico→OCI per ciascun runtime,
+zero membri classici mancanti. I 22 riferimenti assenti sono manifesti di altre
+piattaforme (13) o ausiliari unknown/nonruntime (9), negli ordinali 0/1/5/7.
+Risultato 95e66e21, prova privata f54c14e3; Exit0. Tutti i 9 scope precedenti
+preservati; cumulativi 10 controlli / 35 GET. Il comando diagnostico è CONSUMATO,
+come cattura e due vecchie verifiche: NON rilanciare nessun comando storico.
+
+[Passo corrente](docs/handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md): nuovo verificatore del ramo runtime univoco, legato
+al digest nativo originale, al manifest.json classico e alla piattaforma del
+profilo installativo corrente. Configurazione, ogni layer e diff ID sono obbligatori;
+rami mancanti della piattaforma richiesta, indici mancanti, nonruntime indefiniti
+o ambiguità restano bloccanti. I rami ausiliari devono avere marker/target coerenti.
+Non si ammettono indice completo, rami non selezionati, publisher o runtime.
+Riuso dei controlli di digest/compressione/diff ID già qualificati, senza alterare
+17 sorgenti del verificatore, 19 della diagnosi o 235 dell'esecuzione congelata.
+Nuova prova su tutti i 10 scope e gli stessi 13 archivi; zero Engine/fetch/import/
+lifecycle/mount host/credenziali/SQL/OAuth. Massimo 1 controllo/600s, totale 11/35;
+nessun riarmo, reset, grant o authority. Sorgente in qualifica, nessun comando pronto.
+
+Riletti handoff M1, dossier Teatri e audit M2: riusare contratti owner, provenance,
+identità/proprietà/recovery; nessuna terza acquisizione o nuovo motore. M1 tecnico
+8/8 e funzionale 6/6 acquisiti; stessa Farmacie 61 righe/10 campi OPEN, ministeriale
+STRING. M2/G5/G6/G7/due client ancora OPEN. Restano source/publisher/membership,
+Gateway proposal, owner/policy/custody/bearer, coorte/pacchetto/review/authority e
+prova UDP con tutte le righe. Poi grafo/search e verticali/API scheduler/delta.
+Nessun subagente, automazione, merge o release acceptance. Header seguenti STORICI.
+
 # CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md), [qualifica](evidence/m2-image-graph-delivery-qualified-20261101.json),
