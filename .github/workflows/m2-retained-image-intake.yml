@@ -1,9 +1,9 @@
 name: M2 consumed private image intake and native byte verification
 on:
   push:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
   pull_request:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
 permissions: {contents: read}
 jobs:
   unit-and-seal:
@@ -31,7 +31,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_image_identity.py test_m2_retained_image_intake.py test_m2_retained_image_reader.py test_m2_retained_image_verification_capsule.py; do
+          for suite in test_m2_retained_image_identity.py test_m2_retained_image_intake.py test_m2_retained_image_reader.py test_m2_retained_image_verification_capsule.py test_m2_retained_image_verification_launcher.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
           sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-image-verification.py" \
@@ -65,6 +65,16 @@ jobs:
             retained-image-byte-verification-publisher-verification.json
           if-no-files-found: error
           retention-days: 30
+  public-https-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual public immutable launcher and capsule; unprivileged source inspection only
+        env:
+          OUF_DELIVERY_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python3 -I -B -S tests/qualify_m2_retained_image_verification_delivery.py -v
   native-seven-stage-reader:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
