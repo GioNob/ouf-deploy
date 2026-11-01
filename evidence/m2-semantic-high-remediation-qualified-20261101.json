@@ -1,0 +1,165 @@
+{
+  "candidateSelectionChanged": false,
+  "cumulativeTargetControlAttempts": 12,
+  "cumulativeTargetEngineGets": 35,
+  "date": "2026-11-01",
+  "finalOriginCompositionCiQualified": false,
+  "finalOriginCompositionLocalTests": 10,
+  "independentLocalReadback": {
+    "checksummedMembersMatched": 4,
+    "completeZipsRehashed": 2,
+    "originalEvidenceMembersRead": 6,
+    "publisherEvidenceMembersRead": 7,
+    "publisherEvidencePreservesEveryOriginalMember": true,
+    "threePackageInventoriesAndVendorVersionOrderingRechecked": true
+  },
+  "m2Acceptance": false,
+  "newVpsOperations": 0,
+  "normativeSectionsConsulted": [
+    "Matrix1.7 section1",
+    "Blueprint0.3 section9",
+    "Semantic1.3 section159.2",
+    "MiniPET M2 version1.3",
+    "M2 Teatri compatibility handoff20261031"
+  ],
+  "publisherReadback": {
+    "artifactId": 13101203812,
+    "conclusion": "success",
+    "finalLogRead": true,
+    "jobId": 124982301308,
+    "preservedZip": "evidence/artifacts/m2-semantic-remediation-publisher-41351447269.zip",
+    "publisherVerificationSha256": "c6624b2ee8c9b8f32917359153a1bc2c3de785b3984c8f7fe4eec129d25cb2bb",
+    "runId": 41351447269,
+    "sigstoreChainAndTransparencyVerifiedInNamedJob": true,
+    "sigstoreChainReverifiedLocally": false,
+    "sourceCommit": "835e52b6cd30ae685abb73dcb36c33df02926dea",
+    "subject": [
+      {
+        "digest": {
+          "sha256": "f75fa7d2310f67b2a19063ee5f04e601913261362f7cb781f189b3fc3721e096"
+        },
+        "name": "SHA256SUMS"
+      }
+    ],
+    "verifiedCertificate": {
+      "buildConfigDigest": "c893120beb881320542a1a63d06ec4fec37935ea",
+      "buildConfigURI": "https://github.com/GioNob/ouf-deploy/.github/workflows/m2-semantic-high-remediation.yml@refs/heads/feat/m2-discovery-complete-profile-20261029",
+      "buildSignerDigest": "c893120beb881320542a1a63d06ec4fec37935ea",
+      "buildSignerURI": "https://github.com/GioNob/ouf-deploy/.github/workflows/m2-semantic-high-remediation.yml@refs/heads/feat/m2-discovery-complete-profile-20261029",
+      "buildTrigger": "push",
+      "certificateIssuer": "CN=sigstore-intermediate,O=sigstore.dev",
+      "githubWorkflowName": "M2 exact Semantic replacement HIGH remediation",
+      "githubWorkflowRef": "refs/heads/feat/m2-discovery-complete-profile-20261029",
+      "githubWorkflowRepository": "GioNob/ouf-deploy",
+      "githubWorkflowSHA": "c893120beb881320542a1a63d06ec4fec37935ea",
+      "githubWorkflowTrigger": "push",
+      "issuer": "https://token.actions.githubusercontent.com",
+      "runInvocationURI": "https://github.com/GioNob/ouf-deploy/actions/runs/41351198866/attempts/1",
+      "runnerEnvironment": "github-hosted",
+      "sourceRepositoryDigest": "c893120beb881320542a1a63d06ec4fec37935ea",
+      "sourceRepositoryIdentifier": "1409074354",
+      "sourceRepositoryOwnerIdentifier": "96419716",
+      "sourceRepositoryOwnerURI": "https://github.com/GioNob",
+      "sourceRepositoryRef": "refs/heads/feat/m2-discovery-complete-profile-20261029",
+      "sourceRepositoryURI": "https://github.com/GioNob/ouf-deploy",
+      "sourceRepositoryVisibilityAtSigning": "public",
+      "subjectAlternativeName": "https://github.com/GioNob/ouf-deploy/.github/workflows/m2-semantic-high-remediation.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"
+    },
+    "verifierVersion": "2.97.0",
+    "zipBytes": 109538,
+    "zipSha256": "4e4551c6c86517025bdffafe2a50f8986c129736ad6f6394ba72e05390bb5ff3"
+  },
+  "releaseAcceptance": false,
+  "remainingPrerequisites": [
+    "gateway-owner executable provenance",
+    "MinIO exact origin",
+    "complete runtime membership and private custody",
+    "current policy owner workload bearer",
+    "complete sealed execution package and concrete review",
+    "current HUMAN and dual-role authority",
+    "target replacement and readback",
+    "all61 UDP outcomes repeatability faults and two real clients"
+  ],
+  "remediationQualifiedInExistingReplacement": true,
+  "result": {
+    "archiveSha256": "7f6482b79589fd1063eaf96508ea948d6411a7b4f0dbe76d663746a08953a223",
+    "candidateSelectionChanged": false,
+    "configurationImageId": "sha256:a6f00cda30f1c570082c94cb49d5564f40d512758441f6b6eac75e21f423d14f",
+    "highCriticalUnknownGate": "PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED",
+    "imageRebuilt": false,
+    "m2Acceptance": false,
+    "nativeImageId": "sha256:d06aeb529724ca198b1cb87a1f868143cfbe7ad6eb05dc4ccdf2b6400cc39d64",
+    "originFactsSha256": "75ad37eecca172382bf3928cdb1b8c1fd08d128522908a3dd70e54fdd025f734",
+    "originalArtifactId": 13066396654,
+    "originalArtifactRepository": "GioNob/ouf-semantic-registry",
+    "originalZipSha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba",
+    "releaseAcceptance": false,
+    "remediatedFindings": [
+      {
+        "cve": "CVE-2026-92392",
+        "cveAbsentAtEverySeverity": true,
+        "minimumFixedVersion": "8.18.0-1ubuntu2.8",
+        "package": "curl",
+        "replacementVersion": "8.18.0-1ubuntu2.8",
+        "retainedVersion": "8.18.0-1ubuntu2.7",
+        "vendorFixedVersionSatisfied": true
+      },
+      {
+        "cve": "CVE-2026-92392",
+        "cveAbsentAtEverySeverity": true,
+        "minimumFixedVersion": "8.18.0-1ubuntu2.8",
+        "package": "libcurl4t64",
+        "replacementVersion": "8.18.0-1ubuntu2.8",
+        "retainedVersion": "8.18.0-1ubuntu2.7",
+        "vendorFixedVersionSatisfied": true
+      },
+      {
+        "cve": "CVE-2026-111497",
+        "cveAbsentAtEverySeverity": true,
+        "minimumFixedVersion": "1.2.0-3ubuntu0.1",
+        "package": "libbrotli1",
+        "replacementVersion": "1.2.0-3ubuntu0.1",
+        "retainedVersion": "1.2.0-3build1",
+        "vendorFixedVersionSatisfied": true
+      }
+    ],
+    "remediationMethod": "QUALIFIED_EXISTING_REPLACEMENT_NOT_RETAINED_IMAGE_MUTATION",
+    "retainedImageSecurityAdmission": "HELD_HIGH_CRITICAL_UNKNOWN",
+    "retainedReportGzipSha256": "1f4e4f06fbac99dd5eea9c202ec8f6c8d5d940eef82500f12858d8a4b7e1b99f",
+    "runtimeAuthorityIssued": false,
+    "scanCreatedAt": "2026-11-01T21:17:33.233602882Z",
+    "scanSha256": "e84e5fe433968235c9da7c67cdde6db92aec765547c5086d807ebb90e6d7f66c",
+    "schema": "ouf.m2-semantic-high-remediation.v1",
+    "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+    "targetApplyAuthorized": false,
+    "targetImageReplaced": false,
+    "targetOperations": 0,
+    "threeRetainedHighFindingsRemediatedInReplacement": true,
+    "vulnerabilityCounts": {
+      "LOW": 4,
+      "MEDIUM": 53
+    }
+  },
+  "retainedTargetImageStillHeld": true,
+  "runtimeAuthorityIssued": false,
+  "scanQualification": {
+    "artifactId": 13100779425,
+    "conclusion": "success",
+    "errors": 0,
+    "failures": 0,
+    "finalLogRead": true,
+    "jobId": 124981513469,
+    "preservedZip": "evidence/artifacts/m2-semantic-high-remediation-41351198866.zip",
+    "resultSha256": "836dd2d9bb3cb2d4c787a9bf464e5645d2a537ca5b6a6612b0782c16ee94c652",
+    "runId": 41351198866,
+    "skips": 0,
+    "sourceCommit": "c893120beb881320542a1a63d06ec4fec37935ea",
+    "tests": 15,
+    "zipBytes": 100936,
+    "zipSha256": "4fed16f6a98975dbe02e03a8814b47fea7da76bf3e2abadcb583acaa3d4850eb"
+  },
+  "schema": "ouf.m2-semantic-high-remediation-qualified.v1",
+  "targetApplyAuthorized": false,
+  "targetImageReplaced": false,
+  "timezone": "Europe/Rome"
+}

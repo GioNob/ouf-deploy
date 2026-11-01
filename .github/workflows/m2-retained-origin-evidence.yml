@@ -11,6 +11,10 @@ on:
       - 'releases/artifacts/m2-retained-semantic-original-13099216732.zip'
       - 'evidence/m2-retained-semantic-scan-readback-20261101.json'
       - 'evidence/artifacts/m2-retained-semantic-trivy-20261101.json.gz'
+      - 'evidence/artifacts/m2-semantic-high-remediation-41351198866.zip'
+      - 'evidence/artifacts/m2-semantic-remediation-publisher-41351447269.zip'
+      - 'scripts/check-m2-semantic-high-remediation-20261101.py'
+      - 'tests/test_m2_semantic_high_remediation.py'
 permissions: {contents: read}
 jobs:
   offline-original-evidence:
@@ -22,4 +26,6 @@ jobs:
       - name: Reconcile exact consumed origin receipt, original signed members and 198 independent source blobs
         run: python3 -I -B -S scripts/reconcile-m2-retained-origin-evidence-20261101.py --check
       - name: Deny changed provenance or promoted authority and preserve all frozen sources
-        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_retained_origin_evidence.py -v
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_retained_origin_evidence.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_semantic_high_remediation.py -v

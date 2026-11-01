@@ -1,3 +1,23 @@
+# CURRENT — Tre HIGH Semantic risolti nel candidato esatto; target ancora HELD
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_SEMANTIC_HIGH_REMEDIATION_20261101.md).
+Scansione aggiornata del candidato originale c2dae77b/config a6f00cda/native d06aeb52:
+zero HIGH/CRITICAL/UNKNOWN, 53 MEDIUM e 4 LOW. curl e libcurl4t64 8.18.0-1ubuntu2.8,
+libbrotli1 1.2.0-3ubuntu0.1; CVE-2026-92392 e CVE-2026-111497 assenti a ogni severità.
+CI 41351198866/job124981513469 PASS, 15 test; archivio originale non ricostruito.
+Readback 41351447269/job124982301308 PASS: interi ZIP e checksum, catena Sigstore,
+trasparenza, workflow/ref/source/publisher esatti. Entrambi i log finali letti.
+Prove complete preservate. Riconciliatore pubblico collega il candidato separato;
+la configurazione installata 29e32c14 resta HELD con i tre HIGH originari.
+Non dichiarare sanato il VPS o M2. Nessuna selezione/installazione già eseguita.
+NEXT: integrare il candidato nella coorte/pacchetto/review governati, con nuova
+ammissione corrente prima degli effetti. Restano origini Gateway-owner/MinIO,
+membership/custody/policy/owner/bearer, review e HUMAN/dual-role. Nessun nuovo
+comando VPS pronto/richiesto. Scope12 consumato; 12 controlli/35 GET immutati.
+Tutti i pin congelati preservati; non rilanciare vecchie consegne. M1/Teatri
+8/8 tecnico e 6/6 funzionale acquisiti; stessa Farmacie61/10OPEN/STRING preservata.
+M2/G5–G7/due client OPEN. Header successivi storici.
+
 # CURRENT — Semantic conservato collegato al publisher originale; scansione HELD
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md).

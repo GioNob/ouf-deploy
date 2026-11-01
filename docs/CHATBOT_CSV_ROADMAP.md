@@ -1,3 +1,5 @@
+> **Checkpoint 1 novembre — correzione HIGH qualificata nel candidato:** [handoff corrente](handoffs/OUF_M2_SEMANTIC_HIGH_REMEDIATION_20261101.md). Candidato esatto c2dae77b: tutti e tre i pacchetti nelle versioni corrette, entrambi i CVE assenti; zero HIGH/CRITICAL/UNKNOWN, 53 MEDIUM e 4 LOW. Scansione41351198866 e verifica indipendente del publisher41351447269 PASS. Immagine installata ancora HELD: sostituzione non applicata. Coorte/pacchetto/review/authority e origini Gateway-owner/MinIO restano aperti. Scope12 consumato, 12 controlli/35 GET immutati. Teatri e stessa Farmacie preservati; M2 OPEN. Checkpoint precedenti storici.
+
 # CURRENT — Origini runtime COLLEGATE; comando consumato, ricomposizione autonoma
 
 1 novembre 2026, Europe/Rome. [Ricevuta target](../evidence/m2-runtime-origin-join-target-20261101.json),

@@ -8,6 +8,7 @@ It neither changes the frozen installation compilers nor invokes the VPS.
 """
 import argparse
 import ast
+import base64
 from collections import Counter
 import gzip
 import hashlib
@@ -25,6 +26,8 @@ TARGET = 'ca16c7e3799d916517cba7e0c0d0456c57bd949184bd103d3fa3204110768a09'
 SOURCE = 'eccef11a97367f20e278db40b9ed6f45dd980c37'
 CONFIG = 'sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489'
 NATIVE = 'sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3'
+REMEDIATION_ZIP = 'evidence/artifacts/m2-semantic-high-remediation-41351198866.zip'
+REMEDIATION_PUBLISHER_ZIP = 'evidence/artifacts/m2-semantic-remediation-publisher-41351447269.zip'
 
 
 def require(ok, reason):
@@ -109,6 +112,69 @@ def validate_semantic(result, binding):
             'ORIGINAL_EVIDENCE_MUST_NOT_CONFER_RUNTIME_ADMISSION')
 
 
+def semantic_remediation(root):
+    """Join separately qualified candidate evidence, keeping the target HELD.
+
+    Verify the exact recorded hosted verifier output. This offline reader does
+    not itself repeat Sigstore trust-chain or transparency-log verification.
+    """
+    archives = []
+    for path, size, checksum in (
+        (REMEDIATION_ZIP, 100936, '4fed16f6a98975dbe02e03a8814b47fea7da76bf3e2abadcb583acaa3d4850eb'),
+        (REMEDIATION_PUBLISHER_ZIP, 109538, '4e4551c6c86517025bdffafe2a50f8986c129736ad6f6394ba72e05390bb5ff3')):
+        raw = (root/path).read_bytes()
+        require(len(raw) == size and sha(raw) == checksum, 'EXACT_REMEDIATION_AND_PUBLISHER_ZIPS_REQUIRED')
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            require(len(archive.namelist()) == len(set(archive.namelist()))
+                    and sum(r.file_size for r in archive.infolist()) <= 2097152, 'BOUNDED_REMEDIATION_EVIDENCE_REQUIRED')
+            archives.append({name: archive.read(name) for name in archive.namelist()})
+    original, verified = archives
+    require(set(original) == {'SHA256SUMS', 'origin-facts.json', 'empty.trivyignore', 'provenance.json',
+                             'remediation-result.json', 'trivy-image.json'}
+            and set(verified) == set(original)|{'publisher-verification.json'}
+            and all(value == verified[name] for name, value in original.items()),
+            'IDENTICAL_COMPLETE_REMEDIATION_EVIDENCE_REQUIRED')
+    for row in original['SHA256SUMS'].decode().splitlines():
+        checksum, name = row.split('  ', 1)
+        require(name in original and sha(original[name]) == checksum, 'REMEDIATION_SIGNED_MEMBER_CHANGED')
+    results = json.loads(verified['publisher-verification.json'])
+    require(type(results) is list and len(results) == 1, 'ONE_HOSTED_PUBLISHER_VERIFICATION_REQUIRED')
+    publisher = results[0]['verificationResult']; cert = publisher['signature']['certificate']
+    bundle = json.loads(original['provenance.json'])
+    statement = json.loads(base64.b64decode(bundle['dsseEnvelope']['payload'], validate=True))
+    source = 'c893120beb881320542a1a63d06ec4fec37935ea'
+    identity = ('https://github.com/GioNob/ouf-deploy/.github/workflows/m2-semantic-high-remediation.yml'
+                '@refs/heads/feat/m2-discovery-complete-profile-20261029')
+    require(results[0]['attestation']['bundle'] == bundle and publisher['statement'] == statement
+            and cert['subjectAlternativeName'] == cert['buildSignerURI'] == identity
+            and cert['sourceRepositoryDigest'] == cert['buildSignerDigest'] == source
+            and cert['issuer'] == 'https://token.actions.githubusercontent.com'
+            and cert['runnerEnvironment'] == 'github-hosted'
+            and cert['sourceRepositoryRef'] == 'refs/heads/feat/m2-discovery-complete-profile-20261029'
+            and any(t['type'] == 'Tlog' for t in publisher['verifiedTimestamps'])
+            and statement['subject'] == [{'name':'SHA256SUMS', 'digest':{'sha256':sha(original['SHA256SUMS'])}}],
+            'EXACT_HOSTED_VERIFIED_REMEDIATION_PUBLISHER_REQUIRED')
+    result = json.loads(original['remediation-result.json'])
+    scan = json.loads(original['trivy-image.json'])
+    counts = dict(Counter(f['Severity'] for r in scan['Results'] for f in r.get('Vulnerabilities', [])))
+    require(result['configurationImageId'] == scan['Metadata']['ImageID'] ==
+            'sha256:a6f00cda30f1c570082c94cb49d5564f40d512758441f6b6eac75e21f423d14f'
+            and result['sourceCommit'] == 'c2dae77b42f1811b704465f6ab813c91d808ade4'
+            and result['scanSha256'] == sha(original['trivy-image.json'])
+            and result['vulnerabilityCounts'] == counts
+            and not any(counts.get(s, 0) for s in ('HIGH', 'CRITICAL', 'UNKNOWN'))
+            and result['threeRetainedHighFindingsRemediatedInReplacement'] is True
+            and result['retainedImageSecurityAdmission'] == 'HELD_HIGH_CRITICAL_UNKNOWN'
+            and all(result[k] is False for k in ('candidateSelectionChanged', 'targetImageReplaced',
+                    'targetApplyAuthorized', 'runtimeAuthorityIssued', 'releaseAcceptance', 'm2Acceptance')),
+            'REMEDIATION_CANDIDATE_MUST_NOT_CLEAR_TARGET_HOLD')
+    return dict(result, evidenceZip=REMEDIATION_ZIP, publisherEvidenceZip=REMEDIATION_PUBLISHER_ZIP,
+                publisherChainVerifiedInNamedHostedJob=True, publisherChainReverifiedByThisReader=False,
+                scanRunId=41351198866, scanJobId=124981513469,
+                publisherReadbackRunId=41351447269, publisherReadbackJobId=124982301308,
+                scanFreshnessMustBeRecheckedBeforeAdmission=True)
+
+
 def reconcile(root):
     target_raw = (root / 'evidence/m2-runtime-origin-join-target-20261101.json').read_bytes()
     target = json.loads(target_raw)
@@ -155,7 +221,8 @@ def reconcile(root):
             'EXACT_IMAGE_BOUND_HELD_SCAN_MUST_REMAIN_HELD')
     roles['semantic'].update(freshScanAdmission='HELD_HIGH_CRITICAL_UNKNOWN',
         freshScanEvidence='evidence/m2-retained-semantic-scan-readback-20261101.json',
-        freshScanSha256=sha(scan_raw), vulnerabilityCounts=counts)
+        freshScanSha256=sha(scan_raw), vulnerabilityCounts=counts,
+        remediationCandidate=semantic_remediation(root))
     roles['gateway-owner']['originGap'] = 'ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP'
     roles['minio']['originGap'] = 'EXACT_SELECTED_REGISTRY_DESCRIPTOR_UNAVAILABLE'
     return {

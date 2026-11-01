@@ -109,6 +109,31 @@ class OriginalEvidence(unittest.TestCase):
             with self.subTest(kind=kind), patch.object(Path, 'read_bytes', read), self.assertRaises(ValueError):
                 m.reconcile(ROOT)
 
+    def test_remediation_binds_a_different_exact_image_and_preserves_the_target_hold(self):
+        report = m.reconcile(ROOT)
+        retained = report['roles']['semantic']
+        replacement = retained['remediationCandidate']
+        self.assertEqual(replacement['configurationImageId'],
+                         'sha256:a6f00cda30f1c570082c94cb49d5564f40d512758441f6b6eac75e21f423d14f')
+        self.assertEqual(len(replacement['remediatedFindings']), 3)
+        self.assertEqual(replacement['vulnerabilityCounts'], {'MEDIUM':53, 'LOW':4})
+        self.assertTrue(replacement['publisherChainVerifiedInNamedHostedJob'])
+        self.assertFalse(replacement['publisherChainReverifiedByThisReader'])
+        self.assertTrue(replacement['scanFreshnessMustBeRecheckedBeforeAdmission'])
+        self.assertFalse(replacement['targetImageReplaced'])
+        self.assertFalse(replacement['candidateSelectionChanged'])
+        self.assertEqual(retained['freshScanAdmission'], 'HELD_HIGH_CRITICAL_UNKNOWN')
+        self.assertEqual(retained['vulnerabilityCounts']['HIGH'], 3)
+
+    def test_either_remediation_zip_changed_blocks_the_composed_report(self):
+        original = Path.read_bytes
+        for changed in (m.REMEDIATION_ZIP, m.REMEDIATION_PUBLISHER_ZIP):
+            def read(path):
+                raw = original(path)
+                return raw+b'changed' if path == ROOT/changed else raw
+            with self.subTest(changed=changed), patch.object(Path, 'read_bytes', read), self.assertRaisesRegex(ValueError, 'PUBLISHER_ZIPS'):
+                m.reconcile(ROOT)
+
 
 if __name__ == '__main__':
     unittest.main()
