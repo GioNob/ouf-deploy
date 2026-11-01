@@ -46,6 +46,10 @@ include ora `roles.semantic.remediationCandidate`. Mantiene sul ruolo installato
 sorgenteeccef11a/config29e32c14/nativeb61bc39c e `HELD_HIGH_CRITICAL_UNKNOWN` con
 i tre HIGH: non scambia il candidato con il target. I test aggiunti respingono
 alterazioni di entrambi gli ZIP e verificano la separazione di immagini/authority.
+Qualifica finale della composizione sorgente `037b4e9e`,
+[run41351775616](https://github.com/GioNob/ouf-deploy/actions/runs/41351775616),
+job124983324268 PASS:17 test (10 origine,7 remediation), zero failure/error/skip;
+log finale letto. Tutti i cinque insiemi di sorgenti congelati restano invariati.
 [Dossier strutturato](../../evidence/m2-semantic-high-remediation-qualified-20261101.json).
 
 Riferimenti consultati: Matrix1.7§1, Blueprint0.3§9, Semantic1.3§159.2, miniPET M2

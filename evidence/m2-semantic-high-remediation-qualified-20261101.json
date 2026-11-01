@@ -3,8 +3,22 @@
   "cumulativeTargetControlAttempts": 12,
   "cumulativeTargetEngineGets": 35,
   "date": "2026-11-01",
-  "finalOriginCompositionCiQualified": false,
+  "finalOriginCompositionCiQualified": true,
   "finalOriginCompositionLocalTests": 10,
+  "finalOriginCompositionQualification": {
+    "allFiveFrozenSourceMapsPreserved": true,
+    "conclusion": "success",
+    "errors": 0,
+    "failures": 0,
+    "finalLogRead": true,
+    "jobId": 124983324268,
+    "originTests": 10,
+    "remediationTests": 7,
+    "runId": 41351775616,
+    "skips": 0,
+    "sourceCommit": "037b4e9e96caf685ff127866837f85808ef4ab42",
+    "tests": 17
+  },
   "independentLocalReadback": {
     "checksummedMembersMatched": 4,
     "completeZipsRehashed": 2,
