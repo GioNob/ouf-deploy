@@ -31,7 +31,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_runtime_origins.py test_m2_retained_runtime_origin_capsule.py; do
+          for suite in test_m2_retained_runtime_origins.py test_m2_retained_runtime_origin_capsule.py test_m2_retained_runtime_origin_launcher.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
           sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-runtime-origins.py" \
@@ -108,3 +108,13 @@ jobs:
           sudo chmod -R go-w "$fixture"
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
             python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_retained_runtime_origins_native.py -v
+  public-https-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual public immutable runtime-origin launcher and capsule; inspection only
+        env:
+          OUF_DELIVERY_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python3 -I -B -S tests/qualify_m2_retained_runtime_origins_delivery.py -v
