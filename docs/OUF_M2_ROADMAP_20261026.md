@@ -1,3 +1,29 @@
+# CURRENT — Tredici immagini M2: launcher e consegna QUALIFICATI, input VPS necessario
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
+e [prove](../evidence/m2-native-image-archives-delivery-qualified-20261101.json).
+Source/launcher1a519f53: push41323332553 e PR41323339276 SUCCESS, ciascuno
+20 test/5 suite, zero failure/error/skip/ResourceWarning; tutti sei log finali letti.
+Include tre test Docker29.8.1 reali e consegna HTTPS pubblica esatta con sola
+ispezione non privilegiata. Capsula originale a7cb/3e281be8 conservata, 13 sorgenti.
+
+NEXT solo nuovo comando fissato del handoff come oufadmin sul VPS, una volta.
+È l'input privato di 13 immagini originali CID-bound, GET-only, non un apply.
+9GiB liberi prima dello scope, massimo30min/2GiB per immagine/8GiB totali;
+archivi root-private0400, nessun contenuto mount host, estrazione o import.
+STOP/interruzione: preservare tutto e riconciliare, mai rilanciare/riarmare.
+Target ancora6 scope consumati/22GET; nuovo scope NON eseguito. L'agente non
+ha shell né record privati VPS. Non chiedere archivi/indice/config/credenziali.
+Nessun login/grant/budget/runtime authority o modifica applicativa.
+
+M1/Teatri tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso SUCCEEDED61righe,
+10colonne/10OPEN, ministeriale STRING. Nessun nuovo upload/profile/acquisizione.
+Coorte completa/private proposal/policy e owner live/custody/bearer/pacchetto e
+review privata/authority HUMAN+dual-role/E2E e due client restano OPEN.
+Caricamento fino a UDP e tutti gli esiti, poi grafo/search e verticali/API delta.
+Nessun merge, release acceptance, subagente o automazione. Gli header/comandi
+successivi sono cronologia; non riprendere vecchi launcher.
+
 # Aggiornamento M2 — 31 ottobre 2026
 
 [Checkpoint corrente](handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md):

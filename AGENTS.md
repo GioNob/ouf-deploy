@@ -1,32 +1,28 @@
-# CURRENT — Exact thirteen-image archive input source and native chain QUALIFIED; capsule delivery next
+# CURRENT — Tredici immagini M2: launcher e consegna QUALIFICATI, input VPS necessario
 
-1 November 2026. Source4a1e7e23dd1b09ca4e3752dd148146275f24e415, push run
-41321000925 jobs124890997645/124890997946 BOTH SUCCESS; both final logs read.
-4 actual Unix-socket/private archive tests +5 isolated capsule/CLI/tamper tests
-+3 actual Docker29.8.1 tests =12 tests/3 suites, zero fail/error/skip/ResourceWarning.
-Native positive uses actual six producer stages +13 distinct native images,
-all13 image GETs, root-private archives/checksums, ZERO mounted host contents,
-all six old scopes preserved. Changed view receipt/root Engine generation deny
-before GET; method/role/path/replay/peer/size/partial/disk guards also pass.
-Earlier source c785 first CI held on wrong signer workflow path and fixture
-Semantic name; BOTH corrected, no production admission guard relaxed.
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
+e [prove](evidence/m2-native-image-archives-delivery-qualified-20261101.json).
+Source/launcher1a519f53: push41323332553 e PR41323339276 SUCCESS, ciascuno
+20 test/5 suite, zero failure/error/skip/ResourceWarning; tutti sei log finali letti.
+Include tre test Docker29.8.1 reali e consegna HTTPS pubblica esatta con sola
+ispezione non privilegiata. Capsula originale a7cb/3e281be8 conservata, 13 sorgenti.
 
-Actual gh2.97 publisher signature verification SUCCESS: exact repo/workflow/
-source4a1/ref head/github-hosted/source hash and capsule subject3e281be8.
-Downloaded artifact13089785255 ZIPab33a206/76954 verified, delivered capsule
-189219bytes SHA3e281be893cf7c5dc36d6169b8a48a14d979f6a9c32bd523071d8ea4fa6f148f
-is BYTE-IDENTICAL to actual13-source builder at4a1. Sigstore+verification bytes
-retained as source evidence. Publisher source trust does NOT grant runtime.
+NEXT solo nuovo comando fissato del handoff come oufadmin sul VPS, una volta.
+È l'input privato di 13 immagini originali CID-bound, GET-only, non un apply.
+9GiB liberi prima dello scope, massimo30min/2GiB per immagine/8GiB totali;
+archivi root-private0400, nessun contenuto mount host, estrazione o import.
+STOP/interruzione: preservare tutto e riconciliare, mai rilanciare/riarmare.
+Target ancora6 scope consumati/22GET; nuovo scope NON eseguito. L'agente non
+ha shell né record privati VPS. Non chiedere archivi/indice/config/credenziali.
+Nessun login/grant/budget/runtime authority o modifica applicativa.
 
-Capsule delivery now prepared; launcher/negative/real raw URL checks next before
-operator handoff. NO seventh target scope run, target remains6controls/22GET.
-New scope still13 GET-only private image archives, no host mount contents,
-no image import/extraction/container changes or budgets/admission. Requires
-9GiBfree before consuming scope; archives<=8GiBtotal,<=2GiBeach,1800s deadline.
-Old scopes never replay/rearm. FullM2 private proposal/policy/liveowners/custody/
-completepackage/HUMAN+dualrole/E2E/client acceptance OPEN. Security candidates
-remain unselected (scans qualified efec6d2b), no target changes. Noagents or
-optional stops. Preserve M1/Teatri/Farmacie facts stated below.
+M1/Teatri tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso SUCCEEDED61righe,
+10colonne/10OPEN, ministeriale STRING. Nessun nuovo upload/profile/acquisizione.
+Coorte completa/private proposal/policy e owner live/custody/bearer/pacchetto e
+review privata/authority HUMAN+dual-role/E2E e due client restano OPEN.
+Caricamento fino a UDP e tutti gli esiti, poi grafo/search e verticali/API delta.
+Nessun merge, release acceptance, subagente o automazione. Gli header/comandi
+successivi sono cronologia; non riprendere vecchi launcher.
 
 # CURRENT — Security repair scans and exact current MCP bridge PASS; next image bytes input in qualification
 

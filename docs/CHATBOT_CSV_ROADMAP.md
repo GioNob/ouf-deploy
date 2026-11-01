@@ -1,3 +1,12 @@
+# Checkpoint corrente — M2, 1 novembre 2026
+
+M1/Teatri tecnico8/8, funzionale6/6 acquisiti. M2 resta aperto; stessa Farmacie
+61righe/10colonne/10OPEN e codice ministeriale STRING. È qualificata la consegna
+per il nuovo input privato di 13 immagini; sul VPS restano6scope/22GET, input
+nuovo non eseguito. [Handoff corrente](handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md).
+Nessun vecchio comando, upload/profiling o acquisizione da ripetere. I checkpoint
+successivi sono storici; continuare dal handoff corrente e dalla roadmap M2.
+
 # CURRENT — peer storico riconciliato; continuazione diagnostica qualificata NON eseguita
 
 27 ottobre2026. VPS reader completo/Exit0/DeliveryExit0: unica differenza peerCredentials ASSENTE storico→presente cattura; stesso socket/custodia e profiloNATIVE, vecchiaauthority/journalassenti,3metadataread originali/zeroEngineSQL. ReportSHA be0123cad1ce85cbe16b508d41d9361fa76843603dceffff4e1f64bac655ee3c. [Ricevuta](evidence/onboarding-transport-stop-reconciled-target-20261027.json). Capture/preparazione/primoAPPLY/reader CONSUMATI, NON ripetere.

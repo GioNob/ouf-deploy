@@ -6,7 +6,15 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Stato corrente del 30 ottobre 2026 — riuso di Teatri e prova Farmacie
+## Checkpoint operativo del 1 novembre 2026
+
+La [consegna dell'input privato delle tredici immagini](handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
+è qualificata su push e PR,20test/5suite ciascuno. Il nuovo input VPS non è ancora
+eseguito; sei scope precedenti/22GET restano consumati e conservati. Nessun gate
+M2 è chiuso da questa prova installativa. Gli AT/UX e i criteri di stabilità non
+cambiano; il prossimo passo esatto è nel handoff corrente.
+
+## Stato del caso conservato al 30 ottobre 2026 — riuso di Teatri e prova Farmacie
 
 Teatri è completata a passi singoli: M1/G4, tecnico8/8 e funzionale6/6 acquisiti
 per quel caso. Se ne riusano componenti e prove per il percorso completo,
