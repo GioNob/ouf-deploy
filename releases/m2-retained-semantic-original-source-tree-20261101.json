@@ -1,0 +1,1195 @@
+{
+  "repository": "GioNob/ouf-semantic-registry",
+  "source": "GitHub git/trees at exact commit, independently fetched through GitHub connector",
+  "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+  "tree": [
+    {
+      "mode": "100644",
+      "path": ".dockerignore",
+      "sha": "9d9d639236e2b42ce15b769cae270ade9b0e7d9e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/authorization-pairwise.yml",
+      "sha": "c25325d8768b145da857336dab3dd310aa13e1ad",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/authorization-sdk-pairwise.yml",
+      "sha": "0360fbbf8618a5f865e9ca31b46e2fa730bd607d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/gateway-fixture-ci.yml",
+      "sha": "ee3158f6342bf029804006bd4a6583b4f8b29cdc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/module-ci.yml",
+      "sha": "ee1625433f3bcbc1a3ec810ff3966df6e372f469",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/pairwise.yml",
+      "sha": "1ce6fd92fb42e69929769857eb634ec9d3117697",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/semantic-gateway-live-pairwise.yml",
+      "sha": "744bf1884cc9cfc9f064e85c2422ae586981f1e5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".gitignore",
+      "sha": "d16cc411a1f2f4a563d36e9f4b1b76632b45410e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "AGENTS.md",
+      "sha": "db6a4114d9680ae2fdb2cdf9f1c27ef542abd018",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "Dockerfile",
+      "sha": "fe5b865ee3920b3a5e36094a76f21886e95b9806",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "LICENSE",
+      "sha": "76d4fa95830401c1d71cd7e97a337a781b85f9b6",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "README.md",
+      "sha": "4682e1dd77ba962657e8d56eccec363f24b42a5a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/artifact-detail-v1.json",
+      "sha": "7cfe750b6d53761122d1392daa06e5076a73ff15",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/artifact-revision-v1.json",
+      "sha": "701933660b1f1e8020c1e3556e94d3a9d31ef5b6",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/discovery-candidate-v1.json",
+      "sha": "d66646cdd8f28a4a45f2f3216d62d67a6f4309f2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/discovery-request-v1.json",
+      "sha": "60120a7ba681d5846eee3e6ab9cb80475a1f087e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/external-origin-v1.json",
+      "sha": "46b410fdc9c4237876b0d3db0d201fe1f1f61755",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/impact-report-v1.json",
+      "sha": "561a46fcd02e6a8c17ae53fdbdc6ec04a4c25ca7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/search-result-v1.json",
+      "sha": "5ec6864292f2df430257277fcccde6c59967bbf5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/semantic-change-notice-v1.json",
+      "sha": "ffc5820ecb291ee6b8deebbd299aecfc6a3e7f7a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/semantic-migration-proposal-v1.json",
+      "sha": "b3851b038caa80f73a7d62a406d450c3f6c2f40e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/semantic-publication-member-v1.json",
+      "sha": "15d3794843b7d3ab9db427cdc840d4b9902b3720",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/semantic-publication-set-v1.json",
+      "sha": "f985a0e8c14b84e90e24a4cba504c0b8bd82d976",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "contracts/semantic-reference-v1.json",
+      "sha": "54d105176b5f31cae4338e694784dacbcd38ea3a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/AUTHORIZATION_R1B.md",
+      "sha": "8b1ef3c1f5d39d769c52dc80a28132b97ae0ca32",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/AUTHORIZATION_SEMANTIC_PAIRWISE_TRACEABILITY.md",
+      "sha": "3593f0cb76987df7025c4a3a51847294fac6f6ed",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/FILE_FIRST_CANDIDATE_COHERENCE_20261014.md",
+      "sha": "08b12e66b02d237815a8d341b97a218bcdb0fb29",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/FILE_TO_SEARCH_ROADMAP_20261010.md",
+      "sha": "371409348cd4f3c77c030c0a16493ad71329fc48",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/FILE_TO_SEARCH_STATUS_20261010.md",
+      "sha": "8535ab55993b0fbfd0fabe6b245798d69640e924",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/OUF_REALITY_BASELINE_V1_7_REFERENCES.json",
+      "sha": "35737f40d882641379f12a32b7720dd86cc8ab46",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/OUF_ROADMAP_PET_1_7.md",
+      "sha": "83cf26e1a269da39961c64b371417aec0e9a528b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/OUF_SPRINT_PET_ALIGNMENT.md",
+      "sha": "1a06c51e1e5f8ca9817370d0554c7704c32607e9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/PET_TRACEABILITY.md",
+      "sha": "3bf6c5f8ce0bc009d825505c9b743512ae1c0ae4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R0_BASELINE_AND_EVIDENCE.md",
+      "sha": "f81804912b069badb76816851301f11c30a05dfc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R1A_AUTHORIZATION_SDK.md",
+      "sha": "ce1c5d636649830a0b8131204d344b065a8f57cd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R1B_AUTHORIZATION_EVIDENCE.md",
+      "sha": "1dc1dfd441c942b0dde1e1dacc810b4a9328a6e8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R1B_ENDPOINT_COVERAGE_AUDIT.md",
+      "sha": "72c277eaddf2d2d1268587a98e639b06fe185c07",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R1B_OWNER_ENFORCEMENT.md",
+      "sha": "d93901c860f18ea0c6007663a4e8e29270cddd74",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R1B_OWNER_ENFORCEMENT_EVIDENCE.md",
+      "sha": "0f40dd02c5bd72f02449450396fcc08f05a76426",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R2A_ACTIVATION_EVIDENCE.md",
+      "sha": "afc6dcff14f00fb07823cf397031620e0f132571",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R2B_SERVING_EVIDENCE.md",
+      "sha": "e5f91717fdd7ec69b42483dc2fe96f2fe288bbf3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R2C_GOVERNED_PUBLICATION_EVIDENCE.md",
+      "sha": "0ae30761b1785a0300ef7c59573e1883d259d96e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R2D_GOVERNED_CRS_EVIDENCE.md",
+      "sha": "a0e7395403e673dded7a6d06e87b27c5b03a9af4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/R2E_GEOPACKAGE_RELATIONSHIPS_EVIDENCE.md",
+      "sha": "fc89b182efb74f4eae53d6012ffbfbc21ab816fd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "docs/installation/OUF_INSTALLATION_MANUAL.md",
+      "sha": "fc2fa7bbecfcc1b99d8062b7abb0748c22f4b2bc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/IMPLEMENTATION_STATUS.md",
+      "sha": "eb69413e1715edab44745d54540c9fcc1f8921d7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/INDEPENDENT_TECHNICAL_REVIEW_2026-09-12.md",
+      "sha": "ba717fab6fa604745adbd619516bfdfbaf1abd61",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/acceptance-traceability.json",
+      "sha": "bf9e6e483d1cb0e1aa0bbdfa08550ed93ad09b10",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/ci-run-34668586429-summary.json",
+      "sha": "5eae3a91b173ae5f27c2338d05e0124313a1e2c9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/current-canonical-search-read-20261010.json",
+      "sha": "bf58cd9364a69ebd0d55a5b4cbf7aa80ae4604dd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/discovery-adoption-postgresql.json",
+      "sha": "4324701d59c6577a271b0888c414caa351e0d340",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/discovery-postgresql.json",
+      "sha": "998ad08997efb755dd846cab2231bf46cc71ab25",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/discovery-provider-increment-2026-09-10.json",
+      "sha": "4cac9a03f96b181c0ba1fc69787a5ff96f50a4e4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-first-source-baseline-20261014.json",
+      "sha": "da85ddf7c678f2262819397bcbbe01cfee0b02dc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-loop-execution-checkpoint-20261010.json",
+      "sha": "dfa7da66985da3739d22f5d207e7a916f5f9b0f1",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-loop-provenance-trust-r9-target-20261010.json",
+      "sha": "5fd07ed438c3f000635ce791b25d3231ed9dd13b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-loop-publisher-target-read-checkpoint-20261010.json",
+      "sha": "6712f19e963edacd269199d0222257b11b7228ba",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-to-search-documentary-status-20261010.json",
+      "sha": "2ebe4b497da55d229967ddc5ae29acc287ff5a41",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/file-to-search-roadmap-context-20261010.json",
+      "sha": "b8482acdbbb9bc6036b2b2ef130713c21060aec9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/github-actions-gate-status.json",
+      "sha": "c29ca37f5421e84e8f96c2536143bb626a8f2dab",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/governed-publication-postgresql.json",
+      "sha": "ddb59fc856040c13abdfb193aaaa5148efcbcc34",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/history/OUF_R2F_IAM_PRODUCTION_ACCEPTANCE_2026-09-18.md",
+      "sha": "1c9c70872930b5f4ce396a0219a6c652fd8e6153",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/interchange-change-increment-2026-09-10.json",
+      "sha": "5c59da3f7d16d5a5d742e6faa3ac457df578b010",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/java21-build-status.json",
+      "sha": "09d67102dfded9be6578aaa8df42515a85198838",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/live-baseline-qualification-20261010.json",
+      "sha": "ac52ffeae94af76787836f60ac18d5ca72f5ba0c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/operational-priority-qualified-20261011.json",
+      "sha": "1e6739f89b9c1d3651e5e40c6a05ec5212bb94fc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/ouf-pet-gap-register-v1.7.json",
+      "sha": "130bf4ced660e0a0f1ffb8931e3c15a4eee0c9db",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/r1b-endpoint-inventory.json",
+      "sha": "76d121f7e8969d8bb8fc70ae9437f6bee07099b4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/r2e-geopackage-process-summary.json",
+      "sha": "396d1aa0b1901cb34ecf07e09665a914c6d1035a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/schema-gov-provider-boundary.md",
+      "sha": "4bfeef8a264d0d734af8ad7a17b989d0c6782517",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/semantic-route-authorization-v1.json",
+      "sha": "2a9f24d9b8a90d9a16751667c2dc606eaefa3bf9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/source-checksums.txt",
+      "sha": "24c0049e83438e69ca69552e1a4cc4189f994104",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "evidence/validation-impact-increment-2026-09-10.json",
+      "sha": "11c81af8b23d9db3c4fdcd8fcc0b48d448e79ae4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "openapi/semantic-ths-v1.yaml",
+      "sha": "172b55f77bb4b91e755e35e9866e9cf56c34ec22",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "openapi/semantic-v1.yaml",
+      "sha": "ffad9dcddc8107220dc63dba0df14ed80fed5f60",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/README.md",
+      "sha": "8c9522dfc2e29a39c8997a49fdae1a14766ef836",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/fixtures/semantic-gateway-live-v1/fixture.json",
+      "sha": "d99dba36a9cfdec59bc939a800ebea4cd8df3854",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/Dockerfile",
+      "sha": "a983a199b77fa9246250c6cac65b79044bffe528",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/README.md",
+      "sha": "f8a4d3bf8a7de598ae0f763da1588ed231b6d5fc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/evidence/ci-status.json",
+      "sha": "db6129c882027521b6569fbc204c4b7bab55b6fa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/pom.xml",
+      "sha": "735e4ee2eaa99bb9b145bfb3694f27062e47844c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/main/java/it/comune/trieste/ouf/fixture/GatewayFixtureApplication.java",
+      "sha": "4093e43a92291a75d975461691c887df92fab6b1",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/main/java/it/comune/trieste/ouf/fixture/SchemaGovFixtureApi.java",
+      "sha": "21c870007bd4dc651ce7837f9dc7fb7968510a2d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/main/java/it/comune/trieste/ouf/fixture/SchemaGovFixtureProperties.java",
+      "sha": "9a8f847144e77ef11b40e507b987e0e8fb1071fc",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/main/java/it/comune/trieste/ouf/fixture/SchemaGovProxy.java",
+      "sha": "5f279e5218dd4661b16ebd3a581d7e2233632c91",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/main/resources/application.yml",
+      "sha": "fef80a8525715f9100f5a09b64232a4ef0649f51",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/gateway-fixture/src/test/java/it/comune/trieste/ouf/fixture/SchemaGovProxyTest.java",
+      "sha": "edb950b87881401058d4e2ec3e3297e0891d2d37",
+      "type": "blob"
+    },
+    {
+      "mode": "100755",
+      "path": "pairwise/run-pairwise.sh",
+      "sha": "15f4077c61a515b556c4e59dbb71cc4837c408d4",
+      "type": "blob"
+    },
+    {
+      "mode": "100755",
+      "path": "pairwise/run-semantic-gateway-live.sh",
+      "sha": "a6e58e40bde7495000e228180b564de5eb16f6d7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pairwise/semantic-fixture/Dockerfile",
+      "sha": "c291b3743691504ce770c1e2c4dab0eb67718737",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "pom.xml",
+      "sha": "0b6ca248e92fb1aefb8ffdb349c5350292911a28",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/BoundedGatewayClientSmoke.java",
+      "sha": "8518e6489c9820394ad7af031759302a055164aa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/check-file-first-source-continuity.py",
+      "sha": "c0b47aab08a1df529fb542ad76d31eee2be6a384",
+      "type": "blob"
+    },
+    {
+      "mode": "100755",
+      "path": "scripts/install-authorization-sdk.sh",
+      "sha": "56e51821efb5b94b4d74a95436a536150dba6a92",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/test-discovery-db.mjs",
+      "sha": "03ed915f57d9e642c35d15ae9e8b7a8a5b80f0c8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/test-governance.mjs",
+      "sha": "1dff8cf2f13f1fa75667a5aa092e497089ae0743",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/test-interchange-change.mjs",
+      "sha": "c4b7861f34f9c90e52dd76ec67c1b22155dd9246",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/test-validation-impact.mjs",
+      "sha": "da50a63f05b0e9a04a80543b11e3075c2586e469",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/validate-pet-register.py",
+      "sha": "ae39050927d02856d1184651002b4b9f330747a8",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/write-ci-evidence.mjs",
+      "sha": "2df458da4e9295940c88e078b60620c4009f996c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/SemanticRegistryApplication.java",
+      "sha": "6213f6e08f9489739fa63acea8154e6accebdc81",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/adapters/discovery/BoundedGatewayClient.java",
+      "sha": "7d256833827723c7b72aa499096709b90691b09f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/adapters/discovery/SchemaGovProperties.java",
+      "sha": "a868b06095598711aa1e2cddcfddd7783f0d128f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/adapters/discovery/SchemaGovProvider.java",
+      "sha": "ac940c23ad493e821e06c0908ad25a32689e7898",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/ArtifactApi.java",
+      "sha": "949b177136e5329dcf00a5522825230177d267ff",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/ChangeGovernanceApi.java",
+      "sha": "404b446b775413fc7b386d872510cf39c8b360b6",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/DiscoveryApi.java",
+      "sha": "4a9e2da36e5237e1cd89d1299c3457e08937bff4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/GovernanceApi.java",
+      "sha": "2061247b617cb951e9de4b25cb2b548a746ace9d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/InterchangeApi.java",
+      "sha": "4d0cf40b3f527f885256632c51c8de4210ecc23e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/ProblemHandler.java",
+      "sha": "0ec6f2aa85817569064d6c00b64dd4f5a6882597",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/ProposalCommandApi.java",
+      "sha": "fc2fc75be7b8bb76f583a58bd3187d0d7a1faeaa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/RequestObservabilityFilter.java",
+      "sha": "1ee4620ac2f8531d3aedc7826ded286bfb8cf860",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticAuthorizationBoundary.java",
+      "sha": "33ee7ddeb49f4cef0203bba729602d1350aa3464",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticCapability.java",
+      "sha": "e300c85ee37a04aeef20a42307e8ccf898afc750",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticConsultationApi.java",
+      "sha": "581f8e038964496cf4b344112a0f92905e2fb4bf",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticIamSecurityConfiguration.java",
+      "sha": "34d9e20330dfae3fdb6d8294ac4fea9501d35310",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticProposalReceiptFilter.java",
+      "sha": "4a58d8ab20ca0a8c40ac4da88ffa7d2a89fa83c7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticProposalReceiptVerifier.java",
+      "sha": "041a6891a71db6eb6b5f9047dfc92cb046c53a77",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticReadDelegation.java",
+      "sha": "afa77f68bd220ea0e50c37635e2e187ab93280ce",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/SemanticTrustedHumanApi.java",
+      "sha": "d558f3407f1a47857cdd96adfc9d5dab78fc7ac9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/TrustedActorResolver.java",
+      "sha": "7b27a324062e85b2318c73efe7661e3cfaa00af4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/api/ValidationApi.java",
+      "sha": "a1e6b74d90ab891e7f79a83092f7e070db01d0a3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/ArtifactService.java",
+      "sha": "1079fe60efa8378538b76ae6afa72c1313300809",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/ChangeGovernanceService.java",
+      "sha": "932e2bfb0a19afbad55bac305fcd8f9c4632ee18",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/DiscoveryService.java",
+      "sha": "4f9957ca1520abb1087e7f682ecda53b099992ec",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/DiscoveryWorker.java",
+      "sha": "e1540d7754c29b2b439e15558b06a4b227bcf747",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/GovernanceService.java",
+      "sha": "b79f1a2cd64832ae8d03633b497b58bbd8608c9b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/InterchangeService.java",
+      "sha": "5afa6ad924616eae607c2de29c71098a0bf3f2ba",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/ProposalCommandService.java",
+      "sha": "3d222f1221ae6b4466720b46eacb6f63169ef725",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/PublishedRdfSnapshot.java",
+      "sha": "9a9f942dbac19eb7015fb58c2ab2b2dc3637bd6b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/SemanticReadService.java",
+      "sha": "f557d3c0e95491ae7c718116f23487a4eaa409e5",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/application/ValidationService.java",
+      "sha": "24abd24b0a65558891182d673351e62923e65c20",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/domain/RdfInterchangeCodec.java",
+      "sha": "428cabad40a62500440553966071c62ccb7b95cb",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/domain/SafeRdfParser.java",
+      "sha": "7635f330d125cd0d462928e8ca10f94776127528",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/java/it/comune/trieste/ouf/semantic/ports/SemanticDiscoveryProvider.java",
+      "sha": "ccfdb5f8391b047a689d13a1d9a204c6341edb16",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/application-file-first.yml",
+      "sha": "0ddf42f8761b70b67af3c30738fb705d34280dac",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/application.yml",
+      "sha": "a11a9fde9e5140b24f368ca23a616d309ad5ec61",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V10__proposal_command_receipts.sql",
+      "sha": "cc9ce2a94e8edd25f40e04b8a61f7993b515a5de",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V1__semantic_registry.sql",
+      "sha": "f5b18d18d083adb0dfe0602e48de5dcd5f35c88c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V2__governed_publication.sql",
+      "sha": "40665e47cc4416a77975a764b4e533fa578c292c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V3__discovery_jobs.sql",
+      "sha": "2695315afd4a12c48ae2fe6bc46466acae3ba620",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V4__candidate_adoption.sql",
+      "sha": "f95437982268237c487ac5408fd27dbec24c22ea",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V5__validation_compatibility.sql",
+      "sha": "33911bbffad1960ab1a3c171ac91240227e12e85",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V6__interchange_change_governance.sql",
+      "sha": "c597e6e3c373e4f4b437c9bf4998ef9419fd251c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V7__trusted_human_governance_audit.sql",
+      "sha": "2ff9e7124a29be03447f6db123e000d7cb1908c2",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V8__governed_deprecation_retirement.sql",
+      "sha": "5db4450eeade21041d9ae3073a622ecdc1b84d77",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/main/resources/db/migration/V9__authorization_actor_type_canonicalization.sql",
+      "sha": "4719feab7f8b1cd83e3af52cf743d1f2aa704b86",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/AuthenticatedSemanticFixture.java",
+      "sha": "87e9dc82cefec8b08b7934db3d9ce5e34fe5b272",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/AuthenticatedSemanticFixtureTest.java",
+      "sha": "bdddc39460f372f14a368cf3700440ae94d60d67",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/ChatbotSemanticFixture.java",
+      "sha": "bb413b22ce40f8e0dcd7f573f543387cf87a69a7",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/GovernedPublicationFixture.java",
+      "sha": "c699593e43c6990410a6ab0b7ccfdd6744feead9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/ContractInventoryTest.java",
+      "sha": "1fd1a600f9b0312f29459ca70220d913f11f39d9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/DatabaseBehaviorRuntimeTest.java",
+      "sha": "48f374a125f43f0878cc07640ea21043ec203e8d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/DatabaseConcurrencyRuntimeTest.java",
+      "sha": "81d970fbcceeaf798e29edbc93f4a3f5004df2b1",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/GovernedDiscoveryRuntimeTest.java",
+      "sha": "d39f080f8461c117d82695ab061bee5aedb04493",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/HttpApiRuntimeTest.java",
+      "sha": "aa3970c0774281051637d2eaad59e3de3199532d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/ObservabilityRuntimeTest.java",
+      "sha": "758069a25202defac8f74485eee98d1c061b2653",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/OpenApiBoundaryTest.java",
+      "sha": "c2f74fd3ecbe21e6fca0a2e6d43b49bcb3bad96c",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/Postgres17RuntimeTest.java",
+      "sha": "fdfd5b44c06a65a133311b0579d334d91584eec3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/ProposalCommandRuntimeTest.java",
+      "sha": "9712ddd0634859cc1cecc2754b97441e2f643500",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/PublishedRdfSnapshotTest.java",
+      "sha": "42d19d5e3192cb5ede37a95cf18a83c36a4b64aa",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/SemanticConsultationTest.java",
+      "sha": "c985b37b2897ca3a26ecbddc9c4f6e1c0cf5e928",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/SemanticReadRuntimeTest.java",
+      "sha": "af5bd506c33a4d185e74fd13dc6e32279f73f68e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/TrustedActorResolverTest.java",
+      "sha": "512b633edd152302e89bd4717f3923cf0965f0bd",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/adapters/discovery/BoundedGatewayClientTest.java",
+      "sha": "3bf4c7514dda0c29acf0f673043154d9bb4a784e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/adapters/discovery/SchemaGovProviderIntegrationTest.java",
+      "sha": "2d6418250c678c1a61edae36358af2adf2313db6",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/adapters/discovery/SchemaGovProviderTest.java",
+      "sha": "1f7d17328e2d6b75015267a77f728113200b7a7a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/api/FileFirstIamHttpRuntimeTest.java",
+      "sha": "be4d242c2b8197147c31db3bc193677b452e5b34",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/api/SemanticIamSecurityConfigurationTest.java",
+      "sha": "8edd684644d1c19b56896009b1960132c0d9254f",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/api/SemanticProposalLuaVectorTest.java",
+      "sha": "215d192aba9aa85a318d5448220d8687fd75e8ee",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/api/SemanticProposalReceiptHttpTest.java",
+      "sha": "03524c282d0d4a11ba7c9d2092f40d676abeba03",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/api/SemanticProposalReceiptVerifierTest.java",
+      "sha": "beef25be95dd17ce2db441da7b40e627eb66070e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/domain/RdfInterchangeCodecTest.java",
+      "sha": "27dfc09923d6f6270d42d5c0638a633c78f5f44e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/java/it/comune/trieste/ouf/semantic/domain/SafeRdfParserTest.java",
+      "sha": "afe49a53f74b01e18191fb3a405c134bf686a940",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/resources/semantic-proposal-lua-vectors.json",
+      "sha": "2d9d1351de5d92f8b1c1277614f8d7474f8d9d30",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "src/test/resources/teatri-reuse-semantic-proposal-20261014.json",
+      "sha": "09190f3f537ddb92a866872d2068c14d2250bc07",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "tooling/package-lock.json",
+      "sha": "628aa2c105ac719502727a41bce5da49eb5b6cd1",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "tooling/package.json",
+      "sha": "f9c4521d171894b9412e5a1f01a85b1f46407d3d",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/AUTHORIZATION_SDK_SOURCE.json",
+      "sha": "c5c01950e700fd51a02da56dee465ee0d49f5e85",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/README.md",
+      "sha": "58d33caa90ac6364d8f17f6c6a792403a6cf003e",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/SOURCE_SHA256SUMS",
+      "sha": "e0b95509c32a3955f06c52db584c12919d520eef",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/pom.xml",
+      "sha": "543a22ba49cbb7d4a69f379866779fef32d16e41",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ActiveBundleRefresher.java",
+      "sha": "082ec085ae8fd4483d5a3ceb44a3577fd6a40bc4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationAutoConfiguration.java",
+      "sha": "d4d39b161f56aacd1a3e04c94dc9adcf32d324b9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationPolicy.java",
+      "sha": "3eae3f70ccd5a7b08579bae1f9aceb762c90c2f0",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/LocalAuthorization.java",
+      "sha": "ef643fe779c036feed5a433ef824f4879e8bec97",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/OwnerAuthorization.java",
+      "sha": "234952c8a0506d2712dbb9dd618854475c3c3948",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/PrincipalContext.java",
+      "sha": "c412588eee62d77704168b8c91339d33d0e5d4c3",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ResourceContext.java",
+      "sha": "9dd909d20a8ce28881addc1dade7e0fbdec6fd2b",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ServletAuthorization.java",
+      "sha": "eff5dc8a898998261337e15697df91c883bee35a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/TrustedPrincipal.java",
+      "sha": "ffc521271035eefae1fd9482feaf3e0d09fc7909",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports",
+      "sha": "9faeea8d0c613ce535f466d5127d1e1ddd17171a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/ActiveBundleRefresherTest.java",
+      "sha": "808e926ea74e7c25e95cb31349d66b051d0a2bb4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/CommonConformanceTest.java",
+      "sha": "dbcf072d856197c4e3e3311f41800d8bd9a2e77a",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/LocalAuthorizationTest.java",
+      "sha": "c4b9086b92d4723fc1324c5b65a50bcf1d2f9524",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/OwnerAuthorizationTest.java",
+      "sha": "9d3eba3a6e16b95e4843813de9a149c4f94e2a23",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/TestAuthorization.java",
+      "sha": "7903e8850c3203ea477f2035daf28dbf8d1a2499",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": "vendor/authorization-sdk/src/test/resources/authorization-conformance-v1.json",
+      "sha": "818a45020d9db61e5403bfa8f08aaf8e19bd8ea7",
+      "type": "blob"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+name: M2 consumed origin receipt and signed original source reconciliation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-retained-origin-evidence.yml'
+      - 'scripts/reconcile-m2-retained-origin-evidence-20261101.py'
+      - 'tests/test_m2_retained_origin_evidence.py'
+      - 'releases/m2-retained-runtime-origin-reconciliation-20261101.json'
+      - 'releases/m2-retained-semantic-original-source-tree-20261101.json'
+      - 'releases/artifacts/m2-retained-semantic-original-13099216732.zip'
+permissions: {contents: read}
+jobs:
+  offline-original-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reconcile exact consumed origin receipt, original signed members and 198 independent source blobs
+        run: python3 -I -B -S scripts/reconcile-m2-retained-origin-evidence-20261101.py --check
+      - name: Deny changed provenance or promoted authority and preserve all frozen sources
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_retained_origin_evidence.py -v

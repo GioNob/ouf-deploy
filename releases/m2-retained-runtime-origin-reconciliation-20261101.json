@@ -1,0 +1,128 @@
+{
+  "agentReadPrivateTargetProof": false,
+  "allRuntimeArtifactMembershipProven": false,
+  "candidateSelectionChanged": false,
+  "completePrivateCustodyProven": false,
+  "cumulativeTargetControlsUnchanged": 12,
+  "cumulativeTargetEngineGetsUnchanged": 35,
+  "currentApplicationConfigurationOrLivenessProven": false,
+  "date": "2026-11-01",
+  "directEngineGets": 0,
+  "evidenceOrigin": "OPERATOR_PUBLIC_RECEIPT_PLUS_EXACT_PRESERVED_CI_ARTIFACT_AND_INDEPENDENT_GIT_TREE",
+  "freshSecurityAdmissionOfAllRetainedImagesProven": false,
+  "originalSignedSemanticSourceJoined": true,
+  "privateOriginEvidenceHash": "8cf9a9ba0eaaf1f485515f893fee738c526622e2df97ec3687ca01843f0cd067",
+  "publicOriginJoinRecordSha256": "c06c8f766356bacb1364c8ca16e2755cff09aca347ee365cc903eea0a2225b99",
+  "publicOriginJoinResultHash": "ca16c7e3799d916517cba7e0c0d0456c57bd949184bd103d3fa3204110768a09",
+  "publicSourceOrDescriptorReferenceBindings": 11,
+  "releaseAcceptance": false,
+  "remainingOriginGaps": [
+    "gateway-owner",
+    "minio"
+  ],
+  "roleCount": 13,
+  "roles": {
+    "apisix": {
+      "configurationDigest": "sha256:b6fd21b8c341f3bf274ddabbad2e3c1bbb6a17566f0e41bf618166e63e4641e4",
+      "nativeImageId": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+      "originClass": "EXACT_PUBLIC_REGISTRY_DESCRIPTOR",
+      "selectedRuntimeManifestDigest": "sha256:51bb7b7fcd4162bec53f276c5a9b7b93d5de55723586842becb3e5f165fc0281"
+    },
+    "caddy": {
+      "configurationDigest": "sha256:af555904a0961945f16bb323a501457b13a4f7e9bde969b145b97da80b38ecbe",
+      "nativeImageId": "sha256:13ba145cba2f3e28fa801994876e4c086d1b95d5aa2a520a734765ffb6b12017",
+      "originClass": "EXACT_PUBLIC_REGISTRY_DESCRIPTOR",
+      "selectedRuntimeManifestDigest": "sha256:98eb57d882ccd5213d1688764db10c1ca2c58a1ca3a6717a3411ad798f7a423a"
+    },
+    "gateway-owner": {
+      "configurationDigest": "sha256:f983b5a83b06315fb8e9a524a82a4fa72e6f53e0ea06fc34f5d79b60038f640a",
+      "nativeImageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
+      "originClass": "DECLARED_SOURCE_NOT_EXECUTABLE_IMAGE_MEMBERSHIP",
+      "originGap": "ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP",
+      "selectedRuntimeManifestDigest": "sha256:5675785b977f9d471bb97ad0e56262bd9e94569eb99ddfdecf3eb0f1617bf541"
+    },
+    "ingestion": {
+      "configurationDigest": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "originClass": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1"
+    },
+    "ingestion-evidence-read": {
+      "configurationDigest": "sha256:5b4a0465a24c801d4703d54c89660f1528ad028ff83660067c41be7dbe23565a",
+      "nativeImageId": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385",
+      "originClass": "QUALIFIED_AND_APPLIED_READ_REPLICA_NATIVE_ID_MATCH",
+      "sourceCommit": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7"
+    },
+    "keycloak": {
+      "configurationDigest": "sha256:b2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89",
+      "nativeImageId": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+      "originClass": "EXACT_PUBLIC_REGISTRY_DESCRIPTOR",
+      "selectedRuntimeManifestDigest": "sha256:3d911baa186f352563854039b95f21a7e2c01c76b527fdc64f24a0885b927bdf"
+    },
+    "mcp": {
+      "configurationDigest": "sha256:47e42435404d4d4cb5ca24473ac22192b375c0bf602b4e35f5864d0894a69903",
+      "nativeImageId": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+      "originClass": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "sourceCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c"
+    },
+    "minio": {
+      "configurationDigest": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+      "nativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+      "originClass": "HISTORICAL_VENDOR_REFERENCE_ONLY",
+      "originGap": "EXACT_SELECTED_REGISTRY_DESCRIPTOR_UNAVAILABLE",
+      "selectedRuntimeManifestDigest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2"
+    },
+    "onboarding": {
+      "configurationDigest": "sha256:5140811b44623c7035843c955509a387336bc11ffb24b72ffe26a73434fb5ebd",
+      "nativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "originClass": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "sourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846"
+    },
+    "postgres": {
+      "configurationDigest": "sha256:823c9d80930ce5f5fb4ed0f54a091abb79cfde1e34189aaeb69aeaf2720400a2",
+      "nativeImageId": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+      "originClass": "EXACT_PUBLIC_REGISTRY_DESCRIPTOR",
+      "selectedRuntimeManifestDigest": "sha256:1e85984a7261b01b38a8e7d4166abcdb35370e6b7667a6d6fd9caa057f64eab6"
+    },
+    "semantic": {
+      "configurationDigest": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+      "currentSecurityScanProven": false,
+      "nativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+      "originClass": "SIGNED_ORIGINAL_COHORT_CONFIG_AND_NATIVE_ENVELOPE_MATCH",
+      "originalArtifactId": 11907557440,
+      "selectedRuntimeManifestDigest": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+      "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+      "sourceEvidence": {
+        "artifactId": 13099216732,
+        "fullOriginalImageReadByThisReader": false,
+        "jobId": 124964417117,
+        "originalSourceFilesIndependentlyMatched": 198,
+        "originalSourceTreeSha256": "2e5dee1836203af8f86315781d5eefc915fd016cc84f32ea1881be650ca73550",
+        "preservedZip": "releases/artifacts/m2-retained-semantic-original-13099216732.zip",
+        "publisherChainReverifiedByThisReader": false,
+        "publisherChainVerifiedInNamedHostedJob": true,
+        "runId": 41345531053,
+        "signedPayloadMembersIndependentlyMatched": 7,
+        "workflowSource": "e155649ff99fcd952822a6475358ced77767ae1a",
+        "zipBytes": 312517,
+        "zipSha256": "658a252456e515b9b66fe93505822b24f78d498fd98c463f42da83c2ae5b173e"
+      }
+    },
+    "udp": {
+      "configurationDigest": "sha256:e283630ab0e141092a87ca4aa590bf02ef4535804e7cf5427adff636d7cb4f8b",
+      "nativeImageId": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "originClass": "QUALIFIED_ORIGINAL_ARCHIVE_NATIVE_ID_MATCH",
+      "sourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291"
+    },
+    "udp-evidence-read": {
+      "configurationDigest": "sha256:7d3686b795e8086fe24e6f3749eaf1ee0d6fb9976adb57c4abbcfd3ee0e6a82f",
+      "nativeImageId": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d",
+      "originClass": "QUALIFIED_AND_APPLIED_READ_REPLICA_NATIVE_ID_MATCH",
+      "sourceCommit": "125510cf9d970aff7db66a0a8f27eb98b50bb6de"
+    }
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-runtime-origin-reconciliation.v1",
+  "targetApplyAuthorized": false,
+  "targetControlAttemptsAdded": 0
+}
