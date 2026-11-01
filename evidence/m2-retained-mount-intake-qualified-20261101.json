@@ -33,7 +33,7 @@
   "mountedFileContentReadByCurrentWitness": false,
   "nativeScope": "Actual Docker29.8.1, ten scratch processes, Unix peer/proc, root-private captured inputs and mount/FIFO/socket metadata; three replaced peer records and parent/READY lineage modeled.",
   "newCaptureScopeCreatedByCurrentWitness": false,
-  "next": "Prepare distinct readonly regular-file hash input from exact captured allowlist; metadata scopes stay consumed. Values and per-file hashes private; mutable/ephemeral/special contents excluded.",
+  "next": "Exact new readonly regular-file hash input qualified: docs/handoffs/OUF_M2_RETAINED_READONLY_HASH_INPUT_20261101.md. Operator VPS execution and public JSON required; both metadata scopes remain consumed.",
   "noProductionPathHashOrEngineCallbackOverride": true,
   "releaseAcceptance": false,
   "runtimeAuthorityIssued": false,

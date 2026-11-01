@@ -1,3 +1,58 @@
+# CURRENT — Exact readonly-file hash input qualified; operator VPS execution required
+
+1 November2026, Europe/Rome. User requires autonomous sequential progress; no
+agents/automations or optional stops. Metadata correction actually SUCCEEDED:
+candidate46f6e6355a1bb133c4f72537f09d7b60250fd4c47265cde24fc1ea792cb366a7,
+public result59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f.
+25RO/4RW/33nodes/20GET/zero mounted-file contents, prior0922ad73 preserved.
+Both old scopes consumed: never rerun/delete/reset. Result evidence is committed.
+
+NEXT REQUIRED INPUT: execute exact new readonly hash preparation on VPS and
+return public JSON only. This session has no VPS shell/filesystem connector.
+Concrete command: docs/handoffs/OUF_M2_RETAINED_READONLY_HASH_INPUT_20261101.md.
+Launcher8a302bab5567105f056f617dfb18070907391e43 SHA256
+52da256f65c610006e055c952806a19bfd8b442fec597589758590413db5ccf5.
+Capsule8e08b7d4f0a38e43154608c54da64f8d4b4d5a8f SHA256
+35fff36ff18e149e0ae537f0bbf4eeae28b596d358cc046b49f99782e3c2d446,
+sourcea3694974;5closed sources. Fixed exact successful candidate/receipt/seed,
+no caller path/hash/mode/Engine override. Reads ONLY captured readonly REGULAR
+files transiently for hashing, potentially existing credential/key files. Values
+are never printed/spooled; per-file hashes/paths remain root-private. Do not
+claim zero credential reads or metadata-only for this NEW step. RW/ephemeral/
+special content never opened, RO overlap/aliases of captured RW roots rejected
+before first hash. No permission/content policy inferred or complete admission.
+One new attempt90s/20directGET,2048files/8MiBfile/64MiBtotal; prior2capture controls/
+20GET remain recorded, cumulative3controls/40directGET for this input chain.
+No old clock reset/replay, runtime budget/grant, signing/OAuth/SQL/lifecycle/
+activation/apply/acceptance. Outer timeout100s+kill5s. On STOP preserve all scopes,
+return public result, never retry/delete/repair. No private attachments needed.
+
+Final CI41288195129 PASS23/4suites (unit19/native4), final logs124793729401 and
+124793729539 read; zero failure/error/skip/ResourceWarning. Actual Docker29.8.1,
+ten scratch processes/Unix peer/proc, root:10001/0440 hash read/race/restart; three
+peer/parent/common review hashes fixture, not OUF E2E or target admission.
+Source CI41287945761 PASS19/3suites; publisher push41287940897/job124792984364,
+artifact13075393575 ZIP2e776fb002f07db9738e19b48c9276ff2b23e7a575a03862c2f14f67c298ad37.
+Pinned gh2.97.0 bundle verification on runner; downloaded cert/source/ref/workflow/
+repoID1409074354/owner96419716/subject read. Delivery byte-identical; immutable raw
+launcher/capsule URLs reread and hashes matched. No local crypto rerun claimed.
+
+Source04920448 intake uses actual Engine binding, preserving mount order instead
+of historical sorted stable_binding. Current metadata owner has no input/callback
+override and creates no new scope. Controllerv4:13typed owners/24reads, same fence,
+expected policy/full private custody/bearer/full cohort still false. Main
+41286820490 PASS194/27suites, all5logs read; targeted41286820335 PASS28/3suites,
+bothlogs read. All235 frozen compiler hashes and both old capture deliveries
+unchanged. Dossiers: m2-retained-mount-intake-qualified, m2-retained-readonly-hashes-
+qualified and m2-retained-mount-role-correction-target, all dated20261101.
+After actual new private hash input, continue full custody/runtime membership,
+target bearer, complete sealed early/late controller/execution package/current
+private review+HUMAN/role authority and E2E/two clients; all remain OPEN.
+Preserve M1/Teatri8/8technical6/6functional and same Farmacie61/10/10OPEN/
+ministerial STRING. No upload/profiling/acquisition replay. Loading ends UDP/
+all61outcomes, then graph search, then vertical/API delta scheduler.
+All older CURRENT/READY/pending/operator-free headers below are historical.
+
 # CURRENT — Metadata intake/controller PASS194; readonly file-hash input in qualification
 
 1 November2026. Exact VPS metadata capture SUCCEEDED candidate46f6e635/result59935457;

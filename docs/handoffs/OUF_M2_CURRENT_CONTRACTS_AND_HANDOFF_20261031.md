@@ -1,32 +1,39 @@
-# Passo corrente — intake e controller qualificati, hash readonly in preparazione
+# Passo corrente — input hash readonly qualificato, intervento VPS necessario
 
-1 novembre2026. Raccolta VPS riuscita: candidato46f6e635/risultato59935457,
-20GET/25mount readonly+4mutabili/33entry, zero contenuti montati; predecessore
-0922ad73 preservato. Entrambe le directory restano consumate: nessun replay o
-cancellazione. [Ricevuta target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
+1 novembre2026. La raccolta metadati è riuscita: candidato46f6e635/risultato
+59935457,25readonly/4mutabili/33entry/20GET/zero contenuti montati; precedente
+0922ad73 preservato. Entrambe le catture sono consumate e non vanno ripetute o
+cancellate. [Ricevuta target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
 
-Sorgente04920448 integra gli input privati e il controllo dei metadati nel
-controller v4,13owner/24letture sotto un solo fence. Usa il vero binding Engine:
-ordine dei mount conservato, distinto dal vecchio hash che li ordinava per
-nome. CI41286820335 PASS28/3suite (unit24/native4); CI41286820490 PASS194/27suite,
-tutti7log finali letti, zero failure/error/skip/ResourceWarning. Docker29.8.1 e
-dieci processi scratch reali; lineage parent/READY e tre peer sostituiti fixture,
-non OUF E2E. [Dossier](../../evidence/m2-retained-mount-intake-qualified-20261101.json).
+È qualificato il [nuovo comando esatto di preparazione degli hash readonly](OUF_M2_RETAINED_READONLY_HASH_INPUT_20261101.md).
+La sessione non ha shell/filesystem VPS: serve l'operatore, poi soltanto il JSON
+pubblico. Il passaggio legge transitoriamente i soli file regolari dell'elenco
+readonly già acquisito, inclusi eventuali file di credenziali/chiavi, per hashing
+in memoria. Valori non stampati/salvati, hash individuali e percorsi root privati.
+Nessun contenuto RW/effimero/speciale; sovrapposizioni/alias di sorgenti RW respinti
+prima degli hash. I vecchi input restano consumati. Un nuovo tentativo90s/20GET,
+8MiB/file/64MiB totali;3controlli/40GET cumulativi nella catena di input, nessun
+reset/grant di budget runtime o autorità. Hash osservati non sono policy attesa.
 
-È in qualifica un nuovo input di hash dei soli file regolari montati readonly,
-selezionati dall'esatto candidato acquisito. Legge i valori soltanto per hashing
-in memoria, inclusi eventuali file di credenziali/chiavi; valori e hash individuali
-restano privati. Nessun contenuto mutabile/effimero/speciale letto; sovrapposizioni
-con sorgenti RW respinte. Un nuovo tentativo90s/20GET,8MiB perfile/64MiB totali;
-precedenti controlli/clock conservati, nessun budget runtime azzerato o concesso.
-L'operatore sarà necessario solo dopo la qualifica della consegna esatta; per ora
-il lavoro sorgente prosegue autonomamente. Nessun replay delle vecchie catture.
+Sourcea3694974, capsula8e08b7d4 (5sorgenti/87816byte), launcher8a302bab.
+CI [41288195129](https://github.com/GioNob/ouf-deploy/actions/runs/41288195129)
+PASS23/4suite (unit19/native4), log finali124793729401/124793729539 letti,
+zero failure/error/skip/ResourceWarning. Docker29.8.1/dieci processi scratch/
+root:10001/0440 reali; parent/tre peer/common hashes fixture, non OUF E2E.
+Publisher41287940897/artifact13075393575 verificato sul runner; certificato e
+subject riletti, byte e URL raw immutabili identici. [Dossier hash](../../evidence/m2-retained-readonly-hashes-qualified-20261101.json).
 
-Policy attesa/custodia completa, tutti gli artefatti runtime, bearer target,
-controller/checkpoint e pacchetto/review/autorità correnti, E2E/due client restano
-aperti. M1/Teatri e stessa Farmacie61/10/10OPEN/ministeriale STRING preservati;
-nessun replay upload/profiling/acquisizioni/activation/accettazione. I235hash del
-compilatore e le vecchie consegne sono invariati. Le sezioni seguenti sono storico.
+Intake04920448 e controllerv4,13owner/24letture sotto un solo fence, qualificati:
+main41286820490 PASS194/27suite,5log finali letti; targeted41286820335 PASS28/3suite,
+2log finali letti. Binding Engine conserva l'ordine dei mount, distinto dal vecchio
+hash storico ordinato. [Dossier intake](../../evidence/m2-retained-mount-intake-qualified-20261101.json).
+I235hash congelati e le due vecchie consegne sono invariati. Dopo il nuovo input
+proseguire custodia privata completa/tutti gli artefatti runtime/bearer target/
+controller e checkpoint completi/pacchetto e review con autorità correnti/E2E e
+due client: restano aperti. Nessun apply o accettazione. M1/Teatri e stessa
+Farmacie61/10/10OPEN/ministeriale STRING preservati. Nessun replay upload/profiling/
+acquisizioni/activation. UDP con tutti61esiti, poi grafo, poi verticali/API delta.
+Le sezioni seguenti sono storico e non istruzioni operative per i vecchi comandi.
 
 ---
 
