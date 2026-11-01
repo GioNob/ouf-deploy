@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           cp "$PROVENANCE_BUNDLE" retained-native-image-archives-reconciliation.sigstore.json
           /opt/ouf-capture-gh297/bin/gh attestation verify retained-native-image-archives-reconciliation.py --repo GioNob/ouf-deploy \
-            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-retained-native-image-archives.yml \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-retained-image-archives.yml \
             --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
             --bundle "$PROVENANCE_BUNDLE" --format json > retained-native-image-archives-publisher-verification.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

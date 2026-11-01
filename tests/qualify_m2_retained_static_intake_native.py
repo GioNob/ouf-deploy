@@ -62,7 +62,7 @@ class NativeStaticIntake(unittest.TestCase):
             mount_args=[]
             for mount in cls.mount_layout.get(role,[]):
                 mount_args+=['--mount','type=bind,src='+mount['Source']+',dst='+mount['Destination']+(',readonly' if not mount['RW'] else '')]
-            cid=command('run','-d','--name','ouf-'+('gateway-operational-owner' if role=='gateway-owner' else role),
+            cid=command('run','-d','--name',cls.seed['observations'][role]['Name'].lstrip('/'),
                 '--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges',
                 '--memory','16m','--pids-limit','8',*mount_args,role_tag)
             cls.addClassCleanup(lambda cid=cid: command('rm','-f',cid))
