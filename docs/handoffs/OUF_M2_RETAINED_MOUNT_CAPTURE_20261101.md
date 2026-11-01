@@ -1,3 +1,9 @@
+> CONSUMATO — 1 novembre 2026: il comando seguente ha restituito
+> `STOP_RECONCILE / EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED`.
+> Non eseguirlo nuovamente e non cancellare la directory. Il lettore nuovo
+> richiedeva erroneamente nomi di ruolo come etichette di inventario.
+> Correzione separata in qualifica; il comando storico resta qui come evidenza.
+
 # M2 — input necessario dal VPS: soli metadati dei mount mantenuti
 
 Il prossimo input concreto è la custodia attuale dei mount dei dieci servizi

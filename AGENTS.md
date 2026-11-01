@@ -1,3 +1,24 @@
+# CURRENT — Retained metadata capture STOP; exact role-contract correction in qualification
+
+1 November 2026. Actual operator result STOP_RECONCILE with reason
+EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED, scope consumed; no automatic replay.
+Old command below and old READY header are historical; do not rerun/delete scope.
+The new collector required logical role labels, but original accepted 13-peer
+producer permits arbitrary inventory aliases. Same contract already corrected
+in material_role_preparation.py. Original fixtures missed this domain.
+Prepare/qualify exact separate corrective reader: preserve failed predecessor,
+verify its canonical result0922ad73 and two root-private files, verify original
+seed14e42 hash/schema/flags, select unique IDs/full binding/pins from accepted
+public roster a5161311. Twenty GETs/ten peers, metadata only; all authority false.
+Old result has no counters or persisted clock: zero Engine/mount reads inferred
+only from exact failpoint in pinned source; do not claim resumed old clock.
+Prior control attempt1 remains consumed; at most one explicit changed-code
+corrective attempt, cumulative2 control attempts and20 Engine attempts.
+No runtime budget reset/grant, lifecycle/apply/acquisition/upload/activation.
+Proceed autonomously/sequentially, no agents/automations; operator needed only
+when concrete immutable corrected metadata reader is fully qualified.
+Target failure: evidence/m2-retained-mount-capture-target-failure-20261101.json.
+
 # CURRENT — Exact metadata capture READY; operator VPS input required
 
 1 November 2026, Europe/Rome. Source work remains autonomous/sequential; no
