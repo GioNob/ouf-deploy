@@ -6,16 +6,20 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint operativo corrente — diagnosi strutturale in qualifica
+## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 
-Secondo STOP immagini8bec8301/Exit1,9controlli/35GET, scope consumato.
-[Entrambe le verifiche sono ora storiche](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json).
-Nessun rilancio. [Diagnosi9scope/13archivi](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md)
-in qualifica: enumera riferimenti mancanti senza ammetterli, Engine o replay.
-Solo indice/manifesti vengono aperti; hash integrale unparsed degli archivi.
-Nuovo controllo distinto massimo1/600s; massimo10controlli/35GET, nessun comando
-pronto. I successi Teatri sono sempre consultati prima dei delta; M1 acquisito,
-Farmacie preservata e M2 aperto. I checkpoint seguenti sono storici.
+Secondo STOP immagini8bec8301/Exit1,9controlli/35GET e scope consumato.
+[Entrambe le verifiche sono storiche](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json).
+Nessun rilancio. [Diagnosi corrente](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md)
+qualificata, launcher71a1d671, push41332434946 e PR41332441062 ciascuno28test/6suite
+PASS, tutti sei log letti. Include export vendor multipiattaforma REALE che
+riproduce lo STOP e distingue manifestaltrepiattaforme/auxassenti da runtime.
+La causa VPS resta da stabilire; non si accetta alcun blob assente. Nuovo comando
+monouso diagnostico600s sugli stessi13archivi e9scope, massimo10controlli/35GET,
+zeroEngine/config-layer member-open/espansione/fetch/riarmo/reset/grant/authority.
+[Qualifica](../evidence/m2-image-graph-delivery-qualified-20261101.json).
+Sempre riusare successi/contratti/provenance/recovery Teatri; M1 acquisito,
+Farmacie61righe10OPEN/STRING preservata e M2 aperto. Checkpoint successivi storici.
 
 ## Checkpoint operativo corrente — riconciliazione OCI qualificata
 

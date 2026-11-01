@@ -1,6 +1,6 @@
 # M2 — diagnosi della struttura degli archivi conservati
 
-1 novembre 2026, Europe/Rome. IN QUALIFICA; nessun comando operatore pronto.
+1 novembre 2026, Europe/Rome. Sorgente e consegna QUALIFICATI; nuova diagnosi VPS NON eseguita.
 [Secondo STOP](../../evidence/m2-image-byte-reconciliation-target-stop-20261101.json):
 ImageByteReconciliationExit=1, PRIVATE_IMAGE_BLOB_OR_EXACT_CANONICAL_EMPTY_CONFIG_REQUIRED,
 risultato canonico8bec830155b26ee665298b6e35f8bb53d41e1ee8ba0333e4e2209829dfea1380,
@@ -47,7 +47,7 @@ root0700/file0600/create-only/fsync. Massimo1controllo/600s; cumulativi10control
 35GET. È diagnosi diversa, non nuovo tentativo di verifica o riarmo. STOP e
 interruzione conservano ogni file; nessun rilancio o directory alternativa.
 Limiti:2GiB/archivio,8GiBset,2048membri,256documenti/1024riferimenti,2MiB/documento,
-16MiBmetadata/immagine,profondità4,64KiBJSONpubblico. Tutto bounded senza retry.
+16MiBmetadata/immagine,profondità4,16MiBreportprivato/64KiBJSONpubblico. Tutto bounded senza retry.
 
 ## Riuso Teatri e baseline consultata
 
@@ -67,3 +67,54 @@ acquisizione/attivazione/releaseacceptance. Pipeline fino a UDP con ogni riga,
 poi grafo/search e verticali/API scheduler/delta. Publisher/source/membership,
 Gatewayproposal, owner/policy/custody/bearer, coorte/pacchetto/review/authority
 correnti rimangono distinti e aperti.
+
+## Qualifica sorgente acquisita
+
+[Source5fe74816](../../evidence/m2-image-graph-source-qualified-20261101.json),19moduli.
+Push41332158720 e PR41332165729, ciascuno20test/4suite:8struttura/limiti,
+5controllo9scope e limiteprivato,5capsula,2Docker29.8.1. Tutti quattro log finali
+letti, zero failure/error/skip/ResourceWarning.13export originali e13binding
+classic→OCI integri. La fixture pubblica busybox1.37.0 produce un export originale
+2.235.392byte/nativea7dbc319… con8manifestaltrepiattaforme+7auxassenti,1runtime
+classic/OCI presente, e riproduce esattamente lo STOP col verificatore corrente.
+È prova del formato pubblico, NON identificazione della causa privata VPS.
+
+Capsula271.453byte, SHA480c97e51a7377346dba754b6ef8fb4641f9d5bb1c11287159a3e8971ef72a04,
+pubblicata inaf237a7eaa20a47f70e36c6ba6e1c8f8db2d38af. ZIPoriginale13093722988,
+99.810byte/SHAf71a739f…, scaricato; tutti cinque membri letti e builder locale
+identico. Verifica crittografica gh2.97 eseguita sul runner; bundle, statement,
+certificato, subject/source/repo/workflow/ref/runner letti e confrontati. Nessun
+rerun crittografico locale della trustchain dichiarato. Tutti235sorgenti congelati
+e tutti17sorgenti del verificatore precedente restano esatti.
+
+Nuovo launcher71a1d6710767a2e0572f5ea9de19db35d333873e,
+SHA36037795acf4292935c3f973a4f5602bd60dc0e275b17796c301dccb3692a737.
+Push41332434946 e PR41332441062 SUCCESS, ciascuno28test/6suite, tutti sei log
+finali letti, zero failure/error/skip/ResourceWarning. Include7test del launcher e
+1consegnaHTTPS esatta,8struttura,5controllo9scope/limiti,5capsula,2Dockerreali.
+[Qualifica finale](../../evidence/m2-image-graph-delivery-qualified-20261101.json).
+[Comando preparato](../../releases/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_COMMAND_20261101.sh)
+QUALIFICATO e unica azione operatore corrente. Le capsule rigenerate nelle CI
+del launcher dichiarano revisioni CI diverse; non sostituirle alla480c97e5
+originale consegnata e vincolata al publisher sopra.
+
+## Unica azione operatore ora
+
+Come oufadmin in SSH interattivo sul VPS eseguire UNA SOLA VOLTA il
+[nuovo comando](../../releases/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_COMMAND_20261101.sh).
+Il plugin non espone questi archivi amministrativi privati; l'agente non dispone
+di SSH. Questa diagnosi di manutenzione resta distinta dal percorso ordinario MCP.
+Eventuale password sudo soltanto nel terminale locale; niente login IAM o token.
+Non ricattura né duplica gli archivi e non richiede altri9GiB; zero effetti Engine.
+
+Atteso PRIVATE_IMAGE_GRAPH_STRUCTURE_DIAGNOSED_NOT_ADMITTED e
+ImageGraphDiagnosticExit=0. Exit0 significa diagnosi completa dei13archivi;
+i riferimenti mancanti possono restare numerosi e non sono ammessi. Il JSON
+pubblico enumera contesti/classi per ordinali; il report strutturale con riferimenti
+resta privato. Restituire SOLO JSONpubblico e footer, niente report/archivi/config.
+STOP/interruzione preserva ogni file; nessun rilancio o percorso alternativo.
+
+Dopo il risultato usare i contesti reali per preparare il solo delta verificabile
+sul sotto-grafo runtime e sui relativi contratti/source/publisher; niente skip
+indiscriminato o nuova acquisizione. Coorte completa, Gatewayproposal/policy-owner,
+custody/bearer/pacchetto/review/authority e provaFarmacieUDP restano aperti.

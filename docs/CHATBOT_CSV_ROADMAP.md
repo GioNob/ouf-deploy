@@ -1,30 +1,39 @@
-# CURRENT — Secondo STOP immagini acquisito; diagnosi della struttura in qualifica
+# CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
 
-1 novembre 2026, Europe/Rome. [Ricevuta9](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json),
-ImageByteReconciliationExit=1, PRIVATE_IMAGE_BLOB_OR_EXACT_CANONICAL_EMPTY_CONFIG_REQUIRED,
-risultato8bec8301, nuovo scope precedenteCONSUMATO. Totale9controlli/35GET;
-13archivi originali conservati. NON rilanciare alcun verificatore o cattura.
-La correzione empty/data è valida ma insufficiente per il target; la ragione
-pubblica non identifica il blob mancante. Nessuna nuova ipotesi viene ammessa.
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md), [qualifica](../evidence/m2-image-graph-delivery-qualified-20261101.json),
+[STOP9/8bec8301](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json), ImageByteReconciliationExit=1. Totale9controlli/35GET;
+13archivi originali conservati. Entrambi i verificatori e la cattura CONSUMATI:
+NON rilanciare alcun vecchio comando. Empty/data corretto ma insufficiente sul
+VPS; la ragione pubblica non identifica il blob mancante. Causa privata OPEN.
 
-[Diagnosi corrente](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md): classifica tutti i riferimenti presenti/mancanti
-nei13archivi dopo hash integrale e verifica9scope/risultati/profili esatti.
-Solo indice/manifesti JSON bounded; config/layer letti solo nel flusso hash
-indifferenziato, mai aperti come membri o espansi. Nessun fetch di blob assenti,
-Engine, rete, mount host, credenziali, SQL/OAuth, import o lifecycle.
-Nuovo controllo diagnostico distinto, non replay della verifica: massimo1/600s,
-10controlli/35GET. Nuovo scope fisso, oldscope mai riarmati/reset/grant.
-Sorgenti/test/qualificaDocker29 con export vendor multipiattaforma in corso;
-nessun nuovo comando operatore ancora pronto.
+Nuova DIAGNOSI strutturale, non replay della verifica né skip/accettazione blob.
+Source5fe74816/19moduli; capsulaaf237a7e/480c97e5/271.453byte;
+launcher71a1d671/SHA36037795. Push41332434946 e PR41332441062 SUCCESS:
+ciascuno28test/6suite, zero failure/error/skip/ResourceWarning; tutti sei log letti.
+Include13exportDocker29.8.1 e fixturevendorREALE busybox1.37.0: export originale
+riproduce exactSTOP,8manifestaltrepiattaforme+7auxassenti e1runtimeclassic/OCI
+presente. Prova di formato, non causa VPS. Nuovo HTTPS esatto qualificato;
+ZIP/publisher/statement/source confrontati. Tutti235sorgenti congelati e17verifica
+precedente invariati; capsule vecchie preservate.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, UNA VOLTA. Diagnostica
+9scope/2STOP/profili esatti; hash integrale13archivi e JSONindice/manifesti bounded.
+Config/layer solo nel flussohash unparsed, mai aperti come membri o espansi.
+Pubblico solo ordinali, enum e conteggi; nomi/path/valori/hashindividuali privati.
+Nessun fetch, Engine, mount host, credenziali, SQL/OAuth, import o lifecycle.
+Nuovo scope m2-image-graph-diagnostic-fa95a719-20261101-v1,1controllo/600s,
+10controlli/35GET, nessun riarmo/reset/grant/authority. Exit0 significa diagnosi
+completata, non identità immagini o M2. STOP/interruzione conserva/nonrilanciare.
+L'agente non ha shell o byteprivati VPS; plugin senza lettura di questi archivi.
 
 Riuso Teatri SEMPRE: riletti handoffM1/dossier26join/13identità/20proprietà/8Cinema
-e auditM2; conservare contratti owner/provenance/MATCH-NEW-REVIEW/recovery, niente
-nuovo motore o terzaacquisizione. M1tecnico8/8,funzionale6/6 acquisiti; Farmacie
-stesso61righe/10campiOPEN/ministerialeSTRING. M2/G5/G6/G7/dueclient aperti.
-UDP/tutti gli esiti, poi grafo/search e verticali/API scheduler/delta. Tutti i
-residui publisher/source/policy-owner/custody/bearer/coorte/pacchetto/review/
-authority restano OPEN. Nessun subagente/automazione/merge/releaseacceptance.
-Le intestazioni/comandi seguenti sono storia, NON istruzioni correnti.
+e auditM2; riusare contratti owner/provenance/MATCH-NEW-REVIEW/recovery; niente
+nuovo motore o terzaacquisizione. M1tecnico8/8 e funzionale6/6 acquisiti; Farmacie
+stesso61righe/10campiOPEN/ministerialeSTRING. M2/G5/G6/G7/dueclient OPEN; nessun
+upload/profiling/acquisizione/attivazione. Residui source/publisher/membership,
+Gatewayproposal, owner/policy/custody/bearer/coorte/pacchetto/review/authority e
+provaUDP/tutte righe OPEN. Poi grafo/search e verticali/API scheduler/delta.
+Nessun subagente/automazione/merge/releaseacceptance. Header/comandi seguenti STORICI.
 
 # CURRENT — STOP consumato; riconciliazione OCI QUALIFICATA, input VPS necessario
 
