@@ -1,28 +1,37 @@
-# CURRENT — Verifica byte STOP consumata; riconciliazione OCI in qualifica
+# CURRENT — STOP consumato; riconciliazione OCI QUALIFICATA, input VPS necessario
 
-1 novembre 2026, Europe/Rome. Ricevuta operatore [STOP d1e98ad3](evidence/m2-image-byte-verification-target-stop-20261101.json),
-ImageByteVerificationExit=1, reason PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED.
-Cattura13archivi/2.774.726.144byte conservata; cumulativi8controlli/35GET.
-NON rilanciare il verificatore consumato, la cattura o vecchi comandi.
-Il codice originale richiedeva data=e30= per il blob empty omesso; OCI1.1.1 rende
-il campo data opzionale. Difetto sorgente riprodotto; il motivo pubblico NON
-identifica il blob privato e non prova ancora la causa target.
-Nuovo verificatore: eccezione SOLO attestationconfigEMPTY/digest44136f/size2,
-data assente o e30= esatto; gli altri blob restano obbligatori. Legge claim/risultato
-esatti del fallimento e preserva gli otto scope. Un unico nuovo controllo finito
-riconcilia la ricevuta, non riarma il vecchio scope; massimo9controlli/35GET,
-600s/zeroEngine, nessun reset/grant/authority. Consegna ancora IN QUALIFICA,
-nessun nuovo comando VPS pronto. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md).
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md),
+[qualifica](evidence/m2-image-byte-reconciliation-delivery-qualified-20261101.json) e [STOP operatore](evidence/m2-image-byte-verification-target-stop-20261101.json).
+Il verificatore precedente è ESEGUITO e CONSUMATO: Exit1/reasontipoEMPTY,
+risultatod1e98ad3. Totale8controlli/35GET;13archivi originali conservati.
+NON rilanciare vecchia verifica, cattura o comandi precedenti.
 
-Richiamo owner: controllare SEMPRE i contratti/codice/prove già riusciti per Teatri
-prima di ogni delta M2. Riletti handoff M1, dossier26join/13identità/20proprietà/
-8Cinema e auditM2: riusare owner/provenance/MATCH-NEW-REVIEW/recovery già qualificati,
-non ricostruire motori o rieseguire acquisizioni Teatri. Verifica artefatti qui è
-manutenzione distinta dal flusso ordinario MCP→Gateway→owner. M1tecnico8/8 e
-funzionale6/6 acquisiti; Farmacie stesso61righe/10campiOPEN/ministerialeSTRING.
-M2/G5/G6/G7/dueclient aperti. UDP/tutti gli esiti, poi grafo/search e verticali/API
-scheduler/delta. Nessun subagente/automazione/merge/releaseacceptance.
-Le intestazioni e i comandi successivi sono cronologia, non istruzioni correnti.
+Difetto data opzionale OCI riprodotto col vero verificatore70ab e corretto:
+solo EMPTY/digest44136f/size2 per configattestazione nonruntime; blob diversi
+assenti o alterati sempre negati. La causa privata VPS resta da verificare.
+Source630f8a22,17sorgenti; capsula58c1f120/SHA20e2107c/241.905byte,
+launcher cfd24741/SHA1ac2191d. Push41330448686 e PR41330454602 SUCCESS:
+ciascuno46test/7suite, zero failure/error/skip/ResourceWarning; tutti sei log letti.
+13exportDocker29.8.1 originali +13varianti esplicite senza data, runtimeconfig/layer
+uguali; vecchio STOP riprodotto13volte. Publisher/ZIP/sorgenti controllati;
+nuovo HTTPS esatto qualificato. Tutti235sorgenti congelati invariati.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, una volta. Riconcilia
+claim/profilo/risultato esatti dello STOP e preserva tutti8scope prima/dopo;
+rilegge stessi13archivi, zeroEngine/mount/credenziali/SQL/OAuth/import/lifecycle.
+Scope nuovo fisso m2-image-byte-reconciliation-fa95a719-20261101-v1,1controllo/
+600s, massimo9controlli/35GET. Nessun riarmo/reset/grant/authority. STOP o
+interruzione conserva tutto e non si rilancia. L'agente non ha shell o byte VPS.
+
+Richiamo owner: controllare SEMPRE quanto già riuscito per Teatri prima dei deltaM2.
+Riletti handoffM1, dossier26join/13identità/20proprietà/8Cinema e auditM2. Riusare
+contratti/provenance/MATCH-NEW-REVIEW/recovery, non rifare motori o acquisizioni.
+M1tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso61righe/10campiOPEN/
+ministerialeSTRING. M2/G5/G6/G7/dueclient rimangono OPEN. Publisher/source/full
+membership, proposalGateway, owner/policy/custody/bearer, coorte/pacchetto/review/
+authority correnti e E2E non chiusi. UDP/tutti gli esiti, poi grafo/search e
+verticali/API scheduler/delta. Nessun subagente/automazione/merge/releaseacceptance.
+Le intestazioni e i comandi seguenti sono storia, non nuove istruzioni.
 
 # CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
 

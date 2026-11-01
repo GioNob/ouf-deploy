@@ -6,17 +6,20 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint operativo corrente — STOP privato consumato
+## Checkpoint operativo corrente — riconciliazione OCI qualificata
 
-Il verificatore del1novembre è stato eseguito e ha dato STOP_RECONCILE,
-PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED, Exit1. Scope consumato;
-cumulativi8controlli/35GET. [Ricevuta](../evidence/m2-image-byte-verification-target-stop-20261101.json).
-Il difetto sorgente sul data opzionale OCI è riprodotto, causa target ancora da
-riconciliare privatamente. [Correzione in qualifica](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md),
-nessun comando pronto. Non ripetere cattura o verifica precedente.
-I successi Teatri si consultano ad ogni delta: handoff M1, dossier26ottobre e
-auditM2; riuso dei contratti/provenance/recovery e dei motori, non nuove acquisizioni.
-Tutti i gate M2 rimangono aperti. Il checkpoint successivo è storico.
+Verifica precedente STOP/Exit1/risultatod1e98ad3 e scopeCONSUMATO;
+8controlli/35GET. [Ricevuta](../evidence/m2-image-byte-verification-target-stop-20261101.json).
+Correzione del data opzionale qualificata; causa privata VPS ancora da stabilire.
+Nuovo launcher cfd24741, push41330448686 e PR41330454602 ciascuno46test/7suite
+PASS; tutti sei log letti, zero failure/error/skip/ResourceWarning.
+[Handoff e unica azione corrente](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md)
+e [qualifica](../evidence/m2-image-byte-reconciliation-delivery-qualified-20261101.json).
+Un nuovo controllo600s sullo STOP esatto, stessi archivi e zeroEngine, massimo
+9controlli/35GET, nessun riarmo/reset/grant. Non ripetere cattura o vecchia verifica.
+I successi Teatri si consultano ad ogni delta: handoffM1, dossier26ottobre e auditM2;
+riuso dei contratti/provenance/recovery e motori, nessuna nuova acquisizione.
+Tutti gateM2 restano aperti. Il checkpoint successivo è storico.
 
 ## Checkpoint operativo del 1 novembre 2026
 
