@@ -23,7 +23,7 @@ jobs:
           sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-capture-gh297
           sudo chown -R root:root /opt/ouf-capture-gh297
           /opt/ouf-capture-gh297/bin/gh --version
-      - name: Closed readonly file hash input and sealed source capsule
+      - name: Static host-file hash input and sealed source capsule
         run: |
           set -euo pipefail
           fixture="/var/lib/ouf-retained-capture-unit-${GITHUB_RUN_ID}"
@@ -31,7 +31,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_static_custody.py test_m2_retained_static_custody_capsule.py; do
+          for suite in test_m2_retained_static_custody.py test_m2_retained_static_custody_capsule.py test_m2_retained_static_custody_launcher.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
           sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-static-custody.py" \
