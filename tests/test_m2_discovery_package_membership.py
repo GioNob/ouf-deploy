@@ -13,6 +13,7 @@ class PackageMembership(unittest.TestCase):
         case = named_fixture.Membership(); self.addCleanup(case.doCleanups)
         named, root, package, records, _, original_seal = case.prepared()
         runtime = named.databases.runtime; runtime.guard = Mock(); runtime.inputs['peers'] = {}
+        named.images.plan['nativeEngineProfile'] = {'profile': 'CLASSIC_CONFIG'}
         named.publisher.inputs['artifacts'][0]['bundle'] = {'path': str(root/'bundle.json')}
         for name, record in records.items():
             record['artifactKind'] = 'SOURCE_AND_ROUTE_PACKAGE' if name == 'gateway' else 'DOCKER_SAVE'
@@ -85,6 +86,24 @@ class PackageMembership(unittest.TestCase):
         reader, _, _, _, _ = self.prepared()
         reader.runtime.inputs['peers']['onboarding']['runtimeBinding']['imageId'] = 'sha256:'+'e'*64
         with self.assertRaisesRegex(ValueError, 'IMAGE_MUST_MATCH_SAME_REVIEWED'): reader.observe()
+
+    def test_containerd_retained_manifest_ids_are_bound_to_exact_original_config_and_layer_bytes(self):
+        reader, _, package, records, _ = self.prepared()
+        reader.membership.images.plan['nativeEngineProfile'] = {'profile': 'CONTAINERD_MANIFEST'}
+        for name in ('onboarding', 'ingestion', 'udp'):
+            with (package/name/'image.docker.tar').open('rb') as stream:
+                audit = m.archive(stream, records[name]['files']['image.docker.tar'], records[name]['imageId'], records[name]['sourceCommit'])
+            image_id = m.native_identity(audit)['nativeImageId']
+            self.assertNotEqual(image_id, records[name]['imageId'])
+            reader.runtime.inputs['peers'][name]['runtimeBinding']['imageId'] = image_id
+        self.assertTrue(reader.observe()['fiveReviewedModuleImageIdentitiesProven'])
+        reader.membership.images.plan['nativeEngineProfile'] = {'profile': 'CLASSIC_CONFIG'}
+        with self.assertRaisesRegex(ValueError, 'IMAGE_MUST_MATCH_SAME_REVIEWED'): reader.observe()
+
+    def test_unknown_image_store_profile_never_guesses_an_equivalent_image_identity(self):
+        reader, _, _, _, _ = self.prepared()
+        reader.membership.images.plan['nativeEngineProfile'] = {'profile': 'UNREVIEWED'}
+        with self.assertRaisesRegex(ValueError, 'IMAGE_STORE_PROFILE'): reader.observe()
 
     def test_linked_world_writable_and_replaced_members_are_rejected(self):
         for change in ('symlink', 'hardlink', 'permissions'):

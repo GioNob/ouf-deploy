@@ -1,0 +1,10 @@
+{
+  "tools.m2_discovery_installation_profile.custody_capture": {
+    "path": "tools/m2_discovery_installation_profile/custody_capture.py",
+    "sha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf"
+  },
+  "tools.m2_discovery_installation_profile.retained_mount_capture": {
+    "path": "tools/m2_discovery_installation_profile/retained_mount_capture.py",
+    "sha256": "f6cb51659af47a9d7557514da34b8bf502443bc3fc77c0b1a01078a2604fcc48"
+  }
+}

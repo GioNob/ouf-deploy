@@ -13,7 +13,7 @@ from .current_cohort import CurrentCohortRuntime
 from .node_owner import ObservationBudget
 from tools.semantic_registry_operational_owner.guard import protected_file
 from tools.semantic_provider_deployment_authentication import attributes
-from image_custody import archive
+from image_custody import archive, native_identity
 
 IMAGES = MODULES - {'gateway'}
 MAXIMUM_BYTES = 6 * 1024 ** 3
@@ -105,15 +105,24 @@ class CurrentPackageMembership:
                 expected=declared[name+'/SHA256SUMS'], modes=(0o400, 0o440, 0o600, 0o644))
             require(checksum_map(raw) == record['files'], 'EXACT_SIGNED_MODULE_CHECKSUM_CLOSURE_REQUIRED')
         selected = {v['module']: v['audit']['imageId'] for v in m.images.plan['images']}
-        identities = {name: (selected[name] if name in selected else
-            self.runtime.inputs['peers'][name]['runtimeBinding']['imageId']) for name in IMAGES}
+        profile = m.images.plan['nativeEngineProfile']['profile']
+        require(profile in {'CLASSIC_CONFIG', 'CONTAINERD_MANIFEST'}, 'EXACT_REVIEWED_PACKAGE_IMAGE_STORE_PROFILE_REQUIRED')
         images = {}
         for name in sorted(IMAGES):
             record = records[name]
-            require(record.get('imageId') == identities[name] and 'image.docker.tar' in record['files'],
-                'SIGNED_PACKAGE_IMAGE_MUST_MATCH_SAME_REVIEWED_CURRENT_COHORT_ROLE')
+            require('image.docker.tar' in record['files'], 'SIGNED_ORIGINAL_MODULE_IMAGE_ARCHIVE_REQUIRED')
             with stable_source(root/name/'image.docker.tar', 2147483648, budget) as stream:
-                proof = archive(stream, record['files']['image.docker.tar'], identities[name], record['sourceCommit'])
+                proof = archive(stream, record['files']['image.docker.tar'], record['imageId'], record['sourceCommit'])
+            if name in selected:
+                require(record['imageId'] == selected[name], 'SIGNED_PACKAGE_IMAGE_MUST_MATCH_SAME_REVIEWED_CURRENT_COHORT_ROLE')
+            else:
+                # Docker29/containerd addresses a native manifest, while the
+                # signed Docker-save package records its config digest. Bind
+                # the exact qualified envelope bytes; never equate those IDs
+                # or accept an arbitrary/observed alternative descriptor.
+                expected = native_identity(proof)['nativeImageId'] if profile == 'CONTAINERD_MANIFEST' else proof['imageId']
+                require(expected == self.runtime.inputs['peers'][name]['runtimeBinding']['imageId'],
+                    'SIGNED_PACKAGE_IMAGE_MUST_MATCH_SAME_REVIEWED_CURRENT_COHORT_ROLE')
             images[name] = digest(proof)
         require(self.inventory(root, allowed, budget) == before and self.guard() == row
             and m.manifest(row, budget)[2] == manifest_hash and m.publisher.observe() == publisher,
