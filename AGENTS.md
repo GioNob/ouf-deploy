@@ -1,3 +1,57 @@
+# CURRENT — Exact metadata capture READY; operator VPS input required
+
+1 November 2026, Europe/Rome. Source work remains autonomous/sequential; no
+agents/automations or optional stops. Preserve M1/Teatri8/8technical6/6functional,
+same Farmacie SUCCEEDED61rows/10columns/10OPEN/ministerial STRING. No upload,
+profiling or acquisition replay, source activation, old authority or budget reset.
+
+NEXT REQUIRED INPUT: operator executes the exact read-only metadata launcher on
+VPS and returns only public result JSON. This session has no direct VPS shell/FS
+connector. This is NEW retained mount custody input, not another QUIESCED status
+diagnostic or installation approval. Exact command/reason and hashes are in:
+docs/handoffs/OUF_M2_RETAINED_MOUNT_CAPTURE_20261101.md.
+Launcher source ef664e159ea4bc6981d2799dae6c93a1d0a4c8c7, SHA256
+fe722cf6b37b5789f2cafa799a1506aea8d49736349ae4bef1010428d8e93b6a.
+It verifies capsule d2020f17 / source26b7fb12 in memory before privileged exec;
+capsule SHA256dfdedd2e038b524277d6db8ed9f00808798366e45552863b471f5d7de67014fa.
+Exactly20 Engine GETs/ten retained IDs from old hash-bound13peer metadata;
+current boot/root/peer pins required. Filesystem ownership/mode/inode metadata
+only; zero mounted-file content reads. Private candidates stay root-private.
+Mutable/ephemeral content and protocol rights of special files stay unobserved.
+One attempt/90s; launcher timeout100s+5s kill. Consumed/partial scope never replays.
+No grants, OAuth, SQL, lifecycle, signing or source activation. On STOP return
+public JSON, do not reexecute or delete the consumed scope.
+
+Collector source c5a14726; fixture26b7fb12. CI41267261226 PASS16/3suites;
+launcher CI41267871051 PASS20/4suites (unit17/native3), both final logs read,
+zero failure/error/skip/ResourceWarning. Actual Docker29.8.1, ten scratch pause
+processes, /proc and Unix peer, metadata/FIFO/socket; not OUF application E2E.
+Publisher push41267257360/artifact13068106546 ZIP5f2699aa39d7bda21da3aa795f004d2725265632ce8e1843b96fb05eb96eb603:
+verified gh2.97.0 publisher; downloaded bytes exactly equal committed delivery.
+Repo/owner/workflow/source/ref/subject independently read back; no local crypto rerun.
+
+Registry fix10980762 permits only exact root:10001/0440 shared-group credential
+and invalidates bearer cache on local credential/custody drift. Native UID10001
++real retained Keycloak26.7.4+IAM decoder/converter14 PASS; module133 PASS.
+New candidate c2dae77b / producer4c8bcde image a6f00cda qualified scan/attestation;
+8hashes/221Gitblobs/12SQL read back. Independent seven-mount OCI/rootfs PASS,
+Java never starts/private inputs synthetic. Old4f8 selection remains unchanged.
+
+Package membership sourceaff52590 PASS179/26 plus offline parent/Sigstore9;
+Gateway route-progress73632988 PASS180/26 plus publication24/2. Current controller
+v3:12typed owners/22reads; no recursive publication checkpoint. Sourcec5a14726
+also fixes retained native-manifest vs config digest identity, exact reviewed
+store profile/envelope only. CI41266955637 PASS182/26/all5 final logs read,
+zero failure/error/skip/ResourceWarning. No arbitrary identity alternative.
+All235 frozen compiler hashes and original37/108/128/136 maps remain unchanged;
+new owners outside compiler. Full private custody/admission, actual target bearer,
+complete early/late sealed controller/execution package/exact current private
+review/HUMAN+role authority and E2E/two clients remain OPEN. No apply command ready.
+Loading ends UDP/all61outcomes, then graph search, then vertical/API delta scheduler.
+Evidence:evidence/m2-retained-mount-capture-qualified-20261101.json plus current
+credential/six-module/Gateway-route dossiers. Canonical handoff links them all.
+Older CURRENT headers and SOURCE-only/no-command statements are historical.
+
 # CURRENT — Native controller witnesses PASS169; joined artifact crypto PASS6
 
 31 October 2026, Europe/Rome. Continue SOURCE work autonomously/sequentially;

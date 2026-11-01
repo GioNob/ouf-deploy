@@ -1,3 +1,106 @@
+# Passo corrente — raccolta metadati pronta, intervento VPS necessario
+
+1 novembre2026. È qualificato il [comando esatto di sola lettura](OUF_M2_RETAINED_MOUNT_CAPTURE_20261101.md).
+La sessione non ha accesso diretto al filesystem/shell del VPS: occorre eseguirlo
+lì e restituire soltanto il JSON pubblico. Non inviare credenziali o file privati.
+È un nuovo input di custodia dei dieci peer mantenuti, non un ulteriore controllo
+QUIESCED. Un solo tentativo; su STOP conservare la directory e non ripetere.
+
+Sorgente26b7fb12/capsulad2020f17/launcheref664e15: CI41267871051 **20test/4suite PASS**,
+due log finali letti (unit17/native3), Docker29.8.1/processi/socket/metadati reali.
+Contenuti dei file montati non letti; mutabili/effimeri non osservati. Firme
+publisher verificate e byte identici alla consegna. Tutto è un candidato privato
+di review; nessuna ammissione target o autorità emessa.
+
+Corretto anche un difetto del controllo d'appartenenza delle immagini mantenute:
+il manifest nativo Docker29 è diverso dal digest di configurazione del package.
+Ora si usa esclusivamente la derivazione esatta dell'envelope nel profilo Engine
+recensito; nessun ID alternativo arbitrario. Sorgentec5a14726,
+CI41266955637 **182test/26suite PASS**, tutti5log finali letti, zero errori/failure/
+skip/ResourceWarning. I235hash congelati e le vecchie mappe restano invariati.
+
+Dossier: [raccolta e identità native](../../evidence/m2-retained-mount-capture-qualified-20261101.json),
+[route correnti](../../evidence/m2-current-gateway-routes-qualified-20261101.json),
+[credenziali/candidato](../../evidence/m2-native-provider-credential-qualified-20261101.json),
+[sei moduli](../../evidence/m2-native-six-module-membership-qualified-20261101.json).
+Full private custody, bearer target, checkpoint/controller completo e pacchetto
+esecutivo/review/autorità correnti, E2E e due client restano OPEN. Le righe storiche
+seguenti che indicano nessun intervento/comando pronto precedono questa raccolta.
+
+---
+
+# Corrente — candidato credenziali, appartenenza completa e route Gateway
+
+1 novembre 2026, Europe/Rome. Continuità autonoma e sequenziale; M1/Teatri resta
+8/8 tecnico e 6/6 funzionale. Stessa Farmacie SUCCEEDED61righe/10colonne/10OPEN,
+codice ministeriale STRING. Nessun replay di upload/profiling/acquisizioni,
+activation, autorità storica, grant/reset o accettazione.
+
+La correzione Registry10980762 risolve un difetto di contratto effettivo: il
+profilo nativo ammette la credenziale root:10001/0440, mentre il client OAuth
+Java rifiutava ogni permesso di gruppo. Accetta ora soltanto quel caso esatto,
+con controlli su inode/metadati/link/mode, conservando i file privati. La cache
+viene invalidata se cambiano credenziale o custodia. Nessun retry aggiunto.
+Sorgente applicativo c2dae77b, PR[42](https://github.com/GioNob/ouf-semantic-registry/pull/42):
+133 test modulo PASS (41263547564/job124721564420, log finale letto), container
+smoke PASS;14 casi nativi con Java UID10001 e vero Keycloak26.7.4 PASS
+(41263404454/job124721089189, log finale letto). Il bearer è emesso e verificato
+dal decoder/converter IAM reale; firma alterata/audience errata respinte.
+Realm e HTTP loopback sono fixture, non l'ammissione del workload target.
+
+Il publisher4c8bcde ha prodotto il nuovo candidato in
+[41263544004](https://github.com/GioNob/ouf-semantic-registry/actions/runs/41263544004),
+job124721503151, artifact13066396654; ZIP SHA256
+`1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba`.
+Verificati localmente tutti8hash,221blob Git e12SQL del JAR. Scansione immagine
+esatta:53 MEDIUM/4 LOW, nessuna HIGH/CRITICAL/UNKNOWN; attestazioni verificate.
+La qualifica indipendente Docker29.8.1 in
+[41264083529](https://github.com/GioNob/ouf-deploy/actions/runs/41264083529),
+job124723112442/artifact13066547098, confronta OCI e sette mount; seal completo
+`516beaaff72fe24062eae294794de74a39981539ccb58ba766e9e29e34342cc2`,9302entry,
+1720017215byte, nessuna esclusione. Java non parte; input privati sintetici.
+La selezione precedente4f8 resta immutata fino a nuova composizione/review.
+Dossier: [credenziali e candidato](../../evidence/m2-native-provider-credential-qualified-20261101.json).
+
+`aff52590` aggiunge `CurrentPackageMembership`: tutti i payload dei sei moduli,
+cinque archivi immagine originali e checksum interni/esterni devono appartenere
+allo stesso subject publisher recensito. Albero esatto, nessun file/directory
+extra, link, file alterato o immagine diversa dal ruolo selezionato/retained.
+Limiti256member/512entry/6GiB/2GiB per member/180secondi. CI
+[41264004807](https://github.com/GioNob/ouf-deploy/actions/runs/41264004807):
+179test/26suite PASS, cinque log finali letti, zero failure/error/skip/ResourceWarning.
+Protocollo162/21, DB/fence4/2, TLS7, IAM4, processo reale2. Qualifica congiunta
+Sigstore/Ed25519 in [41264004792](https://github.com/GioNob/ouf-deploy/actions/runs/41264004792)/
+job124722886346:9test/3suite PASS, log finale letto, namespace senza rete e
+senza credenziali GitHub; byte CI disposable, Engine/altre foglie simulate.
+Dossier: [sei moduli](../../evidence/m2-native-six-module-membership-qualified-20261101.json).
+
+Sorgente successiva `73632988` collega anche `CurrentGatewayRoutes` al controller
+v3 (12owner/22letture). Usa il canale namespace GET concreto e le route del
+piano di pubblicazione corrente. Non richiama il guard/checkpoint di quella
+pubblicazione: ne nascerebbe una dipendenza circolare. Una CLAIMED senza marker
+ammette soltanto la mappa precedente; dopo il marker originale ammette esclusivamente
+le mappe before/after di quell'esatto effetto, lasciando la riconciliazione all'owner.
+APPLIED richiede il marker; baseline estraneo, generazioni/storia diverse e
+inizializzazioni parziali sono respinti. Nessun PUT o avanzamento del journal.
+CI73632988: pubblicazione24test/2suite PASS (41265066498/job124726055993,
+log finale letto); controller180/26suite PASS (41265066320, tutti5log finali letti),
+zero failure/error/skip/ResourceWarning. Firme/journal reali, HTTP/Engine simulati
+nella suite delle route. I test nativi separati conservano il proprio perimetro.
+
+Tutti235hash del compilatore corrente e le vecchie mappe37/108/128/136 sono
+conservati. Nuovi owner fuori da quel compilatore: non è un installer target.
+Restano custodia privata completa, appartenenza di tutti i runtime/artefatti
+terzi, bearer del target, checkpoint iniziali/controller completo sigillato,
+pacchetto di esecuzione e review privata esatta con autorità correnti. È pronto soltanto il nuovo comando di raccolta metadati descritto sopra;
+nessun comando di applicazione pronto. Serve l'operatore per quell'input VPS.
+Caricamento fino a UDP con tutti61esiti; ricerca nel grafo dopo, quindi verticali/API
+e scheduler delta. G5-G7/24AT/8UX/8stabilità/boot/rotazione/due client OPEN.
+
+Le sezioni seguenti sono lo storico delle prove precedenti.
+
+---
+
 # Continuazione corrente — checkpoint nativi e appartenenza degli artefatti
 
 31 ottobre 2026, Europe/Rome. Sorgente corrente `ed908d3f89b455ceb765660e49b23551ed88e140`.

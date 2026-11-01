@@ -1,0 +1,105 @@
+{
+  "actualOfflineCrypto": {
+    "errors": 0,
+    "failures": 0,
+    "finalLogRead": true,
+    "jobId": 124722886346,
+    "limitations": "Engine/runtime, other private custody and actual target cohort are modeled/unproven.",
+    "runId": 41264004792,
+    "scope": "Actual Sigstore, current parent Ed25519 and all six disposable package payloads/five images; empty network namespace, no GitHub credential.",
+    "skips": 0,
+    "suites": 3,
+    "tests": 9
+  },
+  "actualTargetWorkloadBearerAdmissionProven": false,
+  "allRuntimeArtifactMembershipProven": false,
+  "applicationE2EProven": false,
+  "bounds": {
+    "maximumDeclaredMembers": 256,
+    "maximumMemberBytes": 2147483648,
+    "maximumObservationSeconds": 180,
+    "maximumPackagePayloadBytes": 6442450944,
+    "maximumTreeEntries": 512
+  },
+  "capabilitiesPublished": false,
+  "change": "CurrentPackageMembership closes exact signed six-module payload/checksum tree and five original image identities; HeldNativeController v2 requires it under the same invocation fence.",
+  "completeCutoverCheckpointProven": false,
+  "completePrivateCustodyProven": false,
+  "controller": {
+    "atomicDistributedSnapshot": false,
+    "namedReads": 20,
+    "packageAndVolatileReadsRepeatedBeforeReturn": true,
+    "samePublisherAndNamedMembershipJoined": true,
+    "schema": "ouf.discovery-held-native-controller-witness.v2",
+    "singleTransitionInvocationFence": true,
+    "typedOwners": 11
+  },
+  "date": "2026-11-01",
+  "denials": [
+    "Missing/extra module checksum or outer member",
+    "Altered Gateway payload outside selected-image migration subset",
+    "Conflicting module checksum inventory",
+    "Unknown files/empty directories, links/hardlinks, writable file/directory",
+    "Retained role image mismatch",
+    "File replacement/tree drift, foreign owner/current parent revocation"
+  ],
+  "fiveReviewedModuleImageIdentitiesProvenInQualifiedFixture": true,
+  "frozenCompiler": {
+    "allOriginalHashesVerifiedLocally": true,
+    "newOwnersInThatCompiler": false,
+    "sourceMapChanged": false,
+    "sources": 235
+  },
+  "fullCohortProven": false,
+  "producerReleaseDispatched": false,
+  "protocolAndNative": {
+    "allFiveFinalLogsRead": true,
+    "errors": 0,
+    "failures": 0,
+    "jobs": [
+      {
+        "id": 124722886911,
+        "scope": "Protocol/root custody/signatures, remaining native leaves modeled",
+        "suites": 21,
+        "tests": 162
+      },
+      {
+        "id": 124722886910,
+        "scope": "Real PostgreSQL and Docker29.8.1 producer fence",
+        "suites": 2,
+        "tests": 4
+      },
+      {
+        "id": 124722886780,
+        "scope": "Real TLS and native namespaces",
+        "suites": 1,
+        "tests": 7
+      },
+      {
+        "id": 124722886913,
+        "scope": "Keycloak26.7.4 read-only existing admin session",
+        "suites": 1,
+        "tests": 4
+      },
+      {
+        "id": 124722886959,
+        "scope": "Actual non-root process; Engine modeled",
+        "suites": 1,
+        "tests": 2
+      }
+    ],
+    "resourceWarnings": 0,
+    "runId": 41264004807,
+    "skips": 0,
+    "suites": 26,
+    "tests": 179
+  },
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-native-six-module-membership-qualification.v1",
+  "sixModulePackageBytesProvenInQualifiedFixture": true,
+  "source": "aff52590b9c8d004f5e725d6a008fd59d4520fb3",
+  "sourceActivation": false,
+  "targetApplyAuthorized": false,
+  "vpsOperations": 0
+}
