@@ -1,5 +1,5 @@
 """Small inert Docker/OCI archives; no container, executable or publisher trust."""
-import gzip,hashlib,io,json,tarfile
+import ast,base64,gzip,hashlib,io,json,tarfile,types
 
 
 def encoded(value):return json.dumps(value,separators=(',',':')).encode()
@@ -36,7 +36,8 @@ def fixture(*,native=True,compressed=True,role='fixture',bad_diff=False):
     return raw,image,entries
 
 
-def attested_fixture(*,modern=True,inline_empty=False,bad_blob=False,wrong_subject=False,wrong_platform=False):
+def attested_fixture(*,modern=True,inline_empty=False,empty_data=True,empty_config_patch=None,
+        bad_blob=False,wrong_subject=False,wrong_platform=False):
     _,image,entries=fixture()
     manifest_body=entries[2][1]
     descriptor=lambda media,raw:{'mediaType':media,'digest':address(raw),'size':len(raw)}
@@ -46,7 +47,8 @@ def attested_fixture(*,modern=True,inline_empty=False,bad_blob=False,wrong_subje
         'subject':[{'name':'_','digest':{'sha256':image[7:]}}],'predicate':{'fixture':'PRIVATE_ATTESTATION_BODY'}})
     raw_config=b'{}' if modern else encoded({'architecture':'unknown','os':'unknown','rootfs':{'type':'layers','diff_ids':[]}})
     cfg=descriptor('application/vnd.oci.empty.v1+json' if modern else 'application/vnd.oci.image.config.v1+json',raw_config)
-    if modern:cfg['data']='e30='
+    if modern and empty_data:cfg['data']='e30='
+    if empty_config_patch:cfg.update(empty_config_patch)
     artifact={'schemaVersion':2,'mediaType':'application/vnd.oci.image.manifest.v1+json',
         'config':cfg,'layers':[descriptor('application/vnd.in-toto+json',content)]}
     target=('sha256:'+'f'*64) if wrong_subject else image
@@ -62,3 +64,49 @@ def attested_fixture(*,modern=True,inline_empty=False,bad_blob=False,wrong_subje
         ('blobs/sha256/'+address(content)[7:],content+(b' ' if bad_blob else b''))]
     if not inline_empty or not modern:entries.append(('blobs/sha256/'+address(raw_config)[7:],raw_config))
     return package(entries),root['digest'],entries
+
+
+def original_delivered_verifier(root):
+    """The actual consumed capsule, not a test reimplementation of its defect."""
+    raw=(root/'scripts/prepare-m2-retained-image-verification-20261101.py').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='70ab863a3bdb9855672acd5bf9af33d1678ad29ba35c0259ce0bf38e6b64337f'
+    tree=ast.parse(raw)
+    payload=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='PAYLOAD' for t in n.targets))
+    source=json.loads(base64.b64decode(payload,validate=True))['tools.m2_discovery_installation_profile.retained_image_identity']
+    module=types.ModuleType('original_consumed_image_identity')
+    module.__package__='tools.m2_discovery_installation_profile'
+    exec(compile(source,'<original-consumed-image-identity>','exec'),module.__dict__)
+    return module
+
+
+def omit_canonical_empty_data(raw,image):
+    """OCI compatibility variant of real Docker output; runtime bytes unchanged.
+
+    Only remove optional attestation-config data and the known empty blob.
+    Re-address changed attestation manifests/parent indexes explicitly.
+    This result is a derivative fixture, never claimed to be an original export.
+    """
+    with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as archive:
+        entries={m.name:archive.extractfile(m).read() for m in archive if m.isfile()}
+    empty='sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a'
+    replacements={};changed=0
+    def rewrite(descriptor):
+        nonlocal changed
+        address_old=descriptor['digest']
+        if address_old in replacements:return {**descriptor,**replacements[address_old]}
+        name='blobs/sha256/'+address_old[7:];body=entries[name];value=json.loads(body)
+        if 'manifests' in value:
+            value['manifests']=[rewrite(v) for v in value['manifests']]
+        elif value.get('config',{}).get('mediaType')=='application/vnd.oci.empty.v1+json':
+            assert value['config']['digest']==empty and value['config']['size']==2
+            value['config'].pop('data',None);changed+=1
+        else:return descriptor
+        new=encoded(value);replacement={'digest':address(new),'size':len(new)}
+        replacements[address_old]=replacement
+        if new!=body:entries.pop(name);entries['blobs/sha256/'+address(new)[7:]]=new
+        return {**descriptor,**replacement}
+    index=json.loads(entries['index.json']);index['manifests']=[rewrite(v) for v in index['manifests']]
+    assert changed>0
+    entries['index.json']=encoded(index);entries.pop('blobs/sha256/'+empty[7:],None)
+    return package(list(entries.items())),replacements.get(image,{'digest':image})['digest'],changed

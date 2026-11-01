@@ -1,9 +1,9 @@
 name: M2 consumed private image intake and native byte verification
 on:
   push:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", "evidence/m2-image-byte-verification-target-stop-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
   pull_request:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "scripts/launch-m2-retained-image-verification-20261101.sh", "evidence/m2-native-image-archives-target-20261101.json", "evidence/m2-image-byte-verification-target-stop-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
 permissions: {contents: read}
 jobs:
   unit-and-seal:

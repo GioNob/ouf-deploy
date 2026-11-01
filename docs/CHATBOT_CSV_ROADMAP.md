@@ -1,3 +1,29 @@
+# CURRENT — Verifica byte STOP consumata; riconciliazione OCI in qualifica
+
+1 novembre 2026, Europe/Rome. Ricevuta operatore [STOP d1e98ad3](../evidence/m2-image-byte-verification-target-stop-20261101.json),
+ImageByteVerificationExit=1, reason PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED.
+Cattura13archivi/2.774.726.144byte conservata; cumulativi8controlli/35GET.
+NON rilanciare il verificatore consumato, la cattura o vecchi comandi.
+Il codice originale richiedeva data=e30= per il blob empty omesso; OCI1.1.1 rende
+il campo data opzionale. Difetto sorgente riprodotto; il motivo pubblico NON
+identifica il blob privato e non prova ancora la causa target.
+Nuovo verificatore: eccezione SOLO attestationconfigEMPTY/digest44136f/size2,
+data assente o e30= esatto; gli altri blob restano obbligatori. Legge claim/risultato
+esatti del fallimento e preserva gli otto scope. Un unico nuovo controllo finito
+riconcilia la ricevuta, non riarma il vecchio scope; massimo9controlli/35GET,
+600s/zeroEngine, nessun reset/grant/authority. Consegna ancora IN QUALIFICA,
+nessun nuovo comando VPS pronto. [Handoff corrente](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md).
+
+Richiamo owner: controllare SEMPRE i contratti/codice/prove già riusciti per Teatri
+prima di ogni delta M2. Riletti handoff M1, dossier26join/13identità/20proprietà/
+8Cinema e auditM2: riusare owner/provenance/MATCH-NEW-REVIEW/recovery già qualificati,
+non ricostruire motori o rieseguire acquisizioni Teatri. Verifica artefatti qui è
+manutenzione distinta dal flusso ordinario MCP→Gateway→owner. M1tecnico8/8 e
+funzionale6/6 acquisiti; Farmacie stesso61righe/10campiOPEN/ministerialeSTRING.
+M2/G5/G6/G7/dueclient aperti. UDP/tutti gli esiti, poi grafo/search e verticali/API
+scheduler/delta. Nessun subagente/automazione/merge/releaseacceptance.
+Le intestazioni e i comandi successivi sono cronologia, non istruzioni correnti.
+
 # CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)

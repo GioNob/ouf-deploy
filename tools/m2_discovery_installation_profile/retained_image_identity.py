@@ -16,6 +16,7 @@ IMAGE_TYPES={'application/vnd.oci.image.manifest.v1+json','application/vnd.docke
 INDEX_TYPES={'application/vnd.oci.image.index.v1+json','application/vnd.docker.distribution.manifest.list.v2+json'}
 CONFIG_TYPES={'application/vnd.oci.image.config.v1+json','application/vnd.docker.container.image.v1+json'}
 EMPTY='application/vnd.oci.empty.v1+json'
+EMPTY_DIGEST='sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a'
 ATTESTATION='application/vnd.docker.attestation.manifest.v1+json'
 LAYER_TYPES={'application/vnd.oci.image.layer.v1.tar','application/vnd.oci.image.layer.v1.tar+gzip',
     'application/vnd.docker.image.rootfs.diff.tar','application/vnd.docker.image.rootfs.diff.tar.gzip'}
@@ -80,14 +81,21 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
             with archive.extractfile(row) as content:raw=content.read(maximum+1)
             require(len(raw)==row.size,'COMPLETE_PRIVATE_IMAGE_DOCUMENT_REQUIRED');budget.check()
             return raw,decode(raw)
-        def blob(descriptor,maximum=2097152):
+        canonical_empty={}
+        def blob(descriptor,maximum=2097152,*,empty_attestation_config=False):
             require(type(descriptor) is dict and re.fullmatch(SHA,descriptor.get('digest',''))
                 and type(descriptor.get('size')) is int and 0<descriptor['size']<=maximum,
                 'BOUNDED_CONTENT_ADDRESSED_IMAGE_DESCRIPTOR_REQUIRED')
             name='blobs/sha256/'+descriptor['digest'][7:]
             if name not in members:
-                require(descriptor.get('mediaType')==EMPTY and descriptor.get('data')=='e30=',
-                    'PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED')
+                # OCI 1.1.1 explicitly makes data optional. This exception is
+                # ONLY the known two-byte nonruntime attestation config, never
+                # an arbitrary missing blob, inline runtime config or layer.
+                require(empty_attestation_config and descriptor.get('mediaType')==EMPTY
+                    and descriptor['digest']==EMPTY_DIGEST and descriptor['size']==2
+                    and ('data' not in descriptor or descriptor['data']=='e30='),
+                    'PRIVATE_IMAGE_BLOB_OR_EXACT_CANONICAL_EMPTY_CONFIG_REQUIRED')
+                canonical_empty[name]={'inlineDataPresent':'data' in descriptor}
                 raw=b'{}';value={}
             else:raw,value=small(name,maximum)
             require(len(raw)==descriptor['size'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==descriptor['digest'],
@@ -127,7 +135,7 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                     and node.get('artifactType') in (None,ATTESTATION),'EXPLICIT_NONRUNTIME_BUILDKIT_ATTESTATION_REQUIRED')
                 cfg=node.get('config',{})
                 require(cfg.get('mediaType') in CONFIG_TYPES|{EMPTY},'EXACT_ATTESTATION_CONFIG_DESCRIPTOR_REQUIRED')
-                _,raw,value=blob(cfg)
+                _,raw,value=blob(cfg,empty_attestation_config=True)
                 if cfg['mediaType']==EMPTY:
                     require(raw==b'{}' and node.get('artifactType')==ATTESTATION,
                         'EXACT_OCI_EMPTY_ATTESTATION_CONFIGURATION_REQUIRED')
@@ -245,6 +253,9 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
             'layerCount':len(proofs),'executionConfigurationHash':digest(config['config']),
             'auxiliaryAttestationCount':len(attestations),'auxiliaryAttestationBytes':auxiliary_bytes,
             'auxiliaryAttestationBindingsHash':digest(attestations),
+            'canonicalEmptyAttestationConfigsReconstructed':len(canonical_empty),
+            'canonicalEmptyAttestationConfigsWithoutInlineData':sum(not v['inlineDataPresent'] for v in canonical_empty.values()),
+            'missingNonemptyBlobAccepted':False,
             'auxiliaryAttestationTrustAccepted':False,
             'nativeOrClassicImageByteIdentityProven':True,'sourcePublisherAuthenticated':False,
             'scanAdmissionProven':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}

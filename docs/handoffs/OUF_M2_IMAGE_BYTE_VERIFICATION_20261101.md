@@ -1,3 +1,11 @@
+# SUPERATO — verifica ESEGUITA, STOP e scope CONSUMATO
+
+[La ricevuta operatore](../../evidence/m2-image-byte-verification-target-stop-20261101.json)
+riporta PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED e Exit1.
+NON eseguire il comando di questo documento. Cumulativi8controlli/35GET.
+[Handoff corrente: riconciliazione](OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md).
+Le qualifiche sotto restano prove storiche, non prova di successo VPS.
+
 # M2 — verifica privata degli archivi acquisiti, consegna qualificata
 
 1 novembre 2026, Europe/Rome. Proseguire dalla cattura riuscita e consumata

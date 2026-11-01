@@ -1,8 +1,9 @@
 """Actual seven-stage lineage and original thirteen Docker29 archive bytes."""
-import json,sys,unittest
+import hashlib,io,json,sys,unittest
 from pathlib import Path
 from unittest.mock import patch
-ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
+ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tests/fixtures')]
+from retained_image_bytes import omit_canonical_empty_data,original_delivered_verifier
 import qualify_m2_retained_image_capture_native as fixture
 from tools.m2_discovery_installation_profile import retained_image_capture as producer
 from tools.m2_discovery_installation_profile import retained_image_reader as m
@@ -58,6 +59,25 @@ class NativeReader(unittest.TestCase):
             with patch.object(m,'verified_image',side_effect=AssertionError('NO_UNBOUND_ARCHIVE_BYTES')):
                 with self.assertRaisesRegex(ValueError,'EXACT_CONSUMED_PRIVATE_ARCHIVE_SCOPE'):m.RetainedArchiveReader().observe()
         finally:path.unlink()
+
+    def test_d_optional_empty_data_variant_of_actual_exports_reproduces_stop_and_preserves_runtime_bytes(self):
+        from tools.m2_discovery_installation_profile import retained_image_identity as identity
+        old=original_delivered_verifier(ROOT);_,rows=m.RetainedArchiveReader().material();count=0
+        with patch.object(producer.socket,'socket',side_effect=AssertionError('NO_ENGINE_OR_NETWORK_DURING_VARIANT_READ')):
+            for role,row in sorted(rows.items()):
+                raw=(self.archive_root/row['filename']).read_bytes()
+                baseline=identity.verified_image(io.BytesIO(raw),row['sha256'],row['imageIdRequested'],len(raw),identity.VerificationBudget())
+                variant,image,changed=omit_canonical_empty_data(raw,row['imageIdRequested'])
+                with self.assertRaisesRegex(ValueError,'PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED'):
+                    old.verified_image(io.BytesIO(variant),hashlib.sha256(variant).hexdigest(),image,len(variant),old.VerificationBudget())
+                proof=identity.verified_image(io.BytesIO(variant),hashlib.sha256(variant).hexdigest(),image,len(variant),identity.VerificationBudget())
+                for key in ('configurationDigest','nativeManifestDigest','layersHash','layerCount','executionConfigurationHash'):
+                    self.assertEqual(proof[key],baseline[key])
+                self.assertEqual(proof['canonicalEmptyAttestationConfigsWithoutInlineData'],1)
+                self.assertFalse(proof['missingNonemptyBlobAccepted']);count+=changed
+        print(json.dumps({'actualDockerExportDerivedOptionalDataVariants':len(rows),
+            'derivedAttestationManifests':count,'allOriginalRuntimeBytesEqual':True,
+            'originalConsumedStopReproducedForEach':True,'privateVpsCauseProven':False},sort_keys=True))
 
 
 if __name__=='__main__':unittest.main()

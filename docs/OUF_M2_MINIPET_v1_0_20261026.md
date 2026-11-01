@@ -6,6 +6,18 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
+## Checkpoint operativo corrente — STOP privato consumato
+
+Il verificatore del1novembre è stato eseguito e ha dato STOP_RECONCILE,
+PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED, Exit1. Scope consumato;
+cumulativi8controlli/35GET. [Ricevuta](../evidence/m2-image-byte-verification-target-stop-20261101.json).
+Il difetto sorgente sul data opzionale OCI è riprodotto, causa target ancora da
+riconciliare privatamente. [Correzione in qualifica](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md),
+nessun comando pronto. Non ripetere cattura o verifica precedente.
+I successi Teatri si consultano ad ogni delta: handoff M1, dossier26ottobre e
+auditM2; riuso dei contratti/provenance/recovery e dei motori, non nuove acquisizioni.
+Tutti i gate M2 rimangono aperti. Il checkpoint successivo è storico.
+
 ## Checkpoint operativo del 1 novembre 2026
 
 La cattura delle tredici immagini è riuscita e consumata: fa95a719/9733fa7c,

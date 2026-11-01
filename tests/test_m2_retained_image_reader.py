@@ -15,6 +15,19 @@ from tools.m2_discovery_installation_profile.custody_capture import encoded
 
 
 class Reader(unittest.TestCase):
+    def failed_predecessor(self,entry,root,observer):
+        profile={**copy.deepcopy(entry.PREDECESSOR_PROFILE),'candidateHash':observer.bindings['candidateHash'],
+            'captureResultHash':observer.bindings['resultHash']}
+        prior=m.Capture(root/'consumed-byte-verification')
+        prior.put('image-byte-verification.claim.json',{'schema':'ouf.image-byte-verification-claim.v1',
+            'profile':profile,'automaticReplayAllowed':False})
+        receipt=json.loads((ROOT/'evidence/m2-image-byte-verification-target-stop-20261101.json').read_bytes())['receipt']
+        self.assertEqual(m.digest(receipt),entry.FAILED_RESULT_HASH)
+        prior.put('result.json',receipt)
+        for name,value in (('FAILED_SCOPE',prior.scope),('PREDECESSOR_PROFILE',profile)):
+            context=patch.object(entry,name,value);context.start();self.addCleanup(context.stop)
+        return prior.scope
+
     def prepared(self):
         images={role:image_fixture(role=role) for role in m.ROSTER}
         original=first_fixture.RetainedMetadata.prepared
@@ -103,17 +116,54 @@ class Reader(unittest.TestCase):
         from tools.m2_discovery_installation_profile import retained_image_verification as entry
         profile={**copy.deepcopy(entry.PROFILE),'candidateHash':observer.bindings['candidateHash'],
             'captureResultHash':observer.bindings['resultHash']};scope=root/'verification-control'
+        previous=self.failed_predecessor(entry,root,observer)
+        previous_frames={str(p):m.attrs(p.lstat()) for p in previous.rglob('*')}
         with patch.object(entry,'OUTPUT',scope),patch.object(entry,'PROFILE',profile),patch.object(sys,'argv',['verify.py']):
             output=io.StringIO()
             with contextlib.redirect_stdout(output):code=entry.main()
             self.assertEqual(code,0);public=json.loads(output.getvalue())
-            self.assertEqual(public['cumulativeControlAttempts'],8);self.assertEqual(public['cumulativeDirectEngineGets'],35)
+            self.assertEqual(public['cumulativeControlAttempts'],9);self.assertEqual(public['cumulativeDirectEngineGets'],35)
+            self.assertTrue(public['allEightPriorScopesPreserved']);self.assertFalse(public['oldVerificationScopeRearmed'])
             self.assertTrue(public['newVerificationControlScopeCreated'])
             self.assertEqual(public['witness']['imageCount'],13)
             self.assertEqual((scope/'image-byte-evidence.private.json').stat().st_mode&0o777,0o600)
             before={p.name:p.read_bytes() for p in scope.iterdir()}
             with contextlib.redirect_stdout(io.StringIO()):self.assertEqual(entry.main(),1)
             self.assertEqual(before,{p.name:p.read_bytes() for p in scope.iterdir()})
+        self.assertEqual(previous_frames,{str(p):m.attrs(p.lstat()) for p in previous.rglob('*')})
+
+    def test_reconciliation_requires_exact_failed_scope_profile_and_receipt_before_archive_reads(self):
+        from tools.m2_discovery_installation_profile import retained_image_verification as entry
+        for kind in ('receipt','profile','extra','symlink'):
+            observer,_,_,root,*_=self.prepared();previous=self.failed_predecessor(entry,root,observer)
+            if kind=='receipt':(previous/'result.json').write_bytes(b'{}')
+            elif kind=='profile':(previous/'image-byte-verification.claim.json').write_bytes(b'{}')
+            elif kind=='extra':(previous/'unexpected').touch()
+            else:
+                (previous/'result.json').rename(previous/'other.json')
+                (previous/'result.json').symlink_to(previous/'other.json');(previous/'other.json').unlink()
+            with patch.object(entry,'OUTPUT',root/'byte-reconciliation-control'),patch.object(sys,'argv',['verify.py']),\
+                    patch.object(entry.RetainedArchiveReader,'read_set',side_effect=AssertionError('NO_IMAGE_READ')):
+                output=io.StringIO()
+                with contextlib.redirect_stdout(output):self.assertEqual(entry.main(),1)
+                public=json.loads(output.getvalue());self.assertTrue(public['newVerificationControlScopeCreated'])
+                self.assertEqual(public['cumulativeControlAttempts'],9)
+                self.assertFalse((root/'byte-reconciliation-control'/'image-byte-evidence.private.json').exists())
+
+    def test_changed_failed_predecessor_during_verification_prevents_success_proof(self):
+        observer,_,_,root,*_=self.prepared()
+        from tools.m2_discovery_installation_profile import retained_image_verification as entry
+        previous=self.failed_predecessor(entry,root,observer);original=entry.RetainedArchiveReader.read_set
+        def changed(reader):
+            result=original(reader);(previous/'result.json').write_bytes(b'{}');return result
+        scope=root/'byte-reconciliation-control'
+        with patch.object(entry,'OUTPUT',scope),patch.object(sys,'argv',['verify.py']),\
+                patch.object(entry.RetainedArchiveReader,'read_set',changed):
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output):self.assertEqual(entry.main(),1)
+            self.assertEqual(json.loads(output.getvalue())['reasonCode'],
+                'CONSUMED_IMAGE_VERIFICATION_CHANGED_DURING_RECONCILIATION')
+            self.assertFalse((scope/'image-byte-evidence.private.json').exists())
 
     def test_failed_private_verification_keeps_claim_and_no_false_proof_or_argument_echo(self):
         observer,_,_,root,*_=self.prepared()

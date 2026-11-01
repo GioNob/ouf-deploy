@@ -3,7 +3,7 @@ import hashlib,io,json,sys,tarfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests/fixtures')]
-from retained_image_bytes import fixture,attested_fixture,package,encoded,address
+from retained_image_bytes import fixture,attested_fixture,package,encoded,address,original_delivered_verifier
 from tools.m2_discovery_installation_profile import retained_image_identity as m
 
 
@@ -103,6 +103,43 @@ class ImageBytes(unittest.TestCase):
         for option in ('bad_blob','wrong_subject','wrong_platform'):
             raw,image,_=attested_fixture(**{option:True})
             with self.subTest(option=option),self.assertRaises(ValueError):self.verify(raw,image)
+
+    def test_canonical_empty_config_accepts_optional_data_and_reports_omitted_bytes_explicitly(self):
+        for present in (False,True):
+            for data in (False,True):
+                raw,image,_=attested_fixture(inline_empty=not present,empty_data=data)
+                proof=self.verify(raw,image)
+                self.assertEqual(proof['canonicalEmptyAttestationConfigsReconstructed'],int(not present))
+                self.assertEqual(proof['canonicalEmptyAttestationConfigsWithoutInlineData'],int(not present and not data))
+                self.assertFalse(proof['missingNonemptyBlobAccepted'])
+                self.assertFalse(proof['auxiliaryAttestationTrustAccepted'])
+
+    def test_exact_consumed_verifier_reproduces_the_reported_stop_on_optional_data_omission(self):
+        raw,image,_=attested_fixture(inline_empty=True,empty_data=False)
+        old=original_delivered_verifier(ROOT)
+        with self.assertRaisesRegex(ValueError,'PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED'):
+            old.verified_image(io.BytesIO(raw),hashlib.sha256(raw).hexdigest(),image,len(raw),old.VerificationBudget())
+        self.assertEqual(self.verify(raw,image)['canonicalEmptyAttestationConfigsWithoutInlineData'],1)
+
+    def test_missing_empty_config_requires_exact_digest_size_media_and_optional_data(self):
+        for change in ({'digest':'sha256:'+'a'*64},{'size':3},{'size':True},
+                {'mediaType':'application/vnd.oci.image.config.v1+json'},
+                {'data':'e30=\n'},{'data':None},{'data':'e10='}):
+            raw,image,_=attested_fixture(inline_empty=True,empty_config_patch=change)
+            with self.subTest(change=change),self.assertRaises(ValueError):self.verify(raw,image)
+
+    def test_missing_runtime_config_layer_or_manifest_is_never_reconstructed_from_inline_data(self):
+        for index in (2,3,4):
+            _,image,entries=fixture();name,raw=entries[index]
+            # Each of these is a real nonempty referenced blob; no remote lookup.
+            with self.subTest(member=name),self.assertRaises(ValueError):
+                self.verify(package(entries[:index]+entries[index+1:]),image)
+
+    def test_present_empty_config_blob_is_verified_even_when_optional_data_is_absent(self):
+        _,image,entries=attested_fixture(empty_data=False)
+        name='blobs/sha256/'+m.EMPTY_DIGEST[7:]
+        changed=[(key,b'[]' if key==name else raw) for key,raw in entries]
+        with self.assertRaisesRegex(ValueError,'DIGEST_DIFFERS'):self.verify(package(changed),image)
 
 
 if __name__=='__main__':unittest.main()
