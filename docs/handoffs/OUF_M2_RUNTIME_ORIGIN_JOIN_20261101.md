@@ -1,3 +1,11 @@
+> **RIUSCITO E CONSUMATO — non eseguire il comando storico sotto.**
+> [Ricevuta ca16c7e3](../../evidence/m2-runtime-origin-join-target-20261101.json),
+> RuntimeOriginJoinExit=0:13ruoli/10config,3identità residue ora disponibili,
+> tutti11scope precedenti preservati; totale12controlli/35GET. Prova privata8cf9a9ba.
+> Prosegue autonomamente la ricomposizione delle provenienze pubbliche.
+> Nessun nuovo comando VPS richiesto in questo checkpoint. Tutto sotto è storia
+> immutata della consegna, non istruzione attiva.
+
 # M2 — collegamento delle origini ai runtime verificati
 
 1 novembre 2026, Europe/Rome. Sorgente e consegna QUALIFICATI. Operazione target

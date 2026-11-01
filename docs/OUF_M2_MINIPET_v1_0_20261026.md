@@ -6,21 +6,17 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint corrente — origini runtime qualificate, unico readback VPS necessario
+## Checkpoint corrente — origini collegate, ricomposizione autonoma
 
-Byte13runtime acquisiti, risultato039f03a7/prova privata c52a0e2a. Scope11 consumato,
-11controlli/35GET; non rilanciare. [Nuovo handoff](handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md),
-[qualifica](../evidence/m2-runtime-origin-join-delivery-qualified-20261101.json):
-launcherd51807fe, source23moduli, push41342126387 e PR41342134036 ciascuno23test/
-5suite PASS, tutti sei log letti. Collega13ruoli/10config e4manifesti pubblici,
-legge solo3config originali per source claim non autenticati; zeroEngine/layer/
-rehash/espansione/registry/filemount/credenziali/SQL/OAuth/import/lifecycle.
-Nuovo comando UNA VOLTA come oufadmin,1controllo/180s,totale12controlli/35GET,
-11scope precedenti preservati. Nessun riarmo/reset/grant/authority; STOP conservare/
-nonrilanciare. Agente senza accesso agli archivi VPS; plugin senza endpoint adatto.
-PET originali presenti e riletti nei paragrafi indicati nella nuova evidenza;
-il vecchio limite di indisponibilità era errato. Tutti235/19/17/21hash invariati.
-Teatri/M1 acquisiti e stessa Farmacie preservata; M2 e tutti i suoi gate OPEN.
+[Ricevuta target ca16c7e3](../evidence/m2-runtime-origin-join-target-20261101.json),
+Exit0, prova privata8cf9a9ba.13ruoli/10config pubbliche e4manifesti corrispondenti;
+3identità residue note,11scope precedenti preservati. Scope12 consumato,12controlli/
+35GET. Nessun replay/verifica/cattura/riarmo/reset/grant/authority; non rilanciare.
+Nuovi cfg Gatewayf983b5a8,MinIO69b2ec20,Semantic29e32c14; quest'ultimo compare già
+nella qualifica storica eccef11a. Prosegue autonomamente il confronto degli artifact
+originali e delle provenienze, senza un nuovo comando VPS in questo checkpoint.
+Tutti235/19/17/21/23hash congelati preservati. Teatri/M1 acquisiti e stessa Farmacie
+preservata; M2/G5/G6/G7/dueclient e gate source/publisher/scan/custody/authority OPEN.
 
 ## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 

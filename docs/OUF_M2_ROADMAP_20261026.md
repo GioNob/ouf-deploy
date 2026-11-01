@@ -1,38 +1,31 @@
-# CURRENT — Origini runtime: consegna unica QUALIFICATA, intervento VPS necessario
+# CURRENT — Origini runtime COLLEGATE; comando consumato, ricomposizione autonoma
 
-1 novembre 2026, Europe/Rome. I13runtime sono già verificati: ricevuta039f03a7,
-prova privata c52a0e2a, scope11 CONSUMATO, totale11controlli/35GET. NON rilanciare
-cattura, byte-verifica, diagnosi o comandi precedenti.22rami non selezionati esclusi.
+1 novembre 2026, Europe/Rome. [Ricevuta target](../evidence/m2-runtime-origin-join-target-20261101.json),
+RuntimeOriginJoinExit=0, risultato ca16c7e3, prova privata8cf9a9ba. Tutti13ruoli
+collegati alla prova bytec52a/risultato039f;10config pubbliche e4manifesti vendor
+corrispondenti,3config aperte/31.025byte metadata,11scope precedenti preservati.
+Scope12 CONSUMATO: totale12controlli/35GET. NON rilanciare origine/byte-verifica/
+diagnosi/cattura o vecchi comandi. Zero Engine/layer/rehash/espansione/registry/
+filemount/filecredenziali/SQL/OAuth/import/lifecycle aggiuntivi; nessun reset/grant/
+authority. Publisher/membership/custody/configurazione/liveness/accettazione false.
 
-[Handoff corrente](handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md), [qualifica](../evidence/m2-runtime-origin-join-delivery-qualified-20261101.json).
-Sourcecbbc1276/23moduli, capsula710edec8/65092df6/332.958byte,
-launcherd51807fe/SHAb50d274c. Push41342126387 e PR41342134036 SUCCESS, ciascuno
-23test/5suite; tutti sei log finali letti, zero failure/error/skip/ResourceWarning.
-Include13exportDocker29.8.1 reali: nuovo lettore apre solo manifesto/config, mai
-layer; vecchi scope invariati, corruzione/rimozione negate. Firma/subject/source/
-repoID/workflow/ref/runner confrontati col vero output gh2.97 hosted, HTTPS esatto
-qualificato. Tutti235/19/17/21sorgenti precedenti invariati.
+Nuove identità esatte per il lavoro PUBBLICO:
+Gateway-owner configf983b5a8/manifesto5675785b, MinIO config69b2ec20/manifestoa1a8bd4a,
+Semantic config29e32c14/manifestob61bc39c. Label source assenti; le dichiarazioni
+restano non autenticate. config29e32c14 compare già nella qualifica storica
+Semantic eccef11a: verificare gli originali, non inferire source dal solo tag.
+NEXT autonomo: collegare gli artifact originali/source/publisher/scan e completare
+il profilo di provenienza; nessun nuovo comando VPS richiesto in questo checkpoint.
+[Handoff della consegna consumata](handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md). Tutti235/19/17/21sorgenti precedenti e
+23del lettore origine preservati. Non accumulare microdiagnostiche o riesportare.
 
-NEXT: SOLO nuovo comando nel handoff, come oufadmin sul VPS, UNA VOLTA. Collega
-prova c52a/risultato039f/profilo esatti ai13ruoli; richiede10config pubbliche esatte
-e4manifesti vendor, legge TRE config originali(Gateway-owner/MinIO/Semantic) per
-identità/source claim minimizzati. Label dichiarate non diventano trust. Nessun
-Engine/registry/layer/rehash archivio/espansione/import/lifecycle/mount host/file
-credenziali/SQL/OAuth. Nuovo scope m2-runtime-origins-c52a0e2a-20261101-v1,
-massimo1controllo/180s, totale12controlli/35GET; tutti11scope precedenti preservati.
-Zero riarmo/reset/grant/authority. STOP/interruzione: conservare e NON rilanciare.
-L'agente non ha shell o archivi VPS; il plugin non espone questa lettura.
-
-PET originali disponibili in docs/baseline/v1.7/package: il precedente limite
-contrario era errato. [Rilettura diretta e hash](../evidence/m2-runtime-origin-join-normative-review-20261101.json):
-Matrix1.7§1/4,Blueprint0.3§1/7/9,Gateway1.5T1/T2,Semantic1.3§159.2/160.6.
-Teatri SEMPRE: M1tecnico8/8,funzionale6/6 acquisiti,26join/13identità/20proprietà/
-8Cinema; riuso owner/provenance/identity/property/recovery. Stessa Farmacie61righe/
-10OPEN/ministerialeSTRING preservata; niente upload/profiling/acquisizione nuovi.
-M2/G5/G6/G7/dueclient OPEN: source/publisher/scan/custody/policy/bearer/Gateway/
-coorte/pacchetto/review/authority,61esitiUDP e repeatability/fault. Riparazioni OS
-non selezionate/installate; poi grafo/search e verticali/API scheduler/delta.
-Nessun subagente, automazione, merge o release acceptance. Header/comandi seguenti STORICI.
+PET originali disponibili in docs/baseline/v1.7/package; gerarchia/ownership,
+release/operational gate e supply-chain consultati. Teatri SEMPRE: handoffM1 e
+auditM2, tecnico8/8,funzionale6/6 acquisiti,26join/13identità/20proprietà/8Cinema;
+riuso owner/provenance/identity/property/recovery. Stessa Farmacie61righe/10OPEN/
+ministerialeSTRING preservata; nessun upload/profiling/acquisizione aggiuntiva.
+M2/G5/G6/G7/dueclient OPEN. Nessun subagente, automazione, merge o release acceptance.
+Header/comandi seguenti STORICI.
 
 # CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
 
