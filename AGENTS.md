@@ -1,3 +1,50 @@
+# CURRENT — CurrentMCP/Onboard core stages+scans PASS; Ing/UDP actual OS findings, unselected repair in qualification
+
+1November2026,Europe/Rome. Source93d61391 run41311454637 all5logsread: MCP+
+Onboard source-specific originalstage/freshTrivy0.70/actuallegacyScanGate/new
+unsignedenvelope/sourceGit/checksumclosure SUCCESS. Artifacts13085452289
+(18,935,272bytes ZIP01f24dcf) and13086110077(426,597,623 ZIPc59a9442).
+Each4contracttestsPASS. Ing/UDP correctoriginalbytes staged butfreshscanner
+HELD: brotli-libs1.2.0-r1 CRITICAL CVE-2026-111497 fixed1.2.1-r0;
+musl+musl-utils1.2.6-r2 UNKNOWN CVE-2026-107891 fixed1.2.6-r3. AllAlpine3.24.2.
+Heldreports downloaded/rawZIPhashes verified, noignore/exceptions/fakePASS.
+Vendor security.alpinelinux.org/vuln/{CVE} and official3.24main APKs verified.
+Semanticdownload404 was wrongartifact REPO, notmissingartifact: correct
+GioNob/ouf-semantic-registry/run41263544004/source4c8bcdef/artifact13066396654
+confirmedAPI, ZIP1a7045ff unchanged. Correctedcase nextCI. ghapi downloader
+nowusesGH_TOKENenv only (notargv) withRLIMIT_FSIZE exactzip bound. Newrawrecord
+explicitruntimeAuthorityfalse. No credentials printed (GitHubmasked oldtrace).
+
+New narrow repair preparation: scripts/prepare-m2-runtime-os-repair.py and
+releases/m2-original-runtime-os-repair-case-20261101.json, hosted2roleCI next.
+DO NOT mutate current origin cases or select repairs. It builds NEW UNSELECTED
+runtimeimage candidates over exactoriginalIng/UDP ONLY3 pinned signedvendor
+APKs: brotli1.2.1-r0 SHA62a7e37e, muslr3 SHAe142255d, musl-utilsr3 SHA47263d05.
+DefaultAPKsignatureverification usingoriginalkeys, noallowuntrusted; buildnetwork
+NONE, noapplicationrecompile. Postguards exactfullJAR (thereforeallmigrations),
+originalrootfsdiffIDprefix/executionconfig/user and packageversiondiff EXACTLY
+3names only. Nativecontrolledenvelope exactload, JVM-version-only probe (2CPUs/
+256MiB/64pids, noapplicationmain), thenactualfreshTrivy+existingproducer scan_gate.
+Candidate/applicationreadiness/fullcohort/targetauthority/selection/allE2E remain
+false. Local3meaningfulrepair tests PASS (only3changes, duplicates/overlaywhiteout/
+symlink denial), actualbotholdAPKdatabases73pkgs read and exact3oldversions match.
+CI repair notyetqualified. This is explicitsecurity-layer derivation, NOT blind
+retainedrebuild/replacement. Existingretainedimages/scopes remainuntouched.
+
+KeepactualMCPa521/d245 customqualifiedCI source helper5d0; UDPae78/0d40,
+IngD173/4165, Onb7b9/734tested=9dreviewedtree091; newSemD06/C2 UNSELECTED.
+OldOct14MCP4df/f249 andUDPc2db/b49 arehistorical, notcurrent. All235/frozen11
+unchanged; oldgenericimagehelper DOESNOTacceptMCPnilLabel (newsealedcompiler
+mustreusequalifiedmodernhelper explicitly). No newVPScommand/capture needed
+whilepublicsource work continues. Sixconsumedscopes/22EngineGET, neverreplay/
+rearm/reset/grant. Gatewayprivateproposal/vendor/sidecarorigins/coreaggregation/
+fullprivatecustody/liveowner+expectedpolicy/bearer/completeexecution/private
+review/currentHUMAN+dualrole/E2E/twoclients OPEN. User askedAggiornami; status
+answeredincommentary andautonomousworkcontinues. Noagents/automations/optional
+stops. M1/Teatri8/8tech6/6functional/Farmacie61/10/10OPEN/ministerialSTRING
+preserved. No upload/profile/acquisition/activation. UDP/alloutcomes then graph
+then vertical/APIdelta. Oldercommandheaders historical.
+
 # CURRENT — Correct current core origins verified; new source-specific composition in qualification
 
 1November2026,Europe/Rome. Exactcurrent native archives readback from public

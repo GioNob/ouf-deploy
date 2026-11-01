@@ -72,7 +72,7 @@
       "nativeImageId": "sha256:d06aeb529724ca198b1cb87a1f868143cfbe7ad6eb05dc4ccdf2b6400cc39d64",
       "originalFormat": "UNSIGNED_OFFLINE_IMAGE",
       "qualifiedReplacementCandidateNotYetSelected": true,
-      "repository": "GioNob/ouf-deploy",
+      "repository": "GioNob/ouf-semantic-registry",
       "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
       "sourceRepository": "GioNob/ouf-semantic-registry",
       "zipBytes": 203419418,

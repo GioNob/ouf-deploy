@@ -143,7 +143,7 @@ def finalize(role, output, source_directory, scan):
         'imageScanGate': 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED',
         'originZipSha256': case['zipSha256'], 'originMetadataSha256': facts['originalMetadataSha256'],
         'originFormat': case['originalFormat'], 'imageRebuilt': False, 'imageRelabelled': False,
-        'notReleaseAcceptance': True, 'signatureIssued': False, 'targetApplyAuthorized': False,
+        'notReleaseAcceptance': True, 'signatureIssued': False, 'runtimeAuthorityIssued': False, 'targetApplyAuthorized': False,
         'vpsOperations': 0, 'futureBuildByteReproducibilityProven': False}
     manifest = {'schema': 'ouf.chatbot-file-module-package.v1', 'module': role,
         'repository': case['sourceRepository'], 'sourceCommit': case['sourceCommit'],

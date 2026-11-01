@@ -38,13 +38,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json,os,subprocess
+          import json,os,resource,subprocess
           case=json.load(open('releases/m2-current-core-artifact-origins-20261101.json'))['roles'][os.environ['OUF_ORIGIN_ROLE']]
-          subprocess.run(['curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https',
-              '--connect-timeout','15','--max-time','300','--max-filesize',str(case['zipBytes']),
-              '-H','Authorization: Bearer '+os.environ['GH_TOKEN'],'-H','Accept: application/vnd.github+json',
-              'https://api.github.com/repos/'+case['repository']+'/actions/artifacts/'+str(case['artifactId'])+'/zip',
-              '-o','original.zip'],check=True,timeout=320)
+          def bounded_zip(): resource.setrlimit(resource.RLIMIT_FSIZE,(case['zipBytes'],case['zipBytes']))
+          with open('original.zip','wb') as destination:
+              subprocess.run(['gh','api','repos/'+case['repository']+'/actions/artifacts/'+str(case['artifactId'])+'/zip'],
+                  stdout=destination,check=True,timeout=300,preexec_fn=bounded_zip)
           PY
           python3 -I -B -S scripts/stage-m2-current-core-origin.py '${{ matrix.role }}' original.zip prepared
       - name: Scan the exact preserved archive including unfixed vulnerabilities
