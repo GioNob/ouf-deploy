@@ -39,6 +39,48 @@
       "nativeImageId": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
       "originClass": "DECLARED_SOURCE_NOT_EXECUTABLE_IMAGE_MEMBERSHIP",
       "originGap": "ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP",
+      "replacementCandidate": {
+        "applicationJarSha256": "2df4d76c21e4c3ce9b8f2f56e44d7cd4dcff3c7783c15decf317611a1da4c76d",
+        "archiveSha256": "72975aef69ab881560e4f4eef062ef2ab6a733a1f44da58f108988a66b4330e8",
+        "artifactId": 13102047484,
+        "baseImage": "eclipse-temurin@sha256:0b99b3376fbb50dbf9c0af8535fdd5b8eb0d3fdfc8b1e4967f383b6919f6901a",
+        "candidateSelectionChanged": false,
+        "configurationImageId": "sha256:8c2b47b5d7c2ddcf55cfa644ad3b61a397e67c9fc9651dc8a20fea9fbe805906",
+        "declaredRetainedSourceCommit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+        "freshScanGatePassed": true,
+        "imageApplicationReadinessProven": false,
+        "jobId": 124987637755,
+        "nativeImageId": "sha256:502ba0e41a67b3db46a2cd08c31ccb7b7cce0faa0e3952e1143e1415f952d25f",
+        "originalZipBytes": 298387448,
+        "originalZipSha256": "9af9def1857cefe917b8889143d81b27cf08f5df587f11547c73c922a368e7da",
+        "preservedMetadata": "releases/artifacts/m2-gateway-owner-qualified-metadata-41353205013.zip",
+        "publisherChainReverifiedByThisReader": false,
+        "publisherChainVerifiedInNamedHostedJob": true,
+        "releaseAcceptance": false,
+        "retainedImageSourceMembershipProven": false,
+        "runId": 41353205013,
+        "runtimeAuthorityIssued": false,
+        "scanFreshnessMustBeRecheckedBeforeAdmission": true,
+        "scanInputSha256": "bc9a681be67a07db684876fc1f4047751fa1b43d96bbdfa6d5b22a7fd3840e6f",
+        "scanSha256": "8cb79aa12ae06a2ce00db327a9b22fa99d9ec9b4949d1e43ad46a09a8a3bdcf7",
+        "schema": "ouf.m2-gateway-owner-distinct-candidate.v1",
+        "sourceCommit": "17439fed7a45d455baa6945ee72a65fa19c14029",
+        "sourceFilesIndependentlyMatched": 230,
+        "sourceRepository": "GioNob/ouf-api-gateway",
+        "targetApplyAuthorized": false,
+        "targetOperations": 0,
+        "unitTestReports": {
+          "errors": 0,
+          "failures": 0,
+          "skipped": 0,
+          "suites": 2,
+          "tests": 4
+        },
+        "vulnerabilityCounts": {
+          "LOW": 4,
+          "MEDIUM": 53
+        }
+      },
       "selectedRuntimeManifestDigest": "sha256:5675785b977f9d471bb97ad0e56262bd9e94569eb99ddfdecf3eb0f1617bf541"
     },
     "ingestion": {
@@ -67,9 +109,112 @@
     },
     "minio": {
       "configurationDigest": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+      "exactCopySecurityEvidence": {
+        "allSelectedLayerAndExpandedDiffIdsVerified": true,
+        "anonymousTokenRequests": 1,
+        "candidateSelectionChanged": false,
+        "configurationImageId": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+        "contentAddressedReads": 12,
+        "copyIsNotOriginalVendorPublisher": true,
+        "copyRegistry": "ghcr.io",
+        "copyRepository": "datalens-tech/minio",
+        "copyUse": "EVIDENCE_RECOVERY_ONLY_NO_RUNTIME_REFERENCE_CHANGE",
+        "deploymentReachabilityOfFindingsProven": false,
+        "evidenceZip": "evidence/artifacts/m2-minio-exact-copy-security-41352708811.zip",
+        "existingUserCredentialsRead": false,
+        "freshSecurityGatePassed": false,
+        "imageExecuted": false,
+        "jobId": 124986151771,
+        "layers": [
+          {
+            "blobBytes": 7240601,
+            "blobDigest": "sha256:b83ce1c86227e7eb8f809d5634df70202a43b5a2a42ad5881de019c6e7bb77ab",
+            "diffId": "sha256:702bea3dc94887d2fcf1aa0d56565c57d5ca6d24659c8d0b6cbde5c58d6c182f",
+            "expandedBytes": 23511040,
+            "ordinal": 0
+          },
+          {
+            "blobBytes": 1637189,
+            "blobDigest": "sha256:f94d28849fa387176d83fed06c02b5814597103420f929f8f74ad5c212e62a7a",
+            "diffId": "sha256:88e53e46c4d2bed466a6b02167ef9d8cef2c9392c4ee9fb64f7a0e7c38c31858",
+            "expandedBytes": 3544576,
+            "ordinal": 1
+          },
+          {
+            "blobBytes": 122724,
+            "blobDigest": "sha256:81260b1730768c85f8ebdba7d561c7189971d84eef7dc0ff2b03d83957dcdd4a",
+            "diffId": "sha256:d37092179ddccad1ee0b97d96b129b58f41d5acc765698bf3b972896347f3d84",
+            "expandedBytes": 216064,
+            "ordinal": 2
+          },
+          {
+            "blobBytes": 39450432,
+            "blobDigest": "sha256:f9c0805c25ee5c0d375a9c16810eafb57cf658d7b6814c179d52496272bec8a4",
+            "diffId": "sha256:65df1de0fc5d5ed3b009724450521360e9cac82bb7a18c2565705224e5d966be",
+            "expandedBytes": 110994432,
+            "ordinal": 3
+          },
+          {
+            "blobBytes": 11188523,
+            "blobDigest": "sha256:1008deaf6ec413772a3de8828d030bd6472ec80c59a8595f3f9fee2524576692",
+            "diffId": "sha256:d9e4fbf4fcf5a2a873b09a4f801d1576be6ef9acfc4d712e4bb010fe323a98bc",
+            "expandedBytes": 30540800,
+            "ordinal": 4
+          },
+          {
+            "blobBytes": 2401645,
+            "blobDigest": "sha256:71e9fc939447059a2e6b8db211155a6d0217582e6a93d13e53c111df359b05cf",
+            "diffId": "sha256:6e4622138e7123a662eb8da39c3da85d1605d7a9a0749b8939b3b22b3d14a1d5",
+            "expandedBytes": 5506048,
+            "ordinal": 5
+          },
+          {
+            "blobBytes": 180305,
+            "blobDigest": "sha256:c1bc68842c41cb716734641f75dc37d629f05df5f812a8cc2e7e0370d4e833ec",
+            "diffId": "sha256:c4f9743e910169563769da2e07bf10a78fb4c9b0c489a2ee2c1f8bb25dc5bac6",
+            "expandedBytes": 1884672,
+            "ordinal": 6
+          },
+          {
+            "blobBytes": 11876,
+            "blobDigest": "sha256:0288b5a0d7e71a2cdbdf114cb9869ce2bc4b05adfd6aa5e3ee9fa4b3847e7b80",
+            "diffId": "sha256:469babe0725a8ef9ea8ee85eed6e55dc33682ff9ba4fc4b61e4434e0ac1e447b",
+            "expandedBytes": 36864,
+            "ordinal": 7
+          },
+          {
+            "blobBytes": 496,
+            "blobDigest": "sha256:34013573f2786dfd3f6a542374c2bb7821fa6924de6ed320dc808582d50879d3",
+            "diffId": "sha256:48a0959ec57746c5b54d3f0ee68ba154defefab5c979c49d4afa78e2a183303f",
+            "expandedBytes": 3584,
+            "ordinal": 8
+          }
+        ],
+        "originalVendorPublisherAuthenticated": false,
+        "ownerStorageDirectionRequired": true,
+        "releaseAcceptance": false,
+        "rootIndexDigest": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+        "runId": 41352708811,
+        "runtimeAuthorityIssued": false,
+        "runtimeReferenceChanged": false,
+        "scanSha256": "2e7070fe0d2ec92563b3c52b56b5196a9566e1813c797aca3db8e22d8821911d",
+        "scannerArchiveSha256": "833814e66510a63e61c46a42ab3d8ca94fde0cc2d99965a67e2e181a9d46ece4",
+        "schema": "ouf.m2-minio-exact-copy-security.v1",
+        "securityAdmission": "HELD_HIGH_CRITICAL_UNKNOWN",
+        "selectedRuntimeManifestDigest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+        "targetApplyAuthorized": false,
+        "targetOperations": 0,
+        "vulnerabilityCounts": {
+          "CRITICAL": 9,
+          "HIGH": 127,
+          "LOW": 27,
+          "MEDIUM": 171,
+          "UNKNOWN": 8
+        }
+      },
       "nativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
       "originClass": "HISTORICAL_VENDOR_REFERENCE_ONLY",
-      "originGap": "EXACT_SELECTED_REGISTRY_DESCRIPTOR_UNAVAILABLE",
+      "originGap": "EXACT_COPY_CONTENT_RECOVERED_ORIGINAL_VENDOR_PUBLISHER_UNAUTHENTICATED",
       "selectedRuntimeManifestDigest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2"
     },
     "onboarding": {

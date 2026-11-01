@@ -1,3 +1,28 @@
+# CURRENT — Gateway e Semantic corretti; scelta owner sullo storage MinIO necessaria
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_STORAGE_SECURITY_DECISION_20261101.md).
+Nuovo Gateway operational owner da sorgente17439fed/PR85: risolti5HIGH+2CRITICAL
+Java; CI41353205013/job124987637755 PASS, zeroHIGH/CRITICAL/UNKNOWN,53MEDIUM/4LOW.
+SDK10/owner4/integrationAPISIX1/package3; sorgenteCI41353173886 tre jobPASS,
+con generic config244PASS/3SKIP dichiarati. Nuovo native502ba0e4/config8c2b47b5,
+NON il retained979d. Publisher verificato; intero ZIP298.387.448byte, checksum,
+due archivi/9layer e230blob Git/mode riletti indipendentemente. Metadati conservati.
+Semanticc2dae77b già corretto resta distinto/non selezionato. Nessun effetto VPS.
+MinIO: copia esplicita NON fidata recupera esattamente root14cea/manifestoa1a8/
+config69b2 e9layer; non è un fallback installativo o publisher originale.
+Scansione41352708811:9CRITICAL/127HIGH/8UNKNOWN, gate correttamenteHELD.
+Upstream non mantenuto; fix ufficiali di bypass anche nell'ultima release OSS
+rimandano ad AIStor. [Proposta](docs/decisions/OUF_M2_OBJECT_STORAGE_DIRECTION_20261101.md)
+PRONTA: scegliere AIStor con licenza adeguata oppure qualificare storage S3
+mantenuto/open source. Nessuna scelta, licenza accettata o migrazione effettuata.
+AIStor in-place dichiarato irreversibile dal vendor; Free non copre ogni
+requisito di cifratura/HA. Richiedere soltanto la DIREZIONE di prodotto; non
+chiedere comandi diagnostici, password o nuova authority runtime per questa scelta.
+Scope12 consumato:12controlli/35GET immutati; tutti235/19/17/21/23pin preservati.
+M1/Teatri8/8tecnico6/6funzionale e stessa Farmacie61/10OPEN/STRING preservati.
+M2/G5–G7/dueclient OPEN; coorte/review/custody/policy/owner/bearer/HUMAN restano gate.
+Header successivi storici. Non rilanciare vecchie consegne.
+
 # CURRENT — Tre HIGH Semantic risolti nel candidato esatto; target ancora HELD
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_SEMANTIC_HIGH_REMEDIATION_20261101.md).

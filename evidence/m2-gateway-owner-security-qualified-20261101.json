@@ -1,0 +1,103 @@
+{
+  "applicationPullRequest": 85,
+  "applicationSource": "17439fed7a45d455baa6945ee72a65fa19c14029",
+  "cumulativeTargetControls": 12,
+  "cumulativeTargetEngineGets": 35,
+  "currentRuntimeAcceptance": false,
+  "date": "2026-11-01",
+  "declaredRetainedSource": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+  "executableQualification": {
+    "artifactId": 13102047484,
+    "conclusion": "success",
+    "dockerVersion": "29.8.1",
+    "errors": 0,
+    "failures": 0,
+    "finalLogRead": true,
+    "jobId": 124987637755,
+    "ownerTests": 4,
+    "publisherVerifiedWithGh297": true,
+    "pythonPackageTests": 3,
+    "realApisixOwnerIntegrationTests": 1,
+    "runId": 41353205013,
+    "sdkTests": 10,
+    "skips": 0,
+    "sourceCommit": "48c934d0927aa8049dfaa42a23bfaed12e541439",
+    "zipBytes": 298387448,
+    "zipSha256": "9af9def1857cefe917b8889143d81b27cf08f5df587f11547c73c922a368e7da"
+  },
+  "independentLocalReadback": {
+    "applicationJarSha256": "2df4d76c21e4c3ce9b8f2f56e44d7cd4dcff3c7783c15decf317611a1da4c76d",
+    "bothConfigurationsAndAllLayersAndDiffIdsVerified": true,
+    "everyChecksumMemberReadIncludingBothImageArchives": true,
+    "independentSourceTree": "releases/m2-gateway-owner-security-source-tree-20261101.json",
+    "metadataZip": "releases/artifacts/m2-gateway-owner-qualified-metadata-41353205013.zip",
+    "metadataZipBytes": 339540,
+    "metadataZipSha256": "0ac3793a0f73dcdcc22e341a1e42129bee830cb5d63c9e9696c7f34a27f33cb6",
+    "sigstoreChainReverifiedLocally": false,
+    "sourceBlobModeMatches": 230,
+    "testedJarComparedWithActualImageJar": true,
+    "wholeOriginalZipDownloadedAndRehashed": true
+  },
+  "initialPackagingFailure": {
+    "applicationAndRealApisixTestHadPassed": true,
+    "jobId": 124985707487,
+    "qualificationClaimed": false,
+    "reason": "ACTUAL_CYCLONEDX_OUTPUT_PATH_DIFFERED_FROM_HISTORICAL_ARTIFACT_PATH",
+    "runId": 41352559992
+  },
+  "m2Acceptance": false,
+  "newVpsOperations": 0,
+  "onlySourceChange": "operational-owner/pom.xml",
+  "originalDependencyCandidateHeld": {
+    "artifactId": 13101714267,
+    "critical": 2,
+    "denialPreserved": true,
+    "high": 5,
+    "jobId": 124986326537,
+    "preservedZip": "evidence/artifacts/m2-gateway-owner-held-41352768608.zip",
+    "runId": 41352768608,
+    "source": "64ef470b2b39422a8ae9b667a9e3e901c83c8d60",
+    "zipBytes": 157948,
+    "zipSha256": "c3f4be065f3d783b75b9f5c026de66b59c568a9f0dda6eba07bd8780fb1ed8b1"
+  },
+  "result": {
+    "archiveSha256": "72975aef69ab881560e4f4eef062ef2ab6a733a1f44da58f108988a66b4330e8",
+    "candidateSelectionChanged": false,
+    "configurationImageId": "sha256:8c2b47b5d7c2ddcf55cfa644ad3b61a397e67c9fc9651dc8a20fea9fbe805906",
+    "freshScanGatePassed": true,
+    "imageApplicationReadinessProven": false,
+    "nativeImageId": "sha256:502ba0e41a67b3db46a2cd08c31ccb7b7cce0faa0e3952e1143e1415f952d25f",
+    "releaseAcceptance": false,
+    "retainedImageSourceMembershipProven": false,
+    "runtimeAuthorityIssued": false,
+    "scanInputSha256": "bc9a681be67a07db684876fc1f4047751fa1b43d96bbdfa6d5b22a7fd3840e6f",
+    "scanSha256": "8cb79aa12ae06a2ce00db327a9b22fa99d9ec9b4949d1e43ad46a09a8a3bdcf7",
+    "sourceCommit": "17439fed7a45d455baa6945ee72a65fa19c14029",
+    "targetApplyAuthorized": false,
+    "targetOperations": 0
+  },
+  "schema": "ouf.m2-gateway-owner-security-qualified.v1",
+  "sourceQualification": {
+    "allThreeFinalLogsRead": true,
+    "allThreeJobsPassed": true,
+    "genericConfigPassed": 244,
+    "genericConfigSkipped": 3,
+    "genericSkipsNotClaimedPassed": true,
+    "jobIds": [
+      124987549044,
+      124987549318,
+      124987549426
+    ],
+    "ownerTestsPerJavaJob": 4,
+    "realApisixOwnerTest": true,
+    "runId": 41353173886,
+    "sdkTestsPerJavaJob": 10,
+    "wholeSummaryStackTest": true
+  },
+  "sourceRepository": "GioNob/ouf-api-gateway",
+  "targetImageChanged": false,
+  "vulnerabilityCounts": {
+    "LOW": 4,
+    "MEDIUM": 53
+  }
+}

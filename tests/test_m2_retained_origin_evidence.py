@@ -134,6 +134,46 @@ class OriginalEvidence(unittest.TestCase):
             with self.subTest(changed=changed), patch.object(Path, 'read_bytes', read), self.assertRaisesRegex(ValueError, 'PUBLISHER_ZIPS'):
                 m.reconcile(ROOT)
 
+    def test_exact_minio_copy_never_becomes_original_publisher_or_security_admission(self):
+        proof = m.reconcile(ROOT)['roles']['minio']['exactCopySecurityEvidence']
+        self.assertEqual(proof['vulnerabilityCounts'], {'CRITICAL':9,'HIGH':127,'UNKNOWN':8,'MEDIUM':171,'LOW':27})
+        self.assertEqual(len(proof['layers']),9)
+        self.assertFalse(proof['originalVendorPublisherAuthenticated'])
+        self.assertFalse(proof['freshSecurityGatePassed'])
+        self.assertFalse(proof['runtimeReferenceChanged'])
+        self.assertFalse(proof['deploymentReachabilityOfFindingsProven'])
+        self.assertEqual(proof['securityAdmission'],'HELD_HIGH_CRITICAL_UNKNOWN')
+        self.assertTrue(proof['ownerStorageDirectionRequired'])
+
+    def test_changed_minio_evidence_is_denied_before_any_report_promotion(self):
+        original = Path.read_bytes
+        def read(path):
+            raw = original(path)
+            return raw+b'changed' if path == ROOT/m.MINIO_SECURITY_ZIP else raw
+        with patch.object(Path,'read_bytes',read), self.assertRaisesRegex(ValueError,'MINIO_SECURITY_EVIDENCE'):
+            m.reconcile(ROOT)
+
+    def test_gateway_security_replacement_is_a_different_image_and_source_with_230_exact_blobs(self):
+        role = m.reconcile(ROOT)['roles']['gateway-owner']
+        new = role['replacementCandidate']
+        self.assertNotEqual(new['nativeImageId'],role['nativeImageId'])
+        self.assertEqual(new['sourceCommit'],'17439fed7a45d455baa6945ee72a65fa19c14029')
+        self.assertEqual(new['declaredRetainedSourceCommit'],'81fdf7a5f9f3ef02ed930a1db911d34cab1a9415')
+        self.assertEqual(new['sourceFilesIndependentlyMatched'],230)
+        self.assertEqual(new['vulnerabilityCounts'],{'MEDIUM':53,'LOW':4})
+        self.assertFalse(new['retainedImageSourceMembershipProven'])
+        self.assertFalse(new['targetApplyAuthorized'])
+        self.assertFalse(new['imageApplicationReadinessProven'])
+
+    def test_changed_gateway_metadata_or_independent_source_tree_blocks_the_profile(self):
+        original=Path.read_bytes
+        for changed in (m.GATEWAY_METADATA_ZIP,'releases/m2-gateway-owner-security-source-tree-20261101.json'):
+            def read(path):
+                raw=original(path)
+                return raw+b'changed' if path==ROOT/changed else raw
+            with self.subTest(changed=changed),patch.object(Path,'read_bytes',read),self.assertRaises(ValueError):
+                m.reconcile(ROOT)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,6 +13,7 @@ from collections import Counter
 import gzip
 import hashlib
 import io
+import importlib.util
 import json
 from pathlib import Path
 import tarfile
@@ -28,6 +29,8 @@ CONFIG = 'sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d6048
 NATIVE = 'sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3'
 REMEDIATION_ZIP = 'evidence/artifacts/m2-semantic-high-remediation-41351198866.zip'
 REMEDIATION_PUBLISHER_ZIP = 'evidence/artifacts/m2-semantic-remediation-publisher-41351447269.zip'
+MINIO_SECURITY_ZIP = 'evidence/artifacts/m2-minio-exact-copy-security-41352708811.zip'
+GATEWAY_METADATA_ZIP = 'releases/artifacts/m2-gateway-owner-qualified-metadata-41353205013.zip'
 
 
 def require(ok, reason):
@@ -175,6 +178,110 @@ def semantic_remediation(root):
                 scanFreshnessMustBeRecheckedBeforeAdmission=True)
 
 
+def minio_security(root):
+    raw = (root/MINIO_SECURITY_ZIP).read_bytes()
+    require(len(raw) == 270309 and sha(raw) == '59786c63c06d53f081a9e66469d0bf8bb05ed2eb7b7030645d48d1570728d2ca',
+            'EXACT_HELD_MINIO_SECURITY_EVIDENCE_REQUIRED')
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        names = archive.namelist()
+        require(len(names) == len(set(names)) == 5
+                and set(names) == {'root.json','selected.json','configuration.json','copy-result.json','trivy-image.json'}
+                and sum(r.file_size for r in archive.infolist()) <= 8388608, 'BOUNDED_COMPLETE_MINIO_EVIDENCE_REQUIRED')
+        members = {name: archive.read(name) for name in names}
+    spec = importlib.util.spec_from_file_location('exact_public_minio_content', root/'scripts/read-m2-minio-exact-copy-20261101.py')
+    reader = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(reader)
+    layers, diff_ids = reader.verify_descriptors(members['root.json'], members['selected.json'], members['configuration.json'])
+    proof, scan = (json.loads(members[n]) for n in ('copy-result.json','trivy-image.json'))
+    counts = dict(Counter(f['Severity'] for r in scan['Results'] for f in r.get('Vulnerabilities', [])))
+    require(proof['scanSha256'] == sha(members['trivy-image.json'])
+            and proof['configurationImageId'] == scan['Metadata']['ImageID'] == reader.CONFIG
+            and proof['selectedRuntimeManifestDigest'] == reader.MANIFEST
+            and proof['rootIndexDigest'] == reader.ROOT_DIGEST
+            and proof['vulnerabilityCounts'] == counts
+            and counts.get('CRITICAL') == 9 and counts.get('HIGH') == 127 and counts.get('UNKNOWN') == 8
+            and proof['freshSecurityGatePassed'] is False and proof['copyIsNotOriginalVendorPublisher'] is True
+            and proof['originalVendorPublisherAuthenticated'] is False
+            and proof['runtimeReferenceChanged'] is False and proof['targetOperations'] == 0
+            and proof['allSelectedLayerAndExpandedDiffIdsVerified'] is True
+            and len(proof['layers']) == len(layers)
+            and all(p['ordinal'] == i and p['blobDigest'] == layers[i]['digest']
+                    and p['blobBytes'] == layers[i]['size'] and p['diffId'] == diff_ids[i]
+                    for i,p in enumerate(proof['layers'])), 'EXACT_CONTENT_RECOVERY_MUST_REMAIN_UNTRUSTED_AND_HELD')
+    return dict(proof, evidenceZip=MINIO_SECURITY_ZIP, runId=41352708811, jobId=124986151771,
+                securityAdmission='HELD_HIGH_CRITICAL_UNKNOWN', deploymentReachabilityOfFindingsProven=False,
+                ownerStorageDirectionRequired=True)
+
+
+def gateway_candidate(root):
+    raw = (root/GATEWAY_METADATA_ZIP).read_bytes()
+    require(len(raw) == 339540 and sha(raw) == '0ac3793a0f73dcdcc22e341a1e42129bee830cb5d63c9e9696c7f34a27f33cb6',
+            'EXACT_QUALIFIED_GATEWAY_CANDIDATE_METADATA_REQUIRED')
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        require(len(archive.namelist()) == len(set(archive.namelist())) == 14
+                and sum(r.file_size for r in archive.infolist()) <= 8388608, 'BOUNDED_GATEWAY_EVIDENCE_REQUIRED')
+        members = {n:archive.read(n) for n in archive.namelist()}
+    proof, scan = (json.loads(members[n]) for n in ('candidate.json','trivy-image.json'))
+    sums = dict(line.split('  ',1)[::-1] for line in members['SHA256SUMS'].decode().splitlines())
+    require(sums['image.docker.tar'] == proof['archiveSha256']
+            and sums['scan-input.docker.tar'] == proof['scanInputSha256'], 'SIGNED_GATEWAY_IMAGE_MEMBERS_REQUIRED')
+    for name, checksum in sums.items():
+        if name not in ('image.docker.tar','scan-input.docker.tar'):
+            require(name in members and sha(members[name]) == checksum, 'SIGNED_GATEWAY_METADATA_CHANGED')
+    results = json.loads(members['publisher-verification.json'])
+    require(type(results) is list and len(results) == 1, 'ONE_GATEWAY_PUBLISHER_VERIFICATION_REQUIRED')
+    verification = results[0]['verificationResult']; cert = verification['signature']['certificate']
+    bundle = json.loads(members['provenance.json'])
+    statement = json.loads(base64.b64decode(bundle['dsseEnvelope']['payload'],validate=True))
+    identity = ('https://github.com/GioNob/ouf-deploy/.github/workflows/m2-gateway-owner-candidate.yml'
+                '@refs/heads/feat/m2-discovery-complete-profile-20261029')
+    require(results[0]['attestation']['bundle'] == bundle and verification['statement'] == statement
+            and statement['subject'] == [{'name':'SHA256SUMS','digest':{'sha256':sha(members['SHA256SUMS'])}}]
+            and cert['subjectAlternativeName'] == cert['buildSignerURI'] == identity
+            and cert['sourceRepositoryDigest'] == cert['buildSignerDigest'] == '48c934d0927aa8049dfaa42a23bfaed12e541439'
+            and cert['issuer'] == 'https://token.actions.githubusercontent.com'
+            and cert['runnerEnvironment'] == 'github-hosted'
+            and any(t['type'] == 'Tlog' for t in verification['verifiedTimestamps']), 'EXACT_VERIFIED_GATEWAY_PUBLISHER_REQUIRED')
+    tree_raw = (root/'releases/m2-gateway-owner-security-source-tree-20261101.json').read_bytes()
+    require(sha(tree_raw) == '20c5176330674e4459db6afb393a7e4c750f0ea3abfbe75ae7291bbf3d5b39f2',
+            'EXACT_INDEPENDENT_GATEWAY_SOURCE_TREE_REQUIRED')
+    tree = json.loads(tree_raw)
+    expected = {r['path']:(r['sha'],r['mode']) for r in tree['tree']}
+    inventory = json.loads(members['source-inventory.json'])
+    require(len(expected) == 230 and tree['truncated'] is False
+            and expected == {r['path']:(r['sha'],r['mode']) for r in inventory['tree'] if r['type']=='blob'},
+            'COMPLETE_230_GATEWAY_SOURCE_BLOBS_REQUIRED')
+    seen = set()
+    with tarfile.open(fileobj=io.BytesIO(members['source.tar']),mode='r:') as source:
+        for entry in source:
+            if entry.isdir(): continue
+            require(entry.isfile() and entry.name in expected and entry.name not in seen and entry.size <= 2097152,
+                    'BOUNDED_REGULAR_GATEWAY_SOURCE_MEMBER_REQUIRED')
+            body = source.extractfile(entry).read(entry.size+1)
+            git_blob = hashlib.sha1(b'blob '+str(len(body)).encode()+b'\0'+body).hexdigest()
+            require(len(body) == entry.size and (git_blob,'100755' if entry.mode&0o111 else '100644') == expected[entry.name],
+                    'GATEWAY_SOURCE_BYTES_OR_MODE_DIFFER_FROM_GIT')
+            seen.add(entry.name)
+    counts = dict(Counter(f['Severity'] for r in scan['Results'] for f in r.get('Vulnerabilities',[])))
+    require(seen == set(expected) and proof['sourceCommit'] == tree['sourceCommit'] == '17439fed7a45d455baa6945ee72a65fa19c14029'
+            and proof['configurationImageId'] == scan['Metadata']['ImageID'] == 'sha256:8c2b47b5d7c2ddcf55cfa644ad3b61a397e67c9fc9651dc8a20fea9fbe805906'
+            and proof['nativeImageId'] == 'sha256:502ba0e41a67b3db46a2cd08c31ccb7b7cce0faa0e3952e1143e1415f952d25f'
+            and proof['scanSha256'] == sha(members['trivy-image.json'])
+            and proof['freshScanGatePassed'] is True and not any(counts.get(s,0) for s in ('CRITICAL','HIGH','UNKNOWN'))
+            and proof['retainedImageSourceMembershipProven'] is False and proof['candidateSelectionChanged'] is False
+            and proof['runtimeAuthorityIssued'] is False and proof['targetApplyAuthorized'] is False,
+            'QUALIFIED_NEW_OWNER_MUST_NOT_PROMOTE_RETAINED_IMAGE_OR_AUTHORITY')
+    return {k:proof[k] for k in ('schema','sourceRepository','sourceCommit','declaredRetainedSourceCommit','nativeImageId',
+        'configurationImageId','archiveSha256','scanInputSha256','applicationJarSha256','baseImage','unitTestReports',
+        'freshScanGatePassed','scanSha256','candidateSelectionChanged','retainedImageSourceMembershipProven',
+        'imageApplicationReadinessProven','targetOperations','targetApplyAuthorized','runtimeAuthorityIssued','releaseAcceptance')} | {
+        'runId':41353205013,'jobId':124987637755,'artifactId':13102047484,
+        'originalZipSha256':'9af9def1857cefe917b8889143d81b27cf08f5df587f11547c73c922a368e7da',
+        'originalZipBytes':298387448,'preservedMetadata':GATEWAY_METADATA_ZIP,'sourceFilesIndependentlyMatched':230,
+        'publisherChainVerifiedInNamedHostedJob':True,'publisherChainReverifiedByThisReader':False,
+        'vulnerabilityCounts':counts,'scanFreshnessMustBeRecheckedBeforeAdmission':True}
+
+
 def reconcile(root):
     target_raw = (root / 'evidence/m2-runtime-origin-join-target-20261101.json').read_bytes()
     target = json.loads(target_raw)
@@ -223,8 +330,10 @@ def reconcile(root):
         freshScanEvidence='evidence/m2-retained-semantic-scan-readback-20261101.json',
         freshScanSha256=sha(scan_raw), vulnerabilityCounts=counts,
         remediationCandidate=semantic_remediation(root))
-    roles['gateway-owner']['originGap'] = 'ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP'
-    roles['minio']['originGap'] = 'EXACT_SELECTED_REGISTRY_DESCRIPTOR_UNAVAILABLE'
+    roles['gateway-owner'].update(originGap='ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP',
+                                   replacementCandidate=gateway_candidate(root))
+    roles['minio'].update(originGap='EXACT_COPY_CONTENT_RECOVERED_ORIGINAL_VENDOR_PUBLISHER_UNAUTHENTICATED',
+                          exactCopySecurityEvidence=minio_security(root))
     return {
         'schema': 'ouf.m2-retained-runtime-origin-reconciliation.v1', 'date': '2026-11-01',
         'publicOriginJoinResultHash': TARGET, 'publicOriginJoinRecordSha256': sha(target_raw),
