@@ -3,7 +3,7 @@
 The runtime image and private inputs are synthetic. Java never executes. The
 independent committed Engine baseline supplies expected OCI, not the live OCI.
 """
-import hashlib,http.client,json,os,shutil,socket,struct,subprocess,sys,tempfile,time,uuid
+import hashlib,http.client,json,os,re,shutil,socket,struct,subprocess,sys,tempfile,time,uuid
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tools/semantic_application_cutover'),
@@ -20,7 +20,12 @@ from tools.semantic_provider_deployment_authentication import attributes
 def run(*args):
     return subprocess.check_output(args,stderr=subprocess.PIPE,timeout=120).decode().strip()
 
-def main(package_directory=None, output=None):
+RETAINED_PACKAGE = {'recordSha256': 'fb49890ba3f99bd40aeb51b8aa87ff941177f1cb8d7a433e15cfe8b3ba0dedbb',
+    'imageId': 'sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e',
+    'sourceCommit': '4f8fb581916075a539bda4428be7bd8af073a569',
+    'archiveSha256': '4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c'}
+
+def main(package_directory=None, output=None, *, package_binding=None):
     assert os.geteuid()==0 and os.environ.get('GITHUB_ACTIONS')=='true'
     info=json.loads(run('docker','info','--format','{{json .}}'))
     assert info['ServerVersion']=='29.8.1' and info['Driver']=='overlayfs' and info['CgroupDriver']=='systemd'
@@ -33,21 +38,25 @@ def main(package_directory=None, output=None):
             (task/'Dockerfile').write_text('FROM '+base[0]+'\nRUN addgroup -S -g 10001 ouf && adduser -S -D -H -u 10001 -G ouf ouf\nUSER 10001:10001\nWORKDIR /app\n')
             run('docker','build','-t',tag,str(task));image=json.loads(run('docker','image','inspect',tag))[0]['Id']
         else:
+            binding = RETAINED_PACKAGE if package_binding is None else package_binding
+            assert type(binding) is dict and set(binding) == set(RETAINED_PACKAGE)
+            assert all(re.fullmatch('[a-f0-9]{64}', binding[k]) for k in ('recordSha256', 'archiveSha256'))
+            assert re.fullmatch('sha256:[a-f0-9]{64}', binding['imageId']) and re.fullmatch('[a-f0-9]{40}', binding['sourceCommit'])
             package_directory=Path(package_directory)
             assert package_directory.is_absolute() and output is not None
             record_raw=(package_directory/'package-record.json').read_bytes();record=json.loads(record_raw)
-            assert hashlib.sha256(record_raw).hexdigest()=='fb49890ba3f99bd40aeb51b8aa87ff941177f1cb8d7a433e15cfe8b3ba0dedbb'
-            image='sha256:a0bc481df9735abb60b5a6d085a6b7d84ae76c53ae31db84ad5859ff6a46518e'
-            assert record['imageId']==image and record['sourceCommit']=='4f8fb581916075a539bda4428be7bd8af073a569'
+            assert hashlib.sha256(record_raw).hexdigest()==binding['recordSha256']
+            image=binding['imageId']
+            assert record['imageId']==image and record['sourceCommit']==binding['sourceCommit']
             assert record['runtimeUser']=='10001:10001' and record['targetApplyAuthorized'] is False
             archive=package_directory/'image.docker.tar'
-            assert hashlib.sha256(archive.read_bytes()).hexdigest()=='4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c'
+            assert hashlib.sha256(archive.read_bytes()).hexdigest()==binding['archiveSha256']
             from image_custody import archive as verify_archive,tagless_archive,native_identity,loaded
             # Docker29's containerd store addresses a manifest, not the config
             # digest recorded in the original package. Reuse the qualified
             # tagless envelope; preserve every authenticated config/layer byte.
             with archive.open('rb') as original:
-                audit=verify_archive(original,'4457a59574c06ec47ce686a40fb017e4cb3fe31bd12a62d8a5644d9d3d4f7d8c',image,record['sourceCommit'])
+                audit=verify_archive(original,binding['archiveSha256'],image,record['sourceCommit'])
                 projected=task/'tagless-image.tar'
                 with projected.open('w+b') as destination:
                     envelope=tagless_archive(original,destination,audit,containerd=True)
