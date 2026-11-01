@@ -3,7 +3,7 @@ import hashlib,io,json,sys,tarfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests/fixtures')]
-from retained_image_bytes import fixture,package
+from retained_image_bytes import fixture,package,encoded,address
 from tools.m2_discovery_installation_profile import retained_image_identity as m
 
 
@@ -70,6 +70,25 @@ class ImageBytes(unittest.TestCase):
         with patch.dict(m.LIMITS,maximumExpandedSetBytes=15000):
             self.verify(raw,image,budget)
             with self.assertRaisesRegex(ValueError,'EXPANDED_PRIVATE_IMAGE_SET'):self.verify(raw,image,budget)
+
+    def test_native_index_and_configuration_addresses_have_distinct_exact_evidence(self):
+        raw,image,entries=fixture()
+        config=next(name for name,body in entries if name.startswith('blobs/') and b'"rootfs"' in body)
+        proof=self.verify(raw,'sha256:'+config.rsplit('/',1)[1])
+        self.assertEqual(proof['requestedIdentityKind'],'OCI_CONFIGURATION')
+        self.assertIsNone(proof['nativeArchiveIdentityDigest']);self.assertEqual(proof['nativeManifestDigest'],image)
+        index_raw=entries[1][1];root=address(index_raw)
+        outer=encoded({'schemaVersion':2,'manifests':[{'mediaType':'application/vnd.oci.image.index.v1+json',
+            'digest':root,'size':len(index_raw)}]})
+        changed=[entries[0],('index.json',outer),*entries[2:],('blobs/sha256/'+root[7:],index_raw)]
+        proof=self.verify(package(changed),root)
+        self.assertEqual(proof['requestedIdentityKind'],'OCI_INDEX')
+        self.assertEqual(proof['nativeArchiveIdentityDigest'],root);self.assertEqual(proof['nativeManifestDigest'],image)
+
+    def test_oversized_pax_extension_is_denied_before_metadata_allocation(self):
+        _,image,entries=fixture();header=tarfile.TarInfo('pax');header.type=tarfile.XHDTYPE;header.size=1048576
+        raw=header.tobuf()+b'\0'*1024
+        with self.assertRaisesRegex(ValueError,'TAR_HEADER'):self.verify(raw,image)
 
 
 if __name__=='__main__':unittest.main()

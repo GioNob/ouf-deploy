@@ -45,7 +45,18 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
         return value.hexdigest(),size
     stream.seek(0);actual,size=hashed(stream,LIMITS['maximumArchiveBytes'])
     require(actual==expected_sha and size==expected_bytes,'PRIVATE_IMAGE_ARCHIVE_BYTES_CHANGED');stream.seek(0)
-    with tarfile.open(fileobj=stream,mode='r:') as archive:
+    class BoundedInfo(tarfile.TarInfo):
+        def _proc_member(self,tar):
+            # Reject unsupported types and oversized extension bodies before
+            # tarfile allocates PAX/GNU metadata, not after it yields a member.
+            budget.check()
+            extensions=(tarfile.XHDTYPE,tarfile.XGLTYPE,tarfile.SOLARIS_XHDTYPE,
+                tarfile.GNUTYPE_LONGNAME,tarfile.GNUTYPE_LONGLINK)
+            require(self.type in (tarfile.REGTYPE,tarfile.AREGTYPE,tarfile.DIRTYPE,*extensions)
+                and (self.size<=131072 if self.type in extensions else self.size<=LIMITS['maximumArchiveBytes']),
+                'BOUNDED_REGULAR_PRIVATE_TAR_HEADER_REQUIRED')
+            return super()._proc_member(tar)
+    with tarfile.open(fileobj=stream,mode='r:',tarinfo=BoundedInfo) as archive:
         members={}
         for row in archive:
             budget.check();name=row.name.rstrip('/') if row.isdir() else row.name;path=PurePosixPath(name)
@@ -71,11 +82,11 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
             require(len(raw)==descriptor['size'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==descriptor['digest'],
                 'PRIVATE_IMAGE_DESCRIPTOR_CONTENT_DIGEST_DIFFERS')
             return name,raw,value
-        manifest_digest=None
+        manifest_digest=None;identity_kind='CLASSIC_CONFIGURATION';native_archive_digest=None
         if 'index.json' in members:
             _,layout=small('oci-layout',131072)
             require(layout=={'imageLayoutVersion':'1.0.0'},'PRIVATE_OCI_IMAGE_LAYOUT_REQUIRED')
-            _,index=small('index.json',131072);found=[];seen=set()
+            _,index=small('index.json',131072);nodes={};seen=set()
             def visit(document,depth):
                 require(type(document) is dict and document.get('schemaVersion')==2
                     and type(document.get('manifests')) is list and 1<=len(document['manifests'])<=64
@@ -88,11 +99,34 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                     media=descriptor.get('mediaType')
                     require(media in IMAGE_TYPES|INDEX_TYPES and node.get('mediaType') in (None,media)
                         and node.get('schemaVersion')==2,'PRIVATE_IMAGE_DESCRIPTOR_MEDIA_TYPE_REQUIRED')
+                    nodes[address]=(media,node)
                     if media in INDEX_TYPES:visit(node,depth+1)
-                    elif address==expected_image:found.append((address,node))
             visit(index,0)
-            require(len(found)==1,'EXACT_REQUESTED_NATIVE_IMAGE_MANIFEST_REQUIRED')
-            manifest_digest,native=found[0]
+            def leaves(address):
+                media,node=nodes[address]
+                if media in IMAGE_TYPES:return [(address,node)]
+                return [leaf for child in node['manifests'] for leaf in leaves(child['digest'])]
+            if expected_image in nodes:
+                media,_=nodes[expected_image];native_archive_digest=expected_image
+                identity_kind='OCI_MANIFEST' if media in IMAGE_TYPES else 'OCI_INDEX'
+                candidates=leaves(expected_image)
+                if media in INDEX_TYPES:
+                    selected=[]
+                    for address,node in candidates:
+                        cfg=node.get('config',{})
+                        require(cfg.get('mediaType') in CONFIG_TYPES,'PRIVATE_INDEX_IMAGE_CONFIG_DESCRIPTOR_REQUIRED')
+                        _,_,value=blob(cfg)
+                        if value.get('os')=='linux' and value.get('architecture')=='amd64':selected.append((address,node))
+                    candidates=selected
+            else:
+                # A Docker container can retain a configuration digest while
+                # its save transport is OCI. Bind that exact config to one
+                # authenticated manifest; never guess from a tag or label.
+                identity_kind='OCI_CONFIGURATION'
+                candidates=[(address,node) for address,(media,node) in nodes.items()
+                    if media in IMAGE_TYPES and node.get('config',{}).get('digest')==expected_image]
+            require(len(candidates)==1,'EXACT_UNIQUE_REQUESTED_NATIVE_OR_CONFIGURATION_IMAGE_REQUIRED')
+            manifest_digest,native=candidates[0]
             cfg=native.get('config',{})
             require(cfg.get('mediaType') in CONFIG_TYPES,'PRIVATE_IMAGE_CONFIGURATION_DESCRIPTOR_REQUIRED')
             config_name,config_raw,config=blob(cfg)
@@ -141,6 +175,7 @@ def verified_image(stream,expected_sha,expected_image,expected_bytes,budget):
                 'archiveBytes':blob_bytes,'expandedBytes':expanded_bytes})
         budget.check()
         return {'schema':'ouf.retained-private-image-byte-identity.v1','requestedImageId':expected_image,
+            'requestedIdentityKind':identity_kind,'nativeArchiveIdentityDigest':native_archive_digest,
             'nativeManifestDigest':manifest_digest,'configurationDigest':config_digest,'archiveSha256':expected_sha,
             'archiveBytes':expected_bytes,'expandedBytes':expanded_total,'layersHash':digest(proofs),
             'layerCount':len(proofs),'executionConfigurationHash':digest(config['config']),

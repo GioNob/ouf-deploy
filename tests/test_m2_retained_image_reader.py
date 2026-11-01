@@ -2,7 +2,7 @@
 
 The separate native suite supplies actual Docker29 exports and kernel pins.
 """
-import hashlib,json,os,sys,unittest
+import contextlib,copy,hashlib,io,json,os,sys,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests'),str(ROOT/'tests/fixtures')]
@@ -97,6 +97,39 @@ class Reader(unittest.TestCase):
         with self.assertRaises(TypeError):observer.observe(engine=lambda:True)
         observer.bindings['candidateHash']='0'*64
         with self.assertRaises(ValueError):observer.observe()
+
+    def test_durable_verification_control_writes_private_proofs_once_and_preserves_replay(self):
+        observer,_,_,root,*_=self.prepared()
+        from tools.m2_discovery_installation_profile import retained_image_verification as entry
+        profile={**copy.deepcopy(entry.PROFILE),'candidateHash':observer.bindings['candidateHash'],
+            'captureResultHash':observer.bindings['resultHash']};scope=root/'verification-control'
+        with patch.object(entry,'OUTPUT',scope),patch.object(entry,'PROFILE',profile),patch.object(sys,'argv',['verify.py']):
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output):code=entry.main()
+            self.assertEqual(code,0);public=json.loads(output.getvalue())
+            self.assertEqual(public['cumulativeControlAttempts'],8);self.assertEqual(public['cumulativeDirectEngineGets'],35)
+            self.assertTrue(public['newVerificationControlScopeCreated'])
+            self.assertEqual(public['witness']['imageCount'],13)
+            self.assertEqual((scope/'image-byte-evidence.private.json').stat().st_mode&0o777,0o600)
+            before={p.name:p.read_bytes() for p in scope.iterdir()}
+            with contextlib.redirect_stdout(io.StringIO()):self.assertEqual(entry.main(),1)
+            self.assertEqual(before,{p.name:p.read_bytes() for p in scope.iterdir()})
+
+    def test_failed_private_verification_keeps_claim_and_no_false_proof_or_argument_echo(self):
+        observer,_,_,root,*_=self.prepared()
+        from tools.m2_discovery_installation_profile import retained_image_verification as entry
+        scope=root/'failed-verification';(observer.path.parent/'result.json').write_text('{}')
+        with patch.object(entry,'OUTPUT',scope),patch.object(sys,'argv',['verify.py']):
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output):self.assertEqual(entry.main(),1)
+            self.assertTrue(json.loads(output.getvalue())['scopeConsumed'])
+            self.assertTrue((scope/'image-byte-verification.claim.json').exists())
+            self.assertFalse((scope/'image-byte-evidence.private.json').exists())
+        other=root/'unused'
+        with patch.object(entry,'OUTPUT',other),patch.object(sys,'argv',['verify.py','PRIVATE_ARGUMENT_SENTINEL']):
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output):self.assertEqual(entry.main(),1)
+            self.assertNotIn('PRIVATE_ARGUMENT_SENTINEL',output.getvalue());self.assertFalse(other.exists())
 
 
 if __name__=='__main__':unittest.main()

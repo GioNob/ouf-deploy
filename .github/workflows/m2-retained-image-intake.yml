@@ -1,28 +1,70 @@
 name: M2 consumed private image intake and native byte verification
 on:
   push:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_intake.py", "tools/m2_discovery_installation_profile/retained_image_identity.py", "tools/m2_discovery_installation_profile/retained_image_reader.py", "tests/*m2_retained_image_intake*", "tests/*m2_retained_image_identity*", "tests/*m2_retained_image_reader*", "tests/fixtures/retained_image_bytes.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
   pull_request:
-    paths: ["tools/m2_discovery_installation_profile/retained_image_intake.py", "tools/m2_discovery_installation_profile/retained_image_identity.py", "tools/m2_discovery_installation_profile/retained_image_reader.py", "tests/*m2_retained_image_intake*", "tests/*m2_retained_image_identity*", "tests/*m2_retained_image_reader*", "tests/fixtures/retained_image_bytes.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_image_*", "tests/*m2_retained_image_*", "tests/fixtures/retained_image_bytes.py", "scripts/export-m2-retained-image-verification.py", "evidence/m2-native-image-archives-target-20261101.json", ".github/workflows/m2-retained-image-intake.yml"]
 permissions: {contents: read}
 jobs:
-  protected-byte-intake:
+  unit-and-seal:
+    permissions: {contents: read, id-token: write, attestations: write}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
-      - name: Actual tar-gzip and seven producer record sets; bounded read-only private verification
+      - name: Install the qualified exact offline publisher verifier
         run: |
           set -euo pipefail
-          fixture="/var/lib/ouf-retained-intake-${GITHUB_RUN_ID}"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
+          sudo install -d -m 0755 /opt/ouf-capture-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-capture-gh297
+          sudo chown -R root:root /opt/ouf-capture-gh297
+          /opt/ouf-capture-gh297/bin/gh --version
+      - name: Sealed seventeen-source byte verifier with no capture replay or Engine calls
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-retained-capture-unit-${GITHUB_RUN_ID}"
           sudo install -d -m 0700 "$fixture"
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_image_identity.py test_m2_retained_image_intake.py test_m2_retained_image_reader.py; do
+          for suite in test_m2_retained_image_identity.py test_m2_retained_image_intake.py test_m2_retained_image_reader.py test_m2_retained_image_verification_capsule.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-image-verification.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --output "$GITHUB_WORKSPACE/retained-image-byte-verification.py" > retained-image-byte-verification.json
+          python3 -I -B -S retained-image-byte-verification.py --inspect-source > retained-image-byte-verification-source-inspection.json
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: retained-image-byte-verification.py
+          create-storage-record: false
+      - name: Verify source publisher and retain offline attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          cp "$PROVENANCE_BUNDLE" retained-image-byte-verification.sigstore.json
+          /opt/ouf-capture-gh297/bin/gh attestation verify retained-image-byte-verification.py --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-retained-image-intake.yml \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+            --bundle "$PROVENANCE_BUNDLE" --format json > retained-image-byte-verification-publisher-verification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-image-byte-verification-${{ github.run_id }}
+          path: |
+            retained-image-byte-verification.py
+            retained-image-byte-verification.json
+            retained-image-byte-verification-source-inspection.json
+            retained-image-byte-verification.sigstore.json
+            retained-image-byte-verification-publisher-verification.json
+          if-no-files-found: error
+          retention-days: 30
   native-seven-stage-reader:
     runs-on: ubuntu-24.04
     timeout-minutes: 10

@@ -31,7 +31,9 @@ class NativeReader(unittest.TestCase):
         self.assertEqual(public['directEngineGets'],0);self.assertEqual(public['mountedHostFileContentBytesRead'],0)
         self.assertEqual(len({v['requestedImageId'] for v in private['images'].values()}),13)
         for proof in private['images'].values():
-            self.assertEqual(proof['requestedImageId'],proof['nativeManifestDigest'])
+            self.assertIn(proof['requestedIdentityKind'],('OCI_MANIFEST','OCI_INDEX','OCI_CONFIGURATION','CLASSIC_CONFIGURATION'))
+            self.assertEqual(proof['requestedImageId'],proof['nativeArchiveIdentityDigest']
+                if proof['requestedIdentityKind'] in ('OCI_MANIFEST','OCI_INDEX') else proof['configurationDigest'])
             self.assertFalse(proof['sourcePublisherAuthenticated']);self.assertGreater(proof['layerCount'],0)
         for key in ('sourcePublisherAuthenticated','allRuntimeArtifactMembershipProven',
                 'currentApplicationConfigurationOrLivenessProven','completePrivateCustodyProven',
