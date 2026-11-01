@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import Mock
 ROOT = Path(__file__).resolve().parents[1]; sys.path[:0] = [str(ROOT), str(ROOT/'tests')]
 import test_m2_discovery_artifact_membership as membership_fixture
+import test_m2_discovery_package_membership as package_fixture
 import test_m2_discovery_current_publisher as publisher_fixture
 from tools.m2_discovery_installation_profile import artifact_membership as m
 from tools.m2_discovery_installation_profile import current_publisher as publisher_module
@@ -18,9 +19,10 @@ def prepare(output, source_commit):
     require(len(source_commit) == 40 and all(c in '0123456789abcdef' for c in source_commit),
         'EXACT_DISPOSABLE_CI_PRODUCER_COMMIT_REQUIRED')
     output = Path(output); output.mkdir(mode=0o700)
-    case = membership_fixture.Membership()
+    case = package_fixture.PackageMembership()
     try:
-        reader, root, package, records, _, seal = case.prepared()
+        complete, root, package, records, seal = case.prepared()
+        reader = complete.membership
         # The subject's producer must equal the workflow certificate source.
         reader.publisher.inputs['artifacts'][0]['sourceCommit'] = source_commit
         original_manifest = m.decode((package/'cohort-manifest.json').read_bytes())
@@ -32,7 +34,9 @@ def prepare(output, source_commit):
         (package/'COHORT_SHA256SUMS').write_bytes(''.join(sha+'  '+name+'\n' for name, sha in sorted(sums.items())).encode())
         reader.images.plan['cohortManifestHash'] = m.digest(original_manifest)
         state = {'originalRoot': str(root), 'cohortManifestHash': m.digest(original_manifest),
-            'databaseInputs': reader.databases.inputs, 'imagePlan': reader.images.plan}
+            'databaseInputs': reader.databases.inputs, 'imagePlan': reader.images.plan,
+            'retainedImageIds': {name: reader.databases.runtime.inputs['peers'][name]['runtimeBinding']['imageId']
+                for name in ('onboarding', 'ingestion', 'udp')}}
         shutil.copytree(root, output/'material')
         (output/'state.json').write_bytes(membership_fixture.encoded(state))
     finally: case.doCleanups()
@@ -67,6 +71,7 @@ class NativeMembership(unittest.TestCase):
         if wrong_id: row['repositoryId'] = '1'
         runtime = copy.deepcopy(old.runtime_inputs); runtime.pop('additionalInputsHashes')
         runtime['schema'] = publisher_fixture.cohort.m.INPUT_SCHEMA; runtime['cohortManifestHash'] = state['cohortManifestHash']
+        for name, image_id in state['retainedImageIds'].items(): runtime['peers'][name]['runtimeBinding']['imageId'] = image_id
         runtime = publisher_module.bind_publisher_inputs(runtime, inputs); review = copy.deepcopy(case.review)
         component = review['components']['cohortInstallation']
         component['currentAdmission'] = copy.deepcopy(component['currentAdmission']['requirements'])
@@ -77,6 +82,7 @@ class NativeMembership(unittest.TestCase):
         images.guard = lambda: parent.guard('cohortInstallation', parent.review['components']['cohortInstallation'])
         current = publisher_fixture.cohort.m.CurrentCohortRuntime.__new__(publisher_fixture.cohort.m.CurrentCohortRuntime)
         current.parent = parent; current.inputs = runtime
+        current.input_hash = publisher_fixture.cohort.m.validate_inputs(runtime); current.guard = images.guard
         selected = membership_fixture.SimpleNamespace(images=images)
         held = {'state': 'READY', 'nextPhase': 12, 'version': 42}
         def snapshot(expected=None):

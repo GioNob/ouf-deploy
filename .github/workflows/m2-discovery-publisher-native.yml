@@ -1,9 +1,9 @@
 name: M2 offline native publisher cryptography
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tools/m2_discovery_installation_profile/package_membership.py','tests/test_m2_discovery_package_membership.py','tests/qualify_m2_discovery_package_membership_native.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
+    paths: ['tools/m2_discovery_installation_profile/current_publisher.py','tools/m2_discovery_installation_profile/artifact_membership.py','tools/m2_discovery_installation_profile/package_membership.py','tests/test_m2_discovery_package_membership.py','tests/qualify_m2_discovery_package_membership_native.py','tests/test_m2_discovery_artifact_membership.py','tests/qualify_m2_discovery_artifact_membership_native.py','tests/test_m2_discovery_current_publisher.py','tests/qualify_m2_discovery_current_publisher_native.py','.github/workflows/m2-discovery-publisher-native.yml']
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
   offline-publisher:
@@ -53,7 +53,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in qualify_m2_discovery_current_publisher_native.py qualify_m2_discovery_artifact_membership_native.py; do
+          for suite in qualify_m2_discovery_current_publisher_native.py qualify_m2_discovery_artifact_membership_native.py qualify_m2_discovery_package_membership_native.py; do
           sudo unshare --net -- env GITHUB_ACTIONS=true PATH=/usr/sbin:/usr/bin:/sbin:/bin \
             OUF_PUBLISHER_FIXTURE_ROOT="$fixture/repository/publisher-fixture" \
             OUF_MEMBERSHIP_FIXTURE_ROOT="$fixture/repository/publisher-fixture/membership" \

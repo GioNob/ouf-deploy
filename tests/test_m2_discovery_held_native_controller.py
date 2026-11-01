@@ -44,7 +44,8 @@ class HeldController(unittest.TestCase):
         for name, cls in (('runtime', m.CurrentCohortRuntime), ('databases', m.CurrentCohortDatabases),
             ('publisher', m.CurrentPublisherCustody), ('tls', m.CurrentTlsIdentities), ('iam', m.CurrentWorkloadIam),
             ('retirement', m.CurrentRetirementAndBackup), ('producers', m.CurrentProducerFence),
-            ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership)):
+            ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership),
+            ('packages', m.CurrentPackageMembership)):
             objects[name] = object.__new__(cls); objects[name].guard = Mock()
         runtime = objects['runtime']; runtime.selected = selected; runtime.input_hash = 'c'*64
         runtime.inputs = {'additionalInputsHashes': {k: 'd'*64 for k in m.ADDITIONAL_INPUTS}}
@@ -57,6 +58,7 @@ class HeldController(unittest.TestCase):
         objects['retirement'].installed = True
         objects['membership'].publisher = objects['publisher']; objects['membership'].databases = objects['databases']
         objects['membership'].images = selected.images
+        objects['packages'].membership = objects['membership']; objects['packages'].runtime = runtime
         def operation(name):
             def run(*args):
                 self.assertTrue(occupied[0], name+' must use the invocation fence')
@@ -64,9 +66,15 @@ class HeldController(unittest.TestCase):
                 if name == 'membership':
                     result.update(selectedImageAndMigrationMembershipProven=True,
                         publisherEvidenceHash=m.digest({'schema':'modeled-publisher','heldHistoryHash':m.digest(row)}))
+                if name == 'packages':
+                    publisher = {'schema':'modeled-publisher','heldHistoryHash':m.digest(row)}
+                    named = {'schema':'modeled-membership','heldHistoryHash':m.digest(row),
+                        'selectedImageAndMigrationMembershipProven': True, 'publisherEvidenceHash':m.digest(publisher)}
+                    result.update(sixModulePackageBytesProven=True, fiveReviewedModuleImageIdentitiesProven=True,
+                        publisherEvidenceHash=m.digest(publisher), namedMembershipEvidenceHash=m.digest(named))
                 return result
             return Mock(side_effect=run)
-        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership'):
+        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages'):
             objects[name].observe = operation(name)
         objects['retirement'].retired = operation('retirement'); objects['retirement'].retained_backup = operation('backup')
         selected.images.verify = operation('images')
@@ -78,9 +86,9 @@ class HeldController(unittest.TestCase):
     def test_all_concrete_observers_share_one_fence_without_publication_or_release_receipt(self):
         controller, _, row, calls, occupied, _ = self.prepared(); original = copy.deepcopy(row)
         result = controller.observe()
-        self.assertEqual(calls, ['images','registry','operational','runtime','publisher','membership','databases','tls','iam',
-            'retirement','backup','producers','registry','operational','runtime','producers','membership','images'])
-        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 18)
+        self.assertEqual(calls, ['images','registry','operational','runtime','publisher','membership','packages','databases','tls','iam',
+            'retirement','backup','producers','registry','operational','runtime','producers','membership','packages','images'])
+        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 20)
         self.assertTrue(result['singleTransitionInvocationFenceHeld']); self.assertTrue(result['allBoundNativeObserversCompleted'])
         self.assertNotEqual(result['schema'], 'ouf.semantic-cutover-native-checkpoint.v1')
         for key in ('observationIntervalIsAtomicSnapshot', 'artifactMembershipProven', 'completePrivateCustodyProven',
@@ -94,13 +102,14 @@ class HeldController(unittest.TestCase):
         self.assertEqual(calls, [])
 
     def test_foreign_or_replaced_owner_or_input_cannot_join_native_witnesses(self):
-        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement'):
+        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages'):
             controller, objects, _, calls, _, _ = self.prepared()
             if failure == 'type': controller.publisher = SimpleNamespace(guard=Mock(), observe=Mock())
             elif failure == 'runtime': objects['tls'].runtime = object()
             elif failure == 'worker': objects['tls'].operational = object()
             elif failure == 'parent': objects['publisher'].parent = object()
             elif failure == 'input': objects['publisher'].runtime_inputs['additionalInputsHashes']['custody'] = 'f'*64
+            elif failure == 'packages': objects['packages'].membership = object()
             else: objects['retirement'].installed = False
             with self.subTest(failure=failure), self.assertRaises(ValueError): controller.observe()
             self.assertEqual(calls, [])
@@ -135,6 +144,17 @@ class HeldController(unittest.TestCase):
         objects['membership'].observe.side_effect = wrong_publisher
         with self.assertRaisesRegex(ValueError, 'SAME_CURRENT_PUBLISHER_AND_SELECTED_ARTIFACT'): controller.observe()
         objects['databases'].observe.assert_not_called()
+
+    def test_complete_package_must_join_both_exact_named_membership_and_publisher(self):
+        for field in ('publisherEvidenceHash', 'namedMembershipEvidenceHash', 'sixModulePackageBytesProven'):
+            controller, objects, _, _, occupied, _ = self.prepared()
+            original = objects['packages'].observe.side_effect
+            def changed():
+                proof = original(); proof[field] = False if field == 'sixModulePackageBytesProven' else 'f'*64
+                return proof
+            objects['packages'].observe.side_effect = changed
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'COMPLETE_PACKAGE_REQUIRED'): controller.observe()
+            objects['databases'].observe.assert_not_called(); self.assertFalse(occupied[0])
 
     def test_revocation_after_native_read_stops_following_read_without_repair(self):
         controller, objects, _, _, occupied, registry = self.prepared()
