@@ -18,7 +18,7 @@ COMMON=dict(zip(m.COMMON,('a'*64,'b'*64,'c'*64,'d'*64)))
 
 
 class Intake(unittest.TestCase):
-    def prepared(self):
+    def prepared(self,*,before_capture=None,seed_transform=None):
         case=capture_fixture.RoleCorrection();self.addCleanup(case.doCleanups)
         c,args,seed,root,mounted,reads,aliases=case.prepared()
         seed['bootId']='11111111-1111-1111-1111-111111111111';args['boot_path'].write_text(seed['bootId'])
@@ -26,6 +26,8 @@ class Intake(unittest.TestCase):
             row=seed['observations'][alias]
             row['Name']='/ouf-'+('gateway-operational-owner' if role=='gateway-owner' else role)
             if role=='semantic':row['Name']='/ouf-semantic-cutover-'+'a'*64
+        if before_capture is not None:before_capture(root,mounted)
+        if seed_transform is not None:seed_transform(seed)
         args['seed_path'].write_bytes(m.encoded(seed));args['seed_hash']=m.digest(seed)
         args['roster']=capture_fixture.roster_for(seed,aliases)
         result=producer.collect(c,**args);c.put('result.json',result)

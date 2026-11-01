@@ -1,3 +1,39 @@
+# CURRENT — Metadata intake/controller PASS194; readonly file-hash input in qualification
+
+1 November2026. Exact VPS metadata capture SUCCEEDED candidate46f6e635/result59935457;
+20GET/25readonly+4mutable/33nodes/zero mounted-file contents, prior0922 preserved.
+Both metadata scopes consumed: never replay/reset/delete. Target public evidence
+recorded; no independent target filesystem/private candidate read by agent.
+Source04920448 intake maps aliases by accepted ID and uses actual Engine runtime
+binding (mount order preserved, unlike historical sorted stable_binding).
+CurrentRetainedMountMetadata exposes no caller path/hash/Engine callback override,
+creates no scope/output and rechecks current metadata. Held controllerv4 has13typed
+owners/24reads under one transition fence; expected policy/full admission false.
+Targeted41286820335 PASS28/3suites (24unit+4actualDocker29),2final logs read.
+Main41286820490 PASS194/27suites (protocol177/22 plus17/5 native), all5logs read;
+zero failure/error/skip/ResourceWarning. Dossier m2-retained-mount-intake-qualified.
+All235 frozen hashes and old capture/correction delivered bytes remain unchanged.
+
+Current autonomous work: distinct one-shot retained_readonly_hashes preparation,
+source + source-sealed capsule in qualification. This NEW input intentionally
+reads only exact captured readonly REGULAR files to hash them in memory, potentially
+including existing credential/key files. No raw values/per-file hashes printed or
+spooled; per-file hash metadata stays root-private. RW/ephemeral/special contents
+never opened; RO aliases overlapping captured RW sources rejected before content.
+No mutable admission or observed-data-as-expected-policy inference. Existing
+captures remain consumed; new preparation1attempt/90s/20direct GETs, max8MiB/file,
+64MiB total/2048unique; prior2control+20GET preserved, cumulative3control/40directGET.
+No runtime budget/reset/grant/lifecycle/apply/OAuth/SQL/signing/activation.
+Need complete native/capsule/publisher/delivery qualification before giving operator
+new exact command. No optional stop now; no agents or automations. Actual operator
+intervention will be necessary for this new private hash input (no VPS shell/FS
+connector), not for a replay/status probe. Preserve M1/Teatri and same Farmacie
+61/10/10OPEN/ministerial STRING; loading ends UDP/all61outcomes, then graph search,
+then vertical/API delta. Full private custody, all-runtime package membership,
+workload bearer, complete sealed early/late controller/execution package/current
+private review + HUMAN/role authority and E2E/two clients remain OPEN.
+All earlier operator-required/pending/READY headers are historical.
+
 # CURRENT — VPS retained-mount correction SUCCEEDED; autonomous source integration
 
 1 November2026, Europe/Rome. Operator returned PRIVATE_MOUNT_CANDIDATES_CAPTURED_NOT_ADMITTED,

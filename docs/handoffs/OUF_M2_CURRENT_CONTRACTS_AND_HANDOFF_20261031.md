@@ -1,26 +1,32 @@
-# Passo corrente — raccolta VPS riuscita, composizione sorgente in corso
+# Passo corrente — intake e controller qualificati, hash readonly in preparazione
 
-1 novembre2026. Il correttivo ha restituito
-`PRIVATE_MOUNT_CANDIDATES_CAPTURED_NOT_ADMITTED`, candidato46f6e635 e risultato
-canonico59935457. Venti GET/tre letture di metadati,25mount readonly/4mutabili,
-33entry statiche; zero contenuti montati/credenziali/chiavi letti. Predecessore
-0922ad73 preservato; due controlli cumulativi e20GET. Entrambe le directory
-sono consumate e non vanno ripetute/cancellate. [Risultato target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
+1 novembre2026. Raccolta VPS riuscita: candidato46f6e635/risultato59935457,
+20GET/25mount readonly+4mutabili/33entry, zero contenuti montati; predecessore
+0922ad73 preservato. Entrambe le directory restano consumate: nessun replay o
+cancellazione. [Ricevuta target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
 
-Prosegue autonomamente la composizione degli input privati e del controller.
-Il nuovo intake verifica candidato/risultato/seed esatti, conserva gli alias
-come etichette e deriva i binding Engine con l'ordine originale dei mount.
-Il nuovo observer rilegge soltanto le dichiarazioni private e i metadati O_PATH;
-nessun nuovo scope o file di cattura. Controller v4:13owner tipizzati/24letture
-sotto lo stesso fence. Unit24 locali PASS; qualifica Docker/main CI in corso.
-Nessuna nuova azione VPS richiesta per questo lavoro sorgente.
+Sorgente04920448 integra gli input privati e il controllo dei metadati nel
+controller v4,13owner/24letture sotto un solo fence. Usa il vero binding Engine:
+ordine dei mount conservato, distinto dal vecchio hash che li ordinava per
+nome. CI41286820335 PASS28/3suite (unit24/native4); CI41286820490 PASS194/27suite,
+tutti7log finali letti, zero failure/error/skip/ResourceWarning. Docker29.8.1 e
+dieci processi scratch reali; lineage parent/READY e tre peer sostituiti fixture,
+non OUF E2E. [Dossier](../../evidence/m2-retained-mount-intake-qualified-20261101.json).
 
-Metadati osservati non diventano policy attesa. Restano custodia privata completa,
-appartenenza di tutti i runtime, bearer target, controller/checkpoint completi,
-pacchetto esecutivo/review/autorità correnti, E2E e due client. M1/Teatri e stessa
-Farmacie61/10/10OPEN/ministeriale STRING preservati; nessun replay di upload,
-profiling/acquisizioni o activation/grant/reset/accettazione. Le sezioni seguenti
-sono storico: i comandi di cattura non sono più operativi.
+È in qualifica un nuovo input di hash dei soli file regolari montati readonly,
+selezionati dall'esatto candidato acquisito. Legge i valori soltanto per hashing
+in memoria, inclusi eventuali file di credenziali/chiavi; valori e hash individuali
+restano privati. Nessun contenuto mutabile/effimero/speciale letto; sovrapposizioni
+con sorgenti RW respinte. Un nuovo tentativo90s/20GET,8MiB perfile/64MiB totali;
+precedenti controlli/clock conservati, nessun budget runtime azzerato o concesso.
+L'operatore sarà necessario solo dopo la qualifica della consegna esatta; per ora
+il lavoro sorgente prosegue autonomamente. Nessun replay delle vecchie catture.
+
+Policy attesa/custodia completa, tutti gli artefatti runtime, bearer target,
+controller/checkpoint e pacchetto/review/autorità correnti, E2E/due client restano
+aperti. M1/Teatri e stessa Farmacie61/10/10OPEN/ministeriale STRING preservati;
+nessun replay upload/profiling/acquisizioni/activation/accettazione. I235hash del
+compilatore e le vecchie consegne sono invariati. Le sezioni seguenti sono storico.
 
 ---
 
