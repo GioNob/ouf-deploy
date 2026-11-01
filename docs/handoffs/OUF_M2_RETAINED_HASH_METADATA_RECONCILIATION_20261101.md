@@ -1,3 +1,8 @@
+> CONSUMED on target, 1 November2026. Receipt621124d2/private candidate050ba14d.
+> Four current metadata differences recorded, zero Engine/content. Do not run
+> the command below again. All four predecessor scopes remain preserved.
+> Lifecycle correction and new static-only input are in qualification.
+
 # M2 — riconciliazione mirata dei metadati di gateway-owner
 
 1 novembre2026, Europe/Rome. Il comando hash ha restituito `STOP_RECONCILE /

@@ -78,7 +78,10 @@ class HeldController(unittest.TestCase):
                     result.update(sixModulePackageBytesProven=True, fiveReviewedModuleImageIdentitiesProven=True,
                         publisherEvidenceHash=m.digest(publisher), namedMembershipEvidenceHash=m.digest(named))
                 if name == 'mounts':
-                    result.update(currentRetainedMetadataMatchesCapturedCandidate=True,
+                    result.update(schema='ouf.discovery-current-retained-mount-metadata.v2',
+                        currentRetainedStaticMetadataMatchesCapturedCandidate=True,
+                        liveMountRootsMatchCapturedCustody=True,liveMembersObservedOrAdmitted=False,
+                        lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,
                         nativeRuntimeInputsHash=runtime.input_hash,candidateHash=m.CANDIDATE_HASH,
                         captureResultHash=m.RESULT_HASH,expectedMountPolicyEstablished=False,
                         mountedFileContentBytesRead=0,newCaptureScopeCreated=False)

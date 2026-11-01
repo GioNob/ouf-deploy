@@ -103,7 +103,7 @@ class NativeRetainedIntake(unittest.TestCase):
         self.assertEqual(result['counts']['mutableMounts'],10)
         self.assertEqual(result['counts']['specialSources'],20)
         self.assertEqual(result['mountedFileContentBytesRead'],0)
-        self.assertTrue(result['currentRetainedMetadataMatchesCapturedCandidate'])
+        self.assertTrue(result['currentRetainedStaticMetadataMatchesCapturedCandidate'])
         self.assertFalse(result['newCaptureScopeCreated']);self.assertFalse(result['completePrivateCustodyProven'])
         self.assertFalse(result['expectedMountPolicyEstablished']);self.assertFalse(result['targetApplyAuthorized'])
         self.assertEqual(before,{str(p.relative_to(self.root)) for p in self.root.rglob('*')})
@@ -112,7 +112,7 @@ class NativeRetainedIntake(unittest.TestCase):
         (self.root/'mutable/private-data').write_bytes(b'MUTABLE_CONTENT_CHANGED')
         (self.root/'mutable/new-data').write_bytes(b'NEVER_READ')
         result=current.CurrentRetainedMountMetadata(self.runtime).observe()
-        self.assertTrue(result['currentRetainedMetadataMatchesCapturedCandidate'])
+        self.assertTrue(result['currentRetainedStaticMetadataMatchesCapturedCandidate'])
         self.assertFalse(result['mutableContentsObserved'])
 
     def test_c_readonly_metadata_drift_between_native_passes_does_not_return_witness(self):

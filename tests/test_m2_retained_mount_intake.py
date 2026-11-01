@@ -136,7 +136,7 @@ class Intake(unittest.TestCase):
         with patch.object(os,'open',side_effect=no_contents):
             result=self.run_observer(observer,args)
         self.assertEqual(len(reads),20);self.assertEqual(result['directRetainedEngineGets'],20)
-        self.assertTrue(result['currentRetainedMetadataMatchesCapturedCandidate'])
+        self.assertTrue(result['currentRetainedStaticMetadataMatchesCapturedCandidate'])
         self.assertFalse(result['newCaptureScopeCreated']);self.assertEqual(result['mountedFileContentBytesRead'],0)
         self.assertFalse(result['expectedMountPolicyEstablished']);self.assertFalse(result['completePrivateCustodyProven'])
         self.assertEqual(before,{str(p.relative_to(root)) for p in root.rglob('*')})
@@ -147,7 +147,7 @@ class Intake(unittest.TestCase):
         (root/'mutable/private-data').write_bytes(b'CHANGED_MUTABLE_DATA')
         (root/'mutable/new-file').write_text('UNOBSERVED')
         result=self.run_observer(observer,args)
-        self.assertTrue(result['currentRetainedMetadataMatchesCapturedCandidate'])
+        self.assertTrue(result['currentRetainedStaticMetadataMatchesCapturedCandidate'])
         for kind in ('inode','mode'):
             observer,args,root,_,reads,*_=self.observer()
             if kind=='inode':(root/'mutable').rename(root/'old-mutable');(root/'mutable').mkdir(mode=0o700)

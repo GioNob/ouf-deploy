@@ -1,4 +1,4 @@
-"""Current metadata equality against the one successful retained capture.
+"""Current static metadata and live root custody for the retained capture.
 
 Read-only witness: no new scope/claim/output, mounted-file contents, policy
 inference or runtime authority. The complete parent-bound runtime remains the
@@ -10,6 +10,7 @@ from .custody_capture import Capture, attrs, decode, digest, process_pin, requir
 from .retained_mount_capture import RetainedCapture, RetainedEngine, SEED, RETAINED, identity
 from .retained_mount_role_correction import ROSTER
 from .retained_mount_intake import CANDIDATE, CANDIDATE_HASH, RESULT_HASH, SEED_HASH, validate_capture
+from . import retained_mount_lifecycle as lifecycle
 from .current_cohort import CurrentCohortRuntime
 from .node_owner import ObservationBudget
 from tools.semantic_registry_operational_owner.guard import protected_file
@@ -48,12 +49,14 @@ class CurrentRetainedMountMetadata:
         self.candidate_path=Path(CANDIDATE);self.seed_path=Path(SEED)
         self.bindings={'candidate_hash':CANDIDATE_HASH,'result_hash':RESULT_HASH,
             'seed_hash':SEED_HASH,'roster':copy.deepcopy(ROSTER)}
+        self.lifecycle_hash=lifecycle.CONTRACT_HASH
         self.reference_hash=digest({'candidatePath':str(self.candidate_path),'seedPath':str(self.seed_path),**self.bindings})
         self.guard()
 
     def guard(self):
         r=self.runtime
         require(type(r) is CurrentCohortRuntime and id(r)==self.runtime_id and r.input_hash==self.runtime_hash
+            and self.lifecycle_hash==lifecycle.CONTRACT_HASH==digest(lifecycle.CONTRACT)
             and self.reference_hash==digest({'candidatePath':str(self.candidate_path),
                 'seedPath':str(self.seed_path),**self.bindings}),
             'SAME_CURRENT_RUNTIME_AND_EXACT_RETAINED_CAPTURE_REFERENCE_REQUIRED')
@@ -83,7 +86,7 @@ class CurrentRetainedMountMetadata:
 
     def observe(self):
         budget=ObservationBudget(90);held=self.guard();candidate,seed,seals=self.material(budget)
-        c=MetadataObservation(budget);peers=candidate['peers']
+        c=MetadataObservation(budget);peers=candidate['peers'];classes,_=lifecycle.plan(peers)
         def roots():
             budget.check();self.guard()
             require(BOOT_PATH.read_text().strip()==seed['bootId']
@@ -96,11 +99,12 @@ class CurrentRetainedMountMetadata:
             expected=peers[role];actual=engine.get(expected['containerId']);roots()
             require(digest(identity(actual))==expected['runtimeIdentityHash'],
                 'CURRENT_RETAINED_METADATA_CONTAINER_CONFIGURATION_CHANGED')
-            mounts=c.mounts(actual)
-            require(metadata_binding(mounts)==metadata_binding(expected['mounts']),
-                'CURRENT_RETAINED_MOUNT_METADATA_DIFFERS_FROM_CAPTURE')
+            # Exact Engine identity already includes the full mount declarations.
+            # Live descendants are left to their native owners, never frozen as
+            # static files or silently accepted as current owner credentials.
+            mounts=lifecycle.observe_mounts(c,role,expected['mounts'])
             proofs[role]=digest({'identityHash':expected['runtimeIdentityHash'],
-                'mountMetadata':metadata_binding(mounts),'processPin':expected['processPin']})
+                'mountMetadata':mounts,'processPin':expected['processPin']})
         for role in sorted(RETAINED):
             actual=engine.get(peers[role]['containerId']);roots()
             require(digest(identity(actual))==peers[role]['runtimeIdentityHash'],
@@ -115,11 +119,14 @@ class CurrentRetainedMountMetadata:
         roots();require(c.counts['engineGets']==20 and all(attrs(Path(p).lstat())==v for p,v in seals.items()),
             'RETAINED_METADATA_INPUT_OR_CLOSED_READ_COUNT_CHANGED')
         self.runtime.selected.held(held);budget.check()
-        return {'schema':'ouf.discovery-current-retained-mount-metadata.v1',
+        return {'schema':'ouf.discovery-current-retained-mount-metadata.v2',
             'nativeRuntimeInputsHash':self.runtime_hash,'heldHistoryHash':digest(held),
             'candidateHash':self.bindings['candidate_hash'],'captureResultHash':self.bindings['result_hash'],
             'peerMetadataHash':digest(proofs),'captureInputPinsHash':digest(seals),
-            'currentRetainedMetadataMatchesCapturedCandidate':True,'retainedPeerCount':10,
+            'lifecycleContractHash':self.lifecycle_hash,'lifecyclePlanHash':digest(classes),
+            'currentRetainedStaticMetadataMatchesCapturedCandidate':True,
+            'liveMountRootsMatchCapturedCustody':True,'liveMembersObservedOrAdmitted':False,
+            'retainedPeerCount':10,
             'directRetainedEngineGets':20,
             'counts':{k:v for k,v in c.counts.items() if k!='engineBytes'},
             'underlyingOwnerGuardReadsCountedHere':False,'mountedFileContentBytesRead':0,

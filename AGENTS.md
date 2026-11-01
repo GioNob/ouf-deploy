@@ -1,3 +1,44 @@
+# CURRENT — Metadata reconciliation consumed; live/static lifecycle fix in qualification
+
+1 November2026. Actual operator receipt621124d2, private candidate050ba14d:
+METADATA_DIFFERENCES_RECORDED_NOT_ADMITTED,4changes/6nodes/5metadata reads/
+638296bytes, ZERO Engine/mounted-file content. All4prior scopes consumed and
+preserved. Hash attempt remains consumed, no replay/rearm/delete/reset. Total
+input Engine22. No current container configuration, permission policy, live
+owner admission, full custody, target apply or release acceptance inferred.
+
+Public filename fingerprints match token and gateway-operations.sqlite.
+Gateway retained source81fdf7a reads SQLite mode=ro; external collector writes
+that store. Existing renewable owner replaces token atomically. RO is access
+mode, never a universal immutable-content contract. Source-backed lifecycle
+classes: seven renewable token declarations, one live Gateway store, seventeen
+static regular-file declarations, four writable roots. All25RO/4RW/33original
+nodes must match the new exact static-input profile. Unknown directory/special/
+ephemeral input fails before content. Static frames keep all9fields; live/RW
+roots retain dev/inode/type+mode/uid/gid. Live descendants are NOT observed,
+hashed, authenticated or admitted here; native owners must admit separately.
+
+New retained_static_custody.py is a separate private HOST FILE candidate,
+ZERO Engine, same boot/root/all10process pins and exact four predecessor scopes/
+claims/receipts. Static file content hashing only, max8MiB/file/64MiBtotal/2048,
+90seconds/one attempt. Tokens, live SQLite, writable and special contents excluded;
+path/ancestor/captured-inode alias exclusions checked before any content. Current
+container configuration explicitly NOT freshly observed. No token permissions
+or membership acceptance inferred from skipping them. New5th control keeps
+cumulative22GET, no runtime budget grant/reset. Current metadata witnessv2 and
+held controllerv5 separate static metadata/live roots from unobserved live
+members; same13typed owners/24reads, no complete admission. Frozen235and all
+old capture/intake/hash/reconciliation modules/capsules remain byte-exact.
+
+Next autonomous work: qualify new source/capsule on target-shaped25RO/4RW/33node
+fixtures and actual Docker29.8.1/ten disposable containers, token rotation and
+live SQLite writer; verify publisher/immutable capsule/launcher before issuing
+ONE new VPS input command. No operator command ready yet. No VPS connector.
+No agents/automations or optional stops. All older ready/pending headers below
+are historical. Preserve M1/Teatri8/8technical6/6functional and same Farmacie
+61rows/10cols/10OPEN/ministerial STRING. No upload/profile/acquisition/activation
+replay. Full custody/current HUMAN+role authority/E2E/two clients remain OPEN.
+
 # CURRENT — Exact gateway metadata reconciliation qualified; operator VPS input required
 
 1 November2026, Europe/Rome. Hash input actually STOPPED after2GET with

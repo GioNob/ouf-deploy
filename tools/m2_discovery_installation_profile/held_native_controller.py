@@ -23,6 +23,7 @@ from .package_membership import CurrentPackageMembership
 from .current_gateway_routes import CurrentGatewayRoutes
 from .current_retained_mounts import CurrentRetainedMountMetadata
 from .retained_mount_intake import CANDIDATE_HASH, RESULT_HASH
+from .retained_mount_lifecycle import CONTRACT_HASH as MOUNT_LIFECYCLE_HASH
 from .node_owner import ObservationBudget
 from application_verification_adapter import ApplicationVerificationAdapter
 
@@ -109,7 +110,11 @@ class HeldNativeController:
             read('operationalWorker', self.operational.observe)
             read('runtime', self.runtime.observe)
             read('retainedMountMetadata', self.mounts.observe)
-            require(proofs['retainedMountMetadata']['currentRetainedMetadataMatchesCapturedCandidate'] is True
+            require(proofs['retainedMountMetadata']['schema']=='ouf.discovery-current-retained-mount-metadata.v2'
+                and proofs['retainedMountMetadata']['currentRetainedStaticMetadataMatchesCapturedCandidate'] is True
+                and proofs['retainedMountMetadata']['liveMountRootsMatchCapturedCustody'] is True
+                and proofs['retainedMountMetadata']['liveMembersObservedOrAdmitted'] is False
+                and proofs['retainedMountMetadata']['lifecycleContractHash']==MOUNT_LIFECYCLE_HASH
                 and proofs['retainedMountMetadata']['nativeRuntimeInputsHash']==self.runtime.input_hash
                 and proofs['retainedMountMetadata']['candidateHash']==CANDIDATE_HASH
                 and proofs['retainedMountMetadata']['captureResultHash']==RESULT_HASH
@@ -160,7 +165,7 @@ class HeldNativeController:
                 and proofs['producers'] == proofs['finalProducers'],
                 'HELD_CONTROLLER_NATIVE_GENERATIONS_CHANGED_DURING_OBSERVATION_INTERVAL')
             require(self.guard() == row, 'HELD_CONTROLLER_FINAL_HISTORY_CHANGED'); budget.check()
-            return {'schema': 'ouf.discovery-held-native-controller-witness.v4',
+            return {'schema': 'ouf.discovery-held-native-controller-witness.v5',
                 'parentAuthorityHash': a.discovery_parent.sha, 'childAuthorityHash': a.raw_hash,
                 'heldHistoryHash': digest(row), 'nativeRuntimeInputsHash': self.runtime.input_hash,
                 'ownerEvidenceHashes': {name: digest(proof) for name, proof in proofs.items()},
@@ -168,7 +173,8 @@ class HeldNativeController:
                 'selectedImageAndMigrationMembershipProven': True,
                 'sixModulePackageBytesProven': True, 'fiveReviewedModuleImageIdentitiesProven': True,
                 'currentGatewayRoutesAndAdminCustodyObserved': True,
-                'currentRetainedMountMetadataMatchesAcceptedCapture':True,
+                'currentRetainedStaticMetadataAndLiveRootsMatchAcceptedCapture':True,
+                'retainedLiveMembersObservedOrAdmitted':False,
                 'expectedRetainedMountPolicyEstablished':False,
                 'observationIntervalIsAtomicSnapshot': False, 'artifactMembershipProven': False,
                 'completePrivateCustodyProven': False, 'actualWorkloadBearerAdmissionProven': False,

@@ -1,9 +1,9 @@
 name: M2 current retained mount intake and metadata witness
 on:
   push:
-    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
   pull_request:
-    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
 permissions: {contents: read}
 jobs:
   protected-intake-and-controller:

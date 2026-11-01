@@ -1,3 +1,10 @@
+> CURRENT 1 November2026: metadata reconciliation has executed successfully,
+> candidate050ba14d/receipt621124d2. All4previous scopes consumed,22Engine total.
+> Token atomic rotation and live Gateway SQLite store require source-backed
+> lifecycle handling. New static-only host-file input/current witnessv2/controller
+> v5 are in qualification; no new VPS command ready yet. Old commands below are
+> historical and must not be replayed. Target apply/admission/acceptance false.
+
 # Passo corrente — confronto metadati qualificato, input VPS necessario
 
 1 novembre2026. Hash STOP dopo2GET/zero file o byte hashati:
