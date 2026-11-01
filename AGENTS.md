@@ -1,3 +1,59 @@
+# CURRENT — Current-byte/effective-view owners qualified; one new private kernel/live-metadata input in qualification
+
+1November2026. Actual static host-file input de4546d0/39426368 succeeded,
+13files3937bytes,25RO4RW33nodes,7token declarations+1live store excluded. Five
+scopes consumed/preserved, cumulative22directGET; no authority/apply/acceptance.
+Source420125ec intake/controller6 qualified203/28general+26/3targeted, logsread.
+Kernel observer/controller7 productionbb3872b0 with native fixture9b90f266:
+general41301044446 PASS209/29, all5logs read; target41301443890 PASS33/4, bothlogs
+124833003708/124833003918 read. Actual Docker29.8.1/10UID10001scratch peers,
+25RO4RW kernel flags+source/view inode+heldFD mountID; readonly remount drift,
+nested shadow mount, single rebound file and PID restart denied while Docker
+Config/HostConfig/Mounts remain unchanged. Initial negative fixture helper
+failed before reaching observer; fixed cwd/setns+detached bind and ensuredsingle
+rebound mount, never weakened production guards. All details in effective-views
+qualification dated20261101. Controller7=15typed owners/28reads/one fence,
+current static bytes and kernel views at both boundaries. Live admission,
+permission/content policy, complete private custody/bearer/checkpoint false.
+
+Continue autonomous/sequential; no new operator command ready yet. New
+retained_view_capture is one private input bound to exact successful staticde/
+result394, original metadata46/result599/seed14 and all5preserved consumed scopes.
+Zero Engine, mounted-file contents, SQL/IAM/commands/lifecycle. Kernel procmetadata
+and O_PATH only; actual25RO4RW views in10same boot/root/process generations,
+source/view frame+heldFD mountID and no shadow mount. Also metadata only for7
+renewable-token leaf declarations and1live SQLite mainfile, no contents/listing.
+Token inode/time/value renewal allowed between independent observations; same
+host/view named leaf must be stable within a token observation. SQLite size/time
+may change within observation; custody dev/ino/mode/uid/gid/nlink and source/view
+are held. Metadata differences from captured custody are recorded privately,
+never adopted as policy. No issuer/signature/audience/scope/expiry/revocation or
+actual owner authentication inferred. Static contents NOT rehashed; exactprior
+hashes/full9static frames retained, actual byte observer must still reverify at
+execution. Current Docker configuration explicitly NOT freshly observed.
+
+Newinput1attempt90s, max128kernel reads/16MiBkernel metadata, mountinfo262144bytes/
+4096rows, fdinfo8192bytes, private8MiB. New6th control/cumulative22GET, no runtime
+budget reset/grant or old scope rearm. Newroot kernel-views-de4546d0-v1 root700/
+files600/create-once, preserves all5old scopes. Eleven closed sources; kernel
+primitives factored from qualified observer unchanged for reuse in newinput.
+Current owner no public input/callback override; capture has fixedcase noCLI
+path/hash/Engine override. Capsule/launcher/native/publisher must qualify before
+issuing operator command. All235/all8old sealed staticinput sources and previous
+capture/hash/reconciliation/capsules remain unchanged. Agent cannot directly
+read VPS private files. No agents/automations/optional stops.
+
+Full private custody/live owner credentials+policy/current workload bearer/all-
+runtime artifact membership/complete current execution package and private
+review/current HUMAN+dualrole/E2E/two clients remainOPEN. Original Oct14 sixmodule
+assembler is file-first/four-mount and source-locks oldOnboarding: do not reuse it
+as a new M2 seven-mount package or rebuild retained images blindly. NewSemanticc2
+candidate/newOnboardingV38 and selectedMCP/currentretained source payloads need
+coherent composed publisher package later. No upload/profile/acquisition/
+activation/lifecycle replay. Preserve M1/Teatri8/8technical6/6functional and same
+Farmacie61rows10cols10OPEN/ministerial STRING. UDP/all61outcomes then graph then
+vertical/API delta. Older CURRENT/READY/operator-input headers are historical.
+
 # CURRENT — Static intake qualified; effective kernel mount views in qualification
 
 1November2026. Actual static success de4546d0/39426368 is recorded,13files/

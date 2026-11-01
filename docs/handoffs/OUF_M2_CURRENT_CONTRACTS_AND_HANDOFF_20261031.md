@@ -1,3 +1,9 @@
+> CURRENT: exact static successde4546/394263 recorded. Current byte/kernel-view
+> owners/controller7 qualified:209tests29suites general,33/4native-focused, logsread.
+> New single metadata-only kernel/live-leaf input in qualification, fixedcase
+> originalfive scopes preserved/zero Engine/content. No new operator command
+> ready yet. All runtime/live-owner/policy/fullcustody/authority/E2E still open.
+
 > CURRENT: static intake/current-byte witness qualified at420125ec (target
 > de4546/394263, five consumed scopes,22GET). General203tests28suites and native
 > intake26/3 PASS, logs read. Effective kernel mount-view observer/controllerv7
