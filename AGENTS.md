@@ -1,40 +1,40 @@
-# CURRENT — Diagnosi acquisita; verifica byte runtime QUALIFICATA, input VPS necessario
+# CURRENT — Byte dei 13 runtime verificati; origini pubbliche riconciliate
 
-1 novembre 2026, Europe/Rome. [Ricevuta 95e66e21](evidence/m2-image-graph-target-20261101.json), prova privata f54c14e3:
-13 archivi/2.774.726.144 byte, 13 match classico→OCI univoci, zero membri classici
-mancanti. Le 22 assenze sono manifesti di altre piattaforme (13) o ausiliari
-nonruntime (9), ordinali0/1/5/7. Diagnosi Exit0 e CONSUMATA; totale10controlli/35GET.
-NON rilanciare cattura, due vecchi verificatori, diagnostico o comandi storici.
+1 novembre 2026, Europe/Rome. [Ricevuta target riuscita](evidence/m2-selected-runtime-target-20261101.json):
+SelectedRuntimeByteVerificationExit=0, risultato039f03a7, prova privata c52a0e2a.
+13 archivi originali/2.774.726.144 byte,4.010.055.680 byte espansi verificati;
+config, layer e diffID del ramo selezionato completi. Tutti10scope precedenti
+preservati. Scope11 CONSUMATO: totale11controlli/35GET. NON rilanciare il comando
+selezionato, diagnosi, vecchie verifiche o cattura. Le22assenze(13altre piattaforme,
+9ausiliarie) restano fuori ammissione; nessun reset/grant/authority.
 
-[Handoff corrente](docs/handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md), [qualifica](evidence/m2-selected-runtime-delivery-qualified-20261101.json). Source59784ccb/21moduli,
-capsula db277ecc/SHAd7e433b2/307.649byte; launcher1de7ba7f/SHA7c534bc3.
-Push41336834573 e PR41336840737 SUCCESS: ciascuno31test/6suite, zero failure/error/
-skip/ResourceWarning; tutti sei log finali letti. Tredici exportDocker29.8.1 mantengono
-config/manifesto/layerHash del verificatore congelato. Export vendor REALE parziale:
-config e tutti i layer del runtime verificati,8+7rami assenti fuori ammissione;
-assenza di config/layer selezionati negata. AST del ciclo layer uguale all'originale.
-Source ZIP/publisher/statement/identità confrontati, HTTPS esatto qualificato.
-Tutti235sorgenti congelati,19diagnosi e17vecchia verifica invariati.
+[Handoff corrente](docs/handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md) e [riconciliazione pubblica qualificata](evidence/m2-retained-runtime-origin-reconciliation-qualified-20261101.json).
+Commit0357ef81, CI41339964353/job124947684673 SUCCESS: tredici ruoli riconciliati,
+quattro origini applicative originali e due repliche lettura corrispondono ai
+native ID osservati; per APISIX/Caddy/Keycloak/PostGIS recuperati e verificati
+root e manifesto linux/amd64 dal registry esatto, senza blob config/layer.
+Nove invocazioni pubbliche, ZERO nuove operazioni VPS. Otto descrittori originali
+conservati. MinIO al riferimento originale non disponibile: nessun fallback.
+Gateway catalogue:380file/mode Git originali e10materializzatori verificati,
+ma non prova dell'immagine owner979de5eb. Artefatto CI owner81fdf7a contiene solo
+JUnit. Semantic storico622614 esaminato integralmente(config/layer/diffID), ma
+nessun envelope lega il native ID attuale b61bc39c: provenienza resta OPEN.
+Nessuna inferenza di byte diversi dalla sola differenza di envelope.
 
-NEXT solo NUOVO comando del handoff sul VPS come oufadmin, UNA VOLTA. Richiede
-ricevuta/prova/profili esatti e tutti10scope, poi digest nativo→unico manifesto
-runtime→manifest.json/config/layer/diffID, con piattaforma del profilo corrente.
-Rami della piattaforma richiesta mancanti, indici assenti, marker/target ausiliari
-incongrui e ambiguità restano STOP; ogni assenza riconciliata con la diagnosi.
-Indice completo, rami non selezionati, publisher, scan e runtime NON ammessi.
-Nuovo scope m2-selected-runtime-bytes-fa95a719-20261101-v1,1controllo/600s,
-totale11controlli/35GET. Zero Engine/fetch/import/estrazione/lifecycle/mount host/
-credenziali/SQL/OAuth; nessun riarmo/reset/grant/authority. STOP/interruzione:
-conservare tutto e non rilanciare. L'agente non ha shell o archivi VPS; il plugin
-non espone questa lettura amministrativa. Nessun nuovo upload/profiling/acquisizione.
+NEXT: composizione unica del profilo di provenienza dei13ruoli con prova privata
+c52a, completamento delle tre origini MinIO/Gateway-owner/Semantic e publisher/scan.
+Nessun nuovo comando VPS pronto o richiesto in questo checkpoint; la vecchia
+consegna è ritirata. Non accumulare microdiagnostiche o ripetere export/verifica.
+Source-lock/candidati/repair NON diventano automaticamente selezione o installazione.
+Tutti235sorgenti congelati,19diagnosi,17vecchia verifica e21selezionata esatti.
 
-Teatri SEMPRE riletto: handoffM1, dossier26join/13identità/20proprietà/8Cinema e
-auditM2; riuso contratti owner/provenance/identity/property/recovery. M1tecnico8/8,
-funzionale6/6 acquisiti; stessa Farmacie61righe/10campiOPEN/ministerialeSTRING.
-M2/G5/G6/G7/dueclient OPEN. Residui source/publisher/membership/Gatewayproposal/
-owner-policy/custody/bearer/coorte/pacchetto/review/authority e provaUDP/tutte righe
-restano aperti. Poi grafo/search e verticali/API scheduler/delta. Nessun subagente,
-automazione, merge o release acceptance. Header/comandi seguenti STORICI.
+Teatri SEMPRE: handoff M1/audit M2 riletti; tecnico8/8,funzionale6/6 acquisiti,
+26join/13identità/20proprietà/8Cinema, riuso owner/provenance/identity/property/recovery.
+Stessa Farmacie61righe/10campiOPEN/ministerialeSTRING preservata; nessun nuovo
+upload/profiling/acquisizione. M2/G5/G6/G7/dueclient OPEN: membership completa,
+custody/policy/bearer correnti, Gateway privato, coorte/pacchetto/review/authority,
+61esiti UDP e repeatability/fault. Poi grafo/search e verticali/API scheduler/delta.
+Nessun subagente, automazione, merge o release acceptance. Header/comandi seguenti STORICI.
 
 # CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
 

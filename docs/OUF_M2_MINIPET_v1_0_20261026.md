@@ -6,20 +6,22 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint corrente — byte runtime qualificati in CI, prova VPS necessaria
+## Checkpoint corrente — byte runtime target acquisiti e origini pubbliche riconciliate
 
-[Diagnosi target acquisita](../evidence/m2-image-graph-target-20261101.json): Exit0,
-10controlli/35GET,13match runtime classico→OCI,zero membri classici mancanti,
-22manifesti assenti di altre piattaforme/ausiliari. Comando consumato.
-[Nuova verifica dei byte del runtime](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md)
-qualificata: launcher1de7ba7f, push41336834573 e PR41336840737 ciascuno31test/6suite,
-tutti sei log letti, zero failure/error/skip/ResourceWarning. [Evidenza](../evidence/m2-selected-runtime-delivery-qualified-20261101.json).
-Richiede dieci scope/prova diagnostica esatta, digest nativo, unico classic/native
-binding, piattaforma, config, ogni layer e diff ID. Indice completo/altri rami/
-publisher/scan/runtime non ammessi. Nuovo comando massimo1/600s,11controlli/35GET,
-zeroEngine/fetch/import/estrazione/lifecycle e nessun riarmo/reset/grant/authority.
-Teatri e motori/contratti riusati; M1 acquisito, stessa Farmacie preservata, M2 e
-tutti i suoi gate ancora OPEN. Checkpoint successivi storici: nessun replay.
+[Ricevuta039f03a7](../evidence/m2-selected-runtime-target-20261101.json), Exit0,
+prova privata c52a0e2a:13runtime completi,2.774.726.144byte archivio/4.010.055.680
+espansi, tutti10scope precedenti conservati. Scope11 consumato,11controlli/35GET.
+22rami non selezionati fuori ammissione; nessun replay/reset/grant/authority.
+[Handoff](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md).
+[Riconciliazione pubblica](../evidence/m2-retained-runtime-origin-reconciliation-qualified-20261101.json),
+CI41339964353/job124947684673 SUCCESS:13ruoli,4origini core e2repliche con native ID
+esatti;4vendor con descrittori originali registry verificati. Nessuna operazione VPS.
+MinIO/Gateway-owner/Semantic e join della prova privata per ruolo ancora OPEN;
+Gateway380sorgenti/10materializzatori non equivalgono all'immagine owner, vecchio
+Semantic622614 non lega il native ID corrente. Nessun fallback o selezione repair.
+Proseguire con unica composizione provenienza/custody/policy; nessun nuovo comando
+VPS in questo checkpoint, nessun rilancio. Congelati235/19/17/21 esatti. Teatri/M1
+acquisiti e stessa Farmacie preservata; M2 e tutti i suoi gate restano OPEN.
 
 ## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 

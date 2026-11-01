@@ -1,129 +1,78 @@
-# M2 — verifica del ramo runtime dopo la diagnosi esatta
+# M2 — byte runtime acquisiti; completamento della provenienza
 
-1 novembre 2026, Europe/Rome. Sorgente e consegna QUALIFICATI; prova VPS NON eseguita.
-[Diagnosi operatore](../../evidence/m2-image-graph-target-20261101.json), Exit0,
-risultato canonico 95e66e217be370477f7bece3a3ac7313857c92d73dd7d6fabd41c2200f67cea7,
-prova privata f54c14e334545054a4c6d3f56d51c3ad9d8c4038653dd2c813b4408dabc295ea.
-13 archivi/2.774.726.144 byte, 13 match classico→OCI univoci, nessun membro classico
-mancante. 22 manifesti assenti: 13 di altre piattaforme, 9 ausiliari unknown;
-ordinali 0,1,5,7 interessati. Tutti i 9 scope precedenti preservati, 10 controlli/
-35 GET. Diagnostico, cattura e vecchi verificatori sono CONSUMATI. Non rilanciarli.
+1 novembre 2026, Europe/Rome. Il comando precedente è **CONSUMATO** e ritirato.
+Non rilanciarlo. Questo checkpoint non propone un nuovo comando VPS.
 
-## Perimetro della nuova prova
+La [ricevuta fornita dall'operatore](../../evidence/m2-selected-runtime-target-20261101.json)
+riporta `SelectedRuntimeByteVerificationExit=0`, risultato canonico
+039f03a7593c0b826e6597f755c838f85efa197d17d7df3339512f5ee7c52bcc,
+prova privata c52a0e2a0ebcdb9c8a826426386a9172c0507231199815c09ab32eb144fd713e.
+Sono verificati i byte dei13 runtime selezionati:2.774.726.144byte di archivi originali,
+4.010.055.680byte espansi, config/layer/diffID completi. Tutti10scope precedenti
+preservati; totale11controlli/35EngineGET. L'agente non ha letto il filesystem privato
+VPS; questa è una ricevuta pubblica dell'operatore, non un proprio readback privato.
 
-La diagnosi prova struttura e hash degli archivi, non i digest delle configurazioni,
-i layer o i diff ID. La nuova verifica richiede la ricevuta e la prova privata
-esatte della diagnosi, i suoi claim/profilo, entrambi gli STOP precedenti e tutti
-i dieci scope originali, con ownership/mode/no-link/metadata e generazioni stabili.
-I byte restano privati sul VPS; l'agente ha solo il JSON pubblico, non shell o file.
+I13manifesti di altre piattaforme e9ausiliari assenti restano fuori ammissione.
+Indice completo, publisher, membership di tutti gli artifact, custody, configurazione/
+liveness corrente, autorità operativa e release acceptance rimangono falsi.
+La riuscita non rinnova budget o consensi. Cattura, scope8/9, diagnosi10 e verifica11
+restano preservati e consumati.
 
-Verifica ogni documento OCI presente per digest, raggiungibilità dal digest nativo
-richiesto e limiti. Entro quel ramo richiede UN SOLO manifesto runtime che uguagli
-config e lista ordinata di layer del manifest.json classico, a sua volta unico e
-completo. La piattaforma del descrittore, se presente, e quella della configurazione
-devono concordare col profilo. Questo recupero installativo resta vincolato alla
-linux/amd64 già qualificata per la coorte; non è un default di installer generico.
-Nessun tag/label/URL fornito dal chiamante seleziona immagini o amplia il profilo.
+## Lavoro autonomo successivo completato
 
-Un manifesto assente può restare FUORI dall'ammissione solo se è esplicitamente
-di altra piattaforma oppure è un ausiliario marcato unknown/unknown, con marker
-attestation e target nonausiliario coerente e dichiarato nello stesso ramo nativo.
-Indici assenti, piattaforma richiesta assente/indefinita, marker/target incongrui
-e ambiguità restano STOP. Presenti altri manifesti della piattaforma richiesta
-non corrispondenti al binding classico non vengono scelti implicitamente.
-Ogni assenza deve riconciliare esattamente i conteggi/contesti della diagnosi.
+[Inventario riproducibile dei13ruoli](../../releases/m2-retained-runtime-origin-inventory-20261101.json),
+[qualifica](../../evidence/m2-retained-runtime-origin-reconciliation-qualified-20261101.json).
+Source0357ef813f09cf21420c484362f06719bad13e98, CI41339964353/job124947684673 SUCCESS;
+log recuperato e risultati esaminati. Nessuna operazione VPS/Engine aggiuntiva.
 
-Config e ciascun layer selezionato sono OBBLIGATORI: media type, digest, size,
-compressione e diff ID espanso, con rootfs e ordine esatti. Il ciclo di verifica
-dei layer è lo stesso AST del verificatore precedente, con prova di uguaglianza;
-si confrontano inoltre config/manifesto/layerHash reali su export già qualificati.
-Niente estrazione, import, tag, lifecycle, Engine o fetch di contenuti assenti.
-La configurazione privata si legge solo nell'archivio per la prova; valori e hash
-individuali non vengono esportati. File di credenziali e mount host non aperti.
+| Ruoli | Collegamento pubblico disponibile | Limite |
+|---|---|---|
+| Ingestion, MCP, Onboarding, UDP | Quattro archivi originali qualificati coincidono con native ID osservati | Publisher e join al record privato per ruolo separati |
+| Ingestion-evidence-read, UDP-evidence-read | Qualifica containerd e ricevuta apply coincidono con i native ID osservati | Scan corrente e custody privata ancora da provare |
+| APISIX, Caddy, Keycloak, PostGIS | Root richiesto e manifesto linux/amd64 recuperati dal registry esatto; digest/size/config descriptor verificati | Nessuna firma publisher o lettura di blob config/layer |
+| MinIO | Riferimento storico coincide con native ID osservato | Registry originale indisponibile al digest esatto; nessun fallback |
+| Gateway-owner | Source dichiarato81fdf7a e immagine979de5eb conservati | CI originale contiene JUnit, non immagine eseguibile |
+| Semantic | Native ID conservato b61bc39c | Vecchio candidato622614 esaminato non stabilisce il collegamento |
 
-Il risultato ammette solo la PROVA dei byte del runtime selezionato: non indice
-completo, altri rami, attestazioni/publisher, scan PASS, appartenenza dell'intera
-coorte o authority/esecuzione. Nessun salto di gate installativo o applicativo.
+[Materiale registry originale](../../evidence/m2-retained-vendor-descriptor-material-20261101.json):
+otto documenti preservati, nove invocazioni di lettura pubblica, quattro coppie root/
+runtime complete. MinIO resta `UNRESOLVED_NOT_ADMITTED`; CI verde indica diagnosi
+pubblica completata, non ammissione di tutti i vendor.
 
-## Controllo finito e custodia
+[Gateway catalogue](../../evidence/m2-catalogue-gateway-source-readback-20261101.json):
+380file e mode confrontati con Git originale,10materializzatori e tutti checksum
+verificati; zero HIGH/CRITICAL/UNKNOWN nello scan delle dipendenze pip di sorgente.
+È sorgente/materializzazione, non prova dell'immagine Gateway-owner installata.
+[CI owner originale](../../evidence/m2-retained-gateway-original-ci-readback-20261101.json)
+non contiene l'eseguibile. Non ricostruire un'immagine e presumere identità.
 
-Nuovo scope fisso /etc/ouf/deploy-snapshots/m2-selected-runtime-bytes-fa95a719-20261101-v1,
-root0700/file0600/create-only/fsync. Massimo 1 controllo/600s; cumulativi 11/35,
-zero nuovi GET Engine. Stessi 13 archivi, nessuna ricattura o duplicazione.
-Limiti preservati: 2GiB per archivio/8GiB set, espansi 8GiB per immagine/32GiB set,
-2048 membri, 64 descrittori d'indice, profondità4, 256 layer, 16MiB metadata per
-immagine; prova precedente e report nuovi ciascuno entro2MiB. Timeout esterno635s,
-kill dopo5s. STOP/interruzione conserva tutto: nessun retry, riarmo, reset o grant.
-La shell isolata è manutenzione distinta dal flusso ordinario chatbot/MCP.
+[Semantic storico](../../evidence/m2-historical-semantic-original-readback-20261101.json):
+ZIP originale212.134.782byte/SHAa0c30bbb e sette checksum verificati; confige826bd97,
+10layer e tutti diffID verificati. Root OCI02b1af51 e envelope qualificato2c8633ec
+non legano il native ID conservato b61bc39c. Una differenza di envelope non dimostra
+da sola sorgente o application byte diversi. Provenienza corrente resta aperta.
 
-## Teatri e baseline consultati
+## Residuo concreto
 
-Riletti [handoff M1](OUF_M1_COMPLETED_20261026.md),
-[dossier owner: 26 join/13 identità/20 proprietà/8 Cinema](../../evidence/csv-m1-f5-f6-owner-verification-20261026.json)
-e [audit M2: generazioni, riuso e lacune](../OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md).
-Si conservano contratti owner/provenance/identity/property/recovery, senza terza
-acquisizione o nuovi motori. MiniPET M2v1.3 WP2/WP6/§10; policy resilienza v3
-regole3–9/14–18; GatewayPET1.5 T11/T11.3 e principi AuthorizationPET1.5.
-Fonti di formato: [OCI index1.1.1](https://specs.opencontainers.org/image-spec/image-index/?v=v1.1.1),
-[layout](https://specs.opencontainers.org/image-spec/image-layout/) e
-[Docker save](https://docs.docker.com/reference/cli/docker/image/save/).
-La scelta riduce la prova al runtime univoco; nessuna conformità completa si
-ricava dai soli hash. I 235 sorgenti congelati, 19 della diagnosi e 17 del vecchio
-verificatore devono restare esatti; la capsula separata non è l'esecuzione M2 completa.
+Comporre il profilo dei13ruoli con il record privato c52a e completare le tre
+provenienze non risolte. Il join deve richiedere gli stessi native ID, selected
+manifest/config digest e prove di source/publisher/scan pertinenti, senza equiparare
+config e index digest o promuovere un candidato non selezionato. Il prossimo
+controllo target, se indispensabile, deve essere unico, qualificato, con tutti11scope
+preservati e limiti cumulativi espliciti; non ripetere export/verifica o accumulare
+microdiagnostiche. Nessun nuovo launcher viene proposto qui.
 
-M1 resta tecnico8/8 e funzionale6/6, stessa Farmacie SUCCEEDED61righe/10colonne/
-10OPEN e ministeriale STRING. M2/G5/G6/G7/dueclient ancora OPEN. Dopo questa prova
-restano source/publisher/membership, Gateway proposal, owner/policy/custody/bearer,
-coorte/pacchetto/review/authority correnti e Farmacie fino a UDP con ogni riga.
-Poi grafo/search e verticali/API scheduler/delta. Nessuna acquisizione/attivazione,
-merge, release acceptance, subagente o automazione autorizzata da questo passo.
+Le riparazioni OS Ingestion/UDP rimangono qualificate ma non selezionate/installate;
+gli originali conservano lo STOP scan registrato. Poi completare Gateway privato,
+policy/owner/custody/bearer correnti, coorte firmata, pacchetto eseguibile completo,
+review privata e autorità HUMAN/dual-role. Il compilatore congelato235sorgenti non
+è stato esteso di nascosto:235/19/17/21hash restano esatti.
 
-## Qualifica sorgente e consegna acquisita
+Teatri sempre consultato: handoff M1 e audit M2,26join/13identità/20proprietà/8Cinema,
+tecnico8/8 e funzionale6/6 acquisiti. Riusare contratti owner/provenance/identity/
+property/recovery. Stessa Farmacie61righe,10campiOPEN e ministerialeSTRING preservata;
+nessun upload/profiling/acquisizione aggiuntiva. M2/G5/G6/G7/dueclient restano OPEN
+fino ai61esiti UDP, repeatability e fault. Nessun merge o release acceptance.
 
-[Source59784ccb](../../evidence/m2-selected-runtime-source-qualified-20261101.json),
-21 moduli chiusi. Push41336480788 e PR41336488322: ciascuno23test/4suite, tutti
-quattro log finali letti, zero failure/error/skip/ResourceWarning. Tredici export
-Docker29.8.1 reali hanno gli stessi config/manifesto/layerHash del verificatore
-congelato. Il vero export vendor busybox1.37.0 verifica il runtime e lascia fuori
-8 manifesti di altre piattaforme e7ausiliari. Rimuovere config/layer reali impone STOP.
-Il sorgente non ha verificato i byte privati sul VPS.
-
-Capsula307.649byte, SHAd7e433b2d42c89aa8cdd8ccf49ce5dd97f0deb17479cba844c666270ff7a0f12,
-pubblicata indb277ecccd234f1171763cc093f0e97ec023ab32. ZIPoriginale13094449213,
-112.622byte/SHAcae6b846…, scaricato e tutti cinque membri letti; builder locale
-identico byte per byte. Verifica crittografica gh2.97 sul runner; bundle, statement,
-certificato e subject/source/repo/workflow/ref/runner letti e confrontati. Nessuna
-riverifica crittografica locale della trustchain dichiarata.
-
-Nuovo launcher1de7ba7fa5e393f64c25d3c19b47c88267553d3c,
-SHA7c534bc3d94b9fec0983c3d11508d94b4e335f0457c648939a5daf387608d89a.
-Push41336834573 e PR41336840737 SUCCESS: ciascuno31test/6suite, zero failure/
-error/skip/ResourceWarning; tutti sei log finali letti. Include10test identità,
-5controllo dieci scope,5capsula,7launcher,3Docker29.8.1 e1HTTPS reale esatto.
-[Qualifica finale](../../evidence/m2-selected-runtime-delivery-qualified-20261101.json).
-[Comando preparato](../../releases/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_COMMAND_20261101.sh)
-QUALIFICATO e unica azione operatore corrente. Le capsule rigenerate dalle CI
-del launcher dichiarano altre revisioni; non sostituirle alla d7e433b2 consegnata
-e vincolata alla provenienza originale sopra.
-
-## Unica azione operatore necessaria ora
-
-Come oufadmin in SSH interattivo sul VPS eseguire UNA SOLA VOLTA il
-[nuovo comando esatto](../../releases/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_COMMAND_20261101.sh).
-Gli archivi e la prova diagnostica sono privati sul VPS; il plugin OUF non
-espone questa lettura amministrativa e l'agente non ha SSH. È manutenzione,
-non parte del percorso file ordinario. Password sudo soltanto nel terminale;
-nessun login IAM/token da fornire in chat. Niente ricattura o duplicazione degli
-archivi; non servono altri9GiB. Lettura della configurazione solo dall'archivio.
-
-Atteso SELECTED_RUNTIME_BYTES_VERIFIED_COMPLETE_INDEX_NOT_ADMITTED e
-SelectedRuntimeByteVerificationExit=0:13runtime,22assenze riconciliate (13+9),
-tutti10scope preservati,11controlli/35GET. Non significa source/publisher/scan/
-runtime admission o M2 completo. Restituire SOLO JSON pubblico e footer;
-nessun archivio, prova privata o configurazione. STOP/interruzione conserva tutto,
-nessun rilancio o nuova directory alternativa.
-
-Dopo la prova: collegare questi byte esatti ai contratti/source/publisher della
-coorte effettiva, mantenendo repairOS separati e non selezionati; poi Gateway
-proposal/owner-policy/custody/bearer/pacchetto/review/authority correnti e flusso
-Farmacie tramite MCP fino a UDP, con tutti gli esiti. Non riavviare il caso Teatri.
+La consegna monouso precedente è conservata soltanto come
+[storia immutabile](https://github.com/GioNob/ouf-deploy/blob/97f18ed368465819fc4a387563f014779971b598/docs/handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md).
