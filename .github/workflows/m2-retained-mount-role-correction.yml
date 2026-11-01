@@ -31,7 +31,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_mount_role_correction.py test_m2_retained_mount_role_capsule.py; do
+          for suite in test_m2_retained_mount_role_correction.py test_m2_retained_mount_role_capsule.py test_m2_retained_mount_role_launcher.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
           sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-mount-role-correction.py" \
