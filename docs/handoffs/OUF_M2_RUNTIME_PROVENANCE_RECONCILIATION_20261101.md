@@ -31,8 +31,11 @@ Le mappe congelate da235/19/17/21/23sorgenti sono immutate.
 [Readback indipendente](../../evidence/m2-retained-semantic-provenance-readback-20261101.json).
 La prima qualifica del riconciliatore, source `aae34e77`, run `41349863951`,
 job `124977507535`, passa sei test senza failure/error/skip; log finale letto.
-I due test aggiunti conservano il diniego della scansione e proteggono path/hash del report: qualifica
-finale nel [registro](../../evidence/m2-runtime-provenance-reconciliation-qualified-20261101.json).
+La qualifica finale source `ec4e118b`, run `41350639594`, job `124979828237`,
+passa **otto test**, zero failure/error/skip; log finale letto. I due test aggiunti
+conservano il diniego della scansione e proteggono path/hash del report. Tutti i
+19 file pubblicati confrontati con i Git blob locali, zero differenze.
+[Registro finale](../../evidence/m2-runtime-provenance-reconciliation-qualified-20261101.json).
 
 ## Scansione dell'immagine realmente conservata
 
