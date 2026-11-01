@@ -1,9 +1,9 @@
 name: M2 retained mount metadata capture
 on:
   push:
-    paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
+    paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','scripts/capture-m2-retained-mounts-20261101.py','scripts/launch-m2-retained-mount-capture-20261101.sh','tests/test_m2_retained_mount_launcher.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
   pull_request:
-    paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
+    paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','scripts/capture-m2-retained-mounts-20261101.py','scripts/launch-m2-retained-mount-capture-20261101.sh','tests/test_m2_retained_mount_launcher.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
 permissions: {contents: read}
 jobs:
   unit-and-seal:
@@ -31,7 +31,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_mount_capture.py test_m2_retained_mount_capsule.py; do
+          for suite in test_m2_retained_mount_capture.py test_m2_retained_mount_capsule.py test_m2_retained_mount_launcher.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
           sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-mount-capture.py" \
