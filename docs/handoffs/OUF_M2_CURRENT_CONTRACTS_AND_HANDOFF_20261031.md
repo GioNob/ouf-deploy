@@ -1,3 +1,40 @@
+# Passo corrente — correzione qualificata, input VPS necessario
+
+1 novembre2026. Il vecchio comando di raccolta ha restituito `STOP_RECONCILE /
+EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED`; la directory resta consumata.
+**Non ripeterlo e non cancellarla.** L'errore era nel nuovo lettore: assumeva
+che gli alias dell'inventario fossero i nomi logici dei ruoli. Le fixture
+precedenti non coprivano il formato ammesso dal produttore originale.
+
+È pronto il [comando corretto esatto](OUF_M2_RETAINED_MOUNT_ROLE_CORRECTION_20261101.md).
+Serve l'operatore perché qui manca la shell/filesystem del VPS. Il correttivo
+verifica l'esatto predecessore fallito e il seed originale; associa tredici ruoli
+per ID univoco/binding completo/pin dal roster pubblico già acquisito. Due letture
+dei dieci peer mantenuti, solo metadati dei mount; nessun contenuto montato letto.
+Il primo tentativo resta registrato, zero GET dedotti dal punto di arresto del
+sorgente esatto; il vecchio risultato non conteneva contatori o clock persistito.
+Un tentativo correttivo esplicito90s, due controlli cumulativi/20GET cumulativi;
+nessun replay o grant/reset di budget runtime.
+
+Sourcefff3a2dc, capsulac9aef7c9, launcher3bd586f0. CI
+[41271390451](https://github.com/GioNob/ouf-deploy/actions/runs/41271390451):
+**20test/4suite PASS**, log finali124744708747/124744708942 letti, zero failure/
+error/skip/ResourceWarning. Docker29.8.1 reale/dieci processi scratch e tre record
+fixture; non è OUF E2E. Publisher41271208231/artifact13068424551 verificato sul
+runner, certificato e subject riletti; byte commessi e raw immutabili identici.
+[Dossier correttivo](../../evidence/m2-retained-mount-role-correction-qualified-20261101.json)
+e [fallimento target](../../evidence/m2-retained-mount-capture-target-failure-20261101.json).
+
+Restano aperti custodia privata completa, bearer target, controller/checkpoint
+completo, pacchetto di esecuzione/review/autorità correnti, E2E e due client.
+Nessuna autorizzazione apply/accettazione/attivazione emessa. M1/Teatri e stessa
+Farmacie61/10/10OPEN/ministeriale STRING preservati, nessun replay upload/profiling/
+acquisizioni. UDP con tutti61esiti conclude il caricamento, poi ricerca nel grafo,
+poi verticali/API e scheduler delta. Le sezioni seguenti sono storico e le vecchie
+istruzioni READY del primo lettore non sono più operative.
+
+---
+
 # Passo corrente — raccolta metadati pronta, intervento VPS necessario
 
 1 novembre2026. È qualificato il [comando esatto di sola lettura](OUF_M2_RETAINED_MOUNT_CAPTURE_20261101.md).

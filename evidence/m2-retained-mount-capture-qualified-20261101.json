@@ -5,6 +5,7 @@
   "capsuleSourceMapSha256": "9c39e5bbd4123d65005f8fa9c5ec7a3ceb7b799bd1132131e9b31b55cd4e2409",
   "coreSource": "c5a1472684a906b45419fd271c039ce0a0239c6d",
   "date": "2026-11-01",
+  "fixtureContractGap": "Original inventory aliases were arbitrary; old new-reader fixtures wrongly used logical role labels. Prior CI did not establish actual seed compatibility.",
   "frozenCustodyHelperSha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
   "initialNativeFailure": {
     "jobId": 124731638559,
@@ -33,7 +34,7 @@
     "suites": 26,
     "tests": 182
   },
-  "nextRequiredInput": "Operator executes the exact hash-verified metadata launcher on the VPS and returns only its public result JSON. This session has no direct VPS filesystem/shell connector.",
+  "nextRequiredInput": "Distinct qualified ID-bound role correction; docs/handoffs/OUF_M2_RETAINED_MOUNT_ROLE_CORRECTION_20261101.md. Old command consumed; do not replay/delete.",
   "profile": {
     "automaticRetryOrScopeReuse": false,
     "budgetSeconds": 90,
@@ -97,5 +98,12 @@
   "schema": "ouf.m2-retained-mount-metadata-capture-qualification.v1",
   "sourceActivation": false,
   "targetApplyAuthorized": false,
+  "targetAttempt": {
+    "automaticReplayAllowed": false,
+    "failureEvidence": "evidence/m2-retained-mount-capture-target-failure-20261101.json",
+    "reasonCode": "EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED",
+    "scopeConsumed": true,
+    "status": "STOP_RECONCILE"
+  },
   "vpsOperations": 0
 }

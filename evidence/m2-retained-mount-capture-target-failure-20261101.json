@@ -1,6 +1,8 @@
 {
   "automaticReplayAllowed": false,
-  "correctionStatus": "SOURCE_PREPARED_QUALIFICATION_PENDING",
+  "correctionStatus": "DISTINCT_CORRECTIVE_READER_QUALIFIED_OPERATOR_INPUT_REQUIRED",
+  "correctiveQualification": "evidence/m2-retained-mount-role-correction-qualified-20261101.json",
+  "correctiveReaderSource": "fff3a2dc617d115a2849ae2a4c4f90a34e249a4e",
   "deliveredCapsuleSha256": "dfdedd2e038b524277d6db8ed9f00808798366e45552863b471f5d7de67014fa",
   "deliveredLauncherCommit": "ef664e159ea4bc6981d2799dae6c93a1d0a4c8c7",
   "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT",

@@ -1,3 +1,51 @@
+# CURRENT — Exact pre-Engine role correction qualified; operator input required
+
+1 November 2026. User requires autonomous sequential progress; no agents or
+optional stops. Original retained metadata capture actually returned STOP_RECONCILE /
+EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED. Old scope consumed: never rerun,
+reset or delete. Original guard confused inventory aliases with logical roles;
+original fixtures missed that accepted producer domain. Do not equate old CI
+success with actual target seed compatibility. The predecessor remains intact.
+
+NEXT: operator runs the distinct exact correction command in
+ docs/handoffs/OUF_M2_RETAINED_MOUNT_ROLE_CORRECTION_20261101.md
+and returns public JSON only. No VPS shell/FS connector is available here.
+Launcher3bd586f072449eace15cbdf645e4e3cdd6a8b8d4 SHA256
+0db66081112fcc0ee82f62cf4fbc29c782b0eeb0606721185107d2a2e0ef7a60.
+Sourcefff3a2dc; capsulec9aef7c9 SHA256
+647945cd54d222044213ce7aa993c05477327f4e71d7b809309245fd03021e93.
+Three closed sources; old collector/helper/235 frozen compiler hashes unchanged.
+Verify exact root-private two-file predecessor/result0922ad73, then independently
+seed14e42 hash/schema/false flags and heterogeneous alias domain. Select all13
+unique IDs/full original stable bindings/process pins from accepted public roster
+a5161311; runtime selection never uses aliases/Names. Reobserve ten retained
+peers twice through exact Engine socket/peer/current boot/root/process pins.
+Only mount inode/type/ownership/mode metadata; zero mounted-file content.
+Preserve prior attempt1; one explicit corrected attempt, cumulative2 control
+attempts/20GETs. Prior zero GET/mount reads inferred from pinned reason callsite,
+not reported counters; old clock absent, never claim resumed/reset. Corrective
+90s, outer100+kill5. No runtime budgets/grants/activation/lifecycle/apply/acceptance.
+On STOP preserve both directories and do not reexecute/delete/repair inputs.
+
+Final CI41271390451 PASS20/4suites (unit17/native3), final logs124744708747 and
+124744708942 read; zero failures/errors/skips/ResourceWarnings. Native Docker29.8.1,
+ten scratch processes/Unix peer/proc/mount/FIFO/socket plus three fixture records;
+not OUF E2E. Source CI41271213577 PASS16/3suites. Publisher push41271208231,
+job124744187713/artifact13068424551 ZIP8beea6fd52ca2e2cd5e10efd667677d37764eccb0cabca4c1e7ce691943a665e:
+runner gh2.97.0 verification, downloaded cert/source/ref/repoID1409074354/owner96419716/
+subject read; bytes identical and immutable raw URL hashes read back. No local
+cryptographic verification rerun claimed. Correction/failure dossiers in evidence/.
+
+After this actual target input, continue complete private custody/review/controller
+composition; full runtime package/target bearer/current role+HUMAN authority/E2E/
+two clients remain OPEN. Existing credential fix10980762/sourcec2dae77b, native14/
+module133 PASS and candidate imagea6f00cda stay qualified but unselected; membership,
+Gateway route progress and native manifest identity fix remain as documented below.
+Preserve M1/Teatri8/8technical6/6functional and same Farmacie SUCCEEDED61rows/10cols/
+10OPEN/ministerial STRING. No upload/profiling/acquisition replay. Loading ends UDP/
+all61outcomes; graph search afterwards, then vertical/API delta scheduler.
+All earlier CURRENT/READY/pending headers are historical; this header takes precedence.
+
 # CURRENT — Retained metadata capture STOP; exact role-contract correction in qualification
 
 1 November 2026. Actual operator result STOP_RECONCILE with reason

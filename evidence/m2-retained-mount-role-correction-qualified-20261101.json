@@ -1,0 +1,99 @@
+{
+  "automaticReplayAllowed": false,
+  "capsuleBytes": 56865,
+  "capsuleDeliveryCommit": "c9aef7c914b3f5e56f9c82e2e88c1cf79999044d",
+  "capsuleSha256": "647945cd54d222044213ce7aa993c05477327f4e71d7b809309245fd03021e93",
+  "capsuleSourceMapSha256": "f4a1dd4e4c177c616a810340020c2fa28aa427dd296ad5ee97601ecde5eab554",
+  "date": "2026-11-01",
+  "frozenCurrentCompiler235Unchanged": true,
+  "guardContract": [
+    "exact failed predecessor claim/result; no extra output; root custody; preserve predecessor",
+    "original seed hash/schema/false flags independently verified",
+    "exact arbitrary alias domain; thirteen unique accepted roster IDs; full binding and generation",
+    "ten retained current generations; same boot/root/socket peer; twenty GET attempts total",
+    "no mounted file content; mutable and ephemeral contents unobserved; metadata candidates only"
+  ],
+  "immutableRawDeliveryHashesReadBack": true,
+  "launcherCommit": "3bd586f072449eace15cbdf645e4e3cdd6a8b8d4",
+  "launcherQualification": {
+    "errors": 0,
+    "failures": 0,
+    "finalLogsRead": [
+      124744708747,
+      124744708942
+    ],
+    "nativeTests": 3,
+    "resourceWarnings": 0,
+    "run": 41271390451,
+    "skips": 0,
+    "source": "3bd586f072449eace15cbdf645e4e3cdd6a8b8d4",
+    "status": "PASS",
+    "suiteCount": 4,
+    "testCount": 20,
+    "unitTests": 17
+  },
+  "launcherSha256": "0db66081112fcc0ee82f62cf4fbc29c782b0eeb0606721185107d2a2e0ef7a60",
+  "limits": {
+    "correctiveControlAttempts": 1,
+    "correctiveSeconds": 90,
+    "cumulativeControlAttemptsMaximum": 2,
+    "cumulativeEngineAttemptsMaximum": 20,
+    "killAfterSeconds": 5,
+    "launcherTimeoutSeconds": 100,
+    "oldClockPersisted": false,
+    "oldClockResumedOrReset": false,
+    "predecessorControlAttempts": 1,
+    "predecessorEngineAttemptsSourceDerived": 0,
+    "runtimeBudgetsGranted": false
+  },
+  "nextRequiredInput": "Operator executes exact corrected launcher on VPS and returns public JSON only; no old replay or deletion.",
+  "originalCaptureAndCustodyHelperUnchanged": true,
+  "predecessorIndependentTargetRead": false,
+  "predecessorResultHash": "0922ad7330417ed9da7a472cad266174ace344c12fa7c5c420f8083ca1fe8d2c",
+  "publisher": {
+    "artifact": 13068424551,
+    "certificateSourceAndSubjectIndependentlyRead": true,
+    "downloadedCapsuleByteExact": true,
+    "finalLogRead": true,
+    "job": 124744187713,
+    "localCryptographicVerificationRepeated": false,
+    "ownerId": "96419716",
+    "ref": "refs/heads/feat/m2-discovery-complete-profile-20261029",
+    "repositoryId": "1409074354",
+    "run": 41271208231,
+    "runnerGhVersion": "2.97.0",
+    "runnerVerificationSuccessful": true,
+    "sourceRevision": "fff3a2dc617d115a2849ae2a4c4f90a34e249a4e",
+    "workflow": ".github/workflows/m2-retained-mount-role-correction.yml",
+    "zipSha256": "8beea6fd52ca2e2cd5e10efd667677d37764eccb0cabca4c1e7ce691943a665e"
+  },
+  "qualificationLimits": [
+    "Native ten scratch containers plus three fixture cohort records; no OUF application execution.",
+    "Alias regression uses original producer schema, frozen failing reader and accepted public roster; actual target private input not independently read.",
+    "Zero predecessor Engine/mount reads derive from exact reason call site, not reported counters.",
+    "Current target process or file drift remains an independent STOP condition; no repair or discovery.",
+    "Metadata candidate capture does not establish complete private custody, expected policy, workload bearer, runtime admission or E2E."
+  ],
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-mount-role-correction-qualified.v1",
+  "scope": "EXACT_PRE_ENGINE_ALIAS_CONTRACT_CORRECTION_ONLY",
+  "sourceActivation": false,
+  "sourceCommit": "fff3a2dc617d115a2849ae2a4c4f90a34e249a4e",
+  "sourceCount": 3,
+  "sourceQualification": {
+    "errors": 0,
+    "failures": 0,
+    "finalLogsRead": [
+      124744202756,
+      124744202698
+    ],
+    "resourceWarnings": 0,
+    "run": 41271213577,
+    "skips": 0,
+    "suiteCount": 3,
+    "testCount": 16
+  },
+  "targetApplyAuthorized": false,
+  "vpsOperationsExecutedByAgent": 0
+}
