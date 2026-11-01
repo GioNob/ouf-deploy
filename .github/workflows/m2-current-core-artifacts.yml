@@ -1,0 +1,86 @@
+name: M2 current original core image contracts
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths: ['scripts/stage-m2-current-core-origin.py','releases/m2-current-core-artifact-origins-20261101.json','releases/m2-current-core-source-lock-20261101.json','tests/test_m2_current_core_origins.py','.github/workflows/m2-current-core-artifacts.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  origin:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix: {role: [semantic, mcp, onboarding, ingestion, udp]}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Check actual public target roster and reject unsafe origin archives
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_current_core_origins.py -v
+      - name: Select the exact already published origin and source
+        id: origin
+        env: {OUF_ORIGIN_ROLE: '${{ matrix.role }}'}
+        run: |
+          python3 - <<'PY'
+          import json,os
+          case=json.load(open('releases/m2-current-core-artifact-origins-20261101.json'))['roles'][os.environ['OUF_ORIGIN_ROLE']]
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('repository='+case['sourceRepository']+'\n')
+              out.write('commit='+case['sourceCommit']+'\n')
+          PY
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ steps.origin.outputs.repository }}
+          ref: ${{ steps.origin.outputs.commit }}
+          path: reference-source
+          persist-credentials: false
+      - name: Preserve original producer format and verify every image configuration and layer byte
+        env: {GH_TOKEN: '${{ github.token }}', OUF_ORIGIN_ROLE: '${{ matrix.role }}'}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,subprocess
+          case=json.load(open('releases/m2-current-core-artifact-origins-20261101.json'))['roles'][os.environ['OUF_ORIGIN_ROLE']]
+          subprocess.run(['curl','--fail','--silent','--show-error','--location','--proto','=https','--proto-redir','=https',
+              '--connect-timeout','15','--max-time','300','--max-filesize',str(case['zipBytes']),
+              '-H','Authorization: Bearer '+os.environ['GH_TOKEN'],'-H','Accept: application/vnd.github+json',
+              'https://api.github.com/repos/'+case['repository']+'/actions/artifacts/'+str(case['artifactId'])+'/zip',
+              '-o','original.zip'],check=True,timeout=320)
+          PY
+          python3 -I -B -S scripts/stage-m2-current-core-origin.py '${{ matrix.role }}' original.zip prepared
+      - name: Scan the exact preserved archive including unfixed vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          input: prepared/image.docker.tar
+          format: json
+          output: prepared/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: HIGH,CRITICAL,UNKNOWN
+          ignore-unfixed: false
+          exit-code: 1
+      - name: Bind the fresh scan and original source to a new unsigned delivery envelope
+        run: |
+          python3 -I -B -S scripts/stage-m2-current-core-origin.py '${{ matrix.role }}' original.zip prepared \
+            --source-directory reference-source --scan prepared/trivy-image.json
+          cd prepared
+          sha256sum --check --strict SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-current-core-${{ matrix.role }}-${{ github.run_id }}
+          path: prepared/
+          compression-level: 6
+          retention-days: 30
+          if-no-files-found: error
+      - name: Retain origin and scanner diagnosis without accepting a failed candidate
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-current-core-held-${{ matrix.role }}-${{ github.run_id }}
+          path: |
+            prepared/origin-facts.json
+            prepared/trivy-image.json
+          compression-level: 6
+          retention-days: 30
+          if-no-files-found: ignore

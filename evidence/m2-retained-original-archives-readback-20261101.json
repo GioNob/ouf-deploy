@@ -4,10 +4,14 @@
   "imageRebuilt": false,
   "modules": {
     "ingestion": {
+      "applicationJarExtractedWithoutExecution": true,
+      "applicationJarSha256": "54424047880b6c96c512efb55dbd1c241e98180f4d679c342760980385f771f1",
+      "candidateClassBindingsVerified": true,
       "configAndAllLayerBytesVerified": true,
       "expandedArchiveBytes": 284608512,
       "expandedArchiveSha256": "311aeb78b8db83f7bc3c1f8799921d1078ad2bb9428189097de6d71a0eb93e63",
       "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "migrationResourcesVerified": 18,
       "nativeIdentity": {
         "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
         "manifestBytes": 1531,
@@ -18,6 +22,7 @@
       "nativeIdentityMatchesPreviouslyReportedRetainedRole": true,
       "originalArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
       "originalArtifactId": 12370330790,
+      "originalNativeExtractionOwnerReused": true,
       "originalRepository": "GioNob/ouf-ingestion-runtime",
       "originalRun": 39650459729,
       "originalZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
@@ -27,6 +32,8 @@
       "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1"
     },
     "onboarding": {
+      "applicationJarExtractedWithoutExecution": true,
+      "applicationJarSha256": "152159de758ead299d53eaf9cf113c01445b7e1d6fa86590ba0a1248bf4ef681",
       "bothCommitsTreeReadFromGithub": "091a10a53da04ed46759f345e877a69e8db87021",
       "configAndAllLayerBytesVerified": true,
       "expandedArchiveBytes": 444419072,
@@ -43,6 +50,7 @@
       "nativeIdentityMatchesPreviouslyReportedRetainedRole": true,
       "originalArchiveSha256": "eca776c890233c87c9b5e42297683c184424d71f02737b710e839c22eab5903f",
       "originalArtifactId": 12836316286,
+      "originalNativeExtractionOwnerReused": true,
       "originalRepository": "GioNob/ouf-source-onboarding",
       "originalRun": 40732932645,
       "originalZipSha256": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
@@ -55,6 +63,7 @@
     }
   },
   "newOperatorCaptureRequested": false,
+  "originalOctober14McpAndUdpAreHistoricalNotCurrent": true,
   "packageCompositionComplete": false,
   "releaseAcceptance": false,
   "runtimeAuthorityIssued": false,

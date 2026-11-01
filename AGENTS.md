@@ -1,3 +1,52 @@
+# CURRENT — Correct current core origins verified; new source-specific composition in qualification
+
+1November2026,Europe/Rome. Exactcurrent native archives readback from public
+originalCIbytes: OnboardV38 native7b9/config514/source734tested==9dreviewedtree091;
+Ing natived173/config76c/source4165; UDPnativeae78/confige283/source0d40 from
+artifact12119360632/run39081627088 ZIPbfedb025; MCPnativea521/config47e4/source
+d245 fromartifact12761775539/run40560685583 ZIPdbc4c918. FOURcurrentroles match
+actual13peer publicroster CIDs/nativeIDs. NewSemantic C2/configa6/nativeD06 is
+separatelyqualifiedUNSELECTED replacementcandidate. Public originals only;
+agentreadNOtargetprivatefiles/0targetcalls. Fullconfig/alllayerbytes independently
+checked all5 by reusing EXISTING acquisition_read_native/image_custody helper
+5d0fc0ed; no rebuild/relabel/import/target selectionchange. Ing/Onb JARs extracted
+with EXISTING native owner methods; exacthashes,18Ing SQL+classbindings verified.
+
+Important correction: historicalOct14f249MCP/b49UDP are NOTcurrent M2roles.
+Preservation source26e95bde run41308709031/job124854394309 SUCCESS: original
+cosignpublisher8bff exactsubject verified, original vs controlled import native
+IDs compared in Docker29.8.1 withoutcreating/startingcontainers. OldMCP rawload
+4df vscontrolleda007, oldUDP rawloadc2db vscontrolled09fa, neither is current
+MCPa521/UDPae78. Earlierf31 source guard failure and laternative mismatch recorded,
+notpassedoffascurrentproof. DoNOTselectoldf249/b49orweakennativeIDmatching.
+
+CurrentMCP originalZIP is customCI with source-commit/image-config/capabilities,
+NOunsignedpackage-record and NOrevisionLabel. Reuse exact EXISTING qualifiedCI
+binding from managed-profile-control-mcp-image-custody-20261027 (d245/config47,
+compressed e2e9/expandedb0fe/receipt64ac/frozenplanbffe), notinventedsourceLabel.
+Onboardcustomtestedimage and Ingcustomreadinessmetadata retained too. Frozen235
+image_custody alias is older and doesNOTacceptthisno-labelCIbinding. A newsealed
+M2execution compiler must explicitly compose the qualified modernhelper; never
+mutate235frozenmap orrelaxoldgenericguard. Completeexecution remains OPEN.
+
+New scripts/stage-m2-current-core-origin.py accepts ONLY5fixed original ZIP/
+size/source/config/layer/native cases, preserves originalformats+metadata verbatim,
+and staged all5actual datasets locallyPASS. Fourtests PASS: exactcurrentCIDroster,
+new6corelock7mountM2requirements, unknown/wrongZIP denied beforeoutput, traversal/
+links/devices denied. Source lock is NEW M2, notrewrittenOct14filefirst4mount.
+Finalizer creates a NEW unsigneddelivery envelope ONLYafter originalproducer
+scan_gate on samearchive+exactcleanGitsource checkout, retains originalmetadata,
+no fakeoldrecord/scanGate. Hosted5matrixworkflow m2-current-core-artifacts next:
+pinnedTrivy0.70 inputarchive/highcriticalunknown+unfixed. No scan success claimyet.
+All235/map2/3/5/6/8/11 hashesexact. Core6Gateway origin/actualprivateproposal,
+allvendor/sidecar artifacts, fullprivatecustody/liveowner+expectedpolicy/bearer/
+completeexecution/privatecurrentreview/currentHUMAN+dualrole/E2E/twoclients OPEN.
+No newVPSoperatorstep neededyet; sixscopes consumed/22cumulativeEngineGET,
+no replay/rearm/reset/grant. Autonomoussequential, noagents/automations/optional
+stops. M1/Teatri8/8technical6/6functional and sameFarmacie61/10/10OPEN/ministerial
+STRING preserved; no upload/profile/acquisition/activation. UDP/alloutcomes,
+then graph then vertical/APIdelta. Olderoperatorcommandheaders historical.
+
 # CURRENT — Cross-owner raw image package contract qualified; original archive composition continues
 
 1November2026,Europe/Rome. Source0b6d8fe3 actual image/delivery producers +
