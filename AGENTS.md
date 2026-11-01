@@ -1,39 +1,37 @@
-# CURRENT — Byte dei 13 runtime verificati; origini pubbliche riconciliate
+# CURRENT — Origini runtime: consegna unica QUALIFICATA, intervento VPS necessario
 
-1 novembre 2026, Europe/Rome. [Ricevuta target riuscita](evidence/m2-selected-runtime-target-20261101.json):
-SelectedRuntimeByteVerificationExit=0, risultato039f03a7, prova privata c52a0e2a.
-13 archivi originali/2.774.726.144 byte,4.010.055.680 byte espansi verificati;
-config, layer e diffID del ramo selezionato completi. Tutti10scope precedenti
-preservati. Scope11 CONSUMATO: totale11controlli/35GET. NON rilanciare il comando
-selezionato, diagnosi, vecchie verifiche o cattura. Le22assenze(13altre piattaforme,
-9ausiliarie) restano fuori ammissione; nessun reset/grant/authority.
+1 novembre 2026, Europe/Rome. I13runtime sono già verificati: ricevuta039f03a7,
+prova privata c52a0e2a, scope11 CONSUMATO, totale11controlli/35GET. NON rilanciare
+cattura, byte-verifica, diagnosi o comandi precedenti.22rami non selezionati esclusi.
 
-[Handoff corrente](docs/handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md) e [riconciliazione pubblica qualificata](evidence/m2-retained-runtime-origin-reconciliation-qualified-20261101.json).
-Commit0357ef81, CI41339964353/job124947684673 SUCCESS: tredici ruoli riconciliati,
-quattro origini applicative originali e due repliche lettura corrispondono ai
-native ID osservati; per APISIX/Caddy/Keycloak/PostGIS recuperati e verificati
-root e manifesto linux/amd64 dal registry esatto, senza blob config/layer.
-Nove invocazioni pubbliche, ZERO nuove operazioni VPS. Otto descrittori originali
-conservati. MinIO al riferimento originale non disponibile: nessun fallback.
-Gateway catalogue:380file/mode Git originali e10materializzatori verificati,
-ma non prova dell'immagine owner979de5eb. Artefatto CI owner81fdf7a contiene solo
-JUnit. Semantic storico622614 esaminato integralmente(config/layer/diffID), ma
-nessun envelope lega il native ID attuale b61bc39c: provenienza resta OPEN.
-Nessuna inferenza di byte diversi dalla sola differenza di envelope.
+[Handoff corrente](docs/handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md), [qualifica](evidence/m2-runtime-origin-join-delivery-qualified-20261101.json).
+Sourcecbbc1276/23moduli, capsula710edec8/65092df6/332.958byte,
+launcherd51807fe/SHAb50d274c. Push41342126387 e PR41342134036 SUCCESS, ciascuno
+23test/5suite; tutti sei log finali letti, zero failure/error/skip/ResourceWarning.
+Include13exportDocker29.8.1 reali: nuovo lettore apre solo manifesto/config, mai
+layer; vecchi scope invariati, corruzione/rimozione negate. Firma/subject/source/
+repoID/workflow/ref/runner confrontati col vero output gh2.97 hosted, HTTPS esatto
+qualificato. Tutti235/19/17/21sorgenti precedenti invariati.
 
-NEXT: composizione unica del profilo di provenienza dei13ruoli con prova privata
-c52a, completamento delle tre origini MinIO/Gateway-owner/Semantic e publisher/scan.
-Nessun nuovo comando VPS pronto o richiesto in questo checkpoint; la vecchia
-consegna è ritirata. Non accumulare microdiagnostiche o ripetere export/verifica.
-Source-lock/candidati/repair NON diventano automaticamente selezione o installazione.
-Tutti235sorgenti congelati,19diagnosi,17vecchia verifica e21selezionata esatti.
+NEXT: SOLO nuovo comando nel handoff, come oufadmin sul VPS, UNA VOLTA. Collega
+prova c52a/risultato039f/profilo esatti ai13ruoli; richiede10config pubbliche esatte
+e4manifesti vendor, legge TRE config originali(Gateway-owner/MinIO/Semantic) per
+identità/source claim minimizzati. Label dichiarate non diventano trust. Nessun
+Engine/registry/layer/rehash archivio/espansione/import/lifecycle/mount host/file
+credenziali/SQL/OAuth. Nuovo scope m2-runtime-origins-c52a0e2a-20261101-v1,
+massimo1controllo/180s, totale12controlli/35GET; tutti11scope precedenti preservati.
+Zero riarmo/reset/grant/authority. STOP/interruzione: conservare e NON rilanciare.
+L'agente non ha shell o archivi VPS; il plugin non espone questa lettura.
 
-Teatri SEMPRE: handoff M1/audit M2 riletti; tecnico8/8,funzionale6/6 acquisiti,
-26join/13identità/20proprietà/8Cinema, riuso owner/provenance/identity/property/recovery.
-Stessa Farmacie61righe/10campiOPEN/ministerialeSTRING preservata; nessun nuovo
-upload/profiling/acquisizione. M2/G5/G6/G7/dueclient OPEN: membership completa,
-custody/policy/bearer correnti, Gateway privato, coorte/pacchetto/review/authority,
-61esiti UDP e repeatability/fault. Poi grafo/search e verticali/API scheduler/delta.
+PET originali disponibili in docs/baseline/v1.7/package: il precedente limite
+contrario era errato. [Rilettura diretta e hash](evidence/m2-runtime-origin-join-normative-review-20261101.json):
+Matrix1.7§1/4,Blueprint0.3§1/7/9,Gateway1.5T1/T2,Semantic1.3§159.2/160.6.
+Teatri SEMPRE: M1tecnico8/8,funzionale6/6 acquisiti,26join/13identità/20proprietà/
+8Cinema; riuso owner/provenance/identity/property/recovery. Stessa Farmacie61righe/
+10OPEN/ministerialeSTRING preservata; niente upload/profiling/acquisizione nuovi.
+M2/G5/G6/G7/dueclient OPEN: source/publisher/scan/custody/policy/bearer/Gateway/
+coorte/pacchetto/review/authority,61esitiUDP e repeatability/fault. Riparazioni OS
+non selezionate/installate; poi grafo/search e verticali/API scheduler/delta.
 Nessun subagente, automazione, merge o release acceptance. Header/comandi seguenti STORICI.
 
 # CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario

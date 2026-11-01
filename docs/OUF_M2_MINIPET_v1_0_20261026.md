@@ -6,22 +6,21 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint corrente — byte runtime target acquisiti e origini pubbliche riconciliate
+## Checkpoint corrente — origini runtime qualificate, unico readback VPS necessario
 
-[Ricevuta039f03a7](../evidence/m2-selected-runtime-target-20261101.json), Exit0,
-prova privata c52a0e2a:13runtime completi,2.774.726.144byte archivio/4.010.055.680
-espansi, tutti10scope precedenti conservati. Scope11 consumato,11controlli/35GET.
-22rami non selezionati fuori ammissione; nessun replay/reset/grant/authority.
-[Handoff](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md).
-[Riconciliazione pubblica](../evidence/m2-retained-runtime-origin-reconciliation-qualified-20261101.json),
-CI41339964353/job124947684673 SUCCESS:13ruoli,4origini core e2repliche con native ID
-esatti;4vendor con descrittori originali registry verificati. Nessuna operazione VPS.
-MinIO/Gateway-owner/Semantic e join della prova privata per ruolo ancora OPEN;
-Gateway380sorgenti/10materializzatori non equivalgono all'immagine owner, vecchio
-Semantic622614 non lega il native ID corrente. Nessun fallback o selezione repair.
-Proseguire con unica composizione provenienza/custody/policy; nessun nuovo comando
-VPS in questo checkpoint, nessun rilancio. Congelati235/19/17/21 esatti. Teatri/M1
-acquisiti e stessa Farmacie preservata; M2 e tutti i suoi gate restano OPEN.
+Byte13runtime acquisiti, risultato039f03a7/prova privata c52a0e2a. Scope11 consumato,
+11controlli/35GET; non rilanciare. [Nuovo handoff](handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md),
+[qualifica](../evidence/m2-runtime-origin-join-delivery-qualified-20261101.json):
+launcherd51807fe, source23moduli, push41342126387 e PR41342134036 ciascuno23test/
+5suite PASS, tutti sei log letti. Collega13ruoli/10config e4manifesti pubblici,
+legge solo3config originali per source claim non autenticati; zeroEngine/layer/
+rehash/espansione/registry/filemount/credenziali/SQL/OAuth/import/lifecycle.
+Nuovo comando UNA VOLTA come oufadmin,1controllo/180s,totale12controlli/35GET,
+11scope precedenti preservati. Nessun riarmo/reset/grant/authority; STOP conservare/
+nonrilanciare. Agente senza accesso agli archivi VPS; plugin senza endpoint adatto.
+PET originali presenti e riletti nei paragrafi indicati nella nuova evidenza;
+il vecchio limite di indisponibilità era errato. Tutti235/19/17/21hash invariati.
+Teatri/M1 acquisiti e stessa Farmacie preservata; M2 e tutti i suoi gate OPEN.
 
 ## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 

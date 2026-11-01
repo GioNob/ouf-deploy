@@ -1,3 +1,7 @@
+> Verifica byte riuscita e consumata. Il passo corrente è il [collegamento delle
+> origini runtime](OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md), qualificato dopo questo
+> checkpoint. Il vecchio comando di verifica byte resta ritirato.
+
 # M2 — byte runtime acquisiti; completamento della provenienza
 
 1 novembre 2026, Europe/Rome. Il comando precedente è **CONSUMATO** e ritirato.
