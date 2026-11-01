@@ -136,7 +136,14 @@ def reconcile(root):
         sourceCommit=SOURCE, originalArtifactId=11907557440, sourceEvidence=proof,
         currentSecurityScanProven=False)
     scan_proof = json.loads((root/'evidence/m2-retained-semantic-scan-readback-20261101.json').read_bytes())
-    scan_raw = gzip.decompress((root/scan_proof['preservedFullReport']).read_bytes())
+    require(scan_proof['preservedFullReport'] == 'evidence/artifacts/m2-retained-semantic-trivy-20261101.json.gz',
+            'EXACT_PRESERVED_IMAGE_SCAN_REPORT_REQUIRED')
+    compressed = (root/scan_proof['preservedFullReport']).read_bytes()
+    require(len(compressed) <= 2097152 and sha(compressed) == scan_proof['compressedReportSha256'],
+            'BOUNDED_UNCHANGED_COMPRESSED_SCAN_REQUIRED')
+    with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as source:
+        scan_raw = source.read(2097153)
+    require(len(scan_raw) <= 2097152, 'BOUNDED_EXPANDED_IMAGE_SCAN_REQUIRED')
     scan = json.loads(scan_raw)
     counts = dict(Counter(f.get('Severity', 'UNKNOWN') for r in scan['Results']
                           for f in r.get('Vulnerabilities', [])))

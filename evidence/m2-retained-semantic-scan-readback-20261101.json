@@ -1,6 +1,5 @@
 {
   "actualFinalLogRead": true,
-  "allZipMembersRead": 12,
   "artifactId": 13100364694,
   "blockingFindings": [
     {
@@ -38,6 +37,10 @@
   "imageGateOutcome": "HELD_HIGH_CRITICAL_UNKNOWN",
   "imageRebuilt": false,
   "jobId": 124977507436,
+  "membersIndependentlyRead": [
+    "scan-result.json",
+    "trivy-image.json"
+  ],
   "newVpsOperations": 0,
   "preservedFullReport": "evidence/artifacts/m2-retained-semantic-trivy-20261101.json.gz",
   "releaseAcceptance": false,
@@ -71,5 +74,6 @@
   "targetApplyAuthorized": false,
   "workflowConclusion": "failure",
   "zipBytes": 416315,
+  "zipMembersEnumerated": 12,
   "zipSha256": "70acd64d4162a3a87350153f610ef740510874158eaa822cb9bf98ad0fafa276"
 }

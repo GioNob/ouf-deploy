@@ -96,6 +96,19 @@ class OriginalEvidence(unittest.TestCase):
         with patch.object(Path, 'read_bytes', read), self.assertRaisesRegex(ValueError, 'MUST_REMAIN_HELD'):
             m.reconcile(ROOT)
 
+    def test_scan_path_substitution_and_compressed_report_drift_are_rejected(self):
+        original = Path.read_bytes
+        for kind in ('path', 'hash'):
+            def read(path):
+                raw = original(path)
+                if path.name == 'm2-retained-semantic-scan-readback-20261101.json':
+                    document = json.loads(raw)
+                    document['preservedFullReport' if kind == 'path' else 'compressedReportSha256'] = '/unapproved' if kind == 'path' else '0'*64
+                    return json.dumps(document).encode()
+                return raw
+            with self.subTest(kind=kind), patch.object(Path, 'read_bytes', read), self.assertRaises(ValueError):
+                m.reconcile(ROOT)
+
 
 if __name__ == '__main__':
     unittest.main()

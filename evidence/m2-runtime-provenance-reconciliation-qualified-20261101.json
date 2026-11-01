@@ -20,7 +20,7 @@
   "localErrors": 0,
   "localFailures": 0,
   "localSkips": 0,
-  "localTests": 7,
+  "localTests": 8,
   "minioOriginGapPreserved": true,
   "newTargetActions": 0,
   "originalSourceMatches": 198,
@@ -35,8 +35,8 @@
   "signedMembersMatched": 7,
   "sourcesSha256": {
     ".github/workflows/m2-retained-origin-evidence.yml": "93ee52f2d1bc645cdb0b20344afb9a05eefb1d54998a86430ce106737adf1232",
-    "scripts/reconcile-m2-retained-origin-evidence-20261101.py": "99ab9a1a54565e2722a9e1efe88531a25de77f1c72a84a082d112c83a34ed156",
-    "tests/test_m2_retained_origin_evidence.py": "bef79807213d286b442124e7eb656e3f23588fc9ed3957725bf835d792535652"
+    "scripts/reconcile-m2-retained-origin-evidence-20261101.py": "127c2abd5e3ca49a210ecdb9f260c307e5eec967cf4c355f1bd39573ff17fa5a",
+    "tests/test_m2_retained_origin_evidence.py": "97d61c1f81879d1d9cccab1291f01f99109126cac08cb15c1fe1ac1f85b4d6b7"
   },
   "targetApplyAuthorized": false,
   "targetControlsUnchanged": 12,
