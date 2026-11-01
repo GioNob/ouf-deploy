@@ -94,11 +94,14 @@ class NativeViews(unittest.TestCase):
 
     def test_d_actual_rebound_static_file_is_rejected_with_unchanged_host_file_and_docker_config(self):
         target=next(row['destination'] for row in self.gateway['mounts'] if row['source']==str(self.keys['gateway-key']))
+        self.mutate('unmount',target)
         self.mutate('bind',target,self.keys['udp-key']);self.mutate('ro',target)
         try:
             self.unchanged_declaration()
             with self.assertRaisesRegex(ValueError,'SOURCE_IDENTITY_OR_ACCESS'):self.views.observe()
-        finally:self.mutate('unmount',target)
+        finally:
+            self.mutate('unmount',target)
+            self.mutate('bind',target,self.keys['gateway-key']);self.mutate('ro',target)
 
     def test_z_actual_process_restart_denies_before_mount_observation(self):
         self.command('restart',self.gateway['containerId'])
