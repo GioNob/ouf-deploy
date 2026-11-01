@@ -1,0 +1,110 @@
+name: M2 reconcile exact gateway mount metadata mismatch
+on:
+  push:
+    paths: ["tools/m2_discovery_installation_profile/retained_hash_reconciliation.py", "tools/m2_discovery_installation_profile/retained_hash_reconciliation_capsule.py", "tools/m2_discovery_installation_profile/retained_hash_reconciliation_sources.json", "scripts/export-m2-retained-hash-reconciliation.py", "scripts/reconcile-m2-retained-hash-metadata-20261101.py", "scripts/launch-m2-retained-hash-reconciliation-20261101.sh", "tests/test_m2_retained_hash_reconciliation.py", "tests/test_m2_retained_hash_reconciliation_capsule.py", "tests/test_m2_retained_hash_reconciliation_launcher.py", "tests/qualify_m2_retained_hash_reconciliation_native.py", ".github/workflows/m2-retained-hash-reconciliation.yml"]
+  pull_request:
+    paths: ["tools/m2_discovery_installation_profile/retained_hash_reconciliation.py", "tools/m2_discovery_installation_profile/retained_hash_reconciliation_capsule.py", "tools/m2_discovery_installation_profile/retained_hash_reconciliation_sources.json", "scripts/export-m2-retained-hash-reconciliation.py", "scripts/reconcile-m2-retained-hash-metadata-20261101.py", "scripts/launch-m2-retained-hash-reconciliation-20261101.sh", "tests/test_m2_retained_hash_reconciliation.py", "tests/test_m2_retained_hash_reconciliation_capsule.py", "tests/test_m2_retained_hash_reconciliation_launcher.py", "tests/qualify_m2_retained_hash_reconciliation_native.py", ".github/workflows/m2-retained-hash-reconciliation.yml"]
+permissions: {contents: read}
+jobs:
+  unit-and-seal:
+    permissions: {contents: read, id-token: write, attestations: write}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Install the qualified exact offline publisher verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
+          sudo install -d -m 0755 /opt/ouf-capture-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-capture-gh297
+          sudo chown -R root:root /opt/ouf-capture-gh297
+          /opt/ouf-capture-gh297/bin/gh --version
+      - name: Closed readonly file hash input and sealed source capsule
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-retained-capture-unit-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          for suite in test_m2_retained_hash_reconciliation.py test_m2_retained_hash_reconciliation_capsule.py; do
+            sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
+          done
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-retained-hash-reconciliation.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --output "$GITHUB_WORKSPACE/retained-hash-metadata-reconciliation.py" > retained-hash-metadata-reconciliation.json
+          python3 -I -B -S retained-hash-metadata-reconciliation.py --inspect-source > retained-hash-metadata-source-inspection.json
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: retained-hash-metadata-reconciliation.py
+          create-storage-record: false
+      - name: Verify source publisher and retain offline attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          cp "$PROVENANCE_BUNDLE" retained-hash-metadata-reconciliation.sigstore.json
+          /opt/ouf-capture-gh297/bin/gh attestation verify retained-hash-metadata-reconciliation.py --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-retained-hash-reconciliation.yml \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+            --bundle "$PROVENANCE_BUNDLE" --format json > retained-hash-metadata-publisher-verification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-hash-metadata-reconciliation-${{ github.run_id }}
+          path: |
+            retained-hash-metadata-reconciliation.py
+            retained-hash-metadata-reconciliation.json
+            retained-hash-metadata-source-inspection.json
+            retained-hash-metadata-reconciliation.sigstore.json
+            retained-hash-metadata-publisher-verification.json
+          if-no-files-found: error
+          retention-days: 30
+  native-ten-peers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: Actual predecessor mismatch and metadata-only reconciliation without Engine or content
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-retained-capture-native-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_retained_hash_reconciliation_native.py -v

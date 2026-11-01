@@ -1,3 +1,43 @@
+# CURRENT — Hash input STOP after2GET/zero hashes; exact metadata reconciliation in qualification
+
+1 November2026, Europe/Rome. Operator returned STOP_RECONCILE /
+READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE, scope consumed.
+Result canonicala7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319.
+Counts metadataReads4/bytes637228/engineGets2/engineBytes11813/RO5/RW2/nodes7,
+zero files hashed/zero file bytes. Hash scope has only generic+purpose claim and
+terminal result; no content-hash candidate. Never rerun/reset/delete any scope.
+All3prior inputs preserved; actual input direct Engine total22 (20metadata+2hash).
+Pinned code's sorted role order is caddy then gateway-owner. Unique failure site
+is after full identity and current mounts on second peer: gateway-owner metadata
+comparison failed. Caddy passed at that observation; remaining8peers not read.
+Public receipt has no node/field delta. Cause category/legitimate rotation unproven;
+readonly declaration does not imply immutable bytes. Do not guess or relax guards.
+Target evidence: m2-retained-readonly-hashes-target-stop-20261101.json.
+
+Continue autonomously/sequentially, no agents/automations/optional stops.
+New retained_hash_reconciliation.py is a separate exact predecessor-bound
+metadata-only diagnostic: failed result/claim/profile + successful metadata
+candidate/receipt/original seed, same boot/root/gateway pins. Zero Engine calls,
+zero mounted-file content; only gateway-owner declared mount trees, O_PATH and
+directory names. Drifted symlink/hardlink/added/deleted/blocked nodes are reported
+without following/reading. Paths/names/exact frames private; public structural
+differences with changed field names and explicit token-path reference CLASS
+only when old Config.Env supplies it. Never infer actual token renewal or policy.
+Current diff is not the failed historical trace; no fresh Engine config claimed.
+1diagnostic/30s/2048nodes/depth32/128public deltas; old scopes stay consumed,
+4cumulative input controls/22directGET (new0); hash attempt is NOT rearmed.
+No runtime authority/grants/budget resets/apply/SQL/OAuth/signing/lifecycle.
+Unit7 + capsule5 PASS locally; actual Docker/publisher qualification pending.
+Complete/qualify immutable deliverable before asking operator for the necessary
+new metadata delta input. No direct VPS shell/FS connector is available here.
+Old235 compiler hashes/all5old producer modules/capsules unchanged.
+Earlier READY and old command/operator-required headers below are historical.
+Preserve M1/Teatri8/8technical6/6functional and same Farmacie61/10/10OPEN/
+ministerial STRING; no upload/profiling/acquisition/activation replay. Full
+private custody/runtime membership/bearer/complete controller+package+review/
+current HUMAN+role authority/E2E/two clients remain OPEN. UDP/all61outcomes,
+then graph search, then vertical/API delta scheduler.
+
 # CURRENT — Exact readonly-file hash input qualified; operator VPS execution required
 
 1 November2026, Europe/Rome. User requires autonomous sequential progress; no

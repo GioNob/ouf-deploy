@@ -48,7 +48,7 @@
   "mutableEphemeralOrSpecialContentsOpened": false,
   "nativeLimits": "Actual Docker29.8.1 ten scratch processes and root:10001/0440 regular file, actual Engine peer/proc and private file hashing; three cohort peer/parent records and common review hashes are fixtures. Not OUF application execution or admission.",
   "newTargetPreparationExecutedByAgent": false,
-  "nextRequiredInput": "Operator executes exact launcher on VPS and returns public JSON only. This session has no VPS shell/filesystem connector. Preserve all consumed scopes; no replay/delete.",
+  "nextRequiredInput": "No hash replay. Exact predecessor-bound gateway-owner metadata reconciliation in qualification; zero new Engine and mounted-file contents.",
   "oldScopesAndFrozen235Unchanged": true,
   "originalMetadataCandidateHash": "46f6e6355a1bb133c4f72537f09d7b60250fd4c47265cde24fc1ea792cb366a7",
   "originalMetadataResultHash": "59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f",
@@ -94,5 +94,15 @@
     "unitTests": 15
   },
   "targetApplyAuthorized": false,
+  "targetAttempt": {
+    "engineGets": 2,
+    "evidence": "evidence/m2-retained-readonly-hashes-target-stop-20261101.json",
+    "readonlyFileBytesHashed": 0,
+    "readonlyFilesHashed": 0,
+    "reasonCode": "READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE",
+    "resultCanonicalSha256": "a7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319",
+    "scopeConsumed": true,
+    "status": "STOP_RECONCILE"
+  },
   "timezone": "Europe/Rome"
 }

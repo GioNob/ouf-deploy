@@ -1,3 +1,9 @@
+> CONSUMATO — 1 novembre2026: `STOP_RECONCILE /
+> READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE`,2GET/zero file o byte hashati.
+> Non ripetere il comando seguente e non cancellare lo scope. Differenza dei
+> metadati di gateway-owner da riconciliare; nuovo lettore metadata-only in qualifica.
+> [Ricevuta target](../../evidence/m2-retained-readonly-hashes-target-stop-20261101.json).
+
 # M2 — nuovo input privato: hash dei file regolari montati readonly
 
 1 novembre2026, Europe/Rome. La cattura dei metadati sul VPS è riuscita:

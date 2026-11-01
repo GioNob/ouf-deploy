@@ -1,39 +1,29 @@
-# Passo corrente — input hash readonly qualificato, intervento VPS necessario
+# Passo corrente — hash fermati prima dei contenuti, riconciliazione metadati in qualifica
 
-1 novembre2026. La raccolta metadati è riuscita: candidato46f6e635/risultato
-59935457,25readonly/4mutabili/33entry/20GET/zero contenuti montati; precedente
-0922ad73 preservato. Entrambe le catture sono consumate e non vanno ripetute o
-cancellate. [Ricevuta target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
+1 novembre2026. L'ultimo comando ha restituito `STOP_RECONCILE /
+READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE`; scope consumato e conservato.
+Due GET, quattro letture di metadati, zero file/byte letti per hashing. Risultato
+canonico a7a7601c. [Ricevuta](../../evidence/m2-retained-readonly-hashes-target-stop-20261101.json).
+Non ripetere il comando e non cancellare/modificare le tre directory precedenti.
 
-È qualificato il [nuovo comando esatto di preparazione degli hash readonly](OUF_M2_RETAINED_READONLY_HASH_INPUT_20261101.md).
-La sessione non ha shell/filesystem VPS: serve l'operatore, poi soltanto il JSON
-pubblico. Il passaggio legge transitoriamente i soli file regolari dell'elenco
-readonly già acquisito, inclusi eventuali file di credenziali/chiavi, per hashing
-in memoria. Valori non stampati/salvati, hash individuali e percorsi root privati.
-Nessun contenuto RW/effimero/speciale; sovrapposizioni/alias di sorgenti RW respinti
-prima degli hash. I vecchi input restano consumati. Un nuovo tentativo90s/20GET,
-8MiB/file/64MiB totali;3controlli/40GET cumulativi nella catena di input, nessun
-reset/grant di budget runtime o autorità. Hash osservati non sono policy attesa.
+Il punto nel sorgente fissato identifica gateway-owner, secondo peer dopo caddy.
+Le configurazioni osservate hanno superato il guard; il confronto dei metadati
+dei mount del secondo peer è fallito. Gli altri otto peer non sono stati letti.
+Il risultato non contiene quali nodi/campi siano diversi: rotazione prevista,
+modifica di custodia o altra causa restano da distinguere. Non si ignorano i drift.
 
-Sourcea3694974, capsula8e08b7d4 (5sorgenti/87816byte), launcher8a302bab.
-CI [41288195129](https://github.com/GioNob/ouf-deploy/actions/runs/41288195129)
-PASS23/4suite (unit19/native4), log finali124793729401/124793729539 letti,
-zero failure/error/skip/ResourceWarning. Docker29.8.1/dieci processi scratch/
-root:10001/0440 reali; parent/tre peer/common hashes fixture, non OUF E2E.
-Publisher41287940897/artifact13075393575 verificato sul runner; certificato e
-subject riletti, byte e URL raw immutabili identici. [Dossier hash](../../evidence/m2-retained-readonly-hashes-qualified-20261101.json).
-
-Intake04920448 e controllerv4,13owner/24letture sotto un solo fence, qualificati:
-main41286820490 PASS194/27suite,5log finali letti; targeted41286820335 PASS28/3suite,
-2log finali letti. Binding Engine conserva l'ordine dei mount, distinto dal vecchio
-hash storico ordinato. [Dossier intake](../../evidence/m2-retained-mount-intake-qualified-20261101.json).
-I235hash congelati e le due vecchie consegne sono invariati. Dopo il nuovo input
-proseguire custodia privata completa/tutti gli artefatti runtime/bearer target/
-controller e checkpoint completi/pacchetto e review con autorità correnti/E2E e
-due client: restano aperti. Nessun apply o accettazione. M1/Teatri e stessa
-Farmacie61/10/10OPEN/ministeriale STRING preservati. Nessun replay upload/profiling/
-acquisizioni/activation. UDP con tutti61esiti, poi grafo, poi verticali/API delta.
-Le sezioni seguenti sono storico e non istruzioni operative per i vecchi comandi.
+È in qualifica un nuovo lettore di riconciliazione, limitato ai mount di gateway-owner:
+zero GET Engine e zero contenuti montati, solo O_PATH/metadati e directory names.
+Verifica l'esatto fallimento e il suo claim/profilo, il candidato metadati46f6e635/
+risultato59935457/seed14e42 e i pin boot/root/gateway. Pubblica soltanto classi di
+differenze e nomi dei campi, conservando percorsi/nomi/frame esatti nel JSON root
+privato. Collegamenti o nodi nuovi vengono descritti senza seguirli/leggerli.
+Non ricostruisce retroattivamente l'istante fallito e non dichiara nuova configurazione
+Docker osservata; non riabilita gli hash né deduce una policy dai metadati.
+Unit12 locali PASS; qualifica Docker e consegna sigillata in corso. Nessuna azione
+VPS richiesta prima della consegna concreta qualificata. I GET della catena
+restano22; nessun budget runtime azzerato/concesso. Vecchie prove/readers/235hash
+congelati invariati. Gli stati READY e comandi seguenti sono storico.
 
 ---
 
