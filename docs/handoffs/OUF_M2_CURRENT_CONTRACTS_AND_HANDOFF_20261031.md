@@ -1,3 +1,29 @@
+# Passo corrente — raccolta VPS riuscita, composizione sorgente in corso
+
+1 novembre2026. Il correttivo ha restituito
+`PRIVATE_MOUNT_CANDIDATES_CAPTURED_NOT_ADMITTED`, candidato46f6e635 e risultato
+canonico59935457. Venti GET/tre letture di metadati,25mount readonly/4mutabili,
+33entry statiche; zero contenuti montati/credenziali/chiavi letti. Predecessore
+0922ad73 preservato; due controlli cumulativi e20GET. Entrambe le directory
+sono consumate e non vanno ripetute/cancellate. [Risultato target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
+
+Prosegue autonomamente la composizione degli input privati e del controller.
+Il nuovo intake verifica candidato/risultato/seed esatti, conserva gli alias
+come etichette e deriva i binding Engine con l'ordine originale dei mount.
+Il nuovo observer rilegge soltanto le dichiarazioni private e i metadati O_PATH;
+nessun nuovo scope o file di cattura. Controller v4:13owner tipizzati/24letture
+sotto lo stesso fence. Unit24 locali PASS; qualifica Docker/main CI in corso.
+Nessuna nuova azione VPS richiesta per questo lavoro sorgente.
+
+Metadati osservati non diventano policy attesa. Restano custodia privata completa,
+appartenenza di tutti i runtime, bearer target, controller/checkpoint completi,
+pacchetto esecutivo/review/autorità correnti, E2E e due client. M1/Teatri e stessa
+Farmacie61/10/10OPEN/ministeriale STRING preservati; nessun replay di upload,
+profiling/acquisizioni o activation/grant/reset/accettazione. Le sezioni seguenti
+sono storico: i comandi di cattura non sono più operativi.
+
+---
+
 # Passo corrente — correzione qualificata, input VPS necessario
 
 1 novembre2026. Il vecchio comando di raccolta ha restituito `STOP_RECONCILE /

@@ -46,7 +46,7 @@
     "predecessorEngineAttemptsSourceDerived": 0,
     "runtimeBudgetsGranted": false
   },
-  "nextRequiredInput": "Operator executes exact corrected launcher on VPS and returns public JSON only; no old replay or deletion.",
+  "nextRequiredInput": "No capture replay. Continue autonomous source integration of fixed successful candidate/private review/current metadata witness.",
   "originalCaptureAndCustodyHelperUnchanged": true,
   "predecessorIndependentTargetRead": false,
   "predecessorResultHash": "0922ad7330417ed9da7a472cad266174ace344c12fa7c5c420f8083ca1fe8d2c",
@@ -95,5 +95,13 @@
     "testCount": 16
   },
   "targetApplyAuthorized": false,
+  "targetAttempt": {
+    "candidateHash": "46f6e6355a1bb133c4f72537f09d7b60250fd4c47265cde24fc1ea792cb366a7",
+    "evidence": "evidence/m2-retained-mount-role-correction-target-20261101.json",
+    "predecessorPreserved": true,
+    "resultCanonicalSha256": "59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f",
+    "scopeConsumed": true,
+    "status": "PRIVATE_MOUNT_CANDIDATES_CAPTURED_NOT_ADMITTED"
+  },
   "vpsOperationsExecutedByAgent": 0
 }

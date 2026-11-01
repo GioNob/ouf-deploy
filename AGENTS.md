@@ -1,3 +1,37 @@
+# CURRENT — VPS retained-mount correction SUCCEEDED; autonomous source integration
+
+1 November2026, Europe/Rome. Operator returned PRIVATE_MOUNT_CANDIDATES_CAPTURED_NOT_ADMITTED,
+candidate46f6e6355a1bb133c4f72537f09d7b60250fd4c47265cde24fc1ea792cb366a7,
+public result canonical59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f.
+20GETs,3metadata reads,616585metadata bytes/128432Engine bytes,25readonly/4mutable
+mounts,33static entries,0special/ephemeral/mounted-file/credential/key content.
+Predecessor0922ad73 preserved; cumulative2control attempts/20GETs. Both capture
+scopes consumed: never replay/reset/delete either. Original alias-contract
+correction passed on target. No independent VPS filesystem/log/private input
+read by agent. Evidence: m2-retained-mount-role-correction-target-20261101.json.
+
+Continue autonomously/sequentially; no agents/automations or optional stop.
+No operator input needed for current source work. New retained_mount_intake.py
+consumes exact captured candidate/receipt/original seed, derives role maps by ID
+and runtime-input declarations with four independently supplied review hashes.
+Historical stable_binding sorts mounts; Engine.runtime_binding preserves order:
+use actual runtime contract, never reuse historical sorted mountsHash.
+New CurrentRetainedMountMetadata rechecks actual retained generations/config and
+O_PATH metadata against fixed successful input, creates no scope/output and reads
+no mounted-file content. Caller cannot select hashes/paths/Engine callbacks.
+Mutable contents/size/times remain unobserved; metadata equality is not expected
+permission policy or complete private custody. Held controller v4 joins13typed
+owners/24reads, same fence, all complete admission/authority flags still false.
+Targeted unit11+controller13 PASS locally; native Docker/main CI qualification
+pending. Old235compiler sources/maps and capture/corrective capsules unchanged.
+Need qualify before declaring new source ready. Then continue private review/
+full runtime membership, target bearer, complete early/late controller/sealed
+execution package/current role+HUMAN authority and application E2E/two clients.
+Preserve M1/Teatri8/8technical6/6functional and same Farmacie61rows/10cols/10OPEN/
+ministerial STRING. No upload/profile/acquisition/source activation/runtime-budget
+reset or acceptance. Loading ends UDP/all61outcomes, then graph search, then
+vertical/API delta. Earlier operator-required/READY headers are historical.
+
 # CURRENT — Exact pre-Engine role correction qualified; operator input required
 
 1 November 2026. User requires autonomous sequential progress; no agents or

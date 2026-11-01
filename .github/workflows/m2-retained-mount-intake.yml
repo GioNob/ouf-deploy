@@ -1,0 +1,68 @@
+name: M2 current retained mount intake and metadata witness
+on:
+  push:
+    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
+  pull_request:
+    paths: ["tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-mount-intake.yml"]
+permissions: {contents: read}
+jobs:
+  protected-intake-and-controller:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Real producer records and fenced controller composition
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-retained-intake-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          for suite in test_m2_retained_mount_intake.py test_m2_discovery_held_native_controller.py; do
+            sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
+          done
+  native-ten-peers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: Actual ten retained processes, twenty Engine GETs and metadata-only mount capture
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-retained-capture-native-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_retained_mount_intake_native.py -v

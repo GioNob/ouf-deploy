@@ -1,3 +1,9 @@
+> ESEGUITO CON SUCCESSO — 1 novembre2026: candidato46f6e635,
+> risultato59935457,20GET/zero contenuti montati, predecessore preservato.
+> Scope consumato: non ripetere il comando seguente e non cancellare le prove.
+> [Ricevuta target](../../evidence/m2-retained-mount-role-correction-target-20261101.json).
+> Ora prosegue la composizione sorgente; non è richiesta un'altra cattura.
+
 # M2 — correzione del contratto di inventario, precedente conservato
 
 1 novembre 2026. Il primo lettore ha restituito il risultato pubblico esatto

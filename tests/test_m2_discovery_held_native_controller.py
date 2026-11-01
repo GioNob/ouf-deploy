@@ -45,7 +45,8 @@ class HeldController(unittest.TestCase):
             ('publisher', m.CurrentPublisherCustody), ('tls', m.CurrentTlsIdentities), ('iam', m.CurrentWorkloadIam),
             ('retirement', m.CurrentRetirementAndBackup), ('producers', m.CurrentProducerFence),
             ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership),
-            ('packages', m.CurrentPackageMembership), ('gateway_routes', m.CurrentGatewayRoutes)):
+            ('packages', m.CurrentPackageMembership), ('gateway_routes', m.CurrentGatewayRoutes),
+            ('mounts', m.CurrentRetainedMountMetadata)):
             objects[name] = object.__new__(cls); objects[name].guard = Mock()
         runtime = objects['runtime']; runtime.selected = selected; runtime.input_hash = 'c'*64
         runtime.inputs = {'additionalInputsHashes': {k: 'd'*64 for k in m.ADDITIONAL_INPUTS}}
@@ -58,6 +59,7 @@ class HeldController(unittest.TestCase):
         objects['retirement'].installed = True
         objects['membership'].publisher = objects['publisher']; objects['membership'].databases = objects['databases']
         objects['membership'].images = selected.images
+        objects['mounts'].runtime = runtime
         objects['packages'].membership = objects['membership']; objects['packages'].runtime = runtime
         selected.gateway = object()
         objects['gateway_routes'].selected = selected; objects['gateway_routes'].runtime = selected.gateway
@@ -75,13 +77,18 @@ class HeldController(unittest.TestCase):
                         'selectedImageAndMigrationMembershipProven': True, 'publisherEvidenceHash':m.digest(publisher)}
                     result.update(sixModulePackageBytesProven=True, fiveReviewedModuleImageIdentitiesProven=True,
                         publisherEvidenceHash=m.digest(publisher), namedMembershipEvidenceHash=m.digest(named))
+                if name == 'mounts':
+                    result.update(currentRetainedMetadataMatchesCapturedCandidate=True,
+                        nativeRuntimeInputsHash=runtime.input_hash,candidateHash=m.CANDIDATE_HASH,
+                        captureResultHash=m.RESULT_HASH,expectedMountPolicyEstablished=False,
+                        mountedFileContentBytesRead=0,newCaptureScopeCreated=False)
                 if name == 'gateway_routes':
                     result.update(currentRoutesMatchReviewedPublicationProgress=True,
                         currentGatewayConfigurationAndAdminExecutableObserved=True,
                         publicationCheckpointReentered=False, routeWrites=0)
                 return result
             return Mock(side_effect=run)
-        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes'):
+        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes', 'mounts'):
             objects[name].observe = operation(name)
         objects['retirement'].retired = operation('retirement'); objects['retirement'].retained_backup = operation('backup')
         selected.images.verify = operation('images')
@@ -93,9 +100,9 @@ class HeldController(unittest.TestCase):
     def test_all_concrete_observers_share_one_fence_without_publication_or_release_receipt(self):
         controller, _, row, calls, occupied, _ = self.prepared(); original = copy.deepcopy(row)
         result = controller.observe()
-        self.assertEqual(calls, ['images','registry','operational','runtime','gateway_routes','publisher','membership','packages','databases','tls','iam',
-            'retirement','backup','producers','registry','operational','runtime','gateway_routes','producers','membership','packages','images'])
-        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 22)
+        self.assertEqual(calls, ['images','registry','operational','runtime','mounts','gateway_routes','publisher','membership','packages','databases','tls','iam',
+            'retirement','backup','producers','registry','operational','runtime','mounts','gateway_routes','producers','membership','packages','images'])
+        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 24)
         self.assertTrue(result['singleTransitionInvocationFenceHeld']); self.assertTrue(result['allBoundNativeObserversCompleted'])
         self.assertNotEqual(result['schema'], 'ouf.semantic-cutover-native-checkpoint.v1')
         for key in ('observationIntervalIsAtomicSnapshot', 'artifactMembershipProven', 'completePrivateCustodyProven',
@@ -103,13 +110,24 @@ class HeldController(unittest.TestCase):
             'producerReleaseDispatched', 'runtimeAuthorityIssued', 'targetApplyAuthorized', 'budgetReset', 'releaseAcceptance'):
             self.assertIs(result[key], False)
 
+    def test_mount_witness_cannot_substitute_capture_content_reads_policy_or_new_scope(self):
+        for field in ('candidateHash','captureResultHash','nativeRuntimeInputsHash',
+            'expectedMountPolicyEstablished','mountedFileContentBytesRead','newCaptureScopeCreated'):
+            controller,objects,_,_,occupied,_=self.prepared();original=objects['mounts'].observe.side_effect
+            def wrong():
+                proof=original();proof[field]=('f'*64 if field.endswith('Hash') else True);return proof
+            objects['mounts'].observe.side_effect=wrong
+            with self.subTest(field=field),self.assertRaisesRegex(ValueError,'SAME_CURRENT_RETAINED_CAPTURE_METADATA'):
+                controller.observe()
+            objects['gateway_routes'].observe.assert_not_called();self.assertFalse(occupied[0])
+
     def test_concurrent_invocation_denies_before_any_observer(self):
         controller, _, _, calls, occupied, _ = self.prepared(); occupied[0] = True
         with self.assertRaises(BlockingIOError): controller.observe()
         self.assertEqual(calls, [])
 
     def test_foreign_or_replaced_owner_or_input_cannot_join_native_witnesses(self):
-        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes'):
+        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes', 'mounts'):
             controller, objects, _, calls, _, _ = self.prepared()
             if failure == 'type': controller.publisher = SimpleNamespace(guard=Mock(), observe=Mock())
             elif failure == 'runtime': objects['tls'].runtime = object()
@@ -117,6 +135,7 @@ class HeldController(unittest.TestCase):
             elif failure == 'parent': objects['publisher'].parent = object()
             elif failure == 'input': objects['publisher'].runtime_inputs['additionalInputsHashes']['custody'] = 'f'*64
             elif failure == 'packages': objects['packages'].membership = object()
+            elif failure == 'mounts': objects['mounts'].runtime = object()
             elif failure == 'gateway_routes': objects['gateway_routes'].window.parent = object()
             else: objects['retirement'].installed = False
             with self.subTest(failure=failure), self.assertRaises(ValueError): controller.observe()
