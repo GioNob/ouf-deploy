@@ -140,7 +140,14 @@ def build(source, output):
         mode, kind, blob = metadata.decode().split()
         inventory.append({'path': path.decode(), 'mode': mode, 'type': kind, 'sha': blob})
     (output/'source-inventory.json').write_text(json.dumps({'truncated': False, 'tree': inventory}, sort_keys=True, indent=2)+'\n')
-    shutil.copyfile(source/'operational-owner/target/bom.json', output/'bom.json')
+    # Spring Boot's CycloneDX configuration places the actual generated BOM
+    # under classes/META-INF/sbom, not the historical CI artifact path.
+    sbom = source/'operational-owner/target/classes/META-INF/sbom/application.cdx.json'
+    bom = json.loads(sbom.read_bytes())
+    require(bom.get('bomFormat') == 'CycloneDX' and bom.get('components')
+            and bom['metadata']['component']['name'] == 'gateway-operational-owner',
+            'ACTUAL_NONEMPTY_GATEWAY_OWNER_SBOM_REQUIRED')
+    shutil.copyfile(sbom, output/'bom.json')
     shutil.copyfile(context/'Dockerfile', output/'Dockerfile.resolved')
     shutil.copytree(source/'operational-owner/target/surefire-reports', output/'surefire-reports')
     proof = {'schema': 'ouf.m2-gateway-owner-distinct-candidate.v1', 'sourceRepository': 'GioNob/ouf-api-gateway',
