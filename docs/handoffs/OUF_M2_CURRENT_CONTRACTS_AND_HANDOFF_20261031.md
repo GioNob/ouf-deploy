@@ -1,3 +1,15 @@
+> CURRENT 1 November2026: live/static lifecycle correction is qualified.
+> NEW static host-file input ready in OUF_M2_RETAINED_STATIC_CUSTODY_20261101.md:
+> launcherb90cb4a2/capsule970b59a7/source7108c3ab. FinalCI41295370082 PASS19/4,
+> intake/controller41295061722 PASS28/3, actual Docker29.8.1/25RO4RW33nodes.
+> Zero new Engine, token/live SQLite contents excluded, all4old scopes consumed
+> and preserved, input total22GETs. Current metadata witnessv2/controllerv5 only
+> prove static metadata/live roots; live descendants are unobserved/unadmitted.
+> General CI41295061739 PASS194tests/27suites: protocol177/22 at job124814058899,
+plus native process2/TLS7/DB4in2suites/IAM4. All5logs read; no failure/error/skip/ResourceWarning.
+> Actual target candidate still required; no VPS shell connector. Target apply,
+> complete custody/authority/acceptance/E2E false. Prior commands below historical.
+
 > CURRENT 1 November2026: metadata reconciliation has executed successfully,
 > candidate050ba14d/receipt621124d2. All4previous scopes consumed,22Engine total.
 > Token atomic rotation and live Gateway SQLite store require source-backed

@@ -1,3 +1,66 @@
+# CURRENT — Lifecycle fix and static-only host-file input qualified; new VPS input required
+
+1 November2026. Actual metadata reconciliation executed: candidate050ba14d,
+receipt621124d2,4changes/6nodes/5metadata reads/638296bytes/zero Engine/content.
+All4prior scopes remain consumed/preserved. New source-backed classification
+reuses renewable owner and retained Gateway81fdf7a: token atomic renewal and
+live operational SQLite updates must not be frozen by readonly mount status.
+Current filename references match token and gateway-operations.sqlite. Actual
+live token validity/collector runtime/permission policy not established.
+
+NEXT required input: ONE execution of the NEW static-only host-file preparation
+in docs/handoffs/OUF_M2_RETAINED_STATIC_CUSTODY_20261101.md, public JSON only.
+This session has no VPS shell/filesystem connector. New exact25RO/4RW/33captured
+nodes:7renewable token declarations+1live Gateway store excluded from contents,
+17static regular-file declarations hashed;4writable roots excluded. Unknown RO
+directory/special/ephemeral input fails before content. Static full9metadata/
+nlink1 retained; live/RW root dev/ino/mode/uid/gid checked against old capture.
+Live descendants are deliberately unobserved, not authenticated/admitted.
+Native owners still must prove live permissions/membership/effective access/
+issuer/signature/audience/scope/expiry/revocation independently. No false complete
+custody/owner admission. Path/ancestor/captured-inode alias preflight excludes
+live and writable sources before ANY content. Static key/credential contents
+may be read transiently for hashing; no raw values/per-file hashes printed.
+
+ZERO new Engine calls, original four scopes/claims/results/seed and boot/root/
+all10process pins checked. Current Docker configuration explicitly NOT freshly
+observed. New host-file candidate input is not runtime admission or old hash
+rearm. Input chain remains22directGET, new5th control/1attempt90s/max8MiBfile/
+64MiBtotal/2048unique files, outer100s+kill5. Newscope static-custody-050ba14d-v1,
+root700/files600/create-once. Never rerun/reset/delete/rearm or grant budgets.
+Launcherb90cb4a2543a333fd47a71b94ebcdbd2769fe283 SHA256
+30838d18507147de2899ae91f757a541da92be9749b1ff462fbe5b56fb9529a8.
+Capsule970b59a73d41fb1fa841b2ffd45065ce1ceb5311 SHA256
+80d1bf71a59df09880b09fe76814d672bb320658f44d0126de80dcba9e43c933,
+130112bytes/8closed sources, source7108c3ab6c339f4b5cf0eff9be4e978dd6ecd498.
+Both immutable raw URL byte hashes and actual isolated8source import verified.
+All235frozen sources/all5old producer modules and capture/hash/reconciliation
+capsules unchanged. Current metadata witnessv2/controllerv5 preserve13typed
+owners/24reads/one fence: static metadata/live roots versus unobserved members.
+
+Source41295061817 PASS15/3suites, logs124814058910/124814059057 read; intake/
+controller41295061722 PASS28/3, logs124814058827/124814058946 read. Final
+launcher41295370082 PASS19/4(unit6+capsule5+launcher4/native4), final both logs
+124814997099/124814997231 read. Actual Docker29.8.1/ten UID10001scratch processes,
+full25RO/4RW/33node shape,13distinct static files, atomic root:10001/0440tokens,
+active SQLite WAL writer, original producer/failed2GET/reconciliation thennew0GET
+input, static drift/PID restart. All fixtures, not target/application E2E.
+Publisher41295061817/job124814058910/artifact13078338123 ZIP
+ de8c70ad62ff03327f88829f9289cef67ff52c00f091ca6e3bb7d26034172da6.
+Pinned gh2.97.0 offline runnerverify; downloaded certificate/source/ref/workflow/
+repo1409074354/owner96419716/subject read, exact local export matches committed
+capsule. No local crypto trust-chain rerun claimed. General CI41295061739 PASS194tests/27suites: protocol177/22 at job124814058899,
+plus native process2/TLS7/DB4in2suites/IAM4. All5logs read; no failure/error/skip/ResourceWarning.
+
+Continue autonomously/sequentially, no agents/automations/optional stops. Stop
+only for necessary operator input. No upload/profile/acquisition/activation/
+lifecycle replay, no reuse of historical HUMAN/role authority. Preserve M1/
+Teatri8/8technical6/6functional and same Farmacie61rows/10cols/10OPEN/ministerial
+STRING. UDP/all61outcomes, then graph search, then vertical/API delta. Full
+private custody/current workload bearer/all-runtime membership/complete early-
+late controller and execution package/exact private review/current HUMAN+role/
+E2E/two clients remain OPEN. Old CURRENT/READY/pending headers below historical.
+
 # CURRENT — Metadata reconciliation consumed; live/static lifecycle fix in qualification
 
 1 November2026. Actual operator receipt621124d2, private candidate050ba14d:
