@@ -1,0 +1,26 @@
+name: M2 retained public runtime origin reconciliation
+on:
+  push:
+    paths:
+      - '.github/workflows/m2-retained-runtime-origins.yml'
+      - 'scripts/reconcile-m2-retained-runtime-origins-20261101.py'
+      - 'scripts/read-m2-retained-vendor-descriptors-20261101.py'
+      - 'releases/m2-retained-runtime-origin-inventory-20261101.json'
+permissions: {contents: read}
+jobs:
+  public-reconciliation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reconcile all thirteen original public role bindings and preserve unselected candidates
+        run: python3 -I -B -S scripts/reconcile-m2-retained-runtime-origins-20261101.py --check
+      - name: Read only public registry descriptors at five exact observed native digests
+        run: python3 -I -B -S scripts/read-m2-retained-vendor-descriptors-20261101.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-public-retained-runtime-origins-${{ github.run_id }}
+          path: public-vendor-descriptors/
+          if-no-files-found: error
+          retention-days: 30
