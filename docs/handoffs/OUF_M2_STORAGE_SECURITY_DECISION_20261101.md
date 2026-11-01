@@ -71,6 +71,15 @@ licenza viene accettata o migrazione scelta. Non si assume implicitamente un
 fork Community manutenuto da OUF. L'owner deve indicare la direzione; la scelta
 abilita la qualifica del candidato, non l'installazione sul VPS.
 
+## Qualifica finale della composizione
+
+Sorgente `1cb6d20b`, [run41353995331](https://github.com/GioNob/ouf-deploy/actions/runs/41353995331),
+job124990025427 PASS:21 test (14 riconciliazione,7 remediation), zero failure,
+error o skip; log finale letto. Tutti i cinque insiemi di sorgenti congelati
+restano immutati. I test proteggono anche il diniego MinIO, il publisher della
+copia non autenticato e la separazione tra nuovo Gateway e runtime conservato.
+[Dossier finale](../../evidence/m2-storage-security-composition-qualified-20261101.json).
+
 ## Continuità e prossima azione
 
 Il riconciliatore pubblico aggiunge il candidato Gateway distinto e la prova
