@@ -56,15 +56,19 @@ def preserve(source, output):
         with (folder/'image.docker.tar').open('rb') as image:
             proof = archive(image, record['files']['image.docker.tar'], record['imageId'], commit)
         identity = native_identity(proof)
-        require(identity['nativeImageId'] == NATIVE[name], 'EXACT_ORIGINAL_NATIVE_IMAGE_ID_REQUIRED')
         shutil.copytree(folder, output/name)
         observed[name] = {'sourceCommit': commit, 'imageId': record['imageId'],
             'nativeImageId': identity['nativeImageId'], 'originalArchiveSha256': record['files']['image.docker.tar'],
+            'historicalNativeImageIdReference': NATIVE[name],
+            'computedNativeIdentityMatchesHistoricalReference': identity['nativeImageId'] == NATIVE[name],
             'rawPackageHash': digest(package_record), 'deliveryManifestHash': digest(candidate),
             'imageAudit': proof, 'originalFiles': record['files']}
     receipt = {'schema': 'ouf.m2-original-mcp-udp-members.v1', 'originalZipSha256': ZIP_SHA,
         'originalProducer': PRODUCER, 'originalRun': 38584614991, 'originalArtifact': 11907557440,
         'originalOwnerReceipt': origin, 'modules': observed, 'imageRebuilt': False, 'candidateSelectionChanged': False,
+        'runtimeImageIdentityAdmitted': False, 'coherentPackageCompositionComplete': False,
+        'allComputedNativeIdentitiesMatchHistoricalReferences': all(
+            row['computedNativeIdentityMatchesHistoricalReference'] for row in observed.values()),
         'runtimeAuthorityIssued': False, 'targetApplyAuthorized': False, 'releaseAcceptance': False}
     (output/'receipt.json').write_text(json.dumps(receipt, indent=2, sort_keys=True)+'\n')
     return receipt
