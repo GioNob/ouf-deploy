@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from tools.acquisition_read_native import image_custody as custody
 
-SOURCE = '81fdf7a5f9f3ef02ed930a1db911d34cab1a9415'
+DECLARED_RETAINED_SOURCE = '81fdf7a5f9f3ef02ed930a1db911d34cab1a9415'
+SOURCE = '17439fed7a45d455baa6945ee72a65fa19c14029'
 RETAINED = 'sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21'
 TAG = 'ouf-m2-gateway-owner-candidate:'+SOURCE
 DOCKER = '/opt/ouf-docker-29/docker'
@@ -151,7 +152,8 @@ def build(source, output):
     shutil.copyfile(context/'Dockerfile', output/'Dockerfile.resolved')
     shutil.copytree(source/'operational-owner/target/surefire-reports', output/'surefire-reports')
     proof = {'schema': 'ouf.m2-gateway-owner-distinct-candidate.v1', 'sourceRepository': 'GioNob/ouf-api-gateway',
-             'sourceCommit': SOURCE, 'retainedNativeImageId': RETAINED, 'retainedImageSourceMembershipProven': False,
+             'sourceCommit': SOURCE, 'declaredRetainedSourceCommit': DECLARED_RETAINED_SOURCE,
+             'retainedNativeImageId': RETAINED, 'retainedImageSourceMembershipProven': False,
              'configurationImageId': config_id, 'nativeImageId': identity['nativeImageId'],
              'archiveSha256': envelope['derivedArchiveSha256'], 'scanInputSha256': sha(output/'scan-input.docker.tar'),
              'imageAudit': audit, 'scannerImageAudit': scanner, 'baseImage': refs[0],

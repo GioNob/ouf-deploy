@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: 81fdf7a5f9f3ef02ed930a1db911d34cab1a9415
+          ref: 17439fed7a45d455baa6945ee72a65fa19c14029
           path: reference-source
           persist-credentials: false
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
