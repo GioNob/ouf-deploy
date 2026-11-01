@@ -95,11 +95,13 @@ class HeldController(unittest.TestCase):
                         lifecyclePlanHash='e'*64,directEngineGets=0,liveTokenAndOperationalStoreContentBytesRead=0,
                         liveMembersObservedOrAdmitted=False,expectedPermissionOrContentPolicyEstablished=False,newCaptureScopeCreated=False)
                 if name == 'mount_views':
-                    result.update(schema='ouf.discovery-current-retained-mount-views.v1',
+                    result.update(schema='ouf.discovery-current-retained-mount-views.v2',
                         nativeRuntimeInputsHash=runtime.input_hash,staticCandidateHash=m.STATIC_CANDIDATE_HASH,
                         lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,currentMountDeclarationsMatchEffectiveViews=True,
+                        viewCandidateHash=m.VIEW_CANDIDATE_HASH,viewResultHash=m.VIEW_RESULT_HASH,
+                        currentLiveLeafCustodyMatchesCapturedMetadata=True,liveLeafMetadataNodes=8,
                         readonlyMounts=25,writableMounts=4,retainedProcessCount=10,directEngineGets=0,
-                        mountedFileContentBytesRead=0,liveMembersObservedOrAdmitted=False,newCaptureScopeCreated=False)
+                        mountedFileContentBytesRead=0,liveOwnerAuthenticated=False,liveDirectoryMembershipObserved=False,newCaptureScopeCreated=False)
                 if name == 'gateway_routes':
                     result.update(currentRoutesMatchReviewedPublicationProgress=True,
                         currentGatewayConfigurationAndAdminExecutableObserved=True,
@@ -167,7 +169,8 @@ class HeldController(unittest.TestCase):
 
     def test_kernel_view_cannot_claim_wrong_mount_counts_or_hidden_content_io(self):
         for field,value in (('readonlyMounts',24),('writableMounts',5),('retainedProcessCount',9),
-            ('directEngineGets',1),('mountedFileContentBytesRead',1),('liveMembersObservedOrAdmitted',True),
+            ('directEngineGets',1),('mountedFileContentBytesRead',1),('liveOwnerAuthenticated',True),
+            ('liveDirectoryMembershipObserved',True),('viewCandidateHash','f'*64),('viewResultHash','f'*64),('liveLeafMetadataNodes',7),
             ('staticCandidateHash','f'*64),('currentMountDeclarationsMatchEffectiveViews',False)):
             controller,objects,_,_,occupied,_=self.prepared();original=objects['mount_views'].observe.side_effect
             def changed():

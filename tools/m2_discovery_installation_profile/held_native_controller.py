@@ -27,6 +27,7 @@ from .retained_mount_lifecycle import CONTRACT_HASH as MOUNT_LIFECYCLE_HASH
 from .current_retained_static import CurrentRetainedStaticBytes
 from .current_retained_views import CurrentRetainedMountViews
 from .retained_static_intake import CANDIDATE_HASH as STATIC_CANDIDATE_HASH, RESULT_HASH as STATIC_RESULT_HASH
+from .retained_view_intake import CANDIDATE_HASH as VIEW_CANDIDATE_HASH, RESULT_HASH as VIEW_RESULT_HASH
 from .node_owner import ObservationBudget
 from application_verification_adapter import ApplicationVerificationAdapter
 
@@ -145,16 +146,21 @@ class HeldNativeController:
                 and proofs['retainedStaticBytes']['newCaptureScopeCreated'] is False,
                 'CURRENT_STATIC_BYTE_CONTINUITY_WITHOUT_LIVE_ADMISSION_OR_POLICY_REQUIRED')
             read('retainedMountViews', self.mount_views.observe)
-            require(proofs['retainedMountViews']['schema']=='ouf.discovery-current-retained-mount-views.v1'
+            require(proofs['retainedMountViews']['schema']=='ouf.discovery-current-retained-mount-views.v2'
                 and proofs['retainedMountViews']['nativeRuntimeInputsHash']==self.runtime.input_hash
                 and proofs['retainedMountViews']['staticCandidateHash']==STATIC_CANDIDATE_HASH
+                and proofs['retainedMountViews']['viewCandidateHash']==VIEW_CANDIDATE_HASH
+                and proofs['retainedMountViews']['viewResultHash']==VIEW_RESULT_HASH
                 and proofs['retainedMountViews']['lifecycleContractHash']==MOUNT_LIFECYCLE_HASH
                 and proofs['retainedMountViews']['currentMountDeclarationsMatchEffectiveViews'] is True
+                and proofs['retainedMountViews']['currentLiveLeafCustodyMatchesCapturedMetadata'] is True
+                and proofs['retainedMountViews']['liveLeafMetadataNodes']==8
                 and proofs['retainedMountViews']['readonlyMounts']==25 and proofs['retainedMountViews']['writableMounts']==4
                 and proofs['retainedMountViews']['retainedProcessCount']==10
                 and proofs['retainedMountViews']['directEngineGets']==0
                 and proofs['retainedMountViews']['mountedFileContentBytesRead']==0
-                and proofs['retainedMountViews']['liveMembersObservedOrAdmitted'] is False
+                and proofs['retainedMountViews']['liveOwnerAuthenticated'] is False
+                and proofs['retainedMountViews']['liveDirectoryMembershipObserved'] is False
                 and proofs['retainedMountViews']['newCaptureScopeCreated'] is False,
                 'CURRENT_RETAINED_KERNEL_VIEWS_WITHOUT_CONTENT_OR_LIVE_ADMISSION_REQUIRED')
             read('gatewayRoutes', self.gateway_routes.observe)
@@ -204,7 +210,7 @@ class HeldNativeController:
                 and proofs['producers'] == proofs['finalProducers'],
                 'HELD_CONTROLLER_NATIVE_GENERATIONS_CHANGED_DURING_OBSERVATION_INTERVAL')
             require(self.guard() == row, 'HELD_CONTROLLER_FINAL_HISTORY_CHANGED'); budget.check()
-            return {'schema': 'ouf.discovery-held-native-controller-witness.v7',
+            return {'schema': 'ouf.discovery-held-native-controller-witness.v8',
                 'parentAuthorityHash': a.discovery_parent.sha, 'childAuthorityHash': a.raw_hash,
                 'heldHistoryHash': digest(row), 'nativeRuntimeInputsHash': self.runtime.input_hash,
                 'ownerEvidenceHashes': {name: digest(proof) for name, proof in proofs.items()},
@@ -216,6 +222,7 @@ class HeldNativeController:
                 'retainedLiveMembersObservedOrAdmitted':False,
                 'currentStaticFileBytesMatchAcceptedCandidate':True,
                 'currentRetainedKernelMountViewsMatchDeclarations':True,
+                'currentLiveLeafCustodyMatchesCapturedMetadata':True,
                 'expectedRetainedMountPolicyEstablished':False,
                 'observationIntervalIsAtomicSnapshot': False, 'artifactMembershipProven': False,
                 'completePrivateCustodyProven': False, 'actualWorkloadBearerAdmissionProven': False,

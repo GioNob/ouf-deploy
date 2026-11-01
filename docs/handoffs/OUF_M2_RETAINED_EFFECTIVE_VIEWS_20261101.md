@@ -1,3 +1,9 @@
+> CONSUMED successfully on target:9f1d571b/ac206493,25RO4RW10processes8live nodes,
+> zero custody differences/Engine/content,104kernelreads109372bytes. All6scopes
+> preserved/consumed,22GETtotal. Never run the old command below again. Exact
+> input/current-view/controller8 integration in qualification. No newoperator
+> action needed yet; liveowner/policy/fullcustody/authority/E2E remain OPEN.
+
 # Retained effective kernel views and live metadata input
 
 1November2026, Europe/Rome. Actual static success de4546d0/39426368 is recorded:

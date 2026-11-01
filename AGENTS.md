@@ -1,3 +1,47 @@
+# CURRENT — Actual kernel/live-metadata success; exact input/current leaf continuity in qualification
+
+1November2026,Europe/Rome. Operator success9f1d571b1f38ace9ec5b5f52b157ed0c4de20c2e1a4553ccc6ae19f9ae04344a,
+receiptac206493fa3e9e4d7af098fe8d3a8aec9325162c3167858cff37a0dd57cc6a7b.
+25effectiveRO/4RW/10processes,8live leafmetadata nodes, ZERO custody continuity
+differences,104kernelreads/109372bytes,6privateJSONreads/644260bytes,0Engine/
+0mountedcontents. All5predecessor scopes preserved, new6thscopeconsumed,22GETtotal.
+Actual private files not read by agent; only operator pasted publicJSON. All
+freshDockerConfig/policy/liveowner/fullcustody/authority/apply/acceptance false.
+Evidence m2-retained-view-capture-target-20261101.json. Lastlauncher a60b4d6d/
+capsule00de07a4/source91a0aeaf are CONSUMED; never replay/rearm/delete/reset.
+
+No new operator command needed. Continue autonomous/sequential source work.
+New pure retained_view_intake pins exact9f/ac206+staticde/394+original46/599/14,
+full source/mount/role/root/process lineage, acceptedRO/RW/mount IDs,liveleaf
+shape/custody projection/counts and no policy/auth claims. Typed current view
+owner now reads that exact protected capture/receipt/claim, has no caller path/
+hash/callback override, and checks current8liveleaf metadata against accepted
+custody. Token inode/time/value renewal between observations allowed, but named
+host/effective leaf stable within each read; DBsize/time live,dev/ino/mode/uid/
+gid/nlink stable. Current bound descriptor IDs/root/source/view frames preserved.
+Directory membership/credential readability/IAMissuer/signature/audience/scope/
+expiry/revocation/current owner admission are NOT inferred. No livecontents,
+Engine/newscope/grant/reset/command/lifecycle. Controller8 remains15typedowners/
+28reads/onefence, current metadata witnessv2 pins9f/ac206 at both boundaries,
+current-live-custody continuity explicit, completecustody/checkpoint false.
+
+Local6intake/current-view +16controller tests PASS using actual original6stage
+producer record (kernel/proc/parent modeled in unit; actualFS). Native fixture
+now creates genuine sixth input before current observer, real Docker29.8.1/
+10UID10001scratch processes; token rotations/SQLiteWAL/permissiondrift/ROflag/
+shadow/rebound/PID cases next. All235/frozen11/eightsealedstatic sources andall
+oldcapsules unchanged. HostedCI/mainchecks inprogress. Do not request another
+blind diagnostic. Next source work coherent current M2artifact composition and
+remaining liveowner/expectedpolicy/review+authority; oldOct14filefirst4mount
+assembler cannot stand for M2sevenmount/newOnboardingV38/newSemantic selected.
+No blind retainedimage rebuild. Existing native owners/Teatri contracts mustbe
+reused. Fullprivatecustody/currentbearer/allruntimeartifacts/completeexecution
+package/currentprivatereview/HUMAN+dualrole/E2E/twoclients OPEN. No agents/
+automations/optional stops. Preserve M1/Teatri8/8technical6/6functional, same
+Farmacie61rows10cols10OPEN/ministerialSTRING. No upload/profile/acquisition/
+activation/lifecycle replay. UDP/all61outcomes then graph then vertical/API.
+All olderCURRENT/READY/operatorinput headersbelow are historical.
+
 # CURRENT — Exact kernel/live-metadata input qualified; necessary VPS operator step
 
 1November2026, Europe/Rome. Actual static success de4546d0/39426368 recorded:

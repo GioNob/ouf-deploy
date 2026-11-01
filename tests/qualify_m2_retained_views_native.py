@@ -10,6 +10,8 @@ ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests
 import qualify_m2_retained_static_intake_native as fixture
 from retained_lifecycle_layout import rotate
 from tools.m2_discovery_installation_profile import current_retained_views as m
+from tools.m2_discovery_installation_profile import retained_view_capture as capture
+from tools.m2_discovery_installation_profile import retained_static_custody as static_prep
 
 HELPER=r'''
 #define _GNU_SOURCE
@@ -50,6 +52,16 @@ class NativeViews(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         fixture.NativeStaticIntake.setUpClass.__func__(cls)
+        static_owner=cls.static_observer
+        selected={**static_owner.case,'staticCandidatePath':str(static_owner.path),
+            'staticCandidateHash':static_owner.bindings['candidateHash'],'staticResultHash':static_owner.bindings['resultHash']}
+        for name,value in {'CASE':selected,'ROSTER':static_prep.ROSTER}.items():
+            context=patch.object(capture,name,value);context.start();cls.addClassCleanup(context.stop)
+        captured=capture.ViewCapture(cls.root/'captured-kernel-views');receipt=capture.collect(captured);captured.put('result.json',receipt)
+        record=json.loads((captured.scope/'effective-views.private.json').read_bytes())
+        for name,value in {'VIEW_CASE':selected,'VIEW_CANDIDATE':captured.scope/'effective-views.private.json',
+            'VIEW_CANDIDATE_HASH':m.digest(record),'VIEW_RESULT_HASH':m.digest(receipt)}.items():
+            context=patch.object(m,name,value);context.start();cls.addClassCleanup(context.stop)
         cls.views=m.CurrentRetainedMountViews(cls.static_observer)
         source=cls.root/'view-helper.c';source.write_text(HELPER);cls.helper=cls.root/'view-helper'
         subprocess.run([shutil.which('cc'),'-O2','-Wall','-Wextra','-Werror',str(source),'-o',str(cls.helper)],
@@ -75,7 +87,7 @@ class NativeViews(unittest.TestCase):
         self.assertTrue(second['currentMountDeclarationsMatchEffectiveViews'])
         self.assertEqual((second['readonlyMounts'],second['writableMounts'],second['retainedProcessCount']),(25,4,10))
         self.assertEqual(second['directEngineGets'],0);self.assertEqual(second['mountedFileContentBytesRead'],0)
-        self.assertFalse(second['liveMembersObservedOrAdmitted']);self.assertFalse(second['completePrivateCustodyProven'])
+        self.assertFalse(second['liveOwnerAuthenticated']);self.assertFalse(second['liveDirectoryMembershipObserved']);self.assertFalse(second['completePrivateCustodyProven'])
         self.assertFalse(second['expectedPermissionOrContentPolicyEstablished']);self.assertFalse(second['targetApplyAuthorized'])
 
     def test_b_actual_readonly_flag_drift_is_detected_even_when_docker_declaration_is_unchanged(self):
@@ -92,7 +104,7 @@ class NativeViews(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'NO_SHADOWING'):self.views.observe()
         finally:self.mutate('unmount',target)
 
-    def test_d_actual_rebound_static_file_is_rejected_with_unchanged_host_file_and_docker_config(self):
+    def test_f_actual_rebound_static_file_is_rejected_with_unchanged_host_file_and_docker_config(self):
         target=next(row['destination'] for row in self.gateway['mounts'] if row['source']==str(self.keys['gateway-key']))
         self.mutate('unmount',target)
         self.mutate('bind',target,self.keys['udp-key']);self.mutate('ro',target)
@@ -102,6 +114,12 @@ class NativeViews(unittest.TestCase):
         finally:
             self.mutate('unmount',target)
             self.mutate('bind',target,self.keys['gateway-key']);self.mutate('ro',target)
+
+    def test_e_actual_live_permission_drift_is_not_accepted_as_token_renewal(self):
+        path=self.auth['gateway']/'token';mode=path.stat().st_mode&0o777;path.chmod(0o400)
+        try:
+            with self.assertRaisesRegex(ValueError,'LIVE_LEAF_CUSTODY_DIFFERS'):self.views.observe()
+        finally:path.chmod(mode)
 
     def test_z_actual_process_restart_denies_before_mount_observation(self):
         self.command('restart',self.gateway['containerId'])
