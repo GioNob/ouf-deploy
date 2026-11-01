@@ -1,3 +1,39 @@
+# CURRENT — Cross-owner raw image package contract qualified; original archive composition continues
+
+1November2026,Europe/Rome. Source0b6d8fe3 actual image/delivery producers +
+MCPplanner/rawrecord membership fix qualified: offline41306743383 PASS9tests/
+3suites, general41306743355 PASS218tests/30suites, all6final logs read,
+zeroerrors/failures/skips/ResourceWarning. V8source3fac40/5focused215/30general
+alreadyqualified. New evidence m2-image-package-record-contract-qualified.
+No new operator step:6scopesconsumed/22EngineGET, exact9f/acinput bound.
+
+Retrieved originalOnboarding12836316286 ZIP7719c104 and Ingestion12370330790
+ZIPf2856230, independently verified compressed ZIP/archive and expanded
+config/alllayers/nativeidentities against actualreported retained7b9/d173.
+Onboarding originalproducer is customtested-image schema, not unsignedmodule
+record; source label73498c17 and reviewed9d19fad3 have exactsame Git tree091a.
+Ingestion custommetadata too. Do NOT invent unsignedrecord or rewrite legacy
+candidate/source lock to conceal those contracts. ExactnewM2composition must
+represent originalformats/label-vs-reviewedtree lineage and actualsource/JAR.
+
+Original MCP/UDPpreservation source6df6aee5 CI41307296686 failed BEFORE output:
+firsthistoricalf31aggregate was older than qualifiedMCPf249. Guardcorrectly
+rejectedsource. Actualresumption evidence selects8bff54a5/run38584614991/
+artifact11907557440 ZIP144699ab (1708479761bytes), confirmedcurrentartifact
+metadata. Newsource corrects to this alreadyqualifiedoriginal (no rebuild/
+selectionchange/targetreplay), REUSES original root-private extract_cohort
+owner with exactwholeZIP/lock/producer/run/checksumclosure, thenbothoriginal
+modulebytes+nativeidentityaudit and originalpublisher signature. Inqualification;
+no success claimuntilactualrun/logs/readback. Originalf31 remains historical.
+
+Continueautonomous sequential M2coherent source/package+allruntime artifacts,
+independentliveowner/expectedpolicy/fullprivatecustody/bearer/sealedcomplete
+execution/privatecurrentreview/currentHUMAN+dualrole/E2E/twoclients. All235/
+frozen11sourcesexact; newcurrentowners outsidefrozencompiler. Noagents/
+automations/optionalstops; M1/Teatri and Farmacie61/10/10OPEN/ministerialSTRING
+preserved, no upload/profile/acquisition/activationreplay. UDP/alloutcomes,
+then graph then vertical/APIdelta. Olderoperatorcommandheaders historical.
+
 # CURRENT — Actual kernel/live custody input and controller8 qualified; package contract correction in progress
 
 1November2026,Europe/Rome. Actual target9f1d571b/ac206493 receipt consumed

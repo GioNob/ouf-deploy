@@ -1,0 +1,64 @@
+{
+  "agentReadTargetPrivateFiles": false,
+  "date": "2026-11-01",
+  "imageRebuilt": false,
+  "modules": {
+    "ingestion": {
+      "configAndAllLayerBytesVerified": true,
+      "expandedArchiveBytes": 284608512,
+      "expandedArchiveSha256": "311aeb78b8db83f7bc3c1f8799921d1078ad2bb9428189097de6d71a0eb93e63",
+      "imageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+      "nativeIdentity": {
+        "configurationImageId": "sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc",
+        "manifestBytes": 1531,
+        "nativeImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+        "platform": "linux/amd64",
+        "profile": "ouf.config-and-native-manifest-identity.v1"
+      },
+      "nativeIdentityMatchesPreviouslyReportedRetainedRole": true,
+      "originalArchiveSha256": "5f6893d1ac63d5c5ee96c961e5c91a3b1c058a6300af169663961f1d5fbf8be6",
+      "originalArtifactId": 12370330790,
+      "originalRepository": "GioNob/ouf-ingestion-runtime",
+      "originalRun": 39650459729,
+      "originalZipSha256": "f28562307f37e663e90944d45b9f0ca5d6f9011fca6f5154c199679a7b006c64",
+      "rawUnsignedModulePackageRecordPresent": false,
+      "rootfsLayerCount": 8,
+      "runtimeUser": "10002:10002",
+      "sourceCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1"
+    },
+    "onboarding": {
+      "bothCommitsTreeReadFromGithub": "091a10a53da04ed46759f345e877a69e8db87021",
+      "configAndAllLayerBytesVerified": true,
+      "expandedArchiveBytes": 444419072,
+      "expandedArchiveSha256": "63a4f72604557447827880061e14021eb512775048e6002034163ef1aecad97c",
+      "imageId": "sha256:5140811b44623c7035843c955509a387336bc11ffb24b72ffe26a73434fb5ebd",
+      "imageRevisionTestedCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "nativeIdentity": {
+        "configurationImageId": "sha256:5140811b44623c7035843c955509a387336bc11ffb24b72ffe26a73434fb5ebd",
+        "manifestBytes": 1846,
+        "nativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+        "platform": "linux/amd64",
+        "profile": "ouf.config-and-native-manifest-identity.v1"
+      },
+      "nativeIdentityMatchesPreviouslyReportedRetainedRole": true,
+      "originalArchiveSha256": "eca776c890233c87c9b5e42297683c184424d71f02737b710e839c22eab5903f",
+      "originalArtifactId": 12836316286,
+      "originalRepository": "GioNob/ouf-source-onboarding",
+      "originalRun": 40732932645,
+      "originalZipSha256": "7719c1045753fe38bbdc498adb8f540c61bad411c25969badf71ec4d3ec5d91b",
+      "rawUnsignedModulePackageRecordPresent": false,
+      "reviewedAndTestedTreesEqual": true,
+      "reviewedSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+      "rootfsLayerCount": 10,
+      "runtimeUser": "10003:10003",
+      "sourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846"
+    }
+  },
+  "newOperatorCaptureRequested": false,
+  "packageCompositionComplete": false,
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-original-archive-readback.v1",
+  "targetApplyAuthorized": false,
+  "targetCalls": 0
+}
