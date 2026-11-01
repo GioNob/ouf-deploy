@@ -1,3 +1,11 @@
+# SUPERATO — seconda verifica STOP e scope CONSUMATO
+
+[Ricevuta9/risultato8bec8301](../../evidence/m2-image-byte-reconciliation-target-stop-20261101.json),
+ImageByteReconciliationExit=1, cumulativi9controlli/35GET. NON eseguire il comando
+sotto. La correzione empty non ha risolto il caso target; il blob resta ignoto.
+[Handoff corrente: diagnosi strutturale](OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md).
+Le qualifiche sotto restano prove storiche e non dimostrano successo sul VPS.
+
 # M2 — riconciliare lo STOP sul descrittore OCI empty
 
 1 novembre 2026, Europe/Rome. Stato: sorgente e consegna QUALIFICATI;

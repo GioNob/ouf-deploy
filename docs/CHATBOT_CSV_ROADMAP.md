@@ -1,3 +1,31 @@
+# CURRENT — Secondo STOP immagini acquisito; diagnosi della struttura in qualifica
+
+1 novembre 2026, Europe/Rome. [Ricevuta9](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json),
+ImageByteReconciliationExit=1, PRIVATE_IMAGE_BLOB_OR_EXACT_CANONICAL_EMPTY_CONFIG_REQUIRED,
+risultato8bec8301, nuovo scope precedenteCONSUMATO. Totale9controlli/35GET;
+13archivi originali conservati. NON rilanciare alcun verificatore o cattura.
+La correzione empty/data è valida ma insufficiente per il target; la ragione
+pubblica non identifica il blob mancante. Nessuna nuova ipotesi viene ammessa.
+
+[Diagnosi corrente](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md): classifica tutti i riferimenti presenti/mancanti
+nei13archivi dopo hash integrale e verifica9scope/risultati/profili esatti.
+Solo indice/manifesti JSON bounded; config/layer letti solo nel flusso hash
+indifferenziato, mai aperti come membri o espansi. Nessun fetch di blob assenti,
+Engine, rete, mount host, credenziali, SQL/OAuth, import o lifecycle.
+Nuovo controllo diagnostico distinto, non replay della verifica: massimo1/600s,
+10controlli/35GET. Nuovo scope fisso, oldscope mai riarmati/reset/grant.
+Sorgenti/test/qualificaDocker29 con export vendor multipiattaforma in corso;
+nessun nuovo comando operatore ancora pronto.
+
+Riuso Teatri SEMPRE: riletti handoffM1/dossier26join/13identità/20proprietà/8Cinema
+e auditM2; conservare contratti owner/provenance/MATCH-NEW-REVIEW/recovery, niente
+nuovo motore o terzaacquisizione. M1tecnico8/8,funzionale6/6 acquisiti; Farmacie
+stesso61righe/10campiOPEN/ministerialeSTRING. M2/G5/G6/G7/dueclient aperti.
+UDP/tutti gli esiti, poi grafo/search e verticali/API scheduler/delta. Tutti i
+residui publisher/source/policy-owner/custody/bearer/coorte/pacchetto/review/
+authority restano OPEN. Nessun subagente/automazione/merge/releaseacceptance.
+Le intestazioni/comandi seguenti sono storia, NON istruzioni correnti.
+
 # CURRENT — STOP consumato; riconciliazione OCI QUALIFICATA, input VPS necessario
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md),
