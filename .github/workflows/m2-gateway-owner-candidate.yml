@@ -1,0 +1,149 @@
+name: M2 distinct Gateway operational owner executable candidate
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-gateway-owner-candidate.yml'
+      - 'scripts/package-m2-gateway-owner-candidate-20261101.py'
+      - 'tests/test_m2_gateway_owner_candidate.py'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify-new-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reject wrong artifacts and failed or partial owner test evidence
+        run: python3 -I -B -S -m unittest discover -s tests -p test_m2_gateway_owner_candidate.py -v
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 81fdf7a5f9f3ef02ed930a1db911d34cab1a9415
+          path: reference-source
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Verify the original pinned SDK and run the actual Gateway owner tests
+        run: |
+          set -euo pipefail
+          cd reference-source
+          (cd vendor/authorization-sdk && sha256sum --check --strict SOURCE_SHA256SUMS)
+          timeout --signal=TERM --kill-after=10s 600s mvn -B -ntp -f vendor/authorization-sdk/pom.xml install
+          timeout --signal=TERM --kill-after=10s 600s mvn -B -ntp -f operational-owner/pom.xml verify
+          python3 -m pip install -r requirements-dev.txt
+      - name: Use the same exact Docker29 runtime family as the retained installation
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo /opt/ouf-docker-29/docker info >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          test "$(sudo /opt/ouf-docker-29/docker version --format '{{.Server.Version}}')" = 29.8.1
+          sudo chgrp docker /var/run/docker.sock
+          sudo chmod 0660 /var/run/docker.sock
+      - name: Test the original real APISIX and Java owner contract with synthetic IAM
+        env:
+          OUF_APISIX_LIVE_TEST: '1'
+          OUF_GATEWAY_OWNER_JAR: '${{ github.workspace }}/reference-source/operational-owner/target/gateway-operational-owner-1.0.0-SNAPSHOT.jar'
+        run: |
+          set -euo pipefail
+          export PATH=/opt/ouf-docker-29:$PATH
+          docker pull apache/apisix@sha256:51bb7b7fcd4162bec53f276c5a9b7b93d5de55723586842becb3e5f165fc0281
+          docker tag apache/apisix@sha256:51bb7b7fcd4162bec53f276c5a9b7b93d5de55723586842becb3e5f165fc0281 apache/apisix:3.18.0-debian
+          cd reference-source
+          timeout --signal=TERM --kill-after=10s 180s python3 -m pytest -q tests/test_execute_apisix_live.py --junitxml="$GITHUB_WORKSPACE/gateway-owner-integration.xml"
+      - name: Package a distinct new image with the byte-exact tested owner JAR
+        run: python3 -I -B -S scripts/package-m2-gateway-owner-candidate-20261101.py build reference-source candidate
+      - name: Use an explicitly empty scanner ignore file
+        run: ': > empty.trivyignore'
+      - name: Scan exact new owner OS and JAR including unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          input: candidate/scan-input.docker.tar
+          format: json
+          output: candidate/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Apply the unchanged HIGH CRITICAL UNKNOWN gate before qualification
+        run: |
+          python3 -I -B -S scripts/package-m2-gateway-owner-candidate-20261101.py finalize reference-source candidate
+          cp gateway-owner-integration.xml candidate/owner-integration.xml
+          cd candidate
+          sha256sum image.docker.tar scan-input.docker.tar candidate.json Dockerfile.resolved source.tar source-inventory.json bom.json trivy-image.json owner-integration.xml > SHA256SUMS
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: candidate/SHA256SUMS
+          create-storage-record: false
+      - name: Preserve publisher proof without selecting or installing the image
+        run: cp '${{ steps.provenance.outputs.bundle-path }}' candidate/provenance.json
+      - name: Independently verify the checksum publisher with the qualified CLI
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify candidate/SHA256SUMS --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-gateway-owner-candidate.yml \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+            --bundle candidate/provenance.json --format json > candidate/publisher-verification.json
+          cd candidate
+          sha256sum --check --strict SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-gateway-owner-candidate-${{ github.run_id }}
+          path: |
+            candidate/image.docker.tar
+            candidate/scan-input.docker.tar
+            candidate/candidate.json
+            candidate/Dockerfile.resolved
+            candidate/source.tar
+            candidate/source-inventory.json
+            candidate/bom.json
+            candidate/trivy-image.json
+            candidate/owner-integration.xml
+            candidate/surefire-reports/
+            candidate/SHA256SUMS
+            candidate/provenance.json
+            candidate/publisher-verification.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Retain a held candidate report without qualifying it
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-gateway-owner-held-${{ github.run_id }}
+          path: |
+            candidate/candidate.json
+            candidate/trivy-image.json
+            candidate/bom.json
+            reference-source/operational-owner/target/surefire-reports/
+            gateway-owner-integration.xml
+          if-no-files-found: ignore
+          retention-days: 30
