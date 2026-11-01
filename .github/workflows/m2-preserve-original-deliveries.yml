@@ -1,0 +1,54 @@
+name: M2 preserve original MCP UDP deliveries
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths: ['scripts/preserve-original-mcp-udp.py', '.github/workflows/m2-preserve-original-deliveries.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download exact existing archive without rebuilding any image
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --connect-timeout 15 --max-time 300 --max-filesize 1708468889 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/11880585559/zip \
+            -o original.zip
+          python3 -I -B -S scripts/preserve-original-mcp-udp.py original.zip preserved
+      - uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
+        with: {cosign-release: v3.1.3}
+      - name: Verify the original publisher and original unchanged signed subject
+        run: |
+          set -euo pipefail
+          cosign verify-blob preserved/origin/COHORT_SHA256SUMS \
+            --bundle preserved/origin/COHORT_SHA256SUMS.sigstore.json \
+            --certificate-identity 'https://github.com/GioNob/ouf-deploy/.github/workflows/semantic-proposal-candidate-package.yml@refs/heads/codex/complete-file-cohort-package-20261014' \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-github-workflow-repository GioNob/ouf-deploy \
+            --certificate-github-workflow-sha f31a653ee1da56b29a6171c159f9c601523735b9
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-original-mcp-${{ github.run_id }}
+          path: |
+            preserved/mcp/
+            preserved/origin/
+            preserved/receipt.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-original-udp-${{ github.run_id }}
+          path: |
+            preserved/udp/
+            preserved/origin/
+            preserved/receipt.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
