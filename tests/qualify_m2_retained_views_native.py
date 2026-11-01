@@ -14,20 +14,33 @@ from tools.m2_discovery_installation_profile import current_retained_views as m
 HELPER=r'''
 #define _GNU_SOURCE
 #include <fcntl.h>
+#include <limits.h>
+#include <linux/mount.h>
 #include <sched.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mount.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 int main(int argc,char **argv){
   if(argc!=5)return 2;
-  int fd=open(argv[1],O_RDONLY|O_CLOEXEC);if(fd<0||setns(fd,CLONE_NEWNS)){perror("namespace");return 3;}close(fd);
+  char target[PATH_MAX];if(strlen(argv[3])>=sizeof(target))return 2;strcpy(target,argv[3]);
+  char *leaf=strrchr(target,'/');if(!leaf||!leaf[1])return 2;*leaf++=0;
+  int parent=open(target,O_RDONLY|O_DIRECTORY|O_CLOEXEC);if(parent<0){perror("target-parent");return 3;}
+  int tree=-1;
+  if(!strcmp(argv[2],"bind")){
+    tree=syscall(SYS_open_tree,AT_FDCWD,argv[4],OPEN_TREE_CLONE|OPEN_TREE_CLOEXEC);
+    if(tree<0){perror("clone-fixture-bind");return 3;}
+  }
+  int fd=open(argv[1],O_RDONLY|O_CLOEXEC);
+  if(fd<0||setns(fd,CLONE_NEWNS)||fchdir(parent)){perror("namespace-cwd");return 3;}close(fd);close(parent);
   int rc;
-  if(!strcmp(argv[2],"rw"))rc=mount(NULL,argv[3],NULL,MS_REMOUNT|MS_BIND,NULL);
-  else if(!strcmp(argv[2],"ro"))rc=mount(NULL,argv[3],NULL,MS_REMOUNT|MS_BIND|MS_RDONLY,NULL);
-  else if(!strcmp(argv[2],"bind"))rc=mount(argv[4],argv[3],NULL,MS_BIND,NULL);
-  else if(!strcmp(argv[2],"unmount"))rc=umount(argv[3]);
+  if(!strcmp(argv[2],"rw"))rc=mount(NULL,leaf,NULL,MS_REMOUNT|MS_BIND,NULL);
+  else if(!strcmp(argv[2],"ro"))rc=mount(NULL,leaf,NULL,MS_REMOUNT|MS_BIND|MS_RDONLY,NULL);
+  else if(!strcmp(argv[2],"bind"))rc=syscall(SYS_move_mount,tree,"",AT_FDCWD,leaf,MOVE_MOUNT_F_EMPTY_PATH);
+  else if(!strcmp(argv[2],"unmount"))rc=umount(leaf);
   else return 4;
+  if(tree>=0)close(tree);
   if(rc){perror("fixture-mount");return 5;}return 0;
 }
 '''
@@ -45,9 +58,10 @@ class NativeViews(unittest.TestCase):
         cls.initial_docker=json.loads(cls.command('inspect',cls.gateway['containerId']))[0]
 
     def mutate(self,operation,target,source='unused'):
-        subprocess.run([str(self.helper),'/proc/'+str(self.pid)+'/ns/mnt',operation,
+        result=subprocess.run([str(self.helper),'/proc/'+str(self.pid)+'/ns/mnt',operation,
             '/proc/'+str(self.pid)+'/root'+target,str(source)],stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5,check=True)
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5)
+        self.assertEqual(result.returncode,0,result.stderr.decode()[:512])
 
     def unchanged_declaration(self):
         actual=json.loads(self.command('inspect',self.gateway['containerId']))[0]
