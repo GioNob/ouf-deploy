@@ -6,7 +6,7 @@
   "expectedPermissionOrContentPolicyEstablished": false,
   "independentTargetFilesystemOrLogRead": false,
   "launcherCommit": "8a302bab5567105f056f617dfb18070907391e43",
-  "next": "Prepare exact predecessor-bound gateway-owner mount metadata reconciliation, zero Engine GET and zero mounted-file content, preserve all consumed scopes; do not guess/normalize drift or rerun hash preparation.",
+  "next": "Exact predecessor-bound gateway-owner metadata reconciliation qualified at0bea0b9c/launcher9f8bf351; zero new Engine or contents, preserve all scopes. Operator executes exact command and returns public JSON.",
   "observedDate": "2026-11-01",
   "publicResultCanonicalSha256": "a7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319",
   "receipt": {
@@ -31,6 +31,7 @@
     "status": "STOP_RECONCILE",
     "targetApplyAuthorized": false
   },
+  "reconciliationEvidence": "evidence/m2-retained-hash-reconciliation-qualified-20261101.json",
   "releaseAcceptance": false,
   "runtimeAuthorityIssued": false,
   "schema": "ouf.m2-retained-readonly-hashes-target-stop.v1",

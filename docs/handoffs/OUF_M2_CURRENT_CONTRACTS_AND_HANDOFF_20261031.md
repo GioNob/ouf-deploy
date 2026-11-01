@@ -1,29 +1,42 @@
-# Passo corrente — hash fermati prima dei contenuti, riconciliazione metadati in qualifica
+# Passo corrente — confronto metadati qualificato, input VPS necessario
 
-1 novembre2026. L'ultimo comando ha restituito `STOP_RECONCILE /
-READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE`; scope consumato e conservato.
-Due GET, quattro letture di metadati, zero file/byte letti per hashing. Risultato
-canonico a7a7601c. [Ricevuta](../../evidence/m2-retained-readonly-hashes-target-stop-20261101.json).
-Non ripetere il comando e non cancellare/modificare le tre directory precedenti.
+1 novembre2026. Hash STOP dopo2GET/zero file o byte hashati:
+`READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE`, risultato a7a7601c.
+Tre scope consumati, nessun candidato hash. Non ripetere i vecchi comandi e non
+cancellare/modificare le prove. [Stop target](../../evidence/m2-retained-readonly-hashes-target-stop-20261101.json).
+Il punto nel sorgente identifica gateway-owner, secondo peer dopo caddy:
+configurazioni osservate passate, differenza nei metadati del secondo peer;
+altri8peer non letti. La causa precisa/rotazione legittima restano da provare.
 
-Il punto nel sorgente fissato identifica gateway-owner, secondo peer dopo caddy.
-Le configurazioni osservate hanno superato il guard; il confronto dei metadati
-dei mount del secondo peer è fallito. Gli altri otto peer non sono stati letti.
-Il risultato non contiene quali nodi/campi siano diversi: rotazione prevista,
-modifica di custodia o altra causa restano da distinguere. Non si ignorano i drift.
+È qualificato il [nuovo comando mirato di riconciliazione](OUF_M2_RETAINED_HASH_METADATA_RECONCILIATION_20261101.md).
+Serve l'operatore perché manca shell/filesystem VPS. Zero nuovi GET Engine e zero
+contenuti montati, solo metadati O_PATH/listing dei mount gateway-owner. Verifica
+fallimento/claim/profilo esatti e vecchio candidato46f6e635/risultato59935457/seed14e42,
+boot/root/gateway pins. Pubblica classi/nomi campi/ID opachi, percorsi e frame esatti
+root privati. Non segue link o legge token/chiavi. Non riabilita gli hash né deduce
+policy o causa dalla sola osservazione. Il confronto è attuale, non una ricostruzione
+dell'istante fallito, e non osserva nuovamente la configurazione Docker.
+Un solo confronto30s,2048nodi/depth32/128differenze pubbliche, timeout40+kill5.
+La catena resta22GET; quattro controlli cumulativi incluso il nuovo. Nessun
+reset/grant runtime o modifica agli scope consumati.
 
-È in qualifica un nuovo lettore di riconciliazione, limitato ai mount di gateway-owner:
-zero GET Engine e zero contenuti montati, solo O_PATH/metadati e directory names.
-Verifica l'esatto fallimento e il suo claim/profilo, il candidato metadati46f6e635/
-risultato59935457/seed14e42 e i pin boot/root/gateway. Pubblica soltanto classi di
-differenze e nomi dei campi, conservando percorsi/nomi/frame esatti nel JSON root
-privato. Collegamenti o nodi nuovi vengono descritti senza seguirli/leggerli.
-Non ricostruisce retroattivamente l'istante fallito e non dichiara nuova configurazione
-Docker osservata; non riabilita gli hash né deduce una policy dai metadati.
-Unit12 locali PASS; qualifica Docker e consegna sigillata in corso. Nessuna azione
-VPS richiesta prima della consegna concreta qualificata. I GET della catena
-restano22; nessun budget runtime azzerato/concesso. Vecchie prove/readers/235hash
-congelati invariati. Gli stati READY e comandi seguenti sono storico.
+Source0bea0b9c, capsula2332de54 (6sorgenti/107738byte), launcher9f8bf351.
+CI[41291711507](https://github.com/GioNob/ouf-deploy/actions/runs/41291711507)
+PASS20/4suite (unit16/native4), log finali124804139125/124804139324 letti, zero
+failure/error/skip/ResourceWarning. Docker29.8.1/dieci scratch processes reali:
+vecchio stop riprodotto2GET/zero hash, nuova lettura0GET/zero contenuti, sostituzione
+atomica/link/PID;3peer/parent/common hash fixture, non OUF E2E o diagnosi target.
+Publisher41291231946/artifact13077082636 verificato sul runner; cert/subject/source/
+ref/workflow/repo-owner riletti, byte e raw URL immutabili corrispondenti.
+[Dossier](../../evidence/m2-retained-hash-reconciliation-qualified-20261101.json).
+
+Dopo il risultato usare i contratti degli owner per classificare i delta; nessuna
+normalizzazione per supposizione. Custodia privata completa/artefatti runtime/
+bearer/controller/checkpoint/package/review/autorità correnti/E2E/due client aperti.
+Vecchie sorgenti/consegne e235hash congelati invariati. M1/Teatri e stessa
+Farmacie61/10/10OPEN/ministeriale STRING preservati. Nessun replay upload/profile/
+acquisizioni/activation. UDP/all61esiti, poi grafo, poi verticali/API delta.
+Le sezioni seguenti sono storico, non istruzioni operative per i vecchi comandi.
 
 ---
 

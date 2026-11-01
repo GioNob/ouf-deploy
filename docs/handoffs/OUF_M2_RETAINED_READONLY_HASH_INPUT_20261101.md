@@ -1,7 +1,7 @@
 > CONSUMATO — 1 novembre2026: `STOP_RECONCILE /
 > READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE`,2GET/zero file o byte hashati.
 > Non ripetere il comando seguente e non cancellare lo scope. Differenza dei
-> metadati di gateway-owner da riconciliare; nuovo lettore metadata-only in qualifica.
+> metadati di gateway-owner da riconciliare; [nuovo confronto qualificato](OUF_M2_RETAINED_HASH_METADATA_RECONCILIATION_20261101.md).
 > [Ricevuta target](../../evidence/m2-retained-readonly-hashes-target-stop-20261101.json).
 
 # M2 — nuovo input privato: hash dei file regolari montati readonly

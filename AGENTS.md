@@ -1,3 +1,62 @@
+# CURRENT — Exact gateway metadata reconciliation qualified; operator VPS input required
+
+1 November2026, Europe/Rome. Hash input actually STOPPED after2GET with
+READONLY_HASH_MOUNT_METADATA_DIFFERS_FROM_CAPTURE, resulta7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319.
+4metadata reads/637228bytes/2GET/11813Engine bytes/RO5/RW2/nodes7; zero files/
+bytes hashed. Scope consumed, no hash candidate. All3prior scopes must remain
+preserved, never rerun/reset/delete. Sorted second peer is gateway-owner; prior
+caddy/current Docker identity guards passed at that observation, remaining8not
+read. Exact drift fields/category/legitimate renewal unproven. Never guess or
+relax custody guards. Actual metadata input before hashes succeeded46f6e635/
+59935457,25RO/4RW/33nodes/20GET. Actual input direct Engine total now22.
+
+NEXT REQUIRED INPUT: operator executes the NEW exact metadata-only reconciliation
+in docs/handoffs/OUF_M2_RETAINED_HASH_METADATA_RECONCILIATION_20261101.md and returns
+public JSON only. No VPS shell/filesystem connector in this session. Not a hash
+retry or a redundant QUIESCED probe: the old failure didn't persist node/field
+deltas. Only current metadata for gateway-owner, zero Engine requests and zero
+mounted-file contents. Exact failure result/claim/profile + successful candidate/
+receipt/seed required; same boot/root/gateway pins. Directory listing/O_PATH/
+nofollow only. Symlink/hardlink/missing/blocked nodes reported without following.
+Names/paths/exact frames private; public changed field names/categories/opaque
+node IDs and explicit token-path CLASS from old Config.Env only. No token read
+or owner authentication inferred. Current diff is not a historical failure trace,
+no fresh Docker configuration claimed. Incomplete nodes don't prove a cause.
+Hash attempt is NOT rearmed. New1diagnostic/30s/2048nodes/depth32/128public diffs/
+8MiBprivate, outer40s+kill5. Four cumulative controls/22directGET in input chain;
+old clocks/budgets/scope consumption unchanged. No runtime grants/budget reset/
+SQL/OAuth/signing/lifecycle/activation/apply/acceptance. On STOP preserve all scopes
+and return public JSON; never retry/delete/repair inputs.
+
+Launcher9f8bf3517ec5de1cc75808556877938b4bfaed59 SHA256
+b171c4487372af68161150eb7a9f39f7f553f2e3432b2774ced9a5a2a33d9f0f.
+Capsule2332de54f919512ea347d7fae3bbdabf1721d337 SHA256
+5e992de54d31657f0c2fa840cfb0ca2f6e2513c15520a302bec7e8ba22f9f403,
+source0bea0b9c,6closed sources/107738bytes. Actual isolated source import verified
+without target entrypoint. Final41291711507 PASS20/4suites (unit16/native4), final
+logs124804139125/124804139324 read; source41291236508 PASS16/3, bothlogs read;
+zero failure/error/skip/ResourceWarning. Actual Docker29.8.1/ten scratch processes,
+original2GET/zero hash failure reproduced then new0GET/0contents report, atomic
+replacement/symlink/PID restart;3peer/parent/common hash fixtures, not OUF E2E or
+target diagnosis. Publisher41291231946/job124802743273/artifact13077082636 ZIP
+a9b8deb48bed165c45952d5f38b0a8459cda74b27cb8b314948a4f8284cc594b.
+Pinned gh2.97.0 offline runner verify; downloaded cert/source/ref/workflow/
+repoID1409074354/owner96419716/subject read; byte-exact committed capsule and raw
+URL hashes read back. No local crypto rerun claimed. Old235hashes/all5old
+producer modules/capture/hash deliveries unchanged. Evidence: target-stop and
+hash-reconciliation-qualified dated20261101. Existing source04920448 intake/
+controllerv4(13owners/24reads) PASS194/27 and target-intake28/3 remain qualified
+within their scope; this does not override actual target metadata stop.
+
+Continue autonomously/sequentially; no agents/automations or optional stops.
+After actual delta input, classify against existing owner/renewable-token
+contracts without turning observed metadata into expected policy. Full custody,
+all-runtime membership/bearer/complete controller+execution package/private review/
+current HUMAN+role authority/E2E/two clients OPEN. Preserve M1/Teatri8/8technical/
+6/6functional and same Farmacie61/10/10OPEN/ministerial STRING. No upload/profile/
+acquisition/activation replay. UDP/all61outcomes, then graph search, then
+vertical/API delta. All older CURRENT/READY/pending headers below are historical.
+
 # CURRENT — Hash input STOP after2GET/zero hashes; exact metadata reconciliation in qualification
 
 1 November2026, Europe/Rome. Operator returned STOP_RECONCILE /
