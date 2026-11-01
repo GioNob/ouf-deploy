@@ -3,7 +3,7 @@
 Namespace mutation helpers belong only to disposable native negative fixtures.
 Source current/static witnesses and parent authority remain distinct obligations.
 """
-import json,os,sys,unittest
+import json,os,sqlite3,sys,threading,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT),str(ROOT/'tests')]
@@ -26,6 +26,18 @@ class NativeViewInput(unittest.TestCase):
 
     def test_a_actual_twenty_five_readonly_four_rw_and_eight_live_nodes_metadata_only(self):
         c=m.ViewCapture(self.root/'view-input-a')
+        for path in self.auth.values():fixture.rotate(path)
+        stopped=threading.Event();written=threading.Event();failures=[]
+        def writer():
+            try:
+                db=sqlite3.connect(self.database)
+                try:
+                    while not stopped.is_set():
+                        db.execute('update fixture set value=value+1');db.commit()
+                        db.execute('pragma wal_checkpoint(PASSIVE)');written.set();stopped.wait(.005)
+                finally:db.close()
+            except Exception as error:failures.append(type(error).__name__);written.set()
+        thread=threading.Thread(target=writer);thread.start()
         # An FD-based read guard rejects all token/SQLite/static content. Private
         # historical JSON and kernel proc metadata are the only O_RDONLY files.
         original=os.open;original_dup=os.dup;opened={}
@@ -43,7 +55,11 @@ class NativeViewInput(unittest.TestCase):
             value=original_dup(fd)
             if fd in opened:opened[value]=opened[fd]
             return value
-        with patch.object(os,'open',side_effect=closed),patch.object(os,'dup',side_effect=duplicate):result=m.collect(c)
+        try:
+            self.assertTrue(written.wait(5));self.assertFalse(failures)
+            with patch.object(os,'open',side_effect=closed),patch.object(os,'dup',side_effect=duplicate):result=m.collect(c)
+        finally:stopped.set();thread.join(5)
+        self.assertFalse(thread.is_alive());self.assertFalse(failures)
         self.assertEqual(result['counts']['engineGets'],0);self.assertEqual(result['counts']['mountFileContentBytesRead'],0)
         self.assertEqual(result['counts']['effectiveReadonlyMounts'],25);self.assertEqual(result['counts']['effectiveWritableMounts'],4)
         self.assertEqual(result['counts']['liveLeafMetadataNodes'],8);self.assertEqual(result['counts']['liveCustodyContinuityDifferences'],0)
