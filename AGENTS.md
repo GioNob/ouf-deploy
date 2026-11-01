@@ -1,3 +1,78 @@
+# CURRENT — Exact kernel/live-metadata input qualified; necessary VPS operator step
+
+1November2026, Europe/Rome. Actual static success de4546d0/39426368 recorded:
+13distinctfiles3937bytes in17static declarations/25RO4RW33nodes;7token mounts
+and1liveGatewaystore contents excluded,0newEngine. Five scopes consumed/preserved,
+cumulative22GET; NEVER rerun/reset/delete/rearm or grant runtime budgets.
+Target evidence m2-retained-static-custody-target-20261101.json. No agent read
+of private target records/files. Source420125ec currentstatic intake/controller6
+qualified203/28general+26/3targeted. Kernel owner/controller7 qualified209/29+
+33/4native-focused with unchanged production guards after CI fixture corrections.
+Current controller7=15typed owners/28reads/one invocation fence; exact static
+bytes and kernel views checked both boundaries. Live owner/expected policy,
+fullcustody/bearer/checkpoint/complete admission remain false.
+
+NEXT required input: operator executes exactly once the NEW command in
+ docs/handoffs/OUF_M2_RETAINED_EFFECTIVE_VIEWS_20261101.md and returns public JSON
+only. Session has no VPS shell/filesystem connector. New private input pins
+staticde/394 +metadata46/599/seed14, exact5old scope layouts/claim andsameboot/
+root/all10retained process pins. Kernel mountinfo/fdinfo/O_PATH only:25RO4RWactual
+views, same source/view inode and held descriptor mountID/per-mount flags,
+no shadow mounts, tables stable before/after and at interval end. Also captures
+metadata only of7renewable token leaves+1liveSQLite mainfile. Token inode/time
+renewal allowed between independent observations; named/source/view stablewithin
+individualtokenread. SQLite size/time live, custody identity fields stable.
+No token/key/SQLite/static body reads, directory content enumeration, hashes or
+claims; static contents NOT rehashed. Original static full9frames mustmatch;
+typed byte observer still must rehashat execution. Permissionmetadata differences
+are recorded/countedas differences, never become expected policy/ownerauth.
+No current fresh Docker config, live membership/effective credential readability/
+issuer/signature/audience/scope/expiry/revocation inferred. No SQL/IAM/native
+command/setns/mount/lifecycle/signing/grant/reset in production capture.
+
+One6thinputcontrol,1attempt90s/max128kernel reads/16MiBkernelmetadata,
+mountinfo262144bytes4096rows/fdinfo8192bytes/private8MiB, cumulative22GETunchanged.
+Createonce root700/files600 scope kernel-views-de4546d0-20261101-v1. Outer100s+
+kill5; onSTOP/interruption preserve allscopehistory, no retry/repair. Launcher
+ a60b4d6d88e9f96ee3620dc845642f9504b91d33 SHA256
+ c180ed3ebb307e13169fee64ee9bb1594ba8b76b72184173b96877226e7c8482.
+Capsule00de07a457442903041ad8b47899458bb283c714 SHA256
+ 4ddb3625fd961bbd1cd40866227b3ff95af478b791f6058806a5414e9355d811,
+162016bytes/11closed sources, source91a0aeaf1664a387e1d9559ced604f5fb449b37f,
+mapd3c6d1f4496f87336b27fd088f2cf5273dd18b6349bf778c4c95b4b1a8b37d0a.
+Both raw URLs byte-exact readback; actual isolated11source import verified
+without target entrypoint. Original235/all8oldsealedstaticinputsources and all
+oldcapsules unchanged. Kernel primitives factored from qualified observer for
+bounded reuse; no callback/positive owner bypass in actual current constructors.
+
+Source41302293479 PASS15/3(unit5/caps5/native5), both124835589869/124835590076 logs
+read. Final launcher41302674676 PASS19/4(unit14/native5), both124836690015/
+124836690213 logsread. Actual Docker29.8.1/10UID10001scratch processes, original
+five-stage producers, full25RO4RW profile/8live nodes, FDallowlist zero contents,
+atomic token renewal/activeSQLiteWAL/checkpoints during newcapture; permission
+change recordednotpolicy, changedROwithunchangedDockerconfig denied, live symlink
+notfollowed, PIDrestart denied. Controllercompat41302293325 PASS33/4, bothlogs
+124835589382/124835589556 read. General41302293317 PASS209/29, protocol192/24
+job124835589749 +IAM4/DB4in2suites/process2/TLS7, all5logsread. No failures/errors/
+skips/ResourceWarning. Fixtures, not actual targetkernel observation or OUF E2E.
+Publisher41302293479/job124835590076/artifact13082135784 ZIP
+ 937c6514986c0e26187f26c19c925cf66538ff883fbf8f099049d90c5513b55f.
+Pinned gh2.97.0 offline runner verification; downloaded cert/source/ref/workflow/
+repo1409074354/owner96419716/exactsignedsubject read; local export equals artifact/
+committed capsule. No local cryptographic trust-chain rerun claimed. Dossiers:
+retained-view-capture-source/delivery-qualified and retained-effective-views dated20261101.
+
+Continueautonomous/sequential, no agents/automations/optional stops. Fullprivate
+custody/liveowner+policy/workloadbearer/all-runtimeartifacts/completecurrent
+executionpackage+review/currentHUMAN+dualrole/E2E/twoclients OPEN. OldOct14four-
+mount/filefirst sixmoduleassembler cannotbe usedasM2sevenmount package or blindly
+rebuild retainedimages. NewSemanticc2/newOnboardingV38/selectedMCP/currentretained
+original payloads need coherent publishercomposition later. Preserve M1/Teatri
+8/8technical6/6functional and sameFarmacie61rows10cols10OPEN/ministerialSTRING.
+No upload/profile/acquisition/activation/lifecycle replay or historical authority
+reuse. UDP/all61outcomes then graph then vertical/API delta. OlderCURRENT/READY/
+pendinginput headersbelow are historical.
+
 # CURRENT — Current-byte/effective-view owners qualified; one new private kernel/live-metadata input in qualification
 
 1November2026. Actual static host-file input de4546d0/39426368 succeeded,
