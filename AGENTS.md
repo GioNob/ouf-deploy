@@ -1,3 +1,53 @@
+# CURRENT — Security repair scans and exact current MCP bridge PASS; next image bytes input in qualification
+
+1 November 2026. Published source efec6d2b199bd49fa2938d08b3e5eae8b850f437.
+OS repair run 41319954409 jobs 124887823114/124887823255 SUCCESS: all final
+logs read. Four unit tests repeated across two matrix jobs. Original Docker
+29.8.1 imports, three pinned vendor signed APK updates, network NONE, exact
+JAR/all SQL equality, execution config/user, eight-layer original prefix and
+JDK21.0.12.1 version-only probes PASS. Classic scanner input has the SAME config
+and EACH expanded layer byte as runnable candidate. Fresh Trivy0.70 HIGH/
+CRITICAL/UNKNOWN including unfixed: ZERO findings in both actual OS+JAR reports.
+Both complete ZIPs, EVERY inner checksum member and reports independently read.
+Artifacts: Ing13088374953 ZIP93a55649/279117140; UDP13089430534 ZIP1d703c8b/
+241933081. New native IDs e3d397d1/9beae4c9; these are UNSELECTED derivatives,
+NOT retained IDs and NOT target changes. Provenance emitted, not independently
+verified yet. New index m2-scanned-runtime-repair-origins and evidence preserve
+source, native, archive, scan, checksum, proof and provenance bindings explicitly.
+
+Exact current MCP bridge run41319954372 job124887822953 SUCCESS, final log read:
+3 unit tests plus ACTUAL original23MB -> exact457d/a521 native envelope. Generic
+legacy surface unchanged, exactCI source exception only, all235 frozen exact.
+Corrected core Sem/MCP/Onboard scans already PASS as preceding entry records.
+
+NEW source-only input under qualification: retained_image_capture, fixed scope
+m2-native-image-archives-9f1d571b-20261101-v1. This closes the missing PRIVATE
+image-byte input for Gateway/vendor/sidecars and preserves all13 exact old image
+addresses, selected by original CID-bound roster, NOT aliases/current tag lookup.
+13 GET /v1.44/images/sha256:.../get ONLY; no Engine writes/imports/container IO/
+commands/mount contents/SQL/IAM. Archives0400 + index0600/root0700 stay PRIVATE;
+image configuration/build values MAY exist in archives, never printed/exported.
+No image extraction, native/source admission or new target acceptance claimed.
+Exact sixth9f/ac + original46/599 + seed14 validated, all SIX scopes preserved.
+New bounded input: 1800s, <=2GiB/image/8GiBtotal,9GiBinitialfree/1GiBreserve;
+no retries/replay/rearm/runtime budget grant or reset. Cumulative7controls/35GET
+only upon success; failed attempt reports actual22+gets; existing scope rejects
+with unknown cumulative counts and does not overwrite its result. Prior container
+state not freshly inspected: immutable image addresses only, root/boot/Engine
+socket/peer credentials pinned. No application process liveness claim.
+
+Thirteen-source capsule has five local source/CLI/tamper tests PASS. Actual Unix
+socket tests cannot run in local sandbox (EPERM); hosted ROOT unit/native jobs
+must qualify all4+5+3 tests before a launcher/operator command. Reuse actual six
+producer stages and13 distinct Docker29 fixture images via opt-in fixture flag;
+old default10-peer fixture behavior unchanged. Scope7 NOT executed on VPS.
+No operator command yet. Six scopes/22GET remain target fact. Noagents, no optional
+stops. Complete M2 package, Gateway private proposal, fullprivatecustody/liveowner/
+expectedpolicy/bearer/currentHUMAN+dualrole/fullcohort/E2E/two clients still OPEN.
+Preserve M1/Teatri8/8technical6/6functional and Farmacie61/10/10OPEN/STRING.
+No upload/profile/acquisition/activation replay. UDP/alloutcomes then graph then
+vertical/API delta. Every older operator launcher remains consumed/historical.
+
 # CURRENT — CorrectedcoreSem/MCP/Onboard PASS; OSrepair nativechecks PASS but scanner-format HOLD; exactMCP alias next
 
 1November2026,Europe/Rome. Correctedcore source3940e8ac/run41313438162:

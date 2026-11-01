@@ -51,13 +51,20 @@ class NativeStaticIntake(unittest.TestCase):
         tag = 'ouf-retained-capture:'+cls.root.name
         command('build','--network','none','-t',tag,str(build))
         cls.addClassCleanup(lambda: command('image','rm','-f',tag))
-        for role in sorted(m.RETAINED):
+        image_roles=m.ROLES if getattr(cls,'fixture_per_role_images',False) else m.RETAINED
+        for role in sorted(image_roles):
+            role_tag=tag
+            if getattr(cls,'fixture_per_role_images',False):
+                role_build=cls.root/('image-build-'+role);role_build.mkdir(mode=0o700)
+                (role_build/'Dockerfile').write_text('FROM '+tag+'\nLABEL ouf.fixture.role='+role+'\n')
+                role_tag=tag+'-'+role;command('build','--network','none','-t',role_tag,str(role_build))
+                cls.addClassCleanup(lambda role_tag=role_tag:command('image','rm','-f',role_tag))
             mount_args=[]
-            for mount in cls.mount_layout[role]:
+            for mount in cls.mount_layout.get(role,[]):
                 mount_args+=['--mount','type=bind,src='+mount['Source']+',dst='+mount['Destination']+(',readonly' if not mount['RW'] else '')]
             cid=command('run','-d','--name','ouf-'+('gateway-operational-owner' if role=='gateway-owner' else role),
                 '--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges',
-                '--memory','16m','--pids-limit','8',*mount_args,tag)
+                '--memory','16m','--pids-limit','8',*mount_args,role_tag)
             cls.addClassCleanup(lambda cid=cid: command('rm','-f',cid))
             import json
             actual = json.loads(command('inspect',cid))[0]
