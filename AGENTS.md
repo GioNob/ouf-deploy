@@ -1,3 +1,39 @@
+# CURRENT — Actual kernel/live custody input and controller8 qualified; package contract correction in progress
+
+1November2026,Europe/Rome. Actual target9f1d571b/ac206493 receipt consumed
+successfully; fixed current typed observer/controller8 source3fac1af5 qualified:
+focused41305779291 PASS40tests5suites, general41305779380 PASS215tests30suites,
+all7relevant joblogs read with no failures/errors/skips/ResourceWarning.
+Real sixth original producer input, Docker29.8.1/tenUID10001scratch peers,
+normal token renewal/SQLiteWAL allowed, live permission/effectiveRW/shadow/
+static rebound/PID drift denied. Evidence new retained-view-intake-controller
+qualified JSON. All235/map2/3/5/6/8/11 source hashes still exact.
+
+New concrete cross-owner bug discovered before coherent M2composition:
+CurrentArtifactMembership compared selected.modulePackageHash to delivery
+candidate-manifest.json while actual mcp_runtime/private_review require the
+raw unsigned image package-record.json canonicaldigest. Those producer schema
+and bytes differ. Current fix authenticates actual package-record signedmember,
+validates producer schema/module/source/image/runtimeuser/artifactformat/scan/
+noauthority, binds canonicalrawrecordhash, rereads at final boundary. Existing
+MCPplanner/legacyproducers remainunchanged. Fixture now executes BOTH actual
+image+delivery producers with external Docker/Git/scan modeled, not handmade
+package lookalike; cross-owner actual MCPplanner positive and oldmanifesthash
+negative test. Local14membership+11completepackage tests PASS. Native offline
+signature/publisher+package qualification next; do not claim it passed yet.
+These new nativeowners remain outside235frozencompiler; complete package OPEN.
+
+No further operator capture needed and no new VPScommand ready/required.
+Six scopes consumed,22cumulativeEngineGETs. No replay/rearm/budgetreset/grant.
+Continue autonomous/sequential coherent M2source/package composition using
+actual original retained archives (no blind rebuild) and new qualifiedSemantic;
+then fullprivatecustody/liveowner+expectedpolicy/allruntimeartifact/bearer/
+completeexecution/privatecurrentreview/currentHUMAN+dualrole/E2E/twoclients.
+Preserve M1/Teatri8/8technical6/6functional, same Farmacie61rows10cols10OPEN/
+ministerialSTRING, no reupload/profile/acquisition/activation. UDP/alloutcomes
+then graph then vertical/API. No agents/automations/optional stops. All older
+CURRENT/READY/operatorcommand headers below are historical.
+
 # CURRENT — Actual kernel/live-metadata success; exact input/current leaf continuity in qualification
 
 1November2026,Europe/Rome. Operator success9f1d571b1f38ace9ec5b5f52b157ed0c4de20c2e1a4553ccc6ae19f9ae04344a,

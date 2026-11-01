@@ -133,6 +133,29 @@ class CurrentArtifactMembership:
             require(found == expected, 'MCP_MIGRATIONS_DIFFER_FROM_SIGNED_SOURCE_MEMBERS')
         return digest(found)
 
+    def image_package(self, root, record, audit, budget):
+        # Delivery manifests and the image producer's package-record.json are
+        # distinct documents. The MCP planner binds the latter's canonical
+        # digest; authenticate those actual signed member bytes here too.
+        expected = record['files'].get('package-record.json')
+        require(expected is not None, 'SIGNED_IMAGE_PACKAGE_RECORD_MEMBER_REQUIRED')
+        budget.check()
+        package = decode(protected_file(root/record['module']/'package-record.json', 1048576,
+            expected=expected, modes=(0o400, 0o440, 0o600, 0o644)))
+        budget.check()
+        require(type(package) is dict and package.get('schema') == 'ouf.unsigned-offline-candidate-package.v1'
+            and package.get('module') == record['module']
+            and package.get('sourceCommit') == record['sourceCommit'] == audit['sourceCommit']
+            and package.get('imageId') == record['imageId'] == audit['imageId']
+            and package.get('runtimeUser') == audit['imageConfig'].get('User')
+            and package.get('artifactFormat') == 'DOCKER_SAVE_OFFLINE_ARCHIVE_NOT_HOST_OCI_DECLARATION'
+            and package.get('imageScanGate') == record['scanGate']
+            and package.get('notReleaseAcceptance') is True
+            and package.get('signatureIssued') is package.get('targetApplyAuthorized') is False
+            and type(package.get('vpsOperations')) is int and package['vpsOperations'] == 0,
+            'EXACT_SIGNED_IMAGE_PRODUCER_PACKAGE_RECORD_REQUIRED')
+        return digest(package)
+
     def observe(self):
         budget = ObservationBudget(180); row = self.guard(); held = self.databases.runtime.selected.held()
         publisher = self.publisher.observe(); root, records, manifest_hash = self.manifest(row, budget)
@@ -144,10 +167,11 @@ class CurrentArtifactMembership:
                 require(record['files'].get('application.jar') == db['artifact']['files'][0]['sha256'],
                     'REVIEWED_MIGRATION_JAR_IS_NOT_A_SIGNED_PACKAGE_MEMBER')
                 membership[name] = db['artifact']['files'][0]['sha256']
-        images = {}
+        images = {}; packages = {}
         for selected in self.images.plan['images']:
             name = selected['module']; record = records[name]; audit = selected['audit']
-            require(selected['modulePackageHash'] == digest({k: v for k, v in record.items() if k != 'files'})
+            packages[name] = self.image_package(root, record, audit, budget)
+            require(selected['modulePackageHash'] == packages[name]
                 and selected['originalArchiveSha256'] == record['files'].get('image.docker.tar')
                 and record['sourceCommit'] == audit['sourceCommit'] and record['imageId'] == audit['imageId'],
                 'EXACT_SIGNED_SELECTED_IMAGE_PACKAGE_AND_SOURCE_REQUIRED')
@@ -158,6 +182,8 @@ class CurrentArtifactMembership:
                 require(observed == unbound_audit(audit), 'CURRENT_DERIVED_IMAGE_ARCHIVE_MEMBERSHIP_CHANGED')
             images[name] = digest(audit)
         require(self.guard() == row and self.manifest(row, budget)[2] == manifest_hash
+            and {v['module']: self.image_package(root, records[v['module']], v['audit'], budget)
+                for v in self.images.plan['images']} == packages
             and self.databases.sources(budget) == sources and self.publisher.observe() == publisher,
             'SIGNED_ARTIFACT_MEMBERSHIP_CHANGED_DURING_NATIVE_READ')
         self.databases.runtime.selected.held(held); budget.check()

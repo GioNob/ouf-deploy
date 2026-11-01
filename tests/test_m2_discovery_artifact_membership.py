@@ -10,6 +10,8 @@ from unittest.mock import Mock
 ROOT = Path(__file__).resolve().parents[1]; sys.path[:0] = [str(ROOT), str(ROOT/'tests')]
 import test_m2_discovery_current_databases as database_fixture
 import test_image_custody as image_fixture
+from fixtures.offline_image_producer import produce
+from test_chatbot_cohort_plan import fixture as old_container
 from tools.m2_discovery_installation_profile import artifact_membership as m
 from tools.m2_discovery_installation_profile.current_cohort import CurrentCohortRuntime
 from tools.m2_discovery_installation_profile.custody_capture import encoded
@@ -22,6 +24,8 @@ class Membership(unittest.TestCase):
         root = Path(tmp.name); root.chmod(0o700); package = root/'package'; package.mkdir(mode=0o700)
         modules = database_fixture.artifacts(root); by_module = {row['module']: row for row in modules}
         files = {name: {} for name in m.MODULES}; selected = []
+        lock = root/'producer-source-lock.json'
+        lock.write_bytes(encoded({'modules': [{'module': name, 'commit': image_fixture.SOURCE} for name in sorted(m.MODULES)]}))
         for name in sorted(m.MODULES):
             (package/name).mkdir(mode=0o700)
             raw = encoded({'module': name, 'disposableFixture': True})
@@ -31,12 +35,19 @@ class Membership(unittest.TestCase):
             if name != 'mcp':
                 raw = Path(row['artifact']['root']).read_bytes(); (package/name/'application.jar').write_bytes(raw)
                 files[name]['application.jar'] = hashlib.sha256(raw).hexdigest()
+        deliveries = {}
         for name in ('semantic', 'mcp'):
             def change(config, manifest):
                 config['config']['Env'].append('FIXTURE_MODULE='+name); manifest['RepoTags'] = [name+':fixture']
+                if name == 'mcp':
+                    config['config']['User'] = '10005:10005'
+                    config['config']['Entrypoint'] = ['/usr/local/bin/ouf-mcp']
             source = image_fixture.fixture(change); (package/name/'image.docker.tar').write_bytes(source[0])
-            files[name]['image.docker.tar'] = source[1]
             derived = io.BytesIO(); original = image_fixture.audit(source)
+            payload = b'disposable Semantic jar; never run' if name == 'semantic' else b'disposable MCP executable; never run'
+            deliveries[name] = produce(root/(name+'-producer-checkout'), package/name, name, original, source[0], payload, lock)
+            files[name].update({p.relative_to(package/name).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in (package/name).rglob('*') if p.is_file() and p.name != 'SHA256SUMS'})
             plan = image_fixture.c.tagless_archive(io.BytesIO(source[0]), derived, original)
             path = root/(name+'.tagless.tar'); path.write_bytes(derived.getvalue()); path.chmod(0o600)
             audit = image_fixture.c.archive(derived, plan['derivedArchiveSha256'], source[2], image_fixture.SOURCE)
@@ -44,6 +55,7 @@ class Membership(unittest.TestCase):
                 'originalArchiveSha256': source[1]})
         records = {name: {'module': name, 'sourceCommit': image_fixture.SOURCE,
             'scanGate': 'PASS_HIGH_CRITICAL_UNKNOWN_INCLUDING_UNFIXED', 'files': files[name]} for name in m.MODULES}
+        for name, delivery in deliveries.items(): records[name] = dict(delivery, files=files[name])
         for image in selected: records[image['module']]['imageId'] = image['audit']['imageId']
         for path in package.rglob('*'):
             if path.is_file(): path.chmod(0o600)
@@ -91,7 +103,7 @@ class Membership(unittest.TestCase):
             runtime.inputs['cohortManifestHash'] = images.plan['cohortManifestHash'] = m.digest(manifest)
             publisher.runtime_hash = m.digest(runtime.inputs)
             for image in selected:
-                image['modulePackageHash'] = m.digest({k: v for k, v in records[image['module']].items() if k != 'files'})
+                image['modulePackageHash'] = m.digest(m.decode((package/image['module']/'package-record.json').read_bytes()))
         source_tar(); seal()
         return m.CurrentArtifactMembership(publisher, db, images), root, package, records, source_tar, seal
 
@@ -149,7 +161,47 @@ class Membership(unittest.TestCase):
 
     def test_source_commit_drift_in_reviewed_image_plan_is_denied(self):
         reader, _, _, _, _, _ = self.prepared(); reader.images.plan['images'][0]['audit']['sourceCommit'] = 'e'*40
+        with self.assertRaisesRegex(ValueError, 'SIGNED_IMAGE_PRODUCER_PACKAGE_RECORD'): reader.observe()
+
+    def test_actual_image_and_delivery_producers_compose_with_the_mcp_planner(self):
+        from tools.m2_discovery_installation_profile.mcp_runtime import compile_plan
+        reader, _, package, records, _, _ = self.prepared()
+        selected = reader.images.plan['images'][1]
+        raw = m.decode((package/'mcp/package-record.json').read_bytes())
+        delivery = {k: v for k, v in records['mcp'].items() if k != 'files'}
+        self.assertNotEqual(m.digest(raw), m.digest(delivery))
+        self.assertNotEqual(m.digest(raw), records['mcp']['files']['package-record.json'])
+        old, _, _ = old_container('mcp')
+        plan = compile_plan(old=old, selected_image=selected, package=raw, cohort_id='disposable-m2',
+            environment_delta={}, registry_request_hash='1'*64, cohort_manifest_hash=reader.images.plan['cohortManifestHash'])
+        self.assertEqual(plan['replacement']['modulePackageHash'], selected['modulePackageHash'])
+        self.assertTrue(reader.observe()['selectedImageAndMigrationMembershipProven'])
+        selected['modulePackageHash'] = m.digest(delivery)
+        with self.assertRaisesRegex(ValueError, 'SAME_SELECTED_MCP_PACKAGE'): compile_plan(old=old,
+            selected_image=selected, package=raw, cohort_id='disposable-m2', environment_delta={},
+            registry_request_hash='1'*64, cohort_manifest_hash=reader.images.plan['cohortManifestHash'])
         with self.assertRaisesRegex(ValueError, 'SIGNED_SELECTED_IMAGE_PACKAGE_AND_SOURCE'): reader.observe()
+
+    def test_signed_member_bytes_cannot_be_replaced_by_an_equal_delivery_manifest_hash(self):
+        reader, _, package, records, _, seal = self.prepared()
+        path = package/'semantic/package-record.json'; original = path.read_bytes()
+        path.write_bytes(b'{}')
+        with self.assertRaises((ValueError, Denied)): reader.observe()
+        self.assertEqual(path.read_bytes(), b'{}')
+        path.write_bytes(original); records['semantic']['files'].pop('package-record.json'); seal()
+        with self.assertRaisesRegex(ValueError, 'SIGNED_IMAGE_PACKAGE_RECORD_MEMBER_REQUIRED'): reader.observe()
+
+    def test_resealed_producer_record_must_match_image_identity_user_scan_and_authority(self):
+        for field, value in (('schema', 'ouf.chatbot-file-module-package.v1'), ('module', 'onboarding'),
+            ('sourceCommit', 'b'*40), ('imageId', 'sha256:'+'b'*64), ('runtimeUser', '0:0'),
+            ('artifactFormat', 'host declaration'), ('imageScanGate', 'UNSCANNED'),
+            ('notReleaseAcceptance', False), ('signatureIssued', True), ('targetApplyAuthorized', True),
+            ('vpsOperations', False)):
+            with self.subTest(field=field):
+                reader, _, package, records, _, seal = self.prepared(); path = package/'mcp/package-record.json'
+                raw = m.decode(path.read_bytes()); raw[field] = value; path.write_bytes(encoded(raw))
+                records['mcp']['files']['package-record.json'] = hashlib.sha256(path.read_bytes()).hexdigest(); seal()
+                with self.assertRaisesRegex(ValueError, 'SIGNED_IMAGE_PRODUCER_PACKAGE_RECORD'): reader.observe()
 
     def test_publisher_revocation_stops_before_membership_reads(self):
         reader, _, _, _, _, _ = self.prepared(); reader.publisher.observe.side_effect = ValueError('PUBLISHER_REVOKED')
