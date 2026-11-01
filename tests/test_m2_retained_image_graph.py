@@ -46,13 +46,16 @@ class Graph(unittest.TestCase):
             self.assertFalse(public['nativeImageByteIdentityProven']);self.assertFalse(public['missingBlobAdmitted'])
 
     def test_canonical_empty_presence_is_classified_without_synthesis_or_trust(self):
-        raw,image,_=attested_fixture(inline_empty=True,empty_data=False)
-        _,public=self.inspect(raw,image)
-        self.assertEqual(public['missingReferences'],1)
-        row=public['missingReferenceGroups'][0]
-        self.assertEqual(row['context'],'ATTESTATION_CONFIG')
-        self.assertEqual(row['presenceClass'],'ABSENT_CANONICAL_EMPTY_CONFIG');self.assertFalse(row['inlineDataPresent'])
-        self.assertFalse(public['missingBlobAdmitted'])
+        for inline in (False,True):
+            raw,image,_=attested_fixture(inline_empty=True,empty_data=inline)
+            private,public=self.inspect(raw,image)
+            self.assertEqual(public['missingReferences'],1)
+            row=public['missingReferenceGroups'][0]
+            self.assertEqual(row['context'],'ATTESTATION_CONFIG')
+            self.assertEqual(row['presenceClass'],'ABSENT_CANONICAL_EMPTY_CONFIG')
+            self.assertEqual(row['inlineDataPresent'],inline);self.assertFalse(public['missingBlobAdmitted'])
+            for ref in private['references']:
+                self.assertEqual(set(ref['descriptor']),{'digest','size','mediaType','descriptorHash'})
 
     def test_complete_oci_and_classic_layouts_remain_diagnostic_only(self):
         for native in (False,True):

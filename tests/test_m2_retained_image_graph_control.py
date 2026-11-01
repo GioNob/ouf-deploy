@@ -78,5 +78,11 @@ class Control(unittest.TestCase):
         with patch.object(sys,'argv',['graph.py','PRIVATE_ARGUMENT_SENTINEL']):code,result=self.invoke()
         self.assertEqual(code,1);self.assertNotIn('PRIVATE_ARGUMENT',json.dumps(result));self.assertFalse(m.OUTPUT.exists())
 
+    def test_private_report_size_is_bounded_before_any_private_success_file(self):
+        self.prepared()
+        with patch.dict(m.PROFILE,maximumPrivateEvidenceBytes=1):code,result=self.invoke()
+        self.assertEqual(code,1);self.assertEqual(result['reasonCode'],'BOUNDED_PRIVATE_GRAPH_EVIDENCE_REQUIRED')
+        self.assertFalse((m.OUTPUT/'image-graph-diagnostic.private.json').exists())
+
 
 if __name__=='__main__':unittest.main()

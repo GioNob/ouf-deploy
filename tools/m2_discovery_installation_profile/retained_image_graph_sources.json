@@ -13,11 +13,11 @@
   },
   "tools.m2_discovery_installation_profile.retained_image_graph": {
     "path": "tools/m2_discovery_installation_profile/retained_image_graph.py",
-    "sha256": "10653cca29371e20a15a0b92addaacb592e803de654bce69b0891de54c5ee2b7"
+    "sha256": "bc80c962766c20059e86e89896c4f84538461fc71c663d53312ec757c9b55ce8"
   },
   "tools.m2_discovery_installation_profile.retained_image_graph_diagnostic": {
     "path": "tools/m2_discovery_installation_profile/retained_image_graph_diagnostic.py",
-    "sha256": "05207ebfbe165ae852d643fcbfaa1360702696a1d1df9692bbaba1cd86ebfa3e"
+    "sha256": "ba94065154c3c81f072792baa01c0176a329cf4912069992fca1f5540ed5a518"
   },
   "tools.m2_discovery_installation_profile.retained_image_identity": {
     "path": "tools/m2_discovery_installation_profile/retained_image_identity.py",

@@ -7,7 +7,7 @@ silently accepted. Full names/digests/descriptor values stay in private evidence
 import base64,hashlib,re,tarfile
 from collections import Counter
 from pathlib import PurePosixPath
-from .custody_capture import decode,require
+from .custody_capture import decode,digest,require
 from .retained_image_identity import (VerificationBudget,LIMITS,SHA,IMAGE_TYPES,INDEX_TYPES,
     CONFIG_TYPES,EMPTY,EMPTY_DIGEST,ATTESTATION)
 
@@ -185,7 +185,13 @@ def inspect_graph(stream,archive_sha,requested_image,expected_bytes,budget):
             'configurationMembersOpened':0,'layerMembersOpened':0,'expandedLayerBytesRead':0,'externalBlobFetches':0,
             'missingBlobAdmitted':False,'nativeImageByteIdentityProven':False,
             'publisherTrustAccepted':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'releaseAcceptance':False}
+        # Keep bounded structural bindings, not repeated inline payloads/URLs or
+        # arbitrary annotations. Original exact descriptors remain in the archive.
+        structural=[{**{k:v for k,v in row.items() if k!='descriptor'},'descriptor':{
+            'digest':row['descriptor']['digest'],'size':row['descriptor']['size'],
+            'mediaType':row['descriptor']['mediaType'],'descriptorHash':digest(row['descriptor'])}}
+            for row in references]
         private={'schema':'ouf.retained-private-image-graph-diagnostic.v1','archiveSha256':archive_sha,
-            'requestedImageId':requested_image,'references':references,'classicReferences':classic_refs,
+            'requestedImageId':requested_image,'references':structural,'classicReferences':classic_refs,
             'classicMatchedManifestDigests':sorted(set(classic_matches)),'summary':public}
         budget.check();return private,public

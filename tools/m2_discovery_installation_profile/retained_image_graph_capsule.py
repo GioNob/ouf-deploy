@@ -3,7 +3,7 @@ import base64, hashlib, json, re
 from pathlib import Path
 
 SOURCE_MAP = 'tools/m2_discovery_installation_profile/retained_image_graph_sources.json'
-SOURCE_MAP_SHA256 = '94de13bc5deb6f0c9a1bf7d36bd879a573b0eb9d4deed11afe78a03a3f4752f0'
+SOURCE_MAP_SHA256 = '8c890dd5517b75a51d455e5e15dead66fe49d6a3bb24826203e1d19abfda55f9'
 CUSTODY_SHA256 = '834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf'
 LOADER_HASH = '1150d7ec5365426950699b5935d37174011b7badbfba255291dd571c16e0c352'
 ENTRY = 'tools.m2_discovery_installation_profile.retained_image_graph_diagnostic'

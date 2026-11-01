@@ -19,6 +19,7 @@ PROFILE={'schema':'ouf.retained-image-graph-diagnostic-control.v1','maximumAttem
     'priorControlAttempts':9,'maximumCumulativeControlAttempts':10,'cumulativeDirectEngineGets':35,
     'candidateHash':previous.PROFILE['candidateHash'],'captureResultHash':previous.PROFILE['captureResultHash'],
     'failedResultHash':FAILED_RESULT_HASH,'limits':GRAPH_LIMITS,'maximumPublicResultBytes':65536,
+    'maximumPrivateEvidenceBytes':16777216,
     'purpose':'CLASSIFY_PRESENT_AND_MISSING_ARCHIVE_REFERENCES_WITHOUT_IMAGE_ADMISSION',
     'verificationReplayed':False,'captureReplayed':False,'automaticReplayAllowed':False,
     'oldScopesRearmed':False,'runtimeBudgetResetOrGrant':False}
@@ -82,6 +83,7 @@ def diagnose(control):
         'automaticReplayAllowed':False,'runtimeBudgetResetOrGrant':False,'runtimeAuthorityIssued':False,
         'targetApplyAuthorized':False,'releaseAcceptance':False}
     require(len(encoded(result))<=PROFILE['maximumPublicResultBytes'],'BOUNDED_PRIVATE_GRAPH_PUBLIC_RESULT_REQUIRED')
+    require(len(encoded(proof))<=PROFILE['maximumPrivateEvidenceBytes'],'BOUNDED_PRIVATE_GRAPH_EVIDENCE_REQUIRED')
     stable();return proof,result
 
 
