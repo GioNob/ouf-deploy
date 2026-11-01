@@ -69,7 +69,7 @@ jobs:
             python3 -I -B -S "$fixture/repository/scripts/prepare-m2-runtime-os-repair.py" '${{ matrix.role }}' \
             "$fixture/original" "$fixture/candidate"
           mkdir candidate
-          sudo cp "$fixture/candidate/image.docker.tar" "$fixture/candidate/repair-candidate.json" \
+          sudo cp "$fixture/candidate/image.docker.tar" "$fixture/candidate/scan-input.docker.tar" "$fixture/candidate/repair-candidate.json" \
             "$fixture/candidate/build/Dockerfile" candidate/
           cp releases/m2-original-runtime-os-repair-case-20261101.json candidate/
           sudo chown -R "$(id -u):$(id -g)" candidate
@@ -78,7 +78,7 @@ jobs:
         with:
           version: v0.70.0
           scan-type: image
-          input: candidate/image.docker.tar
+          input: candidate/scan-input.docker.tar
           format: json
           output: candidate/trivy-image.json
           list-all-pkgs: true
@@ -91,7 +91,7 @@ jobs:
           python3 -I -B -S scripts/prepare-m2-runtime-os-repair.py '${{ matrix.role }}' prepared candidate \
             --scan candidate/trivy-image.json
           cd candidate
-          sha256sum image.docker.tar repair-candidate.json Dockerfile trivy-image.json \
+          sha256sum image.docker.tar scan-input.docker.tar repair-candidate.json Dockerfile trivy-image.json \
             m2-original-runtime-os-repair-case-20261101.json > SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
