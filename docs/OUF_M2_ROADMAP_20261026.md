@@ -1,32 +1,40 @@
-# CURRENT — Diagnosi immagini riuscita; verifica dei byte del runtime in qualifica
+# CURRENT — Diagnosi acquisita; verifica byte runtime QUALIFICATA, input VPS necessario
 
-1 novembre 2026, Europe/Rome. [Ricevuta corrente](../evidence/m2-image-graph-target-20261101.json): diagnosi completata,
-13 archivi / 2.774.726.144 byte; un solo match classico→OCI per ciascun runtime,
-zero membri classici mancanti. I 22 riferimenti assenti sono manifesti di altre
-piattaforme (13) o ausiliari unknown/nonruntime (9), negli ordinali 0/1/5/7.
-Risultato 95e66e21, prova privata f54c14e3; Exit0. Tutti i 9 scope precedenti
-preservati; cumulativi 10 controlli / 35 GET. Il comando diagnostico è CONSUMATO,
-come cattura e due vecchie verifiche: NON rilanciare nessun comando storico.
+1 novembre 2026, Europe/Rome. [Ricevuta 95e66e21](../evidence/m2-image-graph-target-20261101.json), prova privata f54c14e3:
+13 archivi/2.774.726.144 byte, 13 match classico→OCI univoci, zero membri classici
+mancanti. Le 22 assenze sono manifesti di altre piattaforme (13) o ausiliari
+nonruntime (9), ordinali0/1/5/7. Diagnosi Exit0 e CONSUMATA; totale10controlli/35GET.
+NON rilanciare cattura, due vecchi verificatori, diagnostico o comandi storici.
 
-[Passo corrente](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md): nuovo verificatore del ramo runtime univoco, legato
-al digest nativo originale, al manifest.json classico e alla piattaforma del
-profilo installativo corrente. Configurazione, ogni layer e diff ID sono obbligatori;
-rami mancanti della piattaforma richiesta, indici mancanti, nonruntime indefiniti
-o ambiguità restano bloccanti. I rami ausiliari devono avere marker/target coerenti.
-Non si ammettono indice completo, rami non selezionati, publisher o runtime.
-Riuso dei controlli di digest/compressione/diff ID già qualificati, senza alterare
-17 sorgenti del verificatore, 19 della diagnosi o 235 dell'esecuzione congelata.
-Nuova prova su tutti i 10 scope e gli stessi 13 archivi; zero Engine/fetch/import/
-lifecycle/mount host/credenziali/SQL/OAuth. Massimo 1 controllo/600s, totale 11/35;
-nessun riarmo, reset, grant o authority. Sorgente in qualifica, nessun comando pronto.
+[Handoff corrente](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md), [qualifica](../evidence/m2-selected-runtime-delivery-qualified-20261101.json). Source59784ccb/21moduli,
+capsula db277ecc/SHAd7e433b2/307.649byte; launcher1de7ba7f/SHA7c534bc3.
+Push41336834573 e PR41336840737 SUCCESS: ciascuno31test/6suite, zero failure/error/
+skip/ResourceWarning; tutti sei log finali letti. Tredici exportDocker29.8.1 mantengono
+config/manifesto/layerHash del verificatore congelato. Export vendor REALE parziale:
+config e tutti i layer del runtime verificati,8+7rami assenti fuori ammissione;
+assenza di config/layer selezionati negata. AST del ciclo layer uguale all'originale.
+Source ZIP/publisher/statement/identità confrontati, HTTPS esatto qualificato.
+Tutti235sorgenti congelati,19diagnosi e17vecchia verifica invariati.
 
-Riletti handoff M1, dossier Teatri e audit M2: riusare contratti owner, provenance,
-identità/proprietà/recovery; nessuna terza acquisizione o nuovo motore. M1 tecnico
-8/8 e funzionale 6/6 acquisiti; stessa Farmacie 61 righe/10 campi OPEN, ministeriale
-STRING. M2/G5/G6/G7/due client ancora OPEN. Restano source/publisher/membership,
-Gateway proposal, owner/policy/custody/bearer, coorte/pacchetto/review/authority e
-prova UDP con tutte le righe. Poi grafo/search e verticali/API scheduler/delta.
-Nessun subagente, automazione, merge o release acceptance. Header seguenti STORICI.
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, UNA VOLTA. Richiede
+ricevuta/prova/profili esatti e tutti10scope, poi digest nativo→unico manifesto
+runtime→manifest.json/config/layer/diffID, con piattaforma del profilo corrente.
+Rami della piattaforma richiesta mancanti, indici assenti, marker/target ausiliari
+incongrui e ambiguità restano STOP; ogni assenza riconciliata con la diagnosi.
+Indice completo, rami non selezionati, publisher, scan e runtime NON ammessi.
+Nuovo scope m2-selected-runtime-bytes-fa95a719-20261101-v1,1controllo/600s,
+totale11controlli/35GET. Zero Engine/fetch/import/estrazione/lifecycle/mount host/
+credenziali/SQL/OAuth; nessun riarmo/reset/grant/authority. STOP/interruzione:
+conservare tutto e non rilanciare. L'agente non ha shell o archivi VPS; il plugin
+non espone questa lettura amministrativa. Nessun nuovo upload/profiling/acquisizione.
+
+Teatri SEMPRE riletto: handoffM1, dossier26join/13identità/20proprietà/8Cinema e
+auditM2; riuso contratti owner/provenance/identity/property/recovery. M1tecnico8/8,
+funzionale6/6 acquisiti; stessa Farmacie61righe/10campiOPEN/ministerialeSTRING.
+M2/G5/G6/G7/dueclient OPEN. Residui source/publisher/membership/Gatewayproposal/
+owner-policy/custody/bearer/coorte/pacchetto/review/authority e provaUDP/tutte righe
+restano aperti. Poi grafo/search e verticali/API scheduler/delta. Nessun subagente,
+automazione, merge o release acceptance. Header/comandi seguenti STORICI.
 
 # CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
 

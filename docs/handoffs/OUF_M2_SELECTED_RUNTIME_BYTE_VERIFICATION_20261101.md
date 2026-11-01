@@ -1,6 +1,6 @@
 # M2 — verifica del ramo runtime dopo la diagnosi esatta
 
-1 novembre 2026, Europe/Rome. Sorgente IN QUALIFICA; nessun nuovo comando pronto.
+1 novembre 2026, Europe/Rome. Sorgente e consegna QUALIFICATI; prova VPS NON eseguita.
 [Diagnosi operatore](../../evidence/m2-image-graph-target-20261101.json), Exit0,
 risultato canonico 95e66e217be370477f7bece3a3ac7313857c92d73dd7d6fabd41c2200f67cea7,
 prova privata f54c14e334545054a4c6d3f56d51c3ad9d8c4038653dd2c813b4408dabc295ea.
@@ -77,3 +77,53 @@ restano source/publisher/membership, Gateway proposal, owner/policy/custody/bear
 coorte/pacchetto/review/authority correnti e Farmacie fino a UDP con ogni riga.
 Poi grafo/search e verticali/API scheduler/delta. Nessuna acquisizione/attivazione,
 merge, release acceptance, subagente o automazione autorizzata da questo passo.
+
+## Qualifica sorgente e consegna acquisita
+
+[Source59784ccb](../../evidence/m2-selected-runtime-source-qualified-20261101.json),
+21 moduli chiusi. Push41336480788 e PR41336488322: ciascuno23test/4suite, tutti
+quattro log finali letti, zero failure/error/skip/ResourceWarning. Tredici export
+Docker29.8.1 reali hanno gli stessi config/manifesto/layerHash del verificatore
+congelato. Il vero export vendor busybox1.37.0 verifica il runtime e lascia fuori
+8 manifesti di altre piattaforme e7ausiliari. Rimuovere config/layer reali impone STOP.
+Il sorgente non ha verificato i byte privati sul VPS.
+
+Capsula307.649byte, SHAd7e433b2d42c89aa8cdd8ccf49ce5dd97f0deb17479cba844c666270ff7a0f12,
+pubblicata indb277ecccd234f1171763cc093f0e97ec023ab32. ZIPoriginale13094449213,
+112.622byte/SHAcae6b846…, scaricato e tutti cinque membri letti; builder locale
+identico byte per byte. Verifica crittografica gh2.97 sul runner; bundle, statement,
+certificato e subject/source/repo/workflow/ref/runner letti e confrontati. Nessuna
+riverifica crittografica locale della trustchain dichiarata.
+
+Nuovo launcher1de7ba7fa5e393f64c25d3c19b47c88267553d3c,
+SHA7c534bc3d94b9fec0983c3d11508d94b4e335f0457c648939a5daf387608d89a.
+Push41336834573 e PR41336840737 SUCCESS: ciascuno31test/6suite, zero failure/
+error/skip/ResourceWarning; tutti sei log finali letti. Include10test identità,
+5controllo dieci scope,5capsula,7launcher,3Docker29.8.1 e1HTTPS reale esatto.
+[Qualifica finale](../../evidence/m2-selected-runtime-delivery-qualified-20261101.json).
+[Comando preparato](../../releases/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_COMMAND_20261101.sh)
+QUALIFICATO e unica azione operatore corrente. Le capsule rigenerate dalle CI
+del launcher dichiarano altre revisioni; non sostituirle alla d7e433b2 consegnata
+e vincolata alla provenienza originale sopra.
+
+## Unica azione operatore necessaria ora
+
+Come oufadmin in SSH interattivo sul VPS eseguire UNA SOLA VOLTA il
+[nuovo comando esatto](../../releases/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_COMMAND_20261101.sh).
+Gli archivi e la prova diagnostica sono privati sul VPS; il plugin OUF non
+espone questa lettura amministrativa e l'agente non ha SSH. È manutenzione,
+non parte del percorso file ordinario. Password sudo soltanto nel terminale;
+nessun login IAM/token da fornire in chat. Niente ricattura o duplicazione degli
+archivi; non servono altri9GiB. Lettura della configurazione solo dall'archivio.
+
+Atteso SELECTED_RUNTIME_BYTES_VERIFIED_COMPLETE_INDEX_NOT_ADMITTED e
+SelectedRuntimeByteVerificationExit=0:13runtime,22assenze riconciliate (13+9),
+tutti10scope preservati,11controlli/35GET. Non significa source/publisher/scan/
+runtime admission o M2 completo. Restituire SOLO JSON pubblico e footer;
+nessun archivio, prova privata o configurazione. STOP/interruzione conserva tutto,
+nessun rilancio o nuova directory alternativa.
+
+Dopo la prova: collegare questi byte esatti ai contratti/source/publisher della
+coorte effettiva, mantenendo repairOS separati e non selezionati; poi Gateway
+proposal/owner-policy/custody/bearer/pacchetto/review/authority correnti e flusso
+Farmacie tramite MCP fino a UDP, con tutti gli esiti. Non riavviare il caso Teatri.

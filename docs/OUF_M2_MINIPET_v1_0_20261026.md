@@ -6,17 +6,20 @@
 **Stima residua:** inventario completato e profiling Farmacie recuperato; restano composizione esatta e qualificazione del flusso completo. Le 34–58 ore, centrale 46, e la relativa riserva della versione 1.0 sono ritirate come forecast corrente.
 **Roadmap:** [sequenza e checkpoint](OUF_M2_ROADMAP_20261026.md). **Registro:** [piano strutturato](../releases/csv-m2-plan-20261026.json).
 
-## Checkpoint corrente — diagnosi acquisita, byte runtime in qualifica
+## Checkpoint corrente — byte runtime qualificati in CI, prova VPS necessaria
 
-[Diagnosi riuscita](../evidence/m2-image-graph-target-20261101.json), Exit0,
-10 controlli/35 GET, scope consumato: 13 match classico→OCI univoci, nessun membro
-classico mancante, 22 manifesti assenti di altre piattaforme o ausiliari.
-[Verifica del runtime esatto](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md)
-in qualifica: digest nativo, classic binding, piattaforma, config e tutti i layer/
-diff ID, con dieci scope preservati. Nessuna ammissione dei rami non selezionati
-né del runtime. Nuovo controllo finito massimo 11/35, nessun comando pronto.
-Sempre riuso dei contratti/prove Teatri, M1 acquisito e stessa Farmacie preservata;
-tutti i gate M2 restano aperti. Checkpoint successivi storici, nessun replay.
+[Diagnosi target acquisita](../evidence/m2-image-graph-target-20261101.json): Exit0,
+10controlli/35GET,13match runtime classico→OCI,zero membri classici mancanti,
+22manifesti assenti di altre piattaforme/ausiliari. Comando consumato.
+[Nuova verifica dei byte del runtime](handoffs/OUF_M2_SELECTED_RUNTIME_BYTE_VERIFICATION_20261101.md)
+qualificata: launcher1de7ba7f, push41336834573 e PR41336840737 ciascuno31test/6suite,
+tutti sei log letti, zero failure/error/skip/ResourceWarning. [Evidenza](../evidence/m2-selected-runtime-delivery-qualified-20261101.json).
+Richiede dieci scope/prova diagnostica esatta, digest nativo, unico classic/native
+binding, piattaforma, config, ogni layer e diff ID. Indice completo/altri rami/
+publisher/scan/runtime non ammessi. Nuovo comando massimo1/600s,11controlli/35GET,
+zeroEngine/fetch/import/estrazione/lifecycle e nessun riarmo/reset/grant/authority.
+Teatri e motori/contratti riusati; M1 acquisito, stessa Farmacie preservata, M2 e
+tutti i suoi gate ancora OPEN. Checkpoint successivi storici: nessun replay.
 
 ## Checkpoint operativo corrente — diagnosi struttura immagini qualificata
 
