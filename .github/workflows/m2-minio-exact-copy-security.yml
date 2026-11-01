@@ -1,0 +1,48 @@
+name: M2 evidence-only recovery and scan of exact MinIO content
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-minio-exact-copy-security.yml'
+      - 'scripts/read-m2-minio-exact-copy-20261101.py'
+permissions: {contents: read}
+jobs:
+  recover-and-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Recover only the three retained public digests and their exact selected layers from the explicit untrusted copy
+        run: python3 -I -B -S scripts/read-m2-minio-exact-copy-20261101.py stage copy-evidence
+      - name: Disable scanner ignore inputs explicitly
+        run: ': > empty.trivyignore'
+      - name: Scan exact historical MinIO OS and Go binaries without executing the image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          input: copy-evidence/scan-input.docker.tar
+          format: json
+          output: copy-evidence/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Preserve exact image-bound result and enforce HIGH CRITICAL UNKNOWN denial
+        run: python3 -I -B -S scripts/read-m2-minio-exact-copy-20261101.py scan copy-evidence
+      - name: Preserve public bytes and actual security result even when denied
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-minio-exact-copy-security-${{ github.run_id }}
+          path: |
+            copy-evidence/root.json
+            copy-evidence/selected.json
+            copy-evidence/configuration.json
+            copy-evidence/copy-result.json
+            copy-evidence/trivy-image.json
+          if-no-files-found: error
+          retention-days: 30
