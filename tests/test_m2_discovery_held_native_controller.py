@@ -46,7 +46,7 @@ class HeldController(unittest.TestCase):
             ('retirement', m.CurrentRetirementAndBackup), ('producers', m.CurrentProducerFence),
             ('operational', m.CurrentOperationalWorker), ('membership', m.CurrentArtifactMembership),
             ('packages', m.CurrentPackageMembership), ('gateway_routes', m.CurrentGatewayRoutes),
-            ('mounts', m.CurrentRetainedMountMetadata), ('static_bytes',m.CurrentRetainedStaticBytes)):
+            ('mounts', m.CurrentRetainedMountMetadata), ('static_bytes',m.CurrentRetainedStaticBytes), ('mount_views',m.CurrentRetainedMountViews)):
             objects[name] = object.__new__(cls); objects[name].guard = Mock()
         runtime = objects['runtime']; runtime.selected = selected; runtime.input_hash = 'c'*64
         runtime.inputs = {'additionalInputsHashes': {k: 'd'*64 for k in m.ADDITIONAL_INPUTS}}
@@ -61,6 +61,7 @@ class HeldController(unittest.TestCase):
         objects['membership'].images = selected.images
         objects['mounts'].runtime = runtime
         objects['static_bytes'].runtime=runtime;objects['static_bytes'].mounts=objects['mounts']
+        objects['mount_views'].runtime=runtime;objects['mount_views'].static_bytes=objects['static_bytes']
         objects['packages'].membership = objects['membership']; objects['packages'].runtime = runtime
         selected.gateway = object()
         objects['gateway_routes'].selected = selected; objects['gateway_routes'].runtime = selected.gateway
@@ -93,13 +94,19 @@ class HeldController(unittest.TestCase):
                         metadataCandidateHash=m.CANDIDATE_HASH,lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,
                         lifecyclePlanHash='e'*64,directEngineGets=0,liveTokenAndOperationalStoreContentBytesRead=0,
                         liveMembersObservedOrAdmitted=False,expectedPermissionOrContentPolicyEstablished=False,newCaptureScopeCreated=False)
+                if name == 'mount_views':
+                    result.update(schema='ouf.discovery-current-retained-mount-views.v1',
+                        nativeRuntimeInputsHash=runtime.input_hash,staticCandidateHash=m.STATIC_CANDIDATE_HASH,
+                        lifecycleContractHash=m.MOUNT_LIFECYCLE_HASH,currentMountDeclarationsMatchEffectiveViews=True,
+                        readonlyMounts=25,writableMounts=4,retainedProcessCount=10,directEngineGets=0,
+                        mountedFileContentBytesRead=0,liveMembersObservedOrAdmitted=False,newCaptureScopeCreated=False)
                 if name == 'gateway_routes':
                     result.update(currentRoutesMatchReviewedPublicationProgress=True,
                         currentGatewayConfigurationAndAdminExecutableObserved=True,
                         publicationCheckpointReentered=False, routeWrites=0)
                 return result
             return Mock(side_effect=run)
-        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes', 'mounts', 'static_bytes'):
+        for name in ('runtime', 'databases', 'publisher', 'tls', 'iam', 'producers', 'operational', 'membership', 'packages', 'gateway_routes', 'mounts', 'static_bytes', 'mount_views'):
             objects[name].observe = operation(name)
         objects['retirement'].retired = operation('retirement'); objects['retirement'].retained_backup = operation('backup')
         selected.images.verify = operation('images')
@@ -111,9 +118,9 @@ class HeldController(unittest.TestCase):
     def test_all_concrete_observers_share_one_fence_without_publication_or_release_receipt(self):
         controller, _, row, calls, occupied, _ = self.prepared(); original = copy.deepcopy(row)
         result = controller.observe()
-        self.assertEqual(calls, ['images','registry','operational','runtime','mounts','static_bytes','gateway_routes','publisher','membership','packages','databases','tls','iam',
-            'retirement','backup','producers','registry','operational','runtime','mounts','static_bytes','gateway_routes','producers','membership','packages','images'])
-        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 26)
+        self.assertEqual(calls, ['images','registry','operational','runtime','mounts','static_bytes','mount_views','gateway_routes','publisher','membership','packages','databases','tls','iam',
+            'retirement','backup','producers','registry','operational','runtime','mounts','static_bytes','mount_views','gateway_routes','producers','membership','packages','images'])
+        self.assertEqual(row, original); self.assertFalse(occupied[0]); self.assertEqual(len(result['ownerEvidenceHashes']), 28)
         self.assertTrue(result['singleTransitionInvocationFenceHeld']); self.assertTrue(result['allBoundNativeObserversCompleted'])
         self.assertNotEqual(result['schema'], 'ouf.semantic-cutover-native-checkpoint.v1')
         for key in ('observationIntervalIsAtomicSnapshot', 'artifactMembershipProven', 'completePrivateCustodyProven',
@@ -158,8 +165,20 @@ class HeldController(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'NATIVE_GENERATIONS_CHANGED'):controller.observe()
         self.assertFalse(occupied[0]);self.assertEqual(len(calls),2)
 
+    def test_kernel_view_cannot_claim_wrong_mount_counts_or_hidden_content_io(self):
+        for field,value in (('readonlyMounts',24),('writableMounts',5),('retainedProcessCount',9),
+            ('directEngineGets',1),('mountedFileContentBytesRead',1),('liveMembersObservedOrAdmitted',True),
+            ('staticCandidateHash','f'*64),('currentMountDeclarationsMatchEffectiveViews',False)):
+            controller,objects,_,_,occupied,_=self.prepared();original=objects['mount_views'].observe.side_effect
+            def changed():
+                proof=original();proof[field]=value;return proof
+            objects['mount_views'].observe.side_effect=changed
+            with self.subTest(field=field),self.assertRaisesRegex(ValueError,'CURRENT_RETAINED_KERNEL_VIEWS'):
+                controller.observe()
+            objects['gateway_routes'].observe.assert_not_called();self.assertFalse(occupied[0])
+
     def test_foreign_or_replaced_owner_or_input_cannot_join_native_witnesses(self):
-        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes', 'mounts', 'static_bytes'):
+        for failure in ('type', 'runtime', 'worker', 'parent', 'input', 'retirement', 'packages', 'gateway_routes', 'mounts', 'static_bytes', 'mount_views'):
             controller, objects, _, calls, _, _ = self.prepared()
             if failure == 'type': controller.publisher = SimpleNamespace(guard=Mock(), observe=Mock())
             elif failure == 'runtime': objects['tls'].runtime = object()
@@ -169,6 +188,7 @@ class HeldController(unittest.TestCase):
             elif failure == 'packages': objects['packages'].membership = object()
             elif failure == 'mounts': objects['mounts'].runtime = object()
             elif failure == 'static_bytes': objects['static_bytes'].mounts=object()
+            elif failure == 'mount_views': objects['mount_views'].static_bytes=object()
             elif failure == 'gateway_routes': objects['gateway_routes'].window.parent = object()
             else: objects['retirement'].installed = False
             with self.subTest(failure=failure), self.assertRaises(ValueError): controller.observe()

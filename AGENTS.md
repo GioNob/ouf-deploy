@@ -1,3 +1,42 @@
+# CURRENT — Static intake qualified; effective kernel mount views in qualification
+
+1November2026. Actual static success de4546d0/39426368 is recorded,13files/
+3937bytes,25RO4RW33nodes,7renewable declarations/1live store excluded,0newEngine,
+0live content. Five scopes consumed/preserved, cumulative22GET. Never replay.
+Source420125ec static intake/current bytes/controllerv6 qualified: targeted
+41300221066 PASS26/3suites, general41300221035 PASS203/28, all7relevant logs read,
+zero failures/errors/skips/ResourceWarning. Native Docker29.8.1/ten UID10001scratch
+processes, original five-stage producer outputs, token rotation/SQLite WAL,
+static file/root/history/process drift and exact constructor/type/allowlist.
+All authority/apply/acceptance/fullcustody/live-admission flags false. Evidence
+m2-retained-static-custody-target and m2-retained-static-intake-qualified dated20261101.
+
+Continue autonomous/sequential source work; no operator action needed yet.
+New CurrentRetainedMountViews binds ACTUAL CurrentRetainedStaticBytes and same
+metadata/runtime. Kernel mountinfo+fdinfo/O_PATH, zero Engine/content/setns/
+mount commands or writes in production. Verify exact25RO4RW targets in10processes,
+source and effective-view inode/metadata, actual held descriptor mountID matching
+per-mount flags (not superblock flags), no nested shadow mount, whole mountinfo
+stable before/after and at interval end, boot/root/process pins/private inputs.
+Live roots only, no token/SQLite members/content/admission. Root/proc magiclink
+only at exact pinned /proc/PID/root, all configured children nofollow. Current
+controllerv7 now15typed owners/28reads/one invocation fence, static bytes and
+kernel views checked both boundaries; no complete checkpoint/acceptance.
+
+Native qualification uses a CI-only setns/mount helper to change effective RO
+flags or add shadow/rebound mounts while Docker Config/HostConfig/Mounts stay
+unchanged. Production observer never invokes this helper or any native command.
+Local5parser/FDpath+16controller tests PASS; actual Docker checks next. Kernel
+contract primary source docs.kernel.org/filesystems/proc.html section3.5/3.8.
+Original235and all8static-capsule sources/old capsules unchanged. Actual target
+private records not read by agent. Full live-owner policy/effective credential
+access/authentication, complete runtime artifact membership/bearer/review/parent+
+child/HUMAN+role authority/controller execution package/E2E/two clients OPEN.
+No new grants/resets or upload/profile/acquisition/activation/lifecycle replay.
+Preserve M1/Teatri8/8technical6/6functional and same Farmacie61/10/10OPEN/codeSTRING.
+UDP/all61outcomes then graph then vertical/API delta. Older ready/input headers
+below are historical. No agents/automations or optional stops.
+
 # CURRENT — Actual static host-file input succeeded; native byte continuity in qualification
 
 1 November2026, Europe/Rome. Actual operator success candidate

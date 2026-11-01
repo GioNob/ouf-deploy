@@ -1,9 +1,9 @@
-name: M2 current retained static bytes and metadata intake
+name: M2 current retained effective mount views and static bytes
 on:
   push:
-    paths: ["tools/m2_discovery_installation_profile/retained_static_intake.py", "tools/m2_discovery_installation_profile/current_retained_static.py", "tests/test_m2_retained_static_intake.py", "tests/qualify_m2_retained_static_intake_native.py", "evidence/m2-retained-static-custody-target-20261101.json", "tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-static-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_static_intake.py", "tools/m2_discovery_installation_profile/current_retained_static.py", "tools/m2_discovery_installation_profile/current_retained_views.py", "tests/test_m2_retained_views.py", "tests/qualify_m2_retained_views_native.py", "tests/test_m2_retained_static_intake.py", "tests/qualify_m2_retained_static_intake_native.py", "evidence/m2-retained-static-custody-target-20261101.json", "tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-static-intake.yml"]
   pull_request:
-    paths: ["tools/m2_discovery_installation_profile/retained_static_intake.py", "tools/m2_discovery_installation_profile/current_retained_static.py", "tests/test_m2_retained_static_intake.py", "tests/qualify_m2_retained_static_intake_native.py", "evidence/m2-retained-static-custody-target-20261101.json", "tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-static-intake.yml"]
+    paths: ["tools/m2_discovery_installation_profile/retained_static_intake.py", "tools/m2_discovery_installation_profile/current_retained_static.py", "tools/m2_discovery_installation_profile/current_retained_views.py", "tests/test_m2_retained_views.py", "tests/qualify_m2_retained_views_native.py", "tests/test_m2_retained_static_intake.py", "tests/qualify_m2_retained_static_intake_native.py", "evidence/m2-retained-static-custody-target-20261101.json", "tools/m2_discovery_installation_profile/retained_mount_intake.py", "tools/m2_discovery_installation_profile/retained_mount_lifecycle.py", "tools/m2_discovery_installation_profile/current_retained_mounts.py", "tools/m2_discovery_installation_profile/held_native_controller.py", "tests/test_m2_retained_mount_intake.py", "tests/test_m2_discovery_held_native_controller.py", "tests/qualify_m2_retained_mount_intake_native.py", "evidence/m2-retained-mount-role-correction-target-20261101.json", ".github/workflows/m2-retained-static-intake.yml"]
 permissions: {contents: read}
 jobs:
   protected-intake-and-controller:
@@ -20,7 +20,7 @@ jobs:
           sudo cp -a . "$fixture/repository"
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
-          for suite in test_m2_retained_static_intake.py test_m2_discovery_held_native_controller.py; do
+          for suite in test_m2_retained_static_intake.py test_m2_retained_views.py test_m2_discovery_held_native_controller.py; do
             sudo python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
           done
   native-ten-peers:
@@ -65,4 +65,4 @@ jobs:
           sudo chown -R root:root "$fixture"
           sudo chmod -R go-w "$fixture"
           sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
-            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_retained_static_intake_native.py -v
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_retained_views_native.py -v

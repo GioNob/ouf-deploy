@@ -25,13 +25,14 @@ from .current_retained_mounts import CurrentRetainedMountMetadata
 from .retained_mount_intake import CANDIDATE_HASH, RESULT_HASH
 from .retained_mount_lifecycle import CONTRACT_HASH as MOUNT_LIFECYCLE_HASH
 from .current_retained_static import CurrentRetainedStaticBytes
+from .current_retained_views import CurrentRetainedMountViews
 from .retained_static_intake import CANDIDATE_HASH as STATIC_CANDIDATE_HASH, RESULT_HASH as STATIC_RESULT_HASH
 from .node_owner import ObservationBudget
 from application_verification_adapter import ApplicationVerificationAdapter
 
 
 class HeldNativeController:
-    def __init__(self, *, selected, runtime, databases, publisher, tls, iam, retirement, producers, operational, membership, packages, gateway_routes, mounts, static_bytes):
+    def __init__(self, *, selected, runtime, databases, publisher, tls, iam, retirement, producers, operational, membership, packages, gateway_routes, mounts, static_bytes, mount_views):
         self.selected, self.runtime = selected, runtime
         self.databases, self.publisher, self.tls, self.iam = databases, publisher, tls, iam
         self.retirement, self.producers, self.operational = retirement, producers, operational
@@ -40,19 +41,20 @@ class HeldNativeController:
         self.gateway_routes = gateway_routes
         self.mounts = mounts
         self.static_bytes = static_bytes
+        self.mount_views = mount_views
         self.ids = tuple(map(id, self.owners()))
         self.guard()
 
     def owners(self):
         return (self.selected, self.runtime, self.databases, self.publisher, self.tls,
-            self.iam, self.retirement, self.producers, self.operational, self.membership, self.packages, self.gateway_routes, self.mounts, self.static_bytes)
+            self.iam, self.retirement, self.producers, self.operational, self.membership, self.packages, self.gateway_routes, self.mounts, self.static_bytes, self.mount_views)
 
     def lineage(self):
         owners = self.owners()
         types = (DiscoverySelectedRuntime, CurrentCohortRuntime, CurrentCohortDatabases,
             CurrentPublisherCustody, CurrentTlsIdentities, CurrentWorkloadIam,
             CurrentRetirementAndBackup, CurrentProducerFence, CurrentOperationalWorker, CurrentArtifactMembership,
-            CurrentPackageMembership, CurrentGatewayRoutes, CurrentRetainedMountMetadata, CurrentRetainedStaticBytes)
+            CurrentPackageMembership, CurrentGatewayRoutes, CurrentRetainedMountMetadata, CurrentRetainedStaticBytes, CurrentRetainedMountViews)
         require(tuple(map(id, owners)) == self.ids and all(type(o) is t for o, t in zip(owners, types)),
             'EXACT_NATIVE_HELD_CONTROLLER_OWNERS_REQUIRED')
         s, r = self.selected, self.runtime; a = s.installation.application
@@ -69,6 +71,7 @@ class HeldNativeController:
             and self.packages.membership is self.membership and self.packages.runtime is r
             and self.mounts.runtime is r
             and self.static_bytes.mounts is self.mounts and self.static_bytes.runtime is r
+            and self.mount_views.static_bytes is self.static_bytes and self.mount_views.runtime is r
             and self.gateway_routes.selected is s and self.gateway_routes.runtime is s.gateway
             and self.gateway_routes.window.app is a and self.gateway_routes.window.executor is a.executor
             and self.gateway_routes.window.parent is a.discovery_parent
@@ -141,6 +144,19 @@ class HeldNativeController:
                 and proofs['retainedStaticBytes']['expectedPermissionOrContentPolicyEstablished'] is False
                 and proofs['retainedStaticBytes']['newCaptureScopeCreated'] is False,
                 'CURRENT_STATIC_BYTE_CONTINUITY_WITHOUT_LIVE_ADMISSION_OR_POLICY_REQUIRED')
+            read('retainedMountViews', self.mount_views.observe)
+            require(proofs['retainedMountViews']['schema']=='ouf.discovery-current-retained-mount-views.v1'
+                and proofs['retainedMountViews']['nativeRuntimeInputsHash']==self.runtime.input_hash
+                and proofs['retainedMountViews']['staticCandidateHash']==STATIC_CANDIDATE_HASH
+                and proofs['retainedMountViews']['lifecycleContractHash']==MOUNT_LIFECYCLE_HASH
+                and proofs['retainedMountViews']['currentMountDeclarationsMatchEffectiveViews'] is True
+                and proofs['retainedMountViews']['readonlyMounts']==25 and proofs['retainedMountViews']['writableMounts']==4
+                and proofs['retainedMountViews']['retainedProcessCount']==10
+                and proofs['retainedMountViews']['directEngineGets']==0
+                and proofs['retainedMountViews']['mountedFileContentBytesRead']==0
+                and proofs['retainedMountViews']['liveMembersObservedOrAdmitted'] is False
+                and proofs['retainedMountViews']['newCaptureScopeCreated'] is False,
+                'CURRENT_RETAINED_KERNEL_VIEWS_WITHOUT_CONTENT_OR_LIVE_ADMISSION_REQUIRED')
             read('gatewayRoutes', self.gateway_routes.observe)
             require(proofs['gatewayRoutes']['currentRoutesMatchReviewedPublicationProgress'] is True
                 and proofs['gatewayRoutes']['currentGatewayConfigurationAndAdminExecutableObserved'] is True
@@ -170,6 +186,7 @@ class HeldNativeController:
             read('finalRuntime', self.runtime.observe)
             read('finalRetainedMountMetadata', self.mounts.observe)
             read('finalRetainedStaticBytes', self.static_bytes.observe)
+            read('finalRetainedMountViews', self.mount_views.observe)
             read('finalGatewayRoutes', self.gateway_routes.observe)
             read('finalProducers', self.producers.observe)
             read('finalArtifactMembership', self.membership.observe)
@@ -180,13 +197,14 @@ class HeldNativeController:
                 and proofs['runtime'] == proofs['finalRuntime']
                 and proofs['retainedMountMetadata'] == proofs['finalRetainedMountMetadata']
                 and proofs['retainedStaticBytes'] == proofs['finalRetainedStaticBytes']
+                and proofs['retainedMountViews'] == proofs['finalRetainedMountViews']
                 and proofs['gatewayRoutes'] == proofs['finalGatewayRoutes']
                 and proofs['artifactMembership'] == proofs['finalArtifactMembership']
                 and proofs['sixModulePackage'] == proofs['finalSixModulePackage']
                 and proofs['producers'] == proofs['finalProducers'],
                 'HELD_CONTROLLER_NATIVE_GENERATIONS_CHANGED_DURING_OBSERVATION_INTERVAL')
             require(self.guard() == row, 'HELD_CONTROLLER_FINAL_HISTORY_CHANGED'); budget.check()
-            return {'schema': 'ouf.discovery-held-native-controller-witness.v6',
+            return {'schema': 'ouf.discovery-held-native-controller-witness.v7',
                 'parentAuthorityHash': a.discovery_parent.sha, 'childAuthorityHash': a.raw_hash,
                 'heldHistoryHash': digest(row), 'nativeRuntimeInputsHash': self.runtime.input_hash,
                 'ownerEvidenceHashes': {name: digest(proof) for name, proof in proofs.items()},
@@ -197,6 +215,7 @@ class HeldNativeController:
                 'currentRetainedStaticMetadataAndLiveRootsMatchAcceptedCapture':True,
                 'retainedLiveMembersObservedOrAdmitted':False,
                 'currentStaticFileBytesMatchAcceptedCandidate':True,
+                'currentRetainedKernelMountViewsMatchDeclarations':True,
                 'expectedRetainedMountPolicyEstablished':False,
                 'observationIntervalIsAtomicSnapshot': False, 'artifactMembershipProven': False,
                 'completePrivateCustodyProven': False, 'actualWorkloadBearerAdmissionProven': False,

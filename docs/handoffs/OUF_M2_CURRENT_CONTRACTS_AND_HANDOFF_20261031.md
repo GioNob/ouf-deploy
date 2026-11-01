@@ -1,3 +1,10 @@
+> CURRENT: static intake/current-byte witness qualified at420125ec (target
+> de4546/394263, five consumed scopes,22GET). General203tests28suites and native
+> intake26/3 PASS, logs read. Effective kernel mount-view observer/controllerv7
+> now15owners28reads in qualification. Zero Engine/content/commands in view
+> observer; direct namespace shadow/RO drift negative tests confined to CI.
+> No new VPS command needed yet; live-owner/fullcustody/admission/E2E still open.
+
 > CURRENT 1November2026: actual static-input success de4546d0/39426368,
 > 13files3937bytes, zero new Engine/live content; all5scopes consumed/preserved,
 > cumulative22GETs. New pure static intake/current byte observer/controllerv6
