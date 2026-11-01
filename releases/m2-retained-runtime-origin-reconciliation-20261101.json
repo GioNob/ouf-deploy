@@ -87,6 +87,9 @@
     "semantic": {
       "configurationDigest": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
       "currentSecurityScanProven": false,
+      "freshScanAdmission": "HELD_HIGH_CRITICAL_UNKNOWN",
+      "freshScanEvidence": "evidence/m2-retained-semantic-scan-readback-20261101.json",
+      "freshScanSha256": "d86f81872997863a471d858272ee9130c845ade6a6afd7cd22151d54f110acb8",
       "nativeImageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
       "originClass": "SIGNED_ORIGINAL_COHORT_CONFIG_AND_NATIVE_ENVELOPE_MATCH",
       "originalArtifactId": 11907557440,
@@ -106,6 +109,11 @@
         "workflowSource": "e155649ff99fcd952822a6475358ced77767ae1a",
         "zipBytes": 312517,
         "zipSha256": "658a252456e515b9b66fe93505822b24f78d498fd98c463f42da83c2ae5b173e"
+      },
+      "vulnerabilityCounts": {
+        "HIGH": 3,
+        "LOW": 38,
+        "MEDIUM": 56
       }
     },
     "udp": {

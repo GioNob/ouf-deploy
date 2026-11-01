@@ -1,3 +1,5 @@
+> **1 novembre — provenienza Semantic conservata riconciliata:** sorgente originale firmato `eccef11a`, configurazione `29e32c14` ed envelope `b61bc39c` collegati alla ricevuta target. Verificati198blob Git e7membri firmati. La scansione aggiornata dell'immagine conservata rileva3HIGH e il gate la mantiene HELD; il candidato sostitutivo resta distinto. Due origini residue Gateway-owner/MinIO, coorte privata e M2 ancora aperti. [Handoff corrente](docs/handoffs/OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md). Scope12consumato/12controlli/35GET: nessun vecchio comando da rilanciare, nessun nuovo comando VPS richiesto da questo checkpoint.
+
 # CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)

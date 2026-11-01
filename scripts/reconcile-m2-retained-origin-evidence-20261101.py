@@ -8,6 +8,8 @@ It neither changes the frozen installation compilers nor invokes the VPS.
 """
 import argparse
 import ast
+from collections import Counter
+import gzip
 import hashlib
 import io
 import json
@@ -133,6 +135,20 @@ def reconcile(root):
     roles['semantic'].update(originClass='SIGNED_ORIGINAL_COHORT_CONFIG_AND_NATIVE_ENVELOPE_MATCH',
         sourceCommit=SOURCE, originalArtifactId=11907557440, sourceEvidence=proof,
         currentSecurityScanProven=False)
+    scan_proof = json.loads((root/'evidence/m2-retained-semantic-scan-readback-20261101.json').read_bytes())
+    scan_raw = gzip.decompress((root/scan_proof['preservedFullReport']).read_bytes())
+    scan = json.loads(scan_raw)
+    counts = dict(Counter(f.get('Severity', 'UNKNOWN') for r in scan['Results']
+                          for f in r.get('Vulnerabilities', [])))
+    require(sha(scan_raw) == scan_proof['result']['scanSha256'] == 'd86f81872997863a471d858272ee9130c845ade6a6afd7cd22151d54f110acb8'
+            and scan['Metadata']['ImageID'] == CONFIG
+            and counts == scan_proof['result']['vulnerabilityCounts']
+            and scan_proof['result']['freshScanGatePassed'] is False
+            and scan_proof['workflowConclusion'] == 'failure',
+            'EXACT_IMAGE_BOUND_HELD_SCAN_MUST_REMAIN_HELD')
+    roles['semantic'].update(freshScanAdmission='HELD_HIGH_CRITICAL_UNKNOWN',
+        freshScanEvidence='evidence/m2-retained-semantic-scan-readback-20261101.json',
+        freshScanSha256=sha(scan_raw), vulnerabilityCounts=counts)
     roles['gateway-owner']['originGap'] = 'ORIGINAL_CI_ARTIFACT_HAS_REPORTS_ONLY_NO_EXECUTABLE_MEMBERSHIP'
     roles['minio']['originGap'] = 'EXACT_SELECTED_REGISTRY_DESCRIPTOR_UNAVAILABLE'
     return {

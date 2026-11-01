@@ -1,3 +1,5 @@
+> **Checkpoint 1 novembre — provenienza e scansione reali:** [handoff corrente](handoffs/OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md). Semantic originaleeccef11a/config29e32c14/envelopeb61bc39c collegato al pacchetto firmato;198Gitblob/mode e7membri verificati. Scansione reale3HIGH/56MEDIUM/38LOW, gateHELD. Due origini residueGateway-owner/MinIO; coorte/custody/authority/M2 restano aperti. Scope12consumato,12controlli/35GET immutati. Nessun nuovo comando VPS richiesto,nessun replay. Teatri e stessa Farmacie preservati. I precedenti checkpoint restano storici.
+
 # CURRENT — Origini runtime COLLEGATE; comando consumato, ricomposizione autonoma
 
 1 novembre 2026, Europe/Rome. [Ricevuta target](../evidence/m2-runtime-origin-join-target-20261101.json),

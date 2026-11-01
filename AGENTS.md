@@ -1,3 +1,23 @@
+# CURRENT — Semantic conservato collegato al publisher originale; scansione HELD
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md).
+Artifact originale11907557440/sourceeccef11a/config29e32c14/envelopeb61bc39c
+corrispondono alla ricevuta targetca16. Cosign originale qualificato in CI;
+ZIP evidenza13099216732 preservato,7membri firmati e198Gitblob/mode confrontati.
+Nuovo riconciliatore pubblico, senza effetti target, conserva235/19/17/21/23pin.
+Scansione reale41349863937:3HIGH(curl/libcurl4t64/libbrotli1),56MEDIUM/38LOW;
+gate esistente correttamente FALLITO. Provenienza verificata non significa
+ammissione sicurezza. Candidatoc2dae77b separato/non selezionato.
+Due origini residue:Gateway-owner(configf983/nativo979d,CI originale soloJUnit),
+MinIO(config69b2/manifestoa1a8,lookup esatti non autorizzati anche con token anonimo).
+Nessun fallback o inferenza dal tag. Coorte privata/custody/policy/bearer/pacchetto/
+review/HUMANdualrole/E2E restano aperti. Nessun nuovo comando VPS pronto/richiesto;
+completare prima la consegna concreta necessaria, senza microdiagnostiche.
+Scope12 CONSUMATO,12controlli/35GET immutati:NON rilanciare vecchi comandi.
+M1/Teatri8/8tecnico6/6funzionale preservato; Farmacie61righe/10OPEN/STRING.
+M2/G5–G7/dueclient OPEN. Nessun grant/reset/deploy/merge/release acceptance.
+Header seguenti STORICI.
+
 # CURRENT — Origini runtime COLLEGATE; comando consumato, ricomposizione autonoma
 
 1 novembre 2026, Europe/Rome. [Ricevuta target](evidence/m2-runtime-origin-join-target-20261101.json),

@@ -9,6 +9,8 @@ on:
       - 'releases/m2-retained-runtime-origin-reconciliation-20261101.json'
       - 'releases/m2-retained-semantic-original-source-tree-20261101.json'
       - 'releases/artifacts/m2-retained-semantic-original-13099216732.zip'
+      - 'evidence/m2-retained-semantic-scan-readback-20261101.json'
+      - 'evidence/artifacts/m2-retained-semantic-trivy-20261101.json.gz'
 permissions: {contents: read}
 jobs:
   offline-original-evidence:

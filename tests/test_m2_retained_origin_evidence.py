@@ -29,6 +29,8 @@ class OriginalEvidence(unittest.TestCase):
         self.assertEqual(proof['originalSourceFilesIndependentlyMatched'], 198)
         self.assertEqual(proof['signedPayloadMembersIndependentlyMatched'], 7)
         self.assertFalse(proof['publisherChainReverifiedByThisReader'])
+        self.assertEqual(report['roles']['semantic']['freshScanAdmission'], 'HELD_HIGH_CRITICAL_UNKNOWN')
+        self.assertEqual(report['roles']['semantic']['vulnerabilityCounts']['HIGH'], 3)
         for key in ('allRuntimeArtifactMembershipProven', 'completePrivateCustodyProven',
                     'currentApplicationConfigurationOrLivenessProven', 'runtimeAuthorityIssued',
                     'targetApplyAuthorized', 'releaseAcceptance', 'candidateSelectionChanged'):
@@ -81,6 +83,18 @@ class OriginalEvidence(unittest.TestCase):
             self.assertEqual(len(rows), count)
             for row in rows.values():
                 self.assertEqual(m.sha((ROOT/row['path']).read_bytes()), row['sha256'], row['path'])
+
+    def test_held_actual_scan_cannot_be_promoted_to_pass(self):
+        original = Path.read_bytes
+        def read(path):
+            raw = original(path)
+            if path.name == 'm2-retained-semantic-scan-readback-20261101.json':
+                document = json.loads(raw)
+                document['result']['freshScanGatePassed'] = True
+                return json.dumps(document).encode()
+            return raw
+        with patch.object(Path, 'read_bytes', read), self.assertRaisesRegex(ValueError, 'MUST_REMAIN_HELD'):
+            m.reconcile(ROOT)
 
 
 if __name__ == '__main__':

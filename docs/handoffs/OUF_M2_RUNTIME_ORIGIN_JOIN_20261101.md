@@ -1,3 +1,5 @@
+> **CONSUMATO — non eseguire il comando storico sotto.** Ricevuta targetca16/Exit0 acquisita,scope12consumato. [Continuazione corrente](OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md): provenienza Semantic risolta,scansioneHELD,nessun nuovo comando VPS richiesto.
+
 > **RIUSCITO E CONSUMATO — non eseguire il comando storico sotto.**
 > [Ricevuta ca16c7e3](../../evidence/m2-runtime-origin-join-target-20261101.json),
 > RuntimeOriginJoinExit=0:13ruoli/10config,3identità residue ora disponibili,
