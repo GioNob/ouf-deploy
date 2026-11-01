@@ -1,3 +1,31 @@
+# CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)
+e [qualifica](evidence/m2-image-byte-verification-delivery-qualified-20261101.json).
+La cattura13archivi/2.774.726.144byte è RIUSCITA e CONSUMATA, fa95a719/9733fa7c,
+Exit0, tutti sei scope precedenti preservati; target7controlli/35GET.
+NON rilanciare la cattura o alcun vecchio comando.
+
+Nuovo verificatore:17sorgenti chiusi, byte originali/indici OCI/config/layer e
+attestazioni BuildKit verificati senza Engine, estrazione/import o trust implicito.
+Source01f50339; capsula88c1df73/SHA70ab863a; launcherbdb49b4f/SHA575818eb.
+Push41327850081 e PR41327857484 SUCCESS: ciascuno38test/7suite, tutti sei log
+finali letti, zero failure/error/skip/ResourceWarning. Include13immagini native
+Docker29.8.1 con13attestazioni, casi negativi, controllo durevole monouso,
+17source capsule e consegna HTTPS esatta. Tutti235sorgenti congelati invariati.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, una volta: rilegge gli
+archivi già acquisiti e salva una prova privata.600s/1tentativo, zero Engine;
+nuovo scope m2-image-byte-verification-fa95a719-20261101-v1 ancora NON eseguito.
+Un successo porterà i controlli a8, sempre35GET. STOP conserva, mai replay/reset.
+L'agente ha la ricevuta pubblica, non gli archivi/file privati o shell VPS.
+Source/publisher, scan, owner live/policy, complete custody/bearer, coorte completa,
+pacchetto/review e authority correnti rimangono distinti e aperti.
+M1/Teatri tecnico8/8 funzionale6/6 acquisiti; stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING; M2/G5/G6/G7/dueclient aperti. Nessun upload/profile/acquisizione,
+merge/release acceptance/subagente/automazione. UDP/tutti gli esiti, poi grafo e
+verticali/API delta. Header/comandi successivi sono storia, non nuove istruzioni.
+
 # CURRENT — Input immagini M2 riuscito e consumato; verifica dei byte in qualifica
 
 1 novembre 2026, Europe/Rome. Ricevuta operatore acquisita:

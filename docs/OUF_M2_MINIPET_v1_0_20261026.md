@@ -8,11 +8,14 @@
 
 ## Checkpoint operativo del 1 novembre 2026
 
-La [consegna dell'input privato delle tredici immagini](handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
-è qualificata su push e PR,20test/5suite ciascuno. Il nuovo input VPS non è ancora
-eseguito; sei scope precedenti/22GET restano consumati e conservati. Nessun gate
-M2 è chiuso da questa prova installativa. Gli AT/UX e i criteri di stabilità non
-cambiano; il prossimo passo esatto è nel handoff corrente.
+La cattura delle tredici immagini è riuscita e consumata: fa95a719/9733fa7c,
+2.774.726.144 byte, 7controlli/35GET. La successiva
+[verifica privata dei byte](handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)
+è qualificata su push e PR,38test/7suite ciascuno, ma ancora NON eseguita sul VPS.
+Il nuovo comando rilegge gli stessi archivi e conserva tutti gli scope; nessun
+replay della cattura. Publisher/source admission, completa coorte e runtime
+rimangono separati. Nessun AT/UX/criterio di stabilità o gate M2 diventa PASS da
+questa qualifica installativa. Continuare soltanto dal handoff corrente.
 
 ## Stato del caso conservato al 30 ottobre 2026 — riuso di Teatri e prova Farmacie
 

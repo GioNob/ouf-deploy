@@ -1,21 +1,30 @@
-# CURRENT — Input immagini M2 riuscito e consumato; verifica dei byte in qualifica
+# CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
 
-1 novembre 2026, Europe/Rome. Ricevuta operatore acquisita:
-[13 archivi / 2.774.726.144 byte](evidence/m2-native-image-archives-target-20261101.json),
-candidate fa95a719, receipt9733fa7c, ImageArchiveInputExit=0. Tutti sei scope
-precedenti preservati; totale7controlli/35GET, zero credenziali o contenuti mount.
-NON rilanciare cattura/launcher o il vecchio comando: scope consumato.
+1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)
+e [qualifica](evidence/m2-image-byte-verification-delivery-qualified-20261101.json).
+La cattura13archivi/2.774.726.144byte è RIUSCITA e CONSUMATA, fa95a719/9733fa7c,
+Exit0, tutti sei scope precedenti preservati; target7controlli/35GET.
+NON rilanciare la cattura o alcun vecchio comando.
 
-Prossimo passo autonomo: intake esatto indice/ricevuta/seed e verifica privata
-manifesti/configurazioni/layer senza Engine, estrazione o import. Nuovi sorgenti
-retained_image_intake/identity/reader e regressioni in qualifica; nessun nuovo
-comando operatore pronto. L'agente ha solo il JSON pubblico, non i file VPS.
-Identità nativa/source admission, publisher, scan, policy attesa e owner live,
-full custody/bearer, pacchetto/review correnti e authority restano distinti.
-M1/Teatri8/8 tecnico6/6 funzionale acquisiti, stessa Farmacie61righe/10campiOPEN/
-ministeriale STRING. M2/G5/G6/G7 e due client aperti. Nessun nuovo upload,
-profiling, acquisizione, merge o release acceptance. UDP/tutti gli esiti, poi
-grafo/search e verticali/API delta. Header e comandi seguenti sono storici.
+Nuovo verificatore:17sorgenti chiusi, byte originali/indici OCI/config/layer e
+attestazioni BuildKit verificati senza Engine, estrazione/import o trust implicito.
+Source01f50339; capsula88c1df73/SHA70ab863a; launcherbdb49b4f/SHA575818eb.
+Push41327850081 e PR41327857484 SUCCESS: ciascuno38test/7suite, tutti sei log
+finali letti, zero failure/error/skip/ResourceWarning. Include13immagini native
+Docker29.8.1 con13attestazioni, casi negativi, controllo durevole monouso,
+17source capsule e consegna HTTPS esatta. Tutti235sorgenti congelati invariati.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, una volta: rilegge gli
+archivi già acquisiti e salva una prova privata.600s/1tentativo, zero Engine;
+nuovo scope m2-image-byte-verification-fa95a719-20261101-v1 ancora NON eseguito.
+Un successo porterà i controlli a8, sempre35GET. STOP conserva, mai replay/reset.
+L'agente ha la ricevuta pubblica, non gli archivi/file privati o shell VPS.
+Source/publisher, scan, owner live/policy, complete custody/bearer, coorte completa,
+pacchetto/review e authority correnti rimangono distinti e aperti.
+M1/Teatri tecnico8/8 funzionale6/6 acquisiti; stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING; M2/G5/G6/G7/dueclient aperti. Nessun upload/profile/acquisizione,
+merge/release acceptance/subagente/automazione. UDP/tutti gli esiti, poi grafo e
+verticali/API delta. Header/comandi successivi sono storia, non nuove istruzioni.
 
 # CURRENT — Security repair scans and exact current MCP bridge PASS; next image bytes input in qualification
 

@@ -1,3 +1,8 @@
+> SUCCESSORE CORRENTE: [verifica privata dei byte](OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md),
+> qualificata ma ancora non eseguita. La cattura e il vecchio comando restano
+> CONSUMATI e non vanno rilanciati. Le indicazioni di qualifica pendente sotto
+> descrivono il checkpoint precedente.
+
 > CATTURA RIUSCITA E CONSUMATA: fa95a719 / 9733fa7c, 13 archivi,
 > 2.774.726.144 byte, totale7controlli/35GET, Exit0. Tutti sei scope precedenti
 > preservati. Non eseguire il vecchio comando collegato sotto. Ricevuta:
