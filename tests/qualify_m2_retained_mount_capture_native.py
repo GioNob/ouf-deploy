@@ -1,4 +1,4 @@
-"""Actual ten containers, Docker29 socket, process pins, mount metadata/FIFO.
+"""Actual ten containers, Docker29 socket, process pins, mount metadata/FIFO/socket.
 
 Disposable scratch pause processes, not OUF applications or a target admission.
 """
@@ -16,6 +16,8 @@ class NativeRetainedMounts(unittest.TestCase):
             raise AssertionError('DISPOSABLE_HOSTED_NATIVE_RETAINED_CAPTURE_ONLY')
         cls.case = fixture.RetainedMetadata(); cls.addClassCleanup(cls.case.doCleanups)
         cls.initial, cls.args, cls.seed, cls.root, cls.mounted, _, _ = cls.case.prepared()
+        endpoint = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM); endpoint.bind(str(cls.mounted/'socket'))
+        cls.addClassCleanup(endpoint.close)
         cls.docker = shutil.which('docker')
         if not cls.docker: raise AssertionError('ACTUAL_DOCKER_REQUIRED')
         def command(*args):
@@ -59,7 +61,7 @@ class NativeRetainedMounts(unittest.TestCase):
         self.assertEqual(result['counts']['mountFileContentBytesRead'],0)
         self.assertEqual(result['counts']['readonlyMounts'],10)
         self.assertEqual(result['counts']['mutableMounts'],10)
-        self.assertEqual(result['counts']['specialSources'],10)
+        self.assertEqual(result['counts']['specialSources'],20)
         self.assertFalse(result['completePrivateCustodyProven']); self.assertFalse(result['targetApplyAuthorized'])
 
     def test_b_native_file_custody_drift_does_not_use_unchanged_engine_config_as_custody(self):
@@ -77,7 +79,9 @@ class NativeRetainedMounts(unittest.TestCase):
     def test_z_restarted_native_generation_blocks_before_get_without_repair(self):
         cid = self.seed['observations']['onboarding']['Id']; self.command('restart',cid)
         c = self.capture('changed-process')
-        with self.assertRaisesRegex(ValueError,'PROCESS_GENERATION_CHANGED'): m.collect(c,**self.args)
+        # An exited old PID may be absent instead of yielding a different pin.
+        # Both outcomes must deny before any GET; do not normalize it positive.
+        with self.assertRaises((ValueError,OSError)): m.collect(c,**self.args)
         self.assertEqual(c.counts['engineGets'],0); self.assertFalse((c.scope/'retained-mounts.private.json').exists())
 
 

@@ -4,14 +4,25 @@ on:
     paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
   pull_request:
     paths: ['tools/m2_discovery_installation_profile/retained_mount_capture.py','tools/m2_discovery_installation_profile/retained_mount_capsule.py','tools/m2_discovery_installation_profile/retained_mount_sources.json','scripts/export-m2-retained-mount-capture.py','tests/test_m2_retained_mount_capture.py','tests/test_m2_retained_mount_capsule.py','tests/qualify_m2_retained_mount_capture_native.py','.github/workflows/m2-retained-mount-capture.yml']
-permissions: {contents: read, id-token: write, attestations: write}
+permissions: {contents: read}
 jobs:
   unit-and-seal:
+    permissions: {contents: read, id-token: write, attestations: write}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Install the qualified exact offline publisher verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
+          sudo install -d -m 0755 /opt/ouf-capture-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /opt/ouf-capture-gh297
+          sudo chown -R root:root /opt/ouf-capture-gh297
+          /opt/ouf-capture-gh297/bin/gh --version
       - name: Protected real metadata and isolated source capsule
         run: |
           set -euo pipefail
@@ -39,7 +50,7 @@ jobs:
         run: |
           set -euo pipefail
           cp "$PROVENANCE_BUNDLE" retained-mount-capture.sigstore.json
-          gh attestation verify retained-mount-capture.py --repo GioNob/ouf-deploy \
+          /opt/ouf-capture-gh297/bin/gh attestation verify retained-mount-capture.py --repo GioNob/ouf-deploy \
             --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-retained-mount-capture.yml \
             --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
             --bundle "$PROVENANCE_BUNDLE" --format json > retained-mount-publisher-verification.json
