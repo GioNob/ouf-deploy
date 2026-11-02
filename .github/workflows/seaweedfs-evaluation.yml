@@ -8,6 +8,7 @@ on:
       - 'scripts/run-seaweedfs-contract-20261102.py'
       - 'tests/test_seaweedfs_evaluation.py'
       - 'tools/storage_migration/**'
+      - 'tools/storage_inventory/**'
       - 'tests/test_storage_migration_inventory.py'
       - 'tests/fixtures/seaweedfs-contract/**'
 permissions: {contents: read, id-token: write, attestations: write}
@@ -32,7 +33,19 @@ jobs:
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py stage sw-evaluation --source sw-source
       - name: Build distinct candidate with corrected JOSE and network dependencies
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py rebuild sw-evaluation --source sw-source
-      - run: ': > empty.trivyignore'
+      - name: Build and test read-only inventory component with pinned AWS SDK
+        env: {GOTOOLCHAIN: go1.27.3, CGO_ENABLED: '0'}
+        run: |
+          set -euo pipefail
+          cd tools/storage_inventory
+          go mod tidy
+          go mod verify
+          go test -v ./... | tee ../../sw-evaluation/inventory-unit-tests.txt
+          go build -trimpath -o ../../sw-evaluation/bin/storage-inventory .
+          cp go.mod ../../sw-evaluation/inventory.go.mod
+          cp go.sum ../../sw-evaluation/inventory.go.sum
+          go version -m ../../sw-evaluation/bin/storage-inventory > ../../sw-evaluation/inventory-build-info.txt
+      - run: ': > empty.trivyignore' 
       - name: Scan exact patched Go executable including unfixed vulnerabilities
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:

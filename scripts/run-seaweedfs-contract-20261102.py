@@ -70,11 +70,22 @@ with (OUT/'server.log').open('w') as log:
   for path in reports:
    r=ET.parse(path).getroot();assert all(int(r.attrib.get(k,-1))==0 for k in ['failures','errors','skipped']);count+=int(r.attrib['tests'])
   assert count==5
+  # Exercise the read-only inventory component against the same real server.
+  (lab/'inventory-access').write_text('lab-admin');(lab/'inventory-access').chmod(0o600)
+  (lab/'inventory-secret').write_text('lab-admin-secret-not-production');(lab/'inventory-secret').chmod(0o600)
+  config={'endpoint':'http://127.0.0.1:18333','region':'us-east-1','accessKeyFile':str(lab/'inventory-access'),'secretKeyFile':str(lab/'inventory-secret'),'allowLoopbackHttp':True}
+  (lab/'inventory-config.json').write_text(json.dumps(config))
+  subprocess.run([str(OUT/'bin/storage-inventory'),str(lab/'inventory-config.json'),str(lab/'inventory-output')],check=True,timeout=320)
+  inventory=json.loads((lab/'inventory-output/inventory.private.json').read_text())
+  assert inventory['complete'] and len(inventory['records'])==1006 and inventory['targetWrites']==0 and inventory['objectBodiesRead']==0
+  # Demonstrate no automatic replay of a consumed output scope.
+  assert subprocess.run([str(OUT/'bin/storage-inventory'),str(lab/'inventory-config.json'),str(lab/'inventory-output')],timeout=30).returncode!=0
+  (OUT/'inventory-live-result.json').write_text(json.dumps({'status':'PASS','syntheticRecords':len(inventory['records']),'requests':inventory['requests'],'automaticReplayDenied':True,'targetOperations':0,'bucketFeatureInventoryComplete':False},indent=2)+'\n')
   # Coherent cold backup after all writers and the server have stopped.
   proc.terminate()
-  try:proc.wait(timeout=15)
+  try:proc.wait(timeout=120)
   except subprocess.TimeoutExpired:proc.kill();proc.wait()
-  require_clean_exit = proc.returncode in (0,-15)
+  require_clean_exit = proc.returncode == 0
   assert require_clean_exit, 'COHERENT_COLD_BACKUP_REQUIRES_CLEAN_SHUTDOWN'
   restored=OUT/'restored-lab';shutil.copytree(lab,restored)
   (restored/'filer.toml').write_text('[leveldb2]\nenabled = true\ndir = "'+str(restored/'metadata')+'"\n')
@@ -97,7 +108,7 @@ with (OUT/'server.log').open('w') as log:
  finally:
   if (FIXTURE/'target/surefire-reports').exists() and not (OUT/'contract-reports').exists():shutil.copytree(FIXTURE/'target/surefire-reports',OUT/'contract-reports')
   proc.terminate()
-  try:proc.wait(timeout=15)
+  try:proc.wait(timeout=120)
   except subprocess.TimeoutExpired:proc.kill();proc.wait()
   # Do not publish the synthetic data volume or filer database.
   for name in ['lab','restored-lab','offline-original']:
