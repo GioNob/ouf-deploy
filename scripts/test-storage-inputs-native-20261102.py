@@ -11,7 +11,7 @@ m=stage.base;prior=stage.prior
 pid=int(sys.argv[1]);binary=Path(sys.argv[2]);data=Path(sys.argv[3]);out=Path(sys.argv[4])
 results=[]
 for case in ['mode0644','owner10001','hardlink','oversize']:
- temporary=Path(tempfile.mkdtemp(prefix='ouf-credential-case-',dir='/root'));containers=[];image='ouf-storage-credentials-'+temporary.name
+ temporary=Path(tempfile.mkdtemp(prefix='ouf-credential-case-',dir='/root'));containers=[];image='ouf-storage-inputs-'+hashlib.sha256(str(temporary).encode()).hexdigest()[:16]
  try:
   assert hashlib.sha256(binary.read_bytes()).hexdigest()==m.BACKEND_SHA,'EXACT_PREVIOUSLY_INSTALLED_READER_REQUIRED'
   backend=temporary/'inventory';shutil.copyfile(binary,backend);backend.chmod(0o500);m.BACKEND=backend
