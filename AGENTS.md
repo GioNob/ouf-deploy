@@ -1,3 +1,34 @@
+# CURRENT — Credential continuation qualified; retained control14 snapshot, two fresh MinIO reads
+
+2 novembre2026. [Unica consegna nuova](docs/OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md).
+Ricevuta14 STOP CANONICAL_PRIVATE_CREDENTIAL_REFERENCE_REQUIRED: scope14
+CONSUMATO, cumulativi14controlli/49GET. Snapshot13container/RAM/capacità
+salvato prima delloSTOP; S3 non raggiunto. Config.Env già inRAM negliinspect,
+risoluzioni credenziali completate0o1 non provate: non inventare zero.
+Niente replay/cancellazione vecchi comandi, scope o installazioni.
+Source6447b0f6/CI41429406938 PASS:28Python/12Java, due casi Docker REALI
+riproducono14STOP e completano1010record con solo2GET nuovi ciascuno:
+file default relativi assenti->ENV, file relativi->overrideENV. Namespace/S3
+reali; storico14scope MODELLATO/ruoloMinIO waiter hostnet, non VPS/E2E.
+Nuovo parser segue07c3a429/release dichiarata immagineconfig69b2; nessuna
+shell/defaultminioadmin, traversal/symlink/file nonprivati negati. Non è
+prova publisher del MinIO corrente. Ordine mount variato deterministicamente
+nel test; sola comparazione osservazioni perDest, valori/diritti/hash e
+contratti runtime congelati intatti. SDK430631fe invariato, riscan zero.
+CI41430471681 verifica indipendente18checksum,sorgenti/loader,firma esatta,
+2file pubblicati/383000byte e launcher.26sorgenti preservano tutte24precedenti
+(23storiche+corrector14), nuovo loader294912byte/payload279063 esplicito.
+NEXT UNA esecuzione owner del NUOVO blocco e SOLO JSON finale: launcher727dfedc/
+SHA457fe76a, pubblicazione28eb6706. No shell/API inventory VPS all'agente.
+Scope15 distinto NON eseguito, max2GET SOLO MinIO/fino51cumulativi;
+riusa14snapshot, altre12config NON rinfrescate, RAM/spazio dichiarati del14.
+File dichiarati max4segreti+1config,4KiB/64KiB/80KiBtotali; soloRAM/memfd,
+nuove sole capsula/manifesto/evidenze private. ZeroS3write/corpi/SQL/lifecycle.
+SuSTOP conserva fase/contatori S3 eventuali e riconcilia, mai replay/reset/grant.
+[Dossier](evidence/seaweedfs-credential-continuation-qualified-20261102.json).
+Nessuna nuova operazione VPS dopo14; gate8/AT21/M2 OPEN, Teatri/stessaFarmacie
+preservati; niente deploy/migrazione/merge/release/subagenti. Storico sotto.
+
 # CURRENT — Credential reference STOP14 consumed; retained-snapshot continuation in qualification
 
 2 novembre2026. Scope14 CONSUMATO, cumulativi14controlli/49EngineGET,

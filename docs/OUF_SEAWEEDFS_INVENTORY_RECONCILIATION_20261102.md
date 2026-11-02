@@ -1,3 +1,5 @@
+> **CONSUMATO — NON ESEGUIRE IL BLOCCO SOTTO.** Controllo14 terminato con CANONICAL_PRIVATE_CREDENTIAL_REFERENCE_REQUIRED; cumulativi14controlli/49GET. I13snapshot sono conservati. Usare esclusivamente la [NUOVA continuazione qualificata](OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md), controllo15 separato/max2GET, senza cancellare o ripetere nulla. Il contenuto seguente è storico.
+
 # SeaweedFS — rilevazione correttiva dopo lo STOP di selezione
 
 2 novembre 2026. Il primo controllo è terminato con `BOUNDED_NONEMPTY_OUF_CONTAINER_SET_REQUIRED`: scope13 consumato,13controlli/36GET Docker cumulativi. Il filtro per prefisso `/ouf-` era un'assunzione errata del reader. Lo STOP non prova assenza di container o dati. Dal punto preciso di arresto nel sorgente qualificato si deduce che non erano ancora stati aperti credenziali o richieste S3; questa è una deduzione dal codice, non un contatore S3 riportato dal target.
