@@ -13,6 +13,12 @@ class Engine(base.Engine):
   super().bind(ids,seed);self.allowed={'/v1.44/containers/'+base.ROSTER['minio']['containerId']+'/json'}
  def get(self,path):
   require(self.gets<2,'TWO_FRESH_MINIO_READS_ONLY');return super().get(path)
+def observation(view):
+ rows=view['mounts'];require(type(rows) is list and len(rows)<=64 and all(type(r) is dict and set(r)=={'Type','Name','Source','Destination','RW'} and type(r['Destination']) is str and r['Destination'].startswith('/') and type(r['RW']) is bool for r in rows),'TYPED_INVENTORY_MOUNT_OBSERVATIONS_REQUIRED')
+ require(len({r['Destination'] for r in rows})==len(rows),'UNIQUE_INVENTORY_MOUNT_DESTINATIONS_REQUIRED')
+ # Observation comparison only. Preserve raw snapshots and all frozen runtime
+ # binding/source hashes; no native creation/admission contract is normalized.
+ return {**view,'mounts':sorted(rows,key=lambda r:r['Destination'])}
 def history(control):
  frames=base.history_frames(base.PREDECESSOR,('capture.claim.json','storage-baseline.claim.json','result.json'))
  def read(root,name,limit=16384):return decode(control.read(root/name,0,0,0o600,limit,'metadataReads'))
@@ -39,7 +45,7 @@ def capture(control,engine):
   control.check();require(all(attrs(Path(p).lstat())==v for p,v in frames.items()),'ALL_FOURTEEN_PRIOR_SCOPES_MUST_REMAIN_UNCHANGED')
  control.phase='MINIO_PIN';stable();engine.bind([base.ROSTER[r]['containerId'] for r in sorted(base.ROSTER)],seed)
  path='/v1.44/containers/'+base.ROSTER['minio']['containerId']+'/json';doc=engine.get(path);old=next(r for r in host['bindings'] if r['role']=='minio')
- require({'role':'minio',**base.filtered_binding(doc)}==old and doc['Config']['Env']==seed['observations'][mapping['minio']]['Config']['Env'],'EXACT_MINIO_RETAINED_BINDING_AND_ENVIRONMENT_REQUIRED')
+ require(observation({'role':'minio',**base.filtered_binding(doc)})==observation(old) and doc['Config']['Env']==seed['observations'][mapping['minio']]['Config']['Env'],'EXACT_MINIO_RETAINED_BINDING_AND_ENVIRONMENT_REQUIRED')
  pid,env=base.minio_admission(doc,private['roles']['minio']['nativeImageId'],base.ROSTER['minio']['containerId']);pin=base.process_pin(pid)
  require(pin==host['minioProcessPin']==seed['processPins'][mapping['minio']],'EXACT_RETAINED_MINIO_PROCESS_GENERATION_REQUIRED')
  Capture.ancestors(base.BACKEND);s=base.BACKEND.lstat();require(stat.S_ISREG(s.st_mode) and s.st_uid==s.st_gid==0 and stat.S_IMODE(s.st_mode)==0o500 and s.st_nlink==1 and 0<s.st_size<=33554432,'ORIGINAL_ROOT_READER_REQUIRED')
@@ -64,7 +70,7 @@ def capture(control,engine):
   with os.fdopen(fd,'rb') as f:
    info=os.fstat(f.fileno());require(stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1 and 0<info.st_size<=67108864,'PRIVATE_BOUNDED_INVENTORY_REQUIRED');inventory_sha=base.file_sha(f);require(attrs(info)==attrs(os.fstat(f.fileno())),'PRIVATE_INVENTORY_CHANGED')
   post=engine.get(path)
-  before_binding=base.filtered_binding(doc);after_binding=base.filtered_binding(post)
+  before_binding=observation(base.filtered_binding(doc));after_binding=observation(base.filtered_binding(post))
   changed=[k for k in before_binding if before_binding[k]!=after_binding.get(k)]
   control.put('postcheck.private.json',{'changedBindingFields':changed,'processGenerationStable':base.process_pin(pid)==pin})
   require(not changed,'MINIO_METADATA_CHANGED_DURING_S3_INVENTORY');require(base.process_pin(pid)==pin,'MINIO_PROCESS_CHANGED_DURING_S3_INVENTORY');binding.stable();stable()

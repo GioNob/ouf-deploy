@@ -15,6 +15,15 @@ class ContinuationTests(unittest.TestCase):
   with self.assertRaises(m.base.Stop):e.get('/v1.44/containers/'+'a'*64+'/json')
  def test_original_sdk_and_no_runtime_authority(self):
   self.assertEqual(m.base.BACKEND_SHA,'430631fe4dfd1b844229637373ea176c2e84e81e1491919f4a25cc36c68359a8');self.assertFalse(m.PROFILE['runtimeAuthorityIssued']);self.assertFalse(m.PROFILE['automaticReplayAllowed'])
+ def test_mount_observation_order_has_no_semantic_effect_and_input_is_preserved(self):
+  a={'Type':'bind','Name':None,'Source':'/synthetic-a','Destination':'/a','RW':False};b={**a,'Destination':'/b','Source':'/synthetic-b'}
+  view={'mounts':[b,a]};self.assertEqual(m.observation(view),m.observation({'mounts':[a,b]}));self.assertEqual(view['mounts'],[b,a])
+ def test_changed_mount_source_or_rights_does_not_compare_equal(self):
+  row={'Type':'bind','Name':None,'Source':'/synthetic-a','Destination':'/a','RW':False}
+  for key,value in [('Source','/other'),('RW',True)]:self.assertNotEqual(m.observation({'mounts':[row]}),m.observation({'mounts':[{**row,key:value}]}))
+ def test_duplicate_mount_destination_is_denied(self):
+  row={'Type':'bind','Name':None,'Source':'/synthetic-a','Destination':'/a','RW':False}
+  with self.assertRaises(m.base.Stop):m.observation({'mounts':[row,row]})
  @unittest.skipUnless(os.geteuid()==0,'root custody fixture')
  def test_changed_control14_stop_is_rejected_before_engine(self):
   from unittest.mock import patch

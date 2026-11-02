@@ -53,7 +53,12 @@ for case in ['defaults-absent','files']:
   else:raise AssertionError('OLD_GUARD_DID_NOT_REPRODUCE_TARGET_STOP')
   assert old_engine.gets==13;previous.put('result.json',stage.FAILED);stage.PREVIOUS=previous.scope
   before={p.name:p.read_bytes() for p in previous.scope.iterdir()}
-  control=stage.Capture(temporary/'control15');control.until=time.monotonic()+600;control.put('storage-baseline.claim.json',{'profile':stage.PROFILE,'automaticReplayAllowed':False});engine=stage.Engine(control)
+  class ProviderOrderEngine(stage.Engine):
+   def get(self,path):
+    doc=super().get(path)
+    if case=='files':doc['Mounts']=sorted(doc['Mounts'],key=lambda r:r['Destination'],reverse=self.gets==2)
+    return doc
+  control=stage.Capture(temporary/'control15');control.until=time.monotonic()+600;control.put('storage-baseline.claim.json',{'profile':stage.PROFILE,'automaticReplayAllowed':False});engine=ProviderOrderEngine(control)
   try:report=stage.capture(control,engine)
   except Exception:
    if (control.scope/'postcheck.private.json').is_file():print('SYNTHETIC_POSTCHECK_DIFFERENCE '+(control.scope/'postcheck.private.json').read_text())
@@ -69,7 +74,7 @@ for case in ['defaults-absent','files']:
   except m.Stop as error:assert str(error)=='EXACT_CONSUMED_CREDENTIAL_REFERENCE_STOP_REQUIRED'
   else:raise AssertionError('CHANGED_CONTROL14_STOP_ACCEPTED')
   assert denied_engine.gets==0
-  results.append({'case':case,'status':'PASS','reproducedOldStopAfter13RealGets':True,'freshMinioInspects':2,'records':1010,'retainedSnapshotBytesPreserved':True,'secretFilesOpened':report['credentialSources']['secretFilesOpened'],'selectedSources':report['credentialSources']['selectedSources'],'capacityAndMemoryFromControl':report['capacityAndMemoryObservedAtControl'],'tamperedPreviousStopDeniedBeforeEngineAndS3':True})
+  results.append({'case':case,'status':'PASS','reproducedOldStopAfter13RealGets':True,'freshMinioInspects':2,'records':1010,'retainedSnapshotBytesPreserved':True,'secretFilesOpened':report['credentialSources']['secretFilesOpened'],'selectedSources':report['credentialSources']['selectedSources'],'capacityAndMemoryFromControl':report['capacityAndMemoryObservedAtControl'],'providerMountOrderVariationInjected':case=='files','tamperedPreviousStopDeniedBeforeEngineAndS3':True})
  finally:
   for cid in reversed(containers):subprocess.run(['docker','rm','-f',cid],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   subprocess.run(['docker','image','rm',image],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
