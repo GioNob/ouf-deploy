@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/seaweedfs-evaluation.yml'
       - 'scripts/qualify-seaweedfs-20261102.py'
+      - 'scripts/run-seaweedfs-contract-20261102.py'
       - 'tests/test_seaweedfs_evaluation.py'
       - 'tests/fixtures/seaweedfs-contract/**'
 permissions: {contents: read, id-token: write, attestations: write}
@@ -30,7 +31,7 @@ jobs:
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           version: v0.70.0
-          scan-type: fs
+          scan-type: rootfs
           scan-ref: sw-evaluation/bin
           format: json
           output: sw-evaluation/trivy-binary.json
@@ -42,6 +43,22 @@ jobs:
           exit-code: 0
       - name: Enforce security admission before execution
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py gate sw-evaluation
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 73498c17596ae155a3ed9ab36acfd6bb69da9846
+          path: onboarding-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: udp-source
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Execute original OUF adapters against isolated real SeaweedFS
+        run: python3 -I -B -S scripts/run-seaweedfs-contract-20261102.py
       - name: Preserve exact evaluated bytes and result even on denial
         if: always()
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py seal sw-evaluation
