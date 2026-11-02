@@ -5,3 +5,5 @@ func TestOnlyReadMethodsAllowed(t *testing.T){b:=&Budget{transport:http.DefaultT
 func TestSecretSymlinksAndPublicModesDenied(t *testing.T){d:=t.TempDir();p:=filepath.Join(d,"secret");if e:=os.WriteFile(p,[]byte("synthetic"),0600);e!=nil{t.Fatal(e)};if _,e:=secret(p);e!=nil{t.Fatal(e)};l:=filepath.Join(d,"link");os.Symlink(p,l);if _,e:=secret(l);e==nil{t.Fatal("symlink accepted")};os.Chmod(p,0644);if _,e:=secret(p);e==nil{t.Fatal("public credential accepted")}}
 
 func TestReadBudgetExhaustion(t *testing.T){b:=&Budget{requests:10000,transport:http.DefaultTransport};r:=httptest.NewRequest("GET","http://127.0.0.1:1/",nil);if _,e:=b.RoundTrip(r);e==nil{t.Fatal("budget bypass")};if b.requests!=10000{t.Fatal("counter changed")}}
+
+func TestUnsealedDescriptorAndMixedBindingsDenied(t *testing.T){p:=filepath.Join(t.TempDir(),"secret");os.WriteFile(p,[]byte("synthetic"),0600);f,e:=os.Open(p);if e!=nil{t.Fatal(e)};defer f.Close();if _,e:=sealedSecret(int(f.Fd()));e==nil{t.Fatal("unsealed file accepted")};fd:=int(f.Fd());if _,_,e:=credentialPair(Config{AccessKeyFD:&fd,SecretKeyFile:p});e==nil{t.Fatal("mixed bindings accepted")}}

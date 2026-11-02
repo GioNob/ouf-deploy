@@ -15,6 +15,7 @@ import (
  "net/url"
  "os"
  "path/filepath"
+ "runtime"
  "strings"
  "sync"
  "syscall"
@@ -25,7 +26,7 @@ import (
  "github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type Config struct {Endpoint string `json:"endpoint"`; Region string `json:"region"`; AccessKeyFile string `json:"accessKeyFile"`; SecretKeyFile string `json:"secretKeyFile"`; AllowLoopbackHTTP bool `json:"allowLoopbackHttp"`; CACertificateFile string `json:"caCertificateFile"`}
+type Config struct {Endpoint string `json:"endpoint"`; Region string `json:"region"`; AccessKeyFile string `json:"accessKeyFile"`; SecretKeyFile string `json:"secretKeyFile"`; AllowLoopbackHTTP bool `json:"allowLoopbackHttp"`; CACertificateFile string `json:"caCertificateFile"`; AccessKeyFD *int `json:"accessKeyFd"`; SecretKeyFD *int `json:"secretKeyFd"`}
 type Budget struct {mu sync.Mutex; requests int; transport http.RoundTripper}
 func (b *Budget) RoundTrip(r *http.Request)(*http.Response,error){
  b.mu.Lock();defer b.mu.Unlock()
@@ -49,10 +50,29 @@ func secret(path string)(string,error){
  f,e:=os.Open(path);if e!=nil{return "",e};defer f.Close();actual,e:=f.Stat();if e!=nil||!os.SameFile(s,actual){return "",errors.New("SECRET_CHANGED")}
  b,e:=io.ReadAll(io.LimitReader(f,4097));if e!=nil||len(b)>4096{return "",errors.New("SECRET_LIMIT")};v:=strings.TrimSpace(string(b));if v==""||strings.ContainsAny(v,"\r\n"){return "",errors.New("INVALID_SECRET")};return v,nil
 }
+// Linux F_GET_SEALS validates anonymous immutable credential descriptors supplied by a reviewed launcher.
+// This path never copies a credential to a filesystem file.
+func sealedSecret(fd int)(string,error){
+ if runtime.GOOS!="linux"||runtime.GOARCH!="amd64"||fd<3{return "",errors.New("SEALED_CREDENTIAL_FD_REQUIRED")}
+ seals,_,errno:=syscall.Syscall(syscall.SYS_FCNTL,uintptr(fd),1034,0)
+ if errno!=0||seals&15!=15{return "",errors.New("IMMUTABLE_CREDENTIAL_FD_REQUIRED")}
+ f:=os.NewFile(uintptr(fd),"sealed-credential");if f==nil{return "",errors.New("CREDENTIAL_FD_MISSING")};defer f.Close()
+ info,e:=f.Stat();if e!=nil||!info.Mode().IsRegular()||info.Mode().Perm()!=0600||info.Size()<1||info.Size()>4096{return "",errors.New("SEALED_CREDENTIAL_METADATA")}
+ owner,ok:=info.Sys().(*syscall.Stat_t);if !ok||owner.Uid!=uint32(os.Geteuid()){return "",errors.New("SEALED_CREDENTIAL_OWNER")}
+ if _,e=f.Seek(0,0);e!=nil{return "",e};raw,e:=io.ReadAll(io.LimitReader(f,4097));if e!=nil||len(raw)>4096{return "",errors.New("SEALED_CREDENTIAL_SIZE")}
+ value:=strings.TrimSpace(string(raw));if value==""||strings.ContainsAny(value,"\r\n"){return "",errors.New("INVALID_SEALED_CREDENTIAL")};return value,nil
+}
+func credentialPair(c Config)(string,string,error){
+ if c.AccessKeyFD!=nil&&c.SecretKeyFD!=nil&&c.AccessKeyFile==""&&c.SecretKeyFile==""{
+  a,e:=sealedSecret(*c.AccessKeyFD);if e!=nil{return "","",e};s,e:=sealedSecret(*c.SecretKeyFD);return a,s,e
+ }
+ if c.AccessKeyFD!=nil||c.SecretKeyFD!=nil||c.AccessKeyFile==""||c.SecretKeyFile==""{return "","",errors.New("EXACTLY_ONE_CREDENTIAL_BINDING_REQUIRED")}
+ a,e:=secret(c.AccessKeyFile);if e!=nil{return "","",e};s,e:=secret(c.SecretKeyFile);return a,s,e
+}
 func client(c Config)(*s3.Client,*Budget,error){
  if e:=endpoint(c.Endpoint,c.AllowLoopbackHTTP);e!=nil{return nil,nil,e}
  if c.Region==""{return nil,nil,errors.New("EXPLICIT_REGION_REQUIRED")}
- a,e:=secret(c.AccessKeyFile);if e!=nil{return nil,nil,e};s,e:=secret(c.SecretKeyFile);if e!=nil{return nil,nil,e}
+ a,s,e:=credentialPair(c);if e!=nil{return nil,nil,e}
  transport:=http.DefaultTransport.(*http.Transport).Clone();transport.Proxy=nil
  transport.DialContext=(&net.Dialer{Timeout:5*time.Second}).DialContext;transport.TLSHandshakeTimeout=5*time.Second;transport.ResponseHeaderTimeout=10*time.Second
  if c.CACertificateFile!=""{info,e:=os.Lstat(c.CACertificateFile);if e!=nil||!info.Mode().IsRegular()||info.Size()>1048576{return nil,nil,errors.New("BOUNDED_CA_FILE_REQUIRED")};raw,e:=os.ReadFile(c.CACertificateFile);if e!=nil{return nil,nil,e};pool:=x509.NewCertPool();if !pool.AppendCertsFromPEM(raw){return nil,nil,errors.New("INVALID_CA")};transport.TLSClientConfig=&tls.Config{RootCAs:pool,MinVersion:tls.VersionTLS12}}

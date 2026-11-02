@@ -46,7 +46,7 @@ jobs:
           go mod tidy
           go mod verify
           go test -v ./... | tee ../../sw-evaluation/inventory-unit-tests.txt
-          go build -trimpath -o ../../sw-evaluation/bin/storage-inventory .
+          go build -trimpath -ldflags="-s -w" -o ../../sw-evaluation/bin/storage-inventory .
           cp go.mod ../../sw-evaluation/inventory.go.mod
           cp go.sum ../../sw-evaluation/inventory.go.sum
           go version -m ../../sw-evaluation/bin/storage-inventory > ../../sw-evaluation/inventory-build-info.txt

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run original OUF adapters against a loopback-only disposable real server."""
 import hashlib
+import fcntl
 import json
 import os
 from pathlib import Path
@@ -86,6 +87,20 @@ with (OUT/'server.log').open('w') as log:
   # Demonstrate no automatic replay of a consumed output scope.
   assert subprocess.run([str(OUT/'bin/storage-inventory'),str(lab/'inventory-config.json'),str(lab/'inventory-output')],timeout=30).returncode!=0
   (OUT/'inventory-live-result.json').write_text(json.dumps({'status':'PASS','syntheticRecords':len(inventory['records']),'requests':inventory['requests'],'automaticReplayDenied':True,'targetOperations':0,'bucketFeatureInventoryComplete':inventory['bucketFeaturesInventoried']},indent=2)+'\n')
+  # Anonymous sealed credential descriptors: no credential file exists for this invocation.
+  (lab/'inventory-access').unlink();(lab/'inventory-secret').unlink()
+  descriptors=[]
+  try:
+   for value in ['lab-admin','lab-admin-secret-not-production']:
+    fd=os.memfd_create('ouf-synthetic-credential',os.MFD_ALLOW_SEALING);os.fchmod(fd,0o600);os.write(fd,value.encode());os.lseek(fd,0,os.SEEK_SET)
+    fcntl.fcntl(fd,fcntl.F_ADD_SEALS,fcntl.F_SEAL_SEAL|fcntl.F_SEAL_WRITE|fcntl.F_SEAL_GROW|fcntl.F_SEAL_SHRINK);descriptors.append(fd)
+   fd_config={k:v for k,v in config.items() if k not in ['accessKeyFile','secretKeyFile']};fd_config.update(accessKeyFd=descriptors[0],secretKeyFd=descriptors[1])
+   fd_config_path=lab/'inventory-fd-config.json';fd_config_path.write_text(json.dumps(fd_config));fd_config_path.chmod(0o600)
+   subprocess.run([str(OUT/'bin/storage-inventory'),str(fd_config_path),str(lab/'inventory-fd-output')],pass_fds=descriptors,check=True,timeout=320)
+   fd_result=json.loads((lab/'inventory-fd-output/inventory.private.json').read_text());assert fd_result['complete'] and fd_result['records']==inventory['records']
+   (OUT/'inventory-sealed-fd-result.json').write_text(json.dumps({'status':'PASS','syntheticRecords':len(fd_result['records']),'credentialFileReads':0,'anonymousSealedFds':2,'sameRecordsAsFileBinding':True,'targetOperations':0},indent=2)+'\n')
+  finally:
+   for fd in descriptors:os.close(fd)
   # Coherent cold backup after all writers and the server have stopped.
   proc.terminate()
   try:proc.wait(timeout=120)
