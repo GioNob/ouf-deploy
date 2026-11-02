@@ -60,7 +60,7 @@
         6,
         12
       ],
-      "executionStatus": "EXACT_BINARY_OCI_IMAGE_FRESH_SCAN_AND_SPDX_QUALIFIED_LICENSE_CUSTODY_COHORT_OPEN"
+      "executionStatus": "EXACT_IMAGE_AND_COMPLETE_LICENSE_SOURCE_CORPUS_QUALIFIED_LICENSE_REVIEW_CUSTODY_COHORT_LIFECYCLE_OPEN"
     },
     {
       "id": "SW-WP2",
@@ -256,7 +256,7 @@
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
-  "nextPlannedWork": "Complete checksum-bound dependency licence texts/attributions, durable image custody and full cohort; retain G0 writer/DB/fence/backup/capacity gaps; no target delivery before G0-G4.",
+  "nextPlannedWork": "Review three raw licence UNKNOWN findings and compiled AWS SDK Go v1 lifecycle; prepare durable custody of exact runtime image plus attribution/source bundle and complete cohort; G0 writer/DB/fence/backup/capacity still open. No target command before G0-G4.",
   "openTargetInputs": [
     "private ACL grants and publicAccessBlock compatibility/control mapping",
     "current writers, external consumers and database references",
@@ -658,13 +658,13 @@
     "schema": "ouf.storage-planning-progress-estimate.v1",
     "status": "HEURISTIC_NOT_ACCEPTANCE",
     "date": "2026-11-02",
-    "exactWeightedEstimatePercent": 31.956521739130434,
-    "reportedApproximatePercent": 30,
+    "exactWeightedEstimatePercent": 33.26086956521739,
+    "reportedApproximatePercent": 33,
     "uncertaintyPercentagePoints": 10,
     "weights": "original WP minimum engineering-hour estimates; 46 total",
     "creditsPercent": [
       50,
-      65,
+      75,
       60,
       15,
       35,
@@ -672,7 +672,7 @@
       0,
       0
     ],
-    "weightedCredits": 14.7,
+    "weightedCredits": 15.3,
     "gatePass": 0,
     "gateTotal": 8,
     "acceptanceTestPass": 0,
@@ -681,5 +681,46 @@
     "realObjectTotal": 120,
     "doesNotMeasureElapsedTime": true,
     "doesNotMeasureAcceptance": true
+  },
+  "licenceEvidence": {
+    "status": "CORPUS_AND_MPL_SOURCES_QUALIFIED_NOT_ADMITTED",
+    "document": "docs/OUF_SEAWEEDFS_LICENCE_EVIDENCE_20261102.md",
+    "dossier": "evidence/seaweedfs-licence-evidence-qualified-20261102.json",
+    "producerSource": "81a0e32784a2c96f685773edfb65f0cc7849e7eb",
+    "producerRunId": 41541625141,
+    "independentSource": "4d1183ee2855999419e1b60a8b4f85b74889d5c3",
+    "independentRunId": 41542075842,
+    "publisherIndependentlyVerified": true,
+    "components": 245,
+    "legalTexts": 374,
+    "componentsWithRootClassification": 245,
+    "rawLicenseFindings": {
+      "UNKNOWN": 3,
+      "LOW": 296,
+      "MEDIUM": 17,
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "mplCompleteSourceArchives": 17,
+    "unitTests": 10,
+    "rawSpdxModified": false,
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false,
+    "targetOperations": 0,
+    "nativeArchive": "evidence/artifacts/storage-licences-native-41541625141.zip",
+    "nativeArchiveSha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67"
+  },
+  "dependencyLifecycleReview": {
+    "status": "OPEN",
+    "component": "github.com/aws/aws-sdk-go",
+    "version": "v1.55.8",
+    "goSum": "h1:JRmEUbU52aJQZ2AjX4q4Wu7t4uZjOu71uyNmaWlUkJQ=",
+    "zipSha256": "c8ba172b5297abf62e50efc8a039e624a5d02b7c5a55c137499e797ffa540a19",
+    "upstreamEndOfSupport": "2025-07-31",
+    "officialSource": "https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-aws-sdk-for-go-v1-on-july-31-2025/",
+    "compiledPresenceProven": true,
+    "activeRuntimePathProven": false,
+    "newCveClaimed": false,
+    "upstreamResolutionOrRemovalPending": true
   }
 }
