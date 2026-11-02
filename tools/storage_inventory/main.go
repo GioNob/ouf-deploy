@@ -4,6 +4,8 @@ package main
 
 import (
  "context"
+ "crypto/tls"
+ "crypto/x509"
  "encoding/json"
  "errors"
  "fmt"
@@ -23,7 +25,7 @@ import (
  "github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type Config struct {Endpoint string `json:"endpoint"`; Region string `json:"region"`; AccessKeyFile string `json:"accessKeyFile"`; SecretKeyFile string `json:"secretKeyFile"`; AllowLoopbackHTTP bool `json:"allowLoopbackHttp"`}
+type Config struct {Endpoint string `json:"endpoint"`; Region string `json:"region"`; AccessKeyFile string `json:"accessKeyFile"`; SecretKeyFile string `json:"secretKeyFile"`; AllowLoopbackHTTP bool `json:"allowLoopbackHttp"`; CACertificateFile string `json:"caCertificateFile"`}
 type Budget struct {mu sync.Mutex; requests int; transport http.RoundTripper}
 func (b *Budget) RoundTrip(r *http.Request)(*http.Response,error){
  b.mu.Lock();defer b.mu.Unlock()
@@ -53,6 +55,7 @@ func client(c Config)(*s3.Client,*Budget,error){
  a,e:=secret(c.AccessKeyFile);if e!=nil{return nil,nil,e};s,e:=secret(c.SecretKeyFile);if e!=nil{return nil,nil,e}
  transport:=http.DefaultTransport.(*http.Transport).Clone();transport.Proxy=nil
  transport.DialContext=(&net.Dialer{Timeout:5*time.Second}).DialContext;transport.TLSHandshakeTimeout=5*time.Second;transport.ResponseHeaderTimeout=10*time.Second
+ if c.CACertificateFile!=""{info,e:=os.Lstat(c.CACertificateFile);if e!=nil||!info.Mode().IsRegular()||info.Size()>1048576{return nil,nil,errors.New("BOUNDED_CA_FILE_REQUIRED")};raw,e:=os.ReadFile(c.CACertificateFile);if e!=nil{return nil,nil,e};pool:=x509.NewCertPool();if !pool.AppendCertsFromPEM(raw){return nil,nil,errors.New("INVALID_CA")};transport.TLSClientConfig=&tls.Config{RootCAs:pool,MinVersion:tls.VersionTLS12}}
  b:=&Budget{transport:transport};h:=&http.Client{Transport:b,Timeout:15*time.Second,CheckRedirect:func(*http.Request,[]*http.Request)error{return http.ErrUseLastResponse}}
  sdk:=s3.New(s3.Options{Region:c.Region,BaseEndpoint:aws.String(c.Endpoint),UsePathStyle:true,Credentials:credentials.NewStaticCredentialsProvider(a,s,""),HTTPClient:h,Retryer:aws.NopRetryer{}})
  return sdk,b,nil
@@ -129,6 +132,7 @@ func execute(configPath,out string) error {
  sdk,budget,e:=client(c);if e!=nil{return e};ctx,cancel:=context.WithTimeout(context.Background(),300*time.Second);defer cancel()
  rows,features,readError:=inventory(ctx,sdk)
  record:=map[string]any{"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatures":features,"writerInventoryComplete":false}
+ if readError!=nil{failure:=map[string]string{"class":"INVENTORY_READ_FAILED"};var api interface{ErrorCode()string};if errors.As(readError,&api){failure["apiCode"]=api.ErrorCode()};var operation interface{Operation()string};if errors.As(readError,&operation){failure["operation"]=operation.Operation()};record["failure"]=failure}
  bytes,e:=json.Marshal(record);if e!=nil||len(bytes)>64*1024*1024{return errors.New("PRIVATE_OUTPUT_BUDGET")}
  if e=writeNew(out,"inventory.private.json",bytes);e!=nil{return e}
  fmt.Printf("{\"complete\":%t,\"records\":%d,\"requests\":%d,\"objectBodiesRead\":0,\"targetWrites\":0}\n",readError==nil,len(rows),budget.requests)

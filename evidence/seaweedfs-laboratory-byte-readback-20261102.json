@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.seaweedfs-independent-byte-readback.v1",
+  "artifactSha256": "5e14ecdc9ae38456cd2f851201c08ee0e2c21e90b1dff5670b13615f0354fe18",
+  "checksumMembers": 27,
+  "upstreamGitBlobsAndModes": 4390,
+  "compiledPackages": 1738,
+  "javaTests": 7,
+  "inventoryRecords": 1009,
+  "inventoryBinarySha256": "86a59da01c15acc15183a5a6f36b0263d9714bbf2b3775dfeea82e84ee762e40",
+  "rawServerSecurityGate": "HELD_ONE_UNKNOWN",
+  "inventoryExecutableScan": "ZERO_FINDINGS",
+  "publisherSignatureIndependentlyVerified": false,
+  "releaseAdmitted": false,
+  "targetOperations": 0
+}

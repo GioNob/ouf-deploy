@@ -219,9 +219,10 @@
     "plannedCutoverAcknowledgedWriteRpo": 0,
     "rpoUnit": "lost acknowledged writes",
     "runtimeRtoSeconds": null,
-    "disasterRecoveryRpoSeconds": null,
-    "disasterRecoveryRtoSeconds": null,
-    "proposedObservationHoursMinimum": 48
+    "disasterRecoveryRpoSeconds": 900,
+    "disasterRecoveryRtoSeconds": 14400,
+    "proposedObservationHoursMinimum": 48,
+    "recoveryTargetsStatus": "PET_UDP_SECTION_81_INITIAL_TARGETS_TO_VALIDATE_ON_CHOSEN_INFRASTRUCTURE"
   },
   "invariants": {
     "preserveExistingTeatriAndFarmacie": true,
@@ -255,5 +256,20 @@
     "admitted recovery objectives and maintenance window"
   ],
   "executionRequestedByOwner": "2026-11-02",
-  "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md"
+  "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md",
+  "latestLaboratoryQualification": {
+    "source": "9fa8c7f0bcb286af653ada49f88070b3a3508478",
+    "runId": 41385154842,
+    "jobId": 125084251041,
+    "javaTests": 7,
+    "inventoryGoUnitTests": 4,
+    "pythonGateAndMigrationTests": 16,
+    "syntheticInventoryRecords": 1009,
+    "coldIndependentRestorePassed": true,
+    "versionsAndDeleteMarkerRecoveryPassed": true,
+    "targetOperations": 0,
+    "rawServerGate": "HELD_ONE_UNKNOWN",
+    "inventoryExecutableScan": "ZERO_FINDINGS",
+    "releaseAdmitted": false
+  }
 }

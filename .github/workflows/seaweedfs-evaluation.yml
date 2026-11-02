@@ -29,6 +29,11 @@ jobs:
           ref: 153ab668c99731a6d29492bf6c61d0b4fa701101
           path: sw-source
           persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: true
+          cache-dependency-path: sw-source/go.sum
       - name: Acquire immutable release bytes and record source separately
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py stage sw-evaluation --source sw-source
       - name: Build distinct candidate with corrected JOSE and network dependencies

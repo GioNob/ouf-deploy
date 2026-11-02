@@ -18,11 +18,18 @@ class SeaweedContractTest {
  static S3Client admin, udpClient, stagingClient;
  static MinioManagedFileStagingStore staging;
  static S3LakeObjectStorageAdapter udp;
- static final String ENDPOINT="http://127.0.0.1:18333";
+ static final String ENDPOINT=System.getenv().getOrDefault("OUF_SW_ENDPOINT","http://127.0.0.1:18333");
  static S3Client client(String key,String secret){return S3Client.builder().endpointOverride(URI.create(ENDPOINT)).region(Region.US_EAST_1).credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(key,secret))).serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build()).build();}
  @BeforeAll static void setup() throws Exception {
   admin=client("lab-admin","lab-admin-secret-not-production");
   for(String bucket:List.of("ouf-managed-files","ouf-udp","ouf-versioned"))admin.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+  String policy="""
+   {"Version":"2012-10-17","Statement":[
+    {"Sid":"DenyOutsideManagedPrefix","Effect":"Deny","Principal":"*","Action":["s3:GetObject","s3:PutObject"],"NotResource":"arn:aws:s3:::ouf-managed-files/managed-files/*"},
+    {"Sid":"DenyStagingDeletion","Effect":"Deny","Principal":"*","Action":"s3:DeleteObject","Resource":"arn:aws:s3:::ouf-managed-files/*"}
+   ]}
+   """;
+  admin.putBucketPolicy(PutBucketPolicyRequest.builder().bucket("ouf-managed-files").policy(policy).build());
   Path d=Files.createTempDirectory("ouf-sw-client-");Path a=d.resolve("access"),s=d.resolve("secret");
   Files.writeString(a,"lab-staging");Files.writeString(s,"lab-staging-secret-not-production");
   staging=new MinioManagedFileStagingStore(ENDPOINT,"ouf-managed-files",a,s);
@@ -67,6 +74,31 @@ class SeaweedContractTest {
   admin.deleteObject(DeleteObjectRequest.builder().bucket("ouf-versioned").key("history/file").build());
   var history=admin.listObjectVersions(ListObjectVersionsRequest.builder().bucket("ouf-versioned").build());
   assertEquals(2,history.versions().size());assertEquals(1,history.deleteMarkers().size());
+ }
+
+ @Test void tlsRejectsAnUntrustedCertificate() throws Exception {
+  assertTrue(ENDPOINT.startsWith("https://"));
+  var empty=java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());empty.load(null,null);
+  var factory=javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());factory.init(empty);
+  var context=javax.net.ssl.SSLContext.getInstance("TLS");context.init(null,factory.getTrustManagers(),new java.security.SecureRandom());
+  var connection=(javax.net.ssl.HttpsURLConnection)URI.create(ENDPOINT).toURL().openConnection();connection.setSSLSocketFactory(context.getSocketFactory());connection.setConnectTimeout(5000);connection.setReadTimeout(5000);
+  assertThrows(javax.net.ssl.SSLException.class,()->connection.getInputStream());connection.disconnect();
+ }
+
+ @Test void prefixPolicyAndDeleteDenials() {
+  var forbidden=PutObjectRequest.builder().bucket("ouf-managed-files").key("forbidden/file").build();
+  assertEquals(403,assertThrows(S3Exception.class,()->stagingClient.putObject(forbidden,software.amazon.awssdk.core.sync.RequestBody.fromString("probe"))).statusCode());
+  assertEquals(403,assertThrows(S3Exception.class,()->stagingClient.deleteObject(DeleteObjectRequest.builder().bucket("ouf-managed-files").key("managed-files/probe").build())).statusCode());
+ }
+ @Test void postFormCannotBypassPrefixPolicy() throws Exception {
+  var client=io.minio.MinioClient.builder().endpoint(ENDPOINT).credentials("lab-staging","lab-staging-secret-not-production").build();
+  var policy=new io.minio.PostPolicy("ouf-managed-files",java.time.ZonedDateTime.now().plusMinutes(5));policy.addEqualsCondition("key","forbidden/post-file");
+  var fields=new LinkedHashMap<>(client.getPresignedPostFormData(policy));fields.put("key","forbidden/post-file");
+  String boundary="ouf-lab-multipart-policy-boundary";var body=new java.io.ByteArrayOutputStream();
+  for(var field:fields.entrySet())body.write(("--"+boundary+"\r\nContent-Disposition: form-data; name=\""+field.getKey()+"\"\r\n\r\n"+field.getValue()+"\r\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+  body.write(("--"+boundary+"\r\nContent-Disposition: form-data; name=\"file\"; filename=\"probe.csv\"\r\nContent-Type: text/csv\r\n\r\nprobe\r\n--"+boundary+"--\r\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+  var request=java.net.http.HttpRequest.newBuilder(URI.create(ENDPOINT+"/ouf-managed-files")).timeout(java.time.Duration.ofSeconds(15)).header("Content-Type","multipart/form-data; boundary="+boundary).POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(body.toByteArray())).build();
+  var response=java.net.http.HttpClient.newHttpClient().send(request,java.net.http.HttpResponse.BodyHandlers.ofString());assertEquals(403,response.statusCode());
  }
 
 }
