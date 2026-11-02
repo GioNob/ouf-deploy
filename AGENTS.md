@@ -1,3 +1,23 @@
+# CURRENT — SeaweedFS inventory STOP consumed; corrective ID-bound qualification in progress
+
+2 novembre 2026. L'owner ha restituito STOP_RECONCILE /
+BOUNDED_NONEMPTY_OUF_CONTAINER_SET_REQUIRED: scope13 CONSUMATO,
+1nuovo EngineGET, cumulativi13controlli/36GET. Non rilanciare/cancellare
+scope o installazione. Il reader assumeva erroneamente nomi /ouf-*;
+non è prova di assenza container/oggetti. Zero S3/credenziali dedotti
+dall'esatto call site nel producer6cddeee7, non da contatori misurati.
+Ricevuta in evidence/seaweedfs-inventory-selection-stop-target-20261102.json.
+Correzione IN QUALIFICA: roster13ID già hash-bound, seed privato14e42,
+GET diretti solo ai13ID, nessun container-list o nuovo naming fallback.
+Conserva vecchio STOP e tutti13scope; nuovo controllo14 separato,
+massimo13GET nuovi/cumulativo49, riusa SDK SHA430631fe già installato.
+Ancora nessun comando correttivo qualificato/consegnato, nessuna nuova
+operazione VPS. Completare Docker reale con nomi diversi, S3/namespace,
+capsula24con23storiche invariate, firma e readback prima dell'owner.
+Rawserver gate HELD1UNKNOWN,8gate/21AT/M2 OPEN; Teatri/stessaFarmacie
+preservati. Nessun deploy/migrazione/merge/grant/reset/subagente.
+Le intestazioni successive sono storiche.
+
 # CURRENT — SeaweedFS: laboratorio PASS, unica azione VPS pronta
 
 2 novembre 2026. Lavoro MiniPET avviato autonomamente; nessun subagente.

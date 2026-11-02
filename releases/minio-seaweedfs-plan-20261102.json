@@ -3,7 +3,7 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "IN_PROGRESS_LAB_QUALIFIED_PRIVATE_BASELINE_REQUIRED",
+  "status": "PRIVATE_BASELINE_STOP_RECONCILE_CORRECTION_QUALIFYING",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -232,8 +232,8 @@
     "singleActiveWriterBackend": true,
     "inPlaceMinioVolumeConversion": false,
     "automaticRollbackToVulnerableMinio": false,
-    "consumedScopeCount": 12,
-    "cumulativeEngineGets": 35,
+    "consumedScopeCount": 13,
+    "cumulativeEngineGets": 36,
     "frozenSourceMapCounts": [
       235,
       19,
@@ -287,7 +287,7 @@
     "releaseAdmitted": false
   },
   "privateBaselineDelivery": {
-    "status": "PREPARED_AWAITING_OPERATOR_EXECUTION",
+    "status": "CONSUMED_STOP_SELECTION_NAME_ASSUMPTION",
     "immutableDeliveryCommit": "0f446ddb4a1ed19b2c139bb496d06f84edb6062a",
     "immutableLauncherCommit": "4eb2505d77b2ced8df77b52ab3ee12df52642ffa",
     "launcherSha256": "4c0d2bd971b661a7352b480fbe14d48ea957db7835caddf14ad7bd88795221fd",
@@ -304,10 +304,27 @@
     "privateOutputBytesMaximum": 67108864,
     "credentialValuesSpooled": false,
     "automaticReplayAllowed": false,
-    "actualTargetExecuted": false,
+    "actualTargetExecuted": true,
     "targetShellAvailableToAgent": false,
     "targetOperationsPerformed": 0,
     "independentPublishedBytesReadbackRunId": 41392147761,
-    "publishedFilesComparedByteForByte": 21
+    "publishedFilesComparedByteForByte": 21,
+    "actualTargetEngineGets": 1,
+    "cumulativeControlAttempts": 13,
+    "cumulativeDirectEngineGets": 36,
+    "receipt": "evidence/seaweedfs-inventory-selection-stop-target-20261102.json"
+  },
+  "privateBaselineCorrection": {
+    "status": "QUALIFYING_NOT_DELIVERED",
+    "scope": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-reconciliation-20261102-v1",
+    "controlAttempt": 14,
+    "priorEngineGets": 36,
+    "maximumNewEngineGets": 13,
+    "maximumCumulativeEngineGets": 49,
+    "selection": "HASH_BOUND_THIRTEEN_ID_ROSTER_AND_PRIVATE_SEED",
+    "containerListRequests": 0,
+    "reuseInstalledSdk": true,
+    "oldScopeRearmed": false,
+    "targetExecuted": false
   }
 }

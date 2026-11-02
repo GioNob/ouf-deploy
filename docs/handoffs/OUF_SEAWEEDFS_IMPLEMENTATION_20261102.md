@@ -1,3 +1,5 @@
+> **STOP target ricevuto — 2 novembre 2026:** scope13 consumato,13controlli/36GET cumulativi. Il primo GET list è riuscito ma il filtro `/ouf-` ha selezionato zero container; naming reale non ancora osservato. Zero accessi S3/credenziali dedotti dall'esatto call site precedente al primo inspect. Non ripetere il vecchio comando né cancellare scope/installazione. Correzione a roster13ID e seed privato già hash-bound IN QUALIFICA; nuovo scope14 separato e massimo13GET, SDK installato invariato. Nessuna consegna correttiva prima di prove Docker reali, byte e provenienza. [Ricevuta](../../evidence/seaweedfs-inventory-selection-stop-target-20261102.json). I checkpoint seguenti sono storici.
+
 # SeaweedFS — laboratorio qualificato, inventario VPS necessario
 
 2 novembre 2026, Europe/Rome. L'owner richiede esecuzione autonoma del MiniPET con aggiornamenti costanti. Nessun subagente o automazione operativa. [MiniPET](../OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md), [registro](../../releases/minio-seaweedfs-plan-20261102.json), [unica consegna VPS](../OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md).

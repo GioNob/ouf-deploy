@@ -1,0 +1,85 @@
+name: Storage inventory exact-ID reconciliation qualification
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-inventory-reconciliation.yml'
+      - 'tools/storage_migration/target_inventory_reconciliation.py'
+      - 'tools/storage_migration/inventory_reconciliation_bootstrap.py'
+      - 'tests/test_storage_inventory_reconciliation*.py'
+      - 'scripts/*storage-inventory-reconciliation*.py'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: New guards including immutable predecessor and root capsule-only install
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S -m unittest discover -s tests -p 'test_storage_inventory_reconciliation*.py' -v
+      - name: Independently verify exact original executable artifact bytes and sources
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/read-seaweedfs-lab-artifact-20261102.py
+      - name: Verify original publisher workflow source and hosted runner
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify sw-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/seaweedfs-evaluation.yml --source-digest 6cddeee707b67bd27568aa7a3890e28ebecf274f --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle sw-readback/provenance.json --format json > sw-readback/publisher-verification.json
+      - run: python3 -I -B -S scripts/run-storage-inventory-reconciliation-lab-20261102.py stage
+      - run: ': > empty.trivyignore'
+      - name: Rescan the two exact old executables including all severities and unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: sw-evaluation/bin
+          format: json
+          output: sw-evaluation/trivy-binary.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py gate sw-evaluation
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with: {go-version: '1.27.3', cache: false}
+      - name: Compile disposable Docker fixture process from owned source and standard library only
+        env: {CGO_ENABLED: '0', GOTOOLCHAIN: go1.27.3}
+        run: |
+          printf 'package main\nimport "time"\nfunc main(){time.Sleep(20*time.Minute)}\n' > sw-readback/waiter.go
+          go build -trimpath -o sw-readback/waiter sw-readback/waiter.go
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: GioNob/ouf-source-onboarding, ref: 73498c17596ae155a3ed9ab36acfd6bb69da9846, path: onboarding-source, persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {repository: GioNob/ouf-udp-object-resolution, ref: 0d40da05408a14db31d4d41af2372d6a71480291, path: udp-source, persist-credentials: false}
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Original OUF adapters and recovery plus thirteen real Docker ID reads without prefix assumptions
+        run: python3 -I -B -S scripts/run-storage-inventory-reconciliation-lab-20261102.py run
+      - name: Package closed corrective capsule and qualify exact root installation
+        run: |
+          mkdir correction-evidence
+          python3 -I -B -S scripts/package-storage-inventory-reconciliation-20261102.py correction-evidence/inventory-delivery "$GITHUB_SHA"
+          sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S scripts/test-storage-inventory-reconciliation-install-20261102.py correction-evidence/inventory-delivery correction-evidence/root-install-fixture.json
+          python3 -I -B -S scripts/seal-storage-inventory-reconciliation-20261102.py
+      - name: Attest new corrective qualification checksum subject
+        id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: correction-evidence/SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" correction-evidence/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-inventory-reconciliation-${{ github.run_id }}
+          path: |
+            correction-evidence/
+            sw-evaluation/candidate.json
+            sw-evaluation/native-target-inventory-result.json
+          if-no-files-found: error
+          retention-days: 90
