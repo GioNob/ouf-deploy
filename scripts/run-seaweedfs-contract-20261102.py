@@ -74,7 +74,7 @@ with (OUT/'server.log').open('w') as log:
   count=0
   for path in reports:
    r=ET.parse(path).getroot();assert all(int(r.attrib.get(k,-1))==0 for k in ['failures','errors','skipped']);count+=int(r.attrib['tests'])
-  assert count==9
+  assert count==10
   # Exercise the read-only inventory component against the same real server.
   (lab/'inventory-access').write_text('lab-admin');(lab/'inventory-access').chmod(0o600)
   (lab/'inventory-secret').write_text('lab-admin-secret-not-production');(lab/'inventory-secret').chmod(0o600)
@@ -83,7 +83,7 @@ with (OUT/'server.log').open('w') as log:
   inventory_process=subprocess.run([str(OUT/'bin/storage-inventory'),str(lab/'inventory-config.json'),str(lab/'inventory-output')],timeout=320)
   inventory=json.loads((lab/'inventory-output/inventory.private.json').read_text())
   assert inventory_process.returncode==0 and inventory['complete'], 'SYNTHETIC_INVENTORY_FAILED '+json.dumps(inventory.get('failure',{}))
-  assert len(inventory['records'])==1009 and inventory['targetWrites']==0 and inventory['objectBodiesRead']==0
+  assert len(inventory['records'])==1010 and inventory['targetWrites']==0 and inventory['objectBodiesRead']==0
   # Demonstrate no automatic replay of a consumed output scope.
   assert subprocess.run([str(OUT/'bin/storage-inventory'),str(lab/'inventory-config.json'),str(lab/'inventory-output')],timeout=30).returncode!=0
   (OUT/'inventory-live-result.json').write_text(json.dumps({'status':'PASS','syntheticRecords':len(inventory['records']),'requests':inventory['requests'],'automaticReplayDenied':True,'targetOperations':0,'bucketFeatureInventoryComplete':inventory['bucketFeaturesInventoried']},indent=2)+'\n')

@@ -101,4 +101,9 @@ class SeaweedContractTest {
   var response=java.net.http.HttpClient.newHttpClient().send(request,java.net.http.HttpResponse.BodyHandlers.ofString());assertEquals(403,response.statusCode());
  }
 
+ @Test void unicodeAndReservedKeyCharactersPreserveBytesAndMetadata() throws Exception {
+  byte[] bytes="contenuto UTF-8: città λ".getBytes(java.nio.charset.StandardCharsets.UTF_8);String key="unicode/caffè λ/file ?#%.csv";
+  udp.put(key,bytes,"text/csv",hash(bytes));assertArrayEquals(bytes,udp.read(key));assertEquals(hash(bytes),udp.head(key).orElseThrow().contentHash());
+ }
+
 }

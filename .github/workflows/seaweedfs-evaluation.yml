@@ -12,6 +12,7 @@ on:
       - 'tests/test_storage_migration_inventory.py'
       - 'tests/test_storage_target_inventory.py'
       - 'scripts/test-storage-target-native-20261102.py'
+      - 'scripts/package-storage-inventory-delivery-20261102.py'
       - 'tests/fixtures/seaweedfs-contract/**'
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
@@ -86,6 +87,8 @@ jobs:
         with: {distribution: temurin, java-version: '21', cache: maven}
       - name: Execute original OUF adapters against isolated real SeaweedFS
         run: python3 -I -B -S scripts/run-seaweedfs-contract-20261102.py
+      - name: Prepare closed monouse inventory delivery after native diagnostics pass
+        run: python3 -I -B -S scripts/package-storage-inventory-delivery-20261102.py sw-evaluation/bin/storage-inventory sw-evaluation/inventory-delivery
       - name: Preserve exact evaluated bytes and result even on denial
         if: always()
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py seal sw-evaluation

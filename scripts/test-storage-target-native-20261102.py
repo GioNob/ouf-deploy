@@ -24,7 +24,7 @@ try:
    assert path=='/containers/'+'a'*64+'/json'
    return {'Id':'a'*64,'Name':'/ouf-minio','Image':'sha256:'+'a'*64,'State':{'Running':True,'Paused':False,'Pid':pid},'Args':['server','/data'],'Config':{'Env':['MINIO_ROOT_USER=lab-admin','MINIO_ROOT_PASSWORD=lab-admin-secret-not-production']},'Mounts':[{'Destination':'/data','Source':str(data),'Type':'bind','RW':True}]}
  control=m.Capture(temporary/'scope');control.until=__import__('time').monotonic()+600
- report=m.capture(control,FixtureEngine());assert report['status']=='PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED' and report['records']==1009 and report['credentialBytesSpooled']==0
+ report=m.capture(control,FixtureEngine());assert report['status']=='PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED' and report['records']==1010 and report['credentialBytesSpooled']==0
  value={'status':'PASS','records':report['records'],'kernelNetworkNamespaceEntered':True,'anonymousSealedCredentialFds':2,'credentialBytesSpooled':0,'modeledDockerGets':report['directEngineGets'],'realDockerEngineQualified':False,'historicalScopeChecks':'MODELLED','retainedTargetScopesObserved':False,'targetOperations':0,'runtimeAuthorityIssued':False}
  out.write_text(json.dumps(value,indent=2)+'\n');out.chmod(0o644)
 finally:shutil.rmtree(temporary)

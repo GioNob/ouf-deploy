@@ -82,6 +82,11 @@ def credential(pid,env,name):
   require(name in env,'EXPLICIT_ROOT_CREDENTIAL_SOURCE_REQUIRED');raw=env[name].encode()
  value=raw.strip();require(0<len(value)<=4096 and b'\n' not in value and b'\r' not in value,'SINGLE_BOUNDED_CREDENTIAL_VALUE_REQUIRED');return value
 
+def file_sha(stream):
+ h=hashlib.sha256()
+ while raw:=stream.read(1048576):h.update(raw)
+ return h.hexdigest()
+
 def sealed_descriptor(raw):
  require(os.uname().sysname=='Linux','LINUX_SEALED_CREDENTIALS_REQUIRED')
  fd=os.memfd_create('ouf-storage-credential',os.MFD_ALLOW_SEALING)
@@ -119,9 +124,9 @@ def capture(control,engine):
   if m.get('Destination')=='/data':
    filesystem=os.statvfs(m['Source']);capacity.append({'destination':'/data','freeBytes':filesystem.f_bavail*filesystem.f_frsize,'totalBytes':filesystem.f_blocks*filesystem.f_frsize})
  require(len(capacity)==1,'ONE_MINIO_DATA_MOUNT_REQUIRED')
- control.put('host-baseline.private.json',{'bindings':bindings,'minioProcessPin':pin,'capacity':capacity,'memoryInfo':memory,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False})
+ host={'bindings':bindings,'minioProcessPin':pin,'capacity':capacity,'memoryInfo':memory,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False};control.put('host-baseline.private.json',host)
  Capture.ancestors(BACKEND);metadata=BACKEND.lstat();require(stat.S_ISREG(metadata.st_mode) and metadata.st_uid==metadata.st_gid==0 and stat.S_IMODE(metadata.st_mode)==0o500 and metadata.st_nlink==1 and 0<metadata.st_size<=33554432,'ROOT_PINNED_INVENTORY_BACKEND_REQUIRED')
- with BACKEND.open('rb') as f:require(hashlib.file_digest(f,'sha256').hexdigest()==BACKEND_SHA,'EXACT_QUALIFIED_INVENTORY_BACKEND_REQUIRED')
+ with BACKEND.open('rb') as f:require(file_sha(f)==BACKEND_SHA,'EXACT_QUALIFIED_INVENTORY_BACKEND_REQUIRED')
  stable();descriptors=[]
  try:
   for name in ['MINIO_ROOT_USER','MINIO_ROOT_PASSWORD']:descriptors.append(sealed_descriptor(credential(pid,env,name)))
@@ -133,7 +138,12 @@ def capture(control,engine):
   require(len(completed.stdout)<=4096 and len(completed.stderr)<=4096,'MINIMIZED_BACKEND_OUTPUT_REQUIRED')
   require(process_pin(pid)==pin,'MINIO_NAMESPACE_PIN_CHANGED');stable()
   report=decode(completed.stdout);require(completed.returncode==0 and report.get('complete') is True and report.get('objectBodiesRead')==report.get('targetWrites')==0,'PRIVATE_INVENTORY_INCOMPLETE')
-  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED','s3Complete':True,'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
+  fd=os.open(control.scope/'s3/inventory.private.json',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+  with os.fdopen(fd,'rb') as stream:
+   info=os.fstat(stream.fileno());require(stat.S_ISREG(info.st_mode) and info.st_uid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1 and 0<info.st_size<=67108864,'BOUNDED_ROOT_PRIVATE_INVENTORY_REQUIRED')
+   private_hash=file_sha(stream);require(attrs(info)==attrs(os.fstat(stream.fileno())),'PRIVATE_INVENTORY_CHANGED')
+  stable()
+  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED','privateInventorySha256':private_hash,'hostBaselineHash':digest(host),'profileHash':digest(PROFILE),'parentOriginResultHash':ORIGIN_RESULT,'s3Complete':True,'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
  finally:
   for fd in descriptors:os.close(fd)
 
