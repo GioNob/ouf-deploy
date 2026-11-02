@@ -1,3 +1,34 @@
+# CURRENT — Input observation continuation qualified; control15 consumed, control16 awaits operator
+
+2 novembre 2026. [Unica consegna nuova](docs/OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md).
+Ricevuta15: STOP input guard, CREDENTIAL_PREFLIGHT,15 controlli/50 GET cumulativi,
+0 file aperti/0 byte letti/5 candidati. S3 non raggiunto; Config.Env già in RAM.
+Predicato effettivo fallito NON provato. Tutti i tre vecchi comandi consumati:
+non ripetere/cancellare/riarmare; nessun chmod/chown sugli input VPS.
+Source91dc1f07/CI41446908345 PASS:20 Python senza skip,12 Java,4 casi Docker/S3
+reali riproducono STOP15 esatto. Mode0644/UID10001/hardlink completano1010 record
+con2 GET; oversize restituisce metadata completi,0 contenuti/call site S3 non
+raggiunto. Storico15 scope MODELLATO/MinIO waiter hostnet+S3separato, non VPS.
+Osservazione input dichiarati regolari/bounded/stabili senza symlink distinta
+da custody: proprietario/permessi/link riportati, fonte NON ammessa. Output
+root0700/0600; valori soloRAM/memfd, nessuna modifica input. Special/symlink/
+oversize/metadata indisponibile=>review prima di contenuto/S3. Nessun default/shell.
+SDK430631fe invariato/riscan zero; rootinstall sola capsula.28 sorgenti preservano
+26 precedenti incluse23 storiche; payload296642/nuovo limite327680 esplicito.
+CI41447457400 verifica indipendente18checksum,sorgenti/loader,firma esatta del
+workflow/source/ref hosted,2 file pubblicati/407097 byte e launcher.
+NEXT UNA esecuzione NUOVO blocco e SOLO JSON finale: launcher7e410619,
+SHAda9fcbb5, pubblicazione14006308. Nessuna shell/API Docker/S3 VPS all'agente.
+Scope16 distinto NON eseguito,max2 GET SOLO MinIO/max52 cumulativi; riusa
+snapshot14; altre12 config non rinfrescate,RAM/capacità del14 esplicite.
+Precedenti15 scope e reader intatti, zero S3write/corpi/SQL/lifecycle/migrazione.
+Prima CI41446529251 fallita per random image tag della sola fixture; corretta e
+qualifica completa ripetuta, mai considerata PASS. Nessun nuovo effetto VPS.
+[Dossier](evidence/seaweedfs-input-observation-qualified-20261102.json).
+Raw server HELD1UNKNOWN; vulnerabilità MinIO ancora presenti.8 gate/21 AT/M2
+OPEN,Teatri/stessaFarmacie e source map235/19/17/21/23 preservati. No deploy,
+merge,grant,reset,subagenti. Le intestazioni seguenti sono STORICHE.
+
 # CURRENT — Control15 consumed; complete input metadata preflight under qualification
 
 2 novembre 2026. Ricevuta15 STOP PRIVATE_BOUNDED_REGULAR_CREDENTIAL_SOURCE_REQUIRED,

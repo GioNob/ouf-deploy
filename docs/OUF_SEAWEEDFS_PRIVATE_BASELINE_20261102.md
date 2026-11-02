@@ -1,3 +1,5 @@
+> **CONSUMATO — NON ESEGUIRE I BLOCCHI SOTTO.** La ricevuta15 è stata riconciliata:15 controlli/50 GET cumulativi,0 file/0 byte credenziali. [Unica nuova consegna: controllo16](OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md). Nessun replay o cancellazione degli scope; quanto segue è storico.
+
 > **CONSUMATO — NON ESEGUIRE QUESTO VECCHIO BLOCCO.** L'operatore ha restituito STOP_RECONCILE/BOUNDED_NONEMPTY_OUF_CONTAINER_SET_REQUIRED: scope13 consumato e36GET cumulativi. Usare esclusivamente la [nuova consegna correttiva qualificata](OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md), scope14 distinto; non cancellare o rilanciare nulla del vecchio controllo. Il contenuto seguente è storico.
 
 # SeaweedFS — unica rilevazione privata sul VPS

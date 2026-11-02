@@ -388,7 +388,7 @@
     "receipt": "evidence/seaweedfs-inventory-input-stop-target-20261102.json"
   },
   "privateBaselineInputObservation": {
-    "status": "IN_QUALIFICATION_NOT_DELIVERED",
+    "status": "QUALIFIED_AWAITING_OPERATOR",
     "controlAttempt": 16,
     "previousEngineGets": 50,
     "maximumNewEngineGets": 2,
@@ -401,6 +401,17 @@
     "sourceCustodyAdmitted": false,
     "targetExecuted": false,
     "migrationPerformed": false,
-    "oldScopeRearmed": false
+    "oldScopeRearmed": false,
+    "producerSource": "91dc1f079bf7f6760d6dcf1f613b6c8a418f03d2",
+    "producerRunId": 41446908345,
+    "independentRunId": 41447457400,
+    "deliveryCommit": "14006308605553483b9a5ba0df9bf51ed56761f2",
+    "launcherCommit": "7e4106199ca17ed1bde82981c4ed81aef76a5de9",
+    "launcherSha256": "da9fcbb5caaef59276fbad44eb14e201bb6414f591f319699edcc8ade49d58c5",
+    "scope": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-inputs-20261102-v1",
+    "install": "/usr/local/lib/ouf-storage-inventory-inputs-20261102",
+    "instructions": "docs/OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md",
+    "dossier": "evidence/seaweedfs-input-observation-qualified-20261102.json",
+    "sourcePayloadBytes": 296642
   }
 }
