@@ -17,6 +17,9 @@ class SeaweedRecoveryTest {
    Set<String> expected=new HashSet<>(List.of(SeaweedContractTest.hash(big),SeaweedContractTest.hash("codice,nome\n00001,Farmacia test sintetica\n".getBytes(java.nio.charset.StandardCharsets.UTF_8))));
    for(var object:managed){var response=staging.getObjectAsBytes(GetObjectRequest.builder().bucket("ouf-managed-files").key(object.key()).build());assertEquals("text/csv",response.response().contentType());assertTrue(expected.remove(SeaweedContractTest.hash(response.asByteArray())));}
    assertTrue(expected.isEmpty());assertTrue(udp.head("contract/one").isEmpty());
+   var history=admin.listObjectVersions(ListObjectVersionsRequest.builder().bucket("ouf-versioned").build());assertEquals(2,history.versions().size());assertEquals(1,history.deleteMarkers().size());
+   Set<String> versions=new HashSet<>(List.of("first-version","second-version"));
+   for(var version:history.versions())assertTrue(versions.remove(admin.getObjectAsBytes(GetObjectRequest.builder().bucket("ouf-versioned").key(version.key()).versionId(version.versionId()).build()).asUtf8String()));assertTrue(versions.isEmpty());
   }
  }
 }

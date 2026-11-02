@@ -34,7 +34,7 @@ def validate(records, require_hashes=False):
             if row['size'] != 0:raise ValueError('DELETE_MARKER_WITH_CONTENT')
             markers += 1
         else:total += row['size']
-        if version is not None:versions += 1
+        if version not in (None,'null'):versions += 1
         buckets.setdefault(bucket,set()).add(key)
     # Check ALL versions, including keys hidden by current delete markers.
     conflicts = 0; unsafe = 0; trailing = 0

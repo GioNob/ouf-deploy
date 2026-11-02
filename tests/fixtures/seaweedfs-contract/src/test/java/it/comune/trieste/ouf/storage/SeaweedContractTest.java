@@ -22,7 +22,7 @@ class SeaweedContractTest {
  static S3Client client(String key,String secret){return S3Client.builder().endpointOverride(URI.create(ENDPOINT)).region(Region.US_EAST_1).credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(key,secret))).serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build()).build();}
  @BeforeAll static void setup() throws Exception {
   admin=client("lab-admin","lab-admin-secret-not-production");
-  for(String bucket:List.of("ouf-managed-files","ouf-udp"))admin.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+  for(String bucket:List.of("ouf-managed-files","ouf-udp","ouf-versioned"))admin.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
   Path d=Files.createTempDirectory("ouf-sw-client-");Path a=d.resolve("access"),s=d.resolve("secret");
   Files.writeString(a,"lab-staging");Files.writeString(s,"lab-staging-secret-not-production");
   staging=new MinioManagedFileStagingStore(ENDPOINT,"ouf-managed-files",a,s);
@@ -61,4 +61,12 @@ class SeaweedContractTest {
   S3Exception denied=assertThrows(S3Exception.class,()->stagingClient.headObject(HeadObjectRequest.builder().bucket("ouf-udp").key("contract/one-other").build()));assertEquals(403,denied.statusCode());
   try(S3Client unknown=client("unknown","invalid")){assertThrows(S3Exception.class,()->unknown.listBuckets());}
  }
+ @Test void versionHistoryAndDeleteMarker() {
+  admin.putBucketVersioning(PutBucketVersioningRequest.builder().bucket("ouf-versioned").versioningConfiguration(VersioningConfiguration.builder().status(BucketVersioningStatus.ENABLED).build()).build());
+  for(String text:List.of("first-version","second-version"))admin.putObject(PutObjectRequest.builder().bucket("ouf-versioned").key("history/file").build(),software.amazon.awssdk.core.sync.RequestBody.fromString(text));
+  admin.deleteObject(DeleteObjectRequest.builder().bucket("ouf-versioned").key("history/file").build());
+  var history=admin.listObjectVersions(ListObjectVersionsRequest.builder().bucket("ouf-versioned").build());
+  assertEquals(2,history.versions().size());assertEquals(1,history.deleteMarkers().size());
+ }
+
 }

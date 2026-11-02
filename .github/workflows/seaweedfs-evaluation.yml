@@ -45,7 +45,7 @@ jobs:
           cp go.mod ../../sw-evaluation/inventory.go.mod
           cp go.sum ../../sw-evaluation/inventory.go.sum
           go version -m ../../sw-evaluation/bin/storage-inventory > ../../sw-evaluation/inventory-build-info.txt
-      - run: ': > empty.trivyignore' 
+      - run: ': > empty.trivyignore'
       - name: Scan exact patched Go executable including unfixed vulnerabilities
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:

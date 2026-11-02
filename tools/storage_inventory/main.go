@@ -15,6 +15,7 @@ import (
  "path/filepath"
  "strings"
  "sync"
+ "syscall"
  "time"
 
  "github.com/aws/aws-sdk-go-v2/aws"
@@ -28,8 +29,12 @@ func (b *Budget) RoundTrip(r *http.Request)(*http.Response,error){
  b.mu.Lock();defer b.mu.Unlock()
  if r.Method!="GET" && r.Method!="HEAD" {return nil,errors.New("MUTATION_DENIED")}
  if b.requests>=10000{return nil,errors.New("READ_BUDGET_EXHAUSTED")};b.requests++
- return b.transport.RoundTrip(r)
+ response,e:=b.transport.RoundTrip(r)
+ if e==nil {response.Body=&boundedBody{Reader:io.LimitReader(response.Body,4*1024*1024),closer:response.Body}}
+ return response,e
 }
+type boundedBody struct{io.Reader;closer io.Closer}
+func (b *boundedBody)Close()error{return b.closer.Close()}
 func endpoint(raw string,allowLoopback bool) error {
  u,e:=url.Parse(raw);if e!=nil||u.Host==""||u.User!=nil||u.RawQuery!=""||u.Fragment!=""||u.Path!="" {return errors.New("INVALID_ENDPOINT")}
  if u.Scheme=="https"{return nil}
@@ -38,6 +43,7 @@ func endpoint(raw string,allowLoopback bool) error {
 }
 func secret(path string)(string,error){
  s,e:=os.Lstat(path);if e!=nil||!s.Mode().IsRegular()||s.Mode().Perm()&0077!=0||s.Size()<1||s.Size()>4096{return "",errors.New("PRIVATE_SECRET_FILE_REQUIRED")}
+ owner,ok:=s.Sys().(*syscall.Stat_t);if !ok||owner.Uid!=uint32(os.Geteuid()){return "",errors.New("SECRET_OWNER_MISMATCH")}
  f,e:=os.Open(path);if e!=nil{return "",e};defer f.Close();actual,e:=f.Stat();if e!=nil||!os.SameFile(s,actual){return "",errors.New("SECRET_CHANGED")}
  b,e:=io.ReadAll(io.LimitReader(f,4097));if e!=nil||len(b)>4096{return "",errors.New("SECRET_LIMIT")};v:=strings.TrimSpace(string(b));if v==""||strings.ContainsAny(v,"\r\n"){return "",errors.New("INVALID_SECRET")};return v,nil
 }
@@ -51,40 +57,80 @@ func client(c Config)(*s3.Client,*Budget,error){
  sdk:=s3.New(s3.Options{Region:c.Region,BaseEndpoint:aws.String(c.Endpoint),UsePathStyle:true,Credentials:credentials.NewStaticCredentialsProvider(a,s,""),HTTPClient:h,Retryer:aws.NopRetryer{}})
  return sdk,b,nil
 }
-type Row struct {Bucket string `json:"bucket"`;Key string `json:"key"`;VersionID *string `json:"versionId"`;IsLatest bool `json:"isLatest"`;DeleteMarker bool `json:"deleteMarker"`;Size int64 `json:"size"`;SHA256 *string `json:"sha256"`;MetadataSHA256 *string `json:"metadataSha256"`;Metadata map[string]string `json:"metadata,omitempty"`}
-func inventory(ctx context.Context,sdk *s3.Client)([]Row,error){
- rows:=[]Row{};seenBuckets:=map[string]bool{};token:=(*string)(nil)
+type Row struct {Bucket string `json:"bucket"`;Key string `json:"key"`;VersionID *string `json:"versionId"`;IsLatest bool `json:"isLatest"`;DeleteMarker bool `json:"deleteMarker"`;Size int64 `json:"size"`;SHA256 *string `json:"sha256"`;MetadataSHA256 *string `json:"metadataSha256"`;Metadata map[string]string `json:"metadata,omitempty"`;Head map[string]any `json:"headMetadata,omitempty"`;Tags any `json:"tags,omitempty"`}
+func inventory(ctx context.Context,sdk *s3.Client)([]Row,[]map[string]any,error){
+ rows:=[]Row{};features:=[]map[string]any{};privateBytes:=0
+ appendRow:=func(row Row)error{encoded,e:=json.Marshal(row);if e!=nil||len(encoded)>65536||privateBytes+len(encoded)>64*1024*1024{return errors.New("PRIVATE_INVENTORY_MEMORY_BUDGET")};privateBytes+=len(encoded);rows=append(rows,row);return nil};seenBuckets:=map[string]bool{};token:=(*string)(nil)
  for {
-  buckets,e:=sdk.ListBuckets(ctx,&s3.ListBucketsInput{ContinuationToken:token});if e!=nil{return rows,e}
+  buckets,e:=sdk.ListBuckets(ctx,&s3.ListBucketsInput{ContinuationToken:token});if e!=nil{return rows,features,e}
   for _,bucket:=range buckets.Buckets{
-   name:=aws.ToString(bucket.Name);if name==""||seenBuckets[name]{return rows,errors.New("DUPLICATE_BUCKET")};seenBuckets[name]=true
+   name:=aws.ToString(bucket.Name);if name==""||seenBuckets[name]{return rows,features,errors.New("DUPLICATE_BUCKET")};seenBuckets[name]=true
+   featureSet:=map[string]any{"bucket":name}
+   readFeature:=func(name string,read func()(any,error))error{
+    value,err:=read();if err==nil{raw,e:=json.Marshal(value);if e!=nil||len(raw)>1024*1024||privateBytes+len(raw)>64*1024*1024{return errors.New("BUCKET_FEATURE_BUDGET")};privateBytes+=len(raw);featureSet[name]=map[string]any{"status":"PRESENT","value":value};return nil}
+    var api interface{ErrorCode()string};if errors.As(err,&api){
+     code:=api.ErrorCode()
+     for _,absent:=range []string{"NoSuchBucketPolicy","NoSuchLifecycleConfiguration","ReplicationConfigurationNotFoundError","ServerSideEncryptionConfigurationNotFoundError","ObjectLockConfigurationNotFoundError","NoSuchObjectLockConfiguration","NoSuchCORSConfiguration","NoSuchTagSet","NoSuchPublicAccessBlockConfiguration"}{if code==absent{featureSet[name]=map[string]any{"status":"ABSENT","code":code};return nil}}
+     if code=="NotImplemented"{featureSet[name]=map[string]any{"status":"UNSUPPORTED","code":code};return nil}
+    };return err
+   }
+   calls:=[]struct{name string;read func()(any,error)}{
+    {"versioning",func()(any,error){return sdk.GetBucketVersioning(ctx,&s3.GetBucketVersioningInput{Bucket:bucket.Name})}},
+    {"encryption",func()(any,error){return sdk.GetBucketEncryption(ctx,&s3.GetBucketEncryptionInput{Bucket:bucket.Name})}},
+    {"policy",func()(any,error){return sdk.GetBucketPolicy(ctx,&s3.GetBucketPolicyInput{Bucket:bucket.Name})}},
+    {"objectLock",func()(any,error){return sdk.GetObjectLockConfiguration(ctx,&s3.GetObjectLockConfigurationInput{Bucket:bucket.Name})}},
+    {"lifecycle",func()(any,error){return sdk.GetBucketLifecycleConfiguration(ctx,&s3.GetBucketLifecycleConfigurationInput{Bucket:bucket.Name})}},
+    {"replication",func()(any,error){return sdk.GetBucketReplication(ctx,&s3.GetBucketReplicationInput{Bucket:bucket.Name})}},
+    {"notification",func()(any,error){return sdk.GetBucketNotificationConfiguration(ctx,&s3.GetBucketNotificationConfigurationInput{Bucket:bucket.Name})}},
+    {"cors",func()(any,error){return sdk.GetBucketCors(ctx,&s3.GetBucketCorsInput{Bucket:bucket.Name})}},
+    {"acl",func()(any,error){return sdk.GetBucketAcl(ctx,&s3.GetBucketAclInput{Bucket:bucket.Name})}},
+    {"publicAccessBlock",func()(any,error){return sdk.GetPublicAccessBlock(ctx,&s3.GetPublicAccessBlockInput{Bucket:bucket.Name})}},
+   }
+   for _,call:=range calls{if e:=readFeature(call.name,call.read);e!=nil{features=append(features,featureSet);return rows,features,e}}
+   features=append(features,featureSet)
    pages:=s3.NewListObjectVersionsPaginator(sdk,&s3.ListObjectVersionsInput{Bucket:bucket.Name,MaxKeys:aws.Int32(1000)})
    markers:=map[string]bool{}
    for pages.HasMorePages(){
-    page,e:=pages.NextPage(ctx);if e!=nil{return rows,e}
+    page,e:=pages.NextPage(ctx);if e!=nil{return rows,features,e}
     for _,o:=range page.Versions{
-     if len(rows)>=25000{return rows,errors.New("OBJECT_BUDGET_EXHAUSTED")}
-     head,e:=sdk.HeadObject(ctx,&s3.HeadObjectInput{Bucket:bucket.Name,Key:o.Key,VersionId:o.VersionId});if e!=nil{return rows,e}
-     rows=append(rows,Row{Bucket:name,Key:aws.ToString(o.Key),VersionID:o.VersionId,IsLatest:aws.ToBool(o.IsLatest),Size:aws.ToInt64(o.Size),Metadata:head.Metadata})
+     if len(rows)>=25000{return rows,features,errors.New("OBJECT_BUDGET_EXHAUSTED")}
+     head,e:=sdk.HeadObject(ctx,&s3.HeadObjectInput{Bucket:bucket.Name,Key:o.Key,VersionId:o.VersionId});if e!=nil{return rows,features,e}
+     tags,e:=sdk.GetObjectTagging(ctx,&s3.GetObjectTaggingInput{Bucket:bucket.Name,Key:o.Key,VersionId:o.VersionId});if e!=nil{return rows,features,e}
+     if e:=appendRow(Row{Bucket:name,Key:aws.ToString(o.Key),VersionID:o.VersionId,IsLatest:aws.ToBool(o.IsLatest),Size:aws.ToInt64(o.Size),Metadata:head.Metadata,Tags:tags.TagSet,Head:map[string]any{"contentType":head.ContentType,"contentLength":head.ContentLength,"lastModified":head.LastModified,"cacheControl":head.CacheControl,"contentEncoding":head.ContentEncoding,"objectLockMode":head.ObjectLockMode,"retainUntilDate":head.ObjectLockRetainUntilDate,"legalHoldStatus":head.ObjectLockLegalHoldStatus,"serverSideEncryption":head.ServerSideEncryption,"kmsKeyId":head.SSEKMSKeyId}});e!=nil{return rows,features,e}
     }
-    for _,o:=range page.DeleteMarkers{if len(rows)>=25000{return rows,errors.New("OBJECT_BUDGET_EXHAUSTED")};rows=append(rows,Row{Bucket:name,Key:aws.ToString(o.Key),VersionID:o.VersionId,IsLatest:aws.ToBool(o.IsLatest),DeleteMarker:true})}
-    if aws.ToBool(page.IsTruncated){marker:=aws.ToString(page.NextKeyMarker)+"\x00"+aws.ToString(page.NextVersionIdMarker);if markers[marker]||marker=="\x00"{return rows,errors.New("NONPROGRESSING_VERSION_PAGINATION")};markers[marker]=true}
+    for _,o:=range page.DeleteMarkers{if len(rows)>=25000{return rows,features,errors.New("OBJECT_BUDGET_EXHAUSTED")};if e:=appendRow(Row{Bucket:name,Key:aws.ToString(o.Key),VersionID:o.VersionId,IsLatest:aws.ToBool(o.IsLatest),DeleteMarker:true});e!=nil{return rows,features,e}}
+    if aws.ToBool(page.IsTruncated){marker:=aws.ToString(page.NextKeyMarker)+"\x00"+aws.ToString(page.NextVersionIdMarker);if markers[marker]||marker=="\x00"{return rows,features,errors.New("NONPROGRESSING_VERSION_PAGINATION")};markers[marker]=true}
    }
   }
-  if buckets.ContinuationToken==nil||aws.ToString(buckets.ContinuationToken)==""{break};if token!=nil&&*token==*buckets.ContinuationToken{return rows,errors.New("NONPROGRESSING_BUCKET_PAGINATION")};token=buckets.ContinuationToken
+  if buckets.ContinuationToken==nil||aws.ToString(buckets.ContinuationToken)==""{break};if token!=nil&&*token==*buckets.ContinuationToken{return rows,features,errors.New("NONPROGRESSING_BUCKET_PAGINATION")};token=buckets.ContinuationToken
  }
- return rows,nil
+ return rows,features,nil
+}
+func privateParents(path string)error{
+ for p:=filepath.Clean(path);;p=filepath.Dir(p){
+  info,e:=os.Lstat(p);if e!=nil||!info.IsDir()||info.Mode()&os.ModeSymlink!=0{return errors.New("UNSAFE_OUTPUT_ANCESTRY")}
+  owner,ok:=info.Sys().(*syscall.Stat_t);if !ok||(owner.Uid!=0&&owner.Uid!=uint32(os.Geteuid())){return errors.New("UNTRUSTED_OUTPUT_OWNER")}
+  if info.Mode().Perm()&0022!=0 && info.Mode()&os.ModeSticky==0{return errors.New("WRITABLE_OUTPUT_ANCESTRY")}
+  if p==filepath.Dir(p){break}
+ };return nil
+}
+func writeNew(dir,name string,raw []byte)error{
+ f,e:=os.OpenFile(filepath.Join(dir,name),os.O_WRONLY|os.O_CREATE|os.O_EXCL|syscall.O_NOFOLLOW,0600);if e!=nil{return e}
+ if _,e=f.Write(raw);e==nil{e=f.Sync()};f.Close();if e!=nil{return e}
+ d,e:=os.Open(dir);if e!=nil{return e};defer d.Close();return d.Sync()
 }
 func execute(configPath,out string) error {
+ configInfo,e:=os.Lstat(configPath);if e!=nil||!configInfo.Mode().IsRegular()||configInfo.Mode().Perm()&0077!=0||configInfo.Size()>16384{return errors.New("PRIVATE_CONFIG_REQUIRED")}
  raw,e:=os.ReadFile(configPath);if e!=nil||len(raw)>16384{return errors.New("BOUNDED_CONFIG_REQUIRED")};var c Config;d:=json.NewDecoder(strings.NewReader(string(raw)));d.DisallowUnknownFields();if d.Decode(&c)!=nil{return errors.New("INVALID_CONFIG")}
  // New output scope is a permanent no-replay claim, including partial failures.
- if !filepath.IsAbs(out){return errors.New("ABSOLUTE_OUTPUT_REQUIRED")};if e=os.Mkdir(out,0700);e!=nil{return errors.New("NEW_PRIVATE_SCOPE_REQUIRED")}
- claim:=[]byte("{\"schema\":\"ouf.storage-inventory-claim.v1\",\"automaticReplayAllowed\":false}\n");if e=os.WriteFile(filepath.Join(out,"claim.json"),claim,0600);e!=nil{return e}
+ if !filepath.IsAbs(out){return errors.New("ABSOLUTE_OUTPUT_REQUIRED")};if e=privateParents(filepath.Dir(out));e!=nil{return e};if e=os.Mkdir(out,0700);e!=nil{return errors.New("NEW_PRIVATE_SCOPE_REQUIRED")}
+ parent,e:=os.Open(filepath.Dir(out));if e!=nil{return e};e=parent.Sync();parent.Close();if e!=nil{return e}
+ claim:=[]byte("{\"schema\":\"ouf.storage-inventory-claim.v1\",\"automaticReplayAllowed\":false}\n");if e=writeNew(out,"claim.json",claim);e!=nil{return e}
  sdk,budget,e:=client(c);if e!=nil{return e};ctx,cancel:=context.WithTimeout(context.Background(),300*time.Second);defer cancel()
- rows,readError:=inventory(ctx,sdk)
- record:=map[string]any{"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":false,"writerInventoryComplete":false}
+ rows,features,readError:=inventory(ctx,sdk)
+ record:=map[string]any{"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatures":features,"writerInventoryComplete":false}
  bytes,e:=json.Marshal(record);if e!=nil||len(bytes)>64*1024*1024{return errors.New("PRIVATE_OUTPUT_BUDGET")}
- f,e:=os.OpenFile(filepath.Join(out,"inventory.private.json"),os.O_WRONLY|os.O_CREATE|os.O_EXCL,0600);if e!=nil{return e};if _,e=f.Write(bytes);e==nil{e=f.Sync()};f.Close();if e!=nil{return e}
+ if e=writeNew(out,"inventory.private.json",bytes);e!=nil{return e}
  fmt.Printf("{\"complete\":%t,\"records\":%d,\"requests\":%d,\"objectBodiesRead\":0,\"targetWrites\":0}\n",readError==nil,len(rows),budget.requests)
  if readError!=nil{return errors.New("INVENTORY_INCOMPLETE_PRIVATE_DETAIL_NOT_PRINTED")};return nil
 }

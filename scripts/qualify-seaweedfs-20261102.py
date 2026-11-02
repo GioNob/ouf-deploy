@@ -118,7 +118,14 @@ def gate(out):
     record = json.loads((out/'candidate.json').read_text())
     require(digest(out/'bin/weed') == record['binarySha256'], 'BINARY_CHANGED')
     report = out/'trivy-binary.json'
-    counts = assess(json.loads(report.read_text()))
+    parsed = json.loads(report.read_text())
+    counts = assess(parsed)
+    inventory = out/'bin/storage-inventory'
+    if inventory.exists():
+        require(any(r.get('Class') == 'lang-pkgs' and r.get('Type') == 'gobinary' and r.get('Packages')
+                    and r.get('Target','').endswith('storage-inventory') for r in parsed['Results']), 'ACTUAL_INVENTORY_EXECUTABLE_SCAN_REQUIRED')
+        record['inventoryBinarySha256'] = digest(inventory)
+
     record.update(scanSha256=digest(report),findings=counts,
                   securityGate='HELD' if any(counts[s] for s in ['UNKNOWN','HIGH','CRITICAL']) else 'PASS')
     eligible = False
