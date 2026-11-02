@@ -3,7 +3,7 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "PRIVATE_BASELINE_STOP_RECONCILE_CORRECTION_QUALIFYING",
+  "status": "PRIVATE_BASELINE_CORRECTION_QUALIFIED_AWAITING_OPERATOR",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -242,7 +242,7 @@
       23
     ]
   },
-  "runtimeOperationsPerformed": false,
+  "runtimeOperationsPerformed": true,
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
@@ -306,16 +306,18 @@
     "automaticReplayAllowed": false,
     "actualTargetExecuted": true,
     "targetShellAvailableToAgent": false,
-    "targetOperationsPerformed": 0,
+    "targetOperationsPerformed": 1,
     "independentPublishedBytesReadbackRunId": 41392147761,
     "publishedFilesComparedByteForByte": 21,
     "actualTargetEngineGets": 1,
     "cumulativeControlAttempts": 13,
     "cumulativeDirectEngineGets": 36,
-    "receipt": "evidence/seaweedfs-inventory-selection-stop-target-20261102.json"
+    "receipt": "evidence/seaweedfs-inventory-selection-stop-target-20261102.json",
+    "performedBy": "OPERATOR",
+    "s3NotReachedBasis": "EXACT_FAILURE_CALL_SITE_BEFORE_FIRST_INSPECT"
   },
   "privateBaselineCorrection": {
-    "status": "QUALIFYING_NOT_DELIVERED",
+    "status": "QUALIFIED_AWAITING_OPERATOR",
     "scope": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-reconciliation-20261102-v1",
     "controlAttempt": 14,
     "priorEngineGets": 36,
@@ -325,6 +327,19 @@
     "containerListRequests": 0,
     "reuseInstalledSdk": true,
     "oldScopeRearmed": false,
-    "targetExecuted": false
-  }
+    "targetExecuted": false,
+    "producerSource": "f53412947ab7b301e76083c27d11d93a9873df3d",
+    "producerRunId": 41406925881,
+    "independentReadbackRunId": 41407543627,
+    "deliveryCommit": "7102638803484c7dcb7a61f398d442f5ccbe6203",
+    "launcherCommit": "4da291a42aa7951b3742fab5423a1fb40401f266",
+    "launcherSha256": "a4d3173bd6e41943811c825acf95501ba898dd057ed698bb884b1d73bb375c77",
+    "instructions": "docs/OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md",
+    "dossier": "evidence/seaweedfs-inventory-reconciliation-qualified-20261102.json",
+    "realDockerIdOnlyQualificationPassed": true,
+    "historicalScopeChecksInFixture": "MODELLED"
+  },
+  "runtimeObservationPerformed": true,
+  "runtimeMutationsPerformed": false,
+  "runtimeOperationClass": "ONE_OPERATOR_READONLY_DOCKER_LIST_GET_NO_S3"
 }

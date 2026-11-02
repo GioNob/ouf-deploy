@@ -1,3 +1,29 @@
+# CURRENT — SeaweedFS inventory correction qualified; one distinct VPS action ready
+
+2 novembre 2026. [Consegna correttiva](docs/OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md).
+Ricevuta operatore: STOP selezione /ouf-; scope13 CONSUMATO, cumulativi
+13controlli/36GET. Non rilanciare vecchio comando/cancellare vecchi file.
+Era un'assunzione errata del reader, non prova di assenza container/dati.
+Sourcef5341294/CI41406925881 PASS:10nuoviPython/12Java;13container Docker
+REALI con nomi senza prefisso, socket/peer e13GET diretti agliID. Namespace
+kernel/S3 reali,1010record sintetici; storico13scope MODELLATO e ruoloMinIO
+sintetico con waiter su hostnet: non spacciarli per osservazione VPS.
+SDK originale SHA430631fe riusato e riscan zero findings; capsula24sorgenti,
+23storiche invariate, payload260304entro limite; oldreader/scopes intatti.
+CI41407543627 verifica indipendentemente18checksum,sorgenti,firma publisher
+esatta,due file pubblicati e launcher. [Dossier](evidence/seaweedfs-inventory-reconciliation-qualified-20261102.json).
+NEXT richiedere UNA esecuzione NUOVO blocco correttivo e SOLO JSON finale:
+launcher4da291a4/SHAa4d3173b, pubblicazione71026388, reader già installato.
+Nessuna shell/API inventory VPS all'agente. Scope14 SEPARATO non ancora
+eseguito, verifica STOP esatto+seed14e42+roster13ID senza list/fallbacknomi;
+max13nuoviGET/cumulativo49, zero S3write/corpi/SQL/lifecycle. Credenziali
+solo memfd; nuove sole capsula/manifesto ed evidenze private. SuSTOP/parziale
+conservare e riconciliare, nessun replay/reset/grant. Nessuna nuova operazione
+VPS dopo ricevuta13. ZeroS3/credenziali del vecchioSTOP dedotti dal call site,
+non da contatori misurati. Raw server HELD1UNKNOWN;8gate/21AT/M2 OPEN,
+Teatri/stessaFarmacie e mappe235/19/17/21/23 preservati. No deploy/migrazione/
+merge/release acceptance/subagenti. Le intestazioni successive sono storiche.
+
 # CURRENT — SeaweedFS inventory STOP consumed; corrective ID-bound qualification in progress
 
 2 novembre 2026. L'owner ha restituito STOP_RECONCILE /

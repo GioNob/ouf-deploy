@@ -1,3 +1,5 @@
+> **CONSUMATO — NON ESEGUIRE QUESTO VECCHIO BLOCCO.** L'operatore ha restituito STOP_RECONCILE/BOUNDED_NONEMPTY_OUF_CONTAINER_SET_REQUIRED: scope13 consumato e36GET cumulativi. Usare esclusivamente la [nuova consegna correttiva qualificata](OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md), scope14 distinto; non cancellare o rilanciare nulla del vecchio controllo. Il contenuto seguente è storico.
+
 # SeaweedFS — unica rilevazione privata sul VPS
 
 2 novembre 2026. MiniPET OUF-MP-STORAGE-SW, SW-WP0/SW-G0. Consegna preparata e verificata; **non ancora eseguita sul target**. L'agente dispone di GitHub e OUF MCP, ma non di una shell VPS o di una funzione MCP per inventariare Docker/S3. Questo è l'intervento operativo necessario per proseguire.

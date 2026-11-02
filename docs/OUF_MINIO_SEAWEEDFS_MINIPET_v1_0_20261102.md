@@ -236,3 +236,10 @@ Avviati WP0/WP1/WP2 e qualifica recovery, senza effetti sul target. Source6cddee
 Il rawgate SeaweedFS resta HELD1UNKNOWN, OpenPGP assente dal grafo compilato: diagnostica sintetica consentita, produzione non ammessa. Nessuna vulnerabilità HIGH/CRITICAL nella build corretta; il reader distinto ha scan zero findings. Non confondere questi risultati con la rimozione delle vulnerabilità dall'installazione corrente, ancora invariata.
 
 [Consegna unica inventario privato VPS](OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md) pronta e qualificata; necessaria esecuzione owner perché shell/API inventory assenti all'agente. Tutti8gate e21AT restano OPEN fino alle evidenze richieste, incluse quelle reali. Nessun deploy, migrazione o cutover. [Registro aggiornato](../releases/minio-seaweedfs-plan-20261102.json), [handoff](handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md).
+
+
+## Correzione dell'inventario — 2 novembre 2026
+
+L'esecuzione operatore ha consumato il controllo13/36GET cumulativi con STOP al filtro di nomi `/ouf-`; nessun inspect/S3/credenziale ancora raggiunto secondo il call site qualificato. Questa è una deduzione dal codice, non un contatore S3 target. Il vecchio scope resta intatto e non ripetibile. Correzione sourcef5341294/CI41406925881 qualificata: roster13ID e seed privato già verificati,13GET diretti senza elenco; Docker reale con nomi diversi, namespace/S3 reali,10test Python e12Java PASS. Storico13scope MODELLATO in fixture; non è osservazione VPS. Stesso SDK installato SHA430631fe riscan zero, capsula24con23sorgenti storiche invariate. CI41407543627 verifica firma esatta e byte/sorgenti/pubblicazione/launcher.
+
+[Consegna correttiva](OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md) pronta per una sola esecuzione owner necessaria per assenza shell/API inventory all'agente: controllo14 distinto NON ancora eseguito, max13GET nuovi/fino49cumulativi, zero corpi/S3write/SQL/lifecycle. Non è replay, reset o migrazione; tutti8gate e21AT OPEN. [Dossier](../evidence/seaweedfs-inventory-reconciliation-qualified-20261102.json).
