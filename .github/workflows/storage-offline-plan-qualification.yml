@@ -22,7 +22,7 @@ jobs:
         id: attestation
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
         with: {subject-path: offline-evidence/SHA256SUMS}
-      - run: cp "${{ steps.attestation.outputs.bundle-path }}" offline-evidence/provenance.json
+      - run: sudo cp "${{ steps.attestation.outputs.bundle-path }}" offline-evidence/provenance.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
