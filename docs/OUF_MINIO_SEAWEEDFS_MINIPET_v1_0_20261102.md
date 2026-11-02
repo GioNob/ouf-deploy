@@ -227,3 +227,12 @@ Fonti consultate il 2 novembre 2026. Gli URL ai sorgenti OUF e al tag SeaweedFS 
 - **S6:** [Bucket policy](https://github.com/seaweedfs/seaweedfs/wiki/S3-Bucket-Policies).
 - **S7:** [Versioning e limitazioni](https://github.com/seaweedfs/seaweedfs/wiki/S3-Object-Versioning).
 - **S8:** [Configurazione sicurezza](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration).
+
+
+## Registro di esecuzione — 2 novembre 2026
+
+Avviati WP0/WP1/WP2 e qualifica recovery, senza effetti sul target. Source6cddeee7/CI41391421536:24test Python,7Go e12Java PASS; originali adapter OUF, HTTPS/policy con dinieghi, versioni/marker, Unicode e multipart, copia fredda indipendente dati+filer con rehash fixture. Inventario1010record sintetici e credenziali anonime sigillate, esito parziale esplicito su diniego. Firma/provenienza/source/checksum verificati da CI41391892653; tutti21file pubblicati confrontati con artefatto attestato da CI41392147761.
+
+Il rawgate SeaweedFS resta HELD1UNKNOWN, OpenPGP assente dal grafo compilato: diagnostica sintetica consentita, produzione non ammessa. Nessuna vulnerabilità HIGH/CRITICAL nella build corretta; il reader distinto ha scan zero findings. Non confondere questi risultati con la rimozione delle vulnerabilità dall'installazione corrente, ancora invariata.
+
+[Consegna unica inventario privato VPS](OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md) pronta e qualificata; necessaria esecuzione owner perché shell/API inventory assenti all'agente. Tutti8gate e21AT restano OPEN fino alle evidenze richieste, incluse quelle reali. Nessun deploy, migrazione o cutover. [Registro aggiornato](../releases/minio-seaweedfs-plan-20261102.json), [handoff](handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md).

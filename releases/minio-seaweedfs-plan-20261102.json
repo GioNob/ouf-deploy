@@ -3,10 +3,10 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "IN_PROGRESS_PUBLIC_QUALIFICATION",
+  "status": "IN_PROGRESS_LAB_QUALIFIED_PRIVATE_BASELINE_REQUIRED",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
-  "requestedDirection": "Plan replacement of MinIO with SeaweedFS preserving data",
+  "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
   "candidate": {
     "product": "SeaweedFS",
     "initialVersionToEvaluate": "4.51",
@@ -41,7 +41,7 @@
         4,
         8
       ],
-      "executionStatus": "PUBLIC_AUDIT_STARTED_TARGET_INVENTORY_PENDING"
+      "executionStatus": "SIX_PUBLIC_BODY_AUDITS_COMPLETE_PRIVATE_BASELINE_PREPARED"
     },
     {
       "id": "SW-WP1",
@@ -60,7 +60,8 @@
       "effortHoursRange": [
         8,
         16
-      ]
+      ],
+      "executionStatus": "ORIGINAL_ADAPTER_LAB_CONTRACTS_TLS_PREFIX_VERSIONS_MULTIPART_PASS_TARGET_PENDING"
     },
     {
       "id": "SW-WP3",
@@ -96,7 +97,8 @@
       "effortHoursRange": [
         4,
         8
-      ]
+      ],
+      "executionStatus": "INDEPENDENT_COLD_RESTORE_ALL_SYNTHETIC_BYTES_VERSIONS_MULTIPART_PASS_TARGET_PENDING"
     },
     {
       "id": "SW-WP7",
@@ -258,18 +260,54 @@
   "executionRequestedByOwner": "2026-11-02",
   "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md",
   "latestLaboratoryQualification": {
-    "source": "9fa8c7f0bcb286af653ada49f88070b3a3508478",
-    "runId": 41385154842,
-    "jobId": 125084251041,
-    "javaTests": 7,
-    "inventoryGoUnitTests": 4,
-    "pythonGateAndMigrationTests": 16,
-    "syntheticInventoryRecords": 1009,
+    "source": "6cddeee707b67bd27568aa7a3890e28ebecf274f",
+    "runId": 41391421536,
+    "jobId": 125103457725,
+    "javaTests": 12,
+    "inventoryGoUnitTests": 7,
+    "pythonGateMigrationAndTargetGuardTests": 24,
+    "bootstrapGuardTests": 8,
+    "syntheticInventoryRecords": 1010,
     "coldIndependentRestorePassed": true,
     "versionsAndDeleteMarkerRecoveryPassed": true,
+    "incompleteMultipartRecoveryPassed": true,
+    "tlsExplicitCaAndWrongCaDenialPassed": true,
+    "stagingPrefixPutAndSignedPostDenialPassed": true,
+    "unicodeReservedKeyRoundtripPassed": true,
+    "anonymousSealedCredentialFdsPassed": true,
+    "partialDeniedReceiptPassed": true,
+    "kernelNamespaceAndS3Real": true,
+    "dockerAndHistoricalStateInNativeFixture": "MODELLED_NOT_TARGET",
     "targetOperations": 0,
     "rawServerGate": "HELD_ONE_UNKNOWN",
     "inventoryExecutableScan": "ZERO_FINDINGS",
+    "publisherIndependentlyVerified": true,
+    "independentRunId": 41391892653,
+    "evidence": "evidence/seaweedfs-laboratory-byte-readback-20261102.json",
     "releaseAdmitted": false
+  },
+  "privateBaselineDelivery": {
+    "status": "PREPARED_AWAITING_OPERATOR_EXECUTION",
+    "immutableDeliveryCommit": "0f446ddb4a1ed19b2c139bb496d06f84edb6062a",
+    "immutableLauncherCommit": "4eb2505d77b2ced8df77b52ab3ee12df52642ffa",
+    "launcherSha256": "4c0d2bd971b661a7352b480fbe14d48ea957db7835caddf14ad7bd88795221fd",
+    "instructions": "docs/OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md",
+    "scopePath": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-20261102-v1",
+    "newControlAttempt": 13,
+    "maximumNewEngineGets": 65,
+    "maximumS3Requests": 10000,
+    "maximumS3Records": 25000,
+    "objectBodiesRead": 0,
+    "s3Writes": 0,
+    "containerLifecycleOperations": 0,
+    "sqlRequests": 0,
+    "privateOutputBytesMaximum": 67108864,
+    "credentialValuesSpooled": false,
+    "automaticReplayAllowed": false,
+    "actualTargetExecuted": false,
+    "targetShellAvailableToAgent": false,
+    "targetOperationsPerformed": 0,
+    "independentPublishedBytesReadbackRunId": 41392147761,
+    "publishedFilesComparedByteForByte": 21
   }
 }

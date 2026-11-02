@@ -1,3 +1,26 @@
+# CURRENT — SeaweedFS: laboratorio PASS, unica azione VPS pronta
+
+2 novembre 2026. Lavoro MiniPET avviato autonomamente; nessun subagente.
+[Handoff](docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md),
+[consegna VPS](docs/OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md).
+Source6cddeee7/run41391421536 PASS:24Python/7Go/12Java,1010record sintetici;
+TLS+dinieghi CA/prefisso/POST,versioni/marker,Unicode,multipart e copia fredda
+indipendente dati+filer con rehash integrale fixture PASS. Memfd sigillati e
+ricevuta parziale su credenziali negate PASS; Docker/storico MODELLATI nel lab.
+CI41391892653 verifica indipendente checksum50membri,4390Gitblob/mode e firma
+publisher esatta;8test bootstrap/rootinstall PASS. CI41392147761 rilegge21file
+pubblicati confrontandoli con artefatto attestato e launcher esatto.
+Raw server gate HELD1UNKNOWN OpenPGP non importato, zeroHIGH/CRITICAL;
+solo lab sintetico ammesso, nessuna adozione produzione. Reader scan zero.
+NEXT: chiedere una sola esecuzione della consegna VPS e SOLO JSON finale:
+nessuna shell VPS/API inventory all'agente. Scope nuovo13 NON ancora eseguito,
+massimo65EngineGET/10000S3GET-HEAD,zero corpi/S3write/SQL/lifecycle. Credenziali
+solo RAM; installazione reader+nuove evidenze private esplicite. SuSTOP/parziale
+riconciliare,mai replay/reset. Nessuna richiesta di microdiagnostiche.
+Scope12/12controlli/35GET e pin235/19/17/21/23 invariati; Teatri/stessaFarmacie
+preservati;8gate/21AT/M2 OPEN. Nessun deploy/migrazione/merge/release acceptance.
+Le intestazioni successive sono storiche.
+
 # CURRENT — Sostituzione SeaweedFS AVVIATA, lavoro autonomo richiesto
 
 2 novembre 2026. [Handoff](docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md).
