@@ -10,6 +10,8 @@ on:
       - 'tools/storage_migration/**'
       - 'tools/storage_inventory/**'
       - 'tests/test_storage_migration_inventory.py'
+      - 'tests/test_storage_target_inventory.py'
+      - 'scripts/test-storage-target-native-20261102.py'
       - 'tests/fixtures/seaweedfs-contract/**'
 permissions: {contents: read, id-token: write, attestations: write}
 jobs:
@@ -23,6 +25,7 @@ jobs:
         run: |
           python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_evaluation.py -v
           python3 -I -B -S -m unittest discover -s tests -p test_storage_migration_inventory.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_target_inventory.py -v
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: seaweedfs/seaweedfs

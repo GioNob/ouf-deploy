@@ -59,14 +59,14 @@ for name,actions in [('admin',['Admin','Read','Write','List','Tagging']),('stagi
  identities.append({'name':'lab-'+name,'credentials':[{'accessKey':'lab-'+name,'secretKey':'lab-'+name+'-secret-not-production'}],'actions':actions})
 (lab/'s3.json').write_text(json.dumps({'identities':identities}))
 # No ports exposed outside loopback. Synthetic fixtures only; this is not the target TLS/IAM profile.
-args=[str(OUT/'bin/weed'),'server','-ip=127.0.0.1','-ip.bind=127.0.0.1','-dir='+str(lab/'data'),'-master.port=19333','-master.volumeSizeLimitMB=32','-volume.port=18080','-volume.max=20','-filer','-filer.port=18888','-s3','-s3.port=18333','-s3.port.https=18443','-s3.cert.file='+str(lab/'tls.crt'),'-s3.key.file='+str(lab/'tls.key'),'-s3.port.iceberg=0','-s3.port.lance=0','-s3.config='+str(lab/'s3.json')]
+args=[str(OUT/'bin/weed'),'server','-ip=127.0.0.1','-ip.bind=127.0.0.1','-dir='+str(lab/'data'),'-master.port=19333','-master.volumeSizeLimitMB=32','-volume.port=18080','-volume.max=20','-filer','-filer.port=18888','-s3','-s3.port=9000','-s3.port.https=18443','-s3.cert.file='+str(lab/'tls.crt'),'-s3.key.file='+str(lab/'tls.key'),'-s3.port.iceberg=0','-s3.port.lance=0','-s3.config='+str(lab/'s3.json')]
 with (OUT/'server.log').open('w') as log:
  proc=subprocess.Popen(args,cwd=lab,stdout=log,stderr=subprocess.STDOUT)
  try:
   for _ in range(90):
    if proc.poll() is not None:raise RuntimeError('SERVER_EXITED')
    try:
-    with socket.create_connection(('127.0.0.1',18333),timeout=1):break
+    with socket.create_connection(('127.0.0.1',9000),timeout=1):break
    except OSError:time.sleep(1)
   else:raise RuntimeError('SERVER_READINESS_TIMEOUT')
   subprocess.run(['mvn','-B','-ntp','-Dtest=SeaweedContractTest','test'],cwd=FIXTURE,env=java_env,check=True,timeout=600)
@@ -101,6 +101,7 @@ with (OUT/'server.log').open('w') as log:
    (OUT/'inventory-sealed-fd-result.json').write_text(json.dumps({'status':'PASS','syntheticRecords':len(fd_result['records']),'credentialFileReads':0,'anonymousSealedFds':2,'sameRecordsAsFileBinding':True,'targetOperations':0},indent=2)+'\n')
   finally:
    for fd in descriptors:os.close(fd)
+  subprocess.run(['sudo','--preserve-env=GITHUB_ACTIONS','python3','-I','-B','-S',str(ROOT/'scripts/test-storage-target-native-20261102.py'),str(proc.pid),str(OUT/'bin/storage-inventory'),str(lab/'data'),str(OUT/'native-target-inventory-result.json')],check=True,timeout=360)
   # Coherent cold backup after all writers and the server have stopped.
   proc.terminate()
   try:proc.wait(timeout=120)
@@ -117,7 +118,7 @@ with (OUT/'server.log').open('w') as log:
   for _ in range(90):
    if proc.poll() is not None:raise RuntimeError('RESTORED_SERVER_EXITED')
    try:
-    with socket.create_connection(('127.0.0.1',18333),timeout=1):break
+    with socket.create_connection(('127.0.0.1',9000),timeout=1):break
    except OSError:time.sleep(1)
   else:raise RuntimeError('RESTORED_SERVER_READINESS_TIMEOUT')
   subprocess.run(['mvn','-B','-ntp','-Dtest=SeaweedRecoveryTest','test'],cwd=FIXTURE,env=java_env,check=True,timeout=600)
