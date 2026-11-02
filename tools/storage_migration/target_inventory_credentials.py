@@ -63,7 +63,11 @@ def capture(control,engine):
   complete=result.returncode==0 and report['complete'];fd=os.open(control.scope/'s3/inventory.private.json',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
   with os.fdopen(fd,'rb') as f:
    info=os.fstat(f.fileno());require(stat.S_ISREG(info.st_mode) and info.st_uid==info.st_gid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1 and 0<info.st_size<=67108864,'PRIVATE_BOUNDED_INVENTORY_REQUIRED');inventory_sha=base.file_sha(f);require(attrs(info)==attrs(os.fstat(f.fileno())),'PRIVATE_INVENTORY_CHANGED')
-  post=engine.get(path);require(base.filtered_binding(post)==base.filtered_binding(doc) and base.process_pin(pid)==pin,'MINIO_CHANGED_DURING_S3_INVENTORY');binding.stable();stable()
+  post=engine.get(path)
+  before_binding=base.filtered_binding(doc);after_binding=base.filtered_binding(post)
+  changed=[k for k in before_binding if before_binding[k]!=after_binding.get(k)]
+  control.put('postcheck.private.json',{'changedBindingFields':changed,'processGenerationStable':base.process_pin(pid)==pin})
+  require(not changed,'MINIO_METADATA_CHANGED_DURING_S3_INVENTORY');require(base.process_pin(pid)==pin,'MINIO_PROCESS_CHANGED_DURING_S3_INVENTORY');binding.stable();stable()
   available=re.search(r'^MemAvailable:\s+([0-9]+) kB$',host['memoryInfo'],re.M);require(available is not None,'RETAINED_MEMORY_METADATA_REQUIRED')
   return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED' if complete else 'PRIVATE_STORAGE_BASELINE_PARTIAL_REVIEW_REQUIRED','s3Complete':complete,'readerFailureCategory':report['failureCategory'],'privateInventorySha256':inventory_sha,'retainedHostBaselineHash':digest(host),'hostBaselineFromControl':14,'memoryAvailableBytes':int(available[1])*1024,'storageDataFreeBytes':host['capacity'][0]['freeBytes'],'storageDataTotalBytes':host['capacity'][0]['totalBytes'],'capacityAndMemoryObservedAtControl':14,'retainedContainerSnapshots':13,'otherTwelveContainerBindingsRefreshed':False,'inventorySummary':report['summary'],'records':report['records'],'s3Requests':report['requests'],'credentialSources':sources,'credentialValuesSpooled':False,'directEngineGets':engine.gets,'cumulativeDirectEngineGets':49+engine.gets,'cumulativeControlAttempts':15,'allFourteenPriorScopesPreserved':True,'thirteenInspectScanReplayed':False,'automaticReplayAllowed':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'releaseAcceptance':False}
  finally:

@@ -54,7 +54,10 @@ for case in ['defaults-absent','files']:
   assert old_engine.gets==13;previous.put('result.json',stage.FAILED);stage.PREVIOUS=previous.scope
   before={p.name:p.read_bytes() for p in previous.scope.iterdir()}
   control=stage.Capture(temporary/'control15');control.until=time.monotonic()+600;control.put('storage-baseline.claim.json',{'profile':stage.PROFILE,'automaticReplayAllowed':False});engine=stage.Engine(control)
-  report=stage.capture(control,engine)
+  try:report=stage.capture(control,engine)
+  except Exception:
+   if (control.scope/'postcheck.private.json').is_file():print('SYNTHETIC_POSTCHECK_DIFFERENCE '+(control.scope/'postcheck.private.json').read_text())
+   raise
   assert report['s3Complete'] and report['records']==1010 and report['directEngineGets']==2 and report['cumulativeControlAttempts']==15 and report['cumulativeDirectEngineGets']==51 and report['allFourteenPriorScopesPreserved'] and not report['thirteenInspectScanReplayed']
   assert before=={p.name:p.read_bytes() for p in previous.scope.iterdir()}
   expected='DECLARED_SECRET_FILE' if case=='files' else 'EXPLICIT_ENV';assert report['credentialSources']['selectedSources']==[expected,expected]
