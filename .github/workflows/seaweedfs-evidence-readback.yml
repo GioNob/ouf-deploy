@@ -9,6 +9,9 @@ on:
       - 'tools/storage_migration/inventory_bootstrap.py'
       - 'tests/test_storage_inventory_bootstrap.py'
       - 'scripts/test-storage-inventory-bootstrap-20261102.py'
+      - 'scripts/build-storage-inventory-bootstrap-20261102.py'
+      - 'scripts/verify-published-storage-inventory-20261102.py'
+      - 'releases/seaweedfs-inventory-delivery-20261102/run-inventory.py'
 permissions: {contents: read, attestations: read}
 jobs:
   readback:
@@ -25,6 +28,8 @@ jobs:
           set -euo pipefail
           sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S -m unittest discover -s tests -p test_storage_inventory_bootstrap.py -v
           sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S scripts/test-storage-inventory-bootstrap-20261102.py sw-readback/original.zip sw-readback/root-install-fixture.json
+      - name: Read back all immutable delivery bytes and inspect exact bound launcher
+        run: python3 -I -B -S scripts/verify-published-storage-inventory-20261102.py
       - name: Verify exact original publisher workflow source and hosted runner
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
