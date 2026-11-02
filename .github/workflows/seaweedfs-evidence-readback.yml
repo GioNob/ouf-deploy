@@ -6,6 +6,9 @@ on:
       - '.github/workflows/seaweedfs-evidence-readback.yml'
       - 'scripts/read-seaweedfs-lab-artifact-20261102.py'
       - 'scripts/verify-seaweedfs-evidence-20261102.py'
+      - 'tools/storage_migration/inventory_bootstrap.py'
+      - 'tests/test_storage_inventory_bootstrap.py'
+      - 'scripts/test-storage-inventory-bootstrap-20261102.py'
 permissions: {contents: read, attestations: read}
 jobs:
   readback:
@@ -17,6 +20,11 @@ jobs:
       - name: Read and hash every original member and all source Git blobs and modes
         env: {GH_TOKEN: '${{ github.token }}'}
         run: python3 -I -B -S scripts/read-seaweedfs-lab-artifact-20261102.py
+      - name: Qualify root installation of exact delivery and reject unsafe alternatives
+        run: |
+          set -euo pipefail
+          sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S -m unittest discover -s tests -p test_storage_inventory_bootstrap.py -v
+          sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S scripts/test-storage-inventory-bootstrap-20261102.py sw-readback/original.zip sw-readback/root-install-fixture.json
       - name: Verify exact original publisher workflow source and hosted runner
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
@@ -28,7 +36,7 @@ jobs:
           tar -xzf gh297.tar.gz --strip-components=1 -C gh297
           gh297/bin/gh attestation verify sw-readback/SHA256SUMS --repo GioNob/ouf-deploy \
             --signer-workflow GioNob/ouf-deploy/.github/workflows/seaweedfs-evaluation.yml \
-            --source-digest 9fa8c7f0bcb286af653ada49f88070b3a3508478 \
+            --source-digest 6cddeee707b67bd27568aa7a3890e28ebecf274f \
             --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
             --deny-self-hosted-runners --bundle sw-readback/provenance.json --format json > sw-readback/publisher-verification.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -4,9 +4,9 @@ import hashlib,json,os,shutil,urllib.request,urllib.parse,zipfile
 from pathlib import Path
 import importlib.util
 ROOT=Path(__file__).resolve().parents[1]
-ARTIFACT=13114913760
-SHA='5e14ecdc9ae38456cd2f851201c08ee0e2c21e90b1dff5670b13615f0354fe18'
-SIZE=278488850
+ARTIFACT=13117298753
+SHA='6c5b8c90b0e45e6261946d80653d3e8e6f2b3a0c82c4a47efc5ea5dc839419ee'
+SIZE=278756504
 assert os.environ.get('GITHUB_ACTIONS')=='true','CI_ONLY'
 out=ROOT/'sw-readback';out.mkdir()
 class Redirect(urllib.request.HTTPRedirectHandler):
@@ -26,7 +26,7 @@ with urllib.request.build_opener(Redirect()).open(request,timeout=60) as respons
   total+=len(block);assert total<=SIZE,'BOUNDED_EXACT_ARTIFACT_REQUIRED';f.write(block)
 assert total==SIZE
 spec=importlib.util.spec_from_file_location('verify',ROOT/'scripts/verify-seaweedfs-evidence-20261102.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
-result=module.verify(path,SHA)
+result=module.verify(path,SHA,java_tests=12,record_count=1010,delivery=True)
 (out/'byte-readback.json').write_text(json.dumps(result,indent=2)+'\n')
 with zipfile.ZipFile(path) as z:
  for name in ['SHA256SUMS','provenance.json','candidate.json','openpgp-applicability.json','adapter-source-inventory.json','compiled-packages.json','contract-result.json','inventory-live-result.json','trivy-binary.json']:
