@@ -19,3 +19,16 @@ class ScanDenialTest(unittest.TestCase):
             with self.assertRaises(ValueError):sw.assess(report)
     def test_unknown_severity_denied(self):
         with self.assertRaises(ValueError):sw.assess(self.report('UNRATED'))
+
+    def test_lab_diagnostics_only_for_absent_exact_openpgp_package(self):
+        graph={'packages':['github.com/seaweedfs/seaweedfs/weed','golang.org/x/crypto/bcrypt']}
+        report=self.report('UNKNOWN');finding=report['Results'][0]['Vulnerabilities'][0]
+        finding.update(VulnerabilityID='GO-2026-5932',PkgName='golang.org/x/crypto')
+        self.assertTrue(sw.lab_eligible(report,graph))
+        graph['packages'].append('golang.org/x/crypto/openpgp/packet')
+        self.assertFalse(sw.lab_eligible(report,graph))
+    def test_other_unknown_or_high_cannot_enter_lab(self):
+        graph={'packages':['github.com/seaweedfs/seaweedfs/weed']}
+        for severity,identifier in [('HIGH','GO-2026-5932'),('UNKNOWN','OTHER')]:
+            report=self.report(severity);report['Results'][0]['Vulnerabilities'][0].update(VulnerabilityID=identifier,PkgName='golang.org/x/crypto')
+            self.assertFalse(sw.lab_eligible(report,graph))

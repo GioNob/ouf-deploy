@@ -3,7 +3,7 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "PLANNED_NOT_QUALIFIED",
+  "status": "IN_PROGRESS_PUBLIC_QUALIFICATION",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Plan replacement of MinIO with SeaweedFS preserving data",
@@ -13,7 +13,24 @@
     "sourceCommit": "153ab668c99731a6d29492bf6c61d0b4fa701101",
     "imageDigest": null,
     "qualified": false,
-    "installed": false
+    "installed": false,
+    "patchedBuild": {
+      "source": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+      "goToolchain": "go1.27.3",
+      "dependencyOverrides": {
+        "github.com/go-jose/go-jose/v4": "v4.1.6",
+        "golang.org/x/net": "v0.62.0"
+      },
+      "runId": 41382769649,
+      "rawCounts": {
+        "HIGH": 0,
+        "CRITICAL": 0,
+        "UNKNOWN": 1
+      },
+      "compiledPackages": 1738,
+      "openpgpImported": false,
+      "releaseAdmitted": false
+    }
   },
   "workPackages": [
     {
@@ -23,7 +40,8 @@
       "effortHoursRange": [
         4,
         8
-      ]
+      ],
+      "executionStatus": "PUBLIC_AUDIT_STARTED_TARGET_INVENTORY_PENDING"
     },
     {
       "id": "SW-WP1",
@@ -32,7 +50,8 @@
       "effortHoursRange": [
         6,
         12
-      ]
+      ],
+      "executionStatus": "UPSTREAM_DENIED_PATCHED_CANDIDATE_HELD_ONE_UNKNOWN"
     },
     {
       "id": "SW-WP2",
@@ -234,5 +253,7 @@
     "capacity and throughput",
     "encryption and retention",
     "admitted recovery objectives and maintenance window"
-  ]
+  ],
+  "executionRequestedByOwner": "2026-11-02",
+  "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md"
 }

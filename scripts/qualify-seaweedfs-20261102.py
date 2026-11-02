@@ -88,6 +88,7 @@ def rebuild(source, out):
     r.update(binarySha256=digest(out/'bin/weed'),upstreamBinaryRebuilt=True,
              buildToolchain='go1.27.3',cgoEnabled=False,dependencyPatchSha256=digest(out/'dependency.patch'),
              securityGate='NOT_RUN',sourceBinaryEqualityProven=False)
+    r['compiledPackagesSha256'] = digest(out/'compiled-packages.json')
     write(out/'candidate.json',r)
 
 
@@ -104,6 +105,15 @@ def assess(report):
     return counts
 
 
+def lab_eligible(report, graph):
+    packages = graph.get('packages')
+    require(isinstance(packages,list) and bool(packages) and all(isinstance(p,str) for p in packages), 'COMPLETE_PACKAGE_GRAPH_REQUIRED')
+    require('github.com/seaweedfs/seaweedfs/weed' in packages, 'ACTUAL_EXECUTABLE_PACKAGE_REQUIRED')
+    if any(p == 'golang.org/x/crypto/openpgp' or p.startswith('golang.org/x/crypto/openpgp/') for p in packages):return False
+    findings = [v for r in report['Results'] for v in r.get('Vulnerabilities') or [] if v.get('Severity') in ['HIGH','CRITICAL','UNKNOWN']]
+    return bool(findings) and all(v.get('VulnerabilityID') == 'GO-2026-5932' and v.get('PkgName') == 'golang.org/x/crypto' and v.get('Severity') == 'UNKNOWN' for v in findings)
+
+
 def gate(out):
     record = json.loads((out/'candidate.json').read_text())
     require(digest(out/'bin/weed') == record['binarySha256'], 'BINARY_CHANGED')
@@ -111,9 +121,16 @@ def gate(out):
     counts = assess(json.loads(report.read_text()))
     record.update(scanSha256=digest(report),findings=counts,
                   securityGate='HELD' if any(counts[s] for s in ['UNKNOWN','HIGH','CRITICAL']) else 'PASS')
+    eligible = False
+    if record.get('upstreamBinaryRebuilt') and record.get('cgoEnabled') is False:
+        require(digest(out/'compiled-packages.json') == record['compiledPackagesSha256'], 'PACKAGE_GRAPH_CHANGED')
+        eligible = lab_eligible(json.loads(report.read_text()),json.loads((out/'compiled-packages.json').read_text()))
+    record.update(isolatedLabEligible=eligible,releaseAdmitted=False,rawGatePreserved=True)
+    if eligible:
+        write(out/'openpgp-applicability.json',{'advisory':'GO-2026-5932','assessment':'AFFECTED_PACKAGE_NOT_IMPORTED','binarySha256':record['binarySha256'],'compiledPackagesSha256':record['compiledPackagesSha256'],'rawSecurityGate':'HELD','allows':'synthetic loopback diagnostic tests only','allowsTargetOrRelease':False})
     write(out/'candidate.json', record)
     print(json.dumps({'securityGate':record['securityGate'],'findings':counts}))
-    require(record['securityGate'] == 'PASS','SECURITY_GATE_HELD')
+    require(record['securityGate'] == 'PASS' or eligible,'SECURITY_GATE_HELD')
 
 
 def seal(out):

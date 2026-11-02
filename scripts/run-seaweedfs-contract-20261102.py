@@ -22,7 +22,9 @@ SOURCES={
  'it/comune/trieste/ouf/udp/LakeObjectStoragePort.java',
  'it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java'])}
 assert os.environ.get('GITHUB_ACTIONS')=='true','CI_ONLY'
-assert json.loads((OUT/'candidate.json').read_text())['securityGate']=='PASS'
+candidate=json.loads((OUT/'candidate.json').read_text())
+assert candidate['securityGate']=='PASS' or candidate.get('isolatedLabEligible') is True
+assert hashlib.sha256((OUT/'bin/weed').read_bytes()).hexdigest()==candidate['binarySha256']
 records=[]
 for directory,(commit,files) in SOURCES.items():
  source=ROOT/directory

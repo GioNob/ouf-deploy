@@ -1,3 +1,5 @@
+> **Esecuzione avviata — 2 novembre 2026:** [handoff corrente](handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md). L'owner richiede lavoro autonomo secondo questo piano. Scansione upstream1HIGH/3UNKNOWN; build corretta zeroHIGH/CRITICAL,1UNKNOWN con applicabilità da verificare. Nessun gate chiuso o target modificato. La diagnostica isolata e l'ammissione release restano distinte.
+
 # OUF — MiniPET: sostituzione di MinIO con SeaweedFS
 
 **ID:** OUF-MP-STORAGE-SW · **Versione:** 1.0 · **Data:** 2 novembre 2026, Europe/Rome  

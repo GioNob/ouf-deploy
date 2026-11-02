@@ -1,3 +1,21 @@
+# CURRENT — Sostituzione SeaweedFS AVVIATA, lavoro autonomo richiesto
+
+2 novembre 2026. [Handoff](docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md).
+L'owner ha chiesto esecuzione del MiniPET, sviluppo e qualifica autonomi con
+aggiornamenti costanti. Non fermarsi alla pianificazione. Nessun subagente.
+Upstream4.51 respinto1HIGH/3UNKNOWN; build distinta JOSE4.1.6/xnet0.62.0
+con Go1.27.3: run41382769649 zeroHIGH/CRITICAL,1UNKNOWN OpenPGP. Grafo1738
+non importa OpenPGP. Rawgate HELD e releaseAdmitted false restano espliciti.
+Nuova valutazione consente soltanto diagnostica sintetica loopback per questo
+unico advisory se assenza pacchetto provata; nessun altro rilievo ammesso.
+Fixture CINQUE file originali adapter/porte,5prove Java da eseguire;16test
+locali parser/inventario PASS. Audit sei generazioni pubbliche, non target.
+NEXT: seguire CI, correggere e qualificare laboratorio, poi TLS/policy/recovery/
+packaging e consegna completa inventario. Gate tutti OPEN; niente richiesta
+operatore prematura. Scope12/12controlli/35GET e pin235/19/17/21/23 invariati.
+Teatri e stessa Farmacie preservati; M2 aperto; nessun effetto VPS o merge.
+Le intestazioni successive sono storiche.
+
 # CURRENT — MiniPET sostituzione MinIO → SeaweedFS redatto
 
 2 novembre 2026, Europe/Rome. L'owner richiede il piano di sostituzione con
