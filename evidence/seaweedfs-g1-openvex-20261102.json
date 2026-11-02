@@ -1,0 +1,27 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "urn:ouf:vex:seaweedfs-bb9f768e-GO-2026-5932-20261102-v1",
+  "author": "OUF project",
+  "role": "Project technical assessment, accepted by project owner in conversation",
+  "timestamp": "2026-11-02T21:22:30+01:00",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "GO-2026-5932",
+        "@id": "https://pkg.go.dev/vuln/GO-2026-5932"
+      },
+      "products": [
+        {
+          "hashes": {
+            "sha-256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74"
+          }
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The exact OUF-owned CGO-disabled SeaweedFS executable excludes all affected golang.org/x/crypto/openpgp packages from its compilation graph. The containing x/crypto module remains present for other functionality. Evidence is bound to the binary, source, dependency patch, toolchain and graph hashes; rebuilds and advisory scope changes require renewed assessment.",
+      "status_notes": "urn:ouf:decision:OUF-SW-G1-20261102-01; the raw scanner report remains retained with one UNKNOWN. This statement does not admit a container image, deployment or migration."
+    }
+  ]
+}
