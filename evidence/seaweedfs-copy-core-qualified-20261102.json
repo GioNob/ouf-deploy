@@ -1,0 +1,235 @@
+{
+  "schema": "ouf.storage-copy-laboratory-dossier.v1",
+  "date": "2026-11-02",
+  "status": "LAB_QUALIFIED_NOT_PRODUCTION_ADMITTED",
+  "producer": {
+    "source": "99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4",
+    "runId": 41504703184,
+    "jobId": 125480894533,
+    "workflow": ".github/workflows/storage-copy-lab.yml",
+    "conclusion": "success",
+    "artifactId": 13168889944,
+    "artifactBytes": 4420588,
+    "artifactSha256": "9714833cd2a3a0b1e26635497b1a9807752092ee41981f6bf482a956dd62578e",
+    "binarySha256": "dadb43a3d03297fa434181c9e447fdc7841a501eb4d8c04f43c31fd9c17b1cb2",
+    "checksumSubjectSha256": "a0139369e3ee3ed634243f922075771313a602f8ae5fcc105243afe0525f56b4"
+  },
+  "independentReadback": {
+    "source": "1606f05c88164a21a4a9126548f413f3507151bf",
+    "runId": 41507064288,
+    "jobId": 125488952877,
+    "conclusion": "success",
+    "artifactId": 13171720492,
+    "artifactBytes": 84954,
+    "artifactSha256": "00a3559a38bcf84f122863e2aaa0e31122452603462735c3f16ea126a10fab4f",
+    "retainedArchive": "evidence/artifacts/storage-copy-readback-41507064288.zip",
+    "checksumMembers": 25,
+    "repositorySourceRecords": 8,
+    "priorFrozenSourceRecordsUnchanged": 28,
+    "enclosedBinaryExecuted": false,
+    "publisherSignatureVerified": true,
+    "publisherScope": "OUF-owned hosted workflow, exact source/ref; not upstream vendor signature",
+    "signatureSubject": "SHA256SUMS"
+  },
+  "qualification": {
+    "schema": "ouf.storage-copy-lab-qualification.v1",
+    "status": "PASS",
+    "producerSource": "99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4",
+    "passedTests": [
+      "TestUnitCopyAndCompletedDedup",
+      "TestUnitCrashReconciliation/BEFORE_PUT",
+      "TestUnitCrashReconciliation/AFTER_PUT",
+      "TestUnitCrashReconciliation/BEFORE_CHECKPOINT",
+      "TestUnitCrashReconciliation",
+      "TestUnitAmbiguous503RetryAfterAndNoDuplicatePut",
+      "TestUnitSixHourOutageSurvivesRestartsAndBudgetPersists",
+      "TestUnitExhausted24HoursDoesNotReset",
+      "TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry/bad-hash",
+      "TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry/unowned-destination",
+      "TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry/extra-destination",
+      "TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry/corrupt-destination",
+      "TestUnitPermanentIntegrityCasesHoldWithoutAutomaticRetry",
+      "TestUnitChangedPlanOrProfileCannotResetBudget",
+      "TestUnitJournalCustodyChainAndConcurrentLaunch",
+      "TestUnitJournalRequestCreditsAreDurableAndFinite",
+      "TestUnitUnprovenExistingScopeAndSourceIdentity",
+      "TestUnitPlanLimitsAndPrivateModes",
+      "TestRealFunctionalReadiness/source",
+      "TestRealFunctionalReadiness/destination",
+      "TestRealFunctionalReadiness",
+      "TestRealConditionalAtomicity",
+      "TestRealCopy120FromExactInventoryCompilerWire",
+      "TestRealProcessCrashResumeNoSecondPut/BEFORE_PUT",
+      "TestRealProcessCrashResumeNoSecondPut/AFTER_PUT",
+      "TestRealProcessCrashResumeNoSecondPut/BEFORE_CHECKPOINT",
+      "TestRealProcessCrashResumeNoSecondPut",
+      "TestRealAmbiguous503RespectsRetryAfterAndReconciles",
+      "TestRealTagsAndEncodingPreserved",
+      "TestRealInvalidTagCannotOverwrite",
+      "TestRealSourceIfMatchAndVersionedDestinationDenials"
+    ],
+    "passedTestCount": 31,
+    "twoIndependentRealS3Servers": true,
+    "sourceServerIsMinio": false,
+    "sourceAndDestination": "SYNTHETIC_SEAWEEDFS_FIXTURES",
+    "originalInventorySdkReused": true,
+    "existingPrivatePlanCompilerWireExercised": true,
+    "syntheticObjects": 120,
+    "syntheticLogicalBytes": 203743,
+    "missingAdvertisedHashes": 10,
+    "bodiesVerified": 120,
+    "realProcessCrashPoints": [
+      "BEFORE_PUT",
+      "AFTER_PUT",
+      "BEFORE_CHECKPOINT"
+    ],
+    "destinationPutsPerCrashCase": 1,
+    "ambiguous503AfterStoreReconciledWithoutSecondPut": true,
+    "retryAfterOneHourQualifiedWithVirtualClock": true,
+    "sixHourOutageQualifiedWithVirtualClock": true,
+    "cumulativeRequestBudget": 10000,
+    "maximumAttempts": 128,
+    "maximumOperationHours": 24,
+    "versionedDestinationCopySupported": false,
+    "productionEntryPointExists": false,
+    "rawServerGatePreserved": true,
+    "runtimeAuthorityIssued": false,
+    "migrationReady": false,
+    "targetOperations": 0
+  },
+  "sourceRecords": {
+    "tools/storage_copy/copy.go": "34c277f3264cca816c0942ef937be3008cb4b039b980f2b96604b658b9477bbc",
+    "tools/storage_copy/copy_test.go": "3bde4411ef900d33c12cf462de1bd96dac4893521f82fd4c3aca2efeea68eed5",
+    "tools/storage_copy/go.mod": "711789627731c162d2a90bf476a4d55430e608589bb677500fcb7a2d6dc85142",
+    "tools/storage_copy/go.sum": "c21db9d6513ea34c35b439d2bab40cf951a5fc3a70052dcd303f4a45b201edb6",
+    "tools/storage_copy/s3.go": "a59e335156fd32997b02df40a1d49bdb68a1ea4ca9d2fdc003b208f352cf3c64",
+    "tools/storage_copy/s3_test.go": "f88325895460567bc46619c566d5ea7f26e1a92049a35d7aa81358d97f95bef8",
+    "tools/storage_copy/wire.go": "663f9e9008f6271e93b9e504903199ead37a5e53212256a4bc3e5b86bb1fd4b5",
+    "tools/storage_planning/inventory_manifest.py": "5aabd44d0df99e08f95cfa7d085e449b05ad1d4fd5c5c581364675d2930baec1"
+  },
+  "security": {
+    "status": "PASS_FOR_SYNTHETIC_LAB_ONLY",
+    "copyModuleFindings": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 0,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "rawServerGate": "HELD",
+    "serverFindings": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 1
+    },
+    "rawServerGatePreserved": true,
+    "releaseAdmitted": false,
+    "targetOperations": 0
+  },
+  "custody": {
+    "metadataLogsRawScansAndOriginalProvenanceRetainedInGit": true,
+    "originalTestExecutableInRetainedMetadataArchive": false,
+    "originalExecutableArtifactRetentionDays": 90,
+    "fullReleaseDurableCustodyAdmitted": false,
+    "omittedBinaryExplicitlyIdentified": "omitted-member.json"
+  },
+  "limits": {
+    "sameVirtualMachine": true,
+    "sourceServer": "synthetic SeaweedFS; no live or vulnerable MinIO process",
+    "maximumObjects": 256,
+    "maximumObjectBytes": 16777216,
+    "maximumLogicalBytes": 67108864,
+    "namespace": "declared buckets only",
+    "productionEntrypoint": false,
+    "versionHistoryCopy": false,
+    "multipartCopy": false,
+    "wholeInstanceInventory": false,
+    "productionWriterFence": false,
+    "databaseReconciliation": false,
+    "consistentSourceBackup": false,
+    "governedProductionBudgetRenewal": false,
+    "sourceAndDestinationProfileFromTarget": false,
+    "perInvocationSeconds": 300,
+    "maximumAttempts": 128,
+    "maximumOperationHours": 24,
+    "cumulativeRequestBudget": 10000
+  },
+  "priorFailedQualifications": [
+    {
+      "source": "24db7f0956c93ff56f4a3f98da1c580ae10571c4",
+      "runId": 41500335789,
+      "result": "FAIL",
+      "observed": "CAS: 1 success, 0 classified denials, 15 other outcomes; cause not proven at this observation",
+      "correction": "Add HTTP/error-class diagnostics; do not relax one-winner/15-denials requirement",
+      "evidence": [
+        {
+          "path": "evidence/artifacts/storage-copy-first-qualification-failed-41500335789.zip",
+          "size": 6694,
+          "sha256": "d1329564c00846b0298b7a5dac8353ea0be51a2007b5e28854090df29e35b12d",
+          "blobSha": "c48b886b45e789e82e72f2c8a086fcb8c28e0093"
+        }
+      ]
+    },
+    {
+      "source": "585d70a03492639812054b7a32187aa4819ae37d",
+      "runId": 41501156327,
+      "result": "FAIL",
+      "observed": "CAS: 1 success, 2 denials, 13 timeouts; retained during-test logs show lock ring/filer registration after TLS listener became live",
+      "correction": "Functional PUT/conditional denial/GET readiness before concurrency",
+      "evidence": [
+        {
+          "path": "evidence/artifacts/storage-copy-cas-diagnostic-41501156327.zip",
+          "size": 12858,
+          "sha256": "d53df44527a1b0ad625bcea3dc26f1a6a07ca2ba56c23f6bd2c91d844245f555",
+          "blobSha": "2d2cd75333bb85c65f990e8dd3dec30a167902d4"
+        }
+      ]
+    },
+    {
+      "source": "9e1c65015a93c964fe4e4ea5dd61dec855b1a68c",
+      "runId": 41502227393,
+      "result": "FAIL",
+      "observed": "Readiness, atomic CAS and full 120-object copy passed; crash setup returned transient 500; exact original cause not proven by retained logs",
+      "correction": "Finite lab volume slots increased from20 to128; retain logs before server shutdown; add explicit metadata/body/runtime bounds",
+      "evidence": [
+        {
+          "path": "evidence/artifacts/storage-copy-readiness-qualification-41502227393.zip",
+          "size": 13682,
+          "sha256": "1f458ef073953b326c0450fcd9ff5f89db79a200ce897af91bc184d17b8217f8",
+          "blobSha": "ebe7910b155e22ebabe362775f5151a9f6cc89f1"
+        }
+      ]
+    },
+    {
+      "source": "38d8998638fa8db644e30084b0c6401f2c5e73a7",
+      "runId": 41503653978,
+      "result": "FAIL",
+      "observed": "Readiness/CAS/copy120/crashes/ambiguous503 passed; invalid tag fixture rejected by selected server with InvalidTag",
+      "correction": "Use valid Unicode/escaped allowed characters for preservation fixture; retain invalid tag case as negative test with unchanged source body",
+      "evidence": [
+        {
+          "path": "evidence/artifacts/storage-copy-volume-qualification-41503653978.zip",
+          "size": 27680,
+          "sha256": "bc3323f0b9c3921f6c6d63f3a93a348b4a9ddafdf002437e303723d70a39720d",
+          "blobSha": "59ba3aa3dfa3c9c9c63b547036ff7dc36469acec"
+        }
+      ]
+    }
+  ],
+  "target": {
+    "latestConsumedControl": 17,
+    "cumulativeEngineGets": 52,
+    "newTargetOperationsSinceControl17": 0,
+    "privateObjectsCopied": 0,
+    "privateBodiesVerified": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "migrationReady": false,
+    "releaseAcceptance": false
+  },
+  "allEightGatesAnd21AcceptanceTestsRemainOpen": true,
+  "document": "docs/OUF_SEAWEEDFS_COPY_CORE_20261102.md",
+  "g1ApplicabilityProposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json"
+}

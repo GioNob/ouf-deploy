@@ -1,40 +1,39 @@
-# SeaweedFS — inventario target acquisito e preparazione del piano privato
+# SeaweedFS — inventario e piano privato acquisiti, migrazione non ammessa
 
-2 novembre 2026. Il controllo 16 ha completato l'inventario S3. È una raccolta di metadati non ammessa al cutover: tutti gli 8 gate e i 21 AT del MiniPET restano OPEN.
+2 novembre 2026. I controlli16 e17 sono completati e consumati. L'inventario S3 e il piano privato descrivono i dati osservati; non provano uno snapshot atomico. Tutti gli 8 gate / 21 AT e M2 restano OPEN.
 
 | Evidenza | Risultato | Implicazione |
 |---|---:|---|
-| Bucket / record oggetto | 2 / 120 | Insieme rilevato senza errore del reader; non è uno snapshot atomico |
-| Byte logici delle versioni | 203743 | Circa 204 kB; non comprende allocazione SeaweedFS, filer, DB, backup o margini |
-| Hash OUF dichiarati / assenti | 110 / 10 | Tutti i 120 corpi richiedono comunque SHA-256 alla lettura e alla rilettura destinazione |
-| Versioni non-null / marker / multipart incompleti | 0 / 0 / 0 | Non rilevati nella raccolta; nessuna esclusione automatica delle prove future |
+| Bucket / record | 2 / 120 | Insieme rilevato dalle API supportate |
+| Byte logici | 203743 | Non include allocazione storage, filer, DB, backup e margini |
+| Hash OUF dichiarati / mancanti | 110 / 10 | Tutti i120 corpi reali devono ancora essere letti e verificati |
+| Versioni non-null / marker / multipart incompleti | 0 / 0 / 0 | Osservazione della raccolta, non N/A automatico per gli AT |
 | Namespace | PASS | Nessuna collisione file-directory, chiave non sicura o slash finale rilevata |
-| Risposte bucket non supportate | 2 | Nomi e valori non sono nel riepilogo: non equivale a funzione assente |
-| Richieste della raccolta S3 | 265 GET/HEAD | Nessun corpo oggetto letto né scrittura S3 |
-| Controlli / GET Docker cumulativi | 16 / 52 | Scope16 consumato; tutti i quattro vecchi comandi non vanno ripetuti |
+| Corpi reali verificati / oggetti copiati | 0 / 0 | Piano privato PLANNED_NOT_COPIED |
+| Richieste S3 del16 / del17 | 265 / 0 | Solo metadata; nessuna scrittura |
+| Controlli / Docker GET cumulativi | 17 / 52 | Cinque vecchi comandi13–17 consumati: non ripetere o cancellare |
+| Letture metadata offline17 | 4 file / 93238 byte | Stabilità della raccolta16 durante l'analisi provata |
 
-La password è stata risolta da un file dichiarato regolare 0600, con singolo collegamento e dimensione ammessa, appartenente a un utente diverso da root. Il file letto era di 65 byte; il valore non è stato pubblicato o spooled. L'utente S3 proviene dall'ambiente esplicito. La fonte non è ammessa per la custodia operativa. NON_ROOT_OWNER è una violazione sufficiente del vecchio guard allo stato ora osservato; non possediamo i metadati del file al controllo 15 per una prova retrospettiva. Le 9 righe dei candidati corrispondono a 7 path distinti: non è una discrepanza del contatore.
+Inventario privato SHA256 `43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55`; piano privato SHA256 `debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501`. [Ricevuta17](../evidence/seaweedfs-offline-plan-target-20261102.json) e [valutazione strutturata](../evidence/seaweedfs-offline-plan-target-assessment-20261102.json). Nessun nome di oggetto, credenziale o documento privato pubblicato.
 
-RAM disponibile 11830857728 byte e spazio libero 293381369856 su 539792977920 byte appartengono al controllo 14. Le altre 12 configurazioni non sono state rinfrescate. Questi valori non ammettono capacità corrente, throughput, assenza di writer esterni o indipendenza del futuro storage.
+## Funzioni classificate dal controllo17
 
-## Differenze da risolvere nel piano di copia
+| Funzione | Stato sui2 bucket | Conclusione ammessa |
+|---|---|---|
+| publicAccessBlock | UNSUPPORTED2 | Sono queste le due risposte non supportate; non significa assenza della funzione |
+| ACL | PRESENT2, configured0 | I grant non sono classificati dal riepilogo: accesso privato non ancora provato |
+| Bucket policy, CORS, cifratura default, lifecycle, objectLock, replication | ABSENT2 per tipo | Nessun documento policy da tradurre nella raccolta |
+| Versioning e notification | PRESENT2, configured0 | Nessun bucket versionato o notification configurata rilevati; conservare il valore privato |
+| Cifratura/KMS, retention/hold, tag, cache/encoding degli oggetti | Conteggi0 | Nessuno di questi attributi rilevato sui120 record; non è una verifica dei corpi |
 
-I 10 oggetti senza hash dichiarato non sono classificati come persi o corrotti. I metadati originali vanno preservati; il nuovo hash calcolato dai corpi appartiene al manifest di migrazione, senza inventare hash storici o nuove revisioni semantiche. Anche i 110 hash dichiarati vanno confrontati con i byte effettivi.
+I ruoli con binding storage nello snapshot14 sono onboarding, udp e udp-evidence-read. Non prova chi stia scrivendo oggi, che i consumer esterni siano assenti o che i riferimenti DB siano completi. Le altre12configurazioni, RAM e capacità del14 non sono state rinfrescate.
 
-Le due risposte NotImplemented vanno identificate per tipo dal manifest privato già raccolto. L'analisi distingue PRESENT, ABSENT e UNSUPPORTED, conserva policy, ACL, CORS e valori in area privata e segnala attributi per-oggetto di cifratura, KMS, retention e legal hold. Zero cifratura di default sui bucket non prova assenza di cifratura sui singoli oggetti.
+La password del16 è stata risolta da un file dichiarato regolare0600, con un solo collegamento e dimensione ammessa, appartenente a un utente diverso da root; letti65byte senza pubblicare o spooling del valore. L'utente S3 proviene dall'ambiente esplicito. La fonte non è ammessa alla custodia operativa. NON_ROOT_OWNER è sufficiente a violare il vecchio guard allo stato osservato16: mancano i metadati15 per attestare retroattivamente quel preciso predicato. Il17 non ha aperto file credenziali e non ha modificato proprietà o permessi.
 
-La copia prevista mantiene bucket/key e i riferimenti object://managed-files esistenti. Preserva metadati, tag, versioni/marker se richiesti e la mappa degli ID originali. La LIST non è uno snapshot: prima del passaggio servono ancora censimento writer/consumer/DB, fence, delta finale e verifica integrale. I riferimenti nei 13 snapshot del14 sono osservazioni trattenute, non prova di writer correnti o di completezza dei consumer.
+## Stato di SW-WP4 e prossimi vincoli
 
-## Compilazione offline del piano privato
+Il compilatore offline già qualificato ha prodotto il piano. Il nuovo [core di copia sintetica](OUF_SEAWEEDFS_COPY_CORE_20261102.md) ha superato CI41504703184 e readback indipendente41507064288: 120 oggetti generati copiati/riletti su due processi SeaweedFS, CAS, crash reali e503 post-salvataggio. Non prova il trasferimento dal MinIO reale. Nessun entrypoint VPS, nessuna copia reale o autorità emessa. Versioni/marker e multipart copy non implementati nel core; massimo256 oggetti/16MiB ciascuno/64MiB totali, soli bucket dichiarati.
 
-È qualificato un compilatore offline di manifest: 33 test Python in namespace rete isolato e verifica indipendente di firma, sorgenti e pubblicazione. Legge soltanto tre artifact della raccolta16 e lo snapshot host14, verificandone ricevuta/hash e stabilità. Non apre fonti delle credenziali, socket Docker, database o rete S3. Produce un nuovo migration-plan.private.json con modo 0600 con tutte le voci PLANNED_NOT_COPIED, zero copie e zero verifiche dei corpi già eseguite. Il riepilogo pubblico contiene solo conteggi e classi note, senza nomi degli oggetti, endpoint o valori delle policy.
+Per il target restano aperti ACL e controllo equivalente di publicAccessBlock, censimento completo writer/consumer/DB, custodia delle credenziali, profilo destinazione indipendente, backup coerente, fence/delta finale, capacità fresca, throughput e validazione degli obiettivi recovery PET UDP§81 (RPO iniziale900s, RTO14400s; perdita di scritture confermate al passaggio pianificato0). L'assenza di policy o versioni non chiude questi vincoli.
 
-Nuovo controllo 17 distinto, ancora NON eseguito:0 nuovi GET Docker/S3,52 GET Docker cumulativi invariati. Non riapre l'inventario e non modifica vecchi file. [Unico nuovo comando qualificato](OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md): eseguire una volta e restituire soltanto il JSON finale. Il manifest privato rimane sul VPS.
-
-## Vincoli ancora aperti
-
-SW-G0 resta OPEN per funzionalità private da riconciliare, writer, riferimenti DB, recovery e finestra. La build SeaweedFS corretta resta HELD per 1 UNKNOWN grezzo, con zero HIGH/CRITICAL e sola diagnostica sintetica ammessa; nessuna deroga o ammissione viene prodotta da questo risultato. Il motore di copia/ripresa non è ancora implementato: lo schema pianificato è il primo passo di SW-WP4, non una migrazione provata.
-
-Nessuna nuova operazione VPS dopo la ricevuta16, nessuna copia, deploy, merge o grant. Le vulnerabilità del MinIO attuale restano presenti. Teatri/M1 rimane alle prove 8/8 tecniche e 6/6 funzionali già acquisite; la stessa Farmacie e i contratti congelati sono preservati, M2 non chiuso. MiniPET v1.0 §5–8 e introduzione della riconciliazione PET del 10 ottobre consultati; gli originali PET non sono disponibili in questa conversazione, quindi non viene attestata conformità completa né chiuso alcun gate.
-
-[Ricevuta](../evidence/seaweedfs-private-baseline-target-20261102.json) · [Valutazione strutturata](../evidence/seaweedfs-private-baseline-assessment-20261102.json)
+SW-G1 conserva il gate raw HELD: zero HIGH/CRITICAL e1UNKNOWN. [Proposta limitata di applicabilità](OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md) documentata ma non ammessa; nessun ignore o criterio cambiato. Nessuna nuova operazione VPS dopo17. MinIO resta in uso e vulnerabile. Teatri/M1 8/8tecniche,6/6funzionali e stessa Farmacie preservati; originali PET non disponibili nella conversazione, nessuna attestazione di conformità completa.

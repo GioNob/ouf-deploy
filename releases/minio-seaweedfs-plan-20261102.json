@@ -3,7 +3,7 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "PRIVATE_COPY_PLAN_CAPTURED_NOT_ADMITTED_COPY_CORE_IN_QUALIFICATION",
+  "status": "PRIVATE_COPY_PLAN_CAPTURED_NOT_ADMITTED_SYNTHETIC_COPY_CORE_LAB_QUALIFIED",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -41,7 +41,7 @@
         4,
         8
       ],
-      "executionStatus": "PRIVATE_S3_METADATA_CAPTURE_COMPLETE_FEATURES_WRITERS_AND_DB_RECONCILIATION_OPEN"
+      "executionStatus": "PRIVATE_METADATA_AND_OFFLINE_PLAN_CAPTURED_ACL_WRITERS_DB_SNAPSHOT_AND_CUSTODY_OPEN"
     },
     {
       "id": "SW-WP1",
@@ -80,7 +80,7 @@
         8,
         16
       ],
-      "executionStatus": "PRIVATE_TARGET_PLAN_CAPTURED_SYNTHETIC_COPY_CORE_IN_QUALIFICATION"
+      "executionStatus": "PRIVATE_PLAN_CAPTURED_SYNTHETIC_COPY_CRASH_AND_INTEGRITY_CORE_LAB_QUALIFIED_TARGET_PENDING"
     },
     {
       "id": "SW-WP5",
@@ -253,10 +253,11 @@
     "SW-WP4"
   ],
   "openTargetInputs": [
-    "private bucket-feature classification and policy review",
-    "active writers, external consumers and database references",
-    "fresh independent destination capacity and measured throughput",
-    "per-object encryption and retention classification",
+    "private ACL grants and publicAccessBlock compatibility/control mapping",
+    "current writers, external consumers and database references",
+    "consistent source backup, writer fence and point-in-time final verification",
+    "validated independent destination profile, fresh capacity and measured throughput",
+    "credential source custody for operational use",
     "infrastructure validation of PET UDP section81 recovery targets and maintenance window"
   ],
   "executionRequestedByOwner": "2026-11-02",
@@ -455,13 +456,77 @@
         "objectsWithRetentionDate": 0,
         "objectsWithTags": 0
       },
-      "aclAccessClassification": "NOT_IN_PUBLIC_RECEIPT",
+      "aclAccessClassification": "ACL_DOCUMENT_GRANTS_NOT_CLASSIFIED_BY_PUBLIC_RECEIPT",
       "configuredStorageRolesAtControl14": [
         "onboarding",
         "udp",
         "udp-evidence-read"
-      ]
-    }
+      ],
+      "counts": {
+        "acl": {
+          "ABSENT": 0,
+          "PRESENT": 2,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "cors": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "encryption": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "lifecycle": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "notification": {
+          "ABSENT": 0,
+          "PRESENT": 2,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "objectLock": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "policy": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "publicAccessBlock": {
+          "ABSENT": 0,
+          "PRESENT": 0,
+          "UNSUPPORTED": 2,
+          "configured": 0
+        },
+        "replication": {
+          "ABSENT": 2,
+          "PRESENT": 0,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        },
+        "versioning": {
+          "ABSENT": 0,
+          "PRESENT": 2,
+          "UNSUPPORTED": 0,
+          "configured": 0
+        }
+      },
+      "publicAccessBlockUnsupportedMeansAbsent": false
+    },
+    "bucketFeatureStatusClassificationComplete": true
   },
   "offlineMigrationPlan": {
     "status": "CONSUMED_PRIVATE_PLAN_PREPARED_NOT_ADMITTED",
@@ -474,7 +539,7 @@
     "sourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
     "retainedHostBaselineHash": "49aaea817bff55ff5ab901f2f54784e97ac85b7e2bbf2ec489055bab94c790c4",
     "targetExecuted": true,
-    "copyEngineImplemented": "SYNTHETIC_PROTOTYPE_UNQUALIFIED_NO_PRODUCTION_ENTRYPOINT",
+    "copyEngineImplemented": "SYNTHETIC_PROTOTYPE_LAB_QUALIFIED_NO_PRODUCTION_ENTRYPOINT",
     "migrationPerformed": false,
     "producerSource": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
     "producerRunId": 41488131645,
@@ -498,7 +563,7 @@
     "assessment": "evidence/seaweedfs-offline-plan-target-assessment-20261102.json"
   },
   "copyCore": {
-    "status": "IMPLEMENTED_IN_QUALIFICATION",
+    "status": "LAB_QUALIFIED_NOT_PRODUCTION_ADMITTED",
     "code": "tools/storage_copy",
     "scope": "synthetic loopback TLS, declared buckets, unversioned objects <=16MiB, <=256 objects",
     "maximumAttempts": 128,
@@ -508,6 +573,22 @@
     "governedProductionAdmissionImplemented": false,
     "versionedCopySupported": false,
     "wholeInstanceReconciliationImplemented": false,
-    "targetExecuted": false
+    "targetExecuted": false,
+    "maximumObjectBytes": 16777216,
+    "maximumLogicalBytes": 67108864,
+    "producerSource": "99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4",
+    "producerRunId": 41504703184,
+    "independentRunId": 41507064288,
+    "testPassEventsIncludingSubtests": 31,
+    "realSourceServer": "SYNTHETIC_SEAWEEDFS_NOT_MINIO",
+    "dossier": "evidence/seaweedfs-copy-core-qualified-20261102.json",
+    "publisherIndependentlyVerified": true
+  },
+  "g1ApplicabilityReview": {
+    "status": "PROPOSED_NOT_ADMITTED",
+    "proposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+    "rawGate": "HELD_ONE_UNKNOWN",
+    "decisionRef": null,
+    "gateChanged": false
   }
 }

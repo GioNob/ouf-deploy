@@ -111,7 +111,7 @@
   "migrationReady": false,
   "migrationPerformed": false,
   "copyEngine": {
-    "status": "SYNTHETIC_PROTOTYPE_IN_QUALIFICATION",
+    "status": "SYNTHETIC_PROTOTYPE_LAB_QUALIFIED_NOT_TARGET",
     "productionEntrypoint": false,
     "scope": "unversioned bounded objects in declared buckets only",
     "remaining": [
@@ -119,7 +119,8 @@
       "complete-instance reconciliation",
       "current writer fencing and DB reconciliation",
       "governed production admission and independent destination profile"
-    ]
+    ],
+    "dossier": "evidence/seaweedfs-copy-core-qualified-20261102.json"
   },
   "security": {
     "rawServerGate": "HELD_ONE_UNKNOWN",

@@ -1,3 +1,15 @@
+# CURRENT — Control17 consumed; copy prototype LAB QUALIFIED; G1 HELD
+
+1. **SW-WP0 / G0 — inventario e piano privato acquisiti, gate aperto.** Controllo 17 consumato: 4 artifact metadata / 93238 byte letti; 0 nuovi Docker GET, S3, SQL, credenziali o corpi. Totali 17 controlli / 52 Docker GET. Piano privato SHA256 `debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501`: 120 record / 203743 byte, tutti PLANNED_NOT_COPIED. 110 hash dichiarati, 10 assenti; 120 corpi reali ancora da verificare.
+2. **SW-WP1 / G1 — sicurezza ancora HELD.** Candidato corretto: zero HIGH/CRITICAL, un UNKNOWN grezzo GO-2026-5932. Proposta di applicabilità limitata al binario esatto, non ammessa; nessun ignore o VEX aggiunto. Immagine finale, licenze, custodia durevole e coorte restano da chiudere.
+3. **SW-WP2 / G2 e SW-WP6 / G6 — prove sintetiche precedenti conservate.** Adapter originali, TLS, prefissi, versioni/marker, multipart e recovery freddo qualificati in laboratorio; nessuna qualifica della topologia target.
+4. **SW-WP4 / G4 — core di copia sintetica qualificato.** Source `99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4`, CI41504703184 PASS; 31 eventi di test passati, inclusi sotto-casi. Due processi SeaweedFS indipendenti sulla stessa VM: 120 corpi sintetici copiati e riletti, CAS concorrente, tre morti reali del processo, 503 dopo salvataggio riconciliato senza secondo PUT. Clock virtuale per Retry-After di un'ora e outage di sei ore. Verifica indipendente byte/sorgenti/firma OUF CI41507064288 PASS; 25 checksum e tutte le 28 sorgenti precedenti invariate. Non è una prova MinIO→SeaweedFS reale.
+5. **Passaggio target ancora non ammesso.** Due UNSUPPORTED = publicAccessBlock; non significano assenza. ACL PRESENT/configured0 non prova grant privati. Binding onboarding/udp/udp-evidence-read osservati al14: writer attivi, consumer esterni e DB non provati; snapshot coerente, backup, fence e capacità fresca ancora aperti. Nessun entrypoint di produzione per il core; nessuna nuova operazione VPS dopo17. Cinque vecchi comandi13–17 CONSUMATI: nessun replay, reset o cancellazione. Tutti gli 8 gate / 21 AT / M2 OPEN. Teatri/M1 conserva 8/8 tecniche e 6/6 funzionali, stessa Farmacie preservata. MinIO resta in uso e vulnerabile.
+
+[Core e dossier](docs/OUF_SEAWEEDFS_COPY_CORE_20261102.md), [proposta G1](docs/OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md). Non cambiare il gate raw né ammettere la proposta senza decisionRef. Nessun comando VPS del core: history/multipart copy, whole-instance reconciliation, fencing/DB, independent destination profile e governed production admission non implementati. Limiti256 oggetti/16MiB ciascuno/64MiB totali. Publisher OUF verificato, non firma upstream. Source maps235/19/17/21/23 e28 storici intatti. Nessuna automazione operativa, subagente, merge, deploy, grant o copia reale.
+
+## Historical checkpoints below — do not replay consumed deliveries
+
 # CURRENT — Control17 private plan COMPLETE, not admitted; synthetic copy core qualification
 
 2 novembre 2026. Ricevuta17 PRIVATE_PLAN_PREPARED_NOT_ADMITTED:

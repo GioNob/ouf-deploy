@@ -1,3 +1,7 @@
+> **CONSUMATO — controllo17 completato. Non eseguire di nuovo il comando storico qui sotto.** Ricevuta PRIVATE_PLAN_PREPARED_NOT_ADMITTED: 4 artifact metadata / 93238 byte, 120 record, 0 nuovi Docker/S3/SQL/credenziali/corpi; totali17 controlli/52DockerGET. [Valutazione](OUF_SEAWEEDFS_BASELINE_ASSESSMENT_20261102.md), [core sintetico qualificato](OUF_SEAWEEDFS_COPY_CORE_20261102.md). Il piano privato resta PLANNED_NOT_COPIED; nessuna migrazione. Tutti gli scope13–17 consumati e preservati.
+
+## Consegna storica — non rilanciare
+
 # SeaweedFS — compilazione offline del piano privato di copia
 
 2 novembre 2026. L'inventario del controllo 16 è acquisito: 2 bucket, 120 record oggetto, 203743 byte logici. Non ripetere nessuno dei quattro vecchi comandi. La raccolta è completa per le API supportate, ma resta non ammessa al cutover: 2 risposte sulle funzionalità non supportate, writer/DB e sicurezza del candidato sono ancora da riconciliare.
