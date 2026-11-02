@@ -1,3 +1,35 @@
+# CURRENT — Control17 private plan COMPLETE, not admitted; synthetic copy core qualification
+
+2 novembre 2026. Ricevuta17 PRIVATE_PLAN_PREPARED_NOT_ADMITTED:
+120 record/203743 byte,privatePlanSHA debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501.
+17 controlli/52 EngineGET cumulativi,0 nuovi Docker/S3/SQL/credenziali/corpi.
+4 artifact metadata/93238 byte letti,scope17 CONSUMATO:non rilanciare nessuno dei
+cinque vecchi comandi,né cancellare/riarmare scope o installazioni.
+UNSUPPORTED=publicAccessBlock per2 bucket. Policy/CORS/encryption/lifecycle/
+objectLock/replication ABSENT2;versioning e notification PRESENT2,configured0.
+ACL PRESENT2,configured0 NON prova accesso privato:grant non classificati qui.
+Oggetti:cifratura/KMS/retention/hold/tag/cache/encoding osservati0.110 hash
+riconosciuti/10 assenti,120 corpi ancora da verificare,nessuna copia eseguita.
+Bindingstorage osservati14:onboarding,udp,udp-evidence-read.NON writer correnti
+provati,altre12config/RAM/capacità non rinfrescate,no snapshot/DB admission.
+[Ricevuta](evidence/seaweedfs-offline-plan-target-20261102.json),
+[valutazione](evidence/seaweedfs-offline-plan-target-assessment-20261102.json).
+Nuovo core in tools/storage_copy SOLO prototipo di laboratorio:zero entrypoint
+produzione;S3TLSloopback,sourceGET/HEAD,destPutIfNoneMatch*,rilettura corpi+
+metadata/tag,journalprivati append/fsync,lockesclusivo,quote richieste durevoli,
+pause senza sleep,128 tentativi/24h/10000 richieste cumulativi e Retry-After.
+IN QUALIFICA:concorrenza CAS,120 sintetici via SDKinventory+compilatore originali,
+processdeath prima/dopoPUT/checkpoint,503 ambiguo poststore,6h virtualoutage.
+NON ancora qualificato:non proporre alcun comandoVPS per il core. Limiti espliciti:
+<=256 oggetti<=16MiB,solo bucket dichiarati,history/multipartcopy e fencing/DB/
+wholeinstance reconciliation/governedprod admission non implementati.
+Gate server HELD1UNKNOWN:fonte ufficiale GO-2026-5932 ancora senza fixedversion,
+packageopenpgp non importato nel binario già qualificato;nessun ignore/VEX ammesso,
+nessuna gatepolicy modificata. Verificare scan freschi prima di eseguire lab.
+Teatri/M1 8/8tecniche,6/6funzionali,stessaFarmacie e frozen235/19/17/21/23/28
+intatti.8gate/21AT/M2 OPEN;MinIO ancora vulnerabile.Nessuna nuova operazioneVPS
+dopo17,copia reale/merge/deploy/grant/subagente vietati. Storico sotto.
+
 # CURRENT — Target S3 metadata baseline acquired; offline private copy plan qualified, ONE operator action
 
 2 novembre 2026. [Unica nuova consegna](docs/OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md),
