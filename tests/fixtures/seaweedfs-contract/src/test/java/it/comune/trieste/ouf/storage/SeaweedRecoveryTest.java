@@ -20,6 +20,8 @@ class SeaweedRecoveryTest {
    var history=admin.listObjectVersions(ListObjectVersionsRequest.builder().bucket("ouf-versioned").build());assertEquals(2,history.versions().size());assertEquals(1,history.deleteMarkers().size());
    Set<String> versions=new HashSet<>(List.of("first-version","second-version"));
    for(var version:history.versions())assertTrue(versions.remove(admin.getObjectAsBytes(GetObjectRequest.builder().bucket("ouf-versioned").key(version.key()).versionId(version.versionId()).build()).asUtf8String()));assertTrue(versions.isEmpty());
+   var pending=admin.listMultipartUploads(ListMultipartUploadsRequest.builder().bucket("ouf-udp").build()).uploads();assertEquals(1,pending.size());
+   var parts=admin.listParts(ListPartsRequest.builder().bucket("ouf-udp").key(pending.getFirst().key()).uploadId(pending.getFirst().uploadId()).build()).parts();assertEquals(1,parts.size());assertEquals(5242880L,parts.getFirst().size().longValue());
   }
  }
 }

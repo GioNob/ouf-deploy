@@ -27,10 +27,11 @@ import (
 )
 
 type Config struct {Endpoint string `json:"endpoint"`; Region string `json:"region"`; AccessKeyFile string `json:"accessKeyFile"`; SecretKeyFile string `json:"secretKeyFile"`; AllowLoopbackHTTP bool `json:"allowLoopbackHttp"`; CACertificateFile string `json:"caCertificateFile"`; AccessKeyFD *int `json:"accessKeyFd"`; SecretKeyFD *int `json:"secretKeyFd"`}
-type Budget struct {mu sync.Mutex; requests int; transport http.RoundTripper}
+type Budget struct {mu sync.Mutex; requests int; transport http.RoundTripper; scheme string; host string}
 func (b *Budget) RoundTrip(r *http.Request)(*http.Response,error){
  b.mu.Lock();defer b.mu.Unlock()
  if r.Method!="GET" && r.Method!="HEAD" {return nil,errors.New("MUTATION_DENIED")}
+ if b.host!=""&&(r.URL.Host!=b.host||r.URL.Scheme!=b.scheme||r.URL.User!=nil){return nil,errors.New("ENDPOINT_ESCAPE_DENIED")}
  if b.requests>=10000{return nil,errors.New("READ_BUDGET_EXHAUSTED")};b.requests++
  response,e:=b.transport.RoundTrip(r)
  if e==nil {response.Body=&boundedBody{Reader:io.LimitReader(response.Body,4*1024*1024),closer:response.Body}}
@@ -76,7 +77,7 @@ func client(c Config)(*s3.Client,*Budget,error){
  transport:=http.DefaultTransport.(*http.Transport).Clone();transport.Proxy=nil
  transport.DialContext=(&net.Dialer{Timeout:5*time.Second}).DialContext;transport.TLSHandshakeTimeout=5*time.Second;transport.ResponseHeaderTimeout=10*time.Second
  if c.CACertificateFile!=""{info,e:=os.Lstat(c.CACertificateFile);if e!=nil||!info.Mode().IsRegular()||info.Size()>1048576{return nil,nil,errors.New("BOUNDED_CA_FILE_REQUIRED")};raw,e:=os.ReadFile(c.CACertificateFile);if e!=nil{return nil,nil,e};pool:=x509.NewCertPool();if !pool.AppendCertsFromPEM(raw){return nil,nil,errors.New("INVALID_CA")};transport.TLSClientConfig=&tls.Config{RootCAs:pool,MinVersion:tls.VersionTLS12}}
- b:=&Budget{transport:transport};h:=&http.Client{Transport:b,Timeout:15*time.Second,CheckRedirect:func(*http.Request,[]*http.Request)error{return http.ErrUseLastResponse}}
+ parsed,_:=url.Parse(c.Endpoint);b:=&Budget{transport:transport,scheme:parsed.Scheme,host:parsed.Host};h:=&http.Client{Transport:b,Timeout:15*time.Second,CheckRedirect:func(*http.Request,[]*http.Request)error{return http.ErrUseLastResponse}}
  sdk:=s3.New(s3.Options{Region:c.Region,BaseEndpoint:aws.String(c.Endpoint),UsePathStyle:true,Credentials:credentials.NewStaticCredentialsProvider(a,s,""),HTTPClient:h,Retryer:aws.NopRetryer{}})
  return sdk,b,nil
 }
@@ -129,6 +130,57 @@ func inventory(ctx context.Context,sdk *s3.Client)([]Row,[]map[string]any,error)
  }
  return rows,features,nil
 }
+func multipartInventory(ctx context.Context,sdk *s3.Client,buckets []map[string]any)([]map[string]any,error){
+ result:=[]map[string]any{};seen:=map[string]bool{};partsCount:=0
+ for _,b:=range buckets{
+  bucket:=b["bucket"].(string);pages:=s3.NewListMultipartUploadsPaginator(sdk,&s3.ListMultipartUploadsInput{Bucket:aws.String(bucket),MaxUploads:aws.Int32(1000)})
+  markers:=map[string]bool{}
+  for pages.HasMorePages(){page,e:=pages.NextPage(ctx);if e!=nil{return result,e}
+   for _,upload:=range page.Uploads{
+    id:=bucket+"\x00"+aws.ToString(upload.Key)+"\x00"+aws.ToString(upload.UploadId);if seen[id]||len(result)>=25000{return result,errors.New("DUPLICATE_OR_UNBOUNDED_MULTIPART")};seen[id]=true
+    partPages:=s3.NewListPartsPaginator(sdk,&s3.ListPartsInput{Bucket:aws.String(bucket),Key:upload.Key,UploadId:upload.UploadId,MaxParts:aws.Int32(1000)})
+    parts:=[]map[string]any{};var bytes int64;partMarkers:=map[string]bool{}
+    for partPages.HasMorePages(){partPage,e:=partPages.NextPage(ctx);if e!=nil{return result,e}
+     for _,part:=range partPage.Parts{partsCount++;size:=aws.ToInt64(part.Size);if partsCount>25000||size<0||bytes>int64(9223372036854775807)-size{return result,errors.New("MULTIPART_PART_BUDGET")};bytes+=size;parts=append(parts,map[string]any{"partNumber":part.PartNumber,"size":part.Size,"etag":part.ETag})}
+     if aws.ToBool(partPage.IsTruncated){marker:=aws.ToString(partPage.NextPartNumberMarker);if marker==""||partMarkers[marker]{return result,errors.New("NONPROGRESSING_PART_PAGINATION")};partMarkers[marker]=true}
+    }
+    result=append(result,map[string]any{"bucket":bucket,"key":upload.Key,"uploadId":upload.UploadId,"initiated":upload.Initiated,"bytes":bytes,"parts":parts})
+   }
+   if aws.ToBool(page.IsTruncated){marker:=aws.ToString(page.NextKeyMarker)+"\x00"+aws.ToString(page.NextUploadIdMarker);if marker=="\x00"||markers[marker]{return result,errors.New("NONPROGRESSING_MULTIPART_PAGINATION")};markers[marker]=true}
+  }
+ }
+ return result,nil
+}
+func summary(rows []Row,features []map[string]any)(map[string]any,error){
+ objects,versions,markers,hashes,collisions,unsafe,trailing:=0,0,0,0,0,0,0;var total int64;keys:=map[string]map[string]bool{};identities:=map[string]bool{};latest:=map[string]bool{}
+ for _,r:=range rows{
+  version:=aws.ToString(r.VersionID);id:=r.Bucket+"\x00"+r.Key+"\x00"+version
+  if identities[id]||r.Key==""||r.Size<0{return nil,errors.New("INVALID_OR_DUPLICATE_OBJECT_IDENTITY")};identities[id]=true
+  if r.IsLatest{identity:=r.Bucket+"\x00"+r.Key;if latest[identity]{return nil,errors.New("MULTIPLE_LATEST_VERSIONS")};latest[identity]=true}
+  if keys[r.Bucket]==nil{keys[r.Bucket]=map[string]bool{}};keys[r.Bucket][r.Key]=true
+  if version!=""&&version!="null"{versions++}
+  if r.DeleteMarker{markers++}else{objects++;if r.Size>0&&total>int64(9223372036854775807)-r.Size{return nil,errors.New("BYTE_COUNT_OVERFLOW")};total+=r.Size;if r.Metadata["ouf-content-hash"]!=""{hashes++}}
+ }
+ for _,bucketKeys:=range keys{for key:=range bucketKeys{
+  parts:=strings.Split(key,"/");bad:=strings.HasPrefix(key,"/")||strings.Contains(key,"//")||strings.ContainsAny(key,"\\\x00")
+  for _,part:=range parts{if part=="."||part==".."{bad=true}}
+  if bad{unsafe++};if strings.HasSuffix(key,"/"){trailing++}
+  for i:=1;i<len(parts);i++{if bucketKeys[strings.Join(parts[:i],"/")]{collisions++;break}}
+ }}
+ unsupported,versionedBuckets,encryptedBuckets,lockedBuckets,replicatedBuckets,lifecycleBuckets,notifiedBuckets:=0,0,0,0,0,0,0
+ for _,f:=range features{
+  for _,item:=range f{if entry,ok:=item.(map[string]any);ok{switch value:=entry["value"].(type){
+   case *s3.GetBucketVersioningOutput:if value.Status=="Enabled"{versionedBuckets++}
+   case *s3.GetBucketEncryptionOutput:if value.ServerSideEncryptionConfiguration!=nil&&len(value.ServerSideEncryptionConfiguration.Rules)>0{encryptedBuckets++}
+   case *s3.GetObjectLockConfigurationOutput:if value.ObjectLockConfiguration!=nil&&value.ObjectLockConfiguration.ObjectLockEnabled=="Enabled"{lockedBuckets++}
+   case *s3.GetBucketReplicationOutput:if value.ReplicationConfiguration!=nil&&len(value.ReplicationConfiguration.Rules)>0{replicatedBuckets++}
+   case *s3.GetBucketLifecycleConfigurationOutput:if len(value.Rules)>0{lifecycleBuckets++}
+   case *s3.GetBucketNotificationConfigurationOutput:if len(value.LambdaFunctionConfigurations)+len(value.QueueConfigurations)+len(value.TopicConfigurations)>0||value.EventBridgeConfiguration!=nil{notifiedBuckets++}
+  }}}
+for _,v:=range f{if item,ok:=v.(map[string]any);ok&&item["status"]=="UNSUPPORTED"{unsupported++}}}
+ gate:="PASS";if collisions+unsafe+trailing>0{gate="HELD"}
+ return map[string]any{"buckets":len(features),"objectVersions":objects,"versionedRecords":versions,"deleteMarkers":markers,"bytesAcrossVersions":total,"objectsWithAdvertisedOufHash":hashes,"fileDirectoryCollisions":collisions,"unsafePathKeys":unsafe,"trailingSlashKeys":trailing,"namespaceGate":gate,"unsupportedBucketFeatures":unsupported,"versioningEnabledBuckets":versionedBuckets,"defaultEncryptedBuckets":encryptedBuckets,"objectLockEnabledBuckets":lockedBuckets,"replicatedBuckets":replicatedBuckets,"lifecycleBuckets":lifecycleBuckets,"notificationConfiguredBuckets":notifiedBuckets},nil
+}
 func privateParents(path string)error{
  for p:=filepath.Clean(path);;p=filepath.Dir(p){
   info,e:=os.Lstat(p);if e!=nil||!info.IsDir()||info.Mode()&os.ModeSymlink!=0{return errors.New("UNSAFE_OUTPUT_ANCESTRY")}
@@ -151,11 +203,16 @@ func execute(configPath,out string) error {
  claim:=[]byte("{\"schema\":\"ouf.storage-inventory-claim.v1\",\"automaticReplayAllowed\":false}\n");if e=writeNew(out,"claim.json",claim);e!=nil{return e}
  sdk,budget,e:=client(c);if e!=nil{return e};ctx,cancel:=context.WithTimeout(context.Background(),300*time.Second);defer cancel()
  rows,features,readError:=inventory(ctx,sdk)
- record:=map[string]any{"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatures":features,"writerInventoryComplete":false}
+ publicSummary,summaryError:=summary(rows,features);if readError==nil{readError=summaryError}
+ multipart:=[]map[string]any{}
+ if readError==nil{multipart,readError=multipartInventory(ctx,sdk,features)}
+ var incompleteBytes int64;for _,upload:=range multipart{size:=upload["bytes"].(int64);if size>0&&incompleteBytes>int64(9223372036854775807)-size{readError=errors.New("MULTIPART_TOTAL_OVERFLOW");break};incompleteBytes+=size}
+ if publicSummary!=nil{publicSummary["incompleteMultipartUploads"]=len(multipart);publicSummary["incompleteMultipartBytes"]=incompleteBytes}
+ record:=map[string]any{"summary":publicSummary,"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatures":features,"multipartUploads":multipart,"writerInventoryComplete":false}
  if readError!=nil{failure:=map[string]string{"class":"INVENTORY_READ_FAILED"};var api interface{ErrorCode()string};if errors.As(readError,&api){failure["apiCode"]=api.ErrorCode()};var operation interface{Operation()string};if errors.As(readError,&operation){failure["operation"]=operation.Operation()};record["failure"]=failure}
  bytes,e:=json.Marshal(record);if e!=nil||len(bytes)>64*1024*1024{return errors.New("PRIVATE_OUTPUT_BUDGET")}
  if e=writeNew(out,"inventory.private.json",bytes);e!=nil{return e}
- fmt.Printf("{\"complete\":%t,\"records\":%d,\"requests\":%d,\"objectBodiesRead\":0,\"targetWrites\":0}\n",readError==nil,len(rows),budget.requests)
+ public:=map[string]any{"complete":readError==nil,"records":len(rows),"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"summary":publicSummary};publicJSON,_:=json.Marshal(public);fmt.Println(string(publicJSON))
  if readError!=nil{return errors.New("INVENTORY_INCOMPLETE_PRIVATE_DETAIL_NOT_PRINTED")};return nil
 }
 func main(){if len(os.Args)!=3{fmt.Fprintln(os.Stderr,"PRIVATE_CONFIG_AND_NEW_OUTPUT_SCOPE_REQUIRED");os.Exit(2)};if execute(os.Args[1],os.Args[2])!=nil{fmt.Fprintln(os.Stderr,"INVENTORY_STOP_PRIVATE_INPUTS_NOT_PRINTED");os.Exit(1)}}

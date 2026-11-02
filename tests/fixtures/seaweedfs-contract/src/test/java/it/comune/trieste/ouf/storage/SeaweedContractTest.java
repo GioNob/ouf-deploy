@@ -106,4 +106,10 @@ class SeaweedContractTest {
   udp.put(key,bytes,"text/csv",hash(bytes));assertArrayEquals(bytes,udp.read(key));assertEquals(hash(bytes),udp.head(key).orElseThrow().contentHash());
  }
 
+ @Test void incompleteMultipartIsInventoriableWithoutPublishingAnObject() {
+  String upload=admin.createMultipartUpload(CreateMultipartUploadRequest.builder().bucket("ouf-udp").key("incomplete/upload").build()).uploadId();
+  admin.uploadPart(UploadPartRequest.builder().bucket("ouf-udp").key("incomplete/upload").uploadId(upload).partNumber(1).build(),software.amazon.awssdk.core.sync.RequestBody.fromBytes(new byte[5*1024*1024]));
+  assertEquals(1,admin.listMultipartUploads(ListMultipartUploadsRequest.builder().bucket("ouf-udp").build()).uploads().size());assertTrue(udp.head("incomplete/upload").isEmpty());
+ }
+
 }
