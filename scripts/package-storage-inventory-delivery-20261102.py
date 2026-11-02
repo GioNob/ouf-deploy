@@ -30,7 +30,8 @@ def package(binary,output,revision):
  compressed=gzip.compress(backend,compresslevel=9,mtime=0);parts=[]
  for i,offset in enumerate(range(0,len(compressed),196608)):
   name=f'inventory.part{i:03d}';raw_part=compressed[offset:offset+196608];(output/name).write_bytes(raw_part);parts.append({'name':name,'bytes':len(raw_part),'sha256':sha(raw_part)})
- delivery={'schema':'ouf.storage-inventory-delivery.v1','producerSource':revision,'capsuleSha256':sha(capsule.read_bytes()),'backendSha256':sha(backend),'backendBytes':len(backend),'compressedBackendSha256':sha(compressed),'compressedBackendBytes':len(compressed),'parts':parts,'closedSourceCount':24,'original23SourcesUnchanged':True,'capsuleTamperDenied':True,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'targetExecutionPreparedNotPerformed':True,'rootCredentialValuesSpooled':False}
+ profile=next(ast.literal_eval(n.value) for n in ast.parse(template).body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='PROFILE' for t in n.targets))
+ delivery={'schema':'ouf.storage-inventory-delivery.v1','controlProfile':profile,'scopePath':'/etc/ouf/deploy-snapshots/seaweedfs-inventory-20261102-v1','backendInstallPath':'/usr/local/lib/ouf-storage-inventory-20261102/inventory','producerSource':revision,'capsuleSha256':sha(capsule.read_bytes()),'backendSha256':sha(backend),'backendBytes':len(backend),'compressedBackendSha256':sha(compressed),'compressedBackendBytes':len(compressed),'parts':parts,'closedSourceCount':24,'original23SourcesUnchanged':True,'capsuleTamperDenied':True,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'targetExecutionPreparedNotPerformed':True,'rootCredentialValuesSpooled':False}
  (output/'delivery.json').write_text(json.dumps(delivery,indent=2)+'\n');print(json.dumps(delivery))
 if __name__=='__main__':
  assert os.environ.get('GITHUB_ACTIONS')=='true','CI_PACKAGE_ONLY'

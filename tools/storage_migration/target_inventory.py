@@ -16,7 +16,7 @@ ORIGIN_PRIVATE='8cf9a9ba0eaaf1f485515f893fee738c526622e2df97ec3687ca01843f0cd067
 PROFILE={'schema':'ouf.storage-baseline-read-control.v1','maximumAttempts':1,'maximumSeconds':600,
  'maximumEngineGets':65,'maximumContainers':64,'maximumEngineResponseBytes':2097152,
  'maximumCredentialSources':2,'maximumCredentialBytesEach':4096,'maximumS3Requests':10000,
- 'maximumS3Records':25000,'maximumS3Seconds':300,'objectBodiesRead':0,'sqlRequests':0,
+ 'maximumS3Records':25000,'maximumS3Seconds':300,'backendGoMemoryLimit':'256MiB','backendGoMaxProcs':1,'objectBodiesRead':0,'sqlRequests':0,
  'containerLifecycleOperations':0,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,
  'previousControlAttempts':12,'previousEngineGets':35,'migrationAuthorized':False}
 
@@ -134,7 +134,7 @@ def capture(control,engine):
   config={'endpoint':'http://127.0.0.1:9000','region':env.get('MINIO_REGION_NAME') or env.get('MINIO_REGION') or 'us-east-1','allowLoopbackHttp':True,'accessKeyFd':descriptors[0],'secretKeyFd':descriptors[1]}
   control.put('inventory-config.private.json',config)
   timeout=min(320,int(control.until-time.monotonic()));require(timeout>=10,'INVENTORY_CONTROL_DEADLINE')
-  completed=subprocess.run(['/usr/bin/nsenter','--net=/proc/'+str(pid)+'/ns/net','--',str(BACKEND),str(control.scope/'inventory-config.private.json'),str(control.scope/'s3')],pass_fds=descriptors,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin'},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
+  completed=subprocess.run(['/usr/bin/nsenter','--net=/proc/'+str(pid)+'/ns/net','--',str(BACKEND),str(control.scope/'inventory-config.private.json'),str(control.scope/'s3')],pass_fds=descriptors,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','GOMEMLIMIT':'256MiB','GOMAXPROCS':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
   require(len(completed.stdout)<=4096 and len(completed.stderr)<=4096,'MINIMIZED_BACKEND_OUTPUT_REQUIRED')
   require(process_pin(pid)==pin,'MINIO_NAMESPACE_PIN_CHANGED');stable()
   report=decode(completed.stdout);require(completed.returncode==0 and report.get('complete') is True and report.get('objectBodiesRead')==report.get('targetWrites')==0,'PRIVATE_INVENTORY_INCOMPLETE')

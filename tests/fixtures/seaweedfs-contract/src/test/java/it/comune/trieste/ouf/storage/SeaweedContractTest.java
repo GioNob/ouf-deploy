@@ -25,8 +25,8 @@ class SeaweedContractTest {
   for(String bucket:List.of("ouf-managed-files","ouf-udp","ouf-versioned"))admin.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
   String policy="""
    {"Version":"2012-10-17","Statement":[
-    {"Sid":"DenyOutsideManagedPrefix","Effect":"Deny","Principal":"*","Action":["s3:GetObject","s3:PutObject"],"NotResource":"arn:aws:s3:::ouf-managed-files/managed-files/*"},
-    {"Sid":"DenyStagingDeletion","Effect":"Deny","Principal":"*","Action":"s3:DeleteObject","Resource":"arn:aws:s3:::ouf-managed-files/*"}
+    {"Sid":"DenyOutsideManagedPrefix","Effect":"Deny","Principal":"*","Action":["s3:GetObject","s3:PutObject"],"NotResource":"arn:aws:s3:::ouf-managed-files/managed-files/*","Condition":{"StringEquals":{"aws:username":"lab-staging"}}},
+    {"Sid":"DenyStagingDeletion","Effect":"Deny","Principal":"*","Action":"s3:DeleteObject","Resource":"arn:aws:s3:::ouf-managed-files/*","Condition":{"StringEquals":{"aws:username":"lab-staging"}}}
    ]}
    """;
   admin.putBucketPolicy(PutBucketPolicyRequest.builder().bucket("ouf-managed-files").policy(policy).build());
