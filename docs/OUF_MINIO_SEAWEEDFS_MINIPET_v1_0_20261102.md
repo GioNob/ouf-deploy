@@ -1,3 +1,11 @@
+# Emendamento v1.1 — decisione owner sull'applicabilità, 2 novembre 2026
+
+**Decisione owner recepita — 2 novembre 2026.** `OUF-SW-G1-20261102-01`: GO-2026-5932 classificato `not_affected / vulnerable_code_not_present` per il solo server SHA256 `bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74`. Rapporto grezzo conservato: 0HIGH/CRITICAL,1UNKNOWN. Dopo l'unica classificazione accettata: 0HIGH/CRITICAL/UNKNOWN irrisolti nell'insieme di eseguibili esaminato. Nessun ignore aggiunto; gate raw storico invariato. [CI41519037628](https://github.com/GioNob/ouf-deploy/actions/runs/41519037628) PASS: 9 test, advisory ufficiale fresco e provenienza originale autenticata nuovamente;28 sorgenti precedenti intatte. Documento OpenVEX emesso per il solo hash, decisione conversazionale registrata senza rivendicare firma HUMAN/THS. SW-G1 complessivo ancora OPEN per immagine/SBOM/licenze/custody/coorte. Tutti8gate/21AT/M2 OPEN; controllo17 consumato,52DockerGET cumulativi,0 nuovi effetti target. Teatri/M1 8/8tecniche,6/6funzionali e stessaFarmacie preservati.
+
+Il §5 recepisce unicamente la [decisione approvata](OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md). I restanti requisiti, gate e AT mantengono il proprio stato. Il nome storico del file resta stabile per conservare tutti i riferimenti.
+
+## Stato e checkpoint precedenti
+
 # Stato corrente — 2 novembre 2026, ricevuta17 e core di copia qualificato
 
 1. **SW-WP0 / G0 — inventario e piano privato acquisiti, gate aperto.** Controllo 17 consumato: 4 artifact metadata / 93238 byte letti; 0 nuovi Docker GET, S3, SQL, credenziali o corpi. Totali 17 controlli / 52 Docker GET. Piano privato SHA256 `debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501`: 120 record / 203743 byte, tutti PLANNED_NOT_COPIED. 110 hash dichiarati, 10 assenti; 120 corpi reali ancora da verificare.
@@ -20,7 +28,7 @@
 
 # OUF — MiniPET: sostituzione di MinIO con SeaweedFS
 
-**ID:** OUF-MP-STORAGE-SW · **Versione:** 1.0 · **Data:** 2 novembre 2026, Europe/Rome  
+**ID:** OUF-MP-STORAGE-SW · **Versione:** 1.1 · **Data:** 2 novembre 2026, Europe/Rome  
 **Stato:** piano redatto su richiesta dell'owner; SeaweedFS candidato alla sostituzione, ancora NON qualificato né installato.  
 **Owner di prodotto:** Giovanni. **Esecuzione:** agente principale, sequenziale. **Responsabilità operative:** owner dei moduli e operatore della piattaforma, secondo i contratti OUF esistenti.  
 **Baseline documentale:** `ouf-deploy@640ae37f5a1c49717e2f4168a928a553bcbfa603`.  
@@ -124,7 +132,7 @@ Tutti i gate **SW-G0…SW-G7 sono OPEN** alla redazione. Le ore sono intervalli 
 | WP / gate | Attività e consegna concreta | Condizione di uscita | Stima iniziale |
 |---|---|---|---:|
 | SW-WP0 / G0 — baseline | Inventario contratti e consumer; pacchetto unico per inventario privato target, capacità, funzionalità, DB e writer; rapporto pubblico redatto | Inventario completo riconciliato, generazioni distinte, funzionalità richieste e finestra/RPO/RTO espliciti | 4–8 h |
-| SW-WP1 / G1 — candidato | Sorgente/release/immagine esatti, licenze, SBOM, provenienza, scansione OS/Go e tool/client; retention degli artifact in custodia durevole | Zero CRITICAL/HIGH/UNKNOWN secondo gate vigente, provenienza verificabile; nessun ignore aggiunto per passare | 6–12 h |
+| SW-WP1 / G1 — candidato | Sorgente/release/immagine esatti, licenze, SBOM, provenienza, scansione OS/Go e tool/client; retention degli artifact in custodia durevole | Zero CRITICAL/HIGH/UNKNOWN irrisolti secondo gate vigente, provenienza verificabile; unica classificazione accettata GO-2026-5932/binario bb9f768e secondo decisione OUF-SW-G1-20261102-01; raw conservato, nessun ignore aggiunto per passare | 6–12 h |
 | SW-WP2 / G2 — contratti | Laboratorio isolato, due client reali, policy minime, suite parametrica; eventuale patch adapter separata | Tutti AT applicabili della matrice storage PASS con log; nessuna differenza funzionale aperta | 8–16 h |
 | SW-WP3 / G3 — esercizio | Profilo persistente, backup completo, TLS/secret rotation, fault/reboot, restore su ambiente vuoto e prova di ritorno | Recovery e prestazioni entro obiettivi; dati e DB coerenti; spazio sufficiente misurato | 8–16 h |
 | SW-WP4 / G4 — migrazione provata | Migratore idempotente con manifest/checkpoint, rehearsal su copie, prova delta e crash nei punti di transizione | 100% byte/metadati/referenze riconciliati, versioni/marker coperti se presenti; ripresa senza duplicati | 8–16 h |

@@ -1,36 +1,36 @@
-# SeaweedFS — proposta di valutazione di applicabilità per SW-G1
+# SeaweedFS — valutazione di applicabilità accettata per SW-G1
 
-2 novembre 2026. **Bozza da sottoporre all’owner: non approvata, non è una VEX ammessa e non cambia il gate corrente.** Nessun ignore, nessuna opzione --vex o soppressione aggiunta agli scanner. Il rapporto grezzo rimane HELD con1UNKNOWN.
+2 novembre 2026, Europe/Rome. L'owner ha approvato la proposta esatta dopo la raccomandazione tecnica: «Mi hai convinto, e sia.». Decisione `OUF-SW-G1-20261102-01`, limitata a un advisory e a un binario. La [proposta originale](../evidence/seaweedfs-g1-applicability-review-proposal-20261102.json), revisionata al commit `c08c4312fcbd0632bad93c9fcdaf5303c0453921`, resta byte per byte invariata come documento storico DRAFT; il nuovo [record della decisione](../evidence/seaweedfs-g1-applicability-owner-decision-20261102.json) ne registra l'accettazione. Nessuna firma o decisione THS viene rivendicata.
 
-## Decisione concreta proposta
+## Classificazione e perimetro
 
-Nel solo MiniPET MinIO→SeaweedFS, consentire una valutazione di non applicabilità per GO-2026-5932, limitata al binario server SHA256 `bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74`, soltanto dopo review umana dell'evidenza di compilazione e della fonte ufficiale. La classificazione proposta è `not_affected` con motivazione `vulnerable_code_not_present`. Il modulo x/crypto è presente; la famiglia di pacchetti OpenPGP interessata non risulta importata nel grafo effettivo di compilazione.
-
-Il criterio vigente di SW-G1, MiniPET v1.0 §5, è: «Zero CRITICAL/HIGH/UNKNOWN secondo gate vigente, provenienza verificabile; nessun ignore aggiunto per passare». Il gate implementato resta HELD sul rapporto grezzo. Per questo la proposta richiede una decisione esplicita dell'owner sul criterio di applicabilità; l'autorizzazione generale allo sviluppo non basta per modificarlo. Nessuna decisione viene inferita dalla qualifica del laboratorio, dal completamento dell'inventario o dal comando offline17.
-
-| Evidenza | Stato |
+| Campo | Valore |
 |---|---|
-| Sorgente SeaweedFS | `153ab668c99731a6d29492bf6c61d0b4fa701101`, release4.51 dichiarata |
-| Build posseduta da OUF | Go1.27.3, CGO0, JOSE4.1.6 e x/net0.62.0; distinta dall'asset upstream |
-| Binario oggetto della proposta | SHA256bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74 |
-| Grafo compilato |1738pacchetti; `golang.org/x/crypto/openpgp` e sotto-pacchetti assenti |
-| Hash del grafo | `67534a54978a5a157673a6a21ea26c147b0dbcb60c60d30497ce39e6ee3c435b` |
-| Risultato grezzo |0HIGH/CRITICAL,1UNKNOWN; nessuna soppressione |
-| Gate produzione |HELD; nessuna review/applicabilità ammessa, nessuna installazione |
+| Advisory | GO-2026-5932 |
+| Stato | `not_affected` |
+| Motivazione | `vulnerable_code_not_present` |
+| Binario server | SHA256 `bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74` |
+| Sorgente | SeaweedFS `153ab668c99731a6d29492bf6c61d0b4fa701101`, build OUF distinta dall'asset upstream |
+| Build | Go1.27.3, CGO0; patch JOSE4.1.6 / x/net0.62.0 |
+| Grafo compilato |1738 pacchetti; famiglia OpenPGP interessata assente |
+| SHA256 del grafo | `67534a54978a5a157673a6a21ea26c147b0dbcb60c60d30497ce39e6ee3c435b` |
+| Rapporto raw conservato |0HIGH/CRITICAL,1UNKNOWN; gate raw HELD |
+| Irrisolti dopo la valutazione accettata |0HIGH/CRITICAL/UNKNOWN nell'insieme esaminato |
+| Sotto-controllo vulnerabilità |PASS_WITH_EXACT_DISPOSITION |
+| SW-G1 complessivo / release / migrazione |OPEN / non ammessa / non eseguita |
 
-## Fonti e significato tecnico
+Il modulo `golang.org/x/crypto` rimane presente per altre funzionalità. L'[advisory Go](https://vuln.go.dev/ID/GO-2026-5932.json) riguarda la famiglia `golang.org/x/crypto/openpgp`; i pacchetti elencati non compaiono nella compilazione del binario. La [specifica OpenVEX](https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md) prevede la motivazione vulnerable_code_not_present quando il componente contenitore è incluso ma il codice vulnerabile è escluso dalla build. Non si dichiara assente tutto il modulo x/crypto e non si attribuisce una correzione upstream inesistente.
 
-L'[advisory ufficiale Go](https://vuln.go.dev/ID/GO-2026-5932.json), consultato il2novembre, è pubblicato e modificato al7luglio2026 e non dichiara una versione corretta. Identifica la famiglia `golang.org/x/crypto/openpgp`, incluso packet/armor/clearsign/errors/elgamal/s2k. Un aggiornamento nominale del modulo non costituisce correzione del vecchio pacchetto. Non deduciamo dalle PR upstream aperte che la banca dati sia già cambiata.
+## Recepimento nel MiniPET
 
-La [specifica OpenVEX](https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md) distingue il componente assente dal componente presente con codice vulnerabile escluso dalla build. Quest'ultimo è il significato della motivazione proposta. È una valutazione tecnica da approvare, non una tolleranza generica verso vulnerabilità raggiungibili o future.
+MiniPET v1.1 §5 conserva zero HIGH/CRITICAL/UNKNOWN irrisolti e provenienza verificabile, ammettendo questa sola valutazione di applicabilità documentata dall'owner. Nessuna soppressione viene aggiunta agli scanner e nessun rapporto storico viene riscritto. Il nuovo [OpenVEX](../evidence/seaweedfs-g1-openvex-20261102.json) identifica unicamente il prodotto tramite SHA256; non contiene una regola per tutte le release4.51. Il suo autore è il progetto OUF e la decisione è registrata dalla conversazione, senza presentarla come credenziale o firma HUMAN/THS.
 
-La provenienza verificata è quella della build OUF nel workflow/source/ref esatti su runner hosted; non è una firma del publisher upstream né prova di uguaglianza con il suo asset. I rapporti originali e i riferimenti immutabili restano in [dossier della qualifica del piano](../evidence/seaweedfs-offline-plan-qualified-20261102.json), [sicurezza server](../evidence/seaweedfs-patched-security-held-20261102.json) e nel [dossier delle prove di copia](../evidence/seaweedfs-copy-core-qualified-20261102.json), con readback indipendente CI41507064288 PASS e archivio dei rapporti grezzi/provenienza.
+Qualsiasi variazione di binario, sorgente, patch dipendenze, toolchain/opzioni, grafo o advisory richiede nuova valutazione. Nuovi HIGH/CRITICAL/UNKNOWN rimangono bloccanti. La classificazione non completa licenze, SBOM, immagine OCI, custodia durevole, coorte o qualifica della destinazione.
 
-## Vincoli dell’eventuale decisione
+## Qualifica del recepimento
 
-- Riferimento al solo advisory GO-2026-5932 e al binario esatto sopra, senza accettare altri UNKNOWN o HIGH/CRITICAL.
-- Rapporto raw conservato integralmente; nuova valutazione separata, motivata e collegata al reviewer/decisionRef secondo il processo del progetto. Nessun documento VEX standard utilizzabile automaticamente viene emesso da questa bozza.
-- Qualsiasi variazione di binario, sorgente, patch dipendenze, toolchain, grafo compilato o perimetro dell’advisory invalida la valutazione fino a nuova review. L'import di uno dei pacchetti interessati rende la proposta inammissibile.
-- La decisione di applicabilità non autorizza installazione, copia dei dati o cutover. G0,G2–G7,corpi/writer/DB,coorte,custody e autorità runtime continuano nei rispettivi gate. Nessuna accettazione M2 viene prodotta.
+[CI41519037628](https://github.com/GioNob/ouf-deploy/actions/runs/41519037628), source `214c0e8a9681340fa71ea7f03ed6875a015097b6`, PASS:9 test con sotto-casi per nuovo rilievo, stesso advisory su un altro eseguibile, build/grafo/dipendenze/advisory cambiati, decisione non accettata o estesa, VEX ampliata, inventari vuoti, severità sconosciute e riferimenti di prodotto errati. Nessun eseguibile incluso nelle prove originali viene avviato. Advisory scaricato nuovamente dalla fonte ufficiale e confrontato con lo snapshot canonico approvato.
 
-Se il criterio resta strettamente zero anche sul rapporto raw, questo candidato rimane HELD: si attende una correzione verificabile del rapporto/advisory o si riqualifica una build che superi quel criterio, senza rinominare dipendenze, falsificare versioni o sopprimere findings. Nessuna decisione dell'owner è stata ancora acquisita.
+Il workflow ricontrolla l'artifact originale4.4MB,25checksum,8sorgenti del core/compilatore e tutte28sorgenti precedenti. Verifica Sigstore dell'esatto workflow/source/ref OUF originale su runner hosted. L'attestazione della nuova valutazione è disponibile; la sua firma non viene dichiarata verificata indipendentemente in questo dossier. [Dossier e archivio integrale dei16membri checksum](../evidence/seaweedfs-g1-accepted-applicability-qualified-20261102.json).
+
+Nessuna nuova operazione VPS:17controlli/52DockerGET, tutti gli scope13–17 consumati.120corpi reali da verificare; writer/consumer/DB/ACL, backup coerente, profilo destinazione, capacità fresca e recovery ancora aperti. Teatri/M1 8/8tecniche,6/6funzionali e stessaFarmacie preservati; nessuna accettazione M2.

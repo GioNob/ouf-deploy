@@ -1,9 +1,9 @@
 {
   "schema": "ouf.storage-replacement-plan.v1",
   "id": "OUF-MP-STORAGE-SW",
-  "version": "1.0",
+  "version": "1.1",
   "date": "2026-11-02",
-  "status": "PRIVATE_COPY_PLAN_CAPTURED_NOT_ADMITTED_SYNTHETIC_COPY_CORE_LAB_QUALIFIED",
+  "status": "PRIVATE_PLAN_CAPTURED_COPY_CORE_LAB_QUALIFIED_EXACT_APPLICABILITY_ACCEPTED_TARGET_PENDING",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -29,7 +29,16 @@
       },
       "compiledPackages": 1738,
       "openpgpImported": false,
-      "releaseAdmitted": false
+      "releaseAdmitted": false,
+      "acceptedApplicability": {
+        "advisory": "GO-2026-5932",
+        "status": "not_affected",
+        "justification": "vulnerable_code_not_present",
+        "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+        "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+        "decision": "evidence/seaweedfs-g1-applicability-owner-decision-20261102.json",
+        "vex": "evidence/seaweedfs-g1-openvex-20261102.json"
+      }
     }
   },
   "workPackages": [
@@ -51,7 +60,7 @@
         6,
         12
       ],
-      "executionStatus": "UPSTREAM_DENIED_PATCHED_CANDIDATE_HELD_ONE_UNKNOWN"
+      "executionStatus": "EXACT_BINARY_ADVISORY_DISPOSITION_OWNER_ACCEPTED_IMAGE_LICENSE_SBOM_CUSTODY_COHORT_OPEN"
     },
     {
       "id": "SW-WP2",
@@ -248,8 +257,8 @@
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
   "nextPlannedWork": [
-    "SW-WP0",
     "SW-WP1",
+    "SW-WP0",
     "SW-WP4"
   ],
   "openTargetInputs": [
@@ -585,10 +594,30 @@
     "publisherIndependentlyVerified": true
   },
   "g1ApplicabilityReview": {
-    "status": "PROPOSED_NOT_ADMITTED",
-    "proposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+    "status": "OWNER_ACCEPTED_EXACT_BINARY_ONLY",
+    "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+    "decision": "evidence/seaweedfs-g1-applicability-owner-decision-20261102.json",
+    "originalProposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+    "vex": "evidence/seaweedfs-g1-openvex-20261102.json",
     "rawGate": "HELD_ONE_UNKNOWN",
-    "decisionRef": null,
-    "gateChanged": false
+    "rawGateChanged": false,
+    "scannerIgnoreAdded": false,
+    "acceptedDispositions": 1,
+    "unresolvedCountsForAssessedExecutableSet": {
+      "HIGH": 0,
+      "CRITICAL": 0,
+      "UNKNOWN": 0
+    },
+    "vulnerabilitySubgate": "PASS_WITH_EXACT_DISPOSITION",
+    "overallSwG1": "OPEN",
+    "runtimeAuthorityIssued": false,
+    "qualification": {
+      "source": "214c0e8a9681340fa71ea7f03ed6875a015097b6",
+      "runId": 41519037628,
+      "tests": 9,
+      "originalPublisherAuthenticated": true,
+      "freshOfficialAdvisoryChecked": true,
+      "dossier": "evidence/seaweedfs-g1-accepted-applicability-qualified-20261102.json"
+    }
   }
 }

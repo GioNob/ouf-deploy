@@ -231,5 +231,11 @@
   },
   "allEightGatesAnd21AcceptanceTestsRemainOpen": true,
   "document": "docs/OUF_SEAWEEDFS_COPY_CORE_20261102.md",
-  "g1ApplicabilityProposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json"
+  "g1ApplicabilityProposal": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+  "subsequentApplicabilityDecision": {
+    "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+    "decision": "evidence/seaweedfs-g1-applicability-owner-decision-20261102.json",
+    "qualification": "evidence/seaweedfs-g1-accepted-applicability-qualified-20261102.json",
+    "rawEvidenceOfOriginalQualificationUnchanged": true
+  }
 }
