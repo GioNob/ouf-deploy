@@ -117,6 +117,19 @@ class LicenceEvidenceTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'EXACT_RETAINED_FILE'):
             m.assess_classification(i, r)
 
+    def test_underscore_names_and_hash_bound_views(self):
+        self.assertTrue(m.legal_path('LICENSE_APACHE'))
+        self.assertTrue(m.licence_path('LICENSE_MIT'))
+        i, r = self.classification()
+        text = i['components'][0]['legalTexts'][0]
+        view = {'viewPath': 'component/content-hash/LICENSE',
+                'originalEvidencePath': text['evidencePath'], 'sha256': text['sha256']}
+        r['Results'][0]['Licenses'][0]['FilePath'] = view['viewPath']
+        self.assertEqual(m.assess_classification(i, r, [view])['componentsWithRootClassification'], 1)
+        view['sha256'] = '0'*64
+        with self.assertRaisesRegex(ValueError, 'HASH_BOUND_CLASSIFIER_VIEW'):
+            m.assess_classification(i, r, [view])
+
 
 if __name__ == '__main__':
     unittest.main()

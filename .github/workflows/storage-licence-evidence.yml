@@ -42,7 +42,7 @@ jobs:
         with:
           version: v0.70.0
           scan-type: fs
-          scan-ref: storage-licence-evidence/texts
+          scan-ref: storage-licence-evidence/classifier-views
           format: json
           output: storage-licence-evidence/trivy-licences.json
           list-all-pkgs: true
@@ -65,7 +65,7 @@ jobs:
               for name in ['publisher-verification.json','provenance.json','SHA256SUMS','candidate.json','byte-readback.json']:
                   shutil.copyfile(Path('sw-readback')/name,out/('original-'+name))
           complete=(out/'classification.json').exists() and not (out/'failure.json').exists()
-          (out/'qualification.json').write_text(json.dumps({'schema':'ouf.storage-licence-evidence-qualification.v1','status':'PASS' if complete else 'INCOMPLETE_NOT_ADMITTED','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'unitTests':9,'moduleCodeExecuted':False,'imageRebuilt':False,'rawSpdxModified':False,'targetOperations':0,'releaseAdmitted':False,'licenceReview':'OPEN','overallSwG1':'OPEN'},indent=2)+'\n')
+          (out/'qualification.json').write_text(json.dumps({'schema':'ouf.storage-licence-evidence-qualification.v1','status':'PASS' if complete else 'INCOMPLETE_NOT_ADMITTED','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'unitTests':10,'moduleCodeExecuted':False,'imageRebuilt':False,'rawSpdxModified':False,'targetOperations':0,'releaseAdmitted':False,'licenceReview':'OPEN','overallSwG1':'OPEN'},indent=2)+'\n')
           (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
           PY
       - id: attestation

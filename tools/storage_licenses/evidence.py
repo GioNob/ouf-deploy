@@ -16,7 +16,7 @@ MAX_ARCHIVE_BYTES = 512 * 1024**2
 MAX_EXPANDED_BYTES = 512 * 1024**2
 MAX_TEXT_BYTES = 16 * 1024**2
 MAX_TEXT_TOTAL = 64 * 1024**2
-LEGAL_NAMES = ('license', 'licence', 'copying', 'notice', 'authors', 'contributors',
+LEGAL_NAMES = ('license', 'licence', 'licenses', 'licences', 'copying', 'notice', 'authors', 'contributors',
                'copyright', 'patents', 'third_party', 'third-party', 'thirdparty')
 
 
@@ -40,15 +40,15 @@ def safe_path(name):
 def legal_path(name):
     p = safe_path(name)
     base = p.name.lower()
-    return (any(base == n or base.startswith(n + '.') or base.startswith(n + '-')
+    return (any(base == n or any(base.startswith(n + sep) for sep in ('.', '-', '_'))
                 for n in LEGAL_NAMES)
             or any(part.lower() in ('licenses', 'licences', 'legal') for part in p.parts[:-1]))
 
 
 def licence_path(name):
     base = PurePosixPath(name).name.lower()
-    return any(base == n or base.startswith(n + '.') or base.startswith(n + '-')
-               for n in ('license', 'licence', 'copying'))
+    return any(base == n or any(base.startswith(n + sep) for sep in ('.', '-', '_'))
+               for n in ('license', 'licence', 'licenses', 'licences', 'copying'))
 
 
 def h1_records(records):
@@ -159,23 +159,34 @@ def retain_component(out, name, version, texts, provenance):
             'licenceExpression': 'NOASSERTION', 'obligationsAccepted': False}
 
 
-def assess_classification(inventory, report):
+def assess_classification(inventory, report, views=None):
     require(report.get('SchemaVersion') == 2 and report.get('Trivy', {}).get('Version') == '0.70.0'
             and isinstance(report.get('Results'), list) and bool(report['Results']),
             'NONEMPTY_PINNED_LICENCE_REPORT_REQUIRED')
     files = {r['evidencePath']: r for c in inventory['components'] for r in c['legalTexts']}
     require(bool(files), 'RETAINED_LEGAL_TEXTS_REQUIRED')
+    paths = {p: p for p in files} if views is None else {}
+    if views is not None:
+        for view in views:
+            safe_path(view['viewPath'])
+            original = view['originalEvidencePath']
+            require(original in files and view['sha256'] == files[original]['sha256']
+                    and files[original]['licenceCandidate'] and view['viewPath'] not in paths,
+                    'EXACT_HASH_BOUND_CLASSIFIER_VIEW_REQUIRED')
+            paths[view['viewPath']] = original
     detected = {}
     for result in report['Results']:
         for finding in result.get('Licenses') or []:
             path = finding.get('FilePath', '')
             safe_path(path)
-            require(path in files and not finding.get('PkgName') and
+            require(path in paths and not finding.get('PkgName') and
                     isinstance(finding.get('Name'), str) and bool(finding['Name']), 'EXACT_RETAINED_FILE_CLASSIFICATION_REQUIRED')
             require(type(finding.get('Confidence')) in (int, float) and 0 <= finding['Confidence'] <= 1,
                     'VALID_CLASSIFIER_CONFIDENCE_REQUIRED')
             require(finding.get('Severity') in ['UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], 'KNOWN_LICENCE_SEVERITY_REQUIRED')
-            detected.setdefault(path, []).append(finding)
+            original = paths[path]
+            record = dict(finding, OriginalEvidencePath=original)
+            detected.setdefault(original, []).append(record)
     require(bool(detected), 'ACTUAL_FILE_CLASSIFICATIONS_REQUIRED')
     components = []
     for component in inventory['components']:

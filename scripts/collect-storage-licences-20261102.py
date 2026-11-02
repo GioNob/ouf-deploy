@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Public CI evidence collector; never executes any downloaded module code."""
 import argparse
+import base64
 import hashlib
 import importlib.util
 import io
@@ -56,6 +57,44 @@ def legal_tar(raw, prefix=''):
             total += member.size; m.require(total <= m.MAX_TEXT_TOTAL, 'TAR_LEGAL_TEXT_TOTAL_BUDGET')
             texts[relative] = tar.extractfile(member).read()
     return texts
+
+
+def flatbuffers_parent_licence(archive):
+    """Bind the omitted parent licence to every Go module ZIP file at its commit."""
+    commit = '3b8644d32c50e86872584829af4b8caf180235ab'
+    base = 'https://api.github.com/repos/google/flatbuffers'
+    def get(url, limit):
+        req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'OUF-checksum-bound-licence-evidence'})
+        with urllib.request.urlopen(req, timeout=60) as response:
+            raw = response.read(limit+1)
+        m.require(0 < len(raw) <= limit, 'BOUNDED_PUBLIC_GIT_METADATA_REQUIRED')
+        return json.loads(raw)
+    tree = get(base+'/git/trees/'+commit+'?recursive=1', 4*1024**2)
+    m.require(tree.get('truncated') is False, 'COMPLETE_EXACT_PARENT_TREE_REQUIRED')
+    files = {f['path']: f for f in tree['tree'] if f['type'] == 'blob'}
+    expected = files['LICENSE.txt']
+    m.require(expected['sha'] == 'd645695673349e3947e8e5ae42332d0ac3164cd7', 'EXACT_PARENT_LICENCE_BLOB_REQUIRED')
+    matches = []
+    with zipfile.ZipFile(archive) as z:
+        for info in z.infolist():
+            if info.is_dir():
+                continue
+            relative = info.filename.split('@', 1)[1].split('/', 1)[1]
+            path = 'go/'+relative
+            raw = z.read(info)
+            blob = hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\x00'+raw).hexdigest()
+            m.require(path in files and files[path]['sha'] == blob and files[path]['mode'] in ('100644', '100755'), 'EXACT_SUBMODULE_GIT_BLOB_REQUIRED:'+relative)
+            matches.append({'path': path, 'gitBlob': blob, 'sha256': m.sha(raw)})
+    m.require(len(matches) == 10, 'ALL_TEN_FLATBUFFERS_MODULE_FILES_REQUIRED')
+    blob = get(base+'/git/blobs/'+expected['sha'], 65536)
+    raw = base64.b64decode(blob['content'])
+    m.require(len(raw) == expected['size'] and hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\x00'+raw).hexdigest() == expected['sha'], 'PARENT_LICENCE_GIT_BLOB_MISMATCH')
+    proof = {'repository': 'google/flatbuffers', 'commit': commit, 'parentLicencePath': 'LICENSE.txt',
+             'parentLicenceGitBlob': expected['sha'], 'parentLicenceSha256': m.sha(raw),
+             'moduleFilesMatchedToSameCommit': matches, 'treeTruncated': False,
+             'currentBranchUsed': False, 'licenceAcceptanceClaimed': False}
+    write(OUT/'flatbuffers-parent-licence-proof.json', proof)
+    return raw, proof
 
 
 def collect():
@@ -131,6 +170,11 @@ def collect():
         m.require(total_archive_bytes <= 4*1024**3, 'CUMULATIVE_MODULE_ARCHIVE_BUDGET')
         texts, provenance = m.module_texts(name, version, archive, gomod.read_bytes(),
                                          sums[name, version], sums[name, version+'/go.mod'])
+        if name == 'github.com/google/flatbuffers/go':
+            parent, proof = flatbuffers_parent_licence(archive)
+            m.require('LICENSE.txt' not in texts, 'PARENT_LICENCE_MUST_NOT_OVERWRITE_MODULE_TEXT')
+            texts['LICENSE.txt'] = parent
+            provenance['parentLicenceSupplement'] = proof
         provenance.update(kind='GO_SUM_AND_SUMDB_VERIFIED_MODULE',
                           goReportedSum=info['Sum'], goReportedGoModSum=info['GoModSum'],
                           independentH1EqualsOfficialGo=True)
@@ -144,6 +188,18 @@ def collect():
                     legalTextCount=sum(len(c['legalTexts']) for c in components),
                     componentsWithoutRootLicence=[c['name']+'@'+c['version'] for c in components if c['rootLicenceCandidates'] == 0])
     write(OUT/'inventory.json', progress)
+    views = []
+    for component in components:
+        for record in component['legalTexts']:
+            if not record['licenceCandidate'] or record['bytes'] == 0:
+                continue
+            raw = (OUT/'texts'/record['evidencePath']).read_bytes()
+            view = component['id']+'/'+m.sha(record['evidencePath'].encode())+'/LICENSE'
+            p = OUT/'classifier-views'/view; p.parent.mkdir(parents=True, exist_ok=True)
+            with p.open('xb') as f:
+                f.write(raw)
+            views.append({'viewPath': view, 'originalEvidencePath': record['evidencePath'], 'sha256': m.sha(raw)})
+    write(OUT/'classifier-views.json', views)
 
 
 def assess():
@@ -154,7 +210,10 @@ def assess():
             p = OUT/'texts'/r['evidencePath']
             m.require(not p.is_symlink() and p.stat().st_size == r['bytes'] and m.sha(p.read_bytes()) == r['sha256'], 'LEGAL_TEXT_CHANGED')
     report = json.loads((OUT/'trivy-licences.json').read_bytes())
-    result = m.assess_classification(inventory, report)
+    views = json.loads((OUT/'classifier-views.json').read_bytes())
+    for view in views:
+        m.require(m.sha((OUT/'classifier-views'/view['viewPath']).read_bytes()) == view['sha256'], 'CLASSIFIER_VIEW_BYTES_CHANGED')
+    result = m.assess_classification(inventory, report, views)
     write(OUT/'classification.json', result)
     summary = {k: v for k, v in result.items() if k != 'components'}
     write(OUT/'summary.json', summary); print(json.dumps(summary, indent=2))
