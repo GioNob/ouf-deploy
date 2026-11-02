@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import tarfile
@@ -63,6 +64,33 @@ def stage(source, out):
         'sourceBinaryEqualityProven':False,'targetOperations':0,'installed':False,'securityGate':'NOT_RUN'})
 
 
+def rebuild(source, out):
+    require(os.environ.get('GITHUB_ACTIONS') == 'true', 'CI_ONLY')
+    require(subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip() == SOURCE, 'EXACT_SOURCE_REQUIRED')
+    env = dict(os.environ, GOTOOLCHAIN='go1.27.3', CGO_ENABLED='0')
+    def go(*args):
+        return subprocess.check_output(['go',*args],cwd=source,env=env,timeout=900)
+    require(go('version').decode().startswith('go version go1.27.3 '), 'EXACT_GO_TOOLCHAIN_REQUIRED')
+    go('get','github.com/go-jose/go-jose/v4@v4.1.6','golang.org/x/net@v0.62.0')
+    go('mod','verify')
+    changed = subprocess.check_output(['git','-C',str(source),'diff','--name-only'],text=True).splitlines()
+    require(set(changed) <= {'go.mod','go.sum'}, 'ONLY_DEPENDENCY_MANIFEST_PATCH_PERMITTED')
+    (out/'dependency.patch').write_bytes(subprocess.check_output(['git','-C',str(source),'diff','--binary']))
+    for name in ['go.mod','go.sum']:
+        shutil.copyfile(source/name, out/name)
+    packages = go('list','-deps','-f','{{.ImportPath}}','./weed').decode().splitlines()
+    write(out/'compiled-packages.json', {'packages':packages,'openpgpImported':any(p == 'golang.org/x/crypto/openpgp' or p.startswith('golang.org/x/crypto/openpgp/') for p in packages)})
+    (out/'upstream').mkdir()
+    shutil.move(out/'bin/weed',out/'upstream/weed')
+    go('build','-trimpath','-o',str((out/'bin/weed').resolve()),'./weed')
+    (out/'patched-go-build-info.txt').write_bytes(go('version','-m',str((out/'bin/weed').resolve())))
+    r = json.loads((out/'candidate.json').read_text())
+    r.update(binarySha256=digest(out/'bin/weed'),upstreamBinaryRebuilt=True,
+             buildToolchain='go1.27.3',cgoEnabled=False,dependencyPatchSha256=digest(out/'dependency.patch'),
+             securityGate='NOT_RUN',sourceBinaryEqualityProven=False)
+    write(out/'candidate.json',r)
+
+
 def assess(report):
     require(isinstance(report,dict) and report.get('SchemaVersion') == 2, 'VALID_SCANNER_REPORT_REQUIRED')
     require(isinstance(report.get('Results'),list) and bool(report['Results']), 'NONEMPTY_SCAN_REQUIRED')
@@ -94,8 +122,9 @@ def seal(out):
 
 
 if __name__ == '__main__':
-    p=argparse.ArgumentParser();p.add_argument('mode',choices=['stage','gate','seal']);p.add_argument('output',type=Path);p.add_argument('--source',type=Path)
+    p=argparse.ArgumentParser();p.add_argument('mode',choices=['stage','rebuild','gate','seal']);p.add_argument('output',type=Path);p.add_argument('--source',type=Path)
     a=p.parse_args()
     if a.mode=='stage':stage(a.source,a.output)
+    elif a.mode=='rebuild':rebuild(a.source,a.output)
     elif a.mode=='gate':gate(a.output)
     else:seal(a.output)

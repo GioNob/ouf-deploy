@@ -32,6 +32,19 @@ for directory,(commit,files) in SOURCES.items():
   dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(origin,dest)
   records.append({'repositoryDirectory':directory,'commit':commit,'path':file,'sha256':hashlib.sha256(origin.read_bytes()).hexdigest()})
 (OUT/'adapter-source-inventory.json').write_text(json.dumps(records,indent=2)+'\n')
+audit=[]
+for directory,(commit,_) in SOURCES.items():
+ source=ROOT/directory
+ paths=subprocess.check_output(['git','-C',str(source),'ls-tree','-r','--name-only',commit],text=True).splitlines()
+ for relative in paths:
+  if not relative.startswith(('src/','scripts/','.github/','config/')) and relative!='pom.xml':continue
+  path=source/relative
+  if not path.is_file() or path.stat().st_size>262144:continue
+  text=path.read_text(errors='replace')
+  lines=[i for i,line in enumerate(text.splitlines(),1) if any(word in line.lower() for word in ['minio','s3client','lake.s3','onboarding.staging','presigned','objectstorage'])]
+  if lines:audit.append({'repositoryDirectory':directory,'commit':commit,'path':relative,'matchingLines':lines,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+(OUT/'public-consumer-audit.json').write_text(json.dumps({'scope':'Onboarding and UDP exact selected public generations only','targetInventoryComplete':False,'files':audit},indent=2)+'\n')
+
 lab=OUT/'lab';lab.mkdir();(lab/'data').mkdir();(lab/'metadata').mkdir()
 (lab/'filer.toml').write_text('[leveldb2]\nenabled = true\ndir = "'+str(lab/'metadata')+'"\n')
 identities=[]

@@ -26,6 +26,8 @@ jobs:
           persist-credentials: false
       - name: Acquire immutable release bytes and record source separately
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py stage sw-evaluation --source sw-source
+      - name: Build distinct candidate with corrected JOSE and network dependencies
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py rebuild sw-evaluation --source sw-source
       - run: ': > empty.trivyignore'
       - name: Scan actual upstream Go executable including unfixed vulnerabilities
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
