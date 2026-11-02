@@ -1,0 +1,83 @@
+{
+  "schema": "ouf.storage-runtime-image-independent-readback.v1",
+  "status": "PASS",
+  "artifactId": 13180033257,
+  "archiveBytes": 186961604,
+  "archiveSha256": "459ef6d3b746cfd7387d10517949dcd30d507c33df9d4fedafe612cb31c5c98a",
+  "checksumMembers": 23,
+  "packagingSourcesCompared": 5,
+  "imageConfigDigest": "sha256:11aa43b10ef3ce7743cad1b4e0b10aeaa87cd5e55a414246b6225a50487f154d",
+  "ociManifestDigest": "sha256:8aaab8a40cbe7f4eae0dfd357718c62b5280011d46c0aa036825b2a624dd4a09",
+  "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+  "scanPackages": 245,
+  "spdxPackages": 247,
+  "allScannedPackagesInSpdx": true,
+  "licenceNoAssertionCount": 247,
+  "rawCounts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "UNKNOWN": 1,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "unresolvedCounts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "UNKNOWN": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "assessmentReproduced": true,
+  "ociAndDockerReconstructedByteForByte": true,
+  "enclosedExecutablesExecuted": false,
+  "targetOperations": 0,
+  "publisherSignatureVerifiedByThisScript": false,
+  "omittedMembers": [
+    {
+      "name": "blobs/sha256/f987884e34f568745748b28b5bd8e00f8bdf4a91e9251bd66c7d2d8d96db7f39",
+      "bytes": 218408960,
+      "sha256": "f987884e34f568745748b28b5bd8e00f8bdf4a91e9251bd66c7d2d8d96db7f39",
+      "verifiedFromOriginal": true,
+      "includedInMetadataArchive": false
+    },
+    {
+      "name": "runtime.docker.tar",
+      "bytes": 218419200,
+      "sha256": "6d3e1c4885be713d04127147bda4ad6d02ffe93f3c559c297448852249d4bcbb",
+      "verifiedFromOriginal": true,
+      "includedInMetadataArchive": false
+    }
+  ],
+  "durableReleaseCustody": "OPEN",
+  "licenceReview": "OPEN",
+  "cohortQualification": "OPEN",
+  "overallSwG1": "OPEN",
+  "producerSource": "d4cfa1f08bb25dace29ed94946d4a7c97a729af0",
+  "producerRunId": 41527393253,
+  "producerJobId": 125558545575,
+  "packagingAndBoundaryTests": 12,
+  "independentSource": "8338ee72edff1ffa0b5f14a4858cad475fbcbc0f",
+  "independentRunId": 41527990598,
+  "independentJobId": 125560582116,
+  "independentPublisherSignatureVerified": true,
+  "signatureQualificationStatus": "PASS",
+  "originalArtefactExpiresAt": "2027-01-31T21:20:08Z",
+  "technicalRoadmap": {
+    "completed": 8,
+    "total": 8
+  },
+  "functionalRoadmap": {
+    "completed": 6,
+    "total": 6
+  },
+  "m2Accepted": false,
+  "realObjectsCopied": 0,
+  "realObjectsBodyVerified": 0,
+  "realObjectsPlanned": 120,
+  "cumulativeTargetControls": 17,
+  "cumulativeEngineGets": 52,
+  "metadataArchive": "evidence/artifacts/storage-runtime-image-readback-41527990598.zip",
+  "metadataArchiveSha256": "b93bfefbc1d3a1e19f2a1cdd9c4fbea992f2f72510199bcbaa28b96e59583d2f",
+  "metadataArchiveBytes": 103274,
+  "metadataArchiveChecksumSubjects": 27
+}

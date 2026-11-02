@@ -60,7 +60,7 @@
         6,
         12
       ],
-      "executionStatus": "EXACT_BINARY_ADVISORY_DISPOSITION_OWNER_ACCEPTED_IMAGE_LICENSE_SBOM_CUSTODY_COHORT_OPEN"
+      "executionStatus": "EXACT_BINARY_OCI_IMAGE_FRESH_SCAN_AND_SPDX_QUALIFIED_LICENSE_CUSTODY_COHORT_OPEN"
     },
     {
       "id": "SW-WP2",
@@ -256,11 +256,7 @@
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
-  "nextPlannedWork": [
-    "SW-WP1",
-    "SW-WP0",
-    "SW-WP4"
-  ],
+  "nextPlannedWork": "Complete checksum-bound dependency licence texts/attributions, durable image custody and full cohort; retain G0 writer/DB/fence/backup/capacity gaps; no target delivery before G0-G4.",
   "openTargetInputs": [
     "private ACL grants and publicAccessBlock compatibility/control mapping",
     "current writers, external consumers and database references",
@@ -619,5 +615,71 @@
       "freshOfficialAdvisoryChecked": true,
       "dossier": "evidence/seaweedfs-g1-accepted-applicability-qualified-20261102.json"
     }
+  },
+  "runtimeImageQualification": {
+    "status": "IMAGE_AND_SBOM_QUALIFIED_NOT_ADMITTED",
+    "producerSource": "d4cfa1f08bb25dace29ed94946d4a7c97a729af0",
+    "producerRunId": 41527393253,
+    "producerJobId": 125558545575,
+    "independentSource": "8338ee72edff1ffa0b5f14a4858cad475fbcbc0f",
+    "independentRunId": 41527990598,
+    "independentJobId": 125560582116,
+    "independentSignatureStatus": "PASS",
+    "imageConfigDigest": "sha256:11aa43b10ef3ce7743cad1b4e0b10aeaa87cd5e55a414246b6225a50487f154d",
+    "ociManifestDigest": "sha256:8aaab8a40cbe7f4eae0dfd357718c62b5280011d46c0aa036825b2a624dd4a09",
+    "scannedPackages": 245,
+    "spdxPackages": 247,
+    "licenceNoAssertionCount": 247,
+    "rawCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 1
+    },
+    "unresolvedCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "UNKNOWN": 0
+    },
+    "packagingAndBoundaryTests": 12,
+    "originalBinaryRebuilt": false,
+    "originalArchiveReconstructed": true,
+    "licenceReview": "OPEN",
+    "durableReleaseCustody": "OPEN",
+    "cohortQualification": "OPEN",
+    "overallSwG1": "OPEN",
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "dossier": "evidence/seaweedfs-runtime-image-qualified-20261102.json",
+    "document": "docs/OUF_SEAWEEDFS_RUNTIME_IMAGE_20261102.md",
+    "metadataArchive": "evidence/artifacts/storage-runtime-image-readback-41527990598.zip",
+    "metadataArchiveSha256": "b93bfefbc1d3a1e19f2a1cdd9c4fbea992f2f72510199bcbaa28b96e59583d2f"
+  },
+  "progressEstimate": {
+    "schema": "ouf.storage-planning-progress-estimate.v1",
+    "status": "HEURISTIC_NOT_ACCEPTANCE",
+    "date": "2026-11-02",
+    "exactWeightedEstimatePercent": 31.956521739130434,
+    "reportedApproximatePercent": 30,
+    "uncertaintyPercentagePoints": 10,
+    "weights": "original WP minimum engineering-hour estimates; 46 total",
+    "creditsPercent": [
+      50,
+      65,
+      60,
+      15,
+      35,
+      0,
+      0,
+      0
+    ],
+    "weightedCredits": 14.7,
+    "gatePass": 0,
+    "gateTotal": 8,
+    "acceptanceTestPass": 0,
+    "acceptanceTestTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectTotal": 120,
+    "doesNotMeasureElapsedTime": true,
+    "doesNotMeasureAcceptance": true
   }
 }
