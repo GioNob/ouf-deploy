@@ -33,6 +33,19 @@ from tools.chatbot_file_cohort.plan import digest, encoded, require
 PROFILE = 'ouf.chatbot-file-authorization.v1'
 REVISION_PROFILE = 'ouf.source-property-revision-authorization.v1'
 INGESTION_READ_PROFILE = 'ouf.ingestion-operational-read-authorization.v1'
+DISCOVERY_PROFILE = 'ouf.semantic-discovery-authorization.v1'
+DISCOVERY_SCOPE = 'ouf.semantic.discovery'
+DISCOVERY = {
+    'ouf.semantic.discovery': ('semantic', 'COMMAND', None),
+    'ouf.semantic.discovery.status': ('semantic', 'READ', None),
+    'ouf.semantic.discovery.candidates': ('semantic', 'READ', None),
+}
+DISCOVERY_CATALOGUE = 'catalogue/m2-semantic-discovery-capabilities.json'
+
+
+def catalogue_path(profile):
+    return DISCOVERY_CATALOGUE if profile == DISCOVERY_PROFILE else 'catalogue/chatbot-source-review-capabilities.json'
+
 INGESTION_READ = {'ingestion.operations.read': ('ingestion', 'READ', 'operational')}
 RETRY = {'maximumAttempts':128,'maximumElapsedSeconds':86400,'backoffSeconds':[5,15,60,300,900],'maximumJitterPercent':20}
 OBSERVATION_POLICY={'profile':'ouf.authorization-finite-observation.v1','maximumAttempts':128,
@@ -61,6 +74,9 @@ REVISION = {
 
 def profile_definition(profile):
     """Fixed owner contracts, never caller-selected capability semantics."""
+    if profile == DISCOVERY_PROFILE:
+        return {'new':copy.deepcopy(DISCOVERY),'catalogue':copy.deepcopy(DISCOVERY),
+                'chat':[DISCOVERY_SCOPE],'browser':[]}
     if profile == INGESTION_READ_PROFILE:
         return {'new':copy.deepcopy(INGESTION_READ),'catalogue':copy.deepcopy(INGESTION_READ),
                 'chat':list(INGESTION_READ),'browser':[]}
@@ -85,7 +101,7 @@ class OwnerPrimitives:
         profile_definition(profile)
         self.root, self.bindings = Path(directory), copy.deepcopy(bindings)
         required = {'scripts/r4a_authorization_lifecycle.py', 'scripts/r4a_keycloak_client_scope_catalogue.py',
-                    'catalogue/chatbot-source-review-capabilities.json'}
+                    catalogue_path(profile)}
         require(set(bindings) == required, 'EXACT_EXISTING_OWNER_HELPER_BINDINGS_REQUIRED')
         self.modules = {}
         for name in sorted(bindings):
@@ -107,9 +123,9 @@ class OwnerPrimitives:
     @classmethod
     def from_qualified_modules(cls, lifecycle, scopes, catalogue, bindings, *, profile=PROFILE):
         expected = {'scripts/r4a_authorization_lifecycle.py','scripts/r4a_keycloak_client_scope_catalogue.py',
-                    'catalogue/chatbot-source-review-capabilities.json'}
+                    catalogue_path(profile)}
         require(set(bindings) == expected and type(catalogue) is bytes
-                and hashlib.sha256(catalogue).hexdigest() == bindings['catalogue/chatbot-source-review-capabilities.json'],
+                and hashlib.sha256(catalogue).hexdigest() == bindings[catalogue_path(profile)],
                 'EXACT_MEMORY_LOADED_OWNER_BINDINGS_REQUIRED')
         for module, name, path in ((lifecycle,'qualified_owner_authorization_lifecycle','scripts/r4a_authorization_lifecycle.py'),
                                    (scopes,'qualified_owner_scope_catalogue','scripts/r4a_keycloak_client_scope_catalogue.py')):
@@ -133,7 +149,7 @@ class OwnerPrimitives:
         for row in self.catalogue:
             cap = row['descriptor']['capabilityId']; owner, operation, _ = catalogue[cap]
             require(row == {'ownerRef': owner, 'descriptor': {'capabilityId':cap,'operation':operation,
-                    'requiredScope':cap,'allowedActors':['HUMAN']}}, 'OWNER_DESCRIPTOR_SEMANTICS_CHANGED')
+                    'requiredScope':DISCOVERY_SCOPE if self.profile == DISCOVERY_PROFILE else cap,'allowedActors':['HUMAN']}}, 'OWNER_DESCRIPTOR_SEMANTICS_CHANGED')
         self.descriptors = [copy.deepcopy(r) for r in self.catalogue
                             if r['descriptor']['capabilityId'] in definition['new']]
 
@@ -388,6 +404,8 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
     new = definition['new']
     require(primitives.profile != REVISION_PROFILE or include_ingestion_status is False,
             'REVISION_PROFILE_EXCLUDES_UNRELATED_STATUS_DELTA')
+    require(primitives.profile != DISCOVERY_PROFILE or include_ingestion_status is False,
+            'DISCOVERY_PROFILE_EXCLUDES_UNRELATED_STATUS_DELTA')
     if primitives.profile == INGESTION_READ_PROFILE:
         require(include_ingestion_status is False and type(source_id) is str
                 and re.fullmatch('[A-Za-z0-9_.:-]{1,160}', source_id),
@@ -467,7 +485,9 @@ def compile_plan(observed, primitives, selection, *, role_id='admin', include_in
             'registrationAdditions':missing_registration,'candidatePolicy':candidate,'addedDescriptors':missing,
             'targetRoles':target_roles,'addedPermissions':new_permissions,'roleId':role_id,
             'scopeCreations':scope_creations,'scopeBindings':scope_bindings,'requiredScopes':required,
-            'roleProposal':{'operation':'REPLACE_ROLES','reason':('Enable generic same-source property revision preparation/read; activation remains a separate native HUMAN review.'
+            'roleProposal':{'operation':'REPLACE_ROLES','reason':('Enable only caller-owned semantic discovery request/status/candidates with one discovery OAuth scope; adoption, approval and publication remain separate owner/HUMAN operations.'
+                                      if primitives.profile == DISCOVERY_PROFILE else
+                                      'Enable generic same-source property revision preparation/read; activation remains a separate native HUMAN review.'
                                       if primitives.profile == REVISION_PROFILE else
                                       'Enable only source-scoped ingestion operational READ; no run, replay, activation or protected logs.'
                                       if primitives.profile == INGESTION_READ_PROFILE else
