@@ -40,6 +40,23 @@ func create(t *testing.T,c *s3.Client,bucket string){t.Helper();if _,e:=c.Create
 func stores(t *testing.T,src,dst string,caSrc,caDst []byte,items []Item)(*s3Store,*s3Store){t.Helper();s,e:=newLoopbackS3(src,"us-east-1",sourceKey,sourceSecret,caSrc,items,false);if e!=nil{t.Fatal(e)};d,e:=newLoopbackS3(dst,"us-east-1",destinationKey,destinationSecret,caDst,items,true);if e!=nil{t.Fatal(e)};return s,d}
 func makeSingle(t *testing.T,name string)([]Item,string,string,[]byte){t.Helper();src,dst,ca:=lab(t);a:=admin(t,src,ca,sourceKey,sourceSecret);b:=admin(t,dst,ca,destinationKey,destinationSecret);bucket:="lab-"+name;create(t,a,bucket);create(t,b,bucket);raw:=[]byte("synthetic only, never OUF data");_,e:=a.PutObject(context.Background(),&s3.PutObjectInput{Bucket:aws.String(bucket),Key:aws.String("data"),Body:bytes.NewReader(raw),ContentType:aws.String("application/octet-stream"),Metadata:map[string]string{"ouf-content-hash":"sha256:"+hash(raw)}});if e!=nil{t.Fatal(e)}
  items:=[]Item{{ID:ID{bucket,"data"}}};s,_:=stores(t,src,dst,ca,ca,items);s.SetCredit(func()error{return nil});m,e:=s.Head(context.Background(),items[0].ID);if e!=nil{t.Fatal(e)};items[0].Meta=m;return items,src,dst,ca}
+func TestRealFunctionalReadiness(t *testing.T){src,dst,ca:=lab(t)
+ for _,profile:=range []struct{endpoint,key,secret,role string}{{src,sourceKey,sourceSecret,"source"},{dst,destinationKey,destinationSecret,"destination"}}{t.Run(profile.role,func(t *testing.T){
+  client:=admin(t,profile.endpoint,ca,profile.key,profile.secret);bucket:="lab-functional-readiness";create(t,client,bucket);ctx,cancel:=context.WithTimeout(context.Background(),90*time.Second);defer cancel();ready:=false
+  for attempt:=0;attempt<6;attempt++{
+   _,err:=client.PutObject(ctx,&s3.PutObjectInput{Bucket:aws.String(bucket),Key:aws.String("probe"),Body:strings.NewReader("synthetic-readiness"),IfNoneMatch:aws.String("*")})
+   var status interface{HTTPStatusCode()int}
+   if err==nil||errors.As(err,&status)&&status.HTTPStatusCode()==412{
+    _,rejected:=client.PutObject(ctx,&s3.PutObjectInput{Bucket:aws.String(bucket),Key:aws.String("probe"),Body:strings.NewReader("must-not-overwrite"),IfNoneMatch:aws.String("*")})
+    if errors.As(rejected,&status)&&status.HTTPStatusCode()==412{result,getErr:=client.GetObject(ctx,&s3.GetObjectInput{Bucket:aws.String(bucket),Key:aws.String("probe")});if getErr==nil{body,readErr:=io.ReadAll(result.Body);result.Body.Close();if readErr==nil&&string(body)=="synthetic-readiness"{ready=true;break}}}
+   }
+   if ctx.Err()!=nil{break};time.Sleep(time.Second)
+  }
+  if !ready{t.Fatal("functional conditional-write/read readiness not proven")}
+  if _,err:=client.DeleteObject(ctx,&s3.DeleteObjectInput{Bucket:aws.String(bucket),Key:aws.String("probe")});err!=nil{t.Fatal(err)}
+  if _,err:=client.DeleteBucket(ctx,&s3.DeleteBucketInput{Bucket:aws.String(bucket)});err!=nil{t.Fatal(err)}
+ })}
+}
 func TestRealConditionalAtomicity(t *testing.T){_,dst,ca:=lab(t);client:=admin(t,dst,ca,destinationKey,destinationSecret);bucket:="lab-atomic-preconditions";create(t,client,bucket);start:=make(chan struct{});var successes,denials,other atomic.Int32;var wg sync.WaitGroup
  for i:=0;i<16;i++{wg.Add(1);go func(i int){defer wg.Done();<-start;_,e:=client.PutObject(context.Background(),&s3.PutObjectInput{Bucket:aws.String(bucket),Key:aws.String("one-winner"),Body:strings.NewReader(strconv.Itoa(i)),IfNoneMatch:aws.String("*")});if e==nil{successes.Add(1)}else{var status interface{HTTPStatusCode()int};if errors.As(e,&status)&&(status.HTTPStatusCode()==412||status.HTTPStatusCode()==409){denials.Add(1)}else{n:=other.Add(1);if n<=3{t.Logf("conditional failure type=%T detail=%v",e,e)}}}}(i)}
  close(start);wg.Wait();if successes.Load()!=1||denials.Load()!=15||other.Load()!=0{t.Fatalf("CAS not qualified: success%d denial%d other%d",successes.Load(),denials.Load(),other.Load())};t.Log("one conditional winner, fifteen rejected; real isolated S3")
