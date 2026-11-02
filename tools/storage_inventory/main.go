@@ -194,6 +194,16 @@ func writeNew(dir,name string,raw []byte)error{
  if _,e=f.Write(raw);e==nil{e=f.Sync()};f.Close();if e!=nil{return e}
  d,e:=os.Open(dir);if e!=nil{return e};defer d.Close();return d.Sync()
 }
+func failureCategory(err error)string{
+ if err==nil{return "NONE"};if errors.Is(err,context.DeadlineExceeded){return "TIME_BUDGET"}
+ var api interface{ErrorCode()string};if errors.As(err,&api){switch api.ErrorCode(){
+  case "AccessDenied":return "AUTHORIZATION"
+  case "SignatureDoesNotMatch","InvalidAccessKeyId","InvalidToken":return "AUTHENTICATION"
+  case "NoSuchKey","NoSuchVersion","NoSuchBucket":return "SOURCE_CHANGED_OR_MISSING"
+  case "NotImplemented","UnsupportedOperation":return "UNSUPPORTED_API"
+  case "InvalidRequest","InvalidArgument":return "CONFIGURATION_OR_ENCRYPTION_REVIEW"
+ }};return "UNCLASSIFIED"
+}
 func execute(configPath,out string) error {
  configInfo,e:=os.Lstat(configPath);if e!=nil||!configInfo.Mode().IsRegular()||configInfo.Mode().Perm()&0077!=0||configInfo.Size()>16384{return errors.New("PRIVATE_CONFIG_REQUIRED")}
  raw,e:=os.ReadFile(configPath);if e!=nil||len(raw)>16384{return errors.New("BOUNDED_CONFIG_REQUIRED")};var c Config;d:=json.NewDecoder(strings.NewReader(string(raw)));d.DisallowUnknownFields();if d.Decode(&c)!=nil{return errors.New("INVALID_CONFIG")}
@@ -212,7 +222,7 @@ func execute(configPath,out string) error {
  if readError!=nil{failure:=map[string]string{"class":"INVENTORY_READ_FAILED"};var api interface{ErrorCode()string};if errors.As(readError,&api){failure["apiCode"]=api.ErrorCode()};var operation interface{Operation()string};if errors.As(readError,&operation){failure["operation"]=operation.Operation()};record["failure"]=failure}
  bytes,e:=json.Marshal(record);if e!=nil||len(bytes)>64*1024*1024{return errors.New("PRIVATE_OUTPUT_BUDGET")}
  if e=writeNew(out,"inventory.private.json",bytes);e!=nil{return e}
- public:=map[string]any{"complete":readError==nil,"records":len(rows),"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"summary":publicSummary};publicJSON,_:=json.Marshal(public);fmt.Println(string(publicJSON))
+ public:=map[string]any{"failureCategory":failureCategory(readError),"complete":readError==nil,"records":len(rows),"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"summary":publicSummary};publicJSON,_:=json.Marshal(public);fmt.Println(string(publicJSON))
  if readError!=nil{return errors.New("INVENTORY_INCOMPLETE_PRIVATE_DETAIL_NOT_PRINTED")};return nil
 }
 func main(){if len(os.Args)!=3{fmt.Fprintln(os.Stderr,"PRIVATE_CONFIG_AND_NEW_OUTPUT_SCOPE_REQUIRED");os.Exit(2)};if execute(os.Args[1],os.Args[2])!=nil{fmt.Fprintln(os.Stderr,"INVENTORY_STOP_PRIVATE_INPUTS_NOT_PRINTED");os.Exit(1)}}

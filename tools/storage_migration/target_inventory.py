@@ -139,13 +139,13 @@ def capture(control,engine):
   completed=subprocess.run(['/usr/bin/nsenter','--net=/proc/'+str(pid)+'/ns/net','--',str(BACKEND),str(control.scope/'inventory-config.private.json'),str(control.scope/'s3')],pass_fds=descriptors,env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','GOMEMLIMIT':'256MiB','GOMAXPROCS':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
   require(len(completed.stdout)<=4096 and len(completed.stderr)<=4096,'MINIMIZED_BACKEND_OUTPUT_REQUIRED')
   require(process_pin(pid)==pin,'MINIO_NAMESPACE_PIN_CHANGED');stable()
-  report=decode(completed.stdout);require(completed.returncode==0 and report.get('complete') is True and report.get('objectBodiesRead')==report.get('targetWrites')==0,'PRIVATE_INVENTORY_INCOMPLETE')
+  report=decode(completed.stdout);require(type(report.get('complete')) is bool and report.get('objectBodiesRead')==report.get('targetWrites')==0 and type(report.get('records')) is int and type(report.get('requests')) is int,'MINIMIZED_READ_ONLY_INVENTORY_RESULT_REQUIRED');complete=completed.returncode==0 and report['complete'] is True
   fd=os.open(control.scope/'s3/inventory.private.json',os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
   with os.fdopen(fd,'rb') as stream:
    info=os.fstat(stream.fileno());require(stat.S_ISREG(info.st_mode) and info.st_uid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1 and 0<info.st_size<=67108864,'BOUNDED_ROOT_PRIVATE_INVENTORY_REQUIRED')
    private_hash=file_sha(stream);require(attrs(info)==attrs(os.fstat(stream.fileno())),'PRIVATE_INVENTORY_CHANGED')
   stable()
-  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED','privateInventorySha256':private_hash,'hostBaselineHash':digest(host),'profileHash':digest(PROFILE),'parentOriginResultHash':ORIGIN_RESULT,'s3Complete':True,'memoryAvailableBytes':available_bytes,'storageDataFreeBytes':capacity[0]['freeBytes'],'storageDataTotalBytes':capacity[0]['totalBytes'],'inventorySummary':report['summary'],'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
+  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED' if complete else 'PRIVATE_STORAGE_BASELINE_PARTIAL_REVIEW_REQUIRED','readerFailureCategory':report.get('failureCategory','UNCLASSIFIED'),'privateInventorySha256':private_hash,'hostBaselineHash':digest(host),'profileHash':digest(PROFILE),'parentOriginResultHash':ORIGIN_RESULT,'s3Complete':complete,'memoryAvailableBytes':available_bytes,'storageDataFreeBytes':capacity[0]['freeBytes'],'storageDataTotalBytes':capacity[0]['totalBytes'],'inventorySummary':report['summary'],'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
  finally:
   for fd in descriptors:os.close(fd)
 
@@ -154,7 +154,7 @@ def main():
  try:
   require(sys.argv[1:]==[] and os.geteuid()==os.getegid()==0,'ROOT_ISOLATED_NO_ARGUMENT_ENTRY_REQUIRED');require(sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_STDLIB_ENTRY_REQUIRED')
   os.umask(0o077);control=Capture(SCOPE);control.until=time.monotonic()+PROFILE['maximumSeconds'];control.put('storage-baseline.claim.json',{'profile':PROFILE,'automaticReplayAllowed':False});engine=Engine(control)
-  report=capture(control,engine);control.put('result.json',report);code=0
+  report=capture(control,engine);control.put('result.json',report);code=0 if report['s3Complete'] else 1
  except Exception as error:
   reason=str(error) if type(error) is Stop and re.fullmatch('[A-Z0-9_]{1,128}',str(error)) else 'STORAGE_BASELINE_UNPROVEN'
   report={'status':'STOP_RECONCILE','reasonCode':reason,'scopeConsumed':os.path.lexists(SCOPE),'directEngineGets':engine.gets if engine else 0,'cumulativeControlAttempts':13 if control else 12,'cumulativeDirectEngineGets':35+(engine.gets if engine else 0),'automaticReplayAllowed':False,'runtimeAuthorityIssued':False,'targetApplyAuthorized':False}
