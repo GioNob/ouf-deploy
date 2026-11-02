@@ -1,3 +1,5 @@
+> **CONSUMATO — NON ESEGUIRE I BLOCCHI SOTTO.** Inventario16 completo:2 bucket/120 record/203743 byte,16 controlli/52 GET cumulativi. [Unica nuova consegna: analisi offline17](OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md),senza nuove interrogazioni Docker/S3 o letture credenziali. Nessun replay/reset/cancellazione;quanto segue è storico.
+
 # SeaweedFS — inventario dopo lo STOP sui metadati delle credenziali
 
 2 novembre 2026. Il controllo 15 è consumato: 15 controlli e 50 GET Docker cumulativi. Si è fermato in CREDENTIAL_PREFLIGHT con PRIVATE_BOUNDED_REGULAR_CREDENTIAL_SOURCE_REQUIRED; 5 candidati verificati, nessun file di credenziale aperto e nessun byte letto. S3 non è stato raggiunto. Config.Env era già passato in RAM nell'inspect. La ricevuta non distingue il predicato fallito: tipo, proprietario, permessi, collegamenti o dimensione. Non attribuire al VPS una causa non osservata.

@@ -1,3 +1,39 @@
+# CURRENT — Target S3 metadata baseline acquired; offline private copy plan qualified, ONE operator action
+
+2 novembre 2026. [Unica nuova consegna](docs/OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md),
+[valutazione](docs/OUF_SEAWEEDFS_BASELINE_ASSESSMENT_20261102.md).
+Ricevuta16 completa NON ADMITTED:2 bucket/120 record/203743 byte,265 GET/HEAD S3,
+110 hash dichiarati/10 assenti,0 corpi letti.16 controlli/52 EngineGET cumulativi.
+Scope16 CONSUMATO,quattro vecchi comandi NON ripetibili,oldfiles/reader invariati.
+Namespace PASS;0 versioni non-null/marker/multipart;2 risposte feature UNSUPPORTED,
+nomi non nel riepilogo. Nessun N/A/assenza automatica. Root password REGULAR0600
+ownerNONroot/nlink1/sizeOK:viola il vecchio guard ora,non prova metadata storici15.
+Sorgenti ENV+file,1 file/65 byte letti,nessun valore spooled,custody fonte NON ammessa.
+Nuovo piano OFFLINE qualificato:source969e45ee/CI41488131645,33 Python senza skip,
+root filesystem reale/rete namespace isolata. Binding input/hash/ricevuta MODELLATI
+nelle fixture,NON VPS. Productionbytes solo install/sourceinspect.2 sorgenti nel
+compiler,tutte28precedenti preservate byte per byte;0 networkimports nel compiler.
+CI41488523185 indipendente verifica6checksum,sorgenti/frozen28,firma esatta
+workflow/source/ref hosted,2 file/28089 byte pubblicati e launcher esatto.
+NEXT richiedere UNA esecuzione NUOVO blocco e SOLO JSON finale:launcher835ffb76,
+SHA bbb8ea97,pub a8f767ed. Nessuna shell/accesso al manifest privato VPS all'agente.
+Control17 separato NON eseguito:legge solo3artifact16+host14 già hash-bound,
+max4file,0 nuove Docker/S3/SQL/credenziali/corpi/lifecycle;52 EngineGET invariati.
+Scrive nuova sola capsula/manifesto e piano/evidenze private;scope17mai riarmato.
+Voci PLANNED_NOT_COPIED,executionEnabledfalse,0 copie/verifiche. Tutti120 corpi
+richiedono SHA source+dest,i10 senza hash mantengono i metadata storici originali.
+Report solo conteggi/classi/ruoli pubblici;policy/chiavi/endpoint/valori privati non
+pubblicati. Riferimenti13snapshot e RAM/spazio del14 NON prova writer correnti,
+capacity corrente,DB coerente o assenza consumer esterni. Nessuna ammissione G0.
+45s worker/60s watchdog/512MiB,un tentativo;inventario/piano64MiB,host2MiB.
+Prima CI41487826809 testPASS ma jobFAIL per copia firma in dirroot;corretta sola
+raccolta bundle e qualifica completa ripetuta,mai promossa a PASS retroattivo.
+[Dossier](evidence/seaweedfs-offline-plan-qualified-20261102.json).
+MinIO ancora vulnerabile,server candidato rawHELD1UNKNOWN,8gate/21AT/M2 OPEN.
+Teatri/M1 8/8 tecniche e6/6 funzionali,stessaFarmacie e mappe235/19/17/21/23
+preservate. Motore copia/ripresa NON implementato;nessuna copia/deploy/merge/grant,
+nessun nuovo effetto VPS dopo16,nessun subagente. Storico sotto.
+
 # CURRENT — Control16 S3 inventory COMPLETE, not admitted; offline copy-plan compiler in qualification
 
 2 novembre 2026. Ricevuta16 PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED:

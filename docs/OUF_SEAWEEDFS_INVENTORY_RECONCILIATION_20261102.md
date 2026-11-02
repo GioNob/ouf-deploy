@@ -1,3 +1,5 @@
+> **CONSUMATO — NON ESEGUIRE I BLOCCHI SOTTO.** Inventario16 completo:2 bucket/120 record/203743 byte,16 controlli/52 GET cumulativi. [Unica nuova consegna: analisi offline17](OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md),senza nuove interrogazioni Docker/S3 o letture credenziali. Nessun replay/reset/cancellazione;quanto segue è storico.
+
 > **CONSUMATO — NON ESEGUIRE I BLOCCHI SOTTO.** La ricevuta15 è stata riconciliata:15 controlli/50 GET cumulativi,0 file/0 byte credenziali. [Unica nuova consegna: controllo16](OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md). Nessun replay o cancellazione degli scope; quanto segue è storico.
 
 > **CONSUMATO — NON ESEGUIRE IL BLOCCO SOTTO.** Controllo14 terminato con CANONICAL_PRIVATE_CREDENTIAL_REFERENCE_REQUIRED; cumulativi14controlli/49GET. I13snapshot sono conservati. Usare esclusivamente la [NUOVA continuazione qualificata](OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md), controllo15 separato/max2GET, senza cancellare o ripetere nulla. Il contenuto seguente è storico.

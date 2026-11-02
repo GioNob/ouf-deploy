@@ -68,7 +68,7 @@
     "m2Accepted": false
   },
   "next": {
-    "offlinePlanner": "IMPLEMENTED_IN_QUALIFICATION",
+    "offlinePlanner": "QUALIFIED_AWAITING_OPERATOR",
     "control": 17,
     "maximumNewEngineGets": 0,
     "maximumNewS3Requests": 0,
@@ -77,7 +77,12 @@
     "retainedHostBaselineHash": "49aaea817bff55ff5ab901f2f54784e97ac85b7e2bbf2ec489055bab94c790c4",
     "privatePlanOnly": true,
     "copyEngineImplemented": false,
-    "targetExecuted": false
+    "targetExecuted": false,
+    "producerSource": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+    "producerRunId": 41488131645,
+    "independentRunId": 41488523185,
+    "instructions": "docs/OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md",
+    "dossier": "evidence/seaweedfs-offline-plan-qualified-20261102.json"
   },
   "sourcesConsulted": [
     {
