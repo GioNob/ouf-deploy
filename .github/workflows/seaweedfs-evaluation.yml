@@ -69,9 +69,13 @@ jobs:
         if: always()
         run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py seal sw-evaluation
       - name: Attest evaluation checksum subject
+        id: attestation
         if: always()
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
         with: {subject-path: sw-evaluation/SHA256SUMS}
+      - name: Retain attestation bundle
+        if: always() && steps.attestation.outcome == 'success'
+        run: cp "${{ steps.attestation.outputs.bundle-path }}" sw-evaluation/provenance.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

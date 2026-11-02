@@ -64,18 +64,41 @@ with (OUT/'server.log').open('w') as log:
     with socket.create_connection(('127.0.0.1',18333),timeout=1):break
    except OSError:time.sleep(1)
   else:raise RuntimeError('SERVER_READINESS_TIMEOUT')
-  subprocess.run(['mvn','-B','-ntp','test'],cwd=FIXTURE,check=True,timeout=600)
+  subprocess.run(['mvn','-B','-ntp','-Dtest=SeaweedContractTest','test'],cwd=FIXTURE,check=True,timeout=600)
   reports=list((FIXTURE/'target/surefire-reports').glob('TEST-*.xml'));assert reports
   count=0
   for path in reports:
    r=ET.parse(path).getroot();assert all(int(r.attrib.get(k,-1))==0 for k in ['failures','errors','skipped']);count+=int(r.attrib['tests'])
   assert count==5
+  # Coherent cold backup after all writers and the server have stopped.
+  proc.terminate()
+  try:proc.wait(timeout=15)
+  except subprocess.TimeoutExpired:proc.kill();proc.wait()
+  require_clean_exit = proc.returncode in (0,-15)
+  assert require_clean_exit, 'COHERENT_COLD_BACKUP_REQUIRES_CLEAN_SHUTDOWN'
+  restored=OUT/'restored-lab';shutil.copytree(lab,restored)
+  (restored/'filer.toml').write_text('[leveldb2]\nenabled = true\ndir = "'+str(restored/'metadata')+'"\n')
+  restore_args=[a.replace(str(lab/'data'),str(restored/'data')).replace(str(lab/'s3.json'),str(restored/'s3.json')) for a in args]
+  # Rename the originals to ensure the new server cannot silently use them.
+  shutil.move(lab,OUT/'offline-original')
+  proc=subprocess.Popen(restore_args,cwd=restored,stdout=log,stderr=subprocess.STDOUT)
+  for _ in range(90):
+   if proc.poll() is not None:raise RuntimeError('RESTORED_SERVER_EXITED')
+   try:
+    with socket.create_connection(('127.0.0.1',18333),timeout=1):break
+   except OSError:time.sleep(1)
+  else:raise RuntimeError('RESTORED_SERVER_READINESS_TIMEOUT')
+  subprocess.run(['mvn','-B','-ntp','-Dtest=SeaweedRecoveryTest','test'],cwd=FIXTURE,check=True,timeout=600)
+  recovery=ET.parse(FIXTURE/'target/surefire-reports/TEST-it.comune.trieste.ouf.storage.SeaweedRecoveryTest.xml').getroot()
+  assert int(recovery.attrib['tests'])==1 and all(int(recovery.attrib.get(k,-1))==0 for k in ['failures','errors','skipped'])
+  count+=1
   shutil.copytree(FIXTURE/'target/surefire-reports',OUT/'contract-reports')
-  (OUT/'contract-result.json').write_text(json.dumps({'status':'PASS','tests':count,'actualOriginalAdapters':True,'transport':'loopback HTTP, synthetic credentials','targetE2E':False,'tlsQualified':False,'prefixPolicyQualified':False},indent=2)+'\n')
+  (OUT/'contract-result.json').write_text(json.dumps({'status':'PASS','tests':count,'actualOriginalAdapters':True,'transport':'loopback HTTP, synthetic credentials','targetE2E':False,'tlsQualified':False,'prefixPolicyQualified':False,'coldRestoreOnIndependentCopy':True,'postgresCoordinatedRecoveryQualified':False},indent=2)+'\n')
  finally:
   if (FIXTURE/'target/surefire-reports').exists() and not (OUT/'contract-reports').exists():shutil.copytree(FIXTURE/'target/surefire-reports',OUT/'contract-reports')
   proc.terminate()
   try:proc.wait(timeout=15)
   except subprocess.TimeoutExpired:proc.kill();proc.wait()
   # Do not publish the synthetic data volume or filer database.
-  shutil.rmtree(lab)
+  for name in ['lab','restored-lab','offline-original']:
+   if (OUT/name).exists():shutil.rmtree(OUT/name)
