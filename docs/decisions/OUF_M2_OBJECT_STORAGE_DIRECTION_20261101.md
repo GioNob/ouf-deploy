@@ -1,3 +1,5 @@
+> **Aggiornamento 2 novembre 2026:** l'owner ha richiesto il [MiniPET per sostituire MinIO con SeaweedFS](../OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md). Il piano è redatto; SeaweedFS è la direzione da qualificare. Non serve riproporre la scelta generica AIStor/open source. Qualifica del candidato, migrazione, ammissione runtime e accettazione restano da completare. La proposta del 1 novembre qui sotto è conservata come storia della decisione.
+
 # M2 — Direzione dello storage a oggetti: decisione owner necessaria
 
 **Stato: PROPOSTA, nessuna scelta effettuata.** 1 novembre 2026, Europe/Rome.

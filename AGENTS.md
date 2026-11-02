@@ -1,3 +1,26 @@
+# CURRENT — MiniPET sostituzione MinIO → SeaweedFS redatto
+
+2 novembre 2026, Europe/Rome. L'owner richiede il piano di sostituzione con
+SeaweedFS: [MiniPET v1.0](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md),
+[registro](releases/minio-seaweedfs-plan-20261102.json). Superata la precedente
+attesa di una scelta generica AIStor/open source: la direzione ora pianificata
+è SeaweedFS, soggetta a qualifica. Nessuna immagine ammessa o installazione.
+Otto WP/gate e21AT tutti OPEN; riferimento iniziale4.51/source153ab668,
+digest runtime da qualificare. Inventario completo ancora da acquisire.
+Distingue sorgenti candidate dall'installato, client MinIO onboarding/AWS UDP,
+provisioner mc admin, semantiche chiavi/delete, filer metadata, backup e restore.
+Migrazione API su storage indipendente, verifica integrale corpi/metadati,
+fence unico e delta finale; ritorno post-scritture solo con riconciliazione.
+MinIO vulnerabile non è un fallback automatico: STOP controllato se necessario.
+NEXT previsto:WP0/WP1 pubblici e laboratorio; preparare inventario/precondizioni
+target in una consegna completa, senza microdiagnostiche o vecchi comandi.
+Richiesta corrente di pianificazione completata; esecuzione runtime non concessa
+da questo documento. Restano coorte/custody/policy/bearer/review/HUMANdual-role.
+Scope12 consumato,12controlli/35GET, pin235/19/17/21/23 invariati.
+Teatri/M1 e stessa Farmacie61/10OPEN/STRING preservati; M2/G5–G7/dueclient OPEN.
+Nessun subagente, automazione, deploy, merge o release acceptance.
+Le intestazioni successive sono storiche.
+
 # CURRENT — Gateway e Semantic corretti; scelta owner sullo storage MinIO necessaria
 
 1 novembre 2026, Europe/Rome. [Handoff corrente](docs/handoffs/OUF_M2_STORAGE_SECURITY_DECISION_20261101.md).

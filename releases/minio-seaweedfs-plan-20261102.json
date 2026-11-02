@@ -1,0 +1,238 @@
+{
+  "schema": "ouf.storage-replacement-plan.v1",
+  "id": "OUF-MP-STORAGE-SW",
+  "version": "1.0",
+  "date": "2026-11-02",
+  "status": "PLANNED_NOT_QUALIFIED",
+  "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
+  "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
+  "requestedDirection": "Plan replacement of MinIO with SeaweedFS preserving data",
+  "candidate": {
+    "product": "SeaweedFS",
+    "initialVersionToEvaluate": "4.51",
+    "sourceCommit": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+    "imageDigest": null,
+    "qualified": false,
+    "installed": false
+  },
+  "workPackages": [
+    {
+      "id": "SW-WP0",
+      "gate": "SW-G0",
+      "status": "OPEN",
+      "effortHoursRange": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "SW-WP1",
+      "gate": "SW-G1",
+      "status": "OPEN",
+      "effortHoursRange": [
+        6,
+        12
+      ]
+    },
+    {
+      "id": "SW-WP2",
+      "gate": "SW-G2",
+      "status": "OPEN",
+      "effortHoursRange": [
+        8,
+        16
+      ]
+    },
+    {
+      "id": "SW-WP3",
+      "gate": "SW-G3",
+      "status": "OPEN",
+      "effortHoursRange": [
+        8,
+        16
+      ]
+    },
+    {
+      "id": "SW-WP4",
+      "gate": "SW-G4",
+      "status": "OPEN",
+      "effortHoursRange": [
+        8,
+        16
+      ]
+    },
+    {
+      "id": "SW-WP5",
+      "gate": "SW-G5",
+      "status": "OPEN",
+      "effortHoursRange": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "SW-WP6",
+      "gate": "SW-G6",
+      "status": "OPEN",
+      "effortHoursRange": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "SW-WP7",
+      "gate": "SW-G7",
+      "status": "OPEN",
+      "effortHoursRange": [
+        4,
+        8
+      ]
+    }
+  ],
+  "acceptanceTests": [
+    {
+      "id": "SW-AT01",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT02",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT03",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT04",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT05",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT06",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT07",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT08",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT09",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT10",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT11",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT12",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT13",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT14",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT15",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT16",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT17",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT18",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT19",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT20",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT21",
+      "status": "OPEN"
+    }
+  ],
+  "planningEstimate": {
+    "technicalHoursRange": [
+      46,
+      92
+    ],
+    "contingencyPercent": 30,
+    "roundedHoursIncludingContingency": [
+      60,
+      120
+    ],
+    "excludes": [
+      "operator waits",
+      "actual transfer duration",
+      "observation window"
+    ],
+    "reestimateAfter": [
+      "SW-G0",
+      "SW-G1",
+      "SW-G2"
+    ]
+  },
+  "targets": {
+    "plannedCutoverAcknowledgedWriteRpo": 0,
+    "rpoUnit": "lost acknowledged writes",
+    "runtimeRtoSeconds": null,
+    "disasterRecoveryRpoSeconds": null,
+    "disasterRecoveryRtoSeconds": null,
+    "proposedObservationHoursMinimum": 48
+  },
+  "invariants": {
+    "preserveExistingTeatriAndFarmacie": true,
+    "newUploadOrProfilingRequired": false,
+    "singleActiveWriterBackend": true,
+    "inPlaceMinioVolumeConversion": false,
+    "automaticRollbackToVulnerableMinio": false,
+    "consumedScopeCount": 12,
+    "cumulativeEngineGets": 35,
+    "frozenSourceMapCounts": [
+      235,
+      19,
+      17,
+      21,
+      23
+    ]
+  },
+  "runtimeOperationsPerformed": false,
+  "migrationPerformed": false,
+  "targetApplyAuthorizedByThisPlan": false,
+  "m2Accepted": false,
+  "nextPlannedWork": [
+    "SW-WP0",
+    "SW-WP1"
+  ],
+  "openTargetInputs": [
+    "all buckets and object versions",
+    "active writers and consumers",
+    "capacity and throughput",
+    "encryption and retention",
+    "admitted recovery objectives and maintenance window"
+  ]
+}
