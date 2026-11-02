@@ -1,0 +1,58 @@
+name: SeaweedFS isolated evaluation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/seaweedfs-evaluation.yml'
+      - 'scripts/qualify-seaweedfs-20261102.py'
+      - 'tests/test_seaweedfs_evaluation.py'
+      - 'tests/fixtures/seaweedfs-contract/**'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Test scanner fail-closed rules
+        run: python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_evaluation.py -v
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 153ab668c99731a6d29492bf6c61d0b4fa701101
+          path: sw-source
+          persist-credentials: false
+      - name: Acquire immutable release bytes and record source separately
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py stage sw-evaluation --source sw-source
+      - run: ': > empty.trivyignore'
+      - name: Scan actual upstream Go executable including unfixed vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: fs
+          scan-ref: sw-evaluation/bin
+          format: json
+          output: sw-evaluation/trivy-binary.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Enforce security admission before execution
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py gate sw-evaluation
+      - name: Preserve exact evaluated bytes and result even on denial
+        if: always()
+        run: python3 -I -B -S scripts/qualify-seaweedfs-20261102.py seal sw-evaluation
+      - name: Attest evaluation checksum subject
+        if: always()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: sw-evaluation/SHA256SUMS}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-evaluation-${{ github.run_id }}
+          path: sw-evaluation/
+          if-no-files-found: error
+          retention-days: 90
