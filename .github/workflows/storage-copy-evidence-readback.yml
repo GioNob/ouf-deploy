@@ -1,0 +1,35 @@
+name: Storage copy evidence independent byte and publisher readback
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-copy-evidence-readback.yml'
+      - 'scripts/verify-storage-copy-evidence-20261102.py'
+      - 'scripts/readback-storage-copy-evidence-20261102.py'
+permissions: {contents: read}
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify exact qualified bytes without executing enclosed programs
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/readback-storage-copy-evidence-20261102.py
+      - name: Authenticate frozen producer workflow source ref and hosted runner
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify copy-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-copy-lab.yml --source-digest 99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4 --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle copy-readback/provenance.json --format json > copy-readback/publisher-verification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-copy-readback-${{ github.run_id }}
+          path: copy-readback/
+          if-no-files-found: error
+          retention-days: 90
