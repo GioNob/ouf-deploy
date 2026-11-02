@@ -57,6 +57,9 @@ def run():
    try:p.wait(timeout=30)
    except subprocess.TimeoutExpired:p.kill();p.wait()
   for log in logs:log.close()
+  for role in ["source","destination"]:
+   p=lab/role/"server.log"
+   if p.exists():(OUT/(role+"-synthetic-log-tail.txt")).write_bytes(p.read_bytes()[-16384:])
   shutil.rmtree(lab);shutil.rmtree(tmp)
 def seal():
  for name in ['candidate.json','compiled-packages.json','trivy-binary.json']:shutil.copyfile(SW/name,OUT/name)

@@ -75,6 +75,7 @@ func (j *Journal) load(name string,out any) error {
  j.Last[name]=previous;j.Counts[name]=count;return nil
 }
 func (j *Journal) append(name string,value any)error{
+ if j.lock==nil{return code("ACTIVE_RECOVERY_LOCK_REQUIRED")}
  body:=encode(value);previous:=j.Last[name];event:=Event{Previous:previous,Payload:body,Digest:hash(append([]byte(previous),body...))};raw:=append(encode(event),'\n')
  p:=filepath.Join(j.Dir,name);f,e:=os.OpenFile(p,os.O_CREATE|os.O_APPEND|os.O_WRONLY|syscall.O_NOFOLLOW,0600);if e!=nil{return e}
  info,e:=f.Stat();if e!=nil||!privateFile(info)||info.Size()+int64(len(raw))>8<<20{f.Close();return code("PRIVATE_JOURNAL_LIMIT")}
@@ -123,7 +124,7 @@ func (e *Engine) run(ctx context.Context,items []Item,scope string) (report Repo
   if errors.As(err,&transient){delays:=[]time.Duration{5*time.Second,15*time.Second,time.Minute,5*time.Minute,15*time.Minute};index:=state.Attempt-1;if index>=len(delays){index=len(delays)-1};delay:=delays[index];jitter:=time.Duration(intent[0]%21)*delay/100;delay+=jitter;if transient.After>delay{delay=transient.After};state.Next=e.Now().Add(delay);state.Outcome="PAUSED";state.Reason="DEPENDENCY_TRANSIENT";if !state.Next.Before(state.Deadline){state.Outcome="EXHAUSTED"};report.Status=state.Outcome}else{state.Outcome="HELD";state.Reason="PERMANENT_OR_INTEGRITY_OR_UNKNOWN";report.Status="HELD"}
   state.Seq++;if x:=j.append("operation",state);x!=nil{err=code("DURABLE_PAUSE_UNPROVEN")}
  }()
- e.Source.SetCredit(j.credit);e.Destination.SetCredit(j.credit)
+ e.Source.SetCredit(j.credit);e.Destination.SetCredit(j.credit);defer e.Source.SetCredit(nil);defer e.Destination.SetCredit(nil)
  source,er:=e.Source.Snapshot(ctx,buckets);if er!=nil{return report,er};if len(source)!=len(items){return report,code("SOURCE_SET_CHANGED")}
  dest,er:=e.Destination.Snapshot(ctx,buckets);if er!=nil{return report,er};for id:=range dest{if !seen[id]{return report,code("UNEXPLAINED_DESTINATION_OBJECT")}}
  preflight:=map[ID]Meta{}
