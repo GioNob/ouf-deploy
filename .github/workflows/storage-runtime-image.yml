@@ -1,0 +1,99 @@
+name: Storage exact reviewed runtime image qualification
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-runtime-image.yml'
+      - 'tools/storage_security/runtime_image.py'
+      - 'scripts/package-storage-runtime-image-20261102.py'
+      - 'scripts/assess-storage-runtime-image-20261102.py'
+      - 'tests/test_storage_runtime_image.py'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify deterministic packaging and tamper denials
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_runtime_image.py -v
+      - name: Independently re-read original exact executable and upstream source
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/read-seaweedfs-lab-artifact-20261102.py
+      - name: Authenticate original OUF publisher source ref and hosted runner
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify sw-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/seaweedfs-evaluation.yml --source-digest 6cddeee707b67bd27568aa7a3890e28ebecf274f --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle sw-readback/provenance.json --format json > sw-readback/publisher-verification.json
+      - name: Package exact reviewed bytes without rebuilding
+        run: python3 -I -B -S scripts/package-storage-runtime-image-20261102.py
+      - name: Load candidate only into isolated hosted runner daemon
+        run: docker load --input storage-runtime-image/runtime.docker.tar
+      - run: ': > empty.trivyignore'
+      - name: Fresh complete image scan including unfixed and unknown findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          image-ref: ouf-seaweedfs-candidate:reviewed-bb9f768e
+          format: json
+          output: storage-runtime-image/fresh-image-scan.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Generate SPDX from the exact same raw package inventory
+        run: |
+          set -euo pipefail
+          trivy convert --format spdx-json --output storage-runtime-image/image.spdx.json storage-runtime-image/fresh-image-scan.json
+          python3 -I -B -S - <<'PY'
+          import urllib.request
+          from pathlib import Path
+          with urllib.request.urlopen('https://vuln.go.dev/ID/GO-2026-5932.json', timeout=30) as r:
+              data = r.read(65537)
+          assert 0 < len(data) <= 65536, 'BOUNDED_OFFICIAL_ADVISORY_REQUIRED'
+          Path('storage-runtime-image/current-advisory.json').write_bytes(data)
+          PY
+          python3 -I -B -S scripts/assess-storage-runtime-image-20261102.py
+      - name: Execute exact image without network or writable root as nonroot
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 256m --cpus 1 --tmpfs /tmp:rw,noexec,nosuid,size=16777216 ouf-seaweedfs-candidate:reviewed-bb9f768e version > storage-runtime-image/version-smoke.txt
+          test -s storage-runtime-image/version-smoke.txt
+          docker image inspect --format '{{.Id}}' ouf-seaweedfs-candidate:reviewed-bb9f768e > storage-runtime-image/daemon-image-id.txt
+      - name: Seal exact image, assessment, provenance chain and sources
+        run: |
+          python3 -I -B -S - <<'PY'
+          import hashlib, json, os, shutil
+          from pathlib import Path
+          out = Path('storage-runtime-image')
+          r = json.loads((out/'image-record.json').read_bytes())
+          assert (out/'daemon-image-id.txt').read_text().strip() == r['configDigest'], 'DAEMON_IMAGE_ID_CHANGED'
+          sources = ['tools/storage_security/runtime_image.py', 'tests/test_storage_runtime_image.py', 'scripts/package-storage-runtime-image-20261102.py', 'scripts/assess-storage-runtime-image-20261102.py', '.github/workflows/storage-runtime-image.yml']
+          (out/'source-records.json').write_text(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sources},indent=2)+'\n')
+          for name in ['candidate.json','compiled-packages.json','byte-readback.json','SHA256SUMS','provenance.json','publisher-verification.json']:
+              shutil.copyfile(Path('sw-readback')/name, out/('original-'+name))
+          for name in ['seaweedfs-g1-applicability-owner-decision-20261102.json','seaweedfs-g1-openvex-20261102.json']:
+              shutil.copyfile(Path('evidence')/name, out/name)
+          (out/'qualification.json').write_text(json.dumps({'schema':'ouf.storage-runtime-image-qualification.v1','status':'PASS','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'packagingAndBoundaryTests':12,'exactOriginalPublisherAuthenticated':True,'exactOriginalBinaryPackagedWithoutRebuild':True,'freshImageScan':True,'sameInventorySpdx':True,'nonrootReadonlyNoNetworkVersionSmoke':True,'sourceTreeBlobsVerified':4390,'targetOperations':0,'releaseAdmitted':False,'overallSwG1':'OPEN','licenceReview':'OPEN','durableReleaseCustody':'OPEN','cohortQualification':'OPEN'},indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
+          PY
+      - name: Attest image package and complete evidence closure
+        id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: storage-runtime-image/SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" storage-runtime-image/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-runtime-image-${{ github.run_id }}
+          path: storage-runtime-image/
+          if-no-files-found: error
+          retention-days: 90
