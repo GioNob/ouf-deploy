@@ -1,3 +1,27 @@
+# CURRENT — Credential reference STOP14 consumed; retained-snapshot continuation in qualification
+
+2 novembre2026. Scope14 CONSUMATO, cumulativi14controlli/49EngineGET,
+13GET riusciti prima delloSTOP CANONICAL_PRIVATE_CREDENTIAL_REFERENCE_REQUIRED.
+Non rilanciare né cancellare vecchi scope/installazioni. Snapshot13container,
+RAM/capacità già salvati in host-baseline.private.json di14: riusarli, non rifare
+scan13. S3 non raggiunto secondo sorgente/case e assenza config/output previsti;
+Config.Env è passato in RAM negli inspect, numero risoluzioni credenziali
+completate non provato (0o1). Nessun valore pubblicato; non inventare zero.
+Correzione IN QUALIFICA: implementazione filename/ENV da release dichiarata
+RELEASE.2025-09-07T16-13-09Z/source07c3a429, config69b2 verificato dalla copia
+pubblica ancora NON autenticata dal vendor. File relativi in/run/secrets o cwd,
+file mancanti/vuoti non sovrascrivonoENV,legacy->root->config.env letterale.
+Niente shell/default minioadmin, traversal/symlink/file nonprivati negati.
+20test credenziali+5lineage locali PASS. Scope15 SEPARATO ancora non eseguito,
+max2GET freschi SOLO MinIO/cumulativo51; riusa14snapshot e SDK430631fe invariato.
+Nuova capsula26preserva tutte24precedenti (23storiche+corrector14), limite
+sorgente nuovo294912byte esplicito, nessun vecchio loader/source modificato.
+Completare riproduzione STOP con Docker reale/default mancanti+file override,
+SDK/S3,rootinstall,capsula,firma/readback PRIMA della nuova consegna owner.
+Nessuna shell/API inventory VPS all'agente; nessuna richiesta prematura.
+Tutti8gate/21AT/M2 OPEN, source235/19/17/21/23/24preservati,Teatri/stessaFarmacie
+immutati; niente merge/deploy/migrazione/grant/reset/subagenti. Storico sotto.
+
 # CURRENT — SeaweedFS inventory correction qualified; one distinct VPS action ready
 
 2 novembre 2026. [Consegna correttiva](docs/OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md).
