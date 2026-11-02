@@ -65,6 +65,8 @@ def flatbuffers_parent_licence(archive):
     base = 'https://api.github.com/repos/google/flatbuffers'
     def get(url, limit):
         req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'OUF-checksum-bound-licence-evidence'})
+        m.require(bool(os.environ.get('GH_TOKEN')), 'CI_GITHUB_READ_TOKEN_REQUIRED')
+        req.add_unredirected_header('Authorization', 'Bearer '+os.environ['GH_TOKEN'])
         with urllib.request.urlopen(req, timeout=60) as response:
             raw = response.read(limit+1)
         m.require(0 < len(raw) <= limit, 'BOUNDED_PUBLIC_GIT_METADATA_REQUIRED')
@@ -144,8 +146,11 @@ def collect():
     env = dict(os.environ, GOENV='off', GOTOOLCHAIN='local', GOPROXY='https://proxy.golang.org',
                GOSUMDB='sum.golang.org', GOPRIVATE='', GONOSUMDB='', GONOPROXY='',
                GOWORK='off', GO111MODULE='on', GOMODCACHE=str(cache), GOFLAGS='')
+    env.pop('GH_TOKEN', None)
+    env.pop('GITHUB_TOKEN', None)
     working = cache/'empty-work'; working.mkdir()
     total_archive_bytes = 0
+    module_sources = {}
     progress = {'schema': 'ouf.storage-licence-collection.v1', 'status': 'COLLECTING',
                 'expectedComponents': 245, 'components': components, 'rootAndToolchain': 'COLLECTED',
                 'sourceScanSha256': m.sha(scan_bytes), 'originalGoSumSha256': m.sha(sums_raw),
@@ -178,6 +183,8 @@ def collect():
         provenance.update(kind='GO_SUM_AND_SUMDB_VERIFIED_MODULE',
                           goReportedSum=info['Sum'], goReportedGoModSum=info['GoModSum'],
                           independentH1EqualsOfficialGo=True)
+        module_sources[name+'@'+version] = {'cacheRelativePath': str(archive.relative_to(cache)),
+                                           'zipSha256': provenance['zipSha256']}
         components.append(m.retain_component(OUT, name, version, texts, provenance))
         progress.update(completedComponents=len(components), downloadedModuleArchiveBytes=total_archive_bytes)
         write(OUT/'inventory.json', progress)
@@ -188,6 +195,7 @@ def collect():
                     legalTextCount=sum(len(c['legalTexts']) for c in components),
                     componentsWithoutRootLicence=[c['name']+'@'+c['version'] for c in components if c['rootLicenceCandidates'] == 0])
     write(OUT/'inventory.json', progress)
+    write(OUT/'module-source-records.json', module_sources)
     views = []
     for component in components:
         for record in component['legalTexts']:
@@ -219,10 +227,48 @@ def assess():
     write(OUT/'summary.json', summary); print(json.dumps(summary, indent=2))
 
 
+def source_offer():
+    """Retain the exact whole module source for every observed MPL root licence."""
+    inventory = json.loads((OUT/'inventory.json').read_bytes())
+    classification = json.loads((OUT/'classification.json').read_bytes())
+    sources = json.loads((OUT/'module-source-records.json').read_bytes())
+    cache = Path(os.environ['RUNNER_TEMP'])/'ouf-licence-module-cache'
+    by_key = {c['name']+'@'+c['version']: c for c in inventory['components']}
+    offered = []
+    for component in classification['components']:
+        if not any(f['Name'] == 'MPL-2.0' for f in component['rootClassifications']):
+            continue
+        key = component['name']+'@'+component['version']; original = by_key[key]
+        record = sources[key]; m.safe_path(record['cacheRelativePath'])
+        path = cache/record['cacheRelativePath']
+        m.require(not path.is_symlink(), 'REGULAR_AUTHENTICATED_MPL_SOURCE_REQUIRED')
+        raw = path.read_bytes()
+        m.require(m.sha(raw) == record['zipSha256'] == original['provenance']['zipSha256'], 'EXACT_MPL_SOURCE_ZIP_REQUIRED')
+        p = OUT/'sources'/(original['id']+'.zip'); p.parent.mkdir(exist_ok=True)
+        with p.open('xb') as f:
+            f.write(raw)
+        offered.append({'name': component['name'], 'version': component['version'], 'path': str(p.relative_to(OUT)),
+                        'sha256': m.sha(raw), 'goSum': original['provenance']['sum'],
+                        'goModSum': original['provenance']['goModSum'], 'originalLicence': 'MPL-2.0',
+                        'moduleSourcesModified': False, 'redistributionAccepted': False})
+    m.require(bool(offered), 'OBSERVED_MPL_COMPONENT_SOURCES_REQUIRED')
+    write(OUT/'mpl-source-manifest.json', {'schema': 'ouf.storage-mpl-source-custody.v1', 'components': offered,
+                                         'sourceCount': len(offered), 'status': 'SOURCE_PACKAGE_PREPARED_NOT_ACCEPTED',
+                                         'redistributionAccepted': False, 'releaseAdmitted': False})
+    notice = ('OUF SeaweedFS candidate - MPL source package (draft, not a release acceptance)\n\n'
+              'Exact source modules for the MPL-2.0 components listed below accompany this package.\n'
+              'Their original licence texts and notices remain in the source ZIP files and texts/.\n'
+              'This packaging workflow has not modified these module sources. The separately recorded\n'
+              'OUF dependency patch changes only the SeaweedFS go.mod and go.sum manifests.\n'
+              'Each source archive is bound to the original build go.sum and a SHA256 in the manifest.\n'
+              'No requirement is discharged merely by this draft notice. Distribution review remains open.\n\n')
+    (OUT/'MPL-SOURCE-NOTICE.txt').write_text(notice+''.join(c['name']+'@'+c['version']+'  '+c['path']+'\n' for c in offered))
+
+
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(); p.add_argument('mode', choices=['collect', 'assess']); a = p.parse_args()
+    p = argparse.ArgumentParser(); p.add_argument('mode', choices=['collect', 'assess', 'source-offer']); a = p.parse_args()
     try:
-        collect() if a.mode == 'collect' else assess()
+        {'collect': collect, 'assess': assess, 'source-offer': source_offer}[a.mode]()
     except BaseException as e:
         if OUT.exists():
             write(OUT/'failure.json', {'status': 'INCOMPLETE_NOT_ADMITTED', 'errorClass': type(e).__name__,

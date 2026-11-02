@@ -32,6 +32,7 @@ jobs:
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with: {go-version: '1.27.3', cache: false}
       - name: Collect exact component licences and independently recompute Go h1 checksums
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: python3 -I -B -S scripts/collect-storage-licences-20261102.py collect
       - run: ': > empty.trivyignore'
       - name: Classify authenticated legal files without accepting redistribution
@@ -52,6 +53,8 @@ jobs:
           exit-code: 0
       - name: Join classifications to exact texts and expose every unresolved component
         run: python3 -I -B -S scripts/collect-storage-licences-20261102.py assess
+      - name: Preserve exact complete MPL component sources alongside attribution evidence
+        run: python3 -I -B -S scripts/collect-storage-licences-20261102.py source-offer
       - name: Seal evidence and source without modifying original SPDX or image
         if: always()
         run: |
@@ -64,7 +67,7 @@ jobs:
           if Path('sw-readback/publisher-verification.json').exists():
               for name in ['publisher-verification.json','provenance.json','SHA256SUMS','candidate.json','byte-readback.json']:
                   shutil.copyfile(Path('sw-readback')/name,out/('original-'+name))
-          complete=(out/'classification.json').exists() and not (out/'failure.json').exists()
+          complete=(out/'classification.json').exists() and (out/'mpl-source-manifest.json').exists() and not (out/'failure.json').exists()
           (out/'qualification.json').write_text(json.dumps({'schema':'ouf.storage-licence-evidence-qualification.v1','status':'PASS' if complete else 'INCOMPLETE_NOT_ADMITTED','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'unitTests':10,'moduleCodeExecuted':False,'imageRebuilt':False,'rawSpdxModified':False,'targetOperations':0,'releaseAdmitted':False,'licenceReview':'OPEN','overallSwG1':'OPEN'},indent=2)+'\n')
           (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
           PY
