@@ -31,7 +31,7 @@ class DeliveryTest(unittest.TestCase):
   with self.assertRaises(ValueError):m.NoRedirect().redirect_request(None,None,None,None,None,None)
  @unittest.skipUnless(os.geteuid()==0,'root-owned installation fixture')
  def test_install_protects_modes_and_refuses_existing_unknown_files(self):
-  with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
+  with tempfile.TemporaryDirectory(dir='/root' if os.environ.get('GITHUB_ACTIONS')=='true' else ROOT) as tmp:
    root=Path(tmp);root.chmod(0o700)
    with patch.object(m,'INSTALL',root/'reader'):
     m.install(self.binary,self.capsule)
