@@ -38,7 +38,7 @@ def run():
   for role,master,volume,filer,http,tls in [('source',19331,18081,18881,9001,18441),('destination',19332,18082,18882,9002,18442)]:
    root=lab/role;root.mkdir();(root/'data').mkdir();(root/'metadata').mkdir();(root/'filer.toml').write_text('[leveldb2]\nenabled = true\ndir = "'+str(root/'metadata')+'"\n')
    (root/'s3.json').write_text(json.dumps({'identities':[{'name':'synthetic-'+role+'-admin','credentials':[{'accessKey':'synthetic-'+role+'-admin','secretKey':'synthetic-'+role+'-secret-not-production'}],'actions':['Admin','Read','Write','List','Tagging']}]}))
-   args=[str(SW/'bin/weed'),'server','-ip=127.0.0.1','-ip.bind=127.0.0.1','-dir='+str(root/'data'),'-master.port='+str(master),'-master.volumeSizeLimitMB=32','-volume.port='+str(volume),'-volume.max=20','-filer','-filer.port='+str(filer),'-s3','-s3.port='+str(http),'-s3.port.https='+str(tls),'-s3.cert.file='+str(lab/'tls.crt'),'-s3.key.file='+str(lab/'tls.key'),'-s3.port.iceberg=0','-s3.port.lance=0','-s3.config='+str(root/'s3.json')]
+   args=[str(SW/'bin/weed'),'server','-ip=127.0.0.1','-ip.bind=127.0.0.1','-dir='+str(root/'data'),'-master.port='+str(master),'-master.volumeSizeLimitMB=32','-volume.port='+str(volume),'-volume.max=128','-filer','-filer.port='+str(filer),'-s3','-s3.port='+str(http),'-s3.port.https='+str(tls),'-s3.cert.file='+str(lab/'tls.crt'),'-s3.key.file='+str(lab/'tls.key'),'-s3.port.iceberg=0','-s3.port.lance=0','-s3.config='+str(root/'s3.json')]
    log=(root/'server.log').open('wb');logs.append(log);p=subprocess.Popen(args,cwd=root,stdout=log,stderr=subprocess.STDOUT);processes.append(p)
    for _ in range(90):
     if p.poll() is not None:raise ValueError('SYNTHETIC_SERVER_EXITED')
@@ -51,6 +51,10 @@ def run():
   for pattern,name in cases:passed+=tests(pattern,name,env)
   write(OUT/'qualification.json',{'schema':'ouf.storage-copy-lab-qualification.v1','status':'PASS','producerSource':os.environ['GITHUB_SHA'],'passedTests':passed,'passedTestCount':len(passed),'twoIndependentRealS3Servers':True,'sourceServerIsMinio':False,'sourceAndDestination':'SYNTHETIC_SEAWEEDFS_FIXTURES','originalInventorySdkReused':True,'existingPrivatePlanCompilerWireExercised':True,'syntheticObjects':120,'syntheticLogicalBytes':203743,'missingAdvertisedHashes':10,'bodiesVerified':120,'realProcessCrashPoints':['BEFORE_PUT','AFTER_PUT','BEFORE_CHECKPOINT'],'destinationPutsPerCrashCase':1,'ambiguous503AfterStoreReconciledWithoutSecondPut':True,'retryAfterOneHourQualifiedWithVirtualClock':True,'sixHourOutageQualifiedWithVirtualClock':True,'cumulativeRequestBudget':10000,'maximumAttempts':128,'maximumOperationHours':24,'versionedDestinationCopySupported':False,'productionEntryPointExists':False,'rawServerGatePreserved':True,'runtimeAuthorityIssued':False,'migrationReady':False,'targetOperations':0})
  finally:
+  for role in ["source","destination"]:
+   p=lab/role/"server.log"
+   if p.exists():
+    raw=p.read_bytes();(OUT/(role+"-synthetic-before-stop.txt")).write_bytes(raw[:16384]+b"\nBOUNDED_LOG_TAIL\n"+raw[-32768:])
   for p in processes:
    p.terminate()
   for p in processes:

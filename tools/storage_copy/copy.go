@@ -102,9 +102,10 @@ func (e *Engine) run(ctx context.Context,items []Item,scope string) (report Repo
  // This entry is unexported and called only by synthetic fixtures in this module.
  if e.Now==nil{e.Now=time.Now};if len(items)==0||len(items)>MaxObjects{return report,code("BOUNDED_SYNTHETIC_PLAN_REQUIRED")}
  if e.Source.Identity()==e.Destination.Identity(){return report,code("INDEPENDENT_PROFILES_REQUIRED")}
- seen:=map[ID]bool{};bucketSet:=map[string]bool{};for _,it:=range items{
-  if it.ID.Bucket==""||it.ID.Key==""||seen[it.ID]||it.Meta.Size<0||it.Meta.Size>MaxObjectBytes{return report,code("INVALID_SYNTHETIC_PLAN")};seen[it.ID]=true;bucketSet[it.ID.Bucket]=true
+ seen:=map[ID]bool{};bucketSet:=map[string]bool{};var totalBytes int64;for _,it:=range items{
+  if it.ID.Bucket==""||it.ID.Key==""||seen[it.ID]||it.Meta.Size<0||it.Meta.Size>MaxObjectBytes{return report,code("INVALID_SYNTHETIC_PLAN")};if strings.HasPrefix(it.ID.Key,"/")||strings.HasSuffix(it.ID.Key,"/")||strings.Contains(it.ID.Key,"//")||strings.ContainsAny(it.ID.Key,"\\\x00"){return report,code("UNSAFE_NAMESPACE_HELD")};for _,part:=range strings.Split(it.ID.Key,"/"){if part=="."||part==".."{return report,code("UNSAFE_NAMESPACE_HELD")}};totalBytes+=it.Meta.Size;if totalBytes>64<<20{return report,code("TOTAL_BODY_BUDGET_HELD")};seen[it.ID]=true;bucketSet[it.ID.Bucket]=true
  }
+ for id:=range seen{parts:=strings.Split(id.Key,"/");for i:=1;i<len(parts);i++{if seen[ID{id.Bucket,strings.Join(parts[:i],"/")}]{return report,code("FILE_DIRECTORY_COLLISION_HELD")}}}
  buckets:=[]string{};for b:=range bucketSet{buckets=append(buckets,b)}
  intent:=hash(encode(struct{Items []Item;Source,Destination string}{items,e.Source.Identity(),e.Destination.Identity()}))
  j,er:=openJournal(scope);if er!=nil{return report,er};defer j.Close()
@@ -116,6 +117,7 @@ func (e *Engine) run(ctx context.Context,items []Item,scope string) (report Repo
  if state.Outcome=="HELD"||state.Outcome=="EXHAUSTED"{return report,code("COPY_RECONCILIATION_REQUIRED")}
  if e.Now().Before(state.Next){report.Status="PAUSED_BEFORE_RETRY_AFTER";return report,nil}
  if state.Attempt>=128||!e.Now().Before(state.Deadline){state.Outcome="EXHAUSTED";state.Seq++;j.append("operation",state);return report,code("CUMULATIVE_COPY_BUDGET_EXHAUSTED")}
+ attemptLimit:=state.Deadline.Sub(e.Now());if attemptLimit>300*time.Second{attemptLimit=300*time.Second};ctx,cancel:=context.WithTimeout(ctx,attemptLimit);defer cancel()
  state.Attempt++;state.Seq++;state.Outcome="RUNNING";state.Next=time.Time{};if er=j.append("operation",state);er!=nil{return report,er};report.Attempt=state.Attempt
  defer func(){
   report.RequestsReserved=j.Counts["requests"]

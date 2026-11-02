@@ -28,15 +28,18 @@ func (b *requestGate) RoundTrip(r *http.Request)(*http.Response,error){
  if !(object&&(r.Method=="GET"||r.Method=="HEAD"||r.Method=="PUT"&&b.write&&!q.Has("tagging")&&!q.Has("versions")&&!q.Has("versioning")&&r.Header.Get("If-None-Match")=="*")||bucket&&r.Method=="GET"&&(q.Has("versions")||q.Has("versioning"))){return nil,code("SOURCE_MUTATION_OR_OUT_OF_SCOPE_REQUEST_DENIED")}
  if b.credit==nil{return nil,code("DURABLE_REQUEST_RESERVATION_REQUIRED")};if e:=b.credit();e!=nil{return nil,e}
  b.retryAfter=0;response,e:=b.next.RoundTrip(r)
+ if e==nil{limit:=int64(4<<20);if object&&r.Method=="GET"&&!q.Has("tagging"){limit=MaxObjectBytes+1};response.Body=&limitedResponse{Reader:io.LimitReader(response.Body,limit),closer:response.Body}}
  if e==nil&&response.StatusCode>=429{raw:=response.Header.Get("Retry-After");if n,x:=strconv.Atoi(raw);x==nil&&n>0{b.retryAfter=time.Duration(n)*time.Second}else if when,x:=http.ParseTime(raw);x==nil&&when.After(time.Now()){b.retryAfter=time.Until(when)}}
  return response,e
 }
+type limitedResponse struct{io.Reader;closer io.Closer}
+func (r *limitedResponse) Close()error{return r.closer.Close()}
 type s3Store struct { sdk *s3.Client; gate *requestGate; id string; write bool }
 func newLoopbackS3(endpoint,region,key,secret string,ca []byte,items []Item,write bool)(*s3Store,error){
  u,e:=url.Parse(endpoint);if e!=nil||u.Scheme!="https"||u.User!=nil||u.RawQuery!=""||u.Fragment!=""||u.Path!=""||net.ParseIP(u.Hostname())==nil||!net.ParseIP(u.Hostname()).IsLoopback()||u.Port()==""||region==""||key==""||secret==""{return nil,code("EXPLICIT_SYNTHETIC_LOOPBACK_TLS_PROFILE_REQUIRED")}
  roots:=x509.NewCertPool();if !roots.AppendCertsFromPEM(ca){return nil,code("EXPLICIT_LAB_CA_REQUIRED")}
  transport:=http.DefaultTransport.(*http.Transport).Clone();transport.Proxy=nil;transport.DisableCompression=true
- transport.TLSClientConfig=&tls.Config{RootCAs:roots,MinVersion:tls.VersionTLS12};transport.DialContext=(&net.Dialer{Timeout:5*time.Second}).DialContext;transport.TLSHandshakeTimeout=5*time.Second;transport.ResponseHeaderTimeout=10*time.Second
+ transport.MaxResponseHeaderBytes=1<<20;transport.TLSClientConfig=&tls.Config{RootCAs:roots,MinVersion:tls.VersionTLS12};transport.DialContext=(&net.Dialer{Timeout:5*time.Second}).DialContext;transport.TLSHandshakeTimeout=5*time.Second;transport.ResponseHeaderTimeout=10*time.Second
  gate:=&requestGate{next:transport,host:u.Host,allowed:map[ID]bool{},buckets:map[string]bool{},write:write};for _,it:=range items{gate.allowed[it.ID]=true;gate.buckets[it.ID.Bucket]=true}
  client:=&http.Client{Transport:gate,Timeout:15*time.Second,CheckRedirect:func(*http.Request,[]*http.Request)error{return http.ErrUseLastResponse}}
  sdk:=s3.New(s3.Options{Region:region,BaseEndpoint:aws.String(endpoint),UsePathStyle:true,Credentials:credentials.NewStaticCredentialsProvider(key,secret,""),HTTPClient:client,Retryer:aws.NopRetryer{}})
