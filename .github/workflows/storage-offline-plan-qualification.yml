@@ -1,0 +1,32 @@
+name: Storage offline manifest planning qualification
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-offline-plan-qualification.yml'
+      - 'tools/storage_planning/**'
+      - 'tests/test_storage_offline_plan.py'
+      - 'scripts/*storage-offline*.py'
+      - 'evidence/seaweedfs-private-baseline-target-20261102.json'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Root filesystem qualification in isolated network namespace without target services
+        run: sudo --preserve-env=GITHUB_ACTIONS,GITHUB_SHA unshare --net python3 -I -B -S scripts/qualify-storage-offline-plan-20261102.py
+      - name: Attest exact compiler, source readback and qualification
+        id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: offline-evidence/SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" offline-evidence/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-offline-plan-qualification-${{ github.run_id }}
+          path: offline-evidence/
+          if-no-files-found: error
+          retention-days: 90

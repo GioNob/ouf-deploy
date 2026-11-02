@@ -3,7 +3,7 @@
   "id": "OUF-MP-STORAGE-SW",
   "version": "1.0",
   "date": "2026-11-02",
-  "status": "CREDENTIAL_CONTINUATION_QUALIFIED_AWAITING_OPERATOR",
+  "status": "PRIVATE_BASELINE_CAPTURED_NOT_ADMITTED_OFFLINE_PLAN_IN_QUALIFICATION",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -41,7 +41,7 @@
         4,
         8
       ],
-      "executionStatus": "SIX_PUBLIC_BODY_AUDITS_COMPLETE_PRIVATE_BASELINE_PREPARED"
+      "executionStatus": "PRIVATE_S3_METADATA_CAPTURE_COMPLETE_FEATURES_WRITERS_AND_DB_RECONCILIATION_OPEN"
     },
     {
       "id": "SW-WP1",
@@ -79,7 +79,8 @@
       "effortHoursRange": [
         8,
         16
-      ]
+      ],
+      "executionStatus": "OFFLINE_MANIFEST_COMPILER_IMPLEMENTED_IN_QUALIFICATION_COPY_ENGINE_NOT_IMPLEMENTED"
     },
     {
       "id": "SW-WP5",
@@ -232,8 +233,8 @@
     "singleActiveWriterBackend": true,
     "inPlaceMinioVolumeConversion": false,
     "automaticRollbackToVulnerableMinio": false,
-    "consumedScopeCount": 15,
-    "cumulativeEngineGets": 50,
+    "consumedScopeCount": 16,
+    "cumulativeEngineGets": 52,
     "frozenSourceMapCounts": [
       235,
       19,
@@ -251,11 +252,11 @@
     "SW-WP1"
   ],
   "openTargetInputs": [
-    "all buckets and object versions",
-    "active writers and consumers",
-    "capacity and throughput",
-    "encryption and retention",
-    "admitted recovery objectives and maintenance window"
+    "private bucket-feature classification and policy review",
+    "active writers, external consumers and database references",
+    "fresh independent destination capacity and measured throughput",
+    "per-object encryption and retention classification",
+    "infrastructure validation of PET UDP section81 recovery targets and maintenance window"
   ],
   "executionRequestedByOwner": "2026-11-02",
   "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md",
@@ -347,7 +348,7 @@
   },
   "runtimeObservationPerformed": true,
   "runtimeMutationsPerformed": false,
-  "runtimeOperationClass": "OPERATOR_DOCKER_INVENTORIES_AND_CREDENTIAL_REFERENCE_PREFLIGHT_STOP_NO_S3",
+  "runtimeOperationClass": "OPERATOR_COMPLETE_READ_ONLY_S3_METADATA_INVENTORY_NO_RUNTIME_MUTATIONS",
   "privateBaselineCredentialContinuation": {
     "status": "CONSUMED_STOP_INPUT_METADATA_GUARD",
     "controlAttempt": 15,
@@ -388,7 +389,7 @@
     "receipt": "evidence/seaweedfs-inventory-input-stop-target-20261102.json"
   },
   "privateBaselineInputObservation": {
-    "status": "QUALIFIED_AWAITING_OPERATOR",
+    "status": "CONSUMED_COMPLETE_CAPTURE_NOT_ADMITTED",
     "controlAttempt": 16,
     "previousEngineGets": 50,
     "maximumNewEngineGets": 2,
@@ -399,7 +400,7 @@
     "sourcePayloadLimitBytes": 327680,
     "inputPermissionsModified": false,
     "sourceCustodyAdmitted": false,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "migrationPerformed": false,
     "oldScopeRearmed": false,
     "producerSource": "91dc1f079bf7f6760d6dcf1f613b6c8a418f03d2",
@@ -412,6 +413,46 @@
     "install": "/usr/local/lib/ouf-storage-inventory-inputs-20261102",
     "instructions": "docs/OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md",
     "dossier": "evidence/seaweedfs-input-observation-qualified-20261102.json",
-    "sourcePayloadBytes": 296642
+    "sourcePayloadBytes": 296642,
+    "actualTargetEngineGets": 2,
+    "cumulativeControlAttempts": 16,
+    "cumulativeDirectEngineGets": 52,
+    "s3Complete": true,
+    "s3Requests": 265,
+    "records": 120,
+    "receipt": "evidence/seaweedfs-private-baseline-target-20261102.json",
+    "assessment": "evidence/seaweedfs-private-baseline-assessment-20261102.json"
+  },
+  "privateBaselineCaptured": {
+    "status": "CAPTURED_NOT_ADMITTED",
+    "control": 16,
+    "privateInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+    "records": 120,
+    "buckets": 2,
+    "bytesAcrossVersions": 203743,
+    "advertisedOufHashes": 110,
+    "missingAdvertisedHashes": 10,
+    "verifiedBodies": 0,
+    "unsupportedBucketFeatureResponses": 2,
+    "bucketFeatureValuesComplete": false,
+    "writerInventoryComplete": false,
+    "pointInTimeSnapshotProven": false,
+    "externalConsumersProvenAbsent": false,
+    "credentialSourceCustodyAdmitted": false,
+    "assessment": "evidence/seaweedfs-private-baseline-assessment-20261102.json"
+  },
+  "offlineMigrationPlan": {
+    "status": "IMPLEMENTED_IN_QUALIFICATION",
+    "controlAttempt": 17,
+    "previousControlAttempts": 16,
+    "previousEngineGets": 52,
+    "maximumNewEngineGets": 0,
+    "maximumS3Requests": 0,
+    "maximumCredentialFileReads": 0,
+    "sourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+    "retainedHostBaselineHash": "49aaea817bff55ff5ab901f2f54784e97ac85b7e2bbf2ec489055bab94c790c4",
+    "targetExecuted": false,
+    "copyEngineImplemented": false,
+    "migrationPerformed": false
   }
 }

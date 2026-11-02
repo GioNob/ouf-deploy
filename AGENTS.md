@@ -1,3 +1,30 @@
+# CURRENT — Control16 S3 inventory COMPLETE, not admitted; offline copy-plan compiler in qualification
+
+2 novembre 2026. Ricevuta16 PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED:
+2 bucket/120 record/203743 byte,110 hash dichiarati/10 assenti;265 GET/HEAD S3,
+2 nuovi inspect MinIO,16 controlli/52 GET Engine cumulativi. Scope16 CONSUMATO:
+non ripetere nessuno dei quattro vecchi comandi, né cancellare/riarmare file.
+Tutti15 scope precedenti preservati dalla ricevuta; zero corpi/S3write/SQL/lifecycle.
+Namespace PASS,0 versioni non-null/marker/multipart osservati;2 risposte feature
+UNSUPPORTED, nomi NON nel riepilogo: non inventare N/A o funzioni assenti.
+Root password REGULAR0600,owner NONroot,nlink1,sizeOK; sorgenti effettive ENV+
+file,1 file/65byte letti,nessun valore spooled,custody fonte NON ammessa.
+NON_ROOT_OWNER è violazione sufficiente ora, non prova retrospettiva dei metadata15.
+9 righe candidati/7 path distinti: non è incoerenza. RAM/spazio restano osservati
+al14,altre12 config non rinfrescate; no snapshot atomico/assenza consumer esterni.
+[Ricevuta](evidence/seaweedfs-private-baseline-target-20261102.json),
+[valutazione](evidence/seaweedfs-private-baseline-assessment-20261102.json).
+Nuovo compilatore OFFLINE privato implementato, IN QUALIFICA: legge solo3 artifact
+16 più host14 già hash-bound;0 Docker/S3/credenziali,nuovo scope17 separato,
+52 EngineGET invariati. Mantiene chiavi/versioni/metadati/tag,stato PLANNED_NOT_COPIED,
+verifica corpi richiesta per TUTTI120,anche110 con hash dichiarato. Riepilogo feature
+per tipo senza nomi/valori; censimento binding14 NON prova writer attivi.
+Nessuna consegna17 prima di root/network-isolated tests, firma e readback.
+SW-G0 resta OPEN,8 gate/21 AT OPEN; server raw HELD1UNKNOWN,MinIO ancora vulnerabile.
+Nessuna copia/merge/deploy/runtimegrant; sorgenti frozen28/235/19/17/21/23 intatte.
+Teatri/M1 8/8 tecniche,6/6 funzionali e stessaFarmacie preservate; M2 non chiuso.
+Nessun nuovo effetto VPS dopo16,nessun subagente. Storico sotto.
+
 # CURRENT — Input observation continuation qualified; control15 consumed, control16 awaits operator
 
 2 novembre 2026. [Unica consegna nuova](docs/OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md).
