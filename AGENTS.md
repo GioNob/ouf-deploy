@@ -1,3 +1,21 @@
+# CURRENT — Control15 consumed; complete input metadata preflight under qualification
+
+2 novembre 2026. Ricevuta15 STOP PRIVATE_BOUNDED_REGULAR_CREDENTIAL_SOURCE_REQUIRED,
+CREDENTIAL_PREFLIGHT: cumulativi15controlli/50EngineGET, 0file aperti/0byte letti,
+5candidati metadata. S3 non raggiunto; Config.Env già passato in RAM negli inspect.
+NON attribuire il fallimento a mode/owner/nlink/size specifici: predicato non osservato.
+Scope15 CONSUMATO: nessun replay/reset/chmod/chown; vecchi file intatti.
+Nuova continuazione16 IN QUALIFICA, non consegnata né eseguita: classifica TUTTI
+candidati prima del contenuto. File dichiarati regolari/stabili/bounded senza
+symlink leggibili solo inRAM/memfd; mode/owner/nlink osservati non sono admission
+di custody. Output root0700/0600. Special/symlink/oversize: diagnosi completa,
+zero contenuto/S3. Nessuna modifica a permessi/proprietà dei file input VPS.
+Riusa SDK430631fe e snapshot14, solo2GET nuoviMinIO max52cumulativi.
+Capsula28 preserva tutte26precedenti; limite nuovo327680 esplicito, oldsource
+immutati. Completare Docker/S3 reali, rootinstall, firma e readback indipendente
+prima della consegna. Niente deploy/migrazione/merge/grant/subagenti;
+8gate/21AT/M2 OPEN, Teatri/stessaFarmacie preservati. Storico sotto.
+
 # CURRENT — Credential continuation qualified; retained control14 snapshot, two fresh MinIO reads
 
 2 novembre2026. [Unica consegna nuova](docs/OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md).

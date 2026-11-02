@@ -232,8 +232,8 @@
     "singleActiveWriterBackend": true,
     "inPlaceMinioVolumeConversion": false,
     "automaticRollbackToVulnerableMinio": false,
-    "consumedScopeCount": 14,
-    "cumulativeEngineGets": 49,
+    "consumedScopeCount": 15,
+    "cumulativeEngineGets": 50,
     "frozenSourceMapCounts": [
       235,
       19,
@@ -349,7 +349,7 @@
   "runtimeMutationsPerformed": false,
   "runtimeOperationClass": "OPERATOR_DOCKER_INVENTORIES_AND_CREDENTIAL_REFERENCE_PREFLIGHT_STOP_NO_S3",
   "privateBaselineCredentialContinuation": {
-    "status": "QUALIFIED_AWAITING_OPERATOR",
+    "status": "CONSUMED_STOP_INPUT_METADATA_GUARD",
     "controlAttempt": 15,
     "scope": "/etc/ouf/deploy-snapshots/seaweedfs-inventory-credentials-20261102-v1",
     "previousEngineGets": 49,
@@ -377,6 +377,30 @@
     "maximumCredentialBytesRead": 81920,
     "objectBodiesRead": 0,
     "s3Writes": 0,
-    "targetExecuted": false
+    "targetExecuted": true,
+    "actualTargetEngineGets": 1,
+    "cumulativeControlAttempts": 15,
+    "cumulativeDirectEngineGets": 50,
+    "credentialFilesOpened": 0,
+    "credentialSourceBytesRead": 0,
+    "metadataCandidates": 5,
+    "failedMetadataPredicate": "UNPROVEN",
+    "receipt": "evidence/seaweedfs-inventory-input-stop-target-20261102.json"
+  },
+  "privateBaselineInputObservation": {
+    "status": "IN_QUALIFICATION_NOT_DELIVERED",
+    "controlAttempt": 16,
+    "previousEngineGets": 50,
+    "maximumNewEngineGets": 2,
+    "maximumCumulativeEngineGets": 52,
+    "retainedSnapshotControl": 14,
+    "closedSources": 28,
+    "allPrior26SourcesUnchanged": true,
+    "sourcePayloadLimitBytes": 327680,
+    "inputPermissionsModified": false,
+    "sourceCustodyAdmitted": false,
+    "targetExecuted": false,
+    "migrationPerformed": false,
+    "oldScopeRearmed": false
   }
 }
