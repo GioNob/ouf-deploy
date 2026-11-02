@@ -16,7 +16,7 @@ ORIGIN_PRIVATE='8cf9a9ba0eaaf1f485515f893fee738c526622e2df97ec3687ca01843f0cd067
 PROFILE={'schema':'ouf.storage-baseline-read-control.v1','maximumAttempts':1,'maximumSeconds':600,
  'maximumEngineGets':65,'maximumContainers':64,'maximumEngineResponseBytes':2097152,
  'maximumCredentialSources':2,'maximumCredentialBytesEach':4096,'maximumS3Requests':10000,
- 'maximumS3Records':25000,'maximumS3Seconds':300,'backendGoMemoryLimit':'256MiB','backendGoMaxProcs':1,'objectBodiesRead':0,'sqlRequests':0,
+ 'maximumPrivateInventoryBytes':67108864,'maximumS3Records':25000,'maximumS3Seconds':300,'backendGoMemoryLimit':'256MiB','backendGoMaxProcs':1,'objectBodiesRead':0,'sqlRequests':0,
  'containerLifecycleOperations':0,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,
  'previousControlAttempts':12,'previousEngineGets':35,'migrationAuthorized':False}
 
@@ -119,6 +119,8 @@ def capture(control,engine):
  require(minio is not None,'RETAINED_MINIO_CONTAINER_REQUIRED')
  pid,env=minio_admission(minio,private['roles']['minio']['nativeImageId']);pin=process_pin(pid)
  root=Path('/proc/'+str(pid)+'/root');memory=Path('/proc/meminfo').read_text();require(len(memory)<=32768,'BOUNDED_MEMORY_METADATA_REQUIRED')
+ memory_rows={line.split(':',1)[0]:line.split(':',1)[1].split() for line in memory.splitlines() if ':' in line}
+ available=memory_rows.get('MemAvailable');require(type(available) is list and len(available)==2 and available[0].isdigit() and available[1]=='kB','TYPED_AVAILABLE_MEMORY_REQUIRED');available_bytes=int(available[0])*1024
  capacity=[]
  for m in minio.get('Mounts') or []:
   if m.get('Destination')=='/data':
@@ -143,7 +145,7 @@ def capture(control,engine):
    info=os.fstat(stream.fileno());require(stat.S_ISREG(info.st_mode) and info.st_uid==0 and stat.S_IMODE(info.st_mode)==0o600 and info.st_nlink==1 and 0<info.st_size<=67108864,'BOUNDED_ROOT_PRIVATE_INVENTORY_REQUIRED')
    private_hash=file_sha(stream);require(attrs(info)==attrs(os.fstat(stream.fileno())),'PRIVATE_INVENTORY_CHANGED')
   stable()
-  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED','privateInventorySha256':private_hash,'hostBaselineHash':digest(host),'profileHash':digest(PROFILE),'parentOriginResultHash':ORIGIN_RESULT,'s3Complete':True,'storageDataFreeBytes':capacity[0]['freeBytes'],'storageDataTotalBytes':capacity[0]['totalBytes'],'inventorySummary':report['summary'],'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
+  return {'status':'PRIVATE_STORAGE_BASELINE_CAPTURED_NOT_ADMITTED','privateInventorySha256':private_hash,'hostBaselineHash':digest(host),'profileHash':digest(PROFILE),'parentOriginResultHash':ORIGIN_RESULT,'s3Complete':True,'memoryAvailableBytes':available_bytes,'storageDataFreeBytes':capacity[0]['freeBytes'],'storageDataTotalBytes':capacity[0]['totalBytes'],'inventorySummary':report['summary'],'records':report['records'],'s3Requests':report['requests'],'containersObserved':len(bindings),'directEngineGets':engine.gets,'cumulativeDirectEngineGets':35+engine.gets,'cumulativeControlAttempts':13,'credentialSourcesOpened':2,'credentialBytesSpooled':0,'allTwelvePriorScopesPreserved':True,'pointInTimeSnapshotProven':False,'externalConsumersProvenAbsent':False,'targetApplyAuthorized':False,'runtimeAuthorityIssued':False,'automaticReplayAllowed':False,'releaseAcceptance':False}
  finally:
   for fd in descriptors:os.close(fd)
 

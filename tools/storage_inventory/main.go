@@ -208,7 +208,7 @@ func execute(configPath,out string) error {
  if readError==nil{multipart,readError=multipartInventory(ctx,sdk,features)}
  var incompleteBytes int64;for _,upload:=range multipart{size:=upload["bytes"].(int64);if size>0&&incompleteBytes>int64(9223372036854775807)-size{readError=errors.New("MULTIPART_TOTAL_OVERFLOW");break};incompleteBytes+=size}
  if publicSummary!=nil{publicSummary["incompleteMultipartUploads"]=len(multipart);publicSummary["incompleteMultipartBytes"]=incompleteBytes}
- record:=map[string]any{"summary":publicSummary,"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatures":features,"multipartUploads":multipart,"writerInventoryComplete":false}
+ record:=map[string]any{"summary":publicSummary,"schema":"ouf.storage-private-inventory.v1","records":rows,"complete":readError==nil,"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"bucketFeaturesInventoried":readError==nil,"bucketFeatureValuesComplete":readError==nil&&publicSummary!=nil&&publicSummary["unsupportedBucketFeatures"]==0,"bucketFeatures":features,"multipartUploads":multipart,"writerInventoryComplete":false}
  if readError!=nil{failure:=map[string]string{"class":"INVENTORY_READ_FAILED"};var api interface{ErrorCode()string};if errors.As(readError,&api){failure["apiCode"]=api.ErrorCode()};var operation interface{Operation()string};if errors.As(readError,&operation){failure["operation"]=operation.Operation()};record["failure"]=failure}
  bytes,e:=json.Marshal(record);if e!=nil||len(bytes)>64*1024*1024{return errors.New("PRIVATE_OUTPUT_BUDGET")}
  if e=writeNew(out,"inventory.private.json",bytes);e!=nil{return e}
