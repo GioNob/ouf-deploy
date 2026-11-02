@@ -1,0 +1,83 @@
+name: Storage checksum-bound licence evidence
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-licence-evidence.yml'
+      - 'tools/storage_licenses/**'
+      - 'scripts/collect-storage-licences-20261102.py'
+      - 'tests/test_storage_licence_evidence.py'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify archive integrity and unresolved-licence boundaries
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_licence_evidence.py -v
+      - name: Authenticate original full source bytes and retained source closure
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/read-seaweedfs-lab-artifact-20261102.py
+      - name: Verify original exact OUF publisher before legal text collection
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify sw-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/seaweedfs-evaluation.yml --source-digest 6cddeee707b67bd27568aa7a3890e28ebecf274f --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle sw-readback/provenance.json --format json > sw-readback/publisher-verification.json
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with: {go-version: '1.27.3', cache: false}
+      - name: Collect exact component licences and independently recompute Go h1 checksums
+        run: python3 -I -B -S scripts/collect-storage-licences-20261102.py collect
+      - run: ': > empty.trivyignore'
+      - name: Classify authenticated legal files without accepting redistribution
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        env:
+          TRIVY_LICENSE_FULL: 'true'
+          TRIVY_LICENSE_CONFIDENCE_LEVEL: '0.9'
+        with:
+          version: v0.70.0
+          scan-type: fs
+          scan-ref: storage-licence-evidence/texts
+          format: json
+          output: storage-licence-evidence/trivy-licences.json
+          list-all-pkgs: true
+          scanners: license
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Join classifications to exact texts and expose every unresolved component
+        run: python3 -I -B -S scripts/collect-storage-licences-20261102.py assess
+      - name: Seal evidence and source without modifying original SPDX or image
+        if: always()
+        run: |
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,shutil
+          from pathlib import Path
+          out=Path('storage-licence-evidence'); out.mkdir(exist_ok=True)
+          sources=['tools/storage_licenses/evidence.py','scripts/collect-storage-licences-20261102.py','tests/test_storage_licence_evidence.py','.github/workflows/storage-licence-evidence.yml']
+          (out/'source-records.json').write_text(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sources},indent=2)+'\n')
+          if Path('sw-readback/publisher-verification.json').exists():
+              for name in ['publisher-verification.json','provenance.json','SHA256SUMS','candidate.json','byte-readback.json']:
+                  shutil.copyfile(Path('sw-readback')/name,out/('original-'+name))
+          complete=(out/'classification.json').exists() and not (out/'failure.json').exists()
+          (out/'qualification.json').write_text(json.dumps({'schema':'ouf.storage-licence-evidence-qualification.v1','status':'PASS' if complete else 'INCOMPLETE_NOT_ADMITTED','producerSource':os.environ['GITHUB_SHA'],'runId':int(os.environ['GITHUB_RUN_ID']),'unitTests':9,'moduleCodeExecuted':False,'imageRebuilt':False,'rawSpdxModified':False,'targetOperations':0,'releaseAdmitted':False,'licenceReview':'OPEN','overallSwG1':'OPEN'},indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
+          PY
+      - id: attestation
+        if: always()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: storage-licence-evidence/SHA256SUMS}
+      - if: always() && steps.attestation.outcome == 'success'
+        run: cp "${{ steps.attestation.outputs.bundle-path }}" storage-licence-evidence/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-licence-evidence-${{ github.run_id }}
+          path: storage-licence-evidence/
+          if-no-files-found: error
+          retention-days: 90
