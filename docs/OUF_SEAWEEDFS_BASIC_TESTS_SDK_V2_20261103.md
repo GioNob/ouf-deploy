@@ -25,6 +25,12 @@ Il client conserva endpoint locale HTTP `localhost:8333`, regione `us-west-2`, c
 
 Il workflow `.github/workflows/storage-basic-tests-sdk-v2.yml`, con azioni pin-nate a commit, ripete la prova sul runner GitHub e trattiene un manifest attestato con dipendenze, importatori residui, hash e log.
 
+## Esito hosted
+
+La [CI 41632509122](https://github.com/GioNob/ouf-deploy/actions/runs/41632509122) è PASS sul commit `3924cf73e0c5fc66e0bddfe6ec5ca92a2e2e4d50`. Tutti gli otto step principali sono riusciti, inclusi applicazione delle sedici patch, controllo del perimetro residuo, test non-network, attestazione e retention.
+
+L'artifact `13229155800` contiene sette file e scade il 1 febbraio 2027. Lo ZIP di 4.545 byte ha SHA256 `6fe51c97f819a4ea5c883d41b00ac5c8c611b576f611bfbd0914b8ee2db0a506`; tutti i sei membri elencati in `SHA256SUMS` sono stati riletti e verificati. Il readback conferma 330 pacchetti nel grafo del test, zero pacchetti SDK v1 e l'elenco esatto dei 25 importatori diretti residui.
+
 ## Confini
 
 Questo lotto estende la pulizia dei test e non modifica il server standard già qualificato con quindici patch. Non sostituisce la coorte OCI esatta, non ammette una release e non chiude SW-G1. Review licenze e custodia durevole dell'immagine restano OPEN.

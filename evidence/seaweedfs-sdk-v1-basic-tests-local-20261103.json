@@ -1,5 +1,24 @@
 {
   "candidatePatchCountBefore": 15,
+  "hostedArtifact": {
+    "expiresAt": "2027-02-01T12:03:26Z",
+    "id": 13229155800,
+    "sha256": "6fe51c97f819a4ea5c883d41b00ac5c8c611b576f611bfbd0914b8ee2db0a506",
+    "sizeBytes": 4545
+  },
+  "hostedEvidence": {
+    "basicTestDependencies": 330,
+    "manifest": {
+      "basic-test-deps.txt": "04b102346dc16d3f68f3bf50b7d49e104a15d4b1e0f1ad584a922797e623000e",
+      "patch-sha256.txt": "ea88293977cebd822ce06b3ee01c14c8d1f74368a242e778799c559471cd299c",
+      "patch-stat.txt": "ab95dc34a7d2e67c6cc62f79487b44c79540427c853c5f9ddba6cdf4158d649d",
+      "remaining-direct-importers.txt": "6768341c7c5bf2ea6348881a5cd8ef3eecd5296a9459bfe93bfb52c9e435c801",
+      "test.log": "cc20aed2692e2c1c2f3e471cca3bb14e53aa27d3a39ee6bb6501e9f76ce88037",
+      "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93"
+    },
+    "remainingDirectImporters": 25,
+    "verified": true
+  },
   "directAwsSdkV1ImportersAfter": 25,
   "directAwsSdkV1ImportersBefore": 28,
   "files": {
@@ -28,8 +47,10 @@
   "targetOperations": 0,
   "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
   "workflow": {
+    "artifactId": 13229155800,
     "path": ".github/workflows/storage-basic-tests-sdk-v2.yml",
+    "runId": 41632509122,
     "sha256": "679c2b1d3ff921193dd58ae1ade6ab6445f4d7faf13585f8ef4fc75d9950a037",
-    "status": "LOCAL_READY_REMOTE_PENDING"
+    "status": "HOSTED_PASS"
   }
 }

@@ -1,3 +1,16 @@
+## Checkpoint storage 2026-11-03 — test S3 basic su SDK v2, hosted PASS
+
+- Patch 16 test-only: `patches/seaweedfs/4.52-basic-tests-sdk-v2.patch`, SHA256 `ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40`.
+- CI dedicata [41632509122](https://github.com/GioNob/ouf-deploy/actions/runs/41632509122): otto step principali PASS sul commit `3924cf73e0c5fc66e0bddfe6ec5ca92a2e2e4d50`.
+- Artifact `13229155800`: 4.545 byte, SHA256 `6fe51c97f819a4ea5c883d41b00ac5c8c611b576f611bfbd0914b8ee2db0a506`, sette file, scadenza 2027-02-01.
+- Package `test/s3/basic`: 330 pacchetti, zero AWS SDK Go v1; test locale/hosted non-network PASS.
+- Importatori diretti SDK v1 repository-wide 28→25: 13 in `test/s3/iam`, 12 in altri test/strumenti non qualificati.
+- La tornata complessiva è 51/51 SUCCESS; Registry è riuscita al secondo tentativo dopo una cancellazione per timeout, con i test del primo tentativo già PASS.
+- Patch solo test: il binario e l'esatta coorte OCI a 15 patch non cambiano; licence review e durable image custody restano OPEN.
+- MiniPET circa 35% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO attivo.
+- Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali, Farmacie 61/10 OPEN/STRING invariati.
+- Zero operazioni target, replay/reset/grant, release, merge, deploy o autorità runtime.
+
 ## Checkpoint storage 2026-11-03 — coorte 4.52 hosted PASS, non ammessa
 
 - CI dedicata [41627470213](https://github.com/GioNob/ouf-deploy/actions/runs/41627470213): 7/7 step PASS sul source commit `fe6b392c1e5789513c6cea18fdf913b0acf1c559`.
