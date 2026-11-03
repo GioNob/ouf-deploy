@@ -3,6 +3,7 @@
 - Source patch commit: `e5a36b02fe46105b88500ceba9337cb79d06c91d`; baseline SeaweedFS 4.52 `984eac6a790be89e2a11de175a7413e1e3e32dd3`.
 - Ultimi helper `aws.*` sostituiti con puntatori nativi; parser XML locale Apache-2.0 preserva le semantiche legacy verificate.
 - Locale: 5.591 PASS, 5 skip, 20 package PASS; race/wire/s3api/build/reapply exact PASS.
+- CI 41599415067: entrambe le job SUCCESS su `080aed6d1a4867ad01a0a8c90a963a04f6711346`; artefatto conferma 1.811/0 v1 e SHA binario locale.
 - Grafo produttivo: 1.811 package, **0 SDK v1, 0 importatori, 0 archi**; binario `d9873b7d…` senza metadati SDK v1.
 - Limite: SDK v1 resta dichiarato in `go.mod` e importato da 23 file test-only; migrare questi test prima della rimozione integrale dal modulo.
 - Stato MiniPET invariato: circa 33% ±10, 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO resta attivo.
