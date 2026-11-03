@@ -1,3 +1,17 @@
+# Stato corrente — sei patch storage, SQS su SDK v2; G1 aperto
+
+3 novembre 2026. Proseguire dal [MiniPET storage](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) e dalle evidenze [S3 wire](evidence/seaweedfs-s3-wire-local-20261103.json) / [SQS v2](evidence/seaweedfs-sqs-v2-local-20261103.json). Sei patch sequenziali su SeaweedFS 4.52 commit 984eac6a790be89e2a11de175a7413e1e3e32dd3. Quarta IAM, quinta 19 modelli S3/ACL persistite, sesta publisher/consumer SQS su v2 1.51.0 già pinato. go.mod/go.sum invariati. Source finale patch 7da527895dfacc34650b3cf9feb700912a8c09f5.
+
+Locale sull'esatta patch finale: 5.444 eventi PASS / 5 skip preesistenti in 15 pacchetti, build riuscita; 8 test Python lifecycle PASS. Grafo 1.845 pacchetti / 53 SDK v1 / 5 importatori / 29 archi v1. Manifest dei 96 pacchetti v2/config/auth aggiunti verificato esattamente. Protocollo SQS testato con SDK/firma reali e HTTP sintetico: nessuna richiesta AWS. ACK solo dopo replica, nessun delete su fallimento/invalidità, un tentativo SDK, timeout HTTP30s; credenziali parziali, regione o endpoint impliciti e URL vuoto negati.
+
+CI quattro patch 41578323726 PASS; cinque patch 41580156811 PASS (entrambi i job). CI sei patch finale 41580991342 su 7da527895d da verificare; non attribuire le prove locali alla CI. Prossimo lavoro: leggere il risultato CI, poi KMS e client S3/remote_storage/replication/storage, parser XML/helper. Il parser storico resta invariato per compatibilità con XML ambiguo/malformato.
+
+MiniPET circa33% (±10 punti), 0/8 gate chiusi, 0/21 AT accettati, 0/120 oggetti reali copiati. Nessuna nuova immagine ammessa, scansione/licenza/custody/coorte da ricalcolare; NON estendere il vecchio VEX al nuovo binario. Default credential chain v2, profili/ruoli/process/SSO richiedono nuova qualifica dei binding/autorità; callback delete SQS preesistente senza propagazione al chiamante, budget durevoli/riconciliazione owner non qualificati. Non dichiarare resilienza SQS completa.
+
+Scope17 consumato e52EngineGET invariati. Teatri/M1 8/8 tecniche,6/6 funzionali e stessaFarmacie61righe/10OPEN/STRING preservati. Nessun nuovo effetto target, upload/profiling, replay/reset/grant, merge/deploy o release acceptance. Continuare sviluppo repository sequenziale senza subagenti; autorità runtime HUMAN/THS distinta. Leggere PET originali in docs/baseline/v1.7 e policy resilienza v3.
+
+## Checkpoint precedenti — storico
+
 # Stato corrente — corpus licenze qualificato; G1 ancora aperto
 
 [Licenze, sorgenti e prove](docs/OUF_SEAWEEDFS_LICENCE_EVIDENCE_20261102.md): CI41541625141 e verifica indipendente41542075842 PASS. 245 componenti, 374 testi, 17 archivi sorgente MPL completi; 10 test, 709 checksum nativi e firma del workflow esatto verificati. Corpus completo conservato nel repository. Nessuna modifica a binario, immagine o SBOM originali. Tre UNKNOWN del classificatore di licenze, review degli obblighi, custodia dell'immagine e coorte restano OPEN. Rilevato anche AWS SDK Go v1.55.8 fuori supporto: dipendenza compilata da valutare, senza inventare una CVE o un percorso attivo.
