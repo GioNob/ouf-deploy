@@ -1,3 +1,13 @@
+## Checkpoint repository — suite remote-cache su SDK v2 (3 novembre 2026)
+
+La [quattordicesima patch](../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch) migra i tre file residui della suite remote-cache. Conserva indirizzamento path-style, credenziali fixture, letture a intervalli, copia, copia multipart e prova di eviction. Il client di laboratorio usa il contesto del test, un timeout HTTP di 30 secondi e un tentativo SDK. L'abort di cleanup è circoscritto all'upload creato dal test e viene saltato dopo una conferma di completamento.
+
+La suite storage qualificata ha prodotto **5.591 PASS, 5 skip e 20 pacchetti PASS**. La suite remote-cache compila con `-mod=readonly`; il grafo dei suoi test e dell'utility conta **301 pacchetti, zero SDK v1 e zero manager S3 deprecato** (SHA256 del grafo `b6c40a20947d52b6dfc1d9541c4b51d75a5685ad943126cfb66840fb4b50018f`). I tre file della patch si riapplicano e coincidono byte per byte. SHA256 patch `1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6`. L'avvio locale delle due istanze è stato interrotto per il divieto del sandbox sui socket Unix. Il workflow esegue sei casi sul runner GitHub con due istanze loopback e conserva grafo, log dei test e log delle istanze.
+
+La [CI 41612171089 della patch 13](https://github.com/GioNob/ouf-deploy/actions/runs/41612171089) è **SUCCESS** in entrambe le job. Digest dell'artefatto `sha256:4efb644af8fe17ff77f222ea1b2f24dade00f321a0e843c0cce39b6bc3bf36b2`.
+
+Gli importatori diretti scendono da **31 a 28** (15 nel modulo radice e 13 in `test/s3/iam`). Resta da verificare la dichiarazione indiretta in `test/kafka/go.mod`. La stima MiniPET è **circa 33% ±10**, con **0/8 gate, 0/21 AT e 0/120 oggetti reali**. La migrazione dei test lascia ancora da qualificare immagine, SBOM, scan, licenze, custodia e coorte G1. Scope17/52 Engine GET, Teatri/M1 e Farmacie sono preservati.
+
 ## Checkpoint repository — utility S3 di laboratorio su SDK v2 (3 novembre 2026)
 
 La [tredicesima patch](../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch) migra l'esempio di PUT prefirmata e l'utility di creazione bucket del test remote-cache. La PUT locale usa path-style, firma `Content-MD5` e conserva la scadenza di 15 minuti. Il test sintetico verifica firma, header, corpo e chiave con spazi. L'utility conserva l'interfaccia CLI, riconosce i codici S3 di bucket già esistente e limita CreateBucket a un tentativo SDK entro 30 secondi. Per l'utility è verificata la compilazione. Le prove locali non chiamano endpoint S3.

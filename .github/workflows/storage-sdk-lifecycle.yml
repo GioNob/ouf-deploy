@@ -24,6 +24,7 @@ on:
       - 'patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1-removed-packages.txt'
       - 'patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch'
       - 'patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch'
+      - 'patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch'
       - 'evidence/seaweedfs-sdk-v1-test-closure-local-20261103.json'
       - 'evidence/artifacts/storage-runtime-image-readback-41527990598.zip'
 permissions:
@@ -40,7 +41,7 @@ jobs:
         run: python3 -I -B -S -m unittest discover -s tests -p test_storage_sdk_lifecycle.py -v
   seaweedfs_patches:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       CGO_ENABLED: '0'
       GOTOOLCHAIN: local
@@ -92,6 +93,8 @@ jobs:
           git apply ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch
           git apply --check ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch
           git apply ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch
+          git apply --check ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch
           git diff --check
           if grep -R --include='*.go' --exclude='*_test.go' -F '"github.com/aws/aws-sdk-go/' weed; then
             exit 1
@@ -174,6 +177,19 @@ jobs:
             exit 1
           fi
           sha256sum "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-binary-sha256.txt"
+      - name: Run remote-cache integration tests on two loopback SeaweedFS instances
+        working-directory: seaweedfs/test/s3/remote_cache
+        timeout-minutes: 8
+        env:
+          GOFLAGS: -mod=readonly
+        run: |
+          set -euo pipefail
+          go list -deps -test . ./utils | LC_ALL=C sort -u > "$RUNNER_TEMP/seaweedfs-remote-cache-test-deps"
+          if grep -Eq '^github[.]com/aws/(aws-sdk-go|aws-sdk-go-v2/feature/s3/manager)(/|$)' "$RUNNER_TEMP/seaweedfs-remote-cache-test-deps"; then
+            exit 1
+          fi
+          trap 'make stop-primary stop-remote' EXIT
+          make test-with-server TEST_TIMEOUT=5m 'TEST_PATTERN=^TestRemoteCache(Basic|RangeRequest|NotFound|CopyObject(Part)?|EvictUnderPressure)$' |& tee "$RUNNER_TEMP/seaweedfs-remote-cache-integration.log"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -183,6 +199,9 @@ jobs:
             ${{ runner.temp }}/seaweedfs-*-imports
             ${{ runner.temp }}/seaweedfs-regressions.jsonl
             ${{ runner.temp }}/seaweedfs-storage-tools.jsonl
+            ${{ runner.temp }}/seaweedfs-remote-cache-integration.log
+            seaweedfs/test/s3/remote_cache/primary-weed.log
+            seaweedfs/test/s3/remote_cache/remote-weed.log
             ${{ runner.temp }}/seaweedfs-build-info.txt
             ${{ runner.temp }}/seaweedfs-binary-sha256.txt
           if-no-files-found: error
