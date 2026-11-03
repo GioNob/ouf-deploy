@@ -1,0 +1,44 @@
+{
+  "candidatePatchCountBefore": 19,
+  "directAwsSdkV1ImportersAfter": 21,
+  "directAwsSdkV1ImportersBefore": 22,
+  "files": {
+    "test/s3/sse/s3_volume_encryption_test.go": "dbe542eed001b732c6b7eee978e6d35e4ba059228b35f3513141d14711df32a6"
+  },
+  "generatedAt": "2026-11-03T14:22:00Z",
+  "hostedArtifact": null,
+  "hostedEvidence": null,
+  "maintainedSdk": {
+    "core": "github.com/aws/aws-sdk-go-v2",
+    "service": "github.com/aws/aws-sdk-go-v2/service/s3"
+  },
+  "mutationRetryPolicy": {
+    "cleanupTimeoutSeconds": 30,
+    "sdkAttempts": 1
+  },
+  "package": "./test/s3/sse",
+  "packageAwsSdkV1Dependencies": 0,
+  "packageDependencies": 331,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch",
+    "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c"
+  },
+  "qualifiedCompile": {
+    "command": "go test -mod=readonly -tags integration -run ^$ ./test/s3/sse",
+    "result": "PASS"
+  },
+  "qualifiedTest": {
+    "command": "go test -mod=readonly -tags integration -run ^TestGetS3ClientUsesBoundedLocalConfiguration$ -count=1 ./test/s3/sse",
+    "result": "PASS"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "scope": "LOCAL_PUBLIC_SOURCE_ONLY",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "workflow": {
+    "path": ".github/workflows/storage-sse-tests-sdk-v2.yml",
+    "sha256": "8fabed75caa0a730453c23e6aaf39c46cd6f61c8aa46cdd4c56a9ecad1d0cb9b",
+    "status": "PENDING_HOSTED_RUN"
+  }
+}
