@@ -20,9 +20,9 @@ def load_module(name, path):
 image = load_module('runtime_image', 'tools/storage_security/runtime_image.py')
 lifecycle = load_module('sdk_lifecycle', 'scripts/assess-storage-sdk-lifecycle.py')
 PROFILE = image.ImageProfile(
-    binary_sha='d9873b7d5c484266c9226e90acf20215e7ed1985fe2b235171f617768471a98f',
+    binary_sha='85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033',
     source_commit='984eac6a790be89e2a11de175a7413e1e3e32dd3',
-    image_tag='ouf-seaweedfs-candidate:4.52-d9873b7d',
+    image_tag='ouf-seaweedfs-candidate:4.52-85fa52c6',
     licence_sha='d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613',
 )
 DEPRECATED_MANAGER = 'github.com/aws/aws-sdk-go-v2/feature/s3/manager'
@@ -43,9 +43,12 @@ def package(build, out):
                        'vcs.revision=' + PROFILE.source_commit} <= build_settings
                   and not any(setting.startswith('-tags=') for setting in build_settings),
                   'EXACT_STANDARD_BUILD_SETTINGS_REQUIRED')
-    modules = [line.split('\t')[2] for line in lines if line.startswith('\tdep\t')]
+    modules = dict(line.split('\t')[2:4] for line in lines if line.startswith('\tdep\t'))
     image.require(bool(modules) and not any(lifecycle.sdk_v1(m) or is_manager(m) for m in modules),
                   'LEGACY_BINARY_MODULE_PRESENT')
+    image.require(modules.get('golang.org/x/net') == 'v0.62.0'
+                  and modules.get('golang.org/x/crypto') == 'v0.58.1-0.20261009181718-2f1f834330b2',
+                  'FIXED_NETWORK_AND_CRYPTO_MODULES_REQUIRED')
     image.write_image((build / 'weed').read_bytes(), (build / 'LICENSE').read_bytes(),
                       out, profile=PROFILE)
     graph_bytes = image.canonical({'packages': graph})
