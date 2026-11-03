@@ -14,6 +14,7 @@ on:
       - evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json
       - evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json
       - evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json
       - scripts/verify-minio-seaweedfs-plan-current.py
       - tests/test_minio_seaweedfs_plan_current.py
   workflow_dispatch:
@@ -60,6 +61,7 @@ jobs:
             evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json \
             evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json \
             evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json \
             scripts/verify-minio-seaweedfs-plan-current.py \
             tests/test_minio_seaweedfs_plan_current.py \
             .github/workflows/storage-plan-current.yml \

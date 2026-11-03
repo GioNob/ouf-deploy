@@ -37,7 +37,7 @@ class CurrentStoragePlanTest(unittest.TestCase):
     def test_repository_current_plan_passes(self):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
-        self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 21)
+        self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 20)
         self.assertFalse(result["releaseAdmitted"])
         self.assertEqual(result["activeStorageBackend"], "MinIO")
 

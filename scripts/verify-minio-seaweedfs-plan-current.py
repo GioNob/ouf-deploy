@@ -27,6 +27,7 @@ EXPECTED_DOSSIERS = [
     "evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json",
     "evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json",
     "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json",
+    "evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json",
 ]
 HISTORICAL_FIELDS = [
     "candidate",
@@ -111,7 +112,7 @@ def validate_documents(
     require(current.get("version") == "4.52", "CURRENT_VERSION_452_REQUIRED")
     require(current.get("upstreamCommit") == UPSTREAM_COMMIT, "CURRENT_UPSTREAM_COMMIT_REQUIRED")
     require(current.get("qualifiedImagePatchCount") == 15, "QUALIFIED_IMAGE_PATCH_COUNT_REQUIRED")
-    require(current.get("repositoryPatchCount") == 20, "REPOSITORY_PATCH_COUNT_REQUIRED")
+    require(current.get("repositoryPatchCount") == 21, "REPOSITORY_PATCH_COUNT_REQUIRED")
     require(current.get("qualificationRunId") == 41622752493, "QUALIFICATION_RUN_REQUIRED")
     require(current.get("vulnerabilitySubgate") == "PASS_RAW", "RAW_VULNERABILITY_PASS_REQUIRED")
     require(
@@ -132,8 +133,8 @@ def validate_documents(
         current.get("deprecatedS3ManagerInQualifiedBinary") == "ABSENT",
         "DEPRECATED_MANAGER_BINARY_ABSENCE_REQUIRED",
     )
-    require(current.get("remainingRepositoryDirectSdkV1Importers") == 21, "DIRECT_IMPORTER_COUNT_REQUIRED")
-    require(current.get("remainingIamTestImporters") == 13, "IAM_IMPORTER_COUNT_REQUIRED")
+    require(current.get("remainingRepositoryDirectSdkV1Importers") == 20, "DIRECT_IMPORTER_COUNT_REQUIRED")
+    require(current.get("remainingIamTestImporters") == 12, "IAM_IMPORTER_COUNT_REQUIRED")
     require(current.get("remainingOtherTestImporters") == 8, "OTHER_IMPORTER_COUNT_REQUIRED")
     require(current.get("testOnlyDossiers") == EXPECTED_DOSSIERS, "EXACT_TEST_DOSSIERS_REQUIRED")
 
@@ -162,7 +163,7 @@ def validate_documents(
     require(cohort.get("runtimeAuthorityIssued") is False, "COHORT_NO_RUNTIME_AUTHORITY_REQUIRED")
     require(cohort.get("targetOperations") == 0, "COHORT_ZERO_TARGET_OPERATIONS_REQUIRED")
 
-    expected_after = [25, 24, 23, 22, 21]
+    expected_after = [25, 24, 23, 22, 21, 20]
     for path, after in zip(EXPECTED_DOSSIERS, expected_after, strict=True):
         dossier = dossiers.get(path, {})
         require(dossier.get("upstreamCommit") == UPSTREAM_COMMIT, "DOSSIER_UPSTREAM_REQUIRED")
@@ -218,9 +219,9 @@ def validate_documents(
         "status": "PASS_NOT_ADMITTED",
         "candidateVersion": "4.52",
         "candidateLockSha256": LOCK_SHA256,
-        "repositoryPatchCount": 20,
+        "repositoryPatchCount": 21,
         "qualifiedImagePatchCount": 15,
-        "remainingRepositoryDirectSdkV1Importers": 21,
+        "remainingRepositoryDirectSdkV1Importers": 20,
         "progressPercent": percent,
         "gatesPassed": 0,
         "acceptanceTestsPassed": 0,

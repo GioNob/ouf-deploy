@@ -1,3 +1,13 @@
+## Checkpoint repository — signer IAM/STS migrato a SDK v2 (3 novembre 2026)
+
+La [patch 21](../patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch), SHA256 `cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b`, migra soltanto il signer di `test/s3/iam/s3_sts_assume_role_test.go` al signer AWS SDK Go v2. Il protocollo resta HTTP/XML raw: `POST /`, form URL-encoded, servizio `sts`, regione `us-east-1`, endpoint, host singolo e timeout di 30 secondi sono preservati. Nessun client STS tipizzato viene introdotto.
+
+La [CI 41665635452](https://github.com/GioNob/ouf-deploy/actions/runs/41665635452) ha applicato in ordine tutte le 21 patch, compilato l'intero modulo IAM con `-mod=readonly` sugli esatti pin e superato i due test deterministici del signer. Gli otto step principali sono PASS, inclusi manifest e attestazione. L'artifact `13245451582`, 5.038 byte, ha digest GitHub `sha256:d375975e0bf9ec503b1ae48ce4cbfe055a51e22928f2eaa1b4977cf7be0c72e4`; il manifest attestato ha SHA256 `46d8cd312d71e2d08bc3fd42433e1ff4f4defb4a459ccbbedaeca56dfb082952`. La tornata complessiva è 51/51 SUCCESS dopo il rerun di una sola attestazione M2 non correlata, fallita inizialmente per `socket hang up` OIDC.
+
+Gli importatori diretti repository-wide scendono 21→20: 12 in `test/s3/iam` e 8 in altri test non qualificati. La prova bounded non esegue un roundtrip STS live e non sostituisce la successiva qualifica IAM. La patch resta solo test: binario standard e coorte OCI esatta a 15 patch invariati, nessuna release ammessa.
+
+Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali; licenze e custodia durevole restano OPEN, MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati; zero operazioni target o nuova autorità.
+
 ## Checkpoint repository — test SSE migrati a SDK v2 (3 novembre 2026)
 
 La [patch 20](../patches/seaweedfs/4.52-sse-tests-sdk-v2.patch), SHA256 `53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c`, migra `test/s3/sse/s3_volume_encryption_test.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture, regione, path-style e casi funzionali. Le chiamate usano il contesto del test, l'SDK usa un solo tentativo e il cleanup ha un contesto indipendente con timeout di 30 secondi.

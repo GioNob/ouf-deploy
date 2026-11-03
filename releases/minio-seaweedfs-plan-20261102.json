@@ -56,7 +56,7 @@
     "version": "4.52",
     "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
     "qualifiedImagePatchCount": 15,
-    "repositoryPatchCount": 20,
+    "repositoryPatchCount": 21,
     "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
     "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
     "qualificationRunId": 41622752493,
@@ -75,15 +75,16 @@
     "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
     "awsSdkV1InQualifiedBinary": "ABSENT",
     "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
-    "remainingRepositoryDirectSdkV1Importers": 21,
-    "remainingIamTestImporters": 13,
+    "remainingRepositoryDirectSdkV1Importers": 20,
+    "remainingIamTestImporters": 12,
     "remainingOtherTestImporters": 8,
     "testOnlyDossiers": [
       "evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json",
       "evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json",
       "evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json",
       "evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json"
+      "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json"
     ],
     "licenceRawUnknownClassifications": 3,
     "licenceReview": "OPEN",
