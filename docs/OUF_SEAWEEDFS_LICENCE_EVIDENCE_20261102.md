@@ -1,3 +1,9 @@
+## Coorte 4.52 verificata su runner ospitato — 3 novembre 2026
+
+La [CI 41627470213](https://github.com/GioNob/ouf-deploy/actions/runs/41627470213) ha verificato l'esatta coorte tecnica e attestato la ricevuta bounded. La ricevuta hosted, ora trattenuta in `evidence/seaweedfs-452-cohort-readback-hosted-20261103.json`, è di 1.393 byte e ha SHA256 `da3482b4710e50c40634a89e37d7d17d78bdff8073d00e048ba00990de16f092`. L'artifact `13226228195` ha ZIP SHA256 `eff348904adb4ad63f6bf7304914b3972e11db468ea8c5d136c35972c5f1c6d4`.
+
+Il readback conferma 262 moduli di terze parti, 353 testi legali e il contesto byte-bound dei tre risultati UNKNOWN del classificatore. Questo è un risultato tecnico, non un'accettazione legale: `licenceReview=OPEN`, `redistributionAccepted=false`, `durableImageCustody=OPEN`, `releaseAdmitted=false`, zero autorità runtime e zero operazioni target.
+
 ## Readback della coorte 4.52 — 3 novembre 2026
 
 Il verificatore della [coorte candidata](OUF_SEAWEEDFS_452_COHORT_READBACK_20261103.md) collega l'archivio OCI completo, il readback indipendente, questo corpus storico e il delta della patch 15. La rilettura locale integrale ha riprodotto OCI e assessment, verificato firma e sorgenti e prodotto la ricevuta canonica SHA256 `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`.

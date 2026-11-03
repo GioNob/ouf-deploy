@@ -30,13 +30,19 @@ Risultato locale riproducibile:
 - manifest OCI `sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4`;
 - 262 moduli terzi e 353 testi legali legati ai checksum;
 - contesto esatto dei tre risultati `UNKNOWN` del classificatore verificato;
-- ricevuta canonica locale SHA256
-  `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`;
+- [ricevuta canonica ospitata](../evidence/seaweedfs-452-cohort-readback-hosted-20261103.json)
+  SHA256 `da3482b4710e50c40634a89e37d7d17d78bdff8073d00e048ba00990de16f092`;
 - 6 test unitari del verificatore PASS, oltre alla rilettura integrale.
 
-Il workflow dedicato scarica gli artifact originali con permesso Actions in sola
-lettura, ripete la verifica su runner ospitato, attesta la ricevuta e conserva solo
-la ricevuta bounded. Non pubblica né distribuisce l'immagine.
+Il [workflow dedicato 41627470213](https://github.com/GioNob/ouf-deploy/actions/runs/41627470213)
+ha completato con successo tutti i sette step sul sorgente `fe6b392c1e5789513c6cea18fdf913b0acf1c559`.
+Ha scaricato gli artifact originali con permesso Actions in sola lettura, ripetuto
+la verifica su runner ospitato, attestato la ricevuta e conservato soltanto la
+ricevuta bounded. L'artifact 13226228195 è un ZIP da 988 byte con un solo membro,
+SHA256 `eff348904adb4ad63f6bf7304914b3972e11db468ea8c5d136c35972c5f1c6d4`,
+scadenza 1 febbraio 2027. Il download indipendente locale ha confermato digest,
+membro unico e byte della ricevuta. Il workflow non pubblica né distribuisce
+l'immagine.
 
 ## Contesto dei tre risultati di licenza
 

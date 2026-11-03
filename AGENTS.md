@@ -1,3 +1,14 @@
+## Checkpoint storage 2026-11-03 — coorte 4.52 hosted PASS, non ammessa
+
+- CI dedicata [41627470213](https://github.com/GioNob/ouf-deploy/actions/runs/41627470213): 7/7 step PASS sul source commit `fe6b392c1e5789513c6cea18fdf913b0acf1c559`.
+- Ricevuta hosted: `TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED`, 1.393 byte, SHA256 `da3482b4710e50c40634a89e37d7d17d78bdff8073d00e048ba00990de16f092`.
+- Artifact bounded `13226228195`: ZIP SHA256 `eff348904adb4ad63f6bf7304914b3972e11db468ea8c5d136c35972c5f1c6d4`; scadenza CI 2027-02-01.
+- Verificati su runner ospitato OCI producer completo, readback indipendente, 16 checksum, 21 sorgenti, firma publisher, 262 moduli e 353 testi.
+- Licence review, accettazione redistribuzione e custodia durevole dell'immagine restano OPEN; SW-G1 e ammissione release restano chiusi.
+- MiniPET circa 35% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO resta attivo.
+- Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali, Farmacie 61 righe/10 OPEN/STRING preservati.
+- Zero operazioni target, replay/reset/grant, deploy, merge o autorità runtime.
+
 ## Checkpoint storage 2026-11-03 — coorte candidata riletta, G1 ancora aperto
 
 - Verificatore nuovo: `scripts/verify-seaweedfs-452-cohort.py`; workflow dedicato pin-nato a commit e 6 test unitari.

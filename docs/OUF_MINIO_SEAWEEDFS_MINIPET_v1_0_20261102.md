@@ -1,3 +1,9 @@
+## Checkpoint repository — coorte 4.52 verificata su runner ospitato (3 novembre 2026)
+
+La [CI 41627470213](https://github.com/GioNob/ouf-deploy/actions/runs/41627470213) ha completato **7/7 step PASS** sul commit `fe6b392c1e5789513c6cea18fdf913b0acf1c559`. Ha scaricato l'esatto OCI producer da 194.296.104 byte e il readback indipendente, ricostruito OCI e assessment, verificato 16 checksum, 21 sorgenti, firma publisher, 262 moduli e 353 testi. La ricevuta hosted trattenuta nel repository è di 1.393 byte, SHA256 `da3482b4710e50c40634a89e37d7d17d78bdff8073d00e048ba00990de16f092`; l'artifact bounded `13226228195` ha ZIP SHA256 `eff348904adb4ad63f6bf7304914b3972e11db468ea8c5d136c35972c5f1c6d4` ed è attestato dal workflow.
+
+Lo stato resta `TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED`: la coorte tecnica è verificata, ma review licenze, accettazione della redistribuzione e custodia durevole dell'immagine completa sono ancora OPEN. Nessuna ammissione release, autorità runtime o operazione target è stata prodotta. L'avanzamento resta **circa 35% ±10**: 0/8 gate, 0/21 AT e 0/120 oggetti reali; MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie rimangono invariati.
+
 ## Checkpoint repository — coorte tecnica 4.52 riletta localmente (3 novembre 2026)
 
 L'[esatta coorte candidata](OUF_SEAWEEDFS_452_COHORT_READBACK_20261103.md) è stata riletta sui byte trattenuti: archivio OCI completo da 194.296.104 byte, readback indipendente, delta licenze e corpus storico. Il verificatore ha ricostruito assessment e OCI, verificato 16 checksum interni, 21 sorgenti, firma del publisher, 262 moduli e 353 testi legali. Ricevuta canonica locale SHA256 `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`; 6 test unitari PASS e readback integrale PASS.
