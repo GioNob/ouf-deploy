@@ -1,3 +1,13 @@
+## Checkpoint repository — decima patch SDK lifecycle (3 novembre 2026)
+
+Il client `weed/remote_storage/s3` è migrato da AWS SDK Go v1 a `service/s3` v2 1.114.1 e `feature/s3/transfermanager` v0.4.3 con la [decima patch](../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch), source `f730a88253c7727933aa4e3a8c6a4d225e5ed53c`. Il [manifest](../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2-removed-packages.txt) vincola i 38 pacchetti v1 che devono uscire dalla chiusura compilata. La replica CI del nuovo checkpoint è attivata dall'aggiornamento del workflow e va letta separatamente dalle prove locali.
+
+Prove locali: **5.591 PASS, 5 skip, 20 pacchetti PASS**, race test del client, regressioni server sul default credential chain, build completa e riapplicazione esatta dopo le nove patch precedenti. Binario locale SHA256 `a0733e3b245945d597b63223a94638bfb1e8bf2bff4d5edb7a6222656ff8cc5c`. Il grafo esatto `CGO_ENABLED=0 go list -mod=readonly -deps ./weed` contiene **1.826 pacchetti, 14 SDK v1, 1 importatore produttivo diretto e 2 archi**. Il residuo diretto è confinato a `weed/s3api`; nessun package del deprecato `feature/s3/manager` è compilato. [Evidenza completa](../evidence/seaweedfs-remote-storage-s3-v2-local-20261103.json).
+
+Sono preservati listing, range read, copy e multipart copy, tag, cifratura, storage class, user-agent, delete condizionale, omissione storica di Content-Type e Content-MD5 su DeleteObjects. Endpoint espliciti e tuple di credenziali incomplete vengono negati; `AWS_ENDPOINT_URL_S3` implicito non può cambiare il binding. Il client SDK esegue un solo tentativo; il downloader assegna il retry del body a un unico owner locale. I test usano trasporto sintetico e nessun AWS/target.
+
+L'avanzamento resta circa **33% ±10**, non acceptance: **0/8 gate, 0/21 AT, 0/120 oggetti reali**. MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali e Farmacie 61 righe/10 OPEN/STRING sono invariati. Nessuna operazione target, replay/reset/grant, merge o deploy. Restano i due import XML/helper in `weed/s3api`, poi nuova immagine/SBOM/security/licenze/custody/coorte e qualifica recovery/identità/TLS/egress.
+
 ## Checkpoint repository — nona patch SDK lifecycle (3 novembre 2026)
 
 Il backend tier S3 è migrato da AWS SDK Go v1 al transfer manager mantenuto v0.4.3/S3 v2 1.114.1 nel patch `4.52-s3backend-sdk-v2.patch`, source `5083a7f177cb3f983028efdb815d66a023beb495`. La CI [41585394627](https://github.com/GioNob/ouf-deploy/actions/runs/41585394627) è SUCCESS in entrambi i job: applicazione ordinata di nove patch, chiusura dipendenze esatta, regressioni e build.
