@@ -1,3 +1,19 @@
+# Checkpoint 3 novembre 2026 — SQS su SDK mantenuto, sei patch
+
+La sesta [patch](../patches/seaweedfs/4.52-sqs-sdk-v2.patch) porta publisher SQS e consumer di replica a SDK v2 SQS 1.51.0, già fissato in go.mod/go.sum. Entrambi i lockfile restano invariati. Mantiene payload protobuf, attributo key, delay 10s, long poll/visibility 20s, un messaggio per ricezione e cancellazione solo dopo successo della replica. Credenziali statiche incomplete, regione implicita, endpoint alternativo implicito e URL di coda assente producono errore prima dell'operazione dipendente. Il tipo QueueDoesNotExist resta riconoscibile. Il trasporto HTTP ha timeout 30s; un solo tentativo SDK evita replay nascosti di invii ambigui. Nessun nuovo retry loop o rinnovo di autorità.
+
+Suite locale sull'esatta patch finale: **5.444 eventi PASS, 5 skip preesistenti, 15 pacchetti PASS**; build del server riuscita e 8 regressioni del valutatore lifecycle PASS. Test con serializer e firma SDK reali, risposte HTTP sintetiche e credenziali fixture; nessuna richiesta AWS o target. [Prove, hash e limiti](../evidence/seaweedfs-sqs-v2-local-20261103.json). La quinta patch S3 conserva 19 modelli locali e compatibilità delle ACL persistite, come documentato sotto.
+
+Grafo server: **1.845 pacchetti, 53 SDK v1, 5 importatori diretti, 29 archi v1**. Rispetto al checkpoint iniziale di questo giro (quattro patch), i pacchetti v1 scendono da 54 a 53 e gli importatori da 8 a 5. SQS v2 introduce 96 pacchetti di client/configurazione/autenticazione mantenuti: il [manifest esatto](../patches/seaweedfs/4.52-sqs-sdk-v2-added-packages.txt) è verificato dalla CI. La crescita transitoria della chiusura mentre convivono v1/v2 è esplicita; non è riduzione della superficie totale già dimostrata.
+
+CI quattro patch [41578323726](https://github.com/GioNob/ouf-deploy/actions/runs/41578323726) PASS. Replica quinta [41580156811](https://github.com/GioNob/ouf-deploy/actions/runs/41580156811) in corso al checkpoint. Replica sei patch finale [41580991342](https://github.com/GioNob/ouf-deploy/actions/runs/41580991342), source 7da527895dfacc34650b3cf9feb700912a8c09f5, in coda al checkpoint. Non attribuire alle prove locali il risultato CI ancora pendente.
+
+Limiti: default credential chain v2, profili/ruoli/process/SSO e relativi endpoint esterni richiedono qualifica dei binding e dell'autorità; un singolo tentativo SDK non implementa budget durevoli o riconciliazione del chiamante. Il callback preesistente non propaga al chiamante un errore di cancellazione SQS: recovery completo ancora aperto. Nuova immagine, SBOM, scansioni, licenze/custody/coorte devono essere ricalcolate; il VEX del vecchio binario non si estende al nuovo hash.
+
+**MiniPET circa 33% (±10 punti), 0/8 gate chiusi, 0/21 AT accettati, 0/120 oggetti reali copiati.** MinIO resta in esercizio. Scope17 consumato e 52 EngineGET invariati; Teatri/M1 8/8 tecniche e 6/6 funzionali, stessa Farmacie 61 righe/10 OPEN/STRING preservati. Prossimo: verificare CI finale, migrare KMS e i tre client S3/replica/storage, rimuovere parser/helper residui e poi ricostruire la nuova qualifica G1. Nessun passo target ammesso da questo checkpoint.
+
+## Checkpoint precedente
+
 # Checkpoint 3 novembre 2026 — modelli S3 e ACL persistite
 
 La quinta [patch](../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch) estrae 19 modelli S3 dal client SDK v1. Mantiene campi, ordine, tag, puntatori e licenze. I confronti verificano JSON storico e rilettura delle ACL, XML delle risposte multipart e parsing delle richieste ACL/ownership/versioning. Il parser storico resta invariato, inclusi casi di contenuto misto, radici multiple e XML malformato. Due log non stampano più l'intera richiesta multipart, perché i modelli locali non ereditano la redazione del formatter SDK.
