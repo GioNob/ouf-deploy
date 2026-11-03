@@ -1,0 +1,203 @@
+{
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "upstream": "seaweedfs/seaweedfs@984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "previous_ouf_checkpoint": "0102fd8fc835997fd9cc98eea96f4b8b5a977bb9",
+  "patches": 7,
+  "go": "1.27.3",
+  "CGO_ENABLED": 0,
+  "GOPROXY_during_tests": "off",
+  "module_mode_during_tests": "readonly",
+  "test_pass_events": 5500,
+  "test_skip_events": 5,
+  "packages": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/kms/aws",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/kms",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/command",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "status": "pass"
+    }
+  ],
+  "lifecycle_evaluator_python_tests": 8,
+  "all_seven_patches_reapplied_byte_equal_files": 51,
+  "graph": {
+    "total_packages": 1848,
+    "sdk_v1_packages": 52,
+    "sdk_v1_direct_importer_packages": 4,
+    "sdk_v1_direct_import_edges": 24,
+    "delta_from_six_patches": {
+      "added_packages": 4,
+      "added_manifest": "patches/seaweedfs/4.52-kms-sdk-v2-added-packages.txt",
+      "removed": [
+        "github.com/aws/aws-sdk-go/service/kms"
+      ]
+    }
+  },
+  "modules": {
+    "github.com/aws/aws-sdk-go-v2/service/kms": "v1.62.2",
+    "github.com/aws/aws-sdk-go-v2": "v1.47.5",
+    "github.com/aws/aws-sdk-go-v2/internal/configsources": "v1.5.8",
+    "github.com/aws/aws-sdk-go-v2/internal/endpoints/v2": "v2.8.8",
+    "github.com/aws/smithy-go": "v1.28.7"
+  },
+  "ci": {
+    "six_patches": {
+      "run": 41580991342,
+      "head": "7da527895dfacc34650b3cf9feb700912a8c09f5",
+      "status": "success",
+      "readback": "Both verify and seaweedfs_patches completed successfully; workflow conclusion success."
+    },
+    "seven_patches": {
+      "status": "not_yet_published_at_local_qualification"
+    }
+  },
+  "files": [
+    {
+      "path": "deploy/patches/seaweedfs/4.52-kms-sdk-v2.patch",
+      "bytes": 30935,
+      "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a"
+    },
+    {
+      "path": "deploy/patches/seaweedfs/4.52-kms-sdk-v2-added-packages.txt",
+      "bytes": 197,
+      "sha256": "72e6278718b3995a6f360eb39d05bd1544767f44270bb06cfefc01f9c85519ee"
+    },
+    {
+      "path": "toolchain/kms-v2-tests.jsonl",
+      "bytes": 7186239,
+      "sha256": "77d3a94cf9bb9c439bc869077fe402ff47c709f878d09fa5f944bd63f476978a"
+    },
+    {
+      "path": "toolchain/kms-v2-import-edges.txt",
+      "bytes": 483968,
+      "sha256": "09b58fdcbf423276ff69741e060bf81c1aa852139b103a11022483d1af04fb0e"
+    },
+    {
+      "path": "toolchain/weed-4.52-kms-v2-lab",
+      "bytes": 226221428,
+      "sha256": "46f2fc4c4e0c930601793a50900c1ce1959bfa8e389dcbb75e302587f1a1fc7e"
+    },
+    {
+      "path": "toolchain/kms-v2-build-info.txt",
+      "bytes": 25035,
+      "sha256": "b06734fcab12bdec35bb85286e6823db361de134437e146436446cd9cdd1f7b9"
+    },
+    {
+      "path": "seaweed-452/go.mod",
+      "bytes": 26691,
+      "sha256": "89a53450a03defaa3786f22d10e63d1268eb08861fbf475e5ee6f412159b27bf"
+    },
+    {
+      "path": "seaweed-452/go.sum",
+      "bytes": 168592,
+      "sha256": "85b94bbcb8f085383e68e1de6d372609fed7d5b3b82114fb7db68f8af8571757"
+    }
+  ],
+  "verified_contracts": [
+    "Real SDK v2 JSON serialization, SigV4/service/region signing and session token with synthetic HTTP; no AWS account or target contacted",
+    "GenerateDataKey AES_256 and encryption context; standardized ciphertext envelope byte equality",
+    "Decrypt of previously stored envelope; alias resolution and DescribeKey metadata",
+    "Nine provider error codes including wrapped Smithy API errors retain SeaweedFS mapping",
+    "One SDK attempt for ambiguous GenerateDataKey HTTP500 and transport failures; cancelled request produces no transport call",
+    "Static credentials/session precedence, environment fallback and explicit shared profile fixture",
+    "Explicit region; partial or orphan static credentials and unsupported role/external ID fields denied",
+    "Implicit KMS/global endpoint overrides denied; explicit endpoint precedence and malformed URL rejection",
+    "Connect/request timeouts default10/30s and explicit7/19s; negative/overflow durations and nonzero max_retries rejected",
+    "Nil/invalid request and envelope validation before I/O; missing metadata rejected"
+  ],
+  "normative_sources_consulted": [
+    "docs/baseline/v1.7/text/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.txt sections1,4,5",
+    "docs/baseline/v1.7/text/OUF_PET_Data_Lake_UDP_Urban_Object_Registry_v1_3_Development_Ready.txt sections109.4,109.5 and secret custody paragraph",
+    "docs/OUF_RESILIENCE_POLICY.md v3 rules1-10,governed recovery and qualification criteria",
+    "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md current checkpoint and WP/gates"
+  ],
+  "intentional_configuration_changes": [
+    "Region is now mandatory rather than silently us-east-1.",
+    "max_retries must be zero/absent: previous default3 internal retries replaced by one attempt; owner recovery not implemented by this patch.",
+    "connect_timeout now actually configures the dialer; previously read but unused.",
+    "role_arn/external_id previously ignored now rejected; shared-profile role configuration remains a distinct binding requiring qualification.",
+    "Default SDK v2 chain can differ from v1 and is not a qualification of production credentials."
+  ],
+  "limitations": [
+    "Only synthetic HTTP transport and local credential fixtures; no live KMS/SSE or target acceptance.",
+    "SDK v2 KMS adds four compiled packages and upgrades four shared modules; go.mod/go.sum changes are intentional. Full new SBOM/security/licence/custody/cohort qualification remains OPEN.",
+    "Explicit HTTP endpoint remains available for isolated LocalStack compatibility; target TLS/egress allowlisting is separately required.",
+    "SDK default chain including roles/process/SSO/external identity endpoints and refresh needs binding/authority qualification.",
+    "One SDK attempt plus inherited error conversion does not implement durable retry, ambiguity reconciliation or preserve cancellation as a typed domain cause.",
+    "Historical envelope/provider behavior remains; no redesign of key identity validation or provider response policy.",
+    "SDK v1 remains in three S3 clients and S3 request parser/helpers.",
+    "No target operation, object copy, replay/reset/grant, merge/deploy, admission or release acceptance.",
+    "Scope17 consumed/52EngineGET,Teatri M1 and same Farmacie61rows/10OPEN/STRING remain preserved."
+  ],
+  "minipet": {
+    "estimated_engineering_progress_percent": 33,
+    "uncertainty_percentage_points": 10,
+    "gates_closed": 0,
+    "gates_total": 8,
+    "AT_accepted": 0,
+    "AT_total": 21,
+    "real_objects_copied": 0,
+    "real_objects_total": 120
+  }
+}

@@ -1,3 +1,21 @@
+# Checkpoint 3 novembre 2026 — KMS su SDK v2, sette patch
+
+La settima [patch](../patches/seaweedfs/4.52-kms-sdk-v2.patch) migra il provider AWS KMS a `service/kms v1.62.2`. Aggiorna core SDK a1.47.5,configsources1.5.8,endpoints2.8.8 e smithy1.28.7 con versioni/checksum espliciti in go.mod/go.sum. La suite comprende SQS per verificare le dipendenze condivise aggiornate. Nessuna nuova dipendenza entra senza manifest: la chiusura compilata aggiunge quattro pacchetti KMS v2 e rimuove service/kms v1.
+
+**5.500 eventi PASS,5skip preesistenti,17pacchetti PASS; build completa riuscita e8test lifecycle PASS.** Tutte sette patch sono state riapplicate al sorgente iniziale e i51file risultano identici ai byte testati. Grafo: **1.848 pacchetti,52SDKv1,4importatori diretti,24archi**. Il vecchio SDK resta necessario ai tre client S3 e al parser/helper del server. [Prove,hash,versioni e limiti](../evidence/seaweedfs-kms-v2-local-20261103.json).
+
+Test con SDK/firma reali e HTTP sintetico: GenerateDataKey AES_256,contesto di cifratura,envelope persistito identico,Decrypt,alias/metadata,errori AWS e trasporto,cancellazione e input invalidi. Zero richieste ad AWS o al target. Le risposte remote reali,KMS/SSE e i binding di produzione richiedono successiva qualifica.
+
+Modifiche intenzionali di configurazione: regione obbligatoria,credenziali statiche complete,session token senza coppia negato,role_arn/external_id precedentemente ignorati ora negati. Il timeout di connessione viene effettivamente applicato; default dial/request10/30s,valori negativi/overflow negati. max_retries deve essere assente/0: un solo tentativo SDK restituisce l'esito ambiguo al chiamante; non implementa recovery durevole. Endpoint alternativo solo esplicito,con validazione URL; HTTP resta per laboratorio LocalStack,mentre target TLS/allowlist rimangono obbligatori. Credenziali da profili/ruoli/process/SSO,endpoint identità e refresh richiedono qualifica distinta.
+
+La [CI sei patch41580991342](https://github.com/GioNob/ouf-deploy/actions/runs/41580991342),source7da527895dfacc34650b3cf9feb700912a8c09f5,è confermata **SUCCESS** in entrambi i job. La replica settima viene attivata dalla pubblicazione: risultato remoto ancora da verificare. La nuova immagine,SBOM,scansioni,licenze,custodia e coorte non sono ancora qualificate; il vecchio VEX vale soltanto per il vecchio hash.
+
+**MiniPET circa33%(±10punti):0/8gate,0/21AT,0/120oggetti reali copiati.** Lo sviluppo del candidato avanza,ma non chiude alcun gate di ammissione/migrazione. MinIO resta in esercizio. Scope17/52EngineGET,Teatri/M1 8/8tecniche e6/6funzionali,stessaFarmacie61righe/10OPEN/STRING invariati. Nessun effetto target,merge,deploy o nuova autorità. Prossimo: CI settima,client S3 remoti/replica/storage,parser XML/helper e nuova qualifica G1.
+
+Fonti normative consultate: Matrix1.7§1/4/5,UDP1.3§109.4/109.5 e secret custody,policy resilienzav3 regole1–10 e qualifica. Il laboratorio non sostituisce i binding effettivi e le autorità HUMAN/THS.
+
+## Checkpoint precedente
+
 # Checkpoint 3 novembre 2026 — SQS su SDK mantenuto, sei patch
 
 La sesta [patch](../patches/seaweedfs/4.52-sqs-sdk-v2.patch) porta publisher SQS e consumer di replica a SDK v2 SQS 1.51.0, già fissato in go.mod/go.sum. Entrambi i lockfile restano invariati. Mantiene payload protobuf, attributo key, delay 10s, long poll/visibility 20s, un messaggio per ricezione e cancellazione solo dopo successo della replica. Credenziali statiche incomplete, regione implicita, endpoint alternativo implicito e URL di coda assente producono errore prima dell'operazione dipendente. Il tipo QueueDoesNotExist resta riconoscibile. Il trasporto HTTP ha timeout 30s; un solo tentativo SDK evita replay nascosti di invii ambigui. Nessun nuovo retry loop o rinnovo di autorità.

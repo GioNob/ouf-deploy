@@ -1,3 +1,17 @@
+# Stato corrente — sette patch storage; KMS su SDK v2, G1 aperto
+
+3 novembre 2026. Ripartire da [MiniPET storage](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) e [prova KMS](evidence/seaweedfs-kms-v2-local-20261103.json). Sette patch ordinate sul tag4.52/984eac6a790be89e2a11de175a7413e1e3e32dd3: la settima migra KMS a SDKv2 service/kms1.62.2. Aggiornati core1.47.5/configsources1.5.8/endpoints2.8.8/smithy1.28.7 e go.mod/go.sum; nuova qualifica supply-chain obbligatoria.
+
+Locale: 5.500 eventi PASS/5skip preesistenti,17pacchetti PASS,build server riuscita,8regressioni lifecycle PASS. Tutte sette patch riapplicate da baseline e confrontate byte-per-byte:51file uguali al sorgente provato. Grafo1848pacchetti/52SDKv1/4importatori/24archi; quattro nuovi pacchetti KMSv2 al posto di service/kmsv1. CI sei patch41580991342 confermata SUCCESS su source7da527895d. CI settima da verificare dopo pubblicazione; non attribuire al remoto le prove locali.
+
+KMS mantiene envelope cifrato, contesto, risoluzione alias e codici errori; firma reale con HTTP sintetico,nessun AWS. Regione obbligatoria; credenziali parziali,session token orfano,endpoint implicito e role_arn/external_id non supportati negati. max_retries assente/0 implica un tentativo,nonzero negato; timeout dial/request10/30s,espliciti e validati. Sono cambiamenti intenzionali di configurazione. Profili/ruoli/process/SSO,refresh,TLS/egress e recovery durevole restano da qualificare; non dichiarare resilienza completa.
+
+Prossimo: verificare CI settima,poi tre client S3 (remote_storage/s3,replication/sink/s3sink,storage/backend/s3_backend) e parser XML/helper. Conservare compatibilità dei dati persistiti e casi XML ambiguo/malformato. Ricalcolare immagine/SBOM/scansione/licenze/custody/coorte; vecchio VEX non trasferibile.
+
+MiniPET circa33%(±10punti),0/8gate chiusi,0/21AT,0/120oggetti copiati; MinIO ancora in esercizio. Scope17consumato/52EngineGET e Teatri/M1 8/8tecniche,6/6funzionali; stessaFarmacie61righe/10OPEN/STRING preservati. Nessun effetto target,replay/reset/grant,merge/deploy o acceptance. Sviluppo sequenziale senza subagenti,verificare concorrenza prima di modificare; autorità runtime HUMAN/THS distinta. Consultati Matrix1.7§1/4/5,UDP1.3§109.4/109.5 e policy resilienzav3; originali in docs/baseline/v1.7.
+
+## Checkpoint precedenti — storico
+
 # Stato corrente — sei patch storage, SQS su SDK v2; G1 aperto
 
 3 novembre 2026. Proseguire dal [MiniPET storage](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) e dalle evidenze [S3 wire](evidence/seaweedfs-s3-wire-local-20261103.json) / [SQS v2](evidence/seaweedfs-sqs-v2-local-20261103.json). Sei patch sequenziali su SeaweedFS 4.52 commit 984eac6a790be89e2a11de175a7413e1e3e32dd3. Quarta IAM, quinta 19 modelli S3/ACL persistite, sesta publisher/consumer SQS su v2 1.51.0 già pinato. go.mod/go.sum invariati. Source finale patch 7da527895dfacc34650b3cf9feb700912a8c09f5.
