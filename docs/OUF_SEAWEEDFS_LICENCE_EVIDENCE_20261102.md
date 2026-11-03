@@ -1,3 +1,9 @@
+## Readback della coorte 4.52 — 3 novembre 2026
+
+Il verificatore della [coorte candidata](OUF_SEAWEEDFS_452_COHORT_READBACK_20261103.md) collega l'archivio OCI completo, il readback indipendente, questo corpus storico e il delta della patch 15. La rilettura locale integrale ha riprodotto OCI e assessment, verificato firma e sorgenti e prodotto la ricevuta canonica SHA256 `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`.
+
+I tre risultati UNKNOWN sono vincolati a modulo, versione, percorso, hash e co-rilevazioni. Questo è contesto tecnico: `licenceReview=OPEN` e `redistributionAccepted=false` restano obbligatori. L'immagine completa resta in artifact CI temporaneo fino al 1 febbraio 2027; la custodia durevole è OPEN. Nessuna release, ammissione, operazione target o autorità runtime.
+
 # SeaweedFS — licenze e attribuzioni della generazione esatta
 
 ## Review tecnica G1 — 3 novembre 2026

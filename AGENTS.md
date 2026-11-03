@@ -1,3 +1,16 @@
+## Checkpoint storage 2026-11-03 — coorte candidata riletta, G1 ancora aperto
+
+- Verificatore nuovo: `scripts/verify-seaweedfs-452-cohort.py`; workflow dedicato pin-nato a commit e 6 test unitari.
+- Readback locale integrale PASS su OCI completo 194.296.104 byte, artifact readback, delta licenze e corpus storico.
+- Confermati 16 checksum, 21 sorgenti, OCI/assessment, firma GitHub esatta, 262 moduli e 353 testi.
+- Ricevuta canonica locale SHA256 `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`.
+- Contesto esatto dei tre UNKNOWN licenza vincolato ai byte; nessuna accettazione o espressione SPDX inventata.
+- Stato imposto: `TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED`, licence review e durable image custody OPEN.
+- CI remota del nuovo workflow da verificare dopo pubblicazione; non attribuire alla CI la prova locale.
+- MiniPET circa 35% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO attivo.
+- Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali, Farmacie 61/10 OPEN/STRING invariati.
+- Nessuna operazione target, replay/reset/grant, release, merge, deploy o autorità runtime.
+
 ## Checkpoint storage 2026-11-03 — zero SDK v1 nel binario (11 patch)
 
 - Source patch commit: `e5a36b02fe46105b88500ceba9337cb79d06c91d`; baseline SeaweedFS 4.52 `984eac6a790be89e2a11de175a7413e1e3e32dd3`.

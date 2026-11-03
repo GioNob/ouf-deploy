@@ -1,3 +1,11 @@
+## Checkpoint repository — coorte tecnica 4.52 riletta localmente (3 novembre 2026)
+
+L'[esatta coorte candidata](OUF_SEAWEEDFS_452_COHORT_READBACK_20261103.md) è stata riletta sui byte trattenuti: archivio OCI completo da 194.296.104 byte, readback indipendente, delta licenze e corpus storico. Il verificatore ha ricostruito assessment e OCI, verificato 16 checksum interni, 21 sorgenti, firma del publisher, 262 moduli e 353 testi legali. Ricevuta canonica locale SHA256 `390121e8d48793f0f10fa3351e8aa87fe5603fd7617f680ebc7dd978272b0a11`; 6 test unitari PASS e readback integrale PASS.
+
+I tre risultati UNKNOWN del classificatore restano grezzi e visibili. Il verificatore lega ciascuno a modulo, versione, percorso, SHA256 e co-rilevazioni Apache/BSD, ma impone `licenceReview=OPEN`, `redistributionAccepted=false`, `durableImageCustody=OPEN`, `releaseAdmitted=false`, zero autorità runtime e zero operazioni target. Il workflow dedicato con azioni pin-nate a commit ripeterà la prova su runner GitHub e attesterà soltanto la ricevuta bounded; il suo esito remoto è ancora da confermare.
+
+Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali. SW-G1 resta aperto per review licenze e custodia durevole dell'immagine; coorte dei contenuti verificata localmente, non ammessa. MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati. Nessun replay, reset, grant, deploy, merge o nuova autorità.
+
 ## Checkpoint repository — immagine 4.52 attestata, sottogate vulnerabilità PASS_RAW (3 novembre 2026)
 
 La [CI 41622752493](https://github.com/GioNob/ouf-deploy/actions/runs/41622752493) ha superato **tutte e quattro le job** sul commit `7a775d2a63ae5ede005056c325db85e2f335ed94`. Evidenze verificate: 16 test di packaging, **5.591 PASS, 5 skip, 20 pacchetti PASS**, sei casi remote-cache su due istanze, build esatta e smoke nonroot/read-only senza rete. Il [lock 4.52](../releases/seaweedfs-452-candidate-lock-20261103.json) fissa sorgente, patch, SHA server e digest OCI. Il binario standard e la SBOM sono privi di AWS SDK v1 e del manager S3 deprecato. La scansione Trivy 0.70.0, con tutti i livelli e gli unfixed, restituisce **zero rilievi a tutte le severità**, 264 componenti scansionati e 266 record SPDX. Nessuna disposizione di applicabilità è stata applicata.
