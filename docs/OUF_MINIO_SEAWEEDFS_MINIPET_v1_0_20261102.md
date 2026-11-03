@@ -1,3 +1,11 @@
+## Checkpoint repository — signer S3Tables migrato a SDK v2 (3 novembre 2026)
+
+La [patch 19](../patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch), SHA256 `aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398`, migra il signer SigV4 di `test/s3tables/catalog/iceberg_catalog_test.go` a AWS SDK Go v2. Conserva credenziali fixture, regione `us-east-1`, servizio `s3tables` e payload firmato; payload hash e contesto della richiesta sono ora espliciti.
+
+La [CI 41649313494](https://github.com/GioNob/ouf-deploy/actions/runs/41649313494) ha completato tutti gli otto step principali applicando in ordine diciannove patch. Il grafo del package contiene 639 pacchetti e zero SDK v1. L'artifact attestato `13235454773`, ZIP SHA256 `7c0587f35a79f306912250b0e71dc5e5364f8232d021e0ea6cf52d5c935fb440`, conserva sette file e l'elenco esatto dei 22 importatori residui. La tornata complessiva è 51/51 SUCCESS.
+
+Gli importatori diretti repository-wide scendono 23→22: 13 in `test/s3/iam` e 9 in altri test non qualificati. La patch è solo test e non sostituisce l'esatta coorte OCI a 15 patch, non modifica il server qualificato e non ammette una release. Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali; licenze e custodia durevole restano OPEN, MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati; zero operazioni target o nuova autorità.
+
 ## Checkpoint repository — test volume/gRPC S3 migrato a SDK v2 (3 novembre 2026)
 
 La [patch 18](../patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch), SHA256 `743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7`, migra `test/volume_server/grpc/fetch_remote_s3_test.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture, regione `us-east-1` e path-style. L'SDK usa un solo tentativo; CreateBucket e PutObject ricevono context e gli errori prima ignorati sono verificati.

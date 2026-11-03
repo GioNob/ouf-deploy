@@ -23,7 +23,9 @@ Il workflow `.github/workflows/storage-s3tables-signer-sdk-v2.yml`, con azioni p
 
 ## Esito hosted
 
-PENDING: il workflow dedicato deve ancora essere eseguito sul commit pubblicato.
+La [CI 41649313494](https://github.com/GioNob/ouf-deploy/actions/runs/41649313494) è PASS sul commit `8fa05cb181c8816c8b6ae429822e9ea5b7170e96`. Tutti gli otto step principali sono riusciti, inclusi applicazione delle diciannove patch, controllo del perimetro residuo, test non-network, attestazione e retention.
+
+L'artifact `13235454773` contiene sette file e scade il 1 febbraio 2027. Lo ZIP di 6.627 byte ha SHA256 `7c0587f35a79f306912250b0e71dc5e5364f8232d021e0ea6cf52d5c935fb440`; tutti i sei membri elencati in `SHA256SUMS` sono stati riletti e verificati. Il readback conferma 639 pacchetti nel grafo del test, zero pacchetti SDK v1 e l'elenco esatto dei 22 importatori diretti residui.
 
 ## Confini
 
