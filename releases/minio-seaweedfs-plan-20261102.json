@@ -188,7 +188,8 @@
       "effortHoursRange": [
         8,
         16
-      ]
+      ],
+      "executionStatus": "HISTORICAL_OCI15_SYNTHETIC_COLD_RESTORE_PASS_MIME_FAIL_COORDINATED_DB_RECOVERY_AND_TARGET_PENDING"
     },
     {
       "id": "SW-WP4",
@@ -365,7 +366,7 @@
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
-  "nextPlannedWork": "Complete competent licence and redistribution review, durable custody of the exact OCI image, remaining unqualified test-only AWS SDK Go v1 importers, and G0 writer/DB/fence/backup/capacity prerequisites. No target command before G0-G4 and no release admission without the required HUMAN/THS authority.",
+  "nextPlannedWork": "Bind generation29 image, fresh scan/SPDX, verified provenance and exact licence corpus into its own cohort, then run new cold recovery with strict MIME preservation and identity/TLS/egress labs; develop coordinated DB/object recovery and writer fencing. Competent licence/redistribution review, durable exact-image custody and target bindings remain OPEN. No target command before G0-G4 and no release admission without required HUMAN/THS authority.",
   "openTargetInputs": [
     "private ACL grants and publicAccessBlock compatibility/control mapping",
     "current writers, external consumers and database references",
@@ -767,21 +768,21 @@
     "schema": "ouf.storage-planning-progress-estimate.v1",
     "status": "HEURISTIC_NOT_ACCEPTANCE",
     "date": "2026-11-03",
-    "exactWeightedEstimatePercent": 34.56521739130435,
-    "reportedApproximatePercent": 35,
+    "exactWeightedEstimatePercent": 38.04347826086957,
+    "reportedApproximatePercent": 38,
     "uncertaintyPercentagePoints": 10,
     "weights": "original WP minimum engineering-hour estimates; 46 total",
     "creditsPercent": [
       50,
       85,
       60,
-      15,
+      35,
       35,
       0,
       0,
       0
     ],
-    "weightedCredits": 15.9,
+    "weightedCredits": 17.5,
     "gatePass": 0,
     "gateTotal": 8,
     "acceptanceTestPass": 0,
@@ -789,7 +790,23 @@
     "realObjectsCopied": 0,
     "realObjectTotal": 120,
     "doesNotMeasureElapsedTime": true,
-    "doesNotMeasureAcceptance": true
+    "doesNotMeasureAcceptance": true,
+    "creditChange": {
+      "workPackage": "SW-WP3",
+      "previousCreditPercent": 15,
+      "currentCreditPercent": 35,
+      "receipt": "evidence/seaweedfs-452-cold-recovery-hosted-20261103.json",
+      "receiptSha256": "2cb1ae3c6ca67f58bac1ac5b48a7c2db934f26ee033098d3cf82571de313fa6c",
+      "reason": "Independent synthetic cold copy/restore of exact historical OCI15, retained byte/hash evidence and eight clean container exits; MIME incompatibility remains FAIL. Preliminary engineering credit only; no transfer of runtime proof to generation29.",
+      "remaining": [
+        "Coordinated PostgreSQL dump/restore and WAL/PITR",
+        "Writer fencing and actual DB/object bindings",
+        "Crash/reboot and complete source-host loss",
+        "TLS/key rotation",
+        "Representative capacity, RPO and RTO acceptance",
+        "Full foundation backup contract and durable image custody"
+      ]
+    }
   },
   "licenceEvidence": {
     "status": "CORPUS_AND_MPL_SOURCES_QUALIFIED_NOT_ADMITTED",
@@ -858,5 +875,70 @@
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
     "resolvedBy": "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json"
+  },
+  "historicalRuntimeQualification": {
+    "coldRecovery15": {
+      "receipt": "evidence/seaweedfs-452-cold-recovery-hosted-20261103.json",
+      "receiptSha256": "2cb1ae3c6ca67f58bac1ac5b48a7c2db934f26ee033098d3cf82571de313fa6c",
+      "status": "HOSTED_SYNTHETIC_COLD_RESTORE_PASS_MIME_FAIL_NOT_ACCEPTANCE",
+      "runId": 41696541366,
+      "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+      "orderedImagePatchCount": 15,
+      "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+      "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+      "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+      "syntheticObjects": 5,
+      "syntheticBytes": 8388702,
+      "backupFiles": 110,
+      "backupBytes": 8417419,
+      "eightDistinctContainerIdentities": true,
+      "allExitCodesZero": true,
+      "octetStreamCompatibility": "FAIL",
+      "g2Closed": false,
+      "g3Closed": false,
+      "fullFoundationBackupContractSatisfied": false,
+      "postgresRecovery": "NOT_TESTED",
+      "rpoAcceptance": false,
+      "rtoAcceptance": false,
+      "transferredToGeneration29": false,
+      "releaseAdmitted": false,
+      "runtimeAuthorityIssued": false,
+      "targetOperations": 0
+    }
+  },
+  "generation29Qualification": {
+    "status": "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING",
+    "orderedPatchCount": 29,
+    "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+    "runId": 41696541570,
+    "receipt": "evidence/seaweedfs-452-generation29-image-hosted-20261103.json",
+    "receiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
+    "buildManifest": "releases/seaweedfs-452-generation29-build-manifest-20261103.json",
+    "buildManifestSha256": "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9",
+    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+    "imageConfigDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "patchedSourceTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "publisherSignatureVerifiedByHostedReader": true,
+    "localCryptographicSignatureVerificationClaimed": false,
+    "phaseBHostedCohort": "PENDING",
+    "runtimeLabs29": "PENDING",
+    "oldRuntimeEvidenceTransferred": false,
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false,
+    "durableImageCustody": "OPEN",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "activeStorageBackend": "MinIO"
   }
 }

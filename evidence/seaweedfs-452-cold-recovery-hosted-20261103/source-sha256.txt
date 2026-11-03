@@ -1,0 +1,4 @@
+a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089  scripts/run-seaweedfs-452-cold-recovery.py
+34b5da5f3e623f64634ebee8d5fcb92d38af61f92b0db537758ed99fd022d01a  tests/test_seaweedfs_452_cold_recovery.py
+81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea  releases/seaweedfs-452-candidate-lock-20261103.json
+bb55f726fbed4e6af44db129d0f4107fb74a973b296138f77147f5bd71d27831  .github/workflows/storage-452-cold-recovery.yml

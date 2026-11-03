@@ -11,6 +11,7 @@ on:
       - tests/test_storage_recovery_*.py
       - tests/fixtures/storage-recovery/**
       - docs/OUF_SEAWEEDFS_COORDINATED_RECONCILER_20261103.md
+      - docs/OUF_SEAWEEDFS_POSTGRES_FIXTURE_ADAPTER_20261103.md
       - docs/OUF_SEAWEEDFS_452_RECOVERY_FOUNDATION_20261103.md
   workflow_dispatch:
 
@@ -49,11 +50,14 @@ jobs:
             tools/storage_recovery/profile.py \
             tools/storage_recovery/manifest.py \
             tools/storage_recovery/coordinated.py \
+            tools/storage_recovery/postgres_fixture.py \
             tests/test_storage_recovery_profile.py \
             tests/test_storage_recovery_manifest.py \
             tests/test_storage_recovery_coordinated.py \
+            tests/test_storage_recovery_postgres_fixture.py \
             tests/fixtures/storage-recovery/catalog.sql \
             docs/OUF_SEAWEEDFS_COORDINATED_RECONCILER_20261103.md \
+            docs/OUF_SEAWEEDFS_POSTGRES_FIXTURE_ADAPTER_20261103.md \
             docs/OUF_SEAWEEDFS_452_RECOVERY_FOUNDATION_20261103.md \
             | LC_ALL=C sort > "$evidence/source-sha256.txt"
           printf '%s\n' \

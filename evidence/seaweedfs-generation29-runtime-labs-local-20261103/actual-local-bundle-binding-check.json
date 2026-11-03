@@ -1,0 +1,10 @@
+{
+  "status": "REAL_LOCAL_COHORT_LAYOUT_COMPATIBILITY_PASS_NOT_HOSTED",
+  "lockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+  "fixtureArchiveSha256": "daf9760661a9f33b514abcda0c9dfdeae97139c103760d7a40fc6798e2664ff5",
+  "receiptSha256": "9fc580014adb20ab50d321a1e7be84f9aa788dfbbbf1b832eaa87f7d25f02eca",
+  "members": 9,
+  "dockerCommands": 0,
+  "runtimeLabExecuted": false,
+  "notAHostedCohortQualification": true
+}

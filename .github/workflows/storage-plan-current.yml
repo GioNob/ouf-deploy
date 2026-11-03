@@ -20,6 +20,10 @@ on:
       - evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json
       - evidence/storage-ouf-standard-41691297148/**
       - evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json
+      - evidence/seaweedfs-452-cold-recovery-hosted-20261103.json
+      - evidence/seaweedfs-452-cold-recovery-hosted-20261103/**
+      - evidence/seaweedfs-452-generation29-image-hosted-20261103.json
+      - releases/seaweedfs-452-generation29-build-manifest-20261103.json
       - patches/seaweedfs/4.52-ouf-standard-optional-closure.patch
       - patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch
       - patches/seaweedfs/4.52-normal-tests-sdk-v2.patch
@@ -79,6 +83,10 @@ jobs:
             evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json \
             evidence/storage-ouf-standard-41691297148/* \
             evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json \
+            evidence/seaweedfs-452-cold-recovery-hosted-20261103.json \
+            evidence/seaweedfs-452-cold-recovery-hosted-20261103/* \
+            evidence/seaweedfs-452-generation29-image-hosted-20261103.json \
+            releases/seaweedfs-452-generation29-build-manifest-20261103.json \
             patches/seaweedfs/4.52-ouf-standard-optional-closure.patch \
             patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
             patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \

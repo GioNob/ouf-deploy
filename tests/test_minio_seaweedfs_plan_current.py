@@ -28,6 +28,12 @@ class CurrentStoragePlanTest(unittest.TestCase):
         cls.defect_bytes = (ROOT / plan_current.MIME_DEFECT_PATH).read_bytes()
         cls.defect = json.loads(cls.defect_bytes)
         cls.standard_files = plan_current.read_standard_evidence(ROOT, cls.standard)
+        cls.cold_bytes = (ROOT / plan_current.COLD_RECEIPT_PATH).read_bytes()
+        cls.cold = json.loads(cls.cold_bytes)
+        cls.cold_files = plan_current.read_cold_evidence(ROOT, cls.cold)
+        cls.image29_bytes = (ROOT / plan_current.IMAGE29_RECEIPT_PATH).read_bytes()
+        cls.image29 = json.loads(cls.image29_bytes)
+        cls.image29_manifest_bytes = (ROOT / plan_current.IMAGE29_MANIFEST_PATH).read_bytes()
         cls.dossiers = {
             path: json.loads((ROOT / path).read_bytes())
             for path in plan_current.EXPECTED_DOSSIERS
@@ -60,6 +66,101 @@ class CurrentStoragePlanTest(unittest.TestCase):
         self.assertFalse(result["optionalModuleGraphEradicationClaimed"])
         self.assertFalse(result["releaseAdmitted"])
         self.assertEqual(result["activeStorageBackend"], "MinIO")
+
+    def test_cold_receipt_and_raw_bytes_are_both_required(self):
+        plan_current.validate_cold_evidence(self.plan, self.cold, self.cold_bytes, self.cold_files)
+        with self.assertRaisesRegex(ValueError, "COLD_RECEIPT_BYTES_CHANGED"):
+            plan_current.validate_cold_evidence(self.plan, self.cold, self.cold_bytes + b"\n", self.cold_files)
+        changed = dict(self.cold_files)
+        changed["recovery-result.json"] = changed["recovery-result.json"].replace(b"true", b"null", 1)
+        with self.assertRaisesRegex(ValueError, "COLD_EVIDENCE_BYTES_MISMATCH"):
+            plan_current.validate_cold_evidence(self.plan, self.cold, self.cold_bytes, changed)
+        missing = dict(self.cold_files)
+        del missing["exact-image.json"]
+        with self.assertRaisesRegex(ValueError, "COLD_EVIDENCE_MEMBER_SET_REQUIRED"):
+            plan_current.validate_cold_evidence(self.plan, self.cold, self.cold_bytes, missing)
+
+    def test_cold_recovery_cannot_be_transferred_to_new_image(self):
+        for field, value, code in (
+            ("transferredToGeneration29", True, "COLD_GENERATION15_ONLY_REQUIRED"),
+            ("orderedImagePatchCount", 29, "COLD_GENERATION15_ONLY_REQUIRED"),
+            ("ociManifestDigest", "sha256:" + "0" * 64, "COLD_CANDIDATE15_BINDING_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["historicalRuntimeQualification"]["coldRecovery15"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                plan_current.validate_cold_evidence(changed, self.cold, self.cold_bytes, self.cold_files)
+
+    def test_cold_restore_success_does_not_close_mime_or_acceptance(self):
+        for field, value, code in (
+            ("octetStreamCompatibility", "PASS", "COLD_MIME_DEFECT_MUST_REMAIN_FAIL"),
+            ("g2Closed", True, "COLD_NO_ACCEPTANCE_OR_AUTHORITY_REQUIRED"),
+            ("g3Closed", True, "COLD_NO_ACCEPTANCE_OR_AUTHORITY_REQUIRED"),
+            ("rpoAcceptance", True, "COLD_NO_ACCEPTANCE_OR_AUTHORITY_REQUIRED"),
+            ("rtoAcceptance", True, "COLD_NO_ACCEPTANCE_OR_AUTHORITY_REQUIRED"),
+            ("postgresRecovery", "PASS", "COLD_NO_TARGET_OR_POSTGRES_CLAIM_REQUIRED"),
+            ("targetOperations", 1, "COLD_NO_TARGET_OR_POSTGRES_CLAIM_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["historicalRuntimeQualification"]["coldRecovery15"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                plan_current.validate_cold_evidence(changed, self.cold, self.cold_bytes, self.cold_files)
+
+    def test_cold_preserved_paths_reject_traversal_and_duplicates(self):
+        for value, code in (
+            (plan_current.COLD_EVIDENCE_DIR + "/../outside.json", "COLD_EVIDENCE_PATH_INVALID"),
+            (self.cold["rawEvidencePreservation"]["files"][1]["path"], "COLD_EVIDENCE_DUPLICATE"),
+        ):
+            changed = copy.deepcopy(self.cold)
+            changed["rawEvidencePreservation"]["files"][0]["path"] = value
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, code):
+                plan_current.read_cold_evidence(ROOT, changed)
+
+    def test_progress_credit_is_bound_to_actual_cold_evidence(self):
+        changed = copy.deepcopy(self.plan)
+        changed["progressEstimate"]["creditChange"]["receiptSha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "COLD_PROGRESS_EVIDENCE_REQUIRED"):
+            self.validate(plan=changed)
+
+    def test_generation29_requires_exact_readback_and_manifest_bytes(self):
+        plan_current.validate_generation29_image(self.plan, self.image29, self.image29_bytes, self.image29_manifest_bytes)
+        with self.assertRaisesRegex(ValueError, "IMAGE29_RECEIPT_BYTES_REQUIRED"):
+            plan_current.validate_generation29_image(self.plan, self.image29, self.image29_bytes + b"\n", self.image29_manifest_bytes)
+        with self.assertRaisesRegex(ValueError, "IMAGE29_BUILD_MANIFEST_BYTES_REQUIRED"):
+            plan_current.validate_generation29_image(self.plan, self.image29, self.image29_bytes, self.image29_manifest_bytes + b"\n")
+
+    def test_generation29_does_not_inherit_old_binary_or_runtime_proof(self):
+        for field, value, code in (
+            ("binarySha256", self.plan["currentQualification"]["binarySha256"], "IMAGE29_CONTENT_BINDING_REQUIRED"),
+            ("ociManifestDigest", self.plan["currentQualification"]["ociManifestDigest"], "IMAGE29_CONTENT_BINDING_REQUIRED"),
+            ("oldRuntimeEvidenceTransferred", True, "IMAGE29_NO_RUNTIME_PROOF_TRANSFER_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["generation29Qualification"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                plan_current.validate_generation29_image(changed, self.image29, self.image29_bytes, self.image29_manifest_bytes)
+
+    def test_generation29_phase_a_cannot_claim_cohort_runtime_or_admission(self):
+        for field, value, code in (
+            ("phaseBHostedCohort", "PASS", "IMAGE29_COHORT_AND_RUNTIME_PENDING_REQUIRED"),
+            ("runtimeLabs29", "PASS", "IMAGE29_COHORT_AND_RUNTIME_PENDING_REQUIRED"),
+            ("licenceReview", "CLOSED", "IMAGE29_OPEN_GATES_REQUIRED"),
+            ("durableImageCustody", "ESTABLISHED", "IMAGE29_OPEN_GATES_REQUIRED"),
+            ("redistributionAccepted", True, "IMAGE29_NO_ADMISSION_OR_AUTHORITY_REQUIRED"),
+            ("releaseAdmitted", True, "IMAGE29_NO_ADMISSION_OR_AUTHORITY_REQUIRED"),
+            ("runtimeAuthorityIssued", True, "IMAGE29_NO_ADMISSION_OR_AUTHORITY_REQUIRED"),
+            ("targetOperations", 1, "IMAGE29_NO_TARGET_CHANGE_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["generation29Qualification"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                plan_current.validate_generation29_image(changed, self.image29, self.image29_bytes, self.image29_manifest_bytes)
+
+    def test_generation29_signature_scope_is_precise(self):
+        changed = copy.deepcopy(self.plan)
+        changed["generation29Qualification"]["localCryptographicSignatureVerificationClaimed"] = True
+        with self.assertRaisesRegex(ValueError, "IMAGE29_NO_LOCAL_CRYPTO_CLAIM_REQUIRED"):
+            plan_current.validate_generation29_image(changed, self.image29, self.image29_bytes, self.image29_manifest_bytes)
 
     def test_historical_451_and_current_452_are_separate(self):
         self.assertEqual(self.plan["candidate"]["initialVersionToEvaluate"], "4.51")
@@ -103,7 +204,7 @@ class CurrentStoragePlanTest(unittest.TestCase):
     def test_progress_is_recomputed_from_original_weights(self):
         self.assertAlmostEqual(
             self.plan["progressEstimate"]["exactWeightedEstimatePercent"],
-            15.9 / 46 * 100,
+            17.5 / 46 * 100,
         )
         changed = copy.deepcopy(self.plan)
         changed["progressEstimate"]["weightedCredits"] = 16

@@ -4,7 +4,10 @@
 The replacement plan intentionally retains the 4.51 evidence blocks as history.
 This verifier binds the additive 4.52 view to the immutable candidate lock, the
 hosted cohort receipt, the six historical test-only dossiers, the 27-patch source closure and the
-28-patch standard-profile hosted receipt. Known MIME incompatibility remains open.
+28-patch standard-profile hosted receipt. The additive generation29 image view
+keeps its hosted cohort/runtime qualification pending. Cold-recovery proof and
+preliminary engineering credit remain bound to historical OCI15; its known MIME
+incompatibility stays open.
 """
 
 from __future__ import annotations
@@ -84,7 +87,14 @@ HISTORICAL_CANONICAL_SHA256 = {
     "dependencyLifecycleReview": "b2dcd6f7b599bb7659f11b02b36a3d5e8137ccd8698f27d8cda10adc84b08674",
 }
 WP_WEIGHTS = [4, 6, 8, 8, 8, 4, 4, 4]
-WP_CREDITS = [50, 85, 60, 15, 35, 0, 0, 0]
+WP_CREDITS = [50, 85, 60, 35, 35, 0, 0, 0]
+COLD_RECEIPT_PATH = "evidence/seaweedfs-452-cold-recovery-hosted-20261103.json"
+COLD_RECEIPT_SHA256 = "2cb1ae3c6ca67f58bac1ac5b48a7c2db934f26ee033098d3cf82571de313fa6c"
+COLD_EVIDENCE_DIR = "evidence/seaweedfs-452-cold-recovery-hosted-20261103"
+IMAGE29_RECEIPT_PATH = "evidence/seaweedfs-452-generation29-image-hosted-20261103.json"
+IMAGE29_RECEIPT_SHA256 = "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8"
+IMAGE29_MANIFEST_PATH = "releases/seaweedfs-452-generation29-build-manifest-20261103.json"
+IMAGE29_MANIFEST_SHA256 = "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9"
 
 
 def fail(code: str) -> None:
@@ -307,7 +317,10 @@ def validate_documents(
         math.isclose(progress.get("exactWeightedEstimatePercent", -1), percent, abs_tol=1e-12),
         "EXACT_PROGRESS_FORMULA_REQUIRED",
     )
-    require(progress.get("reportedApproximatePercent") == 35, "REPORTED_PROGRESS_REQUIRED")
+    require(progress.get("reportedApproximatePercent") == 38, "REPORTED_PROGRESS_REQUIRED")
+    credit = progress.get("creditChange", {})
+    require(credit.get("workPackage") == "SW-WP3" and credit.get("previousCreditPercent") == 15 and credit.get("currentCreditPercent") == 35, "COLD_PROGRESS_CREDIT_CHANGE_REQUIRED")
+    require(credit.get("receipt") == COLD_RECEIPT_PATH and credit.get("receiptSha256") == COLD_RECEIPT_SHA256, "COLD_PROGRESS_EVIDENCE_REQUIRED")
     require(progress.get("uncertaintyPercentagePoints") == 10, "PROGRESS_UNCERTAINTY_REQUIRED")
     require(progress.get("gatePass") == 0 and progress.get("gateTotal") == 8, "ZERO_OF_EIGHT_GATES_REQUIRED")
     require(
@@ -494,6 +507,101 @@ def read_standard_evidence(root: Path, receipt: dict[str, Any]) -> dict[str, byt
     return archived
 
 
+def read_cold_evidence(root: Path, receipt: dict[str, Any]) -> dict[str, bytes]:
+    preserved = receipt.get("rawEvidencePreservation", {})
+    require(preserved.get("repositoryDirectory") == COLD_EVIDENCE_DIR, "COLD_EVIDENCE_DIRECTORY_REQUIRED")
+    directory = root / COLD_EVIDENCE_DIR
+    require(directory.is_dir() and not directory.is_symlink() and directory.resolve().is_relative_to(root.resolve()), "COLD_EVIDENCE_DIRECTORY_REQUIRED")
+    archived = {}
+    files = preserved.get("files", [])
+    require(isinstance(files, list) and len(files) == 31, "COLD_31_MEMBERS_REQUIRED")
+    for item in files:
+        name = item.get("path", "")
+        require(isinstance(name, str) and name.startswith(COLD_EVIDENCE_DIR + "/"), "COLD_EVIDENCE_PATH_INVALID")
+        member = name.removeprefix(COLD_EVIDENCE_DIR + "/")
+        require(re.fullmatch(r"[A-Za-z0-9_.-]+", member) is not None and member not in (".", ".."), "COLD_EVIDENCE_PATH_INVALID")
+        require(member not in archived, "COLD_EVIDENCE_DUPLICATE")
+        path = directory / member
+        require(path.is_file() and not path.is_symlink(), "COLD_EVIDENCE_FILE_REQUIRED")
+        archived[member] = path.read_bytes()
+    return archived
+
+
+def validate_cold_evidence(
+    plan: dict[str, Any], receipt: dict[str, Any], receipt_bytes: bytes,
+    archived: dict[str, bytes],
+) -> None:
+    require(sha256(receipt_bytes) == COLD_RECEIPT_SHA256, "COLD_RECEIPT_BYTES_CHANGED")
+    require(json.loads(receipt_bytes) == receipt, "COLD_RECEIPT_OBJECT_BYTES_MISMATCH")
+    view = plan.get("historicalRuntimeQualification", {}).get("coldRecovery15", {})
+    require(view.get("receipt") == COLD_RECEIPT_PATH and view.get("receiptSha256") == COLD_RECEIPT_SHA256, "COLD_RECEIPT_BINDING_REQUIRED")
+    require(view.get("status") == "HOSTED_SYNTHETIC_COLD_RESTORE_PASS_MIME_FAIL_NOT_ACCEPTANCE", "COLD_STATUS_REQUIRED")
+    require(view.get("runId") == receipt.get("runId") == 41696541366, "COLD_RUN_REQUIRED")
+    require(view.get("sourceCommit") == receipt.get("sourceCommit") == "041992eacd851d277cd049f03b9fe68a393e6df4", "COLD_SOURCE_REQUIRED")
+    require(view.get("orderedImagePatchCount") == 15 and view.get("transferredToGeneration29") is False, "COLD_GENERATION15_ONLY_REQUIRED")
+    result = receipt["hostedResult"]
+    current = plan["currentQualification"]
+    for key in ("candidateLockSha256", "binarySha256", "ociManifestDigest"):
+        require(view.get(key) == result.get(key) == current.get(key), "COLD_CANDIDATE15_BINDING_REQUIRED")
+    require(result.get("status") == "SYNTHETIC_STORAGE_COLD_RESTORE_PASS_NOT_ACCEPTANCE", "COLD_HOSTED_PASS_REQUIRED")
+    for key in ("syntheticObjects", "syntheticBytes", "backupFiles"):
+        require(view.get(key) == result.get(key), "COLD_MEASUREMENT_BINDING_REQUIRED")
+    readback = receipt["independentReadback"]
+    require(view.get("backupBytes") == readback.get("backupBytes"), "COLD_MEASUREMENT_BINDING_REQUIRED")
+    for key in ("eightDistinctContainerIdentities", "allExitCodesZero"):
+        require(view.get(key) is True and readback.get(key) is True, "COLD_INDEPENDENT_RESTORE_REQUIRED")
+    require(view.get("octetStreamCompatibility") == result.get("octetStreamCompatibility", {}).get("status") == "FAIL", "COLD_MIME_DEFECT_MUST_REMAIN_FAIL")
+    for key in ("g2Closed", "g3Closed", "fullFoundationBackupContractSatisfied", "rpoAcceptance", "rtoAcceptance", "releaseAdmitted", "runtimeAuthorityIssued"):
+        require(view.get(key) is False, "COLD_NO_ACCEPTANCE_OR_AUTHORITY_REQUIRED")
+    require(view.get("targetOperations") == 0 and view.get("postgresRecovery") == "NOT_TESTED", "COLD_NO_TARGET_OR_POSTGRES_CLAIM_REQUIRED")
+    expected = {item["path"].removeprefix(COLD_EVIDENCE_DIR + "/"): item for item in receipt["rawEvidencePreservation"]["files"]}
+    require(set(archived) == set(expected), "COLD_EVIDENCE_MEMBER_SET_REQUIRED")
+    for name, item in expected.items():
+        require(len(archived[name]) == item["bytes"] and sha256(archived[name]) == item["sha256"], "COLD_EVIDENCE_BYTES_MISMATCH")
+    manifest = {}
+    for line in archived["SHA256SUMS"].decode("utf-8").splitlines():
+        match = re.fullmatch(r"([0-9a-f]{64}) [ *](?:\./)?([A-Za-z0-9_.-]+)", line)
+        require(match is not None, "COLD_MANIFEST_FORMAT_REQUIRED")
+        digest, name = match.groups()
+        require(name not in manifest and name not in (".", "..", "SHA256SUMS"), "COLD_MANIFEST_MEMBER_INVALID")
+        manifest[name] = digest
+    require(len(manifest) == 30 and manifest == {name: item["sha256"] for name, item in expected.items() if name != "SHA256SUMS"}, "COLD_MANIFEST_BINDING_REQUIRED")
+    require(json.loads(archived["recovery-result.json"]) == result, "COLD_RAW_RESULT_BINDING_REQUIRED")
+    require(json.loads(archived["exact-image.json"]) == receipt["exactImage"], "COLD_RAW_IMAGE_BINDING_REQUIRED")
+
+
+def validate_generation29_image(
+    plan: dict[str, Any], receipt: dict[str, Any], receipt_bytes: bytes,
+    build_manifest_bytes: bytes,
+) -> None:
+    require(sha256(receipt_bytes) == IMAGE29_RECEIPT_SHA256 and json.loads(receipt_bytes) == receipt, "IMAGE29_RECEIPT_BYTES_REQUIRED")
+    require(sha256(build_manifest_bytes) == IMAGE29_MANIFEST_SHA256, "IMAGE29_BUILD_MANIFEST_BYTES_REQUIRED")
+    view = plan.get("generation29Qualification", {})
+    require(view.get("status") == "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING", "IMAGE29_PHASE_A_ONLY_REQUIRED")
+    require(view.get("receipt") == IMAGE29_RECEIPT_PATH and view.get("receiptSha256") == IMAGE29_RECEIPT_SHA256, "IMAGE29_RECEIPT_BINDING_REQUIRED")
+    require(view.get("buildManifest") == IMAGE29_MANIFEST_PATH and view.get("buildManifestSha256") == receipt.get("buildManifestSha256") == IMAGE29_MANIFEST_SHA256, "IMAGE29_BUILD_MANIFEST_BINDING_REQUIRED")
+    require(receipt.get("schema") == "ouf.seaweedfs-generation29-hosted-image.v1" and receipt.get("status") == "HOSTED_PASS_BYTES_REVERIFIED_NOT_ADMITTED", "IMAGE29_VERIFIED_RECEIPT_REQUIRED")
+    require(view.get("sourceCommit") == receipt.get("producerCommit") == "041992eacd851d277cd049f03b9fe68a393e6df4", "IMAGE29_SOURCE_REQUIRED")
+    require(view.get("runId") == receipt.get("runId") == 41696541570, "IMAGE29_RUN_REQUIRED")
+    require(view.get("orderedPatchCount") == receipt.get("generation") == 29, "IMAGE29_PATCH29_REQUIRED")
+    jobs = receipt.get("jobs", [])
+    require(len(jobs) == 4 and {job.get("name") for job in jobs} == {"verify", "qualify-standard-profile", "runtime_candidate", "independent_image_readback"} and all(job.get("conclusion") == "success" for job in jobs), "IMAGE29_FOUR_SUCCESSFUL_JOBS_REQUIRED")
+    readback = receipt["byteReadback"]
+    for key in ("binarySha256", "ociManifestDigest", "imageConfigDigest", "patchedSourceTree", "vulnerabilitySubgate", "rawSeverityCounts"):
+        require(view.get(key) == readback.get(key), "IMAGE29_CONTENT_BINDING_REQUIRED")
+    require(view.get("binarySha256") != plan["currentQualification"]["binarySha256"] and view.get("ociManifestDigest") != plan["currentQualification"]["ociManifestDigest"], "IMAGE29_DISTINCT_GENERATION_REQUIRED")
+    require(view.get("publisherSignatureVerifiedByHostedReader") is True and receipt.get("publisherSignatureVerifiedByHostedReader") is True, "IMAGE29_HOSTED_SIGNATURE_REQUIRED")
+    require(view.get("localCryptographicSignatureVerificationClaimed") is False and receipt.get("localCryptographicSignatureVerificationClaimed") is False, "IMAGE29_NO_LOCAL_CRYPTO_CLAIM_REQUIRED")
+    require(view.get("oldRuntimeEvidenceTransferred") is False, "IMAGE29_NO_RUNTIME_PROOF_TRANSFER_REQUIRED")
+    for key in ("phaseBHostedCohort", "runtimeLabs29"):
+        require(view.get(key) == receipt.get(key) == "PENDING", "IMAGE29_COHORT_AND_RUNTIME_PENDING_REQUIRED")
+    for key in ("licenceReview", "durableImageCustody", "overallSwG1"):
+        require(view.get(key) == "OPEN", "IMAGE29_OPEN_GATES_REQUIRED")
+    for key in ("redistributionAccepted", "releaseAdmitted", "runtimeAuthorityIssued"):
+        require(view.get(key) is False, "IMAGE29_NO_ADMISSION_OR_AUTHORITY_REQUIRED")
+    require(view.get("targetOperations") == 0 and view.get("activeStorageBackend") == "MinIO", "IMAGE29_NO_TARGET_CHANGE_REQUIRED")
+
+
 def validate_tree(root: Path) -> dict[str, Any]:
     plan, _ = read_json(root / PLAN_PATH)
     lock, lock_bytes = read_json(root / LOCK_PATH)
@@ -510,6 +618,14 @@ def validate_tree(root: Path) -> dict[str, Any]:
     result["standardProfileClosure"] = "HOSTED_PASS"
     result["standardProfileReceiptSha256"] = sha256(standard_bytes)
     result["knownCompatibilityDefects"] = ["CONTENT_TYPE_MISMATCH"]
+    cold, cold_bytes = read_json(root / COLD_RECEIPT_PATH)
+    validate_cold_evidence(plan, cold, cold_bytes, read_cold_evidence(root, cold))
+    result["historicalColdRecovery15"] = "HOSTED_PASS_MIME_FAIL_NOT_ACCEPTANCE"
+    result["coldProofTransferredToGeneration29"] = False
+    image29, image29_bytes = read_json(root / IMAGE29_RECEIPT_PATH)
+    validate_generation29_image(plan, image29, image29_bytes, (root / IMAGE29_MANIFEST_PATH).read_bytes())
+    result["generation29ImageQualification"] = "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING"
+    result["generation29ImageReceiptSha256"] = IMAGE29_RECEIPT_SHA256
     return result
 
 
