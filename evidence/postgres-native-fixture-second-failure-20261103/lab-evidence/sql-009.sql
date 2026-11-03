@@ -1,0 +1,1 @@
+UPDATE ouf_recovery_fixture.generation SET pending_acknowledgements=1

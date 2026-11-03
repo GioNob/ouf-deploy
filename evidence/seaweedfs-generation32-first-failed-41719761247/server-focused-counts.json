@@ -1,0 +1,16 @@
+{
+  "profile": "server",
+  "counts": {
+    "pass_tests": 984,
+    "pass_packages": 1
+  },
+  "logSha256": "d4fe11290ca8ea3743be958e1060eceda27231513ab0e96d9c9c95fb827823a6",
+  "terminalTestsSha256": "b05d54925d930f4e3d550ebddd6f8182bb4a3fa90683d5a2ab8a0cc56763e148",
+  "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+  "environmentConditionalOutcomes": {
+    "TestGuardedPeerHTTPClientUploadsOverTLS": "pass",
+    "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade": "pass"
+  },
+  "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "targetOperations": 0
+}

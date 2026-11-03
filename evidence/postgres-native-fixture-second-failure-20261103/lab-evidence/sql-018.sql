@@ -1,0 +1,1 @@
+SELECT pg_cancel_backend(pid) FROM pg_stat_activity WHERE application_name='ouf-uncommitted-writer'

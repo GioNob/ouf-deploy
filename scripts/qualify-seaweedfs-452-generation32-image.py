@@ -18,7 +18,8 @@ engine.configure(ROOT, 32, MANIFEST_PATH, (
     'scripts/qualify-seaweedfs-raftstore-compat.py',
     'tests/fixtures/seaweedfs-raftstore-compat/compat_test.go',
     'tests/test_seaweedfs_452_generation32_image.py',
-    'tests/test_storage_runtime_image.py', MANIFEST_PATH,
+    'tests/test_storage_runtime_image.py',
+    'scripts/replay-seaweedfs-source-tree.py', 'tests/test_replay_seaweedfs_source_tree.py', MANIFEST_PATH,
 ), 'releases/seaweedfs-452-generation31-build-manifest-20261103.json',
     '9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719')
 if __name__ == '__main__':

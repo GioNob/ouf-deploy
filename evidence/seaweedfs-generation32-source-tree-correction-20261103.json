@@ -1,0 +1,210 @@
+{
+  "schema": "ouf.generation32-source-tree-correction.v1",
+  "status": "METADATA_CAUSE_PROVED_FRESH_HOSTED_QUALIFICATION_REQUIRED",
+  "failedRunId": 41719761247,
+  "failedProducerCommit": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+  "failedJobId": 126209111545,
+  "failure": {
+    "step": "Bind the reviewed generation32 source, graph and executable",
+    "assertionLine": 10,
+    "observedTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "incorrectExpectedTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+    "precedingBinaryGraphAndPackageCountAssertionsPassedInJobLog": true,
+    "hostedBinaryIndependentlyDownloaded": false
+  },
+  "originalManifest": {
+    "path": "evidence/seaweedfs-generation32-first-failed-41719761247/original-build-manifest.json",
+    "sha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788"
+  },
+  "correctedManifest": {
+    "path": "releases/seaweedfs-452-generation32-build-manifest-20261103.json",
+    "sha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+    "changedFields": [
+      "build.patchedSourceTree"
+    ]
+  },
+  "sourceReceiptPreservedSha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0",
+  "sourcePatchSha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "sourceBytesChanged": false,
+  "patchChanged": false,
+  "binaryChanged": false,
+  "testRequirementsChanged": false,
+  "all4567FileHashesBlobIdsAndModesVerified": true,
+  "omittedPreviouslyTrackedIgnoredFiles": 24,
+  "commonEntriesChanged": 0,
+  "upstreamBasedFullPrefixReplayVerified": true,
+  "cause": "The local producer constructed a new empty index and ran git add -A, excluding 24 already tracked files matched by ignore rules. Files were present and byte-identical in the working source and SHA256 inventory. The hosted indexed replay retained them correctly. The original pipeline review accepted the producer tree without independently replaying a populated upstream index; this verification gap is now recorded explicitly.",
+  "failureArtifact": {
+    "id": 13272057006,
+    "bytes": 777019,
+    "sha256": "50a4aa1131b8f2474f3bdb1e09e8c717c6f499375626a0e3f3e52fd06c3b3c3b",
+    "members": 40,
+    "internalSha256SumsPresent": false
+  },
+  "derivedTerminalCounts": {
+    "compat-tests.jsonl": {
+      "pass_tests": 3,
+      "pass_packages": 1
+    },
+    "kafka-compile.jsonl": {
+      "skip_packages": 2,
+      "pass_packages": 4
+    },
+    "nested-iam-regressions.jsonl": {
+      "pass_tests": 18,
+      "pass_packages": 1
+    },
+    "race.jsonl": {
+      "pass_tests": 185,
+      "pass_packages": 3
+    },
+    "regressions.jsonl": {
+      "pass_tests": 6656,
+      "pass_packages": 41,
+      "skip_packages": 9,
+      "skip_tests": 12
+    },
+    "root-iam-regressions.jsonl": {
+      "pass_tests": 24,
+      "pass_packages": 2
+    },
+    "server-focused.jsonl": {
+      "pass_tests": 984,
+      "pass_packages": 1
+    },
+    "shell-hosted.jsonl": {
+      "pass_tests": 306,
+      "pass_packages": 1
+    },
+    "storage-focused.jsonl": {
+      "pass_tests": 58,
+      "pass_packages": 1
+    }
+  },
+  "unproduced": [
+    "qualified OCI32",
+    "Trivy image scan32",
+    "SPDX32",
+    "publisher attestation32",
+    "independent OCI readback32",
+    "operational cohort lock32"
+  ],
+  "freshSuccessfulA32Required": true,
+  "currentQualifiedCandidateRemains": 31,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "proofs": {
+    "evidence/seaweedfs-generation32-first-failed-41719761247/build-evidence-failed.zip": {
+      "sha256": "50a4aa1131b8f2474f3bdb1e09e8c717c6f499375626a0e3f3e52fd06c3b3c3b",
+      "bytes": 777019
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/canonical-tree-verification.json": {
+      "sha256": "48a6b0b094378768b2d07ca8cf4bb8bf96761843b6e39e264f2f5295c1485875",
+      "bytes": 8867
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/derived-terminal-counts.json": {
+      "sha256": "d8e90a746e60f33842cf2655dbd26c12f27dbcd287167f48d184ad9ad16afa8d",
+      "bytes": 755
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/derived-zip-member-hashes.json": {
+      "sha256": "86973fe9cd4db967d60bb499c9c41cb59cbd999f247200721f97089aad874126",
+      "bytes": 5841
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/github-metadata-failure.json": {
+      "sha256": "14f3a55df07b9b4863dd107b586fb3089d26bb74c3a1f6d1e19bcd108037e96e",
+      "bytes": 27942
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/independent-full-prefix-diagnosis.json": {
+      "sha256": "4111a68e99c75b9602d0e60efd865f8d211d555ba797205d4d69f2bd78b0f679",
+      "bytes": 24357
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-build-manifest.json": {
+      "sha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+      "bytes": 30214
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs/.github/workflows/storage-452-generation32-image.yml": {
+      "sha256": "e5792061b95168ed66658b61437f5b5aa58827ec779f286c66723453542e55f3",
+      "bytes": 22893
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs/scripts/qualify-seaweedfs-452-generation32-image.py": {
+      "sha256": "f0be047a84f7478ad981b864e381281eae8bae75cd2480867f4b1b37d0969e22",
+      "bytes": 1369
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs/scripts/readback-seaweedfs-452-generation32-image.py": {
+      "sha256": "fb088e2180b37652cb4a8bca7e3b5882c4b9f6ace661f787c044a5ff7e5cc57f",
+      "bytes": 675
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs/tests/test_seaweedfs_452_generation32_image.py": {
+      "sha256": "d3a6d608f02106dae3176667789e831d298f6e20e662c4df7eaedf75d90a6678",
+      "bytes": 32939
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs/tools/storage_security/generation_image_v3.py": {
+      "sha256": "0ab2e7cc7faa7491bb766cf9365b8ed6987539b9ffdeb2e88c004ad61e832d31",
+      "bytes": 32326
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/original-qualification-inputs-sha256.json": {
+      "sha256": "61a64e00f44e924663be478e5513fa9a0f08a85789c9679cce1bdc42fde5ad6e",
+      "bytes": 8250
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/qualify-failure.log": {
+      "sha256": "50892f01510c8e63da0db5ba6350dcadedcb571a250a103ad9a2a888dc53da63",
+      "bytes": 45836
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/race-counts.json": {
+      "sha256": "08942d79597d3015e951464b0be5176eb28703de0f4da8c9e8f994f83f925db5",
+      "bytes": 490
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/regression-counts.json": {
+      "sha256": "0be516a800ab86ceadab0fe616ecad6491bd10ec2b056f51cdfc5f13f974863e",
+      "bytes": 538
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/server-focused-counts.json": {
+      "sha256": "c06381f7e2e70c28d4f39c16c954de3e549360ba09225345153cb97e80108181",
+      "bytes": 611
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/shell-hosted-counts.json": {
+      "sha256": "6b1b2cb44fb04ecbd1172ab6f955b872c4e159481c2b7864cc6f06526fe6ba04",
+      "bytes": 416
+    },
+    "evidence/seaweedfs-generation32-first-failed-41719761247/storage-focused-counts.json": {
+      "sha256": "914111ad27240053bf60deba45e7c99f04226631c2a7e711b23889e8f27a7ec4",
+      "bytes": 618
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/actual-failed-run-profile-reverification.json": {
+      "sha256": "166ffd075e83df1e6d86757d08e23b5b36a39495d70e29b071754c836409561f",
+      "bytes": 2871
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/canonical-corrected-manifest-replay.json": {
+      "sha256": "e453587f5b98fdfc853c76ae561bd5ab88bfdd7343cfd0e466e2eda4c31a91f4",
+      "bytes": 8676
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/canonical-helper-tests.txt": {
+      "sha256": "72577941b29c2eed9c10801939fa2ccea10f7183ca9cc0787ad298d9b1a30863",
+      "bytes": 1470
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/gate-red-green.json": {
+      "sha256": "58daebdd44969efcf79425979e6898ca112f437c1a182a660391fdaa31b6d56e",
+      "bytes": 647
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/pipeline-tests.txt": {
+      "sha256": "445111a0c160a12ca3a2a4b68e2f0b4fc90d4d397c9e32926ad220f445c09937",
+      "bytes": 7506
+    },
+    "evidence/seaweedfs-generation32-tree-correction-validation-20261103/runtime-engine-tests.txt": {
+      "sha256": "b330a704307b44bee2e472c9aac90a62057d059ecbce8869da8a86873e3847d2",
+      "bytes": 1845
+    }
+  },
+  "preBuildPrevention": {
+    "helper": "scripts/replay-seaweedfs-source-tree.py",
+    "helperDelivery": "source-tree-replay-helper-stage",
+    "independentPrivateIndexReplayBeforeBuild": true,
+    "explicitExpectedTreeComparison": true,
+    "appliedWorkingIndexComparedWithCanonicalReplay": true,
+    "unitTestsPassed": 8,
+    "qualificationSourceInputs": 48,
+    "noCandidateSourcePatchChange": true
+  }
+}

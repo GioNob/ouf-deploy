@@ -28,7 +28,7 @@ class GenerationBoundaryTests(unittest.TestCase):
     def test_reviewed_manifest_and_patch_bytes_are_exact(self):
         candidate.validate_manifest(candidate.MANIFEST)
         candidate.verify_patch_sources()
-        self.assertEqual(len(candidate.source_names()), 46)
+        self.assertEqual(len(candidate.source_names()), 48)
         self.assertEqual(candidate.MANIFEST["orderedPatches"][-1]["path"],
                          "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch")
 
@@ -272,7 +272,7 @@ class ImageReadbackTests(unittest.TestCase):
         path = self.zip()
         receipt = readback.verify(path, self.root / "readback", readback.file_hash(path), "b" * 40, 1)
         self.assertEqual(receipt["checksumMembersVerified"], 20)
-        self.assertEqual(receipt["sourceFilesVerified"], 46)
+        self.assertEqual(receipt["sourceFilesVerified"], 48)
         self.assertFalse(receipt["publisherSignatureVerifiedByThisScript"])
         self.assertEqual(receipt["targetOperations"], 0)
 

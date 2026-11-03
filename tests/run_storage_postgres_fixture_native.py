@@ -191,7 +191,7 @@ class NativeLab:
 
     def reconcile(self, snapshot):
         fence_sha = hashlib.sha256(snapshot["fenceEvidence"]).hexdigest()
-        backup = manifest.build_manifest(self.profile, self.artifacts, backup_id="native-fixture-0001",
+        backup = manifest.build_manifest(self.profile, self.artifacts, backup_id="lab-native-fixture-0001",
             created_at="2026-11-03T00:00:00Z", writer_fence={"status": "CONFIRMED",
             "generation": GENERATION, "evidenceSha256": fence_sha})
         def reader(bucket, key):

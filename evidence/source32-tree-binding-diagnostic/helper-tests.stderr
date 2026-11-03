@@ -1,0 +1,13 @@
+test_commit_and_parent_tree_bases_are_equivalent (__main__.CanonicalTreeTests.test_commit_and_parent_tree_bases_are_equivalent) ... ok
+test_inherited_git_index_does_not_redirect_private_replay (__main__.CanonicalTreeTests.test_inherited_git_index_does_not_redirect_private_replay) ... ok
+test_ordered_patch_chain_is_not_reordered (__main__.CanonicalTreeTests.test_ordered_patch_chain_is_not_reordered) ... ok
+test_path_escape_rejected_before_apply (__main__.CanonicalTreeTests.test_path_escape_rejected_before_apply) ... ok
+test_preserves_tracked_ignored_files_executable_and_symlink_modes (__main__.CanonicalTreeTests.test_preserves_tracked_ignored_files_executable_and_symlink_modes) ... ok
+test_regression_empty_index_scan_drops_tracked_ignored_files (__main__.CanonicalTreeTests.test_regression_empty_index_scan_drops_tracked_ignored_files) ... ok
+test_unapplicable_patch_fails_closed_and_preserves_caller (__main__.CanonicalTreeTests.test_unapplicable_patch_fails_closed_and_preserves_caller) ... ok
+test_wrong_hash_fails_without_mutating_caller_or_leaving_scratch (__main__.CanonicalTreeTests.test_wrong_hash_fails_without_mutating_caller_or_leaving_scratch) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.729s
+
+OK

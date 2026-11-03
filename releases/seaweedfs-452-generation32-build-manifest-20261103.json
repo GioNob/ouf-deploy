@@ -148,7 +148,7 @@
       "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
       "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
     },
-    "patchedSourceTree": "d58d388bd4b791ffbc41814cc670af44af20f47c"
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d"
   },
   "observedLocalRegression": {
     "packagesPassed": 41,

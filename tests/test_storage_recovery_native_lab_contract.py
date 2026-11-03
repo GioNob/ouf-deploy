@@ -1,5 +1,7 @@
 """Offline harness checks. These never count as PostgreSQL runtime tests."""
 import importlib.util
+import hashlib
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -102,6 +104,38 @@ class NativeLabContractTests(unittest.TestCase):
             self.assertEqual(run.call_count, 2)
             self.assertTrue(harness.started)
             harness.temp.cleanup.assert_not_called()
+
+    def test_actual_native_manifest_bridge_hashes_good_and_corrupt_file_bodies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            harness = lab.NativeLab(root, root)
+            harness.profile = json.loads((lab.ROOT / "profiles/seaweedfs-452-lab/profile.json").read_bytes())
+            harness.artifacts = []
+            for kind in harness.profile["backupPolicy"]["requiredArtifactKinds"]:
+                (root / kind).write_bytes(("synthetic bridge " + kind).encode())
+                harness.artifacts.append(lab.manifest.record_artifact(root, kind,
+                    logical_id=kind.replace("_", "-"), kind=kind, generation=lab.GENERATION))
+            dump_sha = next(a["sha256"] for a in harness.artifacts if a["kind"] == "postgres_dump")
+            body = b"native runner bridge fixture\x00\xff"
+            harness.bodies = {"bridge": body}
+            harness.paths = {"bridge": root / "bridge-body"}
+            harness.paths["bridge"].write_bytes(body)
+            raw = {"schema": "ouf.postgres-fixture-raw-snapshot.v1",
+                "generationRows": [{"generation": lab.GENERATION, "accepting_writes": False,
+                                    "active_writers": 0, "pending_acknowledgements": 0}],
+                "objectRows": [{"bucket": lab.coordinated.BUCKET, "object_key": "bridge",
+                                "generation": lab.GENERATION, "content_bytes": len(body),
+                                "content_sha256": hashlib.sha256(body).hexdigest(), "ack_state": "ACKED"}]}
+            snapshot = lab.postgres_fixture.decode_snapshot(json.dumps(raw).encode(),
+                expected_generation=lab.GENERATION, source_dump_sha256=dump_sha)
+            good = harness.reconcile(snapshot)
+            self.assertTrue(good["fixtureReconciled"])
+            self.assertEqual(good["bodyBytesRead"], len(body))
+            self.assertFalse(good["runtimeHealthyClaimed"])
+            harness.paths["bridge"].write_bytes(b"X" + body[1:])
+            corrupt = harness.reconcile(snapshot)
+            self.assertFalse(corrupt["fixtureReconciled"])
+            self.assertEqual({f["code"] for f in corrupt["findings"]}, {"BODY_SHA256_MISMATCH"})
 
 
 if __name__ == "__main__":

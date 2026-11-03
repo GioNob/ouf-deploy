@@ -1,0 +1,6 @@
+status=SYNTHETIC_FOUNDATION_VERIFIED_NOT_ACCEPTANCE
+releaseAdmitted=false
+runtimeAuthorityIssued=false
+targetOperations=0
+rpoMeasured=false
+rtoMeasured=false

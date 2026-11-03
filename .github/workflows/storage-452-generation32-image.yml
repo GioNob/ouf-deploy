@@ -14,6 +14,8 @@ on:
       - scripts/qualify-seaweedfs-raftstore-compat.py
       - tests/fixtures/seaweedfs-raftstore-compat/compat_test.go
       - tests/test_seaweedfs_452_generation32_image.py
+      - scripts/replay-seaweedfs-source-tree.py
+      - tests/test_replay_seaweedfs_source_tree.py
       - releases/seaweedfs-452-generation32-build-manifest-20261103.json
   workflow_dispatch:
 
@@ -38,6 +40,7 @@ jobs:
         run: |
           python3 -I -B -S -m unittest discover -s tests -p test_storage_runtime_image.py -v
           python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation32_image.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_replay_seaweedfs_source_tree.py -v
   qualify-standard-profile:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -60,6 +63,23 @@ jobs:
         with:
           go-version: '1.27.3'
           cache: false
+      - name: Independently replay the canonical tracked tree before building
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          mkdir -p "$evidence"
+          python3 -I -B -S scripts/replay-seaweedfs-source-tree.py \
+            --repository seaweedfs \
+            --manifest releases/seaweedfs-452-generation32-build-manifest-20261103.json \
+            --patch-root . --output "$evidence/canonical-source-tree-replay.json"
+          python3 -I -B -S - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          manifest = json.loads(Path('releases/seaweedfs-452-generation32-build-manifest-20261103.json').read_bytes())
+          receipt = json.loads((Path(os.environ['RUNNER_TEMP']) / 'storage-ouf-standard-evidence/canonical-source-tree-replay.json').read_bytes())
+          assert receipt['patchedSourceTree'] == manifest['build']['patchedSourceTree'], 'CANONICAL_SOURCE_TREE_MISMATCH'
+          assert receipt['orderedPatchCount'] == 32
+          PYCODE
       - name: Apply the exact 32 patches for the OUF standard profile
         working-directory: seaweedfs
         run: |
@@ -73,6 +93,9 @@ jobs:
             git apply --index "../$patch"
           done < "$RUNNER_TEMP/storage-ouf-standard-evidence/ordered-patch-paths.txt"
           git diff --cached --check
+          actual_tree="$(git write-tree)"
+          canonical_tree="$(python3 -I -B -S -c 'import json,sys; print(json.load(open(sys.argv[1]))["patchedSourceTree"])' "$RUNNER_TEMP/storage-ouf-standard-evidence/canonical-source-tree-replay.json")"
+          test "$actual_tree" = "$canonical_tree"
           test "$(wc -l < "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt")" -eq 32
           printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/upstream-source-sha.txt"
           git diff --cached --stat > "$RUNNER_TEMP/storage-ouf-standard-evidence/patch-stat.txt"

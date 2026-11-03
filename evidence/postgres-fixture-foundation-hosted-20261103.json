@@ -1,0 +1,68 @@
+{
+  "adapterSha256": "772a1b93e1acd4ab191d2621766c51ef7ef1fbe0534d3a1553ce076b3b379f5b",
+  "artifact": {
+    "bytes": 3689,
+    "expiresAt": "2027-02-01T21:13:04Z",
+    "id": 13270884291,
+    "manifestSha256": "a40de936f259607be3f80e88ce6ede804c8e0248305c1b43dcce2b772742642c",
+    "members": 5,
+    "path": "evidence/artifacts/postgres-fixture-foundation-41719760718.zip",
+    "sha256": "9841433d070fba369ecad12d7c8a6d39d55f1112af3331915662bd61bcd51351"
+  },
+  "attestationCreatedHosted": true,
+  "attestationCryptographicallyReverifiedLocally": false,
+  "attestationUrl": "https://github.com/GioNob/ouf-deploy/attestations/63301464",
+  "jobId": 126209111133,
+  "pitrQualified": false,
+  "releaseAdmitted": false,
+  "retainedRawEvidence": {
+    "evidence/postgres-fixture-foundation-hosted-20261103/SHA256SUMS": {
+      "bytes": 339,
+      "sha256": "a40de936f259607be3f80e88ce6ede804c8e0248305c1b43dcce2b772742642c"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/artifacts-final.json": {
+      "bytes": 775,
+      "sha256": "77ddaae198d8d5de3a4aec3bc57eb7968a08325dae98941354a28d44e2eb2c2f"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/boundaries.txt": {
+      "bytes": 158,
+      "sha256": "9f5758bf04f4b63a86cfed0eb07b4ef23e307e1d2a2263d231db13f181995dcb"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/job.log": {
+      "bytes": 35863,
+      "sha256": "01a63b2832f1bd54f3b362f5c28cc4386c8027f28c85fe31a3965967e8a476b8"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/jobs-final.json": {
+      "bytes": 1432,
+      "sha256": "078bf2be432957c2beab1ae17ba4f046169d5a018b63800215f0b0077b7b0329"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/profile-validation.json": {
+      "bytes": 220,
+      "sha256": "2bc32cb04b9994917731073cc98815a04d14fe6017a050bdf6be6af203077ae1"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/run-final.json": {
+      "bytes": 12396,
+      "sha256": "c8f909f3d615b3d8eab50f2759faef78f4bff195f9f8d14e02cd02f9a135a936"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/source-sha256.txt": {
+      "bytes": 1646,
+      "sha256": "06efc47f9efce1af5dc07933ebdf4436dea742995ae03cc13fcfcee5c94cf955"
+    },
+    "evidence/postgres-fixture-foundation-hosted-20261103/tests.log": {
+      "bytes": 9439,
+      "sha256": "23c0183f875422d532a2d8ed69612190ed51a40314a8e3d4e305ecafc5a64f42"
+    }
+  },
+  "runAttempt": 1,
+  "runId": 41719760718,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41719760718",
+  "runtimeAuthorityIssued": false,
+  "runtimeHealthyClaimed": false,
+  "schema": "ouf.postgres-fixture-foundation-hosted.v1",
+  "sourceCommit": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+  "sourceManifestEntriesVerified": 15,
+  "status": "HOSTED_FOUNDATION_VERIFIED_NOT_RECOVERY",
+  "targetOperations": 0,
+  "testsPassed": 50,
+  "testsSkipped": 0
+}
