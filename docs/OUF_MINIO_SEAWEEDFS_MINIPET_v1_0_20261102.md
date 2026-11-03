@@ -1,3 +1,13 @@
+## Checkpoint repository — nona patch SDK lifecycle (3 novembre 2026)
+
+Il backend tier S3 è migrato da AWS SDK Go v1 al transfer manager mantenuto v0.4.3/S3 v2 1.114.1 nel patch `4.52-s3backend-sdk-v2.patch`, source `5083a7f177cb3f983028efdb815d66a023beb495`. La CI [41585394627](https://github.com/GioNob/ouf-deploy/actions/runs/41585394627) è SUCCESS in entrambi i job: applicazione ordinata di nove patch, chiusura dipendenze esatta, regressioni e build.
+
+Prove locali: 5.548 PASS/5 skip/19 pacchetti, race test del backend, build completa SHA256 `178a2ff1d3d99acd5b3226874df95cb2fb691b07e296f73cfb75f09261567194`. Il grafo `./weed` resta identico fra otto e nove patch a 1.865 pacchetti; 52 pacchetti SDK v1, importatori produttivi diretti 3→2 e archi 18→11. Il precedente 1.864 era una misura locale errata, corretta confrontando le due chiusure esatte.
+
+Il client richiede regione esplicita e binding credenziali/endpoint non ambiguo, isola la cache per identità/addressing/trasporto, conserva checksum, range read e fsync, e non ripete upload ambigui. HTTP sintetico ha verificato firma SigV4, user-agent, checksum e un solo tentativo su503; nessun AWS o target è stato chiamato. Restano `remote_storage/s3` e helper/XML `weed/s3api`, oltre a image/SBOM/security/licenze/custody/coorte e recovery owner.
+
+L'avanzamento resta circa **33% ±10**, non acceptance: **0/8 gate**, **0/21 AT**, **0/120 oggetti reali**. MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e6/6 funzionali e Farmacie61righe/10OPEN/STRING sono invariati. Nessuna operazione target, replay/reset/grant, merge o deploy.
+
 # Checkpoint 3 novembre 2026 — replica S3 mantenuta, otto patch
 
 L'ottava [patch](../patches/seaweedfs/4.52-s3sink-sdk-v2.patch) migra il sink di replica S3 a SDK v2 e `feature/s3/transfermanager v0.4.3`. Non introduce `feature/s3/manager`, che AWS dichiara deprecato e sostituito dal [nuovo componente](https://github.com/aws/aws-sdk-go-v2/discussions/3306). S3v2 1.114.1 e checksum dei moduli erano già nel lockfile; transfermanager diventa dipendenza diretta in go.mod.

@@ -1,3 +1,19 @@
+# Stato corrente — nove patch storage; backend tier S3 su transfermanager mantenuto
+
+3 novembre 2026. Ripartire dal [MiniPET storage](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) e dalla [prova backend tier S3](evidence/seaweedfs-s3backend-v2-local-20261103.json). Nona patch `4.52-s3backend-sdk-v2.patch` dopo le otto già pubblicate. Base SeaweedFS4.52/984eac6a790be89e2a11de175a7413e1e3e32dd3; source nono patch 5083a7f177cb3f983028efdb815d66a023beb495.
+
+Locale finale:5.548eventi PASS,5skip preesistenti,19pacchetti PASS; race test backend e build completa riusciti. Patch nona riapplicata esattamente dopo le otto, diff pulito e package test PASS. Binario233194314byte SHA256 178a2ff1d3d99acd5b3226874df95cb2fb691b07e296f73cfb75f09261567194. Patch25176byte SHA256 3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9; byte pubblicati verificati uguali.
+
+Grafo esatto `./weed`:1.865pacchetti sia a otto sia a nove patch,52SDKv1,2importatori produttivi diretti,11archi diretti; nessun pacchetto aggiunto/rimosso e nessun feature/s3/manager deprecato. Correzione trasparente: il checkpoint precedente riportava1.864, ma la rimisura comparata base8/base9 è1.865. Residui: `weed/remote_storage/s3` e helper/XML `weed/s3api`.
+
+Backend tier: transfermanager0.4.3/S3v2 1.114.1, checksum flessibili attivi, SigV4/user-agent reali su HTTP sintetico,503→un solo tentativo. Rimosso replay esterno `util.Retry` degli upload ambigui; download body limitato a un tentativo,fsync e range/stall contract preservati. Regione obbligatoria; credenziali parziali,endpoint impliciti/malformati/credential-bearing negati. Cache isolata per identità,path-style,endpoint e trasporto con chiave hash. Nessun AWS/target.
+
+CI otto patch41583531119 SUCCESS entrambi job. CI nove patch [41585394627](https://github.com/GioNob/ouf-deploy/actions/runs/41585394627) SUCCESS entrambi job su5083a7f177cb3f983028efdb815d66a023beb495: applicazione,grafi,regressioni e build. Prossimo: migrare `remote_storage/s3`, poi XML/helper senza alterare ACL/envelope/token. Nuova immagine/SBOM/scansione/licenze/custody/coorte e G1 restano aperti; vecchio VEX non trasferibile. Ambiguità multipart/crash,identity refresh,TLS/egress e recovery owner restano da qualificare; non chiamare il runtime resiliente o accettato.
+
+MiniPET circa33%(±10punti),0/8gate chiusi,0/21AT,0/120oggetti copiati. MinIO in esercizio; scope17consumato/52EngineGET,Teatri/M1 8/8tecniche e6/6funzionali,stessaFarmacie61righe/10OPEN/STRING preservati. Nessun effetto target,replay/reset/grant,merge/deploy o acceptance. Autorità runtime HUMAN/THS distinta. Consultati UDP1.3§109.4/109.5,Matrix1.7§1/4/5 originali in docs/baseline/v1.7 e policy resilienzav3. Lavoro repository sequenziale senza subagenti; controllare concorrenza prima di modificare.
+
+## Checkpoint precedenti — storico
+
 # Stato corrente — otto patch storage; replica S3 su transfermanager mantenuto
 
 3 novembre 2026. Ripartire dal [MiniPET storage](docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) e dalle prove [KMS](evidence/seaweedfs-kms-v2-local-20261103.json) / [replica S3](evidence/seaweedfs-s3sink-v2-local-20261103.json). Ottava patch `4.52-s3sink-sdk-v2.patch` dopo le sette già pubblicate in cb4b356f417e7a4250f08032a6e4fedcd32c721f. Base SeaweedFS4.52/984eac6a790be89e2a11de175a7413e1e3e32dd3.

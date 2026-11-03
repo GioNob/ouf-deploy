@@ -52,7 +52,10 @@
       "both_jobs_success": true
     },
     "nine_patches": {
-      "status": "pending_publication"
+      "run": 41585394627,
+      "source": "5083a7f177cb3f983028efdb815d66a023beb495",
+      "status": "success",
+      "both_jobs_success": true
     }
   },
   "verified_contracts": [
@@ -96,5 +99,16 @@
     "docs/baseline/v1.7 UDP PET 1.3 sections 109.4-109.5",
     "docs/baseline/v1.7 Matrix 1.7 sections 1, 4 and 5",
     "docs/OUF_RESILIENCE_POLICY.md v3"
-  ]
+  ],
+  "post_publication_readback": {
+    "source": "5083a7f177cb3f983028efdb815d66a023beb495",
+    "patch_bytes_equal_to_qualified_local_source": true,
+    "workflow_contains_exact_ninth_patch_and_backend_regression": true,
+    "evidence_readback_status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+    "nine_patch_ci": {
+      "run": 41585394627,
+      "status": "success",
+      "both_jobs_success": true
+    }
+  }
 }
