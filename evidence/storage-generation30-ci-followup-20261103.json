@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.ci-native-observer-ordering-fix.v1",
+  "status": "LOCAL_CHECKS_PASS_HOSTED_NATIVE_PENDING",
+  "sourceCommit": "63ae5b2a71873aad0586c9bb3b5819f054fa7c09",
+  "observedFailure": {
+    "runId": 41709457540,
+    "jobId": 126173390997,
+    "unitTestsPassed": 13,
+    "nativeFirstPhase": "HEALTHY_OUTAGE_FOUR_VIRTUAL_HOURS_RECOVERY_HEALTHY",
+    "exception": "BlockingIOError errno11 while test calls retry.read during live reporter short journal transaction",
+    "budgetOrAuthorityReset": false
+  },
+  "fix": {
+    "path": "tests/qualify_m2_discovery_lease_worker_native.py",
+    "sha256": "829e61adc8028db79470dbcd618699a5d724dfd4fbaf0e845718e827af821b4c",
+    "changes": [
+      "Assert concurrent invocation denial while worker remains active",
+      "Wait for the existing synchronous systemctl stop to return successfully before observing final durable state",
+      "Inspect unchanged durable attempts only after process exit, avoiding a read competing with live reporter",
+      "Also assert no new DNS queries during stop"
+    ],
+    "runtimeSourceChanged": false,
+    "lockBlockingBehaviorChanged": false,
+    "retryAdded": false
+  },
+  "localValidation": {
+    "existingUnitTestsPassed": 13,
+    "pythonSyntax": "PASS",
+    "nativeSystemdDnsNftNotRunLocally": true
+  },
+  "limits": [
+    "A real systemd/DNS/nft run of the edited test remains pending",
+    "The first failed hosted run and its traceback are retained",
+    "No target scope, budget, authority, consumed claim or journal is changed by repository test fix"
+  ],
+  "evidence": {
+    "126173341642.log": "4aee3ab68d5b6993ac44a4d818fc59a76c24a6220f122806454b4627f2bfbc11",
+    "126173390997.log": "c03f95b886767b6035d0099a3d9bff07dd6def92f8c86b09dcde45e7b8a7eb22",
+    "worker-unit-tests.log": "bbfe15e7055809ef6c2a0e7b112f7d44c5a5288464109bd9dd5584281932fbf5"
+  },
+  "targetOperations": 0
+}

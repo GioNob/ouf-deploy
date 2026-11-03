@@ -213,8 +213,13 @@ def main(source):
             # Concurrent process cannot get the invocation lock or reset budget.
             repeated = run([sys.executable, '-I', '-B', str(Path(__file__).resolve()),
                             '--child', str(root)], check=False)
-            assert repeated.returncode != 0 and retry.read()['attempts'] == exhausted['attempts']
+            assert repeated.returncode != 0
+            # The live reporter briefly holds the non-blocking journal lock.
+            # Inspect the final durable budget after the synchronous stop,
+            # while still proving that a concurrent invocation was denied.
             run(['/usr/bin/systemctl', 'stop', unit])
+            assert retry.read()['attempts'] == exhausted['attempts']
+            assert control['queries'] == before
             assert json.loads((root/'journal.json').read_bytes())['state'] == 'QUIESCED'
             print('CI_CONTINUOUS_WORKER=EXHAUSTED_ALIVE_REVOKED_NO_QUERY CONCURRENT_WORKER_DENIED=true OLD_CLAIM_SOURCES_PRESERVED=true TARGET_ACTIONS=0', flush=True)
         finally:

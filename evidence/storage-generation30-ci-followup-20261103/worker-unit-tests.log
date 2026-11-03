@@ -1,0 +1,18 @@
+test_build_preserves_exact_retained_budget_journal_and_issues_no_calls (test_m2_discovery_lease_worker.Worker.test_build_preserves_exact_retained_budget_journal_and_issues_no_calls) ... ok
+test_guard_rechecks_runtime_generation_and_custody_without_dns_or_publication (test_m2_discovery_lease_worker.Worker.test_guard_rechecks_runtime_generation_and_custody_without_dns_or_publication) ... ok
+test_installed_manager_stop_failure_stays_pending_without_budget_reset (test_m2_discovery_lease_worker.Worker.test_installed_manager_stop_failure_stays_pending_without_budget_reset) ... ok
+test_installed_manager_stop_preserves_wait_deadlines_and_parked_incidents (test_m2_discovery_lease_worker.Worker.test_installed_manager_stop_preserves_wait_deadlines_and_parked_incidents) ... ok
+test_installed_manager_stop_revokes_and_preserves_active_history (test_m2_discovery_lease_worker.Worker.test_installed_manager_stop_revokes_and_preserves_active_history) ... ok
+test_legacy_accounting_profile_is_not_silently_migrated (test_m2_discovery_lease_worker.Worker.test_legacy_accounting_profile_is_not_silently_migrated) ... ok
+test_missing_or_revoked_runtime_generation_or_custody_stops_guard (test_m2_discovery_lease_worker.Worker.test_missing_or_revoked_runtime_generation_or_custody_stops_guard) ... ok
+test_observer_failure_revokes_and_parks_alive_without_reset_or_dependency_calls (test_m2_discovery_lease_worker.Worker.test_observer_failure_revokes_and_parks_alive_without_reset_or_dependency_calls) ... ok
+test_old_active_invocation_requires_reconciliation_without_new_attempt (test_m2_discovery_lease_worker.Worker.test_old_active_invocation_requires_reconciliation_without_new_attempt) ... ok
+test_owner_drift_after_construction_is_not_renewed (test_m2_discovery_lease_worker.Worker.test_owner_drift_after_construction_is_not_renewed) ... ok
+test_scope_generation_policy_or_old_journal_cannot_be_silently_adopted (test_m2_discovery_lease_worker.Worker.test_scope_generation_policy_or_old_journal_cannot_be_silently_adopted) ... ok
+test_status_rejects_extra_private_fields_and_symlinks (test_m2_discovery_lease_worker.Worker.test_status_rejects_extra_private_fields_and_symlinks) ... ok
+test_unobserved_downtime_after_positive_kernel_ttl_consumes_recovery_budget (test_m2_discovery_lease_worker.Worker.test_unobserved_downtime_after_positive_kernel_ttl_consumes_recovery_budget) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.120s
+
+OK
