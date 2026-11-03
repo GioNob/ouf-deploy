@@ -1,0 +1,100 @@
+name: Storage PostgreSQL native fixture
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-postgres-native-fixture.yml
+      - tests/run_storage_postgres_fixture_native.py
+      - tests/test_storage_recovery_native_lab_contract.py
+      - tools/storage_recovery/**
+      - tests/fixtures/storage-recovery/catalog.sql
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-postgres-native-fixture-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  postgres-fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare finite native source build
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pg-native/build-evidence"
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y build-essential bison flex
+          cd "$RUNNER_TEMP/pg-native"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --connect-timeout 15 --max-time 120 \
+            https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2 \
+            --output postgresql-17.11.tar.bz2
+          printf '%s\n' 'dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979  postgresql-17.11.tar.bz2' > build-evidence/source.sha256
+          sha256sum --strict --check build-evidence/source.sha256
+          tar -xjf postgresql-17.11.tar.bz2
+          cd postgresql-17.11
+          timeout 600 ./configure --prefix="$RUNNER_TEMP/pg-native/install" \
+            --without-readline --without-zlib --without-icu \
+            > ../build-evidence/configure.log 2>&1
+          timeout 600 make -j2 > ../build-evidence/make.log 2>&1
+          timeout 120 make install > ../build-evidence/install.log 2>&1
+          cp config.log ../build-evidence/config.log
+          { gcc --version; make --version; bison --version; flex --version; uname -a; } \
+            > ../build-evidence/toolchain.txt
+          dpkg-query -W > ../build-evidence/runner-packages.txt
+          sha256sum "$RUNNER_TEMP/pg-native/install/bin/"{postgres,initdb,pg_ctl,psql} \
+            > ../build-evidence/binary-sha256.txt
+      - name: Execute real local PostgreSQL fixture
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests \
+            -p test_storage_recovery_native_lab_contract.py -v 2>&1 | \
+            tee "$RUNNER_TEMP/pg-native/build-evidence/offline-contract-tests.log"
+          python3 -I -B -S tests/run_storage_postgres_fixture_native.py \
+            --pg-bin "$RUNNER_TEMP/pg-native/install/bin" \
+            --output "$RUNNER_TEMP/pg-native/lab-evidence" \
+            > "$RUNNER_TEMP/pg-native/build-evidence/lab-stdout.json"
+      - name: Bind source and all retained results
+        if: always()
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/pg-native"
+          mkdir -p "$base/build-evidence" "$base/lab-evidence"
+          sha256sum tests/run_storage_postgres_fixture_native.py \
+            tests/test_storage_recovery_native_lab_contract.py \
+            tests/fixtures/storage-recovery/catalog.sql \
+            tools/storage_recovery/{postgres_fixture,coordinated,manifest,profile}.py \
+            profiles/seaweedfs-452-lab/profile.json \
+            .github/workflows/storage-postgres-native-fixture.yml \
+            > "$base/build-evidence/repository-source-sha256.txt"
+          git rev-parse HEAD > "$base/build-evidence/repository-commit.txt"
+          cd "$base"
+          find build-evidence lab-evidence -type f -print0 2>/dev/null | \
+            LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest native fixture evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/pg-native/SHA256SUMS
+      - name: Retain actual results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-postgres-native-fixture-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/pg-native/build-evidence/
+            ${{ runner.temp }}/pg-native/lab-evidence/
+            ${{ runner.temp }}/pg-native/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 90
