@@ -8,6 +8,7 @@ on:
       - 'tests/test_storage_sdk_lifecycle.py'
       - 'patches/seaweedfs/4.52-listing-remove-sdk-v1.patch'
       - 'patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch'
+      - 'patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch'
       - 'evidence/artifacts/storage-runtime-image-readback-41527990598.zip'
 permissions:
   contents: read
@@ -48,11 +49,13 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
-          go list -mod=readonly -deps ./weed > "$RUNNER_TEMP/seaweedfs-baseline-deps"
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort > "$RUNNER_TEMP/seaweedfs-baseline-deps"
           git apply --check ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch
           git apply ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch
           git apply --check ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch
           git apply ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch
           git diff --check
           if grep -F '"github.com/aws/aws-sdk-go/' weed/s3api/s3api_object_handlers_list.go; then
             exit 1
@@ -61,9 +64,13 @@ jobs:
           if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-s3err-imports"; then
             exit 1
           fi
-          go list -mod=readonly -deps ./weed > "$RUNNER_TEMP/seaweedfs-patched-deps"
+          go list -mod=readonly -f '{{join .Imports "\n"}}' ./weed/command > "$RUNNER_TEMP/seaweedfs-command-imports"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-command-imports"; then
+            exit 1
+          fi
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort > "$RUNNER_TEMP/seaweedfs-patched-deps"
           cmp "$RUNNER_TEMP/seaweedfs-baseline-deps" "$RUNNER_TEMP/seaweedfs-patched-deps"
           test "$(grep -c '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-patched-deps")" = 55
-      - name: Run S3 handler and XML response regressions
+      - name: Run command, S3 handler and XML response regressions
         working-directory: seaweedfs
-        run: go test -mod=readonly -count 1 -timeout 3m -v ./weed/s3api ./weed/s3api/s3err
+        run: go test -mod=readonly -count 1 -timeout 3m -v ./weed/command ./weed/s3api ./weed/s3api/s3err
