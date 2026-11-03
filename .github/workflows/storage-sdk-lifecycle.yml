@@ -167,19 +167,3 @@ jobs:
             ${{ runner.temp }}/seaweedfs-binary-sha256.txt
           if-no-files-found: error
           retention-days: 90
-\\tdep\\tgithub.com/aws/aws-sdk-go\\t' "$RUNNER_TEMP/seaweedfs-build-info.txt"; then
-            exit 1
-          fi
-          sha256sum "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-binary-sha256.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: seaweedfs-sdk-lifecycle-evidence
-          path: |
-            ${{ runner.temp }}/seaweedfs-*-deps
-            ${{ runner.temp }}/seaweedfs-*-imports
-            ${{ runner.temp }}/seaweedfs-regressions.jsonl
-            ${{ runner.temp }}/seaweedfs-build-info.txt
-            ${{ runner.temp }}/seaweedfs-binary-sha256.txt
-          if-no-files-found: error
-          retention-days: 90
