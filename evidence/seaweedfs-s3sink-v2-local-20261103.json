@@ -198,5 +198,18 @@
     "real_objects_copied": 0,
     "real_objects_total": 120
   },
-  "normative_baseline": "Same Matrix1.7\u00a71/4/5,UDP1.3\u00a7109.4/109.5 and resilience policyv3 consulted for seventh-patch qualification; see seaweedfs-kms-v2-local-20261103.json."
+  "normative_baseline": "Same Matrix1.7§1/4/5,UDP1.3§109.4/109.5 and resilience policyv3 consulted for seventh-patch qualification; see seaweedfs-kms-v2-local-20261103.json.",
+  "post_publication_readback": {
+    "source": "adee567bae520e2d93fcc8cdcad282ed79b820cb",
+    "all_six_published_files_verified_exact": true,
+    "seven_patch_ci": {
+      "id": 41582635594,
+      "status": "success",
+      "both_jobs_success": true
+    },
+    "eight_patch_ci": {
+      "id": 41583531119,
+      "status": "in_progress"
+    }
+  }
 }
