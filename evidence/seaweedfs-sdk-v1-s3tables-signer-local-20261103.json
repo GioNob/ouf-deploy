@@ -1,0 +1,36 @@
+{
+  "candidatePatchCountBefore": 18,
+  "directAwsSdkV1ImportersAfter": 22,
+  "directAwsSdkV1ImportersBefore": 23,
+  "files": {
+    "test/s3tables/catalog/iceberg_catalog_test.go": "b4bd573d3e53a7dc6672294b1049dff39fe7aad7c9bca0f49c965d762b6b0f26"
+  },
+  "generatedAt": "2026-11-03T13:57:00Z",
+  "hostedArtifact": null,
+  "hostedEvidence": null,
+  "maintainedSdk": {
+    "core": "github.com/aws/aws-sdk-go-v2",
+    "signer": "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+  },
+  "package": "./test/s3tables/catalog",
+  "packageAwsSdkV1Dependencies": 0,
+  "packageDependencies": 639,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch",
+    "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398"
+  },
+  "qualifiedTest": {
+    "command": "go test -mod=readonly -short -run ^TestSignS3TablesRequestUsesS3TablesScope$ -count=1 ./test/s3tables/catalog",
+    "result": "PASS"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "scope": "LOCAL_PUBLIC_SOURCE_ONLY",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "workflow": {
+    "path": ".github/workflows/storage-s3tables-signer-sdk-v2.yml",
+    "sha256": "bdc520235c0f74d4a06e88687ade4a5db5191335fc6b05adacfc0f66db6328ae",
+    "status": "PENDING_HOSTED_RUN"
+  }
+}
