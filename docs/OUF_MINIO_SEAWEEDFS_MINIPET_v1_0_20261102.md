@@ -1,3 +1,13 @@
+# Checkpoint 3 novembre 2026 — tipi IAM locali e riduzione del grafo
+
+La quarta [patch](../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch) separa i tipi delle risposte IAM dalla libreria client AWS v1. I dieci tipi conservano campi, puntatori, ordine e tag del modello precedente. Gli errori mantengono i codici originali. I test confrontano XML vuoto e popolato con l'SDK precedente, includendo date, liste e caratteri speciali. Le copie derivate mantengono LICENSE, NOTICE e attribuzione. I client SDK usati dai test restano utili per verificare il protocollo.
+
+La suite locale comprende IAM, OIDC, STS, policy, integrazione IAM, IAM API e S3. Esito 4.806 eventi PASS e 5 skip preesistenti. Il grafo del server contiene 1.749 pacchetti, di cui 54 SDK v1, con 41 archi diretti da 8 pacchetti importatori. La variazione rispetto alla baseline riguarda la sostituzione di `github.com/aws/aws-sdk-go/service/iam` con `weed/iam/wire`. Il workflow verifica questa differenza esatta e include la suite IAM. [Workflow aggiornato](../.github/workflows/storage-sdk-lifecycle.yml).
+
+L'estrazione IAM costituisce un passo della rimozione SDK v1. I percorsi S3, KMS, SQS, remote storage e replica rimangono da trattare. Stima MiniPET circa 33%, 8 gate e 21 AT aperti, 0/120 oggetti reali copiati.
+
+## Checkpoint precedente
+
 # Checkpoint 3 novembre 2026 — manutenzione AWS SDK e qualifica G1
 
 Il tag SeaweedFS 4.52, commit `984eac6a790be89e2a11de175a7413e1e3e32dd3`, contiene ancora AWS SDK Go v1.55.8. Il grafo Go amd64/CGO disabilitato contiene 55 pacchetti v1 su 1.749. Il tag è la base per una prova di rimozione incrementale. La scelta di una generazione per il target richiede ancora qualifica e ammissione. [Release 4.52](https://github.com/seaweedfs/seaweedfs/releases/tag/4.52).
