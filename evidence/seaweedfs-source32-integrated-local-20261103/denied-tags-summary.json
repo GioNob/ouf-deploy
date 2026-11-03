@@ -1,0 +1,86 @@
+[
+  {
+    "tags": "elastic",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE"
+    ],
+    "stderrSha256": "5356f6b4b779463f717c1be2a582342fb377f73443ac78f71d2df78b289de884"
+  },
+  {
+    "tags": "rclone",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE"
+    ],
+    "stderrSha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53"
+  },
+  {
+    "tags": "kafka",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION"
+    ],
+    "stderrSha256": "6bca47fdfffbaf2756501ba0128bb5505ee02f796d2fe6a499332eabe447c970"
+  },
+  {
+    "tags": "openbao",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT"
+    ],
+    "stderrSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5"
+  },
+  {
+    "tags": "vault",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT"
+    ],
+    "stderrSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5"
+  },
+  {
+    "tags": "gcs",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE"
+    ],
+    "stderrSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0"
+  },
+  {
+    "tags": "google_pub_sub",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE"
+    ],
+    "stderrSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0"
+  },
+  {
+    "tags": "googlecloud",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE"
+    ],
+    "stderrSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0"
+  },
+  {
+    "tags": "elastic,rclone,kafka,openbao,vault,gcs,google_pub_sub,googlecloud",
+    "expectedRejection": true,
+    "exitCode": 1,
+    "diagnostics": [
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE",
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION",
+      "OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_OPENBAO_OR_VAULT",
+      "OUF_STANDARD_PROFILE_GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE"
+    ],
+    "stderrSha256": "e67fcb0698d5fcfa85f4039ae95dd98987b8864b8e11c240ff89d2a72e31ad61"
+  }
+]

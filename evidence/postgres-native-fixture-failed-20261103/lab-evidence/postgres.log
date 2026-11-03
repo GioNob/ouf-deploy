@@ -1,0 +1,19 @@
+2026-11-03 20:51:06.564 UTC [11463] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-11-03 20:51:06.564 UTC [11463] LOG:  listening on Unix socket "/tmp/oufpg-noi528qw/socket/.s.PGSQL.55439"
+2026-11-03 20:51:06.565 UTC [11466] LOG:  database system was shut down at 2026-11-03 20:51:06 UTC
+2026-11-03 20:51:06.567 UTC [11463] LOG:  database system is ready to accept connections
+2026-11-03 20:51:06.822 UTC [11505] ERROR:  permission denied for table generation
+2026-11-03 20:51:06.822 UTC [11505] STATEMENT:  SET application_name = 'ouf-native-lab'; UPDATE ouf_recovery_fixture.generation SET accepting_writes=true
+2026-11-03 20:51:06.826 UTC [11507] ERROR:  cannot execute UPDATE in a read-only transaction
+2026-11-03 20:51:06.826 UTC [11507] STATEMENT:  SET application_name = 'ouf-native-lab'; BEGIN READ ONLY; UPDATE ouf_recovery_fixture.generation SET accepting_writes=true
+2026-11-03 20:51:06.850 UTC [11463] LOG:  received fast shutdown request
+2026-11-03 20:51:06.850 UTC [11463] LOG:  aborting any active transactions
+2026-11-03 20:51:06.851 UTC [11516] FATAL:  terminating connection due to administrator command
+2026-11-03 20:51:06.851 UTC [11516] STATEMENT:  SET application_name = 'ouf-uncommitted-writer'; BEGIN; UPDATE ouf_recovery_fixture.generation SET generation='postgres-native-fixture-0002'; UPDATE ouf_recovery_fixture.objects SET generation='postgres-native-fixture-0002'; SELECT pg_sleep(25); ROLLBACK
+2026-11-03 20:51:06.851 UTC [11516] LOG:  could not send data to client: Broken pipe
+2026-11-03 20:51:06.851 UTC [11516] STATEMENT:  SET application_name = 'ouf-uncommitted-writer'; BEGIN; UPDATE ouf_recovery_fixture.generation SET generation='postgres-native-fixture-0002'; UPDATE ouf_recovery_fixture.objects SET generation='postgres-native-fixture-0002'; SELECT pg_sleep(25); ROLLBACK
+2026-11-03 20:51:06.851 UTC [11463] LOG:  background worker "logical replication launcher" (PID 11469) exited with exit code 1
+2026-11-03 20:51:06.851 UTC [11464] LOG:  shutting down
+2026-11-03 20:51:06.851 UTC [11464] LOG:  checkpoint starting: shutdown immediate
+2026-11-03 20:51:06.919 UTC [11464] LOG:  checkpoint complete: wrote 913 buffers (44.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.056 s, sync=0.011 s, total=0.069 s; sync files=372, longest=0.009 s, average=0.001 s; distance=4112 kB, estimate=4112 kB; lsn=0/1881010, redo lsn=0/1881010
+2026-11-03 20:51:06.923 UTC [11463] LOG:  database system is shut down

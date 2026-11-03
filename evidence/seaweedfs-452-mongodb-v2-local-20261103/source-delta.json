@@ -1,0 +1,32 @@
+[
+  {
+    "path": "go.mod",
+    "beforeSha256": "2e7ef58f17dc8606f18c2c6851b79958b5240d6a1bc50ec637893437854bd070",
+    "afterSha256": "e38b529b1b0b237a8ae9eac5beca31045a87cf4997141a140455f0377c4b46c3"
+  },
+  {
+    "path": "go.sum",
+    "beforeSha256": "c9b923fd2b52b3780a41e785c95c20364dc63d4910ab30f907f0e31e8fe6e395",
+    "afterSha256": "fcce44e791f5c2949325c2eead488ff12e747d8928494887e3516ddd6cd2f0fb"
+  },
+  {
+    "path": "weed/filer/mongodb/mongodb_options_v2_test.go",
+    "beforeSha256": null,
+    "afterSha256": "9896552a8d69800d897e6c7ced9a231e66727df238ec818a061ec894be0e7877"
+  },
+  {
+    "path": "weed/filer/mongodb/mongodb_store.go",
+    "beforeSha256": "c2e8aae92e8c191e325ba68ed7ff062e0d57662054bd4c916772a05162a6dfa4",
+    "afterSha256": "4d648e63f6d76302b1463da01d98f39f42806b90c4b9a43cb704ca9c250133f6"
+  },
+  {
+    "path": "weed/filer/mongodb/mongodb_store_kv.go",
+    "beforeSha256": "3c304d74944d25fc1a573dbedc65c662491795b03e9eed581ecc533e30fe0789",
+    "afterSha256": "468985996f7b61a8dbb9626aa2dca033c8ab3cf85e4073ffc1e60adf517c1558"
+  },
+  {
+    "path": "weed/filer/mongodb/mongodb_wire_test.go",
+    "beforeSha256": null,
+    "afterSha256": "36ea9f30b9b73e6fdfe1e47b66e22801a11a610662e875493ed92c994dc1cf71"
+  }
+]

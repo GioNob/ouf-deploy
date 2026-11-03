@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "originalInputsVerified": 117,
+  "originalBytesVerified": 34768100,
+  "gzipPayloadsVerified": 11,
+  "identityPayloadsVerified": 106,
+  "frozenReceiptSha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0",
+  "compactMappingSha256": "a4674ee32be5b8df81e4ec8480e16519488bd5dbf81306242f0cddec3c774c57",
+  "materialized": false
+}

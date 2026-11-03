@@ -1,0 +1,394 @@
+{
+  "schema": "ouf.github-ci-round.v1",
+  "commit": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8",
+  "total": 53,
+  "counts": {
+    "success": 52,
+    "failure": 1
+  },
+  "runs": [
+    {
+      "id": 41716007618,
+      "name": "M2 sealed infrastructure review fragment",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007618",
+      "attempt": 1
+    },
+    {
+      "id": 41716007818,
+      "name": "M2 isolated transport template",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007818",
+      "attempt": 1
+    },
+    {
+      "id": 41716007615,
+      "name": "M2 public trust and current native context",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007615",
+      "attempt": 1
+    },
+    {
+      "id": 41716007728,
+      "name": "M2 private material preparation native peers",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007728",
+      "attempt": 1
+    },
+    {
+      "id": 41716007675,
+      "name": "M2 sealed complete parent review",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007675",
+      "attempt": 1
+    },
+    {
+      "id": 41716007544,
+      "name": "M2 retained runtime origin join after consumed byte proof",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007544",
+      "attempt": 1
+    },
+    {
+      "id": 41716007917,
+      "name": "OUF policy-token bounded admin GET diagnosis",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007917",
+      "attempt": 1
+    },
+    {
+      "id": 41716007521,
+      "name": "M2 sealed private review assembly",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007521",
+      "attempt": 1
+    },
+    {
+      "id": 41716007805,
+      "name": "M2 corrected material roles native peers",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007805",
+      "attempt": 1
+    },
+    {
+      "id": 41716007696,
+      "name": "M2 retained archive graph diagnosis without image admission",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007696",
+      "attempt": 1
+    },
+    {
+      "id": 41716007628,
+      "name": "M2 capture retained effective kernel views and live metadata",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007628",
+      "attempt": 1
+    },
+    {
+      "id": 41716007527,
+      "name": "M2 public trust and native context protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007527",
+      "attempt": 1
+    },
+    {
+      "id": 41716007642,
+      "name": "M2 discovery single MCP native lifecycle",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007642",
+      "attempt": 1
+    },
+    {
+      "id": 41716007807,
+      "name": "M2 private archives of the thirteen exact native images",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007807",
+      "attempt": 1
+    },
+    {
+      "id": 41716007725,
+      "name": "M2 discovery native Docker frame",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007725",
+      "attempt": 1
+    },
+    {
+      "id": 41716007529,
+      "name": "M2 explicit public Java truststore",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007529",
+      "attempt": 1
+    },
+    {
+      "id": 41716007474,
+      "name": "M2 stopped provider installation inputs",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007474",
+      "attempt": 1
+    },
+    {
+      "id": 41716007547,
+      "name": "M2 hash only captured readonly regular files",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007547",
+      "attempt": 1
+    },
+    {
+      "id": 41716007731,
+      "name": "M2 read-only provider runtime contract",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007731",
+      "attempt": 1
+    },
+    {
+      "id": 41716007619,
+      "name": "M2 read-only provider runtime contract protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007619",
+      "attempt": 1
+    },
+    {
+      "id": 41716007817,
+      "name": "M2 current retained effective mount views and static bytes",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007817",
+      "attempt": 1
+    },
+    {
+      "id": 41716007583,
+      "name": "M2 exact diagnosed selected runtime byte verification",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007583",
+      "attempt": 1
+    },
+    {
+      "id": 41716007806,
+      "name": "M2 retained mount role correction",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007806",
+      "attempt": 1
+    },
+    {
+      "id": 41716007985,
+      "name": "Registry recovery components and Unix Engine transport",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007985",
+      "attempt": 1
+    },
+    {
+      "id": 41716007589,
+      "name": "M2 governed publication owner protocol",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007589",
+      "attempt": 1
+    },
+    {
+      "id": 41716007626,
+      "name": "M2 read-only stopped-provider inputs protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007626",
+      "attempt": 1
+    },
+    {
+      "id": 41716007532,
+      "name": "M2 composed provider v4 native installation",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007532",
+      "attempt": 1
+    },
+    {
+      "id": 41716007882,
+      "name": "OUF policy-token online IAM and installed owner qualification",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007882",
+      "attempt": 1
+    },
+    {
+      "id": 41716007861,
+      "name": "M2 real Docker admitted provider worker handoff",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007861",
+      "attempt": 1
+    },
+    {
+      "id": 41716007534,
+      "name": "M2 native operational lease generation probe",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007534",
+      "attempt": 1
+    },
+    {
+      "id": 41716007681,
+      "name": "M2 discovery custody protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007681",
+      "attempt": 1
+    },
+    {
+      "id": 41716007820,
+      "name": "M2 read-only provider representation reconciliation",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007820",
+      "attempt": 1
+    },
+    {
+      "id": 41716007785,
+      "name": "M2 read-only provider reconciliation protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007785",
+      "attempt": 1
+    },
+    {
+      "id": 41716007825,
+      "name": "M2 selected Registry MCP images native CLI",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007825",
+      "attempt": 1
+    },
+    {
+      "id": 41716007858,
+      "name": "M2 retained mount metadata capture",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007858",
+      "attempt": 1
+    },
+    {
+      "id": 41716007829,
+      "name": "M2 distinct discovery lease worker",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007829",
+      "attempt": 1
+    },
+    {
+      "id": 41716007750,
+      "name": "M2 current retained mount intake and metadata witness",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007750",
+      "attempt": 1
+    },
+    {
+      "id": 41716007602,
+      "name": "M2 parent-owned native gate peer window",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007602",
+      "attempt": 1
+    },
+    {
+      "id": 41716007594,
+      "name": "M2 installed Ingestion to Onboarding HTTP contract",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007594",
+      "attempt": 1
+    },
+    {
+      "id": 41716007974,
+      "name": "M2 corrective material roles protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007974",
+      "attempt": 1
+    },
+    {
+      "id": 41716007747,
+      "name": "M2 offline native publisher cryptography",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007747",
+      "attempt": 1
+    },
+    {
+      "id": 41716007726,
+      "name": "M2 consumed private image intake and native byte verification",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007726",
+      "attempt": 1
+    },
+    {
+      "id": 41716007922,
+      "name": "M2 classify retained lifecycle and prepare static host-file custody",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007922",
+      "attempt": 1
+    },
+    {
+      "id": 41716007824,
+      "name": "M2 reconcile exact gateway mount metadata mismatch",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007824",
+      "attempt": 1
+    },
+    {
+      "id": 41716007649,
+      "name": "M2 compiled discovery lease sandbox",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007649",
+      "attempt": 1
+    },
+    {
+      "id": 41716007832,
+      "name": "M2 discovery material protected delivery",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007832",
+      "attempt": 1
+    },
+    {
+      "id": 41716007812,
+      "name": "M2 reuse installed Teatri owner contracts",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007812",
+      "attempt": 1
+    },
+    {
+      "id": 41716007559,
+      "name": "M2 running Registry admission protocol",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007559",
+      "attempt": 1
+    },
+    {
+      "id": 41716007797,
+      "name": "Discovery authorization and complete installation proposal",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007797",
+      "attempt": 1
+    },
+    {
+      "id": 41716007698,
+      "name": "Chatbot cohort delivery native owners",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41716007698",
+      "attempt": 1
+    },
+    {
+      "id": 41715991128,
+      "name": "Storage 4.52 generation31 cohort and legal text rebinding",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41715991128",
+      "attempt": 1
+    },
+    {
+      "id": 41715990729,
+      "name": "Storage 4.52 recovery foundation",
+      "conclusion": "success",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41715990729",
+      "attempt": 1
+    },
+    {
+      "id": 41715990786,
+      "name": "Storage PostgreSQL native fixture",
+      "conclusion": "failure",
+      "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41715990786",
+      "attempt": 1
+    }
+  ],
+  "retainedFailure": {
+    "runId": 41715990786,
+    "reason": "libpq warning: password file /dev/null is not a plain file",
+    "nativeTests": {
+      "pass": 0,
+      "fail": 3,
+      "error": 4,
+      "skip": 0
+    },
+    "fixStatus": "PRIVATE_EMPTY_REGULAR_PASSFILE_LOCAL_50_PASS_HOSTED_PENDING"
+  },
+  "targetOperations": 0
+}

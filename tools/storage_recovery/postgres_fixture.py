@@ -7,12 +7,14 @@ origin separately. Reading a fence row does not enforce a fence on any writer.
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
 import selectors
 import signal
 import subprocess
+import tempfile
 import time
 
 from .coordinated import (BUCKET, MAX_OBJECTS, MAX_OBJECT_BYTES, MAX_TOTAL_BYTES,
@@ -22,6 +24,27 @@ from .profile import canonical_json
 
 MAX_STDERR = 65536
 MAX_STDOUT = MAX_SNAPSHOT_BYTES + 16384
+
+
+@contextmanager
+def empty_password_environment():
+    """Private empty regular passfile; no inherited libpq credentials/options.
+
+    libpq warns for /dev/null because it is not a regular file. A private empty
+    file prevents both that warning and fallback to the user's default .pgpass.
+    The file and its owner-only directory live exactly as long as the process
+    attempt, including its bounded termination and pipe cleanup.
+    """
+    with tempfile.TemporaryDirectory(prefix="ouf-empty-pgpass-") as directory:
+        os.chmod(directory, 0o700)
+        passfile = str(Path(directory) / "pgpass")
+        descriptor = os.open(passfile, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            os.fchmod(descriptor, 0o600)
+        finally:
+            os.close(descriptor)
+        yield {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "PGCONNECT_TIMEOUT": "5",
+               "PGPASSFILE": passfile, "PGSERVICEFILE": "/dev/null"}
 
 # Fixed SQL, never caller-interpolated. The sentinel row distinguishes oversized
 # relations from complete snapshots. Both tables are read within one snapshot.
@@ -59,9 +82,12 @@ def _run_bounded(argv: list[str], *, timeout: float) -> bytes:
     """One process attempt, bounded memory/time, no raw stderr in exceptions."""
     require(type(timeout) in (int, float) and 0 < timeout <= 30,
             "PROCESS_TIMEOUT_BUDGET")
-    environment = {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
-                   "PGCONNECT_TIMEOUT": "5", "PGPASSFILE": "/dev/null",
-                   "PGSERVICEFILE": "/dev/null", "PGAPPNAME": "ouf-recovery-fixture-readback"}
+    with empty_password_environment() as environment:
+        environment["PGAPPNAME"] = "ouf-recovery-fixture-readback"
+        return _run_bounded_in_environment(argv, timeout=timeout, environment=environment)
+
+
+def _run_bounded_in_environment(argv: list[str], *, timeout: float, environment: dict) -> bytes:
     deadline = time.monotonic() + timeout
     try:
         process = subprocess.Popen(argv, stdin=subprocess.DEVNULL,

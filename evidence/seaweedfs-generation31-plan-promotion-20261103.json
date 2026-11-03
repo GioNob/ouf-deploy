@@ -1,0 +1,91 @@
+{
+  "schema": "ouf.storage-plan-generation31-promotion.v1",
+  "status": "LOCAL_PLAN_BINDING_PASS_HOSTED31_BYTES_REQUIRED_NOT_ADMITTED",
+  "currentGeneration": 31,
+  "historicalGeneration29Preserved": true,
+  "wholePreviousPlanCanonicalSha256": "7671b526b3c2ba6d0d32a7b49af690bb24157917c3b908bf5502ad0a58e986ea",
+  "baselineFilesCompared": 2690,
+  "onlyExistingFilesChanged": [
+    ".github/workflows/storage-plan-current.yml",
+    "releases/minio-seaweedfs-plan-20261102.json",
+    "scripts/verify-minio-seaweedfs-plan-current.py",
+    "tests/test_minio_seaweedfs_plan_current.py"
+  ],
+  "qualification": {
+    "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+    "imageReceiptSha256": "428dd1bd4f083d0160dd98ca2862dd1f3ef09de055f39d7be9dd30dd6f59cbc0",
+    "cohortReceiptSha256": "a092a73c1a2e1ba20375bbc9a40d9d1a510a03abfe3eb91d7a2bd5c2d04d2d38",
+    "runtimeReceiptSha256": "ff19d07d485e287492593f8439e426b293be8dc2669ba064e93dff9d0b60b0a3",
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484"
+  },
+  "checks": {
+    "unitTestsPassed": 60,
+    "priorTestsRetained": 48,
+    "newTests": 12,
+    "actualWorkflowRunBlocksPassed": 2,
+    "inputFileHashes": 369,
+    "sourceModules": 234,
+    "compiledPackages": 1740,
+    "historicalMime15FailurePreserved": true,
+    "localModifiedMplSourceArchiveAndManifestBound": true
+  },
+  "proofFiles": {
+    ".github/workflows/storage-plan-current.yml": {
+      "bytes": 18401,
+      "sha256": "cfb7e90e9411b625e633a5a1064e640bfccab982cccbd443705a1e7a5376b392"
+    },
+    "releases/minio-seaweedfs-plan-20261102.json": {
+      "bytes": 47301,
+      "sha256": "8b25434985be905763cc1605d4b23009efaafe482fed54174c401928aacbbb84"
+    },
+    "scripts/verify-minio-seaweedfs-plan-current.py": {
+      "bytes": 69683,
+      "sha256": "826d061f6ab991c725698d576bd2b55f5e810ad2b186ea28ccd4fcaf5268e407"
+    },
+    "tests/test_minio_seaweedfs_plan_current.py": {
+      "bytes": 49478,
+      "sha256": "ffa51cfca04add9fd721c0932e69ac761a14aa9aced6646bf744a684dd9fcc03"
+    },
+    "scripts/verify-minio-seaweedfs-plan-generation31.py": {
+      "bytes": 18053,
+      "sha256": "3c0094ce6fa471df4c29c2ebaad5e2d3667532709cdccb27f0885382f2d7ea22"
+    },
+    "docs/OUF_SEAWEEDFS_GENERATION31_CURRENT_PLAN_20261103.md": {
+      "bytes": 3313,
+      "sha256": "429c78de1d3baf35953e0843d6903f33117ea755b99c666c1f3cb97025005af5"
+    },
+    "evidence/seaweedfs-generation31-plan-promotion-20261103/tests.log": {
+      "bytes": 10909,
+      "sha256": "1b68b910a0a19ccd724697141d0ea2dd6b7e0e606b54e84057bf1933b7bcc56d"
+    },
+    "evidence/seaweedfs-generation31-plan-promotion-20261103/verification.json": {
+      "bytes": 2328,
+      "sha256": "f32c1e943c7caff14ec435d741fd850544bc7ec6717f5ea58a8d57ec0dd26477"
+    },
+    "evidence/seaweedfs-generation31-plan-promotion-20261103/input-sha256.txt": {
+      "bytes": 51764,
+      "sha256": "b61934df20499ada793593e9a12ae1d636a179cef2b5836b4f37cc5d9c6626c0"
+    },
+    "evidence/seaweedfs-generation31-plan-promotion-20261103/workflow-validation.log": {
+      "bytes": 10909,
+      "sha256": "1b68b910a0a19ccd724697141d0ea2dd6b7e0e606b54e84057bf1933b7bcc56d"
+    },
+    "evidence/seaweedfs-generation31-plan-promotion-20261103/workflow-binding.log": {
+      "bytes": 56,
+      "sha256": "c0e93491c8ec0104bce09d250590c7446e48571727255dc223b5a2e7c47d1dce"
+    }
+  },
+  "limits": {
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "progressUnchanged": true,
+    "newNativePostgresPassClaimed": false,
+    "source32QualificationClaimed": false,
+    "allDependenciesMaintained": false,
+    "historicalHumanAdvisoryDecisionChanged": false
+  }
+}

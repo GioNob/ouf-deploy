@@ -1,0 +1,1076 @@
+{
+  "schema": "ouf.seaweedfs-source32-compact-publication.v1",
+  "status": "LOSSLESS_PUBLICATION_REPRESENTATION_ONLY",
+  "originalDeliveryManifest": {
+    "publishedPath": "evidence/seaweedfs-source32-original-delivery-files-20261103.json",
+    "sha256": "a011522114f7578e33414aa02e42e60348e5976f84fd768fb42b6e22beccc487"
+  },
+  "frozenQualificationReceipt": {
+    "logicalPath": "evidence/seaweedfs-source32-integrated-local-20261103.json",
+    "sha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0",
+    "unchanged": true
+  },
+  "originalInputCount": 117,
+  "compressedInputCount": 11,
+  "identityInputCount": 106,
+  "originalInputBytes": 34768100,
+  "publishedInputBytes": 4762787,
+  "compression": "gzip level9 mtime0; raw payloads >100000 bytes except direct essential patch/docs/source and observed-profile manifests",
+  "interpretation": "Paths inside the frozen qualification receipt are logical original evidence identifiers, not claims that each uncompressed path exists in this publication. Resolve every identifier through files[logicalPath].publishedPath and encoding. Original qualifications, errors, skips and hashes are unchanged.",
+  "verifiedAllOriginalInputs": true,
+  "files": {
+    "docs/OUF_SEAWEEDFS_SOURCE32_MAINTAINED_PROFILES_20261103.md": {
+      "encoding": "identity",
+      "publishedPath": "docs/OUF_SEAWEEDFS_SOURCE32_MAINTAINED_PROFILES_20261103.md",
+      "originalBytes": 5879,
+      "originalSha256": "5e1c2c217965fd4fd9b9f0c6f0f244a0bc05a993fd0e4f798b098df77ff19ca2",
+      "publishedBytes": 5879,
+      "publishedSha256": "5e1c2c217965fd4fd9b9f0c6f0f244a0bc05a993fd0e4f798b098df77ff19ca2",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103.json",
+      "originalBytes": 30695,
+      "originalSha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0",
+      "publishedBytes": 30695,
+      "publishedSha256": "3bda090e8b62cd0e5cc0fcf18b1e26d1bdec6b3f10cb2e51c9d7bd34891952f0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/binary-first.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/binary-first.json",
+      "originalBytes": 306,
+      "originalSha256": "ef8af4dc1b75bdab321aae7e1dbe859ccbd40d6f6a5dfbb9fada17078fd42e1b",
+      "publishedBytes": 306,
+      "publishedSha256": "ef8af4dc1b75bdab321aae7e1dbe859ccbd40d6f6a5dfbb9fada17078fd42e1b",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-first.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-first.command.json",
+      "originalBytes": 533,
+      "originalSha256": "69f3d7de7ca4e0cae6723452989d21d12f3d57e621a6ace1b6389ad1b771d970",
+      "publishedBytes": 533,
+      "publishedSha256": "69f3d7de7ca4e0cae6723452989d21d12f3d57e621a6ace1b6389ad1b771d970",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-first.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-first.stderr",
+      "originalBytes": 191,
+      "originalSha256": "e9338a28f06f6a64d3db13e366e8bacd7f482f6fb9584ccb52e255f90df8e474",
+      "publishedBytes": 191,
+      "publishedSha256": "e9338a28f06f6a64d3db13e366e8bacd7f482f6fb9584ccb52e255f90df8e474",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-first.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-first.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.command.json",
+      "originalBytes": 428,
+      "originalSha256": "ee36f84db152c32b91b1225c8c98c516f5726eda645467a350debf8f9fb7e790",
+      "publishedBytes": 428,
+      "publishedSha256": "ee36f84db152c32b91b1225c8c98c516f5726eda645467a350debf8f9fb7e790",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-first.stdout",
+      "originalBytes": 20740,
+      "originalSha256": "dbc8fc5fab1961ca75ac5d7072d2ca9f98635b15d71222aeaf8ec534da77d5d9",
+      "publishedBytes": 20740,
+      "publishedSha256": "dbc8fc5fab1961ca75ac5d7072d2ca9f98635b15d71222aeaf8ec534da77d5d9",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.command.json",
+      "originalBytes": 428,
+      "originalSha256": "f0732ac373b595d36666d9180b2db933171a6acad2b74166d3330049a8259515",
+      "publishedBytes": 428,
+      "publishedSha256": "f0732ac373b595d36666d9180b2db933171a6acad2b74166d3330049a8259515",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-info-replay.stdout",
+      "originalBytes": 20740,
+      "originalSha256": "dbc8fc5fab1961ca75ac5d7072d2ca9f98635b15d71222aeaf8ec534da77d5d9",
+      "publishedBytes": 20740,
+      "publishedSha256": "dbc8fc5fab1961ca75ac5d7072d2ca9f98635b15d71222aeaf8ec534da77d5d9",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.command.json",
+      "originalBytes": 532,
+      "originalSha256": "64eed1399d1f6ddff8fd332307c8b86b2cad61cbcfb024e15126b616d3aa4d51",
+      "publishedBytes": 532,
+      "publishedSha256": "64eed1399d1f6ddff8fd332307c8b86b2cad61cbcfb024e15126b616d3aa4d51",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.stderr",
+      "originalBytes": 191,
+      "originalSha256": "1473e38d8fbe429b1d1f1a762f6be44718cdbcbb14cc8bb5dbbafba17526c297",
+      "publishedBytes": 191,
+      "publishedSha256": "1473e38d8fbe429b1d1f1a762f6be44718cdbcbb14cc8bb5dbbafba17526c297",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/build-replay.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/check_denied_tags.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/check_denied_tags.py",
+      "originalBytes": 1418,
+      "originalSha256": "4e768d893958d122dca9d4c2730b311ca8a498c7ecd2f332976e03bc30f74ed1",
+      "publishedBytes": 1418,
+      "publishedSha256": "4e768d893958d122dca9d4c2730b311ca8a498c7ecd2f332976e03bc30f74ed1",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/combined-failure-output.jsonl": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/combined-failure-output.jsonl",
+      "originalBytes": 10707,
+      "originalSha256": "8185cc859ca721c942930b105923d486891bd45defcce042a0ec5dcbb64a0170",
+      "publishedBytes": 10707,
+      "publishedSha256": "8185cc859ca721c942930b105923d486891bd45defcce042a0ec5dcbb64a0170",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/combined-summary.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/combined-summary.json",
+      "originalBytes": 1807,
+      "originalSha256": "2ae17ccfe822e582b3129077f403923b18c96063a2dc230cfe0a631b42dce668",
+      "publishedBytes": 1807,
+      "publishedSha256": "2ae17ccfe822e582b3129077f403923b18c96063a2dc230cfe0a631b42dce668",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.command.json",
+      "originalBytes": 684,
+      "originalSha256": "d5954538068810f0ec8360bab671565eb0c9077d02d5c53d13aaccd8960b5450",
+      "publishedBytes": 684,
+      "publishedSha256": "d5954538068810f0ec8360bab671565eb0c9077d02d5c53d13aaccd8960b5450",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.stderr",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/combined-tests.stdout.gz",
+      "originalBytes": 10152880,
+      "originalSha256": "8d8a6d9433068321c96f9dabd7f323e291fa14549214a52be16bbe3b684f005c",
+      "publishedBytes": 623445,
+      "publishedSha256": "6c3c666c8a62caee26baba20cc013b1e1b1befe82f1a766379b1ed228c3ffdb1",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/compiled-module-rows.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/compiled-module-rows.json",
+      "originalBytes": 13589,
+      "originalSha256": "6d668f23a1effed0fcda0ee9508223c31a76ad8685f015ed390fe94ff541c8b7",
+      "publishedBytes": 13589,
+      "publishedSha256": "6d668f23a1effed0fcda0ee9508223c31a76ad8685f015ed390fe94ff541c8b7",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/component-source-parity.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/component-source-parity.json",
+      "originalBytes": 6790,
+      "originalSha256": "dcb031ccecb5f50a8ffa551e12cc8ea033d84b94baeec791851d0207e192182c",
+      "publishedBytes": 6790,
+      "publishedSha256": "dcb031ccecb5f50a8ffa551e12cc8ea033d84b94baeec791851d0207e192182c",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.command.json",
+      "originalBytes": 559,
+      "originalSha256": "b042f2595592f04349a871eebe25d4bbb717408e8acba3da98a46a811c6ec402",
+      "publishedBytes": 559,
+      "publishedSha256": "b042f2595592f04349a871eebe25d4bbb717408e8acba3da98a46a811c6ec402",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.stderr",
+      "originalBytes": 618,
+      "originalSha256": "e67fcb0698d5fcfa85f4039ae95dd98987b8864b8e11c240ff89d2a72e31ad61",
+      "publishedBytes": 618,
+      "publishedSha256": "e67fcb0698d5fcfa85f4039ae95dd98987b8864b8e11c240ff89d2a72e31ad61",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic-rclone-kafka-openbao-vault-gcs-google_pub_sub-googlecloud.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.command.json",
+      "originalBytes": 501,
+      "originalSha256": "92066b5582fe842d55c84953bc6ea966923009446858cf88bba9be4bbc943831",
+      "publishedBytes": 501,
+      "publishedSha256": "92066b5582fe842d55c84953bc6ea966923009446858cf88bba9be4bbc943831",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.stderr",
+      "originalBytes": 339,
+      "originalSha256": "5356f6b4b779463f717c1be2a582342fb377f73443ac78f71d2df78b289de884",
+      "publishedBytes": 339,
+      "publishedSha256": "5356f6b4b779463f717c1be2a582342fb377f73443ac78f71d2df78b289de884",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-elastic.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.command.json",
+      "originalBytes": 497,
+      "originalSha256": "11d4cbb796cf4b5e99d576dd393ec90e9e2c40e9d4fe3f5210eda8a87477b795",
+      "publishedBytes": 497,
+      "publishedSha256": "11d4cbb796cf4b5e99d576dd393ec90e9e2c40e9d4fe3f5210eda8a87477b795",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.stderr",
+      "originalBytes": 180,
+      "originalSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "publishedBytes": 180,
+      "publishedSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-gcs.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.command.json",
+      "originalBytes": 508,
+      "originalSha256": "b58f69ba03cccfd51625379e963b1007f3cc9fc8435e56c4e33dfb237766270c",
+      "publishedBytes": 508,
+      "publishedSha256": "b58f69ba03cccfd51625379e963b1007f3cc9fc8435e56c4e33dfb237766270c",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.stderr",
+      "originalBytes": 180,
+      "originalSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "publishedBytes": 180,
+      "publishedSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-google_pub_sub.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.command.json",
+      "originalBytes": 505,
+      "originalSha256": "b339dfb28bdc83cd3f131be2891e8ff41ee6ea875c06a4757a2efb44857a33ad",
+      "publishedBytes": 505,
+      "publishedSha256": "b339dfb28bdc83cd3f131be2891e8ff41ee6ea875c06a4757a2efb44857a33ad",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.stderr",
+      "originalBytes": 180,
+      "originalSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "publishedBytes": 180,
+      "publishedSha256": "37dd13f6c229a24f1f51bf226cc78adf60337b24c5197612c4e1204a765574d0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-googlecloud.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.command.json",
+      "originalBytes": 499,
+      "originalSha256": "52b2b5d0e628e801ad5971a717d8a466d223fc0241bdf205eaedb729b2f02402",
+      "publishedBytes": 499,
+      "publishedSha256": "52b2b5d0e628e801ad5971a717d8a466d223fc0241bdf205eaedb729b2f02402",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.stderr",
+      "originalBytes": 176,
+      "originalSha256": "6bca47fdfffbaf2756501ba0128bb5505ee02f796d2fe6a499332eabe447c970",
+      "publishedBytes": 176,
+      "publishedSha256": "6bca47fdfffbaf2756501ba0128bb5505ee02f796d2fe6a499332eabe447c970",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-kafka.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.command.json",
+      "originalBytes": 501,
+      "originalSha256": "3a9be30ac244898ac42e48208b7539af9bc7343e34bfc5e858dd72b64d61be05",
+      "publishedBytes": 501,
+      "publishedSha256": "3a9be30ac244898ac42e48208b7539af9bc7343e34bfc5e858dd72b64d61be05",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.stderr",
+      "originalBytes": 162,
+      "originalSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "publishedBytes": 162,
+      "publishedSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-openbao.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-orchestration.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-orchestration.stderr",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-orchestration.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-orchestration.stdout",
+      "originalBytes": 2453,
+      "originalSha256": "dce2132d19606ac5d22c015980df95a7990a88eaf78675febe9400016460bb18",
+      "publishedBytes": 2453,
+      "publishedSha256": "dce2132d19606ac5d22c015980df95a7990a88eaf78675febe9400016460bb18",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.command.json",
+      "originalBytes": 500,
+      "originalSha256": "86841cbf5b9887434f6444c592725fa7d3028ba06716943dc7a189720a352d36",
+      "publishedBytes": 500,
+      "publishedSha256": "86841cbf5b9887434f6444c592725fa7d3028ba06716943dc7a189720a352d36",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.stderr",
+      "originalBytes": 164,
+      "originalSha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+      "publishedBytes": 164,
+      "publishedSha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-rclone.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-tags-summary.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-tags-summary.json",
+      "originalBytes": 2712,
+      "originalSha256": "6295a371eed54139b1410617c3438afd30baf680460d138d0acc6bfe0e5a33a8",
+      "publishedBytes": 2712,
+      "publishedSha256": "6295a371eed54139b1410617c3438afd30baf680460d138d0acc6bfe0e5a33a8",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.command.json",
+      "originalBytes": 499,
+      "originalSha256": "47252becf6d50a4909c1c76c66ae05e1a83be121f4bb95f6de11f1d94df05669",
+      "publishedBytes": 499,
+      "publishedSha256": "47252becf6d50a4909c1c76c66ae05e1a83be121f4bb95f6de11f1d94df05669",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.stderr",
+      "originalBytes": 162,
+      "originalSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "publishedBytes": 162,
+      "publishedSha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/denied-vault.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/finalize.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/finalize.py",
+      "originalBytes": 4329,
+      "originalSha256": "55e55db10f55f315c1eca13dd1941ede6bf19a2f13d689d704f701f256968f83",
+      "publishedBytes": 4329,
+      "publishedSha256": "55e55db10f55f315c1eca13dd1941ede6bf19a2f13d689d704f701f256968f83",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/graph-summary.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/graph-summary.json",
+      "originalBytes": 2057,
+      "originalSha256": "51c990af82f299bacd2aa09db95e88e6c202f1481e50c8bccc25721656cefddc",
+      "publishedBytes": 2057,
+      "publishedSha256": "51c990af82f299bacd2aa09db95e88e6c202f1481e50c8bccc25721656cefddc",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/graph_summary.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/graph_summary.py",
+      "originalBytes": 1816,
+      "originalSha256": "a194337179e5b1f417963ec8ccab4eef5d2520e31df42d16ba61c56d722eb06f",
+      "publishedBytes": 1816,
+      "publishedSha256": "a194337179e5b1f417963ec8ccab4eef5d2520e31df42d16ba61c56d722eb06f",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.command.json",
+      "originalBytes": 498,
+      "originalSha256": "7159d53dfda97fd599ff63eb516b120d1fdf85bfba14962b1d1d47086f42dbeb",
+      "publishedBytes": 498,
+      "publishedSha256": "7159d53dfda97fd599ff63eb516b120d1fdf85bfba14962b1d1d47086f42dbeb",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-compile.stdout",
+      "originalBytes": 787,
+      "originalSha256": "e07a1f20fc12c3f3e723ee985d0946240570570c4dde07f22965460565986a54",
+      "publishedBytes": 787,
+      "publishedSha256": "e07a1f20fc12c3f3e723ee985d0946240570570c4dde07f22965460565986a54",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.command.json",
+      "originalBytes": 455,
+      "originalSha256": "671650fa4087cfc4c0c3f5570d0d5a8afe95b386b165521d83d5d61fe399dcb6",
+      "publishedBytes": 455,
+      "publishedSha256": "671650fa4087cfc4c0c3f5570d0d5a8afe95b386b165521d83d5d61fe399dcb6",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/iam-tidy-diff.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/independent-observed-profiles-review.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/independent-observed-profiles-review.json",
+      "originalBytes": 1670,
+      "originalSha256": "100f7603fe4deaeb1bf7bf72d9195d70b0adb063458178c594015c2f44d72aa0",
+      "publishedBytes": 1670,
+      "publishedSha256": "100f7603fe4deaeb1bf7bf72d9195d70b0adb063458178c594015c2f44d72aa0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/independent-source-parity-review.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/independent-source-parity-review.json",
+      "originalBytes": 669,
+      "originalSha256": "ea6ae39c050645a9ffb342f5c2fc5769e1b95e7b915426c6a89fde604fe312c1",
+      "publishedBytes": 669,
+      "publishedSha256": "ea6ae39c050645a9ffb342f5c2fc5769e1b95e7b915426c6a89fde604fe312c1",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/input-deliveries-verified.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/input-deliveries-verified.json",
+      "originalBytes": 1526,
+      "originalSha256": "7063678716bfda2d5152634da2b776ce9016410549bc01f118f605ea14be45ba",
+      "publishedBytes": 1526,
+      "publishedSha256": "7063678716bfda2d5152634da2b776ce9016410549bc01f118f605ea14be45ba",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.command.json",
+      "originalBytes": 497,
+      "originalSha256": "943bb069142ed0516992f9cdb24fb6f567eb3070dde53677f7966a251a89944d",
+      "publishedBytes": 497,
+      "publishedSha256": "943bb069142ed0516992f9cdb24fb6f567eb3070dde53677f7966a251a89944d",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-compile.stdout",
+      "originalBytes": 4301,
+      "originalSha256": "b27e1ed038438e1a771e9ba088d8bbf069b4a369e4135c56500e46378d1d6878",
+      "publishedBytes": 4301,
+      "publishedSha256": "b27e1ed038438e1a771e9ba088d8bbf069b4a369e4135c56500e46378d1d6878",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.command.json",
+      "originalBytes": 454,
+      "originalSha256": "495edfd39745bbc23ccd68529d63ca85e62af8a5d025444a9a53916c20cc273e",
+      "publishedBytes": 454,
+      "publishedSha256": "495edfd39745bbc23ccd68529d63ca85e62af8a5d025444a9a53916c20cc273e",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/kafka-tidy-diff.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/main.jsonl": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/main.jsonl.gz",
+      "originalBytes": 8462744,
+      "originalSha256": "e9d101c4747114d87f89ac4143234f9223e2da635725171d0327faf1dc6c9992",
+      "publishedBytes": 512083,
+      "publishedSha256": "6eef06148ac136a5adce790d7a6cbcb3c520d9ec7b4ee6acaa0c33ae97c96e3b",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/make_patch.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/make_patch.py",
+      "originalBytes": 1630,
+      "originalSha256": "ac0d2d67e9cbacd5649e35aeffd2adf698a9796bdbeb02ba80fccedd89face3e",
+      "publishedBytes": 1630,
+      "publishedSha256": "ac0d2d67e9cbacd5649e35aeffd2adf698a9796bdbeb02ba80fccedd89face3e",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/module-pin-closure.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/module-pin-closure.json",
+      "originalBytes": 1621,
+      "originalSha256": "151199e5e968cef49215c420ee9e8fe34f060f9ce6e621630c60b1a44647e26c",
+      "publishedBytes": 1621,
+      "publishedSha256": "151199e5e968cef49215c420ee9e8fe34f060f9ce6e621630c60b1a44647e26c",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/observed-profiles.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/observed-profiles.json",
+      "originalBytes": 1592321,
+      "originalSha256": "c6fb650378f30231717b71faccc92d6d93274793e226bd755ea24383c392aa07",
+      "publishedBytes": 1592321,
+      "publishedSha256": "c6fb650378f30231717b71faccc92d6d93274793e226bd755ea24383c392aa07",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/owned-work-cleanup.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/owned-work-cleanup.json",
+      "originalBytes": 244,
+      "originalSha256": "501a25c831979b48ba41ad6573e63676c20a8ff6749380b6849563e8fca7a80d",
+      "publishedBytes": 244,
+      "publishedSha256": "501a25c831979b48ba41ad6573e63676c20a8ff6749380b6849563e8fca7a80d",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/patch-replay.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/patch-replay.json",
+      "originalBytes": 381,
+      "originalSha256": "3f1a46ffb1dc6e57d79a426ad947f089333d4100ae65909561f9a7699b196091",
+      "publishedBytes": 381,
+      "publishedSha256": "3f1a46ffb1dc6e57d79a426ad947f089333d4100ae65909561f9a7699b196091",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.command.json",
+      "originalBytes": 325,
+      "originalSha256": "f6133591fa272844e9104ccb20ad485645f32a5cd4ffacb4de5fed15e9b7d166",
+      "publishedBytes": 325,
+      "publishedSha256": "f6133591fa272844e9104ccb20ad485645f32a5cd4ffacb4de5fed15e9b7d166",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/production-graph.stdout.gz",
+      "originalBytes": 9904188,
+      "originalSha256": "e0a4f0e1bbf1bf0787b5ce8ac76feb280d8cd2e4081e83773b406dca7fc92951",
+      "publishedBytes": 609622,
+      "publishedSha256": "649fc45e19f3d1357d701a45d32b354e376f283ef6302d56c41ffa6edc809bc6",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/production-packages.txt": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/production-packages.txt",
+      "originalBytes": 61601,
+      "originalSha256": "eb8f1f4415985f4bf56a58e6ffe8b460d10ce94653dbaeec26494c0eafa48cb1",
+      "publishedBytes": 61601,
+      "publishedSha256": "eb8f1f4415985f4bf56a58e6ffe8b460d10ce94653dbaeec26494c0eafa48cb1",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/race.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/race.command.json",
+      "originalBytes": 623,
+      "originalSha256": "c9f2abf679363acefb935780f63a7e811716c640a56e170a1ba68d8a3e156bd9",
+      "publishedBytes": 623,
+      "publishedSha256": "c9f2abf679363acefb935780f63a7e811716c640a56e170a1ba68d8a3e156bd9",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/race.jsonl": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/race.jsonl.gz",
+      "originalBytes": 196934,
+      "originalSha256": "e5aef26337cc176aa0cfac6669c0a14b84e29439c375b5ff300edd673a7bffe9",
+      "publishedBytes": 13218,
+      "publishedSha256": "68c466f4b8d8d3b22f0d166983fec77d380d1052c141f039926f35aa2ca56455",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/race.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/race.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/race.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/race.stdout.gz",
+      "originalBytes": 198284,
+      "originalSha256": "dacf66dbc46299bf8a884f5cdd15d62454aa3fe5b0f6dac917421f795482ef82",
+      "publishedBytes": 13226,
+      "publishedSha256": "f7441359c3c3f169cc0a5dcc70422a92dade339d145abfd47ce37da85d897069",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/replay-owned-work-cleanup.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/replay-owned-work-cleanup.json",
+      "originalBytes": 238,
+      "originalSha256": "6980780c840a1d27f3a04a39527a7ac52c5dd0dead22022b8a54e12633c1a01d",
+      "publishedBytes": 238,
+      "publishedSha256": "6980780c840a1d27f3a04a39527a7ac52c5dd0dead22022b8a54e12633c1a01d",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/replay_prepare.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/replay_prepare.py",
+      "originalBytes": 2231,
+      "originalSha256": "09fcc89f6acf4eb219c20cb0bea570c59971f9049538b5469b824c14301bab86",
+      "publishedBytes": 2231,
+      "publishedSha256": "09fcc89f6acf4eb219c20cb0bea570c59971f9049538b5469b824c14301bab86",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.command.json",
+      "originalBytes": 276,
+      "originalSha256": "ff3c5e8c5ffcfea1522787c4abe8cdb7a035805167c1878b3868dcc27afd5d1e",
+      "publishedBytes": 276,
+      "publishedSha256": "ff3c5e8c5ffcfea1522787c4abe8cdb7a035805167c1878b3868dcc27afd5d1e",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.stderr",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-module-graph.stdout.gz",
+      "originalBytes": 332904,
+      "originalSha256": "f25e5508e27ddf9c3812ccb21a2224089a084acf76eef2dbcb29e2fd9c44abd2",
+      "publishedBytes": 41083,
+      "publishedSha256": "00ff068f8895496fc32c6789bf1faa7ac99e31090c51d1ea9e210b574f10c249",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.command.json",
+      "originalBytes": 473,
+      "originalSha256": "0ccf7bd5d495ff35342d1869e080606dca6e2f260ba7b38b00f4ba4148e2c592",
+      "publishedBytes": 473,
+      "publishedSha256": "0ccf7bd5d495ff35342d1869e080606dca6e2f260ba7b38b00f4ba4148e2c592",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-complete.stdout.gz",
+      "originalBytes": 289811,
+      "originalSha256": "7577c6dce6fb37f6f47c4982dbb9aaa794d384f8acb254b055ca37339187ed1b",
+      "publishedBytes": 67243,
+      "publishedSha256": "7cfd442ca43ed3a8675d766dfda0367fc9152d719e8a05cfe6fa52c41907ea55",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.command.json",
+      "originalBytes": 462,
+      "originalSha256": "c610573916bb661d31b0a0c6934114310966536e71f9dd72119539a6bafb3534",
+      "publishedBytes": 462,
+      "publishedSha256": "c610573916bb661d31b0a0c6934114310966536e71f9dd72119539a6bafb3534",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules-with-errors.stdout.gz",
+      "originalBytes": 289875,
+      "originalSha256": "d0d00d163b3dc0467eb6bbe90f0a596db1473bfd96f97b00f6a55e5649547f88",
+      "publishedBytes": 67356,
+      "publishedSha256": "508b2e446cd7ccefbd6f40dabed4fbc400016f3b84bc6dc442991bb2755f582a",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.command.json",
+      "originalBytes": 319,
+      "originalSha256": "ced27e8017e1e53ac0b00280fce6673b8a33b51b0bf9d4a534700c6099fd9e45",
+      "publishedBytes": 319,
+      "publishedSha256": "ced27e8017e1e53ac0b00280fce6673b8a33b51b0bf9d4a534700c6099fd9e45",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.stderr",
+      "originalBytes": 84,
+      "originalSha256": "3ac47291ad88596c889414921c8e4075d1df911427926d311cf41ce532f3a633",
+      "publishedBytes": 84,
+      "publishedSha256": "3ac47291ad88596c889414921c8e4075d1df911427926d311cf41ce532f3a633",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/root-modules.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/run_checks.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/run_checks.py",
+      "originalBytes": 1246,
+      "originalSha256": "96fabcf0a9a51b6950b4fb66fdfdc7d172425972bf80b843b208d00413a52e24",
+      "publishedBytes": 1246,
+      "publishedSha256": "96fabcf0a9a51b6950b4fb66fdfdc7d172425972bf80b843b208d00413a52e24",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/server.jsonl": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/server.jsonl.gz",
+      "originalBytes": 1651419,
+      "originalSha256": "d8c9238e0807d9a1714c5e67825b0533cf684a6cc75d1af1f25d817fd0f4030c",
+      "publishedBytes": 105320,
+      "publishedSha256": "4e3611737b918991325991073b19f2499fb8abff0cf74d1e9449ead8c7cb943c",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/shell-failure-baseline-parity.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/shell-failure-baseline-parity.json",
+      "originalBytes": 1630,
+      "originalSha256": "b2d73ef8254f0788b05cdbcda849a959d1c869502101733caa2c509e471a43d7",
+      "publishedBytes": 1630,
+      "publishedSha256": "b2d73ef8254f0788b05cdbcda849a959d1c869502101733caa2c509e471a43d7",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/shell-local-observation.jsonl": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/shell-local-observation.jsonl.gz",
+      "originalBytes": 335058,
+      "originalSha256": "d1d4a897b2ee64d3133f32903426e581b9f204dd39a7e35bcd05561af0a11f98",
+      "publishedBytes": 23743,
+      "publishedSha256": "16e479d35bc12b74d76f69da82b027f8be3bf0d1dcbdbec3f665ee2808840ad0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/source-manifest.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/source-manifest.json",
+      "originalBytes": 530372,
+      "originalSha256": "5c2d4145b7999e204e5e3562531d80c230c0688f9c3ac830ef45d7e3550101b4",
+      "publishedBytes": 530372,
+      "publishedSha256": "5c2d4145b7999e204e5e3562531d80c230c0688f9c3ac830ef45d7e3550101b4",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/storage.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/storage.command.json",
+      "originalBytes": 561,
+      "originalSha256": "1d5a4afa6bd946e1e4f2f0695038bf94e711de36569004cc0258f0aba5458cc0",
+      "publishedBytes": 561,
+      "publishedSha256": "1d5a4afa6bd946e1e4f2f0695038bf94e711de36569004cc0258f0aba5458cc0",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/storage.jsonl": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/storage.jsonl",
+      "originalBytes": 94432,
+      "originalSha256": "db4c0562975f3efbe547819e24d8044a5fbcad9b6777627c4f5fc6add6dcff4c",
+      "publishedBytes": 94432,
+      "publishedSha256": "db4c0562975f3efbe547819e24d8044a5fbcad9b6777627c4f5fc6add6dcff4c",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/storage.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/storage.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/storage.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/storage.stdout",
+      "originalBytes": 94437,
+      "originalSha256": "530b6a9b8afc91789c6285cc7440c075bfa3c0d2c943e9477322d60c874e9f67",
+      "publishedBytes": 94437,
+      "publishedSha256": "530b6a9b8afc91789c6285cc7440c075bfa3c0d2c943e9477322d60c874e9f67",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/summarize_profiles.py": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/summarize_profiles.py",
+      "originalBytes": 2610,
+      "originalSha256": "2faab74a5f265b373c3f41e56075dcd8c01d5acf04a8c028f15504b0fc36b804",
+      "publishedBytes": 2610,
+      "publishedSha256": "2faab74a5f265b373c3f41e56075dcd8c01d5acf04a8c028f15504b0fc36b804",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.command.json",
+      "originalBytes": 703,
+      "originalSha256": "5bb1486cd36dcb002a82f1a6692688232816b096ef60e4c47961e3b658821c79",
+      "publishedBytes": 703,
+      "publishedSha256": "5bb1486cd36dcb002a82f1a6692688232816b096ef60e4c47961e3b658821c79",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.stdout": {
+      "encoding": "gzip",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/supplemental-tests.stdout.gz",
+      "originalBytes": 287761,
+      "originalSha256": "533348a075d1c17030ec484187774c144645084b5e5309da3d295c59cc6bd847",
+      "publishedBytes": 20206,
+      "publishedSha256": "c001db5e4f87d01444123777e1eebb65f7fad5123e50fa3f699afe0d852516a5",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.command.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.command.json",
+      "originalBytes": 275,
+      "originalSha256": "0a84eee469c6b3ae6f953f5ff2f9e434c1ba909415e1f69ffe1beef4260861fb",
+      "publishedBytes": 275,
+      "publishedSha256": "0a84eee469c6b3ae6f953f5ff2f9e434c1ba909415e1f69ffe1beef4260861fb",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.stderr": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.stderr",
+      "originalBytes": 101,
+      "originalSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "publishedBytes": 101,
+      "publishedSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.stdout": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/tidy-combined.stdout",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decompressionByteEqualityVerified": true
+    },
+    "evidence/seaweedfs-source32-integrated-local-20261103/workdir-observation.json": {
+      "encoding": "identity",
+      "publishedPath": "evidence/seaweedfs-source32-integrated-local-20261103/workdir-observation.json",
+      "originalBytes": 431,
+      "originalSha256": "37a1a41cdb8a31f427f0582f9d51a60d9c420a972d27f5d1af5a3c7ccca761f4",
+      "publishedBytes": 431,
+      "publishedSha256": "37a1a41cdb8a31f427f0582f9d51a60d9c420a972d27f5d1af5a3c7ccca761f4",
+      "decompressionByteEqualityVerified": true
+    },
+    "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch": {
+      "encoding": "identity",
+      "publishedPath": "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch",
+      "originalBytes": 128791,
+      "originalSha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "publishedBytes": 128791,
+      "publishedSha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "decompressionByteEqualityVerified": true
+    }
+  }
+}

@@ -114,6 +114,46 @@ class PostgresFixtureAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(ReconciliationError, "DIAGNOSTIC_OUTPUT"):
             self.run_peer(code)
 
+    def test_password_file_is_private_empty_regular_and_removed_after_success(self):
+        captured = self.root / "password-path.json"
+        code = ("import os,stat,sys,json\n"
+                "p=os.environ['PGPASSFILE']; s=os.stat(p)\n"
+                "open(" + repr(str(captured)) + ",'w').write(json.dumps(p))\n"
+                "if not stat.S_ISREG(s.st_mode):\n"
+                " sys.stderr.write('WARNING: password file is not a plain file\\n')\n"
+                "else:\n"
+                " assert stat.S_IMODE(s.st_mode)==0o600\n"
+                " assert stat.S_IMODE(os.stat(os.path.dirname(p)).st_mode)==0o700\n"
+                " assert open(p,'rb').read()==b''\n"
+                "sys.stdout.write(" + repr(json.dumps(self.raw)) + ")\n")
+        self.run_peer(code)
+        password = Path(json.loads(captured.read_text()))
+        self.assertFalse(password.exists())
+        self.assertFalse(password.parent.exists())
+
+    def test_password_file_is_removed_on_warning_exit_and_timeout(self):
+        for mode, tail, error in (("warning", "sys.stderr.write('warning')", "DIAGNOSTIC_OUTPUT"),
+                                 ("exit", "sys.exit(3)", "PROCESS_FAILED"),
+                                 ("timeout", "time.sleep(10)", "PROCESS_TIMEOUT")):
+            with self.subTest(mode=mode):
+                captured = self.root / (mode + "-password-path.json")
+                code = ("import os,json,sys,time\nopen(" + repr(str(captured)) +
+                        ",'w').write(json.dumps(os.environ['PGPASSFILE']))\n"
+                        "sys.stdout.write(" + repr(json.dumps(self.raw)) + ")\n" + tail + "\n")
+                with self.assertRaisesRegex(ReconciliationError, error):
+                    self.run_peer(code, timeout=0.15)
+                password = Path(json.loads(captured.read_text()))
+                self.assertFalse(password.exists())
+                self.assertFalse(password.parent.exists())
+
+    def test_password_file_is_removed_if_process_cannot_start(self):
+        with patch.object(adapter.subprocess, "Popen", side_effect=OSError("fixture failure")) as popen:
+            with self.assertRaisesRegex(ReconciliationError, "PROCESS_START_FAILED"):
+                self.run_peer("pass\n")
+        password = Path(popen.call_args.kwargs["env"]["PGPASSFILE"])
+        self.assertFalse(password.exists())
+        self.assertFalse(password.parent.exists())
+
     def test_duplicate_json_fields_trailing_frames_and_invalid_json_rejected(self):
         valid = json.dumps(self.raw).encode()
         for raw in (b'{"schema":1,"schema":2}', valid + valid, b"not json", b"", b"[]"):

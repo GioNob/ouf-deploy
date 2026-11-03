@@ -904,8 +904,9 @@ def validate_lifecycle29_evidence(root: Path, current: dict[str, Any]) -> None:
             "LIFECYCLE29_PINNED_POLICY_FINDINGS_REQUIRED")
 
 
-def validate_tree(root: Path) -> dict[str, Any]:
-    original_plan, _ = read_json(root / PLAN_PATH)
+def validate_generation29_tree(root: Path, original_plan=None) -> dict[str, Any]:
+    if original_plan is None:
+        original_plan, _ = read_json(root / PLAN_PATH)
     plan = historical_plan_view(original_plan)
     lock, lock_bytes = read_json(root / LOCK_PATH)
     cohort, _ = read_json(root / COHORT_PATH)
@@ -950,6 +951,25 @@ def validate_tree(root: Path) -> dict[str, Any]:
                    "dependencyLifecycleStatus": "OPEN", "allDependenciesMaintained": False,
                    "nextPrototypeQualified": False})
     return result
+
+
+def generation31_helper():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('plan_generation31', Path(__file__).with_name('verify-minio-seaweedfs-plan-generation31.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+def generation29_view(plan):
+    if plan['currentQualification'].get('generation') == 31:
+        return generation31_helper().restore_generation29_plan(plan)
+    return plan
+
+def validate_tree(root: Path) -> dict[str, Any]:
+    plan, _ = read_json(root / PLAN_PATH)
+    if plan['currentQualification'].get('generation') == 31:
+        return generation31_helper().validate_tree31(root, plan, validate_generation29_tree)
+    return validate_generation29_tree(root, plan)
 
 
 def main() -> int:

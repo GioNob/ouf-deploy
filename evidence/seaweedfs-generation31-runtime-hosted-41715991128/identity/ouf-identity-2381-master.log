@@ -1,0 +1,164 @@
+I1103 20:53:15.090352 file_util.go:29 Folder /data Permission: -rwxr-xr-x
+I1103 20:53:15.090500 master.go:517 current: 127.0.0.1:19333 peers:none
+I1103 20:53:15.090509 master.go:522 Running in single-master mode (peers=none), no quorum required
+I1103 20:53:15.090693 master_server.go:219 Volume Size Limit is 32 MB
+I1103 20:53:15.091675 master.go:242 Start Seaweed Master 30GB 4.52  at 127.0.0.1:19333
+I1103 20:53:15.092036 raft_server.go:166 Starting RaftServer with 127.0.0.1:19333
+I1103 20:53:15.094332 raft_server.go:253 current cluster leader: 
+I1103 20:53:15.094396 master.go:299 Single-master mode: initializing cluster immediately
+I1103 20:53:15.094412 raft_server.go:333 Initializing new cluster
+I1103 20:53:15.096171 master_server.go:337 [127.0.0.1:19333.29333] I am the leader!
+I1103 20:53:15.096681 master.go:324 Start Seaweed Master 30GB 4.52  grpc server at 127.0.0.1:29333
+I1103 20:53:15.098674 cluster_commands.go:54 TopologyId generated and applied on leader: 94f611ae-93a7-43bb-8a85-ca7f482667f5
+I1103 20:53:15.099306 master_grpc_server.go:707 + client .master@127.0.0.1:19333.29333
+I1103 20:53:15.099789 masterclient.go:544 updateVidMap ignore short heartbeat: volume_location:{leader:"127.0.0.1:19333.29333"}
+I1103 20:53:15.099908 masterclient.go:465 + master@127.0.0.1:19333 noticed .master 127.0.0.1:19333.29333
+I1103 20:53:15.100072 raft_common.go:66 TopologyId generated: 94f611ae-93a7-43bb-8a85-ca7f482667f5
+I1103 20:53:15.101075 master_server.go:418 snapshot taken to persist TopologyId 94f611ae-93a7-43bb-8a85-ca7f482667f5
+I1103 20:53:15.178682 node.go:539 topo adds child DefaultDataCenter
+I1103 20:53:15.178704 node.go:539 topo:DefaultDataCenter adds child DefaultRack
+I1103 20:53:15.178714 node.go:539 topo:DefaultDataCenter:DefaultRack adds child 127.0.0.1:18080
+I1103 20:53:15.178723 node.go:539 topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080 adds child 
+I1103 20:53:15.178734 master_grpc_server.go:269 added volume server 0: 127.0.0.1:18080 (id=127.0.0.1:18080, ip=127.0.0.1:18080) [6d6b1e48-9240-4c95-9b9b-97b355101382]
+I1103 20:53:15.178749 master_grpc_server.go:77 found new uuid:127.0.0.1:18080 [6d6b1e48-9240-4c95-9b9b-97b355101382] , map[127.0.0.1:18080:[6d6b1e48-9240-4c95-9b9b-97b355101382]]
+I1103 20:53:18.512668 master_grpc_server.go:707 + client .s3@127.0.0.1:28333
+I1103 20:53:18.512892 masterclient.go:465 + master@127.0.0.1:19333 noticed .s3 127.0.0.1:28333
+I1103 20:53:29.453612 master_grpc_server.go:707 + client .filer@127.0.0.1:18888.28888
+I1103 20:53:29.453737 masterclient.go:465 + master@127.0.0.1:19333 noticed .filer 127.0.0.1:18888.28888
+I1103 20:53:30.454107 lock_ring_manager.go:158 LockRing: broadcasting ring update for group "" version 1793739210454028487: [127.0.0.1:18888.28888]
+I1103 20:53:30.981662 master_grpc_server_volume.go:168 volume grow &{Option:{"collection":"ouf-identity-fixture","replication":{},"ttl":{"Count":0,"Unit":0},"version":3} Count:0 Force:false Reason:grpc assign}
+I1103 20:53:30.987252 volume_growth.go:395 Created Volume 1 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.987293 volume_growth.go:408 Registered Volume 1 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.991412 volume_growth.go:395 Created Volume 2 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.991439 volume_growth.go:408 Registered Volume 2 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.995474 volume_growth.go:395 Created Volume 3 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.995509 volume_growth.go:408 Registered Volume 3 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.999251 volume_growth.go:395 Created Volume 4 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:30.999275 volume_growth.go:408 Registered Volume 4 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.003066 volume_growth.go:395 Created Volume 5 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.003086 volume_growth.go:408 Registered Volume 5 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.007087 volume_growth.go:395 Created Volume 6 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.007137 volume_growth.go:408 Registered Volume 6 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.010992 volume_growth.go:395 Created Volume 7 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.011017 volume_growth.go:408 Registered Volume 7 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.200131 master_grpc_server_volume.go:168 volume grow &{Option:{"collection":"ouf-identity-other","replication":{},"ttl":{"Count":0,"Unit":0},"version":3} Count:0 Force:false Reason:grpc assign}
+I1103 20:53:31.205076 volume_growth.go:395 Created Volume 8 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.205110 volume_growth.go:408 Registered Volume 8 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.209120 volume_growth.go:395 Created Volume 9 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.209165 volume_growth.go:408 Registered Volume 9 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.226668 volume_growth.go:395 Created Volume 10 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.226706 volume_growth.go:408 Registered Volume 10 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.230634 volume_growth.go:395 Created Volume 11 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.230658 volume_growth.go:408 Registered Volume 11 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.235502 volume_growth.go:395 Created Volume 12 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.235527 volume_growth.go:408 Registered Volume 12 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.239486 volume_growth.go:395 Created Volume 13 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.239504 volume_growth.go:408 Registered Volume 13 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.243559 volume_growth.go:395 Created Volume 14 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.243577 volume_growth.go:408 Registered Volume 14 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.509247 master_grpc_server.go:722 - client .s3@127.0.0.1:28333
+I1103 20:53:31.509406 masterclient.go:467 - master@127.0.0.1:19333 noticed .s3 127.0.0.1:28333
+I1103 20:53:31.632578 master_grpc_server.go:722 - client .filer@127.0.0.1:18888.28888
+I1103 20:53:31.632685 masterclient.go:467 - master@127.0.0.1:19333 noticed .filer 127.0.0.1:18888.28888
+I1103 20:53:31.659364 master_grpc_server_volume.go:168 volume grow &{Option:{"replication":{},"ttl":{"Count":0,"Unit":0},"version":3} Count:0 Force:false Reason:grpc assign}
+I1103 20:53:31.664016 volume_growth.go:395 Created Volume 15 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.664065 volume_growth.go:408 Registered Volume 15 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.668136 volume_growth.go:395 Created Volume 16 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.668161 volume_growth.go:408 Registered Volume 16 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.672123 volume_growth.go:395 Created Volume 17 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.672150 volume_growth.go:408 Registered Volume 17 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.675788 volume_growth.go:395 Created Volume 18 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.675808 volume_growth.go:408 Registered Volume 18 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.679382 volume_growth.go:395 Created Volume 19 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.679405 volume_growth.go:408 Registered Volume 19 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.683286 volume_growth.go:395 Created Volume 20 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.683311 volume_growth.go:408 Registered Volume 20 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.687313 volume_growth.go:395 Created Volume 21 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.687340 volume_growth.go:408 Registered Volume 21 on topo:DefaultDataCenter:DefaultRack:127.0.0.1:18080
+I1103 20:53:31.963377 data_node.go:150 Deleting volume id: 8
+I1103 20:53:31.963397 data_node.go:150 Deleting volume id: 17
+I1103 20:53:31.963401 data_node.go:150 Deleting volume id: 18
+I1103 20:53:31.963417 data_node.go:150 Deleting volume id: 21
+I1103 20:53:31.963420 data_node.go:150 Deleting volume id: 9
+I1103 20:53:31.963423 data_node.go:150 Deleting volume id: 10
+I1103 20:53:31.963426 data_node.go:150 Deleting volume id: 12
+I1103 20:53:31.963429 data_node.go:150 Deleting volume id: 16
+I1103 20:53:31.963432 data_node.go:150 Deleting volume id: 4
+I1103 20:53:31.963435 data_node.go:150 Deleting volume id: 11
+I1103 20:53:31.963439 data_node.go:150 Deleting volume id: 14
+I1103 20:53:31.963442 data_node.go:150 Deleting volume id: 19
+I1103 20:53:31.963445 data_node.go:150 Deleting volume id: 2
+I1103 20:53:31.963448 data_node.go:150 Deleting volume id: 3
+I1103 20:53:31.963451 data_node.go:150 Deleting volume id: 5
+I1103 20:53:31.963454 data_node.go:150 Deleting volume id: 6
+I1103 20:53:31.963457 data_node.go:150 Deleting volume id: 13
+I1103 20:53:31.963459 data_node.go:150 Deleting volume id: 15
+I1103 20:53:31.963463 data_node.go:150 Deleting volume id: 20
+I1103 20:53:31.963466 data_node.go:150 Deleting volume id: 1
+I1103 20:53:31.963470 data_node.go:150 Deleting volume id: 7
+I1103 20:53:31.963476 topology.go:1129 removing volume info: Id:8, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963520 volume_layout.go:1149 Volume 8 becomes unwritable
+I1103 20:53:31.963525 volume_layout.go:477 volume 8 does not have enough copies
+I1103 20:53:31.963529 topology.go:1129 removing volume info: Id:17, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963535 volume_layout.go:1149 Volume 17 becomes unwritable
+I1103 20:53:31.963538 volume_layout.go:477 volume 17 does not have enough copies
+I1103 20:53:31.963540 topology.go:1129 removing volume info: Id:18, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963544 volume_layout.go:1149 Volume 18 becomes unwritable
+I1103 20:53:31.963546 volume_layout.go:477 volume 18 does not have enough copies
+I1103 20:53:31.963548 topology.go:1129 removing volume info: Id:21, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963552 volume_layout.go:1149 Volume 21 becomes unwritable
+I1103 20:53:31.963554 volume_layout.go:477 volume 21 does not have enough copies
+I1103 20:53:31.963557 topology.go:1129 removing volume info: Id:9, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963561 volume_layout.go:1149 Volume 9 becomes unwritable
+I1103 20:53:31.963572 volume_layout.go:477 volume 9 does not have enough copies
+I1103 20:53:31.963574 topology.go:1129 removing volume info: Id:10, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963577 volume_layout.go:1149 Volume 10 becomes unwritable
+I1103 20:53:31.963579 volume_layout.go:477 volume 10 does not have enough copies
+I1103 20:53:31.963581 topology.go:1129 removing volume info: Id:12, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963585 volume_layout.go:1149 Volume 12 becomes unwritable
+I1103 20:53:31.963587 volume_layout.go:477 volume 12 does not have enough copies
+I1103 20:53:31.963589 topology.go:1129 removing volume info: Id:16, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963592 volume_layout.go:1149 Volume 16 becomes unwritable
+I1103 20:53:31.963594 volume_layout.go:477 volume 16 does not have enough copies
+I1103 20:53:31.963596 topology.go:1129 removing volume info: Id:4, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963600 volume_layout.go:1149 Volume 4 becomes unwritable
+I1103 20:53:31.963602 volume_layout.go:477 volume 4 does not have enough copies
+I1103 20:53:31.963604 topology.go:1129 removing volume info: Id:11, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963610 volume_layout.go:1149 Volume 11 becomes unwritable
+I1103 20:53:31.963614 volume_layout.go:477 volume 11 does not have enough copies
+I1103 20:53:31.963617 topology.go:1129 removing volume info: Id:14, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963625 volume_layout.go:1149 Volume 14 becomes unwritable
+I1103 20:53:31.963627 volume_layout.go:477 volume 14 does not have enough copies
+I1103 20:53:31.963630 topology.go:1129 removing volume info: Id:19, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963636 volume_layout.go:1149 Volume 19 becomes unwritable
+I1103 20:53:31.963650 volume_layout.go:477 volume 19 does not have enough copies
+I1103 20:53:31.963653 topology.go:1129 removing volume info: Id:2, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963657 volume_layout.go:1149 Volume 2 becomes unwritable
+I1103 20:53:31.963659 volume_layout.go:477 volume 2 does not have enough copies
+I1103 20:53:31.963662 topology.go:1129 removing volume info: Id:3, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963666 volume_layout.go:1149 Volume 3 becomes unwritable
+I1103 20:53:31.963669 volume_layout.go:477 volume 3 does not have enough copies
+I1103 20:53:31.963671 topology.go:1129 removing volume info: Id:5, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963676 volume_layout.go:1149 Volume 5 becomes unwritable
+I1103 20:53:31.963679 volume_layout.go:477 volume 5 does not have enough copies
+I1103 20:53:31.963682 topology.go:1129 removing volume info: Id:6, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963686 volume_layout.go:1149 Volume 6 becomes unwritable
+I1103 20:53:31.963689 volume_layout.go:477 volume 6 does not have enough copies
+I1103 20:53:31.963692 topology.go:1129 removing volume info: Id:13, Size:0, ReplicaPlacement:000, Collection:ouf-identity-other, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1793739211 from 127.0.0.1:18080
+I1103 20:53:31.963697 volume_layout.go:1149 Volume 13 becomes unwritable
+I1103 20:53:31.963700 volume_layout.go:477 volume 13 does not have enough copies
+I1103 20:53:31.963706 topology.go:1129 removing volume info: Id:15, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963710 volume_layout.go:1149 Volume 15 becomes unwritable
+I1103 20:53:31.963713 volume_layout.go:477 volume 15 does not have enough copies
+I1103 20:53:31.963715 topology.go:1129 removing volume info: Id:20, Size:0, ReplicaPlacement:000, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963730 volume_layout.go:1149 Volume 20 becomes unwritable
+I1103 20:53:31.963732 volume_layout.go:477 volume 20 does not have enough copies
+I1103 20:53:31.963738 topology.go:1129 removing volume info: Id:1, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963743 volume_layout.go:1149 Volume 1 becomes unwritable
+I1103 20:53:31.963746 volume_layout.go:477 volume 1 does not have enough copies
+I1103 20:53:31.963748 topology.go:1129 removing volume info: Id:7, Size:0, ReplicaPlacement:000, Collection:ouf-identity-fixture, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:0 from 127.0.0.1:18080
+I1103 20:53:31.963753 volume_layout.go:1149 Volume 7 becomes unwritable
+I1103 20:53:31.963755 volume_layout.go:477 volume 7 does not have enough copies
+I1103 20:53:31.963865 node.go:560 topo:DefaultDataCenter:DefaultRack removes 127.0.0.1:18080
+I1103 20:53:31.963970 master_grpc_server.go:182 unregister disconnected volume server 127.0.0.1:18080
+I1103 20:53:31.963994 master_grpc_server.go:86 remove volume server 127.0.0.1:18080, online volume server: map[]

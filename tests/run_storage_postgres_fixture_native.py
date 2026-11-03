@@ -42,8 +42,7 @@ def digest(path):
 
 
 def clean_environment():
-    return {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "PGCONNECT_TIMEOUT": "5",
-            "PGPASSFILE": "/dev/null", "PGSERVICEFILE": "/dev/null"}
+    return postgres_fixture.empty_password_environment()
 
 
 def successful(result, stopped, failure):
@@ -53,9 +52,9 @@ def successful(result, stopped, failure):
 
 def run(argv, *, timeout=20):
     """Lab administrative command; private files retain diagnostics, not pipes."""
-    with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+    with clean_environment() as environment, tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
         process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=stdout,
-                                   stderr=stderr, env=clean_environment(), start_new_session=True)
+                                   stderr=stderr, env=environment, start_new_session=True)
         try:
             returncode = process.wait(timeout=timeout)
         finally:
@@ -286,10 +285,10 @@ class NativeTests(unittest.TestCase):
         updates = ("UPDATE ouf_recovery_fixture.generation SET generation='%s'; "
                    "UPDATE ouf_recovery_fixture.objects SET generation='%s'; " % (NEXT_GENERATION, NEXT_GENERATION))
         out_path, err_path = self.lab.output / "writer.stdout", self.lab.output / "writer.stderr"
-        with out_path.open("wb") as stdout, err_path.open("wb") as stderr:
+        with out_path.open("wb") as stdout, err_path.open("wb") as stderr, clean_environment() as environment:
             writer = subprocess.Popen(self.lab.argv("BEGIN; " + updates + "SELECT pg_sleep(25); ROLLBACK",
                 application="ouf-uncommitted-writer"), stdout=stdout, stderr=stderr,
-                stdin=subprocess.DEVNULL, env=clean_environment(), start_new_session=True)
+                stdin=subprocess.DEVNULL, env=environment, start_new_session=True)
             try:
                 deadline = time.monotonic() + 5
                 while True:

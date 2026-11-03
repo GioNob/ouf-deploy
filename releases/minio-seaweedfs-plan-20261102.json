@@ -51,32 +51,35 @@
     "dependencyLifecycleReview"
   ],
   "currentQualification": {
-    "generation": 29,
+    "generation": 31,
     "version": "4.52",
     "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
-    "candidateLock": "releases/seaweedfs-452-generation29-candidate-lock-20261103.json",
-    "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
-    "qualifiedImagePatchCount": 29,
-    "repositoryPatchCount": 29,
-    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
-    "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
-    "imageConfigDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "candidateLock": "releases/seaweedfs-452-generation31-candidate-lock-20261103.json",
+    "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+    "qualifiedImagePatchCount": 31,
+    "repositoryPatchCount": 31,
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+    "imageConfigDigest": "sha256:31b99e914181a85a3e0ca3ca6b66621827df298235b215ccf1d0042fd4653771",
     "status": "TECHNICAL_COHORT_AND_SYNTHETIC_RUNTIME_VERIFIED_NOT_ADMITTED",
-    "qualificationRunId": 41696541570,
-    "imageReceipt": "evidence/seaweedfs-452-generation29-image-hosted-20261103.json",
-    "imageReceiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
-    "cohortReceipt": "evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json",
-    "cohortReceiptSha256": "ba67c94bfb9a473db31f82a7430604597faa0dddaae71c6818e738d57197e599",
-    "cohortRunId": 41701381292,
+    "qualificationRunId": 41712811559,
+    "imageReceipt": "evidence/seaweedfs-452-generation31-image-hosted-20261103.json",
+    "imageReceiptSha256": "428dd1bd4f083d0160dd98ca2862dd1f3ef09de055f39d7be9dd30dd6f59cbc0",
+    "cohortReceipt": "evidence/seaweedfs-452-generation31-cohort-hosted-20261103.json",
+    "cohortReceiptSha256": "a092a73c1a2e1ba20375bbc9a40d9d1a510a03abfe3eb91d7a2bd5c2d04d2d38",
+    "cohortRunId": 41715991128,
     "cohortContent": "VERIFIED",
-    "runtimeReceipt": "evidence/seaweedfs-generation29-runtime-hosted-20261103.json",
-    "runtimeReceiptSha256": "786e28000b25d6fbb5e7b1b7884527447ab79a04a8f4cc48ff34dee37ffe94be",
-    "runtimeRunId": 41701381292,
-    "runtimeJobId": 126147936979,
-    "buildProfile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+    "runtimeReceipt": "evidence/seaweedfs-generation31-runtime-hosted-20261103.json",
+    "runtimeReceiptSha256": "ff19d07d485e287492593f8439e426b293be8dc2669ba064e93dff9d0b60b0a3",
+    "runtimeRunId": 41715991128,
+    "runtimeJobId": 126197618474,
+    "buildProfile": "OUF_STANDARD_WITHOUT_ELASTIC_RCLONE_KAFKA_OPENBAO",
     "excludedBuildTags": [
       "elastic",
-      "rclone"
+      "rclone",
+      "kafka",
+      "openbao",
+      "vault"
     ],
     "vulnerabilitySubgate": "PASS_RAW",
     "rawSeverityCounts": {
@@ -98,7 +101,7 @@
       "objects": 5,
       "bytes": 8388702,
       "backupFiles": 110,
-      "backupBytes": 8417467,
+      "backupBytes": 8417282,
       "octetStreamGetAndHeadBeforeAndAfterRestore": "PASS",
       "identityS3Cases": 23,
       "tlsNegatives": 2,
@@ -112,7 +115,7 @@
       "rtoAcceptance": false
     },
     "mimeCorrection": {
-      "status": "EXACT_GENERATION29_SYNTHETIC_REGRESSION_PASS",
+      "status": "EXACT_GENERATION31_SYNTHETIC_REGRESSION_PASS",
       "historicalGeneration15FailurePreserved": true,
       "historicalLostMetadataRepaired": false,
       "storageGateG2Closed": false
@@ -120,76 +123,40 @@
     "dependencyLifecycle": {
       "status": "OPEN",
       "allDependenciesMaintained": false,
-      "selectedRemediationFronts": {
-        "ShopifySaramaAndRcrowleyMetrics": [
-          "github.com/Shopify/sarama@v1.38.1",
-          "github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475"
-        ],
-        "Bolt": [
-          "github.com/boltdb/bolt@v1.3.1"
-        ],
-        "Mapstructure": [
-          "github.com/mitchellh/mapstructure@v1.5.1-0.20220423185008-bf980b35cac4"
-        ],
-        "ArmonMetrics": [
-          "github.com/armon/go-metrics@v0.4.1"
-        ]
-      },
-      "selectedFrontsAreExhaustive": false,
-      "widerInventoryAssessment": {
-        "inventoryReceipt": "evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json",
-        "inventoryReceiptSha256": "2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0",
-        "inventoryPath": "evidence/lifecycle262/compiled-module-inventory.json",
-        "inventorySha256": "43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3",
-        "scope": "COMPILED_GENERATION29_ONLY",
-        "compiledModules": 262,
-        "repositoryMetadataResolvedModules": 250,
-        "repositoryMetadataUnknownModules": [
-          "golang.org/x/crypto",
-          "golang.org/x/exp",
-          "golang.org/x/image",
-          "golang.org/x/net",
-          "golang.org/x/oauth2",
-          "golang.org/x/sync",
-          "golang.org/x/sys",
-          "golang.org/x/term",
-          "golang.org/x/text",
-          "golang.org/x/time",
-          "google.golang.org/protobuf",
-          "modernc.org/b"
-        ],
-        "archivedCompiledModules": [
-          "github.com/boltdb/bolt",
-          "github.com/envoyproxy/protoc-gen-validate",
-          "github.com/facebookgo/clock",
-          "github.com/facebookgo/stats",
-          "github.com/google/btree",
-          "github.com/mitchellh/colorstring",
-          "github.com/mitchellh/mapstructure",
-          "github.com/rcrowley/go-metrics",
-          "go.opencensus.io",
-          "gopkg.in/yaml.v3"
-        ],
-        "additionalPolicyStates": {
-          "cloud.google.com/go/pubsub": "MODULE_DEPRECATED",
-          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": "DECLARED_NO_LONGER_MAINTAINED",
-          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric": "DEPRECATED_FUTURE_ARCHIVAL_ANNOUNCED",
-          "github.com/Shopify/sarama": "LEGACY_MODULE_PATH_MOVED_REPOSITORY",
-          "github.com/arangodb/go-driver": "MAJOR_DEPRECATED_NO_NEW_FEATURES",
-          "github.com/armon/go-metrics": "LEGACY_IMPORT_PATH_DEPRECATED",
-          "github.com/golang/protobuf": "MODULE_DEPRECATED",
-          "github.com/pkg/errors": "MAINTENANCE_MODE_DECLARED",
-          "github.com/syndtr/goleveldb": "MAINTENANCE_UNKNOWN_NOT_ARCHIVED",
-          "go.mongodb.org/mongo-driver": "DEPRECATED_MAJOR_SUPPORT_WINDOW_PASSED",
-          "google.golang.org/api": "MAINTENANCE_MODE_CRITICAL_SECURITY_FIXES_DECLARED"
+      "compiledModules": 234,
+      "compiledPackages": 1740,
+      "historicalGeneration29InventoryReference": "historicalQualification29.dependencyLifecycle.widerInventoryAssessment",
+      "archivedModulesRemovedFromGeneration29Binary": [
+        "github.com/boltdb/bolt",
+        "github.com/facebookgo/clock",
+        "github.com/facebookgo/stats",
+        "github.com/google/btree",
+        "github.com/mitchellh/mapstructure",
+        "github.com/rcrowley/go-metrics"
+      ],
+      "remainingArchivedCompiledModules": [
+        "github.com/envoyproxy/protoc-gen-validate",
+        "github.com/mitchellh/colorstring",
+        "go.opencensus.io",
+        "gopkg.in/yaml.v3"
+      ],
+      "unknownOriginAssumedMaintained": false,
+      "widerMaintenanceAssessment": "OPEN",
+      "nextGeneration32QualificationTransferred": false,
+      "targetKafkaOpenBaoFeatureBinding": "OPEN",
+      "moduleGraphEradicationClaimed": false,
+      "additionalLifecycleFindings": {
+        "go.mongodb.org/mongo-driver": {
+          "state": "DEPRECATED_MAJOR_SECURITY_FIXES_OBSERVED_PIN_OLDER",
+          "compiledPin": "v1.17.9",
+          "laterSecurityReleaseObserved": "v1.17.10",
+          "laterReleaseMonth": "2026-09",
+          "absolutelyUnmaintainedClaimed": false
         },
-        "repositoryNotArchivedProvesSupport": false,
-        "unknownOriginAssumedMaintained": false,
-        "allApiDeprecationsImplyModuleEndOfSupport": false,
-        "widerMaintenanceAssessment": "OPEN"
-      },
-      "claimScope": "AWS_SDK_V1_AND_DEPRECATED_S3_MANAGER_REMOVED_ONLY",
-      "prototypeRemovalsQualified": false
+        "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": {
+          "state": "DECLARED_NO_LONGER_MAINTAINED"
+        }
+      }
     },
     "licenceRawUnknownClassifications": 3,
     "licenceReview": "OPEN",
@@ -199,7 +166,11 @@
     "releaseAdmitted": false,
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
-    "activeStorageBackend": "MinIO"
+    "activeStorageBackend": "MinIO",
+    "modifiedMplSource": {
+      "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+      "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+    }
   },
   "workPackages": [
     {
@@ -958,8 +929,8 @@
     }
   },
   "generation29Qualification": {
-    "status": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
-    "currentQualificationField": "currentQualification",
+    "status": "HISTORICAL_HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+    "historicalQualificationField": "historicalQualification29",
     "oldRuntimeEvidenceTransferred": false
   },
   "historicalQualification15": {
@@ -1099,8 +1070,175 @@
   },
   "nextGenerationPrototype": {
     "status": "IN_DEVELOPMENT_NOT_QUALIFIED",
+    "qualifiedGenerationRetained": 31,
+    "progressCreditAdded": 0,
+    "runtimeProofTransferred": false
+  },
+  "historicalQualification29": {
+    "generation": 29,
+    "version": "4.52",
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "candidateLock": "releases/seaweedfs-452-generation29-candidate-lock-20261103.json",
+    "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+    "qualifiedImagePatchCount": 29,
+    "repositoryPatchCount": 29,
+    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+    "imageConfigDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "status": "TECHNICAL_COHORT_AND_SYNTHETIC_RUNTIME_VERIFIED_NOT_ADMITTED",
+    "qualificationRunId": 41696541570,
+    "imageReceipt": "evidence/seaweedfs-452-generation29-image-hosted-20261103.json",
+    "imageReceiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
+    "cohortReceipt": "evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json",
+    "cohortReceiptSha256": "ba67c94bfb9a473db31f82a7430604597faa0dddaae71c6818e738d57197e599",
+    "cohortRunId": 41701381292,
+    "cohortContent": "VERIFIED",
+    "runtimeReceipt": "evidence/seaweedfs-generation29-runtime-hosted-20261103.json",
+    "runtimeReceiptSha256": "786e28000b25d6fbb5e7b1b7884527447ab79a04a8f4cc48ff34dee37ffe94be",
+    "runtimeRunId": 41701381292,
+    "runtimeJobId": 126147936979,
+    "buildProfile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+    "excludedBuildTags": [
+      "elastic",
+      "rclone"
+    ],
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "HIGH": 0,
+      "CRITICAL": 0,
+      "UNKNOWN": 0,
+      "LOW": 0,
+      "MEDIUM": 0
+    },
+    "awsSdkV1InQualifiedBinary": "ABSENT",
+    "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
+    "remainingRepositoryDirectSdkV1Importers": 0,
+    "historicalApplicabilityApplied": false,
+    "historicalRuntimeProofTransferred": false,
+    "historicalSourceClosureReference": "historicalQualification15.sourceClosureReceipt",
+    "historicalStandardProfileReference": "historicalQualification15.standardProfileQualification",
+    "syntheticRuntime": {
+      "coldRestore": "PASS",
+      "objects": 5,
+      "bytes": 8388702,
+      "backupFiles": 110,
+      "backupBytes": 8417467,
+      "octetStreamGetAndHeadBeforeAndAfterRestore": "PASS",
+      "identityS3Cases": 23,
+      "tlsNegatives": 2,
+      "egressProbes": 2,
+      "distinctContainers": 12,
+      "maximumConcurrentContainers": 4,
+      "postgresRecovery": "NOT_TESTED",
+      "certificateRotation": "NOT_TESTED",
+      "s3MetadataCompatibilityGenerallyQualified": false,
+      "rpoAcceptance": false,
+      "rtoAcceptance": false
+    },
+    "mimeCorrection": {
+      "status": "EXACT_GENERATION29_SYNTHETIC_REGRESSION_PASS",
+      "historicalGeneration15FailurePreserved": true,
+      "historicalLostMetadataRepaired": false,
+      "storageGateG2Closed": false
+    },
+    "dependencyLifecycle": {
+      "status": "OPEN",
+      "allDependenciesMaintained": false,
+      "selectedRemediationFronts": {
+        "ShopifySaramaAndRcrowleyMetrics": [
+          "github.com/Shopify/sarama@v1.38.1",
+          "github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475"
+        ],
+        "Bolt": [
+          "github.com/boltdb/bolt@v1.3.1"
+        ],
+        "Mapstructure": [
+          "github.com/mitchellh/mapstructure@v1.5.1-0.20220423185008-bf980b35cac4"
+        ],
+        "ArmonMetrics": [
+          "github.com/armon/go-metrics@v0.4.1"
+        ]
+      },
+      "selectedFrontsAreExhaustive": false,
+      "widerInventoryAssessment": {
+        "inventoryReceipt": "evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json",
+        "inventoryReceiptSha256": "2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0",
+        "inventoryPath": "evidence/lifecycle262/compiled-module-inventory.json",
+        "inventorySha256": "43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3",
+        "scope": "COMPILED_GENERATION29_ONLY",
+        "compiledModules": 262,
+        "repositoryMetadataResolvedModules": 250,
+        "repositoryMetadataUnknownModules": [
+          "golang.org/x/crypto",
+          "golang.org/x/exp",
+          "golang.org/x/image",
+          "golang.org/x/net",
+          "golang.org/x/oauth2",
+          "golang.org/x/sync",
+          "golang.org/x/sys",
+          "golang.org/x/term",
+          "golang.org/x/text",
+          "golang.org/x/time",
+          "google.golang.org/protobuf",
+          "modernc.org/b"
+        ],
+        "archivedCompiledModules": [
+          "github.com/boltdb/bolt",
+          "github.com/envoyproxy/protoc-gen-validate",
+          "github.com/facebookgo/clock",
+          "github.com/facebookgo/stats",
+          "github.com/google/btree",
+          "github.com/mitchellh/colorstring",
+          "github.com/mitchellh/mapstructure",
+          "github.com/rcrowley/go-metrics",
+          "go.opencensus.io",
+          "gopkg.in/yaml.v3"
+        ],
+        "additionalPolicyStates": {
+          "cloud.google.com/go/pubsub": "MODULE_DEPRECATED",
+          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": "DECLARED_NO_LONGER_MAINTAINED",
+          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric": "DEPRECATED_FUTURE_ARCHIVAL_ANNOUNCED",
+          "github.com/Shopify/sarama": "LEGACY_MODULE_PATH_MOVED_REPOSITORY",
+          "github.com/arangodb/go-driver": "MAJOR_DEPRECATED_NO_NEW_FEATURES",
+          "github.com/armon/go-metrics": "LEGACY_IMPORT_PATH_DEPRECATED",
+          "github.com/golang/protobuf": "MODULE_DEPRECATED",
+          "github.com/pkg/errors": "MAINTENANCE_MODE_DECLARED",
+          "github.com/syndtr/goleveldb": "MAINTENANCE_UNKNOWN_NOT_ARCHIVED",
+          "go.mongodb.org/mongo-driver": "DEPRECATED_MAJOR_SUPPORT_WINDOW_PASSED",
+          "google.golang.org/api": "MAINTENANCE_MODE_CRITICAL_SECURITY_FIXES_DECLARED"
+        },
+        "repositoryNotArchivedProvesSupport": false,
+        "unknownOriginAssumedMaintained": false,
+        "allApiDeprecationsImplyModuleEndOfSupport": false,
+        "widerMaintenanceAssessment": "OPEN"
+      },
+      "claimScope": "AWS_SDK_V1_AND_DEPRECATED_S3_MANAGER_REMOVED_ONLY",
+      "prototypeRemovalsQualified": false
+    },
+    "licenceRawUnknownClassifications": 3,
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false,
+    "durableImageCustody": "OPEN",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "activeStorageBackend": "MinIO"
+  },
+  "historicalGeneration29QualificationAlias": {
+    "status": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+    "currentQualificationField": "currentQualification",
+    "oldRuntimeEvidenceTransferred": false
+  },
+  "historicalNextGenerationPrototypeBefore31": {
+    "status": "IN_DEVELOPMENT_NOT_QUALIFIED",
     "qualifiedGenerationRetained": 29,
     "progressCreditAdded": 0,
     "runtimeProofTransferred": false
+  },
+  "generation31Qualification": {
+    "status": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+    "currentQualificationField": "currentQualification",
+    "oldRuntimeEvidenceTransferred": false
   }
 }

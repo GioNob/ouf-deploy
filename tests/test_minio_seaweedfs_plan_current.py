@@ -16,7 +16,7 @@ spec.loader.exec_module(plan_current)
 class CurrentStoragePlanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.current_plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.current_plan = plan_current.generation29_view(json.loads((ROOT / plan_current.PLAN_PATH).read_bytes()))
         cls.plan = plan_current.historical_plan_view(cls.current_plan)
         cls.lock_bytes = (ROOT / plan_current.LOCK_PATH).read_bytes()
         cls.lock = json.loads(cls.lock_bytes)
@@ -62,8 +62,8 @@ class CurrentStoragePlanTest(unittest.TestCase):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
         self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 0)
-        self.assertEqual(result["repositoryPatchCount"], 29)
-        self.assertEqual(result["qualifiedImagePatchCount"], 29)
+        self.assertEqual(result["repositoryPatchCount"], 31)
+        self.assertEqual(result["qualifiedImagePatchCount"], 31)
         self.assertEqual(result["historicalQualifiedImagePatchCount"], 15)
         self.assertEqual(result["generation29MimeRegression"], "PASS_SYNTHETIC_ONLY")
         self.assertEqual(result["hostedSourceClosureRunCount"], 6)
@@ -500,7 +500,7 @@ class CurrentStoragePlanTest(unittest.TestCase):
 class QualifiedGeneration29PlanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.plan = plan_current.generation29_view(json.loads((ROOT / plan_current.PLAN_PATH).read_bytes()))
         cls.lock_bytes = (ROOT / plan_current.LOCK29_PATH).read_bytes()
         cls.lock = json.loads(cls.lock_bytes)
         cls.cohort_bytes = (ROOT / plan_current.COHORT29_PATH).read_bytes()
@@ -682,6 +682,108 @@ class QualifiedGeneration29PlanTest(unittest.TestCase):
         self.assertFalse(self.plan["currentQualification"]["historicalRuntimeProofTransferred"])
 
 
+
+
+class QualifiedGeneration31PlanTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.helper = plan_current.generation31_helper()
+        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+
+    def test_actual31_is_current_and_old29_qualified_history(self):
+        result = plan_current.validate_tree(ROOT)
+        self.assertEqual(result['currentGeneration'], 31)
+        self.assertEqual(result['historicalGeneration29QualifiedImagePatchCount'], 29)
+        self.assertEqual(result['currentBinaryModules'], 234)
+        self.assertEqual(result['currentCompiledPackages'], 1740)
+        self.assertEqual(result['historicalGeneration15MimeDefect'], 'FAIL_PRESERVED')
+        self.assertFalse(result['historicalProofTransferredToGeneration31'])
+        self.assertEqual(result['acceptanceTestsPassed'], 0)
+
+    def test_entire_pre31_plan_reconstructs_exactly(self):
+        restored = self.helper.restore_generation29_plan(self.plan)
+        self.assertEqual(self.helper.sha(self.helper.canonical(restored)), self.helper.BASE_PLAN_CANONICAL_SHA)
+        self.assertEqual(restored['currentQualification'], self.plan['historicalQualification29'])
+        self.assertEqual(restored['historicalQualification15'], self.plan['historicalQualification15'])
+
+    def test_historical_binary_cannot_be_rewritten(self):
+        changed = copy.deepcopy(self.plan)
+        changed['historicalQualification29']['binarySha256'] = self.helper.BINARY_SHA
+        with self.assertRaisesRegex(ValueError, 'ALL_PRE31'):
+            self.helper.restore_generation29_plan(changed)
+
+    def test_arbitrary_old_plan_field_cannot_be_changed(self):
+        changed = copy.deepcopy(self.plan)
+        changed['historicalQualification15']['releaseAdmitted'] = True
+        with self.assertRaisesRegex(ValueError, 'ALL_PRE31'):
+            self.helper.restore_generation29_plan(changed)
+
+    def test_proto32_cannot_inherit_qualification_or_progress(self):
+        for field,value in [('qualifiedGenerationRetained',32),('progressCreditAdded',1),('runtimeProofTransferred',True)]:
+            with self.subTest(field=field):
+                changed=copy.deepcopy(self.plan);changed['nextGenerationPrototype'][field]=value
+                with self.assertRaisesRegex(ValueError,'NEXT_PROTOTYPE'):
+                    self.helper.restore_generation29_plan(changed)
+
+    def test_current31_cannot_transfer_old29_binary(self):
+        changed=copy.deepcopy(self.plan)
+        changed['currentQualification']['binarySha256']=changed['historicalQualification29']['binarySha256']
+        with self.assertRaisesRegex(ValueError,'EXACT31_CURRENT_VIEW'):
+            self.helper.validate_tree31(ROOT,changed,plan_current.validate_generation29_tree)
+
+    def test_current31_cannot_grant_authority_or_claim_maintenance(self):
+        for field,value in [('releaseAdmitted',True),('targetOperations',1),('activeStorageBackend','SeaweedFS')]:
+            with self.subTest(field=field):
+                changed=copy.deepcopy(self.plan);changed['currentQualification'][field]=value
+                with self.assertRaisesRegex(ValueError,'EXACT31_CURRENT_VIEW'):
+                    self.helper.validate_tree31(ROOT,changed,plan_current.validate_generation29_tree)
+        changed=copy.deepcopy(self.plan);changed['currentQualification']['dependencyLifecycle']['allDependenciesMaintained']=True
+        with self.assertRaisesRegex(ValueError,'EXACT31_CURRENT_VIEW'):
+            self.helper.validate_tree31(ROOT,changed,plan_current.validate_generation29_tree)
+
+    def test_current_mime_pass_cannot_repair_old_loss_or_close_g2(self):
+        for field in ('historicalLostMetadataRepaired','storageGateG2Closed'):
+            changed=copy.deepcopy(self.plan);changed['currentQualification']['mimeCorrection'][field]=True
+            with self.assertRaisesRegex(ValueError,'EXACT31_CURRENT_VIEW'):
+                self.helper.validate_tree31(ROOT,changed,plan_current.validate_generation29_tree)
+
+    def test_changed_or_missing_receipt_and_symlink_are_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);path=root/'receipt.json';path.write_bytes(b'actual')
+            digest=self.helper.sha(b'actual')
+            self.assertEqual(self.helper.read_bound(root,'receipt.json',digest),b'actual')
+            path.write_bytes(b'changed')
+            with self.assertRaisesRegex(ValueError,'FILE_BYTES_CHANGED'):
+                self.helper.read_bound(root,'receipt.json',digest)
+            path.unlink()
+            with self.assertRaisesRegex(ValueError,'REGULAR_FILE'):
+                self.helper.read_bound(root,'receipt.json',digest)
+            (root/'actual.json').write_bytes(b'actual');path.symlink_to(root/'actual.json')
+            with self.assertRaisesRegex(ValueError,'REGULAR_FILE'):
+                self.helper.read_bound(root,'receipt.json',digest)
+
+    def test_checksum_missing_extra_or_changed_member_rejected(self):
+        raw=b'local MPL source archive bytes'
+        sums=(self.helper.sha(raw)+'  source.tar.gz\n').encode()
+        members={'SHA256SUMS':sums,'source.tar.gz':raw}
+        self.helper.checksum_members(members)
+        for changed in ({'SHA256SUMS':sums},{**members,'source.tar.gz':raw+b'x'},{**members,'unlisted':b'x'}):
+            with self.assertRaises(ValueError):self.helper.checksum_members(changed)
+
+    def test_checksums_reject_duplicate_name(self):
+        data=b'x';line=(self.helper.sha(data)+'  file\n').encode()
+        with self.assertRaisesRegex(ValueError,'CHECKSUM_MEMBER'):
+            self.helper.checksum_members({'SHA256SUMS':line+line,'file':data})
+
+    def test_raw_cohort_runtime_and_local_mpl_are_exact(self):
+        lock,image,_,_=self.helper.validate_image31(ROOT)
+        cohort,runtime,raw=self.helper.validate_cohort_runtime31(ROOT,lock,image)
+        self.assertEqual(len(raw),62)
+        self.assertEqual(self.helper.sha(raw['cohort/modified-raftstore-source.tar.gz']),lock['modifiedMplSource']['archiveSha256'])
+        self.assertEqual(runtime['coldRecovery']['backupBytes'],8417282)
+        self.assertEqual(cohort['checks']['mplSourceArchives'],7)
+        self.assertEqual(cohort['checks']['modifiedLocalMplFiles'],6)
 
 if __name__ == "__main__":
     unittest.main()

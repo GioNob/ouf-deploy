@@ -1,0 +1,17 @@
+{
+  "scripts/run-seaweedfs-452-generation31-labs.py": "df7cc8c1c8962653a1541f8158501aaf1a3670d3df340b66273d9c73de9562a3",
+  "scripts/storage-generation31-lab-binding.py": "f8e81906bbc9b2c19dee4e227cb27529cdcbb5c8cfed569779a489045fa22f9a",
+  "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+  "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+  "scripts/readback-seaweedfs-452-generation31-image.py": "a6a5b4b724f37bc27f45e12ebed5427461f8bba79111c93998a814ebe7a73be9",
+  "scripts/qualify-seaweedfs-452-generation31-image.py": "5e2904162446e9f806f0ed5c9953047551ea3efa1107d9622484e4dc7c91231a",
+  "scripts/verify-seaweedfs-452-generation31-cohort.py": "910bd2a1c01e42da9aa1434ea7fdf3793ff0b9f5e3cea317aed6a02ac3c97e28",
+  "tools/storage_security/generation_image_v2.py": "0435a7ce2507ddee1fdcd306ac856a18733c6d7fe1af53e5fe470c5ad373b719",
+  "tools/storage_security/generation_readback_v1.py": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+  "tools/storage_licenses/evidence.py": "1a85d04ee6c821f42f00b412ea57d3ca21ca401af1c9bd823a9d7b032aa3ee73",
+  "tests/test_storage_generation31_lab_binding.py": "75e643119a86e30eabffbcfff460c682d4ee82a9deb2f303d84204eca4518eee",
+  "tests/test_storage_generation31_labs.py": "e1ea1cf1723dc72a4810ae85e2788654ea2c03c231b2a41aa4e79c63113abc57",
+  "releases/seaweedfs-452-generation31-build-manifest-20261103.json": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+  "releases/seaweedfs-452-generation31-candidate-lock-20261103.json": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  ".github/workflows/storage-452-generation31-runtime-labs.yml": "a167fe3a1c304be70de406da4787d0a82762c65f772f633820dbc6f667a95010"
+}

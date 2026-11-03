@@ -1,0 +1,22 @@
+{
+  "v1Deprecation": "Formal from 1.17.8; v1.17.10 security fix was still published 2026-09-10. Do not claim all maintenance ceased.",
+  "upstreamTag": "v2.9.2",
+  "upstreamCommit": "df261dcb3f58dcedb9464bd8e7cd79f4e6657579",
+  "minimumGo": "1.25",
+  "minimumMongoDB": "4.4",
+  "sources": [
+    "https://www.mongodb.com/docs/drivers/go/v1.x/whats-new/",
+    "https://www.mongodb.com/docs/drivers/go/current/reference/upgrade/",
+    "https://www.mongodb.com/docs/drivers/go/current/reference/release-notes/",
+    "https://github.com/mongodb/mongo-go-driver/releases/tag/v2.9.2",
+    "https://github.com/mongodb/mongo-go-driver/blob/v2.9.2/docs/migration-2.0.md"
+  ],
+  "securityScope": "No GridFS exploit-path or final vulnerability scan claim. Candidate uses only bson/mongo/options for filer metadata, not GridFS APIs.",
+  "retryReview": {
+    "unchanged": "retryReads and retryWrites settings/default remain driver-owned; no OUF retry policy added",
+    "protocol": "Supported retryable mutations use sessions and txnNumber; standalone test fixtures explicitly disable retries. Live replica-set/sharded dedup/failover is not qualified.",
+    "csot": "Both v1.17.9 and v2.9.2 source permit retries until a CSOT deadline, not universally one retry.",
+    "newV2Feature": "Adaptive overload retries default2 (Atlas9+) are explicitly set to0 in this profile. Positive maxAdaptiveRetries or true enableOverloadRetargeting are rejected before Connect; existing retryWrites/read behavior and defaults are preserved.",
+    "wireProof": "Standalone TCP driver test observes one attempted update and propagates overload16500 with labels. Control removing SetMaxAdaptiveRetries(0) retries into canned success and fails the regression test. No real Atlas9, replica-set, dedup, durable recovery, or PITR claim."
+  }
+}
