@@ -22,6 +22,8 @@ on:
       - 'patches/seaweedfs/4.52-remote-storage-s3-sdk-v2-removed-packages.txt'
       - 'patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch'
       - 'patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1-removed-packages.txt'
+      - 'patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch'
+      - 'evidence/seaweedfs-sdk-v1-test-closure-local-20261103.json'
       - 'evidence/artifacts/storage-runtime-image-readback-41527990598.zip'
 permissions:
   contents: read
@@ -85,8 +87,17 @@ jobs:
           git apply ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch
           git apply --check ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch
           git apply ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch
+          git apply --check ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch
+          git apply ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch
           git diff --check
           if grep -R --include='*.go' --exclude='*_test.go' -F '"github.com/aws/aws-sdk-go/' weed; then
+            exit 1
+          fi
+          if grep -R --include='*.go' -F '"github.com/aws/aws-sdk-go/' weed; then
+            exit 1
+          fi
+          go list -mod=readonly -deps -test ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend ./weed/remote_storage/s3 | LC_ALL=C sort -u > "$RUNNER_TEMP/seaweedfs-qualified-test-deps"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/seaweedfs-qualified-test-deps"; then
             exit 1
           fi
           if grep -F '"github.com/aws/aws-sdk-go/' weed/s3api/s3api_object_handlers_list.go; then
