@@ -151,7 +151,10 @@ jobs:
           go test -mod=readonly -count 1 -timeout 3m -json ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend ./weed/remote_storage/s3 | tee "$RUNNER_TEMP/seaweedfs-regressions.jsonl"
           go build -mod=readonly -trimpath -o "$RUNNER_TEMP/weed-lab" ./weed
           go version -m "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-build-info.txt"
-          if grep -q  "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-binary-sha256.txt"
+          if grep -Eq '^[[:space:]]*dep[[:space:]]+github[.]com/aws/aws-sdk-go[[:space:]]' "$RUNNER_TEMP/seaweedfs-build-info.txt"; then
+            exit 1
+          fi
+          sha256sum "$RUNNER_TEMP/weed-lab" > "$RUNNER_TEMP/seaweedfs-binary-sha256.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
