@@ -5,6 +5,7 @@
 - Locale: 5.591 PASS, 5 skip, 20 package PASS; race/focused server/build/reapply exact PASS.
 - CI 41594094791: entrambe le job SUCCESS su `2aa318aaeb8c4c0731f8a7683f7af6115d3b8414`.
 - Grafo esatto: 1.826 package, 14 SDK v1, 1 importatore produttivo diretto, 2 archi; residuo confinato a `weed/s3api`.
+- Correzione evidenziale: l'artefatto CI della nona patch conta 1.864 package, non 1.865; 1.864−38=1.826.
 - Stato MiniPET invariato: circa 33% ±10, 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO resta attivo.
 - Scope17/52 Engine GET, Teatri/M1 e Farmacie restano congelati. Nessuna operazione target, authority, replay/reset/grant, merge o deploy.
 - Prossimo sviluppo ammesso: rimuovere i due import XML/helper v1 da `weed/s3api`, poi rifare image/SBOM/security/licenze/custody/coorte. Binding reali, recovery e ammissione restano separati.
