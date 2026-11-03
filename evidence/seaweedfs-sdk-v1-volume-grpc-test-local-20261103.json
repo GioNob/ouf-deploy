@@ -1,0 +1,39 @@
+{
+  "candidatePatchCountBefore": 17,
+  "directAwsSdkV1ImportersAfter": 23,
+  "directAwsSdkV1ImportersBefore": 24,
+  "files": {
+    "test/volume_server/grpc/fetch_remote_s3_test.go": "77c66dee5afc27c6c9d790955ac1a5ea4d4e171d79340aab0cc4e58e388647e6"
+  },
+  "generatedAt": "2026-11-03T13:19:36Z",
+  "hostedArtifact": null,
+  "hostedEvidence": null,
+  "maintainedSdk": {
+    "core": "github.com/aws/aws-sdk-go-v2",
+    "service": "github.com/aws/aws-sdk-go-v2/service/s3"
+  },
+  "mutationRetryPolicy": {
+    "sdkAttempts": 1
+  },
+  "package": "./test/volume_server/grpc",
+  "packageAwsSdkV1Dependencies": 0,
+  "packageDependencies": 580,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch",
+    "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+  },
+  "qualifiedTest": {
+    "command": "go test -mod=readonly -run ^TestNewS3ClientUsesBoundedLocalConfiguration$ -count=1 ./test/volume_server/grpc",
+    "result": "PASS"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "scope": "LOCAL_PUBLIC_SOURCE_ONLY",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "workflow": {
+    "path": ".github/workflows/storage-volume-grpc-s3-test-sdk-v2.yml",
+    "sha256": "7422e8d036ad28a76033f84049a1b7e3451f22b8929dcae394fc1814eacf513a",
+    "status": "PENDING_HOSTED_RUN"
+  }
+}
