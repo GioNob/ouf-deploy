@@ -1,5 +1,33 @@
 # SeaweedFS — licenze e attribuzioni della generazione esatta
 
+## Review tecnica G1 — 3 novembre 2026
+
+**Stima MiniPET circa 33%** (15,3/46, incertezza di circa 10 punti). I risultati qui sotto chiariscono due rilievi aperti e mantengono aperti G1, tutti gli 8 gate, tutti i 21 AT e M2. L'inventario privato ha 120 oggetti, con 0 copie reali.
+
+### AWS SDK Go v1 nel percorso S3
+
+Nel grafo di compilazione del candidato 4.51, legato dal suo SHA256 `67534a54978a5a157673a6a21ea26c147b0dbcb60c60d30497ce39e6ee3c435b` al record del binario `bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74`, figurano **55 pacchetti di AWS SDK Go v1 su 1.738 pacchetti totali**. La versione è `v1.55.8`, fuori supporto AWS dal 31 luglio 2025. Il ramo principale upstream osservato al commit `c2ca83c0bf2f0c13b8cb3398728a1d4fd3f669ce` dichiara ancora la stessa versione. [Grafo e record conservati](../evidence/artifacts/storage-runtime-image-readback-41527990598.zip) · [go.mod upstream osservato](https://github.com/seaweedfs/seaweedfs/blob/c2ca83c0bf2f0c13b8cb3398728a1d4fd3f669ce/go.mod) · [Ciclo di vita AWS](https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-aws-sdk-for-go-v1-on-july-31-2025/).
+
+Nel tag esatto, una ricerca degli import v1 trova 34 file Go fuori dai test, 15 sotto `weed/s3api` e le sue sottodirectory. I blob esaminati coincidono con l'inventario upstream congelato. Multipart usa tipi v1 per avvio, completamento, abort e listing delle parti. Il codice di listing usa costanti e helper v1. Gli handler del bucket chiamano il decoder XML interno v1 per ownership e versioning, e il percorso ACL usa tipi v1. AWS KMS, SQS, remote storage S3 e backend S3 sono ulteriori punti d'uso. Disabilitare i servizi opzionali lascia il modulo nella build e lascia gli usi osservati nei gestori S3. L'analisi statica dimostra la dipendenza nel server candidato. La configurazione e il traffico del target richiedono una verifica distinta. [Tag e handler multipart](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/s3api/s3api_object_handlers_multipart.go) · [Handler bucket](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/s3api/s3api_bucket_handlers.go) · [Inventario dei blob](../releases/seaweedfs-upstream-source-tree-20261102.json).
+
+Direzione tecnica per la prossima generazione: partire da un commit upstream verificato che rimuova SDK v1, oppure qualificare una patch circoscritta e mantenibile con copertura dei percorsi interessati. Il criterio tecnico proposto è assenza di v1 nel grafo compilato e nella SBOM del nuovo binario, con regressioni S3 su listing/paginazione, multipart, ACL e versioning e riconciliazione della copia con i client OUF. I nuovi byte richiedono scansione completa, nuova valutazione dell'applicabilità, provenienza e custodia. Il candidato corrente resta una base per le prove isolate e la raccolta di evidenze. Questa è una constatazione di ciclo di vita, senza un nuovo rilievo CVE.
+
+### Rilettura dei tre UNKNOWN di licenza
+
+Per tutte e tre le righe raw, la vista del classificatore coincide byte per byte con il testo originale e lo SHA256 coincide con quello della mappatura. Tutte e tre coesistono con una rilevazione Apache-2.0 nello stesso documento, insieme a BSD-3-Clause per Arrow e Thrift.
+
+| Componente e percorso | Rilievo raw | Esito tecnico della rilettura |
+|---|---|---|
+| parquet-go v0.32.0 · `LICENSE` | `Copyright` | Il documento contiene Apache-2.0 e una menzione di copyright. Conservare testo e attribuzione. |
+| Arrow Go v18.8.0 · `LICENSE.txt` | `Copyright` | Il documento aggrega Apache-2.0, attribuzioni e termini BSD-3-Clause. Conservare il documento completo e i notice. |
+| Thrift v0.24.0 · `LICENSE` | `GNU-All-permissive-Copying-License` | Il documento aggrega più termini. Mantenere il rilievo associato al testo e verificare la pertinenza del componente coperto rispetto ai sorgenti compilati e alla distribuzione. |
+
+Il rapporto grezzo mantiene 3 UNKNOWN. La SBOM mantiene NOASSERTION. La review di applicabilità, co-consegna e obblighi di redistribuzione resta aperta. [Corpus e risultati originali](../evidence/artifacts/storage-licences-native-41541625141.zip).
+
+Verifica eseguita sui due archivi pubblici trattenuti: SHA256 degli archivi, checksum dei membri presenti, binding del grafo al record del candidato, corrispondenza dei blob selezionati del tag 4.51 all'inventario congelato e verifica byte/SHA delle tre viste. La rilettura è documentale e statica. Custodia durevole dell'immagine e coorte restano aperte. Per questa review sono stati consultati il MiniPET storage v1.1, il PET UDP v1.3 originale conservato nel pacchetto baseline v1.7 (§46, §81, §109.4–109.5) e la policy di resilienza v3.
+
+---
+
 Sessione avviata il 2 novembre 2026, Europe/Rome. Continuazione SW-WP1/G1; immagine e binario restano quelli qualificati in [OUF_SEAWEEDFS_RUNTIME_IMAGE_20261102.md](OUF_SEAWEEDFS_RUNTIME_IMAGE_20261102.md). Questo dossier raccoglie prove tecniche, senza dichiarare accettata la distribuzione.
 
 ## Raccolta e verifiche
