@@ -1,3 +1,15 @@
+# Checkpoint 3 novembre 2026 — modelli S3 e ACL persistite
+
+La quinta [patch](../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch) estrae 19 modelli S3 dal client SDK v1. Mantiene campi, ordine, tag, puntatori e licenze. I confronti verificano JSON storico e rilettura delle ACL, XML delle risposte multipart e parsing delle richieste ACL/ownership/versioning. Il parser storico resta invariato, inclusi casi di contenuto misto, radici multiple e XML malformato. Due log non stampano più l'intera richiesta multipart, perché i modelli locali non ereditano la redazione del formatter SDK.
+
+Suite estesa locale: **5.422 eventi PASS, 5 skip preesistenti, 13 pacchetti PASS**. Comprende anche command e s3_constants: il conteggio non è direttamente confrontabile con i precedenti 4.806. Build del server riuscita. Grafo: **1.750 pacchetti totali, 54 SDK v1, 7 importatori diretti e 39 archi**. Rispetto alle quattro patch entra soltanto il pacchetto locale s3api/wire; service/s3 resta necessario alle integrazioni. [Evidenza locale e limiti](../evidence/seaweedfs-s3-wire-local-20261103.json).
+
+La CI delle quattro patch [41578323726](https://github.com/GioNob/ouf-deploy/actions/runs/41578323726) è PASS. Il workflow aggiornato qualifica le cinque patch sul tag esatto, conserva grafo, log JSON e metadati di build. La replica CI della quinta patch è in attesa. Un primo tentativo locale è fallito perché /tmp non esisteva; il rilancio con TMPDIR esplicito è PASS, senza modificare test o regole di accettazione.
+
+Stima MiniPET **circa 33% (±10 punti)**: avanzamento di sviluppo, **0/8 gate chiusi, 0/21 AT accettati, 0/120 oggetti reali copiati**. G1 resta aperto; nessuna ammissione o operazione target. Scope17 consumato e 52 EngineGET invariati, Teatri/M1 e stessa Farmacie preservati. Prossimo passo: integrazione SQS, poi restanti percorsi KMS/S3/replica e parser XML.
+
+## Checkpoint precedente
+
 # Checkpoint 3 novembre 2026 — tipi IAM locali e riduzione del grafo
 
 La quarta [patch](../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch) separa i tipi delle risposte IAM dalla libreria client AWS v1. I dieci tipi conservano campi, puntatori, ordine e tag del modello precedente. Gli errori mantengono i codici originali. I test confrontano XML vuoto e popolato con l'SDK precedente, includendo date, liste e caratteri speciali. Le copie derivate mantengono LICENSE, NOTICE e attribuzione. I client SDK usati dai test restano utili per verificare il protocollo.
