@@ -1,0 +1,903 @@
+diff --git a/weed/s3api/auth_account_collapse_test.go b/weed/s3api/auth_account_collapse_test.go
+--- a/weed/s3api/auth_account_collapse_test.go
++++ b/weed/s3api/auth_account_collapse_test.go
+@@ -6,7 +6,7 @@
+ 	"os"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+diff --git a/weed/s3api/bucket_metadata.go b/weed/s3api/bucket_metadata.go
+--- a/weed/s3api/bucket_metadata.go
++++ b/weed/s3api/bucket_metadata.go
+@@ -3,7 +3,7 @@
+ import (
+ 	"encoding/json"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	lru "github.com/hashicorp/golang-lru/v2"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+diff --git a/weed/s3api/bucket_metadata_test.go b/weed/s3api/bucket_metadata_test.go
+--- a/weed/s3api/bucket_metadata_test.go
++++ b/weed/s3api/bucket_metadata_test.go
+@@ -8,7 +8,7 @@
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+diff --git a/weed/s3api/filer_multipart.go b/weed/s3api/filer_multipart.go
+--- a/weed/s3api/filer_multipart.go
++++ b/weed/s3api/filer_multipart.go
+@@ -25,9 +25,9 @@
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
+ 	"github.com/google/uuid"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 
+ 	"net/http"
+ 
+@@ -66,7 +66,7 @@
+ 
+ func (s3a *S3ApiServer) createMultipartUpload(r *http.Request, input *s3.CreateMultipartUploadInput) (output *InitiateMultipartUploadResult, code s3err.ErrorCode) {
+ 
+-	glog.V(2).Infof("createMultipartUpload input %v", input)
++	glog.V(2).Info("createMultipartUpload")
+ 
+ 	uploadIdString := s3a.generateUploadID(*input.Key)
+ 
+@@ -656,7 +656,7 @@
+ 
+ func (s3a *S3ApiServer) completeMultipartUpload(r *http.Request, input *s3.CompleteMultipartUploadInput, parts *CompleteMultipartUpload) (output *CompleteMultipartUploadResult, code s3err.ErrorCode) {
+ 
+-	glog.V(2).Infof("completeMultipartUpload input %v", input)
++	glog.V(2).Info("completeMultipartUpload")
+ 	if len(parts.Parts) == 0 {
+ 		stats.S3HandlerCounter.WithLabelValues(stats.ErrorCompletedNoSuchUpload).Inc()
+ 		return nil, s3err.ErrNoSuchUpload
+@@ -1152,7 +1152,7 @@
+ 
+ func (s3a *S3ApiServer) abortMultipartUpload(input *s3.AbortMultipartUploadInput) (output *s3.AbortMultipartUploadOutput, code s3err.ErrorCode) {
+ 
+-	glog.V(2).Infof("abortMultipartUpload input %v", input)
++	glog.V(2).Info("abortMultipartUpload")
+ 
+ 	uploadsFolder := s3a.genUploadsFolder(*input.Bucket)
+ 	uploadEntry, err := s3a.getEntry(uploadsFolder, *input.UploadId)
+@@ -1310,7 +1310,7 @@
+ func (s3a *S3ApiServer) listMultipartUploads(input *s3.ListMultipartUploadsInput) (output *ListMultipartUploadsResult, code s3err.ErrorCode) {
+ 	// https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html
+ 
+-	glog.V(2).Infof("listMultipartUploads input %v", input)
++	glog.V(2).Info("listMultipartUploads")
+ 
+ 	uploadsFolder := s3a.genUploadsFolder(*input.Bucket)
+ 	var page *multipartUploadPage
+@@ -1536,7 +1536,7 @@
+ func (s3a *S3ApiServer) listObjectParts(input *s3.ListPartsInput) (output *ListPartsResult, code s3err.ErrorCode) {
+ 	// https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
+ 
+-	glog.V(2).Infof("listObjectParts input %v", input)
++	glog.V(2).Info("listObjectParts")
+ 
+ 	// complete/abort delete the upload directory, but most stores list a missing
+ 	// directory as empty instead of erroring, so listing alone cannot tell a
+diff --git a/weed/s3api/filer_multipart_abort_test.go b/weed/s3api/filer_multipart_abort_test.go
+--- a/weed/s3api/filer_multipart_abort_test.go
++++ b/weed/s3api/filer_multipart_abort_test.go
+@@ -5,7 +5,7 @@
+ 	"testing"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/s3_lifecycle_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+diff --git a/weed/s3api/filer_multipart_checksum_test.go b/weed/s3api/filer_multipart_checksum_test.go
+--- a/weed/s3api/filer_multipart_checksum_test.go
++++ b/weed/s3api/filer_multipart_checksum_test.go
+@@ -10,7 +10,7 @@
+ 	"testing"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/minio/crc64nvme"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+diff --git a/weed/s3api/filer_multipart_list_encoding_test.go b/weed/s3api/filer_multipart_list_encoding_test.go
+--- a/weed/s3api/filer_multipart_list_encoding_test.go
++++ b/weed/s3api/filer_multipart_list_encoding_test.go
+@@ -9,7 +9,7 @@
+ 	"time"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/stretchr/testify/assert"
+diff --git a/weed/s3api/filer_multipart_list_test.go b/weed/s3api/filer_multipart_list_test.go
+--- a/weed/s3api/filer_multipart_list_test.go
++++ b/weed/s3api/filer_multipart_list_test.go
+@@ -9,7 +9,7 @@
+ 	"testing"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"google.golang.org/grpc/codes"
+diff --git a/weed/s3api/s3_constants/acp_canned_acl.go b/weed/s3api/s3_constants/acp_canned_acl.go
+--- a/weed/s3api/s3_constants/acp_canned_acl.go
++++ b/weed/s3api/s3_constants/acp_canned_acl.go
+@@ -1,7 +1,7 @@
+ package s3_constants
+ 
+ import (
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ )
+ 
+ const (
+diff --git a/weed/s3api/s3api_acl_header_parser_test.go b/weed/s3api/s3api_acl_header_parser_test.go
+--- a/weed/s3api/s3api_acl_header_parser_test.go
++++ b/weed/s3api/s3api_acl_header_parser_test.go
+@@ -4,7 +4,7 @@
+ 	"testing"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+ 	"github.com/stretchr/testify/require"
+diff --git a/weed/s3api/s3api_acl_helper.go b/weed/s3api/s3api_acl_helper.go
+--- a/weed/s3api/s3api_acl_helper.go
++++ b/weed/s3api/s3api_acl_helper.go
+@@ -7,7 +7,7 @@
+ 	"strings"
+ 
+ 	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+diff --git a/weed/s3api/s3api_bucket_config.go b/weed/s3api/s3api_bucket_config.go
+--- a/weed/s3api/s3api_bucket_config.go
++++ b/weed/s3api/s3api_bucket_config.go
+@@ -11,7 +11,7 @@
+ 	"sync"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	lru "github.com/hashicorp/golang-lru/v2"
+ 	"google.golang.org/protobuf/proto"
+ 
+diff --git a/weed/s3api/s3api_bucket_handlers.go b/weed/s3api/s3api_bucket_handlers.go
+--- a/weed/s3api/s3api_bucket_handlers.go
++++ b/weed/s3api/s3api_bucket_handlers.go
+@@ -26,7 +26,7 @@
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+diff --git a/weed/s3api/s3api_bucket_handlers_misc_test.go b/weed/s3api/s3api_bucket_handlers_misc_test.go
+--- a/weed/s3api/s3api_bucket_handlers_misc_test.go
++++ b/weed/s3api/s3api_bucket_handlers_misc_test.go
+@@ -12,7 +12,7 @@
+ 	"time"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+diff --git a/weed/s3api/s3api_list_parts_no_such_upload_test.go b/weed/s3api/s3api_list_parts_no_such_upload_test.go
+--- a/weed/s3api/s3api_list_parts_no_such_upload_test.go
++++ b/weed/s3api/s3api_list_parts_no_such_upload_test.go
+@@ -7,7 +7,7 @@
+ 	"testing"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+diff --git a/weed/s3api/s3api_object_anonymous_read.go b/weed/s3api/s3api_object_anonymous_read.go
+--- a/weed/s3api/s3api_object_anonymous_read.go
++++ b/weed/s3api/s3api_object_anonymous_read.go
+@@ -8,7 +8,7 @@
+ 	"path"
+ 	"strings"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+diff --git a/weed/s3api/s3api_object_anonymous_read_test.go b/weed/s3api/s3api_object_anonymous_read_test.go
+--- a/weed/s3api/s3api_object_anonymous_read_test.go
++++ b/weed/s3api/s3api_object_anonymous_read_test.go
+@@ -13,7 +13,7 @@
+ 	"time"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+diff --git a/weed/s3api/s3api_object_handlers_copy_acl_test.go b/weed/s3api/s3api_object_handlers_copy_acl_test.go
+--- a/weed/s3api/s3api_object_handlers_copy_acl_test.go
++++ b/weed/s3api/s3api_object_handlers_copy_acl_test.go
+@@ -16,7 +16,7 @@
+ 	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/aws/aws-sdk-go/aws/credentials"
+ 	"github.com/aws/aws-sdk-go/aws/signer/v4"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/cluster"
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+diff --git a/weed/s3api/s3api_object_handlers_multipart.go b/weed/s3api/s3api_object_handlers_multipart.go
+--- a/weed/s3api/s3api_object_handlers_multipart.go
++++ b/weed/s3api/s3api_object_handlers_multipart.go
+@@ -15,7 +15,7 @@
+ 	"time"
+ 
+ 	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/google/uuid"
+ 	"github.com/pquerna/cachecontrol/cacheobject"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+diff --git a/weed/s3api/s3api_object_ownership_test.go b/weed/s3api/s3api_object_ownership_test.go
+--- a/weed/s3api/s3api_object_ownership_test.go
++++ b/weed/s3api/s3api_object_ownership_test.go
+@@ -4,7 +4,7 @@
+ 	"net/http"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+diff --git a/weed/s3api/s3api_object_upload_acl.go b/weed/s3api/s3api_object_upload_acl.go
+--- a/weed/s3api/s3api_object_upload_acl.go
++++ b/weed/s3api/s3api_object_upload_acl.go
+@@ -7,7 +7,7 @@
+ 	"net/url"
+ 	"strings"
+ 
+-	"github.com/aws/aws-sdk-go/service/s3"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+diff --git a/weed/s3api/wire/LICENSE b/weed/s3api/wire/LICENSE
+new file mode 100644
+--- /dev/null
++++ b/weed/s3api/wire/LICENSE
+@@ -0,0 +1,202 @@
++
++                                 Apache License
++                           Version 2.0, January 2004
++                        http://www.apache.org/licenses/
++
++   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
++
++   1. Definitions.
++
++      "License" shall mean the terms and conditions for use, reproduction,
++      and distribution as defined by Sections 1 through 9 of this document.
++
++      "Licensor" shall mean the copyright owner or entity authorized by
++      the copyright owner that is granting the License.
++
++      "Legal Entity" shall mean the union of the acting entity and all
++      other entities that control, are controlled by, or are under common
++      control with that entity. For the purposes of this definition,
++      "control" means (i) the power, direct or indirect, to cause the
++      direction or management of such entity, whether by contract or
++      otherwise, or (ii) ownership of fifty percent (50%) or more of the
++      outstanding shares, or (iii) beneficial ownership of such entity.
++
++      "You" (or "Your") shall mean an individual or Legal Entity
++      exercising permissions granted by this License.
++
++      "Source" form shall mean the preferred form for making modifications,
++      including but not limited to software source code, documentation
++      source, and configuration files.
++
++      "Object" form shall mean any form resulting from mechanical
++      transformation or translation of a Source form, including but
++      not limited to compiled object code, generated documentation,
++      and conversions to other media types.
++
++      "Work" shall mean the work of authorship, whether in Source or
++      Object form, made available under the License, as indicated by a
++      copyright notice that is included in or attached to the work
++      (an example is provided in the Appendix below).
++
++      "Derivative Works" shall mean any work, whether in Source or Object
++      form, that is based on (or derived from) the Work and for which the
++      editorial revisions, annotations, elaborations, or other modifications
++      represent, as a whole, an original work of authorship. For the purposes
++      of this License, Derivative Works shall not include works that remain
++      separable from, or merely link (or bind by name) to the interfaces of,
++      the Work and Derivative Works thereof.
++
++      "Contribution" shall mean any work of authorship, including
++      the original version of the Work and any modifications or additions
++      to that Work or Derivative Works thereof, that is intentionally
++      submitted to Licensor for inclusion in the Work by the copyright owner
++      or by an individual or Legal Entity authorized to submit on behalf of
++      the copyright owner. For the purposes of this definition, "submitted"
++      means any form of electronic, verbal, or written communication sent
++      to the Licensor or its representatives, including but not limited to
++      communication on electronic mailing lists, source code control systems,
++      and issue tracking systems that are managed by, or on behalf of, the
++      Licensor for the purpose of discussing and improving the Work, but
++      excluding communication that is conspicuously marked or otherwise
++      designated in writing by the copyright owner as "Not a Contribution."
++
++      "Contributor" shall mean Licensor and any individual or Legal Entity
++      on behalf of whom a Contribution has been received by Licensor and
++      subsequently incorporated within the Work.
++
++   2. Grant of Copyright License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      copyright license to reproduce, prepare Derivative Works of,
++      publicly display, publicly perform, sublicense, and distribute the
++      Work and such Derivative Works in Source or Object form.
++
++   3. Grant of Patent License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      (except as stated in this section) patent license to make, have made,
++      use, offer to sell, sell, import, and otherwise transfer the Work,
++      where such license applies only to those patent claims licensable
++      by such Contributor that are necessarily infringed by their
++      Contribution(s) alone or by combination of their Contribution(s)
++      with the Work to which such Contribution(s) was submitted. If You
++      institute patent litigation against any entity (including a
++      cross-claim or counterclaim in a lawsuit) alleging that the Work
++      or a Contribution incorporated within the Work constitutes direct
++      or contributory patent infringement, then any patent licenses
++      granted to You under this License for that Work shall terminate
++      as of the date such litigation is filed.
++
++   4. Redistribution. You may reproduce and distribute copies of the
++      Work or Derivative Works thereof in any medium, with or without
++      modifications, and in Source or Object form, provided that You
++      meet the following conditions:
++
++      (a) You must give any other recipients of the Work or
++          Derivative Works a copy of this License; and
++
++      (b) You must cause any modified files to carry prominent notices
++          stating that You changed the files; and
++
++      (c) You must retain, in the Source form of any Derivative Works
++          that You distribute, all copyright, patent, trademark, and
++          attribution notices from the Source form of the Work,
++          excluding those notices that do not pertain to any part of
++          the Derivative Works; and
++
++      (d) If the Work includes a "NOTICE" text file as part of its
++          distribution, then any Derivative Works that You distribute must
++          include a readable copy of the attribution notices contained
++          within such NOTICE file, excluding those notices that do not
++          pertain to any part of the Derivative Works, in at least one
++          of the following places: within a NOTICE text file distributed
++          as part of the Derivative Works; within the Source form or
++          documentation, if provided along with the Derivative Works; or,
++          within a display generated by the Derivative Works, if and
++          wherever such third-party notices normally appear. The contents
++          of the NOTICE file are for informational purposes only and
++          do not modify the License. You may add Your own attribution
++          notices within Derivative Works that You distribute, alongside
++          or as an addendum to the NOTICE text from the Work, provided
++          that such additional attribution notices cannot be construed
++          as modifying the License.
++
++      You may add Your own copyright statement to Your modifications and
++      may provide additional or different license terms and conditions
++      for use, reproduction, or distribution of Your modifications, or
++      for any such Derivative Works as a whole, provided Your use,
++      reproduction, and distribution of the Work otherwise complies with
++      the conditions stated in this License.
++
++   5. Submission of Contributions. Unless You explicitly state otherwise,
++      any Contribution intentionally submitted for inclusion in the Work
++      by You to the Licensor shall be under the terms and conditions of
++      this License, without any additional terms or conditions.
++      Notwithstanding the above, nothing herein shall supersede or modify
++      the terms of any separate license agreement you may have executed
++      with Licensor regarding such Contributions.
++
++   6. Trademarks. This License does not grant permission to use the trade
++      names, trademarks, service marks, or product names of the Licensor,
++      except as required for reasonable and customary use in describing the
++      origin of the Work and reproducing the content of the NOTICE file.
++
++   7. Disclaimer of Warranty. Unless required by applicable law or
++      agreed to in writing, Licensor provides the Work (and each
++      Contributor provides its Contributions) on an "AS IS" BASIS,
++      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
++      implied, including, without limitation, any warranties or conditions
++      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
++      PARTICULAR PURPOSE. You are solely responsible for determining the
++      appropriateness of using or redistributing the Work and assume any
++      risks associated with Your exercise of permissions under this License.
++
++   8. Limitation of Liability. In no event and under no legal theory,
++      whether in tort (including negligence), contract, or otherwise,
++      unless required by applicable law (such as deliberate and grossly
++      negligent acts) or agreed to in writing, shall any Contributor be
++      liable to You for damages, including any direct, indirect, special,
++      incidental, or consequential damages of any character arising as a
++      result of this License or out of the use or inability to use the
++      Work (including but not limited to damages for loss of goodwill,
++      work stoppage, computer failure or malfunction, or any and all
++      other commercial damages or losses), even if such Contributor
++      has been advised of the possibility of such damages.
++
++   9. Accepting Warranty or Additional Liability. While redistributing
++      the Work or Derivative Works thereof, You may choose to offer,
++      and charge a fee for, acceptance of support, warranty, indemnity,
++      or other liability obligations and/or rights consistent with this
++      License. However, in accepting such obligations, You may act only
++      on Your own behalf and on Your sole responsibility, not on behalf
++      of any other Contributor, and only if You agree to indemnify,
++      defend, and hold each Contributor harmless for any liability
++      incurred by, or claims asserted against, such Contributor by reason
++      of your accepting any such warranty or additional liability.
++
++   END OF TERMS AND CONDITIONS
++
++   APPENDIX: How to apply the Apache License to your work.
++
++      To apply the Apache License to your work, attach the following
++      boilerplate notice, with the fields enclosed by brackets "[]"
++      replaced with your own identifying information. (Don't include
++      the brackets!)  The text should be enclosed in the appropriate
++      comment syntax for the file format. We also recommend that a
++      file or class name and description of purpose be included on the
++      same "printed page" as the copyright notice for easier
++      identification within third-party archives.
++
++   Copyright [yyyy] [name of copyright owner]
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++   you may not use this file except in compliance with the License.
++   You may obtain a copy of the License at
++
++       http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing, software
++   distributed under the License is distributed on an "AS IS" BASIS,
++   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++   See the License for the specific language governing permissions and
++   limitations under the License.
+diff --git a/weed/s3api/wire/NOTICE b/weed/s3api/wire/NOTICE
+new file mode 100644
+--- /dev/null
++++ b/weed/s3api/wire/NOTICE
+@@ -0,0 +1,3 @@
++AWS SDK for Go
++Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
++Copyright 2014-2015 Stripe, Inc.
+diff --git a/weed/s3api/wire/types.go b/weed/s3api/wire/types.go
+new file mode 100644
+--- /dev/null
++++ b/weed/s3api/wire/types.go
+@@ -0,0 +1,205 @@
++// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
++// SPDX-License-Identifier: Apache-2.0
++// Protocol models derived from aws-sdk-go v1.55.8/service/s3/api.go.
++// Retain fields, order and tags for stored ACL JSON and S3 XML compatibility.
++package wire
++
++import "time"
++
++const EncodingTypeUrl = "url"
++
++type AbortMultipartUploadInput struct {
++	_                   struct{} `locationName:"AbortMultipartUploadRequest" type:"structure"`
++	Bucket              *string  `location:"uri" locationName:"Bucket" type:"string" required:"true"`
++	ExpectedBucketOwner *string  `location:"header" locationName:"x-amz-expected-bucket-owner" type:"string"`
++	Key                 *string  `location:"uri" locationName:"Key" min:"1" type:"string" required:"true"`
++	RequestPayer        *string  `location:"header" locationName:"x-amz-request-payer" type:"string" enum:"RequestPayer"`
++	UploadId            *string  `location:"querystring" locationName:"uploadId" type:"string" required:"true"`
++}
++
++type AbortMultipartUploadOutput struct {
++	_              struct{} `type:"structure"`
++	RequestCharged *string  `location:"header" locationName:"x-amz-request-charged" type:"string" enum:"RequestCharged"`
++}
++
++type AccessControlPolicy struct {
++	_      struct{} `type:"structure"`
++	Grants []*Grant `locationName:"AccessControlList" locationNameList:"Grant" type:"list"`
++	Owner  *Owner   `type:"structure"`
++}
++
++type CompleteMultipartUploadInput struct {
++	_                    struct{}                  `locationName:"CompleteMultipartUploadRequest" type:"structure" payload:"MultipartUpload"`
++	Bucket               *string                   `location:"uri" locationName:"Bucket" type:"string" required:"true"`
++	ChecksumCRC32        *string                   `location:"header" locationName:"x-amz-checksum-crc32" type:"string"`
++	ChecksumCRC32C       *string                   `location:"header" locationName:"x-amz-checksum-crc32c" type:"string"`
++	ChecksumSHA1         *string                   `location:"header" locationName:"x-amz-checksum-sha1" type:"string"`
++	ChecksumSHA256       *string                   `location:"header" locationName:"x-amz-checksum-sha256" type:"string"`
++	ExpectedBucketOwner  *string                   `location:"header" locationName:"x-amz-expected-bucket-owner" type:"string"`
++	Key                  *string                   `location:"uri" locationName:"Key" min:"1" type:"string" required:"true"`
++	MultipartUpload      *CompletedMultipartUpload `locationName:"CompleteMultipartUpload" type:"structure" xmlURI:"http://s3.amazonaws.com/doc/2006-03-01/"`
++	RequestPayer         *string                   `location:"header" locationName:"x-amz-request-payer" type:"string" enum:"RequestPayer"`
++	SSECustomerAlgorithm *string                   `location:"header" locationName:"x-amz-server-side-encryption-customer-algorithm" type:"string"`
++	SSECustomerKey       *string                   `marshal-as:"blob" location:"header" locationName:"x-amz-server-side-encryption-customer-key" type:"string" sensitive:"true"`
++	SSECustomerKeyMD5    *string                   `location:"header" locationName:"x-amz-server-side-encryption-customer-key-MD5" type:"string"`
++	UploadId             *string                   `location:"querystring" locationName:"uploadId" type:"string" required:"true"`
++}
++
++type CompletedMultipartUpload struct {
++	_     struct{}         `type:"structure"`
++	Parts []*CompletedPart `locationName:"Part" type:"list" flattened:"true"`
++}
++
++type CompletedPart struct {
++	_              struct{} `type:"structure"`
++	ChecksumCRC32  *string  `type:"string"`
++	ChecksumCRC32C *string  `type:"string"`
++	ChecksumSHA1   *string  `type:"string"`
++	ChecksumSHA256 *string  `type:"string"`
++	ETag           *string  `type:"string"`
++	PartNumber     *int64   `type:"integer"`
++}
++
++type CreateMultipartUploadInput struct {
++	_                         struct{}           `locationName:"CreateMultipartUploadRequest" type:"structure"`
++	ACL                       *string            `location:"header" locationName:"x-amz-acl" type:"string" enum:"ObjectCannedACL"`
++	Bucket                    *string            `location:"uri" locationName:"Bucket" type:"string" required:"true"`
++	BucketKeyEnabled          *bool              `location:"header" locationName:"x-amz-server-side-encryption-bucket-key-enabled" type:"boolean"`
++	CacheControl              *string            `location:"header" locationName:"Cache-Control" type:"string"`
++	ChecksumAlgorithm         *string            `location:"header" locationName:"x-amz-checksum-algorithm" type:"string" enum:"ChecksumAlgorithm"`
++	ContentDisposition        *string            `location:"header" locationName:"Content-Disposition" type:"string"`
++	ContentEncoding           *string            `location:"header" locationName:"Content-Encoding" type:"string"`
++	ContentLanguage           *string            `location:"header" locationName:"Content-Language" type:"string"`
++	ContentType               *string            `location:"header" locationName:"Content-Type" type:"string"`
++	ExpectedBucketOwner       *string            `location:"header" locationName:"x-amz-expected-bucket-owner" type:"string"`
++	Expires                   *time.Time         `location:"header" locationName:"Expires" type:"timestamp"`
++	GrantFullControl          *string            `location:"header" locationName:"x-amz-grant-full-control" type:"string"`
++	GrantRead                 *string            `location:"header" locationName:"x-amz-grant-read" type:"string"`
++	GrantReadACP              *string            `location:"header" locationName:"x-amz-grant-read-acp" type:"string"`
++	GrantWriteACP             *string            `location:"header" locationName:"x-amz-grant-write-acp" type:"string"`
++	Key                       *string            `location:"uri" locationName:"Key" min:"1" type:"string" required:"true"`
++	Metadata                  map[string]*string `location:"headers" locationName:"x-amz-meta-" type:"map"`
++	ObjectLockLegalHoldStatus *string            `location:"header" locationName:"x-amz-object-lock-legal-hold" type:"string" enum:"ObjectLockLegalHoldStatus"`
++	ObjectLockMode            *string            `location:"header" locationName:"x-amz-object-lock-mode" type:"string" enum:"ObjectLockMode"`
++	ObjectLockRetainUntilDate *time.Time         `location:"header" locationName:"x-amz-object-lock-retain-until-date" type:"timestamp" timestampFormat:"iso8601"`
++	RequestPayer              *string            `location:"header" locationName:"x-amz-request-payer" type:"string" enum:"RequestPayer"`
++	SSECustomerAlgorithm      *string            `location:"header" locationName:"x-amz-server-side-encryption-customer-algorithm" type:"string"`
++	SSECustomerKey            *string            `marshal-as:"blob" location:"header" locationName:"x-amz-server-side-encryption-customer-key" type:"string" sensitive:"true"`
++	SSECustomerKeyMD5         *string            `location:"header" locationName:"x-amz-server-side-encryption-customer-key-MD5" type:"string"`
++	SSEKMSEncryptionContext   *string            `location:"header" locationName:"x-amz-server-side-encryption-context" type:"string" sensitive:"true"`
++	SSEKMSKeyId               *string            `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string" sensitive:"true"`
++	ServerSideEncryption      *string            `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
++	StorageClass              *string            `location:"header" locationName:"x-amz-storage-class" type:"string" enum:"StorageClass"`
++	Tagging                   *string            `location:"header" locationName:"x-amz-tagging" type:"string"`
++	WebsiteRedirectLocation   *string            `location:"header" locationName:"x-amz-website-redirect-location" type:"string"`
++}
++
++type CreateMultipartUploadOutput struct {
++	_                       struct{}   `type:"structure"`
++	AbortDate               *time.Time `location:"header" locationName:"x-amz-abort-date" type:"timestamp"`
++	AbortRuleId             *string    `location:"header" locationName:"x-amz-abort-rule-id" type:"string"`
++	Bucket                  *string    `locationName:"Bucket" type:"string"`
++	BucketKeyEnabled        *bool      `location:"header" locationName:"x-amz-server-side-encryption-bucket-key-enabled" type:"boolean"`
++	ChecksumAlgorithm       *string    `location:"header" locationName:"x-amz-checksum-algorithm" type:"string" enum:"ChecksumAlgorithm"`
++	Key                     *string    `min:"1" type:"string"`
++	RequestCharged          *string    `location:"header" locationName:"x-amz-request-charged" type:"string" enum:"RequestCharged"`
++	SSECustomerAlgorithm    *string    `location:"header" locationName:"x-amz-server-side-encryption-customer-algorithm" type:"string"`
++	SSECustomerKeyMD5       *string    `location:"header" locationName:"x-amz-server-side-encryption-customer-key-MD5" type:"string"`
++	SSEKMSEncryptionContext *string    `location:"header" locationName:"x-amz-server-side-encryption-context" type:"string" sensitive:"true"`
++	SSEKMSKeyId             *string    `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string" sensitive:"true"`
++	ServerSideEncryption    *string    `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
++	UploadId                *string    `type:"string"`
++}
++
++type Grant struct {
++	_          struct{} `type:"structure"`
++	Grantee    *Grantee `type:"structure" xmlPrefix:"xsi" xmlURI:"http://www.w3.org/2001/XMLSchema-instance"`
++	Permission *string  `type:"string" enum:"Permission"`
++}
++
++type Grantee struct {
++	_            struct{} `type:"structure" xmlPrefix:"xsi" xmlURI:"http://www.w3.org/2001/XMLSchema-instance"`
++	DisplayName  *string  `type:"string"`
++	EmailAddress *string  `type:"string"`
++	ID           *string  `type:"string"`
++	Type         *string  `locationName:"xsi:type" type:"string" xmlAttribute:"true" required:"true" enum:"Type"`
++	URI          *string  `type:"string"`
++}
++
++type Initiator struct {
++	_           struct{} `type:"structure"`
++	DisplayName *string  `type:"string"`
++	ID          *string  `type:"string"`
++}
++
++type ListMultipartUploadsInput struct {
++	_                   struct{} `locationName:"ListMultipartUploadsRequest" type:"structure"`
++	Bucket              *string  `location:"uri" locationName:"Bucket" type:"string" required:"true"`
++	Delimiter           *string  `location:"querystring" locationName:"delimiter" type:"string"`
++	EncodingType        *string  `location:"querystring" locationName:"encoding-type" type:"string" enum:"EncodingType"`
++	ExpectedBucketOwner *string  `location:"header" locationName:"x-amz-expected-bucket-owner" type:"string"`
++	KeyMarker           *string  `location:"querystring" locationName:"key-marker" type:"string"`
++	MaxUploads          *int64   `location:"querystring" locationName:"max-uploads" type:"integer"`
++	Prefix              *string  `location:"querystring" locationName:"prefix" type:"string"`
++	RequestPayer        *string  `location:"header" locationName:"x-amz-request-payer" type:"string" enum:"RequestPayer"`
++	UploadIdMarker      *string  `location:"querystring" locationName:"upload-id-marker" type:"string"`
++}
++
++type ListPartsInput struct {
++	_                    struct{} `locationName:"ListPartsRequest" type:"structure"`
++	Bucket               *string  `location:"uri" locationName:"Bucket" type:"string" required:"true"`
++	ExpectedBucketOwner  *string  `location:"header" locationName:"x-amz-expected-bucket-owner" type:"string"`
++	Key                  *string  `location:"uri" locationName:"Key" min:"1" type:"string" required:"true"`
++	MaxParts             *int64   `location:"querystring" locationName:"max-parts" type:"integer"`
++	PartNumberMarker     *int64   `location:"querystring" locationName:"part-number-marker" type:"integer"`
++	RequestPayer         *string  `location:"header" locationName:"x-amz-request-payer" type:"string" enum:"RequestPayer"`
++	SSECustomerAlgorithm *string  `location:"header" locationName:"x-amz-server-side-encryption-customer-algorithm" type:"string"`
++	SSECustomerKey       *string  `marshal-as:"blob" location:"header" locationName:"x-amz-server-side-encryption-customer-key" type:"string" sensitive:"true"`
++	SSECustomerKeyMD5    *string  `location:"header" locationName:"x-amz-server-side-encryption-customer-key-MD5" type:"string"`
++	UploadId             *string  `location:"querystring" locationName:"uploadId" type:"string" required:"true"`
++}
++
++type MultipartUpload struct {
++	_                 struct{}   `type:"structure"`
++	ChecksumAlgorithm *string    `type:"string" enum:"ChecksumAlgorithm"`
++	Initiated         *time.Time `type:"timestamp"`
++	Initiator         *Initiator `type:"structure"`
++	Key               *string    `min:"1" type:"string"`
++	Owner             *Owner     `type:"structure"`
++	StorageClass      *string    `type:"string" enum:"StorageClass"`
++	UploadId          *string    `type:"string"`
++}
++
++type Owner struct {
++	_           struct{} `type:"structure"`
++	DisplayName *string  `type:"string"`
++	ID          *string  `type:"string"`
++}
++
++type OwnershipControls struct {
++	_     struct{}                 `type:"structure"`
++	Rules []*OwnershipControlsRule `locationName:"Rule" type:"list" flattened:"true" required:"true"`
++}
++
++type OwnershipControlsRule struct {
++	_               struct{} `type:"structure"`
++	ObjectOwnership *string  `type:"string" required:"true" enum:"ObjectOwnership"`
++}
++
++type Part struct {
++	_              struct{}   `type:"structure"`
++	ChecksumCRC32  *string    `type:"string"`
++	ChecksumCRC32C *string    `type:"string"`
++	ChecksumSHA1   *string    `type:"string"`
++	ChecksumSHA256 *string    `type:"string"`
++	ETag           *string    `type:"string"`
++	LastModified   *time.Time `type:"timestamp"`
++	PartNumber     *int64     `type:"integer"`
++	Size           *int64     `type:"long"`
++}
++
++type VersioningConfiguration struct {
++	_         struct{} `type:"structure"`
++	MFADelete *string  `locationName:"MfaDelete" type:"string" enum:"MFADelete"`
++	Status    *string  `type:"string" enum:"BucketVersioningStatus"`
++}
+diff --git a/weed/s3api/wire/types_test.go b/weed/s3api/wire/types_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/s3api/wire/types_test.go
+@@ -0,0 +1,174 @@
++package wire
++
++import (
++	"bytes"
++	"encoding/json"
++	"encoding/xml"
++	"fmt"
++	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++
++	legacy "github.com/aws/aws-sdk-go/service/s3"
++)
++
++func fillWireFixture(v reflect.Value) {
++	if v.Type() == reflect.TypeOf(time.Time{}) {
++		v.Set(reflect.ValueOf(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC)))
++		return
++	}
++	switch v.Kind() {
++	case reflect.Ptr:
++		v.Set(reflect.New(v.Type().Elem()))
++		fillWireFixture(v.Elem())
++	case reflect.Struct:
++		for i := 0; i < v.NumField(); i++ {
++			if v.Field(i).CanSet() {
++				fillWireFixture(v.Field(i))
++			}
++		}
++	case reflect.Slice:
++		v.Set(reflect.MakeSlice(v.Type(), 2, 2))
++		for i := 0; i < v.Len(); i++ {
++			fillWireFixture(v.Index(i))
++		}
++	case reflect.Map:
++		v.Set(reflect.MakeMap(v.Type()))
++		value := reflect.New(v.Type().Elem()).Elem()
++		fillWireFixture(value)
++		v.SetMapIndex(reflect.ValueOf("metadata-key"), value)
++	case reflect.String:
++		v.SetString("fixture<&\"")
++	case reflect.Bool:
++		v.SetBool(true)
++	case reflect.Int64:
++		v.SetInt(7)
++	}
++}
++
++func wirePairs() [][2]any {
++	return [][2]any{
++		{AbortMultipartUploadInput{}, legacy.AbortMultipartUploadInput{}},
++		{AbortMultipartUploadOutput{}, legacy.AbortMultipartUploadOutput{}},
++		{AccessControlPolicy{}, legacy.AccessControlPolicy{}},
++		{CompleteMultipartUploadInput{}, legacy.CompleteMultipartUploadInput{}},
++		{CompletedMultipartUpload{}, legacy.CompletedMultipartUpload{}},
++		{CompletedPart{}, legacy.CompletedPart{}},
++		{CreateMultipartUploadInput{}, legacy.CreateMultipartUploadInput{}},
++		{CreateMultipartUploadOutput{}, legacy.CreateMultipartUploadOutput{}},
++		{Grant{}, legacy.Grant{}},
++		{Grantee{}, legacy.Grantee{}},
++		{Initiator{}, legacy.Initiator{}},
++		{ListMultipartUploadsInput{}, legacy.ListMultipartUploadsInput{}},
++		{ListPartsInput{}, legacy.ListPartsInput{}},
++		{MultipartUpload{}, legacy.MultipartUpload{}},
++		{Owner{}, legacy.Owner{}},
++		{OwnershipControls{}, legacy.OwnershipControls{}},
++		{OwnershipControlsRule{}, legacy.OwnershipControlsRule{}},
++		{Part{}, legacy.Part{}},
++		{VersioningConfiguration{}, legacy.VersioningConfiguration{}},
++	}
++}
++
++// JSON is a persisted ACL format, so nil pointers, empty collections and order matter.
++func TestLegacyJSONCompatibility(t *testing.T) {
++	for _, pair := range wirePairs() {
++		t.Run(reflect.TypeOf(pair[0]).Name(), func(t *testing.T) {
++			for _, populated := range []bool{false, true} {
++				var data [2][]byte
++				for i, value := range pair {
++					fixture := reflect.New(reflect.TypeOf(value)).Elem()
++					if populated {
++						fillWireFixture(fixture)
++					}
++					var err error
++					data[i], err = json.Marshal(fixture.Interface())
++					if err != nil {
++						t.Fatal(err)
++					}
++				}
++				if !bytes.Equal(data[0], data[1]) {
++					t.Fatalf("JSON differs populated=%v: %s / %s", populated, data[0], data[1])
++				}
++				local := reflect.New(reflect.TypeOf(pair[0])).Interface()
++				if err := json.Unmarshal(data[1], local); err != nil {
++					t.Fatal(err)
++				}
++				roundTrip, err := json.Marshal(local)
++				if err != nil {
++					t.Fatal(err)
++				}
++				if !bytes.Equal(roundTrip, data[1]) {
++					t.Fatal("persisted legacy JSON did not round trip")
++				}
++			}
++		})
++	}
++}
++
++// Compare the standard XML serializer actually used for multipart responses.
++func TestLegacyXMLCompatibility(t *testing.T) {
++	for _, pair := range wirePairs() {
++		name := reflect.TypeOf(pair[0]).Name()
++		if strings.HasSuffix(name, "Input") {
++			continue
++		}
++		t.Run(name, func(t *testing.T) {
++			for _, populated := range []bool{false, true} {
++				var data [2][]byte
++				for i, value := range pair {
++					fixture := reflect.New(reflect.TypeOf(value)).Elem()
++					if populated {
++						fillWireFixture(fixture)
++					}
++					var err error
++					data[i], err = xml.Marshal(fixture.Interface())
++					if err != nil {
++						t.Fatal(err)
++					}
++				}
++				if !bytes.Equal(data[0], data[1]) {
++					t.Fatalf("XML differs populated=%v: %s / %s", populated, data[0], data[1])
++				}
++			}
++		})
++	}
++}
++
++// Keep the historical request parser and prove its attribute/list tags still work.
++func TestLegacyRequestParsing(t *testing.T) {
++	cases := []struct {
++		body       string
++		local, old any
++	}{
++		{`<AccessControlPolicy><Owner><ID>owner&amp;x</ID></Owner><AccessControlList><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"><ID>owner&amp;x</ID></Grantee><Permission>FULL_CONTROL</Permission></Grant><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"><URI>http://acs.amazonaws.com/groups/global/AllUsers</URI></Grantee><Permission>READ</Permission></Grant></AccessControlList></AccessControlPolicy>`, &AccessControlPolicy{}, &legacy.AccessControlPolicy{}},
++		{`<AccessControlPolicy><AccessControlList/></AccessControlPolicy>`, &AccessControlPolicy{}, &legacy.AccessControlPolicy{}},
++		{`<OwnershipControls><Rule><ObjectOwnership>BucketOwnerPreferred</ObjectOwnership></Rule><Rule><ObjectOwnership>ObjectWriter</ObjectOwnership></Rule></OwnershipControls>`, &OwnershipControls{}, &legacy.OwnershipControls{}},
++		{`<VersioningConfiguration><Status>Enabled</Status><MFADelete>Disabled</MFADelete></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
++		{`<VersioningConfiguration><Status>Enable<Other/>d</Status></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
++		{`<VersioningConfiguration><Status>Enabled</Status></VersioningConfiguration><VersioningConfiguration><Status>Suspended</Status></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
++		{`<VersioningConfiguration><Status>Enabled</Status>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
++	}
++	for n, tc := range cases {
++		t.Run(fmt.Sprint(n), func(t *testing.T) {
++			a := xmlutil.UnmarshalXML(tc.local, xml.NewDecoder(strings.NewReader(tc.body)), "")
++			b := xmlutil.UnmarshalXML(tc.old, xml.NewDecoder(strings.NewReader(tc.body)), "")
++			if fmt.Sprint(a) != fmt.Sprint(b) {
++				t.Fatalf("parser errors differ: %v / %v", a, b)
++			}
++			x, err := json.Marshal(tc.local)
++			if err != nil {
++				t.Fatal(err)
++			}
++			y, err := json.Marshal(tc.old)
++			if err != nil {
++				t.Fatal(err)
++			}
++			if !bytes.Equal(x, y) {
++				t.Fatalf("decoded values differ: %s / %s", x, y)
++			}
++		})
++	}
++}
