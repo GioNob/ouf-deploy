@@ -8,6 +8,7 @@ import io
 import json
 from pathlib import Path
 import tarfile
+from typing import NamedTuple
 
 BINARY_SHA = 'bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74'
 SOURCE = '153ab668c99731a6d29492bf6c61d0b4fa701101'
@@ -15,6 +16,17 @@ IMAGE_TAG = 'ouf-seaweedfs-candidate:reviewed-bb9f768e'
 OCI_MANIFEST = 'application/vnd.oci.image.manifest.v1+json'
 OCI_CONFIG = 'application/vnd.oci.image.config.v1+json'
 OCI_LAYER = 'application/vnd.oci.image.layer.v1.tar'
+
+
+class ImageProfile(NamedTuple):
+    binary_sha: str
+    source_commit: str
+    image_tag: str
+    licence_sha: str | None = None
+
+
+def legacy_profile():
+    return ImageProfile(BINARY_SHA, SOURCE, IMAGE_TAG)
 
 
 def require(ok, message):
@@ -47,11 +59,14 @@ def archive(entries):
     return stream.getvalue()
 
 
-def assemble(binary, licence, source_record):
-    require(sha(binary) == BINARY_SHA, 'EXACT_OWNER_REVIEWED_BINARY_REQUIRED')
+def assemble(binary, licence, source_record, *, profile=None):
+    profile = profile or legacy_profile()
+    require(sha(binary) == profile.binary_sha, 'EXACT_OWNER_REVIEWED_BINARY_REQUIRED')
     require(0 < len(licence) < 65536 and b'Apache License' in licence,
             'UPSTREAM_LICENCE_REQUIRED')
-    require(source_record == {'sourceCommit': SOURCE, 'binarySha256': BINARY_SHA,
+    require(profile.licence_sha is None or sha(licence) == profile.licence_sha,
+            'EXACT_UPSTREAM_LICENCE_REQUIRED')
+    require(source_record == {'sourceCommit': profile.source_commit, 'binarySha256': profile.binary_sha,
                              'licenceSha256': sha(licence)}, 'EXACT_SOURCE_RECORD_REQUIRED')
     layer = archive([
         ('data', None, 0o755), ('tmp', None, 0o1777),
@@ -65,9 +80,9 @@ def assemble(binary, licence, source_record):
         'config': {'User': '10001:10001', 'Entrypoint': ['/usr/local/bin/weed'],
                    'WorkingDir': '/data',
                    'Labels': {'org.opencontainers.image.source': 'https://github.com/seaweedfs/seaweedfs',
-                              'org.opencontainers.image.revision': SOURCE,
+                              'org.opencontainers.image.revision': profile.source_commit,
                               'org.opencontainers.image.licenses': 'Apache-2.0',
-                              'org.ouf.binary.sha256': BINARY_SHA,
+                              'org.ouf.binary.sha256': profile.binary_sha,
                               'org.ouf.release-admitted': 'false'}},
         'rootfs': {'type': 'layers', 'diff_ids': ['sha256:' + sha(layer)]},
     })
@@ -79,7 +94,7 @@ def assemble(binary, licence, source_record):
     index = canonical({'schemaVersion': 2, 'manifests': [dict(
         descriptor(manifest, OCI_MANIFEST), platform={'architecture': 'amd64', 'os': 'linux'})]})
     docker_manifest = canonical([{'Config': sha(config) + '.json',
-                                  'RepoTags': [IMAGE_TAG], 'Layers': ['layer.tar']}])
+                                  'RepoTags': [profile.image_tag], 'Layers': ['layer.tar']}])
     docker = archive([(sha(config)+'.json', config, 0o444),
                       ('manifest.json', docker_manifest, 0o444), ('layer.tar', layer, 0o444)])
     return {'oci-layout': canonical({'imageLayoutVersion': '1.0.0'}), 'index.json': index,
@@ -87,7 +102,7 @@ def assemble(binary, licence, source_record):
             'blobs/sha256/' + sha(layer): layer, 'runtime.docker.tar': docker,
             'image-record.json': canonical({
                 'schema': 'ouf.storage-runtime-image.v1', 'status': 'PACKAGED_NOT_ADMITTED',
-                'binarySha256': BINARY_SHA, 'sourceCommit': SOURCE,
+                'binarySha256': profile.binary_sha, 'sourceCommit': profile.source_commit,
                 'configDigest': 'sha256:' + sha(config), 'manifestDigest': 'sha256:' + sha(manifest),
                 'layerDigest': 'sha256:' + sha(layer), 'dockerArchiveSha256': sha(docker),
                 'upstreamLicenceSha256': sha(licence), 'user': '10001:10001',
@@ -96,8 +111,9 @@ def assemble(binary, licence, source_record):
                 'releaseAdmitted': False, 'overallSwG1': 'OPEN'})}
 
 
-def verify_layout(root):
+def verify_layout(root, *, profile=None):
     """Resolve every descriptor then enforce the exact packaged filesystem/config."""
+    profile = profile or legacy_profile()
     require(json.loads((root/'oci-layout').read_bytes()) == {'imageLayoutVersion': '1.0.0'}, 'OCI_LAYOUT_REQUIRED')
     index = json.loads((root/'index.json').read_bytes())
     require(index.get('schemaVersion') == 2 and len(index.get('manifests', [])) == 1, 'SINGLE_MANIFEST_REQUIRED')
@@ -121,8 +137,8 @@ def verify_layout(root):
         files = {m.name: tar.extractfile(m).read() for m in members if m.isfile()}
     require(set(files) == {'usr/local/bin/weed', 'usr/share/licenses/SeaweedFS-LICENSE'}, 'EXACT_RUNTIME_FILES_REQUIRED')
     expected = assemble(files['usr/local/bin/weed'], files['usr/share/licenses/SeaweedFS-LICENSE'],
-                        {'sourceCommit': SOURCE, 'binarySha256': BINARY_SHA,
-                         'licenceSha256': sha(files['usr/share/licenses/SeaweedFS-LICENSE'])})
+                        {'sourceCommit': profile.source_commit, 'binarySha256': profile.binary_sha,
+                         'licenceSha256': sha(files['usr/share/licenses/SeaweedFS-LICENSE'])}, profile=profile)
     # Exact reconstruction also verifies ownership, modes, entrypoint and no hidden env/ports.
     for name, raw in expected.items():
         path = root/name
@@ -132,13 +148,14 @@ def verify_layout(root):
     return json.loads(expected['image-record.json'])
 
 
-def write_image(binary, licence, out):
+def write_image(binary, licence, out, *, profile=None):
+    profile = profile or legacy_profile()
     require(not out.exists(), 'NEW_OUTPUT_REQUIRED')
-    files = assemble(binary, licence, {'sourceCommit': SOURCE, 'binarySha256': BINARY_SHA,
-                                      'licenceSha256': sha(licence)})
+    files = assemble(binary, licence, {'sourceCommit': profile.source_commit, 'binarySha256': profile.binary_sha,
+                                      'licenceSha256': sha(licence)}, profile=profile)
     out.mkdir(parents=True)
     for name, raw in files.items():
         path = out/name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
-    return verify_layout(out)
+    return verify_layout(out, profile=profile)

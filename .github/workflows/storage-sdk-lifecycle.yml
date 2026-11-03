@@ -5,6 +5,10 @@ on:
     paths:
       - '.github/workflows/storage-sdk-lifecycle.yml'
       - 'scripts/assess-storage-sdk-lifecycle.py'
+      - 'scripts/qualify-seaweedfs-452-image.py'
+      - 'tools/storage_security/runtime_image.py'
+      - 'tests/test_seaweedfs_452_image.py'
+      - 'tests/test_storage_runtime_image.py'
       - 'tests/test_storage_sdk_lifecycle.py'
       - 'patches/seaweedfs/4.52-listing-remove-sdk-v1.patch'
       - 'patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch'
@@ -39,6 +43,11 @@ jobs:
           persist-credentials: false
       - name: Verify lifecycle evidence handling and the exact 4.51 denial
         run: python3 -I -B -S -m unittest discover -s tests -p test_storage_sdk_lifecycle.py -v
+      - name: Verify legacy and 4.52 runtime image boundaries
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_runtime_image.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_image.py -v
   seaweedfs_patches:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -190,6 +199,21 @@ jobs:
           fi
           trap 'make stop-primary stop-remote' EXIT
           make test-with-server TEST_TIMEOUT=5m 'TEST_PATTERN=^TestRemoteCache(Basic|RangeRequest|NotFound|CopyObject(Part)?|EvictUnderPressure)$' |& tee "$RUNNER_TEMP/seaweedfs-remote-cache-integration.log"
+      - name: Stage the exact build for same-run image qualification
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/seaweedfs-candidate-build"
+          install -m 0555 "$RUNNER_TEMP/weed-lab" "$RUNNER_TEMP/seaweedfs-candidate-build/weed"
+          cp LICENSE "$RUNNER_TEMP/seaweedfs-candidate-build/LICENSE"
+          cp "$RUNNER_TEMP/seaweedfs-patched-deps" "$RUNNER_TEMP/seaweedfs-candidate-build/compiled-deps"
+          cp "$RUNNER_TEMP/seaweedfs-build-info.txt" "$RUNNER_TEMP/seaweedfs-candidate-build/build-info.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seaweedfs-candidate-build
+          path: ${{ runner.temp }}/seaweedfs-candidate-build/
+          if-no-files-found: error
+          retention-days: 3
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -204,5 +228,69 @@ jobs:
             seaweedfs/test/s3/remote_cache/remote-weed.log
             ${{ runner.temp }}/seaweedfs-build-info.txt
             ${{ runner.temp }}/seaweedfs-binary-sha256.txt
+          if-no-files-found: error
+          retention-days: 90
+  runtime_candidate:
+    needs: [verify, seaweedfs_patches]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: seaweedfs-candidate-build
+          path: ${{ runner.temp }}/seaweedfs-candidate-build
+      - name: Package the exact standard build into a deterministic OCI layout
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/qualify-seaweedfs-452-image.py package "$RUNNER_TEMP/seaweedfs-candidate-build" candidate-image
+          docker load --input candidate-image/runtime.docker.tar
+          docker image inspect --format '{{.Id}}' ouf-seaweedfs-candidate:4.52-d9873b7d > candidate-image/daemon-image-id.txt
+          : > empty.trivyignore
+      - name: Scan the candidate image with all severities and unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          image-ref: ouf-seaweedfs-candidate:4.52-d9873b7d
+          format: json
+          output: candidate-image/fresh-image-scan.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Bind SPDX and raw findings to the exact image and test its version entrypoint
+        run: |
+          set -euo pipefail
+          trivy convert --format spdx-json --output candidate-image/image.spdx.json candidate-image/fresh-image-scan.json
+          python3 -I -B -S scripts/qualify-seaweedfs-452-image.py assess candidate-image "$GITHUB_SHA" "$GITHUB_RUN_ID"
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 256m --cpus 1 --tmpfs /tmp:rw,noexec,nosuid,size=16777216 ouf-seaweedfs-candidate:4.52-d9873b7d version > candidate-image/version-smoke.txt
+          test -s candidate-image/version-smoke.txt
+      - name: Seal evidence and input source hashes
+        run: |
+          set -euo pipefail
+          sha256sum .github/workflows/storage-sdk-lifecycle.yml scripts/qualify-seaweedfs-452-image.py scripts/assess-storage-sdk-lifecycle.py tools/storage_security/runtime_image.py tests/test_seaweedfs_452_image.py tests/test_storage_runtime_image.py patches/seaweedfs/4.52-*.patch > candidate-image/source-SHA256SUMS
+          cd candidate-image
+          find . -type f ! -path './SHA256SUMS' -printf '%P\0' | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest the candidate image evidence
+        id: candidate-attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: candidate-image/SHA256SUMS
+      - run: cp "${{ steps.candidate-attestation.outputs.bundle-path }}" candidate-image/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-452-candidate-image-${{ github.run_id }}
+          path: candidate-image/
           if-no-files-found: error
           retention-days: 90

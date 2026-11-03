@@ -1,3 +1,11 @@
+## Checkpoint repository — immagine OCI del candidato SeaweedFS 4.52 (3 novembre 2026)
+
+Il [workflow storage](../.github/workflows/storage-sdk-lifecycle.yml) confeziona il binario prodotto dalla stessa esecuzione che applica le 14 patch ed esegue le regressioni. Il [qualificatore](../scripts/qualify-seaweedfs-452-image.py) vincola sorgente upstream `984eac6a790be89e2a11de175a7413e1e3e32dd3`, SHA256 del server `d9873b7d5c484266c9226e90acf20215e7ed1985fe2b235171f617768471a98f`, licenza upstream esatta e build standard Go 1.27.3 linux/amd64 CGO disabilitato. Verifica i 1.811 pacchetti della chiusura e il modulo binario prima di produrre l'immagine scratch. I profili 4.51 e 4.52 hanno pin distinti.
+
+Packaging locale sul binario esatto e **16 test** dei due profili passati. Digest OCI manifest locale `sha256:326d13f773fec1291815105d68a8f12529f0a40b74508bc039b1a46d1c7f790f`, config `sha256:cc545e812f9070fd8f1f78b0eec1ea9142c420efd528996005156e2541ce1009`. La CI deve confermare l'identità con Docker, scansione Trivy senza ignore e con tutti i livelli, SBOM SPDX, smoke nonroot/read-only senza rete e attestazione dell'inventario degli artefatti. L'assessment conserva eventuali HIGH, CRITICAL e UNKNOWN; la disposizione del vecchio binario resta confinata al suo hash.
+
+MiniPET circa **33% ±10** con **0/8 gate, 0/21 AT, 0/120 oggetti reali**. L'OCI locale prepara la qualifica G1. Esito remoto, revisione licenze, custodia durevole e coorte restano aperti. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+
 ## Checkpoint repository — suite remote-cache su SDK v2 (3 novembre 2026)
 
 La [quattordicesima patch](../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch) migra i tre file residui della suite remote-cache. Conserva indirizzamento path-style, credenziali fixture, letture a intervalli, copia, copia multipart e prova di eviction. Il client di laboratorio usa il contesto del test, un timeout HTTP di 30 secondi e un tentativo SDK. L'abort di cleanup è circoscritto all'upload creato dal test e viene saltato dopo una conferma di completamento.
