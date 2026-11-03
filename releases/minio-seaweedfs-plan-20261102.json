@@ -51,41 +51,146 @@
     "dependencyLifecycleReview"
   ],
   "currentQualification": {
-    "candidateLock": "releases/seaweedfs-452-candidate-lock-20261103.json",
-    "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    "generation": 29,
     "version": "4.52",
     "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
-    "qualifiedImagePatchCount": 15,
-    "repositoryPatchCount": 28,
-    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
-    "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
-    "qualificationRunId": 41622752493,
+    "candidateLock": "releases/seaweedfs-452-generation29-candidate-lock-20261103.json",
+    "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+    "qualifiedImagePatchCount": 29,
+    "repositoryPatchCount": 29,
+    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+    "imageConfigDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "status": "TECHNICAL_COHORT_AND_SYNTHETIC_RUNTIME_VERIFIED_NOT_ADMITTED",
+    "qualificationRunId": 41696541570,
+    "imageReceipt": "evidence/seaweedfs-452-generation29-image-hosted-20261103.json",
+    "imageReceiptSha256": "9b6ff3d19e18d9c20d1577c32744a3a4e4b2ae0a66a5d0940ca713f9a17057c8",
+    "cohortReceipt": "evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json",
+    "cohortReceiptSha256": "ba67c94bfb9a473db31f82a7430604597faa0dddaae71c6818e738d57197e599",
+    "cohortRunId": 41701381292,
+    "cohortContent": "VERIFIED",
+    "runtimeReceipt": "evidence/seaweedfs-generation29-runtime-hosted-20261103.json",
+    "runtimeReceiptSha256": "786e28000b25d6fbb5e7b1b7884527447ab79a04a8f4cc48ff34dee37ffe94be",
+    "runtimeRunId": 41701381292,
+    "runtimeJobId": 126147936979,
+    "buildProfile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+    "excludedBuildTags": [
+      "elastic",
+      "rclone"
+    ],
     "vulnerabilitySubgate": "PASS_RAW",
     "rawSeverityCounts": {
-      "CRITICAL": 0,
       "HIGH": 0,
-      "MEDIUM": 0,
+      "CRITICAL": 0,
+      "UNKNOWN": 0,
       "LOW": 0,
-      "UNKNOWN": 0
+      "MEDIUM": 0
     },
-    "historicalApplicabilityApplied": false,
-    "cohortReceipt": "evidence/seaweedfs-452-cohort-readback-hosted-20261103.json",
-    "cohortRunId": 41627470213,
-    "cohortContent": "VERIFIED",
-    "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
     "awsSdkV1InQualifiedBinary": "ABSENT",
     "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
     "remainingRepositoryDirectSdkV1Importers": 0,
-    "remainingIamTestImporters": 0,
-    "remainingOtherTestImporters": 0,
-    "testOnlyDossiers": [
-      "evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json",
-      "evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json"
-    ],
+    "historicalApplicabilityApplied": false,
+    "historicalRuntimeProofTransferred": false,
+    "historicalSourceClosureReference": "historicalQualification15.sourceClosureReceipt",
+    "historicalStandardProfileReference": "historicalQualification15.standardProfileQualification",
+    "syntheticRuntime": {
+      "coldRestore": "PASS",
+      "objects": 5,
+      "bytes": 8388702,
+      "backupFiles": 110,
+      "backupBytes": 8417467,
+      "octetStreamGetAndHeadBeforeAndAfterRestore": "PASS",
+      "identityS3Cases": 23,
+      "tlsNegatives": 2,
+      "egressProbes": 2,
+      "distinctContainers": 12,
+      "maximumConcurrentContainers": 4,
+      "postgresRecovery": "NOT_TESTED",
+      "certificateRotation": "NOT_TESTED",
+      "s3MetadataCompatibilityGenerallyQualified": false,
+      "rpoAcceptance": false,
+      "rtoAcceptance": false
+    },
+    "mimeCorrection": {
+      "status": "EXACT_GENERATION29_SYNTHETIC_REGRESSION_PASS",
+      "historicalGeneration15FailurePreserved": true,
+      "historicalLostMetadataRepaired": false,
+      "storageGateG2Closed": false
+    },
+    "dependencyLifecycle": {
+      "status": "OPEN",
+      "allDependenciesMaintained": false,
+      "selectedRemediationFronts": {
+        "ShopifySaramaAndRcrowleyMetrics": [
+          "github.com/Shopify/sarama@v1.38.1",
+          "github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475"
+        ],
+        "Bolt": [
+          "github.com/boltdb/bolt@v1.3.1"
+        ],
+        "Mapstructure": [
+          "github.com/mitchellh/mapstructure@v1.5.1-0.20220423185008-bf980b35cac4"
+        ],
+        "ArmonMetrics": [
+          "github.com/armon/go-metrics@v0.4.1"
+        ]
+      },
+      "selectedFrontsAreExhaustive": false,
+      "widerInventoryAssessment": {
+        "inventoryReceipt": "evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json",
+        "inventoryReceiptSha256": "2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0",
+        "inventoryPath": "evidence/lifecycle262/compiled-module-inventory.json",
+        "inventorySha256": "43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3",
+        "scope": "COMPILED_GENERATION29_ONLY",
+        "compiledModules": 262,
+        "repositoryMetadataResolvedModules": 250,
+        "repositoryMetadataUnknownModules": [
+          "golang.org/x/crypto",
+          "golang.org/x/exp",
+          "golang.org/x/image",
+          "golang.org/x/net",
+          "golang.org/x/oauth2",
+          "golang.org/x/sync",
+          "golang.org/x/sys",
+          "golang.org/x/term",
+          "golang.org/x/text",
+          "golang.org/x/time",
+          "google.golang.org/protobuf",
+          "modernc.org/b"
+        ],
+        "archivedCompiledModules": [
+          "github.com/boltdb/bolt",
+          "github.com/envoyproxy/protoc-gen-validate",
+          "github.com/facebookgo/clock",
+          "github.com/facebookgo/stats",
+          "github.com/google/btree",
+          "github.com/mitchellh/colorstring",
+          "github.com/mitchellh/mapstructure",
+          "github.com/rcrowley/go-metrics",
+          "go.opencensus.io",
+          "gopkg.in/yaml.v3"
+        ],
+        "additionalPolicyStates": {
+          "cloud.google.com/go/pubsub": "MODULE_DEPRECATED",
+          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": "DECLARED_NO_LONGER_MAINTAINED",
+          "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric": "DEPRECATED_FUTURE_ARCHIVAL_ANNOUNCED",
+          "github.com/Shopify/sarama": "LEGACY_MODULE_PATH_MOVED_REPOSITORY",
+          "github.com/arangodb/go-driver": "MAJOR_DEPRECATED_NO_NEW_FEATURES",
+          "github.com/armon/go-metrics": "LEGACY_IMPORT_PATH_DEPRECATED",
+          "github.com/golang/protobuf": "MODULE_DEPRECATED",
+          "github.com/pkg/errors": "MAINTENANCE_MODE_DECLARED",
+          "github.com/syndtr/goleveldb": "MAINTENANCE_UNKNOWN_NOT_ARCHIVED",
+          "go.mongodb.org/mongo-driver": "DEPRECATED_MAJOR_SUPPORT_WINDOW_PASSED",
+          "google.golang.org/api": "MAINTENANCE_MODE_CRITICAL_SECURITY_FIXES_DECLARED"
+        },
+        "repositoryNotArchivedProvesSupport": false,
+        "unknownOriginAssumedMaintained": false,
+        "allApiDeprecationsImplyModuleEndOfSupport": false,
+        "widerMaintenanceAssessment": "OPEN"
+      },
+      "claimScope": "AWS_SDK_V1_AND_DEPRECATED_S3_MANAGER_REMOVED_ONLY",
+      "prototypeRemovalsQualified": false
+    },
     "licenceRawUnknownClassifications": 3,
     "licenceReview": "OPEN",
     "redistributionAccepted": false,
@@ -94,61 +199,7 @@
     "releaseAdmitted": false,
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
-    "activeStorageBackend": "MinIO",
-    "sourceClosureReceipt": "evidence/seaweedfs-sdk27-hosted-20261103.json",
-    "sourceClosureReceiptSha256": "79ecb185c8ec15baca290808b6921f3ebdf9dd8a5e344f3a53f01900ba041adc",
-    "sourceClosureHead": "70cd2671b41b0f775889826b2617811451a5e2ba",
-    "sourceClosureStatus": "HOSTED_PASS",
-    "optionalModuleDependencyLimits": {
-      "moduleGraphEradicationClaimed": false,
-      "excludedBuildTags": [
-        "elastic",
-        "rclone"
-      ],
-      "qualificationScope": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
-      "rootStandardModuleGraphSdkV1": 0,
-      "rootStandardModuleGraphDeprecatedS3Manager": 0,
-      "remainingNestedKafkaModulesQualified": false,
-      "liveIamRoundtripPerformed": false
-    },
-    "standardProfileQualification": {
-      "status": "HOSTED_PASS",
-      "profile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
-      "excludedBuildTags": [
-        "elastic",
-        "rclone"
-      ],
-      "universalUpstreamModuleClosureClaimed": false,
-      "receipt": "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json",
-      "receiptSha256": "26315a1dca4b24f0d73423de35e88cbba6283dc2e24ab906378b82cc8b5db9cb",
-      "sourceHead": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
-      "runId": 41691297148,
-      "orderedPatchCount": 28,
-      "qualifiedImagePatchCount": 15,
-      "patch": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
-      "patchSha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
-      "rootModuleGraphSdkV1": 0,
-      "rootModuleGraphDeprecatedS3Manager": 0,
-      "qualifiedBinaryByteIdentical": true
-    },
-    "knownCompatibilityDefects": [
-      {
-        "code": "CONTENT_TYPE_MISMATCH",
-        "status": "OPEN",
-        "receipt": "evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json",
-        "receiptSha256": "328ede037e8a3044c8e5cfe39c5843a9e6612d6e095aea2931bab9f947f8cda8",
-        "runId": 41691296882,
-        "failingObjectKey": null,
-        "actualResponseContentType": null,
-        "s3MetadataCompatibilityQualified": false
-      }
-    ],
-    "pendingCompatibilityCorrection": {
-      "orderedPatchCount": 29,
-      "status": "NOT_QUALIFIED",
-      "requiresNewImageQualification": true,
-      "candidateLockUnchanged": true
-    }
+    "activeStorageBackend": "MinIO"
   },
   "workPackages": [
     {
@@ -907,6 +958,111 @@
     }
   },
   "generation29Qualification": {
+    "status": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+    "currentQualificationField": "currentQualification",
+    "oldRuntimeEvidenceTransferred": false
+  },
+  "historicalQualification15": {
+    "candidateLock": "releases/seaweedfs-452-candidate-lock-20261103.json",
+    "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    "version": "4.52",
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "qualifiedImagePatchCount": 15,
+    "repositoryPatchCount": 28,
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+    "qualificationRunId": 41622752493,
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "historicalApplicabilityApplied": false,
+    "cohortReceipt": "evidence/seaweedfs-452-cohort-readback-hosted-20261103.json",
+    "cohortRunId": 41627470213,
+    "cohortContent": "VERIFIED",
+    "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+    "awsSdkV1InQualifiedBinary": "ABSENT",
+    "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
+    "remainingRepositoryDirectSdkV1Importers": 0,
+    "remainingIamTestImporters": 0,
+    "remainingOtherTestImporters": 0,
+    "testOnlyDossiers": [
+      "evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json"
+    ],
+    "licenceRawUnknownClassifications": 3,
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false,
+    "durableImageCustody": "OPEN",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "activeStorageBackend": "MinIO",
+    "sourceClosureReceipt": "evidence/seaweedfs-sdk27-hosted-20261103.json",
+    "sourceClosureReceiptSha256": "79ecb185c8ec15baca290808b6921f3ebdf9dd8a5e344f3a53f01900ba041adc",
+    "sourceClosureHead": "70cd2671b41b0f775889826b2617811451a5e2ba",
+    "sourceClosureStatus": "HOSTED_PASS",
+    "optionalModuleDependencyLimits": {
+      "moduleGraphEradicationClaimed": false,
+      "excludedBuildTags": [
+        "elastic",
+        "rclone"
+      ],
+      "qualificationScope": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+      "rootStandardModuleGraphSdkV1": 0,
+      "rootStandardModuleGraphDeprecatedS3Manager": 0,
+      "remainingNestedKafkaModulesQualified": false,
+      "liveIamRoundtripPerformed": false
+    },
+    "standardProfileQualification": {
+      "status": "HOSTED_PASS",
+      "profile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+      "excludedBuildTags": [
+        "elastic",
+        "rclone"
+      ],
+      "universalUpstreamModuleClosureClaimed": false,
+      "receipt": "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json",
+      "receiptSha256": "26315a1dca4b24f0d73423de35e88cbba6283dc2e24ab906378b82cc8b5db9cb",
+      "sourceHead": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+      "runId": 41691297148,
+      "orderedPatchCount": 28,
+      "qualifiedImagePatchCount": 15,
+      "patch": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+      "patchSha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+      "rootModuleGraphSdkV1": 0,
+      "rootModuleGraphDeprecatedS3Manager": 0,
+      "qualifiedBinaryByteIdentical": true
+    },
+    "knownCompatibilityDefects": [
+      {
+        "code": "CONTENT_TYPE_MISMATCH",
+        "status": "OPEN",
+        "receipt": "evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json",
+        "receiptSha256": "328ede037e8a3044c8e5cfe39c5843a9e6612d6e095aea2931bab9f947f8cda8",
+        "runId": 41691296882,
+        "failingObjectKey": null,
+        "actualResponseContentType": null,
+        "s3MetadataCompatibilityQualified": false
+      }
+    ],
+    "pendingCompatibilityCorrection": {
+      "orderedPatchCount": 29,
+      "status": "NOT_QUALIFIED",
+      "requiresNewImageQualification": true,
+      "candidateLockUnchanged": true
+    }
+  },
+  "historicalGeneration29PhaseA": {
     "status": "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING",
     "orderedPatchCount": 29,
     "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
@@ -940,5 +1096,11 @@
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
     "activeStorageBackend": "MinIO"
+  },
+  "nextGenerationPrototype": {
+    "status": "IN_DEVELOPMENT_NOT_QUALIFIED",
+    "qualifiedGenerationRetained": 29,
+    "progressCreditAdded": 0,
+    "runtimeProofTransferred": false
   }
 }

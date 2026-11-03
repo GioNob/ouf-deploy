@@ -1,0 +1,20 @@
+{
+  "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+  "durableImageCustody": "OPEN",
+  "generation": 29,
+  "independentReadbackSha256": "15bf6c843014e4014485a880e0e88742dc210d3e74406a1e1cb203ddee963c7a",
+  "legalTextRebindingSha256": "61b8bf30e025d6e361e47e519b156529386a50923d3ab993947b87cd02d8d196",
+  "licenceReview": "OPEN",
+  "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+  "producerArtifactSha256": "745b49a525412848cc9ea3c03c674f60f033681afc93bd5591ed7a50f20a7dca",
+  "publisherSignatureReverifiedByThisScript": false,
+  "publisherVerificationRecordBound": true,
+  "readbackReproduced": true,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation29-cohort.v1",
+  "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+  "targetOperations": 0
+}

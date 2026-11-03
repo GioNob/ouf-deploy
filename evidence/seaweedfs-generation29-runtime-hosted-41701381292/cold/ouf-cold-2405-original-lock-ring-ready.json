@@ -1,0 +1,6 @@
+{
+  "evidence": "PINNED_FILER_APPLIED_RING_LOG_EVENT",
+  "member": "127.0.0.1:18888",
+  "mutatingProbes": 0,
+  "readOnlyPolls": 12
+}

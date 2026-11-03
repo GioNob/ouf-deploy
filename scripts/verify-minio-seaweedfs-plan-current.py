@@ -4,10 +4,10 @@
 The replacement plan intentionally retains the 4.51 evidence blocks as history.
 This verifier binds the additive 4.52 view to the immutable candidate lock, the
 hosted cohort receipt, the six historical test-only dossiers, the 27-patch source closure and the
-28-patch standard-profile hosted receipt. The additive generation29 image view
-keeps its hosted cohort/runtime qualification pending. Cold-recovery proof and
-preliminary engineering credit remain bound to historical OCI15; its known MIME
-incompatibility stays open.
+28-patch standard-profile hosted receipt. Generation29 is current only through its exact image, hosted cohort and fresh
+runtime receipts. Historical OCI15/SDK27/profile28 views remain immutable; old
+MIME failure is preserved. Engineering credits remain unchanged at17.5/46,
+and known dependency lifecycle residuals prevent a universal maintenance claim.
 """
 
 from __future__ import annotations
@@ -602,8 +602,311 @@ def validate_generation29_image(
     require(view.get("targetOperations") == 0 and view.get("activeStorageBackend") == "MinIO", "IMAGE29_NO_TARGET_CHANGE_REQUIRED")
 
 
+# Historical snapshots are immutable views, never rewritten to use generation29.
+HISTORICAL_QUALIFICATION15_SHA = "58c9def4a5b4917a4861821c18ed73178e768e79196021696f4b5e5053be7b4f"
+HISTORICAL_PHASE_A29_SHA = "74e5c093e0d9caccd7b4bc3947f435ada3d76da5a20bc575056902d69c27734b"
+LOCK29_PATH = "releases/seaweedfs-452-generation29-candidate-lock-20261103.json"
+LOCK29_SHA = "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc"
+COHORT29_PATH = "evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json"
+COHORT29_SHA = "ba67c94bfb9a473db31f82a7430604597faa0dddaae71c6818e738d57197e599"
+RUNTIME29_PATH = "evidence/seaweedfs-generation29-runtime-hosted-20261103.json"
+RUNTIME29_SHA = "786e28000b25d6fbb5e7b1b7884527447ab79a04a8f4cc48ff34dee37ffe94be"
+COHORT29_DIR = "evidence/seaweedfs-452-generation29-cohort-hosted-20261103"
+RUNTIME29_DIR = "evidence/seaweedfs-generation29-runtime-hosted-41701381292"
+LIFECYCLE29_INVENTORY = {'inventoryReceipt': 'evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json',
+ 'inventoryReceiptSha256': '2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0',
+ 'inventoryPath': 'evidence/lifecycle262/compiled-module-inventory.json',
+ 'inventorySha256': '43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3',
+ 'scope': 'COMPILED_GENERATION29_ONLY',
+ 'compiledModules': 262,
+ 'repositoryMetadataResolvedModules': 250,
+ 'repositoryMetadataUnknownModules': ['golang.org/x/crypto',
+                                      'golang.org/x/exp',
+                                      'golang.org/x/image',
+                                      'golang.org/x/net',
+                                      'golang.org/x/oauth2',
+                                      'golang.org/x/sync',
+                                      'golang.org/x/sys',
+                                      'golang.org/x/term',
+                                      'golang.org/x/text',
+                                      'golang.org/x/time',
+                                      'google.golang.org/protobuf',
+                                      'modernc.org/b'],
+ 'archivedCompiledModules': ['github.com/boltdb/bolt',
+                             'github.com/envoyproxy/protoc-gen-validate',
+                             'github.com/facebookgo/clock',
+                             'github.com/facebookgo/stats',
+                             'github.com/google/btree',
+                             'github.com/mitchellh/colorstring',
+                             'github.com/mitchellh/mapstructure',
+                             'github.com/rcrowley/go-metrics',
+                             'go.opencensus.io',
+                             'gopkg.in/yaml.v3'],
+ 'additionalPolicyStates': {'cloud.google.com/go/pubsub': 'MODULE_DEPRECATED',
+                            'github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp': 'DECLARED_NO_LONGER_MAINTAINED',
+                            'github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric': 'DEPRECATED_FUTURE_ARCHIVAL_ANNOUNCED',
+                            'github.com/Shopify/sarama': 'LEGACY_MODULE_PATH_MOVED_REPOSITORY',
+                            'github.com/arangodb/go-driver': 'MAJOR_DEPRECATED_NO_NEW_FEATURES',
+                            'github.com/armon/go-metrics': 'LEGACY_IMPORT_PATH_DEPRECATED',
+                            'github.com/golang/protobuf': 'MODULE_DEPRECATED',
+                            'github.com/pkg/errors': 'MAINTENANCE_MODE_DECLARED',
+                            'github.com/syndtr/goleveldb': 'MAINTENANCE_UNKNOWN_NOT_ARCHIVED',
+                            'go.mongodb.org/mongo-driver': 'DEPRECATED_MAJOR_SUPPORT_WINDOW_PASSED',
+                            'google.golang.org/api': 'MAINTENANCE_MODE_CRITICAL_SECURITY_FIXES_DECLARED'},
+ 'repositoryNotArchivedProvesSupport': False,
+ 'unknownOriginAssumedMaintained': False,
+ 'allApiDeprecationsImplyModuleEndOfSupport': False,
+ 'widerMaintenanceAssessment': 'OPEN'}
+LIFECYCLE29_INPUTS = {'evidence/lifecycle262/build-info-generation29.txt': {'sha256': '4d0a9eabc3fb020456824361b0bb944c6de92c3250ae5df5e2ae3bf6785e0c11',
+                                                       'bytes': 25462},
+ 'evidence/lifecycle262/compiled-module-inventory.json': {'sha256': '43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3',
+                                                          'bytes': 405202},
+ 'evidence/lifecycle262/flagged-compiled-importers.json': {'sha256': '2bada89f2630f71118833338b6af69519ee79b18e306d6d9288f97a11e025f33',
+                                                           'bytes': 44018},
+ 'evidence/lifecycle262/github-canonical-repositories.json': {'sha256': '9e64e53d4a5ed9461edbbf01b9cf9d8754f10b3bddef4e1aea3fc7df0b437b49',
+                                                              'bytes': 32275},
+ 'evidence/lifecycle262/github-clock-redirect-resolution.json': {'sha256': '9de0b51ed35d4d710274292e0fae2f6ac6e1d6ec2643ff6bf0e90c5fcd0df139',
+                                                                 'bytes': 26959},
+ 'evidence/lifecycle262/github-redirects.json': {'sha256': '90e7a326e98ef3961d8fd7889ee887535b1af499de4047b78e4a9f609d187bd3',
+                                                 'bytes': 1866},
+ 'evidence/lifecycle262/github-repositories-001.json': {'sha256': 'c85cd02d3b02b5e3eb3df79fffc7cd035b27ddc60be30a67b51a43428614f9be',
+                                                        'bytes': 189802},
+ 'evidence/lifecycle262/github-repositories-002.json': {'sha256': 'af33865524f6a9276aecef12bdb444d12f00a80c42ce00156a4b7da1e8ebb623',
+                                                        'bytes': 373538},
+ 'evidence/lifecycle262/github-repositories-003.json': {'sha256': 'bbeea865ce6e662c4894cea4bd8dc21783c97ba184f57d864f6c955407c5a4d8',
+                                                        'bytes': 361226},
+ 'evidence/lifecycle262/github-repositories-004.json': {'sha256': '40c3830eb915b9db66a66f601556237170d479319047d2ed915d5b0f04151c71',
+                                                        'bytes': 471160},
+ 'evidence/lifecycle262/github-repositories-005.json': {'sha256': '72df6e80c975094dd7b13476c049a8e5e59b55692e793f18d700e8a6438b6c78',
+                                                        'bytes': 160104},
+ 'evidence/lifecycle262/non-github-module-origins.json': {'sha256': 'e280b4beabd48ec4df00da87237fc99fdc77e9febcc9dddc14bd2435cf0dddde',
+                                                          'bytes': 25117},
+ 'evidence/lifecycle262/pgv-archive-observation.json': {'sha256': 'b68f6f3bb8e2fd9818c71bac47ffb235b1af33eb38c3bef4651595adfbadf680',
+                                                        'bytes': 681},
+ 'evidence/lifecycle262/pinned-module-deprecation-markers.json': {'sha256': '0185a38b37a049a6c6c058d3a5400b3dfed9ead4f0784add2af5daf12c2cfb3f',
+                                                                  'bytes': 9954},
+ 'evidence/lifecycle262/primary-policy-readback.json': {'sha256': '0df8b633388d573467973b9afcf79b6f94e4c2fef6b23f36273b81ede60a6a1c',
+                                                        'bytes': 2075},
+ 'evidence/lifecycle262/production-import-edges-generation29.txt': {'sha256': 'c78d5499b3b360797c5def44dd52b03d37f416f3f614704146523fed217df28c',
+                                                                    'bytes': 477196},
+ 'evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json': {'sha256': '2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0',
+                                                                       'bytes': 2466}}
+LIFECYCLE29_RESIDUALS = {
+    "ShopifySaramaAndRcrowleyMetrics": [
+        "github.com/Shopify/sarama@v1.38.1",
+        "github.com/rcrowley/go-metrics@v0.0.0-20201227073835-cf1acfcdf475",
+    ],
+    "Bolt": ["github.com/boltdb/bolt@v1.3.1"],
+    "Mapstructure": ["github.com/mitchellh/mapstructure@v1.5.1-0.20220423185008-bf980b35cac4"],
+    "ArmonMetrics": ["github.com/armon/go-metrics@v0.4.1"],
+}
+
+
+def historical_plan_view(plan: dict[str, Any]) -> dict[str, Any]:
+    require(canonical_sha256(plan.get("historicalQualification15")) == HISTORICAL_QUALIFICATION15_SHA,
+            "HISTORICAL_QUALIFICATION15_CHANGED")
+    require(canonical_sha256(plan.get("historicalGeneration29PhaseA")) == HISTORICAL_PHASE_A29_SHA,
+            "HISTORICAL_PHASE_A29_CHANGED")
+    view = dict(plan)
+    view["currentQualification"] = plan["historicalQualification15"]
+    view["generation29Qualification"] = plan["historicalGeneration29PhaseA"]
+    return view
+
+
+def generation29_current_view(lock: dict[str, Any]) -> dict[str, Any]:
+    """Projection of exact generation29 evidence; no historical result is promoted."""
+    return {
+        "generation": 29, "version": "4.52", "upstreamCommit": UPSTREAM_COMMIT,
+        "candidateLock": LOCK29_PATH, "candidateLockSha256": LOCK29_SHA,
+        "qualifiedImagePatchCount": 29, "repositoryPatchCount": 29,
+        "binarySha256": lock["buildProfile"]["binarySha256"],
+        "ociManifestDigest": lock["image"]["manifestDigest"],
+        "imageConfigDigest": lock["image"]["configDigest"],
+        "status": "TECHNICAL_COHORT_AND_SYNTHETIC_RUNTIME_VERIFIED_NOT_ADMITTED",
+        "qualificationRunId": 41696541570,
+        "imageReceipt": IMAGE29_RECEIPT_PATH, "imageReceiptSha256": IMAGE29_RECEIPT_SHA256,
+        "cohortReceipt": COHORT29_PATH, "cohortReceiptSha256": COHORT29_SHA,
+        "cohortRunId": 41701381292, "cohortContent": "VERIFIED",
+        "runtimeReceipt": RUNTIME29_PATH, "runtimeReceiptSha256": RUNTIME29_SHA,
+        "runtimeRunId": 41701381292, "runtimeJobId": 126147936979,
+        "buildProfile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+        "excludedBuildTags": ["elastic", "rclone"],
+        "vulnerabilitySubgate": "PASS_RAW",
+        "rawSeverityCounts": {key: 0 for key in ("HIGH", "CRITICAL", "UNKNOWN", "LOW", "MEDIUM")},
+        "awsSdkV1InQualifiedBinary": "ABSENT", "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
+        "remainingRepositoryDirectSdkV1Importers": 0,
+        "historicalApplicabilityApplied": False, "historicalRuntimeProofTransferred": False,
+        "historicalSourceClosureReference": "historicalQualification15.sourceClosureReceipt",
+        "historicalStandardProfileReference": "historicalQualification15.standardProfileQualification",
+        "syntheticRuntime": {
+            "coldRestore": "PASS", "objects": 5, "bytes": 8388702,
+            "backupFiles": 110, "backupBytes": 8417467,
+            "octetStreamGetAndHeadBeforeAndAfterRestore": "PASS",
+            "identityS3Cases": 23, "tlsNegatives": 2, "egressProbes": 2,
+            "distinctContainers": 12, "maximumConcurrentContainers": 4,
+            "postgresRecovery": "NOT_TESTED", "certificateRotation": "NOT_TESTED",
+            "s3MetadataCompatibilityGenerallyQualified": False,
+            "rpoAcceptance": False, "rtoAcceptance": False,
+        },
+        "mimeCorrection": {
+            "status": "EXACT_GENERATION29_SYNTHETIC_REGRESSION_PASS",
+            "historicalGeneration15FailurePreserved": True,
+            "historicalLostMetadataRepaired": False, "storageGateG2Closed": False,
+        },
+        "dependencyLifecycle": {
+            "status": "OPEN", "allDependenciesMaintained": False,
+            "selectedRemediationFronts": LIFECYCLE29_RESIDUALS,
+            "selectedFrontsAreExhaustive": False,
+            "widerInventoryAssessment": LIFECYCLE29_INVENTORY,
+            "claimScope": "AWS_SDK_V1_AND_DEPRECATED_S3_MANAGER_REMOVED_ONLY",
+            "prototypeRemovalsQualified": False,
+        },
+        "licenceRawUnknownClassifications": 3, "licenceReview": "OPEN",
+        "redistributionAccepted": False, "durableImageCustody": "OPEN", "overallSwG1": "OPEN",
+        "releaseAdmitted": False, "runtimeAuthorityIssued": False,
+        "targetOperations": 0, "activeStorageBackend": "MinIO",
+    }
+
+
+def read_generation29_raw(root: Path, cohort: dict[str, Any], runtime: dict[str, Any]) -> dict[str, bytes]:
+    raw: dict[str, bytes] = {}
+    groups = [
+        (COHORT29_DIR, [{"path": name, **item} for name, item in cohort["retainedRawEvidence"].items()], 14),
+        (RUNTIME29_DIR, runtime["rawEvidence"]["files"], 60),
+    ]
+    for prefix, entries, count in groups:
+        require(len(entries) == count, "GENERATION29_RAW_MEMBER_COUNT_REQUIRED")
+        for item in entries:
+            path = item.get("path", "")
+            require(isinstance(path, str) and path.startswith(prefix + "/")
+                    and not any(part in ("", ".", "..") for part in path.split("/"))
+                    and "\\" not in path and path not in raw, "GENERATION29_RAW_PATH_REQUIRED")
+            file = root / path
+            require(file.is_file() and not file.is_symlink() and file.stat().st_size <= 32 * 1024 * 1024,
+                    "GENERATION29_REGULAR_BOUNDED_RAW_REQUIRED")
+            data = file.read_bytes()
+            require(len(data) == item["bytes"] and sha256(data) == item["sha256"], "GENERATION29_RAW_BYTES_CHANGED")
+            raw[path] = data
+    return raw
+
+
+def validate_current_generation29(
+    plan: dict[str, Any], lock: dict[str, Any], lock_bytes: bytes,
+    cohort: dict[str, Any], cohort_bytes: bytes, runtime: dict[str, Any], runtime_bytes: bytes,
+    raw: dict[str, bytes],
+) -> None:
+    for value, data, expected, code in (
+        (lock, lock_bytes, LOCK29_SHA, "LOCK29_BYTES_REQUIRED"),
+        (cohort, cohort_bytes, COHORT29_SHA, "COHORT29_BYTES_REQUIRED"),
+        (runtime, runtime_bytes, RUNTIME29_SHA, "RUNTIME29_BYTES_REQUIRED"),
+    ):
+        require(sha256(data) == expected and json.loads(data) == value, code)
+    expected = generation29_current_view(lock)
+    current = plan.get("currentQualification", {})
+    require(current == expected, "CURRENT_GENERATION29_VIEW_REQUIRED")
+    require(plan.get("generation29Qualification") == {
+        "status": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+        "currentQualificationField": "currentQualification", "oldRuntimeEvidenceTransferred": False,
+    }, "GENERATION29_PROMOTION_STATUS_REQUIRED")
+    require(plan.get("nextGenerationPrototype") == {
+        "status": "IN_DEVELOPMENT_NOT_QUALIFIED", "qualifiedGenerationRetained": 29,
+        "progressCreditAdded": 0, "runtimeProofTransferred": False,
+    }, "NEXT_PROTOTYPE_NOT_QUALIFIED_REQUIRED")
+    require(lock["generation"] == lock["orderedPatchCount"] == 29, "LOCK29_GENERATION_REQUIRED")
+    require(cohort["status"] == "HOSTED_TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED"
+            and runtime["status"] == "HOSTED_SYNTHETIC_GENERATION29_RUNTIME_PASS_NOT_ACCEPTANCE",
+            "GENERATION29_HOSTED_RESULTS_REQUIRED")
+    for value in (cohort, runtime):
+        require(value["runId"] == 41701381292 and value["sourceCommit"] == "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+                "GENERATION29_EXACT_RUN_REQUIRED")
+        for key in ("candidateLockSha256", "binarySha256", "ociManifestDigest"):
+            require(value[key] == current[key], "GENERATION29_COHORT_RUNTIME_IDENTITY_REQUIRED")
+        require(value["targetOperations"] == 0 and value["releaseAdmitted"] is False
+                and value["runtimeAuthorityIssued"] is False, "GENERATION29_NO_AUTHORITY_REQUIRED")
+    require(runtime["allThreeWorkflowJobsPassed"] is True and runtime["runtimeJobId"] == 126147936979,
+            "GENERATION29_ALL_HOSTED_JOBS_REQUIRED")
+    require(runtime["predecessorCohortArtifact"]["id"] == cohort["artifact"]["id"] == 13264050910
+            and runtime["predecessorCohortArtifact"]["archiveSha256"] == cohort["artifact"]["sha256"],
+            "GENERATION29_PREDECESSOR_ARTIFACT_REQUIRED")
+    # Recheck each retained raw byte, even when callers supply an in-memory map.
+    entries = {name: item for name, item in cohort["retainedRawEvidence"].items()}
+    entries.update({item["path"]: item for item in runtime["rawEvidence"]["files"]})
+    require(set(raw) == set(entries) and len(raw) == 74, "GENERATION29_COMPLETE_RAW_SET_REQUIRED")
+    for name, item in entries.items():
+        require(len(raw[name]) == item["bytes"] and sha256(raw[name]) == item["sha256"], "GENERATION29_RAW_BYTES_CHANGED")
+    cohort_raw = raw[COHORT29_DIR + "/cohort/cohort-receipt.json"]
+    require(sha256(cohort_raw) == cohort["cohortReceiptSha256"] == runtime["cohortReceiptSha256"],
+            "GENERATION29_EXACT_COHORT_RECEIPT_REQUIRED")
+    for path, data in raw.items():
+        if path.startswith(COHORT29_DIR + "/cohort/"):
+            require(raw[RUNTIME29_DIR + "/cohort/" + path.removeprefix(COHORT29_DIR + "/cohort/")] == data,
+                    "GENERATION29_PREDECESSOR_BYTES_REQUIRED")
+    result = json.loads(raw[RUNTIME29_DIR + "/runtime-result.json"])
+    cold = json.loads(raw[RUNTIME29_DIR + "/cold/recovery-result.json"])
+    identity = json.loads(raw[RUNTIME29_DIR + "/identity/identity-result.json"])
+    for value in (result, cold, identity):
+        for key in ("candidateLockSha256", "binarySha256", "ociManifestDigest"):
+            require(value[key] == current[key], "GENERATION29_RAW_IDENTITY_REQUIRED")
+        require(value["targetOperations"] == value["gatesClosed"] == value["acceptanceTestsPassed"] == 0
+                and value["releaseAdmitted"] is False and value["runtimeAuthorityIssued"] is False,
+                "GENERATION29_RAW_NO_ACCEPTANCE_REQUIRED")
+    require(result["octetStreamBeforeAndAfterRestore"] == "PASS"
+            and cold["octetStreamCompatibility"]["status"] == "PASS"
+            and cold["octetStreamCompatibility"]["getContentType"] == cold["octetStreamCompatibility"]["headContentType"] == "application/octet-stream"
+            and cold["syntheticObjects"] == 5 and cold["backupFiles"] == 110
+            and cold["originalContainersRemoved"] is True and cold["restoreUsesOnlyIndependentRoots"] is True,
+            "GENERATION29_COLD_AND_MIME_REQUIRED")
+    require(identity["s3CasesPassed"] == 23 and identity["tlsNegativesPassed"] == 2
+            and identity["egressProbesPassed"] == 2, "GENERATION29_IDENTITY_TLS_EGRESS_REQUIRED")
+    require(cold["postgresRecovery"] == "NOT_TESTED" and cold["rpoAcceptance"] is False
+            and cold["rtoAcceptance"] is False and cold["s3MetadataCompatibilityQualified"] is False
+            and identity["certificateRotation"] == "NOT_TESTED", "GENERATION29_LIMITS_REQUIRED")
+
+
+def validate_generation29_sources(root: Path, manifest_bytes: bytes, runtime: dict[str, Any]) -> None:
+    require(sha256(manifest_bytes) == IMAGE29_MANIFEST_SHA256, "IMAGE29_BUILD_MANIFEST_BYTES_REQUIRED")
+    manifest = json.loads(manifest_bytes)
+    require(len(manifest["orderedPatches"]) == 29, "GENERATION29_ALL_PATCHES_REQUIRED")
+    for patch in manifest["orderedPatches"]:
+        require(sha256((root / patch["path"]).read_bytes()) == patch["sha256"], "GENERATION29_PATCH_SOURCE_CHANGED")
+    for path, expected in runtime["sourceHashesVerified"].items():
+        require(sha256((root / path).read_bytes()) == expected, "GENERATION29_RUNTIME_SOURCE_CHANGED")
+    jobs = runtime["workflowJobsEvidence"]
+    raw = (root / jobs["path"]).read_bytes()
+    require(len(raw) == jobs["bytes"] and sha256(raw) == jobs["sha256"], "GENERATION29_JOB_EVIDENCE_CHANGED")
+    actual = json.loads(raw)["jobs"]
+    require(len(actual) == 3 and all(item["conclusion"] == "success" and item["head_sha"] == runtime["sourceCommit"] for item in actual),
+            "GENERATION29_ALL_HOSTED_JOBS_REQUIRED")
+
+
+def validate_lifecycle29_evidence(root: Path, current: dict[str, Any]) -> None:
+    for name, item in LIFECYCLE29_INPUTS.items():
+        path = root / name
+        require(path.is_file() and not path.is_symlink(), "LIFECYCLE29_RAW_REGULAR_FILE_REQUIRED")
+        data = path.read_bytes()
+        require(len(data) == item["bytes"] and sha256(data) == item["sha256"], "LIFECYCLE29_EVIDENCE_BYTES_CHANGED")
+    view = current["dependencyLifecycle"]["widerInventoryAssessment"]
+    require(view == LIFECYCLE29_INVENTORY, "LIFECYCLE29_ASSESSMENT_REQUIRED")
+    receipt = json.loads((root / view["inventoryReceipt"]).read_bytes())
+    inventory = json.loads((root / view["inventoryPath"]).read_bytes())
+    require(receipt["binarySha256"] == inventory["binarySha256"] == current["binarySha256"]
+            and receipt["producerRun"] == inventory["producerRun"] == current["qualificationRunId"],
+            "LIFECYCLE29_BINARY_BINDING_REQUIRED")
+    require(inventory["compiledModules"] == len(inventory["modules"]) == 262
+            and len(inventory["archivedCompiledModules"]) == 10
+            and len(inventory["githubRepositoryMetadataUnknownForModules"]) == 12
+            and inventory["githubRepositoryMetadataResolvedForModules"] == 250
+            and inventory["allDependenciesMaintainedClaimed"] is False,
+            "LIFECYCLE29_COMPLETE_LIMITED_INVENTORY_REQUIRED")
+    records = {item["module"]: item for item in inventory["modules"]}
+    require(records["go.mongodb.org/mongo-driver"]["additionalLifecyclePolicy"]["status"] == "DEPRECATED_MAJOR_SUPPORT_WINDOW_PASSED"
+            and records["github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp"]["additionalLifecyclePolicy"]["status"] == "DECLARED_NO_LONGER_MAINTAINED",
+            "LIFECYCLE29_PINNED_POLICY_FINDINGS_REQUIRED")
+
+
 def validate_tree(root: Path) -> dict[str, Any]:
-    plan, _ = read_json(root / PLAN_PATH)
+    original_plan, _ = read_json(root / PLAN_PATH)
+    plan = historical_plan_view(original_plan)
     lock, lock_bytes = read_json(root / LOCK_PATH)
     cohort, _ = read_json(root / COHORT_PATH)
     dossiers = {path: read_json(root / path)[0] for path in EXPECTED_DOSSIERS}
@@ -624,8 +927,28 @@ def validate_tree(root: Path) -> dict[str, Any]:
     result["coldProofTransferredToGeneration29"] = False
     image29, image29_bytes = read_json(root / IMAGE29_RECEIPT_PATH)
     validate_generation29_image(plan, image29, image29_bytes, (root / IMAGE29_MANIFEST_PATH).read_bytes())
-    result["generation29ImageQualification"] = "HOSTED_IMAGE_PASS_COHORT_AND_RUNTIME_PENDING"
     result["generation29ImageReceiptSha256"] = IMAGE29_RECEIPT_SHA256
+    lock29, lock29_bytes = read_json(root / LOCK29_PATH)
+    cohort29, cohort29_bytes = read_json(root / COHORT29_PATH)
+    runtime29, runtime29_bytes = read_json(root / RUNTIME29_PATH)
+    # Receipt pins are checked before using their file lists.
+    require(sha256(cohort29_bytes) == COHORT29_SHA and sha256(runtime29_bytes) == RUNTIME29_SHA,
+            "GENERATION29_RECEIPT_PINS_REQUIRED")
+    raw29 = read_generation29_raw(root, cohort29, runtime29)
+    validate_current_generation29(original_plan, lock29, lock29_bytes, cohort29, cohort29_bytes,
+                                  runtime29, runtime29_bytes, raw29)
+    validate_generation29_sources(root, (root / IMAGE29_MANIFEST_PATH).read_bytes(), runtime29)
+    validate_lifecycle29_evidence(root, original_plan["currentQualification"])
+    result.update({"candidateLockSha256": LOCK29_SHA, "repositoryPatchCount": 29,
+                   "qualifiedImagePatchCount": 29,
+                   "generation29ImageQualification": "HOSTED_IMAGE_COHORT_RUNTIME_PASS_NOT_ADMITTED",
+                   "generation29CohortReceiptSha256": COHORT29_SHA,
+                   "generation29RuntimeReceiptSha256": RUNTIME29_SHA,
+                   "historicalRepositoryPatchCount": 28, "historicalQualifiedImagePatchCount": 15,
+                   "knownCompatibilityDefects": [], "historicalGeneration15MimeDefect": "FAIL_PRESERVED",
+                   "generation29MimeRegression": "PASS_SYNTHETIC_ONLY",
+                   "dependencyLifecycleStatus": "OPEN", "allDependenciesMaintained": False,
+                   "nextPrototypeQualified": False})
     return result
 
 

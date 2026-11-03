@@ -16,7 +16,8 @@ spec.loader.exec_module(plan_current)
 class CurrentStoragePlanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.current_plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.plan = plan_current.historical_plan_view(cls.current_plan)
         cls.lock_bytes = (ROOT / plan_current.LOCK_PATH).read_bytes()
         cls.lock = json.loads(cls.lock_bytes)
         cls.cohort = json.loads((ROOT / plan_current.COHORT_PATH).read_bytes())
@@ -61,7 +62,10 @@ class CurrentStoragePlanTest(unittest.TestCase):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
         self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 0)
-        self.assertEqual(result["repositoryPatchCount"], 28)
+        self.assertEqual(result["repositoryPatchCount"], 29)
+        self.assertEqual(result["qualifiedImagePatchCount"], 29)
+        self.assertEqual(result["historicalQualifiedImagePatchCount"], 15)
+        self.assertEqual(result["generation29MimeRegression"], "PASS_SYNTHETIC_ONLY")
         self.assertEqual(result["hostedSourceClosureRunCount"], 6)
         self.assertFalse(result["optionalModuleGraphEradicationClaimed"])
         self.assertFalse(result["releaseAdmitted"])
@@ -492,6 +496,191 @@ class CurrentStoragePlanTest(unittest.TestCase):
         changed["currentQualification"]["pendingCompatibilityCorrection"]["status"] = "QUALIFIED"
         with self.assertRaisesRegex(ValueError, "PRODUCTION_PATCH29_NOT_PROMOTED_REQUIRED"):
             self.validate_standard(plan=changed)
+
+class QualifiedGeneration29PlanTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.lock_bytes = (ROOT / plan_current.LOCK29_PATH).read_bytes()
+        cls.lock = json.loads(cls.lock_bytes)
+        cls.cohort_bytes = (ROOT / plan_current.COHORT29_PATH).read_bytes()
+        cls.cohort = json.loads(cls.cohort_bytes)
+        cls.runtime_bytes = (ROOT / plan_current.RUNTIME29_PATH).read_bytes()
+        cls.runtime = json.loads(cls.runtime_bytes)
+        cls.raw = plan_current.read_generation29_raw(ROOT, cls.cohort, cls.runtime)
+
+    def validate(self, **changes):
+        arguments = {"plan": copy.deepcopy(self.plan), "lock": copy.deepcopy(self.lock),
+                     "lock_bytes": self.lock_bytes, "cohort": copy.deepcopy(self.cohort),
+                     "cohort_bytes": self.cohort_bytes, "runtime": copy.deepcopy(self.runtime),
+                     "runtime_bytes": self.runtime_bytes, "raw": dict(self.raw)}
+        arguments.update(changes)
+        plan_current.validate_current_generation29(**arguments)
+
+    def test_actual_generation29_joins_independent_image_cohort_and_runtime(self):
+        self.validate()
+        current = self.plan["currentQualification"]
+        self.assertEqual(current["qualifiedImagePatchCount"], 29)
+        self.assertNotEqual(current["binarySha256"], self.plan["historicalQualification15"]["binarySha256"])
+        self.assertEqual(len(self.raw), 74)
+
+    def test_exact_receipt_and_lock_bytes_required(self):
+        for key, expected in (("lock_bytes", "LOCK29_BYTES_REQUIRED"),
+                              ("cohort_bytes", "COHORT29_BYTES_REQUIRED"),
+                              ("runtime_bytes", "RUNTIME29_BYTES_REQUIRED")):
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, expected):
+                self.validate(**{key: getattr(self, key) + b"\n"})
+
+    def test_receipt_object_cannot_disagree_with_its_pinned_bytes(self):
+        for key, code in (("cohort", "COHORT29_BYTES_REQUIRED"), ("runtime", "RUNTIME29_BYTES_REQUIRED")):
+            changed = copy.deepcopy(getattr(self, key)); changed["status"] = "PENDING"
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, code):
+                self.validate(**{key: changed})
+
+    def test_historical_image_cannot_replace_generation29_identity(self):
+        for key in ("binarySha256", "ociManifestDigest", "candidateLockSha256"):
+            changed = copy.deepcopy(self.plan)
+            changed["currentQualification"][key] = changed["historicalQualification15"][key]
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_no_unqualified_patch_or_image_promotion(self):
+        for key in ("repositoryPatchCount", "qualifiedImagePatchCount", "generation"):
+            changed = copy.deepcopy(self.plan); changed["currentQualification"][key] = 30
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+        for key, value in (("status", "QUALIFIED"), ("qualifiedGenerationRetained", 30),
+                           ("progressCreditAdded", 5), ("runtimeProofTransferred", True)):
+            changed = copy.deepcopy(self.plan); changed["nextGenerationPrototype"][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "NEXT_PROTOTYPE_NOT_QUALIFIED_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_no_authority_custody_or_backend_promotion(self):
+        for key, value in (("releaseAdmitted", True), ("runtimeAuthorityIssued", True),
+                           ("targetOperations", 1), ("activeStorageBackend", "SeaweedFS"),
+                           ("licenceReview", "CLOSED"), ("redistributionAccepted", True),
+                           ("durableImageCustody", "ESTABLISHED"), ("overallSwG1", "CLOSED")):
+            changed = copy.deepcopy(self.plan); changed["currentQualification"][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_known_lifecycle_residuals_cannot_be_silently_closed(self):
+        for key, value in (("status", "CLOSED"), ("allDependenciesMaintained", True),
+                           ("selectedRemediationFronts", {}), ("prototypeRemovalsQualified", True)):
+            changed = copy.deepcopy(self.plan); changed["currentQualification"]["dependencyLifecycle"][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_mime_regression_does_not_repair_history_or_close_general_acceptance(self):
+        for key in ("historicalLostMetadataRepaired", "storageGateG2Closed"):
+            changed = copy.deepcopy(self.plan); changed["currentQualification"]["mimeCorrection"][key] = True
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+        for key, value in (("s3MetadataCompatibilityGenerallyQualified", True),
+                           ("postgresRecovery", "PASS"), ("certificateRotation", "PASS"),
+                           ("rpoAcceptance", True), ("rtoAcceptance", True)):
+            changed = copy.deepcopy(self.plan); changed["currentQualification"]["syntheticRuntime"][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_historical_snapshots_remain_immutable_and_keep_old_mime_failure(self):
+        view = plan_current.historical_plan_view(self.plan)
+        self.assertEqual(view["currentQualification"]["qualifiedImagePatchCount"], 15)
+        self.assertEqual(view["historicalRuntimeQualification"]["coldRecovery15"]["octetStreamCompatibility"], "FAIL")
+        self.assertEqual(view["generation29Qualification"]["runtimeLabs29"], "PENDING")
+        for field, key, value, error in (
+            ("historicalQualification15", "binarySha256", self.plan["currentQualification"]["binarySha256"], "HISTORICAL_QUALIFICATION15_CHANGED"),
+            ("historicalQualification15", "repositoryPatchCount", 29, "HISTORICAL_QUALIFICATION15_CHANGED"),
+            ("historicalGeneration29PhaseA", "runtimeLabs29", "PASS", "HISTORICAL_PHASE_A29_CHANGED"),
+        ):
+            changed = copy.deepcopy(self.plan); changed[field][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, error):
+                plan_current.historical_plan_view(changed)
+
+    def test_wider_lifecycle_inventory_unknowns_and_policy_states_stay_open(self):
+        current = self.plan["currentQualification"]
+        plan_current.validate_lifecycle29_evidence(ROOT, current)
+        assessment = current["dependencyLifecycle"]["widerInventoryAssessment"]
+        self.assertEqual(len(assessment["archivedCompiledModules"]), 10)
+        self.assertEqual(len(assessment["repositoryMetadataUnknownModules"]), 12)
+        for key, value in (("repositoryMetadataUnknownModules", []), ("archivedCompiledModules", []),
+                           ("unknownOriginAssumedMaintained", True), ("repositoryNotArchivedProvesSupport", True),
+                           ("allApiDeprecationsImplyModuleEndOfSupport", True), ("widerMaintenanceAssessment", "CLOSED")):
+            changed = copy.deepcopy(self.plan)
+            changed["currentQualification"]["dependencyLifecycle"]["widerInventoryAssessment"][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+                self.validate(plan=changed)
+
+    def test_lifecycle_evidence_must_match_actual_qualified_binary_and_raw_bytes(self):
+        import tempfile
+        import shutil
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in plan_current.LIFECYCLE29_INPUTS:
+                target = root / name; target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / name, target)
+            plan_current.validate_lifecycle29_evidence(root, self.plan["currentQualification"])
+            target = root / plan_current.LIFECYCLE29_INVENTORY["inventoryPath"]
+            target.write_bytes(target.read_bytes() + b"\n")
+            with self.assertRaisesRegex(ValueError, "LIFECYCLE29_EVIDENCE_BYTES_CHANGED"):
+                plan_current.validate_lifecycle29_evidence(root, self.plan["currentQualification"])
+
+    def test_legacy_source_receipt_is_not_relabelled_as_new_binary(self):
+        changed = copy.deepcopy(self.plan)
+        changed["currentQualification"]["sourceClosureReceipt"] = plan_current.SOURCE_CLOSURE_PATH
+        changed["currentQualification"]["qualifiedBinaryByteIdentical"] = True
+        with self.assertRaisesRegex(ValueError, "CURRENT_GENERATION29_VIEW_REQUIRED"):
+            self.validate(plan=changed)
+
+    def test_runtime_raw_bytes_are_required_not_just_success_boolean(self):
+        key = plan_current.RUNTIME29_DIR + "/runtime-result.json"
+        changed = dict(self.raw); del changed[key]
+        with self.assertRaisesRegex(ValueError, "GENERATION29_COMPLETE_RAW_SET_REQUIRED"):
+            self.validate(raw=changed)
+        changed = dict(self.raw); changed[key] += b"\n"
+        with self.assertRaisesRegex(ValueError, "GENERATION29_RAW_BYTES_CHANGED"):
+            self.validate(raw=changed)
+
+    def test_raw_file_paths_and_duplicates_are_rejected(self):
+        for path in (plan_current.RUNTIME29_DIR + "/../outside", self.runtime["rawEvidence"]["files"][1]["path"]):
+            changed = copy.deepcopy(self.runtime)
+            if path == self.runtime["rawEvidence"]["files"][1]["path"]:
+                changed["rawEvidence"]["files"][0] = copy.deepcopy(changed["rawEvidence"]["files"][1])
+            else:
+                changed["rawEvidence"]["files"][0]["path"] = path
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "GENERATION29_RAW_PATH_REQUIRED"):
+                plan_current.read_generation29_raw(ROOT, self.cohort, changed)
+
+    def test_qualified_patch_harness_and_job_evidence_cannot_drift(self):
+        import shutil
+        import tempfile
+        manifest_bytes = (ROOT / plan_current.IMAGE29_MANIFEST_PATH).read_bytes()
+        manifest = json.loads(manifest_bytes)
+        paths = {item["path"] for item in manifest["orderedPatches"]}
+        paths.update(self.runtime["sourceHashesVerified"])
+        paths.add(self.runtime["workflowJobsEvidence"]["path"])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in paths:
+                target = root / name; target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / name, target)
+            plan_current.validate_generation29_sources(root, manifest_bytes, self.runtime)
+            for name, code in (
+                (manifest["orderedPatches"][-1]["path"], "GENERATION29_PATCH_SOURCE_CHANGED"),
+                ("scripts/run-seaweedfs-452-generation29-labs.py", "GENERATION29_RUNTIME_SOURCE_CHANGED"),
+                (self.runtime["workflowJobsEvidence"]["path"], "GENERATION29_JOB_EVIDENCE_CHANGED"),
+            ):
+                target = root / name; previous = target.read_bytes(); target.write_bytes(previous + b"\n")
+                with self.subTest(path=name), self.assertRaisesRegex(ValueError, code):
+                    plan_current.validate_generation29_sources(root, manifest_bytes, self.runtime)
+                target.write_bytes(previous)
+
+    def test_fresh_runtime_does_not_increase_progress_credit(self):
+        self.assertEqual(self.plan["progressEstimate"]["weightedCredits"], 17.5)
+        self.assertEqual(self.plan["progressEstimate"]["reportedApproximatePercent"], 38)
+        self.assertEqual(self.plan["progressEstimate"]["creditChange"]["receipt"], plan_current.COLD_RECEIPT_PATH)
+        self.assertFalse(self.plan["currentQualification"]["historicalRuntimeProofTransferred"])
+
 
 
 if __name__ == "__main__":

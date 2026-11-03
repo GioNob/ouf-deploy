@@ -33,6 +33,23 @@ on:
       - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
       - scripts/verify-minio-seaweedfs-plan-current.py
       - tests/test_minio_seaweedfs_plan_current.py
+      - releases/seaweedfs-452-generation29-candidate-lock-20261103.json
+      - evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json
+      - evidence/seaweedfs-452-generation29-cohort-hosted-20261103/**
+      - evidence/seaweedfs-generation29-runtime-hosted-20261103.json
+      - evidence/seaweedfs-generation29-runtime-hosted-41701381292/**
+      - evidence/seaweedfs-generation29-runtime-jobs-41701381292.json
+      - patches/seaweedfs/**
+      - scripts/run-seaweedfs-452-generation29-labs.py
+      - scripts/storage-generation29-lab-binding.py
+      - scripts/run-seaweedfs-452-cold-recovery.py
+      - scripts/run-seaweedfs-452-identity-tls.py
+      - scripts/readback-seaweedfs-452-generation29-image.py
+      - tests/test_storage_generation29_lab_binding.py
+      - tests/test_storage_generation29_labs.py
+      - .github/workflows/storage-452-generation29-runtime-labs.yml
+      - evidence/lifecycle262/**
+      - evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json
   workflow_dispatch:
 
 permissions:
@@ -98,6 +115,26 @@ jobs:
             tests/test_minio_seaweedfs_plan_current.py \
             .github/workflows/storage-plan-current.yml \
             > "$evidence/input-sha256.txt"
+          python3 -I -B -S - <<'PYCODE' >> "$evidence/input-sha256.txt"
+          import hashlib, json, os
+          from pathlib import Path
+          current = json.loads(Path('releases/minio-seaweedfs-plan-20261102.json').read_bytes())['currentQualification']
+          cohort = json.loads(Path(current['cohortReceipt']).read_bytes())
+          runtime = json.loads(Path(current['runtimeReceipt']).read_bytes())
+          manifest = json.loads(Path('releases/seaweedfs-452-generation29-build-manifest-20261103.json').read_bytes())
+          paths = {current['candidateLock'], current['cohortReceipt'], current['runtimeReceipt'], runtime['workflowJobsEvidence']['path']}
+          paths.update(cohort['retainedRawEvidence'])
+          paths.update(item['path'] for item in runtime['rawEvidence']['files'])
+          paths.update(runtime['sourceHashesVerified'])
+          paths.update(item['path'] for item in manifest['orderedPatches'])
+          lifecycle = current['dependencyLifecycle']['widerInventoryAssessment']
+          paths.add(lifecycle['inventoryReceipt'])
+          paths.update(str(path) for path in Path('evidence/lifecycle262').rglob('*') if path.is_file())
+          existing = Path(os.environ['RUNNER_TEMP']) / 'storage-plan-current-evidence/input-sha256.txt'
+          paths.difference_update(line.split('  ', 1)[1] for line in existing.read_text().splitlines())
+          for name in sorted(paths):
+              print(hashlib.sha256(Path(name).read_bytes()).hexdigest() + '  ' + name)
+          PYCODE
           cd "$evidence"
           sha256sum input-sha256.txt test.log verification.json | LC_ALL=C sort > SHA256SUMS
           sha256sum --strict --check SHA256SUMS
