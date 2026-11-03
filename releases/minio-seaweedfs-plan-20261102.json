@@ -1,9 +1,10 @@
 {
   "schema": "ouf.storage-replacement-plan.v1",
   "id": "OUF-MP-STORAGE-SW",
-  "version": "1.1",
+  "version": "1.2",
   "date": "2026-11-02",
-  "status": "PRIVATE_PLAN_CAPTURED_COPY_CORE_LAB_QUALIFIED_EXACT_APPLICABILITY_ACCEPTED_TARGET_PENDING",
+  "updatedAt": "2026-11-03",
+  "status": "PRIVATE_PLAN_CAPTURED_452_TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED_TARGET_PENDING",
   "document": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
   "baselineDeployCommit": "640ae37f5a1c49717e2f4168a928a553bcbfa603",
   "requestedDirection": "Execute MiniPET replacement of MinIO with SeaweedFS preserving data",
@@ -41,6 +42,59 @@
       }
     }
   },
+  "historicalEvidenceFields": [
+    "candidate",
+    "latestLaboratoryQualification",
+    "g1ApplicabilityReview",
+    "runtimeImageQualification",
+    "licenceEvidence",
+    "dependencyLifecycleReview"
+  ],
+  "currentQualification": {
+    "candidateLock": "releases/seaweedfs-452-candidate-lock-20261103.json",
+    "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    "version": "4.52",
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "qualifiedImagePatchCount": 15,
+    "repositoryPatchCount": 20,
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+    "qualificationRunId": 41622752493,
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "historicalApplicabilityApplied": false,
+    "cohortReceipt": "evidence/seaweedfs-452-cohort-readback-hosted-20261103.json",
+    "cohortRunId": 41627470213,
+    "cohortContent": "VERIFIED",
+    "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+    "awsSdkV1InQualifiedBinary": "ABSENT",
+    "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
+    "remainingRepositoryDirectSdkV1Importers": 21,
+    "remainingIamTestImporters": 13,
+    "remainingOtherTestImporters": 8,
+    "testOnlyDossiers": [
+      "evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json",
+      "evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json"
+    ],
+    "licenceRawUnknownClassifications": 3,
+    "licenceReview": "OPEN",
+    "redistributionAccepted": false,
+    "durableImageCustody": "OPEN",
+    "overallSwG1": "OPEN",
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "activeStorageBackend": "MinIO"
+  },
   "workPackages": [
     {
       "id": "SW-WP0",
@@ -60,7 +114,7 @@
         6,
         12
       ],
-      "executionStatus": "EXACT_IMAGE_AND_COMPLETE_LICENSE_SOURCE_CORPUS_QUALIFIED_LICENSE_REVIEW_CUSTODY_COHORT_LIFECYCLE_OPEN"
+      "executionStatus": "452_TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED_SDK_V1_ABSENT_FROM_QUALIFIED_BINARY_LICENSE_REVIEW_CUSTODY_AND_ADMISSION_OPEN"
     },
     {
       "id": "SW-WP2",
@@ -256,7 +310,7 @@
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
-  "nextPlannedWork": "Review three raw licence UNKNOWN findings and compiled AWS SDK Go v1 lifecycle; prepare durable custody of exact runtime image plus attribution/source bundle and complete cohort; G0 writer/DB/fence/backup/capacity still open. No target command before G0-G4.",
+  "nextPlannedWork": "Complete competent licence and redistribution review, durable custody of the exact OCI image, remaining unqualified test-only AWS SDK Go v1 importers, and G0 writer/DB/fence/backup/capacity prerequisites. No target command before G0-G4 and no release admission without the required HUMAN/THS authority.",
   "openTargetInputs": [
     "private ACL grants and publicAccessBlock compatibility/control mapping",
     "current writers, external consumers and database references",
@@ -657,14 +711,14 @@
   "progressEstimate": {
     "schema": "ouf.storage-planning-progress-estimate.v1",
     "status": "HEURISTIC_NOT_ACCEPTANCE",
-    "date": "2026-11-02",
-    "exactWeightedEstimatePercent": 33.26086956521739,
-    "reportedApproximatePercent": 33,
+    "date": "2026-11-03",
+    "exactWeightedEstimatePercent": 34.56521739130435,
+    "reportedApproximatePercent": 35,
     "uncertaintyPercentagePoints": 10,
     "weights": "original WP minimum engineering-hour estimates; 46 total",
     "creditsPercent": [
       50,
-      75,
+      85,
       60,
       15,
       35,
@@ -672,7 +726,7 @@
       0,
       0
     ],
-    "weightedCredits": 15.3,
+    "weightedCredits": 15.9,
     "gatePass": 0,
     "gateTotal": 8,
     "acceptanceTestPass": 0,

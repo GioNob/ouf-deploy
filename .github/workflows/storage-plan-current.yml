@@ -1,0 +1,82 @@
+name: Storage current qualification plan
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-plan-current.yml
+      - releases/minio-seaweedfs-plan-20261102.json
+      - releases/seaweedfs-452-candidate-lock-20261103.json
+      - evidence/seaweedfs-452-cohort-readback-hosted-20261103.json
+      - evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json
+      - scripts/verify-minio-seaweedfs-plan-current.py
+      - tests/test_minio_seaweedfs_plan_current.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-plan-current-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-current-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Validate the additive current qualification view
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-plan-current-evidence"
+          mkdir -p "$evidence"
+          python3 -I -B -S -m unittest discover \
+            -s tests -p test_minio_seaweedfs_plan_current.py -v 2>&1 |
+            tee "$evidence/test.log"
+          python3 -I -B -S scripts/verify-minio-seaweedfs-plan-current.py \
+            --output "$evidence/verification.json"
+
+      - name: Bind all current inputs and verify the manifest
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-plan-current-evidence"
+          sha256sum \
+            releases/minio-seaweedfs-plan-20261102.json \
+            releases/seaweedfs-452-candidate-lock-20261103.json \
+            evidence/seaweedfs-452-cohort-readback-hosted-20261103.json \
+            evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json \
+            scripts/verify-minio-seaweedfs-plan-current.py \
+            tests/test_minio_seaweedfs_plan_current.py \
+            .github/workflows/storage-plan-current.yml \
+            > "$evidence/input-sha256.txt"
+          cd "$evidence"
+          sha256sum input-sha256.txt test.log verification.json | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-plan-current-evidence/SHA256SUMS
+
+      - name: Retain the bounded evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-plan-current-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-plan-current-evidence/
+          if-no-files-found: error
+          retention-days: 90
