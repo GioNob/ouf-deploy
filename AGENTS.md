@@ -3,6 +3,7 @@
 - Source patch commit: `f730a88253c7727933aa4e3a8c6a4d225e5ed53c`; baseline SeaweedFS 4.52 `984eac6a790be89e2a11de175a7413e1e3e32dd3`.
 - `weed/remote_storage/s3` usa SDK v2 S3 1.114.1 e transfermanager 0.4.3; 38 pacchetti SDK v1 rimossi dalla chiusura.
 - Locale: 5.591 PASS, 5 skip, 20 package PASS; race/focused server/build/reapply exact PASS.
+- CI 41594094791: entrambe le job SUCCESS su `2aa318aaeb8c4c0731f8a7683f7af6115d3b8414`.
 - Grafo esatto: 1.826 package, 14 SDK v1, 1 importatore produttivo diretto, 2 archi; residuo confinato a `weed/s3api`.
 - Stato MiniPET invariato: circa 33% ±10, 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO resta attivo.
 - Scope17/52 Engine GET, Teatri/M1 e Farmacie restano congelati. Nessuna operazione target, authority, replay/reset/grant, merge o deploy.
