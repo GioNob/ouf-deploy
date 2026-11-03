@@ -55,3 +55,33 @@ namespace privo di egress. Nessuna identità o autorità target deriva dal test.
 Restano 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO attivo, Scope17/52,
 Teatri/M1 e Farmacie invariati. Release, redistribuzione e custodia durevole
 non vengono ammesse. L'artifact CI è temporaneo, con retention di 90 giorni.
+
+## Primo run e correzione del bootstrap
+
+La CI `41687967286`, sul commit `70cd2671b41b0f775889826b2617811451a5e2ba`,
+ha superato unit test, download/identità OCI, avvio dei quattro container,
+controlli di isolamento e LIST di readiness. Il client seed è fallito prima
+del backup. Il suo stderr non era conservato; non si attribuisce un codice
+HTTP o un timeout osservato direttamente. I log mostrano però che la prima
+allocazione volume ha atteso 5,75 secondi e che il filer ha applicato il lock
+ring solo dopo l'avvio delle scritture, oltre il timeout HTTP di 5 secondi.
+Tutti i quattro servizi sono poi terminati con ExitCode 0. Nessun restore PASS.
+
+L'artifact negativo `13255691039` (12.262 byte), SHA256
+`995bcdc53ea256709135c8fe6bf1a840c7fb1c14b16a0a1bb3e933a579516da7`, è stato
+scaricato e riletto indipendentemente. La correzione attende l'evento applicato
+del lock ring del filer esatto con soli controlli read-only, massimo 60 poll e
+90 secondi. Ogni richiesta operativa ha timeout 30 secondi, senza retry mutativi;
+il client seed/verify ha budget totale 180 secondi; la readiness HTTP ha un
+cap totale separato di 90 secondi, imposto anche al processo figlio. I 24 slot volume coprono i due gruppi
+di crescita iniziale da sette volumi (bucket e metadati filer), senza preallocare
+lo spazio. Il nuovo test riparte da fixture vuote in un runner distinto; non
+ritenta la mutazione ambigua del run precedente. Lo stderr figlio è ora
+conservato anche per scadenza dei 180 secondi, normalizzando output bytes/testo
+e limitandolo a 32 KiB UTF-8. Ogni inspect, lettura log e attesa della readiness
+è limitato dal budget residuo dei 90 secondi. La [ricevuta negativa](../evidence/seaweedfs-452-cold-recovery-failed-20261103.json)
+separa fatti osservati e ipotesi causale. Undici test locali PASS includono
+clock simulato per richieste e attese limitate dal tempo residuo, rifiuto di
+risposta positiva tardiva e verifica del cap complessivo del processo readiness.
+I fallimenti permanenti continuano a fermarsi dopo un solo tentativo. Resta
+necessaria una nuova qualifica hosted.

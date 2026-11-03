@@ -15,6 +15,14 @@ on:
       - evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json
       - evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json
       - evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json
+      - evidence/seaweedfs-sdk27-hosted-20261103.json
+      - evidence/sdk27-artifacts/**
+      - patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-normal-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch
+      - patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch
+      - patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
       - scripts/verify-minio-seaweedfs-plan-current.py
       - tests/test_minio_seaweedfs_plan_current.py
   workflow_dispatch:
@@ -62,6 +70,14 @@ jobs:
             evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json \
             evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json \
             evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json \
+            evidence/seaweedfs-sdk27-hosted-20261103.json \
+            evidence/sdk27-artifacts/*/* \
+            patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \
+            patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \
+            patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-iam-module-sdk-v2.patch \
             scripts/verify-minio-seaweedfs-plan-current.py \
             tests/test_minio_seaweedfs_plan_current.py \
             .github/workflows/storage-plan-current.yml \

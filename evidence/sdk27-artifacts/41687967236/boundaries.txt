@@ -1,0 +1,8 @@
+scope=normal-S3-fixtures-only
+liveRoundtripExecuted=false
+remainingNormalImporters=0
+productionBinaryChanged=false
+rootModuleAddsTestOnlyIAM=true
+releaseAdmitted=false
+runtimeAuthorityIssued=false
+targetOperations=0

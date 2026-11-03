@@ -1,0 +1,1 @@
+d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19  ../patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch

@@ -1,0 +1,729 @@
+{
+  "schemaVersion": 1,
+  "status": "HOSTED_PASS",
+  "scope": "Cumulative 27-patch source and bounded test qualification; not storage admission",
+  "observedAt": "2026-11-03T17:58:56.908758+00:00",
+  "sourceHead": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "sourceCodeCommit": "9ebbb28283a2cad4eea215e183905dbc6d159eef",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "patchCount": 27,
+  "patchHashes": {
+    "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+    "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+    "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+    "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883",
+    "patches/seaweedfs/4.52-iam-module-sdk-v2.patch": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+    "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5"
+  },
+  "directSourceImporters": 0,
+  "directSourceImporterEvidenceRuns": [
+    41687967236,
+    41687967247,
+    41687967264,
+    41687967278,
+    41687967306
+  ],
+  "optionalModuleGraphEradicationClaimed": false,
+  "workflows": [
+    {
+      "name": "storage-normal-tests-sdk-v2",
+      "workflowPath": ".github/workflows/storage-normal-tests-sdk-v2.yml",
+      "runId": 41687967236,
+      "jobId": 126098661010,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967236",
+      "artifact": {
+        "id": 13256201247,
+        "name": "storage-normal-tests-sdk-v2-41687967236",
+        "sha256": "3af5ef65bd36f5d59f896810671bac628eae371198ae23ac619fb359cc1add14",
+        "sizeInBytes": 15267,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "707b99d629117858e827b3d649247046f56e096d156d65eb5510d8136f33a0b5",
+      "manifestEntriesVerified": 9,
+      "fileManifest": [
+        {
+          "file": "boundaries.txt",
+          "sha256": "0cde9ba38b9e0b0e5381f6e7712a698c7d5ef48140123801848a90b2f3d1df16",
+          "size": 216
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "1932246ad7d6837f6d06d969437b48b71567c14d50deb0916650a8fea03411a4",
+          "size": 118
+        },
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "normal-test-deps.txt",
+          "sha256": "5cf78cfa648d6e6f039c266c5b857579ec22a24be43701890a651bd3b7f01e89",
+          "size": 74769
+        },
+        {
+          "file": "patch-stat.txt",
+          "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+          "size": 6395
+        },
+        {
+          "file": "compile.log",
+          "sha256": "cb16398084e1151d2a7eaf869d209b2d7951f07ce7e83ae7eed4c00322f2cf92",
+          "size": 76
+        },
+        {
+          "file": "test.log",
+          "sha256": "e15f88900a8218541bde6f50fc7ae5772d1a6ee61ad33a7aae7bc1e6c6a47bac",
+          "size": 821
+        },
+        {
+          "file": "remaining-direct-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "remaining-normal-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        }
+      ],
+      "tests": {
+        "topLevelPass": 4,
+        "subcasesPass": 3,
+        "names": [
+          "TestNormalSDKV2PutWireAndNoRetry",
+          "TestNormalSDKV2MultipartAndCancellation",
+          "TestNormalSDKV2RawSignerLegacyGolden",
+          "TestNormalSDKV2SSECKeyEncoding"
+        ],
+        "subcases": [
+          "TestNormalSDKV2PutWireAndNoRetry/OK",
+          "TestNormalSDKV2PutWireAndNoRetry/Bad_Request",
+          "TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable"
+        ],
+        "liveIntegrationRun": false
+      },
+      "dependencyGraphs": [
+        {
+          "file": "normal-test-deps.txt",
+          "packageCount": 1801,
+          "sdkV1Packages": 0,
+          "sha256": "5cf78cfa648d6e6f039c266c5b857579ec22a24be43701890a651bd3b7f01e89"
+        }
+      ],
+      "directImporters": 0
+    },
+    {
+      "name": "storage-kafka-module-cleanup",
+      "workflowPath": ".github/workflows/storage-kafka-module-cleanup.yml",
+      "runId": 41687967241,
+      "jobId": 126098659836,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967241",
+      "artifact": {
+        "id": 13257195609,
+        "name": "storage-kafka-module-cleanup-41687967241",
+        "sha256": "fb041e6217b969ad7e394942a5b88a72a4845ee30dafe17559fe91a75eca00ad",
+        "sizeInBytes": 6918,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "fa2b532cd41df53a048a19b711a3f46e7abc48d1dad38d7c19340656a0ce960f",
+      "manifestEntriesVerified": 8,
+      "fileManifest": [
+        {
+          "file": "kafka-test-deps.txt",
+          "sha256": "0fa878379ad8880a509373de572190c7b92697096e28bd1fb63f687297d71cdc",
+          "size": 26997
+        },
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "compile.log",
+          "sha256": "5c431b4d0db032d400f32ad0f021105518aba131b92584b9bac6b58592cc2638",
+          "size": 472
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "70d639824e406fe915c2add11077b0b94537789b894445c9178550ae571f2ee0",
+          "size": 130
+        },
+        {
+          "file": "root-module-sha256.txt",
+          "sha256": "c267a9524016a8b1c1cae3f8699704d5c0daae8cea7a0b1695695ef2b3dd9e74",
+          "size": 146
+        },
+        {
+          "file": "tidy.diff",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "kafka-module-sha256.txt",
+          "sha256": "f021f736a6f601f4d0b0deee292b0552b068aaa35e90fb37fad43cccac3bd956",
+          "size": 168
+        },
+        {
+          "file": "boundaries.txt",
+          "sha256": "f1936885abd3023c013d19b0dbe335d4ed8f7478cdbf614e472049551d928718",
+          "size": 186
+        }
+      ],
+      "tests": {
+        "topLevelPass": 0,
+        "subcasesPass": 0,
+        "names": [],
+        "subcases": [],
+        "liveIntegrationRun": false
+      },
+      "dependencyGraphs": [
+        {
+          "file": "kafka-test-deps.txt",
+          "packageCount": 763,
+          "sdkV1Packages": 0,
+          "sha256": "0fa878379ad8880a509373de572190c7b92697096e28bd1fb63f687297d71cdc"
+        }
+      ],
+      "directImporters": null,
+      "tidyDiffBytes": 0
+    },
+    {
+      "name": "storage-bucket-policy-tests-sdk-v2",
+      "workflowPath": ".github/workflows/storage-bucket-policy-tests-sdk-v2.yml",
+      "runId": 41687967247,
+      "jobId": 126098660427,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967247",
+      "artifact": {
+        "id": 13255334989,
+        "name": "storage-bucket-policy-sdk-v2-41687967247",
+        "sha256": "97f7196c6defc763b86bb6234753ad00ea99de98e93c5aa5b5719025cdcc0af0",
+        "sizeInBytes": 14601,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "323a5aca4a5cc76d5c922607623fed98cfef4f268df110058a6d0ac976754839",
+      "manifestEntriesVerified": 7,
+      "fileManifest": [
+        {
+          "file": "compile.log",
+          "sha256": "20baa604bfb19377982fefc23e90247e9b86cb1b5f8f3456d05fa47c2cba0ed6",
+          "size": 76
+        },
+        {
+          "file": "policy-test-deps.txt",
+          "sha256": "2f1a01833f03826f391df38e0f2826bd42cc9067783ad26314348c987ca056e0",
+          "size": 74769
+        },
+        {
+          "file": "test.log",
+          "sha256": "30994b35410796ee10bd7528d61cb6ba80c1a14355e6c36c1a05530efb7e31f6",
+          "size": 58
+        },
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "48da2e0a5de051353a1537c2e6018e31b6b43c9c61851ce6163dd27bf1ef7bca",
+          "size": 125
+        },
+        {
+          "file": "patch-stat.txt",
+          "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+          "size": 6395
+        },
+        {
+          "file": "remaining-direct-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        }
+      ],
+      "tests": {
+        "topLevelPass": null,
+        "subcasesPass": null,
+        "names": [],
+        "subcases": [],
+        "liveIntegrationRun": false,
+        "selectedTopLevelTestCount": 4,
+        "selection": "^TestBucketPolicySDKV2",
+        "verboseResultAvailable": false,
+        "note": "The dedicated workflow logs package success without -v; named results are cross-checked in the cumulative root IAM workflow."
+      },
+      "dependencyGraphs": [
+        {
+          "file": "policy-test-deps.txt",
+          "packageCount": 1801,
+          "sdkV1Packages": 0,
+          "sha256": "2f1a01833f03826f391df38e0f2826bd42cc9067783ad26314348c987ca056e0"
+        }
+      ],
+      "directImporters": 0
+    },
+    {
+      "name": "storage-root-iam-tests-sdk-v2",
+      "workflowPath": ".github/workflows/storage-root-iam-tests-sdk-v2.yml",
+      "runId": 41687967264,
+      "jobId": 126098660251,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967264",
+      "artifact": {
+        "id": 13256397431,
+        "name": "storage-root-iam-sdk-v2-41687967264",
+        "sha256": "f29fa78c229fe5ac98dfe8f0787fcdea87f0490c69c0d1642c6064cc9a7395bb",
+        "sizeInBytes": 41161,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "978cadf50dc4040a2c5785b40d4232b979b9dbe1682e60bfe56e2a4502a01ef0",
+      "manifestEntriesVerified": 11,
+      "fileManifest": [
+        {
+          "file": "test.log",
+          "sha256": "042a6e942ff8bcbe7c5b12b9bd6ab9b63e8f7c127491d7d819a868eb2d2c894b",
+          "size": 2620
+        },
+        {
+          "file": "iam-module.json",
+          "sha256": "4184960df3ae5448230f9c3fe1c4a21dd7783d5319a6ac382cb21061a47d8fbc",
+          "size": 449
+        },
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "build-info.txt",
+          "sha256": "580696e2eba7ba9d54584da50fdec20fbcb94dcdf58a62be6ce5a34ed7b04c39",
+          "size": 25458
+        },
+        {
+          "file": "binary-sha256.txt",
+          "sha256": "6a351bc906b9494c317cf472914394ae6e3477e0bbab415a64b9386629c58aa5",
+          "size": 104
+        },
+        {
+          "file": "root-iam-test-deps.txt",
+          "sha256": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26",
+          "size": 74953
+        },
+        {
+          "file": "compile.log",
+          "sha256": "9672bb5af41c4346b446b501112304719afc6b2733d888845620060b9ee9ab51",
+          "size": 230
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "a6c8e5c517861095bcbd27faa205066c9c70f19037f74a927ecb1c4e5c0c2987",
+          "size": 120
+        },
+        {
+          "file": "patch-stat.txt",
+          "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+          "size": 6395
+        },
+        {
+          "file": "production-deps.txt",
+          "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+          "size": 74977
+        },
+        {
+          "file": "remaining-direct-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        }
+      ],
+      "tests": {
+        "topLevelPass": 16,
+        "subcasesPass": 8,
+        "names": [
+          "TestBucketPolicySDKV2Configuration",
+          "TestBucketPolicySDKV2RoundTrip",
+          "TestBucketPolicySDKV2SingleAttempt",
+          "TestBucketPolicySDKV2Cancellation",
+          "TestPolicyIAMSDKV2Configuration",
+          "TestPolicyIAMSDKV2WireAndModels",
+          "TestPolicyIAMSDKV2ErrorsAndBudget",
+          "TestPolicyIAMSDKV2Cancellation",
+          "TestNormalIAMSDKV2Configuration",
+          "TestNormalIAMSDKV2WireAndModels",
+          "TestNormalIAMSDKV2SingleAttempt",
+          "TestNormalIAMSDKV2Cancellation",
+          "TestNormalSDKV2PutWireAndNoRetry",
+          "TestNormalSDKV2MultipartAndCancellation",
+          "TestNormalSDKV2RawSignerLegacyGolden",
+          "TestNormalSDKV2SSECKeyEncoding"
+        ],
+        "subcases": [
+          "TestPolicyIAMSDKV2Configuration/fallback",
+          "TestPolicyIAMSDKV2Configuration/configured",
+          "TestPolicyIAMSDKV2ErrorsAndBudget/NoSuchEntity",
+          "TestPolicyIAMSDKV2ErrorsAndBudget/DeleteConflict",
+          "TestPolicyIAMSDKV2ErrorsAndBudget/ServiceFailure",
+          "TestNormalSDKV2PutWireAndNoRetry/OK",
+          "TestNormalSDKV2PutWireAndNoRetry/Bad_Request",
+          "TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable"
+        ],
+        "liveIntegrationRun": false
+      },
+      "dependencyGraphs": [
+        {
+          "file": "production-deps.txt",
+          "packageCount": 1811,
+          "sdkV1Packages": 0,
+          "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a"
+        },
+        {
+          "file": "root-iam-test-deps.txt",
+          "packageCount": 1803,
+          "sdkV1Packages": 0,
+          "sha256": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26"
+        }
+      ],
+      "directImporters": 0
+    },
+    {
+      "name": "storage-iam-module-sdk-v2",
+      "workflowPath": ".github/workflows/storage-iam-module-sdk-v2.yml",
+      "runId": 41687967278,
+      "jobId": 126098659932,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967278",
+      "artifact": {
+        "id": 13256586071,
+        "name": "storage-iam-module-sdk-v2-41687967278",
+        "sha256": "37cb21571731a26da01075d83a734c3130bbb56d21c96a03d5736ff3e5704a2a",
+        "sizeInBytes": 6518,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "fa0bfd26cfd524ab8077bf689d90e9a8ea288061c5430ea4d48766ba98b9cec3",
+      "manifestEntriesVerified": 12,
+      "fileManifest": [
+        {
+          "file": "module-pins-before-tidy.txt",
+          "sha256": "16c242fae7ba1feba2e979626707a571d85b29247b20f226a312e1bc47f019bb",
+          "size": 146
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "2c5780f2f8bfa62672ee87d693e842033223c31fb314033a1a9e0c72d159c760",
+          "size": 116
+        },
+        {
+          "file": "test.log",
+          "sha256": "38f363672272e739f72f520a9e44fc1b33f118ce3734afecf0eda33ea8781a32",
+          "size": 1990
+        },
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "iam-test-deps.txt",
+          "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd",
+          "size": 7780
+        },
+        {
+          "file": "iam-modules.txt",
+          "sha256": "63d5c4fad3549649d4c05629c9837a46acb32296c7343cf0622c89fd5e271d44",
+          "size": 955
+        },
+        {
+          "file": "compile.log",
+          "sha256": "ae7a42c72b1a09eea4e1420fd76883c5eefeca59fd02a63372bcf6d041bec463",
+          "size": 73
+        },
+        {
+          "file": "tidy-idempotence.log",
+          "sha256": "bae31ee1d4a44c2809bb8967ec8ab1952bc42a13c74e34545b0bbf13fd0aee10",
+          "size": 22
+        },
+        {
+          "file": "patch-stat.txt",
+          "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+          "size": 6395
+        },
+        {
+          "file": "remaining-direct-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "remaining-iam-v1-module-entries.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "unsupported-module-findings.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        }
+      ],
+      "tests": {
+        "topLevelPass": 14,
+        "subcasesPass": 4,
+        "names": [
+          "TestIAMFrameworkV2StaticQueryAndToken",
+          "TestIAMFrameworkV2S3RegionAndChecksum",
+          "TestIAMFrameworkV2BearerIdentity",
+          "TestIAMFrameworkV2ErrorsAndBoundedRetry",
+          "TestIAMFrameworkV2CancellationAndPartialCredentials",
+          "TestIAMFrameworkV2RawExtensionSigning",
+          "TestIAMFixtureS3V2Contract",
+          "TestIAMFixtureS3V2FailureBudget",
+          "TestIAMFixtureS3V2Cancellation",
+          "TestIAMFixtureS3V2CleanupDeadline",
+          "TestIAMFixtureS3V2RejectsPartialCredentials",
+          "TestIAMFixtureRawQueryV2Signing",
+          "TestSignSigV4RequestUsesStableSTSScopeAndBody",
+          "TestSignSigV4RequestIncludesTemporaryCredentialToken"
+        ],
+        "subcases": [
+          "TestIAMFrameworkV2BearerIdentity/iam",
+          "TestIAMFrameworkV2BearerIdentity/s3",
+          "TestIAMFixtureS3V2FailureBudget/Forbidden",
+          "TestIAMFixtureS3V2FailureBudget/Service_Unavailable"
+        ],
+        "liveIntegrationRun": false
+      },
+      "dependencyGraphs": [
+        {
+          "file": "iam-test-deps.txt",
+          "packageCount": 303,
+          "sdkV1Packages": 0,
+          "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd"
+        }
+      ],
+      "directImporters": 0
+    },
+    {
+      "name": "storage-iam-service-account-sdk-v2",
+      "workflowPath": ".github/workflows/storage-iam-service-account-sdk-v2.yml",
+      "runId": 41687967306,
+      "jobId": 126098660099,
+      "conclusion": "success",
+      "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+      "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967306",
+      "artifact": {
+        "id": 13257245202,
+        "name": "storage-iam-service-account-sdk-v2-41687967306",
+        "sha256": "78dbb656d3c6e69960cd6fe54cd8736cffee107066f943760b48d9938c8aab23",
+        "sizeInBytes": 6832,
+        "downloadVerified": true,
+        "expiresAt": "2027-02-01T17:49:39Z"
+      },
+      "manifestSha256": "3b08b80507067e5141e7ad54b386ee483ebcc21a535dcec8ea40d90462668ee2",
+      "manifestEntriesVerified": 9,
+      "fileManifest": [
+        {
+          "file": "upstream-source-sha.txt",
+          "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+          "size": 41
+        },
+        {
+          "file": "iam-test-deps.txt",
+          "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd",
+          "size": 7780
+        },
+        {
+          "file": "test.log",
+          "sha256": "65d56ebb52a0a2a10b9c904c7695e6fc65375e71a78f5165c042e6bade98f030",
+          "size": 1134
+        },
+        {
+          "file": "helper-deps.txt",
+          "sha256": "6a6cc73590faed4b165470fd76e20b44b831bc17e00c4e19e75dcfc8a666420a",
+          "size": 6972
+        },
+        {
+          "file": "compile.log",
+          "sha256": "ae7a42c72b1a09eea4e1420fd76883c5eefeca59fd02a63372bcf6d041bec463",
+          "size": 73
+        },
+        {
+          "file": "patch-stat.txt",
+          "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+          "size": 6395
+        },
+        {
+          "file": "remaining-direct-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "remaining-iam-importers.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "file": "patch-sha256.txt",
+          "sha256": "eeb8918f9250aa61b8f67b8e6803b3851a2190811c5cf3360cbafaa6ea6b67cb",
+          "size": 125
+        }
+      ],
+      "tests": {
+        "topLevelPass": 8,
+        "subcasesPass": 2,
+        "names": [
+          "TestIAMFixtureS3V2Contract",
+          "TestIAMFixtureS3V2FailureBudget",
+          "TestIAMFixtureS3V2Cancellation",
+          "TestIAMFixtureS3V2CleanupDeadline",
+          "TestIAMFixtureS3V2RejectsPartialCredentials",
+          "TestIAMFixtureRawQueryV2Signing",
+          "TestSignSigV4RequestUsesStableSTSScopeAndBody",
+          "TestSignSigV4RequestIncludesTemporaryCredentialToken"
+        ],
+        "subcases": [
+          "TestIAMFixtureS3V2FailureBudget/Forbidden",
+          "TestIAMFixtureS3V2FailureBudget/Service_Unavailable"
+        ],
+        "liveIntegrationRun": false
+      },
+      "dependencyGraphs": [
+        {
+          "file": "helper-deps.txt",
+          "packageCount": 272,
+          "sdkV1Packages": 0,
+          "sha256": "6a6cc73590faed4b165470fd76e20b44b831bc17e00c4e19e75dcfc8a666420a"
+        },
+        {
+          "file": "iam-test-deps.txt",
+          "packageCount": 303,
+          "sdkV1Packages": 0,
+          "sha256": "4e52f7a8e438d0d3f4f3b97afcc0d14a1fe3f9b5d48b88298cd124371f59f5cd"
+        }
+      ],
+      "directImporters": 0
+    }
+  ],
+  "tests": {
+    "uniqueTopLevelPass": 30,
+    "uniqueSubcasesPass": 12,
+    "names": [
+      "TestBucketPolicySDKV2Cancellation",
+      "TestBucketPolicySDKV2Configuration",
+      "TestBucketPolicySDKV2RoundTrip",
+      "TestBucketPolicySDKV2SingleAttempt",
+      "TestIAMFixtureRawQueryV2Signing",
+      "TestIAMFixtureS3V2Cancellation",
+      "TestIAMFixtureS3V2CleanupDeadline",
+      "TestIAMFixtureS3V2Contract",
+      "TestIAMFixtureS3V2FailureBudget",
+      "TestIAMFixtureS3V2RejectsPartialCredentials",
+      "TestIAMFrameworkV2BearerIdentity",
+      "TestIAMFrameworkV2CancellationAndPartialCredentials",
+      "TestIAMFrameworkV2ErrorsAndBoundedRetry",
+      "TestIAMFrameworkV2RawExtensionSigning",
+      "TestIAMFrameworkV2S3RegionAndChecksum",
+      "TestIAMFrameworkV2StaticQueryAndToken",
+      "TestNormalIAMSDKV2Cancellation",
+      "TestNormalIAMSDKV2Configuration",
+      "TestNormalIAMSDKV2SingleAttempt",
+      "TestNormalIAMSDKV2WireAndModels",
+      "TestNormalSDKV2MultipartAndCancellation",
+      "TestNormalSDKV2PutWireAndNoRetry",
+      "TestNormalSDKV2RawSignerLegacyGolden",
+      "TestNormalSDKV2SSECKeyEncoding",
+      "TestPolicyIAMSDKV2Cancellation",
+      "TestPolicyIAMSDKV2Configuration",
+      "TestPolicyIAMSDKV2ErrorsAndBudget",
+      "TestPolicyIAMSDKV2WireAndModels",
+      "TestSignSigV4RequestIncludesTemporaryCredentialToken",
+      "TestSignSigV4RequestUsesStableSTSScopeAndBody"
+    ],
+    "subcases": [
+      "TestIAMFixtureS3V2FailureBudget/Forbidden",
+      "TestIAMFixtureS3V2FailureBudget/Service_Unavailable",
+      "TestIAMFrameworkV2BearerIdentity/iam",
+      "TestIAMFrameworkV2BearerIdentity/s3",
+      "TestNormalSDKV2PutWireAndNoRetry/Bad_Request",
+      "TestNormalSDKV2PutWireAndNoRetry/OK",
+      "TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable",
+      "TestPolicyIAMSDKV2Configuration/configured",
+      "TestPolicyIAMSDKV2Configuration/fallback",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/DeleteConflict",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/NoSuchEntity",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/ServiceFailure"
+    ],
+    "deduplicatedAcrossOverlappingWorkflows": true,
+    "policyNamedResultsCorroboratedByRunId": 41687967264
+  },
+  "qualifiedBinary": {
+    "sha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "productionGraphCount": 1811,
+    "productionGraphSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "sdkV1Packages": 0,
+    "byteIdentical": true,
+    "relativeTo": "Qualified fifteen-patch SeaweedFS 4.52 candidate",
+    "evidenceRunId": 41687967264,
+    "binaryDownloadPerformed": false,
+    "binaryEqualityVerifiedInHostedJob": true
+  },
+  "verification": {
+    "artifactArchivesDownloaded": 6,
+    "artifactArchiveHashesMatched": 6,
+    "allManifestEntriesVerified": true,
+    "manifestDigestsMatchedHostedAttestationLog": true,
+    "sigstoreSignatureIndependentlyVerified": false,
+    "rawArtifactsKeptInWorkspace": "review-stage/downloads/<runId>/",
+    "perWorkflowReceipts": "evidence/sdk27-workflows/<runId>.json",
+    "githubEvidenceRetentionDays": 90,
+    "permanentExternalCustodyEstablished": false,
+    "textEvidenceRepositoryPath": "evidence/sdk27-artifacts/<runId>/",
+    "textEvidenceFileCount": 62,
+    "textEvidenceUtf8Verified": true,
+    "textEvidenceCredentialPatternFindings": 0,
+    "fullImageCustodyEstablished": false
+  },
+  "limits": {
+    "optionalBuildTagsStillOpen": [
+      "elastic",
+      "rclone"
+    ],
+    "remainingNestedKafkaModulesQualified": false,
+    "liveIamRoundtripPerformed": false,
+    "liveS3RoundtripPerformed": false,
+    "liveKafkaRoundtripPerformed": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "minioStillActive": true,
+    "storageGatePassCount": 0,
+    "storageGateTotal": 8,
+    "acceptanceTestPassCount": 0,
+    "acceptanceTestTotal": 21,
+    "realObjectsMigrated": 0,
+    "realObjectsTarget": 120,
+    "licenseReviewOpen": true,
+    "redistributionReviewOpen": true,
+    "durableCustodyOpen": true,
+    "teatriM1Preserved": {
+      "technical": "8/8",
+      "functional": "6/6"
+    },
+    "farmaciePreserved": {
+      "observed": "61/10",
+      "status": "OPEN/STRING"
+    },
+    "sourceClosureDoesNotImplyOptionalModuleGraphClosure": true,
+    "consumedScopeCount": 17,
+    "cumulativeEngineGets": 52
+  }
+}

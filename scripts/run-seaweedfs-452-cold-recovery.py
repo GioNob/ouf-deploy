@@ -13,6 +13,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import stat
 import subprocess
@@ -78,11 +79,11 @@ def signed_headers(method, path, query="", body=b"", extra=None, now=None):
     return headers
 
 
-def request(method, key=None, body=b"", query=None, extra=None, expected=(200,)):
+def request(method, key=None, body=b"", query=None, extra=None, expected=(200,), timeout=30):
     path = "/" if key is None else "/" + BUCKET + ("/" + quote(key, safe="/~") if key else "")
     query = urlencode(sorted((query or {}).items()), quote_via=quote, safe="~")
     headers = signed_headers(method, path, query, body, extra)
-    connection = http.client.HTTPConnection("127.0.0.1", 18333, timeout=5)
+    connection = http.client.HTTPConnection("127.0.0.1", 18333, timeout=timeout)
     try:
         connection.request(method, path + ("?" + query if query else ""), body=body, headers=headers)
         response = connection.getresponse()
@@ -108,17 +109,20 @@ def client(action):
         while attempts < 60 and time.monotonic() < deadline:
             attempts += 1
             try:
-                request("GET")
-                return {"readinessAttempts": attempts}
+                request("GET", timeout=remaining_timeout(
+                    deadline, failure_code="HTTP_READINESS_BUDGET"))
             except RuntimeError as error:
                 require(str(error) in {"HTTP_500_GET", "HTTP_502_GET", "HTTP_503_GET", "HTTP_504_GET"},
                         "PERMANENT_READINESS_FAILURE:" + str(error))
-                time.sleep(1)
             except OSError as error:
                 require(isinstance(error, TimeoutError) or error.errno in
                         {errno.ECONNREFUSED, errno.ECONNRESET, errno.ETIMEDOUT},
                         "UNCLASSIFIED_READINESS_FAILURE")
-                time.sleep(1)
+            else:
+                remaining_timeout(deadline, failure_code="HTTP_READINESS_BUDGET")
+                return {"readinessAttempts": attempts}
+            time.sleep(remaining_timeout(deadline, maximum=1,
+                                         failure_code="HTTP_READINESS_BUDGET"))
         raise RuntimeError("BOUNDED_READINESS_EXHAUSTED")
     values = fixtures()
     if action == "seed":
@@ -158,6 +162,25 @@ def client(action):
     request("GET", "deleted.bin", expected=(404,))
     return {"action": action, "objects": records, "listPages": pages,
             "deletedObjectAbsent": True, "mutatingRequestRetries": 0}
+
+
+def ready_lock_ring(log):
+    """Pinned upstream's applied-ring event; LIST readiness alone precedes this."""
+    rings = re.findall(r"LockRing: applying master ring update v[0-9]+: \[([^\]\r\n]*)\]", log)
+    return bool(rings) and rings[-1] == "127.0.0.1:18888"
+
+
+def bounded_diagnostic(stderr, fallback):
+    if isinstance(stderr, bytes):
+        stderr = stderr.decode("utf-8", errors="replace")
+    value = stderr or fallback
+    return value.encode("utf-8")[-32768:].decode("utf-8", errors="ignore")
+
+
+def remaining_timeout(deadline, maximum=5, failure_code="LOCK_RING_READINESS_BUDGET"):
+    remaining = deadline - time.monotonic()
+    require(remaining > 0, failure_code)
+    return min(maximum, remaining)
 
 
 def inventory(root):
@@ -225,7 +248,7 @@ class Lab:
                        "-port.grpc=29333", "-mdir=/data", "-peers=none", "-telemetry=false",
                        "-volumeSizeLimitMB=32", "-defaultReplication=000"],
             "volume": ["volume", "-ip=127.0.0.1", "-ip.bind=127.0.0.1", "-port=18080",
-                       "-port.grpc=28080", "-master=127.0.0.1:19333", "-dir=/data", "-max=12",
+                       "-port.grpc=28080", "-master=127.0.0.1:19333", "-dir=/data", "-max=24",
                        "-preStopSeconds=1"],
             "filer": ["filer", "-ip=127.0.0.1", "-ip.bind=127.0.0.1", "-port=18888",
                       "-port.grpc=28888", "-master=127.0.0.1:19333", "-defaultStoreDir=/data"],
@@ -266,11 +289,40 @@ class Lab:
         require(all(r.get("dev") == "lo" for r in route_records), "LOOPBACK_ROUTES_ONLY")
         write_json(self.evidence / (self.prefix + "-routes.json"), route_records)
         self.client("ready")
+        # Read-only startup precondition: the pinned filer must have applied its
+        # own ring membership before the sole writer is admitted. No PUT probe.
+        deadline = time.monotonic() + 90
+        for attempt in range(1, 61):
+            state = json.loads(command(["docker", "inspect", self.prefix + "-filer"],
+                                       timeout=remaining_timeout(deadline)))[0]["State"]
+            require(state["Running"] and not state["OOMKilled"], "FILER_EXITED_BEFORE_RING_READY")
+            result = subprocess.run(["docker", "logs", "--tail", "200", self.prefix + "-filer"],
+                                    check=True, text=True, stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT, timeout=remaining_timeout(deadline))
+            remaining_timeout(deadline)
+            if ready_lock_ring(result.stdout):
+                write_json(self.evidence / (self.prefix + "-lock-ring-ready.json"), {
+                    "readOnlyPolls": attempt, "member": "127.0.0.1:18888",
+                    "evidence": "PINNED_FILER_APPLIED_RING_LOG_EVENT", "mutatingProbes": 0,
+                })
+                break
+            time.sleep(remaining_timeout(deadline, maximum=1))
+        else:
+            raise RuntimeError("LOCK_RING_READINESS_BUDGET")
 
     def client(self, action):
-        result = json.loads(command(["sudo", "-n", "nsenter", "-t", self.pid, "-n",
-                                     sys.executable, "-I", "-B", "-S", str(Path(__file__).resolve()),
-                                     "client", action], timeout=110))
+        try:
+            output = command(["sudo", "-n", "nsenter", "-t", self.pid, "-n",
+                              sys.executable, "-I", "-B", "-S", str(Path(__file__).resolve()),
+                              "client", action], timeout=90 if action == "ready" else 180)
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
+            timed_out = isinstance(error, subprocess.TimeoutExpired)
+            (self.evidence / (self.prefix + "-client-" + action + "-stderr.log")).write_text(
+                bounded_diagnostic(error.stderr, "CHILD_TIMEOUT_NO_STDERR" if timed_out
+                                   else "CHILD_FAILURE_NO_STDERR"))
+            raise RuntimeError(("CLIENT_ACTION_TIMED_OUT:" if timed_out else "CLIENT_ACTION_FAILED:")
+                               + action) from error
+        result = json.loads(output)
         write_json(self.evidence / (self.prefix + "-" + action + ".json"), result)
         return result
 

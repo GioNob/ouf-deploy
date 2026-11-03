@@ -56,7 +56,7 @@
     "version": "4.52",
     "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
     "qualifiedImagePatchCount": 15,
-    "repositoryPatchCount": 21,
+    "repositoryPatchCount": 27,
     "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
     "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
     "qualificationRunId": 41622752493,
@@ -75,9 +75,9 @@
     "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
     "awsSdkV1InQualifiedBinary": "ABSENT",
     "deprecatedS3ManagerInQualifiedBinary": "ABSENT",
-    "remainingRepositoryDirectSdkV1Importers": 20,
-    "remainingIamTestImporters": 12,
-    "remainingOtherTestImporters": 8,
+    "remainingRepositoryDirectSdkV1Importers": 0,
+    "remainingIamTestImporters": 0,
+    "remainingOtherTestImporters": 0,
     "testOnlyDossiers": [
       "evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json",
       "evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json",
@@ -94,7 +94,20 @@
     "releaseAdmitted": false,
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
-    "activeStorageBackend": "MinIO"
+    "activeStorageBackend": "MinIO",
+    "sourceClosureReceipt": "evidence/seaweedfs-sdk27-hosted-20261103.json",
+    "sourceClosureReceiptSha256": "79ecb185c8ec15baca290808b6921f3ebdf9dd8a5e344f3a53f01900ba041adc",
+    "sourceClosureHead": "70cd2671b41b0f775889826b2617811451a5e2ba",
+    "sourceClosureStatus": "HOSTED_PASS",
+    "optionalModuleDependencyLimits": {
+      "moduleGraphEradicationClaimed": false,
+      "optionalBuildTagsStillOpen": [
+        "elastic",
+        "rclone"
+      ],
+      "remainingNestedKafkaModulesQualified": false,
+      "liveIamRoundtripPerformed": false
+    }
   },
   "workPackages": [
     {
@@ -780,10 +793,28 @@
   },
   "pendingRepositoryQualification": {
     "patchCount": 27,
-    "status": "LOCAL_EXACT_PASS_HOSTED_PENDING",
+    "status": "COMPLETED_HOSTED_PASS",
     "evidence": "evidence/seaweedfs-sdk-v1-source-closure-local-20261103.json",
     "sourceImporters": 0,
     "qualifiedImagePatchCount": 15,
-    "currentQualificationRetainedUntilHostedPass": true
+    "currentQualificationRetainedUntilHostedPass": true,
+    "resolvedBy": "evidence/seaweedfs-sdk27-hosted-20261103.json"
+  },
+  "pendingStandardProfileQualification": {
+    "status": "LOCAL_PASS_HOSTED_PENDING",
+    "profile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+    "orderedPatchCount": 28,
+    "patch": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+    "patchSha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+    "evidence": "evidence/seaweedfs-ouf-standard-module-closure-local-20261103.json",
+    "workflow": ".github/workflows/storage-ouf-standard-module-closure.yml",
+    "rootModuleGraphSdkV1": 0,
+    "rootModuleGraphDeprecatedS3Manager": 0,
+    "qualifiedBinaryByteIdentical": true,
+    "currentQualificationRetainedUntilHostedPass": true,
+    "qualifiedImagePatchCount": 15,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0
   }
 }

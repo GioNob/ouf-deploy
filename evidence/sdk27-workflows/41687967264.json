@@ -1,0 +1,124 @@
+{
+  "name": "storage-root-iam-tests-sdk-v2",
+  "workflowPath": ".github/workflows/storage-root-iam-tests-sdk-v2.yml",
+  "runId": 41687967264,
+  "jobId": 126098660251,
+  "conclusion": "success",
+  "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967264",
+  "artifact": {
+    "id": 13256397431,
+    "name": "storage-root-iam-sdk-v2-41687967264",
+    "sha256": "f29fa78c229fe5ac98dfe8f0787fcdea87f0490c69c0d1642c6064cc9a7395bb",
+    "sizeInBytes": 41161,
+    "downloadVerified": true,
+    "expiresAt": "2027-02-01T17:49:39Z"
+  },
+  "manifestSha256": "978cadf50dc4040a2c5785b40d4232b979b9dbe1682e60bfe56e2a4502a01ef0",
+  "manifestEntriesVerified": 11,
+  "fileManifest": [
+    {
+      "file": "test.log",
+      "sha256": "042a6e942ff8bcbe7c5b12b9bd6ab9b63e8f7c127491d7d819a868eb2d2c894b",
+      "size": 2620
+    },
+    {
+      "file": "iam-module.json",
+      "sha256": "4184960df3ae5448230f9c3fe1c4a21dd7783d5319a6ac382cb21061a47d8fbc",
+      "size": 449
+    },
+    {
+      "file": "upstream-source-sha.txt",
+      "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "size": 41
+    },
+    {
+      "file": "build-info.txt",
+      "sha256": "580696e2eba7ba9d54584da50fdec20fbcb94dcdf58a62be6ce5a34ed7b04c39",
+      "size": 25458
+    },
+    {
+      "file": "binary-sha256.txt",
+      "sha256": "6a351bc906b9494c317cf472914394ae6e3477e0bbab415a64b9386629c58aa5",
+      "size": 104
+    },
+    {
+      "file": "root-iam-test-deps.txt",
+      "sha256": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26",
+      "size": 74953
+    },
+    {
+      "file": "compile.log",
+      "sha256": "9672bb5af41c4346b446b501112304719afc6b2733d888845620060b9ee9ab51",
+      "size": 230
+    },
+    {
+      "file": "patch-sha256.txt",
+      "sha256": "a6c8e5c517861095bcbd27faa205066c9c70f19037f74a927ecb1c4e5c0c2987",
+      "size": 120
+    },
+    {
+      "file": "patch-stat.txt",
+      "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+      "size": 6395
+    },
+    {
+      "file": "production-deps.txt",
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+      "size": 74977
+    },
+    {
+      "file": "remaining-direct-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "tests": {
+    "topLevelPass": 16,
+    "subcasesPass": 8,
+    "names": [
+      "TestBucketPolicySDKV2Configuration",
+      "TestBucketPolicySDKV2RoundTrip",
+      "TestBucketPolicySDKV2SingleAttempt",
+      "TestBucketPolicySDKV2Cancellation",
+      "TestPolicyIAMSDKV2Configuration",
+      "TestPolicyIAMSDKV2WireAndModels",
+      "TestPolicyIAMSDKV2ErrorsAndBudget",
+      "TestPolicyIAMSDKV2Cancellation",
+      "TestNormalIAMSDKV2Configuration",
+      "TestNormalIAMSDKV2WireAndModels",
+      "TestNormalIAMSDKV2SingleAttempt",
+      "TestNormalIAMSDKV2Cancellation",
+      "TestNormalSDKV2PutWireAndNoRetry",
+      "TestNormalSDKV2MultipartAndCancellation",
+      "TestNormalSDKV2RawSignerLegacyGolden",
+      "TestNormalSDKV2SSECKeyEncoding"
+    ],
+    "subcases": [
+      "TestPolicyIAMSDKV2Configuration/fallback",
+      "TestPolicyIAMSDKV2Configuration/configured",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/NoSuchEntity",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/DeleteConflict",
+      "TestPolicyIAMSDKV2ErrorsAndBudget/ServiceFailure",
+      "TestNormalSDKV2PutWireAndNoRetry/OK",
+      "TestNormalSDKV2PutWireAndNoRetry/Bad_Request",
+      "TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable"
+    ],
+    "liveIntegrationRun": false
+  },
+  "dependencyGraphs": [
+    {
+      "file": "production-deps.txt",
+      "packageCount": 1811,
+      "sdkV1Packages": 0,
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a"
+    },
+    {
+      "file": "root-iam-test-deps.txt",
+      "packageCount": 1803,
+      "sdkV1Packages": 0,
+      "sha256": "75d691075783e9397fec0421d7e3acd8fc4e9502bf552820e655e1f9fb36ce26"
+    }
+  ],
+  "directImporters": 0
+}
