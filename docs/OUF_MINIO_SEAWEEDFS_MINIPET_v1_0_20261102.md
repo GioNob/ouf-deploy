@@ -1,3 +1,11 @@
+## Checkpoint repository — test volume/gRPC S3 migrato a SDK v2 (3 novembre 2026)
+
+La [patch 18](../patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch), SHA256 `743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7`, migra `test/volume_server/grpc/fetch_remote_s3_test.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture, regione `us-east-1` e path-style. L'SDK usa un solo tentativo; CreateBucket e PutObject ricevono context e gli errori prima ignorati sono verificati.
+
+La [CI 41643462164](https://github.com/GioNob/ouf-deploy/actions/runs/41643462164) ha completato tutti gli otto step principali applicando in ordine diciotto patch. Il grafo del package contiene 580 pacchetti e zero SDK v1. L'artifact attestato `13233557928`, ZIP SHA256 `9b238c2c81d6e9c9c07801e1416dc644b885b593886e6f7ae6c7d48ee4fd0534`, conserva sette file e l'elenco esatto dei 23 importatori residui. La tornata complessiva è 51/51 SUCCESS.
+
+Gli importatori diretti repository-wide scendono 24→23: 13 in `test/s3/iam` e 10 in altri test non qualificati. La patch è solo test e non sostituisce l'esatta coorte OCI a 15 patch, non modifica il server qualificato e non ammette una release. Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali; licenze e custodia durevole restano OPEN, MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati; zero operazioni target o nuova autorità.
+
 ## Checkpoint repository — strumento multipart migrato a SDK v2 (3 novembre 2026)
 
 La [patch 17](../patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch), SHA256 `3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8`, migra `test/s3/multipart/aws_upload.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture e path-style; corregge la regione al valore ASCII `us-west-1`. L'SDK usa un solo tentativo. Il loop esplicito mantiene tre tentativi per UploadPart sullo stesso upload ID e part number, quindi sostituisce la stessa parte senza produrre una seconda mutazione logica.

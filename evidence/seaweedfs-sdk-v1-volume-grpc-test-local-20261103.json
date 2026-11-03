@@ -6,8 +6,25 @@
     "test/volume_server/grpc/fetch_remote_s3_test.go": "77c66dee5afc27c6c9d790955ac1a5ea4d4e171d79340aab0cc4e58e388647e6"
   },
   "generatedAt": "2026-11-03T13:19:36Z",
-  "hostedArtifact": null,
-  "hostedEvidence": null,
+  "hostedArtifact": {
+    "expiresAt": "2027-02-01T13:20:27Z",
+    "id": 13233557928,
+    "sha256": "9b238c2c81d6e9c9c07801e1416dc644b885b593886e6f7ae6c7d48ee4fd0534",
+    "sizeBytes": 6280
+  },
+  "hostedEvidence": {
+    "manifest": {
+      "patch-sha256.txt": "f5c5d49dec1ae14e6d63ccb310c07f23aa917d2bc67b43c76de36b9572dc536f",
+      "patch-stat.txt": "107f8340db7ba2b73260508e3cd7025ff000ee23fd31de29d0023f0f356a2fea",
+      "remaining-direct-importers.txt": "5efe5424755911104e4d1ee22fb72e03b0fd75b114c292edde209591323093e6",
+      "test.log": "f54c3bae85bc138bcc11aa5fe8e5a8a87565ef9d561e299c6b550459ab4a8784",
+      "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "volume-grpc-test-deps.txt": "56fb0838321c94050a426667353a22022cca77be978fc619719aa915115befdd"
+    },
+    "remainingDirectImporters": 23,
+    "verified": true,
+    "volumeGrpcTestDependencies": 580
+  },
   "maintainedSdk": {
     "core": "github.com/aws/aws-sdk-go-v2",
     "service": "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -32,8 +49,10 @@
   "targetOperations": 0,
   "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
   "workflow": {
+    "artifactId": 13233557928,
     "path": ".github/workflows/storage-volume-grpc-s3-test-sdk-v2.yml",
+    "runId": 41643462164,
     "sha256": "7422e8d036ad28a76033f84049a1b7e3451f22b8929dcae394fc1814eacf513a",
-    "status": "PENDING_HOSTED_RUN"
+    "status": "HOSTED_PASS"
   }
 }

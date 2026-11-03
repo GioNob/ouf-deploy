@@ -23,7 +23,9 @@ Il workflow `.github/workflows/storage-volume-grpc-s3-test-sdk-v2.yml`, con azio
 
 ## Esito hosted
 
-PENDING: il workflow dedicato deve ancora essere eseguito sul commit pubblicato.
+La [CI 41643462164](https://github.com/GioNob/ouf-deploy/actions/runs/41643462164) è PASS sul commit `54c31f323440aacc4d199ee895730f0b0c14f17c`. Tutti gli otto step principali sono riusciti, inclusi applicazione delle diciotto patch, controllo del perimetro residuo, test non-network, attestazione e retention.
+
+L'artifact `13233557928` contiene sette file e scade il 1 febbraio 2027. Lo ZIP di 6.280 byte ha SHA256 `9b238c2c81d6e9c9c07801e1416dc644b885b593886e6f7ae6c7d48ee4fd0534`; tutti i sei membri elencati in `SHA256SUMS` sono stati riletti e verificati. Il readback conferma 580 pacchetti nel grafo del test, zero pacchetti SDK v1 e l'elenco esatto dei 23 importatori diretti residui.
 
 ## Confini
 
