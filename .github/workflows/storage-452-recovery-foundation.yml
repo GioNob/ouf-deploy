@@ -1,0 +1,75 @@
+name: Storage 4.52 recovery foundation
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-452-recovery-foundation.yml
+      - profiles/seaweedfs-452-lab/profile.json
+      - tools/storage_recovery/**
+      - tests/test_storage_recovery_*.py
+      - docs/OUF_SEAWEEDFS_452_RECOVERY_FOUNDATION_20261103.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-452-recovery-foundation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Verify exact candidate binding and fail-closed profile
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-452-recovery-foundation"
+          mkdir -p "$evidence"
+          test "$(sha256sum releases/seaweedfs-452-candidate-lock-20261103.json | cut -d' ' -f1)" = 81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea
+          PYTHONPATH=. python3 -I -B -S tools/storage_recovery/profile.py profiles/seaweedfs-452-lab/profile.json |
+            tee "$evidence/profile-validation.json"
+          PYTHONPATH=. python3 -I -B -S -m unittest discover -s tests -p 'test_storage_recovery_*.py' -v 2>&1 |
+            tee "$evidence/tests.log"
+          sha256sum \
+            releases/seaweedfs-452-candidate-lock-20261103.json \
+            profiles/seaweedfs-452-lab/profile.json \
+            tools/storage_recovery/__init__.py \
+            tools/storage_recovery/profile.py \
+            tools/storage_recovery/manifest.py \
+            tests/test_storage_recovery_profile.py \
+            tests/test_storage_recovery_manifest.py \
+            docs/OUF_SEAWEEDFS_452_RECOVERY_FOUNDATION_20261103.md \
+            | LC_ALL=C sort > "$evidence/source-sha256.txt"
+          printf '%s\n' \
+            'status=SYNTHETIC_FOUNDATION_VERIFIED_NOT_ACCEPTANCE' \
+            'releaseAdmitted=false' \
+            'runtimeAuthorityIssued=false' \
+            'targetOperations=0' \
+            'rpoMeasured=false' \
+            'rtoMeasured=false' > "$evidence/boundaries.txt"
+          cd "$evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-452-recovery-foundation/SHA256SUMS
+
+      - name: Retain bounded foundation evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-452-recovery-foundation-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-452-recovery-foundation/
+          if-no-files-found: error
+          retention-days: 90
