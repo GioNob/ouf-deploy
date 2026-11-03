@@ -1,5 +1,24 @@
 {
   "candidatePatchCountBefore": 16,
+  "hostedArtifact": {
+    "expiresAt": "2027-02-01T12:43:24Z",
+    "id": 13230963602,
+    "sha256": "dd6391fffd52a29b5a67d41c249a7812502fc025180cb5caf7f440e10aa23c7a",
+    "sizeBytes": 4341
+  },
+  "hostedEvidence": {
+    "manifest": {
+      "multipart-test-deps.txt": "2470fca7237701a38d188a7615cccf02b4aca4d46d9473756288400e284792e6",
+      "patch-sha256.txt": "5127f6d10a2f2a89552e324b27c3bb3be3af61008ab2c5cfdf18bc04ec66ed40",
+      "patch-stat.txt": "774cf6ed90b0668b7d17bfe1f8ec14ed718936b66909edd265d312108b3084b3",
+      "remaining-direct-importers.txt": "29f069dad7b9ad9389fec5b0c664ba7664266f6c4f2d6622d845101801d38af9",
+      "test.log": "80b1d01498a90b68af7a241c3320d68112503f1ed06986870d00604f182242c6",
+      "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93"
+    },
+    "multipartTestDependencies": 290,
+    "remainingDirectImporters": 24,
+    "verified": true
+  },
   "directAwsSdkV1ImportersAfter": 24,
   "directAwsSdkV1ImportersBefore": 25,
   "files": {
@@ -32,8 +51,10 @@
   "targetOperations": 0,
   "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
   "workflow": {
+    "artifactId": 13230963602,
     "path": ".github/workflows/storage-multipart-tool-sdk-v2.yml",
+    "runId": 41638106512,
     "sha256": "7b0bd2345f1a1d4ff93f8dc0a8e83f7eedfe92a757b83779c0f68338d79d42d6",
-    "status": "LOCAL_READY_REMOTE_PENDING"
+    "status": "HOSTED_PASS"
   }
 }

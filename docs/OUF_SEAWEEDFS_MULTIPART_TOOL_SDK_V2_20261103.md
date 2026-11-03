@@ -21,6 +21,12 @@ Le API multipart ricevono ora un `context.Context` e usano i tipi SDK v2. Il ret
 
 Il workflow `.github/workflows/storage-multipart-tool-sdk-v2.yml`, con azioni pin-nate a commit, ripete la sequenza a 17 patch, vincola i 24 importatori residui e trattiene un manifest attestato con dipendenze, hash e log.
 
+## Esito hosted
+
+La [CI 41638106512](https://github.com/GioNob/ouf-deploy/actions/runs/41638106512) è PASS sul commit `1dd71a6bd8a23490fb25b1879069985cb500c5fe`. Tutti gli otto step principali sono riusciti, inclusi applicazione delle diciassette patch, controllo del perimetro residuo, test non-network, attestazione e retention.
+
+L'artifact `13230963602` contiene sette file e scade il 1 febbraio 2027. Lo ZIP di 4.341 byte ha SHA256 `dd6391fffd52a29b5a67d41c249a7812502fc025180cb5caf7f440e10aa23c7a`; tutti i sei membri elencati in `SHA256SUMS` sono stati riletti e verificati. Il readback conferma 290 pacchetti nel grafo del test, zero pacchetti SDK v1 e l'elenco esatto dei 24 importatori diretti residui.
+
 ## Confini
 
 Questo lotto modifica uno strumento di test, non il server standard già qualificato con quindici patch. Non sostituisce la coorte OCI esatta, non ammette una release e non chiude SW-G1. Review licenze e custodia durevole dell'immagine restano OPEN.

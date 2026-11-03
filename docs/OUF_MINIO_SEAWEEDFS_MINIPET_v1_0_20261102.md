@@ -1,3 +1,11 @@
+## Checkpoint repository — strumento multipart migrato a SDK v2 (3 novembre 2026)
+
+La [patch 17](../patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch), SHA256 `3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8`, migra `test/s3/multipart/aws_upload.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture e path-style; corregge la regione al valore ASCII `us-west-1`. L'SDK usa un solo tentativo. Il loop esplicito mantiene tre tentativi per UploadPart sullo stesso upload ID e part number, quindi sostituisce la stessa parte senza produrre una seconda mutazione logica.
+
+La [CI 41638106512](https://github.com/GioNob/ouf-deploy/actions/runs/41638106512) ha completato tutti gli otto step principali applicando in ordine diciassette patch. Il grafo del package contiene 290 pacchetti e zero SDK v1. L'artifact attestato `13230963602`, ZIP SHA256 `dd6391fffd52a29b5a67d41c249a7812502fc025180cb5caf7f440e10aa23c7a`, conserva sette file e l'elenco esatto dei 24 importatori residui. La tornata complessiva è 51/51 SUCCESS; un worker M2 è riuscito al secondo tentativo dopo scadenza di una finestra sintetica, senza operazioni target.
+
+Gli importatori diretti repository-wide scendono 25→24: 13 in `test/s3/iam` e 11 in altri test non qualificati. La patch è solo strumento di test e non sostituisce l'esatta coorte OCI a 15 patch, non modifica il server qualificato e non ammette una release. Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali; licenze e custodia durevole restano OPEN, MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati; zero operazioni target o nuova autorità.
+
 ## Checkpoint repository — test S3 basic migrati a SDK v2 (3 novembre 2026)
 
 La [patch 16](../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch), SHA256 `ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40`, migra i tre file di `test/s3/basic` a AWS SDK Go v2. Conserva endpoint locale HTTP, regione, credenziali configurate e path-style; le chiamate ricevono context e i modelli ACL/tagging usano i tipi mantenuti. Il test non-network del contratto client è PASS in locale e sulla [CI 41632509122](https://github.com/GioNob/ouf-deploy/actions/runs/41632509122).
