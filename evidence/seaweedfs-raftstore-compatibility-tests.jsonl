@@ -1,0 +1,16 @@
+{"Time":"2026-11-03T20:18:18.179084143+01:00","Action":"start","Package":"ouf.storage.raftstore.compat"}
+{"Time":"2026-11-03T20:18:18.182654737+01:00","Action":"run","Package":"ouf.storage.raftstore.compat","Test":"TestOldV2FileReadAndWriteWithLocalThenReopenOldV2"}
+{"Time":"2026-11-03T20:18:18.182767677+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestOldV2FileReadAndWriteWithLocalThenReopenOldV2","Output":"=== RUN   TestOldV2FileReadAndWriteWithLocalThenReopenOldV2\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.199570677+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestOldV2FileReadAndWriteWithLocalThenReopenOldV2","Output":"--- PASS: TestOldV2FileReadAndWriteWithLocalThenReopenOldV2 (0.02s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.199628604+01:00","Action":"pass","Package":"ouf.storage.raftstore.compat","Test":"TestOldV2FileReadAndWriteWithLocalThenReopenOldV2","Elapsed":0.02}
+{"Time":"2026-11-03T20:18:18.199670637+01:00","Action":"run","Package":"ouf.storage.raftstore.compat","Test":"TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes"}
+{"Time":"2026-11-03T20:18:18.199755455+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes","Output":"=== RUN   TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.207540572+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes","Output":"--- PASS: TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes (0.01s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.207585099+01:00","Action":"pass","Package":"ouf.storage.raftstore.compat","Test":"TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes","Elapsed":0.01}
+{"Time":"2026-11-03T20:18:18.207596587+01:00","Action":"run","Package":"ouf.storage.raftstore.compat","Test":"TestLogStoreMonotonicInterfaceRemainsUnclaimed"}
+{"Time":"2026-11-03T20:18:18.207639271+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestLogStoreMonotonicInterfaceRemainsUnclaimed","Output":"=== RUN   TestLogStoreMonotonicInterfaceRemainsUnclaimed\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.207643497+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Test":"TestLogStoreMonotonicInterfaceRemainsUnclaimed","Output":"--- PASS: TestLogStoreMonotonicInterfaceRemainsUnclaimed (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.20764544+01:00","Action":"pass","Package":"ouf.storage.raftstore.compat","Test":"TestLogStoreMonotonicInterfaceRemainsUnclaimed","Elapsed":0}
+{"Time":"2026-11-03T20:18:18.207647934+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:18:18.210450321+01:00","Action":"output","Package":"ouf.storage.raftstore.compat","Output":"ok  \touf.storage.raftstore.compat\t0.030s\n"}
+{"Time":"2026-11-03T20:18:18.210499135+01:00","Action":"pass","Package":"ouf.storage.raftstore.compat","Elapsed":0.031}

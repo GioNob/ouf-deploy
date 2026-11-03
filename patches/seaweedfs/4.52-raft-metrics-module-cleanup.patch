@@ -1,0 +1,33 @@
+diff --git a/go.mod b/go.mod
+index 1dc30d5..57618c7 100644
+--- a/go.mod
++++ b/go.mod
+@@ -115,7 +115,6 @@ require (
+ 	github.com/apache/iceberg-go v0.7.0
+ 	github.com/apple/foundationdb/bindings/go v0.0.0-20250911184653-27f7192f47c3
+ 	github.com/arangodb/go-driver v1.6.9
+-	github.com/armon/go-metrics v0.4.1
+ 	github.com/aws/aws-sdk-go-v2 v1.47.5
+ 	github.com/aws/aws-sdk-go-v2/config v1.33.6
+ 	github.com/aws/aws-sdk-go-v2/credentials v1.20.6
+@@ -320,7 +319,7 @@ require (
+ 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+ 	github.com/hashicorp/go-hclog v1.6.3 // indirect
+ 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+-	github.com/hashicorp/go-metrics v0.7.0 // indirect
++	github.com/hashicorp/go-metrics v0.7.0
+ 	github.com/hashicorp/go-msgpack/v2 v2.1.5 // indirect
+ 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
+ 	github.com/hashicorp/golang-lru v1.0.2 // indirect
+diff --git a/go.sum b/go.sum
+index f44577f..c39db64 100644
+--- a/go.sum
++++ b/go.sum
+@@ -783,7 +783,6 @@ github.com/parquet-go/jsonlite v1.0.0 h1:87QNdi56wOfsE5bdgas0vRzHPxfJgzrXGml1zZd
+ github.com/parquet-go/jsonlite v1.0.0/go.mod h1:nDjpkpL4EOtqs6NQugUsi0Rleq9sW/OtC1NnZEnxzF0=
+ github.com/parquet-go/parquet-go v0.32.0 h1:NWDqTUHfrCS4cJP/Fj2HlxvqsrVedWG3sayMkf+znzM=
+ github.com/parquet-go/parquet-go v0.32.0/go.mod h1:navtkAYr2LGoJVp141oXPlO/sxLvaOe3la2JEoD8+rg=
+-github.com/pascaldekloe/goe v0.1.0 h1:cBOtyMzM9HTpWjXfbbunk26uA6nG3a8n06Wieeh0MwY=
+ github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
+ github.com/pelletier/go-toml/v2 v2.4.3 h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=
+ github.com/pelletier/go-toml/v2 v2.4.3/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=

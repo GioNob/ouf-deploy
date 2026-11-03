@@ -1,0 +1,160 @@
+{
+  "schema": "ouf.httpdown-stdlib-local-qualification.v1",
+  "status": "LOCAL_HTTP_TCP_TLS_AND_RACE_QUALIFIED_NEW_IMAGE_PENDING",
+  "sourceGeneration": 29,
+  "sourceRevision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "environment": {
+    "goVersion": "go1.27.3",
+    "platform": "linux/amd64",
+    "standardTestsCGOEnabled": false,
+    "raceTestsCGOEnabled": true,
+    "raceRepetitions": 3
+  },
+  "testResults": {
+    "local-tests": {
+      "passTestOutcomes": 13,
+      "failedTestOutcomes": 0,
+      "packagePassed": true,
+      "packageFailed": false,
+      "dataRaceReported": false
+    },
+    "race-tests": {
+      "passTestOutcomes": 39,
+      "failedTestOutcomes": 0,
+      "packagePassed": true,
+      "packageFailed": false,
+      "dataRaceReported": false
+    },
+    "command-compile": {
+      "passTestOutcomes": 0,
+      "failedTestOutcomes": 0,
+      "packagePassed": true,
+      "packageFailed": false,
+      "dataRaceReported": false
+    },
+    "baseline-negative": {
+      "passTestOutcomes": 0,
+      "failedTestOutcomes": 1,
+      "packagePassed": false,
+      "packageFailed": true,
+      "dataRaceReported": false
+    },
+    "control-channel-red": {
+      "passTestOutcomes": 7,
+      "failedTestOutcomes": 0,
+      "packagePassed": false,
+      "packageFailed": true,
+      "dataRaceReported": false
+    }
+  },
+  "realLoopbackHttpTcpTls": true,
+  "tlsTrustVerifiedWithFixtureCA": true,
+  "negativeShutdownStressIterationsPerRun": 100,
+  "concurrentStopCallersPerRun": 16,
+  "legacyBaselinePanicIndependentlyReproduced": true,
+  "zeroDurationDefaultsPreservedSeconds": {
+    "StopTimeout": 60,
+    "KillTimeout": 60
+  },
+  "negativeDurations": "immediately expired, as before",
+  "configuredVolumeTimeoutsChanged": false,
+  "httpClockGoFieldRemoved": true,
+  "repositoryHttpConfigCallers": {
+    "path": "weed/command/volume.go",
+    "count": 2,
+    "ClockAssignments": 0,
+    "callerSourceChanged": false
+  },
+  "optionalStatsStructuralClientCompatibility": true,
+  "productionGraph": {
+    "baselinePackages": 1811,
+    "newPackages": 1809,
+    "removed": [
+      "github.com/facebookgo/clock",
+      "github.com/facebookgo/stats"
+    ],
+    "added": [],
+    "environment": {
+      "CGO_ENABLED": "0",
+      "GOOS": "linux",
+      "GOARCH": "amd64",
+      "go": "1.27.3"
+    },
+    "baselineSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "newSha256": "7c654418517a1e6e21579b340fbc6c8a4a0344b636440ffd85c297d06e046d45"
+  },
+  "moduleRequirementsRemoved": [
+    "github.com/facebookgo/clock",
+    "github.com/facebookgo/stats"
+  ],
+  "remainingDependencyVersionsChanged": [],
+  "sumEntriesRemoved": 4,
+  "patchReplayComparedFiles": 5,
+  "patchReplayByteIdentical": true,
+  "goModSha256": "4aec496707b7b06483ad720a93595864948d9f883a46046e2ff77e0b9de5de89",
+  "goSumSha256": "2cf51a27da561a091af976b8cea4e85c654a17651172d707595a3305419c2abf",
+  "newProductionBinaryBuilt": false,
+  "newImageQualified": false,
+  "fullIntegratedSuiteQualified": false,
+  "tidyFixedPointQualified": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "limitations": [
+    "Clock injection field is intentionally removed from this internal package API; no repository callers set it.",
+    "Stop/kill phase budgets do not interrupt arbitrary blocking Listener.Close, Conn.Close, Stats or ConnState implementations.",
+    "Existing policy may finish Stop after kill-budget exhaustion without proving every custom connection was closed; no healthy/runtime claim is made.",
+    "TLS callback/handshake tested, certificate rotation and full production workload not qualified here.",
+    "Remaining archived modules in lifecycle inventory are not resolved by this change."
+  ],
+  "files": {
+    "docs/OUF_SEAWEEDFS_HTTPDOWN_STDLIB_20261103.md": {
+      "sha256": "5169ca0723d247e86cf4694a72e91294e7a22f458ce5e2b23882f144014b7925",
+      "bytes": 4394
+    },
+    "evidence/seaweedfs-httpdown-baseline-negative-20261103.jsonl": {
+      "sha256": "8b4fe53c0b429fa64139aab55469f123b5ad577786773b71395840f24264a470",
+      "bytes": 6116
+    },
+    "evidence/seaweedfs-httpdown-baseline-race-reproduction-20261103.json": {
+      "sha256": "f94c511553a066e878b036b7983fe3cb0845ee1f71712b45f6ae166ed7328435",
+      "bytes": 736
+    },
+    "evidence/seaweedfs-httpdown-command-compile-20261103.jsonl": {
+      "sha256": "c020311e87fbfd364633d2fb4ad7a49d1750046c62c703046c03c9725086bdc6",
+      "bytes": 3068
+    },
+    "evidence/seaweedfs-httpdown-control-channel-red-20261103.jsonl": {
+      "sha256": "03b5e915666bd9adbd0022290b108bfa0bd3e2a7ac738be0529493285bc07b25",
+      "bytes": 12968
+    },
+    "evidence/seaweedfs-httpdown-local-tests-20261103.jsonl": {
+      "sha256": "43c5c029bb032072016301a4989591d7f0ad2ae07aa7b2f548fd49d4df3a4b20",
+      "bytes": 13777
+    },
+    "evidence/seaweedfs-httpdown-production-deps-20261103.txt": {
+      "sha256": "7c654418517a1e6e21579b340fbc6c8a4a0344b636440ffd85c297d06e046d45",
+      "bytes": 74921
+    },
+    "evidence/seaweedfs-httpdown-production-deps-delta-20261103.json": {
+      "sha256": "576af808bcc60d3d23eaac07f548446fe94e0c2b3a120e0f77d028155aa67c80",
+      "bytes": 440
+    },
+    "evidence/seaweedfs-httpdown-race-tests-20261103.jsonl": {
+      "sha256": "ae4089520e85490b9e3156973c4d1f86b6a889ad213f5335e39e85330c921476",
+      "bytes": 40538
+    },
+    "patches/seaweedfs/4.52-httpdown-module-closure.patch": {
+      "sha256": "379403a1565593659033aeec82736d899a7a0077f6bbbc77062c8490cb946505",
+      "bytes": 2370
+    },
+    "patches/seaweedfs/4.52-httpdown-stdlib-time-local-stats.patch": {
+      "sha256": "59d653c5aeb0b28a7718259e4ed7bf4361ca12ed12d3dbf9aa0436a8b901e45d",
+      "bytes": 17982
+    },
+    "tests/fixtures/seaweedfs-httpdown-legacy-race/legacy_race_test.go": {
+      "sha256": "1e0fcf4c99474b7c4ee56247600de153960a1515f90304ed192dcdf8534627ae",
+      "bytes": 337
+    }
+  }
+}

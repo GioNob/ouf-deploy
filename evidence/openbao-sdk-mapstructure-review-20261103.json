@@ -1,0 +1,57 @@
+{
+  "schema": "ouf.openbao-sdk-mapstructure-review.v1",
+  "status": "OFFICIAL_SDK_MIGRATION_ALONE_DOES_NOT_CLOSE_ARCHIVED_DEPENDENCY",
+  "date": "2026-11-03",
+  "openbaoApiLatestObservedTag": "api/v2.7.1",
+  "openbaoApiTagCommit": "36ba71c26ede7ba3e89b90a8064a8cd28d37de39",
+  "openbaoApiMainObservedCommit": "6539c32aa1d260aa0bb0ebe4dd74bc41b7aab313",
+  "openbaoApiRequiresGo": "1.25.0",
+  "sourceSignatureCompatibilityObserved": true,
+  "compiledCompatibilityProven": false,
+  "wireCompatibilityProven": false,
+  "officialApiStillImportsHashicorpParseutil": true,
+  "hashicorpParseutilLatestObservedTag": "parseutil/v0.2.0",
+  "hashicorpParseutilStillImportsArchivedMapstructure": true,
+  "openbaoParseutilLatestObservedTag": "parseutil/v1.1.0",
+  "openbaoParseutilStillImportsArchivedMapstructure": true,
+  "maintainedDropInDependencyChainWithoutOldMapstructureFound": false,
+  "profileExclusionPossibleOnlyAsExplicitlyRestrictedCandidate": true,
+  "targetBindingsProvenNotToRequireExcludedProvider": false,
+  "kmsInitializationErrorsCurrentlySwallowedAtTwoLayers": true,
+  "sdkMigrationPerformed": false,
+  "replacementAliasApplied": false,
+  "customHttpClientImplemented": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "sourceObservations": {
+    "evidence/openbao-sdk-review-20261103/api-v2.7.1-env.go.txt": {
+      "bytes": 993,
+      "sha256": "3fdc832d23abc9f40a9cad052bdcc40ccb3c45ea6c30422ad4cbd593d1cde267"
+    },
+    "evidence/openbao-sdk-review-20261103/api-v2.7.1-go.mod.txt": {
+      "bytes": 1561,
+      "sha256": "048ddbc504d6ee66fe9691a306a3f2181e193122de3e271fff816330e0e7b65b"
+    },
+    "evidence/openbao-sdk-review-20261103/hashicorp-parseutil-main-go.mod.txt": {
+      "bytes": 445,
+      "sha256": "ff8dfe492601be6c96e6423ac0682b04c7019bfe758b213cdb8c5ed7216b3d5a"
+    },
+    "evidence/openbao-sdk-review-20261103/kms-failure-propagation-observations.json": {
+      "bytes": 3233,
+      "sha256": "d0772fc2fb18c154d13ee122e413c7802f3fe5d95c1c8aeb91ad9ac2a3c5ff8c"
+    },
+    "evidence/openbao-sdk-review-20261103/observed-tag-refs.json": {
+      "bytes": 4677,
+      "sha256": "56148f3ebe83fadd1ad7e1cb2fe404a95034695b8c251eba1ea81c2be0acb7ff"
+    },
+    "evidence/openbao-sdk-review-20261103/openbao-parseutil-v1.1.0-go.mod.txt": {
+      "bytes": 564,
+      "sha256": "52a08b1a97f8239cd0ca01ec0930ad25b683e4cf895ea0467d895c17a45c0a74"
+    },
+    "evidence/openbao-sdk-review-20261103/ouf-binding-observations.json": {
+      "bytes": 868,
+      "sha256": "12c7753aecef9d47f9241d248709904f88d3e519ca092c5419165842268e6e58"
+    }
+  }
+}

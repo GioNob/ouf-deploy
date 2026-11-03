@@ -1,0 +1,55 @@
+{
+  "checks": [
+    "Stats subset preserves exact method types of former Client, including anonymous End return interface",
+    "Unused Clock field removal documented; unchanged2 internal volume callers set no Clock",
+    "Default60second budgets and negative immediate expiry preserved",
+    "Late kill cannot send to closed control channel; publication has deadline and completion alternatives",
+    "No added goroutine for kill publication; unused control channels are reclaimed with server, stats ticker stopped on manager exit",
+    "sync.Once serializes concurrent/repeated Stop and publishes shared stopErr",
+    "Wait serving errors and Stop listener-close errors remain separate as baseline",
+    "Live TCP HTTP TLS tests and race repetitions pass"
+  ],
+  "codePatchSha256": "59d653c5aeb0b28a7718259e4ed7bf4361ca12ed12d3dbf9aa0436a8b901e45d",
+  "component": "HTTPdown stdlib timers and local Stats",
+  "deliveryFilesHashAndSizeVerified": 13,
+  "githubWrites": 0,
+  "independentlyRepeated": {
+    "focused": {
+      "dataRaceReported": false,
+      "fail": 0,
+      "packagePass": 1,
+      "testPass": 13
+    },
+    "race": {
+      "dataRaceReported": false,
+      "fail": 0,
+      "packagePass": 1,
+      "testPass": 39
+    }
+  },
+  "limits": [
+    "Blocking arbitrary Close/Stats/ConnState implementations remain outside phase timeout guarantee",
+    "Kill budget exhaustion may return without all arbitrary connections closed; no healthy admission claimed",
+    "No full integrated candidate30 image/OCI qualification",
+    "Clock injection Go API intentionally removed"
+  ],
+  "modulePatchSha256": "379403a1565593659033aeec82736d899a7a0077f6bbbc77062c8490cb946505",
+  "rawEvidence": {
+    "httpdown-focused-tests.jsonl": "5867b0a094db5f6877a45e7cfc46576c8c07c71cafb5465543d6415a646085e0",
+    "httpdown-focused-tests.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "httpdown-race-tests.jsonl": "b15724a237d3280181bf7a6002f693c13026fd4b8e99496c333789739bc9a5f3",
+    "httpdown-race-tests.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381"
+  },
+  "reapplyByteIdenticalFiles": 5,
+  "reviewedSource": {
+    "go.mod": "4aec496707b7b06483ad720a93595864948d9f883a46046e2ff77e0b9de5de89",
+    "go.sum": "2cf51a27da561a091af976b8cea4e85c654a17651172d707595a3305419c2abf",
+    "weed/util/httpdown/http_down.go": "2869b20608e89d98281ba2e21cf4ef64f1755536130514b566b7b4c8c4651d9c",
+    "weed/util/httpdown/http_down_test.go": "d759701fe00d1ea199c72cd56cf85ee23f17419792281cbb6311ee8323774aed",
+    "weed/util/httpdown/stats.go": "e0fa7fd11be7b4eda4392a9ae2a5923059abc4b2a57bb755c9e13c8588a0e52f"
+  },
+  "schema": "ouf.profile30-independent-review.v1",
+  "sourceModifiedByReviewer": false,
+  "status": "PASS_BOUNDED_LOCAL_REVIEW",
+  "targetOperations": 0
+}

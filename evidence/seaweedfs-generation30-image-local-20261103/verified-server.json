@@ -1,0 +1,13 @@
+{
+  "profile": "server",
+  "counts": {
+    "pass_tests": 7,
+    "pass_packages": 1
+  },
+  "logSha256": "00423a06aa6f347153abf5a9ec95680c22a3e145bd38eb3e4135f07afa6fabf7",
+  "terminalTestsSha256": "284bed3612f12af2a94b6a6c412b2f67f09beffd89a8196331bd2b478bbe3230",
+  "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+  "environmentConditionalOutcomes": {},
+  "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "targetOperations": 0
+}

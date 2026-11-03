@@ -1,0 +1,1 @@
+?   	github.com/seaweedfs/seaweedfs/weed	[no test files]

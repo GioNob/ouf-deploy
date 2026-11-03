@@ -1,0 +1,44 @@
+{
+  "metrics30": {
+    "sourceLocalPath": "metrics30-stage/proposal/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/metrics30-DELIVERY_FILES.json",
+    "sha256": "0a6095fc51c524c236c3ff43394baa93b4a7979c82b46704e7b0406a09be90cf",
+    "bytes": 6257
+  },
+  "mapstructure30": {
+    "sourceLocalPath": "mapstructure30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/mapstructure30-DELIVERY_FILES.json",
+    "sha256": "f41dd816c39ec5167d147a4f48e85f538a38a822a69751bbb5f29814a36b5600",
+    "bytes": 2829
+  },
+  "bolt30": {
+    "sourceLocalPath": "bolt30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/bolt30-DELIVERY_FILES.json",
+    "sha256": "3fa042a98e3b86962d301d8514129f21f883cf709c1bf9cb6e400701afac6c6f",
+    "bytes": 2864
+  },
+  "kafka-profile30": {
+    "sourceLocalPath": "kafka-profile30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/kafka-profile30-DELIVERY_FILES.json",
+    "sha256": "d8e8105700bc46a8cc9c60c4831cbeb430f59bb16393c1bf11b513d3920761e2",
+    "bytes": 6753
+  },
+  "openbao-profile30": {
+    "sourceLocalPath": "openbao-profile30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/openbao-profile30-DELIVERY_FILES.json",
+    "sha256": "0c76ac8941f4c83ec8dca850ff104ce5ea6431c158a95fd419f617221f88f002",
+    "bytes": 9770
+  },
+  "btree30": {
+    "sourceLocalPath": "btree30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/btree30-DELIVERY_FILES.json",
+    "sha256": "c0c0021869c51d8e625a2789a808bed637cf9769373ef3546eea88e1057d5784",
+    "bytes": 1540
+  },
+  "httpdown30": {
+    "sourceLocalPath": "httpdown30-stage/DELIVERY_FILES.json",
+    "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/httpdown30-DELIVERY_FILES.json",
+    "sha256": "d34e5a94336b2206a455f82332ce68fa2f67f2d7f389f1e5d33276e4a3cd44db",
+    "bytes": 2354
+  }
+}

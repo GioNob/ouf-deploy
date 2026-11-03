@@ -1,0 +1,204 @@
+{
+  "schema": "ouf.seaweedfs-kafka-maintained-local.v1",
+  "status": "PARTIAL_MIGRATION_PROPOSAL_NOT_SELECTED_FOR_STANDARD_PROFILE",
+  "baseOrderedPatchCount": 29,
+  "patch": "patches/seaweedfs/4.52-kafka-sarama-maintained.patch",
+  "patchSha256": "9fc2bcac9be8a119e8544b79eb2007b50df3b583dbc12df954275541248f8863",
+  "sourceFilesChanged": 9,
+  "indexedReplayExact": true,
+  "maintainedClient": {
+    "module": "github.com/IBM/sarama",
+    "version": "v1.61.1",
+    "sourceCommit": "c0f15301b4b77be468320c17f094f01a9eebe233",
+    "h1": "h1:I59MWPHQUWqJNdRpsDUcbeCriog8SxjQaPfHNWxidEg="
+  },
+  "selectedBinaryPackageGraph": {
+    "before": 1811,
+    "after": 1811,
+    "CGO_ENABLED": "0",
+    "packagesRemoved": [
+      "github.com/Shopify/sarama",
+      "github.com/eapache/go-xerial-snappy",
+      "github.com/eapache/queue"
+    ],
+    "packagesAdded": [
+      "github.com/IBM/sarama",
+      "github.com/IBM/sarama/internal/queue",
+      "github.com/klauspost/compress/snappy/xerial"
+    ]
+  },
+  "tests": {
+    "focused": {
+      "passEvents": 39,
+      "failed": 0,
+      "packagePasses": 2,
+      "realLoopbackKafkaMockBroker": true,
+      "checks": [
+        "producer success and permanent error",
+        "protobuf/key preservation",
+        "acknowledgement policy and protocol version",
+        "consumer delivery and failure-hold offset callbacks",
+        "SASL configuration and real SCRAM first exchange",
+        "TLS verification configuration default"
+      ]
+    },
+    "defaultConfigNegativeControl": "FAIL_EXPECTED_RAW_NEW_DEFAULTS_CHANGE_BROKER_AND_SASL_PROFILE",
+    "rootWeedCompilation": "PASS_BUILDVCS_FALSE_NO_RELEASE_BINARY",
+    "rootTidyFixedPoint": "PASS_EMPTY_DIFF",
+    "sharedDependencyOriginalBroad": {
+      "passEvents": 1616,
+      "skipEvents": 8,
+      "failEvents": 11,
+      "allPassed": false
+    },
+    "lz4RootWithPinnedUpstreamSymlinkFixture": {
+      "passEvents": 1032,
+      "skipEvents": 1,
+      "failEvents": 0,
+      "testSourceChanged": false,
+      "fixtureLink": "Mark.Twain-Tom.Sawyer_linked.txt.gz -> Mark.Twain-Tom.Sawyer_long.txt.gz",
+      "fixtureLinkGitBlob": "a00f15f8b39408f5e047dc9e9c63c1650b087231",
+      "targetGitBlob": "40fe200b57287f9568dabd5c794ccc72a78608a2"
+    },
+    "metricsLegacySeedFull": {
+      "passEvents": 79,
+      "failEvents": 2,
+      "GODEBUG": "randseednop=0",
+      "remainingFailure": "TestTimerFunc timing bound observed57ms vs allowed45-55ms"
+    },
+    "metricsSpecificRecheck": {
+      "passEvents": 4,
+      "failEvents": 2,
+      "GODEBUG": "randseednop=0",
+      "remainingFailure": "TestUniformSampleSnapshot assumes random global state seeded by another excluded test; no full upstream pass claimed"
+    },
+    "eapache": "All5 component test packages PASS"
+  },
+  "intentionalCompatibility": {
+    "configuredBrokerBaseline": "1.0.0.0",
+    "saslHandshake": 0,
+    "producerMaxMessageBytes": 1000000,
+    "apiVersionsRequests": false,
+    "reason": "Legacy1.38.1 did not send negotiation for configuredKafka1.0; current1.61.1 sends whenever flagtrue and rejectsSASLv0+true",
+    "wireVersions": {
+      "oldProduce": 3,
+      "newProduce": 5,
+      "oldFetch": 4,
+      "newFetch": 6
+    },
+    "oldBrokerSupportQualified": false,
+    "originalRetryAndTransportBudgetsPreserved": true
+  },
+  "sharedVersionChanges": {
+    "github.com/eapache/go-resiliency": [
+      "v1.6.0",
+      "v1.7.0"
+    ],
+    "github.com/pierrec/lz4/v4": [
+      "v4.1.29",
+      "v4.1.31"
+    ],
+    "github.com/rcrowley/go-metrics": [
+      "v0.0.0-20201227073835-cf1acfcdf475",
+      "v0.0.0-20250401214520-65e299d6c5c9"
+    ]
+  },
+  "retainedEvidence": {
+    "focused-tests.jsonl": {
+      "sha256": "49ca1f96266dfe35636d7869f98dee07a67128386942a786452bd7a60dc5d2a1",
+      "bytes": 38759,
+      "preservedVerbatim": true
+    },
+    "focused-tests.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101,
+      "preservedVerbatim": true
+    },
+    "raw-default-negative.txt": {
+      "sha256": "08613b6b66a06fd3bb77ea457467854ae1849fed125938455ff0c9f29699fce8",
+      "bytes": 345,
+      "preservedVerbatim": true
+    },
+    "production-deps.txt": {
+      "sha256": "5aa606e0596c3fe7f91eda29f3c6e56723b173c1823ae2a7bdb064bb808dcb9b",
+      "bytes": 74993,
+      "preservedVerbatim": true
+    },
+    "production-deps.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101,
+      "preservedVerbatim": true
+    },
+    "tidy.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "preservedVerbatim": true
+    },
+    "tidy.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101,
+      "preservedVerbatim": true
+    },
+    "metrics-legacy-seed-tests.jsonl": {
+      "sha256": "c2dfa409322d4b1fe8ec6ac5ea63c304ac2a567d4e9e0bbcfb5cf0f7489852a3",
+      "bytes": 59170,
+      "preservedVerbatim": true
+    },
+    "metrics-specific-recheck.jsonl": {
+      "sha256": "27a99d7145cb580cd206256249651a6871873fa28baf350afee1b6c5d1c31744",
+      "bytes": 5796,
+      "preservedVerbatim": true
+    },
+    "shared-dependency-tests-terminal.json": {
+      "sha256": "a036222248bf56a084beabd6446a50cc6cd185e416dff3b1fe6197efbb66bc9e",
+      "bytes": 379758,
+      "preservedVerbatim": false,
+      "rawSha256": "6f5acb781c659c6c4a7123d7372589a33b300d501d456d8d6305f8ee3c937ca4",
+      "rawBytes": 1446889
+    },
+    "lz4-upstream-fixture-tests-terminal.json": {
+      "sha256": "c8ab89fa855b0153323f42dd58c36c0797d670dea1b157bd04e110e04bdd9075",
+      "bytes": 234296,
+      "preservedVerbatim": false,
+      "rawSha256": "438dc2dad5c33cd13dfab90b8d8eff67b24d5c24bf7f422bcc2b69b899b2a866",
+      "rawBytes": 954455
+    },
+    "package-delta.json": {
+      "sha256": "d932e143fc1d4cb527ddc17ba5ccabf8a77dc359db5ea8cbcb2a3a78392f09c2",
+      "bytes": 416
+    },
+    "downloaded-modules.json": {
+      "sha256": "ed700966be4e61faaca925ee689a9373915fbfad77ec788c9486caa183e85c12",
+      "bytes": 1289
+    },
+    "weed-compile.txt": {
+      "bytes": 57,
+      "sha256": "a4a3125d4767fab19a8bdc86fa6b9a886049ea606a78d8c1ab808a530bdafa1b",
+      "preservedVerbatim": true
+    },
+    "weed-compile.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "preservedVerbatim": true
+    },
+    "tidy-fixed-point.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "preservedVerbatim": true
+    },
+    "tidy-fixed-point.stderr": {
+      "bytes": 101,
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "preservedVerbatim": true
+    }
+  },
+  "residualLifecycle": "Archived rcrowley/go-metrics remains required by IBM/sarama; see separate audit. This migration is not selected as lifecycle-clean standard candidate.",
+  "fullStorageSuiteRun": false,
+  "newImageQualified": false,
+  "newLicenceBindingQualified": false,
+  "targetKafkaBindingQualified": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "candidate29Unchanged": true
+}

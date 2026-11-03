@@ -1,0 +1,62 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -132,7 +132,6 @@
+ 	github.com/google/flatbuffers/go v0.0.0-20230108230133-3b8644d32c50
+ 	github.com/hashicorp/golang-lru/v2 v2.0.7
+ 	github.com/hashicorp/raft v1.8.0
+-	github.com/hashicorp/raft-boltdb/v2 v2.4.2
+ 	github.com/hashicorp/vault/api v1.23.0
+ 	github.com/jhump/protoreflect v1.18.1
+ 	github.com/linkedin/goavro/v2 v2.15.0
+@@ -291,7 +290,6 @@
+ 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.43.1 // indirect
+ 	github.com/aws/aws-sdk-go-v2/service/sts v1.51.1
+ 	github.com/aws/smithy-go v1.28.7
+-	github.com/boltdb/bolt v1.3.1 // indirect
+ 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
+ 	github.com/creasty/defaults v1.8.0 // indirect
+ 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
+@@ -320,8 +318,8 @@
+ 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+ 	github.com/hashicorp/go-hclog v1.6.3 // indirect
+ 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+-	github.com/hashicorp/go-metrics v0.7.0 // indirect
+-	github.com/hashicorp/go-msgpack/v2 v2.1.5 // indirect
++	github.com/hashicorp/go-metrics v0.7.0
++	github.com/hashicorp/go-msgpack/v2 v2.1.5
+ 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
+ 	github.com/hashicorp/golang-lru v1.0.2 // indirect
+ 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+@@ -380,7 +378,7 @@
+ 	github.com/ydb-platform/ydb-go-yc v0.12.5 // indirect
+ 	github.com/ydb-platform/ydb-go-yc-metadata v0.6.2 // indirect
+ 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+-	go.etcd.io/bbolt v1.5.0 // indirect
++	go.etcd.io/bbolt v1.5.0
+ 	go.etcd.io/etcd/api/v3 v3.7.1 // indirect
+ 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+ 	go.opentelemetry.io/contrib/detectors/gcp v1.46.0 // indirect
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -189,8 +189,6 @@
+ github.com/bits-and-blooms/bitset v1.24.4/go.mod h1:7hO7Gc7Pp1vODcmWvKMRA9BNmbv6a/7QIWpPxHddWR8=
+ github.com/blevesearch/snowballstem v0.9.0 h1:lMQ189YspGP6sXvZQ4WZ+MLawfV8wOmPoD/iWeNXm8s=
+ github.com/blevesearch/snowballstem v0.9.0/go.mod h1:PivSj3JMc8WuaFkTSRDW2SlrulNWPl4ABg1tC/hlgLs=
+-github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
+-github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
+ github.com/broady/gogeohash v0.0.0-20120525094510-7b2c40d64042 h1:iEdmkrNMLXbM7ecffOAtZJQOQUTE4iMonxrb5opUgE4=
+ github.com/broady/gogeohash v0.0.0-20120525094510-7b2c40d64042/go.mod h1:f1L9YvXvlt9JTa+A17trQjSMM6bV40f+tHjB+Pi+Fqk=
+ github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
+@@ -564,10 +562,6 @@
+ github.com/hashicorp/raft v1.7.0/go.mod h1:N1sKh6Vn47mrWvEArQgILTyng8GoDRNYlgKyK7PMjs0=
+ github.com/hashicorp/raft v1.8.0 h1:YbfecBcuTar/LNFEDfVTpqu9Aw+MczTk7MYczvy+62k=
+ github.com/hashicorp/raft v1.8.0/go.mod h1:agL5fncrpEsbxr5P5KOd2srskDwPY18opjXN5x0661s=
+-github.com/hashicorp/raft-boltdb v0.0.0-20230125174641-2a8082862702 h1:RLKEcCuKcZ+qp2VlaaZsYZfLOmIiuJNpEi48Rl8u9cQ=
+-github.com/hashicorp/raft-boltdb v0.0.0-20230125174641-2a8082862702/go.mod h1:nTakvJ4XYq45UXtn0DbwR4aU9ZdjlnIenpbs6Cd+FM0=
+-github.com/hashicorp/raft-boltdb/v2 v2.4.2 h1:r2RRgZ6ajT+VH8/9yC5mfoKAlt3KrYiUDhfbUSmaoTs=
+-github.com/hashicorp/raft-boltdb/v2 v2.4.2/go.mod h1:+wvKK1thWEqM7amY1MXjtQpkm+b9KNUXks0fcus5ZGU=
+ github.com/hashicorp/vault/api v1.23.0 h1:gXgluBsSECfRWTSW9niY2jwg2e9mMJc4WoHNv4g3h6A=
+ github.com/hashicorp/vault/api v1.23.0/go.mod h1:zransKiB9ftp+kgY8ydjnvCU7Wk8i9L0DYWpXeMj9ko=
+ github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=

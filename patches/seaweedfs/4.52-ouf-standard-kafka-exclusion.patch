@@ -1,0 +1,1358 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -6,17 +6,12 @@
+ 	cloud.google.com/go v0.123.0 // indirect
+ 	cloud.google.com/go/pubsub v1.51.1
+ 	cloud.google.com/go/storage v1.67.0
+-	github.com/Shopify/sarama v1.38.1
+ 	github.com/beorn7/perks v1.0.1 // indirect
+ 	github.com/bwmarrin/snowflake v0.3.0
+ 	github.com/cenkalti/backoff/v4 v4.3.0
+ 	github.com/coreos/go-semver v0.3.1 // indirect
+ 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
+-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+ 	github.com/dustin/go-humanize v1.1.0
+-	github.com/eapache/go-resiliency v1.6.0 // indirect
+-	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
+-	github.com/eapache/queue v1.1.0 // indirect
+ 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
+ 	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
+ 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
+@@ -35,10 +30,7 @@
+ 	github.com/gorilla/mux v1.8.1
+ 	github.com/hashicorp/errwrap v1.1.0 // indirect
+ 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+-	github.com/hashicorp/go-uuid v1.0.3 // indirect
+ 	github.com/jackc/pgx/v5 v5.10.0
+-	github.com/jcmturner/gofork v1.7.6 // indirect
+-	github.com/jcmturner/gokrb5/v8 v8.4.4 // indirect
+ 	github.com/jinzhu/copier v0.4.0
+ 	github.com/karlseguin/ccache/v2 v2.0.8
+ 	github.com/klauspost/compress v1.20.3
+@@ -55,7 +47,6 @@
+ 	github.com/prometheus/client_model v0.6.3
+ 	github.com/prometheus/common v0.71.0 // indirect
+ 	github.com/prometheus/procfs v0.22.0
+-	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+ 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+ 	github.com/seaweedfs/goexif v1.0.3
+ 	github.com/seaweedfs/raft v1.2.3
+@@ -74,7 +65,7 @@
+ 	github.com/valyala/bytebufferpool v1.0.0
+ 	github.com/viant/ptrie v1.0.1
+ 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
+-	github.com/xdg-go/scram v1.2.0
++	github.com/xdg-go/scram v1.2.0 // indirect
+ 	github.com/xdg-go/stringprep v1.0.4 // indirect
+ 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+ 	go.etcd.io/etcd/client/v3 v3.7.1
+@@ -324,9 +315,6 @@
+ 	github.com/hashicorp/go-msgpack/v2 v2.1.5 // indirect
+ 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
+ 	github.com/hashicorp/golang-lru v1.0.2 // indirect
+-	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+-	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
+-	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
+ 	github.com/jonboulle/clockwork v0.5.0 // indirect
+ 	github.com/k0kubun/pp v3.0.1+incompatible
+ 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
+diff --git a/go.sum b/go.sum
+--- a/go.sum
++++ b/go.sum
+@@ -85,10 +85,6 @@
+ github.com/RoaringBitmap/roaring/v2 v2.26.0 h1:K30ZxF4vZcIKvJsbmgfiep2K64f+dILJqkYGoj4xnwU=
+ github.com/RoaringBitmap/roaring/v2 v2.26.0/go.mod h1:BZufmFbox589n3j5eOmyTaLSGXbRLc2LmQvjKjzSEGU=
+ github.com/Sereal/Sereal/Go/sereal v0.0.0-20231009093132-b9187f1a92c6/go.mod h1:JwrycNnC8+sZPDyzM3MQ86LvaGzSpfxg885KOOwFRW4=
+-github.com/Shopify/sarama v1.38.1 h1:lqqPUPQZ7zPqYlWpTh+LQ9bhYNu2xJL6k1SJN4WVe2A=
+-github.com/Shopify/sarama v1.38.1/go.mod h1:iwv9a67Ha8VNa+TifujYoWGxWnu2kNVAQdSdZ4X2o5g=
+-github.com/Shopify/toxiproxy/v2 v2.5.0 h1:i4LPT+qrSlKNtQf5QliVjdP08GyAH8+BUIc9gT0eahc=
+-github.com/Shopify/toxiproxy/v2 v2.5.0/go.mod h1:yhM2epWtAmel9CB8r2+L+PCmhH6yH2pITaPAo7jxJl0=
+ github.com/ThreeDotsLabs/watermill v1.5.3 h1:GoTR7fW1ZT+itzUv/w3VB6Um1B7oTBrOWjJ8sOA9XqU=
+ github.com/ThreeDotsLabs/watermill v1.5.3/go.mod h1:i9/968UriGphWfEbfMuYSD1qFbYRjb0mE0r+rV0FPp4=
+ github.com/TomiHiltunen/geohash-golang v0.0.0-20150112065804-b3e4e625abfb h1:wumPkzt4zaxO4rHPBrjDK8iZMR41C1qs7njNqlacwQg=
+@@ -310,12 +306,6 @@
+ github.com/docker/go-units v0.5.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
+ github.com/dustin/go-humanize v1.1.0 h1:dbKTrvD0klcbBV/h4AWJdMuZogJACoMlvWIWZ5b2xWg=
+ github.com/dustin/go-humanize v1.1.0/go.mod h1:hc1CvRkJMsgxqjmjMQF3QNRAZBwY8AXBAzKYoSX9sFI=
+-github.com/eapache/go-resiliency v1.6.0 h1:CqGDTLtpwuWKn6Nj3uNUdflaq+/kIPsg0gfNzHton30=
+-github.com/eapache/go-resiliency v1.6.0/go.mod h1:5yPzW0MIvSe0JDsv0v+DvcjEv2FyD6iZYSs1ZI+iQho=
+-github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 h1:Oy0F4ALJ04o5Qqpdz8XLIpNA3WM/iSIXqxtqo7UGVws=
+-github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3/go.mod h1:YvSRo5mw33fLEx1+DlK6L2VV43tJt5Eyel9n9XBcR+0=
+-github.com/eapache/queue v1.1.0 h1:YOEu7KNc61ntiQlcEeUIoDTJ2o8mQznoNvUhiigpIqc=
+-github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=
+ github.com/ebitengine/purego v0.10.2 h1:W809HbnvzAxgdm+aOvlSekrM16wGCdT/e76+9tS7gzE=
+ github.com/ebitengine/purego v0.10.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
+ github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203 h1:XBBHcIb256gUJtLmY22n99HaZTz+r2Z51xUPi01m3wg=
+@@ -356,8 +346,6 @@
+ github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
+ github.com/fluent/fluent-logger-golang v1.10.1 h1:wu54iN1O2afll5oQrtTjhgZRwWcfOeFFzwRsEkABfFQ=
+ github.com/fluent/fluent-logger-golang v1.10.1/go.mod h1:qOuXG4ZMrXaSTk12ua+uAb21xfNYOzn0roAtp7mfGAE=
+-github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
+-github.com/fortytw2/leaktest v1.3.0/go.mod h1:jDsjWgpAGjm2CA7WthBh/CdZYEPF31XHquHwclZch5g=
+ github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
+ github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=
+ github.com/fsnotify/fsevents v0.2.0 h1:BRlvlqjvNTfogHfeBOFvSC9N0Ddy+wzQCQukyoD7o/c=
+@@ -502,10 +490,8 @@
+ github.com/googleapis/gax-go/v2 v2.24.1/go.mod h1:bWeBei0NVwaNZKb2y1HUBS7gLXIF3/Tu3pq7j8D2Tb0=
+ github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
+ github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
+-github.com/gorilla/securecookie v1.1.1/go.mod h1:ra0sb63/xPlUeL+yeDciTfxMRAA+MP+HVt/4epWDjd4=
+ github.com/gorilla/securecookie v1.1.2 h1:YCIWL56dvtr73r6715mJs5ZvhtnY73hBvEF8kXD8ePA=
+ github.com/gorilla/securecookie v1.1.2/go.mod h1:NfCASbcHqRSY+3a8tlWJwsQap2VX5pwzwo4h3eOamfo=
+-github.com/gorilla/sessions v1.2.1/go.mod h1:dk2InVEVJ0sfLlnXv9EAgkf6ecYs/i80K/zI+bUmuGM=
+ github.com/gorilla/sessions v1.4.0 h1:kpIYOp/oi6MG/p5PgxApU8srsSw9tuFbt46Lt7auzqQ=
+ github.com/gorilla/sessions v1.4.0/go.mod h1:FLWm50oby91+hl7p/wRxDth9bWSuk0qVL2emc7lT5ik=
+ github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 h1:UH//fgunKIs4JdUbpDl1VZCDaL56wXCB/5+wF6uHfaI=
+@@ -548,7 +534,6 @@
+ github.com/hashicorp/go-sockaddr v1.0.7 h1:G+pTkSO01HpR5qCxg7lxfsFEZaG+C0VssTy/9dbT+Fw=
+ github.com/hashicorp/go-sockaddr v1.0.7/go.mod h1:FZQbEYa1pxkQ7WLpyXJ6cbjpT8q0YgQaK/JakXqGyWw=
+ github.com/hashicorp/go-uuid v1.0.0/go.mod h1:6SBZvOh/SIDV7/2o3Jml5SYk/TvGqwFJ/bN7x4byOro=
+-github.com/hashicorp/go-uuid v1.0.2/go.mod h1:6SBZvOh/SIDV7/2o3Jml5SYk/TvGqwFJ/bN7x4byOro=
+ github.com/hashicorp/go-uuid v1.0.3 h1:2gKiV6YVmrJ1i2CKKa9obLvRieoRGviZFL26PcT/Co8=
+ github.com/hashicorp/go-uuid v1.0.3/go.mod h1:6SBZvOh/SIDV7/2o3Jml5SYk/TvGqwFJ/bN7x4byOro=
+ github.com/hashicorp/go-version v1.9.0 h1:CeOIz6k+LoN3qX9Z0tyQrPtiB1DFYRPfCIBtaXPSCnA=
+@@ -858,8 +843,6 @@
+ github.com/puzpuzpuz/xsync/v3 v3.5.1/go.mod h1:VjzYrABPabuM4KyBh1Ftq6u8nhwY5tBPKP9jpmh0nnA=
+ github.com/rabbitmq/amqp091-go v1.15.0 h1:LEQL4/yp48/Wigt6A6XOu18RQRo8ZHtB5I/KZJn+gkw=
+ github.com/rabbitmq/amqp091-go v1.15.0/go.mod h1:Hy4jKW5kQART1u+JkDTF9YYOQUHXqMuhrgxOEeS7G4o=
+-github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 h1:N/ElC8H3+5XpJzTSTfLsJV/mx9Q9g7kxmchpfZyxgzM=
+-github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
+ github.com/rdleal/intervalst v1.5.0 h1:SEB9bCFz5IqD1yhfH1Wv8IBnY/JQxDplwkxHjT6hamU=
+ github.com/rdleal/intervalst v1.5.0/go.mod h1:xO89Z6BC+LQDH+IPQQw/OESt5UADgFD41tYMUINGpxQ=
+ github.com/redis/go-redis/v9 v9.23.0 h1:/TTVdJa8BRNsybwwGGnmiYktHNlUXtbOQxlWpHBPL3s=
+@@ -1189,7 +1172,6 @@
+ golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
+ golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
+ golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
+-golang.org/x/crypto v0.6.0/go.mod h1:OFC/31mSvZgRz0V1QTNCzfAI1aIRzbiufJtkMIlEp58=
+ golang.org/x/crypto v0.13.0/go.mod h1:y6Z2r+Rw4iayiXXAIxJIDAJ1zMW4yaTpebo8fPOliYc=
+ golang.org/x/crypto v0.14.0/go.mod h1:MVFd36DqK4CsrnJYDkBA3VC4m2GkXAM0PvzMCn4JQf4=
+ golang.org/x/crypto v0.58.1-0.20261009181718-2f1f834330b2 h1:zGDaB+/Mus2mScKvZ23k+W9NAUbP56sNM9SptgvWI5A=
+@@ -1226,7 +1208,6 @@
+ golang.org/x/net v0.0.0-20190603091049-60506f45cf65/go.mod h1:HSz+uSET+XFnRR8LxR5pz3Of3rY3CfYBVs4xY44aLks=
+ golang.org/x/net v0.0.0-20190613194153-d28f0bde5980/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+ golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+-golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+ golang.org/x/net v0.0.0-20200226121028-0de0cce0169b/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+ golang.org/x/net v0.0.0-20200822124328-c89045814202/go.mod h1:/O7V0waA8r7cgGh81Ro3o1hOxt32SMVPicZroKQ2sZA=
+ golang.org/x/net v0.0.0-20201021035429-f5854403a974/go.mod h1:sp8m0HH+o8qH0wwXwYZr8TS3Oi6o0r6Gce1SSxlDquU=
+@@ -1236,7 +1217,6 @@
+ golang.org/x/net v0.0.0-20220722155237-a158d28d115b/go.mod h1:XRhObCWvk6IyKnWLug+ECip1KBveYUHfp+8e9klMJ9c=
+ golang.org/x/net v0.3.0/go.mod h1:MBQ8lrhLObU/6UmLb4fmbmk5OcyYmqtbGd/9yIeKjEE=
+ golang.org/x/net v0.6.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
+-golang.org/x/net v0.7.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
+ golang.org/x/net v0.10.0/go.mod h1:0qNGK6F8kojg2nk9dLZ2mShWaEBan6FAoqfSigmmuDg=
+ golang.org/x/net v0.15.0/go.mod h1:idbUs1IY1+zTqbi8yxTbhexhEEk5ur9LInksu6HrEpk=
+ golang.org/x/net v0.16.0/go.mod h1:NxSsAGuq816PNPmqtQdLE42eU2Fs7NoRIZrHJAlaCOE=
+diff --git a/weed/command/ouf_unsupported_kafka_tag.go b/weed/command/ouf_unsupported_kafka_tag.go
+new file mode 100644
+--- /dev/null
++++ b/weed/command/ouf_unsupported_kafka_tag.go
+@@ -0,0 +1,7 @@
++//go:build kafka
++
++package command
++
++// The OUF standard source cannot reactivate the excluded client with a tag.
++// SeaweedFS's independent native Kafka protocol server is not this integration.
++var _ = OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION
+diff --git a/weed/notification/kafka/event_filter.go b/weed/notification/kafka/event_filter.go
+deleted file mode 100644
+--- a/weed/notification/kafka/event_filter.go
++++ /dev/null
+@@ -1,40 +0,0 @@
+-package kafka
+-
+-import (
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+-	"github.com/seaweedfs/seaweedfs/weed/notification"
+-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+-	"google.golang.org/protobuf/proto"
+-)
+-
+-// Empty eventTypes means publish every event. A non-nil map publishes only those types.
+-// The names and classification match the webhook notifier.
+-func (k *KafkaQueue) setEventTypes(types []string) {
+-	if len(types) == 0 {
+-		k.eventTypes = nil
+-		return
+-	}
+-
+-	allowed := make(map[string]struct{}, len(types))
+-	for _, et := range types {
+-		if !notification.ValidEventType(et) {
+-			glog.Warningf("invalid event type: %v", et)
+-			continue
+-		}
+-		allowed[et] = struct{}{}
+-	}
+-	k.eventTypes = allowed
+-}
+-
+-func (k *KafkaQueue) allowsEvent(key string, message proto.Message) bool {
+-	if k.eventTypes == nil {
+-		return true
+-	}
+-
+-	n, ok := message.(*filer_pb.EventNotification)
+-	if !ok || n == nil {
+-		return false
+-	}
+-	_, allowed := k.eventTypes[notification.DetectEventType(key, n)]
+-	return allowed
+-}
+diff --git a/weed/notification/kafka/event_filter_test.go b/weed/notification/kafka/event_filter_test.go
+deleted file mode 100644
+--- a/weed/notification/kafka/event_filter_test.go
++++ /dev/null
+@@ -1,160 +0,0 @@
+-package kafka
+-
+-import (
+-	"testing"
+-
+-	"github.com/seaweedfs/seaweedfs/weed/notification"
+-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+-	"google.golang.org/protobuf/proto"
+-)
+-
+-func TestKafkaEventTypes(t *testing.T) {
+-	tests := []struct {
+-		name         string
+-		key          string
+-		eventTypes   []string
+-		notification *filer_pb.EventNotification
+-		wantType     string
+-		wantAllow    bool
+-	}{
+-		{
+-			name:       "create event allowed",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"create", "delete"},
+-			notification: &filer_pb.EventNotification{
+-				NewEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "create",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "create event filtered out",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"delete", "update"},
+-			notification: &filer_pb.EventNotification{
+-				NewEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "create",
+-			wantAllow: false,
+-		},
+-		{
+-			name:       "delete event allowed",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"create", "delete"},
+-			notification: &filer_pb.EventNotification{
+-				OldEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "delete",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "update event allowed",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"update"},
+-			notification: &filer_pb.EventNotification{
+-				OldEntry:      &filer_pb.Entry{Name: "test.txt"},
+-				NewEntry:      &filer_pb.Entry{Name: "test.txt"},
+-				NewParentPath: "/test",
+-			},
+-			wantType:  "update",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "rename event allowed",
+-			key:        "/old/path/old.txt",
+-			eventTypes: []string{"rename"},
+-			notification: &filer_pb.EventNotification{
+-				OldEntry:      &filer_pb.Entry{Name: "old.txt"},
+-				NewEntry:      &filer_pb.Entry{Name: "new.txt"},
+-				NewParentPath: "/new/path",
+-			},
+-			wantType:  "rename",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "rename across directories allowed",
+-			key:        "/old/path/file.txt",
+-			eventTypes: []string{"rename"},
+-			notification: &filer_pb.EventNotification{
+-				OldEntry:      &filer_pb.Entry{Name: "file.txt"},
+-				NewEntry:      &filer_pb.Entry{Name: "file.txt"},
+-				NewParentPath: "/new/path",
+-			},
+-			wantType:  "rename",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "rename event filtered out",
+-			key:        "/old/path/old.txt",
+-			eventTypes: []string{"create", "delete", "update"},
+-			notification: &filer_pb.EventNotification{
+-				OldEntry:      &filer_pb.Entry{Name: "old.txt"},
+-				NewEntry:      &filer_pb.Entry{Name: "new.txt"},
+-				NewParentPath: "/new/path",
+-			},
+-			wantType:  "rename",
+-			wantAllow: false,
+-		},
+-		{
+-			name:       "empty filter publishes every event",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{},
+-			notification: &filer_pb.EventNotification{
+-				NewEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "create",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "invalid type does not remove a valid one",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"create", "bogus"},
+-			notification: &filer_pb.EventNotification{
+-				NewEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "create",
+-			wantAllow: true,
+-		},
+-		{
+-			name:       "only invalid types publish nothing",
+-			key:        "/test/test.txt",
+-			eventTypes: []string{"bogus"},
+-			notification: &filer_pb.EventNotification{
+-				NewEntry: &filer_pb.Entry{Name: "test.txt"},
+-			},
+-			wantType:  "create",
+-			wantAllow: false,
+-		},
+-	}
+-
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			gotType := notification.DetectEventType(tt.key, tt.notification)
+-			if gotType != tt.wantType {
+-				t.Errorf("DetectEventType() = %v, want %v", gotType, tt.wantType)
+-			}
+-
+-			q := &KafkaQueue{}
+-			q.setEventTypes(tt.eventTypes)
+-			if got := q.allowsEvent(tt.key, tt.notification); got != tt.wantAllow {
+-				t.Errorf("allowsEvent() = %v, want %v", got, tt.wantAllow)
+-			}
+-		})
+-	}
+-}
+-
+-func TestKafkaEventFilterUnsetPublishesOtherMessages(t *testing.T) {
+-	q := &KafkaQueue{}
+-	if !q.allowsEvent("/test/test.txt", &filer_pb.Entry{Name: "test.txt"}) {
+-		t.Fatal("unset filter dropped a message")
+-	}
+-}
+-
+-func TestKafkaEventFilterDropsUnclassifiedMessages(t *testing.T) {
+-	q := &KafkaQueue{}
+-	q.setEventTypes([]string{"create"})
+-	var message proto.Message = &filer_pb.Entry{Name: "test.txt"}
+-	if q.allowsEvent("/test/test.txt", message) {
+-		t.Fatal("filtered queue published a message that is not an event notification")
+-	}
+-}
+diff --git a/weed/notification/kafka/kafka_queue.go b/weed/notification/kafka/kafka_queue.go
+--- a/weed/notification/kafka/kafka_queue.go
++++ b/weed/notification/kafka/kafka_queue.go
+@@ -1,106 +1,33 @@
++// Package kafka retains a rejecting registration for the excluded external
++// Kafka notification integration in the OUF standard candidate.
+ package kafka
+ 
+ import (
+-	"fmt"
++	"errors"
+ 
+-	"github.com/Shopify/sarama"
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/notification"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 	"google.golang.org/protobuf/proto"
+ )
+ 
++var ErrUnsupportedInOUFStandardProfile = errors.New("OUF_STANDARD_PROFILE_KAFKA_INTEGRATION_UNSUPPORTED: external Kafka notifications and replication require a separately qualified maintained client")
++
+ func init() {
++	// Keep the name visible so enabled Kafka is rejected by the normal provider
++	// selection path instead of being ignored or falling through to a default.
+ 	notification.MessageQueues = append(notification.MessageQueues, &KafkaQueue{})
+ }
+ 
+-type KafkaQueue struct {
+-	topic      string
+-	producer   sarama.AsyncProducer
+-	eventTypes map[string]struct{}
++type KafkaQueue struct{}
++
++func (*KafkaQueue) GetName() string { return "kafka" }
++
++func (*KafkaQueue) Initialize(util.Configuration, string) error {
++	// No credential/configuration read, network connection or goroutine.
++	return ErrUnsupportedInOUFStandardProfile
+ }
+ 
+-func (k *KafkaQueue) GetName() string {
+-	return "kafka"
++func (*KafkaQueue) SendMessage(string, proto.Message) error {
++	// A direct call must not silently acknowledge an event that was not sent.
++	return ErrUnsupportedInOUFStandardProfile
+ }
+-
+-func (k *KafkaQueue) Initialize(configuration util.Configuration, prefix string) (err error) {
+-	glog.V(0).Infof("filer.notification.kafka.hosts: %v\n", configuration.GetStringSlice(prefix+"hosts"))
+-	glog.V(0).Infof("filer.notification.kafka.topic: %v\n", configuration.GetString(prefix+"topic"))
+-	eventTypes := configuration.GetStringSlice(prefix + "event_types")
+-	glog.V(0).Infof("filer.notification.kafka.event_types: %v\n", eventTypes)
+-	k.setEventTypes(eventTypes)
+-	return k.initialize(
+-		configuration.GetStringSlice(prefix+"hosts"),
+-		configuration.GetString(prefix+"topic"),
+-		SASLTLSConfig{
+-			SASLEnabled:           configuration.GetBool(prefix + "sasl_enabled"),
+-			SASLMechanism:         configuration.GetString(prefix + "sasl_mechanism"),
+-			SASLUsername:          configuration.GetString(prefix + "sasl_username"),
+-			SASLPassword:          configuration.GetString(prefix + "sasl_password"),
+-			TLSEnabled:            configuration.GetBool(prefix + "tls_enabled"),
+-			TLSCACert:             configuration.GetString(prefix + "tls_ca_cert"),
+-			TLSClientCert:         configuration.GetString(prefix + "tls_client_cert"),
+-			TLSClientKey:          configuration.GetString(prefix + "tls_client_key"),
+-			TLSInsecureSkipVerify: configuration.GetBool(prefix + "tls_insecure_skip_verify"),
+-		},
+-	)
+-}
+-
+-func (k *KafkaQueue) initialize(hosts []string, topic string, saslTLS SASLTLSConfig) (err error) {
+-	config := sarama.NewConfig()
+-	config.Producer.RequiredAcks = sarama.WaitForLocal
+-	config.Producer.Partitioner = sarama.NewHashPartitioner
+-	config.Producer.Return.Successes = true
+-	config.Producer.Return.Errors = true
+-	if err = ConfigureSASLTLS(config, saslTLS); err != nil {
+-		return fmt.Errorf("kafka producer security configuration: %w", err)
+-	}
+-	k.producer, err = sarama.NewAsyncProducer(hosts, config)
+-	if err != nil {
+-		return err
+-	}
+-	k.topic = topic
+-	go k.handleSuccess()
+-	go k.handleError()
+-	return nil
+-}
+-
+-func (k *KafkaQueue) SendMessage(key string, message proto.Message) (err error) {
+-	if !k.allowsEvent(key, message) {
+-		return nil
+-	}
+-
+-	bytes, err := proto.Marshal(message)
+-	if err != nil {
+-		return
+-	}
+-
+-	msg := &sarama.ProducerMessage{
+-		Topic: k.topic,
+-		Key:   sarama.StringEncoder(key),
+-		Value: sarama.ByteEncoder(bytes),
+-	}
+-
+-	k.producer.Input() <- msg
+-
+-	return nil
+-}
+-
+-func (k *KafkaQueue) handleSuccess() {
+-	for {
+-		pm := <-k.producer.Successes()
+-		if pm != nil {
+-			glog.V(3).Infof("producer message success, partition:%d offset:%d key:%v", pm.Partition, pm.Offset, pm.Key)
+-		}
+-	}
+-}
+-
+-func (k *KafkaQueue) handleError() {
+-	for {
+-		err := <-k.producer.Errors()
+-		if err != nil {
+-			glog.Errorf("producer message error, partition:%d offset:%d key:%v value:%s error(%v) topic:%s", err.Msg.Partition, err.Msg.Offset, err.Msg.Key, err.Msg.Value, err.Err, k.topic)
+-		}
+-	}
+-}
+diff --git a/weed/notification/kafka/kafka_sasl_tls.go b/weed/notification/kafka/kafka_sasl_tls.go
+deleted file mode 100644
+--- a/weed/notification/kafka/kafka_sasl_tls.go
++++ /dev/null
+@@ -1,112 +0,0 @@
+-package kafka
+-
+-import (
+-	"crypto/tls"
+-	"crypto/x509"
+-	"fmt"
+-	"os"
+-	"strings"
+-
+-	"github.com/Shopify/sarama"
+-	"github.com/xdg-go/scram"
+-)
+-
+-// SASLTLSConfig holds SASL and TLS configuration for Kafka connections.
+-type SASLTLSConfig struct {
+-	SASLEnabled   bool
+-	SASLMechanism string
+-	SASLUsername  string
+-	SASLPassword  string
+-
+-	TLSEnabled            bool
+-	TLSCACert             string
+-	TLSClientCert         string
+-	TLSClientKey          string
+-	TLSInsecureSkipVerify bool
+-}
+-
+-// ConfigureSASLTLS applies SASL and TLS settings to a sarama config.
+-func ConfigureSASLTLS(config *sarama.Config, st SASLTLSConfig) error {
+-	if st.SASLEnabled {
+-		config.Net.SASL.Enable = true
+-		config.Net.SASL.User = st.SASLUsername
+-		config.Net.SASL.Password = st.SASLPassword
+-
+-		mechanism := strings.ToUpper(st.SASLMechanism)
+-		switch mechanism {
+-		case "PLAIN", "":
+-			config.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+-		case "SCRAM-SHA-256":
+-			config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA256
+-			config.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient {
+-				return &scramClient{HashGeneratorFcn: scram.SHA256}
+-			}
+-		case "SCRAM-SHA-512":
+-			config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA512
+-			config.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient {
+-				return &scramClient{HashGeneratorFcn: scram.SHA512}
+-			}
+-		default:
+-			return fmt.Errorf("unsupported SASL mechanism: %s", mechanism)
+-		}
+-	}
+-
+-	if st.TLSEnabled {
+-		if (st.TLSClientCert == "") != (st.TLSClientKey == "") {
+-			return fmt.Errorf("both tls_client_cert and tls_client_key must be provided for mTLS, or neither")
+-		}
+-
+-		tlsConfig := &tls.Config{
+-			MinVersion:         tls.VersionTLS12,
+-			InsecureSkipVerify: st.TLSInsecureSkipVerify,
+-		}
+-
+-		if st.TLSCACert != "" {
+-			caCert, err := os.ReadFile(st.TLSCACert)
+-			if err != nil {
+-				return fmt.Errorf("failed to read CA certificate: %w", err)
+-			}
+-			caCertPool := x509.NewCertPool()
+-			if !caCertPool.AppendCertsFromPEM(caCert) {
+-				return fmt.Errorf("failed to parse CA certificate")
+-			}
+-			tlsConfig.RootCAs = caCertPool
+-		}
+-
+-		if st.TLSClientCert != "" && st.TLSClientKey != "" {
+-			cert, err := tls.LoadX509KeyPair(st.TLSClientCert, st.TLSClientKey)
+-			if err != nil {
+-				return fmt.Errorf("failed to load client certificate/key: %w", err)
+-			}
+-			tlsConfig.Certificates = []tls.Certificate{cert}
+-		}
+-
+-		config.Net.TLS.Enable = true
+-		config.Net.TLS.Config = tlsConfig
+-	}
+-
+-	return nil
+-}
+-
+-// scramClient implements the sarama.SCRAMClient interface.
+-type scramClient struct {
+-	*scram.ClientConversation
+-	scram.HashGeneratorFcn
+-}
+-
+-func (c *scramClient) Begin(userName, password, authzID string) (err error) {
+-	client, err := c.HashGeneratorFcn.NewClient(userName, password, authzID)
+-	if err != nil {
+-		return err
+-	}
+-	c.ClientConversation = client.NewConversation()
+-	return nil
+-}
+-
+-func (c *scramClient) Step(challenge string) (string, error) {
+-	return c.ClientConversation.Step(challenge)
+-}
+-
+-func (c *scramClient) Done() bool {
+-	return c.ClientConversation.Done()
+-}
+diff --git a/weed/notification/kafka/kafka_sasl_tls_test.go b/weed/notification/kafka/kafka_sasl_tls_test.go
+deleted file mode 100644
+--- a/weed/notification/kafka/kafka_sasl_tls_test.go
++++ /dev/null
+@@ -1,65 +0,0 @@
+-package kafka
+-
+-import (
+-	"strings"
+-	"testing"
+-
+-	"github.com/Shopify/sarama"
+-)
+-
+-func TestConfigureSASLTLSRejectsPartialMTLSConfig(t *testing.T) {
+-	tests := []struct {
+-		name string
+-		cfg  SASLTLSConfig
+-	}{
+-		{
+-			name: "missing key",
+-			cfg: SASLTLSConfig{
+-				TLSEnabled:    true,
+-				TLSClientCert: "/tmp/client.crt",
+-			},
+-		},
+-		{
+-			name: "missing cert",
+-			cfg: SASLTLSConfig{
+-				TLSEnabled:   true,
+-				TLSClientKey: "/tmp/client.key",
+-			},
+-		},
+-	}
+-
+-	for _, tt := range tests {
+-		t.Run(tt.name, func(t *testing.T) {
+-			err := ConfigureSASLTLS(sarama.NewConfig(), tt.cfg)
+-			if err == nil {
+-				t.Fatal("expected error")
+-			}
+-			if !strings.Contains(err.Error(), "both tls_client_cert and tls_client_key must be provided") {
+-				t.Fatalf("unexpected error: %v", err)
+-			}
+-		})
+-	}
+-}
+-
+-func TestConfigureSASLTLSConfiguresSCRAMSHA256(t *testing.T) {
+-	config := sarama.NewConfig()
+-	err := ConfigureSASLTLS(config, SASLTLSConfig{
+-		SASLEnabled:   true,
+-		SASLMechanism: "SCRAM-SHA-256",
+-		SASLUsername:  "alice",
+-		SASLPassword:  "secret",
+-	})
+-	if err != nil {
+-		t.Fatalf("ConfigureSASLTLS returned error: %v", err)
+-	}
+-
+-	if !config.Net.SASL.Enable {
+-		t.Fatal("expected SASL to be enabled")
+-	}
+-	if config.Net.SASL.Mechanism != sarama.SASLTypeSCRAMSHA256 {
+-		t.Fatalf("unexpected mechanism: %v", config.Net.SASL.Mechanism)
+-	}
+-	if config.Net.SASL.SCRAMClientGeneratorFunc == nil {
+-		t.Fatal("expected SCRAM client generator")
+-	}
+-}
+diff --git a/weed/notification/kafka/ouf_profile_test.go b/weed/notification/kafka/ouf_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/notification/kafka/ouf_profile_test.go
+@@ -0,0 +1,100 @@
++package kafka
++
++import (
++	"context"
++	"errors"
++	"flag"
++	"fmt"
++	"os"
++	"os/exec"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/seaweedfs/seaweedfs/weed/notification"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/spf13/viper"
++	"google.golang.org/protobuf/proto"
++)
++
++type allowedFixtureQueue struct{ initialized int }
++
++func (*allowedFixtureQueue) GetName() string { return "fixture" }
++func (q *allowedFixtureQueue) Initialize(util.Configuration, string) error {
++	q.initialized++
++	if os.Getenv("OUF_KAFKA_DENIAL_CHILD") != "" {
++		fmt.Println("OTHER_PROVIDER_INITIALIZED")
++	}
++	return nil
++}
++func (*allowedFixtureQueue) SendMessage(string, proto.Message) error { return nil }
++
++func TestOUFStandardKafkaRegisteredAndAlwaysRejected(t *testing.T) {
++	count := 0
++	for _, q := range notification.MessageQueues {
++		if q.GetName() == "kafka" {
++			count++
++		}
++	}
++	if count != 1 {
++		t.Fatalf("Kafka must stay recognizable exactly once, found %d", count)
++	}
++	q := &KafkaQueue{}
++	if !errors.Is(q.Initialize(nil, "notification.kafka."), ErrUnsupportedInOUFStandardProfile) {
++		t.Fatal("excluded initialize accepted")
++	}
++	if !errors.Is(q.SendMessage("/never-send", nil), ErrUnsupportedInOUFStandardProfile) {
++		t.Fatal("excluded publish acknowledged")
++	}
++}
++
++func TestOUFStandardKafkaConfigurationStopsBeforeOtherProvider(t *testing.T) {
++	if mode := os.Getenv("OUF_KAFKA_DENIAL_CHILD"); mode != "" {
++		_ = flag.Set("logtostderr", "true")
++		other := &allowedFixtureQueue{}
++		notification.MessageQueues = []notification.MessageQueue{other, &KafkaQueue{}}
++		v := viper.New()
++		v.Set("notification.kafka.enabled", true)
++		if mode == "mixed" {
++			v.Set("notification.fixture.enabled", true)
++		}
++		notification.LoadConfiguration(util.NewViperProxy(v), "notification.")
++		fmt.Println("UNEXPECTED_CONFIGURATION_SUCCESS")
++		return
++	}
++	for _, mode := range []string{"kafka-only", "mixed"} {
++		t.Run(mode, func(t *testing.T) {
++			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
++			defer cancel()
++			cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestOUFStandardKafkaConfigurationStopsBeforeOtherProvider$")
++			cmd.Env = append(os.Environ(), "OUF_KAFKA_DENIAL_CHILD="+mode)
++			output, err := cmd.CombinedOutput()
++			if ctx.Err() != nil {
++				t.Fatalf("denial process exceeded budget: %s", output)
++			}
++			if err == nil || strings.Contains(string(output), "OTHER_PROVIDER_INITIALIZED") || strings.Contains(string(output), "UNEXPECTED_CONFIGURATION_SUCCESS") {
++				t.Fatalf("configuration did not stop before effects: %v %s", err, output)
++			}
++			wanted := "OUF_STANDARD_PROFILE_KAFKA_INTEGRATION_UNSUPPORTED"
++			if mode == "mixed" {
++				wanted = "Notification message queue is enabled for both"
++			}
++			if !strings.Contains(string(output), wanted) {
++				t.Fatalf("unexpected rejection: %s", output)
++			}
++		})
++	}
++}
++
++func TestOUFStandardNonKafkaQueueRemainsSelectable(t *testing.T) {
++	oldQueues, oldQueue := notification.MessageQueues, notification.Queue
++	defer func() { notification.MessageQueues = oldQueues; notification.Queue = oldQueue }()
++	other := &allowedFixtureQueue{}
++	notification.MessageQueues = []notification.MessageQueue{&KafkaQueue{}, other}
++	v := viper.New()
++	v.Set("notification.fixture.enabled", true)
++	notification.LoadConfiguration(util.NewViperProxy(v), "notification.")
++	if other.initialized != 1 || notification.Queue != other {
++		t.Fatal("supported queue selection changed")
++	}
++}
+diff --git a/weed/replication/sub/notification_kafka.go b/weed/replication/sub/notification_kafka.go
+--- a/weed/replication/sub/notification_kafka.go
++++ b/weed/replication/sub/notification_kafka.go
+@@ -1,203 +1,26 @@
+ package sub
+ 
+ import (
+-	"encoding/json"
+-	"fmt"
+-	"os"
+-	"sync"
+-	"time"
+-
+-	"github.com/Shopify/sarama"
+-	"github.com/seaweedfs/seaweedfs/weed/glog"
+-	kafkanotif "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
++	kafkanotification "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+-	"google.golang.org/protobuf/proto"
+ )
+ 
+ func init() {
++	// Preserve explicit recognition: Kafka configuration cannot become a
++	// successful no-input run after removing the external client.
+ 	NotificationInputs = append(NotificationInputs, &KafkaInput{})
+ }
+ 
+-type KafkaInput struct {
+-	topic       string
+-	consumer    sarama.Consumer
+-	messageChan chan *sarama.ConsumerMessage
+-	progress    *KafkaProgress
++type KafkaInput struct{}
++
++func (*KafkaInput) GetName() string { return "kafka" }
++
++func (*KafkaInput) Initialize(util.Configuration, string) error {
++	return kafkanotification.ErrUnsupportedInOUFStandardProfile
+ }
+ 
+-func (k *KafkaInput) GetName() string {
+-	return "kafka"
++func (*KafkaInput) ReceiveMessage() (key string, message *filer_pb.EventNotification, onSuccessFn func(), onFailureFn func(), err error) {
++	// No synthetic empty-success response, offset mutation or ACK callback.
++	return "", nil, nil, nil, kafkanotification.ErrUnsupportedInOUFStandardProfile
+ }
+-
+-func (k *KafkaInput) Initialize(configuration util.Configuration, prefix string) error {
+-	glog.V(0).Infof("replication.notification.kafka.hosts: %v\n", configuration.GetStringSlice(prefix+"hosts"))
+-	glog.V(0).Infof("replication.notification.kafka.topic: %v\n", configuration.GetString(prefix+"topic"))
+-	return k.initialize(
+-		configuration.GetStringSlice(prefix+"hosts"),
+-		configuration.GetString(prefix+"topic"),
+-		configuration.GetString(prefix+"offsetFile"),
+-		configuration.GetInt(prefix+"offsetSaveIntervalSeconds"),
+-		kafkanotif.SASLTLSConfig{
+-			SASLEnabled:           configuration.GetBool(prefix + "sasl_enabled"),
+-			SASLMechanism:         configuration.GetString(prefix + "sasl_mechanism"),
+-			SASLUsername:          configuration.GetString(prefix + "sasl_username"),
+-			SASLPassword:          configuration.GetString(prefix + "sasl_password"),
+-			TLSEnabled:            configuration.GetBool(prefix + "tls_enabled"),
+-			TLSCACert:             configuration.GetString(prefix + "tls_ca_cert"),
+-			TLSClientCert:         configuration.GetString(prefix + "tls_client_cert"),
+-			TLSClientKey:          configuration.GetString(prefix + "tls_client_key"),
+-			TLSInsecureSkipVerify: configuration.GetBool(prefix + "tls_insecure_skip_verify"),
+-		},
+-	)
+-}
+-
+-func (k *KafkaInput) initialize(hosts []string, topic string, offsetFile string, offsetSaveIntervalSeconds int, saslTLS kafkanotif.SASLTLSConfig) (err error) {
+-	config := sarama.NewConfig()
+-	config.Consumer.Return.Errors = true
+-	if err = kafkanotif.ConfigureSASLTLS(config, saslTLS); err != nil {
+-		return fmt.Errorf("kafka consumer security configuration: %w", err)
+-	}
+-	k.consumer, err = sarama.NewConsumer(hosts, config)
+-	if err != nil {
+-		return fmt.Errorf("create kafka consumer: %w", err)
+-	}
+-	glog.V(0).Infof("connected to %v", hosts)
+-
+-	k.topic = topic
+-	k.messageChan = make(chan *sarama.ConsumerMessage, 1)
+-
+-	partitions, err := k.consumer.Partitions(topic)
+-	if err != nil {
+-		return fmt.Errorf("get kafka partitions for topic %q: %w", topic, err)
+-	}
+-
+-	progress := loadProgress(offsetFile)
+-	if progress == nil || progress.Topic != topic {
+-		progress = &KafkaProgress{
+-			Topic:            topic,
+-			PartitionOffsets: make(map[int32]int64),
+-		}
+-	}
+-	progress.lastSaveTime = time.Now()
+-	progress.offsetFile = offsetFile
+-	progress.offsetSaveIntervalSeconds = offsetSaveIntervalSeconds
+-	progress.failedOffsets = make(map[int32]int64)
+-	k.progress = progress
+-
+-	for _, partition := range partitions {
+-		offset, found := progress.PartitionOffsets[partition]
+-		if !found {
+-			offset = sarama.OffsetOldest
+-		} else {
+-			offset += 1
+-		}
+-		partitionConsumer, err := k.consumer.ConsumePartition(topic, partition, offset)
+-		if err != nil {
+-			return fmt.Errorf("consume kafka topic %q partition %d: %w", topic, partition, err)
+-		}
+-		go func() {
+-			for {
+-				select {
+-				case err := <-partitionConsumer.Errors():
+-					fmt.Println(err)
+-				case msg := <-partitionConsumer.Messages():
+-					k.messageChan <- msg
+-				}
+-			}
+-		}()
+-	}
+-
+-	return nil
+-}
+-
+-func (k *KafkaInput) ReceiveMessage() (key string, message *filer_pb.EventNotification, onSuccessFn func(), onFailureFn func(), err error) {
+-
+-	msg := <-k.messageChan
+-
+-	// Commit only once the message has been replicated. Committing on receipt
+-	// leaves nothing to redeliver when the sink write fails.
+-	onSuccessFn = func() {
+-		if err := k.progress.setOffset(msg.Partition, msg.Offset); err != nil {
+-			glog.Warningf("set kafka offset: %v", err)
+-		}
+-	}
+-	onFailureFn = func() {
+-		k.progress.markFailed(msg.Partition, msg.Offset)
+-	}
+-
+-	key = string(msg.Key)
+-	message = &filer_pb.EventNotification{}
+-	err = proto.Unmarshal(msg.Value, message)
+-
+-	return
+-}
+-
+-type KafkaProgress struct {
+-	Topic                     string          `json:"topic"`
+-	PartitionOffsets          map[int32]int64 `json:"partitionOffsets"`
+-	offsetFile                string
+-	lastSaveTime              time.Time
+-	offsetSaveIntervalSeconds int
+-	// failedOffsets is the oldest offset that failed to replicate in each
+-	// partition. Nothing at or past it is ever committed, so a restart
+-	// redelivers from the failure instead of resuming after it.
+-	failedOffsets map[int32]int64
+-	sync.Mutex
+-}
+-
+-func loadProgress(offsetFile string) *KafkaProgress {
+-	progress := &KafkaProgress{}
+-	data, err := os.ReadFile(offsetFile)
+-	if err != nil {
+-		glog.Warningf("failed to read kafka progress file: %s", offsetFile)
+-		return nil
+-	}
+-	err = json.Unmarshal(data, progress)
+-	if err != nil {
+-		glog.Warningf("failed to read kafka progress message: %s", string(data))
+-		return nil
+-	}
+-	return progress
+-}
+-
+-func (progress *KafkaProgress) saveProgress() error {
+-	data, err := json.Marshal(progress)
+-	if err != nil {
+-		return fmt.Errorf("failed to marshal progress: %w", err)
+-	}
+-	err = util.WriteFile(progress.offsetFile, data, 0640)
+-	if err != nil {
+-		return fmt.Errorf("failed to save progress to %s: %v", progress.offsetFile, err)
+-	}
+-
+-	progress.lastSaveTime = time.Now()
+-	return nil
+-}
+-
+-func (progress *KafkaProgress) setOffset(partition int32, offset int64) error {
+-	progress.Lock()
+-	defer progress.Unlock()
+-
+-	if failedOffset, found := progress.failedOffsets[partition]; found && offset >= failedOffset {
+-		return nil
+-	}
+-
+-	progress.PartitionOffsets[partition] = offset
+-	if int(time.Now().Sub(progress.lastSaveTime).Seconds()) > progress.offsetSaveIntervalSeconds {
+-		return progress.saveProgress()
+-	}
+-	return nil
+-}
+-
+-// markFailed records an offset that could not be replicated, holding the
+-// committed offset for that partition behind it.
+-func (progress *KafkaProgress) markFailed(partition int32, offset int64) {
+-	progress.Lock()
+-	defer progress.Unlock()
+-
+-	if failedOffset, found := progress.failedOffsets[partition]; !found || offset < failedOffset {
+-		progress.failedOffsets[partition] = offset
+-		glog.Errorf("replicate kafka %s partition %d offset %d failed; holding the committed offset before it", progress.Topic, partition, offset)
+-	}
+-}
+diff --git a/weed/replication/sub/notification_kafka_ouf_profile_test.go b/weed/replication/sub/notification_kafka_ouf_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sub/notification_kafka_ouf_profile_test.go
+@@ -0,0 +1,28 @@
++package sub
++
++import (
++	"errors"
++	"testing"
++
++	kafkanotification "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
++)
++
++func TestOUFStandardKafkaInputRegisteredAndRejectedWithoutAcknowledgement(t *testing.T) {
++	count := 0
++	for _, input := range NotificationInputs {
++		if input.GetName() == "kafka" {
++			count++
++		}
++	}
++	if count != 1 {
++		t.Fatalf("Kafka input must stay recognizable exactly once, found %d", count)
++	}
++	input := &KafkaInput{}
++	if !errors.Is(input.Initialize(nil, "notification.kafka."), kafkanotification.ErrUnsupportedInOUFStandardProfile) {
++		t.Fatal("excluded input initialization accepted")
++	}
++	key, message, success, failure, err := input.ReceiveMessage()
++	if !errors.Is(err, kafkanotification.ErrUnsupportedInOUFStandardProfile) || key != "" || message != nil || success != nil || failure != nil {
++		t.Fatal("excluded input produced a message, acknowledgement or false success")
++	}
++}
+diff --git a/weed/replication/sub/notification_kafka_test.go b/weed/replication/sub/notification_kafka_test.go
+deleted file mode 100644
+--- a/weed/replication/sub/notification_kafka_test.go
++++ /dev/null
+@@ -1,69 +0,0 @@
+-package sub
+-
+-import (
+-	"testing"
+-	"time"
+-)
+-
+-func newTestProgress() *KafkaProgress {
+-	return &KafkaProgress{
+-		Topic:            "test",
+-		PartitionOffsets: make(map[int32]int64),
+-		failedOffsets:    make(map[int32]int64),
+-		lastSaveTime:     time.Now(),
+-		// large enough that no test call reaches saveProgress and touches disk
+-		offsetSaveIntervalSeconds: 3600,
+-	}
+-}
+-
+-// TestKafkaProgressHoldsOffsetAtFailure verifies that a message that failed to
+-// replicate keeps the committed offset behind it, so a restart redelivers it
+-// rather than resuming after it.
+-func TestKafkaProgressHoldsOffsetAtFailure(t *testing.T) {
+-	progress := newTestProgress()
+-
+-	if err := progress.setOffset(0, 10); err != nil {
+-		t.Fatalf("setOffset: %v", err)
+-	}
+-	if got := progress.PartitionOffsets[0]; got != 10 {
+-		t.Fatalf("offset = %d after a replicated message, want 10", got)
+-	}
+-
+-	progress.markFailed(0, 11)
+-
+-	if err := progress.setOffset(0, 12); err != nil {
+-		t.Fatalf("setOffset: %v", err)
+-	}
+-	if got := progress.PartitionOffsets[0]; got != 10 {
+-		t.Fatalf("offset = %d after a later success, want it held at 10", got)
+-	}
+-
+-	// a failure in one partition must not stall the others
+-	if err := progress.setOffset(1, 5); err != nil {
+-		t.Fatalf("setOffset: %v", err)
+-	}
+-	if got := progress.PartitionOffsets[1]; got != 5 {
+-		t.Fatalf("offset = %d in an unaffected partition, want 5", got)
+-	}
+-}
+-
+-// TestKafkaProgressKeepsOldestFailure verifies that the hold point is the
+-// oldest failed offset, not the most recent one.
+-func TestKafkaProgressKeepsOldestFailure(t *testing.T) {
+-	progress := newTestProgress()
+-
+-	progress.markFailed(0, 20)
+-	progress.markFailed(0, 11)
+-	progress.markFailed(0, 30)
+-
+-	if got := progress.failedOffsets[0]; got != 11 {
+-		t.Fatalf("held at offset %d, want the oldest failure 11", got)
+-	}
+-
+-	if err := progress.setOffset(0, 10); err != nil {
+-		t.Fatalf("setOffset: %v", err)
+-	}
+-	if got := progress.PartitionOffsets[0]; got != 10 {
+-		t.Fatalf("offset = %d, want an offset before the failure to still commit", got)
+-	}
+-}
+diff --git a/weed/server/filer_server.go b/weed/server/filer_server.go
+--- a/weed/server/filer_server.go
++++ b/weed/server/filer_server.go
+@@ -56,7 +56,7 @@
+ 	_ "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs"
+ 	_ "github.com/seaweedfs/seaweedfs/weed/notification/gocdk_pub_sub"
+ 	_ "github.com/seaweedfs/seaweedfs/weed/notification/google_pub_sub"
+-	_ "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
++	kafkanotification "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
+ 	_ "github.com/seaweedfs/seaweedfs/weed/notification/log"
+ 	_ "github.com/seaweedfs/seaweedfs/weed/notification/webhook"
+ 	"github.com/seaweedfs/seaweedfs/weed/security"
+@@ -230,6 +230,7 @@
+ func NewFilerServer(defaultMux, readonlyMux *http.ServeMux, option *FilerOption) (fs *FilerServer, err error) {
+ 
+ 	v := util.GetViper()
++
+ 	signingKey := v.GetString("jwt.filer_signing.key")
+ 	v.SetDefault("jwt.filer_signing.expires_after_seconds", 10)
+ 	expiresAfterSec := v.GetInt("jwt.filer_signing.expires_after_seconds")
+@@ -250,20 +251,32 @@
+ 
+ 	allowedOrigins := v.GetString("cors.allowed_origins.values")
+ 	domains := strings.Split(allowedOrigins, ",")
+-	option.AllowedOrigins = domains
+ 
+ 	// -exposeDirectoryData and filer.expose_directory_metadata both default to
+ 	// on, and either one turning it off has to hold: this is what keeps the
+ 	// directory listing off a filer whose reads are otherwise unauthenticated.
+ 	v.SetDefault("filer.expose_directory_metadata.enabled", true)
+-	option.ExposeDirectoryData = option.ExposeDirectoryData && v.GetBool("filer.expose_directory_metadata.enabled")
++	exposeDirectoryMetadata := v.GetBool("filer.expose_directory_metadata.enabled")
++	// Snapshot the original client TLS inputs, not the dial options themselves:
++	// constructing TLS providers starts certificate-refresh goroutines.
++	clientTLSConfig := snapshotFilerClientTLSConfig(v)
++
++	// Merge once in the original filer/notification order and reject excluded
++	// Kafka before option writes, TLS providers, stores, DNS or goroutines.
++	filerConfigLoaded := util.LoadConfiguration("filer", false)
++	util.LoadConfiguration("notification", false)
++	if v.GetBool("notification.kafka.enabled") {
++		return nil, kafkanotification.ErrUnsupportedInOUFStandardProfile
++	}
++	option.AllowedOrigins = domains
++	option.ExposeDirectoryData = option.ExposeDirectoryData && exposeDirectoryMetadata
+ 
+ 	fs = &FilerServer{
+ 		option:                option,
+-		grpcDialOption:        security.LoadClientTLS(util.GetViper(), "grpc.filer"),
+-		grpcDialOptionMaster:  security.LoadClientTLSForTarget(util.GetViper(), "grpc.filer", "grpc.master"),
+-		grpcDialOptionVolume:  security.LoadClientTLSForTarget(util.GetViper(), "grpc.filer", "grpc.volume"),
+-		grpcDialOptionS3:      security.LoadClientTLSForTarget(util.GetViper(), "grpc.filer", "grpc.s3"),
++		grpcDialOption:        security.LoadClientTLS(clientTLSConfig, "grpc.filer"),
++		grpcDialOptionMaster:  security.LoadClientTLSForTarget(clientTLSConfig, "grpc.filer", "grpc.master"),
++		grpcDialOptionVolume:  security.LoadClientTLSForTarget(clientTLSConfig, "grpc.filer", "grpc.volume"),
++		grpcDialOptionS3:      security.LoadClientTLSForTarget(clientTLSConfig, "grpc.filer", "grpc.s3"),
+ 		knownListeners:        make(map[int32]int32),
+ 		subscribers:           make(map[int32]*metadataSubscriber),
+ 		inFlightDataLimitCond: sync.NewCond(new(sync.Mutex)),
+@@ -284,7 +297,7 @@
+ 		glog.Fatal("master list is required!")
+ 	}
+ 
+-	if !util.LoadConfiguration("filer", false) {
++	if !filerConfigLoaded {
+ 		v.SetDefault("leveldb2.enabled", true)
+ 		v.SetDefault("leveldb2.dir", option.DefaultLevelDbDir)
+ 		_, err := os.Stat(option.DefaultLevelDbDir)
+@@ -295,8 +308,6 @@
+ 	} else {
+ 		glog.Warningf("skipping default store dir in %s", option.DefaultLevelDbDir)
+ 	}
+-	util.LoadConfiguration("notification", false)
+-
+ 	v.SetDefault("filer.options.max_file_name_length", 255)
+ 	maxFilenameLength := v.GetUint32("filer.options.max_file_name_length")
+ 	glog.V(0).Infof("max_file_name_length %d", maxFilenameLength)
+diff --git a/weed/server/filer_server_ouf_kafka_profile_test.go b/weed/server/filer_server_ouf_kafka_profile_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/server/filer_server_ouf_kafka_profile_test.go
+@@ -0,0 +1,128 @@
++package weed_server
++
++import (
++	"context"
++	"errors"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"reflect"
++	"strings"
++	"testing"
++	"time"
++
++	kafkanotification "github.com/seaweedfs/seaweedfs/weed/notification/kafka"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/spf13/viper"
++)
++
++// A fresh process isolates the shared Viper singleton and environment. Passing
++// nil masters (and, in one case, nil options) proves the denial precedes option
++// writes, TLS setup, sweepers, DNS refresh, store setup and master connections.
++func TestOUFStandardKafkaFilerPreflightBeforeEffects(t *testing.T) {
++	if mode := os.Getenv("OUF_KAFKA_FILER_CHILD"); mode != "" {
++		directory := t.TempDir()
++		util.ConfigurationFileDirectory = util.DirectoryValueType(directory)
++		filerConfig := "[leveldb2]\nenabled = true\ndir = '" + filepath.Join(directory, "store") + "'\n"
++		notificationConfig := "[notification.kafka]\nenabled = true\n"
++		switch mode {
++		case "filer-file":
++			filerConfig += "[notification.kafka]\nenabled = true\n"
++			notificationConfig = ""
++		case "merge-and-mixed":
++			filerConfig += "[notification.kafka]\nenabled = false\n"
++			notificationConfig += "[notification.webhook]\nenabled = true\nendpoint = 'http://127.0.0.1:1/never'\n"
++		case "environment":
++			notificationConfig = "[notification.kafka]\nenabled = false\n"
++			t.Setenv("WEED_NOTIFICATION_KAFKA_ENABLED", "true")
++		}
++		if err := os.WriteFile(filepath.Join(directory, "filer.toml"), []byte(filerConfig), 0600); err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(filepath.Join(directory, "notification.toml"), []byte(notificationConfig), 0600); err != nil {
++			t.Fatal(err)
++		}
++		var options *FilerOption
++		if mode != "notification-file" {
++			options = &FilerOption{DefaultLevelDbDir: filepath.Join(directory, "default-store"), AllowedOrigins: []string{"unchanged"}, ExposeDirectoryData: true}
++		}
++		// Invalid TLS files would abort startup if TLS construction happened
++		// before the Kafka guard. They must never be read on this path.
++		v := util.GetViper()
++		v.Set("grpc.filer.client_cert", filepath.Join(directory, "never-read.crt"))
++		v.Set("grpc.filer.client_key", filepath.Join(directory, "never-read.key"))
++		v.Set("grpc.ca", filepath.Join(directory, "never-read-ca.crt"))
++		fs, err := NewFilerServer(nil, nil, options)
++		if fs != nil || !errors.Is(err, kafkanotification.ErrUnsupportedInOUFStandardProfile) {
++			t.Fatalf("expected rejection before construction, got filer=%v error=%v", fs, err)
++		}
++		if options != nil && (!reflect.DeepEqual(options.AllowedOrigins, []string{"unchanged"}) || !options.ExposeDirectoryData) {
++			t.Fatal("preflight mutated caller options")
++		}
++		for _, name := range []string{"store", "default-store"} {
++			if _, err := os.Stat(filepath.Join(directory, name)); !os.IsNotExist(err) {
++				t.Fatalf("store touched: %s (%v)", name, err)
++			}
++		}
++		return
++	}
++	for _, mode := range []string{"notification-file", "filer-file", "merge-and-mixed", "environment"} {
++		t.Run(mode, func(t *testing.T) {
++			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++			defer cancel()
++			cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestOUFStandardKafkaFilerPreflightBeforeEffects$")
++			cmd.Env = append(os.Environ(), "OUF_KAFKA_FILER_CHILD="+mode)
++			output, err := cmd.CombinedOutput()
++			if err != nil || ctx.Err() != nil {
++				t.Fatalf("early denial failed: %v %s", err, output)
++			}
++		})
++	}
++}
++
++func TestOUFStandardFilerTLSSnapshotPreservesEffectiveInputs(t *testing.T) {
++	values := map[string]string{
++		"grpc.ca":                "original-ca",
++		"grpc.filer.client_cert": "original-client-cert", "grpc.filer.client_key": "original-client-key",
++		"grpc.filer.cert": "original-cert", "grpc.filer.key": "original-key",
++		"grpc.allowed_server_commonNames": "original-global-names", "grpc.allowed_server_wildcard_domain": "original-global-wildcard",
++		"grpc.filer.allowed_server_commonNames": "original-filer-names", "grpc.filer.allowed_server_wildcard_domain": "original-filer-wildcard",
++	}
++	for _, target := range []string{"master", "volume", "s3"} {
++		values["grpc.filer."+target+"_allowed_server_commonNames"] = "original-" + target + "-names"
++		values["grpc.filer."+target+"_allowed_server_wildcard_domain"] = "original-" + target + "-wildcard"
++	}
++	// This override is absent from AllKeys when no file/default provides it.
++	delete(values, "grpc.filer.client_cert")
++	original := viper.New()
++	original.SetEnvPrefix("OUF_TLS_SNAPSHOT")
++	original.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
++	original.AutomaticEnv()
++	for key, value := range values {
++		original.SetDefault(key, value)
++	}
++	t.Setenv("OUF_TLS_SNAPSHOT_GRPC_FILER_CLIENT_CERT", "environment-client-cert")
++	config := util.NewViperProxy(original)
++	snapshot := snapshotFilerClientTLSConfig(config)
++	values["grpc.filer.client_cert"] = "environment-client-cert"
++	// Simulate a later filer/notification config merge changing every key.
++	merged := map[string]interface{}{}
++	for key := range values {
++		merged[key] = "later-file-value"
++	}
++	if err := original.MergeConfigMap(merged); err != nil {
++		t.Fatal(err)
++	}
++	t.Setenv("OUF_TLS_SNAPSHOT_GRPC_FILER_CLIENT_CERT", "later-environment-value")
++	for key, wanted := range values {
++		if got := snapshot.GetString(key); got != wanted {
++			t.Errorf("snapshot %s=%q, want %q", key, got, wanted)
++		}
++		if got := config.GetString(key); got == wanted {
++			t.Errorf("fixture did not change %s", key)
++		}
++	}
++	if snapshot.GetString("grpc.filer.unrelated_new_key") != "" {
++		t.Fatal("unexpected snapshot content")
++	}
++}
+diff --git a/weed/server/filer_server_ouf_profile.go b/weed/server/filer_server_ouf_profile.go
+new file mode 100644
+--- /dev/null
++++ b/weed/server/filer_server_ouf_profile.go
+@@ -0,0 +1,29 @@
++package weed_server
++
++import (
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/spf13/viper"
++)
++
++// snapshotFilerClientTLSConfig preserves the pre-filer/notification merge
++// inputs consumed by security.LoadClientTLS and LoadClientTLSForTarget. Read
++// each key through ViperProxy so automatic environment overrides are captured
++// even when a key is not listed by AllKeys. This performs no certificate reads
++// or provider construction. Keep this key set aligned with security/tls.go.
++func snapshotFilerClientTLSConfig(config *util.ViperProxy) *util.ViperProxy {
++	snapshot := viper.New()
++	keys := []string{
++		"grpc.ca",
++		"grpc.filer.client_cert", "grpc.filer.client_key",
++		"grpc.filer.cert", "grpc.filer.key",
++		"grpc.allowed_server_commonNames", "grpc.allowed_server_wildcard_domain",
++		"grpc.filer.allowed_server_commonNames", "grpc.filer.allowed_server_wildcard_domain",
++	}
++	for _, target := range []string{"master", "volume", "s3"} {
++		keys = append(keys, "grpc.filer."+target+"_allowed_server_commonNames", "grpc.filer."+target+"_allowed_server_wildcard_domain")
++	}
++	for _, key := range keys {
++		snapshot.Set(key, config.GetString(key))
++	}
++	return util.NewViperProxy(snapshot)
++}
