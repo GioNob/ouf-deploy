@@ -1,0 +1,91 @@
+name: Storage 4.52 delivery evidence
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-delivery-evidence.yml
+      - scripts/build-seaweedfs-452-delivery-evidence.py
+      - scripts/verify-seaweedfs-452-delivery-evidence.py
+      - tests/test_seaweedfs_452_delivery_evidence.py
+      - releases/seaweedfs-452-delivery-evidence-lock-20261103.json
+      - releases/seaweedfs-452-durable-custody-plan-20261103.json
+      - evidence/seaweedfs-452-component-obligation-matrix-20261103.json
+      - evidence/seaweedfs-452-component-obligation-matrix-20261103.csv
+      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000
+      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001
+      - evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-delivery-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-delivery-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Verify the closed technical bundle and authority boundaries
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/storage-delivery-evidence"
+          cat \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000 \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001 \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002 \
+            > evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip
+          test "$(stat -c %s evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip)" = 1832133
+          test "$(sha256sum evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip | cut -d' ' -f1)" = d02665c32943bb362f3ace5a7c96093634807d468354b1aaaf5f77efe8bc0f19
+          sha256sum --strict --check <<'EOF'
+          1838d239086f60fddcf858712bc0f5c0e5d4df68741cf8ee372c75d014983af3  evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000
+          985cdd3bdd500ef72352999167e086d7e51558943f50cc8ac5d341cc0ea96095  evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001
+          4e9614091d92160a26ae19c5c0997e58d893012d0af8996f4c3290bd75f2cc6d  evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002
+          EOF
+          python3 -I -B -S -m unittest discover -s tests \
+            -p test_seaweedfs_452_delivery_evidence.py -v 2>&1 | \
+            tee "$RUNNER_TEMP/storage-delivery-evidence/test.log"
+          python3 -I -B -S scripts/verify-seaweedfs-452-delivery-evidence.py \
+            --delivery-lock releases/seaweedfs-452-delivery-evidence-lock-20261103.json \
+            --matrix evidence/seaweedfs-452-component-obligation-matrix-20261103.json \
+            --matrix-csv evidence/seaweedfs-452-component-obligation-matrix-20261103.csv \
+            --bundle evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip \
+            --custody-plan releases/seaweedfs-452-durable-custody-plan-20261103.json \
+            > "$RUNNER_TEMP/storage-delivery-evidence/verification.json"
+          cp releases/seaweedfs-452-delivery-evidence-lock-20261103.json \
+            "$RUNNER_TEMP/storage-delivery-evidence/"
+          cp releases/seaweedfs-452-durable-custody-plan-20261103.json \
+            "$RUNNER_TEMP/storage-delivery-evidence/"
+          sha256sum evidence/seaweedfs-452-component-obligation-matrix-20261103.json \
+            evidence/seaweedfs-452-component-obligation-matrix-20261103.csv \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000 \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001 \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002 \
+            evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip \
+            > "$RUNNER_TEMP/storage-delivery-evidence/repository-evidence-sha256.txt"
+          cd "$RUNNER_TEMP/storage-delivery-evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-delivery-evidence/SHA256SUMS
+
+      - name: Retain the bounded verification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-delivery-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-delivery-evidence/
+          if-no-files-found: error
+          retention-days: 90
