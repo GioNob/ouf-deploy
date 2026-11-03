@@ -1,0 +1,594 @@
+diff --git a/weed/notification/aws_sqs/aws_sqs_pub.go b/weed/notification/aws_sqs/aws_sqs_pub.go
+--- a/weed/notification/aws_sqs/aws_sqs_pub.go
++++ b/weed/notification/aws_sqs/aws_sqs_pub.go
+@@ -1,13 +1,11 @@
+ package aws_sqs
+ 
+ import (
++	"context"
+ 	"fmt"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/notification"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+@@ -18,8 +16,13 @@
+ 	notification.MessageQueues = append(notification.MessageQueues, &AwsSqsPub{})
+ }
+ 
++type sqsAPI interface {
++	GetQueueUrl(context.Context, *sqs.GetQueueUrlInput, ...func(*sqs.Options)) (*sqs.GetQueueUrlOutput, error)
++	SendMessage(context.Context, *sqs.SendMessageInput, ...func(*sqs.Options)) (*sqs.SendMessageOutput, error)
++}
++
+ type AwsSqsPub struct {
+-	svc      *sqs.SQS
++	svc      sqsAPI
+ 	queueUrl string
+ }
+ 
+@@ -40,30 +43,14 @@
+ 
+ func (k *AwsSqsPub) initialize(awsAccessKeyId, awsSecretAccessKey, region, queueName string) (err error) {
+ 
+-	config := &aws.Config{
+-		Region: aws.String(region),
++	k.svc, err = NewClient(context.Background(), awsAccessKeyId, awsSecretAccessKey, region)
++	if err != nil {
++		return err
+ 	}
+-	if awsAccessKeyId != "" && awsSecretAccessKey != "" {
+-		config.Credentials = credentials.NewStaticCredentials(awsAccessKeyId, awsSecretAccessKey, "")
++	k.queueUrl, err = ResolveQueueURL(context.Background(), k.svc, queueName)
++	if err != nil {
++		return err
+ 	}
+-
+-	sess, err := session.NewSession(config)
+-	if err != nil {
+-		return fmt.Errorf("create aws session: %w", err)
+-	}
+-	k.svc = sqs.New(sess)
+-
+-	result, err := k.svc.GetQueueUrl(&sqs.GetQueueUrlInput{
+-		QueueName: aws.String(queueName),
+-	})
+-	if err != nil {
+-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == sqs.ErrCodeQueueDoesNotExist {
+-			return fmt.Errorf("unable to find queue %s", queueName)
+-		}
+-		return fmt.Errorf("get queue %s url: %v", queueName, err)
+-	}
+-
+-	k.queueUrl = *result.QueueUrl
+ 
+ 	return nil
+ }
+@@ -72,23 +59,23 @@
+ 
+ 	text, err := proto.Marshal(message)
+ 	if err != nil {
+-		return fmt.Errorf("send message marshal %+v: %v", message, err)
++		return fmt.Errorf("send message marshal: %w", err)
+ 	}
+ 
+-	_, err = k.svc.SendMessage(&sqs.SendMessageInput{
+-		DelaySeconds: aws.Int64(10),
+-		MessageAttributes: map[string]*sqs.MessageAttributeValue{
+-			"key": &sqs.MessageAttributeValue{
+-				DataType:    aws.String("String"),
+-				StringValue: aws.String(key),
++	_, err = k.svc.SendMessage(context.Background(), &sqs.SendMessageInput{
++		DelaySeconds: 10,
++		MessageAttributes: map[string]types.MessageAttributeValue{
++			"key": {
++				DataType:    new("String"),
++				StringValue: new(key),
+ 			},
+ 		},
+-		MessageBody: aws.String(string(text)),
++		MessageBody: new(string(text)),
+ 		QueueUrl:    &k.queueUrl,
+ 	})
+ 
+ 	if err != nil {
+-		return fmt.Errorf("send message to sqs %s: %v", k.queueUrl, err)
++		return fmt.Errorf("send message to sqs %s: %w", k.queueUrl, err)
+ 	}
+ 
+ 	return nil
+diff --git a/weed/notification/aws_sqs/client.go b/weed/notification/aws_sqs/client.go
+new file mode 100644
+--- /dev/null
++++ b/weed/notification/aws_sqs/client.go
+@@ -0,0 +1,57 @@
++package aws_sqs
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"time"
++
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
++)
++
++// NewClient uses the maintained SDK default credential chain unless a complete
++// static credential pair is supplied. A partial pair must not select another identity.
++// SDK retries are disabled: a standard-queue send has no proven deduplication,
++// and an ambiguous result must return to the pipeline owner for reconciliation.
++// The transport bounds each request while allowing the existing 20-second long poll.
++func NewClient(ctx context.Context, accessKey, secretKey, region string) (*sqs.Client, error) {
++	if (accessKey == "") != (secretKey == "") {
++		return nil, fmt.Errorf("SQS requires both static credential fields or neither")
++	}
++	opts := []func(*config.LoadOptions) error{
++		config.WithRegion(region),
++		config.WithRetryMaxAttempts(1),
++		config.WithHTTPClient(awshttp.NewBuildableClient().WithTimeout(30 * time.Second)),
++	}
++	if accessKey != "" {
++		opts = append(opts, config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKey, secretKey, "")))
++	}
++	cfg, err := config.LoadDefaultConfig(ctx, opts...)
++	if err != nil {
++		return nil, fmt.Errorf("load SQS configuration: %w", err)
++	}
++	return sqs.NewFromConfig(cfg), nil
++}
++
++type queueURLAPI interface {
++	GetQueueUrl(context.Context, *sqs.GetQueueUrlInput, ...func(*sqs.Options)) (*sqs.GetQueueUrlOutput, error)
++}
++
++func ResolveQueueURL(ctx context.Context, client queueURLAPI, queueName string) (string, error) {
++	result, err := client.GetQueueUrl(ctx, &sqs.GetQueueUrlInput{QueueName: &queueName})
++	if err != nil {
++		var missing *types.QueueDoesNotExist
++		if errors.As(err, &missing) {
++			return "", fmt.Errorf("unable to find queue %s: %w", queueName, err)
++		}
++		return "", fmt.Errorf("get queue %s url: %w", queueName, err)
++	}
++	if result == nil || result.QueueUrl == nil || *result.QueueUrl == "" {
++		return "", fmt.Errorf("queue %s returned no URL", queueName)
++	}
++	return *result.QueueUrl, nil
++}
+diff --git a/weed/notification/aws_sqs/client_test.go b/weed/notification/aws_sqs/client_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/notification/aws_sqs/client_test.go
+@@ -0,0 +1,173 @@
++package aws_sqs
++
++import (
++	"context"
++	"encoding/json"
++	"errors"
++	"io"
++	"net/http"
++	"os"
++	"path/filepath"
++	"strings"
++	"testing"
++	"time"
++
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	"github.com/aws/aws-sdk-go-v2/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"google.golang.org/protobuf/proto"
++)
++
++type httpFunc func(*http.Request) (*http.Response, error)
++
++func (f httpFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
++
++func isolateCredentials(t *testing.T) {
++	t.Helper()
++	for _, name := range []string{"AWS_PROFILE", "AWS_DEFAULT_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN", "AWS_WEB_IDENTITY_TOKEN_FILE", "AWS_ROLE_ARN", "AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_SQS", "AWS_CONTAINER_CREDENTIALS_FULL_URI", "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"} {
++		t.Setenv(name, "")
++	}
++	t.Setenv("AWS_EC2_METADATA_DISABLED", "true")
++	path := filepath.Join(t.TempDir(), "empty")
++	if err := os.WriteFile(path, nil, 0600); err != nil {
++		t.Fatal(err)
++	}
++	t.Setenv("AWS_CONFIG_FILE", path)
++	t.Setenv("AWS_SHARED_CREDENTIALS_FILE", path)
++}
++
++func TestClientCredentialSelectionAndLimits(t *testing.T) {
++	isolateCredentials(t)
++	t.Setenv("AWS_ACCESS_KEY_ID", "environment-id")
++	t.Setenv("AWS_SECRET_ACCESS_KEY", "environment-secret")
++	for _, tc := range []struct{ name, id, secret, want string }{
++		{"explicit", "static-id", "static-secret", "static-id"}, {"default-chain", "", "", "environment-id"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			client, err := NewClient(context.Background(), tc.id, tc.secret, "us-east-1")
++			if err != nil {
++				t.Fatal(err)
++			}
++			opts := client.Options()
++			creds, err := opts.Credentials.Retrieve(context.Background())
++			if err != nil {
++				t.Fatal(err)
++			}
++			if creds.AccessKeyID != tc.want {
++				t.Fatal("selected unexpected credential provider")
++			}
++			if opts.RetryMaxAttempts != 1 {
++				t.Fatalf("unexpected attempts %d", opts.RetryMaxAttempts)
++			}
++			transport, ok := opts.HTTPClient.(*awshttp.BuildableClient)
++			if !ok || transport.GetTimeout() != 30*time.Second {
++				t.Fatal("request timeout lost")
++			}
++		})
++	}
++	for _, pair := range [][2]string{{"partial", ""}, {"", "partial"}} {
++		if client, err := NewClient(context.Background(), pair[0], pair[1], "us-east-1"); err == nil || client != nil {
++			t.Fatal("partial credentials accepted")
++		}
++	}
++}
++
++func sdkFixture(t *testing.T, transport httpFunc) *sqs.Client {
++	t.Helper()
++	isolateCredentials(t)
++	client, err := NewClient(context.Background(), "fixture-id", "fixture-secret", "us-east-1")
++	if err != nil {
++		t.Fatal(err)
++	}
++	opts := client.Options()
++	opts.HTTPClient = transport
++	return sqs.New(opts)
++}
++
++func response(status int, body string) *http.Response {
++	return &http.Response{StatusCode: status, Header: http.Header{"Content-Type": []string{"application/x-amz-json-1.0"}}, Body: io.NopCloser(strings.NewReader(body))}
++}
++
++func TestSDKSendWireAndAmbiguousFailureNoRetry(t *testing.T) {
++	for _, status := range []int{200, 503} {
++		t.Run(http.StatusText(status), func(t *testing.T) {
++			calls := 0
++			event := &filer_pb.EventNotification{NewParentPath: "/fixture"}
++			expected, err := proto.Marshal(event)
++			if err != nil {
++				t.Fatal(err)
++			}
++			client := sdkFixture(t, func(r *http.Request) (*http.Response, error) {
++				calls++
++				if r.Header.Get("X-Amz-Target") != "AmazonSQS.SendMessage" || !strings.Contains(r.Header.Get("Authorization"), "Credential=fixture-id/") {
++					t.Fatal("missing operation or signature")
++				}
++				var body struct {
++					DelaySeconds          int
++					MessageBody, QueueUrl string
++					MessageAttributes     map[string]struct{ DataType, StringValue string }
++				}
++				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
++					t.Fatal(err)
++				}
++				if body.DelaySeconds != 10 || body.MessageBody != string(expected) || body.QueueUrl != "https://sqs.us-east-1.amazonaws.com/123/fixture" || body.MessageAttributes["key"].DataType != "String" || body.MessageAttributes["key"].StringValue != "event-key" {
++					t.Fatalf("wire mismatch: %+v", body)
++				}
++				if status == 503 {
++					return response(503, `{"__type":"ServiceUnavailable","message":"ambiguous send"}`), nil
++				}
++				return response(200, `{"MessageId":"fixture"}`), nil
++			})
++			pub := AwsSqsPub{svc: client, queueUrl: "https://sqs.us-east-1.amazonaws.com/123/fixture"}
++			err = pub.SendMessage("event-key", event)
++			if (err != nil) != (status == 503) || calls != 1 {
++				t.Fatalf("err=%v calls=%d", err, calls)
++			}
++			if status == 503 {
++				var operation interface{ Unwrap() error }
++				if !errors.As(err, &operation) {
++					t.Fatal("error cause lost")
++				}
++			}
++		})
++	}
++}
++
++func TestSDKQueueResolution(t *testing.T) {
++	for _, tc := range []struct {
++		name, body       string
++		status           int
++		wantErr, missing bool
++	}{
++		{"success", `{"QueueUrl":"https://sqs.us-east-1.amazonaws.com/123/fixture"}`, 200, false, false},
++		{"empty", `{}`, 200, true, false},
++		{"missing", `{"__type":"QueueDoesNotExist","message":"missing"}`, 400, true, true},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			client := sdkFixture(t, func(r *http.Request) (*http.Response, error) {
++				var body struct{ QueueName string }
++				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
++					t.Fatal(err)
++				}
++				if body.QueueName != "fixture" || r.Header.Get("X-Amz-Target") != "AmazonSQS.GetQueueUrl" {
++					t.Fatal("lookup wire mismatch")
++				}
++				return response(tc.status, tc.body), nil
++			})
++			url, err := ResolveQueueURL(context.Background(), client, "fixture")
++			if (err != nil) != tc.wantErr {
++				t.Fatalf("unexpected error %v", err)
++			}
++			if err == nil && url == "" {
++				t.Fatal("empty successful URL")
++			}
++			if tc.missing {
++				var missing *types.QueueDoesNotExist
++				if !errors.As(err, &missing) {
++					t.Fatalf("typed cause lost: %v", err)
++				}
++			}
++		})
++	}
++}
+diff --git a/weed/replication/sub/notification_aws_sqs.go b/weed/replication/sub/notification_aws_sqs.go
+--- a/weed/replication/sub/notification_aws_sqs.go
++++ b/weed/replication/sub/notification_aws_sqs.go
+@@ -1,14 +1,13 @@
+ package sub
+ 
+ import (
++	"context"
+ 	"fmt"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs"
++	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
++	"github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 	"google.golang.org/protobuf/proto"
+@@ -18,8 +17,14 @@
+ 	NotificationInputs = append(NotificationInputs, &AwsSqsInput{})
+ }
+ 
++type sqsAPI interface {
++	GetQueueUrl(context.Context, *sqs.GetQueueUrlInput, ...func(*sqs.Options)) (*sqs.GetQueueUrlOutput, error)
++	ReceiveMessage(context.Context, *sqs.ReceiveMessageInput, ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error)
++	DeleteMessage(context.Context, *sqs.DeleteMessageInput, ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error)
++}
++
+ type AwsSqsInput struct {
+-	svc      *sqs.SQS
++	svc      sqsAPI
+ 	queueUrl string
+ }
+ 
+@@ -40,31 +45,14 @@
+ 
+ func (k *AwsSqsInput) initialize(awsAccessKeyId, awsSecretAccessKey, region, queueName string) (err error) {
+ 
+-	config := &aws.Config{
+-		Region:                        aws.String(region),
+-		S3DisableContentMD5Validation: aws.Bool(true),
++	k.svc, err = aws_sqs.NewClient(context.Background(), awsAccessKeyId, awsSecretAccessKey, region)
++	if err != nil {
++		return err
+ 	}
+-	if awsAccessKeyId != "" && awsSecretAccessKey != "" {
+-		config.Credentials = credentials.NewStaticCredentials(awsAccessKeyId, awsSecretAccessKey, "")
++	k.queueUrl, err = aws_sqs.ResolveQueueURL(context.Background(), k.svc, queueName)
++	if err != nil {
++		return err
+ 	}
+-
+-	sess, err := session.NewSession(config)
+-	if err != nil {
+-		return fmt.Errorf("create aws session: %w", err)
+-	}
+-	k.svc = sqs.New(sess)
+-
+-	result, err := k.svc.GetQueueUrl(&sqs.GetQueueUrlInput{
+-		QueueName: aws.String(queueName),
+-	})
+-	if err != nil {
+-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == sqs.ErrCodeQueueDoesNotExist {
+-			return fmt.Errorf("unable to find queue %s", queueName)
+-		}
+-		return fmt.Errorf("get queue %s url: %v", queueName, err)
+-	}
+-
+-	k.queueUrl = *result.QueueUrl
+ 
+ 	return nil
+ }
+@@ -72,20 +60,20 @@
+ func (k *AwsSqsInput) ReceiveMessage() (key string, message *filer_pb.EventNotification, onSuccessFn func(), onFailureFn func(), err error) {
+ 
+ 	// receive message
+-	result, err := k.svc.ReceiveMessage(&sqs.ReceiveMessageInput{
+-		AttributeNames: []*string{
+-			aws.String(sqs.MessageSystemAttributeNameSentTimestamp),
++	result, err := k.svc.ReceiveMessage(context.Background(), &sqs.ReceiveMessageInput{
++		MessageSystemAttributeNames: []types.MessageSystemAttributeName{
++			types.MessageSystemAttributeNameSentTimestamp,
+ 		},
+-		MessageAttributeNames: []*string{
+-			aws.String(sqs.QueueAttributeNameAll),
++		MessageAttributeNames: []string{
++			"All",
+ 		},
+ 		QueueUrl:            &k.queueUrl,
+-		MaxNumberOfMessages: aws.Int64(1),
+-		VisibilityTimeout:   aws.Int64(20), // 20 seconds
+-		WaitTimeSeconds:     aws.Int64(20),
++		MaxNumberOfMessages: 1,
++		VisibilityTimeout:   20, // 20 seconds
++		WaitTimeSeconds:     20,
+ 	})
+ 	if err != nil {
+-		err = fmt.Errorf("receive message from sqs %s: %v", k.queueUrl, err)
++		err = fmt.Errorf("receive message from sqs %s: %w", k.queueUrl, err)
+ 		return
+ 	}
+ 	if len(result.Messages) == 0 {
+@@ -94,7 +82,11 @@
+ 
+ 	// process the message
+ 	// fmt.Printf("messages: %+v\n", result.Messages[0])
+-	keyValue := result.Messages[0].MessageAttributes["key"]
++	keyValue, ok := result.Messages[0].MessageAttributes["key"]
++	if !ok || keyValue.StringValue == nil || result.Messages[0].Body == nil || result.Messages[0].ReceiptHandle == nil || *result.Messages[0].ReceiptHandle == "" {
++		err = fmt.Errorf("incomplete SQS event; message retained without acknowledgement")
++		return
++	}
+ 	key = *keyValue.StringValue
+ 	text := *result.Messages[0].Body
+ 	message = &filer_pb.EventNotification{}
+@@ -109,7 +101,7 @@
+ 	// queue lets the visibility timeout redeliver it.
+ 	receiptHandle := result.Messages[0].ReceiptHandle
+ 	onSuccessFn = func() {
+-		if _, deleteErr := k.svc.DeleteMessage(&sqs.DeleteMessageInput{
++		if _, deleteErr := k.svc.DeleteMessage(context.Background(), &sqs.DeleteMessageInput{
+ 			QueueUrl:      &k.queueUrl,
+ 			ReceiptHandle: receiptHandle,
+ 		}); deleteErr != nil {
+diff --git a/weed/replication/sub/notification_aws_sqs_test.go b/weed/replication/sub/notification_aws_sqs_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sub/notification_aws_sqs_test.go
+@@ -0,0 +1,116 @@
++package sub
++
++import (
++	"encoding/json"
++	"io"
++	"net/http"
++	"strings"
++	"testing"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/sqs"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"google.golang.org/protobuf/proto"
++)
++
++type sqsHTTPFunc func(*http.Request) (*http.Response, error)
++
++func (f sqsHTTPFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
++
++func TestSQSReceiveAcknowledgesOnlyAfterSuccess(t *testing.T) {
++	for _, mode := range []string{"success", "sink-failure", "malformed", "missing-key", "missing-receipt", "missing-body", "empty", "receive-error"} {
++		t.Run(mode, func(t *testing.T) {
++			receives, deletes := 0, 0
++			event := &filer_pb.EventNotification{NewParentPath: "/fixture"}
++			data, err := proto.Marshal(event)
++			if err != nil {
++				t.Fatal(err)
++			}
++			client := sqs.NewFromConfig(aws.Config{Region: "us-east-1", Credentials: credentials.NewStaticCredentialsProvider("fixture-id", "fixture-secret", ""), RetryMaxAttempts: 1, HTTPClient: sqsHTTPFunc(func(r *http.Request) (*http.Response, error) {
++				var body map[string]any
++				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
++					t.Fatal(err)
++				}
++				status := 200
++				responseBody := `{}`
++				switch r.Header.Get("X-Amz-Target") {
++				case "AmazonSQS.ReceiveMessage":
++					receives++
++					if body["MaxNumberOfMessages"] != float64(1) || body["VisibilityTimeout"] != float64(20) || body["WaitTimeSeconds"] != float64(20) {
++						t.Fatalf("poll contract changed: %+v", body)
++					}
++					attrs, _ := json.Marshal(body["MessageAttributeNames"])
++					system, _ := json.Marshal(body["MessageSystemAttributeNames"])
++					if string(attrs) != `["All"]` || string(system) != `["SentTimestamp"]` {
++						t.Fatal("attribute request changed")
++					}
++					msg := map[string]any{"Body": string(data), "ReceiptHandle": "receipt", "MessageAttributes": map[string]any{"key": map[string]any{"DataType": "String", "StringValue": "event-key"}}}
++					if mode == "malformed" {
++						msg["Body"] = "\xff"
++					}
++					if mode == "missing-key" {
++						delete(msg, "MessageAttributes")
++					}
++					if mode == "missing-body" {
++						delete(msg, "Body")
++					}
++					if mode == "missing-receipt" {
++						delete(msg, "ReceiptHandle")
++					}
++					payload, _ := json.Marshal(map[string]any{"Messages": []any{msg}})
++					responseBody = string(payload)
++					if mode == "empty" {
++						responseBody = `{}`
++					}
++					if mode == "receive-error" {
++						status = 503
++						responseBody = `{"__type":"ServiceUnavailable"}`
++					}
++				case "AmazonSQS.DeleteMessage":
++					deletes++
++					if body["ReceiptHandle"] != "receipt" || body["QueueUrl"] != "https://sqs.us-east-1.amazonaws.com/123/fixture" {
++						t.Fatalf("ack changed: %+v", body)
++					}
++				default:
++					t.Fatalf("unexpected operation %s", r.Header.Get("X-Amz-Target"))
++				}
++				return &http.Response{StatusCode: status, Header: http.Header{"Content-Type": []string{"application/x-amz-json-1.0"}}, Body: io.NopCloser(strings.NewReader(responseBody))}, nil
++			})})
++			input := AwsSqsInput{svc: client, queueUrl: "https://sqs.us-east-1.amazonaws.com/123/fixture"}
++			key, got, ack, nack, err := input.ReceiveMessage()
++			if receives != 1 || deletes != 0 {
++				t.Fatalf("received %d deleted before commit %d", receives, deletes)
++			}
++			if mode == "empty" {
++				if err != nil || got != nil || ack != nil || nack != nil {
++					t.Fatal("empty poll is not empty")
++				}
++				return
++			}
++			if mode != "success" && mode != "sink-failure" {
++				if err == nil || ack != nil || nack != nil {
++					t.Fatal("invalid/error message acknowledged")
++				}
++				return
++			}
++			if err != nil || key != "event-key" || !proto.Equal(event, got) || ack == nil || nack == nil {
++				t.Fatalf("receive mismatch %v", err)
++			}
++			if mode == "sink-failure" {
++				nack()
++				if deletes != 0 {
++					t.Fatal("failed sink deleted message")
++				}
++				return
++			}
++			ack()
++			if deletes != 1 {
++				t.Fatalf("commit acknowledgements %d", deletes)
++			}
++		})
++	}
++}
++
++// Ensure the SDK-facing interface keeps context-aware operations.
++var _ sqsAPI = (*sqs.Client)(nil)
