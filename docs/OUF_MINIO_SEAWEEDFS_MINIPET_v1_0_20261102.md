@@ -1,3 +1,19 @@
+# Checkpoint 3 novembre 2026 — replica S3 mantenuta, otto patch
+
+L'ottava [patch](../patches/seaweedfs/4.52-s3sink-sdk-v2.patch) migra il sink di replica S3 a SDK v2 e `feature/s3/transfermanager v0.4.3`. Non introduce `feature/s3/manager`, che AWS dichiara deprecato e sostituito dal [nuovo componente](https://github.com/aws/aws-sdk-go-v2/discussions/3306). S3v2 1.114.1 e checksum dei moduli erano già nel lockfile; transfermanager diventa dipendenza diretta in go.mod.
+
+**5.524 eventi PASS, 5 skip preesistenti, 18 pacchetti PASS; build server riuscita.** Le otto patch riapplicate producono gli stessi55file del sorgente testato. Il grafo contiene **1.864pacchetti,52SDKv1,3importatori diretti,18archi**; questa patch aggiunge16pacchetti mantenuti e non elimina ancora altri pacchetti v1, richiesti dai client residui. [Manifest](../patches/seaweedfs/4.52-s3sink-sdk-v2-added-packages.txt) e [prove/hash/limiti](../evidence/seaweedfs-s3sink-v2-local-20261103.json).
+
+Le prove conservano tag,mtime,MIME,metadati utente e MD5 nel PUT singolo,insieme ai checksum flessibili. Nel multipart non si applica l'MD5 dell'intero oggetto alle parti. Un oggetto fixture di6MiB viene caricato in2parti; un errore della prima parte produce errore e abort,senza complete né retry SDK. PUT/DELETE ambigui sono restituiti dopo un tentativo. La regressione originaria sul Content-Type ha individuato un default introdotto da SDKv2: il middleware ora conserva l'assenza del campo prima della firma senza cambiare un MIME esplicito. Test con SDK e firma reali,HTTP sintetico,zero AWS/target.
+
+Configurazione intenzionalmente più rigorosa: regione esplicita,credenziali complete,endpoint alternativo esplicito e validato,timeout30s per richiesta. Il flag s3_disable_content_md5_validation ora ha defaultfalse e rifiuta true; non si disabilita l'integrità per passare i test. Le interfacce di replica non acquisiscono un nuovo contesto di autorizzazione o un ledger durevole. Ambiguità su creazione/completamento multipart,crash,retry esterni e dimensionamento restano da qualificare. I binding reali di credenziali,ruoli/process/SSO,refresh,TLS ed egress rimangono separati.
+
+CI sei patch41580991342 confermata PASS; [CI sette41582635594](https://github.com/GioNob/ouf-deploy/actions/runs/41582635594) in corso all'ultima lettura. Replica ottava attivata dalla pubblicazione e ancora da verificare. Nuova immagine,SBOM,scansione,licenze,custodia e coorte non sono ancora qualificate.
+
+**MiniPET circa33%(±10punti),0/8gate chiusi,0/21AT accettati,0/120oggetti copiati.** Il lavoro rimuove dipendenze dal candidato ma non prova migrazione o ammissione. MinIO resta in esercizio. Scope17/52EngineGET,Teatri/M1 e stessaFarmacie61righe/10OPEN/STRING invariati. Prossimo: CI sette/otto,client S3 remote_storage e storage/backend,parser XML/helper e nuova qualifica G1.
+
+## Checkpoint precedente
+
 # Checkpoint 3 novembre 2026 — KMS su SDK v2, sette patch
 
 La settima [patch](../patches/seaweedfs/4.52-kms-sdk-v2.patch) migra il provider AWS KMS a `service/kms v1.62.2`. Aggiorna core SDK a1.47.5,configsources1.5.8,endpoints2.8.8 e smithy1.28.7 con versioni/checksum espliciti in go.mod/go.sum. La suite comprende SQS per verificare le dipendenze condivise aggiornate. Nessuna nuova dipendenza entra senza manifest: la chiusura compilata aggiunge quattro pacchetti KMS v2 e rimuove service/kms v1.

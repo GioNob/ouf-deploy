@@ -1,0 +1,629 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -126,6 +126,7 @@
+ 	github.com/aws/aws-sdk-go-v2 v1.47.5
+ 	github.com/aws/aws-sdk-go-v2/config v1.33.6
+ 	github.com/aws/aws-sdk-go-v2/credentials v1.20.6
++	github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager v0.4.3
+ 	github.com/aws/aws-sdk-go-v2/service/kms v1.62.2
+ 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.1
+ 	github.com/cespare/xxhash/v2 v2.3.0
+diff --git a/weed/replication/sink/s3sink/s3_sink.go b/weed/replication/sink/s3sink/s3_sink.go
+--- a/weed/replication/sink/s3sink/s3_sink.go
++++ b/weed/replication/sink/s3sink/s3_sink.go
+@@ -1,6 +1,7 @@
+ package S3Sink
+ 
+ import (
++	"context"
+ 	"encoding/base64"
+ 	"fmt"
+ 	"mime"
+@@ -8,12 +9,10 @@
+ 	"strconv"
+ 	"strings"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
+-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+@@ -30,7 +29,7 @@
+ const maxMetadataSize = 2 * 1024
+ 
+ type S3Sink struct {
+-	conn                          s3iface.S3API
++	conn                          *s3.Client
+ 	filerSource                   *source.FilerSource
+ 	isIncremental                 bool
+ 	keepPartSize                  bool
+@@ -67,13 +66,12 @@
+ }
+ 
+ func (s3sink *S3Sink) Initialize(configuration util.Configuration, prefix string) error {
+-	configuration.SetDefault(prefix+"region", "us-east-2")
+ 	configuration.SetDefault(prefix+"directory", "/")
+ 	configuration.SetDefault(prefix+"keep_part_size", true)
+ 	configuration.SetDefault(prefix+"uploader_max_upload_parts", 1000)
+ 	configuration.SetDefault(prefix+"uploader_part_size_mb", 8)
+ 	configuration.SetDefault(prefix+"uploader_concurrency", 8)
+-	configuration.SetDefault(prefix+"s3_disable_content_md5_validation", true)
++	configuration.SetDefault(prefix+"s3_disable_content_md5_validation", false)
+ 	configuration.SetDefault(prefix+"s3_force_path_style", true)
+ 	s3sink.region = configuration.GetString(prefix + "region")
+ 	s3sink.bucket = configuration.GetString(prefix + "bucket")
+@@ -83,6 +81,9 @@
+ 	s3sink.isIncremental = configuration.GetBool(prefix + "is_incremental")
+ 	s3sink.keepPartSize = configuration.GetBool(prefix + "keep_part_size")
+ 	s3sink.s3DisableContentMD5Validation = configuration.GetBool(prefix + "s3_disable_content_md5_validation")
++	if s3sink.s3DisableContentMD5Validation {
++		return fmt.Errorf("S3 sink checksum validation cannot be disabled")
++	}
+ 	s3sink.s3ForcePathStyle = configuration.GetBool(prefix + "s3_force_path_style")
+ 	s3sink.uploaderMaxUploadParts = configuration.GetInt(prefix + "uploader_max_upload_parts")
+ 	s3sink.uploaderPartSizeMb = configuration.GetInt(prefix + "uploader_part_size")
+@@ -91,16 +92,15 @@
+ 	glog.V(0).Infof("sink.s3.region: %v", s3sink.region)
+ 	glog.V(0).Infof("sink.s3.bucket: %v", s3sink.bucket)
+ 	glog.V(0).Infof("sink.s3.directory: %v", s3sink.dir)
+-	glog.V(0).Infof("sink.s3.endpoint: %v", s3sink.endpoint)
+ 	glog.V(0).Infof("sink.s3.acl: %v", s3sink.acl)
+ 	glog.V(0).Infof("sink.s3.is_incremental: %v", s3sink.isIncremental)
+ 	glog.V(0).Infof("sink.s3.s3_disable_content_md5_validation: %v", s3sink.s3DisableContentMD5Validation)
+ 	glog.V(0).Infof("sink.s3.s3_force_path_style: %v", s3sink.s3ForcePathStyle)
+ 	glog.V(0).Infof("sink.s3.keep_part_size: %v", s3sink.keepPartSize)
+-	if s3sink.uploaderMaxUploadParts > s3manager.MaxUploadParts {
+-		s3sink.uploaderMaxUploadParts = s3manager.MaxUploadParts
++	if s3sink.uploaderMaxUploadParts > 10000 {
++		s3sink.uploaderMaxUploadParts = 10000
+ 		glog.Warningf("uploader_max_upload_parts is greater than the maximum number of parts allowed when uploading multiple parts to Amazon S3")
+-		glog.V(0).Infof("sink.s3.uploader_max_upload_parts: %v => %v", s3sink.uploaderMaxUploadParts, s3manager.MaxUploadParts)
++		glog.V(0).Infof("sink.s3.uploader_max_upload_parts: %v => %v", s3sink.uploaderMaxUploadParts, 10000)
+ 	} else {
+ 		glog.V(0).Infof("sink.s3.uploader_max_upload_parts: %v", s3sink.uploaderMaxUploadParts)
+ 	}
+@@ -118,22 +118,11 @@
+ }
+ 
+ func (s3sink *S3Sink) initialize(awsAccessKeyId, awsSecretAccessKey string) error {
+-	config := &aws.Config{
+-		Region:                        aws.String(s3sink.region),
+-		Endpoint:                      aws.String(s3sink.endpoint),
+-		S3DisableContentMD5Validation: aws.Bool(s3sink.s3DisableContentMD5Validation),
+-		S3ForcePathStyle:              aws.Bool(s3sink.s3ForcePathStyle),
+-	}
+-	if awsAccessKeyId != "" && awsSecretAccessKey != "" {
+-		config.Credentials = credentials.NewStaticCredentials(awsAccessKeyId, awsSecretAccessKey, "")
+-	}
+-
+-	sess, err := session.NewSession(config)
++	client, err := newClient(awsAccessKeyId, awsSecretAccessKey, s3sink.region, s3sink.endpoint, s3sink.s3ForcePathStyle)
+ 	if err != nil {
+-		return fmt.Errorf("create aws session: %w", err)
+-	}
+-	s3sink.conn = s3.New(sess)
+-
++		return err
++	}
++	s3sink.conn = client
+ 	return nil
+ }
+ 
+@@ -150,7 +139,7 @@
+ 		Key:    aws.String(key),
+ 	}
+ 
+-	result, err := s3sink.conn.DeleteObject(input)
++	result, err := s3sink.conn.DeleteObject(context.Background(), input)
+ 
+ 	if err == nil {
+ 		glog.V(2).Infof("[%s] delete %s: %v", s3sink.bucket, key, result)
+@@ -179,29 +168,37 @@
+ 	}
+ 	defer repl_util.CloseMaybeDecryptedReader(reader, decryptedReader)
+ 
+-	// Create an uploader with the session and custom options
+-	uploader := s3manager.NewUploaderWithClient(s3sink.conn, func(u *s3manager.Uploader) {
+-		u.PartSize = int64(s3sink.uploaderPartSizeMb * 1024 * 1024)
+-		u.Concurrency = s3sink.uploaderConcurrency
+-		u.MaxUploadParts = s3sink.uploaderMaxUploadParts
++	// Use the maintained transfer manager. Preserve the whole-object MD5
++	// on single PUT only; it is not a checksum of individual multipart parts.
++	md5 := ""
++	if len(entry.Attributes.Md5) > 0 {
++		md5 = base64.StdEncoding.EncodeToString(entry.Attributes.Md5)
++	}
++	partSize := int64(s3sink.uploaderPartSizeMb) * 1024 * 1024
++	if partSize == 0 {
++		partSize = 5 * 1024 * 1024
++	} // historical uploader default
++	if s3sink.keepPartSize {
++		if len(entry.Chunks) > 1 {
++			if first := int64(entry.Chunks[0].Size); first > 5*1024*1024 {
++				partSize = first
++			}
++		} else {
++			partSize = 5 * 1024 * 1024
++		}
++	}
++	uploader := transfermanager.New(checksummedClient{Client: s3sink.conn, contentMD5: md5}, func(o *transfermanager.Options) {
++		o.PartSizeBytes = partSize
++		o.MultipartUploadThreshold = partSize
++		o.Concurrency = s3sink.uploaderConcurrency
++		o.MaxUploadParts = int64(s3sink.uploaderMaxUploadParts)
+ 	})
+-
+-	if s3sink.keepPartSize {
+-		switch chunkCount := len(entry.Chunks); {
+-		case chunkCount > 1:
+-			if firstChunkSize := int64(entry.Chunks[0].Size); firstChunkSize > s3manager.MinUploadPartSize {
+-				uploader.PartSize = firstChunkSize
+-			}
+-		default:
+-			uploader.PartSize = 0
+-		}
+-	}
+ 
+ 	// process tagging
+ 	tags := buildTaggingString(entry.Extended)
+ 
+ 	// Upload the file to S3.
+-	uploadInput := s3manager.UploadInput{
++	uploadInput := transfermanager.UploadObjectInput{
+ 		Bucket: aws.String(s3sink.bucket),
+ 		Key:    aws.String(key),
+ 		Body:   decryptedReader,
+@@ -211,7 +208,7 @@
+ 	}
+ 	metadata := toMetadata(entry.Extended)
+ 	if _, found := metadata["mtime"]; !found {
+-		metadata["mtime"] = aws.String(strconv.FormatInt(entry.Attributes.Mtime, 10))
++		metadata["mtime"] = strconv.FormatInt(entry.Attributes.Mtime, 10)
+ 	}
+ 	if size := metadataSize(metadata); size <= maxMetadataSize {
+ 		uploadInput.Metadata = metadata
+@@ -221,10 +218,7 @@
+ 	if entry.Attributes.Mime != "" {
+ 		uploadInput.ContentType = aws.String(entry.Attributes.Mime)
+ 	}
+-	if len(entry.Attributes.Md5) > 0 {
+-		uploadInput.ContentMD5 = aws.String(base64.StdEncoding.EncodeToString([]byte(entry.Attributes.Md5)))
+-	}
+-	_, err = uploader.Upload(&uploadInput)
++	_, err = uploader.UploadObject(context.Background(), &uploadInput)
+ 	if err != nil {
+ 		if sourceErr := filer.ReaderSourceError(reader); sourceErr != nil {
+ 			return fmt.Errorf("read source %s: %w", key, sourceErr)
+@@ -267,9 +261,9 @@
+ // Of keys that differ only in case the lowest wins, so X-Amz-Meta-Foo beats the
+ // legacy x-amz-meta-foo. Values that are not printable ASCII are RFC 2047
+ // encoded, which S3 decodes.
+-func toMetadata(extended map[string][]byte) map[string]*string {
++func toMetadata(extended map[string][]byte) map[string]string {
+ 	prefix := s3_constants.AmzUserMetaPrefix
+-	metadata := make(map[string]*string)
++	metadata := make(map[string]string)
+ 	sourceKeys := make(map[string]string)
+ 	for k, v := range extended {
+ 		if len(k) <= len(prefix) || !strings.EqualFold(k[:len(prefix)], prefix) {
+@@ -284,14 +278,14 @@
+ 			continue
+ 		}
+ 		sourceKeys[name] = k
+-		metadata[name] = aws.String(mime.QEncoding.Encode("utf-8", string(v)))
++		metadata[name] = mime.QEncoding.Encode("utf-8", string(v))
+ 	}
+ 	return metadata
+ }
+ 
+-func metadataSize(metadata map[string]*string) (size int) {
++func metadataSize(metadata map[string]string) (size int) {
+ 	for k, v := range metadata {
+-		size += len(k) + len(*v)
++		size += len(k) + len(v)
+ 	}
+ 	return size
+ }
+diff --git a/weed/replication/sink/s3sink/s3_sink_test.go b/weed/replication/sink/s3sink/s3_sink_test.go
+--- a/weed/replication/sink/s3sink/s3_sink_test.go
++++ b/weed/replication/sink/s3sink/s3_sink_test.go
+@@ -7,10 +7,9 @@
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	awss3 "github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/stretchr/testify/require"
+@@ -77,16 +76,12 @@
+ func newCapturingS3Sink(t *testing.T) (*S3Sink, *capturePutRoundTripper) {
+ 	t.Helper()
+ 	rt := &capturePutRoundTripper{}
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String("us-east-1"),
+-		Endpoint:         aws.String("https://example.invalid"),
+-		S3ForcePathStyle: aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials("k", "s", ""),
+-		HTTPClient:       &http.Client{Transport: rt},
++	client := awss3.New(awss3.Options{
++		Region: "us-east-1", BaseEndpoint: aws.String("https://example.invalid"), UsePathStyle: true,
++		Credentials: credentials.NewStaticCredentialsProvider("k", "s", ""), HTTPClient: &http.Client{Transport: rt}, RetryMaxAttempts: 1,
+ 	})
+-	require.NoError(t, err)
+ 	s := &S3Sink{
+-		conn:                awss3.New(sess),
++		conn:                client,
+ 		bucket:              "bucket",
+ 		uploaderConcurrency: 1,
+ 		uploaderPartSizeMb:  5,
+@@ -223,7 +218,7 @@
+ 		"X-Amz-Meta-bad\nkey": []byte("newline"),
+ 	})
+ 	require.Len(t, metadata, 1)
+-	require.Equal(t, "yes", *metadata["good"])
++	require.Equal(t, "yes", metadata["good"])
+ }
+ 
+ func TestToMetadataPrefersCanonicalKeyOnCaseCollision(t *testing.T) {
+@@ -234,6 +229,6 @@
+ 			"X-Amz-Meta-project": []byte("mixed"),
+ 		})
+ 		require.Len(t, metadata, 1)
+-		require.Equal(t, "canonical", *metadata["project"])
+-	}
+-}
++		require.Equal(t, "canonical", metadata["project"])
++	}
++}
+diff --git a/weed/replication/sink/s3sink/client.go b/weed/replication/sink/s3sink/client.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sink/s3sink/client.go
+@@ -0,0 +1,86 @@
++package S3Sink
++
++import (
++	"context"
++	"fmt"
++	"net/url"
++	"time"
++
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	"github.com/aws/aws-sdk-go-v2/config"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/smithy-go/middleware"
++	smithyhttp "github.com/aws/smithy-go/transport/http"
++)
++
++// newClient keeps identity and endpoint selection explicit. One SDK attempt
++// avoids hidden replays of a PUT or multipart creation with an ambiguous outcome.
++// Existing owner recovery remains separate; this is not a durable retry policy.
++func newClient(accessKey, secretKey, region, endpoint string, pathStyle bool) (*s3.Client, error) {
++	if region == "" {
++		return nil, fmt.Errorf("S3 sink requires an explicit region")
++	}
++	if (accessKey == "") != (secretKey == "") {
++		return nil, fmt.Errorf("S3 sink requires both static credential fields or neither")
++	}
++	if endpoint != "" {
++		u, err := url.Parse(endpoint)
++		if err != nil || u.Hostname() == "" || (u.Scheme != "https" && u.Scheme != "http") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" {
++			return nil, fmt.Errorf("S3 sink endpoint must be an explicit HTTP(S) binding without credentials, query or fragment")
++		}
++	}
++	opts := []func(*config.LoadOptions) error{config.WithRegion(region), config.WithRetryMaxAttempts(1), config.WithHTTPClient(awshttp.NewBuildableClient().WithTimeout(30 * time.Second))}
++	if accessKey != "" {
++		opts = append(opts, config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKey, secretKey, "")))
++	}
++	cfg, err := config.LoadDefaultConfig(context.Background(), opts...)
++	if err != nil {
++		return nil, fmt.Errorf("load S3 sink configuration: %w", err)
++	}
++	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
++		o.UsePathStyle = pathStyle
++		if endpoint != "" {
++			o.BaseEndpoint = &endpoint
++		}
++	})
++	if endpoint == "" && client.Options().BaseEndpoint != nil {
++		return nil, fmt.Errorf("S3 sink endpoint override requires an explicit binding")
++	}
++	return client, nil
++}
++
++// transfermanager uses flexible checksums and has no ContentMD5 input field.
++// Keep the existing whole-object MD5 contract for a single PUT, alongside the
++// maintained client's checksums. Never attach it to UploadPart.
++type checksummedClient struct {
++	*s3.Client
++	contentMD5 string
++}
++
++func (c checksummedClient) PutObject(ctx context.Context, in *s3.PutObjectInput, opts ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
++	copy := *in
++	if c.contentMD5 != "" {
++		copy.ContentMD5 = &c.contentMD5
++	}
++	if copy.ContentType == nil {
++		opts = append(opts, omitUnspecifiedContentType)
++	}
++	return c.Client.PutObject(ctx, &copy, opts...)
++}
++
++// SDK v2 defaults a missing PUT Content-Type to application/octet-stream.
++// Keep the historical omission, before SigV4 signing, without changing an
++// explicit MIME value or any multipart protocol request headers.
++func omitUnspecifiedContentType(o *s3.Options) {
++	o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
++		return stack.Serialize.Insert(middleware.SerializeMiddlewareFunc("PreserveMissingContentType", func(ctx context.Context, in middleware.SerializeInput, next middleware.SerializeHandler) (middleware.SerializeOutput, middleware.Metadata, error) {
++			req, ok := in.Request.(*smithyhttp.Request)
++			if !ok {
++				return middleware.SerializeOutput{}, middleware.Metadata{}, fmt.Errorf("unexpected S3 request transport")
++			}
++			req.Header.Del("Content-Type")
++			return next.HandleSerialize(ctx, in)
++		}), "OperationSerializer", middleware.After)
++	})
++}
+diff --git a/weed/replication/sink/s3sink/client_test.go b/weed/replication/sink/s3sink/client_test.go
+new file mode 100644
+--- /dev/null
++++ b/weed/replication/sink/s3sink/client_test.go
+@@ -0,0 +1,241 @@
++package S3Sink
++
++import (
++	"bytes"
++	"context"
++	"crypto/md5"
++	"encoding/base64"
++	"fmt"
++	"io"
++	"net/http"
++	"os"
++	"path/filepath"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/spf13/viper"
++)
++
++type httpFunc func(*http.Request) (*http.Response, error)
++
++func (f httpFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
++
++func isolateCredentials(t *testing.T) {
++	t.Helper()
++	for _, key := range []string{"AWS_PROFILE", "AWS_DEFAULT_PROFILE", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN", "AWS_WEB_IDENTITY_TOKEN_FILE", "AWS_ROLE_ARN", "AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_S3", "AWS_CONTAINER_CREDENTIALS_FULL_URI", "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI", "AWS_S3_USE_ARN_REGION", "AWS_S3_DISABLE_MULTIREGION_ACCESS_POINTS"} {
++		t.Setenv(key, "")
++	}
++	t.Setenv("AWS_EC2_METADATA_DISABLED", "true")
++	path := filepath.Join(t.TempDir(), "empty")
++	if err := os.WriteFile(path, nil, 0600); err != nil {
++		t.Fatal(err)
++	}
++	t.Setenv("AWS_CONFIG_FILE", path)
++	t.Setenv("AWS_SHARED_CREDENTIALS_FILE", path)
++}
++
++func TestS3ClientBindings(t *testing.T) {
++	isolateCredentials(t)
++	t.Setenv("AWS_ACCESS_KEY_ID", "env-id")
++	t.Setenv("AWS_SECRET_ACCESS_KEY", "env-secret")
++	for _, explicit := range []bool{true, false} {
++		t.Run(fmt.Sprint(explicit), func(t *testing.T) {
++			id, secret, want := "static-id", "static-secret", "static-id"
++			if !explicit {
++				id = ""
++				secret = ""
++				want = "env-id"
++			}
++			c, err := newClient(id, secret, "us-east-1", "https://fixture.invalid", true)
++			if err != nil {
++				t.Fatal(err)
++			}
++			o := c.Options()
++			cred, err := o.Credentials.Retrieve(context.Background())
++			if err != nil {
++				t.Fatal(err)
++			}
++			if cred.AccessKeyID != want || o.RetryMaxAttempts != 1 || !o.UsePathStyle || aws.ToString(o.BaseEndpoint) != "https://fixture.invalid" {
++				t.Fatal("identity, endpoint or retry drift")
++			}
++			tr, ok := o.HTTPClient.(*awshttp.BuildableClient)
++			if !ok || tr.GetTimeout() != 30*time.Second {
++				t.Fatal("timeout lost")
++			}
++		})
++	}
++	for _, tc := range []struct{ id, secret, region, endpoint string }{
++		{"partial", "", "us-east-1", ""}, {"", "partial", "us-east-1", ""}, {"id", "secret", "", ""},
++		{"id", "secret", "us-east-1", "file:///fixture"}, {"id", "secret", "us-east-1", "https://user:secret@fixture.invalid"},
++		{"id", "secret", "us-east-1", "https://fixture.invalid?secret=value"},
++	} {
++		if _, err := newClient(tc.id, tc.secret, tc.region, tc.endpoint, true); err == nil {
++			t.Fatal("invalid binding accepted")
++		}
++	}
++	for _, key := range []string{"AWS_ENDPOINT_URL", "AWS_ENDPOINT_URL_S3"} {
++		t.Run(key, func(t *testing.T) {
++			t.Setenv(key, "https://unexpected.invalid")
++			if _, err := newClient("id", "secret", "us-east-1", "", true); err == nil {
++				t.Fatal("implicit endpoint accepted")
++			}
++			c, err := newClient("id", "secret", "us-east-1", "https://explicit.invalid", true)
++			if err != nil || aws.ToString(c.Options().BaseEndpoint) != "https://explicit.invalid" {
++				t.Fatal("explicit endpoint lost")
++			}
++		})
++	}
++}
++
++func TestS3SinkRejectsChecksumDowngrade(t *testing.T) {
++	isolateCredentials(t)
++	c := viper.New()
++	c.Set("region", "us-east-1")
++	c.Set("s3_disable_content_md5_validation", true)
++	s := &S3Sink{}
++	if err := s.Initialize(util.NewViperProxy(c), ""); err == nil {
++		t.Fatal("checksum downgrade silently accepted")
++	}
++}
++
++func sdkSink(t *testing.T, transport httpFunc) *S3Sink {
++	t.Helper()
++	isolateCredentials(t)
++	client, err := newClient("fixture-id", "fixture-secret", "us-east-1", "https://fixture.invalid", true)
++	if err != nil {
++		t.Fatal(err)
++	}
++	opts := client.Options()
++	opts.HTTPClient = transport
++	return &S3Sink{conn: s3.New(opts), bucket: "bucket", uploaderPartSizeMb: 5, uploaderConcurrency: 1, uploaderMaxUploadParts: 10000}
++}
++
++func fixtureResponse(r *http.Request, status int, body string) *http.Response {
++	return &http.Response{StatusCode: status, Body: io.NopCloser(strings.NewReader(body)), Header: http.Header{"Content-Type": []string{"application/xml"}, "ETag": []string{`"fixture-etag"`}}, Request: r}
++}
++
++func checksumPresent(r *http.Request) bool {
++	return r.Header.Get("X-Amz-Checksum-Crc32") != "" || strings.Contains(r.Header.Get("X-Amz-Trailer"), "x-amz-checksum-crc32")
++}
++
++func TestS3SinkSinglePutMD5AndFlexibleChecksum(t *testing.T) {
++	content := []byte("whole-object fixture")
++	sum := md5.Sum(content)
++	calls := 0
++	sink := sdkSink(t, func(r *http.Request) (*http.Response, error) {
++		calls++
++		if r.Method != "PUT" || r.URL.Host != "fixture.invalid" || r.URL.Path != "/bucket/key" || !strings.Contains(r.Header.Get("Authorization"), "/us-east-1/s3/aws4_request") {
++			t.Fatal("request binding changed")
++		}
++		if r.Header.Get("Content-Md5") != base64.StdEncoding.EncodeToString(sum[:]) || !checksumPresent(r) {
++			t.Fatal("MD5 or flexible checksum missing")
++		}
++		if _, err := io.Copy(io.Discard, r.Body); err != nil {
++			t.Fatal(err)
++		}
++		return fixtureResponse(r, 200, ""), nil
++	})
++	err := sink.CreateEntry("/key", &filer_pb.Entry{Content: content, Attributes: &filer_pb.FuseAttributes{FileSize: uint64(len(content)), Md5: sum[:]}}, nil)
++	if err != nil || calls != 1 {
++		t.Fatalf("err=%v calls=%d", err, calls)
++	}
++}
++
++func TestS3SinkMultipartSuccessAndPartFailure(t *testing.T) {
++	for _, fail := range []bool{false, true} {
++		t.Run(fmt.Sprint(fail), func(t *testing.T) {
++			content := bytes.Repeat([]byte("x"), 6*1024*1024)
++			sum := md5.Sum(content)
++			calls := map[string]int{}
++			var mu sync.Mutex
++			sink := sdkSink(t, func(r *http.Request) (*http.Response, error) {
++				mu.Lock()
++				defer mu.Unlock()
++				q := r.URL.Query()
++				op := ""
++				switch {
++				case r.Method == "POST" && q.Has("uploads"):
++					op = "create"
++				case r.Method == "PUT" && q.Get("partNumber") != "":
++					op = "part" + q.Get("partNumber")
++				case r.Method == "POST" && q.Get("uploadId") != "":
++					op = "complete"
++				case r.Method == "DELETE" && q.Get("uploadId") != "":
++					op = "abort"
++				default:
++					t.Fatalf("unexpected multipart request: %s %s", r.Method, r.URL)
++				}
++				calls[op]++
++				if r.Header.Get("Content-Md5") != "" {
++					t.Fatal("whole-object MD5 used for multipart")
++				}
++				if strings.HasPrefix(op, "part") && !checksumPresent(r) {
++					t.Fatal("part checksum disabled")
++				}
++				if r.Body != nil {
++					if _, err := io.Copy(io.Discard, r.Body); err != nil {
++						t.Fatal(err)
++					}
++				}
++				if fail && op == "part1" {
++					return fixtureResponse(r, 503, `<Error><Code>ServiceUnavailable</Code><Message>ambiguous fixture</Message></Error>`), nil
++				}
++				switch op {
++				case "create":
++					return fixtureResponse(r, 200, `<InitiateMultipartUploadResult><Bucket>bucket</Bucket><Key>key</Key><UploadId>fixture-upload</UploadId></InitiateMultipartUploadResult>`), nil
++				case "complete":
++					return fixtureResponse(r, 200, `<CompleteMultipartUploadResult><Bucket>bucket</Bucket><Key>key</Key><ETag>fixture-etag</ETag></CompleteMultipartUploadResult>`), nil
++				default:
++					return fixtureResponse(r, 200, ""), nil
++				}
++			})
++			err := sink.CreateEntry("/key", &filer_pb.Entry{Content: content, Attributes: &filer_pb.FuseAttributes{FileSize: uint64(len(content)), Md5: sum[:]}}, nil)
++			if (err != nil) != fail || calls["create"] != 1 || calls["part1"] != 1 {
++				t.Fatalf("err=%v calls=%v", err, calls)
++			}
++			if fail {
++				if calls["complete"] != 0 || calls["abort"] != 1 {
++					t.Fatalf("failed upload finalized or cleanup lost: %v", calls)
++				}
++			} else {
++				if calls["part2"] != 1 || calls["complete"] != 1 || calls["abort"] != 0 {
++					t.Fatalf("multipart mismatch: %v", calls)
++				}
++			}
++		})
++	}
++}
++
++func TestS3SinkAmbiguousPutAndDeleteSingleAttempt(t *testing.T) {
++	for _, op := range []string{"PUT", "DELETE"} {
++		t.Run(op, func(t *testing.T) {
++			calls := 0
++			sink := sdkSink(t, func(r *http.Request) (*http.Response, error) {
++				calls++
++				if r.Method != op {
++					t.Fatal("wrong method")
++				}
++				if r.Body != nil {
++					io.Copy(io.Discard, r.Body)
++				}
++				return fixtureResponse(r, 503, `<Error><Code>ServiceUnavailable</Code><Message>ambiguous fixture</Message></Error>`), nil
++			})
++			var err error
++			if op == "PUT" {
++				err = sink.CreateEntry("key", &filer_pb.Entry{Content: []byte("fixture"), Attributes: &filer_pb.FuseAttributes{}}, nil)
++			} else {
++				err = sink.DeleteEntry("key", false, false, nil)
++			}
++			if err == nil || calls != 1 {
++				t.Fatalf("hidden replay: err=%v calls=%d", err, calls)
++			}
++		})
++	}
++}
