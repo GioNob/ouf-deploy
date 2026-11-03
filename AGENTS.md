@@ -1,3 +1,14 @@
+## Checkpoint storage 2026-11-03 — zero SDK v1 nel binario (11 patch)
+
+- Source patch commit: `e5a36b02fe46105b88500ceba9337cb79d06c91d`; baseline SeaweedFS 4.52 `984eac6a790be89e2a11de175a7413e1e3e32dd3`.
+- Ultimi helper `aws.*` sostituiti con puntatori nativi; parser XML locale Apache-2.0 preserva le semantiche legacy verificate.
+- Locale: 5.591 PASS, 5 skip, 20 package PASS; race/wire/s3api/build/reapply exact PASS.
+- Grafo produttivo: 1.811 package, **0 SDK v1, 0 importatori, 0 archi**; binario `d9873b7d…` senza metadati SDK v1.
+- Limite: SDK v1 resta dichiarato in `go.mod` e importato da 23 file test-only; migrare questi test prima della rimozione integrale dal modulo.
+- Stato MiniPET invariato: circa 33% ±10, 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO resta attivo.
+- Scope17/52 Engine GET, Teatri/M1 e Farmacie restano congelati. Nessuna operazione target, authority, replay/reset/grant, merge o deploy.
+- Prossimo sviluppo ammesso: CI undici patch, poi rimozione test-only/go.mod e nuova image/SBOM/security/licenze/custody/coorte.
+
 ## Checkpoint storage 2026-11-03 — remote_storage/s3 SDK v2 (10 patch)
 
 - Source patch commit: `f730a88253c7727933aa4e3a8c6a4d225e5ed53c`; baseline SeaweedFS 4.52 `984eac6a790be89e2a11de175a7413e1e3e32dd3`.
