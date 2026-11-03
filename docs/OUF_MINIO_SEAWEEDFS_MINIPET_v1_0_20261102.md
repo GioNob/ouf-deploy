@@ -1,3 +1,16 @@
+## Checkpoint storage 2026-11-03 — 27 patch, chiusura importatori sorgente locale
+
+- Sei patch ulteriori migrano i test policy/S3 normal, i client IAM e il modulo IAM separato; ripuliscono il modulo Kafka.
+- Sequenza completa riapplicata: importatori diretti AWS SDK Go v1 20→0 nell’intero sorgente.
+- Prova combinata con pin esatti: 30 test principali e 12 sottocasi PASS; nessuna sostituzione modfile.
+- Grafo server 1.811 pacchetti e binario `85fa52c6…` identici alla coorte OCI qualificata a 15 patch; l’immagine non viene sostituita.
+- I grafi dei test normal/policy e dei moduli IAM/Kafka verificati non contengono SDK v1. Gli archi opzionali elastic/rclone e gli ulteriori moduli Kafka restano fuori dalla dichiarazione di chiusura.
+- Sei workflow SDK condividono l’esatta sequenza a 27 patch; qualifica hosted ancora PENDING.
+- Nuovo drill cold recovery pronto: quattro ruoli isolati, copia fredda e restore indipendente dell’OCI esatto; 6 test offline PASS, esecuzione Docker hosted PENDING.
+- Fondazione recovery e dossier licenze già hosted PASS nei run 41684434955 e 41684434829 sul checkpoint `d2e927d`.
+- MiniPET circa 35% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali; MinIO attivo. Licenze, redistribuzione e custodia durevole OPEN.
+- Scope17/52 Engine GET, Teatri/M1 e Farmacie invariati; nessuna operazione target o autorità runtime.
+
 ## Checkpoint repository — signer IAM/STS migrato a SDK v2 (3 novembre 2026)
 
 La [patch 21](../patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch), SHA256 `cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b`, migra soltanto il signer di `test/s3/iam/s3_sts_assume_role_test.go` al signer AWS SDK Go v2. Il protocollo resta HTTP/XML raw: `POST /`, form URL-encoded, servizio `sts`, regione `us-east-1`, endpoint, host singolo e timeout di 30 secondi sono preservati. Nessun client STS tipizzato viene introdotto.
@@ -530,3 +543,4 @@ L'esecuzione operatore ha consumato il controllo13/36GET cumulativi con STOP al 
 Ricevuta14: STOP_RECONCILE/CANONICAL_PRIVATE_CREDENTIAL_REFERENCE_REQUIRED dopo13inspect riusciti,14controlli/49GET cumulativi. Snapshot container/RAM/spazio già conservato; S3 non raggiunto. Non è provato se siano state completate0o1risoluzioni credenziali; Config.Env era già inRAM negliinspect. Il reader assumeva riferimenti assoluti e non replicava il ripiego ENV dei file relativi mancanti. Nuova implementazione dal riferimento MinIO07c3a429, senza shell/defaultcreds o allentamento di filetype/owner/privacy/traversal/symlink. Source6447b0f6/CI41429406938:28Python/12Java, due casi Docker reali,1010record sintetici per caso, dueGET nuovi; ordine mount variato, valori/diritti e contratti runtime congelati preservati. Storico MODELLATO/MinIOwaiter hostnet, nonVPS. SDK430631fe identico riscan zero;26sorgenti con tutte24precedenti invariate, nuovo limite solo-loader294912byte/payload279063 esplicito. CI41430471681 verifica18checksum,sorgenti, firma e byte pubblicati/launcher.
 
 [Nuova consegna](OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md) pronta per una sola esecuzione owner necessaria per assenza shell/API inventory VPS all'agente. Scope15 separato ancora NON eseguito: massimo2GET MinIO/fino51cumulativi, riusa14snapshot senza ripetere13scan; altre12configurazioni non rinfrescate e RAM/spazio datati al14. Tutti8gate e21AT restano OPEN, nessuna migrazione, nessun replay/reset/grant. [Dossier](../evidence/seaweedfs-credential-continuation-qualified-20261102.json).
+

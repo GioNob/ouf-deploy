@@ -1,0 +1,1815 @@
+diff --git a/test/s3/normal/get_object_attributes_test.go b/test/s3/normal/get_object_attributes_test.go
+--- a/test/s3/normal/get_object_attributes_test.go
++++ b/test/s3/normal/get_object_attributes_test.go
+@@ -2,7 +2,6 @@
+ 
+ import (
+ 	"bytes"
+-	"context"
+ 	"fmt"
+ 	"io"
+ 	"net/http"
+@@ -10,26 +9,17 @@
+ 	"testing"
+ 	"time"
+ 
+-	v2aws "github.com/aws/aws-sdk-go-v2/aws"
+-	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	v2s3 "github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+-	"github.com/aws/aws-sdk-go/aws"
+-	v1credentials "github.com/aws/aws-sdk-go/aws/credentials"
+-	v1signer "github.com/aws/aws-sdk-go/aws/signer/v4"
+-	v1s3 "github.com/aws/aws-sdk-go/service/s3"
++
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+ 
+ // newS3V2Client creates an AWS SDK v2 S3 client from the test cluster.
+ func newS3V2Client(cluster *TestCluster) *v2s3.Client {
+-	return v2s3.New(v2s3.Options{
+-		Region:       testRegion,
+-		BaseEndpoint: v2aws.String(cluster.s3Endpoint),
+-		Credentials:  v2aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(testAccessKey, testSecretKey, "")),
+-		UsePathStyle: true,
+-	})
++	return newNormalS3Client(cluster.s3Endpoint, nil)
+ }
+ 
+ func TestGetObjectAttributes(t *testing.T) {
+@@ -72,7 +62,7 @@
+ 	objectKey := "test-object.txt"
+ 	objectData := "Hello, GetObjectAttributes!"
+ 
+-	_, err := cluster.s3Client.PutObject(&v1s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &v2s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte(objectData)),
+@@ -80,9 +70,9 @@
+ 	require.NoError(t, err)
+ 
+ 	client := newS3V2Client(cluster)
+-	resp, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String(objectKey),
++	resp, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesEtag,
+ 			types.ObjectAttributesStorageClass,
+@@ -122,39 +112,39 @@
+ 	part1Data := bytes.Repeat([]byte("A"), 5*1024*1024) // 5MB (minimum part size)
+ 	part2Data := bytes.Repeat([]byte("B"), 3*1024*1024) // 3MB
+ 
+-	initResp, err := cluster.s3Client.CreateMultipartUpload(&v1s3.CreateMultipartUploadInput{
++	initResp, err := cluster.s3Client.CreateMultipartUpload(t.Context(), &v2s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+ 	require.NoError(t, err)
+ 	uploadID := initResp.UploadId
+ 
+-	part1Resp, err := cluster.s3Client.UploadPart(&v1s3.UploadPartInput{
++	part1Resp, err := cluster.s3Client.UploadPart(t.Context(), &v2s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		UploadId:   uploadID,
+ 		Body:       bytes.NewReader(part1Data),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	part2Resp, err := cluster.s3Client.UploadPart(&v1s3.UploadPartInput{
++	part2Resp, err := cluster.s3Client.UploadPart(t.Context(), &v2s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+-		PartNumber: aws.Int64(2),
++		PartNumber: aws.Int32(2),
+ 		UploadId:   uploadID,
+ 		Body:       bytes.NewReader(part2Data),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = cluster.s3Client.CompleteMultipartUpload(&v1s3.CompleteMultipartUploadInput{
++	_, err = cluster.s3Client.CompleteMultipartUpload(t.Context(), &v2s3.CompleteMultipartUploadInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey),
+ 		UploadId: uploadID,
+-		MultipartUpload: &v1s3.CompletedMultipartUpload{
+-			Parts: []*v1s3.CompletedPart{
+-				{ETag: part1Resp.ETag, PartNumber: aws.Int64(1)},
+-				{ETag: part2Resp.ETag, PartNumber: aws.Int64(2)},
++		MultipartUpload: &types.CompletedMultipartUpload{
++			Parts: []types.CompletedPart{
++				{ETag: part1Resp.ETag, PartNumber: aws.Int32(1)},
++				{ETag: part2Resp.ETag, PartNumber: aws.Int32(2)},
+ 			},
+ 		},
+ 	})
+@@ -164,9 +154,9 @@
+ 	time.Sleep(200 * time.Millisecond)
+ 
+ 	client := newS3V2Client(cluster)
+-	resp, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String(objectKey),
++	resp, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesObjectParts,
+ 			types.ObjectAttributesObjectSize,
+@@ -186,10 +176,10 @@
+ 	assert.Equal(t, int64(len(part2Data)), *resp.ObjectParts.Parts[1].Size)
+ 
+ 	// Test pagination: MaxParts=1
+-	resp2, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket:   v2aws.String(bucketName),
+-		Key:      v2aws.String(objectKey),
+-		MaxParts: v2aws.Int32(1),
++	resp2, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket:   aws.String(bucketName),
++		Key:      aws.String(objectKey),
++		MaxParts: aws.Int32(1),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesObjectParts,
+ 		},
+@@ -209,7 +199,7 @@
+ 	objectKey := "test-selective.txt"
+ 	objectData := "Selective attributes test"
+ 
+-	_, err := cluster.s3Client.PutObject(&v1s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &v2s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte(objectData)),
+@@ -219,9 +209,9 @@
+ 	client := newS3V2Client(cluster)
+ 
+ 	// Request only ETag
+-	resp, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String(objectKey),
++	resp, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesEtag,
+ 		},
+@@ -240,7 +230,7 @@
+ 	bucketName := createTestBucket(t, cluster, "test-goa-inv-")
+ 	objectKey := "test-object.txt"
+ 
+-	_, err := cluster.s3Client.PutObject(&v1s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &v2s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte("test")),
+@@ -249,12 +239,10 @@
+ 
+ 	// Use raw HTTP to send an invalid attribute name since the SDK validates
+ 	reqURL := fmt.Sprintf("%s/%s/%s?attributes", cluster.s3Endpoint, bucketName, objectKey)
+-	req, err := http.NewRequest("GET", reqURL, nil)
++	req, err := http.NewRequestWithContext(t.Context(), "GET", reqURL, nil)
+ 	require.NoError(t, err)
+ 	req.Header.Set("X-Amz-Object-Attributes", "InvalidAttr")
+-
+-	signer := v1signer.NewSigner(v1credentials.NewStaticCredentials(testAccessKey, testSecretKey, ""))
+-	_, err = signer.Sign(req, nil, "s3", testRegion, time.Now())
++	err = signNormalS3Request(t.Context(), req, time.Now())
+ 	require.NoError(t, err)
+ 
+ 	client := &http.Client{Timeout: 10 * time.Second}
+@@ -271,9 +259,9 @@
+ 	bucketName := createTestBucket(t, cluster, "test-goa-nf-")
+ 
+ 	client := newS3V2Client(cluster)
+-	_, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("nonexistent-key"),
++	_, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("nonexistent-key"),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesEtag,
+ 		},
+@@ -289,8 +277,8 @@
+ 	bucketName := createTestBucket(t, cluster, "test-goa-ver-")
+ 
+ 	// Enable versioning
+-	_, err := client.PutBucketVersioning(context.Background(), &v2s3.PutBucketVersioningInput{
+-		Bucket: v2aws.String(bucketName),
++	_, err := client.PutBucketVersioning(t.Context(), &v2s3.PutBucketVersioningInput{
++		Bucket: aws.String(bucketName),
+ 		VersioningConfiguration: &types.VersioningConfiguration{
+ 			Status: types.BucketVersioningStatusEnabled,
+ 		},
+@@ -300,9 +288,9 @@
+ 
+ 	// Put two versions of the same object
+ 	v1Data := "version 1 content"
+-	putResp1, err := client.PutObject(context.Background(), &v2s3.PutObjectInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("versioned-key"),
++	putResp1, err := client.PutObject(t.Context(), &v2s3.PutObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("versioned-key"),
+ 		Body:   strings.NewReader(v1Data),
+ 	})
+ 	require.NoError(t, err)
+@@ -310,9 +298,9 @@
+ 	versionId1 := *putResp1.VersionId
+ 
+ 	v2Data := "version 2 content - longer"
+-	putResp2, err := client.PutObject(context.Background(), &v2s3.PutObjectInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("versioned-key"),
++	putResp2, err := client.PutObject(t.Context(), &v2s3.PutObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("versioned-key"),
+ 		Body:   strings.NewReader(v2Data),
+ 	})
+ 	require.NoError(t, err)
+@@ -322,9 +310,9 @@
+ 	assert.NotEqual(t, versionId1, versionId2, "versions should differ")
+ 
+ 	// GetObjectAttributes for latest version (v2)
+-	resp, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("versioned-key"),
++	resp, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("versioned-key"),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesObjectSize,
+ 			types.ObjectAttributesEtag,
+@@ -337,10 +325,10 @@
+ 	assert.Equal(t, versionId2, *resp.VersionId)
+ 
+ 	// GetObjectAttributes for specific older version (v1)
+-	resp1, err := client.GetObjectAttributes(context.Background(), &v2s3.GetObjectAttributesInput{
+-		Bucket:    v2aws.String(bucketName),
+-		Key:       v2aws.String("versioned-key"),
+-		VersionId: v2aws.String(versionId1),
++	resp1, err := client.GetObjectAttributes(t.Context(), &v2s3.GetObjectAttributesInput{
++		Bucket:    aws.String(bucketName),
++		Key:       aws.String("versioned-key"),
++		VersionId: aws.String(versionId1),
+ 		ObjectAttributes: []types.ObjectAttributes{
+ 			types.ObjectAttributesObjectSize,
+ 			types.ObjectAttributesEtag,
+@@ -359,14 +347,13 @@
+ // signedGetObjectAttributes creates a signed GET request for ?attributes with custom headers.
+ func signedGetObjectAttributes(t *testing.T, cluster *TestCluster, bucketName, objectKey string, extraHeaders map[string]string) *http.Response {
+ 	reqURL := fmt.Sprintf("%s/%s/%s?attributes", cluster.s3Endpoint, bucketName, objectKey)
+-	req, err := http.NewRequest("GET", reqURL, nil)
++	req, err := http.NewRequestWithContext(t.Context(), "GET", reqURL, nil)
+ 	require.NoError(t, err)
+ 	req.Header.Set("X-Amz-Object-Attributes", "ETag,ObjectSize")
+ 	for k, v := range extraHeaders {
+ 		req.Header.Set(k, v)
+ 	}
+-	signer := v1signer.NewSigner(v1credentials.NewStaticCredentials(testAccessKey, testSecretKey, ""))
+-	_, err = signer.Sign(req, nil, "s3", testRegion, time.Now())
++	err = signNormalS3Request(t.Context(), req, time.Now())
+ 	require.NoError(t, err)
+ 	client := &http.Client{Timeout: 10 * time.Second}
+ 	resp, err := client.Do(req)
+@@ -378,7 +365,7 @@
+ 	bucketName := createTestBucket(t, cluster, "test-goa-cond-")
+ 	objectKey := "cond-test.txt"
+ 
+-	_, err := cluster.s3Client.PutObject(&v1s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &v2s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte("conditional headers test")),
+@@ -386,12 +373,12 @@
+ 	require.NoError(t, err)
+ 
+ 	// Get the ETag and Last-Modified for the object
+-	headResp, err := cluster.s3Client.HeadObject(&v1s3.HeadObjectInput{
+-		Bucket: aws.String(bucketName),
+-		Key:    aws.String(objectKey),
+-	})
+-	require.NoError(t, err)
+-	etag := aws.StringValue(headResp.ETag)
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &v2s3.HeadObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
++	})
++	require.NoError(t, err)
++	etag := aws.ToString(headResp.ETag)
+ 	lastModified := headResp.LastModified
+ 	require.NotNil(t, lastModified)
+ 
+@@ -465,14 +452,13 @@
+ // signedGetObjectAttributesVersioned creates a signed GET request for ?attributes&versionId=... with custom headers.
+ func signedGetObjectAttributesVersioned(t *testing.T, cluster *TestCluster, bucketName, objectKey, versionId string, extraHeaders map[string]string) *http.Response {
+ 	reqURL := fmt.Sprintf("%s/%s/%s?attributes&versionId=%s", cluster.s3Endpoint, bucketName, objectKey, versionId)
+-	req, err := http.NewRequest("GET", reqURL, nil)
++	req, err := http.NewRequestWithContext(t.Context(), "GET", reqURL, nil)
+ 	require.NoError(t, err)
+ 	req.Header.Set("X-Amz-Object-Attributes", "ETag,ObjectSize")
+ 	for k, v := range extraHeaders {
+ 		req.Header.Set(k, v)
+ 	}
+-	signer := v1signer.NewSigner(v1credentials.NewStaticCredentials(testAccessKey, testSecretKey, ""))
+-	_, err = signer.Sign(req, nil, "s3", testRegion, time.Now())
++	err = signNormalS3Request(t.Context(), req, time.Now())
+ 	require.NoError(t, err)
+ 	client := &http.Client{Timeout: 10 * time.Second}
+ 	resp, err := client.Do(req)
+@@ -485,8 +471,8 @@
+ 	bucketName := createTestBucket(t, cluster, "test-goa-vcond-")
+ 
+ 	// Enable versioning
+-	_, err := client.PutBucketVersioning(context.Background(), &v2s3.PutBucketVersioningInput{
+-		Bucket: v2aws.String(bucketName),
++	_, err := client.PutBucketVersioning(t.Context(), &v2s3.PutBucketVersioningInput{
++		Bucket: aws.String(bucketName),
+ 		VersioningConfiguration: &types.VersioningConfiguration{
+ 			Status: types.BucketVersioningStatusEnabled,
+ 		},
+@@ -496,9 +482,9 @@
+ 
+ 	// Put two versions with different content (different ETags)
+ 	v1Data := "version 1 - original"
+-	putResp1, err := client.PutObject(context.Background(), &v2s3.PutObjectInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("vcond-key"),
++	putResp1, err := client.PutObject(t.Context(), &v2s3.PutObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("vcond-key"),
+ 		Body:   strings.NewReader(v1Data),
+ 	})
+ 	require.NoError(t, err)
+@@ -506,9 +492,9 @@
+ 	vid1 := *putResp1.VersionId
+ 
+ 	v2Data := "version 2 - updated content"
+-	putResp2, err := client.PutObject(context.Background(), &v2s3.PutObjectInput{
+-		Bucket: v2aws.String(bucketName),
+-		Key:    v2aws.String("vcond-key"),
++	putResp2, err := client.PutObject(t.Context(), &v2s3.PutObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String("vcond-key"),
+ 		Body:   strings.NewReader(v2Data),
+ 	})
+ 	require.NoError(t, err)
+@@ -516,18 +502,18 @@
+ 	vid2 := *putResp2.VersionId
+ 
+ 	// Get ETags for each version
+-	headV1, err := client.HeadObject(context.Background(), &v2s3.HeadObjectInput{
+-		Bucket:    v2aws.String(bucketName),
+-		Key:       v2aws.String("vcond-key"),
+-		VersionId: v2aws.String(vid1),
++	headV1, err := client.HeadObject(t.Context(), &v2s3.HeadObjectInput{
++		Bucket:    aws.String(bucketName),
++		Key:       aws.String("vcond-key"),
++		VersionId: aws.String(vid1),
+ 	})
+ 	require.NoError(t, err)
+ 	etagV1 := *headV1.ETag
+ 
+-	headV2, err := client.HeadObject(context.Background(), &v2s3.HeadObjectInput{
+-		Bucket:    v2aws.String(bucketName),
+-		Key:       v2aws.String("vcond-key"),
+-		VersionId: v2aws.String(vid2),
++	headV2, err := client.HeadObject(t.Context(), &v2s3.HeadObjectInput{
++		Bucket:    aws.String(bucketName),
++		Key:       aws.String("vcond-key"),
++		VersionId: aws.String(vid2),
+ 	})
+ 	require.NoError(t, err)
+ 	etagV2 := *headV2.ETag
+diff --git a/test/s3/normal/s3_integration_test.go b/test/s3/normal/s3_integration_test.go
+--- a/test/s3/normal/s3_integration_test.go
++++ b/test/s3/normal/s3_integration_test.go
+@@ -16,11 +16,10 @@
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ 
+@@ -42,7 +41,7 @@
+ 	dataDir       string
+ 	ctx           context.Context
+ 	cancel        context.CancelFunc
+-	s3Client      *s3.S3
++	s3Client      *s3.Client
+ 	isRunning     bool
+ 	startOnce     sync.Once
+ 	wg            sync.WaitGroup
+@@ -187,7 +186,7 @@
+ 			"-volume.port=" + strconv.Itoa(volumePort),
+ 			"-filer.port=" + strconv.Itoa(filerPort),
+ 			"-s3.port=" + strconv.Itoa(s3Port),
+-			"-webdav=false", // Disable WebDAV
++			"-webdav=false",                // Disable WebDAV
+ 			"-admin.ui=false",              // Disable admin UI
+ 			"-master.volumeSizeLimitMB=32", // Small volumes for testing
+ 			"-ip=127.0.0.1",
+@@ -230,20 +229,8 @@
+ 
+ 	cluster.isRunning = true
+ 
+-	// Create S3 client
+-	sess, err := session.NewSession(&aws.Config{
+-		Region:           aws.String(testRegion),
+-		Endpoint:         aws.String(cluster.s3Endpoint),
+-		DisableSSL:       aws.Bool(true),
+-		S3ForcePathStyle: aws.Bool(true),
+-		Credentials:      credentials.NewStaticCredentials(testAccessKey, testSecretKey, ""),
+-	})
+-	if err != nil {
+-		cancel()
+-		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+-	}
+-
+-	cluster.s3Client = s3.New(sess)
++	// Use one SDK attempt with a bounded local HTTP transport.
++	cluster.s3Client = newNormalS3Client(cluster.s3Endpoint, nil)
+ 
+ 	t.Logf("Test cluster started successfully at %s", cluster.s3Endpoint)
+ 	return cluster, nil
+@@ -361,7 +348,7 @@
+ func testCreateBucket(t *testing.T, cluster *TestCluster) {
+ 	bucketName := "test-bucket-" + randomString(8)
+ 
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err, "Failed to create bucket")
+@@ -371,7 +358,7 @@
+ 
+ 	// Verify bucket exists by trying to head it
+ 	// Note: ListBuckets may not immediately show new buckets in SeaweedFS
+-	_, err = cluster.s3Client.HeadBucket(&s3.HeadBucketInput{
++	_, err = cluster.s3Client.HeadBucket(t.Context(), &s3.HeadBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err, "Bucket should be accessible via HeadBucket")
+@@ -385,7 +372,7 @@
+ 	objectData := "Hello, SeaweedFS S3!"
+ 
+ 	// Create bucket
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -394,7 +381,7 @@
+ 	time.Sleep(100 * time.Millisecond)
+ 
+ 	// Put object
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte(objectData)),
+@@ -402,20 +389,20 @@
+ 	require.NoError(t, err, "Failed to put object")
+ 
+ 	// Verify object exists
+-	headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+ 	require.NoError(t, err)
+ 	assert.NotNil(t, headResp.ContentLength)
+-	assert.Equal(t, int64(len(objectData)), aws.Int64Value(headResp.ContentLength))
++	assert.Equal(t, int64(len(objectData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("✓ Put object: %s/%s (%d bytes)", bucketName, objectKey, len(objectData))
+ }
+ 
+ func createTestBucket(t *testing.T, cluster *TestCluster, prefix string) string {
+ 	bucketName := prefix + randomString(8)
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -423,15 +410,15 @@
+ 	return bucketName
+ }
+ 
+-// generateSSECKey returns a 32-byte key as a raw string (what the SDK expects
+-// for SSECustomerKey) and its base64-encoded MD5 (for SSECustomerKeyMD5).
+-func generateSSECKey() (keyRaw, keyMD5B64 string) {
++// generateSSECKey returns a base64-encoded 32-byte key and its base64-encoded
++// MD5. SDK v2 transmits the supplied key header without the v1 auto-encoding.
++func generateSSECKey() (keyB64, keyMD5B64 string) {
+ 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+ 	key := make([]byte, 32)
+ 	for i := range key {
+ 		key[i] = byte(rng.Intn(256))
+ 	}
+-	keyRaw = string(key)
++	keyB64 = base64.StdEncoding.EncodeToString(key)
+ 	keyHash := md5.Sum(key)
+ 	keyMD5B64 = base64.StdEncoding.EncodeToString(keyHash[:])
+ 	return
+@@ -446,7 +433,7 @@
+ 	incorrectMD5 := calculateMd5(objectData + "incorrect")
+ 
+ 	// Put object with incorrect MD5 should be rejected
+-	_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+ 		Body:       bytes.NewReader([]byte(objectData)),
+@@ -457,7 +444,7 @@
+ 	t.Logf("✓ Put object with incorrect MD5 rejected: %s/%s", bucketName, objectKey)
+ 
+ 	// Put object with correct MD5 should succeed
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+ 		Body:       bytes.NewReader([]byte(objectData)),
+@@ -466,33 +453,15 @@
+ 	require.NoError(t, err, "Failed to put object")
+ 
+ 	// Verify object exists
+-	headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+ 	require.NoError(t, err)
+ 	assert.NotNil(t, headResp.ContentLength)
+-	assert.Equal(t, int64(len(objectData)), aws.Int64Value(headResp.ContentLength))
++	assert.Equal(t, int64(len(objectData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("✓ Put object with correct MD5: %s/%s (%d bytes)", bucketName, objectKey, len(objectData))
+-}
+-
+-// putObjectSSEC sends a PutObject request with SSE-C headers over HTTP.
+-// The AWS SDK v1 refuses to send SSE-C keys over plain HTTP, so we use the
+-// low-level Request API and clear the Validate handlers to bypass that check.
+-// We use Clear() because the specific validator is internal and not easily removable by name.
+-func putObjectSSEC(client *s3.S3, input *s3.PutObjectInput) (*s3.PutObjectOutput, error) {
+-	req, output := client.PutObjectRequest(input)
+-	req.Handlers.Validate.Clear()
+-	err := req.Send()
+-	return output, err
+-}
+-
+-func headObjectSSEC(client *s3.S3, input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
+-	req, output := client.HeadObjectRequest(input)
+-	req.Handlers.Validate.Clear()
+-	err := req.Send()
+-	return output, err
+ }
+ 
+ func testPutObjectWithChecksumAndSSEC(t *testing.T, cluster *TestCluster) {
+@@ -502,16 +471,16 @@
+ 
+ 	correctMD5 := calculateMd5(objectData)
+ 	incorrectMD5 := calculateMd5(objectData + "incorrect")
+-	keyRaw, keyMD5B64 := generateSSECKey()
++	keyB64, keyMD5B64 := generateSSECKey()
+ 
+ 	// Put object with SSE-C and incorrect MD5 should be rejected
+-	_, err := putObjectSSEC(cluster.s3Client, &s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket:               aws.String(bucketName),
+ 		Key:                  aws.String(objectKey),
+ 		Body:                 bytes.NewReader([]byte(objectData)),
+ 		ContentMD5:           aws.String(incorrectMD5),
+ 		SSECustomerAlgorithm: aws.String("AES256"),
+-		SSECustomerKey:       aws.String(keyRaw),
++		SSECustomerKey:       aws.String(keyB64),
+ 		SSECustomerKeyMD5:    aws.String(keyMD5B64),
+ 	})
+ 	assertBadDigestError(t, err, "PutObject with SSE-C should fail with incorrect MD5")
+@@ -519,28 +488,28 @@
+ 	t.Logf("Put object with SSE-C and incorrect MD5 rejected: %s/%s", bucketName, objectKey)
+ 
+ 	// Put object with SSE-C and correct MD5 should succeed
+-	_, err = putObjectSSEC(cluster.s3Client, &s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket:               aws.String(bucketName),
+ 		Key:                  aws.String(objectKey),
+ 		Body:                 bytes.NewReader([]byte(objectData)),
+ 		ContentMD5:           aws.String(correctMD5),
+ 		SSECustomerAlgorithm: aws.String("AES256"),
+-		SSECustomerKey:       aws.String(keyRaw),
++		SSECustomerKey:       aws.String(keyB64),
+ 		SSECustomerKeyMD5:    aws.String(keyMD5B64),
+ 	})
+ 	require.NoError(t, err, "Failed to put object with SSE-C and correct MD5")
+ 
+ 	// Verify object exists (SSE-C requires the key for HeadObject too)
+-	headResp, err := headObjectSSEC(cluster.s3Client, &s3.HeadObjectInput{
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket:               aws.String(bucketName),
+ 		Key:                  aws.String(objectKey),
+ 		SSECustomerAlgorithm: aws.String("AES256"),
+-		SSECustomerKey:       aws.String(keyRaw),
++		SSECustomerKey:       aws.String(keyB64),
+ 		SSECustomerKeyMD5:    aws.String(keyMD5B64),
+ 	})
+ 	require.NoError(t, err)
+ 	assert.NotNil(t, headResp.ContentLength)
+-	assert.Equal(t, int64(len(objectData)), aws.Int64Value(headResp.ContentLength))
++	assert.Equal(t, int64(len(objectData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("Put object with SSE-C and correct MD5: %s/%s (%d bytes)", bucketName, objectKey, len(objectData))
+ }
+@@ -551,7 +520,7 @@
+ 	objectData := "Hello, SeaweedFS S3 Multipart!"
+ 
+ 	// Initiate multipart upload
+-	initResp, err := cluster.s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++	initResp, err := cluster.s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+@@ -562,10 +531,10 @@
+ 	incorrectMD5 := calculateMd5(objectData + "incorrect")
+ 
+ 	// Upload part with incorrect MD5
+-	_, err = cluster.s3Client.UploadPart(&s3.UploadPartInput{
++	_, err = cluster.s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		UploadId:   uploadID,
+ 		Body:       bytes.NewReader([]byte(objectData)),
+ 		ContentMD5: aws.String(incorrectMD5),
+@@ -573,10 +542,10 @@
+ 	assertBadDigestError(t, err, "UploadPart should fail with incorrect MD5")
+ 
+ 	// Upload part with correct MD5
+-	partResp, err := cluster.s3Client.UploadPart(&s3.UploadPartInput{
++	partResp, err := cluster.s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		UploadId:   uploadID,
+ 		Body:       bytes.NewReader([]byte(objectData)),
+ 		ContentMD5: aws.String(correctMD5),
+@@ -584,15 +553,15 @@
+ 	require.NoError(t, err, "Failed to upload part with correct MD5")
+ 
+ 	// Complete multipart upload
+-	_, err = cluster.s3Client.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
++	_, err = cluster.s3Client.CompleteMultipartUpload(t.Context(), &s3.CompleteMultipartUploadInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey),
+ 		UploadId: uploadID,
+-		MultipartUpload: &s3.CompletedMultipartUpload{
+-			Parts: []*s3.CompletedPart{
++		MultipartUpload: &types.CompletedMultipartUpload{
++			Parts: []types.CompletedPart{
+ 				{
+ 					ETag:       partResp.ETag,
+-					PartNumber: aws.Int64(1),
++					PartNumber: aws.Int32(1),
+ 				},
+ 			},
+ 		},
+@@ -600,12 +569,12 @@
+ 	require.NoError(t, err, "Failed to complete multipart upload")
+ 
+ 	// Verify object exists
+-	headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
+-		Bucket: aws.String(bucketName),
+-		Key:    aws.String(objectKey),
+-	})
+-	require.NoError(t, err)
+-	assert.Equal(t, int64(len(objectData)), aws.Int64Value(headResp.ContentLength))
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
++	})
++	require.NoError(t, err)
++	assert.Equal(t, int64(len(objectData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("✓ Multipart upload with checksum successful: %s/%s", bucketName, objectKey)
+ }
+@@ -619,7 +588,7 @@
+ 	correctMD5 := calculateMd5(partData)
+ 	incorrectMD5 := calculateMd5(partData + "incorrect")
+ 
+-	createResp, err := cluster.s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++	createResp, err := cluster.s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+@@ -629,35 +598,35 @@
+ 
+ 	partBody := []byte(partData)
+ 
+-	_, err = cluster.s3Client.UploadPart(&s3.UploadPartInput{
++	_, err = cluster.s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+ 		UploadId:   uploadID,
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		Body:       bytes.NewReader(partBody),
+ 		ContentMD5: aws.String(incorrectMD5),
+ 	})
+ 	assertBadDigestError(t, err, "UploadPart should fail with incorrect MD5")
+ 
+-	uploadResp, err := cluster.s3Client.UploadPart(&s3.UploadPartInput{
++	uploadResp, err := cluster.s3Client.UploadPart(t.Context(), &s3.UploadPartInput{
+ 		Bucket:     aws.String(bucketName),
+ 		Key:        aws.String(objectKey),
+ 		UploadId:   uploadID,
+-		PartNumber: aws.Int64(1),
++		PartNumber: aws.Int32(1),
+ 		Body:       bytes.NewReader(partBody),
+ 		ContentMD5: aws.String(correctMD5),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = cluster.s3Client.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
++	_, err = cluster.s3Client.CompleteMultipartUpload(t.Context(), &s3.CompleteMultipartUploadInput{
+ 		Bucket:   aws.String(bucketName),
+ 		Key:      aws.String(objectKey),
+ 		UploadId: uploadID,
+-		MultipartUpload: &s3.CompletedMultipartUpload{
+-			Parts: []*s3.CompletedPart{
++		MultipartUpload: &types.CompletedMultipartUpload{
++			Parts: []types.CompletedPart{
+ 				{
+ 					ETag:       uploadResp.ETag,
+-					PartNumber: aws.Int64(1),
++					PartNumber: aws.Int32(1),
+ 				},
+ 			},
+ 		},
+@@ -665,12 +634,12 @@
+ 	require.NoError(t, err, "Failed to complete multipart upload")
+ 
+ 	// Verify object exists
+-	headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
+-		Bucket: aws.String(bucketName),
+-		Key:    aws.String(objectKey),
+-	})
+-	require.NoError(t, err)
+-	assert.Equal(t, int64(len(partData)), aws.Int64Value(headResp.ContentLength))
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
++		Bucket: aws.String(bucketName),
++		Key:    aws.String(objectKey),
++	})
++	require.NoError(t, err)
++	assert.Equal(t, int64(len(partData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("✓ UploadPart with MD5 validation: %s/%s", bucketName, objectKey)
+ }
+@@ -684,9 +653,9 @@
+ func assertBadDigestError(t *testing.T, err error, description string) {
+ 	require.Error(t, err, description)
+ 
+-	var awsErr awserr.Error
++	var awsErr smithy.APIError
+ 	require.ErrorAs(t, err, &awsErr)
+-	assert.Equal(t, "BadDigest", awsErr.Code())
++	assert.Equal(t, "BadDigest", awsErr.ErrorCode())
+ }
+ 
+ func testGetObject(t *testing.T, cluster *TestCluster) {
+@@ -695,7 +664,7 @@
+ 	objectData := "This is test data for GET operation"
+ 
+ 	// Create bucket and put object
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -703,7 +672,7 @@
+ 	// Wait a bit for bucket to be fully created
+ 	time.Sleep(200 * time.Millisecond)
+ 
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte(objectData)),
+@@ -714,13 +683,13 @@
+ 	time.Sleep(300 * time.Millisecond)
+ 
+ 	// Verify object metadata via HeadObject (more reliable than GetObject in mini mode)
+-	headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++	headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+ 	require.NoError(t, err, "Failed to head object")
+ 	assert.NotNil(t, headResp.ContentLength)
+-	assert.Equal(t, int64(len(objectData)), aws.Int64Value(headResp.ContentLength))
++	assert.Equal(t, int64(len(objectData)), aws.ToInt64(headResp.ContentLength))
+ 
+ 	t.Logf("✓ Got object metadata: %s/%s (verified %d bytes via HEAD)", bucketName, objectKey, len(objectData))
+ 
+@@ -732,7 +701,7 @@
+ 	bucketName := "test-list-" + randomString(8)
+ 
+ 	// Create bucket
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+@@ -740,7 +709,7 @@
+ 	// Put multiple objects
+ 	objectKeys := []string{"file1.txt", "file2.txt", "file3.txt"}
+ 	for _, key := range objectKeys {
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(key),
+ 			Body:   bytes.NewReader([]byte("test data for " + key)),
+@@ -749,7 +718,7 @@
+ 	}
+ 
+ 	// List objects
+-	listResp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++	listResp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err, "Failed to list objects")
+@@ -759,7 +728,7 @@
+ 
+ 	foundKeys := make(map[string]bool)
+ 	for _, obj := range listResp.Contents {
+-		foundKeys[aws.StringValue(obj.Key)] = true
++		foundKeys[aws.ToString(obj.Key)] = true
+ 	}
+ 
+ 	for _, key := range objectKeys {
+@@ -774,12 +743,12 @@
+ 	objectKey := "to-be-deleted.txt"
+ 
+ 	// Create bucket and put object
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
+-		Bucket: aws.String(bucketName),
+-	})
+-	require.NoError(t, err)
+-
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
++		Bucket: aws.String(bucketName),
++	})
++	require.NoError(t, err)
++
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 		Body:   bytes.NewReader([]byte("This will be deleted")),
+@@ -787,14 +756,14 @@
+ 	require.NoError(t, err)
+ 
+ 	// Delete object
+-	_, err = cluster.s3Client.DeleteObject(&s3.DeleteObjectInput{
++	_, err = cluster.s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+ 	require.NoError(t, err, "Failed to delete object")
+ 
+ 	// Verify object is gone
+-	_, err = cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++	_, err = cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(objectKey),
+ 	})
+@@ -808,14 +777,14 @@
+ 	childKey := "test-content/file1.txt"
+ 	directoryMarkerKey := "test-content/"
+ 
+-	_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(childKey),
+ 		Body:   bytes.NewReader([]byte("child")),
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket:      aws.String(bucketName),
+ 		Key:         aws.String(directoryMarkerKey),
+ 		Body:        bytes.NewReader(nil),
+@@ -823,13 +792,13 @@
+ 	})
+ 	require.NoError(t, err)
+ 
+-	_, err = cluster.s3Client.DeleteObject(&s3.DeleteObjectInput{
++	_, err = cluster.s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String(directoryMarkerKey),
+ 	})
+ 	require.NoError(t, err, "Deleting a directory marker should succeed even when children exist")
+ 
+-	listResp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++	listResp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 		Bucket: aws.String(bucketName),
+ 		Prefix: aws.String("test-content/"),
+ 	})
+@@ -837,7 +806,7 @@
+ 
+ 	foundKeys := make(map[string]bool)
+ 	for _, obj := range listResp.Contents {
+-		foundKeys[aws.StringValue(obj.Key)] = true
++		foundKeys[aws.ToString(obj.Key)] = true
+ 	}
+ 
+ 	assert.True(t, foundKeys[childKey], "Child object should remain after deleting the directory marker")
+@@ -848,23 +817,23 @@
+ 	bucketName := "test-delete-bucket-" + randomString(8)
+ 
+ 	// Create bucket
+-	_, err := cluster.s3Client.CreateBucket(&s3.CreateBucketInput{
++	_, err := cluster.s3Client.CreateBucket(t.Context(), &s3.CreateBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err)
+ 
+ 	// Delete bucket
+-	_, err = cluster.s3Client.DeleteBucket(&s3.DeleteBucketInput{
++	_, err = cluster.s3Client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 		Bucket: aws.String(bucketName),
+ 	})
+ 	require.NoError(t, err, "Failed to delete bucket")
+ 
+ 	// Verify bucket is gone
+-	resp, err := cluster.s3Client.ListBuckets(&s3.ListBucketsInput{})
++	resp, err := cluster.s3Client.ListBuckets(t.Context(), &s3.ListBucketsInput{})
+ 	require.NoError(t, err)
+ 
+ 	for _, bucket := range resp.Buckets {
+-		assert.NotEqual(t, bucketName, aws.StringValue(bucket.Name), "Bucket should not exist after deletion")
++		assert.NotEqual(t, bucketName, aws.ToString(bucket.Name), "Bucket should not exist after deletion")
+ 	}
+ 
+ 	t.Logf("✓ Deleted bucket: %s", bucketName)
+@@ -884,7 +853,7 @@
+ 		objectKey := "keep-me.txt"
+ 
+ 		// Put an object so the bucket is non-empty
+-		_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucketName),
+ 			Key:    aws.String(objectKey),
+ 			Body:   bytes.NewReader([]byte("data")),
+@@ -892,21 +861,21 @@
+ 		require.NoError(t, err)
+ 
+ 		// Attempt to delete the non-empty bucket — must fail with BucketNotEmpty (409)
+-		_, err = cluster.s3Client.DeleteBucket(&s3.DeleteBucketInput{
++		_, err = cluster.s3Client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.Error(t, err, "deleting a non-empty bucket should fail")
+-		var awsErr awserr.Error
++		var awsErr smithy.APIError
+ 		require.ErrorAs(t, err, &awsErr)
+-		assert.Equal(t, "BucketNotEmpty", awsErr.Code(),
+-			"expected BucketNotEmpty error code, got %s: %s", awsErr.Code(), awsErr.Message())
++		assert.Equal(t, "BucketNotEmpty", awsErr.ErrorCode(),
++			"expected BucketNotEmpty error code, got %s: %s", awsErr.ErrorCode(), awsErr.ErrorMessage())
+ 	})
+ 
+ 	t.Run("DeleteEmptyBucketSucceeds", func(t *testing.T) {
+ 		bucketName := createTestBucket(t, cluster, "test-empty-")
+ 
+ 		// Delete the empty bucket — should succeed even with the flag
+-		_, err := cluster.s3Client.DeleteBucket(&s3.DeleteBucketInput{
++		_, err := cluster.s3Client.DeleteBucket(t.Context(), &s3.DeleteBucketInput{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err, "deleting an empty bucket should succeed")
+diff --git a/test/s3/normal/s3_list_empty_directory_test.go b/test/s3/normal/s3_list_empty_directory_test.go
+--- a/test/s3/normal/s3_list_empty_directory_test.go
++++ b/test/s3/normal/s3_list_empty_directory_test.go
+@@ -5,8 +5,9 @@
+ 	"sort"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -29,7 +30,7 @@
+ 	bucketName := createTestBucket(t, cluster, "test-empty-dirs-")
+ 
+ 	// Create a regular file at Empty/manifest.yaml
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("Empty/manifest.yaml"),
+ 		Body:   bytes.NewReader([]byte("name: test\nversion: 1.0\n")),
+@@ -38,7 +39,7 @@
+ 
+ 	// Create an empty directory marker via PutObject (key ending in "/", zero bytes).
+ 	// This is how `aws s3api put-object --key "Empty/empty/"` works.
+-	_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++	_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("Empty/empty/"),
+ 		Body:   bytes.NewReader([]byte{}),
+@@ -46,7 +47,7 @@
+ 	require.NoError(t, err, "failed to create empty directory marker")
+ 
+ 	// Verify the directory marker exists via HeadObject
+-	_, err = cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++	_, err = cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 		Bucket: aws.String(bucketName),
+ 		Key:    aws.String("Empty/empty/"),
+ 	})
+@@ -55,7 +56,7 @@
+ 	// Test 1: ListObjectsV2 with prefix (no delimiter) — the exact scenario from the issue.
+ 	// AWS S3 returns both "Empty/empty/" and "Empty/manifest.yaml" in Contents.
+ 	t.Run("ListV2_WithPrefix_NoDelimiter", func(t *testing.T) {
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket: aws.String(bucketName),
+ 			Prefix: aws.String("Empty"),
+ 		})
+@@ -70,7 +71,7 @@
+ 
+ 	// Test 2: ListObjectsV1 with prefix (no delimiter).
+ 	t.Run("ListV1_WithPrefix_NoDelimiter", func(t *testing.T) {
+-		resp, err := cluster.s3Client.ListObjects(&s3.ListObjectsInput{
++		resp, err := cluster.s3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 			Bucket: aws.String(bucketName),
+ 			Prefix: aws.String("Empty"),
+ 		})
+@@ -86,7 +87,7 @@
+ 	// Test 3: ListObjectsV2 without prefix and without delimiter.
+ 	// All objects in the bucket should appear, including directory markers.
+ 	t.Run("ListV2_NoPrefix_NoDelimiter", func(t *testing.T) {
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket: aws.String(bucketName),
+ 		})
+ 		require.NoError(t, err)
+@@ -101,7 +102,7 @@
+ 	// The directory marker "Empty/empty/" should appear as a CommonPrefix,
+ 	// and "Empty/manifest.yaml" should appear in Contents.
+ 	t.Run("ListV2_WithPrefix_WithDelimiter", func(t *testing.T) {
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket:    aws.String(bucketName),
+ 			Prefix:    aws.String("Empty/"),
+ 			Delimiter: aws.String("/"),
+@@ -123,28 +124,28 @@
+ 		//   dir/sub1/         (empty dir marker)
+ 		//   dir/sub2/deep/    (empty dir marker at deeper level)
+ 		//   dir/file.txt      (regular file)
+-		_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(nestedBucket),
+ 			Key:    aws.String("dir/sub1/"),
+ 			Body:   bytes.NewReader([]byte{}),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(nestedBucket),
+ 			Key:    aws.String("dir/sub2/deep/"),
+ 			Body:   bytes.NewReader([]byte{}),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(nestedBucket),
+ 			Key:    aws.String("dir/file.txt"),
+ 			Body:   bytes.NewReader([]byte("content")),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket: aws.String(nestedBucket),
+ 		})
+ 		require.NoError(t, err)
+@@ -167,21 +168,21 @@
+ 		//   docs/            (directory key object)
+ 		//   docs/readme.txt  (child file inside the marker)
+ 		//   readme.txt       (sibling file at top level)
+-		_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(siblingBucket),
+ 			Key:    aws.String("docs/"),
+ 			Body:   bytes.NewReader([]byte{}),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(siblingBucket),
+ 			Key:    aws.String("docs/readme.txt"),
+ 			Body:   bytes.NewReader([]byte("inside docs")),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(siblingBucket),
+ 			Key:    aws.String("readme.txt"),
+ 			Body:   bytes.NewReader([]byte("hello")),
+@@ -189,7 +190,7 @@
+ 		require.NoError(t, err)
+ 
+ 		// Unpaginated: all three keys should appear.
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket: aws.String(siblingBucket),
+ 		})
+ 		require.NoError(t, err)
+@@ -204,14 +205,14 @@
+ 		var allKeys []string
+ 		var token *string
+ 		for {
+-			pageResp, pageErr := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++			pageResp, pageErr := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 				Bucket:            aws.String(siblingBucket),
+-				MaxKeys:           aws.Int64(1),
++				MaxKeys:           aws.Int32(int32(1)),
+ 				ContinuationToken: token,
+ 			})
+ 			require.NoError(t, pageErr)
+ 			allKeys = append(allKeys, collectKeys(pageResp.Contents)...)
+-			if !aws.BoolValue(pageResp.IsTruncated) {
++			if !aws.ToBool(pageResp.IsTruncated) {
+ 				break
+ 			}
+ 			token = pageResp.NextContinuationToken
+@@ -226,7 +227,7 @@
+ 		bucketWithContentType := createTestBucket(t, cluster, "test-explicit-dir-")
+ 		objectKey := "test-content/empty/"
+ 
+-		_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket:      aws.String(bucketWithContentType),
+ 			Key:         aws.String(objectKey),
+ 			Body:        bytes.NewReader([]byte{}),
+@@ -234,14 +235,14 @@
+ 		})
+ 		require.NoError(t, err, "failed to create explicit directory marker with octet-stream content type")
+ 
+-		headResp, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++		headResp, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 			Bucket: aws.String(bucketWithContentType),
+ 			Key:    aws.String(objectKey),
+ 		})
+ 		require.NoError(t, err, "directory marker should exist via HeadObject")
+-		assert.Equal(t, "application/octet-stream", aws.StringValue(headResp.ContentType))
+-
+-		respV1, err := cluster.s3Client.ListObjects(&s3.ListObjectsInput{
++		assert.Equal(t, "application/octet-stream", aws.ToString(headResp.ContentType))
++
++		respV1, err := cluster.s3Client.ListObjects(t.Context(), &s3.ListObjectsInput{
+ 			Bucket: aws.String(bucketWithContentType),
+ 			Prefix: aws.String("test-content"),
+ 		})
+@@ -249,7 +250,7 @@
+ 		assert.Equal(t, []string{objectKey}, collectKeysV1(respV1.Contents),
+ 			"explicit empty directory markers with octet-stream content type should be listed")
+ 
+-		respV2, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		respV2, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket: aws.String(bucketWithContentType),
+ 			Prefix: aws.String("test-content"),
+ 		})
+@@ -259,22 +260,22 @@
+ 	})
+ }
+ 
+-func collectKeys(contents []*s3.Object) []string {
++func collectKeys(contents []types.Object) []string {
+ 	keys := make([]string, 0, len(contents))
+ 	for _, obj := range contents {
+-		keys = append(keys, aws.StringValue(obj.Key))
++		keys = append(keys, aws.ToString(obj.Key))
+ 	}
+ 	return keys
+ }
+ 
+-func collectKeysV1(contents []*s3.Object) []string {
++func collectKeysV1(contents []types.Object) []string {
+ 	return collectKeys(contents)
+ }
+ 
+-func collectPrefixes(prefixes []*s3.CommonPrefix) []string {
++func collectPrefixes(prefixes []types.CommonPrefix) []string {
+ 	result := make([]string, 0, len(prefixes))
+ 	for _, p := range prefixes {
+-		result = append(result, aws.StringValue(p.Prefix))
++		result = append(result, aws.ToString(p.Prefix))
+ 	}
+ 	return result
+ }
+diff --git a/test/s3/normal/s3_list_multipart_uploads_test.go b/test/s3/normal/s3_list_multipart_uploads_test.go
+--- a/test/s3/normal/s3_list_multipart_uploads_test.go
++++ b/test/s3/normal/s3_list_multipart_uploads_test.go
+@@ -4,8 +4,8 @@
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -26,22 +26,22 @@
+ 	bucket := createTestBucket(t, cluster, "test-list-mpu-initiated-")
+ 
+ 	beforeInit := time.Now().UTC()
+-	createOut, err := cluster.s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++	createOut, err := cluster.s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 		Bucket: aws.String(bucket),
+ 		Key:    aws.String("unfinished.bin"),
+ 	})
+ 	require.NoError(t, err)
+ 	afterInit := time.Now().UTC()
+ 
+-	listOut, err := cluster.s3Client.ListMultipartUploads(&s3.ListMultipartUploadsInput{
++	listOut, err := cluster.s3Client.ListMultipartUploads(t.Context(), &s3.ListMultipartUploadsInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	require.NoError(t, err)
+ 	require.Len(t, listOut.Uploads, 1)
+ 
+ 	upload := listOut.Uploads[0]
+-	assert.Equal(t, "unfinished.bin", aws.StringValue(upload.Key))
+-	assert.Equal(t, aws.StringValue(createOut.UploadId), aws.StringValue(upload.UploadId))
++	assert.Equal(t, "unfinished.bin", aws.ToString(upload.Key))
++	assert.Equal(t, aws.ToString(createOut.UploadId), aws.ToString(upload.UploadId))
+ 	require.NotNil(t, upload.Initiated, "Initiated timestamp must be populated")
+ 
+ 	initiated := upload.Initiated.UTC()
+@@ -49,7 +49,7 @@
+ 	assert.False(t, initiated.After(afterInit.Add(time.Second)), "Initiated %v is after upload creation %v", initiated, afterInit)
+ 
+ 	time.Sleep(2 * time.Second)
+-	listOut2, err := cluster.s3Client.ListMultipartUploads(&s3.ListMultipartUploadsInput{
++	listOut2, err := cluster.s3Client.ListMultipartUploads(t.Context(), &s3.ListMultipartUploadsInput{
+ 		Bucket: aws.String(bucket),
+ 	})
+ 	require.NoError(t, err)
+@@ -57,7 +57,7 @@
+ 	require.NotNil(t, listOut2.Uploads[0].Initiated, "Initiated timestamp must be populated on repeated listing")
+ 	assert.True(t, listOut2.Uploads[0].Initiated.Equal(*upload.Initiated), "Initiated must be preserved across listings, got %v then %v", *upload.Initiated, *listOut2.Uploads[0].Initiated)
+ 
+-	_, err = cluster.s3Client.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
++	_, err = cluster.s3Client.AbortMultipartUpload(t.Context(), &s3.AbortMultipartUploadInput{
+ 		Bucket:   aws.String(bucket),
+ 		Key:      aws.String("unfinished.bin"),
+ 		UploadId: createOut.UploadId,
+diff --git a/test/s3/normal/s3_prefix_object_test.go b/test/s3/normal/s3_prefix_object_test.go
+--- a/test/s3/normal/s3_prefix_object_test.go
++++ b/test/s3/normal/s3_prefix_object_test.go
+@@ -9,11 +9,11 @@
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/awserr"
+-	v1credentials "github.com/aws/aws-sdk-go/aws/credentials"
+-	v1signer "github.com/aws/aws-sdk-go/aws/signer/v4"
+-	"github.com/aws/aws-sdk-go/service/s3"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
++	smithyhttp "github.com/aws/smithy-go/transport/http"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+@@ -32,7 +32,7 @@
+ 
+ 	put := func(t *testing.T, bucket, key string, body []byte) {
+ 		t.Helper()
+-		_, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String(key),
+ 			Body:   bytes.NewReader(body),
+@@ -44,14 +44,14 @@
+ 	// alone.
+ 	read := func(t *testing.T, bucket, key string, want []byte) {
+ 		t.Helper()
+-		head, err := cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++		head, err := cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String(key),
+ 		})
+ 		require.NoError(t, err, "head %s", key)
+-		assert.Equal(t, int64(len(want)), aws.Int64Value(head.ContentLength), "head %s", key)
+-
+-		get, err := cluster.s3Client.GetObject(&s3.GetObjectInput{
++		assert.Equal(t, int64(len(want)), aws.ToInt64(head.ContentLength), "head %s", key)
++
++		get, err := cluster.s3Client.GetObject(t.Context(), &s3.GetObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String(key),
+ 		})
+@@ -65,24 +65,24 @@
+ 	// entry that outlived the object.
+ 	gone := func(t *testing.T, bucket, key string) {
+ 		t.Helper()
+-		_, err := cluster.s3Client.GetObject(&s3.GetObjectInput{
++		_, err := cluster.s3Client.GetObject(t.Context(), &s3.GetObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String(key),
+ 		})
+-		var missing awserr.RequestFailure
++		var missing *smithyhttp.ResponseError
+ 		require.ErrorAs(t, err, &missing, "get %s", key)
+-		assert.Equal(t, http.StatusNotFound, missing.StatusCode(), "get %s", key)
+-
+-		_, err = cluster.s3Client.HeadObject(&s3.HeadObjectInput{
++		assert.Equal(t, http.StatusNotFound, missing.HTTPStatusCode(), "get %s", key)
++
++		_, err = cluster.s3Client.HeadObject(t.Context(), &s3.HeadObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String(key),
+ 		})
+ 		require.ErrorAs(t, err, &missing, "head %s", key)
+-		assert.Equal(t, http.StatusNotFound, missing.StatusCode(), "head %s", key)
++		assert.Equal(t, http.StatusNotFound, missing.HTTPStatusCode(), "head %s", key)
+ 	}
+ 	listKeys := func(t *testing.T, bucket string) []string {
+ 		t.Helper()
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{Bucket: aws.String(bucket)})
+ 		require.NoError(t, err)
+ 		keys := collectKeys(resp.Contents)
+ 		sort.Strings(keys)
+@@ -138,7 +138,7 @@
+ 		put(t, bucket, "collision/foo", body)
+ 		put(t, bucket, "collision/other", body)
+ 
+-		resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket:    aws.String(bucket),
+ 			Prefix:    aws.String("collision/"),
+ 			Delimiter: aws.String("/"),
+@@ -151,7 +151,7 @@
+ 		assert.Equal(t, []string{"collision/foo/"}, collectPrefixes(resp.CommonPrefixes))
+ 
+ 		// Listing the prefix itself names only what is under it.
+-		resp, err = cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++		resp, err = cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 			Bucket:    aws.String(bucket),
+ 			Prefix:    aws.String("collision/foo/"),
+ 			Delimiter: aws.String("/"),
+@@ -173,10 +173,10 @@
+ 			var keys, prefixes []string
+ 			var token *string
+ 			for page := 0; page < 12; page++ {
+-				resp, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++				resp, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 					Bucket:            aws.String(bucket),
+ 					Delimiter:         aws.String("/"),
+-					MaxKeys:           aws.Int64(maxKeys),
++					MaxKeys:           aws.Int32(int32(maxKeys)),
+ 					ContinuationToken: token,
+ 				})
+ 				require.NoError(t, err)
+@@ -186,7 +186,7 @@
+ 					"maxKeys=%d page %d", maxKeys, page)
+ 				keys = append(keys, collectKeys(resp.Contents)...)
+ 				prefixes = append(prefixes, collectPrefixes(resp.CommonPrefixes)...)
+-				if !aws.BoolValue(resp.IsTruncated) {
++				if !aws.ToBool(resp.IsTruncated) {
+ 					token = nil
+ 					break
+ 				}
+@@ -206,9 +206,9 @@
+ 	t.Run("Versioned", func(t *testing.T) {
+ 		setVersioning := func(t *testing.T, bucket, status string) {
+ 			t.Helper()
+-			_, err := cluster.s3Client.PutBucketVersioning(&s3.PutBucketVersioningInput{
++			_, err := cluster.s3Client.PutBucketVersioning(t.Context(), &s3.PutBucketVersioningInput{
+ 				Bucket:                  aws.String(bucket),
+-				VersioningConfiguration: &s3.VersioningConfiguration{Status: aws.String(status)},
++				VersioningConfiguration: &types.VersioningConfiguration{Status: types.BucketVersioningStatus(status)},
+ 			})
+ 			require.NoError(t, err)
+ 		}
+@@ -243,7 +243,7 @@
+ 		put(t, bucket, "collision/foo", body)
+ 		setVersioning(t, bucket, "Enabled")
+ 		newer := []byte("written after versioning was enabled")
+-		versioned, err := cluster.s3Client.PutObject(&s3.PutObjectInput{
++		versioned, err := cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String("collision/foo"),
+ 			Body:   bytes.NewReader(newer),
+@@ -253,8 +253,8 @@
+ 		for _, v := range []struct {
+ 			id   string
+ 			want []byte
+-		}{{"null", body}, {aws.StringValue(versioned.VersionId), newer}} {
+-			got, err := cluster.s3Client.GetObject(&s3.GetObjectInput{
++		}{{"null", body}, {aws.ToString(versioned.VersionId), newer}} {
++			got, err := cluster.s3Client.GetObject(t.Context(), &s3.GetObjectInput{
+ 				Bucket:    aws.String(bucket),
+ 				Key:       aws.String("collision/foo"),
+ 				VersionId: aws.String(v.id),
+@@ -266,7 +266,7 @@
+ 			assert.Equal(t, v.want, body, "get version %s", v.id)
+ 		}
+ 
+-		_, err = cluster.s3Client.DeleteObject(&s3.DeleteObjectInput{
++		_, err = cluster.s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 			Bucket:    aws.String(bucket),
+ 			Key:       aws.String("collision/foo"),
+ 			VersionId: aws.String("null"),
+@@ -275,17 +275,17 @@
+ 
+ 		read(t, bucket, "collision/foo", newer)
+ 		read(t, bucket, "collision/foo/bar", nested)
+-		remaining, err := cluster.s3Client.ListObjectVersions(&s3.ListObjectVersionsInput{
++		remaining, err := cluster.s3Client.ListObjectVersions(t.Context(), &s3.ListObjectVersionsInput{
+ 			Bucket: aws.String(bucket),
+ 			Prefix: aws.String("collision/foo"),
+ 		})
+ 		require.NoError(t, err)
+ 		for _, v := range remaining.Versions {
+-			if aws.StringValue(v.Key) != "collision/foo" {
++			if aws.ToString(v.Key) != "collision/foo" {
+ 				// collision/foo/bar predates versioning too, and keeps its null version.
+ 				continue
+ 			}
+-			assert.NotEqual(t, "null", aws.StringValue(v.VersionId), "the null version was deleted")
++			assert.NotEqual(t, "null", aws.ToString(v.VersionId), "the null version was deleted")
+ 		}
+ 	})
+ 
+@@ -308,14 +308,14 @@
+ 		} {
+ 			name := "prefix=" + q.prefix + " delimiter=" + q.delimiter
+ 
+-			objects, err := cluster.s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
++			objects, err := cluster.s3Client.ListObjectsV2(t.Context(), &s3.ListObjectsV2Input{
+ 				Bucket:    aws.String(bucket),
+ 				Prefix:    aws.String(q.prefix),
+ 				Delimiter: aws.String(q.delimiter),
+ 			})
+ 			require.NoError(t, err, name)
+ 
+-			versions, err := cluster.s3Client.ListObjectVersions(&s3.ListObjectVersionsInput{
++			versions, err := cluster.s3Client.ListObjectVersions(t.Context(), &s3.ListObjectVersionsInput{
+ 				Bucket:    aws.String(bucket),
+ 				Prefix:    aws.String(q.prefix),
+ 				Delimiter: aws.String(q.delimiter),
+@@ -324,11 +324,11 @@
+ 
+ 			versionKeys := make([]string, 0, len(versions.Versions))
+ 			for _, v := range versions.Versions {
+-				versionKeys = append(versionKeys, aws.StringValue(v.Key))
++				versionKeys = append(versionKeys, aws.ToString(v.Key))
+ 			}
+ 			versionPrefixes := make([]string, 0, len(versions.CommonPrefixes))
+ 			for _, p := range versions.CommonPrefixes {
+-				versionPrefixes = append(versionPrefixes, aws.StringValue(p.Prefix))
++				versionPrefixes = append(versionPrefixes, aws.ToString(p.Prefix))
+ 			}
+ 			sort.Strings(versionKeys)
+ 			sort.Strings(versionPrefixes)
+@@ -349,26 +349,26 @@
+ 		bucket := createTestBucket(t, cluster, "test-prefix-versioned-")
+ 		put(t, bucket, "collision/foo/bar", nested)
+ 		put(t, bucket, "collision/foo", body)
+-		_, err := cluster.s3Client.PutBucketVersioning(&s3.PutBucketVersioningInput{
++		_, err := cluster.s3Client.PutBucketVersioning(t.Context(), &s3.PutBucketVersioningInput{
+ 			Bucket:                  aws.String(bucket),
+-			VersioningConfiguration: &s3.VersioningConfiguration{Status: aws.String("Enabled")},
++			VersioningConfiguration: &types.VersioningConfiguration{Status: types.BucketVersioningStatus("Enabled")},
+ 		})
+ 		require.NoError(t, err)
+ 		newer := []byte("written after versioning was enabled")
+ 		put(t, bucket, "collision/foo", newer)
+ 
+-		resp, err := cluster.s3Client.ListObjectVersions(&s3.ListObjectVersionsInput{Bucket: aws.String(bucket)})
++		resp, err := cluster.s3Client.ListObjectVersions(t.Context(), &s3.ListObjectVersionsInput{Bucket: aws.String(bucket)})
+ 		require.NoError(t, err)
+ 
+ 		latest := map[string]int{}
+ 		var nullSize int64 = -1
+ 		for _, v := range resp.Versions {
+-			if aws.BoolValue(v.IsLatest) {
+-				latest[aws.StringValue(v.Key)]++
+-			}
+-			if aws.StringValue(v.Key) == "collision/foo" && aws.StringValue(v.VersionId) == "null" {
+-				nullSize = aws.Int64Value(v.Size)
+-				assert.False(t, aws.BoolValue(v.IsLatest), "the newer version is the latest one")
++			if aws.ToBool(v.IsLatest) {
++				latest[aws.ToString(v.Key)]++
++			}
++			if aws.ToString(v.Key) == "collision/foo" && aws.ToString(v.VersionId) == "null" {
++				nullSize = aws.ToInt64(v.Size)
++				assert.False(t, aws.ToBool(v.IsLatest), "the newer version is the latest one")
+ 			}
+ 		}
+ 		assert.Equal(t, 1, latest["collision/foo"], "exactly one version of a key is the latest")
+@@ -383,7 +383,7 @@
+ 		bucket := createTestBucket(t, cluster, "test-prefix-copy-")
+ 		copyObject := func(t *testing.T, src, dst string) {
+ 			t.Helper()
+-			_, err := cluster.s3Client.CopyObject(&s3.CopyObjectInput{
++			_, err := cluster.s3Client.CopyObject(t.Context(), &s3.CopyObjectInput{
+ 				Bucket:     aws.String(bucket),
+ 				Key:        aws.String(dst),
+ 				CopySource: aws.String(bucket + "/" + src),
+@@ -422,10 +422,9 @@
+ 		bucket := createTestBucket(t, cluster, "test-prefix-rename-")
+ 		renameObject := func(t *testing.T, src, dst string) {
+ 			t.Helper()
+-			req, _ := http.NewRequest(http.MethodPut, cluster.s3Endpoint+"/"+bucket+"/"+dst+"?renameObject=", nil)
++			req, _ := http.NewRequestWithContext(t.Context(), http.MethodPut, cluster.s3Endpoint+"/"+bucket+"/"+dst+"?renameObject=", nil)
+ 			req.Header.Set("x-amz-rename-source", "/"+bucket+"/"+src)
+-			signer := v1signer.NewSigner(v1credentials.NewStaticCredentials(testAccessKey, testSecretKey, ""))
+-			_, err := signer.Sign(req, nil, "s3", testRegion, time.Now())
++			err := signNormalS3Request(t.Context(), req, time.Now())
+ 			require.NoError(t, err)
+ 
+ 			resp, err := (&http.Client{Timeout: 20 * time.Second}).Do(req)
+@@ -458,59 +457,62 @@
+ 	// stored on: the object would replace that state with its own.
+ 	t.Run("ReservedDirectory", func(t *testing.T) {
+ 		bucket := createTestBucket(t, cluster, "test-prefix-reserved-")
+-		_, err := cluster.s3Client.PutBucketVersioning(&s3.PutBucketVersioningInput{
++		_, err := cluster.s3Client.PutBucketVersioning(t.Context(), &s3.PutBucketVersioningInput{
+ 			Bucket:                  aws.String(bucket),
+-			VersioningConfiguration: &s3.VersioningConfiguration{Status: aws.String("Enabled")},
++			VersioningConfiguration: &types.VersioningConfiguration{Status: types.BucketVersioningStatus("Enabled")},
+ 		})
+ 		require.NoError(t, err)
+ 		put(t, bucket, "foo", body)
+-		_, err = cluster.s3Client.PutBucketVersioning(&s3.PutBucketVersioningInput{
++		_, err = cluster.s3Client.PutBucketVersioning(t.Context(), &s3.PutBucketVersioningInput{
+ 			Bucket:                  aws.String(bucket),
+-			VersioningConfiguration: &s3.VersioningConfiguration{Status: aws.String("Suspended")},
+-		})
+-		require.NoError(t, err)
+-
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++			VersioningConfiguration: &types.VersioningConfiguration{Status: types.BucketVersioningStatus("Suspended")},
++		})
++		require.NoError(t, err)
++
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String("foo.versions"),
+ 			Body:   bytes.NewReader(body),
+ 		})
+ 		// Not just any error: a permanently impossible write must not come back as a
+ 		// 500 the SDK retries.
+-		var refused awserr.RequestFailure
++		var refused *smithyhttp.ResponseError
+ 		require.ErrorAs(t, err, &refused, "the version history of foo is not a prefix of foo.versions")
+-		assert.Equal(t, http.StatusConflict, refused.StatusCode())
+-		assert.Equal(t, "ExistingObjectIsDirectory", refused.Code())
+-
+-		versions, err := cluster.s3Client.ListObjectVersions(&s3.ListObjectVersionsInput{Bucket: aws.String(bucket)})
++		assert.Equal(t, http.StatusConflict, refused.HTTPStatusCode())
++		var apiError smithy.APIError
++		require.ErrorAs(t, err, &apiError)
++		assert.Equal(t, "ExistingObjectIsDirectory", apiError.ErrorCode())
++
++		versions, err := cluster.s3Client.ListObjectVersions(t.Context(), &s3.ListObjectVersionsInput{Bucket: aws.String(bucket)})
+ 		require.NoError(t, err)
+ 		require.Len(t, versions.Versions, 1)
+-		assert.Equal(t, "foo", aws.StringValue(versions.Versions[0].Key))
++		assert.Equal(t, "foo", aws.ToString(versions.Versions[0].Key))
+ 		read(t, bucket, "foo", body)
+ 
+ 		// The multipart staging folder is the other one, and an in-flight upload has
+ 		// to survive the attempt.
+ 		staging := createTestBucket(t, cluster, "test-prefix-uploads-")
+-		created, err := cluster.s3Client.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
++		created, err := cluster.s3Client.CreateMultipartUpload(t.Context(), &s3.CreateMultipartUploadInput{
+ 			Bucket: aws.String(staging),
+ 			Key:    aws.String("mp.bin"),
+ 		})
+ 		require.NoError(t, err)
+ 
+-		_, err = cluster.s3Client.PutObject(&s3.PutObjectInput{
++		_, err = cluster.s3Client.PutObject(t.Context(), &s3.PutObjectInput{
+ 			Bucket: aws.String(staging),
+ 			Key:    aws.String(".uploads"),
+ 			Body:   bytes.NewReader(body),
+ 		})
+ 		require.ErrorAs(t, err, &refused, "the multipart staging folder is not a prefix of .uploads")
+-		assert.Equal(t, http.StatusConflict, refused.StatusCode())
+-		assert.Equal(t, "ExistingObjectIsDirectory", refused.Code())
+-
+-		uploads, err := cluster.s3Client.ListMultipartUploads(&s3.ListMultipartUploadsInput{Bucket: aws.String(staging)})
++		assert.Equal(t, http.StatusConflict, refused.HTTPStatusCode())
++		require.ErrorAs(t, err, &apiError)
++		assert.Equal(t, "ExistingObjectIsDirectory", apiError.ErrorCode())
++
++		uploads, err := cluster.s3Client.ListMultipartUploads(t.Context(), &s3.ListMultipartUploadsInput{Bucket: aws.String(staging)})
+ 		require.NoError(t, err)
+ 		require.Len(t, uploads.Uploads, 1)
+-		assert.Equal(t, "mp.bin", aws.StringValue(uploads.Uploads[0].Key))
+-		_, err = cluster.s3Client.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
++		assert.Equal(t, "mp.bin", aws.ToString(uploads.Uploads[0].Key))
++		_, err = cluster.s3Client.AbortMultipartUpload(t.Context(), &s3.AbortMultipartUploadInput{
+ 			Bucket:   aws.String(staging),
+ 			Key:      aws.String("mp.bin"),
+ 			UploadId: created.UploadId,
+@@ -524,7 +526,7 @@
+ 		put(t, bucket, "collision/foo/bar", nested)
+ 		put(t, bucket, "collision/foo", body)
+ 
+-		_, err := cluster.s3Client.DeleteObject(&s3.DeleteObjectInput{
++		_, err := cluster.s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String("collision/foo"),
+ 		})
+@@ -534,7 +536,7 @@
+ 		gone(t, bucket, "collision/foo")
+ 
+ 		put(t, bucket, "collision/foo", body)
+-		_, err = cluster.s3Client.DeleteObject(&s3.DeleteObjectInput{
++		_, err = cluster.s3Client.DeleteObject(t.Context(), &s3.DeleteObjectInput{
+ 			Bucket: aws.String(bucket),
+ 			Key:    aws.String("collision/foo/bar"),
+ 		})
+diff --git a/test/s3/normal/sdk_v2_client_test.go b/test/s3/normal/sdk_v2_client_test.go
+new file mode 100644
+--- /dev/null
++++ b/test/s3/normal/sdk_v2_client_test.go
+@@ -0,0 +1,140 @@
++package example
++
++import (
++	"bytes"
++	"context"
++	"crypto/md5"
++	"crypto/sha256"
++	"encoding/base64"
++	"encoding/hex"
++	"errors"
++	"io"
++	"net/http"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
++	"github.com/aws/aws-sdk-go-v2/credentials"
++	"github.com/aws/aws-sdk-go-v2/service/s3"
++	"github.com/aws/aws-sdk-go-v2/service/s3/types"
++	"github.com/aws/smithy-go"
++	"github.com/stretchr/testify/require"
++)
++
++// newNormalS3Client preserves the explicit local endpoint, credentials and
++// addressing contract. The SDK never retries mutations implicitly.
++func newNormalS3Client(endpoint string, transport http.RoundTripper) *s3.Client {
++	return s3.New(s3.Options{
++		Region:           testRegion,
++		BaseEndpoint:     aws.String(endpoint),
++		Credentials:      credentials.NewStaticCredentialsProvider(testAccessKey, testSecretKey, ""),
++		UsePathStyle:     true,
++		RetryMaxAttempts: 1,
++		HTTPClient:       &http.Client{Transport: transport, Timeout: 30 * time.Second},
++	})
++}
++
++// signNormalS3Request signs the empty-body raw S3 fixtures without changing
++// their existing escaping, header or service contract.
++func signNormalS3Request(ctx context.Context, req *http.Request, now time.Time) error {
++	digest := sha256.Sum256(nil)
++	payloadHash := hex.EncodeToString(digest[:])
++	req.Header.Set("X-Amz-Content-Sha256", payloadHash)
++	return v4.NewSigner().SignHTTP(ctx, aws.Credentials{AccessKeyID: testAccessKey, SecretAccessKey: testSecretKey}, req, payloadHash, "s3", testRegion, now)
++}
++
++type normalRoundTripFunc func(*http.Request) (*http.Response, error)
++
++func (f normalRoundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
++func normalResponse(r *http.Request, status int, body string) *http.Response {
++	return &http.Response{StatusCode: status, Header: http.Header{"Content-Type": []string{"application/xml"}}, Body: io.NopCloser(strings.NewReader(body)), Request: r}
++}
++
++func TestNormalSDKV2PutWireAndNoRetry(t *testing.T) {
++	for _, status := range []int{200, 400, 503} {
++		t.Run(http.StatusText(status), func(t *testing.T) {
++			body := []byte("normal-sdk-fixture")
++			// This deliberately wrong MD5 must reach the server unchanged, as the
++			// existing negative checksum cases depend on a server-side BadDigest.
++			wrongMD5 := "AAAAAAAAAAAAAAAAAAAAAA=="
++			key := []byte("01234567890123456789012345678901")
++			keyHash := md5.Sum(key)
++			keyMD5 := base64.StdEncoding.EncodeToString(keyHash[:])
++			calls := 0
++			client := newNormalS3Client("http://127.0.0.1:8333", normalRoundTripFunc(func(r *http.Request) (*http.Response, error) {
++				calls++
++				require.Equal(t, "PUT", r.Method)
++				require.Equal(t, "127.0.0.1:8333", r.URL.Host)
++				require.Equal(t, "/bucket/a%20b", r.URL.EscapedPath())
++				require.Equal(t, wrongMD5, r.Header.Get("Content-MD5"))
++				require.Equal(t, "AES256", r.Header.Get("X-Amz-Server-Side-Encryption-Customer-Algorithm"))
++				require.Equal(t, base64.StdEncoding.EncodeToString(key), r.Header.Get("X-Amz-Server-Side-Encryption-Customer-Key"))
++				require.Equal(t, keyMD5, r.Header.Get("X-Amz-Server-Side-Encryption-Customer-Key-Md5"))
++				require.Contains(t, r.Header.Get("Authorization"), "/us-west-2/s3/aws4_request")
++				raw, err := io.ReadAll(r.Body)
++				require.NoError(t, err)
++				require.Equal(t, body, raw)
++				if status == http.StatusOK {
++					return normalResponse(r, status, ""), nil
++				}
++				return normalResponse(r, status, "<Error><Code>BadDigest</Code><Message>fixture</Message></Error>"), nil
++			}))
++			_, err := client.PutObject(t.Context(), &s3.PutObjectInput{Bucket: aws.String("bucket"), Key: aws.String("a b"), Body: bytes.NewReader(body), ContentMD5: aws.String(wrongMD5), SSECustomerAlgorithm: aws.String("AES256"), SSECustomerKey: aws.String(base64.StdEncoding.EncodeToString(key)), SSECustomerKeyMD5: aws.String(keyMD5)})
++			if status == 200 {
++				require.NoError(t, err)
++			} else {
++				var apiError smithy.APIError
++				require.ErrorAs(t, err, &apiError)
++				require.Equal(t, "BadDigest", apiError.ErrorCode())
++			}
++			require.Equal(t, 1, calls, "the SDK must not replay ambiguous writes")
++		})
++	}
++}
++
++func TestNormalSDKV2MultipartAndCancellation(t *testing.T) {
++	calls := 0
++	client := newNormalS3Client("http://127.0.0.1:8333", normalRoundTripFunc(func(r *http.Request) (*http.Response, error) {
++		calls++
++		require.Equal(t, "POST", r.Method)
++		require.Equal(t, "fixture-upload", r.URL.Query().Get("uploadId"))
++		body, err := io.ReadAll(r.Body)
++		require.NoError(t, err)
++		require.Contains(t, string(body), "<PartNumber>1</PartNumber>")
++		require.Contains(t, string(body), "<ETag>fixture-etag</ETag>")
++		return normalResponse(r, 200, "<CompleteMultipartUploadResult><Bucket>bucket</Bucket><Key>key</Key><ETag>complete-etag</ETag></CompleteMultipartUploadResult>"), nil
++	}))
++	out, err := client.CompleteMultipartUpload(t.Context(), &s3.CompleteMultipartUploadInput{Bucket: aws.String("bucket"), Key: aws.String("key"), UploadId: aws.String("fixture-upload"), MultipartUpload: &types.CompletedMultipartUpload{Parts: []types.CompletedPart{{ETag: aws.String("fixture-etag"), PartNumber: aws.Int32(1)}}}})
++	require.NoError(t, err)
++	require.Equal(t, "complete-etag", aws.ToString(out.ETag))
++	require.Equal(t, 1, calls)
++	ctx, cancel := context.WithCancel(t.Context())
++	cancel()
++	_, err = client.PutObject(ctx, &s3.PutObjectInput{Bucket: aws.String("bucket"), Key: aws.String("key"), Body: strings.NewReader("cancelled")})
++	require.True(t, errors.Is(err, context.Canceled))
++	require.Equal(t, 1, calls)
++}
++
++func TestNormalSDKV2RawSignerLegacyGolden(t *testing.T) {
++	req, err := http.NewRequestWithContext(t.Context(), "GET", "http://127.0.0.1:8333/bucket/a%20b?attributes", nil)
++	require.NoError(t, err)
++	req.Header.Set("X-Amz-Object-Attributes", "ETag,ObjectSize")
++	err = signNormalS3Request(t.Context(), req, time.Date(2026, 11, 3, 0, 0, 0, 0, time.UTC))
++	require.NoError(t, err)
++	// Frozen from the original v1 raw signer with the same request, credentials,
++	// time and default URI escaping. No v1 dependency is needed for this oracle.
++	require.Equal(t, "AWS4-HMAC-SHA256 Credential=admin/20261103/us-west-2/s3/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-object-attributes, Signature=caa5f67e5701cd714893c5b58b8716d5975b0aad336aac8064513f0531914649", req.Header.Get("Authorization"))
++	require.Equal(t, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", req.Header.Get("X-Amz-Content-Sha256"))
++	require.Equal(t, "/bucket/a%20b", req.URL.EscapedPath())
++}
++
++func TestNormalSDKV2SSECKeyEncoding(t *testing.T) {
++	key, md5B64 := generateSSECKey()
++	raw, err := base64.StdEncoding.DecodeString(key)
++	require.NoError(t, err)
++	require.Len(t, raw, 32)
++	digest := md5.Sum(raw)
++	require.Equal(t, base64.StdEncoding.EncodeToString(digest[:]), md5B64)
++}

@@ -777,5 +777,13 @@
     "activeRuntimePathProven": false,
     "newCveClaimed": false,
     "upstreamResolutionOrRemovalPending": true
+  },
+  "pendingRepositoryQualification": {
+    "patchCount": 27,
+    "status": "LOCAL_EXACT_PASS_HOSTED_PENDING",
+    "evidence": "evidence/seaweedfs-sdk-v1-source-closure-local-20261103.json",
+    "sourceImporters": 0,
+    "qualifiedImagePatchCount": 15,
+    "currentQualificationRetainedUntilHostedPass": true
   }
 }
