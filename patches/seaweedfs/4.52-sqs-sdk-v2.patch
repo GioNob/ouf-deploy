@@ -107,7 +107,7 @@ diff --git a/weed/notification/aws_sqs/client.go b/weed/notification/aws_sqs/cli
 new file mode 100644
 --- /dev/null
 +++ b/weed/notification/aws_sqs/client.go
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,66 @@
 +package aws_sqs
 +
 +import (
@@ -129,6 +129,9 @@ new file mode 100644
 +// and an ambiguous result must return to the pipeline owner for reconciliation.
 +// The transport bounds each request while allowing the existing 20-second long poll.
 +func NewClient(ctx context.Context, accessKey, secretKey, region string) (*sqs.Client, error) {
++	if region == "" {
++		return nil, fmt.Errorf("SQS requires an explicit region")
++	}
 +	if (accessKey == "") != (secretKey == "") {
 +		return nil, fmt.Errorf("SQS requires both static credential fields or neither")
 +	}
@@ -144,7 +147,13 @@ new file mode 100644
 +	if err != nil {
 +		return nil, fmt.Errorf("load SQS configuration: %w", err)
 +	}
-+	return sqs.NewFromConfig(cfg), nil
++	client := sqs.NewFromConfig(cfg)
++	// v1 did not accept these SDK v2 environment/shared-config endpoint overrides.
++	// A provider endpoint must become an explicit reviewed binding, not a silent redirect.
++	if client.Options().BaseEndpoint != nil {
++		return nil, fmt.Errorf("SQS endpoint override requires an explicit supported binding")
++	}
++	return client, nil
 +}
 +
 +type queueURLAPI interface {
@@ -169,7 +178,7 @@ diff --git a/weed/notification/aws_sqs/client_test.go b/weed/notification/aws_sq
 new file mode 100644
 --- /dev/null
 +++ b/weed/notification/aws_sqs/client_test.go
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,185 @@
 +package aws_sqs
 +
 +import (
@@ -341,6 +350,18 @@ new file mode 100644
 +				}
 +			}
 +		})
++	}
++}
++
++func TestClientRejectsImplicitRegionAndEndpointOverride(t *testing.T) {
++	isolateCredentials(t)
++	t.Setenv("AWS_REGION", "us-east-1")
++	if client, err := NewClient(context.Background(), "fixture-id", "fixture-secret", ""); err == nil || client != nil {
++		t.Fatal("implicit region selected")
++	}
++	t.Setenv("AWS_ENDPOINT_URL_SQS", "https://unapproved.invalid")
++	if client, err := NewClient(context.Background(), "fixture-id", "fixture-secret", "us-east-1"); err == nil || client != nil {
++		t.Fatal("implicit endpoint override selected")
 +	}
 +}
 diff --git a/weed/replication/sub/notification_aws_sqs.go b/weed/replication/sub/notification_aws_sqs.go
