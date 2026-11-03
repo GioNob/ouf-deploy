@@ -24,7 +24,9 @@ Il workflow `.github/workflows/storage-sse-tests-sdk-v2.yml`, con azioni pin-nat
 
 ## Esito hosted
 
-PENDING: il workflow dedicato deve ancora essere eseguito sul commit pubblicato.
+La [CI 41656007239](https://github.com/GioNob/ouf-deploy/actions/runs/41656007239) è PASS sul commit `e98c774733e78b6c7a2d687aff510a464cc802f1`. Tutti gli otto step principali sono riusciti, inclusi applicazione delle venti patch, controllo del perimetro residuo, compilazione con tag `integration`, test non-network, attestazione e retention.
+
+L'artifact `13239852878` contiene otto file e scade il 1 febbraio 2027. Lo ZIP di 4.777 byte ha SHA256 `eff1b81794da7702e29f4b9349ef57ccd1707a4cb3d25e6f4f2b9ff5a59eac18`; tutti i sette membri elencati in `SHA256SUMS` sono stati riletti e verificati. Il readback conferma 331 pacchetti nel grafo del test, zero pacchetti SDK v1 e l'elenco esatto dei 21 importatori diretti residui.
 
 ## Confini
 

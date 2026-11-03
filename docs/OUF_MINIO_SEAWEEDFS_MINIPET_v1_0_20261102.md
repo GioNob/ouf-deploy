@@ -1,3 +1,11 @@
+## Checkpoint repository — test SSE migrati a SDK v2 (3 novembre 2026)
+
+La [patch 20](../patches/seaweedfs/4.52-sse-tests-sdk-v2.patch), SHA256 `53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c`, migra `test/s3/sse/s3_volume_encryption_test.go` a AWS SDK Go v2. Conserva endpoint HTTP locale, credenziali fixture, regione, path-style e casi funzionali. Le chiamate usano il contesto del test, l'SDK usa un solo tentativo e il cleanup ha un contesto indipendente con timeout di 30 secondi.
+
+La [CI 41656007239](https://github.com/GioNob/ouf-deploy/actions/runs/41656007239) ha completato tutti gli otto step principali applicando in ordine venti patch. Il package con build tag `integration` compila; il grafo contiene 331 pacchetti e zero SDK v1. L'artifact attestato `13239852878`, ZIP SHA256 `eff1b81794da7702e29f4b9349ef57ccd1707a4cb3d25e6f4f2b9ff5a59eac18`, conserva otto file e l'elenco esatto dei 21 importatori residui. La tornata complessiva è 51/51 SUCCESS.
+
+Gli importatori diretti repository-wide scendono 22→21: 13 in `test/s3/iam` e 8 in altri test non qualificati. La prova bounded non sostituisce i roundtrip live cifrati. La patch è solo test e non sostituisce l'esatta coorte OCI a 15 patch, non modifica il server qualificato e non ammette una release. Avanzamento invariato **circa 35% ±10**: 0/8 gate, 0/21 AT, 0/120 oggetti reali; licenze e custodia durevole restano OPEN, MinIO resta in esercizio. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati; zero operazioni target o nuova autorità.
+
 ## Checkpoint repository — signer S3Tables migrato a SDK v2 (3 novembre 2026)
 
 La [patch 19](../patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch), SHA256 `aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398`, migra il signer SigV4 di `test/s3tables/catalog/iceberg_catalog_test.go` a AWS SDK Go v2. Conserva credenziali fixture, regione `us-east-1`, servizio `s3tables` e payload firmato; payload hash e contesto della richiesta sono ora espliciti.

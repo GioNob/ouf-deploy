@@ -6,8 +6,26 @@
     "test/s3/sse/s3_volume_encryption_test.go": "dbe542eed001b732c6b7eee978e6d35e4ba059228b35f3513141d14711df32a6"
   },
   "generatedAt": "2026-11-03T14:22:00Z",
-  "hostedArtifact": null,
-  "hostedEvidence": null,
+  "hostedArtifact": {
+    "expiresAt": "2027-02-01T14:40:26Z",
+    "id": 13239852878,
+    "sha256": "eff1b81794da7702e29f4b9349ef57ccd1707a4cb3d25e6f4f2b9ff5a59eac18",
+    "sizeBytes": 4777
+  },
+  "hostedEvidence": {
+    "manifest": {
+      "compile.log": "9a163766ea1e857822440172f28698f4e80e9b1c3afc9dbfd4e98769c7ac5f15",
+      "patch-sha256.txt": "21df7f35a8b9ed30fd202db4c7950d9caf7e1d1890b666a011827f8325d0493f",
+      "patch-stat.txt": "68d7a4f97992e60717a4a13638680f99ef17f07f5fed2fe5ba0b69791ea302cb",
+      "remaining-direct-importers.txt": "896af49517c164894f167582daeb793e9f4df3779aaa9391a92d8a5321b71ef6",
+      "sse-test-deps.txt": "6a4402fd16533b5cefd1abcc7e1d543ae547e66123c6ab1193709ff6a1e0e64b",
+      "test.log": "12be046a2f7316b5b1230bfb4e28772017651a0973fea63938c2653f33a7803a",
+      "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93"
+    },
+    "remainingDirectImporters": 21,
+    "sseTestDependencies": 331,
+    "verified": true
+  },
   "maintainedSdk": {
     "core": "github.com/aws/aws-sdk-go-v2",
     "service": "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -37,8 +55,10 @@
   "targetOperations": 0,
   "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
   "workflow": {
+    "artifactId": 13239852878,
     "path": ".github/workflows/storage-sse-tests-sdk-v2.yml",
+    "runId": 41656007239,
     "sha256": "8fabed75caa0a730453c23e6aaf39c46cd6f61c8aa46cdd4c56a9ecad1d0cb9b",
-    "status": "PENDING_HOSTED_RUN"
+    "status": "HOSTED_PASS"
   }
 }
