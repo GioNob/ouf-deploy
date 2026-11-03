@@ -1,0 +1,35 @@
+{
+  "candidatePatchCountBefore": 15,
+  "directAwsSdkV1ImportersAfter": 25,
+  "directAwsSdkV1ImportersBefore": 28,
+  "files": {
+    "test/s3/basic/basic_test.go": "f873662b8d54b270de267a7f105114b61a9d91b32cb6da1b91ab1b32f75e26d2",
+    "test/s3/basic/delimiter_test.go": "0246757b57ccf06a33dec40d8858e27445fda008bbf13dd36df542e0a67090f8",
+    "test/s3/basic/object_tagging_test.go": "1330bfd3024b8ac65c46cec7b39d412c0b722688a19ac754bd851b5a6a1ad924"
+  },
+  "generatedAt": "2026-11-03T11:51:19Z",
+  "maintainedSdk": {
+    "core": "github.com/aws/aws-sdk-go-v2",
+    "service": "github.com/aws/aws-sdk-go-v2/service/s3"
+  },
+  "package": "./test/s3/basic",
+  "packageAwsSdkV1Dependencies": 0,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch",
+    "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40"
+  },
+  "qualifiedTest": {
+    "command": "go test -mod=readonly -run ^TestClientUsesLocalPathStyle$ -count=1 ./test/s3/basic",
+    "result": "PASS"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "scope": "LOCAL_PUBLIC_SOURCE_ONLY",
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "workflow": {
+    "path": ".github/workflows/storage-basic-tests-sdk-v2.yml",
+    "sha256": "679c2b1d3ff921193dd58ae1ade6ab6445f4d7faf13585f8ef4fc75d9950a037",
+    "status": "LOCAL_READY_REMOTE_PENDING"
+  }
+}
