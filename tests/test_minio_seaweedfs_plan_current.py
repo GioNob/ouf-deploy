@@ -23,6 +23,11 @@ class CurrentStoragePlanTest(unittest.TestCase):
         cls.source_receipt_bytes = (ROOT / plan_current.SOURCE_CLOSURE_PATH).read_bytes()
         cls.source_receipt = json.loads(cls.source_receipt_bytes)
         cls.patch_hashes = {path: plan_current.sha256((ROOT / path).read_bytes()) for path in plan_current.EXPECTED_SOURCE_PATCHES}
+        cls.standard_bytes = (ROOT / plan_current.STANDARD_RECEIPT_PATH).read_bytes()
+        cls.standard = json.loads(cls.standard_bytes)
+        cls.defect_bytes = (ROOT / plan_current.MIME_DEFECT_PATH).read_bytes()
+        cls.defect = json.loads(cls.defect_bytes)
+        cls.standard_files = plan_current.read_standard_evidence(ROOT, cls.standard)
         cls.dossiers = {
             path: json.loads((ROOT / path).read_bytes())
             for path in plan_current.EXPECTED_DOSSIERS
@@ -50,7 +55,7 @@ class CurrentStoragePlanTest(unittest.TestCase):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
         self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 0)
-        self.assertEqual(result["repositoryPatchCount"], 27)
+        self.assertEqual(result["repositoryPatchCount"], 28)
         self.assertEqual(result["hostedSourceClosureRunCount"], 6)
         self.assertFalse(result["optionalModuleGraphEradicationClaimed"])
         self.assertFalse(result["releaseAdmitted"])
@@ -295,6 +300,97 @@ class CurrentStoragePlanTest(unittest.TestCase):
         changed["workflows"][0]["fileManifest"][0]["file"] = "../outside.txt"
         with self.assertRaisesRegex(ValueError, "ARCHIVED_EVIDENCE_PATH_INVALID"):
             plan_current.validate_archived_tree(ROOT, changed)
+
+    def validate_standard(self, *, plan=None, receipt=None, receipt_bytes=None, patch_sha=None, defect=None):
+        selected_plan = copy.deepcopy(self.plan if plan is None else plan)
+        selected_receipt = copy.deepcopy(self.standard if receipt is None else receipt)
+        raw = self.standard_bytes if receipt_bytes is None else receipt_bytes
+        if receipt is not None and receipt_bytes is None:
+            raw = (json.dumps(selected_receipt, indent=2) + "\n").encode()
+            selected_plan["currentQualification"]["standardProfileQualification"]["receiptSha256"] = plan_current.sha256(raw)
+        selected_defect = copy.deepcopy(self.defect if defect is None else defect)
+        defect_raw = self.defect_bytes
+        if defect is not None:
+            defect_raw = (json.dumps(selected_defect, indent=2) + "\n").encode()
+            selected_plan["currentQualification"]["knownCompatibilityDefects"][0]["receiptSha256"] = plan_current.sha256(defect_raw)
+        return plan_current.validate_standard_profile(selected_plan, selected_receipt, raw, plan_current.STANDARD_PATCH_SHA256 if patch_sha is None else patch_sha, selected_defect, defect_raw)
+
+    def test_standard_profile_is_scoped_and_excluded_tags_stay_denied(self):
+        for field, value, code in (
+            ("universalUpstreamModuleClosureClaimed", True, "NO_UNIVERSAL_MODULE_CLOSURE_REQUIRED"),
+            ("excludedBuildTags", [], "STANDARD_EXCLUSIONS_REQUIRED"),
+            ("rootModuleGraphSdkV1", 1, "STANDARD_MODULE_ZERO_UNMAINTAINED_REQUIRED"),
+            ("qualifiedImagePatchCount", 28, "STANDARD_PATCH_COUNTS_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["currentQualification"]["standardProfileQualification"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                self.validate_standard(plan=changed)
+        changed = copy.deepcopy(self.standard)
+        changed["verification"]["negativeBuildTags"] = []
+        with self.assertRaisesRegex(ValueError, "STANDARD_TAG_DENIALS_REQUIRED"):
+            self.validate_standard(receipt=changed)
+
+    def test_standard_hosted_receipt_patch_and_source_are_bound(self):
+        with self.assertRaisesRegex(ValueError, "STANDARD_RECEIPT_BINDING_REQUIRED"):
+            self.validate_standard(receipt_bytes=self.standard_bytes + b"\n")
+        with self.assertRaisesRegex(ValueError, "STANDARD_PATCH28_BINDING_REQUIRED"):
+            self.validate_standard(patch_sha="0" * 64)
+        for field, value, code in (
+            ("jobConclusion", "failure", "STANDARD_HOSTED_SUCCESS_REQUIRED"),
+            ("headSha", "0" * 40, "STANDARD_RECEIPT_SOURCE_RUN_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.standard)
+            changed[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                self.validate_standard(receipt=changed)
+        changed = copy.deepcopy(self.standard)
+        changed["verification"]["deprecatedManagerRootModuleGraph"] = 1
+        with self.assertRaisesRegex(ValueError, "STANDARD_VERIFIED_CLOSURE_REQUIRED"):
+            self.validate_standard(receipt=changed)
+        changed = copy.deepcopy(self.plan)
+        changed["pendingStandardProfileQualification"]["status"] = "LOCAL_PASS_HOSTED_PENDING"
+        with self.assertRaisesRegex(ValueError, "STANDARD_PENDING_RESOLVED_REQUIRED"):
+            self.validate_standard(plan=changed)
+
+    def test_standard_retained_proof_rejects_missing_bytes_and_path_escape(self):
+        plan_current.validate_standard_evidence(self.standard, self.standard_files)
+        missing = dict(self.standard_files)
+        del missing["root-module-graph.txt"]
+        with self.assertRaisesRegex(ValueError, "STANDARD_EVIDENCE_MEMBER_SET_REQUIRED"):
+            plan_current.validate_standard_evidence(self.standard, missing)
+        changed = dict(self.standard_files)
+        changed["root-module-graph.txt"] += b"unexpected-module\n"
+        with self.assertRaisesRegex(ValueError, "STANDARD_EVIDENCE_BYTES_MISMATCH"):
+            plan_current.validate_standard_evidence(self.standard, changed)
+        receipt = copy.deepcopy(self.standard)
+        receipt["verification"]["patches"][0]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "STANDARD_RAW_PATCH_SEQUENCE_BINDING_REQUIRED"):
+            plan_current.validate_standard_evidence(receipt, self.standard_files)
+        receipt = copy.deepcopy(self.standard)
+        receipt["retainedBoundedEvidence"]["files"]["../outside"] = receipt["retainedBoundedEvidence"]["files"].pop("root-module-graph.txt")
+        with self.assertRaisesRegex(ValueError, "STANDARD_EVIDENCE_PATH_INVALID"):
+            plan_current.read_standard_evidence(ROOT, receipt)
+
+    def test_known_mime_failure_remains_open_and_does_not_invent_headers(self):
+        for field, value, code in (
+            ("status", "RESOLVED", "MIME_DEFECT_OPEN_REQUIRED"),
+            ("failingObjectKey", "guessed-key.csv", "MIME_UNOBSERVED_VALUES_MUST_REMAIN_UNKNOWN"),
+            ("actualResponseContentType", "text/csv", "MIME_UNOBSERVED_VALUES_MUST_REMAIN_UNKNOWN"),
+            ("s3MetadataCompatibilityQualified", True, "MIME_COMPATIBILITY_NOT_QUALIFIED_REQUIRED"),
+        ):
+            changed = copy.deepcopy(self.plan)
+            changed["currentQualification"]["knownCompatibilityDefects"][0][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, code):
+                self.validate_standard(plan=changed)
+        changed = copy.deepcopy(self.defect)
+        changed["observed"]["restoreExecuted"] = True
+        with self.assertRaisesRegex(ValueError, "MIME_FAILED_RUN_NO_RESTORE_REQUIRED"):
+            self.validate_standard(defect=changed)
+        changed = copy.deepcopy(self.plan)
+        changed["currentQualification"]["pendingCompatibilityCorrection"]["status"] = "QUALIFIED"
+        with self.assertRaisesRegex(ValueError, "PRODUCTION_PATCH29_NOT_PROMOTED_REQUIRED"):
+            self.validate_standard(plan=changed)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,329 @@
+name: Storage 4.52 generation29 image qualification
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-452-generation29-image.yml
+      - patches/seaweedfs/4.52-s3-content-type-persistence.patch
+      - scripts/qualify-seaweedfs-452-generation29-image.py
+      - scripts/readback-seaweedfs-452-generation29-image.py
+      - tests/test_seaweedfs_452_generation29_image.py
+      - releases/seaweedfs-452-generation29-build-manifest-20261103.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-452-generation29-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify generation boundaries, readback and malformed evidence denials
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_runtime_image.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation29_image.py -v
+  qualify-standard-profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CGO_ENABLED: "0"
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Apply the exact 29 patches for the OUF standard profile
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          mkdir -p "$RUNNER_TEMP/storage-ouf-standard-evidence"
+          python3 -I -B -S ../scripts/qualify-seaweedfs-452-generation29-image.py patch-paths > "$RUNNER_TEMP/storage-ouf-standard-evidence/ordered-patch-paths.txt"
+          while IFS= read -r patch; do
+            sha256sum "../$patch" >> "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt"
+            git apply --check "../$patch"
+            git apply --index "../$patch"
+          done < "$RUNNER_TEMP/storage-ouf-standard-evidence/ordered-patch-paths.txt"
+          git diff --cached --check
+          test "$(wc -l < "$RUNNER_TEMP/storage-ouf-standard-evidence/patches-sha256.txt")" -eq 29
+          printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/upstream-source-sha.txt"
+          git diff --cached --stat > "$RUNNER_TEMP/storage-ouf-standard-evidence/patch-stat.txt"
+
+      - name: Prove the root module closure and tidy fixed point
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          go mod tidy -diff > "$evidence/tidy.diff" 2> "$evidence/tidy.stderr"
+          test ! -s "$evidence/tidy.diff"
+          go mod graph > "$evidence/root-module-graph.txt"
+          go list -m all > "$evidence/root-modules.txt"
+          if grep -E '(^| )github.com/(aws/aws-sdk-go|aws/aws-sdk-go-v2/feature/s3/manager|olivere/elastic/v7|rclone/rclone)(@| |$)' "$evidence/root-module-graph.txt" "$evidence/root-modules.txt"; then
+            exit 1
+          fi
+          (grep -RIl --include='*.go' -F '"github.com/aws/aws-sdk-go/' . || test "$?" -eq 1) |
+            LC_ALL=C sort > "$evidence/remaining-direct-sdk-v1-importers.txt"
+          test ! -s "$evidence/remaining-direct-sdk-v1-importers.txt"
+          sha256sum go.mod go.sum > "$evidence/root-lockfiles-sha256.txt"
+
+      - name: Run the qualified storage regression plus filer and MIME persistence
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          go test -mod=readonly -count=1 -timeout=3m -json \
+            ./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/filer \
+            ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err \
+            ./weed/notification/aws_sqs ./weed/replication/sub ./weed/kms/... \
+            ./weed/replication/sink/s3sink ./weed/storage/backend/s3_backend \
+            ./weed/remote_storage/s3 > "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.jsonl" 2> "$RUNNER_TEMP/storage-ouf-standard-evidence/regressions.stderr"
+          python3 - <<'PYCODE'
+          import collections, json, os, pathlib
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "storage-ouf-standard-evidence"
+          counts = collections.Counter()
+          for line in (evidence / "regressions.jsonl").open():
+              row = json.loads(line)
+              if row.get("Action") in ("pass", "skip", "fail"):
+                  counts[row["Action"] + ("_tests" if "Test" in row else "_packages")] += 1
+          (evidence / "regression-counts.json").write_text(json.dumps(dict(counts), indent=2) + "\n")
+          assert counts["fail_tests"] == counts["fail_packages"] == 0, counts
+          assert counts["pass_packages"] == 21, counts
+          assert counts["pass_tests"] == 6156 and counts["skip_tests"] == 5, counts
+          passed = {(r.get("Package"), r.get("Test")) for r in
+                    map(json.loads, (evidence / "regressions.jsonl").open())
+                    if r.get("Action") == "pass"}
+          prefix = "github.com/seaweedfs/seaweedfs/weed/"
+          assert (prefix + "filer", "TestFilerStoreWrapperMimeNormalization") in passed
+          assert (prefix + "s3api", "TestS3ContentTypeSurvivesFilerPersistence") in passed
+          PYCODE
+
+      - name: Recheck root IAM fixtures and independently qualified nested modules
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          go test -mod=readonly -run '^(TestBucketPolicySDKV2|TestNormalSDKV2|TestPolicyIAMSDKV2|TestNormalIAMSDKV2)' -count=1 -timeout=60s -json ./test/s3/policy ./test/s3/normal > "$evidence/root-iam-regressions.jsonl" 2> "$evidence/root-iam-regressions.stderr"
+          sha256sum test/s3/iam/go.mod test/s3/iam/go.sum test/kafka/go.mod test/kafka/go.sum > "$evidence/nested-lockfiles-before.sha256"
+          (
+            cd test/s3/iam
+            go test -mod=readonly -run '^Test(IAMFrameworkV2|IAMFixtureS3V2|IAMFixtureRawQueryV2|SignSigV4Request)' -count=1 -timeout=60s -json ./... > "$evidence/nested-iam-regressions.jsonl" 2> "$evidence/nested-iam-regressions.stderr"
+          )
+          (
+            cd test/kafka
+            go mod tidy -diff > "$evidence/kafka-tidy.diff" 2> "$evidence/kafka-tidy.stderr"
+            test ! -s "$evidence/kafka-tidy.diff"
+            go test -mod=readonly -run '^$' -json ./... > "$evidence/kafka-compile.jsonl" 2> "$evidence/kafka-compile.stderr"
+          )
+          sha256sum --strict --check "$evidence/nested-lockfiles-before.sha256"
+
+      - name: Bind the reviewed generation29 source, graph and executable
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          git diff --exit-code
+          go list -mod=readonly -deps ./weed | LC_ALL=C sort -u > "$evidence/production-deps.txt"
+          go build -mod=readonly -trimpath -o "$RUNNER_TEMP/generation29-weed" ./weed
+          go version -m "$RUNNER_TEMP/generation29-weed" > "$evidence/build-info.txt"
+          git write-tree > "$evidence/patched-source-tree.txt"
+          python3 - <<'PYCODE'
+          import hashlib, json, os, pathlib, shutil
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "storage-ouf-standard-evidence"
+          manifest_path = pathlib.Path("../releases/seaweedfs-452-generation29-build-manifest-20261103.json")
+          manifest = json.loads(manifest_path.read_bytes())
+          sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+          binary = pathlib.Path(os.environ["RUNNER_TEMP"]) / "generation29-weed"
+          assert sha(binary) == manifest["build"]["binarySha256"]
+          assert sha(evidence / "production-deps.txt") == manifest["build"]["compiledPackagesSha256"]
+          assert len((evidence / "production-deps.txt").read_text().splitlines()) == manifest["build"]["compiledPackages"]
+          assert (evidence / "patched-source-tree.txt").read_text().strip() == manifest["build"]["patchedSourceTree"]
+          build = pathlib.Path(os.environ["RUNNER_TEMP"]) / "generation29-build"
+          build.mkdir()
+          shutil.copyfile(binary, build / "weed")
+          shutil.copyfile("LICENSE", build / "LICENSE")
+          shutil.copyfile(evidence / "production-deps.txt", build / "compiled-deps")
+          for name in ("build-info.txt", "root-modules.txt", "root-module-graph.txt"):
+              shutil.copyfile(evidence / name, build / name)
+          source = {"upstreamCommit": manifest["upstreamCommit"], "orderedPatchCount": 29,
+                    "patchManifestSha256": sha(manifest_path),
+                    "patchedTree": (evidence / "patched-source-tree.txt").read_text().strip(),
+                    "rootLockfilesSha256": {name: sha(pathlib.Path(name)) for name in ("go.mod", "go.sum")},
+                    "moduleEvidenceSha256": {name: sha(build / name) for name in ("root-modules.txt", "root-module-graph.txt")}}
+          (build / "build-source.json").write_text(json.dumps(source, sort_keys=True, indent=2) + "\n")
+          PYCODE
+
+      - name: Deny excluded optional tag profiles explicitly
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-ouf-standard-evidence"
+          for tags in elastic rclone elastic,rclone; do
+            logfile="$evidence/denied-${tags//,/-}.log"
+            if go build -mod=readonly -trimpath -tags="$tags" -o "$RUNNER_TEMP/denied-optional-weed" ./weed > "$logfile" 2>&1; then
+              echo "Excluded optional tags unexpectedly built: $tags" >&2
+              exit 1
+            fi
+            grep -F 'OUF_STANDARD_PROFILE_DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE' "$logfile"
+          done
+          cd "$evidence"
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seaweedfs-generation29-build
+          path: ${{ runner.temp }}/generation29-build/
+          if-no-files-found: error
+          retention-days: 3
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-generation29-build-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-ouf-standard-evidence/
+          if-no-files-found: error
+          retention-days: 90
+  runtime_candidate:
+    needs: [verify, qualify-standard-profile]
+    outputs:
+      artifact-id: ${{ steps.candidate-upload.outputs.artifact-id }}
+      artifact-digest: ${{ steps.candidate-upload.outputs.artifact-digest }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: seaweedfs-generation29-build
+          path: ${{ runner.temp }}/generation29-build
+      - name: Read the exact reviewed generation image tag
+        id: profile
+        run: |
+          python3 -I -B -S - <<'PYCODE' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          m = json.loads(Path('releases/seaweedfs-452-generation29-build-manifest-20261103.json').read_bytes())
+          print('image-tag=ouf-seaweedfs-candidate:4.52-g29-' + m['build']['binarySha256'][:8])
+          PYCODE
+      - name: Package the exact standard build into a deterministic OCI layout
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/qualify-seaweedfs-452-generation29-image.py package "$RUNNER_TEMP/generation29-build" candidate-image
+          docker load --input candidate-image/runtime.docker.tar
+          docker image inspect --format '{{.Id}}' ${{ steps.profile.outputs.image-tag }} > candidate-image/daemon-image-id.txt
+          : > empty.trivyignore
+      - name: Scan the candidate image with all severities and unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          image-ref: ${{ steps.profile.outputs.image-tag }}
+          format: json
+          output: candidate-image/fresh-image-scan.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore
+          exit-code: 0
+      - name: Bind SPDX and raw findings to the exact image and test its version entrypoint
+        run: |
+          set -euo pipefail
+          trivy convert --format spdx-json --output candidate-image/image.spdx.json candidate-image/fresh-image-scan.json
+          python3 -I -B -S scripts/qualify-seaweedfs-452-generation29-image.py assess candidate-image "$GITHUB_SHA" "$GITHUB_RUN_ID"
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 32 --memory 256m --cpus 1 --tmpfs /tmp:rw,noexec,nosuid,size=16777216 ${{ steps.profile.outputs.image-tag }} version > candidate-image/version-smoke.txt
+          test -s candidate-image/version-smoke.txt
+      - name: Seal evidence and input source hashes
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/qualify-seaweedfs-452-generation29-image.py seal-sources candidate-image
+          cd candidate-image
+          find . -type f ! -path './SHA256SUMS' -printf '%P\0' | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest the candidate image evidence
+        id: candidate-attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: candidate-image/SHA256SUMS
+      - run: cp "${{ steps.candidate-attestation.outputs.bundle-path }}" candidate-image/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: candidate-upload
+        if: always()
+        with:
+          name: seaweedfs-452-generation29-candidate-image-${{ github.run_id }}
+          path: candidate-image/
+          if-no-files-found: error
+          retention-days: 90
+  independent_image_readback:
+    needs: runtime_candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      attestations: read
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install the pinned provenance verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+      - name: Re-read the exact ZIP and verify publisher provenance on a separate runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_ARTIFACT: ${{ needs.runtime_candidate.outputs.artifact-id }}
+          CANDIDATE_DIGEST: ${{ needs.runtime_candidate.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_ARTIFACT" =~ ^[0-9]+$ ]]
+          digest="${CANDIDATE_DIGEST#sha256:}"
+          [[ "$digest" =~ ^[0-9a-f]{64}$ ]]
+          url="https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$CANDIDATE_ARTIFACT/zip"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 150 --max-filesize 536870912 \
+            --header "Authorization: Bearer $GH_TOKEN" --header 'Accept: application/vnd.github+json' "$url" -o candidate-image.zip
+          python3 -I -B -S scripts/readback-seaweedfs-452-generation29-image.py candidate-image.zip candidate-readback "$digest" "$GITHUB_SHA" "$GITHUB_RUN_ID"
+          gh297/bin/gh attestation verify candidate-readback/SHA256SUMS --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/storage-452-generation29-image.yml" \
+            --source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF" --deny-self-hosted-runners \
+            --bundle candidate-readback/provenance.json --format json > candidate-readback/publisher-verification.json
+          test -s candidate-readback/publisher-verification.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: seaweedfs-452-generation29-independent-image-readback-${{ github.run_id }}
+          path: candidate-readback/
+          if-no-files-found: warn
+          retention-days: 90

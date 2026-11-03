@@ -17,6 +17,10 @@ on:
       - evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json
       - evidence/seaweedfs-sdk27-hosted-20261103.json
       - evidence/sdk27-artifacts/**
+      - evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json
+      - evidence/storage-ouf-standard-41691297148/**
+      - evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json
+      - patches/seaweedfs/4.52-ouf-standard-optional-closure.patch
       - patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch
       - patches/seaweedfs/4.52-normal-tests-sdk-v2.patch
       - patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch
@@ -72,6 +76,10 @@ jobs:
             evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json \
             evidence/seaweedfs-sdk27-hosted-20261103.json \
             evidence/sdk27-artifacts/*/* \
+            evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json \
+            evidence/storage-ouf-standard-41691297148/* \
+            evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json \
+            patches/seaweedfs/4.52-ouf-standard-optional-closure.patch \
             patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
             patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
             patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \

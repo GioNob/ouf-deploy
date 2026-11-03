@@ -1,0 +1,54 @@
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory
+=== RUN   TestFilerStoreWrapperMimeNormalization
+=== RUN   TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/insert
+=== RUN   TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/insert_known_absent
+=== RUN   TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/update
+=== RUN   TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/insert
+=== RUN   TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/insert_known_absent
+=== RUN   TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/update
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert_known_absent
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/update
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert_known_absent
+=== RUN   TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/update
+--- PASS: TestFilerStoreWrapperMimeNormalization (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/insert (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/insert_known_absent (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/files_strip_octet-stream/update (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/insert (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/insert_known_absent (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/directories_keep_octet-stream/update (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/insert_known_absent (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_ETag_preserves_explicit_octet-stream/update (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/insert_known_absent (0.00s)
+    --- PASS: TestFilerStoreWrapperMimeNormalization/S3_owner_preserves_explicit_octet-stream/update (0.00s)
+PASS
+ok  	github.com/seaweedfs/seaweedfs/weed/filer	0.015s
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_txt_extension
+I1103 19:24:49.166746 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_json_extension
+I1103 19:24:49.173930 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/empty_object_retains_explicit_type
+I1103 19:24:49.177662 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/custom_explicit_type_retained
+I1103 19:24:49.179367 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/missing_type_still_detected
+I1103 19:24:49.181692 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/missing_type_empty_object_keeps_PUT_default
+I1103 19:24:49.184633 config_loader.go:73 Using explicit credential store: memory
+=== RUN   TestS3ContentTypeSurvivesFilerPersistence/missing_type_binary_body_keeps_detected_type
+I1103 19:24:49.186208 config_loader.go:73 Using explicit credential store: memory
+--- PASS: TestS3ContentTypeSurvivesFilerPersistence (0.02s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_txt_extension (0.01s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/explicit_octet-stream_overrides_json_extension (0.00s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/empty_object_retains_explicit_type (0.00s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/custom_explicit_type_retained (0.00s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/missing_type_still_detected (0.00s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/missing_type_empty_object_keeps_PUT_default (0.00s)
+    --- PASS: TestS3ContentTypeSurvivesFilerPersistence/missing_type_binary_body_keeps_detected_type (0.00s)
+PASS
+ok  	github.com/seaweedfs/seaweedfs/weed/s3api	0.127s

@@ -1,0 +1,35 @@
+{
+  "identities": [
+    {
+      "actions": [
+        "Admin:ouf-identity-fixture",
+        "Admin:ouf-identity-other"
+      ],
+      "credentials": [
+        {
+          "accessKey": "ouf-fixture-bootstrap",
+          "secretKey": "public-bootstrap-fixture-not-production"
+        }
+      ],
+      "name": "ouf-fixture-bootstrap"
+    },
+    {
+      "credentials": [
+        {
+          "accessKey": "ouf-fixture-prefix",
+          "secretKey": "public-prefix-fixture-not-production"
+        }
+      ],
+      "name": "ouf-fixture-prefix",
+      "policyNames": [
+        "SyntheticPrefixOnly"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "content": "{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Action\": [\"s3:GetObject\", \"s3:PutObject\"], \"Resource\": [\"arn:aws:s3:::ouf-identity-fixture/staging/*\"]}, {\"Effect\": \"Allow\", \"Action\": [\"s3:ListBucket\"], \"Resource\": [\"arn:aws:s3:::ouf-identity-fixture\"], \"Condition\": {\"StringLike\": {\"s3:prefix\": [\"staging/*\"]}}}]}",
+      "name": "SyntheticPrefixOnly"
+    }
+  ]
+}

@@ -3,7 +3,8 @@
 
 The replacement plan intentionally retains the 4.51 evidence blocks as history.
 This verifier binds the additive 4.52 view to the immutable candidate lock, the
-hosted cohort receipt, the six historical test-only dossiers, and the exact 27-patch hosted receipt.
+hosted cohort receipt, the six historical test-only dossiers, the 27-patch source closure and the
+28-patch standard-profile hosted receipt. Known MIME incompatibility remains open.
 """
 
 from __future__ import annotations
@@ -51,10 +52,21 @@ EXPECTED_HOSTED_WORKFLOWS = {
 }
 OPTIONAL_MODULE_LIMITS = {
     "moduleGraphEradicationClaimed": False,
-    "optionalBuildTagsStillOpen": ["elastic", "rclone"],
+    "excludedBuildTags": ["elastic", "rclone"],
+    "qualificationScope": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+    "rootStandardModuleGraphSdkV1": 0,
+    "rootStandardModuleGraphDeprecatedS3Manager": 0,
     "remainingNestedKafkaModulesQualified": False,
     "liveIamRoundtripPerformed": False,
 }
+STANDARD_RECEIPT_PATH = "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json"
+STANDARD_HEAD = "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be"
+STANDARD_RUN = 41691297148
+STANDARD_PATCH_PATH = "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch"
+STANDARD_PATCH_SHA256 = "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79"
+STANDARD_EVIDENCE_DIR = "evidence/storage-ouf-standard-41691297148"
+MIME_DEFECT_PATH = "evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json"
+MIME_DEFECT_RUN = 41691296882
 HISTORICAL_FIELDS = [
     "candidate",
     "latestLaboratoryQualification",
@@ -219,7 +231,7 @@ def validate_documents(
     require(current.get("version") == "4.52", "CURRENT_VERSION_452_REQUIRED")
     require(current.get("upstreamCommit") == UPSTREAM_COMMIT, "CURRENT_UPSTREAM_COMMIT_REQUIRED")
     require(current.get("qualifiedImagePatchCount") == 15, "QUALIFIED_IMAGE_PATCH_COUNT_REQUIRED")
-    require(current.get("repositoryPatchCount") == 27, "REPOSITORY_PATCH_COUNT_REQUIRED")
+    require(current.get("repositoryPatchCount") == 28, "REPOSITORY_PATCH_COUNT_REQUIRED")
     require(current.get("qualificationRunId") == 41622752493, "QUALIFICATION_RUN_REQUIRED")
     require(current.get("vulnerabilitySubgate") == "PASS_RAW", "RAW_VULNERABILITY_PASS_REQUIRED")
     require(
@@ -332,7 +344,7 @@ def validate_documents(
         "status": "PASS_NOT_ADMITTED",
         "candidateVersion": "4.52",
         "candidateLockSha256": LOCK_SHA256,
-        "repositoryPatchCount": 27,
+        "repositoryPatchCount": 28,
         "qualifiedImagePatchCount": 15,
         "sourceClosureReceiptSha256": sha256(source_receipt_bytes),
         "hostedSourceClosureRunCount": 6,
@@ -385,6 +397,103 @@ def validate_archived_tree(root: Path, receipt: dict[str, Any]) -> None:
         validate_archived_workflow(workflow, archived)
 
 
+def validate_standard_profile(
+    plan: dict[str, Any], receipt: dict[str, Any], receipt_bytes: bytes,
+    patch_sha256: str, defect: dict[str, Any], defect_bytes: bytes,
+) -> None:
+    current = plan["currentQualification"]
+    profile = current.get("standardProfileQualification", {})
+    require(profile.get("status") == "HOSTED_PASS", "STANDARD_PROFILE_HOSTED_PASS_REQUIRED")
+    require(profile.get("profile") == "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE", "STANDARD_PROFILE_SCOPE_REQUIRED")
+    require(profile.get("excludedBuildTags") == ["elastic", "rclone"], "STANDARD_EXCLUSIONS_REQUIRED")
+    require(profile.get("universalUpstreamModuleClosureClaimed") is False, "NO_UNIVERSAL_MODULE_CLOSURE_REQUIRED")
+    require(profile.get("receipt") == STANDARD_RECEIPT_PATH and profile.get("receiptSha256") == sha256(receipt_bytes), "STANDARD_RECEIPT_BINDING_REQUIRED")
+    require(profile.get("sourceHead") == STANDARD_HEAD and profile.get("runId") == STANDARD_RUN, "STANDARD_SOURCE_RUN_BINDING_REQUIRED")
+    require(profile.get("orderedPatchCount") == 28 and profile.get("qualifiedImagePatchCount") == 15, "STANDARD_PATCH_COUNTS_REQUIRED")
+    require(profile.get("patch") == STANDARD_PATCH_PATH and profile.get("patchSha256") == STANDARD_PATCH_SHA256 and patch_sha256 == STANDARD_PATCH_SHA256, "STANDARD_PATCH28_BINDING_REQUIRED")
+    for field in ("rootModuleGraphSdkV1", "rootModuleGraphDeprecatedS3Manager"):
+        require(profile.get(field) == 0, "STANDARD_MODULE_ZERO_UNMAINTAINED_REQUIRED")
+    require(profile.get("qualifiedBinaryByteIdentical") is True, "STANDARD_BINARY_IDENTITY_REQUIRED")
+    require(receipt.get("status") == "HOSTED_PASS_ARTIFACT_BYTES_VERIFIED" and receipt.get("jobConclusion") == "success", "STANDARD_HOSTED_SUCCESS_REQUIRED")
+    require(receipt.get("headSha") == STANDARD_HEAD and receipt.get("runId") == STANDARD_RUN, "STANDARD_RECEIPT_SOURCE_RUN_REQUIRED")
+    require(receipt.get("jobId") == 126110264320, "STANDARD_JOB_REQUIRED")
+    steps = receipt.get("steps", [])
+    require(len(steps) == 16 and all(step.get("status") == "completed" and step.get("conclusion") == "success" for step in steps), "STANDARD_ALL_STEPS_SUCCESS_REQUIRED")
+    verification = receipt.get("verification", {})
+    require(verification.get("status") == "ARTIFACT_BYTES_VERIFIED", "STANDARD_BYTES_VERIFIED_REQUIRED")
+    for field in ("sdkV1RootModuleGraph", "deprecatedManagerRootModuleGraph", "sdkV1DirectSourceImporters"):
+        require(verification.get(field) == 0, "STANDARD_VERIFIED_CLOSURE_REQUIRED")
+    patches = verification.get("patches", [])
+    require(len(patches) == 28 and patches[-1] == {"path": STANDARD_PATCH_PATH, "sha256": STANDARD_PATCH_SHA256}, "STANDARD_VERIFIED_PATCH28_REQUIRED")
+    require(verification.get("negativeBuildTags") == ["elastic", "rclone", "elastic,rclone"], "STANDARD_TAG_DENIALS_REQUIRED")
+    require(verification.get("tidyRootAndKafkaFixedPoint") is True, "STANDARD_TIDY_FIXED_POINT_REQUIRED")
+    require(verification.get("productionPackages") == 1811 and verification.get("productionGraphSha256") == PRODUCTION_GRAPH_SHA256, "STANDARD_PRODUCTION_GRAPH_REQUIRED")
+    require(verification.get("binarySha256") == current["binarySha256"], "STANDARD_PRODUCTION_BINARY_REQUIRED")
+    require(receipt.get("artifact", {}).get("githubDigest") == "sha256:" + receipt.get("artifact", {}).get("zipSha256", ""), "STANDARD_ARCHIVE_DIGEST_BINDING_REQUIRED")
+    require(receipt.get("attestation", {}).get("subjectSha256") == verification.get("manifestSha256"), "STANDARD_ATTESTED_MANIFEST_BINDING_REQUIRED")
+    require(receipt.get("retainedBoundedEvidence", {}).get("directory") == STANDARD_EVIDENCE_DIR, "STANDARD_RETAINED_DIRECTORY_REQUIRED")
+    pending = plan.get("pendingStandardProfileQualification", {})
+    require(pending.get("status") == "COMPLETED_HOSTED_PASS" and pending.get("resolvedBy") == STANDARD_RECEIPT_PATH, "STANDARD_PENDING_RESOLVED_REQUIRED")
+    require(pending.get("currentQualificationRetainedUntilHostedPass") is True, "STANDARD_HOSTED_PROMOTION_CONDITION_REQUIRED")
+
+    defects = current.get("knownCompatibilityDefects", [])
+    require(len(defects) == 1, "KNOWN_MIME_DEFECT_REQUIRED")
+    recorded = defects[0]
+    require(recorded.get("code") == "CONTENT_TYPE_MISMATCH" and recorded.get("status") == "OPEN", "MIME_DEFECT_OPEN_REQUIRED")
+    require(recorded.get("receipt") == MIME_DEFECT_PATH and recorded.get("receiptSha256") == sha256(defect_bytes), "MIME_DEFECT_RECEIPT_BINDING_REQUIRED")
+    require(recorded.get("runId") == MIME_DEFECT_RUN, "MIME_DEFECT_RUN_REQUIRED")
+    require(recorded.get("failingObjectKey") is None and recorded.get("actualResponseContentType") is None, "MIME_UNOBSERVED_VALUES_MUST_REMAIN_UNKNOWN")
+    require(recorded.get("s3MetadataCompatibilityQualified") is False, "MIME_COMPATIBILITY_NOT_QUALIFIED_REQUIRED")
+    require(defect.get("runId") == MIME_DEFECT_RUN and defect.get("sourceCommit") == STANDARD_HEAD, "MIME_RECEIPT_SOURCE_RUN_REQUIRED")
+    require(defect.get("candidateLockSha256") == LOCK_SHA256 and defect.get("binarySha256") == current["binarySha256"] and defect.get("ociManifestDigest") == current["ociManifestDigest"], "MIME_RECEIPT_CANDIDATE_BINDING_REQUIRED")
+    observed = defect.get("observed", {})
+    require(observed.get("childException") == "RuntimeError: CONTENT_TYPE_MISMATCH" and observed.get("failedOperation") == "GET_CONTENT_TYPE_COMPARISON", "MIME_OBSERVED_FAILURE_REQUIRED")
+    require(observed.get("seedComplete") is False and observed.get("backupExecuted") is False and observed.get("restoreExecuted") is False, "MIME_FAILED_RUN_NO_RESTORE_REQUIRED")
+    require(defect.get("diagnosis", {}).get("compatibilityResolved") is False and defect.get("g2Closed") is False, "MIME_DEFECT_UNRESOLVED_REQUIRED")
+    correction = current.get("pendingCompatibilityCorrection", {})
+    require(correction == {"orderedPatchCount": 29, "status": "NOT_QUALIFIED", "requiresNewImageQualification": True, "candidateLockUnchanged": True}, "PRODUCTION_PATCH29_NOT_PROMOTED_REQUIRED")
+
+
+def validate_standard_evidence(receipt: dict[str, Any], archived: dict[str, bytes]) -> None:
+    expected = receipt["retainedBoundedEvidence"]["files"]
+    require(set(archived) == set(expected), "STANDARD_EVIDENCE_MEMBER_SET_REQUIRED")
+    for name, entry in expected.items():
+        require(isinstance(archived[name], bytes) and len(archived[name]) == entry["bytes"] and sha256(archived[name]) == entry["sha256"], "STANDARD_EVIDENCE_BYTES_MISMATCH")
+    declared = {}
+    for line in archived["BOUNDED_SHA256SUMS"].decode("utf-8").splitlines():
+        match = re.fullmatch(r"([0-9a-f]{64}) [ *]([A-Za-z0-9_.-]+)", line)
+        require(match is not None, "STANDARD_BOUNDED_MANIFEST_FORMAT_REQUIRED")
+        digest, name = match.groups()
+        require(name not in declared and name not in (".", "..", "BOUNDED_SHA256SUMS"), "STANDARD_BOUNDED_MANIFEST_MEMBER_INVALID")
+        declared[name] = digest
+    require(declared == {name: entry["sha256"] for name, entry in expected.items() if name != "BOUNDED_SHA256SUMS"}, "STANDARD_BOUNDED_MANIFEST_BINDING_REQUIRED")
+    require(sha256(archived["original-artifact-SHA256SUMS"]) == receipt["verification"]["manifestSha256"], "STANDARD_ORIGINAL_MANIFEST_BINDING_REQUIRED")
+    require(archived["upstream-source-sha.txt"].decode("ascii").strip() == UPSTREAM_COMMIT, "STANDARD_RAW_UPSTREAM_BINDING_REQUIRED")
+    patch_lines = archived["patches-sha256.txt"].decode("utf-8").splitlines()
+    expected_patch_lines = [entry["sha256"] + "  ../" + entry["path"] for entry in receipt["verification"]["patches"]]
+    require(patch_lines == expected_patch_lines, "STANDARD_RAW_PATCH_SEQUENCE_BINDING_REQUIRED")
+    require(sha256(archived["production-deps.txt"]) == PRODUCTION_GRAPH_SHA256, "STANDARD_RAW_PRODUCTION_GRAPH_REQUIRED")
+    binary_line = archived["binary-sha256.txt"].decode("utf-8").split()
+    require(len(binary_line) == 2 and binary_line[0] == receipt["verification"]["binarySha256"], "STANDARD_RAW_BINARY_BINDING_REQUIRED")
+    graph = archived["root-module-graph.txt"].decode("utf-8")
+    modules = archived["root-modules.txt"].decode("utf-8")
+    require(re.search(r"github\.com/aws/(?:aws-sdk-go@|aws-sdk-go-v2/feature/s3/manager@)", graph) is None, "STANDARD_RAW_GRAPH_UNMAINTAINED_DEPENDENCY")
+    require(re.search(r"(?m)^github\.com/aws/(?:aws-sdk-go|aws-sdk-go-v2/feature/s3/manager)\s", modules) is None, "STANDARD_RAW_MODULES_UNMAINTAINED_DEPENDENCY")
+    require(archived["tidy.diff"] == b"" and archived["kafka-tidy.diff"] == b"" and archived["remaining-direct-sdk-v1-importers.txt"] == b"", "STANDARD_RAW_FIXED_POINT_AND_SOURCE_CLOSURE_REQUIRED")
+
+
+def read_standard_evidence(root: Path, receipt: dict[str, Any]) -> dict[str, bytes]:
+    directory = root / STANDARD_EVIDENCE_DIR
+    require(directory.is_dir() and not directory.is_symlink() and directory.resolve().is_relative_to(root.resolve()), "STANDARD_EVIDENCE_DIRECTORY_REQUIRED")
+    archived = {}
+    for name in receipt["retainedBoundedEvidence"]["files"]:
+        require(re.fullmatch(r"[A-Za-z0-9_.-]+", name) is not None and name not in (".", ".."), "STANDARD_EVIDENCE_PATH_INVALID")
+        path = directory / name
+        require(path.is_file() and not path.is_symlink(), "STANDARD_EVIDENCE_FILE_REQUIRED")
+        archived[name] = path.read_bytes()
+    return archived
+
+
 def validate_tree(root: Path) -> dict[str, Any]:
     plan, _ = read_json(root / PLAN_PATH)
     lock, lock_bytes = read_json(root / LOCK_PATH)
@@ -394,6 +503,13 @@ def validate_tree(root: Path) -> dict[str, Any]:
     patch_hashes = {path: sha256((root / path).read_bytes()) for path in EXPECTED_SOURCE_PATCHES}
     result = validate_documents(plan, lock, lock_bytes, cohort, dossiers, source_receipt, source_receipt_bytes, patch_hashes)
     validate_archived_tree(root, source_receipt)
+    standard_receipt, standard_bytes = read_json(root / STANDARD_RECEIPT_PATH)
+    defect, defect_bytes = read_json(root / MIME_DEFECT_PATH)
+    validate_standard_profile(plan, standard_receipt, standard_bytes, sha256((root / STANDARD_PATCH_PATH).read_bytes()), defect, defect_bytes)
+    validate_standard_evidence(standard_receipt, read_standard_evidence(root, standard_receipt))
+    result["standardProfileClosure"] = "HOSTED_PASS"
+    result["standardProfileReceiptSha256"] = sha256(standard_bytes)
+    result["knownCompatibilityDefects"] = ["CONTENT_TYPE_MISMATCH"]
     return result
 
 

@@ -1,6 +1,26 @@
 # SeaweedFS 4.52 — laboratorio sintetico identity/TLS/egress
 
-Stato iniziale: **13 test locali PASS; esecuzione OCI reale hosted PENDING; NOT_ACCEPTANCE**.
+Stato qualificato in laboratorio: **13 test PASS, 23 richieste S3 PASS,
+2 rifiuti TLS PASS, 2 probe egress PASS sulla OCI15 esatta; NOT_ACCEPTANCE**.
+
+[CI41691296988](https://github.com/GioNob/ouf-deploy/actions/runs/41691296988)
+PASS sul commit `24e96bb5e875a4c0b5c17aed2653e0bd14bd05be`, primo tentativo,
+3 novembre 2026 18:10:50–18:12:01 UTC. Artefatto `13256083808`, 19.479 byte,
+SHA256 `c752c2ee3891abbce27324f8d5d6e9f25b69e39bc57e7d2071db683f95d59f41`:
+digest confrontato con metadata GitHub e tutti i 20 ingressi del manifest
+interno verificati dopo download. Conservati 21 file raw, 80.942 byte.
+[Readback hosted](../evidence/seaweedfs-452-identity-tls-hosted-20261103.json)
+e [prove raw](../evidence/seaweedfs-452-identity-tls-run-41691296988-raw/).
+
+Osservati 9 rifiuti di policy e 3 di autenticazione con codici 403 esatti;
+2 assenze404 confermano che i PUT negati non hanno creato oggetti. TLS ha
+rifiutato hostname errato con verifyCode64 e CA errata con verifyCode20.
+TCP443 e UDP53 verso192.0.2.1 hanno entrambi restituito ENETUNREACH101.
+Quattro ruoli fermati con exit0, nessun retry mutativo e stessa OCI/binario.
+L'attestazione [63236033](https://github.com/GioNob/ouf-deploy/attestations/63236033)
+è riportata PASS dal job per manifestSHA256
+`7b84f6bd8baabc5ab5477ad15f77a390043440eacd1340b66c801f8d729072a4`;
+questa ricevuta non rivendica verifica crittografica indipendente della firma.
 
 Questo lotto prepara una prova riproducibile della coorte OCI15 già qualificata,
 senza ricostruire o sostituire il binario. Non chiude SW-AT07/SW-AT08 né gate,
@@ -31,7 +51,7 @@ prova si verificano immagine, mount, rete, routing e l'unica interfaccia `lo`.
 La presenza del membro filer nel lock ring è una precondizione read-only
 prima del primo PUT, come nel runner cold-recovery corretto.
 
-## Prove previste nel job
+## Prove eseguite nel job
 
 La fixture bootstrap ha soltanto `Admin:ouf-identity-fixture` e
 `Admin:ouf-identity-other`, non Admin globale. Crea i due bucket sintetici e
@@ -100,8 +120,9 @@ kernel-denied distinto da timeout/refused, blocco fuori CI, handshake TLS
 OpenSSL reale in memoria con CA valida e due rifiuti. Ricevuta:
 [JSON locale](../evidence/seaweedfs-452-identity-tls-local-20261103.json),
 [log locale](../evidence/seaweedfs-452-identity-tls-local-tests-20261103.txt).
-Nessun Docker disponibile localmente: **nessuna esecuzione S3/OCI reale ancora
-dichiarata**, risultati live da integrare soltanto dopo la CI.
+Docker non disponibile localmente: le 13 prove iniziali erano locali; la
+qualifica reale S3/OCI successiva è stata eseguita dal job hosted citato sopra,
+con readback dell'artefatto e senza operazioni target.
 
 ## Limiti e autorità preservate
 

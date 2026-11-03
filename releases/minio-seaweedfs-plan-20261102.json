@@ -56,7 +56,7 @@
     "version": "4.52",
     "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
     "qualifiedImagePatchCount": 15,
-    "repositoryPatchCount": 27,
+    "repositoryPatchCount": 28,
     "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
     "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
     "qualificationRunId": 41622752493,
@@ -101,12 +101,53 @@
     "sourceClosureStatus": "HOSTED_PASS",
     "optionalModuleDependencyLimits": {
       "moduleGraphEradicationClaimed": false,
-      "optionalBuildTagsStillOpen": [
+      "excludedBuildTags": [
         "elastic",
         "rclone"
       ],
+      "qualificationScope": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+      "rootStandardModuleGraphSdkV1": 0,
+      "rootStandardModuleGraphDeprecatedS3Manager": 0,
       "remainingNestedKafkaModulesQualified": false,
       "liveIamRoundtripPerformed": false
+    },
+    "standardProfileQualification": {
+      "status": "HOSTED_PASS",
+      "profile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
+      "excludedBuildTags": [
+        "elastic",
+        "rclone"
+      ],
+      "universalUpstreamModuleClosureClaimed": false,
+      "receipt": "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json",
+      "receiptSha256": "26315a1dca4b24f0d73423de35e88cbba6283dc2e24ab906378b82cc8b5db9cb",
+      "sourceHead": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+      "runId": 41691297148,
+      "orderedPatchCount": 28,
+      "qualifiedImagePatchCount": 15,
+      "patch": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+      "patchSha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+      "rootModuleGraphSdkV1": 0,
+      "rootModuleGraphDeprecatedS3Manager": 0,
+      "qualifiedBinaryByteIdentical": true
+    },
+    "knownCompatibilityDefects": [
+      {
+        "code": "CONTENT_TYPE_MISMATCH",
+        "status": "OPEN",
+        "receipt": "evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json",
+        "receiptSha256": "328ede037e8a3044c8e5cfe39c5843a9e6612d6e095aea2931bab9f947f8cda8",
+        "runId": 41691296882,
+        "failingObjectKey": null,
+        "actualResponseContentType": null,
+        "s3MetadataCompatibilityQualified": false
+      }
+    ],
+    "pendingCompatibilityCorrection": {
+      "orderedPatchCount": 29,
+      "status": "NOT_QUALIFIED",
+      "requiresNewImageQualification": true,
+      "candidateLockUnchanged": true
     }
   },
   "workPackages": [
@@ -801,7 +842,7 @@
     "resolvedBy": "evidence/seaweedfs-sdk27-hosted-20261103.json"
   },
   "pendingStandardProfileQualification": {
-    "status": "LOCAL_PASS_HOSTED_PENDING",
+    "status": "COMPLETED_HOSTED_PASS",
     "profile": "OUF_STANDARD_WITHOUT_ELASTIC_OR_RCLONE",
     "orderedPatchCount": 28,
     "patch": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
@@ -815,6 +856,7 @@
     "qualifiedImagePatchCount": 15,
     "releaseAdmitted": false,
     "runtimeAuthorityIssued": false,
-    "targetOperations": 0
+    "targetOperations": 0,
+    "resolvedBy": "evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json"
   }
 }

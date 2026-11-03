@@ -1,0 +1,10 @@
+{
+  "status": "EXACT_THREE_FILE_REAPPLY_PASS",
+  "patchSha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+  "sourceSha256": {
+    "weed/filer/filerstore_wrapper.go": "103aeb711244e8cad68df0044ab406f8ad1e6b36f6f62425484833b8abd1b157",
+    "weed/filer/filerstore_wrapper_test.go": "4838980cf8009467c752ddd0be30dd1c6485a6e23921d4e1a8a891536d2712e8",
+    "weed/s3api/s3api_object_content_type_persistence_test.go": "efd4c12b838ffd2007dae2e56aca537cc7343584e5d71af35cca49f9b11b37a1"
+  },
+  "fuzz": 0
+}

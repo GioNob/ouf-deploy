@@ -30,6 +30,8 @@ BINARY_SHA = "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033"
 ACCESS = "ouf-recovery-synthetic"
 SECRET = "public-fixture-only-not-a-production-secret"
 BUCKET = "ouf-recovery-fixture"
+COMPAT_BUCKET = "ouf-recovery-mime-fixture"
+RECOVERY_MIME = "application/x-ouf-recovery-fixture"
 HOST = "127.0.0.1:18333"
 MAX_FILE = 256 * 1024 * 1024
 MAX_TOTAL = 1024 * 1024 * 1024
@@ -79,8 +81,10 @@ def signed_headers(method, path, query="", body=b"", extra=None, now=None):
     return headers
 
 
-def request(method, key=None, body=b"", query=None, extra=None, expected=(200,), timeout=30):
-    path = "/" if key is None else "/" + BUCKET + ("/" + quote(key, safe="/~") if key else "")
+def request(method, key=None, body=b"", query=None, extra=None, expected=(200,), timeout=30,
+            bucket=BUCKET):
+    require(bucket in {BUCKET, COMPAT_BUCKET}, "FIXTURE_BUCKET_REQUIRED")
+    path = "/" if key is None else "/" + bucket + ("/" + quote(key, safe="/~") if key else "")
     query = urlencode(sorted((query or {}).items()), quote_via=quote, safe="~")
     headers = signed_headers(method, path, query, body, extra)
     connection = http.client.HTTPConnection("127.0.0.1", 18333, timeout=timeout)
@@ -99,6 +103,42 @@ def fixtures():
     return {"empty": b"", "unicode/città + %.txt": "Trieste è una città\n".encode(),
             "overwritten.bin": b"final-confirmed-version\x00\xff",
             "large.bin": bytes(range(256)) * 32768}
+
+
+def check_content_type(key, method, headers, expected):
+    observed = headers.get("content-type")
+    require(observed == expected, "CONTENT_TYPE_MISMATCH:" + json.dumps({
+        "key": key, "method": method, "expected": expected, "observed": observed,
+    }, sort_keys=True))
+
+
+def probe_octet_stream(action):
+    """Distinct, finite compatibility result; mismatch never becomes a PASS."""
+    key, body = "octet-stream.txt", b"public octet-stream MIME compatibility fixture\n"
+    expected = "application/octet-stream"
+    if action == "seed":
+        request("PUT", "", bucket=COMPAT_BUCKET)
+        request("PUT", key, body, bucket=COMPAT_BUCKET, extra={
+            "content-type": expected, "x-amz-meta-ouf-content-hash": digest(body),
+        })
+    actual, get_headers = request("GET", key, bucket=COMPAT_BUCKET)
+    _, head_headers = request("HEAD", key, bucket=COMPAT_BUCKET)
+    require(actual == body, "COMPAT_PROBE_BODY_MISMATCH")
+    for method, headers in (("GET", get_headers), ("HEAD", head_headers)):
+        require(headers.get("x-amz-meta-ouf-content-hash") == digest(body),
+                "COMPAT_PROBE_METADATA_MISMATCH:" + method)
+        require(int(headers["content-length"]) == len(body),
+                "COMPAT_PROBE_LENGTH_MISMATCH:" + method)
+    findings = [{"key": key, "method": method, "expected": expected,
+                 "observed": headers.get("content-type")}
+                for method, headers in (("GET", get_headers), ("HEAD", head_headers))
+                if headers.get("content-type") != expected]
+    return {"status": "FAIL" if findings else "PASS", "bucket": COMPAT_BUCKET,
+            "key": key, "requestedContentType": expected,
+            "getContentType": get_headers.get("content-type"),
+            "headContentType": head_headers.get("content-type"),
+            "findings": findings, "bytes": len(body), "sha256": digest(body),
+            "g2Closed": False, "mutatingRequestRetries": 0}
 
 
 def client(action):
@@ -130,7 +170,7 @@ def client(action):
         request("PUT", "overwritten.bin", b"superseded")
         request("PUT", "deleted.bin", b"to-be-deleted")
         for key, body in values.items():
-            request("PUT", key, body, extra={"content-type": "application/octet-stream",
+            request("PUT", key, body, extra={"content-type": RECOVERY_MIME,
                                              "x-amz-meta-ouf-content-hash": digest(body)})
         request("DELETE", "deleted.bin", expected=(204,))
     seen, token, pages = [], None, 0
@@ -155,13 +195,17 @@ def client(action):
         actual, headers = request("GET", key)
         require(actual == expected, "BODY_MISMATCH")
         require(headers.get("x-amz-meta-ouf-content-hash") == digest(expected), "METADATA_MISMATCH")
-        require(headers.get("content-type") == "application/octet-stream", "CONTENT_TYPE_MISMATCH")
+        check_content_type(key, "GET", headers, RECOVERY_MIME)
         _, head = request("HEAD", key)
         require(int(head["content-length"]) == len(expected), "HEAD_LENGTH_MISMATCH")
-        records.append({"key": key, "bytes": len(expected), "sha256": digest(expected)})
+        require(head.get("x-amz-meta-ouf-content-hash") == digest(expected), "HEAD_METADATA_MISMATCH")
+        check_content_type(key, "HEAD", head, RECOVERY_MIME)
+        records.append({"key": key, "bytes": len(expected), "sha256": digest(expected),
+                        "getContentType": headers["content-type"], "headContentType": head["content-type"]})
     request("GET", "deleted.bin", expected=(404,))
     return {"action": action, "objects": records, "listPages": pages,
-            "deletedObjectAbsent": True, "mutatingRequestRetries": 0}
+            "deletedObjectAbsent": True, "mutatingRequestRetries": 0,
+            "octetStreamCompatibility": probe_octet_stream(action)}
 
 
 def ready_lock_ring(log):
@@ -390,14 +434,21 @@ def run(archive, work):
         second.start()
         after = second.client("verify")
         require(before["objects"] == after["objects"], "INDEPENDENT_RESTORE_OBJECT_PARITY_REQUIRED")
+        require(before["octetStreamCompatibility"] == after["octetStreamCompatibility"],
+                "COMPATIBILITY_PROBE_RESTORE_PARITY_REQUIRED")
         duration = round(time.monotonic() - start, 3)
         second.stop()
         write_json(evidence / "recovery-result.json", {
             "schema": "ouf.seaweedfs-452-storage-cold-recovery.v1",
             "status": "SYNTHETIC_STORAGE_COLD_RESTORE_PASS_NOT_ACCEPTANCE",
             "candidateLockSha256": LOCK_SHA, "ociManifestDigest": MANIFEST,
-            "binarySha256": BINARY_SHA, "syntheticObjects": len(after["objects"]),
-            "syntheticBytes": sum(r["bytes"] for r in after["objects"]),
+            "binarySha256": BINARY_SHA, "syntheticObjects": len(after["objects"]) + 1,
+            "dataRecoveryFixtures": len(after["objects"]), "mimeCompatibilityFixtures": 1,
+            "syntheticBytes": sum(r["bytes"] for r in after["objects"])
+                              + after["octetStreamCompatibility"]["bytes"],
+            "explicitRecoveryMimePreserved": RECOVERY_MIME,
+            "octetStreamCompatibility": after["octetStreamCompatibility"],
+            "s3MetadataCompatibilityQualified": False, "g2Closed": False,
             "backupFiles": len(manifest), "allBodiesAndHashMetadataEqual": True,
             "overwritePreserved": True, "deletedObjectAbsent": True,
             "originalContainersRemoved": True, "restoreUsesOnlyIndependentRoots": True,
@@ -453,3 +504,4 @@ if __name__ == "__main__":
                     "releaseAdmitted": False, "runtimeAuthorityIssued": False, "targetOperations": 0,
                 })
             raise
+

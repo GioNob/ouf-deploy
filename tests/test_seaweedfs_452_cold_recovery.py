@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("cold_recovery", ROOT / "scripts/run-seaweedfs-452-cold-recovery.py")
@@ -12,6 +13,81 @@ SPEC.loader.exec_module(lab)
 
 
 class ColdRecoveryTests(unittest.TestCase):
+    def test_seed_verify_separates_recovery_from_real_mime_failure_without_replay(self):
+        objects, calls = {}, []
+
+        def transport(method, key=None, body=b"", query=None, extra=None,
+                      expected=(200,), timeout=30, bucket=lab.BUCKET):
+            calls.append((method, bucket, key))
+            if method == "PUT":
+                if key:
+                    headers = {**(extra or {}), "content-length": str(len(body))}
+                    if bucket == lab.COMPAT_BUCKET:
+                        headers["content-type"] = "text/plain; charset=utf-8"
+                    objects[bucket, key] = (body, headers)
+                return b"", {}
+            if method == "DELETE":
+                del objects[bucket, key]
+                return b"", {}
+            if key == "":
+                keys = sorted(k for b, k in objects if b == bucket)
+                start = int((query or {}).get("continuation-token", "0"))
+                page, more = keys[start:start + 2], start + 2 < len(keys)
+                xml = '<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">'
+                xml += ''.join('<Contents><Key>' + escape(k) + '</Key></Contents>' for k in page)
+                xml += '<IsTruncated>' + str(more).lower() + '</IsTruncated>'
+                if more:
+                    xml += '<NextContinuationToken>' + str(start + 2) + '</NextContinuationToken>'
+                return (xml + '</ListBucketResult>').encode(), {}
+            if (bucket, key) not in objects:
+                self.assertEqual(expected, (404,))
+                return b"", {}
+            data, headers = objects[bucket, key]
+            return (b"" if method == "HEAD" else data), dict(headers)
+
+        with patch.object(lab, "request", side_effect=transport):
+            before = lab.client("seed")
+            mutation_end = len(calls)
+            after = lab.client("verify")
+        self.assertEqual(before["objects"], after["objects"])
+        self.assertEqual(before["octetStreamCompatibility"], after["octetStreamCompatibility"])
+        self.assertEqual(len(before["objects"]), 4)
+        self.assertEqual(before["listPages"], 2)
+        probe = before["octetStreamCompatibility"]
+        self.assertEqual(probe["status"], "FAIL")
+        self.assertFalse(probe["g2Closed"])
+        self.assertEqual({f["method"] for f in probe["findings"]}, {"GET", "HEAD"})
+        self.assertTrue(all(f["expected"] == "application/octet-stream" for f in probe["findings"]))
+        self.assertTrue(all(f["observed"] == "text/plain; charset=utf-8" for f in probe["findings"]))
+        self.assertTrue(all(method in {"GET", "HEAD"} for method, _, _ in calls[mutation_end:]))
+        self.assertEqual(sum(m == "PUT" and b == lab.COMPAT_BUCKET and bool(k)
+                             for m, b, k in calls), 1)
+
+    def test_recovery_mime_mismatch_keeps_exact_key_method_and_observed_header(self):
+        for method in ("GET", "HEAD"):
+            with self.subTest(method=method):
+                with self.assertRaisesRegex(RuntimeError, "CONTENT_TYPE_MISMATCH") as error:
+                    lab.check_content_type("fixture.txt", method, {"content-type": "text/plain"}, lab.RECOVERY_MIME)
+                details = lab.json.loads(str(error.exception).split(":", 1)[1])
+                self.assertEqual(details, {"key": "fixture.txt", "method": method,
+                                          "expected": lab.RECOVERY_MIME, "observed": "text/plain"})
+
+    def test_compatibility_pass_requires_both_methods_and_preserves_no_gate_claim(self):
+        body = b"public octet-stream MIME compatibility fixture\n"
+        headers = {"content-type": "application/octet-stream", "content-length": str(len(body)),
+                   "x-amz-meta-ouf-content-hash": lab.digest(body)}
+        with patch.object(lab, "request", side_effect=[(body, headers), (b"", headers)]) as request:
+            result = lab.probe_octet_stream("verify")
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["findings"], [])
+        self.assertFalse(result["g2Closed"])
+        self.assertEqual([c.args[0] for c in request.call_args_list], ["GET", "HEAD"])
+
+    def test_compatibility_probe_does_not_tolerate_body_corruption_as_mime_limitation(self):
+        with patch.object(lab, "request", side_effect=[(b"corrupt", {}), (b"", {})]):
+            with self.assertRaisesRegex(RuntimeError, "COMPAT_PROBE_BODY_MISMATCH"):
+                lab.probe_octet_stream("verify")
+
     def test_copy_requires_independent_empty_root_and_verifies_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

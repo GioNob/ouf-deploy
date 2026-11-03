@@ -1,0 +1,21 @@
+I1103 18:11:37.885278 s3.go:330 S3 read filer buckets dir: /buckets
+I1103 18:11:37.885314 s3.go:331 S3 read filer maxMB: 4
+I1103 18:11:37.885318 s3.go:333 S3 read master addresses for discovery: [127.0.0.1:19333]
+I1103 18:11:37.885361 s3.go:341 connected to filers [127.0.0.1:18888]
+I1103 18:11:37.885383 s3.go:363 Starting S3 API Server with standard IAM
+I1103 18:11:37.887897 filer_client.go:180 FilerClient: started filer discovery for group '' (refresh interval: 5m0s)
+W1103 18:11:37.887947 s3_sse_s3.go:868 SSE-S3 KeyManager: neither s3.sse.kek.passphrase nor WEED_S3_SSE_KEK_PASSPHRASE is set; the KEK will be stored on the filer in plaintext. Set one to enable encrypted-at-rest KEK storage.
+I1103 18:11:37.888202 s3_sse_s3.go:566 SSE-S3 KeyManager: No KEK configured. SSE-S3 encryption is disabled. Set s3.sse.kek or s3.sse.key in security.toml to enable it.
+E1103 18:11:37.888522 s3api_server.go:420 Failed to load IAM configuration: no signing key found for STS service; please provide 'signingKey' in IAM config, configure 'jwt.filer_signing.key' in security.toml, or ensure SSE-S3 is initialized
+I1103 18:11:37.890343 masterclient.go:465 + s3@127.0.0.1:28333 noticed .s3 127.0.0.1:28333
+I1103 18:11:37.891741 s3.go:538 Start Seaweed S3 API Server 30GB 4.52  at https port 18333
+I1103 18:11:37.895146 s3api_bucket_owner_index.go:277 bucket owner index ready
+I1103 18:11:37.993480 master_client.go:27 the cluster has 0 filers
+I1103 18:11:48.806439 masterclient.go:465 + s3@127.0.0.1:28333 noticed .filer 127.0.0.1:18888.28888
+I1103 18:11:48.806485 filer_client.go:526 FilerClient: discovered 1 new filer(s) in group '': [127.0.0.1:18888]
+I1103 18:11:49.807551 masterclient.go:480 LockRing: s3@127.0.0.1:28333 received ring update v1793729509807226990: [127.0.0.1:18888.28888]
+W1103 18:11:50.800993 auth_signature_v4.go:298 InvalidAccessKeyId: attempted key 'unknown-synthetic-key' not found. Available keys: 2, Auth enabled: true
+2026/11/03 18:11:50 http: TLS handshake error from 127.0.0.1:41968: local error: tls: bad record MAC
+2026/11/03 18:11:50 http: TLS handshake error from 127.0.0.1:41974: local error: tls: bad record MAC
+I1103 18:11:50.855450 shutdown.go:15 Gracefully stopping gRPC server
+I1103 18:11:50.855566 shutdown.go:23 gRPC server stopped gracefully
