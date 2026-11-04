@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — piano 32 verificato; avvio della qualifica 33 corretto
+
+- Il piano tecnico 32 pubblicato in `0cdfe1b9` passa 64 test nella CI 41780309777. Restauro canonico del piano precedente, gate, scope e prove storiche preservati.
+- Primo avvio immagine33 `41780306657` FAIL prima della creazione dei job. La definizione usava il contesto runner nell'ambiente del job. La correzione imposta i percorsi di cache nel runner dopo la ricostruzione fresca, tramite GITHUB_ENV. Verificati struttura dei quattro job, 18 blocchi shell, inizializzazione positiva e negativa e tutti i 75 hash del sigillo sorgenti. Il nuovo tentativo richiede ancora tutti gli esiti immagine, scan, SPDX, firma e readback.
+- Nuovo laboratorio congiunto sintetico: vincola OCI32 e coorte già verificate, usa dump/restore PostgreSQL 17.11 e confronta il catalogo ripristinato con LIST e GET reali su SeaweedFS dopo copia fredda indipendente. Cinque test offline PASS, inclusi corruzione a lunghezza uguale, metadata obsoleti, LIST troncata e digest dump diverso. Prova hosted PENDING; niente prova di cut simultaneo, fencing effettivo, PITR o RPO/RTO.
+- MiniPET **38% ±10**, 17,5/46 crediti, 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO attivo. Scope 17 consumati / 52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali, Farmacie 61 righe / 10 OPEN / STRING preservati. Zero effetti target, ammissione o nuova autorità runtime.
+
 ## Checkpoint storage 2026-11-04 — qualifica tecnica 32 completata; ripristino PostgreSQL e pipeline immagine 33
 
 - La generazione 32 è la candidata tecnica con immagine, coorte e laboratori verificati. Immagine run 41724851743, coorte/runtime run 41778371999, tutti i job PASS. OCI `sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6`, binario `33c54c17…`. Ricevuta coorte `cf3a01b6…` identica al replay locale, firma publisher verificata sul runner e nessuna ammissione.

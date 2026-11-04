@@ -46,9 +46,6 @@ jobs:
       GOWORK: "off"
       GOPROXY: https://proxy.golang.org
       GOSUMDB: sum.golang.org
-      GOMODCACHE: ${{ runner.temp }}/yaml33-qualification-work/module-cache
-      GOCACHE: ${{ runner.temp }}/yaml33-qualification-work/build-cache
-      GOPATH: ${{ runner.temp }}/yaml33-qualification-work/gopath
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -70,6 +67,14 @@ jobs:
           python3 -I -B -S scripts/observe-seaweedfs-yaml33.py \
             --repo "$GITHUB_WORKSPACE" --upstream "$GITHUB_WORKSPACE/upstream-seaweedfs" \
             --work "$RUNNER_TEMP/yaml33-qualification-work" --evidence "$RUNNER_TEMP/yaml33-qualification-evidence"
+      - name: Reuse the isolated observer caches for regressions
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/yaml33-qualification-work"
+          test -d "$work/module-cache"
+          test -d "$work/build-cache"
+          printf 'GOMODCACHE=%s\nGOCACHE=%s\nGOPATH=%s\n' \
+            "$work/module-cache" "$work/build-cache" "$work/gopath" >> "$GITHUB_ENV"
       - name: Run the inherited main test identities on the generation33 vendor tree
         working-directory: ${{ runner.temp }}/yaml33-qualification-work/first
         run: |
