@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — common cut33 pronto per qualifica nativa
+
+- Nuovo laboratorio coordinato sull'OCI33 esatto: ledger PostgreSQL con ACK e intento ambiguo, drain persistente, fermo completo S3 e riavvio della sola identità fixture con Read/List. PUT tardivo, overwrite e DELETE devono essere negati prima e dopo restore indipendente.
+- Dump PostgreSQL e copia fredda acquisiti nello stesso intervallo quiescente dopo riconciliazione reale S3; nessun PITR coordinato o fencing target dichiarato. [Perimetro e limiti](docs/OUF_STORAGE_COMMON_CUT33_20261104.md).
+- 22 test locali PASS (11 nuovi + 7 fence + 4 restore), YAML e shell verificati. Prova nativa dedicata PENDING; nessuna promozione del codice a risultato.
+- MiniPET invariato circa40% ±10, 18,3/46 crediti; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO e stato target non modificati. Scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+
 ## Checkpoint storage 2026-11-04 — coorte 33 qualificata; fencing nativo PASS; prove PITR e rotazione avviate
 
 - Generazione33 candidata tecnica corrente, non ammessa: immagine run 41782068047 e coorte/runtime run 41794344274 tutti SUCCESS. Lock `c2b30130…`, OCI `5bfda2ef…`, binario `c301b4f4…`, 214 moduli / 1.532 pacchetti. Coorte hosted identica al replay locale `5b28de1d…`: 214 ZIP originali, 302 testi legali, sette archivi MPL, sei file MPL modificati e provenienza separata della patch Iceberg. Firma publisher ricontrollata hosted; nessuna verifica crittografica locale dichiarata.
