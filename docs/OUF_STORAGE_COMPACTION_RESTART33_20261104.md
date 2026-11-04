@@ -20,3 +20,5 @@ Budget fixture: listener60 tentativi per porta, topologia10 tentativi/120s con b
 Qualifica perdita dei processi **dopo** vacuum completato; page cache e host restano vivi. Non crash durante commit/rename, power loss, reboot host, perdita disco, RPO/RTO, secure erase, spazio libero host o accettazione produzione. La compattazione di un volume con needle vivi dipende dall'allocazione nativa e deve essere dichiarata solo se osservata. Prove pre/post compaction distinte; vecchi prefissi/tombstone precedono il vacuum.
 
 MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO, scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+
+Nota di pubblicazione: il primo commit4189dbec includeva accidentalmente due file temporanei TLS sintetici (CA della fixture locale). Rimossi subito dal ramo nel commit successivo, con pubblicazione da lista esplicita e controllo anti-chiavi. Nessuna chiave del target è stata usata; i file restano nella storia Git del primo commit e non sono inclusi nelle evidenze native.

@@ -54,7 +54,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/network-gate" > "$RUNNER_TEMP/network-gate.sha256"
           cc --version > "$RUNNER_TEMP/network-gate-compiler.txt"
 
-      - name: Test joint and individual service crashes, role policy, launch barrier and credential and TLS boundaries
+      - name: Test service recovery, compaction persistence, launch barriers and credential and TLS boundaries
         run: |
           set -euo pipefail
           python3 -I -B -S -m unittest discover -s tests -p test_storage_lateral_isolation_generation33.py -v 2>&1 | tee "$RUNNER_TEMP/lateral33-offline-tests.log"
