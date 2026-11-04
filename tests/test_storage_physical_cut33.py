@@ -2,6 +2,9 @@ import copy
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
+from types import SimpleNamespace
+from unittest.mock import patch
 from test_storage_coordinated33_lab import ledger
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -72,5 +75,27 @@ class PhysicalCutTests(unittest.TestCase):
         args=self.restored()
         for row in args[1]['events']:row['sequence']+=100
         with self.assertRaisesRegex(RuntimeError,'EXACT_ACK_FENCE_HISTORY'):joint.validate_restored(*args)
+
+
+class SqlReadinessTests(unittest.TestCase):
+    def run_probe(self,codes):
+        temporary=tempfile.TemporaryDirectory();self.addCleanup(temporary.cleanup)
+        proof=Path(temporary.name)
+        destination=SimpleNamespace(binary=lambda name:Path('/fixture')/name,socket=Path('/private/socket'))
+        with patch.object(joint.pitr,'command',side_effect=[SimpleNamespace(returncode=n) for n in codes]) as command, patch.object(joint.time,'sleep'), patch.object(joint.time,'monotonic',return_value=0):
+            try:
+                result=joint.await_sql_ready(destination,proof)
+            finally:self.calls=command.call_count
+        return result
+    def test_rejecting_and_no_response_are_not_sql_readiness(self):
+        result=self.run_probe([1,2,0])
+        self.assertEqual([x['returnCode'] for x in result],[1,2,0])
+        self.assertEqual(self.calls,3)
+    def test_invalid_probe_is_permanent_and_not_retried(self):
+        with self.assertRaisesRegex(RuntimeError,'PERMANENT_READINESS'):self.run_probe([3,0])
+        self.assertEqual(self.calls,1)
+    def test_readiness_budget_is_finite(self):
+        with self.assertRaisesRegex(RuntimeError,'SQL_READINESS_BUDGET'):self.run_probe([1]*60)
+        self.assertEqual(self.calls,60)
 
 if __name__=='__main__':unittest.main()

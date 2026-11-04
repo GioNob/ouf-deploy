@@ -56,7 +56,7 @@ jobs:
             > ../build-evidence/configure.log 2>&1
           timeout 600 make -j2 > ../build-evidence/make.log 2>&1
           timeout 120 make install > ../build-evidence/install.log 2>&1
-          sha256sum "$base/install/bin/"{postgres,initdb,pg_ctl,psql,pg_basebackup,pg_verifybackup,pg_waldump} > ../build-evidence/binary-sha256.txt
+          sha256sum "$base/install/bin/"{postgres,initdb,pg_ctl,psql,pg_basebackup,pg_verifybackup,pg_waldump,pg_isready} > ../build-evidence/binary-sha256.txt
       - name: Fetch and bind the exact successful generation33 cohort and image
         env:
           GH_TOKEN: ${{ github.token }}

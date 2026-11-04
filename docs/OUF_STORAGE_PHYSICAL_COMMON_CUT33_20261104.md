@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — correzione disponibilità SQL nel recupero fisico
+
+- Native41913004716 su57a3de3f:32test PASS, caso nativo WAL mancante bloccato prima di S3, poi FAILED `FIXTURE_SQL_RETURN_CODE`. pg_ctl start aveva restituito0 mentre PostgreSQL rifiutava SQL durante il replay (`Hot standby mode is disabled`); cleanup completo. Readback negativo preserva l'originale, senza qualifica parziale.
+- Originale13364540297,5996122byte SHA2566c2c8fc856678b1cacae625da61d52f059d41a44592d6e085da50f16ebfe49ff; copia13363806513.171membri/170checksum verificati localmente. Diagnosi, SQL/log e metadati completi in evidence/storage-physical-cut33-first-failure-20261104.json.
+- Aggiunta attesa di sole sonde pg_isready: massimo60tentativi/20s, probe2s; solo exit0 consente i controlli ledger, exit1/2 transitori, configurazione invalida bloccata.15test locali PASS (3nuovi positivi/negativi),35test Linux attesi. Nessuna deroga su punto nominato, WAL, identità, ACK, fence o payload.
+- Nuova esecuzione solo dopo questa correzione; qualifica PITR coordinata ancora PENDING. Precedenti prove, MiniPET39,78%,0gate/AT/oggetti reali e MinIO preservati.
+
 # Generation33 — physical PostgreSQL / SeaweedFS common recovery cut
 
 Status: implementation and local boundary tests complete; native qualification PENDING.

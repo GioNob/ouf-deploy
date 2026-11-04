@@ -66,6 +66,24 @@ def prepare_restore(pg_bin,base,archive,work,proof,label):
     return lab
 
 
+
+def await_sql_ready(destination,proof):
+    """A running postmaster is not necessarily accepting SQL during recovery."""
+    deadline=time.monotonic()+20;observations=[]
+    for attempt in range(1,61):
+        result=pitr.command(proof,'restored-ready-%03d'%attempt,
+            [str(destination.binary('pg_isready')),'--host='+str(destination.socket),
+             '--port='+str(pitr.native.PORT),'--username=fixture_admin',
+             '--dbname='+pitr.native.ROLE,'--timeout=2'],timeout=3,allow_failure=True)
+        observations.append({'attempt':attempt,'returnCode':result.returncode})
+        write(proof/'restored-sql-readiness.json',{'status':'ACCEPTING_SQL' if result.returncode==0 else 'WAITING',
+              'attempts':observations,'readOnlyProbes':True,'maxAttempts':60,'budgetSeconds':20})
+        if result.returncode==0:return observations
+        require(result.returncode in (1,2),'PERMANENT_READINESS_PROBE_FAILURE')
+        require(time.monotonic()<deadline,'SQL_READINESS_BUDGET_EXHAUSTED')
+        if attempt<60:time.sleep(.25)
+    raise RuntimeError('SQL_READINESS_BUDGET_EXHAUSTED')
+
 def events(path):
     return [json.loads(line) for line in path.read_text().splitlines()]
 
@@ -93,7 +111,7 @@ def execute(image,pg_bin,work,receipt):
         require(pitr.sql(source_pg,'SHOW wal_segment_size;')=='16MB'
                 and pitr.sql(source_pg,'SHOW archive_mode;')=='on','ARCHIVE_CONFIGURATION_REQUIRED')
         tools={}
-        for name in ('pg_basebackup','pg_verifybackup','pg_waldump'):
+        for name in ('pg_basebackup','pg_verifybackup','pg_waldump','pg_isready'):
             binary=pg_bin/name;r=pitr.command(proof,name+'-version',[str(binary),'--version'])
             require(r.stdout.decode().strip().endswith(' '+pitr.native.VERSION),'PINNED_PHYSICAL_TOOL')
             tools[name]={'version':r.stdout.decode().strip(),'sha256':pitr.native.digest(binary)}
@@ -179,6 +197,7 @@ def execute(image,pg_bin,work,receipt):
               'pgCtlStartReturnCode':failure.returncode,'mutatingRetries':0})
         restored_pg=prepare_restore(pg_bin,base,wal,work,proof,'restored');destinations.append(restored_pg)
         require(pitr.start_restore(restored_pg,proof,'restored').returncode==0,'POSITIVE_TARGET_START_REQUIRED')
+        readiness=await_sql_ready(restored_pg,proof)
         restored_calls=common.fence.Calls(restored_pg)
         restored_ledger=common.ledger_snapshot(restored_calls,proof,'restored')
         restored_id=common.postgres.system_identifier(restored_pg)
@@ -203,7 +222,7 @@ def execute(image,pg_bin,work,receipt):
         require(pitr.inventory(base)==base_inventory and pitr.inventory(wal)==wal_inventory
                 and cold.cold_copy(cold_backup,work/'custody-readback')==storage_inventory,'ORIGINAL_BACKUPS_UNCHANGED')
         report={**LIMITS,'status':'SYNTHETIC_PHYSICAL_COMMON_CUT33_PASS','schema':SCHEMA,
-            'fixtureCoordinatedPhysicalPitrQualified':True,'fixtureS3ReadOnlyFenceQualified':True,
+            'sqlReadinessProbeAttempts':len(readiness),'fixtureCoordinatedPhysicalPitrQualified':True,'fixtureS3ReadOnlyFenceQualified':True,
             'fixturePersistentSqlFenceAfterPromotion':True,'allAcknowledgementsPreserved':True,
             'ambiguousEffectReconciledWithoutResend':True,'namedTargetDistinguishedFromEndOfWal':True,
             'excludedPostTargetObjectAcknowledgements':0,'missingRequiredWalBlocksS3Start':True,

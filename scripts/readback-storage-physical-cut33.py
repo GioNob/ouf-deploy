@@ -83,6 +83,11 @@ def verify(archive,source,expected_sha,producer):
     pre=doc('pre-drain-ledger');require(rows[:len(pre['events'])]==pre['events'],'PRESERVED_ORIGINAL_ACK')
     base=doc('base-ledger')
     require(base['control']=={'singleton':True,'epoch':1,'version':0,'phase':'ACTIVE'} and base['intents'] is None,'INTENTS_ABSENT_FROM_BASEBACKUP')
+    ready=doc('restored-sql-readiness');attempts=ready['attempts']
+    require(ready['status']=='ACCEPTING_SQL' and ready['readOnlyProbes'] and ready['maxAttempts']==60 and ready['budgetSeconds']==20
+            and 1<=len(attempts)<=60 and [x['attempt'] for x in attempts]==list(range(1,len(attempts)+1))
+            and attempts[-1]['returnCode']==0 and all(x['returnCode'] in (1,2) for x in attempts[:-1]),'BOUNDED_ACTUAL_SQL_READINESS')
+    require(b'accepting connections' in payload['lab/evidence/restored-ready-%03d.stdout'%len(attempts)],'PG_ISREADY_ACCEPTING_CONNECTIONS')
     gate=doc('restore-release');negative=doc('missing-wal-gate')
     require(gate['status']=='DB_VERIFIED_BEFORE_S3_START' and gate['restoredS3ProcessesStarted']==0
             and gate['sourceSystemIdentifier']==gate['restoredSystemIdentifier']==cut['sourceSystemIdentifier']
@@ -109,11 +114,11 @@ def verify(archive,source,expected_sha,producer):
     for name in ('postgres-source','restored'):
         require(b'server stopped' in payload['lab/evidence/'+name+'/stop.stdout'],'CLEAN_POSTGRES_STOP')
     tests=payload['build-evidence/offline-tests.log'].decode()
-    require(sum(map(int,re.findall(r'Ran (\d+) tests? in ',tests)))==32 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_32_TEST_SUITE')
+    require(sum(map(int,re.findall(r'Ran (\d+) tests? in ',tests)))==35 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_35_TEST_SUITE')
     require(receipt['targetOperations']==receipt['mutatingRetries']==receipt['recoveryPutRequests']==receipt['excludedPostTargetObjectAcknowledgements']==0,'NO_TARGET_OR_REPLAY_OR_ACK_LOSS')
     return {'status':'ORIGINAL_PHYSICAL_COMMON_CUT_READBACK_PASS','producerCommit':producer,
             'originalZipSha256':sha(raw),'originalZipBytes':len(raw),'members':len(payload),'checksumsVerified':len(checks),
-            'sourceBindingsVerified':len(sources),'testsPassed':32,'backupPayloadFilesVerified':{k:len(v) for k,v in inventories.items()},
+            'sourceBindingsVerified':len(sources),'testsPassed':35,'backupPayloadFilesVerified':{k:len(v) for k,v in inventories.items()},
             'backupPayloadBytesVerified':{k:sum(x['bytes'] for x in v.values()) for k,v in inventories.items()},
             'cut':cut,'nativeReceipt':receipt,'missingWalGate':negative,'restoreRelease':gate,
             'cleanStorageStopsVerified':len(stops),'s3Objects':len(bodies),'s3Bytes':sum(map(len,bodies.values())),
