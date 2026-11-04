@@ -1,3 +1,12 @@
+## Checkpoint storage 2026-11-04 — crash precommit compattazione33 PASS
+
+- Run41859638833/producer6db28abd:146test e undici scenari PASS. Volume7/PID25075 esatto,8thread T, .cpd1048688byte/.cpx16byte presenti e .cpc assente; DAT5243072/IDX48byte, hash e inode invariati prima di quattro SIGKILL137/non-OOM. Copie temporanee già presenti: non prova interruzione a metà copia.
+- Ripresa senza secondo vacuum: temporanei rimossi, vecchia coppia/allocazione/volumi non selezionati esatti; witness1048593byte/offset4194392 e GET integri; baseline S38388865byte/metadati al primo recupero, orfano logicamente assente.11link/36dinieghi ripetuti.55stopped-state puliti;98container/43morti dai receipt;11reti rimosse.
+- Readback indipendente41861664588 PASS:ZIP2227404byte SHA4a205356...,1177membri/1176checksum/34sorgenti. Receipt evidence/storage-compaction-precommit33-hosted-readback-20261104.json; dossier docs/OUF_STORAGE_COMPACTION_CRASH33_20261104.md. Primo readback41860752790 FAILED401 conservato, downloader corretto senza rerun nativo.
+- Originale e seconda copia negli artifact GitHub fino2027-02-02; nessuna custodia durevole Git del nuovo ZIP dichiarata, tutti gli archivi già in Git preservati. Nessuna seconda esecuzione nativa locale o verifica locale firma publisher.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8gate,0/21AT,0/120oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO invariato.
+- Prossimo singolo passo: crash dopo marker .cpc; poi intervallo fra rinomine. Post-marker/inter-rename/power loss/RPO/RTO OPEN.
+
 ## Checkpoint storage 2026-11-04 — crash precommit compattazione33 in qualifica
 
 - Ripresa da handoff676f6268; undicesimo scenario con OCI33 invariata e solo opzione nativa compactionMBps=1. Osservatore PID/start/cgroup/binario, SIGSTOP e tutti i thread fermi; .cpd con dati, .cpc assente, DAT/IDX/hash/inode invariati prima del singolo crash congiunto. Fase mancata = UNQUALIFIED, nessun reinvio vacuum.

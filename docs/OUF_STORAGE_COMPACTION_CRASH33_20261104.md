@@ -1,13 +1,35 @@
 # Generation33: observed precommit compaction crash
 
-## Current status
+## Verified result — 4 November 2026
+
+Native run [41859638833](https://github.com/GioNob/ouf-deploy/actions/runs/41859638833), job126677564586, exact producer `6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96`: **146 tests and eleven native scenarios PASS**. Independent original-archive readback [41861664588](https://github.com/GioNob/ouf-deploy/actions/runs/41861664588), job126684809823, verifier `aedcec769c33e02334711a59d62b039840b5e14c`: **PASS**.
+
+Observed volume7/PID25075, start56874 and exact container cgroup/executable; all eight threads T. Frozen `.cpd`1048688bytes and `.cpx`16bytes exist; `.cpc` absent. Original DAT5243072bytes/hash/inode9439852 and IDX48bytes/hash/inode9439859 remain identical. The original temporary bytes are retained and rehashed. Frozen, killed and gated file identities/hashes match exactly.
+
+**Observed phase is precommit with both temporary copies already present.** This does not establish interruption halfway through copying a needle. The native compaction rate option is conditional (the upstream throttler first checks elapsed time above100ms), so no guaranteed or measured widening of the window is claimed; the frozen evidence establishes the phase.
+
+After four non-OOM SIGKILL137 deaths and fresh gated service replacements, abandoned temporary files disappear and the old data/index generation, allocation and unselected volumes remain exact. The native1048593-byte witness `7,0100000000002133aabbcc`, SHA256`88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c`, retains header offset4194392 and full GET parity. The8388865-byte S3 baseline and complete filer metadata recover on the first read. New filer response counter0→1954bytes and volume0→8398318bytes support real reads. Orphan direct404/S3 absence persist; retained tombstone bytes are correct rollback behavior, not a failed reclamation claim.
+
+All ten prior regressions also pass. Eleven network removals,55 actual clean final stopped-state records,43 reported intentional deaths and98 reported distinct containers; the latter two totals are summed from native scenario receipts. The eleventh case repeats11 allowed links and36 measured denials. No second vacuum, reseed or mutating retry.
+
+### Evidence and explicit custody
+
+- [Original native ZIP](https://github.com/GioNob/ouf-deploy/actions/runs/41859638833/artifacts/13340730378):2227404bytes, SHA256`4a20535663dc6881bf533a13416152112c3c0441fa815d39c1ca6f9a355dd42c`.
+- [Independent readback plus unchanged original ZIP](https://github.com/GioNob/ouf-deploy/actions/runs/41861664588/artifacts/13340131675): outer archive1932132bytes, SHA256`5630dd3df4f807d1dbacc5ed790d1ece2a0d9b546c6e5a8a2cc1b7d15106e85a`.
+- [Repository receipt](../evidence/storage-compaction-precommit33-hosted-readback-20261104.json):1177members/1176checksums/34exact producer-source bindings verified by a separate hosted job. This is not a second native execution or local ZIP/publisher-signature verification.
+- Failed first readback [41860752790](https://github.com/GioNob/ouf-deploy/actions/runs/41860752790), artifact13339722820,2547bytes, SHA256`91eb9f44f99193954dad34914191a2793cf5f316bde69c4095f4134d41c3bf97`, remains retained. Its urllib download received401 after redirect. The correction uses curl's default cross-origin Authorization stripping; no broader permission or native retry.
+- Both new ZIP copies are in GitHub Actions custody until **2 February2027**; they have not been copied into Git history. Durable archive custody remains OPEN. All previously committed evidence archives are unchanged.
+
+**Next bounded step:** qualify a crash after the `.cpc` marker, then the interval between DAT and IDX renames, with equally exact phase evidence. These remain OPEN, as do power loss and representative RPO/RTO. Progress remains18.3/46 (~40%±10),0/8gates,0/21AT,0/120real objects. MinIO/target unchanged.
+
+## Implementation checkpoint (historical, before the successful run)
 
 Implementation prepared; native qualification PENDING. No new storage PASS or progress credit.
 Starting head: `676f626814d3f3e5d42fea273a4776062758fe59`, the cloud handoff commit. PR54 and branch were checked for later work; only already-running unrelated PR checks were observed. The app's thread inventory was unavailable, so absence of another agent cannot be established from that surface. Publication uses an expected-head lease.
 
 ## Bounded experiment
 
-The eleventh isolated scenario retains all ten previous scenarios and the exact generation33 OCI/binary. It uses the existing incomplete PUT, tombstone, baseline S3 object and native live witness. Only this scenario adds the upstream `-compactionMBps=1` volume option, including replacements. This enlarges an observation window; it is not phase evidence or a performance test.
+The eleventh isolated scenario retains all ten previous scenarios and the exact generation33 OCI/binary. It uses the existing incomplete PUT, tombstone, baseline S3 object and native live witness. Only this scenario adds the upstream `-compactionMBps=1` volume option, including replacements. This conditional throttle does not guarantee an observation window and is not phase evidence or a performance test.
 
 Before the sole vacuum, an observer binds the volume PID, start ticks, network namespace, container cgroup and running executable SHA256. It observes a nonempty `.cpd`, sends one SIGSTOP, verifies every task is stopped, and records original DAT/IDX bytes, hashes, inode/device/allocation, temporary files and absence of `.cpc`. A missing window, marker, rename, changed original pair or partially stopped process is UNQUALIFIED/failed, never PASS. `.cpx` may not yet exist: the reviewed CompactByIndex path saves the new index after the data-copy traversal.
 
