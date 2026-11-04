@@ -1,6 +1,27 @@
 # OUF — generazione33: rilocazione di un needle valido oltre un record cancellato
 
-Stato: **134 test locali PASS; qualifica nativa PENDING**. Checkpoint iniziale `bc528908310e8dceff00bdd5661c5391169a58be`; stessa OCI33/coorte. Decimo laboratorio; nove regressioni conservate.
+Stato: **134 test locali/hosted e dieci scenari nativi PASS**. Checkpoint iniziale `bc528908310e8dceff00bdd5661c5391169a58be`; stessa OCI33/coorte. Decimo laboratorio; nove regressioni conservate.
+
+## Risultato nativo e readback verificato
+
+Run [41845769045](https://github.com/GioNob/ouf-deploy/actions/runs/41845769045), job126628727934, producer `28c4890956dc74813dd3642042575799fa4d3a8b`: **134 test e dieci scenari nativi PASS**.85 container distinti,50 arresti finali puliti,35 SIGKILL intenzionali e dieci reti rimosse. Le nove regressioni precedenti conservate.
+
+Witness `1,0100000000002133aabbcc`: **1048593byte**, SHA256 `88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c`. Identificativo riservato assente da tutti gli indici e GET404; un solo POST201/size, senza retry. Prefissi DAT e IDX conservati esattamente, entry positiva singola aggiunta e volumi non selezionati invariati.
+
+| Misura | Prima del vacuum | Dopo vacuum | Dopo secondo crash/recupero |
+| --- | ---: | ---: | ---: |
+| Offset header witness | 4194392 | 8 | 8 |
+| Offset payload witness | 4194412 | 28 | 28 |
+| Lunghezza totale DAT | 13632128 | 9437744 | 9437744 |
+| Byte allocati ai DAT | 13660160 | 9465856 | 9465856 |
+
+Spostamento verso sinistra **4194384byte**, esattamente pari alla riduzione DAT; recuperati **4194304byte allocati**. Stesso ID/cookie/size/hash del witness; tre GET diretti200 con corpo identico (prima/dopo/restart), nuovo offset persistente, IDX/DAT concordi. Payload/tombstone orfano rimossi; chunk orfano diretto404 e S3 GET/HEAD404/LIST baseline-only. Nessun residuo di compattazione o handle fixture unlinkato nel processo volume.
+
+Baseline S3 originale8388865byte integra al tentativo1 dopo il secondo crash; metadati completi invariati, topologia/registrazioni al tentativo1. Nuovo filer0→1952byte e nuovo volume0→8398162byte; il contatore precede le letture native finali del witness. Quattro SIGKILL137/non-OOM prima di ogni sostituto, nuovi namespace/gate/regole, client invariato;11 link/36 dinieghi ripetuti. Tutti i DAT/IDX/blocchi e l'offset finale persistono.
+
+Artifact13332445479:975697byte, SHA256 `5d72e91a59dd82b48bb3978e8e4e59b87e122b05064fce31fbcabc38a91ba26c`. Verificati990 membri/989 checksum/31 sorgenti del producer, assenza chiavi private e tutti i dieci percorsi semantici. [Originale](../evidence/artifacts/storage-relocation33-41845769045.zip), [readback](../evidence/storage-relocation33-readback-20261104.json). Readback locale su riepiloghi nativi e codice vincolato, non seconda esecuzione Docker locale o corpi DAT/IDX/DB esportati; firma del publisher non riverificata localmente.
+
+Prossimo singolo passo: interruzione del processo volume durante la compattazione, con riconciliazione dello stato e verifica integrità/assenza senza reinvio mutativo automatico. Questa fase non è ancora qualificata dal run corrente.
 
 ## Protocollo
 

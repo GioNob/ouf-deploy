@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — rilocazione needle valido33 e persistenza PASS
+
+- Run [41845769045](https://github.com/GioNob/ouf-deploy/actions/runs/41845769045), producer `28c4890956dc74813dd3642042575799fa4d3a8b`:134 test e dieci scenari PASS. Witness nativo1,0100000000002133aabbcc/1048593byte aggiunto con un POST201 dopo tombstone, ID assente e prefissi DAT/IDX integri. Nessun retry, assegnazione master o nuovo oggetto S3.
+- Offset4194392→8 e resta8 dopo secondo crash congiunto: spostamento4194384byte pari alla riduzione DAT, recuperati4194304byte allocati. Identità/cookie/size/hash e GET200 prima/dopo/restart identici; baseline S38388865byte/metadati integri al primo recupero, orfano404 e S3 assente, nessun residuo/handle unlinkato. Tutti gli indici/DAT/blocchi persistono.
+- 85 container distinti,50 arresti puliti,35 SIGKILL intenzionali, dieci reti rimosse;990 membri/989 checksum/31 sorgenti verificati. Dossier docs/OUF_STORAGE_RELOCATION33_20261104.md e originale/readback conservati. Witness non collegato al filer: prova nativa distinta dalla baseline S3. Non crash durante vacuum/power loss/RPO/RTO/secure erase.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO e confini preservati.
+- Prossimo singolo passo: interrompere il volume durante compattazione e riconciliare lo stato senza retry mutativo automatico.
+
 ## Checkpoint storage 2026-11-04 — rilocazione needle valido33 in qualifica
 
 - Decimo caso: dopo cleanup/crash/probe, un solo POST nativo aggiunge un witness1048593byte oltre il record orfano tombstoned nello stesso volume. ID riservato della fixture verificato assente in tutti gli indici e GET404 prima della scrittura; prefissi DAT/IDX esattamente conservati. Nessuna modifica diretta storage, nuova chiave S3 o assegnazione master.
