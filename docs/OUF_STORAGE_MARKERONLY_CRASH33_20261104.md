@@ -1,3 +1,7 @@
+## Esecuzione con osservazione fra thread — 2026-11-04
+
+Producer `b293a4902b38aa2df9b658247457cf951224f96c`, native [41886227100](https://github.com/GioNob/ouf-deploy/actions/runs/41886227100), job126771291040.189test/14scenari richiesti. Readback vincolato a questo producer e run, con ordine syscall esplicito e gruppo tracciato; stesso TID richiesto solo fra ingresso/uscita della singola syscall. Qualifica PENDING fino a successo nativo e readback originale separato. Nessun rerun invariato.
+
 ## Checkpoint storage 2026-11-04 — marker-only: secondo tentativo negativo e correzione scheduling
 
 - Native41882562646/job126758546819 su84706b4f:186test PASS,13 scenari precedenti PASS, marker-only FAILED `BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK`. Readback41883215358 su e5e59d02 FAILED `NATIVE_SCENARIO_PASS: markeronly-crash-lab`; nessuna qualifica marker-only.

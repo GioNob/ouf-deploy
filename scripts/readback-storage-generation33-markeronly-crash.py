@@ -241,9 +241,13 @@ def verify(archive, source, expected_sha, producer):
     require(second['operation']=='entry' and second['syscallNotResumed'] and second['number'] in (82,264,316) and second['oldPath']==stem+'.cpx' and second['newPath']==stem+'.idx','EXACT_SECOND_RENAME_ENTRY')
     require(second['threadStates'] and set(second['threadStates'].values())=={'t'},'ALL_THREADS_STOPPED_BEFORE_IDX')
     require(second_exit['operation']=='exit' and second_exit['returnValue']==0 and not second_exit['isError'] and second_exit['tid']==second['tid'] and second_exit['number']==second['number'] and second_exit['oldPath']==second['oldPath'] and second_exit['newPath']==second['newPath'],'SECOND_RENAME_EXECUTED_SUCCESSFULLY')
-    require(marker_phase['operation']=='entry' and marker_phase['syscallNotResumed'] and marker_phase['number'] in (87,263) and marker_phase['path']==stem+'.cpc' and marker_phase['tid']==second['tid'],'EXACT_MARKER_UNLINK_ENTRY_NOT_RESUMED')
+    require(marker_phase['operation']=='entry' and marker_phase['syscallNotResumed'] and marker_phase['number'] in (87,263) and marker_phase['path']==stem+'.cpc' and str(marker_phase['tid']) in marker_phase['threadStates'],'EXACT_MARKER_UNLINK_ENTRY_NOT_RESUMED')
     post_syncs=marker_phase['postRenameDirectorySyncs']
     require(len(post_syncs)==1 and post_syncs[0]['kind']=='directory' and post_syncs[0]['returnValue']==0,'POST_RENAME_DIRECTORY_SYNC')
+    trace=marker_phase['postRenameTrace']
+    require([x['kind'] for x in trace]==['idx-rename-exit','directory-fsync-entry','directory-fsync-exit','marker-unlink-entry'],'EXACT_ORDERED_POST_RENAME_TRACE')
+    require(trace[0]['tid']==second_exit['tid'] and trace[0]['returnValue']==0 and trace[1]['tid']==trace[2]['tid']==post_syncs[0]['tid'] and trace[2]['returnValue']==0,'ORDERED_RENAME_AND_FSYNC_EXITS')
+    require(trace[3]['tid']==marker_phase['tid'] and trace[3]['number']==marker_phase['number'] and trace[3]['path']==marker_phase['path'] and all(str(x['tid']) in marker_phase['threadStates'] for x in trace),'TRACE_BINDS_EXACT_TRACED_PROCESS_AND_MARKER')
     require(set(marker_files)=={'.dat','.idx','.cpc'} and marker_files['.dat']==first_files['.cpd']==mixed_files['.dat'] and marker_files['.idx']==first_files['.cpx']==mixed_files['.cpx'] and marker_files['.cpc']==first_files['.cpc']==mixed_files['.cpc'],'EXACT_COMPLETED_PAIR_AND_ONLY_MARKER')
     require(set(before_files)=={'.dat','.idx'} and set(first_files)=={'.dat','.idx','.cpd','.cpx','.cpc'} and set(mixed_files)=={'.dat','.idx','.cpx','.cpc'},'EXACT_MIXED_FILE_SETS')
     require(all(first_files[ext]==before_files[ext] for ext in before_files),'OLD_PAIR_BEFORE_FIRST_RENAME')
@@ -311,7 +315,7 @@ def verify(archive, source, expected_sha, producer):
     require(all(not x['connected'] and x['counterAfter']>x['counterBefore'] for x in mo_dns),'MARKERONLY_DNS_HOST_PROBE')
 
     tests=payload['offline-tests.log'].decode();counts=[int(x) for x in re.findall(r'Ran (\d+) tests? in ',tests)]
-    require(sum(counts)==186 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_186_TEST_REGRESSION')
+    require(sum(counts)==189 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_189_TEST_REGRESSION')
     return {'schema':'ouf.storage-compaction-markeronly-readback.v1','status':'HOSTED_ORIGINAL_ARCHIVE_READBACK_PASS',
             'producerCommit':producer,'originalZipSha256':sha(raw),'originalZipBytes':len(raw),
             'members':len(payload),'checksumsVerified':len(checks),'sourceBindingsVerified':len(bindings),
