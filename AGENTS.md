@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — isolamento laterale33 in qualifica
+
+- Cinque namespace distinti e bridge interno; launcher statico bounded impedisce exec weed prima delle regole nft. Matrice IPv4 di10 collegamenti ammessi e22 vietati tra ruoli, con listener reali e contatori dedicati;15 probe DNS/host gateway. S3 TLS, firma, hash/MIME/LIST e nessun retry mutativo.
+- 32 test locali PASS (10 nuovi e22 regressioni credential/TLS); qualifica nativa richiesta. Dossier docs/OUF_STORAGE_LATERAL_ISOLATION33_20261104.md. Nessuna equivalenza con autorizzazione dei metodi interni, mTLS o profilo produttivo.
+- MiniPET invariato18,3/46, circa40% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — rotazione credenziali S3 33 e revoca persistente PASS
 
 - Run [41811147933](https://github.com/GioNob/ouf-deploy/actions/runs/41811147933), producer `69680f3e2ca42515110ac3d6ee4f6b1b27dd5415`: 22 test e qualifica nativa OLD → OLD+NEW → NEW → restart NEW PASS. Stessa identità applicativa/policy e stesso TLS; owner bootstrap invariato.
