@@ -31,10 +31,35 @@ same-length corrupt bodies, changed metadata and a non-AccessDenied response.
 The original cohort archive is independently rebound by an offline test.
 Workflow YAML parses and every shell block passes bash -n.
 
-Native qualification is PENDING until the dedicated Actions run and original
-artifact are read back. Its workflow pins the producer/cohort hashes, verifies
-the cohort publisher, builds pinned PostgreSQL, retains failures and checksums,
-and attests successful evidence. A local PASS is not a native restore result.
+Native qualification **PASS**, [run 41802094297](https://github.com/GioNob/ouf-deploy/actions/runs/41802094297),
+job 126480073815, exact producer `a31b2be7cfdea1ddaaa0c7e0902a6f325c974ddc`.
+All steps succeeded, including cohort publisher verification, the 22 tests,
+PostgreSQL build, joint restore, checksums, attestation and artifact retention.
+
+The [original ZIP](../evidence/artifacts/storage-common-cut33-41802094297.zip)
+is retained with SHA256
+`8640404cbf762ec557cf7082526376aeeb37f60572b537ab3ada54e5cf81186e`.
+Independent local readback verified 136 members / 135 checksums and 22 exact
+source hashes, the dump identity, identical source/restored ledger, common-cut
+manifest, cold-copy index and 12 distinct container IDs with clean stops.
+Two PostgreSQL clusters have distinct system identifiers and clean stops.
+
+Result: two synthetic objects / 77 bytes; 104 cold-copy files / 22,275 bytes;
+original ACK retained and ambiguous effect reconciled without resend. Six
+explicit AccessDenied results cover new PUT, overwrite and DELETE before and
+after restore. Body/MIME/hash/generation GET and HEAD readback passed.
+[Readback receipt](../evidence/storage-common-cut33-readback-20261104.json).
+
+Verification limit: the archive retains the fixture dump, ledger, indices and
+hosted readback evidence; S3 bodies and cold-copy payloads are not exported.
+This is not a second local restore or local cryptographic publisher check.
+The source/restored ledger JSON is preserved, although the restored cluster's
+first diagnostic SQL slot is reused by the later denied reservation; no
+claim of a complete raw SQL transcript is made.
+
+The next bounded exercise is an interrupted/crashed write around this cut,
+with recovery retaining the same intent and no duplicate external effect.
+PITR integration and target-wide fencing remain separate qualifications.
 
 MiniPET remains **18.3/46 = 39.78%, approximately 40% ±10**; no extra credit.
 **0/8 gates, 0/21 acceptance tests, 0/120 real objects copied.** Physical PITR at

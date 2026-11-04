@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — common cut33 nativo PASS e archivio verificato
+
+- Run [41802094297](https://github.com/GioNob/ouf-deploy/actions/runs/41802094297), producer `a31b2be7cfdea1ddaaa0c7e0902a6f325c974ddc`: 22 test e prova PostgreSQL17.11/S3 su OCI33 PASS. Un ACK conservato, un effetto ambiguo riconciliato senza resend, nuovi claim/pubblicazioni tardivi negati e sei dinieghi S3 AccessDenied per PUT/overwrite/DELETE prima e dopo restore.
+- Punto comune acquisito nell'intervallo quiescente: catalogo FROZEN, processi S3 arrestati e configurazione Read/List. Restore in cluster PostgreSQL distinto e radici storage indipendenti; due oggetti sintetici/77 byte, 104 file cold/22.275 byte, 12 container distinti e due cluster arrestati pulitamente.
+- ZIP originale conservato: 136 membri/135 checksum, 22 sorgenti, dump/ledger/manifest e indici verificati localmente. I payload S3/cold non sono esportati; nessun secondo restore locale, PITR coordinato, RPO/RTO o fencing target dichiarato. Dettagli e limite del transcript nel dossier common cut33.
+- MiniPET invariato circa40% ±10, 18,3/46 crediti; 0/8 gate, 0/21 AT e 0/120 oggetti reali. Nessuna operazione VPS, merge/deploy, replay/reset/grant; Teatri/M1, Farmacie e scope17/52 Engine GET preservati.
+- Prossimo singolo passo: fault durante una scrittura attorno al punto comune, con ripresa dello stesso intento e verifica dell'assenza di duplicati.
+
 ## Checkpoint storage 4 novembre 2026 — PITR e rotazione TLS verificati; riepilogo percentuale corretto
 
 La stima resta **40% ±10 punti (18,3/46 = 39,78%)**. Nessun credito aggiunto per questa verifica: **0/8 gate, 0/21 AT, 0/120 oggetti reali copiati**; MinIO resta attivo secondo l'ultima ricevuta target conservata, senza nuova osservazione VPS.
