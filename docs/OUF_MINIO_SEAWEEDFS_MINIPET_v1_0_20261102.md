@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — assenza/corruzione33 bloccano il freeze, PASS
+
+- Run [41809311981](https://github.com/GioNob/ouf-deploy/actions/runs/41809311981), producer `2d3d8a41121751abad9da9ab4849fa1112dd1676`: 54 test PASS, tre regressioni positive con restore completo e due controlli negativi nativi PASS.
+- Oggetto assente: LIST completo, GET404 NoSuchKey e HEAD404; nessuna identità inventata. Corruzione della stessa lunghezza con metadata apparentemente validi: rifiuto sui byte reali e CONFLICT PostgreSQL per l'hash effettivo. In entrambi EXISTING_PENDING, pubblicazione tardiva FENCED e freeze RECONCILE_REQUIRED prima/dopo immediate restart; DRAINING epoch2/version1, ACK/PENDING e quattro eventi identici. Nessun PUT di recupero, common cut o restore dei casi negativi.
+- Originale verificato: 616 membri / 615 checksum / 28 sorgenti e input esatti, 52 container distinti, log recovery e SQL prima/dopo conservati. Dossier docs/OUF_STORAGE_UNRESOLVED33_20261104.md e receipt evidence/storage-unresolved33-readback-20261104.json.
+- Stati negativi costruiti nella fixture, non nuova perdita HTTP o prova runtime target. MiniPET invariato 18,3/46, circa40% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione VPS, merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo SW-WP3: rotazione credenziali S3 nella fixture, nuova chiave valida e vecchia revocata, con letture coerenti e dinieghi verificati.
+
 ## Checkpoint storage 2026-11-04 — esito irrisolto33 in qualifica
 
 - Due controlli negativi: oggetto assente e contenuto alterato di uguale lunghezza con hash dichiarato apparentemente valido. Si riusa il verificatore common cut; GET/HEAD/LIST effettivi devono impedire la riconciliazione. ACK e intento PENDING conservati, freeze RECONCILE_REQUIRED anche dopo PostgreSQL immediate restart, nessun PUT di recupero o common cut.

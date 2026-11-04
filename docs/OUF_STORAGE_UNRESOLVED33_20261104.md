@@ -10,7 +10,21 @@ Dopo il drain e il fermo/riavvio S3 della sola identità fixture in Read/List, l
 
 ## Qualifica
 
-54 test locali: 43 common-cut/crash/perdita risposta/controlli negativi, sette writer fence e quattro restore. Workflow dedicato con i tre percorsi positivi di regressione e due nuovi percorsi negativi in radici separate. Prova nativa e rilettura archivio originale PENDING.
+54 test locali e hosted PASS: 43 common-cut/crash/perdita risposta/controlli negativi, sette writer fence e quattro restore. Workflow dedicato con i tre percorsi positivi di regressione e due nuovi percorsi negativi in radici separate. Tutti e cinque i percorsi nativi PASS; archivio originale verificato.
+
+## Esito nativo e verifica delle evidenze
+
+- Producer `2d3d8a41121751abad9da9ab4849fa1112dd1676`; [run 41809311981](https://github.com/GioNob/ouf-deploy/actions/runs/41809311981), job `126504250931` SUCCESS, artifact `13311672444`.
+- Caso assente: LIST completo del solo ACK, GET 404 NoSuchKey e HEAD 404; nessun PUT dell'oggetto ambiguo e nessuna identità inventata per la riconciliazione.
+- Caso corrotto: un PUT fixture da 45 byte, lunghezza e metadata hash atteso conservati ma corpo alterato; il verificatore common cut rifiuta i byte e PostgreSQL restituisce CONFLICT per l'hash effettivo, due volte.
+- In entrambi: due risposte EXISTING_PENDING, due FENCED e due RECONCILE_REQUIRED, prima/dopo immediate restart. Ledger identico, DRAINING epoch 2/version 1, ACK e PENDING originali, esattamente quattro eventi. Hash ledger prima/dopo `a010f085104fd341357d75ec071d5b226d6b5016b8e4bf5450c1b7f66291c0c7`; nessun evento RECONCILED/FROZEN e nessun common cut, dump o restore dei casi negativi.
+- Sei dinieghi S3 per caso negativo e otto container distinti arrestati pulitamente per caso. Conservate le tre regressioni positive con restore completo; totale cinque percorsi e 52 ID container distinti. Zero PUT di recupero in tutti i percorsi.
+- ZIP originale [storage-unresolved33-41809311981.zip](../evidence/artifacts/storage-unresolved33-41809311981.zip), 376528 byte, SHA256 `d58d2926ef111345a3048f94f706e27b84c1cf70432cac1aeb0f60e61886dfb8`. Verificati 616 membri, 615 checksum e 28 sorgenti/input esatti. [Receipt di rilettura](../evidence/storage-unresolved33-readback-20261104.json).
+- Rilettura locale di ZIP, SQL, ledger e report nativi; i corpi S3/cold non sono esportati, non è stato eseguito un secondo restore locale e non si dichiara verifica crittografica locale della firma publisher. La coorte è verificata hosted con l'esatto source commit.
+
+## Prossimo singolo passo
+
+Qualificare la rotazione delle credenziali S3 nella fixture: nuova chiave valida, vecchia chiave revocata, letture coerenti e dinieghi delle credenziali superate. Segue SW-WP3 del MiniPET; nessuna rotazione di credenziali target è autorizzata da questa prova. Non eseguito in questo checkpoint.
 
 ## Limiti e avanzamento
 
