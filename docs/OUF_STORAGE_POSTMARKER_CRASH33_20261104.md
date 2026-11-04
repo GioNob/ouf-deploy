@@ -44,3 +44,20 @@ durabilita hardware, RPO/RTO, oppure intervallo fra le due rinomine.
 
 MiniPET invariato18,3/46=39,78% (~40% ±10), 0/8 gate, 0/21 AT, 0/120 oggetti reali.
 Nessun VPS/merge/deploy/admission/replay/reset/grant. MinIO invariato.
+
+## Avvio e osservazione GitHub
+
+Producer `18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31`,
+[run41864590947](https://github.com/GioNob/ouf-deploy/actions/runs/41864590947),
+job126695427394. Prima osservazione: queued, nessun runner assegnato e nessuno step
+eseguito. Nessuna evidenza nativa post-marker acquisita in questa fase; non e un PASS.
+
+Readback separato `storage-generation33-commit-crash-readback.yml`, vincolato a
+questo esatto run/commit/attempt1, senza secondo laboratorio. Attende con budget
+finito il producer; richiede successo, scarica l'originale con digest GitHub,
+verifica ogni membro/checksum e sorgente contro checkout esatto. Ricostruisce sia
+il rollback precommit sia il nuovo rollforward, 157 test senza skip, 12 scenari,
+60 arresti puliti, bytes/offset/inode e confini rete. Conserva originale e receipt
+negli artifact per90giorni. Un timeout/fallimento rimane tale, nessun retry del
+vacuum o promozione automatica della qualifica. Questa custodia temporanea non
+equivale a un archivio durevole in Git.
