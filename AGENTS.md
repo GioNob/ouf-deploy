@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — PUT incompleto33: assenza S3 persistente PASS
+
+- Run [41821487900](https://github.com/GioNob/ouf-deploy/actions/runs/41821487900), producer `9c0f2968dba8528ced7c98643f30a7c5740ce400`:86 test e sei scenari nativi PASS. Singolo PUT4259841/8388865 byte; chunk4194304 identificato nei .dat al primo probe prima dell'abort, log server connection reset durante lettura dei65537 byte successivi. Nessun ACK letto/retry mutativo.
+- GET404/NoSuchKey, HEAD404 e LIST baseline-only prima/dopo riavvio completo e probe rete; baseline8388865 byte integra al primo recupero. Quattro SIGKILL137/non-OOM, quattro nuovi processi/namespace/gate, regole prima dell'exec e inventari conservati.41 container distinti,30 arresti puliti,11 SIGKILL intenzionali;400 membri/399 checksum/24 sorgenti verificati.
+- Limite osservato: cleanup di1 chunk orfano tentata dal gateway e fallita sul link S3→volume gRPC28080 vietato dalla fixture. Assenza S3 PASS, reclamation non qualificata. Dossier docs/OUF_STORAGE_STREAM_INTERRUPTION33_20261104.md; receipt evidence/storage-stream-interruption33-readback-20261104.json e originale conservati.
+- Solo client disconnect su nuova chiave Content-Length; non server crash in-flight, streaming-chunked/multipart/overwrite/GC/power loss/RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1, Farmacie e MinIO preservati.
+- Prossimo singolo passo: qualificare cleanup chunk orfano e collegamento gRPC minimo nella fixture isolata, con verifica risultato e confini di rete; nessuna apertura target.
+
 ## Checkpoint storage 2026-11-04 — PUT incompleto33 in qualifica
 
 - Un PUT nuovo con Content-Length8388865, soltanto4259841 byte inviati e abort dopo prova del chunk esatto4194304 nei .dat. Nessun ACK letto, nessun replay mutativo; GET/HEAD404 e LIST baseline-only prima/dopo riavvio completo e probe rete.
