@@ -1,6 +1,27 @@
 # OUF — generazione33: compattazione del volume con chunk orfano
 
-Stato: **114 test locali PASS; nuova qualifica nativa PENDING**. Checkpoint precedente `ae01a2757d8f49f03c06cace6e1d5e0e0e3cacae`. Stessa immagine/coorte33 e otto laboratori distinti; sette regressioni conservate.
+Stato: **114 test locali/hosted e otto scenari nativi PASS**. Checkpoint precedente `ae01a2757d8f49f03c06cace6e1d5e0e0e3cacae`. Stessa immagine/coorte33 e otto laboratori distinti; sette regressioni conservate.
+
+## Risultato nativo e readback verificato
+
+Run [41837272317](https://github.com/GioNob/ouf-deploy/actions/runs/41837272317), job126599309665, producer `b07df7eceda9036aa53ba1b328ca9d1a3e6fcb60`. Tutti gli otto percorsi PASS;59 container distinti,40 arresti puliti,19 SIGKILL intenzionali e otto reti rimosse. Nei due casi cleanup/compaction11 link ammessi e36 dinieghi; nelle sei regressioni10/37. Regole installate prima dell'exec e pin dei namespace rilasciati.
+
+Un solo vacuum completato sul volume7, chunk `7,042adb8fbb`, senza retry né riavvio durante la compattazione.
+
+| Misura | Prima | Dopo | Riduzione |
+| --- | ---: | ---: | ---: |
+| Lunghezza totale dei sette DAT | 12583448 | 8389064 | 4194384 byte |
+| Blocchi allocati ai DAT (`st_blocks*512`) | 12611584 | 8417280 | 4194304 byte (4 MiB) |
+| Lunghezza DAT selezionato | 4194392 | 8 | 4194384 byte |
+| Indice selezionato | 32 | 0 | 32 byte |
+
+Payload orfano e tombstone rimossi; nessun residuo temporaneo né file fixture unlinkato ancora aperto nel processo volume. Chunk diretto404, S3 GET/HEAD404 e LIST baseline-only dopo compattazione. Baseline8388865byte e metadati filer completi invariati; snapshot identico dopo le letture.
+
+**Limite osservato:** il volume7 conteneva soltanto l'orfano tombstoned. I tre needle validi della baseline erano nel volume2, rimasto identico insieme agli altri volumi non selezionati. Questo run non prova la copia/rilocazione nativa di needle validi nello stesso volume compattato.
+
+Artifact13327877414:630916byte, SHA256 `07fb939d1dcc490d494a2158935767dba58696bf3ecfd8bdedbb53792e59ec82`. Verificati639 membri,638 checksum,28 sorgenti esatte, assenza di chiavi private e parità semantica degli otto percorsi. Il readback locale verifica riepiloghi prodotti dal codice vincolato e archivio originale; non riesegue Docker né esporta DAT/IDX/DB. [Originale](../evidence/artifacts/storage-compaction33-41837272317.zip), [readback](../evidence/storage-compaction33-readback-20261104.json). Primo run fallito conservato separatamente.
+
+Prossimo singolo passo: riavvio completo dopo la compattazione, verificando persistenza di indice/assenza, spazio recuperato e baseline senza reseed. Nessuna qualifica post-compaction restart già acquisita.
 
 ## Prima esecuzione conservata e marker atomico
 

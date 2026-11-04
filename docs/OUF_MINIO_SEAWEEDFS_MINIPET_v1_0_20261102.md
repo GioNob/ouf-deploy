@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — compattazione33 e recupero allocazione PASS
+
+- Run [41837272317](https://github.com/GioNob/ouf-deploy/actions/runs/41837272317), producer `b07df7eceda9036aa53ba1b328ca9d1a3e6fcb60`:114 test e otto scenari nativi PASS. Un solo vacuum locked sul volume7/chunk7,042adb8fbb, nessun retry: DAT12583448→8389064byte e allocazione12611584→8417280, recuperati4194304byte allocati. Indice selezionato32→0, payload/tombstone rimossi; chunk404 e S3 assente, baseline8388865byte/metadati invariati.
+- Volume selezionato senza needle vivi; tre needle baseline nel volume2 e sei volumi non selezionati identici. Nessun residuo/handle unlinkato nel processo volume, nessun restart durante compattazione. Non qualificati copia live nello stesso volume, restart successivo, crash commit o secure erase.
+- 59 container distinti,40 arresti puliti,19 SIGKILL intenzionali, otto reti rimosse;639 membri/638 checksum/28 sorgenti verificati. Originale630916byte e readback conservati; primo run41836677592 FAILED conservato e marker pubblicato atomicamente senza rilassare il launcher. Dossier docs/OUF_STORAGE_COMPACTION33_20261104.md.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO, scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: riavvio completo dopo compattazione e verifica persistenza di spazio/indice/assenza/baseline senza reseed.
+
 ## Checkpoint storage 2026-11-04 — compattazione33, primo run fermato al gate iniziale
 
 - Run41836677592/sourcec942fdfc:112 test PASS; primo scenario FAILED prima di seed/compattazione, launcher volume exit65/non-OOM e log vuoto, cleanup non pulita. Originale fallito conservato:37 membri/36 checksum/28 sorgenti verificati.
