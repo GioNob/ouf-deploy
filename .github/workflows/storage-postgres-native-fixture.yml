@@ -8,6 +8,8 @@ on:
       - .github/workflows/storage-postgres-native-fixture.yml
       - tests/run_storage_postgres_fixture_native.py
       - tests/test_storage_recovery_native_lab_contract.py
+      - tests/run_storage_postgres_logical_restore.py
+      - tests/test_storage_postgres_logical_restore_contract.py
       - tools/storage_recovery/**
       - tests/fixtures/storage-recovery/catalog.sql
 
@@ -52,7 +54,7 @@ jobs:
           { gcc --version; make --version; bison --version; flex --version; uname -a; } \
             > ../build-evidence/toolchain.txt
           dpkg-query -W > ../build-evidence/runner-packages.txt
-          sha256sum "$RUNNER_TEMP/pg-native/install/bin/"{postgres,initdb,pg_ctl,psql} \
+          sha256sum "$RUNNER_TEMP/pg-native/install/bin/"{postgres,initdb,pg_ctl,psql,pg_dump,pg_restore} \
             > ../build-evidence/binary-sha256.txt
       - name: Execute real local PostgreSQL fixture
         run: |
@@ -64,14 +66,26 @@ jobs:
             --pg-bin "$RUNNER_TEMP/pg-native/install/bin" \
             --output "$RUNNER_TEMP/pg-native/lab-evidence" \
             > "$RUNNER_TEMP/pg-native/build-evidence/lab-stdout.json"
+      - name: Execute synthetic logical restore into an independent cluster
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests \
+            -p test_storage_postgres_logical_restore_contract.py -v 2>&1 | \
+            tee "$RUNNER_TEMP/pg-native/build-evidence/logical-restore-contract-tests.log"
+          python3 -I -B -S tests/run_storage_postgres_logical_restore.py \
+            --pg-bin "$RUNNER_TEMP/pg-native/install/bin" \
+            --output "$RUNNER_TEMP/pg-native/restore-evidence" \
+            > "$RUNNER_TEMP/pg-native/build-evidence/logical-restore-stdout.json"
       - name: Bind source and all retained results
         if: always()
         run: |
           set -euo pipefail
           base="$RUNNER_TEMP/pg-native"
-          mkdir -p "$base/build-evidence" "$base/lab-evidence"
+          mkdir -p "$base/build-evidence" "$base/lab-evidence" "$base/restore-evidence"
           sha256sum tests/run_storage_postgres_fixture_native.py \
             tests/test_storage_recovery_native_lab_contract.py \
+            tests/run_storage_postgres_logical_restore.py \
+            tests/test_storage_postgres_logical_restore_contract.py \
             tests/fixtures/storage-recovery/catalog.sql \
             tools/storage_recovery/{postgres_fixture,coordinated,manifest,profile}.py \
             profiles/seaweedfs-452-lab/profile.json \
@@ -79,7 +93,7 @@ jobs:
             > "$base/build-evidence/repository-source-sha256.txt"
           git rev-parse HEAD > "$base/build-evidence/repository-commit.txt"
           cd "$base"
-          find build-evidence lab-evidence -type f -print0 2>/dev/null | \
+          find build-evidence lab-evidence restore-evidence -type f -print0 2>/dev/null | \
             LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
           sha256sum --strict --check SHA256SUMS
       - name: Attest native fixture evidence
@@ -95,6 +109,7 @@ jobs:
           path: |
             ${{ runner.temp }}/pg-native/build-evidence/
             ${{ runner.temp }}/pg-native/lab-evidence/
+            ${{ runner.temp }}/pg-native/restore-evidence/
             ${{ runner.temp }}/pg-native/SHA256SUMS
           if-no-files-found: error
           retention-days: 90

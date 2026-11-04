@@ -1,0 +1,60 @@
+{
+  "allDependenciesMaintained": false,
+  "baseSourceTreeSha256": "2ca10e226724252ab566d93574142ce65d9b9be2e78c15cfdead3934caec3fa6",
+  "build": {
+    "arch": "amd64",
+    "cgo": false,
+    "go": "1.27.3",
+    "moduleMode": "vendor",
+    "os": "linux",
+    "tags": [],
+    "trimpath": true
+  },
+  "dependencySourceMode": "vendor-with-reviewed-source-patches",
+  "generation": 33,
+  "maintainedYaml": {
+    "h1": "h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=",
+    "module": "go.yaml.in/yaml/v3",
+    "version": "v3.0.5"
+  },
+  "maintenance": {
+    "reviewCadence": "EACH_CANDIDATE_AND_WEEKLY_WHILE_PATCH_ACTIVE",
+    "status": "OPEN",
+    "technicalOwner": null
+  },
+  "materializerSha256": "a8f919469002c42995aa94d96d3adeb28f93b6e9fe3df3c3d366c55077b9e4d2",
+  "moduleOriginCount": 214,
+  "moduleOriginsSha256": "b4c1ad0679a5f9dd646aa4f0960bf721d73558688846cbb2df6c838b470135c7",
+  "patch": {
+    "file": "github.com/apache/iceberg-go/config/config.go",
+    "modifiedFileSha256": "9983e5e82a9372e9f47db6ccc5a55d9b747fd503caaedb5619e4b37e95c75ab4",
+    "originalFileSha256": "30ec8eebf86cd2f5df0c8d6bbf8661c0bf72d10fc8c025d6943c9565ae13a604",
+    "sha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef"
+  },
+  "previousGeneration": 32,
+  "previousGenerationManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+  "previousSourceGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "releaseAdmitted": false,
+  "rootLockfilesSha256": {
+    "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+    "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+  },
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-vendor-yaml-source-profile.v1",
+  "status": "BOUND_SOURCE_PROFILE_NOT_ADMITTED",
+  "targetOperations": 0,
+  "upstream": {
+    "checksumDoesNotDescribePatchedSource": true,
+    "commit": "89a9104ec3639d38ab07e4461721cb5270e95571",
+    "h1InputOnly": "h1:bTD6Pb4uM4sWcMfIx0/cV1haHMc84r+CvPieUqYzD4I=",
+    "module": "github.com/apache/iceberg-go",
+    "version": "v0.7.0",
+    "zipSha256": "a042ec87708c376362859041b1741213dc4e05400cad7ad0220ea4361a250d55"
+  },
+  "vendor": {
+    "baseTreeSha256": "1e39ce238b15e68f5494e0588b23c26a2adfa6fbdce6f665a046bdc653fc2646",
+    "fileCount": 13918,
+    "modulesTxtSha256": "0e6e07da9b88a1ef9f0bb6281e4b404f5bdf5c69673b5a555b7ed3d72759ea17",
+    "patchedTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547"
+  }
+}

@@ -101,7 +101,7 @@ class NativeLab:
             raise AssertionError("LAB_SQL_EXIT: %s != %s (%s)" % (result.returncode, expect, stem.name))
         return result
 
-    def start(self):
+    def start(self, *, initialize_catalog=True):
         if os.geteuid() == 0:
             raise RuntimeError("UNPRIVILEGED_LAB_USER_REQUIRED")
         self.output.mkdir(parents=True, exist_ok=False)
@@ -143,13 +143,9 @@ class NativeLab:
         result = run(argv)
         if result.returncode:
             raise RuntimeError("FIXTURE_DATABASE_CREATE_FAILED")
-        self.sql((ROOT / "tests/fixtures/storage-recovery/catalog.sql").read_text())
-        self.sql("CREATE ROLE " + ROLE + " LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION; "
-                 "REVOKE ALL ON DATABASE " + ROLE + " FROM PUBLIC; "
-                 "GRANT CONNECT ON DATABASE " + ROLE + " TO " + ROLE + "; "
-                 "REVOKE CREATE ON SCHEMA public FROM PUBLIC; "
-                 "GRANT USAGE ON SCHEMA ouf_recovery_fixture TO " + ROLE + "; "
-                 "GRANT SELECT ON ALL TABLES IN SCHEMA ouf_recovery_fixture TO " + ROLE)
+        if initialize_catalog:
+            self.sql((ROOT / "tests/fixtures/storage-recovery/catalog.sql").read_text())
+            self.grant_fixture_readback()
         self.profile = json.loads((ROOT / "profiles/seaweedfs-452-lab/profile.json").read_bytes())
         self.artifact_root = self.root / "artifacts"
         self.artifact_root.mkdir()
@@ -169,6 +165,14 @@ class NativeLab:
             self.artifacts.append(manifest.record_artifact(self.artifact_root, kind,
                 logical_id=kind.replace("_", "-"), kind=kind, generation=GENERATION))
         self.dump_reference = next(a["sha256"] for a in self.artifacts if a["kind"] == "postgres_dump")
+
+    def grant_fixture_readback(self):
+        self.sql("CREATE ROLE " + ROLE + " LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION; "
+                 "REVOKE ALL ON DATABASE " + ROLE + " FROM PUBLIC; "
+                 "GRANT CONNECT ON DATABASE " + ROLE + " TO " + ROLE + "; "
+                 "REVOKE CREATE ON SCHEMA public FROM PUBLIC; "
+                 "GRANT USAGE ON SCHEMA ouf_recovery_fixture TO " + ROLE + "; "
+                 "GRANT SELECT ON ALL TABLES IN SCHEMA ouf_recovery_fixture TO " + ROLE)
 
     def reset(self):
         statements = ["BEGIN", "TRUNCATE ouf_recovery_fixture.objects, ouf_recovery_fixture.generation",

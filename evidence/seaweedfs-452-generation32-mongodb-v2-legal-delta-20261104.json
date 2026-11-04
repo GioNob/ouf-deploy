@@ -1,0 +1,41 @@
+{
+  "classificationReused": false,
+  "goModSum": "h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA=",
+  "historicalModule": {
+    "module": "go.mongodb.org/mongo-driver",
+    "sourceZipSha256": "42f4a475c38067e0c7b8490414711298193990d347294307c3c12829f545fcc4",
+    "texts": {
+      "LICENSE": {
+        "byteIdenticalToV2": true,
+        "bytes": 11357,
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      },
+      "THIRD-PARTY-NOTICES": {
+        "byteIdenticalToV2": false,
+        "bytes": 80578,
+        "sha256": "7de04f108a833eea9dc54b6f05ac10c152f83d99df4a58a1b33e6a49b7321f08"
+      }
+    },
+    "version": "v1.17.9"
+  },
+  "licenceReview": "OPEN",
+  "module": "go.mongodb.org/mongo-driver/v2",
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.generation32-mongo-legal-delta.v1",
+  "sourceZipSha256": "fa7378829ce45e2d2ec8b92f0dfa1b65f52cd4aa308d17e92cf222ace6069783",
+  "sum": "h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=",
+  "targetOperations": 0,
+  "texts": {
+    "LICENSE": {
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "THIRD-PARTY-NOTICES": {
+      "bytes": 78904,
+      "sha256": "163cf23ef82f3fc9932ff27d56bfb84ea9bda064f6bd70829588b9060436dc7a"
+    }
+  },
+  "version": "v2.9.2"
+}
