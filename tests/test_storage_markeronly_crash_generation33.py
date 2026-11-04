@@ -70,6 +70,47 @@ class MarkerPhaseTests(unittest.TestCase):
                      'restart_compact','relocate_live','crash_compact','crash_commit','crash_rename'):
             with self.assertRaisesRegex(ValueError,'ONE_CRASH_ROLE'):lab.run(None,None,None,None,crash_marker=True,**{flag:True})
 
+
+class MarkerSchedulingTests(unittest.TestCase):
+    def observer(self,events):
+        observer=object.__new__(c.Observer)
+        observer.tids={11,12};observer.stopped={11,12};observer.syncs=[];observer.clone_events=[]
+        observer.old_path='/data/volume.cpd';observer.new_path='/data/volume.dat'
+        observer.resume=lambda tid,sig=0:observer.stopped.discard(tid)
+        def wait(deadline):
+            if not events:raise AssertionError('unexpected resume past marker')
+            tid,info=events.pop(0);observer.current=info;return tid,0
+        def event(tid,status):observer.stopped.add(tid);return 'syscall',0
+        observer.wait=wait;observer.event=event;observer.info=lambda tid:observer.current
+        observer.string=lambda tid,address:str(Path(observer.new_path).with_suffix('.cpc'))
+        observer.sync_kind=lambda tid,fd:'directory'
+        observer.freeze_all=lambda deadline:{'11':'t','12':'t'}
+        second={'operation':'entry','syscallNotResumed':True,'tid':11,'number':264,
+                'oldPath':'/data/volume.cpx','newPath':'/data/volume.idx','firstRenameResult':{'returnValue':0}}
+        return observer,second
+    def events(self):
+        return [(11,{'op':'exit','returnValue':0,'isError':False}),
+                (12,{'op':'entry','number':74,'args':[9]}),
+                (12,{'op':'exit','returnValue':0,'isError':False}),
+                (12,{'op':'entry','number':263,'args':[-100,123,0]})]
+    def test_ordered_commit_may_continue_on_another_traced_thread(self):
+        observer,second=self.observer(self.events());phase=observer.observe_marker(second)
+        self.assertEqual(phase['secondRenameResult']['tid'],11);self.assertEqual(phase['tid'],12)
+        self.assertEqual([x['kind'] for x in phase['postRenameTrace']],
+                         ['idx-rename-exit','directory-fsync-entry','directory-fsync-exit','marker-unlink-entry'])
+        self.assertIn(12,observer.stopped)
+    def test_cross_thread_unlink_without_completed_sync_fails_closed(self):
+        events=self.events();observer,second=self.observer([events[0],events[-1]])
+        with self.assertRaisesRegex(ValueError,'BOTH_RENAMES_AND_SYNC'):observer.observe_marker(second)
+        self.assertIn(12,observer.stopped)
+        self.assertEqual(observer.marker_progress['postRenameTrace'][-1]['kind'],'marker-unlink-entry')
+    def test_cross_thread_sync_failure_or_sync_before_rename_exit_rejected(self):
+        events=self.events();events[2][1]['returnValue']=-5;events[2][1]['isError']=True
+        observer,second=self.observer(events)
+        with self.assertRaisesRegex(ValueError,'SUCCESSFUL_POST_RENAME'):observer.observe_marker(second)
+        events=self.events();observer,second=self.observer([events[1],events[0]])
+        with self.assertRaisesRegex(ValueError,'DIRECTORY_SYNC_AFTER_SECOND_EXIT'):observer.observe_marker(second)
+
 @unittest.skipUnless(platform.system()=='Linux' and platform.machine()=='x86_64','Linux ptrace mechanics required')
 class NativeMarkerOnlyTests(unittest.TestCase):
     def test_execute_both_renames_sync_and_hold_unlink_until_kill(self):
@@ -79,6 +120,13 @@ root=pathlib.Path(sys.argv[1]);stem=root/'ouf-identity-fixture_3'
 threading.Thread(target=lambda:time.sleep(60),daemon=True).start()
 (root/'ready').write_text('ready')
 while not (root/'go').exists():time.sleep(.002)
+handoff=threading.Event()
+def clear_marker():
+    handoff.wait()
+    fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
+    os.unlink(stem.with_suffix('.cpc'))
+    (root/'unexpected-marker-unlink').write_text('failed')
+threading.Thread(target=clear_marker,daemon=True).start()
 def commit():
     stem.with_suffix('.cpd').write_bytes(b'compacted-data-contents')
     stem.with_suffix('.cpx').write_bytes(b'compacted-index!')
@@ -86,9 +134,7 @@ def commit():
     fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
     os.rename(stem.with_suffix('.cpd'),stem.with_suffix('.dat'))
     os.rename(stem.with_suffix('.cpx'),stem.with_suffix('.idx'))
-    fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
-    os.unlink(stem.with_suffix('.cpc'))
-    (root/'unexpected-marker-unlink').write_text('failed')
+    handoff.set();time.sleep(60)
 threading.Thread(target=commit).start();time.sleep(60)
 '''
         with tempfile.TemporaryDirectory() as temp:
@@ -107,6 +153,8 @@ threading.Thread(target=commit).start();time.sleep(60)
                 phase=observer.observe_marker(second);frozen=c.pre.files(root,target)
                 c.validate_phase(first_files,mixed,frozen,phase['threadStates'],phase['secondRenameResult'],phase['postRenameDirectorySyncs'])
                 self.assertTrue(phase['cloneEvents']);self.assertTrue(phase['path'].endswith('.cpc'))
+                self.assertNotEqual(phase['tid'],phase['secondRenameResult']['tid'])
+                self.assertEqual(phase['postRenameDirectorySyncs'][0]['tid'],phase['tid'])
                 self.assertFalse((root/'unexpected-marker-unlink').exists())
                 os.kill(child.pid,signal.SIGKILL);observer.wait_for_kill(timeout=10)
                 self.assertEqual(c.pre.files(root,target),frozen)

@@ -32,6 +32,8 @@ class Observer(inter.Observer):
     def observe_marker(self,second,timeout=15):
         require(second['operation']=='entry' and second['syscallNotResumed'] and self.tids==self.stopped,'SECOND_RENAME_HELD_BEFORE_RELEASE')
         second_tid=second['tid'];second_result=None;syncs=[];pending_sync={}
+        self.marker_progress={'secondRenameResult':None,'postRenameDirectorySyncs':syncs,'postRenameTrace':[]}
+        trace=self.marker_progress['postRenameTrace']
         marker=str(Path(self.new_path).with_suffix('.cpc'))
         for tid in sorted(self.tids):self.resume(tid)
         deadline=time.monotonic()+timeout
@@ -44,26 +46,33 @@ class Observer(inter.Observer):
                     require(info['op']=='exit' and info['returnValue']==0 and not info['isError'],'SECOND_NATIVE_IDX_RENAME_MUST_SUCCEED')
                     second_result={'tid':tid,'operation':'exit','returnValue':0,'isError':False,
                                    'number':second['number'],'oldPath':second['oldPath'],'newPath':second['newPath']}
+                    self.marker_progress['secondRenameResult']=second_result
+                    trace.append({'kind':'idx-rename-exit','tid':tid,'returnValue':0})
                 elif info['op']=='entry':
                     nr,args=info['number'],info['args'];pending_sync.pop(tid,None)
                     if nr==74 and self.sync_kind(tid,args[0])=='directory':
                         require(second_result is not None,'DIRECTORY_SYNC_AFTER_SECOND_EXIT')
                         pending_sync[tid]=True
+                        trace.append({'kind':'directory-fsync-entry','tid':tid})
                     if nr in (82,264,316):
                         old,new=(args[0],args[1]) if nr==82 else (args[1],args[3])
                         require(self.string(tid,old) not in (self.old_path,second['oldPath']),'NO_REPEATED_COMPACTION_RENAME')
                     if nr in (87,263):
                         name=self.string(tid,args[0] if nr==87 else args[1])
                         if name==marker:
-                            require(second_result is not None and tid==second_tid and len(syncs)==1,'BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK')
+                            # Go may migrate the committing goroutine after any blocking syscall.
+                            # Bind ordering, exact paths and the traced process, not one OS thread.
+                            trace.append({'kind':'marker-unlink-entry','tid':tid,'number':nr,'path':name})
+                            require(second_result is not None and len(syncs)==1 and tid in self.tids,'BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK')
                             require(nr!=263 or args[2]==0,'PLAIN_MARKER_UNLINK_REQUIRED')
                             states=self.freeze_all(time.monotonic()+5)
                             return {'tid':tid,'number':nr,'operation':'entry','path':name,'syscallNotResumed':True,
                                     'threadStates':states,'successfulSyncs':self.syncs,'firstRenameResult':second['firstRenameResult'],
-                                    'secondRenameResult':second_result,'postRenameDirectorySyncs':syncs,'cloneEvents':self.clone_events}
+                                    'secondRenameResult':second_result,'postRenameDirectorySyncs':syncs,'postRenameTrace':trace,'cloneEvents':self.clone_events}
                 elif pending_sync.pop(tid,None):
                     require(info['returnValue']==0 and not info['isError'],'SUCCESSFUL_POST_RENAME_DIRECTORY_FSYNC')
                     syncs.append({'kind':'directory','tid':tid,'returnValue':0})
+                    trace.append({'kind':'directory-fsync-exit','tid':tid,'returnValue':0})
                     require(len(syncs)==1,'ONE_POST_RENAME_DIRECTORY_FSYNC')
             self.resume(tid,sig if kind=='signal' else 0)
 
@@ -107,6 +116,7 @@ def run(root,target,pid,container,output):
         atomic_json(output/'markeronly-observer-exit.json',{'status':'ALL_TRACED_THREADS_KILLED','exits':exits})
     except Exception as error:
         report.update(status='UNQUALIFIED',failure=type(error).__name__+': '+str(error))
+        if 'observer' in locals():report['markerObservationProgress']=getattr(observer,'marker_progress',{})
         atomic_json(output/'markeronly-failure.json',report);raise
 
 if __name__=='__main__':

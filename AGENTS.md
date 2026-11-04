@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — marker-only: secondo tentativo negativo e correzione scheduling
+
+- Native41882562646/job126758546819 su84706b4f:186test PASS,13 scenari precedenti PASS, marker-only FAILED `BOTH_RENAMES_AND_SYNC_BEFORE_UNLINK`. Readback41883215358 su e5e59d02 FAILED `NATIVE_SCENARIO_PASS: markeronly-crash-lab`; nessuna qualifica marker-only.
+- Originale artifact13350816644,16325348byte SHA256eef93e9e5d413759c871d8ceac21b901fe29c0e8b712c1028d38d6b4f2172e3d: ZIP scaricato e1683checksum/1684membri verificati. Copia readback13350218739,15914026byte SHA256ab54cef5090cdd7c6990630b010b7c7e98f36d1867e7164959775fe53a430a8d. Receipt completa `evidence/storage-markeronly33-second-failure-diagnosis-20261104.json`; tutti i tentativi precedenti preservati.
+- L'osservatore imponeva erroneamente stesso TID per IDX rename e unlink CPC. Go può migrare dopo syscall; la vecchia asserzione composta non ha conservato gli operandi, quindi il vecchio archivio non discrimina da solo mismatch TID e fsync assente. Correzione limitata al gruppo tracciato e ordine reale IDX-exit0→directory-fsync entry/exit0→unlink entry esatto, ora con trace e diagnostica persistenti. Inode/bytes/fsync/freeze/SIGKILL obbligatori invariati. Nuova prova Linux trasferisce fsync/unlink a un altro thread;3 regressioni pure positive/negative aggiunte.15test puri PASS locale,1Linux skipped Windows;189test nativi attesi.
+- Nuovo native richiesto dopo correzione; readback originale e stato terminale necessari prima di PASS. Nessuna modifica al candidato OCI33, MinIO o target. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali invariati. Backup/restore coordinato resta il passo successivo solo dopo qualifica.
+
 ## Checkpoint storage 2026-11-04 — assunzione offset del test corretta, nuova qualifica PENDING
 
 - Run 41878669053 / producer 87fc66ca: 183 test Linux PASS, dodici scenari PASS, inter-rename FAILED, marker-only SKIPPED. Readback 41878956434 fallito per receipt marker-only assente; originale e copia conservati (artifact 13348782049/13348816994).
