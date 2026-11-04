@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — SIGKILL congiunto33 e ripresa senza reseed PASS
+
+- Run [41819462147](https://github.com/GioNob/ouf-deploy/actions/runs/41819462147), producer `1a8a868fc4361b567127fe898e36c5da2b51d4e2`:74 test e cinque scenari nativi PASS. Quattro servizi137/non-OOM prima di qualsiasi sostituto (timestamp verificati), quattro nuovi container/namespace/gate, client invariato e tutte le regole prima di ogni exec.
+- Inventari fermo/gate identici: master4file/1335byte, filer40/5274, volume7.dat/8389064; prefissi .dat preservati. TopologyId/localizzazioni/registrazioni al primo probe, metadati completi identici. Oggetto8388865byte integro al primo GET/HEAD/LIST senza nuovi PUT; contatori nuovi filer0→1954 e volume0→8397434 byte.
+- 37 dinieghi/10 link ammessi per percorso, other_denied zero;32 container distinti,25 arresti puliti,7 SIGKILL intenzionali, cinque reti rimosse. Originale verificato307 membri/306 checksum/22 sorgenti. Dossier docs/OUF_STORAGE_ALL_CRASH33_20261104.md; receipt evidence/storage-all-crash33-readback-20261104.json.
+- Solo perdita congiunta dei processi dopo PUT concluso, non power loss/reboot host/perdita disco/HA/in-flight/RPO/RTO; page cache conservata. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: interruzione PUT durante trasferimento del corpo prima dell'ACK nella fixture; riconciliazione da letture reali, nessun oggetto parziale valido e nessun reinvio mutativo automatico.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL congiunto33 in qualifica
 
 - Estesa la fixture alla perdita di master/volume/filer/S3: quattro exit137/non-OOM prima di ogni sostituto, inventari storage fermi, nuovi container/namespace/gate con radici/IP/config conservati. Client invariato; tutti i firewall e otto listener chiusi prima di ogni exec.
