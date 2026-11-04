@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — rotazione credenziali S3 33 e revoca persistente PASS
+
+- Run [41811147933](https://github.com/GioNob/ouf-deploy/actions/runs/41811147933), producer `69680f3e2ca42515110ac3d6ee4f6b1b27dd5415`: 22 test e qualifica nativa OLD → OLD+NEW → NEW → restart NEW PASS. Stessa identità applicativa/policy e stesso TLS; owner bootstrap invariato.
+- 19 dinieghi HTTP/S3: chiave non introdotta o revocata, HEAD403 senza codice XML, limiti di policy e secret errato. NEW scrive una sola volta e rilegge; oggetto OLD da 50 byte invariato, due oggetti finali/91 byte, zero retry mutativi. Sette container distinti/arresti puliti, tre sostituzioni del solo gateway, master/volume/filer senza restart.
+- Originale verificato: 46 membri / 45 checksum / 15 sorgenti esatte, quattro configurazioni fixture e fingerprint TLS invariato; chiavi private assenti. Dossier docs/OUF_STORAGE_CREDENTIAL_ROTATION33_20261104.md e receipt evidence/storage-credential-rotation33-readback-20261104.json.
+- Limite: chiavi sintetiche pubbliche, gateway sostituito con interruzione; nessuna prova hot reload, zero downtime, STS/sessioni, richieste in-flight o secret custody produttiva. MiniPET invariato 18,3/46, circa40% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: isolamento laterale dei ruoli SeaweedFS nel laboratorio, con collegamenti minimi e dinieghi nativi; la loopback condivisa attuale non lo qualifica.
+
 ## Checkpoint storage 2026-11-04 — rotazione credenziali S3 33 in qualifica
 
 - Fixture OLD → OLD+NEW → NEW → restart NEW, stessa policy prefix-scoped e TLS; tre sostituzioni bounded del solo gateway con ruoli storage invariati. Dinieghi OLD, prova di una scrittura NEW e letture coerenti, nessun resend mutativo. Owner bootstrap invariato; nessuna chiave target.
