@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — cleanup orfano33, primo run fermato sul confronto namespace
+
+- Run41823561384/source2910750d:97 test e sei regressioni PASS; settimo caso FAILED su FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED dopo cleanup logica già osservata (indice16→32, tombstone-1, chunkGET404, gRPC677/579byte). Post-restart non qualificato. Originale fallito e readback parziale conservati;456 membri/455 checksum/26 sorgenti verificati.
+- Correzione fixture: bind mount dei vecchi namespace prima di SIGKILL, confronto mentre sono ancora vivi per evitare ambiguità da riuso inode, rilascio prima di exec/finally. Distinzione namespace non rilassata.100 test locali PASS; nuova qualifica nativa PENDING. Dossier docs/OUF_STORAGE_ORPHAN_CLEANUP33_20261104.md.
+- MiniPET e target invariati. Nessuna nuova autorizzazione o operazione produttiva.
+
 ## Checkpoint storage 2026-11-04 — cleanup logica orfano33 in qualifica
 
 - Nuovo settimo caso con sola tupla S3→volume gRPC28080 aggiunta, installata prima dell'exec; sei regressioni con policy originale conservate. Chunk identificato da header/hash .dat e GET200 completo prima dell'abort; cleanup automatica richiede tombstone esatta e GET404, contatori gRPC e persistenza dopo riavvio completo. Nessun DELETE/PUT/retry del controller.

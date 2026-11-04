@@ -97,6 +97,27 @@ class CleanupTests(unittest.TestCase):
                 connection=Mock();response=connection.getresponse.return_value;response.status=status;response.read.return_value=body
                 with patch.object(c.http.client,'HTTPConnection',return_value=connection),self.assertRaises(ValueError):c.read_chunk('172.30.233.11',chunk,expected)
 
+    def test_namespace_pin_binds_exact_live_inode(self):
+        with tempfile.TemporaryDirectory() as temp:
+            command=Mock(side_effect=['','12345'])
+            value=lab.pin_network_namespace('123',Path(temp)/'pin','net:[12345]',command)
+            self.assertEqual(value,{'namespace':'net:[12345]','sourcePid':123,'bindMountVerified':True})
+            self.assertEqual(command.call_args_list[0].args[0][3:5],['--bind','/proc/123/ns/net'])
+
+    def test_wrong_namespace_pin_is_released_before_failure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            command=Mock(side_effect=['','999',''])
+            with self.assertRaisesRegex(ValueError,'PINNED_NAMESPACE_IDENTITY'):
+                lab.pin_network_namespace('123',Path(temp)/'pin','net:[12345]',command)
+            self.assertEqual(command.call_args_list[-1].args[0][2],'umount')
+
+    def test_symlink_or_invalid_pid_cannot_pin_namespace(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'pin';path.symlink_to(Path(temp)/'missing');command=Mock()
+            with self.assertRaises(ValueError):lab.pin_network_namespace('123',path,'net:[12345]',command)
+            with self.assertRaises(ValueError):lab.pin_network_namespace('../host',Path(temp)/'fresh','net:[12345]',command)
+            command.assert_not_called()
+
     def test_cleanup_mode_rejects_combined_faults(self):
         for flag in ('crash_volume','crash_filer','crash_master','crash_all','interrupt_stream'):
             with self.assertRaisesRegex(ValueError,'ONE_CRASH_ROLE'):

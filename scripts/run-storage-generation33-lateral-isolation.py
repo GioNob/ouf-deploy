@@ -367,6 +367,20 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
+def pin_network_namespace(pid, path, expected, command):
+    # Keep the old namespace alive so its inode cannot be recycled before comparison.
+    require(str(pid).isdigit() and int(pid)>0 and expected.startswith('net:[') and expected.endswith(']'), 'EXACT_NAMESPACE_PIN_ID_REQUIRED')
+    require(path.parent.is_dir() and not path.parent.is_symlink() and not path.exists() and not path.is_symlink(), 'FRESH_NAMESPACE_PIN_REQUIRED')
+    path.touch(exist_ok=False)
+    command(['sudo','-n','mount','--bind','/proc/'+str(pid)+'/ns/net',str(path)])
+    try:
+        inode=command(['sudo','-n','stat','-Lc','%i',str(path)]).strip()
+        require('net:['+inode+']'==expected, 'PINNED_NAMESPACE_IDENTITY_REQUIRED')
+    except Exception:
+        command(['sudo','-n','umount',str(path)]);raise
+    return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
+
+
 def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False):
     require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
     interrupt_stream = interrupt_stream or cleanup_stream
@@ -378,7 +392,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
     work.mkdir(parents=True); evidence = work / 'evidence'; evidence.mkdir()
     data = work / 'fixture'; config = data / 'config'; config.mkdir(parents=True)
     prefix = 'ouf-lateral33-' + str(os.getpid()); network = prefix + '-net'; created_network = False
-    lab = cold.Lab(prefix, data, evidence); pids = {}; failure = None
+    lab = cold.Lab(prefix, data, evidence); pids = {}; failure = None; namespace_pins = []
     report = {'status': 'SYNTHETIC_LATERAL33_FAILED', 'targetOperations': 0}
     def save(name, value): module.write_json(evidence / (name + '.json'), value)
     def ns(role, args, **kwargs):
@@ -554,6 +568,12 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             save(crash_role + '-before-crash', by_role)
             old_names = {role: prefix + '-' + role for role in replaced_roles}
             old_indexes = {role: lab.names.index(name) for role, name in old_names.items()}
+            retained_ns = {}
+            for role in replaced_roles:
+                pin = work / ('retained-' + role + '.netns')
+                retained_ns[role] = pin_network_namespace(pids[role], pin, inodes[ROLES.index(role)], cold.command)
+                namespace_pins.append(pin)
+            save('retained-network-namespaces', retained_ns)
             # One bounded Docker batch, not an assertion of physical simultaneity.
             cold.command(['docker', 'kill', '--signal', 'KILL', *old_names.values()])
             killed_roles = dict(zip(replaced_roles, json.loads(cold.command(['docker', 'inspect', *old_names.values()]))))
@@ -607,6 +627,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_ROLE_LISTENER_BEFORE_RELEASE')
                 save(role + '-replacement-closed-listeners', blocked)
             if crash_all: validate_replacement_namespaces(dict(zip(ROLES, inodes)), replacement_ns, host_ns)
+            for pin in list(namespace_pins):
+                cold.command(['sudo','-n','umount',str(pin)]); namespace_pins.remove(pin)
+            save('released-network-namespaces', {'roles':list(replaced_roles),'allReleased':True,'beforeAnyReplacementExec':True})
             current_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
             validate_retained_roles(by_role, current_roles, crash_role); save(crash_role + '-replacement-gated', current_roles)
             for role, args in inventory_commands.items():
@@ -749,13 +772,16 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
             'forcedContainerDeaths': 4 if crash_all else 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
-            'networkRemoved': True, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
+            'networkRemoved': True, 'retainedNamespacePinsReleased': not namespace_pins, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
             'releaseAdmitted': False, 'runtimeAuthorityIssued': False, 'productionTopologyQualified': False,
             'internalMtlsQualified': False, 'allowedPortMethodAuthorizationQualified': False,
             'ipv6MatrixQualified': False, 'hostCompromiseIsolationQualified': False}
     except Exception as error:
         failure = error; report['failure'] = type(error).__name__ + ': ' + str(error)[:512]
     finally:
+        for pin in list(namespace_pins):
+            try: cold.command(['sudo','-n','umount',str(pin)]); namespace_pins.remove(pin)
+            except Exception as error: report['namespacePinCleanupFailure'] = str(error)[:256]; failure = failure or error
         if lab.names:
             try: lab.stop()
             except Exception as error: report['cleanupFailure'] = str(error)[:256]; failure = failure or error

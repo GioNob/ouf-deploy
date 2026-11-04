@@ -1,6 +1,14 @@
 # OUF — generazione33: cleanup logica del chunk orfano
 
-Stato: **97 test locali PASS; qualifica nativa PENDING**. Checkpoint precedente `bf040e975ac0ea8060f6d2450205eb7b3b460da3`. Stessa immagine/coorte33; sette scenari distinti, con le sei regressioni conservate.
+Stato: **100 test locali PASS; qualifica nativa corretta PENDING**. Checkpoint precedente `bf040e975ac0ea8060f6d2450205eb7b3b460da3`. Stessa immagine/coorte33; sette scenari distinti, con le sei regressioni conservate.
+
+## Prima esecuzione conservata e correzione della fixture
+
+Run [41823561384](https://github.com/GioNob/ouf-deploy/actions/runs/41823561384), source `2910750df27ccbff9c6e1f1a25f6c8eea8da8928`:97 test e sei regressioni PASS, cleanup-lab **FAILED** su `FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED`. Prima del blocco: chunk `6,04996b75db` letto200/4194304byte, indice16→32byte con record originale e tombstone-1, GET404 e traffico gRPC0→677/579byte. Nessuna qualifica post-restart per questa esecuzione.
+
+Il controllo confrontava gli inode dei nuovi namespace con numeri storici dopo aver distrutto quelli vecchi: non esclude il riuso dell'inode. L'inode del sostituto non è stato salvato prima dell'assert fallita, quindi non viene ricostruito o dichiarato noto. La correzione mantiene vivi i vecchi namespace con bind mount prima del SIGKILL, verifica ogni identità e li rilascia dopo creazione/confronto dei sostituti e prima di ogni exec. Il requisito di namespace distinti resta invariato. Rilascio anche in finally; tre test per pin esatto, mismatch con rilascio e input/symlink invalidi. [Semantica Linux namespace lifetime](https://man7.org/linux/man-pages/man7/namespaces.7.html).
+
+Originale fallito artifact13316969633:470874byte, SHA256 `6d99724041aace57cd0aa4e18aea56c45d62ebdfcb38a2814e65786c6cba4af4`,456 membri/455 checksum/26 sorgenti del producer verificati. [ZIP fallito](../evidence/artifacts/storage-orphan-cleanup33-failed-41823561384.zip), [readback parziale](../evidence/storage-orphan-cleanup33-failed-readback-20261104.json). Il risultato fallito non viene sostituito da un PASS.
 
 ## Protocollo e confine
 
@@ -15,7 +23,7 @@ Il precedente stream-lab mantiene la policy originale: S3→volume gRPC28080 neg
 
 Il parser è intenzionalmente vincolato al formato della fixture: header16byte + DataSize4, indici16byte (needleId8,offset4 in unità8,size4 signed). Rifiuta record parziali, mapping non corrispondente, aggiornamenti inattesi o symlink. Riferimenti upstream esatti della build: [needle_read.go](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/storage/needle/needle_read.go), [needle_map_memory.go](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/storage/needle_map_memory.go), [volume BatchDelete](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/server/volume_grpc_batch_delete.go). La lettura HTTP reale conferma il fileId derivato prima che la prova possa dichiarare assenza.
 
-Undici nuovi test su delta esatto della policy, contatori, binding header/hash/identità, mapping indice e tombstone, file errati/symlink, letture reali simulate con errori permanenti, modi CLI incompatibili. Totale97 con le86 regressioni; YAML/shell PASS.
+Undici nuovi test su delta esatto della policy, contatori, binding header/hash/identità, mapping indice e tombstone, file errati/symlink, letture reali simulate con errori permanenti, modi CLI incompatibili. Con i tre test sui pin namespace, totale100; YAML/shell PASS.
 
 ## Limiti
 

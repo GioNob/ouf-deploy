@@ -1,0 +1,101 @@
+{
+  "schema": "ouf.orphan-cleanup33-failed-readback.v1",
+  "status": "FAILED_NAMESPACE_IDENTITY_CHECK_AFTER_LOGICAL_CLEANUP",
+  "producerCommit": "2910750df27ccbff9c6e1f1a25f6c8eea8da8928",
+  "runId": 41823561384,
+  "jobId": 126552458314,
+  "artifactId": 13316969633,
+  "archiveSha256": "6d99724041aace57cd0aa4e18aea56c45d62ebdfcb38a2814e65786c6cba4af4",
+  "archiveBytes": 470874,
+  "archiveMembers": 456,
+  "checksumsVerified": 455,
+  "sourcesVerified": 26,
+  "priorPathStatuses": {
+    "lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "crash-lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "filer-crash-lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "master-crash-lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "all-crash-lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "stream-lab": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS"
+  },
+  "failureReceipt": {
+    "failure": "ValueError: FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED",
+    "status": "SYNTHETIC_LATERAL33_FAILED",
+    "targetOperations": 0
+  },
+  "chunk": {
+    "cookieHex": "996b75db",
+    "datFile": "ouf-identity-fixture_6.dat",
+    "dataBytes": 4194304,
+    "dataOffset": 28,
+    "dataSha256": "ab00f0a9983617f0f0556df4a93789539f94111e18f7ea04c3739a4492a303dd",
+    "fileId": "6,04996b75db",
+    "needleId": 4,
+    "needleOffset": 8,
+    "needleSize": 4194316,
+    "volumeId": "6",
+    "volumeVersion": 3
+  },
+  "liveIndex": {
+    "fileId": "6,04996b75db",
+    "indexBytes": 16,
+    "indexFile": "ouf-identity-fixture_6.idx",
+    "indexSha256": "cc332ba749dbf633505c04c4de1d90fe367737d0e542dc57ea78b3af88397362",
+    "matchingEntries": [
+      {
+        "offset": 8,
+        "record": 0,
+        "size": 4194316
+      }
+    ],
+    "mutatingRequests": 0,
+    "tombstoned": false
+  },
+  "deletedIndex": {
+    "fileId": "6,04996b75db",
+    "indexBytes": 32,
+    "indexFile": "ouf-identity-fixture_6.idx",
+    "indexSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+    "matchingEntries": [
+      {
+        "offset": 8,
+        "record": 0,
+        "size": 4194316
+      },
+      {
+        "offset": 4194360,
+        "record": 1,
+        "size": -1
+      }
+    ],
+    "mutatingRequests": 0,
+    "tombstoned": true
+  },
+  "chunkLiveGet": {
+    "expectation": "present",
+    "fileId": "6,04996b75db",
+    "mutatingRequests": 0,
+    "responseBytes": 4194304,
+    "responseSha256": "ab00f0a9983617f0f0556df4a93789539f94111e18f7ea04c3739a4492a303dd",
+    "status": 200
+  },
+  "chunkAfterCleanupGet": {
+    "expectation": "absent",
+    "fileId": "6,04996b75db",
+    "mutatingRequests": 0,
+    "responseBytes": 0,
+    "responseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": 404
+  },
+  "grpcBefore": {
+    "s3": 0,
+    "volume": 0
+  },
+  "grpcAfter": {
+    "s3": 677,
+    "volume": 579
+  },
+  "postRestartQualified": false,
+  "causeLimit": "Historical inode comparison after old namespaces were destroyed does not exclude kernel inode reuse. Replacement inode was not saved before the failing assertion; no definitive reuse identity or storage recovery PASS inferred. Correction retains old namespaces during replacement comparison and releases pins before replacement execution.",
+  "privateKeysAbsent": true
+}
