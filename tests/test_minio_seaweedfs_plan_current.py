@@ -841,8 +841,13 @@ class QualifiedGeneration33PlanTest(unittest.TestCase):
 
     def test_exact_hosted_evidence_and_full32_history(self):
         history=self.helper.restore_generation32_plan(self.plan)
-        result=self.helper.validate_tree33(ROOT,self.plan,lambda root,old:{})
+        historical_result={'progressPercent':17.5/46*100}
+        result=self.helper.validate_tree33(ROOT,self.plan,lambda root,old:dict(historical_result))
         self.assertEqual(result['currentGeneration'],33)
+        self.assertAlmostEqual(result['progressPercent'],self.plan['progressEstimate']['exactWeightedEstimatePercent'])
+        self.assertEqual(result['planningProgressEstimatePercent'],self.plan['progressEstimate']['reportedApproximatePercent'])
+        self.assertEqual(result['weightedPlanningCredits'],self.plan['progressEstimate']['weightedCredits'])
+        self.assertAlmostEqual(historical_result['progressPercent'],17.5/46*100)
         self.assertEqual(result['currentBinaryModules'],214)
         self.assertEqual(result['currentCompiledPackages'],1532)
         self.assertEqual(history['currentQualification']['generation'],32)

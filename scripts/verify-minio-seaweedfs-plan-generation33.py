@@ -352,6 +352,8 @@ def validate_tree33(root, plan, historical_validator):
                     repositoryPatchCount=33, qualifiedImagePatchCount=33, candidateLockSha256=LOCK_SHA,
                     generation33ImageReceiptSha256=IMAGE_SHA, generation33CohortReceiptSha256=COHORT_SHA,
                     generation33RuntimeReceiptSha256=RUNTIME_SHA, generation33MimeRegression="PASS_SYNTHETIC_ONLY",
-                    planningProgressEstimatePercent=40,weightedPlanningCredits=18.3,
+                    progressPercent=plan['progressEstimate']['exactWeightedEstimatePercent'],
+                    planningProgressEstimatePercent=plan['progressEstimate']['reportedApproximatePercent'],
+                    weightedPlanningCredits=plan['progressEstimate']['weightedCredits'],
                     currentBinaryModules=214, currentCompiledPackages=1532, historicalProofTransferredToGeneration33=False)
     return previous
