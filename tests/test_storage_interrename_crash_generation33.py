@@ -78,18 +78,43 @@ class MixedPhaseTests(unittest.TestCase):
         data=b'\x03'+b'\0'*7+struct.pack('>IQiI',int(witness['cookieHex'],16),witness['needleId'],size,len(body))+body
         old=struct.pack('>QIi',witness['needleId'],4194392//8,size)
         pending=struct.pack('>QIi',witness['needleId'],1,size)
-        return old,pending,data,witness
+        return old,pending,data,witness,len(data)+4194392-8
 
     def test_old_offset_is_invalid_but_pending_index_binds_real_body(self):
         result=c.mixed_witness(*self.witness());self.assertTrue(result['oldIndexInvalidForNewDat'])
         self.assertEqual(result['pendingNeedleOffset'],8)
-        old,pending,data,witness=self.witness()
-        with self.assertRaisesRegex(ValueError,'OUTSIDE'):c.mixed_witness(pending,pending,data,witness)
+        old,pending,data,witness,before_bytes=self.witness()
+        with self.assertRaisesRegex(ValueError,'OUTSIDE'):c.mixed_witness(pending,pending,data,witness,before_bytes)
 
     def test_wrong_pending_index_or_body_is_rejected(self):
-        old,pending,data,witness=self.witness()
-        with self.assertRaisesRegex(ValueError,'RELOCATES'):c.mixed_witness(old,old,data,witness)
-        with self.assertRaisesRegex(ValueError,'EXACT_WITNESS_BODY'):c.mixed_witness(old,pending,data[:-1]+bytes([data[-1]^1]),witness)
+        old,pending,data,witness,before_bytes=self.witness()
+        with self.assertRaisesRegex(ValueError,'RELOCATES'):c.mixed_witness(old,old,data,witness,before_bytes)
+        with self.assertRaisesRegex(ValueError,'EXACT_WITNESS_BODY'):c.mixed_witness(old,pending,data[:-1]+bytes([data[-1]^1]),witness,before_bytes)
+
+    def prefixed_witness(self):
+        old,pending,data,witness,before_bytes=self.witness()
+        prefix=b'live-prefix-data'*524288
+        shift=len(prefix)
+        prefix_data=data[:8]+prefix+data[8:]
+        nid,off,size=struct.unpack('>QIi',old);old=struct.pack('>QIi',nid,off+shift//8,size)
+        nid,off,size=struct.unpack('>QIi',pending);pending=struct.pack('>QIi',nid,off+shift//8,size)
+        return old,pending,prefix_data,witness,before_bytes+shift
+
+    def test_live_prefix_allows_nonzero_compacted_witness_position(self):
+        result=c.mixed_witness(*self.prefixed_witness())
+        self.assertGreater(result['pendingNeedleOffset'],8)
+        self.assertEqual(result['oldNeedleOffset']-result['pendingNeedleOffset'],4194384)
+        self.assertTrue(result['pendingIndexBodyVerified'])
+
+    def test_nonzero_offset_still_requires_exact_dat_shrink(self):
+        args=self.prefixed_witness()
+        with self.assertRaisesRegex(ValueError,'RELOCATES'):c.mixed_witness(*args[:4],args[4]+8)
+
+    def test_nonzero_offset_does_not_accept_old_or_wrong_pending_index(self):
+        old,pending,data,witness,before_bytes=self.prefixed_witness()
+        nid,off,size=struct.unpack('>QIi',pending)
+        for wrong in (old,struct.pack('>QIi',nid,off+1,size)):
+            with self.assertRaisesRegex(ValueError,'RELOCATES'):c.mixed_witness(old,wrong,data,witness,before_bytes)
 
     def test_mode_is_exclusive_before_any_environment_action(self):
         spec=importlib.util.spec_from_file_location('inter_lab33',ROOT/'scripts/run-storage-generation33-lateral-isolation.py')

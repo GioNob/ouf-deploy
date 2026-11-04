@@ -50,7 +50,7 @@ def validate_unselected(before, after, target):
     require(set(before)==set(after) and target in before,'UNCHANGED_RAW_VOLUME_SET')
     require(all(before[name]==after[name] for name in before if name!=target),'UNSELECTED_RAW_FILES_UNCHANGED')
 
-def mixed_witness(old_index, pending_index, data, witness):
+def mixed_witness(old_index, pending_index, data, witness, before_dat_bytes):
     require(witness==relocation.identity(witness),'EXACT_MIXED_WITNESS_IDENTITY')
     def entry(raw):
         require(0<len(raw)<=1024 and len(raw)%16==0,'BOUNDED_COMPLETE_MIXED_INDEX')
@@ -61,7 +61,9 @@ def mixed_witness(old_index, pending_index, data, witness):
     old_offset,old_size=entry(old_index);new_offset,new_size=entry(pending_index)
     require(8<=len(data)<=33*1024*1024 and data[0] in (2,3),'BOUNDED_MIXED_DAT')
     require(old_offset>=len(data),'OLD_WITNESS_OFFSET_OUTSIDE_NEW_DAT_REQUIRED')
-    require(new_offset==8 and old_offset-new_offset>=4194304 and new_offset+20+witness['dataBytes']<=len(data),'PENDING_INDEX_RELOCATES_VALID_WITNESS')
+    require(new_offset>=8 and new_offset%8==0 and old_offset-new_offset>=4194304
+            and old_offset-new_offset==before_dat_bytes-len(data)
+            and new_offset+20+witness['dataBytes']<=len(data),'PENDING_INDEX_RELOCATES_VALID_WITNESS')
     cookie,nid,size,length=struct.unpack('>IQiI',data[new_offset:new_offset+20])
     digest=pre.sha(data[new_offset+20:new_offset+20+length])
     require(nid==witness['needleId'] and format(cookie,'08x')==witness['cookieHex'] and size==old_size==new_size
@@ -139,7 +141,7 @@ def run(root,target,pid,container,output):
         require(pre.process_identity(pid)==identity,'SAME_PROCESS_BETWEEN_RENAMES')
         validate_mixed(before,first_files,frozen,phase['threadStates'],phase['firstRenameResult'])
         raw_frozen=raw_storage(root);validate_unselected(raw_before,raw_frozen,target)
-        mixed=mixed_witness((root/target).with_suffix('.idx').read_bytes(),(root/target).with_suffix('.cpx').read_bytes(),(root/target).read_bytes(),witness)
+        mixed=mixed_witness((root/target).with_suffix('.idx').read_bytes(),(root/target).with_suffix('.cpx').read_bytes(),(root/target).read_bytes(),witness,before['.dat']['bytes'])
         retain(root,target,output,'interrename-frozen-retained',('.dat','.idx','.cpx','.cpc'))
         require(pre.files(root,target)==frozen and pre.thread_states(pid)==phase['threadStates'],'MIXED_FROZEN_STATE_STABLE')
         report.update(phase);report.update(status='OBSERVED_INTERRENAME_FROZEN',processFrozen=pre.process_identity(pid),

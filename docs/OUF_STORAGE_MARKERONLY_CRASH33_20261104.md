@@ -1,3 +1,16 @@
+## Checkpoint storage 2026-11-04 — assunzione offset del test corretta, nuova qualifica PENDING
+
+- Run 41878669053 / producer 87fc66ca: 183 test Linux PASS, dodici scenari PASS, inter-rename FAILED, marker-only SKIPPED. Readback 41878956434 fallito per receipt marker-only assente; originale e copia conservati (artifact 13348782049/13348816994).
+- Diagnosi dai bytes originali: 1483 membri/1482 checksum verificati anche localmente. Il volume 2 contiene altri needle vivi prima del witness: offset 12583096→8388712, DAT 13631776→9437392, riduzione esatta 4194384. Il vecchio controllo new_offset==8 rifiutava questo layout valido. Body/ID/cookie integri nelle copie trattenute; non si promuove il run fallito a PASS.
+- Corretto il controllo per richiedere offset allineato e riduzione esattamente uguale alla differenza delle lunghezze DAT, oltre a tutti i vincoli di fase/inode/hash/controllo del body. Tre regressioni per prefisso vivo, riduzione errata e indice errato. Diagnostica del controller distingue uscita osservatore da timeout; limiti e segnali non allentati. Cleanup failure del primo run preservata.
+- 27 test puri inter-rename/marker-only PASS locali, due test Linux skipped; nuova suite attesa 186 test/14 scenari. Receipt negativa: evidence/storage-markeronly33-first-failure-diagnosis-20261104.json. Readback indipendente da aggiornare al nuovo producer/run/job, senza sovrascrivere il primo esito.
+- MiniPET invariato 39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna modifica a OCI/binario/MinIO/target, merge/deploy/admission/replay/reset/grant.
+
+
+Il precedente riepilogo queued descriveva metadati ritardati: i log originali mostrano attività iniziata mentre le API continuavano a riportare coda. Non si attribuisce una causa di piattaforma non dimostrata. Il passo successivo resta completare il caso marker-only dopo la correzione del test; nessun nuovo passo di migrazione.
+
+## Storia preservata
+
 # Crash dopo le rinomine e prima della rimozione del marker33 — 2026-11-04
 
 **IMPLEMENTED / NATIVE QUALIFICATION PENDING.**

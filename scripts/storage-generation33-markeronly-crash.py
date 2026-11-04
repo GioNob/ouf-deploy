@@ -89,7 +89,7 @@ def run(root,target,pid,container,output):
         second=observer.observe_second(first);mixed_files=pre.files(root,target)
         inter.validate_mixed(before,first_files,mixed_files,second['threadStates'],second['firstRenameResult'])
         inter.validate_unselected(raw_before,raw_storage(root),target)
-        mixed=inter.mixed_witness((root/target).with_suffix('.idx').read_bytes(),(root/target).with_suffix('.cpx').read_bytes(),(root/target).read_bytes(),witness)
+        mixed=inter.mixed_witness((root/target).with_suffix('.idx').read_bytes(),(root/target).with_suffix('.cpx').read_bytes(),(root/target).read_bytes(),witness,before['.dat']['bytes'])
         inter.retain(root,target,output,'markeronly-before-idx-retained',('.dat','.idx','.cpx','.cpc'))
         report.update(beforeIdxRenamePhase=second,filesBeforeIdxRename=mixed_files,mixedWitness=mixed)
         atomic_json(output/'markeronly-before-idx-rename.json',report)

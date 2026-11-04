@@ -833,7 +833,11 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 if crash_commit:
                     deadline=time.monotonic()+(130 if crash_marker else 115 if crash_rename else 95)
                     while not (evidence/(phase_prefix+'-freeze.json')).is_file():
-                        require(observer_process.poll() is None and time.monotonic()<deadline,'POSTMARKER_OBSERVATION_BUDGET')
+                        if observer_process.poll() is not None:
+                            diagnostic=evidence/(phase_prefix+'-failure.json')
+                            detail=json.loads(diagnostic.read_bytes()).get('failure','NO_OBSERVER_DIAGNOSTIC') if diagnostic.is_file() else 'NO_OBSERVER_DIAGNOSTIC'
+                            raise ValueError('COMPACTION_OBSERVER_FAILED: '+detail)
+                        require(time.monotonic()<deadline,'POSTMARKER_OBSERVATION_BUDGET')
                         time.sleep(.05)
                     require(observer_process.poll() is None,'POSTMARKER_TRACER_MUST_HOLD_RENAME')
                 else:
