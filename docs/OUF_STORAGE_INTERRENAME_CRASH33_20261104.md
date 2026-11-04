@@ -41,3 +41,20 @@ L'osservazione altera lo scheduling, non la build candidata. Non qualifica caric
 concorrente continuo, power loss, durabilita hardware, RPO/RTO o migrazione target.
 MiniPET invariato18,3/46=39,78% (~40% ±10),0/8gate/0/21AT/0/120oggetti reali.
 Nessun VPS/merge/deploy/replay/reset/grant/admission; MinIO invariato.
+
+## Producer e verifica indipendente
+
+Producer`5ac67de14e4aaf17808b12f95040ed297aef37dc`,
+[run41870302570](https://github.com/GioNob/ouf-deploy/actions/runs/41870302570),
+job126715227789. Test Linux di entrambe le fasi ptrace PASS prima del laboratorio;
+risultato completo nativo ancora PENDING a questa osservazione.
+
+Il readback separato e vincolato a run/attempt1/producer esatti: acquisisce
+l'archivio originale appena pubblicato, controlla digest API e tutti i membri,
+38sorgenti contro checkout esatto,170test/13scenari/65arresti puliti. Decodifica
+direttamente IDX/cpx/DAT conservati per provare vecchio offset invalido, nuovo body
+integro e promozione esatta. Conserva anche le osservazioni dello stato remoto.
+La conferma completed/success di run e job e un controllo separato obbligatorio,
+con budget finito: nessun rilancio del laboratorio per ritardi del riepilogo Actions.
+Originale e readback vengono conservati90giorni; custodia durevole dei nuovi ZIP
+non dichiarata. Readback e conferma terminale devono entrambi passare.
