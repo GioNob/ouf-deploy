@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — crash33: errore del verificatore corretto, nuova qualifica richiesta
+
+- Run41803868175 conserva il primo FAIL: SIGKILL post-PUT, PostgreSQL immediate restart e ledger persistente riusciti, ma il verificatore pretendeva ID evento consecutivi. Archivio originale verificato (225 membri/224 checksum/23 sorgenti); sequenza reale [1,2,3,34,35,36], payload completi e prefisso originale invariato.
+- Correzione: ID bigint positivi strettamente crescenti, sei payload esatti, prefisso confermato identico e confronto integrale source/restore. Tre regressioni nuove incluso l'archivio reale; 33 test locali totali PASS. Il primo FAIL non diventa PASS; nuova CI necessaria.
+- MiniPET40% ±10 invariato; nessun target effect, gate o AT chiuso. Dossier docs/OUF_STORAGE_CRASH33_20261104.md.
+
 ## Checkpoint storage 2026-11-04 — crash post-PUT33 in qualifica
 
 - Estensione bounded del common cut33: worker OS distinto invia un PUT e si termina con SIGKILL prima dell'ACK catalogo; marker fsynced e segnale -9 obbligatori. PostgreSQL immediate restart deve preservare ACK, PENDING e storico; stessa chiave restituisce EXISTING_PENDING, senza secondo PUT.

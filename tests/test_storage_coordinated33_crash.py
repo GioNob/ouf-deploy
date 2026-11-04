@@ -1,6 +1,9 @@
 """Crash evidence must establish process death and a durable post-PUT boundary."""
 import importlib.util
 import json
+import copy
+import hashlib
+import zipfile
 from pathlib import Path
 import signal
 import subprocess
@@ -22,6 +25,35 @@ class WorkerCrashTests(unittest.TestCase):
 
     def result(self, code=-signal.SIGKILL, stdout=b'', stderr=b''):
         return subprocess.CompletedProcess(['fixture-worker'], code, stdout, stderr)
+
+    def historical_ledger(self):
+        path = ROOT / 'evidence/artifacts/storage-common-cut33-failed-41803868175.zip'
+        self.assertEqual('ccfa6b4c1d3fc8acfbdad709db82c72f87163ce9d408eafe4ad9b7b50ae7f8fd',
+                         hashlib.sha256(path.read_bytes()).hexdigest())
+        with zipfile.ZipFile(path) as z:
+            before = json.loads(z.read('crash-lab/evidence/crash-ledger-before-restart.json'))
+            final = json.loads(z.read('crash-lab/evidence/postgres-source/fence-014.stdout'))
+        return before, final
+
+    def test_real_crash_sequence_gaps_preserve_complete_history(self):
+        before, final = self.historical_ledger()
+        self.assertEqual([1, 2, 3, 34, 35, 36], [e['sequence'] for e in final['events']])
+        cut.validate_ledger(final)
+        cut.validate_preserved_prefix(before, final)
+
+    def test_duplicate_reversed_or_invalid_sequence_is_rejected(self):
+        _, original = self.historical_ledger()
+        for bad in (0, -1, True, '34', 3, 37, 2**63):
+            final = copy.deepcopy(original); final['events'][3]['sequence'] = bad
+            with self.subTest(value=bad), self.assertRaisesRegex(RuntimeError, 'STRICT_EVENT_SEQUENCE'):
+                cut.validate_ledger(final)
+
+    def test_committed_prefix_cannot_be_renumbered(self):
+        before, final = self.historical_ledger()
+        for event in final['events']: event['sequence'] += 100
+        cut.validate_ledger(final)  # Ordering alone must not authorize rewritten history.
+        with self.assertRaisesRegex(RuntimeError, 'COMMITTED_EVENT_PREFIX'):
+            cut.validate_preserved_prefix(before, final)
 
     def test_real_sigkill_is_observed_from_distinct_process(self):
         result = cut.postgres.native.run([sys.executable, '-I', '-B', '-S', '-c',

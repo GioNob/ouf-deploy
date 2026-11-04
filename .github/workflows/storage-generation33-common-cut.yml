@@ -140,6 +140,7 @@ jobs:
             scripts/{run-seaweedfs-452-generation33-labs,run-seaweedfs-452-cold-recovery,run-seaweedfs-452-identity-tls,storage-generation33-lab-binding,readback-seaweedfs-452-generation33-image,qualify-seaweedfs-452-generation33-image}.py \
             tests/{run_storage_postgres_fixture_native,run_storage_postgres_logical_restore,run_storage_postgres_writer_fence}.py \
             tests/fixtures/storage-recovery/writer-fence.sql \
+            evidence/artifacts/storage-common-cut33-failed-41803868175.zip \
             tools/storage_recovery/{coordinated,manifest,postgres_fixture,profile}.py \
             tools/storage_security/{generation_image_v4,generation_readback_v1}.py \
             profiles/seaweedfs-452-lab/profile.json \

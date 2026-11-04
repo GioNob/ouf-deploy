@@ -26,7 +26,7 @@ The restored PostgreSQL diagnostic call counter is now reused, preserving both
 the restored ledger query and the later reservation-denial SQL output; historical
 archives remain unchanged.
 
-Local validation: 19 common-cut/crash tests, including a real child SIGKILL and
+Local validation: 22 common-cut/crash tests, including a real child SIGKILL and
 negative evidence tests; 7 existing fence and 4 logical-restore tests. Native
 Docker/PostgreSQL qualification is PENDING until the original CI archive has
 been read back. No target operation or real object is involved.
@@ -42,3 +42,26 @@ MiniPET stays **18.3/46 = 39.78%, approximately 40% ±10**; no extra credit.
 **0/8 gates, 0/21 AT, 0/120 real objects copied.** Authority remains the storage
 MiniPET, original PET/Matrix and resilience policy v3 (durable intent, no blind
 resend after ambiguity, restart preserving state and finite failure handling).
+
+## First native attempt retained; sequence validation corrected
+
+Run 41803868175 on `7e6d80a3f003aa6c245edca39deedcb658749296` failed
+before the crash-path dump/restore. The ordinary path passed. Worker SIGKILL,
+immediate PostgreSQL restart, pending-intent preservation, no-resend decision,
+S3 fencing and reconciliation completed. The verifier then rejected the valid
+event IDs `[1,2,3,34,35,36]` because it incorrectly required `[1,2,3,4,5,6]`.
+
+The original failed archive is retained at
+`evidence/artifacts/storage-common-cut33-failed-41803868175.zip`; independent
+readback verified 225 members, 224 checksums and 23 source hashes. The three
+committed events survive unchanged, and all six expected payloads remain in
+order. [Failed readback](../evidence/storage-crash33-failed-readback-20261104.json).
+
+[PostgreSQL17 sequence documentation](https://www.postgresql.org/docs/17/functions-sequence.html)
+explicitly permits gaps after crashes. Validation now requires six exact event
+payloads and strictly increasing positive bigint identifiers. A separate exact
+prefix comparison prohibits renumbering or rewriting committed history; the
+final restored ledger must still equal the source ledger byte-semantically.
+Three regressions cover the original failed archive, invalid/duplicate/reversed
+IDs and rewriting an otherwise ordered prefix. **33 local tests total PASS**.
+The failed native run remains failed; fresh qualification is required.

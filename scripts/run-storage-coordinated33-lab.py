@@ -79,9 +79,22 @@ def validate_ledger(ledger):
     events = [('RESERVED', 'lab-acked', 1, 0), ('ACKED', 'lab-acked', 1, 0),
               ('RESERVED', 'lab-ambiguous', 1, 0), ('DRAINING', None, 2, 1),
               ('RECONCILED', 'lab-ambiguous', 2, 1), ('FROZEN', None, 2, 2)]
-    require(ledger.get('events') == [dict(sequence=n, kind=k, operation=o, epoch=e, version=v)
-            for n, (k, o, e, v) in enumerate(events, 1)], 'EXACT_ACK_AND_FENCE_HISTORY_REQUIRED')
+    actual = ledger.get('events')
+    require(isinstance(actual, list) and len(actual) == len(events)
+            and all(isinstance(row, dict) for row in actual), 'EXACT_ACK_AND_FENCE_HISTORY_REQUIRED')
+    sequence = [row.get('sequence') for row in actual]
+    # PostgreSQL identity sequences can jump after crash recovery. Event ordering
+    # and complete payload history are contractual; consecutive IDs are not.
+    require(all(type(n) is int and 0 < n < 2**63 for n in sequence)
+            and all(a < b for a, b in zip(sequence, sequence[1:])), 'STRICT_EVENT_SEQUENCE_REQUIRED')
+    require(actual == [dict(sequence=n, kind=k, operation=o, epoch=e, version=v)
+            for n, (k, o, e, v) in zip(sequence, events)], 'EXACT_ACK_AND_FENCE_HISTORY_REQUIRED')
     return expected
+
+
+def validate_preserved_prefix(before, final):
+    require(final['events'][:len(before['events'])] == before['events'],
+            'COMMITTED_EVENT_PREFIX_MUST_REMAIN_IDENTICAL')
 
 
 def read_objects(request):
@@ -280,6 +293,8 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
                 'RECONCILE_REAL_S3_BEFORE_FREEZE_REQUIRED')
         require(calls.call('finish_drain', 1) == 'FROZEN', 'COMMON_FROZEN_CUT_REQUIRED')
         ledger = ledger_snapshot(calls, proof, 'source')
+        if crash_after_put:
+            validate_preserved_prefix(json.loads((proof / 'crash-ledger-before-restart.json').read_bytes()), ledger)
         compare_readback(ledger, observed)
         frozen.stop()
         # The quiesced interval spans both the PostgreSQL dump and the cold S3 copy.
