@@ -35,6 +35,8 @@ commit_spec = importlib.util.spec_from_file_location('commit_crash33', ROOT / 's
 commit_crash = importlib.util.module_from_spec(commit_spec); commit_spec.loader.exec_module(commit_crash)
 inter_spec = importlib.util.spec_from_file_location('interrename33', ROOT / 'scripts/storage-generation33-interrename-crash.py')
 interrename = importlib.util.module_from_spec(inter_spec); inter_spec.loader.exec_module(interrename)
+marker_spec = importlib.util.spec_from_file_location('markeronly33', ROOT / 'scripts/storage-generation33-markeronly-crash.py')
+markeronly = importlib.util.module_from_spec(marker_spec); marker_spec.loader.exec_module(markeronly)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -402,11 +404,12 @@ def pin_network_namespace(pid, path, expected, command):
     return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False, relocate_live=False, crash_compact=False, crash_commit=False, crash_rename=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact, relocate_live, crash_compact, crash_commit, crash_rename)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
-    crash_commit = crash_commit or crash_rename
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False, relocate_live=False, crash_compact=False, crash_commit=False, crash_rename=False, crash_marker=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact, relocate_live, crash_compact, crash_commit, crash_rename, crash_marker)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    after_rename_crash = crash_rename or crash_marker
+    crash_commit = crash_commit or after_rename_crash
     crash_compact = crash_compact or crash_commit
-    phase_prefix = 'interrename' if crash_rename else 'postmarker' if crash_commit else 'precommit'
+    phase_prefix = 'markeronly' if crash_marker else 'interrename' if crash_rename else 'postmarker' if crash_commit else 'precommit'
     relocate_live = relocate_live or crash_compact
     restart_compact = restart_compact or relocate_live
     compact_stream = compact_stream or restart_compact
@@ -813,7 +816,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 require(post_topology_before['status']=='MASTER_TOPOLOGY_READY','PRECOMMIT_TOPOLOGY_REQUIRED')
                 # Arm before the sole vacuum; frozen files, not timing, qualify the phase.
                 observer_log = (evidence/(phase_prefix+'-observer.log')).open('w')
-                observer_args = [str(ROOT/'scripts/storage-generation33-interrename-crash.py'),'observe'] if crash_rename else [
+                observer_args = [str(ROOT/'scripts/storage-generation33-markeronly-crash.py'),'observe'] if crash_marker else [str(ROOT/'scripts/storage-generation33-interrename-crash.py'),'observe'] if crash_rename else [
                     str(ROOT/('scripts/storage-generation33-commit-crash.py' if crash_commit else 'scripts/storage-generation33-compaction-crash.py'))]
                 observer_process = subprocess.Popen(['sudo','-n',sys.executable,'-I','-B','-S',
                     *observer_args,str(data/'volume'),
@@ -828,7 +831,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 vacuum_process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=vacuum_stdout,stderr=vacuum_stderr,text=True)
                 vacuum_process.stdin.write(script);vacuum_process.stdin.close()
                 if crash_commit:
-                    deadline=time.monotonic()+(115 if crash_rename else 95)
+                    deadline=time.monotonic()+(130 if crash_marker else 115 if crash_rename else 95)
                     while not (evidence/(phase_prefix+'-freeze.json')).is_file():
                         require(observer_process.poll() is None and time.monotonic()<deadline,'POSTMARKER_OBSERVATION_BUDGET')
                         time.sleep(.05)
@@ -838,7 +841,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     observer_log.close()
                 crash_compaction_evidence=json.loads((evidence/(phase_prefix+'-freeze.json')).read_bytes())
                 require(crash_compaction_evidence['status']=='OBSERVED_'+phase_prefix.upper()+'_FROZEN','OBSERVED_COMPACTION_PHASE_REQUIRED')
-                if crash_rename:
+                if after_rename_crash:
                     def mixed_raw_snapshot(output):
                         value=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                             str(ROOT/'scripts/storage-generation33-interrename-crash.py'),'raw-storage',str(data/'volume')]))
@@ -850,7 +853,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                         require(all(files['.dat'][k]==compact_before['datFiles'][name][k] for k in ('bytes','allocatedBytes','sha256'))
                             and all(files['.idx'][k]==compact_before['indexes'][idx][k] for k in ('bytes','sha256')),'OBSERVER_BASELINE_STORAGE_BINDING')
                     require(crash_compaction_evidence['witnessBeforeDatRename']==witness_before,'EXACT_WITNESS_BEFORE_FIRST_RENAME')
-                    require(mixed_raw_snapshot('interrename-frozen-storage')==crash_compaction_evidence['rawStorageFrozen'],'EXACT_MIXED_STORAGE_FROZEN')
+                    require(mixed_raw_snapshot(phase_prefix+'-frozen-storage')==crash_compaction_evidence['rawStorageFrozen'],'EXACT_MIXED_STORAGE_FROZEN')
                 else:
                     compact_after=compact_snapshot(phase_prefix+'-frozen-dat')
                     compaction_crash.validate_rollback(compact_before,compact_after,gated=True)
@@ -966,8 +969,8 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             require(gated_storage==post_storage,'POST_COMPACTION_STOPPED_STORAGE_UNCHANGED_REQUIRED')
             save('post-compaction-gated-storage',gated_storage)
             if crash_compact:
-                if crash_rename:
-                    require(mixed_raw_snapshot('interrename-gated-storage')==crash_compaction_evidence['rawStorageFrozen'],'EXACT_MIXED_STORAGE_RETAINED_BEFORE_EXEC')
+                if after_rename_crash:
+                    require(mixed_raw_snapshot(phase_prefix+'-gated-storage')==crash_compaction_evidence['rawStorageFrozen'],'EXACT_MIXED_STORAGE_RETAINED_BEFORE_EXEC')
                 else:
                     gated_dat=compact_snapshot('post-compaction-gated-dat')
                     compaction_crash.validate_rollback(compact_before,gated_dat,gated=True)
@@ -986,14 +989,14 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                         require(attempt<60,'POST_COMPACTION_LISTENER_BUDGET');time.sleep(1)
                     ready.append({'port':port,'attempts':attempt})
                 save('post-compaction-'+role+'-live-listeners',ready)
-            if crash_rename:
+            if after_rename_crash:
                 ready_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                     str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
-                interrename.validate_pair(crash_compaction_evidence['filesFrozen'],ready_files)
-                save('interrename-listeners-ready-files',ready_files)
-                ready_dat=compact_snapshot('interrename-listeners-ready-dat')
+                (markeronly if crash_marker else interrename).validate_pair(crash_compaction_evidence['filesFrozen'],ready_files)
+                save(phase_prefix+'-listeners-ready-files',ready_files)
+                ready_dat=compact_snapshot(phase_prefix+'-listeners-ready-dat')
                 compact.validate(compact_before,ready_dat,cleanup_chunk,recovered=True)
-                witness_observe('interrename-listeners-ready-witness')
+                witness_observe(phase_prefix+'-listeners-ready-witness')
             deadline=time.monotonic()+120
             for post_attempt in range(1,11):
                 topology=json.loads(ns('master',[sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
@@ -1029,10 +1032,10 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             if crash_commit:
                 recovered_dat=compact_snapshot('post-compaction-recovered-dat')
                 compaction_evidence=compact.validate(compact_before,recovered_dat,cleanup_chunk,recovered=True)
-                if crash_rename:compact.validate_restart(ready_dat,recovered_dat)
+                if after_rename_crash:compact.validate_restart(ready_dat,recovered_dat)
                 recovered_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                     str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
-                (interrename if crash_rename else commit_crash).validate_pair(crash_compaction_evidence['filesFrozen'],recovered_files)
+                (markeronly if crash_marker else interrename if crash_rename else commit_crash).validate_pair(crash_compaction_evidence['filesFrozen'],recovered_files)
                 save(phase_prefix+'-recovered-files',recovered_files)
                 witness_after=witness_observe(phase_prefix+'-recovered-witness')
                 relocation_evidence=relocation.validate(witness_before,witness_after,cleanup_chunk,compaction_evidence)
@@ -1062,7 +1065,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 compact.validate_restart(recovered_dat,compact_snapshot('post-compaction-final-dat'))
                 final_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                     str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
-                (interrename if crash_rename else commit_crash).validate_pair(crash_compaction_evidence['filesFrozen'],final_files)
+                (markeronly if crash_marker else interrename if crash_rename else commit_crash).validate_pair(crash_compaction_evidence['filesFrozen'],final_files)
                 save(phase_prefix+'-final-files',final_files)
             elif crash_compact: compaction_crash.validate_rollback(compact_before,compact_snapshot('post-compaction-final-dat'))
             else: compact.validate_restart(compact_after,compact_snapshot('post-compaction-final-dat'))
@@ -1077,7 +1080,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 'allServicesStoppedBeforeReplacement':True,'allRulesBeforeAnyRestartExec':True,'clientUnchanged':True,
                 'stoppedStorageUnchangedBeforeExec':True,'exactDatAndIndexSnapshotsPreserved':not crash_commit,'allocatedDatBlocksPreserved':not crash_commit,
                 'postMarkerRollforwardQualified':crash_commit,
-                'betweenRenamesCrashQualified':crash_rename,'coherentPairAtFirstReadinessBeforeFixtureReads':crash_rename,
+                'betweenRenamesCrashQualified':crash_rename,'markerOnlyCrashQualified':crash_marker,'coherentPairAtFirstReadinessBeforeFixtureReads':after_rename_crash,
                 'orphanPayloadAndIndexRemainAbsent':not crash_compact or crash_commit,'baselineS3Parity':True,'directMetadataIdentical':True,
                 'directChunk404':True,'s3ObjectAbsent':True,'topologyAndRegistrationRecovered':True,
                 'volumeResponseBytesBefore':volume_before,'volumeResponseBytesAfter':volume_after,
@@ -1089,14 +1092,14 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 require(witness_observe('relocation-after-restart')==witness_after,'RELOCATED_OFFSET_AND_DATA_MUST_SURVIVE_RESTART')
                 require(witness_read('relocation-read-after-restart')==json.loads((evidence/('relocation-read-before-compaction.json' if crash_compact else 'relocation-read-after-compaction.json')).read_bytes()),
                         'RELOCATED_NATIVE_GET_MUST_SURVIVE_RESTART')
-                if crash_rename:
-                    require(json.loads((evidence/'interrename-listeners-ready-witness.json').read_bytes())==witness_after,'WITNESS_COHERENT_FROM_FIRST_READINESS')
-                    crash_compaction_evidence.update(status='INTERRENAME_PROCESS_CRASH_RECOVERY_PASS',
-                        newDatPreservedAndPendingIndexPromoted=True,witnessRelocatedWithBodyPreserved=True,baselineS3Parity=True,
+                if after_rename_crash:
+                    require(json.loads((evidence/(phase_prefix+'-listeners-ready-witness.json')).read_bytes())==witness_after,'WITNESS_COHERENT_FROM_FIRST_READINESS')
+                    crash_compaction_evidence.update(status='MARKERONLY_PROCESS_CRASH_RECOVERY_PASS' if crash_marker else 'INTERRENAME_PROCESS_CRASH_RECOVERY_PASS',
+                        newDatPreservedAndPendingIndexPromoted=crash_rename,alreadyPromotedPairPreserved=crash_marker,markerOnlyQualified=crash_marker,witnessRelocatedWithBodyPreserved=True,baselineS3Parity=True,
                         orphanPhysicallyAbsent=True,temporaryFilesRemovedOnRecovery=True,
                         coherentPairAtFirstReadinessBeforeFixtureReads=True,
-                        vacuumCommands=1,mutatingRetries=0,betweenRenamesQualified=True,powerLossQualified=False)
-                    save('interrename-recovery',crash_compaction_evidence)
+                        vacuumCommands=1,mutatingRetries=0,betweenRenamesQualified=crash_rename,powerLossQualified=False)
+                    save(phase_prefix+'-recovery',crash_compaction_evidence)
                 elif crash_commit:
                     crash_compaction_evidence.update(status='POSTMARKER_PROCESS_CRASH_RECOVERY_PASS',
                         exactTemporaryPairRolledForward=True,witnessRelocatedWithBodyPreserved=True,baselineS3Parity=True,
@@ -1125,7 +1128,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
             'compactionCrashQualified': crash_compact, 'compactionCrashEvidence': crash_compaction_evidence,
-            'postMarkerCrashQualified': crash_commit and not crash_rename, 'betweenRenamesCrashQualified': crash_rename,
+            'postMarkerCrashQualified': crash_commit and not after_rename_crash, 'betweenRenamesCrashQualified': crash_rename, 'markerOnlyCrashQualified': crash_marker,
             'liveRelocationQualified': relocate_live and not crash_compact, 'liveRelocationEvidence': relocation_evidence,
             'nativeFixtureChunkWrites': 1 if relocate_live else 0,
             'postCompactionRestartQualified': restart_compact and not crash_compact, 'postCompactionRestartEvidence': post_evidence,
@@ -1144,7 +1147,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
     finally:
         # Wait out the bounded observer before any PID can be replaced during cleanup.
         if observer_process is not None and observer_process.poll() is None:
-            try: observer_process.wait(timeout=120 if crash_rename else 100 if crash_commit else 50)
+            try: observer_process.wait(timeout=140 if crash_marker else 120 if crash_rename else 100 if crash_commit else 50)
             except Exception as error: failure = failure or error
         for pin in list(namespace_pins):
             try: cold.command(['sudo','-n','umount',str(pin)]); namespace_pins.remove(pin)
@@ -1167,7 +1170,7 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true'); crash.add_argument('--relocate-live', action='store_true'); crash.add_argument('--crash-compact', action='store_true'); crash.add_argument('--crash-commit', action='store_true'); crash.add_argument('--crash-rename', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true'); crash.add_argument('--relocate-live', action='store_true'); crash.add_argument('--crash-compact', action='store_true'); crash.add_argument('--crash-commit', action='store_true'); crash.add_argument('--crash-rename', action='store_true'); crash.add_argument('--crash-marker', action='store_true')
     pre = sub.add_parser('precommit-files');pre.add_argument('root',type=Path);pre.add_argument('target')
     rel = sub.add_parser('relocation-observe'); rel.add_argument('root',type=Path); rel.add_argument('witness',type=Path)
     rel_upload = sub.add_parser('relocation-upload'); rel_upload.add_argument('witness',type=Path)
@@ -1185,7 +1188,7 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact, relocate_live=args.relocate_live, crash_compact=args.crash_compact, crash_commit=args.crash_commit, crash_rename=args.crash_rename)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact, relocate_live=args.relocate_live, crash_compact=args.crash_compact, crash_commit=args.crash_commit, crash_rename=args.crash_rename, crash_marker=args.crash_marker)
     elif args.operation == 'precommit-files': print(json.dumps(compaction_crash.files(args.root,args.target)))
     elif args.operation == 'relocation-observe': print(json.dumps(relocation.observe(args.root,json.loads(args.witness.read_bytes()))))
     elif args.operation == 'relocation-upload': print(json.dumps(relocation.upload(IPS['volume'],json.loads(args.witness.read_bytes()))))

@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — crash con solo marker33 in qualifica
+
+- Ripresa da `1a471e57`, head invariato e nessuna esecuzione attiva. Quattordicesimo caso sulla stessa OCI33/binario; tredici scenari e prove precedenti preservati.
+- Osservatore separato conserva prima DAT, prima IDX e prima unlink .cpc. Richiesti due rename con uscita 0, fsync directory successivo 0, tutti i thread fermi all'ingresso della rimozione del marker. Coppia DAT/IDX identica alle copie iniziali, temporanei assenti.
+- Quattro SIGKILL; recupero con solo marker da rimuovere, DAT/IDX già promossi invariati alla prima readiness e dopo le riletture. S3/metadati/witness/spazio/confini completi, nessun secondo vacuum o retry mutativo.
+- 12 nuovi test puri PASS; test ptrace Linux richiesto in CI. Attesi 183 test/14 scenari, qualifica e readback PENDING. Dossier `docs/OUF_STORAGE_MARKERONLY_CRASH33_20261104.md`.
+- MiniPET invariato 18,3/46=39,78%, 0/8 gate/0/21 AT/0/120 oggetti reali. MinIO e prove preservati; nessun VPS/merge/deploy/admission/replay/reset/grant/target.
+
 ## Checkpoint storage 2026-11-04 — crash fra rinomine DAT/IDX33 PASS
 
 - Producer `5ac67de14e4aaf17808b12f95040ed297aef37dc`, [run 41870302570](https://github.com/GioNob/ouf-deploy/actions/runs/41870302570), job 126715227789: **170 test / 13 scenari PASS**, attempt 1 completed/success. Verifier `15d6ac5b13c25866e61b8969c005dfe4355eb9e8`, [readback 41871254673](https://github.com/GioNob/ouf-deploy/actions/runs/41871254673), job 126718618427: completed/success; nessuna seconda esecuzione nativa.

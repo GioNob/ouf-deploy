@@ -21,6 +21,8 @@ on:
       - scripts/storage-generation33-commit-crash.py
       - scripts/storage-generation33-interrename-crash.py
       - tests/test_storage_interrename_crash_generation33.py
+      - scripts/storage-generation33-markeronly-crash.py
+      - tests/test_storage_markeronly_crash_generation33.py
       - tests/test_storage_commit_crash_generation33.py
       - scripts/bind-storage-generation33-compaction-source.py
       - tests/test_storage_compaction_crash_generation33.py
@@ -101,6 +103,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 -I -B -S -m unittest discover -s tests -p test_storage_interrename_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Test completed pair marker-only phase and real unlink entry freeze
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_markeronly_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
 
       - name: Bind reviewed compaction source through all generation33 patches
         run: |
@@ -246,6 +253,13 @@ jobs:
             "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-interrename-crash-lab" \
             "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-rename
 
+      - name: Crash after both renames before marker removal and preserve the completed pair
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-markeronly-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-marker
+
       - name: Preserve bounded public evidence and reject private-key material
         if: always()
         run: |
@@ -275,6 +289,7 @@ jobs:
                                    (temp/'lateral33-compaction-crash-lab/evidence','compaction-crash-lab'),
                                    (temp/'lateral33-commit-crash-lab/evidence','commit-crash-lab'),
                                    (temp/'lateral33-interrename-crash-lab/evidence','interrename-crash-lab'),
+                                   (temp/'lateral33-markeronly-crash-lab/evidence','markeronly-crash-lab'),
                                    (temp/'lateral33-compaction-source','compaction-source')):
               if work.is_dir():
                   for source in sorted(work.iterdir()):copy_public(source,out/destination/source.name)
@@ -285,7 +300,7 @@ jobs:
           (out/'source-commit.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD']).decode())
           for name in ('network-gate.sha256','network-gate-compiler.txt'):
               if (temp/name).is_file():copy_public(temp/name,out/name)
-          paths=['scripts/storage-generation33-interrename-crash.py','tests/test_storage_interrename_crash_generation33.py','scripts/storage-generation33-commit-crash.py','tests/test_storage_commit_crash_generation33.py','scripts/storage-generation33-compaction-crash.py','scripts/bind-storage-generation33-compaction-source.py',
+          paths=['scripts/storage-generation33-markeronly-crash.py','tests/test_storage_markeronly_crash_generation33.py','scripts/storage-generation33-interrename-crash.py','tests/test_storage_interrename_crash_generation33.py','scripts/storage-generation33-commit-crash.py','tests/test_storage_commit_crash_generation33.py','scripts/storage-generation33-compaction-crash.py','scripts/bind-storage-generation33-compaction-source.py',
                  'tests/test_storage_compaction_crash_generation33.py','scripts/run-storage-generation33-credential-rotation.py','tests/test_storage_credential_rotation_generation33.py',
                  'tests/fixtures/storage-recovery/network-gate.c','scripts/run-storage-generation33-tls-rotation.py','tests/test_storage_tls_rotation_generation33.py',
                  'scripts/run-storage-generation33-lateral-isolation.py','tests/test_storage_lateral_isolation_generation33.py',
