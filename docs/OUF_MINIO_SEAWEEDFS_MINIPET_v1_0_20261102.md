@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — restart dopo compattazione33 PASS
+
+- Run [41840445331](https://github.com/GioNob/ouf-deploy/actions/runs/41840445331), producer `6aa6d73b3096a4b2de8c7f2300751a0f8019118c`:122 test e nove scenari PASS. Nel nono, vacuum volume2 poi quattro SIGKILL137/non-OOM e nuovi container/namespace/gate prima del recupero. Nessun reseed o secondo vacuum.
+- DAT/IDX/hash/blocchi identici a post-compaction dopo gate, recupero e probe: allocazione12611584→8417280 e resta8417280, recuperati4194304byte. Baseline8388865byte integra al tentativo1, metadati/topologia/registrazioni identici, chunk404 e S3 assente. Nuovi filer1954 e volume8398110byte osservati;11 link/36 dinieghi ripetuti. Un needle valido4194304byte/id3 nel volume compattato2 resta integro; indice48→16. Orfano successivo al record valido, rilocazione oltre un buco non qualificata.
+- 72 container distinti,45 arresti puliti,27 SIGKILL, nove reti rimosse;810 membri/809 checksum/29 sorgenti verificati. Dossier docs/OUF_STORAGE_COMPACTION_RESTART33_20261104.md e originale/readback conservati. Primo run41840244896 PASS; due residui TLS sintetici inclusi per errore nel primo commit rimossi dal ramo, ancora nella storia e assenti dall'archivio evidenze.
+- Perdita processi dopo vacuum, non crash durante commit/power loss/secure erase/RPO/RTO. MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO e confini preservati.
+- Prossimo singolo passo: record cancellato prima di un needle valido nello stesso volume, con cambio offset e integrità/persistenza della rilocazione verificati.
+
 ## Checkpoint storage 2026-11-04 — restart dopo compattazione33 in qualifica
 
 - Nono caso: compattazione conclusa, poi secondo SIGKILL congiunto dei quattro servizi e nuova generazione dietro gate/firewall. Directory/config/IP conservati, namespace precedenti trattenuti fino al confronto; nessun reseed o secondo vacuum. DAT/IDX/hash/blocchi allocati esattamente identici al post-compaction, baseline/metadati/topologia/registrazioni/assenza verificati e nuova matrice rete.
