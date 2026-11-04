@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — compattazione33, primo run fermato al gate iniziale
+
+- Run41836677592/sourcec942fdfc:112 test PASS; primo scenario FAILED prima di seed/compattazione, launcher volume exit65/non-OOM e log vuoto, cleanup non pulita. Originale fallito conservato:37 membri/36 checksum/28 sorgenti verificati.
+- Eliminata race possibile nella pubblicazione marker: scrittura esclusiva temporaneo e rename atomico, controllo tutti i gate prima del rilascio, avvio iniziale e replacement. Marker esatto e confini non rilassati.114 test locali PASS, nuova qualifica nativa PENDING; dossier docs/OUF_STORAGE_COMPACTION33_20261104.md.
+- MiniPET e target invariati, nessun replay o nuova autorità.
+
 ## Checkpoint storage 2026-11-04 — compattazione33 in qualifica
 
 - Ottavo caso dopo cleanup/restart/probe già qualificati: un solo vacuum nativo con lock, collection e volumeId esatti, timeout90s e nessun retry. Riduzione .dat e blocchi allocati almeno4194304byte, payload/indice orfano rimossi, needle validi e volumi non selezionati preservati, nessun residuo/handle unlinkato aperto. Parità S3 e metadati dopo compattazione.

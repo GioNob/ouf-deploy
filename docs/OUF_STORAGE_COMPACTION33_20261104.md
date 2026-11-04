@@ -1,6 +1,14 @@
 # OUF — generazione33: compattazione del volume con chunk orfano
 
-Stato: **112 test locali PASS; qualifica nativa PENDING**. Checkpoint precedente `ae01a2757d8f49f03c06cace6e1d5e0e0e3cacae`. Stessa immagine/coorte33 e otto laboratori distinti; sette regressioni conservate.
+Stato: **114 test locali PASS; nuova qualifica nativa PENDING**. Checkpoint precedente `ae01a2757d8f49f03c06cace6e1d5e0e0e3cacae`. Stessa immagine/coorte33 e otto laboratori distinti; sette regressioni conservate.
+
+## Prima esecuzione conservata e marker atomico
+
+Run [41836677592](https://github.com/GioNob/ouf-deploy/actions/runs/41836677592), source `c942fdfcbb24ae7348e6ca9541624ceac3bf7bde`:112 test PASS, primo scenario FAILED prima del seed; compattazione non eseguita. Launcher volume exit65/non-OOM e log vuoto; cleanup segnala l'arresto non pulito. Il codice65 corrisponde a marker non valido; i byte del marker non furono esportati, quindi non si dichiara osservata una specifica scrittura parziale.
+
+La pubblicazione diretta con write_text poteva rendere visibile il file prima che fosse completo. Correzione: file temporaneo creato in esclusiva, scrittura/chiusura e rename atomico; validazione di tutte le directory/marker prima del rilascio. Applicata all'avvio iniziale e ai sostituti, mantenendo READY esatto e rifiuto symlink/preaperture. Due regressioni aggiunte: marker completo prima della visibilità e ultimo gate con temporaneo stale che blocca tutti. Totale114 test locali PASS.
+
+Artifact fallito13327355919:39052byte, SHA256 `9f5b733e33d157973a23e6c12eac8d29a006246bb0a63c1b2e11c9fddad3c51f`,37 membri/36 checksum/28 sorgenti del producer verificati. [Originale fallito](../evidence/artifacts/storage-compaction33-failed-41836677592.zip), [readback](../evidence/storage-compaction33-failed-readback-20261104.json). Il run resta FAILED.
 
 ## Protocollo
 
@@ -14,7 +22,7 @@ L'ottavo caso ripete integralmente cleanup, crash congiunto, recupero baseline e
 
 Riferimenti del codice upstream esatto: [volume.vacuum](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/shell/command_volume_vacuum.go), [shell e propagazione errori](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/shell/shell_liner.go), [volume compaction](https://github.com/seaweedfs/seaweedfs/blob/153ab668c99731a6d29492bf6c61d0b4fa701101/weed/storage/volume_vacuum.go).
 
-Dodici test nuovi: comando con lock e volume/collection esatti; rifiuto injection/scope multiplo; snapshot con needle vivi e cancellati; integrità; riduzione reale dei blocchi; volumi non selezionati; residui/handle; processo invariato; indici troncati/symlink; scansione handle scoped/bounded; modi CLI incompatibili. Totale112 con le100 regressioni. `/proc` è simulato nei test locali e letto realmente nel runner nativo. YAML/shell PASS.
+Dodici test nuovi: comando con lock e volume/collection esatti; rifiuto injection/scope multiplo; snapshot con needle vivi e cancellati; integrità; riduzione reale dei blocchi; volumi non selezionati; residui/handle; processo invariato; indici troncati/symlink; scansione handle scoped/bounded; modi CLI incompatibili. Con le due regressioni sui marker atomici, totale114. `/proc` è simulato nei test locali e letto realmente nel runner nativo. YAML/shell PASS.
 
 ## Limiti
 

@@ -107,6 +107,24 @@ class CompactionTests(unittest.TestCase):
             for n in range(3,258):(fds/str(n)).symlink_to('/unrelated')
             with self.assertRaisesRegex(ValueError,'BOUNDED_VOLUME_FDS'):c.deleted_handles('123',root)
 
+    def test_gate_marker_is_complete_before_it_becomes_visible(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);original=Path.replace;observations=[]
+            def replace(source,target):
+                observations.append((source.read_bytes(),target.exists()))
+                return original(source,target)
+            with patch.object(Path,'replace',replace):lab.publish_gate(root)
+            self.assertEqual(observations,[(b'READY\n',False)])
+            self.assertEqual((root/'open').read_bytes(),b'READY\n');self.assertFalse((root/'open.tmp').exists())
+
+    def test_stale_temporary_marker_in_last_gate_blocks_every_release(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);gates={r:root/r for r in lab.SERVICES}
+            for p in gates.values():p.mkdir()
+            (gates['s3']/'open.tmp').write_text('partial')
+            with self.assertRaises(ValueError):lab.release_replacement_gates(gates)
+            self.assertTrue(all(not (p/'open').exists() for p in gates.values()))
+
     def test_compaction_mode_cannot_combine_fault_modes(self):
         for flag in ('crash_volume','crash_filer','crash_master','crash_all','interrupt_stream','cleanup_stream'):
             with self.assertRaisesRegex(ValueError,'ONE_CRASH_ROLE'):

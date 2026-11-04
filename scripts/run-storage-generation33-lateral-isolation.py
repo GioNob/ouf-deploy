@@ -82,12 +82,22 @@ def validate_replacement_namespaces(old, new, host):
             and not set(new.values()).intersection(old.values()), 'FOUR_FRESH_NONHOST_NAMESPACES_REQUIRED')
 
 
+def validate_closed_gate(path):
+    require(path.is_dir() and not path.is_symlink() and all(not (path/name).exists() and not (path/name).is_symlink()
+            for name in ('open','open.tmp')), 'FRESH_CLOSED_REPLACEMENT_GATES_REQUIRED')
+
+
+def publish_gate(path):
+    validate_closed_gate(path)
+    temporary=path/'open.tmp'
+    with temporary.open('x') as output: output.write('READY\n')
+    temporary.replace(path/'open')
+
+
 def release_replacement_gates(gates):
     require(set(gates) in ({'master'}, {'volume'}, {'filer'}, set(SERVICES)), 'EXACT_GATE_SET_REQUIRED')
-    for path in gates.values():
-        require(path.is_dir() and not path.is_symlink() and not (path / 'open').exists()
-                and not (path / 'open').is_symlink(), 'FRESH_CLOSED_REPLACEMENT_GATES_REQUIRED')
-    for path in gates.values(): (path / 'open').write_text('READY\n')
+    for path in gates.values(): validate_closed_gate(path)
+    for path in gates.values(): publish_gate(path)
 
 
 def volume_inventory(root, previous=None):
@@ -532,7 +542,8 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             save(role + '-rules-before', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
             require('NETWORK_GATE_RELEASED' not in cold.command(['docker', 'logs', prefix + '-' + role]),
                     'SERVICES_MUST_WAIT_FOR_ALL_RULES')
-        for role in ROLES: (data / ('gate-' + role) / 'open').write_text('READY\n')
+        for role in ROLES: validate_closed_gate(data / ('gate-' + role))
+        for role in ROLES: publish_gate(data / ('gate-' + role))
         # Read-only readiness uses each destination namespace's loopback. All
         # advertised service ports must be live before the deny matrix is tested.
         readiness = []

@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.storage-compaction33-failed-readback.v1",
+  "status": "FAILED_INITIAL_GATE_BEFORE_SEED_AND_COMPACTION",
+  "producerCommit": "c942fdfcbb24ae7348e6ca9541624ceac3bf7bde",
+  "runId": 41836677592,
+  "jobId": 126597268392,
+  "artifactId": 13327355919,
+  "archiveSha256": "9f5b733e33d157973a23e6c12eac8d29a006246bb0a63c1b2e11c9fddad3c51f",
+  "archiveBytes": 39052,
+  "archiveMembers": 37,
+  "checksumsVerified": 36,
+  "sourcesVerified": 28,
+  "failureReceipt": {
+    "cleanupFailure": "STOP_OR_CLEANUP_FAILED:CLEAN_STOP_REQUIRED:ouf-lateral33-2755-volume",
+    "failure": "CalledProcessError: Command '['sudo', '-n', 'nsenter', '-t', '2943', '-n', '/usr/bin/python3', '-I', '-B', '-S', '/home/runner/work/ouf-deploy/ouf-deploy/scripts/run-storage-generation33-lateral-isolation.py', 'probe', '127.0.0.1', '18080', 'tcp']' returned non-zero exit status 1.",
+    "status": "SYNTHETIC_LATERAL33_FAILED",
+    "targetOperations": 0
+  },
+  "volumeStoppedState": {
+    "Dead": false,
+    "Error": "",
+    "ExitCode": 65,
+    "FinishedAt": "2026-11-04T13:17:39.929993427Z",
+    "OOMKilled": false,
+    "Paused": false,
+    "Pid": 0,
+    "Restarting": false,
+    "Running": false,
+    "StartedAt": "2026-11-04T13:17:39.142438411Z",
+    "Status": "exited"
+  },
+  "volumeLogEmpty": true,
+  "noObjectSeedRecorded": true,
+  "compactionExecuted": false,
+  "causeLimit": "Launcher exit65 denotes invalid marker; marker bytes were not retained. Direct write_text publication allows a reader to observe an empty/partial marker. Corrected with exclusive temporary write, close and atomic rename for initial and replacement gates; no launcher validation relaxed.",
+  "privateKeysAbsent": true
+}
