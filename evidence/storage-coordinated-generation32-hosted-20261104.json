@@ -1,0 +1,184 @@
+{
+  "schema": "ouf.storage-coordinated-hosted-readback.v1",
+  "status": "VERIFIED_SYNTHETIC_POSTGRES_AND_COLD_S3_RESTORE_NOT_ACCEPTANCE",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+  "workflowRunId": 41782068196,
+  "workflowJobId": 126415668271,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41782068196",
+  "workflowConclusion": "success",
+  "offlineTestsPassed": 5,
+  "originalArtifact": {
+    "id": 13299712059,
+    "path": "evidence/artifacts/storage-coordinated-generation32-41782068196.zip",
+    "bytes": 99768,
+    "sha256": "e55efbfab6f5572d83526c61f4e4fd642ad10d45b99aefc06bfc6ddecae94297",
+    "githubDigestMatched": true,
+    "members": 98,
+    "internalChecksumsVerified": 97,
+    "expiresAt": "2027-02-02T05:54:10Z"
+  },
+  "attestation": {
+    "createdByHostedJob": true,
+    "subject": "SHA256SUMS",
+    "subjectSha256": "ef13914916c18c0dbff1368fa95f46d7c466830950d70c10502522b3264f198e",
+    "url": "https://github.com/GioNob/ouf-deploy/attestations/63445278",
+    "localCryptographicVerificationPerformed": false,
+    "separateConsumerSignatureVerificationPerformed": false
+  },
+  "sourceBindingsVerifiedAgainstExactGitTree": [
+    {
+      "path": ".github/workflows/storage-452-generation32-coordinated-recovery.yml",
+      "sha256": "809dd69679597053dc7f4cb9ec047be192cc98d11cd48f9d12c1ce57623b0113",
+      "gitBlobSha": "1ae24460c4d1d1ec2585d4ea5c52d66ca11ce53c"
+    },
+    {
+      "path": "scripts/run-storage-coordinated32-lab.py",
+      "sha256": "01ca7f038bb7198f0f33cd810724c4509137221ca8b2965cde77393c31c5eb6a",
+      "gitBlobSha": "f4a296bde7cc4fc2fb5e7275495c26d1ffcc186e"
+    },
+    {
+      "path": "tests/test_storage_coordinated32_lab.py",
+      "sha256": "15087319a0750aa8dc124129418fadef7e589eb1f4449a04e7d9039365c490f8",
+      "gitBlobSha": "90b3e7704242055b06b825a072f121790ad119f4"
+    },
+    {
+      "path": "scripts/run-seaweedfs-452-generation32-labs.py",
+      "sha256": "7406a9f8ede0a77d25ebf44ae82edd9fa4c0071897565661099b0a25087a9dfd",
+      "gitBlobSha": "c54dc92abee696d383c6eef269c3fd526ef41998"
+    },
+    {
+      "path": "scripts/run-seaweedfs-452-cold-recovery.py",
+      "sha256": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+      "gitBlobSha": "7bd789e0808c52027dfa0a620966155f52ac1a1c"
+    },
+    {
+      "path": "scripts/storage-generation32-lab-binding.py",
+      "sha256": "8f890a38474fc87a3326dbbdc1906d77a0928a31d1aa91db82dfaa5801bdb9e8",
+      "gitBlobSha": "7f55ba17f5c29be738a33dd523de1a02fd9a61e0"
+    },
+    {
+      "path": "scripts/readback-seaweedfs-452-generation32-image.py",
+      "sha256": "fb088e2180b37652cb4a8bca7e3b5882c4b9f6ace661f787c044a5ff7e5cc57f",
+      "gitBlobSha": "d419bd7edb29a9210b964c7edf4dd9de70c1cd24"
+    },
+    {
+      "path": "tests/run_storage_postgres_fixture_native.py",
+      "sha256": "c730cd625cd3c23bb69881d220135662c2b9b8d570f16a5d9485efb204948780",
+      "gitBlobSha": "dc7a2a6ef9d51ea1805ae551cad706f3409b2069"
+    },
+    {
+      "path": "tests/run_storage_postgres_logical_restore.py",
+      "sha256": "d8abe6824345914030ed90be952af31865c923243f5ef966f8091b223d22eac6",
+      "gitBlobSha": "6f2604c6d572495008c5a98f8a81ab80b7d04081"
+    },
+    {
+      "path": "tests/fixtures/storage-recovery/catalog.sql",
+      "sha256": "ee6f9ca98adbdef8f75f21162878da7982c2195fef585c44b352799aa89a62db",
+      "gitBlobSha": "032e0883f9bedfbd37b067c363f9508e1a38d579"
+    },
+    {
+      "path": "tools/storage_recovery/coordinated.py",
+      "sha256": "5e691c0e51d4e7b986b97cd1f51992d74893bf90f50396ea0033585168c20499",
+      "gitBlobSha": "14f58dffec9734c453319f13227e590c73a2cc5c"
+    },
+    {
+      "path": "tools/storage_recovery/manifest.py",
+      "sha256": "ca368243e5dfbe5cffde6b9f6130ec17a59ae95a4fcc3c76105ccf41797716d6",
+      "gitBlobSha": "6ec115ff52de5e887dc7269ec2d95f90d2c2860c"
+    },
+    {
+      "path": "tools/storage_recovery/postgres_fixture.py",
+      "sha256": "772a1b93e1acd4ab191d2621766c51ef7ef1fbe0534d3a1553ce076b3b379f5b",
+      "gitBlobSha": "f0decf417c1d60d244274b17b3013e914f9dfa38"
+    },
+    {
+      "path": "tools/storage_recovery/profile.py",
+      "sha256": "bbe1b3015374d1b6ead80bf86d4718c249979dc82cc1add356d96c1f430c187e",
+      "gitBlobSha": "9c5bffc8b8ed6d55f835552d61f153d862cf8d94"
+    },
+    {
+      "path": "profiles/seaweedfs-452-lab/profile.json",
+      "sha256": "44143abba2540321d778546a2365eab97c7ed3fbe40421baaf4e422b3e6b3f37",
+      "gitBlobSha": "0bb23a8ce7cc80e51ab3350728d46f55e5dfe364"
+    },
+    {
+      "path": "releases/seaweedfs-452-generation32-candidate-lock-20261103.json",
+      "sha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+      "gitBlobSha": "744946b755c112e15a01c8a446032e5e05748abe"
+    },
+    {
+      "path": "releases/seaweedfs-452-generation32-build-manifest-20261103.json",
+      "sha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+      "gitBlobSha": "9ade5ae79163c585e67cf3a7f514298738c20a68"
+    },
+    {
+      "path": "evidence/artifacts/seaweedfs-generation32-cohort-41778371999.zip",
+      "sha256": "b235c9e9b53d20d7c4eb58250602a051f9e6d66b5faf4cf55417afa905234772",
+      "gitBlobSha": "06a39c4e8e9a9ee0f7c370e801c2634335c89fe5"
+    }
+  ],
+  "receipt": {
+    "acceptanceTestsPassed": 0,
+    "cohortReceiptSha256": "cf3a01b6426bdb64725b155d252089026a3cf08bc94859da7619ac17a88af19c",
+    "coldBackupBytes": 18848,
+    "coldBackupFiles": 89,
+    "completeProductionBackupClaimed": false,
+    "eightCleanContainerStops": true,
+    "fixtureWriterReturnedBeforeColdCopy": true,
+    "gatesClosed": 0,
+    "livePostgresRecoveryQualified": false,
+    "lockSha256": "91a7c874deb5b11f1a18dc483e99f6031644b62abb769a9e11ff1ad29250fb7d",
+    "manifestStorageRecordsRepresentVerifiedColdCopyIndices": true,
+    "ociManifestDigest": "sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6",
+    "pitrQualified": false,
+    "postgresDumpSha256": "34977dcd8a596abb1706aa32df1251b173d8022156309ecba66fb8e67aa8e0e5",
+    "postgresVersion": "17.11",
+    "releaseAdmitted": false,
+    "restoredClientIssuedOnlyListAndGet": true,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "runtimeAuthorityIssued": false,
+    "s3ObjectBytesRead": 1064,
+    "s3ObjectsReconciled": 3,
+    "schema": "ouf.storage-coordinated-fixture32.v1",
+    "simultaneousRecoveryCutQualified": false,
+    "status": "SYNTHETIC_POSTGRES_AND_COLD_S3_RESTORE_PASS",
+    "targetOperations": 0,
+    "twoIndependentColdRoots": true,
+    "writerFenceEnforced": false
+  },
+  "readback": {
+    "postgresDumpBytes": 4578,
+    "postgresSourceAndDestinationIdentifiersDiffer": true,
+    "destinationSchemaAbsentBeforeRestore": true,
+    "catalogSnapshotsByteIdentical": true,
+    "bodyReadbacksComplete": true,
+    "reconciliationFindings": [],
+    "distinctContainers": 8,
+    "cleanStops": 8,
+    "publishedPorts": 0,
+    "actualColdPayloadsContainedInEvidence": false,
+    "bodyPayloadsContainedInEvidence": false,
+    "hostedComparisonEvidenceVerified": true
+  },
+  "limits": [
+    "Synthetic catalog, synthetic objects and fixture credentials only.",
+    "The retained storage records are cold-copy indices, not complete production backup payloads.",
+    "No new local GET of restored payloads or cryptographic publisher verification is claimed.",
+    "No simultaneous PostgreSQL/S3 cut, effective writer fencing, PITR, representative RPO/RTO or target acceptance."
+  ],
+  "preserved": {
+    "consumedScopes": 17,
+    "cumulativeEngineGets": 52,
+    "teatriTechnical": "8/8",
+    "teatriFunctional": "6/6",
+    "farmacieRows": 61,
+    "farmacieOpen": 10,
+    "farmacieType": "STRING",
+    "minioActive": true,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "buildManifest": {
+    "path": "releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json",
+    "rootSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "sha256": "6fa4e051e4a5c3f41c262ce4b3d1b0b36c0de27d462c930268ef99a542b40232",
+    "vendorAfterTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547"
+  },
+  "buildProfile": {
+    "arch": "amd64",
+    "binaryBytes": 192665834,
+    "binaryDependencyModules": 214,
+    "binaryModuleRowsSha256": "429fc32a9079f3469effd90f90783b121e30cbb41e7eddadb494178f6a571370",
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "cgo": false,
+    "compiledPackages": 1532,
+    "compiledPackagesSha256": "6e4c3e404f0843e391944dbbdb6bfc46256360ec846d61eda5edcf39e82d4e11",
+    "go": "1.27.3",
+    "moduleMode": "vendor",
+    "os": "linux",
+    "tags": [],
+    "trimpath": true
+  },
+  "compiledDependencyPolicy": {
+    "allDependenciesMaintained": false,
+    "allTenArchivedCensus29ModulesAbsent": true
+  },
+  "date": "2026-11-04",
+  "dependencyMaintenance": {
+    "allDependenciesMaintained": false,
+    "status": "OPEN"
+  },
+  "dependencyPatchCount": 1,
+  "generation": 33,
+  "image": {
+    "configDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "dockerArchiveSha256": "5683622c9924be6192babb5a49588c7cb1ec53e5bf9257ed48225aa61ed26b12",
+    "layerDigest": "sha256:2659751a1733834f69e0d77e15081775ec95d724b9e51cc16a9eaf401139c577",
+    "manifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+  },
+  "independentReadback": {
+    "assessmentReproduced": true,
+    "bytes": 29743,
+    "digest": "sha256:f5ac37a2053651497499d728f11e2d5e741f425894a530b1e3e74d8b6d855c83",
+    "expiresAt": "2027-02-02T05:54:10Z",
+    "id": 13299653783,
+    "publisherSignatureVerifiedByHostedJob": true,
+    "publisherSignatureVerifiedLocally": false
+  },
+  "licenceRebinding": {
+    "mplSourceArchives": 7,
+    "path": "evidence/seaweedfs-452-generation33-licence-rebinding-local-20261104.json",
+    "sha256": "61c8d7b398ef42fb94eff8e46354cb590155896faf277ba4945a10e73bad8276",
+    "sourceArchivesRehashedBytes": 372925820,
+    "status": "REVIEW_OPEN",
+    "thirdPartyLegalTexts": 302,
+    "thirdPartyModules": 214
+  },
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "mongoV2LegalDelta": {
+    "path": "evidence/seaweedfs-452-generation32-mongodb-v2-legal-delta-20261104.json",
+    "sha256": "3ddcd24b110f078518d3473d6522ee9dd126974813714f33dc61cdcdf3300018"
+  },
+  "orderedPatchCount": 33,
+  "producerArtifact": {
+    "bytes": 174223468,
+    "digest": "sha256:4175ae9f0f5e4f6e71729084e0bfc2d9e8a2d39d3c5908dc51e5c4c695bd6121",
+    "expiresAt": "2027-02-02T05:54:10Z",
+    "id": 13299559178,
+    "retention": "TEMPORARY_CI"
+  },
+  "producerCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+  "product": "SeaweedFS",
+  "qualification": {
+    "allJobsPassed": true,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "runAttempt": 1,
+    "runId": 41782068047,
+    "sbomSha256": "c30c7163ddd806fb17200cfa2e2c325c787dd15f6e607ddec131857d8829507e",
+    "scanSha256": "69c9031e163e172d957b3aed9c786ea3759b27b4f8ba0aed8b8465dedf2e9aa9",
+    "scannedComponents": 216,
+    "scanner": "Trivy 0.70.0",
+    "spdxRecords": 218,
+    "vulnerabilitySubgate": "PASS_RAW",
+    "workflow": ".github/workflows/storage-452-generation33-image.yml"
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.storage-candidate-lock.v3",
+  "sourcePatchCount": 32,
+  "sourceRevision": {
+    "rootLockfilesSha256": {
+      "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+      "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+    },
+    "rootSourceGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "vendorAfterTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547"
+  },
+  "status": "EVIDENCE_PREPARED_NOT_ADMITTED",
+  "statusOfGates": {
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "cohortQualification": "HOSTED_PENDING",
+    "durableReleaseCustody": "OPEN",
+    "gatesClosed": 0,
+    "gatesTotal": 8,
+    "licenceReview": "OPEN",
+    "overallSwG1": "OPEN",
+    "realObjectsCopied": 0,
+    "realObjectsTotal": 120,
+    "runtimeLabs33": "PENDING"
+  },
+  "targetOperations": 0,
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "vendorSourceProfile": {
+    "path": "config/seaweedfs-generation33-vendor-source-profile.json",
+    "sha256": "2331b929c579e778a76072d279f8aa47e31cc054c0c8165936de8a7d7a6a5464"
+  },
+  "version": "4.52"
+}
