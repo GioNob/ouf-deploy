@@ -39,7 +39,7 @@ class FilerCrashTests(unittest.TestCase):
         with self.assertRaises(ValueError): lab.validate_killed_role(before['filer'], killed)
 
     def test_crash_role_is_bounded_and_simultaneous_crashes_rejected(self):
-        with self.assertRaises(ValueError): lab.validate_retained_roles({}, {}, 'master')
+        with self.assertRaises(ValueError): lab.validate_retained_roles({}, {}, 'client')
         with self.assertRaisesRegex(ValueError, 'ONE_CRASH_ROLE'):
             lab.run(None, None, None, None, crash_volume=True, crash_filer=True)
 

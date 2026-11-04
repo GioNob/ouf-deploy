@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — SIGKILL master33 in qualifica
+
+- Fixture isolata estesa al solo master: oggetto confermato, metadati chunk e probe diretti di readiness/topologia/lookup, SIGKILL137/non-OOM, stessa radice/IP e nuovo container/namespace/gate. Altri quattro ruoli invariati; firewall e listener chiusi prima dell'exec.
+- Inventario master identico durante fermo/gate; TopologyId/localizzazioni chunk invariati, registrazioni filer/S3 dal nuovo processo, GET/HEAD/LIST e volume byte counter. Nessun reseed; discovery bounded con jitter/Retry-After, regressioni normale/volume/filer e37 dinieghi conservati.
+- 64 test locali PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_MASTER_CRASH33_20261104.md. Solo crash processo con disco/page cache, non HA/quorum/power loss o RPO/RTO.
+- MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL filer33 e recupero metadati PASS
 
 - Run [41816733896](https://github.com/GioNob/ouf-deploy/actions/runs/41816733896), producer `3ec6473670168b524ac06ca7015aca2416b837ae`:52 test e percorsi normale/volume/filer PASS. SIGKILL del solo filer137/non-OOM, altri quattro ruoli invariati, stessa radice/IP e nuovo container/namespace/gate; firewall prima dell'exec.

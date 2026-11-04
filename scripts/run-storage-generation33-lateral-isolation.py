@@ -50,7 +50,7 @@ validate_killed_volume = validate_killed_role
 
 
 def validate_retained_roles(before, after, replaced='volume'):
-    require(replaced in ('volume', 'filer'), 'BOUNDED_CRASH_ROLE_REQUIRED')
+    require(replaced in ('volume', 'filer', 'master'), 'BOUNDED_CRASH_ROLE_REQUIRED')
     require(set(before) == set(after) == set(ROLES), 'EXACT_ROLE_SET_REQUIRED')
     for role in ROLES:
         old, new = before[role], after[role]
@@ -116,6 +116,91 @@ def filer_metadata():
         value = json.loads(raw); validate_filer_metadata(value, module.BUCKET)
         return {'status': 200, 'metadata': value, 'mutatingRequests': 0, 'bodyReads': 0}
     finally: connection.close()
+
+
+def master_inventory(root):
+    require(root.is_dir() and not root.is_symlink(), 'REGULAR_MASTER_ROOT_REQUIRED')
+    paths = sorted(root.rglob('*'))
+    require(0 < len(paths) <= 128 and not any(p.is_symlink() for p in paths)
+            and all(p.is_dir() or p.is_file() for p in paths), 'BOUNDED_REGULAR_MASTER_TREE_REQUIRED')
+    files = [p for p in paths if p.is_file()]
+    require(0 < sum(p.stat().st_size for p in files) <= 32 * 1024 * 1024, 'MASTER_STORAGE_BUDGET')
+    return {str(p.relative_to(root)): {'bytes': p.stat().st_size, 'sha256': keys.sha(p.read_bytes())} for p in files}
+
+
+def master_lookup_ids(metadata):
+    value = metadata['metadata']
+    validate_filer_metadata(value, 'ouf-identity-fixture')
+    ids = sorted({c['file_id'].split(',')[0] for c in value['chunks']})
+    require(0 < len(ids) <= 64 and all(v.isascii() and v.isdigit() and 0 < int(v) <= 2**32-1 for v in ids),
+            'BOUNDED_CHUNK_VOLUME_IDS_REQUIRED')
+    return ids
+
+
+def master_http(path):
+    require(path in ('/readyz', '/dir/status') or
+            (path.startswith('/dir/lookup?volumeId=') and path.removeprefix('/dir/lookup?volumeId=').isascii()
+             and path.removeprefix('/dir/lookup?volumeId=').isdigit()), 'READ_ONLY_MASTER_PATH_REQUIRED')
+    connection = http.client.HTTPConnection('127.0.0.1', 19333, timeout=5)
+    try:
+        connection.request('GET', path, headers={'Accept': 'application/json'})
+        response = connection.getresponse(); raw = response.read(256 * 1024 + 1)
+        require(len(raw) <= 256 * 1024, 'BOUNDED_MASTER_RESPONSE_REQUIRED')
+        retry = response.getheader('Retry-After')
+        require(retry is None or (retry.isascii() and retry.isdigit()), 'VALID_MASTER_RETRY_AFTER_REQUIRED')
+        return {'path': path, 'status': response.status, 'retryAfterSeconds': int(retry or '0'),
+                'body': json.loads(raw) if raw else None}
+    finally: connection.close()
+
+
+def master_topology(metadata, requester=master_http):
+    ids = master_lookup_ids(metadata); replies = []
+    def get(path):
+        value = requester(path); replies.append(value); return value
+    def waiting(response):
+        return {'status': 'MASTER_REGISTRATION_PENDING', 'responses': replies,
+                'retryAfterSeconds': response['retryAfterSeconds'], 'mutatingRequests': 0}
+    ready = get('/readyz')
+    if ready['status'] == 503: return waiting(ready)
+    require(ready['status'] == 200, 'MASTER_READY_REQUIRED')
+    status = get('/dir/status')
+    require(status['status'] == 200 and isinstance(status['body'], dict)
+            and status['body'].get('TopologyId') and isinstance(status['body'].get('Topology'), dict),
+            'MASTER_TOPOLOGY_ID_REQUIRED')
+    locations = {}
+    for vid in ids:
+        result = get('/dir/lookup?volumeId=' + vid)
+        if result['status'] in (404, 503): return waiting(result)
+        body = result['body']
+        require(result['status'] == 200 and body.get('volumeOrFileId') == vid and not body.get('error')
+                and len(body.get('locations', [])) == 1, 'EXACT_VOLUME_REGISTRATION_REQUIRED')
+        location = body['locations'][0]
+        require(location.get('url') == IPS['volume'] + ':18080' and location.get('grpcPort') == 28080
+                and not location.get('dataInRemote') and not location.get('readOnly'), 'SAME_LOCAL_VOLUME_REQUIRED')
+        locations[vid] = body
+    return {'status': 'MASTER_TOPOLOGY_READY', 'topologyId': status['body']['TopologyId'],
+            'locations': locations, 'responses': replies, 'mutatingRequests': 0}
+
+
+def validate_master_recovery(before, after):
+    require(before['status'] == after['status'] == 'MASTER_TOPOLOGY_READY'
+            and before['topologyId'] == after['topologyId']
+            and before['locations'] == after['locations'], 'MASTER_TOPOLOGY_AND_LOCATIONS_MUST_SURVIVE')
+
+
+def master_registration_log(log):
+    # Only the new container's log is accepted by the controller.
+    required = ['+ client .filer@' + IPS['filer'] + ':18888.28888',
+                '+ client .s3@' + IPS['s3'] + ':28333']
+    return all(marker in log for marker in required)
+
+
+def master_retry_delay(attempt, retry_after, now, deadline):
+    require(1 <= attempt < 10 and isinstance(retry_after, int) and retry_after >= 0, 'BOUNDED_MASTER_RETRY_REQUIRED')
+    base = (1, 2, 4, 8, 15, 15, 15, 15, 15)[attempt - 1]
+    delay = max(base * (1 + int.from_bytes(os.urandom(2), 'big') / 65535 * 0.2), retry_after)
+    require(now + delay < deadline, 'MASTER_RETRY_AFTER_EXCEEDS_TIME_BUDGET')
+    return delay
 
 
 def matrix():
@@ -245,9 +330,9 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False):
-    require(not (crash_volume and crash_filer), 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
-    crash_role = 'volume' if crash_volume else 'filer' if crash_filer else None
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False):
+    require(sum((crash_volume, crash_filer, crash_master)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else None
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not work.exists() and not work.is_symlink(), 'FRESH_WORK_REQUIRED')
     bound = binding(receipt); module = keys.tls_rotation.configure(bound); cold = module.cold
@@ -337,7 +422,12 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         crash_evidence = {}
         before = s3('seed-volume' if crash_role else 'seed')
         if crash_role:
-            if crash_filer: metadata_before = metadata('filer-metadata-before')
+            if crash_filer or crash_master: metadata_before = metadata(crash_role + '-metadata-before')
+            if crash_master:
+                topology_before = json.loads(ns('master', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
+                    'topology', str(evidence / 'master-metadata-before.json')]))
+                save('master-topology-before', topology_before)
+                require(topology_before['status'] == 'MASTER_TOPOLOGY_READY', 'BASELINE_MASTER_TOPOLOGY_REQUIRED')
             role = crash_role
             by_role = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
             save(role + '-before-crash', by_role)
@@ -350,8 +440,8 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                                  stderr=subprocess.STDOUT, timeout=30)
             (evidence / (role + '-killed.log')).write_bytes(log.stdout)
             inventory_args = ['sudo', '-n', sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
-                              'inventory' if crash_volume else 'filer-inventory',
-                              str(data / 'volume' if crash_volume else data / 'filer' / 'filerldb2')]
+                              'inventory' if crash_volume else 'filer-inventory' if crash_filer else 'master-inventory',
+                              str(data / 'volume' if crash_volume else data / 'filer' / 'filerldb2' if crash_filer else data / 'master')]
             persisted = json.loads(cold.command(inventory_args))
             save(role + '-stopped-storage', persisted)
             if crash_volume:
@@ -383,9 +473,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             blocked = [probe(role, '127.0.0.1', port) for port in PORTS[role]]
             require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_ROLE_LISTENER_BEFORE_RELEASE')
             save(role + '-replacement-closed-listeners', blocked)
-            if crash_filer:
-                gated_storage = json.loads(cold.command(inventory_args)); save('filer-gated-storage', gated_storage)
-                require(gated_storage == persisted, 'FILER_STORAGE_UNCHANGED_BEFORE_EXEC')
+            if crash_filer or crash_master:
+                gated_storage = json.loads(cold.command(inventory_args)); save(role + '-gated-storage', gated_storage)
+                require(gated_storage == persisted, 'STORAGE_UNCHANGED_BEFORE_EXEC')
             (gate_dir / 'open').write_text('READY\n')
             readiness = []
             for port in PORTS[role]:
@@ -401,6 +491,28 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 metadata_bytes_after = counter_value('filer', 'filer_http_response_bytes')['bytes']
                 require(metadata_after == metadata_before, 'PERSISTED_FILER_METADATA_MUST_SURVIVE')
                 require(metadata_bytes_after > metadata_bytes_before, 'NEW_FILER_MUST_SERVE_METADATA')
+            if crash_master:
+                deadline = time.monotonic() + 120
+                for topology_attempt in range(1, 11):
+                    topology_after = json.loads(ns('master', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
+                        'topology', str(evidence / 'master-metadata-before.json')], timeout=45))
+                    save('master-topology-attempt-' + str(topology_attempt), topology_after)
+                    log = subprocess.run(['docker', 'logs', new_name], check=True, stdout=subprocess.PIPE,
+                                         stderr=subprocess.STDOUT, text=True, timeout=10).stdout
+                    registered = master_registration_log(log)
+                    save('master-registration-attempt-' + str(topology_attempt), {'filerAndS3Registered': registered})
+                    if topology_after['status'] == 'MASTER_TOPOLOGY_READY' and registered: break
+                    require(topology_attempt < 10, 'MASTER_REGISTRATION_ATTEMPTS_EXHAUSTED')
+                    delay = master_retry_delay(topology_attempt, topology_after.get('retryAfterSeconds', 0),
+                                               time.monotonic(), deadline)
+                    save('master-wait-' + str(topology_attempt), {'delaySeconds': delay, 'mutatingRequests': 0})
+                    time.sleep(delay)
+                require(time.monotonic() <= deadline, 'MASTER_REGISTRATION_TIME_BUDGET')
+                validate_master_recovery(topology_before, topology_after)
+                save('master-topology-recovered', topology_after)
+                (evidence / 'master-registration-recovered.log').write_text(log)
+                metadata_after = metadata('master-metadata-recovered')
+                require(metadata_after == metadata_before, 'METADATA_MUST_SURVIVE_MASTER_RESTART')
             bytes_before = counter_value('volume', 'volume_http_response_bytes')['bytes']
             for attempt in range(1, 7):
                 observed = s3('read-volume', role + '-recovery-read-' + str(attempt))
@@ -420,11 +532,16 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             if crash_volume:
                 crash_evidence.update(sameVolumeRoot=True, stoppedDatBytes=sum(x['bytes'] for x in dat.values()),
                                       datPrefixesPreserved=True)
-            else:
+            elif crash_filer:
                 crash_evidence.update(sameFilerRoot=True, stoppedMetadataFiles=len(persisted),
                     stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()), gatedStorageUnchanged=True,
                     directMetadataIdentical=True, filerResponseBytesBefore=metadata_bytes_before,
                     filerResponseBytesAfter=metadata_bytes_after)
+            else:
+                crash_evidence.update(sameMasterRoot=True, stoppedMetadataFiles=len(persisted),
+                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()), gatedStorageUnchanged=True,
+                    topologyIdPreserved=True, chunkVolumeLocationsPreserved=True, filerAndS3Reregistered=True,
+                    directMetadataIdentical=True, topologyReadAttempts=topology_attempt)
             final_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
             validate_retained_roles(by_role, final_roles, role); save(role + '-recovered-roles', final_roles)
         probes = []
@@ -466,6 +583,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'successfulObjectPuts': 1, 'bucketCreates': 1, 'mutatingRequestRetries': 0, 'object': after,
             'volumeCrashInjected': crash_volume, 'volumeCrashEvidence': crash_evidence if crash_volume else {},
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
+            'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'totalDistinctContainerCount': 6 if crash_role else 5, 'forcedContainerDeaths': 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
             'networkRemoved': True, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
@@ -492,13 +610,18 @@ def main():
     for name in ('archive', 'work', 'receipt', 'gate_binary'): runner.add_argument(name, type=Path)
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
+    crash.add_argument('--crash-master', action='store_true')
+    master_inv = sub.add_parser('master-inventory'); master_inv.add_argument('root', type=Path)
+    topology = sub.add_parser('topology'); topology.add_argument('metadata', type=Path)
     sub.add_parser('metadata')
     filer_inv = sub.add_parser('filer-inventory'); filer_inv.add_argument('root', type=Path)
     inventory = sub.add_parser('inventory'); inventory.add_argument('root', type=Path); inventory.add_argument('--previous', type=Path)
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master)
+    elif args.operation == 'topology': print(json.dumps(master_topology(json.loads(args.metadata.read_bytes()))))
+    elif args.operation == 'master-inventory': print(json.dumps(master_inventory(args.root)))
     elif args.operation == 'metadata': print(json.dumps(filer_metadata()))
     elif args.operation == 'filer-inventory': print(json.dumps(filer_inventory(args.root)))
     elif args.operation == 'inventory':
