@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 - crash post-marker33 PASS
+
+- Run41864590947/producer18b93a7f:157test/12scenari PASS. Volume4/PID28516/start72537,TID28820 all'ingresso renameat264 .cpd→.dat,9thread t; fsync marker/directory0, .cpc presente e vecchia coppia DAT/IDX immutata. Binario/OCI33 invariati; nessuna scrittura ptrace a memoria/registri/storage.
+- Quattro SIGKILL137/non-OOM,9thread morti senza ripresa. Stessi inode delle copie promossi a DAT/IDX, marker/temp rimossi,4194384byte DAT e4194304allocati recuperati; witness1048593byte offset4194392→8 e GET integri. Baseline S38388865/metadati integri, recupero1,11link/36dinieghi.60stati finali puliti/111container/51morti/12reti dai controlli e receipt.
+- Readback41865783844 e verifica separata41867565360 PASS con risultati identici:1364membri/1363checksum/36sorgenti. Originale3447908byte SHAbe6f6164...,artifact13343120116; copie annidate13342372982/13343535815. Receipt evidence/storage-postmarker33-hosted-readback-20261104.json; dossier docs/OUF_STORAGE_POSTMARKER_CRASH33_20261104.md.
+- Discordanza iniziale queued contro log/artifact conclusi durante incidente GitHub Actions: risolta, stato nativo completed/success confermato. Seconda verifica readonly conserva stato e bytes separati; nessun rerun nativo e nessun criterio allentato. ZIP in Actions fino2027-02-02, nessuna custodia durevole Git nuova dichiarata; vecchi archivi preservati.
+- Prossimo singolo passo: crash fra rinomina DAT e IDX. Inter-rename/power-loss/RPO/RTO OPEN. MiniPET invariato18,3/46=39,78% (~40% ±10),0/8gate/0/21AT/0/120oggetti reali; nessun VPS/merge/deploy/replay/reset/grant, MinIO invariato.
+
 ## Checkpoint storage 2026-11-04 - crash post-marker33 in qualifica
 
 - Ripresa da23fc41f5: dodicesimo scenario con binario/OCI33 invariati. Osservatore esterno ptrace ferma ingresso prima rinomina DAT dopo fsync marker/directory; tutti i thread tracciati, nessuna modifica registri/memoria/storage, EXITKILL e nessuna ripresa dopo la fase.
