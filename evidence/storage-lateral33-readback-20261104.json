@@ -1,0 +1,58 @@
+{
+  "schema": "ouf.storage-lateral-isolation33-readback.v1",
+  "status": "VERIFIED_NATIVE_ROLE_MATRIX_AND_S3_PARITY",
+  "producerCommit": "57c9959eda87542c8ac327467e0c30c74718c4ee",
+  "archiveSha256": "8fd5ba9e63be4564e3375f2f7f32110bce6471172efdcdff7acea2ca4f29843d",
+  "archiveBytes": 49933,
+  "archiveMembers": 49,
+  "checksumsVerified": 48,
+  "sourcesVerified": 18,
+  "nativeReceipt": {
+    "acceptanceTestsPassed": 0,
+    "allDenialsHaveFirewallCounterEvidence": true,
+    "allowedPortMethodAuthorizationQualified": false,
+    "bucketCreates": 1,
+    "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "cleanContainerStops": 5,
+    "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+    "deniedRoleLinks": 22,
+    "distinctNetworkNamespaces": 5,
+    "dnsAndHostDenials": 15,
+    "gatesClosed": 0,
+    "hostCompromiseIsolationQualified": false,
+    "internalMtlsQualified": false,
+    "ipv6MatrixQualified": false,
+    "mutatingRequestRetries": 0,
+    "networkRemoved": true,
+    "object": {
+      "listedKeys": [
+        "staging/credential-rotation.bin"
+      ],
+      "mutatingRequests": 0,
+      "objects": {
+        "staging/credential-rotation.bin": {
+          "bytes": 50,
+          "mime": "application/octet-stream",
+          "sha256": "85e4ca643455ee442b6b703464ab29dd520c30404e9005728c344d7b7068b41c"
+        }
+      },
+      "peerSha256": "58a9489eb4d011f3f7377a20c8ad58c82fc4abe571493f356db40da9f361d160"
+    },
+    "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "productionTopologyQualified": false,
+    "releaseAdmitted": false,
+    "requiredRoleLinks": 10,
+    "rulesInstalledBeforeServiceExec": true,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-generation33-lateral-isolation.v1",
+    "status": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+    "successfulObjectPuts": 1,
+    "targetOperations": 0,
+    "unprivilegedServiceContainers": true
+  },
+  "fiveDistinctNamespacesVerified": true,
+  "unchangedDefaultDenyRulesVerified": true,
+  "privateKeysAbsent": true,
+  "publisherSignatureVerifiedLocally": false,
+  "readbackLimit": "Original ZIP, complete checksums, exact sources, gate/compiler digest, namespaces, nft rules and counters, live-listener probes and hosted TLS S3 parity verified. No second local native execution, internal mTLS, allowed-port method authorization, IPv6 matrix or production acceptance."
+}

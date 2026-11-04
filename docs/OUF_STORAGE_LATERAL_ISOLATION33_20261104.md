@@ -25,7 +25,20 @@ Un seed S3 firmato su TLS crea bucket e oggetto binario; GET/HEAD/LIST completo,
 
 ## Stato
 
-32 test locali PASS: 10 nuovi, inclusi compilazione statica e barriera reale di processo, e22 regressioni credential/TLS. CI nativa richiesta; esito PENDING. Il workflow conserva configurazioni nft, contatori, identità namespace/container, probe, versioni del toolchain, fonti e report S3, anche in caso di errore.
+32 test locali PASS: 10 nuovi, inclusi compilazione statica e barriera reale di processo, e22 regressioni credential/TLS. CI nativa PASS; archivio originale verificato. Il workflow conserva configurazioni nft, contatori, identità namespace/container, probe, versioni del toolchain, fonti e report S3, anche in caso di errore.
+
+## Esito nativo e rilettura
+
+- Producer `57c9959eda87542c8ac327467e0c30c74718c4ee`; [run 41812944892](https://github.com/GioNob/ouf-deploy/actions/runs/41812944892), job `126516457297` SUCCESS, artifact `13312992543`. Tutti i 32 test hosted PASS.
+- Cinque namespace distinti e non host, con cinque container non privilegiati e avvio gated. Regole registrate prima dell'apertura delle barriere, contatori iniziali a zero e struttura delle regole invariata a fine prova. Il launcher statico del laboratorio e la sua versione di compilatore sono legati tramite digest/evidenze; non si tratta di una nuova immagine OCI qualificata.
+- Otto listener reali raggiungibili localmente; 10 collegamenti tra ruoli consentiti e22 negati. Altri15 dinieghi: DNS TCP/UDP sul resolver Docker e accesso TCP443 al gateway del bridge, da ciascun ruolo. Tutti i37 dinieghi hanno contatori dedicati in aumento e errore di socket (errno1 o113); nessun timeout conteggiato come successo. Contatore other_denied a zero in tutti i ruoli nel periodo osservato.
+- Un bucket e un oggetto sintetico da50 byte creati con firma S3 e TLS verificato. GET/HEAD/LIST, hash, MIME e fingerprint TLS identici prima/dopo i probe; nessun retry mutativo. Cinque arresti puliti e bridge rimosso.
+- ZIP originale [storage-lateral33-41812944892.zip](../evidence/artifacts/storage-lateral33-41812944892.zip), 49933 byte, SHA256 `8fd5ba9e63be4564e3375f2f7f32110bce6471172efdcdff7acea2ca4f29843d`; verificati49 membri,48 checksum e18 sorgenti esatte. [Receipt di rilettura](../evidence/storage-lateral33-readback-20261104.json).
+- Rilettura locale di originali, source hash, namespace/container, policy nft e contatori, listener/probe e report S3 hosted. Nessuna seconda esecuzione nativa locale o verifica crittografica locale della firma publisher dichiarata; publisher della coorte verificato hosted con source commit esatto. Nessuna chiave privata TLS nell'archivio.
+
+## Prossimo singolo passo
+
+Arresto forzato del ruolo volume nel laboratorio isolato e ripresa, verificando l'oggetto già confermato e il ripristino delle regole di rete prima del servizio. Il test deve conservare evidenze del guasto senza trasformare una semplice ripartenza in una garanzia RPO/RTO o power-loss produttiva. Non eseguito in questo checkpoint.
 
 ## Limiti
 

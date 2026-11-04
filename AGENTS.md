@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — isolamento laterale33 nativo PASS
+
+- Run [41812944892](https://github.com/GioNob/ouf-deploy/actions/runs/41812944892), producer `57c9959eda87542c8ac327467e0c30c74718c4ee`: 32 test e prova nativa PASS. Cinque namespace distinti/non host, regole nft prima dell'exec servizi, cinque container senza capability/porte pubblicate su bridge interno.
+- Otto listener attivi;10 collegamenti consentiti,22 dinieghi tra ruoli e15 DNS/host gateway, tutti37 provati con errore socket e contatore dedicato in aumento. Regole invarianti, contatore other_denied zero. S3 firmato/TLS: un oggetto da50 byte identico in GET/HEAD/LIST e MIME prima/dopo, zero retry mutativi. Cinque arresti puliti e rete rimossa.
+- Originale verificato:49 membri/48 checksum/18 sorgenti esatte, policy/counter/namespace e fingerprint TLS coerenti. Dossier docs/OUF_STORAGE_LATERAL_ISOLATION33_20261104.md; receipt evidence/storage-lateral33-readback-20261104.json.
+- Limiti: matrice connessioni IPv4 su fixture singolo nodo per ruolo; non autorizzazione metodi sulle porte ammesse, mTLS interno, host compromesso, IPv6 o topologia produttiva. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: arresto forzato volume e ripresa nel laboratorio isolato, oggetto già confermato e regole di rete prima del riavvio del servizio; nessuna garanzia RPO/RTO produttiva anticipata.
+
 ## Checkpoint storage 2026-11-04 — isolamento laterale33 in qualifica
 
 - Cinque namespace distinti e bridge interno; launcher statico bounded impedisce exec weed prima delle regole nft. Matrice IPv4 di10 collegamenti ammessi e22 vietati tra ruoli, con listener reali e contatori dedicati;15 probe DNS/host gateway. S3 TLS, firma, hash/MIME/LIST e nessun retry mutativo.
