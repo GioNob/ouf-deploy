@@ -1,3 +1,12 @@
+## Checkpoint storage 2026-11-04 — SIGKILL post-PUT33 e ripresa nativa PASS
+
+- Run [41805145586](https://github.com/GioNob/ouf-deploy/actions/runs/41805145586), producer `8b109725e8f7424e59d799c29e3a2550ee539ad7`: 33 test PASS e due percorsi (normale/crash) con restore completo PASS. Worker distinto SIGKILL dopo PUT e prima ACK; PostgreSQL immediate restart conserva ACK/PENDING/storico, retry stessa chiave EXISTING_PENDING, zero PUT in ripresa.
+- Due oggetti sintetici/77 byte riconciliati per percorso; sei dinieghi S3 prima/dopo restore per percorso. Archivio originale verificato: 284 membri/283 checksum/24 sorgenti e input esatti, 24 container distinti, quattro cluster PostgreSQL indipendenti, log recovery forzato e dump/ledger/manifest coerenti. Slot diagnostici SQL ripristinati conservati separatamente.
+- Primo FAIL41803868175 conservato: il verificatore presumeva ID eventi consecutivi dopo crash. Corretto con ID strettamente crescenti, payload completi e prefisso storico identico; regressione sull'archivio originale. Dossier docs/OUF_STORAGE_CRASH33_20261104.md e receipt evidence/storage-crash33-readback-20261104.json.
+- Limite: crash dopo PUT completato, non risposta HTTP persa, streaming/multipart o dedup su bucket versionato. Nessun secondo restore locale, RPO/RTO produttivo o accettazione target.
+- MiniPET circa40% ±10 invariato, 18,3/46; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione VPS, merge/deploy, replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: perdita della risposta HTTP S3 dopo scrittura, con riconciliazione dello stesso intento senza resend alla cieca.
+
 ## Checkpoint storage 2026-11-04 — crash33: errore del verificatore corretto, nuova qualifica richiesta
 
 - Run41803868175 conserva il primo FAIL: SIGKILL post-PUT, PostgreSQL immediate restart e ledger persistente riusciti, ma il verificatore pretendeva ID evento consecutivi. Archivio originale verificato (225 membri/224 checksum/23 sorgenti); sequenza reale [1,2,3,34,35,36], payload completi e prefisso originale invariato.

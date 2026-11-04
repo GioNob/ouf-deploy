@@ -28,8 +28,8 @@ archives remain unchanged.
 
 Local validation: 22 common-cut/crash tests, including a real child SIGKILL and
 negative evidence tests; 7 existing fence and 4 logical-restore tests. Native
-Docker/PostgreSQL qualification is PENDING until the original CI archive has
-been read back. No target operation or real object is involved.
+Docker/PostgreSQL qualification is now PASS; the original archive has been
+read back as recorded below. No target operation or real object is involved.
 
 Scope limits: death after a completed single PUT, not an in-flight streaming or
 multipart kill, lost HTTP response, host power loss or SeaweedFS component crash.
@@ -65,3 +65,38 @@ final restored ledger must still equal the source ledger byte-semantically.
 Three regressions cover the original failed archive, invalid/duplicate/reversed
 IDs and rewriting an otherwise ordered prefix. **33 local tests total PASS**.
 The failed native run remains failed; fresh qualification is required.
+
+## Fresh qualification and original-archive readback: PASS
+
+[Run 41805145586](https://github.com/GioNob/ouf-deploy/actions/runs/41805145586),
+job 126490204017, exact producer `8b109725e8f7424e59d799c29e3a2550ee539ad7`:
+all steps SUCCESS. **33 tests PASS**, then both normal and real-crash paths PASS,
+followed by evidence checksums, attestation and artifact retention.
+
+[Original archive](../evidence/artifacts/storage-crash33-41805145586.zip),
+203,125 bytes, SHA256
+`4c329f641ae8b211e9a043d93f1e51adab79a6b33cdbfa03ad4bb1b612c6f7cc`.
+[Independent readback](../evidence/storage-crash33-readback-20261104.json)
+verifies 284 members / 283 checksums, 24 exact source/artifact hashes, both
+PostgreSQL dumps, common-cut manifests, source/restored ledgers and 24 distinct
+SeaweedFS container IDs. Both paths terminate their 12 containers and two
+independent PostgreSQL clusters cleanly after the tests.
+
+Crash-specific evidence: actual worker return code -9; fsynced marker after
+one successful 45-byte PUT, before catalog ACK; original ACK and PENDING intent
+identical across immediate PostgreSQL restart. The PostgreSQL log records the
+immediate shutdown, interrupted database and automatic recovery. Re-reservation
+returns EXISTING_PENDING; recovery sends zero further PUTs. The committed event
+prefix is unchanged through freeze and restore. Both paths reconcile two
+synthetic objects / 77 bytes and reject six S3 mutations before/after restore.
+The restored SQL query and subsequent denial now have distinct retained slots.
+
+The failed first run remains failed and retained, with its guard regression.
+No local second restore or local cryptographic publisher check is claimed;
+S3/cold payloads are not exported, and the native body/MIME checks are read back
+from their retained evidence. MiniPET credit remains unchanged.
+
+Next single bounded step: lose the S3 HTTP response after the external write,
+then reconcile the same durable intent without blindly resending PUT. Streaming,
+multipart, versioning, SeaweedFS process faults and host reboot remain separate
+qualifications, as do target binding and acceptance.
