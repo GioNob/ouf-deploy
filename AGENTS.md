@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — integrazione PITR fisico / common-cut33 PENDING
+
+- Ripresa da74f28277, branch invariato e nessun workflow in_progress all'avvio. Common-cut logico e PITR separato già qualificati: il gap scelto è lo stesso punto di recupero fisico PostgreSQL/WAL e cold-copy SeaweedFS, con ledger FROZEN e fence persistente dopo promotion.
+- Nuovo laboratorio isolato: basebackup prima degli intenti, archiviazione WAL e punto nominato dopo riconciliazione/freeze, marker diagnostico non-domain successivo escluso senza perdere ACK di oggetti. Sorgenti ferme e radici S3 trattenute; clone fisico indipendente con stesso system ID. Mancanza del WAL richiesto deve terminare il PostgreSQL negativo prima di avviare S3 ripristinato.
+- 12test nuovi PASS locali, AST/YAML PASS;32test Linux attesi più prova nativa positiva/negativa e readback dell'originale su runner separato. Tutti i payload basebackup/WAL/cold-copy sono conservati;30binding sorgenti. Dossier docs/OUF_STORAGE_PHYSICAL_COMMON_CUT33_20261104.md. Nessuna qualifica nuova finché run/readback non sono conclusi.
+- La descrizione PR precedente è conservata integralmente in docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_PHYSICAL_CUT_20261104.md, per mantenere la PR leggibile entro il limite GitHub senza eliminare storia. MiniPET39,78%,0/8gate,0/21AT,0/120oggetti reali, MinIO invariati. Nessun target/merge/deploy/admission/replay/reset/grant.
+
 ## Checkpoint storage 2026-11-04 — crash con solo marcatore33 PASS
 
 - Producer `b293a4902b38aa2df9b658247457cf951224f96c`, native [41886227100](https://github.com/GioNob/ouf-deploy/actions/runs/41886227100)/job126771291040/attempt1 completed/success: **189test e14scenari PASS**, inclusi i13precedenti. Candidato OCI33/binario invariati. Verifier `341abfe3ed5f8e8bb950b814087ee84c1374f6d5`, [readback41886345188](https://github.com/GioNob/ouf-deploy/actions/runs/41886345188)/job126771719219 completed/success; stato terminale nativo confermato separatamente.
