@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — SIGKILL volume33 in qualifica
+
+- Un PUT da8 MiB +257 byte confermato, nessun GET del corpo prima del guasto; SIGKILL del solo volume, stato137/non-OOM e log conservati. Stessa radice dati, nuovo container/namespace/gate; regole nft prima dell'exec e altri ruoli invariati.
+- Rilettura reale tramite contatore byte HTTP del volume, identità S3 e prefissi .dat; nessun PUT di recupero. Matrice rete completa dopo ripresa. 42 test locali PASS (10 nuovi,10 isolamento e22 credential/TLS); CI nativa richiesta. Dossier docs/OUF_STORAGE_VOLUME_CRASH33_20261104.md.
+- Solo crash processo, non power loss o RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — isolamento laterale33 nativo PASS
 
 - Run [41812944892](https://github.com/GioNob/ouf-deploy/actions/runs/41812944892), producer `57c9959eda87542c8ac327467e0c30c74718c4ee`: 32 test e prova nativa PASS. Cinque namespace distinti/non host, regole nft prima dell'exec servizi, cinque container senza capability/porte pubblicate su bridge interno.
