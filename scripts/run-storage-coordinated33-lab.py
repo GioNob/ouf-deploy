@@ -10,6 +10,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import signal
 from pathlib import Path
 import subprocess
 import sys
@@ -141,9 +142,62 @@ def client(action):
     return {'objects': after, 'denied': denied, 'mutatingRetries': 0}
 
 
-def remote(cold, lab, action, proof):
+def worker_marker():
+    body = BODIES['lab-ambiguous']
+    return {'operation': 'lab-ambiguous', 'phase': 'AFTER_PUT_200_BEFORE_CATALOG_ACK',
+            'sha256': sha(body), 'bytes': len(body), 'putRequests': 1}
+
+
+def validate_crash(result, marker):
+    require(result.returncode == -signal.SIGKILL, 'EXACT_WORKER_SIGKILL_REQUIRED')
+    require(result.stdout == result.stderr == b'', 'CRASH_WORKER_OUTPUT_MUST_BE_EMPTY')
+    require(not marker.is_symlink() and marker.is_file() and marker.stat().st_size <= 4096,
+            'BOUNDED_DURABLE_CRASH_MARKER_REQUIRED')
+    require(json.loads(marker.read_bytes()) == worker_marker(), 'EXACT_POST_PUT_CRASH_PHASE_REQUIRED')
+    return {'workerReturnCode': result.returncode, 'workerSignal': 'SIGKILL',
+            'markerSha256': postgres.native.digest(marker), **worker_marker()}
+
+
+def crash_client(marker):
+    require(not marker.exists() and not marker.is_symlink(), 'FRESH_CRASH_MARKER_REQUIRED')
+    # A distinct OS worker performs one PUT and dies before any catalog finish.
+    # native.run bounds output/time and kills the process group on timeout;
+    # a supervisor timeout is never treated as the expected injected SIGKILL.
+    result = postgres.native.run([sys.executable, '-I', '-B', '-S',
+        str(Path(__file__).resolve()), 'worker-after-put', str(marker)], timeout=30)
+    return validate_crash(result, marker)
+
+
+def verify_restart_pending(calls, lab, proof):
+    before = json.loads(calls.raw(LEDGER_SQL))
+    require(before['control'] == {'singleton': True, 'epoch': 1, 'version': 0, 'phase': 'ACTIVE'},
+            'PRE_DRAIN_CONTROL_REQUIRED')
+    require([(i['operation'], i['state']) for i in before['intents']] ==
+            [('lab-acked', 'ACKED'), ('lab-ambiguous', 'PENDING')], 'CRASH_MUST_LEAVE_PENDING_INTENT')
+    write(proof / 'crash-ledger-before-restart.json', before)
+    result = postgres.native.run([str(lab.binary('pg_ctl')), '-D', str(lab.data),
+        '-m', 'immediate', '-l', str(lab.output / 'postgres.log'), '-w', '-t', '20', 'restart'], timeout=25)
+    (proof / 'crash-postgres-restart.stdout').write_bytes(result.stdout)
+    (proof / 'crash-postgres-restart.stderr').write_bytes(result.stderr)
+    require(result.returncode == 0, 'POSTGRES_IMMEDIATE_RESTART_FAILED')
+    after = json.loads(calls.raw(LEDGER_SQL))
+    write(proof / 'crash-ledger-after-restart.json', after)
+    require(after == before, 'RESTART_MUST_PRESERVE_ACK_PENDING_AND_HISTORY')
+    body = BODIES['lab-ambiguous']
+    decision = calls.call('reserve', 'lab-ambiguous', 1, sha(body), len(body), user=fence.WRITER)
+    require(decision == 'EXISTING_PENDING', 'RETRY_MUST_NOT_GRANT_ANOTHER_PUT')
+    require(json.loads(calls.raw(LEDGER_SQL)) == before, 'RETRY_MUST_NOT_CHANGE_DURABLE_INTENT')
+    return {'postgresImmediateRestart': True, 'ledgerSurvivedRestart': True,
+            'retryDecision': decision, 'recoveryPutRequests': 0,
+            'ledgerBeforeRestartSha256': postgres.native.digest(proof / 'crash-ledger-before-restart.json'),
+            'ledgerAfterRestartSha256': postgres.native.digest(proof / 'crash-ledger-after-restart.json')}
+
+
+def remote(cold, lab, action, proof, marker=None):
     argv = ['sudo', '-n', 'nsenter', '-t', lab.pid, '-n', sys.executable,
             '-I', '-B', '-S', str(Path(__file__).resolve()), 'client', action]
+    if marker is not None:
+        argv.extend(['--marker', str(marker)])
     try:
         value = json.loads(cold.command(argv, timeout=90))
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
@@ -167,7 +221,7 @@ def ledger_snapshot(calls, proof, name):
     return ledger
 
 
-def run(archive, pg_bin, work, receipt):
+def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
     bound = binding(receipt)
     cold = labs.configured_harness('cold', bound)
     proof = work / 'evidence'
@@ -178,6 +232,7 @@ def run(archive, pg_bin, work, receipt):
     containers = []
     report = {**LIMITS, 'status': 'SYNTHETIC_COMMON_CUT_BLOCKED'}
     failed = None
+    crash_evidence = {}
     try:
         write(proof / 'exact-image.json', cold.prepare_image(archive, image))
         original = work / 'original'
@@ -195,7 +250,11 @@ def run(archive, pg_bin, work, receipt):
         for op, body in BODIES.items():
             require(calls.call('reserve', op, 1, sha(body), len(body), user=fence.WRITER) == 'RESERVED',
                     'DURABLE_INTENT_BEFORE_S3_REQUIRED')
-            remote(cold, source, op, proof)
+            if crash_after_put and op == 'lab-ambiguous':
+                crash_evidence = remote(cold, source, 'crash-put', proof, proof / 'crash-worker-marker.json')
+                crash_evidence.update(verify_restart_pending(calls, source_pg, proof))
+            else:
+                remote(cold, source, op, proof)
             if op == 'lab-acked':
                 require(calls.call('finish', op, 1, sha(body), len(body), user=fence.WRITER) == 'ACKED',
                         'ACK_AFTER_S3_REQUIRED')
@@ -255,7 +314,8 @@ def run(archive, pg_bin, work, receipt):
         require(dest_id != source_id and dest_pg.sql("SELECT to_regnamespace('ouf_fence_lab') IS NULL;").stdout.strip() == b't',
                 'INDEPENDENT_EMPTY_DESTINATION_REQUIRED')
         postgres.restore_archive(dest_pg, dump, dump_sha, proof)
-        restored_ledger = ledger_snapshot(fence.Calls(dest_pg), proof, 'restored')
+        restored_calls = fence.Calls(dest_pg)
+        restored_ledger = ledger_snapshot(restored_calls, proof, 'restored')
         require(restored_ledger == ledger, 'DUMP_RESTORE_MUST_PRESERVE_ACKS_AND_FENCE')
         # Schema-only fixture dump intentionally has no cluster roles/ACL. Install
         # only the fixture writer grants before proving the restored fence denies it.
@@ -268,7 +328,7 @@ def run(archive, pg_bin, work, receipt):
             "GRANT USAGE ON SCHEMA ouf_fence_lab TO ouf_fence_writer; "
             "GRANT EXECUTE ON FUNCTION ouf_fence_lab.reserve(text,bigint,text,bigint), "
             "ouf_fence_lab.finish(text,bigint,text,bigint) TO ouf_fence_writer;")
-        require(fence.Calls(dest_pg).call('reserve', 'lab-late', 2, sha(b'late'), 4,
+        require(restored_calls.call('reserve', 'lab-late', 2, sha(b'late'), 4,
                 user=fence.WRITER) == 'FENCED', 'RESTORED_DB_MUST_REMAIN_FROZEN')
         cold.command(['sudo', '-n', 'chown', '-R', '65532:65532', str(restored_root)])
         restored = cold.Lab(prefix + '-restored', restored_root, proof); containers.append(restored)
@@ -292,6 +352,7 @@ def run(archive, pg_bin, work, receipt):
             'coldBackupFiles': len(inventory), 'coldBackupBytes': sum(x['bytes'] for x in inventory.values()),
             'commonCutSha256': postgres.native.digest(proof / 'common-cut.json'),
             'cleanContainerStops': 12, 'cleanPostgresStops': 2, 'mutatingRetries': 0,
+            'workerCrashInjected': crash_after_put, 'crashEvidence': crash_evidence,
             'scope': 'sole synthetic S3 identity; full stop then Read/List replacement; logical PG dump'}
     except Exception as error:
         failed = error
@@ -321,17 +382,31 @@ def run(archive, pg_bin, work, receipt):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    child = sub.add_parser('client'); child.add_argument('action', choices=['bucket', *BODIES, 'verify-frozen'])
+    child = sub.add_parser('client'); child.add_argument('action', choices=['bucket', *BODIES, 'verify-frozen', 'crash-put'])
+    child.add_argument('--marker', type=Path)
+    worker = sub.add_parser('worker-after-put'); worker.add_argument('marker', type=Path)
     runner = sub.add_parser('run')
     for name in ('image', 'pg-bin', 'work', 'cohort-receipt'):
         runner.add_argument('--' + name, required=True, type=Path)
+    runner.add_argument('--crash-after-put', action='store_true')
     args = parser.parse_args()
+    if args.command == 'worker-after-put':
+        client('lab-ambiguous')
+        fence.persist_body(args.marker, json.dumps(worker_marker(), sort_keys=True).encode())
+        os.kill(os.getpid(), signal.SIGKILL)
+        raise RuntimeError('WORKER_SURVIVED_SIGKILL')
     if args.command == 'client':
-        print(json.dumps(client(args.action)))
+        if args.action == 'crash-put':
+            require(args.marker is not None, 'CRASH_MARKER_REQUIRED')
+            print(json.dumps(crash_client(args.marker)))
+        else:
+            require(args.marker is None, 'UNEXPECTED_MARKER')
+            print(json.dumps(client(args.action)))
         return
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not args.work.exists() and not args.work.is_symlink(), 'FRESH_WORK_REQUIRED')
-    print(json.dumps(run(args.image.resolve(), args.pg_bin.resolve(), args.work.absolute(), args.cohort_receipt.resolve())))
+    print(json.dumps(run(args.image.resolve(), args.pg_bin.resolve(), args.work.absolute(), args.cohort_receipt.resolve(),
+                         crash_after_put=args.crash_after_put)))
 
 
 if __name__ == '__main__':

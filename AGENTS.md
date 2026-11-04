@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — crash post-PUT33 in qualifica
+
+- Estensione bounded del common cut33: worker OS distinto invia un PUT e si termina con SIGKILL prima dell'ACK catalogo; marker fsynced e segnale -9 obbligatori. PostgreSQL immediate restart deve preservare ACK, PENDING e storico; stessa chiave restituisce EXISTING_PENDING, senza secondo PUT.
+- 30 test locali PASS (19 common-cut/crash + 7 fence + 4 restore); YAML/shell PASS. CI richiesta per percorso normale e crash in radici separate; esito nativo ancora PENDING. Dossier: docs/OUF_STORAGE_CRASH33_20261104.md.
+- Risolta la sovrascrittura dello slot diagnostico SQL nel cluster ripristinato; archivi storici invariati. MiniPET circa40% ±10, 18,3/46; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — common cut33 nativo PASS e archivio verificato
 
 - Run [41802094297](https://github.com/GioNob/ouf-deploy/actions/runs/41802094297), producer `a31b2be7cfdea1ddaaa0c7e0902a6f325c974ddc`: 22 test e prova PostgreSQL17.11/S3 su OCI33 PASS. Un ACK conservato, un effetto ambiguo riconciliato senza resend, nuovi claim/pubblicazioni tardivi negati e sei dinieghi S3 AccessDenied per PUT/overwrite/DELETE prima e dopo restore.

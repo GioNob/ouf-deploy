@@ -8,6 +8,7 @@ on:
       - .github/workflows/storage-generation33-common-cut.yml
       - scripts/run-storage-coordinated33-lab.py
       - tests/test_storage_coordinated33_lab.py
+      - tests/test_storage_coordinated33_crash.py
       - tests/fixtures/storage-recovery/writer-fence.sql
       - tests/run_storage_postgres_writer_fence.py
       - tests/run_storage_postgres_logical_restore.py
@@ -35,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/cut33/build-evidence"
-          python3 -I -B -S -m unittest discover -s tests -p test_storage_coordinated33_lab.py -v 2>&1 | tee "$RUNNER_TEMP/cut33/build-evidence/offline-tests.log"
+          python3 -I -B -S -m unittest discover -s tests -p 'test_storage_coordinated33*.py' -v 2>&1 | tee "$RUNNER_TEMP/cut33/build-evidence/offline-tests.log"
           python3 -I -B -S -m unittest discover -s tests -p test_storage_postgres_writer_fence.py -v
           python3 -I -B -S -m unittest discover -s tests -p test_storage_postgres_logical_restore_contract.py -v
       - name: Build the pinned PostgreSQL 17.11 fixture tools
@@ -115,19 +116,27 @@ jobs:
             --image "$RUNNER_TEMP/cut33-inputs/image.zip" \
             --cohort-receipt "$RUNNER_TEMP/cut33-inputs/bound-cohort/cohort-receipt.json" \
             --work "$RUNNER_TEMP/cut33/lab"
+      - name: Kill a post-PUT worker, crash-restart PostgreSQL and recover without resend
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-coordinated33-lab.py run \
+            --pg-bin "$RUNNER_TEMP/cut33/install/bin" \
+            --image "$RUNNER_TEMP/cut33-inputs/image.zip" \
+            --cohort-receipt "$RUNNER_TEMP/cut33-inputs/bound-cohort/cohort-receipt.json" \
+            --work "$RUNNER_TEMP/cut33/crash-lab" --crash-after-put
       - name: Bind exact source and preserve successful or failed evidence
         if: always()
         run: |
           set -euo pipefail
           base="$RUNNER_TEMP/cut33"
-          mkdir -p "$base/build-evidence" "$base/lab/evidence"
+          mkdir -p "$base/build-evidence" "$base/lab/evidence" "$base/crash-lab/evidence"
           for name in cohort-publisher-verification.json bound-cohort/cohort-receipt.json; do
             if test -f "$RUNNER_TEMP/cut33-inputs/$name"; then
               cp "$RUNNER_TEMP/cut33-inputs/$name" "$base/build-evidence/$(basename "$name")"
             fi
           done
           sha256sum .github/workflows/storage-generation33-common-cut.yml \
-            scripts/run-storage-coordinated33-lab.py tests/test_storage_coordinated33_lab.py \
+            scripts/run-storage-coordinated33-lab.py tests/test_storage_coordinated33_lab.py tests/test_storage_coordinated33_crash.py \
             scripts/{run-seaweedfs-452-generation33-labs,run-seaweedfs-452-cold-recovery,run-seaweedfs-452-identity-tls,storage-generation33-lab-binding,readback-seaweedfs-452-generation33-image,qualify-seaweedfs-452-generation33-image}.py \
             tests/{run_storage_postgres_fixture_native,run_storage_postgres_logical_restore,run_storage_postgres_writer_fence}.py \
             tests/fixtures/storage-recovery/writer-fence.sql \
@@ -138,7 +147,7 @@ jobs:
             > "$base/build-evidence/repository-source-sha256.txt"
           git rev-parse HEAD > "$base/build-evidence/repository-commit.txt"
           cd "$base"
-          find build-evidence lab/evidence -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          find build-evidence lab/evidence crash-lab/evidence -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
           sha256sum --strict --check SHA256SUMS
       - name: Attest successful synthetic evidence
         if: success()
@@ -154,5 +163,6 @@ jobs:
             ${{ runner.temp }}/cut33/SHA256SUMS
             ${{ runner.temp }}/cut33/build-evidence/
             ${{ runner.temp }}/cut33/lab/evidence/
+            ${{ runner.temp }}/cut33/crash-lab/evidence/
           if-no-files-found: error
           retention-days: 90
