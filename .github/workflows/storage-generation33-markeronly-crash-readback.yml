@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-          ref: 87fc66ca9a2b24fb55e983392f573c0c1f54d96c
+          ref: 84706b4fa014df74fdbd3685a56d2aba16934c84
           path: producer
       - name: Acquire the exact original before waiting for delayed terminal metadata
         env:
@@ -43,13 +43,13 @@ jobs:
           headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
           def get(path):
               with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
-          producer='87fc66ca9a2b24fb55e983392f573c0c1f54d96c'
+          producer='84706b4fa014df74fdbd3685a56d2aba16934c84'
           observations=[]
           for attempt in range(181):
-              run=get('/actions/runs/41878669053')
+              run=get('/actions/runs/41882562646')
               assert run['head_sha']==producer and run['run_attempt']==1
-              artifacts=get('/actions/runs/41878669053/artifacts')['artifacts']
-              selected=[a for a in artifacts if a['name']=='storage-generation33-lateral-isolation-41878669053']
+              artifacts=get('/actions/runs/41882562646/artifacts')['artifacts']
+              selected=[a for a in artifacts if a['name']=='storage-generation33-lateral-isolation-41882562646']
               observations.append({'attempt':attempt,'status':run['status'],'conclusion':run['conclusion'],'matchingArtifacts':len(selected)})
               (out/'native-observations.json').write_text(json.dumps(observations,indent=2)+'\n')
               (out/'native-run-at-acquisition.json').write_text(json.dumps(run,indent=2)+'\n')
@@ -58,7 +58,7 @@ jobs:
               time.sleep(10)
           assert len(selected)==1 and not selected[0]['expired']
           a=selected[0]
-          assert a['workflow_run']['id']==41878669053 and a['workflow_run']['head_sha']==producer
+          assert a['workflow_run']['id']==41882562646 and a['workflow_run']['head_sha']==producer
           assert 0<a['size_in_bytes']<=32*1024*1024 and a['digest'].startswith('sha256:')
           (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
           dest=out/'original-native.zip'
@@ -76,7 +76,7 @@ jobs:
           python3 -I -B -S verifier/scripts/readback-storage-generation33-markeronly-crash.py \
             "$RUNNER_TEMP/markeronly-readback/original-native.zip" "$GITHUB_WORKSPACE/producer" \
             "$(cat "$RUNNER_TEMP/markeronly-readback/original-sha256.txt")" \
-            87fc66ca9a2b24fb55e983392f573c0c1f54d96c "$RUNNER_TEMP/markeronly-readback/readback.json"
+            84706b4fa014df74fdbd3685a56d2aba16934c84 "$RUNNER_TEMP/markeronly-readback/readback.json"
       - name: Confirm successful native terminal run and job separately from archive contents
         env:
           GH_TOKEN: ${{ github.token }}
@@ -90,15 +90,15 @@ jobs:
           def get(path):
               with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
           for attempt in range(31):
-              run=get('/actions/runs/41878669053');jobs=get('/actions/runs/41878669053/jobs?filter=all&per_page=100')['jobs']
-              assert run['head_sha']=='87fc66ca9a2b24fb55e983392f573c0c1f54d96c' and run['run_attempt']==1
-              assert len(jobs)==1 and jobs[0]['id']==126745091191
+              run=get('/actions/runs/41882562646');jobs=get('/actions/runs/41882562646/jobs?filter=all&per_page=100')['jobs']
+              assert run['head_sha']=='84706b4fa014df74fdbd3685a56d2aba16934c84' and run['run_attempt']==1
+              assert len(jobs)==1 and jobs[0]['id']==126758546819
               (out/'native-terminal-observed.json').write_text(json.dumps({'run':run,'job':jobs[0]},indent=2)+'\n')
               if run['status']==jobs[0]['status']=='completed':break
               assert attempt<30,'NATIVE_TERMINAL_METADATA_BUDGET'
               time.sleep(10)
           assert run['conclusion']==jobs[0]['conclusion']=='success','NATIVE_TERMINAL_SUCCESS_REQUIRED'
-          result={'status':'EXACT_NATIVE_TERMINAL_SUCCESS_CONFIRMED','runId':41878669053,'jobId':126745091191,
+          result={'status':'EXACT_NATIVE_TERMINAL_SUCCESS_CONFIRMED','runId':41882562646,'jobId':126758546819,
               'producerCommit':run['head_sha'],'runAttempt':1,'metadataObservationAttempts':attempt+1,
               'nativeResubmissions':0,'targetOperations':0}
           (out/'native-terminal-confirmation.json').write_text(json.dumps(result,indent=2)+'\n')

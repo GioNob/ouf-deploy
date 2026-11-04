@@ -1,3 +1,7 @@
+## Nuova esecuzione dopo la correzione dell'offset
+
+Producer `84706b4fa014df74fdbd3685a56d2aba16934c84`, [run 41882562646](https://github.com/GioNob/ouf-deploy/actions/runs/41882562646), job 126758546819, attempt 1. Esecuzione effettivamente avviata; l'elenco aggregato Actions inizialmente non la riportava, ma check-run e run esatto la identificano. Readback richiesto: 186 test senza skip, 14 scenari, 40 binding sorgenti, 70 stati finali puliti e decodifica degli offset effettivi. Tutti i controlli di integrità/fase/promozione rimangono richiesti. Primo run e diagnosi preservati.
+
 ## Checkpoint storage 2026-11-04 — assunzione offset del test corretta, nuova qualifica PENDING
 
 - Run 41878669053 / producer 87fc66ca: 183 test Linux PASS, dodici scenari PASS, inter-rename FAILED, marker-only SKIPPED. Readback 41878956434 fallito per receipt marker-only assente; originale e copia conservati (artifact 13348782049/13348816994).

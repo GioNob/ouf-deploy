@@ -123,7 +123,7 @@ def verify(archive, source, expected_sha, producer):
     require(witness_old==pm('postmarker-frozen-witness') and witness_new==pm('relocation-after-restart'),'WITNESS_FREEZE_AND_RECOVERY_STABILITY')
     for key in ('volumeId','datFile','needleId','cookieHex','fileId','dataBytes','dataSha256','needleSize'):
         require(witness_old[key]==witness_new[key],'RELOCATED_WITNESS_IDENTITY: '+key)
-    require(witness_new['needleOffset']==8 and witness_old['needleOffset']-witness_new['needleOffset']==reclaimed and witness_old['datBytes']-witness_new['datBytes']==reclaimed,'WITNESS_REAL_RELOCATION')
+    require(witness_new['needleOffset']>=8 and witness_new['needleOffset']%8==0 and witness_old['needleOffset']-witness_new['needleOffset']==reclaimed and witness_old['datBytes']-witness_new['datBytes']==reclaimed,'WITNESS_REAL_RELOCATION')
     require(pm('relocation-read-before-compaction')==pm('relocation-read-after-restart'),'POSTMARKER_NATIVE_GET_PARITY')
     require(pm('compaction-metadata-before')==pm('post-compaction-metadata'),'POSTMARKER_FULL_METADATA_PARITY')
     pm_recovery=pm('post-compaction-recovery');pm_roles=pm('post-compaction-before-crash');pm_killed=pm('post-compaction-killed')
@@ -192,7 +192,7 @@ def verify(archive, source, expected_sha, producer):
     require(ir_witness_new==ir('interrename-recovered-witness')==ir('relocation-after-restart'),'WITNESS_COHERENT_FROM_FIRST_READINESS')
     for key in ('volumeId','datFile','needleId','cookieHex','fileId','dataBytes','dataSha256','needleSize'):
         require(ir_witness_old[key]==ir_witness_new[key],'INTERRENAME_WITNESS_IDENTITY: '+key)
-    require(ir_witness_new['needleOffset']==8 and ir_witness_old['needleOffset']-8==ir_reclaimed and ir_witness_old['datBytes']-ir_witness_new['datBytes']==ir_reclaimed,'INTERRENAME_WITNESS_RELOCATION')
+    require(ir_witness_new['needleOffset']>=8 and ir_witness_new['needleOffset']%8==0 and ir_witness_old['needleOffset']-ir_witness_new['needleOffset']==ir_reclaimed and ir_witness_old['datBytes']-ir_witness_new['datBytes']==ir_reclaimed,'INTERRENAME_WITNESS_RELOCATION')
     # Independent binary decoding: stale IDX offset cannot address this frozen DAT.
     import struct
     dat=payload['interrename-crash-lab/interrename-frozen-retained.dat']
@@ -203,7 +203,7 @@ def verify(archive, source, expected_sha, producer):
         found=[(off*8,size) for nid,off,size in rows if nid==ir_witness_old['needleId']]
         require(len(found)==1 and found[0][1]>0,'UNIQUE_RETAINED_WITNESS_INDEX');return found[0]
     old_offset,old_size=binary_entry('.idx');new_offset,new_size=binary_entry('.cpx')
-    require(old_offset==ir_witness_old['needleOffset'] and old_offset>=len(dat) and new_offset==8,'RETAINED_OLD_IDX_INVALID_NEW_IDX_VALID')
+    require(old_offset==ir_witness_old['needleOffset'] and old_offset>=len(dat) and new_offset==ir_witness_new['needleOffset'] and new_offset>=8 and new_offset%8==0 and old_offset-new_offset==ir_reclaimed and new_offset+20+ir_witness_old['dataBytes']<=len(dat),'RETAINED_OLD_IDX_INVALID_NEW_IDX_VALID')
     cookie,nid,stored_size,data_size=struct.unpack('>IQiI',dat[new_offset:new_offset+20])
     require(nid==ir_witness_old['needleId'] and format(cookie,'08x')==ir_witness_old['cookieHex'] and stored_size==old_size==new_size==ir_witness_new['needleSize'] and data_size==ir_witness_old['dataBytes'] and sha(dat[new_offset+20:new_offset+20+data_size])==ir_witness_old['dataSha256'],'BINARY_PENDING_INDEX_BINDS_EXACT_BODY')
     require(ir('relocation-read-before-compaction')==ir('relocation-read-after-restart'),'INTERRENAME_NATIVE_GET_PARITY')
@@ -279,7 +279,7 @@ def verify(archive, source, expected_sha, producer):
     require(mo_witness_new==marker_phase['witnessFrozen']==mo('markeronly-recovered-witness')==mo('relocation-after-restart'),'WITNESS_COHERENT_FROM_FIRST_READINESS')
     for key in ('volumeId','datFile','needleId','cookieHex','fileId','dataBytes','dataSha256','needleSize'):
         require(mo_witness_old[key]==mo_witness_new[key],'MARKERONLY_WITNESS_IDENTITY: '+key)
-    require(mo_witness_new['needleOffset']==8 and mo_witness_old['needleOffset']-8==mo_reclaimed and mo_witness_old['datBytes']-mo_witness_new['datBytes']==mo_reclaimed,'MARKERONLY_WITNESS_RELOCATION')
+    require(mo_witness_new['needleOffset']>=8 and mo_witness_new['needleOffset']%8==0 and mo_witness_old['needleOffset']-mo_witness_new['needleOffset']==mo_reclaimed and mo_witness_old['datBytes']-mo_witness_new['datBytes']==mo_reclaimed,'MARKERONLY_WITNESS_RELOCATION')
     # Decode original old IDX and promoted IDX against the retained final DAT.
     import struct
     dat=payload['markeronly-crash-lab/markeronly-frozen-retained.dat']
@@ -290,7 +290,7 @@ def verify(archive, source, expected_sha, producer):
         found=[(off*8,size) for nid,off,size in rows if nid==mo_witness_old['needleId']]
         require(len(found)==1 and found[0][1]>0,'UNIQUE_RETAINED_WITNESS_INDEX');return found[0]
     old_offset,old_size=marker_binary_entry('markeronly-before-idx-retained.idx');new_offset,new_size=marker_binary_entry('markeronly-frozen-retained.idx')
-    require(old_offset==mo_witness_old['needleOffset'] and old_offset>=len(dat) and new_offset==8,'RETAINED_OLD_IDX_INVALID_NEW_IDX_VALID')
+    require(old_offset==mo_witness_old['needleOffset'] and old_offset>=len(dat) and new_offset==mo_witness_new['needleOffset'] and new_offset>=8 and new_offset%8==0 and old_offset-new_offset==mo_reclaimed and new_offset+20+mo_witness_old['dataBytes']<=len(dat),'RETAINED_OLD_IDX_INVALID_NEW_IDX_VALID')
     cookie,nid,stored_size,data_size=struct.unpack('>IQiI',dat[new_offset:new_offset+20])
     require(nid==mo_witness_old['needleId'] and format(cookie,'08x')==mo_witness_old['cookieHex'] and stored_size==old_size==new_size==mo_witness_new['needleSize'] and data_size==mo_witness_old['dataBytes'] and sha(dat[new_offset+20:new_offset+20+data_size])==mo_witness_old['dataSha256'],'BINARY_PENDING_INDEX_BINDS_EXACT_BODY')
     require(mo('relocation-read-before-compaction')==mo('relocation-read-after-restart'),'MARKERONLY_NATIVE_GET_PARITY')
@@ -311,7 +311,7 @@ def verify(archive, source, expected_sha, producer):
     require(all(not x['connected'] and x['counterAfter']>x['counterBefore'] for x in mo_dns),'MARKERONLY_DNS_HOST_PROBE')
 
     tests=payload['offline-tests.log'].decode();counts=[int(x) for x in re.findall(r'Ran (\d+) tests? in ',tests)]
-    require(sum(counts)==183 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_183_TEST_REGRESSION')
+    require(sum(counts)==186 and not re.search(r'^FAILED|^OK \(skipped=',tests,re.M),'COMPLETE_186_TEST_REGRESSION')
     return {'schema':'ouf.storage-compaction-markeronly-readback.v1','status':'HOSTED_ORIGINAL_ARCHIVE_READBACK_PASS',
             'producerCommit':producer,'originalZipSha256':sha(raw),'originalZipBytes':len(raw),
             'members':len(payload),'checksumsVerified':len(checks),'sourceBindingsVerified':len(bindings),
