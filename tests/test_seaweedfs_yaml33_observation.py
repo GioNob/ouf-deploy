@@ -76,6 +76,23 @@ class ObservationTests(unittest.TestCase):
         self.assertIn("NOT binary build-info", text)
         self.assertEqual(m.vendor_modules("# example.invalid/a v1.0.0\n## explicit\nexample.invalid/a\n"), [("example.invalid/a", "v1.0.0")])
 
+    def test_only_pinned_unused_replacement_footer_is_allowed(self):
+        header = "# example.invalid/a v1.0.0\n## explicit\nexample.invalid/a\n"
+        module = "github.com/tyler-smith/go-bip39"
+        footer = f"# {module} => github.com/cosmos/go-bip39 v1.0.0\n"
+        self.assertEqual(m.vendor_modules(header + footer), [("example.invalid/a", "v1.0.0")])
+        for invalid in [
+            footer + header,
+            header + footer * 2,
+            header + footer.replace("v1.0.0", "v1.0.1"),
+            header + footer.replace(module, "example.invalid/b"),
+            header + footer.replace(module, module + " v1.0.0"),
+            header + f"# {module} v1.0.0\n" + footer,
+            header + f"{module}/package\n" + footer,
+        ]:
+            with self.subTest(text=invalid), self.assertRaises(ValueError):
+                m.vendor_modules(invalid)
+
     def test_failed_command_retains_stderr_and_exit_code(self):
         obs = m.Observer(self.root / "repo", self.root / "upstream", self.root / "work", self.root / "evidence", 20)
         with self.assertRaisesRegex(ValueError, "COMMAND_UNEXPECTED_EXIT"):

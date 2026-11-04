@@ -34,11 +34,23 @@ def write(path, value):
 
 
 def vendor_modules(text):
+    # Go records unused wildcard replacements at the end of modules.txt.
+    # The pinned upstream directive below must never own a vendored package.
+    inactive_module = "github.com/tyler-smith/go-bip39"
+    inactive_footer = f"# {inactive_module} => github.com/cosmos/go-bip39 v1.0.0"
+    lines = text.splitlines()
+    has_inactive_footer = bool(lines and lines[-1] == inactive_footer)
+    if has_inactive_footer:
+        lines.pop()
+        guard.require(not any(line == inactive_module or line.startswith(inactive_module + "/")
+                              for line in lines), "INACTIVE_VENDOR_REPLACEMENT_OWNS_PACKAGE")
     rows = []
-    for line in text.splitlines():
+    for line in lines:
         if line.startswith("# "):
             parts = line.split()
             guard.require(len(parts) == 3 and parts[2].startswith("v"), "EXACT_VENDOR_MODULE_HEADERS_REQUIRED")
+            guard.require(not has_inactive_footer or parts[1] != inactive_module,
+                          "INACTIVE_VENDOR_REPLACEMENT_HAS_MODULE")
             rows.append((parts[1], parts[2]))
     guard.require(rows and len(rows) == len({r[0] for r in rows}), "UNIQUE_VENDOR_MODULES_REQUIRED")
     return sorted(rows)
@@ -188,7 +200,9 @@ class Observer:
         self.run("root-module-graph", ["go", "mod", "graph"], first)
         self.run("first-vendor", ["go", "mod", "vendor"], first, 600)
         self.verify_locks(first, manifest)
-        rows = vendor_modules((first / "vendor/modules.txt").read_text())
+        modules_manifest = self.evidence / "baseline-vendor-modules.txt"
+        shutil.copyfile(first / "vendor/modules.txt", modules_manifest)
+        rows = vendor_modules(modules_manifest.read_text())
         records = origins.parse_records(self.run("vendor-input-download-records",
             ["go", "mod", "download", "-json"] + [n + "@" + v for n, v in rows], first, 600).encode())
         self.verify_locks(first, manifest)

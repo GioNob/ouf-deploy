@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — immagine 32 e laboratorio PostgreSQL PASS, osservazione YAML33 corretta
+
+- Tornata `20bded51` conclusa con 53 SUCCESS su 54. Immagine 32: quattro job PASS nel run 41724851743, inclusa verifica indipendente della provenienza. OCI `sha256:5531868a8acc4ac8b1581339e5cae79c7a6211402c936eb74f2bcfcd070831f6`, binario `33c54c17…`, zero findings nelle cinque severità. Coorte e laboratori sull'OCI32 ancora da qualificare. La generazione 31 resta la candidata con qualifica tecnica completa; nessuna ammissione.
+- PostgreSQL 17.11: run 41724851796, 7/7 casi nativi PASS, zero skip, arresto riuscito. ZIP originale e tutti i 91 checksum interni verificati. È una prova di fixture SQL e riconciliazione sintetica; recovery coordinato, fencing, PITR e RPO/RTO restano aperti.
+- Prima osservazione YAML33, run 41724851908: `go mod vendor` PASS, il controllo delle intestazioni si ferma prima della build. ZIP originale e 93 checksum interni verificati. Il manifest effettivo non era conservato dal primo run. Nel sorgente upstream è fissato il replace wildcard go-bip39, assente dal grafo osservato. Il parser consente solo il suo esatto footer finale se privo di modulo e pacchetti associati. Sostituzioni effettive, sconosciute o ripetute sono respinte. Il prossimo run conserva `vendor/modules.txt` prima del controllo. 12 test observer locali PASS; riproduzione completa e qualifica YAML ancora pendenti.
+- MiniPET **38% ±10** (17,5/46 crediti pesati), 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO attivo. Scope 17 consumati / 52 Engine GET cumulativi, Teatri/M1 8/8 tecniche + 6/6 funzionali e Farmacie 61 righe / 10 OPEN / STRING preservati. Zero operazioni target, replay/reset/grant, merge, deploy o nuova autorità runtime.
+
 ## Checkpoint storage 2026-11-03 — correzione identità sorgente32 e fixture PostgreSQL; osservazione YAML33
 
 - Tornata `77215bee…` conclusa: 55 workflow, 53 SUCCESS e due FAIL conservati. La candidata corrente qualificata tecnicamente resta la 31, non ammessa; nessun trasferimento della qualifica alla 32 o 33.
