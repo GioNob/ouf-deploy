@@ -23,6 +23,8 @@ spec = importlib.util.spec_from_file_location('lateral_credentials33', ROOT / 's
 keys = importlib.util.module_from_spec(spec); spec.loader.exec_module(keys)
 stream_spec = importlib.util.spec_from_file_location('interrupted_stream33', ROOT / 'scripts/storage-generation33-stream-interruption.py')
 stream = importlib.util.module_from_spec(stream_spec); stream_spec.loader.exec_module(stream)
+cleanup_spec = importlib.util.spec_from_file_location('orphan_cleanup33', ROOT / 'scripts/storage-generation33-orphan-cleanup.py')
+cleanup = importlib.util.module_from_spec(cleanup_spec); cleanup_spec.loader.exec_module(cleanup)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -227,17 +229,22 @@ def master_retry_delay(attempt, retry_after, now, deadline):
     return delay
 
 
-def matrix():
-    return [(src, dst, port, (src, dst, port) in ALLOW)
+def allow_links(cleanup_stream=False):
+    return ALLOW | ({('s3', 'volume', 28080)} if cleanup_stream else set())
+
+
+def matrix(cleanup_stream=False):
+    return [(src, dst, port, (src, dst, port) in allow_links(cleanup_stream))
             for src in ROLES for dst, ports in PORTS.items() if src != dst for port in ports]
 
 
-def nft_rules(role):
+def nft_rules(role, cleanup_stream=False):
     require(role in ROLES, 'KNOWN_ROLE_REQUIRED')
     counters = ['dns_tcp', 'dns_udp', 'egress_tcp', 'other_denied'] + [
-        f'deny_{dst}_{port}' for src, dst, port, allowed in matrix() if src == role and not allowed]
+        f'deny_{dst}_{port}' for src, dst, port, allowed in matrix(cleanup_stream) if src == role and not allowed]
     if role == 'volume': counters.append('volume_http_response_bytes')
     if role == 'filer': counters.append('filer_http_response_bytes')
+    if cleanup_stream and role in ('s3','volume'): counters.append('cleanup_grpc_bytes')
     lines = ['table inet ouf_roles {'] + [f' counter {name} {{ }}' for name in counters]
     # -150 precedes Docker's OUTPUT destination NAT, including embedded DNS.
     lines += [' chain output { type filter hook output priority -150; policy drop;',
@@ -249,15 +256,19 @@ def nft_rules(role):
         lines.append(f' ip daddr {{ {IPS["filer"]}, {IPS["s3"]} }} tcp sport 18080 counter name volume_http_response_bytes')
     if role == 'filer':
         lines.append(f' ip daddr {IPS["s3"]} tcp sport 18888 counter name filer_http_response_bytes')
+    if cleanup_stream and role == 's3':
+        lines.append(f' ip daddr {IPS["volume"]} tcp dport 28080 counter name cleanup_grpc_bytes')
+    if cleanup_stream and role == 'volume':
+        lines.append(f' ip daddr {IPS["s3"]} tcp sport 28080 counter name cleanup_grpc_bytes')
     lines += [' ct state established,related accept']
-    for src, dst, port, allowed in matrix():
+    for src, dst, port, allowed in matrix(cleanup_stream):
         if src == role:
             action = 'accept' if allowed else f'counter name deny_{dst}_{port} reject with icmpx type admin-prohibited'
             lines.append(f' ip daddr {IPS[dst]} tcp dport {port} {action}')
     lines += [' counter name other_denied reject with icmpx type admin-prohibited', ' }',
               ' chain input { type filter hook input priority 0; policy drop;',
               ' iifname "lo" accept', ' ct state established,related accept']
-    for src, dst, port in sorted(ALLOW):
+    for src, dst, port in sorted(allow_links(cleanup_stream)):
         if dst == role: lines.append(f' ip saddr {IPS[src]} tcp dport {port} accept')
     lines += [' counter reject with icmpx type admin-prohibited', ' }',
               ' chain forward { type filter hook forward priority 0; policy drop; }', '}']
@@ -356,8 +367,9 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    interrupt_stream = interrupt_stream or cleanup_stream
     crash_all = crash_all or interrupt_stream
     crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else 'all' if crash_all else None
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
@@ -391,7 +403,17 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         # Trusted internal API, reached only from the already allowed S3 namespace.
         value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
         save(output, value); return value
+    cleanup_evidence = {}; cleanup_chunk = None
+    def chunk_index(output):
+        value = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
+            str(Path(__file__).resolve()), 'chunk-index', str(data / 'volume'), str(evidence / 'cleanup-chunk.json')]))
+        save(output, value); return value
+    def chunk_read(expected, output):
+        value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
+            'chunk-read', str(evidence / 'cleanup-chunk.json'), expected]))
+        save(output, value); return value
     def interrupt_upload():
+        nonlocal cleanup_chunk
         control = work / 'stream-control'; control.mkdir()
         baseline = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
             str(Path(__file__).resolve()), 'stream-progress', str(data / 'volume')]))
@@ -418,6 +440,15 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     if progress['persistedPrefixFound']: break
                     require(observation < 30 and time.monotonic() < deadline, 'STREAM_NATIVE_CHUNK_BUDGET')
                     time.sleep(1)
+                if cleanup_stream:
+                    cleanup_chunk = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
+                        str(Path(__file__).resolve()), 'chunk-identify', str(data / 'volume'),
+                        str(evidence / ('stream-prefix-observation-' + str(observation) + '.json'))]))
+                    save('cleanup-chunk', cleanup_chunk)
+                    live_index = chunk_index('cleanup-index-live'); require(not live_index['tombstoned'], 'LIVE_CHUNK_BEFORE_ABORT_REQUIRED')
+                    chunk_read('present', 'cleanup-chunk-live')
+                    grpc_before = {r:counter_value(r, 'cleanup_grpc_bytes')['bytes'] for r in ('s3','volume')}
+                    save('cleanup-grpc-before', grpc_before)
                 require(process.poll() is None, 'STREAM_MUST_STILL_BE_OPEN_AT_ABORT')
                 abort_client()
                 stdout, _ = process.communicate(timeout=15)
@@ -426,6 +457,21 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 require(result['sentBodyBytes'] == stream.PREFIX_BYTES < result['declaredBodyBytes'] == stream.BODY_BYTES
                         and result['clientConnectionClosed'] and not result['ackObserved']
                         and result['putAttempts'] == 1 and result['mutatingRetries'] == 0, 'INCOMPLETE_SINGLE_PUT_REQUIRED')
+                if cleanup_stream:
+                    for attempt in range(1,21):
+                        deleted = chunk_index('cleanup-index-attempt-' + str(attempt))
+                        if deleted['tombstoned']: break
+                        require(attempt < 20, 'ORPHAN_CLEANUP_BUDGET'); time.sleep(1)
+                    chunk_read('absent', 'cleanup-chunk-deleted')
+                    grpc_after = {r:counter_value(r, 'cleanup_grpc_bytes')['bytes'] for r in ('s3','volume')}
+                    save('cleanup-grpc-after', grpc_after)
+                    require(all(grpc_after[r] > grpc_before[r] for r in grpc_before), 'REAL_CLEANUP_GRPC_TRAFFIC_REQUIRED')
+                    for r in ('s3','volume'):
+                        save('cleanup-' + r + '-rules', json.loads(ns(r, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
+                    cleanup_evidence.update(fileId=cleanup_chunk['fileId'], indexPollAttempts=attempt,
+                        directChunkReadBeforeAbort=True, directChunk404AfterCleanup=True, originalIndexEntryPreserved=True,
+                        exactTombstoneObserved=True, grpcBytesBefore=grpc_before, grpcBytesAfter=grpc_after,
+                        clientDeleteRequests=0, clientMutatingRetries=0, physicalSpaceReclaimed=False)
                 return {'putAttempts': 1, 'mutatingRetries': 0, 'ackObserved': False,
                         'sentBodyBytes': result['sentBodyBytes'], 'declaredBodyBytes': result['declaredBodyBytes'],
                         'actualPersistedChunkBytes': stream.CHUNK_BYTES, 'prefixObservations': observation,
@@ -439,7 +485,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         save('exact-image', cold.prepare_image(archive, work))
         module.write_json(config / 's3.json', module.fixture_config()); module.certificates(config)
         for name in ('ca.pem', 'server.pem'): (evidence / name).write_bytes((config / 'tls' / name).read_bytes())
-        save('policy', {'ips': IPS, 'ports': PORTS, 'allow': sorted(ALLOW), 'matrix': matrix(),
+        save('policy', {'ips': IPS, 'ports': PORTS, 'allow': sorted(allow_links(cleanup_stream)), 'matrix': matrix(cleanup_stream),
                         'gateSha256': keys.sha(gate_binary.read_bytes()), 'subnet': '172.30.233.0/24'})
         (evidence / 'nft-version.txt').write_text(cold.command(['sudo', '-n', 'nft', '--version']) + '\n')
         cold.command(['docker', 'network', 'create', '--internal', '--subnet', '172.30.233.0/24', '--gateway', GATEWAY, network])
@@ -464,7 +510,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     and host['NetworkMode'] == network and not mounts['/config']['RW'] and not mounts['/gate']['RW'],
                     'EXACT_CONTAINER_BOUNDARY_REQUIRED')
             require(item['NetworkSettings']['Networks'][network]['IPAddress'] == IPS[role], 'EXACT_STATIC_IP_REQUIRED')
-            rules = nft_rules(role); (evidence / (role + '-rules.nft')).write_text(rules)
+            rules = nft_rules(role, cleanup_stream); (evidence / (role + '-rules.nft')).write_text(rules)
             ns(role, ['nft', '-f', str(evidence / (role + '-rules.nft'))])
             save(role + '-rules-before', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
             require('NETWORK_GATE_RELEASED' not in cold.command(['docker', 'logs', prefix + '-' + role]),
@@ -646,10 +692,15 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 if not crash_all: crash_evidence.update(stoppedMetadataFiles=len(persisted),
                     stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()))
             if interrupt_stream: s3('absent-interrupted', 'stream-absence-after-restart')
+            if cleanup_stream:
+                recovered_index = chunk_index('cleanup-index-after-restart')
+                require(recovered_index['tombstoned'], 'TOMBSTONE_SURVIVES_RESTART_REQUIRED')
+                chunk_read('absent', 'cleanup-chunk-after-restart')
+                cleanup_evidence.update(tombstoneSurvivesRestart=True, directChunk404AfterRestart=True)
             final_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
             validate_retained_roles(by_role, final_roles, crash_role); save(crash_role + '-recovered-roles', final_roles)
         probes = []
-        for src, dst, port, allowed in matrix():
+        for src, dst, port, allowed in matrix(cleanup_stream):
             name = f'deny_{dst}_{port}'
             prior = None if allowed else counter(src, name)
             result = probe(src, IPS[dst], port)
@@ -671,6 +722,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         save('dns-host-probes', dns)
         after = s3('read-volume' if crash_role else 'read')
         if interrupt_stream: s3('absent-interrupted', 'stream-absence-after-probes')
+        if cleanup_stream:
+            require(chunk_index('cleanup-index-after-probes')['tombstoned'], 'TOMBSTONE_REMAINS_REQUIRED')
+            chunk_read('absent', 'cleanup-chunk-after-probes')
         baseline = observed if crash_role else before
         require({k:v for k,v in baseline.items() if k != 'mutatingRequests'} ==
                 {k:v for k,v in after.items() if k != 'mutatingRequests'}, 'OBJECT_PARITY_REQUIRED')
@@ -682,7 +736,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         report = {'schema': 'ouf.storage-generation33-lateral-isolation.v1', 'status': 'SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS',
             'candidateLockSha256': LOCK_SHA, 'cohortReceiptSha256': COHORT_SHA,
             'ociManifestDigest': bound['lock']['image']['manifestDigest'], 'distinctNetworkNamespaces': 5,
-            'cleanContainerStops': 5, 'requiredRoleLinks': len(ALLOW), 'deniedRoleLinks': len(probes) - len(ALLOW),
+            'cleanContainerStops': 5, 'requiredRoleLinks': len(allow_links(cleanup_stream)), 'deniedRoleLinks': len(probes) - len(allow_links(cleanup_stream)),
             'dnsAndHostDenials': len(dns), 'allDenialsHaveFirewallCounterEvidence': True,
             'rulesInstalledBeforeServiceExec': True, 'unprivilegedServiceContainers': True,
             'successfulObjectPuts': 1, 'bucketCreates': 1, 'mutatingRequestRetries': 0, 'object': after,
@@ -690,6 +744,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'orphanLogicalCleanupQualified': cleanup_stream, 'orphanCleanupEvidence': cleanup_evidence,
             'streamInterruptionInjected': interrupt_stream, 'streamInterruptionEvidence': stream_evidence,
             'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
             'forcedContainerDeaths': 4 if crash_all else 1 if crash_role else 0,
@@ -719,7 +774,10 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true')
+    identify = sub.add_parser('chunk-identify'); identify.add_argument('root', type=Path); identify.add_argument('observation', type=Path)
+    index = sub.add_parser('chunk-index'); index.add_argument('root', type=Path); index.add_argument('chunk', type=Path)
+    chunk = sub.add_parser('chunk-read'); chunk.add_argument('chunk', type=Path); chunk.add_argument('expected', choices=('present','absent'))
     stream_child = sub.add_parser('stream-client'); stream_child.add_argument('config', type=Path); stream_child.add_argument('control', type=Path)
     progress = sub.add_parser('stream-progress'); progress.add_argument('root', type=Path)
     master_inv = sub.add_parser('master-inventory'); master_inv.add_argument('root', type=Path)
@@ -730,7 +788,10 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream)
+    elif args.operation == 'chunk-identify': print(json.dumps(cleanup.identify(args.root, json.loads(args.observation.read_bytes()))))
+    elif args.operation == 'chunk-index': print(json.dumps(cleanup.index_state(args.root, json.loads(args.chunk.read_bytes()))))
+    elif args.operation == 'chunk-read': print(json.dumps(cleanup.read_chunk(IPS['volume'], json.loads(args.chunk.read_bytes()), args.expected)))
     elif args.operation == 'stream-progress': print(json.dumps(stream.persisted_prefix(args.root)))
     elif args.operation == 'stream-client':
         signer = keys.tls_rotation.load('stream_s3_signer', ROOT / 'scripts/run-seaweedfs-452-identity-tls.py')

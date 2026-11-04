@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — cleanup logica orfano33 in qualifica
+
+- Nuovo settimo caso con sola tupla S3→volume gRPC28080 aggiunta, installata prima dell'exec; sei regressioni con policy originale conservate. Chunk identificato da header/hash .dat e GET200 completo prima dell'abort; cleanup automatica richiede tombstone esatta e GET404, contatori gRPC e persistenza dopo riavvio completo. Nessun DELETE/PUT/retry del controller.
+- 97 test locali PASS e YAML/shell PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_ORPHAN_CLEANUP33_20261104.md. Cancellazione logica distinta dalla reclamation fisica, senza vacuum; nessuna qualifica autorizzazione metodi/mTLS/target.
+- MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione VPS/merge/deploy/replay/reset/grant.
+
 ## Checkpoint storage 2026-11-04 — PUT incompleto33: assenza S3 persistente PASS
 
 - Run [41821487900](https://github.com/GioNob/ouf-deploy/actions/runs/41821487900), producer `9c0f2968dba8528ced7c98643f30a7c5740ce400`:86 test e sei scenari nativi PASS. Singolo PUT4259841/8388865 byte; chunk4194304 identificato nei .dat al primo probe prima dell'abort, log server connection reset durante lettura dei65537 byte successivi. Nessun ACK letto/retry mutativo.
