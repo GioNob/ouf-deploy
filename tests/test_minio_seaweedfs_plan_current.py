@@ -62,8 +62,8 @@ class CurrentStoragePlanTest(unittest.TestCase):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
         self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 0)
-        self.assertEqual(result["repositoryPatchCount"], 32)
-        self.assertEqual(result["qualifiedImagePatchCount"], 32)
+        self.assertEqual(result["repositoryPatchCount"], 33)
+        self.assertEqual(result["qualifiedImagePatchCount"], 33)
         self.assertEqual(result["historicalQualifiedImagePatchCount"], 15)
         self.assertEqual(result["generation29MimeRegression"], "PASS_SYNTHETIC_ONLY")
         self.assertEqual(result["hostedSourceClosureRunCount"], 6)
@@ -789,7 +789,7 @@ class QualifiedGeneration32PlanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.helper = plan_current.generation32_helper()
-        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.plan = plan_current.generation32_view(json.loads((ROOT / plan_current.PLAN_PATH).read_bytes()))
 
     def test_exact_hosted_evidence_and_current_view(self):
         history = self.helper.restore_generation31_plan(self.plan)
@@ -831,6 +831,82 @@ class QualifiedGeneration32PlanTest(unittest.TestCase):
             runtime.write_bytes(b"wrong image runtime archive")
             with self.assertRaisesRegex(ValueError, "GEN32_BOUND_BYTES_CHANGED"):
                 self.helper.read_bound(root, self.helper.RUNTIME_ZIP, self.helper.RUNTIME_ZIP_SHA)
+
+
+class QualifiedGeneration33PlanTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.helper=plan_current.generation33_helper()
+        cls.plan=json.loads((ROOT/plan_current.PLAN_PATH).read_bytes())
+
+    def test_exact_hosted_evidence_and_full32_history(self):
+        history=self.helper.restore_generation32_plan(self.plan)
+        result=self.helper.validate_tree33(ROOT,self.plan,lambda root,old:{})
+        self.assertEqual(result['currentGeneration'],33)
+        self.assertEqual(result['currentBinaryModules'],214)
+        self.assertEqual(result['currentCompiledPackages'],1532)
+        self.assertEqual(history['currentQualification']['generation'],32)
+        self.assertEqual(self.helper.sha(self.helper.canonical(history)),self.helper.BASE_PLAN_CANONICAL_SHA)
+        self.assertEqual(plan_current.generation31_view(self.plan)['currentQualification']['generation'],31)
+        self.assertEqual(plan_current.generation29_view(self.plan)['currentQualification']['generation'],29)
+
+    def test_no_old_binary_runtime_or_target_qualification_transfer(self):
+        for field,value in [('binarySha256',self.plan['historicalQualification32']['binarySha256']),
+                            ('runtimeRunId',self.plan['historicalQualification32']['runtimeRunId']),
+                            ('releaseAdmitted',True),('targetOperations',1),('historicalRuntimeProofTransferred',True)]:
+            with self.subTest(field=field):
+                changed=copy.deepcopy(self.plan);changed['currentQualification'][field]=value
+                with self.assertRaisesRegex(ValueError,'GEN33_EXACT_CURRENT_VIEW'):
+                    self.helper.validate_tree33(ROOT,changed,lambda root,old:{})
+
+    def test_all_pre33_history_and_scope_immutable(self):
+        for path in [('historicalQualification32','releaseAdmitted'),('historicalQualification31','releaseAdmitted'),
+                     ('historicalQualification29','releaseAdmitted')]:
+            changed=copy.deepcopy(self.plan);changed[path[0]][path[1]]=True
+            with self.subTest(path=path),self.assertRaisesRegex(ValueError,'ALL_PRE33_HISTORY'):
+                self.helper.restore_generation32_plan(changed)
+        changed=copy.deepcopy(self.plan);changed['nextGenerationPrototype']['progressCreditAdded']=1
+        with self.assertRaisesRegex(ValueError,'NEXT_PROTOTYPE'):
+            self.helper.restore_generation32_plan(changed)
+
+    def test_archived_census_closure_does_not_mean_all_dependencies_maintained(self):
+        current=self.plan['currentQualification']['dependencyLifecycle']
+        self.assertEqual(len(current['archivedModulesRemovedFromGeneration29Binary']),10)
+        self.assertFalse(current['allDependenciesMaintained'])
+        self.assertFalse(current['moduleGraphEradicationClaimed'])
+        changed=copy.deepcopy(self.plan);changed['currentQualification']['dependencyLifecycle']['allDependenciesMaintained']=True
+        with self.assertRaisesRegex(ValueError,'GEN33_EXACT_CURRENT_VIEW'):
+            self.helper.validate_tree33(ROOT,changed,lambda root,old:{})
+
+    def test_modified_source_and_raw_scanner_identities_are_separate(self):
+        lock,image,inner,_,_,legal,_=self.helper.bind_qualification(ROOT)
+        self.assertFalse(image['assessment']['vendorSourceSupplement']['rawArtifactsRewritten'])
+        self.assertFalse(inner['modifiedVendorDependency']['originalChecksumsDescribeModifiedSource'])
+        self.assertEqual(inner['vendorSourceProfile'],lock['vendorSourceProfile'])
+        self.assertEqual(legal['vendoredBuildInfoH1Fields'],'EMPTY_UNCHANGED')
+
+    def test_engineering_credit_keeps_history_and_requires_both_proofs(self):
+        old=self.helper.restore_generation32_plan(self.plan)
+        self.assertEqual(old['progressEstimate']['weightedCredits'],17.5)
+        self.assertEqual(self.plan['progressEstimate']['weightedCredits'],18.3)
+        self.assertEqual(self.plan['progressEstimate']['creditsPercent'],[50,85,60,45,35,0,0,0])
+        self.assertEqual(self.plan['currentQualification']['syntheticRuntime']['postgresRecovery'],'NOT_TESTED')
+        changed=copy.deepcopy(self.plan);changed['progressEstimate']['creditsPercent'][3]=100
+        with self.assertRaisesRegex(ValueError,'GEN33_EXACT_ENGINEERING_CREDIT'):
+            self.helper.validate_tree33(ROOT,changed,lambda root,old:{})
+        changed=copy.deepcopy(self.plan);changed['engineeringRecovery33']['externalS3WritesFenced']=True
+        with self.assertRaisesRegex(ValueError,'GEN33_RECOVERY_SCOPE'):
+            self.helper.restore_generation32_plan(changed)
+
+    def test_missing_and_wrong_archive_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);path=root/self.helper.RUNTIME_ZIP;path.parent.mkdir(parents=True)
+            with self.assertRaisesRegex(ValueError,'GEN33_REGULAR_FILE'):
+                self.helper.read_bound(root,self.helper.RUNTIME_ZIP,self.helper.RUNTIME_ZIP_SHA)
+            path.write_bytes(b'old unrelated runtime')
+            with self.assertRaisesRegex(ValueError,'GEN33_BOUND_BYTES_CHANGED'):
+                self.helper.read_bound(root,self.helper.RUNTIME_ZIP,self.helper.RUNTIME_ZIP_SHA)
 
 
 if __name__ == "__main__":

@@ -33,6 +33,18 @@ on:
       - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
       - scripts/verify-minio-seaweedfs-plan-generation31.py
       - scripts/verify-minio-seaweedfs-plan-generation32.py
+      - scripts/verify-minio-seaweedfs-plan-generation33.py
+      - evidence/storage-postgres-publication-fence-hosted-20261104.json
+      - evidence/storage-coordinated-generation32-hosted-20261104.json
+      - evidence/artifacts/storage-postgres-publication-fence-41794344238.zip
+      - evidence/artifacts/storage-coordinated-generation32-41782068196.zip
+      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
+      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
+      - evidence/seaweedfs-generation33-image-hosted-20261104.json
+      - evidence/seaweedfs-generation33-image-raw-20261104/**
+      - evidence/seaweedfs-452-generation33-cohort-hosted-20261104.json
+      - evidence/seaweedfs-generation33-runtime-hosted-20261104.json
+      - evidence/artifacts/seaweedfs-generation33-*41794344274.zip
       - releases/seaweedfs-452-generation32-candidate-lock-20261103.json
       - releases/seaweedfs-452-generation32-build-manifest-20261103.json
       - evidence/seaweedfs-452-generation32-image-hosted-20261104.json
@@ -229,13 +241,26 @@ jobs:
           from pathlib import Path
           plan = json.loads(Path('releases/minio-seaweedfs-plan-20261102.json').read_bytes())
           paths = {'scripts/verify-minio-seaweedfs-plan-generation31.py'}
-          for current in (plan['currentQualification'], plan['historicalQualification31'], plan['historicalQualification29']):
+          for current in (plan['currentQualification'], plan['historicalQualification32'], plan['historicalQualification31'], plan['historicalQualification29']):
               generation = current['generation']
               cohort = json.loads(Path(current['cohortReceipt']).read_bytes())
               runtime = json.loads(Path(current['runtimeReceipt']).read_bytes())
-              manifest_path = f'releases/seaweedfs-452-generation{generation}-build-manifest-20261103.json'
+              manifest_path = ('releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json' if generation == 33
+                               else f'releases/seaweedfs-452-generation{generation}-build-manifest-20261103.json')
               manifest = json.loads(Path(manifest_path).read_bytes())
               paths.update((current['candidateLock'], current['imageReceipt'], current['cohortReceipt'], current['runtimeReceipt'], manifest_path))
+              if generation == 33:
+                  lock = json.loads(Path(current['candidateLock']).read_bytes())
+                  image = json.loads(Path(current['imageReceipt']).read_bytes())
+                  paths.add('scripts/verify-minio-seaweedfs-plan-generation33.py')
+                  paths.add('evidence/seaweedfs-generation33-cohort-replay-local-20261104.json')
+                  paths.update(runtime['sourceHashesVerified'])
+                  paths.update(item['path'] for item in manifest['orderedSourcePatches'] + manifest['orderedDependencyPatches'])
+                  paths.update((cohort['artifact']['path'], runtime['artifact']['path']))
+                  paths.update(lock[key]['path'] for key in ('licenceRebinding','mongoV2LegalDelta','vendorSourceProfile'))
+                  paths.update(image[key]['path'] for key in ('sourceArtifact','independentReadback'))
+                  paths.update(image['rawEvidence']['directory']+'/'+name for name in image['rawEvidence']['originalMemberBytes'])
+                  continue
               if generation == 32:
                   lock = json.loads(Path(current['candidateLock']).read_bytes())
                   paths.add('scripts/verify-minio-seaweedfs-plan-generation32.py')
@@ -257,6 +282,11 @@ jobs:
                   paths.add(image['buildEvidenceArtifact']['path'])
                   paths.add(image['independentReadback']['path'])
                   paths.add(cohort['artifact']['path'])
+          for field in ('coordinatedGeneration32Receipt','publicationFenceFixtureReceipt'):
+              path=plan['engineeringRecovery33'][field]
+              receipt=json.loads(Path(path).read_bytes())
+              paths.add(path); paths.add(receipt['originalArtifact']['path'])
+              paths.update(row['path'] for row in receipt['sourceBindingsVerifiedAgainstExactGitTree'])
           lifecycle = plan['historicalQualification29']['dependencyLifecycle']['widerInventoryAssessment']
           paths.add(lifecycle['inventoryReceipt'])
           paths.update(str(path) for path in Path('evidence/lifecycle262').rglob('*') if path.is_file())
