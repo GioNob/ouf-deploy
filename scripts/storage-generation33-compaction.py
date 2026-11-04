@@ -65,9 +65,12 @@ def deleted_handles(pid, proc_root=Path('/proc')):
     return sorted(deleted_fds)
 
 
-def validate(before,after,chunk):
+def validate(before,after,chunk,*,recovered=False):
     target=chunk['datFile'];index=str(Path(target).with_suffix('.idx'));nid=chunk['needleId']
-    require(before['volumePid']==after['volumePid'],'SAME_LIVE_VOLUME_DURING_COMPACTION_REQUIRED')
+    if recovered:
+        # Container/namespace replacement and exact temporary inode promotion are checked by the caller.
+        require(isinstance(after['volumePid'],int) and after['volumePid']>0,'LIVE_RECOVERED_VOLUME_PID_REQUIRED')
+    else: require(before['volumePid']==after['volumePid'],'SAME_LIVE_VOLUME_DURING_COMPACTION_REQUIRED')
     require(set(before['datFiles'])==set(after['datFiles']) and set(before['indexes'])==set(after['indexes']),'SAME_COMPACTION_VOLUME_SET_REQUIRED')
     require(before['orphanPayloadFiles']==[target] and after['orphanPayloadFiles']==[],'ORPHAN_PAYLOAD_PHYSICALLY_REMOVED_REQUIRED')
     for state in (before,after):
@@ -97,3 +100,4 @@ def validate_restart(before,after):
     require({k:v for k,v in before.items() if k!='volumePid'}=={k:v for k,v in after.items() if k!='volumePid'},
             'EXACT_COMPACTED_STORAGE_AND_ALLOCATION_MUST_SURVIVE')
     # Container/namespace replacement is verified independently, never inferred from PID reuse.
+

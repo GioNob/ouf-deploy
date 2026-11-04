@@ -1,4 +1,11 @@
-## Checkpoint storage 2026-11-04 — crash precommit compattazione33 PASS
+## Checkpoint storage 2026-11-04 - crash post-marker33 in qualifica
+
+- Ripresa da23fc41f5: dodicesimo scenario con binario/OCI33 invariati. Osservatore esterno ptrace ferma ingresso prima rinomina DAT dopo fsync marker/directory; tutti i thread tracciati, nessuna modifica registri/memoria/storage, EXITKILL e nessuna ripresa dopo la fase.
+- Quattro SIGKILL e nuove generazioni dietro gate: richiesti rollforward esatto degli inode temporanei, recupero allocazione, rilocazione witness, baseline S3/metadati e confini rete. Nessun secondo vacuum. Undici scenari precedenti e tutte le prove preservati.
+- 10 nuovi test puri +12 precommit PASS locali; meccanica ptrace Linux e qualifica nativa PENDING. Dossier docs/OUF_STORAGE_POSTMARKER_CRASH33_20261104.md. Inter-rename/power-loss/RPO/RTO OPEN.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8gate,0/21AT,0/120oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO invariato.
+
+## Checkpoint storage 2026-11-04 - crash precommit compattazione33 PASS
 
 - Run41859638833/producer6db28abd:146test e undici scenari PASS. Volume7/PID25075 esatto,8thread T, .cpd1048688byte/.cpx16byte presenti e .cpc assente; DAT5243072/IDX48byte, hash e inode invariati prima di quattro SIGKILL137/non-OOM. Copie temporanee già presenti: non prova interruzione a metà copia.
 - Ripresa senza secondo vacuum: temporanei rimossi, vecchia coppia/allocazione/volumi non selezionati esatti; witness1048593byte/offset4194392 e GET integri; baseline S38388865byte/metadati al primo recupero, orfano logicamente assente.11link/36dinieghi ripetuti.55stopped-state puliti;98container/43morti dai receipt;11reti rimosse.

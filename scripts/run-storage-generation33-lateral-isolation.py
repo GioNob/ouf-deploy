@@ -31,6 +31,8 @@ relocation_spec = importlib.util.spec_from_file_location('relocation33', ROOT / 
 relocation = importlib.util.module_from_spec(relocation_spec); relocation_spec.loader.exec_module(relocation)
 crash_spec = importlib.util.spec_from_file_location('compaction_crash33', ROOT / 'scripts/storage-generation33-compaction-crash.py')
 compaction_crash = importlib.util.module_from_spec(crash_spec); crash_spec.loader.exec_module(compaction_crash)
+commit_spec = importlib.util.spec_from_file_location('commit_crash33', ROOT / 'scripts/storage-generation33-commit-crash.py')
+commit_crash = importlib.util.module_from_spec(commit_spec); commit_spec.loader.exec_module(commit_crash)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -398,8 +400,10 @@ def pin_network_namespace(pid, path, expected, command):
     return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False, relocate_live=False, crash_compact=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact, relocate_live, crash_compact)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False, relocate_live=False, crash_compact=False, crash_commit=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact, relocate_live, crash_compact, crash_commit)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    crash_compact = crash_compact or crash_commit
+    phase_prefix = 'postmarker' if crash_commit else 'precommit'
     relocate_live = relocate_live or crash_compact
     restart_compact = restart_compact or relocate_live
     compact_stream = compact_stream or restart_compact
@@ -805,26 +809,33 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     'topology',str(evidence/'compaction-metadata-before.json')]))
                 require(post_topology_before['status']=='MASTER_TOPOLOGY_READY','PRECOMMIT_TOPOLOGY_REQUIRED')
                 # Arm before the sole vacuum; frozen files, not timing, qualify the phase.
-                observer_log = (evidence/'precommit-observer.log').open('w')
+                observer_log = (evidence/(phase_prefix+'-observer.log')).open('w')
                 observer_process = subprocess.Popen(['sudo','-n',sys.executable,'-I','-B','-S',
-                    str(ROOT/'scripts/storage-generation33-compaction-crash.py'),str(data/'volume'),
+                    str(ROOT/('scripts/storage-generation33-commit-crash.py' if crash_commit else 'scripts/storage-generation33-compaction-crash.py')),str(data/'volume'),
                     cleanup_chunk['datFile'],pids['volume'],final_compact_roles['volume']['Id'],str(evidence)],
                     stdout=observer_log,stderr=subprocess.STDOUT)
                 deadline=time.monotonic()+15
-                while not (evidence/'precommit-observer-ready.json').is_file():
+                while not (evidence/(phase_prefix+'-observer-ready.json')).is_file():
                     require(observer_process.poll() is None and time.monotonic()<deadline,'PRECOMMIT_OBSERVER_ARM_BUDGET')
                     time.sleep(.05)
                 vacuum_stdout=(evidence/'compaction-stdout.log').open('w')
                 vacuum_stderr=(evidence/'compaction-stderr.log').open('w')
                 vacuum_process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=vacuum_stdout,stderr=vacuum_stderr,text=True)
                 vacuum_process.stdin.write(script);vacuum_process.stdin.close()
-                require(observer_process.wait(timeout=50)==0,'OBSERVED_PRECOMMIT_FREEZE_REQUIRED')
-                observer_log.close()
-                crash_compaction_evidence=json.loads((evidence/'precommit-freeze.json').read_bytes())
-                require(crash_compaction_evidence['status']=='OBSERVED_PRECOMMIT_FROZEN','OBSERVED_PRECOMMIT_REQUIRED')
-                compact_after=compact_snapshot('precommit-frozen-dat')
+                if crash_commit:
+                    deadline=time.monotonic()+95
+                    while not (evidence/'postmarker-freeze.json').is_file():
+                        require(observer_process.poll() is None and time.monotonic()<deadline,'POSTMARKER_OBSERVATION_BUDGET')
+                        time.sleep(.05)
+                    require(observer_process.poll() is None,'POSTMARKER_TRACER_MUST_HOLD_RENAME')
+                else:
+                    require(observer_process.wait(timeout=50)==0,'OBSERVED_PRECOMMIT_FREEZE_REQUIRED')
+                    observer_log.close()
+                crash_compaction_evidence=json.loads((evidence/(phase_prefix+'-freeze.json')).read_bytes())
+                require(crash_compaction_evidence['status']=='OBSERVED_'+phase_prefix.upper()+'_FROZEN','OBSERVED_COMPACTION_PHASE_REQUIRED')
+                compact_after=compact_snapshot(phase_prefix+'-frozen-dat')
                 compaction_crash.validate_rollback(compact_before,compact_after,gated=True)
-                witness_after=witness_observe('precommit-frozen-witness')
+                witness_after=witness_observe(phase_prefix+'-frozen-witness')
                 require(witness_after==witness_before,'PRECOMMIT_WITNESS_UNCHANGED_REQUIRED')
                 compact_read=after
             else:
@@ -884,6 +895,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             post_killed = dict(zip(SERVICES,json.loads(cold.command(['docker','inspect',*post_old_names.values()]))))
             validate_all_killed(post_before,post_killed); save('post-compaction-killed',post_killed)
             if crash_compact:
+                if crash_commit:
+                    require(observer_process.wait(timeout=15)==0,'POSTMARKER_OBSERVER_KILL_ACK_REQUIRED')
+                    observer_log.close()
                 require(vacuum_process.wait(timeout=15) is not None,'VACUUM_CONTROLLER_TERMINATED_REQUIRED')
                 vacuum_stdout.close();vacuum_stderr.close()
                 save('compaction-execution',{'argv':command,'exitCode':vacuum_process.returncode,
@@ -891,7 +905,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 stopped_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                     str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
                 require(stopped_files==crash_compaction_evidence['filesFrozen'],'FROZEN_FILES_PERSIST_AFTER_KILL_REQUIRED')
-                save('precommit-stopped-files',stopped_files)
+                save(phase_prefix+'-stopped-files',stopped_files)
             for role,name in post_old_names.items():
                 logs = subprocess.run(['docker','logs',name],check=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=30)
                 (evidence/(name+'.log')).write_bytes(logs.stdout)
@@ -939,7 +953,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 gated_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
                     str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
                 require(gated_files==stopped_files,'PRECOMMIT_STOPPED_FILES_UNCHANGED_BEFORE_EXEC')
-                save('precommit-gated-files',gated_files)
+                save(phase_prefix+'-gated-files',gated_files)
             else: compact.validate_restart(compact_after,compact_snapshot('post-compaction-gated-dat'))
             release_replacement_gates(post_gates)
             for role in SERVICES:
@@ -982,7 +996,17 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             require(volume_after-volume_before>=VOLUME_BYTES,'POST_COMPACTION_REAL_VOLUME_RESPONSE_REQUIRED')
             chunk_read('absent','post-compaction-chunk-absent')
             s3('absent-interrupted','post-compaction-s3-absence')
-            if crash_compact: compaction_crash.validate_rollback(compact_before,compact_snapshot('post-compaction-recovered-dat'))
+            if crash_commit:
+                recovered_dat=compact_snapshot('post-compaction-recovered-dat')
+                compaction_evidence=compact.validate(compact_before,recovered_dat,cleanup_chunk,recovered=True)
+                recovered_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
+                    str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
+                commit_crash.validate_pair(crash_compaction_evidence['filesFrozen'],recovered_files)
+                save('postmarker-recovered-files',recovered_files)
+                witness_after=witness_observe('postmarker-recovered-witness')
+                relocation_evidence=relocation.validate(witness_before,witness_after,cleanup_chunk,compaction_evidence)
+                save('postmarker-relocation',relocation_evidence)
+            elif crash_compact: compaction_crash.validate_rollback(compact_before,compact_snapshot('post-compaction-recovered-dat'))
             else: compact.validate_restart(compact_after,compact_snapshot('post-compaction-recovered-dat'))
             post_probes=[]
             for src,dst,port,allowed in matrix(True):
@@ -1003,7 +1027,13 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             save('post-compaction-dns-host-probes',post_dns)
             require(s3('read-volume','post-compaction-final-read')==compact_read,'POST_COMPACTION_FINAL_BASELINE_REQUIRED')
             s3('absent-interrupted','post-compaction-final-absence');chunk_read('absent','post-compaction-final-chunk')
-            if crash_compact: compaction_crash.validate_rollback(compact_before,compact_snapshot('post-compaction-final-dat'))
+            if crash_commit:
+                compact.validate_restart(recovered_dat,compact_snapshot('post-compaction-final-dat'))
+                final_files=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',
+                    str(Path(__file__).resolve()),'precommit-files',str(data/'volume'),cleanup_chunk['datFile']]))
+                commit_crash.validate_pair(crash_compaction_evidence['filesFrozen'],final_files)
+                save('postmarker-final-files',final_files)
+            elif crash_compact: compaction_crash.validate_rollback(compact_before,compact_snapshot('post-compaction-final-dat'))
             else: compact.validate_restart(compact_after,compact_snapshot('post-compaction-final-dat'))
             post_final=dict(zip(ROLES,json.loads(cold.command(['docker','inspect',*lab.names]))))
             validate_retained_roles(post_before,post_final,'all')
@@ -1014,8 +1044,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             post_evidence={'signal':'SIGKILL','exitCode':137,'oomKilled':False,'applicationProcessesReplaced':4,
                 'oldContainerIds':{r:x['Id'] for r,x in post_killed.items()},'newContainerIds':{r:post_final[r]['Id'] for r in SERVICES},
                 'allServicesStoppedBeforeReplacement':True,'allRulesBeforeAnyRestartExec':True,'clientUnchanged':True,
-                'stoppedStorageUnchangedBeforeExec':True,'exactDatAndIndexSnapshotsPreserved':True,'allocatedDatBlocksPreserved':True,
-                'orphanPayloadAndIndexRemainAbsent':not crash_compact,'baselineS3Parity':True,'directMetadataIdentical':True,
+                'stoppedStorageUnchangedBeforeExec':True,'exactDatAndIndexSnapshotsPreserved':not crash_commit,'allocatedDatBlocksPreserved':not crash_commit,
+                'postMarkerRollforwardQualified':crash_commit,
+                'orphanPayloadAndIndexRemainAbsent':not crash_compact or crash_commit,'baselineS3Parity':True,'directMetadataIdentical':True,
                 'directChunk404':True,'s3ObjectAbsent':True,'topologyAndRegistrationRecovered':True,
                 'volumeResponseBytesBefore':volume_before,'volumeResponseBytesAfter':volume_after,
                 'filerResponseBytesBefore':filer_before,'filerResponseBytesAfter':filer_after,
@@ -1026,7 +1057,14 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 require(witness_observe('relocation-after-restart')==witness_after,'RELOCATED_OFFSET_AND_DATA_MUST_SURVIVE_RESTART')
                 require(witness_read('relocation-read-after-restart')==json.loads((evidence/('relocation-read-before-compaction.json' if crash_compact else 'relocation-read-after-compaction.json')).read_bytes()),
                         'RELOCATED_NATIVE_GET_MUST_SURVIVE_RESTART')
-                if crash_compact:
+                if crash_commit:
+                    crash_compaction_evidence.update(status='POSTMARKER_PROCESS_CRASH_RECOVERY_PASS',
+                        exactTemporaryPairRolledForward=True,witnessRelocatedWithBodyPreserved=True,baselineS3Parity=True,
+                        orphanPhysicallyAbsent=True,temporaryFilesRemovedOnRecovery=True,
+                        vacuumCommands=1,mutatingRetries=0,postMarkerQualified=True,betweenRenamesQualified=False,
+                        powerLossQualified=False)
+                    save('postmarker-recovery',crash_compaction_evidence)
+                elif crash_compact:
                     crash_compaction_evidence.update(status='PRECOMMIT_PROCESS_CRASH_RECOVERY_PASS',
                         rollbackStorageExact=True,witnessOffsetAndBodyPreserved=True,baselineS3Parity=True,
                         orphanLogicallyAbsent=True,temporaryFilesRemovedOnRecovery=True,
@@ -1047,6 +1085,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
             'compactionCrashQualified': crash_compact, 'compactionCrashEvidence': crash_compaction_evidence,
+            'postMarkerCrashQualified': crash_commit,
             'liveRelocationQualified': relocate_live and not crash_compact, 'liveRelocationEvidence': relocation_evidence,
             'nativeFixtureChunkWrites': 1 if relocate_live else 0,
             'postCompactionRestartQualified': restart_compact and not crash_compact, 'postCompactionRestartEvidence': post_evidence,
@@ -1065,7 +1104,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
     finally:
         # Wait out the bounded observer before any PID can be replaced during cleanup.
         if observer_process is not None and observer_process.poll() is None:
-            try: observer_process.wait(timeout=50)
+            try: observer_process.wait(timeout=100 if crash_commit else 50)
             except Exception as error: failure = failure or error
         for pin in list(namespace_pins):
             try: cold.command(['sudo','-n','umount',str(pin)]); namespace_pins.remove(pin)
@@ -1088,7 +1127,7 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true'); crash.add_argument('--relocate-live', action='store_true'); crash.add_argument('--crash-compact', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true'); crash.add_argument('--relocate-live', action='store_true'); crash.add_argument('--crash-compact', action='store_true'); crash.add_argument('--crash-commit', action='store_true')
     pre = sub.add_parser('precommit-files');pre.add_argument('root',type=Path);pre.add_argument('target')
     rel = sub.add_parser('relocation-observe'); rel.add_argument('root',type=Path); rel.add_argument('witness',type=Path)
     rel_upload = sub.add_parser('relocation-upload'); rel_upload.add_argument('witness',type=Path)
@@ -1106,7 +1145,7 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact, relocate_live=args.relocate_live, crash_compact=args.crash_compact)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact, relocate_live=args.relocate_live, crash_compact=args.crash_compact, crash_commit=args.crash_commit)
     elif args.operation == 'precommit-files': print(json.dumps(compaction_crash.files(args.root,args.target)))
     elif args.operation == 'relocation-observe': print(json.dumps(relocation.observe(args.root,json.loads(args.witness.read_bytes()))))
     elif args.operation == 'relocation-upload': print(json.dumps(relocation.upload(IPS['volume'],json.loads(args.witness.read_bytes()))))
