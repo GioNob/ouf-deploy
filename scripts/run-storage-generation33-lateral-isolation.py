@@ -21,6 +21,8 @@ from urllib.parse import quote, urlencode
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('lateral_credentials33', ROOT / 'scripts/run-storage-generation33-credential-rotation.py')
 keys = importlib.util.module_from_spec(spec); spec.loader.exec_module(keys)
+stream_spec = importlib.util.spec_from_file_location('interrupted_stream33', ROOT / 'scripts/storage-generation33-stream-interruption.py')
+stream = importlib.util.module_from_spec(stream_spec); stream_spec.loader.exec_module(stream)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -311,6 +313,8 @@ def socket_probe(ip, port, protocol):
 
 def client(action, config):
     module = keys.tls_rotation.load('lateral_s3_signer', ROOT / 'scripts/run-seaweedfs-452-identity-tls.py')
+    if action == 'absent-interrupted':
+        return stream.verify_absent(module, config / 'tls', s3_request, VOLUME_KEY, VOLUME_BYTES)
     if action == 'seed-volume':
         body = volume_body()
         for credentials, key, data in [(module.OWNER, '', b''), (module.APP, VOLUME_KEY, body)]:
@@ -352,8 +356,9 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    crash_all = crash_all or interrupt_stream
     crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else 'all' if crash_all else None
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not work.exists() and not work.is_symlink(), 'FRESH_WORK_REQUIRED')
@@ -386,6 +391,50 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         # Trusted internal API, reached only from the already allowed S3 namespace.
         value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
         save(output, value); return value
+    def interrupt_upload():
+        control = work / 'stream-control'; control.mkdir()
+        baseline = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
+            str(Path(__file__).resolve()), 'stream-progress', str(data / 'volume')]))
+        save('stream-prefix-before', baseline)
+        require(not baseline['persistedPrefixFound'], 'NEW_STREAM_PREFIX_REQUIRED')
+        child_args = ['sudo', '-n', 'nsenter', '-t', pids['client'], '-n', sys.executable, '-I', '-B', '-S',
+                      str(Path(__file__).resolve()), 'stream-client', str(config), str(control)]
+        def abort_client():
+            (control / 'abort.tmp').write_text('ABORT\n')
+            (control / 'abort.tmp').replace(control / 'abort')
+        with (evidence / 'stream-client-stderr.log').open('w') as stderr:
+            process = subprocess.Popen(child_args, stdout=subprocess.PIPE, stderr=stderr, text=True)
+            try:
+                deadline = time.monotonic() + 60
+                while not (control / 'prefix-sent.json').exists():
+                    require(process.poll() is None and time.monotonic() < deadline, 'STREAM_PREFIX_SEND_BUDGET')
+                    time.sleep(0.1)
+                marker = json.loads((control / 'prefix-sent.json').read_bytes()); save('stream-prefix-sent', marker)
+                for observation in range(1, 31):
+                    require(process.poll() is None, 'STREAM_MUST_REMAIN_OPEN_UNTIL_VOLUME_EVIDENCE')
+                    progress = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
+                        str(Path(__file__).resolve()), 'stream-progress', str(data / 'volume')]))
+                    save('stream-prefix-observation-' + str(observation), progress)
+                    if progress['persistedPrefixFound']: break
+                    require(observation < 30 and time.monotonic() < deadline, 'STREAM_NATIVE_CHUNK_BUDGET')
+                    time.sleep(1)
+                require(process.poll() is None, 'STREAM_MUST_STILL_BE_OPEN_AT_ABORT')
+                abort_client()
+                stdout, _ = process.communicate(timeout=15)
+                require(process.returncode == 0, 'EXACT_STREAM_CLIENT_EXIT_REQUIRED')
+                result = json.loads(stdout); save('stream-interrupted-put', result)
+                require(result['sentBodyBytes'] == stream.PREFIX_BYTES < result['declaredBodyBytes'] == stream.BODY_BYTES
+                        and result['clientConnectionClosed'] and not result['ackObserved']
+                        and result['putAttempts'] == 1 and result['mutatingRetries'] == 0, 'INCOMPLETE_SINGLE_PUT_REQUIRED')
+                return {'putAttempts': 1, 'mutatingRetries': 0, 'ackObserved': False,
+                        'sentBodyBytes': result['sentBodyBytes'], 'declaredBodyBytes': result['declaredBodyBytes'],
+                        'actualPersistedChunkBytes': stream.CHUNK_BYTES, 'prefixObservations': observation,
+                        'clientConnectionClosedBeforeCrash': True}
+            finally:
+                if process.poll() is None:
+                    abort_client()
+                    try: process.communicate(timeout=5)
+                    except subprocess.TimeoutExpired: process.kill(); process.communicate(timeout=5)
     try:
         save('exact-image', cold.prepare_image(archive, work))
         module.write_json(config / 's3.json', module.fixture_config()); module.certificates(config)
@@ -443,6 +492,10 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         save('ring-ready', {'filer': IPS['filer'] + ':18888', 'mutatingProbes': 0})
         crash_evidence = {}
         before = s3('seed-volume' if crash_role else 'seed')
+        stream_evidence = {}
+        if interrupt_stream:
+            stream_evidence = interrupt_upload()
+            s3('absent-interrupted', 'stream-absence-before-crash')
         if crash_role:
             if crash_filer or crash_master or crash_all: metadata_before = metadata(crash_role + '-metadata-before')
             if crash_master or crash_all:
@@ -592,6 +645,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     topologyReadAttempts=topology_attempt)
                 if not crash_all: crash_evidence.update(stoppedMetadataFiles=len(persisted),
                     stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()))
+            if interrupt_stream: s3('absent-interrupted', 'stream-absence-after-restart')
             final_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
             validate_retained_roles(by_role, final_roles, crash_role); save(crash_role + '-recovered-roles', final_roles)
         probes = []
@@ -616,6 +670,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                             'counterBefore': prior, 'counterAfter': after, **result})
         save('dns-host-probes', dns)
         after = s3('read-volume' if crash_role else 'read')
+        if interrupt_stream: s3('absent-interrupted', 'stream-absence-after-probes')
         baseline = observed if crash_role else before
         require({k:v for k,v in baseline.items() if k != 'mutatingRequests'} ==
                 {k:v for k,v in after.items() if k != 'mutatingRequests'}, 'OBJECT_PARITY_REQUIRED')
@@ -635,6 +690,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'streamInterruptionInjected': interrupt_stream, 'streamInterruptionEvidence': stream_evidence,
             'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
             'forcedContainerDeaths': 4 if crash_all else 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
@@ -663,15 +719,22 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true')
+    stream_child = sub.add_parser('stream-client'); stream_child.add_argument('config', type=Path); stream_child.add_argument('control', type=Path)
+    progress = sub.add_parser('stream-progress'); progress.add_argument('root', type=Path)
     master_inv = sub.add_parser('master-inventory'); master_inv.add_argument('root', type=Path)
     topology = sub.add_parser('topology'); topology.add_argument('metadata', type=Path)
     sub.add_parser('metadata')
     filer_inv = sub.add_parser('filer-inventory'); filer_inv.add_argument('root', type=Path)
     inventory = sub.add_parser('inventory'); inventory.add_argument('root', type=Path); inventory.add_argument('--previous', type=Path)
-    child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume')); child.add_argument('config', type=Path)
+    child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream)
+    elif args.operation == 'stream-progress': print(json.dumps(stream.persisted_prefix(args.root)))
+    elif args.operation == 'stream-client':
+        signer = keys.tls_rotation.load('stream_s3_signer', ROOT / 'scripts/run-seaweedfs-452-identity-tls.py')
+        print(json.dumps(stream.send_prefix(args.config / 'tls', signer, IPS['s3'], args.control)))
     elif args.operation == 'topology': print(json.dumps(master_topology(json.loads(args.metadata.read_bytes()))))
     elif args.operation == 'master-inventory': print(json.dumps(master_inventory(args.root)))
     elif args.operation == 'metadata': print(json.dumps(filer_metadata()))

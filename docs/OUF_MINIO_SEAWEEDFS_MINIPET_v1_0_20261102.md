@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — PUT incompleto33 in qualifica
+
+- Un PUT nuovo con Content-Length8388865, soltanto4259841 byte inviati e abort dopo prova del chunk esatto4194304 nei .dat. Nessun ACK letto, nessun replay mutativo; GET/HEAD404 e LIST baseline-only prima/dopo riavvio completo e probe rete.
+- Quattro processi sostituiti con radici conservate e regole prima dell'exec, baseline già confermata integra. Sei percorsi nativi;86 test locali PASS, qualifica nativa PENDING. Dossier docs/OUF_STORAGE_STREAM_INTERRUPTION33_20261104.md.
+- Solo client disconnect su PUT nuova chiave con Content-Length; non crash server in-flight, streaming-chunked/multipart/overwrite, GC, power loss o RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL congiunto33 e ripresa senza reseed PASS
 
 - Run [41819462147](https://github.com/GioNob/ouf-deploy/actions/runs/41819462147), producer `1a8a868fc4361b567127fe898e36c5da2b51d4e2`:74 test e cinque scenari nativi PASS. Quattro servizi137/non-OOM prima di qualsiasi sostituto (timestamp verificati), quattro nuovi container/namespace/gate, client invariato e tutte le regole prima di ogni exec.
