@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — rilocazione needle valido33 in qualifica
+
+- Decimo caso: dopo cleanup/crash/probe, un solo POST nativo aggiunge un witness1048593byte oltre il record orfano tombstoned nello stesso volume. ID riservato della fixture verificato assente in tutti gli indici e GET404 prima della scrittura; prefissi DAT/IDX esattamente conservati. Nessuna modifica diretta storage, nuova chiave S3 o assegnazione master.
+- Compattazione richiede spostamento offset almeno4194304byte ed esattamente uguale alla riduzione DAT, con stesso ID/cookie/hash; GET nativo prima/dopo e persistenza dopo secondo crash congiunto. Baseline S3/metadati e confini rete conservati.134 test locali e YAML/shell PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_RELOCATION33_20261104.md.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant.
+
 ## Checkpoint storage 2026-11-04 — restart dopo compattazione33 PASS
 
 - Run [41840445331](https://github.com/GioNob/ouf-deploy/actions/runs/41840445331), producer `6aa6d73b3096a4b2de8c7f2300751a0f8019118c`:122 test e nove scenari PASS. Nel nono, vacuum volume2 poi quattro SIGKILL137/non-OOM e nuovi container/namespace/gate prima del recupero. Nessun reseed o secondo vacuum.

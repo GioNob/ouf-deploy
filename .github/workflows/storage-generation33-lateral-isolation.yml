@@ -17,6 +17,8 @@ on:
       - scripts/storage-generation33-compaction.py
       - tests/test_storage_compaction_generation33.py
       - tests/test_storage_compaction_restart_generation33.py
+      - scripts/storage-generation33-relocation.py
+      - tests/test_storage_relocation_generation33.py
       - tests/test_storage_orphan_cleanup_generation33.py
       - scripts/run-storage-generation33-credential-rotation.py
       - tests/test_storage_credential_rotation_generation33.py
@@ -75,6 +77,8 @@ jobs:
           python3 -I -B -S -m unittest discover -s tests -p test_storage_compaction_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
 
           python3 -I -B -S -m unittest discover -s tests -p test_storage_compaction_restart_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_relocation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
 
       - name: Fetch and bind the exact successful generation33 cohort and image
         env:
@@ -187,6 +191,13 @@ jobs:
             "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-compaction-restart-lab" \
             "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --restart-compact
 
+      - name: Relocate a live native chunk across a tombstoned record and verify restart persistence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-relocation-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --relocate-live
+
       - name: Preserve bounded public evidence and reject private-key material
         if: always()
         run: |
@@ -211,7 +222,8 @@ jobs:
                                    (temp/'lateral33-stream-lab/evidence','stream-lab'),
                                    (temp/'lateral33-cleanup-lab/evidence','cleanup-lab'),
                                    (temp/'lateral33-compaction-lab/evidence','compaction-lab'),
-                                   (temp/'lateral33-compaction-restart-lab/evidence','compaction-restart-lab')):
+                                   (temp/'lateral33-compaction-restart-lab/evidence','compaction-restart-lab'),
+                                   (temp/'lateral33-relocation-lab/evidence','relocation-lab')):
               if work.is_dir():
                   for source in sorted(work.iterdir()):copy_public(source,out/destination/source.name)
           for name in ('cohort-publisher-verification.json','bound-cohort/cohort-receipt.json','bound-cohort/SHA256SUMS'):
@@ -229,6 +241,7 @@ jobs:
                  'scripts/storage-generation33-orphan-cleanup.py','tests/test_storage_orphan_cleanup_generation33.py',
                  'scripts/storage-generation33-compaction.py','tests/test_storage_compaction_generation33.py',
                  'tests/test_storage_compaction_restart_generation33.py',
+                 'scripts/storage-generation33-relocation.py','tests/test_storage_relocation_generation33.py',
                  '.github/workflows/storage-generation33-lateral-isolation.yml','scripts/run-seaweedfs-452-generation33-labs.py',
                  'scripts/storage-generation33-lab-binding.py','scripts/run-seaweedfs-452-cold-recovery.py',
                  'scripts/run-seaweedfs-452-identity-tls.py','scripts/readback-seaweedfs-452-generation33-image.py',

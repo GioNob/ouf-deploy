@@ -27,6 +27,8 @@ cleanup_spec = importlib.util.spec_from_file_location('orphan_cleanup33', ROOT /
 cleanup = importlib.util.module_from_spec(cleanup_spec); cleanup_spec.loader.exec_module(cleanup)
 compact_spec = importlib.util.spec_from_file_location('compaction33', ROOT / 'scripts/storage-generation33-compaction.py')
 compact = importlib.util.module_from_spec(compact_spec); compact_spec.loader.exec_module(compact)
+relocation_spec = importlib.util.spec_from_file_location('relocation33', ROOT / 'scripts/storage-generation33-relocation.py')
+relocation = importlib.util.module_from_spec(relocation_spec); relocation_spec.loader.exec_module(relocation)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -393,8 +395,9 @@ def pin_network_namespace(pid, path, expected, command):
     return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False, relocate_live=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact, relocate_live)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    restart_compact = restart_compact or relocate_live
     compact_stream = compact_stream or restart_compact
     cleanup_stream = cleanup_stream or compact_stream
     interrupt_stream = interrupt_stream or cleanup_stream
@@ -431,7 +434,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         # Trusted internal API, reached only from the already allowed S3 namespace.
         value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
         save(output, value); return value
-    cleanup_evidence = {}; cleanup_chunk = None; compaction_evidence = {}; post_evidence = {}
+    cleanup_evidence = {}; cleanup_chunk = None; compaction_evidence = {}; post_evidence = {}; relocation_evidence = {}
     def chunk_index(output):
         value = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
             str(Path(__file__).resolve()), 'chunk-index', str(data / 'volume'), str(evidence / 'cleanup-chunk.json')]))
@@ -769,7 +772,23 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                     str(Path(__file__).resolve()), 'compaction-snapshot', str(data / 'volume'),
                     str(evidence / 'cleanup-chunk.json'), pids['volume']]))
                 save(output, value); return value
+            if relocate_live:
+                witness_initial = compact_snapshot('relocation-before-write')
+                witness = relocation.prepare(witness_initial,cleanup_chunk); save('relocation-witness',witness)
+                def witness_observe(output):
+                    value=json.loads(cold.command(['sudo','-n',sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
+                        'relocation-observe',str(data/'volume'),str(evidence/'relocation-witness.json')]))
+                    save(output,value);return value
+                def witness_read(output):
+                    value=json.loads(ns('s3',[sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
+                        'chunk-read',str(evidence/'relocation-witness.json'),'present']))
+                    save(output,value);return value
+                save('relocation-upload',json.loads(ns('s3',[sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
+                    'relocation-upload',str(evidence/'relocation-witness.json')],timeout=45)))
+                witness_before=witness_observe('relocation-before-compaction')
+                witness_read('relocation-read-before-compaction')
             compact_before = compact_snapshot('compaction-before')
+            if relocate_live:relocation.validate_append(witness_initial,compact_before,witness,witness_before)
             compact_metadata = metadata('compaction-metadata-before')
             script = compact.command_script(cleanup_chunk)
             (evidence / 'compaction-command.txt').write_text(script)
@@ -786,6 +805,10 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             require(completed.returncode == 0 and len(completed.stdout)+len(completed.stderr)<=262144, 'NATIVE_COMPACTION_COMMAND_SUCCESS_REQUIRED')
             compact_after = compact_snapshot('compaction-after')
             compaction_evidence = compact.validate(compact_before, compact_after, cleanup_chunk)
+            if relocate_live:
+                witness_after=witness_observe('relocation-after-compaction')
+                relocation_evidence=relocation.validate(witness_before,witness_after,cleanup_chunk,compaction_evidence)
+                witness_read('relocation-read-after-compaction')
             chunk_read('absent', 'compaction-chunk-absent')
             s3('absent-interrupted', 'compaction-s3-absence')
             compact_read = s3('read-volume', 'compaction-baseline-read')
@@ -945,6 +968,11 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
                 'topologyReadAttempts':post_attempt,'recoveryReadAttempts':read_attempt,'recoveryPutRequests':0,
                 'additionalVacuumCommands':0,'mutatingRetries':0,'powerLossQualified':False,'compactionCrashQualified':False}
             save('post-compaction-recovery',post_evidence)
+            if relocate_live:
+                require(witness_observe('relocation-after-restart')==witness_after,'RELOCATED_OFFSET_AND_DATA_MUST_SURVIVE_RESTART')
+                require(witness_read('relocation-read-after-restart')==json.loads((evidence/'relocation-read-after-compaction.json').read_bytes()),
+                        'RELOCATED_NATIVE_GET_MUST_SURVIVE_RESTART')
+                relocation_evidence.update(postCompactionRestartQualified=True,offsetAndBodyPersisted=True)
         lab.stop(); cold.command(['docker', 'network', 'rm', network]); created_network = False
         report = {'schema': 'ouf.storage-generation33-lateral-isolation.v1', 'status': 'SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS',
             'candidateLockSha256': LOCK_SHA, 'cohortReceiptSha256': COHORT_SHA,
@@ -957,6 +985,8 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'liveRelocationQualified': relocate_live, 'liveRelocationEvidence': relocation_evidence,
+            'nativeFixtureChunkWrites': 1 if relocate_live else 0,
             'postCompactionRestartQualified': restart_compact, 'postCompactionRestartEvidence': post_evidence,
             'compactionQualified': compact_stream, 'compactionEvidence': compaction_evidence,
             'orphanLogicalCleanupQualified': cleanup_stream, 'orphanCleanupEvidence': cleanup_evidence,
@@ -992,7 +1022,9 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true'); crash.add_argument('--relocate-live', action='store_true')
+    rel = sub.add_parser('relocation-observe'); rel.add_argument('root',type=Path); rel.add_argument('witness',type=Path)
+    rel_upload = sub.add_parser('relocation-upload'); rel_upload.add_argument('witness',type=Path)
     comp = sub.add_parser('compaction-snapshot'); comp.add_argument('root', type=Path); comp.add_argument('chunk', type=Path); comp.add_argument('pid')
     identify = sub.add_parser('chunk-identify'); identify.add_argument('root', type=Path); identify.add_argument('observation', type=Path)
     index = sub.add_parser('chunk-index'); index.add_argument('root', type=Path); index.add_argument('chunk', type=Path)
@@ -1007,7 +1039,9 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact, relocate_live=args.relocate_live)
+    elif args.operation == 'relocation-observe': print(json.dumps(relocation.observe(args.root,json.loads(args.witness.read_bytes()))))
+    elif args.operation == 'relocation-upload': print(json.dumps(relocation.upload(IPS['volume'],json.loads(args.witness.read_bytes()))))
     elif args.operation == 'compaction-snapshot': print(json.dumps(compact.snapshot(args.root, json.loads(args.chunk.read_bytes()), args.pid)))
     elif args.operation == 'chunk-identify': print(json.dumps(cleanup.identify(args.root, json.loads(args.observation.read_bytes()))))
     elif args.operation == 'chunk-index': print(json.dumps(cleanup.index_state(args.root, json.loads(args.chunk.read_bytes()))))
