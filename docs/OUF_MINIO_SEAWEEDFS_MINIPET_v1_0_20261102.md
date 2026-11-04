@@ -1,3 +1,24 @@
+## Checkpoint storage 2026-11-04 — crash fra rinomine DAT/IDX33 PASS
+
+- Producer `5ac67de14e4aaf17808b12f95040ed297aef37dc`, [run 41870302570](https://github.com/GioNob/ouf-deploy/actions/runs/41870302570), job 126715227789: **170 test / 13 scenari PASS**, attempt 1 completed/success. Verifier `15d6ac5b13c25866e61b8969c005dfe4355eb9e8`, [readback 41871254673](https://github.com/GioNob/ouf-deploy/actions/runs/41871254673), job 126718618427: completed/success; nessuna seconda esecuzione nativa.
+- Volume 7, PID 31536/start 83283, TID 31808, nove thread in stato t. Dopo fsync marker/directory con ritorno 0, osservata uscita 0 della vera rinomina DAT; ingresso renameat 264 di .cpx→.idx fermato. DAT nuovo (inode 9961978), IDX vecchio (9961863), .cpd assente, .cpc/.cpx invariati. Vecchio offset 4194392 oltre DAT 1048688 byte; indice pendente valido a 8.
+- Quattro SIGKILL, exit 137/non-OOM; radici conservate e nuovi servizi dietro gate. DAT invariato e IDX pendente promosso, coppia coerente già alla prima readiness prima delle riletture della fixture. Witness 1048593 byte/identità/hash/GET integri, baseline S3 e metadati integri al tentativo 1; 4194384 byte DAT e 4194304 byte allocati recuperati. Nessun vacuum aggiuntivo, PUT di recupero o retry mutativo; 11 link/36 dinieghi verificati.
+- Readback: 1559 membri / 1558 checksum / 38 binding sorgenti; decodifica indipendente dei bytes IDX/cpx/DAT conservati. 65 stati finali puliti, 124 container distinti/59 morti intenzionali riportati, 13 reti rimosse. Receipt: `evidence/storage-interrename33-hosted-readback-20261104.json`; dossier: `docs/OUF_STORAGE_INTERRENAME_CRASH33_20261104.md`.
+- Originale artifact 13345276270, 5727470 byte, SHA256 `a47304daa0ade0357972e714205fc70b01f02486773265011d70ae68b3cda73c`; copia originale annidata nel readback artifact 13345266273. Retention fino al 2027-02-02; receipt durevole in Git, nuova custodia durevole dei ZIP non dichiarata. Tutte le prove precedenti preservate.
+- Prossimo singolo passo: Crash dopo entrambe le rinomine DAT/IDX e prima della rimozione del marker .cpc: verificare la finalizzazione idempotente dello stato con solo marker, senza nuovo vacuum. Questo caso resta OPEN, insieme a power loss, durabilità hardware, carico concorrente continuo e RPO/RTO.
+- MiniPET invariato: **18,3/46 = 39,78% (~40% ±10)**; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO invariato; nessun VPS/merge/deploy/admission/replay/reset/grant/operazione target. I checkpoint PENDING e i “prossimi passi” sottostanti sono storia delle osservazioni precedenti.
+
+### Allineamento delle prove successive alla rilocazione
+
+| Fase della compattazione | Prova qualificata | Esito |
+| --- | --- | --- |
+| Prima del marker | [Dossier precommit](OUF_STORAGE_COMPACTION_CRASH33_20261104.md), run 41859638833/readback 41861664588 | Rollback alla coppia precedente, senza secondo vacuum |
+| Marker presente, prima della rinomina DAT | [Dossier post-marker](OUF_STORAGE_POSTMARKER_CRASH33_20261104.md), run 41864590947/readback 41865783844 e 41867565360 | Rollforward delle copie originali |
+| DAT rinominato, IDX ancora vecchio | [Dossier inter-rename](OUF_STORAGE_INTERRENAME_CRASH33_20261104.md), run 41870302570/readback 41871254673 | Promozione del solo indice pendente; coppia coerente prima delle riletture |
+| Entrambe le rinomine concluse, marker ancora presente | Prossimo caso delimitato | OPEN |
+
+Queste evidenze di laboratorio aggiornano lo stato tecnico, senza chiudere gate o AT del target e senza aumentare il punteggio. Il testo precedente del MiniPET è preservato integralmente di seguito.
+
 ## Checkpoint storage 2026-11-04 — rilocazione needle valido33 e persistenza PASS
 
 - Run [41845769045](https://github.com/GioNob/ouf-deploy/actions/runs/41845769045), producer `28c4890956dc74813dd3642042575799fa4d3a8b`:134 test e dieci scenari PASS. Witness nativo1,0100000000002133aabbcc/1048593byte aggiunto con un POST201 dopo tombstone, ID assente e prefissi DAT/IDX integri. Nessun retry, assegnazione master o nuovo oggetto S3.
