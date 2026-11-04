@@ -147,6 +147,15 @@ def client(action):
             'content-type': MIME, 'x-amz-meta-ouf-content-hash': sha(body),
             'x-amz-meta-ouf-recovery-generation': 'fixture33-epoch1'})
         return {'operation': action, 'sha256': sha(body), 'bytes': len(body)}
+    if action == 'response-loss-put':
+        from storage_response_loss import lose_response
+        body = BODIES['lab-ambiguous']
+        path = '/' + cold.BUCKET + '/lab-ambiguous'
+        headers = cold.signed_headers('PUT', path, body=body, extra={
+            'content-type': MIME, 'x-amz-meta-ouf-content-hash': sha(body),
+            'x-amz-meta-ouf-recovery-generation': 'fixture33-epoch1'})
+        headers['connection'] = 'close'
+        return lose_response(path, body, headers)
     require(action == 'verify-frozen', 'KNOWN_ACTION_REQUIRED')
     before = read_objects(cold.request)
     denied = denied_mutations(cold.request)
@@ -206,6 +215,22 @@ def verify_restart_pending(calls, lab, proof):
             'ledgerAfterRestartSha256': postgres.native.digest(proof / 'crash-ledger-after-restart.json')}
 
 
+def verify_response_loss_pending(calls, proof):
+    before = json.loads(calls.raw(LEDGER_SQL))
+    require(before['control'] == {'singleton': True, 'epoch': 1, 'version': 0, 'phase': 'ACTIVE'},
+            'PRE_DRAIN_CONTROL_REQUIRED')
+    require([(i['operation'], i['state']) for i in before['intents']] ==
+            [('lab-acked', 'ACKED'), ('lab-ambiguous', 'PENDING')], 'RESPONSE_LOSS_MUST_LEAVE_PENDING')
+    write(proof / 'response-loss-ledger-before-retry.json', before)
+    body = BODIES['lab-ambiguous']
+    decision = calls.call('reserve', 'lab-ambiguous', 1, sha(body), len(body), user=fence.WRITER)
+    require(decision == 'EXISTING_PENDING', 'RETRY_MUST_NOT_GRANT_ANOTHER_PUT')
+    after = json.loads(calls.raw(LEDGER_SQL))
+    write(proof / 'response-loss-ledger-after-retry.json', after)
+    require(after == before, 'RETRY_MUST_NOT_CHANGE_DURABLE_INTENT')
+    return {'retryDecision': decision, 'recoveryPutRequests': 0, 'ledgerPreservedOnRetry': True}
+
+
 def remote(cold, lab, action, proof, marker=None):
     argv = ['sudo', '-n', 'nsenter', '-t', lab.pid, '-n', sys.executable,
             '-I', '-B', '-S', str(Path(__file__).resolve()), 'client', action]
@@ -234,7 +259,8 @@ def ledger_snapshot(calls, proof, name):
     return ledger
 
 
-def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
+def run(archive, pg_bin, work, receipt, *, crash_after_put=False, lose_put_response=False):
+    require(not (crash_after_put and lose_put_response), 'ONE_FAULT_PER_LAB_REQUIRED')
     bound = binding(receipt)
     cold = labs.configured_harness('cold', bound)
     proof = work / 'evidence'
@@ -246,6 +272,7 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
     report = {**LIMITS, 'status': 'SYNTHETIC_COMMON_CUT_BLOCKED'}
     failed = None
     crash_evidence = {}
+    response_loss_evidence = {}
     try:
         write(proof / 'exact-image.json', cold.prepare_image(archive, image))
         original = work / 'original'
@@ -266,6 +293,9 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
             if crash_after_put and op == 'lab-ambiguous':
                 crash_evidence = remote(cold, source, 'crash-put', proof, proof / 'crash-worker-marker.json')
                 crash_evidence.update(verify_restart_pending(calls, source_pg, proof))
+            elif lose_put_response and op == 'lab-ambiguous':
+                response_loss_evidence = remote(cold, source, 'response-loss-put', proof)
+                response_loss_evidence.update(verify_response_loss_pending(calls, proof))
             else:
                 remote(cold, source, op, proof)
             if op == 'lab-acked':
@@ -295,6 +325,8 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
         ledger = ledger_snapshot(calls, proof, 'source')
         if crash_after_put:
             validate_preserved_prefix(json.loads((proof / 'crash-ledger-before-restart.json').read_bytes()), ledger)
+        if lose_put_response:
+            validate_preserved_prefix(json.loads((proof / 'response-loss-ledger-before-retry.json').read_bytes()), ledger)
         compare_readback(ledger, observed)
         frozen.stop()
         # The quiesced interval spans both the PostgreSQL dump and the cold S3 copy.
@@ -368,6 +400,7 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
             'commonCutSha256': postgres.native.digest(proof / 'common-cut.json'),
             'cleanContainerStops': 12, 'cleanPostgresStops': 2, 'mutatingRetries': 0,
             'workerCrashInjected': crash_after_put, 'crashEvidence': crash_evidence,
+            'responseLossInjected': lose_put_response, 'responseLossEvidence': response_loss_evidence,
             'scope': 'sole synthetic S3 identity; full stop then Read/List replacement; logical PG dump'}
     except Exception as error:
         failed = error
@@ -397,13 +430,15 @@ def run(archive, pg_bin, work, receipt, *, crash_after_put=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    child = sub.add_parser('client'); child.add_argument('action', choices=['bucket', *BODIES, 'verify-frozen', 'crash-put'])
+    child = sub.add_parser('client'); child.add_argument('action', choices=['bucket', *BODIES, 'verify-frozen', 'crash-put', 'response-loss-put'])
     child.add_argument('--marker', type=Path)
     worker = sub.add_parser('worker-after-put'); worker.add_argument('marker', type=Path)
     runner = sub.add_parser('run')
     for name in ('image', 'pg-bin', 'work', 'cohort-receipt'):
         runner.add_argument('--' + name, required=True, type=Path)
-    runner.add_argument('--crash-after-put', action='store_true')
+    fault = runner.add_mutually_exclusive_group()
+    fault.add_argument('--crash-after-put', action='store_true')
+    fault.add_argument('--lose-put-response', action='store_true')
     args = parser.parse_args()
     if args.command == 'worker-after-put':
         client('lab-ambiguous')
@@ -421,7 +456,7 @@ def main():
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not args.work.exists() and not args.work.is_symlink(), 'FRESH_WORK_REQUIRED')
     print(json.dumps(run(args.image.resolve(), args.pg_bin.resolve(), args.work.absolute(), args.cohort_receipt.resolve(),
-                         crash_after_put=args.crash_after_put)))
+                         crash_after_put=args.crash_after_put, lose_put_response=args.lose_put_response)))
 
 
 if __name__ == '__main__':

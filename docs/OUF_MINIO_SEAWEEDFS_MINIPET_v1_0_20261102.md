@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — risposta PUT persa33 in qualifica
+
+- Relay HTTP monouso loopback: un solo PUT, HTTP200 completo ricevuto upstream, zero byte della risposta consegnati al client, RemoteDisconnected obbligatorio. Intento PENDING, stessa chiave EXISTING_PENDING, ledger immutato e zero PUT in ripresa; riconciliazione solo da GET/HEAD/LIST effettivi.
+- 42 test locali; qualifica nativa in tre radici separate normale/crash/risposta persa PENDING. Dossier docs/OUF_STORAGE_RESPONSE_LOSS33_20261104.md.
+- MiniPET invariato circa40% ±10, 18,3/46; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL post-PUT33 e ripresa nativa PASS
 
 - Run [41805145586](https://github.com/GioNob/ouf-deploy/actions/runs/41805145586), producer `8b109725e8f7424e59d799c29e3a2550ee539ad7`: 33 test PASS e due percorsi (normale/crash) con restore completo PASS. Worker distinto SIGKILL dopo PUT e prima ACK; PostgreSQL immediate restart conserva ACK/PENDING/storico, retry stessa chiave EXISTING_PENDING, zero PUT in ripresa.
