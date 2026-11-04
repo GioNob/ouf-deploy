@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — SIGKILL volume33 e recupero verificato PASS
+
+- Run [41814532710](https://github.com/GioNob/ouf-deploy/actions/runs/41814532710), producer `c3eb9b8d267463557c872ad278713321ae8a1dc8`: 42 test PASS; percorso normale e SIGKILL volume PASS. Oggetto da8388865 byte confermato prima del guasto, nessun GET del corpo pre-crash; recupero al primo tentativo senza PUT aggiuntivo.
+- Volume exit137/non-OOM, nuovo container/namespace/gate e stessa radice dati; regole nft prima dell'exec e altri quattro ruoli invariati. Risposta HTTP dal volume ripristinato misurata da0 a8398214 byte; sette .dat/8389064 byte con prefissi/hash conservati. GET/HEAD/LIST, corpo/hash/MIME e TLS coerenti.
+- 10 link ammessi e37 dinieghi per percorso, other_denied zero. Undici container distinti, dieci arresti puliti e una morte SIGKILL intenzionale; reti rimosse. ZIP originale verificato:101 membri/100 checksum/19 sorgenti. Dossier docs/OUF_STORAGE_VOLUME_CRASH33_20261104.md; receipt evidence/storage-volume-crash33-readback-20261104.json.
+- Limite: crash processo sullo stesso host con page cache disponibile, non power loss, reboot host, disco perso, RPO/RTO o accettazione target. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: SIGKILL filer e recupero metadati/oggetto confermato nel laboratorio isolato, senza reseed e con firewall prima dell'exec.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL volume33 in qualifica
 
 - Un PUT da8 MiB +257 byte confermato, nessun GET del corpo prima del guasto; SIGKILL del solo volume, stato137/non-OOM e log conservati. Stessa radice dati, nuovo container/namespace/gate; regole nft prima dell'exec e altri ruoli invariati.

@@ -1,0 +1,134 @@
+{
+  "schema": "ouf.storage-volume-crash33-readback.v1",
+  "status": "VERIFIED_SIGKILL_VOLUME_RECOVERY_REAL_BYTES_AND_NETWORK_BOUNDARIES",
+  "producerCommit": "c3eb9b8d267463557c872ad278713321ae8a1dc8",
+  "archiveSha256": "e2b199194551a53ecae60a308d3b042c6cdb2e1c647792657b95378d1cdd29c1",
+  "archiveBytes": 102167,
+  "archiveMembers": 101,
+  "checksumsVerified": 100,
+  "sourcesVerified": 19,
+  "nativePaths": {
+    "lab": {
+      "acceptanceTestsPassed": 0,
+      "allDenialsHaveFirewallCounterEvidence": true,
+      "allowedPortMethodAuthorizationQualified": false,
+      "bucketCreates": 1,
+      "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+      "cleanContainerStops": 5,
+      "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+      "deniedRoleLinks": 22,
+      "distinctNetworkNamespaces": 5,
+      "dnsAndHostDenials": 15,
+      "forcedContainerDeaths": 0,
+      "gatesClosed": 0,
+      "hostCompromiseIsolationQualified": false,
+      "internalMtlsQualified": false,
+      "ipv6MatrixQualified": false,
+      "mutatingRequestRetries": 0,
+      "networkRemoved": true,
+      "object": {
+        "listedKeys": [
+          "staging/credential-rotation.bin"
+        ],
+        "mutatingRequests": 0,
+        "objects": {
+          "staging/credential-rotation.bin": {
+            "bytes": 50,
+            "mime": "application/octet-stream",
+            "sha256": "85e4ca643455ee442b6b703464ab29dd520c30404e9005728c344d7b7068b41c"
+          }
+        },
+        "peerSha256": "ded58a1a511c3a47949c8c6667418fc418859c6bb486f0243936b75d9efa506e"
+      },
+      "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+      "powerLossQualified": false,
+      "productionTopologyQualified": false,
+      "releaseAdmitted": false,
+      "requiredRoleLinks": 10,
+      "rpoMeasured": false,
+      "rtoMeasured": false,
+      "rulesInstalledBeforeServiceExec": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.storage-generation33-lateral-isolation.v1",
+      "status": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+      "successfulObjectPuts": 1,
+      "targetOperations": 0,
+      "totalDistinctContainerCount": 5,
+      "unprivilegedServiceContainers": true,
+      "volumeCrashEvidence": {},
+      "volumeCrashInjected": false
+    },
+    "crash-lab": {
+      "acceptanceTestsPassed": 0,
+      "allDenialsHaveFirewallCounterEvidence": true,
+      "allowedPortMethodAuthorizationQualified": false,
+      "bucketCreates": 1,
+      "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+      "cleanContainerStops": 5,
+      "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+      "deniedRoleLinks": 22,
+      "distinctNetworkNamespaces": 5,
+      "dnsAndHostDenials": 15,
+      "forcedContainerDeaths": 1,
+      "gatesClosed": 0,
+      "hostCompromiseIsolationQualified": false,
+      "internalMtlsQualified": false,
+      "ipv6MatrixQualified": false,
+      "mutatingRequestRetries": 0,
+      "networkRemoved": true,
+      "object": {
+        "listedKeys": [
+          "staging/volume-crash.bin"
+        ],
+        "mutatingRequests": 0,
+        "objects": {
+          "staging/volume-crash.bin": {
+            "bytes": 8388865,
+            "mime": "application/octet-stream",
+            "sha256": "25809f4ef8ae5e9ab82c2688effb8da2ae66bb0b320befd55350dcb2cda9569d"
+          }
+        },
+        "peerSha256": "f0c5f368095ca5eb2ba85d13f864e7b60775151c513cb896430291f1e0c30f3a"
+      },
+      "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+      "powerLossQualified": false,
+      "productionTopologyQualified": false,
+      "releaseAdmitted": false,
+      "requiredRoleLinks": 10,
+      "rpoMeasured": false,
+      "rtoMeasured": false,
+      "rulesInstalledBeforeServiceExec": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.storage-generation33-lateral-isolation.v1",
+      "status": "SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS",
+      "successfulObjectPuts": 1,
+      "targetOperations": 0,
+      "totalDistinctContainerCount": 6,
+      "unprivilegedServiceContainers": true,
+      "volumeCrashEvidence": {
+        "bodyReadsBeforeCrash": 0,
+        "datPrefixesPreserved": true,
+        "exitCode": 137,
+        "newContainerId": "212e97df7a6f8e17929580115cd09627ceec898cdc3b8316be4fe96e009a9b83",
+        "oldContainerId": "ceaff7ce0388f8d77dc4cb030a6861d7287257901ba0a4b158b016c06c419855",
+        "oomKilled": false,
+        "otherRolesUnchanged": true,
+        "recoveryPutRequests": 0,
+        "recoveryReadAttempts": 1,
+        "rulesBeforeRestartExec": true,
+        "sameVolumeRoot": true,
+        "signal": "SIGKILL",
+        "stoppedDatBytes": 8389064,
+        "volumeResponseBytesAfter": 8398214,
+        "volumeResponseBytesBefore": 0
+      },
+      "volumeCrashInjected": true
+    }
+  },
+  "distinctContainerIds": 11,
+  "originalDatPrefixesVerified": true,
+  "realRecoveredVolumeResponseBytesVerified": true,
+  "privateKeysAbsent": true,
+  "publisherSignatureVerifiedLocally": false,
+  "readbackLimit": "Original ZIP, checksums, exact sources, SIGKILL state, replacement identity/gate/namespace/rules, DAT prefix hashes and hosted actual-volume response byte counters plus TLS body/MIME/network parity verified. No DAT bodies exported, second local native execution, power loss, host reboot, RPO/RTO or production acceptance."
+}

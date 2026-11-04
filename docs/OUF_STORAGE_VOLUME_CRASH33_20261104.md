@@ -12,7 +12,21 @@ Segue l'intera matrice rete, 10 collegamenti ammessi,22 dinieghi tra ruoli e15 D
 
 ## Stato
 
-42 test locali PASS: 10 nuovi,10 isolamento e22 regressioni credential/TLS. Prova nativa richiesta, esito PENDING. Il workflow conserva anche gli esiti falliti e distingue SIGKILL intenzionale da cleanup non riuscito.
+42 test locali PASS: 10 nuovi,10 isolamento e22 regressioni credential/TLS. Prova nativa PASS per percorso normale e crash, archivio originale verificato. Il workflow conserva anche gli esiti falliti e distingue SIGKILL intenzionale da cleanup non riuscito.
+
+## Esito nativo e rilettura
+
+- Producer `c3eb9b8d267463557c872ad278713321ae8a1dc8`; [run 41814532710](https://github.com/GioNob/ouf-deploy/actions/runs/41814532710), job `126521953635` SUCCESS, artifact `13312894925`. Tutti i 42 test hosted PASS; percorso normale e percorso SIGKILL in radici separate PASS.
+- PUT HTTP200 e nessun GET del corpo prima del guasto. Volume originale terminato con SIGKILL, exit137/non-OOM; nuovo container e namespace, stesso mount dati e IP. Master, filer, S3 e client mantengono ID, StartedAt e RestartCount. Due listener ancora chiusi dopo l'installazione nft e prima della nuova apertura gate.
+- Oggetto di **8388865 byte**, SHA256 `25809f4ef8ae5e9ab82c2688effb8da2ae66bb0b320befd55350dcb2cda9569d`, recuperato al primo tentativo con GET/HEAD/LIST completo e MIME corretto. Zero PUT di recupero. Contatore della risposta HTTP volume da0 a **8398214 byte** durante la prima rilettura (byte di traffico TCP, inclusi header, non una misura prestazionale). È superiore al payload e dimostra traffico dal volume ripristinato oltre alla parità del corpo S3.
+- Sette file .dat, complessivamente **8389064 byte** a volume fermo; tutti i prefissi/hash originali conservati dopo la rilettura. I file dati non sono esportati nello ZIP.
+- 10 collegamenti ammessi e37 dinieghi con contatori per percorso; other_denied zero nei cinque ruoli, sia normale sia crash. Undici ID container distinti complessivi: dieci arresti puliti più una morte SIGKILL intenzionale. Entrambi i bridge rimossi.
+- ZIP originale [storage-volume-crash33-41814532710.zip](../evidence/artifacts/storage-volume-crash33-41814532710.zip), **102167 byte**, SHA256 `e2b199194551a53ecae60a308d3b042c6cdb2e1c647792657b95378d1cdd29c1`; verificati **101 membri /100 checksum /19 sorgenti esatte**. [Receipt di rilettura](../evidence/storage-volume-crash33-readback-20261104.json).
+- La rilettura locale verifica originali, source hash, stato SIGKILL, gate/namespace/regole, hash dei prefissi .dat e report nativi di rete/TLS/S3. Nessuna seconda esecuzione nativa locale o verifica crittografica locale della firma publisher dichiarata; publisher della coorte verificato hosted con source commit esatto. Nessuna chiave privata TLS nell'archivio.
+
+## Prossimo singolo passo
+
+Arresto forzato del filer nel laboratorio isolato, con recupero dei metadati e rilettura dell'oggetto già confermato, senza reseed e con regole di rete applicate prima del servizio. Non eseguito in questo checkpoint.
 
 ## Limiti
 
