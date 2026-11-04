@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — SIGKILL master33 e recupero topologia PASS
+
+- Run [41818110341](https://github.com/GioNob/ouf-deploy/actions/runs/41818110341), producer `85f2d40e35e4ba2db1a5aa47b616b45bc99e5e0e`:64 test e percorsi normale/volume/filer/master PASS. Solo master137/non-OOM, nuovo container/namespace/gate e stessa radice/IP; altri quattro ruoli invariati, regole prima dell'exec.
+- 4 file master/1335 byte identici tra fermo/gate. TopologyId recuperato e lookup chunk3/5/6 identici; nuove registrazioni filer/S3/volume. Primo lookup503 warming up con Retry-After14 rispettato; secondo probe PASS. Oggetto8388865 byte integro al primo GET/HEAD/LIST senza reseed, volume13035→8411665 byte; metadati completi invariati.
+- 37 dinieghi/10 link ammessi per percorso, other_denied zero;23 container distinti,20 arresti puliti,3 SIGKILL intenzionali, quattro reti rimosse. Originale verificato221 membri/220 checksum/21 sorgenti. Dossier docs/OUF_STORAGE_MASTER_CRASH33_20261104.md; receipt evidence/storage-master-crash33-readback-20261104.json.
+- Solo recupero processo single-master sullo stesso host/disco/page cache, non HA/quorum/power loss o RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: SIGKILL dell'insieme master/volume/filer/S3 nella fixture e riavvio dalle stesse radici senza reseed, nuovi processi/gate con regole prima dell'exec. Non equivale a reboot host o power loss.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL master33 in qualifica
 
 - Fixture isolata estesa al solo master: oggetto confermato, metadati chunk e probe diretti di readiness/topologia/lookup, SIGKILL137/non-OOM, stessa radice/IP e nuovo container/namespace/gate. Altri quattro ruoli invariati; firewall e listener chiusi prima dell'exec.
