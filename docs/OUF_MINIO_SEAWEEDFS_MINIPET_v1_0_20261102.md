@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — rotazione credenziali S3 33 in qualifica
+
+- Fixture OLD → OLD+NEW → NEW → restart NEW, stessa policy prefix-scoped e TLS; tre sostituzioni bounded del solo gateway con ruoli storage invariati. Dinieghi OLD, prova di una scrittura NEW e letture coerenti, nessun resend mutativo. Owner bootstrap invariato; nessuna chiave target.
+- 22 test locali PASS (12 nuovi e 10 regressioni TLS); qualifica nativa dedicata richiesta. Dossier docs/OUF_STORAGE_CREDENTIAL_ROTATION33_20261104.md. Nessuna dichiarazione hot reload, zero downtime o secret custody produttiva.
+- MiniPET invariato 18,3/46, circa40% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — assenza/corruzione33 bloccano il freeze, PASS
 
 - Run [41809311981](https://github.com/GioNob/ouf-deploy/actions/runs/41809311981), producer `2d3d8a41121751abad9da9ab4849fa1112dd1676`: 54 test PASS, tre regressioni positive con restore completo e due controlli negativi nativi PASS.
