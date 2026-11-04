@@ -25,6 +25,7 @@ labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
 ROLES = ('master', 'volume', 'filer', 's3', 'client')
+SERVICES = ROLES[:-1]
 IPS = {role: '172.30.233.' + str(10 + i) for i, role in enumerate(ROLES)}
 PORTS = {'master': (19333, 29333), 'volume': (18080, 28080), 'filer': (18888, 28888), 's3': (18333, 28333)}
 ALLOW = {('client', 's3', 18333), ('volume', 'master', 29333), ('master', 'volume', 28080),
@@ -50,16 +51,37 @@ validate_killed_volume = validate_killed_role
 
 
 def validate_retained_roles(before, after, replaced='volume'):
-    require(replaced in ('volume', 'filer', 'master'), 'BOUNDED_CRASH_ROLE_REQUIRED')
+    require(replaced in ('volume', 'filer', 'master', 'all'), 'BOUNDED_CRASH_ROLE_REQUIRED')
+    replaced_roles = SERVICES if replaced == 'all' else (replaced,)
     require(set(before) == set(after) == set(ROLES), 'EXACT_ROLE_SET_REQUIRED')
     for role in ROLES:
         old, new = before[role], after[role]
         require(new['State']['Running'] and not new['State']['OOMKilled'], 'LIVE_ROLES_REQUIRED')
-        if role == replaced:
+        if role in replaced_roles:
             require(old['Id'] != new['Id'], 'NEW_ROLE_CONTAINER_REQUIRED')
         else:
             require(old['Id'] == new['Id'] and old['State']['StartedAt'] == new['State']['StartedAt']
                     and old['RestartCount'] == new['RestartCount'] == 0, 'OTHER_ROLES_MUST_NOT_RESTART')
+
+
+def validate_all_killed(before, killed):
+    require(set(before) == set(ROLES) and set(killed) == set(SERVICES), 'EXACT_KILLED_SERVICE_SET_REQUIRED')
+    require(len({x['Id'] for x in killed.values()}) == 4, 'FOUR_DISTINCT_KILLED_SERVICES_REQUIRED')
+    for role in SERVICES: validate_killed_role(before[role], killed[role])
+
+
+def validate_replacement_namespaces(old, new, host):
+    require(set(old) == set(ROLES) and set(new) == set(SERVICES), 'EXACT_REPLACEMENT_NAMESPACE_SET_REQUIRED')
+    require(len(set(new.values())) == 4 and host not in new.values()
+            and not set(new.values()).intersection(old.values()), 'FOUR_FRESH_NONHOST_NAMESPACES_REQUIRED')
+
+
+def release_replacement_gates(gates):
+    require(set(gates) in ({'master'}, {'volume'}, {'filer'}, set(SERVICES)), 'EXACT_GATE_SET_REQUIRED')
+    for path in gates.values():
+        require(path.is_dir() and not path.is_symlink() and not (path / 'open').exists()
+                and not (path / 'open').is_symlink(), 'FRESH_CLOSED_REPLACEMENT_GATES_REQUIRED')
+    for path in gates.values(): (path / 'open').write_text('READY\n')
 
 
 def volume_inventory(root, previous=None):
@@ -330,9 +352,9 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False):
-    require(sum((crash_volume, crash_filer, crash_master)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
-    crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else None
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else 'all' if crash_all else None
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not work.exists() and not work.is_symlink(), 'FRESH_WORK_REQUIRED')
     bound = binding(receipt); module = keys.tls_rotation.configure(bound); cold = module.cold
@@ -422,128 +444,156 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         crash_evidence = {}
         before = s3('seed-volume' if crash_role else 'seed')
         if crash_role:
-            if crash_filer or crash_master: metadata_before = metadata(crash_role + '-metadata-before')
-            if crash_master:
+            if crash_filer or crash_master or crash_all: metadata_before = metadata(crash_role + '-metadata-before')
+            if crash_master or crash_all:
                 topology_before = json.loads(ns('master', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
-                    'topology', str(evidence / 'master-metadata-before.json')]))
-                save('master-topology-before', topology_before)
+                    'topology', str(evidence / (crash_role + '-metadata-before.json'))]))
+                save(crash_role + '-topology-before', topology_before)
                 require(topology_before['status'] == 'MASTER_TOPOLOGY_READY', 'BASELINE_MASTER_TOPOLOGY_REQUIRED')
-            role = crash_role
+            replaced_roles = SERVICES if crash_all else (crash_role,)
             by_role = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
-            save(role + '-before-crash', by_role)
-            old_name = prefix + '-' + role; old_index = lab.names.index(old_name)
-            # Intentional SIGKILL only after the sole object PUT returned HTTP200.
-            cold.command(['docker', 'kill', '--signal', 'KILL', old_name])
-            killed = json.loads(cold.command(['docker', 'inspect', old_name]))[0]
-            save(role + '-killed', killed); validate_killed_role(by_role[role], killed)
-            log = subprocess.run(['docker', 'logs', old_name], check=True, stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT, timeout=30)
-            (evidence / (role + '-killed.log')).write_bytes(log.stdout)
-            inventory_args = ['sudo', '-n', sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
-                              'inventory' if crash_volume else 'filer-inventory' if crash_filer else 'master-inventory',
-                              str(data / 'volume' if crash_volume else data / 'filer' / 'filerldb2' if crash_filer else data / 'master')]
-            persisted = json.loads(cold.command(inventory_args))
-            save(role + '-stopped-storage', persisted)
-            if crash_volume:
-                dat = persisted; save('volume-stopped-dat', dat)
+            save(crash_role + '-before-crash', by_role)
+            old_names = {role: prefix + '-' + role for role in replaced_roles}
+            old_indexes = {role: lab.names.index(name) for role, name in old_names.items()}
+            # One bounded Docker batch, not an assertion of physical simultaneity.
+            cold.command(['docker', 'kill', '--signal', 'KILL', *old_names.values()])
+            killed_roles = dict(zip(replaced_roles, json.loads(cold.command(['docker', 'inspect', *old_names.values()]))))
+            if crash_all:
+                validate_all_killed(by_role, killed_roles); save('all-killed', killed_roles)
+            for role, killed in killed_roles.items():
+                save(role + '-killed', killed); validate_killed_role(by_role[role], killed)
+                log = subprocess.run(['docker', 'logs', old_names[role]], check=True, stdout=subprocess.PIPE,
+                                     stderr=subprocess.STDOUT, timeout=30)
+                (evidence / (role + '-killed.log')).write_bytes(log.stdout)
+            inventories = {}; inventory_commands = {}
+            for role in replaced_roles:
+                if role == 's3': continue  # Stateless gateway; configuration is reused read-only.
+                operation = {'volume': 'inventory', 'filer': 'filer-inventory', 'master': 'master-inventory'}[role]
+                storage = data / role / 'filerldb2' if role == 'filer' else data / role
+                args = ['sudo', '-n', sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), operation, str(storage)]
+                inventory_commands[role] = args
+                inventories[role] = json.loads(cold.command(args)); save(role + '-stopped-storage', inventories[role])
+            if crash_volume or crash_all:
+                dat = inventories['volume']; save('volume-stopped-dat', dat)
                 require(sum(item['bytes'] for item in dat.values()) >= VOLUME_BYTES, 'REAL_VOLUME_DATA_REQUIRED')
-            cold.command(['docker', 'rm', old_name]); lab.names.remove(old_name)
-            gate_dir = data / ('gate-' + role + '-recovered'); gate_dir.mkdir()
-            new_name = prefix + '-' + role + '-recovered'
-            cold.command(container_argv(cold.IMAGE_ID, new_name, network, data, config, gate_binary, role, gate_dir))
-            lab.names.insert(old_index, new_name)
-            recovered = json.loads(cold.command(['docker', 'inspect', new_name]))[0]
-            pids[role] = str(recovered['State']['Pid'])
-            inode = cold.command(['sudo', '-n', 'readlink', '/proc/' + pids[role] + '/ns/net'])
-            require(inode not in inodes and inode != host_ns, 'FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED')
-            save(role + '-replacement-namespace', {'old': inodes[ROLES.index(role)], 'new': inode})
+            # All killed states and all stopped inventories precede every replacement.
+            for name in old_names.values():
+                cold.command(['docker', 'rm', name]); lab.names.remove(name)
+            gates = {}; replacements = {}; replacement_names = {}; replacement_ns = {}
+            for role in replaced_roles:
+                gate_dir = data / ('gate-' + role + '-recovered'); gate_dir.mkdir(); gates[role] = gate_dir
+                new_name = prefix + '-' + role + '-recovered'; replacement_names[role] = new_name
+                cold.command(container_argv(cold.IMAGE_ID, new_name, network, data, config, gate_binary, role, gate_dir))
+                lab.names.insert(old_indexes[role], new_name)
+                recovered = json.loads(cold.command(['docker', 'inspect', new_name]))[0]; replacements[role] = recovered
+                pids[role] = str(recovered['State']['Pid'])
+                inode = cold.command(['sudo', '-n', 'readlink', '/proc/' + pids[role] + '/ns/net'])
+                require(inode not in inodes and inode != host_ns, 'FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED')
+                replacement_ns[role] = inode
+                save(role + '-replacement-namespace', {'old': inodes[ROLES.index(role)], 'new': inode})
+                mounts = {m['Destination']: m for m in recovered['Mounts']}
+                require(recovered['Image'] == cold.IMAGE_ID and recovered['Config']['User'] == '65532:65532'
+                        and recovered['HostConfig']['CapDrop'] == ['ALL'] and recovered['HostConfig']['ReadonlyRootfs']
+                        and not recovered['HostConfig']['PortBindings'] and recovered['HostConfig']['NetworkMode'] == network
+                        and mounts['/data']['Source'] == str(data / role)
+                        and mounts['/gate']['Source'] == str(gate_dir) and not mounts['/gate']['RW']
+                        and mounts['/config']['Source'] == str(config) and not mounts['/config']['RW']
+                        and not mounts['/network-gate']['RW']
+                        and recovered['NetworkSettings']['Networks'][network]['IPAddress'] == IPS[role],
+                        'SAME_ROLE_ROOT_WITH_FRESH_GATE_REQUIRED')
+                ns(role, ['nft', '-f', str(evidence / (role + '-rules.nft'))])
+                save(role + '-replacement-rules-before', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
+                require('NETWORK_GATE_RELEASED' not in cold.command(['docker', 'logs', new_name]), 'REPLACEMENT_MUST_WAIT_FOR_RULES')
+                blocked = [probe(role, '127.0.0.1', port) for port in PORTS[role]]
+                require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_ROLE_LISTENER_BEFORE_RELEASE')
+                save(role + '-replacement-closed-listeners', blocked)
+            if crash_all: validate_replacement_namespaces(dict(zip(ROLES, inodes)), replacement_ns, host_ns)
             current_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
-            validate_retained_roles(by_role, current_roles, role); save(role + '-replacement-gated', current_roles)
-            mounts = {m['Destination']: m for m in recovered['Mounts']}
-            require(recovered['Image'] == cold.IMAGE_ID and recovered['Config']['User'] == '65532:65532'
-                    and recovered['HostConfig']['CapDrop'] == ['ALL'] and recovered['HostConfig']['ReadonlyRootfs']
-                    and not recovered['HostConfig']['PortBindings'] and recovered['HostConfig']['NetworkMode'] == network
-                    and mounts['/data']['Source'] == str(data / role)
-                    and mounts['/gate']['Source'] == str(gate_dir) and not mounts['/gate']['RW']
-                    and recovered['NetworkSettings']['Networks'][network]['IPAddress'] == IPS[role],
-                    'SAME_ROLE_ROOT_WITH_FRESH_GATE_REQUIRED')
-            ns(role, ['nft', '-f', str(evidence / (role + '-rules.nft'))])
-            save(role + '-replacement-rules-before', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
-            require('NETWORK_GATE_RELEASED' not in cold.command(['docker', 'logs', new_name]), 'REPLACEMENT_MUST_WAIT_FOR_RULES')
-            blocked = [probe(role, '127.0.0.1', port) for port in PORTS[role]]
-            require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_ROLE_LISTENER_BEFORE_RELEASE')
-            save(role + '-replacement-closed-listeners', blocked)
-            if crash_filer or crash_master:
-                gated_storage = json.loads(cold.command(inventory_args)); save(role + '-gated-storage', gated_storage)
-                require(gated_storage == persisted, 'STORAGE_UNCHANGED_BEFORE_EXEC')
-            (gate_dir / 'open').write_text('READY\n')
-            readiness = []
-            for port in PORTS[role]:
-                for attempt in range(1, 61):
-                    result = probe(role, '127.0.0.1', port)
-                    if result['connected']: break
-                    require(attempt < 60, 'RECOVERED_ROLE_LISTENER_BUDGET'); time.sleep(1)
-                readiness.append({'port': port, 'attempts': attempt})
-            save(role + '-replacement-live-listeners', readiness)
-            if crash_filer:
+            validate_retained_roles(by_role, current_roles, crash_role); save(crash_role + '-replacement-gated', current_roles)
+            for role, args in inventory_commands.items():
+                gated_storage = json.loads(cold.command(args)); save(role + '-gated-storage', gated_storage)
+                require(gated_storage == inventories[role], 'STORAGE_UNCHANGED_BEFORE_EXEC')
+            # Every firewall and every closed listener was checked before this global release.
+            release_replacement_gates(gates)
+            for role in replaced_roles:
+                readiness = []
+                for port in PORTS[role]:
+                    for attempt in range(1, 61):
+                        result = probe(role, '127.0.0.1', port)
+                        if result['connected']: break
+                        require(attempt < 60, 'RECOVERED_ROLE_LISTENER_BUDGET'); time.sleep(1)
+                    readiness.append({'port': port, 'attempts': attempt})
+                save(role + '-replacement-live-listeners', readiness)
+            if crash_filer or crash_all:
                 metadata_bytes_before = counter_value('filer', 'filer_http_response_bytes')['bytes']
-                metadata_after = metadata('filer-metadata-recovered')
+                metadata_after = metadata(crash_role + '-metadata-recovered')
                 metadata_bytes_after = counter_value('filer', 'filer_http_response_bytes')['bytes']
                 require(metadata_after == metadata_before, 'PERSISTED_FILER_METADATA_MUST_SURVIVE')
                 require(metadata_bytes_after > metadata_bytes_before, 'NEW_FILER_MUST_SERVE_METADATA')
-            if crash_master:
+            if crash_master or crash_all:
                 deadline = time.monotonic() + 120
                 for topology_attempt in range(1, 11):
                     topology_after = json.loads(ns('master', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
-                        'topology', str(evidence / 'master-metadata-before.json')], timeout=45))
-                    save('master-topology-attempt-' + str(topology_attempt), topology_after)
-                    log = subprocess.run(['docker', 'logs', new_name], check=True, stdout=subprocess.PIPE,
+                        'topology', str(evidence / (crash_role + '-metadata-before.json'))], timeout=45))
+                    save(crash_role + '-topology-attempt-' + str(topology_attempt), topology_after)
+                    log = subprocess.run(['docker', 'logs', replacement_names['master']], check=True, stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT, text=True, timeout=10).stdout
                     registered = master_registration_log(log)
-                    save('master-registration-attempt-' + str(topology_attempt), {'filerAndS3Registered': registered})
+                    save(crash_role + '-registration-attempt-' + str(topology_attempt), {'filerAndS3Registered': registered})
                     if topology_after['status'] == 'MASTER_TOPOLOGY_READY' and registered: break
                     require(topology_attempt < 10, 'MASTER_REGISTRATION_ATTEMPTS_EXHAUSTED')
                     delay = master_retry_delay(topology_attempt, topology_after.get('retryAfterSeconds', 0),
                                                time.monotonic(), deadline)
-                    save('master-wait-' + str(topology_attempt), {'delaySeconds': delay, 'mutatingRequests': 0})
+                    save(crash_role + '-wait-' + str(topology_attempt), {'delaySeconds': delay, 'mutatingRequests': 0})
                     time.sleep(delay)
                 require(time.monotonic() <= deadline, 'MASTER_REGISTRATION_TIME_BUDGET')
                 validate_master_recovery(topology_before, topology_after)
-                save('master-topology-recovered', topology_after)
-                (evidence / 'master-registration-recovered.log').write_text(log)
-                metadata_after = metadata('master-metadata-recovered')
+                save(crash_role + '-topology-recovered', topology_after)
+                (evidence / (crash_role + '-registration-recovered.log')).write_text(log)
+                metadata_after = metadata(crash_role + '-metadata-recovered')
                 require(metadata_after == metadata_before, 'METADATA_MUST_SURVIVE_MASTER_RESTART')
             bytes_before = counter_value('volume', 'volume_http_response_bytes')['bytes']
             for attempt in range(1, 7):
-                observed = s3('read-volume', role + '-recovery-read-' + str(attempt))
+                observed = s3('read-volume', crash_role + '-recovery-read-' + str(attempt))
                 if observed.get('status') != 'TRANSIENT_READ_FAILURE': break
                 require(attempt < 6, 'ROLE_RECOVERY_READ_BUDGET'); time.sleep((1, 2, 4, 8, 15)[attempt - 1])
             expected = before['acknowledgedObject']
             require(observed['objects'] == {VOLUME_KEY: {k:v for k,v in expected.items() if k != 'key'}}, 'ACKNOWLEDGED_BODY_MUST_SURVIVE')
             bytes_after = counter_value('volume', 'volume_http_response_bytes')['bytes']
             require(bytes_after - bytes_before >= VOLUME_BYTES, 'RECOVERY_MUST_READ_REAL_VOLUME_RESPONSE_BYTES')
-            if crash_volume: save('volume-recovered-dat-prefix', json.loads(cold.command(inventory_args + ['--previous', str(evidence / 'volume-stopped-dat.json')])))
-            save(role + '-recovered-read', observed)
+            if crash_volume or crash_all: save('volume-recovered-dat-prefix', json.loads(cold.command(inventory_commands['volume'] + ['--previous', str(evidence / 'volume-stopped-dat.json')])))
+            save(crash_role + '-recovered-read', observed)
             crash_evidence = {'signal': 'SIGKILL', 'exitCode': 137, 'oomKilled': False,
-                'oldContainerId': killed['Id'], 'newContainerId': recovered['Id'],
-                'sameStorageRoot': True, 'otherRolesUnchanged': True, 'rulesBeforeRestartExec': True,
+                'sameStorageRoot': True, 'rulesBeforeRestartExec': True,
                 'volumeResponseBytesBefore': bytes_before, 'volumeResponseBytesAfter': bytes_after,
                 'recoveryReadAttempts': attempt, 'recoveryPutRequests': 0, 'bodyReadsBeforeCrash': 0}
-            if crash_volume:
+            if crash_all:
+                crash_evidence.update(oldContainerIds={r:x['Id'] for r,x in killed_roles.items()},
+                    newContainerIds={r:x['Id'] for r,x in replacements.items()}, allServicesStoppedBeforeReplacement=True,
+                    allRulesBeforeAnyRestartExec=True, clientUnchanged=True, applicationProcessesReplaced=4,
+                    stoppedStorageFiles={r:len(v) for r,v in inventories.items()},
+                    stoppedStorageBytes={r:sum(x['bytes'] for x in v.values()) for r,v in inventories.items()})
+            else:
+                crash_evidence.update(oldContainerId=killed_roles[crash_role]['Id'],
+                    newContainerId=replacements[crash_role]['Id'], otherRolesUnchanged=True)
+            if crash_volume or crash_all:
                 crash_evidence.update(sameVolumeRoot=True, stoppedDatBytes=sum(x['bytes'] for x in dat.values()),
                                       datPrefixesPreserved=True)
-            elif crash_filer:
-                crash_evidence.update(sameFilerRoot=True, stoppedMetadataFiles=len(persisted),
-                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()), gatedStorageUnchanged=True,
-                    directMetadataIdentical=True, filerResponseBytesBefore=metadata_bytes_before,
-                    filerResponseBytesAfter=metadata_bytes_after)
-            else:
-                crash_evidence.update(sameMasterRoot=True, stoppedMetadataFiles=len(persisted),
-                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()), gatedStorageUnchanged=True,
-                    topologyIdPreserved=True, chunkVolumeLocationsPreserved=True, filerAndS3Reregistered=True,
-                    directMetadataIdentical=True, topologyReadAttempts=topology_attempt)
+            if crash_filer or crash_all:
+                persisted = inventories['filer']
+                crash_evidence.update(sameFilerRoot=True, gatedStorageUnchanged=True, directMetadataIdentical=True,
+                    filerResponseBytesBefore=metadata_bytes_before, filerResponseBytesAfter=metadata_bytes_after)
+                if not crash_all: crash_evidence.update(stoppedMetadataFiles=len(persisted),
+                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()))
+            if crash_master or crash_all:
+                persisted = inventories['master']
+                crash_evidence.update(sameMasterRoot=True, gatedStorageUnchanged=True, topologyIdPreserved=True,
+                    chunkVolumeLocationsPreserved=True, filerAndS3Reregistered=True, directMetadataIdentical=True,
+                    topologyReadAttempts=topology_attempt)
+                if not crash_all: crash_evidence.update(stoppedMetadataFiles=len(persisted),
+                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()))
             final_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
-            validate_retained_roles(by_role, final_roles, role); save(role + '-recovered-roles', final_roles)
+            validate_retained_roles(by_role, final_roles, crash_role); save(crash_role + '-recovered-roles', final_roles)
         probes = []
         for src, dst, port, allowed in matrix():
             name = f'deny_{dst}_{port}'
@@ -584,7 +634,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'volumeCrashInjected': crash_volume, 'volumeCrashEvidence': crash_evidence if crash_volume else {},
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
-            'totalDistinctContainerCount': 6 if crash_role else 5, 'forcedContainerDeaths': 1 if crash_role else 0,
+            'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
+            'forcedContainerDeaths': 4 if crash_all else 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
             'networkRemoved': True, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
             'releaseAdmitted': False, 'runtimeAuthorityIssued': False, 'productionTopologyQualified': False,
@@ -610,7 +662,7 @@ def main():
     for name in ('archive', 'work', 'receipt', 'gate_binary'): runner.add_argument(name, type=Path)
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
-    crash.add_argument('--crash-master', action='store_true')
+    crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
     master_inv = sub.add_parser('master-inventory'); master_inv.add_argument('root', type=Path)
     topology = sub.add_parser('topology'); topology.add_argument('metadata', type=Path)
     sub.add_parser('metadata')
@@ -619,7 +671,7 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all)
     elif args.operation == 'topology': print(json.dumps(master_topology(json.loads(args.metadata.read_bytes()))))
     elif args.operation == 'master-inventory': print(json.dumps(master_inventory(args.root)))
     elif args.operation == 'metadata': print(json.dumps(filer_metadata()))

@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — SIGKILL congiunto33 in qualifica
+
+- Estesa la fixture alla perdita di master/volume/filer/S3: quattro exit137/non-OOM prima di ogni sostituto, inventari storage fermi, nuovi container/namespace/gate con radici/IP/config conservati. Client invariato; tutti i firewall e otto listener chiusi prima di ogni exec.
+- Topologia/registrazioni/metadati/corpo e contatori filer/volume, prefissi .dat, nessun reseed. Cinque percorsi nativi separati con regressioni singole e37 dinieghi ciascuno. 74 test locali PASS, YAML/shell PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_ALL_CRASH33_20261104.md.
+- Crash congiunto dei processi dopo PUT concluso, non power loss/reboot host/perdita disco/in-flight/RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL master33 e recupero topologia PASS
 
 - Run [41818110341](https://github.com/GioNob/ouf-deploy/actions/runs/41818110341), producer `85f2d40e35e4ba2db1a5aa47b616b45bc99e5e0e`:64 test e percorsi normale/volume/filer/master PASS. Solo master137/non-OOM, nuovo container/namespace/gate e stessa radice/IP; altri quattro ruoli invariati, regole prima dell'exec.
