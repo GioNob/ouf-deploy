@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 - crash fra rinomine33 in qualifica
+
+- Ripresa daaa19c468, head verificato invariato; precedente run41867565360 completed/success. Tredicesimo caso, stessa OCI33/binario, dodici scenari precedenti preservati.
+- Osservatore separato conserva copie prima della rinomina DAT, osserva la sua uscita0, poi ferma ingresso rinomina IDX con tutti i thread t. Richiede DAT nuovo/cpd assente, IDX vecchio, marker/cpx invariati; vecchio offset witness fuori dal nuovo DAT e nuovo indice pendente che lega il body esatto a8.
+- Quattro SIGKILL e ripresa dalle stesse radici dietro nuovi gate; richiesti DAT invariato/IDX pendente promosso, coppia coerente alla prima readiness prima delle riletture, baseline/metadati/witness/spazio/confini. Nessun nuovo vacuum o retry mutativo.
+- 12 nuovi test puri +22 precommit/post-marker PASS locali;2 test ptrace Linux skipped su Windows e richiesti in CI.170test/13scenari attesi, qualifica/readback PENDING. Dossier docs/OUF_STORAGE_INTERRENAME_CRASH33_20261104.md.
+- MiniPET invariato18,3/46=39,78% (~40% ±10),0/8gate/0/21AT/0/120oggetti reali. Prove precedenti e MinIO preservati; nessun VPS/merge/deploy/replay/reset/grant.
+
 ## Checkpoint storage 2026-11-04 - crash post-marker33 PASS
 
 - Run41864590947/producer18b93a7f:157test/12scenari PASS. Volume4/PID28516/start72537,TID28820 all'ingresso renameat264 .cpd→.dat,9thread t; fsync marker/directory0, .cpc presente e vecchia coppia DAT/IDX immutata. Binario/OCI33 invariati; nessuna scrittura ptrace a memoria/registri/storage.
