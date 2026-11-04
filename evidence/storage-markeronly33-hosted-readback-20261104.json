@@ -1,0 +1,2119 @@
+{
+  "schema": "ouf.storage-markeronly33-qualified-checkpoint.v1",
+  "status": "NATIVE_AND_INDEPENDENT_READBACK_PASS",
+  "date": "2026-11-04",
+  "producerCommit": "b293a4902b38aa2df9b658247457cf951224f96c",
+  "verifierCommit": "341abfe3ed5f8e8bb950b814087ee84c1374f6d5",
+  "nativeRun": {
+    "id": 41886227100,
+    "head_sha": "b293a4902b38aa2df9b658247457cf951224f96c",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41886227100",
+    "event": "push",
+    "workflow_id": 406769753,
+    "created_at": "2026-11-04T18:20:46Z",
+    "run_started_at": "2026-11-04T18:20:46Z",
+    "updated_at": "2026-11-04T18:36:38Z"
+  },
+  "readbackRun": {
+    "id": 41886345188,
+    "head_sha": "341abfe3ed5f8e8bb950b814087ee84c1374f6d5",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41886345188",
+    "event": "push",
+    "workflow_id": 407204702,
+    "created_at": "2026-11-04T18:21:29Z",
+    "run_started_at": "2026-11-04T18:21:29Z",
+    "updated_at": "2026-11-04T18:36:48Z"
+  },
+  "nativeJobs": [
+    {
+      "id": 126771291040,
+      "name": "exact-cohort-lateral-isolation",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 41886227100,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Install bounded fixture tooling and build the static launch barrier",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Test service recovery, compaction persistence, launch barriers and credential and TLS boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test phase discrimination and rollback invariants",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Test post-marker phase rejection and native ptrace mechanics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Test mixed generation rejection and actual first-rename execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Test completed pair marker-only phase and real unlink entry freeze",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Bind reviewed compaction source through all generation33 patches",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Fetch and bind the exact successful generation33 cohort and image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Verify the successful cohort publisher with its exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Exercise five distinct namespaces with rules installed before service execution",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "SIGKILL the acknowledged volume and recover through a fresh gated namespace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "SIGKILL the filer and recover persistent metadata without reseeding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "SIGKILL the master and verify fresh topology and peer registration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "SIGKILL all services and recover from retained roots behind fresh gates",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Interrupt an incomplete PUT after its prefix reaches the volume and reconcile without replay",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Qualify automatic orphan tombstone and direct chunk absence with the single required gRPC link",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Compact only the orphan volume and verify allocated space and every live chunk",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Restart all services after compaction and verify retained allocation and absence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Relocate a live native chunk across a tombstoned record and verify restart persistence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Crash the observed precommit compaction and recover without resubmission",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Crash after durable commit marker before first rename and verify rollforward",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        },
+        {
+          "name": "Crash after DAT rename before IDX rename and verify coherent rollforward",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24
+        },
+        {
+          "name": "Crash after both renames before marker removal and preserve the completed pair",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25
+        },
+        {
+          "name": "Preserve bounded public evidence and reject private-key material",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26
+        },
+        {
+          "name": "Attest successful native isolation and joint and individual crash evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27
+        },
+        {
+          "name": "Retain public diagnostics",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 56
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 57
+        }
+      ]
+    }
+  ],
+  "readbackJobs": [
+    {
+      "id": 126771719219,
+      "name": "original-artifact-readback",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 41886345188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Acquire the exact original before waiting for delayed terminal metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Verify every member source and the completed pair and held marker unlink evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Confirm successful native terminal run and job separately from archive contents",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Preserve original bytes readback and control-plane observations even on failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    }
+  ],
+  "nativeArtifacts": [
+    {
+      "id": 13352193356,
+      "name": "storage-generation33-lateral-isolation-41886227100",
+      "size_in_bytes": 20598958,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13352193356",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13352193356/zip",
+      "expired": false,
+      "created_at": "2026-11-04T18:36:34Z",
+      "expires_at": "2027-02-02T18:20:47Z",
+      "updated_at": "2026-11-04T18:36:34Z",
+      "digest": "sha256:b9db34fd0b19c9f4bb6b9cde0ebe51844f2e497698cf9458b6151a7e7a245198",
+      "workflow_run": {
+        "id": 41886227100,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "b293a4902b38aa2df9b658247457cf951224f96c"
+      }
+    }
+  ],
+  "readbackArtifacts": [
+    {
+      "id": 13351279481,
+      "name": "storage-generation33-markeronly-readback-41886345188",
+      "size_in_bytes": 20183526,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13351279481",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13351279481/zip",
+      "expired": false,
+      "created_at": "2026-11-04T18:36:45Z",
+      "expires_at": "2027-02-02T18:21:30Z",
+      "updated_at": "2026-11-04T18:36:45Z",
+      "digest": "sha256:9b37046909ba4299ed13b05ccc6324fa351de50245b0c299cad38b92dde95b1e",
+      "workflow_run": {
+        "id": 41886345188,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "341abfe3ed5f8e8bb950b814087ee84c1374f6d5"
+      }
+    }
+  ],
+  "hostedReadback": {
+    "acceptanceTestsPassed": 0,
+    "betweenRenamesQualified": true,
+    "checksumsVerified": 1756,
+    "cleanFinalStopsReported": 70,
+    "distinctContainersReported": 137,
+    "frozenPhase": {
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "filesBefore": {
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437424,
+          "device": 66305,
+          "inode": 9700397,
+          "sha256": "7fdb694f1cc74724b4e95df3358188930f1cb5f2a0698ae4d15f3a8d06a95381"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 64,
+          "device": 66305,
+          "inode": 9700401,
+          "sha256": "12892eacd0c36dbb46ae95650b1c86ba4afcdf9176df826c34a8ef9a7703e295"
+        }
+      },
+      "filesFrozen": {
+        ".cpd": {
+          "allocatedBytes": 4198400,
+          "bytes": 4194360,
+          "device": 66305,
+          "inode": 9700604,
+          "sha256": "bc86f625745472849fac543f7aded0a0fb83762f8ec0cf9fd7c3b4cdd0340b0d"
+        },
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437424,
+          "device": 66305,
+          "inode": 9700397,
+          "sha256": "7fdb694f1cc74724b4e95df3358188930f1cb5f2a0698ae4d15f3a8d06a95381"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 64,
+          "device": 66305,
+          "inode": 9700401,
+          "sha256": "12892eacd0c36dbb46ae95650b1c86ba4afcdf9176df826c34a8ef9a7703e295"
+        }
+      },
+      "processBefore": {
+        "cgroup": "0::/system.slice/docker-b625d2b897ff9a33057a95f0dc91d11cf05436ebc2436de8e31904cc4119f55f.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 24969,
+        "startTicks": 65307
+      },
+      "processFrozen": {
+        "cgroup": "0::/system.slice/docker-b625d2b897ff9a33057a95f0dc91d11cf05436ebc2436de8e31904cc4119f55f.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 24969,
+        "startTicks": 65307
+      },
+      "signal": "SIGSTOP",
+      "status": "OBSERVED_PRECOMMIT_FROZEN",
+      "threadStates": {
+        "24969": "T",
+        "25256": "T",
+        "25257": "T",
+        "25258": "T",
+        "25259": "T",
+        "25269": "T",
+        "25270": "T",
+        "25271": "T"
+      },
+      "vacuumResubmissions": 0
+    },
+    "gatesClosed": 0,
+    "intentionalDeathsReported": 67,
+    "interrenamePhase": {
+      "beforeDatRenamePhase": {
+        "cloneEvents": [],
+        "newPath": "/data/ouf-identity-fixture_4.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_4.cpd",
+        "operation": "entry",
+        "successfulSyncs": [
+          {
+            "kind": "marker",
+            "returnValue": 0,
+            "tid": 31755
+          },
+          {
+            "kind": "directory",
+            "returnValue": 0,
+            "tid": 31768
+          }
+        ],
+        "syscallNotResumed": true,
+        "threadStates": {
+          "31473": "t",
+          "31753": "t",
+          "31754": "t",
+          "31755": "t",
+          "31756": "t",
+          "31766": "t",
+          "31767": "t",
+          "31768": "t",
+          "31769": "t"
+        },
+        "tid": 31768
+      },
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "cloneEvents": [],
+      "filesBefore": {
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437728,
+          "device": 66305,
+          "inode": 9962215,
+          "sha256": "a2a5f02c80ac3e58560e079ecdbc0352bc64fe81250d9e8cfa21116c34967271"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 80,
+          "device": 66305,
+          "inode": 9962222,
+          "sha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921"
+        }
+      },
+      "filesBeforeDatRename": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9962348,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpd": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243344,
+          "device": 66305,
+          "inode": 9962346,
+          "sha256": "ba9ff935e74ad2988b46f875c66fcef98fa59b17d68eaac454428ff2dbd6dab6"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9962347,
+          "sha256": "d11bd7ae1ae347c3c4e2c2e84dfb3a6640b47245a9494e87fedddb3b42bac812"
+        },
+        ".dat": {
+          "allocatedBytes": 9441280,
+          "bytes": 9437728,
+          "device": 66305,
+          "inode": 9962215,
+          "sha256": "a2a5f02c80ac3e58560e079ecdbc0352bc64fe81250d9e8cfa21116c34967271"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 80,
+          "device": 66305,
+          "inode": 9962222,
+          "sha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921"
+        }
+      },
+      "filesFrozen": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9962348,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9962347,
+          "sha256": "d11bd7ae1ae347c3c4e2c2e84dfb3a6640b47245a9494e87fedddb3b42bac812"
+        },
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243344,
+          "device": 66305,
+          "inode": 9962346,
+          "sha256": "ba9ff935e74ad2988b46f875c66fcef98fa59b17d68eaac454428ff2dbd6dab6"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 80,
+          "device": 66305,
+          "inode": 9962222,
+          "sha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921"
+        }
+      },
+      "firstRenameResult": {
+        "isError": false,
+        "newPath": "/data/ouf-identity-fixture_4.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_4.cpd",
+        "operation": "exit",
+        "returnValue": 0,
+        "tid": 31768
+      },
+      "instrumentation": "external read-only ptrace scheduling",
+      "mixedWitness": {
+        "cookieHex": "33aabbcc",
+        "datFile": "ouf-identity-fixture_4.dat",
+        "dataBytes": 1048593,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "4,0100000000002133aabbcc",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleSize": 1048651,
+        "newDatBytes": 5243344,
+        "oldIndexInvalidForNewDat": true,
+        "oldNeedleOffset": 8389048,
+        "pendingIndexBodyVerified": true,
+        "pendingNeedleOffset": 4194664,
+        "volumeId": "4"
+      },
+      "newPath": "/data/ouf-identity-fixture_4.idx",
+      "number": 264,
+      "oldPath": "/data/ouf-identity-fixture_4.cpx",
+      "operation": "entry",
+      "processBefore": {
+        "cgroup": "0::/system.slice/docker-25f17df2ad7990a929e726a4026d5389cba47f6aa45deed58c41e73bfadfa75c.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 31473,
+        "startTicks": 81340
+      },
+      "processFrozen": {
+        "cgroup": "0::/system.slice/docker-25f17df2ad7990a929e726a4026d5389cba47f6aa45deed58c41e73bfadfa75c.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 31473,
+        "startTicks": 81340
+      },
+      "rawStorageBefore": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962161,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962213,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 66305,
+            "inode": 9962158,
+            "sha256": "de060f923214d2f574484e89865b1578dc808d818af0c43a85d06c2ed69b9544"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 66305,
+            "inode": 9962216,
+            "sha256": "96542c9086c2951bb0094b8ea27a0dcb5575fdf2e8b061cfcfd553b3071c7171"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962212,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962219,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".dat": {
+            "allocatedBytes": 9441280,
+            "bytes": 9437728,
+            "device": 66305,
+            "inode": 9962215,
+            "sha256": "a2a5f02c80ac3e58560e079ecdbc0352bc64fe81250d9e8cfa21116c34967271"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 80,
+            "device": 66305,
+            "inode": 9962222,
+            "sha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962218,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962225,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962221,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962228,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962224,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962231,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "rawStorageFrozen": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962161,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962213,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 66305,
+            "inode": 9962158,
+            "sha256": "de060f923214d2f574484e89865b1578dc808d818af0c43a85d06c2ed69b9544"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 66305,
+            "inode": 9962216,
+            "sha256": "96542c9086c2951bb0094b8ea27a0dcb5575fdf2e8b061cfcfd553b3071c7171"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962212,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962219,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".cpc": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962348,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          ".cpx": {
+            "allocatedBytes": 4096,
+            "bytes": 48,
+            "device": 66305,
+            "inode": 9962347,
+            "sha256": "d11bd7ae1ae347c3c4e2c2e84dfb3a6640b47245a9494e87fedddb3b42bac812"
+          },
+          ".dat": {
+            "allocatedBytes": 5246976,
+            "bytes": 5243344,
+            "device": 66305,
+            "inode": 9962346,
+            "sha256": "ba9ff935e74ad2988b46f875c66fcef98fa59b17d68eaac454428ff2dbd6dab6"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 80,
+            "device": 66305,
+            "inode": 9962222,
+            "sha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962218,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962225,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962221,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962228,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962224,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962231,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "status": "OBSERVED_INTERRENAME_FROZEN",
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "returnValue": 0,
+          "tid": 31755
+        },
+        {
+          "kind": "directory",
+          "returnValue": 0,
+          "tid": 31768
+        }
+      ],
+      "syscallNotResumed": true,
+      "threadStates": {
+        "31473": "t",
+        "31753": "t",
+        "31754": "t",
+        "31755": "t",
+        "31756": "t",
+        "31766": "t",
+        "31767": "t",
+        "31768": "t",
+        "31769": "t"
+      },
+      "tid": 31768,
+      "vacuumResubmissions": 0,
+      "witnessBeforeDatRename": {
+        "cookieHex": "33aabbcc",
+        "datBytes": 9437728,
+        "datFile": "ouf-identity-fixture_4.dat",
+        "datSha256": "a2a5f02c80ac3e58560e079ecdbc0352bc64fe81250d9e8cfa21116c34967271",
+        "dataBytes": 1048593,
+        "dataOffset": 8389068,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "4,0100000000002133aabbcc",
+        "indexBytes": 80,
+        "indexPrefixSha256": "d158acc5089c1ea9e1e4e034506909aa4022594f98b3e47e968d3582b3042b38",
+        "indexRecord": 4,
+        "indexSha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleOffset": 8389048,
+        "needleSize": 1048651,
+        "prefixSha256": "b1cdbc23f7b00bb76d485d783c2d34e2027f200d5752bf7be9a7346b3bf2cfa1",
+        "volumeId": "4"
+      }
+    },
+    "interrenameReclaimedAllocatedBytes": 4194304,
+    "interrenameReclaimedBytes": 4194384,
+    "interrenameRecovery": {
+      "additionalVacuumCommands": 0,
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "allocatedDatBlocksPreserved": false,
+      "applicationProcessesReplaced": 4,
+      "baselineS3Parity": true,
+      "betweenRenamesCrashQualified": true,
+      "clientUnchanged": true,
+      "coherentPairAtFirstReadinessBeforeFixtureReads": true,
+      "compactionCrashQualified": true,
+      "directChunk404": true,
+      "directMetadataIdentical": true,
+      "exactDatAndIndexSnapshotsPreserved": false,
+      "exitCode": 137,
+      "filerResponseBytesAfter": 1954,
+      "filerResponseBytesBefore": 0,
+      "markerOnlyCrashQualified": false,
+      "mutatingRetries": 0,
+      "newContainerIds": {
+        "filer": "b5fe2794219704ac6f9bece3752228abcb980caffe64d30bc90245b6a947f402",
+        "master": "92403c182cf9cf070dd449a28996b6ce9b421abc5cf4695f73786d6f687ba8b2",
+        "s3": "f2f61165e0b9dc1b95a1ad4ebd7a5b53449ffb21027c6ac3d01c4f269b2e93da",
+        "volume": "d8793634dfc59836d1f3d9886dd47b05a8dae2ef206f8060b2eb48a7e27daf96"
+      },
+      "oldContainerIds": {
+        "filer": "d25e25f27aeecac50dcc8ebc093ec0395937d011edbb2aa33802958705fb6132",
+        "master": "af4b0a847cc27414ec16dbc2a532443237583b86ee7069f272013b7152de10d1",
+        "s3": "6ddc946fe8f067d9ef03429ab2fd6f2d1e8596619d1343ff4f988e81ebf670c8",
+        "volume": "25f17df2ad7990a929e726a4026d5389cba47f6aa45deed58c41e73bfadfa75c"
+      },
+      "oomKilled": false,
+      "orphanPayloadAndIndexRemainAbsent": true,
+      "postMarkerRollforwardQualified": true,
+      "powerLossQualified": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "s3ObjectAbsent": true,
+      "signal": "SIGKILL",
+      "stoppedStorageUnchangedBeforeExec": true,
+      "topologyAndRegistrationRecovered": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8397590,
+      "volumeResponseBytesBefore": 0
+    },
+    "interrenameWitnessAfter": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 5243344,
+      "datFile": "ouf-identity-fixture_4.dat",
+      "datSha256": "ba9ff935e74ad2988b46f875c66fcef98fa59b17d68eaac454428ff2dbd6dab6",
+      "dataBytes": 1048593,
+      "dataOffset": 4194684,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "4,0100000000002133aabbcc",
+      "indexBytes": 48,
+      "indexPrefixSha256": "c3212689c326cc724e42220f752a38aeb6ddc9ad58fe2550cf39fd395b16b721",
+      "indexRecord": 2,
+      "indexSha256": "d11bd7ae1ae347c3c4e2c2e84dfb3a6640b47245a9494e87fedddb3b42bac812",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 4194664,
+      "needleSize": 1048651,
+      "prefixSha256": "9bdea050f570e43448f469bea37ac2a7af2db098a97ac2c7f3ea973c8a4fd13c",
+      "volumeId": "4"
+    },
+    "interrenameWitnessBefore": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 9437728,
+      "datFile": "ouf-identity-fixture_4.dat",
+      "datSha256": "a2a5f02c80ac3e58560e079ecdbc0352bc64fe81250d9e8cfa21116c34967271",
+      "dataBytes": 1048593,
+      "dataOffset": 8389068,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "4,0100000000002133aabbcc",
+      "indexBytes": 80,
+      "indexPrefixSha256": "d158acc5089c1ea9e1e4e034506909aa4022594f98b3e47e968d3582b3042b38",
+      "indexRecord": 4,
+      "indexSha256": "d0181abbd37e9c27cffe6c0b571639d7e16e3e0ceedf4d470b40e73b732fe921",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 8389048,
+      "needleSize": 1048651,
+      "prefixSha256": "b1cdbc23f7b00bb76d485d783c2d34e2027f200d5752bf7be9a7346b3bf2cfa1",
+      "volumeId": "4"
+    },
+    "localArchiveReadback": false,
+    "markerOnlyPhase": {
+      "beforeDatRenamePhase": {
+        "cloneEvents": [],
+        "newPath": "/data/ouf-identity-fixture_7.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_7.cpd",
+        "operation": "entry",
+        "successfulSyncs": [
+          {
+            "kind": "marker",
+            "returnValue": 0,
+            "tid": 34783
+          },
+          {
+            "kind": "directory",
+            "returnValue": 0,
+            "tid": 34783
+          }
+        ],
+        "syscallNotResumed": true,
+        "threadStates": {
+          "34783": "t",
+          "35066": "t",
+          "35067": "t",
+          "35068": "t",
+          "35070": "t",
+          "35074": "t",
+          "35084": "t",
+          "35085": "t",
+          "35086": "t"
+        },
+        "tid": 34783
+      },
+      "beforeIdxRenamePhase": {
+        "cloneEvents": [],
+        "firstRenameResult": {
+          "isError": false,
+          "newPath": "/data/ouf-identity-fixture_7.dat",
+          "number": 264,
+          "oldPath": "/data/ouf-identity-fixture_7.cpd",
+          "operation": "exit",
+          "returnValue": 0,
+          "tid": 34783
+        },
+        "newPath": "/data/ouf-identity-fixture_7.idx",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_7.cpx",
+        "operation": "entry",
+        "successfulSyncs": [
+          {
+            "kind": "marker",
+            "returnValue": 0,
+            "tid": 34783
+          },
+          {
+            "kind": "directory",
+            "returnValue": 0,
+            "tid": 34783
+          }
+        ],
+        "syscallNotResumed": true,
+        "threadStates": {
+          "34783": "t",
+          "35066": "t",
+          "35067": "t",
+          "35068": "t",
+          "35070": "t",
+          "35074": "t",
+          "35084": "t",
+          "35085": "t",
+          "35086": "t"
+        },
+        "tid": 34783
+      },
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "cloneEvents": [],
+      "filesBefore": {
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243072,
+          "device": 66305,
+          "inode": 9962600,
+          "sha256": "f2240a861187e443eb2758920af5cefd103197d47829af196d2feb655e62f81a"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9962607,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+        }
+      },
+      "filesBeforeDatRename": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9962724,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpd": {
+          "allocatedBytes": 1052672,
+          "bytes": 1048688,
+          "device": 66305,
+          "inode": 9962722,
+          "sha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 16,
+          "device": 66305,
+          "inode": 9962723,
+          "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+        },
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243072,
+          "device": 66305,
+          "inode": 9962600,
+          "sha256": "f2240a861187e443eb2758920af5cefd103197d47829af196d2feb655e62f81a"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9962607,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+        }
+      },
+      "filesBeforeIdxRename": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9962724,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 16,
+          "device": 66305,
+          "inode": 9962723,
+          "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+        },
+        ".dat": {
+          "allocatedBytes": 1052672,
+          "bytes": 1048688,
+          "device": 66305,
+          "inode": 9962722,
+          "sha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9962607,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+        }
+      },
+      "filesFrozen": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9962724,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".dat": {
+          "allocatedBytes": 1052672,
+          "bytes": 1048688,
+          "device": 66305,
+          "inode": 9962722,
+          "sha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 16,
+          "device": 66305,
+          "inode": 9962723,
+          "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+        }
+      },
+      "firstRenameResult": {
+        "isError": false,
+        "newPath": "/data/ouf-identity-fixture_7.dat",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_7.cpd",
+        "operation": "exit",
+        "returnValue": 0,
+        "tid": 34783
+      },
+      "instrumentation": "external read-only ptrace scheduling",
+      "mixedWitness": {
+        "cookieHex": "33aabbcc",
+        "datFile": "ouf-identity-fixture_7.dat",
+        "dataBytes": 1048593,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "7,0100000000002133aabbcc",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleSize": 1048651,
+        "newDatBytes": 1048688,
+        "oldIndexInvalidForNewDat": true,
+        "oldNeedleOffset": 4194392,
+        "pendingIndexBodyVerified": true,
+        "pendingNeedleOffset": 8,
+        "volumeId": "7"
+      },
+      "number": 263,
+      "operation": "entry",
+      "path": "/data/ouf-identity-fixture_7.cpc",
+      "postRenameDirectorySyncs": [
+        {
+          "kind": "directory",
+          "returnValue": 0,
+          "tid": 34783
+        }
+      ],
+      "postRenameTrace": [
+        {
+          "kind": "idx-rename-exit",
+          "returnValue": 0,
+          "tid": 34783
+        },
+        {
+          "kind": "directory-fsync-entry",
+          "tid": 34783
+        },
+        {
+          "kind": "directory-fsync-exit",
+          "returnValue": 0,
+          "tid": 34783
+        },
+        {
+          "kind": "marker-unlink-entry",
+          "number": 263,
+          "path": "/data/ouf-identity-fixture_7.cpc",
+          "tid": 34783
+        }
+      ],
+      "processBefore": {
+        "cgroup": "0::/system.slice/docker-78613fc9d409da540557471fe81acb4e6bf0aec65943d3d0c9f6fa459b8418c7.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 34783,
+        "startTicks": 90623
+      },
+      "processFrozen": {
+        "cgroup": "0::/system.slice/docker-78613fc9d409da540557471fe81acb4e6bf0aec65943d3d0c9f6fa459b8418c7.scope\n",
+        "networkNamespace": "net:[4026532687]",
+        "pid": 34783,
+        "startTicks": 90623
+      },
+      "rawStorageBefore": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962538,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962589,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962535,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962592,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 66305,
+            "inode": 9962588,
+            "sha256": "3092b80bb65234498954712133306cb98fa0bf0b42540f3c4fa088f6a66ae6d8"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 66305,
+            "inode": 9962595,
+            "sha256": "5714632c09e03d0173795324d20f022312dcc22a6f2ef55d1bd2522e2f7127e1"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962591,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962598,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194664,
+            "device": 66305,
+            "inode": 9962594,
+            "sha256": "8cc696581b89b0dc0cd3f84550f8b59606485b4c9945f068b574693d4eeb1960"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 32,
+            "device": 66305,
+            "inode": 9962601,
+            "sha256": "7934e394f204b9f3739fdab185e7fb0d6da1213fe42c5f666ce1385bab8f0b57"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962597,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962604,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".dat": {
+            "allocatedBytes": 5246976,
+            "bytes": 5243072,
+            "device": 66305,
+            "inode": 9962600,
+            "sha256": "f2240a861187e443eb2758920af5cefd103197d47829af196d2feb655e62f81a"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 48,
+            "device": 66305,
+            "inode": 9962607,
+            "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+          }
+        }
+      },
+      "rawStorageFrozen": {
+        "ouf-identity-fixture_1.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962538,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962589,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_2.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962535,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962592,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_3.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194360,
+            "device": 66305,
+            "inode": 9962588,
+            "sha256": "3092b80bb65234498954712133306cb98fa0bf0b42540f3c4fa088f6a66ae6d8"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 66305,
+            "inode": 9962595,
+            "sha256": "5714632c09e03d0173795324d20f022312dcc22a6f2ef55d1bd2522e2f7127e1"
+          }
+        },
+        "ouf-identity-fixture_4.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962591,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962598,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_5.dat": {
+          ".dat": {
+            "allocatedBytes": 4198400,
+            "bytes": 4194664,
+            "device": 66305,
+            "inode": 9962594,
+            "sha256": "8cc696581b89b0dc0cd3f84550f8b59606485b4c9945f068b574693d4eeb1960"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 32,
+            "device": 66305,
+            "inode": 9962601,
+            "sha256": "7934e394f204b9f3739fdab185e7fb0d6da1213fe42c5f666ce1385bab8f0b57"
+          }
+        },
+        "ouf-identity-fixture_6.dat": {
+          ".dat": {
+            "allocatedBytes": 4096,
+            "bytes": 8,
+            "device": 66305,
+            "inode": 9962597,
+            "sha256": "35be322d094f9d154a8aba4733b8497f180353bd7ae7b0a15f90b586b549f28b"
+          },
+          ".idx": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962604,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "ouf-identity-fixture_7.dat": {
+          ".cpc": {
+            "allocatedBytes": 0,
+            "bytes": 0,
+            "device": 66305,
+            "inode": 9962724,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          ".dat": {
+            "allocatedBytes": 1052672,
+            "bytes": 1048688,
+            "device": 66305,
+            "inode": 9962722,
+            "sha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77"
+          },
+          ".idx": {
+            "allocatedBytes": 4096,
+            "bytes": 16,
+            "device": 66305,
+            "inode": 9962723,
+            "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+          }
+        }
+      },
+      "secondRenameResult": {
+        "isError": false,
+        "newPath": "/data/ouf-identity-fixture_7.idx",
+        "number": 264,
+        "oldPath": "/data/ouf-identity-fixture_7.cpx",
+        "operation": "exit",
+        "returnValue": 0,
+        "tid": 34783
+      },
+      "status": "OBSERVED_MARKERONLY_FROZEN",
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "returnValue": 0,
+          "tid": 34783
+        },
+        {
+          "kind": "directory",
+          "returnValue": 0,
+          "tid": 34783
+        }
+      ],
+      "syscallNotResumed": true,
+      "threadStates": {
+        "34783": "t",
+        "35066": "t",
+        "35067": "t",
+        "35068": "t",
+        "35070": "t",
+        "35074": "t",
+        "35084": "t",
+        "35085": "t",
+        "35086": "t"
+      },
+      "tid": 34783,
+      "vacuumResubmissions": 0,
+      "witnessBeforeDatRename": {
+        "cookieHex": "33aabbcc",
+        "datBytes": 5243072,
+        "datFile": "ouf-identity-fixture_7.dat",
+        "datSha256": "f2240a861187e443eb2758920af5cefd103197d47829af196d2feb655e62f81a",
+        "dataBytes": 1048593,
+        "dataOffset": 4194412,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "7,0100000000002133aabbcc",
+        "indexBytes": 48,
+        "indexPrefixSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+        "indexRecord": 2,
+        "indexSha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleOffset": 4194392,
+        "needleSize": 1048651,
+        "prefixSha256": "57e06376fd4ab66e18ed36558f8af9cc71882646499a1c7485b2832b31bcc969",
+        "volumeId": "7"
+      },
+      "witnessFrozen": {
+        "cookieHex": "33aabbcc",
+        "datBytes": 1048688,
+        "datFile": "ouf-identity-fixture_7.dat",
+        "datSha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77",
+        "dataBytes": 1048593,
+        "dataOffset": 28,
+        "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+        "fileId": "7,0100000000002133aabbcc",
+        "indexBytes": 16,
+        "indexPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "indexRecord": 0,
+        "indexSha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a",
+        "mutatingRequests": 0,
+        "needleId": 281474976710689,
+        "needleOffset": 8,
+        "needleSize": 1048651,
+        "prefixSha256": "165d9fd2d8b712a731caf713add4cdabe7cbe469f816973845bb041c9ad9508c",
+        "volumeId": "7"
+      }
+    },
+    "markerOnlyQualified": true,
+    "markerOnlyReclaimedAllocatedBytes": 4194304,
+    "markerOnlyReclaimedBytes": 4194384,
+    "markerOnlyRecovery": {
+      "additionalVacuumCommands": 0,
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "allocatedDatBlocksPreserved": false,
+      "applicationProcessesReplaced": 4,
+      "baselineS3Parity": true,
+      "betweenRenamesCrashQualified": false,
+      "clientUnchanged": true,
+      "coherentPairAtFirstReadinessBeforeFixtureReads": true,
+      "compactionCrashQualified": true,
+      "directChunk404": true,
+      "directMetadataIdentical": true,
+      "exactDatAndIndexSnapshotsPreserved": false,
+      "exitCode": 137,
+      "filerResponseBytesAfter": 1953,
+      "filerResponseBytesBefore": 0,
+      "markerOnlyCrashQualified": true,
+      "mutatingRetries": 0,
+      "newContainerIds": {
+        "filer": "6710def43c60fd4ef973b305c926767a3272d02d56212961726698a005d33446",
+        "master": "b096bebd4c907699da0f409fed72f86f0ff48f3e3f581edf15c18137fcf5fb6f",
+        "s3": "ea105532bb9d825edd7acfbc69fb55321f9acd1cec6a92f22797d9d69e9692f0",
+        "volume": "6cea216420b345f4f639378ea4f0b9f5bd7e3c99d579c83bfeeaad05f8c62270"
+      },
+      "oldContainerIds": {
+        "filer": "b2a3a349df789d6e2837f4b7c67284f0d92f132fe5cd62dfd912e1499c0dee96",
+        "master": "665eea79a03fda54dc3b28c080ea55fd149a733a7870570837ca077009cd599e",
+        "s3": "580607f89f48d4ed088dd21dc179a0b5ad274d156b2828510259666875a28367",
+        "volume": "78613fc9d409da540557471fe81acb4e6bf0aec65943d3d0c9f6fa459b8418c7"
+      },
+      "oomKilled": false,
+      "orphanPayloadAndIndexRemainAbsent": true,
+      "postMarkerRollforwardQualified": true,
+      "powerLossQualified": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "s3ObjectAbsent": true,
+      "signal": "SIGKILL",
+      "stoppedStorageUnchangedBeforeExec": true,
+      "topologyAndRegistrationRecovered": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8397738,
+      "volumeResponseBytesBefore": 0
+    },
+    "markerOnlyWitnessAfter": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 1048688,
+      "datFile": "ouf-identity-fixture_7.dat",
+      "datSha256": "6078e7ec74fec46a97d3657462af7320d035272da0168c81eec3a522f9d01f77",
+      "dataBytes": 1048593,
+      "dataOffset": 28,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "7,0100000000002133aabbcc",
+      "indexBytes": 16,
+      "indexPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "indexRecord": 0,
+      "indexSha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 8,
+      "needleSize": 1048651,
+      "prefixSha256": "165d9fd2d8b712a731caf713add4cdabe7cbe469f816973845bb041c9ad9508c",
+      "volumeId": "7"
+    },
+    "markerOnlyWitnessBefore": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 5243072,
+      "datFile": "ouf-identity-fixture_7.dat",
+      "datSha256": "f2240a861187e443eb2758920af5cefd103197d47829af196d2feb655e62f81a",
+      "dataBytes": 1048593,
+      "dataOffset": 4194412,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "7,0100000000002133aabbcc",
+      "indexBytes": 48,
+      "indexPrefixSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+      "indexRecord": 2,
+      "indexSha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 4194392,
+      "needleSize": 1048651,
+      "prefixSha256": "57e06376fd4ab66e18ed36558f8af9cc71882646499a1c7485b2832b31bcc969",
+      "volumeId": "7"
+    },
+    "members": 1757,
+    "nativeScenarios": 14,
+    "networkRemovedCount": 14,
+    "originalZipBytes": 20598958,
+    "originalZipSha256": "b9db34fd0b19c9f4bb6b9cde0ebe51844f2e497698cf9458b6151a7e7a245198",
+    "postMarkerQualified": true,
+    "postmarkerPhase": {
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "cloneEvents": [],
+      "filesBefore": {
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243072,
+          "device": 66305,
+          "inode": 9961856,
+          "sha256": "482d86284fb9ca06ea300fc2a7e40c6d6b0c445fb674e36ac305d9e8649d928e"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9961863,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+        }
+      },
+      "filesFrozen": {
+        ".cpc": {
+          "allocatedBytes": 0,
+          "bytes": 0,
+          "device": 66305,
+          "inode": 9961980,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        ".cpd": {
+          "allocatedBytes": 1052672,
+          "bytes": 1048688,
+          "device": 66305,
+          "inode": 9961978,
+          "sha256": "fafb511bb3aef5eb4b345bcdb0ff7a04cf840ac9555cd4223350f4c0ae35e00e"
+        },
+        ".cpx": {
+          "allocatedBytes": 4096,
+          "bytes": 16,
+          "device": 66305,
+          "inode": 9961979,
+          "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+        },
+        ".dat": {
+          "allocatedBytes": 5246976,
+          "bytes": 5243072,
+          "device": 66305,
+          "inode": 9961856,
+          "sha256": "482d86284fb9ca06ea300fc2a7e40c6d6b0c445fb674e36ac305d9e8649d928e"
+        },
+        ".idx": {
+          "allocatedBytes": 4096,
+          "bytes": 48,
+          "device": 66305,
+          "inode": 9961863,
+          "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+        }
+      },
+      "instrumentation": "external read-only ptrace scheduling",
+      "newPath": "/data/ouf-identity-fixture_7.dat",
+      "number": 264,
+      "oldPath": "/data/ouf-identity-fixture_7.cpd",
+      "operation": "entry",
+      "processBefore": {
+        "cgroup": "0::/system.slice/docker-e53fa7a9af9ed68de75955c17548e07053a02abdaffb566ed09ee17f037ea66e.scope\n",
+        "networkNamespace": "net:[4026532691]",
+        "pid": 28239,
+        "startTicks": 73644
+      },
+      "processFrozen": {
+        "cgroup": "0::/system.slice/docker-e53fa7a9af9ed68de75955c17548e07053a02abdaffb566ed09ee17f037ea66e.scope\n",
+        "networkNamespace": "net:[4026532691]",
+        "pid": 28239,
+        "startTicks": 73644
+      },
+      "status": "OBSERVED_POSTMARKER_FROZEN",
+      "successfulSyncs": [
+        {
+          "kind": "marker",
+          "returnValue": 0,
+          "tid": 28239
+        },
+        {
+          "kind": "directory",
+          "returnValue": 0,
+          "tid": 28526
+        }
+      ],
+      "syscallNotResumed": true,
+      "threadStates": {
+        "28239": "t",
+        "28525": "t",
+        "28526": "t",
+        "28527": "t",
+        "28528": "t",
+        "28539": "t",
+        "28540": "t",
+        "28541": "t"
+      },
+      "tid": 28526,
+      "vacuumResubmissions": 0
+    },
+    "postmarkerRecovery": {
+      "additionalVacuumCommands": 0,
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "allocatedDatBlocksPreserved": false,
+      "applicationProcessesReplaced": 4,
+      "baselineS3Parity": true,
+      "betweenRenamesCrashQualified": false,
+      "clientUnchanged": true,
+      "coherentPairAtFirstReadinessBeforeFixtureReads": false,
+      "compactionCrashQualified": true,
+      "directChunk404": true,
+      "directMetadataIdentical": true,
+      "exactDatAndIndexSnapshotsPreserved": false,
+      "exitCode": 137,
+      "filerResponseBytesAfter": 1953,
+      "filerResponseBytesBefore": 0,
+      "markerOnlyCrashQualified": false,
+      "mutatingRetries": 0,
+      "newContainerIds": {
+        "filer": "1b4fc13787678c0a54c2a75ded1ce1c4bb88278d185739c7a358c2fc04ff7718",
+        "master": "6913ef61a794e23558863ae3b4d9c55fabcba8b24b8d0334e6856638f39e2f74",
+        "s3": "c87396e614704c8297804243bd327fa714ad0c96f0e7de42d62d0bb7f7c9fccb",
+        "volume": "e08ecaa76a6760fda7753a71b478a4d10b57e8f36c144057436a35fffbf8e358"
+      },
+      "oldContainerIds": {
+        "filer": "5451606ce79027d286a95ee648c53b17f7b4f1ad11f638ae29156d05a089265e",
+        "master": "f16729bebfd2300f9f546270eef7bf7c3eab0c07ccc0d4777591a30ab9956ec3",
+        "s3": "8abfb36ae43f8b4c1e1374a3af33afae46459f79c72c78add27c17a5e4dc42a4",
+        "volume": "e53fa7a9af9ed68de75955c17548e07053a02abdaffb566ed09ee17f037ea66e"
+      },
+      "oomKilled": false,
+      "orphanPayloadAndIndexRemainAbsent": true,
+      "postMarkerRollforwardQualified": true,
+      "powerLossQualified": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "s3ObjectAbsent": true,
+      "signal": "SIGKILL",
+      "stoppedStorageUnchangedBeforeExec": true,
+      "topologyAndRegistrationRecovered": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8398266,
+      "volumeResponseBytesBefore": 0
+    },
+    "postmarkerWitnessAfter": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 1048688,
+      "datFile": "ouf-identity-fixture_7.dat",
+      "datSha256": "fafb511bb3aef5eb4b345bcdb0ff7a04cf840ac9555cd4223350f4c0ae35e00e",
+      "dataBytes": 1048593,
+      "dataOffset": 28,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "7,0100000000002133aabbcc",
+      "indexBytes": 16,
+      "indexPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "indexRecord": 0,
+      "indexSha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 8,
+      "needleSize": 1048651,
+      "prefixSha256": "165d9fd2d8b712a731caf713add4cdabe7cbe469f816973845bb041c9ad9508c",
+      "volumeId": "7"
+    },
+    "postmarkerWitnessBefore": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 5243072,
+      "datFile": "ouf-identity-fixture_7.dat",
+      "datSha256": "482d86284fb9ca06ea300fc2a7e40c6d6b0c445fb674e36ac305d9e8649d928e",
+      "dataBytes": 1048593,
+      "dataOffset": 4194412,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "7,0100000000002133aabbcc",
+      "indexBytes": 48,
+      "indexPrefixSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+      "indexRecord": 2,
+      "indexSha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 4194392,
+      "needleSize": 1048651,
+      "prefixSha256": "044beef36b2dc330752407ed8efd503f267c23cfd9667343c666ddcaa94d2274",
+      "volumeId": "7"
+    },
+    "powerLossQualified": false,
+    "producerCommit": "b293a4902b38aa2df9b658247457cf951224f96c",
+    "reclaimedAllocatedBytes": 4194304,
+    "reclaimedDatBytes": 4194384,
+    "recovery": {
+      "additionalVacuumCommands": 0,
+      "allRulesBeforeAnyRestartExec": true,
+      "allServicesStoppedBeforeReplacement": true,
+      "allocatedDatBlocksPreserved": true,
+      "applicationProcessesReplaced": 4,
+      "baselineS3Parity": true,
+      "betweenRenamesCrashQualified": false,
+      "clientUnchanged": true,
+      "coherentPairAtFirstReadinessBeforeFixtureReads": false,
+      "compactionCrashQualified": true,
+      "directChunk404": true,
+      "directMetadataIdentical": true,
+      "exactDatAndIndexSnapshotsPreserved": true,
+      "exitCode": 137,
+      "filerResponseBytesAfter": 1954,
+      "filerResponseBytesBefore": 0,
+      "markerOnlyCrashQualified": false,
+      "mutatingRetries": 0,
+      "newContainerIds": {
+        "filer": "45758d67c6ebf0d56c0e72d3e787a2a6048c2bd85dd96cd82c25482964b7eafe",
+        "master": "233f07397fd752a1fd37d5c263428703674a7e9912f879ddab693ce1d71a1fed",
+        "s3": "d7eb847f411bac17f8d62e958bf6cb590079d89f4ceadb54c17f22aa54128e85",
+        "volume": "e8dea693f0fbf2dd60c7c2d217f3df4fc4592f9c112223a6314682d1b0d18dfb"
+      },
+      "oldContainerIds": {
+        "filer": "bf4ee87df93de55ad13bc23c40b1097c331077cd84f35a8d8dbcd85b4d87e369",
+        "master": "330851cc7017058992f87d103ba5d20b767a99fee5e5d8017965371c76355d8d",
+        "s3": "bda427a2d893834bb57f27e68a34b066266f1a0f72fc73cbdcc43716172c08d3",
+        "volume": "b625d2b897ff9a33057a95f0dc91d11cf05436ebc2436de8e31904cc4119f55f"
+      },
+      "oomKilled": false,
+      "orphanPayloadAndIndexRemainAbsent": false,
+      "postMarkerRollforwardQualified": false,
+      "powerLossQualified": false,
+      "recoveryPutRequests": 0,
+      "recoveryReadAttempts": 1,
+      "s3ObjectAbsent": true,
+      "signal": "SIGKILL",
+      "stoppedStorageUnchangedBeforeExec": true,
+      "topologyAndRegistrationRecovered": true,
+      "topologyReadAttempts": 1,
+      "volumeResponseBytesAfter": 8397634,
+      "volumeResponseBytesBefore": 0
+    },
+    "schema": "ouf.storage-compaction-markeronly-readback.v1",
+    "secondNativeExecution": false,
+    "sourceBinding": {
+      "allOrderedPatchesVerified": {
+        "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+        "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40",
+        "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+        "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24",
+        "patches/seaweedfs/4.52-go-network-security-fixes.patch": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e",
+        "patches/seaweedfs/4.52-iam-module-sdk-v2.patch": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+        "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+        "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b",
+        "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3",
+        "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+        "patches/seaweedfs/4.52-kms-sdk-v2.patch": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a",
+        "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1",
+        "patches/seaweedfs/4.52-maintained-dependency-closure.patch": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+        "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+        "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8",
+        "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8",
+        "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+        "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+        "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+        "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6",
+        "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530",
+        "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883",
+        "patches/seaweedfs/4.52-s3-content-type-persistence.patch": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+        "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f",
+        "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d",
+        "patches/seaweedfs/4.52-s3backend-sdk-v2.patch": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9",
+        "patches/seaweedfs/4.52-s3sink-sdk-v2.patch": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4",
+        "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398",
+        "patches/seaweedfs/4.52-sqs-sdk-v2.patch": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3",
+        "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c",
+        "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714",
+        "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30",
+        "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+      },
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "instrumentedBuild": false,
+      "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+      "patchedRootSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+      "reviewedUnmodifiedSourceSha256": {
+        "weed/command/volume.go": "5816a02b60965936952247c7cc6ae4d8239f4205d9eaf5aaf608d7a9efaeeb07",
+        "weed/server/volume_grpc_vacuum.go": "a35efc7af662020e803e32a42f8f6ee6ad74ec20b34ebb286bde3ea4fb61b304",
+        "weed/storage/store_vacuum.go": "2ffb157a058359f8279eb1d973d0b173059de1947620e65cf1c14649a132814c",
+        "weed/storage/volume_vacuum.go": "725690746dcb0bfaf05a8ded782fc2971ba483bb8652b763d839eb9f61c4f96a",
+        "weed/topology/topology_vacuum.go": "9671a1fb2722e85e15ed6cd103397b8667560538553e6a40e941b832681a6976"
+      },
+      "scope": "reviewed paths unchanged by all generation33 patches; candidate binding, not a rebuild",
+      "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3"
+    },
+    "sourceBindingsVerified": 40,
+    "status": "HOSTED_ORIGINAL_ARCHIVE_READBACK_PASS",
+    "targetOperations": 0,
+    "testsPassed": 189,
+    "witness": {
+      "cookieHex": "33aabbcc",
+      "datBytes": 9437424,
+      "datFile": "ouf-identity-fixture_5.dat",
+      "datSha256": "7fdb694f1cc74724b4e95df3358188930f1cb5f2a0698ae4d15f3a8d06a95381",
+      "dataBytes": 1048593,
+      "dataOffset": 8388764,
+      "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+      "fileId": "5,0100000000002133aabbcc",
+      "indexBytes": 64,
+      "indexPrefixSha256": "15ea66c136f8887c1242e45d67a76f3bdff10a15e062e60ea23bd7732a2bde29",
+      "indexRecord": 3,
+      "indexSha256": "12892eacd0c36dbb46ae95650b1c86ba4afcdf9176df826c34a8ef9a7703e295",
+      "mutatingRequests": 0,
+      "needleId": 281474976710689,
+      "needleOffset": 8388744,
+      "needleSize": 1048651,
+      "prefixSha256": "8b5b3ad52c2199fe1a1b8ed51702616989b4014c998b89726e70615302f5a664",
+      "volumeId": "5"
+    }
+  },
+  "nativeTerminal": {
+    "jobId": 126771291040,
+    "metadataObservationAttempts": 1,
+    "nativeResubmissions": 0,
+    "producerCommit": "b293a4902b38aa2df9b658247457cf951224f96c",
+    "runAttempt": 1,
+    "runId": 41886227100,
+    "status": "EXACT_NATIVE_TERMINAL_SUCCESS_CONFIRMED",
+    "targetOperations": 0
+  },
+  "localVerification": {
+    "status": "ORIGINAL_ARCHIVE_READBACK_PASS",
+    "sameResultAsHosted": true,
+    "archiveBytes": 20598958,
+    "archiveSha256": "b9db34fd0b19c9f4bb6b9cde0ebe51844f2e497698cf9458b6151a7e7a245198",
+    "members": 1757,
+    "checksums": 1756,
+    "exactProducerSources": 40,
+    "secondNativeExecution": false,
+    "localArchiveReadback": true,
+    "preparationFailuresPreserved": [
+      {
+        "error": "ORIGINAL_ARCHIVE_DIGEST",
+        "cause": "First local invocation reversed positional expected_sha and producer arguments. Downloaded ZIP SHA256 had already matched GitHub; corrected invocation only."
+      },
+      {
+        "error": "EXACT_SOURCE: scripts/run-storage-generation33-credential-rotation.py",
+        "cause": "25 files in the previously prepared local source copy had one extra trailing newline. Exact producer files fetched independently; the copy was repaired only where removing that one newline reproduced the archived expected hash. All40 exact hashes then verified before readback; no verifier or archive changes.",
+        "mismatches": [
+          {
+            "path": "scripts/run-storage-generation33-credential-rotation.py",
+            "expected": "42d9c2efa6a158cdb9e8e7f65f79a191a0e0212a867a18791078c6ea863dc252",
+            "actual": "f4931c6ea6a581d4d160c7cf107a55e23e54783d682eab26492f9280e67bedee"
+          },
+          {
+            "path": "tests/test_storage_credential_rotation_generation33.py",
+            "expected": "a6b8a72b5a90b8e24923e860acefa3bfc6db86b9cdd5d8e049947b4f756c0f90",
+            "actual": "59c6d3c1bedf1768abccbc817a23f0a802401b0e70cbf85f31894aeb0f3f8808"
+          },
+          {
+            "path": "scripts/run-storage-generation33-tls-rotation.py",
+            "expected": "4adfac0959792c128180fa0f7bb40a3d93cdbef77f37eafb9e87b37544ae6516",
+            "actual": "48b402b2839fb6a85b12feca9ad2bac394f34152de49ea04250318905b4dc54b"
+          },
+          {
+            "path": "tests/test_storage_tls_rotation_generation33.py",
+            "expected": "d98b968b82c2242c4e74c1ec619fe5678630ccdb89af2037edf7f3935239dbd8",
+            "actual": "ecee50ca816ceddb19fb2e95418928093bed0ef055c289eda90d57926f8dd902"
+          },
+          {
+            "path": "tests/test_storage_lateral_isolation_generation33.py",
+            "expected": "f49415a095b4d7dfce7825902d2cc9c5b31b4d879b2dedd052d59580df2c1bdc",
+            "actual": "18c1d2b302beafb5ab4088b14d057b73454c08a96101b1484a24f7ceeab928f4"
+          },
+          {
+            "path": "tests/test_storage_volume_crash_generation33.py",
+            "expected": "c6e1ff6237af0902c6a71027c9743af5ad1faab9e4909e44f971564f2d0c7ea7",
+            "actual": "72cd7e470ed219de3c6dc4160991110aab84ee0941b25dbe7d4d8592e950fabb"
+          },
+          {
+            "path": "tests/test_storage_filer_crash_generation33.py",
+            "expected": "e8e8a3c360be5e10a84a106b1dce4bb9645a34e14ccbbce6af243fcbf82a1025",
+            "actual": "de238d1a23e3db5e04401217e3055db5ca02009585d70d2d2cec0a2f4d03a739"
+          },
+          {
+            "path": "tests/test_storage_master_crash_generation33.py",
+            "expected": "7414bf5818faa97296ad640071ab3774e215656f6e8e8a8ac121ff0adcb3c85f",
+            "actual": "75f3ac59281f87444f79c36c7068f75f8a1d38c1821b62243770f40a86859541"
+          },
+          {
+            "path": "tests/test_storage_all_crash_generation33.py",
+            "expected": "1c97046fc890f75b66913307501062de40081224eb28084df3d6e03e641304cd",
+            "actual": "2904c9da3304e43cb58a82db8aea54e5a33c62696d86ad89882b983c2e9ddbd3"
+          },
+          {
+            "path": "scripts/storage-generation33-stream-interruption.py",
+            "expected": "1cf1020393df615368128d3685b8c980abec735679414f47f37ea06190d93364",
+            "actual": "05fa1d0024efd8cfe52827037167730d6917245eb2261024f81c4e4a0095828c"
+          },
+          {
+            "path": "tests/test_storage_stream_interruption_generation33.py",
+            "expected": "1a43dd298edb170abdec3ae0ca2b2d0d428d3c329b32a0a16f2b2ba8979a66bb",
+            "actual": "886d7fd5528f46066ed51edef433c1b6888df7a9c491f80999b5b77d491c73c8"
+          },
+          {
+            "path": "scripts/storage-generation33-orphan-cleanup.py",
+            "expected": "87533726b500d3a005b4ad63d8112ab20111b5e44714c0055b46e4dea9449ac9",
+            "actual": "f79abfd59757f532fd54cb1dbcc06d10ce6493e48f31252f4f7c40c850816146"
+          },
+          {
+            "path": "tests/test_storage_orphan_cleanup_generation33.py",
+            "expected": "e0022e85a7e6c995c6eb463354463b2688f9ffb22ae3c6be00799069dae8be75",
+            "actual": "4a97ee4fe9aba80f889eddce6a6790b45cada529a7873e2f2054451a9d12e9d3"
+          },
+          {
+            "path": "tests/test_storage_compaction_generation33.py",
+            "expected": "de2ddc5d7bc6b9c46be1c3f1e6b1418d6badb041060b0b88b1d0405b12ca7fe3",
+            "actual": "0d5f69b590b2c1f7979073b6c1a65285e704af346f5dc5104f02b7c59463c4b9"
+          },
+          {
+            "path": "tests/test_storage_compaction_restart_generation33.py",
+            "expected": "065116a0a01d898fa5e170d88d56271e90c2e316e7520fca299750b8f92ffb20",
+            "actual": "b5076ae20d01a586caf4851c5c6e23675cc7f826bcf5d18019fedb7ffcc6869d"
+          },
+          {
+            "path": "scripts/storage-generation33-relocation.py",
+            "expected": "ebd881e17d4665b85629a3b01332a1e8c0d7a41c44f05a760d0068045bf37eb1",
+            "actual": "6595da3a5121660ee7b228c3c4ee4ce7bc73476630aea4af7e06bbfd7e36acfe"
+          },
+          {
+            "path": "tests/test_storage_relocation_generation33.py",
+            "expected": "ed461193c21f698f7458236179bab5d8f2fb2ce6492d7c872da0b7fbd41584ea",
+            "actual": "2682c66312e35d5624b422e0da4380e6b602ae764d8de8a60793a88d89865393"
+          },
+          {
+            "path": "scripts/run-seaweedfs-452-generation33-labs.py",
+            "expected": "54c87ec96eacebf9d25030c600eb1b9fdfc6effc4e498da48d4212f71f17e7e2",
+            "actual": "b54f4bf24b64625744a561d6566681d217209b4e3d438d393625475e6013167b"
+          },
+          {
+            "path": "scripts/storage-generation33-lab-binding.py",
+            "expected": "27623db617bdf10b70e3af1d3ae6097909e82a357cd8170b807b2cd0643a8651",
+            "actual": "035faaf6dd4c5b600ddc170d50a35ff63f48e68f6966458a37cc5db624ecd99d"
+          },
+          {
+            "path": "scripts/run-seaweedfs-452-cold-recovery.py",
+            "expected": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+            "actual": "7b81d4b4423ec205f4f5aef410abc292d531d2ba65469766e87719bc2b925ba1"
+          },
+          {
+            "path": "scripts/run-seaweedfs-452-identity-tls.py",
+            "expected": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+            "actual": "e790f3d1e3dcf00cf5f1d84c590d0c929bad0b54a2afbc081a257f16f13a0fd6"
+          },
+          {
+            "path": "scripts/readback-seaweedfs-452-generation33-image.py",
+            "expected": "dcdfda30f4d6f95148b4b799fbb55d062780d76b8455a0bc1d85559c14a41928",
+            "actual": "15f931427ab01b5e5bc4ec77431df939144596992609383f33480a2e747b4f1d"
+          },
+          {
+            "path": "scripts/qualify-seaweedfs-452-generation33-image.py",
+            "expected": "f64c11b9dad5b3865dd2c7d2d89fb157bff7890a492d62f053b3fa3e59794cf9",
+            "actual": "f758b7f0d68086375f659d7d2367b5598570ec7f1b56de5e3b509f81d90fc36c"
+          },
+          {
+            "path": "tools/storage_security/generation_image_v4.py",
+            "expected": "235d9c162cd9b5ab12920a86d885ec8ce248fe52f8fd5f32c77027aa1d8221fe",
+            "actual": "584af5562bad67227d9e4707e78ae7ae8573a8c82d4a775bfdceadb0f188b702"
+          },
+          {
+            "path": "tools/storage_security/generation_readback_v1.py",
+            "expected": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+            "actual": "c93d5ba50fa7154d83491a07b778033ca3b0708fc06c26b189ab546b1dad3c1e"
+          }
+        ]
+      }
+    ],
+    "localResultReportedHostedContext": false,
+    "rawVerifierResultNote": "The reusable verifier returns hosted labels and localArchiveReadback:false; the identical raw result is retained as hostedReadback. This envelope records the separately executed local verification accurately."
+  },
+  "nativeAttemptsForMarkerOnly": 3,
+  "negativeAttempts": [
+    {
+      "producer": "87fc66ca9a2b24fb55e983392f573c0c1f54d96c",
+      "nativeRun": 41878669053,
+      "readbackRun": 41878956434,
+      "nativeArtifact": 13348782049,
+      "readbackArtifact": 13348816994,
+      "receipt": "evidence/storage-markeronly33-first-failure-diagnosis-20261104.json",
+      "result": "FAILED; marker-only skipped"
+    },
+    {
+      "producer": "84706b4fa014df74fdbd3685a56d2aba16934c84",
+      "nativeRun": 41882562646,
+      "readbackRun": 41883215358,
+      "nativeArtifact": 13350816644,
+      "readbackArtifact": 13350218739,
+      "receipt": "evidence/storage-markeronly33-second-failure-diagnosis-20261104.json",
+      "result": "FAILED; original compound assertion did not retain operands, so exact cause remains unproven retrospectively"
+    }
+  ],
+  "limits": {
+    "powerLossQualified": false,
+    "continuousConcurrentWorkloadQualified": false,
+    "productionRpoRtoQualified": false,
+    "productionMigration": false,
+    "durableGitZipCustody": false,
+    "actionsOriginalAndNestedCopyRetentionUntil": "2027-02-02",
+    "MiniPET": "18.3/46 = 39.78%",
+    "gates": 0,
+    "acceptanceTests": 0,
+    "realObjects": 0,
+    "targetOperations": 0,
+    "MinIO": "unchanged",
+    "nextScope": "Review the already qualified common-cut33 evidence before selecting the remaining bounded coordinated PostgreSQL/filer/object recovery and writer-fencing gap."
+  }
+}
