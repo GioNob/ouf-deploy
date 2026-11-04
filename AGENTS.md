@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — perdita risposta PUT33 e riconciliazione PASS
+
+- Run [41807405448](https://github.com/GioNob/ouf-deploy/actions/runs/41807405448), producer `0bd31c7507571f6a0538130805d546ced624292d`: 42 test PASS e tre percorsi nativi normale/crash/risposta persa con restore completo PASS.
+- Un PUT da 45 byte inoltrato; HTTP200 ricevuto upstream, zero byte di risposta al client che osserva RemoteDisconnected. Intento PENDING e storico conservati; retry EXISTING_PENDING, zero PUT in ripresa. Riconciliazione solo da GET/HEAD/LIST reali, poi FROZEN e restore indipendente.
+- Archivio originale verificato: 423 membri/422 checksum/26 sorgenti e input,36 container distinti, sei cluster PostgreSQL, tre dump/ledger coerenti. Due oggetti sintetici/77 byte e sei dinieghi S3 per percorso. Dossier docs/OUF_STORAGE_RESPONSE_LOSS33_20261104.md; receipt evidence/storage-response-loss33-readback-20261104.json.
+- Limiti: perdita risposta dopo PUT completato su bucket non versionato, non guasto streaming/multipart o garanzia exactly-once generale. MiniPET invariato circa 40% ±10, 18,3/46; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione VPS, merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: controllo negativo dell'esito incerto senza oggetto valido; intento irrisolto, freeze bloccato e nessun reinvio automatico.
+
 ## Checkpoint storage 2026-11-04 — risposta PUT persa33 in qualifica
 
 - Relay HTTP monouso loopback: un solo PUT, HTTP200 completo ricevuto upstream, zero byte della risposta consegnati al client, RemoteDisconnected obbligatorio. Intento PENDING, stessa chiave EXISTING_PENDING, ledger immutato e zero PUT in ripresa; riconciliazione solo da GET/HEAD/LIST effettivi.
