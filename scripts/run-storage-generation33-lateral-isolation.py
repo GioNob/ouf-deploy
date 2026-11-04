@@ -25,6 +25,8 @@ stream_spec = importlib.util.spec_from_file_location('interrupted_stream33', ROO
 stream = importlib.util.module_from_spec(stream_spec); stream_spec.loader.exec_module(stream)
 cleanup_spec = importlib.util.spec_from_file_location('orphan_cleanup33', ROOT / 'scripts/storage-generation33-orphan-cleanup.py')
 cleanup = importlib.util.module_from_spec(cleanup_spec); cleanup_spec.loader.exec_module(cleanup)
+compact_spec = importlib.util.spec_from_file_location('compaction33', ROOT / 'scripts/storage-generation33-compaction.py')
+compact = importlib.util.module_from_spec(compact_spec); compact_spec.loader.exec_module(compact)
 labs, require, binding = keys.labs, keys.require, keys.binding
 LOCK_SHA, COHORT_SHA = keys.LOCK_SHA, keys.COHORT_SHA
 COHORT_ARTIFACT_ID, COHORT_ARCHIVE_SHA, COHORT_ARCHIVE_BYTES = keys.COHORT_ARTIFACT_ID, keys.COHORT_ARCHIVE_SHA, keys.COHORT_ARCHIVE_BYTES
@@ -381,8 +383,9 @@ def pin_network_namespace(pid, path, expected, command):
     return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    cleanup_stream = cleanup_stream or compact_stream
     interrupt_stream = interrupt_stream or cleanup_stream
     crash_all = crash_all or interrupt_stream
     crash_role = 'volume' if crash_volume else 'filer' if crash_filer else 'master' if crash_master else 'all' if crash_all else None
@@ -417,7 +420,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         # Trusted internal API, reached only from the already allowed S3 namespace.
         value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
         save(output, value); return value
-    cleanup_evidence = {}; cleanup_chunk = None
+    cleanup_evidence = {}; cleanup_chunk = None; compaction_evidence = {}
     def chunk_index(output):
         value = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
             str(Path(__file__).resolve()), 'chunk-index', str(data / 'volume'), str(evidence / 'cleanup-chunk.json')]))
@@ -748,6 +751,41 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         if cleanup_stream:
             require(chunk_index('cleanup-index-after-probes')['tombstoned'], 'TOMBSTONE_REMAINS_REQUIRED')
             chunk_read('absent', 'cleanup-chunk-after-probes')
+        if compact_stream:
+            def compact_snapshot(output):
+                value = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
+                    str(Path(__file__).resolve()), 'compaction-snapshot', str(data / 'volume'),
+                    str(evidence / 'cleanup-chunk.json'), pids['volume']]))
+                save(output, value); return value
+            compact_before = compact_snapshot('compaction-before')
+            compact_metadata = metadata('compaction-metadata-before')
+            script = compact.command_script(cleanup_chunk)
+            (evidence / 'compaction-command.txt').write_text(script)
+            command = ['docker', 'exec', '-i', prefix + '-master-recovered', '/usr/local/bin/weed',
+                       'shell', '-master=127.0.0.1:19333', '-connectTimeout=10s']
+            try:
+                completed = subprocess.run(command, input=script, text=True, capture_output=True, timeout=90)
+            except subprocess.TimeoutExpired as error:
+                (evidence / 'compaction-timeout.log').write_text(cold.bounded_diagnostic(error.stderr, 'COMPACTION_TIMEOUT'))
+                raise
+            (evidence / 'compaction-stdout.log').write_text(completed.stdout)
+            (evidence / 'compaction-stderr.log').write_text(completed.stderr)
+            save('compaction-execution', {'argv':command,'exitCode':completed.returncode,'vacuumCommands':1,'mutatingRetries':0,'timeoutSeconds':90})
+            require(completed.returncode == 0 and len(completed.stdout)+len(completed.stderr)<=262144, 'NATIVE_COMPACTION_COMMAND_SUCCESS_REQUIRED')
+            compact_after = compact_snapshot('compaction-after')
+            compaction_evidence = compact.validate(compact_before, compact_after, cleanup_chunk)
+            chunk_read('absent', 'compaction-chunk-absent')
+            s3('absent-interrupted', 'compaction-s3-absence')
+            compact_read = s3('read-volume', 'compaction-baseline-read')
+            require(compact_read == after, 'COMPACTION_BASELINE_PARITY_REQUIRED')
+            require(metadata('compaction-metadata-after') == compact_metadata, 'COMPACTION_METADATA_PARITY_REQUIRED')
+            require(compact_snapshot('compaction-after-reads') == compact_after, 'COMPACTION_STATE_STABLE_AFTER_READS')
+            final_compact_roles = dict(zip(ROLES, json.loads(cold.command(['docker','inspect',*lab.names]))))
+            require(all(final_compact_roles[r]['Id']==final_roles[r]['Id'] and
+                        final_compact_roles[r]['State']['StartedAt']==final_roles[r]['State']['StartedAt'] and
+                        final_compact_roles[r]['RestartCount']==0 for r in ROLES), 'NO_RESTART_DURING_COMPACTION')
+            save('compaction-roles', final_compact_roles)
+            compaction_evidence.update(baselineS3Parity=True, directMetadataIdentical=True, s3ObjectAbsent=True, directChunk404=True)
         baseline = observed if crash_role else before
         require({k:v for k,v in baseline.items() if k != 'mutatingRequests'} ==
                 {k:v for k,v in after.items() if k != 'mutatingRequests'}, 'OBJECT_PARITY_REQUIRED')
@@ -767,6 +805,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'compactionQualified': compact_stream, 'compactionEvidence': compaction_evidence,
             'orphanLogicalCleanupQualified': cleanup_stream, 'orphanCleanupEvidence': cleanup_evidence,
             'streamInterruptionInjected': interrupt_stream, 'streamInterruptionEvidence': stream_evidence,
             'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
@@ -800,7 +839,8 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true')
+    comp = sub.add_parser('compaction-snapshot'); comp.add_argument('root', type=Path); comp.add_argument('chunk', type=Path); comp.add_argument('pid')
     identify = sub.add_parser('chunk-identify'); identify.add_argument('root', type=Path); identify.add_argument('observation', type=Path)
     index = sub.add_parser('chunk-index'); index.add_argument('root', type=Path); index.add_argument('chunk', type=Path)
     chunk = sub.add_parser('chunk-read'); chunk.add_argument('chunk', type=Path); chunk.add_argument('expected', choices=('present','absent'))
@@ -814,7 +854,8 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream)
+    elif args.operation == 'compaction-snapshot': print(json.dumps(compact.snapshot(args.root, json.loads(args.chunk.read_bytes()), args.pid)))
     elif args.operation == 'chunk-identify': print(json.dumps(cleanup.identify(args.root, json.loads(args.observation.read_bytes()))))
     elif args.operation == 'chunk-index': print(json.dumps(cleanup.index_state(args.root, json.loads(args.chunk.read_bytes()))))
     elif args.operation == 'chunk-read': print(json.dumps(cleanup.read_chunk(IPS['volume'], json.loads(args.chunk.read_bytes()), args.expected)))

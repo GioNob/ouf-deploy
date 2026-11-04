@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — compattazione33 in qualifica
+
+- Ottavo caso dopo cleanup/restart/probe già qualificati: un solo vacuum nativo con lock, collection e volumeId esatti, timeout90s e nessun retry. Riduzione .dat e blocchi allocati almeno4194304byte, payload/indice orfano rimossi, needle validi e volumi non selezionati preservati, nessun residuo/handle unlinkato aperto. Parità S3 e metadati dopo compattazione.
+- 112 test locali PASS e YAML/shell PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_COMPACTION33_20261104.md. Compattazione completata a processi vivi, non restart successivo o crash durante compattazione/power loss/secure erase.
+- MiniPET invariato18,3/46≈40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — cleanup logica orfano33 e persistenza PASS
 
 - Run [41824890871](https://github.com/GioNob/ouf-deploy/actions/runs/41824890871), producer `01431f652f75c737d18534708ca0e7f17535814b`:100 test e sette scenari nativi PASS. Sola tupla S3→volume gRPC28080 aggiunta nel settimo caso; chunk3,0497ea242b letto200/4194304byte prima dell'abort, indice16→32 con tombstone-1 al primo probe, GET404 persistente dopo cleanup/riavvio/probe. gRPC0→677/579byte; zero DELETE/retry client.
