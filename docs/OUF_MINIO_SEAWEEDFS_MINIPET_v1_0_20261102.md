@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — cleanup logica orfano33 e persistenza PASS
+
+- Run [41824890871](https://github.com/GioNob/ouf-deploy/actions/runs/41824890871), producer `01431f652f75c737d18534708ca0e7f17535814b`:100 test e sette scenari nativi PASS. Sola tupla S3→volume gRPC28080 aggiunta nel settimo caso; chunk3,0497ea242b letto200/4194304byte prima dell'abort, indice16→32 con tombstone-1 al primo probe, GET404 persistente dopo cleanup/riavvio/probe. gRPC0→677/579byte; zero DELETE/retry client.
+- S3 GET/HEAD404 e LIST baseline-only; baseline8388865byte integra al primo recupero. Quattro processi/namespace/gate nuovi, vecchi namespace trattenuti durante confronto e pin rilasciati prima dell'exec.50 container distinti,35 arresti puliti,15 SIGKILL intenzionali, sette reti rimosse. Settimo caso11link/36dinieghi, sei regressioni10/37;518 membri/517 checksum/26 sorgenti verificati.
+- Primo run41823561384 FAILED conservato: cleanup osservata, confronto namespace bloccato prima di qualifica post-restart; correzione fixture mantiene vivi vecchi namespace senza rilassare separazione. Dossier docs/OUF_STORAGE_ORPHAN_CLEANUP33_20261104.md e receipt evidence/storage-orphan-cleanup33-readback-20261104.json, entrambi gli originali conservati.
+- Cleanup logica, non recupero spazio: .dat12583448byte con tombstone, nessun vacuum. Nessuna qualifica gRPC per metodo/mTLS/power loss/RPO/RTO. MiniPET invariato18,3/46≈40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; MinIO, scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: compattazione del volume nella fixture per recuperare spazio del chunk tombstoned, con baseline/indice/assenza verificati prima e dopo.
+
 ## Checkpoint storage 2026-11-04 — cleanup orfano33, primo run fermato sul confronto namespace
 
 - Run41823561384/source2910750d:97 test e sei regressioni PASS; settimo caso FAILED su FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED dopo cleanup logica già osservata (indice16→32, tombstone-1, chunkGET404, gRPC677/579byte). Post-restart non qualificato. Originale fallito e readback parziale conservati;456 membri/455 checksum/26 sorgenti verificati.

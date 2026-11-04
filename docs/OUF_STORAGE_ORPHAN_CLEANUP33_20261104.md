@@ -1,6 +1,19 @@
 # OUF — generazione33: cleanup logica del chunk orfano
 
-Stato: **100 test locali PASS; qualifica nativa corretta PENDING**. Checkpoint precedente `bf040e975ac0ea8060f6d2450205eb7b3b460da3`. Stessa immagine/coorte33; sette scenari distinti, con le sei regressioni conservate.
+Stato: **100 test locali/hosted e sette scenari nativi PASS**. Run [41824890871](https://github.com/GioNob/ouf-deploy/actions/runs/41824890871), job126557006058, producer `01431f652f75c737d18534708ca0e7f17535814b`. Checkpoint precedente `bf040e975ac0ea8060f6d2450205eb7b3b460da3`. Stessa immagine/coorte33; sette scenari distinti, con le sei regressioni conservate.
+
+## Esito nativo e readback originale
+
+- Chunk esatto `3,0497ea242b`, payload4194304byte/SHA256 `ab00f0a9983617f0f0556df4a93789539f94111e18f7ea04c3739a4492a303dd`, identificato in `ouf-identity-fixture_3.dat` offset28; needle offset8/size4194316. **GET diretto200 con corpo completo prima dell'abort**. Unico PUT incompleto4259841/8388865byte, nessuna risposta/ACK letta, log server connection reset dopo65537byte del secondo chunk.
+- Al primo probe dopo abort, indice **16→32byte**: record positivo originale conservato e tombstone size-1 all'offset4194360. **GET diretto404** sullo stesso fileId dopo cleanup, dopo riavvio e dopo probe rete. Indice completo osservato con stessi hash/record dopo riavvio e probe. Contatori gRPC S3 **0→677** e volume **0→579 byte TCP** prima del crash; zero DELETE e retry mutativi del controller. Il gateway effettua la cleanup automaticamente; nessun errore deleteOrphanedChunks nel log di questo caso.
+- **GET404/NoSuchKey, HEAD404 vuoto e LIST baseline-only** via S3 in tutte e tre le fasi. Quattro SIGKILL137/non-OOM precedono ogni sostituto; vecchi namespace mantenuti durante il confronto, quattro nuovi namespace/gate, tutti i pin rilasciati prima di ogni exec. Baseline8388865byte integra al primo recupero senza nuovi PUT, topologia/metadati invariati al primo probe.
+- Inventari fermo/gate identici: master4file/1335byte, filer40/5268, volume7.dat/12583448. I byte .dat aumentano di32 per la tombstone e non vengono compattati: **cancellazione logica provata, recupero fisico dello spazio non qualificato**. Hash dei prefissi .dat conservati dopo restart. Contatori baseline nuovi filer0→1953 e volume0→8397434 byte TCP; non sono misure di payload esatto/prestazioni/RTO.
+- Settimo caso: **11 link ammessi/36 dinieghi**; sei regressioni:10/37 ciascuna, compreso il caso che mantiene bloccata la cleanup. other_denied zero durante i probe. **50 container distinti,35 arresti finali puliti,15 SIGKILL intenzionali, sette reti rimosse**. Vecchi namespace mantenuti e pin rilasciati anche in tutte le regressioni con crash.
+- Artifact13318842839 originale: **518542byte**, SHA256 `e6838878d7428ac07586d671d88881ef4adab9c57c40f542f83363f9741a7761`. **518 membri/517 checksum/26 sorgenti** verificati localmente, insieme a stati/timestamp/mount/namespace/pin, policy/counter, indici osservati, HTTP/hash/TLS e parità baseline. Nessuna chiave privata. Firma publisher coorte verificata hosted; nessuna verifica crittografica locale aggiuntiva dichiarata.
+
+[Archivio originale riuscito](../evidence/artifacts/storage-orphan-cleanup33-41824890871.zip), [receipt di readback](../evidence/storage-orphan-cleanup33-readback-20261104.json). Le osservazioni degli indici sono metadati/hash prodotti e verificati sul runner; i corpi .idx/.dat/DB non sono esportati per una seconda analisi nativa locale. Il run fallito resta conservato separatamente sotto.
+
+Prossimo singolo passo: qualificare la compattazione del volume della fixture per recuperare lo spazio del chunk tombstoned, verificando baseline, indice e assenza prima/dopo. Nessuna operazione target.
 
 ## Prima esecuzione conservata e correzione della fixture
 
