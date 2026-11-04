@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — restart dopo compattazione33 in qualifica
+
+- Nono caso: compattazione conclusa, poi secondo SIGKILL congiunto dei quattro servizi e nuova generazione dietro gate/firewall. Directory/config/IP conservati, namespace precedenti trattenuti fino al confronto; nessun reseed o secondo vacuum. DAT/IDX/hash/blocchi allocati esattamente identici al post-compaction, baseline/metadati/topologia/registrazioni/assenza verificati e nuova matrice rete.
+- 122 test locali e YAML/shell PASS; qualifica nativa PENDING. Dossier docs/OUF_STORAGE_COMPACTION_RESTART33_20261104.md. Non power loss, crash durante compattazione o nuova autorità target.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. MinIO e confini esistenti preservati.
+
 ## Checkpoint storage 2026-11-04 — compattazione33 e recupero allocazione PASS
 
 - Run [41837272317](https://github.com/GioNob/ouf-deploy/actions/runs/41837272317), producer `b07df7eceda9036aa53ba1b328ca9d1a3e6fcb60`:114 test e otto scenari nativi PASS. Un solo vacuum locked sul volume7/chunk7,042adb8fbb, nessun retry: DAT12583448→8389064byte e allocazione12611584→8417280, recuperati4194304byte allocati. Indice selezionato32→0, payload/tombstone rimossi; chunk404 e S3 assente, baseline8388865byte/metadati invariati.

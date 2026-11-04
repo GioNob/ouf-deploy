@@ -393,8 +393,9 @@ def pin_network_namespace(pid, path, expected, command):
     return {'namespace':expected,'sourcePid':int(pid),'bindMountVerified':True}
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False):
-    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False, crash_master=False, crash_all=False, interrupt_stream=False, cleanup_stream=False, compact_stream=False, restart_compact=False):
+    require(sum((crash_volume, crash_filer, crash_master, crash_all, interrupt_stream, cleanup_stream, compact_stream, restart_compact)) <= 1, 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    compact_stream = compact_stream or restart_compact
     cleanup_stream = cleanup_stream or compact_stream
     interrupt_stream = interrupt_stream or cleanup_stream
     crash_all = crash_all or interrupt_stream
@@ -430,7 +431,7 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
         # Trusted internal API, reached only from the already allowed S3 namespace.
         value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
         save(output, value); return value
-    cleanup_evidence = {}; cleanup_chunk = None; compaction_evidence = {}
+    cleanup_evidence = {}; cleanup_chunk = None; compaction_evidence = {}; post_evidence = {}
     def chunk_index(output):
         value = json.loads(cold.command(['sudo', '-n', sys.executable, '-I', '-B', '-S',
             str(Path(__file__).resolve()), 'chunk-index', str(data / 'volume'), str(evidence / 'cleanup-chunk.json')]))
@@ -804,6 +805,146 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             save(role + '-rules-after', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
         save('network', json.loads(cold.command(['docker', 'network', 'inspect', network])))
         require(json.loads(cold.command(['docker', 'network', 'inspect', network]))[0]['Internal'] is True, 'INTERNAL_NETWORK_REQUIRED')
+        if restart_compact:
+            # A second independent service generation, strictly after completed vacuum.
+            post_before = final_compact_roles
+            post_old_ns = {r:cold.command(['sudo','-n','readlink','/proc/'+pids[r]+'/ns/net']) for r in ROLES}
+            save('post-compaction-before-crash', post_before)
+            save('post-compaction-old-namespaces', post_old_ns)
+            post_topology_before = json.loads(ns('master', [sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
+                'topology',str(evidence/'compaction-metadata-after.json')]))
+            require(post_topology_before['status']=='MASTER_TOPOLOGY_READY', 'POST_COMPACTION_BASELINE_TOPOLOGY_REQUIRED')
+            save('post-compaction-topology-before', post_topology_before)
+            post_old_names = {r:post_before[r]['Name'].lstrip('/') for r in SERVICES}
+            post_pins = {}
+            for role in SERVICES:
+                pin = work / ('post-compaction-'+role+'.netns')
+                post_pins[role] = pin_network_namespace(pids[role],pin,post_old_ns[role],cold.command)
+                namespace_pins.append(pin)
+            save('post-compaction-retained-namespaces', post_pins)
+            cold.command(['docker','kill','--signal','KILL',*post_old_names.values()])
+            post_killed = dict(zip(SERVICES,json.loads(cold.command(['docker','inspect',*post_old_names.values()]))))
+            validate_all_killed(post_before,post_killed); save('post-compaction-killed',post_killed)
+            for role,name in post_old_names.items():
+                logs = subprocess.run(['docker','logs',name],check=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=30)
+                (evidence/(name+'.log')).write_bytes(logs.stdout)
+            post_storage = {r:json.loads(cold.command(args)) for r,args in inventory_commands.items()}
+            save('post-compaction-stopped-storage',post_storage)
+            for name in post_old_names.values():
+                cold.command(['docker','rm',name]);lab.names.remove(name)
+            post_gates = {};post_names = {};post_ns = {}
+            for i,role in enumerate(SERVICES):
+                gate = data/('gate-'+role+'-post-compaction');gate.mkdir();post_gates[role]=gate
+                name = prefix+'-'+role+'-post-compaction';post_names[role]=name
+                cold.command(container_argv(cold.IMAGE_ID,name,network,data,config,gate_binary,role,gate))
+                lab.names.insert(i,name)
+                new = json.loads(cold.command(['docker','inspect',name]))[0];pids[role]=str(new['State']['Pid'])
+                post_ns[role]=cold.command(['sudo','-n','readlink','/proc/'+pids[role]+'/ns/net'])
+                mounts={m['Destination']:m for m in new['Mounts']}
+                require(new['Image']==cold.IMAGE_ID and new['Config']['User']=='65532:65532'
+                    and new['HostConfig']['CapDrop']==['ALL'] and new['HostConfig']['ReadonlyRootfs']
+                    and not new['HostConfig']['PortBindings'] and new['HostConfig']['NetworkMode']==network
+                    and mounts['/data']['Source']==str(data/role)
+                    and mounts['/gate']['Source']==str(gate) and not mounts['/gate']['RW']
+                    and mounts['/config']['Source']==str(config) and not mounts['/config']['RW']
+                    and not mounts['/network-gate']['RW']
+                    and new['NetworkSettings']['Networks'][network]['IPAddress']==IPS[role], 'POST_COMPACTION_RETAINED_ROOT_AND_BOUNDARIES_REQUIRED')
+                ns(role,['nft','-f',str(evidence/(role+'-rules.nft'))])
+                save('post-compaction-'+role+'-rules-before',json.loads(ns(role,['nft','-j','list','table','inet','ouf_roles'])))
+                require('NETWORK_GATE_RELEASED' not in cold.command(['docker','logs',name]), 'POST_COMPACTION_GATE_MUST_WAIT')
+                closed=[probe(role,'127.0.0.1',port) for port in PORTS[role]]
+                require(all(not x['connected'] and x['errno']==errno.ECONNREFUSED for x in closed),'POST_COMPACTION_LISTENERS_CLOSED_REQUIRED')
+                save('post-compaction-'+role+'-closed-listeners',closed)
+            validate_replacement_namespaces(post_old_ns,post_ns,host_ns)
+            save('post-compaction-new-namespaces',post_ns)
+            for pin in list(namespace_pins):
+                cold.command(['sudo','-n','umount',str(pin)]);namespace_pins.remove(pin)
+            save('post-compaction-released-namespaces',{'allReleased':True,'beforeAnyReplacementExec':True})
+            post_gated=dict(zip(ROLES,json.loads(cold.command(['docker','inspect',*lab.names]))))
+            validate_retained_roles(post_before,post_gated,'all');save('post-compaction-gated-roles',post_gated)
+            gated_storage={r:json.loads(cold.command(args)) for r,args in inventory_commands.items()}
+            require(gated_storage==post_storage,'POST_COMPACTION_STOPPED_STORAGE_UNCHANGED_REQUIRED')
+            save('post-compaction-gated-storage',gated_storage)
+            compact.validate_restart(compact_after,compact_snapshot('post-compaction-gated-dat'))
+            release_replacement_gates(post_gates)
+            for role in SERVICES:
+                ready=[]
+                for port in PORTS[role]:
+                    for attempt in range(1,61):
+                        if probe(role,'127.0.0.1',port)['connected']:break
+                        require(attempt<60,'POST_COMPACTION_LISTENER_BUDGET');time.sleep(1)
+                    ready.append({'port':port,'attempts':attempt})
+                save('post-compaction-'+role+'-live-listeners',ready)
+            deadline=time.monotonic()+120
+            for post_attempt in range(1,11):
+                topology=json.loads(ns('master',[sys.executable,'-I','-B','-S',str(Path(__file__).resolve()),
+                    'topology',str(evidence/'compaction-metadata-after.json')],timeout=45))
+                log=subprocess.run(['docker','logs',post_names['master']],check=True,stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,text=True,timeout=10).stdout
+                registered=master_registration_log(log)
+                save('post-compaction-topology-attempt-'+str(post_attempt),topology)
+                save('post-compaction-registration-attempt-'+str(post_attempt),{'filerAndS3Registered':registered})
+                if topology['status']=='MASTER_TOPOLOGY_READY' and registered:break
+                require(post_attempt<10,'POST_COMPACTION_REGISTRATION_BUDGET')
+                delay=master_retry_delay(post_attempt,topology.get('retryAfterSeconds',0),time.monotonic(),deadline)
+                save('post-compaction-wait-'+str(post_attempt),{'delaySeconds':delay,'mutatingRequests':0});time.sleep(delay)
+            require(time.monotonic()<=deadline,'POST_COMPACTION_REGISTRATION_TIME_BUDGET')
+            validate_master_recovery(post_topology_before,topology);save('post-compaction-topology-recovered',topology)
+            (evidence/'post-compaction-registration.log').write_text(log)
+            filer_before=counter_value('filer','filer_http_response_bytes')['bytes']
+            require(metadata('post-compaction-metadata')==compact_metadata,'POST_COMPACTION_METADATA_PERSISTENCE_REQUIRED')
+            filer_after=counter_value('filer','filer_http_response_bytes')['bytes']
+            require(filer_after>filer_before,'POST_COMPACTION_REAL_FILER_RESPONSE_REQUIRED')
+            volume_before=counter_value('volume','volume_http_response_bytes')['bytes']
+            for read_attempt in range(1,7):
+                post_read=s3('read-volume','post-compaction-recovery-read-'+str(read_attempt))
+                if post_read.get('status')!='TRANSIENT_READ_FAILURE':break
+                require(read_attempt<6,'POST_COMPACTION_READ_BUDGET')
+                delay=master_retry_delay(read_attempt,0,time.monotonic(),deadline)
+                save('post-compaction-read-wait-'+str(read_attempt),{'delaySeconds':delay,'mutatingRequests':0});time.sleep(delay)
+            require(post_read==compact_read,'POST_COMPACTION_BASELINE_PERSISTENCE_REQUIRED')
+            volume_after=counter_value('volume','volume_http_response_bytes')['bytes']
+            require(volume_after-volume_before>=VOLUME_BYTES,'POST_COMPACTION_REAL_VOLUME_RESPONSE_REQUIRED')
+            chunk_read('absent','post-compaction-chunk-absent')
+            s3('absent-interrupted','post-compaction-s3-absence')
+            compact.validate_restart(compact_after,compact_snapshot('post-compaction-recovered-dat'))
+            post_probes=[]
+            for src,dst,port,allowed in matrix(True):
+                name=f'deny_{dst}_{port}';prior=None if allowed else counter(src,name)
+                result=probe(src,IPS[dst],port);count=None if allowed else counter(src,name)
+                require(result['connected'] if allowed else not result['connected'] and result['errno'] is not None and count>prior,
+                        'POST_COMPACTION_ROLE_POLICY_REQUIRED')
+                post_probes.append({'source':src,'destination':dst,'port':port,'allowed':allowed,
+                    'counterBefore':prior,'counterAfter':count,**result})
+            save('post-compaction-role-probes',post_probes)
+            post_dns=[]
+            for role in ROLES:
+                for proto,ip,port,name in [('tcp','127.0.0.11',53,'dns_tcp'),('udp','127.0.0.11',53,'dns_udp'),('tcp',GATEWAY,443,'egress_tcp')]:
+                    prior=counter(role,name);result=probe(role,ip,port,proto);count=counter(role,name)
+                    require(not result['connected'] and result['errno'] is not None and count>prior,'POST_COMPACTION_EGRESS_DENIAL_REQUIRED')
+                    post_dns.append({'role':role,'protocol':proto,'ip':ip,'port':port,'counterBefore':prior,'counterAfter':count,**result})
+                save('post-compaction-'+role+'-rules-after',json.loads(ns(role,['nft','-j','list','table','inet','ouf_roles'])))
+            save('post-compaction-dns-host-probes',post_dns)
+            require(s3('read-volume','post-compaction-final-read')==compact_read,'POST_COMPACTION_FINAL_BASELINE_REQUIRED')
+            s3('absent-interrupted','post-compaction-final-absence');chunk_read('absent','post-compaction-final-chunk')
+            compact.validate_restart(compact_after,compact_snapshot('post-compaction-final-dat'))
+            post_final=dict(zip(ROLES,json.loads(cold.command(['docker','inspect',*lab.names]))))
+            validate_retained_roles(post_before,post_final,'all')
+            require(all(post_final[r]['Id']==post_gated[r]['Id'] and post_final[r]['RestartCount']==0 for r in ROLES),
+                    'POST_COMPACTION_NO_EXTRA_RESTART_REQUIRED')
+            save('post-compaction-final-roles',post_final)
+            save('post-compaction-network',json.loads(cold.command(['docker','network','inspect',network])))
+            post_evidence={'signal':'SIGKILL','exitCode':137,'oomKilled':False,'applicationProcessesReplaced':4,
+                'oldContainerIds':{r:x['Id'] for r,x in post_killed.items()},'newContainerIds':{r:post_final[r]['Id'] for r in SERVICES},
+                'allServicesStoppedBeforeReplacement':True,'allRulesBeforeAnyRestartExec':True,'clientUnchanged':True,
+                'stoppedStorageUnchangedBeforeExec':True,'exactDatAndIndexSnapshotsPreserved':True,'allocatedDatBlocksPreserved':True,
+                'orphanPayloadAndIndexRemainAbsent':True,'baselineS3Parity':True,'directMetadataIdentical':True,
+                'directChunk404':True,'s3ObjectAbsent':True,'topologyAndRegistrationRecovered':True,
+                'volumeResponseBytesBefore':volume_before,'volumeResponseBytesAfter':volume_after,
+                'filerResponseBytesBefore':filer_before,'filerResponseBytesAfter':filer_after,
+                'topologyReadAttempts':post_attempt,'recoveryReadAttempts':read_attempt,'recoveryPutRequests':0,
+                'additionalVacuumCommands':0,'mutatingRetries':0,'powerLossQualified':False,'compactionCrashQualified':False}
+            save('post-compaction-recovery',post_evidence)
         lab.stop(); cold.command(['docker', 'network', 'rm', network]); created_network = False
         report = {'schema': 'ouf.storage-generation33-lateral-isolation.v1', 'status': 'SYNTHETIC_ROLE_NETWORK_ISOLATION_PASS',
             'candidateLockSha256': LOCK_SHA, 'cohortReceiptSha256': COHORT_SHA,
@@ -816,11 +957,12 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=
             'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
             'masterCrashInjected': crash_master, 'masterCrashEvidence': crash_evidence if crash_master else {},
             'allCrashInjected': crash_all, 'allCrashEvidence': crash_evidence if crash_all else {},
+            'postCompactionRestartQualified': restart_compact, 'postCompactionRestartEvidence': post_evidence,
             'compactionQualified': compact_stream, 'compactionEvidence': compaction_evidence,
             'orphanLogicalCleanupQualified': cleanup_stream, 'orphanCleanupEvidence': cleanup_evidence,
             'streamInterruptionInjected': interrupt_stream, 'streamInterruptionEvidence': stream_evidence,
-            'totalDistinctContainerCount': 9 if crash_all else 6 if crash_role else 5,
-            'forcedContainerDeaths': 4 if crash_all else 1 if crash_role else 0,
+            'totalDistinctContainerCount': 13 if restart_compact else 9 if crash_all else 6 if crash_role else 5,
+            'forcedContainerDeaths': 8 if restart_compact else 4 if crash_all else 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
             'networkRemoved': True, 'retainedNamespacePinsReleased': not namespace_pins, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
             'releaseAdmitted': False, 'runtimeAuthorityIssued': False, 'productionTopologyQualified': False,
@@ -850,7 +992,7 @@ def main():
     crash = runner.add_mutually_exclusive_group()
     crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
     crash.add_argument('--crash-master', action='store_true'); crash.add_argument('--crash-all', action='store_true')
-    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true')
+    crash.add_argument('--interrupt-stream', action='store_true'); crash.add_argument('--cleanup-stream', action='store_true'); crash.add_argument('--compact-stream', action='store_true'); crash.add_argument('--restart-compact', action='store_true')
     comp = sub.add_parser('compaction-snapshot'); comp.add_argument('root', type=Path); comp.add_argument('chunk', type=Path); comp.add_argument('pid')
     identify = sub.add_parser('chunk-identify'); identify.add_argument('root', type=Path); identify.add_argument('observation', type=Path)
     index = sub.add_parser('chunk-index'); index.add_argument('root', type=Path); index.add_argument('chunk', type=Path)
@@ -865,7 +1007,7 @@ def main():
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume', 'absent-interrupted')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer, crash_master=args.crash_master, crash_all=args.crash_all, interrupt_stream=args.interrupt_stream, cleanup_stream=args.cleanup_stream, compact_stream=args.compact_stream, restart_compact=args.restart_compact)
     elif args.operation == 'compaction-snapshot': print(json.dumps(compact.snapshot(args.root, json.loads(args.chunk.read_bytes()), args.pid)))
     elif args.operation == 'chunk-identify': print(json.dumps(cleanup.identify(args.root, json.loads(args.observation.read_bytes()))))
     elif args.operation == 'chunk-index': print(json.dumps(cleanup.index_state(args.root, json.loads(args.chunk.read_bytes()))))

@@ -86,3 +86,14 @@ def validate(before,after,chunk):
             'allLiveNeedlesPreserved':True,'unselectedVolumesUnchanged':True,'orphanPayloadAbsentFromDat':True,
             'orphanIndexEntryRemoved':True,'noTemporaryOrOpenDeletedFiles':True,'vacuumCommands':1,'mutatingRetries':0,
             'postCompactionRestartQualified':False,'compactionCrashQualified':False,'secureErasureQualified':False}
+
+
+def validate_restart(before,after):
+    """Exact compacted storage and allocation must survive a fresh service generation."""
+    require(isinstance(after.get('volumePid'),int) and after['volumePid']>0,'LIVE_RESTART_VOLUME_PID_REQUIRED')
+    for state in (before,after):
+        require(not state['orphanPayloadFiles'] and not state['temporaryCompactionFiles']
+                and not state['openDeletedFixtureFiles'],'NO_POST_COMPACTION_ORPHAN_OR_LEFTOVERS')
+    require({k:v for k,v in before.items() if k!='volumePid'}=={k:v for k,v in after.items() if k!='volumePid'},
+            'EXACT_COMPACTED_STORAGE_AND_ALLOCATION_MUST_SURVIVE')
+    # Container/namespace replacement is verified independently, never inferred from PID reuse.
