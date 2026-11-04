@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-04 — crash precommit compattazione33 in qualifica
+
+- Ripresa da handoff676f6268; undicesimo scenario con OCI33 invariata e solo opzione nativa compactionMBps=1. Osservatore PID/start/cgroup/binario, SIGSTOP e tutti i thread fermi; .cpd con dati, .cpc assente, DAT/IDX/hash/inode invariati prima del singolo crash congiunto. Fase mancata = UNQUALIFIED, nessun reinvio vacuum.
+- Temporanei originali e stati frozen/stopped/gated conservati prima della ripresa; rollback richiede vecchia coppia, witness/offset, baseline S3/metadati, assenza logica orfano e confini rete. Dieci scenari precedenti conservati. Binding dei sorgenti di compattazione contro tutte33patch; nessuna build strumentata.
+- 12 nuovi test locali e parsing Python/YAML PASS; suite Linux e qualifica nativa PENDING. Limiti ambiente Windows documentati. Dossier docs/OUF_STORAGE_COMPACTION_CRASH33_20261104.md. Post-marker/inter-rename/power-loss/RPO/RTO OPEN.
+- MiniPET invariato18,3/46=39,78%, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; prove precedenti e MinIO preservati.
+
 ## Checkpoint storage 2026-11-04 — rilocazione needle valido33 e persistenza PASS
 
 - Run [41845769045](https://github.com/GioNob/ouf-deploy/actions/runs/41845769045), producer `28c4890956dc74813dd3642042575799fa4d3a8b`:134 test e dieci scenari PASS. Witness nativo1,0100000000002133aabbcc/1048593byte aggiunto con un POST201 dopo tombstone, ID assente e prefissi DAT/IDX integri. Nessun retry, assegnazione master o nuovo oggetto S3.
@@ -461,4 +468,5 @@
 - MiniPET circa 35% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. MinIO attivo.
 - Scope17/52 Engine GET, Teatri/M1 8/8 tecniche e 6/6 funzionali, Farmacie 61/10 OPEN/STRING invariati.
 - Zero operazioni target, replay/reset/grant, release, merge, deploy o autorità runtime.
+
 
