@@ -37,7 +37,7 @@ jobs:
           set -euo pipefail
           mkdir "$RUNNER_TEMP/precommit-readback"
           python3 -I -B -S - <<'PY'
-          import hashlib,json,os,pathlib,time,urllib.request
+          import hashlib,json,os,pathlib,subprocess,time,urllib.request
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'precommit-readback'
           base='https://api.github.com/repos/GioNob/ouf-deploy'
           headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
@@ -56,8 +56,14 @@ jobs:
           assert len(selected)==1 and not selected[0]['expired']
           a=selected[0];assert 0<a['size_in_bytes']<=32*1024*1024
           (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
-          req=urllib.request.Request(a['archive_download_url'],headers=headers)
-          with urllib.request.urlopen(req,timeout=90) as r:raw=r.read(a['size_in_bytes']+1)
+          # curl drops Authorization on cross-host redirects to signed storage.
+          # Never use --location-trusted: the GitHub token belongs only to GitHub.
+          dest=out/'original-native.zip'
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+              '--proto-redir','=https','--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','90',
+              '--max-filesize',str(a['size_in_bytes']),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+              '-H','Accept: application/vnd.github+json',a['archive_download_url'],'--output',str(dest)],check=True)
+          raw=dest.read_bytes()
           assert len(raw)==a['size_in_bytes'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==a['digest']
           (out/'original-native.zip').write_bytes(raw)
           (out/'original-sha256.txt').write_text(a['digest'].removeprefix('sha256:'))
