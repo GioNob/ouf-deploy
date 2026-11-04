@@ -1,3 +1,11 @@
+## Checkpoint storage 2026-11-04 — SIGKILL filer33 e recupero metadati PASS
+
+- Run [41816733896](https://github.com/GioNob/ouf-deploy/actions/runs/41816733896), producer `3ec6473670168b524ac06ca7015aca2416b837ae`:52 test e percorsi normale/volume/filer PASS. SIGKILL del solo filer137/non-OOM, altri quattro ruoli invariati, stessa radice/IP e nuovo container/namespace/gate; firewall prima dell'exec.
+- 40 file LevelDB2/5272 byte identici tra fermo e avvio bloccato. JSON metadati completo e tre chunk identici tramite GET diretto al filer, contatore0→1951 byte; oggetto8388865 byte recuperato al primo tentativo senza reseed, volume12515→8409733 byte. GET/HEAD/LIST e TLS/hash/MIME coerenti.
+- 37 dinieghi e10 link ammessi per percorso; other_denied zero.17 container distinti,15 arresti puliti e2 SIGKILL intenzionali, tre reti rimosse. Originale verificato158 membri/157 checksum/20 sorgenti. Dossier docs/OUF_STORAGE_FILER_CRASH33_20261104.md; receipt evidence/storage-filer-crash33-readback-20261104.json.
+- Limite: recupero processo LevelDB2 sullo stesso host/page cache, non power loss, perdita disco, HA o RPO/RTO. MiniPET invariato18,3/46, circa40% ±10;0/8 gate,0/21 AT,0/120 oggetti reali. Nessun VPS/merge/deploy/replay/reset/grant; scope17/52 Engine GET, Teatri/M1 e Farmacie preservati.
+- Prossimo singolo passo: SIGKILL master nel laboratorio isolato, ri-registrazione/topologia e lettura dell'oggetto già confermato, altri ruoli conservati, nessun reseed e firewall prima dell'exec.
+
 ## Checkpoint storage 2026-11-04 — SIGKILL filer33 in qualifica
 
 - Estesa la fixture isolata: PUT confermato, GET diretto dei soli metadati, SIGKILL filer137/non-OOM, stessa radice LevelDB2 e nuovo container/namespace/gate con firewall prima dell'exec. Master/volume/S3/client invariati; nessun reseed.

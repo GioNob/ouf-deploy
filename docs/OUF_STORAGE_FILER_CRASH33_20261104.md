@@ -1,8 +1,21 @@
 # OUF — generazione33: SIGKILL filer e recupero metadati
 
-Stato iniziale: **52 test locali PASS; qualifica nativa PENDING**. Estensione della fixture isolata già qualificata per il volume in run41814532710. Stessa OCI33, lock/coorte/binario e confini di rete; nessuna modifica alla candidata SeaweedFS o al target.
+Stato: **52 test locali/hosted e tre percorsi nativi PASS**. Run [41816733896](https://github.com/GioNob/ouf-deploy/actions/runs/41816733896), job126529247006, producer `3ec6473670168b524ac06ca7015aca2416b837ae`. Estensione della fixture isolata già qualificata per il volume in run41814532710. Stessa OCI33, lock/coorte/binario e confini di rete; nessuna modifica alla candidata SeaweedFS o al target.
 
-## Prova richiesta
+## Esito nativo e readback originale
+
+- Filer SIGKILL exit137/non-OOM. Vecchio container `d6a31a477ff9d0308930760d9dc22ece6fa1f14e101cc9388a0f22d1ebec2e93`, nuovo `d396c084baa5b8e35d873f2275aeeee252477787071c0bb42fede5e8f4a384cd`. Namespace nuovo/non host, stessa radice/IP, altro gate; listener18888/28888 entrambi chiusi dopo installazione regole e prima dell'exec. Quattro altri ruoli invariati anche dopo la lettura di recupero.
+- **40 file LevelDB2 /5272 byte**, inventari e hash esattamente identici tra processo fermo e sostituto ancora bloccato. Entrambi i log identificano lo store leveldb2. Nessuna deduzione di uguaglianza dei file dopo apertura/compattazione.
+- GET diretto `?metadata=true` dopo ripresa restituisce **l'intero JSON identico**: path, size, MIME, timestamp, inode, MD5, owner/ACL/ETag/write-id e tre chunk da4194304+4194304+257 byte con gli stessi file ID/offset/hash. Il contatore TCP HTTP del filer ripristinato passa **0→1951 byte** durante tale richiesta, separata dal gateway.
+- GET/HEAD/LIST S3 coerenti al **primo tentativo**, nessun nuovo PUT e nessuna lettura del corpo pre-crash. SHA256 oggetto `25809f4ef8ae5e9ab82c2688effb8da2ae66bb0b320befd55350dcb2cda9569d`,8388865 byte. Contatore risposta HTTP del volume **12515→8409733**, incremento8397218 byte. Questi sono byte TCP con overhead, non dimensione esatta del corpo né metrica prestazionale/RTO.
+- Normale, crash volume e crash filer:10 link ammessi e37 dinieghi per percorso, contatori dedicati in aumento e other_denied zero. Parità S3 dopo i probe; **17 container distinti**,15 arresti finali puliti e2 SIGKILL intenzionali/non-OOM, tre reti rimosse. La regressione volume conserva i prefissi dei sette .dat/8389064 byte e legge al primo tentativo.
+- Archivio GitHub originale artifact13315805136: **169069 byte**, SHA256 `ac19df973977f8a9d81a0bb201b1176d8e3bf5bc0b224fb2c578cb15a0ab48ca`; **158 membri,157 checksum,20 hash sorgenti esatti**. Rilettura locale indipendente di checksum, binding, inspect, namespace, regole/contatori, metadati, inventari, risposte TLS e cleanup PASS. Nessuna chiave privata presente. Verifica firma publisher della coorte eseguita hosted; nessuna verifica crittografica locale aggiuntiva dichiarata.
+
+Originale conservato: [ZIP](../evidence/artifacts/storage-filer-crash33-41816733896.zip). Esito verificatore: [readback JSON](../evidence/storage-filer-crash33-readback-20261104.json). Nessuna seconda esecuzione nativa locale o esportazione dei database/payload viene dichiarata.
+
+Prossimo singolo passo: SIGKILL del master nel laboratorio isolato, verificando ri-registrazione/topologia e lettura dell'oggetto già confermato, altri ruoli conservati, nessun reseed e firewall prima dell'exec. Non equivale a HA o failover produttivo.
+
+## Protocollo eseguito
 
 1. Un solo PUT dell'oggetto deterministico da8 MiB+257 byte, chiave fixture `staging/volume-crash.bin`, con HTTP200. Nessun GET del corpo prima del crash. La chiave è condivisa con il caso volume per mantenere il confronto; le radici dei tre laboratori sono separate.
 2. GET read-only diretto `?metadata=true` dal namespace S3 al filer, su collegamento già consentito. Registrazione dell'intero JSON: percorso, dimensione, MIME, timestamp, attributi estesi e riferimenti chunk. Non passa attraverso cache del gateway e non legge il corpo.
