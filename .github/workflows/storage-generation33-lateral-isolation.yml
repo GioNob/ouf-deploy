@@ -8,6 +8,7 @@ on:
       - scripts/run-storage-generation33-lateral-isolation.py
       - tests/test_storage_lateral_isolation_generation33.py
       - tests/test_storage_volume_crash_generation33.py
+      - tests/test_storage_filer_crash_generation33.py
       - scripts/run-storage-generation33-credential-rotation.py
       - tests/test_storage_credential_rotation_generation33.py
       - tests/fixtures/storage-recovery/network-gate.c
@@ -44,13 +45,15 @@ jobs:
           sha256sum "$RUNNER_TEMP/network-gate" > "$RUNNER_TEMP/network-gate.sha256"
           cc --version > "$RUNNER_TEMP/network-gate-compiler.txt"
 
-      - name: Test volume crash, role policy, launch barrier and credential and TLS boundaries
+      - name: Test filer and volume crashes, role policy, launch barrier and credential and TLS boundaries
         run: |
           set -euo pipefail
           python3 -I -B -S -m unittest discover -s tests -p test_storage_lateral_isolation_generation33.py -v 2>&1 | tee "$RUNNER_TEMP/lateral33-offline-tests.log"
           python3 -I -B -S -m unittest discover -s tests -p test_storage_volume_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
           python3 -I -B -S -m unittest discover -s tests -p test_storage_credential_rotation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
           python3 -I -B -S -m unittest discover -s tests -p test_storage_tls_rotation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_filer_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
 
       - name: Fetch and bind the exact successful generation33 cohort and image
         env:
@@ -114,6 +117,13 @@ jobs:
             "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-volume-crash-lab" \
             "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-volume
 
+      - name: SIGKILL the filer and recover persistent metadata without reseeding
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-filer-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-filer
+
       - name: Preserve bounded public evidence and reject private-key material
         if: always()
         run: |
@@ -131,7 +141,8 @@ jobs:
                   (b'-----BEGIN PRIVATE KEY',b'-----BEGIN RSA PRIVATE KEY',b'-----BEGIN EC PRIVATE KEY')):
                   raise ValueError('PRIVATE_KEY_MUST_NOT_ENTER_EVIDENCE')
               dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
-          for work,destination in ((temp/'lateral33-lab/evidence','lab'),(temp/'lateral33-volume-crash-lab/evidence','crash-lab')):
+          for work,destination in ((temp/'lateral33-lab/evidence','lab'),(temp/'lateral33-volume-crash-lab/evidence','crash-lab'),
+                                   (temp/'lateral33-filer-crash-lab/evidence','filer-crash-lab')):
               if work.is_dir():
                   for source in sorted(work.iterdir()):copy_public(source,out/destination/source.name)
           for name in ('cohort-publisher-verification.json','bound-cohort/cohort-receipt.json','bound-cohort/SHA256SUMS'):
@@ -144,7 +155,7 @@ jobs:
           paths=['scripts/run-storage-generation33-credential-rotation.py','tests/test_storage_credential_rotation_generation33.py',
                  'tests/fixtures/storage-recovery/network-gate.c','scripts/run-storage-generation33-tls-rotation.py','tests/test_storage_tls_rotation_generation33.py',
                  'scripts/run-storage-generation33-lateral-isolation.py','tests/test_storage_lateral_isolation_generation33.py',
-                 'tests/test_storage_volume_crash_generation33.py',
+                 'tests/test_storage_volume_crash_generation33.py','tests/test_storage_filer_crash_generation33.py',
                  '.github/workflows/storage-generation33-lateral-isolation.yml','scripts/run-seaweedfs-452-generation33-labs.py',
                  'scripts/storage-generation33-lab-binding.py','scripts/run-seaweedfs-452-cold-recovery.py',
                  'scripts/run-seaweedfs-452-identity-tls.py','scripts/readback-seaweedfs-452-generation33-image.py',
@@ -158,7 +169,7 @@ jobs:
           cd "$RUNNER_TEMP/lateral33-evidence"
           sha256sum --strict --check SHA256SUMS
 
-      - name: Attest successful native isolation and volume crash evidence
+      - name: Attest successful native isolation and volume and filer crash evidence
         if: success()
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
         with:

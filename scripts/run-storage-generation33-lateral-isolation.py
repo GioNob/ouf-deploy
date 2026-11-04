@@ -40,19 +40,23 @@ def volume_body():
     return keys.hashlib.shake_256(b'OUF OCI33 volume crash fixture v1').digest(VOLUME_BYTES)
 
 
-def validate_killed_volume(before, killed):
+def validate_killed_role(before, killed):
     require(killed['Id'] == before['Id'] and before['State']['Running']
             and not killed['State']['Running'] and killed['State']['ExitCode'] == 137
-            and not killed['State']['OOMKilled'] and not killed['State']['Error'], 'EXACT_VOLUME_SIGKILL_REQUIRED')
+            and not killed['State']['OOMKilled'] and not killed['State']['Error'], 'EXACT_ROLE_SIGKILL_REQUIRED')
 
 
-def validate_retained_roles(before, after):
+validate_killed_volume = validate_killed_role
+
+
+def validate_retained_roles(before, after, replaced='volume'):
+    require(replaced in ('volume', 'filer'), 'BOUNDED_CRASH_ROLE_REQUIRED')
     require(set(before) == set(after) == set(ROLES), 'EXACT_ROLE_SET_REQUIRED')
     for role in ROLES:
         old, new = before[role], after[role]
         require(new['State']['Running'] and not new['State']['OOMKilled'], 'LIVE_ROLES_REQUIRED')
-        if role == 'volume':
-            require(old['Id'] != new['Id'], 'NEW_VOLUME_CONTAINER_REQUIRED')
+        if role == replaced:
+            require(old['Id'] != new['Id'], 'NEW_ROLE_CONTAINER_REQUIRED')
         else:
             require(old['Id'] == new['Id'] and old['State']['StartedAt'] == new['State']['StartedAt']
                     and old['RestartCount'] == new['RestartCount'] == 0, 'OTHER_ROLES_MUST_NOT_RESTART')
@@ -76,6 +80,44 @@ def volume_inventory(root, previous=None):
     return result
 
 
+def filer_inventory(root):
+    """Hash the stopped LevelDB tree; never open it with a database client."""
+    require(root.is_dir() and not root.is_symlink(), 'REGULAR_FILER_ROOT_REQUIRED')
+    paths = sorted(root.rglob('*'))
+    require(0 < len(paths) <= 512 and not any(p.is_symlink() for p in paths), 'BOUNDED_FILER_TREE_REQUIRED')
+    require(all(p.is_dir() or p.is_file() for p in paths), 'REGULAR_FILER_FILES_REQUIRED')
+    files = [p for p in paths if p.is_file()]
+    require(sum(p.stat().st_size for p in files) <= 32 * 1024 * 1024, 'FILER_METADATA_BUDGET')
+    result = {str(p.relative_to(root)): {'bytes': p.stat().st_size, 'sha256': keys.sha(p.read_bytes())} for p in files}
+    require(any(p.name == 'CURRENT' for p in files) and any(p.name.startswith('MANIFEST-') for p in files)
+            and any(p.suffix in ('.log', '.ldb', '.sst') and p.stat().st_size > 0 for p in files),
+            'PERSISTED_LEVELDB_FILES_REQUIRED')
+    return result
+
+
+def validate_filer_metadata(value, bucket):
+    require(value.get('FullPath') == '/buckets/' + bucket + '/' + VOLUME_KEY
+            and value.get('FileSize') == VOLUME_BYTES and value.get('Mime') == keys.MIME
+            and not value.get('Content') and isinstance(value.get('chunks'), list)
+            and 0 < len(value['chunks']) <= 64, 'EXACT_PERSISTED_FILER_METADATA_REQUIRED')
+    require(all(isinstance(c, dict) and c.get('file_id') and isinstance(c.get('size'), int)
+                and c['size'] > 0 for c in value['chunks']), 'PERSISTED_CHUNK_REFERENCES_REQUIRED')
+    require(sum(c['size'] for c in value['chunks']) == VOLUME_BYTES, 'COMPLETE_CHUNK_BYTES_REQUIRED')
+
+
+def filer_metadata():
+    module = keys.tls_rotation.load('filer_metadata_signer', ROOT / 'scripts/run-seaweedfs-452-identity-tls.py')
+    connection = http.client.HTTPConnection(IPS['filer'], 18888, timeout=10)
+    try:
+        path = '/buckets/' + module.BUCKET + '/' + VOLUME_KEY + '?metadata=true'
+        connection.request('GET', path, headers={'Accept': 'application/json'})
+        response = connection.getresponse(); raw = response.read(256 * 1024 + 1)
+        require(response.status == 200 and len(raw) <= 256 * 1024, 'BOUNDED_DIRECT_FILER_METADATA_REQUIRED')
+        value = json.loads(raw); validate_filer_metadata(value, module.BUCKET)
+        return {'status': 200, 'metadata': value, 'mutatingRequests': 0, 'bodyReads': 0}
+    finally: connection.close()
+
+
 def matrix():
     return [(src, dst, port, (src, dst, port) in ALLOW)
             for src in ROLES for dst, ports in PORTS.items() if src != dst for port in ports]
@@ -86,6 +128,7 @@ def nft_rules(role):
     counters = ['dns_tcp', 'dns_udp', 'egress_tcp', 'other_denied'] + [
         f'deny_{dst}_{port}' for src, dst, port, allowed in matrix() if src == role and not allowed]
     if role == 'volume': counters.append('volume_http_response_bytes')
+    if role == 'filer': counters.append('filer_http_response_bytes')
     lines = ['table inet ouf_roles {'] + [f' counter {name} {{ }}' for name in counters]
     # -150 precedes Docker's OUTPUT destination NAT, including embedded DNS.
     lines += [' chain output { type filter hook output priority -150; policy drop;',
@@ -95,6 +138,8 @@ def nft_rules(role):
               ' oifname "lo" accept']
     if role == 'volume':
         lines.append(f' ip daddr {{ {IPS["filer"]}, {IPS["s3"]} }} tcp sport 18080 counter name volume_http_response_bytes')
+    if role == 'filer':
+        lines.append(f' ip daddr {IPS["s3"]} tcp sport 18888 counter name filer_http_response_bytes')
     lines += [' ct state established,related accept']
     for src, dst, port, allowed in matrix():
         if src == role:
@@ -200,7 +245,9 @@ def container_argv(image, name, network, data, config, gate_binary, role, gate_d
                 '--entrypoint', '/network-gate', image, '/gate/open', *args]
 
 
-def run(archive, work, receipt, gate_binary, *, crash_volume=False):
+def run(archive, work, receipt, gate_binary, *, crash_volume=False, crash_filer=False):
+    require(not (crash_volume and crash_filer), 'ONE_CRASH_ROLE_PER_LAB_REQUIRED')
+    crash_role = 'volume' if crash_volume else 'filer' if crash_filer else None
     require(os.environ.get('GITHUB_ACTIONS') == 'true' and os.geteuid() != 0, 'UNPRIVILEGED_ISOLATED_CI_REQUIRED')
     require(not work.exists() and not work.is_symlink(), 'FRESH_WORK_REQUIRED')
     bound = binding(receipt); module = keys.tls_rotation.configure(bound); cold = module.cold
@@ -228,6 +275,10 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
             (evidence / (action + '-stderr.log')).write_text(cold.bounded_diagnostic(error.stderr, 'LATERAL_S3_FAILED')); raise
         save(output or action, result); return result
+    def metadata(output):
+        # Trusted internal API, reached only from the already allowed S3 namespace.
+        value = json.loads(ns('s3', [sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()), 'metadata']))
+        save(output, value); return value
     try:
         save('exact-image', cold.prepare_image(archive, work))
         module.write_json(config / 's3.json', module.fixture_config()); module.certificates(config)
@@ -284,74 +335,98 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False):
             require(time.monotonic() < deadline, 'FILER_RING_READINESS_BUDGET'); time.sleep(1)
         save('ring-ready', {'filer': IPS['filer'] + ':18888', 'mutatingProbes': 0})
         crash_evidence = {}
-        before = s3('seed-volume' if crash_volume else 'seed')
-        if crash_volume:
+        before = s3('seed-volume' if crash_role else 'seed')
+        if crash_role:
+            if crash_filer: metadata_before = metadata('filer-metadata-before')
+            role = crash_role
             by_role = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
-            save('volume-before-crash', by_role)
-            old_name = prefix + '-volume'; old_index = lab.names.index(old_name)
+            save(role + '-before-crash', by_role)
+            old_name = prefix + '-' + role; old_index = lab.names.index(old_name)
             # Intentional SIGKILL only after the sole object PUT returned HTTP200.
             cold.command(['docker', 'kill', '--signal', 'KILL', old_name])
             killed = json.loads(cold.command(['docker', 'inspect', old_name]))[0]
-            save('volume-killed', killed); validate_killed_volume(by_role['volume'], killed)
+            save(role + '-killed', killed); validate_killed_role(by_role[role], killed)
             log = subprocess.run(['docker', 'logs', old_name], check=True, stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, timeout=30)
-            (evidence / 'volume-killed.log').write_bytes(log.stdout)
+            (evidence / (role + '-killed.log')).write_bytes(log.stdout)
             inventory_args = ['sudo', '-n', sys.executable, '-I', '-B', '-S', str(Path(__file__).resolve()),
-                              'inventory', str(data / 'volume')]
-            dat = json.loads(cold.command(inventory_args)); save('volume-stopped-dat', dat)
-            require(sum(item['bytes'] for item in dat.values()) >= VOLUME_BYTES, 'REAL_VOLUME_DATA_REQUIRED')
+                              'inventory' if crash_volume else 'filer-inventory',
+                              str(data / 'volume' if crash_volume else data / 'filer' / 'filerldb2')]
+            persisted = json.loads(cold.command(inventory_args))
+            save(role + '-stopped-storage', persisted)
+            if crash_volume:
+                dat = persisted; save('volume-stopped-dat', dat)
+                require(sum(item['bytes'] for item in dat.values()) >= VOLUME_BYTES, 'REAL_VOLUME_DATA_REQUIRED')
             cold.command(['docker', 'rm', old_name]); lab.names.remove(old_name)
-            gate_dir = data / 'gate-volume-recovered'; gate_dir.mkdir()
-            new_name = prefix + '-volume-recovered'
-            cold.command(container_argv(cold.IMAGE_ID, new_name, network, data, config, gate_binary, 'volume', gate_dir))
+            gate_dir = data / ('gate-' + role + '-recovered'); gate_dir.mkdir()
+            new_name = prefix + '-' + role + '-recovered'
+            cold.command(container_argv(cold.IMAGE_ID, new_name, network, data, config, gate_binary, role, gate_dir))
             lab.names.insert(old_index, new_name)
             recovered = json.loads(cold.command(['docker', 'inspect', new_name]))[0]
-            pids['volume'] = str(recovered['State']['Pid'])
-            inode = cold.command(['sudo', '-n', 'readlink', '/proc/' + pids['volume'] + '/ns/net'])
-            require(inode not in inodes and inode != host_ns, 'FRESH_NONHOST_VOLUME_NAMESPACE_REQUIRED')
-            save('volume-replacement-namespace', {'old': inodes[1], 'new': inode})
+            pids[role] = str(recovered['State']['Pid'])
+            inode = cold.command(['sudo', '-n', 'readlink', '/proc/' + pids[role] + '/ns/net'])
+            require(inode not in inodes and inode != host_ns, 'FRESH_NONHOST_REPLACEMENT_NAMESPACE_REQUIRED')
+            save(role + '-replacement-namespace', {'old': inodes[ROLES.index(role)], 'new': inode})
             current_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
-            validate_retained_roles(by_role, current_roles); save('volume-replacement-gated', current_roles)
+            validate_retained_roles(by_role, current_roles, role); save(role + '-replacement-gated', current_roles)
             mounts = {m['Destination']: m for m in recovered['Mounts']}
             require(recovered['Image'] == cold.IMAGE_ID and recovered['Config']['User'] == '65532:65532'
                     and recovered['HostConfig']['CapDrop'] == ['ALL'] and recovered['HostConfig']['ReadonlyRootfs']
                     and not recovered['HostConfig']['PortBindings'] and recovered['HostConfig']['NetworkMode'] == network
-                    and mounts['/data']['Source'] == str(data / 'volume')
+                    and mounts['/data']['Source'] == str(data / role)
                     and mounts['/gate']['Source'] == str(gate_dir) and not mounts['/gate']['RW']
-                    and recovered['NetworkSettings']['Networks'][network]['IPAddress'] == IPS['volume'],
-                    'SAME_VOLUME_ROOT_WITH_FRESH_GATE_REQUIRED')
-            ns('volume', ['nft', '-f', str(evidence / 'volume-rules.nft')])
-            save('volume-replacement-rules-before', json.loads(ns('volume', ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
+                    and recovered['NetworkSettings']['Networks'][network]['IPAddress'] == IPS[role],
+                    'SAME_ROLE_ROOT_WITH_FRESH_GATE_REQUIRED')
+            ns(role, ['nft', '-f', str(evidence / (role + '-rules.nft'))])
+            save(role + '-replacement-rules-before', json.loads(ns(role, ['nft', '-j', 'list', 'table', 'inet', 'ouf_roles'])))
             require('NETWORK_GATE_RELEASED' not in cold.command(['docker', 'logs', new_name]), 'REPLACEMENT_MUST_WAIT_FOR_RULES')
-            blocked = [probe('volume', '127.0.0.1', port) for port in PORTS['volume']]
-            require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_VOLUME_LISTENER_BEFORE_RELEASE')
-            save('volume-replacement-closed-listeners', blocked)
+            blocked = [probe(role, '127.0.0.1', port) for port in PORTS[role]]
+            require(all(not x['connected'] and x['errno'] == errno.ECONNREFUSED for x in blocked), 'NO_ROLE_LISTENER_BEFORE_RELEASE')
+            save(role + '-replacement-closed-listeners', blocked)
+            if crash_filer:
+                gated_storage = json.loads(cold.command(inventory_args)); save('filer-gated-storage', gated_storage)
+                require(gated_storage == persisted, 'FILER_STORAGE_UNCHANGED_BEFORE_EXEC')
             (gate_dir / 'open').write_text('READY\n')
             readiness = []
-            for port in PORTS['volume']:
+            for port in PORTS[role]:
                 for attempt in range(1, 61):
-                    result = probe('volume', '127.0.0.1', port)
+                    result = probe(role, '127.0.0.1', port)
                     if result['connected']: break
-                    require(attempt < 60, 'RECOVERED_VOLUME_LISTENER_BUDGET'); time.sleep(1)
+                    require(attempt < 60, 'RECOVERED_ROLE_LISTENER_BUDGET'); time.sleep(1)
                 readiness.append({'port': port, 'attempts': attempt})
-            save('volume-replacement-live-listeners', readiness)
+            save(role + '-replacement-live-listeners', readiness)
+            if crash_filer:
+                metadata_bytes_before = counter_value('filer', 'filer_http_response_bytes')['bytes']
+                metadata_after = metadata('filer-metadata-recovered')
+                metadata_bytes_after = counter_value('filer', 'filer_http_response_bytes')['bytes']
+                require(metadata_after == metadata_before, 'PERSISTED_FILER_METADATA_MUST_SURVIVE')
+                require(metadata_bytes_after > metadata_bytes_before, 'NEW_FILER_MUST_SERVE_METADATA')
             bytes_before = counter_value('volume', 'volume_http_response_bytes')['bytes']
             for attempt in range(1, 7):
-                observed = s3('read-volume', 'volume-recovery-read-' + str(attempt))
+                observed = s3('read-volume', role + '-recovery-read-' + str(attempt))
                 if observed.get('status') != 'TRANSIENT_READ_FAILURE': break
-                require(attempt < 6, 'VOLUME_RECOVERY_READ_BUDGET'); time.sleep((1, 2, 4, 8, 15)[attempt - 1])
+                require(attempt < 6, 'ROLE_RECOVERY_READ_BUDGET'); time.sleep((1, 2, 4, 8, 15)[attempt - 1])
             expected = before['acknowledgedObject']
             require(observed['objects'] == {VOLUME_KEY: {k:v for k,v in expected.items() if k != 'key'}}, 'ACKNOWLEDGED_BODY_MUST_SURVIVE')
             bytes_after = counter_value('volume', 'volume_http_response_bytes')['bytes']
             require(bytes_after - bytes_before >= VOLUME_BYTES, 'RECOVERY_MUST_READ_REAL_VOLUME_RESPONSE_BYTES')
-            save('volume-recovered-dat-prefix', json.loads(cold.command(inventory_args + ['--previous', str(evidence / 'volume-stopped-dat.json')])))
-            save('volume-recovered-read', observed)
+            if crash_volume: save('volume-recovered-dat-prefix', json.loads(cold.command(inventory_args + ['--previous', str(evidence / 'volume-stopped-dat.json')])))
+            save(role + '-recovered-read', observed)
             crash_evidence = {'signal': 'SIGKILL', 'exitCode': 137, 'oomKilled': False,
                 'oldContainerId': killed['Id'], 'newContainerId': recovered['Id'],
-                'sameVolumeRoot': True, 'otherRolesUnchanged': True, 'rulesBeforeRestartExec': True,
-                'stoppedDatBytes': sum(x['bytes'] for x in dat.values()), 'datPrefixesPreserved': True,
+                'sameStorageRoot': True, 'otherRolesUnchanged': True, 'rulesBeforeRestartExec': True,
                 'volumeResponseBytesBefore': bytes_before, 'volumeResponseBytesAfter': bytes_after,
                 'recoveryReadAttempts': attempt, 'recoveryPutRequests': 0, 'bodyReadsBeforeCrash': 0}
+            if crash_volume:
+                crash_evidence.update(sameVolumeRoot=True, stoppedDatBytes=sum(x['bytes'] for x in dat.values()),
+                                      datPrefixesPreserved=True)
+            else:
+                crash_evidence.update(sameFilerRoot=True, stoppedMetadataFiles=len(persisted),
+                    stoppedMetadataBytes=sum(x['bytes'] for x in persisted.values()), gatedStorageUnchanged=True,
+                    directMetadataIdentical=True, filerResponseBytesBefore=metadata_bytes_before,
+                    filerResponseBytesAfter=metadata_bytes_after)
+            final_roles = dict(zip(ROLES, json.loads(cold.command(['docker', 'inspect', *lab.names]))))
+            validate_retained_roles(by_role, final_roles, role); save(role + '-recovered-roles', final_roles)
         probes = []
         for src, dst, port, allowed in matrix():
             name = f'deny_{dst}_{port}'
@@ -373,8 +448,8 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False):
                 dns.append({'role': role, 'protocol': proto, 'ip': ip, 'port': port,
                             'counterBefore': prior, 'counterAfter': after, **result})
         save('dns-host-probes', dns)
-        after = s3('read-volume' if crash_volume else 'read')
-        baseline = observed if crash_volume else before
+        after = s3('read-volume' if crash_role else 'read')
+        baseline = observed if crash_role else before
         require({k:v for k,v in baseline.items() if k != 'mutatingRequests'} ==
                 {k:v for k,v in after.items() if k != 'mutatingRequests'}, 'OBJECT_PARITY_REQUIRED')
         for role in ROLES:
@@ -389,8 +464,9 @@ def run(archive, work, receipt, gate_binary, *, crash_volume=False):
             'dnsAndHostDenials': len(dns), 'allDenialsHaveFirewallCounterEvidence': True,
             'rulesInstalledBeforeServiceExec': True, 'unprivilegedServiceContainers': True,
             'successfulObjectPuts': 1, 'bucketCreates': 1, 'mutatingRequestRetries': 0, 'object': after,
-            'volumeCrashInjected': crash_volume, 'volumeCrashEvidence': crash_evidence,
-            'totalDistinctContainerCount': 6 if crash_volume else 5, 'forcedContainerDeaths': 1 if crash_volume else 0,
+            'volumeCrashInjected': crash_volume, 'volumeCrashEvidence': crash_evidence if crash_volume else {},
+            'filerCrashInjected': crash_filer, 'filerCrashEvidence': crash_evidence if crash_filer else {},
+            'totalDistinctContainerCount': 6 if crash_role else 5, 'forcedContainerDeaths': 1 if crash_role else 0,
             'powerLossQualified': False, 'rpoMeasured': False, 'rtoMeasured': False,
             'networkRemoved': True, 'targetOperations': 0, 'gatesClosed': 0, 'acceptanceTestsPassed': 0,
             'releaseAdmitted': False, 'runtimeAuthorityIssued': False, 'productionTopologyQualified': False,
@@ -414,12 +490,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__); sub = parser.add_subparsers(dest='operation', required=True)
     runner = sub.add_parser('run')
     for name in ('archive', 'work', 'receipt', 'gate_binary'): runner.add_argument(name, type=Path)
-    runner.add_argument('--crash-volume', action='store_true')
+    crash = runner.add_mutually_exclusive_group()
+    crash.add_argument('--crash-volume', action='store_true'); crash.add_argument('--crash-filer', action='store_true')
+    sub.add_parser('metadata')
+    filer_inv = sub.add_parser('filer-inventory'); filer_inv.add_argument('root', type=Path)
     inventory = sub.add_parser('inventory'); inventory.add_argument('root', type=Path); inventory.add_argument('--previous', type=Path)
     child = sub.add_parser('client'); child.add_argument('action', choices=('seed', 'read', 'seed-volume', 'read-volume')); child.add_argument('config', type=Path)
     prober = sub.add_parser('probe'); prober.add_argument('ip'); prober.add_argument('port', type=int); prober.add_argument('protocol', choices=('tcp', 'udp'))
     args = parser.parse_args()
-    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume)
+    if args.operation == 'run': run(args.archive.resolve(), args.work.absolute(), args.receipt.resolve(), args.gate_binary.resolve(), crash_volume=args.crash_volume, crash_filer=args.crash_filer)
+    elif args.operation == 'metadata': print(json.dumps(filer_metadata()))
+    elif args.operation == 'filer-inventory': print(json.dumps(filer_inventory(args.root)))
     elif args.operation == 'inventory':
         print(json.dumps(volume_inventory(args.root, json.loads(args.previous.read_bytes()) if args.previous else None)))
     elif args.operation == 'probe': print(json.dumps(socket_probe(args.ip, args.port, args.protocol)))
