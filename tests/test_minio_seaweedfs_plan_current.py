@@ -62,8 +62,8 @@ class CurrentStoragePlanTest(unittest.TestCase):
         result = plan_current.validate_tree(ROOT)
         self.assertEqual(result["status"], "PASS_NOT_ADMITTED")
         self.assertEqual(result["remainingRepositoryDirectSdkV1Importers"], 0)
-        self.assertEqual(result["repositoryPatchCount"], 31)
-        self.assertEqual(result["qualifiedImagePatchCount"], 31)
+        self.assertEqual(result["repositoryPatchCount"], 32)
+        self.assertEqual(result["qualifiedImagePatchCount"], 32)
         self.assertEqual(result["historicalQualifiedImagePatchCount"], 15)
         self.assertEqual(result["generation29MimeRegression"], "PASS_SYNTHETIC_ONLY")
         self.assertEqual(result["hostedSourceClosureRunCount"], 6)
@@ -688,10 +688,10 @@ class QualifiedGeneration31PlanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.helper = plan_current.generation31_helper()
-        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+        cls.plan = plan_current.generation31_view(json.loads((ROOT / plan_current.PLAN_PATH).read_bytes()))
 
-    def test_actual31_is_current_and_old29_qualified_history(self):
-        result = plan_current.validate_tree(ROOT)
+    def test_historical31_and_old29_qualified_history(self):
+        result = self.helper.validate_tree31(ROOT, self.plan, plan_current.validate_generation29_tree)
         self.assertEqual(result['currentGeneration'], 31)
         self.assertEqual(result['historicalGeneration29QualifiedImagePatchCount'], 29)
         self.assertEqual(result['currentBinaryModules'], 234)
@@ -784,6 +784,54 @@ class QualifiedGeneration31PlanTest(unittest.TestCase):
         self.assertEqual(runtime['coldRecovery']['backupBytes'],8417282)
         self.assertEqual(cohort['checks']['mplSourceArchives'],7)
         self.assertEqual(cohort['checks']['modifiedLocalMplFiles'],6)
+
+class QualifiedGeneration32PlanTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.helper = plan_current.generation32_helper()
+        cls.plan = json.loads((ROOT / plan_current.PLAN_PATH).read_bytes())
+
+    def test_exact_hosted_evidence_and_current_view(self):
+        history = self.helper.restore_generation31_plan(self.plan)
+        result = self.helper.validate_tree32(ROOT, self.plan, lambda root, old: {})
+        self.assertEqual(result["currentGeneration"], 32)
+        self.assertEqual(result["currentBinaryModules"], 215)
+        self.assertEqual(result["currentCompiledPackages"], 1533)
+        self.assertEqual(history["currentQualification"]["generation"], 31)
+        self.assertEqual(history["progressEstimate"], self.plan["progressEstimate"])
+        self.assertEqual(self.plan["currentQualification"]["syntheticRuntime"]["backupBytes"], 8417555)
+
+    def test_no_transfer_or_admission_in_current_view(self):
+        for field, value in (("releaseAdmitted", True), ("targetOperations", 1),
+                             ("historicalRuntimeProofTransferred", True)):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(self.plan)
+                changed["currentQualification"][field] = value
+                with self.assertRaisesRegex(ValueError, "GEN32_EXACT_CURRENT_VIEW"):
+                    self.helper.validate_tree32(ROOT, changed, lambda root, old: {})
+
+    def test_history_and_next_prototype_are_immutable(self):
+        changed = copy.deepcopy(self.plan)
+        changed["historicalQualification31"]["releaseAdmitted"] = True
+        with self.assertRaisesRegex(ValueError, "ALL_PRE32_HISTORY"):
+            self.helper.restore_generation31_plan(changed)
+        changed = copy.deepcopy(self.plan)
+        changed["nextGenerationPrototype"]["runtimeProofTransferred"] = True
+        with self.assertRaisesRegex(ValueError, "GEN33_PROTOTYPE_REMAINS_UNQUALIFIED"):
+            self.helper.restore_generation31_plan(changed)
+
+    def test_missing_or_altered_runtime_archive_is_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            runtime = root / self.helper.RUNTIME_ZIP
+            runtime.parent.mkdir(parents=True)
+            with self.assertRaisesRegex(ValueError, "GEN32_REGULAR_FILE"):
+                self.helper.read_bound(root, self.helper.RUNTIME_ZIP, self.helper.RUNTIME_ZIP_SHA)
+            runtime.write_bytes(b"wrong image runtime archive")
+            with self.assertRaisesRegex(ValueError, "GEN32_BOUND_BYTES_CHANGED"):
+                self.helper.read_bound(root, self.helper.RUNTIME_ZIP, self.helper.RUNTIME_ZIP_SHA)
+
 
 if __name__ == "__main__":
     unittest.main()

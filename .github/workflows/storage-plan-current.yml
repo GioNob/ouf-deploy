@@ -32,6 +32,14 @@ on:
       - patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch
       - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
       - scripts/verify-minio-seaweedfs-plan-generation31.py
+      - scripts/verify-minio-seaweedfs-plan-generation32.py
+      - releases/seaweedfs-452-generation32-candidate-lock-20261103.json
+      - releases/seaweedfs-452-generation32-build-manifest-20261103.json
+      - evidence/seaweedfs-452-generation32-image-hosted-20261104.json
+      - evidence/seaweedfs-452-generation32-cohort-hosted-20261104.json
+      - evidence/seaweedfs-generation32-runtime-hosted-20261104.json
+      - evidence/artifacts/seaweedfs-generation32-cohort-41778371999.zip
+      - evidence/artifacts/seaweedfs-generation32-runtime-41778371999.zip
       - scripts/verify-minio-seaweedfs-plan-current.py
       - tests/test_minio_seaweedfs_plan_current.py
       - releases/seaweedfs-452-generation29-candidate-lock-20261103.json
@@ -221,13 +229,22 @@ jobs:
           from pathlib import Path
           plan = json.loads(Path('releases/minio-seaweedfs-plan-20261102.json').read_bytes())
           paths = {'scripts/verify-minio-seaweedfs-plan-generation31.py'}
-          for current in (plan['currentQualification'], plan['historicalQualification29']):
+          for current in (plan['currentQualification'], plan['historicalQualification31'], plan['historicalQualification29']):
               generation = current['generation']
               cohort = json.loads(Path(current['cohortReceipt']).read_bytes())
               runtime = json.loads(Path(current['runtimeReceipt']).read_bytes())
               manifest_path = f'releases/seaweedfs-452-generation{generation}-build-manifest-20261103.json'
               manifest = json.loads(Path(manifest_path).read_bytes())
               paths.update((current['candidateLock'], current['imageReceipt'], current['cohortReceipt'], current['runtimeReceipt'], manifest_path))
+              if generation == 32:
+                  lock = json.loads(Path(current['candidateLock']).read_bytes())
+                  paths.add('scripts/verify-minio-seaweedfs-plan-generation32.py')
+                  paths.update(runtime['sourceHashesVerified'])
+                  paths.update(item['path'] for item in manifest['orderedPatches'])
+                  paths.update((cohort['artifact']['path'], runtime['artifact']['path']))
+                  paths.update(lock[key]['path'] for key in (
+                      'buildEvidenceArtifact', 'independentReadback', 'licenceRebinding', 'mongoV2LegalDelta'))
+                  continue
               jobs = runtime.get('hostedJobMetadata', runtime.get('workflowJobsEvidence'))
               paths.add(jobs['path'])
               paths.update(cohort['retainedRawEvidence'])

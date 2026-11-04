@@ -960,15 +960,32 @@ def generation31_helper():
     spec.loader.exec_module(module)
     return module
 
+def generation32_helper():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('plan_generation32', Path(__file__).with_name('verify-minio-seaweedfs-plan-generation32.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+def generation31_view(plan):
+    if plan['currentQualification'].get('generation') == 32:
+        return generation32_helper().restore_generation31_plan(plan)
+    return plan
+
 def generation29_view(plan):
+    plan = generation31_view(plan)
     if plan['currentQualification'].get('generation') == 31:
         return generation31_helper().restore_generation29_plan(plan)
     return plan
 
 def validate_tree(root: Path) -> dict[str, Any]:
     plan, _ = read_json(root / PLAN_PATH)
+    def validate31(root, history):
+        return generation31_helper().validate_tree31(root, history, validate_generation29_tree)
+    if plan['currentQualification'].get('generation') == 32:
+        return generation32_helper().validate_tree32(root, plan, validate31)
     if plan['currentQualification'].get('generation') == 31:
-        return generation31_helper().validate_tree31(root, plan, validate_generation29_tree)
+        return validate31(root, plan)
     return validate_generation29_tree(root, plan)
 
 
