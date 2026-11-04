@@ -21,3 +21,7 @@ L'osservazione modifica lo scheduling, non memoria/registri/storage/build. Non q
 ### Limite della verifica locale Windows
 
 Il tentativo della suite completa si arresta nel primo modulo di isolamento: compilatore `cc` assente e probe socket con `errno=None` nel sandbox Windows (1 errore e 1 failure su 6 test eseguiti). Non è dichiarato PASS locale completo né vengono allentati i controlli Linux. Log locale conservato; la qualifica richiede tutti i 183 test senza skip sul runner Linux. Parsing YAML del workflow PASS.
+
+## Esecuzione e readback vincolati
+
+Producer `87fc66ca9a2b24fb55e983392f573c0c1f54d96c`, [run 41878669053](https://github.com/GioNob/ouf-deploy/actions/runs/41878669053), job 126745091191, attempt 1. Il readback verifica 40 binding sorgenti, 183 test senza skip, 14 scenari e 70 arresti finali puliti; conferma separata completed/success per il run e il job esatti. Nessuna seconda esecuzione nativa. 46 test puri delle quattro fasi PASS locali, 3 test Linux skipped sul sistema Windows. Il tentativo locale completo fallito è conservato in `evidence/storage-markeronly33-local-suite-attempt-20261104.txt` con percorsi locali oscurati.
