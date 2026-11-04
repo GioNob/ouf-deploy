@@ -1,3 +1,9 @@
+## Checkpoint storage 2026-11-04 — esito irrisolto33 in qualifica
+
+- Due controlli negativi: oggetto assente e contenuto alterato di uguale lunghezza con hash dichiarato apparentemente valido. Si riusa il verificatore common cut; GET/HEAD/LIST effettivi devono impedire la riconciliazione. ACK e intento PENDING conservati, freeze RECONCILE_REQUIRED anche dopo PostgreSQL immediate restart, nessun PUT di recupero o common cut.
+- 54 test locali PASS; CI con tre regressioni positive e due nuovi casi negativi, esito nativo PENDING. Dossier docs/OUF_STORAGE_UNRESOLVED33_20261104.md.
+- MiniPET invariato 18,3/46, circa40% ±10; 0/8 gate, 0/21 AT, 0/120 oggetti reali. Nessuna operazione target.
+
 ## Checkpoint storage 2026-11-04 — perdita risposta PUT33 e riconciliazione PASS
 
 - Run [41807405448](https://github.com/GioNob/ouf-deploy/actions/runs/41807405448), producer `0bd31c7507571f6a0538130805d546ced624292d`: 42 test PASS e tre percorsi nativi normale/crash/risposta persa con restore completo PASS.
