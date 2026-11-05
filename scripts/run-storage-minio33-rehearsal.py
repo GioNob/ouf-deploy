@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Disposable MinIO -> exact OCI33 -> empty MinIO. No target/admission CLI."""
-import argparse, hashlib, importlib.util, json, os, shutil, subprocess, sys
+import argparse, hashlib, importlib.util, json, os, shutil, subprocess, sys, tarfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 MINIO='ghcr.io/datalens-tech/minio@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2'
@@ -39,6 +39,7 @@ def run(work,inputs):
  go=shutil.which('go');env=dict(os.environ,GOTOOLCHAIN='go1.27.3',GOMAXPROCS='2')
  subprocess.run([go,'test','-c','-o',str(binary)],cwd=stage,env=env,check=True,timeout=300)
  subprocess.run([go,'build','-trimpath','-o',str(inventory),'.'],cwd=ROOT/'tools/storage_inventory',env=env,check=True,timeout=300)
+ subprocess.run([go,'build','-trimpath','-o',str(bins/'test2json'),'cmd/test2json'],env=env,check=True,timeout=120)
  command(['trivy','rootfs','--format','json','--output',str(out/'trivy-binaries.json'),'--list-all-pkgs','--scanners','vuln','--severity','UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL','--ignorefile',str(ROOT/'empty.trivyignore-minio33'),str(bins)],300)
  scan=json.loads((out/'trivy-binaries.json').read_text())
  if not scan.get('Results') or any(v.get('Severity','UNKNOWN') in ['CRITICAL','HIGH','UNKNOWN'] for r in scan['Results'] for v in r.get('Vulnerabilities',[]) or []):raise ValueError('BINARY_SECURITY_GATE_HELD')
@@ -82,7 +83,8 @@ def run(work,inputs):
   for case in cases:
    path=out/(case+'.jsonl')
    with path.open('w') as log:
-    result=subprocess.run(net+['setpriv','--reuid',str(os.getuid()),'--regid',str(os.getgid()),'--clear-groups','env',*[k+'='+v for k,v in settings.items()],go,'tool','test2json','-t','-p','ouf/minio33',str(binary),'-test.v','-test.run=^'+case+'$','-test.timeout=5m'],stdout=log,stderr=subprocess.STDOUT,timeout=330)
+    result=subprocess.run(net+['setpriv','--reuid',str(os.getuid()),'--regid',str(os.getgid()),'--clear-groups','env',*[k+'='+v for k,v in settings.items()],str(bins/'test2json'),'-t','-p','ouf/minio33',str(binary),'-test.v','-test.run=^'+case+'$','-test.timeout=5m'],stdout=log,stderr=subprocess.STDOUT,timeout=330)
+   if result.returncode and not path.read_text().startswith('{'):raise ValueError('RUNNER_FAILED:'+case+':'+path.read_text()[-2000:])
    rows=[json.loads(line) for line in path.read_text().splitlines()]
    if result.returncode or any(r.get('Action') in ['fail','skip'] for r in rows) or not any(r.get('Action')=='pass' and r.get('Test')==case for r in rows):raise ValueError('NATIVE_CASE_FAILED:'+case)
    passed += [r['Test'] for r in rows if r.get('Action')=='pass' and 'Test' in r]
@@ -107,6 +109,8 @@ def seal(work,inputs):
  paths=subprocess.check_output(['git','ls-files'],cwd=ROOT,text=True).splitlines()
  sources={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths if p.startswith(('tools/storage_copy/','tools/storage_inventory/','tools/storage_security/','tools/storage_planning/')) or p.startswith('scripts/') and ('storage' in p or 'seaweedfs' in p) or p in ['tests/fixtures/storage-minio33/roundtrip_test.go','.github/workflows/storage-minio33-rehearsal.yml']}
  write(out/'source-sha256.json',sources)
+ with tarfile.open(out/'source-files.tar.gz','w:gz') as archive:
+  for path in sorted(sources):archive.add(ROOT/path,arcname=path,recursive=False)
  (out/'source-commit.txt').write_text(os.environ['GITHUB_SHA']+'\n')
  total=0
  for path in out.iterdir():
