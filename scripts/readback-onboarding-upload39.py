@@ -96,4 +96,4 @@ if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--archive',type=Path,required=True);p.add_argument('--source',type=Path,required=True)
     p.add_argument('--git-tree',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     result=check(a.archive,a.source,a.git_tree);a.output.parent.mkdir(parents=True,exist_ok=True)
-    a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print(json.dumps(result,sort_keys=True))
+    a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n',encoding='utf-8',newline='\n');print(json.dumps(result,sort_keys=True))
