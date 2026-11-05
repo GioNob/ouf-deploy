@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-05 — autorità durevole locale e blocco dopo esito owner incerto
+
+- Due passi completati: provider indipendente `FilePlatformRecoveryAuthority`; qualifica nativa tra JVM separate di restart/revoca/crash. Fonte Onboarding `bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6`, PR54 draft.
+- Store POSIX privato esterno al backup owner/Authorization; guard OS esclusivo stabile, generazione attesa, replay identico senza rinnovo, pubblicazione atomica con fsync. Prima della lease viene persistito `lease.active`; solo commit/rollback noto lo rimuove. Morte processo o UNKNOWN bloccano lettori e publisher anche dopo restart. Nessuna cancellazione automatica o riconciliazione operativa implementata.
+- **80 scenari nativi + 8 API/storage = 88 PASS**, nove nuovi casi; **CI sorgente 8/8 SUCCESS**. Suite generale 445 − 80 skip nativi = 365 PASS, scan immagine e boot riusciti. Readback nativo: 125 membri, 124 checksum, 273 blob Git verificati.
+- Regressione fisica/readback SUCCESS: 39 membri, 38 checksum, 276 sorgenti, 1.695 file backup, 15 alterazioni respinte. Driver fisico sequenziale precedente, non integrazione del nuovo provider. Checkpoint deploy precedente `ee2d208fe5ade40180b522d74360c31ebab276e2`: tutti i 50 workflow SUCCESS.
+- Qualifica same-host/local POSIX, ext4 effettivo; UNKNOWN iniettato e crash processo, non guasto reale DB/rete o power loss. Niente multi-host, rollback dello store esterno, wiring operativo, issuer/grant o nuova ammissione. MinIO/source-lock invariati; MiniPET **18,3/46 = 39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali**.
+- Prossima coppia: osservabilità dello stato non risolto e riconciliazione esito owner; qualifica ripresa governata dopo commit/quiescenza verificati e nuova generazione. Non cancellare latch in base a PID/timeout.
+- Riferimenti: `docs/OUF_STORAGE_DURABLE_LOCAL_AUTHORITY_20261105.md`, `evidence/storage-durable-local-authority-qualified-20261105.json`, `scripts/readback-durable-authority-native-20261105.py`, handoff corrente e archivio `docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_DURABLE_AUTHORITY_20261105.md`.
+
 ## Checkpoint 2026-11-05 — binding piattaforma e rollback logico Authorization
 
 - Fonte Onboarding `a0f6a91488f28ec5213d334764eb11c72585abb6`, PR54 draft. Due passi: adattatore interno della lease di autorità piattaforma; qualifica rollback logico Authorization con JVM/runtime/postmaster invariati.
