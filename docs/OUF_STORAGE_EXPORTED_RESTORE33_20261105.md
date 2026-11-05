@@ -1,6 +1,6 @@
 # Restore33 dai soli backup esportati — 2026-11-05
 
-Stato: **PENDING**, qualifica sintetica separata dal target.
+Stato: **PASS**, recupero sintetico dai soli export qualificato; nessuna admission target.
 
 ## Scopo e sorgente immutabile
 
@@ -31,4 +31,17 @@ Il restore non ricrea una sorgente né un bucket e non risemina oggetti. I3PUT/D
 
 ## Esito hosted
 
-Da completare con commit/run/job, archivio originale del nuovo restore e readback terminale.
+**PASS** al commit `c096897c119f6cfc375d16260ff2ab44a23d52c7`, [run41976132880](https://github.com/GioNob/ouf-deploy/actions/runs/41976132880), attempt1 completed/success. Nativo127075295372 e readback indipendente127076271029 SUCCESS.44test Linux PASS; nessun nuovo tentativo nativo fallito.
+
+Il recupero è avvenuto usando soltanto i tre payload esportati.15directory PostgreSQL vuote ricreate, zero file di stato generati; pg_verifybackup PASS. Tre sonde pg_isready prima di SQL. Medesimo system ID, target, ledger FROZEN, ACK e6eventi; canary=cut distingue il punto nominato dalla fine WAL. Reserve e finish respinti dal fence persistente dopo promotion. S3 avviato dopo il gate DB:2oggetti/77byte, body e metadati identici,3AccessDenied.4container e1clone PostgreSQL arrestati puliti. Tutti gli input originali invariati.
+
+Readback hosted e locale identici:86membri/85checksum/34sorgenti del nuovo archivio; nell'originale annidato213checksum/30sorgenti, tutti1391file/114017011byte dei backup. Il job indipendente controlla l'evidenza; il secondo restore nativo è quello del job principale di questo nuovo run.
+
+| Prova | Artifact | Byte | SHA256 |
+|---|---:|---:|---|
+| Restore originale |13391179599|6128331|`95b8281329907bb4e4e519412db8fe1d59a9209f5f8fe42e64aef5f4ab025b21`|
+| Readback con copia invariata |13391443633|6121194|`274ab26178f7d1fc1b690b66f9c0a6ccf69fec52b57844fa625d46eae51b75df`|
+
+Custodia Actions fino2027-02-03; entrambi contengono l'originale del nuovo restore, che a sua volta contiene il vecchio export13362874826 invariato. Nessuna nuova custodia durevole Git dei ZIP dichiarata. Receipt completa: `evidence/storage-exported-restore33-hosted-readback-20261105.json`; preflight locale e relativo limite documentati separatamente.
+
+La lacuna “restore dai soli export su nuova esecuzione hosted” è chiusa per questa fixture quiescente. Prossimo ambito delimitato: riesaminare i gate MiniPET e mappare i writer applicativi OUF PostgreSQL/S3 e i requisiti di fencing effettivi, senza modifiche al target. RPO/RTO rappresentativi, carico concorrente/power-loss, writer target e admission restano aperti.
