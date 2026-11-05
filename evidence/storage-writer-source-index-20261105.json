@@ -1,0 +1,2423 @@
+{
+  "schema": "ouf.storage-writer-source-index.v1",
+  "date": "2026-11-05",
+  "deployReviewCommit": "8e829f0879d4b5e75f3312676a45f875a0f6acdc",
+  "sourceLock": "releases/m2-current-core-source-lock-20261101.json",
+  "sourceScope": "All src/main/java/**/*.java in the three pinned candidate repositories plus eight selected SQL/admin sources; lexical mutation callsites followed by manual owner review. Not a full call graph or current runtime inventory.",
+  "expectedJavaFiles": {
+    "onboarding": 100,
+    "udp": 88,
+    "ingestion": 60
+  },
+  "expectedDirectMutationCallsites": [
+    {
+      "module": "onboarding",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileDelegatedUploadApi.java",
+      "line": 52
+    },
+    {
+      "module": "onboarding",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileStagingApi.java",
+      "line": 57
+    },
+    {
+      "module": "onboarding",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+      "line": 48
+    },
+    {
+      "module": "udp",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeLifecycleService.java",
+      "line": 18
+    },
+    {
+      "module": "udp",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeLifecycleService.java",
+      "line": 22
+    },
+    {
+      "module": "udp",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeShadowRebuildService.java",
+      "line": 23
+    },
+    {
+      "module": "udp",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+      "line": 17
+    },
+    {
+      "module": "udp",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+      "line": 21
+    }
+  ],
+  "reportedRetainedOnboarding": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "receipt": "evidence/managed-file-owner-v38-update-target-20261028.json",
+    "receiptOrigin": "USER_PASTED_FULL_FINAL_RESULT_AND_EXITS",
+    "receiptDate": "2026-10-28",
+    "independentHostLogRead": false,
+    "currentLiveObservation": false,
+    "equalFiles": [
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+        "gitBlobSha": "b7867a7e4cf17ec85de9b71e7c9a0d157347bcad"
+      },
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileStagingApi.java",
+        "gitBlobSha": "b82c736374526459af92c27b9b4dd9c9fd892872"
+      },
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileDelegatedUploadApi.java",
+        "gitBlobSha": "efba28696207d6d3f34f7fe91081be772b5756d8"
+      },
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileService.java",
+        "gitBlobSha": "f8ee955f070aacbed2f71b80f3b0296d60644168"
+      },
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileProfileWorker.java",
+        "gitBlobSha": "92817c340d9810072c17ab8f448534e51fb5f5ea"
+      },
+      {
+        "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileJobs.java",
+        "gitBlobSha": "10f31716e9246b422ea5d17aced0b5d6b766f1de"
+      }
+    ]
+  },
+  "sourceTreeComplete": true,
+  "currentRuntimeBindingsVerified": false,
+  "allWritersInventoried": false,
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "files": [
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/geopackage/GeoPackageReader.java",
+      "gitBlobSha": "37b3d4184c052ba578b3f315a871b19bc309e852",
+      "sha256": "b2d968f49ce799483d29781ccf55f2e6a02ce1a2aed86f3cc1db8616eb0ead07",
+      "bytes": 8817
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ActivationLoop.java",
+      "gitBlobSha": "e0f17cd64dbc28cac5ad3aa9846181a75c684f48",
+      "sha256": "9170dcb12ebd20ba8c2d96ec8db8ead104f20d62e0c7ee95ee5dff111bac8ccd",
+      "bytes": 1605
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ActivationRepository.java",
+      "gitBlobSha": "176190d007a793fc0b525d9b04358a07ab00f486",
+      "sha256": "5e75839de67cad9c079f04156a4eef767b3108904cac0fa0ee59e366f10b5a13",
+      "bytes": 3862
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/AdapterSpi.java",
+      "gitBlobSha": "5c957df0bc586b6473e93ae0a1d7939ce3926f7d",
+      "sha256": "05e77c47bd0e6045787d8d874d0e2c4e6255c70f319ac2fe2828c9acf1fe4277",
+      "bytes": 1541
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/CanonicalRecordPipeline.java",
+      "gitBlobSha": "e30f574c93f03902b6f00490aad05cef00660ef1",
+      "sha256": "47ce1fd6c2d3b5ce3eb94ae8df6a3460e24e9c2da22fd4352aecf12768d20cc3",
+      "bytes": 20885
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/DurablePipelineRepository.java",
+      "gitBlobSha": "ec525a6798d892f98a0ed1b48f0621b1bde3a713",
+      "sha256": "277962e26139d58ebb78ffdf880ee080d9aa2633875af09c541344116366158c",
+      "bytes": 12686
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExecutionBundle.java",
+      "gitBlobSha": "bc33f36916f6b71249bb69fb09d1b6db33109e57",
+      "sha256": "0a63b6e810b43dd2d3e6de8431d9b5670ea02ddd7f7214bdc5103de2e9e1b3e1",
+      "bytes": 408
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExecutionGatewayClient.java",
+      "gitBlobSha": "6a949f2fe3d88423b7dc1b9b24bd34d88fcbce24",
+      "sha256": "efda58e0b9023ffca5cb2516c2320df8fbaa53f3e17dab21a482773af1fda10e",
+      "bytes": 7670
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExecutionLoop.java",
+      "gitBlobSha": "818ae3ed41ad934a0b4b33d8c5210c578d284504",
+      "sha256": "3a647d805d912e555fcebf59c15b2db4a19f00679895af10a864f616fbda6aac",
+      "bytes": 1155
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExecutionRuntimeConfiguration.java",
+      "gitBlobSha": "db341a092af77266b581cbc1cf1e2a391def9bde",
+      "sha256": "a53069c5d2d7c7be7d54861b8c3e9f6570c8490ee49f8dd6077de1b62e159398",
+      "bytes": 1690
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ExternalAdapterSupport.java",
+      "gitBlobSha": "a2eaf889dd3a16e759428749271d51d6f2e80a7d",
+      "sha256": "e1319ba556d0133e61e81f3853233b44ca6116ea85d7c45472b23f319d66606d",
+      "bytes": 2516
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/FrozenConfigurationProbe.java",
+      "gitBlobSha": "07a3d84127503858025c15f7b85a25dfad288615",
+      "sha256": "2c6790d8e1bc3f89f63ecf63314543cfe1f1278c1f31409813cac36f2e113e87",
+      "bytes": 6875
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/FrozenConfigurationProbeMain.java",
+      "gitBlobSha": "b24530d4af58ff3f71f70173018b3fe68a53b4b1",
+      "sha256": "084c8bc5c3fe02a550ec00cad5b547919cf0d30115f6a7ece413d089bcf2feeb",
+      "bytes": 2007
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/FrozenContractValidator.java",
+      "gitBlobSha": "ab8355e64c29351ba94543fdafefcd7436f65a42",
+      "sha256": "910a76d86b1e5df1a6dba7a822f74532fc7ec1ac37f08a219d74628624b6f19a",
+      "bytes": 6538
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/GatewayJsonAdapter.java",
+      "gitBlobSha": "eaede6264512b49d429530241ed8435b6c9d5ee3",
+      "sha256": "019cd07928d507619cf132454ca6a6b5cd4b3e6f25258337166cd66d346ab296",
+      "bytes": 4072
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/GatewayReadReceiptVerifier.java",
+      "gitBlobSha": "8068ab16641e1b650e4056108606d87c6cd3c2f8",
+      "sha256": "6ebe2d21f0f067d574f5ae6baf094ba2df96095666cf7c62f5281b07d1af4635",
+      "bytes": 6298
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/GatewayWfsAdapter.java",
+      "gitBlobSha": "c9cdaf06f9e492618c7ce8074c2708cc05a28285",
+      "sha256": "8c0b8a0425e200b777cc3bdbdbd7f04998cac301d8bee1d6e03a429f8b36230d",
+      "bytes": 5591
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/HistoricalContractApi.java",
+      "gitBlobSha": "6ca2ef0736fb5f54db65c23c1dff6d59e0a7c484",
+      "sha256": "a4700d2097d5210b1bce280445232be070227dea9099951e5c7df330d6a28fdd",
+      "bytes": 2035
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/HistoricalContractService.java",
+      "gitBlobSha": "e6c21437465d188d8ad2c82540f7ea5f43b87367",
+      "sha256": "44d784cded36d5da8e17ddfe69f37340a6f1da622c75ac6096c7fd0cc8f1b741",
+      "bytes": 5951
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/HttpGatewaySourceClient.java",
+      "gitBlobSha": "28b39a145e4710204446c14c152b477359f3bb06",
+      "sha256": "e2de10e34878213144452ec9f7d1245203d857f750bf3327cab0e0239746df84",
+      "bytes": 6241
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IncidentPublicationBookmarkService.java",
+      "gitBlobSha": "08b4fd20a7b8ceb52a71845f143aae55635cc1f1",
+      "sha256": "951c69d83c03c717bb0ad0fc49fca526ca54d7fa28f612cf19775d72c4f5b093",
+      "bytes": 11594
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IncidentSnapshotService.java",
+      "gitBlobSha": "cc07bd6a81c014616a0b4413390bc6f7a97cc3b5",
+      "sha256": "f5933e059537681c70ffc63faf008baef5484453c1f501112d73afa242fd6521",
+      "bytes": 16330
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionGatewayReadSecurityConfiguration.java",
+      "gitBlobSha": "df1b62c6d5aa9257ee1561f4e79ad12186f3b197",
+      "sha256": "646d5502420d95ab8abadf5549874e88786205ff36ba62f0f12cfc3fc31ce376",
+      "bytes": 6089
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionIamSecurityConfiguration.java",
+      "gitBlobSha": "1f6b760223c1d927d06ea18d86af2bb7a76fa8e1",
+      "sha256": "1e216c96fdb073ade4876dcb7cf66498dde15517e6bd6403d3d13f2e576f624f",
+      "bytes": 10943
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionMetrics.java",
+      "gitBlobSha": "a2b881a9c18b69c9e7d05f105684c6d2c08fa833",
+      "sha256": "c8ea62ab1c86d3a94a6e832d962a6c581913add03a6f97be0ad43c90e0c228be",
+      "bytes": 2451
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionReadinessHealthIndicator.java",
+      "gitBlobSha": "c823ea07b1bee5097686279a018487c3b552fea9",
+      "sha256": "9a069e39151e8d65a351b4454d8f3c074a4f3b68188320be50a1fc48121880be",
+      "bytes": 4843
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionRuntimeApplication.java",
+      "gitBlobSha": "bed040ded78fded82f46adecb8f12464a3533cc7",
+      "sha256": "9c0a0e6191df81c1068d2e7f464c195bb15d7aa3de2f9d0681ea0db0d9e085d7",
+      "bytes": 415
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/IngestionValidateOnlyStartup.java",
+      "gitBlobSha": "366774aeaf014f23180e63f8687aff524b8a29f9",
+      "sha256": "00438cd698aeab2e0896ff59ddc4800e945063fe86607c9a2a3e682ad6153a4a",
+      "bytes": 1269
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ManagedGeoPackageAdapter.java",
+      "gitBlobSha": "ec4db2239144157beb1c61406eedc4ce952faa84",
+      "sha256": "2c2676730fbb40c8b514874fd4d507445b0b1ab07191b2bf267af08691dd764f",
+      "bytes": 4856
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ManagedIdentity.java",
+      "gitBlobSha": "ce6f5f9377db66640e19475116fac07a63c18809",
+      "sha256": "4af1eb6af96e8391b5236bc7c7713b82a35feb4606436820ee2650dd576729cf",
+      "bytes": 1362
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ManagedTabularAdapter.java",
+      "gitBlobSha": "4c9c8e11de152f148d7977734634b356d908c704",
+      "sha256": "b6c47345a4b8921ff5fcff49cacfa93005e31c8b5f880e9b5e20ce5e7e884475",
+      "bytes": 7435
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OnboardingReadinessApi.java",
+      "gitBlobSha": "cc2d8aa7b31868d48dcc04898c0870ca54e19861",
+      "sha256": "55c29573a7c746e815799114654eba912184d3504428a3f5f8162a6db8d9f156",
+      "bytes": 2663
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OnboardingReadinessService.java",
+      "gitBlobSha": "117a634502f30514e3ac9e5757ffe10c6e3236d2",
+      "sha256": "4ca2bb7535b3c39b9b976c21a80aa1241b10ffe512765d306c62c212a0bbb74c",
+      "bytes": 5273
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OnboardingReviewDispatcher.java",
+      "gitBlobSha": "6438cb55fa417f3709162ad0b4ff9bd289e8f7ab",
+      "sha256": "e007ffb594bcc24a9dbb6dd10cf0fa2f26429b2b584dcb2c0b2f0197f17fdf09",
+      "bytes": 1277
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OnboardingReviewRepository.java",
+      "gitBlobSha": "2a3b2f4172ddfa1e08a9a781ac59b274326225b3",
+      "sha256": "48ea038eeba840015013858ace7f1ddc08ebd33d8fbdc576fd5b0293a297756e",
+      "bytes": 2701
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OperationalAwarenessApi.java",
+      "gitBlobSha": "c46fb3b494d055847432a6a1c5aa30648ba63b6f",
+      "sha256": "110865052792ffaf9aefcee50f6d8e529a75f90148162c1c752553f33c837078",
+      "bytes": 8684
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OperationalAwarenessService.java",
+      "gitBlobSha": "90d2ae4abfbb43faa0479d697aa6b12506f5a111",
+      "sha256": "bfebc96175dd41f76706283160ca89a583e4abad29a1f315bfcabca5b50c6950",
+      "bytes": 6151
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OutboxDispatcher.java",
+      "gitBlobSha": "34613b042cebf19b617d1b73be4842cf25b297f9",
+      "sha256": "fc178cfa3637a1e20ec0a9ddfea9a149645f97f439f83964b6cb211ac982315c",
+      "bytes": 1844
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/OwnerAuthorizationErrors.java",
+      "gitBlobSha": "83d980a4c8a8b81757781c47464ab1fef48aced0",
+      "sha256": "90421fec5bf1bc5c1fb6785fce4674d3e1a9ab61a8613a5456083ec250e095f9",
+      "bytes": 422
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ProtectedLogTrustedHumanApi.java",
+      "gitBlobSha": "63e9a4be1a088b223022f2434db2528a2614ed6e",
+      "sha256": "20b2d21d642249ccea4aa176fc143a86ee98a38ddeb8e1dbccab15ed9e2ced3b",
+      "bytes": 3226
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ProtectedOperationalLogService.java",
+      "gitBlobSha": "6d0213aebbfd8e33fa6f499c4026cc9552191407",
+      "sha256": "08b3dabe8512498bb6e16addbf220bd47e7fb8085bdcc2cbdf0b6c617fb87ed9",
+      "bytes": 4441
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/PublicationGatewayClient.java",
+      "gitBlobSha": "8b9be872bf8a06173a98a2134dea690cca2846fa",
+      "sha256": "fcfbe2c945ef789a3c4fdbf92cc1def8314d422a3e63d03f19d8fdb9c15aba1b",
+      "bytes": 9742
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/PublishedActivation.java",
+      "gitBlobSha": "f207077ff7d04d116f81cd3a47240d56d71bc59f",
+      "sha256": "1eaa57b60becdadf594bbbab692752ba9d79b6ec72229622bea2bb4da55647c4",
+      "bytes": 4804
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/PublishedExecutionMapper.java",
+      "gitBlobSha": "5acbbaa4623f3c2c3545b62ececeaa57d80b4e9c",
+      "sha256": "ab2d4e0a8677cb49ed14fb1325e95a9fe5d71b17636a70404538cc53dad7b2f4",
+      "bytes": 4445
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/QuarantineService.java",
+      "gitBlobSha": "7bb24ddb4cc7fba45162d47f055e2b4693a75bf5",
+      "sha256": "5b85dd14b0f1c916a3862d1dfe3dbdcb90d72f5d6da92cb66d308ae29fbd9aa9",
+      "bytes": 13775
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/QuarantineTrustedHumanApi.java",
+      "gitBlobSha": "2df6ada49a76d9a0508f10eba7c2a99da6ed78f2",
+      "sha256": "d6e7ebd4f3c4909f1797a01c7fe69a9eaced5edfba5d7bcead26745816de10b5",
+      "bytes": 4170
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ReplayRepository.java",
+      "gitBlobSha": "9510871e74ac42e4cca00f262cb727ebd6be95ca",
+      "sha256": "67899935b98b8e3fc6f64506ae492f02324a8fda10dc05c17d84a0aec8376f4c",
+      "bytes": 5957
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/ReplayWorker.java",
+      "gitBlobSha": "11a90721bef44f0748ab19792770b2fd73ef46e1",
+      "sha256": "33baff26b703fded7c1ee60766982ad56f2aeecc5ddd5cb0305b22110701409f",
+      "bytes": 1901
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunCoordinator.java",
+      "gitBlobSha": "1a072c49104635115a850982a60bb50da5d0b03e",
+      "sha256": "39a997dd539186e14fdb83d42154a8011b7843e871a0ca0e98ad570d56dc5c8e",
+      "bytes": 2674
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunExecutionRepository.java",
+      "gitBlobSha": "bb557ddecf3ce61ea7b8e109f47182e746ea9f83",
+      "sha256": "1fa627effcfb965056dc78c72fa971dccda5277230854049d44d0cc2c81c2a2b",
+      "bytes": 8939
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunExecutionWorker.java",
+      "gitBlobSha": "ee879f8810458e38231b046c137690d608d009a9",
+      "sha256": "903d3e78fa0654f5b5c6d7e2d3229af8658902710ca8ba90b19878730225b70e",
+      "bytes": 5048
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunLifecycleService.java",
+      "gitBlobSha": "3938245071bb5b4286ebfe05500bf9290a6369e2",
+      "sha256": "6bd2b11b99c059c7b0d5d68b640de5de730aa3d984a93d8fcd7b9e33207b835a",
+      "bytes": 8902
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunLifecycleTrustedHumanApi.java",
+      "gitBlobSha": "88cbe9835f9b3c5a76316fe441758aef7d740867",
+      "sha256": "c46d024b788dc71831da45f7e99102648814855260e4a96ea16ef062202bb89d",
+      "bytes": 2413
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunRecoveryBudget.java",
+      "gitBlobSha": "3f91a1e82fa565b5fa89da20cfa437cd028ed9b4",
+      "sha256": "fe12dd43b0908893dce7447c0dd08a249163f19f2c5bf2677f86808b7581452b",
+      "bytes": 6476
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RunStateRepository.java",
+      "gitBlobSha": "173524de20764bb142be9291c49956ea513f6b77",
+      "sha256": "bc5cecb7d7fa9edcdb51af2067a10c4589d6be904b207c205c9b887527cf2d66",
+      "bytes": 17043
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RuntimeIssueService.java",
+      "gitBlobSha": "ed8eb9653e1f98c24bf791a231a8e26cfd27150f",
+      "sha256": "f96dac506a016758e8d3eccc7de57edcd2c52e139f226a8d4c8bb014924cc5cd",
+      "bytes": 6899
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RuntimeIssueTrustedHumanApi.java",
+      "gitBlobSha": "2e8e39f00a53b513caf255908702ee9d464f42dd",
+      "sha256": "3aeed5812f4aa862a3decb4f0438b8de9989711d8584533c01a3fe1f7369555c",
+      "bytes": 3344
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/RuntimePorts.java",
+      "gitBlobSha": "1f593ae249573b68d6fd084ecf62f589a38fadc8",
+      "sha256": "627f2a079cc67b50b79ac04daa91c6b0dc8be4ef20c199d9a29a2d7ffbdab68c",
+      "bytes": 3266
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/SchemaSurveillanceService.java",
+      "gitBlobSha": "a3e97c9a933bad5c659f5c76e1aa9f275c901a40",
+      "sha256": "687544ecc680306ea5291169f32e9e7bab86a16740152f0a52d320d53d2fca7f",
+      "bytes": 4103
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/java/it/comune/trieste/ouf/ingestion/TrustedAuthorizationContext.java",
+      "gitBlobSha": "ad12e9fd9cb640c3523f72b4e1cc1854ada9b966",
+      "sha256": "5f91765db6c5b51b5ab9764ab576c2d6819f8d044d263942e81150ad8d23d4c5",
+      "bytes": 2119
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/resources/db/migration/V2__durable_ack_and_replay.sql",
+      "gitBlobSha": "0364b1c5d359696424cf148e46d96f4ec5580f8e",
+      "sha256": "5e3b53341e396f7bf4ba937db2c61e96e9fdedac6420eb0de15350457ee6c528",
+      "bytes": 1924
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "path": "src/main/resources/db/migration/V7__execution_worker_and_snapshot.sql",
+      "gitBlobSha": "35fff4384dc503eaeb3bf371b1a710d1fe69219a",
+      "sha256": "48527993d3d8b50d98dc396e6d9b013410cd9db28d35fb76bff14cc23e46f9f2",
+      "bytes": 913
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "scripts/r4a_minio_staging_bootstrap.py",
+      "gitBlobSha": "34cad2173d34966a813378944ed2bc0060fd77fd",
+      "sha256": "5e9910d328967e266b4b15fe83fa28d543f44bc3183914a88bf22f7df96f0a46",
+      "bytes": 11541
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/geopackage/GeoPackageReader.java",
+      "gitBlobSha": "37b3d4184c052ba578b3f315a871b19bc309e852",
+      "sha256": "b2d968f49ce799483d29781ccf55f2e6a02ce1a2aed86f3cc1db8616eb0ead07",
+      "bytes": 8817
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/managed/AccessReader.java",
+      "gitBlobSha": "210e7f0d31df2a144999f0ac92a0e2f454787dfd",
+      "sha256": "585e33a14e5f7d75fdcc8530e207c9cf03eb13474788f687b2f6a7c538b80ca9",
+      "bytes": 5707
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/managed/ShapefileReader.java",
+      "gitBlobSha": "2f51817bfec8ee783166207cf75127f25d0ca787",
+      "sha256": "a2830d3e470a46cc0b835453c1dc1bbd769e184de78fbda9ce1aa3da82de3c6a",
+      "bytes": 7638
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AccessSemanticProposalApi.java",
+      "gitBlobSha": "38c6967d73d41f72cdd84a4402e87af29f6a4437",
+      "sha256": "c52736c574a48d8a610aa69a0fad941bb165108105ebcbe5fc3293c2c1e69442",
+      "bytes": 1249
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminApi.java",
+      "gitBlobSha": "099ae3fad2b10c0fb17cdbc92427b55cff6e9745",
+      "sha256": "f7242aa2ef121ab783d1691bba9f8af80a3e2920e89fae1c8fa2658898b491b9",
+      "bytes": 5243
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminBoundary.java",
+      "gitBlobSha": "9d4a51f51a0ec9656de55e114188be07aaf21b89",
+      "sha256": "2aef3cf67dc8896489d2d4bbdf1bbfd55a6170523622407caceeefcf129d2b55",
+      "bytes": 3335
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationBundleApi.java",
+      "gitBlobSha": "3940ebdcf4ea8e2cd8ee02567c6572d1d9fc13e4",
+      "sha256": "fa9571234bd6093fe98a35a8f0c6fe9e8179e839a6ef3f9564d311b2a991d2f1",
+      "bytes": 2255
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationReviewApi.java",
+      "gitBlobSha": "d7c38f8e878c501cf781796711719339d9a6702e",
+      "sha256": "931680eff08d4febb4a190e3616b4c1dee66be636c96e3cc0559e6140fbf7204",
+      "bytes": 2469
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/CorrelationFilter.java",
+      "gitBlobSha": "dd2520334f122a6723e0f781b2008634849cbb47",
+      "sha256": "aa1ca69d91eecd1b8d2b760ffe546e3221864a543e9ea30cd77bad0a318a8cae",
+      "bytes": 1111
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/DiscoveryApi.java",
+      "gitBlobSha": "a42821cb1fab4f242b117da87468a94cd735d543",
+      "sha256": "54ac1fa6ed1c52a613bbc51f7777a46a55729c63edb3ba66beabd835ff92460d",
+      "bytes": 2880
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IamSecurityConfiguration.java",
+      "gitBlobSha": "95a935768daafc64bb74c50410444e69bbd8d28c",
+      "sha256": "3ac07c949c80f6de21308f5df01b5fcdca732f98876c648e9595531aa3e89813",
+      "bytes": 11500
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IngestionCompatibilityApi.java",
+      "gitBlobSha": "aa925779a3a41b7902f389c4cf3c5a6c15e52517",
+      "sha256": "39e7079f4e3e833a2138e7f57ea83166ec93228b5c8b1ca047b6a529be7f65c7",
+      "bytes": 2097
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IngestionConfigurationApi.java",
+      "gitBlobSha": "50ddf3f808673b0a357a387b735fefc6f98792eb",
+      "sha256": "df7c7e8ad7a897689d991e34cf9844cc2c09e6c31a25a8315526e33d90c7f066",
+      "bytes": 1023
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/InstallationBootstrapApi.java",
+      "gitBlobSha": "211e1c41ba2c0837f066ef3e96ae3a5e61054bbc",
+      "sha256": "8ce9e86eb1fd9a0ce08728bb77437c77ccbbdaea1dac39850874bec7f3095778",
+      "bytes": 9629
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/InstallationProjectionExportApi.java",
+      "gitBlobSha": "e354ff9546ea94e92389293e4896a278e32b6081",
+      "sha256": "3665105f1fcb8629b5ccddf3033a7da55510b75bd24445c23aba9cc7ff33a479",
+      "bytes": 5313
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileApi.java",
+      "gitBlobSha": "6f4d7f2c369a77eeed6b2e6b111253a704618d1a",
+      "sha256": "5b6e68c3722847520bf98ef3e99772842bc91e68fef8eb8062c3437c4ff24e96",
+      "bytes": 5216
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileDelegatedUploadApi.java",
+      "gitBlobSha": "efba28696207d6d3f34f7fe91081be772b5756d8",
+      "sha256": "c74a59923b20313680c03c2b38c5a1648dc7fa354f078e3776932bf1d34566c9",
+      "bytes": 3685
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileMcpApi.java",
+      "gitBlobSha": "8b6a876da7d704f15a2ae9dad23450a5e4f1c31a",
+      "sha256": "17a27d2e701c5a373cbc0a846a73f93c71a0cff289e1b5688935cb5530d5c627",
+      "bytes": 10085
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileOwnershipRecoveryApi.java",
+      "gitBlobSha": "30470ea114e9e4e24f6b8905ac8c89854c04d0e0",
+      "sha256": "4ed9c5edd2a4e4f91da54d80d3f7d762d15b563e1a19e8f602fa8322fae187c7",
+      "bytes": 2051
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFilePickerPage.java",
+      "gitBlobSha": "7e796cd0f3a8e6013ed17274fcdaa8d2e16db84e",
+      "sha256": "8e076ae5a0874e1c0829514f8772c45ba60e930aac2d25a6f5c51165b92d95e4",
+      "bytes": 9236
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileQuarantineTrustedHumanApi.java",
+      "gitBlobSha": "076cdf65e106d3a04ab36eccacc26ff8df628e5c",
+      "sha256": "e479aaccc00cfa6e3d03c905970e3e8916654689dbc1929daf125524c82d3a63",
+      "bytes": 2068
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileStagingApi.java",
+      "gitBlobSha": "b82c736374526459af92c27b9b4dd9c9fd892872",
+      "sha256": "876854d7757b4077cb0c9bcd633ea3f2219423251f89ffd31b6bf6e8c65d11f8",
+      "bytes": 3903
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingHumanApi.java",
+      "gitBlobSha": "706d01ca4489a346d36f9c94ba63624fc5ce57a2",
+      "sha256": "6c10b6e75b7807ee9f86cf70d2ff845970d280ffab9dc6bbd17c0588eac612d0",
+      "bytes": 2655
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingReviewApi.java",
+      "gitBlobSha": "22e8f8d0bc9450d927d63ef7d07565dd248918cc",
+      "sha256": "a5b9c729054079bd75b18a0b8b5b289e8569059794a0feb16be3b6fc1af2e08b",
+      "bytes": 3417
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryApi.java",
+      "gitBlobSha": "4c1b243394b0cb2189e48175433229344522eed4",
+      "sha256": "3600a3dbb1ad0f599f347ccb534e8ee7fe6b5bc1e62208fc1648948748c6eaf5",
+      "bytes": 3101
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryThs.java",
+      "gitBlobSha": "ceb01c03b8f9e110b0e2e0a433070d92b9fbf46f",
+      "sha256": "6aea6fab5a7b958ced6d3b0d22fcf617febb586b3b15c9bcd35cabfbb620d01f",
+      "bytes": 9893
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/MappingApi.java",
+      "gitBlobSha": "718f0ed15214327fc7ad0152e38246d2e3f334f2",
+      "sha256": "8a723a80419595b19e397b5ddd6dd22d5210afcea13afc095cf735bae5664d1e",
+      "bytes": 4124
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/OnboardingApi.java",
+      "gitBlobSha": "3e6346b2b783b7634fb0901ce78e5978121b780d",
+      "sha256": "b01eff368ae43c13d762566757679d35a650ca613d4f49973fb342dca9676442",
+      "bytes": 9262
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionDelegationVerifier.java",
+      "gitBlobSha": "06d797bceffe94411a1fff4472ba731d6589819a",
+      "sha256": "341fda9deeddabc58f1a4bfe3e7da0b666232d2e9f4347ec47064216a0f43c38",
+      "bytes": 7597
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionProposalApi.java",
+      "gitBlobSha": "c88ebfbe23ba3fb164a736375ef8e28c68fb11aa",
+      "sha256": "f6b0e563acbf828912593061190f87c3ce496e453846d2d6e3c48ab59fb1f370",
+      "bytes": 2837
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsApi.java",
+      "gitBlobSha": "b2d2bed87f21350b8e1cc8b2a3455028ca09300d",
+      "sha256": "57cadf4dbd54135abb43275d7ccc2fa14441dee1b0abf98825e23cea2512ed10",
+      "bytes": 3338
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsSecurity.java",
+      "gitBlobSha": "a56099475d4170db4ee2029e93762e0f3cd1657e",
+      "sha256": "8991069abe667e50fcb27423741022b27df9fdf84af37cac79c1dedd3c2da03e",
+      "bytes": 4333
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ProblemHandler.java",
+      "gitBlobSha": "d94d122141d35d5fe5845724f1c668ff3947ae67",
+      "sha256": "40b9b2496ea6e2552594f4f9d964aabdbd52b1495a0ebdc9a0eebb62792ffcc4",
+      "bytes": 3169
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ProtectedLogApi.java",
+      "gitBlobSha": "81ce65d123e8f130137769f718f922b4bd3d807e",
+      "sha256": "d288512bae18f70dc7e32fde5303fd6a576f57aca8e329a38839ac4af0695b08",
+      "bytes": 6125
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/R2fReviewSurface.java",
+      "gitBlobSha": "72f174ed28679fb56e2b9862c2669dfcbad46ca6",
+      "sha256": "8680128ad450ad1c80fe4208e29feb60740fc642a59b47262f6f6509a1820446",
+      "bytes": 1528
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/RequestLoggingFilter.java",
+      "gitBlobSha": "335b835ed393001385ec4c6e0cf7930e09a99821",
+      "sha256": "67911c44e26b2e4568ed8772a5b39d709f9302a393d127e686feea98d236da04",
+      "bytes": 1136
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ResolutionThsApi.java",
+      "gitBlobSha": "b4f46bee82917fe4edefb5e50eb3ad37b74d1c27",
+      "sha256": "1ba27bc4e9e3418346d5172a7325244bffe0cfb0c17830024f1e8ade66d100a2",
+      "bytes": 6142
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/RuntimePublicationApi.java",
+      "gitBlobSha": "dfb4eda19e5a0f917f2391b1aed13d65986db341",
+      "sha256": "a8856a5313fb057419b0659963adc22404feef98abf9b405045fe7e36d7055d2",
+      "bytes": 4809
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SchemaSurveillanceApi.java",
+      "gitBlobSha": "33bfc38970e92f3fdedd27173d2da22ade1da51e",
+      "sha256": "540e1b42c3118ab53420e08be79b6d4151b6370059f45e878096b2ca230e01aa",
+      "bytes": 1864
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SemanticGapApi.java",
+      "gitBlobSha": "7430779df1ff80dbeab9f70be519fae32b14b119",
+      "sha256": "1d1d7332344b19265070db7a05c4ece3aa15f77a56d8d1882b54afe6c7b1a0e6",
+      "bytes": 2684
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SourceRevisionApi.java",
+      "gitBlobSha": "aac045a0350fcccedb601682c33131d048a015f9",
+      "sha256": "a27dfc7697ece319840b264979e504d0924a536029a18005439f49c8f80c95cb",
+      "bytes": 3460
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SuperadminApi.java",
+      "gitBlobSha": "98cd0517520699875556cc812cfc591fdfa9b3dc",
+      "sha256": "7f094aec18a22a9485db02a6abcdef87be0330cb9fc17cee9171773add48ed55",
+      "bytes": 3476
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedActorResolver.java",
+      "gitBlobSha": "6ae47fd041f0e93c1dc3f31932fa657645de9ad1",
+      "sha256": "ca66d3716414ec039811099351ca8f18afb0e83fd568fdbb7a58c098353a9546",
+      "bytes": 2043
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedHumanApi.java",
+      "gitBlobSha": "ec295674ab19b8b667aacd7ba28b4e2fe68fff3e",
+      "sha256": "41012f829550f8900fcd6ce2218737db72ca6ae8a4c151dec7d0ec9b5931f7b6",
+      "bytes": 2399
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedWriteProof.java",
+      "gitBlobSha": "7b8250023250bfc96a779150d27d3e2b9f6a8d01",
+      "sha256": "35023f89dfdad44ba76bc3d752b97ce6d69d2a86436adb7f9b58abb5bff8c3e1",
+      "bytes": 910
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/WorkflowThsApi.java",
+      "gitBlobSha": "31496d8f141301ea6f55e6250a9026967cebb035",
+      "sha256": "ae3c39f894f113a1bbb7908d1c69ae2846ac491ca270ca030c806f05a6789724",
+      "bytes": 10590
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ConfigurationValidator.java",
+      "gitBlobSha": "d164b72f1964173bf85064feedd81a66ec61f5d6",
+      "sha256": "8350a36b7deaa96c69197590ecea45484b06375e2b7ed20f68ef88327c172e96",
+      "bytes": 32333
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/DiscoveryService.java",
+      "gitBlobSha": "9143e292628343ced74c0e9df83dc19d88b8f3c6",
+      "sha256": "2605099f7c0f44896042e35fffc313679dd825ef6b6469157493a47a63d54234",
+      "bytes": 10364
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/GatewayManagedFileObjectStore.java",
+      "gitBlobSha": "4bc70145cb8ce7e7f576f5cfbcb30ea3b7fcbe71",
+      "sha256": "615fef7644b254215692166bc6b02a54b7aa6b02edaf66c0aa3c0f26abad0b41",
+      "bytes": 3304
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/GovernedIdentityProposal.java",
+      "gitBlobSha": "6d8b51f64aab3ba4febbd5fca63e34d592ed0c7a",
+      "sha256": "f37c157f21ee1ab327bdfddbd2477a17056f525a25ace308fb6fe57ca60574ed",
+      "bytes": 4196
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedActivationCoordinator.java",
+      "gitBlobSha": "5faf084856843a580137dcfbdfd89ccc55ee7bd8",
+      "sha256": "95ca4f951e8fb6c89a3ba941f5c59b6c3b0221a086c15b06565fd551ca2d559e",
+      "bytes": 7511
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileChatHandoff.java",
+      "gitBlobSha": "efdd709e2d76a6006f34e27d38b1a1425ed32364",
+      "sha256": "a147e94a9c7e8b9bed401dce03ba0072d7f76100db24b330873e9be3ee4c2192",
+      "bytes": 2930
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposal.java",
+      "gitBlobSha": "963c0ba10725e3d68754a2b00b35ab47ccae8056",
+      "sha256": "a10b0c2fc864e324bf5b96a349a61c666552f8e38a82fae4723914d39f6c18e7",
+      "bytes": 10292
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileObjectReadFailure.java",
+      "gitBlobSha": "865e82cb94518931ae1e468c440a1e3a49c43657",
+      "sha256": "c74cf2eabc993185fc18dc63c4b722ed6770d725fe4d87e25c45ff95eb989444",
+      "bytes": 2692
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileObjectStore.java",
+      "gitBlobSha": "b28c7c23cc26f044567ec4241236cce81dad9450",
+      "sha256": "ce9fe421c76c0a4e77d319cdab78420c8d21da1e9b04bda2132cd58c66807ff0",
+      "bytes": 151
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileOwnershipRecovery.java",
+      "gitBlobSha": "2de83ef3c422a81e280bed18d8578b9468d0fd6e",
+      "sha256": "b605db055ab1b45ad5f3d4864fdcaf63335613f886c341ae212db15d430da05f",
+      "bytes": 10319
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileProfiler.java",
+      "gitBlobSha": "0346f8e879f5bcac745a36af5ddb53001225e85e",
+      "sha256": "43a54c84bd29bdcd73c326a6c4e33db9f4663b0359c86a369044d7de69a61911",
+      "bytes": 11767
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileProfileWorker.java",
+      "gitBlobSha": "92817c340d9810072c17ab8f448534e51fb5f5ea",
+      "sha256": "bbf6e455ed3471df28fad1bfef15eb8146a00eb53acdf549eb116a60f9d7e2de",
+      "bytes": 2288
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileReadTransport.java",
+      "gitBlobSha": "58037a08f7142105bb7c2591c76a92323446229d",
+      "sha256": "9db5fc0751f4c355bb641d36a4d8ca51bd6f40cd59199423362d4c20bc88f1c3",
+      "bytes": 2681
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileService.java",
+      "gitBlobSha": "f8ee955f070aacbed2f71b80f3b0296d60644168",
+      "sha256": "95b48ebeba33de2b8b1a5ad9159a2e1fd5d94ad126a4c4e4caaecf4e4c9c40e6",
+      "bytes": 42586
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileStagingStore.java",
+      "gitBlobSha": "91d5c96c6073ef32e3aab58934bf605666cd8bd8",
+      "sha256": "a585fbfb672409d7500eddc4e9164a2706905f2b3b22d28ede0f8c9943bba14e",
+      "bytes": 266
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedOnboardingReviewService.java",
+      "gitBlobSha": "f5a05217825ce4cdd9eb5e055dfba7bb3397bb13",
+      "sha256": "2437b3653d3d4509ad9a87a163395f759889e92329810978e455987fe022d1df",
+      "bytes": 39129
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileFailurePolicy.java",
+      "gitBlobSha": "6d9fa805ccbc3f49ffca8976d96835e762f4788a",
+      "sha256": "c13360fee074f6b2f4c5a31a799f1047313f85b0e9be0b14fdd477d92e0ba3ae",
+      "bytes": 1734
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileJobs.java",
+      "gitBlobSha": "10f31716e9246b422ea5d17aced0b5d6b766f1de",
+      "sha256": "52a6ff27eea28309e6cd16840f234350720eb3f739f91dd9b4266e455058b7ad",
+      "bytes": 24943
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MappingService.java",
+      "gitBlobSha": "0d64295fb42b9500645b610847b17e5d52707f92",
+      "sha256": "433f01a8376016423b63c9da1e43a6ec68d4acaf228d941a2aa431b6c354a30b",
+      "bytes": 13805
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+      "gitBlobSha": "b7867a7e4cf17ec85de9b71e7c9a0d157347bcad",
+      "sha256": "f5c7a82ef6ae1be7a65cc0b8dd915b6ef0bac71b3b95fe22d53de156050a56ec",
+      "bytes": 3560
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingAuditLogStoreAdapter.java",
+      "gitBlobSha": "d2a72082f767178ddf2dc08214fe75ac8885b509",
+      "sha256": "c58f668d0de8f966a9548ea0d6c509f2f144972a7e6f4132feb8b76a70abae31",
+      "bytes": 2818
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingMetrics.java",
+      "gitBlobSha": "dbf62a2e1c82f7bae59b0b53bd01cab640e3880b",
+      "sha256": "3b7c78489b3b3bd79b9865e42a135bf357246a3afb757273aadaab20916dad6a",
+      "bytes": 1929
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingService.java",
+      "gitBlobSha": "9fc35315fd5ff43cad81faa1510623c1c2f7f32d",
+      "sha256": "d5dbe1bdefbf679dd07400bedfbe7dd5d6d3341a218f250de183131617fbb78e",
+      "bytes": 30097
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogAuthorizationGuard.java",
+      "gitBlobSha": "1f426a31809d051d071c84248a6e88fe7e3a05cb",
+      "sha256": "8d6abbd5e93c9805106dbf669c7749c25c649c2e5bf9ded65283aa7594f1b020",
+      "bytes": 1065
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogExportWorker.java",
+      "gitBlobSha": "41c747f7d8ece49612353eaf2e51699bad93c50b",
+      "sha256": "32407477876606e29b1837554c0fe58a24b0f91f334ede34ca7d0785b495d465",
+      "bytes": 1012
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogRedactionService.java",
+      "gitBlobSha": "2aa0e970bbd76cc092e49fbefdf21f0d441bcb15",
+      "sha256": "61148886be555f6e241c717a3bac049b28e3b077e73954ce14cad77d3e09e62a",
+      "bytes": 1388
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogService.java",
+      "gitBlobSha": "8e5b2721c1adc2ba4a3403705080251859435eb5",
+      "sha256": "833dbb2911d41a7a3d9252245316ea3b5a73bd038a6087746c412b10bce64e15",
+      "bytes": 15905
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogStoreAdapter.java",
+      "gitBlobSha": "d3821fea9632c16541c1cc24734d4d1fac7e1216",
+      "sha256": "9a71f71b8b9643aa704c4faa407f73eef49b9b0a5412f855a49d36045a54637b",
+      "bytes": 390
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/PublishedBundleCompiler.java",
+      "gitBlobSha": "23796bce1d2d829619d971d8c089933fd79c3951",
+      "sha256": "7a5f0023d812c493dafdc0b46c8d5dc746feb543f1931059b96c9a453d43a14f",
+      "bytes": 5581
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ResolutionActivationGate.java",
+      "gitBlobSha": "db4973271daa109d9b447654a1b68f5642c5daad",
+      "sha256": "513d4f658c08b786c6c5103a46363c710aa763868a48679bc43cd77dded46f88",
+      "bytes": 2556
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/RuntimeProjectionService.java",
+      "gitBlobSha": "5388b5abd875a88ea0011013684981ddd2ac0166",
+      "sha256": "adbcb659b472f84b2284f6be49c4d4d46f11fb780212d099936c375dd63f3bcf",
+      "bytes": 4087
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SchemaSurveillanceService.java",
+      "gitBlobSha": "54aca5b2a687292288e38b9d05e935bd0db794cb",
+      "sha256": "0a3565b3669a145ffadff4ef6c2c7dcaf5d1801d30526a66399816784fdc8e8a",
+      "bytes": 3506
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SemanticGapService.java",
+      "gitBlobSha": "ed4ff946de039c33d7b4c7f518ff2c4f626b3021",
+      "sha256": "54ef75a9c3986822990aabb6912da2c91de6ffe99f46140c3dff2c06e1034349",
+      "bytes": 10933
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SourceRevisionService.java",
+      "gitBlobSha": "d0a0c1f30c920f91ee8842147364ec7171293062",
+      "sha256": "4d8347d52cb478456be7b73f92511fe5d146b8106607829798268a289b91b299",
+      "bytes": 13402
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/UdpIdentityActivationVerifier.java",
+      "gitBlobSha": "e2eaaeed193c8d58fa14f3635de915838cc9c16c",
+      "sha256": "20828a117746415b03c50e061b129de45b1da3806e409eadce93b54ecc7e214b",
+      "bytes": 3582
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/WeightedIdentityPolicy.java",
+      "gitBlobSha": "154443a4c1fc9b4f4cdc81078126d45bd74ab04d",
+      "sha256": "026cafc698943952a145af5c9f8ab2775e8ee5b7d3977d81f7324851f90e9ab0",
+      "bytes": 2400
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationAdminService.java",
+      "gitBlobSha": "0bea3e285bb1e0acb315add2d5155b33f37b5a4c",
+      "sha256": "bbe8967a556805159a9f11fa33f058685b7e16bc1f4147823485710a0d2e99df",
+      "bytes": 12899
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationCapabilities.java",
+      "gitBlobSha": "8a96494ab08b743502204f55b8cf8aed4aabb867",
+      "sha256": "5992b22ee0e17715f530c8a3ec282e27a3a2522af9e8482b837f7d1b81a7001d",
+      "bytes": 2518
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationPolicyRegistry.java",
+      "gitBlobSha": "b9dce4360cd927206dc4cbf9fa024abe25d584aa",
+      "sha256": "b973640376232ec2da36e09ac2fe5e62e677a119ecda95b8f7952dbb97fd5933",
+      "bytes": 7326
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationReviewService.java",
+      "gitBlobSha": "0111130895c55c1265db68e7172ce69dfdeacdf8",
+      "sha256": "728a4c6bc91a2dcef933dd6f3ed87f6e6a787df2725d62bf763e7298deea47df",
+      "bytes": 9874
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationRuntimeSynchronizer.java",
+      "gitBlobSha": "6dfbda85da2adc02562b1ae7b4a6194e800a2f57",
+      "sha256": "53ab6145afc5654eb106075c6478d9a01b1b41c4a219faff5cb112c112f0ffd8",
+      "bytes": 2769
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/BootstrapAdministrator.java",
+      "gitBlobSha": "bf5d8098f5ec50401be02d7e4f3314a5be6591b2",
+      "sha256": "ac46dee40de6457afa5ae7acfa71687067b6be4be07bb7e847b21e36748bbe59",
+      "bytes": 2912
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/OufRoleCatalogue.java",
+      "gitBlobSha": "59f9bed0730ae9e0b42643562f50803c26818841",
+      "sha256": "8d7ff6070baa6bb6b1f8b38f8bd0923d749e6f87579695f686893d2e594819cb",
+      "bytes": 4522
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/OufRoleCatalogueStore.java",
+      "gitBlobSha": "f489a048ff016c716632e8668df7748cea35b665",
+      "sha256": "f5cbb693fb7a5feaa72f442d2b0c2fe8506264a146d7ee8e37ca0785d7fda40a",
+      "bytes": 3071
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/PermissionProposalService.java",
+      "gitBlobSha": "dedd2a5bb77d8d65e285bdea8cd45291ae059354",
+      "sha256": "6d737335275ccff45f6d0c02930cc0a6a18e13a3b5c73099ea3f6660b4bf827c",
+      "bytes": 13991
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/SuperadminAuthority.java",
+      "gitBlobSha": "b6508c3b648ba24d515930ea3a184f2eeded0539",
+      "sha256": "eec15fba7a55653d9b9f18ef6a1a8fb08c1f4f2696c52109b9ef590f1004ff67",
+      "bytes": 11301
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/domain/CanonicalHash.java",
+      "gitBlobSha": "618ff0297ce2220551a5a3d417b64afbf8c7b522",
+      "sha256": "421ff7b27a988b2c97bfcbf659ddcc232049f5e875bbaaa8c4c6e2c3d47ca542",
+      "bytes": 976
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/domain/DomainFailure.java",
+      "gitBlobSha": "7a4506bcef75f77b20024cbbfae24745ad5c136c",
+      "sha256": "e715db02467b0539cf868eb1fe15d5e2b6fae488e37e9205685101a8b557e492",
+      "bytes": 419
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/DefaultInstallationEnvironmentProbe.java",
+      "gitBlobSha": "233bd972eb9730d8dfb622bfb754edbd76190bcc",
+      "sha256": "72ffa4e16f3a51b0e205caf93d8c505246c67e690d8d807f125089cdab91a452",
+      "bytes": 5053
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationConfigurationService.java",
+      "gitBlobSha": "3393138768f02d6e3845d8ccb36875c60f9403a9",
+      "sha256": "b55bfa3d6c23f051913b844194dc509f9fe8a339430cc44c82c5786c47604376",
+      "bytes": 17903
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationEnvironmentProbe.java",
+      "gitBlobSha": "3c5c65700e4c6d789d8318bc3ceceab2ff5914d7",
+      "sha256": "0ac680893bfca0b19b7e80513604ae7780b9b0c80d3c35c23d07d9dc549ad2c9",
+      "bytes": 587
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationProjectionExportService.java",
+      "gitBlobSha": "1e63a4a608cd776f9e2540abaf46a634691bd619",
+      "sha256": "66e9d21eb31046364c58053e498854a6fc7f4c1ef4d6c84c718d3e157ac202e5",
+      "bytes": 3613
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationRuntimeProjectionService.java",
+      "gitBlobSha": "879b14f82d070d603639c2b5f0eea30bea3028ce",
+      "sha256": "dcc1122abbe87706d6e0858f47d38c23a51baee7f98cb10ae5f46cb77b547d2d",
+      "bytes": 6123
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/OnboardingApplication.java",
+      "gitBlobSha": "9b15a7306f6bba1e42342589a8fd6389fa40d745",
+      "sha256": "768221d32c91966f989401a51adee11916b1f9feb036e06009ed2c4c9a49c071",
+      "bytes": 413
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/resources/db/migration/V31__managed_file_upload_idempotency.sql",
+      "gitBlobSha": "6cc231d30f709b464353d6c7428d2c693ddb1d0e",
+      "sha256": "9c7b9b2f7ebd0e18191e44536ad2f1afb6de92c2201c7a92bcf835672b262bcd",
+      "bytes": 664
+    },
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+      "path": "src/main/resources/db/migration/V37__managed_file_intake_tenant.sql",
+      "gitBlobSha": "38cc8189259c23bc0b5f7aefec19f823d7640a3a",
+      "sha256": "08391f9a0c0e433be45c57cd3a59eee7b2b9e817fcb4fcf3cc0ab1f1a8967014",
+      "bytes": 809
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/AnalyticalCapabilityRequiredException.java",
+      "gitBlobSha": "6fa2760964e5a75ad9c197479cda467ee422a1ad",
+      "sha256": "e4221227d1156c10b46e05d686b7ecd21c35912f81a1ef3cf9e5c0a7d78dcf70",
+      "bytes": 451
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CanonicalMaterializer.java",
+      "gitBlobSha": "b0be90d026df6c826932dc43b977d7d066c3220f",
+      "sha256": "779768bdd5f51013018959de19b8b88cf28d17c668dc081f54510187e74ca205",
+      "bytes": 28570
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CanonicalRevisionReconstructor.java",
+      "gitBlobSha": "f62852fb7e95ac246171a92e54b25610bad83c98",
+      "sha256": "d518db948bea2549f8a5194c46df444b7347031c1bb9d1d89846f3c4ff315acb",
+      "bytes": 3646
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CapabilityMismatchException.java",
+      "gitBlobSha": "954b032d8f9367e17431b29f09a6e471f5eb3ba5",
+      "sha256": "fe47f7901fe388ef5cfb09ceac3674ea75e3b16a1ffe26aba5c4d8a9a85e7814",
+      "bytes": 394
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CapabilityRetryGuard.java",
+      "gitBlobSha": "288af1935e4d8a64e267ffff6e654e6affe6af21",
+      "sha256": "ab1576950b9f3c6c631e933ab6dd10bbb018931d2a60ee2db4f6ececf6eb232d",
+      "bytes": 2630
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CapabilityRouter.java",
+      "gitBlobSha": "7a1a65aefb0bc49ca8b8b6f1c6fbfcb82df473a0",
+      "sha256": "a12a462af8e04b5c177392e037995ab2427a8c60a7336f0d4515d30942c39565",
+      "bytes": 6316
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/CapabilityRouterErrorHandler.java",
+      "gitBlobSha": "23acd4a19af361043a0bcc8ec36ea81a0a3679cd",
+      "sha256": "d033e4757398b2313c6942fe55128d547558bc0b971280b6a451fe302ce19e55",
+      "bytes": 944
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/FrozenContractValidator.java",
+      "gitBlobSha": "741d1195414c7cb04718e54f055aeed9666f5fde",
+      "sha256": "49c3fc3237602582399400c84de31bbf1eee3ec0954ca01eb62a1664df850819",
+      "bytes": 4774
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GeometryGovernanceApi.java",
+      "gitBlobSha": "f3dd60059346053cb09ef07475430b02bf177b11",
+      "sha256": "7731e5b4c3494202a85ff57fb543dad9a73aa1f04e6ab0683116d70284ec6ef5",
+      "bytes": 1872
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GeometryGovernanceService.java",
+      "gitBlobSha": "ff4cfa73c26bda2beaa36bf82234c9fdde5851c1",
+      "sha256": "2229a8d99e6c56e7e6d1154fd734208067ce131983ced9946d8dc8f9ce485a1d",
+      "bytes": 9993
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedCrsTransform.java",
+      "gitBlobSha": "699208fde636aec7645b19eba0242be26a511bad",
+      "sha256": "cb706c7df5db816b04df35c9f97e12128e7af1876ad1faa707e54caeb173530d",
+      "bytes": 9861
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityEngine.java",
+      "gitBlobSha": "cdeb178d3e0a6379c786d8c76f8c725dcc0c64dc",
+      "sha256": "55366f9d78edec360d6f54c5107a8b00d08d292f705e7914a7f5630f9f6a0fdc",
+      "bytes": 13266
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityIndexBackfill.java",
+      "gitBlobSha": "74dea5134d9feffd499cc76f56c42650669da31e",
+      "sha256": "88d10931457cef984f344119458a036eb860e267405510323b404c3f506b9da3",
+      "bytes": 14445
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityPreflight.java",
+      "gitBlobSha": "b4441b4b2b04a6332543fbaa9efaddc9e0e35125",
+      "sha256": "cecdb8ddea6b2ff0e7498fe879c211c4a161f96a673b1c23c5471b47aad578a5",
+      "bytes": 7629
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityResolutionService.java",
+      "gitBlobSha": "14d35bb32c4d2fd3840311c2cec5be799c754fb1",
+      "sha256": "04951ed778e05b8dbab9adac0d1a004fa5da8c162bd58bfdbee88b8b7ee0222b",
+      "bytes": 13692
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityReviewRepository.java",
+      "gitBlobSha": "2e9862a37395036b2a27039ef3e543d43f17ca42",
+      "sha256": "3dcf75f0bab54b74d43764fd5ad5f5f2a64e623c37e72c48d881419be0f9da0e",
+      "bytes": 4573
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentityScopeLock.java",
+      "gitBlobSha": "780eed9fd1034883f05919ba3f724aad57a9350c",
+      "sha256": "598acb7586a00868ad79d23c9b52823eb8a181a469b4135f6903958010d062ee",
+      "bytes": 985
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedIdentitySubjectMapper.java",
+      "gitBlobSha": "946c0b4127f007e0502bb47005507f1ef8c85280",
+      "sha256": "eda28cb3f27483b54310dd063e88f6d989eb6dbe25b11d662edc59ffa07c45ed",
+      "bytes": 2538
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GovernedServingService.java",
+      "gitBlobSha": "4d86277da25f54786b0b1d14d70c8203069408b4",
+      "sha256": "5776dcbedc38a260568895255a1eb3116c1e77c7b044b234b13bbda6a5312fc1",
+      "bytes": 16141
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GraphApi.java",
+      "gitBlobSha": "b98ee60d5b073ba84e6919e1d0c7b812c8092313",
+      "sha256": "bc0456561ef322b80004923ad8597ec97120cc3c1434ac4913785b01b581af79",
+      "bytes": 1163
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/GraphQueryService.java",
+      "gitBlobSha": "7f7446bfbb6b6cc7ca6a01a03f0c19b746a4afd5",
+      "sha256": "c66a5dd8f82ef9f65921f6241439eb148a3f8f198b3504c0bbdc173d3a0bcc8e",
+      "bytes": 7109
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HandoffApi.java",
+      "gitBlobSha": "0c02da89e18f8271e6cbfc74200137385294676f",
+      "sha256": "2a4f80aad5c58d8f3caf0e051db1b7f7bf1dfd3d6b562388a2a2c7c37d4ced6e",
+      "bytes": 1422
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HandoffIntakeService.java",
+      "gitBlobSha": "bbf9dfa538322732403a3581429d717e54f48bea",
+      "sha256": "4fd36171e3c976ad3acc1b6a0fc28b61899bf0f8eb0242cf928838149dc329f1",
+      "bytes": 7419
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HistoricalContractCatalog.java",
+      "gitBlobSha": "e09086dcfd8dcb4a3fcb0a1ba44fb36f0cfdbe16",
+      "sha256": "ee81e36e8d0eb8788e8586000634e64f7d8f7cd83cb0df593e7e3a47e3218482",
+      "bytes": 5340
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HistoricalReplayService.java",
+      "gitBlobSha": "197919dfdb0b9ed7ef15dd39ad8dff22ae0a3c9a",
+      "sha256": "02442b490cc7aceb5e80dcb483e4a56ad31318524bd27e2ab53e2f63fd8c46c9",
+      "bytes": 12948
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HumanReviewBrowserGuard.java",
+      "gitBlobSha": "0a09ca508541548889c4133527050a61e52829bc",
+      "sha256": "d8c0fb90a6ae98a33f61ae1de1903f3d1a5d1b176d6b5255960c168b38933481",
+      "bytes": 2323
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/HumanReviewSessionConfiguration.java",
+      "gitBlobSha": "656bfa6b4829bf6ac23c8eb9fd900284d892af60",
+      "sha256": "f0d3398befd2bd8dff4a296d4e4660e044c1c5ee7ab3b6ba7883aa934a1aea6f",
+      "bytes": 559
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/IdentityGovernanceService.java",
+      "gitBlobSha": "ea9d2a3e40a7d49c67364ead2ff593214b1c0d8c",
+      "sha256": "787914d80d38494c0090eafe33af77ea74b18e078e6af7f1e671136427880b7a",
+      "bytes": 31872
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeCatalogRepository.java",
+      "gitBlobSha": "3ca539621ce522c7e0d5c8b5002579a2d0131fa9",
+      "sha256": "3ad00face47cfcd7b3321ac11da6745dbb2d15d25aa8457fb6ef1daa54ae2fac",
+      "bytes": 10312
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeLifecycleService.java",
+      "gitBlobSha": "d9dd6f3bca5e23f1be4ff47730087413fdc76399",
+      "sha256": "44cfc063d4316e94469156718ad5126c9a6ee93d1d1e8f20a0c497801fce79dc",
+      "bytes": 7480
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeMaintenanceRepository.java",
+      "gitBlobSha": "6828f6a6a32a83f4e316bc8314a745070a0b05de",
+      "sha256": "3cdd900f8793b5a98831a18b9072857629022daf3248c878b7b03bdbf6098ff7",
+      "bytes": 4421
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeMaintenanceWorker.java",
+      "gitBlobSha": "ab9c693a9cd7f5b8751a720dc033fd531ca206a3",
+      "sha256": "1a66851611aa20b6c818463de5ee0ea365f2268f3e00419d6ffa814751592cb9",
+      "bytes": 1931
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeObjectStoragePort.java",
+      "gitBlobSha": "bb5f3b4b59078ce7ea82963f53cdb29c5f854025",
+      "sha256": "781fd14764f5d8072dd1650decd184dc83ef676bf8789e3c5471f8994119e70b",
+      "bytes": 437
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeShadowRebuildApi.java",
+      "gitBlobSha": "6b762dcba55515ab9c1712154aa20bb286665909",
+      "sha256": "c33ca0bc061932e08a93b5b5e75f7f748f1061fcf5e3bc9cd2530e0971acf9f0",
+      "bytes": 1413
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeShadowRebuildService.java",
+      "gitBlobSha": "f5bf4501dd936d7fa64c104c4e32f68cadce37d5",
+      "sha256": "78a5172745c67e17adcaf189acc0792a933c25bf4e68df765186071f3d183374",
+      "bytes": 16374
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeShadowRebuildWorker.java",
+      "gitBlobSha": "f4a1c97fc1526d6313dfa0b423c07a6df4802341",
+      "sha256": "60738b1075241c513140b11ddd32ce57c2262d100d1736d1b4b1d015e5beb466",
+      "bytes": 1318
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LakeTrustedHumanApi.java",
+      "gitBlobSha": "87df4bbb525513e03b0ab3bb5452ca2419d2412d",
+      "sha256": "a08b92caa1dd97fc9566fcfb5e0180dc3a7fb5e2e97c89fc29d8e076539fc9fa",
+      "bytes": 748
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LinkedPropertyAccess.java",
+      "gitBlobSha": "b12a8eda3ad23d70b85b004275734473a6d66f1d",
+      "sha256": "f6bb741008e53b426195cfb3bc5275c8062e9338d9102544b7491ae532fcd79d",
+      "bytes": 2839
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LinkedPropertyPreview.java",
+      "gitBlobSha": "58821e7b59cf2481cf1e9099a0101bdecac6b383",
+      "sha256": "a832d760b2fea5abcc77e49b4f2c542f7623d5ba10e88e81cb817238d207d8cb",
+      "bytes": 5565
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/LinkedPropertyReconciler.java",
+      "gitBlobSha": "4ff982c774a327e74f3dfe18cf3505c466aaa83f",
+      "sha256": "99bd80e4f2cff085c3d9bf388c2f131210ef734e3f9b5add731f0a4bf4b06006",
+      "bytes": 12842
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/MaterializationRecoveryApi.java",
+      "gitBlobSha": "49922e437a0ed929f761efd515a6d81dac92e573",
+      "sha256": "d52f88bc6652afc36f8132b6a0749635c19d7eb26afaa1364ad4bec705d4ece8",
+      "bytes": 1875
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/MaterializationRecoveryService.java",
+      "gitBlobSha": "12e817c0632006b3f28bd26ce6824f84030f5931",
+      "sha256": "037e6c2315aa9cab3f1238dbb81f70ad2b32f8c50cb97b1db27d8cfb15a4ce4d",
+      "bytes": 14797
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/MaterializationReferenceGate.java",
+      "gitBlobSha": "d40051efedf5bef41f1982e898cc469b85b4ef66",
+      "sha256": "ed08a41455cf5cad6b2be780916f83349be78a6a5885d8c7e4b79319f6c53612",
+      "bytes": 2559
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ObjectResolutionService.java",
+      "gitBlobSha": "b5d5ff0242023f32debf51a993b73615125e9ec4",
+      "sha256": "1104642fb9a523e668de64d9f8aaac05f12e9497deb07a32dfcb20c79600b7ff",
+      "bytes": 10925
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ObjectSearchReceiptFilter.java",
+      "gitBlobSha": "6c1aeeec867c1699253c730a76a6338bbcbf841f",
+      "sha256": "58e64fdafc0e28fe2c31b16f60a6769ded0f83a7c6b7240dc07dc7049ec2bc3d",
+      "bytes": 6556
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/OwnerAuthorizationErrors.java",
+      "gitBlobSha": "72f68daff9b827ef398098039c63b03212515ddf",
+      "sha256": "97d86baef91a197d285ba32bb3937ceebadf5452d6386612876f60ccd7b5d74b",
+      "bytes": 416
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/OwnerQueryGuard.java",
+      "gitBlobSha": "2d2c9a6e0418f910901827a44c35b18ebaf6ef55",
+      "sha256": "8374da00427ffb30e6180b7fc77a2fff15c49432146cc57e91ee05d478abfa27",
+      "bytes": 4195
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PropertyEvidence.java",
+      "gitBlobSha": "38747c3b0f5282bddff399256ce74f2e5e07da39",
+      "sha256": "cd256baebc072075546bf588c89022b2b96e5f0957774883b0254eb50cbe1537",
+      "bytes": 3228
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PropertyGovernanceApi.java",
+      "gitBlobSha": "21c597aa74cab2ed4978b1830a66d77612513622",
+      "sha256": "a5a97fc16c19c27c65400bd46c89ce7a9e548248fb0ab9b8449500f2ee60ff2a",
+      "bytes": 1582
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PropertyGovernanceService.java",
+      "gitBlobSha": "8210a33b9265b1d23ebfd994cc2292ae17c22f1e",
+      "sha256": "6fdc9c537e69db27c2d5ef22782fa3f1311e3ba8d427c00ea8883b9ef5234ea0",
+      "bytes": 12446
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublicationAccessFailure.java",
+      "gitBlobSha": "54eda1e2ebbcc9de899d8901830f120958aa6987",
+      "sha256": "189311bb256b265d51a1974ef056a88986802de1c2406b76b42b2d5d9301784b",
+      "bytes": 2036
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublicationDependencyRecovery.java",
+      "gitBlobSha": "b97eee1ae2ba6162fc3e289a4eb701449114677b",
+      "sha256": "22bf2cb6f3e66f67878eefacb92e2646499c30ad27a6730e55d74ec9a5230ca2",
+      "bytes": 5727
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublishedIdentityPolicy.java",
+      "gitBlobSha": "f3f3f98d876f848d9d4eb3aebfe77201784b3b91",
+      "sha256": "b9c1df1bbb9ab0e0b28bf24f891ee32d5f1d25bfd846e626eccc63bb8533a6ec",
+      "bytes": 3973
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublishedResolutionLoop.java",
+      "gitBlobSha": "d3ffcea79ebd0a0aca9d7d3efa402c2fc5704f2f",
+      "sha256": "4b7e5dd1e7478ec288bc7ec789ab011b15a9bdf84c912b559ca8ae123fd163c2",
+      "bytes": 6598
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/PublishedRuntimeConfiguration.java",
+      "gitBlobSha": "db608dc75cad69b492dc334b478c891ed3a3b5a8",
+      "sha256": "f64d827f2c4365780b3754aa11a0268dccd346e7673cb4571b56694ec4ff2a47",
+      "bytes": 15221
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/QueryBudgetStore.java",
+      "gitBlobSha": "2e94bf70da3b17bdb8c876407b54496d599ced46",
+      "sha256": "7c2fb75cce90d257e75dbe390aa9181bcfedaa6e0a20ba41287457b754435c71",
+      "bytes": 6669
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ReferenceFailureEvidence.java",
+      "gitBlobSha": "67461d192235893e3340086ba30cf3d1b6ee0d45",
+      "sha256": "3aa3ac2ec943ae0d8230a8aaa7267b14986df6b698f108f3e7a5c841f2678203",
+      "bytes": 1432
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RelatedSearchApi.java",
+      "gitBlobSha": "14bdbdb0680d7aa43f7a79a6c75c71c8b426341c",
+      "sha256": "5cc0e2d7c98808036e04596af0236f564ad0b38130e49ec819a32d798db58bea",
+      "bytes": 623
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RelatedSearchService.java",
+      "gitBlobSha": "78b2521ffbcaafc1b070adcb5bed9110bd294ced",
+      "sha256": "b26a112874e0fe0d0335fa7030d0fea9df97f1597895b570b7cc5385cd112180",
+      "bytes": 6549
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RelationshipMaterializer.java",
+      "gitBlobSha": "21f58eacc6a74d8246a7c3121c189ff71e8c87e8",
+      "sha256": "da2d6922683744cc658eab09bea7db5e44b3e5192d493b46d3216323ac46dce8",
+      "bytes": 9354
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RelationshipReconciliation.java",
+      "gitBlobSha": "4b19253eedd54542c256f8361941cd7b422dab47",
+      "sha256": "371e000cfce0de88bbbaa1945bf2af29776e5694400a253911d09a0b4e5b91d7",
+      "bytes": 6711
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RelationshipReconciliationLoop.java",
+      "gitBlobSha": "a8e9027a3ab7ea0b916041911755fcafd52a232d",
+      "sha256": "a82d3ddee5e7ec83b09c93d6e84b9a69ab9734c4ebfe782795e6763d0c6f02dc",
+      "bytes": 661
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ReplayTrustedHumanApi.java",
+      "gitBlobSha": "1c76763cf1bb9e52d844352c1af8d745ad55081a",
+      "sha256": "c0e799df0619788302e12073935e023903cec1b8f3b72fbbfac315beee07f617",
+      "bytes": 1500
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ResolutionRepository.java",
+      "gitBlobSha": "db1d5c164c27da511b65656487d5844377019adb",
+      "sha256": "45633ac024fc4f2ea2abdee23772b3b061bd87c12d9555086902115dfdbb019c",
+      "bytes": 7406
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ResolutionRequestErrors.java",
+      "gitBlobSha": "d54f4462cf29d264a2bef8bb2bc523a023733af8",
+      "sha256": "f107c20d21f6cae70fbab799baa6e484ebb70039436f9c0eb89dca30d14aedc8",
+      "bytes": 668
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ResolutionReviewPackageService.java",
+      "gitBlobSha": "967dcc46ebc5ed7ca40dbca41e908baf369ffcfa",
+      "sha256": "4f363dcba2bb8386526ba787e4e30d786b13143dfe625d2320b38a99dfadef8e",
+      "bytes": 12541
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ResolutionWorker.java",
+      "gitBlobSha": "13a4d46600f0e5444361e2f61e2f2e50091b8661",
+      "sha256": "8a708611efa0c889b6e6f29fbf4fe93a6d6e1c4bb662ce3e9051dbbb493b1c06",
+      "bytes": 2426
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RuntimeIntakeAuthorization.java",
+      "gitBlobSha": "288ebddc8bdf3c89a5e18000ed1647a56af29ee1",
+      "sha256": "001f6948a7b40d6a805a062811e35fcf6ddca23639df359a1b250be2d11edc45",
+      "bytes": 1693
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RuntimeIntakeBoundary.java",
+      "gitBlobSha": "ac392574adb32ff0d69a933b07f0fb8787c863bb",
+      "sha256": "fa09a0446ecf13a13e12bec35dc026302ac908510cf2c80bc6347f9888b26b36",
+      "bytes": 1305
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RuntimeIntakeSizeFilter.java",
+      "gitBlobSha": "780c3be9b9fea40077e1df248fe4fb283c7a91e3",
+      "sha256": "0d581a42e0100852a1faa10ed4ab5653e1f2c72e39d916363f1af578241048be",
+      "bytes": 1982
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/RuntimeLakeApi.java",
+      "gitBlobSha": "779d595344859ac3340314899a970c885d70ee67",
+      "sha256": "3e90597a300d6f49364a7b5afbd70d464d9d7cdccee383ea7802c25fd7557c40",
+      "bytes": 3154
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+      "gitBlobSha": "5c6a7fbb5d46b7f2b7540623e2e138dcf6bd5178",
+      "sha256": "5a323ae336b73eb5c7656d02dfaa339bb1c799d54eb41c2313a70017059cdd0f",
+      "bytes": 1083
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+      "gitBlobSha": "0c6045a8736a4bcf8c84da0ba524d3cb739d11be",
+      "sha256": "b590a8d3de8125e54586663a4fd21886a0d9d8f339436ff0dbde78a41c06c178",
+      "bytes": 2225
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ScopedIdentityCandidateRepository.java",
+      "gitBlobSha": "08f7c35ffd8c4411326c142b66e851dc94feac77",
+      "sha256": "45ab682773bf23333d51d317f1bc4db658e9afac7d084b695acad007b97b2866",
+      "bytes": 9911
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ServingApi.java",
+      "gitBlobSha": "2dfadcb1b83f8db9552450850ab2b8fb0c296528",
+      "sha256": "1af6fed85de3387d60e07607863ad3fc29cc6b6a723329b95015ca22342ca6b1",
+      "bytes": 4583
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ServingAuthorizationContext.java",
+      "gitBlobSha": "765082cf3d6c19397f9d888035d166b6032ee4a9",
+      "sha256": "fdeea5412c814d2346c5bd93ddccbd08ef93f30c1004db96d07190a9c65bcadd",
+      "bytes": 1905
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/SpatialApi.java",
+      "gitBlobSha": "f3ec41e51ad8a5280fa98e37ca411a22f5f17b5d",
+      "sha256": "71c244ac85c6bc3f6971a58875ffa8395814aaad2274c861fb7f36dfd2979e1d",
+      "bytes": 1690
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/SpatialBudgetStore.java",
+      "gitBlobSha": "7a680b05db2d810021328b59bb06b5cd6f8266c6",
+      "sha256": "b92a8e209f91a3439560e6183d401a78106ba84197d394e50b0cc1bbba429572",
+      "bytes": 3119
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/SpatialMaterializer.java",
+      "gitBlobSha": "03d805bc941aa2c3594bd2900d4e1c33315bcc9d",
+      "sha256": "74381f1c74804d4ab4c5ffcfd201a9442dee71a6d13f2aa8563fec00999554d3",
+      "bytes": 21129
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/SpatialQueryService.java",
+      "gitBlobSha": "8518e27c75e2920248093af1989bf65955444de6",
+      "sha256": "6d25e7eb0d5762df67664f2d7f5642af8c9752ea4fc273c2b6579a535466b8ae",
+      "bytes": 7990
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/ToolSelectionStalledException.java",
+      "gitBlobSha": "700635b05b8ea8d8e309feda51f85de593921c2c",
+      "sha256": "a52f4ff520d770984b588deff945c45d38749608be8b02266d5c38b69bb4e01d",
+      "bytes": 389
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/TrustedHumanApi.java",
+      "gitBlobSha": "5c6a424314ad028e5c4960a13ff0cf08c212265f",
+      "sha256": "578c7fc635e37b00a5eae37670358920094a615a6214fdc043091e742399cb64",
+      "bytes": 8598
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/TrustedHumanContext.java",
+      "gitBlobSha": "01951d4b8ff2c4af0bf49051e18af547ac2796bb",
+      "sha256": "b747c68f8815791ecfee399a692cc9174ac5d190b365e0800212bdc240a43bca",
+      "bytes": 688
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/UdpApplication.java",
+      "gitBlobSha": "bc4a86b0c606679f1dc16a24a4cb4f5131c46056",
+      "sha256": "0ca48ed277c0c9a6fe04e9c78d9db96bee5150f5c8531d163ddca0b3621233ec",
+      "bytes": 389
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/UdpIamSecurityConfiguration.java",
+      "gitBlobSha": "b32302026a4236fbb95e2ad90a69b8e739800d10",
+      "sha256": "97f9a025f09db11fdf210ccdf02f2a7bcd6fa952f4dea0f0deaa2bcdc51ceebe",
+      "bytes": 9462
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/UdpPorts.java",
+      "gitBlobSha": "2aa4b1cafeb047fe26e04aeb66c62c1aa50fe2dc",
+      "sha256": "d4a39058f1a5fa56f2c8bb28c12cb60a46326d48a62f09e0d86272c33e92dfa7",
+      "bytes": 4633
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/WeightedIdentity.java",
+      "gitBlobSha": "0888bca08dc7af17efa3ae2c8af6cf529759a3e5",
+      "sha256": "9cf24c57b4b96708ec78a1f6216607907f1abcc159d2c458e04e5e3f52696c4a",
+      "bytes": 7410
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/java/it/comune/trieste/ouf/udp/WeightedIdentityCandidates.java",
+      "gitBlobSha": "a6388edda2f405065a2bf952f6025cce1681341b",
+      "sha256": "c6942a5475590c39d20e25a1136efea9ce99dadc959728e0dc3d95e7fdf1fca4",
+      "bytes": 3964
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/resources/db/migration/V10__lake_object_lifecycle.sql",
+      "gitBlobSha": "02ce975d0868523550fef24e191604b99b0a54fa",
+      "sha256": "fba0dcc22de4cd98e51f46f9667d7283bba8c42e9addf10727d453233a52a24b",
+      "bytes": 5757
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/resources/db/migration/V12__lake_maintenance_scheduler.sql",
+      "gitBlobSha": "b69244f632646b71709d51ba151c50db6e75050e",
+      "sha256": "7ed3f5ba9431176918dc328e2193546665a1323a07a4c8e870ea343af268ab28",
+      "bytes": 1821
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "src/main/resources/db/migration/V14__shadow_rebuild_fencing_and_rollback.sql",
+      "gitBlobSha": "fa260d1ced51aefd65c39fa1a8fc14a3fba2643b",
+      "sha256": "dad5e2f33b70177f87f4919e1508e7eb2f69e96c112575465654905f9aaa820d",
+      "bytes": 1868
+    }
+  ],
+  "repositoryObservations": [
+    {
+      "module": "onboarding",
+      "repository": "ouf-source-onboarding",
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-28T19:11:08Z",
+      "defaultHead": "84828f74ac586bae09a78f0fb197b75b1a3d98d1"
+    },
+    {
+      "module": "udp",
+      "repository": "ouf-udp-object-resolution",
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-26T13:26:41Z",
+      "defaultHead": "b49c0d6f50c574c11684361ce4e8040e9cbddee2"
+    },
+    {
+      "module": "ingestion",
+      "repository": "ouf-ingestion-runtime",
+      "defaultBranch": "main",
+      "pushedAt": "2026-10-26T13:24:32Z",
+      "defaultHead": "c48ee4b1873a474e81c6e1be70d393854021e2c1"
+    }
+  ]
+}

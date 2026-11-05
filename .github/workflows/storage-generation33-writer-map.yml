@@ -1,0 +1,79 @@
+name: Storage generation33 application writer source map
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-writer-map.yml
+      - scripts/verify-storage-writer-map33.py
+      - evidence/storage-writer-source-index-20261105.json
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-generation33-writer-map-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  pinned-writer-source-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 73498c17596ae155a3ed9ab36acfd6bb69da9846
+          path: writer-sources/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: writer-sources/udp
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: writer-sources/ingestion
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 9d19fad3dd750dd5b9e77253d3e7e82029c1aca7
+          path: writer-sources/onboarding-retained
+          persist-credentials: false
+      - name: Verify every pinned source byte and the bounded writer map
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/writer-map33"
+          python3 -I -B -S scripts/verify-storage-writer-map33.py \
+            --sources writer-sources \
+            --index evidence/storage-writer-source-index-20261105.json \
+            --output "$RUNNER_TEMP/writer-map33/readback.json" 2>&1 | tee "$RUNNER_TEMP/writer-map33/readback.log"
+      - name: Preserve exact source-map provenance
+        if: always()
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/writer-map33"
+          mkdir -p "$out"
+          cp evidence/storage-writer-source-index-20261105.json "$out/"
+          git rev-parse HEAD > "$out/repository-commit.txt"
+          sha256sum .github/workflows/storage-generation33-writer-map.yml \
+            scripts/verify-storage-writer-map33.py evidence/storage-writer-source-index-20261105.json \
+            > "$out/repository-source-sha256.txt"
+          for module in onboarding udp ingestion onboarding-retained; do
+            git -C "writer-sources/$module" rev-parse HEAD > "$out/$module-commit.txt"
+          done
+          cd "$out"
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -printf '%P\0' | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --check --strict SHA256SUMS
+      - name: Preserve the public source review including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-writer-source-map33-${{ github.run_id }}
+          path: ${{ runner.temp }}/writer-map33/
+          if-no-files-found: error
+          retention-days: 90
