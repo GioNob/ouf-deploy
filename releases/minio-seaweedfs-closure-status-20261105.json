@@ -1,0 +1,200 @@
+{
+  "schema": "ouf.storage-closure-status.v1",
+  "date": "2026-11-05",
+  "status": "OPEN_NO_ACCEPTANCE_CREDIT",
+  "historicalPlan": {
+    "path": "releases/minio-seaweedfs-plan-20261102.json",
+    "gitBlobSha": "c0da9e4f21b7ea17c18e139e541367eb9fee71aa",
+    "sha256": "dae8b545739e54eccce2496cf2d9dff2520202e7259546b608c166d792e294c1",
+    "immutable": true
+  },
+  "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
+  "nextPlannedWork": "Prioritize storage replacement closure: compose isolated MinIO-to-exact-OCI33 rehearsal and authenticated conditional body capture feeding the offline delta planner; qualify only the effects required by the selected quiescent-copy or precopy/delta procedure and governed return. Resolve G0 inventory/current bindings and G1 lifecycle/licence/custody before the single G5 delivery. HTTP/HUMAN resolver wiring is conditional on the chosen procedure, not an autonomous mandatory sequence. No target command before G0-G4 and no admission without actual HUMAN/THS authority.",
+  "closureReview": {
+    "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
+    "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
+    "qualificationReceipt": "evidence/storage-delta-plan-qualified-20261105.json",
+    "status": "G0_G7_OPEN_OFFLINE_DELTA_CANDIDATE_ONLY",
+    "sourceOnboardingUnchanged": "d5155899b09dda298494b68cefa7e1f281167652",
+    "httpHumanWiring": "CONDITIONAL_DEPENDENCY_NOT_MANDATORY_NEXT_STEP",
+    "progressCreditAdded": 0,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false
+  },
+  "progressEstimate": {
+    "schema": "ouf.storage-planning-progress-estimate.v1",
+    "status": "HEURISTIC_NOT_ACCEPTANCE",
+    "date": "2026-11-04",
+    "exactWeightedEstimatePercent": 39.78260869565218,
+    "reportedApproximatePercent": 40,
+    "uncertaintyPercentagePoints": 10,
+    "weights": "original WP minimum engineering-hour estimates; 46 total",
+    "creditsPercent": [
+      50,
+      85,
+      60,
+      45,
+      35,
+      0,
+      0,
+      0
+    ],
+    "weightedCredits": 18.3,
+    "gatePass": 0,
+    "gateTotal": 8,
+    "acceptanceTestPass": 0,
+    "acceptanceTestTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectTotal": 120,
+    "doesNotMeasureElapsedTime": true,
+    "doesNotMeasureAcceptance": true,
+    "creditChange": {
+      "workPackage": "SW-WP3",
+      "previousCreditPercent": 35,
+      "currentCreditPercent": 45,
+      "receipts": [
+        {
+          "path": "evidence/storage-coordinated-generation32-hosted-20261104.json",
+          "sha256": "96d17a119f8750dd5def60ab4df057763f73cb7e922c78967a0ba3c150878099"
+        },
+        {
+          "path": "evidence/storage-postgres-publication-fence-hosted-20261104.json",
+          "sha256": "3214d5a03ff8837a7ddd14de0036b8ebd810563197482b775f3e73dc59acba6e"
+        }
+      ],
+      "reason": "Synthetic PostgreSQL17.11 logical restore reconciled with independently cold-restored exact OCI32 S3 objects, plus separate native PostgreSQL publication-fence fixture with two concurrent clients, restart and ambiguous-effect reconciliation. Engineering work credit only; no proof transfer to OCI33 and no target acceptance.",
+      "remaining": [
+        "External S3 and deployed writer fencing",
+        "Simultaneous PostgreSQL/S3 recovery cut and WAL/PITR",
+        "Crash/reboot and complete source-host loss",
+        "TLS/key rotation",
+        "Representative capacity, RPO and RTO acceptance",
+        "Full foundation backup contract and durable image custody"
+      ]
+    }
+  },
+  "gates": [
+    {
+      "id": "SW-G0",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G1",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G2",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G3",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G4",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G5",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G6",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-G7",
+      "status": "OPEN"
+    }
+  ],
+  "acceptanceTests": [
+    {
+      "id": "SW-AT01",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT02",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT03",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT04",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT05",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT06",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT07",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT08",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT09",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT10",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT11",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT12",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT13",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT14",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT15",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT16",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT17",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT18",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT19",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT20",
+      "status": "OPEN"
+    },
+    {
+      "id": "SW-AT21",
+      "status": "OPEN"
+    }
+  ],
+  "doesNotOverrideRuntimeAuthority": true
+}

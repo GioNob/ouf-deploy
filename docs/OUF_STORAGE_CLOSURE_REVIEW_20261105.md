@@ -65,3 +65,10 @@ Implementato [delta_manifest.py](../tools/storage_planning/delta_manifest.py), c
 Il collegamento HTTP/HUMAN del resolver è **una dipendenza condizionale**: serve se la procedura scelta invoca quel comando. Non è automaticamente il prossimo passo né un prerequisito per ogni copia offline. Una procedura con fermo completo deve comunque dimostrare quiescenza reale, assenza di transazioni ambigue, custodia e autorità; non può cancellare latch o aggirare un owner incerto. La delega di sviluppo non vale come approvazione HUMAN.
 
 Non sono effettuati merge, deploy, grant, nuove operazioni target o riapertura. Nessun reset di scope/budget o nuova acquisizione Teatri/Farmacie. Gli artifact storici restano nelle retention dichiarate: non è attestata una nuova custodia durevole.
+
+### Esito CI e correzione del registro storico
+
+Planner `747c4772075e8c0c36ad4b906cecacd494d02ab3`: 22test hosted PASS, run42060454823/job127360334434. Archivio13432675036 verificato localmente:1948byte,4membri/3checksum/4hash sorgenti esatti, SHA256 `4024a5cd4798087166b9f7a8b6294bf0715d402e712b1ab33fcdb82a11bcf3ce`. Custodia Actions fino3febbraio2027, nessuna nuova custodia durevole attestata.
+
+Il run42060454629/job127360334387 del registro storico è FAILED con `ALL_PRE33_HISTORY_AND_PROGRESS_IMMUTABLE`: il primo commit aveva modificato nextPlannedWork/currentHandoff e aggiunto stato corrente nel JSON congelato. Ripristinato il file originale byte per byte; stato e prossima azione sono ora in `releases/minio-seaweedfs-closure-status-20261105.json`. Verificatore, hash di riferimento, codice planner, punteggi e gate non modificati. Il fallimento resta conservato; Per la CI della correzione fanno fede i check del commit contenente il ripristino, riportati nella PR54.
+

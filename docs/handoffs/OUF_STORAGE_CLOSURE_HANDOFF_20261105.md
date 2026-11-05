@@ -36,3 +36,10 @@ Restore dai soli export33 run41976132880 già riuscito; rotazioni/isolamento/com
 - MinIO e source-lock invariati; nessun merge/deploy/target/grant/riapertura. Teatri e stessa Farmacie preservati.
 
 Descrizioni PR precedenti conservate in [archivio](OUF_PR54_STORAGE_HISTORY_BEFORE_CLOSURE_REVIEW_20261105.md). I checkpoint storici che propongono altre prossime coppie non prevalgono sulla priorità qui fissata.
+
+### Esito CI e correzione del registro storico
+
+Planner `747c4772075e8c0c36ad4b906cecacd494d02ab3`: 22test hosted PASS, run42060454823/job127360334434. Archivio13432675036 verificato localmente:1948byte,4membri/3checksum/4hash sorgenti esatti, SHA256 `4024a5cd4798087166b9f7a8b6294bf0715d402e712b1ab33fcdb82a11bcf3ce`. Custodia Actions fino3febbraio2027, nessuna nuova custodia durevole attestata.
+
+Il run42060454629/job127360334387 del registro storico è FAILED con `ALL_PRE33_HISTORY_AND_PROGRESS_IMMUTABLE`: il primo commit aveva modificato nextPlannedWork/currentHandoff e aggiunto stato corrente nel JSON congelato. Ripristinato il file originale byte per byte; stato e prossima azione sono ora in `releases/minio-seaweedfs-closure-status-20261105.json`. Verificatore, hash di riferimento, codice planner, punteggi e gate non modificati. Il fallimento resta conservato; Per la CI della correzione fanno fede i check del commit contenente il ripristino, riportati nella PR54.
+

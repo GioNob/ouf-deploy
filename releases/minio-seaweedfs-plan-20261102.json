@@ -422,7 +422,7 @@
   "migrationPerformed": false,
   "targetApplyAuthorizedByThisPlan": false,
   "m2Accepted": false,
-  "nextPlannedWork": "Prioritize storage replacement closure: compose isolated MinIO-to-exact-OCI33 rehearsal and authenticated conditional body capture feeding the offline delta planner; qualify only the effects required by the selected quiescent-copy or precopy/delta procedure and governed return. Resolve G0 inventory/current bindings and G1 lifecycle/licence/custody before the single G5 delivery. HTTP/HUMAN resolver wiring is conditional on the chosen procedure, not an autonomous mandatory sequence. No target command before G0-G4 and no admission without actual HUMAN/THS authority.",
+  "nextPlannedWork": "Bind generation29 image, fresh scan/SPDX, verified provenance and exact licence corpus into its own cohort, then run new cold recovery with strict MIME preservation and identity/TLS/egress labs; develop coordinated DB/object recovery and writer fencing. Competent licence/redistribution review, durable exact-image custody and target bindings remain OPEN. No target command before G0-G4 and no release admission without required HUMAN/THS authority.",
   "openTargetInputs": [
     "private ACL grants and publicAccessBlock compatibility/control mapping",
     "current writers, external consumers and database references",
@@ -432,7 +432,7 @@
     "infrastructure validation of PET UDP section81 recovery targets and maintenance window"
   ],
   "executionRequestedByOwner": "2026-11-02",
-  "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
+  "currentHandoff": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md",
   "latestLaboratoryQualification": {
     "source": "6cddeee707b67bd27568aa7a3890e28ebecf274f",
     "runId": 41391421536,
@@ -1617,21 +1617,5 @@
     "targetOperations": 0,
     "gatesClosed": 0,
     "acceptanceTestsPassed": 0
-  },
-  "historicalNextPlannedWorkBeforeClosureReview20261105": "Bind generation29 image, fresh scan/SPDX, verified provenance and exact licence corpus into its own cohort, then run new cold recovery with strict MIME preservation and identity/TLS/egress labs; develop coordinated DB/object recovery and writer fencing. Competent licence/redistribution review, durable exact-image custody and target bindings remain OPEN. No target command before G0-G4 and no release admission without required HUMAN/THS authority.",
-  "historicalHandoffBeforeClosureReview20261105": "docs/handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md",
-  "closureReview20261105": {
-    "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
-    "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
-    "qualificationReceipt": "evidence/storage-delta-plan-qualified-20261105.json",
-    "status": "G0_G7_OPEN_OFFLINE_DELTA_CANDIDATE_ONLY",
-    "sourceOnboardingUnchanged": "d5155899b09dda298494b68cefa7e1f281167652",
-    "httpHumanWiring": "CONDITIONAL_DEPENDENCY_NOT_MANDATORY_NEXT_STEP",
-    "progressCreditAdded": 0,
-    "gatesClosed": 0,
-    "acceptanceTestsPassed": 0,
-    "realObjectsCopied": 0,
-    "targetOperations": 0,
-    "runtimeAuthorityIssued": false
   }
 }

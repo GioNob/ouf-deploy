@@ -8,6 +8,12 @@
 - Prossima coppia delimitata: rehearsal sorgente MinIO isolata→OCI33 esatta e byte autenticati/condizionali; qualifica degli effetti necessari e del ritorno dopo guasti. Valutare prima fermo completo rispetto a precopia+delta sulla finestra misurata. HTTP/HUMAN del resolver soltanto se la procedura lo richiede; nessun bypass di latch/owner incerto.
 - MiniPET invariato **18,3/46=39,78%;0/8gate,0/21AT,0/120oggetti reali**. Nessun merge/deploy/grant/target/riapertura/reset. Review `docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md`, contratto `docs/OUF_STORAGE_DELTA_PLAN_20261105.md`, ricevuta `evidence/storage-delta-plan-qualified-20261105.json`, handoff `docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md`.
 
+### Esito CI e correzione del registro storico
+
+Planner `747c4772075e8c0c36ad4b906cecacd494d02ab3`: 22test hosted PASS, run42060454823/job127360334434. Archivio13432675036 verificato localmente:1948byte,4membri/3checksum/4hash sorgenti esatti, SHA256 `4024a5cd4798087166b9f7a8b6294bf0715d402e712b1ab33fcdb82a11bcf3ce`. Custodia Actions fino3febbraio2027, nessuna nuova custodia durevole attestata.
+
+Il run42060454629/job127360334387 del registro storico è FAILED con `ALL_PRE33_HISTORY_AND_PROGRESS_IMMUTABLE`: il primo commit aveva modificato nextPlannedWork/currentHandoff e aggiunto stato corrente nel JSON congelato. Ripristinato il file originale byte per byte; stato e prossima azione sono ora in `releases/minio-seaweedfs-closure-status-20261105.json`. Verificatore, hash di riferimento, codice planner, punteggi e gate non modificati. Il fallimento resta conservato; Per la CI della correzione fanno fede i check del commit contenente il ripristino, riportati nella PR54.
+
 Le sezioni sottostanti conservano lo storico: non sono la sequenza corrente.
 
 ## Checkpoint 2026-11-05 — approvazione HUMAN autenticata e resolver PostgreSQL ristretto
