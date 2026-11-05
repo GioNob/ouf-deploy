@@ -1,3 +1,10 @@
+## Checkpoint storage 2026-11-05 — restore dai soli export33 PENDING
+
+- Nuovo ambito singolo: recuperare su una nuova esecuzione hosted usando esclusivamente i tre archivi del producer7444df0/run41914041465, artifact13362874826 SHA256`33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3`. Nessuna nuova sorgente PostgreSQL, generazione basebackup o seed S3.
+- Verifica completa del vecchio ZIP e delle30sorgenti al commit originale; estrazione controllata dei tre componenti, ricostruzione delle sole directory vuote PostgreSQL17 e verifica nativa pg_verifybackup. Attesi ledger/ACK/fence identici dopo replay e promotion al target; S3 parte soltanto dopo il gate DB. Originale e input estratti devono restare invariati.
+-9test nuovi e15test fisici PASS locali. Checkout locale parziale: common-cut10PASS/1errore per vendor-profile assente, test PITR non presente; nessun PASS completo locale dichiarato. Workflow hosted con44test obbligatori, restore e readback indipendente. Dossier `docs/OUF_STORAGE_EXPORTED_RESTORE33_20261105.md`.
+- Tutte le prove precedenti preservate. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali; MinIO invariato. Nessun target/merge/deploy/admission/replay/reset/grant; RPO/RTO, power-loss e carico rappresentativo restano OPEN. Qualifica del nuovo restore PENDING fino a risultati terminali e readback.
+
 ## Checkpoint storage 2026-11-04 — PITR fisico e common-cut33 PASS
 
 - Producer `7444df039a8b4990d1518a343f4f57a698db0b74`, [run41914041465](https://github.com/GioNob/ouf-deploy/actions/runs/41914041465), attempt1 completed/success. Job nativo126868857170 e readback indipendente126870953332 SUCCESS: **35test Linux PASS**, caso positivo coordinato e caso WAL mancante PASS. Stessa OCI33/binario; le prove storiche di compattazione189test/14scenari restano integre e non sono state rieseguite.
