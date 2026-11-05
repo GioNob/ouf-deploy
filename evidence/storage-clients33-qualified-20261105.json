@@ -1,0 +1,165 @@
+{
+  "schema": "ouf.storage-clients33-qualification-receipt.v1",
+  "date": "2026-11-05",
+  "status": "PASS_SYNTHETIC_APPLICATION_ADAPTERS_NOT_TARGET_ACCEPTANCE",
+  "sourceCommit": "1d6173e2b6dfc25279c6ad9f31cc4106772b0932",
+  "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+  "onboardingSourceCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+  "udpSourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+  "failureHistory": [
+    {
+      "commit": "689734a7dd7e5595245251fe9a19667f6f7b8d1b",
+      "runId": 42098209864,
+      "jobId": 127493764483,
+      "artifactId": 13449360247,
+      "artifactBytes": 355147,
+      "artifactSha256": "0e57ceab45c0d3a5e45e2b44edcf420a015555a9fd3e8cc60edc9690b5ee22be",
+      "reason": "CLIENT_SECURITY_GATE_HELD",
+      "nativeTestsExecuted": 0,
+      "findings": [
+        {
+          "id": "CVE-2026-54399",
+          "severity": "HIGH",
+          "package": "httpcore5",
+          "version": "5.3.6"
+        },
+        {
+          "id": "CVE-2026-54428",
+          "severity": "HIGH",
+          "package": "httpcore5-h2",
+          "version": "5.3.6"
+        },
+        {
+          "id": "CVE-2026-64607",
+          "severity": "MEDIUM",
+          "package": "httpclient5",
+          "version": "5.5.2"
+        }
+      ],
+      "archiveReadback": {
+        "status": "INTEGRITY_ONLY_FAILED_QUALIFICATION",
+        "members": 14,
+        "checksums": 13,
+        "exactDeployGitSources": 127
+      }
+    },
+    {
+      "commit": "d7f6af85aa77d4901d228dfce7518603c48792c3",
+      "runId": 42099114105,
+      "jobId": 127496926140,
+      "artifactId": 13448332025,
+      "artifactBytes": 360957,
+      "artifactSha256": "048a82c27664fbe0dbe06441258382a2569e4a3cc026f96264530a46f6ff4491",
+      "reason": "JUNIT_ENGINE_LAUNCHER_VERSION_MISMATCH_OUTPUT_DIRECTORY_CREATOR",
+      "nativeTestsExecuted": 0,
+      "scanFindings": 0,
+      "serverCleanStop": true,
+      "archiveReadback": {
+        "status": "INTEGRITY_ONLY_FAILED_QUALIFICATION",
+        "members": 21,
+        "checksums": 20,
+        "exactDeployGitSources": 127
+      }
+    },
+    {
+      "commit": "d731634985c93188dcdbe381112e0c433c89703f",
+      "runId": 42099690705,
+      "jobId": 127498919751,
+      "artifactId": 13450270047,
+      "artifactBytes": 359102,
+      "artifactSha256": "b0ae7ada0fcb7776e9b2e588608506ad6feb4182678279fcd4b21e947724409c",
+      "reason": "SUREFIRE_INTERNAL_LAUNCHER_1_12_2_NOT_STAGED_OFFLINE",
+      "nativeTestsExecuted": 0,
+      "scanFindings": 0,
+      "serverCleanStop": true,
+      "archiveReadback": {
+        "status": "INTEGRITY_ONLY_FAILED_QUALIFICATION",
+        "members": 19,
+        "checksums": 18,
+        "exactDeployGitSources": 127
+      }
+    }
+  ],
+  "providerFixtureCorrection": {
+    "previousCheckpoint": "466209aaf58c1c1d936bde382089a253b90e6a2c",
+    "previousWorkflowTotals": {
+      "success": 50,
+      "failure": 1
+    },
+    "failedRunId": 42083213153,
+    "failedJobId": 127441412782,
+    "observedReason": "CURRENT_EXPLICIT_DISCOVERY_INSTALLATION_AND_NORMAL_USE_DECISION_REQUIRED",
+    "fix": "Resolve exact owned provider ID at beginning under current synthetic authority; retain ID for later fixture SIGKILL. No production authority or TTL changes.",
+    "qualifiedRuns": [
+      42098209923,
+      42098229380
+    ],
+    "jobsPerRun": 4,
+    "allJobs": "SUCCESS"
+  },
+  "scope": {
+    "sourceAdaptersModified": false,
+    "fullServicesQualified": false,
+    "fixtureDependencyClosureDistinctFromFullServices": true,
+    "fixtureHttpClientVersion": "5.6.5",
+    "fixtureHttpCoreVersion": "5.4.4",
+    "fixtureJUnitLauncherVersion": "6.0.3",
+    "applicationDependencyPomsUpdated": false,
+    "applicationBeansOrEndpointsInstalled": false,
+    "completeTargetCollectorDelivered": false,
+    "targetOperations": 0,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "runtimeAuthorityIssued": false,
+    "progressCreditAdded": 0
+  },
+  "relatedG0Request": "releases/storage-g0-evidence-request-20261105.json",
+  "acceptanceMapping": "releases/storage-clients33-acceptance-mapping-20261105.json",
+  "document": "docs/OUF_STORAGE_CLIENTS33_20261105.md",
+  "runId": 42100237756,
+  "jobId": 127500797778,
+  "nativeCasesPassed": 12,
+  "failures": 0,
+  "skipped": 0,
+  "archive": {
+    "artifactId": 13448767414,
+    "bytes": 365853,
+    "sha256": "1e2d0e1bf06a787459dbcd02f741b0391e3add6fb73165f1ce96addf31ae5d92",
+    "expiresAt": "2027-02-03T20:06:26Z",
+    "durableCustodyEstablished": false
+  },
+  "readback": {
+    "schema": "ouf.storage-clients33-archive-readback.v1",
+    "status": "PASS_NOT_SECOND_NATIVE_EXECUTION",
+    "sourceCommit": "1d6173e2b6dfc25279c6ad9f31cc4106772b0932",
+    "archiveBytes": 365853,
+    "archiveSha256": "1e2d0e1bf06a787459dbcd02f741b0391e3add6fb73165f1ce96addf31ae5d92",
+    "members": 22,
+    "checksums": 21,
+    "exactDeployGitSources": 127,
+    "exactApplicationGitSources": 7,
+    "nativeCasesPassed": 12,
+    "scanFindings": 0,
+    "cleanStop": true,
+    "targetOperations": 0,
+    "acceptanceCreditAdded": 0
+  },
+  "readbackNegativeCases": [
+    {
+      "mutation": "source-omission",
+      "denial": "EXACT_COMPLETE_SOURCE_SET",
+      "checksumsResealed": true
+    },
+    {
+      "mutation": "acceptance-credit",
+      "denial": "NO_TARGET_OR_FULL_SERVICE_CREDIT",
+      "checksumsResealed": true
+    },
+    {
+      "mutation": "application-commit",
+      "denial": "EXACT_APPLICATION_SOURCE:onboarding-source/src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileStagingStore.java",
+      "checksumsResealed": true
+    }
+  ]
+}

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Prepare one concrete G0 current collection package (conditional body hashes, ACL/publicAccessBlock, all writers and DB references, capacity/bindings/window), reusing existing deliverables and preserving consumed scopes. Reconcile existing evidence against the final G2-G4 cohort. Prefer fully quiescent migration if the measured target window permits it; do not make online delta or HTTP/HUMAN a mandatory independent workstream. Resolve operator-only current inputs and G1 licence/lifecycle/custody before the single admitted G5 delivery.",
+  "nextPlannedWork": "Deliver the missing bounded current G0 collector (authenticated conditional bodies and complete observations, preserving consumed scopes), then the read-only DB reference export/join and writer census intake for one reviewable operational collection package. Do not ask the operator to execute historical collectors or declare G0 collection ready from the request manifest. Resolve representative capacity/window and G1 licence/lifecycle/custody plus full application dependency security before governed delivery. Prefer a fully quiescent migration if measured conditions allow it; no independent recovery/HUMAN workstream.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -213,5 +213,34 @@
     "targetOperations": 0,
     "realObjectsCopied": 0,
     "runtimeAuthorityIssued": false
+  },
+  "g0CollectionRequest": {
+    "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md",
+    "manifest": "releases/storage-g0-evidence-request-20261105.json",
+    "status": "REVIEW_READY_COLLECTION_NOT_EXECUTABLE",
+    "requiredEvidenceSections": 8,
+    "writerPaths": 11,
+    "completeTargetCollectorDelivered": false,
+    "targetCommandReady": false,
+    "targetOperations": 0,
+    "progressCreditAdded": 0
+  },
+  "clientContracts33": {
+    "document": "docs/OUF_STORAGE_CLIENTS33_20261105.md",
+    "qualificationReceipt": "evidence/storage-clients33-qualified-20261105.json",
+    "acceptanceMapping": "releases/storage-clients33-acceptance-mapping-20261105.json",
+    "onboardingSourceCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+    "udpSourceCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+    "fullServicesQualified": false,
+    "applicationDependencyPomsUpdated": false,
+    "applicationBeansOrEndpointsInstalled": false,
+    "progressCreditAdded": 0,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false,
+    "status": "PASS_SYNTHETIC_APPLICATION_ADAPTERS_NOT_TARGET_ACCEPTANCE",
+    "sourceCommit": "1d6173e2b6dfc25279c6ad9f31cc4106772b0932",
+    "runId": 42100237756,
+    "nativeCasesPassed": 12,
+    "scanFindings": 0
   }
 }
