@@ -78,24 +78,26 @@ def run(work,inputs):
   command(net+['python3','-I','-B','-S','-c',readiness],100)
   tmp=work/'temporaries';tmp.mkdir(mode=0o700)
   settings={'GITHUB_ACTIONS':'true','OUF_COPY_LAB':'1','OUF_COPY_SOURCE':'https://127.0.0.1:18441','OUF_COPY_DESTINATION':'https://127.0.0.1:18442','OUF_COPY_RETURN':'https://127.0.0.1:18443','OUF_COPY_DEST_HTTP':'http://127.0.0.1:9002','OUF_COPY_CA':str(tls/'public.crt'),'OUF_COPY_INVENTORY_BINARY':str(inventory),'OUF_COPY_COMPILER':str(ROOT/'tools/storage_planning/inventory_manifest.py'),'OUF_COPY_RECEIPT':str(out/'roundtrip.json'),'TMPDIR':str(tmp),'GOMAXPROCS':'2'}
-  cases=['TestRealFunctionalReadiness','TestMinio33RoundTrip','TestRealProcessCrashResumeNoSecondPut','TestRealAmbiguous503RespectsRetryAfterAndReconciles','TestRealTagsAndEncodingPreserved','TestRealSourceIfMatchAndVersionedDestinationDenials']
+  cases=['TestRealFunctionalReadiness','TestMinio33RoundTrip','TestMinio33PostWriteReturn','TestRealProcessCrashResumeNoSecondPut','TestRealAmbiguous503RespectsRetryAfterAndReconciles','TestRealTagsAndEncodingPreserved','TestRealSourceIfMatchAndVersionedDestinationDenials']
   for case in cases:
    path=out/(case+'.jsonl')
    with path.open('w') as log:
-    result=subprocess.run(net+['env',*[k+'='+v for k,v in settings.items()],go,'tool','test2json','-t','-p','ouf/minio33',str(binary),'-test.v','-test.run=^'+case+'$','-test.timeout=5m'],stdout=log,stderr=subprocess.STDOUT,timeout=330)
+    result=subprocess.run(net+['setpriv','--reuid',str(os.getuid()),'--regid',str(os.getgid()),'--clear-groups','env',*[k+'='+v for k,v in settings.items()],go,'tool','test2json','-t','-p','ouf/minio33',str(binary),'-test.v','-test.run=^'+case+'$','-test.timeout=5m'],stdout=log,stderr=subprocess.STDOUT,timeout=330)
    rows=[json.loads(line) for line in path.read_text().splitlines()]
    if result.returncode or any(r.get('Action') in ['fail','skip'] for r in rows) or not any(r.get('Action')=='pass' and r.get('Test')==case for r in rows):raise ValueError('NATIVE_CASE_FAILED:'+case)
    passed += [r['Test'] for r in rows if r.get('Action')=='pass' and 'Test' in r]
   command(['sudo','-n','chown',str(os.getuid())+':'+str(os.getgid()),str(out/'roundtrip.json')])
   write(out/'qualification.json',{'schema':'ouf.minio-oci33-rehearsal.v1','status':'PASS_SYNTHETIC_NOT_ACCEPTANCE','producerSource':os.environ['GITHUB_SHA'],'sourceImage':MINIO_ID,'destinationImage':cold.IMAGE_ID,'candidateLockSha256':rotation.LOCK_SHA,'passedTests':passed,'realProcessCrashPoints':['BEFORE_PUT','AFTER_PUT','BEFORE_CHECKPOINT'],'destinationPutsPerCrashCase':1,'ambiguous503AfterStoreReconciledWithoutSecondPut':True,'retryAfterQualifiedWithVirtualClock':True,'runtimeAuthorityIssued':False,'targetOperations':0,'gatesClosed':0,'realObjectsCopied':0})
  finally:
+  stop_errors=[]
   for name in reversed(names):
    log=subprocess.run(['docker','logs',name],capture_output=True,timeout=30)
    (out/(name+'.log')).write_bytes((log.stdout+log.stderr)[-49152:])
    stopped=subprocess.run(['docker','stop','--time','30',name],capture_output=True,timeout=45)
    state=json.loads(command(['docker','inspect',name]))[0]['State'];write(out/(name+'-exit.json'),state)
    command(['docker','rm',name])
-   if stopped.returncode or state['OOMKilled']:raise ValueError('FIXTURE_STOP_FAILED')
+   if stopped.returncode or state['OOMKilled']:stop_errors.append(name)
+  if stop_errors:raise ValueError('FIXTURE_STOP_FAILED:'+','.join(stop_errors))
 
 def seal(work,inputs):
  out=work/'evidence';out.mkdir(parents=True,exist_ok=True)
