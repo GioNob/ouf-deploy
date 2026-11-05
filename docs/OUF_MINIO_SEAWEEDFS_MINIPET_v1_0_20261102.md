@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-05 — osservabilità e riconciliazione governata dell'autorità
+
+- Due passi nel perimetro interno: osservazione read-only dello store e protocollo di riconciliazione dell'esatta lease. Fonte Onboarding `6eb268070ca9c96743cb399b51558016fdc96aa5`, PR54 draft. Stati CURRENT/CONTENDED/RECONCILE_REQUIRED/REVOKED/EXPIRED/FENCED/UNAVAILABLE; CURRENT non è readiness o ALLOW.
+- La risoluzione richiede gate fidato con decisione esatta, esito COMMITTED/ROLLED_BACK ed esclusione owner mantenuta. Persistenza: ricevuta con checksum, generazione successiva revocata, nuovo controllo gate, cancellazione/fsync del marker esatto. Replay identico non rinnova; altro intento/nuova lease non vengono cancellati. Ricevute limitate a 8.192 byte e 128 per store; saturazione blocca senza eliminare storico.
+- **Il gate operativo non è ancora implementato**: fixture con oracolo sintetico dell'esito e vero lock PostgreSQL NOWAIT. Commit/rollback e halt JVM sono reali; UNKNOWN è iniettato, non guasto reale di rete. Nessun endpoint/bean/capability/issuer/grant/ammissione installato.
+- **97 test PASS (89 nativi + 8 API/storage)**; nove nuovi casi, 18 ricevute provider, 16 log JVM. CI sorgente **8/8 SUCCESS**; generale 454 − 89 skip nativi = 365 PASS, scan bloccante e boot riusciti. Readback locale nativo: 151 membri, 150 checksum, 275 blob Git verificati.
+- Regressione fisica/readback SUCCESS: 39 membri, 38 checksum, 278 sorgenti, 1.695 file backup, 15 alterazioni respinte. Driver fisico precedente, non integrazione del nuovo resolver. Checkpoint deploy precedente `105a35cd55b0db3822f12188dd0d5e958ca22156`: 50/50 SUCCESS.
+- Prima pubblicazione 297b7ed respinta per file test troncato nel trasferimento; corretta in 1b1dc75 (97 PASS). Il commit finale estende il filtro CI fisico alle fixture condivise. Storia e riferimenti conservati.
+- Prossima coppia: correlazione durevole lease/transazione/database ammessi; resolver PostgreSQL qualificato su esito incerto reale senza oracolo di test. Custodia, restore/prepared transactions, wiring live e osservabilità MCP restano aperti. Non cancellare marker per PID o timeout.
+- MinIO/source-lock invariati; MiniPET **18,3/46 = 39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali**. Nessun merge/deploy/target. La ripresa dimostrata richiede pubblicazione separata generazione 3, nuova ammissione e nuova decisione; budget 128 esaurito preservato.
+- Dossier `docs/OUF_STORAGE_GOVERNED_AUTHORITY_RECONCILIATION_20261105.md`, ricevuta `evidence/storage-governed-authority-reconciliation-qualified-20261105.json`, verificatore `scripts/readback-governed-authority-native-20261105.py`, handoff corrente e archivio `docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_GOVERNED_RECONCILIATION_20261105.md`.
+
 ## Checkpoint 2026-11-05 — autorità durevole locale e blocco dopo esito owner incerto
 
 - Due passi completati: provider indipendente `FilePlatformRecoveryAuthority`; qualifica nativa tra JVM separate di restart/revoca/crash. Fonte Onboarding `bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6`, PR54 draft.
