@@ -59,10 +59,12 @@ Questa sezione è un contratto di lavoro, non codice applicativo già implementa
 
 ## Qualifica della revisione e CI preesistente
 
-Readback locale dei256file PASS, incluso confronto dei6Git blob della revisione Onboarding riportata installata. Readback hosted da checkout indipendenti PENDING al momento della preparazione.
+**Readback sorgenti PASS.** Commit10658bdd4a41a8d4a67b0e5f8cdd038193bb2588, [run41986479752](https://github.com/GioNob/ouf-deploy/actions/runs/41986479752), job127108301839 completed/success. Quattro checkout immutabili: verifica hosted dei256file, degli8siti lessicali e dei6confronti Onboarding identica al readback locale. Nessuna nuova qualifica runtime.
+
+Artifact13396580480,24957byte, SHA256`e9216d08e50fa882a7ab14725fb2551e8df9d88368af89ad3085bfd538670df3`, retention Actions fino2027-02-03. Originale scaricato:10membri/9checksum/3binding sorgenti del verificatore e indice originale confrontati. Risultato completo in `evidence/storage-writer-map-hosted-readback-20261105.json`.
 
 Il checkpoint8e829f08 ha49workflow generali SUCCESS e1FAILED: run41976789581/job127077493752, test PostCredentialHistory.test_unexpired_authority_and_new_application_claim_still_deny. Il test ripristinava expiresAt usando un nuovo time.time()-20, estendendo la finestra iniziale e/o rompendo il binding all'autorità. Il controllo di produzione ha negato correttamente prima dello STAGE_HISTORY atteso; i timestamp esatti non erano registrati, quindi non si inventa un delta misurato.
 
-Correzione test-only `ef093e41cd8a595e61340fdc63f042b2c6d64f3a`: un solo campione iniziale del tempo, ripristino della decisione originale, passaggio di120s simulato per il caso STAGE_HISTORY. Nessun controllo di autorizzazione modificato. Fallimento conservato in `evidence/chatbot-cohort-clock-fixture-failure-20261105.json`; nuovo run41985050242 in corso.
+Correzione test-only `ef093e41cd8a595e61340fdc63f042b2c6d64f3a`: un solo campione iniziale del tempo, ripristino della decisione originale, passaggio di120s simulato per il caso STAGE_HISTORY. **13test della suite interessata PASS**, incluso il vecchio fallimento, nel log del run41985050242/job127103721017. Quel run è poi stato CANCELLED automaticamente dal push della mappa secondo la policy di concorrenza esistente: non è un successo dell'intero workflow. Il successore41986494868 risulta in corso al momento della revisione; la CI generale del checkpoint documentale resta da verificare. Nessun controllo di autorizzazione produttivo modificato. Fallimento originale conservato in `evidence/chatbot-cohort-clock-fixture-failure-20261105.json`.
 
 MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali. MinIO, prove storage precedenti, Teatri e stessa Farmacie invariati; zero operazioni target.
