@@ -1,0 +1,247 @@
+{
+  "schema": "ouf.onboarding-upload39-hosted-readback.v1",
+  "status": "APPLICATION_CANDIDATE_QUALIFIED_NOT_DEPLOYED",
+  "applicationSourceCommit": "9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f",
+  "applicationSourceTree": "b6734fba1befe90033fd49585ca4b034569ec226",
+  "finalSourceCommit": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+  "finalSourceTree": "fd9f1da04b6110ff7dfef43efb73cbff6bf65805",
+  "finalSourceChangesAfterNativeQualification": {
+    "commitsAhead": 1,
+    "paths": [
+      "Dockerfile"
+    ],
+    "javaSqlPomTestsUnchanged": true
+  },
+  "originalNative": {
+    "runId": 41989631975,
+    "jobId": 127118496112,
+    "artifact": {
+      "id": 13397423414,
+      "name": "onboarding-upload-native-41989631975",
+      "size_in_bytes": 61920,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13397423414",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13397423414/zip",
+      "expired": false,
+      "created_at": "2026-11-05T07:48:26Z",
+      "expires_at": "2027-02-03T07:46:51Z",
+      "updated_at": "2026-11-05T07:48:26Z",
+      "digest": "sha256:91b7f31c4e73510a0d58aefd7408ec6a91c988db404db2baa9aac753cacca37a",
+      "workflow_run": {
+        "id": 41989631975,
+        "repository_id": 1365812393,
+        "head_repository_id": 1365812393,
+        "head_branch": "feat/storage-upload-intent-20261105",
+        "head_sha": "9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f"
+      }
+    },
+    "tests": 23,
+    "nativeScenarios": 15,
+    "checksums": 38,
+    "members": 39,
+    "sourceSha256Bindings": 258,
+    "sourceGitBlobs": 446,
+    "locallyVerifiedBeforeWorkspaceBecameUnavailable": true
+  },
+  "nativeAtFinalSource": {
+    "runId": 41990619971,
+    "jobId": 127121710833,
+    "status": "completed",
+    "conclusion": "success",
+    "artifact": {
+      "id": 13398401217,
+      "name": "onboarding-upload-native-41990619971",
+      "size_in_bytes": 61854,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398401217",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398401217/zip",
+      "expired": false,
+      "created_at": "2026-11-05T07:56:41Z",
+      "expires_at": "2027-02-03T07:55:21Z",
+      "updated_at": "2026-11-05T07:56:41Z",
+      "digest": "sha256:5ac65bd8091507ef8c99914fa567bd2ebe80fb89079e294c7133d9d81cea9be9",
+      "workflow_run": {
+        "id": 41990619971,
+        "repository_id": 1365812393,
+        "head_repository_id": 1365812393,
+        "head_branch": "feat/storage-upload-intent-20261105",
+        "head_sha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9"
+      }
+    }
+  },
+  "independentReadback": {
+    "producer": "9cb1ad2448e624ddecdd0243c8d368f84f0e0ec2",
+    "runId": 41991405508,
+    "jobId": 127124245362,
+    "status": "completed",
+    "conclusion": "success",
+    "receiptByteEqual": true,
+    "canonicalReceiptSha256": "7ba81781bff89a82443ea157a991a654699f76df504ca93b6017c9bcebeb5c7b",
+    "artifact": {
+      "id": 13398352499,
+      "name": "onboarding-upload39-independent-41991405508",
+      "size_in_bytes": 87905,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13398352499",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13398352499/zip",
+      "expired": false,
+      "created_at": "2026-11-05T08:02:06Z",
+      "expires_at": "2027-02-03T08:01:56Z",
+      "updated_at": "2026-11-05T08:02:06Z",
+      "digest": "sha256:8c27623293d65c218b926d990d5608c7b0c837328c99c56a6052c35310939586",
+      "workflow_run": {
+        "id": 41991405508,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "9cb1ad2448e624ddecdd0243c8d368f84f0e0ec2"
+      }
+    },
+    "artifactDigestSource": "GitHub artifact metadata; no local download after workspace became unavailable"
+  },
+  "fullSourceCI": {
+    "runs": [
+      {
+        "id": 41990627276,
+        "name": "R2f trusted review browser",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990627276",
+        "updatedAt": "2026-11-05T07:56:09Z"
+      },
+      {
+        "id": 41990627224,
+        "name": "Managed profile minimized diagnostic",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990627224",
+        "updatedAt": "2026-11-05T07:55:55Z"
+      },
+      {
+        "id": 41990627231,
+        "name": "Source Onboarding module CI",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990627231",
+        "updatedAt": "2026-11-05T08:00:35Z"
+      },
+      {
+        "id": 41990619965,
+        "name": "R2f trusted review browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990619965",
+        "updatedAt": "2026-11-05T07:56:13Z"
+      },
+      {
+        "id": 41990620044,
+        "name": "Managed profile minimized diagnostic",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990620044",
+        "updatedAt": "2026-11-05T07:55:52Z"
+      },
+      {
+        "id": 41990619971,
+        "name": "Onboarding durable upload native owner",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990619971",
+        "updatedAt": "2026-11-05T07:56:45Z"
+      },
+      {
+        "id": 41990619972,
+        "name": "Source Onboarding module CI",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/41990619972",
+        "updatedAt": "2026-11-05T07:59:59Z"
+      }
+    ],
+    "allSevenPassed": true,
+    "prRunId": 41990627231,
+    "prJobId": 127121734323,
+    "pushRunId": 41990619972,
+    "mavenTestsListed": 380,
+    "mavenTestsExecuted": 365,
+    "mavenSkippedInGeneralSuite": 15,
+    "dedicatedNativeScenariosPassed": 15,
+    "blockingImageScan": "success",
+    "containerBoot": "success",
+    "aptAndLibaptPkgVersion": "3.2.1ubuntu0.1",
+    "logEvidence": [
+      "2026-11-05T07:57:23.5101269Z [INFO] Tests run: 380, Failures: 0, Errors: 0, Skipped: 15",
+      "2026-11-05T07:57:44.7058731Z #9 8.013 Setting up libapt-pkg7.0:amd64 (3.2.1ubuntu0.1) ...",
+      "2026-11-05T07:57:44.9667200Z #9 8.294 Setting up apt (3.2.1ubuntu0.1) ...",
+      "2026-11-05T07:59:10.2053023Z Running Trivy with options: trivy image ouf-source-onboarding:f11e80220c19b1f0882395b7244916265e051c28"
+    ],
+    "artifacts": [
+      {
+        "id": 13398586505,
+        "name": "source-onboarding-evidence-41990627231",
+        "size_in_bytes": 668468,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398586505",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398586505/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:00:17Z",
+        "expires_at": "2027-02-03T07:55:24Z",
+        "updated_at": "2026-11-05T08:00:17Z",
+        "digest": "sha256:565f1672adc21ec94c56d88ffe30b4169664b400f7facc2b313569bfaed0014d",
+        "workflow_run": {
+          "id": 41990627231,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9"
+        }
+      },
+      {
+        "id": 13397892920,
+        "name": "source-onboarding-governed-image-41990627231",
+        "size_in_bytes": 215178522,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13397892920",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13397892920/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:00:15Z",
+        "expires_at": "2026-11-19T08:00:11Z",
+        "updated_at": "2026-11-05T08:00:15Z",
+        "digest": "sha256:09812765a5e7b7f3144be3b1fde95a6a2af4e1eae50841ab13c41e0dd5a81f4d",
+        "workflow_run": {
+          "id": 41990627231,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "b64e8b5bc514223aa562719d31eb027e7f27b7b9"
+        }
+      }
+    ]
+  },
+  "preservedFailures": {
+    "imageScan": "evidence/onboarding-upload39-image-scan-failure-20261105.json",
+    "readbackFormat": "evidence/onboarding-upload39-readback-first-failure-20261105.json"
+  },
+  "scope": {
+    "targetOperations": 0,
+    "sourceLockPromoted": false,
+    "releaseAdmitted": false,
+    "minioChanged": false,
+    "mergePerformed": false
+  },
+  "limits": [
+    "Application ACK fence does not revoke in-flight storage credentials or other writers",
+    "Wire-level lost response not qualified; application response loss was injected",
+    "Joint physical recovery of V39 tables with S3 remains open",
+    "No deduplication for distinct unkeyed HTTP requests"
+  ]
+}
