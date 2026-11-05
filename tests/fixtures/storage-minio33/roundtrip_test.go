@@ -3,6 +3,9 @@ package storagecopy
 import (
  "bytes"
  "context"
+ "compress/gzip"
+ "errors"
+ "net/url"
  "fmt"
  "os"
  "path/filepath"
@@ -89,4 +92,21 @@ func TestMinio33PostWriteReturn(t *testing.T) {
  for _,item:=range items {m,e:=original.Head(ctx,item.ID);if e!=nil||!sameRepresentation(m,item.Meta) {t.Fatal("original source changed",e)};b,e:=original.Read(ctx,item.ID,m.ETag);if e!=nil||!bytes.Equal(b,[]byte("before:"+item.ID.Key)) {t.Fatal("original body changed",e)}}
  receipt:=map[string]any{"status":"PASS_SYNTHETIC_NOT_ACCEPTANCE","acknowledgedMutations":[]string{"REPLACE_BODY","REPLACE_METADATA","DELETE","ADD"},"returnInitiallyEmpty":true,"returnedCurrentObjects":3,"deletedObjectAbsent":true,"sourceOriginalsUnchanged":true,"dbReferencesReconciled":false,"runtimeRollbackAdmitted":false}
  if e:=os.WriteFile(filepath.Join(filepath.Dir(os.Getenv("OUF_COPY_RECEIPT")),"post-write-return.json"),append(encode(receipt),'\n'),0644);e!=nil {t.Fatal(e)}
+}
+
+func TestMinio33TagsAndEncoding(t *testing.T) {
+ items,src,dst,ca:=makeSingle(t,"minio-metadata-tags");client:=admin(t,src,ca,sourceKey,sourceSecret);id:=items[0].ID;ctx:=context.Background()
+ // Preserve the observed legacy denial; do not alter the historical SeaweedFS test.
+ _,e:=client.PutObject(ctx,&s3.PutObjectInput{Bucket:aws.String(id.Bucket),Key:aws.String(id.Key),Body:bytes.NewReader([]byte("must-not-replace")),Tagging:aws.String(url.Values{"fixture+clé":[]string{"valeur+é=/:-@"}}.Encode())})
+ var api interface{ErrorCode()string};if !errors.As(e,&api)||api.ErrorCode()!="InvalidTag" {t.Fatal("legacy special tag must be rejected",e)}
+ source,_:=stores(t,src,dst,ca,ca,items);source.SetCredit(func()error{return nil})
+ old,e:=source.Read(ctx,id,items[0].Meta.ETag);if e!=nil||!bytes.Equal(old,[]byte("synthetic only, never OUF data")) {t.Fatal("rejected tag mutated original",e)}
+ var buffer bytes.Buffer;z:=gzip.NewWriter(&buffer);z.Write([]byte("synthetic compressed fixture"));if e:=z.Close();e!=nil {t.Fatal(e)};raw:=buffer.Bytes()
+ _,e=client.PutObject(ctx,&s3.PutObjectInput{Bucket:aws.String(id.Bucket),Key:aws.String(id.Key),Body:bytes.NewReader(raw),Metadata:map[string]string{"ouf-content-hash":hash(raw),"fixture":"retained"},ContentType:aws.String("text/csv"),ContentEncoding:aws.String("gzip"),CacheControl:aws.String("private,max-age=0"),Tagging:aws.String("fixture=retained-123")});if e!=nil {t.Fatal(e)}
+ meta,e:=source.Head(ctx,id);if e!=nil {t.Fatal(e)};items[0].Meta=meta
+ source,destination:=stores(t,src,dst,ca,ca,items);report,e:=(&Engine{Source:source,Destination:destination}).run(ctx,items,filepath.Join(t.TempDir(),"ledger"));if e!=nil||report.Verified!=1 {t.Fatal("tag/encoding copy",e)}
+ destination.SetCredit(func()error{return nil});m,e:=destination.Head(ctx,id);if e!=nil||!sameRepresentation(m,meta)||m.Tags["fixture"]!="retained-123"||m.Headers["contentEncoding"]!="gzip" {t.Fatal("tag/encoding parity",e)}
+ body,e:=destination.Read(ctx,id,m.ETag);if e!=nil||!bytes.Equal(body,raw) {t.Fatal("compressed byte parity",e)}
+ receipt:=map[string]any{"status":"PASS_SYNTHETIC_NOT_ACCEPTANCE","legacySpecialTagRejected":"InvalidTag","rejectedWritePreservedOriginal":true,"supportedTagPreserved":true,"gzipBytesPreserved":true,"metadataPreserved":true}
+ if e:=os.WriteFile(filepath.Join(filepath.Dir(os.Getenv("OUF_COPY_RECEIPT")),"tag-compatibility.json"),append(encode(receipt),'\n'),0644);e!=nil {t.Fatal(e)}
 }

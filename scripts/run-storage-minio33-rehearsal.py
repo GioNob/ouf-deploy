@@ -79,7 +79,7 @@ def run(work,inputs):
   command(net+['python3','-I','-B','-S','-c',readiness],100)
   tmp=work/'temporaries';tmp.mkdir(mode=0o700)
   settings={'GITHUB_ACTIONS':'true','OUF_COPY_LAB':'1','OUF_COPY_SOURCE':'https://127.0.0.1:18441','OUF_COPY_DESTINATION':'https://127.0.0.1:18442','OUF_COPY_RETURN':'https://127.0.0.1:18443','OUF_COPY_DEST_HTTP':'http://127.0.0.1:9002','OUF_COPY_CA':str(tls/'public.crt'),'OUF_COPY_INVENTORY_BINARY':str(inventory),'OUF_COPY_COMPILER':str(ROOT/'tools/storage_planning/inventory_manifest.py'),'OUF_COPY_RECEIPT':str(out/'roundtrip.json'),'TMPDIR':str(tmp),'GOMAXPROCS':'2'}
-  cases=['TestRealFunctionalReadiness','TestMinio33RoundTrip','TestMinio33PostWriteReturn','TestRealProcessCrashResumeNoSecondPut','TestRealAmbiguous503RespectsRetryAfterAndReconciles','TestRealTagsAndEncodingPreserved','TestRealSourceIfMatchAndVersionedDestinationDenials']
+  cases=['TestRealFunctionalReadiness','TestMinio33RoundTrip','TestMinio33PostWriteReturn','TestRealProcessCrashResumeNoSecondPut','TestRealAmbiguous503RespectsRetryAfterAndReconciles','TestMinio33TagsAndEncoding','TestRealSourceIfMatchAndVersionedDestinationDenials']
   for case in cases:
    path=out/(case+'.jsonl')
    with path.open('w') as log:
