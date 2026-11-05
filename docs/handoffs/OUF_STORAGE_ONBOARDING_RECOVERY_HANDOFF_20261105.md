@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-05 — priorità sostituzione storage e piano delta finale
+
+- Direttiva Giovanni: chiudere MinIO → SeaweedFS secondo MiniPET; recovery/HUMAN sono dipendenze, non un filone autonomo. La vecchia proposta HTTP/HUMAN è superata come sequenza obbligatoria. Due passi sequenziali completati: riesame G0–G7/21 AT contro prove e implementazione; pianificatore del delta finale nel modulo esistente `tools/storage_planning`.
+- Base verificata deploy41431ada/source d5155899, PR54 entrambe draft/open; 50 workflow deploy e8 source SUCCESS, nessun run attivo nelle ultime100 osservate per repo. Check-run deploy84SUCCESS, distinto dai50workflow. Nessuna attività concorrente dichiarata; CAS sul branch prima della pubblicazione. Il codice Onboarding rimane d5155899.
+- G0 resta aperto per writer/consumer/DB, ACL/publicAccessBlock, custodia e dati correnti; G1 per review licenze/lifecycle/custodia; G2–G4 per contratti finali, profilo rappresentativo e rehearsal MinIO→OCI33/delta/ritorno; G5–G7 per consegna ammessa, passaggio e osservazione. Restore/rotazioni/compaction già qualificati non vengono ripetuti.
+- `delta_manifest.py` riusa il compilatore inventario e ricalcola SHA256 dai byte locali forniti. ADD/REPLACE_BODY/REPLACE_METADATA/REMOVE/SOURCE_OBSERVATION_CHANGED/UNCHANGED; fingerprint completo, vecchi valori conservati, riepilogo redatto, limiti256oggetti/16MiB/64MiB per snapshot. Versioni anche sospese, marker, multipart pendenti, namespace/attributi non supportati e input incompleti bloccano.
+- Qualifica locale22test PASS; CI dedicata e CI del checkpoint da leggere sul nuovo HEAD. È pianificazione offline: non prova origine dei byte, snapshot atomico, parità destinazione, DB, fence o autorità. Nessun collector/executor target; copy-new Go invariato. REMOVE non autorizza DELETE, cambi intento non rinnovano budget.
+- Prossima coppia delimitata: rehearsal sorgente MinIO isolata→OCI33 esatta e byte autenticati/condizionali; qualifica degli effetti necessari e del ritorno dopo guasti. Valutare prima fermo completo rispetto a precopia+delta sulla finestra misurata. HTTP/HUMAN del resolver soltanto se la procedura lo richiede; nessun bypass di latch/owner incerto.
+- MiniPET invariato **18,3/46=39,78%;0/8gate,0/21AT,0/120oggetti reali**. Nessun merge/deploy/grant/target/riapertura/reset. Review `docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md`, contratto `docs/OUF_STORAGE_DELTA_PLAN_20261105.md`, ricevuta `evidence/storage-delta-plan-qualified-20261105.json`, handoff `docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md`.
+
+Le sezioni sottostanti conservano lo storico: non sono la sequenza corrente.
+
 # Ripresa storage — approvazione HUMAN e resolver ristretto
 
 Continuare **due passi alla volta, senza subagenti**. Verificare HEAD e CI prima delle modifiche; non ripetere prove riuscite senza nuove modifiche o motivi documentati.
