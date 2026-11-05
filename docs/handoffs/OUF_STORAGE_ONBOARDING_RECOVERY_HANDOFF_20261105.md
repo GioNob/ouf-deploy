@@ -1,12 +1,13 @@
-# Ripresa storage Onboarding — 5 novembre 2026
+# Ripresa storage Onboarding — autorità e quiescenza, 5 novembre 2026
 
-Continuare per due passi alla volta, senza subagenti. Prima controllare i branch e i run; non rilanciare prove già concluse senza una modifica o un motivo documentato.
+Continuare per due passi alla volta, senza subagenti. Prima controllare branch e CI; non ripetere prove concluse senza una modifica o un motivo documentato.
 
-- Deploy:PR54,branch `feat/m2-discovery-complete-profile-20261029`; checkpoint antecedente99594c878a3130a353531841e91c53c38741dbd0 con50/50CI verde. Leggere l'HEAD effettivo del commit che contiene questo handoff.
-- Onboarding:PR54,branch `feat/storage-upload-intent-20261105`,fonte qualificata bf6bcf926727b5ea738155ac70a71b73f1b21f68.
-- [Dossier completo](../OUF_STORAGE_ONBOARDING_COMMON_CUT_20261105.md) e [ricevuta](../../evidence/onboarding-common-cut-qualified-20261105.json):24scenari owner+8test API/storage PASS;common cut fisico e readback separato PASS,1671file dei backup verificati. Conservati entrambi i fallimenti e il successo precedente.
-- Il componente interno ManagedFileStorageRecovery implementa drain/reconcile/freeze; nessun endpoint/scheduler o riapertura è ammesso da questa modifica. La fixture prova l'arresto storage, la restrizione Read/List e il ripristino FROZEN; non qualifica la gestione operativa di tutti i writer.
+- Deploy: PR54 draft, branch `feat/m2-discovery-complete-profile-20261029`. Leggere l'HEAD che contiene questo handoff; precedente fd5e774c48b00c410ba203bf407b9373640a3bb2 con50/50CI SUCCESS.
+- Onboarding: PR54 draft, branch `feat/storage-upload-intent-20261105`, fonte qualificata `5d9ba774b0d8b38c2acab36e1736803a1158059d`.
+- [Dossier](../OUF_STORAGE_ONBOARDING_AUTHORITY_GATE_20261105.md), [ricevuta](../../evidence/onboarding-authority-gate-qualified-20261105.json).35scenari nativi+8API/storage PASS;common-cut fisico/readback PASS,265sorgenti/1680file backup;CI sorgente8/8SUCCESS.
+- Il protocollo interno richiede `StorageRecoveryGate`; senza adattatore è negato. Autorità/azione/scope/epoch/scadenza e quiescenza controllati prima e dopo GET, stesso binding, audit atomico, limiti12s/2s/5s e controllo scadenza dopo audit. Non esiste un adattatore di autorità produttivo: quello PostgreSQL è test-only. Nessun permesso per-file è diventato un grant storage globale.
+- Il ripristino preserva le tabelle sintetiche di autorità/audit ma NON dimostra validità produttiva dei grant ripristinati. Il futuro binding deve usare autorità corrente e prova di quiescenza su tutti i writer, non fidarsi del solo backup.
 
-Prossima coppia delimitata:1) riesaminare i contratti operativi owner già esistenti e collegare il protocollo a una prova autorizzata di quiescenza;2) qualificarne revoca, concorrenza, scadenza e blocco della riapertura senza nuova autorità. Non inventare una nuova HUMAN authority o eseguire azioni sul target dalla sola delega di sviluppo. UDP/Ingestion e rollout misto restano da integrare.
+Prossima coppia delimitata:1) definire il binding di piattaforma e separare l'autorità corrente dal backup recuperato, partendo dai contratti Authorization/THS/Gateway e di installazione;2) qualificare che restart/restore non resuscitino decisioni revocate o prove di quiescenza obsolete. Nessuna nuova HUMAN authority implicita né operazione target dalla sola delega di sviluppo. UDP/Ingestion,rollout misto,riapertura e RPO/RTO restano aperti.
 
-MinIO,source-lock,18,3/46=39,78%,0/8gate,0/21AT e0/120oggetti reali invariati. Nessun deployment,merge,nuova acquisizione,replay,reset o grant effettuato. Il readback dello ZIP è stato eseguito sul secondo runner; nessun terzo download locale dichiarato.
+MinIO,source-lock,MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali invariati. Nessun merge/deploy/target/admission/replay/reset/grant. La prova precedente bf6bcf9 e la prima di questa coppia050a5a2a restano conservate; readback dello ZIP sul secondo runner, nessun terzo download locale dichiarato.
