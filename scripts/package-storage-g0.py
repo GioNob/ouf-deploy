@@ -11,9 +11,10 @@ def cmd(args,cwd=None,timeout=180):
  r=subprocess.run(args,cwd=cwd,capture_output=True,text=True,timeout=timeout);require(r.returncode==0,'PACKAGE_COMMAND_FAILED:'+args[0]+':'+r.stderr[-1000:]);return r.stdout.strip()
 def write(p,x):p.write_bytes(canonical(x))
 def build(w):
- profile_path='releases/storage-g0-package-profile-20261105.json';profile=decode((ROOT/profile_path).read_bytes())
- require(all(sha((ROOT/p).read_bytes())==h for p,h in profile['qualifiedSourceSha256'].items()),'QUALIFIED_COMPONENT_BYTES_UNCHANGED')
  require(not w.exists(),'NEW_PACKAGE_WORK');w.mkdir(mode=0o700);out=w/'evidence';out.mkdir();bundle=w/'package';bundle.mkdir();(bundle/'bin').mkdir();(bundle/'tools/storage_planning').mkdir(parents=True)
+ profile_path='releases/storage-g0-package-profile-20261105.json';profile=decode((ROOT/profile_path).read_bytes())
+ write(out/'component-bindings.json',{p:{'expected':h,'observed':sha((ROOT/p).read_bytes())} for p,h in profile['qualifiedSourceSha256'].items()})
+ require(all(sha((ROOT/p).read_bytes())==h for p,h in profile['qualifiedSourceSha256'].items()),'QUALIFIED_COMPONENT_BYTES_UNCHANGED')
  with (out/'tests.log').open('w') as log:subprocess.run([sys.executable,'-m','unittest','discover','-s','tests','-p','test_storage_g0_package.py','-v'],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=60)
  sourcefiles=['tools/storage_planning/'+n for n in ['g0_host.py','g0_package.py','g0_database.py','g0_reconciliation.py','inventory_manifest.py']]
  for f in sourcefiles:shutil.copyfile(ROOT/f,bundle/f)
@@ -51,7 +52,10 @@ def native(w):
  finally:
   if created:cmd(['docker','rm',identifier])
 def seal(w):
- out=w/'evidence';bundle=w/'package';build=decode((out/'build.json').read_bytes());verify_package(bundle,build['manifestSha256'])
+ out=w/'evidence';bundle=w/'package'
+ if not (out/'build.json').is_file():
+  out.mkdir(parents=True,exist_ok=True);write(out/'delivery.json',{'status':'HELD_BUILD_INCOMPLETE_NO_OPERATOR_PACKAGE','deployCommit':os.environ['GITHUB_SHA'],'targetCommandAuthorized':False,'targetOperations':0});(out/'SHA256SUMS').write_text(''.join(sha(p.read_bytes())+'  '+p.name+'\n' for p in sorted(out.iterdir()) if p.name!='SHA256SUMS'));return
+ build=decode((out/'build.json').read_bytes());verify_package(bundle,build['manifestSha256'])
  with tarfile.open(out/'operator-package.tar.gz','w:gz') as t:
   for p in sorted(bundle.rglob('*')):
    if p.is_file():t.add(p,arcname=str(p.relative_to(bundle)),recursive=False)
