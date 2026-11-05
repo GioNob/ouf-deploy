@@ -22,6 +22,7 @@ def stage(work):
 def run(work):
  require(os.environ.get('GITHUB_ACTIONS')=='true','DISPOSABLE_CI_ONLY');out=work/'evidence'
  scan=json.loads((out/'trivy.json').read_text());require(scan.get('SchemaVersion')==2 and scan.get('Results'),'RAW_SCAN_REQUIRED')
+ binaries={Path(r['Target']).name for r in scan['Results'] if r.get('Type')=='gobinary'};require({'inventory','inventory.test'}<=binaries,'BOTH_COMPILED_EXECUTABLE_SCANS_REQUIRED')
  require(not any(v.get('Severity','UNKNOWN') in ['HIGH','CRITICAL','UNKNOWN'] for r in scan['Results'] for v in r.get('Vulnerabilities',[]) or []),'G0_TOOL_SECURITY_HELD')
  command(['docker','pull',MINIO],300);require(json.loads(command(['docker','image','inspect',MINIO]))[0]['Id']==MINIO_ID,'EXACT_LEGACY_SOURCE_IMAGE')
  tls=work/'tls';tls.mkdir();data=work/'data';data.mkdir()
