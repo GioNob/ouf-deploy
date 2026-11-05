@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Prioritize storage replacement closure: compose isolated MinIO-to-exact-OCI33 rehearsal and authenticated conditional body capture feeding the offline delta planner; qualify only the effects required by the selected quiescent-copy or precopy/delta procedure and governed return. Resolve G0 inventory/current bindings and G1 lifecycle/licence/custody before the single G5 delivery. HTTP/HUMAN resolver wiring is conditional on the chosen procedure, not an autonomous mandatory sequence. No target command before G0-G4 and no admission without actual HUMAN/THS authority.",
+  "nextPlannedWork": "Prepare one concrete G0 current collection package (conditional body hashes, ACL/publicAccessBlock, all writers and DB references, capacity/bindings/window), reusing existing deliverables and preserving consumed scopes. Reconcile existing evidence against the final G2-G4 cohort. Prefer fully quiescent migration if the measured target window permits it; do not make online delta or HTTP/HUMAN a mandatory independent workstream. Resolve operator-only current inputs and G1 licence/lifecycle/custody before the single admitted G5 delivery.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -196,5 +196,22 @@
       "status": "OPEN"
     }
   ],
-  "doesNotOverrideRuntimeAuthority": true
+  "doesNotOverrideRuntimeAuthority": true,
+  "migrationRehearsal": {
+    "document": "docs/OUF_STORAGE_MINIO33_REHEARSAL_20261105.md",
+    "qualificationReceipt": "evidence/storage-minio33-rehearsal-qualified-20261105.json",
+    "sourceCommit": "4555f7dc2be2e44aa25277a22a35d7e2597c80ea",
+    "runId": 42068964202,
+    "status": "PASS_SYNTHETIC_NOT_ACCEPTANCE",
+    "nativePassesIncludingSubtests": 12,
+    "exactGitSourcesReadBack": 137,
+    "syntheticObjects": 120,
+    "bytesPerCopy": 203743,
+    "postWriteObjectReturnQualified": true,
+    "dbReferencesReconciled": false,
+    "progressCreditAdded": 0,
+    "targetOperations": 0,
+    "realObjectsCopied": 0,
+    "runtimeAuthorityIssued": false
+  }
 }

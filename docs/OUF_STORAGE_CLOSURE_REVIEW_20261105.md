@@ -1,3 +1,5 @@
+Aggiornamento corrente: [rehearsal MinIO→OCI33 e ritorno dopo scritture](OUF_STORAGE_MINIO33_REHEARSAL_20261105.md), candidato4555f7dc,12esiti nativi PASS e137sorgenti Git verificati. Il riesame iniziale sotto conserva la sua base; G4 ha ora la qualifica fra provider esatti, ma nessun gate/AT è chiuso.
+
 # Chiusura MinIO → SeaweedFS: riscontro dei criteri e percorso residuo
 
 Riesame del 5 novembre 2026 richiesto da Giovanni. Priorità: completare la sostituzione storage; poi riprendere M2 file → onboarding → semantic registry → ingestion → reconciliation → UDP. Due passi sequenziali, nessun subagente.
@@ -14,7 +16,7 @@ Letture: AGENTS e checkpoint più recente, MiniPET §§4–11, handoff recovery,
 | G1 candidato | OCI33 esatta, coorte e runtime sintetico verificati; raw scan HIGH/CRITICAL/UNKNOWN zero al checkpoint; SDKv1 e moduli archiviati del censimento29 rimossi | Inventario manutenzione complessivo ancora aperto; review licenze/redistribuzione, custodia durevole immagine/artifact e binding delle feature non conclusi | Dossier esatto di server/client/tool, lifecycle e review competente, custodia verificata e scansioni valide al momento dell'ammissione |
 | G2 contratti | Client reali storici; prove OCI33 MIME, identità/TLS, isolamento laterale e rotazione in fixture | Nessun trasferimento automatico delle prove fra generazioni; matrice completa dei due client sulla coorte finale e sul binding target non conclusa | Tracciabilità AT per versione/client, chiusura delle differenze e riscontri target applicabili |
 | G3 esercizio | Restore OCI33 da export su nuova esecuzione; PostgreSQL/PITR e common-cut di fixture; fault/compaction e rotazioni native; recovery Onboarding qualificato come componente | Topologia reale, custodia completa, writer OUF effettivi, restore/rebind governato, carico/capacità e RPO/RTO non accettati | Drill rappresentativo sull'intero insieme, preservando i test già riusciti e misurando gli obiettivi |
-| G4 migrazione | Core Go con journal e copy-new su 120 corpi sintetici, hash/rilettura/CAS/crash; nuovo piano delta offline | Core vecchio usa due SeaweedFS di laboratorio, non MinIO→OCI33; nessun executor di replace/delete, delta finale, DB join o ritorno dopo nuove scritture qualificato | Rehearsal con sorgente MinIO isolata e OCI33 esatta, copie indipendenti, delta/inverse recovery e 100% byte/metadati/riferimenti confrontati |
+| G4 migrazione | Core Go invariato ora qualificato MinIO→OCI33 su120corpi; tre crash/503, ritorno vuoto dopo quattro mutazioni, parità byte/metadati; piano delta offline | Nessun DB join, fence writer reali o delta mutativo online; ritorno applicativo e versioni non qualificati | Collegare riferimenti DB e profilo corrente alla procedura quiescente; qualificare solo effetti residui necessari |
 | G5 pacchetto | Singoli deliverable e prove pubbliche | G0–G4 aperti; coorte/binding/custody/fence/backup/runbook/review/autorità non composti in una consegna ammessa | Pacchetto unico concreto, con hold/rollback e autorità corrente separata dallo sviluppo |
 | G6 passaggio | Nessuna migrazione reale o switch | 0/120 oggetti reali; writer unico, parità e percorso utenti non osservati sul target | Esecuzione autorizzata, quiescenza/delta, switch e riapertura con prove correnti |
 | G7 stabilizzazione | Nessuna osservazione post-switch | Finestra proposta ≥48h e ciclo backup/restore/manutenzione non iniziati; MinIO ancora attivo | Osservazione e decisione governata su ritiro accessi e conservazione originali |
@@ -38,10 +40,10 @@ Le prove di rotazione/isolamento/restore successive sono riportate nei loro doss
 | 11 errori/budget | Core copy e recovery owner con budget duraturi; percorso completo e disco pieno rappresentativo da ricomporre |
 | 12 restart | Crash componenti OCI33 e restart owner/PG provati in laboratorio; reboot/host e deployment target non accettati |
 | 13 restore | Restore nativo da soli export acquisito; intero insieme configurazioni/chiavi/DB applicativi e custodia target aperto |
-| 14 interruzione copia | Tre crash reali del core copy-new; nuovo provider finale e delta mutativo non qualificati |
+| 14 interruzione copia | Tre crash reali del core copy-new su MinIO→OCI33; dopo-checkpoint, versioni e delta mutativo non qualificati |
 | 15 delta/fence | Common-cut fixture e owner Onboarding; census completo, fence di tutti i writer e delta target aperti |
 | 16 parità | 120 corpi sintetici; 0 corpi reali verificati/copiati; join DB e confronto integrale reali aperti |
-| 17 ritorno | Recovery fixture; nuove scritture/overwrite/delete dopo switch e ritorno senza perdita non qualificati |
+| 17 ritorno | Ritorno oggetti dopo ADD/overwrite/metadati/delete qualificato fra provider esatti; assenza divergenza DB e ritorno operativo non qualificati |
 | 18 Teatri/Farmacie | Identità preservate; letture governate di riferimenti esistenti sul candidato non eseguite |
 | 19 utenti | Nessun percorso completo sui due client chatbot/MCP/Gateway del candidato storage |
 | 20 capacità | Nessuna misura rappresentativa corrente di carico/risorse/throughput entro obiettivi concordati |
