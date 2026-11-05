@@ -1,6 +1,6 @@
 {
   "schema": "ouf.storage-g0-evidence-request.v1",
-  "status": "REVIEW_READY_COLLECTION_NOT_EXECUTABLE",
+  "status": "BODY_AND_DB_TOOLS_QUALIFIED_TARGET_PACKAGE_INCOMPLETE",
   "date": "2026-11-05",
   "baselineDeployCommit": "466209aaf58c1c1d936bde382089a253b90e6a2c",
   "priority": "MINIO_TO_SEAWEEDFS_CLOSURE",
@@ -85,10 +85,10 @@
   ],
   "collectionBlockers": [
     "TARGET_SHELL_OR_EQUIVALENT_OWNER_COLLECTOR_NOT_EXPOSED_TO_AGENT",
-    "CURRENT_BOUND_BODY_COLLECTOR_NOT_DELIVERED",
-    "READ_ONLY_DB_EXPORT_AND_OBJECT_REFERENCE_JOIN_NOT_DELIVERED",
     "CURRENT_WRITER_AND_EXTERNAL_CONSUMER_CENSUS_NOT_AVAILABLE",
-    "MAINTENANCE_WINDOW_NOT_CONFIRMED"
+    "MAINTENANCE_WINDOW_NOT_CONFIRMED",
+    "EIGHT_SECTION_OPERATIONAL_BINDING_CUSTODY_AND_ADMISSION_PACKAGE_INCOMPLETE",
+    "REAL_DATA_PROFILE_AND_ACL_CLASSIFICATION_NOT_VERIFIED"
   ],
   "legacyCollectorsMayBeReplayed": false,
   "newTargetControlAssigned": false,
@@ -97,5 +97,21 @@
   "targetOperations": 0,
   "gatesClosed": 0,
   "acceptanceCreditAdded": 0,
-  "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md"
+  "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md",
+  "qualifiedTools": {
+    "document": "docs/OUF_STORAGE_G0_COLLECTORS_20261105.md",
+    "receipt": "evidence/storage-g0-collectors-qualified-20261105.json",
+    "bodyCommit": "f4b4152f78af7ca5a220714b517a458de5c494cc",
+    "bodyRunId": 42111278483,
+    "databaseCommit": "60a97c3a55da66e110953ba113b210c1d74dd1a2",
+    "databaseRunId": 42114275442,
+    "bodyCollectorDelivered": true,
+    "readOnlyDatabaseExporterDelivered": true,
+    "boundedReferenceJoinDelivered": true,
+    "writerCensusIntakeDelivered": true,
+    "completeEightSectionTargetPackageDelivered": false,
+    "targetOperations": 0,
+    "progressCreditAdded": 0,
+    "runtimeAuthorityIssued": false
+  }
 }

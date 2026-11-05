@@ -1,0 +1,348 @@
+{
+  "schema": "ouf.storage-g0-collectors-qualified.v1",
+  "date": "2026-11-05",
+  "status": "PASS_SYNTHETIC_COLLECTOR_AND_DATABASE_OBSERVATION_NOT_TARGET_ACCEPTANCE",
+  "preflight": {
+    "deploy": "84b8e189b50add5a92a01ce63c3df21cbd7cd4bf",
+    "deployWorkflowSuccess": 51,
+    "deployWorkflowTotal": 51,
+    "onboarding": "d5155899b09dda298494b68cefa7e1f281167652",
+    "activeRunsObservedAtStart": 0,
+    "concurrencyObservationLimit": "latest100 GitHub runs; external processes not observable; branch writes expected-SHA CAS"
+  },
+  "bodyCollector": {
+    "commit": "f4b4152f78af7ca5a220714b517a458de5c494cc",
+    "runId": 42111278483,
+    "jobId": 127539175986,
+    "conclusion": "success",
+    "artifact": {
+      "id": 13453487281,
+      "bytes": 28275,
+      "sha256": "b155acf64175e10620ad62eceb9c7fb96496cf12087b6ab15c925dfcd51841cf",
+      "expiresAt": "2027-02-03T21:17:29Z"
+    },
+    "native": {
+      "bytes": 203743,
+      "collection": {
+        "schema": "ouf.storage-g0-body-collection-summary.v1",
+        "status": "COMPLETE_OBSERVATION_NOT_SNAPSHOT_OR_ADMISSION",
+        "phase": "SEALED",
+        "reason": "NONE",
+        "started": "2026-11-05T21:18:46.287429126Z",
+        "finished": "2026-11-05T21:18:53.578287179Z",
+        "requestsReserved": 1370,
+        "wireBytesRead": 351955,
+        "verifiedBodies": 120,
+        "verifiedBytes": 203743,
+        "bodiesAttempted": 120,
+        "complete": true,
+        "sourceObservationsEqual": true,
+        "pointInTimeSnapshotProven": false,
+        "writerInventoryComplete": false,
+        "automaticReplayAllowed": false,
+        "runtimeAuthorityIssued": false,
+        "targetWrites": 0
+      },
+      "hashMismatchHeld": true,
+      "missingAdvertisedHash": 10,
+      "objects": 120,
+      "realProcessCrashScopeRemainsConsumed": true,
+      "replayDenied": true,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.storage-g0-native-minio.v1",
+      "status": "PASS_SYNTHETIC_NOT_TARGET_ACCEPTANCE",
+      "targetOperations": 0,
+      "versionedProfileHeldBeforeBodies": true
+    },
+    "readback": {
+      "schema": "ouf.storage-g0-readback.v1",
+      "status": "PASS_OFFLINE_READBACK_NOT_NATIVE_RERUN",
+      "kind": "bodies",
+      "archiveSha256": "b155acf64175e10620ad62eceb9c7fb96496cf12087b6ab15c925dfcd51841cf",
+      "archiveBytes": 28275,
+      "members": 12,
+      "checksums": 11,
+      "exactGitSources": 9,
+      "commits": {
+        "deploy": "f4b4152f78af7ca5a220714b517a458de5c494cc"
+      },
+      "detail": {
+        "objects": 120,
+        "bytes": 203743,
+        "unitPassesIncludingSubtests": 12,
+        "requestsReserved": 1370
+      },
+      "targetOperations": 0,
+      "acceptanceCreditAdded": 0
+    },
+    "negativeReadbacks": [
+      {
+        "case": "runtime-authority",
+        "reason": "NATIVE_BODY_RESULT"
+      },
+      {
+        "case": "body-count",
+        "reason": "NATIVE_BODY_RESULT"
+      },
+      {
+        "case": "missing-executable-scan",
+        "reason": "TWO_EXECUTABLE_SCANS"
+      }
+    ],
+    "executableScanTargets": 2,
+    "executableScanFindings": 0
+  },
+  "databaseJoin": {
+    "commit": "60a97c3a55da66e110953ba113b210c1d74dd1a2",
+    "runId": 42114275442,
+    "jobId": 127549616992,
+    "conclusion": "success",
+    "artifact": {
+      "id": 13454744517,
+      "bytes": 103789,
+      "sha256": "d95cedd027609f22d9ea89e2a445b572e13209e70d14d6f4ca185d9b809bf6c9",
+      "expiresAt": "2027-02-03T21:37:09Z"
+    },
+    "native": {
+      "conditionalBodies": 2,
+      "conditionalBytes": 6,
+      "currentProfiles": 3,
+      "g0Complete": false,
+      "incompatibleSchemaDenied": true,
+      "negativeCases": {
+        "ack-receipt": true,
+        "lineage-run": true,
+        "missing-body": true,
+        "partial-export": true,
+        "raw-hash": true,
+        "watermark": true
+      },
+      "rawHashDistinctFromCanonicalOutputHash": true,
+      "retainedProfileAlsoQualified": true,
+      "runtimeAuthorityIssued": false,
+      "sameOperationReplayDenied": true,
+      "schema": "ouf.storage-g0-db-native.v1",
+      "separateRepeatableReadSnapshots": true,
+      "status": "PASS_SYNTHETIC_NOT_TARGET_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "databaseIsolation": {
+      "capDrop": [
+        "ALL"
+      ],
+      "clientVersion": "psql (PostgreSQL) 16.15 (Ubuntu 16.15-1.pgdg24.04+2)",
+      "fixtureTlsMode": "loopback-only PostgreSQL; verified TLS MinIO",
+      "interfaces": [
+        {
+          "address": "00:00:00:00:00:00",
+          "broadcast": "00:00:00:00:00:00",
+          "flags": [
+            "LOOPBACK",
+            "UP",
+            "LOWER_UP"
+          ],
+          "group": "default",
+          "ifindex": 1,
+          "ifname": "lo",
+          "link_type": "loopback",
+          "linkmode": "DEFAULT",
+          "mtu": 65536,
+          "operstate": "UNKNOWN",
+          "qdisc": "noqueue",
+          "txqlen": 1000
+        }
+      ],
+      "migrationsApplied": {
+        "ingestion": 18,
+        "onboarding": 41,
+        "udp": 36
+      },
+      "postgresImageId": "sha256:823c9d80930ce5f5fb4ed0f54a091abb79cfde1e34189aaeb69aeaf2720400a2",
+      "postgresImageRequested": "postgis/postgis:17-3.5-alpine",
+      "postgresRepoDigests": [
+        "postgis/postgis@sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f"
+      ],
+      "publishedPorts": {},
+      "readOnlyRoot": true,
+      "revokedSelectHeld": true,
+      "roleDmlDenied": true,
+      "routes": [],
+      "rowSecurityHeldWithoutSilentFiltering": true,
+      "runtimeAuthorityIssued": false,
+      "serverVersion": "PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+      "targetOperations": 0
+    },
+    "reconciliation": {
+      "acceptanceCreditAdded": 0,
+      "bodyCollectionSha256": "ebaff7875da65e1b1f8f5730965cdd9134e9ac9bd26621922da117ddfd429041",
+      "bodyObjects": 2,
+      "bodyReferencesChecked": 3,
+      "classifiedBodies": 2,
+      "exportBindings": {
+        "ingestion": {
+          "rawSha256": "7ec8c9287e3cc22568f0c157ee8fd08ce18b9c46613c808038e8780441029bf3",
+          "sourceSchemaCommit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+          "sqlSha256": "f147968640890f95ac68e1c97663633a0efe6bf82fdd74e7ffbbacc9267a4f83"
+        },
+        "onboarding": {
+          "rawSha256": "87e72458e96984ad6a479d956c512ee555744abbb097c0361c1cd2206d457ca6",
+          "sourceSchemaCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+          "sqlSha256": "d5d5970927152c5d54fd3abe3bfc4a9cbd35645728cc4c94d57a26fb0d6552a5"
+        },
+        "udp": {
+          "rawSha256": "24a3cdc9562b9f84aeb105e5a74ee57ac19c7cb7a979e42f020086903da5d686",
+          "sourceSchemaCommit": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "sqlSha256": "53549f93f13e48bb25cafbcbbcd95f4ca329ea6784edc7ede870b06f0acfc4ed"
+        }
+      },
+      "exportRows": 13,
+      "findingsCount": 0,
+      "g0Complete": false,
+      "observationFindings": [],
+      "pointInTimeCommonCutProven": false,
+      "runtimeAuthorityIssued": false,
+      "runtimeInstalledCommitsProven": false,
+      "schema": "ouf.storage-g0-reconciliation.v1",
+      "status": "OBSERVATIONS_CONSISTENT_NOT_G0_ACCEPTANCE",
+      "targetWrites": 0,
+      "writerCensus": {
+        "evidenceAuthenticityVerified": false,
+        "intakeComplete": false,
+        "missingOrUnknownPaths": [
+          "onboarding-human-upload",
+          "onboarding-delegated-upload",
+          "onboarding-profile-worker",
+          "ingestion-execution-replay",
+          "ingestion-outbox-ack-watermark",
+          "udp-store",
+          "udp-shadow",
+          "udp-purge-compaction",
+          "udp-maintenance",
+          "administrative-tools",
+          "external-consumers"
+        ],
+        "operatorDeclaredPaths": 0,
+        "reportedPaths": 0,
+        "runtimeAuthorityIssued": false,
+        "technicalPaths": 0,
+        "writersQuiescentProven": false
+      }
+    },
+    "readback": {
+      "schema": "ouf.storage-g0-readback.v1",
+      "status": "PASS_OFFLINE_READBACK_NOT_NATIVE_RERUN",
+      "kind": "database",
+      "archiveSha256": "d95cedd027609f22d9ea89e2a445b572e13209e70d14d6f4ca185d9b809bf6c9",
+      "archiveBytes": 103789,
+      "members": 27,
+      "checksums": 26,
+      "exactGitSources": 111,
+      "commits": {
+        "deploy": "60a97c3a55da66e110953ba113b210c1d74dd1a2",
+        "ouf-ingestion-runtime": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+        "ouf-source-onboarding": "d5155899b09dda298494b68cefa7e1f281167652",
+        "ouf-udp-object-resolution": "0d40da05408a14db31d4d41af2372d6a71480291"
+      },
+      "detail": {
+        "objects": 2,
+        "bytes": 6,
+        "unitTests": 12,
+        "nativeNegativeCases": 6,
+        "migrations": 95
+      },
+      "targetOperations": 0,
+      "acceptanceCreditAdded": 0
+    },
+    "negativeReadbacks": [
+      {
+        "case": "g0-accepted",
+        "reason": "OBSERVATION_NOT_ACCEPTANCE"
+      },
+      {
+        "case": "false-raw-hash",
+        "reason": "INDEPENDENT_OFFLINE_JOIN_READBACK"
+      },
+      {
+        "case": "sql-source-altered",
+        "reason": "EXACT_SOURCE_MANIFEST"
+      }
+    ],
+    "executableScanTargets": 2,
+    "executableScanFindings": 0,
+    "retainedOnboardingCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "first38MigrationGitBlobsEqualToCandidate": true
+  },
+  "preservedHistory": [
+    {
+      "commit": "3211f75dadc62988f5b5fae786bf7e3ccabed865",
+      "runId": 42110718911,
+      "jobId": 127537230368,
+      "conclusion": "success",
+      "qualification": "NATIVE_PASS_SECURITY_SCAN_INCOMPLETE",
+      "reason": "fs scan found only go.mod; no compiled executable coverage",
+      "correction": "rootfs scan plus required inventory and inventory.test targets; collector unchanged",
+      "artifact": {
+        "id": 13454780921,
+        "bytes": 27971,
+        "sha256": "8c9559c3b470bdfcec665d3c826bc6989931705a0b403ac09356e47ca6df8373",
+        "expiresAt": "2027-02-03T21:13:50Z"
+      },
+      "manifestScanFindings": 0,
+      "manifestUnchangedInFinalBodyAndDatabaseCandidates": true
+    },
+    {
+      "commit": "bc7478e0b5df4425291257cf2a5cd529819f1dfc",
+      "runId": 42113863433,
+      "jobId": 127548189635,
+      "conclusion": "failure",
+      "reason": "G0_DB_EXACT_SECTION: PostgreSQL OID JSON was a string; parser required int",
+      "correction": "explicit SQL bigint casts for databaseOid/tableOid; parser unchanged",
+      "artifact": {
+        "id": 13455103660,
+        "bytes": 89457,
+        "sha256": "bf2a59bb12b3ded7db88bcf75ce5174dc3311612eea860a9786b82f759af5e93",
+        "expiresDate": "2027-02-03"
+      }
+    }
+  ],
+  "limits": {
+    "wholeEightSectionTargetCollectorDelivered": false,
+    "targetCommandReady": false,
+    "writerCensusIsIntakeOnly": true,
+    "writerEvidenceAuthenticated": false,
+    "writersQuiescentProven": false,
+    "pointInTimeCommonCutProven": false,
+    "installedApplicationCommitsProven": false,
+    "remotePostgresTlsQualified": false,
+    "compactionSlicesQualified": false,
+    "shadowAndPreviousLocatorLifecycleQualified": false,
+    "allApplicationReferenceTypesResolved": false,
+    "fullApplicationDependencySecurityQualified": false,
+    "legacyMinioProductionSecurityGate": "HELD_UNCHANGED",
+    "durableArtifactCustodyProven": false,
+    "independentNativeRerunPerformed": false
+  },
+  "unchanged": {
+    "weightedMiniPet": 18.3,
+    "weightedTotal": 46,
+    "percent": 39.78260869565218,
+    "gatesPassed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectsHistoricalTotal": 120,
+    "lastKnownConsumedControls": 17,
+    "lastKnownCumulativeDockerGets": 52,
+    "legacyScopesMayBeReplayed": false,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false,
+    "merge": false,
+    "deploy": false,
+    "operationalGrants": false,
+    "trafficReopened": false,
+    "progressCreditAdded": 0
+  },
+  "document": "docs/OUF_STORAGE_G0_COLLECTORS_20261105.md",
+  "reader": "scripts/readback-storage-g0.py"
+}

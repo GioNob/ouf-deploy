@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Deliver the missing bounded current G0 collector (authenticated conditional bodies and complete observations, preserving consumed scopes), then the read-only DB reference export/join and writer census intake for one reviewable operational collection package. Do not ask the operator to execute historical collectors or declare G0 collection ready from the request manifest. Resolve representative capacity/window and G1 licence/lifecycle/custody plus full application dependency security before governed delivery. Prefer a fully quiescent migration if measured conditions allow it; no independent recovery/HUMAN workstream.",
+  "nextPlannedWork": "Compose and qualify the single G0 eight-section operational package using the delivered body collector, DB exports/join and existing host collectors, with current bindings/custody/budget and ACL classification. Resolve the operator-only target channel, external consumer census and maintenance window; submit the concrete package to the applicable gate before one real collection. Do not add unrelated recovery/HUMAN tests or replay controls13\u201317. Address only real out-of-profile findings and preserve G1 licence/lifecycle/custody/full-service security gates.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -217,7 +217,7 @@
   "g0CollectionRequest": {
     "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md",
     "manifest": "releases/storage-g0-evidence-request-20261105.json",
-    "status": "REVIEW_READY_COLLECTION_NOT_EXECUTABLE",
+    "status": "BODY_AND_DB_TOOLS_QUALIFIED_TARGET_PACKAGE_INCOMPLETE",
     "requiredEvidenceSections": 8,
     "writerPaths": 11,
     "completeTargetCollectorDelivered": false,
@@ -242,5 +242,21 @@
     "runId": 42100237756,
     "nativeCasesPassed": 12,
     "scanFindings": 0
+  },
+  "g0CollectorQualification": {
+    "document": "docs/OUF_STORAGE_G0_COLLECTORS_20261105.md",
+    "receipt": "evidence/storage-g0-collectors-qualified-20261105.json",
+    "bodyCommit": "f4b4152f78af7ca5a220714b517a458de5c494cc",
+    "bodyRunId": 42111278483,
+    "databaseCommit": "60a97c3a55da66e110953ba113b210c1d74dd1a2",
+    "databaseRunId": 42114275442,
+    "bodyCollectorDelivered": true,
+    "readOnlyDatabaseExporterDelivered": true,
+    "boundedReferenceJoinDelivered": true,
+    "writerCensusIntakeDelivered": true,
+    "completeEightSectionTargetPackageDelivered": false,
+    "targetOperations": 0,
+    "progressCreditAdded": 0,
+    "runtimeAuthorityIssued": false
   }
 }
