@@ -1,6 +1,6 @@
 {
   "schema": "ouf.storage-g0-evidence-request.v1",
-  "status": "BODY_AND_DB_TOOLS_QUALIFIED_TARGET_PACKAGE_INCOMPLETE",
+  "status": "PACKAGE_DELIVERED_TARGET_BINDINGS_AND_ADMISSION_HELD",
   "date": "2026-11-05",
   "baselineDeployCommit": "466209aaf58c1c1d936bde382089a253b90e6a2c",
   "priority": "MINIO_TO_SEAWEEDFS_CLOSURE",
@@ -84,11 +84,13 @@
     "external-consumers"
   ],
   "collectionBlockers": [
-    "TARGET_SHELL_OR_EQUIVALENT_OWNER_COLLECTOR_NOT_EXPOSED_TO_AGENT",
+    "TARGET_OPERATOR_OR_ACCESS_CHANNEL_NOT_IDENTIFIED",
+    "CURRENT_PRIVATE_ROLE_CONNECTION_AND_PRIOR_RECEIPT_BINDINGS_UNAVAILABLE",
+    "HOST_NETWORK_REACHABILITY_OR_NAMESPACE_APPLICABILITY_UNVERIFIED",
     "CURRENT_WRITER_AND_EXTERNAL_CONSUMER_CENSUS_NOT_AVAILABLE",
-    "MAINTENANCE_WINDOW_NOT_CONFIRMED",
-    "EIGHT_SECTION_OPERATIONAL_BINDING_CUSTODY_AND_ADMISSION_PACKAGE_INCOMPLETE",
-    "REAL_DATA_PROFILE_AND_ACL_CLASSIFICATION_NOT_VERIFIED"
+    "MAINTENANCE_WINDOW_CAPACITY_AND_CUSTODY_NOT_CONFIRMED",
+    "REAL_DATA_PROFILE_AND_ACL_CLASSIFICATION_NOT_VERIFIED",
+    "EXACT_RUNTIME_COLLECTION_NOT_ADMITTED"
   ],
   "legacyCollectorsMayBeReplayed": false,
   "newTargetControlAssigned": false,
@@ -113,5 +115,20 @@
     "targetOperations": 0,
     "progressCreditAdded": 0,
     "runtimeAuthorityIssued": false
+  },
+  "qualifiedOperatorPackage": {
+    "document": "docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md",
+    "qualificationReceipt": "evidence/storage-g0-package-qualified-20261105.json",
+    "operatorPreflightReceipt": "evidence/storage-g0-operator-preflight-20261105.json",
+    "sourceCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+    "runId": 42120934027,
+    "artifactId": 13459750069,
+    "status": "QUALIFIED_PACKAGE_TARGET_INPUTS_AND_NETWORK_UNVERIFIED",
+    "packageManifestSha256": "b789786ca9c129c7e80e19ba59c2927162a3f2b2c44fa1adbccecef7ff99ba5e",
+    "targetBindingsPresent": false,
+    "targetCommandReady": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "progressCreditAdded": 0
   }
 }

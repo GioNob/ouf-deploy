@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Compose and qualify the single G0 eight-section operational package using the delivered body collector, DB exports/join and existing host collectors, with current bindings/custody/budget and ACL classification. Resolve the operator-only target channel, external consumer census and maintenance window; submit the concrete package to the applicable gate before one real collection. Do not add unrelated recovery/HUMAN tests or replay controls13\u201317. Address only real out-of-profile findings and preserve G1 licence/lifecycle/custody/full-service security gates.",
+  "nextPlannedWork": "Resolve the operator/access channel and private current bindings for the delivered G0 package. Run its local-only check; verify host-network reachability/profile, writer census, custody, capacity and window. Only then construct the exact collection command for the applicable runtime gate, collect once if admitted, and review all eight sections. No additional generic component qualification, historical replay or unrelated recovery/HUMAN work.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -217,13 +217,14 @@
   "g0CollectionRequest": {
     "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md",
     "manifest": "releases/storage-g0-evidence-request-20261105.json",
-    "status": "BODY_AND_DB_TOOLS_QUALIFIED_TARGET_PACKAGE_INCOMPLETE",
+    "status": "PACKAGE_DELIVERED_TARGET_BINDINGS_AND_ADMISSION_HELD",
     "requiredEvidenceSections": 8,
     "writerPaths": 11,
     "completeTargetCollectorDelivered": false,
     "targetCommandReady": false,
     "targetOperations": 0,
-    "progressCreditAdded": 0
+    "progressCreditAdded": 0,
+    "operatorPackageDelivered": true
   },
   "clientContracts33": {
     "document": "docs/OUF_STORAGE_CLIENTS33_20261105.md",
@@ -257,6 +258,22 @@
     "completeEightSectionTargetPackageDelivered": false,
     "targetOperations": 0,
     "progressCreditAdded": 0,
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "operatorPackageDelivered": true
+  },
+  "g0OperatorPackage": {
+    "document": "docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md",
+    "qualificationReceipt": "evidence/storage-g0-package-qualified-20261105.json",
+    "operatorPreflightReceipt": "evidence/storage-g0-operator-preflight-20261105.json",
+    "sourceCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+    "runId": 42120934027,
+    "artifactId": 13459750069,
+    "status": "QUALIFIED_PACKAGE_TARGET_INPUTS_AND_NETWORK_UNVERIFIED",
+    "packageManifestSha256": "b789786ca9c129c7e80e19ba59c2927162a3f2b2c44fa1adbccecef7ff99ba5e",
+    "targetBindingsPresent": false,
+    "targetCommandReady": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "progressCreditAdded": 0
   }
 }

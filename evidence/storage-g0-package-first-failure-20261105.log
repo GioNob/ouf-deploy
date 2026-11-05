@@ -1,0 +1,7 @@
+2026-11-05T22:20:07.9174890Z Traceback (most recent call last):
+2026-11-05T22:20:07.9181730Z     require(all(sha((ROOT/p).read_bytes())==h for p,h in profile['qualifiedSourceSha256'].items()),'QUALIFIED_COMPONENT_BYTES_UNCHANGED')
+2026-11-05T22:20:07.9183256Z tools.storage_planning.inventory_manifest.PlanError: QUALIFIED_COMPONENT_BYTES_UNCHANGED
+2026-11-05T22:20:07.9803098Z Traceback (most recent call last):
+2026-11-05T22:20:07.9807864Z     out=w/'evidence';bundle=w/'package';build=decode((out/'build.json').read_bytes());verify_package(bundle,build['manifestSha256'])
+2026-11-05T22:20:07.9814414Z FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/_temp/g0-package/evidence/build.json'
+2026-11-05T22:20:08.1184077Z ##[error]No files were found with the provided path: /home/runner/work/_temp/g0-package/evidence/. No artifacts will be uploaded.
