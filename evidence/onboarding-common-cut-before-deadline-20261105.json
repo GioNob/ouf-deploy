@@ -1,0 +1,352 @@
+{
+  "source": "00ff6943d6bdd746b23479192be8fd9bd326150c",
+  "nativeOwnerRun": 41994840678,
+  "nativeOwnerJobs": {
+    "jobs": [
+      {
+        "id": 127135419225,
+        "name": "postgres-seaweed-owner",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41994840678,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Initialize containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Bind and boot the exact qualified storage image",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Compile actual owner and execute native crash scenarios",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Preserve native receipts and exact producer bindings",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Stop containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  "physicalRun": 41994840822,
+  "physicalJobs": {
+    "jobs": [
+      {
+        "id": 127135419953,
+        "name": "native-cut",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41994840822,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Compile the actual owner and fresh-process fixture driver",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Bind the exact qualified OCI33",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Drain actual owner and restore the physical common cut from exported backups",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Preserve sources and complete success or failure evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-java@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 127136200674,
+        "name": "independent-readback",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41994840822,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Acquire the original artifact with exact GitHub metadata",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Verify every checksum source binding backup byte and owner receipt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          }
+        ]
+      }
+    ]
+  },
+  "nativeOwnerArtifacts": {
+    "artifacts": [
+      {
+        "id": 13399831892,
+        "name": "onboarding-upload-native-41994840678",
+        "size_in_bytes": 68080,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399831892",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399831892/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:30:44Z",
+        "expires_at": "2027-02-03T08:29:19Z",
+        "updated_at": "2026-11-05T08:30:44Z",
+        "digest": "sha256:2d91a289c6cc87966a6cf6a5a56304c198940c2cd4a0d0d83d92e27b7461b5aa",
+        "workflow_run": {
+          "id": 41994840678,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "00ff6943d6bdd746b23479192be8fd9bd326150c"
+        }
+      }
+    ]
+  },
+  "physicalArtifacts": {
+    "artifacts": [
+      {
+        "id": 13400026449,
+        "name": "onboarding-common-cut-readback-41994840822",
+        "size_in_bytes": 7086672,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13400026449",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13400026449/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:31:18Z",
+        "expires_at": "2027-02-03T08:29:19Z",
+        "updated_at": "2026-11-05T08:31:18Z",
+        "digest": "sha256:719c1ac149fe1c0e32027031d3b9cbb29c614b23fab3777a4af355a447f57d32",
+        "workflow_run": {
+          "id": 41994840822,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "00ff6943d6bdd746b23479192be8fd9bd326150c"
+        }
+      },
+      {
+        "id": 13399358540,
+        "name": "onboarding-common-cut-41994840822",
+        "size_in_bytes": 7087765,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399358540",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399358540/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:31:07Z",
+        "expires_at": "2027-02-03T08:29:19Z",
+        "updated_at": "2026-11-05T08:31:07Z",
+        "digest": "sha256:5b765a6ddcf76fdb8780114f99896ef601d225ba973bd21bf6ee7f3de523e7b9",
+        "workflow_run": {
+          "id": 41994840822,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "00ff6943d6bdd746b23479192be8fd9bd326150c"
+        }
+      }
+    ]
+  },
+  "nativeReceipt": {
+    "status": "PASS",
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "namedPhysicalRecovery": true,
+    "actualOwnerTablesPreserved": true,
+    "pendingReconciledWithoutPut": true,
+    "staleApplicationWriterBlocked": true,
+    "staleS3PutDenied": true,
+    "missingWalBlocksS3": true,
+    "objects": 2,
+    "objectBytes": 36,
+    "cleanStorageStops": 12,
+    "cleanPostgresStops": 2,
+    "targetName": "ouf_onboarding_upload_frozen_v39",
+    "systemIdentifier": "7704601939882016808",
+    "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+    "backupFiles": 1671,
+    "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+  },
+  "independentReadback": {
+    "archiveSha256": "5b765a6ddcf76fdb8780114f99896ef601d225ba973bd21bf6ee7f3de523e7b9",
+    "backupFiles": 1671,
+    "checksums": 31,
+    "commit": "00ff6943d6bdd746b23479192be8fd9bd326150c",
+    "independentNativeRestore": false,
+    "members": 32,
+    "negativeReadbacks": [
+      "EXACT_SOURCE_BINDING_SET",
+      "TERMINAL_PASS",
+      "COMPONENT_BINDING",
+      "EXACT_OWNER_AFTER_RESTORE",
+      "NEGATIVE_WAL_GATE"
+    ],
+    "objects": 2,
+    "sources": 263,
+    "status": "PASS",
+    "targetOperations": 0
+  },
+  "supersededReason": "Final review added deadline checks after storage I/O to both upload and recovery. Native qualification is repeated for the successor; this successful original remains preserved."
+}
