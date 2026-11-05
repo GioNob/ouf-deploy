@@ -225,4 +225,5 @@ func execute(configPath,out string) error {
  public:=map[string]any{"failureCategory":failureCategory(readError),"complete":readError==nil,"records":len(rows),"requests":budget.requests,"objectBodiesRead":0,"targetWrites":0,"summary":publicSummary};publicJSON,_:=json.Marshal(public);fmt.Println(string(publicJSON))
  if readError!=nil{return errors.New("INVENTORY_INCOMPLETE_PRIVATE_DETAIL_NOT_PRINTED")};return nil
 }
-func main(){if len(os.Args)!=3{fmt.Fprintln(os.Stderr,"PRIVATE_CONFIG_AND_NEW_OUTPUT_SCOPE_REQUIRED");os.Exit(2)};if execute(os.Args[1],os.Args[2])!=nil{fmt.Fprintln(os.Stderr,"INVENTORY_STOP_PRIVATE_INPUTS_NOT_PRINTED");os.Exit(1)}}
+func main(){if len(os.Args)>1&&os.Args[1]=="g0-collect"{g0Main()};if len(os.Args)!=3{fmt.Fprintln(os.Stderr,"PRIVATE_CONFIG_AND_NEW_OUTPUT_SCOPE_REQUIRED");os.Exit(2)};if execute(os.Args[1],os.Args[2])!=nil{fmt.Fprintln(os.Stderr,"INVENTORY_STOP_PRIVATE_INPUTS_NOT_PRINTED");os.Exit(1)}}
+
