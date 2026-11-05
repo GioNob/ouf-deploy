@@ -323,13 +323,20 @@ class PostCredentialHistory(initial.predecessor_fixture.Predecessor):
 
     def test_unexpired_authority_and_new_application_claim_still_deny(self):
         import time
-        self.new_decision['expiresAt']=int(time.time())+100
+        original=copy.deepcopy(self.new_decision)
+        now=int(time.time())
+        # A valid-duration future window must fail specifically because it is live.
+        self.new_decision.update(approvedAt=now-100,expiresAt=now+100)
         self.write(self.new_context/'decision.json',self.new_decision)
         with self.assertRaisesRegex(Exception,'WINDOW_MUST_BE_EXPIRED'):self.observe()
-        self.new_decision['expiresAt']=int(time.time())-20
+        # Restore the exact signed-history fixture expiry. Recomputing now-20
+        # extends its original 3600-second window and changes authority binding.
+        self.new_decision=original
         self.write(self.new_context/'decision.json',self.new_decision)
         self.write(Path(self.new_paths['databases'])/'recovery.json',{'state':'UNPROVEN'})
-        with self.assertRaisesRegex(Exception,'STAGE_HISTORY'):self.observe()
+        # Deterministically cover slow execution without sleeping or weakening gates.
+        with patch.object(initial.process.time,'time',return_value=now+120):
+            with self.assertRaisesRegex(Exception,'STAGE_HISTORY'):self.observe()
 
 for _name in initial.predecessor_fixture.Predecessor.__dict__:
     if _name.startswith('test_'):setattr(PostCredentialHistory,_name,None)
