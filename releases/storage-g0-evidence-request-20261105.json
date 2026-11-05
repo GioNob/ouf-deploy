@@ -1,0 +1,101 @@
+{
+  "schema": "ouf.storage-g0-evidence-request.v1",
+  "status": "REVIEW_READY_COLLECTION_NOT_EXECUTABLE",
+  "date": "2026-11-05",
+  "baselineDeployCommit": "466209aaf58c1c1d936bde382089a253b90e6a2c",
+  "priority": "MINIO_TO_SEAWEEDFS_CLOSURE",
+  "knownConsumedControls": [
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "lastKnownCumulativeControls": 17,
+  "lastKnownCumulativeDockerGets": 52,
+  "historicalSourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+  "historicalInventoryCounts": {
+    "objects": 120,
+    "bytes": 203743,
+    "advertisedHashes": 110,
+    "verifiedBodies": 0
+  },
+  "candidateCohort": {
+    "seaweedfsLock": "releases/seaweedfs-452-generation33-candidate-lock-20261104.json",
+    "seaweedfsLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "onboarding": "d5155899b09dda298494b68cefa7e1f281167652",
+    "udp": "0d40da05408a14db31d4d41af2372d6a71480291",
+    "ingestion": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+    "runtimeInstalledFromCandidateInferred": false
+  },
+  "requirements": [
+    {
+      "id": "G0-RUNTIME",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-OBJECTS",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-ACCESS",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-WRITERS",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-DB",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-CAPACITY",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-CUSTODY",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    },
+    {
+      "id": "G0-WINDOW",
+      "status": "REQUIRED_CURRENT_PRIVATE_EVIDENCE",
+      "historicalReceiptCanSatisfy": false
+    }
+  ],
+  "requiredWriterPaths": [
+    "onboarding-human-upload",
+    "onboarding-delegated-upload",
+    "onboarding-profile-worker",
+    "ingestion-execution-replay",
+    "ingestion-outbox-ack-watermark",
+    "udp-store",
+    "udp-shadow",
+    "udp-purge-compaction",
+    "udp-maintenance",
+    "administrative-tools",
+    "external-consumers"
+  ],
+  "collectionBlockers": [
+    "TARGET_SHELL_OR_EQUIVALENT_OWNER_COLLECTOR_NOT_EXPOSED_TO_AGENT",
+    "CURRENT_BOUND_BODY_COLLECTOR_NOT_DELIVERED",
+    "READ_ONLY_DB_EXPORT_AND_OBJECT_REFERENCE_JOIN_NOT_DELIVERED",
+    "CURRENT_WRITER_AND_EXTERNAL_CONSUMER_CENSUS_NOT_AVAILABLE",
+    "MAINTENANCE_WINDOW_NOT_CONFIRMED"
+  ],
+  "legacyCollectorsMayBeReplayed": false,
+  "newTargetControlAssigned": false,
+  "targetCommandReady": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceCreditAdded": 0,
+  "document": "docs/OUF_STORAGE_G0_COLLECTION_REQUEST_20261105.md"
+}

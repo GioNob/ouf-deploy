@@ -89,6 +89,9 @@ def bind_review(auth,setup,provider_scope):
 
 def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None,legacy_reader_control=False):
     owner=provider_phase.runtime;window=owner.creation.window;engine=owner.creation.engine
+    # Resolve the exact owned test provider while installation authority is current.
+    # Later SIGKILL is fixture fault injection, not a renewed installation command.
+    fault_provider=owner.creation.owned_id()
     parent=owner.parent;template=setup['template'];recipe=owner.issuer.scope['registryRecipe']
     unit=setup['unit'];ledger=setup['ledger'];install=setup['install']
     assert engine.inspect(window.transition)['State']['Paused'] is True
@@ -205,7 +208,7 @@ def qualify(provider_phase,auth,setup,boundary,run,*,registry_node=None,legacy_r
         command('systemctl','kill','--signal=KILL','--kill-who=main',unit)
         recovered=wait(lambda v:v['state']=='ACTIVE' and v['attempts']>first['attempts'] and v['reentryCount']>first['reentryCount'])
         assert recovered['startedWall']==first['startedWall'] and recovered['publicationCount']>=first['publicationCount']
-        provider=owner.creation.owned_id();assert engine.request('POST','/v1.44/containers/'+provider+'/kill?signal=SIGKILL')[0]==204
+        assert engine.request('POST','/v1.44/containers/'+fault_provider+'/kill?signal=SIGKILL')[0]==204
         blocked=wait(lambda v:v['state']=='BLOCKED');assert not any(owner.coordinator.sets())
         before=queries[0];time.sleep(1.5)
         assert row()['state']=='BLOCKED' and row()['attempts']==blocked['attempts'] and queries[0]==before
