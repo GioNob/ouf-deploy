@@ -1,0 +1,35 @@
+{
+  "archiveBytes": 61920,
+  "archiveSha256": "91b7f31c4e73510a0d58aefd7408ec6a91c988db404db2baa9aac753cacca37a",
+  "artifactId": 13397423414,
+  "checksums": 38,
+  "jobId": 127118496112,
+  "legacyV38ReceiptUnchanged": true,
+  "limits": [
+    "application lost-response injection, not wire-level proxy fault",
+    "owner ACK fence is not physical credential revocation",
+    "other deployed writers and common-cut integration remain open",
+    "unkeyed HTTP requests are distinct operations"
+  ],
+  "members": 39,
+  "nativeScenarios": 15,
+  "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+  "processCrashReceipts": 4,
+  "releaseAdmitted": false,
+  "runId": 41989631975,
+  "schema": "ouf.onboarding-upload39-readback.v1",
+  "sourceCommit": "9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f",
+  "sourceGitBlobs": 446,
+  "sourceLockPromoted": false,
+  "sourceSha256Bindings": 258,
+  "sourceTree": "b6734fba1befe90033fd49585ca4b034569ec226",
+  "status": "NATIVE_OWNER_QUALIFIED_NOT_DEPLOYED",
+  "suites": {
+    "it.comune.trieste.ouf.onboarding.ManagedFileDelegatedUploadApiTest": 2,
+    "it.comune.trieste.ouf.onboarding.ManagedFileStagingApiTest": 3,
+    "it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest": 15,
+    "it.comune.trieste.ouf.onboarding.application.MinioManagedFileStagingStoreTest": 3
+  },
+  "targetOperations": 0,
+  "tests": 23
+}
