@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — host HELD SLICE_NAME_REQUIRED, nessun replay
+
+Installazione2file pinned riuscita; esito operatore HELD/SLICE_NAME_REQUIRED. Ricevuta evidence/storage-host-containment-slice-held-operator-20261106.json. Area host ora consumata: non rilanciare installer+apply, non cancellare area o alterare claim. Nel codice6d5e il controllo è prima del primo intento/scrittura override/mutazione servizi; questo è posizionamento del codice,non ancora readback del journal target né stato live.
+
+Identificata lacuna validator Slice: esclude escape esadecimali validi systemd, tipici delle slice dei template. Target property effettiva non ancora letta. Correzione preserva nome escaped verbatim verso GetUnit,non lo trasforma in percorso.4unitPASS; fixture nativa ora2servizi istanziati con slice escaped,oltre3semplici+registry. Qualifica in corso,non consegnare mutatore corretto come qualificato finoSUCCESS. Nessun nuovo consenso richiesto o tentativo operativo avviato.
+
+Prossima azione target: sola lettura del journal conservato per legare causa e fase,senzaprovider/modifiche. Autorizzazione host originale registrata,ma non concede replayautomatico. Dopo readback costruire eventuale continuazione governata senzareset,tenendo lo stesso scopo e prove. Nessun creditoMiniPET/archivio/capture. Source d5155899/PR54draftopen invariati.
+
 ## Decisione operatore 2026-11-06 — contenimento host autorizzato, esecuzione VPS pendente
 
 Giovanni risponde “autorizzo” al pacchetto esatto b05ab554: decisione GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01, evidence/storage-host-containment-operator-decision-20261106.json. Autorizzati6override persistenti,disabilitazione/stop5timer,completamento naturale5oneshot,disabilitazione/TERM registry,600s e1tentativo. Non chiedere nuovamente questo consenso. Non è grant runtime o conferma HUMAN/THS autenticata. Nessuna esecuzione VPS già attestata.

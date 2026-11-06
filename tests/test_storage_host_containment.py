@@ -16,6 +16,14 @@ class ReadRunner:
         return self.reply
 
 class TypedStopGuard(unittest.TestCase):
+    def test_slice_names_preserve_systemd_hex_escapes(self):
+        for name in ('system.slice', r'system-ouf\x2dpolicy\x2dtoken.slice', '-.slice', 'scope:review.slice'):
+            self.assertTrue(d.valid_slice_name(name), name)
+        for name in ('', '../system.slice', 'system.slice/child', r'system\xzz.slice',
+                     r'system\x2.slice', 'system slice.slice', 'a' * 250 + '.slice',
+                     'system.slice\n', r'system\n.slice', 'system@a.slice'):
+            self.assertFalse(d.valid_slice_name(name), name)
+
     def test_only_two_typed_empty_arrays_are_admitted(self):
         r=ReadRunner('a(sasbttttuii) 0\na(sasbttttuii) 0\n')
         d.empty_stop_hooks(r,'ouf-test.service')

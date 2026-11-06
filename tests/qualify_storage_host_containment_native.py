@@ -27,7 +27,7 @@ def main():
     root = Path('/var/lib') / ('ouf-host-stop-native-' + tag)
     root.mkdir(mode=0o700)
     prefix = 'ouf-native-token-' + tag
-    p.TIMERS = tuple(prefix + '-' + str(i) + '.timer' for i in range(5))
+    p.TIMERS = tuple(prefix + ('-' if i < 3 else '@') + str(i) + '.timer' for i in range(5))
     p.SERVICES = tuple(n[:-6] + '.service' for n in p.TIMERS)
     p.REGISTRY = prefix + '-registry.service'
     p.MASKED = (prefix + '-masked.service', prefix + '-masked.timer')
@@ -90,7 +90,10 @@ def main():
         probe_area = root / 'inactive-cgroup-proof'
         probe_area.mkdir(mode=0o700)
         probe = d.Runner(vars(b), probe_area)
-        d.bind_cgroups(p, probe, d.show(p, probe))
+        initial_rows = d.show(p, probe)
+        instance_slices = [p.one(initial_rows[n], 'Slice') for n in p.SERVICES if '@' in n]
+        assert len(instance_slices) == 2 and all('\\x2d' in n for n in instance_slices)
+        d.bind_cgroups(p, probe, initial_rows)
         for unit in p.SERVICES:
             d.no_processes(probe, unit)
         assert not d.cgroup_empty(probe.cgroups[p.REGISTRY])
@@ -113,6 +116,7 @@ def main():
             'result': result, 'fiveNaturalCompletions': True, 'registryTermHandlerCompleted': True,
             'hostAttemptReplayRejected': True, 'targetOperationProven': False,
             'initiallyInactiveAndActiveCgroupsChecked': True,
+            'instantiatedServiceEscapedSlicesChecked': len(instance_slices),
             'productionSha256': b.digest((ROOT / 'scripts/storage-host-containment-20261106.py').read_bytes()),
             'acceptanceCreditAdded': 0}), flush=True)
     except Exception:

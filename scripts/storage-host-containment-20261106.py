@@ -181,13 +181,19 @@ def cgroup_empty(path):
         os.close(fd)
 
 
+def valid_slice_name(name):
+    # Keep systemd's escaped name verbatim for GetUnit; never unescape into a path.
+    return (len(name) <= 255 and
+            re.fullmatch(r'(?:[A-Za-z0-9_:.-]|\\x[0-9a-fA-F]{2})+\.slice', name) is not None)
+
+
 def bind_cgroups(p, run, rows):
     fd = cgroup_root(); os.close(fd)
     for unit in tuple(p.SERVICES) + (p.REGISTRY,):
         path = p.one(rows[unit], 'ControlGroup')
         if not path:
             slice_name = p.one(rows[unit], 'Slice')
-            need(re.fullmatch(r'[A-Za-z0-9_.-]+\.slice', slice_name) is not None, 'SLICE_NAME_REQUIRED')
+            need(valid_slice_name(slice_name), 'SLICE_NAME_REQUIRED')
             raw = run.run('busctl', ['get-property', 'org.freedesktop.systemd1', object_path(run, slice_name),
                 'org.freedesktop.systemd1.Slice', 'ControlGroup']).strip()
             need(raw.startswith('s '), 'TYPED_SLICE_CGROUP_REQUIRED')
