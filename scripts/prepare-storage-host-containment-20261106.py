@@ -117,6 +117,23 @@ def words(row, key):
     return value.split()
 
 
+def configuration_path_kind(path):
+    """Classify manager-reported paths, without resolving or following symlinks.
+
+    systemd linked unit fragments can be outside its search directories and can
+    have arbitrary filenames. Location is metadata, not proof of file custody.
+    protected() remains the actual descriptor-relative custody/read boundary.
+    """
+    if not path or not Path(path).is_absolute() or path != str(Path(path)) or path != os.path.normpath(path):
+        return 'INVALID_NONCANONICAL_PATH'
+    if any(path == root or path.startswith(root + '/') for root in ('/proc', '/sys', '/dev')):
+        return 'INVALID_PSEUDO_FILESYSTEM_PATH'
+    if path.startswith(('/etc/systemd/', '/run/systemd/', '/usr/lib/systemd/',
+                        '/usr/local/lib/systemd/', '/lib/systemd/')):
+        return 'SYSTEMD_CONFIGURATION_LOCATION'
+    return 'EXTERNAL_MANAGER_REPORTED_LOCATION'
+
+
 def review(rows, sources, config):
     by_name = {one(row, 'Id'): row for row in rows}
     need(set(by_name) == EXPECTED, 'TOKEN_UNIT_SET_CHANGED')
@@ -125,6 +142,8 @@ def review(rows, sources, config):
         row = by_name[name]
         report = {k: one(row, k) for k in SAFE if k in row}
         report['configurationFilesBound'] = sum(name in f['units'] for f in config.values())
+        report['externalConfigurationFilesBound'] = sum(name in f['units'] and
+            f.get('locationKind') == 'EXTERNAL_MANAGER_REPORTED_LOCATION' for f in config.values())
         report['needDaemonReload'] = one(row, 'NeedDaemonReload')
         report['otherNamesPresent'] = set(words(row, 'Names')) - {name} != set()
         report['stopPropagationPresent'] = any(words(row, k) for k in ('ConsistsOf', 'PropagatesStopTo', 'BoundBy'))
@@ -179,7 +198,7 @@ def prepare(h, run=command):
     need(names == EXPECTED, 'TOKEN_UNIT_SET_CHANGED')
     rows = property_rows(run(['show', *sorted(names), *['--property=' + k for k in PROPS]], until))
     need({one(row, 'Id') for row in rows} == names, 'SHOW_UNIT_SET_CHANGED')
-    config, findings = {}, []
+    config, findings, reads_attempted = {}, [], 0
     for row in rows:
         name = one(row, 'Id')
         if name in MASKED:
@@ -187,19 +206,29 @@ def prepare(h, run=command):
             continue
         need(one(row, 'LoadState') == 'loaded', 'UNIT_NOT_LOADED')
         fragment = one(row, 'FragmentPath')
-        paths = [fragment] + words(row, 'DropInPaths')
-        for path in paths:
-            need(time.monotonic() < until and len(config) < 64, 'CONFIGURATION_READ_BUDGET')
+        paths = [('FragmentPath', fragment)] + [('DropInPaths', path) for path in words(row, 'DropInPaths')]
+        for property_name, path in paths:
+            need(time.monotonic() < until, 'CONFIGURATION_READ_BUDGET')
             if path in config:
                 config[path]['units'].append(name)
                 continue
-            need(path.startswith(('/etc/systemd/system/', '/run/systemd/system/', '/usr/lib/systemd/system/', '/lib/systemd/system/'))
-                 and '..' not in Path(path).parts, 'UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW')
+            location = configuration_path_kind(path)
+            context = {'unit': name, 'property': property_name,
+                       'pathSha256': h['digest'](path.encode()), 'locationKind': location}
+            if location.startswith('INVALID_'):
+                findings.append(context | {'reason': 'UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW', 'bodyReadAttempted': False})
+                continue
+            need(reads_attempted < 64, 'CONFIGURATION_READ_BUDGET')
+            reads_attempted += 1
             try:
                 raw = h['protected'](Path(path), limit=262144)
-                config[path] = {'sha256': h['digest'](raw), 'text': raw.decode('utf-8'), 'units': [name]}
-            except (h['Held'], OSError, UnicodeError):
-                findings.append({'unit': name, 'reason': 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN'})
+                config[path] = {'sha256': h['digest'](raw), 'text': raw.decode('utf-8'),
+                                'units': [name], 'locationKind': location}
+            except (h['Held'], OSError, UnicodeError) as error:
+                # Do not export exception text: OSError may contain private paths.
+                findings.append(context | {'reason': 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN',
+                    'bodyReadAttempted': True, 'errorType': type(error).__name__,
+                    'errno': error.errno if isinstance(error, OSError) else None})
         if one(row, 'NeedDaemonReload') != 'no':
             findings.append({'unit': name, 'reason': 'EFFECTIVE_CONFIGURATION_RELOAD_REQUIRED'})
     reports = review(rows, legacy['sources'], config)
@@ -207,6 +236,7 @@ def prepare(h, run=command):
         'createdEpoch': int(time.time()), 'legacyValidUntilEpoch': legacy['validUntilEpoch'],
         'priorInputSha256': PRIOR, 'sources': legacy['sources'],
         'unitProperties': rows, 'unitConfiguration': config, 'findings': findings,
+        'configurationReadAttempts': reads_attempted,
         'timerUnits': list(TIMERS), 'serviceUnits': list(SERVICES) + [REGISTRY],
         'maskedUnitsRemainUntouched': list(MASKED),
         'registryInclusionReason': 'Conservative containment of additional active OUF token producer; source disjointness unproven',
@@ -232,6 +262,7 @@ def prepare(h, run=command):
         'legacyPlanSha256': next(iter(PRIOR.values())), 'legacyValidUntilEpoch': legacy['validUntilEpoch'],
         'legacyPlanUnexpiredAtPreparation': int(time.time()) < legacy['validUntilEpoch'],
         'units': reports, 'unitConfigurationFilesBound': len(config), 'findings': findings,
+        'configurationReadAttempts': reads_attempted,
         'proposedTimerUnits': list(TIMERS), 'proposedServiceUnits': list(SERVICES) + [REGISTRY],
         'registryIncludedConservatively': True, 'wholeBackupSourcesConsidered': len(legacy['sources']),
         'oldPlanOrAttemptModified': False, 'runtimeCredentialBodiesRead': 0,

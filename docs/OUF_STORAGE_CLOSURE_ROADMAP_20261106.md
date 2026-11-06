@@ -1,3 +1,7 @@
+## Correzione corrente del preparatore host
+
+Prima preparazione HELD sul filtro percorso,prima di scrivere. Corretto il supporto ai frammenti systemd esterni mantenendo custodia e nofollow;9test localiPASS. Ora eseguire il preparatore corretto una volta; configurazioni illeggibili restano rilievi,non successi. [Dettagli e limiti](OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md). Nessun nuovo stop/capture,area cancellata o gate chiuso; questo corregge lo stesso blocco host,non aggiunge un filone o un nuovo traguardo MiniPET.
+
 ## Azione corrente — contenimento host prima del nuovo fermo
 
 Cinque timer attivi hanno ReadWritePaths verso tutte cinque fonti runtime. È presente anche un service registry attivo: incluso conservativamente nel perimetro proposto; la coppia semantic mascherata resta invariata. [Ricevuta](../evidence/storage-runtime-writer-metadata-operator-20261106.json).

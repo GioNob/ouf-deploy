@@ -1,5 +1,15 @@
 # Contenimento dei writer host per la prima copia non produttiva
 
+## Correzione dopo il primo tentativo preparatorio
+
+Il preparatore2adcde61 è stato respinto con UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW, prima di creare la directory o scrivere la bozza. Nessun servizio modificato. [Ricevuta e limiti](../evidence/storage-host-containment-path-held-operator-20261106.json). Non conosciamo ancora unità/percorso specifici: il vecchio errore non li esportava.
+
+Il vecchio filtro ammetteva solo quattro prefissi. [systemd.unit ufficiale](https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html) documenta unità collegate fuori searchpath e destinazioni con nomi arbitrari. Il preparatore corretto accetta i percorsi canonici dichiarati dal manager soltanto attraverso lo stesso lettore protetto e invariato: root, antenati protetti, nofollow, file regolare/singlelink/stabile e max256KiB. Esclude pseudo-filesystem e percorsi non canonici. Non segue collegamenti né indebolisce permessi.
+
+Se il percorso è invalido o la custodia non è dimostrata, salva un rilievo redatto per unità/proprietà/hash percorso e continua le altre configurazioni. Questo NON trasforma un rilievo in accettazione; executor e autorizzazione restano assenti. Conteggio massimo64tentativi include gli insuccessi.
+
+9/9test locali PASS, inclusi3nuovi casi esterno protetto/custodia respinta/percorso invalido senza lettura. Nessuna qualifica target fermo o capture. Area preparatoria invariata: se esiste viene rifiutata, mai eliminata o sovrascritta. Il nuovo comando esegue soltanto il preparatore corretto,non il vecchio stop/capture. Scadenza e quattro digest precedenti invariati.
+
 ## Risultato corrente
 
 Il controllo sul VPS identifica cinque timer attivi e il collegamento ReadWritePaths alle cinque fonti runtime cambiate. I cinque servizi erano inattivi all'osservazione, ma i timer potevano riattivarli. Un sesto servizio OUF token, registry, era attivo. La coppia semantic era già mascherata. [Ricevuta riportata dall'operatore](../evidence/storage-runtime-writer-metadata-operator-20261106.json).
@@ -8,7 +18,7 @@ Questo rimuove l'incertezza sul perimetro minimo host da considerare: il fermo D
 
 ## Preparazione concreta
 
-Programma scripts/prepare-storage-host-containment-20261106.py,14229byte,SHA256a4fe4def22c21889c313c7c32e885aedd8e4c0de43fba1d76c2657ab746dbb47.
+Programma scripts/prepare-storage-host-containment-20261106.py,16077byte,SHA256a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d.
 
 Crea soltanto /var/lib/ouf-storage-host-containment-preparation-20261106-v1 (0700), draft.private.json e result.json (0600). Legge metadati systemd e configurazioni delle unità con custodia protetta. Conserva privatamente configurazioni potenzialmente segrete; restituisce soltanto stati, flag di revisione, conteggi e digest. Tre comandi systemctl di lettura,10s/call,1MiB/call,60s complessivi; max64configurazioni da256KiB; bozza massimo16MiB. Nessun corpo token o API Docker/IAM. Nessun comando di mutazione; non ha modalità apply.
 
@@ -26,7 +36,7 @@ I dati aggiunti rispetto al reader precedente servono a scegliere il comando esa
 
 **Executor host e composizione della nuova operazione non ancora implementati.** La preparazione raccoglie e conserva quanto necessario a completarli; non richiedere approvazione di un mutatore inesistente. Prima dell'uso target servono implementazione/qualifica e decisione sull'esatto perimetro esteso. Non rilanciare il vecchio stop o capture.
 
-I6test del nuovo preparatore verificano confini di lettura, redazione, custodia output, nooverwrite e vincolo al vecchio tentativo; non qualificano un fermo host. Nessun nuovo test Docker/restore/crypto riuscito viene ripetuto. Il difetto iniziale della fixture (helper run omonimo di unittest.TestCase.run) è corretto:6/6PASS locali, CI dedicata separata.
+I9test del preparatore corretto verificano confini di lettura, redazione, custodia output, nooverwrite e vincolo al vecchio tentativo; non qualificano un fermo host. Nessun nuovo test Docker/restore/crypto riuscito viene ripetuto. Il difetto iniziale della fixture (helper run omonimo di unittest.TestCase.run) è corretto:6/6PASS locali, CI dedicata separata.
 
 ## Stato progetto
 

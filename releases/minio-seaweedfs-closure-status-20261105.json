@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Prepare one private host-containment draft for five timer/service pairs plus the active registry token producer; exact unit configuration is needed for a bounded no-force/no-restart executor. Preserve consumed Docker attempt and original expiry; no replay. Then qualify composed host containment + new linked stop/capture, obtain exact operational decision, produce archive, transfer PC, restore, close SeaweedFS criteria.",
+  "nextPlannedWork": "Run corrected private host-containment preparation after pre-write UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW. External systemd fragments supported only through unchanged protected reader; bad paths/custody retained as findings. No stop/capture replay or reset. Use exact prepared config to finish host executor and linked operation, then archive/PC/restore and SeaweedFS criteria.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -650,12 +650,17 @@
   "hostContainmentPreparation": {
     "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md",
     "script": "scripts/prepare-storage-host-containment-20261106.py",
-    "scriptSha256": "a4fe4def22c21889c313c7c32e885aedd8e4c0de43fba1d76c2657ab746dbb47",
+    "scriptSha256": "a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d",
     "targetPreparationPending": true,
     "executorImplemented": false,
     "serviceMutation": false,
-    "testsLocalPass": 6,
-    "acceptanceCreditAdded": 0
+    "testsLocalPass": 9,
+    "acceptanceCreditAdded": 0,
+    "scriptBytes": 16077,
+    "lastTargetResult": "HELD_UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW_BEFORE_WRITES",
+    "failureReceipt": "evidence/storage-host-containment-path-held-operator-20261106.json",
+    "exactFailedUnitAndPathKnown": false,
+    "externalManagerReportedPathsUseUnchangedProtectedReader": true
   },
   "generalCiObserved": {
     "commit": "2db26f14d12930535af09b9140d0c3e3c67a1b86",

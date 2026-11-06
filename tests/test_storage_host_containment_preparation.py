@@ -110,9 +110,43 @@ class Preparation(unittest.TestCase):
     def test_unreadable_configuration_retains_review_finding_not_false_success(self):
         self.unavailable.add('/etc/systemd/system/' + p.REGISTRY)
         result = self.prepare()
-        self.assertEqual(result['findings'], [{'unit': p.REGISTRY,
-            'reason': 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN'}])
+        self.assertEqual(len(result['findings']), 1)
+        self.assertEqual(result['findings'][0]['unit'], p.REGISTRY)
+        self.assertEqual(result['findings'][0]['reason'], 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN')
         self.assertFalse(result['targetStopOrCaptureAuthorized'])
+
+    def test_external_fragment_arbitrary_filename_keeps_protected_read_and_redaction(self):
+        path = '/var/lib/ouf-private-installation/current/unit.runtime'
+        row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+        row['FragmentPath'] = [path]
+        self.files[path] = ('[Service]\nEnvironment=' + self.secret + '\n').encode()
+        result = self.prepare()
+        report = next(r for r in result['units'] if r['Id'] == p.REGISTRY)
+        self.assertEqual(report['externalConfigurationFilesBound'], 1)
+        self.assertNotIn(path, json.dumps(result))
+        self.assertNotIn(self.secret, json.dumps(result))
+        self.assertEqual(result['findings'], [])
+
+    def test_external_fragment_custody_failure_cannot_be_admitted_by_location(self):
+        path = '/opt/ouf-unprotected/unit.runtime'
+        row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+        row['FragmentPath'] = [path]
+        self.unavailable.add(path)
+        result = self.prepare()
+        self.assertEqual(result['findings'][0]['locationKind'], 'EXTERNAL_MANAGER_REPORTED_LOCATION')
+        self.assertEqual(result['findings'][0]['reason'], 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN')
+        self.assertEqual(next(r for r in result['units'] if r['Id'] == p.REGISTRY)['configurationFilesBound'], 0)
+
+    def test_invalid_path_is_reported_without_reading_it_or_losing_other_units(self):
+        for path in ('', '../unit', '/etc/../root/unit', '/proc/1/environ', '/dev/zero', '/sys/example'):
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as temp:
+                self.area = Path(temp) / 'preparation'
+                row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+                row['FragmentPath'] = [path]
+                result = self.prepare()
+                self.assertEqual(result['findings'][0]['reason'], 'UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW')
+                self.assertFalse(result['findings'][0]['bodyReadAttempted'])
+                self.assertEqual(result['unitConfigurationFilesBound'], 10)
 
     def test_repeated_identity_property_denied_without_new_files(self):
         self.rows[0]['Id'].append(self.rows[0]['Id'][0])
