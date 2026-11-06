@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Execute one separately bounded DB continuation: inspect the two known retained overlay formats using original cohort validators and prepare all three DB drafts only if every observed channel passes. Keep S3 and consumed scopes intact. Receive only redacted result, then complete current configuration/operator evidence review and the exact collection decision. No backup availability question as preparation prerequisite; acceptance/operational requirements remain.",
+  "nextPlannedWork": "Run the first composed local check using the qualified installed launch.py and the DB continuation candidate; inspect exact capacity path existence/ancestry locally before consuming collection. Receive both redacted JSON reports. Do not rerun preparation or qualified provider tests. Missing operator evidence and collection decision remain explicit; prepare an exact governed collection command only after resolving observed input/path blockers. Do not require current inventory evidence before the admitted collection meant to obtain it. Backup discovery remains deferred for preparation, not waived for acceptance.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -328,7 +328,7 @@
     "candidateCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
     "runId": 42194949283,
     "artifactId": 13492110156,
-    "status": "VPS_S3_DRAFT_PREPARED_THREE_DATABASE_OVERRIDES_HELD",
+    "status": "VPS_ALL_FOUR_CONNECTION_DRAFTS_PREPARED_COMBINED_CHECK_PENDING",
     "targetExecuted": true,
     "targetInputCheckPassed": false,
     "backupQuestionDeferredForPreparation": true,
@@ -345,9 +345,12 @@
     "operatorReceipt": "evidence/storage-g0-input-preparation-operator-20261106.json",
     "targetExecutionProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
     "connectionDraftsPrepared": [
-      "s3"
+      "s3",
+      "onboarding",
+      "udp",
+      "ingestion"
     ],
-    "databaseDraftsPrepared": 0,
+    "databaseDraftsPrepared": 3,
     "processGenerationsChecked": 5,
     "networkBindingDraftPresent": true
   },
@@ -371,13 +374,31 @@
   "g0DatabaseContinuation": {
     "script": "scripts/continue-storage-g0-databases-20261106.py",
     "document": "docs/OUF_STORAGE_G0_DATABASE_CONTINUATION_20261106.md",
-    "status": "LOCAL_TESTS_PASS_VPS_EXECUTION_PENDING",
+    "status": "VPS_THREE_DATABASE_DRAFTS_PREPARED_ALL_FOUR_CONNECTIONS_PRESENT",
     "localCasesPassed": 14,
     "originalPreparerChanged": false,
     "originalCohortValidatorsChanged": false,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "providerRequests": 0,
     "progressCreditAdded": 0,
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "operatorReceipt": "evidence/storage-g0-db-continuation-operator-20261106.json",
+    "operatorProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+    "allFourConnectionDraftsPresent": true,
+    "configurationFilesRead": 2,
+    "configurationBytesRead": 2429,
+    "dedicatedRunId": 42200612540,
+    "dedicatedCiStatus": "SUCCESS"
+  },
+  "g0FirstComposedCheck": {
+    "document": "docs/OUF_STORAGE_G0_FIRST_COMPOSED_CHECK_20261106.md",
+    "status": "COMMAND_READY_OPERATOR_EXECUTION_PENDING",
+    "collectorChanged": false,
+    "operatorExecutionConfirmed": false,
+    "capacityExactPathsPresent": null,
+    "capacityAncestryCompatible": null,
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "progressCreditAdded": 0
   }
 }
