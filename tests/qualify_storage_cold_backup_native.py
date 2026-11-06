@@ -49,7 +49,14 @@ def main():
         containers.append(mi)
         for _ in range(90):
             try:
+                # pg_isready also succeeds against the temporary init server.
+                # Wait for the final owner postmaster to replace PID1 first.
+                owner = docker('exec', pg, 'cat', '/proc/1/comm')
+                if owner != 'postgres':
+                    time.sleep(1)
+                    continue
                 docker('exec', pg, 'pg_isready', '-U', 'postgres')
+                report['postgresPid1BeforeSeed'] = owner
                 break
             except subprocess.CalledProcessError:
                 time.sleep(1)
@@ -98,6 +105,9 @@ def main():
         # Container shutdown may terminate the auxiliary exec before it returns.
         # Reconcile the original server's exit; never replay pg_ctl on ambiguity.
         server_exit = docker('wait', pg, timeout=15)
+        report['pgCtlExecExitCode'] = ctl.returncode
+        report['postgresServerExitCode'] = int(server_exit)
+        print('Fixture PostgreSQL shutdown:', json.dumps({k: report[k] for k in ('pgCtlExecExitCode', 'postgresServerExitCode', 'postgresPid1BeforeSeed')}), flush=True)
         assert server_exit == '0', 'POSTGRES_SERVER_EXIT_NOT_CLEAN'
         report['pgCtlExecExitCode'] = ctl.returncode
         report['postgresServerExitCode'] = int(server_exit)
@@ -149,6 +159,7 @@ def main():
         containers.append(mi2)
         for _ in range(90):
             try:
+                assert docker('exec', pg2, 'cat', '/proc/1/comm') == 'postgres'
                 docker('exec', pg2, 'pg_isready', '-U', 'postgres')
                 assert s3(mi2, '/cold-backup/original', 'GET') == object_file.read_bytes()
                 break
