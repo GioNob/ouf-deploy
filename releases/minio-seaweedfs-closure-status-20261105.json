@@ -562,7 +562,7 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Run ONLY pinned v3 installer/prepare once; it supports the five observed root0750 directories and reads their contents within explicit limits, preserving v1/v2. Return redacted JSON. No stop/capture authorization; effective configuration/custody, recipient, containment/window and applicable operational decision remain required.",
+    "requiredOperatorInput": "Do not repeat successful prepare. Read exact retained plan impact/policies/expiry; Windows custody client qualification in progress. Recipient, concrete containment/window and applicable operational authority remain required before any stop/capture.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
@@ -573,7 +573,7 @@
     "coldBackupProducer": {
       "path": "scripts/storage-cold-backup.py",
       "receipt": "evidence/storage-cold-backup-v3-qualified-20261106.json",
-      "status": "V3_DIRECTORY_PRODUCER_NATIVE_QUALIFIED_TARGET_PREPARATION_PENDING",
+      "status": "V3_TARGET_PLAN_PREPARED_NO_STOP_AUTHORITY",
       "targetExecuted": true,
       "acceptanceCreditAdded": 0,
       "targetCaptureExecuted": false,
@@ -588,7 +588,11 @@
       "v2HeldReceipt": "evidence/storage-cold-v2-held-operator-20261106.json",
       "metadataReaderTargetExecuted": true,
       "runtimeDirectoriesReceipt": "evidence/storage-cold-runtime-directories-operator-20261106.json",
-      "v3TargetPrepared": false
+      "v3TargetPrepared": true,
+      "operatorPreparationReceipt": "evidence/storage-cold-v3-prepared-operator-20261106.json",
+      "targetPlanSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
+      "targetSources": 34,
+      "stoppedSharingContainers": 103
     }
   },
   "cohortRetainedReconciliation": {
