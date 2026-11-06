@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — 120 corpi tutti referenziati, natura dei18rilievi nota
+
+Readback operatore in evidence/storage-g0-sealed-findings-operator-20261106.json:120bodyObjects/120bodyReferencesChecked/120classifiedBodies,353righe esportate.18rilievi=10ASSET_OWNER_UNRESOLVED+4ADDITIONAL_REFERENCE_REQUIRES_CLASSIFICATION+4QUARANTINE_REFERENCE_REQUIRES_CLASSIFICATION;nessun missing/hash/size/unclassified/dangling nel breakdown.2ACL_OWNER_OR_GRANTS_UNPROVEN non equivalgono a bucket pubblici.293049417728byte liberi;source/destination/backup sullo stesso device,backup indipendente non provato.
+
+Contratti esaminati: V37/V38 e predicato owner Onboarding conservano NULL legacy e prove alternative;10campi tenant non valorizzati non giustificano backfill o10decisioni HUMAN automatiche. Worker profile genera riferimento logico a sample DB; ingestion genera RAW ref e label diagnostiche. Applicazione esatta ai dati ancora da verificare. Dossier docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md.
+
+Unico prossimo comando locale scripts/classify-storage-g0-sealed-references-20261106.py:6file già conservati,hash della reconciliation riportato e catena export/collection/inventory,match esatto18impronte,soli conteggi/etichette consentite. Zero provider/credenziali/corpi/write;nessun replay. Schema source pin non prova commit installato;subject/source-review/sample content non esportati,owner authorization non attestata. Sintassi e smoke sintetico/redazione/negative PASS;VPS esito pendente.
+
+Non ripetere la raccolta02 o il readback già riuscito. Prosegue secondo passo della stessa coppia. Roadmap aggiornata;MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati distinti. Nessuna riparazione/tenant/grant/merge/deploy/traffico. Base de87b9fb CI51/51SUCCESS,nessun run attivo;source d5155899,PR54draft/open. Piano congelato invariato.
+
 ## Checkpoint 2026-11-06 — raccolta target completa, 18 rilievi da riconciliare
 
 Output operatore registrato in evidence/storage-g0-host192-collection-operator-20261106.json: HELD_RECONCILIATION_FINDINGS,phase SEALED,technicalCaptureComplete=true. Verificati120corpi reali,3exportDB,145container via Docker;292GET nuovi/345cumulativi,1370richiesteS3,zero targetWrites. Tutti4child claimed/summaryPresent. Sono osservazioni riportate da Giovanni,non accesso diretto agent. Questa è la raccolta02 autorizzata e ora consumata: **non rilanciare ingresso,collector,preparatore o scope**.

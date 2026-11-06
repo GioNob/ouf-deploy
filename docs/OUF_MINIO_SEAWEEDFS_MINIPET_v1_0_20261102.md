@@ -1,3 +1,7 @@
+## Aggiornamento G0 — readback e natura dei rilievi
+
+120corpi reali tutti referenziati,classificati;353righe nelle proiezioni.18rilievi:10campi tenant non valorizzati,4riferimenti aggiuntivi,4quarantena;non18corruzioni dimostrate.2ACL owner/grants non provati,backup staging sul device sorgente. [Dossier di disposizione](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md);secondo passo di riconciliazione in corso,nessuna nuova raccolta o credito.18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;contratti e piano congelato invariati.
+
 ## Aggiornamento G0 — raccolta02 completa, riconciliazione aperta
 
 [Risultato operatore](../evidence/storage-g0-host192-collection-operator-20261106.json):SEALED,120corpi reali verificati,3exportDB,145container osservati;18rilieviDB e2classificazioniACCESS da rivedere,ACCESS/CUSTODY/WINDOW/WRITERS mancanti. Nessuna scrittura provider,0oggetti migrati. Raccolta consumata,non ripetere;secondo passo della coppia ora in riconciliazione locale. [Roadmap aggiornata](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md). Credito invariato18,3/46=39,78%,0/8gate,0/21AT:inventario riconciliato e criteri complessivi G0 non ancora soddisfatti.
