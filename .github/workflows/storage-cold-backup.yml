@@ -24,7 +24,7 @@ jobs:
       - name: Install encryption utility for isolated qualification
         run: sudo apt-get update && sudo apt-get install -y age
       - name: Guard and archive round-trip tests
-        run: python3 -m unittest discover -s tests -p test_storage_cold_backup.py -v
+        run: sudo -n python3 -B -m unittest discover -s tests -p test_storage_cold_backup.py -v
       - name: Native encrypted capture and isolated restore
         run: sudo -n env GITHUB_ACTIONS=true python3 -B tests/qualify_storage_cold_backup_native.py "$RUNNER_TEMP/cold-backup-proof"
       - name: Preserve only redacted qualification result

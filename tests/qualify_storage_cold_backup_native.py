@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -35,7 +36,17 @@ def main():
     runtime_dir = Path(tempfile.mkdtemp(prefix='ouf-cold-native-', dir='/run'))
     runtime_file = runtime_dir / 'configuration'
     runtime_file.write_bytes(b'fixture-runtime-configuration')
-    b.REVIEWED_RUN_BINDINGS = {'postgres': {b.digest(str(runtime_file).encode())}}
+    runtime_dir.chmod(0o750)
+    os.chown(runtime_dir, 0, 10003)
+    runtime_file.chmod(0o640)
+    os.chown(runtime_file, 0, 10003)
+    runtime_nested = runtime_dir / 'nested'
+    runtime_nested.mkdir(mode=0o750)
+    os.chown(runtime_nested, 0, 10003)
+    (runtime_nested / 'empty').touch(mode=0o640)
+    os.chown(runtime_nested / 'empty', 0, 10003)
+    os.setxattr(runtime_file, 'user.ouf', b'preserve-runtime-custody')
+    b.REVIEWED_RUN_BINDINGS = {'postgres': {b.digest(str(runtime_dir).encode())}}
     report = {'schema': 'ouf.storage-cold-backup-native.v1', 'status': 'FAIL', 'targetOperations': 0, 'acceptanceCreditAdded': 0}
     try:
         for image in (PG, MINIO):
@@ -44,7 +55,7 @@ def main():
         for directory in ('pg', 'minio', 'plan', 'capture'):
             (root / directory).mkdir(mode=0o700)
         pg = docker('run', '-d', '--network', 'none', '--restart=no', '--mount', 'type=bind,src=' + str(root / 'pg') + ',dst=/var/lib/postgresql/data',
-                    '--mount', 'type=bind,src=' + str(runtime_file) + ',dst=' + str(runtime_file) + ',readonly',
+                    '--mount', 'type=bind,src=' + str(runtime_dir) + ',dst=' + str(runtime_dir) + ',readonly',
                     '-e', 'POSTGRES_PASSWORD=fixture-password', PG)
         containers.append(pg)
         mi = docker('run', '-d', '--user', '0:0', '--entrypoint', '/usr/bin/minio', '--stop-signal', 'SIGTERM', '--network', 'none', '--restart=no',
@@ -54,7 +65,7 @@ def main():
         containers.append(mi)
         # A retained CREATED container shares the source, but never runs.
         retained = docker('create', '--network', 'none', '--restart=no', '--mount',
-                          'type=bind,src=' + str(runtime_file) + ',dst=/fixture-config,readonly', PG)
+                          'type=bind,src=' + str(runtime_dir) + ',dst=/fixture-config,readonly', PG)
         containers.append(retained)
         for _ in range(90):
             try:
@@ -107,17 +118,18 @@ def main():
         host = run_plan.inventory({pg, mi})
         bindings = {role: {'containerId': cid, 'nativeImage': host[cid]['Image']} for role, cid in [('postgres', pg), ('minio', mi)]}
         plan = b.build_plan(bindings, host, root / 'capture', b.digest(Path(b.__file__).read_bytes()))
-        assert set(plan['runtimeFiles']) == {str(runtime_file)}
+        assert set(plan['runtimeSources']) == {str(runtime_dir)}
+        assert plan['runtimeSources'][str(runtime_dir)]['entryCount'] == 4
         assert set(plan['stoppedSharingContainers']) == {retained}
         # Real protected reader rejects unsafe files before capture.
         original = runtime_file.read_bytes()
         runtime_file.chmod(0o666)
         try:
-            b.source_path(str(runtime_file))
+            b.runtime_source_identity(runtime_dir)
             raise AssertionError('WRITABLE_RUNTIME_FILE_ACCEPTED')
         except b.Held:
             pass
-        runtime_file.chmod(0o600)
+        runtime_file.chmod(0o640)
         # Mode changes invalidate the previous plan; rebind this changed fixture.
         plan = b.build_plan(bindings, host, root / 'capture', b.digest(Path(b.__file__).read_bytes()))
         plan_sha = b.digest(b.canonical(plan))
@@ -171,8 +183,17 @@ def main():
         for i, source in enumerate(plan['sources']):
             cmd(['tar', '--extract', '--numeric-owner', '--same-owner', '--acls', '--xattrs', '--xattrs-include=*',
                  '-f', str(restored / ('source-%03d.tar' % i)), '-C', str(data)])
-        assert (data / runtime_file.name).read_bytes() == original
-        assert (data / runtime_file.name).stat().st_mode & 0o777 == 0o600
+        restored_runtime = data / runtime_dir.name
+        assert (restored_runtime / runtime_file.name).read_bytes() == original
+        assert (restored_runtime / runtime_file.name).stat().st_mode & 0o777 == 0o640
+        assert restored_runtime.stat().st_mode & 0o777 == 0o750
+        assert restored_runtime.stat().st_uid == 0 and restored_runtime.stat().st_gid == 10003
+        assert (restored_runtime / runtime_file.name).stat().st_gid == 10003
+        assert (restored_runtime / 'nested/empty').read_bytes() == b''
+        assert os.getxattr(restored_runtime / runtime_file.name, 'user.ouf') == b'preserve-runtime-custody'
+        report['reviewedRunDirectoryRestored'] = True
+        report['runtimeDirectoryMode750AndGroupPreserved'] = True
+        report['nestedEmptyFileAndXattrPreserved'] = True
         report['reviewedRunFileRestored'] = True
         report['stoppedSharedContainerBound'] = True
         report['unsafeRuntimeFileRejected'] = True
@@ -217,8 +238,7 @@ def main():
         # Disposable CI-only fixture teardown, not part of the target utility.
         for cid in reversed(containers):
             subprocess.run(['docker', 'rm', '-f', cid], stdout=subprocess.DEVNULL, timeout=60)
-        runtime_file.unlink(missing_ok=True)
-        runtime_dir.rmdir()
+        shutil.rmtree(runtime_dir)
         if network:
             subprocess.run(['docker', 'network', 'rm', network], stdout=subprocess.DEVNULL, timeout=30)
         out = Path(sys.argv[1])

@@ -23,7 +23,7 @@ import time
 
 BASE = Path('/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json')
 BASE_SHA = 'dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e'
-AREA = Path('/var/lib/ouf-storage-migration/cold-backup-20261106-v2')
+AREA = Path('/var/lib/ouf-storage-migration/cold-backup-20261106-v3')
 ETCD_ID = 'e1ae2262714c841c7fec72d911221191bf69a892434a7c59da1aed8b53afa88f'
 ETCD_IMAGE = 'sha256:a3ccd299377af4b9968d8cbaaf9722fe354297f11908f74a846075e1e5f4ee89'
 ROLES = {'apisix', 'caddy', 'gateway-owner', 'ingestion', 'ingestion-evidence-read',
@@ -41,11 +41,17 @@ REVIEWED_RUN_BINDINGS = {
 }
 LIMIT = 64 << 30
 MAX_FILES = 100000
+RUN_MAX_ENTRIES = 256
+RUN_MAX_BYTES = 16 << 20
+RUN_MAX_FILE_BYTES = 1 << 20
+RUN_MAX_DEPTH = 16
 ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
 
 
 class Held(Exception):
-    pass
+    def __init__(self, code, diagnostic=None):
+        super().__init__(code)
+        self.diagnostic = diagnostic
 
 
 def need(ok, code):
@@ -206,7 +212,11 @@ def source_path(value):
     if overlap(str(p), '/run'):
         need(digest(str(p).encode()) in set().union(*REVIEWED_RUN_BINDINGS.values()),
              'UNREVIEWED_RUN_SOURCE')
-        runtime_file_identity(p)
+        parent = runtime_parent(p)
+        try:
+            runtime_node_check(p, '.', os.stat(p.name, dir_fd=parent, follow_symlinks=False))
+        finally:
+            os.close(parent)
     else:
         need(not any(overlap(str(p), x) for x in ('/proc', '/sys', '/dev', '/tmp')),
              'EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW')
@@ -218,12 +228,108 @@ def source_path(value):
     return p
 
 
-def runtime_file_identity(path):
-    """Bounded root-owned regular file, no devices/directories/symlink ancestry."""
-    before = Path(path).lstat()
-    raw = protected(path, limit=1 << 20)
-    need(frame(before) == frame(Path(path).lstat()), 'RUN_FILE_CHANGED_DURING_REVIEW')
-    return {'frame': list(frame(before)), 'sha256': digest(raw)}
+def runtime_failure(code, root, rel, metadata=None, failed=None):
+    diagnostic = {'sourcePathSha256': digest(str(root).encode()),
+                  'relativePathSha256': digest(rel.encode())}
+    if metadata is not None:
+        s = metadata
+        diagnostic.update(type=('DIRECTORY' if stat.S_ISDIR(s.st_mode) else
+                                'REGULAR' if stat.S_ISREG(s.st_mode) else 'OTHER'),
+                          uid=s.st_uid, gid=s.st_gid, mode=format(stat.S_IMODE(s.st_mode), '04o'),
+                          links=s.st_nlink, bytes=s.st_size)
+    if failed:
+        diagnostic['failedChecks'] = failed
+    raise Held(code, diagnostic)
+
+
+def runtime_node_check(root, rel, s):
+    directory, regular = stat.S_ISDIR(s.st_mode), stat.S_ISREG(s.st_mode)
+    checks = {'regularOrDirectory': directory or regular, 'rootOwner': s.st_uid == 0,
+              'notGroupOrOtherWritable': not bool(s.st_mode & 0o022),
+              'singleLinkIfRegular': not regular or s.st_nlink == 1,
+              'fileSizeWithinLimit': not regular or 0 <= s.st_size <= RUN_MAX_FILE_BYTES}
+    failed = [k for k, v in checks.items() if not v]
+    if failed:
+        runtime_failure('RUN_SOURCE_ENTRY_REQUIRES_REVIEW', root, rel, s, failed)
+
+
+def runtime_parent(path):
+    path = Path(path)
+    need(path.is_absolute() and str(path) == os.path.normpath(path), 'CANONICAL_PATH_REQUIRED')
+    parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for part in path.parts[1:-1]:
+            nxt = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            os.close(parent)
+            parent = nxt
+            s = os.fstat(parent)
+            if s.st_uid != 0 or s.st_mode & 0o022:
+                runtime_failure('RUN_SOURCE_ANCESTRY_REQUIRES_REVIEW', path, '.', s)
+        return parent
+    except BaseException:
+        os.close(parent)
+        raise
+
+
+def runtime_source_identity(path):
+    """Bounded descriptor-relative tree; never follows links or opens special files."""
+    path = Path(path)
+    parent = runtime_parent(path)
+    rows, total = [], [0]
+    until = time.monotonic() + 15
+    try:
+        device = os.stat(path.name, dir_fd=parent, follow_symlinks=False).st_dev
+    except BaseException:
+        os.close(parent)
+        raise
+
+    def visit(parent_fd, name, rel, depth):
+        if len(rows) >= RUN_MAX_ENTRIES or depth > RUN_MAX_DEPTH or time.monotonic() >= until:
+            runtime_failure('RUN_SOURCE_SCAN_BUDGET', path, rel)
+        before = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        runtime_node_check(path, rel, before)
+        if before.st_dev != device:
+            runtime_failure('RUN_SOURCE_NESTED_FILESYSTEM', path, rel, before)
+        directory = stat.S_ISDIR(before.st_mode)
+        fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK |
+                     (os.O_DIRECTORY if directory else 0), dir_fd=parent_fd)
+        try:
+            need(frame(before) == frame(os.fstat(fd)), 'RUN_SOURCE_CHANGED_BEFORE_OPEN')
+            row = {'path': rel, 'frame': list(frame(before)),
+                   'xattrs': {n: base64.b64encode(os.getxattr(fd, n)).decode()
+                             for n in sorted(os.listxattr(fd))}}
+            rows.append(row)
+            if directory:
+                names = []
+                with os.scandir(fd) as entries:
+                    for entry in entries:
+                        names.append(entry.name)
+                        if len(names) + len(rows) > RUN_MAX_ENTRIES:
+                            runtime_failure('RUN_SOURCE_SCAN_BUDGET', path, rel)
+                for child in sorted(names):
+                    visit(fd, child, child if rel == '.' else rel + '/' + child, depth + 1)
+            else:
+                total[0] += before.st_size
+                if total[0] > RUN_MAX_BYTES:
+                    runtime_failure('RUN_SOURCE_BYTE_BUDGET', path, rel, before)
+                h, size = hashlib.sha256(), 0
+                while block := os.read(fd, 65536):
+                    size += len(block)
+                    if size > before.st_size or time.monotonic() >= until:
+                        runtime_failure('RUN_SOURCE_READ_BUDGET_OR_CHANGE', path, rel, before)
+                    h.update(block)
+                need(size == before.st_size, 'RUN_SOURCE_FILE_CHANGED')
+                row['sha256'] = h.hexdigest()
+            need(frame(before) == frame(os.fstat(fd)) and
+                 frame(before) == frame(os.stat(name, dir_fd=parent_fd, follow_symlinks=False)),
+                 'RUN_SOURCE_CHANGED_DURING_REVIEW')
+        finally:
+            os.close(fd)
+    try:
+        visit(parent, path.name, '.', 0)
+        return {'entryCount': len(rows), 'fileBytes': total[0], 'entries': rows}
+    finally:
+        os.close(parent)
 
 
 def shared_outside_bindings(host, selected_ids, roots):
@@ -240,10 +346,10 @@ def shared_outside_bindings(host, selected_ids, roots):
     return result
 
 
-def verify_runtime_files(plan):
-    for path, identity in plan.get('runtimeFiles', {}).items():
+def verify_runtime_sources(plan):
+    for path, identity in plan.get('runtimeSources', {}).items():
         source_path(path)
-        need(runtime_file_identity(path) == identity, 'RUN_FILE_CHANGED_SINCE_PLAN')
+        need(runtime_source_identity(path) == identity, 'RUN_SOURCE_CHANGED_SINCE_PLAN')
 
 
 def build_plan(bindings, host, area, program_sha):
@@ -252,7 +358,7 @@ def build_plan(bindings, host, area, program_sha):
     need(all(not d['State']['Running'] or i in ids for i, d in host.items()), 'UNBOUND_RUNNING_CONTAINER')
     roots = set()
     roles = {}
-    runtime_files = {}
+    runtime_sources = {}
     for role, bound in sorted(bindings.items()):
         d = host[bound['containerId']]
         need(d['Image'] == bound['nativeImage'], 'BOUND_IMAGE_CHANGED')
@@ -271,7 +377,8 @@ def build_plan(bindings, host, area, program_sha):
                      and m['Destination'] == m['Source']
                      and digest(m['Source'].encode()) in REVIEWED_RUN_BINDINGS.get(role, set()),
                      'EXACT_READ_ONLY_RUN_BINDING_REQUIRED')
-                runtime_files[m['Source']] = runtime_file_identity(m['Source'])
+                if m['Source'] not in runtime_sources:
+                    runtime_sources[m['Source']] = runtime_source_identity(m['Source'])
             p = source_path(m['Source'])
             need(not overlap(str(p), str(area)), 'BACKUP_INSIDE_SOURCE')
             roots.add(str(p))
@@ -283,7 +390,7 @@ def build_plan(bindings, host, area, program_sha):
     need(0 < len(roots) <= 64, 'PERSISTENT_SOURCE_COUNT_LIMIT')
     return {'schema': 'ouf.storage-cold-backup-plan.v1', 'createdEpoch': int(time.time()),
             'validUntilEpoch': int(time.time()) + 86400, 'programSha256': program_sha,
-            'roles': roles, 'sources': roots, 'runtimeFiles': runtime_files,
+            'roles': roles, 'sources': roots, 'runtimeSources': runtime_sources,
             'stoppedSharingContainers': outside, 'maximumSeconds': 3600, 'maximumProducedBytes': LIMIT,
             'maximumCommandCalls': 256, 'maximumHostContainers': 192,
             'includesWholeSharedPostgresCluster': True, 'runtimeMutationCommands': [],
@@ -309,7 +416,7 @@ def offline(plan, host):
     for cid in plan.get('stoppedSharingContainers', {}):
         need(host[cid]['HostConfig']['RestartPolicy']['Name'] == 'no',
              'SHARED_OUTSIDE_RESTART_POLICY_MUST_BE_DISABLED')
-    verify_runtime_files(plan)
+    verify_runtime_sources(plan)
 
 
 def tree_manifest(root, until):
@@ -497,7 +604,7 @@ def main():
         new(AREA / 'planned-containers.private.json', canonical({r['containerId']: host[r['containerId']] for r in bindings.values()}))
         result = {'schema': 'ouf.storage-cold-backup-preparation.v1', 'status': 'PLAN_PREPARED_NOT_STOP_AUTHORITY',
             'planSha256': digest(canonical(plan)), 'roles': sorted(plan['roles']), 'sourceCount': len(plan['sources']),
-            'reviewedRuntimeFiles': len(plan['runtimeFiles']),
+            'reviewedRuntimeSources': len(plan['runtimeSources']),
             'stoppedSharingContainers': len(plan['stoppedSharingContainers']),
             'includesWholeSharedPostgresCluster': True, 'maximumSeconds': 3600, 'maximumProducedBytes': LIMIT,
             'targetWrites': 0, 'runtimeAuthorityIssued': False, 'acceptanceCreditAdded': 0,
@@ -527,5 +634,6 @@ if __name__ == '__main__':
             raise
         print(json.dumps({'status': 'HELD', 'reason': str(e) if isinstance(e, Held) else type(e).__name__,
                           'automaticReplayAllowed': False, 'automaticRestartAllowed': False,
-                          'runtimeAuthorityIssued': False, 'acceptanceCreditAdded': 0}))
+                          'runtimeAuthorityIssued': False, 'acceptanceCreditAdded': 0,
+                          'diagnostic': getattr(e, 'diagnostic', None)}))
         sys.exit(2)

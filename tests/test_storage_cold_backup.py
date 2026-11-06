@@ -134,15 +134,59 @@ class ColdBackupTests(unittest.TestCase):
                     b.build_plan(bindings, host, self.area, 'c' * 64)
 
     def test_runtime_content_and_metadata_remain_bound_to_plan(self):
+        # Root-protected ancestry is exercised without substitutes in native CI.
         path = self.data / 'content'
-        # Unit fixture only: the root-owned reader is exercised without substitution in native CI.
-        with patch.object(b, 'protected', side_effect=lambda p, **kw: Path(p).read_bytes()):
-            identity = b.runtime_file_identity(path)
-            plan = self.plan | {'runtimeFiles': {str(path): identity}}
-            b.verify_runtime_files(plan)
+        with patch.object(b, 'runtime_parent', side_effect=lambda p: os.open(Path(p).parent, os.O_RDONLY | os.O_DIRECTORY)):
+            identity = b.runtime_source_identity(path)
+            plan = self.plan | {'runtimeSources': {str(path): identity}}
+            b.verify_runtime_sources(plan)
             path.write_bytes(b'changed')
             with self.assertRaises(b.Held):
-                b.verify_runtime_files(plan)
+                b.verify_runtime_sources(plan)
+
+    def test_runtime_directory_preserves_tree_and_rejects_addition(self):
+        self.data.chmod(0o750)
+        (self.data / 'nested').mkdir(mode=0o750)
+        (self.data / 'nested/empty').touch(mode=0o640)
+        with patch.object(b, 'runtime_parent', side_effect=lambda p: os.open(Path(p).parent, os.O_RDONLY | os.O_DIRECTORY)):
+            identity = b.runtime_source_identity(self.data)
+            self.assertEqual(identity['entryCount'], 4)
+            self.assertEqual({e['path'] for e in identity['entries']}, {'.', 'content', 'nested', 'nested/empty'})
+            self.assertEqual(identity['entries'][0]['frame'][2] & 0o777, 0o750)
+            plan = self.plan | {'runtimeSources': {str(self.data): identity}}
+            b.verify_runtime_sources(plan)
+            (self.data / 'new').write_text('unexpected')
+            with self.assertRaises(b.Held):
+                b.verify_runtime_sources(plan)
+
+    def test_runtime_tree_refuses_symlink_fifo_hardlink_and_writable_child(self):
+        with patch.object(b, 'runtime_parent', side_effect=lambda p: os.open(Path(p).parent, os.O_RDONLY | os.O_DIRECTORY)):
+            for kind in ('symlink', 'fifo', 'hardlink', 'writable'):
+                leaf = self.data / 'unsafe-secret-name'
+                if kind == 'symlink':
+                    leaf.symlink_to('/etc/passwd')
+                elif kind == 'fifo':
+                    os.mkfifo(leaf)
+                elif kind == 'hardlink':
+                    os.link(self.data / 'content', leaf)
+                else:
+                    leaf.write_text('secret-value')
+                    leaf.chmod(0o666)
+                with self.subTest(kind=kind), self.assertRaises(b.Held) as caught:
+                    b.runtime_source_identity(self.data)
+                diagnostic = caught.exception.diagnostic
+                self.assertTrue(diagnostic['failedChecks'])
+                self.assertNotIn('unsafe-secret-name', str(diagnostic))
+                self.assertNotIn('secret-value', str(diagnostic))
+                leaf.unlink()
+
+    def test_runtime_tree_limits_and_empty_file(self):
+        (self.data / 'empty').touch(mode=0o600)
+        with patch.object(b, 'runtime_parent', side_effect=lambda p: os.open(Path(p).parent, os.O_RDONLY | os.O_DIRECTORY)):
+            self.assertEqual(b.runtime_source_identity(self.data)['entryCount'], 3)
+            for constant, value in (('RUN_MAX_ENTRIES', 1), ('RUN_MAX_BYTES', 1), ('RUN_MAX_FILE_BYTES', 1)):
+                with self.subTest(constant=constant), patch.object(b, constant, value), self.assertRaises(b.Held):
+                    b.runtime_source_identity(self.data)
 
     def test_writable_layer_config_change_rejected(self):
         host = copy.deepcopy(self.host)

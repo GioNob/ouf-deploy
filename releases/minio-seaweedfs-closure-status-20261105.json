@@ -562,7 +562,7 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Do not repeat v2 installer/prepare. Read only current metadata of the five retained /run paths, v2 program and BASE using the hash-pinned metadata reader; no provider calls or source content reads. Exact failed input/predicate remains unknown; preserve both attempts. No permission changes, stop or capture.",
+    "requiredOperatorInput": "No more metadata diagnosis: five exact sources are root0750 directories. Agent qualifies directory-aware v3, then delivers separate prepare v3. Preserve v1/v2 and their programs. No source chmod/chown, stop or capture authorized.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
@@ -573,7 +573,7 @@
     "coldBackupProducer": {
       "path": "scripts/storage-cold-backup.py",
       "receipt": "evidence/storage-cold-backup-v2-qualified-20261106.json",
-      "status": "V2_TARGET_PREPARATION_HELD_INPUT_METADATA_REQUIRED",
+      "status": "FIVE_RUNTIME_DIRECTORIES_OBSERVED_V3_QUALIFICATION_PENDING",
       "targetExecuted": true,
       "acceptanceCreditAdded": 0,
       "targetCaptureExecuted": false,
@@ -586,7 +586,9 @@
       "v2TargetPrepared": false,
       "v2TargetPreparationAttempted": true,
       "v2HeldReceipt": "evidence/storage-cold-v2-held-operator-20261106.json",
-      "metadataReaderTargetExecuted": false
+      "metadataReaderTargetExecuted": true,
+      "runtimeDirectoriesReceipt": "evidence/storage-cold-runtime-directories-operator-20261106.json",
+      "v3TargetPrepared": false
     }
   },
   "cohortRetainedReconciliation": {
