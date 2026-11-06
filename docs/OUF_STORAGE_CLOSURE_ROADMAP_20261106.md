@@ -1,3 +1,16 @@
+## 7 novembre — contenimento host completato sul target; backup reale pronto per decisione
+
+**Blocco host rimosso:**5timer e registry disabilitati/fermi,5runtimefontistabili;ricevutaVPS acquisita. Non ripeterequestofase. Nuovo fermoDocker+capture collegato al successo è qualificato run42310506109. [Pacchetto eseguibile](OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md):35policy,14stop,34fonti/interoPGcondiviso,archivioage;decisione sul singolonuovotentativo pendente. Originale tentativoDocker consumato conservato e3lettureaddebitate.
+
+| Traguardo | Stato corrente |
+| --- | --- |
+| Contenimento writer host | Completato sul VPS,zero killforzati |
+| Primo archivio cifrato target | Procedura collegata qualificata;approvazione/esecuzione pendenti |
+| CopiaPC e restore isolato | In attesa archivio reale;recipient/decryptcrossplatform giàverificati |
+| Migrazione e accettazione SeaweedFS | Ancora0/120migrati,0/8gate,0/21AT |
+
+MiniPET39,78% invariato:il successo host è un blocco operativo rimosso,nonuncriteriocomplessivochiuso. Prossimorisultato concreto è ENCRYPTED_OFFLINE_RECOVERY_SET_CAPTURED sulVPS,poiWindows/restore;nessunfiloneIAM/DRindipendente.
+
 ## Decisione acquisita 2026-11-07 Europe/Rome — continuazione host sul VPS
 
 Giovanni autorizza la singola continuazione proposta,GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01. [Ricevuta](../evidence/storage-host-continuation-operator-decision-20261107.json). Comando pinned daeseguire una volta,JSONtargetpendente. Non richiedere di nuovo il consenso; nessunaesecuzione/archivio/gate giàdedotta. Le richieste precedenti sotto sono soddisfatte.

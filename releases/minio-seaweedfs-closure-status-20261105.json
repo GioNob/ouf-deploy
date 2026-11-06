@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator executes approved single pinned host continuation and returns redacted JSON. Do not repeat approval,reader or old apply. After receipt build linked Docker stop/capture,archive to PC and isolated restore.",
+  "nextPlannedWork": "Exact decision on single host-bound Docker stop/capture package,then operator execution to first encrypted target archive. Host containment already succeeded:do not repeat it. After archive,Windows transfer and isolated restore,then SeaweedFS gates.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -712,14 +712,14 @@
     "targetSliceCauseConfirmed": true
   },
   "hostContainmentContinuation": {
-    "status": "APPROVED_TARGET_EXECUTION_PENDING",
+    "status": "TARGET_SUCCESS",
     "document": "docs/OUF_STORAGE_HOST_CONTINUATION_20261106.md",
     "codeCommit": "7887bf88a20d776745e6bb3e09158ecd6a712ff2",
     "runId": 42308843588,
     "jobId": 128204988421,
     "decisionReference": "GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01",
     "decisionRecorded": true,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "priorCallsCharged": 19,
     "cumulativeCliLimit": 256,
     "cumulativeByteLimit": 33554432,
@@ -728,6 +728,28 @@
     "maximumCumulativeActiveAllowanceSeconds": 1200,
     "legacyExpiryExtended": false,
     "acceptanceCreditAdded": 0,
-    "decisionEvidence": "evidence/storage-host-continuation-operator-decision-20261107.json"
+    "decisionEvidence": "evidence/storage-host-continuation-operator-decision-20261107.json",
+    "targetReceipt": "evidence/storage-host-continuation-success-operator-20261107.json",
+    "targetResult": "HOST_WRITERS_CONTAINED_NEW_STOP_PLAN_REQUIRED",
+    "cumulativeCallsObserved": 59,
+    "cumulativeBytesObserved": 67321
+  },
+  "hostBoundColdOperation": {
+    "status": "QUALIFIED_EXACT_STOP_CAPTURE_DECISION_PENDING",
+    "package": "docs/OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md",
+    "codeCommit": "ac0b5b862e7e1209756f596c5ae293c366c7b49e",
+    "runId": 42310506109,
+    "jobId": 128210457310,
+    "decisionReference": "GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01",
+    "decisionRecorded": false,
+    "targetExecuted": false,
+    "targetCapturePerformed": false,
+    "policyChanges": 35,
+    "selectedRoles": 14,
+    "sources": 34,
+    "includesWholeSharedPostgresCluster": true,
+    "priorDockerReadsCharged": 3,
+    "legacyExpiryExtended": false,
+    "acceptanceCreditAdded": 0
   }
 }
