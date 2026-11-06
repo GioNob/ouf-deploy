@@ -1,3 +1,17 @@
+## Checkpoint 2026-11-06 — host192 qualificato, consegna privata pronta
+
+Qualifica cfa806d57012f07ead428208b4b8ce9d13b7e1ed/run42218997469/job127896037862 SUCCESS:12profilo+13composizione+14rete,zero skip CI.145container nativi (13ruoli+132fermi fuori roster): vecchio profilo HELD dopo1GET,nuovo v3 con receipt precedenti vincolate completa292GET/345cumulativi,2corpi sintetici/6byte,3export e join0findings,4child rete,95migrazioni,145uscite pulite. Nessuna inferenza dati target o G0 chiuso.
+
+Readback PASS: artifact13503145473,7410684byte,SHAde00f5c374ad3eb3280eeb4737a32277dec50d943ad7a1f4b1e9aaf3ca40b41c;28membri/27checksum/121sorgenti Git esatti/15file pacchetto;3alterazioni semantiche con checksum ricalcolati respinte. Scadenza2027-02-04T12:36:43Z,non custodia durevole. Manifest1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69; binario12ce4635 identico al9053aa38. Ricevuta evidence/storage-g0-host192-qualified-20261106.json.
+
+scripts/prepare-storage-g0-host192-20261106.py consegna il pacchetto esatto in nuova area /var/lib/ouf-g0-host192-preparation-20261106. Verifica tutti i byte del vecchio bundle,riusa11membri invariati e include3override pubblici+manifest verificati nel payload compresso. Nessun download root o copia dei segreti: binario verificato contro entrambi i manifest. Guardia root/ancestry/file e write esclusivo/fsync. Area esistente con risultato si rilegge,parziale HOLD senza adozione o reset.
+
+Pin4receipt reali (result09f6c879,claim5bf27b0c,decision4a474ef3,inputaa002304). Nuova configv3/operationId seaweedfs-g0-20261106-v2,sole4connessioni e rete ricopiate con nuova operationId,stessi path credenziali. OutputParent resta l'area evidence originale,scopev2 NON creato. Preflight locale valida5filecredenziali senza ricopiarli o autenticarli;386GETmassimi/53precedenti,decisionRefnull,quattro evidenze operatore ancora mancanti. Nessuna raccolta o grant.
+
+Consegna:7test locali PASS; inizialmente6PASS per algoritmo,poi payload esatto verificato contro sorgenti/manifest e7PASS. Staging esatto,immutabilità precedenti,drift,parziale conservato,nessun collect/replay. La CI dedicata è separata dal run nativo del profilo,esito nella PR. Nessuna esecuzione VPS ancora osservata.
+
+Prossima azione: operatore esegue SOLO il preparatore e restituisce JSON redatto con nuovo inputsha. Poi decisione distinta per una raccolta v3 fino192container/386GET,900s,cumulativo massimo439; precedente autorizzazione consumata. Non rifare readback/conta directory,non modificare vecchio bundle/scope o cancellare parziali. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti migrati,credito0; source d5155899/MinIO/source-lock/piano congelato intatti,PR54draft/open. Nessun merge/deploy/riapertura.
+
 ## Checkpoint 2026-11-06 — readback145 acquisito, profilo host192 con storico vincolato
 
 Operatore ha restituito HELD_ATTEMPT_BOUND_NO_REPLAY_AUTHORITY:145directory Docker,13binding presenti,nessuna altra entry/symlink,scan completo. Numero live non provato. Ricevute e file del tentativo consumato coincidono,17storiche intatte,53GET cumulativi,zero provider/credenziali/write nel readback. Digest result09f6c879,claim5bf27b0c,decision4a474ef3,inputaa002304. Ricevuta completa evidence/storage-g0-held-readback-operator-20261106.json.

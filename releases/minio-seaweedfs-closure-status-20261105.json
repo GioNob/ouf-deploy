@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Qualify the changed full-inventory host192/v3 profile, verify its artifact, prepare exact new-generation delivery preserving the consumed scope and53prior GET, then request the distinct concrete operator decision for386maximumGET. No old command/readback rerun or reset.",
+  "nextPlannedWork": "Operator stages the exact qualified host192 package in the new private area using the pinned preparation helper, preserving old package/scope/credentials. Receive its redacted v3 check with input hash, then obtain a distinct concrete decision for one192container/386GET collection with53priorGET and439maximumcumulative. No collect/provider request by preparation.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -465,7 +465,7 @@
     "localMetadataDirectories": 145
   },
   "g0Host192": {
-    "status": "CANDIDATE_QUALIFICATION_PENDING",
+    "status": "QUALIFIED_DELIVERY_STAGING_PENDING",
     "maximumContainers": 192,
     "maximumEngineGets": 386,
     "priorEngineGets": 53,
@@ -474,6 +474,9 @@
     "legacy64ProfilePreserved": true,
     "oldScopePreserved": true,
     "newCollectionAuthorized": false,
-    "acceptanceCreditAdded": 0
+    "acceptanceCreditAdded": 0,
+    "qualificationReceipt": "evidence/storage-g0-host192-qualified-20261106.json",
+    "packageManifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+    "preparationScript": "scripts/prepare-storage-g0-host192-20261106.py"
   }
 }
