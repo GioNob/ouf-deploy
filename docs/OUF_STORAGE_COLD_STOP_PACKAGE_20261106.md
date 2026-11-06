@@ -2,7 +2,7 @@
 
 **Profilo: NONPRODUCTION_TEST_STATE_PRESERVATION.** Giovanni accetta indisponibilità senza un orario obbligato di rientro. Conservare lo stato corrente per il successivo recupero; non dichiarare drain o consistenza applicativa prima delle prove. Il backup rimane necessario all'esercitazione e i segreti restano privati.
 
-La cifratura VPS→Windows è conclusa e non va ripetuta. [Ricevuta](../evidence/storage-backup-cross-platform-operator-20261106.json). Stato operativo: **pacchetto da approvare, nessun fermo/cattura target eseguito dall'agente**.
+La cifratura VPS→Windows è conclusa e non va ripetuta. [Ricevuta](../evidence/storage-backup-cross-platform-operator-20261106.json). Stato operativo: **autorizzato da Giovanni con «autorizzo»; esecuzione VPS non ancora riportata**. [Decisione GIOVANNI-NONPROD-COLD-20261106-01](../evidence/storage-test-cold-operator-decision-20261106.json).
 
 ## Perimetro e limiti
 
@@ -53,9 +53,9 @@ Programmi disponibili al commit d57e127ddf244f6bd9218abb7f60c67b418a20b4:
 
 scripts/prepare-storage-test-cold-stop.py installa solo questi tre file root0600,senza Docker o letture applicative. Rifiuta file esistenti differenti; riusa soltanto gli identici verificati. Conserva v3 e piano. Byte3573,SHA329396be9409d78025cabe7d54f817b5fc6182b389f9272565404db437f46cb2. Download sempre da commit esatto del checkpoint che lo pubblica; verificareSHA prima dell'esecuzione. L'installazione non consuma né autorizza lo scope di fermo.
 
-## Comandi operativi da approvare
+## Comandi operativi autorizzati
 
-**Solo sul VPS,Bash, dopo decisione esplicita su questo pacchetto e manutenzione esclusiva.** Riferimento proposto della decisione: GIOVANNI-NONPROD-COLD-20261106-01. Non eseguire per effetto della sola installazione.
+**Solo sul VPS,Bash, nell'ambito della decisione acquisita e della manutenzione esclusiva dichiarata.** Riferimento della decisione: GIOVANNI-NONPROD-COLD-20261106-01. Non eseguire per effetto della sola installazione.
 
 Fermo singolo:
 
@@ -90,8 +90,8 @@ sudo /usr/bin/python3 -I -B -S /var/lib/ouf-storage-cold-backup-v4.py capture \
 
 Risultato atteso ENCRYPTED_OFFLINE_RECOVERY_SET_CAPTURED,con dimensione/SHA dell'archivio. Restituire solo il JSON redatto. Archivio atteso /var/lib/ouf-storage-migration/cold-backup-20261106-v4/capture/backup.tar.age; output e plaintext intermedi custoditi root. Niente SCP del piano,delle credenziali o del plaintext. Trasferimento cifrato,decifraturaPC e restore isolato sono il traguardo successivo; non sono già provati dal successo capture.
 
-## Accettazione e approvazione ancora richiesta
+## Accettazione e decisione acquisita
 
-L'utente ha risolto il vincolo di disponibilità,non approvato questo comando preciso prima che fosse preparato. Richiedere una sola decisione sul fermo35policy/14servizi e cattura dell'intero cluster,con esclusività di manutenzione e mantenimento offline in caso di errore. Non richiedere altra finestra di rientro. L'approvazione operatore non viene etichettata come autenticazioneHUMAN/THS.
+Giovanni ha approvato questo preciso pacchetto con «autorizzo», inclusi35policy/14servizi,cattura dell'intero cluster,manutenzione esclusiva e mantenimento offline in errore. Non chiedere nuovamente consenso o finestra. Il consenso non supera precondizioni fallite,scadenze o scope consumati. Esecuzione/ricevute target ancora pendenti. L'approvazione operatore non viene etichettata come autenticazioneHUMAN/THS.
 
 **MiniPET invariato:18,3/46=39,78%,0/8gate,0/21AT,0/120migrati.**120corpi verificati separatamente. Backup freddo iniziale è conservazione di stato test,nonG3/G4 completi; consistenza,recupero indipendente,capacità e accettazione restano da dimostrare.

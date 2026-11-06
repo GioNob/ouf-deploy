@@ -6,7 +6,7 @@ OUF è **non produttivo**, i dati applicativi sono **di test** e Giovanni accett
 
 La coppia corrente:
 1. **Rimossa la dipendenza dalla continuità di servizio:** prima copia di conservazione a servizi fermi, con lavoro applicativo eventualmente interrotto conservato per riconciliazione. Nessun drain applicativo o common-cut dichiarato per inferenza.
-2. **Fermo e cattura resi eseguibili e verificabili:** driver delimitato, correzione dell'ordine dei mount Docker, qualifica nativa, pacchetto con comandi e hash. [Pacchetto corrente](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md). Esecuzione target ancora da autorizzare ed effettuare.
+2. **Fermo e cattura resi eseguibili e verificabili:** driver delimitato, correzione dell'ordine dei mount Docker, qualifica nativa, pacchetto con comandi e hash. [Pacchetto corrente](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md). Giovanni ha autorizzato fermo e cattura con manutenzione esclusiva: [decisione](../evidence/storage-test-cold-operator-decision-20261106.json). Esecuzione target ancora da effettuare; non richiedere il consenso nuovamente.
 
 Download, diagnosi, fixture e aggiornamenti documentali sono attività interne alla coppia, non nuovi “passi” di roadmap. La stima storica di 12–18 passi rimane ritirata: non rappresentava i blocchi effettivi. Il prossimo risultato da misurare è un archivio corrente con dimensione e SHA256, poi il suo recupero; non un nuovo conteggio di test.
 
@@ -14,7 +14,7 @@ Download, diagnosi, fixture e aggiornamenti documentali sono attività interne a
 
 | Traguardo | Disponibile | Risultato ancora richiesto |
 |---|---|---|
-| Prima conservazione dello stato test | Piano 14 ruoli/34 fonti/5 directory runtime; recipient e VPS→Windows verificati; driver e produttore | Decisione sul comando esatto, esclusività della manutenzione, fermo, cattura cifrata con ricevuta. Nessun backup target ancora prodotto |
+| Prima conservazione dello stato test | Piano 14 ruoli/34 fonti/5 directory runtime; recipient e VPS→Windows verificati; driver e produttore | Decisione sul comando esatto e manutenzione esclusiva dichiarate da Giovanni. Restano fermo e cattura cifrata con ricevuta; nessun backup target ancora prodotto |
 | Copia indipendente e recupero | PC Windows scelto, SSH/SCP e decifratura verificati | Trasferire l'archivio corrente, confrontare hash, decifrare e ripristinare in ambiente isolato; verificare DB, oggetti, configurazioni, segreti e lavoro interrotto |
 | Baseline e candidato G0–G2 | 120 corpi verificati; 18 rilievi tipizzati; coorte ricostruita; OCI33 e prove client | Accettare disposizioni/owner, accessi/custodia e censimento writer; chiudere licenze/provenienza/custodia del candidato e AT dei client applicabili |
 | Esercizio e procedura G3–G4 | Qualifiche sintetiche e componenti, migratore e runbook | Recovery dell'insieme reale, TLS/rotazione, fault/reboot, capacità; rehearsal SeaweedFS su copie, parità completa, interruzioni e ritorno dopo scritture |

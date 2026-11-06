@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "NONPRODUCTION/TEST_DATA, no required return-to-service deadline accepted. Stop driver + v4 mount-order correction qualified; exact stop/capture package prepared. Obtain exact operation decision and exclusive operator maintenance, then one target stop and encrypted capture. Next: offhost PC custody + isolated restore/reconciliation. Do not repeat successful encryption or stop qualification. No MiniPET credit.",
+  "nextPlannedWork": "Exact stop/capture operation authorized by Giovanni (GIOVANNI-NONPROD-COLD-20261106-01), exclusive operator maintenance declared. Do not ask again. Operator executes pinned installation, one stop, then one capture after verified successful stop under unchanged maintenance. Runtime checks, expiry and consumed-scope denials still apply. Return redacted result; next offhost PC custody and isolated restore. No acceptance credit.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -626,7 +626,9 @@
     "targetCapturePerformed": false,
     "requiredAvailabilityDeadline": null,
     "availabilityConstraintResolved": true,
-    "exactOperationApprovalRecorded": false,
-    "applicationConsistencyProven": false
+    "exactOperationApprovalRecorded": true,
+    "applicationConsistencyProven": false,
+    "operatorDecisionEvidence": "evidence/storage-test-cold-operator-decision-20261106.json",
+    "operatorExclusiveMaintenanceDeclared": true
   }
 }
