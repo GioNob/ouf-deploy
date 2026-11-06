@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Run the separately bounded redacted datasource review once to distinguish the three observed override denials; receive fixed-name presence/equality metadata only. Do not rerun the completed preparer or read/copy S3 secrets again. Then resolve only the demonstrated DB configuration inputs in a separate continuation, followed by current configuration/operator evidence review and an exact collection decision. Do not reopen backup discovery as a preparation prerequisite; acceptance and operational requirements remain unproven.",
+  "nextPlannedWork": "Execute one separately bounded DB continuation: inspect the two known retained overlay formats using original cohort validators and prepare all three DB drafts only if every observed channel passes. Keep S3 and consumed scopes intact. Receive only redacted result, then complete current configuration/operator evidence review and the exact collection decision. No backup availability question as preparation prerequisite; acceptance/operational requirements remain.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -354,12 +354,30 @@
   "g0DatasourceReview": {
     "script": "scripts/review-storage-g0-datasource-20261106.py",
     "document": "docs/OUF_STORAGE_G0_DATASOURCE_REVIEW_20261106.md",
-    "status": "LOCAL_TESTS_PASS_VPS_OBSERVATION_PENDING",
+    "status": "VPS_CONFIGURATION_CHANNELS_OBSERVED_CONTENT_REVIEW_REQUIRED",
     "localTests": 10,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "originalPreparerGuardChanged": false,
     "providerRequests": 0,
     "runtimeAuthorityIssued": false,
-    "progressCreditAdded": 0
+    "progressCreditAdded": 0,
+    "operatorReceipt": "evidence/storage-g0-datasource-review-operator-20261106.json",
+    "operatorProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+    "dedicatedRunId": 42198822251,
+    "dedicatedCiStatus": "SUCCESS",
+    "directDatasourceVariablesObserved": false,
+    "configurationContentsObserved": false
+  },
+  "g0DatabaseContinuation": {
+    "script": "scripts/continue-storage-g0-databases-20261106.py",
+    "document": "docs/OUF_STORAGE_G0_DATABASE_CONTINUATION_20261106.md",
+    "status": "LOCAL_TESTS_PASS_VPS_EXECUTION_PENDING",
+    "localCasesPassed": 14,
+    "originalPreparerChanged": false,
+    "originalCohortValidatorsChanged": false,
+    "targetExecuted": false,
+    "providerRequests": 0,
+    "progressCreditAdded": 0,
+    "runtimeAuthorityIssued": false
   }
 }
