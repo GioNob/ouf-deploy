@@ -14,7 +14,7 @@ $identity = Get-Item -LiteralPath $IdentityFile
 if ($identity.PSIsContainer -or ($identity.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
     throw 'Use an existing regular SSH private-key file on this PC.'
 }
-$sshKeygen = (Get-Command ssh-keygen.exe -CommandType Application -ErrorAction Stop).Source
+$sshKeygen = (Get-Command ssh-keygen.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
 $keyLines = @(& $sshKeygen -y -f $identity.FullName)
 if ($LASTEXITCODE -ne 0) { throw 'SSH public-key derivation failed; private key was not copied.' }
 $public = ($keyLines -join "`n").Trim()

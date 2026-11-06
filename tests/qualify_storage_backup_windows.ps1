@@ -4,7 +4,7 @@ if ($env:GITHUB_ACTIONS -ne 'true') { throw 'Disposable GitHub Actions fixture o
 $root = Join-Path $env:RUNNER_TEMP ('ouf-custody-fixture-' + [guid]::NewGuid().ToString('N'))
 [void](New-Item -ItemType Directory -Path $root)
 $identity = Join-Path $root 'fixture-key'
-$keygen = (Get-Command ssh-keygen.exe -CommandType Application).Source
+$keygen = (Get-Command ssh-keygen.exe -CommandType Application | Select-Object -First 1).Source
 $generation = Start-Process -FilePath $keygen -ArgumentList @('-q', '-t', 'ed25519', '-N', '""', '-f', ('"' + $identity + '"')) -Wait -PassThru -NoNewWindow
 if ($generation.ExitCode -ne 0) { throw 'Synthetic SSH key generation failed.' }
 $originalKeyHash = (Get-FileHash -LiteralPath $identity -Algorithm SHA256).Hash
