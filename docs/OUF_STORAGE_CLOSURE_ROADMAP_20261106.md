@@ -1,3 +1,11 @@
+## Azione corrente — contenimento host prima del nuovo fermo
+
+Cinque timer attivi hanno ReadWritePaths verso tutte cinque fonti runtime. È presente anche un service registry attivo: incluso conservativamente nel perimetro proposto; la coppia semantic mascherata resta invariata. [Ricevuta](../evidence/storage-runtime-writer-metadata-operator-20261106.json).
+
+Ora: eseguire una sola preparazione privata delle configurazioni esatte, completare/qualificare executor host e nuova operazione collegata al vecchio tentativo, quindi decisione sul perimetro esteso e archivio reale. [Pacchetto preparatorio e limiti](OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md). Il preparatore non arresta servizi; executor non ancora implementato. Nessun altro probe crypto o test storage riuscito da ripetere. Questa è la correzione del fermo incompleto, non un nuovo traguardo MiniPET.
+
+Dopo archivio: copiaPC/restore isolato, poi gate SeaweedFS. Le vecchie stime12–18passi non sono una previsione aggiornata: niente nuovo conteggio finché l'archivio target non è stato effettivamente prodotto. MiniPET39,78% e criteri invariati.
+
 ## Riscontro corrente — tentativo consumato e fonti runtime variabili
 
 Il journal riportato daGiovanni è coerente con HOLD prima delle mutazioni (3comandi,0intenti); capture assente. Tutti5corpi runtime sono cambiati a parità di dimensione/custodia. [Ricevuta](../evidence/storage-cold-runtime-drift-operator-20261106.json). Nessun replay o semplice rinnovo hash del piano.

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator readback reconciles held attempt with3command outputs and zero mutation intents; capture absent. All five runtime file bodies/inodes changed, same sizes/custody. Historical renewable-token contract and one exact Onboarding identity writer route found. Do not simply refresh plan hashes or replay. Read current host token service/timer metadata and protected static source routing once; prepare precise host-writer containment and governed correction before next stop/capture.",
+  "nextPlannedWork": "Prepare one private host-containment draft for five timer/service pairs plus the active registry token producer; exact unit configuration is needed for a bounded no-force/no-restart executor. Preserve consumed Docker attempt and original expiry; no replay. Then qualify composed host containment + new linked stop/capture, obtain exact operational decision, produce archive, transfer PC, restore, close SeaweedFS criteria.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -637,5 +637,35 @@
     "recordedAttemptPhase": "PRE_MUTATION_SOURCE_REVIEW",
     "mutationIntentsObserved": 0,
     "changedRuntimeBodies": 5
+  },
+  "hostWriterMetadata": {
+    "receipt": "evidence/storage-runtime-writer-metadata-operator-20261106.json",
+    "activeTimers": 5,
+    "pairedServicesInactiveAtObservation": 5,
+    "additionalActiveRegistryService": true,
+    "maskedSemanticUnits": 2,
+    "allFiveRuntimeSourcesHaveReadWritePathsLiteral": true,
+    "writerCensusComplete": false
+  },
+  "hostContainmentPreparation": {
+    "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md",
+    "script": "scripts/prepare-storage-host-containment-20261106.py",
+    "scriptSha256": "a4fe4def22c21889c313c7c32e885aedd8e4c0de43fba1d76c2657ab746dbb47",
+    "targetPreparationPending": true,
+    "executorImplemented": false,
+    "serviceMutation": false,
+    "testsLocalPass": 6,
+    "acceptanceCreditAdded": 0
+  },
+  "generalCiObserved": {
+    "commit": "2db26f14d12930535af09b9140d0c3e3c67a1b86",
+    "success": 48,
+    "inProgress": 2,
+    "failure": 1,
+    "failedRun": 42299748754,
+    "failedJob": 128174139252,
+    "reason": "PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID",
+    "resolved": false,
+    "rerunRequested": false
   }
 }
