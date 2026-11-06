@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — journal confermato, continuazione host in qualifica
+
+Ricevuta operatore evidence/storage-host-slice-readback-operator-20261106.json:19command,0intent/reply/other,3filehashbound; due Slice system-ouf\\x2dpolicy\\x2dtoken.slice rifiutate dal validatorvecchio eaccettate dalcorretto. Causa target confermata; nessunostato live dedotto. Area originale resta consumata e immutabile.
+
+Nuova scripts/continue-storage-host-containment-20261106.py: vincola3digestdeljournal,legge tutti21file privati,riproduce con il vecchio codice pinned le19risposte SOLOinmemoria e pretendeesattoSLICE_NAME_REQUIRED senzaintenti. Nessuna chiamata provider nella ricostruzione. Poi crea area diversa unica /var/lib/ouf-storage-host-continuation-20261106-v1 e usa containmentcorretto156b805b senza invocare vecchioapply. CumulativiCLI256/32MiB includono19letture/byteprecedenti,nuovo600s distinto dalvecchio600s interamenteaddebitato: massimocumulativoattivo1200s. Scadenzalegacy1794081219 nonestesa. NUOVAdecisione esplicita per singolacontinuazione e allowanceaggiuntiva prima di eseguire,NONreset/replayautomatico né nuovaautorizzazionesviluppo. Perimetromutazioni invariato6override/5timer+registry/attesanaturale.
+
+Fixture nativa riproduce vecchioHOLD esatto,respingeintent ehashalterato prima diprovider,eseguecontinuazionesu5writer+registry,replayrespinto,originalibyteidentici econtabilizzazionecumulativa. Qualifica pending: completare pacchetto/installer/proveprima richiesta decisione. NessunacomposizioneDocker/capture ancora,MiniPETinvariato.
+
 ## Checkpoint conclusivo 2026-11-06 — correzione slice qualificata, journal VPS da leggere
 
 VPS ha installato2file e restituito HELD/SLICE_NAME_REQUIRED. Autorizzazione host resta documentata,ma il singolo tentativo è consumato. NON rilanciare il comando mutante,non cancellare/riusare area,non rinnovare scadenza/budget. Nel codice qualificato6d5e questo controllo precede tutti intenti/override/comandi mutanti: inferenza da codice,non ancora verifica journal/stato live target.
