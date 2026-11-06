@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Prepare one fresh protected local staging area with two empty children under /var/lib/ouf-storage-migration; never adopt or alter existing directories. Write a new private input with explicit revised paths and measured CAPACITY technical evidence, then run the original local check because the input changed. Receive only its redacted result. Missing operator decisions/acceptance facts remain explicit; next prepare the exact governed collection command, not another component-resilience detour. No repeated old preparers/checks, provider labs, backup availability question or implied runtime grant.",
+  "nextPlannedWork": "Obtain the separate operator decision on concrete proposal OUF-G0-COLLECT-20261106-01; after applicable admission, exclusively copy the exact current input with only collectionDecisionRef changed, compare bindings and execute the existing bounded collect once on VPS. Retain four missing operator documents and review the redacted result. No preparer/lab reruns or new HUMAN/recovery workstream. No collection authorized or executed by this checkpoint.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -427,6 +427,23 @@
     "independentBackupVerified": false,
     "capacitySufficiencyProven": false,
     "progressCreditAdded": 0,
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "operatorResult": {
+      "status": "CAPACITY_DIRECTORIES_PREPARED_LOCAL_INPUTS_BOUND_REVIEW_REQUIRED",
+      "receipt": "evidence/storage-g0-capacity-operator-20261106.json",
+      "inputSha256": "6b5a2ba087cd5bfbc956f3bb240cf103b0bbf8d0aeaebb14d6a10f9aaaa22af1",
+      "providerRequests": 0,
+      "capacityAcceptance": false
+    }
+  },
+  "g0CollectionProposal": {
+    "proposal": "releases/storage-g0-collection-proposal-20261106.json",
+    "document": "docs/OUF_STORAGE_G0_COLLECTION_PROPOSAL_20261106.md",
+    "status": "PENDING_SEPARATE_OPERATOR_DECISION",
+    "collectionExecuted": false,
+    "collectionScopeCreated": false,
+    "authenticatedHumanApproval": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
   }
 }

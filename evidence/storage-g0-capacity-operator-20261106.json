@@ -1,0 +1,48 @@
+{
+  "schema": "ouf.storage-g0-capacity-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "sourceCommit": "9bfb77f3a7f5a853d3e696a422500777056704e9",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "candidateInputFile": "/var/lib/ouf-g0-network-preparation-20261106/inputs/capacity-directory-preparation-20261106/package-input.review.json",
+    "capacityEvidencePrepared": true,
+    "capacityPathsExistAndMatchCollectorGuard": true,
+    "capacitySufficiencyProven": false,
+    "collectionScopeCreated": false,
+    "credentialCopiesRecreated": false,
+    "dataDirectoriesCreated": 3,
+    "dataDirectoriesEmptyAtObservation": true,
+    "dataDirectoryCreatesAttempted": 3,
+    "destination": "/var/lib/ouf-storage-migration/seaweedfs",
+    "directoryOwnershipOrModesChanged": false,
+    "g0Complete": false,
+    "independentBackupVerified": false,
+    "inputSha256": "6b5a2ba087cd5bfbc956f3bb240cf103b0bbf8d0aeaebb14d6a10f9aaaa22af1",
+    "localBackupStaging": "/var/lib/ouf-storage-migration/backup-staging",
+    "localPreflightInvoked": true,
+    "localPreflightStatus": "LOCAL_INPUTS_BOUND_EXTERNAL_ADMISSION_REQUIRED",
+    "oldBackupAreaTouched": false,
+    "oldInputModified": false,
+    "operatorInputsMissing": [
+      "OPERATOR_ACCESS",
+      "OPERATOR_CUSTODY",
+      "OPERATOR_WINDOW",
+      "OPERATOR_WRITERS",
+      "COLLECTION_DECISION_REFERENCE"
+    ],
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-capacity-preparation-result.v1",
+    "status": "CAPACITY_DIRECTORIES_PREPARED_LOCAL_INPUTS_BOUND_REVIEW_REQUIRED",
+    "targetInputCheckPassed": false
+  },
+  "interpretation": {
+    "threeDirectories": "parent plus two children; emptiness concerns the two data children",
+    "structuralCapacityInputPresent": true,
+    "capacityAcceptance": false,
+    "collectionExecuted": false,
+    "newAcceptanceCredit": 0
+  }
+}

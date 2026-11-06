@@ -1,3 +1,17 @@
+## Checkpoint 2026-11-06 — percorsi pronti, proposta della raccolta reale
+
+Acquisito l'output VPS CAPACITY_DIRECTORIES_PREPARED_LOCAL_INPUTS_BOUND_REVIEW_REQUIRED: tre directory create (padre e due figli dati vuoti), capacità tecnica preparata, percorsi compatibili col collector, check locale riuscito. Input corrente SHA2566b5a2ba087cd5bfbc956f3bb240cf103b0bbf8d0aeaebb14d6a10f9aaaa22af1 in inputs/capacity-directory-preparation-20261106/package-input.review.json. Vecchi input/backup/permessi intatti, nessuna credenziale ricopiata, providerRequests0 e scope raccolta non creato. Fonte: output operatore, non accesso agent. Ricevuta evidence/storage-g0-capacity-operator-20261106.json. Non ripetere preparatori o check riusciti.
+
+Due passi: registrazione dell'esito; proposta concreta OUF-G0-COLLECT-20261106-01 in docs/OUF_STORAGE_G0_COLLECTION_PROPOSAL_20261106.md e releases/storage-g0-collection-proposal-20261106.json. Bundle9053aa38 e collector invariati. Un tentativo/900s, massimo130EngineGET/32MiB,3000S3/256corpi/64MiBcorpi/128MiBwire,3export DB read-only/32MiB ciascuno/10000righe per sezione. Mantiene17controlli/52GET storici. Solo evidenze private locali; nessuna migrazione o fermo writer.
+
+Il contratto originale consente ACCESS/CUSTODY/WINDOW/WRITERS mancanti: conservare null e MISSING_OPERATOR_EVIDENCE, non pretendere inventario live prima della raccolta che deve ottenerlo. CAPACITY presente non dimostra sufficienza/crescita/throughput/backup indipendente. Backup/DR non vengono riaperti come prerequisito di preparazione. RPO/RTO, quiescenza/common-cut, custodia ed equivalenza ACL restano criteri aperti.
+
+Decisione separata per questa raccolta ancora PENDING. Il riferimento proposto non è un'approvazione e non autentica HUMAN/THS; nessun runtime grant. Dopo decisione applicabile, sola copia esclusiva0600 package-input.collection.json con collectionDecisionRef compilato, altri valori/binding invariati, poi comando collect già qualificato. La nuova copia e lo scope non sono stati creati. Qualunque drift/errore conserva i parziali, senza retry/reset/rebind/cambio operationId. Non riaprire un filone HTTP/HUMAN; nessun nuovo codice collector o laboratorio.
+
+HEAD iniziali deploy9bfb77f3 e source d5155899; entrambe PR54 draft/open. Al controllo49run SUCCESS/3in corso sul deploy, nessuno in corso sul source; sono CI, non evidenza di altro writer. CAS richiesto, sessioni esterne non visibili non escluse. Qualifica helper capacità42209505420:11/11PASS, già riletta, non ripetuta. Checkpoint documentale distinto.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti migrati,credito0. Nessun provider/collect/merge/deploy/grant/riapertura/reset; MinIO/source-lock/piano congelato e source invariati. Prossimo passo: decisione sul pacchetto esatto, poi esecuzione operatore e review del solo JSON redatto. Questo checkpoint prevale sulle proposte storiche sottostanti.
+
 ## Checkpoint 2026-11-06 — nuovo staging VPS confermato dall'operatore
 
 Giovanni ha restituito `NETWORK_DRAFT_STAGED_BINDINGS_REQUIRED`: digest bundle9053aa38/manifest esatti,17ricevute coincidenti con la preparazione precedente, vecchia area e storico preservati, nessuna lettura credenziali/connessione provider/scope di raccolta. Provenienza: output dell'operatore, non accesso agent. HEAD di partenza386b039c verificato51/51SUCCESS, PR54 entrambe draft/open, nessun run attivo nelle100esecuzioni osservate; source d5155899 invariato.
