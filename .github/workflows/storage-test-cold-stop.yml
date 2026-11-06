@@ -30,6 +30,7 @@ jobs:
       - name: Native local Docker stop and offline guard
         run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_test_cold_stop_native.py
       - name: Preserve redacted report only
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: storage-test-cold-stop-result

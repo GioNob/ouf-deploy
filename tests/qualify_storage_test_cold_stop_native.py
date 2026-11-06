@@ -58,7 +58,26 @@ def main():
         stop = root / 'stop'
         stop.mkdir(mode=0o700)
         run = d.bounded_runner(vars(b), stop)
-        result = d.stop_once(vars(b), vars(p), plan, host, stop, run, 'synthetic-stop-decision')
+        try:
+            result = d.stop_once(vars(b), vars(p), plan, host, stop, run, 'synthetic-stop-decision')
+        except b.Held as error:
+            # Read the already captured first fresh inventory, no new Engine call.
+            short = stop / 'command-003.private'
+            fresh = {x['Id']: x for x in (b.decode(line) for line in short.read_bytes().splitlines())} if short.exists() else {}
+            differences = []
+            for cid in plan['stoppedSharingContainers']:
+                if cid in fresh:
+                    old, new = host[cid], fresh[cid]
+                    differences.append({'changedFields': [k for k in ('Mounts', 'State', 'HostConfig') if old.get(k) != new.get(k)],
+                        'mountOrderOnly': old['Mounts'] != new['Mounts'] and
+                            sorted(map(b.canonical, old['Mounts'])) == sorted(map(b.canonical, new['Mounts'])),
+                        'changedStateFields': [k for k in set(old['State']) | set(new['State']) if old['State'].get(k) != new['State'].get(k)]})
+            diagnostic = {'schema': 'ouf.storage-test-stop-native-failure.v1', 'status': 'FAIL', 'reason': str(error),
+                'sharingDifferences': differences, 'mutationIntents': len(list(stop.glob('*.intent.private.json'))),
+                'targetOperations': 0, 'acceptanceCreditAdded': 0}
+            Path('test-stop-native-result.json').write_bytes(b.canonical(diagnostic))
+            print(json.dumps(diagnostic, sort_keys=True), flush=True)
+            raise
         assert result['policyChanges'] == 15 and result['selectedRolesStopped'] == 14
         assert result['mutationCalls'] == 29
         after = run.inventory({v['containerId'] for v in bindings.values()})
