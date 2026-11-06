@@ -1,52 +1,42 @@
-## Aggiornamento corrente — sei riferimenti logici distinti dai due payload residui
-
-[Ricevuta](../evidence/storage-g0-reference-classification-operator-20261106.json):4sampleDB collegati ai job,2etichette diagnostiche,2payloadmanaged ancora da collegare;18impronteesatte.10tenantNULL:1receipt owner candidata,nessuna proprietà autenticata provata. ACLpresenti/ungrant/Owner.IDassente e publicAccessBlockUNSUPPORTED. [Dossier aggiornato](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md). Prossimo riepilogo locale raggruppa2payload,grant/feature e servizi osservati;nessuna raccolta nuova. Poi distinguere disposizioni dei riferimenti dalle prove operative mancanti,senza backfill o nuovi filoni di recovery. Secondo passo ancora in corso;gate/crediti invariati.
-
-## Aggiornamento corrente — natura dei rilievi acquisita
-
-[Readback operatore](../evidence/storage-g0-sealed-findings-operator-20261106.json):120corpi/120riferimenti/120classificati,353righe;18rilievi=10campi tenant non valorizzati+4riferimenti aggiuntivi+4quarantena. Nessun rilievo missing/hash/size/unclassified/dangling nel breakdown.2ACL owner/grants non dimostrati;source/destination/backup stesso device. [Disposizione preliminare e contratti](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md). Secondo passo in corso:classificazione locale esatta dei riferimenti e delle prove legacy,senza query o mutazioni;non presumere18riparazioni. Restano accessi/custodia/finestra/writer e accettazione capacità/funzioni/obiettivi. Numeri MiniPET invariati.
-
 # Roadmap corrente MinIO → SeaweedFS — 6 novembre 2026
 
-Questa roadmap sostituisce la stima conversazionale di **12–18 passi / 6–9 coppie** e il percorso successivo del riesame iniziale del 5 novembre. Non modifica criteri, gate, piano storico congelato o autorizzazioni. Base aggiornata: deploy `c4e3b4d2ca4be6b1860aee308ce62daedb662067`, Onboarding `d5155899b09dda298494b68cefa7e1f281167652`; PR54 entrambe draft/open.
+**Raccolta tecnica e review dei dati disponibili concluse; G0 ancora aperto per evidenze operative e disposizioni non ancora accettate.** Fonte: [dossier](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md) e [ricevuta finale](../evidence/storage-g0-final-local-review-operator-20261106.json). Base deploy f02ba458a7e536c848abca001154dbf5f665a16e; source d5155899b09dda298494b68cefa7e1f281167652, entrambePR54 draft/open.
 
-## Correzione della pianificazione
+## Risultato della coppia raccolta e riconciliazione
 
-La stima precedente era troppo ottimistica: trattava raccolta e integrazione operativa come attività già delimitate, senza aver verificato abbastanza le condizioni reali del VPS. Preparazioni, diagnosi, qualifiche e registrazioni sono poi state contate come “passi” senza aggiornare la previsione di chiusura. Non sono unità confrontabili con quei 12–18 passi. Non è possibile sottrarre le coppie svolte per ottenere un residuo attendibile.
+1. Raccolta02 completata tecnicamente:120corpi reali verificati/referenziati,3exportDB,145container,292GET nuovi/345cumulativi e1370richiesteS3,zero scritture target. Le due autorizzazioni sono consumate.
+2. Review dei dati disponibili completata:18impronte associate,4sample DB e2label classificati,2payload collegati ad asset/hash/size/run. Restano10owner non provati e lacune ACCESS/CUSTODY/WINDOW/WRITERS/capacità/coorte. La riconciliazione G0 completa **non è conclusa**.
 
-Sono stati rimossi blocchi reali: pacchetto raccoglitore, connessioni private S3 e tre DB, binding di rete, percorsi di destinazione, consegna e preparazione sul VPS. Le qualifiche di copia/ritorno e dei client esistono, ma restano sintetiche. La raccolta target autorizzata si è arrestata in HOST_BEFORE dopo un Docker GET, senza raggiungere S3 o DB. Il limite di 64 container del pacchetto non era stato adeguatamente confrontato con l'host; il successivo riscontro locale mostra 145 directory, non un conteggio live provato. Il profilo192 corretto è stato poi autorizzato ed eseguito: la raccolta02 è SEALED con technicalCaptureComplete=true,120corpi verificati,3exportDB e145container osservati da Docker. Il risultato è HELD_RECONCILIATION_FINDINGS per18rilieviDB: la cattura è conclusa,la riconciliazione no. Fonte: output operatore registrato; breakdown locale acquisito;associazione semantica puntuale ancora da leggere.
+Download, helper, ricevute e aggiornamenti documentali non diventano altre coppie. Non ripetere le acquisizioni/qualifiche riuscite senza nuova modifica o motivo documentato.
 
-**Stima 12–18 ritirata; nuova stima numerica non disponibile.** Non viene sostituita con un altro conteggio arbitrario. La raccolta corrente e la riconciliazione dei suoi rilievi permetteranno di stimare il lavoro residuo per criterio; eventuali incognite rimarranno esplicite. Non si promette che la raccolta, da sola, chiuda G0.
+## Blocco concreto emerso e scelta della procedura
 
-## Traguardi e prove di uscita
+Onboarding osservato dichiara194b5865, mentre la qualifica client33 usa d5155899. I sorgenti differiscono in interfaccia di upload e policy timeout/retry; label e image ID non provano le classi effettivamente installate. Questa differenza va risolta prima della qualifica finale, senza estendere automaticamente il filone HUMAN/recovery.
 
-| Traguardo | Stato corrente | Prova necessaria per chiuderlo |
+Il [runbook offline](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) propone copia completa a scritture ferme e MinIO preservato. Specifica baseline DB/oggetti, backup indipendente, parità, switch, riapertura e ritorno prima/dopo nuove scritture. È DRAFT non eseguibile: binding finali, comandi, budget e decisioni ancora mancanti sono null nel [piano strutturato](../releases/storage-offline-cutover-plan-20261106.json). Non è una consegna ammessa.
+
+## Gate e prove residue
+
+| Gate | Prova disponibile | Residuo per la chiusura |
 |---|---|---|
-| G0 — baseline reale | Raccolta02 tecnicamente completa:120corpi,3exportDB,145container;18rilieviDB,2classificazioniACCESS da rivedere. Entrambi i tentativi consumati | Raccolta corrente verificata di oggetti/corpi e riferimenti DB; censimento writer/consumer e funzioni; riconciliazione delle otto sezioni incluse accessi, capacità, custodia e finestra. Eventuali rilievi devono essere risolti, non solo elencati |
-| G1 — candidato mantenibile | Coorte OCI33 e scansioni al checkpoint qualificate; gate aperto | Inventario server/client/tool, review licenze e obblighi, custodia durevole verificata e scansioni valide all'ammissione |
-| G2–G4 — compatibilità, esercizio e procedura | Prove sintetiche di client, copia/ritorno, recovery e restore disponibili | Matrice AT sulla coorte finale; topologia/TLS/segreti, backup indipendente e restore dell'insieme DB/oggetti/configurazioni/chiavi; writer realmente fermabili, parità DB/oggetti e rollback applicativo; capacità e RPO/RTO misurati rispetto a obiettivi accettati |
-| G5 — consegna operativa ammessa | Non pronta: G0–G4 aperti | Unico pacchetto con binding, prove, runbook, hold/rollback, finestra e approvazioni effettivamente applicabili |
-| G6 — migrazione e passaggio | Non iniziati; 0/120 oggetti reali migrati sul totale storico | Esecuzione autorizzata, quiescenza verificata, copia e parità integrale, percorso utenti sul target, switch e riapertura governati |
-| G7 — osservazione e chiusura | Non iniziati; MinIO ancora attivo | Finestra concordata: MiniPET propone almeno 48h, con ciclo backup/restore e manutenzione, da estendere se non rappresentativi; decisione sul ritiro accessi MinIO e conservazione originali |
+| G0 baseline |120corpi verificati,18rilievi tipizzati con disposizioni, feature/runtime/capacità osservati |Accettare disposizioni, coorte e inventario completo; accessi/custodia,11percorsi writer e1container attivo fuori roster, funzioni/finestra/RPO/RTO |
+| G1 candidato |OCI33 e qualifiche al checkpoint |Coorte finale server/client/tool, licenze, custodia durevole e sicurezza valida all'ammissione |
+| G2 contratti |12casi client33 e mapping AT aperto |Binding rappresentativi della coorte scelta e tutti gli AT applicabili; niente trasferimento implicito194b→d515 |
+| G3 recovery |Foundation/restore sintetici e backup storici parziali |Backup corrente DB+oggetti+config/chiavi, custodia indipendente, restore rappresentativo e obiettivi/capacità misurati |
+| G4 procedura |Rehearsal copia/ritorno oggetti e runbook proposto |Writer realmente fermabili, common-cut e parità DB/oggetti, rollback applicativo dopo nuove scritture, comandi esatti qualificati |
+| G5 ammissione |Non pronta |Pacchetto unico G0–G4, budget, binding, finestra e decisioni effettivamente applicabili |
+| G6 passaggio |Non iniziato |Esecuzione autorizzata, copia reale/parità, percorso utenti, switch e riapertura governati |
+| G7 osservazione |Non iniziata |Finestra proposta almeno48h, backup/restore e manutenzione rappresentativi; ritiro MinIO deciso separatamente |
 
-Per il volume storicamente ridotto, valutare prima la copia con fermo completo, sulla base dei dati correnti e della finestra accettabile. Non sviluppare delta online o collegamento HTTP/HUMAN senza una dipendenza dimostrata della procedura scelta. Il backup locale di staging non prova un backup indipendente; la domanda sul backup differita per la preparazione non equivale ad accettazione per il cutover.
+Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/baseline/v1.7. Questa roadmap non le modifica.
 
-## Prossima coppia operativa, senza nuovo lavoro preparatorio già riuscito
+## Prossima coppia: due uscite verificabili
 
-1. **COMPLETATO tecnicamente:** raccolta02 autorizzata ed eseguita;120corpi verificati,3exportDB,145container,zero scritture provider. Non ripetere acquisizione o preparazione. [Risultato operatore](../evidence/storage-g0-host192-collection-operator-20261106.json).
-2. **IN CORSO:** leggere il riepilogo locale dei18rilieviDB e2classificazioniACCESS già conservati; assegnare una disposizione motivata e riconciliare le otto sezioni. ACCESS/CUSTODY/WINDOW/WRITERS restano mancanti (11percorsi writer); capacità osservata ma non accettata. Chiudere G0 solo con i criteri soddisfatti. Il numero18 non permette di stimare18riparazioni: può includere classificazioni,più riferimenti allo stesso oggetto o incongruenze effettive.
+1. **Chiudere la scelta della coorte da qualificare.** Cercare nelle prove di consegna già conservate il legame sorgente/build/immagine/classi/binding della coorte installata. Produrre il delta esatto di compatibilità e la scelta motivata tra mantenimento e aggiornamento governato. Se manca una prova target, preparare una sola verifica delimitata del dato mancante, non un'altra raccolta G0 completa.
+2. **Rendere concreto il pacchetto di fermo e ritorno.** Riunire censimento writer/accessi, backup indipendente/restore e finestra nel runbook con comandi e budget sui binding scelti. Distinguere il lavoro autonomo dalle poche attestazioni/azioni che Giovanni deve davvero fornire. Non chiedere approvazione al cutover finché il pacchetto non è reviewabile.
 
-Questa coppia comprende acquisizione e valutazione delle evidenze: non sarà suddivisa artificialmente in download, lettura JSON, registrazione e aggiornamento PR. Un arresto reale può richiedere un intervento separato, che deve essere dichiarato come blocco e motivare la revisione della previsione.
+Nessuna nuova stima numerica: quella di12–18passi è ritirata perché non aveva delimitato le condizioni del VPS e i “passi” successivi erano stati frammentati senza aggiornare il residuo. La review ora riduce l'incertezza sui dati; restano coorte e procedura operativa. La prossima stima deve misurare questo residuo, non contare documenti o test.
 
-Ogni aggiornamento successivo riporterà: criterio chiuso oppure blocco indispensabile rimosso, prova, residui e impatto sulla previsione. Registrazioni e documentazione di accompagnamento non saranno presentate come passi di migrazione. I test già riusciti si riusano; nuove prove solo per modifiche o lacune specifiche documentate.
+## Stato di accettazione
 
-## Riscontri e limiti
-
-- [Riesame G0–G7 e 21 AT](OUF_STORAGE_CLOSURE_REVIEW_20261105.md).
-- [Tentativo HELD](../evidence/storage-g0-held-operator-20261106.json) e [readback operatore](../evidence/storage-g0-held-readback-operator-20261106.json).
-- [Qualifica host192](../evidence/storage-g0-host192-qualified-20261106.json): run42218997469; [preparazione VPS](../evidence/storage-g0-host192-preparation-operator-20261106.json). Gli esiti VPS sono riportati dall'operatore, non osservazioni dirette dell'agent.
-- [Stato corrente strutturato](../releases/minio-seaweedfs-closure-status-20261105.json).
-
-MiniPET invariato: **18,3/46 = 39,78%; 0/8 gate; 0/21 AT; 0/120 oggetti reali migrati**. Il 39,78% è una stima pesata di lavoro tecnico, non una misura del tempo residuo né accettazione. Questo aggiornamento registra una nuova evidenza target riportata dall'operatore, senza credito aggiunto:120corpi verificati e0migrati sono misure distinte.
-
-La raccolta02 ha scritto soltanto evidenze locali e non ha mutato i provider. Ora è previsto esclusivamente il readback locale redatto,senza nuove query o verifica ripetuta dei corpi. Nessun merge,deploy,grant o riapertura. Basec4e3b4d2:CI49SUCCESS/3in corso al controllo; dedicata ingresso10/10SUCCESS. Pubblicazione con confronto dell'HEAD atteso,senza force.
+MiniPET **18,3/46=39,78%**, **0/8gate**, **0/21AT**, **0/120oggetti reali migrati**. Separatamente:120corpi reali verificati. Nessun credito aggiunto per classificazione o runbook. MinIO,source-lock e piano congelato invariati; nessun merge/deploy/grant/riapertura.

@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — review locale conclusa, procedura offline e coorte da risolvere
+
+Ricevuta evidence/storage-g0-final-local-review-operator-20261106.json:2payload fisicamente collegati ad asset/bucket/hash/size/run;tenant NULL,owner non provato. I18rilievi originali restano:4sample DB,2label,2payload tipizzati e10owner aperti. Nessun backfill o riparazione HUMAN inferiti. Versioning Status/MFADelete NOT_SET,0destinazioni notification;grant CanonicalUser FULL_CONTROL senza ID,autorizzazione effettiva non provata.10file letti,zero provider/credenziali/write.13ruoli running,1running fuori roster senza segnali storage rilevati: non prova assenza writer via rete.
+
+Review dei dati disponibili conclusa con disposizioni; riconciliazione complessiva G0 ancora aperta. Non rilanciare helper o raccolte01/02 consumate. Dossier e roadmap correnti riscritti senza proposte VPS ormai superate; storico in Git.
+
+Runbook docs/OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md e piano releases/storage-offline-cutover-plan-20261106.json: copia completa proposta a writer fermi,MinIO preservato,backup indipendente,baseline comune DB/oggetti,parità,ritorno distinto prima/dopo nuove scritture. DRAFT non eseguibile,comandi/budget/ammissione mancanti. Backup storici e correzioneMCP consultati: non attestano insieme attuale indipendente. Nessuna riesecuzione delle qualifiche riuscite.
+
+Differenza concreta:Onboarding osservato dichiara194b5865,qualificato d5155899. Sorgenti interfaccia put/putReserved e retry/timeout diversi;label non prova classi installate. Non applicare al runtime i predicati tenant/recovery più recenti senza membership provata. Prossima coppia:1ricostruire coorte effettiva e scegliere delta di qualifica;2completare pacchetto operativo writer/accessi/backup/finestra/ritorno. Nessun nuovo filone HTTP/HUMAN senza dipendenza dimostrata. Documenti e registrazioni non si contano come passi aggiuntivi.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati distinto. Nessun merge/deploy/grant/traffico o piano congelato modificato. HEAD basef02ba458/source d5155899 riconfermati,PR54draft/open;CI base48SUCCESS/3in corso su51 al controllo,nessun retry. Pubblicazione CAS;sessioni esterne non osservabili non sono escluse da un controllo GitHub.
+
 ## Checkpoint 2026-11-06 — sei riferimenti logici classificati, due payload managed da collegare
 
 Ricevuta evidence/storage-g0-reference-classification-operator-20261106.json:18impronteesatte,4sample collegati ad asset/job/profileDB,2label diagnostiche,2payload managed residui.10tenantNULL,1receipt owner coerente/9assenti,0upload coerenti,2source_ref/8assenti;subject/source-review non esportati,proprietà non attestata. Nessun backfill o HUMAN repair automatico. ACL2bucketPRESENT/ungrant/Owner.IDassente;policyABSENT/publicAccessBlockUNSUPPORTED. Versioning/notificationPRESENT non significa abilitati.

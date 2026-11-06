@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Finish second-step local reconciliation with one grouped read-only review of2managed payload bindings,ACLgrant/feature values and existing host-role metadata. Do not rerun prior collection/readback/classifier. Preserve10legacyNULL owners and original findings; no ownership repair inferred. Then assign dispositions and separately handle ACCESS/CUSTODY/WINDOW/WRITERS and backup/capacity/objectives that these exports cannot prove.",
+  "nextPlannedWork": "Resolve installed versus qualified application cohort from retained delivery evidence and select exact qualification delta; then complete bound offline writer/access/independent-backup/window/rollback package. Available capture review is complete with open dispositions. No repeated local helper or collection, no implicit source update, ownership repair or HTTP/HUMAN prerequisite. Do not count accompanying documents as migration steps.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -513,11 +513,19 @@
     "referenceClassificationReceipt": "evidence/storage-g0-reference-classification-operator-20261106.json",
     "logicalProfileSamplesLinked": 4,
     "diagnosticLabelsClassified": 2,
-    "remainingManagedPayloadBindings": 2,
+    "remainingManagedPayloadBindings": 0,
     "tenantNullAssets": 10,
     "ownerReceiptCandidateRowsPresent": 1,
     "tenantOwnershipProven": false,
-    "finalLocalReviewExecuted": false
+    "finalLocalReviewExecuted": true,
+    "finalLocalReviewReceipt": "evidence/storage-g0-final-local-review-operator-20261106.json",
+    "managedPayloadPhysicalLinksObserved": 2,
+    "localEvidenceReviewCompleteWithOpenDispositions": true,
+    "originalFindingsCleared": 0,
+    "overallG0ReconciliationComplete": false,
+    "runningNonRosterContainersAtCollection": 1,
+    "writerCensusComplete": false,
+    "installedSourceMembershipProven": false
   },
   "currentRoadmap": "docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md",
   "scheduleEstimate": {
@@ -534,5 +542,11 @@
     "reason": "Preparation and diagnosis were counted as closure steps without updating the forecast; G0 target capture and reconciliation are incomplete.",
     "nextEstimationBasis": "Six of eight extra refs classified as4DBsamples+2diagnostic labels;2managed payload links need final local binding.10legacyNULL assets remain owner-unproven (1candidate receipt,subject/source-review absent).Operational evidence remains open; do not estimate10repairs or equate labels with acceptance.",
     "documentationCountsAsMigrationStep": false
+  },
+  "offlineCutoverPlan": {
+    "path": "releases/storage-offline-cutover-plan-20261106.json",
+    "runbook": "docs/OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md",
+    "status": "DRAFT_NOT_EXECUTABLE_NOT_ADMITTED",
+    "acceptanceCreditAdded": 0
   }
 }

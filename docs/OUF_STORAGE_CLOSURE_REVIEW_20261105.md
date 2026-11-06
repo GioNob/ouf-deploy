@@ -1,3 +1,7 @@
+## Stato corrente del6novembre
+
+La review iniziale sottostante è storica. Raccolta02 e review locale completate con rilievi aperti; vedere [roadmap corrente](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md), [dossier](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md) e [procedura offline proposta](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md). Coorte Onboarding osservata dichiarata194b5865 diversa dalla qualifica d515;G0 e tutti gli altri gate aperti. Nessuna nuova raccolta o ammissione implicita.
+
 Roadmap corrente: [revisione del 6 novembre](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md). Sostituisce la stima 12–18 passi e il percorso successivo iniziale sotto; conserva il riesame e le prove storiche. G0 ancora aperto, host192 preparato, decisione02 pendente. Nessun credito aggiunto.
 
 Aggiornamento corrente: [rehearsal MinIO→OCI33 e ritorno dopo scritture](OUF_STORAGE_MINIO33_REHEARSAL_20261105.md), candidato4555f7dc,12esiti nativi PASS e137sorgenti Git verificati. Il riesame iniziale sotto conserva la sua base; G4 ha ora la qualifica fra provider esatti, ma nessun gate/AT è chiuso.

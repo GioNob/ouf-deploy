@@ -1,0 +1,100 @@
+{
+  "schema": "ouf.storage-offline-cutover-plan.v1",
+  "date": "2026-11-06",
+  "status": "DRAFT_NOT_EXECUTABLE_NOT_ADMITTED",
+  "basisCommit": "f02ba458a7e536c848abca001154dbf5f665a16e",
+  "strategy": "PROPOSED_FULL_COPY_WITH_ALL_WRITERS_QUIESCENT",
+  "runbook": "docs/OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md",
+  "targetEvidence": "evidence/storage-g0-final-local-review-operator-20261106.json",
+  "source": {
+    "provider": "MinIO",
+    "nativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "currentRuntimeProven": false,
+    "privateBindingInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e"
+  },
+  "destination": {
+    "path": "/var/lib/ouf-storage-migration/seaweedfs",
+    "candidateImageDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+    "runtimeInstalled": false
+  },
+  "backup": {
+    "localStaging": "/var/lib/ouf-storage-migration/backup-staging",
+    "sharesSourceDevice": true,
+    "independentDestination": null,
+    "custodian": null,
+    "completeCurrentBackupProven": false,
+    "independentRestoreProven": false
+  },
+  "applicationCohort": {
+    "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+    "qualifiedOnboardingRevision": "d5155899b09dda298494b68cefa7e1f281167652",
+    "exactInstalledSourceMembershipProven": false,
+    "sourceContractDifferenceObserved": true,
+    "finalCohortDecision": null
+  },
+  "objectives": {
+    "proposedCutoverConfirmedWriteLoss": 0,
+    "acceptedCutoverRpo": null,
+    "acceptedRtoSeconds": null,
+    "acceptedMaximumDowntimeSeconds": null,
+    "window": null,
+    "proposedObservationHoursMinimum": 48,
+    "observationWindowAccepted": false
+  },
+  "writers": {
+    "requiredPaths": [
+      "onboarding-human-upload",
+      "onboarding-delegated-upload",
+      "onboarding-profile-worker",
+      "ingestion-execution-replay",
+      "ingestion-outbox-ack-watermark",
+      "udp-store",
+      "udp-shadow",
+      "udp-purge-compaction",
+      "udp-maintenance",
+      "administrative-tools",
+      "external-consumers"
+    ],
+    "runningNonRosterAtCapture": 1,
+    "censusComplete": false,
+    "quiescenceProven": false
+  },
+  "rollback": {
+    "beforeFirstTargetWrite": "PRESERVE_FENCE_VERIFY_SOURCE_DB_GENERATION_RESTORE_QUALIFIED_BINDINGS",
+    "afterAnyTargetWrite": "FENCE_BOTH_PRESERVE_DB_AND_STORES_RECONCILE_THEN_GOVERNED_RETURN_OR_FORWARD_RECOVERY",
+    "applicationDatabaseObjectReturnQualified": false,
+    "reopenAllowed": false
+  },
+  "requiredUnresolved": [
+    "INSTALLED_COHORT_AND_FINAL_COHORT",
+    "REQUIRED_FEATURES_AND_EFFECTIVE_AUTHORIZATION",
+    "WRITER_CENSUS_AND_DURABLE_FENCE",
+    "CAPACITY_GROWTH_AND_CUSTODY",
+    "INDEPENDENT_COMPLETE_BACKUP_AND_RESTORE",
+    "ACCEPTED_WINDOW_RPO_RTO",
+    "FINAL_COHORT_LICENSE_SECURITY_DURABLE_CUSTODY",
+    "REPRESENTATIVE_AT_AND_APPLICATION_ROLLBACK",
+    "EXACT_BOUND_COMMANDS_BUDGETS_AND_ADMISSION"
+  ],
+  "execution": {
+    "commands": [],
+    "budget": null,
+    "decisionReference": null,
+    "admissionIssued": false,
+    "mergeAuthorized": false,
+    "deployAuthorized": false,
+    "copyAuthorized": false,
+    "reopenAuthorized": false,
+    "automaticReplayAllowed": false,
+    "consumedCollectionScopesReusable": false
+  },
+  "acceptance": {
+    "g0Complete": false,
+    "gatePass": 0,
+    "atPass": 0,
+    "realObjectsVerified": 120,
+    "realObjectsMigrated": 0,
+    "acceptanceCreditAdded": 0
+  }
+}
