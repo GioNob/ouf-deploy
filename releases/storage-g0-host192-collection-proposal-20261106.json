@@ -1,7 +1,7 @@
 {
   "schema": "ouf.storage-g0-collection-proposal.v2",
   "proposalId": "OUF-G0-COLLECT-20261106-02",
-  "status": "PREPARED_PENDING_DISTINCT_OPERATOR_DECISION",
+  "status": "OPERATOR_AUTHORIZED_EXECUTION_PENDING",
   "operationId": "seaweedfs-g0-20261106-v2",
   "baseInput": "/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json",
   "baseInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
@@ -11,7 +11,7 @@
   "allowedInputDelta": {
     "collectionDecisionRef": "OUF-G0-COLLECT-20261106-02"
   },
-  "decisionReferenceIsProposalNotApproval": true,
+  "decisionReferenceIsProposalNotApproval": false,
   "scope": "/var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v2",
   "limits": {
     "attempts": 1,
@@ -65,10 +65,12 @@
     "WINDOW",
     "WRITERS"
   ],
-  "collectionDecisionRecorded": false,
+  "collectionDecisionRecorded": true,
   "collectionExecuted": false,
   "runtimeAuthorityIssued": false,
   "authenticatedHumanApproval": false,
   "g0Complete": false,
-  "acceptanceCreditAdded": 0
+  "acceptanceCreditAdded": 0,
+  "decisionReceipt": "evidence/storage-g0-host192-collection-decision-20261106.json",
+  "approvalProvenance": "EXPLICIT_USER_CONVERSATION_AUTHORIZATION"
 }

@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — raccolta02 autorizzata, esecuzione VPS pendente
+
+Giovanni: «Autorizzo la raccolta». Decisione OUF-G0-COLLECT-20261106-02 registrata in evidence/storage-g0-host192-collection-decision-20261106.json: perimetro esatto della proposta host192, un tentativo/900s,386GET nuovi/53precedenti/439massimo cumulativo, limiti S3/DB invariati. Non chiedere nuovamente questa autorizzazione. Nessuna autenticazione HUMAN/THS o grant emesso.
+
+Ingresso scripts/execute-storage-g0-host192-authorized-20261106.py adattato dall'ingresso01: nuovo input/manifest/decisione, directory input host192 e outputParent originale distinti, pin delle quattro receipt precedenti, controllo limiti v3 e53GET conservati. Collector e bundle qualificati invariati. Copia privata esclusiva, unico collect; reingresso può solo leggere risultato esistente, parziali conservati senza replay. 10 test locali PASS con preflight v3 originale; CI dedicata sul nuovo ingresso separata, esito nella PR.
+
+L'operatore deve eseguire il comando verificato e restituire solo result.json redatto. Raccolta non ancora osservata; poi verifica/reconciliation delle otto sezioni. Nessun credito aggiunto: MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati. Nessun merge/deploy/grant/riapertura,source d5155899 invariato. Base53010c84 CI51/51SUCCESS,nessun run attivo al controllo. Questo checkpoint accompagna il primo passo operativo,non è un passo aggiuntivo.
+
 ## Checkpoint 2026-11-06 — stima ritirata e roadmap riallineata ai gate
 
 La stima conversazionale 12–18 passi / 6–9 coppie è ritirata: preparazioni e diagnosi sono state frammentate e contate senza aggiornare il residuo. Roadmap corrente: docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md. Questo aggiornamento documentale non è una coppia di avanzamento della migrazione.

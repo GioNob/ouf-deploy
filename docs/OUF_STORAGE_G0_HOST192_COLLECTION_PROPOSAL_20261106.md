@@ -1,6 +1,6 @@
 # Raccolta G0 host192 — decisione OUF-G0-COLLECT-20261106-02
 
-Stato: **PRONTA PER DECISIONE DISTINTA, NON ANCORA AUTORIZZATA O ESEGUITA**. Il riferimento02 è una proposta; nessuna approvazione HUMAN/THS o authority runtime è emessa.
+Stato: **AUTORIZZATA DALL'OPERATORE, ESECUZIONE PENDENTE**. Giovanni: «Autorizzo la raccolta». [Decisione registrata](../evidence/storage-g0-host192-collection-decision-20261106.json). Non richiedere di nuovo questa autorizzazione. Nessuna autenticazione HUMAN/THS o authority runtime emessa.
 
 ## Preparazione acquisita
 
@@ -37,7 +37,7 @@ sudo /usr/bin/python3 -I -B -S \
   --package-sha256 1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69
 ```
 
-Non eseguirlo adesso: copia decisionale e decisione02 non sono ancora presenti. Il preflight interno del nuovo comando resta obbligatorio all'avvio; non comporta rilancio del vecchio check a scopo di prova. Il pacchetto rifiuta la decisione01 e richiede operazione distinta,senza presentare una stringa come autenticazione HUMAN.
+L'ingresso autorizzato sotto crea la copia decisionale e avvia già questa CLI: non eseguire anche il comando manuale. Il preflight interno del nuovo comando resta obbligatorio all'avvio; non comporta rilancio del vecchio check a scopo di prova. Il pacchetto rifiuta la decisione01 e richiede operazione distinta,senza presentare una stringa come autenticazione HUMAN.
 
 ## Perché la decisione è distinta
 
@@ -52,3 +52,9 @@ ACCESS/CUSTODY/WINDOW/WRITERS restano mancanti e devono essere conservati come t
 Qualsiasi diniego/crash conserva scope/parziali: non cancellare,rinominare,cambiare operationId o azzerare contatori per ripetere. Una raccolta completa produce evidenza da rivedere,non G0 chiuso. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti migrati,credito0.
 
 CI generale d969 al controllo:48SUCCESS/1FAIL/3attive. Fail42220098717/job127899698625,fixture sealed-worker in phase.observe: PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID. Nessun retry o guard indebolito; distinto dalle qualifiche dedicate G0. Questo checkpoint modifica solo documenti/ricevute/stato e non rilancia test riusciti.
+
+## Ingresso unico autorizzato
+
+`scripts/execute-storage-g0-host192-authorized-20261106.py`, eseguito con sudo /usr/bin/python3 -I -B -S, verifica il bundle qualificato e l'input dc0ab6d4, confronta binding e limiti con la preparazione, fissa i quattro digest del tentativo precedente e il budget386/53. Registra la decisione conversazionale e crea package-input.collection.json con la sola modifica decisionRef; entrambi O_EXCL/0600/fsync. Il comando collect viene avviato direttamente, senza shell. Non ripetere preparazione o CLI manuale.
+
+Riusa le guardie dell'ingresso01 e il preflight v3 originale. 10test locali PASS per delta esatto, percorsi separati,53GET conservati, immutabilità precedenti, drift e assenza di replay. Workflow dedicato `storage-g0-host192-authorized-entry.yml`; digest e CI di consegna nella PR54. I test di ingresso non sono nuove prove native di raccolta o crediti MiniPET.

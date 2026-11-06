@@ -1,0 +1,53 @@
+{
+  "schema": "ouf.storage-g0-operator-decision-record.v1",
+  "date": "2026-11-06",
+  "decisionRef": "OUF-G0-COLLECT-20261106-02",
+  "operationId": "seaweedfs-g0-20261106-v2",
+  "provenance": "EXPLICIT_USER_CONVERSATION_AUTHORIZATION",
+  "actorDeclared": "Giovanni",
+  "userReply": "Autorizzo la raccolta",
+  "status": "AUTHORIZED_EXECUTION_PENDING",
+  "baseInput": "/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json",
+  "baseInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+  "packageManifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+  "scope": "/var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v2",
+  "limits": {
+    "attempts": 1,
+    "automaticReplayAllowed": false,
+    "databaseBytesEach": 33554432,
+    "databaseExports": 3,
+    "databaseRowsPerSection": 10000,
+    "engineBytes": 33554432,
+    "engineGets": 386,
+    "hostContainers": 192,
+    "priorControls": 17,
+    "priorEngineGets": 53,
+    "s3Bodies": 256,
+    "s3BodyBytes": 67108864,
+    "s3Requests": 3000,
+    "s3WireBytes": 134217728,
+    "seconds": 900
+  },
+  "maxCumulativeEngineGets": 439,
+  "permittedEffects": [
+    "one exclusive private input/decision copy after explicit applicable decision",
+    "Docker complete inventory and inspect including stopped and non-roster containers",
+    "conditional authenticated MinIO inventory and body reads",
+    "three fixed PostgreSQL READ ONLY REPEATABLE READ exports",
+    "protected local evidence and reconciliation"
+  ],
+  "excludedEffects": [
+    "provider mutation",
+    "credential recopy or grant",
+    "container start stop exec",
+    "migration deployment endpoint change",
+    "writer drain or traffic reopening",
+    "old scope changes budget reset automatic retry"
+  ],
+  "priorAttemptPreserved": true,
+  "collectionExecuted": false,
+  "runtimeAuthorityIssued": false,
+  "authenticatedHumanApproval": false,
+  "g0Complete": false,
+  "acceptanceCreditAdded": 0
+}
