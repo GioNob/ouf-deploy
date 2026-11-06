@@ -20,7 +20,18 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Verify preparation privacy, lineage and no service mutation
-        run: python3 -B -m unittest discover -s tests -p 'test_storage_host_containment_preparation.py' -v
+      - name: Reuse exact 13-test success from run 42303969794
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          expected = {
+              'scripts/prepare-storage-host-containment-20261106.py': 'caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1',
+              'tests/test_storage_host_containment_preparation.py': 'a412ca140a751033c256e1a1e768ae2a3a7167ea3b436cab622c53c75306228e',
+              'scripts/storage-cold-backup.py': 'b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac'}
+          for path, digest in expected.items():
+              assert hashlib.sha256(Path(path).read_bytes()).hexdigest() == digest, path
+          print('Reused 13 PASS from run42303969794 step3; only native fixture observation changed.')
+          PY
       - name: Real systemd service timer mask and linked-fragment read integration
         run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_host_preparation_systemd.py

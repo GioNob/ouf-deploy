@@ -87,6 +87,8 @@ def main():
             return p.command(argv, until)
 
         result = p.prepare(vars(b), run=actual_read)
+        print(json.dumps({'schema': 'ouf.storage-host-preparation-systemd-observation.v1',
+                          'redactedPreparation': result}, sort_keys=True), flush=True)
         assert len(calls) == 3 and '--all' in calls[-1]
         assert len(result['units']) == 13 and result['unitConfigurationFilesBound'] == 11
         assert result['serviceMutations'] == result['dockerRequests'] == result['iamRequests'] == 0
