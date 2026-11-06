@@ -1,3 +1,19 @@
+## Checkpoint 2026-11-06 — readback145 acquisito, profilo host192 con storico vincolato
+
+Operatore ha restituito HELD_ATTEMPT_BOUND_NO_REPLAY_AUTHORITY:145directory Docker,13binding presenti,nessuna altra entry/symlink,scan completo. Numero live non provato. Ricevute e file del tentativo consumato coincidono,17storiche intatte,53GET cumulativi,zero provider/credenziali/write nel readback. Digest result09f6c879,claim5bf27b0c,decision4a474ef3,inputaa002304. Ricevuta completa evidence/storage-g0-held-readback-operator-20261106.json.
+
+Due passi: registrazione readback; correzione del profilo host completa con qualifica della composizione modificata. Mantiene ispezione di TUTTI i container,fermi/fuori roster inclusi. Nuovo inputv3 con4ricevute precedenti vincolate e verifica della disposizione esatta1GET/HOST_BEFORE/nessun child. Soglia192 (47oltre le145directory osservate),386GET=2*(192+1),32MiB/2MiB risposta,60s per passata,900s totale. priorEngineGets53,cumulativo massimo439; S3/SQL invariati. Nessun troncamento o grant. v1/v2 conservano64/130/52.
+
+v3 richiede diversa operationId e decisione distinta; stessa installazione/ruoli/capacità/evidenze/storico/outputParent. Config e rete nuove differiscono soltanto per operationId. Receipt precedenti ricontrollate durante la raccolta. count/tipo/soglia della lista sono ora conservati prima del diniego. Il vecchio scope e bundle installato restano intatti; nessuna nuova raccolta autorizzata dalla vecchia decisione. Preflight continua targetCommandAuthorized=false.
+
+12test nuovo profilo PASS (145/192/193,386GET,vecchio64invariato,contatori,receipt/connessione alterata,decisione non riusabile) e13regressioni composizione PASS giustificate dal codice modificato. Qualifica CI aggiornata su145container nativi: vecchio profilo riproduce il blocco1GET,nuovo v3 con storico vincolato deve completare292GET/345cumulativi e4child; esito da osservare nella PR. Non attribuire ancora SUCCESS prima del run. Nessun riavvio del VPS o test reali target.
+
+Ultimo controllo locale lanciato dalla directory padre ha prodotto solo ImportError tools (nessuno scenario eseguito); ripetuto dalla root corretta del repository dopo aggiunta del conteggio anche nel JSON pubblico,12+13PASS. Non è fallimento del collector.
+
+HEAD iniziali0036de5b/d5155899,entrambePR54draft/open. Al controllo47CI SUCCESS/5attive sul deploy,nessuna sul source; sono CI,sessioni esterne non visibili non escluse,CAS prima della pubblicazione. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti migrati,credito0. MinIO/source-lock/piano congelato/source invariati.
+
+Prossima azione: leggere qualifica/artifact del profilo corretto, preparare consegna precisa della nuova generazione senza modificare il bundle/scope vecchio, poi decisione distinta per una sola raccolta con budget386/53esplicito. Non ripetere readback o contare di nuovo i metadati. Non chiedere una nuova decisione finché pacchetto/comando sono concreti e revisionabili.
+
 ## Checkpoint 2026-11-06 — raccolta G0 consumata, limite inventario host
 
 Giovanni ha restituito HELD/HOST_BEFORE/G0_HOST_CONTAINER_LIMIT:1GET Docker,285226byte,53GET cumulativi rispetto ai52storici; childScopes vuoto,zero export DB,S3 null,sezioni NOT_COLLECTED,targetWrites0. Scope seaweedfs-g0-20261106-v1 consumato. Ricevuta evidence/storage-g0-held-operator-20261106.json, provenienza output operatore. **Non rilanciare collect o l'ingresso autorizzato per ottenere un nuovo tentativo, non eliminare/ricreare/rinominare scope e non azzerare budget.** L'autorizzazione OUF-G0-COLLECT-20261106-01 è stata usata; non è un grant di retry.

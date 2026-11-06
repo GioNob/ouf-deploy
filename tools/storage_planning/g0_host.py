@@ -16,11 +16,12 @@ class UnixConnection(http.client.HTTPConnection):
  def connect(self):
   self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);self.sock.settimeout(3);self.sock.connect('/run/docker.sock')
 class Engine:
- def __init__(self,scope):
+ def __init__(self,scope,max_requests=130):
+  require(type(max_requests) is int and max_requests in (130,386),'G0_HOST_FIXED_REQUEST_PROFILE');self.max_requests=max_requests
   self.scope=scope;self.requests=0;self.bytes=0;self.until=time.monotonic()+120
   st=Path('/run/docker.sock').lstat();require(stat.S_ISSOCK(st.st_mode) and st.st_uid==0 and not st.st_mode&0o007 and st.st_nlink==1,'G0_HOST_PRIVATE_ENGINE_SOCKET');self.pin=frame(st)
  def get(self,path):
-  require(time.monotonic()<self.until and self.requests<130 and self.bytes<32<<20,'G0_HOST_BUDGET')
+  require(time.monotonic()<self.until and self.requests<self.max_requests and self.bytes<32<<20,'G0_HOST_BUDGET')
   require(path=='/containers/json?all=1' or re.fullmatch('/containers/[a-f0-9]{64}/json',path),'G0_HOST_GET_ALLOWLIST')
   require(frame(Path('/run/docker.sock').lstat())==self.pin,'G0_HOST_SOCKET_CHANGED')
   self.requests+=1;put_new(self.scope,'engine-request-'+str(self.requests)+'.json',canonical({'sequence':self.requests,'method':'GET','pathSha256':sha(path.encode())}))
@@ -39,8 +40,14 @@ def selected(doc):
   if 'ENDPOINT' in k or 'URL' in k:
    u=urlsplit(env[k]);require(not u.username and not u.password,'G0_HOST_EMBEDDED_CREDENTIAL_BINDING')
  return {'id':doc['Id'],'name':doc.get('Name'),'nativeImage':doc['Image'],'running':state.get('Running'),'paused':state.get('Paused'),'pid':state.get('Pid'),'startedAt':state.get('StartedAt'),'finishedAt':state.get('FinishedAt'),'declaredRevision':labels.get('org.opencontainers.image.revision'),'storageBindings':{k:v for k,v in env.items() if k in BINDINGS},'environmentNames':sorted(env),'mounts':[{k:m.get(k) for k in ('Type','Name','Source','Destination','RW')} for m in doc.get('Mounts') or []],'networkMode':doc.get('HostConfig',{}).get('NetworkMode')}
-def snapshot(engine,roles):
- rows=engine.get('/containers/json?all=1');require(type(rows) is list and 0<len(rows)<=64,'G0_HOST_CONTAINER_LIMIT')
+def snapshot(engine,roles,max_containers=64):
+ require(type(max_containers) is int and max_containers in (64,192),'G0_HOST_FIXED_CONTAINER_PROFILE')
+ rows=engine.get('/containers/json?all=1')
+ count=len(rows) if type(rows) is list else None
+ engine.last_list_observation={'responseIsList':type(rows) is list,'containerCount':count,'maximumContainers':max_containers}
+ put_new(engine.scope,'host-list-'+str(engine.requests)+'.json',canonical({'schema':'ouf.storage-g0-host-list-bound.v1','responseIsList':type(rows) is list,'containerCount':count,'maximumContainers':max_containers,'listIncludesStopped':True,'rawResponsePersisted':False}))
+ require(type(rows) is list,'G0_HOST_CONTAINER_LIST_TYPE')
+ require(0<len(rows)<=max_containers,'G0_HOST_CONTAINER_LIMIT')
  ids=[r.get('Id') for r in rows];require(all(type(x) is str and re.fullmatch('[a-f0-9]{64}',x) for x in ids) and len(ids)==len(set(ids)),'G0_HOST_UNIQUE_IDS')
  records=[]
  for identifier in sorted(ids):

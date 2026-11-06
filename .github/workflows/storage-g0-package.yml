@@ -12,6 +12,7 @@ on:
       - docs/OUF_STORAGE_G0_NETWORK_20261106.md
       - scripts/package-storage-g0.py
       - tests/test_storage_g0_package.py
+      - tests/test_storage_g0_host_profile.py
       - releases/storage-g0-package-profile-20261105.json
       - docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md
       - .github/workflows/storage-g0-package.yml

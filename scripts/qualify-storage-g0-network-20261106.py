@@ -38,6 +38,9 @@ def main(work):
   for role in ROLES:
    if role in views:continue
    cid=cmd(['docker','create','--name',prefix+'-'+role,'--network','none','--read-only','--cap-drop','ALL','--entrypoint','/not-executed',MINIO]);created.append(cid);views[role]=json.loads(cmd(['docker','inspect',cid]))[0]
+  # Reproduce the observed scale:13bound roles plus132retained stopped containers.
+  for index in range(132):
+   cid=cmd(['docker','create','--name',prefix+'-retained-'+str(index),'--network','none','--read-only','--cap-drop','ALL','--entrypoint','/not-executed',MINIO]);created.append(cid)
   for profile,directory in [('onboarding','onboarding-source'),('udp','udp-source'),('ingestion','ingestion-source')]:
    files=sorted((ROOT/directory/'src/main/resources/db/migration').glob('V*.sql'),key=lambda p:int(re.match('V([0-9]+)',p.name)[1]));migration_count[profile]=len(files)
    for f in files:admin('SET search_path=ouf_'+profile+',public;\n'+f.read_text())
@@ -46,7 +49,7 @@ def main(work):
   admin((ROOT/'tests/fixtures/storage-g0-db/seed.sql').read_text())
   for name,value in [('access','synthetic-g0-admin'),('secret','synthetic-g0-secret-not-production')]:p=root/'inputs'/name;p.write_text(value);p.chmod(0o600)
   cmd(ns+['env','OUF_G0_NETWORK_WORK='+str(root),str(root/'seed.test'),'-test.v','-test.run=^TestG0NetworkSeed$','-test.timeout=60s'],timeout=70)
-  c=decode((root/'package/input-template.json').read_bytes());c.update(operationId='native-network',installationRef='synthetic-network',outputParent=str(root/'evidence'),collectionDecisionRef='CI_FIXTURE_ONLY_NOT_RUNTIME_AUTHORITY');c['capacityPaths']={k:str(root) for k in ('source','destination','backup')};c['roles']={k:{'containerId':v['Id'],'nativeImage':v['Image']} for k,v in views.items()}
+  c=decode((root/'package/input-template.json').read_bytes());c.update(operationId='native-network-v1',installationRef='synthetic-network',outputParent=str(root/'evidence'),collectionDecisionRef='CI_FIXTURE_ONLY_NOT_RUNTIME_AUTHORITY');c['capacityPaths']={k:str(root) for k in ('source','destination','backup')};c['roles']={k:{'containerId':v['Id'],'nativeImage':v['Image']} for k,v in views.items()}
   binding={'schema':'ouf.storage-g0-network-binding.v1','operationId':c['operationId'],'installationRef':c['installationRef'],'bootId':net.boot_id(),'targets':{k:{**c['roles'][k],'process':net.process_pin(views[k]['State']['Pid'])} for k in ('minio','postgres')}}
   require(binding['targets']['minio']['process']['namespaces']['net']!=binding['targets']['postgres']['process']['namespaces']['net'] and all(v['process']['namespaces']['net']!=host_net for v in binding['targets'].values()),'DISTINCT_PRIVATE_PROVIDER_NAMESPACES')
   require(all(not views[k]['HostConfig']['PortBindings'] and views[k]['HostConfig']['NetworkMode']=='none' for k in ('minio','postgres')),'NO_PUBLISHED_PROVIDER_PORTS')
@@ -61,14 +64,28 @@ def main(work):
   runtime={'schema':'ouf.storage-g0-operator-evidence.v1','installationRef':c['installationRef'],'section':'RUNTIME','provenance':'TECHNICAL_OBSERVATION','ownerRef':'CI_FIXTURE','capturedAt':'2026-11-06T00:00:00Z','evidenceRefs':['CI_FIXTURE_ONLY'],'storageBuckets':{'onboarding':'ouf-managed-files','udp':'ouf-udp'}};write(root/'inputs/runtime.json',runtime);c['operatorEvidenceFiles']['runtime']=str(root/'inputs/runtime.json')
   for i in range(1,18):
    path=root/'history'/str(i);write(path,{'fixtureControl':i});c['priorReceiptFiles'][i-1]={'control':i,'path':str(path),'sha256':sha(path.read_bytes())}
-  config=root/'inputs/package.json';write(config,c);manifest_sha=sha((root/'package/package-manifest.json').read_bytes())
-  pre=pkg.preflight(config,root/'package',manifest_sha)[-1];require(pre['targetReads']==0 and not pre['targetCommandAuthorized'],'LOCAL_CHECK_NOT_ADMISSION')
+  old_config=root/'inputs/package-v1.json';write(old_config,c);manifest_sha=sha((root/'package/package-manifest.json').read_bytes())
+  pre=pkg.preflight(old_config,root/'package',manifest_sha)[-1];require(pre['targetReads']==0 and not pre['targetCommandAuthorized'],'LOCAL_CHECK_NOT_ADMISSION')
+  held=pkg.collect(old_config,root/'package',manifest_sha);write(out/'native-prior-held.json',held)
+  old_scope=root/'evidence'/c['operationId'];count=decode((old_scope/'host-list-1.json').read_bytes());write(out/'native-prior-list-bound.json',count)
+  require(held['reason']=='G0_HOST_CONTAINER_LIMIT' and held['engineGets']==1 and held['cumulativeEngineGets']==53 and held['childScopes']=={} and count['containerCount']==145,'REPRODUCED_NATIVE_145_LIMIT_BEFORE_CHILDREN')
+  claim=decode((old_scope/'claim.private.json').read_bytes());old_decision=root/'inputs/prior-decision.json'
+  write(old_decision,{'schema':'ouf.storage-g0-operator-decision.v1','provenance':'CI_FIXTURE_NOT_OPERATOR_AUTHORITY','executionInputSha256':sha(old_config.read_bytes()),'decisionRef':c['collectionDecisionRef'],'scope':str(old_scope),'limits':pkg.LIMITS,'boundInputSha256':claim['boundInputSha256'],'runtimeAuthorityIssued':False})
+  old_files={'result':old_scope/'result.json','claim':old_scope/'claim.private.json','input':old_config,'decision':old_decision}
+  c=copy.deepcopy(c);c.update(schema='ouf.storage-g0-package-input.v3',operationId='native-network-v3',collectionDecisionRef='CI_FIXTURE_SECOND_DISTINCT_DECISION_NOT_AUTHORITY',priorAttemptFiles={k:{'path':str(v),'sha256':sha(v.read_bytes())} for k,v in old_files.items()})
+  for key,path in c['connectionFiles'].items():
+   conf=decode(Path(path).read_bytes());conf['operationId']=c['operationId']+'-'+key;dest=root/'inputs'/('v3-'+key+'.json');write(dest,conf);c['connectionFiles'][key]=str(dest)
+  binding=copy.deepcopy(binding);binding['operationId']=c['operationId'];dest=root/'inputs/v3-network.json';write(dest,binding);c['networkBindingFile']=str(dest)
+  config=root/'inputs/package-v3.json';write(config,c)
+  checked=pkg.preflight(config,root/'package',manifest_sha)[-1];write(out/'native-v3-preflight.json',checked)
+  require(checked['limits']==pkg.RECONCILED_LIMITS and checked['reconciledPriorAttempt']['cumulativeEngineGets']==53,'PRIOR_GET_NOT_RESET')
   result=pkg.collect(config,root/'package',manifest_sha);write(out/'network-package-result.json',result)
+  require(all(sha(path.read_bytes())==c['priorAttemptFiles'][key]['sha256'] for key,path in old_files.items()),'OLD_NATIVE_ATTEMPT_PRESERVED')
   scope=root/'evidence'/c['operationId']
   for p in scope.glob('network-entry-*.json'):shutil.copyfile(p,out/p.name)
   for p in scope.glob('*/summary.json'):shutil.copyfile(p,out/(p.parent.name+'-summary.json'))
   require(result['technicalCaptureComplete'] and result['status']=='OBSERVATIONS_SEALED_G0_REVIEW_REQUIRED' and result['sections']['OBJECTS']['verifiedBodies']==2 and result['sections']['DB']['findings']==0 and result['databaseExportsAttempted']==3,'COMPLETE_NAMESPACE_PACKAGE_CAPTURE')
-  require(result['engineGets']==28 and result['cumulativeEngineGets']==80 and not result['g0Complete'] and not result['runtimeAuthorityIssued'],'SAME_FINITE_BUDGET_NO_ACCEPTANCE')
+  require(result['engineGets']==292 and result['cumulativeEngineGets']==345 and not result['g0Complete'] and not result['runtimeAuthorityIssued'],'SAME_FINITE_BUDGET_NO_ACCEPTANCE')
   entries=[decode(p.read_bytes()) for p in scope.glob('network-entry-*.json')];require(len(entries)==4 and all(e['enteredNet']==binding['targets'][e['role']]['process']['namespaces']['net'] and e['mountNamespaceUnchanged'] for e in entries),'FOUR_EXACT_NETWORK_ONLY_CHILDREN')
   require(net.namespace('self','net')==host_net and net.namespace('self','mnt')==host_mnt,'PARENT_CONTEXT_PRESERVED')
   try:pkg.collect(config,root/'package',manifest_sha);raise AssertionError('scope replayed')
@@ -83,7 +100,7 @@ def main(work):
    cmd(['docker','stop','--time','30',mi],timeout=45);stopped.add(mi)
    try:a.check();raise AssertionError('dead owner accepted')
    except (ValueError,OSError):pass
-  write(out/'native-network.json',{'schema':'ouf.storage-g0-network-native.v1','status':'PASS_DISTINCT_NATIVE_NAMESPACES_NOT_TARGET_ACCEPTANCE','providerImages':{'minio':MINIO,'postgres':PG},'migrationsApplied':migration_count,'providersInDistinctNetworks':True,'publishedPorts':0,'currentOwnerProfiles':3,'conditionalBodies':2,'conditionalBytes':6,'namespaceChildren':4,'stoppedOtherRoleFixtures':11,'parentNetworkAndMountPreserved':True,'wrongNetworkFdDeniedBeforeCollector':True,'deadOwnerDeniedWhileFdHeld':True,'sameOperationReplayDenied':True,'priorReceiptsUnchanged':all(sha(Path(v['path']).read_bytes())==v['sha256'] for v in c['priorReceiptFiles']),'fullApplicationServicesQualified':False,'postgresRemoteTlsQualified':False,'newNamespaceCompositionNative':True,'runtimeAuthorityIssued':False,'targetOperations':0,'acceptanceCreditAdded':0})
+  write(out/'native-network.json',{'schema':'ouf.storage-g0-network-native.v1','status':'PASS_DISTINCT_NATIVE_NAMESPACES_NOT_TARGET_ACCEPTANCE','providerImages':{'minio':MINIO,'postgres':PG},'migrationsApplied':migration_count,'providersInDistinctNetworks':True,'publishedPorts':0,'currentOwnerProfiles':3,'conditionalBodies':2,'conditionalBytes':6,'namespaceChildren':4,'stoppedOtherRoleFixtures':143,'allContainersInspected':145,'hostContainerLimit':192,'hostRequestLimit':386,'priorHeldGetsPreserved':1,'parentNetworkAndMountPreserved':True,'wrongNetworkFdDeniedBeforeCollector':True,'deadOwnerDeniedWhileFdHeld':True,'sameOperationReplayDenied':True,'priorReceiptsUnchanged':all(sha(Path(v['path']).read_bytes())==v['sha256'] for v in c['priorReceiptFiles']),'fullApplicationServicesQualified':False,'postgresRemoteTlsQualified':False,'newNamespaceCompositionNative':True,'runtimeAuthorityIssued':False,'targetOperations':0,'acceptanceCreditAdded':0})
  finally:
   exits={}
   for cid in reversed(created):
@@ -93,5 +110,5 @@ def main(work):
   write(out/'network-fixture-exits.json',exits)
   for p in out.iterdir():
    if p.is_file():p.chmod(0o644)
-  require(len(exits)==13 and all(x=={'exitCode':0,'oomKilled':False,'running':False} for x in exits.values()),'CLEAN_NAMESPACE_FIXTURE_STOPS')
+  require(len(exits)==145 and all(x=={'exitCode':0,'oomKilled':False,'running':False} for x in exits.values()),'CLEAN_NAMESPACE_FIXTURE_STOPS')
 if __name__=='__main__':main(Path(sys.argv[1]).resolve())

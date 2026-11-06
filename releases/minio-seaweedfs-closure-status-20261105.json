@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Read back the consumed G0 attempt and bounded local Docker directory metadata without provider calls or writes. Preserve all scopes and cumulative53EngineGET. Then dimension/qualify the exact host-profile correction retaining complete inventory; a replacement collection needs reconciliation and a distinct concrete decision. Do not retry the authorized entry or silently filter to13roles.",
+  "nextPlannedWork": "Qualify the changed full-inventory host192/v3 profile, verify its artifact, prepare exact new-generation delivery preserving the consumed scope and53prior GET, then request the distinct concrete operator decision for386maximumGET. No old command/readback rerun or reset.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -450,7 +450,7 @@
   "g0HeldAttempt": {
     "receipt": "evidence/storage-g0-held-operator-20261106.json",
     "document": "docs/OUF_STORAGE_G0_HELD_READBACK_20261106.md",
-    "readbackPending": true,
+    "readbackPending": false,
     "engineGets": 1,
     "cumulativeEngineGets": 53,
     "databaseExportsAttempted": 0,
@@ -460,6 +460,20 @@
     "automaticReplayAllowed": false,
     "actualContainerCountKnown": false,
     "correctionDelivered": false,
+    "acceptanceCreditAdded": 0,
+    "readbackReceipt": "evidence/storage-g0-held-readback-operator-20261106.json",
+    "localMetadataDirectories": 145
+  },
+  "g0Host192": {
+    "status": "CANDIDATE_QUALIFICATION_PENDING",
+    "maximumContainers": 192,
+    "maximumEngineGets": 386,
+    "priorEngineGets": 53,
+    "maximumCumulativeEngineGets": 439,
+    "fullInventoryPreserved": true,
+    "legacy64ProfilePreserved": true,
+    "oldScopePreserved": true,
+    "newCollectionAuthorized": false,
     "acceptanceCreditAdded": 0
   }
 }

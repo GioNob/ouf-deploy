@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from tools.storage_planning.inventory_manifest import canonical,decode,require,sha
 from tools.storage_planning.g0_host import Engine,ROLES,snapshot,capacity
-from tools.storage_planning.g0_package import LIMITS,OPERATOR,verify_package
+from tools.storage_planning.g0_package import LIMITS,RECONCILED_LIMITS,OPERATOR,verify_package
 MINIO='ghcr.io/datalens-tech/minio@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2'
 def cmd(args,cwd=None,timeout=180):
  r=subprocess.run(args,cwd=cwd,capture_output=True,text=True,timeout=timeout);require(r.returncode==0,'PACKAGE_COMMAND_FAILED:'+args[0]+':'+r.stderr[-1000:]);return r.stdout.strip()
@@ -17,6 +17,7 @@ def build(w):
  require(all(sha((ROOT/p).read_bytes())==h for p,h in profile['qualifiedSourceSha256'].items()),'QUALIFIED_COMPONENT_BYTES_UNCHANGED')
  with (out/'network-tests.log').open('w') as log:subprocess.run(['sudo','-n','env','GITHUB_ACTIONS=true',sys.executable,'-m','unittest','discover','-s','tests','-p','test_storage_g0_network.py','-v'],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=60)
  with (out/'tests.log').open('w') as log:subprocess.run([sys.executable,'-m','unittest','discover','-s','tests','-p','test_storage_g0_package.py','-v'],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=60)
+ with (out/'host-profile-tests.log').open('w') as log:subprocess.run([sys.executable,'-m','unittest','discover','-s','tests','-p','test_storage_g0_host_profile.py','-v'],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=60)
  sourcefiles=['tools/storage_planning/'+n for n in ['g0_host.py','g0_package.py','g0_network.py','g0_database.py','g0_reconciliation.py','inventory_manifest.py']]
  for f in sourcefiles:shutil.copyfile(ROOT/f,bundle/f)
  cmd(['go','build','-buildvcs=false','-trimpath','-o',str(bundle/'bin/inventory'),'.'],ROOT/'tools/storage_inventory',300)
@@ -28,7 +29,7 @@ def build(w):
  shutil.copyfile(ROOT/'docs/OUF_STORAGE_G0_COLLECTORS_20261105.md',bundle/'OUF_STORAGE_G0_COLLECTORS_20261105.md')
  shutil.copyfile(ROOT/profile_path,bundle/'component-profile.json')
  files={str(p.relative_to(bundle)):sha(p.read_bytes()) for p in sorted(bundle.rglob('*')) if p.is_file()}
- m={'schema':'ouf.storage-g0-package.v1','deployCommit':os.environ['GITHUB_SHA'],'files':files,'limits':LIMITS,'runtimeAuthorityIssued':False,'qualifiedComponents':{'bodyCommit':'f4b4152f78af7ca5a220714b517a458de5c494cc','bodyRunId':42111278483,'databaseCommit':'60a97c3a55da66e110953ba113b210c1d74dd1a2','databaseRunId':42114275442},'targetBindingsPresent':False,'targetCommandAuthorized':False};write(bundle/'package-manifest.json',m)
+ m={'schema':'ouf.storage-g0-package.v1','deployCommit':os.environ['GITHUB_SHA'],'files':files,'limits':LIMITS,'reconciledHostProfileLimits':RECONCILED_LIMITS,'runtimeAuthorityIssued':False,'qualifiedComponents':{'bodyCommit':'f4b4152f78af7ca5a220714b517a458de5c494cc','bodyRunId':42111278483,'databaseCommit':'60a97c3a55da66e110953ba113b210c1d74dd1a2','databaseRunId':42114275442},'targetBindingsPresent':False,'targetCommandAuthorized':False};write(bundle/'package-manifest.json',m)
  md=sha((bundle/'package-manifest.json').read_bytes());verify_package(bundle,md)
  # Only executable entry/denial smoke; no repeated S3/PG provider laboratory.
  result=subprocess.run([str(bundle/'bin/inventory'),'g0-collect',str(w/'absent-config'),str(w/'must-not-exist')],capture_output=True,timeout=10)
@@ -40,7 +41,7 @@ def build(w):
  shutil.copyfile(ROOT/'tests/fixtures/storage-g0-network/seed_test.go',module/'network_seed_test.go');cmd(['go','test','-c','-o',str(scan/'fixture/seed.test')],module,300)
  write(out/'scan-executables.json',{p.name:sha(p.read_bytes()) for p in scan.rglob('*') if p.is_file()})
  sourcefiles += ['tools/storage_planning/g0_network.py','scripts/qualify-storage-g0-network-20261106.py','tests/test_storage_g0_network.py','tests/fixtures/storage-g0-network/seed_test.go','tests/fixtures/storage-g0-db/seed.sql','docs/OUF_STORAGE_G0_NETWORK_20261106.md']
- sourcefiles += ['scripts/package-storage-g0.py','tests/test_storage_g0_package.py','tests/test_storage_g0_database.py','.github/workflows/storage-g0-package.yml','docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md','docs/OUF_STORAGE_G0_COLLECTORS_20261105.md',profile_path]
+ sourcefiles += ['tests/test_storage_g0_host_profile.py','scripts/package-storage-g0.py','tests/test_storage_g0_package.py','tests/test_storage_g0_database.py','.github/workflows/storage-g0-package.yml','docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md','docs/OUF_STORAGE_G0_COLLECTORS_20261105.md',profile_path]
  sources={p:ROOT/p for p in set(sourcefiles)};commits={'deploy':os.environ['GITHUB_SHA']}
  for repo,directory,expected in [('ouf-source-onboarding','onboarding-source','d5155899b09dda298494b68cefa7e1f281167652'),('ouf-udp-object-resolution','udp-source','0d40da05408a14db31d4d41af2372d6a71480291'),('ouf-ingestion-runtime','ingestion-source','4165b9e149be467d5d7c6bed35e4e1af4e249db1')]:
   require(cmd(['git','-C',str(ROOT/directory),'rev-parse','HEAD'])==expected,'EXACT_MIGRATION_SOURCE');commits[repo]=expected
