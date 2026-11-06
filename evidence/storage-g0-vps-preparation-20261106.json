@@ -1,7 +1,7 @@
 {
   "schema": "ouf.storage-g0-vps-preparation.v1",
   "date": "2026-11-06",
-  "status": "PREPARER_DELIVERED_VPS_EXECUTION_PENDING",
+  "status": "VPS_PREPARATION_REPORTED_NETWORK_ADAPTATION_REQUIRED",
   "operator": "Giovanni",
   "operatorChannel": "DIRECT_VPS_TERMINAL",
   "observationsProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
@@ -33,7 +33,46 @@
       "uid": 0,
       "gid": 0,
       "mode": "600"
-    }
+    },
+    "preparationResult": {
+      "status": "DRAFT_STAGED_BINDINGS_REQUIRED",
+      "historyFilesBound": 17,
+      "historicalFilesModified": false,
+      "credentialsRead": 0,
+      "providerRequests": 0,
+      "collectionScopeCreated": false,
+      "targetInputCheckPassed": false,
+      "runtimeAuthorityIssued": false,
+      "g0Complete": false,
+      "acceptanceCreditAdded": 0
+    },
+    "networkMetadata": {
+      "status": "LOCAL_NETWORK_METADATA_OBSERVED",
+      "roles": {
+        "minio": {
+          "historicalProcessPinStillMatches": true,
+          "sameNetworkAsHost": false,
+          "expectedPort": 9000,
+          "listeningFamilies": [
+            "IPv4",
+            "IPv6"
+          ]
+        },
+        "postgres": {
+          "historicalProcessPinStillMatches": true,
+          "sameNetworkAsHost": false,
+          "expectedPort": 5432,
+          "listeningFamilies": [
+            "IPv4",
+            "IPv6"
+          ]
+        }
+      },
+      "serviceConnections": 0,
+      "runtimeAuthorityIssued": false
+    },
+    "hostPortListeners9000And5432": false,
+    "nsenterPath": "/usr/bin/nsenter"
   },
   "script": "scripts/prepare-storage-g0-private-20261106.py",
   "scriptSha256": "700a3e7461208bcd921270dc01d5ade29d879ae34bbe6078b5242082d50fe25d",
@@ -82,9 +121,9 @@
   "runtimeAuthorityIssued": false,
   "acceptanceCreditAdded": 0,
   "limitations": [
-    "No remote staging success inferred before operator report.",
+    "Staging success and network metadata are operator-reported; agent has no direct VPS access.",
     "Historical result hashes are captured now for binding, not compared against an authenticated original digest.",
-    "Current roles, network reachability, private connection bindings, capacity, custody, census and window still require verification.",
+    "13 current role/image bindings, authenticated connection configuration, capacity, custody, census and window still require verification. Host-only package cannot reach the observed private provider networks.",
     "No runtime collection or service deployment authorized by preparing these files."
   ]
 }

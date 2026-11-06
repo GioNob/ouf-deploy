@@ -1,6 +1,6 @@
 {
   "schema": "ouf.storage-closure-status.v1",
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "status": "OPEN_NO_ACCEPTANCE_CREDIT",
   "historicalPlan": {
     "path": "releases/minio-seaweedfs-plan-20261102.json",
@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Giovanni executes the bounded local private preparation; obtain its result, then complete actual private bindings and host-network applicability. Run local-only check and review census/window/capacity/custody before presenting an exact collection command to the runtime gate. Operator channel is confirmed; do not request it again. No historical replay or additional generic provider labs.",
+  "nextPlannedWork": "Stage the exact qualified namespace bundle in a new private area while preserving v1 staging and 17 historical receipt bindings; complete current private roles/network/connections and local check. Review writer census, ACL, capacity, custody and window before presenting the concrete command to the applicable runtime gate. No collection admission inferred from check or development delegation.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -282,9 +282,25 @@
     "operatorChannelKnown": true,
     "operatorPrerequisitesReported": true,
     "helperDelivered": true,
-    "helperExecutionConfirmed": false,
+    "helperExecutionConfirmed": true,
     "targetInputCheckPassed": false,
     "providerRequests": 0,
+    "progressCreditAdded": 0,
+    "confirmationProvenance": "USER_REPORTED_TERMINAL_OUTPUT"
+  },
+  "g0NetworkPackage": {
+    "document": "docs/OUF_STORAGE_G0_NETWORK_DELIVERY_20261106.md",
+    "qualificationReceipt": "evidence/storage-g0-network-qualified-20261106.json",
+    "sourceCommit": "9053aa382e8058b4bc30123750e719614a5ef564",
+    "runId": 42180924811,
+    "artifactId": 13485118791,
+    "status": "QUALIFIED_NATIVE_NETWORK_COMPOSITION_TARGET_BINDINGS_PENDING",
+    "packageManifestSha256": "1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf",
+    "targetStaged": false,
+    "targetInputCheckPassed": false,
+    "targetCommandReady": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
     "progressCreditAdded": 0
   }
 }
