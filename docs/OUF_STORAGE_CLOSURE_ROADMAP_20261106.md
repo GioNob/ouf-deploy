@@ -1,3 +1,7 @@
+## Continuazione host qualificata — esecuzione reale ancora pendente
+
+Readback VPS conferma19letture senzaintenti e causa sulle2sliceescaped. Continuazione qualificata run42308843588: riproduce vecchioHOLD,conserva21file,conteggia19letture/byteprecedenti ecompiecontenimento sufixture. [Pacchetto concreto](OUF_STORAGE_HOST_CONTINUATION_20261106.md). Serve decisione per singolacontinuazione conallowance600s separata;stesse6mutazioni configurazione e5timer+registry,scadenzaoriginaria invariata. Non ripetere reader/oldapply. Dopo ricevuta reale: nuova composizioneDockerstop/capture→archivioPC→restore→migrazione. MiniPET39,78%invariato,nessungatechiuso. Nessunanuovastima basata suquesticicli correttivi.
+
 ## Blocco host corrente — correzione qualificata, lettura journal pendente
 
 Contenimento VPS HELD/SLICE_NAME_REQUIRED prima dei punti di mutazione nel codice; journal da confermare. Il validator e la prova precedente non coprivano le slice dei template. Correzione qualificata con2servizi istanziati reali,run42308152680 SUCCESS,5unit test e arresto naturale/TERM. [Prove](../evidence/storage-host-slice-qualified-20261106.json). Prossima consegna solo lettura3file locali per legare il tentativo; nessun replay o ripreparazione. Successivamente continuazione governata→archivio→PC/restore→SeaweedFS. Correzione dello stesso blocco,non nuovo creditoMiniPET;39,78% invariato.

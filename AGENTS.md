@@ -1,3 +1,15 @@
+## Checkpoint conclusivo 2026-11-06 — continuazione host qualificata, decisione distinta pendente
+
+Causa target confermata dal readback:2Slice escaped,19command,0intent/reply/other. Ricevuta evidence/storage-host-slice-readback-operator-20261106.json. Non ripetere lettura né vecchio comando. Codice continuazione7887bf88a20d776745e6bb3e09158ecd6a712ff2,9124byte/SHA5522fde506a439651a923f929bed5d13fe3029a2be508fcebe0c1ec956e5c2c5;corefixed21751/SHA05f4e516.
+
+Qualifica nativa42308843588/job128204988421 SUCCESS: riprodotto vecchioHOLD19letture concodelegacyesatto6d5e; negatiintent/receipthashalterato;5terminazioninaturali,registryTERM,6override/13mutationCLI,0killforzati,5fontistabili,replaynegato.21fileoriginali byteidentici.35nuove+19precedenti=54CLI,115497bytecumulativi/10696precedenti. Prove native equalified dedicate in evidence/storage-host-continuation-*.json. Nonripetere qualifiche giàriuscite senza delta.
+
+Pacchetto completo docs/OUF_STORAGE_HOST_CONTINUATION_20261106.md. Installer c2ee858be36a3034920eb0d50e50ee809ddd1ac2,3591byte/SHA586f46ea0536157ab2e6e45e741b6d0f1b67d81fca4bf0303b4018b33acda13a,scrive2nuovipath senza sovrascriverevecchi. Decisione proposta GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01 PENDENTE:1solacontinuazione,stessoscopehost,600s NUOVI separati dalvecchio600 interamenteaddebitato,massimocumulativoallowance1200s.256CLI/32MiB restanocumulativi includendo19letture/byteprecedenti. TTL1794081219 invariato,min5400s residui. Non è consenso sviluppo ripetuto: primoattemptconsumato,no replayautomatico. Non eseguire finché decisione distinta manca.
+
+Wrapperricostruisce19risposte solo inmemoria controcodelegacy epretendeHOLD esatto,nessunprovider;poi freshpreflightcorecorretto prima prime mutazioni. area nuova /var/lib/ouf-storage-host-continuation-20261106-v1 claimunico,originaleimmutable. oldProviderReadsReissued=false indica soloricostruzionelocale;freshProviderPreflightPerformed=true rende esplicite nuoveread. continuation-result.json completo dopo riletturaoriginali;result.json core distinto. HOLDparziale conservato,niente reset/riavvio/SIGKILLservizi.
+
+Dopo receipt reale completare nuova composizioneDockerstop/capture;non è giàimplementata daquestopacchetto. Archivio→PCrestore→SeaweedFS resta priorità. MiniPET39,78%/0gate0AT0migrati/120verificati invariato. Nessunmerge/deploy/grant/riapertura/source-lock. Source d5155899 ePR54draftopeninvariati;generalCIseparata dallaqualifica dedicata.
+
 ## Checkpoint 2026-11-06 — journal confermato, continuazione host in qualifica
 
 Ricevuta operatore evidence/storage-host-slice-readback-operator-20261106.json:19command,0intent/reply/other,3filehashbound; due Slice system-ouf\\x2dpolicy\\x2dtoken.slice rifiutate dal validatorvecchio eaccettate dalcorretto. Causa target confermata; nessunostato live dedotto. Area originale resta consumata e immutabile.
