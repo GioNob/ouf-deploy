@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Do not repeat staging or the bounded filesystem discovery. Use proposed data/staging paths as planning candidates only; confirm available independent off-VPS backup custody, exact path devices/permissions and current capacity needs. Complete private role/network/connection bindings and identities for local check, then review all eight G0 sections and the exact applicable collection decision. No volume creation, deployment or runtime admission inferred.",
+  "nextPlannedWork": "Giovanni requested progress without waiting for external backup/DR discovery. Run the qualified local private-input preparer through the stable pinned-source downloader; receive only its redacted result and resolve actual missing bindings for local check. Do not repeat old staging, metadata scan or provider labs; do not ask backup availability again as a preparation prerequisite. Independent backup/DR remain unproven for acceptance and operational transition; separate exact collection decision still required.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -321,5 +321,26 @@
     "independentBackupConfirmed": false,
     "operatorProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
     "progressCreditAdded": 0
+  },
+  "g0InputPreparation": {
+    "receipt": "evidence/storage-g0-input-preparation-qualified-20261106.json",
+    "document": "docs/OUF_STORAGE_G0_INPUT_DELIVERY_20261106.md",
+    "candidateCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
+    "runId": 42194949283,
+    "artifactId": 13492110156,
+    "status": "QUALIFIED_LOCAL_PREPARER_VPS_EXECUTION_PENDING",
+    "targetExecuted": false,
+    "targetInputCheckPassed": false,
+    "backupQuestionDeferredForPreparation": true,
+    "runtimeAuthorityIssued": false,
+    "progressCreditAdded": 0,
+    "generalCi": {
+      "runId": 42194962745,
+      "failedJobId": 127815791533,
+      "retryJobId": 127818825693,
+      "status": "OPEN_SAME_AUTHORITY_WINDOW_DENIAL",
+      "newPreparerDedicatedCi": "SUCCESS",
+      "runtimeChangesForThisFailure": false
+    }
   }
 }
