@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — nuovo staging VPS confermato dall'operatore
+
+Giovanni ha restituito `NETWORK_DRAFT_STAGED_BINDINGS_REQUIRED`: digest bundle9053aa38/manifest esatti,17ricevute coincidenti con la preparazione precedente, vecchia area e storico preservati, nessuna lettura credenziali/connessione provider/scope di raccolta. Provenienza: output dell'operatore, non accesso agent. HEAD di partenza386b039c verificato51/51SUCCESS, PR54 entrambe draft/open, nessun run attivo nelle100esecuzioni osservate; source d5155899 invariato.
+
+Superato lo stato «nuovo preparatore non ancora eseguito»: **non ripetere la preparazione né scaricare nuovamente il bundle**. La bozza resta incompleta: identità,13binding correnti,tre percorsi capacità,quattroconnessioni,rete esatta,prove operatore/finestra e decisione separata. Le ricevute sono riutilizzabili; il roster storico non dimostra configurazioni correnti. I due listener già riportati non attestano credenziali o profilo DB installato. Dalla revisione non risultano confermati i percorsi destinazione SeaweedFS e backup: occorre la scelta dell'operatore, non crearli o assumere che il filesystem sorgente sia adeguato.
+
+Prossimi due passi: compilare i binding privati e ottenere check locale; completare review delle otto sezioni e presentare il comando preciso al gate di raccolta. Nessun nuovo test/provider lab, merge/deploy/grant/collect/reset. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali; credito0. Ricevuta `evidence/storage-g0-network-qualified-20261106.json`, mappa input `docs/OUF_STORAGE_G0_INPUT_REVIEW_20261106.md`. La CI di questo aggiornamento documentale è distinta da quella del predecessore.
+
 # Consegna G0 per le reti private — 6 novembre 2026
 
 Il blocco del trasporto rilevato sul VPS è coperto dal candidato qualificato9053aa38. La raccolta reale resta da preparare e ammettere. Contratto tecnico: [profilo reti](OUF_STORAGE_G0_NETWORK_20261106.md). Esiti/digest completi: [ricevuta](../evidence/storage-g0-network-qualified-20261106.json).

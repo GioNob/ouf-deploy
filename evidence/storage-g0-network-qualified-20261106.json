@@ -245,13 +245,43 @@
     },
     "destination": "/var/lib/ouf-g0-network-preparation-20261106",
     "previousDestination": "/var/lib/ouf-g0-preparation-20261106",
-    "status": "NEW_HELPER_DELIVERED_NOT_EXECUTED_ON_VPS",
-    "previousHistoryBindingMustMatch": true
+    "status": "VPS_NETWORK_STAGING_REPORTED_COMPLETE_INPUTS_PENDING",
+    "previousHistoryBindingMustMatch": true,
+    "executionProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_ACCESS",
+    "operatorReportedResult": {
+      "acceptanceCreditAdded": 0,
+      "collectionScopeCreated": false,
+      "credentialsRead": 0,
+      "g0Complete": false,
+      "historicalFilesModified": false,
+      "historicalIntegrityAgainstPriorTrustedDigestProven": false,
+      "historyFilesBound": 17,
+      "historyMappingSourceCommit": "59a523b65972ec5a5c3934eb463d9103de73b392",
+      "historyMatchesPreviousPreparation": true,
+      "manifestSha256": "1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf",
+      "missingInputs": [
+        "operation and installation identity",
+        "13 current role bindings",
+        "capacity paths",
+        "four private connections",
+        "exact current network binding",
+        "operator evidence and window",
+        "separate collection decision"
+      ],
+      "networkBindingPresent": false,
+      "packageSha256": "a1b477789a08b109b54b7decf5ca66099c8ad4dcd63d07c147f283d24d3aef67",
+      "previousPreparationPreserved": true,
+      "providerRequests": 0,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.storage-g0-network-private-preparation.v1",
+      "status": "NETWORK_DRAFT_STAGED_BINDINGS_REQUIRED",
+      "targetInputCheckPassed": false
+    }
   },
   "operatorEvidence": "evidence/storage-g0-vps-preparation-20261106.json",
   "limits": [
     "Operator-reported local network listeners are not authenticated S3/SQL collection or current full Docker bindings.",
-    "New package not installed/staged on VPS; previous host-only staging remains.",
+    "New namespace package staging reported complete by Giovanni; old staging preserved. Current bindings and input check remain pending.",
     "check and collection require private binding/configuration, capacity, census, window, custody and separate applicable runtime decision.",
     "Readback is offline byte/receipt verification, not an independent second native run.",
     "No remote PostgreSQL TLS, complete applications, common-cut, UI/IdP/HUMAN or target gate qualified."

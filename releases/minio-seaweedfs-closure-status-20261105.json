@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Stage the exact qualified namespace bundle in a new private area while preserving v1 staging and 17 historical receipt bindings; complete current private roles/network/connections and local check. Review writer census, ACL, capacity, custody and window before presenting the concrete command to the applicable runtime gate. No collection admission inferred from check or development delegation.",
+  "nextPlannedWork": "Do not repeat either private preparation. Complete current private role/network/connection bindings and identities; source/destination/backup paths must be concrete. Destination and backup paths are not confirmed in reviewed evidence and need an operator decision. Then local check and review census/access/capacity/custody/window before the applicable exact collection decision. Historical IDs are candidates only, not automatically current. No provider probe or collection is authorized by staging.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -296,11 +296,12 @@
     "artifactId": 13485118791,
     "status": "QUALIFIED_NATIVE_NETWORK_COMPOSITION_TARGET_BINDINGS_PENDING",
     "packageManifestSha256": "1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf",
-    "targetStaged": false,
+    "targetStaged": true,
     "targetInputCheckPassed": false,
     "targetCommandReady": false,
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
-    "progressCreditAdded": 0
+    "progressCreditAdded": 0,
+    "targetStagingProvenance": "USER_REPORTED_TERMINAL_OUTPUT"
   }
 }
