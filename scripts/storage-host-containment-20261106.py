@@ -58,6 +58,7 @@ class Runner:
         self.h, self.root = h, root
         self.until = time.monotonic() + 600
         self.calls = self.bytes = self.mutations = 0
+        self.cgroups = {}
 
     def run(self, binary, args, mutation=False):
         need(binary in ('systemctl', 'busctl'), 'CLI_NOT_ALLOWED')
@@ -70,8 +71,9 @@ class Runner:
                 need(len(args) == 7 and args[1:4] == ['org.freedesktop.systemd1', '/org/freedesktop/systemd1', 'org.freedesktop.systemd1.Manager']
                      and args[4] in ('GetUnit', 'GetUnitProcesses') and args[5] == 's', 'BUSCTL_METHOD_NOT_ALLOWED')
             else:
-                need(len(args) == 6 and args[1] == 'org.freedesktop.systemd1' and args[3:] ==
-                     ['org.freedesktop.systemd1.Service', 'ExecStop', 'ExecStopPost'], 'BUSCTL_PROPERTY_NOT_ALLOWED')
+                need(args[1] == 'org.freedesktop.systemd1' and
+                     (len(args) == 6 and args[3:] == ['org.freedesktop.systemd1.Service', 'ExecStop', 'ExecStopPost'] or
+                      len(args) == 5 and args[3:] == ['org.freedesktop.systemd1.Slice', 'ControlGroup']), 'BUSCTL_PROPERTY_NOT_ALLOWED')
         self.calls += 1
         if mutation:
             self.mutations += 1
@@ -113,7 +115,7 @@ class Runner:
 
 
 def show(p, run):
-    props = tuple(dict.fromkeys(p.PROPS + EXTRA))
+    props = tuple(dict.fromkeys(p.PROPS + EXTRA + ('Slice',)))
     old = p.PROPS
     try:
         p.PROPS = props
@@ -139,10 +141,65 @@ def empty_stop_hooks(run, unit):
     need(raw.splitlines() == ['a(sasbttttuii) 0', 'a(sasbttttuii) 0'], 'TYPED_EMPTY_STOP_HOOKS_REQUIRED_' + unit)
 
 
+def cgroup_root():
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for name in ('sys', 'fs', 'cgroup'):
+            nxt = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd); fd = nxt
+        marker = os.open('cgroup.controllers', os.O_RDONLY | os.O_NOFOLLOW, dir_fd=fd)
+        os.close(marker)
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def cgroup_empty(path):
+    need(path.startswith('/') and path != '/' and str(Path(path)) == path and
+         os.path.normpath(path) == path, 'CANONICAL_NONROOT_CGROUP_REQUIRED')
+    fd = cgroup_root()
+    try:
+        for name in Path(path).parts[1:]:
+            try:
+                nxt = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            except FileNotFoundError:
+                return True  # The exact bound cgroup no longer exists.
+            os.close(fd); fd = nxt
+        event = os.open('cgroup.events', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+        try:
+            raw = os.read(event, 4097)
+        finally:
+            os.close(event)
+        need(len(raw) <= 4096, 'CGROUP_EVENTS_SIZE')
+        pairs = [line.split() for line in raw.decode('ascii').splitlines()]
+        need(all(len(pair) == 2 for pair in pairs) and len({pair[0] for pair in pairs}) == len(pairs), 'CGROUP_EVENTS_SHAPE')
+        values = dict(pairs)
+        need(values.get('populated') in ('0', '1'), 'CGROUP_POPULATED_REQUIRED')
+        return values['populated'] == '0'
+    finally:
+        os.close(fd)
+
+
+def bind_cgroups(p, run, rows):
+    fd = cgroup_root(); os.close(fd)
+    for unit in tuple(p.SERVICES) + (p.REGISTRY,):
+        path = p.one(rows[unit], 'ControlGroup')
+        if not path:
+            slice_name = p.one(rows[unit], 'Slice')
+            need(re.fullmatch(r'[A-Za-z0-9_.-]+\.slice', slice_name) is not None, 'SLICE_NAME_REQUIRED')
+            raw = run.run('busctl', ['get-property', 'org.freedesktop.systemd1', object_path(run, slice_name),
+                'org.freedesktop.systemd1.Slice', 'ControlGroup']).strip()
+            need(raw.startswith('s '), 'TYPED_SLICE_CGROUP_REQUIRED')
+            parent = json.loads(raw[2:])
+            need(isinstance(parent, str) and parent.startswith('/'), 'SLICE_CGROUP_REQUIRED')
+            path = parent.rstrip('/') + '/' + unit
+        need(path.startswith('/') and path.endswith('/' + unit) and os.path.normpath(path) == path, 'EXACT_UNIT_CGROUP_REQUIRED')
+        run.cgroups[unit] = path
+
+
 def no_processes(run, unit):
-    raw = run.run('busctl', ['call', 'org.freedesktop.systemd1', '/org/freedesktop/systemd1',
-        'org.freedesktop.systemd1.Manager', 'GetUnitProcesses', 's', unit])
-    need(raw.strip() == 'a(sus) 0', 'UNIT_PROCESSES_REMAIN')
+    need(cgroup_empty(run.cgroups[unit]), 'UNIT_CGROUP_REMAINS_POPULATED')
 
 
 def verify_files(h, draft):
@@ -187,6 +244,10 @@ def wait_inactive(p, run, units, timeout=120):
     until = min(run.until, time.monotonic() + timeout)
     while True:
         rows = show(p, run)
+        for unit in units:
+            if unit.endswith('.service'):
+                current = p.one(rows[unit], 'ControlGroup')
+                need(not current or current == run.cgroups[unit], 'UNIT_CGROUP_CHANGED')
         for unit in p.MASKED:
             need(p.one(rows[unit], 'LoadState') == 'masked' and p.one(rows[unit], 'ActiveState') == 'inactive', 'MASKED_PAIR_CHANGED')
         inactive = all(p.one(rows[n], 'ActiveState') == 'inactive' and p.one(rows[n], 'SubState') == 'dead'
@@ -208,6 +269,7 @@ def containment(h, p, draft, root, run, decision, runtime_sources):
     need(all(p.one(rows[n], 'UnitFileState') == 'enabled' for n in tuple(p.TIMERS) + (p.REGISTRY,)), 'ENABLEMENT_CHANGED')
     for unit in services:
         empty_stop_hooks(run, unit)  # Typed zero-length arrays, not omitted CLI fields.
+    bind_cgroups(p, run, rows)
     verify_files(h, draft)
     # No pre-existing override is adopted, overwritten or removed.
     fd = h['runtime_parent'](SYSTEMD_ROOT / 'custody-check-only')
@@ -219,7 +281,7 @@ def containment(h, p, draft, root, run, decision, runtime_sources):
         if os.path.lexists(parent):
             fd = h['runtime_parent'](path)
             os.close(fd)
-    h['new'](root / 'preflight.private.json', h['canonical']({'unitRows': rows, 'typedEmptyStopHooks': list(services)}))
+    h['new'](root / 'preflight.private.json', h['canonical']({'unitRows': rows, 'typedEmptyStopHooks': list(services), 'unitCgroups': run.cgroups}))
     for index, unit in enumerate(services):
         path = SYSTEMD_ROOT / (unit + '.d') / OVERRIDE_NAME
         h['new'](root / ('file-%02d.intent.json' % index), h['canonical']({'path': str(path), 'sha256': h['digest'](OVERRIDE)}))

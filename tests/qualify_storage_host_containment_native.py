@@ -87,6 +87,13 @@ def main():
         prepared = p.prepare(vars(b))
         print(json.dumps({'phase': 'PREPARED', 'boundFiles': prepared['unitConfigurationFilesBound'], 'findings': prepared['findings']}), flush=True)
         d.DRAFT_SHA = prepared['candidateSha256']
+        probe_area = root / 'inactive-cgroup-proof'
+        probe_area.mkdir(mode=0o700)
+        probe = d.Runner(vars(b), probe_area)
+        d.bind_cgroups(p, probe, d.show(p, probe))
+        for unit in p.SERVICES:
+            d.no_processes(probe, unit)
+        assert not d.cgroup_empty(probe.cgroups[p.REGISTRY])
         # Exercise natural completion after the containment starts.
         ctl('start', '--no-block', *p.SERVICES)
         result = d.apply(vars(b), p, 'SYNTHETIC-RUNNER-HOST-CONTAINMENT')
@@ -105,8 +112,17 @@ def main():
         print(json.dumps({'schema': 'ouf.storage-host-containment-native.v1', 'status': 'PASS',
             'result': result, 'fiveNaturalCompletions': True, 'registryTermHandlerCompleted': True,
             'hostAttemptReplayRejected': True, 'targetOperationProven': False,
+            'initiallyInactiveAndActiveCgroupsChecked': True,
             'productionSha256': b.digest((ROOT / 'scripts/storage-host-containment-20261106.py').read_bytes()),
             'acceptanceCreditAdded': 0}), flush=True)
+    except Exception:
+        if d.AREA.exists():
+            logs = sorted(d.AREA.glob('command-*.private.json'))
+            if logs:
+                last = json.loads(logs[-1].read_bytes())
+                print(json.dumps({'fixtureLastCommand': last['args'], 'returncode': last['returncode'],
+                                  'stderr': last['stderr']}), flush=True)
+        raise
     finally:
         # Fixture cleanup only: never part of production driver or target instructions.
         ctl('stop', '--no-block', *sorted(p.EXPECTED), check=False)
