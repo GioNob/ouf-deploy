@@ -92,8 +92,11 @@ def main():
         bindings = {role: {'containerId': cid, 'nativeImage': host[cid]['Image']} for role, cid in [('postgres', pg), ('minio', mi)]}
         plan = b.build_plan(bindings, host, root / 'capture', b.digest(Path(b.__file__).read_bytes()))
         plan_sha = b.digest(b.canonical(plan))
+        pgdata = docker('exec', pg, 'psql', '-U', 'postgres', '-At', '-c', 'SHOW data_directory')
+        docker('stop', '--time', '120', mi, timeout=130)
+        docker('exec', '--user', 'postgres', pg, 'pg_ctl', '-D', pgdata, '-m', 'fast', '-w', '-t', '120', 'stop', timeout=130)
+        docker('wait', pg, timeout=15)
         for cid in (mi, pg):
-            docker('stop', '--time', '120', cid, timeout=130)
             state = json.loads(docker('inspect', cid))[0]['State']
             print('Fixture stop:', 'minio' if cid == mi else 'postgres', json.dumps({k: state[k] for k in ('ExitCode', 'OOMKilled', 'Running', 'Status')}), flush=True)
         identity = root / 'identity'
@@ -152,12 +155,16 @@ def main():
         report.update(status='PASS', fixtureDatabasesRestored=3, fixtureObjectsRestored=1,
                       fixtureObjectBytes=object_file.stat().st_size, sshRecipientRoundTrip=True,
                       sourceArchiveBytesVerified=True, independentDataRoots=True, writableContainerLayerRetained=True,
-                      replayDenied=True, sourceContainersRemainStopped=True, targetG3Complete=False,
+                      replayDenied=True, sourceContainersRemainStopped=True, postgresShutdown='pg_ctl-fast', targetG3Complete=False,
                       fullFourteenRoleTargetQualified=False, archiveBytes=result['archiveBytes'])
     except BaseException as error:
         report['errorClass'] = type(error).__name__
         if isinstance(error, b.Held):
             report['reason'] = str(error)
+            if 'run' in locals():
+                err = run.area / ('command-%03d.stderr.private' % run.calls)
+                if err.exists():
+                    print('Synthetic fixture command diagnosis:', err.read_text(errors='replace')[-1500:], flush=True)
         raise
     finally:
         # Disposable CI-only fixture teardown, not part of the target utility.
