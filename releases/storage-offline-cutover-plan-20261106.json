@@ -60,7 +60,7 @@
     "sharingContainerCountMustComeFromPlan": true,
     "v2PreparationHeld": true,
     "v2HeldReason": "PROTECTED_REGULAR_INPUT_REQUIRED",
-    "nextAction": "DECRYPT_EXACT_VPS_PROBE_ON_PREPARED_WINDOWS_PC",
+    "nextAction": "COMPLETE_CONTAINMENT_DRAIN_STOP_DRIVER_WINDOW_AND_APPLICABLE_APPROVAL",
     "v3Area": "/var/lib/ouf-storage-migration/cold-backup-20261106-v3",
     "runtimeMetadataReceipt": "evidence/storage-cold-runtime-directories-operator-20261106.json",
     "reviewedRunDirectories": 5,
@@ -83,8 +83,12 @@
     "recipientFileSha256": "20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0",
     "linuxCipherQualification": "evidence/storage-backup-linux-cipher-qualified-20261106.json",
     "linuxCipherPreparationExecuted": true,
-    "crossPlatformDecryptProven": false,
-    "linuxCipherTargetReceipt": "evidence/storage-backup-linux-cipher-operator-20261106.json"
+    "crossPlatformDecryptProven": true,
+    "linuxCipherTargetReceipt": "evidence/storage-backup-linux-cipher-operator-20261106.json",
+    "crossPlatformTargetReceipt": "evidence/storage-backup-cross-platform-operator-20261106.json",
+    "stopProposal": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
+    "stopProposalCompiler": "tools/storage_planning/cold_stop_proposal.py",
+    "stopExecutionDriverQualified": false
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",

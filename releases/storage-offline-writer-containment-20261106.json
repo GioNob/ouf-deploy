@@ -151,7 +151,7 @@
     "runningNonRoster": 0,
     "privateBindingsAlreadyInG0": true,
     "adminAndExternalWriterCensusComplete": false,
-    "backupIndependentDestination": null,
+    "backupIndependentDestination": "OPERATOR_WINDOWS_PC_SELECTED_ARCHIVE_NOT_YET_TRANSFERRED",
     "backupCustodian": "Giovanni",
     "window": null,
     "rpoRtoAccepted": false,
@@ -199,12 +199,16 @@
     "proposedHandling": "REVIEW_CONTROL_CONFIGURATION_CUSTODY_AND_CONSISTENT_BACKUP; DO_NOT_STOP_OR_RESTORE_AUTOMATICALLY",
     "currentLiveObservation": false
   },
-  "nextRequiredOperatorInput": "Execute ONLY the pinned cold-backup prepare utility and return its redacted plan summary. Windows client/endpoint are already supplied. No stop/capture implied.",
+  "nextRequiredOperatorInput": "Planning constraint only: maximum acceptable outage/deadline or permitted HOLD-until-reviewed model. Not an operational stop decision. No new diagnostic command is requested now.",
   "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
   "coldBackupProposal": {
     "document": "docs/OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md",
     "qualification": "evidence/storage-cold-backup-qualified-20261106.json",
     "targetExecuted": false,
-    "wholeSharedPostgresAndFourteenRoleStopApprovalReceived": false
-  }
+    "wholeSharedPostgresAndFourteenRoleStopApprovalReceived": false,
+    "crossPlatformDecryptProven": true,
+    "targetPrepared": true,
+    "targetExecutedMeaning": "CAPTURE_NOT_PERFORMED"
+  },
+  "coldStopProposal": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md"
 }

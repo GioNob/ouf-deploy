@@ -1,3 +1,7 @@
+## Aggiornamento: prova VPS → Windows conclusa
+
+Giovanni ha restituito VPS_TO_WINDOWS_DECRYPT_VERIFIED:512byte e hash coincidono con la prova Linux. [Ricevuta](../evidence/storage-backup-cross-platform-operator-20261106.json). Non ripetere preparazioni o decifratura. Restano backup completo,copia indipendente e restore. Il lavoro corrente è il [pacchetto di fermo e i suoi blocchi effettivi](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md); nessun comando mutativo ammesso. La richiesta del vincolo di indisponibilità è pianificazione,non approvazione dello stop. Le istruzioni di cifratura sotto sono storico già eseguito.
+
 ## Stato corrente — installazione e prova Linux concluse
 
 [Ricevuta VPS](../evidence/storage-backup-linux-cipher-operator-20261106.json) ricevuta: age1.3.2 e relativi hash corrispondono; recipient vincolato. Non ripetere la preparazione Linux. Ciphertext724byte/SHAae7b0c220d8c23fcc44e860d221e290dfa62b89443faa80a5e7aeef050693358 verificato localmente contro Base64 della conversazione. Plaintext atteso512byte/SHA29dde7690fa55acfe33b59502cab3952b0e399840db8d9b38f4dbbd0f167dbe4. Decifratura Windows ancora PENDENTE. Usare PowerShell locale e area/chiave già predisposte,senza nuova installazione o copia privata; nuova sottocartella esclusiva vps-probe-ae7b0c220d8c. Se errore conservare parziali e non ripetere. Il comando inline è revisionato staticamente,non dichiarato eseguito. Nessun creditoMiniPET,backup o fermo. La sezione Linux sotto è storico della consegna già eseguita.

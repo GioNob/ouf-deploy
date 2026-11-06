@@ -1,3 +1,7 @@
+## Aggiornamento: prova VPS → Windows conclusa
+
+Giovanni ha restituito VPS_TO_WINDOWS_DECRYPT_VERIFIED:512byte e hash coincidono con la prova Linux. [Ricevuta](../evidence/storage-backup-cross-platform-operator-20261106.json). Non ripetere preparazioni o decifratura. Restano backup completo,copia indipendente e restore. Il lavoro corrente è il [pacchetto di fermo e i suoi blocchi effettivi](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md); nessun comando mutativo ammesso. La richiesta del vincolo di indisponibilità è pianificazione,non approvazione dello stop. Le istruzioni di cifratura sotto sono storico già eseguito.
+
 ## Stato corrente — impatto VPS e custodia PC verificati dall'operatore
 
 Entrambi gli output sono acquisiti. Non ripetere reader,prepare v3 o client Windows. Piano valido alla lettura,scadenza7novembre2026ore20:53:39Europe/Rome;35policy necessarie (13ruoli+22condividenti),nessuna mutata. PC roundtrip reale4096byte riuscito. Prossima azione: [preparazione cifratura Linux qualificata e collegamento al PC](OUF_STORAGE_BACKUP_CIPHER_LINK_20261106.md),poi completare pacchetto concreto di contenimento/fermo/finestra/autorità. VPS age assente,installazione e decrypt della prova512byte ancora pendenti; nessun backup/restore/creditoMiniPET. La sequenza sotto è storico e non richiede ripetere le prove concluse.

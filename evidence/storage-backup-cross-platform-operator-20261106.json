@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.storage-backup-cross-platform-operator-receipt.v1",
+  "source": "Giovanni: JSON returned after the exact inline PowerShell command; operator evidence, not independent host telemetry",
+  "reportedResult": {
+    "schema": "ouf.storage-backup-cross-platform-probe.v1",
+    "status": "VPS_TO_WINDOWS_DECRYPT_VERIFIED",
+    "ciphertextSha256": "ae7b0c220d8c23fcc44e860d221e290dfa62b89443faa80a5e7aeef050693358",
+    "probeBytes": 512,
+    "probeSha256": "29dde7690fa55acfe33b59502cab3952b0e399840db8d9b38f4dbbd0f167dbe4",
+    "crossPlatformDecryptProven": true,
+    "privateKeyCopied": false,
+    "targetCapturePerformed": false,
+    "targetRestoreVerified": false,
+    "automaticReplayAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "matchesLinuxReceipt": true,
+  "linuxReceipt": "evidence/storage-backup-linux-cipher-operator-20261106.json",
+  "windowsInitialReceipt": "evidence/storage-backup-windows-custody-operator-20261106.json",
+  "scope": "512 random non-application bytes encrypted on VPS and decrypted on operator PC",
+  "completeBackupOrRestoreProven": false,
+  "repeatProbeRequired": false,
+  "acceptanceCreditAdded": 0
+}
