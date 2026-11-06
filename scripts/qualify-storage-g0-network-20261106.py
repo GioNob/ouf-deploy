@@ -15,10 +15,10 @@ def cmd(args,input=None,timeout=120,check=True):
 def write(p,x):p.write_bytes(canonical(x));p.chmod(0o600)
 def main(work):
  require(os.environ.get('GITHUB_ACTIONS')=='true' and os.geteuid()==0,'CI_ROOT_ONLY')
- out=work/'evidence';scan=decode((out/'trivy.json').read_bytes());require({'inventory','seed.test'}<={Path(x['Target']).name for x in scan.get('Results',[]) if x.get('Type')=='gobinary'},'BOTH_EXECUTABLES_SCANNED');require(not any(v.get('Severity','UNKNOWN') in ('HIGH','CRITICAL','UNKNOWN') for x in scan['Results'] for v in x.get('Vulnerabilities',[]) or []),'BINARY_SECURITY_HELD')
+ out=work/'evidence';scan={'Results':decode((out/'trivy.json').read_bytes())['Results']+decode((out/'trivy-fixture.json').read_bytes())['Results']};require({'inventory','seed.test'}<={Path(x['Target']).name for x in scan.get('Results',[]) if x.get('Type')=='gobinary'},'BOTH_EXECUTABLES_SCANNED');require(not any(v.get('Severity','UNKNOWN') in ('HIGH','CRITICAL','UNKNOWN') for x in scan['Results'] for v in x.get('Vulnerabilities',[]) or []),'BINARY_SECURITY_HELD')
  root=Path('/var/lib')/('ouf-g0-network-fixture-'+os.environ['GITHUB_RUN_ID']);require(not root.exists(),'NEW_NATIVE_FIXTURE_ROOT');root.mkdir(mode=0o700);os.umask(0o077)
  for name in ('inputs','history','evidence','data'):(root/name).mkdir(mode=0o700)
- shutil.copytree(work/'package',root/'package');shutil.copyfile(work/'scan/seed.test',root/'seed.test');(root/'seed.test').chmod(0o500)
+ shutil.copytree(work/'package',root/'package');shutil.copyfile(work/'scan/fixture/seed.test',root/'seed.test');(root/'seed.test').chmod(0o500)
  created=[];stopped=set();prefix='g0net-'+os.environ['GITHUB_RUN_ID'];views={};migration_count={};host_net=net.namespace('self','net');host_mnt=net.namespace('self','mnt')
  def admin(sql,check=True):return cmd(['docker','exec','-i',views['postgres']['Id'],'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','postgres','-d','g0'],input=sql,check=check)
  try:

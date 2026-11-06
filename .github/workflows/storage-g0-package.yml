@@ -61,9 +61,22 @@ jobs:
         with:
           version: v0.70.0
           scan-type: rootfs
-          scan-ref: ${{ runner.temp }}/g0-package/scan
+          scan-ref: ${{ runner.temp }}/g0-package/scan/collector
           format: json
           output: ${{ runner.temp }}/g0-package/evidence/trivy.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-g0-package
+          exit-code: 0
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: ${{ runner.temp }}/g0-package/scan/fixture
+          format: json
+          output: ${{ runner.temp }}/g0-package/evidence/trivy-fixture.json
           list-all-pkgs: true
           scanners: vuln
           severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL

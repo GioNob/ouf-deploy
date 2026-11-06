@@ -34,11 +34,11 @@ def build(w):
  result=subprocess.run([str(bundle/'bin/inventory'),'g0-collect',str(w/'absent-config'),str(w/'must-not-exist')],capture_output=True,timeout=10)
  require(result.returncode!=0 and decode(result.stdout)['complete'] is False and not (w/'must-not-exist').exists(),'COMPILED_COLLECTOR_DENIAL_SMOKE')
  sourcefiles += [str(p.relative_to(ROOT)) for p in (ROOT/'tools/storage_inventory').iterdir() if p.suffix=='.go' or p.name in ['go.mod','go.sum']]
- module=w/'fixture-module';module.mkdir();scan=w/'scan';scan.mkdir();shutil.copyfile(bundle/'bin/inventory',scan/'inventory')
+ module=w/'fixture-module';module.mkdir();scan=w/'scan';scan.mkdir();(scan/'collector').mkdir();(scan/'fixture').mkdir();shutil.copyfile(bundle/'bin/inventory',scan/'collector/inventory')
  for f in (ROOT/'tools/storage_inventory').iterdir():
   if f.suffix=='.go' or f.name in ('go.mod','go.sum'):shutil.copyfile(f,module/f.name)
- shutil.copyfile(ROOT/'tests/fixtures/storage-g0-network/seed_test.go',module/'network_seed_test.go');cmd(['go','test','-c','-o',str(scan/'seed.test')],module,300)
- write(out/'scan-executables.json',{p.name:sha(p.read_bytes()) for p in scan.iterdir()})
+ shutil.copyfile(ROOT/'tests/fixtures/storage-g0-network/seed_test.go',module/'network_seed_test.go');cmd(['go','test','-c','-o',str(scan/'fixture/seed.test')],module,300)
+ write(out/'scan-executables.json',{p.name:sha(p.read_bytes()) for p in scan.rglob('*') if p.is_file()})
  sourcefiles += ['tools/storage_planning/g0_network.py','scripts/qualify-storage-g0-network-20261106.py','tests/test_storage_g0_network.py','tests/fixtures/storage-g0-network/seed_test.go','tests/fixtures/storage-g0-db/seed.sql','docs/OUF_STORAGE_G0_NETWORK_20261106.md']
  sourcefiles += ['scripts/package-storage-g0.py','tests/test_storage_g0_package.py','tests/test_storage_g0_database.py','.github/workflows/storage-g0-package.yml','docs/OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md','docs/OUF_STORAGE_G0_COLLECTORS_20261105.md',profile_path]
  sources={p:ROOT/p for p in set(sourcefiles)};commits={'deploy':os.environ['GITHUB_SHA']}
