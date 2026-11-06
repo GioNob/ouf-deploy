@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — operatore VPS disponibile, preparazione privata
+
+Giovanni ha confermato esecuzione diretta sul VPS; GitHub Actions resta CI/CD. Checkpoint59a523b6 verificato51/51SUCCESS, nessun run attivo prima delle modifiche. Output operatore: Debian13/x86_64, Python3.13.5, accesso locale socket, psql17.11 installato, digest archivio/manifest OK, ricevute13–17 root:root0600. Queste sono dichiarazioni con output dell'operatore, non nuova raccolta agent.
+
+Consegnato `scripts/prepare-storage-g0-private-20261106.py`: area nuova root0700, copia del bundle esatto, bozza0600 con17ricevute storiche; nessun contenuto storico modificato, credenziale letta o provider interrogato. Cinque verifiche locali sintetiche PASS. **Esecuzione preparatore sul VPS pendente**, binding correnti/check/rete/census/finestra ancora aperti. `collectionDecisionRef` non autentica HUMAN. Nessun merge/deploy/grant/raccolta/reset, source d5155899 e bundle e7c46c73 invariati. MiniPET39,78%,0/8gate,0/21AT,0/120oggetti reali; zero credito.
+
+Dossier `docs/OUF_STORAGE_G0_VPS_PREPARATION_20261106.md`, ricevuta `evidence/storage-g0-vps-preparation-20261106.json`. Prossima azione: esito della preparazione operatore, poi binding reali e `check`; non tornare a richiedere il canale VPS già confermato. Le sezioni seguenti sono storico, non istruzioni per ripetere prove o launcher consumati.
+
 ## Checkpoint 2026-11-05 — pacchetto unico G0 e blocco operatore concreto
 
 - Passo 1 completato: pacchetto candidato unico con collector host/capacità, corpi S3, tre export PostgreSQL, join, classificazione ACL e intake delle otto sezioni. `check` legge solo file locali; `collect` usa scope nuovo, budget cumulativi, ricevute parziali e binding dei17controlli storici. `collectionDecisionRef` è un riferimento non autenticato: il pacchetto non emette autorità HUMAN.

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Resolve the operator/access channel and private current bindings for the delivered G0 package. Run its local-only check; verify host-network reachability/profile, writer census, custody, capacity and window. Only then construct the exact collection command for the applicable runtime gate, collect once if admitted, and review all eight sections. No additional generic component qualification, historical replay or unrelated recovery/HUMAN work.",
+  "nextPlannedWork": "Giovanni executes the bounded local private preparation; obtain its result, then complete actual private bindings and host-network applicability. Run local-only check and review census/window/capacity/custody before presenting an exact collection command to the runtime gate. Operator channel is confirmed; do not request it again. No historical replay or additional generic provider labs.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -274,6 +274,17 @@
     "targetCommandReady": false,
     "runtimeAuthorityIssued": false,
     "targetOperations": 0,
+    "progressCreditAdded": 0
+  },
+  "g0VpsPreparation": {
+    "document": "docs/OUF_STORAGE_G0_VPS_PREPARATION_20261106.md",
+    "receipt": "evidence/storage-g0-vps-preparation-20261106.json",
+    "operatorChannelKnown": true,
+    "operatorPrerequisitesReported": true,
+    "helperDelivered": true,
+    "helperExecutionConfirmed": false,
+    "targetInputCheckPassed": false,
+    "providerRequests": 0,
     "progressCreditAdded": 0
   }
 }

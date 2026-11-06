@@ -1,0 +1,90 @@
+{
+  "schema": "ouf.storage-g0-vps-preparation.v1",
+  "date": "2026-11-06",
+  "status": "PREPARER_DELIVERED_VPS_EXECUTION_PENDING",
+  "operator": "Giovanni",
+  "operatorChannel": "DIRECT_VPS_TERMINAL",
+  "observationsProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "operatorReported": {
+    "os": "Debian13 trixie",
+    "architecture": "Linux x86_64",
+    "uid": 1000,
+    "python": "3.13.5",
+    "groups": [
+      1000,
+      27,
+      100,
+      990
+    ],
+    "dockerSocketLocalReadWrite": true,
+    "dockerSocketMode": "660",
+    "dockerSocketUid": 0,
+    "dockerSocketGid": 990,
+    "psql": "17.11 (Debian17.11-0+deb13u1)",
+    "newPackages": [
+      "libpq5",
+      "postgresql-client-common",
+      "postgresql-client-17"
+    ],
+    "packageArchiveSha256Verified": true,
+    "packageManifestSha256Verified": true,
+    "controls13To17ResultFiles": {
+      "type": "regular",
+      "uid": 0,
+      "gid": 0,
+      "mode": "600"
+    }
+  },
+  "script": "scripts/prepare-storage-g0-private-20261106.py",
+  "scriptSha256": "700a3e7461208bcd921270dc01d5ade29d879ae34bbe6078b5242082d50fe25d",
+  "localValidation": {
+    "status": "PASS_LOCAL_SYNTHETIC_NOT_VPS",
+    "cases": [
+      {
+        "case": "exact package staging with 17 synthetic root receipts",
+        "result": "PASS"
+      },
+      {
+        "case": "existing destination never overwritten",
+        "result": "DENIED",
+        "code": "PREP_DESTINATION_ALREADY_EXISTS_NO_OVERWRITE"
+      },
+      {
+        "case": "existing custody is not repaired",
+        "result": "DENIED",
+        "code": "PREP_HISTORY_CONTROL_1_UNPROVEN"
+      },
+      {
+        "case": "symlink receipt rejected before staging",
+        "result": "DENIED",
+        "code": "PREP_HISTORY_CONTROL_1_UNPROVEN"
+      },
+      {
+        "case": "wrong control association rejected",
+        "result": "DENIED",
+        "code": "PREP_HISTORY_CONTROL_1_UNPROVEN"
+      }
+    ],
+    "providerRequests": 0,
+    "scriptSha256": "700a3e7461208bcd921270dc01d5ade29d879ae34bbe6078b5242082d50fe25d",
+    "scope": "Local synthetic filesystem fixture plus exact already-qualified package; not VPS execution or provider qualification."
+  },
+  "destination": "/var/lib/ouf-g0-preparation-20261106",
+  "qualifiedPackageCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+  "qualifiedPackageSha256": "e06ce7c10427fb23291cc0a6938c77ad32db772e780505f588d0793fb4dd3295",
+  "historyMappingSourceCommit": "59a523b65972ec5a5c3934eb463d9103de73b392",
+  "knownHistoricalControls": 17,
+  "knownHistoricalDockerGets": 52,
+  "credentialsRead": 0,
+  "providerRequests": 0,
+  "privateInputsBound": false,
+  "targetInputCheckPassed": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "limitations": [
+    "No remote staging success inferred before operator report.",
+    "Historical result hashes are captured now for binding, not compared against an authenticated original digest.",
+    "Current roles, network reachability, private connection bindings, capacity, custody, census and window still require verification.",
+    "No runtime collection or service deployment authorized by preparing these files."
+  ]
+}
