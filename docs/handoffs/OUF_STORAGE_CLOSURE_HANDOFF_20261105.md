@@ -1,3 +1,5 @@
+Qualifica del lettore su GitHub Actions: run42312623241/job128217510640 SUCCESS alcommitd214a75e8147271218c6d60092c3f6af4b10282a,6testPASS/logverificato. Codice operativo/lettore invariato dopo la prova; nessuna ripetizione delle qualifiche native precedenti. GeneralCI sullo stesso commit ancora in corso all'osservazione (14success,39in_progress,33queued), separata dalla qualifica dedicata. Readback target resta pendente.
+
 ## Checkpoint 2026-11-07 — fermo collegato HELD sugli eventi; non ripetere
 
 Giovanni riporta installazione riuscita (1 file) e HELD/UNEXPECTED_CONTAINER_EVENT, partialOperationPreserved=true. Ricevuta: evidence/storage-host-bound-cold-held-operator-20261107.json. Il tentativo GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01 è consumato; comando mutante sospeso, nessun replay, reset, riavvio o cancellazione delle aree.

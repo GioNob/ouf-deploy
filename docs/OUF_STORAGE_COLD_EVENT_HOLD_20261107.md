@@ -8,7 +8,7 @@ Il lettore verifica49intenti/reply,35postcondizioni policy,5gruppi,ultimo invent
 
 Limiti90secondi,192MiB totali comprese le riletture,1024file. I file stderr vuoti sono validi; quelli non vuoti vengono conteggiati e vincolati senza stamparli. Il confronto del comando exec con Healthcheck.Test è solo un confronto testuale: non prova attribuzione o autorizzazione. La soglia256eventi è segnalata senza affermare completezza della cronologia.
 
-Sei test locali PASS: journal sintetico generato dal driver originale con HOLD finale, preservazione byte/frame, redazione, stderr non vuoto, intent alterato, reply assente, symlink ed eventi estranei. [Prova locale](../evidence/storage-cold-event-readback-local-20261107.json). Il workflow storage-cold-event-readback verifica soltanto questo lettore; nessuna ripetizione delle prove native backup già riuscite.
+Sei test locali PASS: journal sintetico generato dal driver originale con HOLD finale, preservazione byte/frame, redazione, stderr non vuoto, intent alterato, reply assente, symlink ed eventi estranei. [Prova locale](../evidence/storage-cold-event-readback-local-20261107.json). [Run42312623241](https://github.com/GioNob/ouf-deploy/actions/runs/42312623241),job128217510640 **SUCCESS** alcommitd214a75e8147271218c6d60092c3f6af4b10282a: gli stessi6testPASS,log verificato. Il workflow storage-cold-event-readback verifica soltanto questo lettore; nessuna ripetizione delle prove native backup già riuscite.
 
 ## Comando da eseguire nella shell Bash del VPS
 

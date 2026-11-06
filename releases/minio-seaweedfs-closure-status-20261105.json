@@ -763,13 +763,17 @@
     "automaticRestartAllowed": false
   },
   "hostBoundColdEventReadback": {
-    "status": "LOCAL_SYNTHETIC_TESTS_PASS_TARGET_READBACK_PENDING",
+    "status": "CI_SYNTHETIC_TESTS_PASS_TARGET_READBACK_PENDING",
     "codeCommit": "460706827004046d7f2a55a46ed2f7ed3ec8aed2",
     "codeSha256": "3d96e397c3331c4ab17c32a517338f56135c7d9c9120e236be2295af30ff794a",
     "localTestsPassed": 6,
     "providerRequests": 0,
     "filesWritten": 0,
     "unexpectedEventCauseProven": false,
-    "acceptanceCreditAdded": 0
+    "acceptanceCreditAdded": 0,
+    "runId": 42312623241,
+    "jobId": 128217510640,
+    "ciCommit": "d214a75e8147271218c6d60092c3f6af4b10282a",
+    "ciTestsPassed": 6
   }
 }
