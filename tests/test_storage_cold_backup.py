@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/storage-cold-backup.py'
 spec = importlib.util.spec_from_file_location('cold_backup', SCRIPT)
@@ -79,9 +80,69 @@ class ColdBackupTests(unittest.TestCase):
         other = container('d' * 64, self.data, running=True)
         with self.assertRaises(b.Held):
             b.build_plan(self.bindings, self.host | {other['Id']: other}, self.area, 'c' * 64)
+        # A stopped label with a live PID is still refused.
         other['State']['Running'] = False
         with self.assertRaises(b.Held):
             b.build_plan(self.bindings, self.host | {other['Id']: other}, self.area, 'c' * 64)
+        other['State']['Pid'] = 0
+        host = self.host | {other['Id']: other}
+        plan = b.build_plan(self.bindings, host, self.area, 'c' * 64)
+        self.assertEqual(set(plan['stoppedSharingContainers']), {other['Id']})
+        b.offline(plan, host)
+
+    def test_shared_container_generation_mounts_or_membership_change_rejected(self):
+        other = container('d' * 64, self.data)
+        host = self.host | {other['Id']: other}
+        plan = b.build_plan(self.bindings, host, self.area, 'c' * 64)
+        for change in ('started', 'mount', 'missing', 'new'):
+            altered = copy.deepcopy(host)
+            if change == 'started':
+                altered[other['Id']]['State']['StartedAt'] = 'new-generation'
+            elif change == 'mount':
+                altered[other['Id']]['Mounts'][0]['RW'] = False
+            elif change == 'missing':
+                del altered[other['Id']]
+            else:
+                altered['e' * 64] = container('e' * 64, self.data)
+            with self.subTest(change=change), self.assertRaises(b.Held):
+                b.offline(plan, altered)
+
+    def test_shared_container_restart_policy_requires_explicit_containment(self):
+        other = container('d' * 64, self.data)
+        other['HostConfig']['RestartPolicy']['Name'] = 'always'
+        host = self.host | {other['Id']: other}
+        plan = b.build_plan(self.bindings, host, self.area, 'c' * 64)
+        with self.assertRaises(b.Held):
+            b.offline(plan, host)
+        self.assertEqual(other['HostConfig']['RestartPolicy']['Name'], 'always')
+        other['HostConfig']['RestartPolicy']['Name'] = 'no'
+        b.offline(plan, host)
+
+    def test_unreviewed_runtime_paths_remain_denied(self):
+        for path in ('/run/docker.sock', '/run/unreviewed', '/proc/123/root/data', '/dev/null', '/tmp/config'):
+            with self.subTest(path=path), self.assertRaises(b.Held):
+                b.source_path(path)
+
+    def test_runtime_file_binding_rejects_writable_wrong_role_or_destination(self):
+        path = '/run/reviewed-fixture'
+        for role, rw, dest in (('postgres', True, path), ('postgres', False, '/different'), ('minio', False, path)):
+            host = copy.deepcopy(self.host)
+            host[self.cid]['Mounts'] = [{'Type': 'bind', 'Source': path, 'Destination': dest, 'RW': rw}]
+            bindings = {role: self.bindings['postgres']}
+            with patch.dict(b.REVIEWED_RUN_BINDINGS, {'postgres': {b.digest(path.encode())}}, clear=True):
+                with self.assertRaises(b.Held):
+                    b.build_plan(bindings, host, self.area, 'c' * 64)
+
+    def test_runtime_content_and_metadata_remain_bound_to_plan(self):
+        path = self.data / 'content'
+        # Unit fixture only: the root-owned reader is exercised without substitution in native CI.
+        with patch.object(b, 'protected', side_effect=lambda p, **kw: Path(p).read_bytes()):
+            identity = b.runtime_file_identity(path)
+            plan = self.plan | {'runtimeFiles': {str(path): identity}}
+            b.verify_runtime_files(plan)
+            path.write_bytes(b'changed')
+            with self.assertRaises(b.Held):
+                b.verify_runtime_files(plan)
 
     def test_writable_layer_config_change_rejected(self):
         host = copy.deepcopy(self.host)

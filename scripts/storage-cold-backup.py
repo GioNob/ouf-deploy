@@ -23,11 +23,22 @@ import time
 
 BASE = Path('/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json')
 BASE_SHA = 'dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e'
-AREA = Path('/var/lib/ouf-storage-migration/cold-backup-20261106-v1')
+AREA = Path('/var/lib/ouf-storage-migration/cold-backup-20261106-v2')
 ETCD_ID = 'e1ae2262714c841c7fec72d911221191bf69a892434a7c59da1aed8b53afa88f'
 ETCD_IMAGE = 'sha256:a3ccd299377af4b9968d8cbaaf9722fe354297f11908f74a846075e1e5f4ee89'
 ROLES = {'apisix', 'caddy', 'gateway-owner', 'ingestion', 'ingestion-evidence-read',
          'keycloak', 'mcp', 'minio', 'onboarding', 'postgres', 'semantic', 'udp', 'udp-evidence-read'}
+# Exact path hashes observed in the operator's retained mount readback.
+# This is an eligibility list, never evidence that current files are safe/present.
+REVIEWED_RUN_BINDINGS = {
+    'gateway-owner': {'41372869507d2e5c524a29d0ab5f6ebeede966c49bd35074ff140dd90f7eb03f'},
+    'ingestion': {'6e6edfffce47aea41d118170cfc2ec1d5cde443d2ece89c2c5d8b124671f5303'},
+    'ingestion-evidence-read': {'6e6edfffce47aea41d118170cfc2ec1d5cde443d2ece89c2c5d8b124671f5303'},
+    'onboarding': {'13bde9e56266f9f67359e1383fee1b4c84b37d862b944dbb2d445852f88ef0ee',
+                   '630028add258dae74151a71fc4e08e655c8a022f28b8b17a72e55f670c0f5c45'},
+    'udp': {'16b173b9dbb759105551bc609b4ec3f4afd6e81ef1057166dfa786cf206aa2a8'},
+    'udp-evidence-read': {'16b173b9dbb759105551bc609b4ec3f4afd6e81ef1057166dfa786cf206aa2a8'},
+}
 LIMIT = 64 << 30
 MAX_FILES = 100000
 ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
@@ -192,8 +203,13 @@ def source_path(value):
     p = Path(value)
     need(p.is_absolute() and str(p) == os.path.normpath(p) and len(p.parts) >= 3,
          'UNSAFE_OR_BROAD_MOUNT_SOURCE')
-    need(not any(overlap(str(p), x) for x in ('/proc', '/sys', '/dev', '/run', '/tmp')),
-         'EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW')
+    if overlap(str(p), '/run'):
+        need(digest(str(p).encode()) in set().union(*REVIEWED_RUN_BINDINGS.values()),
+             'UNREVIEWED_RUN_SOURCE')
+        runtime_file_identity(p)
+    else:
+        need(not any(overlap(str(p), x) for x in ('/proc', '/sys', '/dev', '/tmp')),
+             'EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW')
     current = Path('/')
     for part in p.parts[1:]:
         current /= part
@@ -202,12 +218,41 @@ def source_path(value):
     return p
 
 
+def runtime_file_identity(path):
+    """Bounded root-owned regular file, no devices/directories/symlink ancestry."""
+    before = Path(path).lstat()
+    raw = protected(path, limit=1 << 20)
+    need(frame(before) == frame(Path(path).lstat()), 'RUN_FILE_CHANGED_DURING_REVIEW')
+    return {'frame': list(frame(before)), 'sha256': digest(raw)}
+
+
+def shared_outside_bindings(host, selected_ids, roots):
+    result = {}
+    for cid, doc in host.items():
+        if cid in selected_ids or not any(m.get('Source') and overlap(m['Source'], p)
+                for m in doc['Mounts'] for p in roots):
+            continue
+        state = doc['State']
+        need(not state['Running'] and not state.get('Paused') and not state.get('Restarting')
+             and state['Pid'] == 0, 'SHARED_OUTSIDE_CONTAINER_NOT_STOPPED')
+        result[cid] = digest(canonical({'Id': cid, 'Mounts': doc['Mounts'],
+            'generation': {k: state.get(k) for k in ('StartedAt', 'FinishedAt', 'Status', 'ExitCode')}}))
+    return result
+
+
+def verify_runtime_files(plan):
+    for path, identity in plan.get('runtimeFiles', {}).items():
+        source_path(path)
+        need(runtime_file_identity(path) == identity, 'RUN_FILE_CHANGED_SINCE_PLAN')
+
+
 def build_plan(bindings, host, area, program_sha):
     ids = {v['containerId'] for v in bindings.values()}
     need(len(ids) == len(bindings) and ids <= host.keys(), 'BOUND_CONTAINER_MISSING_OR_DUPLICATE')
     need(all(not d['State']['Running'] or i in ids for i, d in host.items()), 'UNBOUND_RUNNING_CONTAINER')
     roots = set()
     roles = {}
+    runtime_files = {}
     for role, bound in sorted(bindings.items()):
         d = host[bound['containerId']]
         need(d['Image'] == bound['nativeImage'], 'BOUND_IMAGE_CHANGED')
@@ -221,6 +266,12 @@ def build_plan(bindings, host, area, program_sha):
                 continue
             need(m['Type'] in ('bind', 'volume') and (m['Type'] != 'volume' or m.get('Driver') == 'local'),
                  'UNSUPPORTED_MOUNT_DRIVER')
+            if overlap(m['Source'], '/run'):
+                need(m['Type'] == 'bind' and m.get('RW') is False
+                     and m['Destination'] == m['Source']
+                     and digest(m['Source'].encode()) in REVIEWED_RUN_BINDINGS.get(role, set()),
+                     'EXACT_READ_ONLY_RUN_BINDING_REQUIRED')
+                runtime_files[m['Source']] = runtime_file_identity(m['Source'])
             p = source_path(m['Source'])
             need(not overlap(str(p), str(area)), 'BACKUP_INSIDE_SOURCE')
             roots.add(str(p))
@@ -228,14 +279,12 @@ def build_plan(bindings, host, area, program_sha):
                        'originalRestartPolicy': d['HostConfig']['RestartPolicy'], 'wasRunning': d['State']['Running']}
     # Do not silently duplicate or omit nested mounted state.
     roots = sorted(p for p in roots if not any(p != q and p.startswith(q.rstrip('/') + '/') for q in roots))
-    for cid, d in host.items():
-        if cid not in ids:
-            need(not any(overlap(m.get('Source', '/__no_source__'), p) for m in d['Mounts'] for p in roots),
-                 'NON_ROSTER_CONTAINER_SHARES_CAPTURE_SOURCE')
+    outside = shared_outside_bindings(host, ids, roots)
     need(0 < len(roots) <= 64, 'PERSISTENT_SOURCE_COUNT_LIMIT')
     return {'schema': 'ouf.storage-cold-backup-plan.v1', 'createdEpoch': int(time.time()),
             'validUntilEpoch': int(time.time()) + 86400, 'programSha256': program_sha,
-            'roles': roles, 'sources': roots, 'maximumSeconds': 3600, 'maximumProducedBytes': LIMIT,
+            'roles': roles, 'sources': roots, 'runtimeFiles': runtime_files,
+            'stoppedSharingContainers': outside, 'maximumSeconds': 3600, 'maximumProducedBytes': LIMIT,
             'maximumCommandCalls': 256, 'maximumHostContainers': 192,
             'includesWholeSharedPostgresCluster': True, 'runtimeMutationCommands': [],
             'automaticReplayAllowed': False, 'automaticRestartAllowed': False,
@@ -255,10 +304,12 @@ def offline(plan, host):
              and not d['State'].get('Error') and not d['State']['Paused']
              and not d['State']['Restarting'], 'CLEAN_STOP_REQUIRED')
         need(d['HostConfig']['RestartPolicy']['Name'] == 'no', 'RESTART_POLICY_MUST_ALREADY_BE_DISABLED')
-    for cid, d in host.items():
-        if cid not in ids:
-            need(not any(overlap(m.get('Source', '/__no_source__'), p) for m in d['Mounts'] for p in plan['sources']),
-                 'NON_ROSTER_CONTAINER_SHARES_CAPTURE_SOURCE')
+    need(shared_outside_bindings(host, ids, plan['sources']) == plan.get('stoppedSharingContainers', {}),
+         'SHARED_OUTSIDE_CONTAINER_SET_OR_GENERATION_CHANGED')
+    for cid in plan.get('stoppedSharingContainers', {}):
+        need(host[cid]['HostConfig']['RestartPolicy']['Name'] == 'no',
+             'SHARED_OUTSIDE_RESTART_POLICY_MUST_BE_DISABLED')
+    verify_runtime_files(plan)
 
 
 def tree_manifest(root, until):
@@ -446,6 +497,8 @@ def main():
         new(AREA / 'planned-containers.private.json', canonical({r['containerId']: host[r['containerId']] for r in bindings.values()}))
         result = {'schema': 'ouf.storage-cold-backup-preparation.v1', 'status': 'PLAN_PREPARED_NOT_STOP_AUTHORITY',
             'planSha256': digest(canonical(plan)), 'roles': sorted(plan['roles']), 'sourceCount': len(plan['sources']),
+            'reviewedRuntimeFiles': len(plan['runtimeFiles']),
+            'stoppedSharingContainers': len(plan['stoppedSharingContainers']),
             'includesWholeSharedPostgresCluster': True, 'maximumSeconds': 3600, 'maximumProducedBytes': LIMIT,
             'targetWrites': 0, 'runtimeAuthorityIssued': False, 'acceptanceCreditAdded': 0,
             'remaining': ['APPROVED_STOP_CONTAINMENT_AND_WINDOW', 'PUBLIC_ENCRYPTION_RECIPIENT',

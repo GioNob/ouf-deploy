@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — mount identificati, correzione produttore in qualifica
+
+Ricevuto allegato operatore: inventory145container,14ruoli,40mount;7binding RO sotto /run corrispondono a5path SHA distinti. Nessuna vista /proc né socket Docker tra questi;31mount condivisi con container fuori roster, tutti non running nell'osservazione conservata. Nessun piano/capture presente. Ricevuta evidence/storage-cold-mounts-operator-20261106.json conserva output e digest delle tre command private. Non è nuova osservazione live né prova dei tipi/contenuti dei cinque file.
+
+Correzione scripts/storage-cold-backup.py: ammette SOLO i sette binding ruolo/hash/destinazione identica/RO osservati, poi controlla file regolare root, ancestry protetta senza symlink, massimo1MiB e hash/frame privati nel piano. Directory/device/socket/percorso diverso e file cambiato restano HELD. I file sono inclusi nel backup, non ignorati. I container fuori roster con mount sovrapposti possono essere registrati soltanto fermi/PID0/non paused/restarting; ID/mount/generazione vincolati, restart=no richiesto alla cattura. Nessuna modifica automatica della restart policy. Contenimento dei ricreatori/amministratori resta requisito operativo separato.
+
+17test locali PASS. Fixture nativa estesa con file reale /run, copia/ripristino e container CREATED condividente; rifiuto file scrivibile. Qualifica hosted del nuovo codice PENDENTE, non usare vecchia qualifica come credito del delta. Nessun comando VPS nuovo consegnato prima dell'esito. Nuova area proposta cold-backup-20261106-v2 e programma da installare con nuovo nome; v1 e file installato originario intatti, nessun reset/replay. I file effettivamente visibili nei mount runtime e l'intera coorte target non sono qualificati dal laboratorio.
+
+MiniPET invariato18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati. No merge/deploy/grant/stop/riapertura. Source d5155899 invariata. Prossima azione agent: verificare nuova CI e consegnare soltanto prepare v2 qualificato; poi piano/finestra/cifratura/autorità applicabili, non fermo implicito.
+
 ## Checkpoint 2026-11-06 — prepare VPS HELD, sola lettura dei mount conservati
 
 Giovanni riporta download/SHA256 riusciti e programma installato; prepare restituisce HELD/EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW. Ricevuta esatta in evidence/storage-cold-preparation-held-operator-20261106.json, provenienza output operatore, non osservazione diretta agent. Il controllo rifiuta sorgenti sovrapposte a /proc,/sys,/dev,/run,/tmp; NON identifica il mount né dimostra che i suoi contenuti siano effimeri. Nessun fermo/capture eseguito dal percorso prepare. Area parziale da conservare: non rilanciare prepare, non cancellare o adottare lo scope.

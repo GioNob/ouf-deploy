@@ -32,6 +32,10 @@ def main():
     root = Path(tempfile.mkdtemp(prefix='ouf-cold-native-', dir='/var/lib'))
     containers = []
     network = None
+    runtime_dir = Path(tempfile.mkdtemp(prefix='ouf-cold-native-', dir='/run'))
+    runtime_file = runtime_dir / 'configuration'
+    runtime_file.write_bytes(b'fixture-runtime-configuration')
+    b.REVIEWED_RUN_BINDINGS = {'postgres': {b.digest(str(runtime_file).encode())}}
     report = {'schema': 'ouf.storage-cold-backup-native.v1', 'status': 'FAIL', 'targetOperations': 0, 'acceptanceCreditAdded': 0}
     try:
         for image in (PG, MINIO):
@@ -40,6 +44,7 @@ def main():
         for directory in ('pg', 'minio', 'plan', 'capture'):
             (root / directory).mkdir(mode=0o700)
         pg = docker('run', '-d', '--network', 'none', '--restart=no', '--mount', 'type=bind,src=' + str(root / 'pg') + ',dst=/var/lib/postgresql/data',
+                    '--mount', 'type=bind,src=' + str(runtime_file) + ',dst=' + str(runtime_file) + ',readonly',
                     '-e', 'POSTGRES_PASSWORD=fixture-password', PG)
         containers.append(pg)
         mi = docker('run', '-d', '--user', '0:0', '--entrypoint', '/usr/bin/minio', '--stop-signal', 'SIGTERM', '--network', 'none', '--restart=no',
@@ -47,6 +52,10 @@ def main():
                     '-e', 'MINIO_ROOT_USER=fixture-admin', '-e', 'MINIO_ROOT_PASSWORD=fixture-secret-password',
                     MINIO, 'server', '/data')
         containers.append(mi)
+        # A retained CREATED container shares the source, but never runs.
+        retained = docker('create', '--network', 'none', '--restart=no', '--mount',
+                          'type=bind,src=' + str(runtime_file) + ',dst=/fixture-config,readonly', PG)
+        containers.append(retained)
         for _ in range(90):
             try:
                 # pg_isready also succeeds against the temporary init server.
@@ -95,8 +104,21 @@ def main():
         report['phase'] = 'PLAN'
         print('Native phase: PLAN', flush=True)
         run_plan = b.Runner(root / 'plan', seconds=300)
-        host = run_plan.inventory(set(containers))
+        host = run_plan.inventory({pg, mi})
         bindings = {role: {'containerId': cid, 'nativeImage': host[cid]['Image']} for role, cid in [('postgres', pg), ('minio', mi)]}
+        plan = b.build_plan(bindings, host, root / 'capture', b.digest(Path(b.__file__).read_bytes()))
+        assert set(plan['runtimeFiles']) == {str(runtime_file)}
+        assert set(plan['stoppedSharingContainers']) == {retained}
+        # Real protected reader rejects unsafe files before capture.
+        original = runtime_file.read_bytes()
+        runtime_file.chmod(0o666)
+        try:
+            b.source_path(str(runtime_file))
+            raise AssertionError('WRITABLE_RUNTIME_FILE_ACCEPTED')
+        except b.Held:
+            pass
+        runtime_file.chmod(0o600)
+        # Mode changes invalidate the previous plan; rebind this changed fixture.
         plan = b.build_plan(bindings, host, root / 'capture', b.digest(Path(b.__file__).read_bytes()))
         plan_sha = b.digest(b.canonical(plan))
         pgdata = docker('exec', pg, 'psql', '-U', 'postgres', '-At', '-c', 'SHOW data_directory')
@@ -149,6 +171,11 @@ def main():
         for i, source in enumerate(plan['sources']):
             cmd(['tar', '--extract', '--numeric-owner', '--same-owner', '--acls', '--xattrs', '--xattrs-include=*',
                  '-f', str(restored / ('source-%03d.tar' % i)), '-C', str(data)])
+        assert (data / runtime_file.name).read_bytes() == original
+        assert (data / runtime_file.name).stat().st_mode & 0o777 == 0o600
+        report['reviewedRunFileRestored'] = True
+        report['stoppedSharedContainerBound'] = True
+        report['unsafeRuntimeFileRejected'] = True
         docker('image', 'load', '-i', str(restored / 'images.tar'), timeout=300)
         pg2 = docker('run', '-d', '--network', 'none', '--restart=no', '--mount',
                      'type=bind,src=' + str(data / 'pg') + ',dst=/var/lib/postgresql/data', bindings['postgres']['nativeImage'])
@@ -190,6 +217,8 @@ def main():
         # Disposable CI-only fixture teardown, not part of the target utility.
         for cid in reversed(containers):
             subprocess.run(['docker', 'rm', '-f', cid], stdout=subprocess.DEVNULL, timeout=60)
+        runtime_file.unlink(missing_ok=True)
+        runtime_dir.rmdir()
         if network:
             subprocess.run(['docker', 'network', 'rm', network], stdout=subprocess.DEVNULL, timeout=30)
         out = Path(sys.argv[1])
