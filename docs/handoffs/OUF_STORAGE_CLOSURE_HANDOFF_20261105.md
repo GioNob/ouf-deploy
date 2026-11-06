@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — host192 preparato sul VPS, decisione02 pronta
+
+Output operatore acquisito: HOST192_STAGED_LOCAL_CHECK_PASSED_SEPARATE_DECISION_REQUIRED,inputSHA256dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e,manifest1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69. Scopev2 non creato,4receipt precedenti vincolate,5filecredenziali validati localmente/zero copie,zero provider,vecchio bundle/tentativo intatti. Fonte output utente,non osservazione diretta agent. Ricevuta evidence/storage-g0-host192-preparation-operator-20261106.json. **Non ripetere preparatore/readback/check/laboratori riusciti.**
+
+Due passi: registrazione esito; proposta concreta OUF-G0-COLLECT-20261106-02 in docs/OUF_STORAGE_G0_HOST192_COLLECTION_PROPOSAL_20261106.md e releases/storage-g0-host192-collection-proposal-20261106.json. Nuovo scope /var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v2;pacchetto /var/lib/ouf-g0-host192-preparation-20261106/package. Input base e trasformazione esclusiva del solo decisionRef fissati; comando collect esplicito. Nessuna nuova implementazione o test.
+
+Massimi:1tentativo/900s,192container tutti ispezionati inclusi fermi/fuori roster,386GET/32MiB Engine,53precedenti conservati e439cumulativi massimi. S3/DB invariati (3000richieste/256corpi/64MiBcorpi/128MiBwire;3export/32MiB ciascuno/10000righe sezione). Quattro evidenze operatore restano mancanti. La precedente decisione01 è consumata; decisione02 ancora PENDING,nessuna copia decisionale o raccolta eseguita. Richiedere soltanto la decisione concreta su questa seconda operazione. Nessun runtime HUMAN/THS/grant implicito.
+
+Qualifiche già riuscite: cfa806d5/run42218997469 (145container nativi,292GET/345cumulativi,12+13+14test);d9693d7a/run42220077286 (7test preparazione,readback2membri/4checksum). Non ripetute. CI generale d969:48SUCCESS/1FAIL/3attive al controllo;fail42220098717/job127899698625 sealed-worker in phase.observe/PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID,nessun retry o controllo allentato. Source d5155899 senza run attivi. EntrambePR54draft/open,HEAD deployd9693d7a verificato;pubblicazione CAS,nessuna garanzia su sessioni esterne non visibili.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti migrati,credito0. Nessuna modifica codice,MinIO/source-lock/piano congelato/source,merge/deploy/riapertura/reset. Prossima azione dopo decisione02: copia input esclusiva con solo riferimento approvato,ricontrollo binding e singola esecuzione operatore,poi review del solo JSON redatto. Le richieste precedenti di preparazione sono superate da questo esito.
+
 ## Checkpoint 2026-11-06 — host192 qualificato, consegna privata pronta
 
 Qualifica cfa806d57012f07ead428208b4b8ce9d13b7e1ed/run42218997469/job127896037862 SUCCESS:12profilo+13composizione+14rete,zero skip CI.145container nativi (13ruoli+132fermi fuori roster): vecchio profilo HELD dopo1GET,nuovo v3 con receipt precedenti vincolate completa292GET/345cumulativi,2corpi sintetici/6byte,3export e join0findings,4child rete,95migrazioni,145uscite pulite. Nessuna inferenza dati target o G0 chiuso.

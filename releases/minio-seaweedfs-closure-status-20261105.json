@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator stages the exact qualified host192 package in the new private area using the pinned preparation helper, preserving old package/scope/credentials. Receive its redacted v3 check with input hash, then obtain a distinct concrete decision for one192container/386GET collection with53priorGET and439maximumcumulative. No collect/provider request by preparation.",
+  "nextPlannedWork": "Obtain the distinct concrete operator decision OUF-G0-COLLECT-20261106-02 for the bound dc0ab6d4 input and qualified host192 package:one900s collection,max386EngineGET,53prior preserved,max439cumulative. Preparation/readback already succeeded:do not repeat them. After decision,exclusive input copy with only decisionRef changed,final binding check and one operator execution;no reset of consumed v1.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -465,7 +465,7 @@
     "localMetadataDirectories": 145
   },
   "g0Host192": {
-    "status": "QUALIFIED_DELIVERY_STAGING_PENDING",
+    "status": "TARGET_STAGED_CHECK_PASSED_DECISION02_PENDING",
     "maximumContainers": 192,
     "maximumEngineGets": 386,
     "priorEngineGets": 53,
@@ -477,6 +477,10 @@
     "acceptanceCreditAdded": 0,
     "qualificationReceipt": "evidence/storage-g0-host192-qualified-20261106.json",
     "packageManifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
-    "preparationScript": "scripts/prepare-storage-g0-host192-20261106.py"
+    "preparationScript": "scripts/prepare-storage-g0-host192-20261106.py",
+    "operatorPreparationReceipt": "evidence/storage-g0-host192-preparation-operator-20261106.json",
+    "inputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+    "collectionProposal": "releases/storage-g0-host192-collection-proposal-20261106.json",
+    "newCollectionExecuted": false
   }
 }

@@ -1,3 +1,7 @@
+## Esito VPS acquisito — preparazione completata
+
+Giovanni ha restituito il check locale riuscito,inputSHA256 dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e. Scopev2 non creato e quattro receipt precedenti vincolate. Non ripetere il preparatore. Prossima azione: [decisione concreta02](OUF_STORAGE_G0_HOST192_COLLECTION_PROPOSAL_20261106.md). Le istruzioni sotto conservano la consegna già eseguita.
+
 # Consegna privata G0 host192
 
 Il profilo cfa806d5 è qualificato nel [dossier](../evidence/storage-g0-host192-qualified-20261106.json). Nuova area: /var/lib/ouf-g0-host192-preparation-20261106. Il preparatore non esegue collect e non crea lo scope operativo.
