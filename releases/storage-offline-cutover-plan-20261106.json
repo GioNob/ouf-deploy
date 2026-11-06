@@ -38,7 +38,14 @@
     "destinationChoiceEvidence": "evidence/storage-backup-windows-destination-20261106.json",
     "availableDestinationBytes": null,
     "finalArchiveBytes": null,
-    "transferExecuted": false
+    "transferExecuted": false,
+    "windowsClientReadinessEvidence": "evidence/storage-backup-windows-readiness-20261106.json",
+    "sshClientReported": true,
+    "scpClientReported": true,
+    "sshEndpointProvidedPrivately": true,
+    "identityFilePathProvidedPrivately": true,
+    "transferScript": "scripts/receive-storage-backup-windows.ps1",
+    "transferScriptExecuted": false
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",

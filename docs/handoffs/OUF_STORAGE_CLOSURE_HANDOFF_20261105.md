@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — client Windows e connessione acquisiti, ricezione predisposta
+
+Giovanni riporta PowerShell 5.1.26100.9711, SSH/SCP presenti e fornisce comando SSH con endpoint e percorso chiave. Dettagli personali non pubblicati. Ricevuta evidence/storage-backup-windows-readiness-20261106.json. Non chiedere nuovamente questi dati né ripetere Get-Command; nessuna connessione riuscita dedotta dal solo comando.
+
+scripts/receive-storage-backup-windows.ps1 riceve un archivio già prodotto: singolo tentativo, host key obbligatoria, spazio, .partial, dimensione/SHA256 attesi, rename senza overwrite. Default PC %USERPROFILE%/OUF-backup. Revisione statica soltanto: runtime PowerShell non disponibile, nessun test o trasferimento dichiarato. Mancano archivio cifrato completo, percorso/dimensione/hash e chiave di decifratura sotto custodia indipendente. Non presentare gli export G0 come backup.
+
+Revisione delle primitive di backup esistenti registrata nel dossier offhost: riusare implementazioni qualificabili, non scope/budget precedenti. Prossimo lavoro sul pacchetto coerente per tre DB/oggetti/configurazioni e barriera completa ai writer; prepararlo prima della decisione operativa. La richiesta di download autorizza il trasferimento richiesto quando concreto, non un fermo o un nuovo backup privilegiato implicito.
+
+MiniPET invariato 18,3/46 (39,78%), 0/8 gate, 0/21 AT, 0/120 migrati; 120 verificati. Questo è completamento della preparazione Windows, non due nuovi passi di accettazione. Base b3cc0d2b/source d5155899, PR54 draft/open. CI base 49 SUCCESS/2 in corso; nessun replay, merge, deploy, grant o cambiamento traffico.
+
 ## Checkpoint 2026-11-06 — destinazione backup scelta: PC Windows
 
 Giovanni sceglie scaricamento locale sul PC e specifica Windows. Decisione evidence/storage-backup-windows-destination-20261106.json. Non chiedere nuovamente destinazione/OS e non proporre upload del backup suGitHub. Custode Giovanni;directory/spazio/endpointSSH/cifratura-chiave ancora da legare. Nessuna prova di backup indipendente o trasferimento già riuscito.
