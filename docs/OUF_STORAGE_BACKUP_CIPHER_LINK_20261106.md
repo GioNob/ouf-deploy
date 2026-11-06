@@ -1,3 +1,7 @@
+## Stato corrente — installazione e prova Linux concluse
+
+[Ricevuta VPS](../evidence/storage-backup-linux-cipher-operator-20261106.json) ricevuta: age1.3.2 e relativi hash corrispondono; recipient vincolato. Non ripetere la preparazione Linux. Ciphertext724byte/SHAae7b0c220d8c23fcc44e860d221e290dfa62b89443faa80a5e7aeef050693358 verificato localmente contro Base64 della conversazione. Plaintext atteso512byte/SHA29dde7690fa55acfe33b59502cab3952b0e399840db8d9b38f4dbbd0f167dbe4. Decifratura Windows ancora PENDENTE. Usare PowerShell locale e area/chiave già predisposte,senza nuova installazione o copia privata; nuova sottocartella esclusiva vps-probe-ae7b0c220d8c. Se errore conservare parziali e non ripetere. Il comando inline è revisionato staticamente,non dichiarato eseguito. Nessun creditoMiniPET,backup o fermo. La sezione Linux sotto è storico della consegna già eseguita.
+
 # Collegamento cifratura VPS → PC Windows
 
 Due ricevute reali acquisite: [impatto VPS](../evidence/storage-cold-plan-impact-operator-20261106.json) e [custodia PC](../evidence/storage-backup-windows-custody-operator-20261106.json). Non ripetere le rispettive preparazioni. Il PC ha già age1.3.2,chiave privata locale e area con ACL esclusiva; il VPS non ha /usr/bin/age. Pubblico completo,endpoint e percorso personale della chiave restano fuori Git.
