@@ -1,3 +1,18 @@
+## Stato corrente — contenimento host pronto per decisione operativa
+
+La bozza VPS è acquisita e l'executor è qualificato su processi systemd reali (run42306614307 SUCCESS). **Non rieseguire il preparatore**. [Pacchetto concreto](OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md).
+
+| Blocco verso la chiusura | Stato effettivo | Prossimo risultato verificabile |
+| --- | --- | --- |
+| File runtime riscritti durante preparazione backup | Correzione implementata e qualificata; applicazione VPS pendente | 5timer e registry disabilitati, servizi inattivi,5fonti stabili |
+| Primo archivio target | Assente; vecchio tentativo consumato | Nuovo piano collegato alla ricevuta host,fermo/capture governati |
+| Backup fuori host e restore | Cifratura cross-platform provata; dati target non copiati/ripristinati | Archivio sul PC e restore isolato verificato |
+| Migrazione e accettazione SeaweedFS | 0/120copiati,0/8gate,0/21AT | Criteri originali soddisfatti con evidenze target |
+
+Questa coppia acquisisce la bozza reale e qualifica la correzione del blocco host; **non chiude un gate MiniPET**.39,78% invariato. La vecchia stima12–18passi non è una previsione attendibile: niente nuovo conteggio basato su correzioni/test. L'applicazione host richiede la decisione aggiuntiva concreta; non richiedere nuovamente disponibilità del servizio o autorizzazione sviluppo. Dopo esito host completare la composizione stop/capture senza riaprire un filone IAM.
+
+Le sezioni seguenti conservano lo storico e le istruzioni superate.
+
 ## Verifica del preparatore completata; prossima azione sul VPS
 
 CI nativa42304356159SUCCESS: preparatore reale restituisce bozza con rilievi espliciti per symlink rifiutato e proprietà omesse,nessun servizio avviato/fermato.13unit test riusati per digest; qualifiche precedenti storage/crypto non ripetute. Ora eseguire soltanto il preparatore18228byte/SHAcaac2981... e acquisire JSONredatto per completare executorhost e nuova operazione collegata. [Prove e limiti](../evidence/storage-host-preparation-systemd-qualified-20261106.json). Nessun gateMiniPET chiuso,archivio target ancora assente.

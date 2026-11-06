@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator executes only qualified corrected host preparer18228bytes/SHAcaac2981. Native systemd read integration42304356159SUCCESS, explicit unknown/rejected findings retained. Then finish host containment executor/new linked stop-capture using target draft, obtain applicable exact decision, archive/PC/restore; no old replay or acceptance credit.",
+  "nextPlannedWork": "Exact host-only decision for qualified operation, then operator execution. Preserve prior consumed Docker attempt; build new linked stop/capture from host receipt; archive to PC, isolated restore, SeaweedFS gates. Do not rerun preparer.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -651,13 +651,13 @@
     "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md",
     "script": "scripts/prepare-storage-host-containment-20261106.py",
     "scriptSha256": "caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1",
-    "targetPreparationPending": true,
-    "executorImplemented": false,
+    "targetPreparationPending": false,
+    "executorImplemented": true,
     "serviceMutation": false,
     "testsLocalPass": 13,
     "acceptanceCreditAdded": 0,
     "scriptBytes": 18228,
-    "lastTargetResult": "HELD_PROPERTY_CARDINALITY_BEFORE_WRITES",
+    "lastTargetResult": "HOST_CONTAINMENT_DRAFT_PREPARED_REVIEW_REQUIRED",
     "failureReceipt": "evidence/storage-host-containment-cardinality-held-operator-20261106.json",
     "exactFailedUnitAndPathKnown": false,
     "externalManagerReportedPathsUseUnchangedProtectedReader": true,
@@ -672,7 +672,9 @@
       "protectedConfigFiles": 10,
       "linkedFragmentRead": false,
       "omittedExecStopUnknown": true
-    }
+    },
+    "targetReceipt": "evidence/storage-host-containment-prepared-operator-20261106.json",
+    "draftSha256": "c4d59b3894f59d6679f11d48dbec2a3d7f5cbba6c8aa89bbee78b63e86475d0a"
   },
   "generalCiObserved": {
     "commit": "2db26f14d12930535af09b9140d0c3e3c67a1b86",
@@ -684,5 +686,18 @@
     "reason": "PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID",
     "resolved": false,
     "rerunRequested": false
+  },
+  "hostContainmentOperation": {
+    "status": "QUALIFIED_EXACT_HOST_DECISION_PENDING",
+    "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md",
+    "qualification": "evidence/storage-host-containment-qualified-20261106.json",
+    "codeCommit": "c742943800252099c56ac60ef448b712d9d007f3",
+    "runId": 42306614307,
+    "jobId": 128197445773,
+    "targetExecuted": false,
+    "newHostDecisionRecorded": false,
+    "automaticReplayAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
   }
 }

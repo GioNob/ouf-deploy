@@ -1,3 +1,15 @@
+## Checkpoint conclusivo 2026-11-06 — contenimento host qualificato, decisione esatta pendente
+
+Preparazione VPS riuscita: bozza c4d59b3894f59d6679f11d48dbec2a3d7f5cbba6c8aa89bbee78b63e86475d0a, ricevuta evidence/storage-host-containment-prepared-operator-20261106.json. NON rieseguire il preparatore: area esistente. La consegna precedente è superata.
+
+Executor scripts/storage-host-containment-20261106.py al commit c742943800252099c56ac60ef448b712d9d007f3,20994byte/SHA6d5e41d71150c8e59394002473e6eee728981f540bad94a09fd633f493004004. Qualifica nativa run42306614307/job128197445773 SUCCESS:3unit test,5oneshot completati naturalmente,registry TERM completato,6override/13comandi mutanti,0killforzati,5fonti stabili,replay respinto. Prima prova42306145691 fallita a GetUnitProcesses dopo inattività; errore provider preciso non conservato. Sostituita la dipendenza con cgroup v2 legato alla unità e verifica kernel populated=0/assenza percorso esatto. Non inferire vuoto da errori generici. Prova iniziali cgroup attivi/inattivi inclusa. Dossier evidence/storage-host-containment-qualified-20261106.json.
+
+Pacchetto docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md: nuovo scope HOST-ONLY.6dropin persistenti Restart=no,SendSIGKILL=no,RuntimeDirectoryPreserve=yes,TimeoutStopSec=120s;disabilita5timer+registry,ferma5timer,attende5oneshot,ferma registry con TERM.600s/256CLI/32MiB,nessun riavvio/rollback/replay. Area nuova /var/lib/ouf-storage-host-containment-20261106-v1. Originale scadenza1794081219 invariata,min5400s residui. Installer installa solo2file pinned,nessuna mutazione servizi. Prima dell'esecuzione serve decisione concreta per NUOVO scope host aggiuntivo al vecchio scope Docker; delega sviluppo e vecchio tentativo consumato non la sostituiscono. Non richiedere di nuovo finestra/consenso allo sviluppo.
+
+Esito host atteso HOST_WRITERS_CONTAINED_NEW_STOP_PLAN_REQUIRED: NON esegue Docker/capture né rende valido il vecchio piano. Successivo lavoro: nuova composizione stop/capture legata a ricevuta host e tentativo conservato,poi archivioPC/restore e migrazione. Nessun test riuscito da ripetere senza delta. Nessun censimento completo/drain/common-cut/revoca globale provato. Nessun targetstop host già eseguito.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati,120corpi verificati. PR54draft/open,source d5155899 invariata;nessunmerge/deploy/grant/riapertura o modifica piano congelato/source-lock. Le sezioni seguenti sono storia,non istruzioni operative correnti.
+
 ## Checkpoint conclusivo 2026-11-06 — preparatore verificato su systemd reale, target da rieseguire SOLO in preparazione
 
 Qualifica nativa SUCCESS run42304356159/job128189819068 alcommit6ef0eaf44d4130df04fa925ae6fc96cb1735cbbc; prova in evidence/storage-host-preparation-systemd-native-20261106.json e dossier qualificato. Preparatore18228byte/SHAcaac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1,produzione invariata dal142775573.13testPASS run42303969794step3 riusati nei2run successivi verificando3digest (preparatore/test/v3reader),non rieseguiti.
