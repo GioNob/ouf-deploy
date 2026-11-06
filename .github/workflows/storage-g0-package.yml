@@ -5,6 +5,11 @@ on:
     paths:
       - tools/storage_planning/g0_package.py
       - tools/storage_planning/g0_host.py
+      - tools/storage_planning/g0_network.py
+      - scripts/qualify-storage-g0-network-20261106.py
+      - tests/test_storage_g0_network.py
+      - tests/fixtures/storage-g0-network/**
+      - docs/OUF_STORAGE_G0_NETWORK_20261106.md
       - scripts/package-storage-g0.py
       - tests/test_storage_g0_package.py
       - releases/storage-g0-package-profile-20261105.json
@@ -21,10 +26,28 @@ concurrency:
 jobs:
   package:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: d5155899b09dda298494b68cefa7e1f281167652
+          path: onboarding-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: udp-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: ingestion-source
           persist-credentials: false
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
@@ -38,7 +61,7 @@ jobs:
         with:
           version: v0.70.0
           scan-type: rootfs
-          scan-ref: ${{ runner.temp }}/g0-package/package/bin
+          scan-ref: ${{ runner.temp }}/g0-package/scan
           format: json
           output: ${{ runner.temp }}/g0-package/evidence/trivy.json
           list-all-pkgs: true
@@ -47,8 +70,8 @@ jobs:
           ignore-unfixed: false
           trivyignores: empty.trivyignore-g0-package
           exit-code: 0
-      - name: Observe a disposable stopped container without starting a provider
-        run: python3 -I -B -S scripts/package-storage-g0.py native "$RUNNER_TEMP/g0-package"
+      - name: Qualify full package across distinct pinned MinIO and PostgreSQL namespaces
+        run: sudo -n env GITHUB_ACTIONS=true GITHUB_RUN_ID="$GITHUB_RUN_ID" /usr/bin/python3 -I -B -S scripts/qualify-storage-g0-network-20261106.py "$RUNNER_TEMP/g0-package"
       - name: Seal exact operator package and evidence
         if: always()
         run: python3 -I -B -S scripts/package-storage-g0.py seal "$RUNNER_TEMP/g0-package"

@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 from pathlib import Path
 from . import g0_database as db
 from .g0_host import Engine,ROLES,snapshot,capacity
+from . import g0_network as network
 from .g0_reconciliation import census,reconcile
 from .inventory_manifest import canonical,decode,require,sha
 
@@ -26,8 +27,11 @@ def verify_package(root,expected):
  actual={str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()};require(actual==set(m['files'])|{'package-manifest.json'},'G0_PACKAGE_EXACT_FILE_SET');return m
 def inputs(path):
  raw=db.private_read(path,65536);c=decode(raw)
- require(type(c) is dict and set(c)=={'schema','operationId','installationRef','outputParent','roles','capacityPaths','connectionFiles','operatorEvidenceFiles','priorReceiptFiles','collectionDecisionRef'} and c['schema']=='ouf.storage-g0-package-input.v1','G0_PACKAGE_EXACT_INPUT')
+ require(type(c) is dict,'G0_PACKAGE_EXACT_INPUT')
+ extra={'networkBindingFile'} if c.get('schema')=='ouf.storage-g0-package-input.v2' else set()
+ require(set(c)=={'schema','operationId','installationRef','outputParent','roles','capacityPaths','connectionFiles','operatorEvidenceFiles','priorReceiptFiles','collectionDecisionRef'}|extra and c['schema'] in ('ouf.storage-g0-package-input.v1','ouf.storage-g0-package-input.v2'),'G0_PACKAGE_EXACT_INPUT')
  require(name(c['operationId']) and name(c['installationRef']),'G0_PACKAGE_IDENTITIES')
+ if extra:require(type(c['networkBindingFile']) is str and Path(c['networkBindingFile']).is_absolute(),'G0_PACKAGE_NETWORK_PATH')
  require(type(c['roles']) is dict and set(c['roles'])==set(ROLES),'G0_PACKAGE_THIRTEEN_ROLES')
  for r in c['roles'].values():require(type(r) is dict and set(r)=={'containerId','nativeImage'} and digest(r['containerId']) and type(r['nativeImage']) is str and re.fullmatch('sha256:[a-f0-9]{64}',r['nativeImage']),'G0_PACKAGE_ROLE_BINDING')
  require(len({r['containerId'] for r in c['roles'].values()})==13,'G0_PACKAGE_DISTINCT_ROLES')
@@ -63,10 +67,13 @@ def preflight(path,root,manifest_sha):
   else:require(v.get('schema')=='ouf.storage-g0-operator-evidence.v1' and v.get('section')==key.upper() and v.get('provenance') in ('OPERATOR_DECLARATION','TECHNICAL_OBSERVATION') and type(v.get('evidenceRefs')) is list and bool(v['evidenceRefs']) and type(v.get('ownerRef')) is str and bool(v['ownerRef']) and type(v.get('capturedAt')) is str and bool(v['capturedAt']),'G0_PACKAGE_OPERATOR_EVIDENCE')
   operator[key]=v
  mappings=operator.get('runtime',{}).get('storageBuckets');require(type(mappings) is dict and set(mappings)=={'onboarding','udp'} and all(type(b) is str and re.fullmatch('[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]',b) for b in mappings.values()),'G0_PACKAGE_OWNER_BUCKET_BINDINGS_REQUIRED_BEFORE_READS')
+ if c.get('networkBindingFile') is not None:
+  p=c['networkBindingFile'];require(type(p) is str and Path(p).is_absolute(),'G0_PACKAGE_NETWORK_PATH');b=db.private_read(Path(p),65536);v=decode(b);network.validate(v,c['operationId'],c['installationRef'],c['roles']);bindings['network']=sha(b)
+  for key,(_,cfg) in configs.items():network.loopback_config('s3' if key=='s3' else 'db',cfg)
  for r in c['priorReceiptFiles']:
   b=db.private_read(Path(r['path']),2<<20);require(sha(b)==r['sha256'],'G0_PACKAGE_HISTORY_CHANGED');bindings['history:'+str(r['control'])]=sha(b)
  db.ancestors(Path(c['outputParent']));scope=Path(c['outputParent'])/c['operationId'];require(not scope.exists() and not scope.is_symlink(),'G0_PACKAGE_SCOPE_CONSUMED')
- for p in list(c['connectionFiles'].values())+[r['path'] for r in c['priorReceiptFiles']]+[p for p in c['operatorEvidenceFiles'].values() if p]:require(not Path(p).is_relative_to(scope) and not scope.is_relative_to(Path(p).parent),'G0_PACKAGE_NEW_SCOPE_SEPARATE_FROM_INPUTS')
+ for p in ([c['networkBindingFile']] if c.get('networkBindingFile') else [])+list(c['connectionFiles'].values())+[r['path'] for r in c['priorReceiptFiles']]+[p for p in c['operatorEvidenceFiles'].values() if p]:require(not Path(p).is_relative_to(scope) and not scope.is_relative_to(Path(p).parent),'G0_PACKAGE_NEW_SCOPE_SEPARATE_FROM_INPUTS')
  if not(type(c['collectionDecisionRef']) is str and 1<=len(c['collectionDecisionRef'])<=256):missing.append('COLLECTION_DECISION_REFERENCE')
  report={'schema':'ouf.storage-g0-package-preflight.v1','status':'LOCAL_INPUTS_BOUND_EXTERNAL_ADMISSION_REQUIRED','packageManifestSha256':manifest_sha,'inputSha256':sha(raw),'boundInputSha256':bindings,'operatorInputsMissing':missing,'limits':LIMITS,'targetReads':0,'runtimeAuthorityVerified':False,'runtimeAuthorityIssued':False,'targetCommandAuthorized':False,'g0Complete':False,'acceptanceCreditAdded':0}
  return c,configs,operator,scope,report
@@ -87,10 +94,11 @@ def collect(path,root,manifest_sha):
  c,configs,operator,scope,pre=preflight(path,root,manifest_sha)
  require('COLLECTION_DECISION_REFERENCE' not in pre['operatorInputsMissing'],'G0_PACKAGE_DECISION_REFERENCE_REQUIRED_NOT_AUTHORITY')
  scope.mkdir(mode=0o700);db.put_new(scope,'claim.private.json',canonical(pre|{'collectionDecisionRef':c['collectionDecisionRef'],'operationId':c['operationId'],'installationRef':c['installationRef']}));fd=os.open(scope.parent,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
- until=time.monotonic()+900;engine=None;children={};report={'schema':'ouf.storage-g0-package-result.v1','status':'HELD','technicalCaptureComplete':False,'phase':'CLAIMED','engineGets':0,'s3Requests':None,'databaseExportsAttempted':0,'priorControls':17,'priorEngineGets':52,'automaticReplayAllowed':False,'runtimeAuthorityIssued':False,'targetWrites':0,'g0Complete':False,'acceptanceCreditAdded':0,'sections':{s:{'status':'NOT_COLLECTED'} for s in SECTIONS}}
+ until=time.monotonic()+900;engine=None;network_children=None;children={};report={'schema':'ouf.storage-g0-package-result.v1','status':'HELD','technicalCaptureComplete':False,'phase':'CLAIMED','engineGets':0,'s3Requests':None,'databaseExportsAttempted':0,'priorControls':17,'priorEngineGets':52,'automaticReplayAllowed':False,'runtimeAuthorityIssued':False,'targetWrites':0,'g0Complete':False,'acceptanceCreditAdded':0,'sections':{s:{'status':'NOT_COLLECTED'} for s in SECTIONS}}
  def phase(p,seconds):
   require(time.monotonic()+seconds<=until,'G0_PACKAGE_CUMULATIVE_DEADLINE');report['phase']=p;db.put_new(scope,'phase-'+p+'.json',canonical({'phase':p,'reserved':True}))
  def stable():
+  if c.get('networkBindingFile'):require(sha(db.private_read(Path(c['networkBindingFile']),65536))==pre['boundInputSha256']['network'],'G0_PACKAGE_NETWORK_CHANGED')
   for key,(p,_) in configs.items():require(sha(db.private_read(p,16384))==pre['boundInputSha256']['connection:'+key],'G0_PACKAGE_CONNECTION_CHANGED')
   for key,p in c['operatorEvidenceFiles'].items():
    if p:require(sha(db.private_read(Path(p),1<<20))==pre['boundInputSha256']['operator:'+key],'G0_PACKAGE_OPERATOR_CHANGED')
@@ -100,22 +108,29 @@ def collect(path,root,manifest_sha):
   frozen={}
   for key,(p,v) in configs.items():
    raw=db.private_read(p,16384);require(sha(raw)==pre['boundInputSha256']['connection:'+key],'G0_PACKAGE_CONNECTION_CHANGED');dest=scope/('input-'+key+'.private.json');db.put_new(scope,dest.name,raw);frozen[key]=dest
+  if c.get('networkBindingFile'):
+   raw=db.private_read(Path(c['networkBindingFile']),65536);require(sha(raw)==pre['boundInputSha256']['network'],'G0_PACKAGE_NETWORK_CHANGED');dest=scope/'network-binding.private.json';db.put_new(scope,dest.name,raw);network_children=network.NetworkChildren(root,dest,decode(raw),sha(raw))
   phase('HOST_BEFORE',60);engine=Engine(scope);engine.until=time.monotonic()+60;before=snapshot(engine,c['roles']);db.put_new(scope,'host-before.private.json',canonical(before));cap=capacity(c['capacityPaths']);db.put_new(scope,'capacity.private.json',canonical(cap));require(not before['findings'],'G0_PACKAGE_RUNTIME_BINDING_DRIFT')
+  if network_children:network_children.runtime(before)
   phase('S3',310);p=scope/(c['operationId']+'-s3');children['s3']=p
-  r=subprocess.run([str(root/'bin/inventory'),'g0-collect',str(frozen['s3']),str(p)],env={'PATH':'/usr/bin:/bin','GOMEMLIMIT':'256MiB','GOMAXPROCS':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=310)
+  r=network_children.run('s3',frozen['s3'],p,310) if network_children else subprocess.run([str(root/'bin/inventory'),'g0-collect',str(frozen['s3']),str(p)],env={'PATH':'/usr/bin:/bin','GOMEMLIMIT':'256MiB','GOMAXPROCS':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=310)
   require(len(r.stdout)<=8192 and len(r.stderr)<=8192,'G0_PACKAGE_MINIMIZED_CHILD_OUTPUT');summary=decode(r.stdout);report['s3Requests']=summary.get('requestsReserved');require(r.returncode==0 and summary.get('complete') is True,'G0_PACKAGE_BODY_COLLECTION_HELD')
   collection=read_json(p/'collection.private.json',32<<20);require(collection.get('installationRef')==c['installationRef'] and collection.get('operationId')==c['operationId']+'-s3' and collection.get('configSha256')==pre['boundInputSha256']['connection:s3'],'G0_PACKAGE_BODY_INPUT_BINDING')
   invraw=db.private_read(p/'inventory-before.private.json',32<<20);require(sha(invraw)==collection.get('inventoryBeforeSha256'),'G0_PACKAGE_INVENTORY_BINDING');inventory=decode(invraw);acl=access_findings(inventory);db.put_new(scope,'access-review.json',canonical(acl))
   exports={}
   for role in ('onboarding','udp','ingestion'):
-   stable();phase('DB_'+role.upper(),120);q=scope/(c['operationId']+'-'+role);children[role]=q;report['databaseExportsAttempted']+=1
-   result=db.export(frozen[role],q);require(result['complete'],'G0_PACKAGE_DATABASE_EXPORT_HELD');v=configs[role][1];profile=v['profile'];exports[profile]=db.parse_export(db.private_read(q/'export.private.jsonl',32<<20),profile);h=exports[profile]['header']
+   stable();phase('DB_'+role.upper(),125 if network_children else 120);q=scope/(c['operationId']+'-'+role);children[role]=q;report['databaseExportsAttempted']+=1
+   if network_children:
+    child=network_children.run('db',frozen[role],q,125);result=decode(child.stdout);require(child.returncode==0 and result.get('complete') is True,'G0_PACKAGE_DATABASE_NAMESPACE_HELD')
+   else:result=db.export(frozen[role],q)
+   require(result['complete'],'G0_PACKAGE_DATABASE_EXPORT_HELD');v=configs[role][1];profile=v['profile'];exports[profile]=db.parse_export(db.private_read(q/'export.private.jsonl',32<<20),profile);h=exports[profile]['header']
    require(h.get('database')==v['database'] and h.get('role')==v['user'] and h.get('serverAddress')==v['hostaddr'] and h.get('serverPort')==v['port'],'G0_PACKAGE_DATABASE_ENDPOINT_BINDING')
   # The buckets come from the explicitly bound connection/owner input, not a guessed default.
   mappings=operator.get('runtime',{}).get('storageBuckets');require(type(mappings) is dict and set(mappings)=={'onboarding','udp'},'G0_PACKAGE_OWNER_BUCKET_BINDINGS_REQUIRED')
   writers=operator.get('writers',{'schema':'ouf.storage-g0-writer-census.v1','installationRef':c['installationRef'],'paths':[]})
   phase('JOIN',10);joined=reconcile(collection,exports,mappings,writers);db.put_new(scope,'reconciliation.json',canonical(joined))
   phase('HOST_AFTER',60);engine.until=time.monotonic()+60;after=snapshot(engine,c['roles']);db.put_new(scope,'host-after.private.json',canonical(after));require(before==after,'G0_PACKAGE_HOST_DRIFT');stable()
+  if network_children:network_children.runtime(after)
   report['technicalCaptureComplete']=True;report['status']='OBSERVATIONS_SEALED_G0_REVIEW_REQUIRED';report['phase']='SEALED'
   report['sections']={s:{'status':'OBSERVED_REVIEW_REQUIRED'} for s in SECTIONS}
   for key in OPERATOR:

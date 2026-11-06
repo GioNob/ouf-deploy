@@ -11,7 +11,7 @@
   },
   "qualifiedBodyRun": 42111278483,
   "qualifiedDatabaseRun": 42114275442,
-  "newQualificationScope": "package orchestration, host metadata observation, redaction, local preflight and artifacts only",
+  "newQualificationScope": "Full operator package across distinct pinned Linux network namespaces: network-only children, unchanged body collector/SQL exporter, bounded process groups and current owner lifetime checks.",
   "bodyAndDatabaseNativeLabsRepeated": false,
   "runtimeAuthorityIssued": false,
   "historicalControlsPreserved": [
@@ -32,5 +32,6 @@
     15,
     16,
     17
-  ]
+  ],
+  "newNamespaceCompositionNativeRequired": true
 }
