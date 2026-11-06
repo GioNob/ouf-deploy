@@ -148,7 +148,7 @@
     "rollback": "After any target mutation including tests, preserve and reconcile both DB and stores; endpoint reversal alone forbidden"
   },
   "unresolved": {
-    "runningNonRoster": 1,
+    "runningNonRoster": 0,
     "privateBindingsAlreadyInG0": true,
     "adminAndExternalWriterCensusComplete": false,
     "backupIndependentDestination": null,
@@ -156,7 +156,8 @@
     "window": null,
     "rpoRtoAccepted": false,
     "exactCommands": null,
-    "budget": null
+    "budget": null,
+    "runningNonRosterMeaning": "UNIDENTIFIED_RUNNING_CONTAINER_COUNT_AFTER_IDENTITY_JOIN; original captured non-roster count remains1"
   },
   "operatorNextRead": {
     "script": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
@@ -167,8 +168,11 @@
     "credentialsRead": 0,
     "filesModified": 0,
     "currentProcessReads": 0,
-    "status": "PREPARED_NOT_EXECUTED",
-    "purpose": "Identify the remaining active image and retained application JAR mount coverage, without another collection"
+    "status": "EXECUTED_OPERATOR_RESULT_RECEIVED_DO_NOT_REPEAT",
+    "purpose": "Identify the remaining active image and retained application JAR mount coverage, without another collection",
+    "receipt": "evidence/storage-g0-unmapped-runtime-operator-20261106.json",
+    "resultingIdentity": "ouf-etcd",
+    "onboardingJarCoveringMounts": 0
   },
   "approval": {
     "stopAuthorized": false,
@@ -178,5 +182,23 @@
     "runtimeAuthorityIssued": false
   },
   "acceptanceCreditAdded": 0,
-  "writerQuiescenceProven": false
+  "writerQuiescenceProven": false,
+  "additionalObservedControlPlane": {
+    "role": "etcd",
+    "containerName": "ouf-etcd",
+    "nativeImage": "sha256:a3ccd299377af4b9968d8cbaaf9722fe354297f11908f74a846075e1e5f4ee89",
+    "identityMatchedBy": [
+      "nativeImage",
+      "sha256(containerId)",
+      "sha256('/'+historicalName)"
+    ],
+    "evidence": "evidence/storage-g0-unmapped-runtime-operator-20261106.json",
+    "capturedOriginalRosterModified": false,
+    "storageConsumerProven": false,
+    "routingDependencyProvenByThisRead": false,
+    "proposedHandling": "REVIEW_CONTROL_CONFIGURATION_CUSTODY_AND_CONSISTENT_BACKUP; DO_NOT_STOP_OR_RESTORE_AUTOMATICALLY",
+    "currentLiveObservation": false
+  },
+  "nextRequiredOperatorInput": "Independent backup destination: operator PC and OS, or already available off-host storage. No secrets.",
+  "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md"
 }

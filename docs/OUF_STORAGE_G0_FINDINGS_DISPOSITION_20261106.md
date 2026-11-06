@@ -1,3 +1,7 @@
+## Riscontro finale fuori roster
+
+Identità risolta come ouf-etcd tramite immagine e hash esatti di nome/ID nella ricevuta indipendente del9ottobre. [Esito operatore](../evidence/storage-g0-unmapped-runtime-operator-20261106.json).0mount coprenti il JAR Onboarding;nessuna verifica dei byte/writablelayer. Nessuna modifica ai18rilievi o proprietà. Rimangono censimento admin/esterni e condizioni operative;non occorre un altro helper locale per identificare il servizio.
+
 ## Aggiornamento coorte — origine conservata ricostruita
 
 La label194b non identifica il sorgente dell'immagine Onboarding: consegna e custodia legano7b9d3e91 a73498/9d19,stesso tree Git. [Decisione e limiti](OUF_STORAGE_COHORT_DECISION_20261106.md). La riserva sulla membership live resta,ma non occorre ricominciare la ricostruzione dell'origine. I18rilievi e le disposizioni sottostanti restano immutati;nessuna proprietà o accettazione aggiunta.

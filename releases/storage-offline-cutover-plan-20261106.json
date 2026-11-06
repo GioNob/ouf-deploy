@@ -26,7 +26,13 @@
     "independentDestination": null,
     "custodian": null,
     "completeCurrentBackupProven": false,
-    "independentRestoreProven": false
+    "independentRestoreProven": false,
+    "proposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
+    "proposedIndependentDestinationKind": "OPERATOR_PC_ENCRYPTED_ARCHIVE_OR_EXISTING_OFFHOST_STORAGE",
+    "destinationChoiceReceived": false,
+    "additionalControlPlaneCustodyReview": [
+      "etcd"
+    ]
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
@@ -43,7 +49,9 @@
       40,
       41
     ],
-    "keepExternalFenceDuringStartup": true
+    "keepExternalFenceDuringStartup": true,
+    "onboardingJarCoveringMountsAtCapture": 0,
+    "writableContainerLayerChecked": false
   },
   "objectives": {
     "proposedCutoverConfirmedWriteLoss": 0,
@@ -73,7 +81,10 @@
     "quiescenceProven": false,
     "containmentMatrix": "releases/storage-offline-writer-containment-20261106.json",
     "sourceMappedPaths": 9,
-    "operatorUnmappedPaths": 2
+    "operatorUnmappedPaths": 2,
+    "runningNonRosterIdentity": "ouf-etcd",
+    "runningNonRosterIdentityEvidence": "evidence/storage-g0-unmapped-runtime-operator-20261106.json",
+    "unidentifiedRunningContainersAtCapture": 0
   },
   "rollback": {
     "beforeFirstTargetWrite": "PRESERVE_FENCE_VERIFY_SOURCE_DB_GENERATION_RESTORE_QUALIFIED_BINDINGS",

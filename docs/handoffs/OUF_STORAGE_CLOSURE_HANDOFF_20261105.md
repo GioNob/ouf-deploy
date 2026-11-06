@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — ouf-etcd identificato, letture locali concluse
+
+Ricevuta evidence/storage-g0-unmapped-runtime-operator-20261106.json:esito operatore2filelocali,zero provider/processi/credenziali/write. Extra imagea3ccd299,nomeSHA0b5ce582 econtainerIDSHA c8d094b9 coincidono esattamente con ouf-etcd della ricevuta indipendente evidence/provider-r8-independent-runtime-readback-20261009.json (run37979230240/job113985199756). Hash ricomputati localmente;immaginequay.io/coreos/etcd:v3.5.21,volume storico /etcd-data scrivibile. Identità risolta,non prova di dipendenza routing corrente o assenza writerS3. Nessun nuovo scope,roster G0 storico13ruoli invariato. Review custodia/stato control plane aggiunta,nessuno stop/restore implicito.
+
+JAR Onboarding:0mount coprenti nel documento raccolto;byte live e writablelayer non verificati. Non ripetere scripts/read-storage-g0-unmapped-runtime-20261106.py né introdurre un altro helper per l'identità ormai nota. Mappa9percorsi/3owner e2admin-esterni ancora incompleta come censimento operativo.
+
+Proposta docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md delimita backup per migrazione:oggetti+3DBowner completi+config/chiavi necessarie+reviewetcd,con backup coerente,copia cifrata fuoriVPS e restoreverificato. Staging medesimo disco non èindipendente. Prima opzione PCoperatore,alternativa storage remoto già disponibile. Serve scelta destinazione eOSsePC;non chiedere segreti,non presentare scelta come approvazione backup/fermo/deploy. Finestra/RPO/RTO,accessi/census e qualifica integrata restano aperti. Nessun programmaDRgenerico aggiunto.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati. Nessun merge/deploy/grant/traffico/source-lock/piano congelato. Base99b5b1a3/source d5155899 verificati,PR54draft/open;CI base48SUCCESS/3in corso al controllo. Aggiornamento di evidenze e piano,non nuova coppia di migrazione o credito di componente.
+
 ## Checkpoint 2026-11-06 — catena coorte ricostruita e contenimento offline delimitato
 
 Evidenza evidence/storage-cohort-retained-reconciliation-20261106.json: tutti13native ID G0 coincidono con origini conservate. Onboarding7b9d3e91→artifact12836316286→tested73498c17/reviewed9d19fad3,stesso Git tree091a10a5 verificato indipendentemente. Label container194b non è fonte del codice. JAR storico152159de,non letto live;mount/writable-layer overrides non esclusi. MinIO14cea493 root/native e69b2ec20 configuration appartengono alla stessa catena conservata;rehearsal usa69b2ec20. Ritirata falsa differenza di immagine nel runbook;publisher/security/target acceptance restano aperti.

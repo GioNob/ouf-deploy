@@ -21,7 +21,7 @@ Il [runbook](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) include la [matric
 
 | Gate | Prova disponibile | Residuo per la chiusura |
 |---|---|---|
-| G0 baseline |120corpi verificati,18rilievi tipizzati con disposizioni, feature/runtime/capacità osservati |Accettare disposizioni, coorte e inventario completo; accessi/custodia,11percorsi writer e1container attivo fuori roster, funzioni/finestra/RPO/RTO |
+| G0 baseline |120corpi verificati,18rilievi tipizzati con disposizioni, feature/runtime/capacità osservati |Accettare disposizioni, coorte e inventario completo; accessi/custodia,11percorsi writer;etcd fuori roster identificato,da includere nella custodia control plane, funzioni/finestra/RPO/RTO |
 | G1 candidato |OCI33 e qualifiche al checkpoint |Coorte finale server/client/tool, licenze, custodia durevole e sicurezza valida all'ammissione |
 | G2 contratti |12casi client33 e mapping AT aperto |Binding rappresentativi della coorte scelta e tutti gli AT applicabili; niente trasferimento implicito della qualifica adapter al modulo completo |
 | G3 recovery |Foundation/restore sintetici e backup storici parziali |Backup corrente DB+oggetti+config/chiavi, custodia indipendente, restore rappresentativo e obiettivi/capacità misurati |
@@ -35,9 +35,9 @@ Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/basel
 ## Coppia corrente: uscita acquisita e azione residua
 
 1. **Origine, scelta e delta completati:** catena immagine/sorgente ricostruita dalle prove conservate;stesso tree73498/9d19 verificato;scelta di sviluppo d515 confermata,delta e limiti espliciti. Non è qualifica live o ammissione.
-2. **Pacchetto operativo in corso:**9percorsi associati ai3owner e barriere proposte. Unica lettura locale preparata identifica il container attivo fuori roster e la copertura mount del JAR da2file già conservati. Esito operatore necessario;nessun nuovo accesso provider. Restano accessi effettivi,admin/esterni,backup indipendente/restore,finestra e comandi/budget esatti.
+2. **Pacchetto operativo in corso:**9percorsi associati ai3owner e barriere proposte. Lettura locale eseguita:ouf-etcd identificato esattamente per immagine/hashnome/hashID;0mount coprenti il JAR. Nessun nuovo accesso provider;nessuna prova dei byte live. Restano accessi effettivi,admin/esterni,backup indipendente/restore,finestra e comandi/budget esatti.
 
-La lettura si esegue con scripts/read-storage-g0-unmapped-runtime-20261106.py al commit consegnato e SHA25640bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f. Non ripetere altri comandi. Il prossimo lavoro dopo l'esito risolve l'identità restante e completa gli input operativi;non riparte dal confronto della label o da test di componente già riusciti.
+La lettura scripts/read-storage-g0-unmapped-runtime-20261106.py è conclusa e non va ripetuta. [Ricevuta](../evidence/storage-g0-unmapped-runtime-operator-20261106.json). Prossimo input necessario: scegliere dove conservare fuoriVPS il backup cifrato,PC operatore (specificare OS) oppure storage indipendente già disponibile; [proposta](OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md). Non richiedere segreti in chat. Questo non autorizza backup/stop/deploy,ma rende determinabile il successivo comando delimitato.
 
 Nessuna nuova stima numerica: quella di12–18passi è ritirata perché non aveva delimitato le condizioni del VPS e i “passi” successivi erano stati frammentati senza aggiornare il residuo. La review ora riduce l'incertezza sui dati; restano coorte e procedura operativa. La prossima stima deve misurare questo residuo, non contare documenti o test.
 

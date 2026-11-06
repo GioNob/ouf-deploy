@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Obtain the single pinned local non-roster image/JAR-mount coverage readback; use retained provenance to resolve that identity. Complete effective access/admin-external writer census, independent backup/restore and window, then exact bounded commands. Historical Onboarding image-source lineage and MinIO config/native ID relationship are resolved; do not repeat that investigation or native suites. Full-service candidate dependency/integration qualification and current executable membership remain open.",
+  "nextPlannedWork": "Retained non-roster identity resolved as ouf-etcd by exact native-image/name-hash/container-id-hash match; no helper replay or further metadata investigation for this identity. Obtain independent backup destination choice and finish bounded backup/restore, writer/access and window package. Current executable membership and full-service qualification remain open; no gate closure or runtime admission.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -552,9 +552,17 @@
     "sourceMappedWriterPaths": 9,
     "unmappedRuntimeReadback": {
       "script": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
-      "executed": false,
-      "providerRequests": 0
-    }
+      "executed": true,
+      "providerRequests": 0,
+      "receipt": "evidence/storage-g0-unmapped-runtime-operator-20261106.json",
+      "identityResolved": "ouf-etcd",
+      "nativeImageMatchesHistoricalReceipt": true,
+      "containerNameAndIdHashesMatch": true,
+      "onboardingJarCoveringMounts": 0,
+      "currentExecutableMembershipProven": false
+    },
+    "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
+    "requiredOperatorInput": "Independent backup destination: operator PC plus OS, or existing off-host storage. No secret disclosure or runtime approval implied."
   },
   "cohortRetainedReconciliation": {
     "receipt": "evidence/storage-cohort-retained-reconciliation-20261106.json",

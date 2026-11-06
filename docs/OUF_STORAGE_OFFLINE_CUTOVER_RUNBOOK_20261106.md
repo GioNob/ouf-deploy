@@ -1,3 +1,9 @@
+## Aggiornamento corrente — identità fuori roster risolta
+
+[Ricevuta operatore e join storico](../evidence/storage-g0-unmapped-runtime-operator-20261106.json): l'unico attivo fuori roster è **ouf-etcd**, con image ID e SHA256 del nome/ID coincidenti con la ricevuta indipendente del9ottobre. Non è prova di consumer S3,assenza writer esterni o dipendenza routing corrente. Includere review della custodia/stato control plane;nessuno stop/restore automatico. Il roster G0 storico resta13ruoli,non viene riscritto.
+
+Nessuna mount copre /app/application.jar nel documento raccolto;byte del JAR e layer scrivibile non verificati. Lettura dei2file riuscita senza provider/credenziali/write;non ripetere helper. [Proposta concreta di custodia backup](OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md): copia cifrata fuoriVPS,prima opzione PC operatore oppure storage remoto già disponibile. Destinazione/custode/finestra non inventati;serve ora la scelta del mezzo di custodia,non un'altra lettura diagnostica.
+
 # MinIO → SeaweedFS: procedura proposta con fermo completo
 
 Stato: **DRAFT — NON ESEGUIBILE / NON AMMESSA**. Base repository deploy f02ba458a7e536c848abca001154dbf5f665a16e; source d5155899b09dda298494b68cefa7e1f281167652. Questo documento seleziona una procedura da completare e qualificare, non autorizza deploy, grant, stop, copy, switch o riapertura. [Piano strutturato](../releases/storage-offline-cutover-plan-20261106.json).
@@ -18,7 +24,7 @@ Fonte corrente: [ricevuta operatore](../evidence/storage-g0-final-local-review-o
 | Destinazione proposta | /var/lib/ouf-storage-migration/seaweedfs, creata e osservata vuota nella preparazione | Custodia, capacità comprensiva di crescita/restore, topologia e TLS ammessi |
 | Staging backup | /var/lib/ouf-storage-migration/backup-staging | È sullo stesso device della sorgente: serve una copia indipendente con custodia e restore verificati |
 | Candidato | OCI33 sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6; lock SHA256 c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8 | Nessuna ammissione operativa; licenze, custodia durevole, scansioni valide e coorte finale restano G1 |
-| Servizi |13ruoli tutti running e non paused nella raccolta;132fuori roster di cui1running | Identità/funzione del container attivo restante e consumer esterni; assenza di mount/binding rilevato non esclude un writer via rete |
+| Servizi |13ruoli tutti running e non paused nella raccolta;132fuori roster di cui1running | Identità del restante risolta come ouf-etcd;funzione/accessi effettivi e consumer esterni ancora da provare;assenza di mount/binding storage non esclude un writer via rete |
 | Oggetti e DB |120corpi verificati/referenziati,353righe di proiezione;4campioni DB,2label,2payload fisicamente collegati | I3export di proiezione non sono backup DB completi e non provano un common-cut |
 | Accessi |2bucket senza policy; grant CanonicalUser FULL_CONTROL senza ID; publicAccessBlock unsupported | Protezione effettiva ed equivalenza autorizzativa sul target; non dedurre anonimato né sicurezza |
 | Feature osservate |Versioning Status/MFADelete NOT_SET;0destinazioni notifiche; EventBridge assente | Contratto delle funzioni richieste dai consumer, incluse quelle non ricavabili dai dati già presenti |
@@ -44,7 +50,7 @@ Confermata per lo sviluppo la candidata già proposta d5155899 (intero modulo), 
 
 Il fermo dei3owner da solo non prova quiescenza. Servono barriera persistente al restart/ricreazione,blocco degli accessi mutativi diretti a S3/DB,risoluzione delle transazioni/effetti in volo e identità separata per backup/copia. Meccanismo esatto e comandi restano non qualificati;nessun stop o cambio privilegi autorizzato da questa matrice.
 
-Lettura locale preparata: scripts/read-storage-g0-unmapped-runtime-20261106.py. Solo host-before e input base con SHA256 esatti: emette image ID del solo attivo fuori roster,indizi del nome limitati a registry/runner/backup (non ruoli autenticati),hash del nome/ID e conteggio mount che coprono il JAR Onboarding. Non stampa nomi/path/env privati,non legge il JAR,non contatta Docker o altri provider. Il risultato serve a restringere il censimento;non prova assenza di writer esterni o membership eseguibile. Esecuzione VPS ancora pendente.
+Lettura locale preparata: scripts/read-storage-g0-unmapped-runtime-20261106.py. Solo host-before e input base con SHA256 esatti: emette image ID del solo attivo fuori roster,indizi del nome limitati a registry/runner/backup (non ruoli autenticati),hash del nome/ID e conteggio mount che coprono il JAR Onboarding. Non stampa nomi/path/env privati,non legge il JAR,non contatta Docker o altri provider. Il risultato serve a restringere il censimento;non prova assenza di writer esterni o membership eseguibile. Esecuzione VPS riuscita:ouf-etcd identificato,0mount coprenti il JAR;ricevuta nel nuovo aggiornamento iniziale. Non ripetere.
 
 ## Sequenza e condizioni di arresto
 
