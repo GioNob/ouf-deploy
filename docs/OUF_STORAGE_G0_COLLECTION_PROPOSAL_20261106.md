@@ -1,6 +1,6 @@
 # Raccolta G0: proposta concreta OUF-G0-COLLECT-20261106-01
 
-Stato: **PROPOSTA, decisione operatore non ancora ricevuta**. Il riferimento è riservato per questa proposta e non prova approvazione, identità IAM o autorità HUMAN/THS.
+Stato: **AUTORIZZATA DALL'OPERATORE, ESECUZIONE PENDENTE**. Giovanni ha risposto «autorizzo» alla proposta esatta. [Decisione conversazionale](../evidence/storage-g0-collection-decision-20261106.json). Non richiedere nuovamente questa autorizzazione. Il riferimento non autentica identità IAM/HUMAN/THS e non emette grant.
 
 ## Esito acquisito
 
@@ -34,7 +34,7 @@ I conteggi sono massimi, non una previsione del numero corrente di oggetti. Le l
 
 Il [contratto operatore](OUF_STORAGE_G0_OPERATOR_PACKAGE_20261105.md), sezione «Verifica e comando da sottoporre al gate», richiede decisione esplicita applicabile al comando dopo review di binding/digest e custodia. La delega di sviluppo e ouf-admin non la sostituiscono. Il programma controlla solo un riferimento non vuoto e **non autentica HUMAN**: non usare quel campo per simulare una decisione mancante.
 
-Si sottopone qui a Giovanni l'esecuzione diretta della raccolta diagnostica descritta, tramite il suo accesso VPS già disponibile. L'eventuale decisione conversazionale va registrata come tale: non firma THS, grant operativo o approvazione di riconciliazione owner. Se il percorso applicabile richiede una conferma su superficie fidata, quella deve restare separata; questa proposta non la emette.
+Giovanni ha autorizzato l'esecuzione diretta della raccolta diagnostica descritta tramite il suo accesso VPS. La decisione è registrata come conversazionale: non firma THS, grant operativo o approvazione di riconciliazione owner. Il collector diagnostico e il relativo accesso operatore restano distinti dalle capability protette di riconciliazione o migrazione.
 
 ACCESS/CUSTODY/WINDOW/WRITERS restano null. Il collector li ammette come input mancanti e li conserva come MISSING_OPERATOR_EVIDENCE: non inventarli e non richiedere l'inventario corrente prima della raccolta destinata a ottenerlo. La finestra di900s è il budget diagnostico, non una finestra di manutenzione approvata. Nessun common-cut o quiescenza è assunto. Backup/DR restano da verificare per accettazione/cutover, senza riaprirne la ricognizione come prerequisito della preparazione.
 
@@ -49,7 +49,7 @@ sudo /usr/bin/python3 -I -B -S \
   --package-sha256 1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf
 ```
 
-**Non eseguito e non ancora ammesso.** Il candidato di partenza contiene ancora null: non lanciarvi collect. La copia e il controllo di binding finale sono subordinati alla decisione separata; non è previsto un altro giro di preparazione dati. Il preflight interno di collect è necessario perché cambia il riferimento decisione e inizia un nuovo effetto target, non una ripetizione gratuita del vecchio check.
+**Autorizzato, non ancora eseguito.** Il candidato di partenza contiene ancora null: non lanciarvi collect direttamente. Il helper di ingresso crea la copia e il controllo di binding finale già autorizzati; non è previsto un altro giro di preparazione dati. Il preflight interno di collect è necessario perché cambia il riferimento decisione e inizia un nuovo effetto target, non una ripetizione gratuita del vecchio check.
 
 Se il controllo o la raccolta falliscono, conservare copia/scope/parziali. Nessun retry, cancellazione, cambio operationId, rebind o nuova sessione per recuperare budget. Condividere solo il JSON redatto; non config, credenziali, chiavi oggetto, export o archivi privati.
 
@@ -58,3 +58,9 @@ Se il controllo o la raccolta falliscono, conservare copia/scope/parziali. Nessu
 Il risultato atteso è evidenza tecnica corrente da rivedere, non G0 già chiuso. Il collector può restituire OBSERVATIONS_SEALED_G0_REVIEW_REQUIRED o HELD con contatori e causa. Il rapporto mantiene g0Complete=false e acceptanceCreditAdded=0; eventuali crediti richiedono review dei criteri MiniPET, comprese le sezioni mancanti. Gli oggetti letti/verificati non sono oggetti migrati.
 
 MiniPET invariato18,3/46=39,78%;0/8 gate,0/21 AT,0/120 oggetti migrati. [Proposta strutturata](../releases/storage-g0-collection-proposal-20261106.json). Nessuna modifica a MinIO/source-lock/piano congelato, source Onboarding, authority o traffico.
+
+## Consegna dell'ingresso autorizzato
+
+`scripts/execute-storage-g0-authorized-20261106.py` esegue la trasformazione e la CLI sopra senza argomenti operatore aggiuntivi. Verificare SHA256 dei byte scaricati dall'esatto commit qualificato, quindi eseguire quei byte con sudo /usr/bin/python3 -I -B -S -c. Non eseguire sia helper sia CLI manuale: il helper già avvia collect. Manifest e tutti i file del bundle sono verificati prima dell'import; input originale pin6b5a2ba0, binding confrontati con preflight.private.json e sei digest noti. Decisione e copia sono0600, O_EXCL e fsync; decisione privata è il claim locale. Reingresso legge soltanto result.json esistente; ogni parziale senza risultato resta HOLD, nessun reset. Il codice originario del collector è invariato.
+
+Qualifica ingresso:8test locali PASS con preflight originale/provider non invocati; dedicata CI e digest di consegna riportati nella PR54. Questi test non dimostrano raccolta target, autenticazione remota o accettazione. CI precedente b142ae01:50SUCCESS/1FAIL (Maven Central HTTP403 jackson-bom2.21.7), nessun retry.
