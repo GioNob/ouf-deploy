@@ -1,3 +1,23 @@
+## Aggiornamento corrente — sei riferimenti classificati, due payload managed residui
+
+[Esito operatore](../evidence/storage-g0-reference-classification-operator-20261106.json) del classificatore e2983e13:le18impronte coincidono esattamente con la reconciliation conservata.4sample_ref sono PROFILE_DB_SAMPLE_JOB_LINKED_CONTENT_NOT_EXPORTED;2evidence_ref sono CONTRACT_MAPPING_DIAGNOSTIC_LABEL;2payload_ref sono MANAGED_OBJECT_REFERENCE_REQUIRES_BINDING_REVIEW. Quattro campioni logici e due etichette sono ora distinti dai due riferimenti fisici residui. Il contenuto dei campioni non era esportato: il suo mantenimento appartiene al backup/restore DB completo,non a una nuova copia S3 di URI profile://.
+
+Tutti10campi tenant sono NULL:1riga di owner-reconciliation coerente con asset/hash/size,9senza;0righe upload coerenti,2source_ref presenti e8assenti. Subject e source-review non esportati: nessuna proprietà autenticata dedotta. Il percorso di migrazione deve preservare NULL,prove originali e dinieghi; non è autorizzato backfill,adozione o riparazione. La classificazione legacy non azzera automaticamente il rilievo o chiude G0.
+
+Entrambi i bucket:ACL PRESENT,un grant,Owner.ID assente;policy ABSENT,publicAccessBlock UNSUPPORTED. Versioning e notification PRESENT indicano risposte disponibili,non necessariamente feature attive. CORS/encryption/lifecycle/objectLock/replication ABSENT nei riscontri. La protezione effettiva resta aperta:assenza policy o ID owner non prova né accesso anonimo né protezione equivalente.
+
+### Controllo locale raggruppato, senza nuova raccolta
+
+`scripts/review-storage-g0-final-local-20261106.py` completa il collegamento dei2payload verso asset esatto e corpo nel bucket Onboarding vincolato; confronta hash/dimensione già osservati,run/attempt e binding nello snapshot. Conflitti tenant esplicito/source snapshot sono riportati,mai riparati. I NULL restano proprietà non provata anche quando il collegamento fisico è coerente.
+
+Nello stesso comando:classificazione minima del grant ACL (tipo,permesso,presenza ID,gruppi pubblici senza identificativi),valori versioning e conteggi destinazioni notification;13ruoli e container fuori roster nell'inventario host prima/dopo già conservato. Running e revision sono dati al momento della raccolta,non un nuovo probe;revision è dichiarata,non prova di membership sorgente. Env values,mount path,containerID,bucket,grantee privati e righeDB non sono emessi. Image/revision digest pubblicati servono al successivo confronto delle coorti.
+
+Dieci file locali:reconciliation,claim,2export,collection metadata,inventory-before,host-before/after,input base e dichiarazione runtime già vincolata. I primi dati usano i digest riportati dall'operatore;input base dc0ab6d4 e claim cec357cb fissati;runtime confrontato al digest claim per evitare bucket indovinati. Host prima/dopo devono coincidere e corrispondere ai13binding del medesimo input;gli hash di host sono osservati ora,non attestati come sigillo storico indipendente.
+
+Zero provider/credenziali/corpi/SQL/write/replay. Sintassi e smoke sintetico PASS per payload positivo,hash diverso,conflitto tenant/snapshot,gruppoACLpubblico,versioning non impostato e redazione runtime. Esito VPS pendente. Non ripetere classificatore precedente o raccolta02. Dopo questo riepilogo,la review deve separare le disposizioni documentabili dalle evidenze operative mancanti (ACCESS/CUSTODY/WINDOW/WRITERS,capacità/obiettivi),senza supporre che un altro riepilogo provi proprietà o backup indipendente.
+
+Stato di accettazione invariato;secondo passo della coppia raccolta+riconciliazione ancora in corso,nessun credito per questo controllo preparato.
+
 # G0 — disposizione preliminare dei rilievi reali, 6 novembre 2026
 
 Base deploy de87b9fbaff5cdf6237bdabe16a950b5cc3660eb; Onboarding d5155899b09dda298494b68cefa7e1f281167652. Entrambe PR54 draft/open; CI deploy51/51SUCCESS,nessun run attivo al controllo. Nessuna raccolta ripetuta. [Readback operatore](../evidence/storage-g0-sealed-findings-operator-20261106.json) vincola localmente result/reconciliation/access/capacity/claim. È output utente,non osservazione diretta dell'agent o sigillo storico indipendente.

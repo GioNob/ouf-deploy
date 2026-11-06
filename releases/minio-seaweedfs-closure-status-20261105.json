@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Continue second step of collection/reconciliation pair: local hash-bound classification of existing exports and inventory for10tenant-field findings,4additional refs,4quarantine refs and2ACL-shape findings. Do not rerun collection or successful initial readback. Preserve legacy NULL ownership and original findings; no invented tenant/HUMAN repair. Then assign evidence-based dispositions and reconcile remaining G0 operational sections.",
+  "nextPlannedWork": "Finish second-step local reconciliation with one grouped read-only review of2managed payload bindings,ACLgrant/feature values and existing host-role metadata. Do not rerun prior collection/readback/classifier. Preserve10legacyNULL owners and original findings; no ownership repair inferred. Then assign dispositions and separately handle ACCESS/CUSTODY/WINDOW/WRITERS and backup/capacity/objectives that these exports cannot prove.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -508,8 +508,16 @@
       "ACL_OWNER_OR_GRANTS_UNPROVEN": 2
     },
     "capacityPathsShareDevice": true,
-    "referenceClassificationExecuted": false,
-    "findingsDispositionDocument": "docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md"
+    "referenceClassificationExecuted": true,
+    "findingsDispositionDocument": "docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md",
+    "referenceClassificationReceipt": "evidence/storage-g0-reference-classification-operator-20261106.json",
+    "logicalProfileSamplesLinked": 4,
+    "diagnosticLabelsClassified": 2,
+    "remainingManagedPayloadBindings": 2,
+    "tenantNullAssets": 10,
+    "ownerReceiptCandidateRowsPresent": 1,
+    "tenantOwnershipProven": false,
+    "finalLocalReviewExecuted": false
   },
   "currentRoadmap": "docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md",
   "scheduleEstimate": {
@@ -524,7 +532,7 @@
     ],
     "remainingSteps": null,
     "reason": "Preparation and diagnosis were counted as closure steps without updating the forecast; G0 target capture and reconciliation are incomplete.",
-    "nextEstimationBasis": "Breakdown known:120/120bodies referenced,10tenant-field findings and8additional/quarantine refs;2unprovenACLshapes. Need exact local semantic classification and operational evidence, not18assumed repairs.",
+    "nextEstimationBasis": "Six of eight extra refs classified as4DBsamples+2diagnostic labels;2managed payload links need final local binding.10legacyNULL assets remain owner-unproven (1candidate receipt,subject/source-review absent).Operational evidence remains open; do not estimate10repairs or equate labels with acceptance.",
     "documentationCountsAsMigrationStep": false
   }
 }

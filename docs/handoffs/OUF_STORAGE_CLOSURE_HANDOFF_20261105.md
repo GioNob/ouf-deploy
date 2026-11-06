@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — sei riferimenti logici classificati, due payload managed da collegare
+
+Ricevuta evidence/storage-g0-reference-classification-operator-20261106.json:18impronteesatte,4sample collegati ad asset/job/profileDB,2label diagnostiche,2payload managed residui.10tenantNULL,1receipt owner coerente/9assenti,0upload coerenti,2source_ref/8assenti;subject/source-review non esportati,proprietà non attestata. Nessun backfill o HUMAN repair automatico. ACL2bucketPRESENT/ungrant/Owner.IDassente;policyABSENT/publicAccessBlockUNSUPPORTED. Versioning/notificationPRESENT non significa abilitati.
+
+Prossimo unico comando scripts/review-storage-g0-final-local-20261106.py raggruppa:2payload→asset/corpo nel bucket runtime vincolato/hash/size/run/snapshot;grantACL e valori feature;13ruoli/attivi fuori roster da host-before/after già conservati.10filelocali,nessunprovider/credenziale/corpo/write,scope02consumato intatto. Pin inputdc0ab6d4/claimcec357cb e digest degli export/collection/inventory acquisiti;hostprima/dopouguali,senza pretesa di sigillo storico indipendente. Sintassi/smoke PASS,esecuzioneVPS pendente. Non ripetere letture diagnostiche precedenti a scopo di prova: questi controlli aggiungono collegamenti nuovi.
+
+Dossier docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md e roadmap aggiornati. Dopo il riepilogo separare disposizioni dei riferimenti da lacune operative non provabili con export:ACCESS/CUSTODY/WINDOW/WRITERS,backup/capacità/obiettivi. Nessuna proprietà o accettazione inventata. Il secondo passo resta in corso;non contare comandi/documenti come nuove coppie.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120corpi verificati tutti referenziati. Nessunmerge/deploy/grant/traffico/piano congelato. Basee2983e13 CI49SUCCESS/2in corso al controllo;source d5155899,PR54draft/open;CAS senza force.
+
 ## Checkpoint 2026-11-06 — 120 corpi tutti referenziati, natura dei18rilievi nota
 
 Readback operatore in evidence/storage-g0-sealed-findings-operator-20261106.json:120bodyObjects/120bodyReferencesChecked/120classifiedBodies,353righe esportate.18rilievi=10ASSET_OWNER_UNRESOLVED+4ADDITIONAL_REFERENCE_REQUIRES_CLASSIFICATION+4QUARANTINE_REFERENCE_REQUIRES_CLASSIFICATION;nessun missing/hash/size/unclassified/dangling nel breakdown.2ACL_OWNER_OR_GRANTS_UNPROVEN non equivalgono a bucket pubblici.293049417728byte liberi;source/destination/backup sullo stesso device,backup indipendente non provato.

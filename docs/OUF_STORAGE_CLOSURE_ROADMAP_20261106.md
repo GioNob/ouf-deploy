@@ -1,3 +1,7 @@
+## Aggiornamento corrente — sei riferimenti logici distinti dai due payload residui
+
+[Ricevuta](../evidence/storage-g0-reference-classification-operator-20261106.json):4sampleDB collegati ai job,2etichette diagnostiche,2payloadmanaged ancora da collegare;18impronteesatte.10tenantNULL:1receipt owner candidata,nessuna proprietà autenticata provata. ACLpresenti/ungrant/Owner.IDassente e publicAccessBlockUNSUPPORTED. [Dossier aggiornato](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md). Prossimo riepilogo locale raggruppa2payload,grant/feature e servizi osservati;nessuna raccolta nuova. Poi distinguere disposizioni dei riferimenti dalle prove operative mancanti,senza backfill o nuovi filoni di recovery. Secondo passo ancora in corso;gate/crediti invariati.
+
 ## Aggiornamento corrente — natura dei rilievi acquisita
 
 [Readback operatore](../evidence/storage-g0-sealed-findings-operator-20261106.json):120corpi/120riferimenti/120classificati,353righe;18rilievi=10campi tenant non valorizzati+4riferimenti aggiuntivi+4quarantena. Nessun rilievo missing/hash/size/unclassified/dangling nel breakdown.2ACL owner/grants non dimostrati;source/destination/backup stesso device. [Disposizione preliminare e contratti](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md). Secondo passo in corso:classificazione locale esatta dei riferimenti e delle prove legacy,senza query o mutazioni;non presumere18riparazioni. Restano accessi/custodia/finestra/writer e accettazione capacità/funzioni/obiettivi. Numeri MiniPET invariati.

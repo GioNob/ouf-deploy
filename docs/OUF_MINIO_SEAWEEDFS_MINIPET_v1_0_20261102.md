@@ -1,3 +1,7 @@
+## Aggiornamento G0 — riferimenti classificati e residui
+
+[Classificazione operatore](../evidence/storage-g0-reference-classification-operator-20261106.json):4campioni logiciDB collegati ai job,2label diagnostiche;restano2payloadmanaged da legare ai corpi.10tenantNULL storici non autorizzano backfill;1receipt candidata non prova proprietà.2ACL conOwner.IDassente/publicAccessBlockUNSUPPORTED,protezione effettiva aperta. Secondo passo in corso:controllo locale raggruppato payload/feature/runtime,poi disposizioni e lacune operative. Nessun gate/AT chiuso:18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120corpi reali già verificati. [Dossier](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md).
+
 ## Aggiornamento G0 — readback e natura dei rilievi
 
 120corpi reali tutti referenziati,classificati;353righe nelle proiezioni.18rilievi:10campi tenant non valorizzati,4riferimenti aggiuntivi,4quarantena;non18corruzioni dimostrate.2ACL owner/grants non provati,backup staging sul device sorgente. [Dossier di disposizione](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md);secondo passo di riconciliazione in corso,nessuna nuova raccolta o credito.18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;contratti e piano congelato invariati.

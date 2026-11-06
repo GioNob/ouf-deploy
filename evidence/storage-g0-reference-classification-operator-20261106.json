@@ -1,0 +1,98 @@
+{
+  "schema": "ouf.storage-g0-reference-classification-operator-record.v1",
+  "date": "2026-11-06",
+  "operationId": "seaweedfs-g0-20261106-v2",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "classifierCommit": "e2983e13f30ad39683c1699a60e69af3a8e62760",
+  "report": {
+    "acceptanceCreditAdded": 0,
+    "accessShapesWithoutBucketIdentity": [
+      {
+        "featureStates": {
+          "acl": "PRESENT",
+          "cors": "ABSENT",
+          "encryption": "ABSENT",
+          "lifecycle": "ABSENT",
+          "notification": "PRESENT",
+          "objectLock": "ABSENT",
+          "policy": "ABSENT",
+          "publicAccessBlock": "UNSUPPORTED",
+          "replication": "ABSENT",
+          "versioning": "PRESENT"
+        },
+        "grantCount": 1,
+        "grantsListPresent": true,
+        "ownerIdPresent": false
+      },
+      {
+        "featureStates": {
+          "acl": "PRESENT",
+          "cors": "ABSENT",
+          "encryption": "ABSENT",
+          "lifecycle": "ABSENT",
+          "notification": "PRESENT",
+          "objectLock": "ABSENT",
+          "policy": "ABSENT",
+          "publicAccessBlock": "UNSUPPORTED",
+          "replication": "ABSENT",
+          "versioning": "PRESENT"
+        },
+        "grantCount": 1,
+        "grantsListPresent": true,
+        "ownerIdPresent": false
+      }
+    ],
+    "automaticReplayAllowed": false,
+    "credentialsRead": 0,
+    "effectiveAuthorizationProven": false,
+    "exact18FindingFingerprintsMatched": true,
+    "filesModified": 0,
+    "filesRead": 6,
+    "g0Complete": false,
+    "localInputSha256": {
+      "reconciliation.json": "5c0bc6d7351008da9dd53af5489dcf0167c280fe73e99db52de3e9f8c2e5db6a",
+      "seaweedfs-g0-20261106-v2-ingestion/export.private.jsonl": "c7f7dec685b9eab6183861b38ea208f7bb607add566bda8eb770852c176ab982",
+      "seaweedfs-g0-20261106-v2-onboarding/export.private.jsonl": "e998feb525c5b7d0e7c23a2e8bd09ecab757d66c1bbcd0518fcb5ea036fef79c",
+      "seaweedfs-g0-20261106-v2-s3/collection.private.json": "927b53fea852522999d8d8ba3f33b43c7462431ef127040e93c75f72586cf419",
+      "seaweedfs-g0-20261106-v2-s3/inventory-before.private.json": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+      "seaweedfs-g0-20261106-v2-udp/export.private.jsonl": "87459409c0cffc10817e083948e81cb099cbc750d7344282c7784893c3a1920f"
+    },
+    "originalFindingsModified": false,
+    "ownerObservations": {
+      "assetsWithUnresolvedTenantField": 10,
+      "matchingOwnerReceiptRowAbsent": 9,
+      "matchingOwnerReceiptRowPresent": 1,
+      "matchingUploadRowAbsent": 10,
+      "sourceReferenceAbsent": 8,
+      "sourceReferencePresent": 2,
+      "tenantFieldNull": 10
+    },
+    "profileSampleContentExported": false,
+    "providerRequests": 0,
+    "referenceClassifications": [
+      {
+        "classification": "CONTRACT_MAPPING_DIAGNOSTIC_LABEL",
+        "count": 2,
+        "field": "evidence_ref"
+      },
+      {
+        "classification": "MANAGED_OBJECT_REFERENCE_REQUIRES_BINDING_REVIEW",
+        "count": 2,
+        "field": "payload_ref"
+      },
+      {
+        "classification": "PROFILE_DB_SAMPLE_JOB_LINKED_CONTENT_NOT_EXPORTED",
+        "count": 4,
+        "field": "sample_ref"
+      }
+    ],
+    "runtimeAuthorityIssued": false,
+    "runtimeInstalledCommitsProven": false,
+    "schema": "ouf.storage-g0-reference-classification.v1",
+    "status": "LOCAL_REFERENCE_CLASSIFICATION_REVIEW_REQUIRED",
+    "subjectAndSourceReviewProofsExported": false,
+    "tenantOwnershipProven": false
+  },
+  "remainingManagedPayloadBindings": 2,
+  "finalLocalReviewExecuted": false
+}
