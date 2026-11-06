@@ -1,0 +1,116 @@
+{
+  "schema": "ouf.storage-cold-plan-impact-operator-receipt.v1",
+  "source": "Giovanni: operator-supplied JSON in conversation; not independently collected live",
+  "observedOn": "2026-11-06",
+  "status": "PREPARED_PLAN_IMPACT_READ",
+  "planSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
+  "createdEpoch": 1793994819,
+  "validUntilEpoch": 1794081219,
+  "validUntilEuropeRome": "2026-11-07T20:53:39+01:00",
+  "planUnexpiredAtRead": true,
+  "ageAtExpectedPathPresent": false,
+  "localAvailableBytesNow": 293040095232,
+  "sourceCount": 34,
+  "reviewedRuntimeSources": 5,
+  "runtimeEntriesBound": 10,
+  "runtimeFileBytesBound": 7438,
+  "includesWholeSharedPostgresCluster": true,
+  "maximumCaptureSeconds": 3600,
+  "maximumProducedBytes": 68719476736,
+  "roles": {
+    "apisix": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "caddy": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "etcd": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "gateway-owner": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "ingestion": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "ingestion-evidence-read": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "keycloak": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "mcp": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "minio": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "onboarding": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "postgres": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "semantic": {
+      "restartPolicyAtPreparation": "no",
+      "restartPolicyChangeRequiredByCapture": false,
+      "runningAtPreparation": true
+    },
+    "udp": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    },
+    "udp-evidence-read": {
+      "restartPolicyAtPreparation": "unless-stopped",
+      "restartPolicyChangeRequiredByCapture": true,
+      "runningAtPreparation": true
+    }
+  },
+  "sharingContainerPoliciesAtPreparation": {
+    "always": 0,
+    "no": 81,
+    "on-failure": 0,
+    "unless-stopped": 22
+  },
+  "sharingContainerPolicyChangesRequiredByCapture": 22,
+  "selectedRolePolicyChangesRequiredByCapture": 13,
+  "totalPolicyChangesRequiredByCapture": 35,
+  "sharedContainersToStart": 0,
+  "localInputSha256": {
+    "command-001.private": "feb9b30580486678ba5c86dd0af9f31d7bbf957f6606b38f819c04e7b31097c1",
+    "command-002.private": "44dc112c351eea66ec85243826222f0c8c020f8f055b41b75c7b91ea8dc8d725",
+    "command-003.private": "542579b873133e4600c89a4909e42e336ec1beb74b6ec20158245f8c317e1560",
+    "plan.private.json": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f"
+  },
+  "currentLiveContainerStateProven": false,
+  "externalContainmentProven": false,
+  "filesModified": 0,
+  "providerRequests": 0,
+  "sourceBodiesRead": 0,
+  "runtimeAuthorityIssued": false,
+  "automaticReplayAllowed": false,
+  "acceptanceCreditAdded": 0
+}

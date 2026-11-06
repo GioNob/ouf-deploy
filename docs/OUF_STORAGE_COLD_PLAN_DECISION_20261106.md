@@ -1,3 +1,9 @@
+## Aggiornamento: entrambi gli output target ricevuti
+
+Reader VPS e prova Windows conclusi: non ripeterli. Ricevute [impatto](../evidence/storage-cold-plan-impact-operator-20261106.json) e [PC](../evidence/storage-backup-windows-custody-operator-20261106.json). Piano valido alla lettura; scadenza 7 novembre 2026 **20:53:39 Europe/Rome**. Sono necessarie 35 modifiche di restart policy:13ruoli selezionati (semantic è già no) e22dei103condividenti fermi;81sono già no. Nessuna modifica applicata o approvata. Zero condividenti da avviare. Spazio osservato VPS293040095232byte,PC554003427328byte; non ancora misura backup/restore.
+
+Il PC reale ha verificato roundtrip4096byte con age1.3.2 e la propria chiave Ed25519, senza copiarla. Hash del recipient.pub20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0; pubblico completo e percorso personale esclusi da Git. Sul VPS /usr/bin/age assente. Preparatore Linux in qualifica: installazione esclusiva del binario ufficiale1.3.2 dopo verifica archivio19405817byte/SHA cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10; nuova area privata,recipient vincolato e prova512byte casuali da decifrare sulPC. Nessun dato applicativo o provider,stop/policy/capture. Questo è un prerequisito della custodia G3, non un backup o criterio di accettazione soddisfatto. Istruzioni operative solo dopo qualifica nuova; vecchie istruzioni di ripetere i due output qui sotto sono storiche.
+
 # Piano backup v3: custodia e impatto prima del fermo
 
 Stato: PREPARAZIONE TARGET RIUSCITA, NESSUNA AUTORITÀ DI FERMO. Il piano privato è vincolato a SHA2561c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f. [Ricevuta operatore](../evidence/storage-cold-v3-prepared-operator-20261106.json). Non ripetere installer/prepare né cambiare la scadenza del piano.

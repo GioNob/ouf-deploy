@@ -1,3 +1,9 @@
+## Aggiornamento: entrambi gli output target ricevuti
+
+Reader VPS e prova Windows conclusi: non ripeterli. Ricevute [impatto](../evidence/storage-cold-plan-impact-operator-20261106.json) e [PC](../evidence/storage-backup-windows-custody-operator-20261106.json). Piano valido alla lettura; scadenza 7 novembre 2026 **20:53:39 Europe/Rome**. Sono necessarie 35 modifiche di restart policy:13ruoli selezionati (semantic è già no) e22dei103condividenti fermi;81sono già no. Nessuna modifica applicata o approvata. Zero condividenti da avviare. Spazio osservato VPS293040095232byte,PC554003427328byte; non ancora misura backup/restore.
+
+Il PC reale ha verificato roundtrip4096byte con age1.3.2 e la propria chiave Ed25519, senza copiarla. Hash del recipient.pub20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0; pubblico completo e percorso personale esclusi da Git. Sul VPS /usr/bin/age assente. Preparatore Linux in qualifica: installazione esclusiva del binario ufficiale1.3.2 dopo verifica archivio19405817byte/SHA cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10; nuova area privata,recipient vincolato e prova512byte casuali da decifrare sulPC. Nessun dato applicativo o provider,stop/policy/capture. Questo è un prerequisito della custodia G3, non un backup o criterio di accettazione soddisfatto. Istruzioni operative solo dopo qualifica nuova; vecchie istruzioni di ripetere i due output qui sotto sono storiche.
+
 # Roadmap corrente MinIO → SeaweedFS — 6 novembre 2026
 
 **Raccolta tecnica e review dei dati disponibili concluse; G0 ancora aperto per evidenze operative e disposizioni non ancora accettate.** Fonte: [dossier](OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md) e [ricevuta finale](../evidence/storage-g0-final-local-review-operator-20261106.json). Base deploy f02ba458a7e536c848abca001154dbf5f665a16e; source d5155899b09dda298494b68cefa7e1f281167652, entrambePR54 draft/open.

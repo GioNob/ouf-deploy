@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — impatto target e custodia PC acquisiti; collegamento cifratura in preparazione
+
+Entrambi gli output operatore acquisiti in evidence/storage-cold-plan-impact-operator-20261106.json e evidence/storage-backup-windows-custody-operator-20261106.json. Non ripetere reader/prepare/client Windows. PianoSHA1c0bb62c: valido alla lettura, scade2026-11-07T20:53:39+01:00 (non21:33:39; refuso in commentary corretto).14ruoli:13unless-stopped e semantic=no.103condividenti fermi:22unless-stopped/81no. Totale35policy da cambiare prima della capture, NON mutate/autorizzate; nessun condividente da avviare.10entry runtime/7438byte legati; non dimensione archivio. SpazioVPS293040095232byte; PC554003427328byte; capacità complessiva non ancora accettata. age assente in /usr/bin.
+
+PC reale: age1.3.2 e4096byte roundtrip riusciti, ACL area privata, privata non copiata; recipientSSH Ed25519 SHA256 del file20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0. Pubblico completo conservato solo in conversazione/binding privato target, non Git. Cross-platform decrypt, backup e restore ancora non provati.
+
+Nuovo preparatore scripts/prepare-storage-backup-cipher-linux.py installa solo age ufficiale1.3.2 da archivio19405817byte/SHA cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10: verifica prima di scrivere/eseguire, estrae soltanto membro regolare age/age in memoria, /usr/bin/age esclusivo0755, nuova area root0700 /var/lib/ouf-storage-cipher-preparation-20261106. Recipient passato come parametro pubblico e hash atteso; prova512byte casuali, ciphertext Base64 nel JSON per decifratura PC. Nessuna lettura applicativa/provider,nessuno stop/policy/capture,nessun rinnovo piano. Parziali conservati; non sovrascrivere né ripetere automaticamente. Qualifica Linux dell'installer nuova/PENDING, non rerun producer backup riuscito; successiva esecuzione VPS/decifratura PC necessarie.
+
+G3 resta aperto: questo rimuove prerequisiti del backup, non è copia indipendente o restore. Dopo collegamento cifratura completare contenimento amministratori/ricreatori,drain e fermo pulito,comandi esatti/finestra e autorità applicabili; non chiedere sì generico al fermo. Nessun merge/deploy/grant/riapertura o credito MiniPET;18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120corpi verificati.
+
+Verifica iniziale GitHub: deploy6a570787/source d5155899, entrambePR54draft-open; tutte51CI del checkpoint6a570787 SUCCESS e nessuna run attiva nella pagina consultata. Nessun writer concorrente osservato; sessioni esterne non escluse. Pubblicazione CAS.
+
 ## Checkpoint 2026-11-06 — piano target riuscito; custodia Windows qualificata, due output necessari
 
 Prepare v3 ricevuto e conservato: evidence/storage-cold-v3-prepared-operator-20261106.json, SHA piano1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f,14ruoli/34fonti/5runtime/103condividenti fermi,intero PostgreSQL,3600s/64GiB prodotti. Non ripetere preparazione o vecchi reader. La riuscita non autorizza stop/policy/capture e non è backup. Budget capture non è durata finestra disservizio.103 non significa103modifiche di restart né container da avviare.
