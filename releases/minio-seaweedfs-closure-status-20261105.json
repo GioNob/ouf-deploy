@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Giovanni requested progress without waiting for external backup/DR discovery. Run the qualified local private-input preparer through the stable pinned-source downloader; receive only its redacted result and resolve actual missing bindings for local check. Do not repeat old staging, metadata scan or provider labs; do not ask backup availability again as a preparation prerequisite. Independent backup/DR remain unproven for acceptance and operational transition; separate exact collection decision still required.",
+  "nextPlannedWork": "Run the separately bounded redacted datasource review once to distinguish the three observed override denials; receive fixed-name presence/equality metadata only. Do not rerun the completed preparer or read/copy S3 secrets again. Then resolve only the demonstrated DB configuration inputs in a separate continuation, followed by current configuration/operator evidence review and an exact collection decision. Do not reopen backup discovery as a preparation prerequisite; acceptance and operational requirements remain unproven.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -328,8 +328,8 @@
     "candidateCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
     "runId": 42194949283,
     "artifactId": 13492110156,
-    "status": "QUALIFIED_LOCAL_PREPARER_VPS_EXECUTION_PENDING",
-    "targetExecuted": false,
+    "status": "VPS_S3_DRAFT_PREPARED_THREE_DATABASE_OVERRIDES_HELD",
+    "targetExecuted": true,
     "targetInputCheckPassed": false,
     "backupQuestionDeferredForPreparation": true,
     "runtimeAuthorityIssued": false,
@@ -341,6 +341,25 @@
       "status": "OPEN_SAME_AUTHORITY_WINDOW_DENIAL",
       "newPreparerDedicatedCi": "SUCCESS",
       "runtimeChangesForThisFailure": false
-    }
+    },
+    "operatorReceipt": "evidence/storage-g0-input-preparation-operator-20261106.json",
+    "targetExecutionProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+    "connectionDraftsPrepared": [
+      "s3"
+    ],
+    "databaseDraftsPrepared": 0,
+    "processGenerationsChecked": 5,
+    "networkBindingDraftPresent": true
+  },
+  "g0DatasourceReview": {
+    "script": "scripts/review-storage-g0-datasource-20261106.py",
+    "document": "docs/OUF_STORAGE_G0_DATASOURCE_REVIEW_20261106.md",
+    "status": "LOCAL_TESTS_PASS_VPS_OBSERVATION_PENDING",
+    "localTests": 10,
+    "targetExecuted": false,
+    "originalPreparerGuardChanged": false,
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "progressCreditAdded": 0
   }
 }
