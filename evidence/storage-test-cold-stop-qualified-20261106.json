@@ -1,0 +1,213 @@
+{
+  "schema": "ouf.storage-test-cold-stop-qualified.v1",
+  "date": "2026-11-06",
+  "status": "LAB_QUALIFIED_TARGET_DECISION_AND_EXECUTION_PENDING",
+  "contextEvidence": "evidence/storage-nonproduction-owner-context-20261106.json",
+  "profile": "NONPRODUCTION_TEST_STATE_PRESERVATION",
+  "programCommit": "d57e127ddf244f6bd9218abb7f60c67b418a20b4",
+  "fixtureCorrectionCommit": "63e7c2568cac025466d15b555e7966bb104d334c",
+  "sources": {
+    "scripts/storage-cold-backup.py": {
+      "bytes": 32524,
+      "sha256": "b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac"
+    },
+    "scripts/storage-cold-backup-v4.py": {
+      "bytes": 4095,
+      "sha256": "8786a65a8bcde2706a3dc05a96a60ad04682cab6baa697e286b2dc525b17b3b9"
+    },
+    "scripts/storage-test-cold-stop.py": {
+      "bytes": 15186,
+      "sha256": "b3b28645ed377459fbe577fe4eb5eb8fb351a0e2c0e3f7067d5745f6f83ad2b5"
+    },
+    "tools/storage_planning/cold_stop_proposal.py": {
+      "bytes": 7161,
+      "sha256": "121f998eabb7f09b00d6e2cc22bbeaa49c78cec3b535f02c46e57e6eb9c71e68"
+    },
+    "tests/test_storage_test_cold_stop.py": {
+      "bytes": 6478,
+      "sha256": "ce2fa5063100b7f3861933ba8855dec9f5264c07a9d0c6dfe5b0e51ab2bd4f6c"
+    },
+    "tests/test_storage_cold_mount_identity.py": {
+      "bytes": 4392,
+      "sha256": "39391df82cd7c4f0ac4f04ef637738a671250675b743969bb0972d6753414116"
+    },
+    "tests/test_storage_cold_stop_proposal.py": {
+      "bytes": 4748,
+      "sha256": "6496307171cc0223237041bd50b81d35fd0d62fe97701b39c7eca725571ddd34"
+    },
+    "tests/qualify_storage_test_cold_stop_native.py": {
+      "bytes": 7164,
+      "sha256": "56c06c17bf2597f8feadb714c70ef273ffbd96350c122607701fcac0f10e432b"
+    },
+    "tests/qualify_storage_cold_backup_native.py": {
+      "bytes": 15419,
+      "sha256": "e03260394d5669c3a99d5a62eebf4db0b948d77db3e4f54b44d5f3582f59223e"
+    },
+    "tests/qualify_storage_cold_backup_v4_native.py": {
+      "bytes": 756,
+      "sha256": "ed53dd0bf2aac32a679a4dc4d6d943de2d9957e0b50becaa1b64df181b77211c"
+    },
+    ".github/workflows/storage-test-cold-stop.yml": {
+      "bytes": 2574,
+      "sha256": "e3f49894b86fa910df2eb18ccf667c7094de13cf0079fda879d3be09c260df13"
+    },
+    "scripts/prepare-storage-test-cold-stop.py": {
+      "bytes": 3573,
+      "sha256": "329396be9409d78025cabe7d54f817b5fc6182b389f9272565404db437f46cb2"
+    }
+  },
+  "successfulChecks": {
+    "unitTests": {
+      "executed": 23,
+      "mountIdentity": 5,
+      "stopDriver": 10,
+      "proposal": 8,
+      "runId": 42295413282,
+      "localAlsoPassed": true,
+      "notDoubleCounted": true
+    },
+    "stopNative": {
+      "runId": 42295413282,
+      "jobId": 128159257730,
+      "step": 5,
+      "status": "PASS",
+      "overallRun": "FAIL_RESTORE_FIXTURE_ONLY",
+      "fixture": "14 real Docker PID1 signal handlers and2 stopped sharers, not14 OUF services",
+      "policyChanges": 15,
+      "signals": 14,
+      "privateIntentReceipts": 29,
+      "sourceBytesPreserved": true,
+      "replayDeniedWithoutNewProviderCall": true,
+      "artifactId": 13540754699,
+      "artifactBytes": 1202,
+      "artifactSha256": "23b0422ad11ffb9804b2d28313411b0ce0e2626cc5254e3114118f1f87252fdb",
+      "member": "ouf-deploy/ouf-deploy/test-stop-native-result.json",
+      "evidence": "evidence/storage-test-cold-stop-native-20261106.json",
+      "evidenceSha256": "ea99fb07d374fc718be6e019c9c9f37c3b4606a8b77954d430afb66957b06a00"
+    },
+    "captureRestoreNative": {
+      "runId": 42295759944,
+      "jobId": 128160438990,
+      "status": "SUCCESS",
+      "fixtureDatabasesRestored": 3,
+      "fixtureObjectsRestored": 1,
+      "fixtureObjectBytes": 118784,
+      "fixtureArchiveBytes": 1538608068,
+      "targetSizeEstimate": false,
+      "independentDataRoots": true,
+      "sameDockerDaemon": true,
+      "secondHostRestore": false,
+      "runtimeModesOwnershipXattrsPreserved": true,
+      "writableContainerLayerPreserved": true,
+      "sourceArchiveBodiesVerified": true,
+      "replayDenied": true,
+      "ageFixtureVersion": "1.1.1-1ubuntu0.24.04.3",
+      "targetAgeVersion": "1.3.2 separately verified in prior VPS-to-Windows probe; target capture pending",
+      "postgresShutdown": "pg_ctl-fast",
+      "postgresServerExitCode": 0,
+      "postgresControlShutDown": true,
+      "auxiliaryPgCtlExitCode": 137,
+      "auxiliaryCommandReplayed": false,
+      "artifactId": 13541387850,
+      "artifactBytes": 623,
+      "artifactSha256": "43085f1aa414cc0f0ad218db50605f828feda67d568b3fcf5c55a2d4c3c254cd",
+      "member": "native-result.json",
+      "evidence": "evidence/storage-cold-v4-native-20261106.json",
+      "evidenceSha256": "f673fccf5bddcbd1d3dc5a2c80c969d0dd7d4f332b693bc245f922df69ec4739",
+      "expiresAt": "2027-02-04T21:19:24Z",
+      "stopProofReusedByExactFourSourceDigests": true,
+      "stopOrUnitTestsRerun": false
+    },
+    "installer": {
+      "executionAtTarget": false,
+      "nativeQualification": false,
+      "staticSyntaxAndPayloadHashesVerified": true
+    },
+    "archiveReadback": {
+      "allThreeDownloadedArchivesHashAndSizeVerified": true,
+      "reportMembersSavedInGit": true,
+      "privateBackupsDownloaded": false
+    }
+  },
+  "failureHistory": [
+    {
+      "commit": "41aed3b612a74c286a2b565fced4da5621440b13",
+      "runId": 42293756682,
+      "reason": "SHARED_GENERATION_CHANGED",
+      "mutationIntents": 0,
+      "artifact": "none"
+    },
+    {
+      "commit": "64b21714a825248ea954f8fc78431be62f41adb3",
+      "runId": 42294152798,
+      "reason": "ROLE_GENERATION_CHANGED",
+      "mutationIntents": 0,
+      "artifact": "upload failed because only redacted report was0600; corrected report0644, private receipts unchanged"
+    },
+    {
+      "commit": "170a193f81b55d446aa6bd6e92c79e43d30d2d71",
+      "runId": 42294405281,
+      "reason": "SHARED_GENERATION_CHANGED",
+      "causeProven": "Identical Mounts objects in different order, no changed mount field or StartedAt; two selected and one sharing container observed",
+      "mutationIntents": 0,
+      "artifactId": 13540663481,
+      "artifactBytes": 442,
+      "artifactSha256": "1cd42c17447195267cd86c361663350ad768692f0831eb73ab4c436d83643829",
+      "evidence": "evidence/storage-test-cold-stop-mount-order-failure-20261106.json",
+      "evidenceSha256": "49422af3d88c7c15063c12d6eb0e0b2179a61d6287024f602a58263301d4535c"
+    },
+    {
+      "commit": "d57e127ddf244f6bd9218abb7f60c67b418a20b4",
+      "runId": 42295413282,
+      "reason": "EXACT_READ_ONLY_RUN_BINDING_REQUIRED",
+      "phase": "PLAN",
+      "cause": "Test adapter copied namespace; fixture reassignment did not reach function globals",
+      "fix": "BoundDefinitions uses exact globals dict; local assignment identity check and corrected native restore pass",
+      "operationalCodeChangedByFix": false,
+      "evidence": "evidence/storage-cold-v4-fixture-binding-failure-20261106.json",
+      "evidenceSha256": "957706e079d9914dfb80341381968b80cbcdf4cc45cd6100542832eb6e6ee164"
+    }
+  ],
+  "target": {
+    "legacyPlanSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
+    "validUntilEpoch": 1794081219,
+    "expiryRenewed": false,
+    "legacyPlanModified": false,
+    "attemptsReset": false,
+    "expectedPolicyChanges": 35,
+    "expectedSignals": 14,
+    "expectedSources": 34,
+    "wholeSharedPostgresClusterIncluded": true,
+    "maximumStopSeconds": 1200,
+    "maximumStopCommandCalls": 256,
+    "maximumStopMetadataBytes": 67108864,
+    "maximumCaptureSeconds": 3600,
+    "maximumProducedBytes": 68719476736,
+    "operatorMaintenanceExclusiveRequired": true,
+    "exactStopCaptureApprovalRecorded": false,
+    "operatorDeclarationIsAuthenticatedHumanThs": false,
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "targetRestorePerformed": false,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false
+  },
+  "limits": [
+    "Stop native uses synthetic handlers, not actual OUF application drain or shared PostgreSQL workload",
+    "Real PostgreSQL/MinIO capture fixture is separate from14-handler stop fixture; complete target composition not yet executed",
+    "Native functions are qualified; fixed VPS inputs, installed bootstrap and real14-role target remain unexecuted",
+    "Initial preservation can retain interrupted test work; application consistency/common-cut and ownership reconciliation remain open",
+    "No distributed fencing or external recreator/administrator exclusion is authenticated by these utilities",
+    "No runtime capability installation/grant, HUMAN/THS route, merge, deployment, reopening or source-lock change"
+  ],
+  "miniPet": {
+    "weightedCredits": 18.3,
+    "totalWeight": 46,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "objectsMigrated": 0,
+    "realBodiesVerifiedSeparately": 120
+  },
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

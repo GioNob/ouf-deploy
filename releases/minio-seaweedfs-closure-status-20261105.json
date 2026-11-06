@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "VPS-to-Windows512-byte decrypt succeeded; do not repeat encryption preparations. Cold-stop proposal/compiler prepared (35policy changes/14signals for target),8local tests; no target materialization or executable driver. Complete writer/recreator containment,owner drain and ambiguous-effect dispositions,mount custody,qualified stop driver and applicable exact authority. Obtain actual outage constraint from Giovanni for planning; not stop approval. No archive or restore yet.",
+  "nextPlannedWork": "NONPRODUCTION/TEST_DATA, no required return-to-service deadline accepted. Stop driver + v4 mount-order correction qualified; exact stop/capture package prepared. Obtain exact operation decision and exclusive operator maintenance, then one target stop and encrypted capture. Next: offhost PC custody + isolated restore/reconciliation. Do not repeat successful encryption or stop qualification. No MiniPET credit.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -617,5 +617,16 @@
     "acceptanceCreditAdded": 0
   },
   "backupCipherLink": "docs/OUF_STORAGE_BACKUP_CIPHER_LINK_20261106.md",
-  "stopPackage": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md"
+  "stopPackage": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
+  "nonproductionPreservation": {
+    "contextEvidence": "evidence/storage-nonproduction-owner-context-20261106.json",
+    "qualificationEvidence": "evidence/storage-test-cold-stop-qualified-20261106.json",
+    "package": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "requiredAvailabilityDeadline": null,
+    "availabilityConstraintResolved": true,
+    "exactOperationApprovalRecorded": false,
+    "applicationConsistencyProven": false
+  }
 }

@@ -1,0 +1,1 @@
+{"acceptanceCreditAdded":0,"errorClass":"Held","phase":"PLAN","postgresPid1BeforeSeed":"postgres","reason":"EXACT_READ_ONLY_RUN_BINDING_REQUIRED","schema":"ouf.storage-cold-backup-native.v1","status":"FAIL","targetOperations":0}

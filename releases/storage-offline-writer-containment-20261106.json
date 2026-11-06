@@ -210,5 +210,17 @@
     "targetPrepared": true,
     "targetExecutedMeaning": "CAPTURE_NOT_PERFORMED"
   },
-  "coldStopProposal": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md"
+  "coldStopProposal": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
+  "initialPreservationProfile": {
+    "profile": "NONPRODUCTION_TEST_STATE_PRESERVATION",
+    "ownerContext": "evidence/storage-nonproduction-owner-context-20261106.json",
+    "package": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
+    "scope": "Initial preservation only; existing per-path cutover requirements are retained",
+    "applicationDrainRequiredBeforeInitialPreservation": false,
+    "interruptedApplicationWorkDisposition": "PRESERVE_FOR_RECONCILIATION_BEFORE_REOPENING",
+    "noReturnToServiceDeadline": true,
+    "operatorExclusiveMaintenanceRequired": true,
+    "externalContainmentAuthenticated": false,
+    "targetOperationPerformed": false
+  }
 }

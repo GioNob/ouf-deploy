@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — manutenzione non produttiva e pacchetto fermo/cattura
+
+Giovanni conferma ambiente non produttivo, dati test e nessun vincolo di orario per il rientro. Si conserva il backup/restore come esercitazione; non richiedere nuovamente una finestra di disponibilità. [Roadmap corrente riscritta](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md) e [pacchetto esatto](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md). Questo supersede le istruzioni operative storiche sotto,non i criteri originali dei gate.
+
+Qualificati driver fermo e produttorev4 con ordine mount Docker normalizzato senza perdere campi/generazioni né rinnovare piano/budget.23unitPASS; stopDocker14handler+2condividentiPASS (run42295413282,step5); capture/restorev4 PostgreSQL3DB+MinIO1oggettoPASS (run42295759944). Prove/fallimenti/limiti in [ricevuta](../evidence/storage-test-cold-stop-qualified-20261106.json). La successiva qualifica riusa il fermo già riuscito su4digest identici,non lo ripete. Non è esecuzione dei14serviziOUF,restoreVPS o secondo host.
+
+Prima conservazione di stato test può mantenere lavoro applicativo interrotto da riconciliare; non dichiara drain/common-cut né modifica gli obiettivi G3/G5. Mancano decisione precisa e manutenzione esclusiva dell'operatore,poi fermo35policy/14servizi e cattura reale. Nessun nuovo comandoVPS eseguito dall'agente. ArchivioPC e restore restano dopo la cattura. La cifraturaVPS→Windows è già acquisita.
+
+**Avanzamento invariato18,3/46=39,78%;0/8gate,0/21AT,0/120migrati;120corpi verificati separatamente.** Credito0. Nessun merge/deploy/grant/riapertura o modifica al pianoJSON/source-lock congelato. Non contare diagnosi/download/test come nuovi passi.
+
 ## Checkpoint 2026-11-06 — ouf-etcd identificato, letture locali concluse
 
 Ricevuta evidence/storage-g0-unmapped-runtime-operator-20261106.json:esito operatore2filelocali,zero provider/processi/credenziali/write. Extra imagea3ccd299,nomeSHA0b5ce582 econtainerIDSHA c8d094b9 coincidono esattamente con ouf-etcd della ricevuta indipendente evidence/provider-r8-independent-runtime-readback-20261009.json (run37979230240/job113985199756). Hash ricomputati localmente;immaginequay.io/coreos/etcd:v3.5.21,volume storico /etcd-data scrivibile. Identità risolta,non prova di dipendenza routing corrente o assenza writerS3. Nessun nuovo scope,roster G0 storico13ruoli invariato. Review custodia/stato control plane aggiunta,nessuno stop/restore implicito.
