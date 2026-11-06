@@ -10,7 +10,9 @@
     "provider": "MinIO",
     "nativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
     "currentRuntimeProven": false,
-    "privateBindingInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e"
+    "privateBindingInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+    "configurationDigest": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "configurationMatchesQualifiedRehearsal": true
   },
   "destination": {
     "path": "/var/lib/ouf-storage-migration/seaweedfs",
@@ -31,7 +33,17 @@
     "qualifiedOnboardingRevision": "d5155899b09dda298494b68cefa7e1f281167652",
     "exactInstalledSourceMembershipProven": false,
     "sourceContractDifferenceObserved": true,
-    "finalCohortDecision": null
+    "finalCohortDecision": "DEVELOPMENT_CANDIDATE_RECONFIRMED_D515_OCI33_UDP0D40_INGESTION4165_NOT_RUNTIME_ADMISSION",
+    "retainedSourceEvidence": "evidence/storage-cohort-retained-reconciliation-20261106.json",
+    "retainedOnboardingTestedRevision": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "retainedOnboardingReviewedRevision": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "nativeInstallEvidenceDoesNotProveCurrentJar": true,
+    "requiredNewMigrationVersions": [
+      39,
+      40,
+      41
+    ],
+    "keepExternalFenceDuringStartup": true
   },
   "objectives": {
     "proposedCutoverConfirmedWriteLoss": 0,
@@ -58,7 +70,10 @@
     ],
     "runningNonRosterAtCapture": 1,
     "censusComplete": false,
-    "quiescenceProven": false
+    "quiescenceProven": false,
+    "containmentMatrix": "releases/storage-offline-writer-containment-20261106.json",
+    "sourceMappedPaths": 9,
+    "operatorUnmappedPaths": 2
   },
   "rollback": {
     "beforeFirstTargetWrite": "PRESERVE_FENCE_VERIFY_SOURCE_DB_GENERATION_RESTORE_QUALIFIED_BINDINGS",
@@ -67,7 +82,7 @@
     "reopenAllowed": false
   },
   "requiredUnresolved": [
-    "INSTALLED_COHORT_AND_FINAL_COHORT",
+    "CURRENT_EXECUTABLE_MEMBERSHIP_AND_FULL_SERVICE_FINAL_COHORT_QUALIFICATION",
     "REQUIRED_FEATURES_AND_EFFECTIVE_AUTHORIZATION",
     "WRITER_CENSUS_AND_DURABLE_FENCE",
     "CAPACITY_GROWTH_AND_CUSTODY",

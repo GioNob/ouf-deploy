@@ -1,0 +1,182 @@
+{
+  "schema": "ouf.storage-offline-writer-containment.v1",
+  "date": "2026-11-06",
+  "status": "PROPOSED_OWNER_STOP_AND_EXTERNAL_FENCE_NOT_EXECUTED",
+  "sourceEvidence": "evidence/storage-writer-source-index-20261105.json",
+  "cohortEvidence": "evidence/storage-cohort-retained-reconciliation-20261106.json",
+  "paths": [
+    {
+      "pathId": "onboarding-human-upload",
+      "ownerRole": "onboarding",
+      "observedOwnerNativeImageAtCapture": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "effects": "PUT S3, asset/upload DB",
+      "sourceAnchor": "ManagedFileStagingApi; ManagedFileUploadCoordinator",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "onboarding-delegated-upload",
+      "ownerRole": "onboarding",
+      "observedOwnerNativeImageAtCapture": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "effects": "PUT S3, intent/ACK DB",
+      "sourceAnchor": "ManagedFileDelegatedUploadApi; ManagedFileService",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "onboarding-profile-worker",
+      "ownerRole": "onboarding",
+      "observedOwnerNativeImageAtCapture": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "effects": "GET S3, claim/profile/sample DB",
+      "sourceAnchor": "ManagedFileProfileWorker; ManagedProfileJobs",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "ingestion-execution-replay",
+      "ownerRole": "ingestion",
+      "observedOwnerNativeImageAtCapture": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "effects": "HTTP UDP, run/lineage DB",
+      "sourceAnchor": "ExecutionLoop; CanonicalRecordPipeline",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "ingestion-outbox-ack-watermark",
+      "ownerRole": "ingestion",
+      "observedOwnerNativeImageAtCapture": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+      "effects": "HTTP ACK, outbox/watermark DB",
+      "sourceAnchor": "OutboxDispatcher; DurablePipelineRepository",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "udp-store",
+      "ownerRole": "udp",
+      "observedOwnerNativeImageAtCapture": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "effects": "PUT/HEAD S3, catalog DB",
+      "sourceAnchor": "RuntimeLakeApi; LakeLifecycleService",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "udp-shadow",
+      "ownerRole": "udp",
+      "observedOwnerNativeImageAtCapture": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "effects": "GET/PUT/HEAD S3, shadow locator DB",
+      "sourceAnchor": "LakeShadowRebuildWorker; LakeShadowRebuildService",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "udp-purge-compaction",
+      "ownerRole": "udp",
+      "observedOwnerNativeImageAtCapture": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "effects": "DELETE/PUT S3, catalog/manifest DB",
+      "sourceAnchor": "LakeLifecycleService; caller not established",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "udp-maintenance",
+      "ownerRole": "udp",
+      "observedOwnerNativeImageAtCapture": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "effects": "LIST/HEAD S3, finding/quarantine DB",
+      "sourceAnchor": "LakeMaintenanceWorker",
+      "sourceMapped": true,
+      "activeAtTargetProven": false,
+      "proposedContainment": "DENY_NEW_ADMISSION_DRAIN_STOP_WHOLE_OWNER_DISABLE_RESTART_AND_RECREATE_THEN_VERIFY_DB_S3_EFFECT_CESSATION",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "administrative-tools",
+      "ownerRole": null,
+      "observedOwnerNativeImageAtCapture": null,
+      "effects": "S3/DB/config privileged writes",
+      "sourceAnchor": "Privileged scripts, timers and manual tools",
+      "sourceMapped": false,
+      "activeAtTargetProven": false,
+      "proposedContainment": "CENSUS_IDENTITIES_SCHEDULES_AND_ACCESS_THEN_FENCE_EACH_WRITER",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    },
+    {
+      "pathId": "external-consumers",
+      "ownerRole": null,
+      "observedOwnerNativeImageAtCapture": null,
+      "effects": "Network S3/DB/API writes",
+      "sourceAnchor": "Not established by retained host capture",
+      "sourceMapped": false,
+      "activeAtTargetProven": false,
+      "proposedContainment": "CENSUS_IDENTITIES_SCHEDULES_AND_ACCESS_THEN_FENCE_EACH_WRITER",
+      "targetMechanismQualified": false,
+      "operatorEvidenceRef": null
+    }
+  ],
+  "crossOwnerBarriers": {
+    "newIntake": "Ingress APIs, MCP/Gateway and direct administrative/external paths; stopping only Gateway is insufficient",
+    "restart": "Persist maintenance state outside owner; disable restart and other recreators under bounded authority; verify generations again",
+    "database": "Do not infer no writes from process stop alone; account for open/prepared transactions, external connections and shared roles",
+    "storage": "Provider/network/credential barrier must cover direct and late S3 writes; read-only backup/copy identity separate; exact mechanism not yet selected",
+    "commonCut": "After effects reconciled and all write paths fenced, bind complete DB/object/config/key backups to one generation",
+    "newApplicationStartup": "Keep external fence during V39-V41 migrations and read tests; V39 ACTIVE is not reopening authority",
+    "rollback": "After any target mutation including tests, preserve and reconcile both DB and stores; endpoint reversal alone forbidden"
+  },
+  "unresolved": {
+    "runningNonRoster": 1,
+    "privateBindingsAlreadyInG0": true,
+    "adminAndExternalWriterCensusComplete": false,
+    "backupIndependentDestination": null,
+    "backupCustodian": null,
+    "window": null,
+    "rpoRtoAccepted": false,
+    "exactCommands": null,
+    "budget": null
+  },
+  "operatorNextRead": {
+    "script": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
+    "sha256": "40bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f",
+    "bytes": 6221,
+    "reads": 2,
+    "providerRequests": 0,
+    "credentialsRead": 0,
+    "filesModified": 0,
+    "currentProcessReads": 0,
+    "status": "PREPARED_NOT_EXECUTED",
+    "purpose": "Identify the remaining active image and retained application JAR mount coverage, without another collection"
+  },
+  "approval": {
+    "stopAuthorized": false,
+    "grantAuthorized": false,
+    "deployAuthorized": false,
+    "reopenAuthorized": false,
+    "runtimeAuthorityIssued": false
+  },
+  "acceptanceCreditAdded": 0,
+  "writerQuiescenceProven": false
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "ouf.storage-cohort-retained-reconciliation.v1",
+  "date": "2026-11-06",
+  "basisCommit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+  "status": "RETAINED_IMAGE_SOURCE_CHAIN_RECONCILED_CURRENT_EXECUTABLE_MEMBERSHIP_OPEN",
+  "inputSources": [
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "releases/managed-file-owner-v38-image-custody-20261028.json",
+      "gitBlobSha": "f414a16a3c76eb61c17c0d0cb711f9dd5e7c908e"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "releases/m2-current-core-artifact-origins-20261101.json",
+      "gitBlobSha": "81194957dd748397f3f3c463575227d05071574b"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "releases/m2-retained-runtime-origin-reconciliation-20261101.json",
+      "gitBlobSha": "3d7168220c76b68671ea37cedda6fab0cba28ec9"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/managed-file-owner-v38-update-target-20261028.json",
+      "gitBlobSha": "7d4a6bec9968602f12ad2f7d11b8ae189de44bb9"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/m2-selected-runtime-target-20261101.json",
+      "gitBlobSha": "44e006b9ae631c84c4454e74fa9e873ea13f4d0b"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/m2-runtime-origin-join-target-20261101.json",
+      "gitBlobSha": "294b455f6a9dcb90992a23ea342914a09e5ba970"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/storage-writer-source-index-20261105.json",
+      "gitBlobSha": "b61a716db4379697e8915afc4878b08c66fd36a1"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/storage-clients33-qualified-20261105.json",
+      "gitBlobSha": "100f1587ab92803794ff92f78471ed4a24437bf6"
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "fb2a85df397c4ebb043dd4d7ba26e13a8f0659e7",
+      "path": "evidence/storage-minio33-rehearsal-qualified-20261105.json",
+      "gitBlobSha": "8416e4ebf38151e6e2f8f0c5ae85e7c94921f87e"
+    }
+  ],
+  "targetReceipt": "evidence/storage-g0-final-local-review-operator-20261106.json",
+  "roleNativeIdsMatchRetainedOrigins": {
+    "apisix": true,
+    "caddy": true,
+    "gateway-owner": true,
+    "ingestion": true,
+    "ingestion-evidence-read": true,
+    "keycloak": true,
+    "mcp": true,
+    "minio": true,
+    "onboarding": true,
+    "postgres": true,
+    "semantic": true,
+    "udp": true,
+    "udp-evidence-read": true
+  },
+  "onboarding": {
+    "declaredRevisionNotUsedAsSourceProof": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+    "nativeImageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "configurationImageId": "sha256:5140811b44623c7035843c955509a387336bc11ffb24b72ffe26a73434fb5ebd",
+    "testedSourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "reviewedSourceCommit": "9d19fad3dd750dd5b9e77253d3e7e82029c1aca7",
+    "testedGitTree": "091a10a53da04ed46759f345e877a69e8db87021",
+    "reviewedGitTree": "091a10a53da04ed46759f345e877a69e8db87021",
+    "gitTreesEqual": true,
+    "applicationJarSha256": "152159de758ead299d53eaf9cf113c01445b7e1d6fa86590ba0a1248bf4ef681",
+    "originalArtifactId": 12836316286,
+    "historicalInstallReported": true,
+    "liveApplicationJarRead": false,
+    "currentMountOrWritableLayerOverrideExcluded": false,
+    "plannedQualificationSource": "d5155899b09dda298494b68cefa7e1f281167652",
+    "plannedChoice": "REUSE_EXISTING_CANDIDATE_FULL_MODULE_NOT_SINGLE_ADAPTER",
+    "candidateAlreadyListed": "releases/storage-g0-evidence-request-20261105.json",
+    "deltaFromTestedSource": {
+      "changedFiles": 58,
+      "productionJavaFiles": 20,
+      "newMigrations": [
+        "V39",
+        "V40",
+        "V41"
+      ],
+      "pomChanged": false,
+      "migrationExecutionAuthorized": false
+    }
+  },
+  "minio": {
+    "rootNativeImageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "selectedRuntimeManifest": "sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2",
+    "configurationDigest": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "rehearsalSourceImage": "sha256:69b2ec208575b69597784255eec6fa6a2985ee9e1a47f4411a51f7f5fdd193a9",
+    "configurationDigestMatchesRehearsal": true,
+    "differentSourceBinaryInferred": false,
+    "originalPublisherAuthenticated": false,
+    "currentSecurityAdmission": false
+  },
+  "notProven": [
+    "CURRENT_EXECUTABLE_BYTES_AND_CONFIGURATION",
+    "ALL_RUNTIME_ARTIFACT_MEMBERSHIP",
+    "FULL_SERVICE_CLIENT_DEPENDENCY_QUALIFICATION",
+    "WRITER_CENSUS_AND_QUIESCENCE",
+    "CURRENT_INDEPENDENT_BACKUP_AND_RESTORE",
+    "TARGET_ACCEPTANCE"
+  ],
+  "targetOperations": 0,
+  "providerRequests": 0,
+  "replayedScopes": 0,
+  "acceptanceCreditAdded": 0,
+  "g0Complete": false,
+  "runtimeAuthorityIssued": false
+}

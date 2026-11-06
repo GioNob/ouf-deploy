@@ -9,11 +9,13 @@
 
 Download, helper, ricevute e aggiornamenti documentali non diventano altre coppie. Non ripetere le acquisizioni/qualifiche riuscite senza nuova modifica o motivo documentato.
 
-## Blocco concreto emerso e scelta della procedura
+## Coorte ricostruita e procedura delimitata
 
-Onboarding osservato dichiara194b5865, mentre la qualifica client33 usa d5155899. I sorgenti differiscono in interfaccia di upload e policy timeout/retry; label e image ID non provano le classi effettivamente installate. Questa differenza va risolta prima della qualifica finale, senza estendere automaticamente il filone HUMAN/recovery.
+[Decisione coorte](OUF_STORAGE_COHORT_DECISION_20261106.md): le prove conservate collegano Onboarding7b9d3e91 ai sorgenti73498/9d19 (stesso tree),non alla label194b presa isolatamente. Confermata per lo sviluppo la candidata d515/OCI33/UDP0d40/Ingestion4165;delta58file/20Java/V39–V41. Membership live e interi servizi restano da qualificare.
 
-Il [runbook offline](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) propone copia completa a scritture ferme e MinIO preservato. Specifica baseline DB/oggetti, backup indipendente, parità, switch, riapertura e ritorno prima/dopo nuove scritture. È DRAFT non eseguibile: binding finali, comandi, budget e decisioni ancora mancanti sono null nel [piano strutturato](../releases/storage-offline-cutover-plan-20261106.json). Non è una consegna ammessa.
+Corretto il confronto MinIO:14cea493 root/native e69b2ec20 configuration sono collegati nella medesima prova conservata;69b2ec20 è già la sorgente della rehearsal. Non serve un nuovo test per una presunta immagine diversa.
+
+Il [runbook](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) include la [matrice writer](../releases/storage-offline-writer-containment-20261106.json):9percorsi applicativi/3owner,2admin-esterni ancora da censire. Specifica drain,stop intero owner,inibizione restart/barriera DB-S3 e mantenimento fence durante V39 ACTIVE. Rimane DRAFT non eseguibile.
 
 ## Gate e prove residue
 
@@ -21,7 +23,7 @@ Il [runbook offline](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) propone co
 |---|---|---|
 | G0 baseline |120corpi verificati,18rilievi tipizzati con disposizioni, feature/runtime/capacità osservati |Accettare disposizioni, coorte e inventario completo; accessi/custodia,11percorsi writer e1container attivo fuori roster, funzioni/finestra/RPO/RTO |
 | G1 candidato |OCI33 e qualifiche al checkpoint |Coorte finale server/client/tool, licenze, custodia durevole e sicurezza valida all'ammissione |
-| G2 contratti |12casi client33 e mapping AT aperto |Binding rappresentativi della coorte scelta e tutti gli AT applicabili; niente trasferimento implicito194b→d515 |
+| G2 contratti |12casi client33 e mapping AT aperto |Binding rappresentativi della coorte scelta e tutti gli AT applicabili; niente trasferimento implicito della qualifica adapter al modulo completo |
 | G3 recovery |Foundation/restore sintetici e backup storici parziali |Backup corrente DB+oggetti+config/chiavi, custodia indipendente, restore rappresentativo e obiettivi/capacità misurati |
 | G4 procedura |Rehearsal copia/ritorno oggetti e runbook proposto |Writer realmente fermabili, common-cut e parità DB/oggetti, rollback applicativo dopo nuove scritture, comandi esatti qualificati |
 | G5 ammissione |Non pronta |Pacchetto unico G0–G4, budget, binding, finestra e decisioni effettivamente applicabili |
@@ -30,10 +32,12 @@ Il [runbook offline](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) propone co
 
 Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/baseline/v1.7. Questa roadmap non le modifica.
 
-## Prossima coppia: due uscite verificabili
+## Coppia corrente: uscita acquisita e azione residua
 
-1. **Chiudere la scelta della coorte da qualificare.** Cercare nelle prove di consegna già conservate il legame sorgente/build/immagine/classi/binding della coorte installata. Produrre il delta esatto di compatibilità e la scelta motivata tra mantenimento e aggiornamento governato. Se manca una prova target, preparare una sola verifica delimitata del dato mancante, non un'altra raccolta G0 completa.
-2. **Rendere concreto il pacchetto di fermo e ritorno.** Riunire censimento writer/accessi, backup indipendente/restore e finestra nel runbook con comandi e budget sui binding scelti. Distinguere il lavoro autonomo dalle poche attestazioni/azioni che Giovanni deve davvero fornire. Non chiedere approvazione al cutover finché il pacchetto non è reviewabile.
+1. **Origine, scelta e delta completati:** catena immagine/sorgente ricostruita dalle prove conservate;stesso tree73498/9d19 verificato;scelta di sviluppo d515 confermata,delta e limiti espliciti. Non è qualifica live o ammissione.
+2. **Pacchetto operativo in corso:**9percorsi associati ai3owner e barriere proposte. Unica lettura locale preparata identifica il container attivo fuori roster e la copertura mount del JAR da2file già conservati. Esito operatore necessario;nessun nuovo accesso provider. Restano accessi effettivi,admin/esterni,backup indipendente/restore,finestra e comandi/budget esatti.
+
+La lettura si esegue con scripts/read-storage-g0-unmapped-runtime-20261106.py al commit consegnato e SHA25640bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f. Non ripetere altri comandi. Il prossimo lavoro dopo l'esito risolve l'identità restante e completa gli input operativi;non riparte dal confronto della label o da test di componente già riusciti.
 
 Nessuna nuova stima numerica: quella di12–18passi è ritirata perché non aveva delimitato le condizioni del VPS e i “passi” successivi erano stati frammentati senza aggiornare il residuo. La review ora riduce l'incertezza sui dati; restano coorte e procedura operativa. La prossima stima deve misurare questo residuo, non contare documenti o test.
 

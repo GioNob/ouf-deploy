@@ -1,3 +1,7 @@
+## Aggiornamento coorte — origine conservata ricostruita
+
+La label194b non identifica il sorgente dell'immagine Onboarding: consegna e custodia legano7b9d3e91 a73498/9d19,stesso tree Git. [Decisione e limiti](OUF_STORAGE_COHORT_DECISION_20261106.md). La riserva sulla membership live resta,ma non occorre ricominciare la ricostruzione dell'origine. I18rilievi e le disposizioni sottostanti restano immutati;nessuna proprietà o accettazione aggiunta.
+
 # G0 — disposizione dei rilievi raccolti, 6 novembre 2026
 
 **Review delle evidenze disponibili completata con rilievi ancora aperti. G0 non chiuso.** Il risultato originale HELD_RECONCILIATION_FINDINGS con18rilievi resta immutato. Questo dossier descrive cosa significano i rilievi e quale prova manca; non li cancella o converte in PASS.

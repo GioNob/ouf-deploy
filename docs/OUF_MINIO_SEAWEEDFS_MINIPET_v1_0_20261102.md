@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — catena coorte ricostruita e contenimento offline delimitato
+
+Evidenza evidence/storage-cohort-retained-reconciliation-20261106.json: tutti13native ID G0 coincidono con origini conservate. Onboarding7b9d3e91→artifact12836316286→tested73498c17/reviewed9d19fad3,stesso Git tree091a10a5 verificato indipendentemente. Label container194b non è fonte del codice. JAR storico152159de,non letto live;mount/writable-layer overrides non esclusi. MinIO14cea493 root/native e69b2ec20 configuration appartengono alla stessa catena conservata;rehearsal usa69b2ec20. Ritirata falsa differenza di immagine nel runbook;publisher/security/target acceptance restano aperti.
+
+docs/OUF_STORAGE_COHORT_DECISION_20261106.md conferma candidata già proposta d515/OCI33/UDP0d40/Ingestion4165 per sviluppo,non installazione. Delta73498→d515:58file,20Java produzione,V39/V40/V41,pom invariato. Integro modulo,non adapter isolato;dipendenze fixture client33 non trasferite ai servizi. V39 inizializza ACTIVE: mantenere fence esterno durante startup/migrazioni,nessuna ammissione implicita. HTTP/HUMAN non prerequisito automatico.
+
+releases/storage-offline-writer-containment-20261106.json mappa9percorsi a3owner e lascia2admin/esterni da censire;stop interi owner proposto con drain,inibizione restart/ricreazione e barriera DB/S3,non applicato né qualificato. Primo passo origine/scelta/delta concluso al livello documentale;secondo pacchetto operativo ancora in corso,non dichiarato pronto.
+
+Unico nuovo comando locale scripts/read-storage-g0-unmapped-runtime-20261106.py legge2file già conservati e pinned:host-before63cfa229 ebaseinputdc0ab6d4. Identifica image ID dell'unico attivo fuori roster e mount che coprono JAR;nessun nome/path/env privato,nessun JAR/process/provider/credenziale/write.6221byte,SHA25640bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f. Sintassi/redazione/mount PASS,3alterazioni respinte;VPS PENDENTE. Non ripetere helper precedenti,raccolte01/02 o prove native riuscite. Non costruire un nuovo collettore generale per questo dato mancante.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati. Nessun merge/deploy/grant/traffico/cambio source-lock/piano congelato. Basefb2a85df/source d5155899 ePR54draft/open riconfermati;CI base39SUCCESS/12in corso su51 all'inizio,nessun dispatch/rerun manuale. Le attività di prova qui non aggiungono credito o nuove coppie.
+
 ## Checkpoint 2026-11-06 — review locale conclusa, procedura offline e coorte da risolvere
 
 Ricevuta evidence/storage-g0-final-local-review-operator-20261106.json:2payload fisicamente collegati ad asset/bucket/hash/size/run;tenant NULL,owner non provato. I18rilievi originali restano:4sample DB,2label,2payload tipizzati e10owner aperti. Nessun backfill o riparazione HUMAN inferiti. Versioning Status/MFADelete NOT_SET,0destinazioni notification;grant CanonicalUser FULL_CONTROL senza ID,autorizzazione effettiva non provata.10file letti,zero provider/credenziali/write.13ruoli running,1running fuori roster senza segnali storage rilevati: non prova assenza writer via rete.

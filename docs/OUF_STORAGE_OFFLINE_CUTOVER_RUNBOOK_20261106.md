@@ -23,18 +23,28 @@ Fonte corrente: [ricevuta operatore](../evidence/storage-g0-final-local-review-o
 | Accessi |2bucket senza policy; grant CanonicalUser FULL_CONTROL senza ID; publicAccessBlock unsupported | Protezione effettiva ed equivalenza autorizzativa sul target; non dedurre anonimato né sicurezza |
 | Feature osservate |Versioning Status/MFADelete NOT_SET;0destinazioni notifiche; EventBridge assente | Contratto delle funzioni richieste dai consumer, incluse quelle non ricavabili dai dati già presenti |
 
-### Coorte applicativa: differenza da risolvere prima della qualifica finale
+### Coorte applicativa: scelta di sviluppo e origine conservata
 
-Onboarding dichiara194b586508c6661b40a74d9c7f99ed3b876f5fbc, image ID sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51. La qualifica client33 usa d5155899. Confronto dei sorgenti Git esatti:
+[Decisione e confronto esatto](OUF_STORAGE_COHORT_DECISION_20261106.md). La catena conservata associa l'immagine7b9d3e91 ai sorgenti testati73498c17/revisionati9d19fad3, stesso tree091a10a5. La label container194b5865 non è la fonte di identificazione. Non è una lettura del JAR attualmente in esecuzione.
 
-| Contratto |194b5865 dichiarato |d5155899 qualificato |
-|---|---|---|
-| ManagedFileStagingStore |put(InputStream,long,String) restituisce riferimento |putReserved(String,InputStream,long,String) usa riferimento riservato |
-| MinioManagedFileStagingStore |UUID generato nell'upload; builder endpoint/credenziali |Riferimento già riservato; region us-east-1, retryOnConnectionFailure(false), callTimeout60s |
+Confermata per lo sviluppo la candidata già proposta d5155899 (intero modulo), OCI33, UDP0d40 e Ingestion4165. Delta Onboarding:58file/20Java produzione eV39–V41;qualifiche native riusate,integrazione del servizio e dipendenze client ancora aperte. Non introdurre HTTP/HUMAN senza operazione concreta che lo richieda.
 
-Sorgenti: [interfaccia194b](https://github.com/GioNob/ouf-source-onboarding/blob/194b586508c6661b40a74d9c7f99ed3b876f5fbc/src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileStagingStore.java), [adapter194b](https://github.com/GioNob/ouf-source-onboarding/blob/194b586508c6661b40a74d9c7f99ed3b876f5fbc/src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java), [adapterd515](https://github.com/GioNob/ouf-source-onboarding/blob/d5155899b09dda298494b68cefa7e1f281167652/src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java).
+**Fermo esterno durante startup:** V39 crea controllo locale ACTIVE; questo non deve poter riaprire traffico. Mantenere isolamento e inibizione dei writer durante migrazioni,verifiche e fino alla decisione distinta. Nessun downgrade DB distruttivo per tornare al vecchio servizio.
 
-Prima usare prove di consegna conservate per legare immagine, eventuali mount e classi effettive al sorgente; una label non basta. Poi scegliere esplicitamente tra qualifica della coorte installata e aggiornamento applicativo governato. Non sostituire un adapter isolato con interfaccia incompatibile. Non attribuire al servizio osservato i predicati tenant o le garanzie recovery del ramo più recente. Non introdurre HTTP/HUMAN come prerequisito generico: serve solo se la procedura concreta richiede quella capability.
+### Pacchetto di contenimento dei writer
+
+[Matrice strutturata](../releases/storage-offline-writer-containment-20261106.json):9percorsi applicativi associati a3owner;2percorsi amministrativi/esterni senza censimento completo. Le image ID sono quelle osservate e vincolate nella raccolta G0,non dichiarazioni di attività dei singoli job.
+
+| Owner da contenere | Percorsi | Effetto del fermo proposto |
+|---|---:|---|
+| Onboarding |3|Interrompere nuove ammissioni e drenare upload/profile; poi fermare intero owner e impedirne ricreazione/restart |
+| Ingestion |2|Fermare nuovi claim e drenare esecuzione/replay e ACK/outbox prima dello stop |
+| UDP |4|Drenare store/shadow/purge/maintenance; includere writer DB anche quando non scrivono S3 |
+| Amministratori e consumer esterni |2|Identificare credenziali,connessioni,scheduler e procedure manuali; applicare barriera anche ai client fuori Docker |
+
+Il fermo dei3owner da solo non prova quiescenza. Servono barriera persistente al restart/ricreazione,blocco degli accessi mutativi diretti a S3/DB,risoluzione delle transazioni/effetti in volo e identità separata per backup/copia. Meccanismo esatto e comandi restano non qualificati;nessun stop o cambio privilegi autorizzato da questa matrice.
+
+Lettura locale preparata: scripts/read-storage-g0-unmapped-runtime-20261106.py. Solo host-before e input base con SHA256 esatti: emette image ID del solo attivo fuori roster,indizi del nome limitati a registry/runner/backup (non ruoli autenticati),hash del nome/ID e conteggio mount che coprono il JAR Onboarding. Non stampa nomi/path/env privati,non legge il JAR,non contatta Docker o altri provider. Il risultato serve a restringere il censimento;non prova assenza di writer esterni o membership eseguibile. Esecuzione VPS ancora pendente.
 
 ## Sequenza e condizioni di arresto
 
@@ -67,12 +77,12 @@ PET UDP §81 indica backup PostgreSQL completo+WAL/PITR e restore periodico; pro
 
 Riutilizzare senza riesecuzione immotivata:
 - [client33](../evidence/storage-clients33-qualified-20261105.json):12casi su fixture, Onboarding d515 e UDP0d40; dipendenze fixture distinte, non interi servizi installati. [AT mapping](../releases/storage-clients33-acceptance-mapping-20261105.json) resta OPEN.
-- [rehearsal](../evidence/storage-minio33-rehearsal-qualified-20261105.json):120corpi sintetici, crash/ambiguo e ritorno con4mutazioni; nessuna prova di rollback applicativo DB. MinIO di fixture differisce dall'immagine osservata.
+- [rehearsal](../evidence/storage-minio33-rehearsal-qualified-20261105.json):120corpi sintetici, crash/ambiguo e ritorno con4mutazioni; nessuna prova di rollback applicativo DB. Il configuration ID MinIO69b2ec20 della fixture coincide con quello collegato al root/native ID14cea493 del target nelle prove conservate; non è una diversa immagine dedotta dalle stringhe. La rehearsal resta sintetica.
 - Artefatti CI client/rehearsal scadono il3febbraio2027: non sono custodia durevole.
 
 ## Prossima coppia utile
 
-1. **Coorte e copertura:** ricostruire dalle prove di consegna la coorte realmente installata, scegliere la coorte finale e produrre il delta esatto di qualifica G1/G2. Uscita: mapping fonte→build→immagine/classi→binding, con lacune esplicite; non un nuovo conteggio di test generici.
+1. **Origine e scelta di sviluppo completate:** catena conservata dell'immagine ricostruita, candidata d515/OCI33 confermata e delta definito. Membership live e qualifica del modulo completo restano aperte;vedere decisione coorte.
 2. **Fermo e ritorno:** completare il pacchetto operativo con censimento degli11percorsi e del container attivo fuori roster, evidenza di accessi, backup indipendente/restore, finestra e comandi legati ai binding. Uscita: proposta realmente eseguibile e reviewabile, o elenco minimo degli input che richiedono l'azione di Giovanni. Non richiedere ora un'approvazione al cutover incompleto.
 
 MiniPET18,3/46=39,78%;0/8gate,0/21AT,0/120migrati. Questo runbook e la registrazione degli esiti non sono nuovi passi di migrazione e non aggiungono credito.

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Resolve installed versus qualified application cohort from retained delivery evidence and select exact qualification delta; then complete bound offline writer/access/independent-backup/window/rollback package. Available capture review is complete with open dispositions. No repeated local helper or collection, no implicit source update, ownership repair or HTTP/HUMAN prerequisite. Do not count accompanying documents as migration steps.",
+  "nextPlannedWork": "Obtain the single pinned local non-roster image/JAR-mount coverage readback; use retained provenance to resolve that identity. Complete effective access/admin-external writer census, independent backup/restore and window, then exact bounded commands. Historical Onboarding image-source lineage and MinIO config/native ID relationship are resolved; do not repeat that investigation or native suites. Full-service candidate dependency/integration qualification and current executable membership remain open.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -547,6 +547,24 @@
     "path": "releases/storage-offline-cutover-plan-20261106.json",
     "runbook": "docs/OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md",
     "status": "DRAFT_NOT_EXECUTABLE_NOT_ADMITTED",
+    "acceptanceCreditAdded": 0,
+    "writerContainmentMatrix": "releases/storage-offline-writer-containment-20261106.json",
+    "sourceMappedWriterPaths": 9,
+    "unmappedRuntimeReadback": {
+      "script": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
+      "executed": false,
+      "providerRequests": 0
+    }
+  },
+  "cohortRetainedReconciliation": {
+    "receipt": "evidence/storage-cohort-retained-reconciliation-20261106.json",
+    "document": "docs/OUF_STORAGE_COHORT_DECISION_20261106.md",
+    "nativeRoleIdsMatched": 13,
+    "onboardingReviewedAndTestedGitTreesEqual": true,
+    "minioRehearsalConfigurationMatches": true,
+    "installedExecutableMembershipProven": false,
+    "plannedCandidateReconfirmed": true,
+    "runtimeAdmissionIssued": false,
     "acceptanceCreditAdded": 0
   }
 }
