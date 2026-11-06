@@ -1,3 +1,9 @@
+## Decisione operatore 2026-11-06 — contenimento host autorizzato, esecuzione VPS pendente
+
+Giovanni risponde “autorizzo” al pacchetto esatto b05ab554: decisione GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01, evidence/storage-host-containment-operator-decision-20261106.json. Autorizzati6override persistenti,disabilitazione/stop5timer,completamento naturale5oneshot,disabilitazione/TERM registry,600s e1tentativo. Non chiedere nuovamente questo consenso. Non è grant runtime o conferma HUMAN/THS autenticata. Nessuna esecuzione VPS già attestata.
+
+Consegnare il comando pinned in docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md. Installer08ff35a29200aa9797e17871c7d96e376baae36e,3462byte/SHAd2f776ae4fe51993cc694efee9bafc7554f43386a80451423a1701a3fbc28a8a verificato contro repository. Il driver mantiene bozza e scadenza originali; nessun vecchio Dockerstop/capture rieseguito. Aspettare JSONredatto VPS,nonfileprivati. Successo host richiede successiva composizione stop/capture collegata; nessun archivio o gate ancora chiuso. MiniPET invariato. PR54draft/open; HEAD b05ab554 confermato prima di CAS,CI39SUCCESS/12incorso,nessunfail osservato. Le precedenti richieste di decisione host sono soddisfatte.
+
 ## Checkpoint conclusivo 2026-11-06 — contenimento host qualificato, decisione esatta pendente
 
 Preparazione VPS riuscita: bozza c4d59b3894f59d6679f11d48dbec2a3d7f5cbba6c8aa89bbee78b63e86475d0a, ricevuta evidence/storage-host-containment-prepared-operator-20261106.json. NON rieseguire il preparatore: area esistente. La consegna precedente è superata.

@@ -1,3 +1,5 @@
+> Decisione acquisita: Giovanni ha autorizzato questa singola operazione in chat. Riferimento GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01; [ricevuta](../evidence/storage-host-containment-operator-decision-20261106.json). Esecuzione VPS ancora pendente. Le diciture di proposta/decisione pendente sotto conservano il pacchetto esatto approvato.
+
 # Contenimento host per backup di test — operazione proposta 2026-11-06
 
 Stato: **QUALIFICATO SU RUNNER, DECISIONE HOST PENDENTE**. Questa proposta non è un'autorizzazione.

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Exact host-only decision for qualified operation, then operator execution. Preserve prior consumed Docker attempt; build new linked stop/capture from host receipt; archive to PC, isolated restore, SeaweedFS gates. Do not rerun preparer.",
+  "nextPlannedWork": "Operator executes approved pinned host containment once; return redacted receipt. Then new linked Docker stop/capture composition, archive to PC and isolated restore; no old replay.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -688,16 +688,18 @@
     "rerunRequested": false
   },
   "hostContainmentOperation": {
-    "status": "QUALIFIED_EXACT_HOST_DECISION_PENDING",
+    "status": "OPERATOR_APPROVED_TARGET_EXECUTION_PENDING",
     "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md",
     "qualification": "evidence/storage-host-containment-qualified-20261106.json",
     "codeCommit": "c742943800252099c56ac60ef448b712d9d007f3",
     "runId": 42306614307,
     "jobId": 128197445773,
     "targetExecuted": false,
-    "newHostDecisionRecorded": false,
+    "newHostDecisionRecorded": true,
     "automaticReplayAllowed": false,
     "runtimeAuthorityIssued": false,
-    "acceptanceCreditAdded": 0
+    "acceptanceCreditAdded": 0,
+    "decisionReference": "GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01",
+    "decisionEvidence": "evidence/storage-host-containment-operator-decision-20261106.json"
   }
 }

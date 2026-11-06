@@ -1,3 +1,7 @@
+## Decisione acquisita — esecuzione host sul VPS pendente
+
+Giovanni ha approvato il pacchetto host esatto (GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01). Consegnato il comando pinned; attendere ricevuta VPS. Nessun consenso da richiedere di nuovo per questo perimetro,nessun targetstop/capture già dichiarato. [Decisione](../evidence/storage-host-containment-operator-decision-20261106.json). Le richieste di decisione nelle sezioni storiche sono soddisfatte.
+
 ## Stato corrente — contenimento host pronto per decisione operativa
 
 La bozza VPS è acquisita e l'executor è qualificato su processi systemd reali (run42306614307 SUCCESS). **Non rieseguire il preparatore**. [Pacchetto concreto](OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md).
