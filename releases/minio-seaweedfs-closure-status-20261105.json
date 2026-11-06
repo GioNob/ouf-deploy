@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Qualify corrected host preparer against real systemd on GitHub runner, then operator executes preparer only. Resolve missing/multivalue properties as explicit unknown findings; exact VPS failing property unproven. Complete host containment executor and new linked stop/capture after exact draft; preserve all attempts and original expiry.",
+  "nextPlannedWork": "Operator executes only qualified corrected host preparer18228bytes/SHAcaac2981. Native systemd read integration42304356159SUCCESS, explicit unknown/rejected findings retained. Then finish host containment executor/new linked stop-capture using target draft, obtain applicable exact decision, archive/PC/restore; no old replay or acceptance credit.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -662,7 +662,17 @@
     "exactFailedUnitAndPathKnown": false,
     "externalManagerReportedPathsUseUnchangedProtectedReader": true,
     "exactFailedPropertyKnown": false,
-    "nativeSystemdQualificationPending": true
+    "nativeSystemdQualificationPending": false,
+    "nativeSystemdQualification": {
+      "runId": 42304356159,
+      "jobId": 128189819068,
+      "conclusion": "success",
+      "evidence": "evidence/storage-host-preparation-systemd-qualified-20261106.json",
+      "syntheticUnits": 13,
+      "protectedConfigFiles": 10,
+      "linkedFragmentRead": false,
+      "omittedExecStopUnknown": true
+    }
   },
   "generalCiObserved": {
     "commit": "2db26f14d12930535af09b9140d0c3e3c67a1b86",

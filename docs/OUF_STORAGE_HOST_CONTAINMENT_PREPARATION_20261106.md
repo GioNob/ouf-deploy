@@ -1,12 +1,20 @@
 # Contenimento dei writer host per la prima copia non produttiva
 
+## Qualifica corrente completata
+
+[Run42304356159](https://github.com/GioNob/ouf-deploy/actions/runs/42304356159) SUCCESS:13unità sintetiche inattive,10configurazioni acquisite; symlink della registry fixture respinto da nofollow/ELOOP e conservato come finding. I campi ExecStop/ExecStopPost vuoti sono omessi anche con --all e restano null+rilievo. I2comandi ExecStop presenti restano privati. La bozza si completa con REVIEW_REQUIRED; replay della preparazione negato prima delle query. Nessuno start/stop,Docker/IAM. Non prova targetDebian13 o contenimento effettivo.
+
+13unit test delrun42303969794step3 riusati per3digest esatti. Due fallimenti nativi42303969794/42304157404 erano aspettative fixture errate (11file e vuoto→false); osservazione reale salvata e aspettative corrette senza cambiare produzione. [Dossier completo](../evidence/storage-host-preparation-systemd-qualified-20261106.json),[prova nativa](../evidence/storage-host-preparation-systemd-native-20261106.json). Non rieseguire la qualifica riuscita senza modifiche.
+
+Consegna preparatore18228byte/SHAcaac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1. Nessuna nuova area per aggirare esistenza,nessun fermo precedente rilanciato. Outputtarget ancora atteso. Se compaiono rilievi non sono accettazione; usarli per completare l'executorhost che resta da implementare.
+
 ## Secondo HOLD preparatorio: gestione delle proprietà
 
 Il preparatore acb3425e ha prodotto PROPERTY_CARDINALITY prima delle scritture. [Ricevuta](../evidence/storage-host-containment-cardinality-held-operator-20261106.json). Il vecchio messaggio non identifica unità/proprietà: non sappiamo se fosse assente o ripetuta.
 
 La correzione richiede show --all, distingue proprietà opzionali non note da proprietà vuote, conserva gli array ExecStop/ExecStopPost e restituisce rilievi con unità/campo/numero occorrenze, senza esportare valori privati. Proprietà critiche conservano verifica stretta e diagnostica specifica. Non ridurre missing a false o a lista vuota per approvare un mutatore.
 
-[systemctl ufficiale](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html) documenta l'omissione ordinaria dei campi vuoti; --all non rende presenti proprietà non applicabili o non supportate.13test locali PASS. Il vecchio mock assumeva presenza universale delle proprietà: lacuna corretta. Nuova prova di integrazione su systemd reale GitHubRunner:13unità sintetiche inattive,11configurazioni,maschere e frammento esterno; nessun servizio viene avviato/fermato. CI da verificare prima della consegna. Non è prova del contenimentoVPS e non ripete stop/restore/crypto.
+[systemctl ufficiale](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html) documenta l'omissione ordinaria dei campi vuoti; --all non rende presenti proprietà non applicabili o non supportate.13test locali PASS. Il vecchio mock assumeva presenza universale delle proprietà: lacuna corretta. Nuova prova di integrazione su systemd reale GitHubRunner:13unità sintetiche inattive,11configurazioni,maschere e frammento esterno; nessun servizio viene avviato/fermato. CI verificata nel paragrafo corrente; aspettative iniziali della fixture corrette dopo osservazione reale. Non è prova del contenimentoVPS e non ripete stop/restore/crypto.
 
 ## Correzione dopo il primo tentativo preparatorio
 

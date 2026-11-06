@@ -1,0 +1,138 @@
+{
+  "schema": "ouf.storage-host-preparation-systemd-qualified.v1",
+  "productionCommit": "142775573eede991a81ace166a9b6ef06d73983a",
+  "qualificationCommit": "6ef0eaf44d4130df04fa925ae6fc96cb1735cbbc",
+  "runId": 42304356159,
+  "jobId": 128189819068,
+  "conclusion": "success",
+  "program": {
+    "path": "scripts/prepare-storage-host-containment-20261106.py",
+    "bytes": 18228,
+    "sha256": "caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1"
+  },
+  "unitTests": {
+    "pass": 13,
+    "runId": 42303969794,
+    "jobId": 128188526869,
+    "step": 3,
+    "reusedByDigests": true
+  },
+  "nativeProof": {
+    "acceptanceCreditAdded": 0,
+    "defaultShowIncludesEmptyExecStopPost": false,
+    "dockerRequests": 0,
+    "existingPreparationDeniedBeforeCommands": true,
+    "externalFragmentBound": false,
+    "fixtureDaemonReloads": 2,
+    "iamRequests": 0,
+    "linkedFragmentFindingPreserved": true,
+    "linkedFragmentSymlinkRejected": true,
+    "multipleExecStopCommandsPreserved": true,
+    "omittedExecStopRemainsUnknown": true,
+    "optionalPropertyFindings": [
+      {
+        "bodyReadAttempted": true,
+        "errno": 40,
+        "errorType": "OSError",
+        "locationKind": "SYSTEMD_CONFIGURATION_LOCATION",
+        "pathSha256": "03157bcda135c1f090feb10500665578545fd827e1e4b5e1a7c1375bffca73b7",
+        "property": "FragmentPath",
+        "reason": "UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-registry.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStop",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-0.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-0.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStop",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-1.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-1.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStop",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-2.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-2.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStop",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-3.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-3.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStop",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-4.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-4.service"
+      },
+      {
+        "occurrences": 0,
+        "property": "ExecStopPost",
+        "reason": "PROPERTY_CARDINALITY",
+        "unit": "ouf-native-token-4d9b2dd7f4ee-registry.service"
+      }
+    ],
+    "privateOutputProtected": true,
+    "programSha256": "caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1",
+    "protectedConfigurationFiles": 10,
+    "schema": "ouf.storage-host-preparation-systemd-native.v1",
+    "serviceStartsOrStops": 0,
+    "status": "PASS",
+    "syntheticUnits": 13,
+    "targetPreparationOrContainmentProven": false
+  },
+  "failures": [
+    {
+      "runId": 42303969794,
+      "reason": "Fixture assumed11boundfiles; preparation completed before assertion"
+    },
+    {
+      "runId": 42304157404,
+      "reason": "Redacted observation demonstrated10files, ELOOP on linked fragment, omitted ExecStop arrays even with --all"
+    }
+  ],
+  "correction": "Fixture assertions corrected to demand guard rejection, unknown omitted values and preserved findings; production unchanged",
+  "limits": [
+    "Ubuntu24 systemd runner; not target Debian13",
+    "No service starts/stops; only unique fixture files, two daemon-reloads and cleanup",
+    "No host containment executor or target backup/restore",
+    "Direct external path mock coverage is not linked-fragment body acquisition",
+    "Exact failing VPS unit/property remains unknown"
+  ],
+  "acceptanceCreditAdded": 0
+}

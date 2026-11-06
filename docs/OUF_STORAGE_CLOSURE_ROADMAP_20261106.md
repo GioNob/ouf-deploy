@@ -1,3 +1,7 @@
+## Verifica del preparatore completata; prossima azione sul VPS
+
+CI nativa42304356159SUCCESS: preparatore reale restituisce bozza con rilievi espliciti per symlink rifiutato e proprietà omesse,nessun servizio avviato/fermato.13unit test riusati per digest; qualifiche precedenti storage/crypto non ripetute. Ora eseguire soltanto il preparatore18228byte/SHAcaac2981... e acquisire JSONredatto per completare executorhost e nuova operazione collegata. [Prove e limiti](../evidence/storage-host-preparation-systemd-qualified-20261106.json). Nessun gateMiniPET chiuso,archivio target ancora assente.
+
 ## Correzione corrente: proprietà systemd e prova nativa del reader
 
 Seconda preparazione respinta con PROPERTY_CARDINALITY prima delle scritture; campo effettivo non noto. Corretto show --all/valori sconosciuti/ExecStop multipli/diagnostica,13test localiPASS; ora qualifica contro systemd reale nel runner prima di nuova consegna. [Pacchetto](OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md). StessaAREA esclusiva,nessun vecchio stop/capture rilanciato o scope azzerato. Questa è ancora la correzione del medesimo blocco host; nessun avanzamento MiniPET attribuito.
