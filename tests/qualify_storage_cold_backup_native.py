@@ -42,7 +42,7 @@ def main():
         pg = docker('run', '-d', '--network', 'none', '--restart=no', '--mount', 'type=bind,src=' + str(root / 'pg') + ',dst=/var/lib/postgresql/data',
                     '-e', 'POSTGRES_PASSWORD=fixture-password', PG)
         containers.append(pg)
-        mi = docker('run', '-d', '--user', '0:0', '--network', 'none', '--restart=no',
+        mi = docker('run', '-d', '--user', '0:0', '--entrypoint', '/usr/bin/minio', '--stop-signal', 'SIGTERM', '--network', 'none', '--restart=no',
                     '--mount', 'type=bind,src=' + str(root / 'minio') + ',dst=/data',
                     '-e', 'MINIO_ROOT_USER=fixture-admin', '-e', 'MINIO_ROOT_PASSWORD=fixture-secret-password',
                     MINIO, 'server', '/data')
@@ -59,8 +59,6 @@ def main():
             docker('exec', pg, 'psql', '-U', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c', 'CREATE DATABASE ' + db)
             docker('exec', pg, 'psql', '-U', 'postgres', '-d', db, '-v', 'ON_ERROR_STOP=1', '-c',
                    "CREATE TABLE recovery_fixture(id int primary key, payload text); INSERT INTO recovery_fixture VALUES (1, 'profile/sample/object/lineage');")
-        def endpoint(cid):
-            return (cid, 'http://127.0.0.1:9000')
         def s3(cid, path, method, body=None):
             pid = json.loads(docker('inspect', cid))[0]['State']['Pid']
             args = ['nsenter', '--target', str(pid), '--net', 'curl', '--noproxy', '*', '--fail', '--silent', '--show-error', '--max-time', '10', '--aws-sigv4', 'aws:amz:us-east-1:s3',
@@ -96,6 +94,8 @@ def main():
         plan_sha = b.digest(b.canonical(plan))
         for cid in (mi, pg):
             docker('stop', '--time', '120', cid, timeout=130)
+            state = json.loads(docker('inspect', cid))[0]['State']
+            print('Fixture stop:', 'minio' if cid == mi else 'postgres', json.dumps({k: state[k] for k in ('ExitCode', 'OOMKilled', 'Running', 'Status')}), flush=True)
         identity = root / 'identity'
         cmd(['ssh-keygen', '-t', 'ed25519', '-N', '', '-f', str(identity)])
         public = b.recipient((root / 'identity.pub').read_bytes())
@@ -131,7 +131,7 @@ def main():
         pg2 = docker('run', '-d', '--network', 'none', '--restart=no', '--mount',
                      'type=bind,src=' + str(data / 'pg') + ',dst=/var/lib/postgresql/data', bindings['postgres']['nativeImage'])
         containers.append(pg2)
-        mi2 = docker('run', '-d', '--user', '0:0', '--network', 'none', '--restart=no', '--mount',
+        mi2 = docker('run', '-d', '--user', '0:0', '--entrypoint', '/usr/bin/minio', '--stop-signal', 'SIGTERM', '--network', 'none', '--restart=no', '--mount',
                      'type=bind,src=' + str(data / 'minio') + ',dst=/data', '-e', 'MINIO_ROOT_USER=fixture-admin',
                      '-e', 'MINIO_ROOT_PASSWORD=fixture-secret-password', bindings['minio']['nativeImage'], 'server', '/data')
         containers.append(mi2)

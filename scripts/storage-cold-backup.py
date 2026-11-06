@@ -245,12 +245,13 @@ def build_plan(bindings, host, area, program_sha):
 def offline(plan, host):
     ids = {r['containerId'] for r in plan['roles'].values()}
     need(all(not d['State']['Running'] for d in host.values()), 'RUNNING_CONTAINER_DURING_OFFLINE_CAPTURE')
-    for r in plan['roles'].values():
+    for role, r in plan['roles'].items():
         need(r['containerId'] in host, 'BOUND_CONTAINER_MISSING')
         d = host[r['containerId']]
         need(fingerprint(d) == r['fingerprint'], 'BOUND_CONFIG_OR_PROCESS_GENERATION_CHANGED')
+        allowed_exits = (0,) if role in ('postgres', 'minio', 'etcd') else (0, 143)
         need(d['State']['Status'] == 'exited' and d['State']['Pid'] == 0
-             and d['State']['ExitCode'] == 0 and not d['State'].get('OOMKilled')
+             and d['State']['ExitCode'] in allowed_exits and not d['State'].get('OOMKilled')
              and not d['State'].get('Error') and not d['State']['Paused']
              and not d['State']['Restarting'], 'CLEAN_STOP_REQUIRED')
         need(d['HostConfig']['RestartPolicy']['Name'] == 'no', 'RESTART_POLICY_MUST_ALREADY_BE_DISABLED')
@@ -407,7 +408,7 @@ def capture(plan, plan_sha, root, run, public_recipient, decision_reference):
         'sources': len(plan['sources']), 'members': len(members), 'commandCalls': run.calls,
         'producedBytes': run.total, 'attempts': 1, 'providerMutationCommands': 0,
         'plaintextRetainedPrivately': True, 'originalsPreserved': True, 'automaticReplayAllowed': False,
-        'automaticRestartAllowed': False, 'applicationConsistencyProven': False,
+        'automaticRestartAllowed': False, 'applicationDrainProven': False, 'applicationConsistencyProven': False,
         'restorePerformed': False, 'independentBackupVerified': False, 'g3Complete': False, 'acceptanceCreditAdded': 0}
     new(root / 'result.json', canonical(result))
     return result

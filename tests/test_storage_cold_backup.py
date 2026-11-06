@@ -60,6 +60,16 @@ class ColdBackupTests(unittest.TestCase):
         host[self.cid]['HostConfig']['RestartPolicy']['Name'] = 'always'
         with self.assertRaises(b.Held):
             b.offline(self.plan, host)
+
+    def test_sigterm_application_exit_is_not_clean_provider_or_drain_proof(self):
+        host = copy.deepcopy(self.host)
+        host[self.cid]['State']['ExitCode'] = 143
+        with self.assertRaises(b.Held):
+            b.offline(self.plan, host)
+        plan = copy.deepcopy(self.plan)
+        plan['roles']['onboarding'] = plan['roles'].pop('postgres')
+        b.offline(plan, host)
+        self.assertFalse(plan['runtimeAuthorityIssued'])
         host = copy.deepcopy(self.host)
         host[self.cid]['State']['StartedAt'] = 'changed-generation'
         with self.assertRaises(b.Held):
