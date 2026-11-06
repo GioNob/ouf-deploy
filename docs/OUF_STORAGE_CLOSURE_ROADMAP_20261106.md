@@ -1,3 +1,7 @@
+## Decisione acquisita 7 novembre — fermo Docker e backup cifrato
+
+Giovanni autorizza il singolo tentativo collegato:35policy,14stop,34fonti/interoPGcondiviso,capturecifrata,limiti e scadenza invariati rispetto alpacchetto proposto. [Decisione](../evidence/storage-host-bound-cold-operator-decision-20261107.json). ComandoVPSconsegnato;esito reale pendente. Nonrichiedere nuovamenteconsenso,nonripeterecontenimentohostriuscito. Prossimorisultato:archivio reale→Windows→restoreisolato. NessuncreditoMiniPETancora.
+
 ## 7 novembre — contenimento host completato sul target; backup reale pronto per decisione
 
 **Blocco host rimosso:**5timer e registry disabilitati/fermi,5runtimefontistabili;ricevutaVPS acquisita. Non ripeterequestofase. Nuovo fermoDocker+capture collegato al successo è qualificato run42310506109. [Pacchetto eseguibile](OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md):35policy,14stop,34fonti/interoPGcondiviso,archivioage;decisione sul singolonuovotentativo pendente. Originale tentativoDocker consumato conservato e3lettureaddebitate.

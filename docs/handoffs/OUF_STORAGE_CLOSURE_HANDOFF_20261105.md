@@ -1,3 +1,11 @@
+## Decisione operatore 2026-11-07 — nuovo fermo Docker e backup cifrato autorizzati
+
+Giovanni risponde “autorizzo” al pacchetto esatto c939a82f. Decisione GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01,ricevuta evidence/storage-host-bound-cold-operator-decision-20261107.json. Una sola operazione:35restartpolicy,14containerstop,34fonti incluso interoPostgreSQLcondiviso,capturecifrata. Nuovostop1200s,capture3600s/64GiB;vecchio1200saddebitato,3read/bytecumulativi,scadenzaoriginaria invariata. Non richiedere nuovamente questo consenso; nessuna esecuzioneVPS già attestata.
+
+Comando pinned docs/OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md:installer da46be2c9ce47322ac6b65dd615401968beb8534,3557byte/SHAa0a6eec3c93c6cea3aac941b12ea315f9d264e8b7fab6a4e75ec8b37ca1199c2 ricontrollato esatto. Attendere JSONredatto; nessunreplayautomatico inHOLD. Hostcontenimento giàriuscito NONripetere. Dopo archivioSUCCESS:percorso/dimensione/hash reali perWindowsSCP e restoreisolato,nessunriavvioautomatico.
+
+HEADc939a confermato primaCAS,CI22SUCCESS/15incorso/14queued,soleCIosservate;qualificadedicata giàSUCCESS e nonripetuta. PR54draftopen,MiniPETinvariato. Consensooperatore non è grant runtime/HUMANautenticato,merge/deploy o riapertura.
+
 ## Checkpoint conclusivo 2026-11-07 — host target contenuto, nuovo stop/capture pronto per decisione
 
 Contenimentohost targetSUCCESS,evidence/storage-host-continuation-success-operator-20261107.json. Non ripeterehoststop/reader/installer/qualifica. Snapshot8c1611 ecanonicalresult35057e4 vincolano cinque fonti alnuovopiano. Nessun Dockerstop/capturetarget ancora.

@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Exact decision on single host-bound Docker stop/capture package,then operator execution to first encrypted target archive. Host containment already succeeded:do not repeat it. After archive,Windows transfer and isolated restore,then SeaweedFS gates.",
+  "nextPlannedWork": "Operator executes approved single host-bound Docker stop/capture and returns redacted final JSON. Do not repeat approval or successful host containment. Then Windows transfer of exact encrypted archive and isolated restore.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -735,13 +735,13 @@
     "cumulativeBytesObserved": 67321
   },
   "hostBoundColdOperation": {
-    "status": "QUALIFIED_EXACT_STOP_CAPTURE_DECISION_PENDING",
+    "status": "APPROVED_TARGET_STOP_CAPTURE_PENDING",
     "package": "docs/OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md",
     "codeCommit": "ac0b5b862e7e1209756f596c5ae293c366c7b49e",
     "runId": 42310506109,
     "jobId": 128210457310,
     "decisionReference": "GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01",
-    "decisionRecorded": false,
+    "decisionRecorded": true,
     "targetExecuted": false,
     "targetCapturePerformed": false,
     "policyChanges": 35,
@@ -750,6 +750,7 @@
     "includesWholeSharedPostgresCluster": true,
     "priorDockerReadsCharged": 3,
     "legacyExpiryExtended": false,
-    "acceptanceCreditAdded": 0
+    "acceptanceCreditAdded": 0,
+    "decisionEvidence": "evidence/storage-host-bound-cold-operator-decision-20261107.json"
   }
 }

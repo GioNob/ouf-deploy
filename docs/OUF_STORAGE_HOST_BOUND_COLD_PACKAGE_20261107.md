@@ -1,3 +1,5 @@
+> **Autorizzata il 7 novembre 2026:** Giovanni ha approvato questa singola operazione. Riferimento GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01; [ricevuta](../evidence/storage-host-bound-cold-operator-decision-20261107.json). Esecuzione VPS pendente. Le diciture di decisione pendente sotto conservano il pacchetto esatto approvato.
+
 # Backup freddo collegato al contenimento host — 7 novembre 2026
 
 **Stato: procedura qualificata; decisione sul nuovo fermo/capture pendente.**
