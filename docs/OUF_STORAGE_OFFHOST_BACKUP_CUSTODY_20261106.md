@@ -20,13 +20,13 @@ Il container attivo fuori roster è ora identificato esattamente come **ouf-etcd
 
 Includere altri DB/volumi soltanto quando il binding effettivo ne dimostra la necessità al ripristino della generazione. Non estendere automaticamente il fermo a tutto il VPS. Il mezzo di backup deve essere qualificato per i privilegi disponibili: il client psql installato non concede ruoli di backup o replica. Nessuna concessione implicita.
 
-## Destinazione proposta e decisione mancante
+## Destinazione scelta: PC Windows di Giovanni
 
-**Prima opzione da valutare: archivio cifrato conservato sul PC dell'operatore, fuori dal VPS**, con copia tramite SSH/SFTP e chiave di decifratura custodita separatamente dall'unica macchina che si intende poter ripristinare. Non richiede pubblicare dati o credenziali in GitHub e non presume l'acquisto di servizi.
+**Scelta confermata dall'operatore: archivio cifrato sul proprio PC Windows, fuori dal VPS**, con copia tramite SSH/SFTP e chiave di decifratura custodita separatamente dall'unica macchina che si intende poter ripristinare. Non richiede pubblicare dati o credenziali in GitHub e non presume l'acquisto di servizi.
 
 Alternativa: spazio già disponibile su un altro host o storage remoto indipendente. Servono destinazione, modalità di accesso e custode; i segreti non vanno incollati in chat. Un secondo percorso sullo stesso disco o un volume Docker sullo stesso VPS non soddisfa l'indipendenza.
 
-**Scelta ancora non fornita:** PC (e sistema operativo) oppure destinazione remota già disponibile. Nessun trasferimento è ancora predisposto o autorizzato; dimensione, spazio disponibile, cifratura e custodia devono essere verificati prima di produrre il comando esatto.
+[Decisione acquisita](../evidence/storage-backup-windows-destination-20261106.json): Giovanni sceglie il proprio PC e dichiara Windows. Non chiedere nuovamente destinazione o sistema operativo. Restano directory/spazio locale,indirizzo SSH,cifratura/custodia e archivio finale con dimensione/hash. Il backup completo non è ancora prodotto;nessun trasferimento eseguito.
 
 ## Sequenza da legare al pacchetto operativo
 
@@ -43,6 +43,31 @@ Finestra/RPO/RTO sono una decisione distinta. Proposta di riferimento già nel r
 
 Identità del container fuori elenco risolta. Nessuna mount copre il JAR Onboarding nel documento osservato; byte del JAR e writable layer non verificati. Letture diagnostiche locali concluse: non preparare automaticamente un altro helper.
 
-Per completare questo pezzo del pacchetto serve ora la scelta della destinazione indipendente. Rimangono inoltre accessi effettivi,admin/consumer esterni,finestra e qualifica integrata. La decisione sulla destinazione non autorizza deploy,grant,fermo,backup effettivo o riapertura.
+La destinazione indipendente è scelta:PC Windows. Per concretizzare il trasferimento serve il pacchetto completo,cifrato e verificato sul VPS;non inventare percorso,dimensione o hash. Rimangono inoltre accessi effettivi,admin/consumer esterni,finestra e qualifica integrata. La decisione sulla destinazione non autorizza deploy,grant,fermo,backup effettivo o riapertura.
 
 MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati. Credito aggiunto0.
+
+## Trasferimento su Windows: procedura predisposta, non ancora eseguibile
+
+Usare PowerShell con il client OpenSSH e Get-FileHash SHA256. Non installare il server SSH su Windows,non disattivare controllo host key,non modificare ExecutionPolicy. Il client deve usare lo stesso endpoint e l'identità SSH già utilizzati dall'operatore per il VPS; il nome nella shell Linux non dimostra un indirizzo raggiungibile dal PC.
+
+Prima verifica locale,senza connessione né scritture:
+
+```powershell
+[pscustomobject]@{
+    PowerShell = $PSVersionTable.PSVersion.ToString()
+    SSH = [bool](Get-Command ssh.exe -CommandType Application -ErrorAction SilentlyContinue)
+    SCP = [bool](Get-Command scp.exe -CommandType Application -ErrorAction SilentlyContinue)
+} | ConvertTo-Json
+```
+
+Il comando di download definitivo verrà composto solo quando siano disponibili:
+- archivio completo cifrato,separato dalle proiezioni G0;
+- percorso remoto preciso,leggibile dall'utente di trasferimento senza ampliare i permessi degli originali;
+- dimensione e SHA256 del file cifrato fissati nella ricevuta;
+- indirizzo SSH e directory Windows con spazio sufficiente;
+- custodia della chiave fuori dal solo VPS.
+
+La sequenza sarà copia SCP in un nuovo file .partial,controllo exit code e dimensione,Get-FileHash -Algorithm SHA256 e confronto con la ricevuta;solo dopo corrispondenza,ridenominazione al nome definitivo senza sovrascrivere file esistenti. Una copia interrotta resta parziale e non diventa prova di backup. Nessun resume/retry automatico o cancellazione sul VPS. La ricevuta Windows confermerà soltanto il trasferimento integro;decrypt/restore e G3 restano verifiche separate.
+
+Fonti ufficiali consultate il6novembre: [OpenSSH per Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-overview), [Get-FileHash per Windows PowerShell5.1](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash?view=powershell-5.1). Nessuna esecuzione PowerShell su Windows effettuata dall'agent.

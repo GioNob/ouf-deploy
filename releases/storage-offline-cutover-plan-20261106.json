@@ -24,15 +24,21 @@
     "localStaging": "/var/lib/ouf-storage-migration/backup-staging",
     "sharesSourceDevice": true,
     "independentDestination": null,
-    "custodian": null,
+    "custodian": "Giovanni",
     "completeCurrentBackupProven": false,
     "independentRestoreProven": false,
     "proposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
     "proposedIndependentDestinationKind": "OPERATOR_PC_ENCRYPTED_ARCHIVE_OR_EXISTING_OFFHOST_STORAGE",
-    "destinationChoiceReceived": false,
+    "destinationChoiceReceived": true,
     "additionalControlPlaneCustodyReview": [
       "etcd"
-    ]
+    ],
+    "selectedIndependentDestinationKind": "OPERATOR_PC",
+    "selectedOperatingSystem": "Windows",
+    "destinationChoiceEvidence": "evidence/storage-backup-windows-destination-20261106.json",
+    "availableDestinationBytes": null,
+    "finalArchiveBytes": null,
+    "transferExecuted": false
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",

@@ -152,7 +152,7 @@
     "privateBindingsAlreadyInG0": true,
     "adminAndExternalWriterCensusComplete": false,
     "backupIndependentDestination": null,
-    "backupCustodian": null,
+    "backupCustodian": "Giovanni",
     "window": null,
     "rpoRtoAccepted": false,
     "exactCommands": null,
@@ -199,6 +199,6 @@
     "proposedHandling": "REVIEW_CONTROL_CONFIGURATION_CUSTODY_AND_CONSISTENT_BACKUP; DO_NOT_STOP_OR_RESTORE_AUTOMATICALLY",
     "currentLiveObservation": false
   },
-  "nextRequiredOperatorInput": "Independent backup destination: operator PC and OS, or already available off-host storage. No secrets.",
+  "nextRequiredOperatorInput": "Windows SCP client availability and existing VPS SSH endpoint; do not request destination/OS again. Final archive, size/hash, directory and key custody remain unbound.",
   "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md"
 }

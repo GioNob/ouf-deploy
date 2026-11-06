@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — destinazione backup scelta: PC Windows
+
+Giovanni sceglie scaricamento locale sul PC e specifica Windows. Decisione evidence/storage-backup-windows-destination-20261106.json. Non chiedere nuovamente destinazione/OS e non proporre upload del backup suGitHub. Custode Giovanni;directory/spazio/endpointSSH/cifratura-chiave ancora da legare. Nessuna prova di backup indipendente o trasferimento già riuscito.
+
+Procedura PowerShell/SCP e verifica SHA256 in docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md. Prerequisito locale Get-Command ssh.exe,scp.exe;nessuna connessione/installazione/scrittura. Comando finale soltanto dopo archivio cifrato completo con percorso,dimensione ehash reali. Le proiezioni G0 non sono quel backup. Nessun nome archivio inventato e nessuna modifica apermessi degli originali per renderli scaricabili. Nessun test PowerShell dichiarato:runtime locale non disponibile.
+
+Piano/stato aggiornati;MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati. Nessun nuovohelperVPS,testcomponente,scope,replay,merge/deploy/grant/stop/riapertura. Basea58d1760/source d5155899 ePR54draft/open riconfermati;CI base48SUCCESS/3in corso al controllo. Questa registrazione non è avanzamento di accettazione.
+
 ## Checkpoint 2026-11-06 — ouf-etcd identificato, letture locali concluse
 
 Ricevuta evidence/storage-g0-unmapped-runtime-operator-20261106.json:esito operatore2filelocali,zero provider/processi/credenziali/write. Extra imagea3ccd299,nomeSHA0b5ce582 econtainerIDSHA c8d094b9 coincidono esattamente con ouf-etcd della ricevuta indipendente evidence/provider-r8-independent-runtime-readback-20261009.json (run37979230240/job113985199756). Hash ricomputati localmente;immaginequay.io/coreos/etcd:v3.5.21,volume storico /etcd-data scrivibile. Identità risolta,non prova di dipendenza routing corrente o assenza writerS3. Nessun nuovo scope,roster G0 storico13ruoli invariato. Review custodia/stato control plane aggiunta,nessuno stop/restore implicito.

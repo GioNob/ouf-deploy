@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Retained non-roster identity resolved as ouf-etcd by exact native-image/name-hash/container-id-hash match; no helper replay or further metadata investigation for this identity. Obtain independent backup destination choice and finish bounded backup/restore, writer/access and window package. Current executable membership and full-service qualification remain open; no gate closure or runtime admission.",
+  "nextPlannedWork": "Windows PC chosen for encrypted off-host copy; do not ask destination/OS again. Bind complete backup production/consistency/custody and exact final path,size,SHA256 before a download command. Check Windows OpenSSH client and existing SSH endpoint only as transfer prerequisites. No archive exists yet as a qualified complete migration backup; no target stop/deploy/reopen authority inferred.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -562,7 +562,14 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Independent backup destination: operator PC plus OS, or existing off-host storage. No secret disclosure or runtime approval implied."
+    "requiredOperatorInput": "Windows SCP client availability and existing VPS SSH endpoint; do not request destination/OS again. Final archive, size/hash, directory and key custody remain unbound.",
+    "backupDestinationChoice": {
+      "receipt": "evidence/storage-backup-windows-destination-20261106.json",
+      "destinationKind": "OPERATOR_PC",
+      "operatingSystem": "Windows",
+      "custodian": "Giovanni",
+      "independentBackupVerified": false
+    }
   },
   "cohortRetainedReconciliation": {
     "receipt": "evidence/storage-cohort-retained-reconciliation-20261106.json",
