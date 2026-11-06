@@ -24,7 +24,7 @@ Il [runbook](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md) include la [matric
 | G0 baseline |120corpi verificati,18rilievi tipizzati con disposizioni, feature/runtime/capacità osservati |Accettare disposizioni, coorte e inventario completo; accessi/custodia,11percorsi writer;etcd fuori roster identificato,da includere nella custodia control plane, funzioni/finestra/RPO/RTO |
 | G1 candidato |OCI33 e qualifiche al checkpoint |Coorte finale server/client/tool, licenze, custodia durevole e sicurezza valida all'ammissione |
 | G2 contratti |12casi client33 e mapping AT aperto |Binding rappresentativi della coorte scelta e tutti gli AT applicabili; niente trasferimento implicito della qualifica adapter al modulo completo |
-| G3 recovery |Foundation/restore sintetici e backup storici parziali |Backup corrente DB+oggetti+config/chiavi, custodia indipendente, restore rappresentativo e obiettivi/capacità misurati |
+| G3 recovery |Foundation/restore sintetici, backup storici e nuovo produttore freddo qualificato3DB+MinIO |Backup corrente DB+oggetti+config/chiavi, custodia indipendente, restore rappresentativo e obiettivi/capacità misurati |
 | G4 procedura |Rehearsal copia/ritorno oggetti e runbook proposto |Writer realmente fermabili, common-cut e parità DB/oggetti, rollback applicativo dopo nuove scritture, comandi esatti qualificati |
 | G5 ammissione |Non pronta |Pacchetto unico G0–G4, budget, binding, finestra e decisioni effettivamente applicabili |
 | G6 passaggio |Non iniziato |Esecuzione autorizzata, copia reale/parità, percorso utenti, switch e riapertura governati |
@@ -34,10 +34,13 @@ Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/basel
 
 ## Coppia corrente: uscita acquisita e azione residua
 
+**Aggiornamento produttore backup:** [pacchetto implementato e qualificato](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md),12test e restore nativo3DB+1oggetto su radici distinte. Rimosso il blocco software «nessun produttore disponibile». Adesso serve il SOLO prepare sul VPS per legare il piano corrente; la proposta fisica include l'intero PostgreSQL condiviso e14ruoli. Approvazione del fermo/contenimento,recipient pubblico,finestra,cattura e restore reali ancora aperti. Nessun nuovo credito G3 o stima basata sui test.
+
+
 1. **Origine, scelta e delta completati:** catena immagine/sorgente ricostruita dalle prove conservate;stesso tree73498/9d19 verificato;scelta di sviluppo d515 confermata,delta e limiti espliciti. Non è qualifica live o ammissione.
 2. **Pacchetto operativo in corso:**9percorsi associati ai3owner e barriere proposte. Lettura locale eseguita:ouf-etcd identificato esattamente per immagine/hashnome/hashID;0mount coprenti il JAR. Nessun nuovo accesso provider;nessuna prova dei byte live. Restano accessi effettivi,admin/esterni,backup indipendente/restore,finestra e comandi/budget esatti.
 
-La lettura scripts/read-storage-g0-unmapped-runtime-20261106.py è conclusa e non va ripetuta. [Ricevuta](../evidence/storage-g0-unmapped-runtime-operator-20261106.json). Destinazione scelta:PC Windows di Giovanni; [decisione](../evidence/storage-backup-windows-destination-20261106.json). Non chiedere nuovamente destinazione/OS. [Procedura di trasferimento](OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md):prima produrre e verificare il backup completo,cifratura e ricevuta dimensione/hash;poi copiaSCP e verificaSHA256. Prerequisiti clientWindows/endpointSSH ancora da confermare. Nessun segreto in chat o autorità stop/deploy implicita.
+La lettura scripts/read-storage-g0-unmapped-runtime-20261106.py è conclusa e non va ripetuta. [Ricevuta](../evidence/storage-g0-unmapped-runtime-operator-20261106.json). Destinazione scelta:PC Windows di Giovanni; [decisione](../evidence/storage-backup-windows-destination-20261106.json). Non chiedere nuovamente destinazione/OS. [Procedura di trasferimento](OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md):prima produrre e verificare il backup completo,cifratura e ricevuta dimensione/hash;poi copiaSCP e verificaSHA256. Client Windows/endpoint SSH già confermati; non ripetere quei controlli. Nessun segreto in chat o autorità stop/deploy implicita.
 
 Nessuna nuova stima numerica: quella di12–18passi è ritirata perché non aveva delimitato le condizioni del VPS e i “passi” successivi erano stati frammentati senza aggiornare il residuo. La review ora riduce l'incertezza sui dati; restano coorte e procedura operativa. La prossima stima deve misurare questo residuo, non contare documenti o test.
 

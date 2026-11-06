@@ -1,6 +1,6 @@
 # Pacchetto di cattura fredda per il backup MinIO → SeaweedFS
 
-Stato iniziale: implementato, qualifica nativa CI pendente; **nessun fermo o backup VPS eseguito o ammesso da questo documento**. Il comando di preparazione e quello di cattura sono distinti. Lo script non esegue stop, update della restart policy, restart, deploy, grant o restore.
+Stato: **qualifica nativa del produttore PASS**, run42276891427 al commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0; preparazione VPS pendente; **nessun fermo o backup VPS eseguito o ammesso da questo documento**. Il comando di preparazione e quello di cattura sono distinti. Lo script non esegue stop, update della restart policy, restart, deploy, grant o restore.
 
 ## Scelta e impatto
 
@@ -53,3 +53,11 @@ Suite locale nuova: dinieghi su writer attivo, stop sporco, generazione/configur
 Workflow `storage-cold-backup.yml`: fixture PostgreSQL e MinIO con digest già usati dalla qualifica G0; MinIO usa direttamente /usr/bin/minio e SIGTERM, come selezione esplicita del laboratorio; tre DB completi e un oggetto binario; cattura fredda, cifratura con destinatario SSH, decifratura, verifica di tutti i membri, restore su directory distinte e lettura SQL/S3. Conserva solo un rapporto redatto; non carica archivi, chiavi o configurazioni in Actions. L'immagine viene riletta dall'archivio nello stesso daemon CI: non è prova di recupero su un secondo host vuoto. Non qualifica automaticamente tutti i quattordici ruoli o il target.
 
 Stato MiniPET invariato18,3/46=39,78%,0/8gate,0/21AT,0/120migrati. Questa implementazione rimuove la mancanza del produttore di archivio; la sua esecuzione VPS, le autorità e il restore del backup reale restano da completare.
+
+## Esito della qualifica e consegna
+
+[Qualifica e storia dei dinieghi](../evidence/storage-cold-backup-qualified-20261106.json):12test PASS; tre DB e un oggetto binario118784byte recuperati, cifratura SSH e rilettura di tutti i membri riuscite. ZIP del rapporto537byte verificato contro SHA2564cf2c962f84d96ba2ea2de4fdbd6a60e5d83ffc46b4e558763f0c835eaaeea07; unico membro conservato in Git. Non è secondo restore indipendente. La dimensione1538597828byte è del SOLO archivio sintetico CI, non del futuro backup VPS.
+
+La fixture aspetta il postmaster definitivo PID1 prima del seed. Arresto PostgreSQL con pg_ctl fast: l'exec ausiliario è terminato137, ma l'esito del server0 e pg_controldata shut down sono verificati senza replay. L'uso del solo docker stop aveva prodotto un137 del server e il controllo lo ha correttamente respinto. Sul VPS il metodo deve essere legato al processo/PGDATA effettivi e alle autorità applicabili, non copiato dalla fixture senza review.
+
+Programma da consegnare: commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0,24677byte,SHA2563f8f255bf80cf2e077260ecf5ff2c31f14a624529864c8d3fac956877359cac8. Installare una nuova copia root0600 in /var/lib/ouf-storage-cold-backup.py dopo confronto integrale del digest; non sovrascrivere una versione già presente. Primo e unico comando ora previsto: `sudo python3 -I -B -S /var/lib/ouf-storage-cold-backup.py prepare`. Restituire soltanto preparation-result.json/JSON stdout redatto. Non lanciare capture e non fermare servizi prima della review del piano e della decisione applicabile.

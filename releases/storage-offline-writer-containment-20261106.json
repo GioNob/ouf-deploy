@@ -199,6 +199,12 @@
     "proposedHandling": "REVIEW_CONTROL_CONFIGURATION_CUSTODY_AND_CONSISTENT_BACKUP; DO_NOT_STOP_OR_RESTORE_AUTOMATICALLY",
     "currentLiveObservation": false
   },
-  "nextRequiredOperatorInput": "Windows SCP client availability and existing VPS SSH endpoint; do not request destination/OS again. Final archive, size/hash, directory and key custody remain unbound.",
-  "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md"
+  "nextRequiredOperatorInput": "Execute ONLY the pinned cold-backup prepare utility and return its redacted plan summary. Windows client/endpoint are already supplied. No stop/capture implied.",
+  "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
+  "coldBackupProposal": {
+    "document": "docs/OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md",
+    "qualification": "evidence/storage-cold-backup-qualified-20261106.json",
+    "targetExecuted": false,
+    "wholeSharedPostgresAndFourteenRoleStopApprovalReceived": false
+  }
 }

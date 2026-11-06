@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Windows PC chosen for encrypted off-host copy; do not ask destination/OS again. Bind complete backup production/consistency/custody and exact final path,size,SHA256 before a download command. Check Windows OpenSSH client and existing SSH endpoint only as transfer prerequisites. No archive exists yet as a qualified complete migration backup; no target stop/deploy/reopen authority inferred.",
+  "nextPlannedWork": "Cold backup producer qualified on synthetic PostgreSQL/MinIO; operator now runs ONLY prepare on VPS to bind the fourteen-role/whole-cluster proposal. Review actual impact, encryption recipient, writer containment, window and applicable approval before any stop/capture. Windows SSH/SCP/endpoint already supplied; do not ask again. Target archive and restore still absent.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -540,7 +540,7 @@
     ],
     "remainingSteps": null,
     "reason": "Preparation and diagnosis were counted as closure steps without updating the forecast; G0 target capture and reconciliation are incomplete.",
-    "nextEstimationBasis": "Six of eight extra refs classified as4DBsamples+2diagnostic labels;2managed payload links need final local binding.10legacyNULL assets remain owner-unproven (1candidate receipt,subject/source-review absent).Operational evidence remains open; do not estimate10repairs or equate labels with acceptance.",
+    "nextEstimationBasis": "Eight non-owner references classified/physically linked; ten legacy owner assertions and operational criteria remain open. Cold producer now qualified in lab, but target plan, contained stop, backup/restore and final service acceptance remain to be completed. No step-count forecast from document/test count.",
     "documentationCountsAsMigrationStep": false
   },
   "offlineCutoverPlan": {
@@ -562,13 +562,20 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Windows SCP client availability and existing VPS SSH endpoint; do not request destination/OS again. Final archive, size/hash, directory and key custody remain unbound.",
+    "requiredOperatorInput": "Cold backup producer qualified on synthetic PostgreSQL/MinIO; operator now runs ONLY prepare on VPS to bind the fourteen-role/whole-cluster proposal. Review actual impact, encryption recipient, writer containment, window and applicable approval before any stop/capture. Windows SSH/SCP/endpoint already supplied; do not ask again. Target archive and restore still absent.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
       "operatingSystem": "Windows",
       "custodian": "Giovanni",
       "independentBackupVerified": false
+    },
+    "coldBackupProducer": {
+      "path": "scripts/storage-cold-backup.py",
+      "receipt": "evidence/storage-cold-backup-qualified-20261106.json",
+      "status": "NATIVE_QUALIFIED_TARGET_PREPARATION_PENDING",
+      "targetExecuted": false,
+      "acceptanceCreditAdded": 0
     }
   },
   "cohortRetainedReconciliation": {

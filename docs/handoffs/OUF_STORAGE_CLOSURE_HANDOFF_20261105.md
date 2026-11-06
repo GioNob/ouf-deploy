@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — produttore backup qualificato; prepare VPS pronto
+
+Produttore scripts/storage-cold-backup.py qualificato al commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0, run42276891427/job128095391653 SUCCESS:12test e cattura cifrata/ripristino nativo3DB+1oggetto MinIO118784byte, radici nuove, rootfs modificato conservato, replay respinto, originali fermi. Archivio di LAB1538597828byte, NON misura del backup VPS. ZIP537byte/SHA4cf2c962 verificato; unico membro conservato in Git. Quattro sorgenti confrontati esattamente. Ricevuta evidence/storage-cold-backup-qualified-20261106.json conserva cinque tentativi falliti e correzioni; nessuna prova precedente riuscita ripetuta senza delta.
+
+PostgreSQL: pg_isready non basta durante init; fixture aspetta postmaster definitivo PID1. pg_ctl fast restituisce137 sull'exec ausiliario, ma server0 e pg_controldata shut down verificati. Non inferire esito dal solo exec né ripetere pg_ctl. Provider PG/MinIO/etcd richiedono exit0; applicativi143 indicano soltanto cessazione, non drain. Qualifica sullo stesso daemon CI, non secondo host o intera coorte target.
+
+Consegna docs/OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md: installazione controllata del file24677byte/SHA3f8f255bf80cf2e077260ecf5ff2c31f14a624529864c8d3fac956877359cac8 e SOLO prepare. Nuovo piano privato dai binding G0 pinned+etcd; nessun stop/export/backup nel prepare. RuntimeAuthorityIssued=false. Il programma capture non esegue stop/update/start/grant: servono contenimento e finestra realmente approvati prima. Scelta fisica comprende intero PostgreSQL condiviso e14ruoli, impatto più ampio esplicito; non ammetterlo dalla sola delega. Nessuna raccolta consumata riutilizzata.
+
+SSH/SCP/PowerShell e comando SSH Windows sono già acquisiti: non chiedere né verificare di nuovo. Chiave privata resta sul PC, recipient pubblico ancora da fornire/verificare prima del fermo. Nessun archivio target creato, nessun trasferimento/restore target. Non fermare adesso i servizi. Attendere l'esito del SOLO prepare e legare la decisione operativa al piano concreto e ai gate applicabili; decision-reference registra ma non autentica HUMAN/THS.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati. Sorgente d5155899 invariata, PR54draft/open. CI a38:47SUCCESS/5in corso al controllo, nessun fail allora; qualifica dedicata conclusa. Nessun merge/deploy/grant/traffico/source-lock/piano congelato. La rimozione della lacuna del produttore non chiude G3.
+
 ## Checkpoint 2026-11-06 — client Windows e connessione acquisiti, ricezione predisposta
 
 Giovanni riporta PowerShell 5.1.26100.9711, SSH/SCP presenti e fornisce comando SSH con endpoint e percorso chiave. Dettagli personali non pubblicati. Ricevuta evidence/storage-backup-windows-readiness-20261106.json. Non chiedere nuovamente questi dati né ripetere Get-Command; nessuna connessione riuscita dedotta dal solo comando.

@@ -1,3 +1,7 @@
+## Aggiornamento — produttore disponibile, preparazione target pendente
+
+Il [pacchetto di cattura fredda](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md) è implementato e qualificato in laboratorio:12test,3DB+1oggetto ripristinati dopo cifratura. Il prossimo comando VPS è SOLO prepare, senza fermo. Nessun archivio target ancora prodotto. La proposta comprende l'intero cluster PostgreSQL condiviso e14ruoli: richiede review e approvazione esplicite dell'impatto. SSH/SCP e connessione Windows già forniti, non richiederli di nuovo. Cifratura/chiave pubblica effettiva, contenimento, finestra e restore del target restano aperti.
+
 # Copia indipendente per il passaggio storage — proposta da completare
 
 Scopo: rendere ripristinabile il passaggio MinIO→SeaweedFS. Non apre un programma DR autonomo. La richiesta dell'operatore autorizza la preparazione del trasferimento sul proprio PC; non autorizza implicitamente il fermo dei servizi, nuove letture privilegiate per produrre il backup o un restore. Fonte: MiniPET G3/G4 e [runbook](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md).
@@ -74,4 +78,4 @@ Fonti ufficiali consultate il6novembre: [OpenSSH per Windows](https://learn.micr
 
 La revisione di tools/onboarding_profile_recovery_update/backup.py e tools/semantic_application_cutover/fenced_backup_adapter.py conferma primitive per dump PostgreSQL delimitato e verifica del payload, con controllo di quiescenza/ammissione. Sono legate a scope e binding precedenti: non sono un comando già ammesso per questo intervento. Il dump --no-owner --no-acl richiede che il contratto di ripristino conservi separatamente ruoli e privilegi necessari; il solo parsing con pg_restore non prova un restore. La prosecuzione tools/chatbot_file_cohort/backup_recovery.py è anch'essa specifica del precedente intervento e non va rilanciata.
 
-Il blocco da completare è un pacchetto di produzione coerente: binding dei tre DB, barriera ai writer applicativi/amministrativi/esterni, copia della generazione oggetti, configurazioni effettivamente necessarie, cifratura e finestra. Deve essere concreto prima della decisione operativa. Nessun nuovo inventario diagnostico richiesto per SSH o per il container extra già identificato.
+Il pacchetto tecnico di cattura è ora disponibile nel documento collegato sopra; restano da legare sul target: binding dei tre DB, barriera ai writer applicativi/amministrativi/esterni, copia della generazione oggetti, configurazioni effettivamente necessarie, cifratura e finestra. Deve essere concreto prima della decisione operativa. Nessun nuovo inventario diagnostico richiesto per SSH o per il container extra già identificato.

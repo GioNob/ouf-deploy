@@ -1,0 +1,116 @@
+{
+  "schema": "ouf.storage-cold-backup-qualified.v1",
+  "date": "2026-11-06",
+  "status": "NATIVE_PRODUCER_QUALIFIED_TARGET_PREPARATION_PENDING",
+  "sourceCommit": "a38a61273543653b125e0ae1c51fd0c92ba9bbd0",
+  "runId": 42276891427,
+  "jobId": 128095391653,
+  "localTests": 12,
+  "hostedTests": 12,
+  "nativeResult": {
+    "acceptanceCreditAdded": 0,
+    "archiveBytes": 1538597828,
+    "fixtureDatabasesRestored": 3,
+    "fixtureObjectBytes": 118784,
+    "fixtureObjectsRestored": 1,
+    "fullFourteenRoleTargetQualified": false,
+    "independentDataRoots": true,
+    "pgCtlExecExitCode": 137,
+    "phase": "DECRYPT_AND_RESTORE",
+    "postgresControlShutDown": true,
+    "postgresPid1BeforeSeed": "postgres",
+    "postgresServerExitCode": 0,
+    "postgresShutdown": "pg_ctl-fast",
+    "replayDenied": true,
+    "schema": "ouf.storage-cold-backup-native.v1",
+    "sourceArchiveBytesVerified": true,
+    "sourceContainersRemainStopped": true,
+    "sshRecipientRoundTrip": true,
+    "status": "PASS",
+    "targetG3Complete": false,
+    "targetOperations": 0,
+    "writableContainerLayerRetained": true
+  },
+  "artifact": {
+    "id": 13533945142,
+    "bytes": 537,
+    "sha256": "4cf2c962f84d96ba2ea2de4fdbd6a60e5d83ffc46b4e558763f0c835eaaeea07",
+    "expiresAt": "2027-02-04T19:07:47Z",
+    "zipReadbackVerified": true,
+    "memberCount": 1,
+    "member": "native-result.json",
+    "memberSha256": "5cbaa32e18c643aa501914580217833293de8cc65eb06315be00e6f100147f0f",
+    "retainedMember": "evidence/storage-cold-backup-native-result-20261106.json"
+  },
+  "sourceReadback": {
+    "scripts/storage-cold-backup.py": {
+      "sha256": "3f8f255bf80cf2e077260ecf5ff2c31f14a624529864c8d3fac956877359cac8",
+      "bytes": 24677,
+      "exactGitReadback": true
+    },
+    "tests/test_storage_cold_backup.py": {
+      "sha256": "c190faa06c980d2951495be2958a81c4172c49d33e0f4339af09e8f9c2578f1d",
+      "bytes": 7358,
+      "exactGitReadback": true
+    },
+    "tests/qualify_storage_cold_backup_native.py": {
+      "sha256": "e0536476f02195838d4585178f4cb04e04a6f810a470d69cea53aa3fb1838e34",
+      "bytes": 12569,
+      "exactGitReadback": true
+    },
+    ".github/workflows/storage-cold-backup.yml": {
+      "sha256": "fdd23aa1651785ff3575acaf0a1852a9aa1d46156aed2cc7d3952496c14be3ca",
+      "bytes": 1457,
+      "exactGitReadback": true
+    }
+  },
+  "history": [
+    {
+      "commit": "114009affc453cfe5d96da0ac1466f34ec520378",
+      "run": 42273957741,
+      "outcome": "FAIL",
+      "reason": "MINIO_READY_TIMEOUT_BEFORE_BACKUP_AND_REPORT_UPLOAD_PERMISSION"
+    },
+    {
+      "commit": "44cf5d1cb7b3b4a879d042477d1291ce9db92d0a",
+      "run": 42274469616,
+      "outcome": "FAIL",
+      "reason": "CLEAN_STOP_REQUIRED_BEFORE_COPY"
+    },
+    {
+      "commit": "fd1f3740ece2ae18257f401e3bf32b59fcf05596",
+      "run": 42275462483,
+      "outcome": "FAIL",
+      "reason": "POSTGRES_EXIT_137_AFTER_DOCKER_STOP_TIMEOUT;MINIO_EXIT_0"
+    },
+    {
+      "commit": "08a9d2b9ae8312439faa7523d7061033a13ed410",
+      "run": 42276165640,
+      "outcome": "FAIL",
+      "reason": "PG_CTL_AUXILIARY_EXEC_EXIT_137_NOT_RECONCILED"
+    },
+    {
+      "commit": "f77d275e911e9f393873bf010fed6155cc6cf1b1",
+      "run": 42276517054,
+      "outcome": "FAIL",
+      "reason": "POSTGRES_SERVER_EXIT_NOT_CLEAN;DEFINITIVE_PID1_NOT_YET_REQUIRED"
+    },
+    {
+      "commit": "a38a61273543653b125e0ae1c51fd0c92ba9bbd0",
+      "run": 42276891427,
+      "outcome": "SUCCESS",
+      "reason": "DEFINITIVE_POSTGRES_PID1;SERVER_EXIT0_AND_CONTROL_SHUT_DOWN;ENCRYPTED_RESTORE_PASS"
+    }
+  ],
+  "limitations": [
+    "Synthetic two-provider fixture, not all fourteen target roles",
+    "Fresh restore directories in the same Docker daemon, not a second independent host",
+    "Archive bytes refer only to the CI fixture; target archive not produced",
+    "No target application consistency, operator containment or HUMAN/THS approval inferred",
+    "No target transfer, decryption, restore or G3 acceptance"
+  ],
+  "targetPreparationExecuted": false,
+  "targetBackupProduced": false,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0
+}

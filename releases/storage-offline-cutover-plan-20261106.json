@@ -45,7 +45,13 @@
     "sshEndpointProvidedPrivately": true,
     "identityFilePathProvidedPrivately": true,
     "transferScript": "scripts/receive-storage-backup-windows.ps1",
-    "transferScriptExecuted": false
+    "transferScriptExecuted": false,
+    "coldProducer": "scripts/storage-cold-backup.py",
+    "coldProducerQualification": "evidence/storage-cold-backup-qualified-20261106.json",
+    "coldProducerStatus": "NATIVE_QUALIFIED_TARGET_PREPARATION_PENDING",
+    "coldProducerScope": "PROPOSED_OFFLINE_FOURTEEN_ROLES_INCLUDING_WHOLE_SHARED_POSTGRES_CLUSTER",
+    "broaderStopApprovalReceived": false,
+    "prepareCommand": "sudo python3 -I -B -S /var/lib/ouf-storage-cold-backup.py prepare"
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
