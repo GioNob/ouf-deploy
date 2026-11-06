@@ -1,3 +1,11 @@
+## Checkpoint 2026-11-06 — capacità locale e proposta percorsi
+
+Giovanni riporta ricerca limitata completata senza troncamento: tre directory candidate backup, filesystem locale dati ext4 su / con502,72GiB totali e272,95GiB disponibili, più /boot. Non è un inventario esaustivo di filesystem remoti, dischi non montati o installazioni con nomi diversi. Nessun file modificato o provider interrogato. Le directory candidate non provano un backup presente, recuperabile o indipendente.
+
+Scelta reversibile del piano: nuova area dati `/var/lib/ouf/seaweedfs`, staging locale backup `/opt/ouf/backup/seaweedfs`. Nessuna directory creata, mount cambiato o configurazione operativa compilata. Non riusare runtime-backup o contenuti esistenti. Restano da verificare device/custodia dei percorsi esatti, dati correnti e margine per originale+nuova copia+backup+metadati/staging. Una cartella distinta sul medesimo filesystem non prova indipendenza dal guasto del disco; destinazione esterna non confermata, non dichiarata assente.
+
+MiniPET§strategia migrazione richiede backup recuperabile/indipendente e misure; il dato dello spazio libero non chiude G0 né AT20. Non ripetere preparatore o scansione. Prossimo input operatore: eventuale backup esterno/provider o storage indipendente già disponibile; nel frattempo restano da compilare i binding privati G0. Ricevuta `evidence/storage-g0-capacity-discovery-20261106.json`. Predecessoreca696087 verificato51/51SUCCESS, nessun run attivo nelle100esecuzioni osservate. MiniPET39,78%,0/8gate,0/21AT,0/120oggetti reali, nessun nuovo credito. Nessun merge/deploy/grant/collect/reset; CI del nuovo checkpoint documentale distinta.
+
 ## Checkpoint 2026-11-06 — nuovo staging VPS confermato dall'operatore
 
 Giovanni ha restituito `NETWORK_DRAFT_STAGED_BINDINGS_REQUIRED`: digest bundle9053aa38/manifest esatti,17ricevute coincidenti con la preparazione precedente, vecchia area e storico preservati, nessuna lettura credenziali/connessione provider/scope di raccolta. Provenienza: output dell'operatore, non accesso agent. HEAD di partenza386b039c verificato51/51SUCCESS, PR54 entrambe draft/open, nessun run attivo nelle100esecuzioni osservate; source d5155899 invariato.

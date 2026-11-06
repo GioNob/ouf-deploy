@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Do not repeat either private preparation. Complete current private role/network/connection bindings and identities; source/destination/backup paths must be concrete. Destination and backup paths are not confirmed in reviewed evidence and need an operator decision. Then local check and review census/access/capacity/custody/window before the applicable exact collection decision. Historical IDs are candidates only, not automatically current. No provider probe or collection is authorized by staging.",
+  "nextPlannedWork": "Do not repeat staging or the bounded filesystem discovery. Use proposed data/staging paths as planning candidates only; confirm available independent off-VPS backup custody, exact path devices/permissions and current capacity needs. Complete private role/network/connection bindings and identities for local check, then review all eight G0 sections and the exact applicable collection decision. No volume creation, deployment or runtime admission inferred.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -303,5 +303,23 @@
     "targetOperations": 0,
     "progressCreditAdded": 0,
     "targetStagingProvenance": "USER_REPORTED_TERMINAL_OUTPUT"
+  },
+  "g0CapacityDiscovery": {
+    "receipt": "evidence/storage-g0-capacity-discovery-20261106.json",
+    "localDataAvailableGiB": 272.95,
+    "capacityAccepted": false,
+    "pathsSelectedForPlanOnly": {
+      "status": "PATHS_SELECTED_FOR_PLAN_ONLY",
+      "dataRoot": "/var/lib/ouf/seaweedfs",
+      "localBackupStaging": "/opt/ouf/backup/seaweedfs",
+      "independentBackupDestination": null,
+      "sourceDataPath": null,
+      "directoriesCreated": false,
+      "currentPathDeviceAndCustodyVerified": false,
+      "existingRuntimeBackupAreaReused": false
+    },
+    "independentBackupConfirmed": false,
+    "operatorProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+    "progressCreditAdded": 0
   }
 }
