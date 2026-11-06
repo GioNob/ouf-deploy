@@ -1,3 +1,7 @@
+## Correzione corrente: proprietà systemd e prova nativa del reader
+
+Seconda preparazione respinta con PROPERTY_CARDINALITY prima delle scritture; campo effettivo non noto. Corretto show --all/valori sconosciuti/ExecStop multipli/diagnostica,13test localiPASS; ora qualifica contro systemd reale nel runner prima di nuova consegna. [Pacchetto](OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md). StessaAREA esclusiva,nessun vecchio stop/capture rilanciato o scope azzerato. Questa è ancora la correzione del medesimo blocco host; nessun avanzamento MiniPET attribuito.
+
 ## Correzione corrente del preparatore host
 
 Prima preparazione HELD sul filtro percorso,prima di scrivere. Corretto il supporto ai frammenti systemd esterni mantenendo custodia e nofollow;9test localiPASS. Ora eseguire il preparatore corretto una volta; configurazioni illeggibili restano rilievi,non successi. [Dettagli e limiti](OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md). Nessun nuovo stop/capture,area cancellata o gate chiuso; questo corregge lo stesso blocco host,non aggiunge un filone o un nuovo traguardo MiniPET.

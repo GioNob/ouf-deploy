@@ -63,7 +63,8 @@ class Preparation(unittest.TestCase):
             names = p.EXPECTED | ({'ouf-unreviewed-token.service'} if self.extra_unit else set())
             return '\n'.join(name + ' enabled' for name in sorted(names))
         if argv[0] == 'show':
-            return '\n\n'.join('\n'.join(k + '=' + v for k, values in row.items() for v in values)
+            return '\n\n'.join('\n'.join(k + '=' + v for k, values in row.items() for v in values
+                                        if v or '--all' in argv)
                                for row in self.rows)
         raise AssertionError('Mutating or unapproved command: ' + str(argv))
 
@@ -152,6 +153,47 @@ class Preparation(unittest.TestCase):
         self.rows[0]['Id'].append(self.rows[0]['Id'][0])
         with self.assertRaisesRegex(ValueError, 'UNIT_ID_CARDINALITY'):
             self.prepare()
+        self.assertFalse(self.area.exists())
+
+    def test_show_explicitly_requests_empty_properties(self):
+        result = self.prepare()
+        self.assertIn('--all', self.calls[-1])
+        self.assertEqual(result['findings'], [])
+        self.assertTrue(all(r['execStopPresent'] is False for r in result['units'] if 'execStopPresent' in r))
+
+    def test_missing_optional_field_is_unknown_and_other_units_are_preserved(self):
+        row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+        for key in ('PropagatesStopTo', 'ExecStop', 'ReadWritePaths', 'DropInPaths'):
+            del row[key]
+        result = self.prepare()
+        report = next(r for r in result['units'] if r['Id'] == p.REGISTRY)
+        self.assertIsNone(report['stopPropagationPresent'])
+        self.assertIsNone(report['execStopPresent'])
+        self.assertIsNone(report['declaredWritablePathsOverlapSourceCount'])
+        self.assertEqual({f['property'] for f in result['findings']},
+                         {'PropagatesStopTo', 'ExecStop', 'ReadWritePaths', 'DropInPaths'})
+        self.assertEqual(result['unitConfigurationFilesBound'], 11)
+
+    def test_multiple_exec_stop_commands_preserved_without_exporting_arguments(self):
+        row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+        row['ExecStop'] = [self.secret + ' first', self.secret + ' second']
+        row['Restart'] = ['no', 'always']
+        result = self.prepare()
+        report = next(r for r in result['units'] if r['Id'] == p.REGISTRY)
+        self.assertTrue(report['execStopPresent'])
+        self.assertEqual(report['execStopPropertyLines'], 2)
+        self.assertIsNone(report['Restart'])
+        self.assertEqual(result['findings'][0]['property'], 'Restart')
+        self.assertEqual(result['findings'][0]['occurrences'], 2)
+        self.assertNotIn(self.secret, json.dumps(result))
+
+    def test_critical_cardinality_failure_identifies_unit_and_key_without_values(self):
+        row = next(r for r in self.rows if r['Id'] == [p.REGISTRY])
+        row['LoadState'] = ['loaded', self.secret]
+        with self.assertRaises(p.PropertyIssue) as caught:
+            self.prepare()
+        self.assertEqual(caught.exception.details, {'unit': p.REGISTRY, 'property': 'LoadState',
+            'occurrences': 2, 'reason': 'PROPERTY_CARDINALITY'})
         self.assertFalse(self.area.exists())
 
 

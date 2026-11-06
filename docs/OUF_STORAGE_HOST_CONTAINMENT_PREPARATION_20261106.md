@@ -1,5 +1,13 @@
 # Contenimento dei writer host per la prima copia non produttiva
 
+## Secondo HOLD preparatorio: gestione delle proprietà
+
+Il preparatore acb3425e ha prodotto PROPERTY_CARDINALITY prima delle scritture. [Ricevuta](../evidence/storage-host-containment-cardinality-held-operator-20261106.json). Il vecchio messaggio non identifica unità/proprietà: non sappiamo se fosse assente o ripetuta.
+
+La correzione richiede show --all, distingue proprietà opzionali non note da proprietà vuote, conserva gli array ExecStop/ExecStopPost e restituisce rilievi con unità/campo/numero occorrenze, senza esportare valori privati. Proprietà critiche conservano verifica stretta e diagnostica specifica. Non ridurre missing a false o a lista vuota per approvare un mutatore.
+
+[systemctl ufficiale](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html) documenta l'omissione ordinaria dei campi vuoti; --all non rende presenti proprietà non applicabili o non supportate.13test locali PASS. Il vecchio mock assumeva presenza universale delle proprietà: lacuna corretta. Nuova prova di integrazione su systemd reale GitHubRunner:13unità sintetiche inattive,11configurazioni,maschere e frammento esterno; nessun servizio viene avviato/fermato. CI da verificare prima della consegna. Non è prova del contenimentoVPS e non ripete stop/restore/crypto.
+
 ## Correzione dopo il primo tentativo preparatorio
 
 Il preparatore2adcde61 è stato respinto con UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW, prima di creare la directory o scrivere la bozza. Nessun servizio modificato. [Ricevuta e limiti](../evidence/storage-host-containment-path-held-operator-20261106.json). Non conosciamo ancora unità/percorso specifici: il vecchio errore non li esportava.
@@ -18,7 +26,7 @@ Questo rimuove l'incertezza sul perimetro minimo host da considerare: il fermo D
 
 ## Preparazione concreta
 
-Programma scripts/prepare-storage-host-containment-20261106.py,16077byte,SHA256a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d.
+Programma scripts/prepare-storage-host-containment-20261106.py,18228byte,SHA256caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1.
 
 Crea soltanto /var/lib/ouf-storage-host-containment-preparation-20261106-v1 (0700), draft.private.json e result.json (0600). Legge metadati systemd e configurazioni delle unità con custodia protetta. Conserva privatamente configurazioni potenzialmente segrete; restituisce soltanto stati, flag di revisione, conteggi e digest. Tre comandi systemctl di lettura,10s/call,1MiB/call,60s complessivi; max64configurazioni da256KiB; bozza massimo16MiB. Nessun corpo token o API Docker/IAM. Nessun comando di mutazione; non ha modalità apply.
 

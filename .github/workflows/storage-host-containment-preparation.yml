@@ -5,6 +5,7 @@ on:
     paths:
       - scripts/prepare-storage-host-containment-20261106.py
       - tests/test_storage_host_containment_preparation.py
+      - tests/qualify_storage_host_preparation_systemd.py
       - .github/workflows/storage-host-containment-preparation.yml
 permissions:
   contents: read
@@ -21,3 +22,5 @@ jobs:
           persist-credentials: false
       - name: Verify preparation privacy, lineage and no service mutation
         run: python3 -B -m unittest discover -s tests -p 'test_storage_host_containment_preparation.py' -v
+      - name: Real systemd service timer mask and linked-fragment read integration
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_host_preparation_systemd.py

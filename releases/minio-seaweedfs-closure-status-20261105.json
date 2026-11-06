@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Run corrected private host-containment preparation after pre-write UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW. External systemd fragments supported only through unchanged protected reader; bad paths/custody retained as findings. No stop/capture replay or reset. Use exact prepared config to finish host executor and linked operation, then archive/PC/restore and SeaweedFS criteria.",
+  "nextPlannedWork": "Qualify corrected host preparer against real systemd on GitHub runner, then operator executes preparer only. Resolve missing/multivalue properties as explicit unknown findings; exact VPS failing property unproven. Complete host containment executor and new linked stop/capture after exact draft; preserve all attempts and original expiry.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -650,17 +650,19 @@
   "hostContainmentPreparation": {
     "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_PREPARATION_20261106.md",
     "script": "scripts/prepare-storage-host-containment-20261106.py",
-    "scriptSha256": "a465d17b02f7621926a773b819bcbc8cc89261f530249a8149d8136a9fec625d",
+    "scriptSha256": "caac2981e43b96150bc0875405facfc4cb34ad8b188adc210e4ed214bb5bf5b1",
     "targetPreparationPending": true,
     "executorImplemented": false,
     "serviceMutation": false,
-    "testsLocalPass": 9,
+    "testsLocalPass": 13,
     "acceptanceCreditAdded": 0,
-    "scriptBytes": 16077,
-    "lastTargetResult": "HELD_UNIT_CONFIGURATION_PATH_REQUIRES_REVIEW_BEFORE_WRITES",
-    "failureReceipt": "evidence/storage-host-containment-path-held-operator-20261106.json",
+    "scriptBytes": 18228,
+    "lastTargetResult": "HELD_PROPERTY_CARDINALITY_BEFORE_WRITES",
+    "failureReceipt": "evidence/storage-host-containment-cardinality-held-operator-20261106.json",
     "exactFailedUnitAndPathKnown": false,
-    "externalManagerReportedPathsUseUnchangedProtectedReader": true
+    "externalManagerReportedPathsUseUnchangedProtectedReader": true,
+    "exactFailedPropertyKnown": false,
+    "nativeSystemdQualificationPending": true
   },
   "generalCiObserved": {
     "commit": "2db26f14d12930535af09b9140d0c3e3c67a1b86",

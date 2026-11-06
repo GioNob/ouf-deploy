@@ -104,17 +104,44 @@ def property_rows(raw):
     return rows
 
 
+class PropertyIssue(ValueError):
+    def __init__(self, row, key, reason='PROPERTY_CARDINALITY'):
+        ids = row.get('Id', [])
+        self.details = {'unit': ids[0] if len(ids) == 1 and UNIT.fullmatch(ids[0]) else None,
+                        'property': key, 'occurrences': len(row.get(key, [])), 'reason': reason}
+        super().__init__(reason)
+
+
 def one(row, key):
     values = row.get(key, [])
-    need(len(values) == 1, 'PROPERTY_CARDINALITY')
+    if len(values) != 1:
+        raise PropertyIssue(row, key)
     return values[0]
 
 
 def words(row, key):
     value = one(row, key)
     # Do not pretend to decode systemd C-escaping with a shell parser.
-    need(not any(c in value for c in ('\\', '"', "'")), 'ESCAPED_PROPERTY_REQUIRES_REVIEW')
+    if any(c in value for c in ('\\', '"', "'")):
+        raise PropertyIssue(row, key, 'ESCAPED_PROPERTY_REQUIRES_REVIEW')
     return value.split()
+
+
+def reviewed(row, key, findings, *, split=False):
+    try:
+        return words(row, key) if split else one(row, key)
+    except PropertyIssue as error:
+        if error.details not in findings:
+            findings.append(error.details)
+        return None  # Unknown is never silently converted to empty/false.
+
+
+def command_presence(row, key, findings):
+    # Exec* arrays may legitimately serialize as several property lines.
+    if key not in row:
+        reviewed(row, key, findings)
+        return None
+    return any(bool(value) for value in row[key])
 
 
 def configuration_path_kind(path):
@@ -134,35 +161,44 @@ def configuration_path_kind(path):
     return 'EXTERNAL_MANAGER_REPORTED_LOCATION'
 
 
-def review(rows, sources, config):
+def review(rows, sources, config, findings):
     by_name = {one(row, 'Id'): row for row in rows}
     need(set(by_name) == EXPECTED, 'TOKEN_UNIT_SET_CHANGED')
     result = []
     for name in sorted(by_name):
         row = by_name[name]
-        report = {k: one(row, k) for k in SAFE if k in row}
+        report = {k: reviewed(row, k, findings) for k in SAFE if k in row}
         report['configurationFilesBound'] = sum(name in f['units'] for f in config.values())
         report['externalConfigurationFilesBound'] = sum(name in f['units'] and
             f.get('locationKind') == 'EXTERNAL_MANAGER_REPORTED_LOCATION' for f in config.values())
-        report['needDaemonReload'] = one(row, 'NeedDaemonReload')
-        report['otherNamesPresent'] = set(words(row, 'Names')) - {name} != set()
-        report['stopPropagationPresent'] = any(words(row, k) for k in ('ConsistsOf', 'PropagatesStopTo', 'BoundBy'))
-        report['alsoInstallTargetsPresent'] = any(
+        report['needDaemonReload'] = reviewed(row, 'NeedDaemonReload', findings)
+        aliases = reviewed(row, 'Names', findings, split=True)
+        report['otherNamesPresent'] = bool(set(aliases) - {name}) if aliases is not None else None
+        propagation = [reviewed(row, k, findings, split=True) for k in ('ConsistsOf', 'PropagatesStopTo', 'BoundBy')]
+        report['stopPropagationPresent'] = True if any(propagation) else None if None in propagation else False
+        also_present = any(
             name in f['units'] and re.search(r'(?m)^[ \t]*Also[ \t]*=[ \t]*[^\s#;]', f['text'])
             is not None for f in config.values())
-        report['associatedUnits'] = sorted(set(words(row, 'Triggers') + words(row, 'TriggeredBy')))
+        config_unknown = any(f.get('unit') == name and f.get('property') in ('FragmentPath', 'DropInPaths')
+                             for f in findings)
+        report['alsoInstallTargetsPresent'] = True if also_present else None if config_unknown else False
+        triggers = [reviewed(row, k, findings, split=True) for k in ('Triggers', 'TriggeredBy')]
+        report['associatedUnits'] = sorted({n for values in triggers if values is not None for n in values})
+        report['associatedUnitsComplete'] = None not in triggers
         if name.endswith('.service') and name not in MASKED:
             for key in ('Type', 'Restart', 'KillMode', 'KillSignal', 'SendSIGKILL',
                         'TimeoutStopUSec', 'RemainAfterExit', 'RuntimeDirectoryPreserve'):
-                report[key] = one(row, key)
-            report['execStopPresent'] = bool(one(row, 'ExecStop'))
-            report['execStopPostPresent'] = bool(one(row, 'ExecStopPost'))
+                report[key] = reviewed(row, key, findings)
+            report['execStopPresent'] = command_presence(row, 'ExecStop', findings)
+            report['execStopPostPresent'] = command_presence(row, 'ExecStopPost', findings)
+            report['execStopPropertyLines'] = len(row.get('ExecStop', []))
+            report['execStopPostPropertyLines'] = len(row.get('ExecStopPost', []))
             # Advisory route comparison only. Absence does not prove no writer.
-            paths = words(row, 'ReadWritePaths')
+            paths = reviewed(row, 'ReadWritePaths', findings, split=True)
             report['declaredWritablePathsOverlapSourceCount'] = sum(
                 any(p.lstrip('-+') == s or p.lstrip('-+').startswith(s.rstrip('/') + '/')
                     or s.startswith(p.lstrip('-+').rstrip('/') + '/') for p in paths)
-                for s in sources)
+                for s in sources) if paths is not None else None
         result.append(report)
     return result
 
@@ -196,7 +232,7 @@ def prepare(h, run=command):
     loaded = unit_names(run(['list-units', '--all', '--plain', '--no-legend', *patterns], until))
     names = {n for n in installed | loaded if '@.' not in n}
     need(names == EXPECTED, 'TOKEN_UNIT_SET_CHANGED')
-    rows = property_rows(run(['show', *sorted(names), *['--property=' + k for k in PROPS]], until))
+    rows = property_rows(run(['show', '--all', *sorted(names), *['--property=' + k for k in PROPS]], until))
     need({one(row, 'Id') for row in rows} == names, 'SHOW_UNIT_SET_CHANGED')
     config, findings, reads_attempted = {}, [], 0
     for row in rows:
@@ -205,8 +241,10 @@ def prepare(h, run=command):
             need(one(row, 'LoadState') == 'masked' and one(row, 'ActiveState') == 'inactive', 'MASKED_UNIT_CHANGED')
             continue
         need(one(row, 'LoadState') == 'loaded', 'UNIT_NOT_LOADED')
-        fragment = one(row, 'FragmentPath')
-        paths = [('FragmentPath', fragment)] + [('DropInPaths', path) for path in words(row, 'DropInPaths')]
+        fragment = reviewed(row, 'FragmentPath', findings)
+        drop_ins = reviewed(row, 'DropInPaths', findings, split=True)
+        paths = ([('FragmentPath', fragment)] if fragment is not None else [])
+        paths += [('DropInPaths', path) for path in (drop_ins or [])]
         for property_name, path in paths:
             need(time.monotonic() < until, 'CONFIGURATION_READ_BUDGET')
             if path in config:
@@ -229,9 +267,9 @@ def prepare(h, run=command):
                 findings.append(context | {'reason': 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN',
                     'bodyReadAttempted': True, 'errorType': type(error).__name__,
                     'errno': error.errno if isinstance(error, OSError) else None})
-        if one(row, 'NeedDaemonReload') != 'no':
+        if reviewed(row, 'NeedDaemonReload', findings) not in ('no', None):
             findings.append({'unit': name, 'reason': 'EFFECTIVE_CONFIGURATION_RELOAD_REQUIRED'})
-    reports = review(rows, legacy['sources'], config)
+    reports = review(rows, legacy['sources'], config, findings)
     draft = {'schema': 'ouf.storage-host-containment-draft.v1',
         'createdEpoch': int(time.time()), 'legacyValidUntilEpoch': legacy['validUntilEpoch'],
         'priorInputSha256': PRIOR, 'sources': legacy['sources'],
@@ -285,8 +323,9 @@ if __name__ == '__main__':
              and sys.dont_write_bytecode, 'ROOT_ISOLATED_PYTHON_REQUIRED')
         print(json.dumps(prepare(bootstrap()), sort_keys=True))
     except Exception as error:
-        reason = str(error) if type(error).__name__ in ('Held', 'ValueError') else type(error).__name__
+        reason = str(error) if type(error).__name__ in ('Held', 'ValueError', 'PropertyIssue') else type(error).__name__
         print(json.dumps({'status': 'HELD', 'reason': reason, 'partialPreparationPreserved': True,
+            **({'propertyIssue': error.details} if isinstance(error, PropertyIssue) else {}),
             'serviceMutations': 0, 'automaticReplayAllowed': False, 'automaticRestartAllowed': False,
             'runtimeAuthorityIssued': False, 'acceptanceCreditAdded': 0}))
         sys.exit(2)
