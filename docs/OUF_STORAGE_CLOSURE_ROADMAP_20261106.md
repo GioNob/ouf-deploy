@@ -34,7 +34,7 @@ Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/basel
 
 ## Coppia corrente: uscita acquisita e azione residua
 
-**Aggiornamento produttore backup:** [pacchetto implementato e qualificato](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md),12test e restore nativo3DB+1oggetto su radici distinte. Rimosso il blocco software «nessun produttore disponibile». Adesso serve il SOLO prepare sul VPS per legare il piano corrente; la proposta fisica include l'intero PostgreSQL condiviso e14ruoli. Approvazione del fermo/contenimento,recipient pubblico,finestra,cattura e restore reali ancora aperti. Nessun nuovo credito G3 o stima basata sui test.
+**Aggiornamento produttore backup:** prepare v1 eseguito e HELD; readback risolve la causa (7mount/5path RO sotto /run e condivisioni con container fermi). Produttore v2 corretto e qualificato al562f2ca3, run42280383267:17test, restore3DB+MinIO+file /run e condivisione con container CREATED. [Pacchetto v2](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md). Prossimo passo unico VPS: installer pinned e SOLO prepare v2, v1 conservata. Il blocco software è trattato; verifiche correnti dei file e piano target ancora da eseguire. Restano custodia/configurazioni effettive, recipient, contenimento/finestra/approvazione, cattura, trasferimento e restore reali. Nessun credito G3 o nuova stima basata sul conteggio test.
 
 
 1. **Origine, scelta e delta completati:** catena immagine/sorgente ricostruita dalle prove conservate;stesso tree73498/9d19 verificato;scelta di sviluppo d515 confermata,delta e limiti espliciti. Non è qualifica live o ammissione.
