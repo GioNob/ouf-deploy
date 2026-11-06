@@ -1,6 +1,6 @@
-## Aggiornamento — produttore disponibile, preparazione target pendente
+## Aggiornamento — piano target pronto, custodia da eseguire sul PC
 
-Il [pacchetto di cattura fredda](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md) è implementato e qualificato in laboratorio:12test,3DB+1oggetto ripristinati dopo cifratura. Il prossimo comando VPS è SOLO prepare, senza fermo. Nessun archivio target ancora prodotto. La proposta comprende l'intero cluster PostgreSQL condiviso e14ruoli: richiede review e approvazione esplicite dell'impatto. SSH/SCP e connessione Windows già forniti, non richiederli di nuovo. Cifratura/chiave pubblica effettiva, contenimento, finestra e restore del target restano aperti.
+Prepare v3 RIUSCITO: pianoSHA1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f,14ruoli/34fonti/103condividenti fermi. Non ripetere prepare. [Due comandi correnti e impatto](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md):reader del piano già raccolto e prova locale Windows qualificata PowerShell5.1/age1.3.2. La privata SSH resta sul PC;nessuna connessione VPS dal client. Esiti operatore ancora pendenti. Nessun fermo/backup/trasferimento/restore target. Il PC Windows è già scelto,SSH/SCP/endpoint acquisiti:non richiederli di nuovo. Le sequenze storiche sottostanti non prescrivono altri reader conclusi o una nuova scelta destinazione.
 
 # Copia indipendente per il passaggio storage — proposta da completare
 

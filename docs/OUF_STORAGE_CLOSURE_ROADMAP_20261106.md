@@ -34,7 +34,7 @@ Le prove di base restano quelle del MiniPET originale e PET/Matrix in docs/basel
 
 ## Coppia corrente: uscita acquisita e azione residua
 
-**Aggiornamento produttore backup:** v1/v2 HELD conservati. Metadati reali:5directory /run root0750,nlink2,non file singoli; nessun chmod/chown necessario. Correzione v3 qualificata al639f7a64, run42282792808:20test e restore cifrato3DB+MinIO+directory completa con gruppo10003/0750,file0640,subdir,file vuoto,xattr. [Consegna v3](OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md). Prossimo passo VPS: solo installer pinned/prepare v3, con scansione dei contenuti entro budget; nessun altro reader metadati. Restano piano effettivo/configurazioni/custodia,recipient,containment/finestra/gate,backup/trasferimento/restore target. Nessun credito G3 o stima basata sui test.
+**Aggiornamento backup target:** prepare v3 RIUSCITO,pianoSHA1c0bb62c,14ruoli/34fonti/5runtime/103condividenti fermi. Non ripetere prepare o vecchie diagnosi. [Prossima coppia](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md):lettura policy/scadenza dal piano conservato e prova locale Windows di custodia (client qualificato PS5.1,run42284908808). Dopo i due output,legare recipient/age target,policy realmente necessarie,contenimento/finestra/decisioni al piano concreto. Nessun backup,fermo o creditoG3 ancora;restano trasferimento/restore e criteri complessivi.
 
 
 1. **Origine, scelta e delta completati:** catena immagine/sorgente ricostruita dalle prove conservate;stesso tree73498/9d19 verificato;scelta di sviluppo d515 confermata,delta e limiti espliciti. Non è qualifica live o ammissione.

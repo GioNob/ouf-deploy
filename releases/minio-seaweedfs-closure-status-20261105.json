@@ -562,7 +562,7 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Do not repeat successful prepare. Read exact retained plan impact/policies/expiry; Windows custody client qualification in progress. Recipient, concrete containment/window and applicable operational authority remain required before any stop/capture.",
+    "requiredOperatorInput": "Return exact prepared-plan impact/policy/expiry JSON from the read-only VPS reader and local Windows encryption/decryption JSON from the qualified custody client. Do not repeat prepare. Public recipient only; no private key. Operational containment/window/authority and target capture/restore remain separate.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
@@ -593,6 +593,16 @@
       "targetPlanSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
       "targetSources": 34,
       "stoppedSharingContainers": 103
+    },
+    "windowsCustodyClient": {
+      "path": "scripts/prepare-storage-backup-custody-windows.ps1",
+      "receipt": "evidence/storage-backup-windows-custody-qualified-20261106.json",
+      "qualifiedCommit": "00c567d8795a0d4060f4ea2da868e7937af2b933",
+      "runId": 42284908808,
+      "status": "NATIVE_WINDOWS_QUALIFIED_USER_PC_PENDING",
+      "userPcExecuted": false,
+      "crossPlatformDecryptProven": false,
+      "acceptanceCreditAdded": 0
     }
   },
   "cohortRetainedReconciliation": {

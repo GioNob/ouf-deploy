@@ -1,3 +1,7 @@
+## Aggiornamento — piano backup concreto, fermo non ancora ammesso
+
+Piano v3 preparatoSHA1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f:14ruoli (etcd incluso),34fonti,103container già fermi condividenti,intero clusterPG. [Custodia e impatto corrente](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md). Prossima coppia:reader policy/scadenza del piano conservato,prova Windows locale di cifratura/decifratura. Nessuna nuova raccolta Engine o replay prepare. DestinazionePC Windows,custodeGiovanni,SSH/SCP già noti;le proposte storiche di richiederli sono superate. Rimangono recipient target,compatibilità age,policy realmente da modificare,contenimento/finestra/decisioni applicabili e backup/restore. Nessuno stop/deploy/grant autorizzato da questo aggiornamento.
+
 ## Aggiornamento corrente — identità fuori roster risolta
 
 [Ricevuta operatore e join storico](../evidence/storage-g0-unmapped-runtime-operator-20261106.json): l'unico attivo fuori roster è **ouf-etcd**, con image ID e SHA256 del nome/ID coincidenti con la ricevuta indipendente del9ottobre. Non è prova di consumer S3,assenza writer esterni o dipendenza routing corrente. Includere review della custodia/stato control plane;nessuno stop/restore automatico. Il roster G0 storico resta13ruoli,non viene riscritto.

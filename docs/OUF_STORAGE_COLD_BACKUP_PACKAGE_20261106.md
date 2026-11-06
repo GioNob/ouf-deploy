@@ -1,6 +1,6 @@
 # Backup freddo MinIO → SeaweedFS: pacchetto v3
 
-Il produttore v3 gestisce le cinque directory /run osservate sul VPS. Qualifica [run42282792808](https://github.com/GioNob/ouf-deploy/actions/runs/42282792808) SUCCESS al639f7a64; [ricevuta e digest](../evidence/storage-cold-backup-v3-qualified-20261106.json). Prepare v1 e v2 sono già eseguiti e HELD: conservarli, non rilanciarli o modificarne permessi/file. Preparazione v3 target ancora pendente; nessun fermo/capture/restore target implicito.
+Il produttore v3 gestisce le cinque directory /run osservate sul VPS. Qualifica [run42282792808](https://github.com/GioNob/ouf-deploy/actions/runs/42282792808) SUCCESS al639f7a64; [ricevuta e digest](../evidence/storage-cold-backup-v3-qualified-20261106.json). Prepare v1 e v2 sono già eseguiti e HELD: conservarli, non rilanciarli o modificarne permessi/file. Preparazione v3 target RIUSCITA: pianoSHA1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f,14ruoli/34fonti/5runtime/103condividenti fermi. Non ripetere installer/prepare. Nessun fermo/capture/restore target implicito. Prossima azione in [Custodia e impatto](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md):lettura del piano conservato e prova Windows prima di definire il fermo.
 
 ## Evidenza e correzione
 
@@ -10,7 +10,7 @@ V1 respingeva /run interamente; v2 ammetteva solo file regolari sui7binding RO/5
 
 Per ogni fonte /run:256entry compresa radice,16MiB di corpi,1MiB per file,profondità16,15s. Il piano privato conserva albero,hash,frame metadati e xattr; membership/contenuto/metadati vengono ricontrollati prima e dopo la cattura. Gli errori di tipo/custodia/limite riportano codice, metadati e hash dei percorsi, senza nomi o segreti. Non tutti i possibili errori OS sono classificati, e la scansione non è un fence globale.
 
-## Consegna: soltanto preparazione v3
+## Consegna storica già eseguita: non ripetere preparazione v3
 
 Installer scripts/install-storage-cold-backup-v3-20261106.sh,1074byte,SHA2799bdeb20b8c6c2547b5813f8efc031c042bebe7952f3401a4df15671f0ac0c. Da scaricare tramite URL Git immutabile e verificare prima dell'esecuzione. Scarica il produttore al commit639f7a640dc2f0aa0ec00e3b31c2b43bebe97111,32524byte,SHA256b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac; crea solo il nuovo /var/lib/ouf-storage-cold-backup-v3.py root0600 con O_EXCL/fsync e invoca prepare una volta.
 
