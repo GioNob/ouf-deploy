@@ -1,3 +1,7 @@
+## Esito successivo — raccolta02 consumata e completata tecnicamente
+
+Giovanni riporta SEALED/technicalCaptureComplete=true,120corpi verificati,3exportDB,145container,292GET nuovi/345cumulativi,1370richiesteS3. HELD_RECONCILIATION_FINDINGS:18rilieviDB,2classificazioniACCESS,evidenze operative mancanti. [Ricevuta](../evidence/storage-g0-host192-collection-operator-20261106.json). **Non eseguire più i comandi sotto:** descrivono la consegna storica. Prossimo lavoro: sola lettura dei rapporti locali e riconciliazione,nessun nuovo collect o replay.
+
 # Raccolta G0 host192 — decisione OUF-G0-COLLECT-20261106-02
 
 Stato: **AUTORIZZATA DALL'OPERATORE, ESECUZIONE PENDENTE**. Giovanni: «Autorizzo la raccolta». [Decisione registrata](../evidence/storage-g0-host192-collection-decision-20261106.json). Non richiedere di nuovo questa autorizzazione. Nessuna autenticazione HUMAN/THS o authority runtime emessa.

@@ -1,3 +1,7 @@
+## Aggiornamento G0 — raccolta02 completa, riconciliazione aperta
+
+[Risultato operatore](../evidence/storage-g0-host192-collection-operator-20261106.json):SEALED,120corpi reali verificati,3exportDB,145container osservati;18rilieviDB e2classificazioniACCESS da rivedere,ACCESS/CUSTODY/WINDOW/WRITERS mancanti. Nessuna scrittura provider,0oggetti migrati. Raccolta consumata,non ripetere;secondo passo della coppia ora in riconciliazione locale. [Roadmap aggiornata](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md). Credito invariato18,3/46=39,78%,0/8gate,0/21AT:inventario riconciliato e criteri complessivi G0 non ancora soddisfatti.
+
 ## Aggiornamento roadmap — 6 novembre 2026
 
 La stima 12–18 passi è ritirata. La [roadmap corrente per gate](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md) distingue preparazione conclusa, accettazione aperta e passaggio operativo. G0 non è chiuso; host192 preparato, decisione02 pendente. Nessun credito per questo aggiornamento: 18,3/46=39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali migrati. Criteri e storico sotto invariati.

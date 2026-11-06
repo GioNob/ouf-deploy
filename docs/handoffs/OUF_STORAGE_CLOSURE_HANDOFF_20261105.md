@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-06 — raccolta target completa, 18 rilievi da riconciliare
+
+Output operatore registrato in evidence/storage-g0-host192-collection-operator-20261106.json: HELD_RECONCILIATION_FINDINGS,phase SEALED,technicalCaptureComplete=true. Verificati120corpi reali,3exportDB,145container via Docker;292GET nuovi/345cumulativi,1370richiesteS3,zero targetWrites. Tutti4child claimed/summaryPresent. Sono osservazioni riportate da Giovanni,non accesso diretto agent. Questa è la raccolta02 autorizzata e ora consumata: **non rilanciare ingresso,collector,preparatore o scope**.
+
+Primo passo della coppia (raccolta) completato tecnicamente. Secondo (riconciliazione) in corso:18rilieviDB e2classificazioniACCESS,tipi ancora ignoti. Non dedurre18corruzioni né18oggetti distinti. ACCESS/CUSTODY/WINDOW/WRITERS mancanti,11percorsi writer non censiti; capacità osservata ma non accettata. Nessuna quiescenza/common-cut provati.
+
+scripts/readback-storage-g0-sealed-findings-20261106.py legge SOLO5receipt locali in sola lettura,con guardie root/no symlink/limiti e confronto esatto del result riportato; emette conteggi per codici ammessi,statistiche numeriche,capacità senza path e digest locali. Zero provider/credenziali/corpi/righeDB/scritture. Non ricomputa hash dei corpi e non prova integrità storica rispetto a un sigillo precedente. Restituzione operatore ancora pendente. Sintassi e smoke sintetico di conteggi/redazione/drift PASS; nessun test componente o raccolta ripetuto.
+
+Roadmap aggiornata: cattura reale completata; leggere dettaglio già conservato e assegnare una disposizione a ciascun tipo di rilievo. Non contare lettura/registrazione come nuovi passi. MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120MIGRATI;120corpiVERIFICATI è un conteggio distinto. G0 richiede inventario riconciliato e funzionalità/finestra/RPO/RTO espliciti: nessun credito attribuito.
+
+Basec4e3b4d2 CI49SUCCESS/3in corso al controllo; dedicata ingresso42237761647SUCCESS10/10. Source d5155899,entrambePR54draft/open. Nessun merge/deploy/grant/traffico/piano congelato modificato. Nessuna nuova autorizzazione richiesta per la sola lettura locale.
+
 ## Checkpoint 2026-11-06 — raccolta02 autorizzata, esecuzione VPS pendente
 
 Giovanni: «Autorizzo la raccolta». Decisione OUF-G0-COLLECT-20261106-02 registrata in evidence/storage-g0-host192-collection-decision-20261106.json: perimetro esatto della proposta host192, un tentativo/900s,386GET nuovi/53precedenti/439massimo cumulativo, limiti S3/DB invariati. Non chiedere nuovamente questa autorizzazione. Nessuna autenticazione HUMAN/THS o grant emesso.

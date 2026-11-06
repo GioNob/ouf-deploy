@@ -9,12 +9,12 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator executes host192 entry once under decision02 already authorized by Giovanni. Entry verifies the qualified bundle, creates an exclusive decision-bound input and invokes collect. Do not request authorization again or rerun preparation. On receipt of redacted result, reconcile eight G0 sections and update findings/roadmap; no acceptance inferred from authorization.",
+  "nextPlannedWork": "Collection02 is consumed and technically complete: do not rerun collector or preparer. Finish the second step of the same pair: local read-only allowlisted summary of sealed result/reconciliation/access/capacity/claim, then classify18DB findings and2access classifications and reconcile eight G0 sections. No new provider reads or approval requested for this local review. G0 and acceptance stay open.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
     "qualificationReceipt": "evidence/storage-delta-plan-qualified-20261105.json",
-    "status": "G0_G7_OPEN_HOST192_PREPARED_TARGET_COLLECTION_INCOMPLETE",
+    "status": "G0_G7_OPEN_TARGET_CAPTURE_COMPLETE_RECONCILIATION_PENDING",
     "sourceOnboardingUnchanged": "d5155899b09dda298494b68cefa7e1f281167652",
     "httpHumanWiring": "CONDITIONAL_DEPENDENCY_NOT_MANDATORY_NEXT_STEP",
     "progressCreditAdded": 0,
@@ -23,9 +23,9 @@
     "realObjectsCopied": 0,
     "runtimeAuthorityIssued": false,
     "initialReviewTargetOperations": 0,
-    "currentTargetCollectionAttempts": 1,
-    "currentAttemptEngineGets": 1,
-    "cumulativeEngineGets": 53
+    "currentTargetCollectionAttempts": 2,
+    "currentAttemptEngineGets": 292,
+    "cumulativeEngineGets": 345
   },
   "progressEstimate": {
     "schema": "ouf.storage-planning-progress-estimate.v1",
@@ -468,7 +468,7 @@
     "localMetadataDirectories": 145
   },
   "g0Host192": {
-    "status": "OPERATOR_AUTHORIZED_EXECUTION_PENDING",
+    "status": "CONSUMED_SEALED_TARGET_RECONCILIATION_FINDINGS",
     "maximumContainers": 192,
     "maximumEngineGets": 386,
     "priorEngineGets": 53,
@@ -484,8 +484,17 @@
     "operatorPreparationReceipt": "evidence/storage-g0-host192-preparation-operator-20261106.json",
     "inputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
     "collectionProposal": "releases/storage-g0-host192-collection-proposal-20261106.json",
-    "newCollectionExecuted": false,
-    "decisionReceipt": "evidence/storage-g0-host192-collection-decision-20261106.json"
+    "newCollectionExecuted": true,
+    "decisionReceipt": "evidence/storage-g0-host192-collection-decision-20261106.json",
+    "authorizationConsumed": true,
+    "operatorCollectionReceipt": "evidence/storage-g0-host192-collection-operator-20261106.json",
+    "replayAuthorized": false,
+    "technicalCaptureComplete": true,
+    "verifiedBodies": 120,
+    "databaseFindings": 18,
+    "liveContainerCount": 145,
+    "targetObservationProvenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+    "localReadbackReceived": false
   },
   "currentRoadmap": "docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md",
   "scheduleEstimate": {
@@ -500,7 +509,7 @@
     ],
     "remainingSteps": null,
     "reason": "Preparation and diagnosis were counted as closure steps without updating the forecast; G0 target capture and reconciliation are incomplete.",
-    "nextEstimationBasis": "Verified target collection and itemized G0 findings; retain explicit uncertainty for unresolved items.",
+    "nextEstimationBasis": "Technical target capture is now complete; the 18 DB findings and two access classifications still need their local breakdown, and ACCESS/CUSTODY/WINDOW/WRITERS remain missing. Estimate remaining work after itemized dispositions, not from raw finding count.",
     "documentationCountsAsMigrationStep": false
   }
 }
