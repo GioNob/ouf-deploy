@@ -1,3 +1,9 @@
+## Riscontro corrente — tentativo consumato e fonti runtime variabili
+
+Il journal riportato daGiovanni è coerente con HOLD prima delle mutazioni (3comandi,0intenti); capture assente. Tutti5corpi runtime sono cambiati a parità di dimensione/custodia. [Ricevuta](../evidence/storage-cold-runtime-drift-operator-20261106.json). Nessun replay o semplice rinnovo hash del piano.
+
+Il blocco da rimuovere è il contenimento degli eventuali writerhost delle credenziali runtime,non altro sviluppo generaleIAM. Trovati precedente contrattuale e collegamento esatto1dei5percorsi a un servizio/timer noto; statoattuale/attribuzione completa ancora da osservare. [Dossier e lettura raggruppata](OUF_STORAGE_RUNTIME_WRITERS_REVIEW_20261106.md). Dopo quell'output,preparare la correzione operativa concreta collegata al tentativo consumato. Primoarchivio reale,PC/restore e gateSeaweedFS restano la sequenza; nessun creditoMiniPET.
+
 # Roadmap corrente MinIO → SeaweedFS — 6 novembre 2026
 
 ## Decisione corrente e coppia di lavoro
