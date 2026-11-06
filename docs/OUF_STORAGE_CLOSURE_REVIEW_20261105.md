@@ -1,3 +1,5 @@
+Roadmap corrente: [revisione del 6 novembre](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md). Sostituisce la stima 12–18 passi e il percorso successivo iniziale sotto; conserva il riesame e le prove storiche. G0 ancora aperto, host192 preparato, decisione02 pendente. Nessun credito aggiunto.
+
 Aggiornamento corrente: [rehearsal MinIO→OCI33 e ritorno dopo scritture](OUF_STORAGE_MINIO33_REHEARSAL_20261105.md), candidato4555f7dc,12esiti nativi PASS e137sorgenti Git verificati. Il riesame iniziale sotto conserva la sua base; G4 ha ora la qualifica fra provider esatti, ma nessun gate/AT è chiuso.
 
 # Chiusura MinIO → SeaweedFS: riscontro dei criteri e percorso residuo

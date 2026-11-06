@@ -1,3 +1,7 @@
+## Aggiornamento roadmap — 6 novembre 2026
+
+La stima 12–18 passi è ritirata. La [roadmap corrente per gate](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md) distingue preparazione conclusa, accettazione aperta e passaggio operativo. G0 non è chiuso; host192 preparato, decisione02 pendente. Nessun credito per questo aggiornamento: 18,3/46=39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali migrati. Criteri e storico sotto invariati.
+
 ## Checkpoint 2026-11-06 — host192 preparato sul VPS, decisione02 pronta
 
 Output operatore acquisito: HOST192_STAGED_LOCAL_CHECK_PASSED_SEPARATE_DECISION_REQUIRED,inputSHA256dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e,manifest1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69. Scopev2 non creato,4receipt precedenti vincolate,5filecredenziali validati localmente/zero copie,zero provider,vecchio bundle/tentativo intatti. Fonte output utente,non osservazione diretta agent. Ricevuta evidence/storage-g0-host192-preparation-operator-20261106.json. **Non ripetere preparatore/readback/check/laboratori riusciti.**

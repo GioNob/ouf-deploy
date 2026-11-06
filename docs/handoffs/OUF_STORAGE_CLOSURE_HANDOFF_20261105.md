@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — stima ritirata e roadmap riallineata ai gate
+
+La stima conversazionale 12–18 passi / 6–9 coppie è ritirata: preparazioni e diagnosi sono state frammentate e contate senza aggiornare il residuo. Roadmap corrente: docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md. Questo aggiornamento documentale non è una coppia di avanzamento della migrazione.
+
+G0 ancora aperto: pacchetto host192 preparato, primo tentativo consumato/HELD prima di S3 e DB, decisione02 pendente. Non ripetere preparatore, readback o qualifiche riusciti. Prossima coppia operativa: dopo decisione distinta, unica raccolta delimitata; poi riconciliazione delle otto sezioni e chiusura solo se i criteri sono soddisfatti. ACCESS/CUSTODY/WINDOW/WRITERS e capacità accettata non si deducono dalla preparazione. Nessuna nuova autorizzazione dal messaggio di critica alla roadmap.
+
+Restano G1 candidato/custodia/licenze; G2–G4 compatibilità, esercizio e procedura rappresentativa; G5 consegna ammessa; G6 passaggio reale; G7 osservazione e chiusura. Nessuna nuova stima numerica finché i rilievi target non delimitano il residuo. Ogni coppia deve indicare criterio chiuso o blocco indispensabile rimosso, evidenza e impatto sulla previsione. Documentazione e test di accompagnamento non diventano passi autonomi di migrazione.
+
+MiniPET invariato 18,3/46=39,78%, 0/8 gate, 0/21 AT, 0/120 oggetti reali migrati. Nessuna modifica al codice o al piano congelato; nessuna nuova raccolta, test ripetuto, merge/deploy/grant. Base deploy7d4d15dc/source d5155899, PR54 draft/open. CI base al controllo:48 SUCCESS/3 in corso su51; nessuna dichiarazione tutta verde. Il checkpoint precedente resta storico.
+
 ## Checkpoint 2026-11-06 — host192 preparato sul VPS, decisione02 pronta
 
 Output operatore acquisito: HOST192_STAGED_LOCAL_CHECK_PASSED_SEPARATE_DECISION_REQUIRED,inputSHA256dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e,manifest1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69. Scopev2 non creato,4receipt precedenti vincolate,5filecredenziali validati localmente/zero copie,zero provider,vecchio bundle/tentativo intatti. Fonte output utente,non osservazione diretta agent. Ricevuta evidence/storage-g0-host192-preparation-operator-20261106.json. **Non ripetere preparatore/readback/check/laboratori riusciti.**

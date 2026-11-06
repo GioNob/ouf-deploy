@@ -9,20 +9,23 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Obtain the distinct concrete operator decision OUF-G0-COLLECT-20261106-02 for the bound dc0ab6d4 input and qualified host192 package:one900s collection,max386EngineGET,53prior preserved,max439cumulative. Preparation/readback already succeeded:do not repeat them. After decision,exclusive input copy with only decisionRef changed,final binding check and one operator execution;no reset of consumed v1.",
+  "nextPlannedWork": "Follow currentRoadmap: after distinct decision02, one bounded collection with already-staged host192 package; then verify and reconcile all eight G0 sections. Close G0 only if its criteria are met; otherwise enumerate residual findings and update the forecast. Do not repeat successful preparation or reset the consumed scope. Roadmap criticism is not collection authorization.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
     "qualificationReceipt": "evidence/storage-delta-plan-qualified-20261105.json",
-    "status": "G0_G7_OPEN_OFFLINE_DELTA_CANDIDATE_ONLY",
+    "status": "G0_G7_OPEN_HOST192_PREPARED_TARGET_COLLECTION_INCOMPLETE",
     "sourceOnboardingUnchanged": "d5155899b09dda298494b68cefa7e1f281167652",
     "httpHumanWiring": "CONDITIONAL_DEPENDENCY_NOT_MANDATORY_NEXT_STEP",
     "progressCreditAdded": 0,
     "gatesClosed": 0,
     "acceptanceTestsPassed": 0,
     "realObjectsCopied": 0,
-    "targetOperations": 0,
-    "runtimeAuthorityIssued": false
+    "runtimeAuthorityIssued": false,
+    "initialReviewTargetOperations": 0,
+    "currentTargetCollectionAttempts": 1,
+    "currentAttemptEngineGets": 1,
+    "cumulativeEngineGets": 53
   },
   "progressEstimate": {
     "schema": "ouf.storage-planning-progress-estimate.v1",
@@ -482,5 +485,21 @@
     "inputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
     "collectionProposal": "releases/storage-g0-host192-collection-proposal-20261106.json",
     "newCollectionExecuted": false
+  },
+  "currentRoadmap": "docs/OUF_STORAGE_CLOSURE_ROADMAP_20261106.md",
+  "scheduleEstimate": {
+    "status": "WITHDRAWN_PENDING_TARGET_FINDINGS",
+    "previousStepRange": [
+      12,
+      18
+    ],
+    "previousPairRange": [
+      6,
+      9
+    ],
+    "remainingSteps": null,
+    "reason": "Preparation and diagnosis were counted as closure steps without updating the forecast; G0 target capture and reconciliation are incomplete.",
+    "nextEstimationBasis": "Verified target collection and itemized G0 findings; retain explicit uncertainty for unresolved items.",
+    "documentationCountsAsMigrationStep": false
   }
 }
