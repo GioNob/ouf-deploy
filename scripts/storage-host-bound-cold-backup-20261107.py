@@ -119,7 +119,8 @@ def host_review(h):
     need(hashes['reviewed-draft.private.json'] == result['draftSha256'], 'HOST_DRAFT_BINDING')
     preflight = h['decode'](raws['preflight.private.json'])
     return {'result': result, 'snapshot': h['decode'](raws['runtime-snapshot.private.json']),
-        'draft': draft, 'cgroups': preflight['unitCgroups'], 'hashes': hashes}
+        'draft': draft, 'cgroups': preflight['unitCgroups'], 'hashes': hashes,
+        'evidence': {n: h['decode'](raw) for n, raw in raws.items()}}
 
 
 def bind_plan(h, old_plan, host_context, program_sha):
@@ -133,6 +134,9 @@ def bind_plan(h, old_plan, host_context, program_sha):
     plan['hostContainmentLink'] = {'schema': 'ouf.storage-host-bound-plan-link.v1',
         'derivedFromPlanSha256': h['digest'](h['canonical'](old_plan)),
         'hostEvidenceSha256': host_context['hashes'], 'runtimeSourceSnapshotSha256': HOST_SNAPSHOT_SHA,
+        'hostRecoveryEvidence': copy.deepcopy(host_context['evidence']),
+        'offlineOverrideText': '[Service]\nRestart=no\nSendSIGKILL=no\nRuntimeDirectoryPreserve=yes\nTimeoutStopSec=120s\n',
+        'hostRestoreRequiresSeparateGovernedAction': True,
         'change': 'FIVE_RUNTIME_IDENTITIES_AFTER_VERIFIED_HOST_CONTAINMENT_ONLY',
         'expiryRenewed': False, 'oldAttemptReused': False, 'runtimeAuthorityIssued': False}
     return plan

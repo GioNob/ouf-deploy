@@ -69,12 +69,13 @@ def main():
         guardroot = root / 'host-fixture-read';guardroot.mkdir(mode=0o700)
         probe = core.Runner(h, guardroot)
         rows = core.show(p, probe)
-        core.bind_cgroups(p, probe, rows)
+        probe.cgroups = {n: core.slice_cgroup_path(p.one(rows[n], 'Slice')).rstrip('/') + '/' + n
+                         for n in tuple(p.SERVICES) + (p.REGISTRY,)}
         prior_rows = copy.deepcopy(list(rows.values()))
         for row in prior_rows:
             if row['Id'][0] in tuple(p.SERVICES) + (p.REGISTRY,):row['DropInPaths'] = ['']
         draft = {'unitProperties': prior_rows,
-            'unitConfiguration': {str(path): {'sha256': h['digest'](path.read_bytes())} for path in created_units if not path.is_symlink()}}
+            'unitConfiguration': {str(path): {'sha256': h['digest'](path.read_bytes()), 'text': path.read_text()} for path in created_units if not path.is_symlink()}}
         draft_raw = h['canonical'](draft)
         h['new'](o.HOST_AREA / 'reviewed-draft.private.json', draft_raw)
         h['new'](o.HOST_AREA / 'preflight.private.json', h['canonical']({'unitCgroups': probe.cgroups}))
@@ -142,6 +143,7 @@ def main():
         cmd('tar', '-xf', str(decrypted), '-C', str(restored))
         archived_plan = h['decode']((restored / 'plan.private.json').read_bytes())
         assert archived_plan['hostContainmentLink']['hostEvidenceSha256'] == context['hashes']
+        assert archived_plan['hostContainmentLink']['hostRecoveryEvidence'] == context['evidence']
         data = root / 'restored-data';data.mkdir()
         cmd('tar', '-xf', str(restored / 'source-000.tar'), '-C', str(data))
         assert all((data / 'source' / Path(path).name / 'value').read_bytes() == b'after-verified-host-containment' for path in runtime)
