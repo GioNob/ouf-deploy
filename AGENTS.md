@@ -1,3 +1,13 @@
+## Checkpoint 2026-11-06 — produttore backup freddo implementato, qualifica nativa pendente
+
+scripts/storage-cold-backup.py prepara un piano dai binding G0 pinned più etcd; cattura soltanto container già usciti pulitamente e restart=no. Nessun comando di stop/update/start/grant. Copia l'intero cluster PostgreSQL condiviso, mount, immagini e rootfs dei14ruoli: impatto di fermo più ampio da approvare esplicitamente, non dedotto dalla delega. docs/OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md contiene perimetro, limiti, cifratura e sequenza. La proposta fisica è motivata dal cluster condiviso; non aprire un programma DR autonomo.
+
+11test locali PASS, inclusa copia/rilettura tar con hardlink/symlink/xattr e dinieghi writer/generazione/replay/alterazione. Nuova CI storage-cold-backup.yml deve provare PostgreSQL+MinIO reali,3DB/1oggetto,cifratura SSH e restore su radici separate. PENDENTE: non consegnare capture come qualificato prima dell'esito. No replica delle qualifiche native precedenti.
+
+Primo comando VPS futuro: prepare, solo nuove letture locali Engine e piano privato; nessun fermo/backup. Cattura separata: decisione operativa vera, recipient pubblico e finestra; decision-reference registra ma NON autentica approvazione HUMAN/THS. Privata SSH resta sul PC. Dopo copia, coerenza applicativa e restore target ancora da provare. Non riavvia automaticamente, non cancella originali o scope consumati; un fallimento lascia l'area e non concede replay.
+
+MiniPET invariato18,3/46=39,78%,0/8gate,0/21AT,0/120migrati. Source d5155899/MinIO/source-lock/piano congelato invariati. Base8627daa5 confermata, PR54draft/open; sole CI osservate attive, nessun altro avanzamento HEAD. Pubblicazione CAS; sessioni esterne non osservabili non escluse.
+
 ## Checkpoint 2026-11-06 — client Windows e connessione acquisiti, ricezione predisposta
 
 Giovanni riporta PowerShell 5.1.26100.9711, SSH/SCP presenti e fornisce comando SSH con endpoint e percorso chiave. Dettagli personali non pubblicati. Ricevuta evidence/storage-backup-windows-readiness-20261106.json. Non chiedere nuovamente questi dati né ripetere Get-Command; nessuna connessione riuscita dedotta dal solo comando.
