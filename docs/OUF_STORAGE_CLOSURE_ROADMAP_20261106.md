@@ -1,3 +1,19 @@
+## Stato corrente 7 novembre — HOLD dopo il percorso di arresto, prima della cattura
+
+Il tentativo autorizzato ha restituito UNEXPECTED_CONTAINER_EVENT. Il controllo è dopo il fermo nel codice; il journal target deve ancora confermare le49azioni e lo stato osservato. **Non ripetere stop o contenimento host.** [Ricevuta operatore](../evidence/storage-host-bound-cold-held-operator-20261107.json).
+
+| Traguardo | Stato corrente |
+| --- | --- |
+| Contenimento host | Già riuscito sul VPS |
+| Fermo Docker | Tentativo consumato; errore nel controllo finale eventi, readback pendente |
+| Archivio cifrato target | Nessun successo attestato; cattura non raggiunta secondo il percorso del codice |
+| Copia Windows e restore isolato | In attesa dell'archivio reale |
+| Migrazione SeaweedFS | 0/120 migrati, nessun gate/AT chiuso |
+
+Coppia completata lato sviluppo: registrazione del blocco reale e lettore raggruppato senza provider. [Unico comando VPS corrente](OUF_STORAGE_COLD_EVENT_HOLD_20261107.md). Il prossimo JSON identifica eventi e ricevute; se coerenti, preparare cattura senza replay del fermo. Non allargare ora il filtro degli eventi sulla base di un'ipotesi.
+
+MiniPET39,78% invariato. Non trasformare questa diagnosi in un nuovo filone di resilienza: il risultato richiesto resta l'archivio reale per copia/restore e prosecuzione SeaweedFS. Nessuna nuova stima in “passi” prima di quel risultato.
+
 ## Decisione acquisita 7 novembre — fermo Docker e backup cifrato
 
 Giovanni autorizza il singolo tentativo collegato:35policy,14stop,34fonti/interoPGcondiviso,capturecifrata,limiti e scadenza invariati rispetto alpacchetto proposto. [Decisione](../evidence/storage-host-bound-cold-operator-decision-20261107.json). ComandoVPSconsegnato;esito reale pendente. Nonrichiedere nuovamenteconsenso,nonripeterecontenimentohostriuscito. Prossimorisultato:archivio reale→Windows→restoreisolato. NessuncreditoMiniPETancora.

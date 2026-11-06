@@ -1,3 +1,5 @@
+> **SOSPESO DOPO IL TENTATIVO — NON RILANCIARE IL COMANDO SOTTO.** Il VPS ha restituito HELD/UNEXPECTED_CONTAINER_EVENT. Il controllo avviene dopo il percorso di fermo e prima della cattura; non assumere che i container siano ancora accesi. Preservare l'area consumata. Prossima azione: [lettura locale del journal](OUF_STORAGE_COLD_EVENT_HOLD_20261107.md). Il resto della pagina conserva il pacchetto approvato e non costituisce una nuova istruzione di esecuzione.
+
 > **Autorizzata il 7 novembre 2026:** Giovanni ha approvato questa singola operazione. Riferimento GIOVANNI-NONPROD-HOST-BOUND-COLD-20261107-01; [ricevuta](../evidence/storage-host-bound-cold-operator-decision-20261107.json). Esecuzione VPS pendente. Le diciture di decisione pendente sotto conservano il pacchetto esatto approvato.
 
 # Backup freddo collegato al contenimento host — 7 novembre 2026
