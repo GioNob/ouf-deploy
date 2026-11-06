@@ -94,8 +94,17 @@ def main():
         plan_sha = b.digest(b.canonical(plan))
         pgdata = docker('exec', pg, 'psql', '-U', 'postgres', '-At', '-c', 'SHOW data_directory')
         docker('stop', '--time', '120', mi, timeout=130)
-        docker('exec', '--user', 'postgres', pg, 'pg_ctl', '-D', pgdata, '-m', 'fast', '-w', '-t', '120', 'stop', timeout=130)
-        docker('wait', pg, timeout=15)
+        ctl = subprocess.run(['docker', 'exec', '--user', 'postgres', pg, 'pg_ctl', '-D', pgdata, '-m', 'fast', '-w', '-t', '120', 'stop'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=130)
+        # Container shutdown may terminate the auxiliary exec before it returns.
+        # Reconcile the original server's exit; never replay pg_ctl on ambiguity.
+        server_exit = docker('wait', pg, timeout=15)
+        assert server_exit == '0', 'POSTGRES_SERVER_EXIT_NOT_CLEAN'
+        report['pgCtlExecExitCode'] = ctl.returncode
+        report['postgresServerExitCode'] = int(server_exit)
+        control = docker('run', '--rm', '--network', 'none', '--user', 'postgres', '--entrypoint', 'pg_controldata',
+                         '--mount', 'type=bind,src=' + str(root / 'pg') + ',dst=/var/lib/postgresql/data,readonly', PG, pgdata)
+        assert 'Database cluster state:               shut down' in control, 'POSTGRES_CONTROL_NOT_SHUT_DOWN'
+        report['postgresControlShutDown'] = True
         for cid in (mi, pg):
             state = json.loads(docker('inspect', cid))[0]['State']
             print('Fixture stop:', 'minio' if cid == mi else 'postgres', json.dumps({k: state[k] for k in ('ExitCode', 'OOMKilled', 'Running', 'Status')}), flush=True)
