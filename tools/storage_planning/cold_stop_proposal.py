@@ -27,7 +27,7 @@ REQUIRED_EVIDENCE = (
 )
 
 
-def compile_proposal(plan, host, helper, plan_sha256, now):
+def compile_proposal(plan, host, helper, plan_sha256, now, test_preservation=False):
     """Project exact IDs/policies, refusing expired or incompatible retained inputs.
 
     Retained metadata cannot prove any live prerequisite. In particular, neither a
@@ -66,6 +66,11 @@ def compile_proposal(plan, host, helper, plan_sha256, now):
         need(not any(k.startswith('com.docker.swarm.') for k in
                      (doc['Config'].get('Labels') or {})), 'SWARM_RECREATOR_REQUIRES_REVIEW')
         signal = doc['Config'].get('StopSignal') or 'SIGTERM'
+        if test_preservation:
+            # Initial offline preservation of a non-production state, not proof of
+            # completed business work. Explicit TERM for applications; PostgreSQL
+            # may retain its configured INT fast clean shutdown. Never force kill.
+            signal = signal if role == 'postgres' and signal in ('SIGINT', 'INT', '2') else 'SIGTERM'
         need(signal in ('SIGTERM', 'SIGINT', 'TERM', 'INT', '15', '2'),
              'UNREVIEWED_OR_FORCED_STOP_SIGNAL')
         signals[role] = signal
@@ -101,7 +106,14 @@ def compile_proposal(plan, host, helper, plan_sha256, now):
         'maximumCaptureSeconds': plan['maximumSeconds'],
         'maximumProducedBytes': plan['maximumProducedBytes'],
         'stopPhaseBudgetIsNotOutageRto': True,
-        'remainingRequiredEvidence': list(REQUIRED_EVIDENCE),
+        'profile': 'NONPRODUCTION_TEST_STATE_PRESERVATION' if test_preservation else 'APPLICATION_CONSISTENT_CUTOVER',
+        'remainingRequiredEvidence': ([
+            'CURRENT_TARGET_GENERATIONS_AND_COMPLETE_HOST_INVENTORY',
+            'EXCLUSIVE_OPERATOR_MAINTENANCE_AND_RECREATOR_SUSPENSION',
+            'APPLICABLE_EXACT_OPERATION_APPROVAL',
+            'EXECUTION_DRIVER_AND_STOP_MECHANISMS_QUALIFIED',
+        ] if test_preservation else list(REQUIRED_EVIDENCE)),
+        'unresolvedApplicationWorkMustBePreserved': True,
         'captureProgram': '/var/lib/ouf-storage-cold-backup-v3.py',
         'captureRecipientFile': '/var/lib/ouf-storage-cipher-preparation-20261106/recipient.pub',
         'decisionReference': None, 'approvedWindow': None,

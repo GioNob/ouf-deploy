@@ -1,0 +1,38 @@
+name: Storage nonproduction cold stop
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/storage-test-cold-stop.py
+      - tools/storage_planning/cold_stop_proposal.py
+      - tests/test_storage_test_cold_stop.py
+      - tests/test_storage_cold_stop_proposal.py
+      - tests/qualify_storage_test_cold_stop_native.py
+      - .github/workflows/storage-test-cold-stop.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-test-cold-stop-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Stop driver refusal and journal tests
+        run: |
+          python3 -B -m unittest discover -s tests -p test_storage_test_cold_stop.py -v
+          python3 -B -m unittest discover -s tests -p test_storage_cold_stop_proposal.py -v
+      - name: Native local Docker stop and offline guard
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_test_cold_stop_native.py
+      - name: Preserve redacted report only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-test-cold-stop-result
+          path: test-stop-native-result.json
+          if-no-files-found: error
+          retention-days: 90
