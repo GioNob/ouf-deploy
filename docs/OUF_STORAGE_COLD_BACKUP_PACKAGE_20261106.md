@@ -1,6 +1,10 @@
 # Pacchetto di cattura fredda per il backup MinIO → SeaweedFS
 
-Stato: **qualifica nativa del produttore PASS**, run42276891427 al commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0; preparazione VPS pendente; **nessun fermo o backup VPS eseguito o ammesso da questo documento**. Il comando di preparazione e quello di cattura sono distinti. Lo script non esegue stop, update della restart policy, restart, deploy, grant o restore.
+Stato: **qualifica nativa del produttore PASS**, run42276891427 al commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0; preparazione VPS eseguita e HELD su mount da classificare; **nessun fermo o backup VPS eseguito o ammesso da questo documento**. Il comando di preparazione e quello di cattura sono distinti. Lo script non esegue stop, update della restart policy, restart, deploy, grant o restore.
+
+## Blocco osservato sul VPS
+
+Il tentativo prepare è già eseguito: non ripeterlo o cancellarne l'area. Il controllo rigetta sorgenti sotto /proc,/sys,/dev,/run,/tmp, ma il messaggio non identifica il mount. Non presumere che quelle sorgenti siano omissibili. Il prossimo comando usa scripts/read-storage-cold-preparation-20261106.py verificato per SHA256 e legge solo i file di inventario già conservati. Non chiama Docker, non legge i corpi delle sorgenti, non scrive nel tentativo e non prepara/cattura nuovamente. Il riepilogo redatto raggruppa tutti i mount e le condivisioni, verifica i binding e non mostra environment, percorsi privati o segreti. Stato di lettura conservato, non live. Sei test locali mirati PASS; esecuzione VPS del reader ancora pendente. Consegna con URL Git immutabile e digest del reader; eseguire con sudo python3 -I -B -S dopo verifica, restituire solo stdout.
 
 ## Scelta e impatto
 
@@ -60,4 +64,5 @@ Stato MiniPET invariato18,3/46=39,78%,0/8gate,0/21AT,0/120migrati. Questa implem
 
 La fixture aspetta il postmaster definitivo PID1 prima del seed. Arresto PostgreSQL con pg_ctl fast: l'exec ausiliario è terminato137, ma l'esito del server0 e pg_controldata shut down sono verificati senza replay. L'uso del solo docker stop aveva prodotto un137 del server e il controllo lo ha correttamente respinto. Sul VPS il metodo deve essere legato al processo/PGDATA effettivi e alle autorità applicabili, non copiato dalla fixture senza review.
 
-Programma da consegnare: commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0,24677byte,SHA2563f8f255bf80cf2e077260ecf5ff2c31f14a624529864c8d3fac956877359cac8. Installare una nuova copia root0600 in /var/lib/ouf-storage-cold-backup.py dopo confronto integrale del digest; non sovrascrivere una versione già presente. Primo e unico comando ora previsto: `sudo python3 -I -B -S /var/lib/ouf-storage-cold-backup.py prepare`. Restituire soltanto preparation-result.json/JSON stdout redatto. Non lanciare capture e non fermare servizi prima della review del piano e della decisione applicabile.
+Programma da consegnare: commit a38a61273543653b125e0ae1c51fd0c92ba9bbd0,24677byte,SHA2563f8f255bf80cf2e077260ecf5ff2c31f14a624529864c8d3fac956877359cac8. Installare una nuova copia root0600 in /var/lib/ouf-storage-cold-backup.py dopo confronto integrale del digest; non sovrascrivere una versione già presente. Comando storico già eseguito, NON ripetere: `sudo python3 -I -B -S /var/lib/ouf-storage-cold-backup.py prepare`. Esito acquisito: HELD/EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW; la preparazione non ha prodotto il piano. Non lanciare capture e non fermare servizi prima della review del piano e della decisione applicabile.
+

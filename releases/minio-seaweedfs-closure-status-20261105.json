@@ -562,7 +562,7 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Cold backup producer qualified on synthetic PostgreSQL/MinIO; operator now runs ONLY prepare on VPS to bind the fourteen-role/whole-cluster proposal. Review actual impact, encryption recipient, writer containment, window and applicable approval before any stop/capture. Windows SSH/SCP/endpoint already supplied; do not ask again. Target archive and restore still absent.",
+    "requiredOperatorInput": "Prepare already executed and HELD on mount source guard. Do not replay or remove partial area. Read retained inventory with scripts/read-storage-cold-preparation-20261106.py to identify all problematic mounts and source sharing before proposing a correction. No stop/capture authorized; encryption recipient, containment, window and applicable decision still required.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
@@ -573,9 +573,12 @@
     "coldBackupProducer": {
       "path": "scripts/storage-cold-backup.py",
       "receipt": "evidence/storage-cold-backup-qualified-20261106.json",
-      "status": "NATIVE_QUALIFIED_TARGET_PREPARATION_PENDING",
-      "targetExecuted": false,
-      "acceptanceCreditAdded": 0
+      "status": "NATIVE_QUALIFIED_TARGET_PREPARATION_HELD_MOUNT_REVIEW",
+      "targetExecuted": true,
+      "acceptanceCreditAdded": 0,
+      "targetCaptureExecuted": false,
+      "operatorReceipt": "evidence/storage-cold-preparation-held-operator-20261106.json",
+      "retainedMountReadbackPending": true
     }
   },
   "cohortRetainedReconciliation": {
