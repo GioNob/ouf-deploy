@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Giovanni explicitly authorized OUF-G0-COLLECT-20261106-01. Do not ask again. Deliver the pinned authorized entry command; operator runs it once on VPS, then review only redacted result. Existing scope/entry partials never reset or replay. No target collection performed by agent; no implicit migration/deploy/HUMAN grant.",
+  "nextPlannedWork": "Read back the consumed G0 attempt and bounded local Docker directory metadata without provider calls or writes. Preserve all scopes and cumulative53EngineGET. Then dimension/qualify the exact host-profile correction retaining complete inventory; a replacement collection needs reconciliation and a distinct concrete decision. Do not retry the authorized entry or silently filter to13roles.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -439,12 +439,27 @@
   "g0CollectionProposal": {
     "proposal": "releases/storage-g0-collection-proposal-20261106.json",
     "document": "docs/OUF_STORAGE_G0_COLLECTION_PROPOSAL_20261106.md",
-    "status": "OPERATOR_AUTHORIZED_EXECUTION_PENDING",
-    "collectionExecuted": false,
-    "collectionScopeCreated": false,
+    "status": "CONSUMED_HELD_HOST_CONTAINER_LIMIT",
+    "collectionExecuted": true,
+    "collectionScopeCreated": true,
     "authenticatedHumanApproval": false,
     "runtimeAuthorityIssued": false,
     "acceptanceCreditAdded": 0,
     "decisionReceipt": "evidence/storage-g0-collection-decision-20261106.json"
+  },
+  "g0HeldAttempt": {
+    "receipt": "evidence/storage-g0-held-operator-20261106.json",
+    "document": "docs/OUF_STORAGE_G0_HELD_READBACK_20261106.md",
+    "readbackPending": true,
+    "engineGets": 1,
+    "cumulativeEngineGets": 53,
+    "databaseExportsAttempted": 0,
+    "s3PhaseReached": false,
+    "reason": "G0_HOST_CONTAINER_LIMIT",
+    "scopeConsumed": true,
+    "automaticReplayAllowed": false,
+    "actualContainerCountKnown": false,
+    "correctionDelivered": false,
+    "acceptanceCreditAdded": 0
   }
 }

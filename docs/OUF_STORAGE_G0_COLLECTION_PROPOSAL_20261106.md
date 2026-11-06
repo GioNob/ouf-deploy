@@ -1,3 +1,7 @@
+## Esito successivo — tentativo consumato
+
+Giovanni ha eseguito la raccolta: HELD/HOST_BEFORE/G0_HOST_CONTAINER_LIMIT,1GET Docker/285226byte,53GET cumulativi,nessun child S3/DB. **Non eseguire nuovamente il comando sotto.** Prossima azione: [readback locale del tentativo](OUF_STORAGE_G0_HELD_READBACK_20261106.md). Autorizzazione monouso consumata,nessun retry o reset implicito. Le sezioni sotto descrivono la consegna storica precedente all'esecuzione.
+
 # Raccolta G0: proposta concreta OUF-G0-COLLECT-20261106-01
 
 Stato: **AUTORIZZATA DALL'OPERATORE, ESECUZIONE PENDENTE**. Giovanni ha risposto «autorizzo» alla proposta esatta. [Decisione conversazionale](../evidence/storage-g0-collection-decision-20261106.json). Non richiedere nuovamente questa autorizzazione. Il riferimento non autentica identità IAM/HUMAN/THS e non emette grant.
