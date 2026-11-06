@@ -1,3 +1,17 @@
+## Risultato corrente — sola cattura pronta per decisione
+
+**Il dubbio sul fermo è risolto dalle ricevute target:**49azioni/35policy/14servizi fermati,0running nell'ultimo inventario,nessuna cattura avviata. La nuova continuazione è qualificata conHOLDreale simulato e archivio decifrato;non reinvia gli arresti. [Pacchetto concreto](OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md),decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 pendente.
+
+| Traguardo | Stato |
+| --- | --- |
+| Contenimento host | Riuscito sul VPS |
+| Fermo Docker | Effetti confermati nel journal;HOLD sugli execetcd conservato |
+| Archivio reale | Sola cattura qualificata,pronta per decisione/esecuzione |
+| Copia Windows e restore target | Dopo l'archivio reale |
+| Migrazione SeaweedFS | 0/120migrati,0/8gate,0/21AT |
+
+Questa coppia ha acquisito il fermo target e rimosso la dipendenza dal replay del fermo per produrre l'archivio. Non chiude un criterioMiniPET.39,78%invariato;nessuna nuova stima in “passi”. La decisione conserva esplicitamente la storia conexecnonattribuiti,senza considerarli innocui oautorizzati;backupNONPROD non significa accettazioneoperativa.
+
 ## 7 novembre — fermo confermato nelle ricevute; manca la cattura
 
 La lettura target ha confermato49azioni/35policy/14servizi arrestati e0running su145container nell'ultimo inventario. Capture vuota. I nove eventi respinti sono tre sequenze exec di etcd con exit0,non attribuite. Non servono altri arresti né un'altra raccolta della stessa diagnostica.

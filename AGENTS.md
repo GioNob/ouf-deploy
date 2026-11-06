@@ -1,3 +1,17 @@
+## Checkpoint conclusivo 2026-11-07 — sola cattura qualificata, decisione distinta pendente
+
+Fermo target confermato nel journal (504file/184CLI,49azioni/35policy/14stop,0running su145,5gruppi),capture vuota. Noveeventi extra = treexecetcd exit0,non attribuiti/healthcheck noncorrispondente. Ricevuta evidence/storage-cold-event-target-operator-20261107.json. Nonripeterefermo,contenimentohost odiagnostica. Stato live richiede i nuovi guard della cattura.
+
+Nuovo wrapper scripts/capture-storage-after-held-stop-20261107.py alcommit0e1c3bdb587b3d6e8a360f8f9a7af4dd3a4b97ac,11182byte/SHA583a5e26ab18bfdb09d868fb3d7fabd9acf347f64dbf01b8caf0bf8cbec80184. Native42313748655/job128221206861SUCCESS,5unitPASS:145containerfixture,103sharer,treexecetcdreali eHOLD72eventi/9respinti riprodotto;solacapture0segnali/0policy/0mutazionihost,26CLIbackup/3hostcumulativi. Archivio70366180byte/20membri,decifratura ed estrazione5runtimefile+eventi/ricevuteprivate verificate. Vecchiojournal byteidentico,alterazioneintent/replayrespinti. Fixture498file/181CLI,una fonte,BusyBox nonworkloadtarget;target504/184/34fonti. Prove pregresse PG/MinIO/Windows nonripetute. Dossier evidence/storage-capture-after-held-stop-qualified-20261107.json.
+
+Pacchetto docs/OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md con comando concreto verificato. Installer f9a8a5a6967bad69e74e23563f8460968068089f,3913byte/SHA45d65577bad7c135bc292575214a1121092f178121548b10cfff73ef8487d19d;installa2nuoviprogrammi pinned,non sovrascrivevecchi. Codice/installer riletti esatti daGitHub.
+
+Decisione proposta GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 PENDENTE:1solacontinuazione per conservare lo statoNONPROD/test coni3execnonattribuiti. Precedenteattemptstop/captureconsumato,nonusareilconsensovecchiocome replay. Nessun nuovo consenso sviluppo/fermo/downtime da chiedere. Richiedere ora soltanto questa decisione sul pacchetto pronto. Dopoconsenso,registrarlo e consegnarecomandopinned;nonripeterequalifica.
+
+Area nuova /var/lib/ouf-storage-migration/capture-after-held-stop-20261107-v1. Originaliscopeimmutabili;oldHELDnonriscritto,nesunaattribuzioneretroattivaexec. Reportesatto/piano/journaldigest vincolati;guardhost/offlineDocker/fonticorrenti primaedopocopia. Piano cifrato include504hash ed eventi/inventariofinale/ricevute azioni privati,oltre6documentihost giàpresenti. Treexec nonbloccano la sola conservazione fisicaNONPROD se approvata,nonvalgonoaccettazione/revoca oammissione. Filtrooriginario/capturecoreinvariati.
+
+Scadenza1794081219 invariata,min3600sresidui. Cattura3600s/256CLI/64GiBoutputrunner;precedentecapturemaiavviata. Oldfermo2400s/184CLI conservati,nuovofermo0;1hostread/byteaddebitato. Nessunriavvio/retry/authority/merge/deploy. SuccessoattesoENCRYPTED_OFFLINE_RECOVERY_SET_CAPTURED conarchivepath/bytes/SHArealiperWindows→restoreisolato→SeaweedFS. Nessunarchiviotargetancora. MiniPET18,3/46=39,78%,0gate0AT0migrati/120verificatiinvariato,source d5155899/PR54draftopeninvariati.
+
 ## Checkpoint 2026-11-07 — journal target conferma fermo; cattura separata in qualifica
 
 Ricevuta operatore evidence/storage-cold-event-target-operator-20261107.json:504file,49intenti/reply,35policy,5gruppi,145container/0running nell'ultimo inventario conservato. Tutti14ruoli usciti0/143 secondo contratto,PostgreSQL/MinIO/etcd0;restart=no,103condivisioni coerenti. Capture directory vuota;nessun risultato stop/top. Fermo fisico osservato nelle ricevute,non drain né stato live corrente. Non ripetere diagnostica già riuscita né il fermo.

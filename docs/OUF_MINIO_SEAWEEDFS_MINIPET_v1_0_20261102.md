@@ -1,3 +1,11 @@
+## Stato operativo 2026-11-07 — fermo osservato, backup reale ancora da catturare
+
+[Readback target](../evidence/storage-cold-event-target-operator-20261107.json):49azioni/35policy/14servizi arrestati,0running su145container nell'ultimo inventario,504file legati;capture vuota. IlHOLD riguarda9eventi extra,treexecetcd exit0 nonattribuiti. Non è drain né prova dello stato live corrente.
+
+[Continuazione di sola cattura](OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md) qualificata run42313748655,senza nuovi segnali/policy/mutazioni host;conserva l'anomalia e il vecchioHELD nel fascicolo. Decisione sulnuovotentativopendente. ArchivioVPS,copiaoffhost,restoretarget e migrazione restano da eseguire.
+
+**MiniPET18,3/46=39,78%;0/8gate,0/21AT,0/120migrati;120corpi verificati separatamente. Nessun credito aggiunto.** Queste evidenze rimuovono un blocco del percorso al backup,non soddisfanoG3/G5. PET/Matrix,criteri originali,pianoJSONcongelato e source-lock invariati.
+
 ## Checkpoint 2026-11-06 — manutenzione non produttiva e pacchetto fermo/cattura
 
 Giovanni conferma ambiente non produttivo, dati test e nessun vincolo di orario per il rientro. Si conserva il backup/restore come esercitazione; non richiedere nuovamente una finestra di disponibilità. [Roadmap corrente riscritta](OUF_STORAGE_CLOSURE_ROADMAP_20261106.md) e [pacchetto esatto](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md). Questo supersede le istruzioni operative storiche sotto,non i criteri originali dei gate.
