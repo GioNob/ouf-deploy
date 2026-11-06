@@ -1,3 +1,7 @@
+## Stato corrente: tentativo consumato, comandi sotto non da ripetere
+
+Installer completato sulVPS; fermo terminato HELD/RUN_SOURCE_CHANGED_SINCE_PLAN e launcher uscito prima della cattura. [Ricevuta operatore](../evidence/storage-test-cold-held-operator-20261106.json). La verifica delle fonti avviene prima e dopo il fermo: fase e modifiche già applicate devono essere ricostruite dal journal. **Non rilanciare i comandi storici sotto,non cancellare aree e non rinnovare piano/budget.** Prossima azione: scripts/read-storage-cold-runtime-drift-20261106.py,lettura locale raggruppata di journal e confronto delle5fonti correnti,nessunProvider/Docker/scrittura. Autorizzazione precedente registrata,non nuova authority o replay.
+
 # Fermo e prima cattura dei dati di test OUF
 
 **Profilo: NONPRODUCTION_TEST_STATE_PRESERVATION.** Giovanni accetta indisponibilità senza un orario obbligato di rientro. Conservare lo stato corrente per il successivo recupero; non dichiarare drain o consistenza applicativa prima delle prove. Il backup rimane necessario all'esercitazione e i segreti restano privati.

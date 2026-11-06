@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Exact stop/capture operation authorized by Giovanni (GIOVANNI-NONPROD-COLD-20261106-01), exclusive operator maintenance declared. Do not ask again. Operator executes pinned installation, one stop, then one capture after verified successful stop under unchanged maintenance. Runtime checks, expiry and consumed-scope denials still apply. Return redacted result; next offhost PC custody and isolated restore. No acceptance credit.",
+  "nextPlannedWork": "Authorized stop attempt returned RUN_SOURCE_CHANGED_SINCE_PLAN; scope consumed, capture not reached. Do not reinstall/replay/delete scope or assume current service state. Read local journal and five runtime source identity differences with pinned reader; reconcile phase and drift before proposing correction or any new operation.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -622,13 +622,17 @@
     "contextEvidence": "evidence/storage-nonproduction-owner-context-20261106.json",
     "qualificationEvidence": "evidence/storage-test-cold-stop-qualified-20261106.json",
     "package": "docs/OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md",
-    "targetStopPerformed": false,
+    "targetStopPerformed": null,
     "targetCapturePerformed": false,
     "requiredAvailabilityDeadline": null,
     "availabilityConstraintResolved": true,
     "exactOperationApprovalRecorded": true,
     "applicationConsistencyProven": false,
     "operatorDecisionEvidence": "evidence/storage-test-cold-operator-decision-20261106.json",
-    "operatorExclusiveMaintenanceDeclared": true
+    "operatorExclusiveMaintenanceDeclared": true,
+    "stopAttemptReported": "HELD_RUN_SOURCE_CHANGED_SINCE_PLAN",
+    "stopAttemptConsumed": true,
+    "currentServiceStateProven": false,
+    "latestEvidence": "evidence/storage-test-cold-held-operator-20261106.json"
   }
 }
