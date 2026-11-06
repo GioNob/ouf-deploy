@@ -562,7 +562,7 @@
       "currentExecutableMembershipProven": false
     },
     "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
-    "requiredOperatorInput": "Run only the pinned v2 installer/prepare, once, preserving v1. It checks the five exact runtime files and binds stopped sharing containers into a new private plan. Return redacted preparation JSON. No stop/capture authorization; review runtime effective configuration/custody, recipient, containment/window and applicable decision after the concrete plan.",
+    "requiredOperatorInput": "Do not repeat v2 installer/prepare. Read only current metadata of the five retained /run paths, v2 program and BASE using the hash-pinned metadata reader; no provider calls or source content reads. Exact failed input/predicate remains unknown; preserve both attempts. No permission changes, stop or capture.",
     "backupDestinationChoice": {
       "receipt": "evidence/storage-backup-windows-destination-20261106.json",
       "destinationKind": "OPERATOR_PC",
@@ -573,7 +573,7 @@
     "coldBackupProducer": {
       "path": "scripts/storage-cold-backup.py",
       "receipt": "evidence/storage-cold-backup-v2-qualified-20261106.json",
-      "status": "V2_NATIVE_QUALIFIED_TARGET_V2_PREPARATION_PENDING",
+      "status": "V2_TARGET_PREPARATION_HELD_INPUT_METADATA_REQUIRED",
       "targetExecuted": true,
       "acceptanceCreditAdded": 0,
       "targetCaptureExecuted": false,
@@ -583,7 +583,10 @@
       "qualifiedCommit": "562f2ca3efe0dd9052d3dce3f5abffb25380a918",
       "nativeRunId": 42280383267,
       "installer": "scripts/install-storage-cold-backup-v2-20261106.sh",
-      "v2TargetPrepared": false
+      "v2TargetPrepared": false,
+      "v2TargetPreparationAttempted": true,
+      "v2HeldReceipt": "evidence/storage-cold-v2-held-operator-20261106.json",
+      "metadataReaderTargetExecuted": false
     }
   },
   "cohortRetainedReconciliation": {

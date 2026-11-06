@@ -1,6 +1,12 @@
 # Backup freddo MinIO → SeaweedFS: pacchetto v2
 
-Stato: produttore v2 qualificato al commit562f2ca3efe0dd9052d3dce3f5abffb25380a918, [run42280383267](https://github.com/GioNob/ouf-deploy/actions/runs/42280383267) SUCCESS. Preparazione v2 sul VPS ancora da eseguire; nessun fermo, cattura o restore target autorizzato da questo documento.
+Stato: produttore v2 qualificato al commit562f2ca3efe0dd9052d3dce3f5abffb25380a918, [run42280383267](https://github.com/GioNob/ouf-deploy/actions/runs/42280383267) SUCCESS. Preparazione v2 sul VPS eseguita e HELD/PROTECTED_REGULAR_INPUT_REQUIRED; nessun fermo, cattura o restore target autorizzato da questo documento.
+
+## Stato corrente: v2 già eseguita, non ripetere
+
+Il predicato fallito comprende tipo regolare, UID0, nlink1, assenza scrittura gruppo/altri, dimensione non vuota entro limite. Input e condizione esatti ancora sconosciuti. Conservare aree e programmi v1/v2; nessun chmod/chown, reset o replay. La consegna installer più sotto è STORICA, già eseguita.
+
+Prossima azione: scripts/read-storage-cold-v2-metadata-20261106.py (5479byte,SHA256689811fce4d95aa582e3a3db1253c25625c5d3a77b3b7e34615ce31a13e4c701). Usa una sola lettura dell'inventario v1 già hash-pinned e soli metadati O_PATH/O_NOFOLLOW dei5path /run, programma v2 e BASE. Stampa tutti i predicati non soddisfatti, non i contenuti o i percorsi privati. Nessuna chiamata Docker/provider o modifica. Sei test locali PASS; esecuzione VPS pendente. Non prova binding corrente dei processi né il sito esatto dell'errore passato. [Ricevuta del diniego](../evidence/storage-cold-v2-held-operator-20261106.json).
 
 ## Correzione dei due blocchi osservati
 

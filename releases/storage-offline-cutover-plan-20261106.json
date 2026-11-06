@@ -48,16 +48,19 @@
     "transferScriptExecuted": false,
     "coldProducer": "scripts/storage-cold-backup.py",
     "coldProducerQualification": "evidence/storage-cold-backup-v2-qualified-20261106.json",
-    "coldProducerStatus": "V2_NATIVE_QUALIFIED_TARGET_V2_PREPARATION_PENDING",
+    "coldProducerStatus": "V2_PREPARATION_HELD_INPUT_METADATA_REQUIRED",
     "coldProducerScope": "PROPOSED_OFFLINE_FOURTEEN_ROLES_INCLUDING_WHOLE_SHARED_POSTGRES_CLUSTER",
     "broaderStopApprovalReceived": false,
-    "prepareCommand": "Only via scripts/install-storage-cold-backup-v2-20261106.sh, creating /var/lib/ouf-storage-cold-backup-v2.py and invoking prepare once",
+    "prepareCommand": "HISTORICAL_ALREADY_EXECUTED_DO_NOT_REPLAY",
     "v1PreparationHeld": true,
     "v1AttemptMustBePreserved": true,
     "v2Area": "/var/lib/ouf-storage-migration/cold-backup-20261106-v2",
     "reviewedRunFiles": 5,
     "readOnlyRunBindings": 7,
-    "sharingContainerCountMustComeFromPlan": true
+    "sharingContainerCountMustComeFromPlan": true,
+    "v2PreparationHeld": true,
+    "v2HeldReason": "PROTECTED_REGULAR_INPUT_REQUIRED",
+    "nextAction": "scripts/read-storage-cold-v2-metadata-20261106.py: metadata only; preserve v1/v2"
   },
   "applicationCohort": {
     "observedOnboardingDeclaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
