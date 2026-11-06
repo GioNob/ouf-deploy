@@ -34,7 +34,7 @@ def build(w):
  result=subprocess.run([str(bundle/'bin/inventory'),'g0-collect',str(w/'absent-config'),str(w/'must-not-exist')],capture_output=True,timeout=10)
  require(result.returncode!=0 and decode(result.stdout)['complete'] is False and not (w/'must-not-exist').exists(),'COMPILED_COLLECTOR_DENIAL_SMOKE')
  sourcefiles += [str(p.relative_to(ROOT)) for p in (ROOT/'tools/storage_inventory').iterdir() if p.suffix=='.go' or p.name in ['go.mod','go.sum']]
- module=w/'fixture-module';module.mkdir();scan=w/'scan';scan.mkdir();(scan/'collector').mkdir();(scan/'fixture').mkdir();shutil.copyfile(bundle/'bin/inventory',scan/'collector/inventory')
+ module=w/'fixture-module';module.mkdir();scan=w/'scan';scan.mkdir();(scan/'collector').mkdir();(scan/'fixture').mkdir();shutil.copy2(bundle/'bin/inventory',scan/'collector/inventory');require(os.access(scan/'collector/inventory',os.X_OK),'SCANNED_BINARY_EXECUTABLE')
  for f in (ROOT/'tools/storage_inventory').iterdir():
   if f.suffix=='.go' or f.name in ('go.mod','go.sum'):shutil.copyfile(f,module/f.name)
  shutil.copyfile(ROOT/'tests/fixtures/storage-g0-network/seed_test.go',module/'network_seed_test.go');cmd(['go','test','-c','-o',str(scan/'fixture/seed.test')],module,300)
