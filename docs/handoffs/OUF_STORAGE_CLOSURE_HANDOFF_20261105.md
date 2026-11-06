@@ -1,3 +1,15 @@
+## Checkpoint 2026-11-07 — journal target conferma fermo; cattura separata in qualifica
+
+Ricevuta operatore evidence/storage-cold-event-target-operator-20261107.json:504file,49intenti/reply,35policy,5gruppi,145container/0running nell'ultimo inventario conservato. Tutti14ruoli usciti0/143 secondo contratto,PostgreSQL/MinIO/etcd0;restart=no,103condivisioni coerenti. Capture directory vuota;nessun risultato stop/top. Fermo fisico osservato nelle ricevute,non drain né stato live corrente. Non ripetere diagnostica già riuscita né il fermo.
+
+72eventi conservati:9respinti,tre exec_create/start/die suetcd,exit0,comandi NON uguali alhealthcheck configurato. Origine/autorizzazione non provata,non dichiararli healthcheck. PianoSHAf4cc75450360a1a30a7210b5ee8e492bc99c6737d98131537b87b65fa284cc3d,journalSHA5f3416a62555adf1d6b4dc00370bd72cf33c0844bb7d671aaae05c08f4bc741f,eventSHA798a08d5f5f8881d550e0ad6a4d531109b9d8ff7a51b78e2e71a99a415897b57,reportcanonico917b75fa209a4d85aadd92a42913d45eb8f53869c9e2cf1e878f3a1c4b51ddd1.184comandiDocker cumulativi già consumati.
+
+Nuovo scripts/capture-storage-after-held-stop-20261107.py prepara SOLOcattura in area distinta capture-after-held-stop-20261107-v1. Ricontrolla il report esatto e504digest,guardhostcorrente,offlineDocker/fontiruntime; nessun35update/14segnale ripetuto. Produce copia cifrata dello stato NONPROD/test con anomalia conservata:journalhash,finalinventory/eventi integrali privati e ricevuteazioni dentro piano cifrato. VecchioHELD non sanato né trasformato in successo; nessunafalsa attribuzione exec. Non abilita traffico.
+
+Scadenzaoriginaria1794081219 invariata;capture3600s/64GiBoutput/256CLI,mai avviata nel tentativo precedente. Vecchiofermo2400s e184CLI conservati,nuovofermo0. Precedentehostread1/byte restaaddebitato;prima/dopocapturehostchecksolalettura. Nuovo scope unico,nessunreplay/adozione. Decisioneproposta GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 per continuazione e conservazione esplicita dello stato conexecnonattribuiti;NONancoraautorizzata. Completare qualificaeinstaller/pacchetto concreto prima di interpellareGiovanni. CinqueunittestPASS,nuovaqualifica nativa in corso:145containerfixture,treexecetcdreali provocati,lateHOLD,solecaptureexport/cifratura/readbackprove. Provebackupcomponentiprecedenti nonrilanciate.
+
+MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120migrati;120verificati separatamente invariato. Rimosso dubbio sul fermo osservato; archivio reale/Windows/restore e SeaweedFS restano mancanti. Nessunmerge/deploy/grant/riapertura o source-lock. PR54draftopen/source d5155899 invariati.
+
 Qualifica del lettore su GitHub Actions: run42312623241/job128217510640 SUCCESS alcommitd214a75e8147271218c6d60092c3f6af4b10282a,6testPASS/logverificato. Codice operativo/lettore invariato dopo la prova; nessuna ripetizione delle qualifiche native precedenti. GeneralCI sullo stesso commit ancora in corso all'osservazione (14success,39in_progress,33queued), separata dalla qualifica dedicata. Readback target resta pendente.
 
 ## Checkpoint 2026-11-07 — fermo collegato HELD sugli eventi; non ripetere

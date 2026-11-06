@@ -1,0 +1,579 @@
+{
+  "schema": "ouf.storage-cold-event-target-receipt.v1",
+  "provenance": "USER_UPLOADED_TERMINAL_OUTPUT",
+  "inputSha256": "43bdb8d573522f53000fcd85c99700d693fa8269a06195cc5ba55aece1a792d6",
+  "canonicalReportSha256": "917b75fa209a4d85aadd92a42913d45eb8f53869c9e2cf1e878f3a1c4b51ddd1",
+  "report": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "captureDirectoryEmpty": true,
+    "captureEntryCount": 0,
+    "credentialBearingMetadataReadLocally": true,
+    "credentialOrConfigurationBodiesExported": false,
+    "currentLiveStateProven": false,
+    "eventCommandOrdinal": 184,
+    "eventStreamSha256": "798a08d5f5f8881d550e0ad6a4d531109b9d8ff7a51b78e2e71a99a415897b57",
+    "events": {
+      "atOrAbove256RetainedEvents": false,
+      "eventAuthorizationProven": false,
+      "eventCount": 72,
+      "execCommandsOrAttributesExported": false,
+      "groups": [
+        {
+          "actionFamily": "update",
+          "actorClass": "UPDATED_SHARER",
+          "count": 22,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": null,
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "postgres",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "minio",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "keycloak",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "onboarding",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "mcp",
+          "signal": null
+        },
+        {
+          "actionFamily": "exec_create",
+          "actorClass": "SELECTED_ROLE",
+          "count": 3,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": false,
+          "permittedByOriginalStopFilter": false,
+          "role": "etcd",
+          "signal": null
+        },
+        {
+          "actionFamily": "exec_start",
+          "actorClass": "SELECTED_ROLE",
+          "count": 3,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": false,
+          "permittedByOriginalStopFilter": false,
+          "role": "etcd",
+          "signal": null
+        },
+        {
+          "actionFamily": "exec_die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 3,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": false,
+          "permittedByOriginalStopFilter": false,
+          "role": "etcd",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "gateway-owner",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion-evidence-read",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "caddy",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp-evidence-read",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "apisix",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion",
+          "signal": null
+        },
+        {
+          "actionFamily": "update",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "etcd",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "caddy",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "apisix",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "apisix",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "mcp",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "mcp",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "gateway-owner",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "caddy",
+          "signal": null
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "gateway-owner",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "onboarding",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "onboarding",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "semantic",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion-evidence-read",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "semantic",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp-evidence-read",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "ingestion-evidence-read",
+          "signal": null
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "udp-evidence-read",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "keycloak",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 143,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "keycloak",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "postgres",
+          "signal": "2"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "postgres",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "minio",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "minio",
+          "signal": null
+        },
+        {
+          "actionFamily": "kill",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": null,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "etcd",
+          "signal": "15"
+        },
+        {
+          "actionFamily": "die",
+          "actorClass": "SELECTED_ROLE",
+          "count": 1,
+          "exitCode": 0,
+          "linkedExecCommandMatchesConfiguredHealthcheck": null,
+          "permittedByOriginalStopFilter": true,
+          "role": "etcd",
+          "signal": null
+        }
+      ],
+      "healthcheckAttributionProven": false,
+      "nonContainerEventCount": 0,
+      "unexpectedByOriginalFilter": 9
+    },
+    "filesBound": 504,
+    "filesWritten": 0,
+    "hostCheckEntryCount": 1,
+    "mutationIntentsBound": 49,
+    "mutationRepliesBound": 49,
+    "nonemptyCommandStderrFiles": 0,
+    "operationClaimSha256": "9071d617789f1bd33c472e273987757d0200be5bf4e05f34dc05a564bffd27e5",
+    "planSha256": "f4cc75450360a1a30a7210b5ee8e492bc99c6737d98131537b87b65fa284cc3d",
+    "providerRequests": 0,
+    "retainedHostContainerCount": 145,
+    "retainedJournalDigest": "5f3416a62555adf1d6b4dc00370bd72cf33c0844bb7d671aaae05c08f4bc741f",
+    "retainedRoles": {
+      "apisix": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "caddy": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "etcd": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "gateway-owner": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "ingestion": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "ingestion-evidence-read": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "keycloak": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "mcp": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "minio": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "onboarding": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "postgres": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 0,
+        "restartPolicyNo": true
+      },
+      "semantic": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "udp": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      },
+      "udp-evidence-read": {
+        "cleanExitAtRetainedObservation": true,
+        "exitCode": 143,
+        "restartPolicyNo": true
+      }
+    },
+    "retainedRunningContainerCount": 0,
+    "retainedSharingMatchesPlan": true,
+    "retainedSharingRestartNo": true,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-cold-event-held-readback.v1",
+    "sourceBodiesRead": 0,
+    "status": "RETAINED_POST_STOP_EVENT_REVIEW",
+    "stopSuccessResultPresent": false,
+    "stoppedGroups": [
+      "ingress",
+      "application",
+      "identity",
+      "data",
+      "control"
+    ],
+    "topSuccessResultPresent": false,
+    "verifiedRestartPolicyReceipts": 35
+  }
+}

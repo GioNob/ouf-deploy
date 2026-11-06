@@ -1,3 +1,11 @@
+## 7 novembre — fermo confermato nelle ricevute; manca la cattura
+
+La lettura target ha confermato49azioni/35policy/14servizi arrestati e0running su145container nell'ultimo inventario. Capture vuota. I nove eventi respinti sono tre sequenze exec di etcd con exit0,non attribuite. Non servono altri arresti né un'altra raccolta della stessa diagnostica.
+
+Coppia attuale: acquisita la prova target del fermo; implementata continuazione di sola cattura, ora in qualifica. Essa conserva il vecchioHELD e gli eventi nel backup cifrato,senza presentarli come autorizzati. Nessun rilassamento del filtro originale. Prossimo risultato richiesto: archivio reale→Windows→restore isolato→SeaweedFS. Nuova decisione concreta sulla continuazione dopo qualifica;nessun nuovo consenso sviluppo.
+
+MiniPET39,78%,0gate/0AT/0migrati invariato. Questa è rimozione di un blocco operativo,nonaccettazione storage. [Ricevuta target](../evidence/storage-cold-event-target-operator-20261107.json).
+
 ## Stato corrente 7 novembre — HOLD dopo il percorso di arresto, prima della cattura
 
 Il tentativo autorizzato ha restituito UNEXPECTED_CONTAINER_EVENT. Il controllo è dopo il fermo nel codice; il journal target deve ancora confermare le49azioni e lo stato osservato. **Non ripetere stop o contenimento host.** [Ricevuta operatore](../evidence/storage-host-bound-cold-held-operator-20261107.json).

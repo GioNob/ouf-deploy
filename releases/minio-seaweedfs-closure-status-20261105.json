@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Read retained post-stop event journal with the pinned read-only diagnostic. Do not replay Docker stop or host containment. Classify actual events, then reconcile completed effects and prepare capture-only continuation, preserving budgets/expiry/applicable approval. Archive -> Windows -> isolated restore -> SeaweedFS.",
+  "nextPlannedWork": "Qualify and package capture-only continuation preserving unattributed etcd exec history and all completed stop effects. Exact continuation decision after concrete package. Then encrypted target archive, Windows transfer, isolated restore, SeaweedFS.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -735,7 +735,7 @@
     "cumulativeBytesObserved": 67321
   },
   "hostBoundColdOperation": {
-    "status": "HELD_UNEXPECTED_CONTAINER_EVENT_RETAINED_JOURNAL_PENDING",
+    "status": "RETAINED_PHYSICAL_STOP_CONFIRMED_EVENT_HOLD_PRESERVED",
     "package": "docs/OUF_STORAGE_HOST_BOUND_COLD_PACKAGE_20261107.md",
     "codeCommit": "ac0b5b862e7e1209756f596c5ae293c366c7b49e",
     "runId": 42310506109,
@@ -755,15 +755,17 @@
     "targetExecutionProvenance": "USER_REPORTED_TERMINAL_OUTPUT",
     "targetStopSuccessProven": false,
     "currentLiveStateProven": false,
-    "targetCaptureNonExecutionBasis": "Pinned code raises this reason before invoking capture; target journal readback pending.",
+    "targetCaptureNonExecutionBasis": "Readback confirms original capture directory empty",
     "heldReceipt": "evidence/storage-host-bound-cold-held-operator-20261107.json",
     "readbackDocument": "docs/OUF_STORAGE_COLD_EVENT_HOLD_20261107.md",
     "scopeConsumed": true,
     "automaticReplayAllowed": false,
-    "automaticRestartAllowed": false
+    "automaticRestartAllowed": false,
+    "retainedOfflineObservationConfirmed": true,
+    "stopSuccessfulReceiptAbsent": true
   },
   "hostBoundColdEventReadback": {
-    "status": "CI_SYNTHETIC_TESTS_PASS_TARGET_READBACK_PENDING",
+    "status": "TARGET_READBACK_ACQUIRED",
     "codeCommit": "460706827004046d7f2a55a46ed2f7ed3ec8aed2",
     "codeSha256": "3d96e397c3331c4ab17c32a517338f56135c7d9c9120e236be2295af30ff794a",
     "localTestsPassed": 6,
@@ -774,6 +776,22 @@
     "runId": 42312623241,
     "jobId": 128217510640,
     "ciCommit": "d214a75e8147271218c6d60092c3f6af4b10282a",
-    "ciTestsPassed": 6
+    "ciTestsPassed": 6,
+    "targetReceipt": "evidence/storage-cold-event-target-operator-20261107.json",
+    "journalFilesBound": 504,
+    "retainedHostContainers": 145,
+    "retainedRunningContainers": 0,
+    "unattributedEtcdExecSequences": 3,
+    "eventClassesIdentified": true
+  },
+  "captureAfterHeldStop": {
+    "status": "IMPLEMENTED_NATIVE_QUALIFICATION_PENDING",
+    "decisionReference": "GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01",
+    "decisionRecorded": false,
+    "targetExecuted": false,
+    "stopSignalsProposed": 0,
+    "restartPolicyChangesProposed": 0,
+    "legacyExpiryExtended": false,
+    "acceptanceCreditAdded": 0
   }
 }
