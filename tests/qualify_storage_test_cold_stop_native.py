@@ -72,10 +72,20 @@ def main():
                         'mountOrderOnly': old['Mounts'] != new['Mounts'] and
                             sorted(map(b.canonical, old['Mounts'])) == sorted(map(b.canonical, new['Mounts'])),
                         'changedStateFields': [k for k in set(old['State']) | set(new['State']) if old['State'].get(k) != new['State'].get(k)]})
+            selected_path = stop / 'command-002.private'
+            selected = b.decode(selected_path.read_bytes()) if selected_path.exists() else []
+            selected_differences = []
+            for new in selected:
+                old = host[new['Id']]
+                selected_differences.append({'changedFingerprintFields': [k for k in ('Id', 'Image', 'Config', 'Mounts', 'Path', 'Args', 'HostConfig') if old.get(k) != new.get(k)],
+                    'startedAtChanged': old['State'].get('StartedAt') != new['State'].get('StartedAt'),
+                    'mountOrderOnly': old['Mounts'] != new['Mounts'] and sorted(map(b.canonical, old['Mounts'])) == sorted(map(b.canonical, new['Mounts']))})
             diagnostic = {'schema': 'ouf.storage-test-stop-native-failure.v1', 'status': 'FAIL', 'reason': str(error),
-                'sharingDifferences': differences, 'mutationIntents': len(list(stop.glob('*.intent.private.json'))),
+                'sharingDifferences': differences, 'selectedDifferences': selected_differences,
+                'mutationIntents': len(list(stop.glob('*.intent.private.json'))),
                 'targetOperations': 0, 'acceptanceCreditAdded': 0}
             Path('test-stop-native-result.json').write_bytes(b.canonical(diagnostic))
+            Path('test-stop-native-result.json').chmod(0o644)
             print(json.dumps(diagnostic, sort_keys=True), flush=True)
             raise
         assert result['policyChanges'] == 15 and result['selectedRolesStopped'] == 14
@@ -100,6 +110,7 @@ def main():
                 'scripts/storage-test-cold-stop.py', 'tools/storage_planning/cold_stop_proposal.py',
                 'scripts/storage-cold-backup.py')}}
         Path('test-stop-native-result.json').write_bytes(b.canonical(report))
+        Path('test-stop-native-result.json').chmod(0o644)
         print(json.dumps(report, sort_keys=True))
     finally:
         # Fixture cleanup only; production driver has no remove/start/force path.
