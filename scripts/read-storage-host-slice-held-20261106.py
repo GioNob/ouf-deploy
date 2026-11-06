@@ -30,7 +30,9 @@ def protected(path):
         need(stat.S_ISREG(s.st_mode) and s.st_uid == 0 and s.st_nlink == 1 and
              stat.S_IMODE(s.st_mode) == 0o600 and 0 < s.st_size <= 2 << 20, 'PROTECTED_INPUT')
         raw = stream.read((2 << 20) + 1)
-        need(len(raw) == s.st_size and os.fstat(stream.fileno()) == s, 'INPUT_CHANGED')
+        after = os.fstat(stream.fileno())
+        need(len(raw) == s.st_size and all(getattr(after, key) == getattr(s, key) for key in
+             ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink', 'st_size', 'st_mtime_ns', 'st_ctime_ns')), 'INPUT_CHANGED')
     return raw
 
 

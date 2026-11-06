@@ -1,3 +1,15 @@
+## Checkpoint conclusivo 2026-11-06 — correzione slice qualificata, journal VPS da leggere
+
+VPS ha installato2file e restituito HELD/SLICE_NAME_REQUIRED. Autorizzazione host resta documentata,ma il singolo tentativo è consumato. NON rilanciare il comando mutante,non cancellare/riusare area,non rinnovare scadenza/budget. Nel codice qualificato6d5e questo controllo precede tutti intenti/override/comandi mutanti: inferenza da codice,non ancora verifica journal/stato live target.
+
+Lacune nostre: validator escludeva escape systemd delle slice template; fixture nativa precedente aveva solo servizi semplici. Ora2istanziati+3semplici+registry. Primo nuovo run42307935628/job128201918354 fallisce prima di apply: slice mai attivata restituisce ControlGroup stringa vuota. Corretto binding alla gerarchia canonica della slice senza decodificare gli escape; se provider espone un percorso deve coincidere; dopo start il percorso reale deve coincidere con quello legato. Fonte semantica systemd.slice(5),systemd.unit(5).
+
+Qualifica SUCCESS run42308152680/job128202648817 alcommit156b805b1669b26fdee89a2068e6c327409e3f25:5unitPASS,2slice escaped istanziate inizialmente inattive,confronto percorso dopo start,5completamenti naturali,registryTERM,6override/13CLI mutanti,0killforzati,5fontistabili,replaynegato. Codice SHA05f4e5166a4818d6d6b5a33651e4d4d39888245b2ebe0a3d1ae07a9c28a148ec. evidence/storage-host-slice-qualified-20261106.json e native dedicato. Non ripetere prova senza delta.
+
+Unica consegna VPS corrente: scripts/read-storage-host-slice-held-20261106.py,5273byte/SHA0d55d2eb714e457df170f5f2c2d6c35823dc952daebcb39ec919632074c2dffe.3file conservati(claim,draft,primo show),bindingdecisione/draft,conteggiintenti/reply/unknown e proprietà Slice redatte,0provider/0write/0credenziali. Smoke locale rootisolato PASS redazione,2escaped,riconoscimentointento,preservazioneinput. Noninstalla né esegue il drivercorretto. Target Slice effettiva ancora non confermata; prossimo JSON serve a legare causa e stato del tentativo per costruire continuazione governata senza replaycieco.
+
+MiniPET39,78%,0gate0AT0migrati/120verificati invariato,nessunbackup/capture. Source d5155899 invariata,PR54draftopen. Nuovo lavoro rimane rimozione bloccohost per archivio→PCrestore→SeaweedFS,nonfiloneIAM. Nessunmerge/deploy/grant/riapertura. Le consegne mutanti precedenti sono sospese.
+
 ## Checkpoint 2026-11-06 — host HELD SLICE_NAME_REQUIRED, nessun replay
 
 Installazione2file pinned riuscita; esito operatore HELD/SLICE_NAME_REQUIRED. Ricevuta evidence/storage-host-containment-slice-held-operator-20261106.json. Area host ora consumata: non rilanciare installer+apply, non cancellare area o alterare claim. Nel codice6d5e il controllo è prima del primo intento/scrittura override/mutazione servizi; questo è posizionamento del codice,non ancora readback del journal target né stato live.

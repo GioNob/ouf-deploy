@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.storage-host-slice-qualified.v1",
+  "status": "NATIVE_PASS_TARGET_READBACK_PENDING",
+  "codeCommit": "156b805b1669b26fdee89a2068e6c327409e3f25",
+  "productionSha256": "05f4e5166a4818d6d6b5a33651e4d4d39888245b2ebe0a3d1ae07a9c28a148ec",
+  "runId": 42308152680,
+  "jobId": 128202648817,
+  "unitTestsPass": 5,
+  "nativeEvidence": "evidence/storage-host-slice-native-20261106.json",
+  "priorFailure": "evidence/storage-host-slice-native-first-failure-20261106.json",
+  "readerLocalValidation": [
+    "root isolated synthetic three-file readback",
+    "escaped slice classification",
+    "private marker redaction",
+    "mutation intent detection",
+    "input bytes preserved"
+  ],
+  "targetCauseConfirmed": false,
+  "targetCorrectedDriverExecuted": false,
+  "acceptanceCreditAdded": 0
+}

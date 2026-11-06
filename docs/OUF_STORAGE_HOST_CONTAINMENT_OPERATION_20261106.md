@@ -1,3 +1,5 @@
+> **COMANDO MUTANTE SOSPESO: tentativo VPS consumato con HELD/SLICE_NAME_REQUIRED. Non eseguire nuovamente il blocco sotto.** Correzione qualificata run42308152680; prossima azione soltanto scripts/read-storage-host-slice-held-20261106.py sui3file conservati. Nessun nuovo stop/installer/apply autorizzato da questa diagnosi. Il testo sotto conserva la proposta originale e la decisione già acquisita.
+
 > Decisione acquisita: Giovanni ha autorizzato questa singola operazione in chat. Riferimento GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01; [ricevuta](../evidence/storage-host-containment-operator-decision-20261106.json). Esecuzione VPS ancora pendente. Le diciture di proposta/decisione pendente sotto conservano il pacchetto esatto approvato.
 
 # Contenimento host per backup di test — operazione proposta 2026-11-06

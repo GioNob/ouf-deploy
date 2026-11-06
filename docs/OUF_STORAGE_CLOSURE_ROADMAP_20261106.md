@@ -1,3 +1,7 @@
+## Blocco host corrente — correzione qualificata, lettura journal pendente
+
+Contenimento VPS HELD/SLICE_NAME_REQUIRED prima dei punti di mutazione nel codice; journal da confermare. Il validator e la prova precedente non coprivano le slice dei template. Correzione qualificata con2servizi istanziati reali,run42308152680 SUCCESS,5unit test e arresto naturale/TERM. [Prove](../evidence/storage-host-slice-qualified-20261106.json). Prossima consegna solo lettura3file locali per legare il tentativo; nessun replay o ripreparazione. Successivamente continuazione governata→archivio→PC/restore→SeaweedFS. Correzione dello stesso blocco,non nuovo creditoMiniPET;39,78% invariato.
+
 ## Decisione acquisita — esecuzione host sul VPS pendente
 
 Giovanni ha approvato il pacchetto host esatto (GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01). Consegnato il comando pinned; attendere ricevuta VPS. Nessun consenso da richiedere di nuovo per questo perimetro,nessun targetstop/capture già dichiarato. [Decisione](../evidence/storage-host-containment-operator-decision-20261106.json). Le richieste di decisione nelle sezioni storiche sono soddisfatte.

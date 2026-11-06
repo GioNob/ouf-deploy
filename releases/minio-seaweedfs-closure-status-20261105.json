@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Operator executes approved pinned host containment once; return redacted receipt. Then new linked Docker stop/capture composition, archive to PC and isolated restore; no old replay.",
+  "nextPlannedWork": "Operator reads three retained local host journal files only. Bind actual Slice and absence/presence of mutation receipts; then construct governed continuation preserving consumed attempt, scope and budgets. Do not replay prior host or Docker command.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -688,18 +688,25 @@
     "rerunRequested": false
   },
   "hostContainmentOperation": {
-    "status": "OPERATOR_APPROVED_TARGET_EXECUTION_PENDING",
+    "status": "TARGET_HELD_SLICE_NAME_CORRECTION_QUALIFIED_READBACK_PENDING",
     "document": "docs/OUF_STORAGE_HOST_CONTAINMENT_OPERATION_20261106.md",
     "qualification": "evidence/storage-host-containment-qualified-20261106.json",
     "codeCommit": "c742943800252099c56ac60ef448b712d9d007f3",
     "runId": 42306614307,
     "jobId": 128197445773,
-    "targetExecuted": false,
+    "targetExecuted": true,
     "newHostDecisionRecorded": true,
     "automaticReplayAllowed": false,
     "runtimeAuthorityIssued": false,
     "acceptanceCreditAdded": 0,
     "decisionReference": "GIOVANNI-NONPROD-HOST-CONTAIN-20261106-01",
-    "decisionEvidence": "evidence/storage-host-containment-operator-decision-20261106.json"
+    "decisionEvidence": "evidence/storage-host-containment-operator-decision-20261106.json",
+    "targetContainmentSucceeded": false,
+    "targetAttemptConsumed": true,
+    "targetResult": "HELD_SLICE_NAME_REQUIRED",
+    "targetReceipt": "evidence/storage-host-containment-slice-held-operator-20261106.json",
+    "correctedCodeCommit": "156b805b1669b26fdee89a2068e6c327409e3f25",
+    "correctedQualification": "evidence/storage-host-slice-qualified-20261106.json",
+    "targetMutationPhaseConfirmedByJournal": false
   }
 }
