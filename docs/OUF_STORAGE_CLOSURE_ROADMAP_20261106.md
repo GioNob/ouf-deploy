@@ -1,3 +1,7 @@
+## Stato corrente — impatto VPS e custodia PC verificati dall'operatore
+
+Entrambi gli output sono acquisiti. Non ripetere reader,prepare v3 o client Windows. Piano valido alla lettura,scadenza7novembre2026ore20:53:39Europe/Rome;35policy necessarie (13ruoli+22condividenti),nessuna mutata. PC roundtrip reale4096byte riuscito. Prossima azione: [preparazione cifratura Linux qualificata e collegamento al PC](OUF_STORAGE_BACKUP_CIPHER_LINK_20261106.md),poi completare pacchetto concreto di contenimento/fermo/finestra/autorità. VPS age assente,installazione e decrypt della prova512byte ancora pendenti; nessun backup/restore/creditoMiniPET. La sequenza sotto è storico e non richiede ripetere le prove concluse.
+
 ## Aggiornamento: entrambi gli output target ricevuti
 
 Reader VPS e prova Windows conclusi: non ripeterli. Ricevute [impatto](../evidence/storage-cold-plan-impact-operator-20261106.json) e [PC](../evidence/storage-backup-windows-custody-operator-20261106.json). Piano valido alla lettura; scadenza 7 novembre 2026 **20:53:39 Europe/Rome**. Sono necessarie 35 modifiche di restart policy:13ruoli selezionati (semantic è già no) e22dei103condividenti fermi;81sono già no. Nessuna modifica applicata o approvata. Zero condividenti da avviare. Spazio osservato VPS293040095232byte,PC554003427328byte; non ancora misura backup/restore.

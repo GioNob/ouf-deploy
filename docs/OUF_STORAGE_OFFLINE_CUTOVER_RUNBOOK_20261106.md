@@ -1,3 +1,7 @@
+## Stato corrente — impatto VPS e custodia PC verificati dall'operatore
+
+Entrambi gli output sono acquisiti. Non ripetere reader,prepare v3 o client Windows. Piano valido alla lettura,scadenza7novembre2026ore20:53:39Europe/Rome;35policy necessarie (13ruoli+22condividenti),nessuna mutata. PC roundtrip reale4096byte riuscito. Prossima azione: [preparazione cifratura Linux qualificata e collegamento al PC](OUF_STORAGE_BACKUP_CIPHER_LINK_20261106.md),poi completare pacchetto concreto di contenimento/fermo/finestra/autorità. VPS age assente,installazione e decrypt della prova512byte ancora pendenti; nessun backup/restore/creditoMiniPET. La sequenza sotto è storico e non richiede ripetere le prove concluse.
+
 ## Aggiornamento — piano backup concreto, fermo non ancora ammesso
 
 Piano v3 preparatoSHA1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f:14ruoli (etcd incluso),34fonti,103container già fermi condividenti,intero clusterPG. [Custodia e impatto corrente](OUF_STORAGE_COLD_PLAN_DECISION_20261106.md). Prossima coppia:reader policy/scadenza del piano conservato,prova Windows locale di cifratura/decifratura. Nessuna nuova raccolta Engine o replay prepare. DestinazionePC Windows,custodeGiovanni,SSH/SCP già noti;le proposte storiche di richiederli sono superate. Rimangono recipient target,compatibilità age,policy realmente da modificare,contenimento/finestra/decisioni applicabili e backup/restore. Nessuno stop/deploy/grant autorizzato da questo aggiornamento.

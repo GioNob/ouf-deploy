@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Cold backup producer qualified on synthetic PostgreSQL/MinIO; operator now runs ONLY prepare on VPS to bind the fourteen-role/whole-cluster proposal. Review actual impact, encryption recipient, writer containment, window and applicable approval before any stop/capture. Windows SSH/SCP/endpoint already supplied; do not ask again. Target archive and restore still absent.",
+  "nextPlannedWork": "Target plan impact and actual Windows custody check received. Do not repeat prepare/readers/Windows initial client. Install qualified pinned Linux age and bind existing public recipient; decrypt its 512-byte probe on the prepared PC. Then complete concrete containment/drain/clean-stop commands, window and applicable authority; no stop/capture yet. 35 restart policies required (13 selected,22 stopped sharers), no sharers to start. Plan expires2026-11-07T20:53:39+01:00.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -615,5 +615,6 @@
     "plannedCandidateReconfirmed": true,
     "runtimeAdmissionIssued": false,
     "acceptanceCreditAdded": 0
-  }
+  },
+  "backupCipherLink": "docs/OUF_STORAGE_BACKUP_CIPHER_LINK_20261106.md"
 }
