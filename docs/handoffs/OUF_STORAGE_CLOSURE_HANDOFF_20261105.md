@@ -1,3 +1,9 @@
+## Decisione operatore 2026-11-07 Europe/Rome — singola continuazione host autorizzata
+
+Giovanni risponde “autorizzo” al pacchetto concreto f36a1ab8. Decisione GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01 acquisita; il suffisso20261106 identifica il pacchetto,non la data locale di questo consenso. Ricevuta evidence/storage-host-continuation-operator-decision-20261107.json. Autorizzata1solacontinuazione sullo stesso perimetro5timer/6service,allowance600s separata dalvecchio600 interamenteaddebitato,limitiCLI/bytecumulativi e scadenzaoriginaria invariati. Non richiedere nuovamente questo consenso.
+
+Consegnare comando pinned docs/OUF_STORAGE_HOST_CONTINUATION_20261106.md: installer c2ee858be36a3034920eb0d50e50ee809ddd1ac2,3591byte/SHA586f46ea0536157ab2e6e45e741b6d0f1b67d81fca4bf0303b4018b33acda13a verificato esatto. Attendere JSONredattoVPS. Nessuna esecuzione/continenza/capture già attestata,nessungrantHUMANruntime. Ilvecchioattemptrestaconsumato/immutabile;no replayautomatico. HEADf36a confermato,soleCI osservate9success/10incorso/30queued/2pending;qualificadedicata giàSUCCESS,nonripetuta. MiniPETinvariato.
+
 ## Checkpoint conclusivo 2026-11-06 — continuazione host qualificata, decisione distinta pendente
 
 Causa target confermata dal readback:2Slice escaped,19command,0intent/reply/other. Ricevuta evidence/storage-host-slice-readback-operator-20261106.json. Non ripetere lettura né vecchio comando. Codice continuazione7887bf88a20d776745e6bb3e09158ecd6a712ff2,9124byte/SHA5522fde506a439651a923f929bed5d13fe3029a2be508fcebe0c1ec956e5c2c5;corefixed21751/SHA05f4e516.

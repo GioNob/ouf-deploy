@@ -1,3 +1,7 @@
+## Decisione acquisita 2026-11-07 Europe/Rome — continuazione host sul VPS
+
+Giovanni autorizza la singola continuazione proposta,GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01. [Ricevuta](../evidence/storage-host-continuation-operator-decision-20261107.json). Comando pinned daeseguire una volta,JSONtargetpendente. Non richiedere di nuovo il consenso; nessunaesecuzione/archivio/gate giàdedotta. Le richieste precedenti sotto sono soddisfatte.
+
 ## Continuazione host qualificata — esecuzione reale ancora pendente
 
 Readback VPS conferma19letture senzaintenti e causa sulle2sliceescaped. Continuazione qualificata run42308843588: riproduce vecchioHOLD,conserva21file,conteggia19letture/byteprecedenti ecompiecontenimento sufixture. [Pacchetto concreto](OUF_STORAGE_HOST_CONTINUATION_20261106.md). Serve decisione per singolacontinuazione conallowance600s separata;stesse6mutazioni configurazione e5timer+registry,scadenzaoriginaria invariata. Non ripetere reader/oldapply. Dopo ricevuta reale: nuova composizioneDockerstop/capture→archivioPC→restore→migrazione. MiniPET39,78%invariato,nessungatechiuso. Nessunanuovastima basata suquesticicli correttivi.

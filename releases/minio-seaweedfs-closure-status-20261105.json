@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Exact separate decision on qualified single host continuation (same mutations, separate600s, cumulative calls/bytes preserved), then operator execution. No repeat of readback or old apply. After result build linked Docker stop/capture, PC archive and isolated restore.",
+  "nextPlannedWork": "Operator executes approved single pinned host continuation and returns redacted JSON. Do not repeat approval,reader or old apply. After receipt build linked Docker stop/capture,archive to PC and isolated restore.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -712,13 +712,13 @@
     "targetSliceCauseConfirmed": true
   },
   "hostContainmentContinuation": {
-    "status": "QUALIFIED_SEPARATE_DECISION_PENDING",
+    "status": "APPROVED_TARGET_EXECUTION_PENDING",
     "document": "docs/OUF_STORAGE_HOST_CONTINUATION_20261106.md",
     "codeCommit": "7887bf88a20d776745e6bb3e09158ecd6a712ff2",
     "runId": 42308843588,
     "jobId": 128204988421,
     "decisionReference": "GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01",
-    "decisionRecorded": false,
+    "decisionRecorded": true,
     "targetExecuted": false,
     "priorCallsCharged": 19,
     "cumulativeCliLimit": 256,
@@ -727,6 +727,7 @@
     "separateContinuationSeconds": 600,
     "maximumCumulativeActiveAllowanceSeconds": 1200,
     "legacyExpiryExtended": false,
-    "acceptanceCreditAdded": 0
+    "acceptanceCreditAdded": 0,
+    "decisionEvidence": "evidence/storage-host-continuation-operator-decision-20261107.json"
   }
 }

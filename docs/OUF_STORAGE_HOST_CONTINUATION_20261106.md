@@ -1,3 +1,5 @@
+> **Autorizzata il 2026-11-07 Europe/Rome:** Giovanni ha approvato questa singola continuazione. Riferimento GIOVANNI-NONPROD-HOST-CONTINUE-20261106-01; [ricevuta](../evidence/storage-host-continuation-operator-decision-20261107.json). Esecuzione VPS pendente. Le diciture di decisione pendente sotto conservano la proposta esatta approvata.
+
 # Continuazione host dopo SLICE_NAME_REQUIRED — 2026-11-06
 
 **Stato: qualificata, decisione sulla singola continuazione pendente.**
