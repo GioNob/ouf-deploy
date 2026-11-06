@@ -3,6 +3,9 @@ on:
   push:
     branches: [feat/m2-discovery-complete-profile-20261029]
     paths:
+      - scripts/storage-cold-backup-v4.py
+      - tests/test_storage_cold_mount_identity.py
+      - tests/qualify_storage_cold_backup_v4_native.py
       - scripts/storage-test-cold-stop.py
       - tools/storage_planning/cold_stop_proposal.py
       - tests/test_storage_test_cold_stop.py
@@ -18,22 +21,29 @@ concurrency:
 jobs:
   qualification:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Install age for disposable capture qualification
+        run: sudo apt-get update && sudo apt-get install -y age
       - name: Stop driver refusal and journal tests
         run: |
+          python3 -B -m unittest discover -s tests -p test_storage_cold_mount_identity.py -v
           python3 -B -m unittest discover -s tests -p test_storage_test_cold_stop.py -v
           python3 -B -m unittest discover -s tests -p test_storage_cold_stop_proposal.py -v
       - name: Native local Docker stop and offline guard
         run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_test_cold_stop_native.py
+      - name: Native v4 encrypted capture and isolated database/object restore
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_cold_backup_v4_native.py "$RUNNER_TEMP/cold-backup-v4-proof"
       - name: Preserve redacted report only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: storage-test-cold-stop-result
-          path: test-stop-native-result.json
+          path: |
+            test-stop-native-result.json
+            ${{ runner.temp }}/cold-backup-v4-proof/native-result.json
           if-no-files-found: error
           retention-days: 90

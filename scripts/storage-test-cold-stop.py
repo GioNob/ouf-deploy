@@ -23,6 +23,9 @@ PLAN_SHA = '1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f'
 RECIPIENT_SHA = '20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0'
 AGE_SHA = 'eb7dd1b518f0a307c99cd97782623c5321da049154b04acd2d98d21aa7bc9b2c'
 AREA = Path('/var/lib/ouf-storage-migration/cold-test-stop-20261106-v1')
+LEGACY_AREA = Path('/var/lib/ouf-storage-migration/cold-backup-20261106-v3')
+WRAPPER = Path('/var/lib/ouf-storage-cold-backup-v4.py')
+WRAPPER_SHA = '8786a65a8bcde2706a3dc05a96a60ad04682cab6baa697e286b2dc525b17b3b9'
 MAX_COMMANDS = 256
 MAX_METADATA = 64 << 20
 RETAINED = {
@@ -48,6 +51,11 @@ def bootstrap():
         raise ValueError('PINNED_PROGRAM_DIGEST')
     h = {'__name__': 'backup_definitions_only', '__file__': str(PROGRAM)}
     exec(compile(raw, str(PROGRAM), 'exec'), h)
+    wrapper = h['protected'](WRAPPER, private=True)
+    h['need'](h['digest'](wrapper) == WRAPPER_SHA, 'WRAPPER_DIGEST')
+    w = {'__name__': 'wrapper_definitions_only', '__file__': str(WRAPPER)}
+    exec(compile(wrapper, str(WRAPPER), 'exec'), w)
+    h = w['definitions'](raw)
     planner = h['protected'](PLANNER, private=True)
     h['need'](h['digest'](planner) == PLANNER_SHA, 'PLANNER_DIGEST')
     p = {'__name__': 'proposal_definitions_only'}
@@ -81,7 +89,7 @@ def check_host(h, plan, retained, current, updated, signalled, completed):
                      not state.get('Error'), 'UNCLEAN_STOP')
         else:
             need(not state.get('Running') and state.get('Pid') == 0, 'UNBOUND_ACTIVE_PROCESS')
-            need(d['Mounts'] == retained[cid]['Mounts'] and state == retained[cid]['State'],
+            need(sorted(map(h['canonical'], d['Mounts'])) == sorted(map(h['canonical'], retained[cid]['Mounts'])) and state == retained[cid]['State'],
                  'OUTSIDE_CONTAINER_CHANGED')
 
 
@@ -227,28 +235,31 @@ def main():
         raise ValueError('ROOT_ISOLATED_PYTHON_REQUIRED')
     h, p = bootstrap()
     read, need = h['protected'], h['need']
-    raw = read(h['AREA'] / 'plan.private.json', private=True)
+    raw = read(LEGACY_AREA / 'plan.private.json', private=True)
     need(h['digest'](raw) == PLAN_SHA, 'EXACT_PLAN_DIGEST')
     plan = h['decode'](raw)
     need(plan['programSha256'] == PROGRAM_SHA, 'PLAN_PROGRAM_DIGEST')
     need(time.time() + 4800 <= plan['validUntilEpoch'], 'PLAN_WINDOW_TOO_SHORT')
-    inputs = {name: read(h['AREA'] / name, private=True) for name in RETAINED}
+    inputs = {name: read(LEGACY_AREA / name, private=True) for name in RETAINED}
     need(all(h['digest'](inputs[n]) == v for n, v in RETAINED.items()), 'RETAINED_INVENTORY_DIGEST')
     docs = h['decode'](inputs['command-002.private']) + [h['decode'](x) for x in inputs['command-003.private'].splitlines()]
     ids = inputs['command-001.private'].decode().split()
     need(len(ids) == len(set(ids)) == len(docs) == 145 and {d['Id'] for d in docs} == set(ids), 'EXACT_HOST_INVENTORY')
     host = {d['Id']: d for d in docs}
-    proposal = p['compile_proposal'](plan, host, h, PLAN_SHA, int(time.time()), test_preservation=True)
+    plan = h['derive_legacy_plan'](plan, host, WRAPPER_SHA)
+    proposal = p['compile_proposal'](plan, host, h, h['digest'](h['canonical'](plan)), int(time.time()), test_preservation=True)
     need(proposal['selectedPolicyChanges'] == 13 and proposal['sharingPolicyChanges'] == 22, 'EXACT_35_POLICIES')
     recipient = read(Path('/var/lib/ouf-storage-cipher-preparation-20261106/recipient.pub'), private=True)
     need(h['digest'](recipient) == RECIPIENT_SHA, 'RECIPIENT_DIGEST')
     need(h['digest'](read(Path('/usr/bin/age'), limit=64 << 20)) == AGE_SHA, 'AGE_DIGEST')
-    need(not os.path.lexists(h['AREA'] / 'capture'), 'CAPTURE_ALREADY_ATTEMPTED')
+    need(not os.path.lexists(LEGACY_AREA / 'capture') and not os.path.lexists(h['AREA']), 'CAPTURE_OR_DERIVATION_ALREADY_ATTEMPTED')
     for ancestor in [AREA.parent, *AREA.parent.parents]:
         s = ancestor.lstat()
         need(stat.S_ISDIR(s.st_mode) and s.st_uid == 0 and not s.st_mode & 0o022, 'PROTECTED_OPERATION_AREA')
     # Exclusive directory is the permanent single-attempt fence, even before claim.
     AREA.mkdir(mode=0o700)
+    h['AREA'].mkdir(mode=0o700)
+    h['new'](h['AREA'] / 'plan.private.json', h['canonical'](plan))
     run = bounded_runner(h, AREA)
     print(json.dumps(stop_once(h, p, plan, host, AREA, run, args.decision_reference), sort_keys=True))
 

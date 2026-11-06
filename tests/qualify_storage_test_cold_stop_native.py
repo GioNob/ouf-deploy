@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import time
+import types
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,7 +18,8 @@ def load(name, path):
     return module
 
 
-b = load('cold_native', 'scripts/storage-cold-backup.py')
+v4 = load('cold_v4_native', 'scripts/storage-cold-backup-v4.py')
+b = types.SimpleNamespace(**v4.definitions((ROOT / 'scripts/storage-cold-backup.py').read_bytes()))
 p = load('proposal_native', 'tools/storage_planning/cold_stop_proposal.py')
 d = load('stop_native', 'scripts/storage-test-cold-stop.py')
 IMAGE = 'postgis/postgis@sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f'
@@ -53,7 +55,7 @@ def main():
         prepare.mkdir(mode=0o700)
         r = b.Runner(prepare, seconds=300)
         host = r.inventory({v['containerId'] for v in bindings.values()})
-        plan = b.build_plan(bindings, host, prepare, b.digest((ROOT / 'scripts/storage-cold-backup.py').read_bytes()))
+        plan = b.build_plan(bindings, host, prepare, b.digest((ROOT / 'scripts/storage-cold-backup-v4.py').read_bytes()))
         before = b.digest((source / 'keep').read_bytes())
         stop = root / 'stop'
         stop.mkdir(mode=0o700)
@@ -103,12 +105,12 @@ def main():
         report = {'schema': 'ouf.storage-test-cold-stop-native.v1', 'status': 'PASS',
             'fixture': '14 PID1 signal handlers plus2 stopped sharing containers; no OUF application or real PostgreSQL workload',
             'image': IMAGE, 'policyChanges': 15, 'signals': 14, 'sourceBytesPreserved': True,
-            'allContainersStopped': True, 'backupV3OfflineGuardPassed': True, 'replayDeniedWithoutProviderCall': True,
+            'allContainersStopped': True, 'backupV4OfflineGuardPassed': True, 'replayDeniedWithoutProviderCall': True,
             'privateIntentReceipts': len(list(stop.glob('*.intent.private.json'))),
             'applicationDrainProven': False, 'targetOperations': 0, 'acceptanceCreditAdded': 0,
             'sources': {name: b.digest((ROOT / name).read_bytes()) for name in (
                 'scripts/storage-test-cold-stop.py', 'tools/storage_planning/cold_stop_proposal.py',
-                'scripts/storage-cold-backup.py')}}
+                'scripts/storage-cold-backup.py', 'scripts/storage-cold-backup-v4.py')}}
         Path('test-stop-native-result.json').write_bytes(b.canonical(report))
         Path('test-stop-native-result.json').chmod(0o644)
         print(json.dumps(report, sort_keys=True))
