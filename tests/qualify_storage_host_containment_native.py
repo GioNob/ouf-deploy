@@ -99,6 +99,14 @@ def main():
         assert not d.cgroup_empty(probe.cgroups[p.REGISTRY])
         # Exercise natural completion after the containment starts.
         ctl('start', '--no-block', *p.SERVICES)
+        until = time.monotonic() + 5
+        while True:
+            active_rows = d.show(p, probe)
+            if all(p.one(active_rows[n], 'ControlGroup') for n in p.SERVICES):
+                break
+            assert time.monotonic() < until
+            time.sleep(.1)
+        assert all(p.one(active_rows[n], 'ControlGroup') == probe.cgroups[n] for n in p.SERVICES)
         result = d.apply(vars(b), p, 'SYNTHETIC-RUNNER-HOST-CONTAINMENT')
         assert result['status'] == 'HOST_WRITERS_CONTAINED_NEW_STOP_PLAN_REQUIRED'
         assert result['overrideFilesWritten'] == 6 and result['timersDisabledAndStopped'] == 5

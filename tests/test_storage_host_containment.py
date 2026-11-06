@@ -24,6 +24,15 @@ class TypedStopGuard(unittest.TestCase):
                      'system.slice\n', r'system\n.slice', 'system@a.slice'):
             self.assertFalse(d.valid_slice_name(name), name)
 
+    def test_slice_hierarchy_preserves_escaped_hyphens(self):
+        self.assertEqual(d.slice_cgroup_path('-.slice'), '/')
+        self.assertEqual(d.slice_cgroup_path('system.slice'), '/system.slice')
+        self.assertEqual(d.slice_cgroup_path(r'system-ouf\x2dpolicy.slice'),
+                         r'/system.slice/system-ouf\x2dpolicy.slice')
+        for name in ('system--bad.slice', '-bad.slice', 'bad-.slice'):
+            with self.assertRaisesRegex(ValueError, 'SLICE_HIERARCHY_REQUIRED'):
+                d.slice_cgroup_path(name)
+
     def test_only_two_typed_empty_arrays_are_admitted(self):
         r=ReadRunner('a(sasbttttuii) 0\na(sasbttttuii) 0\n')
         d.empty_stop_hooks(r,'ouf-test.service')

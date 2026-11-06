@@ -187,6 +187,15 @@ def valid_slice_name(name):
             re.fullmatch(r'(?:[A-Za-z0-9_:.-]|\\x[0-9a-fA-F]{2})+\.slice', name) is not None)
 
 
+def slice_cgroup_path(name):
+    need(valid_slice_name(name), 'SLICE_NAME_REQUIRED')
+    if name == '-.slice':
+        return '/'
+    pieces = name[:-6].split('-')
+    need(all(pieces), 'SLICE_HIERARCHY_REQUIRED')
+    return '/' + '/'.join('-'.join(pieces[:i]) + '.slice' for i in range(1, len(pieces) + 1))
+
+
 def bind_cgroups(p, run, rows):
     fd = cgroup_root(); os.close(fd)
     for unit in tuple(p.SERVICES) + (p.REGISTRY,):
@@ -198,8 +207,11 @@ def bind_cgroups(p, run, rows):
                 'org.freedesktop.systemd1.Slice', 'ControlGroup']).strip()
             need(raw.startswith('s '), 'TYPED_SLICE_CGROUP_REQUIRED')
             parent = json.loads(raw[2:])
-            need(isinstance(parent, str) and parent.startswith('/'), 'SLICE_CGROUP_REQUIRED')
-            path = parent.rstrip('/') + '/' + unit
+            expected_parent = slice_cgroup_path(slice_name)
+            need(isinstance(parent, str) and parent in ('', expected_parent), 'SLICE_CGROUP_REQUIRED')
+            # A never-started template slice can have no realized ControlGroup.
+            # Bind its canonical hierarchy; subsequent active paths must match it.
+            path = expected_parent.rstrip('/') + '/' + unit
         need(path.startswith('/') and path.endswith('/' + unit) and os.path.normpath(path) == path, 'EXACT_UNIT_CGROUP_REQUIRED')
         run.cgroups[unit] = path
 
