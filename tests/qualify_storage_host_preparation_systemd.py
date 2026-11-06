@@ -90,18 +90,23 @@ def main():
         print(json.dumps({'schema': 'ouf.storage-host-preparation-systemd-observation.v1',
                           'redactedPreparation': result}, sort_keys=True), flush=True)
         assert len(calls) == 3 and '--all' in calls[-1]
-        assert len(result['units']) == 13 and result['unitConfigurationFilesBound'] == 11
+        assert len(result['units']) == 13 and result['unitConfigurationFilesBound'] == 10
         assert result['serviceMutations'] == result['dockerRequests'] == result['iamRequests'] == 0
         registry = next(r for r in result['units'] if r['Id'] == p.REGISTRY)
-        assert registry['externalConfigurationFilesBound'] == 1 and registry['execStopPresent'] is True
+        assert registry['configurationFilesBound'] == 0 and registry['execStopPresent'] is True
+        link_findings = [f for f in result['findings'] if f['unit'] == p.REGISTRY and f.get('property') == 'FragmentPath']
+        assert len(link_findings) == 1 and link_findings[0]['errno'] == 40
+        assert link_findings[0]['reason'] == 'UNIT_CONFIGURATION_CUSTODY_OR_ENCODING_UNPROVEN'
         assert all(r['ActiveState'] == 'inactive' for r in result['units'])
         assert secret not in json.dumps(result)
         draft = json.loads(b.protected(p.AREA / 'draft.private.json', private=True))
         commands = next(r['ExecStop'] for r in draft['unitProperties'] if r['Id'] == [p.REGISTRY])
         assert 'first-fixture-command' in '\n'.join(commands)
         assert 'second-fixture-command' in '\n'.join(commands)
-        assert all(next(r for r in result['units'] if r['Id'] == name)['execStopPresent'] is False
+        assert all(next(r for r in result['units'] if r['Id'] == name)['execStopPresent'] is None
                    for name in p.SERVICES)
+        assert all(any(f['unit'] == name and f.get('property') == 'ExecStop' and f.get('occurrences') == 0
+                       for f in result['findings']) for name in p.SERVICES)
         # Capture actual omission/array behaviour, without attributing the VPS's
         # unspecified PROPERTY_CARDINALITY to a particular field or systemd version.
         default_show = p.command(['show', p.REGISTRY, '--property=ExecStopPost'], time.monotonic() + 10)
@@ -114,8 +119,9 @@ def main():
         assert not calls
         proof = {'schema': 'ouf.storage-host-preparation-systemd-native.v1', 'status': 'PASS',
             'programSha256': hashlib.sha256((ROOT / 'scripts/prepare-storage-host-containment-20261106.py').read_bytes()).hexdigest(),
-            'syntheticUnits': 13, 'protectedConfigurationFiles': 11, 'externalFragmentBound': True,
-            'multipleExecStopCommandsPreserved': True, 'emptyExecStopKnownFalse': True,
+            'syntheticUnits': 13, 'protectedConfigurationFiles': 10, 'externalFragmentBound': False,
+            'linkedFragmentSymlinkRejected': True, 'linkedFragmentFindingPreserved': True,
+            'multipleExecStopCommandsPreserved': True, 'omittedExecStopRemainsUnknown': True,
             'defaultShowIncludesEmptyExecStopPost': 'ExecStopPost=' in default_show,
             'optionalPropertyFindings': result['findings'], 'privateOutputProtected': True,
             'existingPreparationDeniedBeforeCommands': True, 'serviceStartsOrStops': 0,
