@@ -1,8 +1,8 @@
 # Custodia storica del materiale di cattura OUF
 
-**Qualifica nativa PASS.** Cifratura e decifratura con age, 34 tar sorgente, 14 rootfs, 53 digest verificati e controlli negativi in fixture isolata. [Esecuzione](https://github.com/GioNob/ouf-deploy/actions/runs/42352184254) · [Ricevuta di qualifica](../evidence/storage-retained-custody-qualified-20261107.json). Decisione VPS ancora da acquisire.
+**Qualifica nativa PASS.** Cifratura e decifratura con age, 34 tar sorgente, 14 rootfs, 53 digest verificati e controlli negativi in fixture isolata. [Esecuzione](https://github.com/GioNob/ouf-deploy/actions/runs/42352184254) · [Ricevuta di qualifica](../evidence/storage-retained-custody-qualified-20261107.json). Giovanni ha approvato l'esecuzione singola con «Autorizzo». [Decisione registrata](../evidence/storage-retained-custody-operator-decision-20261107.json). Esecuzione VPS pendente.
 
-Decisione proposta `GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01`. L'esecuzione sul VPS richiede la decisione distinta su questo perimetro e la qualifica nativa con age. La decisione di cattura precedente copriva un tentativo, ora consumato.
+Decisione approvata `GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01` sul perimetro qualificato con age. La decisione di cattura precedente copriva un tentativo, ora consumato.
 
 ## Evidenza del VPS
 
