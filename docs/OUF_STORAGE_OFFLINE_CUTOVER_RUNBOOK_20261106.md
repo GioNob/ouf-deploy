@@ -1,3 +1,7 @@
+## Coppia corrente — decodifica della traccia esistente
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md#blocco-unico-per-la-decodifica) per decodificare il file JFR conservato e leggere le categorie d'errore dell'unico POST. Esecuzione pendente.
+
 ## Upload tracciato sospeso con registrazione conservata
 
 Il VPS ha confermato `ONB_STAGING_WRITE_FAILED` con HTTP 502 dopo un solo POST del nuovo intento. La lettura S3 pre-upload è riuscita. Flight Recorder ha conservato il file, mentre il riepilogo incorporato non l'ha decodificato. I contatori di eccezioni e handshake pari a zero in quella ricevuta sono valori iniziali del riepilogo. Tutti e tre i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-trace-held-operator-20261107.json).

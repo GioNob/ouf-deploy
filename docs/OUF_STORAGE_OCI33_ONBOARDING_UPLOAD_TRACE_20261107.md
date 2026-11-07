@@ -9,6 +9,27 @@ La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-uploa
 
 Il tentativo precedente rimane conservato. La nuova operazione riguarda esclusivamente le copie. Durata massima 12 minuti. La scrittura e decodifica del file JFR sono state verificate localmente con il JRE dell'immagine esatta. Il tentativo VPS si è fermato sul 502.
 
+## Blocco unico per la decodifica
+
+1. Montare la registrazione esistente in sola lettura nel container dell'immagine esatta, avviando solo l'eseguibile `jfr` con rete `none`.
+2. Filtrare le eccezioni e gli handshake nella finestra fra intento e risposta del POST. Conservare il JSON dettagliato sul VPS e restituire solo categorie, classi, codici riconosciuti e conteggi. Verificare il digest della registrazione prima e dopo.
+
+L'esito atteso è `ONBOARDING_UPLOAD_JFR_READ_BACK`. Il blocco non avvia l'applicazione e non invia richieste di upload. Durata massima tre minuti. Verificati localmente il filtro temporale, la redazione e il percorso dell'eseguibile nell'immagine. Esecuzione VPS pendente.
+
+```bash
+sudo /usr/bin/timeout 180 /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib, urllib.request
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/bab2f31c08bb05a31534234a62669400548186c9/scripts/read-oci33-onboarding-upload-jfr.py'
+with urllib.request.urlopen(url, timeout=25) as response:
+    raw = response.read(12715)
+if len(raw) != 12714 or hashlib.sha256(raw).hexdigest() != '3d3fa8c0b36db2268d29b7e3225ebfbd56b3b9783a78f885f8fc159e62fe9dea':
+    raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
+exec(compile(raw, 'read-oci33-onboarding-upload-jfr.py', 'exec'), {'__name__': '__main__'})
+PY
+```
+
+Riportare solo il JSON finale.
+
 ## Blocco del tentativo VPS eseguito
 
 ```bash
