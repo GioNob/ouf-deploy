@@ -1,10 +1,18 @@
+## 7 novembre — sorgenti originali e inventario G0 corrispondono
+
+Il riscontro operatore ha verificato la custodia e trovato zero differenze per 5.032 voci PostgreSQL e 325 voci MinIO. I 120 oggetti coincidono con G0 per bucket, chiave, dimensione e SHA-256. I due container sorgente corrispondevano alle identità catturate e i controlli Docker prima e dopo hanno osservato zero container attivi. [Ricevuta](../evidence/storage-retained-source-comparison-match-operator-20261107.json).
+
+Il backup cifrato verificato su Windows, i due restore isolati e la parità OCI33 restano le evidenze da riusare. Il confronto non attesta la copertura degli eventi della cattura, un common cut temporale o una barriera persistente alle scritture esterne. G4 resta aperto. MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21, oggetti migrati operativamente 0.
+
+Il lavoro passa alla preparazione del pacchetto operativo. Le dipendenze immediate sono i due percorsi di scrittura esterni/amministrativi ancora senza censimento completo, i binding effettivi S3 e PostgreSQL della coorte applicativa e la prova di accesso e isolamento sul target. La scelta già acquisita di una finestra non produttiva senza orario di rientro si riusa. La messa in servizio e la riapertura richiedono le decisioni distinte previste dal runbook.
+
 ## 7 novembre — parità verificata sul VPS
 
 Il rehearsal isolato del dataset storico è riuscito. SeaweedFS OCI33 contiene i 120 oggetti dei due bucket (203.743 byte) con insieme delle chiavi, corpi, metadati e tag coincidenti. La continuazione ha riusato l'immagine verificata e distinto il digest della configurazione dall'ID del daemon. [Ricevuta operatore](../evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json).
 
 Il restore isolato di PostgreSQL aveva già aperto 7 database e letto una riga in ciascuno. Le due prove si riferiscono alla stessa custodia storica. Restano aperti la baseline comune corrente, il contenimento verificabile dei writer e i binding applicativi. Credito aggiunto 0, G4 aperto, oggetti operativi migrati 0. Avanzamento MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21.
 
-Il prossimo riscontro è il [confronto unico sul VPS](OUF_STORAGE_RETAINED_SOURCE_COMPARISON_20261107.md) fra le sorgenti originali PostgreSQL e MinIO, la custodia e l'inventario G0. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
+Il [confronto sul VPS](OUF_STORAGE_RETAINED_SOURCE_COMPARISON_20261107.md) è stato completato e ha trovato corrispondenza. L'ammissione operativa resta separata.
 
 ## 7 novembre — continuazione di sola cattura autorizzata
 
