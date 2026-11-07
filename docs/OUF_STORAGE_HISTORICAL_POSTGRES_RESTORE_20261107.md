@@ -1,6 +1,6 @@
 # Prova di ripristino PostgreSQL dalla custodia storica
 
-Decisione proposta `GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01`.
+Decisione approvata `GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01`.
 
 La [ricevuta Windows](../evidence/storage-retained-custody-windows-verified-operator-20261107.json) lega la custodia indipendente al manifest `58484aea53aefeb1fff390578ba6562efabffd914caf64944eee7c9d9a2e0d79`. La prova usa il materiale già conservato sul VPS e ricostruisce quel manifest prima di estrarre il cluster. La chiave di decifratura resta sul PC.
 
@@ -16,3 +16,23 @@ La [ricevuta Windows](../evidence/storage-retained-custody-windows-verified-oper
 [restore-retained-postgres.py](../scripts/restore-retained-postgres.py) · 14.535 byte · SHA-256 `2c57dd92954b9edff61a3463aea5ac00dc95e315e6b1b15e1db26ea87d294d58`.
 
 Avvio come root con Python isolato e argomento `--decision-reference GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01` dopo la decisione. Controllate sintassi e selezione del mount. Il tentativo sul VPS sarà la prima prova effettiva del ripristino.
+
+## Esecuzione approvata
+
+Giovanni ha autorizzato un singolo tentativo. [Decisione](../evidence/storage-historical-postgres-restore-operator-decision-20261107.json). Esecuzione VPS pendente.
+
+```bash
+sudo /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib, sys, urllib.request
+url = ('https://raw.githubusercontent.com/GioNob/ouf-deploy/'
+       'e91387a661f2eb68d7e09ec0820557fa25c26644/scripts/restore-retained-postgres.py')
+with urllib.request.urlopen(url, timeout=30) as response:
+    code = response.read(14536)
+if len(code) != 14535 or hashlib.sha256(code).hexdigest() != '2c57dd92954b9edff61a3463aea5ac00dc95e315e6b1b15e1db26ea87d294d58':
+    raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
+sys.argv[1:] = ['--decision-reference', 'GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01']
+exec(compile(code, 'isolated-postgres-restore', 'exec'), {'__name__': '__main__'})
+PY
+```
+
+Conservare il JSON finale. Su `HELD` conservare anche lo scope e i log privati.
