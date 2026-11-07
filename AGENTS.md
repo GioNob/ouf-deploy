@@ -4,7 +4,7 @@
 
 Far funzionare SeaweedFS, poi rendere ripetibile l'E2E CSV fino al grafo UDP. Industrializzazione, DR, RPO/RTO e chiusura formale dei gate di produzione sono rinviati: non usarli come prerequisiti della prova funzionale non produttiva.
 
-Il 403/THS è già seguito in un filone parallelo. Non duplicarne diagnosi o modifiche IAM; riceverne l'esito per il percorso E2E. Il 502 della prova isolata Onboarding→SeaweedFS è distinto finché una prova non li collega.
+Giovanni ha fermato il filone parallelo e affidato anche il 403/THS al solo agente principale. La proposta di correzione del grant upload richiede conferma umana THS e successiva verifica browser. Il 502 della prova isolata Onboarding→SeaweedFS è distinto finché una prova non li collega.
 
 ## Da leggere per riprendere
 
@@ -21,7 +21,7 @@ Il 403/THS è già seguito in un filone parallelo. Non duplicarne diagnosi o mod
 - Non cambiare dati o proprietà per fingere successo. Conservare ID, URI, hash, lineage e decisioni HUMAN; niente bypass TLS/IAM o credenziali nei report.
 - Non rigiocare claim/comandi consumati, resettare budget o cancellare parziali. Le autorizzazioni già espresse restano acquisite nel loro perimetro; non richiedere consensi generici ripetuti.
 - Le vecchie dichiarazioni “tutti fermi” sono osservazioni storiche: stack MinIO e SeaweedFS risultano successivamente riavviati. Prima del cambio verificare i dati correnti e impedire scritture sui due backend contemporaneamente.
-- Controllare HEAD e lavoro concorrente prima di scrivere. Per il 403/THS preservare il lavoro già in corso. Nessun merge o effetto runtime è attestato dal solo aggiornamento documentale.
+- Controllare HEAD e lavoro concorrente prima di scrivere. Per il 403/THS preservare i risultati del filone fermato e seguire lo stato corrente. Nessun merge o effetto runtime è attestato dal solo aggiornamento documentale.
 - Aggiornare STATE e il registro funzionale; aggiungere gli eventi nel log, senza impilarli in questo file.
 
 ## Storico conservato

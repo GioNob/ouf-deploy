@@ -1,0 +1,130 @@
+{
+  "schema": "ouf.ths-upload-role-diagnosis.v1",
+  "date": "2026-11-07",
+  "status": "POLICY_DEFECT_REPRODUCED_HUMAN_REVIEW_PENDING_BROWSER_RETEST_REQUIRED",
+  "coordination": "SOLE_AGENT_REQUESTED_PARALLEL_STREAM_STOPPED",
+  "policy": {
+    "ref": "ouf-lab-authorization:59",
+    "hash": "sha256:d2e7e21e49cf96ed529b27055d3e510770e7a928c21405bf4d430a4403107369",
+    "meaning": "CONFIGURED_GRANTS_NOT_EFFECTIVE_PERMISSIONS",
+    "liveRead": true,
+    "roles": 9,
+    "assignments": 13,
+    "permissions": 66
+  },
+  "diagnosis": {
+    "sourceRepository": "GioNob/ouf-source-onboarding",
+    "sourceCommit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "resource": {
+      "type": "capability",
+      "attributes": {}
+    },
+    "finding": "The active admin upload permission requires dataAccessLabel and detailLevel absent from the picker authorization context; each missing attribute makes GrantConstraints.matches false.",
+    "actualBrowserDecisionObserved": false,
+    "sampleTokenIsNotActualBrowserToken": true
+  },
+  "proposal": {
+    "operation": "REPLACE_ROLES",
+    "stateAtReceipt": "PENDING",
+    "expiresAt": "2026-11-07T15:26:20.634691Z",
+    "changedPermissions": [
+      {
+        "role": "admin",
+        "before": {
+          "capabilityId": "ouf.managed-source.file.upload",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": null,
+            "resourceId": null,
+            "resourceAttributes": {},
+            "allowedDataLabels": [
+              "ANONYMOUS",
+              "OPEN",
+              "PERSONAL",
+              "RESTRICTED",
+              "SENSITIVE"
+            ],
+            "allowedDetailLevels": [
+              "PUBLIC_OPERATIONAL",
+              "RESTRICTED_OPERATIONAL",
+              "SECURITY_SENSITIVE",
+              "TENANT_OPERATIONAL"
+            ],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        },
+        "after": {
+          "capabilityId": "ouf.managed-source.file.upload",
+          "constraints": {
+            "effect": "ALLOW",
+            "externalRoleRef": null,
+            "resourceType": "capability",
+            "resourceId": null,
+            "resourceAttributes": {},
+            "allowedDataLabels": [],
+            "allowedDetailLevels": [],
+            "requiredAcr": null,
+            "requiredAmr": [],
+            "maxAuthenticationAgeSeconds": null
+          }
+        }
+      }
+    ],
+    "unrelatedPermissionsUnchanged": 65,
+    "assignmentsUnchanged": true,
+    "issuerUnchanged": true,
+    "publicationRequiresAuthenticatedHumanThs": true
+  },
+  "reproduction": {
+    "productionSourcesUnmodified": [
+      "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationPolicy.java",
+      "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/PrincipalContext.java",
+      "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ResourceContext.java"
+    ],
+    "fixture": "scripts/diagnostics/UploadPolicyCheck.java",
+    "runtime": "OpenJDK 17.0.20, local standalone execution",
+    "annotationStub": "com.fasterxml.jackson.annotation.JsonInclude with enum NON_NULL and NON_EMPTY; metadata only",
+    "syntheticPrincipalAndTenant": true,
+    "configuredConstraintArraysReproduced": true,
+    "checks": 13,
+    "result": "PASS",
+    "before": "NO_APPLICABLE_GRANT",
+    "after": "ALLOW",
+    "notLiveBrowserOrVpsTest": true
+  },
+  "diagnosticBuild": {
+    "commit": "380e8dcb8f4ff259b3fea6814bb1f6981132f839",
+    "parent": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+    "run": 42382365071,
+    "job": 128432472581,
+    "conclusion": "failure",
+    "applicationTests": {
+      "tests": 281,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "failedStep": "Trivy image scan",
+    "imageArtifactPreservation": "SKIPPED",
+    "evidenceArtifact": 13577409099,
+    "evidenceArtifactSha256": "5491b901e20d938a21af95f5ba4cfaaafd9776990a89fca9caaf838d22c775be",
+    "retainedSourceAheadOfDiagnosticParent": 20,
+    "directDeploymentSuitable": false,
+    "reason": "Diagnostic parent predates retained source; build did not preserve a tested image."
+  },
+  "next": [
+    "Human reviews the prepared one-permission delta in THS.",
+    "Read proposal outcome and resulting policy before claiming publication.",
+    "Repeat real managed-file picker and upload; capture actual outcome.",
+    "Resume SeaweedFS application PUT/GET diagnosis; 502 is not explained by this policy finding."
+  ],
+  "claims": {
+    "browser403Resolved": false,
+    "seaweedfs502Resolved": false,
+    "applicationStorageSwitched": false,
+    "e2ePassed": false
+  }
+}

@@ -17,8 +17,8 @@
     "newVulnerabilityScans": 0
   },
   "coordination": {
-    "ths403": "IN_PROGRESS_IN_OTHER_WORKSTREAM_DO_NOT_DUPLICATE",
-    "lastRepositoryObservation": "ouf-admin confirmed in InPrivate; Keycloak read prepared, result pending at snapshot",
+    "ths403": "SOLE_AGENT_POLICY_DEFECT_REPRODUCED_HUMAN_THS_REVIEW_PENDING",
+    "lastRepositoryObservation": "Keycloak example token contains expected claims; original evaluator rejects current admin upload constraints on empty picker resource; browser retest pending.",
     "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
     "sharedBranch": "feat/m2-discovery-complete-profile-20261029"
   },
@@ -134,7 +134,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "F1: verify exact application binding and JVM transport, resolve the concrete 502 failure, verify one upload and application read; reuse retained work.",
+  "nextAction": "Read human THS proposal outcome and resulting policy, retest browser picker; then F1 application PUT/GET on SeaweedFS. No browser or storage success claimed.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -304,5 +304,18 @@
     "permissionsChanged": false,
     "dataChanged": false,
     "mergePerformed": false
+  },
+  "takeover": {
+    "sourceCommit": "c83fe37e83572c4fd6b625f90e76cf5b519170a9",
+    "evidenceCommit": "d7c5f4b15606ee309c2128092074a55fdfa977e0",
+    "evidencePath": "evidence/ths-upload-role-diagnosis-20261107.json",
+    "originalAuditCountersAreHistorical": true,
+    "liveConfiguredPolicyRead": true,
+    "syntheticEvaluatorChecks": 13,
+    "checksResult": "PASS",
+    "humanProposalStateAtReceipt": "PENDING",
+    "browser403Resolved": false,
+    "storage502Resolved": false,
+    "industrializationDeferred": true
   }
 }

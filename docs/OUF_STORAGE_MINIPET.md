@@ -11,7 +11,7 @@ Due risultati, in quest'ordine:
 1. **STORAGE FUNZIONANTE:** OUF scrive e legge realmente su SeaweedFS, usando i propri servizi e riferimenti; il percorso verificato non dipende più da MinIO.
 2. **E2E RIPETIBILE:** un CSV passa da chatbot/upload a Onboarding, semantica, Ingestion, riconciliazione e grafo UDP; la procedura riesce di nuovo senza correzioni manuali dei dati o dello storage tra le due esecuzioni.
 
-Il 403/THS è già in lavorazione in un filone parallelo, come confermato da Giovanni. Questo piano ne riceve l'esito e non ne duplica diagnosi, script o modifiche IAM. Il 502 della prova isolata Onboarding→SeaweedFS è un problema distinto finché una prova non li collega.
+Giovanni ha fermato il filone parallelo: anche il 403/THS è ora in carico al solo agente principale. Il grant upload admin richiede attributi assenti dal contesto del selettore; il diniego è riprodotto nel valutatore originale. Una proposta THS corregge soltanto questa voce, ma conferma e verifica browser sono ancora pendenti. [Evidenza](../evidence/ths-upload-role-diagnosis-20261107.json). Il 502 della prova isolata Onboarding→SeaweedFS è un problema distinto finché una prova non li collega.
 
 Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema pronto per la produzione né chiude automaticamente l'intero contratto M2.
 
@@ -29,7 +29,7 @@ Audit documentale e del codice selezionato: deploy **6c17d701**, aggiornamenti T
 | Readback del primo upload: intento DISPATCHED, nessun ACK/asset, chiave riservata assente [E7] | Il tentativo è conservato e il suo esito osservato è incompleto | Non va trasformato in successo o reinviato alla cieca |
 | JFR: indizi di connection refused/loopback IPv6 e timeout, un handshake TLS nella finestra [E8] | Ci sono elementi per una diagnosi mirata del trasporto | Non identifica con certezza la richiesta fallita o la causa del 502 |
 | STATE e runbook di avvio riportano stack originale su MinIO e OCI33 su rete privata [E9] | Esistono due backend; manca il cambio applicativo verificato | L'avvio di SeaweedFS non cambia i binding e non sincronizza nuove scritture MinIO |
-| 403 THS anche in InPrivate, account ouf-admin confermato [E10] | Blocco attuale dell'ingresso utente, seguito nell'altro filone | Non prova un difetto di SeaweedFS |
+| 403 THS anche in InPrivate, account ouf-admin confermato [E10] | Blocco dell'ingresso utente, ora seguito dall'agente principale | Non prova un difetto di SeaweedFS |
 
 **Verdetto:** il lavoro non è a zero. Sono riuscite conservazione, letture S3 e copia storica. Manca la prova decisiva: la stessa applicazione che deve servire l'E2E deve scrivere e rileggere su SeaweedFS; poi va verificato il percorso completo.
 
@@ -51,7 +51,7 @@ Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti 
 | ID e ordine | Lavoro concreto | Uscita verificabile | Dipendenza / responsabilità |
 | --- | --- | --- | --- |
 | **F1 — Un PUT/GET applicativo su SeaweedFS** | Usare immagine, configurazione e adapter del percorso scelto; risolvere il 502 con una verifica mirata. Riutilizzare SeaweedFS e le copie già disponibili. | Upload riuscito; asset/ricevuta coerenti; se si usa d515, intento ACKED; oggetto presente su SeaweedFS, byte e SHA-256 uguali all'input; lettura tramite il normale percorso applicativo riuscita. | Agente storage + operatore soltanto per accesso VPS. Non dipende dalla chiusura dei gate di produzione. |
-| **F2 — Collegare lo stack effettivo** | Applicare i binding coerenti di scrittura e lettura a Onboarding, UDP e percorso Gateway/Ingestion. Conservare bucket/key e URI. Aggiornare i dati rispetto alla riapertura di MinIO, se sono cambiati. | Onboarding e UDP scrivono e leggono da SeaweedFS; i riferimenti preesistenti del dataset scelto si risolvono; configurazioni e prova mostrano che il percorso verificato non usa MinIO. | F1. Agente storage. Ricevere dal filone THS eventuali modifiche alle configurazioni condivise. |
+| **F2 — Collegare lo stack effettivo** | Applicare i binding coerenti di scrittura e lettura a Onboarding, UDP e percorso Gateway/Ingestion. Conservare bucket/key e URI. Aggiornare i dati rispetto alla riapertura di MinIO, se sono cambiati. | Onboarding e UDP scrivono e leggono da SeaweedFS; i riferimenti preesistenti del dataset scelto si risolvono; configurazioni e prova mostrano che il percorso verificato non usa MinIO. | F1. Agente storage. Coordinare nello stesso filone le modifiche THS alle configurazioni condivise. |
 | **F3 — Un CSV arriva al grafo** | Dopo il fix THS, seguire un file lungo upload, profilo, mapping/semantica, review prevista, Ingestion, riconciliazione, persistenza UDP e lettura del grafo. | Una catena di riferimenti collega file/hash → asset → source/version → semantic refs → run/ACK → oggetti/relazioni UDP. Gli esiti di tutte le righe del file sono spiegati. | F2 + esito 403/THS. Filone E2E. |
 | **F4 — Ripetere il percorso** | Eseguire lo stesso flusso con un secondo CSV comparabile, attraverso la stessa procedura. Verificare inoltre il reimport invariato secondo il contratto già previsto. | Secondo percorso riuscito senza SQL, copie S3 manuali, cambio policy ad hoc o patch tra i due run; reimport senza duplicati/revisioni gratuite. Decisioni HUMAN previste restano normali passi del prodotto. | F3. Filone E2E. |
 | **F5 — Riprendere una conversazione** | Riaprire il lavoro da un'altra chat/sessione e leggere stato e riferimenti persistiti; continuare il passo consentito. | Il lavoro è ritrovato senza ricaricare il file per compensare la perdita di contesto; il chatbot non dipende da ID ricordati solo in chat. | F3; verificabile dopo F4. Filone E2E. |
@@ -94,7 +94,7 @@ Il comando `seaweedfs` esistente avvia un servizio aggregato su rete interna, se
 
 ## 5. Regole pratiche per non ricreare il problema
 
-1. **Un risultato alla volta.** Nel filone storage si lavora su F1 finché è riuscito o ha un blocco identificato. Il 403 continua nel suo filone senza modifiche concorrenti non coordinate.
+1. **Un risultato alla volta.** Nel filone storage si lavora su F1 finché è riuscito o ha un blocco identificato. Il 403 è ora nello stesso filone: applicare la proposta tramite THS e verificarne l’esito senza confonderlo con la prova storage.
 2. **Una diagnosi deve scegliere il prossimo intervento.** Prima di un'altra prova scrivere ipotesi, osservazione che la distingue e correzione possibile. Se non distingue nulla, non eseguirla. Dopo due iterazioni senza nuova informazione, riesaminare configurazione e approccio invece di aggiungere strumenti.
 3. **Riuso delle prove.** Non rifare cifratura, restore storico, confronto dei 120 oggetti o test già superati se input e codice interessati non sono cambiati. Ripetere solo la verifica resa necessaria da una modifica o dall'avanzamento dei dati.
 4. **Stato compatto.** Ogni aggiornamento riporta risultato funzionale, errore attuale, prova e prossimo passo. Niente percentuali, contatori di test come progresso o checkpoint impilati in AGENTS.
@@ -112,7 +112,7 @@ I dieci asset legacy senza proprietà provata e le altre classificazioni G0 non 
 
 ## 7. Tempi, limiti e consegna
 
-Non c'è una data di fine attendibile: la causa del 502 non è ancora provata, il binding effettivo deve essere verificato e il filone THS è in corso. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
+Non c'è una data di fine attendibile: la causa del 502 non è ancora provata, il binding effettivo deve essere verificato e la correzione THS attende la verifica nella sessione reale. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
 
 Dopo F1 si stima F2 sulla configurazione realmente corretta; dopo il primo E2E si misurano i tempi del secondo. Ogni blocco di lavoro deve produrre una correzione verificata, una prova funzionale o un impedimento preciso con l'azione necessaria. Se serve un'azione sul VPS, consegnare il solo comando attuale e il risultato richiesto, non una serie di preparazioni speculative.
 
