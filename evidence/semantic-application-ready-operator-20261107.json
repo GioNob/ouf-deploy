@@ -1,0 +1,113 @@
+{
+  "alreadyRunningRoles": [
+    "semantic"
+  ],
+  "configurationCheckScope": "SEMANTIC_EXACT_CONFIGURATION_AND_DEPENDENCY_IMAGE_RUNNING_STATE",
+  "credentialValuesEmitted": false,
+  "currentRole": "semantic",
+  "mode": "semantic",
+  "retainedConfigurationMismatches": [
+    {
+      "argumentsChanged": false,
+      "capturedBaselineMatchesExpectedFingerprint": true,
+      "changedConfigFields": [
+        "MacAddress"
+      ],
+      "changedEnvironmentKeys": [],
+      "changedHostConfigFields": [],
+      "fingerprintMatchesRetained": false,
+      "imageMatchesRetained": true,
+      "matches": false,
+      "mountsChanged": false,
+      "otherChangedEnvironmentKeyCount": 0,
+      "pathChanged": false,
+      "role": "onboarding",
+      "safeScalarChanges": [],
+      "sensitiveConfigurationValuesEmitted": false,
+      "statePermitted": true
+    },
+    {
+      "argumentsChanged": false,
+      "capturedBaselineMatchesExpectedFingerprint": true,
+      "changedConfigFields": [
+        "MacAddress"
+      ],
+      "changedEnvironmentKeys": [],
+      "changedHostConfigFields": [],
+      "fingerprintMatchesRetained": false,
+      "imageMatchesRetained": true,
+      "matches": false,
+      "mountsChanged": false,
+      "otherChangedEnvironmentKeyCount": 0,
+      "pathChanged": false,
+      "role": "udp",
+      "safeScalarChanges": [],
+      "sensitiveConfigurationValuesEmitted": false,
+      "statePermitted": true
+    }
+  ],
+  "semanticApplicationMayAccessDatabase": true,
+  "semanticConfigurationChanged": false,
+  "semanticConfigurationCheck": {
+    "argumentsChanged": false,
+    "capturedBaselineMatchesExpectedFingerprint": true,
+    "changedConfigFields": [],
+    "changedEnvironmentKeys": [],
+    "changedHostConfigFields": [],
+    "fingerprintMatchesRetained": true,
+    "imageMatchesRetained": true,
+    "matches": true,
+    "mountsChanged": false,
+    "otherChangedEnvironmentKeyCount": 0,
+    "pathChanged": false,
+    "role": "semantic",
+    "safeScalarChanges": [],
+    "sensitiveConfigurationValuesEmitted": false,
+    "statePermitted": true
+  },
+  "semanticDependencies": {
+    "apisix": {
+      "imageMatchesRetained": true,
+      "running": true
+    },
+    "caddy": {
+      "imageMatchesRetained": true,
+      "running": true
+    },
+    "gateway-owner": {
+      "imageMatchesRetained": true,
+      "running": true
+    },
+    "keycloak": {
+      "imageMatchesRetained": true,
+      "running": true
+    },
+    "postgres": {
+      "imageMatchesRetained": true,
+      "running": true
+    }
+  },
+  "semanticExitCode": 0,
+  "semanticGateSignalAcknowledged": true,
+  "semanticGateSignalDispatched": true,
+  "semanticJavaIsContainerInit": true,
+  "semanticOomKilled": false,
+  "semanticProcessAfter": "APPLICATION_RUNNING",
+  "semanticProcessBefore": "GATE_WAITING",
+  "semanticReadinessHttpStatus": 200,
+  "semanticReadinessUp": true,
+  "semanticSameContainer": true,
+  "semanticSameImage": true,
+  "semanticStartAttemptFile": "/var/lib/ouf-storage-migration/semantic-application-starts/772c222ac64642f1969b7e01ff36f46be39387664aaa3a3974797323022c1dd3.json",
+  "semanticStartupLog": {
+    "hints": {
+      "applicationStarted": 1
+    },
+    "rawLogsEmitted": false,
+    "read": true,
+    "tailLimit": 100
+  },
+  "semanticStateAfter": "running",
+  "startedRoles": [],
+  "status": "OUF_SEMANTIC_APPLICATION_READY"
+}

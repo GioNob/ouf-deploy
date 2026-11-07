@@ -169,3 +169,12 @@ Preparata correzione in `ouf-runtime-20261107.py`, modo semantic: verifica esatt
 Ricevuta `HELD/RETAINED_CONFIGURATION_CHANGED`, nessun ruolo avviato o raggiunto da `start_role`. Dal sorgente, nessun SIGUSR1 inviato. Ruolo/campi diversi non erano riportati; non sono stati dedotti dalla causa precedente. [Ricevuta](../evidence/semantic-start-retained-configuration-held-operator-20261107.json).
 
 Il modo semantic riusava il controllo globale dello stack: separato il controllo dell'azione singola (configurazione Semantic esatta, dipendenze con immagini attese e running) dalla verifica completa e2e, che resta invariata. Aggiunte differenze per ruolo/campi senza segreti. Nessuna impronta aggiornata o normalizzazione arbitraria. Test di ambito, segnale e due marker storage PASS. [Comando aggiornato](OUF_SEMANTIC_APPLICATION_START_20261107.md), esecuzione VPS pendente.
+
+
+## 7 novembre 2026 — Semantic avviato, ricerca ora negata dalla ricevuta/policy
+
+Ricevuta operatore `OUF_SEMANTIC_APPLICATION_READY`: GATE_WAITING → APPLICATION_RUNNING, singolo segnale confermato, Java init nello stesso container/immagine, readiness 200/UP. Il confronto dello stesso Semantic passa; sulle sostituzioni Onboarding/UDP l'unico campo Config diverso è MacAddress. Il confronto completo e2e resta aperto, senza modifica delle impronte.
+
+La successiva ricerca MCP `teatro`, limit 20, account ouf-admin, termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`; non ripetuta. Il codice installato accorpa verifica della ricevuta e decisione della policy, quindi causa non ancora distinta. Il grant admin è già presente nel catalogo letto. Preparato un controllo delle dichiarazioni selezionate e del token montato, con un solo GET HTTPS al canale policy. Nessun nuovo token, permesso o riavvio. Test locali PASS; esecuzione VPS pendente. Trasporto host e stato della policy in memoria sono distinti.
+
+[Avvio](../evidence/semantic-application-ready-operator-20261107.json) · [403 e sorgenti](../evidence/semantic-ready-search-denial-20261107.json) · [Comando corrente](OUF_SEMANTIC_POLICY_READ_20261107.md).
