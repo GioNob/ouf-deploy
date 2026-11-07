@@ -1,3 +1,7 @@
+## Coppia corrente — upload isolato con Flight Recorder
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md) per un nuovo intento su copie separate e lettura dell'esito effettivo, con traccia del client Java in caso di errore. Esecuzione pendente.
+
 ## Upload sospeso riconciliato sulle copie
 
 La lettura sul VPS ha trovato un intento `DISPATCHED` senza ACK, collegamento asset, asset o ricevuta. SeaweedFS ha risposto `404 NoSuchKey` sulla chiave riservata. Le due richieste S3 erano GET e i container di lettura sono stati rimossi. I log precedenti non identificano la causa del 502. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-readback-operator-20261107.json).
