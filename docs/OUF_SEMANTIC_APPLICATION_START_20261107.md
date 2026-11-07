@@ -1,6 +1,6 @@
 # Avvio applicativo del Semantic Registry
 
-**Stato corrente: AVVIO RIUSCITO.** Ricevuta `OUF_SEMANTIC_APPLICATION_READY`: Java come init nello stesso container/immagine, readiness HTTP 200/UP. [Ricevuta](../evidence/semantic-application-ready-operator-20261107.json). Il comando sotto è conservato per riferimento, **non da rilanciare per il blocco corrente**. La successiva ricerca MCP termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`; proseguire con la [lettura della policy](OUF_SEMANTIC_POLICY_READ_20261107.md).
+**Stato corrente: AVVIO RIUSCITO.** Ricevuta `OUF_SEMANTIC_APPLICATION_READY`: Java come init nello stesso container/immagine, readiness HTTP 200/UP. [Ricevuta](../evidence/semantic-application-ready-operator-20261107.json). Il comando sotto è conservato per riferimento, **non da rilanciare per il blocco corrente**. La successiva ricerca MCP termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`; La lettura della policy ha poi osservato token scaduto e HTTP 401: proseguire con il [ripristino del rinnovo](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md).
 
 ## Blocco osservato
 

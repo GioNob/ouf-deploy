@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_READY_SEARCH_403",
+  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_POLICY_TOKEN_EXPIRED",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -380,7 +380,7 @@
       "e2eFullFingerprintCheckStillBlocks": true
     },
     "nextSemanticPolicyRead": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "COMPLETED",
       "script": "scripts/read-current-semantic-policy-20261107.py",
       "scriptCommit": "3612761e4fe2e33c0bfd8823a6e8b98f55aafe2d",
       "sha256": "28c17fd6fd7611efbcb5307644be0d2f44e0b745652f79bc0d70eeaedb8763d5",
@@ -392,7 +392,34 @@
       "tokenRequests": 0,
       "localChecks": "PASS",
       "runbook": "docs/OUF_SEMANTIC_POLICY_READ_20261107.md",
-      "evidence": "evidence/semantic-current-policy-read-preparation-20261107.json"
+      "evidence": "evidence/semantic-current-policy-read-preparation-20261107.json",
+      "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json"
+    },
+    "currentSemanticPolicyRead": {
+      "source": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T18:52:14.296969+00:00",
+      "mountedTokenExpired": true,
+      "expiryUtc": "2026-11-06T23:08:50+00:00",
+      "policyHttpStatus": 401,
+      "sameMountedAndHostFile": true,
+      "delegationKeyFormatValid": true,
+      "receiptSignatureTested": false,
+      "applicationLoadedPolicyProven": false,
+      "hostTransportOnly": true,
+      "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json"
+    },
+    "nextSemanticTokenRenewal": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "scriptCommit": "591041c8c546c17cee56b129b1a5c908215cbfc0",
+      "script": "scripts/restore-current-semantic-policy-token-20261107.py",
+      "sha256": "83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d",
+      "maximumManualServiceStarts": 1,
+      "conditionalOnExactExistingProducerAndOutput": true,
+      "timerEnabledOnlyAfterFreshTokenAndPolicyGet200": true,
+      "applicationRestart": false,
+      "permissionsChanged": false,
+      "localChecks": "PASS_OFFLINE_MOCKED_SYSTEMD_AND_HTTP",
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md"
     }
   },
   "milestones": [
@@ -467,7 +494,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute current Semantic policy reader: exact retained configuration, mounted token metadata and one configured HTTPS policy GET. Distinguish receipt/policy cause without grant changes or another application start.",
+  "nextAction": "Execute guarded existing Semantic producer renewal; verify mounted fresh token and policy HTTP200 before enabling existing timer; then reattempt governed semantic search.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -494,7 +521,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Semantic Java startup and readiness succeeded. Search now reaches the consultation route but returns receipt-or-policy 403. UDP normal lake operation and E2E remain unproven; no credible completion date yet.",
+    "reason": "Semantic is running; its mounted policy token is expired and policy GET returns401. Existing-producer renewal is prepared but not executed. Search, UDP application lake operation and E2E remain unproven.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [
