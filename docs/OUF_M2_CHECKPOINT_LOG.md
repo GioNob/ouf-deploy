@@ -86,3 +86,10 @@ Ricevuta operatore 15:29 UTC: Onboarding su MinIO HTTP, immagine 7b9d3e91…, re
 Il risultato VPS COMPARISON_COMPLETE conferma entrambi i client PASS sullo stesso endpoint/identità/payload/chiave: curl PUT/GET 200, Java 21.0.12.1 con MinIO 8.6.0 PUT acknowledged e GET con hash coincidente. Immagine Onboarding 7b9d3e91…, CA privata verificata, container temporaneo rimosso, originale ancora running con stessa immagine/avvio. Non è un test HTTP applicativo o DB; non attribuisce la vecchia causa del 502.
 
 Scelta per F1: conservare l'immagine installata appena provata. Il prossimo comando allinea i file attuali Onboarding dopo gli upload recenti, riusando copie identiche e copiando soltanto chiavi mancanti senza sovrascrittura. Fixture HTTP locale PASS su copia/readback, riuso, diniego su differenze/tag nuovi/drift ETag; sintassi PASS. Esecuzione VPS ancora pendente. F1/F2 aperti; nessun binding applicativo cambiato. [Procedura](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md).
+
+
+## 7 novembre 2026 — elenco corrente negato da MinIO; identità sorgente corretta
+
+Ricevuta 16:05 UTC: LIST_CURRENT_SOURCE restituisce 403 AccessDenied con credenziali applicative Onboarding. Una sola richiesta MinIO; zero richieste SeaweedFS e PUT, nessuna modifica di dati, servizi o binding. Non è il 403 THS né un nuovo fallimento PUT SeaweedFS.
+
+Corretto il comando per usare in sola lettura l'identità di manutenzione dalla configurazione MinIO esistente, mantenendo l'identità target già provata. Riutilizzata la risoluzione ambiente/file del repository, verificata sul sorgente MinIO di riferimento; nessun default o ampliamento di grant. Conservato il motivo S3_REQUEST_NOT_SUCCESSFUL correggendo il filtro dei codici. Sei casi locali di credenziali e fixture HTTP PASS, incluso 403 sorgente senza chiamate target e rifiuto locale di PUT/DELETE sorgente. Accesso effettivo VPS pendente. [Procedura](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1/F2 aperti.

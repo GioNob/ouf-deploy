@@ -1,0 +1,54 @@
+{
+  "schema": "ouf.current-onboarding-source-identity-fix.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASSED_VPS_PENDING",
+  "previousFailure": {
+    "receipt": "evidence/onboarding-current-copy-source403-operator-20261107.json",
+    "operation": "MINIO_LIST_OBJECTS_V2",
+    "httpStatus": 403,
+    "providerCode": "AccessDenied",
+    "destinationRequests": 0,
+    "putAttempts": 0
+  },
+  "correction": {
+    "source": "EXISTING_MINIO_SERVER_CONFIGURATION",
+    "resolverAdaptedFrom": "GioNob/ouf-deploy@681935b6220dfee1bbd1149cfc23f393a12a41e2:tools/storage_migration/minio_credential_binding.py+minio_input_observation.py",
+    "upstreamReference": "https://github.com/minio/minio/blob/07c3a429bfed433e49018cb0f78a52145d4bedeb/cmd/common-main.go",
+    "sourceOperations": "GET_ONLY_SELECTED_BUCKET",
+    "sourceRegion": "RESOLVED_FROM_EXISTING_CONFIG",
+    "fallbackCredentials": false,
+    "applicationPermissionsChanged": false,
+    "targetIdentityChanged": false,
+    "sourceBindingsChanged": false,
+    "diagnosticCorrection": "ALLOW_DIGITS_IN_INTERNAL_REASON_CODES"
+  },
+  "localValidation": {
+    "syntax": "PASS",
+    "syntheticCredentialCases": 6,
+    "httpFixture": "PASS",
+    "source403StopsBeforeDestination": true,
+    "sourceWriteMethodsRejectedBeforeHttp": true,
+    "copyReadbackReuseConflictTagsAndEtagChecks": "PASS",
+    "limitations": [
+      "No live VPS credential validation",
+      "No live /proc root lookup in sandbox; filesystem anchor fixture used",
+      "No HTTP application upload or DB access",
+      "No endpoint switch"
+    ]
+  },
+  "files": [
+    {
+      "path": "scripts/sync-current-onboarding-objects-20261107.py",
+      "sha256": "13ee203be367eaf0c8679d163ca5b664c4b91ac5100efd61146e1c97c61e4fcc"
+    },
+    {
+      "path": "tests/check_onboarding_current_copy.py",
+      "sha256": "50ebd024ae5a131c26d892dfd68bb55e905a971bc738cb58e1004a7098640b03"
+    },
+    {
+      "path": "tests/check_minio_current_source_identity.py",
+      "sha256": "3a1618b6e93c31383465013318b1c86744f6bfc2cda37298f383fed2195534e6"
+    }
+  ],
+  "functionalMilestonesClosed": 0
+}

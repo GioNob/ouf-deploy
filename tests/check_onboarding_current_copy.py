@@ -18,6 +18,7 @@ source = {'managed-files/a': (b'id,label\n1,A\n', {'content-type': 'text/csv'}),
 target = {'managed-files/a': source['managed-files/a']}
 tagged = set()
 puts = []
+denied_listing = False
 
 
 def etag(body):
@@ -46,6 +47,8 @@ def handler(objects, role):
             uri = urlsplit(self.path)
             query = parse_qs(uri.query, keep_blank_values=True)
             if 'list-type' in query:
+                if denied_listing:
+                    return self.reply(403, b'<Error><Code>AccessDenied</Code></Error>')
                 rows = ''.join('<Contents><Key>' + escape(key) + '</Key><ETag>' + escape(etag(body))
                                + '</ETag><LastModified>2026-11-07T00:00:00Z</LastModified><Size>'
                                + str(len(body)) + '</Size></Contents>' for key, (body, _) in sorted(objects.items()))
@@ -90,6 +93,24 @@ def report():
 
 try:
     src, dst = clients
+    denied_listing = True
+    blocked = report()
+    try:
+        m.listing(src, blocked); raise AssertionError('source denial ignored')
+    except RuntimeError as e:
+        assert m.failure_reason(e) == 'S3_REQUEST_NOT_SUCCESSFUL'
+        assert blocked['lastS3HttpStatus'] == 403 and blocked['lastS3Code'] == 'AccessDenied'
+        assert dst.calls == 0 and puts == []
+    denied_listing = False
+    src.read_only = True
+    before = src.calls
+    for method, path in [('PUT', '/' + m.BUCKET + '/managed-files/a'),
+                         ('DELETE', '/' + m.BUCKET + '/managed-files/a'),
+                         ('GET', '/another-bucket?list-type=2')]:
+        try:
+            src.request(method, path); raise AssertionError('source read scope escaped')
+        except RuntimeError as e:
+            assert str(e) == 'SOURCE_READ_ONLY_BUCKET_SCOPE' and src.calls == before
     r = report(); rows = m.listing(src, r)
     # The real fsync path is exercised with a private temporary journal.
     import tempfile
@@ -119,6 +140,7 @@ try:
         assert str(e) == 'S3_REQUEST_NOT_SUCCESSFUL'
     assert len(puts) == 1
     print('PASS: copy missing object with body/metadata readback; reuse existing; deny overwrite, new tags, and source ETag drift.')
+    print('PASS: source ListObjectsV2 403 retained with zero target calls; source writes and other buckets rejected before HTTP.')
     print('Scope: local HTTP fixture only; VPS routes, TLS and source identity permissions are not tested here.')
 finally:
     for server in servers:
