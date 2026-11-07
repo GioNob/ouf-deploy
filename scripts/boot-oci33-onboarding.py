@@ -22,6 +22,7 @@ from xml.etree import ElementTree as ET
 SCHEMA = 'ouf.storage-oci33-onboarding-boot.v1'
 UPLOAD_SCHEMA = 'ouf.storage-oci33-onboarding-upload.v1'
 READBACK_SCHEMA = 'ouf.storage-oci33-onboarding-upload-readback.v1'
+TRACE_SCHEMA = 'ouf.storage-oci33-onboarding-upload-trace.v1'
 ROOT = Path('/var/lib/ouf-storage-migration')
 STAGE = ROOT / 'seaweedfs/staging-oci33-20261107-v1'
 BINDINGS = STAGE / 'application-s3-v1'
@@ -43,6 +44,37 @@ WORKLOAD = 'ouf-isolated-upload-driver'
 SUBJECT = 'human:ouf-isolated-fixture'
 TENANT = 'ouf-isolated-theatres'
 ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
+JFR_CONFIG = b'''<?xml version="1.0" encoding="UTF-8"?>
+<configuration version="2.0" label="OUF isolated upload" description="Upload transport diagnostics" provider="OUF">
+  <event name="jdk.JavaExceptionThrow">
+    <setting name="enabled">true</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+  <event name="jdk.TLSHandshake">
+    <setting name="enabled">true</setting>
+  </event>
+</configuration>
+'''
+JFR_SHUTDOWN = r'''
+collect_jfr() {
+  if [ -s /diagnostics/upload.jfr ]; then
+    jfr print --json --events jdk.JavaExceptionThrow,jdk.TLSHandshake --stack-depth 48 \
+        /diagnostics/upload.jfr > /diagnostics/events.json
+  fi
+}
+stop_java() {
+  trap '' TERM INT
+  kill -TERM "$child" 2>/dev/null || true
+  wait "$child" || true
+  collect_jfr
+  exit 0
+}
+trap stop_java TERM INT
+result=0
+wait "$child" || result=$?
+collect_jfr
+exit "$result"
+'''
 CLIENT = r"""
 import base64, http.client, json, socket, ssl, sys
 if sys.argv[1] == 'request':
@@ -155,7 +187,7 @@ def snapshot(h, pg, read):
     return plan, members, admin, user, database
 
 
-def run(report, upload, readback):
+def run(report, upload, readback, trace):
     need(os.geteuid() == 0 and sys.flags.isolated and sys.flags.no_site
          and sys.dont_write_bytecode, 'ISOLATED_ROOT_REQUIRED')
     pg = pinned('5ae47689adeaf39f241527c9364a2c0c9e9b0b9b', 'restore-retained-postgres.py', 19046,
@@ -179,8 +211,21 @@ def run(report, upload, readback):
          and client['OUF_ONBOARDING_STAGING_ENDPOINT'] == 'https://ouf-seaweedfs-stage:9002',
          'ONBOARDING_BUCKET_BINDING')
     plan, members, admin, user, database = snapshot(h, pg, read)
-    scope = UPLOAD_SCOPE / 'readback-v1' if readback else UPLOAD_SCOPE if upload else SCOPE
-    schema = READBACK_SCHEMA if readback else UPLOAD_SCHEMA if upload else SCHEMA
+    schema = report['schema']
+    scope = UPLOAD_SCOPE if upload else SCOPE
+    if readback:
+        scope = UPLOAD_SCOPE / 'readback-v1'
+    if trace:
+        scope = UPLOAD_SCOPE / 'instrumented-upload-v1'
+        prior_readback = read(UPLOAD_SCOPE / 'readback-v1/result.json')
+        need(prior_readback.get('status') == 'ONBOARDING_UPLOAD_OUTCOME_READ_BACK'
+             and prior_readback.get('databaseIntentCount') == 1
+             and prior_readback.get('databaseIntentState') == 'DISPATCHED'
+             and prior_readback.get('databaseAckTimestampPresent') is False
+             and prior_readback.get('databaseReferencedAssetCount') == 0
+             and prior_readback.get('seaweedfsReservedObjectState') == 'ABSENT'
+             and prior_readback.get('uploadRequests') == 0 and prior_readback.get('containersRemoved') == 2,
+             'HELD_UPLOAD_READBACK_REQUIRED')
     if upload or readback:
         prior = read(SCOPE / 'result.json')
         need(prior.get('status') == 'ISOLATED_ONBOARDING_STACK_READY'
@@ -337,6 +382,11 @@ def run(report, upload, readback):
         if upload:
             key = secrets.token_hex(32)
             h['new'](files / 'upload-receipt-key', (key + '\n').encode())
+        if trace:
+            diagnostics = scope / 'diagnostics'
+            diagnostics.mkdir(mode=0o700)
+            os.chown(diagnostics, 10003, 10003)
+            h['new'](files / 'upload.jfc', JFR_CONFIG)
         for p in (*files.iterdir(), files):
             os.chown(p, 10003, 10003)
         password = secrets.token_hex(24)
@@ -361,6 +411,7 @@ def run(report, upload, readback):
               '--label', 'ouf.oci33-stack=' + token]
     containers = []
     net = None
+    trace_window = None
 
     def inspect(cid, network, images):
         item, = json.loads(docker('container', 'inspect', cid))
@@ -431,6 +482,7 @@ def run(report, upload, readback):
         need(existing is not None and existing[0] == 200 and h['digest'](existing[1]) == sample['sha256'], reason)
 
     def prove_upload():
+        nonlocal trace_window
         wait_for_object_reads('SEAWEEDFS_PREUPLOAD_BODY_NOT_READY')
         report['seaweedfsPreUploadBodyVerified'] = True
 
@@ -442,10 +494,25 @@ def run(report, upload, readback):
             'maximumRequests': 1, 'isolatedIdentity': True}))
         headers = {'Content-Type': 'text/csv', 'X-OUF-Managed-File-Receipt': receipt(key, token, checksum, len(body))}
         report['uploadRequests'] = 1
-        response = request('POST', 8080, UPLOAD_PATH, headers, body)
+        started = time.time()
+        try:
+            response = request('POST', 8080, UPLOAD_PATH, headers, body)
+        finally:
+            if trace:
+                trace_window = (started, time.time())
         need(response is not None, 'ONBOARDING_UPLOAD_OUTCOME_UNKNOWN')
         status, raw = response
         report['onboardingUploadHttpStatus'] = status
+        if trace and status != 201:
+            h['new'](scope / 'onboarding-response.private.json', raw)
+            try:
+                value = json.loads(raw)
+                if isinstance(value, dict):
+                    code = value.get('code')
+                    if isinstance(code, str) and re.fullmatch(r'ONB_[A-Z0-9_]{3,64}', code):
+                        report['onboardingErrorCode'] = code
+            except (UnicodeError, json.JSONDecodeError):
+                pass
         need(status == 201, 'ONBOARDING_UPLOAD_HTTP_' + str(status))
         asset = str(uuid.UUID(json.loads(raw)['assetId']))
         report['onboardingAssetCreated'] = True
@@ -540,6 +607,64 @@ def run(report, upload, readback):
             except (OSError, ValueError, subprocess.SubprocessError):
                 pass
 
+    def summarize_trace():
+        recording = diagnostics / 'upload.jfr'
+        report['flightRecordingRetained'] = (recording.is_file() and not recording.is_symlink()
+                                             and recording.stat().st_size > 0)
+        if trace_window is None:
+            return
+        path = diagnostics / 'events.json'
+        if not os.path.lexists(path):
+            return
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, 'rb') as stream:
+            info = os.fstat(stream.fileno())
+            if not (stat.S_ISREG(info.st_mode) and info.st_uid == 10003 and info.st_nlink == 1
+                    and 0 < info.st_size <= 32 << 20):
+                return
+            doc = json.load(stream)
+        classes, hints, addresses = set(), set(), set()
+        patterns = {'tlsCertificate': r'PKIX|certificate_unknown|no subject alternative|trustAnchors',
+                    'connectionRefused': r'connection refused|failed to connect',
+                    'connectionReset': r'connection reset|unexpected end of stream',
+                    'accessDenied': r'AccessDenied|access denied',
+                    'signature': r'SignatureDoesNotMatch|signature.*does not match|InvalidAccessKeyId',
+                    'requestEncoding': r'MissingContentLength|XAmzContentSHA256Mismatch|aws-chunked',
+                    'providerInternal': r'InternalError|internal (server )?error|no writable volumes'}
+        report['flightRecorderParsed'] = True
+        for event in doc['recording']['events']:
+            value = event.get('values') or {}
+            stamp = value.get('startTime')
+            if not isinstance(stamp, str):
+                continue
+            when = datetime.fromisoformat(stamp.replace('Z', '+00:00')).timestamp()
+            if not trace_window[0] - 0.2 <= when <= trace_window[1] + 0.2:
+                continue
+            if event['type'] == 'jdk.TLSHandshake' and value.get('peerPort') == 9002:
+                report['s3TlsHandshakesObserved'] += 1
+            if event['type'] != 'jdk.JavaExceptionThrow':
+                continue
+            frames = (value.get('stackTrace') or {}).get('frames') or []
+            owners = [str(((frame.get('method') or {}).get('type') or {}).get('name', '')).replace('/', '.')
+                      for frame in frames]
+            if not any(owner.startswith(('io.minio.', 'okhttp3.'))
+                       or owner.endswith('.MinioManagedFileStagingStore') for owner in owners):
+                continue
+            report['s3SdkExceptionEvents'] += 1
+            name = str((value.get('thrownClass') or {}).get('name', '')).replace('/', '.').rsplit('.', 1)[-1]
+            if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,95}', name):
+                classes.add(name)
+            message = value.get('message') or ''
+            if isinstance(message, str):
+                hints.update(label for label, pattern in patterns.items() if re.search(pattern, message, re.I))
+                if re.search(r'(?<![0-9])127\.0\.0\.1(?![0-9])', message):
+                    addresses.add('ipv4-loopback')
+                if '::1' in message or '0:0:0:0:0:0:0:1' in message:
+                    addresses.add('ipv6-loopback')
+        report['s3SdkExceptionClasses'] = sorted(classes)[:24]
+        report['s3SdkErrorHints'] = sorted(hints)
+        report['s3SdkAddressHints'] = sorted(addresses)
+
     try:
         need(not docker('ps', '-q').strip(), 'OTHER_CONTAINERS_RUNNING')
         pg_ids = (PG_IMAGE, PG_CONFIG)
@@ -587,14 +712,22 @@ def run(report, upload, readback):
         if readback:
             read_outcome()
         else:
+            bootstrap = ('umask 077; keytool -importcert -noprompt -alias ouf-stage -file /run/stage-s3/ca.pem '
+                         '-keystore /tmp/ouf-stage.p12 -storetype PKCS12 -storepass changeit; ')
+            java = ('java -Xmx512m -Djavax.net.ssl.trustStore=/tmp/ouf-stage.p12 '
+                    '-Djavax.net.ssl.trustStorePassword=changeit ')
+            extra_mounts = []
+            if trace:
+                extra_mounts = ['--mount', f'type=bind,src={diagnostics},dst=/diagnostics']
+                java += ('-XX:StartFlightRecording=name=ouf-upload,settings=/run/stage-s3/upload.jfc,'
+                         'filename=/diagnostics/upload.jfr,dumponexit=true,maxsize=32m,maxage=6m ')
+                launch = bootstrap + java + '-jar /app/application.jar & child=$!;\n' + JFR_SHUTDOWN
+            else:
+                launch = bootstrap + 'exec ' + java + '-jar /app/application.jar'
             app_id, _ = start('onboarding', network, (ONB_IMAGE, ONB_CONFIG),
                 '--user', '10003:10003', '--env-file', str(app_env),
-                '--mount', f'type=bind,src={files},dst=/run/stage-s3,readonly',
-                '--entrypoint', '/bin/sh', ONB_IMAGE, '-ec',
-                'keytool -importcert -noprompt -alias ouf-stage -file /run/stage-s3/ca.pem '
-                '-keystore /tmp/ouf-stage.p12 -storetype PKCS12 -storepass changeit; '
-                'exec java -Xmx512m -Djavax.net.ssl.trustStore=/tmp/ouf-stage.p12 '
-                '-Djavax.net.ssl.trustStorePassword=changeit -jar /app/application.jar')
+                '--mount', f'type=bind,src={files},dst=/run/stage-s3,readonly', *extra_mounts,
+                '--entrypoint', '/bin/sh', ONB_IMAGE, '-ec', launch)
             ready('onboarding', app_id, network, (ONB_IMAGE, ONB_CONFIG), 110)
             report['onboardingReadinessUp'] = True
             rows = psql(database, "SELECT version FROM ouf_onboarding.flyway_schema_history "
@@ -612,11 +745,17 @@ def run(report, upload, readback):
         for role, cid, network, images in reversed(containers):
             try:
                 if inspect(cid, network, images)['Running']:
-                    docker('stop', '--time=15', cid, timeout=23)
+                    grace = 35 if trace and role == 'onboarding' else 15
+                    docker('stop', f'--time={grace}', cid, timeout=grace + 10)
                 docker('rm', cid)
                 report['containersRemoved'] += 1
             except Exception:
                 report['cleanupIncomplete'] = True
+        if trace:
+            try:
+                summarize_trace()
+            except (OSError, UnicodeError, ValueError, KeyError, TypeError):
+                report['flightRecorderParseHeld'] = True
 
     need(not report['cleanupIncomplete'] and not docker('ps', '-q').strip(), 'ISOLATED_STACK_CLEANUP')
     if readback:
@@ -626,10 +765,10 @@ def run(report, upload, readback):
     h['new'](scope / 'result.json', h['canonical'](report))
 
 
-def main(upload=False, readback=False):
+def main(upload=False, readback=False, trace=False):
     os.umask(0o077)
-    need(not (upload and readback), 'EXCLUSIVE_STACK_MODE_REQUIRED')
-    schema = READBACK_SCHEMA if readback else UPLOAD_SCHEMA if upload else SCHEMA
+    need(not (upload and readback) and (not trace or upload), 'EXCLUSIVE_STACK_MODE_REQUIRED')
+    schema = TRACE_SCHEMA if trace else READBACK_SCHEMA if readback else UPLOAD_SCHEMA if upload else SCHEMA
     report = {'schema': schema, 'status': 'HELD',
               'applicationContainersStarted': 0, 'containersStarted': 0,
               'containersRemoved': 0, 'cleanupIncomplete': False, 'privateContainerLogsRetained': 0,
@@ -643,8 +782,11 @@ def main(upload=False, readback=False):
     if readback:
         report.update({'uploadRequests': 0, 's3GetRequests': 0, 'retainedLogHints': {},
                        'databaseIntentState': 'UNREAD', 'seaweedfsReservedObjectState': 'UNREAD'})
+    if trace:
+        report.update({'flightRecordingRetained': False, 'flightRecorderParsed': False,
+                       's3TlsHandshakesObserved': 0, 's3SdkExceptionEvents': 0})
     try:
-        run(report, upload, readback)
+        run(report, upload, readback, trace)
     except Exception as exc:
         report['status'] = 'HELD'
         reason = str(exc)
