@@ -1,0 +1,107 @@
+{
+  "applicationUnchangedDuringRead": true,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "directConnectivityTested": false,
+  "networksInternal": {
+    "ouf-backend": true,
+    "ouf-seaweedfs-private": true
+  },
+  "observedAt": "2026-11-07T17:27:41.300877+00:00",
+  "preparedTarget": {
+    "caFileSha256": "c1ab769d4b76565f717e2600266e11afd0f2042829f486f22fe8596f369cbccf",
+    "caPemPresent": true,
+    "defaultProfileHasAccessKey": true,
+    "defaultProfileHasSecretKey": true,
+    "environment": {
+      "bucket": "ouf-udp",
+      "endpoint": {
+        "host": "ouf-seaweedfs-stage",
+        "port": 9002,
+        "scheme": "https",
+        "validEndpointWithoutCredentialsOrExtraParts": true
+      },
+      "path-style": "true",
+      "region": "us-east-1"
+    }
+  },
+  "s3Requests": 0,
+  "schema": "ouf.current-udp-storage-bindings.v1",
+  "seaweedfs": {
+    "imageId": "sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2",
+    "networks": [
+      "ouf-seaweedfs-private"
+    ],
+    "publishedPortBindings": false,
+    "running": true
+  },
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "sharedDockerNetworks": [],
+  "status": "UDP_BINDINGS_READ_ONLY",
+  "udp": {
+    "configurationScope": "DOCKER_ENV_LAUNCH_AND_PACKAGED_YAML_NOT_EFFECTIVE_JVM_SPRING_CONFIGURATION",
+    "containerId": "946fd69972ada2e310c32f72da27f19a04e7a2043dc330f116e8ba1c507e6e3b",
+    "credentialDeclarations": {
+      "AWS_ACCESS_KEY_ID": true,
+      "AWS_CONTAINER_CREDENTIALS_FULL_URI": false,
+      "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI": false,
+      "AWS_PROFILE": false,
+      "AWS_SECRET_ACCESS_KEY": true,
+      "AWS_SESSION_TOKEN": false,
+      "AWS_SHARED_CREDENTIALS_FILE": false,
+      "AWS_WEB_IDENTITY_TOKEN_FILE": false
+    },
+    "customJvmTrustStoreDeclared": false,
+    "directPropertyEnvironment": {
+      "bucket": null,
+      "endpoint": null,
+      "path-style": null,
+      "region": null
+    },
+    "externalSpringConfigDeclared": false,
+    "health": null,
+    "imageId": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+    "installedJar": {
+      "adapterClassSha256": {
+        "S3LakeConfiguration": "5036160bbd46809ee87adb285e489547fc0a713e97a85327d6097be59b1530e6",
+        "S3LakeObjectStorageAdapter": "5a6bd871ce01e2235ab98f74e6307016ebec9996e62e42fccc11ca951eaa7bf8"
+      },
+      "applicationYamlSha256": "aabfb583f5158bda988f7773cfbb9a52728f34bdd0ebf7f21fb17cc55df44182",
+      "containerJarPath": "/app/app.jar",
+      "pathSource": "DOCKER_DIRECT_JAVA_JAR_ARGUMENT",
+      "selectedLibraries": [
+        "auth-2.54.17.jar",
+        "netty-nio-client-2.54.17.jar",
+        "s3-2.54.17.jar",
+        "sdk-core-2.54.17.jar"
+      ],
+      "status": "READ",
+      "storageEnvironmentPlaceholders": [
+        "OUF_UDP_S3_BUCKET",
+        "OUF_UDP_S3_ENDPOINT",
+        "OUF_UDP_S3_PATH_STYLE",
+        "OUF_UDP_S3_REGION"
+      ]
+    },
+    "jvmStoragePropertiesDeclaredOutsideLaunchArgs": false,
+    "launchStorageDeclarations": [],
+    "matchesRetainedImage": true,
+    "networks": [
+      "ouf-backend"
+    ],
+    "running": true,
+    "springApplicationJsonConfigured": true,
+    "yamlVariableEnvironment": {
+      "bucket": "ouf-udp",
+      "endpoint": {
+        "host": "ouf-minio",
+        "port": 9000,
+        "scheme": "http",
+        "validEndpointWithoutCredentialsOrExtraParts": true
+      },
+      "path-style": "true",
+      "region": "us-east-1"
+    }
+  }
+}

@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_F2_UDP_BINDING_READ_RETRY_PENDING",
+  "status": "F1_PASS_F2_UDP_CLIENT_PROBE_PENDING",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -150,13 +150,14 @@
       "evidence": "evidence/onboarding-seaweedfs-profile-success-20261107.json"
     },
     "nextUdpRead": {
-      "status": "CORRECTED_NOT_EXECUTED_ON_VPS",
+      "status": "COMPLETED",
       "scriptCommit": "8d34ce385f84d9b99fe507634a58d73f1c7cae50",
       "script": "scripts/read-current-udp-storage-20261107.py",
       "sha256": "71cede5f23c97b20483fe340ef146a89aef86d66162276d6ad92bf08ce0de350",
       "localChecks": "PASS",
       "serviceConfigurationChanged": false,
-      "correctionEvidence": "evidence/udp-storage-read-launch-fix-20261107.json"
+      "correctionEvidence": "evidence/udp-storage-read-launch-fix-20261107.json",
+      "receipt": "evidence/udp-current-storage-bindings-operator-20261107.json"
     },
     "udpBindingReadFirstAttempt": {
       "schema": "ouf.current-udp-storage-bindings.v1",
@@ -166,6 +167,31 @@
       "credentialValuesEmitted": false,
       "provenance": "OPERATOR_RECEIPT",
       "evidence": "evidence/udp-storage-read-launch-held-operator-20261107.json"
+    },
+    "currentUdpBindings": {
+      "status": "UDP_BINDINGS_READ_ONLY",
+      "provenance": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T17:27:41.300877+00:00",
+      "receipt": "evidence/udp-current-storage-bindings-operator-20261107.json",
+      "image": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "jar": "/app/app.jar",
+      "sdk": "2.54.17",
+      "declaredEndpoint": "http://ouf-minio:9000",
+      "bucket": "ouf-udp",
+      "springApplicationJsonPresent": true,
+      "effectiveSpringConfigurationNotRead": true,
+      "sharedNetworks": []
+    },
+    "nextUdpClientProbe": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "scriptCommit": "ad27a0ac6417e4c36599e3f1eb94f6ced71bd7dc",
+      "script": "scripts/probe-current-udp-seaweedfs-20261107.py",
+      "sha256": "612c796478c4c18a8ac1c21ba3a4890e17fbd3c77c266a4a521c2b381cde26f9",
+      "localChecks": "PASS",
+      "usesInstalledFactoryAndAdapter": true,
+      "maximumLogicalPutCalls": 1,
+      "applicationBindingsChanged": false,
+      "evidence": "evidence/udp-seaweedfs-client-probe-preparation-20261107.json"
     }
   },
   "milestones": [
@@ -237,7 +263,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run the corrected pinned read-only UDP command: the first reader assumed the Onboarding JAR path and returned no bindings. Inspect current UDP binding and installedJar status, then prepare client verification/data alignment/same-image switch. F1 remains PASS; keep the existing CSV asset/profile.",
+  "nextAction": "Run installed UDP client probe against private SeaweedFS, including allowlisted source JSON read. If PUT/HEAD/GET matches, align current lake objects and switch UDP while stopped. Keep existing CSV asset/profile; F2 and graph E2E remain open.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -264,8 +290,8 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Onboarding application upload and governed profile succeeded. UDP configuration still needs current inspection; UDP client/switch and repeatable E2E remain open. No duration promise.",
-    "nextReestimateAfter": "CURRENT_UDP_BINDING_READ_AND_CLIENT_CHECK"
+    "reason": "Onboarding F1 passed. UDP image/JAR/SDK and declared bindings identified; real UDP SDK/TLS verification and current-data switch remain pending. No duration promise.",
+    "nextReestimateAfter": "UDP_INSTALLED_CLIENT_PROBE"
   },
   "evidence": [
     {

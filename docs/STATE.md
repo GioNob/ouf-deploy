@@ -10,13 +10,15 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 - **Upload e lettura riusciti:** handoff `2de7b988-da47-4231-8443-0e5043214c42` → asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` STAGED → job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED → profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto via MCP. CSV UTF-8, separatore `;`, 13 righe e 20 colonne. Il sorgente installato verifica dimensione e hash del contenuto prima di salvare il profilo; il valore hash non è esposto dalla preview. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json).
 - **Non ricaricare:** riprendere da questi riferimenti. Identità proposta `nome_teatro`, ancora PENDING_HUMAN_REVIEW. Coordinate inferite STRING, campione `4.565.094`/`1.376.850`: formato da chiarire prima del mapping, nessuna conversione automatica. Nessuna bozza sorgente o Ingestion avviata.
 
-## Prossima azione: lettura UDP sul VPS
+## Prossima azione: prova client UDP sul VPS
 
-Il primo comando è terminato con `KNOWN_UDP_JAR_LAUNCH_REQUIRED`: errore del lettore, che assumeva `/app/application.jar`. Il Dockerfile UDP conservato dichiara `/app/app.jar`; il percorso live non è ancora restituito. Nessun servizio o binding modificato. Corretto il lettore per selezionare il JAR dall'argomento `-jar` e conservare comunque i binding se l'ispezione del JAR è incompleta. [Diagnosi e controlli](../evidence/udp-storage-read-launch-fix-20261107.json).
+Lettura operatore delle **18:27 CET** riuscita: UDP immagine `ae78f604…`, JAR `/app/app.jar`, AWS SDK `2.54.17`. Ambiente dichiarato: MinIO HTTP, bucket `ouf-udp`, path-style true, regione us-east-1; nessuna rete condivisa con SeaweedFS e nessun truststore JVM personalizzato dichiarato. `SPRING_APPLICATION_JSON` presente: la lettura dei soli env non è una verifica della configurazione effettiva. [Ricevuta](../evidence/udp-current-storage-bindings-operator-20261107.json).
 
-Eseguire il [blocco unico corretto di sola lettura](OUF_UDP_CURRENT_STORAGE_READ_20261107.md) e riportare il JSON. Serve a conoscere immagine, bucket, endpoint, rete e SDK effettivamente installati, oltre alla configurazione SeaweedFS già preparata. Non ferma servizi né cambia binding; zero richieste S3/DB e nessun valore di credenziale emesso. Controlli locali PASS, inclusa la forma d'avvio UDP e una fixture JAR; esecuzione VPS della correzione ancora pendente.
+Eseguire il [blocco unico per il client installato](OUF_UDP_SEAWEEDFS_CLIENT_PROBE_20261107.md). Legge soltanto le voci storage del JSON, avvia un container temporaneo con la stessa immagine e chiama la factory e l'adapter UDP originali, verificati tramite SHA. Usa identità/CA SeaweedFS già preparate. HEAD di assenza su una chiave UUID nuova, un PUT logico, HEAD e GET con corpo/hash/metadati confrontati. Rimane un piccolo oggetto diagnostico, indicato nel risultato; container temporaneo e copia credenziali rimossi.
 
-Poi: verificare il client UDP/TLS, allineare i suoi oggetti correnti e cambiare il binding conservando l'immagine. Dopo F2, proseguire questo CSV con semantica locale prima, eventuale OntoPiA governata, Ingestion, riconciliazione e grafo; ripetere il percorso secondo il [MiniPET funzionale, PR #55](https://github.com/GioNob/ouf-deploy/pull/55).
+Nessuna fermata o cambio del servizio UDP, nessun avvio Spring/DB. Compilazione e controlli locali PASS; prova reale SDK/TLS sul VPS ancora pendente. La precedente assunzione errata sul nome JAR è corretta e il percorso ora è osservato, non ipotizzato.
+
+Se il client passa: allineare i dati correnti UDP e cambiare il binding a writer fermo, conservando l'immagine. Poi proseguire l'E2E da asset/profilo già acquisiti: semantica locale, eventuale OntoPiA governata, Ingestion, riconciliazione e grafo. [MiniPET funzionale, PR #55](https://github.com/GioNob/ouf-deploy/pull/55).
 
 ## Binding e prove da conservare
 
