@@ -1,5 +1,7 @@
 # Lettura dell'errore D-Bus Semantic
 
+**DIAGNOSI COMPLETATA alle 20:56 CET:** GetUnit fallisce perché l'unità non è caricata. [Ricevuta](../evidence/semantic-systemd-get-unit-not-loaded-operator-20261107.json). Non ripetere questo lettore: la prossima azione è il [ripristino v3](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md), che verifica i file dell'unità senza chiamate D-Bus dirette. Quanto segue conserva il contesto e il comando diagnostico storico.
+
 La ricevuta operatore del **7 novembre, 20:43:40 CET** (19:43:40 UTC) termina `TYPED_SERVICE_METADATA_READ_FAILED`. Il servizio operativo rimane inactive/disabled. Nessun override rimosso, daemon-reload, avvio, abilitazione o GET policy.
 
 Sono ora provati i nomi omessi nell'output testuale: ExecStartPre, ExecStartPost, ExecCondition. Sono verificati path e byte dell'override di cattura. La v2 scarta però il codice di uscita e stderr di busctl e accorpa GetUnit e get-property: **non è provata la causa del nuovo errore né la fase che fallisce**. Non dedurre assenza di hook da un errore. I 19 scenari precedenti simulavano D-Bus e non provavano il trasporto sul VPS.

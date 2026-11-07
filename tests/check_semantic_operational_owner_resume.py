@@ -50,13 +50,16 @@ def service():
     return row
 def scenario(*, legacy_masked=True, initial='ACTIVE', already=False, fresh=False, wrong_output=False,
              wrong_command=False, start_failure=False, policy_status=200, publication='ACTIVE', drift=False,
-             capture=False, capture_bad_bytes=False, omit_hooks=False, missing_scalar=False, nonempty_typed_hook=False):
+             capture=False, capture_bad_bytes=False, omit_hooks=False, missing_scalar=False,
+             network_bytes=None, main_hook=False, pending_reload=False, textual_hook=False):
     state = {'commands': [], 'policyCalls': 0, 'claims': 0, 'running': already, 'enabled': False}
     temporary = tempfile.TemporaryDirectory(dir=HERE)
     root = Path(temporary.name)
     override = root / 'capture.conf'
     network = root / 'network.conf'
-    network.write_bytes(b'[Service]\nIPAddressAllow=192.0.2.10/32\n')
+    network_bytes = network_bytes if network_bytes is not None else b'[Service]\nIPAddressAllow=192.0.2.10/32\n'
+    network.write_bytes(network_bytes)
+    main_bytes = UNIT + (b'ExecStartPre=/bin/false\n' if main_hook else b'')
     if capture:
         override.write_bytes(r.CAPTURE_BYTES + (b'#changed\n' if capture_bad_bytes else b''))
     config = copy.deepcopy(c)
@@ -74,6 +77,8 @@ def scenario(*, legacy_masked=True, initial='ACTIVE', already=False, fresh=False
         if omit_hooks:
             for key in r.START_HOOKS: row.pop(key)
         if missing_scalar: row.pop('FragmentPath')
+        if pending_reload: row['NeedDaemonReload'] = 'yes'
+        if textual_hook: row['ExecStartPre'] = '{ path=/bin/false ; }'
         if state['running']: row.update(ActiveState='active', SubState='running', MainPID='456')
         if state['enabled']: row['UnitFileState'] = 'enabled'
         if wrong_command: row['ExecStart'] = row['ExecStart'].replace('capsule.py', 'other.py')
@@ -112,11 +117,9 @@ def scenario(*, legacy_masked=True, initial='ACTIVE', already=False, fresh=False
     reader = {'declarations': lambda _: (values, {}), 'mounted_read': lambda *a: (current_token(), mount),
         'token_metadata': p.token_metadata, 'endpoint': p.endpoint, 'policy_get': policy}
     owner = dict(vars(o), CONFIG_SHA=confighash, object_at=object_at,
-                 read=lambda path, *a: UNIT if str(path) == c['serviceUnitPath'] else Path(path).read_bytes())
-    def bus(*args):
-        if args[0] == 'call': return 'o "/org/freedesktop/systemd1/unit/test_service"'
-        assert args[0] == 'get-property' and args[-3:] == r.START_HOOKS
-        return '\n'.join(['a(sasbttttuii) '+('1' if nonempty_typed_hook else '0')] * 3)
+                 read=lambda path, *a: main_bytes if str(path) == c['serviceUnitPath'] else Path(path).read_bytes())
+    def no_unexpected_subprocess(*args, **kwargs):
+        raise AssertionError('Unexpected direct subprocess, including busctl')
     def backup_dir(*args, **kwargs):
         target = root / 'backup'; target.mkdir(); return str(target)
     report = {}
@@ -124,14 +127,14 @@ def scenario(*, legacy_masked=True, initial='ACTIVE', already=False, fresh=False
         stack.enter_context(patch.object(r, 'unit_read', unit)); stack.enter_context(patch.object(r, 'command', cmd))
         stack.enter_context(patch.object(r, 'claim_start', claim))
         stack.enter_context(patch.object(r, 'CAPTURE_OVERRIDE', override))
-        stack.enter_context(patch.object(r, 'bus_read', bus))
+        stack.enter_context(patch.object(r.subprocess, 'run', no_unexpected_subprocess))
         stack.enter_context(patch.object(r.tempfile, 'mkdtemp', backup_dir))
         stack.enter_context(patch.object(r.time, 'time', lambda: 1000))
         stack.enter_context(patch.object(r.time, 'sleep', lambda _: None))
         try: r.execute(report, runtime, reader, owner)
         except RuntimeError as exc: report['reason'] = str(exc)
     state['overrideStillPresent'] = override.exists()
-    state['networkUnchanged'] = network.read_bytes() == b'[Service]\nIPAddressAllow=192.0.2.10/32\n'
+    state['networkUnchanged'] = network.read_bytes() == network_bytes
     assert state['networkUnchanged']
     assert 'eyJ' not in json.dumps(report)
     temporary.cleanup()
@@ -170,10 +173,19 @@ assert not state['overrideStillPresent'] and report['unrelatedDropInsPreserved']
 for kwargs, reason in [({'capture': True, 'capture_bad_bytes': True}, 'CAPTURE_OVERRIDE_BYTES_CHANGED'),
                       ({'capture': True, 'initial': 'BLOCKED'}, 'OWNER_LEDGER_REQUIRES_RECONCILIATION'),
                       ({'capture': True, 'already': True}, 'RUNNING_OWNER_WITH_CAPTURE_OVERRIDE_REQUIRES_REVIEW'),
-                      ({'omit_hooks': True, 'nonempty_typed_hook': True}, 'TYPED_EMPTY_START_HOOKS_REQUIRED'),
+                      ({'omit_hooks': True, 'network_bytes': b'[Service]\nExecStartPre=/bin/false\n'}, 'START_HOOK_DECLARED_IN_UNIT_FILES'),
                       ({'missing_scalar': True}, 'SERVICE_METADATA_INCOMPLETE')]:
     report, state = scenario(**kwargs)
     assert report.get('reason') == reason, report
     assert not state['commands'] and not state['claims'] and not state['policyCalls']
     if kwargs.get('capture'): assert state['overrideStillPresent']
-print('PASS: 19 offline scenarios, including omitted text properties with typed empty/nonempty hooks, exact capture override restoration and preservation of unrelated drop-ins')
+for kwargs, reason in [({'main_hook': True}, 'START_HOOK_DECLARED_IN_UNIT_FILES'),
+    ({'network_bytes': b'[Service]\nIPAddressAllow=192.0.2.10/32 \\\nExecStartPre=/bin/false\n'}, 'UNIT_CONTINUATION_REQUIRES_REVIEW'),
+    ({'network_bytes': b'[Unit]\nWants=other.service\n'}, 'UNSUPPORTED_DROPIN_SECTION'),
+    ({'network_bytes': b'[Service]\nEnvironment=OTHER=1\n'}, 'UNEXPECTED_DROPIN_DIRECTIVE'),
+    ({'pending_reload': True}, 'INSTALLED_OPERATIONAL_UNIT_REQUIRED'),
+    ({'textual_hook': True}, 'UNEXPECTED_OPERATIONAL_START_HOOK')]:
+    report, state = scenario(**kwargs)
+    assert report.get('reason') == reason, report
+    assert not state['commands'] and not state['claims'] and not state['policyCalls']
+print('PASS: 25 offline scenarios; complete loaded-file hook checks, omitted fields, capture restoration, pending reload, unsupported syntax and no direct D-Bus calls')

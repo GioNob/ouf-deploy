@@ -424,25 +424,26 @@
       "reason": "WRONG_LEGACY_PRODUCER_SELECTED_ALREADY_MASKED_BEFORE_CAPTURE"
     },
     "nextSemanticOperationalOwnerResume": {
-      "status": "HELD_BEFORE_EFFECTS_V2_SUSPENDED",
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
       "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
-      "scriptCommit": "099f30a0d38af8170db5a5ddb67a055660bdaf1a",
+      "scriptCommit": "c30f8c287bf4bb78cc07d73e18407eb019eec66e",
       "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
-      "sha256": "b272e84f636a03af5a72a82494085c7164b5c7ec9c9adcd30fdf0fb6cfb1b1c6",
+      "sha256": "32fc3f89772e16877654bf6fdab647ec2cf0307e1ced1a406e8314998f510295",
       "legacyMustRemainMasked": true,
       "existingOwnerStoppedByCapture": true,
       "generalRuntimeRestoreOmitsOwner": true,
-      "localChecks": "PASS_19_OFFLINE_SCENARIOS_WITH_REAL_TEMPORARY_OVERRIDE_FILES",
+      "localChecks": "PASS_25_OFFLINE_SCENARIOS_WITH_REAL_TEMPORARY_OVERRIDE_FILES",
       "applicationLoadedPolicyProven": false,
       "automaticRenewalCycleProven": false,
       "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
-      "version": 2,
-      "typedEmptyStartHooksRequired": true,
+      "version": 3,
+      "typedEmptyStartHooksRequired": false,
       "restoreExactSingleCaptureOverrideBeforeStart": true,
       "backupBeforeRemoval": true,
       "unrelatedDropInsPreserved": true,
-      "operatorReceipt": "evidence/semantic-operational-owner-dbus-held-operator-20261107.json",
-      "reason": "TYPED_SERVICE_METADATA_READ_FAILED"
+      "startHookProof": "HASH_PINNED_MAIN_UNIT_ALL_LOADED_DROPINS_NO_PENDING_RELOAD",
+      "directDbusCalls": 0,
+      "sourceByteReadbackBeforeStartAndEnable": true
     },
     "previousSemanticOperationalOwnerResume": {
       "status": "HELD_BEFORE_EFFECTS",
@@ -463,7 +464,7 @@
       "missingPropertyNamesNotReported": true
     },
     "nextSemanticBusDiagnostic": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "COMPLETED_GET_UNIT_NOT_LOADED",
       "script": "scripts/read-semantic-systemd-bus-error-20261107.py",
       "scriptCommit": "9745f249627469567f4a49d2cc7c3120b9bb4c90",
       "sha256": "dfdfe61612f32804f3f3d7b7a2a0be8d5e4c3212ac18e5c50776d799a6b55396",
@@ -471,7 +472,8 @@
       "serviceMutations": 0,
       "tokenReads": 0,
       "localValidation": "SYNTAX_CHECK_ONLY",
-      "runbook": "docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md"
+      "runbook": "docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md",
+      "operatorReceipt": "evidence/semantic-systemd-get-unit-not-loaded-operator-20261107.json"
     }
   },
   "milestones": [
@@ -546,7 +548,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Read exact D-Bus stage and busctl exit code/stderr without starting or modifying services. Resume mutation suspended until cause identified.",
+  "nextAction": "Execute resume v3 with complete loaded-unit-file checks instead of GetUnit. Restore exact capture override, start existing owner, verify mounted token and policy GET200, enable owner, retry semantic MCP search.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -573,7 +575,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Correct owner still inactive/disabled, mounted token expired. Resume v2 held before effects on D-Bus metadata read; stage and error missing. Read-only diagnostic prepared. Semantic search, UDP lake and E2E unproven.",
+    "reason": "GetUnit failure identified: inactive unit not loaded. Resume v3 prepared with verified main fragment/all drop-ins and no pending reload, without direct D-Bus calls. VPS execution, semantic search, normal UDP lake and E2E unproven.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [

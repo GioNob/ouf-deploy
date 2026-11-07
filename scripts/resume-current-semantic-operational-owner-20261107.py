@@ -47,21 +47,31 @@ def public_unit(fields):
             if key not in ('ExecStart', 'ExecStartPre', 'ExecStartPost', 'ExecCondition',
                            'FragmentPath', 'RootDirectory', 'DropInPaths') and re.fullmatch('[A-Za-z0-9_-]{0,80}', value)}
 
-def bus_read(*args):
-    result = subprocess.run(('/usr/bin/busctl', '--system', '--no-pager', *args),
-                            stdin=subprocess.DEVNULL, capture_output=True, timeout=15)
-    need(result.returncode == 0 and len(result.stdout) <= 8192, 'TYPED_SERVICE_METADATA_READ_FAILED')
-    return result.stdout.decode().strip()
+def configuration_hooks_absent(unit_raw, dropins):
+    """Conservative source proof, not an interpretation of omitted CLI fields.
 
-def empty_start_hooks():
-    raw = bus_read('call', 'org.freedesktop.systemd1', '/org/freedesktop/systemd1',
-                   'org.freedesktop.systemd1.Manager', 'GetUnit', 's', SERVICE)
-    match = re.fullmatch(r'o "(/org/freedesktop/systemd1/unit/[A-Za-z0-9_]+)"', raw)
-    need(match is not None, 'TYPED_UNIT_OBJECT_REQUIRED')
-    raw = bus_read('get-property', 'org.freedesktop.systemd1', match.group(1),
-                   'org.freedesktop.systemd1.Service', *START_HOOKS)
-    need(raw.splitlines() == ['a(sasbttttuii) 0'] * len(START_HOOKS),
-         'TYPED_EMPTY_START_HOOKS_REQUIRED')
+    The caller hash-checks the main fragment, reads every loaded drop-in and
+    requires NeedDaemonReload=no. Only the installed simple file syntax and
+    the existing network/capture drop-in directives are admitted.
+    """
+    allowed = {'IPAddressAllow', 'Restart', 'SendSIGKILL', 'RuntimeDirectoryPreserve', 'TimeoutStopSec'}
+    for raw, is_dropin in [(unit_raw, False), *((raw, True) for raw in dropins.values())]:
+        need(raw.isascii() and b'\x00' not in raw and b'\r' not in raw, 'UNSUPPORTED_UNIT_FILE_ENCODING')
+        section = None
+        for line in raw.decode('ascii').splitlines():
+            line = line.strip()
+            if not line or line.startswith(('#', ';')):
+                continue
+            need(not line.endswith('\\'), 'UNIT_CONTINUATION_REQUIRES_REVIEW')
+            if re.fullmatch(r'\[[A-Za-z]+\]', line):
+                section = line[1:-1]
+                need(not is_dropin or section == 'Service', 'UNSUPPORTED_DROPIN_SECTION')
+                continue
+            assignment = re.fullmatch(r'([A-Za-z][A-Za-z0-9]*)\s*=.*', line)
+            need(section is not None and assignment is not None, 'UNSUPPORTED_UNIT_FILE_SYNTAX')
+            key = assignment.group(1)
+            need(key not in START_HOOKS, 'START_HOOK_DECLARED_IN_UNIT_FILES')
+            need(not is_dropin or key in allowed, 'UNEXPECTED_DROPIN_DIRECTIVE')
 
 def legacy_guard(report):
     rows = {unit: unit_read(unit) for unit in LEGACY}
@@ -69,7 +79,7 @@ def legacy_guard(report):
     need(all(row['LoadState'] == 'masked' and row['ActiveState'] == 'inactive'
              for row in rows.values()), 'LEGACY_PRODUCER_MUST_REMAIN_MASKED_INACTIVE')
 
-def service_guard(row, c, unit_raw, expected_restart='on-failure'):
+def service_guard(row, c, unit_raw, snapshots, owner, expected_restart='on-failure'):
     need(all(k in row for k in PROPERTIES if k not in START_HOOKS), 'SERVICE_METADATA_INCOMPLETE')
     need(row['LoadState'] == 'loaded' and row['UnitFileState'] in ('disabled', 'enabled')
          and row['Type'] == 'simple' and row['User'] == 'root'
@@ -79,7 +89,11 @@ def service_guard(row, c, unit_raw, expected_restart='on-failure'):
          and row['FragmentPath'] == c['serviceUnitPath'], 'INSTALLED_OPERATIONAL_UNIT_REQUIRED')
     need(not any(row.get(k) for k in START_HOOKS),
          'UNEXPECTED_OPERATIONAL_START_HOOK')
-    empty_start_hooks()  # Omitted textual properties are not proof of empty arrays.
+    need(set(shlex.split(row['DropInPaths'])) == set(snapshots), 'LOADED_DROPIN_MEMBERSHIP_CHANGED')
+    need(owner['read'](c['serviceUnitPath'], 65536) == unit_raw, 'REVIEWED_UNIT_BYTES_CHANGED')
+    for path, raw in snapshots.items():
+        need(owner['read'](path, 65536) == raw, 'LOADED_DROPIN_BYTES_CHANGED')
+    configuration_hooks_absent(unit_raw, snapshots)
     starts = [line[len('ExecStart=:'):] for line in unit_raw.decode().splitlines()
               if line.startswith('ExecStart=:')]
     actual = re.search(r'argv\[\]=(.*?);', row['ExecStart'])
@@ -208,8 +222,11 @@ def execute(report, runtime, reader, owner):
     before = unit_read(SERVICE); report['serviceBefore'] = public_unit(before)
     report['omittedTextProperties'] = [key for key in PROPERTIES if key not in before]
     snapshots = capture_override(before, owner, report)
-    service_guard(before, c, unit_raw, expected_restart='no' if str(CAPTURE_OVERRIDE) in snapshots else 'on-failure')
-    report['emptyStartHooksProvenByTypedRead'] = True
+    service_guard(before, c, unit_raw, snapshots, owner,
+                  expected_restart='no' if str(CAPTURE_OVERRIDE) in snapshots else 'on-failure')
+    report['startHookCheck'] = {'scope': 'HASH_PINNED_MAIN_UNIT_ALL_LOADED_DROPINS_NO_PENDING_RELOAD',
+                              'noStartHooksDeclared': True, 'directDbusCalls': 0,
+                              'loadedDropInCount': len(snapshots)}
     verify_binding(doc, values, c, token, mount)
     report['installedOwnerMatchesCurrentTokenBinding'] = True
     ledger_path = Path(c['destinations']['ledgerRoot']) / 'state.json'
@@ -237,10 +254,12 @@ def execute(report, runtime, reader, owner):
         report['privateStartAttemptFile'] = claim_start(doc, raw)
         if str(CAPTURE_OVERRIDE) in snapshots:
             restored = restore_capture_override(report, snapshots, owner)
-            service_guard(restored, c, unit_raw)
+            snapshots.pop(str(CAPTURE_OVERRIDE))
+            service_guard(restored, c, unit_raw, snapshots, owner)
             need(restored['ActiveState'] in ('inactive', 'failed') and restored['MainPID'] == '0',
                  'OWNER_STATE_CHANGED_DURING_OVERRIDE_RESTORE')
             unchanged(doc, runtime)
+        service_guard(unit_read(SERVICE), c, unit_raw, snapshots, owner)
         report['serviceStartDispatched'] = True
         result = command('start', SERVICE)
         report['serviceStartExitCode'] = result.returncode
@@ -269,7 +288,7 @@ def execute(report, runtime, reader, owner):
          'FRESH_TOKEN_POLICY_GET_NOT_SUCCESSFUL')
     unchanged(doc, runtime)
     legacy_guard(report)
-    service_guard(unit_read(SERVICE), c, unit_raw)
+    service_guard(unit_read(SERVICE), c, unit_raw, snapshots, owner)
     if unit_read(SERVICE)['UnitFileState'] != 'enabled':
         report['serviceEnableDispatched'] = True
         need(command('enable', SERVICE).returncode == 0, 'OPERATIONAL_OWNER_ENABLE_FAILED')
@@ -283,7 +302,7 @@ def execute(report, runtime, reader, owner):
                   automaticRenewalCycleProven=False)
 
 def main():
-    report = {'schema': 'ouf.semantic-operational-owner-resume.v2', 'status': 'HELD',
+    report = {'schema': 'ouf.semantic-operational-owner-resume.v3', 'status': 'HELD',
               'service': SERVICE, 'serviceStartDispatched': False, 'serviceEnableDispatched': False,
               'credentialValuesEmitted': False, 'applicationConfigurationChanged': False,
               'serviceConfigurationChanged': False, 'captureOverrideRemoved': False,
