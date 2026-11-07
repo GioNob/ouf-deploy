@@ -67,3 +67,10 @@ Prossimo passo: leggere esito della conferma e policy risultante, poi riprovare 
 ## 7 novembre 2026 — correzione upload pubblicata in policy :60
 
 Giovanni riporta la pubblicazione nella THS. Readback MCP conferma proposta PUBLISHED, revisione 1 e finalPolicyRef ouf-lab-authorization:60; la lettura dei grant riporta la stessa versione. Il catalogo ruoli è esattamente quello proposto: sola voce upload admin modificata, 9 ruoli, 13 assegnazioni e altre 65 voci conservati. Nuovo source.file.upload emette handoff 1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce in AWAITING_FILE_SELECTION. Selettore browser e upload ancora da verificare; nessuna prova storage acquisita. [Ricevuta](../evidence/ths-upload-policy60-published-20261107.json).
+
+
+## 7 novembre 2026 — selettore aperto, riuso handoff e prossimo passo storage
+
+Dopo policy :60 Giovanni apre il selettore, riferisce primo caricamento Farmacie e secondo tentativo Teatri terminato HTTP_500. source.file.upload.status ritorna STAGED, asset 8061fad3-1a8b-4f65-9e4a-bfead7974cb7; il nome del file non è esposto. Non attribuire il primo asset a Teatri. Riprodotto sul sorgente 73498c17 il rifiuto di completare uno stesso handoff con un asset diverso, mantenendo la prima ricevuta. Il controllo nel picker è dopo la scrittura e il pulsante viene riabilitato: possibile secondo asset persistito, da riconciliare; manca l'eccezione live. Nessun nuovo upload richiesto e nessuna patch distribuita.
+
+Il suggerimento di confrontare client esterno e Java è recepito con stesso contesto e input. Il 502 ONB_STAGING_WRITE_FAILED è generato dal catch dell'adapter MinIO Java: nessuna causa server o SDK dedotta dal solo HTTP status. Prova storica su localhost con CA importata e container rimossi; preparata lettura read-only dei binding attuali per la prova minima sul percorso scelto. Sintassi verificata, esecuzione VPS pendente. [Evidenza e limiti](../evidence/ths-upload-reuse-storage-next-20261107.json).
