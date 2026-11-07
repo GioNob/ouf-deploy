@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.0 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **da completare sul sistema; nessuna accettazione funzionale aggiunta da questo documento**.
+**Versione 2.1 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -17,7 +17,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine, readiness UP, TLS verificato e vecchio container conservato spento. A writer fermo, 12 oggetti/40.709 byte ancora coincidenti. Dopo il passaggio, il nuovo upload è registrato come STAGED, asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`. La profilazione è negata dall'autorizzazione: preparata una correzione di tre permessi admin, proposta THS PENDING, 16 controlli locali PASS. Non ricaricare il file. La lettura governata resta da provare; UDP non è ancora migrato, F1–F6 aperti. [Stato e azione THS](STATE.md) · [Evidenza](../evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json).
+**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. Il prossimo passo è la [lettura corrente UDP sul VPS](OUF_UDP_CURRENT_STORAGE_READ_20261107.md). [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
 
 Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sopra: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -33,7 +33,7 @@ Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sop
 | STATE e runbook di avvio riportano stack originale su MinIO e OCI33 su rete privata [E9] | Esistono due backend; manca il cambio applicativo verificato | L'avvio di SeaweedFS non cambia i binding e non sincronizza nuove scritture MinIO |
 | 403 THS anche in InPrivate, account ouf-admin confermato [E10] | Blocco dell'ingresso utente, ora seguito dall'agente principale | Non prova un difetto di SeaweedFS |
 
-**Stato corrente:** sono riusciti il confronto PUT/GET dei client, l'allineamento dei file, il passaggio Onboarding e la registrazione del nuovo upload. La lettura/profilazione dello stesso asset è bloccata dall'autorizzazione. Superato questo punto, restano il collegamento UDP e il percorso completo.
+**Stato corrente:** sono riusciti confronto PUT/GET dei client, allineamento dei file, passaggio Onboarding, upload e lettura/profilazione dello stesso asset. Restano il collegamento UDP e il percorso fino al grafo, poi la ripetizione senza riparazioni manuali.
 
 La percentuale **39,78%** del vecchio registro è una stima euristica del 4 novembre basata su crediti di lavoro. Non misura né funzionalità né tempo residuo. Non sarà usata per pianificare o rendicontare questo percorso. I vecchi 0/8 gate e 0/21 AT restano stato della precedente accettazione formale, non una lista da chiudere prima di far funzionare il sistema.
 
@@ -48,11 +48,11 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato iniziale di F1–F6: **OPEN**.
+Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 
 | ID e ordine | Lavoro concreto | Uscita verificabile | Dipendenza / responsabilità |
 | --- | --- | --- | --- |
-| **F1 — Un PUT/GET applicativo su SeaweedFS** | Conservare l'immagine installata e il nuovo binding SeaweedFS. Upload STAGED acquisito; pubblicare la correzione dei permessi e verificare profilo/lettura sullo stesso asset. | Upload riuscito; asset/ricevuta coerenti; se si usa d515, intento ACKED; oggetto presente su SeaweedFS, byte e SHA-256 uguali all'input; lettura tramite il normale percorso applicativo riuscita. | Agente storage + operatore soltanto per accesso VPS. Non dipende dalla chiusura dei gate di produzione. |
+| **F1 — Un PUT/GET applicativo su SeaweedFS** | **PASS:** stessa immagine, nuovo binding SeaweedFS, upload STAGED e profilo SUCCEEDED, risultato letto via MCP. Riferimenti nell'evidenza del 7 novembre. | Upload riuscito; asset/ricevuta coerenti; se si usa d515, intento ACKED; oggetto presente su SeaweedFS, byte e SHA-256 uguali all'input; lettura tramite il normale percorso applicativo riuscita. | Agente storage + operatore soltanto per accesso VPS. Non dipende dalla chiusura dei gate di produzione. |
 | **F2 — Collegare lo stack effettivo** | Applicare i binding coerenti di scrittura e lettura a Onboarding, UDP e percorso Gateway/Ingestion. Conservare bucket/key e URI. Aggiornare i dati rispetto alla riapertura di MinIO, se sono cambiati. | Onboarding e UDP scrivono e leggono da SeaweedFS; i riferimenti preesistenti del dataset scelto si risolvono; configurazioni e prova mostrano che il percorso verificato non usa MinIO. | F1. Agente storage. Coordinare nello stesso filone le modifiche THS alle configurazioni condivise. |
 | **F3 — Un CSV arriva al grafo** | Dopo il fix THS, seguire un file lungo upload, profilo, mapping/semantica, review prevista, Ingestion, riconciliazione, persistenza UDP e lettura del grafo. | Una catena di riferimenti collega file/hash → asset → source/version → semantic refs → run/ACK → oggetti/relazioni UDP. Gli esiti di tutte le righe del file sono spiegati. | F2 + esito 403/THS. Filone E2E. |
 | **F4 — Ripetere il percorso** | Eseguire lo stesso flusso con un secondo CSV comparabile, attraverso la stessa procedura. Verificare inoltre il reimport invariato secondo il contratto già previsto. | Secondo percorso riuscito senza SQL, copie S3 manuali, cambio policy ad hoc o patch tra i due run; reimport senza duplicati/revisioni gratuite. Decisioni HUMAN previste restano normali passi del prodotto. | F3. Filone E2E. |
@@ -61,17 +61,17 @@ Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti 
 
 **Fine del primo risultato:** F1+F2. **Fine dell'E2E ripetibile qui richiesto:** F3+F4+F5+F6. Non contare un nuovo documento, uno script installato o un container UP come chiusura di una riga.
 
-### F1: verificare il percorso applicativo collegato
+### F1: percorso applicativo verificato
 
-L'immagine installata `7b9d3e91…`, corrispondente al sorgente conservato `73498c17`, usa ora SeaweedFS. Il suo client ha già superato PUT/GET, i 12 file correnti sono stati verificati a writer fermo e il nuovo container è pronto. Il comando di passaggio è già completato e non va rilanciato.
+L'immagine installata `7b9d3e91…`, corrispondente al sorgente conservato `73498c17`, usa SeaweedFS. Il 7 novembre il nuovo upload è STAGED, la profilazione è SUCCEEDED e la preview è stata letta tramite MCP. Il worker legge i byte attraverso Gateway; `ManagedFileService.profile` verifica dimensione e hash contro l'asset registrato prima di salvare il risultato. La preview non espone il valore hash: il controllo è quello applicativo, non un nuovo GET S3 indipendente.
 
-1. Upload già completato: `source.file.upload.status` restituisce STAGED e asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`. Non riusare il selettore né caricare nuovamente. La ricevuta non espone filename o hash.
-2. La profilazione è stata negata. Confermare la proposta THS indicata in [STATE](STATE.md), rileggere esito e policy, poi profilare quell'asset e leggere il job con assetId+jobId e il risultato con assetId+profileId. Il codice applicativo verifica dimensione/hash al download; il successo reale è ancora da osservare. Il difetto di riuso del vecchio selettore e l'effetto del tentativo Teatri precedente restano da riconciliare.
-3. Chiudere F1 soltanto con upload HTTP e lettura applicativa riusciti. La sola readiness non soddisfa questa condizione. Poi completare UDP e il percorso E2E previsto da F2/F3.
+F1 è PASS per il percorso Onboarding osservato. Non ricaricare: asset e profilo sono in [STATE](STATE.md). Nessuna bozza/source Ingestion o scrittura UDP aggiunta da questa prova. Coordinate rilevate come STRING, con campione `4.565.094`: interpretazione ancora da decidere prima del mapping. Il riuso del vecchio selettore e il vecchio tentativo Teatri restano da riconciliare.
 
-La causa del vecchio 502 nella diversa configurazione isolata resta storica e non provata. Il prossimo riscontro riguarda il percorso applicativo attuale.
+La causa del vecchio 502 nella diversa configurazione isolata resta storica e non provata; non blocca il risultato applicativo ora acquisito.
 
 ### F2: cambiare tutti i percorsi necessari, una volta sola
+
+Onboarding è già verificato. Prima del cambio UDP eseguire la [lettura corrente](OUF_UDP_CURRENT_STORAGE_READ_20261107.md): il sorgente conservato usa AWS SDK Java e DefaultCredentialsProvider, ma immagine/configurazione installate vanno rilette. Il comando non cambia servizi, DB o S3; verifica VPS ancora pendente.
 
 | Percorso | Punto noto nel codice | Verifica minima |
 | --- | --- | --- |

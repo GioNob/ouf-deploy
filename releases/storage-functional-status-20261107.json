@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "OPEN_UPLOAD_STAGED_PROFILE_AUTHORIZATION_BLOCKED",
+  "status": "F1_PASS_F2_UDP_BINDING_READ_PENDING",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -131,34 +131,45 @@
       "currentEvidence": "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json"
     },
     "currentApplicationProfile": {
-      "status": "AUTHORIZATION_DENIED",
-      "jobReceiptReturned": false,
-      "governedReadProven": false,
-      "proposal": {
-        "proposalId": "66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
-        "revision": 0,
-        "state": "PENDING",
-        "expiresAt": "2026-11-07T17:15:22.299924Z",
-        "approvalPath": "https://api.ouf-lab.it/trusted-human/authorization/?proposal=66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa",
-        "finalPolicyRef": null
+      "status": "SUCCEEDED",
+      "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+      "jobId": "f460d4d5-c6f7-4b65-b305-08091e9849cf",
+      "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+      "metadata": {
+        "rows": 13,
+        "columns": 20,
+        "encoding": "UTF-8",
+        "delimiter": ";",
+        "headerRow": 1
       },
-      "localChecks": 16,
-      "result": "PASS",
-      "liveDecisionCodeExposed": false
+      "governedReadProven": true,
+      "integrityCheckedByInstalledApplicationCode": true,
+      "hashValueExposed": false,
+      "source": "LIVE_MCP_RESPONSE",
+      "policyRef": "ouf-lab-authorization:61",
+      "evidence": "evidence/onboarding-seaweedfs-profile-success-20261107.json"
+    },
+    "nextUdpRead": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "scriptCommit": "1c922e9decaafc93d90692918f6050b739946894",
+      "script": "scripts/read-current-udp-storage-20261107.py",
+      "sha256": "4629a87bfb6783b81b65e06c58bd3de0468ae0d8b8ce05fd43393e4925ca3339",
+      "localChecks": "PASS",
+      "serviceConfigurationChanged": false
     }
   },
   "milestones": [
     {
       "id": "F1",
       "title": "Application upload and read on SeaweedFS",
-      "status": "OPEN",
+      "status": "PASS",
       "dependsOn": [],
       "owner": "storage",
       "evidence": [
         "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
-        "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json"
-      ],
-      "partialResult": "HTTP_UPLOAD_REGISTERED_STAGED_GOVERNED_READ_PENDING"
+        "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json",
+        "evidence/onboarding-seaweedfs-profile-success-20261107.json"
+      ]
     },
     {
       "id": "F2",
@@ -216,7 +227,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Human confirms pending THS proposal; read resulting policy then profile the existing c51745c5-1fc0-4d36-bdcf-1e9a8a049c94 asset and read job/profile. Do not upload again. F1 read, UDP binding and graph E2E remain open.",
+  "nextAction": "Run the pinned read-only UDP binding/JAR inspection on VPS, return JSON, then prepare client verification/current-data alignment and same-image UDP switch. Continue E2E from existing asset/profile; do not upload again.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -243,8 +254,8 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Current upload is STAGED after Onboarding switched to SeaweedFS; profiling blocked by authorization with a targeted proposal pending. Governed read, UDP binding and repeatable E2E remain open.",
-    "nextReestimateAfter": "F1"
+    "reason": "Onboarding application upload and governed profile succeeded. UDP configuration still needs current inspection; UDP client/switch and repeatable E2E remain open. No duration promise.",
+    "nextReestimateAfter": "CURRENT_UDP_BINDING_READ_AND_CLIENT_CHECK"
   },
   "evidence": [
     {
@@ -398,10 +409,10 @@
     "humanProposalStateAtReceipt": "PUBLISHED",
     "storage502Resolved": false,
     "industrializationDeferred": true,
-    "currentPolicy": "ouf-lab-authorization:60",
+    "currentPolicy": "ouf-lab-authorization:61",
     "browser403ResolvedForObservedPicker": true,
-    "currentEvidenceCommit": "48005020cabccc4901287ddb09d86c8d3ecdffe1",
-    "currentEvidencePath": "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json",
-    "profileAuthorizationProposalState": "PENDING"
+    "currentEvidenceCommit": "1c922e9decaafc93d90692918f6050b739946894",
+    "currentEvidencePath": "evidence/onboarding-seaweedfs-profile-success-20261107.json",
+    "profileAuthorizationProposalState": "PUBLISHED"
   }
 }

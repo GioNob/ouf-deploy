@@ -116,3 +116,12 @@ Readback MCP del nuovo handoff `2de7b988-da47-4231-8443-0e5043214c42`: STAGED, a
 Riletta policy :60 e catalogo completo: 9 ruoli, 13 assegnazioni, 66 permessi; 138 grant in due pagine, 17 managed-source. Contesti profilo/creazione capability e lettura job managed-profile-job incompatibili con i vincoli di etichette admin; coperture temporanee scadute o vincolate a vecchi job. Il valutatore Java originale, con fixture redatta, riproduce il diniego e supera 16 controlli sulla correzione, compresi scope/tenant/soggetto/actor/DENY. Non è una traccia del codice decisione live né una prova del token.
 
 Proposta THS `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PENDING, scadenza 18:15 CET: modificati solo tre permessi admin (profile, preview job, onboarding.create); altri 63 e tutte le assegnazioni identici. I controlli applicativi di proprietario/tenant restano presenti nel sorgente. Nessuna pubblicazione, modifica applicativa o migrazione UDP. Dopo conferma umana, rileggere policy e riprendere lo stesso asset. [Evidenza e limiti](../evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json).
+
+
+## 7 novembre 2026 — policy :61 pubblicata, F1 riuscito
+
+Giovanni conferma la pubblicazione; readback MCP: proposta 66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa PUBLISHED rev.1, policy ouf-lab-authorization:61. Il catalogo coincide esattamente con la proposta: tre permessi admin corretti, altri 63 e 13 assegnazioni invariati.
+
+Profilato lo stesso asset c51745c5-1fc0-4d36-bdcf-1e9a8a049c94, senza nuovo upload. Job f460d4d5-c6f7-4b65-b305-08091e9849cf QUEUED, poi SUCCEEDED; preview del profilo da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342 riuscita: CSV UTF-8, separatore punto e virgola, 13 righe/20 colonne. Il codice installato verifica dimensione e hash dei byte letti tramite Gateway prima di salvare il profilo. Hash e nome file non esposti dalla preview; nessun nuovo GET S3 indipendente. F1 PASS nel percorso Onboarding osservato; F2 e l'E2E ancora aperti. Coordinate STRING da interpretare prima del mapping; nessuna fonte/ingestion creata.
+
+Preparata lettura UDP corrente con script fissato e controlli locali PASS (redazione segreti, allowlist, argomenti, sole letture); esecuzione VPS pendente. Nessun cambio UDP né nuova distribuzione. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Comando UDP](OUF_UDP_CURRENT_STORAGE_READ_20261107.md).
