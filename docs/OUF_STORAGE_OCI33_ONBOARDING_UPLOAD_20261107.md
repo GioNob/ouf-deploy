@@ -1,5 +1,7 @@
 # Upload Onboarding verso SeaweedFS sul VPS isolato
 
+**Passo corrente** [Lettura dell'esito sul VPS](OUF_STORAGE_OCI33_UPLOAD_READBACK_20261107.md). Il blocco originale resta qui per tracciabilità.
+
 L'operatore ha riportato HTTP 502 dopo un solo POST. Onboarding era UP e la lettura pre-upload di SeaweedFS era riuscita. Il 502 è compatibile con la risposta che l'adapter Onboarding usa per gli errori S3 di scrittura e lascia l'esito da riconciliare. L'area e i log privati sono conservati e i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json).
 
 Il [primo avvio](../evidence/storage-oci33-onboarding-boot-ready-operator-20261107.json) ha verificato readiness, SeaweedFS TLS e Flyway V39–V41. La coppia corrente riusa quelle copie come base.

@@ -1,3 +1,7 @@
+## Coppia corrente — esito dell'upload sospeso
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_UPLOAD_READBACK_20261107.md) per leggere intento e chiave esatti sulle copie del tentativo HTTP 502. Esito pendente.
+
 ## Upload isolato sospeso su HTTP 502
 
 L'operatore ha riportato HTTP 502 dopo un solo POST. Onboarding era UP e la lettura pre-upload di SeaweedFS era riuscita. Il 502 è compatibile con la risposta che l'adapter Onboarding usa per gli errori S3 di scrittura e lascia l'esito da riconciliare. L'area e i log privati sono conservati e i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json).
