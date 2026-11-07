@@ -1,6 +1,6 @@
 ## 7 novembre — copia storica sigillata sul VPS
 
-La [ricevuta operatore](../evidence/storage-retained-custody-sealed-operator-20261107.json) attesta 6.544.578.724 byte, 34 tar sorgente verificati e 53 membri con hash. Il comando di custodia è concluso. Lo scope root dell'archivio rimane privato. Per il PC Windows, preparare una copia cifrata separata leggibile dal solo account SCP già previsto. Verificare dimensione e SHA-256 prima della custodia indipendente. Nessun restore o credito di accettazione.
+La [ricevuta operatore](../evidence/storage-retained-custody-sealed-operator-20261107.json) attesta 6.544.578.724 byte, 34 tar sorgente verificati e 53 membri con hash. Il comando di custodia è concluso. Lo scope root dell'archivio rimane privato. Per il PC Windows, preparare una copia cifrata separata leggibile dal solo account SCP già previsto. [Comandi VPS e Windows](OUF_STORAGE_RETAINED_CUSTODY_WINDOWS_20261107.md) per la copia indipendente con verifica di dimensione e SHA-256. Nessun restore o credito di accettazione.
 
 # Custodia storica del materiale di cattura OUF
 
