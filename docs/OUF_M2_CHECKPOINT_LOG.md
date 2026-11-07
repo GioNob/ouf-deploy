@@ -107,3 +107,12 @@ Preparato il cambio del solo Onboarding, stessa immagine, conservando rete backe
 Ricevuta operatore ONBOARDING_SEAWEEDFS_READY: stesso JAR/immagine, nuovo container d4f22ff3…, endpoint HTTPS SeaweedFS, readiness UP e TLS dalla rete del container. Originale conservato spento; backend indirizzo/alias preservati. A writer fermo: 12 oggetti/40.709 byte già coincidenti, zero PUT, manifest 9bcfd9b3… invariato. JDK VPS: 118 certificati originali conservati, CA privata aggiunta. Nessun cambio di permessi o binding UDP. Non è ancora una prova di upload HTTP/registrazione asset.
 
 MCP ha creato il nuovo handoff 2de7b988-da47-4231-8443-0e5043214c42, inizialmente AWAITING_FILE_SELECTION, per la prova applicativa dopo il cambio. Nessun nuovo file dichiarato caricato. Dopo la selezione: readback status, profilo dell'asset restituito e lettura governata; F1/F2 aperti. Il vecchio tentativo Teatri rimane separato e da riconciliare.
+
+
+## 7 novembre 2026 — upload su nuovo binding registrato; correzione profilo proposta
+
+Readback MCP del nuovo handoff `2de7b988-da47-4231-8443-0e5043214c42`: STAGED, asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`; filename/hash non esposti. Richiesta profilo negata dall'autorizzazione, nessuna ricevuta job. Non ripetere l'upload. F1 scrittura/registrazione acquisita; lettura/profilo ancora aperta.
+
+Riletta policy :60 e catalogo completo: 9 ruoli, 13 assegnazioni, 66 permessi; 138 grant in due pagine, 17 managed-source. Contesti profilo/creazione capability e lettura job managed-profile-job incompatibili con i vincoli di etichette admin; coperture temporanee scadute o vincolate a vecchi job. Il valutatore Java originale, con fixture redatta, riproduce il diniego e supera 16 controlli sulla correzione, compresi scope/tenant/soggetto/actor/DENY. Non è una traccia del codice decisione live né una prova del token.
+
+Proposta THS `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PENDING, scadenza 18:15 CET: modificati solo tre permessi admin (profile, preview job, onboarding.create); altri 63 e tutte le assegnazioni identici. I controlli applicativi di proprietario/tenant restano presenti nel sorgente. Nessuna pubblicazione, modifica applicativa o migrazione UDP. Dopo conferma umana, rileggere policy e riprendere lo stesso asset. [Evidenza e limiti](../evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json).
