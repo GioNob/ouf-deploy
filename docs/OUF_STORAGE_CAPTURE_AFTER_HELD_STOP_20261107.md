@@ -1,3 +1,9 @@
+## 7 novembre — claim di cattura già presente
+
+L'operatore ha riportato il riuso esatto dei due strumenti e `HELD/CAPTURE_CONTINUATION_ALREADY_CLAIMED`. Il tentativo osservato si è fermato prima di iniziare una nuova cattura. Il precedente esito sul VPS è da riconciliare con [la ricevuta](../evidence/storage-capture-claim-held-operator-20261107.json) e [il lettore locale](../scripts/read-storage-capture-claim-20261107.py). Usare il comando di lettura ancorato a commit e SHA-256 consegnato all'operatore. Lo scope resta conservato. Nessun replay, reset o uso di un parziale per Windows.
+
+Il lettore restituisce `CAPTURE_RESULT_RETAINED` solo se claim, ricevuta interna, ricevuta finale e dimensione dell'archivio concordano. La copia Windows verifica il digest del file ricevuto. `CAPTURE_OUTCOME_UNSEALED` espone soltanto la presenza dei passaggi e non attesta che il processo sia attivo, concluso o fallito. Nove casi di fixture locali PASS. MiniPET **18,3/46 (39,78%)**, credito aggiunto 0. Il comando di cattura nella sezione storica qui sotto non va rilanciato.
+
 # Cattura dopo fermo HELD — pacchetto concreto del 7 novembre 2026
 
 **Stato: singola continuazione autorizzata da Giovanni il 7 novembre 2026; esecuzione VPS pendente.** Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01, [ricevuta](../evidence/storage-capture-only-operator-decision-20261107.json). Le motivazioni di consenso sotto conservano il contesto del pacchetto approvato; non richiedere nuovamente l'autorizzazione.

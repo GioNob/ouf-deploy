@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.storage-capture-claim-held-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_TERMINAL_OUTPUT",
+  "decisionReference": "GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01",
+  "installation": {
+    "schema": "ouf.storage-capture-after-held-stop-installation.v1",
+    "status": "PINNED_TOOLS_INSTALLED_NO_STOP_OR_CAPTURE",
+    "filesInstalled": 0,
+    "exactExistingFilesReused": 2,
+    "providerRequests": 0,
+    "legacyPlanModified": false,
+    "runtimeAuthorityIssued": false,
+    "targetStopPerformed": false,
+    "targetCapturePerformed": false,
+    "acceptanceCreditAdded": 0
+  },
+  "capture": {
+    "status": "HELD",
+    "reason": "CAPTURE_CONTINUATION_ALREADY_CLAIMED",
+    "partialOperationPreserved": true,
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "priorCaptureOutcome": "UNKNOWN_RETAINED_READBACK_REQUIRED",
+  "acceptanceCreditAdded": 0
+}
