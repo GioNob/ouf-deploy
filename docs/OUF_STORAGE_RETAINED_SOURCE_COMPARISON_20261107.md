@@ -4,15 +4,17 @@ La [parità storica SeaweedFS](../evidence/storage-retained-oci33-rehearsal-pari
 
 La scansione ricontrolla i file originali e non riestrae l'archivio. Durata massima sette minuti per il comando completo. I download riguardano esclusivamente codice GitHub con dimensione e SHA-256 fissati. Esecuzione VPS pendente. Verificati localmente sintassi e confronto degli inventari.
 
+Il [primo esito](../evidence/storage-retained-source-comparison-g0-held-operator-20261107.json) ha verificato la custodia e si è fermato prima di Docker e dei volumi. Lo script usava per G0 la serializzazione della custodia, che aggiunge un fine riga al JSON. Il comando aggiornato usa il formato G0 e verifica anche l'hash del file pubblicato nella ricevuta precedente. La correzione è verificata localmente. L'esecuzione con i volumi originali è pendente.
+
 ## Comando unico sul VPS
 
 ```bash
 sudo /usr/bin/timeout 420 /usr/bin/python3 -I -B -S - <<'PY'
 import hashlib, urllib.request
-url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/6bb0d0b690d4fa93b50b65c4abe5ad06ccb4add3/scripts/compare-retained-storage-sources.py'
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/08cbe8c4369776b47170df6d183d178432f2fd9f/scripts/compare-retained-storage-sources.py'
 with urllib.request.urlopen(url, timeout=30) as response:
-    raw = response.read(7544)
-if len(raw) != 7543 or hashlib.sha256(raw).hexdigest() != '34c2a4cbe4f1db8fdf530c110aa820ef845b47aec60de0dd607e4a1f6b6a510b':
+    raw = response.read(7926)
+if len(raw) != 7925 or hashlib.sha256(raw).hexdigest() != '9560e094ba48a80a9ab44fe195cd56c220600525d756cda485a1d4f087917138':
     raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
 exec(compile(raw, 'compare-retained-storage-sources.py', 'exec'), {'__name__': '__main__'})
 PY
