@@ -1,5 +1,7 @@
 # Primo avvio isolato di Onboarding con OCI33
 
+Il VPS ha avviato Onboarding sull'immagine esatta. PostgreSQL e SeaweedFS TLS erano disponibili, la readiness era UP e Flyway ha confermato V39, V40 e V41. I tre container sono stati rimossi e le copie di lavoro conservate. [Ricevuta VPS](../evidence/storage-oci33-onboarding-boot-ready-operator-20261107.json).
+
 Il VPS ha [caricato l'immagine Onboarding esatta e confermato UDP](../evidence/storage-oci33-application-images-ready-operator-20261107.json). Gli accessi S3 tramite le due identità e TLS sono già verificati.
 
 1. Preparare un cluster PostgreSQL di lavoro dal solo tar PostgreSQL della custodia e copiare i dati SeaweedFS staged. Le copie vanno sotto `onboarding-stack-v1`. Un segreto JDBC nuovo viene applicato soltanto al ruolo applicativo sulla copia. Il programma verifica che la coda di export protetti sia vuota prima di avviare l'applicazione.
@@ -7,9 +9,9 @@ Il VPS ha [caricato l'immagine Onboarding esatta e confermato UDP](../evidence/s
 
 L'avvio può aggiornare le copie di lavoro. Il PostgreSQL e lo storage originali restano fuori dai mount. I tre container sono temporanei e senza porte pubblicate. Il collegamento Gateway e il worker che ne dipende sono esclusi da questo avvio. Il risultato copre bootstrap, migrazioni e disponibilità locale di SeaweedFS via TLS. L'upload tramite applicazione e il flusso UDP sono fasi successive.
 
-L'esito atteso è `ISOLATED_ONBOARDING_STACK_READY`. In caso di `HELD`, riportare il JSON e lasciare lo scope privato sul VPS. Durata massima 12 minuti. Verificate sintassi e presenza di keytool nell'immagine esatta. Esecuzione VPS pendente.
+L'esito atteso è `ISOLATED_ONBOARDING_STACK_READY`. In caso di `HELD`, riportare il JSON e lasciare lo scope privato sul VPS. Durata massima 12 minuti. Verificate sintassi e presenza di keytool nell'immagine esatta. Esecuzione VPS completata.
 
-## Blocco unico sul VPS
+## Blocco unico eseguito sul VPS
 
 ```bash
 sudo /usr/bin/timeout 720 /usr/bin/python3 -I -B -S - <<'PY'

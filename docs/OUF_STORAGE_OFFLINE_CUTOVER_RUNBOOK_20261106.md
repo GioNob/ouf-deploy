@@ -1,6 +1,6 @@
-## Coppia corrente — primo avvio Onboarding in isolamento
+## Onboarding avviato sul VPS in isolamento
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_BOOT_20261107.md) per preparare le copie PostgreSQL e SeaweedFS e avviare l'immagine Onboarding esatta, con riscontro readiness e Flyway. Esito pendente.
+Il VPS ha avviato Onboarding sull'immagine esatta. PostgreSQL e SeaweedFS TLS erano disponibili, la readiness era UP e Flyway ha confermato V39, V40 e V41. I tre container sono stati rimossi e le copie di lavoro conservate. [Ricevuta VPS](../evidence/storage-oci33-onboarding-boot-ready-operator-20261107.json).
 
 ## Immagini applicative disponibili sul VPS
 
