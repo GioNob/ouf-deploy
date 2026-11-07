@@ -1,3 +1,7 @@
+## Coppia corrente — accessi S3 applicativi sullo staging
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_APP_BINDINGS_20261107.md) per creare configurazioni TLS e identità dei due servizi e verificare un accesso proprio e un diniego per ciascuno. Riscontro pendente.
+
 ## Staging OCI33 riuscito sul VPS
 
 Il VPS ha restituito `ISOLATED_OCI33_STAGE_READY`. La copia dei file è verificata, SeaweedFS ha elencato 2 bucket e 120 oggetti in rete isolata con 5 GET, poi il container è stato rimosso. I dati staged sono disponibili per configurare gli accessi applicativi. [Ricevuta operatore](../evidence/storage-retained-oci33-stage-ready-operator-20261107.json).
