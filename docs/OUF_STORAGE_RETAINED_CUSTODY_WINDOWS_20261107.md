@@ -1,3 +1,7 @@
+## Custodia Windows verificata
+
+La [ricevuta operatore](../evidence/storage-retained-custody-windows-verified-operator-20261107.json) attesta la decifratura della copia da 6.544.578.724 byte e il confronto con il manifest di tutti i 53 membri e 3 ricevute. [Passo successivo: prova PostgreSQL isolata](OUF_STORAGE_HISTORICAL_POSTGRES_RESTORE_20261107.md).
+
 # Trasferimento della copia storica OUF su Windows
 
 **Trasferimento Windows verificato.** La [ricevuta operatore](../evidence/storage-retained-custody-windows-transfer-operator-20261107.json) conferma i 6.544.578.724 byte e lo SHA-256 sigillato. Passare alla [verifica di decifratura e manifest](../scripts/verify-ouf-custody.ps1) nella stessa directory privata. Il verificatore passa il tar in memoria, confronta lo SHA-256 del manifest e verifica i 53 membri del payload e i tre documenti di evidenza. L'esito Windows è la verifica operativa di questo passo. Il trasferimento resta nella sezione storica sotto.
