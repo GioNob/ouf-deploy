@@ -1,6 +1,6 @@
-## Coppia corrente — immagini applicative esatte
+## Immagini applicative disponibili sul VPS
 
-[Preparazione immagini sul VPS](OUF_STORAGE_OCI33_APPLICATION_IMAGES_20261107.md). Caricamento dell'immagine Onboarding testata e verifica dell'immagine UDP conservata. Esito pendente.
+Il VPS ha caricato e vincolato l'immagine Onboarding testata e confermato l'immagine UDP conservata. L'ID del daemon per Onboarding è registrato accanto al digest raw della configurazione verificato in precedenza. [Ricevuta VPS](../evidence/storage-oci33-application-images-ready-operator-20261107.json).
 
 ## Accessi S3 isolati verificati sul VPS
 
