@@ -93,3 +93,10 @@ Scelta per F1: conservare l'immagine installata appena provata. Il prossimo coma
 Ricevuta 16:05 UTC: LIST_CURRENT_SOURCE restituisce 403 AccessDenied con credenziali applicative Onboarding. Una sola richiesta MinIO; zero richieste SeaweedFS e PUT, nessuna modifica di dati, servizi o binding. Non è il 403 THS né un nuovo fallimento PUT SeaweedFS.
 
 Corretto il comando per usare in sola lettura l'identità di manutenzione dalla configurazione MinIO esistente, mantenendo l'identità target già provata. Riutilizzata la risoluzione ambiente/file del repository, verificata sul sorgente MinIO di riferimento; nessun default o ampliamento di grant. Conservato il motivo S3_REQUEST_NOT_SUCCESSFUL correggendo il filtro dei codici. Sei casi locali di credenziali e fixture HTTP PASS, incluso 403 sorgente senza chiamate target e rifiuto locale di PUT/DELETE sorgente. Accesso effettivo VPS pendente. [Procedura](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1/F2 aperti.
+
+
+## 7 novembre 2026 — file correnti allineati; passaggio Onboarding pronto
+
+Ricevuta operatore 16:15 UTC: CURRENT_ONBOARDING_OBJECTS_ALIGNED, 12 oggetti/40.709 byte, 10 già coincidenti e 2 copiati/riletti, manifest 9bcfd9b3…, snapshot invariato. Identità MinIO risolta da ambiente + file dichiarato; 16 richieste sorgente e 16 target. Zero fermate, modifiche DB, permessi o binding.
+
+Preparato il cambio del solo Onboarding, stessa immagine, conservando rete backend/mount/risorse e aggiungendo CA, rete privata e binding SeaweedFS. Copia del delta e doppio controllo dello snapshot a writer fermo; ripristino originale soltanto prima dello start del sostituto. Avviatore aggiornato al nuovo riferimento persistito. Sei casi locali di sequenza PASS, merge reale keytool locale PASS con 125 certificati conservati, controlli sul binding dell'avviatore PASS. Nessuna esecuzione VPS del passaggio e nessun upload applicativo provato; F1/F2 aperti. [Procedura](OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md).

@@ -163,12 +163,33 @@ def retained_stack():
             all(re.fullmatch('[a-f0-9]{64}', cid) for cid in bound.values()), 'ORIGINAL_IDS_MISMATCH')
     retained = {doc['Id']: doc for doc in json.loads(ORIGINAL_INSPECT.read_bytes())}
     require(set(retained) == set(bound.values()), 'ORIGINAL_INSPECT_MISMATCH')
+    replacement = None
+    marker_path = PLAN.parent.parent / 'onboarding-seaweedfs-current.json'
+    if marker_path.exists():
+        marker = json.loads(marker_path.read_bytes())
+        require(marker.get('status') == 'ONBOARDING_SEAWEEDFS_READY', 'ONBOARDING_STORAGE_SWITCH_INCOMPLETE')
+        work = Path(marker['privateEvidenceDirectory'])
+        require(work.parent == PLAN.parent.parent and work.name.startswith('onboarding-seaweedfs-switch-')
+                and work.resolve(strict=True) == work, 'ONBOARDING_STORAGE_RECEIPT_PATH_INVALID')
+        replacement = json.loads((work / 'replacement-container.private.json').read_bytes())
+        old_id = bound['onboarding']
+        require(marker['originalContainerId'] == old_id
+                and marker['replacementContainerId'] == replacement['Id']
+                and replacement['Image'] == roles['onboarding']['nativeImage']
+                and (replacement['Config'].get('Labels') or {}).get('ouf.storage.switch') == marker['switchToken']
+                and not inspect(old_id)[old_id]['State']['Running'], 'ONBOARDING_STORAGE_BINDING_NOT_PROVEN')
+        bound['onboarding'] = replacement['Id']
+        retained[replacement['Id']] = replacement
     docs = inspect(*bound.values())
     for role, cid in bound.items():
         doc = docs[cid]
         started_at = retained[cid]['State']['StartedAt']
+        expected = fingerprint(replacement, started_at) if role == 'onboarding' and replacement else roles[role]['fingerprint']
         require(doc['State']['Status'] in ('running', 'exited') and doc['Image'] == roles[role]['nativeImage']
-                and fingerprint(doc, started_at) == roles[role]['fingerprint'], 'RETAINED_CONFIGURATION_CHANGED')
+                and fingerprint(doc, started_at) == expected, 'RETAINED_CONFIGURATION_CHANGED')
+        if role == 'onboarding' and replacement:
+            require(set(doc['NetworkSettings']['Networks']) == set(replacement['NetworkSettings']['Networks']),
+                    'ONBOARDING_STORAGE_NETWORKS_CHANGED')
     return bound, docs
 
 
@@ -194,6 +215,8 @@ def e2e(report):
         doc['Name'] == '/' + SERVICE and doc['Image'] == IMAGE
         and (doc['Config']['Labels'] or {}).get(LABEL) == 'true'
         for doc in inspect(*others).values()), 'UNEXPECTED_RUNNING_CONTAINER')
+    if (docs[bound['onboarding']]['Config'].get('Labels') or {}).get('ouf.storage.backend') == 'seaweedfs':
+        seaweedfs(report)
     for index, group in enumerate(GROUPS):
         for role in group:
             start_role(role, bound, docs, report)
@@ -315,3 +338,4 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

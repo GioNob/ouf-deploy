@@ -91,6 +91,23 @@
       "sourceIdentityAtFailure": "ONBOARDING_APPLICATION",
       "bindingChanged": false,
       "receipt": "evidence/onboarding-current-copy-source403-operator-20261107.json"
+    },
+    "currentOnboardingAlignment": {
+      "status": "CURRENT_ONBOARDING_OBJECTS_ALIGNED",
+      "observedAt": "2026-11-07T16:15:06.294471+00:00",
+      "sourceObjects": 12,
+      "sourceBytes": 40709,
+      "alreadyMatched": 10,
+      "copiedAndVerified": 2,
+      "sourceSnapshotUnchanged": true,
+      "applicationBindingsChanged": false,
+      "receipt": "evidence/onboarding-current-copy-aligned-operator-20261107.json"
+    },
+    "currentOnboardingSwitch": {
+      "status": "LOCAL_CHECKS_PASSED_VPS_PENDING",
+      "sameInstalledImage": true,
+      "applicationHttpUploadTested": false,
+      "procedure": "docs/OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md"
     }
   },
   "milestones": [
@@ -158,7 +175,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Retry current Onboarding bucket alignment using existing MinIO maintenance credentials (local checks PASS; live source access pending). Then pause Onboarding briefly, recheck/copy delta, switch the same installed image to SeaweedFS and verify application upload/governed read; UDP follows.",
+  "nextAction": "Execute the prepared same-image Onboarding binding switch: preserve public CAs, pause Onboarding, recheck/copy current delta, replace container preserving backend address/aliases/mounts, verify readiness. Then verify real HTTP upload, registered asset and governed read; UDP follows.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -185,7 +202,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Installed Java/curl PUT/GET passed. Current source LIST was denied; corrected source identity awaits VPS validation. Application binding switch and repeatable E2E remain open.",
+    "reason": "Client PUT/GET and current 12-object alignment passed. Onboarding binding switch, real HTTP upload and repeatable E2E remain open.",
     "nextReestimateAfter": "F1"
   },
   "evidence": [
@@ -342,7 +359,7 @@
     "industrializationDeferred": true,
     "currentPolicy": "ouf-lab-authorization:60",
     "browser403ResolvedForObservedPicker": true,
-    "currentEvidenceCommit": "1023dc35e20952c3c6a55a421f18795c5a72489b",
-    "currentEvidencePath": "evidence/onboarding-current-copy-source403-operator-20261107.json"
+    "currentEvidenceCommit": "712b233c3c9621de881fc730ee480a1df32afce1",
+    "currentEvidencePath": "evidence/onboarding-current-copy-aligned-operator-20261107.json"
   }
 }

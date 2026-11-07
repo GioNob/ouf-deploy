@@ -1,5 +1,7 @@
 # Allineamento dei file correnti di Onboarding
 
+**Completato sul VPS, 7 novembre alle 16:15 UTC:** 12 oggetti/40.709 byte, 10 già coincidenti e 2 copiati/riletti; snapshot sorgente invariato. [Ricevuta](../evidence/onboarding-current-copy-aligned-operator-20261107.json). Il prossimo passo è il [cambio del binding Onboarding](OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md), che include un nuovo controllo del delta a writer fermo. Non ripetere la copia come passo autonomo.
+
 Il [confronto sul VPS](../evidence/storage-client-comparison-success-operator-20261107.json) è riuscito: curl e MinIO Java 8.6.0 dell'immagine Onboarding installata hanno scritto e riletto su SeaweedFS con TLS e hash coincidente. Non ha cambiato il backend dell'applicazione e non spiega retroattivamente il vecchio 502 su un'altra configurazione.
 
 Per il primo percorso applicativo si mantiene l'immagine `7b9d3e91…`, corrispondente al sorgente conservato 73498c17. Non si installa d515 né si eseguono nuove migrazioni DB per il solo cambio storage.

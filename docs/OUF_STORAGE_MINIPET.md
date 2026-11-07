@@ -17,7 +17,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento operativo 7 novembre:** il confronto VPS di curl e del client MinIO Java 8.6.0 dell'immagine Onboarding installata è riuscito su SeaweedFS, con TLS e hash coincidente. [Ricevuta](../evidence/storage-client-comparison-success-operator-20261107.json). È una prova del client, non ancora di HTTP applicativo/asset. Per F1 si conserva questa immagine; l'allineamento dei file correnti ha però ricevuto 403 AccessDenied sul LIST MinIO con l'identità applicativa (zero richieste target). Il comando corretto usa l'identità di manutenzione già configurata in MinIO: test locali passati, accesso VPS da verificare. Poi si cambia il binding Onboarding. [Passo attuale](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1–F6 restano aperti.
+**Aggiornamento operativo 7 novembre:** curl e MinIO Java 8.6.0 dell'immagine installata hanno superato PUT/GET SeaweedFS con TLS e hash coincidente. Alle 16:15 UTC sono stati allineati 12 oggetti correnti/40.709 byte, 10 già coincidenti e 2 copiati. [Ricevuta](../evidence/onboarding-current-copy-aligned-operator-20261107.json). Il [passaggio del solo Onboarding](OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md) è preparato e verificato localmente, ma ancora da eseguire sul VPS. Dopo il passaggio occorre provare upload HTTP, asset e lettura governata. F1–F6 restano aperti.
 
 Audit documentale e del codice selezionato: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -61,14 +61,16 @@ Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti 
 
 **Fine del primo risultato:** F1+F2. **Fine dell'E2E ripetibile qui richiesto:** F3+F4+F5+F6. Non contare un nuovo documento, uno script installato o un container UP come chiusura di una riga.
 
-### F1: il prossimo lavoro storage, senza un altro laboratorio generale
+### F1: completare il percorso applicativo scelto
 
-1. Leggere il binding effettivo della specifica applicazione che useremo: immagine, endpoint, bucket, regione, CA e posizione dei file credenziali, senza esportarne i segreti. Identificare il namespace di rete della JVM. Il contratto di staging resta `object://managed-files/<UUID>`.
-2. Dal medesimo contesto della JVM verificare destinazione/DNS, porta, trust TLS e operazione S3 necessaria. La prova Python/SigV4 già riuscita non sostituisce quella del client Java. Non correggere IPv6, certificati o dipendenze sulla sola base di un indizio JFR.
-3. Per il 502 conservare una causa tecnica correlata alla singola richiesta: fase e classe sicura dell'errore, senza token o payload. L'adapter d515 attuale converte qualunque eccezione PUT in `ONB_STAGING_WRITE_FAILED` senza conservarne la causa nel nuovo errore: il codice spiega perché il solo 502 non basta. Aggiungere diagnostica mirata soltanto se quella già conservata non permette la distinzione.
-4. Correggere un difetto concreto, poi provare upload e lettura della stessa chiave. Prima di una ripresa verificare l'esito dell'intento precedente; non ripetere automaticamente i vecchi comandi consumati.
+L'immagine scelta è quella installata, `7b9d3e91…`, corrispondente al sorgente conservato `73498c17`. Il suo client ha già superato PUT/GET SeaweedFS; i file correnti sono allineati. Queste prove non vanno ripetute come un nuovo laboratorio.
 
-Non è ancora provato se il difetto sia nel binding del laboratorio, nel trasporto Java o nel servizio. **Nessuna di queste ipotesi viene assunta come causa.** Nessun nuovo decoder JFR, framework di recovery o matrice di guasti è richiesto da questo passo.
+1. Eseguire il [comando di passaggio preparato](OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md): stessa immagine, CA aggiunta ai certificati Java esistenti, delta controllato e copiato con Onboarding fermo, rete/backend e mount conservati. Lo script cambia il binding senza aggiornare il JAR.
+2. Verificare `ONBOARDING_SEAWEEDFS_READY`. Questo esito prova l'avvio/configurazione e la readiness, non l'upload. In caso di errore conservare il JSON; dopo uno start incerto non riattivare automaticamente il writer MinIO.
+3. Usare un selettore nuovo per l'upload reale, verificare asset, oggetto/hash su SeaweedFS e lettura/profilo attraverso Gateway. Il riuso del vecchio handoff Farmacie è un difetto separato; l'effetto del tentativo Teatri va riconciliato.
+4. Chiudere F1 soltanto con la ricevuta applicativa e la lettura coerente. Poi completare UDP e il percorso E2E previsto da F2/F3.
+
+La causa del vecchio 502 nella diversa configurazione isolata resta storica e non provata. Non blocca il tentativo sul percorso attuale già verificato con il client installato.
 
 ### F2: cambiare tutti i percorsi necessari, una volta sola
 
@@ -114,7 +116,7 @@ I dieci asset legacy senza proprietà provata e le altre classificazioni G0 non 
 
 ## 7. Tempi, limiti e consegna
 
-Non c'è una data di fine attendibile: curl e Java hanno superato il PUT/GET sul target, ma restano da completare copia corrente, cambio del binding e upload applicativo; il riuso del selettore richiede correzione e riconciliazione. Il vecchio 502 su un'altra configurazione non è il blocco attuale. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
+Non c'è una data di fine attendibile: curl e Java hanno superato il PUT/GET sul target, ma restano da completare cambio del binding e upload applicativo; il riuso del selettore richiede correzione e riconciliazione. Il vecchio 502 su un'altra configurazione non è il blocco attuale. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
 
 Dopo F1 si stima F2 sulla configurazione realmente corretta; dopo il primo E2E si misurano i tempi del secondo. Ogni blocco di lavoro deve produrre una correzione verificata, una prova funzionale o un impedimento preciso con l'azione necessaria. Se serve un'azione sul VPS, consegnare il solo comando attuale e il risultato richiesto, non una serie di preparazioni speculative.
 
