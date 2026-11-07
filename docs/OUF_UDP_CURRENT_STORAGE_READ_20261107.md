@@ -1,6 +1,6 @@
 # Lettura corrente UDP prima del passaggio a SeaweedFS
 
-Onboarding ha completato upload e profilo sul nuovo binding. UDP resta da verificare e collegare.
+**Lettura corretta completata alle 18:27 CET:** UDP_BINDINGS_READ_ONLY, JAR /app/app.jar e AWS SDK 2.54.17 identificati. [Ricevuta](../evidence/udp-current-storage-bindings-operator-20261107.json). Non occorre ripetere questo comando: il prossimo passo è la [prova del client installato](OUF_UDP_SEAWEEDFS_CLIENT_PROBE_20261107.md).
 
 Il primo comando si è fermato con `KNOWN_UDP_JAR_LAUNCH_REQUIRED`: il lettore assumeva il percorso Onboarding `/app/application.jar`, mentre il [Dockerfile UDP conservato](https://github.com/GioNob/ouf-udp-object-resolution/blob/0d40da05408a14db31d4d41af2372d6a71480291/Dockerfile) indica `/app/app.jar`. Il percorso live non è ancora stato restituito. [Ricevuta originale](../evidence/udp-storage-read-launch-held-operator-20261107.json).
 
@@ -24,7 +24,7 @@ exec(compile(raw, 'read-current-udp-storage-20261107.py', 'exec'), {'__name__': 
 PY
 ```
 
-Riportare il JSON finale. Risultato dei binding atteso `UDP_BINDINGS_READ_ONLY`; controllare separatamente `udp.installedJar.status`. Nessuna esecuzione VPS della correzione attestata da questo documento.
+Riportare il JSON finale. Risultato dei binding atteso `UDP_BINDINGS_READ_ONLY`; controllare separatamente `udp.installedJar.status`. La correzione è stata eseguita: installedJar.status READ. Le precedenti istruzioni restano come traccia del comando.
 
 ## Verifiche e seguito
 
