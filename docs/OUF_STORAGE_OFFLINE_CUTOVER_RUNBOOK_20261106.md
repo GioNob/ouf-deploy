@@ -1,3 +1,7 @@
+## Coppia corrente — upload Onboarding sulla copia isolata
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_20261107.md) per un POST delegato del CSV Teatri e verifica congiunta di ACK PostgreSQL e corpo SeaweedFS. Esito pendente.
+
 ## Onboarding avviato sul VPS in isolamento
 
 Il VPS ha avviato Onboarding sull'immagine esatta. PostgreSQL e SeaweedFS TLS erano disponibili, la readiness era UP e Flyway ha confermato V39, V40 e V41. I tre container sono stati rimossi e le copie di lavoro conservate. [Ricevuta VPS](../evidence/storage-oci33-onboarding-boot-ready-operator-20261107.json).
