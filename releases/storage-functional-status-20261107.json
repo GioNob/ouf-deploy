@@ -67,7 +67,20 @@
       "applicationSwitchProven": false,
       "sourceComparisonStillCurrentAfterRestart": "NOT_PROVEN"
     },
-    "causeOf502": "UNKNOWN"
+    "causeOf502": "UNKNOWN",
+    "currentClientComparison": {
+      "status": "BOTH_CLIENTS_PASSED",
+      "provenance": "OPERATOR_RECEIPT",
+      "onboardingImage": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "minioVersion": "8.6.0",
+      "javaVersion": "21.0.12.1",
+      "payloadBytes": 29,
+      "curlPutGet200": true,
+      "javaPutGetHashMatch": true,
+      "applicationHttpUploadTested": false,
+      "applicationBindingsChanged": false,
+      "evidence": "evidence/storage-client-comparison-success-operator-20261107.json"
+    }
   },
   "milestones": [
     {
@@ -134,7 +147,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute read-current-storage-bindings-20261107.py on VPS; then prepare equivalent S3 PUT/GET comparison on exact selected image/network/identity/CA. Do not repeat Teatri upload through consumed handoff.",
+  "nextAction": "Align current Onboarding object bucket, then recheck source during a brief Onboarding writer pause and switch its network/CA/S3 binding using the same installed image. Verify application upload, registered asset and governed read; UDP follows.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -318,7 +331,7 @@
     "industrializationDeferred": true,
     "currentPolicy": "ouf-lab-authorization:60",
     "browser403ResolvedForObservedPicker": true,
-    "currentEvidenceCommit": "f2797455cefc4c867db7c168fb89af888fc5f00c",
-    "currentEvidencePath": "evidence/ths-upload-reuse-storage-next-20261107.json"
+    "currentEvidenceCommit": "681935b6220dfee1bbd1149cfc23f393a12a41e2",
+    "currentEvidencePath": "evidence/storage-client-comparison-success-operator-20261107.json"
   }
 }

@@ -17,6 +17,8 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
+**Aggiornamento operativo 7 novembre:** il confronto VPS di curl e del client MinIO Java 8.6.0 dell'immagine Onboarding installata è riuscito su SeaweedFS, con TLS e hash coincidente. [Ricevuta](../evidence/storage-client-comparison-success-operator-20261107.json). È una prova del client, non ancora di HTTP applicativo/asset. Per F1 si conserva questa immagine; ora si allineano i file correnti e poi si cambia il binding Onboarding. [Passo attuale](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1–F6 restano aperti.
+
 Audit documentale e del codice selezionato: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
 | Fatto verificato nelle fonti | Cosa significa | Cosa non dimostra |
