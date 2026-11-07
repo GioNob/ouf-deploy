@@ -1,0 +1,13 @@
+{
+  "schema": "ouf.onboarding-seaweedfs-upload-handoff.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "source": "LIVE_MCP_SOURCE_FILE_UPLOAD_RESPONSE",
+  "handoffId": "2de7b988-da47-4231-8443-0e5043214c42",
+  "statusAtCreation": "AWAITING_FILE_SELECTION",
+  "createdAfterSwitchReceipt": "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
+  "applicationUploadSuccessObserved": false,
+  "profileRequested": false,
+  "oldHandoffReused": false,
+  "pickerUrlPublished": false
+}

@@ -100,3 +100,10 @@ Corretto il comando per usare in sola lettura l'identità di manutenzione dalla 
 Ricevuta operatore 16:15 UTC: CURRENT_ONBOARDING_OBJECTS_ALIGNED, 12 oggetti/40.709 byte, 10 già coincidenti e 2 copiati/riletti, manifest 9bcfd9b3…, snapshot invariato. Identità MinIO risolta da ambiente + file dichiarato; 16 richieste sorgente e 16 target. Zero fermate, modifiche DB, permessi o binding.
 
 Preparato il cambio del solo Onboarding, stessa immagine, conservando rete backend/mount/risorse e aggiungendo CA, rete privata e binding SeaweedFS. Copia del delta e doppio controllo dello snapshot a writer fermo; ripristino originale soltanto prima dello start del sostituto. Avviatore aggiornato al nuovo riferimento persistito. Sei casi locali di sequenza PASS, merge reale keytool locale PASS con 125 certificati conservati, controlli sul binding dell'avviatore PASS. Nessuna esecuzione VPS del passaggio e nessun upload applicativo provato; F1/F2 aperti. [Procedura](OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md).
+
+
+## 7 novembre 2026, 17:42 CET — Onboarding collegato a SeaweedFS
+
+Ricevuta operatore ONBOARDING_SEAWEEDFS_READY: stesso JAR/immagine, nuovo container d4f22ff3…, endpoint HTTPS SeaweedFS, readiness UP e TLS dalla rete del container. Originale conservato spento; backend indirizzo/alias preservati. A writer fermo: 12 oggetti/40.709 byte già coincidenti, zero PUT, manifest 9bcfd9b3… invariato. JDK VPS: 118 certificati originali conservati, CA privata aggiunta. Nessun cambio di permessi o binding UDP. Non è ancora una prova di upload HTTP/registrazione asset.
+
+MCP ha creato il nuovo handoff 2de7b988-da47-4231-8443-0e5043214c42, inizialmente AWAITING_FILE_SELECTION, per la prova applicativa dopo il cambio. Nessun nuovo file dichiarato caricato. Dopo la selezione: readback status, profilo dell'asset restituito e lettura governata; F1/F2 aperti. Il vecchio tentativo Teatri rimane separato e da riconciliare.
