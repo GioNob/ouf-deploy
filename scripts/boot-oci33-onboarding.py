@@ -17,13 +17,16 @@ import time
 from urllib.parse import quote, urlsplit
 from urllib.request import urlopen
 import uuid
+from xml.etree import ElementTree as ET
 
 SCHEMA = 'ouf.storage-oci33-onboarding-boot.v1'
 UPLOAD_SCHEMA = 'ouf.storage-oci33-onboarding-upload.v1'
+READBACK_SCHEMA = 'ouf.storage-oci33-onboarding-upload-readback.v1'
 ROOT = Path('/var/lib/ouf-storage-migration')
 STAGE = ROOT / 'seaweedfs/staging-oci33-20261107-v1'
 BINDINGS = STAGE / 'application-s3-v1'
 SCOPE = STAGE / 'onboarding-stack-v1'
+UPLOAD_SCOPE = SCOPE / 'upload-proof-v1'
 PG_IMAGE = 'sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f'
 PG_CONFIG = 'sha256:823c9d80930ce5f5fb4ed0f54a091abb79cfde1e34189aaeb69aeaf2720400a2'
 S3_IMAGE = 'sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2'
@@ -152,7 +155,7 @@ def snapshot(h, pg, read):
     return plan, members, admin, user, database
 
 
-def run(report, upload):
+def run(report, upload, readback):
     need(os.geteuid() == 0 and sys.flags.isolated and sys.flags.no_site
          and sys.dont_write_bytecode, 'ISOLATED_ROOT_REQUIRED')
     pg = pinned('5ae47689adeaf39f241527c9364a2c0c9e9b0b9b', 'restore-retained-postgres.py', 19046,
@@ -176,9 +179,9 @@ def run(report, upload):
          and client['OUF_ONBOARDING_STAGING_ENDPOINT'] == 'https://ouf-seaweedfs-stage:9002',
          'ONBOARDING_BUCKET_BINDING')
     plan, members, admin, user, database = snapshot(h, pg, read)
-    scope = SCOPE / 'upload-proof-v1' if upload else SCOPE
-    schema = UPLOAD_SCHEMA if upload else SCHEMA
-    if upload:
+    scope = UPLOAD_SCOPE / 'readback-v1' if readback else UPLOAD_SCOPE if upload else SCOPE
+    schema = READBACK_SCHEMA if readback else UPLOAD_SCHEMA if upload else SCHEMA
+    if upload or readback:
         prior = read(SCOPE / 'result.json')
         need(prior.get('status') == 'ISOLATED_ONBOARDING_STACK_READY'
              and prior.get('flywayVersionsVerified') == [39, 40, 41]
@@ -192,6 +195,31 @@ def run(report, upload):
         need(len(rows) == 120 and samples, 'SEAWEEDFS_READY_OBJECT_BINDING')
         sample = min(samples, key=lambda item: (item['size'], item['key']))
         need(0 <= sample['size'] <= 1 << 20, 'SEAWEEDFS_READY_OBJECT_SIZE')
+    if readback:
+        failed = read(UPLOAD_SCOPE / 'claim.private.json')
+        original = read(UPLOAD_SCOPE / 'upload-intent.private.json')
+        attempt = failed['scopeToken']
+        need(failed.get('schema') == UPLOAD_SCHEMA and failed.get('onboardingImage') == ONB_IMAGE
+             and failed.get('postgresImage') == PG_IMAGE and failed.get('storageImage') == S3_IMAGE
+             and failed.get('custodyManifestSha256') == pg['MANIFEST_SHA']
+             and re.fullmatch('[a-f0-9]{24}', attempt) and original.get('idempotencyKey') == attempt
+             and original.get('fileId') == 'file_' + attempt and original.get('maximumRequests') == 1
+             and original.get('isolatedIdentity') is True and re.fullmatch('[a-f0-9]{64}', original['sha256'])
+             and 0 < original['bytes'] <= 4096 and not os.path.lexists(UPLOAD_SCOPE / 'result.json'),
+             'HELD_UPLOAD_BINDING')
+        log_patterns = {
+            'tlsHandshake': rb'SSLHandshakeException|PKIX|certificate_unknown|bad certificate|x509:',
+            'accessDenied': rb'AccessDenied|access denied',
+            'signature': rb'SignatureDoesNotMatch|InvalidAccessKeyId|signature mismatch',
+            'requestEncoding': rb'MissingContentLength|XAmzContentSHA256Mismatch|aws-chunked|unsupported.*header',
+            'volumeAllocation': rb'failed to assign|no (free|writable) volumes|failed to allocate.*volume',
+            'backendConnection': rb'connection refused|connection reset|failed to connect',
+            'storageWrite': rb'ONB_STAGING_WRITE_FAILED|PutObject[^\n]*(error|failed)|failed to (store|write|save)',
+        }
+        for service in ('onboarding', 'postgres', 'seaweedfs'):
+            raw = h['protected'](UPLOAD_SCOPE / (service + '.log.private'), private=True, limit=262144)
+            report['retainedLogHints'][service] = [name for name, pattern in log_patterns.items()
+                                                   if re.search(pattern, raw, re.IGNORECASE)]
     need(shutil.disk_usage(STAGE).free >= 3 << 30, 'ISOLATED_STACK_FREE_SPACE')
     sock = Path('/run/docker.sock').stat()
     need(stat.S_ISSOCK(sock.st_mode) and sock.st_uid == 0 and not sock.st_mode & 0o007,
@@ -215,11 +243,16 @@ def run(report, upload):
         return row
 
     need(not docker('ps', '-q').strip(), 'OTHER_CONTAINERS_RUNNING')
+    if readback:
+        need(not docker('ps', '-aq', '--filter', 'label=ouf.oci33-stack=' + attempt).strip(),
+             'HELD_UPLOAD_CONTAINERS_PRESENT')
     image_id(PG_IMAGE)
     sea = image_id(S3_IMAGE)
-    onb = image_id(ONB_IMAGE)
-    need(sea['Config']['User'] == '10001:10001' and onb['Config']['User'] == '10003:10003'
-         and onb['Config']['Labels']['org.opencontainers.image.revision'] == ONB_TESTED, 'STACK_IMAGE_BINDING')
+    need(sea['Config']['User'] == '10001:10001', 'STACK_STORAGE_IMAGE_BINDING')
+    if not readback:
+        onb = image_id(ONB_IMAGE)
+        need(onb['Config']['User'] == '10003:10003'
+             and onb['Config']['Labels']['org.opencontainers.image.revision'] == ONB_TESTED, 'STACK_IMAGE_BINDING')
 
     parent = h['runtime_parent'](scope)
     try:
@@ -230,21 +263,29 @@ def run(report, upload):
     h['new'](scope / 'claim.private.json', h['canonical']({'schema': schema, 'scopeToken': token,
         'onboardingImage': ONB_IMAGE, 'postgresImage': PG_IMAGE, 'storageImage': S3_IMAGE,
         'custodyManifestSha256': pg['MANIFEST_SHA']}))
-    if upload:
+    if upload or readback:
         image, _, source, suffix = pg['source_binding'](h, plan, members)
-        origin = SCOPE / 'postgres/data' / source.name / str(suffix)
-        need(not os.path.lexists(origin / 'postmaster.pid'), 'PRIOR_WORKING_POSTGRES_NOT_STOPPED')
+        origin = UPLOAD_SCOPE / 'postgres' if readback else SCOPE / 'postgres/data' / source.name / str(suffix)
+        if not readback:
+            need(not os.path.lexists(origin / 'postmaster.pid'), 'PRIOR_WORKING_POSTGRES_NOT_STOPPED')
         cluster = scope / 'postgres'
         clone(origin, cluster, 120)
         info = cluster.lstat()
         uid, gid = info.st_uid, info.st_gid
         need(uid > 0 and (cluster / 'PG_VERSION').is_file(), 'POSTGRES_WORKING_COPY_REQUIRED')
+        stale = cluster / 'postmaster.pid'
+        if readback and os.path.lexists(stale):
+            info = stale.lstat()
+            need(stat.S_ISREG(info.st_mode) and info.st_uid == uid and info.st_nlink == 1,
+                 'COPIED_POSTMASTER_PID_UNSAFE')
+            stale.unlink()
     else:
         pg['NEW'] = scope / 'postgres'
         pg['NEW'].mkdir(mode=0o700)
         image, cluster, uid, gid, _ = pg['extract_cluster'](h, plan, members, time.monotonic() + 190)
     need(image == PG_IMAGE and not os.path.lexists(cluster / 'postmaster.pid'), 'ISOLATED_POSTGRES_COPY_BINDING')
-    data_source = SCOPE / 'seaweed-data' if upload else STAGE / 'data'
+    work_source = UPLOAD_SCOPE if readback else SCOPE
+    data_source = work_source / 'seaweed-data' if upload or readback else STAGE / 'data'
     info = data_source.lstat()
     need(stat.S_ISDIR(info.st_mode) and info.st_uid == 10001 and data_source.resolve(strict=True) == data_source,
          'STAGED_STORAGE_DATA_BINDING')
@@ -255,9 +296,10 @@ def run(report, upload):
 
     pg_files = scope / 'pg-config'
     pg_files.mkdir(mode=0o700)
-    h['new'](pg_files / 'pg_hba.conf',
-             (f'local all {admin} trust\n'
-              f'host {database} {user} 127.0.0.1/32 scram-sha-256\n').encode())
+    pg_hba = f'local all {admin} trust\n'
+    if not readback:
+        pg_hba += f'host {database} {user} 127.0.0.1/32 scram-sha-256\n'
+    h['new'](pg_files / 'pg_hba.conf', pg_hba.encode())
     for p in (pg_files / 'pg_hba.conf', pg_files):
         os.chown(p, uid, gid)
     storage_config = BINDINGS / 'config'
@@ -270,33 +312,48 @@ def run(report, upload):
         info = path.lstat()
         need(stat.S_ISREG(info.st_mode) and info.st_uid == 10001 and info.st_nlink == 1
              and stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size <= 32768, 'ISOLATED_STORAGE_CONFIG_FILE')
-    files = scope / 'onboarding-secrets'
-    files.mkdir(mode=0o700)
-    s3_auth = []
-    for name in ('access-key', 'secret-key'):
-        raw = h['protected'](private_client / name, private=True, limit=4096)
-        h['new'](files / name, raw)
-        s3_auth.append(raw.decode('ascii').strip())
-    h['new'](files / 'ca.pem', (storage_config / 'tls/ca.pem').read_bytes())
-    if upload:
-        key = secrets.token_hex(32)
-        h['new'](files / 'upload-receipt-key', (key + '\n').encode())
-    for p in (*files.iterdir(), files):
-        os.chown(p, 10003, 10003)
-    password = secrets.token_hex(24)
-    app_env = scope / 'onboarding.env.private'
-    variables = {'OUF_ONB_DB_URL': f'jdbc:postgresql://127.0.0.1:5432/{database}',
-                 'OUF_ONB_DB_USER': user, 'OUF_ONB_DB_PASSWORD': password,
-                 'OUF_ONBOARDING_STAGING_ENDPOINT': 'https://localhost:9002',
-                 'OUF_ONBOARDING_STAGING_BUCKET': bucket,
-                 'OUF_ONBOARDING_STAGING_ACCESS_KEY_FILE': '/run/stage-s3/access-key',
-                 'OUF_ONBOARDING_STAGING_SECRET_KEY_FILE': '/run/stage-s3/secret-key',
-                 'OUF_IAM_ENABLED': 'false', 'SERVER_ADDRESS': '127.0.0.1'}
-    if upload:
-        variables.update({'OUF_IAM_ISSUER': ISSUER, 'OUF_IAM_AUDIENCE': AUDIENCE,
-                          'OUF_AUTHORIZATION_DELEGATION_WORKLOAD': WORKLOAD,
-                          'OUF_AUTHORIZATION_DELEGATION_KEY_FILE': '/run/stage-s3/upload-receipt-key'})
-    h['new'](app_env, ''.join(f'{key}={value}\n' for key, value in variables.items()).encode())
+    if readback:
+        original_config = storage_config
+        storage_config = scope / 'seaweed-config'
+        storage_config.mkdir(mode=0o700)
+        clone(original_config / 'tls', storage_config / 'tls', 10)
+        h['new'](storage_config / 'filer.toml', (original_config / 'filer.toml').read_bytes())
+        s3_auth = ('oufreadback' + secrets.token_hex(8), secrets.token_hex(24))
+        h['new'](storage_config / 's3.json', h['canonical']({'identities': [{
+            'name': 'upload-readback', 'credentials': [{'accessKey': s3_auth[0], 'secretKey': s3_auth[1]}],
+            'actions': ['Read:' + bucket, 'List:' + bucket]}]}))
+        for path in (storage_config / 'filer.toml', storage_config / 's3.json', storage_config):
+            os.chown(path, 10001, 10001)
+        ca_file = storage_config / 'tls/ca.pem'
+    else:
+        files = scope / 'onboarding-secrets'
+        files.mkdir(mode=0o700)
+        s3_auth = []
+        for name in ('access-key', 'secret-key'):
+            raw = h['protected'](private_client / name, private=True, limit=4096)
+            h['new'](files / name, raw)
+            s3_auth.append(raw.decode('ascii').strip())
+        h['new'](files / 'ca.pem', (storage_config / 'tls/ca.pem').read_bytes())
+        if upload:
+            key = secrets.token_hex(32)
+            h['new'](files / 'upload-receipt-key', (key + '\n').encode())
+        for p in (*files.iterdir(), files):
+            os.chown(p, 10003, 10003)
+        password = secrets.token_hex(24)
+        app_env = scope / 'onboarding.env.private'
+        variables = {'OUF_ONB_DB_URL': f'jdbc:postgresql://127.0.0.1:5432/{database}',
+                     'OUF_ONB_DB_USER': user, 'OUF_ONB_DB_PASSWORD': password,
+                     'OUF_ONBOARDING_STAGING_ENDPOINT': 'https://localhost:9002',
+                     'OUF_ONBOARDING_STAGING_BUCKET': bucket,
+                     'OUF_ONBOARDING_STAGING_ACCESS_KEY_FILE': '/run/stage-s3/access-key',
+                     'OUF_ONBOARDING_STAGING_SECRET_KEY_FILE': '/run/stage-s3/secret-key',
+                     'OUF_IAM_ENABLED': 'false', 'SERVER_ADDRESS': '127.0.0.1'}
+        if upload:
+            variables.update({'OUF_IAM_ISSUER': ISSUER, 'OUF_IAM_AUDIENCE': AUDIENCE,
+                              'OUF_AUTHORIZATION_DELEGATION_WORKLOAD': WORKLOAD,
+                              'OUF_AUTHORIZATION_DELEGATION_KEY_FILE': '/run/stage-s3/upload-receipt-key'})
+        h['new'](app_env, ''.join(f'{key}={value}\n' for key, value in variables.items()).encode())
+        ca_file = files / 'ca.pem'
 
     common = ['--pull=never', '--restart=no', '--read-only', '--cap-drop=ALL',
               '--security-opt=no-new-privileges', '--memory=1g', '--cpus=2', '--pids-limit=256',
@@ -337,7 +394,7 @@ def run(report, upload):
         end = time.monotonic() + maximum
         while time.monotonic() < end:
             p = subprocess.run(['/usr/bin/nsenter', f'--net=/proc/self/fd/{net}', '/usr/bin/python3',
-                                '-I', '-B', '-S', '-c', CLIENT, mode, str(files / 'ca.pem')],
+                                '-I', '-B', '-S', '-c', CLIENT, mode, str(ca_file)],
                                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, pass_fds=(net,), env=ENV, timeout=7)
             if p.returncode == 0 and p.stdout.strip() in (b'UP', b'TLS_OK'):
                 return
@@ -362,17 +419,19 @@ def run(report, upload):
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
         path = '/' + bucket + '/' + quote(object_key, safe='/')
         url, headers = rehearsal['signed']('GET', path, 'localhost:9002', tuple(s3_auth), b'', {}, stamp)
-        return request('GET', 9002, url, headers, ca=str(files / 'ca.pem'), limit=max(limit, 16384))
+        return request('GET', 9002, url, headers, ca=str(ca_file), limit=max(limit, 16384))
 
-    def prove_upload():
+    def wait_for_object_reads(reason):
         until = time.monotonic() + 45
         existing = get_object(sample['key'], sample['size'])
         while ((existing is None or existing[0] in (500, 502, 503, 504))
                and time.monotonic() < until and report['s3GetRequests'] < 15):
             time.sleep(2)
             existing = get_object(sample['key'], sample['size'])
-        need(existing is not None and existing[0] == 200 and h['digest'](existing[1]) == sample['sha256'],
-             'SEAWEEDFS_PREUPLOAD_BODY_NOT_READY')
+        need(existing is not None and existing[0] == 200 and h['digest'](existing[1]) == sample['sha256'], reason)
+
+    def prove_upload():
+        wait_for_object_reads('SEAWEEDFS_PREUPLOAD_BODY_NOT_READY')
         report['seaweedfsPreUploadBodyVerified'] = True
 
         body = b'id,teatro,comune\n1,Teatro di prova,Trieste\n'
@@ -416,6 +475,56 @@ def run(report, upload):
         report['seaweedfsUploadBodyVerified'] = True
         report['uploadedBytesVerified'] = len(body)
 
+    def read_outcome():
+        result = psql(database, f"""WITH selected AS (
+            SELECT state, staging_ref, file_id, content_hash, size_bytes, asset_id IS NOT NULL AS asset_linked,
+                   acknowledged_at IS NOT NULL AS acknowledged
+              FROM ouf_onboarding.managed_file_upload_intent
+             WHERE upload_kind='DELEGATED' AND tenant_id='{TENANT}' AND subject_id='{SUBJECT}'
+               AND idempotency_key='{attempt}')
+          SELECT json_build_object(
+            'intents', COALESCE((SELECT json_agg(selected) FROM selected), '[]'::json),
+            'attempts', (SELECT count(*) FROM ouf_onboarding.managed_file_upload_attempt
+              WHERE tenant_id='{TENANT}' AND subject_id='{SUBJECT}' AND idempotency_key='{attempt}'),
+            'assets', (SELECT count(*) FROM ouf_onboarding.managed_file_asset
+              WHERE staging_ref IN (SELECT staging_ref FROM selected)));""")
+        need(result.returncode == 0 and len(result.stdout.splitlines()) == 1, 'READBACK_POSTGRES_QUERY_FAILED')
+        record = json.loads(result.stdout)
+        rows = record['intents']
+        report['databaseIntentCount'] = len(rows)
+        report['databaseUploadAttemptCount'] = record['attempts']
+        report['databaseReferencedAssetCount'] = record['assets']
+        need(len(rows) <= 1 and record['attempts'] <= 1 and record['assets'] <= 1, 'READBACK_DATABASE_BINDING_CONFLICT')
+        if not rows:
+            report['databaseIntentState'] = 'MISSING'
+            report['seaweedfsReservedObjectState'] = 'UNBOUND'
+            return
+        row, = rows
+        ref = row['staging_ref']
+        need(row['file_id'] == original['fileId'] and row['content_hash'] == 'sha256:' + original['sha256']
+             and row['size_bytes'] == original['bytes'] and row['state'] in ('DISPATCHED', 'ACKED')
+             and re.fullmatch(r'object://managed-files/[a-f0-9-]{36}', ref), 'READBACK_UPLOAD_INTENT_MISMATCH')
+        report['databaseIntentState'] = row['state']
+        report['databaseAckTimestampPresent'] = row['acknowledged']
+        report['databaseIntentLinksAsset'] = row['asset_linked']
+        reserved = ref.rsplit('/', 1)[1].encode('ascii')
+        report['retainedSeaweedfsLogMentionsReservedKey'] = reserved in h['protected'](
+            UPLOAD_SCOPE / 'seaweedfs.log.private', private=True, limit=262144)
+        wait_for_object_reads('SEAWEEDFS_READBACK_REFERENCE_NOT_READY')
+        result = get_object(ref.removeprefix('object://'), original['bytes'])
+        need(result is not None, 'READBACK_RESERVED_OBJECT_OUTCOME_UNKNOWN')
+        status, body = result
+        report['reservedObjectHttpStatus'] = status
+        if status == 200:
+            match = len(body) == original['bytes'] and h['digest'](body) == original['sha256']
+            report['seaweedfsReservedObjectState'] = 'PRESENT_MATCH' if match else 'PRESENT_MISMATCH'
+        elif status == 404:
+            code = ET.fromstring(body).findtext('{*}Code')
+            need(code == 'NoSuchKey', 'READBACK_UNEXPECTED_S3_404')
+            report['seaweedfsReservedObjectState'] = 'ABSENT'
+        else:
+            raise ValueError('READBACK_RESERVED_OBJECT_HTTP_' + str(status))
+
     def keep_logs():
         for role, cid, _, _ in containers:
             try:
@@ -434,13 +543,15 @@ def run(report, upload):
     try:
         need(not docker('ps', '-q').strip(), 'OTHER_CONTAINERS_RUNNING')
         pg_ids = (PG_IMAGE, PG_CONFIG)
+        pg_settings = ['-c', 'default_transaction_read_only=on'] if readback else []
+        pg_listen = 'listen_addresses=' if readback else 'listen_addresses=127.0.0.1'
         pg_id, pid = start('postgres', 'none', pg_ids,
             '--user', f'{uid}:{gid}', '--mount', f'type=bind,src={cluster},dst=/isolated-pg',
             '--mount', f'type=bind,src={pg_files},dst=/config,readonly',
             '--entrypoint', 'postgres', PG_IMAGE, '-D', '/isolated-pg', '-c', 'config_file=/dev/null',
-            '-c', 'hba_file=/config/pg_hba.conf', '-c', 'ident_file=/dev/null', '-c', 'listen_addresses=127.0.0.1',
+            '-c', 'hba_file=/config/pg_hba.conf', '-c', 'ident_file=/dev/null', '-c', pg_listen,
             '-c', 'unix_socket_directories=/tmp', '-c', 'port=5432', '-c', 'ssl=off',
-            '-c', 'archive_mode=off', '-c', 'autovacuum=off')
+            '-c', 'archive_mode=off', '-c', 'autovacuum=off', *pg_settings)
         end = time.monotonic() + 50
         while True:
             row = psql(database, 'SELECT 1;')
@@ -448,13 +559,14 @@ def run(report, upload):
                 break
             need(time.monotonic() < end and inspect(pg_id, 'none', pg_ids)['Running'], 'POSTGRES_SQL_READINESS')
             time.sleep(2)
-        role_guard = psql(database, f"SELECT count(*) FROM pg_roles WHERE rolname='{user}' AND rolcanlogin AND NOT rolsuper;")
-        need(role_guard.returncode == 0 and role_guard.stdout.strip() == b'1', 'ONBOARDING_DATABASE_ROLE_REQUIRED')
-        guard = psql(database, "SELECT count(*) FROM ouf_onboarding.protected_log_export_job "
-                                "WHERE state IN ('READY','RETRY_WAIT','RUNNING');")
-        need(guard.returncode == 0 and guard.stdout.strip() == b'0', 'ISOLATED_ONBOARDING_LOG_QUEUE_NOT_EMPTY')
-        changed = psql(database, f"SET password_encryption='scram-sha-256'; ALTER ROLE \"{user}\" PASSWORD '{password}';")
-        need(changed.returncode == 0, 'ISOLATED_ONBOARDING_DATABASE_CREDENTIAL')
+        if not readback:
+            role_guard = psql(database, f"SELECT count(*) FROM pg_roles WHERE rolname='{user}' AND rolcanlogin AND NOT rolsuper;")
+            need(role_guard.returncode == 0 and role_guard.stdout.strip() == b'1', 'ONBOARDING_DATABASE_ROLE_REQUIRED')
+            guard = psql(database, "SELECT count(*) FROM ouf_onboarding.protected_log_export_job "
+                                    "WHERE state IN ('READY','RETRY_WAIT','RUNNING');")
+            need(guard.returncode == 0 and guard.stdout.strip() == b'0', 'ISOLATED_ONBOARDING_LOG_QUEUE_NOT_EMPTY')
+            changed = psql(database, f"SET password_encryption='scram-sha-256'; ALTER ROLE \"{user}\" PASSWORD '{password}';")
+            need(changed.returncode == 0, 'ISOLATED_ONBOARDING_DATABASE_CREDENTIAL')
         report['postgresReady'] = True
 
         net = os.open(f'/proc/{pid}/ns/net', os.O_RDONLY)
@@ -472,22 +584,25 @@ def run(report, upload):
         ready('s3', sea_id, network, (S3_IMAGE, S3_CONFIG), 50)
         report['seaweedfsTlsReady'] = True
 
-        app_id, _ = start('onboarding', network, (ONB_IMAGE, ONB_CONFIG),
-            '--user', '10003:10003', '--env-file', str(app_env),
-            '--mount', f'type=bind,src={files},dst=/run/stage-s3,readonly',
-            '--entrypoint', '/bin/sh', ONB_IMAGE, '-ec',
-            'keytool -importcert -noprompt -alias ouf-stage -file /run/stage-s3/ca.pem '
-            '-keystore /tmp/ouf-stage.p12 -storetype PKCS12 -storepass changeit; '
-            'exec java -Xmx512m -Djavax.net.ssl.trustStore=/tmp/ouf-stage.p12 '
-            '-Djavax.net.ssl.trustStorePassword=changeit -jar /app/application.jar')
-        ready('onboarding', app_id, network, (ONB_IMAGE, ONB_CONFIG), 110)
-        report['onboardingReadinessUp'] = True
-        rows = psql(database, "SELECT version FROM ouf_onboarding.flyway_schema_history "
-                              "WHERE success AND version IN ('39','40','41') ORDER BY version;")
-        need(rows.returncode == 0 and rows.stdout.splitlines() == [b'39', b'40', b'41'], 'ONBOARDING_MIGRATIONS_REQUIRED')
-        report['flywayVersionsVerified'] = [39, 40, 41]
-        if upload:
-            prove_upload()
+        if readback:
+            read_outcome()
+        else:
+            app_id, _ = start('onboarding', network, (ONB_IMAGE, ONB_CONFIG),
+                '--user', '10003:10003', '--env-file', str(app_env),
+                '--mount', f'type=bind,src={files},dst=/run/stage-s3,readonly',
+                '--entrypoint', '/bin/sh', ONB_IMAGE, '-ec',
+                'keytool -importcert -noprompt -alias ouf-stage -file /run/stage-s3/ca.pem '
+                '-keystore /tmp/ouf-stage.p12 -storetype PKCS12 -storepass changeit; '
+                'exec java -Xmx512m -Djavax.net.ssl.trustStore=/tmp/ouf-stage.p12 '
+                '-Djavax.net.ssl.trustStorePassword=changeit -jar /app/application.jar')
+            ready('onboarding', app_id, network, (ONB_IMAGE, ONB_CONFIG), 110)
+            report['onboardingReadinessUp'] = True
+            rows = psql(database, "SELECT version FROM ouf_onboarding.flyway_schema_history "
+                                  "WHERE success AND version IN ('39','40','41') ORDER BY version;")
+            need(rows.returncode == 0 and rows.stdout.splitlines() == [b'39', b'40', b'41'], 'ONBOARDING_MIGRATIONS_REQUIRED')
+            report['flywayVersionsVerified'] = [39, 40, 41]
+            if upload:
+                prove_upload()
     except Exception:
         keep_logs()
         raise
@@ -504,13 +619,18 @@ def run(report, upload):
                 report['cleanupIncomplete'] = True
 
     need(not report['cleanupIncomplete'] and not docker('ps', '-q').strip(), 'ISOLATED_STACK_CLEANUP')
-    report['status'] = 'ISOLATED_ONBOARDING_UPLOAD_VERIFIED' if upload else 'ISOLATED_ONBOARDING_STACK_READY'
+    if readback:
+        report['status'] = 'ONBOARDING_UPLOAD_OUTCOME_READ_BACK'
+    else:
+        report['status'] = 'ISOLATED_ONBOARDING_UPLOAD_VERIFIED' if upload else 'ISOLATED_ONBOARDING_STACK_READY'
     h['new'](scope / 'result.json', h['canonical'](report))
 
 
-def main(upload=False):
+def main(upload=False, readback=False):
     os.umask(0o077)
-    report = {'schema': UPLOAD_SCHEMA if upload else SCHEMA, 'status': 'HELD',
+    need(not (upload and readback), 'EXCLUSIVE_STACK_MODE_REQUIRED')
+    schema = READBACK_SCHEMA if readback else UPLOAD_SCHEMA if upload else SCHEMA
+    report = {'schema': schema, 'status': 'HELD',
               'applicationContainersStarted': 0, 'containersStarted': 0,
               'containersRemoved': 0, 'cleanupIncomplete': False, 'privateContainerLogsRetained': 0,
               'diagnosticHints': {}, 'postgresCopyPrepared': False, 'storageCopyPrepared': False,
@@ -520,8 +640,11 @@ def main(upload=False):
         report.update({'uploadRequests': 0, 's3GetRequests': 0, 'onboardingAssetCreated': False,
                        'seaweedfsPreUploadBodyVerified': False, 'postgresUploadAckVerified': False,
                        'seaweedfsUploadBodyVerified': False})
+    if readback:
+        report.update({'uploadRequests': 0, 's3GetRequests': 0, 'retainedLogHints': {},
+                       'databaseIntentState': 'UNREAD', 'seaweedfsReservedObjectState': 'UNREAD'})
     try:
-        run(report, upload)
+        run(report, upload, readback)
     except Exception as exc:
         report['status'] = 'HELD'
         reason = str(exc)
