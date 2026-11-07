@@ -1,6 +1,8 @@
-## Coppia corrente — estrazione diretta della finestra del POST
+## Coppia corrente — finestra JFR letta e verifica mirata del trasporto
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md#blocco-unico-per-leggere-la-finestra-del-post) per leggere dal JSON già esistente gli eventi nella finestra del POST. Esecuzione pendente.
+Il VPS ha letto il JSON JFR completo nella finestra di 10,396 secondi. Ha osservato 329 eventi di eccezione, 299 con frame S3 SDK, un handshake TLS sulla porta 9002 e gli indizi di rifiuto della connessione e loopback IPv6. I due file conservati sono risultati invariati. Il riepilogo aggregato non lega il rifiuto o il timeout a una specifica operazione né prova che il PUT sia arrivato a SeaweedFS. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-jfr-window-operator-20261107.json).
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md#blocco-corrente-per-distinguere-le-fasi-di-trasporto) per distinguere le fasi con i file già conservati. Esecuzione pendente. G4 aperto, MiniPET 39,78%.
 
 ## Limite di espansione JFR confermato
 
