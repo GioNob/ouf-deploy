@@ -1,3 +1,9 @@
+## 7 novembre — censimento amministrativo ed esterno
+
+Giovanni riferisce «nessun noto» per ulteriori strumenti amministrativi e consumer esterni con scritture dirette su MinIO o PostgreSQL. [Ricevuta](../evidence/storage-external-writers-owner-observation-20261107.json). I percorsi applicativi già mappati e i contenimenti host osservati restano acquisiti. La dichiarazione registra quanto noto all'operatore. L'assenza tecnica dei percorsi e la tenuta del blocco devono risultare dal pacchetto operativo.
+
+Per la preparazione non produttiva, il pacchetto mantiene fermi gli originali, usa copie isolate con endpoint privati e separa le identità di manutenzione da quelle applicative. I servizi dati restano senza porte pubblicate. Prima del cambio servono un elenco esatto dei binding ammessi, una verifica dei dinieghi da percorsi esclusi e una generazione comune PostgreSQL, oggetti e stato di controllo. Riapertura con decisione distinta. [Matrice e condizioni di uscita](../releases/storage-offline-writer-containment-20261106.json).
+
 ## 7 novembre — sorgenti originali e inventario G0 corrispondono
 
 Il riscontro operatore ha verificato la custodia e trovato zero differenze per 5.032 voci PostgreSQL e 325 voci MinIO. I 120 oggetti coincidono con G0 per bucket, chiave, dimensione e SHA-256. I due container sorgente corrispondevano alle identità catturate e i controlli Docker prima e dopo hanno osservato zero container attivi. [Ricevuta](../evidence/storage-retained-source-comparison-match-operator-20261107.json).
@@ -25,7 +31,7 @@ Il [confronto sul VPS](OUF_STORAGE_RETAINED_SOURCE_COMPARISON_20261107.md) è st
 
 Per PostgreSQL, conservare i database e le identità effettive dietro `OUF_ONB_DB_URL`, `OUF_UDP_DB_URL` e `OUF_ING_DB_URL`. Legare versione schema e migrazioni V39–V41 di Onboarding alla stessa coorte candidata. La barriera esterna deve restare attiva durante l'avvio della coorte.
 
-Le fonti Git identificano i punti di configurazione. L'istanza effettiva richiede ancora il confronto privato di endpoint, CA, bucket, identità e mount. Per amministratori e consumer esterni serve un inventario minimo di strumenti, pianificazioni e client con scritture dirette su S3 o PostgreSQL. I cinque timer e il servizio registry già contenuti restano evidenza acquisita. La barriera del pacchetto dovrà coprire anche eventuali accessi diretti non visibili ai container.
+Le fonti Git identificano i punti di configurazione. L'istanza effettiva richiede ancora il confronto privato di endpoint, CA, bucket, identità e mount. Per amministratori e consumer esterni è acquisita l'osservazione operatore. La matrice descrive le verifiche tecniche ancora da fare. I cinque timer e il servizio registry già contenuti restano evidenza acquisita. La barriera del pacchetto dovrà coprire anche eventuali accessi diretti non visibili ai container.
 
 ## Stato corrente — cifratura conclusa, residuo operativo del fermo
 

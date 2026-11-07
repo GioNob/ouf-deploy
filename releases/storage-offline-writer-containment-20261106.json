@@ -123,7 +123,8 @@
       "activeAtTargetProven": false,
       "proposedContainment": "CENSUS_IDENTITIES_SCHEDULES_AND_ACCESS_THEN_FENCE_EACH_WRITER",
       "targetMechanismQualified": false,
-      "operatorEvidenceRef": null
+      "operatorEvidenceRef": "evidence/storage-external-writers-owner-observation-20261107.json",
+      "ownerObservation": "NO_ADDITIONAL_WRITERS_KNOWN"
     },
     {
       "pathId": "external-consumers",
@@ -135,7 +136,8 @@
       "activeAtTargetProven": false,
       "proposedContainment": "CENSUS_IDENTITIES_SCHEDULES_AND_ACCESS_THEN_FENCE_EACH_WRITER",
       "targetMechanismQualified": false,
-      "operatorEvidenceRef": null
+      "operatorEvidenceRef": "evidence/storage-external-writers-owner-observation-20261107.json",
+      "ownerObservation": "NO_ADDITIONAL_WRITERS_KNOWN"
     }
   ],
   "crossOwnerBarriers": {
@@ -199,7 +201,7 @@
     "proposedHandling": "REVIEW_CONTROL_CONFIGURATION_CUSTODY_AND_CONSISTENT_BACKUP; DO_NOT_STOP_OR_RESTORE_AUTOMATICALLY",
     "currentLiveObservation": false
   },
-  "nextRequiredOperatorInput": "Planning constraint only: maximum acceptable outage/deadline or permitted HOLD-until-reviewed model. Not an operational stop decision. No new diagnostic command is requested now.",
+  "nextRequiredOperatorInput": "None for preparation. A separate decision is required only on the exact runtime proposal.",
   "backupCustodyProposal": "docs/OUF_STORAGE_OFFHOST_BACKUP_CUSTODY_20261106.md",
   "coldBackupProposal": {
     "document": "docs/OUF_STORAGE_COLD_BACKUP_PACKAGE_20261106.md",
@@ -222,5 +224,29 @@
     "operatorExclusiveMaintenanceRequired": true,
     "externalContainmentAuthenticated": false,
     "targetOperationPerformed": false
+  },
+  "maintenanceIsolationProfile": {
+    "status": "SELECTED_FOR_PACKAGE_DESIGN_NOT_APPLIED",
+    "ownerObservation": "evidence/storage-external-writers-owner-observation-20261107.json",
+    "originalDataReadback": "evidence/storage-retained-source-comparison-match-operator-20261107.json",
+    "sourceServices": "KEEP_ORIGINAL_MINIO_AND_POSTGRES_STOPPED_DURING_PRIVATE_PREPARATION",
+    "candidatePreparation": "ISOLATED_COPY_WITH_PRIVATE_S3_AND_DB_ENDPOINTS",
+    "denyByDefault": {
+      "network": "NO_PUBLISHED_STORAGE_OR_DATABASE_PORTS_NO_HOST_OR_PUBLIC_ROUTING",
+      "serviceMembership": "ALLOW_ONLY_NAMED_MAINTENANCE_AND_ADMITTED_APPLICATION_ROLES_BY_PHASE",
+      "database": "PRIVATE_BINDINGS_AND_ROLE_SCOPES_WITH_ADMISSIONS_AND_BACKGROUND_WRITERS_HELD",
+      "storage": "SEPARATE_BUCKET_SCOPED_MAINTENANCE_AND_APPLICATION_IDENTITIES",
+      "host": "PRESERVE_RESTART_POLICY_AND_HOST_RECREATION_BARRIERS_VERIFY_TARGET_STATE"
+    },
+    "transitionGuards": [
+      "REVIEW_EXACT_NETWORK_DATABASE_S3_AND_HOST_BINDINGS_ON_TARGET",
+      "PROVE_UNADMITTED_PATHS_DENIED_AND_AUTHORIZED_PATHS_MATCH_EXPECTED_CAPABILITIES",
+      "RECONCILE_PENDING_EFFECTS_AND_BIND_DATABASE_OBJECTS_AND_REQUIRED_CONTROL_STATE_TO_ONE_GENERATION",
+      "PRESERVE_BOTH_GENERATIONS_AFTER_ANY_ACCEPTED_TARGET_WRITE",
+      "REQUIRE_DISTINCT_DECISION_FOR_REOPENING"
+    ],
+    "fenceApplied": false,
+    "externalPathsExcludedByEvidence": false,
+    "commonCutProven": false
   }
 }
