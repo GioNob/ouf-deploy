@@ -1,0 +1,130 @@
+{
+  "applicationLoadedPolicyProven": false,
+  "businessRequestsIssued": 0,
+  "configuration": {
+    "declaredProperties": {
+      "ouf.authorization.max-staleness-seconds": [
+        "ENV"
+      ],
+      "ouf.authorization.refresh-seconds": [
+        "ENV"
+      ],
+      "ouf.authorization.registry-token-file": [
+        "ENV"
+      ],
+      "ouf.authorization.registry-url": [
+        "ENV"
+      ],
+      "ouf.iam.audience": [
+        "ENV"
+      ],
+      "ouf.iam.issuer": [
+        "ENV"
+      ],
+      "ouf.semantic.delegation.key-file": [
+        "ENV"
+      ],
+      "ouf.semantic.delegation.workload": [
+        "ENV"
+      ]
+    },
+    "delegationKeyFileDeclared": true,
+    "delegationWorkloadDeclared": true,
+    "externalConfigLocationPresent": false,
+    "iamIssuerAndAudienceDeclared": true,
+    "max-staleness-seconds": 300,
+    "refresh-seconds": 30,
+    "runtimeLoadedPolicyRead": false,
+    "scope": "DECLARATIONS_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+    "springConfigImportPresent": true,
+    "staticBundleFileDeclared": false
+  },
+  "credentialValuesEmitted": false,
+  "databaseQueriesIssuedByScript": 0,
+  "delegationKeyFormatValid": true,
+  "delegationKeyMount": {
+    "gid": 10001,
+    "modeOctal": "0400",
+    "readFromApplicationMountView": true,
+    "readOnlyMount": true,
+    "sameFileAsCurrentHostSource": true,
+    "uid": 10001
+  },
+  "observedAt": "2026-11-07T18:52:14.296969+00:00",
+  "otherRoleConfigurationMismatches": [
+    {
+      "argumentsChanged": false,
+      "capturedBaselineMatchesExpectedFingerprint": true,
+      "changedConfigFields": [
+        "MacAddress"
+      ],
+      "changedEnvironmentKeys": [],
+      "changedHostConfigFields": [],
+      "fingerprintMatchesRetained": false,
+      "imageMatchesRetained": true,
+      "matches": false,
+      "mountsChanged": false,
+      "otherChangedEnvironmentKeyCount": 0,
+      "pathChanged": false,
+      "role": "onboarding",
+      "safeScalarChanges": [],
+      "sensitiveConfigurationValuesEmitted": false,
+      "statePermitted": true
+    },
+    {
+      "argumentsChanged": false,
+      "capturedBaselineMatchesExpectedFingerprint": true,
+      "changedConfigFields": [
+        "MacAddress"
+      ],
+      "changedEnvironmentKeys": [],
+      "changedHostConfigFields": [],
+      "fingerprintMatchesRetained": false,
+      "imageMatchesRetained": true,
+      "matches": false,
+      "mountsChanged": false,
+      "otherChangedEnvironmentKeyCount": 0,
+      "pathChanged": false,
+      "role": "udp",
+      "safeScalarChanges": [],
+      "sensitiveConfigurationValuesEmitted": false,
+      "statePermitted": true
+    }
+  ],
+  "permissionChanges": 0,
+  "policyGet": {
+    "activePolicyResponseRead": false,
+    "applicationJvmTransportTested": false,
+    "applicationLoadedPolicyProven": false,
+    "hostTransportOnly": true,
+    "httpStatus": 401,
+    "policyInstalledByReader": false
+  },
+  "policyGetAttempts": 1,
+  "process": "APPLICATION_RUNNING",
+  "receiptVerificationTested": false,
+  "retainedConfigurationVerified": true,
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.current-semantic-policy-read.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "status": "SEMANTIC_POLICY_READ_COMPLETE",
+  "tokenMetadata": {
+    "claimsAreMetadataOnly": true,
+    "expiredAtRead": true,
+    "expiryEpoch": 1794006530,
+    "expiryUtc": "2026-11-06T23:08:50+00:00",
+    "notYetValidAtRead": false,
+    "signatureVerifiedLocally": false
+  },
+  "tokenMount": {
+    "gid": 10001,
+    "modeOctal": "0440",
+    "readFromApplicationMountView": true,
+    "readOnlyMount": true,
+    "sameFileAsCurrentHostSource": true,
+    "uid": 0
+  },
+  "tokenRequests": 0
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "ouf.semantic-existing-token-renewal-preparation.v1",
+  "recordedOn": "2026-11-07",
+  "source": "SOURCE_REVIEW_AND_LOCAL_TESTS",
+  "trigger": {
+    "source": "OPERATOR_RECEIPT",
+    "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json",
+    "expiredMountedToken": true,
+    "configuredPolicyGetHttpStatus": 401
+  },
+  "script": "scripts/restore-current-semantic-policy-token-20261107.py",
+  "scriptSha256": "83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d",
+  "existingService": "ouf-policy-token@semantic.service",
+  "existingTimer": "ouf-policy-token@semantic.timer",
+  "historicalProducer": {
+    "path": "/opt/ouf/ops/refresh-policy-token.py",
+    "sha256": "728b4c44d0e24b3c3bfc31769346c0c05752e870e93c096fac1c2897250e5c79",
+    "source": "OPERATOR_OBSERVATION_20261012_NOT_CURRENT_UNIT_PROOF",
+    "evidence": [
+      "evidence/semantic-token-static-public-facts-target-20261012.json",
+      "evidence/semantic-token-private-output-correspondence-v2-target-20261012.json"
+    ]
+  },
+  "guards": [
+    "Exact retained running Semantic and dependencies",
+    "Existing unmasked root oneshot with known direct producer, no additional hooks",
+    "Exact producer source SHA and known atomic-output AST",
+    "Configured output equals current mounted token path and group",
+    "Same issuer, client and requested scopes as mounted token metadata; no local signature verification claimed",
+    "Existing one-minute timer targets exactly that service",
+    "Runtime stable before effects; source/config rechecked",
+    "Exclusive durable claim before manual service invocation; no replay on the same token"
+  ],
+  "effects": {
+    "maximumManualServiceStartCommands": 1,
+    "freshTokenReusedWithoutManualStart": true,
+    "existingProducerMayRequestTokens": true,
+    "maximumPolicyGets": 1,
+    "timerEnabledOnlyAfterFreshMountedTokenAndPolicyHttp200": true,
+    "applicationRestart": false,
+    "applicationConfigurationChanges": 0,
+    "permissionChanges": 0,
+    "directDatabaseQueries": 0,
+    "s3Requests": 0
+  },
+  "verification": {
+    "test": "tests/check_semantic_token_renewal.py",
+    "result": "PASS",
+    "mode": "OFFLINE_UNIT_TESTS_WITH_SYNTHETIC_SOURCE_AND_MOCKED_SYSTEMD_HTTP",
+    "cases": [
+      "wrong output/issuer/client/scope",
+      "masked service",
+      "foreign timer",
+      "changed producer",
+      "runtime drift",
+      "existing attempt prevents another manual start",
+      "producer failure blocks GET and timer enable",
+      "HTTP401 blocks timer enable",
+      "successful manual start and policy GET before timer enable",
+      "fresh token reused",
+      "no credentials in output"
+    ],
+    "nativeSystemdAndIssuerTested": false,
+    "currentVpsExecution": "PENDING"
+  },
+  "limits": {
+    "semanticLoadedPolicyProven": false,
+    "automaticRenewalCycleProven": false,
+    "semanticSearchSucceeded": false,
+    "full403CauseProven": false
+  }
+}
