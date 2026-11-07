@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_SEARCH_AND_EXACT_READ_PASS",
+  "status": "F1_PASS_SEMANTIC_LOCAL_READ_PASS_SHARED_PROPERTY_ALIGNMENT_OPEN",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -522,7 +522,7 @@
       "permissionsChanged": false
     },
     "currentMappingProposal": {
-      "status": "PREPARED_AWAITING_CURRENT_ASSET_FIELD_DECISION",
+      "status": "OPEN_SELECTED_PROPERTY_REFERENCE_ALIGNMENT_INCOMPLETE",
       "path": "releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json",
       "reviewDocument": "docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md",
       "sourceId": "teatri-seaweedfs-c51745c5",
@@ -530,13 +530,43 @@
       "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
       "profileReReadSucceeded": true,
       "allTwentyPropertyTermsAsserted": true,
-      "proposedAccessLabel": "RESTRICTED",
+      "proposedAccessLabel": "OPEN",
       "proposedTransform": "IDENTITY",
       "csvCellsRemainLexical": true,
       "createDraftDispatched": false,
       "sourceActivation": false,
       "ingestionDispatch": false,
-      "historicalSourceChanged": false
+      "historicalSourceChanged": false,
+      "ownerAccessChoiceAcquired": true,
+      "sharedNamePropertyConfirmed": true,
+      "additionalTypeCandidate": true,
+      "localPropertyCount": 18,
+      "localPropertyDomain": "https://schema.org/PerformingArtsTheater",
+      "externalPropertyAlignmentComplete": false,
+      "propertyReviewDocument": "docs/OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md",
+      "propertyReviewEvidence": "evidence/teatri-column-semantic-reference-review-20261107.json",
+      "valueEnumerationNotRequested": true
+    },
+    "currentSemanticDiscoveryAvailability": {
+      "source": "CURRENT_TOOL_ENUMERATION_AND_REPOSITORY_PR_READS",
+      "externalRequestExposed": false,
+      "statusExposed": false,
+      "candidatesExposed": false,
+      "localGetSucceeded": true,
+      "webResearchSubstituted": false,
+      "mcpPr": 81,
+      "gatewayPr": 84,
+      "registryPr": 41,
+      "currentCandidateRuntimeBindingsVerified": false
+    },
+    "latestSemanticSearchAttempt": {
+      "q": "Cinema",
+      "success": false,
+      "code": "orchestration budget exhausted",
+      "retryable": false,
+      "automaticRetry": false,
+      "notAnEmptySearchResult": true,
+      "evidence": "evidence/teatri-column-semantic-reference-review-20261107.json"
     }
   },
   "milestones": [
@@ -611,7 +641,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Owner chooses prepared mapping/access for current asset; then create one idempotent draft and prepare native THS review, followed by Ingestion→UDP→graph. Do not repeat token restore, upload or profiling.",
+  "nextAction": "Reconcile the existing external-discovery candidates with current runtime bindings and complete governed MCP discovery; verify shared property definitions/domain/range for the 20 OPEN columns, then create draft and native THS review. No new upload/profile or value-enumeration requirement.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -638,7 +668,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Semantic search and exact revision read succeeded; application UDP lake operation and complete CSV-to-graph flow remain unproven.",
+    "reason": "Onboarding works on SeaweedFS; normal UDP lake operation and full flow remain unproven. Owner requested shared semantic property references; current MCP lacks external discovery and the last search exhausted orchestration budget.",
     "nextReestimateAfter": "UDP_APPLICATION_OPERATION"
   },
   "evidence": [

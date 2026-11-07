@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.3 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.4 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -19,7 +19,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 **Aggiornamento corrente:** F1 PASS; Onboarding e UDP sono collegati a SeaweedFS con le stesse immagini. Il produttore token Semantic è stato ripristinato alle 21:07 CET: servizio active/enabled, token montato nuovo, GET policy :61 HTTP200. Le successive chiamate MCP riescono: ricerca `Teatri`, lettura della revisione esatta e preview del profilo. [Ricevuta operatore](../evidence/semantic-operational-owner-active-operator-20261107.json) · [Prova applicativa](../evidence/semantic-recovery-functional-read-20261107.json).
 
-Il profilo già acquisito contiene 13 righe e 20 colonne, tutte coperte dal mapping Teatri pubblicato. Preparata la [proposta concreta](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md): riuso Teatri 1.0.0, tutte le colonne RESTRICTED/IDENTITY, celle lessicali e chiave nome_teatro. Manca la scelta dell'owner per il nuovo asset prima di creare la bozza prevista dal contratto MCP. Nessun nuovo upload, profilo, sorgente, Ingestion o approvazione inviato. Dopo la scelta: bozza, review THS, Ingestion→UDP→grafo. F2–F6 restano aperti; normale operazione lake UDP e rinnovo automatico successivo non sono ancora provati.
+Il profilo contiene 13 righe e 20 colonne. **OPEN acquisito per tutte le colonne.** L'owner richiede proprietà condivise per il significato delle colonne, con URI utili al confronto tra tipi diversi. La [tabella semantica](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md) distingue due termini schema.org presenti da 18 proprietà locali con dominio PerformingArtsTheater; l'allineamento esterno resta aperto. La connessione MCP non espone la discovery OntoPiA già candidata. L'ultima ricerca Cinema è stata rifiutata per budget con retryable:false, senza ripetizione. Prossimo lavoro: completare il percorso governato di discovery, chiudere il mapping e passare a bozza/review THS/Ingestion→UDP→grafo. Non introdurre vocabolari di valori come requisito non richiesto. Nessun nuovo upload, profilo, sorgente o Ingestion inviato. F2–F6, normale operazione lake UDP e rinnovo automatico successivo restano da provare.
 
 Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sopra: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 

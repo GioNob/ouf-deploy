@@ -1,50 +1,25 @@
 # Mapping del CSV Teatri già caricato su SeaweedFS
 
-Stato: **proposta pronta; scelta dell'owner sul nuovo asset ancora necessaria**. Nessuna bozza applicativa, approvazione o acquisizione inviata.
+**Classificazione OPEN acquisita per tutte le 20 colonne.** Giovanni ha affidato all'agente l'analisi semantica e chiarito che richiede proprietà condivise per il significato delle colonne, non enumerazioni dei valori.
 
-Asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`, profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`: 13 righe, 20 colonne, CSV UTF-8 separato da `;`. Preview attuale letta via MCP. La corrispondenza delle colonne non dimostra identità byte per byte col vecchio file: l'hash non è esposto dalla preview.
+Asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`, profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`: 13 righe, 20 colonne, CSV UTF-8 separato da `;`. Preview letta via MCP. Non ricaricare o riprofilare.
 
-## Proposta da scegliere
+## Stato della proposta
 
-Riutilizzare il mapping Teatri: **tutte le 20 colonne incluse, accesso RESTRICTED e trasformazione IDENTITY**. Classe `https://schema.org/PerformingArtsTheater`; chiave sorgente `nome_teatro`, proposta dal profiler, con 13 valori distinti. La stabilità dell'identità dipende dalla stabilità di questa chiave.
+[Tabella completa dei riferimenti delle 20 colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 
-Tutte le celle rimangono stringhe del CSV, anche CAP, capienza e coordinate. `4.565.094`/`1.376.850` non vengono convertiti o dichiarati coordinate geografiche numeriche valide. Si conservano sistema di riferimento, precisione, fonti e note. La capienza può riferirsi a una sala secondo le note. Nessuna equivalenza con Cinema.
+La revisione Teatri pubblicata è stata riletta: `schema:name` è il riferimento condiviso per il nome; `schema:additionalType` è il candidato già presente per la tipologia, da verificare nella definizione esterna. Le altre 18 proprietà sono locali con dominio PerformingArtsTheater: non vengono dichiarate automaticamente generiche per oggetti diversi.
 
-Prefisso `teatri:` = `https://api.ouf-lab.it/semantic/teatri#`; prefisso `schema:` = `https://schema.org/`.
+Il [payload di lavoro](../releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json) contiene tutte le colonne OPEN/INCLUDE/IDENTITY e la chiave proposta `nome_teatro`; conserva temporaneamente gli URI del mapping precedente. **Non è il mapping finale validato per interoperabilità tra tipi diversi**, non è stato inviato e non rappresenta una bozza applicativa.
 
-| Colonna | Proprietà |
-| --- | --- |
-| `nome_teatro` | `schema:name` |
-| `tipologia` | `schema:additionalType` |
-| `toponimo` | `teatri:toponimo` |
-| `nome_indirizzo` | `teatri:nome_indirizzo` |
-| `civico` | `teatri:civico` |
-| `cap` | `teatri:cap` |
-| `citta` | `teatri:citta` |
-| `provincia` | `teatri:provincia` |
-| `latitudine` | `teatri:latitudine` |
-| `longitudine` | `teatri:longitudine` |
-| `sistema_riferimento` | `teatri:sistema_riferimento` |
-| `precisione_coordinate` | `teatri:precisione_coordinate` |
-| `capienza_posti` | `teatri:capienza_posti` |
-| `spettacoli_stagione` | `teatri:spettacoli_stagione` |
-| `stagione_riferimento` | `teatri:stagione_riferimento` |
-| `note` | `teatri:note` |
-| `fonte_indirizzo` | `teatri:fonte_indirizzo` |
-| `fonte_coordinate` | `teatri:fonte_coordinate` |
-| `fonte_altri_dati` | `teatri:fonte_altri_dati` |
-| `data_verifica` | `teatri:data_verifica` |
+Celle CSV lessicali, CAP con zeri iniziali e coordinate originali conservati. Le coordinate ambigue non sono convertite automaticamente. Nome originale della colonna e provenienza restano conservati; il riferimento canonico si applica nel mapping.
 
-## Semantica verificata
+## Impedimento e continuazione
 
-Il registro locale restituisce Teatri 1.0.0 ACTIVE. Lettura esatta: revisione `a1db3912-2b72-42eb-af88-a775fcd0e2ab`, publication set `9fe7d1ee-9e13-40bc-ad50-53e36ea0076b`. Snapshot completo: 105 statement. Classe e 20 proprietà presenti; le 18 proprietà locali dichiarano dominio PerformingArtsTheater e range string. I due termini schema.org sono dichiarati rdf:Property senza range/domain nello snapshot: non si attribuiscono loro dichiarazioni assenti.
+La connessione MCP non espone la discovery esterna OntoPiA/schema.gov.it; ricerca locale e lettura esatta funzionano, ma non dimostrano copertura nazionale. L'ultima ricerca Cinema è stata rifiutata per budget di orchestrazione con retryable:false, senza retry o reset.
 
-Non occorre nuova pubblicazione semantica per questa proposta. La precedente approvazione della sorgente storica non vale come approvazione del nuovo asset.
+Il prossimo lavoro è completare il percorso di discovery già candidato, verificare le definizioni delle proprietà condivise e chiudere il mapping. Poi creare una bozza idempotente `teatri-seaweedfs-c51745c5`, leggere versione/hash e preparare la review nativa THS. L'approvazione HUMAN resta nella THS; nessuna nuova scelta generica OPEN/RESTRICTED è richiesta.
 
-## Passo successivo
+La sorgente storica `teatri-csv-6609b245` è invariata e non riacquisita. Nessuna nuova ontologia, bozza, approvazione o Ingestion inviata.
 
-[Payload completo pronto](../releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json). Alla scelta dell'owner: creare la bozza idempotente `teatri-seaweedfs-c51745c5`, leggere versione/hash e preparare la review nativa THS. Il contratto MCP di creazione richiede profilo rivisto, riferimenti semantici scelti e decisioni di accesso sui campi. L'execution proposal per Ingestion/UDP e l'approvazione HUMAN restano passi successivi; nessuna compatibilità viene presunta da questo documento.
-
-La sorgente storica `teatri-csv-6609b245` non è modificata né riacquisita. Il nuovo asset non viene ricaricato o riprofilato.
-
-[Esiti MCP e verifica](../evidence/semantic-recovery-functional-read-20261107.json) · [Stato operativo](STATE.md).
+[Evidenze MCP](../evidence/teatri-column-semantic-reference-review-20261107.json) · [Stato operativo](STATE.md).

@@ -226,3 +226,13 @@ Le successive chiamate MCP come ouf-admin riescono: `teatro` e `Theatre` danno l
 Preparata la proposta di riuso del mapping Teatri per il nuovo asset: tutte le colonne RESTRICTED/IDENTITY, celle lessicali e chiave nome_teatro. Classe/20 proprietà presenti, 18 proprietà locali con range string; i due termini schema.org sono rdf:Property senza range/domain nello snapshot. Manca la scelta dell'owner sul nuovo asset. Nessun draft, approvazione, acquisizione o nuova pubblicazione semantica inviato; sorgente storica invariata. F2–F6 restano aperti.
 
 [Ricevuta operatore](../evidence/semantic-operational-owner-active-operator-20261107.json) · [Risposte MCP](../evidence/semantic-recovery-functional-read-20261107.json) · [Mapping proposto](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md).
+
+## 7 novembre 2026 — OPEN acquisito; proprietà condivise per i nomi delle colonne
+
+Giovanni accetta OPEN per le 20 colonne e affida l'analisi semantica all'agente. Chiarisce che interessa associare il nome/significato della colonna a una proprietà di vocabolario/ontologia condivisa per confronti tra oggetti diversi, non enumerare i valori. La richiesta iniziale di vocabolari di valori viene quindi superata.
+
+MCP: ricerca Teatri riuscita; lettura esatta della stessa revisione/pubblicazione, 105 statement completi e risposta coincidente con la precedente conservata. Due termini schema.org presenti; 18 proprietà locali con dominio PerformingArtsTheater e range string. Predisposta analisi di tutte le 20 colonne; nessun IRI esterno inventato. Le ricerche nome(PROPERTY), indirizzo e coordinate restituiscono liste vuote, che non provano assenza dei termini contenuti negli snapshot. La ricerca Cinema viene rifiutata: orchestration budget exhausted, retryable:false; nessun retry/reset/cambio account.
+
+Discovery request/status/candidates non esposte dalla connessione. Letti i candidati MCP PR81, Gateway PR84 e Registry PR41, aperti/non merged: sono riferimenti di sviluppo, non prova di installazione corrente. Nessuna web research/import manuale sostitutiva, pubblicazione o bozza applicativa. Il payload di lavoro è aggiornato OPEN e marcato incompleto per allineamento a proprietà condivise. Restano prova UDP applicativa e E2E.
+
+[Tabella per colonna](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md) · [Evidenze](../evidence/teatri-column-semantic-reference-review-20261107.json).
