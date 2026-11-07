@@ -1,5 +1,10 @@
 ## Regola MAC da consultare prima di modificare i container
 
+## Produttore token Semantic — correzione del 7 novembre 2026
+
+Il rinnovo corrente usa `ouf-registry-token-7cb59501000058b5dc5030ad.service`, servizio continuo operativo. La coppia `ouf-policy-token@semantic.service/.timer` era già masked/inactive prima della cattura: **non smascherarla né selezionarla per il ripristino**. La cattura ha fermato/disabilitato il produttore operativo; l'avviatore generale lo omette. Il primo comando del 7 novembre alle 19:06 UTC ha scelto il legacy e si è fermato senza effetti. Leggere [stato e comando corretto](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md); riusare installazione e registro esistenti, senza reset. Ripartenza corretta preparata, non ancora provata sul VPS. Dopo il successo completare il percorso generale di ripristino e provare ricerca MCP e rinnovo successivo.
+
+
 Prima di creare/sostituire container o confrontare `Config`/`NetworkSettings`, leggere [la regola permanente MAC](docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) e il [precedente del 25 ottobre](docs/handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md). Distinguere `Config.MacAddress` legacy dagli endpoint per rete. La primitiva `tools/acquisition_read_native/retained_mac.py` copre soltanto il vecchio container dopo STOP/DETACH provati: non usarla per ammettere automaticamente differenze sui sostituti running. Vietate esclusioni globali del campo o riscritture delle impronte. Per un caso diverso riportare presenza/tipo del campo prima e dopo, corrispondenza con gli endpoint e fase del lifecycle; qualificare quel profilo prima di modificare il guard. Non riscoprire il problema come se il precedente non esistesse.
 
 ## Stato operativo OUF
