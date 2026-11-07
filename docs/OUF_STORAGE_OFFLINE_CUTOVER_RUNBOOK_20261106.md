@@ -1,6 +1,6 @@
-## Coppia corrente — esito dell'upload sospeso
+## Upload sospeso riconciliato sulle copie
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_UPLOAD_READBACK_20261107.md) per leggere intento e chiave esatti sulle copie del tentativo HTTP 502. Esito pendente.
+La lettura sul VPS ha trovato un intento `DISPATCHED` senza ACK, collegamento asset, asset o ricevuta. SeaweedFS ha risposto `404 NoSuchKey` sulla chiave riservata. Le due richieste S3 erano GET e i container di lettura sono stati rimossi. I log precedenti non identificano la causa del 502. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-readback-operator-20261107.json).
 
 ## Upload isolato sospeso su HTTP 502
 
