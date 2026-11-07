@@ -2,6 +2,7 @@
 """Prepare private S3 application bindings and verify them against staged OCI33."""
 
 import base64
+import configparser
 from datetime import datetime, timezone
 import json
 import os
@@ -47,15 +48,42 @@ finally:
 """
 
 
-def identities(h, bundle, buckets):
+def identities(h, bundle, buckets, reuse=False):
     endpoint = f'https://{DNS}:{PORT}'
     clients = bundle / 'clients'
-    clients.mkdir(mode=0o700)
+    if not reuse:
+        clients.mkdir(mode=0o700)
     auth, entries, policies = {}, [], []
     for role in ROLES:
         bucket = buckets[role]
         arn = 'arn:aws:s3:::' + bucket
-        auth[role] = key, secret = ('ouf' + role + secrets.token_hex(8), secrets.token_hex(24))
+        root = clients / role
+
+        def private(name):
+            return h['protected'](root / name, private=True, limit=4096)
+
+        if not reuse:
+            root.mkdir(mode=0o700)
+            key, secret = ('ouf' + role + secrets.token_hex(8), secrets.token_hex(24))
+        elif role == 'onboarding':
+            key, secret = (private(name).decode('ascii').removesuffix('\n')
+                           for name in ('access-key', 'secret-key'))
+        else:
+            credentials = configparser.ConfigParser(interpolation=None)
+            credentials.read_string(private('credentials').decode('ascii'))
+            key = credentials['default']['aws_access_key_id']
+            secret = credentials['default']['aws_secret_access_key']
+        if not (re.fullmatch('ouf' + role + '[a-f0-9]{16}', key) and re.fullmatch('[a-f0-9]{48}', secret)):
+            raise ValueError('STAGING_CREDENTIAL_FORMAT')
+        auth[role] = key, secret
+
+        def bind(name, raw):
+            if reuse:
+                if private(name) != raw:
+                    raise ValueError('STAGING_CLIENT_BINDING_CHANGED')
+            else:
+                h['new'](root / name, raw)
+
         policy_name = 'ouf-stage-' + role
         actions = ['s3:GetObject', 's3:PutObject']
         if role == 'onboarding':
@@ -73,22 +101,20 @@ def identities(h, bundle, buckets):
                         'policyNames': [policy_name]})
         policies.append({'name': policy_name, 'content': json.dumps(policy)})
 
-        root = clients / role
-        root.mkdir(mode=0o700)
         if role == 'onboarding':
-            h['new'](root / 'access-key', (key + '\n').encode())
-            h['new'](root / 'secret-key', (secret + '\n').encode())
+            bind('access-key', (key + '\n').encode())
+            bind('secret-key', (secret + '\n').encode())
             env = {'OUF_ONBOARDING_STAGING_ENDPOINT': endpoint, 'OUF_ONBOARDING_STAGING_BUCKET': bucket,
                    'OUF_ONBOARDING_STAGING_ACCESS_KEY_FILE': SECRETS_MOUNT + '/access-key',
                    'OUF_ONBOARDING_STAGING_SECRET_KEY_FILE': SECRETS_MOUNT + '/secret-key'}
         else:
-            h['new'](root / 'credentials', (f'[default]\naws_access_key_id = {key}\n'
-                                           f'aws_secret_access_key = {secret}\n').encode())
+            bind('credentials', (f'[default]\naws_access_key_id = {key}\n'
+                                 f'aws_secret_access_key = {secret}\n').encode())
             env = {'OUF_UDP_S3_ENDPOINT': endpoint, 'OUF_UDP_S3_BUCKET': bucket,
                    'OUF_UDP_S3_REGION': 'us-east-1', 'OUF_UDP_S3_PATH_STYLE': 'true',
                    'AWS_SHARED_CREDENTIALS_FILE': SECRETS_MOUNT + '/credentials',
                    'AWS_PROFILE': 'default', 'AWS_EC2_METADATA_DISABLED': 'true'}
-        h['new'](root / 'binding.private.json', h['canonical']({
+        bind('binding.private.json', h['canonical']({
             'environment': env, 'privateSecretMount': SECRETS_MOUNT, 'caFile': 'config/tls/ca.pem'}))
     return auth, {'identities': entries, 'policies': policies}
 
@@ -120,7 +146,7 @@ def tls(h, config, env, need):
     return dest
 
 
-def execute(stage, report):
+def execute(stage, report, resume):
     need, load, env = stage['need'], stage['load'], stage['ENV']
     need(os.geteuid() == 0 and sys.flags.isolated and sys.flags.no_site
          and sys.dont_write_bytecode, 'ISOLATED_ROOT_REQUIRED')
@@ -181,24 +207,56 @@ def execute(stage, report):
     need(img['Id'] == image and img['Config']['User'] == '10001:10001', 'LOCAL_IMAGE_BINDING')
 
     bundle = scope / 'application-s3-v1'
-    parent = h['runtime_parent'](bundle)
+    proof = bundle / 'access-proof-v2' if resume else bundle
+    config = bundle / 'config'
+    if resume:
+        prior = read(bundle / 'claim.private.json')
+        prior_name = prior['containerName']
+        need(prior.get('schema') == SCHEMA and prior.get('manifestSha256') == r['BODY_MANIFEST']
+             and prior.get('daemonImageId') == image and re.fullmatch('ouf-oci33-bind-[a-f0-9]{24}', prior_name)
+             and not os.path.lexists(bundle / 'result.json'), 'HELD_STAGING_CLAIM_MISMATCH')
+        need(not docker('ps', '-aq', '--filter', 'name=^/' + prior_name + '$'), 'PRIOR_BINDING_CONTAINER_PRESENT')
+    parent = h['runtime_parent'](proof)
     try:
-        os.mkdir(bundle.name, 0o700, dir_fd=parent)
+        os.mkdir(proof.name, 0o700, dir_fd=parent)
     finally:
         os.close(parent)
     token = secrets.token_hex(12)
     name = 'ouf-oci33-bind-' + token
-    h['new'](bundle / 'claim.private.json', h['canonical']({
+    h['new'](proof / 'claim.private.json', h['canonical']({
         'schema': SCHEMA, 'containerName': name, 'manifestSha256': r['BODY_MANIFEST'],
         'daemonImageId': image}))
-    config = bundle / 'config'
-    config.mkdir(mode=0o700)
-    auth, iam = identities(h, bundle, buckets)
-    certs = tls(h, config, env, need)
-    h['new'](config / 'filer.toml', b'[leveldb2]\nenabled = true\ndir = "/data/metadata"\n')
-    h['new'](config / 's3.json', h['canonical'](iam))
-    for path in (*config.rglob('*'), config):
-        os.chown(path, 10001, 10001)
+    filer_config = b'[leveldb2]\nenabled = true\ndir = "/data/metadata"\n'
+    if resume:
+        auth, iam = identities(h, bundle, buckets, reuse=True)
+        certs = config / 'tls'
+        for path in (config, certs):
+            info = path.lstat()
+            need(stat.S_ISDIR(info.st_mode) and info.st_uid == 10001
+                 and stat.S_IMODE(info.st_mode) == 0o700, 'STAGING_SERVER_CONFIG_DIRECTORY')
+        for path in (config / 'filer.toml', config / 's3.json', *(certs / name for name in ('ca.pem', 'server.key', 'server.pem'))):
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(fd, 'rb') as stream:
+                info = os.fstat(stream.fileno())
+                need(stat.S_ISREG(info.st_mode) and info.st_uid == 10001 and info.st_nlink == 1
+                     and stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size <= 32768,
+                     'STAGING_SERVER_CONFIG_FILE')
+                raw = stream.read(32769)
+                need(h['frame'](path.lstat()) == h['frame'](os.fstat(stream.fileno())) == h['frame'](info),
+                     'STAGING_SERVER_CONFIG_CHANGED')
+            if path.name == 'filer.toml':
+                need(raw == filer_config, 'STAGING_FILER_CONFIG_CHANGED')
+            if path.name == 's3.json':
+                need(raw == h['canonical'](iam), 'STAGING_IAM_CONFIG_CHANGED')
+        report['existingBindingsReused'] = True
+    else:
+        config.mkdir(mode=0o700)
+        auth, iam = identities(h, bundle, buckets)
+        certs = tls(h, config, env, need)
+        h['new'](config / 'filer.toml', filer_config)
+        h['new'](config / 's3.json', h['canonical'](iam))
+        for path in (*config.rglob('*'), config):
+            os.chown(path, 10001, 10001)
     report['privateBindingsPrepared'] = 2
 
     need(not docker('ps', '-q'), 'STAGING_RUNTIME_PRECONDITION')
@@ -225,7 +283,8 @@ def execute(stage, report):
              'BINDING_CONTAINER_ISOLATION')
         return item['State']
 
-    def get(role, row):
+    def get(role, row, expected=200):
+        need(report['s3GetRequests'] < 18, 'STAGING_S3_GET_BUDGET')
         report['s3GetRequests'] += 1
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
         path = '/' + row['bucket'] + '/' + quote(row['key'], safe='/')
@@ -239,9 +298,18 @@ def execute(stage, report):
             return None
         need(p.returncode == 0, 'STAGED_TLS_CLIENT_' + str(p.returncode))
         status, body = json.loads(p.stdout)
-        if status == 503:
-            return None
-        return status, base64.b64decode(body, validate=True)
+        report['tlsVerified'] = True
+        body = base64.b64decode(body, validate=True)
+        if status >= 400 and status != expected:
+            report['lastHttpErrorStatus'] = status
+            try:
+                code = ET.fromstring(body).findtext('{*}Code')
+            except ET.ParseError:
+                code = None
+            known = {'InternalError', 'ServiceUnavailable', 'AccessDenied', 'NoSuchKey', 'NoSuchBucket',
+                     'InvalidAccessKeyId', 'SignatureDoesNotMatch', 'SlowDown'}
+            report['lastS3ErrorCode'] = code if code in known else 'UNCLASSIFIED'
+        return status, body
 
     try:
         state()
@@ -250,11 +318,13 @@ def execute(stage, report):
         need(running['Running'] and running['Pid'] > 0, 'BINDING_CONTAINER_START')
         net = os.open(f"/proc/{running['Pid']}/ns/net", os.O_RDONLY)
         need(state()['Pid'] == running['Pid'], 'BINDING_NAMESPACE_CHANGED')
-        until = time.monotonic() + 40
+        until = time.monotonic() + 45
         for index, role in enumerate(ROLES):
             result = get(role, samples[role])
-            while index == 0 and result is None and time.monotonic() < until:
-                time.sleep(1)
+            while (index == 0 and (result is None or result[0] in (500, 502, 503, 504))
+                   and time.monotonic() < until and report['s3GetRequests'] < 15):
+                report['startupReadinessRetries'] += 1
+                time.sleep(2)
                 result = get(role, samples[role])
             need(result is not None, 'STAGING_TLS_READY_TIMEOUT')
             status, body = result
@@ -262,12 +332,32 @@ def execute(stage, report):
                  role.upper() + '_OWN_OBJECT_READ_' + str(status))
             report['ownBucketBodiesVerified'] += 1
             other = ROLES[1 - index]
-            result = get(role, samples[other])
+            result = get(role, samples[other], expected=403)
             need(result is not None and result[0] == 403
                  and ET.fromstring(result[1]).findtext('{*}Code') == 'AccessDenied',
                  role.upper() + '_CROSS_BUCKET_DENIAL_REQUIRED')
             report['crossBucketAccessDenied'] += 1
-        report['tlsVerified'] = True
+    except Exception:
+        # Keep the exact process diagnostics private even when the public receipt is redacted.
+        try:
+            logs = subprocess.run(docker_base + ['logs', '--tail', '80', cid], stdin=subprocess.DEVNULL,
+                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env, timeout=8)
+            if logs.returncode == 0 and logs.stdout:
+                retained = logs.stdout[-262144:]
+                h['new'](proof / 'container-log.private', retained)
+                report['privateContainerLogRetained'] = True
+                patterns = {
+                    'volumeLookup': rb'failed to (lookup|locate).*volume|no (volume )?location|volume.*not found',
+                    'connectionRefused': rb'connection refused|failed to connect',
+                    'filerError': rb'filer.*(unavailable|failed|error)|failed.*filer',
+                    'objectReadError': rb'fail(ed)? to read|failed to fetch|no such file',
+                    'permissionDenied': rb'permission denied|access denied',
+                }
+                report['privateLogHints'] = [label for label, pattern in patterns.items()
+                                             if re.search(pattern, retained, re.IGNORECASE)]
+        except (OSError, subprocess.SubprocessError):
+            pass
+        raise
     finally:
         if net is not None:
             os.close(net)
@@ -278,17 +368,18 @@ def execute(stage, report):
 
     need(not docker('ps', '-q'), 'OTHER_CONTAINERS_RUNNING_AFTER_BINDING')
     report['status'] = 'ISOLATED_OCI33_APP_BINDINGS_READY'
-    h['new'](bundle / 'result.json', h['canonical'](report))
+    h['new'](proof / 'result.json', h['canonical'](report))
 
 
-def main(stage):
+def main(stage, resume=False):
     os.umask(0o077)
     report = {'schema': SCHEMA, 'status': 'HELD', 'privateBindingsPrepared': 0,
               'ownBucketBodiesVerified': 0, 'crossBucketAccessDenied': 0, 's3GetRequests': 0,
-              'tlsVerified': False, 'temporaryContainerRemoved': False,
+              'tlsVerified': False, 'temporaryContainerRemoved': False, 'startupReadinessRetries': 0,
+              'existingBindingsReused': False, 'privateContainerLogRetained': False,
               'applicationContainersStarted': 0, 'acceptanceCreditAdded': 0}
     try:
-        execute(stage, report)
+        execute(stage, report, resume)
     except Exception as exc:
         report['status'] = 'HELD'
         reason = str(exc)
