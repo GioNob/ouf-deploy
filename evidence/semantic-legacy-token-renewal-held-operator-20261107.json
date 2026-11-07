@@ -1,0 +1,43 @@
+{
+  "applicationConfigurationChanged": false,
+  "applicationLoadedPolicyProven": false,
+  "businessRequestsIssued": 0,
+  "credentialValuesEmitted": false,
+  "databaseQueriesIssuedByScript": 0,
+  "existingProducerMayRequestTokens": true,
+  "observedAt": "2026-11-07T19:06:36.100688+00:00",
+  "permissionChanges": 0,
+  "policyGetAttempts": 0,
+  "reason": "EXISTING_UNMASKED_SERVICE_REQUIRED",
+  "s3Requests": 0,
+  "schema": "ouf.semantic-token-renewal.v1",
+  "serviceBefore": {
+    "ActiveState": "inactive",
+    "ExecMainStatus": "0",
+    "LoadState": "masked",
+    "Restart": "no",
+    "Result": "success",
+    "SubState": "dead",
+    "Type": "",
+    "UnitFileState": "masked",
+    "User": ""
+  },
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "HELD",
+  "timerBefore": {
+    "ActiveState": "inactive",
+    "LoadState": "masked",
+    "SubState": "dead",
+    "UnitFileState": "masked"
+  },
+  "timerEnableDispatched": false,
+  "tokenBefore": {
+    "claimsAreMetadataOnly": true,
+    "expiredAtRead": true,
+    "expiryEpoch": 1794006530,
+    "expiryUtc": "2026-11-06T23:08:50+00:00",
+    "notYetValidAtRead": false,
+    "signatureVerifiedLocally": false
+  }
+}

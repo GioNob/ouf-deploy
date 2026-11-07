@@ -1,5 +1,10 @@
 # OUF 2 — istruzioni operative
 
+## Produttore token Semantic — correzione del 7 novembre 2026
+
+Il rinnovo corrente usa `ouf-registry-token-7cb59501000058b5dc5030ad.service`, servizio continuo operativo. La coppia `ouf-policy-token@semantic.service/.timer` era già masked/inactive prima della cattura: **non smascherarla né selezionarla per il ripristino**. La cattura ha fermato/disabilitato il produttore operativo; l'avviatore generale lo omette. Il primo comando del 7 novembre alle 19:06 UTC ha scelto il legacy e si è fermato senza effetti. Leggere [stato e comando corretto](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md); riusare installazione e registro esistenti, senza reset. Ripartenza corretta preparata, non ancora provata sul VPS. Dopo il successo completare il percorso generale di ripristino e provare ricerca MCP e rinnovo successivo.
+
+
 ## Priorità corrente dell'owner — 7 novembre 2026
 
 Far funzionare SeaweedFS, poi rendere ripetibile l'E2E CSV fino al grafo UDP. Industrializzazione, DR, RPO/RTO e chiusura formale dei gate di produzione sono rinviati: non usarli come prerequisiti della prova funzionale non produttiva.

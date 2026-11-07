@@ -409,7 +409,7 @@
       "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json"
     },
     "nextSemanticTokenRenewal": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "SUPERSEDED_AFTER_NO_EFFECT_HELD",
       "scriptCommit": "591041c8c546c17cee56b129b1a5c908215cbfc0",
       "script": "scripts/restore-current-semantic-policy-token-20261107.py",
       "sha256": "83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d",
@@ -419,6 +419,22 @@
       "applicationRestart": false,
       "permissionsChanged": false,
       "localChecks": "PASS_OFFLINE_MOCKED_SYSTEMD_AND_HTTP",
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "operatorReceipt": "evidence/semantic-legacy-token-renewal-held-operator-20261107.json",
+      "reason": "WRONG_LEGACY_PRODUCER_SELECTED_ALREADY_MASKED_BEFORE_CAPTURE"
+    },
+    "nextSemanticOperationalOwnerResume": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "scriptCommit": "1d0a93a9dbb3dd1a3f26a9fa92c71af841427084",
+      "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
+      "sha256": "f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e",
+      "legacyMustRemainMasked": true,
+      "existingOwnerStoppedByCapture": true,
+      "generalRuntimeRestoreOmitsOwner": true,
+      "localChecks": "PASS_13_OFFLINE_SCENARIOS",
+      "applicationLoadedPolicyProven": false,
+      "automaticRenewalCycleProven": false,
       "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md"
     }
   },
@@ -494,7 +510,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute guarded existing Semantic producer renewal; verify mounted fresh token and policy HTTP200 before enabling existing timer; then reattempt governed semantic search.",
+  "nextAction": "Resume existing continuous registry token owner; keep legacy units masked. Verify current mounted publication and policy GET200, enable existing owner, then retry MCP semantic search.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -521,7 +537,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Semantic is running; its mounted policy token is expired and policy GET returns401. Existing-producer renewal is prepared but not executed. Search, UDP application lake operation and E2E remain unproven.",
+    "reason": "Semantic running; policy token expired. First renewal command held without effects because it selected the masked legacy producer. Correct installed continuous owner resume prepared, VPS pending. Search, UDP application lake operation and E2E unproven.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [

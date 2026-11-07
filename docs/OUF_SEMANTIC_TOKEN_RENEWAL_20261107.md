@@ -1,64 +1,69 @@
 # Ripristino del rinnovo del token Semantic
 
-**Preparato e verificato localmente; esecuzione VPS pendente.**
+**Correzione del produttore selezionato. Preparato e verificato localmente; esecuzione VPS pendente.**
 
-La [ricevuta delle 18:52:14 UTC del 7 novembre](../evidence/semantic-current-policy-expired-token-operator-20261107.json) prova che il token letto dal mount del container è scaduto alle **23:08:50 UTC del 6 novembre** e coincide con la sorgente host. Un GET all'endpoint configurato della policy usando quel token termina **401**. Semantic continua a eseguire Java. La chiave di delega ha formato valido, ma nessuna ricevuta di richiesta è stata verificata.
+## Risultato del comando precedente
 
-È un guasto concreto nel canale di caricamento della policy; non prova che sia l'unica causa del 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`. Il trasporto della prova è quello HTTPS dell'host, non quello della JVM.
+La [ricevuta delle 19:06:36 UTC](../evidence/semantic-legacy-token-renewal-held-operator-20261107.json) termina HELD: `ouf-policy-token@semantic.service` e timer sono masked/inactive. Nessun avvio, abilitazione o GET policy eseguito. Il token resta scaduto alle 23:08:50 UTC del 6 novembre.
 
-## Azione
+Il precedente script `restore-current-semantic-policy-token-20261107.py` selezionava il produttore sbagliato. **È superato; non rilanciarlo e non smascherare le unità legacy.** La [lettura del 6 novembre](../evidence/storage-runtime-writer-metadata-operator-20261106.json) distingueva già la coppia legacy mascherata dal produttore operativo `ouf-registry-token-7cb59501000058b5dc5030ad.service`, attivo/running/enabled. La [continuazione della cattura](../evidence/storage-host-continuation-success-operator-20261107.json) registra `registryDisabledAndStopped=true`. L'avviatore generale attuale ripristina cinque altri produttori e omette questo servizio. Queste evidenze erano disponibili e avrebbero dovuto essere lette prima del comando precedente.
 
-Il comando verifica prima l'esatta configurazione corrente Semantic. Legge i metadati del servizio `ouf-policy-token@semantic.service`, del suo timer, il programma installato e la configurazione selezionata. Lo storico identifica quel produttore ma **non ne prova lo stato odierno**: il comando ammette solo la sorgente già osservata, SHA-256 `728b4c44d0e24b3c3bfc31769346c0c05752e870e93c096fac1c2897250e5c79`, unità root oneshot non mascherata, nessun hook aggiuntivo e timer esistente a un minuto.
+## Azione corretta
 
-Confronta output del produttore, mount corrente, gruppo, issuer, client e scope del token montato. I claim decodificati sono metadati, non una verifica locale della firma. I valori restano privati. Un programma cambiato, un servizio mascherato, una destinazione diversa o uno stato non supportato causano HELD prima degli effetti.
+Riavviare il **servizio operativo continuo già installato**, poi ripristinarne l'abilitazione al boot. Non è una nuova installazione né il ripristino del timer legacy.
 
-Se il token è ancora scaduto o ha meno di 60 secondi residui:
-1. Registra un tentativo esclusivo in `/var/lib/ouf-storage-migration/semantic-policy-renewals/`.
-2. Invoca una sola volta il servizio di rinnovo esistente; il produttore può richiedere un nuovo token.
-3. Rilegge il token dal mount e richiede più di 60 secondi residui; effettua un solo GET della policy.
-4. Solo dopo HTTP 200 e risposta policy valida abilita/avvia il timer esistente. Attende l'intervallo normale di refresh Semantic più due secondi (32 secondi con la configurazione osservata).
+Il comando controlla la configurazione conservata di Semantic, la review operativa già installata, gli hash della configurazione e dell'unità, il comando caricato da systemd e la corrispondenza fra output del produttore e token montato. Verifica issuer/client/scope come metadati; non presenta la decodifica dei claim come verifica della firma.
 
-Se trova già un token sufficientemente fresco, riusa quello senza invocare manualmente il produttore. Non crea nuovi servizi o identità, non cambia grant/configurazione applicativa, non riavvia Semantic e non tocca S3 o SQL diretto. Il timer abilitato effettuerà i successivi rinnovi secondo la sua configurazione.
+Legge il registro dei tentativi senza modificarlo. Prima di avviare si ferma su BLOCKED/REVOKED o su DISPATCHING/PUBLISHING di un processo fermo: non cancella esiti incerti e non azzera contatori. Il produttore esistente effettua i propri controlli firmati e gestisce rinnovi, contatori, frequenza e backoff.
 
-Un errore dopo il dispatch non autorizza un nuovo tentativo automatico sullo stesso token. Conservare il JSON e il file privato di tentativo; nessun rollback o reset.
+1. Mantiene entrambe le unità legacy mascherate/inattive.
+2. Se il produttore corretto è fermo, registra un tentativo privato esclusivo ed esegue un solo `systemctl start`. Se è già attivo, osserva senza riavviarlo.
+3. Attende al massimo 90 secondi una pubblicazione ACTIVE, token montato con oltre 60 secondi residui e hash uguale a quello registrato dal produttore.
+4. Esegue un solo GET della policy, dal trasporto HTTPS dell'host.
+5. Solo dopo HTTP 200 e risposta policy valida abilita il medesimo servizio al boot, se disabilitato. Attende il refresh dichiarato di Semantic più due secondi.
+
+Il programma non legge il client secret, non cambia grant, configurazione applicativa, reti o container e non emette credenziali. Il produttore riattivato può leggere la propria credenziale, richiedere token e aggiornare il proprio registro. Un HELD dopo l'avvio **può lasciare il produttore in esecuzione**: conservare l'esito, non rilanciare alla cieca e non resettare file o contatori.
 
 ## Comando attuale
 
-Codice `591041c8c546c17cee56b129b1a5c908215cbfc0`; file 16776 byte, SHA-256 `83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d`. [Preparazione e test](../evidence/semantic-existing-token-renewal-preparation-20261107.json).
+Codice [`1d0a93a9`](https://github.com/GioNob/ouf-deploy/commit/1d0a93a9dbb3dd1a3f26a9fa92c71af841427084); script 12441 byte, SHA-256 `f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e`. [Preparazione](../evidence/semantic-operational-owner-resume-preparation-20261107.json).
 
 ```bash
-sudo /usr/bin/timeout 300 /usr/bin/python3 -I -B -S - <<'PY'
+sudo /usr/bin/timeout 360 /usr/bin/python3 -I -B -S - <<'PY'
 import hashlib
 import urllib.request
 
-base = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/591041c8c546c17cee56b129b1a5c908215cbfc0/scripts/'
+base = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/1d0a93a9dbb3dd1a3f26a9fa92c71af841427084/scripts/'
 files = [
     ('ouf-runtime-20261107.py', 30554, 'b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b'),
     ('read-current-semantic-policy-20261107.py', 13307, '28c17fd6fd7611efbcb5307644be0d2f44e0b745652f79bc0d70eeaedb8763d5'),
-    ('restore-current-semantic-policy-token-20261107.py', 16776, '83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d'),
+    ('observe-registry-operational-owner-20261024.py', 10724, '92da54e145df58f929c5aaa383f14b7a81bc742b173182a3a66d02232abb1760'),
+    ('resume-current-semantic-operational-owner-20261107.py', 12441, 'f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e'),
 ]
-sources = {}
+sources = []
 for name, size, expected in files:
     with urllib.request.urlopen(base + name, timeout=20) as response:
         raw = response.read(size + 1)
     if len(raw) != size or hashlib.sha256(raw).hexdigest() != expected:
         raise SystemExit('STOP: dimensione o SHA-256 non corrispondente')
-    sources[name] = raw
-runtime = {'__name__': 'retained_runtime_reader'}
-policy = {'__name__': 'current_policy_reader'}
-exec(compile(sources[files[0][0]], files[0][0], 'exec'), runtime)
-exec(compile(sources[files[1][0]], files[1][0], 'exec'), policy)
-exec(compile(sources[files[2][0]], files[2][0], 'exec'),
-     {'__name__': '__main__', 'RUNTIME_READER': runtime, 'POLICY_READER': policy})
+    sources.append(raw)
+helpers = []
+for (name, _, _), raw in zip(files[:3], sources[:3]):
+    namespace = {'__name__': 'read_only_helper'}
+    exec(compile(raw, name, 'exec'), namespace)
+    helpers.append(namespace)
+exec(compile(sources[3], files[3][0], 'exec'), {
+    '__name__': '__main__', 'RUNTIME_READER': helpers[0],
+    'POLICY_READER': helpers[1], 'OWNER_READER': helpers[2]})
 PY
 ```
 
-Esito atteso: `SEMANTIC_TOKEN_RENEWED_POLICY_GET_OK_TIMER_ACTIVE`. Incollare il JSON anche in caso HELD; non rilanciare alla cieca.
+Esito atteso: `SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK`. Incollare il JSON anche in caso HELD.
 
-## Verifica successiva e limiti
+## Cosa resta da provare
 
-Riprovare `semantic.search(q=teatro, limit=20)` tramite MCP dopo l'esito positivo. Il comando non prova la policy in memoria della JVM, la ricevuta firmata, un intero ciclo automatico di rinnovo o l'E2E. Se la ricerca resta 403, distinguere quei controlli con evidenza della richiesta reale.
+Dopo il successo riprovare `semantic.search(q=teatro, limit=20)` tramite MCP. Il GET host 200 non prova il caricamento della policy nella JVM o la verifica della ricevuta della richiesta. Il 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED` resta aperto fino alla prova applicativa. Il singolo rinnovo non certifica un ciclo automatico successivo.
 
-I test locali usano un produttore sintetico e systemd/HTTP simulati: verificano i binding, l'ordine degli effetti, i dinieghi, il riuso di un token fresco, l'assenza di retry e la non divulgazione. Non sono una prova del servizio sul VPS.
+I 13 scenari locali usano systemd/HTTP simulati: avvio del produttore corretto, riuso se attivo, produttore legacy invariato, binding errato, comando differente, stati incerti del registro, deriva applicativa, avvio fallito e policy 401. Nessuna esecuzione VPS locale.
 
-Il tema MacAddress conserva il [precedente recuperato](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md); questo intervento non modifica guard, impronte o reti.
+Dopo la verifica live, integrare questo servizio continuo nel percorso generale di ripartenza senza trattarlo come uno dei cinque timer. Resta inoltre aperto il confronto [MacAddress](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md): questo intervento non modifica impronte o guard dei container.
