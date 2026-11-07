@@ -210,3 +210,9 @@ Commit `099f30a0d38af8170db5a5ddb67a055660bdaf1a`: v2 legge gli hook tipizzati e
 Ricevuta operatore: TYPED_SERVICE_METADATA_READ_FAILED, zero modifiche/avvii/GET policy. Ora verificati path/byte dell'override e i tre nomi omessi (ExecStartPre, ExecStartPost, ExecCondition). La fase D-Bus e il messaggio d'errore non sono conservati dalla v2; causa aperta. Nessun successo operativo deducibile dai 19 scenari simulati.
 
 Preparata [lettura mirata](OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md), commit `9745f249627469567f4a49d2cc7c3120b9bb4c90`: GetUnit e singole proprietà, exit code/stderr del comando, solo tipo/conteggio dei risultati riusciti. Nessun token, LoadUnit o mutazione. Verifica sintattica locale; VPS pendente. Ripristino v2 sospeso fino alla diagnosi; F1 PASS e F2–F6 invariati.
+
+## 7 novembre 2026, 20:56 CET — GetUnit su unità non caricata; controllo dai file verificati
+
+La diagnosi riporta GET_UNIT exit1, unità non caricata. Nessun effetto e nessuna lettura degli hook. La dipendenza v2 da un'unità già presente in memoria era inappropriata per il produttore inattivo; il preciso momento di scaricamento non è osservato.
+
+Commit `c30f8c287bf4bb78cc07d73e18407eb019eec66e`: v3 controlla il main fragment vincolato all'hash e tutti i drop-in riportati da systemd, con NeedDaemonReload=no. Richiede assenza esplicita di hook nei file, ammette solo direttive previste rete/cattura nei drop-in, rifiuta sintassi non gestita. Nessun busctl, nessuna inferenza di vuoto da proprietà omessa. Conservati controlli su registro, override esatto, token/policy e abilitazione. 25 scenari locali PASS con systemd/HTTP simulati e file temporanei reali. VPS pendente. [Comando v3](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md). F1 PASS, F2–F6 aperti.
