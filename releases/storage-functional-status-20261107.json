@@ -17,8 +17,8 @@
     "newVulnerabilityScans": 0
   },
   "coordination": {
-    "ths403": "SOLE_AGENT_POLICY_DEFECT_REPRODUCED_HUMAN_THS_REVIEW_PENDING",
-    "lastRepositoryObservation": "Keycloak example token contains expected claims; original evaluator rejects current admin upload constraints on empty picker resource; browser retest pending.",
+    "ths403": "POLICY_60_PUBLISHED_PICKER_OPEN_FIRST_ASSET_STAGED",
+    "lastRepositoryObservation": "User reports Farmacie then Teatri in same picker; handoff read STAGED for first asset, second attempt HTTP_500. Handoff reuse defect reproduced locally; second persistence outcome unresolved.",
     "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
     "sharedBranch": "feat/m2-discovery-complete-profile-20261029"
   },
@@ -134,7 +134,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Read human THS proposal outcome and resulting policy, retest browser picker; then F1 application PUT/GET on SeaweedFS. No browser or storage success claimed.",
+  "nextAction": "Execute read-current-storage-bindings-20261107.py on VPS; then prepare equivalent S3 PUT/GET comparison on exact selected image/network/identity/CA. Do not repeat Teatri upload through consumed handoff.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -313,9 +313,12 @@
     "liveConfiguredPolicyRead": true,
     "syntheticEvaluatorChecks": 13,
     "checksResult": "PASS",
-    "humanProposalStateAtReceipt": "PENDING",
-    "browser403Resolved": false,
+    "humanProposalStateAtReceipt": "PUBLISHED",
     "storage502Resolved": false,
-    "industrializationDeferred": true
+    "industrializationDeferred": true,
+    "currentPolicy": "ouf-lab-authorization:60",
+    "browser403ResolvedForObservedPicker": true,
+    "currentEvidenceCommit": "f2797455cefc4c867db7c168fb89af888fc5f00c",
+    "currentEvidencePath": "evidence/ths-upload-reuse-storage-next-20261107.json"
   }
 }

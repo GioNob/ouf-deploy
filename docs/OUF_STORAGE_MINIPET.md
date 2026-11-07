@@ -11,7 +11,7 @@ Due risultati, in quest'ordine:
 1. **STORAGE FUNZIONANTE:** OUF scrive e legge realmente su SeaweedFS, usando i propri servizi e riferimenti; il percorso verificato non dipende più da MinIO.
 2. **E2E RIPETIBILE:** un CSV passa da chatbot/upload a Onboarding, semantica, Ingestion, riconciliazione e grafo UDP; la procedura riesce di nuovo senza correzioni manuali dei dati o dello storage tra le due esecuzioni.
 
-Giovanni ha fermato il filone parallelo: anche il 403/THS è ora in carico al solo agente principale. Il grant upload admin richiede attributi assenti dal contesto del selettore; il diniego è riprodotto nel valutatore originale. Una proposta THS corregge soltanto questa voce, ma conferma e verifica browser sono ancora pendenti. [Evidenza](../evidence/ths-upload-role-diagnosis-20261107.json). Il 502 della prova isolata Onboarding→SeaweedFS è un problema distinto finché una prova non li collega.
+Giovanni ha fermato il filone parallelo: anche il 403/THS è ora in carico al solo agente principale. Il grant upload admin richiede attributi assenti dal contesto del selettore; il diniego è riprodotto nel valutatore originale. La correzione è pubblicata nella policy :60: il selettore si apre e il primo asset risulta STAGED. Il successivo tentativo Teatri nello stesso link ha dato HTTP_500; il rifiuto del riuso è riprodotto sul codice, ma l'esito della seconda scrittura va riconciliato. [Stato aggiornato](STATE.md). [Evidenza](../evidence/ths-upload-role-diagnosis-20261107.json). Il 502 della prova isolata Onboarding→SeaweedFS è un problema distinto finché una prova non li collega.
 
 Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema pronto per la produzione né chiude automaticamente l'intero contratto M2.
 
@@ -94,7 +94,7 @@ Il comando `seaweedfs` esistente avvia un servizio aggregato su rete interna, se
 
 ## 5. Regole pratiche per non ricreare il problema
 
-1. **Un risultato alla volta.** Nel filone storage si lavora su F1 finché è riuscito o ha un blocco identificato. Il 403 è ora nello stesso filone: applicare la proposta tramite THS e verificarne l’esito senza confonderlo con la prova storage.
+1. **Un risultato alla volta.** Nel filone storage si lavora su F1 finché è riuscito o ha un blocco identificato. Il 403 è ora nello stesso filone: preservare l'esito pubblicato e risolvere il riuso del selettore senza confonderlo con la prova storage.
 2. **Una diagnosi deve scegliere il prossimo intervento.** Prima di un'altra prova scrivere ipotesi, osservazione che la distingue e correzione possibile. Se non distingue nulla, non eseguirla. Dopo due iterazioni senza nuova informazione, riesaminare configurazione e approccio invece di aggiungere strumenti.
 3. **Riuso delle prove.** Non rifare cifratura, restore storico, confronto dei 120 oggetti o test già superati se input e codice interessati non sono cambiati. Ripetere solo la verifica resa necessaria da una modifica o dall'avanzamento dei dati.
 4. **Stato compatto.** Ogni aggiornamento riporta risultato funzionale, errore attuale, prova e prossimo passo. Niente percentuali, contatori di test come progresso o checkpoint impilati in AGENTS.
@@ -112,7 +112,7 @@ I dieci asset legacy senza proprietà provata e le altre classificazioni G0 non 
 
 ## 7. Tempi, limiti e consegna
 
-Non c'è una data di fine attendibile: la causa del 502 non è ancora provata, il binding effettivo deve essere verificato e la correzione THS attende la verifica nella sessione reale. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
+Non c'è una data di fine attendibile: la causa del 502 non è ancora provata, il binding effettivo deve essere verificato e il riuso del selettore richiede correzione e riconciliazione. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
 
 Dopo F1 si stima F2 sulla configurazione realmente corretta; dopo il primo E2E si misurano i tempi del secondo. Ogni blocco di lavoro deve produrre una correzione verificata, una prova funzionale o un impedimento preciso con l'azione necessaria. Se serve un'azione sul VPS, consegnare il solo comando attuale e il risultato richiesto, non una serie di preparazioni speculative.
 

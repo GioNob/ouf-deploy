@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.ths-upload-reuse-and-storage-next-step.v1",
+  "date": "2026-11-07",
+  "userReport": {
+    "firstFile": "Farmacie",
+    "secondFile": "teatri_trieste.csv",
+    "secondBrowserResult": "HTTP_500",
+    "samePickerPreviouslyUsed": true
+  },
+  "liveRead": {
+    "handoffId": "1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce",
+    "status": "STAGED",
+    "assetId": "8061fad3-1a8b-4f65-9e4a-bfead7974cb7",
+    "fileNameNotExposedByStatus": true,
+    "doNotAttributeAssetToTeatri": true
+  },
+  "authorization": {
+    "policy": "ouf-lab-authorization:60",
+    "selectorOpened": true,
+    "previous403NoLongerBlocksObservedSelector": true,
+    "entireE2eAuthorizationNotProven": true
+  },
+  "codeDiagnosis": {
+    "repository": "GioNob/ouf-source-onboarding",
+    "commit": "73498c17596ae155a3ed9ab36acfd6bb69da9846",
+    "facts": [
+      "managed-file-picker.js reenables the send button in finally, including after successful handoff upload.",
+      "ManagedFilePickerPage forwards upload to Gateway before handoffs.complete.",
+      "ManagedFileChatHandoff.complete throws SecurityException when the handoff already refers to a different asset.",
+      "The existing receipt is preserved; ManagedFileStagingApi writes storage and registers an asset before picker handoff completion."
+    ],
+    "reproduction": "Original handoff class compiled and executed locally with metadata annotation stub and in-memory owner check; first asset retained, identical completion accepted, different asset rejected.",
+    "actualServerExceptionObserved": false,
+    "secondAssetPersistence": "NOT_YET_RECONCILED",
+    "deployedFix": false
+  },
+  "storageDiagnosis": {
+    "isolated502Cause": "UNKNOWN",
+    "errorCode": "ONB_STAGING_WRITE_FAILED",
+    "applicationMapsEveryPutExceptionTo502": true,
+    "clientLibrary": "io.minio.MinioClient, not AWS Java SDK",
+    "failedFixtureEndpoint": "https://localhost:9002",
+    "failedFixtureCustomCaImportPresentInLauncher": true,
+    "failedFixtureContainersRemoved": true,
+    "currentRuntimeImageAndBindingsReadbackPending": true,
+    "alternativeClientSuccessWouldNarrowButNotProveJavaSdkBug": true,
+    "requiredComparison": [
+      "same payload bytes",
+      "same S3 identity and bucket",
+      "same target service generation and hostname",
+      "same network context",
+      "correct CA verification",
+      "PUT plus GET body hash"
+    ],
+    "externalClientFailureAloneDoesNotIdentifyFilerOrProxy": true
+  },
+  "next": {
+    "script": "scripts/read-current-storage-bindings-20261107.py",
+    "scriptSha256": "d955619318bb0bd5b039b9dd7c352377b8831a8b4e51125409594c9290f66d36",
+    "validation": "Python AST parse only; not executed on VPS",
+    "effects": "Reads pinned retained plan and current Docker metadata, probes executable availability inside running Onboarding; no S3/DB requests, no service configuration changes, no credential values or raw logs printed.",
+    "afterReadback": "Choose current application generation and prepare minimal equivalent PUT/GET comparison; preserve prior attempts."
+  },
+  "claims": {
+    "seaweedfsWorksForApplication": false,
+    "e2eComplete": false,
+    "http500RootCauseProvenFromLiveLogs": false
+  }
+}

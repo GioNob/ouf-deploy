@@ -4,7 +4,7 @@
 
 Far funzionare SeaweedFS, poi rendere ripetibile l'E2E CSV fino al grafo UDP. Industrializzazione, DR, RPO/RTO e chiusura formale dei gate di produzione sono rinviati: non usarli come prerequisiti della prova funzionale non produttiva.
 
-Giovanni ha fermato il filone parallelo e affidato anche il 403/THS al solo agente principale. La proposta di correzione del grant upload richiede conferma umana THS e successiva verifica browser. Il 502 della prova isolata Onboarding→SeaweedFS è distinto finché una prova non li collega.
+Giovanni ha fermato il filone parallelo e affidato anche il 403/THS al solo agente principale. La correzione del grant upload è pubblicata nella policy :60; il selettore si apre e il primo handoff è STAGED. Il riuso dello stesso link per un altro file ha dato HTTP_500: preservare la prima ricevuta e riconciliare il secondo esito prima di ripetere. Il 502 della prova isolata Onboarding→SeaweedFS è distinto finché una prova non li collega.
 
 ## Da leggere per riprendere
 
