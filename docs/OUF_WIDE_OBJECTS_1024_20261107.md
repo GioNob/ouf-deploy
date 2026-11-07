@@ -2,7 +2,7 @@
 
 Decisione di Giovanni, 7 novembre 2026: portare a **1024** il limite, adeguando i passaggi correlati e il budget di lavoro. Caso concreto: una pratica dello Sportello Unico dell'Edilizia può contenere 300–400 dati. La pratica resta **un unico oggetto logico**; pagine di schema e letture progressive sono dettagli di elaborazione.
 
-Stato: primo incremento di codice qualificato, su cinque PR draft. CI dei cinque moduli riuscita; dettagli e commit esatti nell'evidenza collegata. Nessuna distribuzione VPS, modifica di policy, caricamento, nuova sorgente o acquisizione applicativa. Il budget dinamico dell'intera analisi semantica **non è ancora implementato**. Non presentare il candidato fisso a 60 letture/minuto come soluzione del requisito.
+Stato: primo incremento di codice qualificato, su cinque PR draft. CI dei cinque moduli riuscita; dettagli e commit esatti nell'evidenza collegata. Nessuna distribuzione VPS, modifica di policy, caricamento, nuova sorgente o acquisizione applicativa. Aggiornamento successivo: [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83) aggiunge piano dinamico, esecuzione e progressi persistenti e compone la discovery. [Stato corrente e limiti](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md). Il candidato resta INACTIVE e non distribuito; la sola finestra fissa a 60/minuto non è la soluzione.
 
 ## Catena modificata
 
@@ -73,8 +73,8 @@ La CI Onboarding sul primo candidato corretto ha eseguito **383 test senza error
 ## Sequenza di completamento
 
 1. **Supporto di forma e trasporto:** chiudere la CI dei cinque candidati ed eventuali incompatibilità residue. Stato ed esiti esatti nel JSON collegato. Non dichiarare installazione dal merge o dalla build.
-2. **Budget dinamico effettivo:** associare l'analisi a tenant/soggetto/asset/profilo/versione/hash verificati dal proprietario; dimensionare il lavoro dal profilo e dalle attività effettive, distinguendo ricerche nuove, letture riusabili e retry. Conservare consumo e progresso per colonna. La stessa analisi ripresa non riceve una quota nuova. [Contratto e lavoro aperto](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
+2. **Budget dinamico, candidato PR83:** il coordinatore implementa il collegamento necessario per associare l'analisi a tenant/soggetto/asset/profilo/versione/hash verificati dal proprietario; dimensionare il lavoro dal profilo e dalle attività effettive, distinguendo ricerche nuove, letture riusabili e retry. Conservare consumo e progresso per colonna. La stessa analisi ripresa non riceve una quota nuova. [Implementazione e qualifica](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
 3. **Ripresa attraverso più finestre:** esporre stato, lavoro residuo e attesa; la saturazione temporale non chiude l'analisi. Testare 20/50/100/200/300/400/1024 colonne, riavvio e completamento/irrisolti espliciti. Non inventare coefficienti come se fossero misurati.
 4. **Composizione e prova funzionale:** distribuire un insieme coerente conservando SeaweedFS e gli ID correnti; provare il percorso Teatri conservato fino alla normale scrittura lake UDP, quindi ripeterlo. Usare un fixture distinto per il caso SUE ampio; non ricaricare il file reale per dimostrare i test di codice.
 
-Il lavoro è diviso in incrementi verificabili perché il limite di schema e il coordinamento durevole dell'analisi sono modifiche diverse. Questo documento chiude il rischio di dimenticare i passaggi a valle, **non chiude il requisito complessivo di budget dinamico né F2–F6**.
+Il lavoro è diviso in incrementi verificabili perché il limite di schema e il coordinamento durevole dell'analisi sono modifiche diverse. Questo documento chiude il rischio di dimenticare i passaggi a valle, **non dimostra l'installazione del candidato dinamico né chiude F2–F6**.

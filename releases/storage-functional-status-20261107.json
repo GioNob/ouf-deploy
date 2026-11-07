@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Bind semantic analysis to the verified owned source profile and derive its work budget from actual columns/planned work; preserve progress across rate windows. Fixed 60/min candidate stays draft and is not the dynamic solution. Then complete governed external discovery and shared property mapping, create draft/THS review and run Ingestion→UDP→graph; reuse existing upload/profile.",
+  "nextAction": "Package/deploy the source-qualified composed MCP PR83 with matching Onboarding55, Gateway86 and Registry41; verify target discovery provider/worker, capability publication and current grants, then activate coherent bindings. Run real property discovery on retained Teatri profile, record matches/unresolved columns, then draft/THS/Ingestion→UDP→graph and repeat. Do not reupload/reprofile or reset retained budgets.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -849,7 +849,7 @@
     "profileAuthorizationProposalState": "PUBLISHED"
   },
   "wideObjects1024": {
-    "status": "SOURCE_CANDIDATES_QUALIFIED_DYNAMIC_ANALYSIS_OPEN",
+    "status": "WIDE_AND_DYNAMIC_ANALYSIS_SOURCE_CANDIDATES_QUALIFIED_NOT_DEPLOYED",
     "requiredMaxColumns": 1024,
     "reason": "SUE instances may contain 300–400 fields; one logical object",
     "document": "docs/OUF_WIDE_OBJECTS_1024_20261107.md",
@@ -882,6 +882,40 @@
       }
     ],
     "vpsChanged": false,
-    "dynamicAnalysisBudgetImplemented": false
+    "dynamicAnalysisBudgetImplemented": true,
+    "dynamicAnalysisBudgetInstalled": false,
+    "dynamicAnalysisCandidate": {
+      "repository": "GioNob/ouf-mcp-server",
+      "pr": 83,
+      "commit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+      "evidence": "evidence/profile-analysis-discovery-20261107.json",
+      "publicationState": "INACTIVE"
+    }
+  },
+  "profileAnalysis": {
+    "status": "SOURCE_CANDIDATE_QUALIFIED_NOT_DEPLOYED",
+    "sourceCommit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+    "pr": 83,
+    "evidence": "evidence/profile-analysis-discovery-20261107.json",
+    "document": "docs/OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md",
+    "candidateImplemented": true,
+    "installed": false,
+    "liveDiscoveryTested": false,
+    "semanticMappingsComplete": false,
+    "backgroundScheduler": false,
+    "columnsQualified": [
+      20,
+      50,
+      100,
+      200,
+      300,
+      400,
+      1024
+    ],
+    "sourceQualification": {
+      "targetRunId": 42420569961,
+      "fullRunId": 42420569963,
+      "all23WorkflowsPassed": true
+    }
   }
 }
