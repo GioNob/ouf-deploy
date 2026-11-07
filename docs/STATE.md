@@ -4,7 +4,7 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Risultato corrente
 
-**F1 PASS. Onboarding e UDP collegati a SeaweedFS. Semantic ora esegue Java nello stesso container/immagine e risponde readiness 200/UP. La ricerca MCP supera il precedente blocco di connessione ma termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`. Causa interna del diniego ancora da distinguere.**
+**F1 PASS. Onboarding e UDP collegati a SeaweedFS. Semantic ora esegue Java nello stesso container/immagine e risponde readiness 200/UP. La ricerca MCP supera il precedente blocco di connessione ma termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`. Il token di caricamento della policy è scaduto e il relativo GET risponde 401; resta da verificare se il rinnovo risolve anche il diniego della ricerca.**
 
 - **Policy :61 verificata:** proposta `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PUBLISHED, revisione 1, confermata da Giovanni nella THS. Tre permessi admin corretti per profilazione/stato job/creazione bozza; altri 63 permessi e tutte le 13 assegnazioni invariati.
 - **Upload e lettura riusciti:** handoff `2de7b988-da47-4231-8443-0e5043214c42` → asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` STAGED → job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED → profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto via MCP. CSV UTF-8, separatore `;`, 13 righe e 20 colonne. Codice installato verifica dimensione/hash prima di salvare il profilo; valore hash non esposto dalla preview. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json).
@@ -16,7 +16,9 @@ La ricevuta operatore conferma il passaggio **GATE_WAITING → APPLICATION_RUNNI
 
 Il tentativo MCP successivo `semantic.search(q=teatro, limit=20)`, account `ouf-admin`, restituisce **403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`**; non ripetuto invariato. Il codice installato usa quel codice sia per ricevuta di delega invalida sia per policy assente/scaduta o decisione negativa. Il grant admin di ricerca è presente nel catalogo letto, ma non certifica la policy effettiva caricata in Semantic. [Evidenza e sorgenti esatti](../evidence/semantic-ready-search-denial-20261107.json).
 
-**Prossima azione:** eseguire il [controllo corrente della policy](OUF_SEMANTIC_POLICY_READ_20261107.md): dichiarazioni selezionate, token visto nel mount del container e relativa scadenza, un GET HTTPS all'endpoint configurato. Zero nuovi token, modifiche di permessi, riavvii, richieste business/SQL/S3. Test locali PASS; VPS ancora da eseguire. Un 200 host non sarà presentato come verifica del trasporto JVM o della policy in memoria.
+**Lettura corrente completata alle 18:52:14 UTC:** token montato scaduto il 6 novembre alle 23:08:50 UTC (7 novembre 00:08:50 CET), stesso file della sorgente host, GET policy HTTP 401. Refresh dichiarato ogni 30 secondi, massima staleness 300 secondi, nessun bundle statico dichiarato. Chiave di delega di forma valida; firma della ricevuta non verificata. [Ricevuta](../evidence/semantic-current-policy-expired-token-operator-20261107.json). Nessun rinnovo o cambiamento eseguito dal lettore.
+
+**Prossima azione:** [ripristino del rinnovo esistente](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md). Controlla servizio/program hash/output/issuer/client/scope contro il token montato; un solo avvio manuale se serve, GET policy dopo il rinnovo, timer esistente riattivato solo dopo HTTP 200. Se non corrisponde, HELD prima degli effetti. Nessun nuovo produttore, grant o riavvio applicativo. Test locali PASS; VPS pendente. Dopo successo, riprovare la ricerca MCP: la policy in memoria e la ricevuta non sono ancora provate.
 
 ## Binding storage acquisiti
 

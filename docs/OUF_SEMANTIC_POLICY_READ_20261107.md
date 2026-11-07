@@ -1,6 +1,6 @@
 # Lettura corrente della policy Semantic
 
-**Stato: controllo preparato e verificato localmente; esecuzione VPS pendente.** Semantic è ora avviato nello stesso container e con la stessa immagine, Java come processo init e readiness HTTP 200/UP. La ricerca MCP successiva risponde **403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`**. [Avvio](../evidence/semantic-application-ready-operator-20261107.json) · [Ricerca e analisi del codice](../evidence/semantic-ready-search-denial-20261107.json).
+**Stato: lettura VPS completata.** Token montato scaduto il 6 novembre alle 23:08:50 UTC, GET policy 401, stesso file della sorgente host. [Ricevuta](../evidence/semantic-current-policy-expired-token-operator-20261107.json). Il prossimo comando è il [ripristino del rinnovo](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md); non ripetere questa lettura. Semantic è ora avviato nello stesso container e con la stessa immagine, Java come processo init e readiness HTTP 200/UP. La ricerca MCP successiva risponde **403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`**. [Avvio](../evidence/semantic-application-ready-operator-20261107.json) · [Ricerca e analisi del codice](../evidence/semantic-ready-search-denial-20261107.json).
 
 ## Domanda che il controllo risolve
 
