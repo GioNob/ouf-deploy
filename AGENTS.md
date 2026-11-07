@@ -10,6 +10,10 @@ Le diagnosi HELD sono storiche: GetUnit può non trovare l'unità inattiva non c
 
 Riprendere da asset/profilo e [mapping](docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md), senza nuovo upload/profilazione. **OPEN per tutte le 20 colonne è acquisito.** L'owner chiede proprietà condivise identificate da URI per il significato delle colonne, non enumerazioni dei valori: [analisi per colonna](docs/OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md). I 18 termini locali con dominio PerformingArtsTheater non sono automaticamente riusabili su tipi diversi. Discovery esterna non esposta nella connessione; candidati già esistenti da riconciliare col runtime, senza URI inventati o sostituzione con web research. L'ultima ricerca Cinema è stata rifiutata per orchestration budget exhausted/retryable:false: non ripeterla alla cieca o resettare il budget. La review HUMAN della futura sorgente resta distinta dall'analisi.
 
+## Budget semantico per oggetto — decisione corrente
+
+L'owner richiede budget dinamico proporzionato al profilo effettivo, anche per 50/100/200 colonne. [Decisione](docs/OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md). La proposta MCP PR82 di 60 letture/minuto ha test mirati e CI completa verdi, ma non implementa tale requisito: resta draft, nessun rollout della soluzione fissa. Il sorgente corrente ha una finestra temporale, non un budget totale per analisi; mancano riferimento al profilo negli input semantic.search/get e avanzamento durevole per colonna. Non fingere che basti cambiare una costante. Riutilizzare il profilo esistente e i riferimenti già letti. Separare quota complessiva dal ritmo delle richieste; attendere una finestra non significa abbandonare l'oggetto. Coefficienti e prove 50/100/200 non ancora qualificati. Il lettore runtime MCP conservato non è stato eseguito e non è la prossima azione richiesta all'operatore.
+
 ## Priorità corrente dell'owner — 7 novembre 2026
 
 Far funzionare SeaweedFS, poi rendere ripetibile l'E2E CSV fino al grafo UDP. Industrializzazione, DR, RPO/RTO e chiusura formale dei gate di produzione sono rinviati: non usarli come prerequisiti della prova funzionale non produttiva.

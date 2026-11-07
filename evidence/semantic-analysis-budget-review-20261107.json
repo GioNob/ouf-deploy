@@ -1,0 +1,89 @@
+{
+  "schema": "ouf.semantic-analysis-budget-review.v1",
+  "date": "2026-11-07",
+  "ownerDirection": {
+    "prior": "Raise the limiting orchestration budget as required.",
+    "current": "Budget must be dynamic and proportionate to actual objects of 50, 100, 200 or more columns."
+  },
+  "status": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT",
+  "observedSource": {
+    "repository": "GioNob/ouf-mcp-server",
+    "retainedCommit": "d2454f3cb8cd410d284b9dc78349a170187aea1c",
+    "scope": "RETAINED_SOURCE_NOT_FRESH_RUNTIME_CONFIGURATION",
+    "windowSeconds": 60,
+    "defaultToolCallCapacity": 3,
+    "budgetDimensions": [
+      "TOOL_CALLS",
+      "RESULT_BYTES",
+      "DISTINCT_OBJECTS_AND_DEBT"
+    ],
+    "lastLiveRefusalDimensionKnown": false,
+    "perAnalysisTotalBudgetImplemented": false,
+    "semanticInputsContainSourceProfileReference": false
+  },
+  "profile": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "profileVersion": 1,
+    "columnCount": 20,
+    "columnListCount": 20,
+    "source": "previous successful source.file.preview response; no new profiling"
+  },
+  "candidate": {
+    "pr": "https://github.com/GioNob/ouf-mcp-server/pull/82",
+    "head": "cdfb850b26d8d2e1c1481071c8a281a55a553bac",
+    "fixedSemanticCallsPerMinute": 60,
+    "doesNotMeetDynamicObjectSizing": true,
+    "deployed": false,
+    "targetedCI": {
+      "runId": 42413075158,
+      "jobId": 128525169598,
+      "conclusion": "success",
+      "postgresIntegration": true,
+      "nineGoSourcesEqualNativeGofmtReadback": true
+    },
+    "existingCI": {
+      "runId": 42413075174,
+      "jobId": 128525169629,
+      "conclusion": "success",
+      "dockerBuild": true,
+      "verifySh": true,
+      "staticcheck": true,
+      "govulncheck": true
+    },
+    "imageArtifact": {
+      "id": 13590830257,
+      "name": "acquisition-mcp-image-42413075174",
+      "archiveDigest": "sha256:070020326c9125c615cf42055a945fe47ce776d8d4039c0968e374703676c14e",
+      "runtimeImageIdNotRead": true
+    }
+  },
+  "decision": {
+    "fixedCandidateRollout": "ON_HOLD_SUPERSEDED_REQUIREMENT",
+    "reuse": [
+      "typed temporary window refusal with dimension and retry timing",
+      "separation of semantic reads from command/control capacity",
+      "regression tests preserving authorization/idempotency"
+    ],
+    "totalAnalysisBudget": "derived from trusted source profile and planned work; coefficients not yet selected or qualified",
+    "rateAndConcurrency": "separate from total work; large object is allowed to span multiple windows",
+    "resume": "durable per-column progress and exact validated semantic references; no repeated completed work",
+    "nextImplementationSlice": "owned immutable profile binding, deterministic budget derivation and persisted analysis identity",
+    "secondSlice": "window wait/resume and functional qualification for 20/50/100/200 columns"
+  },
+  "effects": {
+    "vpsChanged": false,
+    "serviceStops": 0,
+    "policyChanges": 0,
+    "databaseResets": 0,
+    "storageChanges": 0,
+    "sourceReuploads": 0,
+    "ingestionDispatched": false
+  },
+  "limits": [
+    "No dynamic budget implementation or 50/100/200-column functional pass is claimed.",
+    "Current refusal dimension not proven from a runtime database read.",
+    "External semantic discovery is a separate missing connection capability.",
+    "Read-only MCP runtime reader was committed before scope correction and was not executed; not the next user action."
+  ]
+}
