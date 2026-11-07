@@ -1,5 +1,7 @@
 # Upload isolato con Flight Recorder dopo HTTP 502
 
+Il decoder ha restituito `DOCKER_START_FAILED` ed è stato rimosso. La registrazione rilevata prima dell'avvio misura 4.415.319 byte, SHA-256 `d01733a50c074e82e614c4124f37d1e987fe7d0087a65ecbfeebaae76fe389dd`. La decodifica e il controllo finale del file sono pendenti. Il codice di errore del wrapper copre anche un'uscita anomala dell'utility dopo l'avvio. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-jfr-decoder-held-operator-20261107.json).
+
 Il VPS ha confermato `ONB_STAGING_WRITE_FAILED` con HTTP 502 dopo un solo POST del nuovo intento. La lettura S3 pre-upload è riuscita. Flight Recorder ha conservato il file, mentre il riepilogo incorporato non l'ha decodificato. I contatori di eccezioni e handshake pari a zero in quella ricevuta sono valori iniziali del riepilogo. Tutti e tre i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-trace-held-operator-20261107.json).
 
 La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-upload-readback-operator-20261107.json) ha trovato un intento `DISPATCHED` senza ACK, asset o oggetto riservato. I log conservati non spiegano il 502.
@@ -9,12 +11,12 @@ La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-uploa
 
 Il tentativo precedente rimane conservato. La nuova operazione riguarda esclusivamente le copie. Durata massima 12 minuti. La scrittura e decodifica del file JFR sono state verificate localmente con il JRE dell'immagine esatta. Il tentativo VPS si è fermato sul 502.
 
-## Blocco unico per la decodifica
+## Blocco della prima decodifica eseguita
 
 1. Montare la registrazione esistente in sola lettura nel container dell'immagine esatta, avviando solo l'eseguibile `jfr` con rete `none`.
 2. Filtrare le eccezioni e gli handshake nella finestra fra intento e risposta del POST. Conservare il JSON dettagliato sul VPS e restituire solo categorie, classi, codici riconosciuti e conteggi. Verificare il digest della registrazione prima e dopo.
 
-L'esito atteso è `ONBOARDING_UPLOAD_JFR_READ_BACK`. Il blocco non avvia l'applicazione e non invia richieste di upload. Durata massima tre minuti. Verificati localmente il filtro temporale, la redazione e il percorso dell'eseguibile nell'immagine. Esecuzione VPS pendente.
+L'esito atteso è `ONBOARDING_UPLOAD_JFR_READ_BACK`. Il blocco non avvia l'applicazione e non invia richieste di upload. Durata massima tre minuti. Verificati localmente il filtro temporale, la redazione e il percorso dell'eseguibile nell'immagine. Il primo tentativo di decodifica è stato sospeso.
 
 ```bash
 sudo /usr/bin/timeout 180 /usr/bin/python3 -I -B -S - <<'PY'

@@ -1,6 +1,6 @@
-## Coppia corrente — decodifica della traccia esistente
+## Decoder JFR sospeso sul VPS
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md#blocco-unico-per-la-decodifica) per decodificare il file JFR conservato e leggere le categorie d'errore dell'unico POST. Esecuzione pendente.
+Il decoder ha restituito `DOCKER_START_FAILED` ed è stato rimosso. La registrazione rilevata prima dell'avvio misura 4.415.319 byte, SHA-256 `d01733a50c074e82e614c4124f37d1e987fe7d0087a65ecbfeebaae76fe389dd`. La decodifica e il controllo finale del file sono pendenti. Il codice di errore del wrapper copre anche un'uscita anomala dell'utility dopo l'avvio. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-jfr-decoder-held-operator-20261107.json).
 
 ## Upload tracciato sospeso con registrazione conservata
 
