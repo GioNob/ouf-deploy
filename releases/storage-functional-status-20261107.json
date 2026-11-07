@@ -847,5 +847,41 @@
     "currentEvidenceCommit": "1c922e9decaafc93d90692918f6050b739946894",
     "currentEvidencePath": "evidence/onboarding-seaweedfs-profile-success-20261107.json",
     "profileAuthorizationProposalState": "PUBLISHED"
+  },
+  "wideObjects1024": {
+    "status": "SOURCE_CANDIDATES_QUALIFIED_DYNAMIC_ANALYSIS_OPEN",
+    "requiredMaxColumns": 1024,
+    "reason": "SUE instances may contain 300–400 fields; one logical object",
+    "document": "docs/OUF_WIDE_OBJECTS_1024_20261107.md",
+    "evidence": "evidence/wide-object-1024-20261107.json",
+    "candidates": [
+      {
+        "module": "onboarding",
+        "commit": "cc6c7869b308c695460d8491a121084893a3c323",
+        "pr": 55
+      },
+      {
+        "module": "mcp",
+        "commit": "872e49b9cd22e045cd208a8404e923694bca7ac2",
+        "pr": 82
+      },
+      {
+        "module": "gateway",
+        "commit": "560fbf6e769c7639a0bc0ddb09380811a4e324e4",
+        "pr": 86
+      },
+      {
+        "module": "ingestion",
+        "commit": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+        "pr": 48
+      },
+      {
+        "module": "udp",
+        "commit": "c0cf1702b2eb971718996a959414caee004af494",
+        "pr": 49
+      }
+    ],
+    "vpsChanged": false,
+    "dynamicAnalysisBudgetImplemented": false
   }
 }

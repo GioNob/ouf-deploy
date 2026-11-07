@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.5 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.6 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -17,7 +17,9 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Budget proporzionato all'oggetto:** l'owner richiede dimensionamento dinamico per 50/100/200 colonne e oltre. La preview contiene già il numero reale di colonne; i contratti semantic.search/get non portano però un riferimento al profilo. Il candidato [MCP PR82](https://github.com/GioNob/ouf-mcp-server/pull/82), 60 letture/minuto, ha superato qualifica mirata e CI completa ma resta draft e **non va distribuito come soluzione del requisito dinamico**. Nessun aggiornamento VPS. Prossimo intervento: collegare analisi e profilo verificato, dimensionare il lavoro complessivo e conservare l'avanzamento; ritmo per finestra e tentativi equivalenti restano separati. [Decisione e due interventi verificabili](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
+**Requisito 1024 colonne, caso SUE da 300–400 campi:** primo incremento di codice su Onboarding, MCP, Gateway, Ingestion e UDP. CSV profilato e ingerito senza trattenere tutta la tabella, pagine immutabili da 128 colonne, array di proprietà/segnali e limiti di trasporto/tempo allineati. Una pratica resta un oggetto. Prove native con 1024 colonne riuscite a 384 MiB; non sono misure o installazioni VPS. [Modifiche, rischi e sequenza](OUF_WIDE_OBJECTS_1024_20261107.md) · [Evidenza e CI](../evidence/wide-object-1024-20261107.json).
+
+**Il budget dinamico dell'intera analisi resta aperto:** servono collegamento autorevole al profilo, attività effettive, consumo persistito e avanzamento per colonna, con attesa/ripresa fra finestre. Il candidato [MCP PR82](https://github.com/GioNob/ouf-mcp-server/pull/82) include ancora la finestra semantica fissa a 60/minuto; non distribuirlo come soluzione del budget dinamico. Nessun rollout in questo incremento. [Contratto del prossimo intervento](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
 
 **Aggiornamento corrente:** F1 PASS; Onboarding e UDP sono collegati a SeaweedFS con le stesse immagini. Il produttore token Semantic è stato ripristinato alle 21:07 CET: servizio active/enabled, token montato nuovo, GET policy :61 HTTP200. Le successive chiamate MCP riescono: ricerca `Teatri`, lettura della revisione esatta e preview del profilo. [Ricevuta operatore](../evidence/semantic-operational-owner-active-operator-20261107.json) · [Prova applicativa](../evidence/semantic-recovery-functional-read-20261107.json).
 

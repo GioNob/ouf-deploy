@@ -244,3 +244,10 @@ Il sorgente MCP conservato d2454f3c applica una finestra di un minuto, capacità
 Giovanni precisa che gli oggetti possono avere 50/100/200 colonne e il budget deve seguire la dimensione reale. Requisito acquisito: il valore fisso non è la soluzione finale e la PR resta draft. La preview ha già conteggio e descrittori, ma search/get non hanno riferimento al profilo. Distinguere budget totale dell'analisi, ritmo delle richieste e guard dei tentativi equivalenti. Due interventi: collegamento al profilo/dimensionamento/conservazione del consumo; poi avanzamento per colonna e attesa/ripresa attraverso finestre, con prove 20/50/100/200. Funzione quantitativa e implementazione dinamica non ancora qualificate.
 
 Il lettore runtime MCP è conservato nel commit deploy 51125a9b; compilazione Python riuscita, nessuna esecuzione sul VPS e nessuna richiesta attuale all'operatore. Nessun cambio runtime, grant, SQL reset, storage, upload, profilo o Ingestion. Discovery esterna resta un problema distinto. [Decisione](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) · [Evidenza](../evidence/semantic-analysis-budget-review-20261107.json).
+
+
+## 7 novembre 2026 — Oggetti SUE fino a 1024 colonne: primo incremento
+
+L'owner ha richiesto 1024 colonne e adeguamento dei limiti correlati, spiegando il caso di una pratica SUE da 300–400 campi. Il lavoro ha trovato e corretto anche i limiti a 32 proprietà/segnali, il body Gateway da 64 KiB e la memoria CSV. La prima prova 1024×10000 ha esaurito 384 MiB; la versione progressiva passa nello stesso heap, così come il caso 1024×2000 valori distinti e l'Ingestion completa 1024×10000. Native SDK/APISIX, draft PostgreSQL e decisione UDP hanno prove mirate. PR Onboarding55/MCP82/Gateway86/Ingestion48/UDP49; [evidenze](../evidence/wide-object-1024-20261107.json).
+
+La CI immagine Onboarding inizialmente rifiutata per CVE-2026-109518 in APT è stata corretta tramite pacchetti ufficiali e base fissata, senza esenzione; scan e boot passano. Nessuna modifica VPS, policy o dati reali. Budget dinamico e avanzamento semantico durevole non ancora implementati; F2–F6 restano aperti. [Sequenza e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).

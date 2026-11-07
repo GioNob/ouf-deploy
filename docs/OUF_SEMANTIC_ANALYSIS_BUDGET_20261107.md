@@ -1,6 +1,10 @@
 # Budget dell'analisi semantica proporzionato al profilo
 
-Decisione dell'owner, 7 novembre 2026: il lavoro deve poter trattare oggetti di 50, 100, 200 colonne e oltre. Il budget dell'analisi deve seguire le dimensioni effettive. Stato: requisito acquisito; implementazione dinamica non ancora presente.
+Decisione dell'owner, 7 novembre 2026: il lavoro deve poter trattare oggetti di 50, 100, 200, 300–400 e fino a 1024 colonne. Il budget dell'analisi deve seguire le dimensioni effettive. Stato: requisito acquisito; implementazione dinamica non ancora presente.
+
+## Incremento 1024 colonne
+
+Il supporto di forma/trasporto è ora candidato su cinque PR con prove native: [rapporto](OUF_WIDE_OBJECTS_1024_20261107.md). Le pagine COLUMNS espongono asset/profilo/versione/hash e numero reale di colonne; sono una base per il collegamento, non una sessione d'analisi già persistita. La quota separata per leggere otto pagine e la finestra semantica a 60/minuto non implementano il budget totale dinamico. Le prove richieste includono ora 300, 400 e 1024 colonne, non si fermano a 200.
 
 ## Fatti verificati
 
