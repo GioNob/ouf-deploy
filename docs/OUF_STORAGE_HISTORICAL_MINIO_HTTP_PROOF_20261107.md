@@ -1,3 +1,7 @@
+## Esito VPS riuscito
+
+La [ricevuta](../evidence/storage-historical-minio-restored-operator-20261107.json) conferma lettura integrale di 120 corpi storici da 2 bucket, 203.743 byte. L'inventario privato resta sul VPS. [Passo successivo: confronto OCI33](OUF_STORAGE_RETAINED_TO_OCI33_20261107.md). MiniPET **39,78%**.
+
 # Riscontro MinIO S3 con client HTTP Python
 
 Decisione approvata `GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-03`. Il [secondo tentativo](../evidence/storage-historical-minio-s3-curl-held-operator-20261107.json) ha restituito l'errore client curl 43. Con curl 8.5 locale, le opzioni precedenti funzionano su loopback. La causa sul VPS e la fase della richiesta restano sconosciute.
