@@ -1,3 +1,7 @@
+## Coppia corrente — primo avvio Onboarding in isolamento
+
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_BOOT_20261107.md) per preparare le copie PostgreSQL e SeaweedFS e avviare l'immagine Onboarding esatta, con riscontro readiness e Flyway. Esito pendente.
+
 ## Immagini applicative disponibili sul VPS
 
 Il VPS ha caricato e vincolato l'immagine Onboarding testata e confermato l'immagine UDP conservata. L'ID del daemon per Onboarding è registrato accanto al digest raw della configurazione verificato in precedenza. [Ricevuta VPS](../evidence/storage-oci33-application-images-ready-operator-20261107.json).
