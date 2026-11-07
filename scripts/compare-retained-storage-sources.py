@@ -14,6 +14,7 @@ SCHEMA = 'ouf.storage-retained-source-comparison.v1'
 RAW = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/'
 G0 = Path('/var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v2')
 G0_JOIN = '5c0bc6d7351008da9dd53af5489dcf0167c280fe73e99db52de3e9f8c2e5db6a'
+G0_COLLECTION = '927b53fea852522999d8d8ba3f33b43c7462431ef127040e93c75f72586cf419'
 BODY_SHA = 'c54d67b9ec8448e884a296c37e588845e3d128283af14e92c29b9bb3e3a8281f'
 ROLES = ('postgres', 'minio')
 
@@ -70,9 +71,12 @@ def compare(report):
     report['custodyManifestVerified'] = True
 
     joined = read(G0 / 'reconciliation.json', G0_JOIN)
-    collection = read(G0 / (G0.name + '-s3') / 'collection.private.json')
-    need(collection['complete'] is True and joined['exportRows'] == 353
-         and digest(canonical(collection)) == joined['bodyCollectionSha256'], 'G0_BINDING')
+    collection = read(G0 / (G0.name + '-s3') / 'collection.private.json', G0_COLLECTION)
+    # G0 fingerprints canonical JSON without the custody format's trailing newline.
+    collection_fingerprint = digest(json.dumps(collection, sort_keys=True, separators=(',', ':'),
+                                               allow_nan=False).encode())
+    need(collection['complete'] is True and joined['exportRows'] == 353, 'G0_COLLECTION_SCOPE')
+    need(collection_fingerprint == joined['bodyCollectionSha256'], 'G0_COLLECTION_FINGERPRINT')
     historical = read(old / 's3-proof-v2/s3-bodies.private.json', BODY_SHA)
     need(all(row['isLatest'] is True and row['deleteMarker'] is False for row in historical),
          'HISTORICAL_OBJECT_PROFILE')
