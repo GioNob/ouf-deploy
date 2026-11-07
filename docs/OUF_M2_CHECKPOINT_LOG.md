@@ -163,3 +163,9 @@ La lettura precedente non esponeva processi e porta numerica. Estesa la [lettura
 Ricevuta v2 delle 18:18:23 UTC / 19:18:23 CET: Semantic contiene soltanto sh/sleep, nessun Java, nessun listener 8080. [Ricevuta](../evidence/semantic-no-java-operator-20261107.json). Il comando di attesa nel sorgente richiede SIGUSR1 prima di exec Java. L'avviatore usato per la ripartenza controllava soltanto container running/health assente: difetto identificato.
 
 Preparata correzione in `ouf-runtime-20261107.py`, modo semantic: verifica esatta del comando/processo/UID/privilegi e generazione, singolo segnale registrato, attesa Java nello stesso PID e readiness. In e2e Semantic passa dopo Gateway/APISIX/Caddy. Test locali, fixture shell nativa e regressioni Onboarding/UDP PASS. Nessun avvio VPS ancora eseguito; [comando](OUF_SEMANTIC_APPLICATION_START_20261107.md). Dopo il risultato occorre verificare semantic.search, non attribuire readiness a successo E2E.
+
+## 7 novembre 2026 — Avvio Semantic fermato nel confronto; ambito corretto
+
+Ricevuta `HELD/RETAINED_CONFIGURATION_CHANGED`, nessun ruolo avviato o raggiunto da `start_role`. Dal sorgente, nessun SIGUSR1 inviato. Ruolo/campi diversi non erano riportati; non sono stati dedotti dalla causa precedente. [Ricevuta](../evidence/semantic-start-retained-configuration-held-operator-20261107.json).
+
+Il modo semantic riusava il controllo globale dello stack: separato il controllo dell'azione singola (configurazione Semantic esatta, dipendenze con immagini attese e running) dalla verifica completa e2e, che resta invariata. Aggiunte differenze per ruolo/campi senza segreti. Nessuna impronta aggiornata o normalizzazione arbitraria. Test di ambito, segnale e due marker storage PASS. [Comando aggiornato](OUF_SEMANTIC_APPLICATION_START_20261107.md), esecuzione VPS pendente.
