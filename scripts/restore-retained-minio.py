@@ -22,6 +22,7 @@ SCHEMA = 'ouf.storage-retained-minio-restore.v1'
 DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01'
 READ_DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02'
 SECONDS = 600
+READ_SECONDS = 900
 BODY_LIMIT = 64 << 20
 TOTAL_LIMIT = 512 << 20
 ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
@@ -237,7 +238,7 @@ def finish_s3_proof(h, pg, decision):
         os.fsync(parent)
     finally:
         os.close(parent)
-    return run_server(h, pg, scope, decision, time.monotonic() + 300, image, volume,
+    return run_server(h, pg, scope, decision, time.monotonic() + READ_SECONDS, image, volume,
                       info, members[f'source-{ordinal:03d}.tar']['sha256'])
 
 
@@ -246,7 +247,7 @@ def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
     name = 'ouf-minio-historical-' + token
     h['new'](scope / 'claim.private.json', h['canonical']({'schema': SCHEMA, 'decisionReference': decision,
         'manifestSha256': pg['MANIFEST_SHA'], 'networkMode': 'none',
-        'maximumSeconds': 300 if decision == READ_DECISION else SECONDS,
+        'maximumSeconds': READ_SECONDS if decision == READ_DECISION else SECONDS,
         'maximumContainerRuns': 1, 'containerName': name}))
     (scope / 'docker-client').mkdir(mode=0o700)
     key, password = 'restore' + secrets.token_hex(8), secrets.token_hex(24)
