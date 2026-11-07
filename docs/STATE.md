@@ -1,6 +1,6 @@
 # Stato corrente OUF
 
-Aggiornato il **7 novembre 2026**, Europe/Rome. Questa pagina raccoglie il blocco e la prossima azione di ciascun filone.
+Aggiornato il **7 novembre 2026**, Europe/Rome. Questa pagina raccoglie il blocco e la prossima azione di ciascun filone. **Priorità dell'owner: SeaweedFS funzionante, poi E2E ripetibile; industrializzazione dopo.**
 
 ## E2E CSV da chatbot
 
@@ -12,11 +12,15 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Questa pagina raccoglie il blocc
 
 ## MinIO → SeaweedFS
 
-- **Verificato** SeaweedFS OCI33 è avviato sul VPS, su una rete Docker privata, con TLS verificato. MinIO serve ancora lo stack E2E.
-- **Blocco** Il cambio dei binding applicativi resta da applicare. I 120 oggetti confrontati nella prova isolata sono un risultato distinto dalla migrazione operativa.
-- **Prossima azione** Applicare i binding S3 per Onboarding, UDP e il percorso di lettura. Verificare scrittura e lettura tramite il flusso reale.
-- [MiniPET SeaweedFS](OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md) · [Registro avanzamento](../releases/minio-seaweedfs-closure-status-20261105.json) · [Procedura di cambio](OUF_STORAGE_OFFLINE_CUTOVER_RUNBOOK_20261106.md)
+- **Verificato nelle ricevute** Copia storica cifrata su Windows, restore isolati, parità di 120 oggetti su OCI33. Avvio di SeaweedFS privato con TLS riportato dal VPS. MinIO serve ancora lo stack E2E.
+- **Blocco storage** Il POST Onboarding isolato è fallito con 502; il readback del primo tentativo non ha trovato ACK/asset/oggetto riservato. La causa non è provata. Il cambio dei binding applicativi resta da verificare sullo stack effettivo.
+- **Prossimo risultato F1** Un upload e una lettura applicativa riusciti su SeaweedFS: byte/hash, riferimento asset e ricevuta coerenti. Verificare binding e trasporto della JVM usata dal flusso, correggere il difetto concreto, senza costruire un altro laboratorio generale.
+- **Poi F2** Collegare scrittura e lettura di Onboarding/UDP/Gateway, riconciliare i dati correnti e dimostrare che il percorso usa SeaweedFS. MinIO è stato riavviato dopo la copia storica: i 120 oggetti di allora non provano la parità attuale.
+- **Coordinamento** Il 403/THS sopra è già in lavorazione altrove. Non duplicarlo né assumerlo causa del 502. Riceverne l'esito prima della prova E2E completa.
+- **Rinviato** DR, RPO/RTO, HA, hardening esteso e accettazione produttiva. Nessun nuovo gate formale chiuso; la percentuale euristica storica non misura il funzionamento.
+- [MiniPET funzionale](OUF_STORAGE_MINIPET.md) · [Registro funzionale](../releases/storage-functional-status-20261107.json)
 
 ## Aggiornamenti
 
 Aggiornare qui il riepilogo e la prossima azione. Aggiungere le evidenze e i passaggi sostituiti in fondo al [log dei checkpoint](OUF_M2_CHECKPOINT_LOG.md).
+

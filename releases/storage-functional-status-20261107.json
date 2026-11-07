@@ -1,0 +1,308 @@
+{
+  "schema": "ouf.storage-functional-status.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
+  "document": "docs/OUF_STORAGE_MINIPET.md",
+  "status": "OPEN_NO_NEW_FUNCTIONAL_PASS",
+  "audit": {
+    "repository": "GioNob/ouf-deploy",
+    "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+    "latestThsCommitIncluded": "74409f14c1c1547fca8b835e4e62640737b5f475",
+    "concurrentBranchChangesObserved": true,
+    "publicationStrategy": "ISOLATED_DOCUMENTATION_BRANCH_NO_MERGE",
+    "scope": "Targeted document, retained-receipt and source-code review; not exhaustive PR or live runtime audit",
+    "newRuntimeCalls": 0,
+    "newRuntimeTests": 0,
+    "newVulnerabilityScans": 0
+  },
+  "coordination": {
+    "ths403": "IN_PROGRESS_IN_OTHER_WORKSTREAM_DO_NOT_DUPLICATE",
+    "lastRepositoryObservation": "ouf-admin confirmed in InPrivate; Keycloak read prepared, result pending at snapshot",
+    "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
+    "sharedBranch": "feat/m2-discovery-complete-profile-20261029"
+  },
+  "observations": {
+    "historicalCustody": {
+      "provenance": "OPERATOR_REPORTED_WINDOWS_RESULT_IN_GIT",
+      "archiveBytes": 6544578724,
+      "payloadMembersVerified": 53,
+      "evidenceMembersVerified": 3
+    },
+    "historicalPostgresRestore": {
+      "databasesOpened": 7,
+      "sampleRowsVerifiedPerDatabase": 1,
+      "fullDatabaseRowIntegrityProven": false
+    },
+    "historicalSeaweedfsRehearsal": {
+      "objectsVerified": 120,
+      "bytesVerified": 203743,
+      "bucketsVerified": 2,
+      "bodyMetadataAndTagsMatch": true,
+      "productionObjectsMigrated": 0
+    },
+    "isolatedS3Bindings": {
+      "ownBucketBodiesVerified": 2,
+      "crossBucketAccessDenied": 2,
+      "applicationContainersStarted": 0,
+      "tlsVerified": true
+    },
+    "isolatedApplicationUpload": {
+      "status": "HELD",
+      "httpStatus": 502,
+      "postgresUploadAckVerified": false,
+      "seaweedfsUploadBodyVerified": false
+    },
+    "firstUploadReadback": {
+      "intentState": "DISPATCHED",
+      "ackPresent": false,
+      "assetPresent": false,
+      "reservedObjectState": "ABSENT",
+      "reservedObjectHttpStatus": 404
+    },
+    "runtime": {
+      "provenance": "REPOSITORY_STATE_AND_OPERATOR_RUNBOOK_NOT_FRESH_LIVE_OBSERVATION",
+      "originalStackBackend": "MinIO",
+      "privateSeaweedfsStartedReported": true,
+      "applicationSwitchProven": false,
+      "sourceComparisonStillCurrentAfterRestart": "NOT_PROVEN"
+    },
+    "causeOf502": "UNKNOWN"
+  },
+  "milestones": [
+    {
+      "id": "F1",
+      "title": "Application upload and read on SeaweedFS",
+      "status": "OPEN",
+      "dependsOn": [],
+      "owner": "storage",
+      "evidence": []
+    },
+    {
+      "id": "F2",
+      "title": "Actual stack bindings and current data on SeaweedFS",
+      "status": "OPEN",
+      "dependsOn": [
+        "F1"
+      ],
+      "owner": "storage",
+      "evidence": []
+    },
+    {
+      "id": "F3",
+      "title": "First CSV from chatbot to UDP graph",
+      "status": "OPEN",
+      "dependsOn": [
+        "F2",
+        "THS403_RESOLVED"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F4",
+      "title": "Second CSV and unchanged reimport",
+      "status": "OPEN",
+      "dependsOn": [
+        "F3"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F5",
+      "title": "Resume from another chat or session",
+      "status": "OPEN",
+      "dependsOn": [
+        "F3"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F6",
+      "title": "Deliver verified repeatable procedure",
+      "status": "OPEN",
+      "dependsOn": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "owner": "principal-agent-and-Giovanni",
+      "evidence": []
+    }
+  ],
+  "nextAction": "F1: verify exact application binding and JVM transport, resolve the concrete 502 failure, verify one upload and application read; reuse retained work.",
+  "deferred": [
+    "DR_RPO_RTO",
+    "HA_HOST_LOSS",
+    "EXTENDED_FAULT_COMPACTION_TESTS",
+    "PRODUCTION_PERFORMANCE_SIZING",
+    "FULL_ROTATION",
+    "FULL_DEPENDENCY_AND_LICENSE_REVIEW",
+    "DURABLE_RELEASE_CUSTODY",
+    "48H_OBSERVATION",
+    "MINIO_DESTRUCTION",
+    "FORMAL_SW_G0_G7_SW_AT01_AT21_AND_FULL_M2_ACCEPTANCE"
+  ],
+  "formalAcceptance": {
+    "historicalRegister": "releases/minio-seaweedfs-closure-status-20261105.json",
+    "unchanged": true,
+    "gatesClosed": 0,
+    "gateCount": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestCount": 21,
+    "notPrerequisiteToNonproductionFunctionalWork": true,
+    "productionReadyClaim": false,
+    "fullM2CompleteClaim": false
+  },
+  "estimate": {
+    "status": "NOT_ESTIMABLE_YET",
+    "historicalPercentageUsedForPlanning": false,
+    "reason": "Cause of application 502 unresolved; current bindings and E2E completion not demonstrated.",
+    "nextReestimateAfter": "F1"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-custody-windows-verified-operator-20261107.json",
+      "gitBlobSha": "2925751f0abd1a3b56cf534ec44ddb29a8a361c9",
+      "liveObservation": false
+    },
+    {
+      "id": "E2",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-historical-postgres-restored-operator-20261107.json",
+      "gitBlobSha": "c7e996b50c72bb1a332a4f0b18f158bb456317af",
+      "liveObservation": false
+    },
+    {
+      "id": "E3",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-historical-minio-restored-operator-20261107.json",
+      "gitBlobSha": "70d2a19b3748a24ed1614fe18f91c43ed91dfe08",
+      "liveObservation": false
+    },
+    {
+      "id": "E4",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json",
+      "gitBlobSha": "0a2a9765d80bf67d240f0e90bb4309821cb73fe2",
+      "liveObservation": false
+    },
+    {
+      "id": "E5",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-app-bindings-ready-operator-20261107.json",
+      "gitBlobSha": "7a968cd1e79e5fc42c89189185912a607acc548b",
+      "liveObservation": false
+    },
+    {
+      "id": "E6",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json",
+      "gitBlobSha": "c6a11f0f5c99d7cf69a42ba58202180febd81af2",
+      "liveObservation": false
+    },
+    {
+      "id": "E7",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-readback-operator-20261107.json",
+      "gitBlobSha": "a2560c38d47965bd4599766a58f4e8d74188ea5a",
+      "liveObservation": false
+    },
+    {
+      "id": "E8",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-jfr-window-operator-20261107.json",
+      "gitBlobSha": "e2e4c68aececc5058a99bbe5f78080832de64305",
+      "liveObservation": false
+    },
+    {
+      "id": "E9_COMPARISON",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-source-comparison-match-operator-20261107.json",
+      "gitBlobSha": "d0863055807bd5794f440bc92ba723b2dc62717c",
+      "liveObservation": false
+    }
+  ],
+  "sourceReferences": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "d5155899b09dda298494b68cefa7e1f281167652",
+      "paths": [
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/GatewayManagedFileObjectStore.java",
+        "pom.xml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "paths": [
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "paths": [
+        "src/main/resources/application.yml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "paths": [
+        "ouf-config/capabilities/ouf.object-storage.content.read.yaml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "paths": [
+        "scripts/ouf-runtime-20261107.py",
+        "scripts/boot-oci33-onboarding.py",
+        "releases/seaweedfs-452-generation33-candidate-lock-20261104.json",
+        "docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md",
+        "docs/OUF_STORAGE_COHORT_DECISION_20261106.md"
+      ]
+    }
+  ],
+  "ciMetadataChecked": [
+    {
+      "repository": "GioNob/ouf-deploy",
+      "runId": 41782068047,
+      "head": "1a11295ad502a77dce76157423577b9766106bfe",
+      "conclusion": "success",
+      "scope": "Historical image workflow metadata; no new scan or log audit"
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "runId": 42049214518,
+      "head": "d5155899b09dda298494b68cefa7e1f281167652",
+      "conclusion": "success",
+      "scope": "Historical module CI metadata; no new application execution"
+    }
+  ],
+  "effects": {
+    "sourceLocksModified": false,
+    "runtimeModified": false,
+    "permissionsChanged": false,
+    "dataChanged": false,
+    "mergePerformed": false
+  }
+}
