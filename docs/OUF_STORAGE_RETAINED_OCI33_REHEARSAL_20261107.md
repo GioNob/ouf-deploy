@@ -1,3 +1,7 @@
+## Esito e ripresa
+
+[HELD Docker image](../evidence/storage-retained-oci33-docker-image-held-operator-20261107.json) prima dei container. [Comando di ripresa](OUF_STORAGE_RETAINED_OCI33_LOADED_IMAGE_20261107.md) per verificare e usare l'immagine già caricata. Il ramo originario sotto è storico.
+
 # Rehearsal reale della copia storica su SeaweedFS OCI33
 
 Decisione approvata `GIOVANNI-NONPROD-RETAINED-TO-OCI33-20261107-01`. Lo [ZIP esatto è sul VPS](../evidence/storage-oci33-zip-staged-operator-20261107.json), 174.223.468 byte. La [ricevuta MinIO](../evidence/storage-historical-minio-restored-operator-20261107.json) lega la sorgente ai 120 corpi e al manifest privato.
