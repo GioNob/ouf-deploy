@@ -79,3 +79,10 @@ Il suggerimento di confrontare client esterno e Java è recepito con stesso cont
 ## 7 novembre 2026 — binding correnti riletti; confronto client pronto
 
 Ricevuta operatore 15:29 UTC: Onboarding su MinIO HTTP, immagine 7b9d3e91…, rete ouf-backend; SeaweedFS d23a50eb… su rete privata distinta, nessuna porta pubblicata. Non è stata provata la connettività. Preparato confronto di curl e del client MinIO dell'adapter installato, in un solo container temporaneo con rete/identità/CA comuni. Una chiave nuova, contenuto sintetico 29 byte, due PUT/GET; nessun database o binding applicativo modificato. Firma SigV4 e corpi verificati su fixture HTTP locale, compilazione Java e sintassi Python PASS; classpath target/TLS/SeaweedFS ancora da verificare sul VPS. [Pacchetto](OUF_STORAGE_CLIENT_COMPARISON_20261107.md). F1/F2 restano aperti.
+
+
+## 7 novembre 2026 — confronto curl/Java riuscito; file correnti da allineare
+
+Il risultato VPS COMPARISON_COMPLETE conferma entrambi i client PASS sullo stesso endpoint/identità/payload/chiave: curl PUT/GET 200, Java 21.0.12.1 con MinIO 8.6.0 PUT acknowledged e GET con hash coincidente. Immagine Onboarding 7b9d3e91…, CA privata verificata, container temporaneo rimosso, originale ancora running con stessa immagine/avvio. Non è un test HTTP applicativo o DB; non attribuisce la vecchia causa del 502.
+
+Scelta per F1: conservare l'immagine installata appena provata. Il prossimo comando allinea i file attuali Onboarding dopo gli upload recenti, riusando copie identiche e copiando soltanto chiavi mancanti senza sovrascrittura. Fixture HTTP locale PASS su copia/readback, riuso, diniego su differenze/tag nuovi/drift ETag; sintassi PASS. Esecuzione VPS ancora pendente. F1/F2 aperti; nessun binding applicativo cambiato. [Procedura](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md).
