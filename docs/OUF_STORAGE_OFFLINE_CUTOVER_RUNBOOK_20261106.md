@@ -1,6 +1,6 @@
-## Coppia corrente — upload Onboarding sulla copia isolata
+## Upload isolato sospeso su HTTP 502
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_20261107.md) per un POST delegato del CSV Teatri e verifica congiunta di ACK PostgreSQL e corpo SeaweedFS. Esito pendente.
+L'operatore ha riportato HTTP 502 dopo un solo POST. Onboarding era UP e la lettura pre-upload di SeaweedFS era riuscita. Il 502 è compatibile con la risposta che l'adapter Onboarding usa per gli errori S3 di scrittura e lascia l'esito da riconciliare. L'area e i log privati sono conservati e i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json).
 
 ## Onboarding avviato sul VPS in isolamento
 

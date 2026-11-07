@@ -1,13 +1,15 @@
 # Upload Onboarding verso SeaweedFS sul VPS isolato
 
+L'operatore ha riportato HTTP 502 dopo un solo POST. Onboarding era UP e la lettura pre-upload di SeaweedFS era riuscita. Il 502 è compatibile con la risposta che l'adapter Onboarding usa per gli errori S3 di scrittura e lascia l'esito da riconciliare. L'area e i log privati sono conservati e i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json).
+
 Il [primo avvio](../evidence/storage-oci33-onboarding-boot-ready-operator-20261107.json) ha verificato readiness, SeaweedFS TLS e Flyway V39–V41. La coppia corrente riusa quelle copie come base.
 
 1. Clonare le copie di lavoro in `onboarding-stack-v1/upload-proof-v1`, avviare i tre container sulla sola loopback e inviare un CSV sintetico Teatri al vero endpoint delegato Onboarding. Il blocco crea una chiave di firma e un'identità effimere limitate alla copia. La ricevuta vincola percorso, capability, hash, dimensione e idempotency key. Un solo POST.
 2. Dopo HTTP 201, verificare l'asset, l'intento ACKED e la ricevuta upload in PostgreSQL. Leggere il nuovo oggetto da SeaweedFS via TLS e confrontarne dimensione e SHA-256. Fermare e rimuovere i container. La copia conserva l'oggetto e le ricevute.
 
-Esito atteso `ISOLATED_ONBOARDING_UPLOAD_VERIFIED`. L'upload è un effetto reale sulla copia isolata e usa l'immagine esatta di Onboarding. La firma è emessa localmente per questa prova. Il percorso chatbot e Gateway richiederà il proprio riscontro. In caso di `HELD`, lasciare l'area sul VPS e riportare il JSON. Il blocco registra l'intento prima del POST e permette un solo invio per scope. Massimo 12 minuti. Sintassi e formato della ricevuta verificati localmente, esecuzione VPS pendente.
+Esito atteso `ISOLATED_ONBOARDING_UPLOAD_VERIFIED`. L'upload è un effetto reale sulla copia isolata e usa l'immagine esatta di Onboarding. La firma è emessa localmente per questa prova. Il percorso chatbot e Gateway richiederà il proprio riscontro. In caso di `HELD`, lasciare l'area sul VPS e riportare il JSON. Il blocco registra l'intento prima del POST e permette un solo invio per scope. Massimo 12 minuti. Sintassi e formato della ricevuta verificati localmente, il tentativo VPS si è fermato sul 502.
 
-## Blocco unico sul VPS
+## Blocco del tentativo VPS eseguito
 
 ```bash
 sudo /usr/bin/timeout 720 /usr/bin/python3 -I -B -S - <<'PY'
