@@ -1,3 +1,8 @@
+## Stato operativo OUF
+
+- Per lo stato attuale di E2E e SeaweedFS partire da [docs/STATE.md](docs/STATE.md). Il [MiniPET M2](docs/OUF_M2_MINIPET.md) conserva il contratto e i criteri di accettazione.
+- Aggiornare la pagina di stato per il prossimo passo. Aggiungere gli eventi datati in fondo al [log dei checkpoint](docs/OUF_M2_CHECKPOINT_LOG.md). I checkpoint datati riportati qui sotto si applicano al proprio tentativo.
+
 ## Decisione operatore 7 novembre 2026 — sola cattura autorizzata
 
 Giovanni risponde “Autorizzo” al pacchetto concreto del commit 67ad84d02584f518928ad1c8ca3b86de5a3e00e9. Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 acquisita; ricevuta evidence/storage-capture-only-operator-decision-20261107.json. Autorizzata una sola continuazione per catturare e cifrare le 34 fonti già previste, incluso l'intero PostgreSQL condiviso, conservando esplicitamente l'anomalia dei tre exec etcd non attribuiti. Nessun nuovo arresto, cambio di policy, mutazione host o riavvio. Non richiedere nuovamente questo consenso.
