@@ -6,8 +6,8 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Questa pagina raccoglie il blocc
 
 - **Obiettivo** Portare un CSV dalla chat fino al grafo UDP con un flusso ripetibile. Conservare rotte, script e contratti. Teatri, Farmacie e Cinema sono fixture.
 - **Verificato** Stack originale avviato su MinIO. Cinque rinnovi host ripristinati. MCP ha risposto HTTP 204 alla readiness e ha emesso un handoff per il selettore.
-- **Blocco** Onboarding ha risposto HTTP 403 `ONB_CAPABILITY_DENIED` per `ouf.managed-source.file.upload` nella sessione browser. L’upload Teatri resta da eseguire. La policy `ouf-lab-authorization:59` espone un ruolo configurato con la capability per `ouf-admin`. L’autorizzazione effettiva va verificata nella sessione THS.
-- **Prossima azione** Verificare identità della sessione browser e decisione effettiva della capability. Una volta riaperto il selettore, seguire lo stesso file attraverso Onboarding, semantica, Ingestion e UDP fino alla verifica nel grafo.
+- **Blocco** Onboarding ha risposto HTTP 403 `ONB_CAPABILITY_DENIED` per `ouf.managed-source.file.upload` nella sessione browser. L’upload Teatri resta da eseguire. La policy `ouf-lab-authorization:59` espone un ruolo configurato con la capability per `ouf-admin`. Il `403` si ripete in InPrivate. Il login THS richiede già lo scope di upload. La lettura dei grant configurati per `giovanni-chatgpt` non contiene questa capability.
+- **Prossima azione** Verificare il nome utente Keycloak nella stessa finestra. Se coincide con `ouf-admin`, isolare scope e decisione effettiva della sessione THS. Una volta riaperto il selettore, seguire lo stesso file attraverso Onboarding, semantica, Ingestion e UDP fino alla verifica nel grafo.
 - [MiniPET M2](OUF_M2_MINIPET.md) · [Registro M2](../releases/csv-m2-plan-20261026.json) · [Avvio VPS](OUF_RUNTIME_RESTART_20261107.md)
 
 ## MinIO → SeaweedFS
