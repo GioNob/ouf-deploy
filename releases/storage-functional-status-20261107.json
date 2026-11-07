@@ -104,10 +104,27 @@
       "receipt": "evidence/onboarding-current-copy-aligned-operator-20261107.json"
     },
     "currentOnboardingSwitch": {
-      "status": "LOCAL_CHECKS_PASSED_VPS_PENDING",
+      "status": "ONBOARDING_SEAWEEDFS_READY",
+      "operatorReceipt": "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
+      "finishedAt": "2026-11-07T16:42:28.988656+00:00",
       "sameInstalledImage": true,
+      "endpoint": "https://ouf-seaweedfs-stage:9002",
+      "bucket": "ouf-managed-files",
+      "replacementContainerId": "d4f22ff3ed5f6dc20adaf58a7c9df4b13314f43c0d7e63e6773ad0a97ee0d859",
+      "readinessUp": true,
+      "originalRetainedStopped": true,
+      "objectsMatchedWhileStopped": 12,
+      "sourceBytes": 40709,
+      "existingTrustCertificatesPreserved": 118,
+      "privateCaAdded": true,
       "applicationHttpUploadTested": false,
-      "procedure": "docs/OUF_ONBOARDING_SEAWEEDFS_SWITCH_20261107.md"
+      "udpBindingsChanged": false
+    },
+    "currentUploadHandoff": {
+      "handoffId": "2de7b988-da47-4231-8443-0e5043214c42",
+      "statusAtCreation": "AWAITING_FILE_SELECTION",
+      "source": "LIVE_MCP_RESPONSE",
+      "receipt": "evidence/onboarding-seaweedfs-upload-handoff-20261107.json"
     }
   },
   "milestones": [
@@ -175,7 +192,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the prepared same-image Onboarding binding switch: preserve public CAs, pause Onboarding, recheck/copy current delta, replace container preserving backend address/aliases/mounts, verify readiness. Then verify real HTTP upload, registered asset and governed read; UDP follows.",
+  "nextAction": "Complete one CSV upload using the newly issued handoff, read its asset receipt, then profile/read the same asset through governed capabilities. F1 remains open until application upload and read succeed; UDP binding and graph E2E follow.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -202,7 +219,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Client PUT/GET and current 12-object alignment passed. Onboarding binding switch, real HTTP upload and repeatable E2E remain open.",
+    "reason": "Onboarding binding switch, readiness and 12-object snapshot passed. Real HTTP upload/read, UDP binding and repeatable E2E remain open.",
     "nextReestimateAfter": "F1"
   },
   "evidence": [
@@ -359,7 +376,7 @@
     "industrializationDeferred": true,
     "currentPolicy": "ouf-lab-authorization:60",
     "browser403ResolvedForObservedPicker": true,
-    "currentEvidenceCommit": "712b233c3c9621de881fc730ee480a1df32afce1",
-    "currentEvidencePath": "evidence/onboarding-current-copy-aligned-operator-20261107.json"
+    "currentEvidenceCommit": "5e8da7c45acf3cbeb522c1d153f6c018fc6b2426",
+    "currentEvidencePath": "evidence/onboarding-seaweedfs-ready-operator-20261107.json"
   }
 }

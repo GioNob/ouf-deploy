@@ -1,6 +1,8 @@
 # Passaggio del solo Onboarding a SeaweedFS
 
-Stato: **preparato e verificato localmente; esecuzione VPS pendente**. Lo stack usa ancora MinIO finché il comando non produce la ricevuta di passaggio.
+Stato: **eseguito sul VPS il 7 novembre 2026 alle 17:42 CET**, con `ONBOARDING_SEAWEEDFS_READY`. Onboarding usa ora SeaweedFS; il vecchio container è conservato spento. 12 oggetti/40.709 byte verificati a writer fermo, manifest invariato, 118 certificati Java originali conservati e CA privata aggiunta. [Ricevuta](../evidence/onboarding-seaweedfs-ready-operator-20261107.json).
+
+**Non rilanciare questo comando.** Il prossimo passo è l'upload HTTP da un selettore nuovo, seguito dalla lettura/profilo governati. UDP resta da collegare e F1/F2 sono ancora aperti.
 
 ## Base verificata
 
@@ -34,4 +36,4 @@ UDP mantiene per ora il binding precedente. MinIO resta acceso per gli altri per
 
 Sei casi di configurazione/sequenza passano: risorse/mount/indirizzi conservati, override staging, copia a writer fermo, ripristino prima dello start, risposta create persa e mancato ritorno a MinIO dopo start incerto. `keytool` reale locale ha conservato 125 certificati e aggiunto una CA sintetica. Il controllo dell'avviatore sceglie il nuovo container e rifiuta passaggi incompleti o due owner in esecuzione.
 
-Queste verifiche non eseguono Docker né il JDK 21 del VPS. La compatibilità nativa del nuovo container, l'accesso ai mount e l'avvio Spring saranno verificati dal comando sul VPS. [Registro delle verifiche](../evidence/onboarding-seaweedfs-switch-prepared-20261107.json).
+Le verifiche locali non eseguivano Docker né il JDK 21 del VPS. La successiva ricevuta dell'operatore conferma creazione e avvio nativi, configurazione/mount/rete conservati, readiness UP e TLS. Il JDK sul VPS conteneva 118 certificati, tutti conservati; i 125 della fixture locale non erano un conteggio atteso sul VPS. L'upload HTTP applicativo resta da verificare. [Registro delle verifiche](../evidence/onboarding-seaweedfs-switch-prepared-20261107.json).
