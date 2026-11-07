@@ -1,3 +1,11 @@
+## 7 novembre — parità verificata sul VPS
+
+Il rehearsal isolato del dataset storico è riuscito. SeaweedFS OCI33 contiene i 120 oggetti dei due bucket (203.743 byte) con insieme delle chiavi, corpi, metadati e tag coincidenti. La continuazione ha riusato l'immagine verificata e distinto il digest della configurazione dall'ID del daemon. [Ricevuta operatore](../evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json).
+
+Il restore isolato di PostgreSQL aveva già aperto 7 database e letto una riga in ciascuno. Le due prove si riferiscono alla stessa custodia storica. Restano aperti la baseline comune corrente, il contenimento verificabile dei writer e i binding applicativi. Credito aggiunto 0, G4 aperto, oggetti operativi migrati 0. Avanzamento MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21.
+
+Il prossimo riscontro utile confronta le sorgenti originali PostgreSQL e MinIO con la custodia e l'inventario G0 già disponibili. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
+
 ## 7 novembre — continuazione di sola cattura autorizzata
 
 Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 acquisita sul pacchetto esatto 67ad84d. [Ricevuta](../evidence/storage-capture-only-operator-decision-20261107.json). Ora eseguire una sola cattura sul VPS, senza ripetere il fermo e conservando l'anomalia etcd. Il prossimo risultato è l'archivio reale con digest e dimensione, poi Windows e restore isolato. Esecuzione ancora pendente; nessun credito MiniPET.

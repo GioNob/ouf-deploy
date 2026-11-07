@@ -1,3 +1,11 @@
+## 7 novembre — parità verificata sul VPS
+
+Il rehearsal isolato del dataset storico è riuscito. SeaweedFS OCI33 contiene i 120 oggetti dei due bucket (203.743 byte) con insieme delle chiavi, corpi, metadati e tag coincidenti. La continuazione ha riusato l'immagine verificata e distinto il digest della configurazione dall'ID del daemon. [Ricevuta operatore](../evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json).
+
+Il restore isolato di PostgreSQL aveva già aperto 7 database e letto una riga in ciascuno. Le due prove si riferiscono alla stessa custodia storica. Restano aperti la baseline comune corrente, il contenimento verificabile dei writer e i binding applicativi. Credito aggiunto 0, G4 aperto, oggetti operativi migrati 0. Avanzamento MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21.
+
+Il prossimo riscontro utile confronta le sorgenti originali PostgreSQL e MinIO con la custodia e l'inventario G0 già disponibili. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
+
 ## Stato corrente — cifratura conclusa, residuo operativo del fermo
 
 [VPS → Windows verificato](../evidence/storage-backup-cross-platform-operator-20261106.json):512byte/hash coincidenti,privata rimasta sulPC. Non ripetere preparazioni o prove di cifratura. [Pacchetto di fermo](OUF_STORAGE_COLD_STOP_PACKAGE_20261106.md):proposta privata di35policy e14segnali,ordine/barriere/timeout espressi; compilatore puro con8test locali,nessun driver esecutivo o qualifica target. Restano contenimento dei writer/ricreatori,drain/disposizione degli esiti incerti,mount effettivi,qualifica del driver,finestra e autorità applicabili. Il vincolo di indisponibilità dell'owner serve alla pianificazione e non autorizza lo stop. Nessun backup applicativo/restore o creditoMiniPET;1h di capture non è durata totale del fermo. Le istruzioni sotto per ripetere prove ormai concluse sono storiche.

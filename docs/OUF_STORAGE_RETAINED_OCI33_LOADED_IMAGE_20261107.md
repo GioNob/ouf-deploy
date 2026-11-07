@@ -1,3 +1,11 @@
+## 7 novembre — parità verificata sul VPS
+
+Il rehearsal isolato del dataset storico è riuscito. SeaweedFS OCI33 contiene i 120 oggetti dei due bucket (203.743 byte) con insieme delle chiavi, corpi, metadati e tag coincidenti. La continuazione ha riusato l'immagine verificata e distinto il digest della configurazione dall'ID del daemon. [Ricevuta operatore](../evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json).
+
+Il restore isolato di PostgreSQL aveva già aperto 7 database e letto una riga in ciascuno. Le due prove si riferiscono alla stessa custodia storica. Restano aperti la baseline comune corrente, il contenimento verificabile dei writer e i binding applicativi. Credito aggiunto 0, G4 aperto, oggetti operativi migrati 0. Avanzamento MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21.
+
+Il prossimo riscontro utile confronta le sorgenti originali PostgreSQL e MinIO con la custodia e l'inventario G0 già disponibili. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
+
 # Riprendere il rehearsal dall’immagine OCI33 caricata
 
 La [ricevuta](../evidence/storage-retained-oci33-docker-image-held-operator-20261107.json) riporta `DOCKER_IMAGE_FAILED`. Il ramo segue la verifica del tar. Il programma precedente usava lo stesso codice per `image ls` e `image inspect`. La ricezione del codice non dimostra che il caricamento sia riuscito. Nessun container o PUT è stato avviato in quel ramo.
@@ -6,7 +14,7 @@ La ripresa usa il tar Docker già verificato e il tag esatto dichiarato al suo i
 
 Se il tag manca o la verifica fallisce, il comando si ferma. Se passa, prosegue la copia già approvata in `copy-proof-v1`, sullo stesso perimetro isolato di due container e 120 oggetti. Il caricamento già tentato rimane separato. Limite della ripresa 15 minuti, 700 richieste locali. Verificate sintassi e lettura della configurazione da un tar campione. Esito reale VPS pendente.
 
-## Comando VPS
+## Comando VPS eseguito
 
 ```bash
 sudo /usr/bin/python3 -I -B -S - <<'PY'
