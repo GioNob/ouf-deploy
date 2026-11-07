@@ -4,7 +4,7 @@ Il rehearsal isolato del dataset storico è riuscito. SeaweedFS OCI33 contiene i
 
 Il restore isolato di PostgreSQL aveva già aperto 7 database e letto una riga in ciascuno. Le due prove si riferiscono alla stessa custodia storica. Restano aperti la baseline comune corrente, il contenimento verificabile dei writer e i binding applicativi. Credito aggiunto 0, G4 aperto, oggetti operativi migrati 0. Avanzamento MiniPET 18,3/46 (39,78%), gate 0/8, AT 0/21.
 
-Il prossimo riscontro utile confronta le sorgenti originali PostgreSQL e MinIO con la custodia e l'inventario G0 già disponibili. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
+Il prossimo riscontro è il [confronto unico sul VPS](OUF_STORAGE_RETAINED_SOURCE_COMPARISON_20261107.md) fra le sorgenti originali PostgreSQL e MinIO, la custodia e l'inventario G0. Una corrispondenza rende riutilizzabile la prova storica per la pianificazione e lascia separata l'ammissione operativa.
 
 # Riprendere il rehearsal dall’immagine OCI33 caricata
 
