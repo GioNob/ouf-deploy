@@ -1,6 +1,6 @@
 # Avvio applicativo del Semantic Registry
 
-**Stato corrente:** il primo comando si è fermato con `RETAINED_CONFIGURATION_CHANGED` prima di avvio o segnale. Il ruolo/campo diverso non era riportato. Il comando sotto contiene la correzione di ambito e diagnostica; esecuzione aggiornata ancora pendente. [Ricevuta](../evidence/semantic-start-retained-configuration-held-operator-20261107.json).
+**Stato corrente: AVVIO RIUSCITO.** Ricevuta `OUF_SEMANTIC_APPLICATION_READY`: Java come init nello stesso container/immagine, readiness HTTP 200/UP. [Ricevuta](../evidence/semantic-application-ready-operator-20261107.json). Il comando sotto è conservato per riferimento, **non da rilanciare per il blocco corrente**. La successiva ricerca MCP termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`; proseguire con la [lettura della policy](OUF_SEMANTIC_POLICY_READ_20261107.md).
 
 ## Blocco osservato
 
@@ -20,7 +20,7 @@ Anche `e2e` usa questa verifica e avvia Semantic dopo Gateway owner, APISIX e Ca
 
 ## Comando unico sul VPS
 
-**Avvio applicativo effettivo, non sola lettura.** Codice `dd2351695dec265a5d3bffdcf5bcb08d27484703`, 30554 byte, SHA-256 `b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b`. Test locali PASS, inclusa prova shell→applicazione nello stesso PID e regressioni dei due marker storage. Nessuna nuova build necessaria; esecuzione VPS ancora pendente.
+**Avvio applicativo effettivo, non sola lettura.** Codice `dd2351695dec265a5d3bffdcf5bcb08d27484703`, 30554 byte, SHA-256 `b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b`. Test locali PASS, inclusa prova shell→applicazione nello stesso PID e regressioni dei due marker storage. Nessuna nuova build necessaria; esecuzione VPS riuscita, come da ricevuta in testa.
 
 ```bash
 sudo /usr/bin/timeout 420 /usr/bin/python3 -I -B -S - <<'PY'
@@ -42,4 +42,4 @@ Risultato atteso: **`OUF_SEMANTIC_APPLICATION_READY`**, `semanticProcessAfter=AP
 
 ## Verifica successiva
 
-Dopo il successo, ripetere la ricerca semantica tramite MCP. Readiness non dimostra che policy, token o ricerca funzionino. Proseguire dall'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` e profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`, senza nuovo upload. F2 applicativo UDP e percorso fino al grafo ancora aperti.
+La ricerca MCP dopo il successo è stata eseguita: HTTP 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`, non ripetuto invariato. Readiness non dimostra che policy, token o ricerca funzionino. Proseguire dall'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` e profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`, senza nuovo upload. F2 applicativo UDP e percorso fino al grafo ancora aperti.
