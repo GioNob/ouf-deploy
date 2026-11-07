@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.2 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.3 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -17,9 +17,9 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento delle 20:56 CET:** identificato il fallimento: GetUnit vede l'unità non caricata. Nessuna modifica nei tentativi precedenti. Il [ripristino v3](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md) verifica gli hook nei file dell'unità e di tutti i drop-in, con hash e NeedDaemonReload=no; nessuna chiamata D-Bus diretta. 25 scenari locali PASS, esecuzione VPS pendente.
+**Aggiornamento corrente:** F1 PASS; Onboarding e UDP sono collegati a SeaweedFS con le stesse immagini. Il produttore token Semantic è stato ripristinato alle 21:07 CET: servizio active/enabled, token montato nuovo, GET policy :61 HTTP200. Le successive chiamate MCP riescono: ricerca `Teatri`, lettura della revisione esatta e preview del profilo. [Ricevuta operatore](../evidence/semantic-operational-owner-active-operator-20261107.json) · [Prova applicativa](../evidence/semantic-recovery-functional-read-20261107.json).
 
-**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. Il client UDP originale ha superato PUT/HEAD/GET su SeaweedFS alle 18:39 CET, corpo di 33 byte, hash e metadati coincidenti. UDP è passato a SeaweedFS alle 18:59 CET: 110 oggetti/181.364 byte coincidenti, stessa immagine, readiness/TLS verificati, vecchio container spento. Il blocco di avvio Semantic è risolto: Java come init nello stesso container/immagine, readiness 200/UP. La ricerca MCP successiva termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`. La lettura corrente prova token di policy scaduto e GET HTTP 401. Prossimo passo: [ripristino del rinnovo esistente](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md), senza modifiche ai grant. La normale operazione applicativa lake resta da provare. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
+Il profilo già acquisito contiene 13 righe e 20 colonne, tutte coperte dal mapping Teatri pubblicato. Preparata la [proposta concreta](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md): riuso Teatri 1.0.0, tutte le colonne RESTRICTED/IDENTITY, celle lessicali e chiave nome_teatro. Manca la scelta dell'owner per il nuovo asset prima di creare la bozza prevista dal contratto MCP. Nessun nuovo upload, profilo, sorgente, Ingestion o approvazione inviato. Dopo la scelta: bozza, review THS, Ingestion→UDP→grafo. F2–F6 restano aperti; normale operazione lake UDP e rinnovo automatico successivo non sono ancora provati.
 
 Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sopra: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -67,7 +67,7 @@ Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti 
 
 L'immagine installata `7b9d3e91…`, corrispondente al sorgente conservato `73498c17`, usa SeaweedFS. Il 7 novembre il nuovo upload è STAGED, la profilazione è SUCCEEDED e la preview è stata letta tramite MCP. Il worker legge i byte attraverso Gateway; `ManagedFileService.profile` verifica dimensione e hash contro l'asset registrato prima di salvare il risultato. La preview non espone il valore hash: il controllo è quello applicativo, non un nuovo GET S3 indipendente.
 
-F1 è PASS per il percorso Onboarding osservato. Non ricaricare: asset e profilo sono in [STATE](STATE.md). Nessuna bozza/source Ingestion o scrittura UDP aggiunta da questa prova. Coordinate rilevate come STRING, con campione `4.565.094`: interpretazione ancora da decidere prima del mapping. Il riuso del vecchio selettore e il vecchio tentativo Teatri restano da riconciliare.
+F1 è PASS per il percorso Onboarding osservato. Non ricaricare: asset e profilo sono in [STATE](STATE.md). Nessuna bozza/source Ingestion o scrittura UDP aggiunta da questa prova. Coordinate rilevate come STRING, con campione `4.565.094`: la proposta corrente conserva il testo senza interpretarlo come numero geografico. Il riuso del vecchio selettore e il vecchio tentativo Teatri restano da riconciliare.
 
 La causa del vecchio 502 nella diversa configurazione isolata resta storica e non provata; non blocca il risultato applicativo ora acquisito.
 
@@ -77,7 +77,7 @@ Onboarding è già verificato. La [prova UDP delle 18:39 CET](../evidence/udp-se
 
 **Cambio UDP completato** alle 18:59 CET: [ricevuta](../evidence/udp-seaweedfs-ready-operator-20261107.json) con 110 oggetti/181.364 byte coincidenti, zero copie aggiuntive, sorgente invariata a writer fermo, diagnostico rimosso e zero extra target. Stessa immagine, nuova rete/binding HTTPS, readiness/TLS e 118 certificati JDK conservati più CA. Vecchio container spento. Non ripetere il cambio.
 
-F2 non è ancora PASS: manca la normale operazione applicativa lake. Semantic esegue Java nello stesso container/immagine, readiness200/UP, ma ricerca MCP403. Token policy montato scaduto e GET401. Il produttore operativo è fermo con override di cattura verificato; il legacy resta masked. La diagnosi più recente individua GetUnit/unità non caricata. Il [ripristino v3](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md) controlla i file completi dell'unità e dei drop-in invece di dipendere da quella chiamata, poi ripristina l'esatto override e verifica pubblicazione/policy. 25 scenari locali PASS, VPS pendente. Dopo successo: ricerca MCP e operazione UDP. Separatamente restano aperti il confronto MacAddress sui sostituti running e la lettura di stato Ingestion priva di grant. Riprendere dal profilo esistente.
+F2 non è ancora PASS: manca la normale operazione applicativa lake. Semantic è avviato e ricerca/lettura della revisione Teatri via MCP riescono dopo il ripristino del produttore token; non occorrono altri tentativi del comando già riuscito. Proseguire dal [mapping del profilo esistente](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md). Restano separati il confronto MacAddress sui sostituti running, l'omissione del produttore continuo nell'avviatore generale e la lettura di stato Ingestion priva di grant.
 
 | Percorso | Punto noto nel codice | Verifica minima |
 | --- | --- | --- |
@@ -121,7 +121,7 @@ I dieci asset legacy senza proprietà provata e le altre classificazioni G0 non 
 
 ## 7. Tempi, limiti e consegna
 
-Non c'è una data di fine attendibile: F1 è provato, entrambi i servizi sono collegati a SeaweedFS e Semantic è avviato, ma restano il 403 sulla ricerca, la normale operazione lake UDP e il percorso fino al grafo con ripetizione. Il riuso del selettore richiede correzione e riconciliazione. Si aggiorna la previsione dopo una ricerca semantica riuscita e la prima operazione applicativa UDP.
+Non c'è una data di fine attendibile: F1 è provato, entrambi i servizi sono collegati a SeaweedFS e Semantic è avviato, e la ricerca Semantic riesce; restano la normale operazione lake UDP e il percorso fino al grafo con ripetizione. Il riuso del selettore richiede correzione e riconciliazione. Si aggiorna la previsione dopo la prima operazione applicativa UDP; la ricerca semantica è riuscita.
 
 Dopo F1 si stima F2 sulla configurazione realmente corretta; dopo il primo E2E si misurano i tempi del secondo. Ogni blocco di lavoro deve produrre una correzione verificata, una prova funzionale o un impedimento preciso con l'azione necessaria. Se serve un'azione sul VPS, consegnare il solo comando attuale e il risultato richiesto, non una serie di preparazioni speculative.
 

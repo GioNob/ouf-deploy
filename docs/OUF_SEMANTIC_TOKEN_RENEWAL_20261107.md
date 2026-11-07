@@ -1,8 +1,12 @@
 # Ripristino del rinnovo del token Semantic
 
-**Versione 3 preparata e verificata localmente; esecuzione VPS pendente.**
+**Versione 3 eseguita con successo. Non rilanciare il ripristino già acquisito.**
 
-## Stato verificato
+[Ricevuta operatore delle 21:07:05 CET](../evidence/semantic-operational-owner-active-operator-20261107.json): servizio active/running/enabled, esatto override di cattura conservato/rimosso, altri drop-in invariati, token montato cambiato e GET policy :61 HTTP200. Semantic invariato; legacy ancora masked. Successive [ricerca e lettura MCP](../evidence/semantic-recovery-functional-read-20261107.json) riuscite. Rinnovo automatico successivo non ancora provato.
+
+Le sezioni seguenti conservano diagnosi e procedura eseguita; non descrivono un nuovo ripristino da fare.
+
+## Stato prima del ripristino
 
 Semantic esegue Java nello stesso container/immagine, readiness 200/UP. Il token montato per leggere la policy è scaduto; GET policy401. Il produttore operativo `ouf-registry-token-7cb59501000058b5dc5030ad.service` è stato fermato/disabilitato dalla cattura, che ha lasciato l'esatto override con Restart=no. Le unità legacy `ouf-policy-token@semantic.service/.timer` restano mascherate.
 
@@ -32,7 +36,7 @@ L'assenza di un campo nell'output testuale non è usata come prova. Il rapporto 
 
 Il produttore può richiedere token e aggiornare il proprio registro; lo script non lo azzera. Non modifica grant, configurazione applicativa, reti o container. Un HELD dopo gli effetti può lasciare l'override rimosso o il produttore avviato: conservare il JSON e non rilanciare alla cieca.
 
-## Comando attuale
+## Comando eseguito — conservato per tracciabilità
 
 Codice [`c30f8c28`](https://github.com/GioNob/ouf-deploy/commit/c30f8c287bf4bb78cc07d73e18407eb019eec66e), script 19129 byte, SHA-256 `32fc3f89772e16877654bf6fdab647ec2cf0307e1ced1a406e8314998f510295`. [Preparazione](../evidence/semantic-operational-owner-resume-preparation-20261107.json).
 
@@ -66,14 +70,14 @@ exec(compile(sources[3], files[3][0], 'exec'), {
 PY
 ```
 
-Esito atteso: `SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK`. Incollare il JSON anche in caso HELD.
+Esito ricevuto: `SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK`. Non eseguire di nuovo per ottenere una seconda ricevuta.
 
 ## Verifica e limiti
 
-25 scenari locali PASS: file temporanei reali per ripristino/conservazione degli override, systemd/HTTP simulati, rifiuto di hook aggiunti, direttive inattese, sintassi non gestita e ricarica pendente. Qualsiasi chiamata subprocess diretta non prevista, incluso busctl, fallisce il test. Nessuna prova VPS è già attestata.
+25 scenari locali PASS: file temporanei reali per ripristino/conservazione degli override, systemd/HTTP simulati, rifiuto di hook aggiunti, direttive inattese, sintassi non gestita e ricarica pendente. Qualsiasi chiamata subprocess diretta non prevista, incluso busctl, fallisce il test. L'esecuzione VPS è ora attestata dalla ricevuta operatore sopra; i test locali restano distinti dalla prova live.
 
-Dopo successo riprovare `semantic.search(q=teatro, limit=20)` via MCP. GET host200 non prova la policy caricata nella JVM o la ricevuta di delega; il 403 resta aperto fino alla prova applicativa. Restano da verificare un rinnovo automatico successivo e l'integrazione del servizio continuo nell'avviatore generale.
+La prova applicativa è stata eseguita: `semantic.search` riesce; `q=Teatri` trova l'ontologia e `semantic.get` legge la revisione esatta. Il precedente 403 non è osservato in queste chiamate. GET host200 resta distinto dal contenuto della policy in memoria JVM, che non è letto direttamente. Restano da verificare un rinnovo automatico successivo e l'integrazione del servizio continuo nell'avviatore generale.
 
 ## Ricevute precedenti
 
-[Legacy mascherato, nessun effetto](../evidence/semantic-legacy-token-renewal-held-operator-20261107.json) · [Metadati incompleti, nessun effetto](../evidence/semantic-operational-owner-metadata-held-operator-20261107.json) · [D-Bus fallito, nessun effetto](../evidence/semantic-operational-owner-dbus-held-operator-20261107.json). Le vecchie procedure restano storiche; il comando corrente è soltanto quello sopra. La [lezione MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) resta valida e non viene modificata da questo intervento.
+[Legacy mascherato, nessun effetto](../evidence/semantic-legacy-token-renewal-held-operator-20261107.json) · [Metadati incompleti, nessun effetto](../evidence/semantic-operational-owner-metadata-held-operator-20261107.json) · [D-Bus fallito, nessun effetto](../evidence/semantic-operational-owner-dbus-held-operator-20261107.json). Le vecchie procedure e il comando eseguito sopra restano storici; non costituiscono un invito a ripetere. La [lezione MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) resta valida e non viene modificata da questo intervento.

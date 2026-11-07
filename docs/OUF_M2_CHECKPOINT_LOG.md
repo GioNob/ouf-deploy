@@ -216,3 +216,13 @@ Preparata [lettura mirata](OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md), com
 La diagnosi riporta GET_UNIT exit1, unità non caricata. Nessun effetto e nessuna lettura degli hook. La dipendenza v2 da un'unità già presente in memoria era inappropriata per il produttore inattivo; il preciso momento di scaricamento non è osservato.
 
 Commit `c30f8c287bf4bb78cc07d73e18407eb019eec66e`: v3 controlla il main fragment vincolato all'hash e tutti i drop-in riportati da systemd, con NeedDaemonReload=no. Richiede assenza esplicita di hook nei file, ammette solo direttive previste rete/cattura nei drop-in, rifiuta sintassi non gestita. Nessun busctl, nessuna inferenza di vuoto da proprietà omessa. Conservati controlli su registro, override esatto, token/policy e abilitazione. 25 scenari locali PASS con systemd/HTTP simulati e file temporanei reali. VPS pendente. [Comando v3](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md). F1 PASS, F2–F6 aperti.
+
+## 7 novembre 2026 — Ripristino produttore Semantic e letture MCP riuscite
+
+Ricevuta operatore delle 21:07:05 CET: `SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK`. Esatto override di cattura conservato/rimosso, altri drop-in invariati; un avvio del produttore continuo, ora active/running/enabled. Pubblicazioni 6468→6469; nuovo token montato, GET policy :61 HTTP200, Semantic invariato e legacy masked. Nessun cambiamento dei grant. Il secondo ciclo automatico non è ancora provato.
+
+Le successive chiamate MCP come ouf-admin riescono: `teatro` e `Theatre` danno liste vuote; `Teatri` trova l'ontologia ACTIVE 1.0.0. La lettura della revisione `a1db3912-2b72-42eb-af88-a775fcd0e2ab` / publication set `9fe7d1ee-9e13-40bc-ad50-53e36ea0076b` restituisce 105 statement completi. Il precedente 403 non è osservato. Preview del profilo corrente riletta: 13 righe/20 colonne. Un primo input preview con solo assetId è stato respinto dalla validazione prima del dispatch; la lettura corretta usa assetId e profileId, come nel contratto.
+
+Preparata la proposta di riuso del mapping Teatri per il nuovo asset: tutte le colonne RESTRICTED/IDENTITY, celle lessicali e chiave nome_teatro. Classe/20 proprietà presenti, 18 proprietà locali con range string; i due termini schema.org sono rdf:Property senza range/domain nello snapshot. Manca la scelta dell'owner sul nuovo asset. Nessun draft, approvazione, acquisizione o nuova pubblicazione semantica inviato; sorgente storica invariata. F2–F6 restano aperti.
+
+[Ricevuta operatore](../evidence/semantic-operational-owner-active-operator-20261107.json) · [Risposte MCP](../evidence/semantic-recovery-functional-read-20261107.json) · [Mapping proposto](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md).

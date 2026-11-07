@@ -2,11 +2,13 @@
 
 ## Produttore token Semantic — aggiornamento del 7 novembre 2026
 
-Usare il servizio continuo `ouf-registry-token-7cb59501000058b5dc5030ad.service`. Il legacy `ouf-policy-token@semantic.service/.timer` era già masked prima della cattura: non smascherarlo. La cattura ha fermato/disabilitato il produttore operativo e lasciato l'esatto override `zzzz-ouf-storage-offline-20261106.conf` con Restart=no; l'avviatore generale omette questo servizio.
+Il servizio continuo `ouf-registry-token-7cb59501000058b5dc5030ad.service` è **ripristinato**: [ricevuta delle 21:07 CET](evidence/semantic-operational-owner-active-operator-20261107.json), active/running/enabled, nuovo token montato e GET policy :61 HTTP200. Esatto override di cattura conservato e rimosso, altri drop-in invariati. Non ripetere il ripristino già riuscito. Il legacy `ouf-policy-token@semantic.service/.timer` resta masked.
 
-La diagnosi delle 20:56 CET prova GET_UNIT exit1, unità non caricata. Non richiedere GetUnit come presupposto per leggere un'unità inattiva. I test D-Bus precedenti erano simulati. La [v3 corrente](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md) verifica assenza di hook nel main fragment vincolato all'hash e in tutti i drop-in riportati da systemd, con NeedDaemonReload=no e rilettura dei byte. Non deduce array vuoti dai campi testuali omessi. Ammette solo la sintassi e le direttive rete/cattura previste; gli altri casi restano HELD.
+Le successive [chiamate MCP](evidence/semantic-recovery-functional-read-20261107.json) di ricerca e lettura della revisione Teatri riescono. `teatro`/`Theatre` danno liste vuote; `Teatri` restituisce l'ontologia ACTIVE e la lettura esatta 105 statement completi. Non dedurre assenza di semantica da una singola ricerca vuota. Il ciclo automatico successivo e l'integrazione del produttore nell'avviatore generale restano da verificare.
 
-Dopo i controlli conserva/rimuove solo l'esatto override, verifica gli altri drop-in invariati, avvia il produttore esistente e controlla token/policy. Nessun reset del registro. 25 scenari locali PASS; VPS pendente. Dopo successo: ricerca MCP, rinnovo successivo e integrazione nell'avviatore generale.
+Le diagnosi HELD sono storiche: GetUnit può non trovare l'unità inattiva non caricata. La v3 eseguita verifica main fragment/all drop-in e NeedDaemonReload=no, senza dedurre array vuoti dai campi omessi né usare D-Bus diretto. [Runbook](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md).
+
+Riprendere da asset/profilo e [mapping pronto](docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md), senza nuovo upload/profilazione. Chiedere solo la scelta concreta dei campi/accesso del nuovo asset prima della creazione prevista dal contratto MCP; non trasferire automaticamente l'approvazione HUMAN della vecchia sorgente.
 
 ## Priorità corrente dell'owner — 7 novembre 2026
 

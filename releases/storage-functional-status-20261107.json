@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_POLICY_TOKEN_EXPIRED",
+  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_SEARCH_AND_EXACT_READ_PASS",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -18,9 +18,11 @@
   },
   "coordination": {
     "ths403": "POLICY_60_PUBLISHED_PICKER_OPEN_FIRST_ASSET_STAGED",
-    "lastRepositoryObservation": "User reports Farmacie then Teatri in same picker; handoff read STAGED for first asset, second attempt HTTP_500. Handoff reuse defect reproduced locally; second persistence outcome unresolved.",
+    "lastRepositoryObservation": "Current asset/profile and pinned Teatri semantic revision read via MCP after operator token-owner restore. Mapping prepared for current owner field/access choice; no draft or acquisition dispatched.",
     "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
-    "sharedBranch": "feat/m2-discovery-complete-profile-20261029"
+    "sharedBranch": "feat/m2-discovery-complete-profile-20261029",
+    "currentPolicy": "ouf-lab-authorization:61",
+    "currentSemanticRead": "SEARCH_AND_EXACT_PUBLISHED_REVISION_PASS"
   },
   "observations": {
     "historicalCustody": {
@@ -359,13 +361,27 @@
     },
     "currentSemanticSearch": {
       "source": "LIVE_GOVERNED_OUF_TOOL",
-      "status": 403,
-      "code": "SEM_READ_RECEIPT_OR_POLICY_DENIED",
-      "attempts": 1,
-      "repeated": false,
-      "searchSucceeded": false,
-      "causeDistinguished": false,
-      "evidence": "evidence/semantic-ready-search-denial-20261107.json"
+      "searchSucceeded": true,
+      "queries": [
+        {
+          "q": "teatro",
+          "results": 0
+        },
+        {
+          "q": "Theatre",
+          "results": 0
+        },
+        {
+          "q": "Teatri",
+          "results": 1
+        }
+      ],
+      "exactPublishedRevisionRead": true,
+      "statementCount": 105,
+      "completeRdfSnapshot": true,
+      "previous403ObservedOnTheseCalls": false,
+      "applicationLoadedPolicyVersionRead": false,
+      "evidence": "evidence/semantic-recovery-functional-read-20261107.json"
     },
     "restartComparison": {
       "status": "OPEN",
@@ -424,7 +440,7 @@
       "reason": "WRONG_LEGACY_PRODUCER_SELECTED_ALREADY_MASKED_BEFORE_CAPTURE"
     },
     "nextSemanticOperationalOwnerResume": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "COMPLETED",
       "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
       "scriptCommit": "c30f8c287bf4bb78cc07d73e18407eb019eec66e",
       "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
@@ -443,7 +459,9 @@
       "unrelatedDropInsPreserved": true,
       "startHookProof": "HASH_PINNED_MAIN_UNIT_ALL_LOADED_DROPINS_NO_PENDING_RELOAD",
       "directDbusCalls": 0,
-      "sourceByteReadbackBeforeStartAndEnable": true
+      "sourceByteReadbackBeforeStartAndEnable": true,
+      "operatorReceipt": "evidence/semantic-operational-owner-active-operator-20261107.json",
+      "noBlindReplay": true
     },
     "previousSemanticOperationalOwnerResume": {
       "status": "HELD_BEFORE_EFFECTS",
@@ -474,6 +492,51 @@
       "localValidation": "SYNTAX_CHECK_ONLY",
       "runbook": "docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md",
       "operatorReceipt": "evidence/semantic-systemd-get-unit-not-loaded-operator-20261107.json"
+    },
+    "previousSemanticSearch": {
+      "source": "LIVE_GOVERNED_OUF_TOOL",
+      "status": 403,
+      "code": "SEM_READ_RECEIPT_OR_POLICY_DENIED",
+      "attempts": 1,
+      "repeated": false,
+      "searchSucceeded": false,
+      "causeDistinguished": false,
+      "evidence": "evidence/semantic-ready-search-denial-20261107.json"
+    },
+    "currentSemanticOperationalOwner": {
+      "source": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T20:07:05.631718+00:00",
+      "status": "SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK",
+      "receipt": "evidence/semantic-operational-owner-active-operator-20261107.json",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "active": true,
+      "enabled": true,
+      "captureOverrideRemoved": true,
+      "unrelatedDropInsPreserved": true,
+      "mountedTokenChanged": true,
+      "policyGetHttpStatus": 200,
+      "policyBundleVersion": 61,
+      "semanticRuntimeUnchanged": true,
+      "automaticRenewalCycleProven": false,
+      "applicationLoadedPolicyProven": false,
+      "permissionsChanged": false
+    },
+    "currentMappingProposal": {
+      "status": "PREPARED_AWAITING_CURRENT_ASSET_FIELD_DECISION",
+      "path": "releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json",
+      "reviewDocument": "docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md",
+      "sourceId": "teatri-seaweedfs-c51745c5",
+      "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+      "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+      "profileReReadSucceeded": true,
+      "allTwentyPropertyTermsAsserted": true,
+      "proposedAccessLabel": "RESTRICTED",
+      "proposedTransform": "IDENTITY",
+      "csvCellsRemainLexical": true,
+      "createDraftDispatched": false,
+      "sourceActivation": false,
+      "ingestionDispatch": false,
+      "historicalSourceChanged": false
     }
   },
   "milestones": [
@@ -548,7 +611,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute resume v3 with complete loaded-unit-file checks instead of GetUnit. Restore exact capture override, start existing owner, verify mounted token and policy GET200, enable owner, retry semantic MCP search.",
+  "nextAction": "Owner chooses prepared mapping/access for current asset; then create one idempotent draft and prepare native THS review, followed by Ingestion→UDP→graph. Do not repeat token restore, upload or profiling.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -575,8 +638,8 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "GetUnit failure identified: inactive unit not loaded. Resume v3 prepared with verified main fragment/all drop-ins and no pending reload, without direct D-Bus calls. VPS execution, semantic search, normal UDP lake and E2E unproven.",
-    "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
+    "reason": "Semantic search and exact revision read succeeded; application UDP lake operation and complete CSV-to-graph flow remain unproven.",
+    "nextReestimateAfter": "UDP_APPLICATION_OPERATION"
   },
   "evidence": [
     {
