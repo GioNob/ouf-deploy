@@ -2,6 +2,9 @@
 
 ## Produttore token Semantic — correzione del 7 novembre 2026
 
+**Aggiornamento 20:43 CET:** il ripristino Semantic v2 è HELD/TYPED_SERVICE_METADATA_READ_FAILED prima degli effetti. Override esatto e tre nomi omessi verificati; mancano fase D-Bus, exit code e stderr. I test precedenti simulavano D-Bus. Prossimo passo: [diagnosi di sola lettura](docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md); non rilanciare il mutatore finché non è noto l'errore.
+
+
 Usare il servizio continuo `ouf-registry-token-7cb59501000058b5dc5030ad.service`. La coppia `ouf-policy-token@semantic.service/.timer` era già masked prima della cattura: non smascherarla. La cattura ha fermato/disabilitato il produttore operativo e installato `zzzz-ouf-storage-offline-20261106.conf` (Restart=no, SendSIGKILL=no, RuntimeDirectoryPreserve=yes, TimeoutStopSec=120s); l'avviatore generale lo omette. Due comandi del 7 novembre si sono fermati senza effetti: produttore legacy errato alle 19:06, poi SERVICE_METADATA_INCOMPLETE sul produttore corretto alle 19:18. La seconda ricevuta espone Restart=no ma non i nomi mancanti.
 
 Le proprietà Exec vuote possono essere omesse dall'output testuale: riusare la lettura tipizzata D-Bus già presente in `scripts/storage-host-containment-20261106.py`, non inferire array vuoti dall'assenza. Il [comando v2](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md) verifica gli hook tipizzati, conserva e rimuove solo l'esatto override di cattura del produttore fermo, verifica ripristino e altri drop-in invariati, poi avvia il servizio esistente. Nessun reset del registro. 19 scenari locali PASS; VPS pendente. Dopo successo provare ricerca MCP, rinnovo successivo e completare l'avviatore generale.
