@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 
 SCHEMA = 'ouf.storage-retained-minio-restore.v1'
 DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01'
+READ_DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02'
 SECONDS = 600
 BODY_LIMIT = 64 << 20
 TOTAL_LIMIT = 512 << 20
@@ -93,20 +94,43 @@ def extract(h, pg, plan, members, scope, until):
 
 def request(net, auth, path, limit, until):
     need(time.monotonic() < until and path.startswith('/'), 'MINIO_READ_WINDOW')
+    maximum = max(limit, 16384)
 
     def restrict_output():
-        resource.setrlimit(resource.RLIMIT_FSIZE, (limit + 1, limit + 1))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (maximum + 1, maximum + 1))
 
     with tempfile.TemporaryFile() as raw:
-        p = subprocess.run(['/usr/bin/nsenter', f'--net=/proc/self/fd/{net}', '/usr/bin/curl',
+        fd = raw.fileno()
+        argv = ['/usr/bin/nsenter', f'--net=/proc/self/fd/{net}', '/usr/bin/curl',
             '--disable', '--globoff', '--path-as-is', '--noproxy', '*', '--proto', '=http',
-            '--max-time', '8', '--max-filesize', str(max(1, limit)), '--silent', '--fail',
-            '--aws-sigv4', 'aws:amz:us-east-1:s3', '--config', '-',
-            'http://127.0.0.1:9000' + path], input=auth, stdout=raw, stderr=subprocess.DEVNULL,
-            env=ENV, pass_fds=(net,), preexec_fn=restrict_output, timeout=min(10, until - time.monotonic()))
-        need(p.returncode == 0 and raw.tell() <= limit, 'MINIO_LOCAL_S3_GET_FAILED')
+            '--max-time', '8', '--max-filesize', str(maximum), '--silent', '--show-error',
+            '--output', f'/proc/self/fd/{fd}', '--write-out', '%{http_code}']
+        if auth:
+            argv.extend(['--config', str(auth), '--aws-sigv4', 'aws:amz:us-east-1:s3'])
+        p = subprocess.run(argv + ['http://127.0.0.1:9000' + path], stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ENV,
+            pass_fds=(net, fd), preexec_fn=restrict_output, timeout=min(10, until - time.monotonic()))
+        if p.returncode:
+            if p.stderr.startswith(b'nsenter:'):
+                raise Held('MINIO_NAMESPACE_ENTRY_FAILED')
+            raise Held(f'MINIO_CURL_EXIT_{p.returncode}' if 0 < p.returncode < 100 else 'MINIO_CURL_INTERRUPTED')
+        need(re.fullmatch(rb'[1-5][0-9]{2}', p.stdout), 'MINIO_HTTP_STATUS_MISSING')
         raw.seek(0)
-        return raw.read(limit + 1)
+        body = raw.read(maximum + 1)
+        status = int(p.stdout)
+        if status != 200:
+            error = None
+            if auth:
+                try:
+                    error = ET.fromstring(body).findtext('{*}Code')
+                except ET.ParseError:
+                    pass
+            labels = {'AccessDenied': 'ACCESS_DENIED', 'SignatureDoesNotMatch': 'SIGNATURE_MISMATCH',
+                      'InvalidAccessKeyId': 'INVALID_ACCESS_KEY', 'AuthorizationHeaderMalformed': 'AUTH_HEADER',
+                      'RequestTimeTooSkewed': 'CLOCK_SKEW', 'XMinioServerNotInitialized': 'NOT_INITIALIZED'}
+            raise Held(f'MINIO_HTTP_{status}' + ('_' + labels[error] if error in labels else ''))
+        need(len(body) <= limit, 'MINIO_HTTP_BODY_LIMIT')
+        return body
 
 
 def inventory(get):
@@ -165,16 +189,72 @@ def execute(h, pg, decision):
         os.close(parent)
     h['new'](scope / 'verified-members.private.json', h['canonical'](members))
     image, volume, info, source_sha = extract(h, pg, plan, members, scope, until)
+    return run_server(h, pg, scope, decision, until, image, volume, info, source_sha)
+
+
+def finish_s3_proof(h, pg, decision):
+    need(decision == READ_DECISION, 'EXACT_MINIO_S3_DECISION_REQUIRED')
+    old = pg['ROOT'] / 'historical-minio-restore-20261107-v1'
+    scope = old / 's3-proof-v1'
+    need(not os.path.lexists(scope) and not os.path.lexists(old / 'result.json'),
+         'MINIO_S3_PROOF_ALREADY_CLAIMED')
+    claim = h['decode'](h['protected'](old / 'claim.private.json', private=True, limit=8192))
+    need(claim.get('schema') == SCHEMA and claim.get('decisionReference') == DECISION
+         and claim.get('manifestSha256') == pg['MANIFEST_SHA'] and claim.get('networkMode') == 'none'
+         and claim.get('maximumContainerRuns') == 1 and re.fullmatch('ouf-minio-historical-[a-f0-9]{16}',
+                                                                   claim.get('containerName', '')),
+         'PRIOR_MINIO_CLAIM_MISMATCH')
+    log = h['protected'](old / 'minio.stderr.private', private=True, limit=1 << 20)
+    need(re.search(rb'API:\s+http://127\.0\.0\.1:9000\b', log)
+         and b'Exiting on signal' in log, 'PRIOR_MINIO_START_STOP_NOT_PROVEN')
+    members = h['decode'](h['protected'](old / 'verified-members.private.json', private=True, limit=32768))
+    sealed = pg['SEALED']
+    capture = pg['OLD']
+    evidence = {'custody-claim.private.json': sealed / 'claim.private.json',
+                'original-claim.private.json': capture / 'claim.private.json',
+                'original-producer-claim.private.json': capture / 'capture/capture-claim.private.json'}
+    manifest = h['canonical']({'schema': 'ouf.storage-retained-capture-custody.v1', 'members': members,
+        'evidenceSha256': {name: h['digest'](h['protected'](path, private=True, limit=8192))
+                           for name, path in evidence.items()},
+        'captureEventCoverageProven': False, 'liveSourceContinuityProven': False,
+        'historicalCustodyOnly': True, 'restorePerformed': False})
+    need(h['digest'](manifest) == pg['MANIFEST_SHA'], 'RETAINED_MINIO_MANIFEST_MISMATCH')
+    raw = h['protected'](pg['PAYLOAD'] / 'plan.private.json', private=True)
+    need(h['digest'](raw) == members['plan.private.json']['sha256'], 'RETAINED_MINIO_PLAN_CHANGED')
+    image, ordinal, source, relative = minio_source(h, pg, h['decode'](raw), members)
+    volume = old / 'data' / source.name / str(relative)
+    info = volume.lstat()
+    need(stat.S_ISDIR(info.st_mode) and volume.resolve(strict=True) == volume
+         and (volume / '.minio.sys').is_dir(), 'MINIO_RESTORED_DATA_REQUIRED')
+    prior = subprocess.run(['/usr/bin/docker', '--host', 'unix:///run/docker.sock',
+        '--config', str(old / 'docker-client'), 'ps', '-aq', '--filter',
+        'name=^/' + claim['containerName'] + '$'], env=ENV, stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL, timeout=10)
+    need(prior.returncode == 0 and not prior.stdout.strip(), 'PRIOR_MINIO_CONTAINER_STILL_PRESENT')
+    parent = h['runtime_parent'](scope)
+    try:
+        os.mkdir(scope.name, 0o700, dir_fd=parent)
+        os.fsync(parent)
+    finally:
+        os.close(parent)
+    return run_server(h, pg, scope, decision, time.monotonic() + 300, image, volume,
+                      info, members[f'source-{ordinal:03d}.tar']['sha256'])
+
+
+def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
     token = secrets.token_hex(8)
     name = 'ouf-minio-historical-' + token
     h['new'](scope / 'claim.private.json', h['canonical']({'schema': SCHEMA, 'decisionReference': decision,
-        'manifestSha256': pg['MANIFEST_SHA'], 'networkMode': 'none', 'maximumSeconds': SECONDS,
+        'manifestSha256': pg['MANIFEST_SHA'], 'networkMode': 'none',
+        'maximumSeconds': 300 if decision == READ_DECISION else SECONDS,
         'maximumContainerRuns': 1, 'containerName': name}))
     (scope / 'docker-client').mkdir(mode=0o700)
     key, password = 'restore' + secrets.token_hex(8), secrets.token_hex(24)
     h['new'](scope / 'minio.env.private',
-             f'MINIO_ROOT_USER={key}\nMINIO_ROOT_PASSWORD={password}\nMINIO_REGION_NAME=us-east-1\n'.encode())
-    auth = f'user = "{key}:{password}"\n'.encode()
+             (f'MINIO_ROOT_USER={key}\nMINIO_ROOT_PASSWORD={password}\n'
+              'MINIO_API_ROOT_ACCESS=on\nMINIO_REGION_NAME=us-east-1\n').encode())
+    auth = scope / 'curl-auth.private'
+    h['new'](auth, f'user = "{key}:{password}"\n'.encode())
     docker = ['/usr/bin/docker', '--host', 'unix:///run/docker.sock', '--config', str(scope / 'docker-client')]
 
     def call(args, timeout=20):
@@ -192,6 +272,7 @@ def execute(h, pg, decision):
         return fields[0], int(fields[3])
 
     calls = 0
+    health_calls = 0
     net = None
     try:
         p = call(['run', '-d', '--name', name, '--label', 'ouf.restore-run=' + token, '--pull=never',
@@ -211,20 +292,24 @@ def execute(h, pg, decision):
         def get(path, limit):
             nonlocal calls
             calls += 1
-            need(calls <= 320, 'MINIO_S3_REQUEST_BUDGET')
+            need(calls + health_calls <= 320, 'MINIO_HTTP_REQUEST_BUDGET')
             return request(net, auth, path, limit, until)
 
-        initial = None
+        ready = False
+        last = 'MINIO_HTTP_NOT_PROBED'
         for _ in range(12):
+            health_calls += 1
             try:
-                initial = get('/', 1 << 20)
+                request(net, None, '/minio/health/ready', 4096, until)
+                ready = True
                 break
             except Held as error:
-                if str(error) != 'MINIO_LOCAL_S3_GET_FAILED':
+                last = str(error)
+                if last not in ('MINIO_CURL_EXIT_7', 'MINIO_CURL_EXIT_28', 'MINIO_HTTP_429', 'MINIO_HTTP_503'):
                     raise
                 time.sleep(1)
-        need(initial is not None, 'MINIO_ISOLATED_READY_TIMEOUT')
-        records, buckets, markers, total = inventory(lambda path, limit: initial if path == '/' else get(path, limit))
+        need(ready, last)
+        records, buckets, markers, total = inventory(get)
     finally:
         if net is not None:
             os.close(net)
@@ -246,6 +331,8 @@ def execute(h, pg, decision):
         'privateManifestSha256': pg['MANIFEST_SHA'], 'sourceArchiveSha256': source_sha,
         's3BodyManifestSha256': h['digest'](manifest), 'bucketsRead': buckets, 'versionsRead': bodies,
         'deleteMarkersObserved': markers, 'bytesRead': total, 's3GetRequests': calls,
+        'httpReadinessVerified': True, 'httpReadinessRequests': health_calls,
+        'reusedExtractedVolume': decision == READ_DECISION,
         'matchesPrior120Bodies': bodies == 120, 'networkMode': 'none', 'historicalRestoreOnly': True,
         'g3Complete': False, 'acceptanceCreditAdded': 0}
     h['new'](scope / 'result.json', h['canonical'](result))
@@ -255,11 +342,13 @@ def execute(h, pg, decision):
 def main(pg):
     parser = argparse.ArgumentParser()
     parser.add_argument('--decision-reference', required=True)
+    parser.add_argument('--finish-s3-proof', action='store_true')
     args = parser.parse_args()
     os.umask(0o077)
     try:
         need(os.geteuid() == os.getegid() == 0, 'ROOT_REQUIRED')
-        print(json.dumps(execute(pg['load_producer'](), pg, args.decision_reference), sort_keys=True))
+        run = finish_s3_proof if args.finish_s3_proof else execute
+        print(json.dumps(run(pg['load_producer'](), pg, args.decision_reference), sort_keys=True))
     except Exception as error:
         code = str(error)
         if not (type(error).__name__ == 'Held' and re.fullmatch('[A-Z0-9_]{1,96}', code)):

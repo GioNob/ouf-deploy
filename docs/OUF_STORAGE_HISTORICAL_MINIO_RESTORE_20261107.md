@@ -1,3 +1,7 @@
+## Riscontro log e ripresa proposta
+
+[Log acquisito](../evidence/storage-historical-minio-startup-log-operator-20261107.json): API locale in ascolto e chiusura osservata. [Ripresa sulla copia già estratta](OUF_STORAGE_HISTORICAL_MINIO_S3_PROOF_20261107.md) pronta per la decisione sul singolo nuovo avvio. L'esecuzione originaria è consumata.
+
 ## Esito VPS e log conservato
 
 La [ricevuta](../evidence/storage-historical-minio-restore-held-operator-20261107.json) riporta `MINIO_ISOLATED_READY_TIMEOUT`. Il ramo segue verifica manifest, estrazione, avvio con PID e pin del namespace. La disponibilità veniva misurata con GET S3 firmata. Il codice non distingueva avvio HTTP, errore curl e autenticazione e non ha iniziato l'inventario. Il container temporaneo è stato rimosso dal ramo di chiusura e il log è rimasto nello scope privato. L'esecuzione approvata è consumata.
