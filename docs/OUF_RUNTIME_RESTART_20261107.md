@@ -1,0 +1,7 @@
+# Ripartenza OUF sul VPS
+
+Il comando `e2e` riavvia i 14 container originali legati al piano privato del VPS, da PostgreSQL e MinIO fino a Caddy. Usa configurazione, immagini, mount e rotte già installati. Ripristina l'ingresso normale dell'installazione. Se viene interrotto, un nuovo avvio riusa i container già accesi e riparte da quelli fermi con lo stesso binding. In caso di HELD riportare il ruolo e la causa, che il comando rende nel JSON.
+
+Il comando `seaweedfs` avvia la candidata OCI33 con un volume di lavoro distinto e i binding TLS già preparati. Il nome `ouf-seaweedfs-stage` coincide con il certificato. La rete Docker è interna e il servizio non pubblica porte. Ripetere il comando riusa la stessa istanza e lo stesso volume di lavoro. Il JSON di successo attesta l'avvio e TLS sul VPS. Il cambio dei binding di Onboarding, UDP e del percorso di lettura resta un'azione distinta. I dati scritti su MinIO dopo il riavvio non sono presenti automaticamente su SeaweedFS.
+
+I due modi usano [lo stesso script](../scripts/ouf-runtime-20261107.py), ciascuno con il proprio lock. Esecuzione sul VPS come root con Python isolato. Per l'E2E usare la capability reale di upload e il CSV Teatri. Conservare i riferimenti di asset, onboarding, registry semantico, run di ingestion, merge UDP e verifica del grafo. Il criterio di fine è l'arrivo al grafo con una seconda esecuzione eseguibile dalla stessa procedura. Teatri, Farmacie e Cinema sono fixture. Conservare contratti, rotte, script e configurazione.
