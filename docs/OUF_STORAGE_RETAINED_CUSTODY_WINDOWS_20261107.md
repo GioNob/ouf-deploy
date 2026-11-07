@@ -44,96 +44,34 @@ $identity = [Environment]::ExpandEnvironmentVariables((Read-Host 'Percorso local
 
 ### 2B. Eseguire la copia
 
+Se PowerShell mostra `>>`, premere Ctrl+C per tornare a `PS>`. Eseguire le righe qui sotto una alla volta. Ogni riga è un comando completo.
+
 ```powershell
 $ErrorActionPreference = 'Stop'
-if ($sshTarget -notmatch '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    $dest = Read-Host 'Percorso della directory privata di custodia gia preparata'
-}
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    throw 'Directory privata di custodia assente'
-}
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$uri = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/b866758dfaea4df22e057ed926aa5b01b762fd5b/scripts/receive-storage-backup-windows.ps1'
-$client = [Net.WebClient]::new()
-try { $bytes = $client.DownloadData($uri) } finally { $client.Dispose() }
-$stream = [IO.MemoryStream]::new([byte[]]$bytes)
-try { $pin = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash } finally { $stream.Dispose() }
-if ($bytes.Length -ne 3523 -or $pin -ne '48d1aae4854257c414d14a7fb62b660613ba52e2d5a619776babc598016cfce6') {
-    throw 'Dimensione o SHA-256 del ricevitore non corrispondente'
-}
-$receive = [ScriptBlock]::Create([Text.Encoding]::UTF8.GetString($bytes))
-$json = & $receive -SshTarget $sshTarget -IdentityFile $identity `
-    -RemoteArchive '/var/tmp/ouf-historical-transfer-20261107-v1/retained-historical.tar.age' `
-    -ExpectedBytes 6544578724 `
-    -ExpectedSha256 'c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886' `
-    -DestinationDirectory $dest
-$result = $json | ConvertFrom-Json
-$result.PSObject.Properties.Remove('localFile')
-$result | ConvertTo-Json
-```
-
-La ricevuta redatta attesa è `TRANSFER_SIZE_AND_SHA256_VERIFIED`. Conservare la copia cifrata. Decifratura e prova di restore isolato sono passi distinti. MiniPET **39,78%**, nessun nuovo credito.
-) {
-    throw 'Inserire il target SSH nel passaggio 2A'
-}
-if ([string]::IsNullOrWhiteSpace($identity) -or $identity -match '\.pub
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    $dest = Read-Host 'Percorso della directory privata di custodia gia preparata'
-}
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    throw 'Directory privata di custodia assente'
-}
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$uri = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/b866758dfaea4df22e057ed926aa5b01b762fd5b/scripts/receive-storage-backup-windows.ps1'
-$client = [Net.WebClient]::new()
-try { $bytes = $client.DownloadData($uri) } finally { $client.Dispose() }
-$stream = [IO.MemoryStream]::new([byte[]]$bytes)
-try { $pin = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash } finally { $stream.Dispose() }
-if ($bytes.Length -ne 3523 -or $pin -ne '48d1aae4854257c414d14a7fb62b660613ba52e2d5a619776babc598016cfce6') {
-    throw 'Dimensione o SHA-256 del ricevitore non corrispondente'
-}
-$receive = [ScriptBlock]::Create([Text.Encoding]::UTF8.GetString($bytes))
-$json = & $receive -SshTarget $sshTarget -IdentityFile $identity `
-    -RemoteArchive '/var/tmp/ouf-historical-transfer-20261107-v1/retained-historical.tar.age' `
-    -ExpectedBytes 6544578724 `
-    -ExpectedSha256 'c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886' `
-    -DestinationDirectory $dest
-$result = $json | ConvertFrom-Json
-$result.PSObject.Properties.Remove('localFile')
-$result | ConvertTo-Json
-```
-
-La ricevuta redatta attesa è `TRANSFER_SIZE_AND_SHA256_VERIFIED`. Conservare la copia cifrata. Decifratura e prova di restore isolato sono passi distinti. MiniPET **39,78%**, nessun nuovo credito.
- -or
-    -not (Test-Path -LiteralPath $identity -PathType Leaf)) {
-    throw 'Inserire il percorso esistente della chiave privata nel passaggio 2A'
-}
+if ([string]::IsNullOrWhiteSpace($sshTarget)) { throw 'Impostare il target SSH nel passaggio 2A' }
+if ([string]::IsNullOrWhiteSpace($identity)) { throw 'Impostare il percorso della chiave nel passaggio 2A' }
+if (-not (Test-Path -LiteralPath $identity -PathType Leaf)) { throw 'File della chiave assente' }
+if ($identity.EndsWith('.pub', [StringComparison]::OrdinalIgnoreCase)) { throw 'Indicare il file della chiave privata' }
 $dest = Join-Path $env:USERPROFILE 'OUF-backup-custody-20261106'
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    $dest = Read-Host 'Percorso della directory privata di custodia gia preparata'
-}
-if (-not (Test-Path -LiteralPath $dest -PathType Container)) {
-    throw 'Directory privata di custodia assente'
-}
+if (-not (Test-Path -LiteralPath $dest -PathType Container)) { $dest = Read-Host 'Directory privata di custodia gia preparata' }
+if (-not (Test-Path -LiteralPath $dest -PathType Container)) { throw 'Directory privata di custodia assente' }
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $uri = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/b866758dfaea4df22e057ed926aa5b01b762fd5b/scripts/receive-storage-backup-windows.ps1'
 $client = [Net.WebClient]::new()
 try { $bytes = $client.DownloadData($uri) } finally { $client.Dispose() }
 $stream = [IO.MemoryStream]::new([byte[]]$bytes)
 try { $pin = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash } finally { $stream.Dispose() }
-if ($bytes.Length -ne 3523 -or $pin -ne '48d1aae4854257c414d14a7fb62b660613ba52e2d5a619776babc598016cfce6') {
-    throw 'Dimensione o SHA-256 del ricevitore non corrispondente'
-}
+if ($bytes.Length -ne 3523 -or $pin -ne '48d1aae4854257c414d14a7fb62b660613ba52e2d5a619776babc598016cfce6') { throw 'Ricevitore con dimensione o SHA-256 diverso' }
 $receive = [ScriptBlock]::Create([Text.Encoding]::UTF8.GetString($bytes))
-$json = & $receive -SshTarget $sshTarget -IdentityFile $identity `
-    -RemoteArchive '/var/tmp/ouf-historical-transfer-20261107-v1/retained-historical.tar.age' `
-    -ExpectedBytes 6544578724 `
-    -ExpectedSha256 'c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886' `
-    -DestinationDirectory $dest
-$result = $json | ConvertFrom-Json
-$result.PSObject.Properties.Remove('localFile')
-$result | ConvertTo-Json
+$transfer = @{}
+$transfer.SshTarget = $sshTarget
+$transfer.IdentityFile = $identity
+$transfer.DestinationDirectory = $dest
+$transfer.RemoteArchive = '/var/tmp/ouf-historical-transfer-20261107-v1/retained-historical.tar.age'
+$transfer.ExpectedBytes = 6544578724
+$transfer.ExpectedSha256 = 'c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886'
+$json = & $receive @transfer
+$json | ConvertFrom-Json | Select-Object * -ExcludeProperty localFile | ConvertTo-Json
 ```
 
 La ricevuta redatta attesa è `TRANSFER_SIZE_AND_SHA256_VERIFIED`. Conservare la copia cifrata. Decifratura e prova di restore isolato sono passi distinti. MiniPET **39,78%**, nessun nuovo credito.
