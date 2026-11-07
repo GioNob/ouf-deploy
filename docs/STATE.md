@@ -12,11 +12,13 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Prossimo passo concreto
 
+**Budget proporzionato all'oggetto:** l'owner richiede dimensionamento dinamico per 50/100/200 colonne e oltre. La preview contiene già il numero reale di colonne; i contratti semantic.search/get non portano però un riferimento al profilo. Il candidato [MCP PR82](https://github.com/GioNob/ouf-mcp-server/pull/82), 60 letture/minuto, ha superato qualifica mirata e CI completa ma resta draft e **non va distribuito come soluzione del requisito dinamico**. Nessun aggiornamento VPS. Prossimo intervento: collegare analisi e profilo verificato, dimensionare il lavoro complessivo e conservare l'avanzamento; ritmo per finestra e tentativi equivalenti restano separati. [Decisione e due interventi verificabili](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
+
 **Scelta OPEN acquisita per tutte le 20 colonne.** L'owner richiede l'associazione delle colonne a proprietà semantiche condivise (URI stabili) per confronti tra oggetti diversi; non chiede vocabolari per enumerare i valori. [Tabella completa delle 20 colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 
 La nuova lettura MCP della revisione Teatri conferma 105 statement: due termini schema.org (`name` e il candidato `additionalType`), 18 proprietà locali con dominio PerformingArtsTheater e range string. La presenza di una proprietà locale non chiude la scelta di un riferimento generale. Le ricerche per `nome`, `indirizzo` e `coordinate` sono vuote; non dimostrano assenza dei termini dentro gli snapshot.
 
-**Impedimento:** la connessione non espone discovery.request/status/candidates per OntoPiA/schema.gov.it. Esistono candidati in MCP PR81, Gateway PR84 e Registry PR41, ancora aperti/non merged; non dedurre installazione dal codice. Il prossimo intervento deve riconciliare i binding attuali e completare questo percorso funzionale conservando file/SeaweedFS. Non inventare URI o sostituire la richiesta con ricerca web/import manuali.
+**Impedimento:** la connessione non espone discovery.request/status/candidates per OntoPiA/schema.gov.it. Esistono candidati in MCP PR81, Gateway PR84 e Registry PR41, ancora aperti/non merged; non dedurre installazione dal codice. Dopo il collegamento dell'analisi al profilo e il dimensionamento del lavoro, riconciliare i binding della discovery e completare questo percorso funzionale conservando file/SeaweedFS. Non inventare URI o sostituire la richiesta con ricerca web/import manuali.
 
 L'ultima ricerca `Cinema` ha risposto `orchestration budget exhausted`, `retryable:false`: esito conservato, nessun retry, reset o cambio account. [Evidenza](../evidence/teatri-column-semantic-reference-review-20261107.json).
 

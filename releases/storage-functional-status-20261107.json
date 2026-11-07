@@ -22,7 +22,8 @@
     "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
     "sharedBranch": "feat/m2-discovery-complete-profile-20261029",
     "currentPolicy": "ouf-lab-authorization:61",
-    "currentSemanticRead": "SEARCH_AND_EXACT_PUBLISHED_REVISION_PASS"
+    "currentSemanticRead": "SEARCH_AND_EXACT_PUBLISHED_REVISION_PASS",
+    "currentSemanticBudget": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT"
   },
   "observations": {
     "historicalCustody": {
@@ -567,6 +568,23 @@
       "automaticRetry": false,
       "notAnEmptySearchResult": true,
       "evidence": "evidence/teatri-column-semantic-reference-review-20261107.json"
+    },
+    "currentSemanticBudgetReview": {
+      "status": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT",
+      "evidence": "evidence/semantic-analysis-budget-review-20261107.json",
+      "decision": "docs/OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md",
+      "codeCandidate": "https://github.com/GioNob/ouf-mcp-server/pull/82",
+      "candidateHead": "cdfb850b26d8d2e1c1481071c8a281a55a553bac",
+      "candidateTestsPassed": true,
+      "candidateDeployed": false,
+      "dynamicSizingImplemented": false,
+      "actualProfileColumns": 20,
+      "targetQualificationColumns": [
+        20,
+        50,
+        100,
+        200
+      ]
     }
   },
   "milestones": [
@@ -641,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Reconcile the existing external-discovery candidates with current runtime bindings and complete governed MCP discovery; verify shared property definitions/domain/range for the 20 OPEN columns, then create draft and native THS review. No new upload/profile or value-enumeration requirement.",
+  "nextAction": "Bind semantic analysis to the verified owned source profile and derive its work budget from actual columns/planned work; preserve progress across rate windows. Fixed 60/min candidate stays draft and is not the dynamic solution. Then complete governed external discovery and shared property mapping, create draft/THS review and run Ingestion→UDP→graph; reuse existing upload/profile.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -743,7 +761,8 @@
       "path": "evidence/storage-retained-source-comparison-match-operator-20261107.json",
       "gitBlobSha": "d0863055807bd5794f440bc92ba723b2dc62717c",
       "liveObservation": false
-    }
+    },
+    "evidence/semantic-analysis-budget-review-20261107.json"
   ],
   "sourceReferences": [
     {
