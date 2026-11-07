@@ -1,0 +1,49 @@
+{
+  "change": "Concrete read-only Gateway route maps join reviewed publication progress without recursive checkpoint invocation.",
+  "date": "2026-11-01",
+  "denials": [
+    "Foreign route maps or parent/runtime lineage",
+    "Changed generation/history between observations",
+    "Binding-only partial initialization",
+    "Lost parent authority",
+    "Missing original applied dispatch marker"
+  ],
+  "fullCohortProven": false,
+  "heldController": {
+    "allFiveFinalLogsRead": true,
+    "errors": 0,
+    "failures": 0,
+    "namedReads": 22,
+    "protocolJobId": 124726055518,
+    "protocolSuites": 21,
+    "protocolTests": 163,
+    "resourceWarnings": 0,
+    "runId": 41265066320,
+    "schema": "ouf.discovery-held-native-controller-witness.v3",
+    "skips": 0,
+    "suites": 26,
+    "tests": 180,
+    "typedOwners": 12
+  },
+  "journalAdvanced": false,
+  "publicationCheckpointReentered": false,
+  "publicationProtocol": {
+    "actualParentChildSignaturesAndJournals": true,
+    "finalLogRead": true,
+    "jobId": 124726055993,
+    "nativeHttpAndEngineModeled": true,
+    "newRouteProgressTests": 10,
+    "oldPublicationTests": 14,
+    "runId": 41265066498,
+    "suites": 2,
+    "tests": 24
+  },
+  "reconciliation": "CLAIMED without dispatch marker admits before-map only. Original marker admits only exact before/after maps, never marks APPLIED. APPLIED requires original marker.",
+  "releaseAcceptance": false,
+  "routeWrites": 0,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-current-gateway-route-progress-qualification.v1",
+  "source": "736329889940ccc37a143f395f96f1e8a5fd9b74",
+  "targetApplyAuthorized": false,
+  "vpsOperations": 0
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "ouf.storage-oci33-zip-staged-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "artifactId": 13299559178,
+  "runId": 41782068047,
+  "httpStatus": 200,
+  "result": {
+    "status": "OCI33_ZIP_STAGED",
+    "remoteRelativePath": "ouf-oci33-d3ebc0e7c1174d638fd84f1f8d44ad89/candidate.zip",
+    "bytes": 174223468,
+    "sha256": "4175ae9f0f5e4f6e71729084e0bfc2d9e8a2d39d3c5908dc51e5c4c695bd6121"
+  },
+  "imageLoaded": false,
+  "acceptanceCreditAdded": 0
+}

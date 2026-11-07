@@ -1,0 +1,52 @@
+[
+  {
+    "requestedRepository": "Shopify/sarama",
+    "url": "https://api.github.com/repositories/11206255",
+    "observedAt": "2026-11-03T19:26:42.320Z",
+    "data": null,
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  {
+    "requestedRepository": "armon/go-metrics",
+    "url": "https://api.github.com/repositories/12006203",
+    "observedAt": "2026-11-03T19:26:42.412Z",
+    "data": null,
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  {
+    "requestedRepository": "envoyproxy/protoc-gen-validate",
+    "url": "https://api.github.com/repositories/105711679",
+    "observedAt": "2026-11-03T19:26:42.512Z",
+    "data": null,
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  {
+    "requestedRepository": "facebookgo/clock",
+    "url": "https://api.github.com/repositories/26832630",
+    "observedAt": "2026-11-03T19:26:42.604Z",
+    "data": null,
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  {
+    "requestedRepository": "facebookgo/stats",
+    "url": "https://api.github.com/repositories/24133566",
+    "observedAt": "2026-11-03T19:26:42.716Z",
+    "data": null,
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    }
+  }
+]

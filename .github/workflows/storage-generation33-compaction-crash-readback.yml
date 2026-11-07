@@ -1,0 +1,85 @@
+name: Storage generation33 precommit original artifact readback
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-compaction-crash-readback.yml
+      - scripts/readback-storage-generation33-compaction-crash.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: storage-precommit-readback-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-artifact-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          path: verifier
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: 6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96
+          path: producer
+      - name: Fetch the exact completed native run and original ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/precommit-readback"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,time,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'precommit-readback'
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
+          for attempt in range(37):
+              run=get('/actions/runs/41859638833')
+              assert run['head_sha']=='6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96' and run['run_attempt']==1
+              if run['status']=='completed':break
+              assert attempt<36,'NATIVE_RUN_OBSERVATION_BUDGET'
+              time.sleep(10)
+          (out/'native-run.json').write_text(json.dumps(run,indent=2)+'\n')
+          assert run['conclusion']=='success','NATIVE_RUN_NOT_SUCCESSFUL'
+          artifacts=get('/actions/runs/41859638833/artifacts')['artifacts']
+          selected=[a for a in artifacts if a['name']=='storage-generation33-lateral-isolation-41859638833']
+          assert len(selected)==1 and not selected[0]['expired']
+          a=selected[0];assert 0<a['size_in_bytes']<=32*1024*1024
+          (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
+          # curl drops Authorization on cross-host redirects to signed storage.
+          # Never use --location-trusted: the GitHub token belongs only to GitHub.
+          dest=out/'original-native.zip'
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+              '--proto-redir','=https','--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','90',
+              '--max-filesize',str(a['size_in_bytes']),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+              '-H','Accept: application/vnd.github+json',a['archive_download_url'],'--output',str(dest)],check=True)
+          raw=dest.read_bytes()
+          assert len(raw)==a['size_in_bytes'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==a['digest']
+          (out/'original-native.zip').write_bytes(raw)
+          (out/'original-sha256.txt').write_text(a['digest'].removeprefix('sha256:'))
+          PY
+      - name: Verify every member, exact producer sources and frozen recovery evidence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S verifier/scripts/readback-storage-generation33-compaction-crash.py \
+            "$RUNNER_TEMP/precommit-readback/original-native.zip" "$GITHUB_WORKSPACE/producer" \
+            "$(cat "$RUNNER_TEMP/precommit-readback/original-sha256.txt")" \
+            6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96 "$RUNNER_TEMP/precommit-readback/readback.json"
+      - name: Retain the unchanged original archive and independent receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-precommit-readback-${{ github.run_id }}
+          path: ${{ runner.temp }}/precommit-readback/
+          if-no-files-found: error
+          retention-days: 90

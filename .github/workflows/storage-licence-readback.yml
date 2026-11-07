@@ -1,0 +1,57 @@
+name: Storage licence corpus independent readback
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-licence-readback.yml'
+      - 'scripts/readback-storage-licence-evidence-20261102.py'
+      - 'scripts/verify-storage-licence-evidence-20261102.py'
+      - 'releases/storage-licence-evidence-lock-20261102.json'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reproduce full licence corpus and rehash all offered MPL module sources
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/readback-storage-licence-evidence-20261102.py
+      - name: Authenticate exact collector workflow source ref and hosted signer
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          source_sha=$(python3 -c 'import json; print(json.load(open("releases/storage-licence-evidence-lock-20261102.json"))["producerSource"])')
+          gh297/bin/gh attestation verify storage-licence-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-licence-evidence.yml --source-digest "$source_sha" --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle storage-licence-readback/provenance.json --format json > storage-licence-readback/publisher-verification.json
+      - name: Seal the complete corpus, raw source ZIPs and independent receipt
+        run: |
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,shutil
+          from pathlib import Path
+          out=Path('storage-licence-readback')
+          assert json.loads((out/'publisher-verification.json').read_bytes())
+          r=json.loads((out/'independent-byte-result.json').read_bytes())
+          r.update(publisherSignatureIndependentlyVerified=True,independentRunId=int(os.environ['GITHUB_RUN_ID']),independentSource=os.environ['GITHUB_SHA'])
+          (out/'independent-result.json').write_text(json.dumps(r,indent=2)+'\n')
+          sources=['scripts/verify-storage-licence-evidence-20261102.py','scripts/readback-storage-licence-evidence-20261102.py','.github/workflows/storage-licence-readback.yml','releases/storage-licence-evidence-lock-20261102.json']
+          (out/'independent-source-records.json').write_text(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sources},indent=2)+'\n')
+          shutil.copyfile(sources[-1],out/'input-lock.json')
+          (out/'READBACK-SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
+          PY
+      - id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: storage-licence-readback/READBACK-SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" storage-licence-readback/readback-provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-licence-readback-${{ github.run_id }}
+          path: storage-licence-readback/
+          if-no-files-found: error
+          retention-days: 90
+          include-hidden-files: true

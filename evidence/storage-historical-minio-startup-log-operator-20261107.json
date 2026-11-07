@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.storage-historical-minio-startup-log-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_REDACTED_VPS_RESULT",
+  "logLines": 10,
+  "logBytes": 309,
+  "matchedMarkers": {
+    "API: http://127.0.0.1:9000": 1,
+    "Exiting on signal": 1,
+    "MinIO Object Storage Server": 1
+  },
+  "fatalOrErrorMarkerObserved": false,
+  "s3ErrorCauseProven": false,
+  "acceptanceCreditAdded": 0
+}

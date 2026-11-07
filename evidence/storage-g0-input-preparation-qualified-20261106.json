@@ -1,0 +1,138 @@
+{
+  "schema": "ouf.storage-g0-input-preparation-qualified.v1",
+  "date": "2026-11-06",
+  "status": "PASS_INPUT_PREPARATION_FIXTURE_NOT_VPS_EXECUTION",
+  "candidateCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
+  "runId": 42194949283,
+  "jobId": 127815743474,
+  "artifact": {
+    "id": 13492110156,
+    "bytes": 46525,
+    "sha256": "d7240d8cd40acb8e0177daa3b7c7198a142cfa1f8b5e10311248ab2a78240be8",
+    "expiresAt": "2027-02-04T09:25:32Z",
+    "durableCustodyProven": false
+  },
+  "delivery": {
+    "acceptanceCreditAdded": 0,
+    "deployCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
+    "manifestSha256": "541115aa70b073803ebe88a809a91a2f263bd7bd62d9708d297d37519e931bb2",
+    "packageBytes": 17419,
+    "packageSha256": "0ea8c04864fd955a4bf16911efd2b98230786939fe24cc51775b3eeb23f83c00",
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-input-tools-delivery.v1",
+    "targetInputCheckPassed": false,
+    "tests": 14,
+    "unchangedDependencies": {
+      "tools/m2_discovery_installation_profile/custody_capture.py": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf",
+      "tools/storage_migration/minio_credential_binding.py": "a2433720b6a294e1f044bd15ce5af3252cb88bdabb4ac8d2659af3fdaa04c23b",
+      "tools/storage_migration/minio_input_observation.py": "ee2ea51e335b51e7515c111d187872fd58b3a04c3fa88a546b4478c004e81412"
+    }
+  },
+  "readback": {
+    "schema": "ouf.storage-g0-input-tools-readback.v1",
+    "status": "PASS_OFFLINE_NOT_VPS_PREPARATION",
+    "deployCommit": "6c9de0f4cd7fe1831ebbfdc2104b32f544ce719d",
+    "archiveSha256": "d7240d8cd40acb8e0177daa3b7c7198a142cfa1f8b5e10311248ab2a78240be8",
+    "archiveBytes": 46525,
+    "members": 6,
+    "checksums": 5,
+    "exactGitSources": 11,
+    "packageMembers": 8,
+    "packageSha256": "0ea8c04864fd955a4bf16911efd2b98230786939fe24cc51775b3eeb23f83c00",
+    "manifestSha256": "541115aa70b073803ebe88a809a91a2f263bd7bd62d9708d297d37519e931bb2",
+    "tests": 14,
+    "providerRequests": 0,
+    "acceptanceCreditAdded": 0
+  },
+  "deliveryValidation": {
+    "negativeReadback": [
+      {
+        "case": "provider_claim",
+        "result": "DENIED",
+        "reason": "NO_PROVIDER_OR_ACCEPTANCE",
+        "checksumsRecomputed": true
+      },
+      {
+        "case": "source_change",
+        "result": "DENIED",
+        "reason": "EXACT_GIT_SOURCE",
+        "checksumsRecomputed": true
+      }
+    ],
+    "localInstaller": [
+      {
+        "case": "exact artifact files installed root0400 under root0700",
+        "result": "PASS"
+      },
+      {
+        "case": "existing exact tools verified without overwrite",
+        "result": "PASS"
+      },
+      {
+        "case": "changed download rejected before install",
+        "result": "DENIED"
+      },
+      {
+        "case": "existing altered code preserved and denied",
+        "result": "DENIED"
+      }
+    ],
+    "bootstrapSha256": "43897499e5c5aed41da6ac33250ed7c3078cb6c9e85d33c266742aa90c456b24",
+    "scope": "OFFLINE_FIXTURES_NO_NETWORK_OR_PREPARER_EXECUTION"
+  },
+  "executionScope": {
+    "unitCasesExecuted": 14,
+    "unitCasesSkipped": 0,
+    "processReadersInFixture": "INJECTED_SYNTHETIC_VALUES_NOT_NATIVE_PROCESS_QUALIFICATION",
+    "minioInputResolver": "THREE_ORIGINAL_MODULES_UNCHANGED",
+    "liveProviderLaboratoriesRerun": false,
+    "credentials": "SYNTHETIC_ONLY_IN_TESTS_REAL_INPUT_COPY_ONLY_BY_OPERATOR_ON_VPS",
+    "targetPreparationExecuted": false,
+    "targetInputCheckPassed": false,
+    "runtimeAuthorityIssued": false,
+    "providerRequests": 0,
+    "acceptanceCreditAdded": 0
+  },
+  "operatorEntry": "scripts/download-and-prepare-storage-g0-inputs-20261106.py",
+  "preparationOutput": "/var/lib/ouf-g0-network-preparation-20261106/inputs/binding-draft-20261106/result.json",
+  "userDirection": {
+    "backupQuestionDeferredForPreparation": true,
+    "backupExistenceProven": false,
+    "disasterRecoveryProven": false,
+    "runtimeApprovalGiven": false
+  },
+  "remaining": [
+    "actual VPS input preparation result",
+    "current Docker role/image/mount review",
+    "effective application configuration and retained Onboarding profile review",
+    "source and proposed capacity path custody",
+    "operator access/writers/capacity/custody/window",
+    "separate exact collection decision"
+  ],
+  "sourceOnboardingUnchanged": "d5155899b09dda298494b68cefa7e1f281167652",
+  "miniPet": {
+    "weightedCredits": 18.3,
+    "weightTotal": 46,
+    "gatesPassed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "creditAdded": 0
+  },
+  "separateGeneralCiFailure": {
+    "runId": 42194962745,
+    "jobId": 127815791533,
+    "job": "sealed-worker",
+    "reason": "PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID",
+    "runtimeSourcesChanged": false,
+    "action": "ONE_RERUN_FAILED_JOB_ONLY",
+    "retryResult": "FAILED_SAME_AUTHORITY_WINDOW_DENIAL",
+    "dedicatedInputPreparationRun": "SUCCESS_UNCHANGED",
+    "logExcerpt": "evidence/storage-g0-inputs-general-ci-first-failure-20261106.log",
+    "successfulMatrixJobsWereCarriedForward": "Original start/completion timestamps preserved in retry job records; no successful job explicitly rerun.",
+    "retryJobId": 127818825693,
+    "retryLogExcerpt": "evidence/storage-g0-inputs-general-ci-retry-failure-20261106.log",
+    "additionalRetriesPlanned": false,
+    "status": "OPEN_GENERAL_CI_FAILURE_NOT_INPUT_PREPARER_QUALIFICATION"
+  }
+}

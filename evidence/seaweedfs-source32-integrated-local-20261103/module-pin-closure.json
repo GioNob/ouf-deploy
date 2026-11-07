@@ -1,0 +1,34 @@
+{
+  "requireDelta": {
+    "removed": {
+      "cel.dev/expr": "v0.25.3",
+      "cloud.google.com/go/monitoring": "v1.30.0",
+      "cloud.google.com/go/storage": "v1.67.0",
+      "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp": "v1.38.0",
+      "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric": "v0.61.0",
+      "github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping": "v0.61.0",
+      "github.com/cncf/xds/go": "v0.0.0-20260202195803-dba9d589def2",
+      "github.com/envoyproxy/go-control-plane/envoy": "v1.40.1-0.20261014170222-9c4befd3c419",
+      "github.com/envoyproxy/protoc-gen-validate": "v1.3.3",
+      "github.com/mitchellh/colorstring": "v0.0.0-20190213212951-d06e56a500db",
+      "github.com/montanaflynn/stats": "v0.7.1",
+      "github.com/rivo/uniseg": "v0.4.7",
+      "github.com/schollz/progressbar/v3": "v3.19.1",
+      "go.mongodb.org/mongo-driver": "v1.17.9",
+      "go.opencensus.io": "v0.24.0",
+      "go.opentelemetry.io/contrib/detectors/gcp": "v1.46.0"
+    },
+    "added": {
+      "go.mongodb.org/mongo-driver/v2": "v2.9.2"
+    },
+    "changed": {}
+  },
+  "changedRetainedChecksums": [],
+  "addedChecksums": {
+    "go.mongodb.org/mongo-driver/v2 v2.9.2": "h1:OCAdjI37pC/SVxucz/9CM8zD4jCdegtsY5QcKzYFCgE=",
+    "go.mongodb.org/mongo-driver/v2 v2.9.2/go.mod": "h1:SHKN0IWkKmEVGHLjXnni6s4wPKX4v86FTgOeJJFuXcA="
+  },
+  "removedChecksumCount": 34,
+  "goModSha256": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+  "goSumSha256": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+}

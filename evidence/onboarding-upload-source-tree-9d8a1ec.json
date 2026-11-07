@@ -1,0 +1,4086 @@
+{
+  "sha": "9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f",
+  "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f",
+  "tree": [
+    {
+      "path": ".dockerignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "383c98baa5d600eaac56011f114f5683feb2ad6d",
+      "size": 29,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/383c98baa5d600eaac56011f114f5683feb2ad6d"
+    },
+    {
+      "path": ".github",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "491b5c3de553ebb06b28e25e35ecc6606e3515ff",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/491b5c3de553ebb06b28e25e35ecc6606e3515ff"
+    },
+    {
+      "path": ".github/workflows",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "643cfd51cb36a2465e4f5050409baeaf57e15ed8",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/643cfd51cb36a2465e4f5050409baeaf57e15ed8"
+    },
+    {
+      "path": ".github/workflows/live-source-smoke.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "298d819961e6f89b37127dd676efbca8426cbd53",
+      "size": 640,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/298d819961e6f89b37127dd676efbca8426cbd53"
+    },
+    {
+      "path": ".github/workflows/managed-profile-diagnostic.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ac1a69ff1feca906bb504ace05cdb53bc8c433e",
+      "size": 688,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1ac1a69ff1feca906bb504ace05cdb53bc8c433e"
+    },
+    {
+      "path": ".github/workflows/managed-profile-recovery-catalogue.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4f69af65bc4ec3d185aca15648af9098647fe99",
+      "size": 1489,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c4f69af65bc4ec3d185aca15648af9098647fe99"
+    },
+    {
+      "path": ".github/workflows/module-ci.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73c04f4d6616eaac000f6e5797cf33e8e1eaa3ad",
+      "size": 8156,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/73c04f4d6616eaac000f6e5797cf33e8e1eaa3ad"
+    },
+    {
+      "path": ".github/workflows/r2f-review-browser.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a0e28d7f069c23fd6112db700f7287739f92e1a6",
+      "size": 871,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a0e28d7f069c23fd6112db700f7287739f92e1a6"
+    },
+    {
+      "path": ".github/workflows/upload-intent-native.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6a82d0043a074cdf22737194a8c6a0ca77af400",
+      "size": 4205,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d6a82d0043a074cdf22737194a8c6a0ca77af400"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f095ba96b307f5ea70f940c395220e517a657c1b",
+      "size": 39,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f095ba96b307f5ea70f940c395220e517a657c1b"
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db6a4114d9680ae2fdb2cdf9f1c27ef542abd018",
+      "size": 4738,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/db6a4114d9680ae2fdb2cdf9f1c27ef542abd018"
+    },
+    {
+      "path": "Dockerfile",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72c57869c448bfd2e24aa8fa398f1fc42ddc4d1b",
+      "size": 686,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/72c57869c448bfd2e24aa8fa398f1fc42ddc4d1b"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c6b6e0f423eca7b42f9335d48b0a5ec31ed41da6",
+      "size": 11357,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c6b6e0f423eca7b42f9335d48b0a5ec31ed41da6"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e97c6eb05afa9fef9fbb3269b631bee0324ac422",
+      "size": 7343,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e97c6eb05afa9fef9fbb3269b631bee0324ac422"
+    },
+    {
+      "path": "authorization-sdk",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "088771ba519778432bbc2814e53bba57fc2b1763",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/088771ba519778432bbc2814e53bba57fc2b1763"
+    },
+    {
+      "path": "authorization-sdk/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58d33caa90ac6364d8f17f6c6a792403a6cf003e",
+      "size": 2998,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/58d33caa90ac6364d8f17f6c6a792403a6cf003e"
+    },
+    {
+      "path": "authorization-sdk/SOURCE_SHA256SUMS",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e0b95509c32a3955f06c52db584c12919d520eef",
+      "size": 2423,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e0b95509c32a3955f06c52db584c12919d520eef"
+    },
+    {
+      "path": "authorization-sdk/pom.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "543a22ba49cbb7d4a69f379866779fef32d16e41",
+      "size": 1834,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/543a22ba49cbb7d4a69f379866779fef32d16e41"
+    },
+    {
+      "path": "authorization-sdk/src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cb1fa23fece90ac3759497ede1f3df35098abd49",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/cb1fa23fece90ac3759497ede1f3df35098abd49"
+    },
+    {
+      "path": "authorization-sdk/src/main",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c81a0a8cb0890038b5f8992d511687815e080ec8",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/c81a0a8cb0890038b5f8992d511687815e080ec8"
+    },
+    {
+      "path": "authorization-sdk/src/main/java",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "633520b11e59388aa5516d3112aaf7425e433023",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/633520b11e59388aa5516d3112aaf7425e433023"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fbe30c47b5cc0194d63551538c80cb3b3b2cede3",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/fbe30c47b5cc0194d63551538c80cb3b3b2cede3"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "06008f7c2b658b86fed218ca1058c694987d4d1f",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/06008f7c2b658b86fed218ca1058c694987d4d1f"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "94ed16451850cab621a63771caf22180bc01842a",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/94ed16451850cab621a63771caf22180bc01842a"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "eff2a4cbe0ea652db23f5e31c5d237466d982fbd",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/eff2a4cbe0ea652db23f5e31c5d237466d982fbd"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "af00830c6dc203f2539bf8152dc4a899bf3da504",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/af00830c6dc203f2539bf8152dc4a899bf3da504"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ActiveBundleRefresher.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "082ec085ae8fd4483d5a3ceb44a3577fd6a40bc4",
+      "size": 4320,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/082ec085ae8fd4483d5a3ceb44a3577fd6a40bc4"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationAutoConfiguration.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d4d39b161f56aacd1a3e04c94dc9adcf32d324b9",
+      "size": 2259,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d4d39b161f56aacd1a3e04c94dc9adcf32d324b9"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/AuthorizationPolicy.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3eae3f70ccd5a7b08579bae1f9aceb762c90c2f0",
+      "size": 11508,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3eae3f70ccd5a7b08579bae1f9aceb762c90c2f0"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/LocalAuthorization.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef643fe779c036feed5a433ef824f4879e8bec97",
+      "size": 5326,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ef643fe779c036feed5a433ef824f4879e8bec97"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/OwnerAuthorization.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "234952c8a0506d2712dbb9dd618854475c3c3948",
+      "size": 1991,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/234952c8a0506d2712dbb9dd618854475c3c3948"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/PrincipalContext.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c412588eee62d77704168b8c91339d33d0e5d4c3",
+      "size": 2175,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c412588eee62d77704168b8c91339d33d0e5d4c3"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ResourceContext.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9dd909d20a8ce28881addc1dade7e0fbdec6fd2b",
+      "size": 702,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9dd909d20a8ce28881addc1dade7e0fbdec6fd2b"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/ServletAuthorization.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eff5dc8a898998261337e15697df91c883bee35a",
+      "size": 3263,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/eff5dc8a898998261337e15697df91c883bee35a"
+    },
+    {
+      "path": "authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/TrustedPrincipal.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffc521271035eefae1fd9482feaf3e0d09fc7909",
+      "size": 490,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ffc521271035eefae1fd9482feaf3e0d09fc7909"
+    },
+    {
+      "path": "authorization-sdk/src/main/resources",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c498ce544a16e3bc0ff61e36d67e0b9245da7cef",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/c498ce544a16e3bc0ff61e36d67e0b9245da7cef"
+    },
+    {
+      "path": "authorization-sdk/src/main/resources/META-INF",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a850d3a929ed12b74e198bc29510c1ec2ee0add5",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/a850d3a929ed12b74e198bc29510c1ec2ee0add5"
+    },
+    {
+      "path": "authorization-sdk/src/main/resources/META-INF/spring",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "90fa4fd2cd9365dbeb609147d148d630eaa649b7",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/90fa4fd2cd9365dbeb609147d148d630eaa649b7"
+    },
+    {
+      "path": "authorization-sdk/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9faeea8d0c613ce535f466d5127d1e1ddd17171a",
+      "size": 67,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9faeea8d0c613ce535f466d5127d1e1ddd17171a"
+    },
+    {
+      "path": "authorization-sdk/src/test",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "aeb00f8f933efb5e3d8be0ebe89ab6ca0ce68ed0",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/aeb00f8f933efb5e3d8be0ebe89ab6ca0ce68ed0"
+    },
+    {
+      "path": "authorization-sdk/src/test/java",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "393443ef93479f5f511924b21901f94e0412b53e",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/393443ef93479f5f511924b21901f94e0412b53e"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1af53a2f099ab8adc48b220462804c180e8c0d98",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/1af53a2f099ab8adc48b220462804c180e8c0d98"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7bb820632fbe99b41cddae9b863ea753ca471708",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7bb820632fbe99b41cddae9b863ea753ca471708"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ab291587043189b0c4ef8a6a2c454e1e8679ac96",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/ab291587043189b0c4ef8a6a2c454e1e8679ac96"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f802e3a365debe3beead3e87ef151c1f006df214",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/f802e3a365debe3beead3e87ef151c1f006df214"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "78ece0691e20fd26c1c492f141b26d7bdd8a201b",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/78ece0691e20fd26c1c492f141b26d7bdd8a201b"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/ActiveBundleRefresherTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "808e926ea74e7c25e95cb31349d66b051d0a2bb4",
+      "size": 1055,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/808e926ea74e7c25e95cb31349d66b051d0a2bb4"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/CommonConformanceTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dbcf072d856197c4e3e3311f41800d8bd9a2e77a",
+      "size": 1464,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dbcf072d856197c4e3e3311f41800d8bd9a2e77a"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/LocalAuthorizationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4b9086b92d4723fc1324c5b65a50bcf1d2f9524",
+      "size": 4250,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c4b9086b92d4723fc1324c5b65a50bcf1d2f9524"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/OwnerAuthorizationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d3eba3a6e16b95e4843813de9a149c4f94e2a23",
+      "size": 1892,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9d3eba3a6e16b95e4843813de9a149c4f94e2a23"
+    },
+    {
+      "path": "authorization-sdk/src/test/java/it/comune/trieste/ouf/authorization/TestAuthorization.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7903e8850c3203ea477f2035daf28dbf8d1a2499",
+      "size": 2418,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7903e8850c3203ea477f2035daf28dbf8d1a2499"
+    },
+    {
+      "path": "authorization-sdk/src/test/resources",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1aabe50d4aa2e0ef4a695a100913e9ccdbe8eae0",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/1aabe50d4aa2e0ef4a695a100913e9ccdbe8eae0"
+    },
+    {
+      "path": "authorization-sdk/src/test/resources/authorization-conformance-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "818a45020d9db61e5403bfa8f08aaf8e19bd8ea7",
+      "size": 49435,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/818a45020d9db61e5403bfa8f08aaf8e19bd8ea7"
+    },
+    {
+      "path": "catalogue",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3a9fd694dfcfce591c5be886cb849f41e5289717",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/3a9fd694dfcfce591c5be886cb849f41e5289717"
+    },
+    {
+      "path": "catalogue/chatbot-source-review-capabilities.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63a2c451d0e2a350df9e382d518d086151cbe75b",
+      "size": 1303,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/63a2c451d0e2a350df9e382d518d086151cbe75b"
+    },
+    {
+      "path": "catalogue/managed-profile-ths-oauth-request-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12e2f45dd9354dfdb90362f25adde838349547de",
+      "size": 540,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/12e2f45dd9354dfdb90362f25adde838349547de"
+    },
+    {
+      "path": "catalogue/r4a-managed-file-human-grants.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4ff246bd362bd070c177f8726cf0b490fdd570b",
+      "size": 431,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c4ff246bd362bd070c177f8726cf0b490fdd570b"
+    },
+    {
+      "path": "catalogue/r4a-managed-file-intake.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa2bc03e655a7c7fc5ec4e7b8cd572f5494b441f",
+      "size": 1213,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fa2bc03e655a7c7fc5ec4e7b8cd572f5494b441f"
+    },
+    {
+      "path": "catalogue/r4a-managed-file-read-grants.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e534d414733c943a5443698d52789b2a6613fad2",
+      "size": 693,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e534d414733c943a5443698d52789b2a6613fad2"
+    },
+    {
+      "path": "catalogue/r4a-managed-profile-recovery.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8e2c1daa3088df13a5f01a9b512b6443eeae18c1",
+      "size": 266,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8e2c1daa3088df13a5f01a9b512b6443eeae18c1"
+    },
+    {
+      "path": "catalogue/r4a-onboarding-lifecycle.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd4da4ec091518661bb2557b9d1234e54ad06ec6",
+      "size": 503,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dd4da4ec091518661bb2557b9d1234e54ad06ec6"
+    },
+    {
+      "path": "catalogue/r4a-semantic-bundle-read-grant.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f98cc2e357b01a52f5e153f49aafc20d7d9f93d",
+      "size": 347,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9f98cc2e357b01a52f5e153f49aafc20d7d9f93d"
+    },
+    {
+      "path": "catalogue/r4a-semantic-human-capabilities.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9da825a4739958c028df310279c1740c3c8a5313",
+      "size": 1670,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9da825a4739958c028df310279c1740c3c8a5313"
+    },
+    {
+      "path": "catalogue/r4a-semantic-human-grants.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa2a63ef453818c69db581f1f305fca08332196c",
+      "size": 766,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fa2a63ef453818c69db581f1f305fca08332196c"
+    },
+    {
+      "path": "catalogue/r4a-udp-published-execution-grants.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "731277e5d8b1d354b5bd077aa3e9fe82fd8d05a9",
+      "size": 691,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/731277e5d8b1d354b5bd077aa3e9fe82fd8d05a9"
+    },
+    {
+      "path": "catalogue/r4a-udp-published-execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2b68ecd1d745430f2e1da1a48e30520e26d42c62",
+      "size": 493,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2b68ecd1d745430f2e1da1a48e30520e26d42c62"
+    },
+    {
+      "path": "catalogue/r4a-udp-search.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "287aabc85be33958f4c7f7575ee488cc1aa7b5a0",
+      "size": 230,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/287aabc85be33958f4c7f7575ee488cc1aa7b5a0"
+    },
+    {
+      "path": "contracts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7e05554a7b77b44307e91428096a80bedc45b562",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7e05554a7b77b44307e91428096a80bedc45b562"
+    },
+    {
+      "path": "contracts/RC3_BASELINE_PIN.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1368b4da67787a9c9b2fac83dc9d5bb8682659dd",
+      "size": 163,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1368b4da67787a9c9b2fac83dc9d5bb8682659dd"
+    },
+    {
+      "path": "contracts/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4ec4612b4b795cb3a50f072c4535046e8b02081d",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/4ec4612b4b795cb3a50f072c4535046e8b02081d"
+    },
+    {
+      "path": "contracts/authorization/authorization-sdk-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6fcf6b9ea6c7b4cc91b9cc68a7c21d8294c8412",
+      "size": 4361,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d6fcf6b9ea6c7b4cc91b9cc68a7c21d8294c8412"
+    },
+    {
+      "path": "contracts/installation",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "97554716ef1cb40be1a6b84efe61c26cb80cce9c",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/97554716ef1cb40be1a6b84efe61c26cb80cce9c"
+    },
+    {
+      "path": "contracts/installation/examples",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "97551f53c6dead22af670fdc2f3c32cde07e3d77",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/97551f53c6dead22af670fdc2f3c32cde07e3d77"
+    },
+    {
+      "path": "contracts/installation/examples/ouf-lab-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "60fcaf442f63b3621415f619d29a5a30bbfa0635",
+      "size": 1925,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/60fcaf442f63b3621415f619d29a5a30bbfa0635"
+    },
+    {
+      "path": "contracts/installation/installation-configuration-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "15a034629c02fb0588ef3c674015a1b7b5cd8ca3",
+      "size": 6749,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/15a034629c02fb0588ef3c674015a1b7b5cd8ca3"
+    },
+    {
+      "path": "contracts/onboarding",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "276b46eb002d7f6b8d75686fe818027d65727511",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/276b46eb002d7f6b8d75686fe818027d65727511"
+    },
+    {
+      "path": "contracts/onboarding/SHA256SUMS.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65b4b8abca64bbeb5586529e2f9de3eadc8b3cfd",
+      "size": 1284,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/65b4b8abca64bbeb5586529e2f9de3eadc8b3cfd"
+    },
+    {
+      "path": "contracts/onboarding/authority-policy-ref-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1766cea7a5f8c35e1aced5d52bde7603533e1279",
+      "size": 1256,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1766cea7a5f8c35e1aced5d52bde7603533e1279"
+    },
+    {
+      "path": "contracts/onboarding/change-representation-profile-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd375cd53a235b3b0ca2dad5453a62e8fa8379cf",
+      "size": 1067,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fd375cd53a235b3b0ca2dad5453a62e8fa8379cf"
+    },
+    {
+      "path": "contracts/onboarding/data-access-policy-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c473247e736c931d8542a666c0b5c92c79bd9c1",
+      "size": 994,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1c473247e736c931d8542a666c0b5c92c79bd9c1"
+    },
+    {
+      "path": "contracts/onboarding/delta-patch-contract-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24d788e07faae97029657d452a31ed9caa1c843f",
+      "size": 1644,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/24d788e07faae97029657d452a31ed9caa1c843f"
+    },
+    {
+      "path": "contracts/onboarding/extraction-profile-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9b8d43bf86496f029afd2f276907dec203d1688",
+      "size": 3655,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c9b8d43bf86496f029afd2f276907dec203d1688"
+    },
+    {
+      "path": "contracts/onboarding/published-configuration-bundle-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7a99196b02499b4bc5efb7668c91f4eee9f17d2",
+      "size": 5346,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f7a99196b02499b4bc5efb7668c91f4eee9f17d2"
+    },
+    {
+      "path": "contracts/onboarding/relationship-mapping-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3a984f61a94b5e503cbe0ffd1d81c6d045d4e22",
+      "size": 1902,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d3a984f61a94b5e503cbe0ffd1d81c6d045d4e22"
+    },
+    {
+      "path": "contracts/onboarding/semantic-mapping-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6478c687e1b2c969ebddb75d2f0b4b53a124de5c",
+      "size": 2853,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6478c687e1b2c969ebddb75d2f0b4b53a124de5c"
+    },
+    {
+      "path": "contracts/onboarding/source-object-identity-policy-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cb6bf216376f810d92a91bbd130dba4746cb7aa1",
+      "size": 1087,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/cb6bf216376f810d92a91bbd130dba4746cb7aa1"
+    },
+    {
+      "path": "contracts/onboarding/sync-profile-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "881001afff31f78ca0e227d511bddc1f3c295437",
+      "size": 2394,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/881001afff31f78ca0e227d511bddc1f3c295437"
+    },
+    {
+      "path": "contracts/onboarding/temporal-mapping-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6256901f7288a7ea87e404c1d58479029ec3cb3b",
+      "size": 1711,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6256901f7288a7ea87e404c1d58479029ec3cb3b"
+    },
+    {
+      "path": "contracts/ouf-role-catalogue-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6d5a9d758d274298ea1cc168a4bcae0a7227d5e1",
+      "size": 5956,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6d5a9d758d274298ea1cc168a4bcae0a7227d5e1"
+    },
+    {
+      "path": "docs",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bff90516e601fa551693a6b7d4ca71a5501d134b",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/bff90516e601fa551693a6b7d4ca71a5501d134b"
+    },
+    {
+      "path": "docs/AUTHORIZATION_POLICY_REGISTRY_SDK_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "79bc809aaa1eece8f73febe19d0489b7c20d0768",
+      "size": 4478,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/79bc809aaa1eece8f73febe19d0489b7c20d0768"
+    },
+    {
+      "path": "docs/AUTHORIZATION_R1B.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2ea94c8d2caa8cd056c473f17309fe91b94dd86c",
+      "size": 4035,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2ea94c8d2caa8cd056c473f17309fe91b94dd86c"
+    },
+    {
+      "path": "docs/AUTHORIZATION_REVIEW.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "398113b6b5a8e7f9fbe493aff6addbe489cdf8d1",
+      "size": 7223,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/398113b6b5a8e7f9fbe493aff6addbe489cdf8d1"
+    },
+    {
+      "path": "docs/AUTHORIZATION_SCENARIO_NEUTRAL_CORE_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d894beb8c614f82c4d72c5004ec7eb23913af538",
+      "size": 2498,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d894beb8c614f82c4d72c5004ec7eb23913af538"
+    },
+    {
+      "path": "docs/INGESTION_READINESS_RECOVERY_20261017.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33fc2db29675243ac13db7f15f59bf7a01ad2de9",
+      "size": 1981,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/33fc2db29675243ac13db7f15f59bf7a01ad2de9"
+    },
+    {
+      "path": "docs/INSTALLATION_ACTIVE_PRECONDITION_20261019.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b12f9c1021f4fead1cc6d00a8bf08b8024853d38",
+      "size": 3560,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b12f9c1021f4fead1cc6d00a8bf08b8024853d38"
+    },
+    {
+      "path": "docs/M2_JOB_DISCOVERY_20261026.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "10eddb78a5e578fa09ef396c1e6df39ef7e1850c",
+      "size": 1794,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/10eddb78a5e578fa09ef396c1e6df39ef7e1850c"
+    },
+    {
+      "path": "docs/M2_PROFILE_FAILFAST_GUARD_20261027.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3500090144b411eb538dfdbd56f0945866500e55",
+      "size": 2448,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3500090144b411eb538dfdbd56f0945866500e55"
+    },
+    {
+      "path": "docs/M2_TYPED_RECOVERY_COMPOSITION_20261026.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d557c88711d02b2311e3e9cceb0d0b43bd240a6f",
+      "size": 1466,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d557c88711d02b2311e3e9cceb0d0b43bd240a6f"
+    },
+    {
+      "path": "docs/MANAGED_FILE_EXECUTION_PROPOSAL.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d91970131b39407ab999a091d013098b7ef304e",
+      "size": 2630,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9d91970131b39407ab999a091d013098b7ef304e"
+    },
+    {
+      "path": "docs/MANAGED_FILE_INTAKE_TENANT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eff6fff08b64eb88f159b845451481c8448af5be",
+      "size": 4514,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/eff6fff08b64eb88f159b845451481c8448af5be"
+    },
+    {
+      "path": "docs/MANAGED_ONBOARDING_REVIEW.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "595445b403a374fa25741288cbc9d51bf91aa607",
+      "size": 6161,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/595445b403a374fa25741288cbc9d51bf91aa607"
+    },
+    {
+      "path": "docs/MANAGED_PROFILE_BUDGET_SESSIONS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8a64a78994d975be462048ae9d46c80a61e5dfa",
+      "size": 5706,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e8a64a78994d975be462048ae9d46c80a61e5dfa"
+    },
+    {
+      "path": "docs/MANAGED_PROFILE_CONTROL_AUTHORIZATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "39ecd5c4837e94879f145bb30815e024dfaeea23",
+      "size": 9139,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/39ecd5c4837e94879f145bb30815e024dfaeea23"
+    },
+    {
+      "path": "docs/MANAGED_PROFILE_DIAGNOSTIC_20261026.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c78235549a5bb765325a465ef421fbff34cdf596",
+      "size": 995,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c78235549a5bb765325a465ef421fbff34cdf596"
+    },
+    {
+      "path": "docs/MANAGED_READINESS_BUDGET_SESSIONS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c50ae11b11fac0de409c26d73202305e2e0772a",
+      "size": 4088,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0c50ae11b11fac0de409c26d73202305e2e0772a"
+    },
+    {
+      "path": "docs/MANAGED_UPLOAD_INTENT_20261105.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "38f94f9196471af3fb486f0ae0df7e3f8cde81f1",
+      "size": 2803,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/38f94f9196471af3fb486f0ae0df7e3f8cde81f1"
+    },
+    {
+      "path": "docs/OPERATIONAL_AWARENESS_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f90a8625bc53070633c1ff850b514ee61d84f914",
+      "size": 900,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f90a8625bc53070633c1ff850b514ee61d84f914"
+    },
+    {
+      "path": "docs/OUF_ADMIN_BOOTSTRAP.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e77dae8c4320410833453dcfedf10c848e193a4f",
+      "size": 12877,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e77dae8c4320410833453dcfedf10c848e193a4f"
+    },
+    {
+      "path": "docs/OUF_APPLICATION_ROLES.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a8d31582fd265ecc8ea4734c814cf4a952cf544",
+      "size": 5778,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9a8d31582fd265ecc8ea4734c814cf4a952cf544"
+    },
+    {
+      "path": "docs/PERMISSION_PROPOSALS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2f27704a29a7f6ca37c9599e3fcbf2d8f314848",
+      "size": 11762,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a2f27704a29a7f6ca37c9599e3fcbf2d8f314848"
+    },
+    {
+      "path": "docs/PET_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4a1c33200d94c73f513ceaa6f74ad6e9c43ad62",
+      "size": 5356,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b4a1c33200d94c73f513ceaa6f74ad6e9c43ad62"
+    },
+    {
+      "path": "docs/R1A_AUTHORIZATION_SDK.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e92d93bc7b17682b7330bb90810ae084dd8bbb4",
+      "size": 2557,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1e92d93bc7b17682b7330bb90810ae084dd8bbb4"
+    },
+    {
+      "path": "docs/R1B_OWNER_ENFORCEMENT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6b265c1f5db0103a00a0d9aa8f98b8704b052b8",
+      "size": 1969,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b6b265c1f5db0103a00a0d9aa8f98b8704b052b8"
+    },
+    {
+      "path": "docs/R2A_PUBLICATION_FEED.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ee04e33828ebf8dc5a3bf73352f41d225f86b8a",
+      "size": 2402,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6ee04e33828ebf8dc5a3bf73352f41d225f86b8a"
+    },
+    {
+      "path": "docs/R2E_GEOPACKAGE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed2dcf45615a66afe17df70c43a7b0ebaa7ac5fe",
+      "size": 2033,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ed2dcf45615a66afe17df70c43a7b0ebaa7ac5fe"
+    },
+    {
+      "path": "docs/R2F_MANAGED_FORMATS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "369f91ba41e9c17570b39c821cdf21df1e4c8a67",
+      "size": 4181,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/369f91ba41e9c17570b39c821cdf21df1e4c8a67"
+    },
+    {
+      "path": "docs/R3A1B_INSTALLATION_LIFECYCLE_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec6f081a643edf6f989b9a41a35c81cd8f360a13",
+      "size": 3135,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ec6f081a643edf6f989b9a41a35c81cd8f360a13"
+    },
+    {
+      "path": "docs/R3A1C_ENVIRONMENT_VALIDATION_PROJECTIONS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac8ad7c5702270f4e77bd955fbdea42c25373b4d",
+      "size": 3991,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ac8ad7c5702270f4e77bd955fbdea42c25373b4d"
+    },
+    {
+      "path": "docs/R3A1E_GOVERNED_INSTALLATION_PROJECTION_EXPORT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76c66de965b9ca6d5fafcc124d46f172570585e4",
+      "size": 3314,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/76c66de965b9ca6d5fafcc124d46f172570585e4"
+    },
+    {
+      "path": "docs/R3A1F_TRUSTED_HUMAN_INSTALLATION_BOOTSTRAP_API.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65311bb364874581400985ef7afa6872f97679c7",
+      "size": 4042,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/65311bb364874581400985ef7afa6872f97679c7"
+    },
+    {
+      "path": "docs/R3A1G_CANDIDATE_INSTALLATION_PROJECTION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a42037f7f5216a9641335c82a5b2c47057bae778",
+      "size": 3076,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a42037f7f5216a9641335c82a5b2c47057bae778"
+    },
+    {
+      "path": "docs/R3A1_INSTALLATION_CONFIGURATION_TRACEABILITY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85e09ca2239f185de5416618e30a97e7cd0d8f44",
+      "size": 2456,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/85e09ca2239f185de5416618e30a97e7cd0d8f44"
+    },
+    {
+      "path": "docs/R4A_AUTHORIZATION_CATALOGUE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d23a7a5507b04868e7d0c5ccdad6ba161832143",
+      "size": 10376,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8d23a7a5507b04868e7d0c5ccdad6ba161832143"
+    },
+    {
+      "path": "docs/R4A_FIRST_PARTY_PICKER_ROLLOUT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffab9fc68ccd4336a47628198d8f6cca9917429b",
+      "size": 8302,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ffab9fc68ccd4336a47628198d8f6cca9917429b"
+    },
+    {
+      "path": "docs/R4A_MANAGED_CSV_INTAKE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9117933f0f4ce87282ac9d36a18df7801bd0185",
+      "size": 35988,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f9117933f0f4ce87282ac9d36a18df7801bd0185"
+    },
+    {
+      "path": "docs/R4A_MANAGED_IDENTITY_INTEGRATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d271fecedb59a453724d83e4ddc8f676a41979b5",
+      "size": 2691,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d271fecedb59a453724d83e4ddc8f676a41979b5"
+    },
+    {
+      "path": "docs/R4A_TEMPORARY_GRANT_PROPOSAL.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3cb6a50d77ba611df901a82f25e5d9adc19b12ca",
+      "size": 2752,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3cb6a50d77ba611df901a82f25e5d9adc19b12ca"
+    },
+    {
+      "path": "docs/R4A_UDP_IDENTITY_ACTIVATION_GATE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f972a6ed53e7c36c6298ca1b56d53a550f86a9b6",
+      "size": 5789,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f972a6ed53e7c36c6298ca1b56d53a550f86a9b6"
+    },
+    {
+      "path": "docs/RUNBOOK.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "198a26642f70c7131f7255e20110efefbc3d82f9",
+      "size": 8575,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/198a26642f70c7131f7255e20110efefbc3d82f9"
+    },
+    {
+      "path": "docs/SOURCE_PROPERTY_REVISION_CHAT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74c2e2e67c5ae763298cb7aa641e97c1651dc31d",
+      "size": 4139,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/74c2e2e67c5ae763298cb7aa641e97c1651dc31d"
+    },
+    {
+      "path": "docs/THS_FEEDBACK_AND_LATENCY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "93f1b793ec408f1f9e0a5fe26ce6a0abb3b6df1d",
+      "size": 3958,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/93f1b793ec408f1f9e0a5fe26ce6a0abb3b6df1d"
+    },
+    {
+      "path": "docs/contracts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cc020f69aa4fcbc0aed70cc200aa2bee6ece4e00",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/cc020f69aa4fcbc0aed70cc200aa2bee6ece4e00"
+    },
+    {
+      "path": "docs/contracts/managed-file-execution-proposal.schema.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f3abe339ab534831295c57df6f7b7eb260fe85d",
+      "size": 10502,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4f3abe339ab534831295c57df6f7b7eb260fe85d"
+    },
+    {
+      "path": "docs/history",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0090a19a8a990f0cbeb5ed2f4f88a6344e58ca5b",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/0090a19a8a990f0cbeb5ed2f4f88a6344e58ca5b"
+    },
+    {
+      "path": "docs/history/IAM_BOOTSTRAP_PRODUCTION_ACCEPTANCE_2026-09-18.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "174922c2bc2180f7d54ea1721b7da177d9e45d66",
+      "size": 10618,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/174922c2bc2180f7d54ea1721b7da177d9e45d66"
+    },
+    {
+      "path": "fixtures",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "be15ef29a78a452632f82f6dd86478df1862f0f7",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/be15ef29a78a452632f82f6dd86478df1862f0f7"
+    },
+    {
+      "path": "fixtures/sources",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "997e28a40279452deea6fb08e1a5d04c4bb16e9b",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/997e28a40279452deea6fb08e1a5d04c4bb16e9b"
+    },
+    {
+      "path": "fixtures/sources/world-bank-italy-population.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a31ca955c22d0fff0a4e9749dac776481b456ea8",
+      "size": 431,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a31ca955c22d0fff0a4e9749dac776481b456ea8"
+    },
+    {
+      "path": "openapi",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3b8744e7ac299103c6531327ca9bb19c4c8f4d7e",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/3b8744e7ac299103c6531327ca9bb19c4c8f4d7e"
+    },
+    {
+      "path": "openapi/authorization-admin-v1.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "90f6a5e9b7c5a22f73deb78a526f0fb2ee8ec4b2",
+      "size": 49873,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/90f6a5e9b7c5a22f73deb78a526f0fb2ee8ec4b2"
+    },
+    {
+      "path": "openapi/managed-file-ownership-recovery-v1.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "40816f4e29da9d6d2524db65bb6794cf807d592d",
+      "size": 4657,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/40816f4e29da9d6d2524db65bb6794cf807d592d"
+    },
+    {
+      "path": "openapi/onboarding-v1.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70454a8d3418f1f72c1035a814826934879f0bd5",
+      "size": 23327,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/70454a8d3418f1f72c1035a814826934879f0bd5"
+    },
+    {
+      "path": "openapi/permission-proposals-v1.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f86dc71fa0369381fb7222dd64db0c7ce6287347",
+      "size": 24279,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f86dc71fa0369381fb7222dd64db0c7ce6287347"
+    },
+    {
+      "path": "openapi/ths-v1.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba6cd7320bd95d2fc7394d3bf2e240d077973efa",
+      "size": 16669,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ba6cd7320bd95d2fc7394d3bf2e240d077973efa"
+    },
+    {
+      "path": "ops",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fe827c08af710d9bad8c48684989b938ebf84d62",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/fe827c08af710d9bad8c48684989b938ebf84d62"
+    },
+    {
+      "path": "ops/summarize_mcp_latency.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69a9e39f27bd40540928892220f290b4d71e3736",
+      "size": 2138,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/69a9e39f27bd40540928892220f290b4d71e3736"
+    },
+    {
+      "path": "pom.xml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "25c2b143d75c562d424ec397cdb57ec1dfc6520a",
+      "size": 6904,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/25c2b143d75c562d424ec397cdb57ec1dfc6520a"
+    },
+    {
+      "path": "scripts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "14cc0048e9077abe196387b9385579d58dd1441e",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/14cc0048e9077abe196387b9385579d58dd1441e"
+    },
+    {
+      "path": "scripts/ci-upload-intent-storage.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec51affcf90183e6da424ad0c6fa8f41b06730e9",
+      "size": 3558,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ec51affcf90183e6da424ad0c6fa8f41b06730e9"
+    },
+    {
+      "path": "scripts/ci_r4a_staging_container_smoke.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "b65c65dd801648a2607c5bc1a8ca76e330f9bbe0",
+      "size": 3161,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b65c65dd801648a2607c5bc1a8ca76e330f9bbe0"
+    },
+    {
+      "path": "scripts/install-authorization-sdk.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "74bc37133a5faa6bd4a6cf269687f6f404743c4d",
+      "size": 213,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/74bc37133a5faa6bd4a6cf269687f6f404743c4d"
+    },
+    {
+      "path": "scripts/live-source-smoke.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "aef34116b37e79fdcabd381c68266846d52e871d",
+      "size": 900,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/aef34116b37e79fdcabd381c68266846d52e871d"
+    },
+    {
+      "path": "scripts/r4a_access_snapshot.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95888a71b43324d7ce9d189816a8bd5c311297e7",
+      "size": 6559,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/95888a71b43324d7ce9d189816a8bd5c311297e7"
+    },
+    {
+      "path": "scripts/r4a_admin_all_human_manifest.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b1f096879e55db8fe1b6792ce8debf82d5c52be3",
+      "size": 7920,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b1f096879e55db8fe1b6792ce8debf82d5c52be3"
+    },
+    {
+      "path": "scripts/r4a_admin_human_scope_bindings.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0863f4dfcb479e32e71ec43332430e18391ba594",
+      "size": 8345,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0863f4dfcb479e32e71ec43332430e18391ba594"
+    },
+    {
+      "path": "scripts/r4a_authorization_catalogue_preflight.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "537028e258d2d832ec872b8c4b86fcc5c7b4ab5d",
+      "size": 4430,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/537028e258d2d832ec872b8c4b86fcc5c7b4ab5d"
+    },
+    {
+      "path": "scripts/r4a_authorization_lifecycle.py",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "06be6e57febbdccc5c52a138b81c24489c2961d0",
+      "size": 15603,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/06be6e57febbdccc5c52a138b81c24489c2961d0"
+    },
+    {
+      "path": "scripts/r4a_chatgpt_managed_file_scopes.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eebe1e99366b2b1fba2ede6de30f9a4c02447d34",
+      "size": 4857,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/eebe1e99366b2b1fba2ede6de30f9a4c02447d34"
+    },
+    {
+      "path": "scripts/r4a_human_grant_lifecycle.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6e00e4c9a71e87ef1065d264eca426019c9a77a",
+      "size": 8593,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f6e00e4c9a71e87ef1065d264eca426019c9a77a"
+    },
+    {
+      "path": "scripts/r4a_human_token_scope_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4c0114eeaf4842eaed01357f53b8e3d0146e5d7",
+      "size": 5849,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a4c0114eeaf4842eaed01357f53b8e3d0146e5d7"
+    },
+    {
+      "path": "scripts/r4a_installation_service_binding_update.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71bf1c1d90b19c3be3fae282b8f02427e693e4f6",
+      "size": 9904,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/71bf1c1d90b19c3be3fae282b8f02427e693e4f6"
+    },
+    {
+      "path": "scripts/r4a_installation_workload_update.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efc2740acd968a827b8c5b4ae92f7b28b315f044",
+      "size": 12431,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/efc2740acd968a827b8c5b4ae92f7b28b315f044"
+    },
+    {
+      "path": "scripts/r4a_keycloak_client_scope_binding.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c605ae70a1e78f9423cf18e0a69be56c0ac7a56",
+      "size": 3419,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2c605ae70a1e78f9423cf18e0a69be56c0ac7a56"
+    },
+    {
+      "path": "scripts/r4a_keycloak_client_scope_catalogue.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6774993887bcb9f2c4250298c84b6582add5e9e9",
+      "size": 4218,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6774993887bcb9f2c4250298c84b6582add5e9e9"
+    },
+    {
+      "path": "scripts/r4a_keycloak_human_device_client.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0ddda8802d87e0bbf1677a4d21f34eca9d0fbfb0",
+      "size": 3096,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0ddda8802d87e0bbf1677a4d21f34eca9d0fbfb0"
+    },
+    {
+      "path": "scripts/r4a_keycloak_workload_client.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df528c3256a0ad852de3c0f85816a64dafe4d075",
+      "size": 8623,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/df528c3256a0ad852de3c0f85816a64dafe4d075"
+    },
+    {
+      "path": "scripts/r4a_keycloak_workload_secret_file.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7a160b1755959333063566500db88ec06cf6a7c",
+      "size": 5021,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f7a160b1755959333063566500db88ec06cf6a7c"
+    },
+    {
+      "path": "scripts/r4a_managed_csv_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ece720dd037edcf1ba2158a12fd5f948772e9a29",
+      "size": 9901,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ece720dd037edcf1ba2158a12fd5f948772e9a29"
+    },
+    {
+      "path": "scripts/r4a_minio_staging_bootstrap.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "34cad2173d34966a813378944ed2bc0060fd77fd",
+      "size": 11541,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/34cad2173d34966a813378944ed2bc0060fd77fd"
+    },
+    {
+      "path": "scripts/r4a_minio_staging_plan.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "43ab630e961733948784808d88b785a65e9611fe",
+      "size": 4021,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/43ab630e961733948784808d88b785a65e9611fe"
+    },
+    {
+      "path": "scripts/r4a_minio_staging_preflight.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e3df175049f3fb05db36c20bf7a89befe42a307e",
+      "size": 2353,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e3df175049f3fb05db36c20bf7a89befe42a307e"
+    },
+    {
+      "path": "scripts/r4a_onboarding_db_backup.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b7527bb55c82fc5ebf327b4c884348a32a4e4c3",
+      "size": 5533,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9b7527bb55c82fc5ebf327b4c884348a32a4e4c3"
+    },
+    {
+      "path": "scripts/r4a_onboarding_failed_rollout_reconcile.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d66087f711c3c979f784681972f7a6e8d40489b3",
+      "size": 4211,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d66087f711c3c979f784681972f7a6e8d40489b3"
+    },
+    {
+      "path": "scripts/r4a_onboarding_rollout.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e03a2242ac8b68d94eb18156593a9f36f12b073",
+      "size": 10446,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0e03a2242ac8b68d94eb18156593a9f36f12b073"
+    },
+    {
+      "path": "scripts/r4a_onboarding_rollout_gate.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc74eb6d24c04bcab2de9533e936038abb517e54",
+      "size": 5811,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/bc74eb6d24c04bcab2de9533e936038abb517e54"
+    },
+    {
+      "path": "scripts/r4a_onboarding_staging_candidate.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4034c956b02a83a7b25d876788e1d24c646aef0b",
+      "size": 8987,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4034c956b02a83a7b25d876788e1d24c646aef0b"
+    },
+    {
+      "path": "scripts/r4a_onboarding_staging_preflight.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "16d36d8b82e81d0643b1e63683f9889eb7e0f44f",
+      "size": 4089,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/16d36d8b82e81d0643b1e63683f9889eb7e0f44f"
+    },
+    {
+      "path": "scripts/r4a_picker_onboarding_rollout.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "419036c835eb4db046771afc719b10ba14736a30",
+      "size": 17390,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/419036c835eb4db046771afc719b10ba14736a30"
+    },
+    {
+      "path": "scripts/r4a_register_capabilities.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f99e7d199b9ce624717f904c358a792bfc4b2edf",
+      "size": 9367,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f99e7d199b9ce624717f904c358a792bfc4b2edf"
+    },
+    {
+      "path": "scripts/r4a_semantic_authorization_bootstrap.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9026b2d3f45b32661e7b46365e073c8fe3494665",
+      "size": 10380,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9026b2d3f45b32661e7b46365e073c8fe3494665"
+    },
+    {
+      "path": "scripts/r4a_semantic_authorization_verify_db.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "723b573c162aadae239ee9358f5efa526ce6511b",
+      "size": 6615,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/723b573c162aadae239ee9358f5efa526ce6511b"
+    },
+    {
+      "path": "scripts/r4a_semantic_human_scopes.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe9d038bf8f554be83cc2e686229d23a5699e988",
+      "size": 2752,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fe9d038bf8f554be83cc2e686229d23a5699e988"
+    },
+    {
+      "path": "scripts/r4a_service_grant_lifecycle.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c6c749cc5bcb68ba0a1831da31e1a7eea76d5b3",
+      "size": 10217,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2c6c749cc5bcb68ba0a1831da31e1a7eea76d5b3"
+    },
+    {
+      "path": "scripts/r4a_stage_deploy_snapshot.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4cdcabe6d1405aa9b23ab4e639e6525ba07de8b",
+      "size": 4511,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f4cdcabe6d1405aa9b23ab4e639e6525ba07de8b"
+    },
+    {
+      "path": "scripts/r4a_temporary_grant_proposal.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "57faf64c30a7e736d836d087b80f889ad955d876",
+      "size": 8778,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/57faf64c30a7e736d836d087b80f889ad955d876"
+    },
+    {
+      "path": "scripts/r4a_verify_onboarding_workload_token.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9762cd1f10049efc5d845b80e6368a3173ff168e",
+      "size": 2831,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9762cd1f10049efc5d845b80e6368a3173ff168e"
+    },
+    {
+      "path": "scripts/reconcile-onboarding-runtime-config.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64e7cc2f40bfd396aa10371effaa883207abb2f5",
+      "size": 4155,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/64e7cc2f40bfd396aa10371effaa883207abb2f5"
+    },
+    {
+      "path": "scripts/test_r4a_chatgpt_managed_file_scopes.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad9ad3b5d4dc62fb2fb92a6b782e279efbf6c98d",
+      "size": 2270,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ad9ad3b5d4dc62fb2fb92a6b782e279efbf6c98d"
+    },
+    {
+      "path": "scripts/verify-contract-freeze.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "afff25aa74c664952476c9ed785ab699a1df8698",
+      "size": 329,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/afff25aa74c664952476c9ed785ab699a1df8698"
+    },
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d07dafecc03489c1386f81693297ee18f193091f",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/d07dafecc03489c1386f81693297ee18f193091f"
+    },
+    {
+      "path": "src/main",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "56037d0bc798b6524ee70d7f8482303178746daa",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/56037d0bc798b6524ee70d7f8482303178746daa"
+    },
+    {
+      "path": "src/main/java",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7681835d6584a8eb7da78604ef12d650f9b31f8f",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7681835d6584a8eb7da78604ef12d650f9b31f8f"
+    },
+    {
+      "path": "src/main/java/it",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6dfe996d1553c037d47ce0beea048431402dab08",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/6dfe996d1553c037d47ce0beea048431402dab08"
+    },
+    {
+      "path": "src/main/java/it/comune",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7a3a8dbe29502635f8d5e6b028303c2eb8cbe67d",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7a3a8dbe29502635f8d5e6b028303c2eb8cbe67d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3a201a07d5a37e78d1a7c05a6c9a470ce72123ed",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/3a201a07d5a37e78d1a7c05a6c9a470ce72123ed"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e5c3d19a2a689e7d8efb8bda33b53d3eef1296f3",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/e5c3d19a2a689e7d8efb8bda33b53d3eef1296f3"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/geopackage",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5fb38d9e6851e18b4c884176c7037a19a91a9038",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/5fb38d9e6851e18b4c884176c7037a19a91a9038"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/geopackage/GeoPackageReader.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "37b3d4184c052ba578b3f315a871b19bc309e852",
+      "size": 8817,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/37b3d4184c052ba578b3f315a871b19bc309e852"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/managed",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "faca3e912f342faa0fa13b0a549490f9142aec20",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/faca3e912f342faa0fa13b0a549490f9142aec20"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/managed/AccessReader.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "210e7f0d31df2a144999f0ac92a0e2f454787dfd",
+      "size": 5707,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/210e7f0d31df2a144999f0ac92a0e2f454787dfd"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/managed/ShapefileReader.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f51817bfec8ee783166207cf75127f25d0ca787",
+      "size": 7638,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2f51817bfec8ee783166207cf75127f25d0ca787"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6fa695ee4c5359ff77e841b59e448ec27e5ea408",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/6fa695ee4c5359ff77e841b59e448ec27e5ea408"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/OnboardingApplication.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b15a7306f6bba1e42342589a8fd6389fa40d745",
+      "size": 413,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9b15a7306f6bba1e42342589a8fd6389fa40d745"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7e9803b1353a9eda791adf33ec47c9fc4c4dc927",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7e9803b1353a9eda791adf33ec47c9fc4c4dc927"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AccessSemanticProposalApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "38c6967d73d41f72cdd84a4402e87af29f6a4437",
+      "size": 1249,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/38c6967d73d41f72cdd84a4402e87af29f6a4437"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "099ae3fad2b10c0fb17cdbc92427b55cff6e9745",
+      "size": 5243,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/099ae3fad2b10c0fb17cdbc92427b55cff6e9745"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminBoundary.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d4a51f51a0ec9656de55e114188be07aaf21b89",
+      "size": 3335,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9d4a51f51a0ec9656de55e114188be07aaf21b89"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationBundleApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3940ebdcf4ea8e2cd8ee02567c6572d1d9fc13e4",
+      "size": 2255,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3940ebdcf4ea8e2cd8ee02567c6572d1d9fc13e4"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/AuthorizationReviewApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7c38f8e878c501cf781796711719339d9a6702e",
+      "size": 2469,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d7c38f8e878c501cf781796711719339d9a6702e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/CorrelationFilter.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd2520334f122a6723e0f781b2008634849cbb47",
+      "size": 1111,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dd2520334f122a6723e0f781b2008634849cbb47"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/DiscoveryApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a42821cb1fab4f242b117da87468a94cd735d543",
+      "size": 2880,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a42821cb1fab4f242b117da87468a94cd735d543"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IamSecurityConfiguration.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95a935768daafc64bb74c50410444e69bbd8d28c",
+      "size": 11500,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/95a935768daafc64bb74c50410444e69bbd8d28c"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IngestionCompatibilityApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aa925779a3a41b7902f389c4cf3c5a6c15e52517",
+      "size": 2097,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/aa925779a3a41b7902f389c4cf3c5a6c15e52517"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/IngestionConfigurationApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50ddf3f808673b0a357a387b735fefc6f98792eb",
+      "size": 1023,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/50ddf3f808673b0a357a387b735fefc6f98792eb"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/InstallationBootstrapApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "211e1c41ba2c0837f066ef3e96ae3a5e61054bbc",
+      "size": 9629,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/211e1c41ba2c0837f066ef3e96ae3a5e61054bbc"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/InstallationProjectionExportApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e354ff9546ea94e92389293e4896a278e32b6081",
+      "size": 5313,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e354ff9546ea94e92389293e4896a278e32b6081"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f4d7f2c369a77eeed6b2e6b111253a704618d1a",
+      "size": 5216,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6f4d7f2c369a77eeed6b2e6b111253a704618d1a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileDelegatedUploadApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12fbc142629004f8efda5c21cf25b0562d03fee0",
+      "size": 3429,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/12fbc142629004f8efda5c21cf25b0562d03fee0"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileMcpApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8b6a876da7d704f15a2ae9dad23450a5e4f1c31a",
+      "size": 10085,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8b6a876da7d704f15a2ae9dad23450a5e4f1c31a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileOwnershipRecoveryApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "30470ea114e9e4e24f6b8905ac8c89854c04d0e0",
+      "size": 2051,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/30470ea114e9e4e24f6b8905ac8c89854c04d0e0"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFilePickerPage.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e796cd0f3a8e6013ed17274fcdaa8d2e16db84e",
+      "size": 9236,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7e796cd0f3a8e6013ed17274fcdaa8d2e16db84e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileQuarantineTrustedHumanApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "076cdf65e106d3a04ab36eccacc26ff8df628e5c",
+      "size": 2068,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/076cdf65e106d3a04ab36eccacc26ff8df628e5c"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedFileStagingApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85b132207d5d9adad9b07d72e4d52831742b72af",
+      "size": 3799,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/85b132207d5d9adad9b07d72e4d52831742b72af"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingHumanApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "706d01ca4489a346d36f9c94ba63624fc5ce57a2",
+      "size": 2655,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/706d01ca4489a346d36f9c94ba63624fc5ce57a2"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingReviewApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "22e8f8d0bc9450d927d63ef7d07565dd248918cc",
+      "size": 3417,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/22e8f8d0bc9450d927d63ef7d07565dd248918cc"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c1b243394b0cb2189e48175433229344522eed4",
+      "size": 3101,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4c1b243394b0cb2189e48175433229344522eed4"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryThs.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceb01c03b8f9e110b0e2e0a433070d92b9fbf46f",
+      "size": 9893,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ceb01c03b8f9e110b0e2e0a433070d92b9fbf46f"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/MappingApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "718f0ed15214327fc7ad0152e38246d2e3f334f2",
+      "size": 4124,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/718f0ed15214327fc7ad0152e38246d2e3f334f2"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/OnboardingApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3e6346b2b783b7634fb0901ce78e5978121b780d",
+      "size": 9262,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3e6346b2b783b7634fb0901ce78e5978121b780d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionDelegationVerifier.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06d797bceffe94411a1fff4472ba731d6589819a",
+      "size": 7597,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/06d797bceffe94411a1fff4472ba731d6589819a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionProposalApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c88ebfbe23ba3fb164a736375ef8e28c68fb11aa",
+      "size": 2837,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c88ebfbe23ba3fb164a736375ef8e28c68fb11aa"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2d2bed87f21350b8e1cc8b2a3455028ca09300d",
+      "size": 3338,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b2d2bed87f21350b8e1cc8b2a3455028ca09300d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/PermissionThsSecurity.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a56099475d4170db4ee2029e93762e0f3cd1657e",
+      "size": 4333,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a56099475d4170db4ee2029e93762e0f3cd1657e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ProblemHandler.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d94d122141d35d5fe5845724f1c668ff3947ae67",
+      "size": 3169,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d94d122141d35d5fe5845724f1c668ff3947ae67"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ProtectedLogApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "81ce65d123e8f130137769f718f922b4bd3d807e",
+      "size": 6125,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/81ce65d123e8f130137769f718f922b4bd3d807e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/R2fReviewSurface.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72f174ed28679fb56e2b9862c2669dfcbad46ca6",
+      "size": 1528,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/72f174ed28679fb56e2b9862c2669dfcbad46ca6"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/RequestLoggingFilter.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "335b835ed393001385ec4c6e0cf7930e09a99821",
+      "size": 1136,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/335b835ed393001385ec4c6e0cf7930e09a99821"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/ResolutionThsApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4f46bee82917fe4edefb5e50eb3ad37b74d1c27",
+      "size": 6142,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b4f46bee82917fe4edefb5e50eb3ad37b74d1c27"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/RuntimePublicationApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dfb4eda19e5a0f917f2391b1aed13d65986db341",
+      "size": 4809,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dfb4eda19e5a0f917f2391b1aed13d65986db341"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SchemaSurveillanceApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33bfc38970e92f3fdedd27173d2da22ade1da51e",
+      "size": 1864,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/33bfc38970e92f3fdedd27173d2da22ade1da51e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SemanticGapApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7430779df1ff80dbeab9f70be519fae32b14b119",
+      "size": 2684,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7430779df1ff80dbeab9f70be519fae32b14b119"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SourceRevisionApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aac045a0350fcccedb601682c33131d048a015f9",
+      "size": 3460,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/aac045a0350fcccedb601682c33131d048a015f9"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/SuperadminApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98cd0517520699875556cc812cfc591fdfa9b3dc",
+      "size": 3476,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/98cd0517520699875556cc812cfc591fdfa9b3dc"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedActorResolver.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ae47fd041f0e93c1dc3f31932fa657645de9ad1",
+      "size": 2043,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6ae47fd041f0e93c1dc3f31932fa657645de9ad1"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedHumanApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec295674ab19b8b667aacd7ba28b4e2fe68fff3e",
+      "size": 2399,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ec295674ab19b8b667aacd7ba28b4e2fe68fff3e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/TrustedWriteProof.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b8250023250bfc96a779150d27d3e2b9f6a8d01",
+      "size": 910,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7b8250023250bfc96a779150d27d3e2b9f6a8d01"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/api/WorkflowThsApi.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "31496d8f141301ea6f55e6250a9026967cebb035",
+      "size": 10590,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/31496d8f141301ea6f55e6250a9026967cebb035"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "63a040222f436a261957c39494eca7c0f57ba6e1",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/63a040222f436a261957c39494eca7c0f57ba6e1"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ConfigurationValidator.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d164b72f1964173bf85064feedd81a66ec61f5d6",
+      "size": 32333,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d164b72f1964173bf85064feedd81a66ec61f5d6"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/DiscoveryService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9143e292628343ced74c0e9df83dc19d88b8f3c6",
+      "size": 10364,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9143e292628343ced74c0e9df83dc19d88b8f3c6"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/GatewayManagedFileObjectStore.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4bc70145cb8ce7e7f576f5cfbcb30ea3b7fcbe71",
+      "size": 3304,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4bc70145cb8ce7e7f576f5cfbcb30ea3b7fcbe71"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/GovernedIdentityProposal.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6d8b51f64aab3ba4febbd5fca63e34d592ed0c7a",
+      "size": 4196,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6d8b51f64aab3ba4febbd5fca63e34d592ed0c7a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedActivationCoordinator.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5faf084856843a580137dcfbdfd89ccc55ee7bd8",
+      "size": 7511,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5faf084856843a580137dcfbdfd89ccc55ee7bd8"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileChatHandoff.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efdd709e2d76a6006f34e27d38b1a1425ed32364",
+      "size": 2930,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/efdd709e2d76a6006f34e27d38b1a1425ed32364"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposal.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "963c0ba10725e3d68754a2b00b35ab47ccae8056",
+      "size": 10292,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/963c0ba10725e3d68754a2b00b35ab47ccae8056"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileObjectReadFailure.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "865e82cb94518931ae1e468c440a1e3a49c43657",
+      "size": 2692,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/865e82cb94518931ae1e468c440a1e3a49c43657"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileObjectStore.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b28c7c23cc26f044567ec4241236cce81dad9450",
+      "size": 151,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b28c7c23cc26f044567ec4241236cce81dad9450"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileOwnershipRecovery.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2de83ef3c422a81e280bed18d8578b9468d0fd6e",
+      "size": 10319,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2de83ef3c422a81e280bed18d8578b9468d0fd6e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileProfileWorker.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "92817c340d9810072c17ab8f448534e51fb5f5ea",
+      "size": 2288,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/92817c340d9810072c17ab8f448534e51fb5f5ea"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileProfiler.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0346f8e879f5bcac745a36af5ddb53001225e85e",
+      "size": 11767,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0346f8e879f5bcac745a36af5ddb53001225e85e"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileReadTransport.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58037a08f7142105bb7c2591c76a92323446229d",
+      "size": 2681,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/58037a08f7142105bb7c2591c76a92323446229d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e6b42a290e59ed6c7b33959e0237af6e4f5c57d",
+      "size": 41351,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1e6b42a290e59ed6c7b33959e0237af6e4f5c57d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileStagingStore.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ec8f6ff16f2eee6e42c4a7446e6c5b1a15018576",
+      "size": 284,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ec8f6ff16f2eee6e42c4a7446e6c5b1a15018576"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedFileUploadCoordinator.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "15c15cd48088e6ed05f55cda435b6f909335d8f0",
+      "size": 7252,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/15c15cd48088e6ed05f55cda435b6f909335d8f0"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedOnboardingReviewService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f5a05217825ce4cdd9eb5e055dfba7bb3397bb13",
+      "size": 39129,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f5a05217825ce4cdd9eb5e055dfba7bb3397bb13"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileFailurePolicy.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6d9fa805ccbc3f49ffca8976d96835e762f4788a",
+      "size": 1734,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6d9fa805ccbc3f49ffca8976d96835e762f4788a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileJobs.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "10f31716e9246b422ea5d17aced0b5d6b766f1de",
+      "size": 24943,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/10f31716e9246b422ea5d17aced0b5d6b766f1de"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MappingService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d64295fb42b9500645b610847b17e5d52707f92",
+      "size": 13805,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0d64295fb42b9500645b610847b17e5d52707f92"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8c47a206dcbb356bb84ff80a004979f5d6278ad",
+      "size": 3678,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e8c47a206dcbb356bb84ff80a004979f5d6278ad"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingAuditLogStoreAdapter.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d2a72082f767178ddf2dc08214fe75ac8885b509",
+      "size": 2818,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d2a72082f767178ddf2dc08214fe75ac8885b509"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingMetrics.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dbf62a2e1c82f7bae59b0b53bd01cab640e3880b",
+      "size": 1929,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dbf62a2e1c82f7bae59b0b53bd01cab640e3880b"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/OnboardingService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9fc35315fd5ff43cad81faa1510623c1c2f7f32d",
+      "size": 30097,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9fc35315fd5ff43cad81faa1510623c1c2f7f32d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogAuthorizationGuard.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f426a31809d051d071c84248a6e88fe7e3a05cb",
+      "size": 1065,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1f426a31809d051d071c84248a6e88fe7e3a05cb"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogExportWorker.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "41c747f7d8ece49612353eaf2e51699bad93c50b",
+      "size": 1012,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/41c747f7d8ece49612353eaf2e51699bad93c50b"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogRedactionService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2aa0e970bbd76cc092e49fbefdf21f0d441bcb15",
+      "size": 1388,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2aa0e970bbd76cc092e49fbefdf21f0d441bcb15"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8e5b2721c1adc2ba4a3403705080251859435eb5",
+      "size": 15905,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8e5b2721c1adc2ba4a3403705080251859435eb5"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ProtectedLogStoreAdapter.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3821fea9632c16541c1cc24734d4d1fac7e1216",
+      "size": 390,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d3821fea9632c16541c1cc24734d4d1fac7e1216"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/PublishedBundleCompiler.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23796bce1d2d829619d971d8c089933fd79c3951",
+      "size": 5581,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/23796bce1d2d829619d971d8c089933fd79c3951"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/ResolutionActivationGate.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db4973271daa109d9b447654a1b68f5642c5daad",
+      "size": 2556,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/db4973271daa109d9b447654a1b68f5642c5daad"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/RuntimeProjectionService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5388b5abd875a88ea0011013684981ddd2ac0166",
+      "size": 4087,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5388b5abd875a88ea0011013684981ddd2ac0166"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SchemaSurveillanceService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "54aca5b2a687292288e38b9d05e935bd0db794cb",
+      "size": 3506,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/54aca5b2a687292288e38b9d05e935bd0db794cb"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SemanticGapService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed4ff946de039c33d7b4c7f518ff2c4f626b3021",
+      "size": 10933,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ed4ff946de039c33d7b4c7f518ff2c4f626b3021"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/SourceRevisionService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0a0c1f30c920f91ee8842147364ec7171293062",
+      "size": 13402,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d0a0c1f30c920f91ee8842147364ec7171293062"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/UdpIdentityActivationVerifier.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2eaaeed193c8d58fa14f3635de915838cc9c16c",
+      "size": 3582,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e2eaaeed193c8d58fa14f3635de915838cc9c16c"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/application/WeightedIdentityPolicy.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "154443a4c1fc9b4f4cdc81078126d45bd74ab04d",
+      "size": 2400,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/154443a4c1fc9b4f4cdc81078126d45bd74ab04d"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "99a8a2d542001803f2a481a6f89f9572df64a86a",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/99a8a2d542001803f2a481a6f89f9572df64a86a"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationAdminService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0bea3e285bb1e0acb315add2d5155b33f37b5a4c",
+      "size": 12899,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0bea3e285bb1e0acb315add2d5155b33f37b5a4c"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationCapabilities.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8a96494ab08b743502204f55b8cf8aed4aabb867",
+      "size": 2518,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8a96494ab08b743502204f55b8cf8aed4aabb867"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationPolicyRegistry.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9dce4360cd927206dc4cbf9fa024abe25d584aa",
+      "size": 7326,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b9dce4360cd927206dc4cbf9fa024abe25d584aa"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationReviewService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0111130895c55c1265db68e7172ce69dfdeacdf8",
+      "size": 9874,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0111130895c55c1265db68e7172ce69dfdeacdf8"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/AuthorizationRuntimeSynchronizer.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6dfbda85da2adc02562b1ae7b4a6194e800a2f57",
+      "size": 2769,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6dfbda85da2adc02562b1ae7b4a6194e800a2f57"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/BootstrapAdministrator.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf5d8098f5ec50401be02d7e4f3314a5be6591b2",
+      "size": 2912,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/bf5d8098f5ec50401be02d7e4f3314a5be6591b2"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/OufRoleCatalogue.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "59f9bed0730ae9e0b42643562f50803c26818841",
+      "size": 4522,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/59f9bed0730ae9e0b42643562f50803c26818841"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/OufRoleCatalogueStore.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f489a048ff016c716632e8668df7748cea35b665",
+      "size": 3071,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f489a048ff016c716632e8668df7748cea35b665"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/PermissionProposalService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dedd2a5bb77d8d65e285bdea8cd45291ae059354",
+      "size": 13991,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dedd2a5bb77d8d65e285bdea8cd45291ae059354"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/authorization/SuperadminAuthority.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6508c3b648ba24d515930ea3a184f2eeded0539",
+      "size": 11301,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b6508c3b648ba24d515930ea3a184f2eeded0539"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/domain",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b02de3e338f1551d88d8268a46fb9d2263f9da45",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/b02de3e338f1551d88d8268a46fb9d2263f9da45"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/domain/CanonicalHash.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "618ff0297ce2220551a5a3d417b64afbf8c7b522",
+      "size": 976,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/618ff0297ce2220551a5a3d417b64afbf8c7b522"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/domain/DomainFailure.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a4506bcef75f77b20024cbbfae24745ad5c136c",
+      "size": 419,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7a4506bcef75f77b20024cbbfae24745ad5c136c"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1fd7e7e09b6687242b9c0ca30f6ccce3720a3c32",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/1fd7e7e09b6687242b9c0ca30f6ccce3720a3c32"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/DefaultInstallationEnvironmentProbe.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "233bd972eb9730d8dfb622bfb754edbd76190bcc",
+      "size": 5053,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/233bd972eb9730d8dfb622bfb754edbd76190bcc"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationConfigurationService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3393138768f02d6e3845d8ccb36875c60f9403a9",
+      "size": 17903,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3393138768f02d6e3845d8ccb36875c60f9403a9"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationEnvironmentProbe.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c5c65700e4c6d789d8318bc3ceceab2ff5914d7",
+      "size": 587,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3c5c65700e4c6d789d8318bc3ceceab2ff5914d7"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationProjectionExportService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e63a4a608cd776f9e2540abaf46a634691bd619",
+      "size": 3613,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1e63a4a608cd776f9e2540abaf46a634691bd619"
+    },
+    {
+      "path": "src/main/java/it/comune/trieste/ouf/onboarding/installation/InstallationRuntimeProjectionService.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "879b14f82d070d603639c2b5f0eea30bea3028ce",
+      "size": 6123,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/879b14f82d070d603639c2b5f0eea30bea3028ce"
+    },
+    {
+      "path": "src/main/resources",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fbb27a94e09a201c1b858cac312fe1080bf6bf7a",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/fbb27a94e09a201c1b858cac312fe1080bf6bf7a"
+    },
+    {
+      "path": "src/main/resources/application.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76145655b0368d046d9b4f1f7bb98f59c4644053",
+      "size": 1238,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/76145655b0368d046d9b4f1f7bb98f59c4644053"
+    },
+    {
+      "path": "src/main/resources/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e8dac628b365464f86b7529556723adb2f852222",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/e8dac628b365464f86b7529556723adb2f852222"
+    },
+    {
+      "path": "src/main/resources/authorization/managed-profile-recovery-role-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b3612eabe7255f1a5cca1de4b92100765132ed4c",
+      "size": 1834,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b3612eabe7255f1a5cca1de4b92100765132ed4c"
+    },
+    {
+      "path": "src/main/resources/db",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0f9bd9a4e4fe6edf0b266b0a26d9b5b4933bf1f5",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/0f9bd9a4e4fe6edf0b266b0a26d9b5b4933bf1f5"
+    },
+    {
+      "path": "src/main/resources/db/migration",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f3203b470d33c3b551f1e1cb5bdc2a8e28bea44d",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/f3203b470d33c3b551f1e1cb5bdc2a8e28bea44d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V10__runtime_projection_schema_surveillance.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d340ba46341f1afcb203908a91c2146b5379b980",
+      "size": 1780,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d340ba46341f1afcb203908a91c2146b5379b980"
+    },
+    {
+      "path": "src/main/resources/db/migration/V11__trusted_human_protected_operations.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e85b30cd75bb5dcea7c97c0e51849cc8a7f1255",
+      "size": 2795,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5e85b30cd75bb5dcea7c97c0e51849cc8a7f1255"
+    },
+    {
+      "path": "src/main/resources/db/migration/V12__semantic_gap_workflow.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6e6f4fc770a634ae457f7b987cb811a2c308464",
+      "size": 1723,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b6e6f4fc770a634ae457f7b987cb811a2c308464"
+    },
+    {
+      "path": "src/main/resources/db/migration/V13__managed_file_quarantine.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d6c4203612fbb52f8bdb1e94cddaead6eefda1b",
+      "size": 1858,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0d6c4203612fbb52f8bdb1e94cddaead6eefda1b"
+    },
+    {
+      "path": "src/main/resources/db/migration/V14__schema_mapping_governance.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "27c87d093f2fd83b6df65598150e642d203c88b6",
+      "size": 889,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/27c87d093f2fd83b6df65598150e642d203c88b6"
+    },
+    {
+      "path": "src/main/resources/db/migration/V15__authorization_policy_registry.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e25b2409050418ec00099ad539fcb00de9570f61",
+      "size": 1940,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e25b2409050418ec00099ad539fcb00de9570f61"
+    },
+    {
+      "path": "src/main/resources/db/migration/V16__authorization_admin_lifecycle.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73366c05f99482cca1be652a99d904dbce5d775d",
+      "size": 1667,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/73366c05f99482cca1be652a99d904dbce5d775d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V17__geopackage_profiles.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6770c43d096fdb2f3eaee0b78ef426f43cbf5679",
+      "size": 542,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6770c43d096fdb2f3eaee0b78ef426f43cbf5679"
+    },
+    {
+      "path": "src/main/resources/db/migration/V18__access_profiles.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fff44792dc9a1e295d87a2380c5350c9795741d5",
+      "size": 634,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fff44792dc9a1e295d87a2380c5350c9795741d5"
+    },
+    {
+      "path": "src/main/resources/db/migration/V19__access_semantic_proposals.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f0999a657a919afcacd2d15372c42a75ea33e97",
+      "size": 342,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2f0999a657a919afcacd2d15372c42a75ea33e97"
+    },
+    {
+      "path": "src/main/resources/db/migration/V1__onboarding_core.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "168b129896d0dcd5725197aae71698206b0213a3",
+      "size": 5229,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/168b129896d0dcd5725197aae71698206b0213a3"
+    },
+    {
+      "path": "src/main/resources/db/migration/V20__authorization_bootstrap_latch.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd04ed35fab0f36cabc338f1eca6954ad56e15a3",
+      "size": 1610,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/cd04ed35fab0f36cabc338f1eca6954ad56e15a3"
+    },
+    {
+      "path": "src/main/resources/db/migration/V21__installation_configuration_lifecycle.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1b1535b56046e8165b4b9cef561a9ccb8e4f260",
+      "size": 2455,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d1b1535b56046e8165b4b9cef561a9ccb8e4f260"
+    },
+    {
+      "path": "src/main/resources/db/migration/V22__installation_environment_validation.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3f2d6a08c9191b802f1844202b4dfad9eb9fcf5",
+      "size": 1095,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f3f2d6a08c9191b802f1844202b4dfad9eb9fcf5"
+    },
+    {
+      "path": "src/main/resources/db/migration/V23__installation_projection_export_audit.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "52c4f1cc866695e1d80ea4d7e70463b476c4d273",
+      "size": 1090,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/52c4f1cc866695e1d80ea4d7e70463b476c4d273"
+    },
+    {
+      "path": "src/main/resources/db/migration/V24__installation_environment_validation_correlation.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0520bd2b20a182f1a9083a779311f2b4c2b2627e",
+      "size": 503,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0520bd2b20a182f1a9083a779311f2b4c2b2627e"
+    },
+    {
+      "path": "src/main/resources/db/migration/V25__candidate_installation_projection_export.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4abfd9f482ecdbfddfb2af609cceecfee43d362",
+      "size": 418,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e4abfd9f482ecdbfddfb2af609cceecfee43d362"
+    },
+    {
+      "path": "src/main/resources/db/migration/V26__protected_superadmin_role.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b90638b45822813f69ce1758cf025a3ade360f31",
+      "size": 2673,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b90638b45822813f69ce1758cf025a3ade360f31"
+    },
+    {
+      "path": "src/main/resources/db/migration/V27__authorization_permission_proposals.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73fc1571dd60c2fbb952d4f3b561ee688517416d",
+      "size": 1429,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/73fc1571dd60c2fbb952d4f3b561ee688517416d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V28__nominal_superadmin.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11c4f9e7c14944857622ed7af99853a1d614c16d",
+      "size": 1762,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/11c4f9e7c14944857622ed7af99853a1d614c16d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V29__ouf_role_catalogue.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc254ff38407450a8338ce0cfa4a0ae70196d67d",
+      "size": 397,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/bc254ff38407450a8338ce0cfa4a0ae70196d67d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V2__validation_engine.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e92cb36bfb1002d7062e8674aaa6235a061bb0d",
+      "size": 1264,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1e92cb36bfb1002d7062e8674aaa6235a061bb0d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V30__managed_file_onboarding_idempotency.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab94663abb455a66e348b9d2148c3c7d9b2a381e",
+      "size": 729,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ab94663abb455a66e348b9d2148c3c7d9b2a381e"
+    },
+    {
+      "path": "src/main/resources/db/migration/V31__managed_file_upload_idempotency.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6cc231d30f709b464353d6c7428d2c693ddb1d0e",
+      "size": 664,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6cc231d30f709b464353d6c7428d2c693ddb1d0e"
+    },
+    {
+      "path": "src/main/resources/db/migration/V32__managed_onboarding_review_handoff.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b0555213ae6bf72d0814f2dfd64816c62b88713d",
+      "size": 792,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b0555213ae6bf72d0814f2dfd64816c62b88713d"
+    },
+    {
+      "path": "src/main/resources/db/migration/V33__managed_review_activation_progress.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f07b0c5905d2ca211e34ca56cb29bffba859935",
+      "size": 471,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0f07b0c5905d2ca211e34ca56cb29bffba859935"
+    },
+    {
+      "path": "src/main/resources/db/migration/V34__source_property_revision.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6ee2ca93ae6b271e770e133e08da557bb379a09",
+      "size": 1387,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a6ee2ca93ae6b271e770e133e08da557bb379a09"
+    },
+    {
+      "path": "src/main/resources/db/migration/V35__managed_readiness_budget_sessions.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a7711d3b72e999e562cfce623e3180b8f5e3747a",
+      "size": 2396,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a7711d3b72e999e562cfce623e3180b8f5e3747a"
+    },
+    {
+      "path": "src/main/resources/db/migration/V36__managed_profile_recovery_sessions.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5892878d6391018321fee9e609320edc5d76c84b",
+      "size": 5523,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5892878d6391018321fee9e609320edc5d76c84b"
+    },
+    {
+      "path": "src/main/resources/db/migration/V37__managed_file_intake_tenant.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "38cc8189259c23bc0b5f7aefec19f823d7640a3a",
+      "size": 809,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/38cc8189259c23bc0b5f7aefec19f823d7640a3a"
+    },
+    {
+      "path": "src/main/resources/db/migration/V38__managed_file_legacy_owner_reconciliation.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9ac723c9a9cd07b776880b30cf020dd32f1a52e",
+      "size": 1920,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c9ac723c9a9cd07b776880b30cf020dd32f1a52e"
+    },
+    {
+      "path": "src/main/resources/db/migration/V39__managed_file_upload_intent.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "52fd86eecbfd4d7fdb781b8b981e78b970eb170f",
+      "size": 3218,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/52fd86eecbfd4d7fdb781b8b981e78b970eb170f"
+    },
+    {
+      "path": "src/main/resources/db/migration/V3__technical_discovery.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19f147178cd149a2ed7241df4d4f614a8d6438ea",
+      "size": 3133,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/19f147178cd149a2ed7241df4d4f614a8d6438ea"
+    },
+    {
+      "path": "src/main/resources/db/migration/V4__mapping_workspace.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5bd8c7b937e12030a3c3ffdc007059cedff77a2f",
+      "size": 2434,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5bd8c7b937e12030a3c3ffdc007059cedff77a2f"
+    },
+    {
+      "path": "src/main/resources/db/migration/V5__managed_file_profiles.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6862db82411d06306260166442925ccbea50cab8",
+      "size": 1641,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6862db82411d06306260166442925ccbea50cab8"
+    },
+    {
+      "path": "src/main/resources/db/migration/V6__initial_ingestion_and_pull_scheduler.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b25b216ab1a257edd327c4ceb77b123843190c80",
+      "size": 3282,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b25b216ab1a257edd327c4ceb77b123843190c80"
+    },
+    {
+      "path": "src/main/resources/db/migration/V7__restore_onboarding_boundary.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e599f823604843409099498197120963101a738",
+      "size": 2807,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6e599f823604843409099498197120963101a738"
+    },
+    {
+      "path": "src/main/resources/db/migration/V8__managed_file_preview.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8fc9833897c3c88e5d7c39012d81e3a9388d5e40",
+      "size": 264,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8fc9833897c3c88e5d7c39012d81e3a9388d5e40"
+    },
+    {
+      "path": "src/main/resources/db/migration/V9__managed_file_contract_hardening.sql",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "13cdba365197ee82c520ce74f1a294d9375dc181",
+      "size": 479,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/13cdba365197ee82c520ce74f1a294d9375dc181"
+    },
+    {
+      "path": "src/main/resources/ths",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6b0172e7b0111f8c34903a617878d4df1b908ef1",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/6b0172e7b0111f8c34903a617878d4df1b908ef1"
+    },
+    {
+      "path": "src/main/resources/ths/managed-file-picker.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05d994c4dc380ac6a90745e934fa7f621a38858d",
+      "size": 657,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/05d994c4dc380ac6a90745e934fa7f621a38858d"
+    },
+    {
+      "path": "src/main/resources/ths/managed-file-picker.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6c898e8e01c77aaa25f69a21895ba62a8df965a",
+      "size": 3817,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b6c898e8e01c77aaa25f69a21895ba62a8df965a"
+    },
+    {
+      "path": "src/main/resources/ths/permissions.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "038d38f9c3078bff9a68769cc519e803bc6b2a0c",
+      "size": 1335,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/038d38f9c3078bff9a68769cc519e803bc6b2a0c"
+    },
+    {
+      "path": "src/main/resources/ths/permissions.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "90e42a3acd51b91af860e225bea016a4c02753a0",
+      "size": 1218,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/90e42a3acd51b91af860e225bea016a4c02753a0"
+    },
+    {
+      "path": "src/main/resources/ths/permissions.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4755729a46433aa51d523d251d0277a5a30c5292",
+      "size": 5620,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4755729a46433aa51d523d251d0277a5a30c5292"
+    },
+    {
+      "path": "src/main/resources/ths/profile-recovery.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e79ec0754cb615f3fed432422d5f7432cef04f65",
+      "size": 1575,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e79ec0754cb615f3fed432422d5f7432cef04f65"
+    },
+    {
+      "path": "src/main/resources/ths/profile-recovery.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa246f7dbc8d36d6a5d691145c271680b3eb3124",
+      "size": 2994,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fa246f7dbc8d36d6a5d691145c271680b3eb3124"
+    },
+    {
+      "path": "src/main/resources/ths/profile-recovery.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "740bba207937795bba782375a6825b1a9ad7a0e9",
+      "size": 11593,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/740bba207937795bba782375a6825b1a9ad7a0e9"
+    },
+    {
+      "path": "src/main/resources/ths/r2f.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ea68ccc8a14cc1196f722ac4dd3332416f6bd69",
+      "size": 1657,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6ea68ccc8a14cc1196f722ac4dd3332416f6bd69"
+    },
+    {
+      "path": "src/main/resources/ths/r2f.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8851b70d416a1483812d92b8294d2f049e8fcf43",
+      "size": 1691,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8851b70d416a1483812d92b8294d2f049e8fcf43"
+    },
+    {
+      "path": "src/main/resources/ths/r2f.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f7e2547742f84bca278550be96d6f62ce7958ee",
+      "size": 8764,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5f7e2547742f84bca278550be96d6f62ce7958ee"
+    },
+    {
+      "path": "src/main/resources/ths/resolution.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "410aeec9d9eb97eed09a5977c0e35efd53d60fbd",
+      "size": 4623,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/410aeec9d9eb97eed09a5977c0e35efd53d60fbd"
+    },
+    {
+      "path": "src/main/resources/ths/resolution.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3c65d789ceed524e535404fc413d9abc6f9875b",
+      "size": 1139,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f3c65d789ceed524e535404fc413d9abc6f9875b"
+    },
+    {
+      "path": "src/main/resources/ths/resolution.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ca5f67706de95103df664f6b30fa5fc3e11ecd7",
+      "size": 16974,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6ca5f67706de95103df664f6b30fa5fc3e11ecd7"
+    },
+    {
+      "path": "src/main/resources/ths/workflow-review.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b5045552f6bbc1c8dd225028477ba4780ca1829",
+      "size": 1289,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6b5045552f6bbc1c8dd225028477ba4780ca1829"
+    },
+    {
+      "path": "src/main/resources/ths/workflow-review.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c7e56fb018d8c4c6701e1d55ed25578812ca7f89",
+      "size": 1287,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c7e56fb018d8c4c6701e1d55ed25578812ca7f89"
+    },
+    {
+      "path": "src/main/resources/ths/workflow-review.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b3c5e98e3df263307b725df776c675b7114a606",
+      "size": 12856,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5b3c5e98e3df263307b725df776c675b7114a606"
+    },
+    {
+      "path": "src/test",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f16509c49cce083bbeff0278542e9172877c8286",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/f16509c49cce083bbeff0278542e9172877c8286"
+    },
+    {
+      "path": "src/test/java",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9eb67b78a76a72db1bc960000dc6c2fb5a5e6302",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/9eb67b78a76a72db1bc960000dc6c2fb5a5e6302"
+    },
+    {
+      "path": "src/test/java/it",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "669dd613612213ef4ca61416565e4afdd3500c6f",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/669dd613612213ef4ca61416565e4afdd3500c6f"
+    },
+    {
+      "path": "src/test/java/it/comune",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "60989da90302c3b41865fab02f3e05ff038e6e99",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/60989da90302c3b41865fab02f3e05ff038e6e99"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9f80b9888e0dda86e58b1433a669d18953b2789c",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/9f80b9888e0dda86e58b1433a669d18953b2789c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "481b7c0542fce2aa99ae598effd25ea600d15a64",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/481b7c0542fce2aa99ae598effd25ea600d15a64"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/geopackage",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7bde4e65e0ce42808b53bad1dbc0957b81b8d993",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7bde4e65e0ce42808b53bad1dbc0957b81b8d993"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/geopackage/GeoPackageReaderTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3ed8e689524639cd2c579fa83121f5320a08caa2",
+      "size": 2332,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3ed8e689524639cd2c579fa83121f5320a08caa2"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/managed",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c2be1b562f043b45068e71dced11b023774a2b76",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/c2be1b562f043b45068e71dced11b023774a2b76"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/managed/AccessReaderTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c319807b79defead93a83110ce0a446f939c845",
+      "size": 3593,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6c319807b79defead93a83110ce0a446f939c845"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/managed/ShapefileReaderTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4d8d8639c54780128cb3e49c2f5f5612a1798de",
+      "size": 4264,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a4d8d8639c54780128cb3e49c2f5f5612a1798de"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ff5eeb6a01dfcf0923d9c3bda2aba8e7a4963cc3",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/ff5eeb6a01dfcf0923d9c3bda2aba8e7a4963cc3"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationAdminRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f68c3dff8dccfa0d996e2cccab901c6bf4845294",
+      "size": 13015,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f68c3dff8dccfa0d996e2cccab901c6bf4845294"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationBootstrapServerBindingTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "95a7f654299902e9f4308f9e4e65f22ae0a95990",
+      "size": 3820,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/95a7f654299902e9f4308f9e4e65f22ae0a95990"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationBundleApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "540081cdb222e74169eafd37270afaa245cbbda0",
+      "size": 3204,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/540081cdb222e74169eafd37270afaa245cbbda0"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationCapabilitiesTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a14ddf665fc011ca19c95fd9da48c0c6796a9509",
+      "size": 3132,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a14ddf665fc011ca19c95fd9da48c0c6796a9509"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationPolicyRegistryRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b7e005199963c62f68ad8ffe980af409d94ca36",
+      "size": 4847,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5b7e005199963c62f68ad8ffe980af409d94ca36"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationPolicyTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c0fb5dae29cc4c5b530e4371c14c3a08a173866",
+      "size": 3791,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8c0fb5dae29cc4c5b530e4371c14c3a08a173866"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationPublishTransactionTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "071702e9a160decae1cb632b6a1c811f07eeaaba",
+      "size": 5564,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/071702e9a160decae1cb632b6a1c811f07eeaaba"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationReviewRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e2618aeea1cc5fb6d0ab947cd295157cdd22bb4",
+      "size": 13596,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7e2618aeea1cc5fb6d0ab947cd295157cdd22bb4"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/AuthorizationRuntimeSynchronizerTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "34bfdad8a41543da19c35789ffa99dd9b33ccfbe",
+      "size": 3553,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/34bfdad8a41543da19c35789ffa99dd9b33ccfbe"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ConfigurationValidatorContractTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63445a318d6c8ca8f1b57191f7f7f041234214ec",
+      "size": 13102,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/63445a318d6c8ca8f1b57191f7f7f041234214ec"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/DiscoveryRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a7f6cdf6166c26cf1dd4f47c1a09c80e4e168f77",
+      "size": 4991,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a7f6cdf6166c26cf1dd4f47c1a09c80e4e168f77"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/GatewayManagedFileObjectStoreTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f919345e98fe19c90f07aefd92e5226ae20474d",
+      "size": 5450,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3f919345e98fe19c90f07aefd92e5226ae20474d"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/IamAuthorizationBootstrapIntegrationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4763e741035dcafaf03a2c867f8b2d8c1b0b4ac5",
+      "size": 10795,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4763e741035dcafaf03a2c867f8b2d8c1b0b4ac5"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/IngestionConfigurationAuditRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "916d1f987805c2dba1694f9a029133c4f04ae5e1",
+      "size": 14491,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/916d1f987805c2dba1694f9a029133c4f04ae5e1"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationConfigurationContractTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0142756005d8f8e36173db01a608dbb3b15d8e1b",
+      "size": 2450,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0142756005d8f8e36173db01a608dbb3b15d8e1b"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationConfigurationLifecycleRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b69510d9489301dd21c57e77d1d754ce087f0cb2",
+      "size": 15386,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b69510d9489301dd21c57e77d1d754ce087f0cb2"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationCorrelationRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04729c9d5817f64b5972a8a0a2bf93a3f3f1a9b6",
+      "size": 3461,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/04729c9d5817f64b5972a8a0a2bf93a3f3f1a9b6"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationProjectionExportRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b25a75565b219ea72f9b649d8ecf5f867ce6f14",
+      "size": 6174,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6b25a75565b219ea72f9b649d8ecf5f867ce6f14"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/InstallationRuntimeProjectionTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da1403a03162ef3641b6b262427331363608b393",
+      "size": 5243,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/da1403a03162ef3641b6b262427331363608b393"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/IntakeTenantMigrationUpgradeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05f703718ed38079b81809bb134dd31aab531bc5",
+      "size": 4830,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/05f703718ed38079b81809bb134dd31aab531bc5"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/LegacyOwnerMigrationUpgradeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58e0ff005a1cd9b8ce509387912bebb35419b5f2",
+      "size": 4937,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/58e0ff005a1cd9b8ce509387912bebb35419b5f2"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileAuthorizationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c5afa8872d11adfef0163f8a52bc8569d821251d",
+      "size": 3717,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c5afa8872d11adfef0163f8a52bc8569d821251d"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileDelegatedUploadApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36101e75bd6e98809629210c5ae865e27844ecf8",
+      "size": 3721,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/36101e75bd6e98809629210c5ae865e27844ecf8"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileDelegationVerifierTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1a958d989c5f528126f3447d3cfb7e88c1be80b",
+      "size": 2553,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f1a958d989c5f528126f3447d3cfb7e88c1be80b"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileIntakeTenantRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da6c9a5aedcd504a042437e9dfe935b4c03f2978",
+      "size": 8387,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/da6c9a5aedcd504a042437e9dfe935b4c03f2978"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileMcpApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d239c84e7711395e87ea2e000cc3d9eb3c6523b",
+      "size": 8780,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5d239c84e7711395e87ea2e000cc3d9eb3c6523b"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileOpenApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65d0aaa868b1845a51c1f6092ffd8b1765cc753d",
+      "size": 1208,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/65d0aaa868b1845a51c1f6092ffd8b1765cc753d"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileOwnershipRecoveryRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04fe097a27ff35f7143519e39f120e06f89f0fae",
+      "size": 12670,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/04fe097a27ff35f7143519e39f120e06f89f0fae"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileProfileWorkerTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8d66049b234f5cfcfa1dd24292e8fc38ecd05b7",
+      "size": 2971,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e8d66049b234f5cfcfa1dd24292e8fc38ecd05b7"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileProfilerBomTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "065a62a3140aee2ffe72bc50ed1ee6ef04134227",
+      "size": 1175,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/065a62a3140aee2ffe72bc50ed1ee6ef04134227"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileRecoveryRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "528ba780916f919d603ac17813492cfcf4653b52",
+      "size": 8536,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/528ba780916f919d603ac17813492cfcf4653b52"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6935830e000778622b3f67da5a5b32c7de59c54",
+      "size": 21772,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f6935830e000778622b3f67da5a5b32c7de59c54"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileStagingApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2b6d400bf1906d987de2d5aad04298ac0baa3cd",
+      "size": 4273,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e2b6d400bf1906d987de2d5aad04298ac0baa3cd"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedFileUploadReceiptTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2fe591e834a2386cb9de4caa2f1fff776acfb71e",
+      "size": 3470,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2fe591e834a2386cb9de4caa2f1fff776acfb71e"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedOnboardingReviewRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70a254ace770a31526aaaedc09b8080e7e83d0db",
+      "size": 37500,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/70a254ace770a31526aaaedc09b8080e7e83d0db"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedProfileBudgetRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "094d4832470e4c57b878dcc946933c49045c1326",
+      "size": 22147,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/094d4832470e4c57b878dcc946933c49045c1326"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedProfileFailureRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1991d75423106bf7662aef04b88db1773a49685e",
+      "size": 5075,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1991d75423106bf7662aef04b88db1773a49685e"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ManagedProfileGatewayContractTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d98f90fb2cae11f095872aa34ea9821733a49da",
+      "size": 1869,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9d98f90fb2cae11f095872aa34ea9821733a49da"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/MappingRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "37d7d8e9c97c1acc46d9e652c58e7a1725a60244",
+      "size": 6884,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/37d7d8e9c97c1acc46d9e652c58e7a1725a60244"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/NominalSuperadminRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee479f015e5c1fd8bfafc09467fc7ba6f0616646",
+      "size": 7304,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ee479f015e5c1fd8bfafc09467fc7ba6f0616646"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/OnboardingLifecycleAuthorizationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad85c46ec61a159680fb0e40b4e1bd5eced6af17",
+      "size": 1727,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ad85c46ec61a159680fb0e40b4e1bd5eced6af17"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/OnboardingWorkflowRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d70edc45ab4b480fd862a7bf8fa73a206c6985b6",
+      "size": 15940,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d70edc45ab4b480fd862a7bf8fa73a206c6985b6"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/OpenApiContractTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad751b140a4eb7224890e57dbfb1e26a5b097920",
+      "size": 1317,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ad751b140a4eb7224890e57dbfb1e26a5b097920"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/PermissionProposalRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "356f5339000f58ffe299db49f0d70fe84964e590",
+      "size": 25813,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/356f5339000f58ffe299db49f0d70fe84964e590"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ProfileBudgetMigrationUpgradeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "595f2b2d8d7c67b5cab5fdc9c85f02d90e8c5467",
+      "size": 4613,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/595f2b2d8d7c67b5cab5fdc9c85f02d90e8c5467"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ProtectedLogOwnerBoundaryTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7944450ffc7dc9d686ab133f92d7b56fe22eb9da",
+      "size": 2692,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7944450ffc7dc9d686ab133f92d7b56fe22eb9da"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ProtectedLogRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74a6f56394026e0caa106e7f39433328fce2f8db",
+      "size": 4808,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/74a6f56394026e0caa106e7f39433328fce2f8db"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/PublishedBundleCompilerTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24c2ba60e6fe6b2b4cf05661fd964d19bad45440",
+      "size": 2795,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/24c2ba60e6fe6b2b4cf05661fd964d19bad45440"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/ReadinessBudgetMigrationUpgradeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6d6f3945bb25e9329d9f3e736626f318850e5d1",
+      "size": 6493,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f6d6f3945bb25e9329d9f3e736626f318850e5d1"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/RuntimePublicationBoundaryTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db8e09844e3e2bbb2221b97cd80093e6558756d8",
+      "size": 2141,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/db8e09844e3e2bbb2221b97cd80093e6558756d8"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SemanticGapRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad0b4d851f9cdc19a83ef402c706266c70cdbbbd",
+      "size": 3447,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ad0b4d851f9cdc19a83ef402c706266c70cdbbbd"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SourceRevisionDelegationVerifierTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3eceaa375ce45b3d9bbb83bc8ee2ac89e4053748",
+      "size": 2812,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3eceaa375ce45b3d9bbb83bc8ee2ac89e4053748"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SourceRevisionPreservationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d721a364c67869246bad6a6cc9c5b3cabd8100d1",
+      "size": 1895,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d721a364c67869246bad6a6cc9c5b3cabd8100d1"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SourceRevisionRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98bd4eabb0a6c2c8ee48b9b969abe0976775b301",
+      "size": 14512,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/98bd4eabb0a6c2c8ee48b9b969abe0976775b301"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SuperadminFixtures.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e5b856127c3a36b46227b34f69b29cb885c6476",
+      "size": 563,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5e5b856127c3a36b46227b34f69b29cb885c6476"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/SuperadminTransferRuntimeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9984f4b057b9deb586712884ae31ff6dbb10c6f4",
+      "size": 15383,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9984f4b057b9deb586712884ae31ff6dbb10c6f4"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/TrustedActorResolverTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3fd863657aa21dec414928a7b986d78471ce31a",
+      "size": 1454,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a3fd863657aa21dec414928a7b986d78471ce31a"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/TrustedHumanSurfaceContractTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62dc01ee1bee4a591930094ec6e97d4090aa7108",
+      "size": 1907,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/62dc01ee1bee4a591930094ec6e97d4090aa7108"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "38c4f4d38bc9b161e631f7b7077aeb07a147b5ad",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/38c4f4d38bc9b161e631f7b7077aeb07a147b5ad"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/AuthorizationAdminBoundaryPrincipalTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ea0e9c8a034e2bb9196c54f6aef63c1dff9363c",
+      "size": 1567,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4ea0e9c8a034e2bb9196c54f6aef63c1dff9363c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/IamJwtValidationTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9afeb9617bcad877bd732b1d0f9a8a432d53f5a4",
+      "size": 3613,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/9afeb9617bcad877bd732b1d0f9a8a432d53f5a4"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/IamPrincipalBridgeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b89f85c6900ee99ec02fe2c5e688c004ebb99d86",
+      "size": 3978,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/b89f85c6900ee99ec02fe2c5e688c004ebb99d86"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/InstallationBootstrapApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "311e1a942878733e3b39442bd0578dc26dd4b2d4",
+      "size": 11998,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/311e1a942878733e3b39442bd0578dc26dd4b2d4"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/InstallationProjectionExportApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98ecacd41ee75d64f912982ce7df0209fd4b3312",
+      "size": 6216,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/98ecacd41ee75d64f912982ce7df0209fd4b3312"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFileNativeRegistrationTenantTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e104023b642bede16fb81935f696ee3572d0dc4",
+      "size": 1630,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0e104023b642bede16fb81935f696ee3572d0dc4"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFileOwnershipRecoveryPolicyTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11149f3a829e93c2301713ea4f57d5deea03767f",
+      "size": 2352,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/11149f3a829e93c2301713ea4f57d5deea03767f"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFilePickerPageTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "796afbcc72b847cdb4a7edb6f7ba5a0e6bd82c6c",
+      "size": 1712,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/796afbcc72b847cdb4a7edb6f7ba5a0e6bd82c6c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedFileProfileDiagnosticTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d0f63a08d83989ac82db674af2b3f22b79e5a61",
+      "size": 3425,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2d0f63a08d83989ac82db674af2b3f22b79e5a61"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedOnboardingReviewApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6955a1aaf7a6e1c5573a76ed4ba5e66f8c60238",
+      "size": 3069,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f6955a1aaf7a6e1c5573a76ed4ba5e66f8c60238"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileJobReadOwnershipTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56ba14fb1608fd4fa9619013e3dcbbe7c2161889",
+      "size": 1832,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/56ba14fb1608fd4fa9619013e3dcbbe7c2161889"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "75ad2abf7b04667cef9b4e4332a355e284ee56d9",
+      "size": 2687,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/75ad2abf7b04667cef9b4e4332a355e284ee56d9"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryPolicyApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7ccfd697800828cee4dce2dfdc68b725fa035dc",
+      "size": 4249,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d7ccfd697800828cee4dce2dfdc68b725fa035dc"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ManagedProfileRecoveryThsTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc251ee6057478e46e5cf906ee2202ed4d5bc067",
+      "size": 7176,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/bc251ee6057478e46e5cf906ee2202ed4d5bc067"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/ResolutionThsApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e695daad01d04837db1f5774933a5b055ad28e1",
+      "size": 5443,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5e695daad01d04837db1f5774933a5b055ad28e1"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/SourceRevisionApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dbf246eeb8f7545f083d92fd6f01d6072a3fab3d",
+      "size": 2883,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dbf246eeb8f7545f083d92fd6f01d6072a3fab3d"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/api/WorkflowThsApiTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dde4deacd688d4ebf0e65160c14b4136070468e7",
+      "size": 7518,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dde4deacd688d4ebf0e65160c14b4136070468e7"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7b50c81ae3897b291d87059fa5081a805b59a692",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/7b50c81ae3897b291d87059fa5081a805b59a692"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/GovernedIdentityProposalTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6037142c8f6f925217a0f9921cc8a4756da6f34f",
+      "size": 2582,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6037142c8f6f925217a0f9921cc8a4756da6f34f"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedActivationCoordinatorTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78f03f08b4f60c34858dd2a27a51a09402504fd2",
+      "size": 6182,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/78f03f08b4f60c34858dd2a27a51a09402504fd2"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedFileChatHandoffTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0e438477aaf55190a4e94572e9f7adffa39c3a3",
+      "size": 1688,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d0e438477aaf55190a4e94572e9f7adffa39c3a3"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedFileExecutionProposalTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a0490faf13395e259fe8f4520613dee0faaf86c",
+      "size": 11397,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7a0490faf13395e259fe8f4520613dee0faaf86c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedFileUploadNativeTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6eb4289ee73312f8e8c20818297266023582cd18",
+      "size": 14877,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/6eb4289ee73312f8e8c20818297266023582cd18"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ManagedProfileTransportTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a6d9ef4d59860cb4ba451030bc4ff3ef46b4b96c",
+      "size": 3264,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/a6d9ef4d59860cb4ba451030bc4ff3ef46b4b96c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStoreTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "720799d646c129e50a319f77ca33ff4b60a05050",
+      "size": 2518,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/720799d646c129e50a319f77ca33ff4b60a05050"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/ResolutionActivationGateTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "000a128c529795020b2b8772ea84687692ba0011",
+      "size": 1276,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/000a128c529795020b2b8772ea84687692ba0011"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/UdpIdentityActivationVerifierTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "28a7d79c8e48c31845f9025eb3fedca4ee1e406b",
+      "size": 2544,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/28a7d79c8e48c31845f9025eb3fedca4ee1e406b"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/application/UploadCrashProcess.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "916f2e51a087838aea7e854d1293c5ab36de43e9",
+      "size": 2316,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/916f2e51a087838aea7e854d1293c5ab36de43e9"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/authorization",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e8b54579f380feeccb825a7269e5ebc73720323e",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/e8b54579f380feeccb825a7269e5ebc73720323e"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/authorization/BootstrapAdministratorTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5004eecf265fcd5504261a90abe849ef725b4f89",
+      "size": 2648,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/5004eecf265fcd5504261a90abe849ef725b4f89"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/authorization/ManagedProfileControlPolicyTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12461a6dfa2fdb45512346c5706dbfbfffcc8d3c",
+      "size": 5938,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/12461a6dfa2fdb45512346c5706dbfbfffcc8d3c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/onboarding/authorization/OufRoleCatalogueTest.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "209e8e6e4cca1b3b09e8616232ccab1c42cb867c",
+      "size": 4145,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/209e8e6e4cca1b3b09e8616232ccab1c42cb867c"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "530983f2fc18fdee24d5b8b1bbf148e3772fd543",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/530983f2fc18fdee24d5b8b1bbf148e3772fd543"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/ActivationPublisherFixture.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d03ff49b0ac15243bcc9af5adedf03faf96cd22",
+      "size": 5538,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8d03ff49b0ac15243bcc9af5adedf03faf96cd22"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/ChatbotVerticalPublisherFixture.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35877a9cfd2b1a13de1c1c6ed6a5035672de48f3",
+      "size": 5484,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/35877a9cfd2b1a13de1c1c6ed6a5035672de48f3"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/GeoPackagePublisherFixture.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1614c61ea856cf1393bd2bb849a1215be3dda729",
+      "size": 8426,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1614c61ea856cf1393bd2bb849a1215be3dda729"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/ManagedFormatsPublisherFixture.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53dd875e700c5b4a57d7f1ce78e7173c4c1dd36b",
+      "size": 14092,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/53dd875e700c5b4a57d7f1ce78e7173c4c1dd36b"
+    },
+    {
+      "path": "src/test/java/it/comune/trieste/ouf/pairwise/ServingPublisherFixture.java",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6b148c2a68ab5b896bb762698bab8aa53d3de0b",
+      "size": 12080,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f6b148c2a68ab5b896bb762698bab8aa53d3de0b"
+    },
+    {
+      "path": "src/test/resources",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "adf1c9feaf9484f1dd215644d0978f478390f486",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/adf1c9feaf9484f1dd215644d0978f478390f486"
+    },
+    {
+      "path": "src/test/resources/application.properties",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c4fd136780ec775571f700184212272e5643fe5",
+      "size": 129,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8c4fd136780ec775571f700184212272e5643fe5"
+    },
+    {
+      "path": "src/test/resources/geopackage",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6db5f5d901d31f388e83629f3a30f354794eb297",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/6db5f5d901d31f388e83629f3a30f354794eb297"
+    },
+    {
+      "path": "src/test/resources/geopackage/cameras-reloaded.gpkg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61abf6ad596e7cf2f9755bd313693062f6aa5587",
+      "size": 32768,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/61abf6ad596e7cf2f9755bd313693062f6aa5587"
+    },
+    {
+      "path": "src/test/resources/geopackage/cameras.gpkg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04e681e9bd34694961e77ded25caacb6561df9fa",
+      "size": 32768,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/04e681e9bd34694961e77ded25caacb6561df9fa"
+    },
+    {
+      "path": "src/test/resources/identity-governed-proposal-v1.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45fa701dd6ce1851aba689357500c82b99c734de",
+      "size": 730,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/45fa701dd6ce1851aba689357500c82b99c734de"
+    },
+    {
+      "path": "tests",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1395d6e79fdabb9f01a3a93999843f1cdac08249",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/1395d6e79fdabb9f01a3a93999843f1cdac08249"
+    },
+    {
+      "path": "tests/browser",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6f8d4cf9dd1cfc25741db3b22a97e2d7a1390a36",
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/trees/6f8d4cf9dd1cfc25741db3b22a97e2d7a1390a36"
+    },
+    {
+      "path": "tests/browser/permissions.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5e03e0df7b1b093676c61f975e0475d5a87f878",
+      "size": 6620,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/e5e03e0df7b1b093676c61f975e0475d5a87f878"
+    },
+    {
+      "path": "tests/browser/profile-recovery.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fef13c01ea0bb041ca6e1785091ca509c66b8a65",
+      "size": 17227,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/fef13c01ea0bb041ca6e1785091ca509c66b8a65"
+    },
+    {
+      "path": "tests/browser/r2f-review.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd600d0d2b1e40f90ad1b15aebd678afcc9fefcc",
+      "size": 5880,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/dd600d0d2b1e40f90ad1b15aebd678afcc9fefcc"
+    },
+    {
+      "path": "tests/browser/resolution-comparison.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56925990c1ecfdd298b22d989fa7ba68c28b766c",
+      "size": 9338,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/56925990c1ecfdd298b22d989fa7ba68c28b766c"
+    },
+    {
+      "path": "tests/browser/workflow-review.test.cjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "405017d961da8ef9c4a307df3116b497c0d0c8c9",
+      "size": 10090,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/405017d961da8ef9c4a307df3116b497c0d0c8c9"
+    },
+    {
+      "path": "tests/test_managed_profile_recovery_catalogue.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11f9ac1074769a55b8ed7cdc07258499c13cb461",
+      "size": 2504,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/11f9ac1074769a55b8ed7cdc07258499c13cb461"
+    },
+    {
+      "path": "tests/test_managed_profile_ths_scope_contract.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df26f6948a8644c5d7320b6cd70bb03677c47f87",
+      "size": 2115,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/df26f6948a8644c5d7320b6cd70bb03677c47f87"
+    },
+    {
+      "path": "tests/test_mcp_latency.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c3c639efe6e2a4641ec2894101c243fe47f8d3f",
+      "size": 1314,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7c3c639efe6e2a4641ec2894101c243fe47f8d3f"
+    },
+    {
+      "path": "tests/test_r4a_access_snapshot.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "306edff7ce678f9e1889e682f770bfa4bdc3ddd1",
+      "size": 431,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/306edff7ce678f9e1889e682f770bfa4bdc3ddd1"
+    },
+    {
+      "path": "tests/test_r4a_admin_all_human_manifest.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7560cddee6670d6d13c07c76e037e20d2643fcec",
+      "size": 1810,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7560cddee6670d6d13c07c76e037e20d2643fcec"
+    },
+    {
+      "path": "tests/test_r4a_admin_human_scope_bindings.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08b782e7bdd8d848b3e0b43664b9577fbf05207e",
+      "size": 2018,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/08b782e7bdd8d848b3e0b43664b9577fbf05207e"
+    },
+    {
+      "path": "tests/test_r4a_authorization_lifecycle.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05c00efa3f863572ae0aeefcc84712a4104fbf79",
+      "size": 2988,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/05c00efa3f863572ae0aeefcc84712a4104fbf79"
+    },
+    {
+      "path": "tests/test_r4a_human_grant_lifecycle.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2da03b4cee522ec3015ceaa9da7c16e378e701c3",
+      "size": 3924,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/2da03b4cee522ec3015ceaa9da7c16e378e701c3"
+    },
+    {
+      "path": "tests/test_r4a_human_token_scope_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c20a5d962ca26efcb1b226fec17cc1b4f0a734ee",
+      "size": 960,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/c20a5d962ca26efcb1b226fec17cc1b4f0a734ee"
+    },
+    {
+      "path": "tests/test_r4a_installation_service_binding_update.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "47095725be2c32a94a54080502e01f5c8f4a03d0",
+      "size": 1789,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/47095725be2c32a94a54080502e01f5c8f4a03d0"
+    },
+    {
+      "path": "tests/test_r4a_installation_workload_update.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1011408273b0bdf82ad36c9a220729144dc7ce2e",
+      "size": 2239,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/1011408273b0bdf82ad36c9a220729144dc7ce2e"
+    },
+    {
+      "path": "tests/test_r4a_keycloak_client_scope_binding.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c2376e1311edd4b2a2b067f9358421476fcc9bc",
+      "size": 1626,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/8c2376e1311edd4b2a2b067f9358421476fcc9bc"
+    },
+    {
+      "path": "tests/test_r4a_keycloak_client_scope_catalogue.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1a546e8029e02fbcd906cca09af9b96b027a3b8",
+      "size": 1031,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/d1a546e8029e02fbcd906cca09af9b96b027a3b8"
+    },
+    {
+      "path": "tests/test_r4a_keycloak_human_device_client.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bf3fed0546b676e5517b7dc4fafdb1ec9d518d5",
+      "size": 2816,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7bf3fed0546b676e5517b7dc4fafdb1ec9d518d5"
+    },
+    {
+      "path": "tests/test_r4a_keycloak_workload_client.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee30abe3ed86991c54fa0c253467dc55f1245cc0",
+      "size": 1215,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/ee30abe3ed86991c54fa0c253467dc55f1245cc0"
+    },
+    {
+      "path": "tests/test_r4a_keycloak_workload_secret_file.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "900e1a33d88b8c2b2a6ffdf8c54cfecc31379527",
+      "size": 1977,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/900e1a33d88b8c2b2a6ffdf8c54cfecc31379527"
+    },
+    {
+      "path": "tests/test_r4a_managed_csv_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3e5b30a2c695eaefe0e691f02b57ccb146f822d1",
+      "size": 2240,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3e5b30a2c695eaefe0e691f02b57ccb146f822d1"
+    },
+    {
+      "path": "tests/test_r4a_minio_staging_bootstrap.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f3727048f8fb694f1a8430201ab95eaea26b315b",
+      "size": 4252,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f3727048f8fb694f1a8430201ab95eaea26b315b"
+    },
+    {
+      "path": "tests/test_r4a_onboarding_failed_rollout_reconcile.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f41e1929070b09a19a1398fa45dd50ada27c2f0",
+      "size": 2305,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/4f41e1929070b09a19a1398fa45dd50ada27c2f0"
+    },
+    {
+      "path": "tests/test_r4a_onboarding_gateway_auth_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0092bf150bd6a977d0577442181a7bdb1845cb15",
+      "size": 1437,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0092bf150bd6a977d0577442181a7bdb1845cb15"
+    },
+    {
+      "path": "tests/test_r4a_onboarding_rollout.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "359037f0b89779cb2478f0f6c035624313fe0b60",
+      "size": 2182,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/359037f0b89779cb2478f0f6c035624313fe0b60"
+    },
+    {
+      "path": "tests/test_r4a_picker_onboarding_rollout.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a0f24433ae85f7610494d2bf779498d0a5209b9",
+      "size": 4499,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/3a0f24433ae85f7610494d2bf779498d0a5209b9"
+    },
+    {
+      "path": "tests/test_r4a_semantic_authorization_bootstrap.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efa9b5fd6fb828f620c691719485b8bf94a759dc",
+      "size": 3476,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/efa9b5fd6fb828f620c691719485b8bf94a759dc"
+    },
+    {
+      "path": "tests/test_r4a_service_grant_lifecycle.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0fdcb96ef0183b9837f6c9bdab9f890ca511d221",
+      "size": 1864,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/0fdcb96ef0183b9837f6c9bdab9f890ca511d221"
+    },
+    {
+      "path": "tests/test_r4a_stage_deploy_snapshot.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bd62bf56c0a112cbcca1a32fd2fffb207d09777",
+      "size": 1753,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7bd62bf56c0a112cbcca1a32fd2fffb207d09777"
+    },
+    {
+      "path": "tests/test_r4a_temporary_grant_proposal.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f89f2a41c6814be207bd4065bf793563d2f99fda",
+      "size": 3398,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/f89f2a41c6814be207bd4065bf793563d2f99fda"
+    },
+    {
+      "path": "tests/test_r4a_verify_onboarding_workload_token.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b64c1a0feb355a91e69a2ba8c3a64f048fac301",
+      "size": 2064,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/7b64c1a0feb355a91e69a2ba8c3a64f048fac301"
+    },
+    {
+      "path": "tests/test_reconcile_onboarding_runtime_config.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "724eec799e949d88ff8957ab03ea753b5d58217b",
+      "size": 1568,
+      "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/git/blobs/724eec799e949d88ff8957ab03ea753b5d58217b"
+    }
+  ],
+  "truncated": false
+}

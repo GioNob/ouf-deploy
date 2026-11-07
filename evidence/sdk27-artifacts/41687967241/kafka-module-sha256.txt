@@ -1,0 +1,2 @@
+8baf9d4f13817d9aae1b401160dc8d9fbc8d8c2dea332bd14168b315a8b12601  test/kafka/go.mod
+4ef43b62ed89d0b777f93c6ab26c5e9d44bad8bef7e0a1796a6d3c58878c27e9  test/kafka/go.sum

@@ -1,0 +1,64 @@
+# Stato prima dell'autorità durevole locale — 5 novembre 2026
+
+Archivio fedele dei due testi PR54 e dell'handoff prima del presente aggiornamento. I conteggi CI pendenti qui riportati sono storici; lo stato aggiornato è nel nuovo dossier.
+
+## PR Onboarding54
+
+A live worker must not reuse restored Authorization history after the platform has advanced its recovery generation. `PlatformStorageRecoveryAuthorityFence` binds trusted installation/tenant/admission generation to the existing recovery service and holds the provider's revocation lease through transaction completion. Missing/invalid leases deny; commit, rollback and suspended transactions release or retain the correct lease without remote calls or waits under owner locks.
+
+The binding is supplied outside the restored database. Installation configuration revision is not used as the independent generation. Existing Authorization policy/HUMAN/expiry checks remain cumulative, and the adapter never re-admits a worker or issues grants automatically.
+
+Validation on source `a0f6a91488f28ec5213d334764eb11c72585abb6`:
+
+- [Native owner 42020505033](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505033), job127221774836: **71 owner scenarios + 8 API/storage tests PASS**, zero failures/errors/skips. Six new cases cover transaction/lease availability, commit and rollback lifetime, invalid admission, concurrent local revocation and REQUIRES_NEW suspension; two cover logical Authorization rollback.
+- Both logical cases keep the same JVM/runtime/PostgreSQL postmaster. Replaying seven populated Authorization/delivery/action tables restores the old allowed policy and DELIVERED decision, but the old admitted worker cannot prepare, deliver, drain, reconcile or freeze after independent external revocation/generation change. Snapshots remain exact, the exhausted read budget stays128, zero GET and no asset publication.
+- [Physical regression/readback 42020505198](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505198): both jobs SUCCESS; **39 members,38 checksums,274 source bindings,1,695 backup files and15 semantic corruptions rejected**. This preserves the previous sequential external-file drill.
+- **Source CI8/8 SUCCESS**, including [PR42020514344](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020514344) and [push42020505077](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505077), blocking image scan and container boot. General suite436 reported−71 skipped native=365 executed PASS; all71 native cases ran separately.
+- Native artifact13410549610 additionally verified locally: **99 members,98 checksums,271 Git source blobs**, suite XML and both complete logical receipts. Digest/size match GitHub metadata. No local native execution or new local download of the physical archive.
+
+[Dossier](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/OUF_STORAGE_PLATFORM_LEASE_LOGICAL_ROLLBACK_20261105.md), [receipt and artifact metadata](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/evidence/storage-platform-lease-logical-rollback-qualified-20261105.json), [reproducible local readback](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/scripts/readback-platform-logical-native-20261105.py), [handoff](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/handoffs/OUF_STORAGE_ONBOARDING_RECOVERY_HANDOFF_20261105.md), [previous PR bodies and handoff preserved](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_PLATFORM_LEASE_20261105.md).
+
+First qualification passed. Artifacts13410549610/13410808964/13412060555 retained until2027-02-03. Existing physical-restore evidence and prior failed readback diagnosis are preserved.
+
+**Scope:** explicitly constructed internal adapter; no production provider, bean, endpoint, issuer or grant. CurrentAuthority must provide nonblocking local revocation exclusion through commit; the test provider uses an in-process read/write lock. Logical replay covers Authorization and the owner delivery/action projection, not whole-database pg_dump/restore or rolled-back upload intents/budgets. The independent generation must advance before governed replay; unfenced rollback with unchanged external authority is not detected. Durable provider restart, cross-process revocation, Gateway/THS admission, complete custody, denial audit, full-owner rollback/budget reconstruction, UDP/Ingestion, mixed rollout and governed reopening remain open. No merge/deploy/target/admission/grant or source-lock change. MinIO and MiniPET18.3/46=39.78%,0/8gates,0/21AT,0/120real objects remain unchanged.
+
+## PR Deploy54
+
+Record the internal platform-authority lease binding and qualify scoped logical Authorization rollback with an unchanged live worker and PostgreSQL postmaster. Implementation is in [Onboarding PR54](https://github.com/GioNob/ouf-source-onboarding/pull/54); this checkpoint preserves receipts, native archive readback, physical regression and prior history.
+
+Evidence checkpoint `ee2d208fe5ade40180b522d74360c31ebab276e2`. Previous deploy aa17823c had **48/50 successful workflows, two still running** when recorded (42019232596 and42019233075); it is not reported as50/50PASS. Checks for this new checkpoint are separate.
+
+Validation on source `a0f6a91488f28ec5213d334764eb11c72585abb6`:
+
+- [Native owner 42020505033](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505033), job127221774836: **71 owner scenarios + 8 API/storage tests PASS**, zero failures/errors/skips. Six new cases cover transaction/lease availability, commit and rollback lifetime, invalid admission, concurrent local revocation and REQUIRES_NEW suspension; two cover logical Authorization rollback.
+- Both logical cases keep the same JVM/runtime/PostgreSQL postmaster. Replaying seven populated Authorization/delivery/action tables restores the old allowed policy and DELIVERED decision, but the old admitted worker cannot prepare, deliver, drain, reconcile or freeze after independent external revocation/generation change. Snapshots remain exact, the exhausted read budget stays128, zero GET and no asset publication.
+- [Physical regression/readback 42020505198](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505198): both jobs SUCCESS; **39 members,38 checksums,274 source bindings,1,695 backup files and15 semantic corruptions rejected**. This preserves the previous sequential external-file drill.
+- **Source CI8/8 SUCCESS**, including [PR42020514344](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020514344) and [push42020505077](https://github.com/GioNob/ouf-source-onboarding/actions/runs/42020505077), blocking image scan and container boot. General suite436 reported−71 skipped native=365 executed PASS; all71 native cases ran separately.
+- Native artifact13410549610 additionally verified locally: **99 members,98 checksums,271 Git source blobs**, suite XML and both complete logical receipts. Digest/size match GitHub metadata. No local native execution or new local download of the physical archive.
+
+[Dossier](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/OUF_STORAGE_PLATFORM_LEASE_LOGICAL_ROLLBACK_20261105.md), [receipt and artifact metadata](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/evidence/storage-platform-lease-logical-rollback-qualified-20261105.json), [reproducible local readback](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/scripts/readback-platform-logical-native-20261105.py), [handoff](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/handoffs/OUF_STORAGE_ONBOARDING_RECOVERY_HANDOFF_20261105.md), [previous PR bodies and handoff preserved](https://github.com/GioNob/ouf-deploy/blob/ee2d208fe5ade40180b522d74360c31ebab276e2/docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_PLATFORM_LEASE_20261105.md).
+
+First qualification passed. Artifacts13410549610/13410808964/13412060555 retained until2027-02-03. Existing physical-restore evidence and prior failed readback diagnosis are preserved.
+
+**Scope:** explicitly constructed internal adapter; no production provider, bean, endpoint, issuer or grant. CurrentAuthority must provide nonblocking local revocation exclusion through commit; the test provider uses an in-process read/write lock. Logical replay covers Authorization and the owner delivery/action projection, not whole-database pg_dump/restore or rolled-back upload intents/budgets. The independent generation must advance before governed replay; unfenced rollback with unchanged external authority is not detected. Durable provider restart, cross-process revocation, Gateway/THS admission, complete custody, denial audit, full-owner rollback/budget reconstruction, UDP/Ingestion, mixed rollout and governed reopening remain open. No merge/deploy/target/admission/grant or source-lock change. MinIO and MiniPET18.3/46=39.78%,0/8gates,0/21AT,0/120real objects remain unchanged.
+
+Next pair: connect a durable current-generation/revocation source outside the owner restore set, then qualify provider restart and cross-process revocation/concurrency. Preserve existing platform/Authorization ownership. Two steps per continuation, no subagents.
+
+## Handoff precedente
+
+# Ripresa storage — lease piattaforma e rollback logico Authorization, 5 novembre 2026
+
+Continuare **due passi alla volta, senza subagenti**. Leggere HEAD e CI prima di modificare; non ripetere prove concluse senza cambiamenti o motivi documentati.
+
+- Onboarding PR54 draft, branch `feat/storage-upload-intent-20261105`, fonte `a0f6a91488f28ec5213d334764eb11c72585abb6`.
+- Deploy PR54 draft, branch `feat/m2-discovery-complete-profile-20261029`; leggere l'HEAD contenente questo handoff. Antecedenteaa17823c77b91c6d905731ce37b4809482afebca:48/50SUCCESS,42019232596 e42019233075 ancora in corso al checkpoint. Verificarli separatamente; non sono stati dichiarati50/50PASS.
+- [Dossier](../OUF_STORAGE_PLATFORM_LEASE_LOGICAL_ROLLBACK_20261105.md), [ricevuta](../../evidence/storage-platform-lease-logical-rollback-qualified-20261105.json). **71scenari nativi+8API/storage PASS; CI sorgente8/8SUCCESS**. Suite generale436-71skipnative=365eseguiti PASS.
+- `PlatformStorageRecoveryAuthorityFence` è un adattatore interno nonbean/nonendpoint. Binding esterno fidato installazione/tenant/generazione; revisione configurazione non è generazione. Provider locale nonbloccante deve escludere revoca fino a close; la lease resta fino a commit/completamento, si rilascia su rollback, si sospende/riprende con REQUIRES_NEW. Nessun provider produttivo o issuer/grant nuovo.
+- Due casi ripristinano sette tabelle Authorization/proiezione consegna/azioni tramite TRUNCATE+INSERT privilegiati solo di test, con trigger attivi e stesso JVM/runtime/postmaster. Uno revoca, l'altro cambia solo la generazione esterna. Vecchia policy/DELIVERED tornano ma prepare/deliver/drain/reconcile/freeze del worker restano negati; snapshot intatti, budget128 e zero GET/asset.
+- Il replay non riavvolge intenti/budget owner, non è pg_dump/pg_restore dell'intero database e non dimostra ricostruzione budget/audit dopo rollback completo. Provider di test in memoria con lock locale; revoca distribuita e restart provider non qualificati. La generazione esterna deve avanzare PRIMA del rollback. Nessuna detection se vengono riavvolti i dati senza modificare anche l'autorità esterna.
+- Nativi42020505033/job127221774836; artifact13410549610 verificato anche localmente:99file/98checksum/271blob Git, XML71/0errori e due ricevute logiche. [Verificatore](../../scripts/readback-platform-logical-native-20261105.py).
+- Regressione fisica42020505198, producer127221775165/readback127222715863 SUCCESS:39membri/38checksum/274sorgenti/1695file,15negativi;artifact13410808964/13412060555. Fixture fisica precedente a file esterno sequenziale invariata, non provider distribuito. Custodia fino2027-02-03;nessun nuovo download locale dello ZIP fisico.
+
+Prossima coppia proposta: **1)** collegare una sorgente durevole di generazione/revoca esterna al set di ripristino, rispettando gli owner piattaforma/Authorization esistenti; **2)** qualificare riavvio del provider e revoca/concorrenza fra processi. Non introdurre un issuer parallelo, non riusare configurazione ripristinata come prova corrente, non assegnare grant target.
+
+Produzione Gateway/THS, custodia completa, audit durevole dinieghi, rollback owner/budget, UDP/Ingestion, rollout misto, riapertura e RPO/RTO OPEN. MinIO/source-lock e MiniPET18,3/46=39,78%,0/8gate,0/21AT,0/120oggetti reali invariati. Nessun merge/deploy/target/admission/reset/grant.

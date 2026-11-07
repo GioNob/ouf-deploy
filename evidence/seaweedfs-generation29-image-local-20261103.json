@@ -1,0 +1,94 @@
+{
+  "schema": "ouf.seaweedfs-generation29-image-pipeline-local.v1",
+  "status": "LOCAL_PACKAGE_AND_UNIT_PASS_HOSTED_QUALIFICATION_PENDING_NOT_ADMITTED",
+  "sourceObservedFrom": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+  "unitTests": {
+    "legacyBoundariesPassed": 12,
+    "generation29Passed": 19,
+    "totalPassed": 31
+  },
+  "workflowValidation": {
+    "jobs": 4,
+    "shellStepsParsed": 14,
+    "realRegressionJSONLParsed": true,
+    "sourceRegressionPackagesPassed": 21,
+    "sourceRegressionTestsPassed": 6156,
+    "sourceRegressionTestsSkipped": 5
+  },
+  "packaging": {
+    "realBinaryPackagedTwice": true,
+    "deterministicImageRecordsEqual": true,
+    "sourceTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "record": {
+      "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+      "configDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+      "dockerArchiveSha256": "5445f54bb1aab0b3ad5e8f4aa8c759959b1e7554dda7330cc426de6be73d02c7",
+      "layerDigest": "sha256:71d9c727671a69b5211dcb91a1c1c32d18b70b2455a81adbc7043ded18e72fb4",
+      "manifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+      "overallSwG1": "OPEN",
+      "releaseAdmitted": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.storage-runtime-image.v1",
+      "scratchRootfs": true,
+      "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+      "status": "PACKAGED_NOT_ADMITTED",
+      "targetOperations": 0,
+      "thirdPartyLicencesAccepted": false,
+      "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+      "user": "10001:10001"
+    },
+    "binaryDependencyRows": 262,
+    "binaryDependencyInventorySha256": "dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3",
+    "moduleEvidenceOrigin": "HOSTED28_REUSED_WITH_EXACT_UNCHANGED_ROOT_LOCKFILES_FOR_LOCAL_PACKAGING_ONLY"
+  },
+  "plannedHosted": {
+    "freshVulnerabilityScan": "PENDING",
+    "newSPDX": "PENDING",
+    "imageVersionSmoke": "PENDING",
+    "publisherAttestation": "PENDING",
+    "independentReadback": "PENDING",
+    "archiveMembers": 22,
+    "checksummedMembers": 20,
+    "sourceFiles": 37,
+    "expectedScannedComponents": 264,
+    "expectedSPDXRecords": 266
+  },
+  "sourceSha256": {
+    ".github/workflows/storage-452-generation29-image.yml": "9443bea94f1400e7e887afeb26806bf85e3bc9bfe75a40c1e56a74d19dcd2ae3",
+    "scripts/qualify-seaweedfs-452-generation29-image.py": "5a9b66bd5012a7b3cf4b5edac29fb87dc42f28cf3505f8f36a66b14af45efaa9",
+    "scripts/readback-seaweedfs-452-generation29-image.py": "e2207977aa1df85ca8aacf69da441f9729d2ce58ac6caf111cdc1e6f27ce2784",
+    "tests/test_seaweedfs_452_generation29_image.py": "8deac74e8d777bc14686fcd6d17ea1d06b34d3181b46fcb4a230b47a35f9def1",
+    "releases/seaweedfs-452-generation29-build-manifest-20261103.json": "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9"
+  },
+  "preservedGeneration15LockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "limits": [
+    "No local Docker or fresh scan for generation29",
+    "No previous vulnerability or runtime proof transferred to generation29",
+    "Licence rebinding, durable custody, cohort29 and cold/identity29 are separate phaseB after hosted artifact readback"
+  ],
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "independentReview": {
+    "status": "PASS",
+    "unitTestsPassed": 31,
+    "workflowJobs": 4,
+    "shellBlocks": 14,
+    "pythonBlocks": 3,
+    "findingsResolved": [
+      "Unicode JSONL streamed parser",
+      "Complete scanner inventory binding",
+      "Exact SPDX module and descriptive node inventory",
+      "Readback and CLI deny raw HIGH/CRITICAL/UNKNOWN"
+    ]
+  },
+  "indexedPatchReplay": {
+    "status": "PASS",
+    "cleanUpstream": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "appliedPatches": 29,
+    "patchedTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "receipt": "seaweedfs-generation29-indexed-reapply-20261103.json"
+  }
+}

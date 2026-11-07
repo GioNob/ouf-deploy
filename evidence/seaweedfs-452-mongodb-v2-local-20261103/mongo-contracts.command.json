@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-json",
+    "-count=1",
+    "-timeout=45s",
+    "./weed/filer/mongodb"
+  ],
+  "exitCode": 1,
+  "elapsedSeconds": 1.28818678855896
+}

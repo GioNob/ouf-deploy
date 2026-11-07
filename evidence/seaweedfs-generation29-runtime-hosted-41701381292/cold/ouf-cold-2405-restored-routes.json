@@ -1,0 +1,42 @@
+[
+  {
+    "dev": "lo",
+    "dst": "127.0.0.0/8",
+    "flags": [],
+    "prefsrc": "127.0.0.1",
+    "protocol": "kernel",
+    "scope": "host",
+    "table": "local",
+    "type": "local"
+  },
+  {
+    "dev": "lo",
+    "dst": "127.0.0.1",
+    "flags": [],
+    "prefsrc": "127.0.0.1",
+    "protocol": "kernel",
+    "scope": "host",
+    "table": "local",
+    "type": "local"
+  },
+  {
+    "dev": "lo",
+    "dst": "127.255.255.255",
+    "flags": [],
+    "prefsrc": "127.0.0.1",
+    "protocol": "kernel",
+    "scope": "link",
+    "table": "local",
+    "type": "broadcast"
+  },
+  {
+    "dev": "lo",
+    "dst": "::1",
+    "flags": [],
+    "metric": 0,
+    "pref": "medium",
+    "protocol": "kernel",
+    "table": "local",
+    "type": "local"
+  }
+]

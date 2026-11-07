@@ -1,0 +1,86 @@
+name: Storage copy core real S3 crash and integrity qualification
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/storage-copy-lab.yml'
+      - 'tools/storage_copy/**'
+      - 'scripts/run-storage-copy-lab-20261102.py'
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify unchanged exact original executable artifact and all source records
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: python3 -I -B -S scripts/read-seaweedfs-lab-artifact-20261102.py
+      - name: Authenticate exact original producer workflow source and hosted runner
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh attestation verify sw-readback/SHA256SUMS --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/seaweedfs-evaluation.yml --source-digest 6cddeee707b67bd27568aa7a3890e28ebecf274f --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 --deny-self-hosted-runners --bundle sw-readback/provenance.json --format json > sw-readback/publisher-verification.json
+      - run: python3 -I -B -S scripts/run-storage-copy-lab-20261102.py stage
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with: {go-version: '1.27.3', cache: true, cache-dependency-path: tools/storage_copy/go.sum}
+      - name: Compile exact test-only executable and record imported packages without running it
+        env: {CGO_ENABLED: '0', GOTOOLCHAIN: go1.27.3}
+        run: |
+          set -euo pipefail
+          cd tools/storage_copy
+          go mod verify
+          go test -c -trimpath -ldflags="-s -w" -o ../../sw-evaluation/bin/storage-copy-lab.test .
+          go version -m ../../sw-evaluation/bin/storage-copy-lab.test > ../../copy-evidence/test-build-info.txt
+          go list -deps -test -f '{{.ImportPath}} {{if .Module}}{{.Module.Path}} {{.Module.Version}}{{end}}' . > ../../copy-evidence/imported-packages.txt
+      - run: ': > empty.trivyignore-copy'
+      - name: Scan all three exact Go executables including unfixed and unknown findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: sw-evaluation/bin
+          format: json
+          output: sw-evaluation/trivy-binary.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-copy
+          exit-code: 0
+      - name: Scan pinned copy module dependency closure separately from test-binary build metadata
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: fs
+          scan-ref: tools/storage_copy
+          format: json
+          output: copy-evidence/trivy-copy-modules.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-copy
+          exit-code: 0
+      - name: Preserve raw server HELD gate and admit only bounded synthetic diagnostics
+        run: python3 -I -B -S scripts/run-storage-copy-lab-20261102.py check
+      - name: Two real isolated servers, original inventory/compiler wire, process death and ambiguous 503
+        run: python3 -I -B -S scripts/run-storage-copy-lab-20261102.py run
+      - run: python3 -I -B -S scripts/run-storage-copy-lab-20261102.py seal
+      - name: Attest exact executable and all qualification evidence
+        id: attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with: {subject-path: copy-evidence/SHA256SUMS}
+      - run: cp "${{ steps.attestation.outputs.bundle-path }}" copy-evidence/provenance.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-copy-lab-${{ github.run_id }}
+          path: copy-evidence/
+          if-no-files-found: error
+          retention-days: 90

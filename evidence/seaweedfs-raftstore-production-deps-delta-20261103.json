@@ -1,0 +1,19 @@
+{
+  "baselinePackages": 1811,
+  "newPackages": 1810,
+  "removed": [
+    "github.com/boltdb/bolt",
+    "github.com/hashicorp/raft-boltdb/v2"
+  ],
+  "added": [
+    "github.com/seaweedfs/seaweedfs/weed/util/raftstore"
+  ],
+  "environment": {
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "go": "1.27.3"
+  },
+  "baselineSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+  "newSha256": "3c36943eabf103c9d9003d8a8c32abdeaba6bb5e60fa1dc705e697853901d1cc"
+}

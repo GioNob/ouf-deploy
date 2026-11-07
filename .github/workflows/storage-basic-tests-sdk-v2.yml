@@ -1,0 +1,111 @@
+name: Storage basic S3 tests on maintained SDK
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-basic-tests-sdk-v2.yml
+      - patches/seaweedfs/4.52-basic-tests-sdk-v2.patch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-basic-tests-sdk-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-basic-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+
+      - name: Apply the exact patch and bind the remaining source scope
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          for patch in \
+            ../patches/seaweedfs/4.52-listing-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-sqs-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-kms-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3sink-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3backend-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch \
+            ../patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch \
+            ../patches/seaweedfs/4.52-go-network-security-fixes.patch
+          do
+            git apply --check "$patch"
+            git apply "$patch"
+          done
+          git apply --check ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch
+          git apply ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/storage-basic-sdk-v2-evidence"
+          grep -RIl --include='*.go' -F '"github.com/aws/aws-sdk-go/' . |
+            sed 's|^./||' | LC_ALL=C sort > "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/remaining-direct-importers.txt"
+          test "$(wc -l < "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/remaining-direct-importers.txt")" -eq 25
+          if grep -R --include='*.go' -F '"github.com/aws/aws-sdk-go/' test/s3/basic; then
+            exit 1
+          fi
+          go list -mod=readonly -deps -test ./test/s3/basic |
+            LC_ALL=C sort -u > "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/basic-test-deps.txt"
+          if grep -q '^github.com/aws/aws-sdk-go/' "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/basic-test-deps.txt"; then
+            exit 1
+          fi
+          printf '%s\n' 984eac6a790be89e2a11de175a7413e1e3e32dd3 > "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/upstream-source-sha.txt"
+          sha256sum ../patches/seaweedfs/4.52-basic-tests-sdk-v2.patch > "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/patch-sha256.txt"
+          git diff --stat > "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/patch-stat.txt"
+
+      - name: Run the bounded non-network regression
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          go test -mod=readonly -run '^TestClientUsesLocalPathStyle$' -count=1 ./test/s3/basic |
+            tee "$RUNNER_TEMP/storage-basic-sdk-v2-evidence/test.log"
+          cd "$RUNNER_TEMP/storage-basic-sdk-v2-evidence"
+          sha256sum ./* | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-basic-sdk-v2-evidence/SHA256SUMS
+
+      - name: Retain the bounded evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-basic-sdk-v2-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-basic-sdk-v2-evidence/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,9 @@
+{
+  "originalBytes": 1596935,
+  "originalSha256": "dc27e17c079c554fd11f5e58346a4091bfef924042aa63987f3732073d29908c",
+  "retainedEvents": 977,
+  "allTerminalOutcomesRetained": true,
+  "failureOutputRetained": true,
+  "fullRawFile": "bolt30-stage/evidence/server-tests-full.jsonl",
+  "rawRepositoryRetention": false
+}

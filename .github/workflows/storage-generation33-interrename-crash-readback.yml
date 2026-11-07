@@ -1,0 +1,114 @@
+name: Storage generation33 interrename original artifact readback
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-interrename-crash-readback.yml
+      - scripts/readback-storage-generation33-interrename-crash.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: storage-interrename-readback-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-artifact-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          path: verifier
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: 5ac67de14e4aaf17808b12f95040ed297aef37dc
+          path: producer
+      - name: Acquire the exact original before waiting for delayed terminal metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/interrename-readback"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,time,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'interrename-readback'
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
+          producer='5ac67de14e4aaf17808b12f95040ed297aef37dc'
+          observations=[]
+          for attempt in range(181):
+              run=get('/actions/runs/41870302570')
+              assert run['head_sha']==producer and run['run_attempt']==1
+              artifacts=get('/actions/runs/41870302570/artifacts')['artifacts']
+              selected=[a for a in artifacts if a['name']=='storage-generation33-lateral-isolation-41870302570']
+              observations.append({'attempt':attempt,'status':run['status'],'conclusion':run['conclusion'],'matchingArtifacts':len(selected)})
+              (out/'native-observations.json').write_text(json.dumps(observations,indent=2)+'\n')
+              (out/'native-run-at-acquisition.json').write_text(json.dumps(run,indent=2)+'\n')
+              if selected:break
+              assert attempt<180,'ORIGINAL_ARTIFACT_OBSERVATION_BUDGET'
+              time.sleep(10)
+          assert len(selected)==1 and not selected[0]['expired']
+          a=selected[0]
+          assert a['workflow_run']['id']==41870302570 and a['workflow_run']['head_sha']==producer
+          assert 0<a['size_in_bytes']<=32*1024*1024 and a['digest'].startswith('sha256:')
+          (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
+          dest=out/'original-native.zip'
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+              '--proto-redir','=https','--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','90',
+              '--max-filesize',str(a['size_in_bytes']),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+              '-H','Accept: application/vnd.github+json',a['archive_download_url'],'--output',str(dest)],check=True)
+          raw=dest.read_bytes()
+          assert len(raw)==a['size_in_bytes'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==a['digest']
+          (out/'original-sha256.txt').write_text(a['digest'].removeprefix('sha256:'))
+          PY
+      - name: Verify every member source and the binary mixed-index evidence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S verifier/scripts/readback-storage-generation33-interrename-crash.py \
+            "$RUNNER_TEMP/interrename-readback/original-native.zip" "$GITHUB_WORKSPACE/producer" \
+            "$(cat "$RUNNER_TEMP/interrename-readback/original-sha256.txt")" \
+            5ac67de14e4aaf17808b12f95040ed297aef37dc "$RUNNER_TEMP/interrename-readback/readback.json"
+      - name: Confirm successful native terminal run and job separately from archive contents
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PY'
+          import json,os,pathlib,time,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'interrename-readback'
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
+          for attempt in range(31):
+              run=get('/actions/runs/41870302570');jobs=get('/actions/runs/41870302570/jobs?filter=all&per_page=100')['jobs']
+              assert run['head_sha']=='5ac67de14e4aaf17808b12f95040ed297aef37dc' and run['run_attempt']==1
+              assert len(jobs)==1 and jobs[0]['id']==126715227789
+              (out/'native-terminal-observed.json').write_text(json.dumps({'run':run,'job':jobs[0]},indent=2)+'\n')
+              if run['status']==jobs[0]['status']=='completed':break
+              assert attempt<30,'NATIVE_TERMINAL_METADATA_BUDGET'
+              time.sleep(10)
+          assert run['conclusion']==jobs[0]['conclusion']=='success','NATIVE_TERMINAL_SUCCESS_REQUIRED'
+          result={'status':'EXACT_NATIVE_TERMINAL_SUCCESS_CONFIRMED','runId':41870302570,'jobId':126715227789,
+              'producerCommit':run['head_sha'],'runAttempt':1,'metadataObservationAttempts':attempt+1,
+              'nativeResubmissions':0,'targetOperations':0}
+          (out/'native-terminal-confirmation.json').write_text(json.dumps(result,indent=2)+'\n')
+          print('OUF_NATIVE_TERMINAL_JSON='+json.dumps(result,sort_keys=True))
+          PY
+      - name: Preserve original bytes readback and control-plane observations even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-interrename-readback-${{ github.run_id }}
+          path: ${{ runner.temp }}/interrename-readback/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,1 @@
+431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b  ../patches/seaweedfs/4.52-normal-tests-sdk-v2.patch

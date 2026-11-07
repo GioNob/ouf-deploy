@@ -1,0 +1,87 @@
+name: Storage generation33 postmarker original artifact readback
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-commit-crash-readback.yml
+      - scripts/readback-storage-generation33-commit-crash.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: storage-postmarker-readback-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-artifact-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          path: verifier
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: 18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31
+          path: producer
+      - name: Fetch the exact completed native run and original ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/postmarker-readback"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,time,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'postmarker-readback'
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
+          # The native producer can still be queued when this readback is scheduled.
+          # Observe only this exact run; never resubmit the native scenario.
+          for attempt in range(211):
+              run=get('/actions/runs/41864590947')
+              assert run['head_sha']=='18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31' and run['run_attempt']==1
+              if run['status']=='completed':break
+              assert attempt<210,'NATIVE_RUN_OBSERVATION_BUDGET'
+              time.sleep(10)
+          (out/'native-run.json').write_text(json.dumps(run,indent=2)+'\n')
+          assert run['conclusion']=='success','NATIVE_RUN_NOT_SUCCESSFUL'
+          artifacts=get('/actions/runs/41864590947/artifacts')['artifacts']
+          selected=[a for a in artifacts if a['name']=='storage-generation33-lateral-isolation-41864590947']
+          assert len(selected)==1 and not selected[0]['expired']
+          a=selected[0];assert 0<a['size_in_bytes']<=32*1024*1024
+          (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
+          # curl drops Authorization on cross-host redirects to signed storage.
+          # Never use --location-trusted: the GitHub token belongs only to GitHub.
+          dest=out/'original-native.zip'
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+              '--proto-redir','=https','--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','90',
+              '--max-filesize',str(a['size_in_bytes']),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+              '-H','Accept: application/vnd.github+json',a['archive_download_url'],'--output',str(dest)],check=True)
+          raw=dest.read_bytes()
+          assert len(raw)==a['size_in_bytes'] and 'sha256:'+hashlib.sha256(raw).hexdigest()==a['digest']
+          (out/'original-native.zip').write_bytes(raw)
+          (out/'original-sha256.txt').write_text(a['digest'].removeprefix('sha256:'))
+          PY
+      - name: Verify every member, exact producer sources and frozen recovery evidence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S verifier/scripts/readback-storage-generation33-commit-crash.py \
+            "$RUNNER_TEMP/postmarker-readback/original-native.zip" "$GITHUB_WORKSPACE/producer" \
+            "$(cat "$RUNNER_TEMP/postmarker-readback/original-sha256.txt")" \
+            18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31 "$RUNNER_TEMP/postmarker-readback/readback.json"
+      - name: Retain the unchanged original archive and independent receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-postmarker-readback-${{ github.run_id }}
+          path: ${{ runner.temp }}/postmarker-readback/
+          if-no-files-found: error
+          retention-days: 90

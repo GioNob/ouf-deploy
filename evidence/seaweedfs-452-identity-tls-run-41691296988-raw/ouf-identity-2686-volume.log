@@ -1,0 +1,74 @@
+I1103 18:11:34.591748 file_util.go:29 Folder /data Permission: -rwxr-xr-x
+I1103 18:11:34.597224 volume_grpc_client_to_master.go:153 Volume server start with seed master nodes: [127.0.0.1:19333]
+I1103 18:11:34.598218 volume.go:702 Start Seaweed volume server 30GB 4.52  at 127.0.0.1:18080
+I1103 18:11:34.600251 volume_grpc_client_to_master.go:284 Heartbeat to: 127.0.0.1:19333
+I1103 18:11:50.339563 store.go:425 In dir /data (disk ID 0) adds volume:1 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.340662 store.go:430 add volume 1 on disk ID 0
+I1103 18:11:50.340735 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 1
+I1103 18:11:50.343007 store.go:425 In dir /data (disk ID 0) adds volume:2 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.343821 store.go:430 add volume 2 on disk ID 0
+I1103 18:11:50.343874 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 2
+I1103 18:11:50.346070 store.go:425 In dir /data (disk ID 0) adds volume:3 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.346870 store.go:430 add volume 3 on disk ID 0
+I1103 18:11:50.346907 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 3
+I1103 18:11:50.348749 store.go:425 In dir /data (disk ID 0) adds volume:4 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.349908 store.go:430 add volume 4 on disk ID 0
+I1103 18:11:50.349960 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 4
+I1103 18:11:50.352139 store.go:425 In dir /data (disk ID 0) adds volume:5 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.352927 store.go:430 add volume 5 on disk ID 0
+I1103 18:11:50.352981 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 5
+I1103 18:11:50.354887 store.go:425 In dir /data (disk ID 0) adds volume:6 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.355693 store.go:430 add volume 6 on disk ID 0
+I1103 18:11:50.355734 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 6
+I1103 18:11:50.357866 store.go:425 In dir /data (disk ID 0) adds volume:7 collection:ouf-identity-fixture replicaPlacement:000 ttl:
+I1103 18:11:50.358748 store.go:430 add volume 7 on disk ID 0
+I1103 18:11:50.358779 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 7
+I1103 18:11:50.551142 store.go:425 In dir /data (disk ID 0) adds volume:8 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.552054 store.go:430 add volume 8 on disk ID 0
+I1103 18:11:50.552100 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 8
+I1103 18:11:50.554369 store.go:425 In dir /data (disk ID 0) adds volume:9 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.555192 store.go:430 add volume 9 on disk ID 0
+I1103 18:11:50.555241 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 9
+I1103 18:11:50.557189 store.go:425 In dir /data (disk ID 0) adds volume:10 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.558064 store.go:430 add volume 10 on disk ID 0
+I1103 18:11:50.558099 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 10
+I1103 18:11:50.560011 store.go:425 In dir /data (disk ID 0) adds volume:11 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.560808 store.go:430 add volume 11 on disk ID 0
+I1103 18:11:50.560849 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 11
+I1103 18:11:50.562787 store.go:425 In dir /data (disk ID 0) adds volume:12 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.563565 store.go:430 add volume 12 on disk ID 0
+I1103 18:11:50.563599 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 12
+I1103 18:11:50.565627 store.go:425 In dir /data (disk ID 0) adds volume:13 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.566371 store.go:430 add volume 13 on disk ID 0
+I1103 18:11:50.566412 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 13
+I1103 18:11:50.568274 store.go:425 In dir /data (disk ID 0) adds volume:14 collection:ouf-identity-other replicaPlacement:000 ttl:
+I1103 18:11:50.569088 store.go:430 add volume 14 on disk ID 0
+I1103 18:11:50.569130 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 14
+I1103 18:11:51.009999 store.go:425 In dir /data (disk ID 0) adds volume:15 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.010841 store.go:430 add volume 15 on disk ID 0
+I1103 18:11:51.010893 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 15
+I1103 18:11:51.012779 store.go:425 In dir /data (disk ID 0) adds volume:16 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.013564 store.go:430 add volume 16 on disk ID 0
+I1103 18:11:51.013600 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 16
+I1103 18:11:51.015396 store.go:425 In dir /data (disk ID 0) adds volume:17 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.016391 store.go:430 add volume 17 on disk ID 0
+I1103 18:11:51.016432 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 17
+I1103 18:11:51.018363 store.go:425 In dir /data (disk ID 0) adds volume:18 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.019125 store.go:430 add volume 18 on disk ID 0
+I1103 18:11:51.019158 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 18
+I1103 18:11:51.020966 store.go:425 In dir /data (disk ID 0) adds volume:19 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.021786 store.go:430 add volume 19 on disk ID 0
+I1103 18:11:51.021817 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 19
+I1103 18:11:51.023795 store.go:425 In dir /data (disk ID 0) adds volume:20 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.024618 store.go:430 add volume 20 on disk ID 0
+I1103 18:11:51.024653 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 20
+I1103 18:11:51.026623 store.go:425 In dir /data (disk ID 0) adds volume:21 collection: replicaPlacement:000 ttl:
+I1103 18:11:51.027454 store.go:430 add volume 21 on disk ID 0
+I1103 18:11:51.027494 volume_grpc_client_to_master.go:425 volume server 127.0.0.1:18080 adds volume 21
+I1103 18:11:51.317617 volume.go:515 volume server has been killed
+I1103 18:11:51.317645 volume_server.go:197 Stopping volume server...
+I1103 18:11:51.317753 volume.go:520 stop send heartbeat and wait 1 seconds until shutdown ...
+I1103 18:11:52.318205 volume.go:588 graceful stop cluster http server ... 
+I1103 18:11:52.318317 volume.go:593 graceful stop gRPC ...
+I1103 18:11:52.318755 volume_server.go:207 Shutting down volume server...
+I1103 18:11:52.318962 volume_server.go:209 Shut down successfully!

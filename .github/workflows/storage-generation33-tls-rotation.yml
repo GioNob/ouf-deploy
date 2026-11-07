@@ -1,0 +1,139 @@
+name: Storage generation33 staged TLS trust and gateway rotation
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-tls-rotation.yml
+      - scripts/run-storage-generation33-tls-rotation.py
+      - tests/test_storage_tls_rotation_generation33.py
+      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-generation33-tls-rotation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-cohort-tls-rotation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Test real TLS trust boundaries and finite rotation behavior
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_tls_rotation_generation33.py -v
+
+      - name: Fetch and bind the exact successful generation33 cohort and image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib, importlib.util, json, os, pathlib, subprocess
+          p=pathlib.Path('scripts/run-storage-generation33-tls-rotation.py')
+          spec=importlib.util.spec_from_file_location('rotation',p)
+          rotation=importlib.util.module_from_spec(spec);spec.loader.exec_module(rotation)
+          bound=rotation.labs.binding_api.load(pathlib.Path.cwd(),rotation.LOCK_SHA)
+          inputs=pathlib.Path(os.environ['RUNNER_TEMP'])/'tls33-inputs';inputs.mkdir()
+          def fetch(artifact_id,filename,expected_size,expected_sha):
+              dest=inputs/filename
+              url='https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/'+str(artifact_id)+'/zip'
+              subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+                              '--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','180',
+                              '--max-filesize',str(expected_size),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+                              '-H','Accept: application/vnd.github+json',url,'--output',str(dest)],check=True)
+              assert dest.stat().st_size==expected_size
+              with dest.open('rb') as stream:assert hashlib.file_digest(stream,'sha256').hexdigest()==expected_sha
+              return dest
+          cohort=fetch(rotation.COHORT_ARTIFACT_ID,'cohort.zip',rotation.COHORT_ARCHIVE_BYTES,rotation.COHORT_ARCHIVE_SHA)
+          receipt=rotation.labs.bind_cohort_artifact(cohort,inputs/'bound-cohort',bound,
+                                                    rotation.COHORT_ARCHIVE_SHA,rotation.COHORT_SHA)
+          rotation.binding(receipt)
+          image=bound['lock']['producerArtifact']
+          fetch(image['id'],'image.zip',image['bytes'],image['digest'].removeprefix('sha256:'))
+          PYCODE
+
+      - name: Verify the successful cohort publisher with its exact source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+          gh297/bin/gh attestation verify "$RUNNER_TEMP/tls33-inputs/bound-cohort/SHA256SUMS" \
+            --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation33-cohort.yml \
+            --source-digest 7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791 \
+            --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --format json > "$RUNNER_TEMP/tls33-inputs/cohort-publisher-verification.json"
+          test -s "$RUNNER_TEMP/tls33-inputs/cohort-publisher-verification.json"
+
+      - name: Exercise staged trust and one controlled S3 gateway replacement
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-tls-rotation.py run \
+            "$RUNNER_TEMP/tls33-inputs/image.zip" "$RUNNER_TEMP/tls33-lab" \
+            "$RUNNER_TEMP/tls33-inputs/bound-cohort/cohort-receipt.json"
+
+      - name: Preserve bounded public evidence and reject private-key material
+        if: always()
+        run: |
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib,json,os,pathlib,shutil
+          temp=pathlib.Path(os.environ['RUNNER_TEMP']);out=temp/'tls33-evidence';out.mkdir()
+          work=temp/'tls33-lab/evidence';inputs=temp/'tls33-inputs'
+          total=0
+          def copy_public(source,dest):
+              global total
+              if source.is_symlink() or not source.is_file():raise ValueError('REGULAR_PUBLIC_EVIDENCE_REQUIRED')
+              raw=source.read_bytes();total+=len(raw)
+              if len(raw)>16*1024*1024 or total>64*1024*1024:raise ValueError('EVIDENCE_SIZE_BUDGET')
+              if source.suffix=='.key' or any(marker in raw for marker in
+                  (b'-----BEGIN PRIVATE KEY',b'-----BEGIN RSA PRIVATE KEY',b'-----BEGIN EC PRIVATE KEY')):
+                  raise ValueError('PRIVATE_KEY_MUST_NOT_ENTER_EVIDENCE')
+              dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
+          if work.is_dir():
+              for source in sorted(work.iterdir()):copy_public(source,out/'lab'/source.name)
+          for name in ('cohort-publisher-verification.json','bound-cohort/cohort-receipt.json','bound-cohort/SHA256SUMS'):
+              source=inputs/name
+              if source.is_file():copy_public(source,out/'input-verification'/name)
+          paths=['scripts/run-storage-generation33-tls-rotation.py','tests/test_storage_tls_rotation_generation33.py',
+                 '.github/workflows/storage-generation33-tls-rotation.yml','scripts/run-seaweedfs-452-generation33-labs.py',
+                 'scripts/storage-generation33-lab-binding.py','scripts/run-seaweedfs-452-cold-recovery.py',
+                 'scripts/run-seaweedfs-452-identity-tls.py','scripts/readback-seaweedfs-452-generation33-image.py',
+                 'scripts/qualify-seaweedfs-452-generation33-image.py','tools/storage_security/generation_image_v4.py',
+                 'tools/storage_security/generation_readback_v1.py','releases/seaweedfs-452-generation33-candidate-lock-20261104.json',
+                 'releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json']
+          (out/'source-sha256.json').write_text(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in paths},indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n'
+                                             for p in sorted(out.rglob('*')) if p.is_file() and p!=out/'SHA256SUMS'))
+          PYCODE
+          cd "$RUNNER_TEMP/tls33-evidence"
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest successful synthetic rotation evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/tls33-evidence/SHA256SUMS
+
+      - name: Retain public diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-tls-rotation-${{ github.run_id }}
+          path: ${{ runner.temp }}/tls33-evidence/
+          if-no-files-found: error
+          retention-days: 90

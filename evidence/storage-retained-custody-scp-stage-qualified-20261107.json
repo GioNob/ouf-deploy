@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.storage-retained-custody-scp-stage-qualification.v1",
+  "status": "QUALIFIED_FIXTURE",
+  "qualifiedCommit": "1f501c46a93e9ee9b112795ac8b51c4eea052507",
+  "runId": 42352859496,
+  "jobId": 128344522944,
+  "stagingProgramBytes": 5671,
+  "stagingProgramSha256": "3283f2846d9fc3831955f25884c9ef37785bb511a6dbc86d858c13b8c20ed37f",
+  "nativeOwnershipChecked": true,
+  "privateMismatchPartialPreserved": true,
+  "originalUnchanged": true,
+  "windowsReceiverUnchanged": true,
+  "actualVpsStagingExecuted": false,
+  "windowsTransferExecuted": false,
+  "acceptanceCreditAdded": 0
+}

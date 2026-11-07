@@ -1,0 +1,80 @@
+{
+  "schema": "ouf.yaml33.source-observation-readback.v1",
+  "workflowRun": 41776440912,
+  "artifact": {
+    "id": 13296914160,
+    "path": "evidence/artifacts/seaweedfs-yaml33-source-observation-41776440912.zip",
+    "bytes": 2427480,
+    "sha256": "ed8a3388310844df236ac1b219d4c111f156b5054d990906aaad3fb7554d1430",
+    "members": 235,
+    "checksumsVerified": 234
+  },
+  "observation": {
+    "allDependenciesMaintained": false,
+    "baseGeneration": 32,
+    "baseManifestSha256": "5289372fe7577936376497adba277fb329bb2a625652eacad47c854735937144",
+    "baselineVendorModuleCount": 341,
+    "binaryBytes": 192665834,
+    "binaryPublished": false,
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "cacheInputsAndVendorUnchanged": true,
+    "compiledLegacyYaml": false,
+    "compiledModuleCount": 214,
+    "dependencyPatchCount": 1,
+    "downstreamMaintenance": {
+      "status": "OPEN",
+      "technicalOwner": null
+    },
+    "elapsedSeconds": 387.385,
+    "fullVendorPublished": false,
+    "intendedGeneration": 33,
+    "releaseAdmitted": false,
+    "repositoryCommit": "4bd8c2645766ffbe407ca744c7bd72691a46ef9c",
+    "reproducibleTwoCleanPaths": true,
+    "rootSourceTree32": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "runId": "41776440912",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.seaweedfs-yaml-vendor-source-observation.v1",
+    "sourcePatchCount": 32,
+    "status": "OBSERVATION_PASS_NOT_RELEASE_QUALIFIED",
+    "targetOperations": 0,
+    "vendorAfterTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547",
+    "vendorBeforeTreeSha256": "1e39ce238b15e68f5494e0588b23c26a2adfa6fbdce6f665a046bdc653fc2646",
+    "vendorDigestsObservedNotAdmitted": true,
+    "vendorFileCount": 13918
+  },
+  "comparisonWithImage32": {
+    "moduleCounts": [
+      215,
+      214
+    ],
+    "packageCounts": [
+      1533,
+      1532
+    ],
+    "removedModules": [
+      {
+        "name": "gopkg.in/yaml.v3",
+        "version": "v3.0.1"
+      }
+    ],
+    "removedPackages": [
+      "gopkg.in/yaml.v3"
+    ],
+    "addedModules": [],
+    "addedPackages": []
+  },
+  "vendorOriginalFilesVerified": 13917,
+  "actualInactiveGoBip39FooterConfirmed": true,
+  "tests": {
+    "observer": 12,
+    "vendorContract": 41,
+    "icebergWorker": 288,
+    "sourceProfile": 25,
+    "upstreamConfig": 6,
+    "upstreamConfigRace": 6
+  },
+  "imageQualified": false,
+  "releaseAdmitted": false,
+  "targetOperations": 0
+}

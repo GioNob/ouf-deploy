@@ -1,0 +1,21 @@
+name: M2 discovery custody protected delivery
+on:
+  push:
+    paths: ['releases/read-m2-discovery-custody-20261029.sh','tests/qualify_m2_discovery_custody_delivery.py','.github/workflows/m2-discovery-custody-delivery.yml']
+  pull_request:
+    paths: ['releases/read-m2-discovery-custody-20261029.sh','tests/qualify_m2_discovery_custody_delivery.py','.github/workflows/m2-discovery-custody-delivery.yml']
+permissions: {contents: read}
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual immutable HTTPS delivery and root custody
+        run: |
+          fixture="/var/lib/ouf-custody-delivery-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo env GITHUB_ACTIONS=true /usr/bin/python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_custody_delivery.py"

@@ -1,0 +1,68 @@
+{
+  "correctsPriorStatement": "The original seven PETs and L0 documents are available in docs/baseline/v1.7/package and their text copies are available locally. The prior origin-reconciliation note incorrectly described the originals as unavailable.",
+  "date": "2026-11-01",
+  "decision": "Bind installation-specific source claims to exact retained runtime/config identities. Declared labels, public registry descriptors and byte equality do not grant publisher trust, current deployment policy, HUMAN authority or product acceptance. Preserve owner boundaries and reuse the Teatri engines; do not repeat acquisition.",
+  "priorFrozenSourceMapsRemainExact": [
+    235,
+    19,
+    17,
+    21
+  ],
+  "references": [
+    {
+      "original": "docs/baseline/v1.7/package/docs/l0/OUF_System_Integration_Development_Blueprint_v0_3.docx",
+      "originalSha256": "732dbff800d5ea5b971125817dc383eab5d760a92d5c9749fc75825e956122fd",
+      "sectionsConsulted": [
+        "1. Autorit\u00e0",
+        "7.",
+        "9. Release"
+      ],
+      "sectionsPresentInOriginalDocx": true,
+      "textCopy": "docs/baseline/v1.7/text/OUF_System_Integration_Development_Blueprint_v0_3.txt",
+      "textSha256": "a6e1d2ff67036c6b2d7d697ee42c74b868dcba5946d09135009d0f64a476a3db"
+    },
+    {
+      "original": "docs/baseline/v1.7/package/docs/l0/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.docx",
+      "originalSha256": "d48a3b36ea3dd23622da380ec498f753fcd37f49f534735fe7ef904def387b1b",
+      "sectionsConsulted": [
+        "1. Frozen ownership",
+        "4. Platform gate"
+      ],
+      "sectionsPresentInOriginalDocx": true,
+      "textCopy": "docs/baseline/v1.7/text/OUF_Cross_Module_Alignment_Matrix_v1_7_Channel_Neutral_OA_Aligned.txt",
+      "textSha256": "eb81ba9af1708afd29c6b5e65de0c5adde09dc2b0610c10d37e54265b615f9e7"
+    },
+    {
+      "original": "docs/baseline/v1.7/package/docs/l1/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.docx",
+      "originalSha256": "c28c4dbb1ca04d877890c00e3cfe5a52725d3aa2a51f7afec9177cae11514175",
+      "sectionsConsulted": [
+        "159.2 CI/CD",
+        "160.6 Security"
+      ],
+      "sectionsPresentInOriginalDocx": true,
+      "textCopy": "docs/baseline/v1.7/text/OUF_PET_Semantic_Model_Registry_v1_3_Development_Ready.txt",
+      "textSha256": "072cc2299fce8a952b9da46c0d7808fd374e3a078666e811f358706708c2a877"
+    },
+    {
+      "original": "docs/baseline/v1.7/package/docs/l1/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.docx",
+      "originalSha256": "d5ac46d60f5d34819cc28c87a8bb81b84aa232ece9925d81c369ddbcb301db72",
+      "sectionsConsulted": [
+        "T1.",
+        "T2. Topologia"
+      ],
+      "sectionsPresentInOriginalDocx": true,
+      "textCopy": "docs/baseline/v1.7/text/OUF_PET_Urban_API_Gateway_v1_5_Channel_Neutral_Operational_Awareness.txt",
+      "textSha256": "6ba81eb3c96337664ee14ff6055c6035fd41be6e71b4995f0d584056a416ded7"
+    }
+  ],
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-runtime-origin-join-normative-review.v1",
+  "scopeLimit": "Consultation of named sections, not a new full seven-PET acceptance audit.",
+  "sourceCount": 23,
+  "targetApplyAuthorized": false,
+  "teatriReferences": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ]
+}

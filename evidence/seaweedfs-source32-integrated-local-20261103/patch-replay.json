@@ -1,0 +1,10 @@
+{
+  "base": "source31-stage/source",
+  "patchSha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+  "fileCount": 4567,
+  "allFileBytesIdentical": true,
+  "gitTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "binaryRebuild": "PASS",
+  "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+  "buildInfoByteIdentical": true
+}

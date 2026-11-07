@@ -1,0 +1,67 @@
+{
+  "schema": "ouf.source32-independent-observed-profile-review.v1",
+  "status": "BOUNDED_SOURCE_ACCEPTANCE_NOT_HOSTED_QUALIFICATION",
+  "profiles": {
+    "main": {
+      "events": {
+        "pass": 6656,
+        "skip": 12
+      },
+      "packages": {
+        "pass": 41,
+        "skip": 9
+      },
+      "validPhysicalJsonLines": 33313,
+      "sha256": "e9d101c4747114d87f89ac4143234f9223e2da635725171d0327faf1dc6c9992"
+    },
+    "server": {
+      "events": {
+        "pass": 982,
+        "skip": 2
+      },
+      "packages": {
+        "pass": 1
+      },
+      "validPhysicalJsonLines": 6113,
+      "sha256": "d8c9238e0807d9a1714c5e67825b0533cf684a6cc75d1af1f25d817fd0f4030c"
+    },
+    "shell-local-observation": {
+      "events": {
+        "pass": 296,
+        "fail": 10
+      },
+      "packages": {
+        "fail": 1
+      },
+      "validPhysicalJsonLines": 1457,
+      "sha256": "d1d4a897b2ee64d3133f32903426e581b9f204dd39a7e35bcd05561af0a11f98"
+    },
+    "storage": {
+      "events": {
+        "pass": 54,
+        "skip": 2
+      },
+      "packages": {
+        "pass": 1
+      },
+      "sha256": "db4c0562975f3efbe547819e24d8044a5fbcad9b6777627c4f5fc6add6dcff4c"
+    },
+    "race": {
+      "events": {
+        "pass": 185
+      },
+      "packages": {
+        "pass": 3
+      },
+      "sha256": "e5aef26337cc176aa0cfac6669c0a14b84e29439c375b5ff300edd673a7bffe9"
+    }
+  },
+  "compiledModules": 215,
+  "compiledPackages": 1533,
+  "mongodbV2": "v2.9.2",
+  "remainingArchivedYaml": "gopkg.in/yaml.v3@v3.0.1",
+  "broadShellFailurePreserved": true,
+  "freshImageScanRuntimeQualificationClaimed": false,
+  "buildPerformedByReviewer": false,
+  "targetOperations": 0
+}

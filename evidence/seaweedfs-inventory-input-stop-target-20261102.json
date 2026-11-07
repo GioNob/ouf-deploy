@@ -1,0 +1,20 @@
+{
+  "automaticReplayAllowed": false,
+  "credentialPreflight": {
+    "filesOpened": 0,
+    "metadataCandidates": 5,
+    "rawValuesSpooled": false,
+    "sourceBytesRead": 0
+  },
+  "cumulativeControlAttempts": 15,
+  "cumulativeDirectEngineGets": 50,
+  "directEngineGets": 1,
+  "inventoryReconciliationProducer": "6447b0f64616170cfa79e2d0e471c5f860fb6ec9",
+  "inventoryReconciliationPublication": "28eb67064492c802ff96b884dbe42deefb5bec00",
+  "phase": "CREDENTIAL_PREFLIGHT",
+  "reasonCode": "PRIVATE_BOUNDED_REGULAR_CREDENTIAL_SOURCE_REQUIRED",
+  "runtimeAuthorityIssued": false,
+  "scopeConsumed": true,
+  "status": "STOP_RECONCILE",
+  "targetApplyAuthorized": false
+}

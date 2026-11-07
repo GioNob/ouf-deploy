@@ -1,0 +1,89 @@
+{
+  "schema": "ouf.source32-canonical-tree-helper.v1",
+  "status": "DIAGNOSIS_AND_HELPER_VERIFIED",
+  "incorrectLocalTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "correctTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "incorrectEntryCount": 4543,
+  "correctEntryCount": 4567,
+  "trackedIgnoredEntriesMissingFromIncorrectIndex": 24,
+  "allWorkingBytesPreserved": true,
+  "commonEntriesBlobAndModeIdentical": true,
+  "causalControls": [
+    "empty-index + git add -A reproduces incorrect tree",
+    "upstream-seeded index + git add -A produces correct tree",
+    "upstream-seeded index + all32 exact cached patches produces correct hosted tree"
+  ],
+  "unitTestsPass": 8,
+  "applicationBuildsRun": 0,
+  "frozenReceiptChanged": false,
+  "githubWrites": false,
+  "targetOperations": false,
+  "helperSha256": "b2dabb6dfdb64fecd1f27d9fe896ad96c98707b6bc25b4e19c8edd1feaa8511b",
+  "testSourceSha256": "fc80a7d570baf1981be1dd38f97e788ba313d741bc9001b3ad477e1408bc6233",
+  "payloads": {
+    "diagnosis.json": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/diagnosis.json",
+      "encoding": "identity",
+      "originalSha256": "4111a68e99c75b9602d0e60efd865f8d211d555ba797205d4d69f2bd78b0f679",
+      "originalBytes": 24357,
+      "publishedSha256": "4111a68e99c75b9602d0e60efd865f8d211d555ba797205d4d69f2bd78b0f679",
+      "publishedBytes": 24357
+    },
+    "full-prefix-diagnose.py": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/full-prefix-diagnose.py",
+      "encoding": "identity",
+      "originalSha256": "5e880b8fa9fa0e3cef2490c30787fee1b420c77bbe38020d49ee13a8740c899c",
+      "originalBytes": 3674,
+      "publishedSha256": "5e880b8fa9fa0e3cef2490c30787fee1b420c77bbe38020d49ee13a8740c899c",
+      "publishedBytes": 3674
+    },
+    "incorrect-local-tree.ls-tree.z": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/incorrect-local-tree.ls-tree.z.gz",
+      "encoding": "gzip",
+      "originalSha256": "bdcec788bbf05bb5f85c6931cdec20aad59147985182c7143625196cac21bc79",
+      "originalBytes": 425174,
+      "publishedSha256": "6f0b03b2a6ea0247343a18f236cb987aeb468ac137ea6557588e29c643f8ad5a",
+      "publishedBytes": 151039
+    },
+    "correct-cached-tree.ls-tree.z": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/correct-cached-tree.ls-tree.z.gz",
+      "encoding": "gzip",
+      "originalSha256": "f22a6b4b347435c60cdddfcfa818b77c7e2df510cac0d5a41de231abb2aec6e6",
+      "originalBytes": 427812,
+      "publishedSha256": "f5481eb19ab51964067ba00d4eecd5348b12073a1b67ab00a1add1a6ade96611",
+      "publishedBytes": 151920
+    },
+    "canonical-helper-replay32.json": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/canonical-helper-replay32.json",
+      "encoding": "identity",
+      "originalSha256": "1a99921737058c9a5b1b252726c2ed037cdcb9685a301a7351dd240d8eeceb69",
+      "originalBytes": 8676,
+      "publishedSha256": "1a99921737058c9a5b1b252726c2ed037cdcb9685a301a7351dd240d8eeceb69",
+      "publishedBytes": 8676
+    },
+    "helper-tests.stdout": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/helper-tests.stdout",
+      "encoding": "identity",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "originalBytes": 0,
+      "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publishedBytes": 0
+    },
+    "helper-tests.stderr": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/helper-tests.stderr",
+      "encoding": "identity",
+      "originalSha256": "f924b85d5aa9c39ed9d8a63f94f3eab03b545b00223f60189aec1e0cd42325be",
+      "originalBytes": 1270,
+      "publishedSha256": "f924b85d5aa9c39ed9d8a63f94f3eab03b545b00223f60189aec1e0cd42325be",
+      "publishedBytes": 1270
+    },
+    "original-failed-expectation-manifest.json": {
+      "publishedPath": "evidence/source32-tree-binding-diagnostic/original-failed-expectation-manifest.json",
+      "encoding": "identity",
+      "originalSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+      "originalBytes": 30214,
+      "publishedSha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+      "publishedBytes": 30214
+    }
+  }
+}

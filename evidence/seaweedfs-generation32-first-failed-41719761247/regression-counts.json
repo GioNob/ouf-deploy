@@ -1,0 +1,15 @@
+{
+  "profile": "main",
+  "counts": {
+    "pass_tests": 6656,
+    "pass_packages": 41,
+    "skip_packages": 9,
+    "skip_tests": 12
+  },
+  "logSha256": "52a67a4c2714507f469de95fe1d071c847f99cfcf5374a56dcf91edaec77126a",
+  "terminalTestsSha256": "31b8013f28af6703b64cb48cb2c7849578a54c9401bdca3732663cbb50e4d283",
+  "terminalPackagesSha256": "41ee96be03d54f90ffd27ed05e7430ea204f812241cf557fdceac2ae19c44fcf",
+  "environmentConditionalOutcomes": {},
+  "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "targetOperations": 0
+}

@@ -1,0 +1,13 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 0,
+  "crossBucketAccessDenied": 0,
+  "ownBucketBodiesVerified": 0,
+  "privateBindingsPrepared": 2,
+  "reason": "ONBOARDING_OWN_OBJECT_READ_500",
+  "s3GetRequests": 4,
+  "schema": "ouf.storage-oci33-app-bindings.v1",
+  "status": "HELD",
+  "temporaryContainerRemoved": true,
+  "tlsVerified": false
+}

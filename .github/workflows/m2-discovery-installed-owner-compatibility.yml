@@ -1,0 +1,153 @@
+name: M2 reuse installed Teatri owner contracts
+on:
+  push:
+    paths: ['.github/workflows/m2-discovery-installed-owner-compatibility.yml','tools/m2_discovery_installation_profile/**','catalogue/m2-semantic-discovery-capabilities.json','tests/test_semantic_discovery_authorization.py','tests/fixtures/owner-role-roundtrip/**']
+  pull_request:
+    paths: ['.github/workflows/m2-discovery-installed-owner-compatibility.yml','tools/m2_discovery_installation_profile/**','catalogue/m2-semantic-discovery-capabilities.json','tests/test_semantic_discovery_authorization.py','tests/fixtures/owner-role-roundtrip/**']
+permissions: {contents: read}
+jobs:
+  installed-onboarding-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: {POSTGRES_DB: ouf_onboarding, POSTGRES_USER: ouf_onboarding, POSTGRES_PASSWORD: ci-only-password}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ouf_onboarding -d ouf_onboarding"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      OUF_ONB_DB_URL: jdbc:postgresql://127.0.0.1:5432/ouf_onboarding
+      OUF_ONB_DB_USER: ouf_onboarding
+      OUF_ONB_DB_PASSWORD: ci-only-password
+      MAVEN_OPTS: -Dmaven.wagon.http.connectionTimeout=10000 -Dmaven.wagon.http.readTimeout=30000 -Djava.net.preferIPv4Stack=true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 9d19fad3dd750dd5b9e77253d3e7e82029c1aca7
+          path: .installed-owner
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Match retained VPS image lineage and unchanged publication compilers
+        run: |
+          set -euo pipefail
+          test "$(git -C .installed-owner rev-parse HEAD)" = 9d19fad3dd750dd5b9e77253d3e7e82029c1aca7
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('.installed-owner')
+          retained=json.loads(pathlib.Path('evidence/managed-file-owner-v38-update-target-20261028.json').read_text())['result']
+          assert retained['sourceCommit']=='9d19fad3dd750dd5b9e77253d3e7e82029c1aca7'
+          assert retained['nativeImageId']=='sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51'
+          expected={'scripts/r4a_authorization_lifecycle.py':'77e1f33d335f7116556cb73765c1323e001f4f99400f7fd504685b8fbfd9b89f',
+              'scripts/r4a_keycloak_client_scope_catalogue.py':'4ca8a16e7c6bb3a48e5834c4cea97709f51cf77a1f59711b947b84a29c2b74a8'}
+          assert all(hashlib.sha256((root/p).read_bytes()).hexdigest()==sha for p,sha in expected.items())
+          print('INSTALLED_OWNER_SOURCE_AND_COMPILER_BYTES_MATCH_RETAINED_VPS_LINEAGE')
+          PY
+      - name: Existing SDK custody and actual V38 HTTP, actor, frozen identity and schema regressions
+        working-directory: .installed-owner
+        run: |
+          set -euo pipefail
+          sh scripts/verify-contract-freeze.sh
+          bash scripts/install-authorization-sdk.sh
+          timeout --signal=TERM --kill-after=30s 12m mvn -B -ntp \
+            -Dtest=IngestionConfigurationAuditRuntimeTest,ManagedOnboardingReviewApiTest,IamJwtValidationTest,IamPrincipalBridgeTest,ConfigurationValidatorContractTest,ManagedFileOpenApiTest,OpenApiContractTest test
+      - name: Require actual selected Java reports with no skipped tests
+        run: |
+          python3 -I -B -S - <<'PY'
+          import json,pathlib,xml.etree.ElementTree as xml
+          wanted={'IngestionConfigurationAuditRuntimeTest','ManagedOnboardingReviewApiTest','IamJwtValidationTest',
+              'IamPrincipalBridgeTest','ConfigurationValidatorContractTest','ManagedFileOpenApiTest','OpenApiContractTest'}
+          found={}
+          for p in pathlib.Path('.installed-owner/target/surefire-reports').glob('TEST-*.xml'):
+              r=xml.parse(p).getroot();name=r.attrib['name'].split('.')[-1]
+              assert name in wanted and name not in found
+              counts={k:int(r.attrib.get(k,0)) for k in ('tests','failures','errors','skipped')}
+              assert counts['tests']>0 and all(counts[k]==0 for k in ('failures','errors','skipped'))
+              found[name]=counts
+          assert set(found)==wanted
+          print(json.dumps({'schema':'ouf.installed-teatri-owner-contracts-ci.v1','sourceCommit':'9d19fad3dd750dd5b9e77253d3e7e82029c1aca7',
+              'actualSourceHttpAndPostgresContracts':True,'suites':found,'currentTargetAdmissionProven':False,'applicationE2EProven':False},sort_keys=True))
+          PY
+      - name: Compile the same role DTO from the installed owner source
+        run: |
+          set -euo pipefail
+          mvn -B -q -f tests/fixtures/owner-role-roundtrip/pom.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath -Dmdep.outputFile="$GITHUB_WORKSPACE/.installed-owner-classpath"
+          mkdir .installed-owner-classes
+          javac -cp "$(cat .installed-owner-classpath)" -d .installed-owner-classes \
+            .installed-owner/authorization-sdk/src/main/java/it/comune/trieste/ouf/authorization/{AuthorizationPolicy,PrincipalContext,ResourceContext}.java \
+            tests/fixtures/owner-role-roundtrip/OwnerConstraintRoundTrip.java
+      - name: Current Discovery delta against the actual installed owner's DTO and helpers
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-installed-owner-compat-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+            OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.installed-owner" \
+            OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.installed-owner" \
+            OUF_OWNER_JAVA_CLASSPATH="$fixture/repository/.installed-owner-classes:$(cat .installed-owner-classpath)" \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p test_semantic_discovery_authorization.py -v
+  installed-ingestion-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          path: .installed-ingestion
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven}
+      - name: Match exact retained Ingestion source and distinct native manifest image identity
+        run: |
+          set -euo pipefail
+          test "$(git -C .installed-ingestion rev-parse HEAD)" = 4165b9e149be467d5d7c6bed35e4e1af4e249db1
+          python3 -I -B -S - <<'PY'
+          import ast,json,pathlib
+          # Read the offline case as data; never execute a consumed delivery.
+          tree=ast.parse(pathlib.Path('scripts/prepare-ingestion-native-archive-20261022.py').read_text())
+          assignments=[n for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='CASE' for t in n.targets)]
+          assert len(assignments)==1
+          case=ast.literal_eval(assignments[0].value)
+          retained=json.loads(pathlib.Path('evidence/ingestion-native-archive-completed-target-20261022.json').read_text())['result']
+          assert case['sourceCommit']=='4165b9e149be467d5d7c6bed35e4e1af4e249db1'
+          assert case['nativeImageId']==retained['nativeImageId']=='sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697'
+          assert case['configurationImageId']==retained['configurationImageId']=='sha256:76c38ddfc886b9e004064fd19bcfe561ce5b8459de241c625765afab5a7260bc'
+          assert case['nativeImageId']!=case['configurationImageId']
+          print('INSTALLED_INGESTION_SOURCE_AND_NATIVE_MANIFEST_LINEAGE_MATCH')
+          PY
+      - name: Actual installed client HTTP route/query, no HUMAN fallback and frozen consumer contracts
+        working-directory: .installed-ingestion
+        run: |
+          set -euo pipefail
+          bash scripts/install-authorization-sdk.sh
+          timeout --signal=TERM --kill-after=30s 12m mvn -B -ntp \
+            -Dtest=OnboardingReadinessGatewayContractTest,OnboardingReadinessTest,PublicationGatewayClientTest,FrozenConfigurationProbeTest,FrozenContractValidatorTest,PublishedExecutionMapperTest,ManagedTabularAdapterTest test
+      - name: Require all seven actual Ingestion reports with no skipped tests
+        run: |
+          python3 -I -B -S - <<'PY'
+          import json,pathlib,xml.etree.ElementTree as xml
+          wanted={'OnboardingReadinessGatewayContractTest','OnboardingReadinessTest','PublicationGatewayClientTest',
+              'FrozenConfigurationProbeTest','FrozenContractValidatorTest','PublishedExecutionMapperTest','ManagedTabularAdapterTest'}
+          found={}
+          for p in pathlib.Path('.installed-ingestion/target/surefire-reports').glob('TEST-*.xml'):
+              r=xml.parse(p).getroot();name=r.attrib['name'].split('.')[-1]
+              assert name in wanted and name not in found
+              counts={k:int(r.attrib.get(k,0)) for k in ('tests','failures','errors','skipped')}
+              assert counts['tests']>0 and all(counts[k]==0 for k in ('failures','errors','skipped'))
+              found[name]=counts
+          assert set(found)==wanted
+          print(json.dumps({'schema':'ouf.installed-teatri-ingestion-contracts-ci.v1','sourceCommit':'4165b9e149be467d5d7c6bed35e4e1af4e249db1',
+              'actualClientHttpAndConsumerContracts':True,'suites':found,'liveOnboardingServerJoined':False,
+              'currentTargetAdmissionProven':False,'applicationE2EProven':False},sort_keys=True))
+          PY

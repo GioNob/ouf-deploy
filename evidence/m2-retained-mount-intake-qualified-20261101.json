@@ -1,0 +1,63 @@
+{
+  "contractFix": "Runtime input preparation invokes the actual Engine.runtime_binding, preserving mount order. The original inventory stable_binding sorts mounts; its digest cannot be reused as a runtime mountsHash.",
+  "controller": {
+    "completePrivateCustodyProven": false,
+    "expectedMountPolicyEstablished": false,
+    "reads": 24,
+    "retainedMountMetadataWitnessJoined": true,
+    "sameTransitionInvocationFence": true,
+    "schema": "ouf.discovery-held-native-controller-witness.v4",
+    "typedOwners": 13
+  },
+  "date": "2026-11-01",
+  "frozenCurrent235AndOldCaptureDeliveryUnchanged": true,
+  "fullCohortOrActualWorkloadBearerProven": false,
+  "mainQualification": {
+    "errors": 0,
+    "failures": 0,
+    "finalLogsRead": [
+      124789695049,
+      124789694729,
+      124789694911,
+      124789694940,
+      124789694969
+    ],
+    "protocolSuites": 22,
+    "protocolTests": 177,
+    "resourceWarnings": 0,
+    "run": 41286820490,
+    "skips": 0,
+    "suiteCount": 27,
+    "testCount": 194
+  },
+  "mountedFileContentReadByCurrentWitness": false,
+  "nativeScope": "Actual Docker29.8.1, ten scratch processes, Unix peer/proc, root-private captured inputs and mount/FIFO/socket metadata; three replaced peer records and parent/READY lineage modeled.",
+  "newCaptureScopeCreatedByCurrentWitness": false,
+  "next": "Exact new readonly regular-file hash input qualified: docs/handoffs/OUF_M2_RETAINED_READONLY_HASH_INPUT_20261101.md. Operator VPS execution and public JSON required; both metadata scopes remain consumed.",
+  "noProductionPathHashOrEngineCallbackOverride": true,
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-mount-intake-qualified.v1",
+  "sourceCommit": "04920448d49308067f9c1ca16934261d7e48286e",
+  "targetApplyAuthorized": false,
+  "targetCandidateHash": "46f6e6355a1bb133c4f72537f09d7b60250fd4c47265cde24fc1ea792cb366a7",
+  "targetPrivateCandidateReadByAgent": false,
+  "targetReceiptEvidence": "evidence/m2-retained-mount-role-correction-target-20261101.json",
+  "targetResultHash": "59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f",
+  "targetedQualification": {
+    "errors": 0,
+    "failures": 0,
+    "finalLogsRead": [
+      124789694081,
+      124789693992
+    ],
+    "nativeTests": 4,
+    "resourceWarnings": 0,
+    "run": 41286820335,
+    "skips": 0,
+    "suiteCount": 3,
+    "testCount": 28,
+    "unitTests": 24
+  },
+  "timezone": "Europe/Rome"
+}

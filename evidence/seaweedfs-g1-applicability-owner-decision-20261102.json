@@ -1,0 +1,66 @@
+{
+  "schema": "ouf.security-applicability-owner-decision.v1",
+  "id": "OUF-SW-G1-20261102-01",
+  "decisionRef": "urn:ouf:decision:OUF-SW-G1-20261102-01",
+  "date": "2026-11-02",
+  "timezone": "Europe/Rome",
+  "status": "ACCEPTED",
+  "recordedFrom": "PROJECT_OWNER_MESSAGE_IN_THIS_CONVERSATION",
+  "ownerStatement": "Mi hai convinto, e sia.",
+  "acceptedProposal": {
+    "repository": "GioNob/ouf-deploy",
+    "commit": "c08c4312fcbd0632bad93c9fcdaf5303c0453921",
+    "path": "evidence/seaweedfs-g1-applicability-review-proposal-20261102.json",
+    "sha256": "6bf310d900548c3311b0067bed8197e3f6ebe16d3063ca81f582c1acf16dd71b"
+  },
+  "product": {
+    "name": "OUF-owned SeaweedFS 4.51 patched server",
+    "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+    "sourceCommit": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+    "goToolchain": "go1.27.3",
+    "cgoEnabled": false,
+    "compiledPackageCount": 1738,
+    "compiledPackagesSha256": "67534a54978a5a157673a6a21ea26c147b0dbcb60c60d30497ce39e6ee3c435b",
+    "upstreamPublisherSignatureProven": false,
+    "ownedWorkflowProvenanceAvailable": true,
+    "dependencyPatchSha256": "e00e55e9210cc931e985ae218be39650fe403d6ac6568f046e9bb46077c47820"
+  },
+  "advisory": {
+    "id": "GO-2026-5932",
+    "module": "golang.org/x/crypto",
+    "affectedPackagePrefix": "golang.org/x/crypto/openpgp",
+    "sourceUrl": "https://vuln.go.dev/ID/GO-2026-5932.json",
+    "canonicalSnapshotSha256": "26df709c385ffdb7845f0c94907d420136cbcd88c4e2a188032fe425a3ecb5a5",
+    "canonicalSnapshotPath": "evidence/seaweedfs-g1-advisory-GO-2026-5932-20261102.json"
+  },
+  "disposition": {
+    "status": "not_affected",
+    "justification": "vulnerable_code_not_present"
+  },
+  "scope": "ONE_ADVISORY_ON_ONE_EXACT_BINARY_ONLY",
+  "rawReportPreserved": true,
+  "rawGateChanged": false,
+  "scannerIgnoreAdded": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false,
+  "migrationReady": false,
+  "thsDecisionClaimed": false,
+  "invalidationTriggers": [
+    "binary checksum",
+    "source or dependency patch",
+    "Go toolchain or build options",
+    "compiled package graph",
+    "advisory scope or new finding"
+  ],
+  "evidence": {
+    "copyDossier": "evidence/seaweedfs-copy-core-qualified-20261102.json",
+    "independentRunId": 41507064288,
+    "retainedMetadataArchive": "evidence/artifacts/storage-copy-readback-41507064288.zip",
+    "metadataArchiveSha256": "00a3559a38bcf84f122863e2aaa0e31122452603462735c3f16ea126a10fab4f",
+    "rawReport": "trivy-binary.json",
+    "compiledGraph": "compiled-packages.json",
+    "exactPublisherSignatureVerified": true,
+    "publisher": "OUF-owned workflow; not upstream vendor"
+  }
+}

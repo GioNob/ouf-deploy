@@ -1,0 +1,191 @@
+{
+  "derivation": "Local byte inventory of frozen published A32 input files; not a producer artifact seal or hosted verification result. GitHub producer commit retained separately.",
+  "producerCommit": "77215bee99bf52a476a1fcebc38b68ed5f4a8e81",
+  "sourceInputCount": 46,
+  "files": {
+    ".github/workflows/storage-452-generation32-image.yml": {
+      "sha256": "e5792061b95168ed66658b61437f5b5aa58827ec779f286c66723453542e55f3",
+      "bytes": 22893
+    },
+    "tools/storage_security/runtime_image.py": {
+      "sha256": "54ee20d7d25cbcf20249e7502c597fc17adda4487e06cdeefc9748b370a6041a",
+      "bytes": 8478
+    },
+    "tools/storage_security/generation_image_v3.py": {
+      "sha256": "0ab2e7cc7faa7491bb766cf9365b8ed6987539b9ffdeb2e88c004ad61e832d31",
+      "bytes": 32326
+    },
+    "releases/seaweedfs-452-generation31-build-manifest-20261103.json": {
+      "sha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+      "bytes": 9193
+    },
+    "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch": {
+      "sha256": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8",
+      "bytes": 2236
+    },
+    "patches/seaweedfs/4.52-s3-content-type-persistence.patch": {
+      "sha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+      "bytes": 10415
+    },
+    "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch": {
+      "sha256": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8",
+      "bytes": 7042
+    },
+    "scripts/qualify-seaweedfs-452-generation32-image.py": {
+      "sha256": "f0be047a84f7478ad981b864e381281eae8bae75cd2480867f4b1b37d0969e22",
+      "bytes": 1369
+    },
+    "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch": {
+      "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "bytes": 128791
+    },
+    "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch": {
+      "sha256": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1",
+      "bytes": 3342
+    },
+    "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch": {
+      "sha256": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714",
+      "bytes": 8724
+    },
+    "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch": {
+      "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530",
+      "bytes": 62005
+    },
+    "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch": {
+      "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883",
+      "bytes": 43467
+    },
+    "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch": {
+      "sha256": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3",
+      "bytes": 23976
+    },
+    "tools/storage_security/generation_readback_v1.py": {
+      "sha256": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+      "bytes": 5936
+    },
+    "tests/fixtures/seaweedfs-raftstore-compat/compat_test.go": {
+      "sha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c",
+      "bytes": 4438
+    },
+    "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch": {
+      "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f",
+      "bytes": 27526
+    },
+    "scripts/qualify-seaweedfs-raftstore-compat.py": {
+      "sha256": "fc5cff4471fee8ba0def1754ef0f84c108ae55184b403853ef887a36747cc2e7",
+      "bytes": 4791
+    },
+    "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch": {
+      "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b",
+      "bytes": 7430
+    },
+    "patches/seaweedfs/4.52-kms-sdk-v2.patch": {
+      "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a",
+      "bytes": 30935
+    },
+    "scripts/assess-storage-runtime-image-20261102.py": {
+      "sha256": "e47393d12e7ee4ab7c2d8e19e0aa0b5b69ce0dfd171b3fb196b68f7473237871",
+      "bytes": 3577
+    },
+    "patches/seaweedfs/4.52-s3sink-sdk-v2.patch": {
+      "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4",
+      "bytes": 24390
+    },
+    "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch": {
+      "sha256": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+      "bytes": 24799
+    },
+    "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch": {
+      "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+      "bytes": 11654
+    },
+    "scripts/readback-seaweedfs-452-generation32-image.py": {
+      "sha256": "fb088e2180b37652cb4a8bca7e3b5882c4b9f6ace661f787c044a5ff7e5cc57f",
+      "bytes": 675
+    },
+    "releases/seaweedfs-452-generation32-build-manifest-20261103.json": {
+      "sha256": "27e52456e618aac7cf88595c1baac4d33d5e48e8bbabe2bbe4bd3cd410524788",
+      "bytes": 30214
+    },
+    "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch": {
+      "sha256": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6",
+      "bytes": 11542
+    },
+    "patches/seaweedfs/4.52-sqs-sdk-v2.patch": {
+      "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3",
+      "bytes": 22088
+    },
+    "patches/seaweedfs/4.52-s3backend-sdk-v2.patch": {
+      "sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9",
+      "bytes": 25176
+    },
+    "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch": {
+      "sha256": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30",
+      "bytes": 91930
+    },
+    "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch": {
+      "sha256": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+      "bytes": 7046
+    },
+    "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch": {
+      "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+      "bytes": 1408
+    },
+    "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch": {
+      "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c",
+      "bytes": 8210
+    },
+    "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch": {
+      "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+      "bytes": 125108
+    },
+    "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch": {
+      "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398",
+      "bytes": 2995
+    },
+    "tests/test_storage_runtime_image.py": {
+      "sha256": "2bbeff328791ca4244daa832accb0a8a1b11cf028c59c6cd2a6641a8d64c8949",
+      "bytes": 8038
+    },
+    "scripts/assess-storage-sdk-lifecycle.py": {
+      "sha256": "18aa9a11bc6e6b3772d794db0e413bd02ad6bc68342bd3740b2858c95a1f26ed",
+      "bytes": 5195
+    },
+    "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch": {
+      "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40",
+      "bytes": 14523
+    },
+    "patches/seaweedfs/4.52-go-network-security-fixes.patch": {
+      "sha256": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e",
+      "bytes": 2306
+    },
+    "tests/test_seaweedfs_452_generation32_image.py": {
+      "sha256": "d3a6d608f02106dae3176667789e831d298f6e20e662c4df7eaedf75d90a6678",
+      "bytes": 32939
+    },
+    "patches/seaweedfs/4.52-maintained-dependency-closure.patch": {
+      "sha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+      "bytes": 205863
+    },
+    "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch": {
+      "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7",
+      "bytes": 4413
+    },
+    "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch": {
+      "sha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+      "bytes": 75629
+    },
+    "patches/seaweedfs/4.52-iam-module-sdk-v2.patch": {
+      "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+      "bytes": 139978
+    },
+    "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch": {
+      "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d",
+      "bytes": 45305
+    },
+    "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch": {
+      "sha256": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24",
+      "bytes": 7531
+    }
+  }
+}

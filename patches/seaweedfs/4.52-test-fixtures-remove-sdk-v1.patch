@@ -1,0 +1,1956 @@
+diff --git a/weed/iam/wire/types_test.go b/weed/iam/wire/types_test.go
+index 1f83b2e..fce3bf7 100644
+--- a/weed/iam/wire/types_test.go
++++ b/weed/iam/wire/types_test.go
+@@ -1,12 +1,12 @@
+ package wire
+ 
+ import (
++	"crypto/sha256"
+ 	"encoding/xml"
++	"fmt"
+ 	"reflect"
+ 	"testing"
+ 	"time"
+-
+-	legacy "github.com/aws/aws-sdk-go/service/iam"
+ )
+ 
+ func fillWireFixture(v reflect.Value) {
+@@ -38,31 +38,38 @@ func fillWireFixture(v reflect.Value) {
+ 	}
+ }
+ 
+-func TestLegacyXMLWireCompatibility(t *testing.T) {
+-	pairs := [][2]any{
+-		{AccessKey{}, legacy.AccessKey{}}, {AccessKeyMetadata{}, legacy.AccessKeyMetadata{}},
+-		{AttachedPolicy{}, legacy.AttachedPolicy{}}, {ErrorDetails{}, legacy.ErrorDetails{}},
+-		{Group{}, legacy.Group{}}, {Policy{}, legacy.Policy{}}, {PolicyVersion{}, legacy.PolicyVersion{}},
+-		{User{}, legacy.User{}}, {Tag{}, legacy.Tag{}},
+-		{AttachedPermissionsBoundary{}, legacy.AttachedPermissionsBoundary{}},
++func TestFrozenSDKV1XMLWireCompatibility(t *testing.T) {
++	// These SHA-256 values freeze the exact empty and populated XML emitted by
++	// aws-sdk-go v1.55.8. They retain the compatibility oracle without keeping
++	// the end-of-support module in the source or test graph.
++	want := map[string][2]string{
++		"AccessKey":                   {"50adfdcebb6aec0918a0da69683ebbae9b60bf02c5f6f64780e33491544596b9", "31760bb55a7d7f34519bbed33028f3bb98cbffe9ea42957a0210dfa861845aed"},
++		"AccessKeyMetadata":           {"d51e3582cb58acc7cf5d6449e9591ca2cf5f223f0bf327a31fc2c577f893b773", "443bd7bbb214f53d71411219eef59313448b3c938fe7b8e80b26cb5eed342c45"},
++		"AttachedPolicy":              {"22ba7cdc8e08c264e32ae4967e9e16116336c682259912a0cce11895043192b9", "e3354abbbe434da959a374bb922043f0f80b4bedcaa94c2f8701bb1484b84a14"},
++		"ErrorDetails":                {"d9fc205776a42a1d59154cba731d7a8e5188ac6ac46b4e68c076eadb2ed85506", "afb7b479ab1c99b3f3aa0aa1dc1dd9ba7f9f762d14c82847f1b2b4f794d6c029"},
++		"Group":                       {"ca270d0f9616ec8cd0b902378ee5939230a61309d2a50aed2015b2ba6df95106", "55b69af55658d4439633420ee0d950c66d721a49c702c547c52914d37bf58a37"},
++		"Policy":                      {"e46512caf9ca81188df4dfe87faba8253a366370383976ca69e7dd4fc065f90e", "cd4e133e18f35f52ef09351f43d06b6549b868c2052b0a4783518dd236fa1176"},
++		"PolicyVersion":               {"586d7bfcae6c4ef78bfdc11f900a11fea22eefa048854afd9274583c8906e995", "142fe44cc8ebfb0ef4205f07036ecc9762bf3d83c1d35faeea1aaa5e748a0bfb"},
++		"User":                        {"75b65d3343e1337858fe5ad8b1ad6d5f2e2c02ee967c36c33e6dbadbdb2ea221", "82039d90c9ff9c130c1189dd2b14c8cfc01a1ddfca28ddb9ac759e3626712fd5"},
++		"Tag":                         {"1f97c3955a00fd3c99abc06ef2e321d9890208c55caefab62b33998bb1e46e42", "56f1e2de1913dce983c6100bdae7381a078c8dc95ab2d831f37655d63821c6e0"},
++		"AttachedPermissionsBoundary": {"5b7cf5cb68299708089f8f5b761db2bf02bbef861c3136f226141f887683af5f", "6a3b31579499a3b60d1315c658fdb9ce2c1e048fe5e6db86978c2bacf032298d"},
+ 	}
+-	for _, pair := range pairs {
+-		t.Run(reflect.TypeOf(pair[0]).Name(), func(t *testing.T) {
+-			for _, populated := range []bool{false, true} {
+-				var data [2][]byte
+-				for i, value := range pair {
+-					fixture := reflect.New(reflect.TypeOf(value)).Elem()
+-					if populated {
+-						fillWireFixture(fixture)
+-					}
+-					var err error
+-					data[i], err = xml.Marshal(fixture.Interface())
+-					if err != nil {
+-						t.Fatal(err)
+-					}
++	values := []any{AccessKey{}, AccessKeyMetadata{}, AttachedPolicy{}, ErrorDetails{}, Group{}, Policy{}, PolicyVersion{}, User{}, Tag{}, AttachedPermissionsBoundary{}}
++	for _, value := range values {
++		name := reflect.TypeOf(value).Name()
++		t.Run(name, func(t *testing.T) {
++			for state, populated := range []bool{false, true} {
++				fixture := reflect.New(reflect.TypeOf(value)).Elem()
++				if populated {
++					fillWireFixture(fixture)
++				}
++				data, err := xml.Marshal(fixture.Interface())
++				if err != nil {
++					t.Fatal(err)
+ 				}
+-				if string(data[0]) != string(data[1]) {
+-					t.Fatalf("XML differs for populated=%v: got %s want %s", populated, data[0], data[1])
++				got := fmt.Sprintf("%x", sha256.Sum256(data))
++				if got != want[name][state] {
++					t.Fatalf("XML drift populated=%v: hash %s, XML %s", populated, got, data)
+ 				}
+ 			}
+ 		})
+diff --git a/weed/iamapi/iamapi_management_handlers_test.go b/weed/iamapi/iamapi_management_handlers_test.go
+index 3a85149..4157cef 100644
+--- a/weed/iamapi/iamapi_management_handlers_test.go
++++ b/weed/iamapi/iamapi_management_handlers_test.go
+@@ -6,9 +6,9 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/arn"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/aws/arn"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+@@ -641,13 +641,13 @@ func TestUserArnIsValid(t *testing.T) {
+ 	s3cfg := &iam_pb.S3ApiConfiguration{}
+ 
+ 	createResp := iama.CreateUser(s3cfg, url.Values{"UserName": []string{"alice"}})
+-	assert.True(t, arn.IsARN(aws.StringValue(createResp.CreateUserResult.User.Arn)),
+-		"CreateUser must return a valid ARN, got %q", aws.StringValue(createResp.CreateUserResult.User.Arn))
++	assert.True(t, arn.IsARN(aws.ToString(createResp.CreateUserResult.User.Arn)),
++		"CreateUser must return a valid ARN, got %q", aws.ToString(createResp.CreateUserResult.User.Arn))
+ 
+ 	getResp, iamErr := iama.GetUser(s3cfg, "alice")
+ 	assert.Nil(t, iamErr)
+-	assert.True(t, arn.IsARN(aws.StringValue(getResp.GetUserResult.User.Arn)),
+-		"GetUser must return a valid ARN, got %q", aws.StringValue(getResp.GetUserResult.User.Arn))
++	assert.True(t, arn.IsARN(aws.ToString(getResp.GetUserResult.User.Arn)),
++		"GetUser must return a valid ARN, got %q", aws.ToString(getResp.GetUserResult.User.Arn))
+ }
+ 
+ func TestCreateAccessKeyWithCallerSuppliedKeys(t *testing.T) {
+@@ -656,8 +656,8 @@ func TestCreateAccessKeyWithCallerSuppliedKeys(t *testing.T) {
+ 		Identities: []*iam_pb.Identity{{Name: "alice"}},
+ 	}
+ 	values := url.Values{
+-		"UserName":       []string{"alice"},
+-		"AccessKeyId":    []string{"myappkey"},
++		"UserName":        []string{"alice"},
++		"AccessKeyId":     []string{"myappkey"},
+ 		"SecretAccessKey": []string{"mysecret1234"},
+ 	}
+ 	resp, iamErr := iama.CreateAccessKey(s3cfg, values)
+@@ -691,8 +691,8 @@ func TestCreateAccessKeyRejectsWeakKeys(t *testing.T) {
+ 	}
+ 	// Too short
+ 	values := url.Values{
+-		"UserName":       []string{"alice"},
+-		"AccessKeyId":    []string{"ab"},
++		"UserName":        []string{"alice"},
++		"AccessKeyId":     []string{"ab"},
+ 		"SecretAccessKey": []string{"validsecret1"},
+ 	}
+ 	_, iamErr := iama.CreateAccessKey(s3cfg, values)
+@@ -701,8 +701,8 @@ func TestCreateAccessKeyRejectsWeakKeys(t *testing.T) {
+ 
+ 	// Short secret
+ 	values = url.Values{
+-		"UserName":       []string{"alice"},
+-		"AccessKeyId":    []string{"validkey"},
++		"UserName":        []string{"alice"},
++		"AccessKeyId":     []string{"validkey"},
+ 		"SecretAccessKey": []string{"short"},
+ 	}
+ 	_, iamErr = iama.CreateAccessKey(s3cfg, values)
+@@ -711,8 +711,8 @@ func TestCreateAccessKeyRejectsWeakKeys(t *testing.T) {
+ 
+ 	// SigV4 delimiters
+ 	values = url.Values{
+-		"UserName":       []string{"alice"},
+-		"AccessKeyId":    []string{"foo/bar=baz"},
++		"UserName":        []string{"alice"},
++		"AccessKeyId":     []string{"foo/bar=baz"},
+ 		"SecretAccessKey": []string{"validsecret1"},
+ 	}
+ 	_, iamErr = iama.CreateAccessKey(s3cfg, values)
+diff --git a/weed/iamapi/iamapi_targeted_writes_test.go b/weed/iamapi/iamapi_targeted_writes_test.go
+index a22b560..da553d9 100644
+--- a/weed/iamapi/iamapi_targeted_writes_test.go
++++ b/weed/iamapi/iamapi_targeted_writes_test.go
+@@ -10,11 +10,10 @@ import (
+ 	"net/http"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential/memory"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+@@ -83,7 +82,7 @@ func TestIamApiCreateAccessKeyTargeted(t *testing.T) {
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "alice"}))
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "bob"}))
+ 
+-	req, _ := iam.New(session.New()).CreateAccessKeyRequest(&iam.CreateAccessKeyInput{UserName: aws.String("alice")})
++	req, _ := iam.New().CreateAccessKeyRequest(&iam.CreateAccessKeyInput{UserName: aws.String("alice")})
+ 	_ = req.Build()
+ 	out := CreateAccessKeyResponse{}
+ 	resp, err := executeRequestWith(srv, req.HTTPRequest, &out)
+@@ -107,7 +106,7 @@ func TestIamApiCreateAccessKeyUnknownUserFallsBack(t *testing.T) {
+ 	srv, cm, counter, _ := targetedIamApiServer()
+ 	ctx := context.Background()
+ 
+-	req, _ := iam.New(session.New()).CreateAccessKeyRequest(&iam.CreateAccessKeyInput{UserName: aws.String("ghost")})
++	req, _ := iam.New().CreateAccessKeyRequest(&iam.CreateAccessKeyInput{UserName: aws.String("ghost")})
+ 	_ = req.Build()
+ 	out := CreateAccessKeyResponse{}
+ 	resp, err := executeRequestWith(srv, req.HTTPRequest, &out)
+@@ -128,7 +127,7 @@ func TestIamApiDeleteAccessKeyTargeted(t *testing.T) {
+ 		Credentials: []*iam_pb.Credential{{AccessKey: "AKIATESTFAKEKEY00001", SecretKey: "testsecretfake"}},
+ 	}))
+ 
+-	req, _ := iam.New(session.New()).DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
++	req, _ := iam.New().DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
+ 		UserName:    aws.String("alice"),
+ 		AccessKeyId: aws.String("AKIATESTFAKEKEY00001"),
+ 	})
+@@ -146,7 +145,7 @@ func TestIamApiDeleteAccessKeyTargeted(t *testing.T) {
+ 	assert.Empty(t, ident.Credentials)
+ 
+ 	// Deleting a key that does not exist still answers 200 and stays targeted.
+-	req, _ = iam.New(session.New()).DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
++	req, _ = iam.New().DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
+ 		UserName:    aws.String("alice"),
+ 		AccessKeyId: aws.String("AKIATESTFAKEKEY99999"),
+ 	})
+@@ -165,7 +164,7 @@ func TestIamApiUpdateAccessKeyTargeted(t *testing.T) {
+ 		Credentials: []*iam_pb.Credential{{AccessKey: "AKIATESTFAKEKEY00001", SecretKey: "testsecretfake", Status: "Active"}},
+ 	}))
+ 
+-	req, _ := iam.New(session.New()).UpdateAccessKeyRequest(&iam.UpdateAccessKeyInput{
++	req, _ := iam.New().UpdateAccessKeyRequest(&iam.UpdateAccessKeyInput{
+ 		UserName:    aws.String("alice"),
+ 		AccessKeyId: aws.String("AKIATESTFAKEKEY00001"),
+ 		Status:      aws.String(iam.StatusTypeInactive),
+@@ -191,7 +190,7 @@ func TestIamApiPutUserPolicyTargeted(t *testing.T) {
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "alice"}))
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "bob"}))
+ 
+-	req, _ := iam.New(session.New()).PutUserPolicyRequest(&iam.PutUserPolicyInput{
++	req, _ := iam.New().PutUserPolicyRequest(&iam.PutUserPolicyInput{
+ 		UserName:       aws.String("alice"),
+ 		PolicyName:     aws.String("read-bench"),
+ 		PolicyDocument: aws.String(targetedTestPolicy),
+@@ -216,7 +215,7 @@ func TestIamApiDeleteUserPolicyTargeted(t *testing.T) {
+ 	ctx := context.Background()
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "alice"}))
+ 
+-	putReq, _ := iam.New(session.New()).PutUserPolicyRequest(&iam.PutUserPolicyInput{
++	putReq, _ := iam.New().PutUserPolicyRequest(&iam.PutUserPolicyInput{
+ 		UserName:       aws.String("alice"),
+ 		PolicyName:     aws.String("read-bench"),
+ 		PolicyDocument: aws.String(targetedTestPolicy),
+@@ -227,7 +226,7 @@ func TestIamApiDeleteUserPolicyTargeted(t *testing.T) {
+ 	require.NoError(t, err)
+ 	require.Equal(t, http.StatusOK, resp.Code)
+ 
+-	delReq, _ := iam.New(session.New()).DeleteUserPolicyRequest(&iam.DeleteUserPolicyInput{
++	delReq, _ := iam.New().DeleteUserPolicyRequest(&iam.DeleteUserPolicyInput{
+ 		UserName:   aws.String("alice"),
+ 		PolicyName: aws.String("read-bench"),
+ 	})
+@@ -252,7 +251,7 @@ func TestIamApiUpdateUserRenameTargeted(t *testing.T) {
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "bob"}))
+ 	require.NoError(t, cm.CreateGroup(ctx, &iam_pb.Group{Name: "devs", Members: []string{"alice", "bob"}}))
+ 
+-	req, _ := iam.New(session.New()).UpdateUserRequest(&iam.UpdateUserInput{
++	req, _ := iam.New().UpdateUserRequest(&iam.UpdateUserInput{
+ 		UserName:    aws.String("alice"),
+ 		NewUserName: aws.String("alice-renamed"),
+ 	})
+@@ -281,7 +280,7 @@ func TestIamApiDeleteUserTargeted(t *testing.T) {
+ 	require.NoError(t, cm.CreateUser(ctx, &iam_pb.Identity{Name: "bob"}))
+ 	require.NoError(t, cm.CreateGroup(ctx, &iam_pb.Group{Name: "devs", Members: []string{"alice", "bob"}}))
+ 
+-	req, _ := iam.New(session.New()).DeleteUserRequest(&iam.DeleteUserInput{UserName: aws.String("alice")})
++	req, _ := iam.New().DeleteUserRequest(&iam.DeleteUserInput{UserName: aws.String("alice")})
+ 	_ = req.Build()
+ 	out := DeleteUserResponse{}
+ 	resp, err := executeRequestWith(srv, req.HTTPRequest, &out)
+diff --git a/weed/iamapi/iamapi_test.go b/weed/iamapi/iamapi_test.go
+index 6000aff..345c089 100644
+--- a/weed/iamapi/iamapi_test.go
++++ b/weed/iamapi/iamapi_test.go
+@@ -10,13 +10,12 @@ import (
+ 	"regexp"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/jinzhu/copier"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential/memory"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api"
+@@ -61,7 +60,7 @@ func (iam iamS3ApiConfigureMock) PutPolicies(policies *Policies) (err error) {
+ func TestCreateUser(t *testing.T) {
+ 	userName := aws.String("Test")
+ 	params := &iam.CreateUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).CreateUserRequest(params)
++	req, _ := iam.New().CreateUserRequest(params)
+ 	_ = req.Build()
+ 	out := CreateUserResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -72,7 +71,7 @@ func TestCreateUser(t *testing.T) {
+ 
+ func TestListUsers(t *testing.T) {
+ 	params := &iam.ListUsersInput{}
+-	req, _ := iam.New(session.New()).ListUsersRequest(params)
++	req, _ := iam.New().ListUsersRequest(params)
+ 	_ = req.Build()
+ 	out := ListUsersResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -82,7 +81,7 @@ func TestListUsers(t *testing.T) {
+ 
+ func TestListUsersRequestIdMatchesResponseHeader(t *testing.T) {
+ 	params := &iam.ListUsersInput{}
+-	req, _ := iam.New(session.New()).ListUsersRequest(params)
++	req, _ := iam.New().ListUsersRequest(params)
+ 	_ = req.Build()
+ 
+ 	out := ListUsersResponse{}
+@@ -96,7 +95,7 @@ func TestListUsersRequestIdMatchesResponseHeader(t *testing.T) {
+ }
+ 
+ func TestListAccessKeys(t *testing.T) {
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	params := &iam.ListAccessKeysInput{}
+ 	req, _ := svc.ListAccessKeysRequest(params)
+ 	_ = req.Build()
+@@ -107,7 +106,7 @@ func TestListAccessKeys(t *testing.T) {
+ }
+ 
+ func TestUpdateAccessKey(t *testing.T) {
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 
+ 	createReq, _ := svc.CreateAccessKeyRequest(&iam.CreateAccessKeyInput{UserName: aws.String("Test")})
+ 	_ = createReq.Build()
+@@ -161,7 +160,7 @@ func TestUpdateAccessKey(t *testing.T) {
+ func TestGetUser(t *testing.T) {
+ 	userName := aws.String("Test")
+ 	params := &iam.GetUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).GetUserRequest(params)
++	req, _ := iam.New().GetUserRequest(params)
+ 	_ = req.Build()
+ 	out := GetUserResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -191,7 +190,7 @@ func TestCreatePolicy(t *testing.T) {
+ 			  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).CreatePolicyRequest(params)
++	req, _ := iam.New().CreatePolicyRequest(params)
+ 	_ = req.Build()
+ 	out := CreatePolicyResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -243,7 +242,7 @@ func (m *isolatedIamConfig) PutPolicies(policies *Policies) error {
+ // GetPolicyVersion and ListPolicyVersions.
+ func TestCreatePolicyVersion(t *testing.T) {
+ 	srv := newIsolatedIamServer()
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	policyName := "tf-managed-policy"
+ 	policyArn := aws.String("arn:aws:iam:::policy/" + policyName)
+ 
+@@ -314,7 +313,7 @@ func TestCreatePolicyVersion(t *testing.T) {
+ // target policy does not exist, matching AWS.
+ func TestCreatePolicyVersionMissingPolicy(t *testing.T) {
+ 	srv := newIsolatedIamServer()
+-	req, _ := iam.New(session.New()).CreatePolicyVersionRequest(&iam.CreatePolicyVersionInput{
++	req, _ := iam.New().CreatePolicyVersionRequest(&iam.CreatePolicyVersionInput{
+ 		PolicyArn:      aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 		PolicyDocument: aws.String(`{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:Get*"],"Resource":["arn:aws:s3:::EXAMPLE-BUCKET"]}]}`),
+ 		SetAsDefault:   aws.Bool(true),
+@@ -332,7 +331,7 @@ func TestCreatePolicyVersionMissingPolicy(t *testing.T) {
+ // rejected rather than silently overwriting the active document.
+ func TestCreatePolicyVersionRequiresSetAsDefault(t *testing.T) {
+ 	srv := newIsolatedIamServer()
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	policyArn := aws.String("arn:aws:iam:::policy/tf-managed-policy")
+ 
+ 	createReq, _ := svc.CreatePolicyRequest(&iam.CreatePolicyInput{
+@@ -392,7 +391,7 @@ func TestPutUserPolicy(t *testing.T) {
+ 				  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).PutUserPolicyRequest(params)
++	req, _ := iam.New().PutUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	out := PutUserPolicyResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -423,7 +422,7 @@ func TestPutUserPolicyError(t *testing.T) {
+ 				  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).PutUserPolicyRequest(params)
++	req, _ := iam.New().PutUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	response, err := executeRequest(req.HTTPRequest, nil)
+ 	assert.Equal(t, nil, err)
+@@ -462,7 +461,7 @@ func extractRequestID(response *httptest.ResponseRecorder) string {
+ func TestGetUserPolicy(t *testing.T) {
+ 	userName := aws.String("Test")
+ 	params := &iam.GetUserPolicyInput{UserName: userName, PolicyName: aws.String("S3-read-only-example-bucket")}
+-	req, _ := iam.New(session.New()).GetUserPolicyRequest(params)
++	req, _ := iam.New().GetUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	out := GetUserPolicyResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -474,7 +473,7 @@ func TestUpdateUser(t *testing.T) {
+ 	userName := aws.String("Test")
+ 	newUserName := aws.String("Test-New")
+ 	params := &iam.UpdateUserInput{NewUserName: newUserName, UserName: userName}
+-	req, _ := iam.New(session.New()).UpdateUserRequest(params)
++	req, _ := iam.New().UpdateUserRequest(params)
+ 	_ = req.Build()
+ 	out := UpdateUserResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+@@ -485,14 +484,14 @@ func TestUpdateUser(t *testing.T) {
+ func TestDeleteUser(t *testing.T) {
+ 	userName := aws.String("Test-New")
+ 	params := &iam.DeleteUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).DeleteUserRequest(params)
++	req, _ := iam.New().DeleteUserRequest(params)
+ 	_ = req.Build()
+ 	out := DeleteUserResponse{}
+ 	response, err := executeRequest(req.HTTPRequest, out)
+ 	assert.Equal(t, nil, err)
+ 	assert.Equal(t, http.StatusConflict, response.Code)
+ 
+-	listReq, _ := iam.New(session.New()).ListAccessKeysRequest(&iam.ListAccessKeysInput{UserName: userName})
++	listReq, _ := iam.New().ListAccessKeysRequest(&iam.ListAccessKeysInput{UserName: userName})
+ 	_ = listReq.Build()
+ 	listOut := ListAccessKeysResponse{}
+ 	listResp, err := executeRequest(listReq.HTTPRequest, listOut)
+@@ -500,7 +499,7 @@ func TestDeleteUser(t *testing.T) {
+ 	var listResult ListAccessKeysResponse
+ 	assert.Equal(t, nil, xml.Unmarshal(listResp.Body.Bytes(), &listResult))
+ 	for _, key := range listResult.ListAccessKeysResult.AccessKeyMetadata {
+-		delKeyReq, _ := iam.New(session.New()).DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
++		delKeyReq, _ := iam.New().DeleteAccessKeyRequest(&iam.DeleteAccessKeyInput{
+ 			UserName:    userName,
+ 			AccessKeyId: key.AccessKeyId,
+ 		})
+@@ -509,7 +508,7 @@ func TestDeleteUser(t *testing.T) {
+ 		assert.Equal(t, nil, err)
+ 	}
+ 
+-	req, _ = iam.New(session.New()).DeleteUserRequest(params)
++	req, _ = iam.New().DeleteUserRequest(params)
+ 	_ = req.Build()
+ 	response, err = executeRequest(req.HTTPRequest, out)
+ 	assert.Equal(t, nil, err)
+@@ -646,7 +645,7 @@ func TestCreateUserDoesNotSaveAllUsers(t *testing.T) {
+ 
+ 	// Create a new user via the HTTP API.
+ 	params := &iam.CreateUserInput{UserName: aws.String("new-user")}
+-	req, _ := iam.New(session.New()).CreateUserRequest(params)
++	req, _ := iam.New().CreateUserRequest(params)
+ 	_ = req.Build()
+ 	out := CreateUserResponse{}
+ 	resp, err := executeRequestWith(srv, req.HTTPRequest, &out)
+diff --git a/workspace/scratch/98dabd1608e5/seaweedfs-src/weed/iamapi/testclient/client.go b/weed/iamapi/testclient/client.go
+new file mode 100644
+index 0000000..2a20f75
+--- /dev/null
++++ b/weed/iamapi/testclient/client.go
+@@ -0,0 +1,183 @@
++// Package testclient builds IAM Query protocol requests for local handler tests.
++//
++// It intentionally implements only the request shapes exercised by SeaweedFS.
++// Keeping this small encoder local avoids retaining the end-of-support AWS SDK
++// for Go v1 merely as a test fixture.
++package testclient
++
++import (
++	"fmt"
++	"net/http"
++	"net/url"
++	"reflect"
++	"strconv"
++	"strings"
++)
++
++const (
++	ErrCodeDeleteConflictException          = "DeleteConflict"
++	ErrCodeEntityAlreadyExistsException     = "EntityAlreadyExists"
++	ErrCodeInvalidInputException            = "InvalidInput"
++	ErrCodeLimitExceededException           = "LimitExceeded"
++	ErrCodeMalformedPolicyDocumentException = "MalformedPolicyDocument"
++	ErrCodeNoSuchEntityException            = "NoSuchEntity"
++	ErrCodeServiceFailureException          = "ServiceFailure"
++	ErrCodeUnmodifiableEntityException      = "UnmodifiableEntity"
++	StatusTypeInactive                      = "Inactive"
++)
++
++type Tag struct{ Key, Value *string }
++
++type CreateUserInput struct{ UserName *string }
++type ListUsersInput struct{}
++type GetUserInput struct{ UserName *string }
++type UpdateUserInput struct{ UserName, NewUserName *string }
++type DeleteUserInput struct{ UserName *string }
++type CreateAccessKeyInput struct{ UserName *string }
++type ListAccessKeysInput struct{ UserName *string }
++type UpdateAccessKeyInput struct{ UserName, AccessKeyId, Status *string }
++type DeleteAccessKeyInput struct{ UserName, AccessKeyId *string }
++type CreatePolicyInput struct{ PolicyName, PolicyDocument *string }
++type CreatePolicyVersionInput struct {
++	PolicyArn, PolicyDocument *string
++	SetAsDefault              *bool
++}
++type GetPolicyInput struct{ PolicyArn *string }
++type GetPolicyVersionInput struct{ PolicyArn, VersionId *string }
++type ListPolicyVersionsInput struct{ PolicyArn *string }
++type DeletePolicyInput struct{ PolicyArn *string }
++type PutUserPolicyInput struct{ UserName, PolicyName, PolicyDocument *string }
++type GetUserPolicyInput struct{ UserName, PolicyName *string }
++type DeleteUserPolicyInput struct{ UserName, PolicyName *string }
++type AttachUserPolicyInput struct{ UserName, PolicyArn *string }
++type DetachUserPolicyInput struct{ UserName, PolicyArn *string }
++type ListAttachedUserPoliciesInput struct{ UserName *string }
++type TagUserInput struct {
++	UserName *string
++	Tags     []*Tag
++}
++type ListUserTagsInput struct{ UserName *string }
++type UntagUserInput struct {
++	UserName *string
++	TagKeys  []*string
++}
++
++type Request struct{ HTTPRequest *http.Request }
++
++func (r *Request) Build() error { return nil }
++
++type Client struct{}
++
++func New(_ ...any) *Client { return &Client{} }
++
++func encode(values url.Values, prefix string, value reflect.Value) {
++	if !value.IsValid() {
++		return
++	}
++	if value.Kind() == reflect.Ptr {
++		if value.IsNil() {
++			return
++		}
++		encode(values, prefix, value.Elem())
++		return
++	}
++	switch value.Kind() {
++	case reflect.Struct:
++		t := value.Type()
++		for i := 0; i < value.NumField(); i++ {
++			name := t.Field(i).Name
++			if prefix != "" {
++				name = prefix + "." + name
++			}
++			encode(values, name, value.Field(i))
++		}
++	case reflect.Slice:
++		for i := 0; i < value.Len(); i++ {
++			encode(values, fmt.Sprintf("%s.member.%d", prefix, i+1), value.Index(i))
++		}
++	case reflect.String:
++		values.Set(prefix, value.String())
++	case reflect.Bool:
++		values.Set(prefix, strconv.FormatBool(value.Bool()))
++	}
++}
++
++func newRequest(action string, input any) (*Request, error) {
++	values := url.Values{"Action": {action}, "Version": {"2010-05-08"}}
++	encode(values, "", reflect.ValueOf(input))
++	req, err := http.NewRequest(http.MethodPost, "https://iam.amazonaws.com/", strings.NewReader(values.Encode()))
++	if err != nil {
++		return nil, err
++	}
++	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
++	return &Request{HTTPRequest: req}, nil
++}
++
++func (c *Client) CreateUserRequest(v *CreateUserInput) (*Request, error) {
++	return newRequest("CreateUser", v)
++}
++func (c *Client) ListUsersRequest(v *ListUsersInput) (*Request, error) {
++	return newRequest("ListUsers", v)
++}
++func (c *Client) GetUserRequest(v *GetUserInput) (*Request, error) { return newRequest("GetUser", v) }
++func (c *Client) UpdateUserRequest(v *UpdateUserInput) (*Request, error) {
++	return newRequest("UpdateUser", v)
++}
++func (c *Client) DeleteUserRequest(v *DeleteUserInput) (*Request, error) {
++	return newRequest("DeleteUser", v)
++}
++func (c *Client) CreateAccessKeyRequest(v *CreateAccessKeyInput) (*Request, error) {
++	return newRequest("CreateAccessKey", v)
++}
++func (c *Client) ListAccessKeysRequest(v *ListAccessKeysInput) (*Request, error) {
++	return newRequest("ListAccessKeys", v)
++}
++func (c *Client) UpdateAccessKeyRequest(v *UpdateAccessKeyInput) (*Request, error) {
++	return newRequest("UpdateAccessKey", v)
++}
++func (c *Client) DeleteAccessKeyRequest(v *DeleteAccessKeyInput) (*Request, error) {
++	return newRequest("DeleteAccessKey", v)
++}
++func (c *Client) CreatePolicyRequest(v *CreatePolicyInput) (*Request, error) {
++	return newRequest("CreatePolicy", v)
++}
++func (c *Client) CreatePolicyVersionRequest(v *CreatePolicyVersionInput) (*Request, error) {
++	return newRequest("CreatePolicyVersion", v)
++}
++func (c *Client) GetPolicyRequest(v *GetPolicyInput) (*Request, error) {
++	return newRequest("GetPolicy", v)
++}
++func (c *Client) GetPolicyVersionRequest(v *GetPolicyVersionInput) (*Request, error) {
++	return newRequest("GetPolicyVersion", v)
++}
++func (c *Client) ListPolicyVersionsRequest(v *ListPolicyVersionsInput) (*Request, error) {
++	return newRequest("ListPolicyVersions", v)
++}
++func (c *Client) DeletePolicyRequest(v *DeletePolicyInput) (*Request, error) {
++	return newRequest("DeletePolicy", v)
++}
++func (c *Client) PutUserPolicyRequest(v *PutUserPolicyInput) (*Request, error) {
++	return newRequest("PutUserPolicy", v)
++}
++func (c *Client) GetUserPolicyRequest(v *GetUserPolicyInput) (*Request, error) {
++	return newRequest("GetUserPolicy", v)
++}
++func (c *Client) DeleteUserPolicyRequest(v *DeleteUserPolicyInput) (*Request, error) {
++	return newRequest("DeleteUserPolicy", v)
++}
++func (c *Client) AttachUserPolicyRequest(v *AttachUserPolicyInput) (*Request, error) {
++	return newRequest("AttachUserPolicy", v)
++}
++func (c *Client) DetachUserPolicyRequest(v *DetachUserPolicyInput) (*Request, error) {
++	return newRequest("DetachUserPolicy", v)
++}
++func (c *Client) ListAttachedUserPoliciesRequest(v *ListAttachedUserPoliciesInput) (*Request, error) {
++	return newRequest("ListAttachedUserPolicies", v)
++}
++func (c *Client) TagUserRequest(v *TagUserInput) (*Request, error) { return newRequest("TagUser", v) }
++func (c *Client) ListUserTagsRequest(v *ListUserTagsInput) (*Request, error) {
++	return newRequest("ListUserTags", v)
++}
++func (c *Client) UntagUserRequest(v *UntagUserInput) (*Request, error) {
++	return newRequest("UntagUser", v)
++}
+diff --git a/weed/s3api/auto_signature_v4_test.go b/weed/s3api/auto_signature_v4_test.go
+index 3ba5b87..7184600 100644
+--- a/weed/s3api/auto_signature_v4_test.go
++++ b/weed/s3api/auto_signature_v4_test.go
+@@ -16,12 +16,12 @@ import (
+ 	"time"
+ 	"unicode/utf8"
+ 
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
++	v4 "github.com/seaweedfs/seaweedfs/weed/s3api/testv4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+ 	"github.com/stretchr/testify/assert"
+diff --git a/weed/s3api/filer_multipart_abort_test.go b/weed/s3api/filer_multipart_abort_test.go
+index 4f1f441..f39b084 100644
+--- a/weed/s3api/filer_multipart_abort_test.go
++++ b/weed/s3api/filer_multipart_abort_test.go
+@@ -4,12 +4,12 @@ import (
+ 	"context"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/s3_lifecycle_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"google.golang.org/grpc/codes"
+ 	"google.golang.org/grpc/status"
+ )
+diff --git a/weed/s3api/filer_multipart_checksum_test.go b/weed/s3api/filer_multipart_checksum_test.go
+index 9cf29d0..9dbc131 100644
+--- a/weed/s3api/filer_multipart_checksum_test.go
++++ b/weed/s3api/filer_multipart_checksum_test.go
+@@ -9,12 +9,12 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/minio/crc64nvme"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ )
+ 
+ func makeCRC64NVMEPartEntry(data []byte) *filer_pb.Entry {
+diff --git a/weed/s3api/filer_multipart_list_encoding_test.go b/weed/s3api/filer_multipart_list_encoding_test.go
+index b652b14..0036f6b 100644
+--- a/weed/s3api/filer_multipart_list_encoding_test.go
++++ b/weed/s3api/filer_multipart_list_encoding_test.go
+@@ -8,10 +8,10 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+diff --git a/weed/s3api/filer_multipart_list_test.go b/weed/s3api/filer_multipart_list_test.go
+index a3a3cab..2fdbc3a 100644
+--- a/weed/s3api/filer_multipart_list_test.go
++++ b/weed/s3api/filer_multipart_list_test.go
+@@ -8,10 +8,10 @@ import (
+ 	"slices"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"google.golang.org/grpc/codes"
+ 	"google.golang.org/grpc/status"
+ )
+@@ -286,7 +286,7 @@ func TestSelectMultipartUploadsDelimiter(t *testing.T) {
+ 		for _, p := range out.CommonPrefixes {
+ 			prefixes = append(prefixes, p.Prefix)
+ 		}
+-		return uploads, prefixes, *out.IsTruncated, aws.StringValue(out.NextKeyMarker)
++		return uploads, prefixes, *out.IsTruncated, aws.ToString(out.NextKeyMarker)
+ 	}
+ 
+ 	uploads, prefixes, truncated, _ := list("", "", 1000)
+diff --git a/weed/s3api/s3api_acl_header_parser_test.go b/weed/s3api/s3api_acl_header_parser_test.go
+index 62f6336..f83d08d 100644
+--- a/weed/s3api/s3api_acl_header_parser_test.go
++++ b/weed/s3api/s3api_acl_header_parser_test.go
+@@ -3,10 +3,10 @@ package s3api
+ import (
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/stretchr/testify/require"
+ )
+ 
+@@ -52,9 +52,9 @@ func TestParseCustomAclHeaderList(t *testing.T) {
+ 			require.Len(t, grants, 1+len(tt.values))
+ 			for i, value := range tt.values {
+ 				grant := grants[i+1]
+-				actual := aws.StringValue(grant.Grantee.ID) + aws.StringValue(grant.Grantee.EmailAddress) + aws.StringValue(grant.Grantee.URI)
++				actual := aws.ToString(grant.Grantee.ID) + aws.ToString(grant.Grantee.EmailAddress) + aws.ToString(grant.Grantee.URI)
+ 				require.Equal(t, value, actual)
+-				require.Equal(t, s3_constants.PermissionRead, aws.StringValue(grant.Permission))
++				require.Equal(t, s3_constants.PermissionRead, aws.ToString(grant.Permission))
+ 			}
+ 		})
+ 	}
+diff --git a/weed/s3api/s3api_bucket_handlers_misc_test.go b/weed/s3api/s3api_bucket_handlers_misc_test.go
+index b3ab71a..f48f166 100644
+--- a/weed/s3api/s3api_bucket_handlers_misc_test.go
++++ b/weed/s3api/s3api_bucket_handlers_misc_test.go
+@@ -11,12 +11,12 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/stretchr/testify/require"
+ )
+ 
+@@ -537,8 +537,8 @@ func TestPutBucketAclWithoutAuth(t *testing.T) {
+ 	var grants []*s3.Grant
+ 	require.NoError(t, json.Unmarshal(filer.txnSeen[0].Mutations[0].SetExtended[s3_constants.ExtAmzAclKey], &grants))
+ 	require.Len(t, grants, 2)
+-	require.Equal(t, s3_constants.AccountAdminId, aws.StringValue(grants[0].Grantee.ID))
+-	require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.StringValue(grants[1].Grantee.URI))
++	require.Equal(t, s3_constants.AccountAdminId, aws.ToString(grants[0].Grantee.ID))
++	require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.ToString(grants[1].Grantee.URI))
+ 	require.Equal(t, s3_constants.AccountAdminId, string(filer.txnSeen[0].Mutations[0].SetExtended[s3_constants.ExtAmzOwnerKey]))
+ }
+ 
+@@ -635,6 +635,6 @@ func TestPutBucketAclKeepsOwner(t *testing.T) {
+ 		require.NotContains(t, filer.txnSeen[0].Mutations[0].DeleteExtended, s3_constants.ExtAmzOwnerKey)
+ 		var grants []*s3.Grant
+ 		require.NoError(t, json.Unmarshal(filer.txnSeen[0].Mutations[0].SetExtended[s3_constants.ExtAmzAclKey], &grants))
+-		require.Equal(t, "team-a", aws.StringValue(grants[0].Grantee.ID))
++		require.Equal(t, "team-a", aws.ToString(grants[0].Grantee.ID))
+ 	}
+ }
+diff --git a/weed/s3api/s3api_embedded_iam_test.go b/weed/s3api/s3api_embedded_iam_test.go
+index a7043b7..e8745a2 100644
+--- a/weed/s3api/s3api_embedded_iam_test.go
++++ b/weed/s3api/s3api_embedded_iam_test.go
+@@ -14,13 +14,12 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/arn"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
++	"github.com/aws/aws-sdk-go-v2/aws/arn"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential/memory"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	. "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+@@ -179,7 +178,7 @@ func TestEmbeddedIamCreateUser(t *testing.T) {
+ 
+ 	userName := aws.String("TestUser")
+ 	params := &iam.CreateUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).CreateUserRequest(params)
++	req, _ := iam.New().CreateUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamCreateUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -191,8 +190,8 @@ func TestEmbeddedIamCreateUser(t *testing.T) {
+ 	assert.Equal(t, "TestUser", *out.CreateUserResult.User.UserName)
+ 
+ 	// Issue #9786: terraform aws provider >= 6.41 blocks on a valid ARN.
+-	assert.True(t, arn.IsARN(aws.StringValue(out.CreateUserResult.User.Arn)),
+-		"CreateUser must return a valid ARN, got %q", aws.StringValue(out.CreateUserResult.User.Arn))
++	assert.True(t, arn.IsARN(aws.ToString(out.CreateUserResult.User.Arn)),
++		"CreateUser must return a valid ARN, got %q", aws.ToString(out.CreateUserResult.User.Arn))
+ 
+ 	// Verify user was persisted in config
+ 	assert.Len(t, api.mockConfig.Identities, 1)
+@@ -232,7 +231,7 @@ func TestEmbeddedIamCreateUserDoesNotSaveAllUsers(t *testing.T) {
+ 	}
+ 
+ 	params := &iam.CreateUserInput{UserName: aws.String("new-user")}
+-	req, _ := iam.New(session.New()).CreateUserRequest(params)
++	req, _ := iam.New().CreateUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamCreateUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -295,7 +294,7 @@ func TestEmbeddedIamListUsers(t *testing.T) {
+ 	}
+ 
+ 	params := &iam.ListUsersInput{}
+-	req, _ := iam.New(session.New()).ListUsersRequest(params)
++	req, _ := iam.New().ListUsersRequest(params)
+ 	_ = req.Build()
+ 	out := iamListUsersResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -311,7 +310,7 @@ func TestEmbeddedIamListUsers(t *testing.T) {
+ // TestEmbeddedIamListAccessKeys tests listing access keys via the embedded IAM API
+ func TestEmbeddedIamListAccessKeys(t *testing.T) {
+ 	api := NewEmbeddedIamApiForTest()
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	params := &iam.ListAccessKeysInput{}
+ 	req, _ := svc.ListAccessKeysRequest(params)
+ 	_ = req.Build()
+@@ -332,7 +331,7 @@ func TestEmbeddedIamGetUser(t *testing.T) {
+ 
+ 	userName := aws.String("TestUser")
+ 	params := &iam.GetUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).GetUserRequest(params)
++	req, _ := iam.New().GetUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamGetUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -345,8 +344,8 @@ func TestEmbeddedIamGetUser(t *testing.T) {
+ 
+ 	// Issue #9786: the terraform aws provider reads the user back after creating
+ 	// it and waits until GetUser returns a value that passes arn.IsARN.
+-	assert.True(t, arn.IsARN(aws.StringValue(out.GetUserResult.User.Arn)),
+-		"GetUser must return a valid ARN, got %q", aws.StringValue(out.GetUserResult.User.Arn))
++	assert.True(t, arn.IsARN(aws.ToString(out.GetUserResult.User.Arn)),
++		"GetUser must return a valid ARN, got %q", aws.ToString(out.GetUserResult.User.Arn))
+ }
+ 
+ // TestEmbeddedIamGetUserImplicitUsername verifies GetUser without a UserName defaults
+@@ -412,7 +411,7 @@ func TestEmbeddedIamCreatePolicy(t *testing.T) {
+ 			  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).CreatePolicyRequest(params)
++	req, _ := iam.New().CreatePolicyRequest(params)
+ 	_ = req.Build()
+ 	out := iamCreatePolicyResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -431,7 +430,7 @@ func TestEmbeddedIamCreatePolicy(t *testing.T) {
+ // AWS Terraform provider) instead of returning 501 NotImplemented.
+ func TestEmbeddedIamCreatePolicyVersion(t *testing.T) {
+ 	api := NewEmbeddedIamApiForTest()
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	policyArn := aws.String("arn:aws:iam:::policy/tf-managed")
+ 
+ 	// Create the managed policy.
+@@ -476,7 +475,7 @@ func TestEmbeddedIamCreatePolicyVersion(t *testing.T) {
+ // target policy does not exist.
+ func TestEmbeddedIamCreatePolicyVersionMissingPolicy(t *testing.T) {
+ 	api := NewEmbeddedIamApiForTest()
+-	req, _ := iam.New(session.New()).CreatePolicyVersionRequest(&iam.CreatePolicyVersionInput{
++	req, _ := iam.New().CreatePolicyVersionRequest(&iam.CreatePolicyVersionInput{
+ 		PolicyArn:      aws.String("arn:aws:iam:::policy/does-not-exist"),
+ 		PolicyDocument: aws.String(`{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:Get*"],"Resource":["arn:aws:s3:::EXAMPLE-BUCKET"]}]}`),
+ 		SetAsDefault:   aws.Bool(true),
+@@ -493,7 +492,7 @@ func TestEmbeddedIamCreatePolicyVersionMissingPolicy(t *testing.T) {
+ // path also rejects a non-default version request given the single-version model.
+ func TestEmbeddedIamCreatePolicyVersionRequiresSetAsDefault(t *testing.T) {
+ 	api := NewEmbeddedIamApiForTest()
+-	svc := iam.New(session.New())
++	svc := iam.New()
+ 	policyArn := aws.String("arn:aws:iam:::policy/tf-managed")
+ 
+ 	createReq, _ := svc.CreatePolicyRequest(&iam.CreatePolicyInput{
+@@ -549,7 +548,7 @@ func TestEmbeddedIamPutUserPolicy(t *testing.T) {
+ 				  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).PutUserPolicyRequest(params)
++	req, _ := iam.New().PutUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	out := iamPutUserPolicyResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -588,7 +587,7 @@ func TestEmbeddedIamPutUserPolicyError(t *testing.T) {
+ 				  ]
+ 			}`),
+ 	}
+-	req, _ := iam.New(session.New()).PutUserPolicyRequest(params)
++	req, _ := iam.New().PutUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.NoError(t, err)
+@@ -616,7 +615,7 @@ func TestEmbeddedIamGetUserPolicy(t *testing.T) {
+ 		UserName:   userName,
+ 		PolicyName: aws.String("S3-read-only-example-bucket"),
+ 	}
+-	req, _ := iam.New(session.New()).GetUserPolicyRequest(params)
++	req, _ := iam.New().GetUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	out := iamGetUserPolicyResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -824,7 +823,7 @@ func TestEmbeddedIamAttachUserPolicy(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/TestManagedPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).AttachUserPolicyRequest(params)
++	req, _ := iam.New().AttachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	out := iamAttachUserPolicyResponse{}
+@@ -887,7 +886,7 @@ func TestEmbeddedIamAttachUserPolicyNoSuchPolicy(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/DoesNotExist"),
+ 	}
+-	req, _ := iam.New(session.New()).AttachUserPolicyRequest(params)
++	req, _ := iam.New().AttachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -914,7 +913,7 @@ func TestEmbeddedIamDetachUserPolicy(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/TestManagedPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).DetachUserPolicyRequest(params)
++	req, _ := iam.New().DetachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	out := iamDetachUserPolicyResponse{}
+@@ -939,7 +938,7 @@ func TestEmbeddedIamDeletePolicyInUse(t *testing.T) {
+ 	params := &iam.DeletePolicyInput{
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/TestPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).DeletePolicyRequest(params)
++	req, _ := iam.New().DeletePolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -972,7 +971,7 @@ func TestEmbeddedIamAttachAlreadyAttachedPolicy(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/TestManagedPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).AttachUserPolicyRequest(params)
++	req, _ := iam.New().AttachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	out := iamAttachUserPolicyResponse{}
+@@ -999,7 +998,7 @@ func TestEmbeddedIamDetachNotAttachedPolicy(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/MissingPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).DetachUserPolicyRequest(params)
++	req, _ := iam.New().DetachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -1038,7 +1037,7 @@ func TestEmbeddedIamAttachPolicyLimitExceeded(t *testing.T) {
+ 		UserName:  aws.String("TestUser"),
+ 		PolicyArn: aws.String("arn:aws:iam:::policy/NewPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).AttachUserPolicyRequest(params)
++	req, _ := iam.New().AttachUserPolicyRequest(params)
+ 	_ = req.Build()
+ 
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -1065,7 +1064,7 @@ func TestEmbeddedIamListAttachedUserPolicies(t *testing.T) {
+ 	params := &iam.ListAttachedUserPoliciesInput{
+ 		UserName: aws.String("TestUser"),
+ 	}
+-	req, _ := iam.New(session.New()).ListAttachedUserPoliciesRequest(params)
++	req, _ := iam.New().ListAttachedUserPoliciesRequest(params)
+ 	_ = req.Build()
+ 
+ 	out := iamListAttachedUserPoliciesResponse{}
+@@ -1077,7 +1076,7 @@ func TestEmbeddedIamListAttachedUserPolicies(t *testing.T) {
+ 
+ 	got := map[string]string{}
+ 	for _, attached := range out.ListAttachedUserPoliciesResult.AttachedPolicies {
+-		got[aws.StringValue(attached.PolicyName)] = aws.StringValue(attached.PolicyArn)
++		got[aws.ToString(attached.PolicyName)] = aws.ToString(attached.PolicyArn)
+ 	}
+ 	assert.Equal(t, "arn:aws:iam:::policy/PolicyA", got["PolicyA"])
+ 	assert.Equal(t, "arn:aws:iam:::policy/PolicyB", got["PolicyB"])
+@@ -1095,7 +1094,7 @@ func TestEmbeddedIamUpdateUser(t *testing.T) {
+ 	userName := aws.String("TestUser")
+ 	newUserName := aws.String("TestUser-New")
+ 	params := &iam.UpdateUserInput{NewUserName: newUserName, UserName: userName}
+-	req, _ := iam.New(session.New()).UpdateUserRequest(params)
++	req, _ := iam.New().UpdateUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamUpdateUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -1128,7 +1127,7 @@ func TestEmbeddedIamUpdateUserPreservesInlinePolicies(t *testing.T) {
+ 	require.NoError(t, api.credentialManager.PutUserInlinePolicy(context.Background(), oldName, policyName, doc))
+ 
+ 	params := &iam.UpdateUserInput{NewUserName: aws.String(newName), UserName: aws.String(oldName)}
+-	req, _ := iam.New(session.New()).UpdateUserRequest(params)
++	req, _ := iam.New().UpdateUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamUpdateUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -1154,7 +1153,7 @@ func TestEmbeddedIamDeleteUser(t *testing.T) {
+ 
+ 	userName := aws.String("TestUser-New")
+ 	params := &iam.DeleteUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).DeleteUserRequest(params)
++	req, _ := iam.New().DeleteUserRequest(params)
+ 	_ = req.Build()
+ 	out := iamDeleteUserResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -1173,7 +1172,7 @@ func TestEmbeddedIamCreateAccessKey(t *testing.T) {
+ 
+ 	userName := aws.String("TestUser")
+ 	params := &iam.CreateAccessKeyInput{UserName: userName}
+-	req, _ := iam.New(session.New()).CreateAccessKeyRequest(params)
++	req, _ := iam.New().CreateAccessKeyRequest(params)
+ 	_ = req.Build()
+ 	out := iamCreateAccessKeyResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -1629,7 +1628,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 	t.Run("CreateUser", func(t *testing.T) {
+ 		userName := aws.String("WorkflowUser")
+ 		params := &iam.CreateUserInput{UserName: userName}
+-		req, _ := iam.New(session.New()).CreateUserRequest(params)
++		req, _ := iam.New().CreateUserRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1640,7 +1639,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 	t.Run("CreateAccessKey", func(t *testing.T) {
+ 		userName := aws.String("WorkflowUser")
+ 		params := &iam.CreateAccessKeyInput{UserName: userName}
+-		req, _ := iam.New(session.New()).CreateAccessKeyRequest(params)
++		req, _ := iam.New().CreateAccessKeyRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1661,7 +1660,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 				}]
+ 			}`),
+ 		}
+-		req, _ := iam.New(session.New()).PutUserPolicyRequest(params)
++		req, _ := iam.New().PutUserPolicyRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1671,7 +1670,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 	// 4. List users to verify
+ 	t.Run("ListUsers", func(t *testing.T) {
+ 		params := &iam.ListUsersInput{}
+-		req, _ := iam.New(session.New()).ListUsersRequest(params)
++		req, _ := iam.New().ListUsersRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1689,7 +1688,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 	// 5. Deleting a user that still has an access key is refused
+ 	t.Run("DeleteUserConflict", func(t *testing.T) {
+ 		params := &iam.DeleteUserInput{UserName: aws.String("WorkflowUser")}
+-		req, _ := iam.New(session.New()).DeleteUserRequest(params)
++		req, _ := iam.New().DeleteUserRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1699,7 +1698,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 	// 6. Delete the access key, then the user
+ 	t.Run("DeleteAccessKey", func(t *testing.T) {
+ 		params := &iam.DeleteAccessKeyInput{UserName: aws.String("WorkflowUser"), AccessKeyId: aws.String(accessKeyId)}
+-		req, _ := iam.New(session.New()).DeleteAccessKeyRequest(params)
++		req, _ := iam.New().DeleteAccessKeyRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1708,7 +1707,7 @@ func TestEmbeddedIamFullWorkflow(t *testing.T) {
+ 
+ 	t.Run("DeleteUser", func(t *testing.T) {
+ 		params := &iam.DeleteUserInput{UserName: aws.String("WorkflowUser")}
+-		req, _ := iam.New(session.New()).DeleteUserRequest(params)
++		req, _ := iam.New().DeleteUserRequest(params)
+ 		_ = req.Build()
+ 		response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 		assert.NoError(t, err)
+@@ -1840,7 +1839,7 @@ func TestEmbeddedIamGetUserNotFound(t *testing.T) {
+ 
+ 	userName := aws.String("NonExistentUser")
+ 	params := &iam.GetUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).GetUserRequest(params)
++	req, _ := iam.New().GetUserRequest(params)
+ 	_ = req.Build()
+ 	response, _ := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.Equal(t, http.StatusNotFound, response.Code)
+@@ -1853,7 +1852,7 @@ func TestEmbeddedIamDeleteUserNotFound(t *testing.T) {
+ 
+ 	userName := aws.String("NonExistentUser")
+ 	params := &iam.DeleteUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).DeleteUserRequest(params)
++	req, _ := iam.New().DeleteUserRequest(params)
+ 	_ = req.Build()
+ 	response, _ := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.Equal(t, http.StatusNotFound, response.Code)
+@@ -1868,7 +1867,7 @@ func TestEmbeddedIamUpdateUserNotFound(t *testing.T) {
+ 		UserName:    aws.String("NonExistentUser"),
+ 		NewUserName: aws.String("NewName"),
+ 	}
+-	req, _ := iam.New(session.New()).UpdateUserRequest(params)
++	req, _ := iam.New().UpdateUserRequest(params)
+ 	_ = req.Build()
+ 	response, _ := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.Equal(t, http.StatusNotFound, response.Code)
+@@ -2038,7 +2037,7 @@ func TestEmbeddedIamGetUserPolicyUserNotFound(t *testing.T) {
+ 		UserName:   aws.String("NonExistentUser"),
+ 		PolicyName: aws.String("TestPolicy"),
+ 	}
+-	req, _ := iam.New(session.New()).GetUserPolicyRequest(params)
++	req, _ := iam.New().GetUserPolicyRequest(params)
+ 	_ = req.Build()
+ 	response, _ := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.Equal(t, http.StatusNotFound, response.Code)
+@@ -2052,7 +2051,7 @@ func TestEmbeddedIamCreatePolicyMalformed(t *testing.T) {
+ 		PolicyName:     aws.String("TestPolicy"),
+ 		PolicyDocument: aws.String("invalid json"),
+ 	}
+-	req, _ := iam.New(session.New()).CreatePolicyRequest(params)
++	req, _ := iam.New().CreatePolicyRequest(params)
+ 	_ = req.Build()
+ 	response, _ := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+ 	assert.Equal(t, http.StatusBadRequest, response.Code)
+@@ -2074,7 +2073,7 @@ func TestEmbeddedIamListAccessKeysForUser(t *testing.T) {
+ 	}
+ 
+ 	params := &iam.ListAccessKeysInput{UserName: aws.String("TestUser")}
+-	req, _ := iam.New(session.New()).ListAccessKeysRequest(params)
++	req, _ := iam.New().ListAccessKeysRequest(params)
+ 	_ = req.Build()
+ 	out := iamListAccessKeysResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -2698,7 +2697,7 @@ func TestEmbeddedIamListAccessKeysShowsStatus(t *testing.T) {
+ 	}
+ 
+ 	params := &iam.ListAccessKeysInput{UserName: aws.String("TestUser")}
+-	req, _ := iam.New(session.New()).ListAccessKeysRequest(params)
++	req, _ := iam.New().ListAccessKeysRequest(params)
+ 	_ = req.Build()
+ 	out := iamListAccessKeysResponse{}
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, &out)
+@@ -2982,7 +2981,7 @@ func TestEmbeddedIamReadOnly(t *testing.T) {
+ 	// Try CreateUser (Write)
+ 	userName := aws.String("ReadOnlyUser")
+ 	params := &iam.CreateUserInput{UserName: userName}
+-	req, _ := iam.New(session.New()).CreateUserRequest(params)
++	req, _ := iam.New().CreateUserRequest(params)
+ 	_ = req.Build()
+ 
+ 	response, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -2995,7 +2994,7 @@ func TestEmbeddedIamReadOnly(t *testing.T) {
+ 
+ 	// Try ListUsers (Read) - Should succeed
+ 	paramsList := &iam.ListUsersInput{}
+-	reqList, _ := iam.New(session.New()).ListUsersRequest(paramsList)
++	reqList, _ := iam.New().ListUsersRequest(paramsList)
+ 	_ = reqList.Build()
+ 
+ 	outList := iamListUsersResponse{}
+diff --git a/weed/s3api/s3api_embedded_iam_user_tags_test.go b/weed/s3api/s3api_embedded_iam_user_tags_test.go
+index ba9a5f3..d8d5e78 100644
+--- a/weed/s3api/s3api_embedded_iam_user_tags_test.go
++++ b/weed/s3api/s3api_embedded_iam_user_tags_test.go
+@@ -8,10 +8,9 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/session"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+@@ -54,7 +53,7 @@ func TestEmbeddedIamTagUser(t *testing.T) {
+ 			{Key: aws.String("team"), Value: aws.String("storage")},
+ 		},
+ 	}
+-	req, _ := iam.New(session.New()).TagUserRequest(params)
++	req, _ := iam.New().TagUserRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	out := iamTagUserResponse{}
+@@ -86,7 +85,7 @@ func TestEmbeddedIamListUserTags(t *testing.T) {
+ 	}
+ 
+ 	params := &iam.ListUserTagsInput{UserName: aws.String("bob")}
+-	req, _ := iam.New(session.New()).ListUserTagsRequest(params)
++	req, _ := iam.New().ListUserTagsRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	out := iamListUserTagsResponse{}
+@@ -119,7 +118,7 @@ func TestEmbeddedIamUntagUser(t *testing.T) {
+ 		UserName: aws.String("carol"),
+ 		TagKeys:  []*string{aws.String("team"), aws.String("missing")},
+ 	}
+-	req, _ := iam.New(session.New()).UntagUserRequest(params)
++	req, _ := iam.New().UntagUserRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	rr, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -144,7 +143,7 @@ func TestEmbeddedIamTagUserInvalidKeyLength(t *testing.T) {
+ 		UserName: aws.String("dave"),
+ 		Tags:     []*iam.Tag{{Key: aws.String(longKey), Value: aws.String("v")}},
+ 	}
+-	req, _ := iam.New(session.New()).TagUserRequest(params)
++	req, _ := iam.New().TagUserRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	rr, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -169,7 +168,7 @@ func TestEmbeddedIamTagUserReplacesDuplicate(t *testing.T) {
+ 		UserName: aws.String("eve"),
+ 		Tags:     []*iam.Tag{{Key: aws.String("env"), Value: aws.String("prod")}},
+ 	}
+-	req, _ := iam.New(session.New()).TagUserRequest(params)
++	req, _ := iam.New().TagUserRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	rr, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+@@ -308,7 +307,7 @@ func TestEmbeddedIamTagUserNotFound(t *testing.T) {
+ 		UserName: aws.String("ghost"),
+ 		Tags:     []*iam.Tag{{Key: aws.String("env"), Value: aws.String("prod")}},
+ 	}
+-	req, _ := iam.New(session.New()).TagUserRequest(params)
++	req, _ := iam.New().TagUserRequest(params)
+ 	require.NoError(t, req.Build())
+ 
+ 	rr, err := executeEmbeddedIamRequest(api, req.HTTPRequest, nil)
+diff --git a/weed/s3api/s3api_iam_oidc_test.go b/weed/s3api/s3api_iam_oidc_test.go
+index 0889885..f0ec00c 100644
+--- a/weed/s3api/s3api_iam_oidc_test.go
++++ b/weed/s3api/s3api_iam_oidc_test.go
+@@ -3,7 +3,7 @@ package s3api
+ import (
+ 	"context"
+ 	"fmt"
+-	"github.com/aws/aws-sdk-go/service/iam"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"net/http"
+ 	"net/http/httptest"
+ 	"net/url"
+diff --git a/weed/s3api/s3api_iam_role_test.go b/weed/s3api/s3api_iam_role_test.go
+index 985c3e8..b1696a6 100644
+--- a/weed/s3api/s3api_iam_role_test.go
++++ b/weed/s3api/s3api_iam_role_test.go
+@@ -9,9 +9,9 @@ import (
+ 	"strings"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/service/iam"
+ 	iamlib "github.com/seaweedfs/seaweedfs/weed/iam"
+ 	"github.com/seaweedfs/seaweedfs/weed/iam/integration"
++	iam "github.com/seaweedfs/seaweedfs/weed/iamapi/testclient"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	"github.com/stretchr/testify/assert"
+diff --git a/weed/s3api/s3api_list_parts_no_such_upload_test.go b/weed/s3api/s3api_list_parts_no_such_upload_test.go
+index 49c90ba..f4ebb76 100644
+--- a/weed/s3api/s3api_list_parts_no_such_upload_test.go
++++ b/weed/s3api/s3api_list_parts_no_such_upload_test.go
+@@ -6,11 +6,11 @@ import (
+ 	"sort"
+ 	"testing"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"google.golang.org/grpc/codes"
+ 	"google.golang.org/grpc/status"
+ )
+diff --git a/weed/s3api/s3api_object_acl_permissions_test.go b/weed/s3api/s3api_object_acl_permissions_test.go
+index b75c82e..c8a92a5 100644
+--- a/weed/s3api/s3api_object_acl_permissions_test.go
++++ b/weed/s3api/s3api_object_acl_permissions_test.go
+@@ -10,7 +10,7 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+@@ -167,19 +167,19 @@ func TestPutObjectAclPermissions(t *testing.T) {
+ 				wantGrants = 2
+ 			}
+ 			require.Len(t, grants, wantGrants)
+-			require.Equal(t, wantOwner, aws.StringValue(grants[0].Grantee.ID), "full-control grant must belong to the object owner")
+-			require.Equal(t, s3_constants.PermissionFullControl, aws.StringValue(grants[0].Permission))
++			require.Equal(t, wantOwner, aws.ToString(grants[0].Grantee.ID), "full-control grant must belong to the object owner")
++			require.Equal(t, s3_constants.PermissionFullControl, aws.ToString(grants[0].Permission))
+ 			if tt.acl == "public-read" {
+-				require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.StringValue(grants[1].Grantee.URI))
+-				require.Equal(t, s3_constants.PermissionRead, aws.StringValue(grants[1].Permission))
++				require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.ToString(grants[1].Grantee.URI))
++				require.Equal(t, s3_constants.PermissionRead, aws.ToString(grants[1].Permission))
+ 			}
+ 			if strings.HasPrefix(tt.acl, "bucket-owner-") {
+-				require.Equal(t, bucketOwner, aws.StringValue(grants[1].Grantee.ID))
++				require.Equal(t, bucketOwner, aws.ToString(grants[1].Grantee.ID))
+ 				permission := s3_constants.PermissionRead
+ 				if tt.acl == "bucket-owner-full-control" {
+ 					permission = s3_constants.PermissionFullControl
+ 				}
+-				require.Equal(t, permission, aws.StringValue(grants[1].Permission))
++				require.Equal(t, permission, aws.ToString(grants[1].Permission))
+ 			}
+ 		})
+ 	}
+@@ -227,7 +227,7 @@ func TestPutObjectAclWithoutAuth(t *testing.T) {
+ 			require.Equal(t, AccountAdmin.Id, string(filer.update.Entry.Extended[s3_constants.ExtAmzOwnerKey]))
+ 			grants := GetAcpGrants(filer.update.Entry.Extended)
+ 			require.Len(t, grants, 2)
+-			require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.StringValue(grants[1].Grantee.URI))
++			require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.ToString(grants[1].Grantee.URI))
+ 		})
+ 	}
+ }
+diff --git a/weed/s3api/s3api_object_anonymous_read_test.go b/weed/s3api/s3api_object_anonymous_read_test.go
+index 769d8c1..9e60aaa 100644
+--- a/weed/s3api/s3api_object_anonymous_read_test.go
++++ b/weed/s3api/s3api_object_anonymous_read_test.go
+@@ -12,13 +12,13 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/policy_engine"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/stretchr/testify/require"
+ 	"google.golang.org/grpc/codes"
+ 	"google.golang.org/grpc/status"
+diff --git a/weed/s3api/s3api_object_handlers_copy_acl_test.go b/weed/s3api/s3api_object_handlers_copy_acl_test.go
+index 52f9767..3b464e0 100644
+--- a/weed/s3api/s3api_object_handlers_copy_acl_test.go
++++ b/weed/s3api/s3api_object_handlers_copy_acl_test.go
+@@ -13,10 +13,7 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	"github.com/aws/aws-sdk-go/aws/signer/v4"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/cluster"
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+@@ -24,6 +21,9 @@ import (
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	v4 "github.com/seaweedfs/seaweedfs/weed/s3api/testv4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/wdclient"
+ 	"github.com/stretchr/testify/require"
+ 	"google.golang.org/grpc/codes"
+@@ -432,16 +432,16 @@ func TestCopyObjectDestinationACL(t *testing.T) {
+ 			publicRead := false
+ 			customPermission := map[string]string{s3_constants.AmzAclRead: s3_constants.PermissionRead, s3_constants.AmzAclFullControl: s3_constants.PermissionFullControl, s3_constants.AmzAclReadAcp: s3_constants.PermissionReadAcp, s3_constants.AmzAclWriteAcp: s3_constants.PermissionWriteAcp}[tt.grantHeader]
+ 			for _, grant := range grants {
+-				require.NotEqual(t, sourceOwner, aws.StringValue(grant.Grantee.ID), "source owner grants must not transfer")
+-				ownerFullControl = ownerFullControl || (aws.StringValue(grant.Grantee.ID) == wantOwner && aws.StringValue(grant.Permission) == s3_constants.PermissionFullControl)
+-				publicRead = publicRead || (aws.StringValue(grant.Grantee.URI) == s3_constants.GranteeGroupAllUsers && aws.StringValue(grant.Permission) == s3_constants.PermissionRead)
++				require.NotEqual(t, sourceOwner, aws.ToString(grant.Grantee.ID), "source owner grants must not transfer")
++				ownerFullControl = ownerFullControl || (aws.ToString(grant.Grantee.ID) == wantOwner && aws.ToString(grant.Permission) == s3_constants.PermissionFullControl)
++				publicRead = publicRead || (aws.ToString(grant.Grantee.URI) == s3_constants.GranteeGroupAllUsers && aws.ToString(grant.Permission) == s3_constants.PermissionRead)
+ 			}
+ 			require.True(t, ownerFullControl)
+ 			require.Equal(t, tt.acl == "public-read", publicRead)
+ 			if customPermission != "" {
+ 				require.Len(t, grants, 2)
+-				require.Equal(t, bucketOwner, aws.StringValue(grants[0].Grantee.ID))
+-				require.Equal(t, customPermission, aws.StringValue(grants[0].Permission))
++				require.Equal(t, bucketOwner, aws.ToString(grants[0].Grantee.ID))
++				require.Equal(t, customPermission, aws.ToString(grants[0].Permission))
+ 			} else if tt.acl == "" || tt.acl == "private" {
+ 				require.Len(t, grants, 1, "private copies must not inherit any source grants")
+ 			}
+diff --git a/weed/s3api/s3api_object_upload_acl_test.go b/weed/s3api/s3api_object_upload_acl_test.go
+index 0671453..e827029 100644
+--- a/weed/s3api/s3api_object_upload_acl_test.go
++++ b/weed/s3api/s3api_object_upload_acl_test.go
+@@ -13,13 +13,13 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
++	"github.com/aws/aws-sdk-go-v2/aws"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	v4 "github.com/seaweedfs/seaweedfs/weed/s3api/testv4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
+ 	"github.com/stretchr/testify/require"
+ 	"google.golang.org/protobuf/proto"
+ )
+@@ -602,18 +602,18 @@ func TestPutObjectUploadACL(t *testing.T) {
+ 				}
+ 				require.Len(t, grants, wantCount, "custom uploads must retain the owner's full control")
+ 				for i, grantee := range wantGrantees {
+-					require.Equal(t, grantee, aws.StringValue(grants[i].Grantee.ID))
+-					require.Equal(t, wantPermission, aws.StringValue(grants[i].Permission))
++					require.Equal(t, grantee, aws.ToString(grants[i].Grantee.ID))
++					require.Equal(t, wantPermission, aws.ToString(grants[i].Permission))
+ 				}
+ 				if !ownerFullControl {
+ 					ownerGrant := grants[len(grants)-1]
+-					require.Equal(t, wantOwner, aws.StringValue(ownerGrant.Grantee.ID))
+-					require.Equal(t, s3_constants.GrantTypeCanonicalUser, aws.StringValue(ownerGrant.Grantee.Type))
+-					require.Equal(t, s3_constants.PermissionFullControl, aws.StringValue(ownerGrant.Permission))
++					require.Equal(t, wantOwner, aws.ToString(ownerGrant.Grantee.ID))
++					require.Equal(t, s3_constants.GrantTypeCanonicalUser, aws.ToString(ownerGrant.Grantee.Type))
++					require.Equal(t, s3_constants.PermissionFullControl, aws.ToString(ownerGrant.Permission))
+ 				}
+ 			} else {
+-				require.Equal(t, wantOwner, aws.StringValue(grants[0].Grantee.ID))
+-				require.Equal(t, s3_constants.PermissionFullControl, aws.StringValue(grants[0].Permission))
++				require.Equal(t, wantOwner, aws.ToString(grants[0].Grantee.ID))
++				require.Equal(t, s3_constants.PermissionFullControl, aws.ToString(grants[0].Permission))
+ 				if wantACL == "public-read" || wantACL == "public-read-write" || wantACL == "authenticated-read" {
+ 					wantGrants := 2
+ 					if wantACL == "public-read-write" {
+@@ -624,20 +624,20 @@ func TestPutObjectUploadACL(t *testing.T) {
+ 					if wantACL == "authenticated-read" {
+ 						wantGroup = s3_constants.GranteeGroupAuthenticatedUsers
+ 					}
+-					require.Equal(t, wantGroup, aws.StringValue(grants[1].Grantee.URI))
+-					require.Equal(t, s3_constants.PermissionRead, aws.StringValue(grants[1].Permission))
++					require.Equal(t, wantGroup, aws.ToString(grants[1].Grantee.URI))
++					require.Equal(t, s3_constants.PermissionRead, aws.ToString(grants[1].Permission))
+ 					if wantACL == "public-read-write" {
+-						require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.StringValue(grants[2].Grantee.URI))
+-						require.Equal(t, s3_constants.PermissionWrite, aws.StringValue(grants[2].Permission))
++						require.Equal(t, s3_constants.GranteeGroupAllUsers, aws.ToString(grants[2].Grantee.URI))
++						require.Equal(t, s3_constants.PermissionWrite, aws.ToString(grants[2].Permission))
+ 					}
+ 				} else if ownership == s3_constants.OwnershipObjectWriter && strings.HasPrefix(wantACL, "bucket-owner-") {
+ 					require.Len(t, grants, 2)
+-					require.Equal(t, bucketOwner, aws.StringValue(grants[1].Grantee.ID))
++					require.Equal(t, bucketOwner, aws.ToString(grants[1].Grantee.ID))
+ 					wantPermission := s3_constants.PermissionRead
+ 					if wantACL == "bucket-owner-full-control" {
+ 						wantPermission = s3_constants.PermissionFullControl
+ 					}
+-					require.Equal(t, wantPermission, aws.StringValue(grants[1].Permission))
++					require.Equal(t, wantPermission, aws.ToString(grants[1].Permission))
+ 				} else {
+ 					require.Len(t, grants, 1)
+ 				}
+@@ -654,8 +654,8 @@ func TestPutObjectUploadACL(t *testing.T) {
+ 				require.Equal(t, wantOwner, acl.Owner.ID)
+ 				require.Len(t, acl.AccessControlList.Grant, len(grants))
+ 				for i, grant := range acl.AccessControlList.Grant {
+-					require.Equal(t, aws.StringValue(grants[i].Grantee.ID), grant.Grantee.ID)
+-					require.Equal(t, Permission(aws.StringValue(grants[i].Permission)), grant.Permission)
++					require.Equal(t, aws.ToString(grants[i].Grantee.ID), grant.Grantee.ID)
++					require.Equal(t, Permission(aws.ToString(grants[i].Permission)), grant.Permission)
+ 				}
+ 			}
+ 		})
+diff --git a/weed/s3api/s3api_server_routing_test.go b/weed/s3api/s3api_server_routing_test.go
+index b008b18..60d9863 100644
+--- a/weed/s3api/s3api_server_routing_test.go
++++ b/weed/s3api/s3api_server_routing_test.go
+@@ -11,8 +11,6 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+ 	"github.com/gorilla/mux"
+ 	"github.com/seaweedfs/seaweedfs/weed/credential"
+ 	"github.com/seaweedfs/seaweedfs/weed/iam/integration"
+@@ -21,6 +19,8 @@ import (
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/cors"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
++	v4 "github.com/seaweedfs/seaweedfs/weed/s3api/testv4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+diff --git a/weed/s3api/s3api_tables_auth_test.go b/weed/s3api/s3api_tables_auth_test.go
+index 85080f5..448d0e2 100644
+--- a/weed/s3api/s3api_tables_auth_test.go
++++ b/weed/s3api/s3api_tables_auth_test.go
+@@ -7,12 +7,12 @@ import (
+ 	"testing"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws/credentials"
+-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/iceberg"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/lance"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	v4 "github.com/seaweedfs/seaweedfs/weed/s3api/testv4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+ )
+diff --git a/workspace/scratch/98dabd1608e5/seaweedfs-src/weed/s3api/testv4/credentials/credentials.go b/weed/s3api/testv4/credentials/credentials.go
+new file mode 100644
+index 0000000..dfc22b7
+--- /dev/null
++++ b/weed/s3api/testv4/credentials/credentials.go
+@@ -0,0 +1,11 @@
++package credentials
++
++// Credentials is the static credential shape consumed by the local SigV4
++// test adapter.
++type Credentials struct {
++	AccessKeyID, SecretAccessKey, SessionToken string
++}
++
++func NewStaticCredentials(accessKey, secretKey, sessionToken string) *Credentials {
++	return &Credentials{AccessKeyID: accessKey, SecretAccessKey: secretKey, SessionToken: sessionToken}
++}
+diff --git a/workspace/scratch/98dabd1608e5/seaweedfs-src/weed/s3api/testv4/signer.go b/weed/s3api/testv4/signer.go
+new file mode 100644
+index 0000000..930a3f9
+--- /dev/null
++++ b/weed/s3api/testv4/signer.go
+@@ -0,0 +1,105 @@
++// Package testv4 adapts the maintained AWS SDK for Go v2 signer to the small
++// request-signing surface used by SeaweedFS regression tests.
++package testv4
++
++import (
++	"context"
++	"crypto/sha256"
++	"encoding/hex"
++	"io"
++	"net/http"
++	"net/url"
++	"strconv"
++	"time"
++
++	"github.com/aws/aws-sdk-go-v2/aws"
++	sdkv4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/testv4/credentials"
++)
++
++type Signer struct {
++	credentials aws.Credentials
++	signer      *sdkv4.Signer
++}
++
++func NewSigner(creds *credentials.Credentials) *Signer {
++	return &Signer{
++		credentials: aws.Credentials{
++			AccessKeyID: creds.AccessKeyID, SecretAccessKey: creds.SecretAccessKey,
++			SessionToken: creds.SessionToken,
++		},
++		signer: sdkv4.NewSigner(),
++	}
++}
++
++func payloadHash(body io.ReadSeeker) (string, error) {
++	if body == nil {
++		sum := sha256.Sum256(nil)
++		return hex.EncodeToString(sum[:]), nil
++	}
++	position, err := body.Seek(0, io.SeekCurrent)
++	if err != nil {
++		return "", err
++	}
++	if _, err = body.Seek(0, io.SeekStart); err != nil {
++		return "", err
++	}
++	h := sha256.New()
++	if _, err = io.Copy(h, body); err != nil {
++		return "", err
++	}
++	if _, err = body.Seek(position, io.SeekStart); err != nil {
++		return "", err
++	}
++	return hex.EncodeToString(h.Sum(nil)), nil
++}
++
++func (s *Signer) Sign(req *http.Request, body io.ReadSeeker, service, region string, signingTime time.Time) (http.Header, error) {
++	hash, err := payloadHash(body)
++	if err != nil {
++		return nil, err
++	}
++	// The v1 signer excluded the transport-generated Content-Length header.
++	// It also materialized the S3 payload hash header before canonicalization.
++	contentLength := req.ContentLength
++	req.ContentLength = -1
++	defer func() { req.ContentLength = contentLength }()
++	if service == "s3" {
++		if suppliedHash := req.Header.Get("X-Amz-Content-Sha256"); suppliedHash != "" {
++			hash = suppliedHash
++		} else {
++			req.Header.Set("X-Amz-Content-Sha256", hash)
++		}
++	}
++	err = s.signer.SignHTTP(context.Background(), s.credentials, req, hash, service, region, signingTime)
++	return req.Header, err
++}
++
++func (s *Signer) Presign(req *http.Request, body io.ReadSeeker, service, region string, expires time.Duration, signingTime time.Time) (http.Header, error) {
++	hash, err := payloadHash(body)
++	if err != nil {
++		return nil, err
++	}
++	query := req.URL.Query()
++	query.Set("X-Amz-Expires", strconv.FormatInt(int64(expires/time.Second), 10))
++	req.URL.RawQuery = query.Encode()
++	contentLength := req.ContentLength
++	req.ContentLength = -1
++	defer func() { req.ContentLength = contentLength }()
++	if service == "s3" {
++		hash = "UNSIGNED-PAYLOAD"
++	}
++	signedURI, headers, err := s.signer.PresignHTTP(context.Background(), s.credentials, req, hash, service, region, signingTime)
++	if err != nil {
++		return nil, err
++	}
++	signedURL, err := url.Parse(signedURI)
++	if err != nil {
++		return nil, err
++	}
++	req.URL = signedURL
++	for name, values := range headers {
++		req.Header[name] = append([]string(nil), values...)
++	}
++	return headers, nil
++}
+diff --git a/weed/s3api/wire/types_test.go b/weed/s3api/wire/types_test.go
+index 86900e0..49030c2 100644
+--- a/weed/s3api/wire/types_test.go
++++ b/weed/s3api/wire/types_test.go
+@@ -2,6 +2,7 @@ package wire
+ 
+ import (
+ 	"bytes"
++	"crypto/sha256"
+ 	"encoding/json"
+ 	"encoding/xml"
+ 	"fmt"
+@@ -9,9 +10,6 @@ import (
+ 	"strings"
+ 	"testing"
+ 	"time"
+-
+-	legacyxml "github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+-	legacy "github.com/aws/aws-sdk-go/service/s3"
+ )
+ 
+ func fillWireFixture(v reflect.Value) {
+@@ -48,60 +46,62 @@ func fillWireFixture(v reflect.Value) {
+ 	}
+ }
+ 
+-func wirePairs() [][2]any {
+-	return [][2]any{
+-		{AbortMultipartUploadInput{}, legacy.AbortMultipartUploadInput{}},
+-		{AbortMultipartUploadOutput{}, legacy.AbortMultipartUploadOutput{}},
+-		{AccessControlPolicy{}, legacy.AccessControlPolicy{}},
+-		{CompleteMultipartUploadInput{}, legacy.CompleteMultipartUploadInput{}},
+-		{CompletedMultipartUpload{}, legacy.CompletedMultipartUpload{}},
+-		{CompletedPart{}, legacy.CompletedPart{}},
+-		{CreateMultipartUploadInput{}, legacy.CreateMultipartUploadInput{}},
+-		{CreateMultipartUploadOutput{}, legacy.CreateMultipartUploadOutput{}},
+-		{Grant{}, legacy.Grant{}},
+-		{Grantee{}, legacy.Grantee{}},
+-		{Initiator{}, legacy.Initiator{}},
+-		{ListMultipartUploadsInput{}, legacy.ListMultipartUploadsInput{}},
+-		{ListPartsInput{}, legacy.ListPartsInput{}},
+-		{MultipartUpload{}, legacy.MultipartUpload{}},
+-		{Owner{}, legacy.Owner{}},
+-		{OwnershipControls{}, legacy.OwnershipControls{}},
+-		{OwnershipControlsRule{}, legacy.OwnershipControlsRule{}},
+-		{Part{}, legacy.Part{}},
+-		{VersioningConfiguration{}, legacy.VersioningConfiguration{}},
++func wireValues() []any {
++	return []any{
++		AbortMultipartUploadInput{}, AbortMultipartUploadOutput{}, AccessControlPolicy{},
++		CompleteMultipartUploadInput{}, CompletedMultipartUpload{}, CompletedPart{},
++		CreateMultipartUploadInput{}, CreateMultipartUploadOutput{}, Grant{}, Grantee{}, Initiator{},
++		ListMultipartUploadsInput{}, ListPartsInput{}, MultipartUpload{}, Owner{}, OwnershipControls{},
++		OwnershipControlsRule{}, Part{}, VersioningConfiguration{},
+ 	}
+ }
+ 
+ // JSON is a persisted ACL format, so nil pointers, empty collections and order matter.
+-func TestLegacyJSONCompatibility(t *testing.T) {
+-	for _, pair := range wirePairs() {
+-		t.Run(reflect.TypeOf(pair[0]).Name(), func(t *testing.T) {
+-			for _, populated := range []bool{false, true} {
+-				var data [2][]byte
+-				for i, value := range pair {
+-					fixture := reflect.New(reflect.TypeOf(value)).Elem()
+-					if populated {
+-						fillWireFixture(fixture)
+-					}
+-					var err error
+-					data[i], err = json.Marshal(fixture.Interface())
+-					if err != nil {
+-						t.Fatal(err)
+-					}
+-				}
+-				if !bytes.Equal(data[0], data[1]) {
+-					t.Fatalf("JSON differs populated=%v: %s / %s", populated, data[0], data[1])
++func TestFrozenSDKV1JSONCompatibility(t *testing.T) {
++	want := map[string][2]string{
++		"AbortMultipartUploadInput":    {"a48d14487e76ec335db71c3f22b9071b66d666aa5770acce9ef1a057975d7357", "1534f6059f55401a249e4d25e006fc2afa099f6464be8c8b7884ed3eba838882"},
++		"AbortMultipartUploadOutput":   {"3234c512c39a716fe4638c384edc22236f3995976ec5145da4a8e73593456b1a", "a1fed36a836b37f0a95d7b5d07c377ec642ae0cfa536205943e06608215456e6"},
++		"AccessControlPolicy":          {"f5fb17c68708f4a4659a694325f34fbffe108bda6f6ace57f9127e665a81a06a", "d24a038bfdb16012db7554b1f27dad475142d4fce69f75e111a9a111ff859686"},
++		"CompleteMultipartUploadInput": {"def306c8e43687a84f8b3c6e43d22376b92035edd0515c2a3951080e041ccc01", "ed1c682ca4247efe612b8501dfb0ec670f2b69109aa48a35ff47ba262605599f"},
++		"CompletedMultipartUpload":     {"0cbf908246ec593a5c55ea0eb97e898eb44f0a8525ab54f8953d9798a497d262", "8e701cff72b9c24c01cd9d163c7db5c50f4aed4e3db66a97c28c09029fbd1c57"},
++		"CompletedPart":                {"77d509cf17fae7e390743c9346521b306f1f3a4ecfd19dbce7d9919250072a30", "86bf6bd8071c04331684fc54f168259085da82497e80093fde1fc58fc7f6bd60"},
++		"CreateMultipartUploadInput":   {"4be435d3b0f3cab74ed2be5a092cead961ec5dc5f6f5278ffefa47eb1b59d592", "f4e4026eebeaf4d9f5f7d5efc03dc8f1e72fd5fda235c429ab2c1823cc8fb2f9"},
++		"CreateMultipartUploadOutput":  {"6595a7cb77a9e3c4aca6da245a5b80868d761c4b021922e28afa26cfd28d9c7f", "f464ea4f5a95b555c20852ff33ee34fb9975180caae0b55cc368bc0312b9eadf"},
++		"Grant":                        {"8267b897b58460506489e5f4799c05b788e73dd7bcab80be520eb3520a844884", "69f45c81d5a9ccdb7dcc6934ada2c684930787fb9ad9e5b6275735dc5475fc4c"},
++		"Grantee":                      {"7b5544e213b116d61f3432b4b1e4c7759248aa46665ad2662619f70872bd2c4b", "770ca1274207b1958e8ebb639a5847fd2317549110eefcb623d5756d900f1c6d"},
++		"Initiator":                    {"fd950baecf6c2a7bb79fd8e6fdf77e87ceb78361dd6d6b42fcb4a8a6a8241fea", "b9321997439a31922430fbf063e924843c9fdfe9d6811bbbe5547b092d4cfb4b"},
++		"ListMultipartUploadsInput":    {"d846d7de0c675f1f08057a3b4d7e3b11a63d97ed1f9709b7932b6c43864a00e2", "07efb8bcd21df22466a506962068d9c194685c9365eb601b5cd0533575a7b439"},
++		"ListPartsInput":               {"1e64368e120c45fd9d65311e443965ba20a6c4993aba05cc926dcdfa0fba175e", "f484fcb7f1e03eb6b97bfdd635c47c2c89982ca7b60e62fa46c5486513f42674"},
++		"MultipartUpload":              {"93efd0c7190f4d097110628f0a220c6e435950791e4054e28fb67e53cd2b3c0f", "d92d8471556b32d5c7a8c0072a36253859e15287ed7a1df237531aa1a587669c"},
++		"Owner":                        {"fd950baecf6c2a7bb79fd8e6fdf77e87ceb78361dd6d6b42fcb4a8a6a8241fea", "b9321997439a31922430fbf063e924843c9fdfe9d6811bbbe5547b092d4cfb4b"},
++		"OwnershipControls":            {"c3e02209c37fbcac48f00d8e34b06ead1990a094168bd2e9f7ed9ec9f35b3b3b", "b682526f4a907d64715299ea4610cec04b7cb2937a8ba1202ae389e78e9b71b8"},
++		"OwnershipControlsRule":        {"4754eb5d19f154833c453c1cef34e4f33a81acb1c3f8d3e3c749511905269f32", "732ab8f923f6c2286e14f575777b51ba126fc9ff5a2770aeb1dc71b8226842c4"},
++		"Part":                         {"ea59efe19aa16b5c91b900c006ef6f66333462d9012f9d901bd8847345400751", "288b0f5a6769aba941241dc6914f765f1931a6361772720b1534bea92c775b4b"},
++		"VersioningConfiguration":      {"a4cb25ff5ff95bc9d83a471b8bd436781b891d3a45aba7daa76bd7b2ae4df3ee", "2122bc88ac5845a255c6c8805760ee07b3a1eec7b34839d1802df1b68f23e13a"},
++	}
++	for _, value := range wireValues() {
++		name := reflect.TypeOf(value).Name()
++		t.Run(name, func(t *testing.T) {
++			for state, populated := range []bool{false, true} {
++				fixture := reflect.New(reflect.TypeOf(value)).Elem()
++				if populated {
++					fillWireFixture(fixture)
+ 				}
+-				local := reflect.New(reflect.TypeOf(pair[0])).Interface()
+-				if err := json.Unmarshal(data[1], local); err != nil {
++				data, err := json.Marshal(fixture.Interface())
++				if err != nil {
+ 					t.Fatal(err)
+ 				}
+-				roundTrip, err := json.Marshal(local)
+-				if err != nil {
++				got := fmt.Sprintf("%x", sha256.Sum256(data))
++				if got != want[name][state] {
++					t.Fatalf("persisted JSON drift populated=%v: hash %s, JSON %s", populated, got, data)
++				}
++				local := reflect.New(reflect.TypeOf(value)).Interface()
++				if err := json.Unmarshal(data, local); err != nil {
+ 					t.Fatal(err)
+ 				}
+-				if !bytes.Equal(roundTrip, data[1]) {
+-					t.Fatal("persisted legacy JSON did not round trip")
++				roundTrip, err := json.Marshal(local)
++				if err != nil || !bytes.Equal(roundTrip, data) {
++					t.Fatalf("persisted JSON did not round trip: %v", err)
+ 				}
+ 			}
+ 		})
+@@ -109,28 +109,41 @@ func TestLegacyJSONCompatibility(t *testing.T) {
+ }
+ 
+ // Compare the standard XML serializer actually used for multipart responses.
+-func TestLegacyXMLCompatibility(t *testing.T) {
+-	for _, pair := range wirePairs() {
+-		name := reflect.TypeOf(pair[0]).Name()
++func TestFrozenSDKV1XMLCompatibility(t *testing.T) {
++	want := map[string][2]string{
++		"AbortMultipartUploadOutput":  {"0a7c074418466ef36a1f144f43b3625e4fc375e88c5825dd3f41b7d264fc3770", "e6aaf620e3b93a2092403ddb4e7569987f72c6bee4922f041ecc583ea0641f44"},
++		"AccessControlPolicy":         {"c7fcf1b67aa1e2979b2ef71b0f86f76e71a8ded08dbbeb26274cc0157f8c1c75", "062050f1a1e3ab05f673221923b0efc75725229bff372d807e7dfb291e769bc5"},
++		"CompletedMultipartUpload":    {"da6f338d2ba4d10b47bbebe14297a208a10f5fcc909a78eec2df0225b222ca7e", "b3782ef444592234bf52be5b1d44f4eecf48bfe538afbfbb0fb83ec0d94ca484"},
++		"CompletedPart":               {"cc7334a6b6e9832b4bfddc93089e26f6e7f78ec859dbe0ff133a40315b5054e2", "363b828f989690bf87ac9d8a388783bfc536cb7fc1632f174819131df93c29a4"},
++		"CreateMultipartUploadOutput": {"1f2d4c9f1c19203c62c5f89e9821d62ab32fba766d77e7bfc53b61851243f133", "0efcd492b930b081e8c20395d37373f69e43bea8cf3f525e047ce9a3acf7cc19"},
++		"Grant":                       {"28495ef638eebb8492a41cfa2bd831229901202b3026c5407f767683cae763b8", "0c4241357b4100fa1b7a91f057398112a73cc8756acc4e6f81bc04f0bb7d7ea5"},
++		"Grantee":                     {"a6c5617b1e812d7a48bb5f9ea875f89ccf9de1f701f9dd3833ead4f4c8f82f85", "47d11eb1052ea28203af132d25a4f2926612affe7fd6de56b1ba66b26f0fb5c0"},
++		"Initiator":                   {"0831b0ba95f77bd671e9ea6d2058539233dcdfa031da10b7c8d29ba086a0af27", "e417aab8db44741c7e72d3cab078036a4fe91d68b0b06883944c5d981d3bbfa0"},
++		"MultipartUpload":             {"bbf32b3afa567e6c2e68293e54fdcfee364b382fc423eb6acfd2768db3a5cbba", "f5f90f230076e4235d38f358c77535969268274c17d46bba5743b1169dc465ae"},
++		"Owner":                       {"b4efe715158277e84765b20217647fdf0d55eece89c6ffad821432c3bce42de5", "f808f074d43e4fd59c2c421bf99ebd8425bd4e03a0172f6e832e8362a0b4bc38"},
++		"OwnershipControls":           {"54419cf01d8eb5fadcb42bffeb847e1551b4e8b138094974af70ca16242303ce", "3a477381fd14b07dc4ca3c6a3ab3f0ce2e9eeb0a77a04caf5d7b6efc47b69e0a"},
++		"OwnershipControlsRule":       {"480e17c42575301dbd3c512124c363b5f912593f93094c75789315dc3b4c029f", "2c74c69167934fad68f44d75c569090b4bbdbc332871470df184b8771420ab95"},
++		"Part":                        {"844ad68f8e1915a7c0b12cbb53eac79f08d52fadd3f5f7216863e2fc0b4bbf70", "50f7419e300e0f07f845f3a50a477fb3830c8dace78c440303dccc321442fee0"},
++		"VersioningConfiguration":     {"ac87a5732e533b964cf009668f3c9cdddd6e11b6c88b8944ce3ebb9070655f5d", "55f7e11abf4152f94fce9e98b370bb9c0db0086b5cbae9f807144e6c7f507b14"},
++	}
++	for _, value := range wireValues() {
++		name := reflect.TypeOf(value).Name()
+ 		if strings.HasSuffix(name, "Input") {
+ 			continue
+ 		}
+ 		t.Run(name, func(t *testing.T) {
+-			for _, populated := range []bool{false, true} {
+-				var data [2][]byte
+-				for i, value := range pair {
+-					fixture := reflect.New(reflect.TypeOf(value)).Elem()
+-					if populated {
+-						fillWireFixture(fixture)
+-					}
+-					var err error
+-					data[i], err = xml.Marshal(fixture.Interface())
+-					if err != nil {
+-						t.Fatal(err)
+-					}
++			for state, populated := range []bool{false, true} {
++				fixture := reflect.New(reflect.TypeOf(value)).Elem()
++				if populated {
++					fillWireFixture(fixture)
++				}
++				data, err := xml.Marshal(fixture.Interface())
++				if err != nil {
++					t.Fatal(err)
+ 				}
+-				if !bytes.Equal(data[0], data[1]) {
+-					t.Fatalf("XML differs populated=%v: %s / %s", populated, data[0], data[1])
++				got := fmt.Sprintf("%x", sha256.Sum256(data))
++				if got != want[name][state] {
++					t.Fatalf("XML drift populated=%v: hash %s, XML %s", populated, got, data)
+ 				}
+ 			}
+ 		})
+@@ -138,36 +151,33 @@ func TestLegacyXMLCompatibility(t *testing.T) {
+ }
+ 
+ // Keep the historical request parser and prove its attribute/list tags still work.
+-func TestLegacyRequestParsing(t *testing.T) {
++func TestFrozenSDKV1RequestParsing(t *testing.T) {
+ 	cases := []struct {
+-		body       string
+-		local, old any
++		body     string
++		local    any
++		wantJSON string
++		wantErr  bool
+ 	}{
+-		{`<AccessControlPolicy><Owner><ID>owner&amp;x</ID></Owner><AccessControlList><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"><ID>owner&amp;x</ID></Grantee><Permission>FULL_CONTROL</Permission></Grant><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"><URI>http://acs.amazonaws.com/groups/global/AllUsers</URI></Grantee><Permission>READ</Permission></Grant></AccessControlList></AccessControlPolicy>`, &AccessControlPolicy{}, &legacy.AccessControlPolicy{}},
+-		{`<AccessControlPolicy><AccessControlList/></AccessControlPolicy>`, &AccessControlPolicy{}, &legacy.AccessControlPolicy{}},
+-		{`<OwnershipControls><Rule><ObjectOwnership>BucketOwnerPreferred</ObjectOwnership></Rule><Rule><ObjectOwnership>ObjectWriter</ObjectOwnership></Rule></OwnershipControls>`, &OwnershipControls{}, &legacy.OwnershipControls{}},
+-		{`<VersioningConfiguration><Status>Enabled</Status><MFADelete>Disabled</MFADelete></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
+-		{`<VersioningConfiguration><Status>Enable<Other/>d</Status></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
+-		{`<VersioningConfiguration><Status>Enabled</Status></VersioningConfiguration><VersioningConfiguration><Status>Suspended</Status></VersioningConfiguration>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
+-		{`<VersioningConfiguration><Status>Enabled</Status>`, &VersioningConfiguration{}, &legacy.VersioningConfiguration{}},
++		{`<AccessControlPolicy><Owner><ID>owner&amp;x</ID></Owner><AccessControlList><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"><ID>owner&amp;x</ID></Grantee><Permission>FULL_CONTROL</Permission></Grant><Grant><Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"><URI>http://acs.amazonaws.com/groups/global/AllUsers</URI></Grantee><Permission>READ</Permission></Grant></AccessControlList></AccessControlPolicy>`, &AccessControlPolicy{}, `{"Grants":[{"Grantee":{"DisplayName":null,"EmailAddress":null,"ID":"owner\u0026x","Type":"CanonicalUser","URI":null},"Permission":"FULL_CONTROL"},{"Grantee":{"DisplayName":null,"EmailAddress":null,"ID":null,"Type":"Group","URI":"http://acs.amazonaws.com/groups/global/AllUsers"},"Permission":"READ"}],"Owner":{"DisplayName":null,"ID":"owner\u0026x"}}`, false},
++		{`<AccessControlPolicy><AccessControlList/></AccessControlPolicy>`, &AccessControlPolicy{}, `{"Grants":null,"Owner":null}`, false},
++		{`<OwnershipControls><Rule><ObjectOwnership>BucketOwnerPreferred</ObjectOwnership></Rule><Rule><ObjectOwnership>ObjectWriter</ObjectOwnership></Rule></OwnershipControls>`, &OwnershipControls{}, `{"Rules":[{"ObjectOwnership":"BucketOwnerPreferred"},{"ObjectOwnership":"ObjectWriter"}]}`, false},
++		{`<VersioningConfiguration><Status>Enabled</Status><MFADelete>Disabled</MFADelete></VersioningConfiguration>`, &VersioningConfiguration{}, `{"MFADelete":null,"Status":"Enabled"}`, false},
++		{`<VersioningConfiguration><Status>Enable<Other/>d</Status></VersioningConfiguration>`, &VersioningConfiguration{}, `{"MFADelete":null,"Status":"d"}`, false},
++		{`<VersioningConfiguration><Status>Enabled</Status></VersioningConfiguration><VersioningConfiguration><Status>Suspended</Status></VersioningConfiguration>`, &VersioningConfiguration{}, `{"MFADelete":null,"Status":"Suspended"}`, false},
++		{`<VersioningConfiguration><Status>Enabled</Status>`, &VersioningConfiguration{}, `{"MFADelete":null,"Status":null}`, true},
+ 	}
+ 	for n, tc := range cases {
+ 		t.Run(fmt.Sprint(n), func(t *testing.T) {
+-			a := UnmarshalXML(tc.local, xml.NewDecoder(strings.NewReader(tc.body)), "")
+-			b := legacyxml.UnmarshalXML(tc.old, xml.NewDecoder(strings.NewReader(tc.body)), "")
+-			if fmt.Sprint(a) != fmt.Sprint(b) {
+-				t.Fatalf("parser errors differ: %v / %v", a, b)
++			err := UnmarshalXML(tc.local, xml.NewDecoder(strings.NewReader(tc.body)), "")
++			if (err != nil) != tc.wantErr {
++				t.Fatalf("parser error=%v, want error=%v", err, tc.wantErr)
+ 			}
+ 			x, err := json.Marshal(tc.local)
+ 			if err != nil {
+ 				t.Fatal(err)
+ 			}
+-			y, err := json.Marshal(tc.old)
+-			if err != nil {
+-				t.Fatal(err)
+-			}
+-			if !bytes.Equal(x, y) {
+-				t.Fatalf("decoded values differ: %s / %s", x, y)
++			if string(x) != tc.wantJSON {
++				t.Fatalf("decoded value drift: got %s want %s", x, tc.wantJSON)
+ 			}
+ 		})
+ 	}

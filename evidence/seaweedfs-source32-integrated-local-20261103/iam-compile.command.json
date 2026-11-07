@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "2",
+    "-json",
+    "-run",
+    "^$",
+    "./..."
+  ],
+  "cwd": "source32-integrated-stage/source/test/s3/iam",
+  "exitCode": 0,
+  "elapsedSeconds": 1.456,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off",
+  "GOTMPDIR": "/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work",
+  "TMPDIR": "/workspace/scratch/98dabd1608e5/tmp"
+}

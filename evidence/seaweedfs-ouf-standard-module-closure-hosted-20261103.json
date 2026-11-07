@@ -1,0 +1,546 @@
+{
+  "schemaVersion": 1,
+  "status": "HOSTED_PASS_ARTIFACT_BYTES_VERIFIED",
+  "checkedAt": "2026-11-03T18:21:28.707648+00:00",
+  "scope": "SeaweedFS 4.52 OUF standard profile module closure, excludes elastic/rclone; no target operations",
+  "headSha": "24e96bb5e875a4c0b5c17aed2653e0bd14bd05be",
+  "runId": 41691297148,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41691297148",
+  "jobId": 126110264320,
+  "jobConclusion": "success",
+  "primaryStepsPassed": 12,
+  "allStepsPassed": 16,
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-03T18:10:53Z",
+      "completed_at": "2026-11-03T18:10:55Z"
+    },
+    {
+      "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-03T18:10:55Z",
+      "completed_at": "2026-11-03T18:11:19Z"
+    },
+    {
+      "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-03T18:11:19Z",
+      "completed_at": "2026-11-03T18:12:04Z"
+    },
+    {
+      "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-03T18:12:04Z",
+      "completed_at": "2026-11-03T18:12:12Z"
+    },
+    {
+      "name": "Apply the exact 28 patches for the OUF standard profile",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-03T18:12:12Z",
+      "completed_at": "2026-11-03T18:12:13Z"
+    },
+    {
+      "name": "Prove the root module closure and tidy fixed point",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-03T18:12:13Z",
+      "completed_at": "2026-11-03T18:12:31Z"
+    },
+    {
+      "name": "Run the qualified 20-package standard regression",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-03T18:12:31Z",
+      "completed_at": "2026-11-03T18:15:52Z"
+    },
+    {
+      "name": "Recheck root IAM fixtures and independently qualified nested modules",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-03T18:15:52Z",
+      "completed_at": "2026-11-03T18:16:09Z"
+    },
+    {
+      "name": "Prove unchanged standard graph and exact qualified binary",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-03T18:16:09Z",
+      "completed_at": "2026-11-03T18:18:41Z"
+    },
+    {
+      "name": "Deny excluded optional tag profiles explicitly",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-03T18:18:41Z",
+      "completed_at": "2026-11-03T18:18:42Z"
+    },
+    {
+      "name": "Attest the bounded standard profile evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-03T18:18:42Z",
+      "completed_at": "2026-11-03T18:18:44Z"
+    },
+    {
+      "name": "Retain the bounded evidence, including failed qualifications",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-11-03T18:18:44Z",
+      "completed_at": "2026-11-03T18:18:45Z"
+    },
+    {
+      "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-11-03T18:18:45Z",
+      "completed_at": "2026-11-03T18:18:46Z"
+    },
+    {
+      "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-11-03T18:18:46Z",
+      "completed_at": "2026-11-03T18:18:46Z"
+    },
+    {
+      "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 24,
+      "started_at": "2026-11-03T18:18:46Z",
+      "completed_at": "2026-11-03T18:18:46Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25,
+      "started_at": "2026-11-03T18:18:46Z",
+      "completed_at": "2026-11-03T18:18:46Z"
+    }
+  ],
+  "artifact": {
+    "id": 13255914712,
+    "name": "storage-ouf-standard-41691297148",
+    "bytes": 548373,
+    "zipSha256": "69687a7b68254476a0c075690672b7f1c219267906eef6cd3dc44c04557e8cc1",
+    "githubDigest": "sha256:69687a7b68254476a0c075690672b7f1c219267906eef6cd3dc44c04557e8cc1",
+    "expiresAt": "2027-02-01T18:10:50Z",
+    "members": 28
+  },
+  "attestation": {
+    "url": "https://github.com/GioNob/ouf-deploy/attestations/63238309",
+    "subjectSha256": "083a20a47872e5808f2e1cf3f18de620d713eacc42e33d36b9b4889a5a8946dd",
+    "observedInJobLog": true,
+    "independentSignatureVerification": false
+  },
+  "verification": {
+    "status": "ARTIFACT_BYTES_VERIFIED",
+    "verifiedManifestFiles": 27,
+    "manifestSha256": "083a20a47872e5808f2e1cf3f18de620d713eacc42e33d36b9b4889a5a8946dd",
+    "rootModuleGraphEdges": 4624,
+    "rootModules": 818,
+    "sdkV1RootModuleGraph": 0,
+    "deprecatedManagerRootModuleGraph": 0,
+    "sdkV1DirectSourceImporters": 0,
+    "patches": [
+      {
+        "path": "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch",
+        "sha256": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch",
+        "sha256": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch",
+        "sha256": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch",
+        "sha256": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+        "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-sqs-sdk-v2.patch",
+        "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-kms-sdk-v2.patch",
+        "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-s3sink-sdk-v2.patch",
+        "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-s3backend-sdk-v2.patch",
+        "sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch",
+        "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch",
+        "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch",
+        "sha256": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch",
+        "sha256": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch",
+        "sha256": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-go-network-security-fixes.patch",
+        "sha256": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch",
+        "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch",
+        "sha256": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch",
+        "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch",
+        "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch",
+        "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch",
+        "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch",
+        "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch",
+        "sha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch",
+        "sha256": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch",
+        "sha256": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch",
+        "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-iam-module-sdk-v2.patch",
+        "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a"
+      },
+      {
+        "path": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+        "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79"
+      }
+    ],
+    "productionPackages": 1811,
+    "productionGraphSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "regressions": {
+      "regressions.jsonl": {
+        "counts": {
+          "pass_tests": 5591,
+          "pass_packages": 20,
+          "skip_packages": 6,
+          "skip_tests": 5
+        },
+        "topLevelTests": 1782,
+        "subcases": 3809
+      },
+      "root-iam-regressions.jsonl": {
+        "counts": {
+          "pass_tests": 24,
+          "pass_packages": 2
+        },
+        "topLevelTests": 16,
+        "subcases": 8
+      },
+      "nested-iam-regressions.jsonl": {
+        "counts": {
+          "pass_tests": 18,
+          "pass_packages": 1
+        },
+        "topLevelTests": 14,
+        "subcases": 4
+      },
+      "kafka-compile.jsonl": {
+        "counts": {
+          "skip_packages": 2,
+          "pass_packages": 4
+        },
+        "topLevelTests": 0,
+        "subcases": 0
+      }
+    },
+    "negativeBuildTags": [
+      "elastic",
+      "rclone",
+      "elastic,rclone"
+    ],
+    "tidyRootAndKafkaFixedPoint": true,
+    "files": {
+      "SHA256SUMS": {
+        "sha256": "083a20a47872e5808f2e1cf3f18de620d713eacc42e33d36b9b4889a5a8946dd",
+        "bytes": 2415
+      },
+      "binary-sha256.txt": {
+        "sha256": "6ced85fb5a794d59c6f31a8a9e45e30fffac7695b987b635c52838210230ce47",
+        "bytes": 108
+      },
+      "build-info.txt": {
+        "sha256": "ad90c568ea74dee6703ad4f41a95a671772765efe95cf249c3631fee7c9ae210",
+        "bytes": 25462
+      },
+      "denied-elastic-rclone.log": {
+        "sha256": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "bytes": 238
+      },
+      "denied-elastic.log": {
+        "sha256": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "bytes": 238
+      },
+      "denied-rclone.log": {
+        "sha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+        "bytes": 164
+      },
+      "kafka-compile.jsonl": {
+        "sha256": "6861ce00e7b3d6990c6dad2e4f74f4c52d22df30c14d682b66c141c710595b4d",
+        "bytes": 4170
+      },
+      "kafka-compile.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "kafka-tidy.diff": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "kafka-tidy.stderr": {
+        "sha256": "e4945fb486028e3c14fba81f01a76fcd83210ad5cffb76b155603647439e6bca",
+        "bytes": 290
+      },
+      "nested-iam-regressions.jsonl": {
+        "sha256": "ed71b2a2054f5bcf6a885528de2a029c5677d83f052a7ec872cdf3dea2d27cf3",
+        "bytes": 15584
+      },
+      "nested-iam-regressions.stderr": {
+        "sha256": "e9267a0e2949fd92c79da1be59b65af00d411bac5b378d39af173ffdc50c0d4a",
+        "bytes": 206
+      },
+      "nested-lockfiles-before.sha256": {
+        "sha256": "88ece19efe729ba135d7c9b712e132e0f146ac00d20bf4701346bd2c15edbd72",
+        "bytes": 338
+      },
+      "patch-stat.txt": {
+        "sha256": "239d82943daaf67b18121037e9ad3cc8537eb4360a072568a897ab39b35c5494",
+        "bytes": 6811
+      },
+      "patches-sha256.txt": {
+        "sha256": "322ca667d1e8e81d9b8f5eae235c7bb9046ff91897daf61bd62d7d0439a7c7fd",
+        "bytes": 3394
+      },
+      "production-deps.txt": {
+        "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+        "bytes": 74977
+      },
+      "regression-counts.json": {
+        "sha256": "1458cf7937b595d1e10fe059f033dbae921c7addf2f7889587f6199fea1ddf25",
+        "bytes": 89
+      },
+      "regressions.jsonl": {
+        "sha256": "da5c0da590f742aa7d1d658b2c7416d0a57555ed68f6c4ba73d71a4630a73053",
+        "bytes": 7137670
+      },
+      "regressions.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "remaining-direct-sdk-v1-importers.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "root-iam-regressions.jsonl": {
+        "sha256": "4f2380071c4d0e2e0fcf4f439fef98643c1b6745de39c0a10bd29ffb4fe64843",
+        "bytes": 21219
+      },
+      "root-iam-regressions.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "root-lockfiles-sha256.txt": {
+        "sha256": "d78785e00293918be9d3a83b49da93919c8d3f6a25f83227a225912918861366",
+        "bytes": 146
+      },
+      "root-module-graph.txt": {
+        "sha256": "a66fa53f1e63ced036d67db2b5d6e0c9199a54a02519226e0edc8bd525941714",
+        "bytes": 369141
+      },
+      "root-modules.txt": {
+        "sha256": "5cf1ab27fd6620018f76a1f5b280f7f9512585e7b75e224a1fb4777738c91382",
+        "bytes": 35926
+      },
+      "tidy.diff": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "tidy.stderr": {
+        "sha256": "76a327966fcf1b960ba188942680cc3306649e056d1345124513b1b7012d34c0",
+        "bytes": 32223
+      },
+      "upstream-source-sha.txt": {
+        "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+        "bytes": 41
+      }
+    }
+  },
+  "retainedBoundedEvidence": {
+    "directory": "evidence/storage-ouf-standard-41691297148",
+    "files": {
+      "BOUNDED_SHA256SUMS": {
+        "sha256": "34c242c06507f5b19cdfe3d1c5b6468cad4af4e9761fa38f831d4b57cbce6a7e",
+        "bytes": 1947
+      },
+      "binary-sha256.txt": {
+        "sha256": "6ced85fb5a794d59c6f31a8a9e45e30fffac7695b987b635c52838210230ce47",
+        "bytes": 108
+      },
+      "build-info.txt": {
+        "sha256": "ad90c568ea74dee6703ad4f41a95a671772765efe95cf249c3631fee7c9ae210",
+        "bytes": 25462
+      },
+      "denied-elastic-rclone.log": {
+        "sha256": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "bytes": 238
+      },
+      "denied-elastic.log": {
+        "sha256": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "bytes": 238
+      },
+      "denied-rclone.log": {
+        "sha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+        "bytes": 164
+      },
+      "hosted-job.log": {
+        "sha256": "c1dc6b5a236695223642e00f190e6887f2b53d586130321a66be416165327450",
+        "bytes": 51637
+      },
+      "kafka-compile.jsonl": {
+        "sha256": "6861ce00e7b3d6990c6dad2e4f74f4c52d22df30c14d682b66c141c710595b4d",
+        "bytes": 4170
+      },
+      "kafka-tidy.diff": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "nested-iam-regressions.jsonl": {
+        "sha256": "ed71b2a2054f5bcf6a885528de2a029c5677d83f052a7ec872cdf3dea2d27cf3",
+        "bytes": 15584
+      },
+      "nested-lockfiles-before.sha256": {
+        "sha256": "88ece19efe729ba135d7c9b712e132e0f146ac00d20bf4701346bd2c15edbd72",
+        "bytes": 338
+      },
+      "original-artifact-SHA256SUMS": {
+        "sha256": "083a20a47872e5808f2e1cf3f18de620d713eacc42e33d36b9b4889a5a8946dd",
+        "bytes": 2415
+      },
+      "patches-sha256.txt": {
+        "sha256": "322ca667d1e8e81d9b8f5eae235c7bb9046ff91897daf61bd62d7d0439a7c7fd",
+        "bytes": 3394
+      },
+      "production-deps.txt": {
+        "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+        "bytes": 74977
+      },
+      "regression-counts.json": {
+        "sha256": "1458cf7937b595d1e10fe059f033dbae921c7addf2f7889587f6199fea1ddf25",
+        "bytes": 89
+      },
+      "regression-terminal-events.jsonl": {
+        "sha256": "d207f55d4f7bf31774884ec3dd72afffd1e1f8148f8962cb1324767bcce6441e",
+        "bytes": 4316
+      },
+      "remaining-direct-sdk-v1-importers.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "root-iam-regressions.jsonl": {
+        "sha256": "4f2380071c4d0e2e0fcf4f439fef98643c1b6745de39c0a10bd29ffb4fe64843",
+        "bytes": 21219
+      },
+      "root-lockfiles-sha256.txt": {
+        "sha256": "d78785e00293918be9d3a83b49da93919c8d3f6a25f83227a225912918861366",
+        "bytes": 146
+      },
+      "root-module-graph.txt": {
+        "sha256": "a66fa53f1e63ced036d67db2b5d6e0c9199a54a02519226e0edc8bd525941714",
+        "bytes": 369141
+      },
+      "root-modules.txt": {
+        "sha256": "5cf1ab27fd6620018f76a1f5b280f7f9512585e7b75e224a1fb4777738c91382",
+        "bytes": 35926
+      },
+      "tidy.diff": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "upstream-source-sha.txt": {
+        "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+        "bytes": 41
+      }
+    },
+    "omission": "Full 6.9 MiB regressions.jsonl remains in downloaded original artifact; its SHA256 is retained and all rows were parsed locally. Bounded subset has exact terminal package/skip events. Original-artifact-SHA256SUMS refers to all original 27 files, while BOUNDED_SHA256SUMS covers this retained subset."
+  },
+  "limits": [
+    "Standard candidate profile only; elastic/rclone builds denied intentionally.",
+    "No assertion that every nested module or upstream distribution is free of unmaintained dependencies.",
+    "Binary, OCI image and target candidate lock unchanged; no new runtime authority.",
+    "0/8 gates, 0/21 acceptance tests, 0/120 real objects; MinIO active.",
+    "Scope17/52 Engine GET, Teatri/M1 and Farmacie preserved; no new upload, profiling, grant, replay or reset."
+  ]
+}

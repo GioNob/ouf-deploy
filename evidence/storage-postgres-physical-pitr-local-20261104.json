@@ -1,0 +1,44 @@
+{
+  "schema": "ouf.storage-postgres-physical-pitr-local.v1",
+  "status": "OFFLINE_PASS_NATIVE_PENDING",
+  "baseCommit": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+  "offlineTestsPassed": 9,
+  "shellSyntaxSnippetsPassed": 4,
+  "pythonSyntaxPassed": true,
+  "nativeExecution": "PENDING_HOSTED_POSTGRES_17_11",
+  "sourceSha256": "dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979",
+  "inputs": {
+    ".github/workflows/storage-postgres-physical-pitr.yml": "8c1926941a4d9c6216931c05deba6ba0f7929334fe1dd8d14a222d1697f0615a",
+    "tests/run_storage_postgres_pitr.py": "dd53a6f8e5e75ae3d89e7be05a17e301a52107dacedc8192027c796f42e856d1",
+    "tests/storage_pitr_archive.py": "7f7b138db7d43d825f501dd48c33a623b1beddf1aa279763533395adc11e9c13",
+    "tests/test_storage_postgres_pitr.py": "ff9b11a3714ca41c861dfc667140ba776d7f143952acf7f3d6fa29b21500e969"
+  },
+  "logSha256": "e6ec061bae0374d6328275785e0f57b2b43d4d663e3d7fe5caa5a36b635cd8d5",
+  "design": [
+    "Physical pg_basebackup with SHA256 backup manifest, streamed base WAL and native pg_verifybackup.",
+    "Force and archive a post-base WAL segment containing a named restore point.",
+    "Source stopped before restoring a separate data root; matching system identifier is required for physical backup.",
+    "Restore pauses at named target; two earlier records visible and one deliberately later acknowledged row excluded.",
+    "Full source-after-target JSON is retained; latest source physical cluster custody and zero-loss policy are not claimed.",
+    "Second independent base copy lacks required target WAL; bounded terminal failure and missing-WAL evidence required.",
+    "Original basebackup and archived WAL file bytes retained in tar.gz with per-file SHA256 inventories."
+  ],
+  "officialReferences": [
+    "https://www.postgresql.org/docs/17/continuous-archiving.html",
+    "https://www.postgresql.org/docs/17/app-pgbasebackup.html",
+    "https://www.postgresql.org/docs/17/runtime-config-wal.html"
+  ],
+  "limits": {
+    "targetPitrQualified": false,
+    "coordinatedS3RecoveryQualified": false,
+    "writerFenceQualified": false,
+    "zeroAcknowledgedLossPolicyQualified": false,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0
+  }
+}

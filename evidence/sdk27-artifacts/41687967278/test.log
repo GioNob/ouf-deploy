@@ -1,0 +1,38 @@
+=== RUN   TestIAMFrameworkV2StaticQueryAndToken
+--- PASS: TestIAMFrameworkV2StaticQueryAndToken (0.00s)
+=== RUN   TestIAMFrameworkV2S3RegionAndChecksum
+--- PASS: TestIAMFrameworkV2S3RegionAndChecksum (0.00s)
+=== RUN   TestIAMFrameworkV2BearerIdentity
+=== RUN   TestIAMFrameworkV2BearerIdentity/iam
+=== RUN   TestIAMFrameworkV2BearerIdentity/s3
+--- PASS: TestIAMFrameworkV2BearerIdentity (0.00s)
+    --- PASS: TestIAMFrameworkV2BearerIdentity/iam (0.00s)
+    --- PASS: TestIAMFrameworkV2BearerIdentity/s3 (0.00s)
+=== RUN   TestIAMFrameworkV2ErrorsAndBoundedRetry
+--- PASS: TestIAMFrameworkV2ErrorsAndBoundedRetry (0.00s)
+=== RUN   TestIAMFrameworkV2CancellationAndPartialCredentials
+--- PASS: TestIAMFrameworkV2CancellationAndPartialCredentials (0.00s)
+=== RUN   TestIAMFrameworkV2RawExtensionSigning
+--- PASS: TestIAMFrameworkV2RawExtensionSigning (0.00s)
+=== RUN   TestIAMFixtureS3V2Contract
+--- PASS: TestIAMFixtureS3V2Contract (0.00s)
+=== RUN   TestIAMFixtureS3V2FailureBudget
+=== RUN   TestIAMFixtureS3V2FailureBudget/Forbidden
+=== RUN   TestIAMFixtureS3V2FailureBudget/Service_Unavailable
+--- PASS: TestIAMFixtureS3V2FailureBudget (0.00s)
+    --- PASS: TestIAMFixtureS3V2FailureBudget/Forbidden (0.00s)
+    --- PASS: TestIAMFixtureS3V2FailureBudget/Service_Unavailable (0.00s)
+=== RUN   TestIAMFixtureS3V2Cancellation
+--- PASS: TestIAMFixtureS3V2Cancellation (0.00s)
+=== RUN   TestIAMFixtureS3V2CleanupDeadline
+--- PASS: TestIAMFixtureS3V2CleanupDeadline (0.00s)
+=== RUN   TestIAMFixtureS3V2RejectsPartialCredentials
+--- PASS: TestIAMFixtureS3V2RejectsPartialCredentials (0.00s)
+=== RUN   TestIAMFixtureRawQueryV2Signing
+--- PASS: TestIAMFixtureRawQueryV2Signing (0.00s)
+=== RUN   TestSignSigV4RequestUsesStableSTSScopeAndBody
+--- PASS: TestSignSigV4RequestUsesStableSTSScopeAndBody (0.00s)
+=== RUN   TestSignSigV4RequestIncludesTemporaryCredentialToken
+--- PASS: TestSignSigV4RequestIncludesTemporaryCredentialToken (0.00s)
+PASS
+ok  	github.com/seaweedfs/seaweedfs/test/s3/iam	0.009s

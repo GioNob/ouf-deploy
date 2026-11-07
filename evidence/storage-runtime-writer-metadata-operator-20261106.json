@@ -1,0 +1,302 @@
+{
+  "acceptanceCreditAdded": 0,
+  "argumentsOrEnvironmentExported": false,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "dockerRequests": 0,
+  "filesWritten": 0,
+  "historicalUnitsNotObserved": [],
+  "iamRequests": 0,
+  "namedUnitFilterProvesAllWriters": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeCredentialBodiesRead": 0,
+  "schema": "ouf.storage-runtime-writer-metadata.v1",
+  "serviceMutations": 0,
+  "sourceFilesRead": 1,
+  "sourcePathsExported": false,
+  "staticLiteralProvesEffectiveWriter": false,
+  "status": "HOST_TOKEN_UNITS_AND_STATIC_ROUTING_OBSERVED",
+  "systemctlReadCommands": 3,
+  "units": [
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-gateway-policy-token.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "associatedUnits": [
+        "ouf-gateway-policy-token.timer"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [
+        {
+          "execStartLiteral": false,
+          "protectedScriptLiteral": false,
+          "readWritePathLiteral": true,
+          "sourcePathSha256": "41372869507d2e5c524a29d0ab5f6ebeede966c49bd35074ff140dd90f7eb03f"
+        }
+      ],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 1,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-gateway-policy-token.timer",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "associatedUnits": [
+        "ouf-gateway-policy-token.service"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [
+        "TimersMonotonic"
+      ],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": true
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-ingestion-policy-token.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "associatedUnits": [
+        "ouf-ingestion-policy-token.timer"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [
+        {
+          "execStartLiteral": false,
+          "protectedScriptLiteral": false,
+          "readWritePathLiteral": true,
+          "sourcePathSha256": "6e6edfffce47aea41d118170cfc2ec1d5cde443d2ece89c2c5d8b124671f5303"
+        }
+      ],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 1,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-ingestion-policy-token.timer",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "associatedUnits": [
+        "ouf-ingestion-policy-token.service"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [
+        "TimersMonotonic"
+      ],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": true
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-onboarding-identity-token.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "associatedUnits": [
+        "ouf-onboarding-identity-token.timer"
+      ],
+      "protectedSourceReads": 1,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [
+        {
+          "execStartLiteral": false,
+          "protectedScriptLiteral": true,
+          "readWritePathLiteral": true,
+          "sourcePathSha256": "630028add258dae74151a71fc4e08e655c8a022f28b8b17a72e55f670c0f5c45"
+        }
+      ],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-onboarding-identity-token.timer",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "associatedUnits": [
+        "ouf-onboarding-identity-token.service"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [
+        "TimersMonotonic"
+      ],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": true
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-policy-token@onboarding.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "associatedUnits": [
+        "ouf-policy-token@onboarding.timer"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [
+        {
+          "execStartLiteral": false,
+          "protectedScriptLiteral": false,
+          "readWritePathLiteral": true,
+          "sourcePathSha256": "13bde9e56266f9f67359e1383fee1b4c84b37d862b944dbb2d445852f88ef0ee"
+        }
+      ],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 1,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-policy-token@onboarding.timer",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "associatedUnits": [
+        "ouf-policy-token@onboarding.service"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [
+        "TimersMonotonic"
+      ],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": true
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-policy-token@semantic.service",
+      "LoadState": "masked",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "masked",
+      "associatedUnits": [],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-policy-token@semantic.timer",
+      "LoadState": "masked",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "masked",
+      "associatedUnits": [],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "ouf-policy-token@udp.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "associatedUnits": [
+        "ouf-policy-token@udp.timer"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [
+        {
+          "execStartLiteral": false,
+          "protectedScriptLiteral": false,
+          "readWritePathLiteral": true,
+          "sourcePathSha256": "16b173b9dbb759105551bc609b4ec3f4afd6e81ef1057166dfa786cf206aa2a8"
+        }
+      ],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 1,
+      "timerScheduleMetadataPresent": false
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-policy-token@udp.timer",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "associatedUnits": [
+        "ouf-policy-token@udp.service"
+      ],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [
+        "TimersMonotonic"
+      ],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 0,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 0,
+      "timerScheduleMetadataPresent": true
+    },
+    {
+      "ActiveState": "active",
+      "Id": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "LoadState": "loaded",
+      "MainPID": "1703854",
+      "Result": "success",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "associatedUnits": [],
+      "protectedSourceReads": 0,
+      "repeatedProperties": [],
+      "runtimeSourceLinks": [],
+      "scriptCandidates": 1,
+      "sourceCodeExecuted": false,
+      "sourceReadsUnavailable": 1,
+      "timerScheduleMetadataPresent": false
+    }
+  ]
+}

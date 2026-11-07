@@ -1,0 +1,19 @@
+{
+  "oldExpectedTree": "d58d388bd4b791ffbc41814cc670af44af20f47c",
+  "actualCanonicalTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+  "oldManifestGate": "DENIED_CANONICAL_SOURCE_TREE_MISMATCH",
+  "correctedManifestGate": "PASS",
+  "sameActual32PatchPrefix": true,
+  "patchesChanged": false,
+  "testsChanged": false,
+  "sourceBytesChanged": false,
+  "binaryChanged": false,
+  "pipelineUnitTestsPassed": 43,
+  "immutableRuntimeTestsPassed": 12,
+  "canonicalHelperTestsPassed": 8,
+  "workflowShellBlocksParsed": 19,
+  "workflowPythonBlocksParsed": 3,
+  "qualificationInputsBefore": 46,
+  "qualificationInputsAfter": 48,
+  "targetOperations": 0
+}

@@ -1,0 +1,146 @@
+﻿2026-11-03T19:14:24.1456669Z Current runner version: '2.338.2'
+2026-11-03T19:14:24.1485121Z ##[group]Runner Image Provisioner
+2026-11-03T19:14:24.1485990Z Hosted Compute Agent
+2026-11-03T19:14:24.1486522Z Version: 20261021.618
+2026-11-03T19:14:24.1487190Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T19:14:24.1487856Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T19:14:24.1488482Z Worker ID: {bac70c37-468d-4d57-a4b8-4723e467de75}
+2026-11-03T19:14:24.1489165Z Region: westus3
+2026-11-03T19:14:24.1489723Z Cloud: Azure
+2026-11-03T19:14:24.1490286Z ##[endgroup]
+2026-11-03T19:14:24.1491708Z ##[group]Operating System
+2026-11-03T19:14:24.1492651Z Ubuntu
+2026-11-03T19:14:24.1493173Z 24.04.5
+2026-11-03T19:14:24.1493674Z LTS
+2026-11-03T19:14:24.1494172Z ##[endgroup]
+2026-11-03T19:14:24.1494683Z ##[group]Runner Image
+2026-11-03T19:14:24.1495224Z Image: ubuntu-24.04
+2026-11-03T19:14:24.1495789Z Version: 20261025.353.1
+2026-11-03T19:14:24.1496990Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T19:14:24.1498419Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T19:14:24.1499267Z ##[endgroup]
+2026-11-03T19:14:24.1500562Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T19:14:24.1503519Z Actions: read
+2026-11-03T19:14:24.1504174Z Attestations: write
+2026-11-03T19:14:24.1504695Z Contents: read
+2026-11-03T19:14:24.1505239Z Metadata: read
+2026-11-03T19:14:24.1505745Z ##[endgroup]
+2026-11-03T19:14:24.1508029Z Secret source: Actions
+2026-11-03T19:14:24.1508979Z Cache mode: write
+2026-11-03T19:14:24.1509641Z Prepare workflow directory
+2026-11-03T19:14:24.1905460Z Prepare all required actions
+2026-11-03T19:14:24.1958331Z Getting action download info
+2026-11-03T19:14:24.4786058Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-03T19:14:24.7007519Z Complete job name: verify-boundaries
+2026-11-03T19:14:24.8672733Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-03T19:14:24.8673985Z with:
+2026-11-03T19:14:24.8674478Z   persist-credentials: false
+2026-11-03T19:14:24.8675117Z   repository: GioNob/ouf-deploy
+2026-11-03T19:14:24.8678842Z   token: ***
+2026-11-03T19:14:24.8679336Z   ssh-strict: true
+2026-11-03T19:14:24.8679901Z   ssh-user: git
+2026-11-03T19:14:24.8680371Z   clean: true
+2026-11-03T19:14:24.8680896Z   sparse-checkout-cone-mode: true
+2026-11-03T19:14:24.8681450Z   fetch-depth: 1
+2026-11-03T19:14:24.8681933Z   fetch-tags: false
+2026-11-03T19:14:24.8682609Z   show-progress: true
+2026-11-03T19:14:24.8683117Z   lfs: false
+2026-11-03T19:14:24.8683598Z   submodules: false
+2026-11-03T19:14:24.8684086Z   set-safe-directory: true
+2026-11-03T19:14:24.8684907Z ##[endgroup]
+2026-11-03T19:14:25.1917989Z Syncing repository: GioNob/ouf-deploy
+2026-11-03T19:14:25.1923139Z ##[group]Getting Git version info
+2026-11-03T19:14:25.1925165Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T19:14:25.1928164Z [command]/usr/bin/git version
+2026-11-03T19:14:25.2073195Z git version 2.56.0
+2026-11-03T19:14:25.2101830Z ##[endgroup]
+2026-11-03T19:14:25.2117519Z Temporarily overriding HOME='/home/runner/work/_temp/8895c27c-d842-4b84-96f4-9d96128fa33e' before making global git config changes
+2026-11-03T19:14:25.2121266Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T19:14:25.2127043Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T19:14:25.2219653Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-03T19:14:25.2223464Z ##[group]Initializing the repository
+2026-11-03T19:14:25.2225623Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T19:14:25.2356788Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T19:14:25.2359370Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T19:14:25.2361934Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T19:14:25.2364049Z hint: call:
+2026-11-03T19:14:25.2365113Z hint:
+2026-11-03T19:14:25.2366564Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T19:14:25.2368150Z hint:
+2026-11-03T19:14:25.2369561Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T19:14:25.2371795Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T19:14:25.2373887Z hint:
+2026-11-03T19:14:25.2375036Z hint: 	git branch -m <name>
+2026-11-03T19:14:25.2376288Z hint:
+2026-11-03T19:14:25.2380992Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T19:14:25.2384232Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-03T19:14:25.2406036Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-03T19:14:25.2506220Z ##[endgroup]
+2026-11-03T19:14:25.2508833Z ##[group]Disabling automatic garbage collection
+2026-11-03T19:14:25.2533459Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T19:14:25.2550360Z ##[endgroup]
+2026-11-03T19:14:25.2552454Z ##[group]Setting up auth
+2026-11-03T19:14:25.2554334Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T19:14:25.2623234Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T19:14:25.3109428Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T19:14:25.3142432Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T19:14:25.3417624Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T19:14:25.3466290Z ##[endgroup]
+2026-11-03T19:14:25.3467536Z ##[group]Fetching the repository
+2026-11-03T19:14:25.3480749Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +7a71218586bcdbc50e1c983a1a12158dc9660de9:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T19:14:45.8303854Z From https://github.com/GioNob/ouf-deploy
+2026-11-03T19:14:45.8304870Z  * [new ref]         7a71218586bcdbc50e1c983a1a12158dc9660de9 -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T19:14:45.8307600Z ##[endgroup]
+2026-11-03T19:14:45.8308167Z ##[group]Determining the checkout info
+2026-11-03T19:14:45.8309480Z ##[endgroup]
+2026-11-03T19:14:45.8316163Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T19:14:45.8438290Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T19:14:45.8474475Z ##[group]Checking out the ref
+2026-11-03T19:14:45.8479943Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-03T19:14:46.2743547Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-03T19:14:46.2748484Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-03T19:14:46.2768279Z ##[endgroup]
+2026-11-03T19:14:46.2827760Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T19:14:46.2856628Z 7a71218586bcdbc50e1c983a1a12158dc9660de9
+2026-11-03T19:14:46.2865255Z ##[group]Removing auth
+2026-11-03T19:14:46.2871322Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T19:14:46.2909617Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T19:14:46.3153765Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T19:14:46.3184024Z http.https://github.com/.extraheader
+2026-11-03T19:14:46.3192492Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-03T19:14:46.3230963Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T19:14:46.3449658Z ##[endgroup]
+2026-11-03T19:14:46.3657107Z ##[group]Run python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation29_cohort.py -v
+2026-11-03T19:14:46.3658031Z [36;1mpython3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation29_cohort.py -v[0m
+2026-11-03T19:14:46.3676398Z shell: /usr/bin/bash -e {0}
+2026-11-03T19:14:46.3676701Z ##[endgroup]
+2026-11-03T19:14:46.4570350Z test_all_raw_severities_required_without_boolean_counts (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_all_raw_severities_required_without_boolean_counts) ... ok
+2026-11-03T19:14:46.4594250Z test_archive_tamper_duplicate_and_traversal_are_denied (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_archive_tamper_duplicate_and_traversal_are_denied) ... ok
+2026-11-03T19:14:46.4599168Z test_artifact_identity_cannot_be_null_or_placeholder (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_artifact_identity_cannot_be_null_or_placeholder) ... ok
+2026-11-03T19:14:46.4602954Z test_authority_or_release_claim_is_denied (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_authority_or_release_claim_is_denied) ... ok
+2026-11-03T19:14:46.4607583Z test_changed_manifest_tree_toolchain_or_licence_is_denied (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_changed_manifest_tree_toolchain_or_licence_is_denied) ... ok
+2026-11-03T19:14:46.4610504Z test_existing_output_prevents_any_reprocessing (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_existing_output_prevents_any_reprocessing) ... ok
+2026-11-03T19:14:46.4614289Z test_generation15_and_old_binary_are_denied (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_generation15_and_old_binary_are_denied) ... ok
+2026-11-03T19:14:46.4617741Z test_high_critical_unknown_cannot_be_transferred_as_pass (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_high_critical_unknown_cannot_be_transferred_as_pass) ... ok
+2026-11-03T19:14:46.4619688Z test_low_medium_are_recorded_without_implying_legal_acceptance (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_low_medium_are_recorded_without_implying_legal_acceptance) ... ok
+2026-11-03T19:14:46.4621232Z test_manifest_must_cover_all_retained_texts_and_hashes (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_manifest_must_cover_all_retained_texts_and_hashes) ... ok
+2026-11-03T19:14:46.4622946Z test_module_inventory_versions_and_sums_are_exact (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_module_inventory_versions_and_sums_are_exact) ... ok
+2026-11-03T19:14:46.4627492Z test_unfinished_failed_or_other_workflow_is_denied (test_seaweedfs_452_generation29_cohort.BoundaryTests.test_unfinished_failed_or_other_workflow_is_denied) ... ok
+2026-11-03T19:14:46.4629598Z 
+2026-11-03T19:14:46.4630041Z ----------------------------------------------------------------------
+2026-11-03T19:14:46.4631177Z Ran 12 tests in 0.007s
+2026-11-03T19:14:46.4631602Z 
+2026-11-03T19:14:46.4631831Z OK
+2026-11-03T19:14:46.4872237Z Post job cleanup.
+2026-11-03T19:14:46.5808786Z [command]/usr/bin/git version
+2026-11-03T19:14:46.5853436Z git version 2.56.0
+2026-11-03T19:14:46.5893421Z Temporarily overriding HOME='/home/runner/work/_temp/cfab1743-140d-44f0-8c3f-c6702e46190a' before making global git config changes
+2026-11-03T19:14:46.5895377Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T19:14:46.5898816Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-03T19:14:46.5944852Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T19:14:46.5984946Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T19:14:46.6224919Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T19:14:46.6265033Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T19:14:46.6743864Z Cleaning up orphan processes
+2026-11-03T19:14:46.7090912Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

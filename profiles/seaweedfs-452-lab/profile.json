@@ -1,0 +1,87 @@
+{
+  "schema": "ouf.storage-recovery-profile.v1",
+  "status": "SYNTHETIC_LAB_PROFILE_NOT_ADMITTED",
+  "candidate": {
+    "lockPath": "releases/seaweedfs-452-candidate-lock-20261103.json",
+    "lockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+    "product": "SeaweedFS",
+    "version": "4.52",
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "orderedPatchCount": 15,
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "ociManifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4"
+  },
+  "authority": {
+    "syntheticOnly": true,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "acceptanceClaimed": false
+  },
+  "isolation": {
+    "network": "seaweedfs-452-synthetic-lab",
+    "allowedCidrs": [
+      "127.0.0.0/8",
+      "::1/128"
+    ],
+    "externalEgress": false,
+    "targetEndpointsAllowed": false
+  },
+  "roles": [
+    {
+      "name": "filer",
+      "kind": "filer",
+      "imageDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+      "listenHosts": ["127.0.0.1"],
+      "persistentPath": "/var/lib/ouf-lab/seaweedfs-452/filer",
+      "readOnlyRootFilesystem": true,
+      "runAsUid": 65532,
+      "syntheticOnly": true
+    },
+    {
+      "name": "master",
+      "kind": "master",
+      "imageDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+      "listenHosts": ["127.0.0.1"],
+      "persistentPath": "/var/lib/ouf-lab/seaweedfs-452/master",
+      "readOnlyRootFilesystem": true,
+      "runAsUid": 65532,
+      "syntheticOnly": true
+    },
+    {
+      "name": "s3",
+      "kind": "s3",
+      "imageDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+      "listenHosts": ["127.0.0.1"],
+      "persistentPath": "/var/lib/ouf-lab/seaweedfs-452/s3",
+      "readOnlyRootFilesystem": true,
+      "runAsUid": 65532,
+      "syntheticOnly": true
+    },
+    {
+      "name": "volume",
+      "kind": "volume",
+      "imageDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+      "listenHosts": ["127.0.0.1"],
+      "persistentPath": "/var/lib/ouf-lab/seaweedfs-452/volume",
+      "readOnlyRootFilesystem": true,
+      "runAsUid": 65532,
+      "syntheticOnly": true
+    }
+  ],
+  "backupPolicy": {
+    "requiredArtifactKinds": [
+      "config_snapshot",
+      "filer_metadata",
+      "master_metadata",
+      "postgres_dump",
+      "volume_data"
+    ],
+    "maximumArtifactBytes": 2147483648,
+    "maximumTotalBytes": 8589934592,
+    "writerFenceRequired": true,
+    "independentRestoreRootRequired": true,
+    "originalsInaccessibleRequired": true,
+    "allowSymlinks": false
+  }
+}

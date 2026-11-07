@@ -1,0 +1,41 @@
+{
+  "automaticReplayAllowed": false,
+  "byteIdentityVerifiedOnTarget": false,
+  "confirmedSourceDefect": "OCI v1.1.1 empty descriptor data field is optional; former verifier requires it for omitted canonical empty attestation config.",
+  "cumulativeControlAttempts": 8,
+  "cumulativeControlCountBasis": "Seven captured controls plus this consumed claimed verifier; independent private read pending",
+  "cumulativeDirectEngineGets": 35,
+  "date": "2026-11-01",
+  "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT_AND_EXIT_FOOTER",
+  "exitFooter": "ImageByteVerificationExit=1",
+  "failureBranchMeaning": "Referenced blob absent and descriptor is not exact EMPTY with data=e30=. Public reason alone does not identify the private missing blob.",
+  "newEngineGetsByQualifiedSource": 0,
+  "oldCommandRetired": true,
+  "privateRecordReadByAgent": false,
+  "publicResultCanonicalSha256": "d1e98ad391ccc5d339ce853a8b88afc12bcb1eb8737887d5c807321fd68e0955",
+  "receipt": {
+    "automaticReplayAllowed": false,
+    "reasonCode": "PRIVATE_IMAGE_BLOB_OR_EXACT_INLINE_EMPTY_CONFIG_REQUIRED",
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeBudgetResetOrGrant": false,
+    "schema": "ouf.retained-image-byte-verification-result.v1",
+    "scopeConsumed": true,
+    "status": "STOP_RECONCILE",
+    "targetApplyAuthorized": false
+  },
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-image-byte-verification-target-stop.v1",
+  "scope": "/etc/ouf/deploy-snapshots/m2-image-byte-verification-fa95a719-20261101-v1",
+  "scopeConsumed": true,
+  "targetApplyAuthorized": false,
+  "targetCauseStillRequiresPrivateReconciliation": true,
+  "teatriReuseReferences": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ],
+  "timezone": "Europe/Rome"
+}

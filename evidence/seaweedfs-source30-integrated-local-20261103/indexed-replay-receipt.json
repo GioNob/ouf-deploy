@@ -1,0 +1,9 @@
+{
+  "status": "EXACT_INDEXED_REPLAY_PASS",
+  "prefix29Tree": "574ad42543851ffe58cc025e14b1011609ff83de",
+  "generation30Tree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+  "patchSha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+  "workingTreeMatchesIndex": true,
+  "targetOperations": 0,
+  "releaseAdmitted": false
+}

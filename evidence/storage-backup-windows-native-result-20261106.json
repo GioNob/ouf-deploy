@@ -1,0 +1,17 @@
+{
+    "schema":  "ouf.storage-backup-windows-native.v1",
+    "status":  "PASS",
+    "powershell":  "5.1.20348.5773",
+    "ageVersion":  "v1.3.2",
+    "ageArchiveSha256":  "f48d8f8f9ebe903ab5027ed067652f2cc1db94bc206976430133b905dcd8e8c7",
+    "ageExeSha256":  "2821a4ed191da07372acd302e5f6feae7a7985e285e1417765ebe74025af45f0",
+    "probeBytes":  4096,
+    "localRoundTripVerified":  true,
+    "privateKeyUnchanged":  true,
+    "workspaceAclVerified":  true,
+    "existingWorkspaceReplayDenied":  true,
+    "userPcQualified":  false,
+    "crossPlatformDecryptProven":  false,
+    "targetOperations":  0,
+    "acceptanceCreditAdded":  0
+}

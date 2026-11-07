@@ -1,0 +1,26 @@
+{
+  "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  "dependencyMaintenance": {
+    "allDependenciesMaintained": false,
+    "status": "OPEN"
+  },
+  "durableImageCustody": "OPEN",
+  "generation": 31,
+  "independentReadbackSha256": "c266081e2ffc7371cf71ee9b1f5aeab00c5795d9b573b27e74a6dd9604c86ce8",
+  "legalTextRebindingSha256": "afbd138bd0bf5db48dd6b4c223695a2a20d03c6ac66f8805c010076f3aac26b9",
+  "licenceReview": "OPEN",
+  "modifiedMplSourceArchiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+  "modifiedMplSourceManifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53",
+  "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+  "producerArtifactSha256": "ab13f8b17a2c7405f32f1cb6c858b3780cffd554823e069f98bcef5938aaab43",
+  "publisherSignatureReverifiedByThisScript": false,
+  "publisherVerificationRecordBound": true,
+  "readbackReproduced": true,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation31-cohort.v1",
+  "status": "TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+  "targetOperations": 0
+}

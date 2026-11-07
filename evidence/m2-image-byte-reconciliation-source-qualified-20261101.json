@@ -1,0 +1,100 @@
+{
+  "actualConsumedCapsuleReproducesExactReportedStopForEachVariant": true,
+  "actualDockerVersion": "29.8.1",
+  "allFiveArtifactMembersRead": true,
+  "automaticReplayAllowed": false,
+  "canonicalEmptyReconstructionBoundToExactDigestSizeMediaAndNonruntimeContext": true,
+  "capsuleBytes": 241905,
+  "capsuleSha256": "20e2107c903466f10ef4b7ab0d9b3bd52735987334caed58fe566961977b66de",
+  "cumulativeDirectEngineGets": 35,
+  "currentOperatorCommandReady": false,
+  "date": "2026-11-01",
+  "derivedVariantsRuntimeConfigAndLayersExactlyEqualOriginal": true,
+  "downloadedArtifactMatchesLocalBuilder": true,
+  "errors": 0,
+  "explicitlyDerivedOptionalDataVariants": 13,
+  "failures": 0,
+  "frozenExecutionSourceMismatches": 0,
+  "frozenExecutionSourcesChecked": 235,
+  "historicalDeliveryDoesNotQualifyNewLauncher": true,
+  "localCryptographicTrustChainRerun": false,
+  "maximumAttempts": 1,
+  "maximumCumulativeControlAttempts": 9,
+  "maximumSeconds": 600,
+  "missingNonemptyBlobAccepted": false,
+  "newEngineGets": 0,
+  "newLauncherQualified": false,
+  "oldVerificationScopeRearmed": false,
+  "originalAuxiliaryAttestations": 13,
+  "originalExports": 13,
+  "originalRequestedIdentityKinds": {
+    "OCI_INDEX": 13
+  },
+  "priorTargetControlAttempts": 8,
+  "privateVpsCauseProven": false,
+  "protocolReferences": [
+    "https://github.com/opencontainers/image-spec/blob/v1.1.1/manifest.md#guidance-for-an-empty-descriptor",
+    "https://github.com/moby/buildkit/blob/master/docs/attestations/attestation-storage.md"
+  ],
+  "qualification": [
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "push",
+      "jobs": [
+        124918454507,
+        124918454770,
+        124918454892
+      ],
+      "run": 41330190298,
+      "suites": 7,
+      "tests": 46
+    },
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "pull_request",
+      "jobs": [
+        124918473912,
+        124918474069,
+        124918474079
+      ],
+      "run": 41330196953,
+      "suites": 7,
+      "tests": 46
+    }
+  ],
+  "releaseAcceptance": false,
+  "resourceWarnings": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-image-byte-reconciliation-source-qualified.v1",
+  "skips": 0,
+  "sourceArtifactId": 13093040843,
+  "sourceArtifactZipBytes": 92283,
+  "sourceArtifactZipSha256": "a7f06e8a03d092137cca8e8fd2d8cdccf2057b2cf595343827221cfc7b979f48",
+  "sourceCommit": "630f8a22dcfe65ea5b2e2f189549cd871301424e",
+  "sourceCount": 17,
+  "sourceMapSha256": "8dce150fbfe4f125d9de8c425025e3fb61d74683eba34422d19fa3aa9e36de20",
+  "sourcePublisherBundle": "evidence/m2-image-byte-reconciliation-source-20261101.sigstore.json",
+  "sourcePublisherResult": "evidence/m2-image-byte-reconciliation-source-publisher-20261101.json",
+  "sourcePublisherVerification": "ACTUAL_GH_2_97_0_CRYPTOGRAPHIC_VERIFY_ON_HOSTED_RUNNER_RESULT_AND_SIGNED_SUBJECT_READ_BACK",
+  "suiteTests": {
+    "byteIdentity": 17,
+    "docker29OriginalAndDerived": 4,
+    "historicalHttpsDelivery": 1,
+    "historicalLauncher": 7,
+    "pureIntake": 4,
+    "readerAndExactFailedControl": 8,
+    "sealedCapsule": 5
+  },
+  "targetApplyAuthorized": false,
+  "targetReconciliationExecuted": false,
+  "targetStopEvidence": "evidence/m2-image-byte-verification-target-stop-20261101.json",
+  "teatriReferencesConsulted": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ],
+  "timezone": "Europe/Rome"
+}

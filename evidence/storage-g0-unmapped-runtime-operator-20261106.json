@@ -1,0 +1,70 @@
+{
+  "schema": "ouf.storage-g0-unmapped-runtime-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "script": {
+    "commit": "99b5b1a34c4d332e96ebbfdbbb395e944a785135",
+    "path": "scripts/read-storage-g0-unmapped-runtime-20261106.py",
+    "sha256": "40bf3fa351481b4f91af811418439556c716444c4d9dd2c80f67bdfe2ac13f5f",
+    "bytes": 6221
+  },
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "baseInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+    "credentialsRead": 0,
+    "currentLiveObservation": false,
+    "executableMembershipProven": false,
+    "filesModified": 0,
+    "filesRead": 2,
+    "g0Complete": false,
+    "observedHostSha256": "63cfa2294e173082a2891aeefcaef43747002fffc36312906b6d01c6d0342b71",
+    "onboardingApplicationJarMountCoverage": {
+      "coveringMounts": 0,
+      "mountedFileContentsRead": false,
+      "writableContainerLayerChecked": false,
+      "writableCoveringMounts": 0
+    },
+    "processReads": 0,
+    "providerRequests": 0,
+    "runningNonRoster": {
+      "containerIdSha256": "c8d094b99b01aca1f4d693b128ea66f5ae8b0dd10f2b580f077e710fcc293c37",
+      "declaredRevision": null,
+      "nameHintsNotAuthenticatedRole": [],
+      "nameSha256": "0b5ce582cd81f8b3829c5f4ecf03b36d0a630502da9fbff3cb914afd54fd5b3b",
+      "nativeImage": "sha256:a3ccd299377af4b9968d8cbaaf9722fe354297f11908f74a846075e1e5f4ee89",
+      "rwMounts": 1,
+      "storageBindingCount": 0
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-unmapped-runtime-readback.v1",
+    "status": "RETAINED_NON_ROSTER_IMAGE_IDENTIFIED_REVIEW_REQUIRED",
+    "writerCensusComplete": false
+  },
+  "interpretation": {
+    "retainedRunningNonRosterIdentityResolved": true,
+    "resolvedContainerName": "ouf-etcd",
+    "resolvedImageReference": "quay.io/coreos/etcd:v3.5.21",
+    "matchingEvidence": "evidence/provider-r8-independent-runtime-readback-20261009.json",
+    "matchingEvidenceCommit": "99b5b1a34c4d332e96ebbfdbbb395e944a785135",
+    "matchingEvidenceRunId": 37979230240,
+    "matchingEvidenceJobId": 113985199756,
+    "matchingEvidenceReportedIndependent": true,
+    "matches": {
+      "nativeImage": true,
+      "sha256OfSlashPrefixedContainerName": true,
+      "sha256OfExactContainerId": true
+    },
+    "historicalWritableMountDestination": "/etcd-data",
+    "controlPlaneCustodyReviewRequired": true,
+    "automaticStopOrRestoreAllowed": false,
+    "containerInHistorical13RoleRoster": false,
+    "originalG0RosterModified": false,
+    "applicationJarMountShadowingObserved": false,
+    "applicationJarBytesVerified": false,
+    "writableContainerLayerVerified": false,
+    "noExternalWritersProven": false,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  }
+}

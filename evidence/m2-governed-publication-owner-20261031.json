@@ -1,0 +1,117 @@
+{
+  "schema": "ouf.m2-governed-publication-owner-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "sourceCommit": "e61d06fa81a0b89bf8a1e441938d39d748e0a732",
+  "pullRequest": 54,
+  "draft": true,
+  "merged": false,
+  "sourceSha256": {
+    "tools/m2_discovery_installation_profile/publication_owner.py": "8621827b494371d481d3ad1b0979f51061d41f6d5251c6655bac044ee7eca8ce",
+    "tests/test_m2_discovery_publication_owner.py": "964586a8e3540bc829ffe3c65ae784cd42ca3a2d96e04b76c4a0719365f9b2bf"
+  },
+  "local": {
+    "initialSuite": {
+      "tests": 13,
+      "seconds": 173.131,
+      "failures": 0,
+      "skipped": 0
+    },
+    "postDispatchRevocation": {
+      "tests": 1,
+      "seconds": 3.739,
+      "failures": 0,
+      "skipped": 0
+    },
+    "updatedPartialInitialization": {
+      "tests": 1,
+      "seconds": 2.802,
+      "failures": 0,
+      "skipped": 0
+    },
+    "distinctCases": 14
+  },
+  "ci": {
+    "runId": 41210128164,
+    "jobId": 124563188217,
+    "tests": 14,
+    "suites": 1,
+    "seconds": 131.293,
+    "failures": 0,
+    "skipped": 0,
+    "finalLogRead": true
+  },
+  "actualTestBoundaries": [
+    "CURRENT_PARENT_CHILD_ED25519_AND_HUMAN_BINDINGS",
+    "ROOT_PRIVATE_CREATE_ONLY_CUSTODY",
+    "FSYNC_AND_SEPARATE_DISPATCH_MARKERS",
+    "ACTUAL_EXISTING_AUTHORIZATION_AND_GATEWAY_STATE_MACHINES"
+  ],
+  "modeledTestBoundaries": [
+    "FULL_NATIVE_COHORT_CHECKPOINT",
+    "SELECTED_RUNTIME_NATIVE_LEAVES",
+    "OWNER_HTTP_IAM_AND_GATEWAY_IO",
+    "HUMAN_ROLE_CONFIRMATION_TRANSITION"
+  ],
+  "nativeCheckpointContract": {
+    "phase": "RELEASE_PRODUCERS",
+    "point": "BEFORE_DISCOVERY_CAPABILITY_PUBLICATION",
+    "channel": "ACTUAL_DISCOVERY_APPLICATION_EXECUTOR_CHECKPOINT",
+    "concreteNativeControllerImplementedHere": false
+  },
+  "protocolCases": [
+    "HUMAN_CONFIRMATION_BEFORE_ROUTES",
+    "UNCHANGED_THIRTEEN_PHASE_CHILD_BYTES",
+    "LOST_GATEWAY_ACK_READ_ONLY_RECONCILIATION",
+    "LOST_REGISTRATION_ACK_READ_ONLY_RECONCILIATION",
+    "NO_AMBIGUOUS_ROLE_PROPOSAL_REDISPATCH",
+    "GATEWAY_MUTABLE_JOURNAL_REGRESSION_DENIED",
+    "AUTHORIZATION_MUTABLE_JOURNAL_REGRESSION_DENIED",
+    "CURRENT_PARENT_REVOCATION_DENIED",
+    "POST_DISPATCH_CLAIM_REVOCATION_PREVENTS_REMOTE_MUTATION",
+    "BAD_NATIVE_CHECKPOINT_OR_REGISTRY_BOUNDARY_DENIED",
+    "OCCUPIED_REGISTRY_FENCE_DENIED",
+    "PARTIAL_OR_COMPLETED_JOURNAL_REINITIALIZATION_DENIED",
+    "CHANGED_GATEWAY_GENERATION_DENIED",
+    "PUT_WITHOUT_CURRENT_EXACT_DURABLE_CLAIM_DENIED"
+  ],
+  "unchangedClosures": {
+    "worker": 37,
+    "earlierReview": 108,
+    "infrastructureReview": 128,
+    "completeParentReview": 136
+  },
+  "operatorEvidence": "evidence/m2-vps-diagnostic-metadata-20261031.json",
+  "publicationExecutionOwnerImplemented": true,
+  "wholeInstallationControllerIntegrated": false,
+  "currentNativeAdmissionProven": false,
+  "executableTargetDeliveryAvailable": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "producerReleaseDispatched": false,
+  "fullCohortProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false,
+  "remaining": [
+    "CONCRETE_FULL_NATIVE_PREPUBLICATION_CHECKPOINT",
+    "CURRENT_COHORT_CUSTODY_TLS_IAM_DB_TRUST_AND_FENCING",
+    "SEALED_INSTALLER_COMPOSITION_AND_CONCRETE_PRIVATE_REVIEW",
+    "ACTUAL_TARGET_GOVERNED_INSTALLATION_AND_PUBLICATION",
+    "FARMACIE_TO_INGESTION_TO_UDP_ALL61_OUTCOMES",
+    "BOOT_ROTATION_FAULT_CHAT_REIMPORT_TWO_CLIENTS_AND_STABILITY"
+  ],
+  "parentCompilerRegression": {
+    "runId": 41210128124,
+    "jobId": 124563188370,
+    "tests": 20,
+    "suites": 2,
+    "suiteSeconds": [
+      0.61,
+      11.186
+    ],
+    "failures": 0,
+    "skipped": 0,
+    "finalLogRead": true,
+    "newArtifactIndependentlyVerifiedHere": false
+  }
+}

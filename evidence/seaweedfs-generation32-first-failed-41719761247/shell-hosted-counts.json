@@ -1,0 +1,12 @@
+{
+  "status": "HOSTED_REQUIRED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "profile": "shell",
+  "testsPassed": 306,
+  "packagesPassed": 1,
+  "testsFailed": 0,
+  "testsSkipped": 0,
+  "terminalTestsSha256": "958c0c7ebfb9258c79e20a5f8602fb29c111771d8ef4fb33e21c37321e6873e7",
+  "logSha256": "04c5157a99cf20f555b28eb3fc5ce76e27db3d358a290177f3515f2f887e6987",
+  "localPassWasObserved": false,
+  "targetOperations": 0
+}

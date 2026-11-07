@@ -1,0 +1,421 @@
+{
+  "schema": "ouf.seaweedfs-openbao-standard-profile-local.v1",
+  "status": "LOCAL_PASS_NOT_ADMITTED",
+  "candidateGeneration": 30,
+  "candidateGenerationSealed": false,
+  "baseGeneration": 29,
+  "basePrerequisitePatch": {
+    "path": "patches/seaweedfs/4.52-ldap-mapstructure-v2.patch",
+    "sha256": "141785f5707cc2ae5dac6d53686c12bc84e13a918c7afd34aca437017ac27948"
+  },
+  "patch": {
+    "path": "patches/seaweedfs/4.52-ouf-standard-openbao-profile.patch",
+    "sha256": "33de23d893ca6d7cb9bf3a7a76bf6ef491ea30f96b74f6e93d5ccc326a52a950",
+    "changedFiles": 21,
+    "includesGoModAndGoSum": true,
+    "parentIntegration": "Apply 19 non-module file changes after generation29+LDAP; compose other candidate30 changes and run one final tidy. This isolated module delta is not the combined generation30 seal."
+  },
+  "build": {
+    "status": "PASS",
+    "goVersion": "go1.27.3",
+    "goos": "linux",
+    "goarch": "amd64",
+    "cgoEnabled": false,
+    "trimpath": true,
+    "binarySha256": "0eb485af73e59767600dfe9b9d85963d385a5a4690963d3e8b7490b9c339d037"
+  },
+  "qualification": {
+    "broad": {
+      "pass": {
+        "topLevel": 2859,
+        "subtests": 4791,
+        "total": 7650,
+        "packages": 42
+      },
+      "skip": {
+        "topLevel": 11,
+        "subtests": 0,
+        "total": 11,
+        "packages": 10
+      },
+      "fail": {
+        "topLevel": 0,
+        "subtests": 0,
+        "total": 0,
+        "packages": 0
+      }
+    },
+    "focusedWithinFinalBroadRun": {
+      "pass": {
+        "topLevel": 10,
+        "subtests": 23,
+        "total": 33,
+        "packages": 0
+      },
+      "skip": {
+        "topLevel": 0,
+        "subtests": 0,
+        "total": 0,
+        "packages": 0
+      },
+      "fail": {
+        "topLevel": 0,
+        "subtests": 0,
+        "total": 0,
+        "packages": 0
+      }
+    },
+    "redBaseline": {
+      "pass": {
+        "topLevel": 1,
+        "subtests": 0,
+        "total": 1,
+        "packages": 0
+      },
+      "skip": {
+        "topLevel": 0,
+        "subtests": 0,
+        "total": 0,
+        "packages": 0
+      },
+      "fail": {
+        "topLevel": 1,
+        "subtests": 6,
+        "total": 7,
+        "packages": 1
+      }
+    },
+    "skips": [
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkInitialization"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkInitializeFromConfig"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkEntryOperations"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkPrecondition"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkIdempotentCreate"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/replication/sink/azuresink",
+        "test": "TestAzureSinkInvalidCredentials"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestCheckGovernanceBypassPermissionIntegrationBehavior"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernanceBypassWithIAMPermission"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernancePermissionIntegration"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernancePermissionEndToEnd"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestImplicitDirectoryIntegration"
+      }
+    ],
+    "rawOutputNote": "One output event contains an unescaped line break. Raw bytes are preserved; strict=False JSON stream decoding yields all 36914 events. Terminal test and package events are well-formed."
+  },
+  "dependencyClosure": {
+    "scope": "actual CGO0 linux/amd64 ./weed production graph and linked binary",
+    "packagesBefore": 1811,
+    "packagesAfter": 1791,
+    "packagesAdded": 0,
+    "packagesRemoved": 20,
+    "productionPackagesSha256": "e0994927625561fb8b7a0734831830a6e5cd9c4f4acc3d4793e61e0ce290c235",
+    "moduleRequireDelta": {
+      "removed": {
+        "github.com/hashicorp/go-cleanhttp": "v0.5.2",
+        "github.com/hashicorp/go-retryablehttp": "v0.7.8",
+        "github.com/hashicorp/go-rootcerts": "v1.0.2",
+        "github.com/hashicorp/go-secure-stdlib/parseutil": "v0.2.0",
+        "github.com/hashicorp/go-secure-stdlib/strutil": "v0.1.2",
+        "github.com/hashicorp/go-sockaddr": "v1.0.7",
+        "github.com/hashicorp/hcl": "v1.0.1-vault-7",
+        "github.com/hashicorp/vault/api": "v1.23.0",
+        "github.com/mitchellh/go-homedir": "v1.1.0",
+        "github.com/mitchellh/mapstructure": "v1.5.1-0.20220423185008-bf980b35cac4",
+        "github.com/ryanuber/go-glob": "v1.0.0"
+      },
+      "added": {},
+      "changed": {}
+    },
+    "absentProductionModules": [
+      "github.com/hashicorp/vault/api",
+      "github.com/hashicorp/go-secure-stdlib/parseutil",
+      "github.com/mitchellh/mapstructure"
+    ],
+    "remainingMaintainedMapstructure": "github.com/go-viper/mapstructure/v2 v2.5.0",
+    "allModuleMetadataEnumeration": "NOT_QUALIFIED: go list -m -json all with GOPROXY=off fails on uncached metadata; raw stderr retained. Production go list -deps and full build both PASS."
+  },
+  "negativeBuildTags": {
+    "openbao": "EXPECTED_COMPILE_REJECTION",
+    "vault": "EXPECTED_COMPILE_REJECTION",
+    "openbao,vault": "EXPECTED_COMPILE_REJECTION"
+  },
+  "actualCLIDenials": [
+    {
+      "command": [
+        "/workspace/scratch/98dabd1608e5/openbao-profile30-stage/weed-openbao-profile30",
+        "-logtostderr=true",
+        "filer.replicate"
+      ],
+      "exitCode": 2,
+      "denied": true,
+      "logFailure": false,
+      "outputSha256": "3fceb02e85ab6a77ed9ce6000c4519a4087881f46e45a3a3c3021c4681854e0b"
+    },
+    {
+      "command": [
+        "/workspace/scratch/98dabd1608e5/openbao-profile30-stage/weed-openbao-profile30",
+        "-logtostderr=true",
+        "filer.backup"
+      ],
+      "exitCode": 2,
+      "denied": true,
+      "logFailure": false,
+      "outputSha256": "0ec0b64230e8720daca3c09e08685c61b3a86b5494af57f684c26ad2f3af2a5f"
+    }
+  ],
+  "profileBoundary": {
+    "OpenBaoVaultKMS": "EXCLUDED_AND_HARD_DENIED",
+    "supportedProviderBehavior": "Retained; direct fake-local provider and no-KMS IAM tests pass. Unrelated SSE initialization warning/fallback preserved.",
+    "kafkaAndSQLSourceFiles": "UNCHANGED_BY_THIS_PATCH",
+    "targetDependencyGate": "OPEN; reject this standard candidate for any target/consumer requiring OpenBao or Vault KMS. Baseline120objects evidence alone does not establish target-wide absence.",
+    "targetOperationsPerformed": false,
+    "humanTHSAuthoritiesChanged": false,
+    "consumedScopesAndTeatriFarmacieChanged": false
+  },
+  "notQualified": [
+    "combined candidate30 source/binary/OCI seal",
+    "hosted candidate30 image/scan/SBOM/license/provenance cohort",
+    "candidate30 runtime laboratory",
+    "target storage replacement/cutover",
+    "full optional build-tag feature matrix",
+    "all archived or unmaintained dependency closure"
+  ],
+  "evidence": [
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/binary-build-info.txt",
+      "sha256": "13b3e15315318d59dd427f249de8fef12ff0518abaf5a60cf72c608aedda2b91",
+      "bytes": 24477
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/broad-tests.command.json",
+      "sha256": "774c8d48b2428965a8aa32e85418b886c4e51328de38e37694ea7946c38be30e",
+      "bytes": 329
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/broad-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/broad-tests.stdout.gz",
+      "sha256": "54eff2b71ebf9c82828ac888336f79887211ff7cc617ef458ce986915a29ebb3",
+      "bytes": 565488
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/cli-denials.json",
+      "sha256": "89f02853253d410f3811874f2734bed19283271c50911a800eebdaa2fe1e9af2",
+      "bytes": 646
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/cli-filer.backup.log",
+      "sha256": "0ec0b64230e8720daca3c09e08685c61b3a86b5494af57f684c26ad2f3af2a5f",
+      "bytes": 4409
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/cli-filer.replicate.log",
+      "sha256": "3fceb02e85ab6a77ed9ce6000c4519a4087881f46e45a3a3c3021c4681854e0b",
+      "bytes": 1660
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao-vault.command.json",
+      "sha256": "35eca98ff7d5c8f8dc4d9b6d118f6f1f9844e5f7f79d43c7d24cad390cb7956b",
+      "bytes": 297
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao-vault.stderr",
+      "sha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "bytes": 162
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao-vault.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao.command.json",
+      "sha256": "7d271ef371773d85c15bb384085f1b4282b2cfd5de2fb43eea0857a77da36074",
+      "bytes": 291
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao.stderr",
+      "sha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "bytes": 162
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-openbao.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-vault.command.json",
+      "sha256": "e2d5c8f5d59a3810f29655b0f11042732b341932ee20c7c3d53add11c36f3e89",
+      "bytes": 289
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-vault.stderr",
+      "sha256": "9be901623a3f1329cf79bfcc2389b93aa45cc34f523cd3404b3d4b7f450adca5",
+      "bytes": 162
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/denied-tags-vault.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/first-attempt-cli-denials.json",
+      "sha256": "6f9df6ab0a251d8283ae60ef478875313bfcf6e68f1584be8b02bcf827cb8680",
+      "bytes": 542
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/first-attempt-cli-filer.backup.log",
+      "sha256": "700788e6203e23882851adbf064db57f24f88eae6e5d9ffb9ea7c3bd676da4b5",
+      "bytes": 7221
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/first-attempt-cli-filer.replicate.log",
+      "sha256": "94b0a6dbcd33f7a45d43b2e0ad23b0ca6fbea7f64ee4ef9ba3e5340bf9689d99",
+      "bytes": 4472
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/focused-tests.jsonl",
+      "sha256": "f171b7a0d4752fa8fd24f0a7d0251aa744442f717a93910cff344a20cc722407",
+      "bytes": 38944
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/focused-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/go-mod-tidy.log",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/module-graph.command.json",
+      "sha256": "cf0eb5724524a201849c1af4388c7fe3b9e31b6afc343b1cc235138c5c11d2b7",
+      "bytes": 192
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/module-graph.stderr",
+      "sha256": "568cd188622dfd80aa1f51358c55ff669eddcedc560e99b348e8d18672b4abd2",
+      "bytes": 20622
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/module-graph.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/module-require-delta.json",
+      "sha256": "b2a86fab4b664c61b6c3bcdac1826b213ae359e2129b2eff7f3d32baa519288c",
+      "bytes": 663
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/patch-replay.json",
+      "sha256": "45ec878c42d3b310bb4e071152a37eefa8771b20dacbe030f93076498422fbe5",
+      "bytes": 1873
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-build.command.json",
+      "sha256": "b2f405305e6666bb898da179d3e93b9b5f5fb76aeb4c6325a0cd6995b93df84c",
+      "bytes": 287
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-build.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-build.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-graph.command.json",
+      "sha256": "7dbdad47b33cd31254777954e72fe37e08f615f929200305786a840a6b42664e",
+      "bytes": 198
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-graph.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-graph.stdout.gz",
+      "sha256": "5199bd28c689d5bab6cb4e059eb0c1b620cb2614a8807072a19d95c6ae528c5b",
+      "bytes": 757386
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-modules.json",
+      "sha256": "6618e8c5cd49a011e78218340fdb4f8b2b1e6c833df2ebd0e3ce1dfca7c7f38d",
+      "bytes": 12658
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-package-delta.json",
+      "sha256": "1045bf7e0de67af8a2c212e40a356d44a257875cedf1e16e2f1a05d617c9b18d",
+      "bytes": 934
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/production-packages.txt",
+      "sha256": "e0994927625561fb8b7a0734831830a6e5cd9c4f4acc3d4793e61e0ce290c235",
+      "bytes": 74255
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/red-baseline-tests.command.json",
+      "sha256": "a6730b0abd924f1389aac5edcaa0403b59ff44c08da08ad341c0351b683ffc4d",
+      "bytes": 418
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/red-baseline-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/red-baseline-tests.stdout",
+      "sha256": "f6d6d8184787978f7cd8c7fceee379c70467aebd5d8ddb00f2e7e50878871f6c",
+      "bytes": 12548
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/source-delta.json",
+      "sha256": "75ca9ded144ac5d190b5ea4864a856fcd33b4dd90f2f0651a097a8d0edb482c4",
+      "bytes": 4222
+    },
+    {
+      "path": "evidence/seaweedfs-452-openbao-standard-profile-local-20261103/test-summary.json",
+      "sha256": "db85a902d84bbf33c730cef8bfc118220a0b949b2a7bc2c32c1ba2d3a94b47e5",
+      "bytes": 2731
+    }
+  ]
+}

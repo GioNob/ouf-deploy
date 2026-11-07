@@ -1,0 +1,107 @@
+{
+  "schema": "ouf.storage-plan-generation29-local-promotion.v1",
+  "status": "LOCAL_PASS_HOSTED_PLAN_CI_PENDING_NOT_ADMITTED",
+  "baseSourceCommit": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+  "tests": {
+    "passed": 48,
+    "failed": 0,
+    "actualWorkflowRunBlocksExecuted": 2,
+    "workflowShellSyntax": "PASS",
+    "workflowInputManifestEntries": 266,
+    "allInputHashesVerified": true
+  },
+  "historyPreservation": {
+    "historicalQualification15CanonicalSha256": "58c9def4a5b4917a4861821c18ed73178e768e79196021696f4b5e5053be7b4f",
+    "historicalGeneration29PhaseACanonicalSha256": "74e5c093e0d9caccd7b4bc3947f435ada3d76da5a20bc575056902d69c27734b",
+    "otherOriginalPlanFieldsUnchanged": 43,
+    "baselineFilesByteIdentical": 2211,
+    "onlyExistingFilesChanged": [
+      "AGENTS.md",
+      "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
+      "tests/test_minio_seaweedfs_plan_current.py",
+      "scripts/verify-minio-seaweedfs-plan-current.py",
+      "releases/minio-seaweedfs-plan-20261102.json",
+      ".github/workflows/storage-plan-current.yml"
+    ],
+    "agentsAndMiniPETOriginalContentsPreservedAsExactSuffix": true
+  },
+  "currentEvidence": {
+    "generation": 29,
+    "lockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+    "cohortReceiptSha256": "ba67c94bfb9a473db31f82a7430604597faa0dddaae71c6818e738d57197e599",
+    "runtimeReceiptSha256": "786e28000b25d6fbb5e7b1b7884527447ab79a04a8f4cc48ff34dee37ffe94be",
+    "lifecycleReceiptSha256": "2ba40208c83515c658801b198428daa1d9cbdd03d836c15a02c9d6a33a0370b0",
+    "retainedCohortRuntimeRawFiles": 74,
+    "boundPatches": 29,
+    "runtimeSourceFiles": 10,
+    "lifecycleEvidenceFiles": 17
+  },
+  "progress": {
+    "weightedCredit": 17.5,
+    "totalWeight": 46,
+    "roundedPercent": 38,
+    "uncertaintyPercentagePoints": 10,
+    "newCredit": 0
+  },
+  "limits": {
+    "allDependenciesMaintained": false,
+    "gatesPassed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "targetOperations": 0,
+    "runtimeAuthorityIssued": false,
+    "releaseAdmitted": false,
+    "activeStorageBackend": "MinIO",
+    "consumedScopes": 17,
+    "cumulativeEngineGET": 52,
+    "prototypeQualified": false,
+    "cryptographicAttestationReverifiedLocally": false,
+    "hostedPlanWorkflowExecutedByThisTask": false
+  },
+  "sources": {
+    "releases/minio-seaweedfs-plan-20261102.json": {
+      "sha256": "b69268aaecd0d8958d827020baf9dcaf54fcee37d6b39ebec533f71ccea318dc",
+      "bytes": 41538
+    },
+    "scripts/verify-minio-seaweedfs-plan-current.py": {
+      "sha256": "70aad85ea0bc1dc6bfa094f61768946f0ee449b05eaa3c57aff647c594fab732",
+      "bytes": 68840
+    },
+    "tests/test_minio_seaweedfs_plan_current.py": {
+      "sha256": "4e60a00fb302424bd9b8a62623994c8e31b877637a2ffd55ea14f4bba4fd6242",
+      "bytes": 43159
+    },
+    ".github/workflows/storage-plan-current.yml": {
+      "sha256": "e2db3b26806c5a39952199c929818f541471b624718e546c570cdfb7513d7775",
+      "bytes": 8158
+    },
+    "AGENTS.md": {
+      "sha256": "5ea154471fd6b9ad4aca5519e8c1a8a172f7d201509ebb44b82b4cce6553238d",
+      "bytes": 18366
+    },
+    "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md": {
+      "sha256": "30371cf3987b10603b91400efcdc9686dddeebb146c15415127b5b08d3e64caf",
+      "bytes": 110000
+    },
+    "docs/OUF_SEAWEEDFS_GENERATION29_CURRENT_QUALIFICATION_20261103.md": {
+      "sha256": "5d6bc58905cd0b475b25bf99094c4b3f947c29de2ec63ea5e1ab34cabc07927b",
+      "bytes": 4727
+    },
+    "evidence/storage-plan29-qualified-local-20261103/test.log": {
+      "sha256": "25ea50aef3b6d98161ba086b1500d825b6579761afd123d089e25e12a456c87c",
+      "bytes": 8833
+    },
+    "evidence/storage-plan29-qualified-local-20261103/verification.json": {
+      "sha256": "0f9f5513963cb1c1f73ac480971fb4de7f71d2d22e89a4b89d33e6333887da2e",
+      "bytes": 1756
+    },
+    "evidence/storage-plan29-qualified-local-20261103/input-sha256.txt": {
+      "sha256": "251e6b01cfff0eccbd9a6aa18f7030fa9a70aefe204559ae4df2dea9b61c9323",
+      "bytes": 36206
+    },
+    "evidence/storage-plan29-qualified-local-20261103/SHA256SUMS": {
+      "sha256": "695b55db11ab41a2c2fffdff8a196283a9570cdf25e731aed11feec844c196cd",
+      "bytes": 242
+    }
+  }
+}

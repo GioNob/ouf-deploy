@@ -1,0 +1,36 @@
+{
+  "schema": "ouf.seaweedfs-452-identity-tls-local.v1",
+  "status": "LOCAL_UNIT_PASS_HOSTED_LIVE_PENDING_NOT_ACCEPTANCE",
+  "unitTestsPassed": 13,
+  "liveS3CasesPlanned": 23,
+  "liveTLSNegativesPlanned": 2,
+  "liveEgressProbesPlanned": 2,
+  "liveContainerTestsRun": 0,
+  "dockerAvailable": false,
+  "tlsFixtureHandshake": "REAL_OPENSSL_MEMORY_BIO_POSITIVE_WRONG_CA_WRONG_HOSTNAME",
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "sourceSha256": {
+    "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+    "tests/test_seaweedfs_452_identity_tls.py": "a37658050bb3e349865bb6662c3cab4a091faff84e0a071449d6170d2fdac54d",
+    ".github/workflows/storage-452-identity-tls.yml": "59b8fda016e7780187065299bceacc0ef442f5ec39e905f29cf876832ee40632"
+  },
+  "reusedColdRunnerSha256": "ea888abe20ef92aa58762b3cac715f7b986e4f52b90f544ed443008344a7437d",
+  "limits": [
+    "No local Docker daemon; real four-role OCI experiment pending hosted run",
+    "No lateral isolation between roles sharing loopback",
+    "No certificate rotation or mTLS",
+    "No production network, identity binding, custody or HUMAN/THS acceptance"
+  ],
+  "budgets": {
+    "operationalRequestTimeoutSeconds": 30,
+    "readinessRequestTimeoutMaximumSeconds": 5,
+    "readinessBudgetSeconds": 80,
+    "readinessChildBudgetSeconds": 90,
+    "verificationChildBudgetSeconds": 240,
+    "mutatingRetries": 0
+  }
+}

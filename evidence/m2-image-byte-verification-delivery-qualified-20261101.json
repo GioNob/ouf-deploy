@@ -1,0 +1,85 @@
+{
+  "actualDockerVersion": "29.8.1",
+  "actualFixtureAuxiliaryAttestations": 13,
+  "actualFixtureIdentityKinds": {
+    "OCI_INDEX": 13
+  },
+  "actualPublicHttpsDeliveryVerified": true,
+  "applicationStateChangesAllowed": false,
+  "archivesExtractedOrImported": false,
+  "automaticReplayAllowed": false,
+  "auxiliaryAttestationTrustAccepted": false,
+  "capsuleBytes": 237245,
+  "capsuleCommit": "88c1df7311701e5414dc1d79ee108fe991c46f0c",
+  "capsuleSha256": "70ab863a3bdb9855672acd5bf9af33d1678ad29ba35c0259ce0bf38e6b64337f",
+  "currentOperatorCommandReady": true,
+  "date": "2026-11-01",
+  "errors": 0,
+  "failures": 0,
+  "frozenSourceDifferences": 0,
+  "frozenSourcesChecked": 235,
+  "handoff": "docs/handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md",
+  "launcherCommit": "bdb49b4f018871930147c7a30d3734724f95a2ac",
+  "launcherSha256": "575818ebf7d3607c6ffe2613aa4ed3c536f0fa6f96a1e19154f8370bda82c212",
+  "localLiveHttpsInspection": "TRANSIENT_PROXY_CONNECT_TIMEOUT_BEFORE_ANY_TARGET_INPUT",
+  "maximumVerificationAttempts": 1,
+  "maximumVerificationSeconds": 600,
+  "newEngineGets": 0,
+  "newTargetScope": "/etc/ouf/deploy-snapshots/m2-image-byte-verification-fa95a719-20261101-v1",
+  "operatorCommand": "releases/OUF_M2_IMAGE_BYTE_VERIFICATION_COMMAND_20261101.sh",
+  "outerKillAfterSeconds": 5,
+  "outerTimeoutSeconds": 635,
+  "priorTargetControlAttempts": 7,
+  "priorTargetDirectEngineGets": 35,
+  "qualification": [
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "push",
+      "jobs": [
+        124911468858,
+        124911469023,
+        124911469103
+      ],
+      "run": 41327850081,
+      "suites": 7,
+      "tests": 38
+    },
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "pull_request",
+      "jobs": [
+        124911490944,
+        124911491087,
+        124911491133
+      ],
+      "run": 41327857484,
+      "suites": 7,
+      "tests": 38
+    }
+  ],
+  "rawPrivateBytesOrIndividualArchiveHashesExported": false,
+  "releaseAcceptance": false,
+  "resourceWarnings": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-image-byte-verification-delivery-qualified.v1",
+  "skips": 0,
+  "sourceCommit": "01f503393443627d49b716dc5eb55e3da2d060cc",
+  "sourceCount": 17,
+  "sourceQualification": "evidence/m2-image-byte-verification-source-qualified-20261101.json",
+  "targetApplyAuthorized": false,
+  "targetCapture": "evidence/m2-native-image-archives-target-20261101.json",
+  "targetVerificationExecuted": false,
+  "testsBySuite": {
+    "actualDocker29": 3,
+    "actualPublicHttpsDelivery": 1,
+    "byteIdentityAndBuildkit": 12,
+    "capsule": 5,
+    "launcher": 7,
+    "pureReceiptIntake": 4,
+    "readerAndDurableControl": 6
+  },
+  "timezone": "Europe/Rome"
+}

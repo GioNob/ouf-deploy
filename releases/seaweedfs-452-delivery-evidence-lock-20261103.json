@@ -1,0 +1,40 @@
+{
+  "bundleBytes": 1832133,
+  "bundleParts": [
+    {
+      "bytes": 610711,
+      "path": "evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-000",
+      "sha256": "1838d239086f60fddcf858712bc0f5c0e5d4df68741cf8ee372c75d014983af3"
+    },
+    {
+      "bytes": 610711,
+      "path": "evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-001",
+      "sha256": "985cdd3bdd500ef72352999167e086d7e51558943f50cc8ac5d341cc0ea96095"
+    },
+    {
+      "bytes": 610711,
+      "path": "evidence/artifacts/seaweedfs-452-attribution-source-review-bundle.zip.part-002",
+      "sha256": "4e9614091d92160a26ae19c5c0997e58d893012d0af8996f4c3290bd75f2cc6d"
+    }
+  ],
+  "bundleSha256": "d02665c32943bb362f3ace5a7c96093634807d468354b1aaaf5f77efe8bc0f19",
+  "candidateLock": "releases/seaweedfs-452-candidate-lock-20261103.json",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "durableImageCustody": "OPEN",
+  "historicalCorpusSha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67",
+  "licenceDeltaSha256": "7cf2b9dc596ded071c9c75f1bfeb87245f443e25984b9cddf8bf4f411791eda2",
+  "licenceReview": "OPEN_HUMAN",
+  "matrixCsvSha256": "fac8745de6c6317ca50a30c25d6d627f8d142c1b17c3c4e36b38f7847cd0f4ff",
+  "matrixSha256": "d11c114f2d79fde34fb67b453d0d0effbe2c146b82832810b9622a847ebc81db",
+  "mplSourceArchives": 17,
+  "rawUnknownClassifications": 3,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-452-delivery-evidence-lock.v1",
+  "status": "TECHNICAL_DELIVERY_DOSSIER_PREPARED_REVIEW_OPEN",
+  "targetOperations": 0,
+  "thirdPartyComponents": 262,
+  "thirdPartyLegalTexts": 353,
+  "unclassifiedViews": 3
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.storage-historical-postgres-restore-operator-decision.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_CHAT_APPROVAL",
+  "operatorResponse": "autorizzo",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01",
+  "approvedProgramCommit": "e91387a661f2eb68d7e09ec0820557fa25c26644",
+  "approvedProgramSha256": "2c57dd92954b9edff61a3463aea5ac00dc95e315e6b1b15e1db26ea87d294d58",
+  "approvedProgramBytes": 14535,
+  "status": "APPROVED_PENDING_VPS_EXECUTION",
+  "scope": "historical-postgres-restore-20261107-v1",
+  "maximumAttempts": 1,
+  "maximumSeconds": 900,
+  "maximumContainerRuns": 18,
+  "networkMode": "none",
+  "originalMountsAllowed": false,
+  "restoreExecuted": false,
+  "acceptanceCreditAdded": 0
+}

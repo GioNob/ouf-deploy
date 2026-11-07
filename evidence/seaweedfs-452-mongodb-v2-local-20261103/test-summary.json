@@ -1,0 +1,113 @@
+{
+  "final-adaptive-contracts-16500": {
+    "pass": {
+      "events": 31,
+      "topLevel": 13,
+      "subtests": 18,
+      "packages": 1
+    },
+    "skip": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "fail": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "skips": []
+  },
+  "server-regression": {
+    "pass": {
+      "events": 4846,
+      "topLevel": 1629,
+      "subtests": 3217,
+      "packages": 2
+    },
+    "skip": {
+      "events": 5,
+      "topLevel": 5,
+      "subtests": 0,
+      "packages": 0
+    },
+    "fail": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "skips": [
+      "TestCheckGovernanceBypassPermissionIntegrationBehavior",
+      "TestGovernanceBypassWithIAMPermission",
+      "TestGovernancePermissionIntegration",
+      "TestGovernancePermissionEndToEnd",
+      "TestImplicitDirectoryIntegration"
+    ]
+  },
+  "baseline-v1-final": {
+    "pass": {
+      "events": 5,
+      "topLevel": 5,
+      "subtests": 0,
+      "packages": 0
+    },
+    "skip": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "fail": {
+      "events": 6,
+      "topLevel": 1,
+      "subtests": 5,
+      "packages": 1
+    },
+    "skips": []
+  },
+  "naive-v2-ack-final": {
+    "pass": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "skip": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "fail": {
+      "events": 6,
+      "topLevel": 1,
+      "subtests": 5,
+      "packages": 1
+    },
+    "skips": []
+  },
+  "adaptive-v2-control-16500": {
+    "pass": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "skip": {
+      "events": 0,
+      "topLevel": 0,
+      "subtests": 0,
+      "packages": 0
+    },
+    "fail": {
+      "events": 1,
+      "topLevel": 1,
+      "subtests": 0,
+      "packages": 1
+    },
+    "skips": []
+  }
+}

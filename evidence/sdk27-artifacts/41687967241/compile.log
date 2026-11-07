@@ -1,0 +1,6 @@
+?   	github.com/seaweedfs/seaweedfs/test/kafka/cmd/setup	[no test files]
+ok  	github.com/seaweedfs/seaweedfs/test/kafka/e2e	0.029s [no tests to run]
+ok  	github.com/seaweedfs/seaweedfs/test/kafka/integration	0.019s [no tests to run]
+?   	github.com/seaweedfs/seaweedfs/test/kafka/internal/testutil	[no test files]
+ok  	github.com/seaweedfs/seaweedfs/test/kafka/loadtest	0.011s [no tests to run]
+ok  	github.com/seaweedfs/seaweedfs/test/kafka/unit	0.019s [no tests to run]

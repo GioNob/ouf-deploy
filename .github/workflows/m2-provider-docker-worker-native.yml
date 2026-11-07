@@ -1,0 +1,81 @@
+name: M2 real Docker admitted provider worker handoff
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/fixtures/m2_publication_read_diagnostics.py','tests/test_m2_registry_node_worker_fixture.py','tests/fixtures/m2_registry_node_worker_native.py','tests/test_iam_token_admission.py','tests/test_installed_token_owner.py','tests/test_m2_discovery_parent_authority.py','tests/test_m2_admitted_provider_sealed_fixture.py','tests/test_m2_recovery_observation.py','tests/fixtures/m2_recovery_reader_control.py','.github/workflows/m2-provider-docker-worker-native.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/semantic_transaction_profiles/repair_peer_bundle_sources.py','tests/test_m2_provider_profiles.py','tests/test_m2_public_peer_bundle_sources.py','tests/qualify_m2_provider_docker_worker_native.py','tests/qualify_m2_provider_installation_native.py','tests/fixtures/m2_provider_worker_handoff_native.py','tests/fixtures/m2_admitted_provider_sealed_worker_native.py','tests/fixtures/m2_publication_read_diagnostics.py','tests/test_m2_registry_node_worker_fixture.py','tests/fixtures/m2_registry_node_worker_native.py','tests/test_iam_token_admission.py','tests/test_installed_token_owner.py','tests/test_m2_discovery_parent_authority.py','tests/test_m2_admitted_provider_sealed_fixture.py','tests/test_m2_recovery_observation.py','tests/fixtures/m2_recovery_reader_control.py','.github/workflows/m2-provider-docker-worker-native.yml']
+permissions: {contents: read}
+jobs:
+  native-material:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [finite-handoff, sealed-worker, registry-worker, registry-worker-exclusive-reader-control]
+    env:
+      OUF_NATIVE_SCENARIO: ${{ matrix.scenario }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          # Feature-only bootstrap exists BEFORE daemon runtime discovery.
+          # It cannot create/start any peer and is replaced before review.
+          printf '%s\n' '#!/bin/sh' 'case "$1" in features|version|--version) exec /opt/ouf-docker-29/runc "$@";; *) exit 1;; esac' > /tmp/ouf-feature-only-runtime
+          sudo install -o root -g root -m 755 /tmp/ouf-feature-only-runtime /usr/local/sbin/ouf-m2-provider-ci
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock \
+            --add-runtime=ouf-fixture-admitted=/usr/local/sbin/ouf-m2-provider-ci
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: Install actual nftables and crypto tools
+        run: sudo apt-get update && sudo apt-get install -y nftables iproute2 openssl python3-cryptography
+      - name: Real admitted Docker provider and the selected distinct worker mode
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-native-docker-provider-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
+            -s "$fixture/repository/tests" -p test_m2_public_peer_bundle_sources.py -v
+          sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
+            -s "$fixture/repository/tests" -p test_m2_admitted_provider_sealed_fixture.py -v
+          sudo env PATH=/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S -m unittest discover \
+            -s "$fixture/repository/tests" -p test_m2_recovery_observation.py -v
+          args=()
+          flags=(-I -B -S)
+          if [ "$OUF_NATIVE_SCENARIO" = sealed-worker ]; then args+=(--sealed-worker); fi
+          if [[ "$OUF_NATIVE_SCENARIO" = registry-worker* ]]; then
+            args+=(--registry-worker)
+            # Only the host-side disposable TLS certificate fixture uses the
+            # distro cryptography package. The sealed worker still runs -I -B -S.
+            flags=(-I -B)
+          fi
+          if [ "$OUF_NATIVE_SCENARIO" = registry-worker-exclusive-reader-control ]; then
+            args+=(--legacy-recovery-reader-control)
+          fi
+          sudo env GITHUB_ACTIONS=true OUF_NATIVE_UIDS=1 DOCKER_API_VERSION=1.44 PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 "${flags[@]}" "$fixture/repository/tests/qualify_m2_provider_docker_worker_native.py" "${args[@]}"

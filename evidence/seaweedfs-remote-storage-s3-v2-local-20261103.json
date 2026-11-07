@@ -1,0 +1,78 @@
+{
+  "schema": "ouf.seaweedfs.storage-sdk-lifecycle.local-evidence.v1",
+  "recorded_at_utc": "2026-11-03T07:05:00Z",
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "repository": "GioNob/ouf-deploy",
+  "branch": "feat/m2-discovery-complete-profile-20261029",
+  "pull_request": 54,
+  "seaweedfs_tag": "4.52",
+  "seaweedfs_commit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "previous_ouf_checkpoint": "3fbfd8d5e0403d11cd9a6dfee8d1278942a58dd5",
+  "source_commit": "f730a88253c7727933aa4e3a8c6a4d225e5ed53c",
+  "patch_sequence_count": 10,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch",
+    "bytes": 62005,
+    "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530"
+  },
+  "removed_package_manifest": {
+    "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2-removed-packages.txt",
+    "entries": 38,
+    "bytes": 1763,
+    "sha256": "20a1880bb0e6e5009ed6b4ef95b541941d65b2b4b636e05d8c7901ef25e8b06a"
+  },
+  "changes": [
+    "migrated weed/remote_storage/s3 from AWS SDK for Go v1 service/s3 and s3manager to SDK v2 service/s3 and feature/s3/transfermanager",
+    "retained list, range-read, copy, multipart-copy, tagging, encryption, storage-class, user-agent and conditional-delete behavior",
+    "retained historical PUT Content-Type omission and DeleteObjects Content-MD5 through SDK v2 middleware",
+    "rejected malformed explicit endpoints, partial static credentials and implicit AWS_ENDPOINT_URL_S3 binding",
+    "kept anonymous generic S3 behavior when no credential source is configured",
+    "bounded SDK attempts to one and assigned the transfer-manager range body as the only local download retry owner"
+  ],
+  "local_validation": {
+    "exact_patch_reapplication_after_previous_nine": "PASS",
+    "focused_package": "PASS",
+    "focused_package_race": "PASS",
+    "focused_server_default_chain_tests": "PASS",
+    "workflow_equivalent_suite": {
+      "pass_events": 5591,
+      "skip_events": 5,
+      "packages_passed": 20,
+      "failures": 0
+    },
+    "full_server_build": "PASS",
+    "git_diff_check": "PASS",
+    "binary": {
+      "bytes": 228450409,
+      "sha256": "a0733e3b245945d597b63223a94638bfb1e8bf2bff4d5edb7a6222656ff8cc5c"
+    }
+  },
+  "dependency_graph": {
+    "command": "CGO_ENABLED=0 go list -mod=readonly -deps ./weed",
+    "packages_total": 1826,
+    "aws_sdk_go_v1_packages": 14,
+    "productive_direct_importer_packages": 1,
+    "productive_direct_import_edges": 2,
+    "remaining_importer": "github.com/seaweedfs/seaweedfs/weed/s3api",
+    "removed_packages_vs_previous_patch_sequence": 38,
+    "added_packages_vs_previous_patch_sequence": 0,
+    "deprecated_aws_sdk_go_v2_feature_s3_manager_packages": 0
+  },
+  "governance": {
+    "target_operations": 0,
+    "real_objects_copied": 0,
+    "gates_closed": "0/8",
+    "acceptance_tests_accepted": "0/21",
+    "human_or_ths_authority_consumed": false,
+    "scope17_52_engine_gets": "preserved",
+    "teatri_m1": "8/8 technical; 6/6 functional; preserved",
+    "farmacie": "61 rows; 10 OPEN/STRING; preserved"
+  },
+  "limitations": [
+    "synthetic HTTP and local SDK behavior do not qualify production identity refresh, TLS, egress, real provider semantics or target credentials",
+    "one SDK attempt is not durable retry or reconciliation; ambiguous multipart completion and crash recovery remain open",
+    "the prior exact-binary VEX does not cover this new binary",
+    "fresh image, SBOM, vulnerability, licence, custody, cohort and controlled acceptance evidence remain required",
+    "MinIO remains deployed and no merge, deployment, grant, replay or release acceptance was performed"
+  ]
+}

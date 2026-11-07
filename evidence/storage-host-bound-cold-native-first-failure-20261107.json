@@ -1,0 +1,14 @@
+{
+  "schema": "ouf.storage-host-bound-cold-native-failure.v1",
+  "runId": 42310274347,
+  "jobId": 128209685123,
+  "commit": "a0c22ae266de66863d93869afcec25a9dcd14992",
+  "stage": "fixture construction of inactive host cgroups before Docker pull or composed operation",
+  "reason": "HOST_CLI_FAILED_NO_RETRY at GetUnit for slice",
+  "exactProviderStderrRetained": false,
+  "fixtureCorrection": "Use canonical bound cgroup paths to model retained successful host receipt; already inactive slice need not remain loaded in systemd",
+  "productionHostCoreChanged": false,
+  "additionalDelta": "Archive six private host evidence records and override text in linked plan, not just digests",
+  "targetOperations": 0,
+  "acceptanceCreditAdded": 0
+}

@@ -1,0 +1,141 @@
+diff --git a/weed/server/raft_hashicorp.go b/weed/server/raft_hashicorp.go
+index 9d1d601..b7a59cc 100644
+--- a/weed/server/raft_hashicorp.go
++++ b/weed/server/raft_hashicorp.go
+@@ -13,8 +13,8 @@ import (
+ 	"time"
+ 
+ 	transport "github.com/Jille/raft-grpc-transport"
+-	"github.com/armon/go-metrics"
+-	"github.com/armon/go-metrics/prometheus"
++	"github.com/hashicorp/go-metrics"
++	"github.com/hashicorp/go-metrics/prometheus"
+ 	"github.com/hashicorp/raft"
+ 	hashicorpRaft "github.com/hashicorp/raft"
+ 	boltdb "github.com/hashicorp/raft-boltdb/v2"
+@@ -199,18 +199,26 @@ func NewHashicorpRaftServer(option *RaftServerOption) (*RaftServer, error) {
+ 		}()
+ 	}
+ 
+-	// Configure a prometheus sink as the raft metrics sink
++	if err := configureRaftMetrics(); err != nil {
++		return nil, err
++	}
++
++	return s, nil
++}
++
++// Configure the same global metrics provider used by raft and raft-boltdb.
++func configureRaftMetrics() error {
+ 	if sink, err := prometheus.NewPrometheusSinkFrom(prometheus.PrometheusOpts{
+ 		Registerer: stats.Gather,
+ 	}); err != nil {
+-		return nil, fmt.Errorf("NewPrometheusSink: %w", err)
++		return fmt.Errorf("NewPrometheusSink: %w", err)
+ 	} else {
+ 		metricsConf := metrics.DefaultConfig(stats.Namespace)
+ 		metricsConf.EnableRuntimeMetrics = false
+ 		if _, err = metrics.NewGlobal(metricsConf, sink); err != nil {
+-			return nil, fmt.Errorf("metrics.NewGlobal: %w", err)
++			return fmt.Errorf("metrics.NewGlobal: %w", err)
+ 		}
+ 	}
+ 
+-	return s, nil
++	return nil
+ }
+diff --git a/weed/server/raft_metrics_test.go b/weed/server/raft_metrics_test.go
+new file mode 100644
+index 0000000..db91968
+--- /dev/null
++++ b/weed/server/raft_metrics_test.go
+@@ -0,0 +1,89 @@
++package weed_server
++
++import (
++	"bytes"
++	"context"
++	"os"
++	"os/exec"
++	"path/filepath"
++	"testing"
++	"time"
++
++	"github.com/hashicorp/raft"
++	boltdb "github.com/hashicorp/raft-boltdb/v2"
++	"github.com/seaweedfs/seaweedfs/weed/stats"
++)
++
++// Metrics providers have process-wide state. Keep this regression in a child
++// process, without starting a Raft server or leaking its background goroutines.
++func TestRaftBoltStoreMetricsReachConfiguredPrometheusSink(t *testing.T) {
++	const child = "SEAWEEDFS_RAFT_METRICS_TEST_CHILD"
++	if os.Getenv(child) != "1" {
++		// The go test runner supplies argv[0]; no mounted /proc is needed.
++		executable, err := filepath.Abs(os.Args[0])
++		if err != nil {
++			t.Fatal(err)
++		}
++		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
++		defer cancel()
++		cmd := exec.CommandContext(ctx, executable, "-test.run=^TestRaftBoltStoreMetricsReachConfiguredPrometheusSink$", "-test.count=1")
++		cmd.Env = append(os.Environ(), child+"=1")
++		output, err := cmd.CombinedOutput()
++		if err != nil {
++			t.Fatalf("isolated metrics regression: %v\n%s", err, output)
++		}
++		return
++	}
++
++	// This is the production initializer called by NewHashicorpRaftServer.
++	if err := configureRaftMetrics(); err != nil {
++		t.Fatal(err)
++	}
++	store, err := boltdb.NewBoltStore(filepath.Join(t.TempDir(), "raft.db"))
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() {
++		if err := store.Close(); err != nil {
++			t.Error(err)
++		}
++	})
++	written := &raft.Log{Index: 1, Term: 1, Type: raft.LogCommand, Data: []byte("metrics-persistence-fixture")}
++	if err := store.StoreLog(written); err != nil {
++		t.Fatal(err)
++	}
++	var recovered raft.Log
++	if err := store.GetLog(written.Index, &recovered); err != nil {
++		t.Fatal(err)
++	}
++	if recovered.Index != written.Index || recovered.Term != written.Term || recovered.Type != written.Type || !bytes.Equal(recovered.Data, written.Data) {
++		t.Fatalf("Raft log roundtrip changed: %+v", recovered)
++	}
++	families, err := stats.Gather.Gather()
++	if err != nil {
++		t.Fatal(err)
++	}
++	want := map[string]bool{
++		"SeaweedFS_raft_boltdb_logsPerBatch": false,
++		"SeaweedFS_raft_boltdb_storeLogs":    false,
++		"SeaweedFS_raft_boltdb_getLog":       false,
++	}
++	for _, family := range families {
++		name := family.GetName()
++		if _, ok := want[name]; !ok {
++			continue
++		}
++		if len(family.Metric) != 1 || family.Metric[0].GetSummary().GetSampleCount() != 1 {
++			t.Fatalf("expected one actual BoltStore sample for %s: %v", name, family)
++		}
++		if name == "SeaweedFS_raft_boltdb_logsPerBatch" && family.Metric[0].GetSummary().GetSampleSum() != 1 {
++			t.Fatalf("expected one log in persisted batch: %v", family)
++		}
++		want[name] = true
++	}
++	for name, observed := range want {
++		if !observed {
++			t.Errorf("real raft-boltdb emission did not reach configured Prometheus sink: %s", name)
++		}
++	}
++}

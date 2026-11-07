@@ -1,0 +1,960 @@
+{
+  "schema": "ouf.onboarding-durable-local-authority-qualification.v1",
+  "date": "2026-11-05",
+  "repository": "GioNob/ouf-source-onboarding",
+  "branch": "feat/storage-upload-intent-20261105",
+  "sourceCommit": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+  "status": "PASS_WITH_EXPLICIT_SCOPE",
+  "native": {
+    "runId": 42024429070,
+    "jobId": 127234955805,
+    "ownerScenarios": 80,
+    "apiStorageTests": 8,
+    "total": 88,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "newProviderScenarios": 9,
+    "filesystem": "ext4",
+    "providerReceipts": [
+      {
+        "pendingNeverUsedAsAuthority": true,
+        "replacementPublished": true,
+        "scenario": "pending-and-guard",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "staleGuardRejected": true,
+        "status": "PASS"
+      },
+      {
+        "blockedDuringOwnerCommit": true,
+        "generation": 2,
+        "publishedAfterCommit": true,
+        "revoked": true,
+        "scenario": "cross-process-commit",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS"
+      },
+      {
+        "automaticClearAbsent": true,
+        "durableLatchPresent": true,
+        "restartStillDenied": true,
+        "scenario": "unknown-completion",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS",
+        "unknownCompletionInjected": true
+      },
+      {
+        "exactPublicationReconciled": true,
+        "generation": 2,
+        "prepareDeliveryOwnerRejected": true,
+        "publisherExit": 86,
+        "restoredSnapshotUnchanged": true,
+        "revoked": true,
+        "samePostmaster": true,
+        "scenario": "crash-and-logical-replay",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS"
+      },
+      {
+        "automaticReprovisionRejected": true,
+        "corruptionRejected": true,
+        "missingStateRejected": true,
+        "oversizeRejected": true,
+        "scenario": "invalid-state",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS",
+        "symlinkRejected": true
+      },
+      {
+        "ambientTransactionRejected": true,
+        "expiredRejected": true,
+        "generationUnchanged": true,
+        "insecurePermissionsRejected": true,
+        "scenario": "invalid-publication",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS"
+      },
+      {
+        "denials": 1,
+        "generation": 2,
+        "scenario": "concurrent-publication",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS",
+        "successes": 1
+      },
+      {
+        "deadlineUnchanged": true,
+        "filesystem": "ext4",
+        "generation": 2,
+        "revoked": true,
+        "sameProofAfterRestart": true,
+        "scenario": "restart-idempotency",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "stalePublicationRejected": true,
+        "status": "PASS"
+      },
+      {
+        "durableLatchPresent": true,
+        "holderKilled": true,
+        "noAutomaticRegrant": true,
+        "ownerDeniedAfterDeath": true,
+        "ownerDeniedWhileHeld": true,
+        "publisherDeniedAfterRestart": true,
+        "scenario": "killed-holder",
+        "scope": "same-host local POSIX filesystem; synthetic authority; no target",
+        "status": "PASS"
+      }
+    ]
+  },
+  "localNativeArtifactReadback": {
+    "status": "PASS",
+    "artifactId": 13412389634,
+    "commit": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+    "archiveSha256": "990ff5fd77b28b9ce8d0c21c716738dbbc4fd376f0227e2edae80272dcc2a1fb",
+    "archiveBytes": 147032,
+    "members": 125,
+    "checksums": 124,
+    "sourceGitBlobsVerified": 273,
+    "nativeTests": 80,
+    "apiStorageTests": 8,
+    "providerReceipts": 9,
+    "childJvmLogs": 8,
+    "filesystem": "ext4",
+    "nativeExecutionRepeated": false,
+    "targetOperations": 0
+  },
+  "physicalRegression": {
+    "runId": 42024429052,
+    "producerJobId": 127234955228,
+    "readbackJobId": 127236034764,
+    "receipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704658146026147879",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1695,
+      "freshRuntimeAttestationRequired": true,
+      "revokedAuthorityRestoreBlocked": true,
+      "currentAuthorityOutsideOwnerBackup": true,
+      "currentAuthoritySha256": "375ee5e89bdb6bb64d6607abf2bc51201c618de9696818db4a14a9d957ebf1ef",
+      "liveWorkerDatabaseRestoreBlocked": true,
+      "populatedAuthorizationHistoryRestored": true,
+      "restoredPolicyCannotPrepareOrRedeliver": true,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    },
+    "artifactReadback": {
+      "archiveSha256": "e63d576d41f351588a663b31f4620bdc02d1dd61165cb84423ed2d2d988ab910",
+      "backupFiles": 1695,
+      "checksums": 38,
+      "commit": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+      "independentNativeRestore": false,
+      "members": 39,
+      "negativeReadbacks": [
+        "EXACT_SOURCE_BINDING_SET",
+        "TERMINAL_PASS",
+        "COMPONENT_BINDING",
+        "EXACT_OWNER_AFTER_RESTORE",
+        "NEGATIVE_WAL_GATE",
+        "RESTART_BLOCKED_BEFORE_BUDGET",
+        "RESTORE_AUTHORITY_REJECTED",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "LIVE_WORKER_DATABASE_BINDING",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "POST_CUT_REVOCATION_AUDIT",
+        "POST_CUT_POLICY_REVOCATION"
+      ],
+      "objects": 2,
+      "sources": 276,
+      "status": "PASS",
+      "targetOperations": 0
+    },
+    "newProviderIntegratedIntoPhysicalDriver": false,
+    "localPhysicalArchiveReadbackRepeated": false
+  },
+  "artifacts": [
+    {
+      "id": 13412389634,
+      "name": "onboarding-upload-native-42024429070",
+      "bytes": 147032,
+      "digest": "sha256:990ff5fd77b28b9ce8d0c21c716738dbbc4fd376f0227e2edae80272dcc2a1fb",
+      "expiresAt": "2027-02-03T12:07:04Z",
+      "runId": 42024429070
+    },
+    {
+      "id": 13413131907,
+      "name": "onboarding-common-cut-42024429052",
+      "bytes": 7179040,
+      "digest": "sha256:e63d576d41f351588a663b31f4620bdc02d1dd61165cb84423ed2d2d988ab910",
+      "expiresAt": "2027-02-03T12:07:04Z",
+      "runId": 42024429052
+    },
+    {
+      "id": 13412119865,
+      "name": "onboarding-common-cut-readback-42024429052",
+      "bytes": 7171807,
+      "digest": "sha256:802cbc034954331bbc8da792d1372a6e0158b5372ae985e7067007638f38e158",
+      "expiresAt": "2027-02-03T12:07:04Z",
+      "runId": 42024429052
+    }
+  ],
+  "contract": {
+    "provider": "FilePlatformRecoveryAuthority",
+    "construction": "explicit internal candidate; no Spring bean or endpoint",
+    "authoritySource": "trusted already-approved proof; no new issuer",
+    "scope": "same-host cooperating JVMs, protected local POSIX filesystem",
+    "directoryMode": "0700",
+    "fileMode": "0600",
+    "maximumStateBytes": 4096,
+    "lock": "stable exclusive OS guard, tryLock without waiting",
+    "publication": "expected generation +1; exact idempotent replay; fsync file, atomic rename, fsync directory",
+    "lease": "fsynced lease.active before grant; retained through owner completion",
+    "knownCompletion": "remove and fsync latch before releasing lock",
+    "unknownOrProcessDeath": "keep durable latch; deny readers and publishers across restart",
+    "automaticLatchClear": false,
+    "reconciliationImplemented": false
+  },
+  "qualifiedScope": {
+    "separateJvmRestart": true,
+    "crossProcessRevocation": true,
+    "actualOwnerCommitExclusion": true,
+    "processHaltAndKill": true,
+    "logicalAuthorizationReplay": true,
+    "injectedUnknownCompletion": true,
+    "actualDatabaseNetworkUnknownFault": false,
+    "hostPowerLoss": false,
+    "multiHost": false,
+    "externalAuthorityStoreRollback": false,
+    "productionMountQualified": false,
+    "operationalWiring": false
+  },
+  "sourceCI": {
+    "success": 8,
+    "total": 8,
+    "runs": [
+      {
+        "id": 42024435725,
+        "name": "Managed profile minimized diagnostic",
+        "event": "pull_request",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024435725"
+      },
+      {
+        "id": 42024435437,
+        "name": "R2f trusted review browser",
+        "event": "pull_request",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024435437"
+      },
+      {
+        "id": 42024435463,
+        "name": "Source Onboarding module CI",
+        "event": "pull_request",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024435463"
+      },
+      {
+        "id": 42024429099,
+        "name": "Managed profile minimized diagnostic",
+        "event": "push",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024429099"
+      },
+      {
+        "id": 42024429109,
+        "name": "R2f trusted review browser",
+        "event": "push",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024429109"
+      },
+      {
+        "id": 42024429052,
+        "name": "Onboarding physical common cut and stale writer recovery",
+        "event": "push",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024429052"
+      },
+      {
+        "id": 42024429070,
+        "name": "Onboarding durable upload native owner",
+        "event": "push",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024429070"
+      },
+      {
+        "id": 42024429011,
+        "name": "Source Onboarding module CI",
+        "event": "push",
+        "headSha": "bf8bb65cf353dc60c9482dd6fe50e4416b2eefe6",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/GioNob/ouf-source-onboarding/actions/runs/42024429011"
+      }
+    ],
+    "general": {
+      "runId": 42024435463,
+      "jobId": 127234975866,
+      "reported": 445,
+      "nativeSkipped": 80,
+      "executed": 365,
+      "failures": 0,
+      "errors": 0,
+      "blockingImageScan": "success",
+      "containerBoot": "success"
+    }
+  },
+  "firstQualification": {
+    "sourceCommit": "ba18f0c24d713f2a8bdb55228d264577d44487d9",
+    "nativeRunId": 42023267464,
+    "nativeJobId": 127231081619,
+    "ownerScenarios": 79,
+    "apiStorageTests": 8,
+    "physicalRunId": 42023267778,
+    "producerJobId": 127231082366,
+    "readbackJobId": 127231962459,
+    "runs": [
+      {
+        "id": 42023276146,
+        "name": "Managed profile minimized diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023276139,
+        "name": "R2f trusted review browser",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023276006,
+        "name": "Source Onboarding module CI",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023267370,
+        "name": "Managed profile minimized diagnostic",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023267464,
+        "name": "Onboarding durable upload native owner",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023267352,
+        "name": "R2f trusted review browser",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023267778,
+        "name": "Onboarding physical common cut and stale writer recovery",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 42023267563,
+        "name": "Source Onboarding module CI",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 13411569592,
+        "name": "onboarding-upload-native-42023267464",
+        "bytes": 146788,
+        "digest": "sha256:80ded46c39d9218e0bbb20c62871611cad12935f612f602f9aa6c2d3a4224cd7",
+        "expiresAt": "2027-02-03T11:58:36Z",
+        "runId": 42023267464
+      },
+      {
+        "id": 13413320123,
+        "name": "onboarding-common-cut-42023267778",
+        "bytes": 7171906,
+        "digest": "sha256:fe510d19a8a26700914ceb1d8dfc3d75001e17042d00fd9b51c04385821f223e",
+        "expiresAt": "2027-02-03T11:58:37Z",
+        "runId": 42023267778
+      },
+      {
+        "id": 13412223546,
+        "name": "onboarding-common-cut-readback-42023267778",
+        "bytes": 7164882,
+        "digest": "sha256:df37e3dfb2b266d67157e292d392986be7668608b7d23e575d191f2c4531658d",
+        "expiresAt": "2027-02-03T11:58:37Z",
+        "runId": 42023267778
+      }
+    ],
+    "reasonForFurtherChange": "Review identified OS lock release after JVM death may precede resolution of a sent PostgreSQL COMMIT. Added fsynced unresolved lease latch and UNKNOWN completion handling before final qualification; no failing first CI run.",
+    "physicalReceipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704655879204454440",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1695,
+      "freshRuntimeAttestationRequired": true,
+      "revokedAuthorityRestoreBlocked": true,
+      "currentAuthorityOutsideOwnerBackup": true,
+      "currentAuthoritySha256": "dc75ee91e75a5aff95c99f04b42e74aef52a7763d15f09ec5771c9728b52fb04",
+      "liveWorkerDatabaseRestoreBlocked": true,
+      "populatedAuthorizationHistoryRestored": true,
+      "restoredPolicyCannotPrepareOrRedeliver": true,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    },
+    "physicalReadback": {
+      "archiveSha256": "fe510d19a8a26700914ceb1d8dfc3d75001e17042d00fd9b51c04385821f223e",
+      "backupFiles": 1695,
+      "checksums": 38,
+      "commit": "ba18f0c24d713f2a8bdb55228d264577d44487d9",
+      "independentNativeRestore": false,
+      "members": 39,
+      "negativeReadbacks": [
+        "EXACT_SOURCE_BINDING_SET",
+        "TERMINAL_PASS",
+        "COMPONENT_BINDING",
+        "EXACT_OWNER_AFTER_RESTORE",
+        "NEGATIVE_WAL_GATE",
+        "RESTART_BLOCKED_BEFORE_BUDGET",
+        "RESTORE_AUTHORITY_REJECTED",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "LIVE_WORKER_DATABASE_BINDING",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "RESTORED_AUTHORIZATION_CANNOT_REISSUE",
+        "REVOCATION_AFTER_NAMED_CUT",
+        "POST_CUT_REVOCATION_AUDIT",
+        "POST_CUT_POLICY_REVOCATION"
+      ],
+      "objects": 2,
+      "sources": 276,
+      "status": "PASS",
+      "targetOperations": 0
+    },
+    "localNativeArchiveFullReadback": false
+  },
+  "priorCheckpoint": {
+    "sourceCommit": "a0f6a91488f28ec5213d334764eb11c72585abb6",
+    "deployCommit": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+    "deployCI": {
+      "success": 50,
+      "total": 50,
+      "runs": [
+        {
+          "id": 42021535425,
+          "name": "M2 read-only provider runtime contract",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535425"
+        },
+        {
+          "id": 42021535511,
+          "name": "M2 sealed private review assembly",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535511"
+        },
+        {
+          "id": 42021535616,
+          "name": "M2 private archives of the thirteen exact native images",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535616"
+        },
+        {
+          "id": 42021535462,
+          "name": "M2 selected Registry MCP images native CLI",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535462"
+        },
+        {
+          "id": 42021535517,
+          "name": "M2 native operational lease generation probe",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535517"
+        },
+        {
+          "id": 42021535563,
+          "name": "M2 retained runtime origin join after consumed byte proof",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535563"
+        },
+        {
+          "id": 42021535617,
+          "name": "M2 read-only provider runtime contract protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535617"
+        },
+        {
+          "id": 42021535558,
+          "name": "M2 current retained mount intake and metadata witness",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535558"
+        },
+        {
+          "id": 42021535785,
+          "name": "M2 stopped provider installation inputs",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535785"
+        },
+        {
+          "id": 42021535340,
+          "name": "M2 read-only provider representation reconciliation",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535340"
+        },
+        {
+          "id": 42021535637,
+          "name": "M2 sealed infrastructure review fragment",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535637"
+        },
+        {
+          "id": 42021535479,
+          "name": "M2 offline native publisher cryptography",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535479"
+        },
+        {
+          "id": 42021535468,
+          "name": "M2 parent-owned native gate peer window",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535468"
+        },
+        {
+          "id": 42021535455,
+          "name": "M2 retained mount role correction",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535455"
+        },
+        {
+          "id": 42021535808,
+          "name": "M2 isolated transport template",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535808"
+        },
+        {
+          "id": 42021535567,
+          "name": "M2 current retained effective mount views and static bytes",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535567"
+        },
+        {
+          "id": 42021535384,
+          "name": "M2 distinct discovery lease worker",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535384"
+        },
+        {
+          "id": 42021535363,
+          "name": "M2 retained mount metadata capture",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535363"
+        },
+        {
+          "id": 42021535505,
+          "name": "M2 public trust and current native context",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535505"
+        },
+        {
+          "id": 42021535665,
+          "name": "M2 discovery single MCP native lifecycle",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535665"
+        },
+        {
+          "id": 42021535769,
+          "name": "M2 retained archive graph diagnosis without image admission",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535769"
+        },
+        {
+          "id": 42021535618,
+          "name": "M2 corrective material roles protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535618"
+        },
+        {
+          "id": 42021535706,
+          "name": "M2 capture retained effective kernel views and live metadata",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535706"
+        },
+        {
+          "id": 42021535836,
+          "name": "M2 classify retained lifecycle and prepare static host-file custody",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535836"
+        },
+        {
+          "id": 42021535645,
+          "name": "M2 consumed private image intake and native byte verification",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535645"
+        },
+        {
+          "id": 42021535522,
+          "name": "M2 hash only captured readonly regular files",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535522"
+        },
+        {
+          "id": 42021535627,
+          "name": "M2 exact diagnosed selected runtime byte verification",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535627"
+        },
+        {
+          "id": 42021535751,
+          "name": "M2 public trust and native context protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535751"
+        },
+        {
+          "id": 42021535702,
+          "name": "M2 installed Ingestion to Onboarding HTTP contract",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535702"
+        },
+        {
+          "id": 42021535749,
+          "name": "M2 reuse installed Teatri owner contracts",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535749"
+        },
+        {
+          "id": 42021535454,
+          "name": "M2 discovery material protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535454"
+        },
+        {
+          "id": 42021535713,
+          "name": "M2 read-only provider reconciliation protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535713"
+        },
+        {
+          "id": 42021535625,
+          "name": "M2 compiled discovery lease sandbox",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535625"
+        },
+        {
+          "id": 42021535588,
+          "name": "M2 sealed complete parent review",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535588"
+        },
+        {
+          "id": 42021535750,
+          "name": "M2 explicit public Java truststore",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535750"
+        },
+        {
+          "id": 42021535622,
+          "name": "M2 private material preparation native peers",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535622"
+        },
+        {
+          "id": 42021535636,
+          "name": "M2 discovery native Docker frame",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535636"
+        },
+        {
+          "id": 42021535664,
+          "name": "M2 discovery custody protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535664"
+        },
+        {
+          "id": 42021535576,
+          "name": "M2 read-only stopped-provider inputs protected delivery",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535576"
+        },
+        {
+          "id": 42021535685,
+          "name": "M2 reconcile exact gateway mount metadata mismatch",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535685"
+        },
+        {
+          "id": 42021535711,
+          "name": "M2 corrected material roles native peers",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535711"
+        },
+        {
+          "id": 42021535767,
+          "name": "OUF policy-token bounded admin GET diagnosis",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535767"
+        },
+        {
+          "id": 42021535417,
+          "name": "M2 composed provider v4 native installation",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535417"
+        },
+        {
+          "id": 42021535334,
+          "name": "M2 governed publication owner protocol",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535334"
+        },
+        {
+          "id": 42021535500,
+          "name": "M2 real Docker admitted provider worker handoff",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535500"
+        },
+        {
+          "id": 42021535815,
+          "name": "Registry recovery components and Unix Engine transport",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535815"
+        },
+        {
+          "id": 42021535577,
+          "name": "OUF policy-token online IAM and installed owner qualification",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535577"
+        },
+        {
+          "id": 42021535481,
+          "name": "M2 running Registry admission protocol",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535481"
+        },
+        {
+          "id": 42021535696,
+          "name": "Discovery authorization and complete installation proposal",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535696"
+        },
+        {
+          "id": 42021535728,
+          "name": "Chatbot cohort delivery native owners",
+          "event": "pull_request",
+          "headSha": "ee2d208fe5ade40180b522d74360c31ebab276e2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/GioNob/ouf-deploy/actions/runs/42021535728"
+        }
+      ]
+    }
+  },
+  "authority": {
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "merge": false,
+    "deployment": false,
+    "runtimeGrantIssued": false,
+    "sourceLockChanged": false,
+    "minioChanged": false,
+    "realObjects": 0,
+    "miniPetCredits": 18.3,
+    "miniPetTotal": 46,
+    "gatesPassed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21
+  },
+  "remaining": [
+    "Observable unresolved state and governed owner-outcome reconciliation before controlled resume",
+    "Production mount custody and authenticated publication/audit",
+    "Full owner rollback budget reconstruction",
+    "Multi-host revocation, UDP/Ingestion, mixed rollout, reopening and RPO/RTO"
+  ]
+}

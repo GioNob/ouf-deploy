@@ -1,0 +1,33 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 0,
+  "cleanupIncomplete": false,
+  "containersRemoved": 2,
+  "containersStarted": 2,
+  "databaseAckTimestampPresent": false,
+  "databaseIntentCount": 1,
+  "databaseIntentLinksAsset": false,
+  "databaseIntentState": "DISPATCHED",
+  "databaseReferencedAssetCount": 0,
+  "databaseUploadAttemptCount": 0,
+  "diagnosticHints": {},
+  "flywayVersionsVerified": [],
+  "onboardingReadinessUp": false,
+  "postgresCopyPrepared": true,
+  "postgresReady": true,
+  "privateContainerLogsRetained": 0,
+  "reservedObjectHttpStatus": 404,
+  "retainedLogHints": {
+    "onboarding": [],
+    "postgres": [],
+    "seaweedfs": []
+  },
+  "retainedSeaweedfsLogMentionsReservedKey": false,
+  "s3GetRequests": 2,
+  "schema": "ouf.storage-oci33-onboarding-upload-readback.v1",
+  "seaweedfsReservedObjectState": "ABSENT",
+  "seaweedfsTlsReady": true,
+  "status": "ONBOARDING_UPLOAD_OUTCOME_READ_BACK",
+  "storageCopyPrepared": true,
+  "uploadRequests": 0
+}

@@ -1,0 +1,91 @@
+{
+  "name": "storage-normal-tests-sdk-v2",
+  "workflowPath": ".github/workflows/storage-normal-tests-sdk-v2.yml",
+  "runId": 41687967236,
+  "jobId": 126098661010,
+  "conclusion": "success",
+  "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967236",
+  "artifact": {
+    "id": 13256201247,
+    "name": "storage-normal-tests-sdk-v2-41687967236",
+    "sha256": "3af5ef65bd36f5d59f896810671bac628eae371198ae23ac619fb359cc1add14",
+    "sizeInBytes": 15267,
+    "downloadVerified": true,
+    "expiresAt": "2027-02-01T17:49:39Z"
+  },
+  "manifestSha256": "707b99d629117858e827b3d649247046f56e096d156d65eb5510d8136f33a0b5",
+  "manifestEntriesVerified": 9,
+  "fileManifest": [
+    {
+      "file": "boundaries.txt",
+      "sha256": "0cde9ba38b9e0b0e5381f6e7712a698c7d5ef48140123801848a90b2f3d1df16",
+      "size": 216
+    },
+    {
+      "file": "patch-sha256.txt",
+      "sha256": "1932246ad7d6837f6d06d969437b48b71567c14d50deb0916650a8fea03411a4",
+      "size": 118
+    },
+    {
+      "file": "upstream-source-sha.txt",
+      "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "size": 41
+    },
+    {
+      "file": "normal-test-deps.txt",
+      "sha256": "5cf78cfa648d6e6f039c266c5b857579ec22a24be43701890a651bd3b7f01e89",
+      "size": 74769
+    },
+    {
+      "file": "patch-stat.txt",
+      "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+      "size": 6395
+    },
+    {
+      "file": "compile.log",
+      "sha256": "cb16398084e1151d2a7eaf869d209b2d7951f07ce7e83ae7eed4c00322f2cf92",
+      "size": 76
+    },
+    {
+      "file": "test.log",
+      "sha256": "e15f88900a8218541bde6f50fc7ae5772d1a6ee61ad33a7aae7bc1e6c6a47bac",
+      "size": 821
+    },
+    {
+      "file": "remaining-direct-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "remaining-normal-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "tests": {
+    "topLevelPass": 4,
+    "subcasesPass": 3,
+    "names": [
+      "TestNormalSDKV2PutWireAndNoRetry",
+      "TestNormalSDKV2MultipartAndCancellation",
+      "TestNormalSDKV2RawSignerLegacyGolden",
+      "TestNormalSDKV2SSECKeyEncoding"
+    ],
+    "subcases": [
+      "TestNormalSDKV2PutWireAndNoRetry/OK",
+      "TestNormalSDKV2PutWireAndNoRetry/Bad_Request",
+      "TestNormalSDKV2PutWireAndNoRetry/Service_Unavailable"
+    ],
+    "liveIntegrationRun": false
+  },
+  "dependencyGraphs": [
+    {
+      "file": "normal-test-deps.txt",
+      "packageCount": 1801,
+      "sdkV1Packages": 0,
+      "sha256": "5cf78cfa648d6e6f039c266c5b857579ec22a24be43701890a651bd3b7f01e89"
+    }
+  ],
+  "directImporters": 0
+}

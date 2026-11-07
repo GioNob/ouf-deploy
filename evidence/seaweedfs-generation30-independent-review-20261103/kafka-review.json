@@ -1,0 +1,47 @@
+{
+  "checks": [
+    "Registered Kafka denies initialize/publish/receive without acknowledgement",
+    "Filer real config guard precedes option writes, TLS providers, goroutines, DNS and stores",
+    "Original config precedence preserved through JWT/CORS/options snapshots and all15 actual TLS input keys",
+    "Replication exclusivity/input denial precedes sink construction",
+    "Patch deletion metadata renders correct15file diff without dev/null path"
+  ],
+  "component": "Kafka external notification and replication exclusion",
+  "githubWrites": 0,
+  "independentlyRepeated": {
+    "failedTests": 0,
+    "packagesPassed": 3,
+    "subTestsPassed": 6,
+    "tagKafkaFailsWithExplicitGuard": true,
+    "topTestsPassed": 6
+  },
+  "limits": [
+    "Root module graph retains Jaeger/Zipkin legacy references; no universal lifecycle closure",
+    "Target feature binding remains OPEN",
+    "No production deployment or release admission"
+  ],
+  "patchSha256": "14a2df91229fa79ca06e849793dbf0be5afb79273492964bb05a15e49d68ff47",
+  "rawEvidence": {
+    "kafka-focused-tests.jsonl": "3a1b4ab9562acbd2ee6382f964d6117c1df1092481b49ed867bb773de3cf36d0",
+    "kafka-focused-tests.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "kafka-tag-negative.log": "1157b495ce607818480aa357bf38c3eb2df5fd65e5fc6886e8d5c28071ff206c"
+  },
+  "reviewedFiles": {
+    "weed/command/ouf_unsupported_kafka_tag.go": "ab243dabb287bc76a4b9efdbec5a97ad270358b53b1748e13e79b8e4f498d18b",
+    "weed/notification/kafka/kafka_queue.go": "24ef55d5024fd475895061b327686d4de1b0d95e817934a7022b99cb42f95cac",
+    "weed/notification/kafka/ouf_profile_test.go": "1b1a7ba198ff1d0e75cdec6d87b511e622dae285dc88a83b9188cd13fa7eaeff",
+    "weed/replication/sub/notification_kafka.go": "95033eb3c05932ebd77f8fa373e907a96b43877a0e751eb5ef4a4949d78dc26d",
+    "weed/replication/sub/notification_kafka_ouf_profile_test.go": "c383243e21fb2aeb3c18dd29ef6401a5b093781bacff9b65faf2e44e75781c8e",
+    "weed/server/filer_server.go": "e1242d7a027cb837f355c66cb8e7adc21e01037b910c33c9c83a0c4f91b40638",
+    "weed/server/filer_server_ouf_kafka_profile_test.go": "ca10fcce1ca8ea9f08f3068452ac22fce10bd8ed502b2aba5298801bd4a0e7ad",
+    "weed/server/filer_server_ouf_profile.go": "3fcf5cd34ed671ede221e71aa7a23ac2f2456c1468e48e8eaaff315492dae01d"
+  },
+  "schema": "ouf.profile30-independent-review.v1",
+  "sourceModifiedByReviewer": false,
+  "sourceParityWithGeneration29": {
+    "weed/mq": 196,
+    "weed/query": 58
+  },
+  "status": "PASS_BOUNDED_LOCAL_REVIEW",
+  "targetOperations": 0
+}

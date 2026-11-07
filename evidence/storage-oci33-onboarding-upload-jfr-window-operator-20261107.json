@@ -1,0 +1,42 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 0,
+  "applicationErrorCode": "ONB_STAGING_WRITE_FAILED",
+  "decoderContainersStarted": 0,
+  "errorHints": [
+    "connectionRefused"
+  ],
+  "eventHeadersInUploadWindow": 330,
+  "eventHeadersScanned": 10048,
+  "exceptionEventsInUploadWindow": 329,
+  "flightRecorderParsed": true,
+  "loopbackAddressHints": [
+    "ipv6-loopback"
+  ],
+  "providerErrorCodes": [],
+  "providerHttpStatusHints": [],
+  "recordingSha256": "d01733a50c074e82e614c4124f37d1e987fe7d0087a65ecbfeebaae76fe389dd",
+  "recordingUnchanged": true,
+  "retainedJsonBytes": 1780674822,
+  "retainedJsonClosed": true,
+  "retainedJsonUnchanged": true,
+  "s3SdkExceptionClasses": [
+    "ClassNotFoundException",
+    "CompletionException",
+    "ConnectException",
+    "DomainFailure",
+    "ExecutionException",
+    "NoSuchMethodError",
+    "SocketTimeoutException"
+  ],
+  "s3SdkExceptionEventsInUploadWindow": 299,
+  "s3TlsHandshakesInUploadWindow": 1,
+  "schema": "ouf.storage-oci33-onboarding-upload-jfr-window.v1",
+  "status": "ONBOARDING_UPLOAD_JFR_WINDOW_READ_BACK",
+  "transportExceptionClasses": [
+    "ConnectException",
+    "SocketTimeoutException"
+  ],
+  "uploadRequests": 0,
+  "uploadWindowMilliseconds": 10396
+}

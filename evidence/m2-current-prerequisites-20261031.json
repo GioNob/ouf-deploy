@@ -1,0 +1,149 @@
+{
+  "schema": "ouf.discovery-current-prerequisites-source-evidence.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "0efea488ed2c1e5f58c24d6987b7a1f6dd09ba27",
+  "sourceTree": "341d9c8aa4f3efad9eb6d2cd574ed8bffde54e57",
+  "qualification": {
+    "runId": 41221748282,
+    "finalLogsRead": true,
+    "failures": 0,
+    "skipped": 0,
+    "protocolJob": {
+      "jobId": 124597563048,
+      "suites": [
+        {
+          "name": "runningRegistry",
+          "tests": 12,
+          "seconds": 1.581
+        },
+        {
+          "name": "currentCohort",
+          "tests": 7,
+          "seconds": 0.401
+        },
+        {
+          "name": "currentInstalledWorker",
+          "tests": 7,
+          "seconds": 94.158
+        },
+        {
+          "name": "currentOperationalWorker",
+          "tests": 5,
+          "seconds": 66.916
+        },
+        {
+          "name": "currentDatabases",
+          "tests": 7,
+          "seconds": 1.68
+        },
+        {
+          "name": "pausedFrame",
+          "tests": 8,
+          "seconds": 0.171
+        },
+        {
+          "name": "pausedNode",
+          "tests": 6,
+          "seconds": 0.204
+        }
+      ]
+    },
+    "nativeDatabaseJob": {
+      "jobId": 124597563226,
+      "tests": 2,
+      "seconds": 12.2,
+      "dockerVersion": "29.8.1",
+      "disposableDataRoot": true,
+      "actual": [
+        "Engine Unix socket/peer and PostgreSQL generation",
+        "Docker CLI and four PostgreSQL databases/principals",
+        "READ ONLY transactions and identity/OID/prepared-transaction checks",
+        "reviewed synthetic JAR and MCP SQL artifacts",
+        "migration checksum drift injection preserved and denied",
+        "owned SQL streams closed without ResourceWarning"
+      ],
+      "modeled": [
+        "other cohort peers and selected-runtime lineage",
+        "actual OUF application migration artifacts",
+        "target VPS and complete native cohort"
+      ]
+    },
+    "resourceWarnings": 0
+  },
+  "databaseSemantics": {
+    "module": "tools/m2_discovery_installation_profile/current_databases.py",
+    "parentBinding": "runtime inputs v2 additionalInputsHashes.databases",
+    "readOnlySessionsPerObservation": 8,
+    "databases": 4,
+    "queriesPerSession": 2,
+    "migrationArtifactPublisherProvenanceVerifiedHere": false,
+    "migrationsGrantsBackupsRestoresPerformed": false,
+    "sameLocalCliAndEngineRequired": true
+  },
+  "operationalHandoffSemantics": {
+    "module": "tools/m2_discovery_installation_profile/current_operational_worker.py",
+    "currentScopedSignatures": [
+      "publication-seal.json",
+      "installed.json",
+      "current-generation.json"
+    ],
+    "currentKeyPolicyClockUsed": true,
+    "backdatedVerifier": false,
+    "sameAdmittedTwoPeerGenerationRequired": true,
+    "completedWorkerPhaseAndOriginalClocksRequired": true,
+    "currentParentChildAndNormalUseDecisionRequired": true,
+    "initialProviderGateUnchanged": true,
+    "initialMandateExtended": false,
+    "newGenerationAuthorized": false,
+    "negativeControl": "initial provider protocol expires after synthetic85s; operational reader succeeds at86s with current installed signatures; expired parent still denies"
+  },
+  "priorNativeFixtureCorrections": [
+    {
+      "runId": 41219717334,
+      "jobId": 124591550548,
+      "status": "setup_failed_no_native_qualification",
+      "change": "wait for final TCP postmaster with original45s readiness budget"
+    },
+    {
+      "runId": 41220023987,
+      "jobId": 124592466016,
+      "status": "default_runner_engine_custody_contract_denied",
+      "change": "reuse existing isolated checksum-pinned Docker29.8.1 workflow step without relaxing the contract"
+    },
+    {
+      "runId": 41220516244,
+      "jobId": 124593894490,
+      "status": "native2passed_with_resource_warnings",
+      "change": "new caller closes retained Psql adapter owned pipes; original adapter unchanged"
+    }
+  ],
+  "latestPublicMcpReadDuringTurn": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  },
+  "unchanged": [
+    "original37/108/128/136 source maps/pins/bodies",
+    "initial finite provider admission/start paths",
+    "original Registry child authority bytes",
+    "Teatri and existing Farmacie acquisition"
+  ],
+  "openWork": [
+    "TLS/IAM and custody/supply-chain/retirement/backup/fencing native composition",
+    "concrete sealed checkpoints and coordinated installer",
+    "phase9/10 operational handoff integration and READY12 continuation without finite provider barrier reentry",
+    "source-sealed complete execution package and exact private review",
+    "target admission and full M2 acceptance"
+  ],
+  "currentVpsQuiescedIncidentDemonstrated": false,
+  "fullCohortProven": false,
+  "currentTargetAdmissionProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "producerReleaseDispatched": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

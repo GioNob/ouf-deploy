@@ -1,0 +1,74 @@
+name: Onboarding upload39 independent native evidence readback
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/onboarding-upload39-readback.yml
+      - scripts/readback-onboarding-upload39.py
+      - evidence/onboarding-upload-source-tree-9d8a1ec.json
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: onboarding-upload39-readback-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  independent-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: 9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f
+          path: owner-source
+          persist-credentials: false
+      - name: Fetch the original successful owner artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir readback
+          python3 -I -B -S - <<'PY'
+          import json,os,pathlib,subprocess,urllib.request
+          base='https://api.github.com/repos/GioNob/ouf-source-onboarding'
+          def get(path):
+              req=urllib.request.Request(base+path,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          meta=get('/actions/artifacts/13397423414')
+          assert not meta['expired'] and meta['size_in_bytes']==61920
+          assert meta['digest']=='sha256:91b7f31c4e73510a0d58aefd7408ec6a91c988db404db2baa9aac753cacca37a'
+          assert meta['workflow_run']['head_sha']=='9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f'
+          job=get('/actions/jobs/127118496112')
+          assert job['run_id']==41989631975 and job['status']=='completed' and job['conclusion']=='success'
+          pathlib.Path('readback/original-artifact.json').write_text(json.dumps(meta,indent=2)+'\n')
+          pathlib.Path('readback/original-job.json').write_text(json.dumps(job,indent=2)+'\n')
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https','--tlsv1.2',
+              '--connect-timeout','15','--max-time','120','--max-filesize','61920',
+              '-H','Authorization: Bearer '+os.environ['GH_TOKEN'],'-H','Accept: application/vnd.github+json',
+              base+'/actions/artifacts/13397423414/zip','-o','readback/original.zip'],check=True)
+          PY
+      - name: Verify source objects checksums scenarios and V38 upgrade
+        run: |
+          set -euo pipefail
+          test "$(git -C owner-source rev-parse HEAD)" = 9d8a1ecea00ac5f614c8e3d6fed61d3d1df85e5f
+          test "$(git -C owner-source rev-parse 'HEAD^{tree}')" = b6734fba1befe90033fd49585ca4b034569ec226
+          python3 -I -B -S scripts/readback-onboarding-upload39.py --archive readback/original.zip \
+            --source owner-source --git-tree evidence/onboarding-upload-source-tree-9d8a1ec.json \
+            --output readback/result.json
+          cmp readback/result.json evidence/onboarding-upload39-local-readback-20261105.json
+          cp scripts/readback-onboarding-upload39.py readback/
+          cp .github/workflows/onboarding-upload39-readback.yml readback/
+          cp evidence/onboarding-upload-source-tree-9d8a1ec.json readback/
+          git rev-parse HEAD > readback/verifier-commit.txt
+          (cd readback && sha256sum * > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onboarding-upload39-independent-${{ github.run_id }}
+          path: readback/
+          retention-days: 90
+          if-no-files-found: error

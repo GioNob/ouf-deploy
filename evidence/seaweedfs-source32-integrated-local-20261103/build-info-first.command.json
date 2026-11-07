@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "version",
+    "-m",
+    "../weed32"
+  ],
+  "cwd": "source32-integrated-stage/source",
+  "exitCode": 0,
+  "elapsedSeconds": 0.006,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off",
+  "GOTMPDIR": "/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work",
+  "TMPDIR": "/workspace/scratch/98dabd1608e5/tmp"
+}

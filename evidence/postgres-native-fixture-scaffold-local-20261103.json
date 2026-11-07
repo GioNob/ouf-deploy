@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.postgres-native-fixture-scaffold-local.v1",
+  "status": "SCAFFOLD_LOCAL_PASS_NATIVE_POSTGRES_PENDING",
+  "sourceOrigin": "https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2.sha256",
+  "postgresVersion": "17.11",
+  "sourceTarballSha256": "dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979",
+  "localTests": {
+    "pass": 9,
+    "fail": 0,
+    "skip": 0
+  },
+  "plannedNativeTests": 7,
+  "nativePostgresExecuted": false,
+  "postgresSourceBuildExecuted": false,
+  "constraints": {
+    "existingAdapterModified": false,
+    "currentCandidateModified": false,
+    "gitHubWrites": 0,
+    "targetOperations": 0,
+    "dumpRestoreOriginVerified": false,
+    "writerFenceEnforcedByAdapter": false,
+    "seaweedfsExercised": false,
+    "pitrQualified": false,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false
+  },
+  "testLogSha256": "fc3f595774eb07af54e6035cb61003931040a53ea191dab98d7a78461ccc1ecd",
+  "sourceArchiveVerifiedByHarness": false
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "ouf.seaweedfs-source31-module-only-repair.v1",
+  "status": "LOCAL_MODULE_CLOSURE_VERIFIED_NEW_HOSTED_IMAGE_PENDING",
+  "generation": 31,
+  "parentGeneration": 30,
+  "orderedPatchCount": 31,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch",
+    "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+    "bytes": 1408
+  },
+  "sourceChange": {
+    "files": {
+      "test/kafka/go.mod": {
+        "beforeSha256": "a0f6ac2320732750d0c25221bb6f1689650397d44f822e62359e46dbf8eba30f",
+        "afterSha256": "9ae31c5d9b060a414f112fcc08a22aacb8a0cb1eee82c9656f28b6ea63969339"
+      },
+      "test/kafka/go.sum": {
+        "beforeSha256": "4ef43b62ed89d0b777f93c6ab26c5e9d44bad8bef7e0a1796a6d3c58878c27e9",
+        "afterSha256": "fe5130eb14950ad4d23087d8dd258aa02c8f909261728e97faa4e90e808e2b73"
+      }
+    },
+    "deletions": 3,
+    "additions": 0,
+    "productionSourceChanged": false,
+    "rootGoModOrGoSumChanged": false,
+    "retainedVersionsOrH1Changed": false
+  },
+  "parentPatchedSourceTree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+  "patchedSourceTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+  "independentIndexedReplayTree": "c2b7d4bd32316af277a76fb21c09894004c24b4b",
+  "build": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": 0,
+    "trimpath": true,
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "binaryByteIdenticalTo30": true,
+    "compiledPackages": 1740,
+    "compiledPackagesSha256": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+    "binaryModules": 234,
+    "moduleRowsByteIdenticalTo30": true
+  },
+  "validation": {
+    "nestedTidyDiffExitCode": 0,
+    "nestedTidyDiffBytes": 0,
+    "nativeKafkaCompileExitCode": 0,
+    "nativeKafkaPassPackages": 4,
+    "nativeKafkaRunFilter": "^$",
+    "rootBuildExitCode": 0,
+    "rootDependencyListExitCode": 0,
+    "indexedReplayExitCode": 0,
+    "allOtherTrackedSourceFilesByteIdenticalTo30": true
+  },
+  "limits": [
+    "Native Kafka was compiled; external broker scenarios were not executed",
+    "Local full generation30 source regressions and failed hosted30 positive test results are retained as earlier proofs, not relabelled as a full generation31 run",
+    "Generation31 requires a new hosted pipeline run, fresh scan/SPDX, provenance and cohort/runtime binding",
+    "No deployment, acceptance, target authority or licence decision is created"
+  ],
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "evidence": {
+    "build-info.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-info.txt": "da38f68afb1fcb544ed84d7b789e393e78b0e3834afe6bdee8b2366117f6c118",
+    "build.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "failed30-receipt.json": "0f2db4ad16ec6dff8aacd1a26941a44a112a7be0e50bedad2d59eb3bb9d4be0f",
+    "image30-failed-41709442499.zip": "34546382b01a363393e0eba0f72facfa9e9fa79c8a2feb339b2aa117409ac96c",
+    "kafka-compile.jsonl": "20696be44fc9d2084ca3ec0da90309765b015db03c70dce820c1296951e9e95d",
+    "kafka-compile.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "nested-tidy.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "nested-tidy.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "production-deps.stderr": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "production-deps.txt": "de9f2d482ce1795c06062f7839373967e6b95376987c973bb44fb64ea2bb0a2d"
+  }
+}

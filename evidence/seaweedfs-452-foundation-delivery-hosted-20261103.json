@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.storage-foundation-delivery-hosted-qualification.v1",
+  "status": "HOSTED_PASS_NOT_ACCEPTANCE",
+  "sourceCommit": "d2e927d02d9184b1ce2b352b282aa6a4579756e0",
+  "date": "2026-11-03",
+  "candidateLockSha256": "81ce6f162cd1ca0e0ac60511ae4565e9e7315d56bccbeefd9882a729307939ea",
+  "recoveryFoundation": {
+    "runId": 41684434955,
+    "jobId": 126086318135,
+    "testsPass": 12,
+    "artifactId": 13253327961,
+    "artifactBytes": 2127,
+    "githubArtifactDigest": "sha256:4f4c38ae8e8796697d06761a5e8a1b5aaf1183251fd46f8c714220b1cb1cb7aa",
+    "attestedManifestSha256": "70a3deeb9051b556ff25bd55d7decf6ae0589a0ee092cc443fd3a3a70aabf19c",
+    "status": "SYNTHETIC_FOUNDATION_VERIFIED_NOT_ACCEPTANCE",
+    "runtimeStarted": false,
+    "restoreExecuted": false
+  },
+  "deliveryDossier": {
+    "runId": 41684434829,
+    "jobId": 126086316713,
+    "testsPass": 4,
+    "artifactId": 13253502763,
+    "artifactBytes": 3472,
+    "githubArtifactDigest": "sha256:e20ddf54fc0e9768397f9e61388d52241d2683770884a3c6f82dcd455286ce99",
+    "attestedManifestSha256": "b2f498096768705d67332fc644141129458736a4f619e9db39cecde80f5d221c",
+    "status": "TECHNICAL_DELIVERY_DOSSIER_VERIFIED_REVIEW_OPEN",
+    "components": 262,
+    "legalTexts": 353,
+    "mplSourceArchives": 17,
+    "rawUnknownClassifications": 3,
+    "unclassifiedViews": 3,
+    "bundleSha256": "d02665c32943bb362f3ace5a7c96093634807d468354b1aaaf5f77efe8bc0f19"
+  },
+  "observations": {
+    "method": "GitHub API job and artifact metadata, decoded completed job logs; prepared repository blobs compared with local tested files",
+    "artifactArchivesIndependentlyDownloaded": false,
+    "artifactExpiresAt": "2027-02-01",
+    "fullImageDurableCustody": false
+  },
+  "licenceReview": "OPEN_HUMAN",
+  "redistributionAccepted": false,
+  "durableImageCustody": "OPEN",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatePass": 0,
+  "acceptanceTestPass": 0,
+  "realObjectsCopied": 0,
+  "activeStorageBackend": "MinIO",
+  "preserved": {
+    "consumedScopes": 17,
+    "cumulativeEngineGets": 52,
+    "teatriTechnicalPass": 8,
+    "teatriFunctionalPass": 6,
+    "farmacieRows": 61,
+    "farmacieOpenFields": 10,
+    "farmacieCodeType": "STRING"
+  }
+}

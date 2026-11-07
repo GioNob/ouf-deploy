@@ -1,0 +1,2 @@
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory
+WORK=/workspace/scratch/98dabd1608e5/source32-integrated-stage/go-work/go-build1502962702

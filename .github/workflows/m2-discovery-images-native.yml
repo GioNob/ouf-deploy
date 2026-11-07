@@ -1,0 +1,61 @@
+name: M2 selected Registry MCP images native CLI
+'on':
+  push:
+    paths: &id001
+    - tools/m2_discovery_installation_profile/cohort_images.py
+    - tools/m2_discovery_installation_profile/selected_image_preparation.py
+    - tests/test_m2_selected_image_preparation.py
+    - tests/qualify_m2_discovery_images_native.py
+    - tests/test_m2_discovery_gate_peer_window.py
+    - tests/test_m2_discovery_parent_authority.py
+    - .github/workflows/m2-discovery-images-native.yml
+  pull_request:
+    paths: *id001
+permissions:
+  contents: read
+jobs:
+  native-images:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      with:
+        persist-credentials: false
+    - name: Use official Docker 29.8.1 in an isolated disposable data root
+      run: |
+        set -euo pipefail
+        curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+          https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+        printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+        sudo install -d -m 755 /opt/ouf-docker-29
+        sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+        sudo chown -R root:root /opt/ouf-docker-29
+        /opt/ouf-docker-29/dockerd --version
+        sudo systemctl stop docker.service docker.socket
+        sudo systemctl start containerd.service
+        sudo install -d -m 700 /var/lib/ouf-docker-29
+        printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+        sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+          --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+          /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+          --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+          --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+          --containerd=/run/containerd/containerd.sock
+        for OUF_DOCKER_POLL in $(seq 1 60); do
+          if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+          sleep 1
+        done
+        test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+        test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+        test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+    - name: Install real Ed25519 dependency
+      run: sudo apt-get update && sudo apt-get install -y openssl
+    - name: Real selected-image CLI, lost reply and no second dispatch
+      run: |
+        set -euo pipefail
+        fixture="/var/lib/ouf-native-selected-images-${GITHUB_RUN_ID}"
+        sudo install -d -m 700 "$fixture"
+        sudo cp -a . "$fixture/repository"
+        sudo chown -R root:root "$fixture"
+        sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+          python3 -I -B -S "$fixture/repository/tests/qualify_m2_discovery_images_native.py"

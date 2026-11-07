@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-json",
+    "-count=1",
+    "-timeout=30s",
+    "-run",
+    "^TestMongoV2AdaptiveRetriesRemainDisabledInProfile$",
+    "./..."
+  ],
+  "cwd": "adaptive-v2-control",
+  "exitCode": 0
+}

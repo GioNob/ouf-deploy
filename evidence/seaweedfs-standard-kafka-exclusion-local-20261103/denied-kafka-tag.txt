@@ -1,0 +1,2 @@
+FAIL	github.com/seaweedfs/seaweedfs/weed/command [build failed]
+FAIL

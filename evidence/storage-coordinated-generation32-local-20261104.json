@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.storage.coordinated-generation32-fixture-local-delivery.v1",
+  "baseCommit": "0cdfe1b9cb7e64414648fe8f3110c651618cb79a",
+  "files": [
+    {
+      "path": ".github/workflows/storage-452-generation32-coordinated-recovery.yml",
+      "sha256": "809dd69679597053dc7f4cb9ec047be192cc98d11cd48f9d12c1ce57623b0113",
+      "bytes": 5559
+    },
+    {
+      "path": "scripts/run-storage-coordinated32-lab.py",
+      "sha256": "01ca7f038bb7198f0f33cd810724c4509137221ca8b2965cde77393c31c5eb6a",
+      "bytes": 12457
+    },
+    {
+      "path": "tests/test_storage_coordinated32_lab.py",
+      "sha256": "15087319a0750aa8dc124129418fadef7e589eb1f4449a04e7d9039365c490f8",
+      "bytes": 5119
+    }
+  ],
+  "localTestsPassed": 5,
+  "workflowYamlParsed": true,
+  "workflowBashBlocksParsed": 5,
+  "originalGeneration32CohortAndProducerZipBindingsVerified": true,
+  "postgresAndColdHistoricalHarnessesUnchanged": true,
+  "hostedCoordinatedFixture": "PENDING",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "actualWriterFenceQualified": false,
+  "simultaneousRecoveryCutQualified": false,
+  "pitrQualified": false,
+  "rpoMeasured": false,
+  "rtoMeasured": false
+}

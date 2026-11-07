@@ -1,0 +1,458 @@
+{
+  "schema": "ouf.m2-registry-node-worker-native-qualification.v1",
+  "status": "QUALIFIED_457_PROTOCOL_TESTS_54_SUITES_ALL_THREE_NATIVE_MODES_AND_IAM_251_TESTS_33_SUITES_FINAL_REPORTS_READ",
+  "sourceCommit": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+  "repository": "GioNob/ouf-deploy",
+  "pullRequest": 54,
+  "composition": [
+    "Actual Docker29 registered v4 provider admission and closed Registry gate.",
+    "Concrete DiscoveryNodeOwner with independent committed fullOCI and separately qualified Registry control-peer rootfs seal.",
+    "Five files, DB-only configtree and current renewable token mount read natively.",
+    "Existing InstalledTokenOwner, protected source stage, actual Ed25519/HUMAN fixture, actual systemd masked-unit fence, retained journal and real pinned TLS discovery/introspection.",
+    "Concrete authenticated Registry transport owner: isolated nft footprint, one owned apply and readback.",
+    "Late WorkerMaterialization,3signatures,create-only publication,registration,one sealed systemd start."
+  ],
+  "fixtureLimits": {
+    "syntheticHumanAndIamRealmImagesPackagesAndEarlierTransitionPrefix": true,
+    "registryJavaExecAllowed": false,
+    "actualApplicationGatewayTransportProven": false,
+    "newInitialParentAndChildSeconds": 300,
+    "tokenAuthorityInitialSeconds": 300,
+    "initialReviewAndAuthorityBeforeCandidates": true,
+    "midflightAuthorityExtension": false,
+    "ordinaryTargetGrantOrReadinessProven": false,
+    "initialTokenLifetimeSeconds": 600,
+    "gatePeerWindowInitialSeconds": 300,
+    "previousTwoModesInitialAuthoritySeconds": 120,
+    "fullHandoffProfileInitialMaximumSeconds": 300,
+    "fullHandoffRequiresNewExactReview": true,
+    "originalV1ProfileMaximumSeconds": 90,
+    "protocolHardCeilingSecondsUnchanged": 300
+  },
+  "local": {
+    "staticPreparationTests": {
+      "tests": 2,
+      "seconds": 0.237,
+      "failures": 0,
+      "skips": 0
+    },
+    "parentAuthorityTests": {
+      "tests": 8,
+      "seconds": 0.931,
+      "failures": 0,
+      "skips": 0
+    },
+    "installedOwnerSuite": {
+      "testsDiscovered": 18,
+      "seconds": 8.708,
+      "skips": 10,
+      "scope": "Native group10001 chown unavailable in this workspace; no complete installed-owner qualification claimed."
+    },
+    "diffWhitespaceClean": true,
+    "transportOwnerTests": {
+      "tests": 6,
+      "seconds": 1.745,
+      "failures": 0,
+      "skips": 0
+    },
+    "immutableArtifactTests": {
+      "tests": 7,
+      "seconds": 21.815,
+      "failures": 0,
+      "skips": 0
+    },
+    "providerProfilesTests": {
+      "tests": 10,
+      "seconds": 64.304,
+      "failures": 0,
+      "skips": 0,
+      "newV2Cases": 2
+    },
+    "engineBackendTests": {
+      "tests": 6,
+      "seconds": 0.024,
+      "failures": 0,
+      "skips": 0
+    }
+  },
+  "preserved": {
+    "farmacieProfile": "Same SUCCEEDED61rows/10columns; ministerial STRING/all10OPEN; no upload/profile/acquisition replay.",
+    "teatri": "M1/G4 technical8/8 functional6/6 retained.",
+    "previousQualifiedSource": "07734a75aa4c2a2c8e2d87519974d04fd8ea590a",
+    "previousProtocolTests": 443,
+    "previousProtocolSuites": 52,
+    "historicalUnknownMcpWorkerCauses": "OPEN",
+    "fullCohortProven": false,
+    "stableCapabilitiesOperationalProven": false,
+    "applicationE2EProven": false,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "budgetReset": false,
+    "automaticReplayAllowed": false,
+    "releaseAcceptance": false,
+    "originalWorkerSourcePins": 37,
+    "originalWorkerSourcePinsUnchanged": true,
+    "originalPrivateReadersUnchanged": true,
+    "originalV1ProviderMaximum90SecondsUnchanged": true,
+    "protocolHardCeiling300SecondsUnchanged": true
+  },
+  "failures": [
+    {
+      "source": "826e95818bc5c2656d72288356dd00e671d506c0",
+      "run": 41162722417,
+      "job": 124423586402,
+      "reason": "Fixture assigned readonly Transition.phases property.",
+      "resolution": "Read/assert existing immutable phase order; no phase/guard rewrite.",
+      "finalLogRead": true
+    },
+    {
+      "source": "4286d67ddcb030f45b06a9023edf2f9560ffb2b1",
+      "run": 41162905750,
+      "job": 124424153954,
+      "reason": "Actual Registry node attestation passed; native transport used PrivateJournal for Docker root0644 config.json, denied PRIVATE_FILE_UNPROVEN.",
+      "resolution": "Discovery-specific exact-CID/fullOCI-hash public bundle reader; original NativeBackend and private journal bytes unchanged.",
+      "finalLogRead": true
+    },
+    {
+      "source": "4c14f52eacdeaf5653bb3dc78d9912dc31c92fc2",
+      "run": 41163259253,
+      "job": 124425245487,
+      "reason": "Transport accepted public Engine OCI, then original namespace ancestry check denied PRIVATE_ANCESTOR_UNPROVEN. Path was not yet diagnosed.",
+      "resolution": "Docker-alias hypothesis tested next; it did not establish the current cause. Concrete proc path diagnosed only at6ab4e4e3.",
+      "finalLogRead": true
+    },
+    {
+      "source": "2c440bc9feacf3a57dbe1f33842a0225633ed1bf",
+      "run": 41163565825,
+      "job": 124426175859,
+      "reason": "Native namespace path is outside the two Docker aliases; EXACT_DISCOVERY_DOCKER_NAMESPACE_PARENT_REQUIRED.",
+      "resolution": "Alias hypothesis does not yet explain current path; readonly native path/PID/inode/Engine diagnostics added in6ab4e4e3. No path permissions broadened.",
+      "finalLogRead": true
+    },
+    {
+      "source": "6ab4e4e3fce8ac2db7ae7ca174bcae38272e5c35",
+      "run": 41163836965,
+      "job": 124427000578,
+      "reason": "Readonly diagnostics prove OCI_CREATED /proc/<admitted-pid>/ns/net has uid/gid10001 ancestors; exact Docker SandboxKey has same signed namespace inode. Alias-only hypothesis insufficient.",
+      "resolution": "63d5d2 binds current matching paused Engine SandboxKey to the same admitted PID/startTicks/inode, before and after. Original proc ancestry is not relaxed.",
+      "finalLogRead": true
+    },
+    {
+      "source": "63d5d2fdac5543d9a1d1a3469d8efc08c1ac70ee",
+      "run": 41164064745,
+      "job": 124427695394,
+      "reason": "Actual Registry attestation and transport pass; sealed worker ATTEST signature is denied PROTOCOL_AUTHORITY_EXPIRED_OR_NOT_YET_VALID under original provider profile maximum90s.",
+      "resolution": "8313e3c adds separate v2 full-installation profile maximum300 within unchanged protocol ceiling300, requiring a new exact initial parent review before candidates. Old v1 remains90s, no consumed claim or live authority extended.",
+      "finalLogRead": true
+    },
+    {
+      "source": "8313e3c584c31880cb1da995d56c99cf2d8b4239",
+      "run": 41164674418,
+      "job": 124429568238,
+      "reason": "Registry and transport plus worker installation/lost manager reply reconciliation passed. Second direct observation denied DISCOVERY_WORKER_CHANGED_DURING_OBSERVATION. Worker final BLOCKED/SAFE_PAUSE_UNPROVEN, attempts1/publications18/reentry1.",
+      "resolution": "Deterministic native-flock tests prove exclusive observer can block both writer and safe revocation; host reader now authenticates same inode without flock and rejects changing/incomplete journal/ownership/two-family publication. Frozen worker code unchanged. Source-specific incident not fully traced; historical UNKNOWN causes remain OPEN.",
+      "finalLogRead": true
+    }
+  ],
+  "latestCandidateCommit": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+  "engineBundleCorrection": {
+    "module": "tools/m2_discovery_installation_profile/engine_transport_backend.py",
+    "originalBackendSha256": "ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528",
+    "originalBackendUnchanged": true,
+    "bindingMethodDiff": "Only OCI read and authenticated namespace access path differ. Every original namespace/NIC/peer/generation guard remains AST-identical.",
+    "custody": "Exact approved parent/CID/config.json; root:root regular0600or0644; one link; bounded/no-follow stable descriptor+path; signed full canonical OCI hash.",
+    "privateCredentialAuthorityJournalReadersUnchanged": true,
+    "localCases": 6,
+    "seconds": 0.024,
+    "failures": 0,
+    "namespaceAlias": "Exact allowed Docker aliases + current matching paused Engine generation; OCI_CREATED /proc path must pin that same PID. No relaxed ancestry for /proc."
+  },
+  "historicalDeliveryCompatibility": {
+    "oldReference": "bcd20f30085cfdd13276e3af3d1295f7c43eada2",
+    "secondReference": "d3b3b06657d756af297078fc9029f77f0524ba18",
+    "sameHistoricalBindingBytesVerified": true,
+    "historicalBindingSha256": "a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d",
+    "currentCompilerSha256": "dcfab9f362ddfd9be95dcd41ee8281d5cecc074918e4ed3995e19dd17da1801b",
+    "currentCompilerUnchangedSincePreviousCheckpoint": true,
+    "oldDeliveryCommandsOrHashesModified": false,
+    "fix": "Historical delivery test uses exact pinned source fixture; current behavior stays tested against current compiler, with explicit old-command rejection before sudo.",
+    "localBindingTests": 13,
+    "localMapperTests": 8,
+    "ciFailures": [
+      {
+        "run": 41162722425,
+        "job": 124423586381,
+        "case": "binding delivery source mismatch",
+        "finalLogRead": true
+      },
+      {
+        "run": 41163030534,
+        "job": 124424573801,
+        "case": "two-source mapper delivery binding mismatch",
+        "finalLogRead": true
+      },
+      {
+        "run": 41163352859,
+        "job": 124425598639,
+        "case": "three-source governance delivery binding mismatch",
+        "finalLogRead": true
+      },
+      {
+        "run": 41163629423,
+        "job": 124426523699,
+        "case": "client-policy delivery test used current binding instead of the same historical guard; consumers had the same proven mismatch.",
+        "finalLogRead": true
+      }
+    ],
+    "thirdReference": "4d3d10e26b584a1d6e28811754e169e93723f396",
+    "localGovernanceDeliveryTests": 3,
+    "fourthReference": "4d3d10e26b584a1d6e28811754e169e93723f396",
+    "fifthReference": "a0f50691a530ae28148264f3607056f3774b0f5c",
+    "localClientPolicyTests": 5,
+    "localConsumerTests": 10,
+    "priorFullQualification": {
+      "source": "63d5d2fdac5543d9a1d1a3469d8efc08c1ac70ee",
+      "run": 41164064718,
+      "job": 124427943260,
+      "conclusion": "success",
+      "finalLogRead": true,
+      "tests": 251,
+      "suites": 33,
+      "skips": 0,
+      "actualDisposableKeycloakProtocol": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+      "productionCalls": 0,
+      "targetCredentialReads": 0,
+      "targetInstallerReady": false
+    },
+    "currentV2FullQualification": {
+      "source": "8313e3c584c31880cb1da995d56c99cf2d8b4239",
+      "run": 41164674399,
+      "job": 124429568069,
+      "conclusion": "success",
+      "finalLogRead": true,
+      "tests": 251,
+      "suites": 33,
+      "skips": 0,
+      "actualDisposableKeycloakProtocol": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+      "productionCalls": 0,
+      "targetInstallerReady": false
+    },
+    "currentObserverFullQualification": {
+      "source": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+      "run": 41165277274,
+      "job": 124431388446,
+      "conclusion": "success",
+      "finalLogRead": true,
+      "tests": 251,
+      "suites": 33,
+      "skips": 0,
+      "actualDisposableKeycloakProtocol": "QUALIFIED_DISPOSABLE_KEYCLOAK_PROTOCOL",
+      "productionCalls": 0,
+      "targetInstallerReady": false
+    }
+  },
+  "namespaceDiagnosis": {
+    "source": "6ab4e4e3fce8ac2db7ae7ca174bcae38272e5c35",
+    "run": 41163836965,
+    "job": 124427000578,
+    "finalLogRead": true,
+    "origin": "OCI_CREATED",
+    "observedPathShape": "/proc/<same-admitted-pid>/ns/net",
+    "procMetadataOwnerUid": 10001,
+    "procMetadataOwnerGid": 10001,
+    "dockerSandboxKeyShape": "/run/docker/netns/<docker-id>",
+    "sameObservedNamespaceInode": true,
+    "initialDockerAliasHypothesisProvenAsCurrentCause": false,
+    "correction": "Read a current exact-matching Docker paused container; bind its namespace reference and admitted PID/startTicks/inode. Keep expected OCI/profile unchanged. Native file/command access uses only the same canonical Docker namespace inode, with before/after generation checks."
+  },
+  "fullHandoffReviewContract": {
+    "schema": "ouf.discovery-provider-profile-installation-scope.v2",
+    "policySchema": "ouf.discovery-complete-installation-handoff-window.v1",
+    "purpose": "REGISTRY_TRANSPORT_AND_SEALED_WORKER_INSTALLATION",
+    "maximumSeconds": 300,
+    "maximumSignatures": 3,
+    "oldV1MaximumSecondsUnchanged": 90,
+    "protocolHardCeilingUnchanged": 300,
+    "newExactParentComponentReviewRequired": true,
+    "issuanceStillClippedToOriginalParentChildAndGateDeadline": true,
+    "midflightExtensionAllowed": false,
+    "automaticRenewalAllowed": false,
+    "existingAuthorityOrClaimAdopted": false,
+    "targetReviewOrSignatureIssued": false
+  },
+  "v2InitialCi": {
+    "event": "pull_request",
+    "sourceCommit": "8313e3c584c31880cb1da995d56c99cf2d8b4239",
+    "nativeRun": 41164674418,
+    "finiteJob": 124429567886,
+    "sealedJob": 124429568089,
+    "registryWorkerJob": 124429568238,
+    "finiteConclusion": "success",
+    "sealedConclusion": "success",
+    "registryWorkerConclusion": "failure",
+    "finiteAndSealedFinalLogsRead": true,
+    "protocolRun": 41164674581,
+    "protocolJob": 124429568453,
+    "protocolConclusion": "success",
+    "installedOwnerRun": 41164674399,
+    "installedOwnerJob": 124429568069,
+    "installedOwnerConclusion": "success",
+    "allCurrentFinalReportsRead": true,
+    "installedOwnerFinalLogRead": true,
+    "installedOwnerTests": 251,
+    "installedOwnerSuites": 33,
+    "installedOwnerSkips": 0,
+    "protocolTests": 453,
+    "protocolSuites": 54,
+    "protocolSkips": 0,
+    "protocolFinalLogRead": true
+  },
+  "ci": {
+    "sourceCommit": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+    "finalReportsRead": true,
+    "event": "pull_request",
+    "nativeRun": 41165277183,
+    "finiteJob": 124431388052,
+    "sealedJob": 124431388176,
+    "registryWorkerJob": 124431388213,
+    "finiteConclusion": "success",
+    "sealedConclusion": "success",
+    "registryWorkerConclusion": "success",
+    "protocolRun": 41165277205,
+    "protocolJob": 124431387665,
+    "protocolConclusion": "success",
+    "installedOwnerRun": 41165277274,
+    "installedOwnerJob": 124431388446,
+    "installedOwnerConclusion": "success",
+    "nativeFinalReportsRead": true,
+    "installedOwnerFinalLogRead": true,
+    "installedOwnerTests": 251,
+    "installedOwnerSuites": 33,
+    "installedOwnerSkips": 0,
+    "protocolTests": 457,
+    "protocolSuites": 54,
+    "protocolSeconds": 834.377,
+    "protocolSkips": 0,
+    "protocolFailures": 0,
+    "protocolFinalLogRead": true,
+    "allCurrentFinalReportsRead": true
+  },
+  "observerConcurrencyCorrection": {
+    "source": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+    "oldExclusiveReaderMechanismReproducedWithActualKernelFlockAndRecoveryPause": true,
+    "controlledPreFixCases": 4,
+    "controlledPreFixErrors": 2,
+    "correctedStartAndObservationTests": 13,
+    "correctedSeconds": 6.677,
+    "correctedFailures": 0,
+    "correctedSkips": 0,
+    "writerKernelLockAndWorkerPinsUnchanged": true,
+    "readerTakesWriterLock": false,
+    "approvedKernelInodeAuthenticatedBeforeAndAfter": true,
+    "completeCurrentOwnedTwoFamilyPositiveMembershipRequired": true,
+    "coordinationJournalStableBeforeAndAfterRequired": true,
+    "managerProcessGenerationAndNondecreasingRecoveryAccountingRequired": true,
+    "retryOrEffectBudgetAdded": false,
+    "nativeFinalQualificationPending": false,
+    "historicalUnknownCauseResolved": false,
+    "nativeFinalQualification": {
+      "source": "bc82ccef0fadcdc4d669a1743f3d38cb6a288693",
+      "run": 41165277183,
+      "job": 124431388213,
+      "conclusion": "success",
+      "finalReportsRead": true,
+      "historicalUnknownCauseResolved": false
+    }
+  },
+  "separateWorkerCurrentQualification": {
+    "run": 41165277212,
+    "job": 124431387945,
+    "conclusion": "success",
+    "finalLogRead": true,
+    "actualSystemdDnsNft": true,
+    "healthyOutageFourVirtualHoursRecoveryHealthySameProcess": true,
+    "exhaustedAliveRevokedNoQueryAndConcurrentWorkerDenied": true,
+    "targetActions": 0
+  },
+  "remainingEvidence": [
+    {
+      "area": "Current complete cohort",
+      "required": "Exact current independent OCI/image/rootfs/TLS/IAM/DB/trust/fencing across all peers; no synthetic HUMAN/package/admission predecessors."
+    },
+    {
+      "area": "Private delivery",
+      "required": "Sealed exact current private compiler/review/CLI assembly and separately reviewed initial authorities; prior scopes remain consumed."
+    },
+    {
+      "area": "Publication and product",
+      "required": "Governed published descriptor/scope/role through actual MCP and Gateway, then same Farmacie profile to Ingestion/UDP with all61 row outcomes."
+    },
+    {
+      "area": "Resilience and acceptance",
+      "required": "Reimport/fault/recovery/chat/boot/rotation/two independent clients and M2/G5-G7/24AT/8UX/8stability; historical anomaly causes remain OPEN."
+    }
+  ],
+  "registryWorkerFinalReports": {
+    "providerAndWorker": {
+      "actualRegistryNodeAndTransport": true,
+      "applicationE2EProven": false,
+      "fullCohortProven": false,
+      "lateMaterializationAttestationPublicationRegistrationStart": true,
+      "lostManagerReplyReconciledWithoutSecondStart": true,
+      "providerHistoryAndRegistryPausePreserved": true,
+      "providerTerminationRevokesAndBlocksWithoutAutomaticRestartOrRearm": true,
+      "realDockerProviderV4Admission": true,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-admitted-provider-sealed-worker-ci.v1",
+      "sealedUnitOnlyCapNetAdminAndKeyHidden": true,
+      "sigkillReentryRetainsStartedTimeAndCounters": true,
+      "syntheticImagesAndReview": true,
+      "syntheticRegistryAdmissionImagesAndReview": false,
+      "targetApplyAuthorized": false
+    },
+    "registryTokenAndTransport": {
+      "actualAuthenticatedTransportNftApplyAndReadback": true,
+      "actualFiveFilesDbConfigtreeAndRenewableTokenMount": true,
+      "actualInstalledTokenOwnerSourceCustodyAndJournal": true,
+      "actualMaskedLegacyWriterUnitReadback": true,
+      "actualRegistryNodeAttestationAndRetainedRead": true,
+      "actualTlsDiscoveryIntrospectionAndOneInitialGrant": true,
+      "applicationE2EProven": false,
+      "currentTargetCohortProven": false,
+      "iamRevocationDeniesFinalRegistryRead": true,
+      "noGrantRenewalOrJournalResetDuringNativeReads": true,
+      "registryJavaStarted": false,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-registry-node-transport-token-ci.v1",
+      "syntheticIamRealmHumanImagesPackagesAndEarlierTransitionPrefix": true,
+      "targetApplyAuthorized": false
+    },
+    "nativeBoundary": {
+      "actualDocker29Boundary": true,
+      "actualProviderCreateAttempts": 1,
+      "actualProviderStartAttempts": 1,
+      "actualProviderV4AdmissionAndRegistryGate": true,
+      "actualRegistryNodeAndTransport": true,
+      "applicationE2EProven": false,
+      "expectedOciFromIndependentCommittedBaseline": true,
+      "fullCohortProven": false,
+      "independentControlPeerRootfsSealBeforeCandidateReview": true,
+      "lostActualStartReplyReconciledWithoutReplay": true,
+      "releaseAcceptance": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.m2-provider-docker-worker-ci.v1",
+      "sealedWorkerInstallationProven": true,
+      "syntheticImagesAndReview": true,
+      "syntheticImagesReviewAndRegistryAdmissionPredecessor": false,
+      "targetApplyAuthorized": false
+    }
+  },
+  "otherActionsStatus": {
+    "snapshotScope": "First page returns29PR workflows for qualified source; all except generic chatbot cohort workflow completed successfully at last read. No universal all-checks-green claim.",
+    "uncompletedRunAtSnapshot": 41165277221,
+    "uncompletedJobAtSnapshot": 124431503443,
+    "uncompletedRunNotClaimedAsQualified": true
+  }
+}

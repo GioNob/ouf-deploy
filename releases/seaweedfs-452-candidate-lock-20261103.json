@@ -1,0 +1,113 @@
+{
+  "schema": "ouf.storage-candidate-lock.v1",
+  "status": "EVIDENCE_PREPARED_NOT_ADMITTED",
+  "date": "2026-11-03",
+  "baselinePlan": "releases/minio-seaweedfs-plan-20261102.json",
+  "product": "SeaweedFS",
+  "version": "4.52",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "orderedPatchCount": 15,
+  "producerCommit": "7a775d2a63ae5ede005056c325db85e2f335ed94",
+  "buildProfile": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": false,
+    "tags": [],
+    "binarySha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "compiledPackages": 1811
+  },
+  "image": {
+    "manifestDigest": "sha256:1bb1ff9d7a42e98f5c6a90903644ed5e18e83a89d76bccbc4d16ce6b8027c6b4",
+    "configDigest": "sha256:add1988121001fe6339a31635d5f61bc560b3c9a540da8027e376a4ebdf0df35",
+    "layerDigest": "sha256:1071b47f3530b0ce21db1256db07643836cfbce358bab7e294cdab4f4be485c4",
+    "dockerArchiveSha256": "39f44d649644264ff58aa1d76a2214f134a1034873affb6271420082bdce2566",
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613"
+  },
+  "qualification": {
+    "runId": 41622752493,
+    "workflow": ".github/workflows/storage-sdk-lifecycle.yml",
+    "allJobsPassed": true,
+    "storageTests": {
+      "pass": 5591,
+      "skip": 5,
+      "packagesPassed": 20
+    },
+    "remoteCacheIntegrationPassed": 6,
+    "imageBoundaryTestsPassed": 16,
+    "vulnerabilitySubgate": "PASS_RAW",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "scanner": "Trivy 0.70.0",
+    "scanSha256": "b15ba1f4070b4282303fba26676ea90747b2570d2afecf2772c617b9bede5e05",
+    "sbomSha256": "c20d75b9f7164709c46e6e6b0db86dd2ef3947b8d88886c44e4ec617f90898ad",
+    "scannedComponents": 264,
+    "spdxRecords": 266,
+    "awsSdkV1": "ABSENT",
+    "deprecatedS3Manager": "ABSENT",
+    "versionSmoke": "NONROOT_READ_ONLY_NO_NETWORK"
+  },
+  "producerArtifact": {
+    "id": 13224053625,
+    "bytes": 194296104,
+    "digest": "sha256:bca4d0a493717812d464f9dc6c7478d918c5dd7f56cd7b5d21f0d4fbcccaeed9",
+    "expiresAt": "2027-02-01T10:51:39Z",
+    "retention": "TEMPORARY_CI"
+  },
+  "independentReadback": {
+    "id": 13225461651,
+    "bytes": 24074,
+    "digest": "sha256:8fade01821e5cd6f8c76fd6828ec7fd8c522072fbee5280823697475cb43582b",
+    "verifiedInternalChecksums": 16,
+    "verifiedSourceFiles": 21,
+    "assessmentReproduced": true,
+    "ociReconstructed": true,
+    "publisherSignatureVerified": true,
+    "locallyReverified": true,
+    "path": "evidence/artifacts/seaweedfs-452-image-readback-41622752493.zip"
+  },
+  "licencePreflight": {
+    "path": "evidence/artifacts/seaweedfs-452-patch15-licence-delta.zip",
+    "sha256": "7cf2b9dc596ded071c9c75f1bfeb87245f443e25984b9cddf8bf4f411791eda2",
+    "bytes": 198350,
+    "archiveMembers": 65,
+    "checkedThirdPartyModules": 262,
+    "reusedHistoricalExactModuleTextSets": 224,
+    "changedModuleVersions": 38,
+    "reusedExactMplSourceArchives": 17,
+    "rawUnknownClassifications": 3,
+    "status": "REVIEW_OPEN"
+  },
+  "statusOfGates": {
+    "overallSwG1": "OPEN",
+    "licenceReview": "OPEN",
+    "durableReleaseCustody": "OPEN",
+    "cohortQualification": "OPEN",
+    "gatesClosed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21,
+    "realObjectsCopied": 0,
+    "realObjectsTotal": 120
+  },
+  "progress": {
+    "heuristicNotAcceptance": true,
+    "baseWeightedCredits": 15.3,
+    "swWp1CreditBeforePercent": 75,
+    "swWp1CreditNowPercent": 85,
+    "swWp1WeightHours": 6,
+    "totalWeightHours": 46,
+    "weightedCredits": 15.9,
+    "exactWeightedPercent": 34.56521739130435,
+    "approximatePercent": 35,
+    "uncertaintyPoints": 10
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

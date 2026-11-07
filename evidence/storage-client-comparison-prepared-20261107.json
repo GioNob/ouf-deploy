@@ -1,0 +1,61 @@
+{
+  "schema": "ouf.storage-client-comparison-prepared.v1",
+  "date": "2026-11-07",
+  "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+  "inputReceipt": "evidence/storage-current-bindings-operator-20261107.json",
+  "files": [
+    {
+      "path": "scripts/diagnostics/StorageClientProbe.java",
+      "sha256": "45a8f50b483cc172715d669bdbb152a1f5445de4de97c018745f1823b7e17733"
+    },
+    {
+      "path": "scripts/compare-current-seaweedfs-clients-20261107.py",
+      "sha256": "d4cd5ffc303f77923f73e89e17f922c90380f1f2a6c96501fd2fa0fd17143ca3"
+    }
+  ],
+  "javaClassSha256": "d23f692727e14a9ed2c6937992448f4605e34b85279934eaf1a77baaefc3cca9",
+  "validation": {
+    "pythonAst": "PASS",
+    "javaCompile": {
+      "release": 17,
+      "result": "PASS"
+    },
+    "embeddedClassDigest": "PASS",
+    "curlLocalFixture": {
+      "signatureV4Validated": true,
+      "putGetPayloadMatch": true,
+      "payloadBytes": 29,
+      "payloadSha256": "5db4b698f1b4107f9914e5cf76159c563639ea599251403ab1e3b8fba7fc0f28",
+      "tlsTested": false,
+      "seaweedfsTested": false
+    },
+    "targetImageClasspathTested": false,
+    "targetPreflightBeforeS3Writes": true
+  },
+  "effects": {
+    "temporaryContainers": 1,
+    "newDiagnosticObjectKeys": 1,
+    "logicalPutCalls": 2,
+    "logicalGetCalls": 2,
+    "curlRegion": "us-east-1",
+    "javaRegion": "INSTALLED_ADAPTER_DEFAULT",
+    "javaSdkInternalRegionLookupAndRetries": "Retained client defaults; no new orchestrator retry",
+    "sharedTargetContext": "Both clients in temporary container from current Onboarding image on existing SeaweedFS private network",
+    "applicationBindingsChanged": false,
+    "databasesCopiedOrStarted": false,
+    "credentialsOrRawLogsEmitted": false,
+    "diagnosticObjectRetained": true
+  },
+  "limits": [
+    "This is the installed adapter's MinIO client invoked directly to retain original exception classes; it does not start Spring or exercise the HTTP upload/asset registration.",
+    "Java stream, bucket, object and contentType arguments mirror the selected adapter; the known probe key replaces its random UUID so curl and Java use the same object.",
+    "The live application still uses MinIO; a client comparison PASS does not prove a switched application flow or close F1/F2.",
+    "Failure may leave the generated diagnostic object; its exact key is retained before the first PUT. Do not replay earlier upload attempts."
+  ],
+  "references": [
+    "https://docs.spring.io/spring-boot/specification/executable-jar/launching.html",
+    "https://docs.spring.io/spring-boot/api/java/org/springframework/boot/loader/launch/PropertiesLauncher.html",
+    "https://curl.se/docs/manpage.html",
+    "https://github.com/GioNob/ouf-source-onboarding/blob/73498c17596ae155a3ed9ab36acfd6bb69da9846/src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java"
+  ]
+}

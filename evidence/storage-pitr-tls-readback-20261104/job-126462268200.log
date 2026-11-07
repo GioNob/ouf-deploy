@@ -1,0 +1,472 @@
+﻿2026-11-04T08:04:08.7490781Z Current runner version: '2.338.2'
+2026-11-04T08:04:08.7519901Z ##[group]Runner Image Provisioner
+2026-11-04T08:04:08.7520764Z Hosted Compute Agent
+2026-11-04T08:04:08.7521460Z Version: 20261021.618
+2026-11-04T08:04:08.7522112Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T08:04:08.7522906Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T08:04:08.7523672Z Worker ID: {10b501d4-959c-4634-8982-ab484ad95931}
+2026-11-04T08:04:08.7524420Z Region: eastus
+2026-11-04T08:04:08.7525067Z Cloud: Azure
+2026-11-04T08:04:08.7525639Z ##[endgroup]
+2026-11-04T08:04:08.7528028Z ##[group]Operating System
+2026-11-04T08:04:08.7528795Z Ubuntu
+2026-11-04T08:04:08.7529330Z 24.04.5
+2026-11-04T08:04:08.7529882Z LTS
+2026-11-04T08:04:08.7530460Z ##[endgroup]
+2026-11-04T08:04:08.7531037Z ##[group]Runner Image
+2026-11-04T08:04:08.7531718Z Image: ubuntu-24.04
+2026-11-04T08:04:08.7532299Z Version: 20261025.353.1
+2026-11-04T08:04:08.7533705Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T08:04:08.7535280Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T08:04:08.7536705Z ##[endgroup]
+2026-11-04T08:04:08.7537931Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T08:04:08.7540330Z Attestations: write
+2026-11-04T08:04:08.7540953Z Contents: read
+2026-11-04T08:04:08.7541597Z Metadata: read
+2026-11-04T08:04:08.7542165Z ##[endgroup]
+2026-11-04T08:04:08.7544247Z Secret source: Actions
+2026-11-04T08:04:08.7545341Z Cache mode: write
+2026-11-04T08:04:08.7546587Z Prepare workflow directory
+2026-11-04T08:04:08.7881491Z Prepare all required actions
+2026-11-04T08:04:08.7931387Z Getting action download info
+2026-11-04T08:04:09.0292400Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-04T08:04:09.1840712Z Download action repository 'actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be' (SHA:e8998f949152b193b063cb0ec769d69d929409be)
+2026-11-04T08:04:09.3021877Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-04T08:04:09.5103509Z Getting action download info
+2026-11-04T08:04:09.5907733Z Download action repository 'actions/attest-build-provenance@1176ef556905f349f669722abf30bce1a6e16e01' (SHA:1176ef556905f349f669722abf30bce1a6e16e01)
+2026-11-04T08:04:09.7140401Z Download action repository 'actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc' (SHA:ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc)
+2026-11-04T08:04:09.8673636Z Complete job name: native-physical-pitr
+2026-11-04T08:04:09.9669346Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-04T08:04:09.9670674Z with:
+2026-11-04T08:04:09.9671184Z   persist-credentials: false
+2026-11-04T08:04:09.9671803Z   repository: GioNob/ouf-deploy
+2026-11-04T08:04:09.9676941Z   token: ***
+2026-11-04T08:04:09.9677442Z   ssh-strict: true
+2026-11-04T08:04:09.9677978Z   ssh-user: git
+2026-11-04T08:04:09.9678442Z   clean: true
+2026-11-04T08:04:09.9678948Z   sparse-checkout-cone-mode: true
+2026-11-04T08:04:09.9679558Z   fetch-depth: 1
+2026-11-04T08:04:09.9680038Z   fetch-tags: false
+2026-11-04T08:04:09.9680538Z   show-progress: true
+2026-11-04T08:04:09.9681051Z   lfs: false
+2026-11-04T08:04:09.9681526Z   submodules: false
+2026-11-04T08:04:09.9682040Z   set-safe-directory: true
+2026-11-04T08:04:09.9682930Z ##[endgroup]
+2026-11-04T08:04:10.3080538Z Syncing repository: GioNob/ouf-deploy
+2026-11-04T08:04:10.3083166Z ##[group]Getting Git version info
+2026-11-04T08:04:10.3084667Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:10.3087060Z [command]/usr/bin/git version
+2026-11-04T08:04:10.3300226Z git version 2.56.0
+2026-11-04T08:04:10.3332559Z ##[endgroup]
+2026-11-04T08:04:10.3345460Z Temporarily overriding HOME='/home/runner/work/_temp/ad57fac3-4a17-4463-a354-44658b09a750' before making global git config changes
+2026-11-04T08:04:10.3351361Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:04:10.3357198Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:10.3417826Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:10.3423178Z ##[group]Initializing the repository
+2026-11-04T08:04:10.3428789Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:10.3562315Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T08:04:10.3565376Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T08:04:10.3568480Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T08:04:10.3570594Z hint: call:
+2026-11-04T08:04:10.3571690Z hint:
+2026-11-04T08:04:10.3573049Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T08:04:10.3574766Z hint:
+2026-11-04T08:04:10.3576581Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T08:04:10.3579241Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T08:04:10.3581348Z hint:
+2026-11-04T08:04:10.3582463Z hint: 	git branch -m <name>
+2026-11-04T08:04:10.3583740Z hint:
+2026-11-04T08:04:10.3585428Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T08:04:10.3603711Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-04T08:04:10.3617363Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:10.3675899Z ##[endgroup]
+2026-11-04T08:04:10.3679058Z ##[group]Disabling automatic garbage collection
+2026-11-04T08:04:10.3681601Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T08:04:10.3749089Z ##[endgroup]
+2026-11-04T08:04:10.3751958Z ##[group]Setting up auth
+2026-11-04T08:04:10.3754739Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:10.3800891Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:10.4221932Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:10.4269392Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:10.4511916Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T08:04:10.4562127Z ##[endgroup]
+2026-11-04T08:04:10.4563903Z ##[group]Fetching the repository
+2026-11-04T08:04:10.4577921Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9fbe9ef71ba296523e904686d7409b4c9150209f:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:13.9679534Z From https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:13.9680945Z  * [new ref]         9fbe9ef71ba296523e904686d7409b4c9150209f -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:13.9684518Z ##[endgroup]
+2026-11-04T08:04:13.9685062Z ##[group]Determining the checkout info
+2026-11-04T08:04:13.9687670Z ##[endgroup]
+2026-11-04T08:04:13.9693746Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T08:04:13.9760166Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T08:04:13.9803025Z ##[group]Checking out the ref
+2026-11-04T08:04:13.9808972Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:14.6254151Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-04T08:04:14.6259998Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-04T08:04:14.6324836Z ##[endgroup]
+2026-11-04T08:04:14.6360754Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T08:04:14.6400097Z 9fbe9ef71ba296523e904686d7409b4c9150209f
+2026-11-04T08:04:14.6413994Z ##[group]Removing auth
+2026-11-04T08:04:14.6414761Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:14.6460647Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:14.6731612Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:14.6773868Z http.https://github.com/.extraheader
+2026-11-04T08:04:14.6783515Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T08:04:14.6831129Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:14.7087307Z ##[endgroup]
+2026-11-04T08:04:14.7317826Z ##[group]Run python3 -I -B -S -m unittest discover -s tests -p test_storage_postgres_pitr.py -v
+2026-11-04T08:04:14.7318579Z [36;1mpython3 -I -B -S -m unittest discover -s tests -p test_storage_postgres_pitr.py -v[0m
+2026-11-04T08:04:14.7342925Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:14.7343206Z ##[endgroup]
+2026-11-04T08:04:14.8306451Z test_archive_duplicate_is_verified_and_corruption_not_overwritten (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_archive_duplicate_is_verified_and_corruption_not_overwritten) ... ok
+2026-11-04T08:04:14.8311348Z test_backup_symlink_cannot_escape_original_tree (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_backup_symlink_cannot_escape_original_tree) ... ok
+2026-11-04T08:04:14.8324373Z test_missing_wal_returns_failure_without_making_destination (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_missing_wal_returns_failure_without_making_destination) ... ok
+2026-11-04T08:04:14.8330997Z test_name_path_traversal_and_absolute_destination_are_rejected (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_name_path_traversal_and_absolute_destination_are_rejected) ... ok
+2026-11-04T08:04:14.8351955Z test_packaging_retains_all_original_file_bytes (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_packaging_retains_all_original_file_bytes) ... ok
+2026-11-04T08:04:14.8355875Z test_regular_file_byte_limit (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_regular_file_byte_limit) ... ok
+2026-11-04T08:04:14.8381779Z test_restore_requires_the_actual_archived_bytes (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_restore_requires_the_actual_archived_bytes) ... ok
+2026-11-04T08:04:14.8387400Z test_shell_config_paths_do_not_accept_interpolation (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_shell_config_paths_do_not_accept_interpolation) ... ok
+2026-11-04T08:04:14.8397708Z test_symlink_wal_and_destination_are_rejected (test_storage_postgres_pitr.PhysicalPitrBoundaries.test_symlink_wal_and_destination_are_rejected) ... ok
+2026-11-04T08:04:14.8398853Z 
+2026-11-04T08:04:14.8399146Z ----------------------------------------------------------------------
+2026-11-04T08:04:14.8399834Z Ran 9 tests in 0.016s
+2026-11-04T08:04:14.8400090Z 
+2026-11-04T08:04:14.8400242Z OK
+2026-11-04T08:04:14.8545768Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:14.8546431Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:14.8546707Z [36;1mbase="$RUNNER_TEMP/pg-pitr"[0m
+2026-11-04T08:04:14.8547009Z [36;1mmkdir -p "$base/build-evidence"[0m
+2026-11-04T08:04:14.8547290Z [36;1msudo apt-get update[0m
+2026-11-04T08:04:14.8547669Z [36;1msudo apt-get install --no-install-recommends -y build-essential bison flex[0m
+2026-11-04T08:04:14.8548075Z [36;1mcd "$base"[0m
+2026-11-04T08:04:14.8548414Z [36;1mcurl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \[0m
+2026-11-04T08:04:14.8549057Z [36;1m  --connect-timeout 15 --max-time 120 \[0m
+2026-11-04T08:04:14.8549524Z [36;1m  https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2 \[0m
+2026-11-04T08:04:14.8549983Z [36;1m  --output postgresql-17.11.tar.bz2[0m
+2026-11-04T08:04:14.8550664Z [36;1mprintf '%s\n' 'dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979  postgresql-17.11.tar.bz2' > build-evidence/source.sha256[0m
+2026-11-04T08:04:14.8551377Z [36;1msha256sum --strict --check build-evidence/source.sha256[0m
+2026-11-04T08:04:14.8551750Z [36;1mtar -xjf postgresql-17.11.tar.bz2[0m
+2026-11-04T08:04:14.8552035Z [36;1mcd postgresql-17.11[0m
+2026-11-04T08:04:14.8552494Z [36;1mtimeout 600 ./configure --prefix="$base/install" --without-readline --without-zlib --without-icu \[0m
+2026-11-04T08:04:14.8553027Z [36;1m  > ../build-evidence/configure.log 2>&1[0m
+2026-11-04T08:04:14.8553386Z [36;1mtimeout 600 make -j2 > ../build-evidence/make.log 2>&1[0m
+2026-11-04T08:04:14.8553805Z [36;1mtimeout 120 make install > ../build-evidence/install.log 2>&1[0m
+2026-11-04T08:04:14.8554514Z [36;1msha256sum "$base/install/bin/"{postgres,initdb,pg_ctl,psql,pg_basebackup,pg_verifybackup,pg_waldump} > ../build-evidence/binary-sha256.txt[0m
+2026-11-04T08:04:14.8575706Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:14.8576214Z ##[endgroup]
+2026-11-04T08:04:14.9464829Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T08:04:14.9722683Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-04T08:04:14.9841187Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-04T08:04:14.9867041Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-04T08:04:14.9930467Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-04T08:04:14.9976651Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-04T08:04:15.0584681Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [721 kB]
+2026-11-04T08:04:15.0773236Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [652 kB]
+2026-11-04T08:04:15.1789724Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1408 kB]
+2026-11-04T08:04:15.1875343Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [311 kB]
+2026-11-04T08:04:15.1928853Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1707 kB]
+2026-11-04T08:04:15.2019445Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [343 kB]
+2026-11-04T08:04:15.2041934Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1813 kB]
+2026-11-04T08:04:15.2133674Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [412 kB]
+2026-11-04T08:04:15.2163649Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-04T08:04:15.2962885Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1155 kB]
+2026-11-04T08:04:15.3053291Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [233 kB]
+2026-11-04T08:04:15.3080011Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1224 kB]
+2026-11-04T08:04:15.3592200Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [247 kB]
+2026-11-04T08:04:15.3619202Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1721 kB]
+2026-11-04T08:04:15.3710898Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [394 kB]
+2026-11-04T08:04:15.3742757Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+2026-11-04T08:04:18.6602171Z Fetched 12.7 MB in 1s (9750 kB/s)
+2026-11-04T08:04:19.7699493Z Reading package lists...
+2026-11-04T08:04:19.8082174Z Reading package lists...
+2026-11-04T08:04:20.0326762Z Building dependency tree...
+2026-11-04T08:04:20.0333868Z Reading state information...
+2026-11-04T08:04:20.2231991Z bison is already the newest version (2:3.8.2+dfsg-1ubuntu0.24.04.1).
+2026-11-04T08:04:20.2232864Z flex is already the newest version (2.6.4-8.2build1).
+2026-11-04T08:04:20.2233529Z The following NEW packages will be installed:
+2026-11-04T08:04:20.2242859Z   build-essential
+2026-11-04T08:04:20.2468337Z 0 upgraded, 1 newly installed, 0 to remove and 16 not upgraded.
+2026-11-04T08:04:20.2468798Z Need to get 4928 B of archives.
+2026-11-04T08:04:20.2469188Z After this operation, 17.4 kB of additional disk space will be used.
+2026-11-04T08:04:20.2469826Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-04T08:04:20.3642745Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1 [4928 B]
+2026-11-04T08:04:20.6433108Z Fetched 4928 B in 0s (37.7 kB/s)
+2026-11-04T08:04:20.6674603Z Selecting previously unselected package build-essential.
+2026-11-04T08:04:20.7013955Z (Reading database ... 
+2026-11-04T08:04:20.7014311Z (Reading database ... 5%
+2026-11-04T08:04:20.7014579Z (Reading database ... 10%
+2026-11-04T08:04:20.7014841Z (Reading database ... 15%
+2026-11-04T08:04:20.7015098Z (Reading database ... 20%
+2026-11-04T08:04:20.7015351Z (Reading database ... 25%
+2026-11-04T08:04:20.7015597Z (Reading database ... 30%
+2026-11-04T08:04:20.7016776Z (Reading database ... 35%
+2026-11-04T08:04:20.7017221Z (Reading database ... 40%
+2026-11-04T08:04:20.7017602Z (Reading database ... 45%
+2026-11-04T08:04:20.7017838Z (Reading database ... 50%
+2026-11-04T08:04:20.7066446Z (Reading database ... 55%
+2026-11-04T08:04:20.8787625Z (Reading database ... 60%
+2026-11-04T08:04:21.0339487Z (Reading database ... 65%
+2026-11-04T08:04:21.2733403Z (Reading database ... 70%
+2026-11-04T08:04:21.4822867Z (Reading database ... 75%
+2026-11-04T08:04:21.6240014Z (Reading database ... 80%
+2026-11-04T08:04:21.7813543Z (Reading database ... 85%
+2026-11-04T08:04:21.9248178Z (Reading database ... 90%
+2026-11-04T08:04:22.0947024Z (Reading database ... 95%
+2026-11-04T08:04:22.0947709Z (Reading database ... 100%
+2026-11-04T08:04:22.0948571Z (Reading database ... 215504 files and directories currently installed.)
+2026-11-04T08:04:22.0991281Z Preparing to unpack .../build-essential_12.10ubuntu1_amd64.deb ...
+2026-11-04T08:04:22.1016778Z Unpacking build-essential (12.10ubuntu1) ...
+2026-11-04T08:04:22.1435733Z Setting up build-essential (12.10ubuntu1) ...
+2026-11-04T08:04:22.8458968Z 
+2026-11-04T08:04:22.8459651Z Running kernel seems to be up-to-date.
+2026-11-04T08:04:22.8460035Z 
+2026-11-04T08:04:22.8460164Z No services need to be restarted.
+2026-11-04T08:04:22.8460399Z 
+2026-11-04T08:04:22.8460526Z No containers need to be restarted.
+2026-11-04T08:04:22.8460739Z 
+2026-11-04T08:04:22.8460887Z No user sessions are running outdated binaries.
+2026-11-04T08:04:22.8461141Z 
+2026-11-04T08:04:22.8461378Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-04T08:04:24.1043793Z postgresql-17.11.tar.bz2: OK
+2026-11-04T08:06:53.2449199Z ##[group]Run set -euo pipefail
+2026-11-04T08:06:53.2449540Z [36;1mset -euo pipefail[0m
+2026-11-04T08:06:53.2449799Z [36;1mbase="$RUNNER_TEMP/pg-pitr"[0m
+2026-11-04T08:06:53.2450151Z [36;1mpython3 -I -B -S tests/run_storage_postgres_pitr.py \[0m
+2026-11-04T08:06:53.2450565Z [36;1m  --pg-bin "$base/install/bin" --output "$base/lab"[0m
+2026-11-04T08:06:53.2470010Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:06:53.2470271Z ##[endgroup]
+2026-11-04T08:07:03.1825563Z {"targetPitrQualified": false, "coordinatedS3RecoveryQualified": false, "writerFenceQualified": false, "zeroAcknowledgedLossPolicyQualified": false, "rpoMeasured": false, "rtoMeasured": false, "releaseAdmitted": false, "runtimeAuthorityIssued": false, "targetOperations": 0, "gatesClosed": 0, "acceptanceTestsPassed": 0, "schema": "ouf.storage-postgres-physical-pitr-fixture.v1", "status": "NATIVE_SYNTHETIC_PHYSICAL_PITR_PASS", "postgresVersion": "17.11", "physicalBaseBackupVerified": true, "postBaseWalSegmentReplayed": true, "namedRecoveryTargetPaused": true, "targetName": "ouf_fixture_before_later_ack", "targetLsn": "0/40001F0", "observedReplayLsn": "0/40001F0", "targetWalSegment": "000000010000000000000004", "sourceSystemIdentifier": "7704224775691779526", "restoredSystemIdentifier": "7704224775691779526", "sameSystemIdentifierExpectedForPhysicalBackup": true, "separateDataDirectories": true, "sourceStoppedBeforeRestore": true, "basebackupFiles": 1270, "basebackupBytes": 46719237, "archivedFiles": 5, "archivedBytes": 67109195, "expectedRowsAtTarget": 2, "sourceRowsAfterTarget": 3, "deliberatelyExcludedPostTargetAcknowledgedRows": 1, "postTargetRowRetainedInSourceEvidence": true, "missingRequiredWalRejected": true, "negativePgCtlStartReturnCode": 0, "basebackupArchiveSha256": "55eee98b59dd43eb42389380e1cf3fe11054e738be1e1fc4d0c0f590dabf440d", "walArchiveSha256": "fab16a82fa45cb6f13b9f291b4b1533e8a5d600dbb5f6ff7c008564b96e4e658", "boundary": "Selected older synthetic point excludes a later acknowledged row deliberately. This is not zero-loss recovery, a production RPO policy or coordinated S3 recovery.", "allStartedProcessesStopped": true}
+2026-11-04T08:07:03.2006947Z ##[group]Run set -euo pipefail
+2026-11-04T08:07:03.2007307Z [36;1mset -euo pipefail[0m
+2026-11-04T08:07:03.2007567Z [36;1mbase="$RUNNER_TEMP/pg-pitr"[0m
+2026-11-04T08:07:03.2007923Z [36;1mmkdir -p "$base/build-evidence" "$base/lab/evidence"[0m
+2026-11-04T08:07:03.2008405Z [36;1msha256sum .github/workflows/storage-postgres-physical-pitr.yml \[0m
+2026-11-04T08:07:03.2009037Z [36;1m  tests/run_storage_postgres_pitr.py tests/storage_pitr_archive.py tests/test_storage_postgres_pitr.py \[0m
+2026-11-04T08:07:03.2009593Z [36;1m  tests/run_storage_postgres_fixture_native.py \[0m
+2026-11-04T08:07:03.2010055Z [36;1m  tools/storage_recovery/{coordinated,manifest,postgres_fixture,profile}.py \[0m
+2026-11-04T08:07:03.2010520Z [36;1m  profiles/seaweedfs-452-lab/profile.json \[0m
+2026-11-04T08:07:03.2010901Z [36;1m  > "$base/build-evidence/repository-source-sha256.txt"[0m
+2026-11-04T08:07:03.2011341Z [36;1mgit rev-parse HEAD > "$base/build-evidence/repository-commit.txt"[0m
+2026-11-04T08:07:03.2011746Z [36;1mcd "$base"[0m
+2026-11-04T08:07:03.2012183Z [36;1mfind build-evidence lab/evidence -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS[0m
+2026-11-04T08:07:03.2012748Z [36;1msha256sum --strict --check SHA256SUMS[0m
+2026-11-04T08:07:03.2035067Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:07:03.2035507Z ##[endgroup]
+2026-11-04T08:07:03.2242971Z build-evidence/binary-sha256.txt: OK
+2026-11-04T08:07:03.2243511Z build-evidence/configure.log: OK
+2026-11-04T08:07:03.2243948Z build-evidence/install.log: OK
+2026-11-04T08:07:03.2250154Z build-evidence/make.log: OK
+2026-11-04T08:07:03.2250518Z build-evidence/repository-commit.txt: OK
+2026-11-04T08:07:03.2250875Z build-evidence/repository-source-sha256.txt: OK
+2026-11-04T08:07:03.2251445Z build-evidence/source.sha256: OK
+2026-11-04T08:07:03.2251992Z lab/evidence/archive-events.jsonl: OK
+2026-11-04T08:07:03.2252493Z lab/evidence/backup-tool-identities.json: OK
+2026-11-04T08:07:03.2256813Z lab/evidence/basebackup-inventory.json: OK
+2026-11-04T08:07:03.2266861Z lab/evidence/basebackup.stderr: OK
+2026-11-04T08:07:03.2267379Z lab/evidence/basebackup.stdout: OK
+2026-11-04T08:07:03.2281083Z lab/evidence/basebackup.tar.gz: OK
+2026-11-04T08:07:03.2281631Z lab/evidence/enable-archiving.stderr: OK
+2026-11-04T08:07:03.2282175Z lab/evidence/enable-archiving.stdout: OK
+2026-11-04T08:07:03.2282724Z lab/evidence/expected-at-target.json: OK
+2026-11-04T08:07:03.2283223Z lab/evidence/missing-wal-process-status-01.stderr: OK
+2026-11-04T08:07:03.2283681Z lab/evidence/missing-wal-process-status-01.stdout: OK
+2026-11-04T08:07:03.2284127Z lab/evidence/missing-wal-process-status-02.stderr: OK
+2026-11-04T08:07:03.2284567Z lab/evidence/missing-wal-process-status-02.stdout: OK
+2026-11-04T08:07:03.2284978Z lab/evidence/missing-wal-start.stderr: OK
+2026-11-04T08:07:03.2285564Z lab/evidence/missing-wal-start.stdout: OK
+2026-11-04T08:07:03.2285940Z lab/evidence/missing-wal-wal-events.jsonl: OK
+2026-11-04T08:07:03.2286710Z lab/evidence/missing-wal/postgres.log: OK
+2026-11-04T08:07:03.2287269Z lab/evidence/pg_basebackup-version.stderr: OK
+2026-11-04T08:07:03.2287896Z lab/evidence/pg_basebackup-version.stdout: OK
+2026-11-04T08:07:03.2288495Z lab/evidence/pg_verifybackup-version.stderr: OK
+2026-11-04T08:07:03.2289119Z lab/evidence/pg_verifybackup-version.stdout: OK
+2026-11-04T08:07:03.2289704Z lab/evidence/pg_waldump-version.stderr: OK
+2026-11-04T08:07:03.2290254Z lab/evidence/pg_waldump-version.stdout: OK
+2026-11-04T08:07:03.2290779Z lab/evidence/receipt.json: OK
+2026-11-04T08:07:03.2291258Z lab/evidence/restored-at-target.json: OK
+2026-11-04T08:07:03.2291794Z lab/evidence/restored-start.stderr: OK
+2026-11-04T08:07:03.2292313Z lab/evidence/restored-start.stdout: OK
+2026-11-04T08:07:03.2292711Z lab/evidence/restored-wal-events.jsonl: OK
+2026-11-04T08:07:03.2293067Z lab/evidence/restored/postgres.log: OK
+2026-11-04T08:07:03.2293391Z lab/evidence/restored/sql-001.sql: OK
+2026-11-04T08:07:03.2293719Z lab/evidence/restored/sql-001.stderr: OK
+2026-11-04T08:07:03.2294263Z lab/evidence/restored/sql-001.stdout: OK
+2026-11-04T08:07:03.2294586Z lab/evidence/restored/sql-002.sql: OK
+2026-11-04T08:07:03.2294850Z lab/evidence/restored/sql-002.stderr: OK
+2026-11-04T08:07:03.2295119Z lab/evidence/restored/sql-002.stdout: OK
+2026-11-04T08:07:03.2295384Z lab/evidence/restored/sql-003.sql: OK
+2026-11-04T08:07:03.2295642Z lab/evidence/restored/sql-003.stderr: OK
+2026-11-04T08:07:03.2295908Z lab/evidence/restored/sql-003.stdout: OK
+2026-11-04T08:07:03.2296548Z lab/evidence/restored/sql-004.sql: OK
+2026-11-04T08:07:03.2296817Z lab/evidence/restored/sql-004.stderr: OK
+2026-11-04T08:07:03.2297087Z lab/evidence/restored/sql-004.stdout: OK
+2026-11-04T08:07:03.2297370Z lab/evidence/restored/sql-005.sql: OK
+2026-11-04T08:07:03.2297708Z lab/evidence/restored/sql-005.stderr: OK
+2026-11-04T08:07:03.2297984Z lab/evidence/restored/sql-005.stdout: OK
+2026-11-04T08:07:03.2298253Z lab/evidence/restored/stop.stderr: OK
+2026-11-04T08:07:03.2298512Z lab/evidence/restored/stop.stdout: OK
+2026-11-04T08:07:03.2298786Z lab/evidence/source-after-target.json: OK
+2026-11-04T08:07:03.2299085Z lab/evidence/source/binary-identities.json: OK
+2026-11-04T08:07:03.2299389Z lab/evidence/source/initdb.stderr: OK
+2026-11-04T08:07:03.2299650Z lab/evidence/source/initdb.stdout: OK
+2026-11-04T08:07:03.2299913Z lab/evidence/source/postgres.log: OK
+2026-11-04T08:07:03.2300170Z lab/evidence/source/sql-001.sql: OK
+2026-11-04T08:07:03.2300427Z lab/evidence/source/sql-001.stderr: OK
+2026-11-04T08:07:03.2300688Z lab/evidence/source/sql-001.stdout: OK
+2026-11-04T08:07:03.2300945Z lab/evidence/source/sql-002.sql: OK
+2026-11-04T08:07:03.2301195Z lab/evidence/source/sql-002.stderr: OK
+2026-11-04T08:07:03.2301466Z lab/evidence/source/sql-002.stdout: OK
+2026-11-04T08:07:03.2301721Z lab/evidence/source/sql-003.sql: OK
+2026-11-04T08:07:03.2301982Z lab/evidence/source/sql-003.stderr: OK
+2026-11-04T08:07:03.2302237Z lab/evidence/source/sql-003.stdout: OK
+2026-11-04T08:07:03.2302489Z lab/evidence/source/sql-004.sql: OK
+2026-11-04T08:07:03.2302739Z lab/evidence/source/sql-004.stderr: OK
+2026-11-04T08:07:03.2302995Z lab/evidence/source/sql-004.stdout: OK
+2026-11-04T08:07:03.2303248Z lab/evidence/source/sql-005.sql: OK
+2026-11-04T08:07:03.2303543Z lab/evidence/source/sql-005.stderr: OK
+2026-11-04T08:07:03.2303795Z lab/evidence/source/sql-005.stdout: OK
+2026-11-04T08:07:03.2304050Z lab/evidence/source/sql-006.sql: OK
+2026-11-04T08:07:03.2304303Z lab/evidence/source/sql-006.stderr: OK
+2026-11-04T08:07:03.2304571Z lab/evidence/source/sql-006.stdout: OK
+2026-11-04T08:07:03.2305055Z lab/evidence/source/sql-007.sql: OK
+2026-11-04T08:07:03.2305492Z lab/evidence/source/sql-007.stderr: OK
+2026-11-04T08:07:03.2305890Z lab/evidence/source/sql-007.stdout: OK
+2026-11-04T08:07:03.2306605Z lab/evidence/source/sql-008.sql: OK
+2026-11-04T08:07:03.2307367Z lab/evidence/source/sql-008.stderr: OK
+2026-11-04T08:07:03.2307833Z lab/evidence/source/sql-008.stdout: OK
+2026-11-04T08:07:03.2308290Z lab/evidence/source/sql-009.sql: OK
+2026-11-04T08:07:03.2308739Z lab/evidence/source/sql-009.stderr: OK
+2026-11-04T08:07:03.2309195Z lab/evidence/source/sql-009.stdout: OK
+2026-11-04T08:07:03.2309648Z lab/evidence/source/sql-010.sql: OK
+2026-11-04T08:07:03.2310308Z lab/evidence/source/sql-010.stderr: OK
+2026-11-04T08:07:03.2310727Z lab/evidence/source/sql-010.stdout: OK
+2026-11-04T08:07:03.2310990Z lab/evidence/source/sql-011.sql: OK
+2026-11-04T08:07:03.2311241Z lab/evidence/source/sql-011.stderr: OK
+2026-11-04T08:07:03.2311501Z lab/evidence/source/sql-011.stdout: OK
+2026-11-04T08:07:03.2311751Z lab/evidence/source/sql-012.sql: OK
+2026-11-04T08:07:03.2311999Z lab/evidence/source/sql-012.stderr: OK
+2026-11-04T08:07:03.2312254Z lab/evidence/source/sql-012.stdout: OK
+2026-11-04T08:07:03.2312510Z lab/evidence/source/stop.stderr: OK
+2026-11-04T08:07:03.2312775Z lab/evidence/source/stop.stdout: OK
+2026-11-04T08:07:03.2313038Z lab/evidence/verifybackup.stderr: OK
+2026-11-04T08:07:03.2313300Z lab/evidence/verifybackup.stdout: OK
+2026-11-04T08:07:03.2313746Z lab/evidence/wal-archive-inventory.json: OK
+2026-11-04T08:07:03.2314051Z lab/evidence/wal-archive.tar.gz: OK
+2026-11-04T08:07:03.2444687Z ##[group]Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+2026-11-04T08:07:03.2445146Z with:
+2026-11-04T08:07:03.2445415Z   subject-path: /home/runner/work/_temp/pg-pitr/SHA256SUMS
+2026-11-04T08:07:03.2445749Z   push-to-registry: false
+2026-11-04T08:07:03.2446289Z   show-summary: true
+2026-11-04T08:07:03.2448757Z   github-token: ***
+2026-11-04T08:07:03.2448975Z ##[endgroup]
+2026-11-04T08:07:03.2511287Z ##[start-action display=Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01;id=__actions_attest-build-provenance.generate-build-provenance-predicate]
+2026-11-04T08:07:03.2546945Z ##[group]Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01
+2026-11-04T08:07:03.2547443Z ##[endgroup]
+2026-11-04T08:07:03.7334577Z ##[end-action id=__actions_attest-build-provenance.generate-build-provenance-predicate;outcome=success;conclusion=success;duration_ms=482]
+2026-11-04T08:07:03.7340430Z ##[start-action display=Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc;id=__actions_attest-build-provenance.attest]
+2026-11-04T08:07:03.7378156Z ##[group]Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc
+2026-11-04T08:07:03.7378518Z with:
+2026-11-04T08:07:03.7378785Z   subject-path: /home/runner/work/_temp/pg-pitr/SHA256SUMS
+2026-11-04T08:07:03.7379190Z   predicate-type: https://slsa.dev/provenance/v1
+2026-11-04T08:07:03.7382595Z   predicate: {"buildDefinition":{"buildType":"https://actions.github.io/buildtypes/workflow/v1","externalParameters":{"workflow":{"ref":"refs/heads/feat/m2-discovery-complete-profile-20261029","repository":"https://github.com/GioNob/ouf-deploy","path":".github/workflows/storage-postgres-physical-pitr.yml"}},"internalParameters":{"github":{"event_name":"push","repository_id":"1409074354","repository_owner_id":"96419716","runner_environment":"github-hosted"}},"resolvedDependencies":[{"uri":"git+https://github.com/GioNob/ouf-deploy@refs/heads/feat/m2-discovery-complete-profile-20261029","digest":{"gitCommit":"9fbe9ef71ba296523e904686d7409b4c9150209f"}}]},"runDetails":{"builder":{"id":"https://github.com/GioNob/ouf-deploy/.github/workflows/storage-postgres-physical-pitr.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"},"metadata":{"invocationId":"https://github.com/GioNob/ouf-deploy/actions/runs/41796664103/attempts/1"}}}
+2026-11-04T08:07:03.7386158Z   push-to-registry: false
+2026-11-04T08:07:03.7386441Z   show-summary: true
+2026-11-04T08:07:03.7389005Z   github-token: ***
+2026-11-04T08:07:03.7389235Z ##[endgroup]
+2026-11-04T08:07:05.1650042Z Attestation created for SHA256SUMS@sha256:a70807d0cd1d93b96c7642100c4967f2d463bf1f383b72f51578169164e65133
+2026-11-04T08:07:05.1652202Z ##[group][36mAttestation signed using certificate from Public Good Sigstore instance[39m
+2026-11-04T08:07:05.1653509Z -----BEGIN CERTIFICATE-----
+2026-11-04T08:07:05.1654278Z MIIIPTCCB8OgAwIBAgIUTqqLlRRg6PL8lyY197fcmFLVUoYwCgYIKoZIzj0EAwMw
+2026-11-04T08:07:05.1655318Z NzEVMBMGA1UEChMMc2lnc3RvcmUuZGV2MR4wHAYDVQQDExVzaWdzdG9yZS1pbnRl
+2026-11-04T08:07:05.1656685Z cm1lZGlhdGUwHhcNMjYxMTA0MDgwNzA0WhcNMjYxMTA0MDgxNzA0WjAAMFkwEwYH
+2026-11-04T08:07:05.1657981Z KoZIzj0CAQYIKoZIzj0DAQcDQgAEE6RGkJzXHvdfQMrhJkzSHUacSX8Yp1/N8bYN
+2026-11-04T08:07:05.1659149Z lKwYWngg2xxF4VMgSy5abGlwEVub5wqVIMAfXHXxWSWh0Cy2saOCBuIwggbeMA4G
+2026-11-04T08:07:05.1660977Z A1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSMEGDAWgBTf
+2026-11-04T08:07:05.1662403Z 0+nPViQRlvmo2OkoVaLGLhhkPzCBoQYDVR0RAQH/BIGWMIGThoGQaHR0cHM6Ly9n
+2026-11-04T08:07:05.1663624Z aXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95Ly5naXRodWIvd29ya2Zsb3dzL3N0
+2026-11-04T08:07:05.1664445Z b3JhZ2UtcG9zdGdyZXMtcGh5c2ljYWwtcGl0ci55bWxAcmVmcy9oZWFkcy9mZWF0
+2026-11-04T08:07:05.1665237Z L20yLWRpc2NvdmVyeS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MDkGCisGAQQB
+2026-11-04T08:07:05.1666613Z g78wAQEEK2h0dHBzOi8vdG9rZW4uYWN0aW9ucy5naXRodWJ1c2VyY29udGVudC5j
+2026-11-04T08:07:05.1667560Z b20wEgYKKwYBBAGDvzABAgQEcHVzaDA2BgorBgEEAYO/MAEDBCg5ZmJlOWVmNzFi
+2026-11-04T08:07:05.1668893Z YTI5NjUyM2U5MDQ2ODZkNzQwOWI0YzkxNTAyMDlmMEUGCisGAQQBg78wAQQEN1N0
+2026-11-04T08:07:05.1669948Z b3JhZ2UgbmF0aXZlIFBvc3RncmVTUUwgcGh5c2ljYWwgV0FMIHJlY292ZXJ5IGZp
+2026-11-04T08:07:05.1670875Z eHR1cmUwHwYKKwYBBAGDvzABBQQRR2lvTm9iL291Zi1kZXBsb3kwRAYKKwYBBAGD
+2026-11-04T08:07:05.1671820Z vzABBgQ2cmVmcy9oZWFkcy9mZWF0L20yLWRpc2NvdmVyeS1jb21wbGV0ZS1wcm9m
+2026-11-04T08:07:05.1672795Z aWxlLTIwMjYxMDI5MDsGCisGAQQBg78wAQgELQwraHR0cHM6Ly90b2tlbi5hY3Rp
+2026-11-04T08:07:05.1673747Z b25zLmdpdGh1YnVzZXJjb250ZW50LmNvbTCBogYKKwYBBAGDvzABCQSBkwyBkGh0
+2026-11-04T08:07:05.1674721Z dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3VmLWRlcGxveS8uZ2l0aHViL3dvcmtm
+2026-11-04T08:07:05.1675743Z bG93cy9zdG9yYWdlLXBvc3RncmVzLXBoeXNpY2FsLXBpdHIueW1sQHJlZnMvaGVh
+2026-11-04T08:07:05.1676943Z ZHMvZmVhdC9tMi1kaXNjb3ZlcnktY29tcGxldGUtcHJvZmlsZS0yMDI2MTAyOTA4
+2026-11-04T08:07:05.1677791Z BgorBgEEAYO/MAEKBCoMKDlmYmU5ZWY3MWJhMjk2NTIzZTkwNDY4NmQ3NDA5YjRj
+2026-11-04T08:07:05.1678604Z OTE1MDIwOWYwHQYKKwYBBAGDvzABCwQPDA1naXRodWItaG9zdGVkMDQGCisGAQQB
+2026-11-04T08:07:05.1679428Z g78wAQwEJgwkaHR0cHM6Ly9naXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95MDgG
+2026-11-04T08:07:05.1680219Z CisGAQQBg78wAQ0EKgwoOWZiZTllZjcxYmEyOTY1MjNlOTA0Njg2ZDc0MDliNGM5
+2026-11-04T08:07:05.1680983Z MTUwMjA5ZjBGBgorBgEEAYO/MAEOBDgMNnJlZnMvaGVhZHMvZmVhdC9tMi1kaXNj
+2026-11-04T08:07:05.1681862Z b3ZlcnktY29tcGxldGUtcHJvZmlsZS0yMDI2MTAyOTAaBgorBgEEAYO/MAEPBAwM
+2026-11-04T08:07:05.1682787Z CjE0MDkwNzQzNTQwKQYKKwYBBAGDvzABEAQbDBlodHRwczovL2dpdGh1Yi5jb20v
+2026-11-04T08:07:05.1683657Z R2lvTm9iMBgGCisGAQQBg78wAREECgwIOTY0MTk3MTYwgaIGCisGAQQBg78wARIE
+2026-11-04T08:07:05.1684595Z gZMMgZBodHRwczovL2dpdGh1Yi5jb20vR2lvTm9iL291Zi1kZXBsb3kvLmdpdGh1
+2026-11-04T08:07:05.1685489Z Yi93b3JrZmxvd3Mvc3RvcmFnZS1wb3N0Z3Jlcy1waHlzaWNhbC1waXRyLnltbEBy
+2026-11-04T08:07:05.1686886Z ZWZzL2hlYWRzL2ZlYXQvbTItZGlzY292ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAy
+2026-11-04T08:07:05.1687787Z NjEwMjkwOAYKKwYBBAGDvzABEwQqDCg5ZmJlOWVmNzFiYTI5NjUyM2U5MDQ2ODZk
+2026-11-04T08:07:05.1688697Z NzQwOWI0YzkxNTAyMDlmMBQGCisGAQQBg78wARQEBgwEcHVzaDBYBgorBgEEAYO/
+2026-11-04T08:07:05.1689677Z MAEVBEoMSGh0dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3VmLWRlcGxveS9hY3Rp
+2026-11-04T08:07:05.1690590Z b25zL3J1bnMvNDE3OTY2NjQxMDMvYXR0ZW1wdHMvMTAWBgorBgEEAYO/MAEWBAgM
+2026-11-04T08:07:05.1692442Z BnB1YmxpYzB1BgorBgEEAYO/MAEYBGcMZXJlcG86R2lvTm9iQDk2NDE5NzE2L291
+2026-11-04T08:07:05.1693362Z Zi1kZXBsb3lAMTQwOTA3NDM1NDpyZWY6cmVmcy9oZWFkcy9mZWF0L20yLWRpc2Nv
+2026-11-04T08:07:05.1694277Z dmVyeS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MIGKBgorBgEEAdZ5AgQCBHwE
+2026-11-04T08:07:05.1695193Z egB4AHYA3T0wasbHETJjGR4cmWc3AqJKXrjePK3/h4pygC8p7o4AAAGhpZjpHgAA
+2026-11-04T08:07:05.1696190Z BAMARzBFAiEAwag81HGjcg/msQZWlrQ7CV9wXxhbMdkChL+U4yjpNNcCIHKbXOkf
+2026-11-04T08:07:05.1696942Z cF4h3gywImqbvTvdrPpMHQ48o6/nohHFtaNQMAoGCCqGSM49BAMDA2gAMGUCMQDA
+2026-11-04T08:07:05.1697942Z YmXk1xlKgYnbKMslmY/KbfqqUCWhh+BnPfnthhxq0vIe++y11L/ZBEMUycTD5f0C
+2026-11-04T08:07:05.1698732Z MFiyQ73jNcttrU6mwCHrKgEQEGDiMheDoewNb1x9Ll0e7ky5sgUAioKPhW+13KrY
+2026-11-04T08:07:05.1699416Z WQ==
+2026-11-04T08:07:05.1699758Z -----END CERTIFICATE-----
+2026-11-04T08:07:05.1700061Z 
+2026-11-04T08:07:05.1700519Z ##[endgroup]
+2026-11-04T08:07:05.1701200Z [36mAttestation signature uploaded to Rekor transparency log[39m
+2026-11-04T08:07:05.1701926Z https://search.sigstore.dev?logIndex=3687310469
+2026-11-04T08:07:05.1702563Z [36mAttestation uploaded to repository[39m
+2026-11-04T08:07:05.1703226Z https://github.com/GioNob/ouf-deploy/attestations/63481137
+2026-11-04T08:07:05.2272784Z ##[end-action id=__actions_attest-build-provenance.attest;outcome=success;conclusion=success;duration_ms=1493]
+2026-11-04T08:07:05.2345820Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-04T08:07:05.2346444Z with:
+2026-11-04T08:07:05.2346696Z   name: storage-postgres-physical-pitr-41796664103
+2026-11-04T08:07:05.2347387Z   path: /home/runner/work/_temp/pg-pitr/SHA256SUMS
+/home/runner/work/_temp/pg-pitr/build-evidence/
+/home/runner/work/_temp/pg-pitr/lab/evidence/
+
+2026-11-04T08:07:05.2348026Z   if-no-files-found: error
+2026-11-04T08:07:05.2348262Z   retention-days: 90
+2026-11-04T08:07:05.2348478Z   compression-level: 6
+2026-11-04T08:07:05.2348692Z   overwrite: false
+2026-11-04T08:07:05.2348904Z   include-hidden-files: false
+2026-11-04T08:07:05.2349144Z ##[endgroup]
+2026-11-04T08:07:05.4110991Z (node:11868) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T08:07:05.4111741Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T08:07:05.4351821Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-04T08:07:05.4354662Z The least common ancestor is /home/runner/work/_temp/pg-pitr. This will be the root directory of the artifact
+2026-11-04T08:07:05.4356108Z With the provided path, there will be 101 files uploaded
+2026-11-04T08:07:05.4361555Z Artifact name is valid!
+2026-11-04T08:07:05.4362342Z Root directory input is valid!
+2026-11-04T08:07:05.6484472Z Beginning upload of artifact content to blob storage
+2026-11-04T08:07:05.9647963Z (node:11868) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-04T08:07:06.2396958Z Uploaded bytes 5929849
+2026-11-04T08:07:06.2565699Z Finished uploading artifact content to blob storage!
+2026-11-04T08:07:06.2566873Z SHA256 digest of uploaded artifact zip is 87cd6063aa633d566892696c39c9a6b36ee31e06bad3569f88aec3904d395ab7
+2026-11-04T08:07:06.2568850Z Finalizing artifact upload
+2026-11-04T08:07:06.6776410Z Artifact storage-postgres-physical-pitr-41796664103.zip successfully finalized. Artifact ID 13305414053
+2026-11-04T08:07:06.6778243Z Artifact storage-postgres-physical-pitr-41796664103 has been successfully uploaded! Final size is 5929849 bytes. Artifact ID is 13305414053
+2026-11-04T08:07:06.6784552Z Artifact download URL: https://github.com/GioNob/ouf-deploy/actions/runs/41796664103/artifacts/13305414053
+2026-11-04T08:07:06.7018094Z Post job cleanup.
+2026-11-04T08:07:06.7951531Z [command]/usr/bin/git version
+2026-11-04T08:07:06.8033350Z git version 2.56.0
+2026-11-04T08:07:06.8075440Z Temporarily overriding HOME='/home/runner/work/_temp/64deea93-9eec-4bbe-8898-21e90d5a5399' before making global git config changes
+2026-11-04T08:07:06.8076924Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:07:06.8081862Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:07:06.8132297Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:07:06.8179580Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:07:06.8479125Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:07:06.8528443Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:07:06.8974294Z Cleaning up orphan processes
+2026-11-04T08:07:06.9348147Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01, actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc, actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

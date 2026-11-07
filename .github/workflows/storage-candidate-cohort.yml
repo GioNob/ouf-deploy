@@ -1,0 +1,94 @@
+name: Storage candidate cohort readback
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-candidate-cohort.yml
+      - scripts/verify-seaweedfs-452-cohort.py
+      - scripts/readback-seaweedfs-452-image.py
+      - scripts/qualify-seaweedfs-452-image.py
+      - tests/test_seaweedfs_452_cohort.py
+      - releases/seaweedfs-452-candidate-lock-20261103.json
+      - evidence/artifacts/seaweedfs-452-patch15-licence-delta.zip
+      - evidence/artifacts/storage-licences-native-41541625141.zip
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-candidate-cohort-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-exact-cohort:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Unit-test bounded archive handling
+        run: python3 -m unittest tests/test_seaweedfs_452_cohort.py -v
+
+      - name: Download exact producer and independent readback archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 600 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13224053625/zip \
+            --output seaweedfs-452-candidate-image.zip
+          curl --fail --location --silent --show-error \
+            --retry 3 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13225461651/zip \
+            --output seaweedfs-452-independent-readback.zip
+
+      - name: Verify content, provenance and licence cohort
+        run: |
+          set -euo pipefail
+          python3 scripts/verify-seaweedfs-452-cohort.py \
+            --lock releases/seaweedfs-452-candidate-lock-20261103.json \
+            --candidate seaweedfs-452-candidate-image.zip \
+            --readback seaweedfs-452-independent-readback.zip \
+            --licence-delta evidence/artifacts/seaweedfs-452-patch15-licence-delta.zip \
+            --historical-licences evidence/artifacts/storage-licences-native-41541625141.zip \
+            --output seaweedfs-452-cohort-readback.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('seaweedfs-452-cohort-readback.json').read_bytes())
+          assert receipt['status'] == 'TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED'
+          assert receipt['cohortContent'] == 'VERIFIED'
+          assert receipt['durableImageCustody'] == 'OPEN'
+          assert receipt['licenceEvidence']['review'] == 'OPEN'
+          assert receipt['releaseAdmitted'] is False
+          assert receipt['runtimeAuthorityIssued'] is False
+          assert receipt['targetOperations'] == 0
+          PY
+
+      - name: Attest cohort receipt
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: seaweedfs-452-cohort-readback.json
+
+      - name: Retain bounded cohort receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: seaweedfs-452-cohort-readback-${{ github.run_id }}
+          path: seaweedfs-452-cohort-readback.json
+          if-no-files-found: error
+          retention-days: 90

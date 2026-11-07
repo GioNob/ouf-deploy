@@ -1,0 +1,207 @@
+{
+  "schema": "ouf.storage-cold-runtime-directories-operator.v1",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "currentMetadataOnly": true,
+    "currentProcessBindingsProven": false,
+    "exactFailureSiteProven": false,
+    "filesModified": 0,
+    "inputs": [
+      {
+        "bytes": 27538,
+        "failedRegularInputChecks": [],
+        "gid": 0,
+        "label": "v2-program",
+        "links": 1,
+        "mode": "0600",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": true,
+          "rootOwner": true,
+          "singleLink": true
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "REGULAR",
+        "uid": 0
+      },
+      {
+        "bytes": 7513,
+        "failedRegularInputChecks": [],
+        "gid": 0,
+        "label": "base-input",
+        "links": 1,
+        "mode": "0600",
+        "privateModeSatisfied": true,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": true,
+          "rootOwner": true,
+          "singleLink": true
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "REGULAR",
+        "uid": 0
+      },
+      {
+        "bytes": 60,
+        "failedRegularInputChecks": [
+          "regularFile",
+          "singleLink"
+        ],
+        "gid": 10003,
+        "label": "reviewed-run-source",
+        "links": 2,
+        "mode": "0750",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": false,
+          "rootOwner": true,
+          "singleLink": false
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "DIRECTORY",
+        "uid": 0,
+        "roles": [
+          "onboarding"
+        ],
+        "sourcePathSha256": "13bde9e56266f9f67359e1383fee1b4c84b37d862b944dbb2d445852f88ef0ee"
+      },
+      {
+        "bytes": 60,
+        "failedRegularInputChecks": [
+          "regularFile",
+          "singleLink"
+        ],
+        "gid": 10004,
+        "label": "reviewed-run-source",
+        "links": 2,
+        "mode": "0750",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": false,
+          "rootOwner": true,
+          "singleLink": false
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "DIRECTORY",
+        "uid": 0,
+        "roles": [
+          "udp",
+          "udp-evidence-read"
+        ],
+        "sourcePathSha256": "16b173b9dbb759105551bc609b4ec3f4afd6e81ef1057166dfa786cf206aa2a8"
+      },
+      {
+        "bytes": 60,
+        "failedRegularInputChecks": [
+          "regularFile",
+          "singleLink"
+        ],
+        "gid": 10001,
+        "label": "reviewed-run-source",
+        "links": 2,
+        "mode": "0750",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": false,
+          "rootOwner": true,
+          "singleLink": false
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "DIRECTORY",
+        "uid": 0,
+        "roles": [
+          "gateway-owner"
+        ],
+        "sourcePathSha256": "41372869507d2e5c524a29d0ab5f6ebeede966c49bd35074ff140dd90f7eb03f"
+      },
+      {
+        "bytes": 60,
+        "failedRegularInputChecks": [
+          "regularFile",
+          "singleLink"
+        ],
+        "gid": 10003,
+        "label": "reviewed-run-source",
+        "links": 2,
+        "mode": "0750",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": false,
+          "rootOwner": true,
+          "singleLink": false
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "DIRECTORY",
+        "uid": 0,
+        "roles": [
+          "onboarding"
+        ],
+        "sourcePathSha256": "630028add258dae74151a71fc4e08e655c8a022f28b8b17a72e55f670c0f5c45"
+      },
+      {
+        "bytes": 60,
+        "failedRegularInputChecks": [
+          "regularFile",
+          "singleLink"
+        ],
+        "gid": 10002,
+        "label": "reviewed-run-source",
+        "links": 2,
+        "mode": "0750",
+        "privateModeSatisfied": null,
+        "protectedAncestry": true,
+        "regularInputChecks": {
+          "nonemptyWithinLimit": true,
+          "notGroupOrOtherWritable": true,
+          "regularFile": false,
+          "rootOwner": true,
+          "singleLink": false
+        },
+        "status": "METADATA_OBSERVED",
+        "type": "DIRECTORY",
+        "uid": 0,
+        "roles": [
+          "ingestion",
+          "ingestion-evidence-read"
+        ],
+        "sourcePathSha256": "6e6edfffce47aea41d118170cfc2ec1d5cde443d2ece89c2c5d8b124671f5303"
+      }
+    ],
+    "inventoryFilesRead": 1,
+    "inventoryIsRetainedObservation": true,
+    "inventorySha256": "44dc112c351eea66ec85243826222f0c8c020f8f055b41b75c7b91ea8dc8d725",
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-cold-v2-metadata.v1",
+    "sourceBodiesRead": 0,
+    "status": "CURRENT_LOCAL_METADATA_OBSERVED"
+  },
+  "interpretation": {
+    "fiveSourcesAreDirectories": true,
+    "reportedRootCustodyAndAncestryCompatible": true,
+    "directoryLinkCountTwoNotAFileHardlinkFinding": true,
+    "directoryContentsObserved": false,
+    "producerV2FileOnlyAssumptionIncompatible": true
+  },
+  "acceptanceCreditAdded": 0
+}

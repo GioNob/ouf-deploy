@@ -1,0 +1,17 @@
+# github.com/jaegertracing/jaeger
+github.com/seaweedfs/seaweedfs/weed/query/engine
+github.com/seaweedfs/cockroachdb-parser/pkg/sql/sem/tree
+github.com/seaweedfs/cockroachdb-parser/pkg/sql/sessiondatapb
+github.com/seaweedfs/cockroachdb-parser/pkg/util/admission/admissionpb
+github.com/seaweedfs/cockroachdb-parser/pkg/util/tracing
+github.com/seaweedfs/cockroachdb-parser/pkg/util/tracing/tracingpb
+github.com/jaegertracing/jaeger/model/json
+
+# github.com/openzipkin/zipkin-go
+github.com/seaweedfs/seaweedfs/weed/query/engine
+github.com/seaweedfs/cockroachdb-parser/pkg/sql/sem/tree
+github.com/seaweedfs/cockroachdb-parser/pkg/sql/sessiondatapb
+github.com/seaweedfs/cockroachdb-parser/pkg/util/admission/admissionpb
+github.com/seaweedfs/cockroachdb-parser/pkg/util/tracing
+go.opentelemetry.io/otel/exporters/zipkin
+github.com/openzipkin/zipkin-go/model

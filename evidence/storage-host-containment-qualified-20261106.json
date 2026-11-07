@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.storage-host-containment-qualified.v1",
+  "status": "NATIVE_QUALIFIED_TARGET_PENDING",
+  "commit": "c742943800252099c56ac60ef448b712d9d007f3",
+  "runId": 42306614307,
+  "jobId": 128197445773,
+  "conclusion": "success",
+  "unitTestsPass": 3,
+  "nativeEvidence": "evidence/storage-host-containment-native-20261106.json",
+  "productionSha256": "6d5e41d71150c8e59394002473e6eee728981f540bad94a09fd633f493004004",
+  "productionBytes": 20994,
+  "earlierFailure": {
+    "runId": 42306145691,
+    "receipt": "evidence/storage-host-containment-native-first-failure-20261106.json",
+    "exactProviderErrorKnown": false,
+    "correction": "Bind unit cgroup v2 and inspect kernel populated state, including inactive units; do not infer empty from CLI errors."
+  },
+  "limits": [
+    "Ubuntu24 disposable runner, not target Debian13",
+    "Installer/bootstrap delivery not executed on VPS",
+    "No target host containment, Docker stop, capture or restore",
+    "No full writer census, application drain, common cut or runtime admission"
+  ],
+  "targetExecuted": false,
+  "acceptanceCreditAdded": 0
+}

@@ -1,0 +1,13 @@
+{
+  "profile": "race",
+  "counts": {
+    "pass_tests": 185,
+    "pass_packages": 3
+  },
+  "logSha256": "f4c2dcfdaa625cfeed8e4c3b76d27d321531c802bfb7e676327fc5ff5c89fd0b",
+  "terminalTestsSha256": "75b78befff533cc7d25da5b8ce7cc4e68ed580a25b348209ea51b1556f81022a",
+  "terminalPackagesSha256": "e61b223abd9c126c02a1c823464279533023377980e98566a40531cabd03dae0",
+  "environmentConditionalOutcomes": {},
+  "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+  "targetOperations": 0
+}

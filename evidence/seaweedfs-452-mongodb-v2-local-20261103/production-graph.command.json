@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "list",
+    "-mod=readonly",
+    "-deps",
+    "-json",
+    "./weed"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 1.9769935607910156
+}

@@ -1,0 +1,7 @@
+from pathlib import Path
+import subprocess,json,sys,hashlib
+S=Path(__file__).resolve().parent;E=S/'evidence';groups={'elastic':'DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE','rclone':'DOES_NOT_SUPPORT_ELASTIC_OR_RCLONE','kafka':'DOES_NOT_SUPPORT_KAFKA_NOTIFICATION_OR_REPLICATION','openbao':'DOES_NOT_SUPPORT_OPENBAO_OR_VAULT','vault':'DOES_NOT_SUPPORT_OPENBAO_OR_VAULT','gcs':'GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE','google_pub_sub':'GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE','googlecloud':'GOOGLE_UNSUPPORTED_USE_SEPARATELY_QUALIFIED_CANDIDATE'};facts=[]
+for tag,diag in list(groups.items())+[(','.join(groups),None)]:
+ n='denied-'+tag.replace(',','-');subprocess.run([sys.executable,str(S/'run_checks.py'),n,'build','-mod=readonly','-p','2','-tags='+tag,'-o','/dev/null','./weed'],check=True)
+ r=json.loads((E/(n+'.command.json')).read_text());err=(E/(n+'.stderr')).read_text();expected=[diag]if diag else sorted(set(groups.values()));assert r['exitCode']!=0 and all('OUF_STANDARD_PROFILE_'+v in err for v in expected),(tag,r,err);facts.append({'tags':tag,'expectedRejection':True,'exitCode':r['exitCode'],'diagnostics':['OUF_STANDARD_PROFILE_'+v for v in expected],'stderrSha256':hashlib.sha256((E/(n+'.stderr')).read_bytes()).hexdigest()})
+(E/'denied-tags-summary.json').write_text(json.dumps(facts,indent=2)+'\n');print('PASS: all9 negative tag builds rejected with exact profile diagnostic')

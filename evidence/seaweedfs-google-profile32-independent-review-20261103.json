@@ -1,0 +1,70 @@
+{
+  "status": "BOUNDED_SOURCE_PROFILE_REVIEW_ACCEPTED_NOT_IMAGE_QUALIFICATION",
+  "patchSha256": "2809f72e392571ef8fdd3f97a6ea229a39bf7b837b6d20c401531c22faa48990",
+  "binarySha256": "aa1ff7497f7a770abe84cbd23b792f3af299846839c1c628ef75dd366def9da2",
+  "binaryBytes": 193141948,
+  "compiledModulesBefore": 234,
+  "compiledModulesAfter": 219,
+  "productionPackagesBefore": 1740,
+  "productionPackagesAfter": 1534,
+  "removedModules": [
+    "cel.dev/expr",
+    "cloud.google.com/go/monitoring",
+    "cloud.google.com/go/pubsub",
+    "cloud.google.com/go/pubsub/v2",
+    "cloud.google.com/go/storage",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping",
+    "github.com/cncf/xds/go",
+    "github.com/envoyproxy/go-control-plane/envoy",
+    "github.com/envoyproxy/protoc-gen-validate",
+    "go.opencensus.io",
+    "go.opentelemetry.io/contrib/detectors/gcp",
+    "go.opentelemetry.io/otel/sdk",
+    "go.opentelemetry.io/otel/sdk/metric"
+  ],
+  "retainedModuleVersionAndH1Changes": [],
+  "fullReplayByteIdenticalFiles": 4563,
+  "focusedIndependent": {
+    "passTestEvents": 52,
+    "passPackages": 14,
+    "skippedTests": 0,
+    "failedTests": 0,
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "timeoutSeconds": 90,
+    "rawSha256": "b902deb8f1696f316ff9bfc5555feb1b8406b70133852af951d266f90e787f64"
+  },
+  "independentTidyDiff": {
+    "exitCode": 0,
+    "stdoutBytes": 0,
+    "stderrSha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+    "stderrIsTelemetryProcLimitationOnly": true
+  },
+  "boundaryReview": [
+    "GCS rejected before CredentialsVersion/file read, guarded builder/DNS and cache admission",
+    "Reload builds temporary map, rejected GCS does not replace map or evict cached clients",
+    "Filer rejects after configuration merge but before option writes, TLS providers, stores and goroutines; original TLS snapshot order unchanged",
+    "S3/Azure remote and sink implementation/test files (23) remain byte-identical to31",
+    "Direct Google provider stubs return errors, no false ACK, no callbacks",
+    "Native GCS tests replaced only where SDK behavior removed; retained pure parser/shared-error tests restored"
+  ],
+  "broadSuite": {
+    "status": "FAIL_PRESERVED",
+    "passEvents": 1764,
+    "skipTests": 7,
+    "failedEvents": 10,
+    "sameFailedTestNamesOnUnmodified31": true,
+    "observedReason": "Sandbox AF_UNIX socket operation not permitted",
+    "reviewerRepeatedBroadSuite": false
+  },
+  "rootGraphEradicationClaimed": false,
+  "allDependenciesMaintainedClaimed": false,
+  "newHostedImageRuntimeQualified": false,
+  "targetFeatureBinding": "OPEN",
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "releaseAdmitted": false
+}

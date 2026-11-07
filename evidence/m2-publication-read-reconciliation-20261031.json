@@ -1,0 +1,126 @@
+{
+  "schema": "ouf.m2-publication-read-reconciliation.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "sourceCommit": "27717b20a26d12a4191c65fe67539c4ec9d1abae",
+  "status": "QUALIFIED_463_PROTOCOL_TESTS_54_SUITES_ALL_THREE_NATIVE_MODES_IAM_AND_ACTUAL_PENDING_READ",
+  "controlledPreFix": {
+    "tests": 7,
+    "errors": 3,
+    "reason": "Complete LEASE_UPDATING/leaseAuthorized=false snapshot and a pending final journal read were denied immediately instead of using the already bounded read reconciliation."
+  },
+  "local": {
+    "startAndObservationTests": 16,
+    "seconds": 6.367,
+    "failures": 0,
+    "skips": 0,
+    "ciDiagnosticHelperTests": 4,
+    "ciDiagnosticSeconds": 0.448,
+    "ciDiagnosticFailures": 0
+  },
+  "bounds": {
+    "readAttemptsOriginalAndCurrent": 3,
+    "singleDeadlinePreserved": true,
+    "defaultMaximumSecondsOriginalAndCurrent": 15,
+    "allowedMaximumSecondsRangeOriginalAndCurrent": [
+      1,
+      30
+    ],
+    "existingReadWaitsSeconds": [
+      0.02,
+      0.04
+    ],
+    "managerStartAttemptsAdded": 0,
+    "operationalRecoveryAttemptsAdded": 0,
+    "dnsOrKernelOrJournalWritesAdded": 0,
+    "authorityOrBudgetExtended": false
+  },
+  "classification": {
+    "requiresValidatedCurrentOwnedCoordinatorJournal": true,
+    "requiresSameApprovedKernelLockInodeAndExpectedSetKeys": true,
+    "onlyBusyState": "LEASE_UPDATING",
+    "onlyBusyLeaseAuthorized": false,
+    "reasonCode": "DISCOVERY_PUBLICATION_IN_PROGRESS",
+    "allThreeBusyOutcome": "UNKNOWN/READ_CONTENTION, no positive receipt",
+    "revokingQuiescingOrBlockedState": "Denied without retry",
+    "otherPublicationOrOwnershipDrift": "Denied without retry",
+    "positiveResultStillRequiresAllOriginalOwnershipMembershipGenerationManagerProcessAndAccountingChecks": true
+  },
+  "diagnosticSource": {
+    "sourceCommit": "1194b5d337bc4c47eebcd12f662fcb98a3dfdbd1",
+    "nativeRun": 41176415076,
+    "sealedJob": 124464789067,
+    "finiteJob": 124464789294,
+    "registryWorkerJob": 124464789300,
+    "allThreeSuccess": true,
+    "allFinalReportsRead": true,
+    "failedSnapshotCaptured": false,
+    "specific31bFailureCauseEstablished": false,
+    "newDiagnosticDoesNotAddReadsOrEffects": true
+  },
+  "currentCi": {
+    "protocolRun": 41176742954,
+    "protocolJob": 124465759690,
+    "nativeRun": 41176743013,
+    "sealedJob": 124465759882,
+    "registryWorkerJob": 124465760019,
+    "finiteJob": 124465760298,
+    "iamRun": 41176742864,
+    "iamJob": 124465759218,
+    "finalReportsRead": true,
+    "nativeConclusion": "success",
+    "nativeAllThreeFinalLogsRead": true,
+    "iamConclusion": "success",
+    "iamTests": 251,
+    "iamSuites": 33,
+    "iamSkips": 0,
+    "iamFinalLogRead": true,
+    "protocolConclusion": "success",
+    "protocolTests": 463,
+    "protocolSuites": 54,
+    "protocolSeconds": 837.574,
+    "protocolFailures": 0,
+    "protocolSkips": 0,
+    "protocolFinalLogRead": true
+  },
+  "privatePreparer": {
+    "originalQualifiedSource": "31b344e094e1f4e1a3e4c53de670a56ae942dbff",
+    "sourceAnd108ModuleClosureUnchanged": true,
+    "artifact13033046169ExactRebuildStillMatched": true,
+    "latestSourceOwnCiRun": 41176742879,
+    "latestSourceOwnCiJob": 124465758900,
+    "latestSourceOwnCiTests": 15,
+    "latestSourceOwnCiConclusion": "success",
+    "latestSourceOwnCiFinalLogRead": true,
+    "latestWrapperEvidence": "evidence/m2-private-review-assembly-20261031.json"
+  },
+  "historicalUnknownMcpWorkerAndSpecific31bCausesResolved": false,
+  "original37WorkerPinsChanged": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "budgetReset": false,
+  "automaticOperationalReplayAllowed": false,
+  "releaseAcceptance": false,
+  "actualNativeRead": {
+    "job": 124465760019,
+    "before": {
+      "state": "LEASE_READY",
+      "leaseAuthorized": true
+    },
+    "sets": {
+      "expectedKeyCount": 2,
+      "exactExpectedKeys": true,
+      "allFamiliesPositive": true
+    },
+    "after": {
+      "state": "LEASE_UPDATING",
+      "leaseAuthorized": false
+    },
+    "sameBoundedObserveCallReconciledToPositive": true,
+    "completeNativeRegistryTokenTransportAndWorkerReportPassed": true,
+    "secondManagerStartPerformed": false,
+    "iamRevocationReadbackDenialPassed": true,
+    "finalLogRead": true,
+    "historical31bSpecificCauseRetroactivelyEstablished": false
+  }
+}

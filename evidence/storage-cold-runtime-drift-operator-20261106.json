@@ -1,0 +1,225 @@
+{
+  "acceptanceCreditAdded": 0,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "bodiesExported": false,
+  "captureDirectoryPresent": false,
+  "claimSha256": "786b60aa3d5217b73120a277218d73d3e5edd138bc26b8ed1f66a8d741215ee9",
+  "comparisonIsCurrentNotSnapshotAtFailure": true,
+  "credentialBearingBodiesMayBeReadLocally": true,
+  "derivedPlanSha256": "0f71ecd23a6e929045c08144a4ce0b878c7a25c87ecaf4e4e50ccc85ee486ea1",
+  "filesWritten": 0,
+  "journal": {
+    "commandOutputFiles": 3,
+    "consistentWithPreMutationSourceHold": true,
+    "currentLiveContainerStateProven": false,
+    "intentReceipts": 0,
+    "phaseInference": "PRE_MUTATION_SOURCE_REVIEW",
+    "replyReceipts": 0,
+    "stoppedGroupReceipts": [],
+    "successResultPresent": false,
+    "unknownScopeEntries": 0,
+    "verifiedPolicyReceipts": 0
+  },
+  "legacyPlanSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f",
+  "proposalSha256": "62b2afd01e215f0da5719c3e22cda1d1c19d11747bc80e102d611b8af5ff5df5",
+  "providerRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeComparisons": [
+    {
+      "bodiesExported": false,
+      "changedEntries": [
+        {
+          "bodyHashEqual": null,
+          "changedFrameFields": [
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 0,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        },
+        {
+          "bodyHashEqual": false,
+          "changedFrameFields": [
+            "inode",
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 1,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        }
+      ],
+      "entriesBefore": 2,
+      "entriesNow": 2,
+      "entryNamesExported": false,
+      "fileBytesBefore": 1501,
+      "fileBytesNow": 1501,
+      "identityEqual": false,
+      "roles": [
+        "gateway-owner"
+      ],
+      "sourcePathSha256": "41372869507d2e5c524a29d0ab5f6ebeede966c49bd35074ff140dd90f7eb03f",
+      "status": "CURRENT_LOCAL_IDENTITY_COMPARED",
+      "xattrValuesExported": false
+    },
+    {
+      "bodiesExported": false,
+      "changedEntries": [
+        {
+          "bodyHashEqual": null,
+          "changedFrameFields": [
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 0,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        },
+        {
+          "bodyHashEqual": false,
+          "changedFrameFields": [
+            "inode",
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 1,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        }
+      ],
+      "entriesBefore": 2,
+      "entriesNow": 2,
+      "entryNamesExported": false,
+      "fileBytesBefore": 1630,
+      "fileBytesNow": 1630,
+      "identityEqual": false,
+      "roles": [
+        "ingestion",
+        "ingestion-evidence-read"
+      ],
+      "sourcePathSha256": "6e6edfffce47aea41d118170cfc2ec1d5cde443d2ece89c2c5d8b124671f5303",
+      "status": "CURRENT_LOCAL_IDENTITY_COMPARED",
+      "xattrValuesExported": false
+    },
+    {
+      "bodiesExported": false,
+      "changedEntries": [
+        {
+          "bodyHashEqual": null,
+          "changedFrameFields": [
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 0,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        },
+        {
+          "bodyHashEqual": false,
+          "changedFrameFields": [
+            "inode",
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 1,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        }
+      ],
+      "entriesBefore": 2,
+      "entriesNow": 2,
+      "entryNamesExported": false,
+      "fileBytesBefore": 1438,
+      "fileBytesNow": 1438,
+      "identityEqual": false,
+      "roles": [
+        "onboarding"
+      ],
+      "sourcePathSha256": "13bde9e56266f9f67359e1383fee1b4c84b37d862b944dbb2d445852f88ef0ee",
+      "status": "CURRENT_LOCAL_IDENTITY_COMPARED",
+      "xattrValuesExported": false
+    },
+    {
+      "bodiesExported": false,
+      "changedEntries": [
+        {
+          "bodyHashEqual": null,
+          "changedFrameFields": [
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 0,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        },
+        {
+          "bodyHashEqual": false,
+          "changedFrameFields": [
+            "inode",
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 1,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        }
+      ],
+      "entriesBefore": 2,
+      "entriesNow": 2,
+      "entryNamesExported": false,
+      "fileBytesBefore": 1434,
+      "fileBytesNow": 1434,
+      "identityEqual": false,
+      "roles": [
+        "onboarding"
+      ],
+      "sourcePathSha256": "630028add258dae74151a71fc4e08e655c8a022f28b8b17a72e55f670c0f5c45",
+      "status": "CURRENT_LOCAL_IDENTITY_COMPARED",
+      "xattrValuesExported": false
+    },
+    {
+      "bodiesExported": false,
+      "changedEntries": [
+        {
+          "bodyHashEqual": null,
+          "changedFrameFields": [
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 0,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        },
+        {
+          "bodyHashEqual": false,
+          "changedFrameFields": [
+            "inode",
+            "mtime_ns",
+            "ctime_ns"
+          ],
+          "entryOrdinal": 1,
+          "presence": "BOTH",
+          "xattrsEqual": true
+        }
+      ],
+      "entriesBefore": 2,
+      "entriesNow": 2,
+      "entryNamesExported": false,
+      "fileBytesBefore": 1435,
+      "fileBytesNow": 1435,
+      "identityEqual": false,
+      "roles": [
+        "udp",
+        "udp-evidence-read"
+      ],
+      "sourcePathSha256": "16b173b9dbb759105551bc609b4ec3f4afd6e81ef1057166dfa786cf206aa2a8",
+      "status": "CURRENT_LOCAL_IDENTITY_COMPARED",
+      "xattrValuesExported": false
+    }
+  ],
+  "schema": "ouf.storage-cold-runtime-drift-readback.v1",
+  "scopeConsumed": true,
+  "status": "LOCAL_HELD_JOURNAL_AND_RUNTIME_COMPARISON"
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "ouf.seaweedfs-452-s3-content-type-persistence-local.v1",
+  "status": "LOCAL_29_PATCH_SOURCE_AND_BINARY_PASS_NEW_OCI_QUALIFICATION_REQUIRED",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "basePatchCount": 28,
+  "patchCount": 29,
+  "patchPath": "patches/seaweedfs/4.52-s3-content-type-persistence.patch",
+  "patchSha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+  "previousPatch28Sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+  "regressions": {
+    "pass_tests": 6156,
+    "pass_packages": 21,
+    "skip_packages": 6,
+    "skip_tests": 5
+  },
+  "focused": {
+    "realS3HandlerCases": 7,
+    "filerWrapperCases": 12,
+    "status": "PASS",
+    "bodyAssertions": "Exact PUT versus GET bytes; HEAD and GET MIME after actual FilerStoreWrapper and protobuf persistence",
+    "network": "LOCAL_HTTP_AND_GRPC_FIXTURES_ONLY",
+    "requestContextSeconds": 10,
+    "testTimeoutSeconds": 120
+  },
+  "negativeControl": {
+    "productionGuardRemovedOnly": true,
+    "expectedExitCode": 1,
+    "failingSubcases": 11,
+    "failingParentTests": 2,
+    "nativeAndCustomAndTextAutodetectControls": "PASS"
+  },
+  "binary": {
+    "sha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "bytes": 223553930,
+    "goVersion": "go1.27.3",
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "flags": [
+      "-mod=readonly",
+      "-trimpath"
+    ],
+    "vcsRevision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "vcsTime": "2026-11-02T11:24:06Z",
+    "vcsModified": true,
+    "equalToOldCohort15": false
+  },
+  "dependencyParity": {
+    "status": "EXACT_ROOT_LOCKFILES_AND_PRODUCTION_GRAPH_AND_BINARY_MODULES_MATCH_PATCH28",
+    "rootLockfiles": {
+      "go.mod": "df02037391ef73d7ea70a03f4c00f68368adc04c480a0fe0bc4f50d0ff4e22e2",
+      "go.sum": "ec9efdd474b2ba274f3f7732ebc78de5082f9010b0dbbf85ecda3ebd48484b91"
+    },
+    "productionPackages": 1811,
+    "productionGraphSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "binaryDependencyModules": 262,
+    "binaryDependencyInventorySha256": "dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3",
+    "identicalBinaryDependencyRowsToPatch28": true,
+    "forbiddenBinaryDependencyModules": [],
+    "rootAllModuleListingReexecuted": false,
+    "rootAllModuleListingLimit": "Offline caches omit metadata for unused transitive modules; do not claim fresh go list -m all. Exact root lockfile parity with qualified patch28 is verified."
+  },
+  "evidence": {
+    "evidence/seaweedfs-452-content-type-local-20261103/baseline-negative-summary.json": {
+      "sha256": "58dca2b9b01e7d9c968e42e0685361b222b714599eeb0ed4ef57d288d7262985",
+      "bytes": 1195
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/baseline-negative.jsonl": {
+      "sha256": "5f93d9e29e93eb757ff8d2bbcf29a3f3489197c14bad8de035d1f5ff7d001fd5",
+      "bytes": 72322
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/binary-modules.txt": {
+      "sha256": "dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3",
+      "bytes": 24941
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/build-exact.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/build-exact.log.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/build-info.txt": {
+      "sha256": "3f98da38c4700dbf72d46bc882a8f0c92c35bbb4404eb1ca41a9b05a0dc27051",
+      "bytes": 25478
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/dependency-parity.json": {
+      "sha256": "aad04834e3195c5af24494ddd57aba149d01c62c21115f6c81a4f0ca34959b51",
+      "bytes": 873
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/focused.txt": {
+      "sha256": "4d59418645a1841ad3076e7b7edc59a467b02e11f62d9c767e3b9e082654f2d7",
+      "bytes": 4781
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/production-deps.txt": {
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+      "bytes": 74977
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/reapply.json": {
+      "sha256": "fea9d204a8a3151ef262aa9735806227a91fde848fde4bd2e9aeeb8e5e4a9868",
+      "bytes": 523
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/regression-counts.json": {
+      "sha256": "7e4264049e24545df3f6ab74b92966ff351a2b4ee421cd7e4104e262389c19ea",
+      "bytes": 89
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/regression-terminal-events.jsonl": {
+      "sha256": "9a0c716f0ebb2e445832e32f2db834f0b02d5885fc0e1eb5cb90d37ead69c287",
+      "bytes": 520962
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/regressions.jsonl.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-452-content-type-local-20261103/root-lockfiles-sha256.txt": {
+      "sha256": "d78785e00293918be9d3a83b49da93919c8d3f6a25f83227a225912918861366",
+      "bytes": 146
+    }
+  },
+  "limits": [
+    "Only regular PutObjectHandler to filer RPC then GetObjectHandler/HeadObjectHandler is exercised by the new integration fixture; multipart/copy/native HTTP are not newly claimed qualified.",
+    "S3 missing-header empty/binary bodies now retain octet-stream selected by PUT rather than falling back to a filename extension on reads.",
+    "Native filer entries without S3 metadata keep prior normalization; truly absent MIME remains absent.",
+    "Already-discarded MIME cannot be recovered from old records; no retroactive repair.",
+    "New binary changes runtime cohort: no inherited OCI15 digest, lock, runtime proof or qualification.",
+    "No local OCI container test; new producer/readback/runtime qualification pending."
+  ],
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "unpublishedFullRegressionLog": {
+    "pathRelativeToWorkspaceStage": "evidence/regressions.jsonl",
+    "sha256": "731302f8eb4f8f05e0af17c467ad8710d1ad39ac2bafac705b34a67f99526d7f",
+    "bytes": 7878633,
+    "retainedInWorkspace": true,
+    "includedInRepositoryProposal": false,
+    "originalParsedRows": 30943,
+    "terminalRows": 6188,
+    "originalCounts": {
+      "pass_tests": 6156,
+      "pass_packages": 21,
+      "skip_packages": 6,
+      "skip_tests": 5
+    }
+  },
+  "derivedRegressionTerminalEvents": {
+    "path": "evidence/seaweedfs-452-content-type-local-20261103/regression-terminal-events.jsonl",
+    "sha256": "9a0c716f0ebb2e445832e32f2db834f0b02d5885fc0e1eb5cb90d37ead69c287",
+    "bytes": 520962,
+    "status": "DERIVED_NOT_ORIGINAL_LOG",
+    "sourceSha256": "731302f8eb4f8f05e0af17c467ad8710d1ad39ac2bafac705b34a67f99526d7f",
+    "algorithm": "Parse every original JSONL row; retain ALL pass/skip/fail events in original order. Serialize compact JSON ASCII plus LF. Preserve Action as a, Package as dictionary index p, and Test as t when present; omit Time, Elapsed and other non-terminal fields.",
+    "fieldNames": {
+      "a": "Action",
+      "p": "Package dictionary index",
+      "t": "Test (absent for package terminal)"
+    },
+    "packageDictionary": {
+      "0": "github.com/seaweedfs/seaweedfs/weed/command",
+      "1": "github.com/seaweedfs/seaweedfs/weed/filer",
+      "2": "github.com/seaweedfs/seaweedfs/weed/iam",
+      "3": "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "4": "github.com/seaweedfs/seaweedfs/weed/iam/ldap",
+      "5": "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "6": "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "7": "github.com/seaweedfs/seaweedfs/weed/iam/providers",
+      "8": "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "9": "github.com/seaweedfs/seaweedfs/weed/iam/util",
+      "10": "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "11": "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "12": "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "13": "github.com/seaweedfs/seaweedfs/weed/kms",
+      "14": "github.com/seaweedfs/seaweedfs/weed/kms/aws",
+      "15": "github.com/seaweedfs/seaweedfs/weed/kms/gcp",
+      "16": "github.com/seaweedfs/seaweedfs/weed/kms/local",
+      "17": "github.com/seaweedfs/seaweedfs/weed/kms/openbao",
+      "18": "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs",
+      "19": "github.com/seaweedfs/seaweedfs/weed/remote_storage/s3",
+      "20": "github.com/seaweedfs/seaweedfs/weed/replication/sink/s3sink",
+      "21": "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "22": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "23": "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "24": "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "25": "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "26": "github.com/seaweedfs/seaweedfs/weed/storage/backend/s3_backend"
+    },
+    "terminalRows": 6188,
+    "countsVerifiedAgainstOriginal": true
+  }
+}

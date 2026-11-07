@@ -1,3 +1,242 @@
+# Stato corrente — corpus licenze qualificato; G1 ancora aperto
+
+[Licenze, sorgenti e prove](OUF_SEAWEEDFS_LICENCE_EVIDENCE_20261102.md): CI41541625141 e verifica indipendente41542075842 PASS. 245 componenti, 374 testi, 17 archivi sorgente MPL completi; 10 test, 709 checksum nativi e firma del workflow esatto verificati. Corpus completo conservato nel repository. Nessuna modifica a binario, immagine o SBOM originali. Tre UNKNOWN del classificatore di licenze, review degli obblighi, custodia dell'immagine e coorte restano OPEN. Rilevato anche AWS SDK Go v1.55.8 fuori supporto: dipendenza compilata da valutare, senza inventare una CVE o un percorso attivo.
+
+Avanzamento tecnico stimato **circa 33%**, con incertezza di circa 10 punti e metodo nel dossier; non accettazione. Tutti 8 gate / 21 AT / M2 OPEN, copia reale **0/120**. MinIO ancora in esercizio. Teatri/M1 conserva 8/8 tecniche e 6/6 funzionali; stessa Farmacie 61 righe / 10 OPEN / codice ministeriale STRING preservata. Controllo17 e52EngineGET invariati: nessun nuovo effetto target, upload/profiling, grant/reset/replay, merge o release acceptance. Prossimo lavoro pubblico: review dei rilievi licenze/lifecycle, custodia durevole dell'immagine e coorte; restano writer/DB/fence/backup/capacità target da provare.
+
+## Checkpoint precedenti — storico
+
+# Stato corrente — classificazione SW-G1 accettata, migrazione ancora aperta
+
+**Decisione owner recepita — 2 novembre 2026.** `OUF-SW-G1-20261102-01`: GO-2026-5932 classificato `not_affected / vulnerable_code_not_present` per il solo server SHA256 `bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74`. Rapporto grezzo conservato: 0HIGH/CRITICAL,1UNKNOWN. Dopo l'unica classificazione accettata: 0HIGH/CRITICAL/UNKNOWN irrisolti nell'insieme di eseguibili esaminato. Nessun ignore aggiunto; gate raw storico invariato. [CI41519037628](https://github.com/GioNob/ouf-deploy/actions/runs/41519037628) PASS: 9 test, advisory ufficiale fresco e provenienza originale autenticata nuovamente;28 sorgenti precedenti intatte. Documento OpenVEX emesso per il solo hash, decisione conversazionale registrata senza rivendicare firma HUMAN/THS. SW-G1 complessivo ancora OPEN per immagine/SBOM/licenze/custody/coorte. Tutti8gate/21AT/M2 OPEN; controllo17 consumato,52DockerGET cumulativi,0 nuovi effetti target. Teatri/M1 8/8tecniche,6/6funzionali e stessaFarmacie preservati.
+
+[Decisione, prove e vincoli](OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md).
+
+## Checkpoint precedenti — storico
+
+# Stato corrente — 2 novembre 2026, ricevuta17 e core di copia qualificato
+
+1. **SW-WP0 / G0 — inventario e piano privato acquisiti, gate aperto.** Controllo 17 consumato: 4 artifact metadata / 93238 byte letti; 0 nuovi Docker GET, S3, SQL, credenziali o corpi. Totali 17 controlli / 52 Docker GET. Piano privato SHA256 `debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501`: 120 record / 203743 byte, tutti PLANNED_NOT_COPIED. 110 hash dichiarati, 10 assenti; 120 corpi reali ancora da verificare.
+2. **SW-WP1 / G1 — sicurezza ancora HELD.** Candidato corretto: zero HIGH/CRITICAL, un UNKNOWN grezzo GO-2026-5932. Proposta di applicabilità limitata al binario esatto, non ammessa; nessun ignore o VEX aggiunto. Immagine finale, licenze, custodia durevole e coorte restano da chiudere.
+3. **SW-WP2 / G2 e SW-WP6 / G6 — prove sintetiche precedenti conservate.** Adapter originali, TLS, prefissi, versioni/marker, multipart e recovery freddo qualificati in laboratorio; nessuna qualifica della topologia target.
+4. **SW-WP4 / G4 — core di copia sintetica qualificato.** Source `99a6d0f00dd1fe490438cef95ce98ee98e7c3ae4`, CI41504703184 PASS; 31 eventi di test passati, inclusi sotto-casi. Due processi SeaweedFS indipendenti sulla stessa VM: 120 corpi sintetici copiati e riletti, CAS concorrente, tre morti reali del processo, 503 dopo salvataggio riconciliato senza secondo PUT. Clock virtuale per Retry-After di un'ora e outage di sei ore. Verifica indipendente byte/sorgenti/firma OUF CI41507064288 PASS; 25 checksum e tutte le 28 sorgenti precedenti invariate. Non è una prova MinIO→SeaweedFS reale.
+5. **Passaggio target ancora non ammesso.** Due UNSUPPORTED = publicAccessBlock; non significano assenza. ACL PRESENT/configured0 non prova grant privati. Binding onboarding/udp/udp-evidence-read osservati al14: writer attivi, consumer esterni e DB non provati; snapshot coerente, backup, fence e capacità fresca ancora aperti. Nessun entrypoint di produzione per il core; nessuna nuova operazione VPS dopo17. Cinque vecchi comandi13–17 CONSUMATI: nessun replay, reset o cancellazione. Tutti gli 8 gate / 21 AT / M2 OPEN. Teatri/M1 conserva 8/8 tecniche e 6/6 funzionali, stessa Farmacie preservata. MinIO resta in uso e vulnerabile.
+
+[Core, prove e limiti](OUF_SEAWEEDFS_COPY_CORE_20261102.md) · [Proposta di review SW-G1](OUF_SEAWEEDFS_G1_APPLICABILITY_REVIEW_20261102.md). La proposta richiede una decisione sul criterio vigente, non concede autorità runtime né accettazione degli altri gate.
+
+---
+
+## Checkpoint precedenti — storico, non istruzioni da rieseguire
+
+> **Stato corrente — 2 novembre 2026:** inventario16 acquisito NON ADMITTED:2 bucket/120 record/203743 byte,265 richieste S3;16 controlli/52 GET Docker.110 hash dichiarati/10 assenti;verifica corpi ancora per tutti120.2 risposte feature UNSUPPORTED da classificare dal manifest privato,nessuna assenza/N/A inventata. Quattro vecchi comandi consumati. [Unico nuovo blocco: piano offline qualificato](OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md), controllo17 NON eseguito:4artifact trattenuti,0 nuovi Docker/S3/SQL/credenziali/corpi,52 GET invariati. Piano privato PLANNED_NOT_COPIED,nessun motore copia o autorità.33 test root/rete isolata e firma/byte indipendenti PASS (CI41488131645/41488523185). Snapshot13/RAM/capacità del14 non rinfrescati,writer/DB ancora da provare. Nessuna migrazione;MinIO vulnerabile,server rawHELD1UNKNOWN,8gate/21AT/M2 OPEN. Teatri/M1 8/8tecniche,6/6funzionali e stessaFarmacie preservati. Storico sotto.
+
+> **Stato corrente — 2 novembre 2026:** ricevuta15 consumata:15 controlli/50 GET Docker,0 file/0 byte credenziali,5 candidati metadata; S3 non raggiunto. Il predicato fallito resta non provato. [Unico nuovo blocco qualificato](OUF_SEAWEEDFS_INPUT_OBSERVATION_20261102.md): controllo16 distinto NON eseguito, max2 GET SOLO MinIO/max52 cumulativi, snapshot14 e SDK invariati. Classifica tutti i candidati prima del contenuto; legge soltanto input dichiarati regolari/bounded/stabili senza symlink, senza cambiare permessi/proprietario e senza ammettere custody della fonte. Casi reali mode0644/UID10001/hardlink e oversize PASS;20 Python/12 Java, CI41446908345 e verifica indipendente41447457400. Tre vecchi comandi consumati: nessun replay/reset/cancellazione. Nessuna migrazione, vulnerabilità MinIO ancora presenti,8 gate/21 AT/M2 OPEN;Teatri/stessaFarmacie preservati. I checkpoint seguenti sono storici.
+
+> **Inventario SeaweedFS — continuazione credenziali qualificata:** scope14 consumato con STOP riferimenti,14controlli/49GET; snapshot13container e capacità salvati, S3 non raggiunto. [Nuovo unico blocco VPS](OUF_SEAWEEDFS_CREDENTIAL_CONTINUATION_20261102.md): scope15 distinto ancora NON eseguito,max2GET/fino51cumulativi, riusa14snapshot e SDK invariato. Parser file/ENV verificato con Docker reale,28Python/12Java e firma/byte indipendenti (CI41429406938/41430471681). Non ripetere vecchi comandi. Tutti gate OPEN, nessuna migrazione; Teatri/stessaFarmacie preservati. Storico sotto.
+
+> **Inventario SeaweedFS — correzione pronta, 2 novembre:** scope13 consumato con STOP selezione,13controlli/36GET. Errore del filtro `/ouf-`, non prova di assenza dati. Correzione a13ID hash-bound qualificata con Docker reale (CI41406925881) e firma/byte indipendenti (CI41407543627). [Unica azione correttiva VPS](OUF_SEAWEEDFS_INVENTORY_RECONCILIATION_20261102.md): scope14 distinto ancora da eseguire, max13nuoviGET/fino49cumulativi, reader precedente e vecchi scope conservati. Non rilanciare vecchio comando. Gate tutti OPEN, nessuna migrazione, Teatri/stessaFarmacie preservati. I checkpoint seguenti sono storici.
+
+> **Checkpoint esecuzione 2 novembre — SeaweedFS:** laboratorio qualificato su source6cddeee7:24Python/7Go/12Java,1010record sintetici; TLS/policy/versioni/marker/Unicode/multipart e recovery dati+filer PASS. Firma e provenienza verificate indipendentemente; consegna21file riletta byte per byte. [Unica rilevazione VPS pronta](OUF_SEAWEEDFS_PRIVATE_BASELINE_20261102.md), richiede esecuzione owner perché l'agente non ha shell VPS. Nessuna operazione target ancora svolta. Rawgate server HELD1UNKNOWN;8gate/21AT/M2 OPEN. Scope12/35GET, Teatri e stessa Farmacie invariati. [Handoff](handoffs/OUF_SEAWEEDFS_IMPLEMENTATION_20261102.md). I checkpoint seguenti sono storici.
+
+> **Checkpoint 2 novembre — piano MinIO → SeaweedFS:** [MiniPET dedicato](OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md), [registro](../releases/minio-seaweedfs-plan-20261102.json). Direzione richiesta dall'owner: pianificare la sostituzione preservando dati e resilienza. Otto WP/gate e21AT OPEN; qualifica, adeguamenti client/provisioner, migrazione con hash integrali, backup dati+filer, fence e ritorno governato. Nessuna migrazione eseguita, nessun fallback automatico al MinIO vulnerabile. Teatri e stessa Farmacie preservati; M2 resta OPEN. Superata l'attesa di una scelta generica di prodotto; checkpoint precedenti storici.
+
+> **Checkpoint 1 novembre — scelta storage necessaria:** [handoff](handoffs/OUF_M2_STORAGE_SECURITY_DECISION_20261101.md). Nuovo candidato Gateway17439fed: risolti5HIGH/2CRITICAL, scan zeroHIGH/CRITICAL/UNKNOWN e publisher verificato;230blob e due immagini riletti. Semantic corretto preservato. MinIO esatto recuperato da copia NON fidata,9CRITICAL/127HIGH/8UNKNOWN,HELD. Upstream non mantenuto; [proposta owner](decisions/OUF_M2_OBJECT_STORAGE_DIRECTION_20261101.md) tra AIStor con licenza adeguata e backend S3 mantenuto/open source. Nessuna scelta o migrazione automatica; scope12 consumato,12controlli/35GET. M1/Teatri e stessa Farmacie preservati, M2 OPEN.
+
+> **Checkpoint 1 novembre — correzione HIGH qualificata nel candidato:** [handoff corrente](handoffs/OUF_M2_SEMANTIC_HIGH_REMEDIATION_20261101.md). Candidato esatto c2dae77b: tutti e tre i pacchetti nelle versioni corrette, entrambi i CVE assenti; zero HIGH/CRITICAL/UNKNOWN, 53 MEDIUM e 4 LOW. Scansione41351198866 e verifica indipendente del publisher41351447269 PASS. Immagine installata ancora HELD: sostituzione non applicata. Coorte/pacchetto/review/authority e origini Gateway-owner/MinIO restano aperti. Scope12 consumato, 12 controlli/35 GET immutati. Teatri e stessa Farmacie preservati; M2 OPEN. Checkpoint precedenti storici.
+
+> **Checkpoint 1 novembre — provenienza e scansione reali:** [handoff corrente](handoffs/OUF_M2_RUNTIME_PROVENANCE_RECONCILIATION_20261101.md). Semantic originaleeccef11a/config29e32c14/envelopeb61bc39c collegato al pacchetto firmato;198Gitblob/mode e7membri verificati. Scansione reale3HIGH/56MEDIUM/38LOW, gateHELD. Due origini residueGateway-owner/MinIO; coorte/custody/authority/M2 restano aperti. Scope12consumato,12controlli/35GET immutati. Nessun nuovo comando VPS richiesto,nessun replay. Teatri e stessa Farmacie preservati. I precedenti checkpoint restano storici.
+
+# CURRENT — Origini runtime COLLEGATE; comando consumato, ricomposizione autonoma
+
+1 novembre 2026, Europe/Rome. [Ricevuta target](../evidence/m2-runtime-origin-join-target-20261101.json),
+RuntimeOriginJoinExit=0, risultato ca16c7e3, prova privata8cf9a9ba. Tutti13ruoli
+collegati alla prova bytec52a/risultato039f;10config pubbliche e4manifesti vendor
+corrispondenti,3config aperte/31.025byte metadata,11scope precedenti preservati.
+Scope12 CONSUMATO: totale12controlli/35GET. NON rilanciare origine/byte-verifica/
+diagnosi/cattura o vecchi comandi. Zero Engine/layer/rehash/espansione/registry/
+filemount/filecredenziali/SQL/OAuth/import/lifecycle aggiuntivi; nessun reset/grant/
+authority. Publisher/membership/custody/configurazione/liveness/accettazione false.
+
+Nuove identità esatte per il lavoro PUBBLICO:
+Gateway-owner configf983b5a8/manifesto5675785b, MinIO config69b2ec20/manifestoa1a8bd4a,
+Semantic config29e32c14/manifestob61bc39c. Label source assenti; le dichiarazioni
+restano non autenticate. config29e32c14 compare già nella qualifica storica
+Semantic eccef11a: verificare gli originali, non inferire source dal solo tag.
+NEXT autonomo: collegare gli artifact originali/source/publisher/scan e completare
+il profilo di provenienza; nessun nuovo comando VPS richiesto in questo checkpoint.
+[Handoff della consegna consumata](handoffs/OUF_M2_RUNTIME_ORIGIN_JOIN_20261101.md). Tutti235/19/17/21sorgenti precedenti e
+23del lettore origine preservati. Non accumulare microdiagnostiche o riesportare.
+
+PET originali disponibili in docs/baseline/v1.7/package; gerarchia/ownership,
+release/operational gate e supply-chain consultati. Teatri SEMPRE: handoffM1 e
+auditM2, tecnico8/8,funzionale6/6 acquisiti,26join/13identità/20proprietà/8Cinema;
+riuso owner/provenance/identity/property/recovery. Stessa Farmacie61righe/10OPEN/
+ministerialeSTRING preservata; nessun upload/profiling/acquisizione aggiuntiva.
+M2/G5/G6/G7/dueclient OPEN. Nessun subagente, automazione, merge o release acceptance.
+Header/comandi seguenti STORICI.
+
+# CURRENT — Due STOP consumati; diagnosi struttura immagini QUALIFICATA, input VPS necessario
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_GRAPH_DIAGNOSTIC_20261101.md), [qualifica](../evidence/m2-image-graph-delivery-qualified-20261101.json),
+[STOP9/8bec8301](../evidence/m2-image-byte-reconciliation-target-stop-20261101.json), ImageByteReconciliationExit=1. Totale9controlli/35GET;
+13archivi originali conservati. Entrambi i verificatori e la cattura CONSUMATI:
+NON rilanciare alcun vecchio comando. Empty/data corretto ma insufficiente sul
+VPS; la ragione pubblica non identifica il blob mancante. Causa privata OPEN.
+
+Nuova DIAGNOSI strutturale, non replay della verifica né skip/accettazione blob.
+Source5fe74816/19moduli; capsulaaf237a7e/480c97e5/271.453byte;
+launcher71a1d671/SHA36037795. Push41332434946 e PR41332441062 SUCCESS:
+ciascuno28test/6suite, zero failure/error/skip/ResourceWarning; tutti sei log letti.
+Include13exportDocker29.8.1 e fixturevendorREALE busybox1.37.0: export originale
+riproduce exactSTOP,8manifestaltrepiattaforme+7auxassenti e1runtimeclassic/OCI
+presente. Prova di formato, non causa VPS. Nuovo HTTPS esatto qualificato;
+ZIP/publisher/statement/source confrontati. Tutti235sorgenti congelati e17verifica
+precedente invariati; capsule vecchie preservate.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, UNA VOLTA. Diagnostica
+9scope/2STOP/profili esatti; hash integrale13archivi e JSONindice/manifesti bounded.
+Config/layer solo nel flussohash unparsed, mai aperti come membri o espansi.
+Pubblico solo ordinali, enum e conteggi; nomi/path/valori/hashindividuali privati.
+Nessun fetch, Engine, mount host, credenziali, SQL/OAuth, import o lifecycle.
+Nuovo scope m2-image-graph-diagnostic-fa95a719-20261101-v1,1controllo/600s,
+10controlli/35GET, nessun riarmo/reset/grant/authority. Exit0 significa diagnosi
+completata, non identità immagini o M2. STOP/interruzione conserva/nonrilanciare.
+L'agente non ha shell o byteprivati VPS; plugin senza lettura di questi archivi.
+
+Riuso Teatri SEMPRE: riletti handoffM1/dossier26join/13identità/20proprietà/8Cinema
+e auditM2; riusare contratti owner/provenance/MATCH-NEW-REVIEW/recovery; niente
+nuovo motore o terzaacquisizione. M1tecnico8/8 e funzionale6/6 acquisiti; Farmacie
+stesso61righe/10campiOPEN/ministerialeSTRING. M2/G5/G6/G7/dueclient OPEN; nessun
+upload/profiling/acquisizione/attivazione. Residui source/publisher/membership,
+Gatewayproposal, owner/policy/custody/bearer/coorte/pacchetto/review/authority e
+provaUDP/tutte righe OPEN. Poi grafo/search e verticali/API scheduler/delta.
+Nessun subagente/automazione/merge/releaseacceptance. Header/comandi seguenti STORICI.
+
+# CURRENT — STOP consumato; riconciliazione OCI QUALIFICATA, input VPS necessario
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_BYTE_RECONCILIATION_20261101.md),
+[qualifica](../evidence/m2-image-byte-reconciliation-delivery-qualified-20261101.json) e [STOP operatore](../evidence/m2-image-byte-verification-target-stop-20261101.json).
+Il verificatore precedente è ESEGUITO e CONSUMATO: Exit1/reasontipoEMPTY,
+risultatod1e98ad3. Totale8controlli/35GET;13archivi originali conservati.
+NON rilanciare vecchia verifica, cattura o comandi precedenti.
+
+Difetto data opzionale OCI riprodotto col vero verificatore70ab e corretto:
+solo EMPTY/digest44136f/size2 per configattestazione nonruntime; blob diversi
+assenti o alterati sempre negati. La causa privata VPS resta da verificare.
+Source630f8a22,17sorgenti; capsula58c1f120/SHA20e2107c/241.905byte,
+launcher cfd24741/SHA1ac2191d. Push41330448686 e PR41330454602 SUCCESS:
+ciascuno46test/7suite, zero failure/error/skip/ResourceWarning; tutti sei log letti.
+13exportDocker29.8.1 originali +13varianti esplicite senza data, runtimeconfig/layer
+uguali; vecchio STOP riprodotto13volte. Publisher/ZIP/sorgenti controllati;
+nuovo HTTPS esatto qualificato. Tutti235sorgenti congelati invariati.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, una volta. Riconcilia
+claim/profilo/risultato esatti dello STOP e preserva tutti8scope prima/dopo;
+rilegge stessi13archivi, zeroEngine/mount/credenziali/SQL/OAuth/import/lifecycle.
+Scope nuovo fisso m2-image-byte-reconciliation-fa95a719-20261101-v1,1controllo/
+600s, massimo9controlli/35GET. Nessun riarmo/reset/grant/authority. STOP o
+interruzione conserva tutto e non si rilancia. L'agente non ha shell o byte VPS.
+
+Richiamo owner: controllare SEMPRE quanto già riuscito per Teatri prima dei deltaM2.
+Riletti handoffM1, dossier26join/13identità/20proprietà/8Cinema e auditM2. Riusare
+contratti/provenance/MATCH-NEW-REVIEW/recovery, non rifare motori o acquisizioni.
+M1tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso61righe/10campiOPEN/
+ministerialeSTRING. M2/G5/G6/G7/dueclient rimangono OPEN. Publisher/source/full
+membership, proposalGateway, owner/policy/custody/bearer, coorte/pacchetto/review/
+authority correnti e E2E non chiusi. UDP/tutti gli esiti, poi grafo/search e
+verticali/API scheduler/delta. Nessun subagente/automazione/merge/releaseacceptance.
+Le intestazioni e i comandi seguenti sono storia, non nuove istruzioni.
+
+# CURRENT — Cattura fa95 acquisita; verifica privata dei byte QUALIFICATA, target da eseguire
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_IMAGE_BYTE_VERIFICATION_20261101.md)
+e [qualifica](../evidence/m2-image-byte-verification-delivery-qualified-20261101.json).
+La cattura13archivi/2.774.726.144byte è RIUSCITA e CONSUMATA, fa95a719/9733fa7c,
+Exit0, tutti sei scope precedenti preservati; target7controlli/35GET.
+NON rilanciare la cattura o alcun vecchio comando.
+
+Nuovo verificatore:17sorgenti chiusi, byte originali/indici OCI/config/layer e
+attestazioni BuildKit verificati senza Engine, estrazione/import o trust implicito.
+Source01f50339; capsula88c1df73/SHA70ab863a; launcherbdb49b4f/SHA575818eb.
+Push41327850081 e PR41327857484 SUCCESS: ciascuno38test/7suite, tutti sei log
+finali letti, zero failure/error/skip/ResourceWarning. Include13immagini native
+Docker29.8.1 con13attestazioni, casi negativi, controllo durevole monouso,
+17source capsule e consegna HTTPS esatta. Tutti235sorgenti congelati invariati.
+
+NEXT solo NUOVO comando del handoff sul VPS come oufadmin, una volta: rilegge gli
+archivi già acquisiti e salva una prova privata.600s/1tentativo, zero Engine;
+nuovo scope m2-image-byte-verification-fa95a719-20261101-v1 ancora NON eseguito.
+Un successo porterà i controlli a8, sempre35GET. STOP conserva, mai replay/reset.
+L'agente ha la ricevuta pubblica, non gli archivi/file privati o shell VPS.
+Source/publisher, scan, owner live/policy, complete custody/bearer, coorte completa,
+pacchetto/review e authority correnti rimangono distinti e aperti.
+M1/Teatri tecnico8/8 funzionale6/6 acquisiti; stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING; M2/G5/G6/G7/dueclient aperti. Nessun upload/profile/acquisizione,
+merge/release acceptance/subagente/automazione. UDP/tutti gli esiti, poi grafo e
+verticali/API delta. Header/comandi successivi sono storia, non nuove istruzioni.
+
+# CURRENT — Input immagini M2 riuscito e consumato; verifica dei byte in qualifica
+
+1 novembre 2026, Europe/Rome. Ricevuta operatore acquisita:
+[13 archivi / 2.774.726.144 byte](../evidence/m2-native-image-archives-target-20261101.json),
+candidate fa95a719, receipt9733fa7c, ImageArchiveInputExit=0. Tutti sei scope
+precedenti preservati; totale7controlli/35GET, zero credenziali o contenuti mount.
+NON rilanciare cattura/launcher o il vecchio comando: scope consumato.
+
+Prossimo passo autonomo: intake esatto indice/ricevuta/seed e verifica privata
+manifesti/configurazioni/layer senza Engine, estrazione o import. Nuovi sorgenti
+retained_image_intake/identity/reader e regressioni in qualifica; nessun nuovo
+comando operatore pronto. L'agente ha solo il JSON pubblico, non i file VPS.
+Identità nativa/source admission, publisher, scan, policy attesa e owner live,
+full custody/bearer, pacchetto/review correnti e authority restano distinti.
+M1/Teatri8/8 tecnico6/6 funzionale acquisiti, stessa Farmacie61righe/10campiOPEN/
+ministeriale STRING. M2/G5/G6/G7 e due client aperti. Nessun nuovo upload,
+profiling, acquisizione, merge o release acceptance. UDP/tutti gli esiti, poi
+grafo/search e verticali/API delta. Header e comandi seguenti sono storici.
+
+# CURRENT — Tredici immagini M2: launcher e consegna QUALIFICATI, input VPS necessario
+
+1 novembre 2026, Europe/Rome. [Handoff corrente](handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md)
+e [prove](../evidence/m2-native-image-archives-delivery-qualified-20261101.json).
+Source/launcher1a519f53: push41323332553 e PR41323339276 SUCCESS, ciascuno
+20 test/5 suite, zero failure/error/skip/ResourceWarning; tutti sei log finali letti.
+Include tre test Docker29.8.1 reali e consegna HTTPS pubblica esatta con sola
+ispezione non privilegiata. Capsula originale a7cb/3e281be8 conservata, 13 sorgenti.
+
+NEXT solo nuovo comando fissato del handoff come oufadmin sul VPS, una volta.
+È l'input privato di 13 immagini originali CID-bound, GET-only, non un apply.
+9GiB liberi prima dello scope, massimo30min/2GiB per immagine/8GiB totali;
+archivi root-private0400, nessun contenuto mount host, estrazione o import.
+STOP/interruzione: preservare tutto e riconciliare, mai rilanciare/riarmare.
+Target ancora6 scope consumati/22GET; nuovo scope NON eseguito. L'agente non
+ha shell né record privati VPS. Non chiedere archivi/indice/config/credenziali.
+Nessun login/grant/budget/runtime authority o modifica applicativa.
+
+M1/Teatri tecnico8/8 e funzionale6/6 acquisiti; Farmacie stesso SUCCEEDED61righe,
+10colonne/10OPEN, ministeriale STRING. Nessun nuovo upload/profile/acquisizione.
+Coorte completa/private proposal/policy e owner live/custody/bearer/pacchetto e
+review privata/authority HUMAN+dual-role/E2E e due client restano OPEN.
+Caricamento fino a UDP e tutti gli esiti, poi grafo/search e verticali/API delta.
+Nessun merge, release acceptance, subagente o automazione. Gli header/comandi
+successivi sono cronologia; non riprendere vecchi launcher.
+
+# Aggiornamento M2 — 31 ottobre 2026
+
+[Checkpoint corrente](handoffs/OUF_M2_CURRENT_CONTRACTS_AND_HANDOFF_20261031.md):
+reader qualificati131/20 suite, inclusi VERIFY_APPLICATION e fence producer
+con Docker reale; compilatore esportato attestato e verificato offline39PASS.
+CI41239011363/41239432016, log finali letti, source60711ad.
+contratti installati verificati via HTTP3PASS, prerequisiti118PASS/17suite,
+publisher offline3PASS, IAM senza refresh e lettura READY12 corrente.
+Il compilatore della nuova review parent lega ora tutti e cinque gli input:
+16 nuovi test/36 nella CI41238086572 PASS, pacchetto235 sorgenti pubblicato;
+non è ancora il controller o un pacchetto di esecuzione target approvato.
+Restano composizione del controller/checkpoint nativo sigillato, pacchetto/review
+privati esatti e prova target Farmacie→UDP con tutti gli esiti. M2 non accettato.
+Conservare Teatri e la stessa acquisizione Farmacie; nessun nuovo upload/profile.
+La ricerca sugli oggetti caricati e i verticali/API con delta seguono il file E2E.
+Le sezioni precedenti restano sotto come cronologia.
+
 # CURRENT — nuova lettura dei riferimenti installativi QUALIFICATA; target da eseguire
 
 29 ottobre 2026, Europe/Rome. [Handoff e unico comando corrente](docs/handoffs/OUF_M2_DISCOVERY_INSTALLATION_INPUTS_20261029.md), [qualifica](evidence/m2-discovery-installation-inputs-qualified-20261029.json), [PR52](https://github.com/GioNob/ouf-deploy/pull/52).

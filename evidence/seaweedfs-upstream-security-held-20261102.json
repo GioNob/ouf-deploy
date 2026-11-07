@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.seaweedfs-upstream-security-readback.v1",
+  "date": "2026-11-02",
+  "source": "e9af5e741a2e1c9bd2d46e717fdf242b4903c20b",
+  "runId": 41382483287,
+  "jobId": 125076082630,
+  "artifactId": 13113777165,
+  "artifactBytes": 177804806,
+  "artifactSha256": "bcc6ba3e84e65346ce8db37fc980be07065ea499d2ede06e8e5e9e49c16619d6",
+  "allOriginalChecksumMembersIndependentlyRead": true,
+  "metadataArchive": "evidence/artifacts/seaweedfs-upstream-held-41382483287.zip",
+  "metadataArchiveSha256": "d85071840200ea5701f584e289dc755c3729ed16efa9e7fa5fb00c45cdfe0d27",
+  "candidate": {
+    "assetBytes": 47534485,
+    "assetSha256": "c03be37416a8ee672c77766e20b22a4e1430744c3af2668599a4b6eeaec14cee",
+    "binarySha256": "eb9adf3a75b53c32f5ad9ba856e1fb652dae03dc6f6222673c3f88c0cbd25d0e",
+    "declaredSource": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+    "findings": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 3
+    },
+    "installed": false,
+    "release": "4.51",
+    "scanSha256": "86f2704e69df327055a3977568a89c0b8057e792c7418c73acd1b958b4260591",
+    "schema": "ouf.seaweedfs-evaluation.v1",
+    "securityGate": "HELD",
+    "sourceBinaryEqualityProven": false,
+    "targetOperations": 0,
+    "upstreamBinaryRebuilt": false,
+    "upstreamPublisherCryptographicallyVerified": false
+  },
+  "serverExecuted": false,
+  "originalAdaptersExecuted": false,
+  "targetOperations": 0,
+  "upstreamPublisherCryptographicallyVerified": false,
+  "ciAttestationCreated": true,
+  "ciAttestationIndependentlyVerified": false,
+  "firstScannerAttempt": {
+    "runId": 41382233355,
+    "result": "DENIED_EMPTY_REPORT",
+    "correctlyDenied": true
+  },
+  "plannedCorrections": {
+    "github.com/go-jose/go-jose/v4": "v4.1.6",
+    "golang.org/x/net": "v0.62.0"
+  },
+  "remainingUnfixedAdvisory": "GO-2026-5932 requires exact compiled-package applicability evidence; raw gate remains unchanged"
+}

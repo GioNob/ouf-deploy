@@ -1,0 +1,16 @@
+{
+  "schema": "ouf.storage-historical-minio-s3-curl-held-operator-receipt.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "provenance": "OPERATOR_REPORTED_VPS_RESULT",
+  "decisionReference": "GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02",
+  "programCommit": "50f23a98a3f9f134ea8eaae64b91b0bb5cd43aa7",
+  "result": {
+    "schema": "ouf.storage-retained-minio-restore.v1",
+    "status": "HELD",
+    "reason": "MINIO_CURL_EXIT_43",
+    "acceptanceCreditAdded": 0
+  },
+  "requestPhaseKnown": false,
+  "acceptanceCreditAdded": 0
+}

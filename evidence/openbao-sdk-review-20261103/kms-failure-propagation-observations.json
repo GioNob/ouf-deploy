@@ -1,0 +1,26 @@
+[
+  {
+    "path": "weed/s3api/auth_credentials.go",
+    "sourceGeneration": 29,
+    "sourceSha256": "a321190894cf4fdd09de641538ba38670086f553634b9b9e7372ea325fbf9282",
+    "startLine": 380,
+    "endLine": 394,
+    "text": "\t// First, try to load configurations from file or filer\n\tstartConfigFile := option.Config\n\tif startConfigFile == \"\" {\n\t\tstartConfigFile = option.IamConfig\n\t}\n\n\tif startConfigFile != \"\" {\n\t\tglog.V(3).Infof(\"loading static config file %s\", startConfigFile)\n\t\tif err := iam.loadS3ApiConfigurationFromFile(startConfigFile); err != nil {\n\t\t\tglog.Fatalf(\"fail to load config file %s: %v\", startConfigFile, err)\n\t\t}\n\t}\n\n\t// Always try to load/merge config from credential manager (filer/db)\n\t// This ensures we get both static users (from file) and dynamic users (from backend)"
+  },
+  {
+    "path": "weed/s3api/auth_credentials.go",
+    "sourceGeneration": 29,
+    "sourceSha256": "a321190894cf4fdd09de641538ba38670086f553634b9b9e7372ea325fbf9282",
+    "startLine": 658,
+    "endLine": 677,
+    "text": "func (iam *IdentityAccessManagement) loadS3ApiConfigurationFromFile(fileName string) error {\n\tiam.reloadMu.Lock()\n\tdefer iam.reloadMu.Unlock()\n\tcontent, readErr := os.ReadFile(fileName)\n\tif readErr != nil {\n\t\tglog.Warningf(\"fail to read %s : %v\", fileName, readErr)\n\t\treturn fmt.Errorf(\"fail to read %s : %v\", fileName, readErr)\n\t}\n\n\tif unknown := unknownS3ConfigKeys(content); len(unknown) > 0 {\n\t\tglog.Warningf(\"S3 config %s: ignoring unknown top-level keys %v\", fileName, unknown)\n\t}\n\n\t// Initialize KMS if configuration contains KMS settings\n\tif err := iam.initializeKMSFromConfig(content); err != nil {\n\t\tglog.Warningf(\"KMS initialization failed: %v\", err)\n\t}\n\n\t// fromStaticFile=true: this file is the source of truth for its static\n\t// identities, so a reload overwrites them (e.g. a rotated secretKey)."
+  },
+  {
+    "path": "weed/s3api/auth_credentials.go",
+    "sourceGeneration": 29,
+    "sourceSha256": "a321190894cf4fdd09de641538ba38670086f553634b9b9e7372ea325fbf9282",
+    "startLine": 2572,
+    "endLine": 2598,
+    "text": "// initializeKMSFromConfig loads KMS configuration from TOML format\nfunc (iam *IdentityAccessManagement) initializeKMSFromConfig(configContent []byte) error {\n\t// JSON-only KMS configuration\n\tif err := iam.initializeKMSFromJSON(configContent); err == nil {\n\t\tglog.V(1).Infof(\"Successfully loaded KMS configuration from JSON format\")\n\t\treturn nil\n\t}\n\n\tglog.V(2).Infof(\"No KMS configuration found in S3 config - SSE-KMS will not be available\")\n\treturn nil\n}\n\n// initializeKMSFromJSON loads KMS configuration from JSON format when provided in the same file\nfunc (iam *IdentityAccessManagement) initializeKMSFromJSON(configContent []byte) error {\n\t// Parse as generic JSON and extract optional \"kms\" block\n\tvar m map[string]any\n\tif err := json.Unmarshal([]byte(strings.TrimSpace(string(configContent))), &m); err != nil {\n\t\treturn err\n\t}\n\tkmsVal, ok := m[\"kms\"]\n\tif !ok {\n\t\treturn fmt.Errorf(\"no KMS section found\")\n\t}\n\n\t// Load KMS configuration directly from the parsed JSON data\n\treturn kms.LoadKMSFromConfig(kmsVal)\n}"
+  }
+]

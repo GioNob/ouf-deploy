@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.storage-backup-windows-custody-qualification.v1",
+  "status": "PASS_WINDOWS_FIXTURE_NOT_USER_PC_ACCEPTANCE",
+  "sourceCommit": "00c567d8795a0d4060f4ea2da868e7937af2b933",
+  "runId": 42284908808,
+  "jobId": 128123098311,
+  "powershell": "5.1.20348.5773",
+  "nativeResult": "evidence/storage-backup-windows-native-result-20261106.json",
+  "artifact": {
+    "id": 13536703070,
+    "bytes": 527,
+    "sha256": "9c67b8de63cfae198168be26f5ea65e2bda6731266e9567d67be5c1e60b88cdc",
+    "memberSha256": "97903215fce3aae91f650ea7b364e88c5d743497a78d0d5007d82cf42000f927",
+    "members": [
+      "native-result.json"
+    ],
+    "expiresAt": "2027-02-04T20:02:38Z",
+    "downloadedAndVerified": true
+  },
+  "sourceContentsComparedToGit": 3,
+  "runnerWorkingTreeByteEqualityProven": false,
+  "sources": {
+    "scripts/prepare-storage-backup-custody-windows.ps1": {
+      "bytes": 6294,
+      "sha256": "a1cf932f340fb24d896299a1fe1c4ab84eb4183f33ba52954d686eb6f4e3d41c"
+    },
+    "tests/qualify_storage_backup_windows.ps1": {
+      "bytes": 2847,
+      "sha256": "9a9971400dcb065e1f5dcb25782d643502c3499f11808921f1a0f369cc20b5bc"
+    },
+    ".github/workflows/storage-backup-windows-custody.yml": {
+      "bytes": 1121,
+      "sha256": "e03b93b735668366b856956ca333f232f22e3f173ff85e06263bae54b23ac476"
+    }
+  },
+  "ageRelease": {
+    "url": "https://github.com/FiloSottile/age/releases/tag/v1.3.2",
+    "publishedAt": "2026-08-29T17:55:36Z",
+    "windowsAmd64ZipBytes": 20250704,
+    "windowsAmd64ZipSha256": "f48d8f8f9ebe903ab5027ed067652f2cc1db94bc206976430133b905dcd8e8c7",
+    "ageExeSha256": "2821a4ed191da07372acd302e5f6feae7a7985e285e1417765ebe74025af45f0",
+    "releaseDigestCheckedAndNativeDownloadVerified": true
+  },
+  "checks": [
+    "local4096byteEncryptionDecryption",
+    "originalPrivateKeyUnchanged",
+    "workspaceAclRestrictedToPrincipal",
+    "existingWorkspaceReplayDenied"
+  ],
+  "failureHistory": [
+    {
+      "commit": "1909380b060abf4373786be633f3e0edd9dea156",
+      "runId": 42284741360,
+      "jobId": 128122520859,
+      "reason": "Multiple ssh-keygen applications returned an array; Start-Process FilePath expected string. Failure before key generation.",
+      "fix": "Select first resolved application in both fixture and client."
+    }
+  ],
+  "userPcExecuted": false,
+  "crossPlatformDecryptProven": false,
+  "targetBackupCapacityAccepted": false,
+  "targetRestoreVerified": false,
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "linuxBackupProducerChanged": false,
+  "linuxProviderQualificationRepeated": false,
+  "planImpactReader": {
+    "path": "scripts/read-storage-cold-plan-impact-20261106.py",
+    "sha256": "469be254e07b04e9cf1616d344803a1b5b1ca7e38ddd727d2b4a68dd80a25713",
+    "bytes": 5481,
+    "localTestsPassed": 4,
+    "targetExecuted": false,
+    "planSha256": "1c0bb62ceba85f748e43465d36f016b4c575c586d40390dc92095a1dbc71bd0f"
+  }
+}

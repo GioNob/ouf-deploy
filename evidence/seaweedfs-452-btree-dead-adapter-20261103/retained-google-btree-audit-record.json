@@ -1,0 +1,30 @@
+{
+  "module": "github.com/google/btree",
+  "version": "v1.1.3",
+  "h1": "h1:CVpQJjYgC4VbzxeGVHfvZrv1ctoYCAI8vbl07Fcxlyg=",
+  "githubRepositoryFromModulePath": "google/btree",
+  "repositoryBindingSource": "module-path-owner-repository",
+  "repositoryObservation": {
+    "id": 22479136,
+    "full_name": "google/btree",
+    "html_url": "https://github.com/google/btree",
+    "archived": true,
+    "disabled": false,
+    "default_branch": "master",
+    "pushed_at": "2024-08-21T16:46:53Z",
+    "apiUrl": "https://api.github.com/repos/google/btree",
+    "observedAt": "2026-11-03T19:24:32.715Z"
+  },
+  "repositoryMetadataStatus": "VERIFIED",
+  "maintenanceClassification": "ARCHIVED_UPSTREAM_REPOSITORY",
+  "compiledPackageCount": 1,
+  "externalCompiledImporters": [
+    "github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
+  ],
+  "exampleCompiledDependencyPath": [
+    "github.com/seaweedfs/seaweedfs/weed",
+    "github.com/seaweedfs/seaweedfs/weed/command",
+    "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+    "github.com/google/btree"
+  ]
+}

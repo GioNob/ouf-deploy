@@ -1,0 +1,38 @@
+[
+  {
+    "tags": "elastic",
+    "exitCode": 1,
+    "expectedDiagnostic": "ELASTIC_OR_RCLONE",
+    "binaryProduced": false
+  },
+  {
+    "tags": "rclone",
+    "exitCode": 1,
+    "expectedDiagnostic": "ELASTIC_OR_RCLONE",
+    "binaryProduced": false
+  },
+  {
+    "tags": "kafka",
+    "exitCode": 1,
+    "expectedDiagnostic": "KAFKA_NOTIFICATION_OR_REPLICATION",
+    "binaryProduced": false
+  },
+  {
+    "tags": "openbao",
+    "exitCode": 1,
+    "expectedDiagnostic": "OPENBAO_OR_VAULT",
+    "binaryProduced": false
+  },
+  {
+    "tags": "vault",
+    "exitCode": 1,
+    "expectedDiagnostic": "OPENBAO_OR_VAULT",
+    "binaryProduced": false
+  },
+  {
+    "tags": "kafka,openbao,vault",
+    "exitCode": 1,
+    "expectedDiagnostic": "OPENBAO_OR_VAULT",
+    "binaryProduced": false
+  }
+]

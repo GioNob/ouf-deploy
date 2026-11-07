@@ -1,0 +1,19 @@
+{
+  "schema": "ouf.storage-nonproduction-owner-context.v1",
+  "date": "2026-11-06",
+  "source": "Giovanni, conversation",
+  "ownerStatement": "ouf non è in produzione, può restare indisponibile tutto il tempo necessario. Gli stessi dati che tanto ti stai prodigando di salvare sono dati di test. Comunque è un buon test anche cercare di salvare dei dati di test, val la pena impegnarsi in tal senso e fare tesoro dell'esperienza. Qualora capitasse in futuro in produzione avremmo già un precedente.",
+  "environment": "NONPRODUCTION",
+  "applicationData": "TEST_DATA",
+  "downtimeDeadline": null,
+  "holdUntilVerificationAndGovernedReopeningAcceptedForPlanning": true,
+  "retainBackupAndRestoreExercise": true,
+  "productionContinuityRequiredForThisExercise": false,
+  "finiteOperationBudgetsStillRequired": true,
+  "credentialsRemainProtected": true,
+  "automaticReplayAllowed": false,
+  "automaticRestartAllowed": false,
+  "exactStopCommandApprovalRecorded": false,
+  "runtimeAuthorityIssued": false,
+  "productionAcceptanceCreditAdded": 0
+}

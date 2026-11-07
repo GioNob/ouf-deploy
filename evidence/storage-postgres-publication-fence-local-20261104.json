@@ -1,0 +1,40 @@
+{
+  "schema": "ouf.storage-postgres-publication-fence-local.v1",
+  "status": "OFFLINE_PASS_NATIVE_PENDING",
+  "baseCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+  "offlineTestsPassed": 7,
+  "shellSyntaxSnippetsPassed": 4,
+  "pythonSyntaxPassed": true,
+  "nativeExecution": "PENDING_HOSTED_POSTGRES_17_11",
+  "nativeSourceSha256": "dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979",
+  "inputs": {
+    ".github/workflows/storage-postgres-writer-fence.yml": "e8df2e7c523408610e6723c201d83903d680858509eccfd10b384f41d7c9e538",
+    "tests/run_storage_postgres_writer_fence.py": "c983b45b83a0466ad4962799bc199cf66e0fb00ae08c87eb7be42dd145e0f109",
+    "tests/test_storage_postgres_writer_fence.py": "6d45aadf1ed926976bddcbc44a7e655fc0e88aebe1bba39a419c52c794655412",
+    "tests/fixtures/storage-recovery/writer-fence.sql": "49d64f540ad476129ec978aa065f9c07bb7d463d69c506c814982e9bb204f042"
+  },
+  "logSha256": "47b526cba8ec403cde26d95992048dba100b1dad2f47388844be9c90b2ea0ff0",
+  "scope": "Additive disposable PostgreSQL fixture. No OUF runtime writer or existing native lab is modified.",
+  "plannedNativeChecks": [
+    "Two PostgreSQL clients contend for identical intent; one reservation and one existing pending result.",
+    "Lost acknowledgement after durable local file effect leaves a pending intent.",
+    "One versioned drain wins; stale controller and late writer publication denied.",
+    "Pending ambiguous effect blocks frozen state.",
+    "Private PostgreSQL restart preserves epoch,intents,events and original acknowledgement.",
+    "Writer role cannot DML the ledger or call control functions.",
+    "Only exact full-byte reconciliation resolves the pending intent before freeze."
+  ],
+  "limits": {
+    "externalS3WritesFenced": false,
+    "targetWriterFenceQualified": false,
+    "simultaneousRecoveryCutQualified": false,
+    "pitrQualified": false,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0
+  }
+}

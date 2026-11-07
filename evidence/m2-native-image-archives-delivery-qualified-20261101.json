@@ -1,0 +1,110 @@
+{
+  "schema": "ouf.m2-native-image-archive-delivery-qualified.v1",
+  "date": "2026-11-01",
+  "timezone": "Europe/Rome",
+  "status": "SOURCE_NATIVE_AND_IMMUTABLE_DELIVERY_QUALIFIED_TARGET_INPUT_PENDING",
+  "sourceCommit": "1a519f533318d9274950b017b1fa2c4c928c70d1",
+  "deliveredCapsule": {
+    "sourceCommit": "4a1e7e23dd1b09ca4e3752dd148146275f24e415",
+    "deliveryCommit": "a7cb69d8bab9bbefc3202f8008e2e744df85a5d5",
+    "path": "scripts/prepare-m2-retained-image-archives-20261101.py",
+    "bytes": 189219,
+    "sha256": "3e281be893cf7c5dc36d6169b8a48a14d979f6a9c32bd523071d8ea4fa6f148f",
+    "originalPublisherEvidence": "evidence/m2-native-image-archives-source-qualified-20261101.json"
+  },
+  "launcher": {
+    "commit": "1a519f533318d9274950b017b1fa2c4c928c70d1",
+    "path": "scripts/launch-m2-retained-image-archives-20261101.sh",
+    "sha256": "ad50569c294bc39a541f0fdeefea4eac27331c03ebe9ab133dca3ac2adc1dd16",
+    "httpsOnlyRedirects": true,
+    "maximumDownloadBytes": 262144,
+    "automaticRetries": 0,
+    "outerTimeoutSeconds": 1835,
+    "killAfterSeconds": 5
+  },
+  "qualification": [
+    {
+      "event": "push",
+      "workflowRun": 41323332553,
+      "jobs": [
+        124897990652,
+        124897990825,
+        124897990894
+      ],
+      "conclusion": "success",
+      "tests": 20,
+      "suites": 5,
+      "allFinalLogsRead": true
+    },
+    {
+      "event": "pull_request",
+      "workflowRun": 41323339276,
+      "jobs": [
+        124898010749,
+        124898010939,
+        124898010947
+      ],
+      "conclusion": "success",
+      "tests": 20,
+      "suites": 5,
+      "allFinalLogsRead": true
+    }
+  ],
+  "suiteTests": {
+    "unixSocketAndPrivateArchives": 4,
+    "capsule": 5,
+    "launcher": 7,
+    "docker29Native": 3,
+    "actualPublicHttpsDelivery": 1
+  },
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "resourceWarnings": 0,
+  "actualDockerVersion": "29.8.1",
+  "actualNativeProducerStages": 6,
+  "actualDistinctNativeFixtureImages": 13,
+  "actualDeliveryMode": "UNPRIVILEGED_SOURCE_INSPECTION_ONLY_NO_TARGET_INPUT",
+  "ciRegeneratedCapsuleIsDeliveredOriginal": false,
+  "operatorCommand": "releases/OUF_M2_NATIVE_IMAGE_ARCHIVES_COMMAND_20261101.sh",
+  "handoff": "docs/handoffs/OUF_M2_RETAINED_IMAGE_ARCHIVES_20261101.md",
+  "targetScope": "/etc/ouf/deploy-snapshots/m2-native-image-archives-9f1d571b-20261101-v1",
+  "targetScopeExecuted": false,
+  "priorTargetControlAttempts": 6,
+  "priorTargetDirectEngineGets": 22,
+  "maximumNewImageGets": 13,
+  "maximumNewAttemptSeconds": 1800,
+  "minimumInitialFreeBytes": 9663676416,
+  "maximumImageBytes": 2147483648,
+  "maximumTotalImageBytes": 8589934592,
+  "minimumRemainingFreeBytes": 1073741824,
+  "hostMountContentsReadAllowed": false,
+  "privateArchiveTransferToAgentRequested": false,
+  "currentApplicationConfigurationOrLivenessProven": false,
+  "completePrivateCustodyProven": false,
+  "liveOwnerAuthenticated": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "releaseAcceptance": false,
+  "automaticReplayAllowed": false,
+  "runtimeBudgetResetOrGrant": false,
+  "allSixPriorScopesMustRemainConsumedAndPreserved": true,
+  "normativeSectionsConsulted": {
+    "miniPet": "M2 1.3 sections 2-4, WP2/WP6, 10",
+    "resilience": "v3 rules 3-9,14-18",
+    "gatewayPet": "1.5 T11/T11.3",
+    "authorizationPet": "1.5 sections 1.3-3"
+  },
+  "remaining": [
+    "private image native/source membership and exact complete cohort",
+    "Gateway private proposal",
+    "live owner authentication and expected policy",
+    "full private custody and workload bearer",
+    "complete execution package and current private review",
+    "current HUMAN and dual-role authority",
+    "Farmacie 61 row outcomes through UDP",
+    "repeatability and fault recovery",
+    "two external clients",
+    "G5/G6/G7/M2 acceptance"
+  ]
+}

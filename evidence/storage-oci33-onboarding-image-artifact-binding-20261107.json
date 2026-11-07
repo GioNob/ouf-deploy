@@ -1,0 +1,21 @@
+{
+  "schema": "ouf.storage-oci33-onboarding-image-artifact-binding.v1",
+  "date": "2026-11-07",
+  "repository": "GioNob/ouf-source-onboarding",
+  "workflowRun": 42049214518,
+  "artifactId": 13426272318,
+  "zipBytes": 215265641,
+  "zipSha256": "a87876f836b90cd597a5729cc693cc1219456f8bccd2da1eb91c4ea1e040ba73",
+  "artifactExpiresAt": "2026-11-19T14:57:16Z",
+  "imageArchiveBytes": 215264020,
+  "imageArchiveSha256": "bb9bc97f68d7f40ca64b05bf4b7d81d70ac8e36e9932fc6c3f8d37d5b5753cea",
+  "imageConfigDigest": "sha256:0a29a90a48a69a6ed757748bdac97cf029b6e7d633b6bc9a9b1d706fa00837db",
+  "imageTag": "ouf-source-onboarding:69b099b04f1823b127ef4af4a9c44861ff4cdc67",
+  "reviewedSourceCommit": "d5155899b09dda298494b68cefa7e1f281167652",
+  "testedCommit": "69b099b04f1823b127ef4af4a9c44861ff4cdc67",
+  "matchingTree": "78f1771f9188d8f3010f7db0d745275a86833019",
+  "zipAndRawImageConfigVerified": true,
+  "targetImageImported": false,
+  "runtimeAdmissionIssued": false,
+  "acceptanceCreditAdded": 0
+}

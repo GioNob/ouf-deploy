@@ -1,0 +1,34 @@
+{
+  "candidateArtifact": {
+    "bytes": 194296104,
+    "currentRetention": "TEMPORARY_CI",
+    "expiresAt": "2027-02-01T10:51:39Z",
+    "sha256": "bca4d0a493717812d464f9dc6c7478d918c5dd7f56cd7b5d21f0d4fbcccaeed9"
+  },
+  "copyExecuted": false,
+  "destination": "OPEN_HUMAN",
+  "durableImageCustody": "OPEN",
+  "executionRequirements": [
+    "approved immutable versioned destination",
+    "independent replica and retention owner",
+    "complete post-copy hash readback",
+    "offline recovery drill",
+    "separate signed custody receipt"
+  ],
+  "readbackExecuted": false,
+  "recoveryDrillExecuted": false,
+  "releaseAdmitted": false,
+  "requiredObjects": [
+    "candidate OCI archive",
+    "independent readback",
+    "candidate lock",
+    "SBOM and raw vulnerability scan",
+    "historical licence corpus",
+    "patch15 licence delta",
+    "delivery review bundle"
+  ],
+  "retentionApproval": "OPEN_HUMAN",
+  "schema": "ouf.seaweedfs-452-durable-custody-plan.v1",
+  "status": "PLAN_ONLY_NOT_EXECUTED",
+  "targetOperations": 0
+}

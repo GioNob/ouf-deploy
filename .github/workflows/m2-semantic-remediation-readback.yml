@@ -1,0 +1,45 @@
+name: M2 independent Semantic remediation publisher readback
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-semantic-remediation-readback.yml'
+      - 'scripts/read-m2-semantic-high-remediation-20261101.py'
+      - 'evidence/artifacts/m2-semantic-high-remediation-41351198866.zip'
+permissions: {contents: read}
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reread the whole exact ZIP, every checksummed member and the actual remediation report
+        run: python3 -I -B -S scripts/read-m2-semantic-high-remediation-20261101.py verified
+      - name: Install the qualified exact GitHub attestation verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar -xzf gh297.tar.gz --strip-components=1 -C gh297
+          gh297/bin/gh --version
+      - name: Verify Sigstore chain and exact publisher workflow source ref and hosted runner
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          gh297/bin/gh attestation verify verified/SHA256SUMS --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/m2-semantic-high-remediation.yml \
+            --source-digest c893120beb881320542a1a63d06ec4fec37935ea \
+            --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --bundle verified/provenance.json --format json \
+            > verified/publisher-verification.json
+          cd verified
+          sha256sum --check --strict SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-semantic-remediation-publisher-${{ github.run_id }}
+          path: verified/
+          if-no-files-found: error
+          retention-days: 30

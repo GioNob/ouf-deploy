@@ -1,0 +1,15 @@
+{
+  "status": "EXACT_ROOT_LOCKFILES_AND_PRODUCTION_GRAPH_AND_BINARY_MODULES_MATCH_PATCH28",
+  "rootLockfiles": {
+    "go.mod": "df02037391ef73d7ea70a03f4c00f68368adc04c480a0fe0bc4f50d0ff4e22e2",
+    "go.sum": "ec9efdd474b2ba274f3f7732ebc78de5082f9010b0dbbf85ecda3ebd48484b91"
+  },
+  "productionPackages": 1811,
+  "productionGraphSha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+  "binaryDependencyModules": 262,
+  "binaryDependencyInventorySha256": "dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3",
+  "identicalBinaryDependencyRowsToPatch28": true,
+  "forbiddenBinaryDependencyModules": [],
+  "rootAllModuleListingReexecuted": false,
+  "rootAllModuleListingLimit": "Offline caches omit metadata for unused transitive modules; do not claim fresh go list -m all. Exact root lockfile parity with qualified patch28 is verified."
+}

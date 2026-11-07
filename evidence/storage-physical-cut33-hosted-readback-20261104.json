@@ -1,0 +1,355 @@
+{
+  "schema": "ouf.storage-physical-common-cut33-qualified-checkpoint.v1",
+  "status": "NATIVE_AND_INDEPENDENT_ORIGINAL_READBACK_PASS",
+  "date": "2026-11-04",
+  "producerCommit": "7444df039a8b4990d1518a343f4f57a698db0b74",
+  "run": {
+    "id": 41914041465,
+    "head_sha": "7444df039a8b4990d1518a343f4f57a698db0b74",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41914041465",
+    "created_at": "2026-11-04T21:13:22Z",
+    "run_started_at": "2026-11-04T21:13:22Z",
+    "updated_at": "2026-11-04T21:17:25Z"
+  },
+  "jobs": [
+    {
+      "id": 126868857170,
+      "name": "quiesced-physical-cut",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 41914041465,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Test physical cut binding and preserved common-cut and WAL boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build the pinned PostgreSQL 17.11 fixture tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Fetch and bind the exact successful generation33 cohort and image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Verify the successful cohort publisher with its exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Bind the frozen ledger and cold storage to one named physical recovery point",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Preserve original backup payloads exact source and negative evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Attest successful synthetic evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Retain complete public fixture evidence including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 126870953332,
+      "name": "original-archive-readback",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 41914041465,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Acquire the exact original archive and verify producer terminal job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Independently verify all ZIP members sources and packaged physical backup bytes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Preserve unchanged original and independent readback",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13364970618,
+      "name": "storage-physical-cut33-readback-41914041465",
+      "size_in_bytes": 5988845,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13364970618",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13364970618/zip",
+      "expired": false,
+      "created_at": "2026-11-04T21:17:21Z",
+      "expires_at": "2027-02-02T21:13:22Z",
+      "updated_at": "2026-11-04T21:17:21Z",
+      "digest": "sha256:95af435a5c65c803a25f701311fd325f0e46fcca8c14ed552e45a97fb6ceb552",
+      "workflow_run": {
+        "id": 41914041465,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "7444df039a8b4990d1518a343f4f57a698db0b74"
+      }
+    },
+    {
+      "id": 13362874826,
+      "name": "storage-physical-cut33-41914041465",
+      "size_in_bytes": 6018250,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13362874826",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13362874826/zip",
+      "expired": false,
+      "created_at": "2026-11-04T21:17:06Z",
+      "expires_at": "2027-02-02T21:13:22Z",
+      "updated_at": "2026-11-04T21:17:06Z",
+      "digest": "sha256:33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+      "workflow_run": {
+        "id": 41914041465,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "7444df039a8b4990d1518a343f4f57a698db0b74"
+      }
+    }
+  ],
+  "hostedReadback": {
+    "backupPayloadBytesVerified": {
+      "basebackup": 46885503,
+      "cold-backup": 22305,
+      "wal-archive": 67109203
+    },
+    "backupPayloadFilesVerified": {
+      "basebackup": 1282,
+      "cold-backup": 104,
+      "wal-archive": 5
+    },
+    "checksumsVerified": 213,
+    "cleanStorageStopsVerified": 12,
+    "cut": {
+      "baseIndexSha256": "f047bd461b118d8516dda389704b9262c703d71aa8527bf74e0f3082d61e746d",
+      "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+      "coldIndexSha256": "96c2c01740dc043273d7a41276e1ef008eabd1f7d093d35b72f54fbd7349122f",
+      "ledgerSha256": "01bcd20394cc7f5803c99cf43293361ce6c3c4b959eba593428000b3ecbd45d5",
+      "lockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+      "readOnlyConfigSha256": "ed4a7916bc3bb7e45c26138b6f7a06f4e3cfecf0c1e606026b8c491b26ebe5f9",
+      "schema": "ouf.synthetic-physical-common-cut33.v1",
+      "sourcePostgresStopped": true,
+      "sourceStorageStoppedAndWithheld": true,
+      "sourceSystemIdentifier": "7704428212093439541",
+      "targetLsn": "0/4008E28",
+      "targetName": "ouf_joint33_frozen_epoch2",
+      "targetWalSegment": "000000010000000000000004",
+      "timeline": 1,
+      "walIndexSha256": "dadcda6fa1b0034925ba09de98530c4ac6c1208d48f471fbdb038c4d66c1a192"
+    },
+    "members": 214,
+    "missingWalGate": {
+      "mutatingRetries": 0,
+      "pgCtlStartReturnCode": 0,
+      "postgresTerminated": true,
+      "restoredS3ProcessesStarted": 0,
+      "sourceProcessesStopped": true,
+      "status": "BLOCKED_BEFORE_S3_RESTORE",
+      "targetWalSegment": "000000010000000000000004"
+    },
+    "nativeReceipt": {
+      "acceptanceTestsPassed": 0,
+      "allAcknowledgementsPreserved": true,
+      "allStartedProcessesStopped": true,
+      "ambiguousEffectReconciledWithoutResend": true,
+      "backupArchives": {
+        "basebackup": "4d5976f409521f7bc5bcf832d61e5df74967c8f5a8ffc70b75bfbf57e082b08a",
+        "cold-backup": "0cab1d4a3891e202a597bf6dbed918af1a0838c44c6eee8aa8c703388ff81631",
+        "wal-archive": "b55c2667cff4f5705f2fba44e1b39df42626ad9fa131f6f4cf8bba53c930591d"
+      },
+      "basebackupFiles": 1282,
+      "cleanContainerStops": 12,
+      "cleanPostgresStops": 2,
+      "coldBackupFiles": 104,
+      "commonCutSha256": "93687637674f245bb956f049fba85e2df05bce095b1ed34a1a0858c6c20c3360",
+      "completeProductionBackupClaimed": false,
+      "excludedPostTargetObjectAcknowledgements": 0,
+      "failedRecoveryProcessesTerminated": 1,
+      "fixtureCoordinatedPhysicalPitrQualified": true,
+      "fixturePersistentSqlFenceAfterPromotion": true,
+      "fixtureS3ReadOnlyFenceQualified": true,
+      "gatesClosed": 0,
+      "lateralIsolationQualified": false,
+      "liveAtomicSnapshotQualified": false,
+      "missingRequiredWalBlocksS3Start": true,
+      "mutatingRetries": 0,
+      "namedTargetDistinguishedFromEndOfWal": true,
+      "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+      "pitrQualified": false,
+      "postgresVersion": "17.11",
+      "productionCodeChanged": false,
+      "recoveryPutRequests": 0,
+      "releaseAdmitted": false,
+      "restoredSystemIdentifier": "7704428212093439541",
+      "rpoMeasured": false,
+      "rtoMeasured": false,
+      "runtimeAuthorityIssued": false,
+      "s3DeniedMutations": 6,
+      "s3ObjectBytesReadPerPass": 77,
+      "s3ObjectsReconciled": 2,
+      "schema": "ouf.synthetic-physical-common-cut33.v1",
+      "scope": "two public objects; one stopped/replaced S3 identity; quiesced named point; private-socket physical PG clone",
+      "sourceSystemIdentifier": "7704428212093439541",
+      "sqlReadinessProbeAttempts": 2,
+      "status": "SYNTHETIC_PHYSICAL_COMMON_CUT33_PASS",
+      "targetLsn": "0/4008E28",
+      "targetName": "ouf_joint33_frozen_epoch2",
+      "targetOperations": 0,
+      "targetPitrQualified": false,
+      "targetWalSegment": "000000010000000000000004",
+      "targetWriterFenceQualified": false,
+      "walArchiveFiles": 5,
+      "zeroProductionAcknowledgedLossQualified": false
+    },
+    "originalZipBytes": 6018250,
+    "originalZipSha256": "33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+    "producerCommit": "7444df039a8b4990d1518a343f4f57a698db0b74",
+    "restoreRelease": {
+      "canary": "cut",
+      "inRecovery": "f",
+      "ledgerSha256": "01bcd20394cc7f5803c99cf43293361ce6c3c4b959eba593428000b3ecbd45d5",
+      "restoredS3ProcessesStarted": 0,
+      "restoredStaleFinish": "FENCED",
+      "restoredSystemIdentifier": "7704428212093439541",
+      "restoredWriterReserve": "FENCED",
+      "sourceSystemIdentifier": "7704428212093439541",
+      "status": "DB_VERIFIED_BEFORE_S3_START"
+    },
+    "s3Bytes": 77,
+    "s3Objects": 2,
+    "secondNativeRestore": false,
+    "sourceBindingsVerified": 30,
+    "status": "ORIGINAL_PHYSICAL_COMMON_CUT_READBACK_PASS",
+    "targetOperations": 0,
+    "testsPassed": 35
+  },
+  "localVerification": {
+    "status": "ORIGINAL_ARCHIVE_READBACK_PASS",
+    "exactlyMatchesHosted": true,
+    "originalZipSha256": "33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+    "originalZipBytes": 6018250,
+    "members": 214,
+    "checksums": 213,
+    "exactSourceBindings": 30,
+    "packagedBackupFiles": 1391,
+    "packagedBackupBytes": 114017011,
+    "secondNativeRestore": false
+  },
+  "negativeAttempt": {
+    "runId": 41913004716,
+    "producer": "57a3de3fcab8e826885a791fd7381f1585eaa0cf",
+    "status": "FAILED_PRESERVED",
+    "receipt": "evidence/storage-physical-cut33-first-failure-20261104.json",
+    "artifactIds": [
+      13364540297,
+      13363806513
+    ],
+    "diagnosis": "pg_ctl start success preceded SQL availability; bounded read-only pg_isready probes added before unchanged recovery validation."
+  },
+  "preservedPriorPrDescription": {
+    "path": "docs/handoffs/OUF_PR54_STORAGE_HISTORY_BEFORE_PHYSICAL_CUT_20261104.md",
+    "verbatim": true,
+    "sourceHead": "74f28277337b009e5658e2cdaa664191f072ddeb"
+  },
+  "limits": {
+    "candidateOCIUnchanged": true,
+    "MinIO": "unchanged",
+    "targetOperations": 0,
+    "MiniPET": "18.3/46 = 39.78%",
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjects": 0,
+    "secondRunnerNativeRestore": false,
+    "targetWriterFenceQualified": false,
+    "powerLossQualified": false,
+    "lateralIsolationComposedWithThisCut": false,
+    "productionRpoRtoMeasured": false,
+    "durableGitBackupZipCustody": false,
+    "actionsRetentionUntil": "2027-02-02",
+    "nextBoundedStep": "Restore on a fresh runner using only the exported original basebackup/WAL/cold-backup package and exact candidate; withhold the producer working directories. The present second runner verifies all package bytes but does not execute that second restore."
+  }
+}

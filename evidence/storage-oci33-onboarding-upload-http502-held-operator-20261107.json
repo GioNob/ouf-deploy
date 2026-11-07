@@ -1,0 +1,35 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 1,
+  "cleanupIncomplete": false,
+  "containersRemoved": 3,
+  "containersStarted": 3,
+  "diagnosticHints": {
+    "onboarding": [
+      "migration"
+    ],
+    "postgres": [],
+    "seaweedfs": []
+  },
+  "flywayVersionsVerified": [
+    39,
+    40,
+    41
+  ],
+  "onboardingAssetCreated": false,
+  "onboardingReadinessUp": true,
+  "onboardingUploadHttpStatus": 502,
+  "postgresCopyPrepared": true,
+  "postgresReady": true,
+  "postgresUploadAckVerified": false,
+  "privateContainerLogsRetained": 3,
+  "reason": "ONBOARDING_UPLOAD_HTTP_502",
+  "s3GetRequests": 1,
+  "schema": "ouf.storage-oci33-onboarding-upload.v1",
+  "seaweedfsPreUploadBodyVerified": true,
+  "seaweedfsTlsReady": true,
+  "seaweedfsUploadBodyVerified": false,
+  "status": "HELD",
+  "storageCopyPrepared": true,
+  "uploadRequests": 1
+}

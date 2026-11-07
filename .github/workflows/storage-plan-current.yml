@@ -1,0 +1,313 @@
+name: Storage current qualification plan
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-plan-current.yml
+      - releases/minio-seaweedfs-plan-20261102.json
+      - releases/seaweedfs-452-candidate-lock-20261103.json
+      - evidence/seaweedfs-452-cohort-readback-hosted-20261103.json
+      - evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json
+      - evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json
+      - evidence/seaweedfs-sdk27-hosted-20261103.json
+      - evidence/sdk27-artifacts/**
+      - evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json
+      - evidence/storage-ouf-standard-41691297148/**
+      - evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json
+      - evidence/seaweedfs-452-cold-recovery-hosted-20261103.json
+      - evidence/seaweedfs-452-cold-recovery-hosted-20261103/**
+      - evidence/seaweedfs-452-generation29-image-hosted-20261103.json
+      - releases/seaweedfs-452-generation29-build-manifest-20261103.json
+      - patches/seaweedfs/4.52-ouf-standard-optional-closure.patch
+      - patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-normal-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch
+      - patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch
+      - patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch
+      - patches/seaweedfs/4.52-iam-module-sdk-v2.patch
+      - scripts/verify-minio-seaweedfs-plan-generation31.py
+      - scripts/verify-minio-seaweedfs-plan-generation32.py
+      - scripts/verify-minio-seaweedfs-plan-generation33.py
+      - evidence/storage-postgres-publication-fence-hosted-20261104.json
+      - evidence/storage-coordinated-generation32-hosted-20261104.json
+      - evidence/artifacts/storage-postgres-publication-fence-41794344238.zip
+      - evidence/artifacts/storage-coordinated-generation32-41782068196.zip
+      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
+      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
+      - evidence/seaweedfs-generation33-image-hosted-20261104.json
+      - evidence/seaweedfs-generation33-image-raw-20261104/**
+      - evidence/seaweedfs-452-generation33-cohort-hosted-20261104.json
+      - evidence/seaweedfs-generation33-runtime-hosted-20261104.json
+      - evidence/artifacts/seaweedfs-generation33-*41794344274.zip
+      - releases/seaweedfs-452-generation32-candidate-lock-20261103.json
+      - releases/seaweedfs-452-generation32-build-manifest-20261103.json
+      - evidence/seaweedfs-452-generation32-image-hosted-20261104.json
+      - evidence/seaweedfs-452-generation32-cohort-hosted-20261104.json
+      - evidence/seaweedfs-generation32-runtime-hosted-20261104.json
+      - evidence/artifacts/seaweedfs-generation32-cohort-41778371999.zip
+      - evidence/artifacts/seaweedfs-generation32-runtime-41778371999.zip
+      - scripts/verify-minio-seaweedfs-plan-current.py
+      - tests/test_minio_seaweedfs_plan_current.py
+      - releases/seaweedfs-452-generation29-candidate-lock-20261103.json
+      - evidence/seaweedfs-452-generation29-cohort-hosted-20261103.json
+      - evidence/seaweedfs-452-generation29-cohort-hosted-20261103/**
+      - evidence/seaweedfs-generation29-runtime-hosted-20261103.json
+      - evidence/seaweedfs-generation29-runtime-hosted-41701381292/**
+      - evidence/seaweedfs-generation29-runtime-jobs-41701381292.json
+      - patches/seaweedfs/**
+      - scripts/run-seaweedfs-452-generation29-labs.py
+      - scripts/storage-generation29-lab-binding.py
+      - scripts/run-seaweedfs-452-cold-recovery.py
+      - scripts/run-seaweedfs-452-identity-tls.py
+      - scripts/readback-seaweedfs-452-generation29-image.py
+      - tests/test_storage_generation29_lab_binding.py
+      - tests/test_storage_generation29_labs.py
+      - .github/workflows/storage-452-generation29-runtime-labs.yml
+      - evidence/lifecycle262/**
+      - evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json
+      - .github/workflows/storage-452-generation31-runtime-labs.yml
+      - evidence/artifacts/seaweedfs-452-generation31-build-evidence-41712811559.zip
+      - evidence/artifacts/seaweedfs-452-generation31-image-readback-41712811559.zip
+      - evidence/artifacts/seaweedfs-generation31-cohort-41715991128.zip
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort-metadata.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/SHA256SUMS
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/cohort-receipt.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/licence-rebinding.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/modified-raftstore-source-manifest.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/modified-raftstore-source.tar.gz
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/module-downloads.jsonl
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/ordered-patches.txt
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/producer/SHA256SUMS
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/producer/provenance.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/publisher-verification.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/cohort/seaweedfs-452-generation31-candidate-lock-20261103.json
+      - evidence/seaweedfs-452-generation31-cohort-hosted-20261103/qualify-cohort.log
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103.json
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103/build-verification.json
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103/fresh-image-scan.json
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103/github-metadata.json
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103/image.spdx.json
+      - evidence/seaweedfs-452-generation31-image-hosted-20261103/version-smoke.txt
+      - evidence/seaweedfs-generation31-runtime-hosted-20261103.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/SHA256SUMS
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/SHA256SUMS
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/cohort-receipt.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/licence-rebinding.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/modified-raftstore-source-manifest.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/modified-raftstore-source.tar.gz
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/module-downloads.jsonl
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/ordered-patches.txt
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/producer/SHA256SUMS
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/producer/provenance.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/publisher-verification.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/seaweedfs-452-generation31-candidate-lock-20261103.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/cold-backup-manifest.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/exact-image.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-containers.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-filer-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-filer.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-lock-ring-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-master-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-master.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-routes.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-s3-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-s3.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-seed.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-volume-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-volume.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-containers.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-filer-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-filer.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-lock-ring-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-master-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-master.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-routes.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-s3-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-s3.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-verify.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-volume-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-volume.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/recovery-result.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ca.pem
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/containers.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/exact-image.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/fixture-policy.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/identity-result.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/lock-ring-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/network.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-filer-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-filer.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-master-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-master.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-ready.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-s3-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-s3.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-verify.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-volume-stopped.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-volume.log
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/server.pem
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/wrong-ca.pem
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/runtime-result.json
+      - evidence/seaweedfs-generation31-runtime-hosted-41715991128/source-sha256.json
+      - evidence/seaweedfs-generation31-runtime-jobs-41715991128.json
+      - releases/seaweedfs-452-generation31-build-manifest-20261103.json
+      - releases/seaweedfs-452-generation31-candidate-lock-20261103.json
+      - scripts/qualify-seaweedfs-452-generation31-image.py
+      - scripts/readback-seaweedfs-452-generation31-image.py
+      - scripts/run-seaweedfs-452-generation31-labs.py
+      - scripts/storage-generation31-lab-binding.py
+      - scripts/verify-seaweedfs-452-generation31-cohort.py
+      - tests/test_storage_generation31_lab_binding.py
+      - tests/test_storage_generation31_labs.py
+      - tools/storage_licenses/evidence.py
+      - tools/storage_security/generation_image_v2.py
+      - tools/storage_security/generation_readback_v1.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-plan-current-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-current-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Validate the additive current qualification view
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-plan-current-evidence"
+          mkdir -p "$evidence"
+          python3 -I -B -S -m unittest discover \
+            -s tests -p test_minio_seaweedfs_plan_current.py -v 2>&1 |
+            tee "$evidence/test.log"
+          python3 -I -B -S scripts/verify-minio-seaweedfs-plan-current.py \
+            --output "$evidence/verification.json"
+
+      - name: Bind all current inputs and verify the manifest
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/storage-plan-current-evidence"
+          sha256sum \
+            releases/minio-seaweedfs-plan-20261102.json \
+            releases/seaweedfs-452-candidate-lock-20261103.json \
+            evidence/seaweedfs-452-cohort-readback-hosted-20261103.json \
+            evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json \
+            evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json \
+            evidence/seaweedfs-sdk27-hosted-20261103.json \
+            evidence/sdk27-artifacts/*/* \
+            evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json \
+            evidence/storage-ouf-standard-41691297148/* \
+            evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json \
+            evidence/seaweedfs-452-cold-recovery-hosted-20261103.json \
+            evidence/seaweedfs-452-cold-recovery-hosted-20261103/* \
+            evidence/seaweedfs-452-generation29-image-hosted-20261103.json \
+            releases/seaweedfs-452-generation29-build-manifest-20261103.json \
+            patches/seaweedfs/4.52-ouf-standard-optional-closure.patch \
+            patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \
+            patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \
+            patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \
+            patches/seaweedfs/4.52-iam-module-sdk-v2.patch \
+            scripts/verify-minio-seaweedfs-plan-current.py \
+            tests/test_minio_seaweedfs_plan_current.py \
+            .github/workflows/storage-plan-current.yml \
+            > "$evidence/input-sha256.txt"
+          python3 -I -B -S - <<'PYCODE' >> "$evidence/input-sha256.txt"
+          import hashlib, json, os
+          from pathlib import Path
+          plan = json.loads(Path('releases/minio-seaweedfs-plan-20261102.json').read_bytes())
+          paths = {'scripts/verify-minio-seaweedfs-plan-generation31.py'}
+          for current in (plan['currentQualification'], plan['historicalQualification32'], plan['historicalQualification31'], plan['historicalQualification29']):
+              generation = current['generation']
+              cohort = json.loads(Path(current['cohortReceipt']).read_bytes())
+              runtime = json.loads(Path(current['runtimeReceipt']).read_bytes())
+              manifest_path = ('releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json' if generation == 33
+                               else f'releases/seaweedfs-452-generation{generation}-build-manifest-20261103.json')
+              manifest = json.loads(Path(manifest_path).read_bytes())
+              paths.update((current['candidateLock'], current['imageReceipt'], current['cohortReceipt'], current['runtimeReceipt'], manifest_path))
+              if generation == 33:
+                  lock = json.loads(Path(current['candidateLock']).read_bytes())
+                  image = json.loads(Path(current['imageReceipt']).read_bytes())
+                  paths.add('scripts/verify-minio-seaweedfs-plan-generation33.py')
+                  paths.add('evidence/seaweedfs-generation33-cohort-replay-local-20261104.json')
+                  paths.update(runtime['sourceHashesVerified'])
+                  paths.update(item['path'] for item in manifest['orderedSourcePatches'] + manifest['orderedDependencyPatches'])
+                  paths.update((cohort['artifact']['path'], runtime['artifact']['path']))
+                  paths.update(lock[key]['path'] for key in ('licenceRebinding','mongoV2LegalDelta','vendorSourceProfile'))
+                  paths.update(image[key]['path'] for key in ('sourceArtifact','independentReadback'))
+                  paths.update(image['rawEvidence']['directory']+'/'+name for name in image['rawEvidence']['originalMemberBytes'])
+                  continue
+              if generation == 32:
+                  lock = json.loads(Path(current['candidateLock']).read_bytes())
+                  paths.add('scripts/verify-minio-seaweedfs-plan-generation32.py')
+                  paths.update(runtime['sourceHashesVerified'])
+                  paths.update(item['path'] for item in manifest['orderedPatches'])
+                  paths.update((cohort['artifact']['path'], runtime['artifact']['path']))
+                  paths.update(lock[key]['path'] for key in (
+                      'buildEvidenceArtifact', 'independentReadback', 'licenceRebinding', 'mongoV2LegalDelta'))
+                  continue
+              jobs = runtime.get('hostedJobMetadata', runtime.get('workflowJobsEvidence'))
+              paths.add(jobs['path'])
+              paths.update(cohort['retainedRawEvidence'])
+              paths.update(item['path'] for item in runtime['rawEvidence']['files'])
+              paths.update(runtime['sourceHashesVerified'])
+              paths.update(item['path'] for item in manifest['orderedPatches'])
+              if generation == 31:
+                  image = json.loads(Path(current['imageReceipt']).read_bytes())
+                  paths.update(image['preservedFiles'])
+                  paths.add(image['buildEvidenceArtifact']['path'])
+                  paths.add(image['independentReadback']['path'])
+                  paths.add(cohort['artifact']['path'])
+          for field in ('coordinatedGeneration32Receipt','publicationFenceFixtureReceipt'):
+              path=plan['engineeringRecovery33'][field]
+              receipt=json.loads(Path(path).read_bytes())
+              paths.add(path); paths.add(receipt['originalArtifact']['path'])
+              paths.update(row['path'] for row in receipt['sourceBindingsVerifiedAgainstExactGitTree'])
+          lifecycle = plan['historicalQualification29']['dependencyLifecycle']['widerInventoryAssessment']
+          paths.add(lifecycle['inventoryReceipt'])
+          paths.update(str(path) for path in Path('evidence/lifecycle262').rglob('*') if path.is_file())
+          existing = Path(os.environ['RUNNER_TEMP']) / 'storage-plan-current-evidence/input-sha256.txt'
+          paths.difference_update(line.split('  ', 1)[1] for line in existing.read_text().splitlines())
+          for name in sorted(paths):
+              print(hashlib.sha256(Path(name).read_bytes()).hexdigest() + '  ' + name)
+          PYCODE
+          cd "$evidence"
+          sha256sum input-sha256.txt test.log verification.json | LC_ALL=C sort > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded evidence manifest
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-plan-current-evidence/SHA256SUMS
+
+      - name: Retain the bounded evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-plan-current-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-plan-current-evidence/
+          if-no-files-found: error
+          retention-days: 90

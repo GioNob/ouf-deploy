@@ -1,0 +1,122 @@
+{
+  "repositoryCandidateFiles": [
+    "docs/OUF_SEAWEEDFS_RAFT_METRICS_MIGRATION_20261103.md",
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/extended-server-failure.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.jsonl",
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.diff",
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.txt",
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.stderr",
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.txt",
+    "evidence/seaweedfs-raft-metrics-local-20261103/regressions-cgo0-terminal-events.json",
+    "evidence/seaweedfs-raft-metrics-local-20261103/source-delta.json",
+    "evidence/seaweedfs-raft-metrics-local-20261103.json",
+    "patches/seaweedfs/4.52-raft-metrics-hashicorp.patch",
+    "patches/seaweedfs/4.52-raft-metrics-module-cleanup.patch"
+  ],
+  "files": {
+    "docs/OUF_SEAWEEDFS_RAFT_METRICS_MIGRATION_20261103.md": {
+      "sha256": "75536df8a2e8f2c9aab6c0309310ac2509742d6d087a88b1ccd0a58549f49cde",
+      "bytes": 3283
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.jsonl": {
+      "sha256": "0b617c6612176bf9982699c1b5fd6a15cd3cfecb8c92fff882d5c1f66b029bf0",
+      "bytes": 1922
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/baseline29-network-test.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/extended-server-failure.jsonl": {
+      "sha256": "2ddc57180a1d7b53c7a7e79d9fe9b3ecc7edd39b44e6bd43249ff361aa410a66",
+      "bytes": 1435
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.jsonl": {
+      "sha256": "04e7c027c284b61857bdb647115268d5de8bdf21a142e84ee1980188ef687fdb",
+      "bytes": 1548
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.jsonl": {
+      "sha256": "a8346f750d86a321876a8a9006ac32116c48caa93718a0a9e1a7c6ba1539dc93",
+      "bytes": 1548
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-green.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.jsonl": {
+      "sha256": "326fe0d6e99efa2e4e7afda7cacc46a3d99d72316ed4fd9c4e28c2d47d308a1d",
+      "bytes": 1547
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-module-cleanup-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.jsonl": {
+      "sha256": "0b6d2a941812ca15183ac85b570c964417f663e34d375bfde50a40609dc99762",
+      "bytes": 3492
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/metrics-red.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.diff": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-fixed-point.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/module-cleanup-why-armon.txt": {
+      "sha256": "80d49c832e254297e7904008d52d898d032014da99d94520866ce725e12ba1a6",
+      "bytes": 211
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/production-deps-cgo0.txt": {
+      "sha256": "e6eb2027b0b75dd3aba92dc62c80822b0b911cc1b0f837a15405c347f0807030",
+      "bytes": 74953
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/regressions-cgo0-terminal-events.json": {
+      "sha256": "8d39911ac50c004e562be800ca67e73c2185ffe31827cc2b89514da06ab440e1",
+      "bytes": 449559
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103/source-delta.json": {
+      "sha256": "04bd14e0667ee41d0988c13e279627c3d52ed2607ee0ce1f87283259ef840ad0",
+      "bytes": 157
+    },
+    "evidence/seaweedfs-raft-metrics-local-20261103.json": {
+      "sha256": "38c1e5fd3909ada10e77f821714982157dc4eac21c4665183796c68bbf85ba27",
+      "bytes": 8581
+    },
+    "patches/seaweedfs/4.52-raft-metrics-hashicorp.patch": {
+      "sha256": "a88b1fdfcfcc26b5bcb189bc7824d437bcdec7fc895bed82df86e54ab2030472",
+      "bytes": 4572
+    },
+    "patches/seaweedfs/4.52-raft-metrics-module-cleanup.patch": {
+      "sha256": "70a9dbfbf181211d2a282476edf3e1f251014ec6ed389f5027bc4a8c9a7204df",
+      "bytes": 1728
+    }
+  },
+  "totalBytes": 555344
+}

@@ -1,0 +1,29 @@
+name: M2 read-only provider reconciliation protected delivery
+on:
+  push:
+    paths: ['releases/prepare-m2-provider-reconciliation-20261029.sh','tests/qualify_m2_provider_reconciliation_delivery.py','.github/workflows/m2-provider-reconciliation-delivery.yml']
+  pull_request:
+    paths: ['releases/prepare-m2-provider-reconciliation-20261029.sh','tests/qualify_m2_provider_reconciliation_delivery.py','.github/workflows/m2-provider-reconciliation-delivery.yml']
+permissions: {contents: read}
+jobs:
+  delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix: {case: [missing-target, prior-log]}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Actual immutable HTTPS delivery and root material
+        env:
+          OUF_MATERIAL_DELIVERY_CASE: ${{ matrix.case }}
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-material-delivery-${GITHUB_RUN_ID}"
+          sudo install -d -m 700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          args=()
+          if [[ "$OUF_MATERIAL_DELIVERY_CASE" = prior-log ]]; then args+=(--prior-log); fi
+          sudo env GITHUB_ACTIONS=true /usr/bin/python3 -I -B -S "$fixture/repository/tests/qualify_m2_provider_reconciliation_delivery.py" "${args[@]}"

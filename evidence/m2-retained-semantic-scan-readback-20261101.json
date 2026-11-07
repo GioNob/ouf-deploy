@@ -1,0 +1,79 @@
+{
+  "actualFinalLogRead": true,
+  "artifactId": 13100364694,
+  "blockingFindings": [
+    {
+      "FixedVersion": "8.18.0-1ubuntu2.8",
+      "InstalledVersion": "8.18.0-1ubuntu2.7",
+      "PkgName": "curl",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-92392",
+      "Severity": "HIGH",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-92392"
+    },
+    {
+      "FixedVersion": "1.2.0-3ubuntu0.1",
+      "InstalledVersion": "1.2.0-3build1",
+      "PkgName": "libbrotli1",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-111497",
+      "Severity": "HIGH",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-111497"
+    },
+    {
+      "FixedVersion": "8.18.0-1ubuntu2.8",
+      "InstalledVersion": "8.18.0-1ubuntu2.7",
+      "PkgName": "libcurl4t64",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-92392",
+      "Severity": "HIGH",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-92392"
+    }
+  ],
+  "candidateSelectionChanged": false,
+  "compressedReportSha256": "1f4e4f06fbac99dd5eea9c202ec8f6c8d5d940eef82500f12858d8a4b7e1b99f",
+  "date": "2026-11-01",
+  "failureIsExpectedSecurityAdmissionDenial": true,
+  "imageGateOutcome": "HELD_HIGH_CRITICAL_UNKNOWN",
+  "imageRebuilt": false,
+  "jobId": 124977507436,
+  "membersIndependentlyRead": [
+    "scan-result.json",
+    "trivy-image.json"
+  ],
+  "newVpsOperations": 0,
+  "preservedFullReport": "evidence/artifacts/m2-retained-semantic-trivy-20261101.json.gz",
+  "releaseAcceptance": false,
+  "reportBytes": 987390,
+  "result": {
+    "allSeveritiesReported": true,
+    "candidateSelectionChanged": false,
+    "configurationDigest": "sha256:29e32c1487b5ba29d6d29ec04f7daa3baeb1e30f392a46c838eef01493d60489",
+    "freshScanGatePassed": false,
+    "imageRebuilt": false,
+    "nativeManifestDigest": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+    "originalImageArchiveSha256": "a0f1e2252f01a0e4a45c1262f124298000c56d206bdf9953b78bcd6b3ad4017a",
+    "releaseAcceptance": false,
+    "runtimeAuthorityIssued": false,
+    "scanSha256": "d86f81872997863a471d858272ee9130c845ade6a6afd7cd22151d54f110acb8",
+    "schema": "ouf.m2-retained-semantic-original-fresh-scan.v1",
+    "sourceCommit": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+    "targetApplyAuthorized": false,
+    "targetCalls": 0,
+    "vulnerabilityCounts": {
+      "HIGH": 3,
+      "LOW": 38,
+      "MEDIUM": 56
+    }
+  },
+  "runId": 41349863937,
+  "runtimeAuthorityIssued": false,
+  "scannerCompleted": true,
+  "schema": "ouf.m2-retained-semantic-scan-readback.v1",
+  "sourceCommit": "aae34e77ad7ed13d68c77c46ac452468b997821c",
+  "targetApplyAuthorized": false,
+  "workflowConclusion": "failure",
+  "zipBytes": 416315,
+  "zipMembersEnumerated": 12,
+  "zipSha256": "70acd64d4162a3a87350153f610ef740510874158eaa822cb9bf98ad0fafa276"
+}

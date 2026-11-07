@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.storage-retained-custody-qualification.v1",
+  "status": "QUALIFIED_FIXTURE",
+  "qualifiedCommit": "45d18601a8b0993c5a843477809197c3d02574fa",
+  "runId": 42352184254,
+  "jobId": 128342483851,
+  "programBytes": 14300,
+  "programSha256": "1e269721c9ee0104cf7ead1e35505048a7152ab4a61102eee6a7e000c5128d1e",
+  "localFixturePassThroughPassed": true,
+  "nativeAgeRoundTripPassed": true,
+  "sourceArchiveFixtures": 34,
+  "rootfsArchiveFixtures": 14,
+  "hashedPayloadMembers": 53,
+  "cipherFailurePreservesPartial": true,
+  "alteredSourceRejected": true,
+  "replayRejected": true,
+  "originalFixtureMembersUnchanged": true,
+  "targetExecuted": false,
+  "acceptanceCreditAdded": 0
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "test",
+    "-mod=readonly",
+    "-json",
+    "-count=1",
+    "-timeout=60s",
+    "-run",
+    "^TestOUFStandardKMS(DeniedBeforeFileAndBytePublication|AbsentConfigPreservesIdentityLoading)$",
+    "./weed/s3api"
+  ],
+  "exitCode": 1,
+  "base": "generation29 plus frozen LDAP patch; only regression test added; no OpenBao profile changes"
+}

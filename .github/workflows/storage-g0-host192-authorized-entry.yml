@@ -1,0 +1,36 @@
+name: Storage G0 host192 authorized collection entry
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/execute-storage-g0-host192-authorized-20261106.py
+      - tests/test_storage_g0_host192_authorized_entry.py
+      - .github/workflows/storage-g0-host192-authorized-entry.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-g0-host192-authorized-entry-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  directories:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify exact decision delta, drift denial and no replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/host192-entry"
+          sudo -n env GITHUB_ACTIONS=true python3 -B -m unittest discover -s tests -p test_storage_g0_host192_authorized_entry.py -v 2>&1 | tee "$RUNNER_TEMP/host192-entry/tests.log"
+          sha256sum scripts/execute-storage-g0-host192-authorized-20261106.py tests/test_storage_g0_host192_authorized_entry.py tools/storage_planning/g0_package.py tools/storage_planning/g0_database.py > "$RUNNER_TEMP/host192-entry/sources.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: storage-g0-host192-authorized-entry-${{ github.run_id }}
+          path: ${{ runner.temp }}/host192-entry/
+          retention-days: 90
+          if-no-files-found: error
