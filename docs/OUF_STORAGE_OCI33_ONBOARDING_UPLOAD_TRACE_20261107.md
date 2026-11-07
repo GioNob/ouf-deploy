@@ -13,6 +13,27 @@ La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-uploa
 
 Il tentativo precedente rimane conservato. La nuova operazione riguarda esclusivamente le copie. Durata massima 12 minuti. La scrittura e decodifica del file JFR sono state verificate localmente con il JRE dell'immagine esatta. Il tentativo VPS si è fermato sul 502.
 
+## Blocco unico per leggere la finestra del POST
+
+1. Verificare il digest del JFR, la dimensione del JSON già espanso e la finestra di 10,396 secondi fra i file di intento e risposta.
+2. Leggere il file già espanso con mappatura di sola lettura. Scorrere le intestazioni OpenJDK e interpretare soltanto gli eventi con timestamp nella finestra del POST. Il JSON restituito contiene classi, categorie di errore e conteggi, con evidenza parziale dichiarata se il file non ha la chiusura attesa.
+
+Il blocco legge soltanto i file esistenti e non richiede Docker. Durata massima due minuti e mezzo. Verificati localmente offsets temporali, caratteri UTF-8 e gestione della coda troncata. Esecuzione VPS pendente.
+
+```bash
+sudo /usr/bin/timeout 150 /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib, urllib.request
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/c2b38c19a59872d0255c51f463de46408b4e8606/scripts/read-oci33-upload-jfr-window.py'
+with urllib.request.urlopen(url, timeout=25) as response:
+    raw = response.read(8362)
+if len(raw) != 8361 or hashlib.sha256(raw).hexdigest() != 'eed55e9fc636eaba7ea4b643bea5f03f13fbf83888faa6c2969e3e97265b2aef':
+    raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
+exec(compile(raw, 'read-oci33-upload-jfr-window.py', 'exec'), {'__name__': '__main__'})
+PY
+```
+
+Riportare solo il JSON finale.
+
 ## Blocco streaming eseguito
 
 1. Verificare lo SHA-256 della registrazione e leggere le dimensioni e gli indizi del primo decoder. Provare a riusare gli eventi già conservati, anche se il file supera il limite del primo riepilogo.
