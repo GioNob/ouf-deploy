@@ -1,5 +1,7 @@
 # Trasferimento della copia storica OUF su Windows
 
+**Staging VPS concluso.** La [ricevuta `SCP_SOURCE_STAGED`](../evidence/storage-retained-custody-scp-staged-operator-20261107.json) coincide con dimensione e SHA-256 dell'archivio sigillato. Eseguire [solo il passaggio Windows](#2-windows--copiare-e-confrontare-il-digest).
+
 La [ricevuta VPS](../evidence/storage-retained-custody-sealed-operator-20261107.json) fissa **6.544.578.724 byte** e SHA-256 `c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886`. La copia resta cifrata. Lo staging locale del VPS è stato qualificato su fixture Linux con cambio di proprietà reale, diniego del replay, mismatch di digest, rifiuto di symlink e conservazione dell'originale. Il trasferimento effettivo su Windows è ancora da eseguire. [Qualifica](https://github.com/GioNob/ouf-deploy/actions/runs/42352859496)
 
 ## 1. VPS — preparare il sorgente SCP privato
