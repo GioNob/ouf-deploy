@@ -1,5 +1,7 @@
 # Trasferimento della copia storica OUF su Windows
 
+**Trasferimento Windows verificato.** La [ricevuta operatore](../evidence/storage-retained-custody-windows-transfer-operator-20261107.json) conferma i 6.544.578.724 byte e lo SHA-256 sigillato. Passare alla [verifica di decifratura e manifest](../scripts/verify-ouf-custody.ps1) nella stessa directory privata. Il verificatore passa il tar in memoria, confronta lo SHA-256 del manifest e verifica i 53 membri del payload e i tre documenti di evidenza. L'esito Windows è la verifica operativa di questo passo. Il trasferimento resta nella sezione storica sotto.
+
 **Staging VPS concluso.** La [ricevuta `SCP_SOURCE_STAGED`](../evidence/storage-retained-custody-scp-staged-operator-20261107.json) coincide con dimensione e SHA-256 dell'archivio sigillato. Eseguire [solo il passaggio Windows](#2-windows--copiare-e-confrontare-il-digest).
 
 La [ricevuta VPS](../evidence/storage-retained-custody-sealed-operator-20261107.json) fissa **6.544.578.724 byte** e SHA-256 `c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886`. La copia resta cifrata. Lo staging locale del VPS è stato qualificato su fixture Linux con cambio di proprietà reale, diniego del replay, mismatch di digest, rifiuto di symlink e conservazione dell'originale. Il trasferimento effettivo su Windows è ancora da eseguire. [Qualifica](https://github.com/GioNob/ouf-deploy/actions/runs/42352859496)

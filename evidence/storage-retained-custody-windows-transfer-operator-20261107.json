@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.storage-retained-custody-windows-transfer-operator-receipt.v1",
+  "provenance": "OPERATOR_REPORTED_WINDOWS_RESULT",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "result": {
+    "schema": "ouf.storage-backup-windows-transfer.v1",
+    "status": "TRANSFER_SIZE_AND_SHA256_VERIFIED",
+    "bytes": 6544578724,
+    "sha256": "c3b0de7ab9fceb9c566431a4ed5ebf8f7720dae5eee52c1a0a5c76a5eb99a886",
+    "attempts": 1,
+    "remoteFilesModified": false,
+    "decryptionVerified": false,
+    "restoreVerified": false,
+    "g3Complete": false,
+    "acceptanceCreditAdded": 0
+  },
+  "matchesSealedVpsReceipt": true,
+  "acceptanceCreditAdded": 0
+}
