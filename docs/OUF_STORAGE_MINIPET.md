@@ -17,7 +17,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. La lettura UDP corrente è riuscita: JAR /app/app.jar e AWS SDK 2.54.17 identificati. Il prossimo passo è la [prova del client installato](OUF_UDP_SEAWEEDFS_CLIENT_PROBE_20261107.md). [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
+**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. Il client UDP originale ha superato PUT/HEAD/GET su SeaweedFS alle 18:39 CET, corpo di 33 byte, hash e metadati coincidenti. Il servizio UDP mantiene ancora il binding MinIO. Il prossimo passo è il [cambio effettivo UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md), preparato e verificato localmente, da eseguire sul VPS. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
 
 Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sopra: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -33,7 +33,7 @@ Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sop
 | STATE e runbook di avvio riportano stack originale su MinIO e OCI33 su rete privata [E9] | Esistono due backend; manca il cambio applicativo verificato | L'avvio di SeaweedFS non cambia i binding e non sincronizza nuove scritture MinIO |
 | 403 THS anche in InPrivate, account ouf-admin confermato [E10] | Blocco dell'ingresso utente, ora seguito dall'agente principale | Non prova un difetto di SeaweedFS |
 
-**Stato corrente:** sono riusciti confronto PUT/GET dei client, allineamento dei file, passaggio Onboarding, upload e lettura/profilazione dello stesso asset. Restano il collegamento UDP e il percorso fino al grafo, poi la ripetizione senza riparazioni manuali.
+**Stato corrente:** sono riusciti confronto PUT/GET dei client Onboarding, allineamento dei file, passaggio Onboarding, upload e lettura/profilazione dello stesso asset, e PUT/HEAD/GET del client UDP originale su SeaweedFS. Restano il collegamento UDP e il percorso fino al grafo, poi la ripetizione senza riparazioni manuali.
 
 La percentuale **39,78%** del vecchio registro è una stima euristica del 4 novembre basata su crediti di lavoro. Non misura né funzionalità né tempo residuo. Non sarà usata per pianificare o rendicontare questo percorso. I vecchi 0/8 gate e 0/21 AT restano stato della precedente accettazione formale, non una lista da chiudere prima di far funzionare il sistema.
 
@@ -71,7 +71,9 @@ La causa del vecchio 502 nella diversa configurazione isolata resta storica e no
 
 ### F2: cambiare tutti i percorsi necessari, una volta sola
 
-Onboarding è già verificato. Lettura UDP delle 18:27 CET riuscita: immagine ae78f604…, JAR /app/app.jar, AWS SDK 2.54.17, ambiente MinIO HTTP, target HTTPS SeaweedFS già preparato, reti distinte. SPRING_APPLICATION_JSON è presente, quindi i soli env non attestano i valori effettivi. Eseguire la [prova del client originale](OUF_UDP_SEAWEEDFS_CLIENT_PROBE_20261107.md): lettura selettiva del JSON e PUT/HEAD/GET diagnostico in container temporaneo, stessa immagine, identità/CA target, nessun cambio applicativo. Compilazione e controlli locali PASS; prova reale pendente. Dopo il risultato, allineamento dati e cambio UDP.
+Onboarding è già verificato. La [prova UDP delle 18:39 CET](../evidence/udp-seaweedfs-client-success-operator-20261107.json) è PASS: factory e adapter installati, AWS SDK 2.54.17, PUT/HEAD/GET HTTPS, 33 byte, corpo/hash/metadati coincidenti. Le proprietà storage selezionate nel JSON dichiarato sono assenti. Spring non avviato; servizio originale invariato.
+
+Eseguire ora il [cambio UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md): fermata temporanea del solo UDP, confronto/copia dei dati correnti a writer fermo, stessa immagine `ae78f604…`, endpoint HTTPS, identità target e CA; vecchio container conservato spento. Il proprio diagnostico viene rimosso solo dopo verifica di hash, gli altri extra target sono conservati. Avviatore aggiornato per i due marker. Prove locali PASS, **cambio VPS pendente**. Readiness e TLS del sostituto non chiuderanno F2 da soli: segue una normale operazione applicativa lake e la verifica del percorso Ingestion→UDP.
 
 | Percorso | Punto noto nel codice | Verifica minima |
 | --- | --- | --- |
