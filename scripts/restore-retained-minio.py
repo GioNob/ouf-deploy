@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Restore the retained MinIO data in an isolated network and read its object bodies."""
 import argparse
+from datetime import datetime, timezone
 import hashlib
+import hmac
 import json
 import os
 from pathlib import PurePosixPath
@@ -14,18 +16,37 @@ import subprocess
 import tarfile
 import tempfile
 import time
-from urllib.parse import quote, unquote, urlencode
+from urllib.parse import parse_qsl, quote, unquote, urlencode
 import xml.etree.ElementTree as ET
 
 
 SCHEMA = 'ouf.storage-retained-minio-restore.v1'
 DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01'
-READ_DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02'
+PRIOR_READ_DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02'
+READ_DECISION = 'GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-03'
 SECONDS = 600
 READ_SECONDS = 900
 BODY_LIMIT = 64 << 20
 TOTAL_LIMIT = 512 << 20
 ENV = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
+LOOPBACK_CLIENT = r"""
+import http.client, json, sys
+path, headers, cap = json.load(sys.stdin)
+connection = http.client.HTTPConnection('127.0.0.1', 9000, timeout=8)
+try:
+    connection.request('GET', path, headers=headers)
+    response = connection.getresponse()
+    body = response.read(cap + 1)
+    sys.stdout.buffer.write(f'{response.status:03d}\n'.encode() + body)
+except ConnectionRefusedError:
+    raise SystemExit(70)
+except TimeoutError:
+    raise SystemExit(71)
+except (OSError, http.client.HTTPException):
+    raise SystemExit(72)
+finally:
+    connection.close()
+"""
 
 
 class Held(Exception):
@@ -93,32 +114,61 @@ def extract(h, pg, plan, members, scope, until):
     return image, volume, info, members[name]['sha256']
 
 
+def signed_get(path, host, auth, stamp):
+    uri, _, query = path.partition('?')
+    pairs = sorted((quote(k, safe='-_.~'), quote(v, safe='-_.~'))
+                   for k, v in parse_qsl(query, keep_blank_values=True))
+    query = '&'.join(f'{k}={v}' for k, v in pairs)
+    url = uri + ('?' + query if query else '')
+    headers = {'host': host}
+    if auth is None:
+        return url, headers
+    key, secret = auth
+    payload = hashlib.sha256(b'').hexdigest()
+    headers.update({'x-amz-content-sha256': payload, 'x-amz-date': stamp})
+    names = sorted(headers)
+    signed = ';'.join(names)
+    canonical_headers = ''.join(f'{name}:{headers[name]}\n' for name in names)
+    canonical = '\n'.join(('GET', uri, query, canonical_headers, signed, payload))
+    day = stamp[:8]
+    scope = f'{day}/us-east-1/s3/aws4_request'
+    message = '\n'.join(('AWS4-HMAC-SHA256', stamp, scope,
+                         hashlib.sha256(canonical.encode()).hexdigest()))
+    signing_key = ('AWS4' + secret).encode()
+    for part in (day, 'us-east-1', 's3', 'aws4_request'):
+        signing_key = hmac.digest(signing_key, part.encode(), 'sha256')
+    signature = hmac.digest(signing_key, message.encode(), 'sha256').hex()
+    headers['Authorization'] = (
+        f'AWS4-HMAC-SHA256 Credential={key}/{scope},SignedHeaders={signed},Signature={signature}')
+    return url, headers
+
+
 def request(net, auth, path, limit, until):
     need(time.monotonic() < until and path.startswith('/'), 'MINIO_READ_WINDOW')
     maximum = max(limit, 16384)
+    path, headers = signed_get(path, '127.0.0.1:9000', auth,
+                               datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
 
     def restrict_output():
-        resource.setrlimit(resource.RLIMIT_FSIZE, (maximum + 1, maximum + 1))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (maximum + 5, maximum + 5))
 
     with tempfile.TemporaryFile() as raw:
-        fd = raw.fileno()
-        argv = ['/usr/bin/nsenter', f'--net=/proc/self/fd/{net}', '/usr/bin/curl',
-            '--disable', '--globoff', '--path-as-is', '--noproxy', '*', '--proto', '=http',
-            '--max-time', '8', '--max-filesize', str(maximum), '--silent', '--show-error',
-            '--output', f'/proc/self/fd/{fd}', '--write-out', '%{http_code}']
-        if auth:
-            argv.extend(['--config', str(auth), '--aws-sigv4', 'aws:amz:us-east-1:s3'])
-        p = subprocess.run(argv + ['http://127.0.0.1:9000' + path], stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ENV,
-            pass_fds=(net, fd), preexec_fn=restrict_output, timeout=min(10, until - time.monotonic()))
+        argv = ['/usr/bin/nsenter', f'--net=/proc/self/fd/{net}', '/usr/bin/python3',
+                '-I', '-B', '-S', '-c', LOOPBACK_CLIENT]
+        p = subprocess.run(argv, input=json.dumps([path, headers, maximum]).encode(),
+            stdout=raw, stderr=subprocess.PIPE, env=ENV,
+            pass_fds=(net,), preexec_fn=restrict_output, timeout=min(10, until - time.monotonic()))
         if p.returncode:
             if p.stderr.startswith(b'nsenter:'):
                 raise Held('MINIO_NAMESPACE_ENTRY_FAILED')
-            raise Held(f'MINIO_CURL_EXIT_{p.returncode}' if 0 < p.returncode < 100 else 'MINIO_CURL_INTERRUPTED')
-        need(re.fullmatch(rb'[1-5][0-9]{2}', p.stdout), 'MINIO_HTTP_STATUS_MISSING')
+            codes = {70: 'MINIO_HTTP_CONNECT_REFUSED', 71: 'MINIO_HTTP_TIMEOUT',
+                     72: 'MINIO_HTTP_PROTOCOL_ERROR'}
+            raise Held(codes.get(p.returncode, 'MINIO_HTTP_CLIENT_FAILED'))
         raw.seek(0)
+        code = raw.read(4)
+        need(re.fullmatch(rb'[1-5][0-9]{2}\n', code), 'MINIO_HTTP_STATUS_MISSING')
         body = raw.read(maximum + 1)
-        status = int(p.stdout)
+        status = int(code)
         if status != 200:
             error = None
             if auth:
@@ -196,8 +246,10 @@ def execute(h, pg, decision):
 def finish_s3_proof(h, pg, decision):
     need(decision == READ_DECISION, 'EXACT_MINIO_S3_DECISION_REQUIRED')
     old = pg['ROOT'] / 'historical-minio-restore-20261107-v1'
-    scope = old / 's3-proof-v1'
-    need(not os.path.lexists(scope) and not os.path.lexists(old / 'result.json'),
+    previous = old / 's3-proof-v1'
+    scope = old / 's3-proof-v2'
+    need(not os.path.lexists(scope) and not os.path.lexists(old / 'result.json')
+         and not os.path.lexists(previous / 'result.json'),
          'MINIO_S3_PROOF_ALREADY_CLAIMED')
     claim = h['decode'](h['protected'](old / 'claim.private.json', private=True, limit=8192))
     need(claim.get('schema') == SCHEMA and claim.get('decisionReference') == DECISION
@@ -208,6 +260,13 @@ def finish_s3_proof(h, pg, decision):
     log = h['protected'](old / 'minio.stderr.private', private=True, limit=1 << 20)
     need(re.search(rb'API:\s+http://127\.0\.0\.1:9000\b', log)
          and b'Exiting on signal' in log, 'PRIOR_MINIO_START_STOP_NOT_PROVEN')
+    prior_claim = h['decode'](h['protected'](previous / 'claim.private.json', private=True, limit=8192))
+    need(prior_claim.get('schema') == SCHEMA and prior_claim.get('decisionReference') == PRIOR_READ_DECISION
+         and prior_claim.get('manifestSha256') == pg['MANIFEST_SHA']
+         and prior_claim.get('networkMode') == 'none' and prior_claim.get('maximumContainerRuns') == 1
+         and prior_claim.get('maximumSeconds') == 900 and re.fullmatch(
+             'ouf-minio-historical-[a-f0-9]{16}', prior_claim.get('containerName', '')),
+         'PRIOR_MINIO_S3_CLAIM_MISMATCH')
     members = h['decode'](h['protected'](old / 'verified-members.private.json', private=True, limit=32768))
     sealed = pg['SEALED']
     capture = pg['OLD']
@@ -227,11 +286,11 @@ def finish_s3_proof(h, pg, decision):
     info = volume.lstat()
     need(stat.S_ISDIR(info.st_mode) and volume.resolve(strict=True) == volume
          and (volume / '.minio.sys').is_dir(), 'MINIO_RESTORED_DATA_REQUIRED')
-    prior = subprocess.run(['/usr/bin/docker', '--host', 'unix:///run/docker.sock',
-        '--config', str(old / 'docker-client'), 'ps', '-aq', '--filter',
-        'name=^/' + claim['containerName'] + '$'], env=ENV, stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL, timeout=10)
-    need(prior.returncode == 0 and not prior.stdout.strip(), 'PRIOR_MINIO_CONTAINER_STILL_PRESENT')
+    for name in (claim['containerName'], prior_claim['containerName']):
+        prior = subprocess.run(['/usr/bin/docker', '--host', 'unix:///run/docker.sock',
+            '--config', str(old / 'docker-client'), 'ps', '-aq', '--filter', 'name=^/' + name + '$'],
+            env=ENV, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10)
+        need(prior.returncode == 0 and not prior.stdout.strip(), 'PRIOR_MINIO_CONTAINER_STILL_PRESENT')
     parent = h['runtime_parent'](scope)
     try:
         os.mkdir(scope.name, 0o700, dir_fd=parent)
@@ -254,8 +313,7 @@ def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
     h['new'](scope / 'minio.env.private',
              (f'MINIO_ROOT_USER={key}\nMINIO_ROOT_PASSWORD={password}\n'
               'MINIO_API_ROOT_ACCESS=on\nMINIO_REGION_NAME=us-east-1\n').encode())
-    auth = scope / 'curl-auth.private'
-    h['new'](auth, f'user = "{key}:{password}"\n'.encode())
+    auth = (key, password)
     docker = ['/usr/bin/docker', '--host', 'unix:///run/docker.sock', '--config', str(scope / 'docker-client')]
 
     def call(args, timeout=20):
@@ -294,7 +352,11 @@ def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
             nonlocal calls
             calls += 1
             need(calls + health_calls <= 320, 'MINIO_HTTP_REQUEST_BUDGET')
-            return request(net, auth, path, limit, until)
+            phase = 'BUCKET_LIST' if path == '/' else ('VERSION_LIST' if '?versions' in path else 'OBJECT_GET')
+            try:
+                return request(net, auth, path, limit, until)
+            except Held as error:
+                raise Held(phase + '_' + str(error)) from None
 
         ready = False
         last = 'MINIO_HTTP_NOT_PROBED'
@@ -306,10 +368,11 @@ def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
                 break
             except Held as error:
                 last = str(error)
-                if last not in ('MINIO_CURL_EXIT_7', 'MINIO_CURL_EXIT_28', 'MINIO_HTTP_429', 'MINIO_HTTP_503'):
-                    raise
+                if last not in ('MINIO_HTTP_CONNECT_REFUSED', 'MINIO_HTTP_TIMEOUT',
+                                'MINIO_HTTP_429', 'MINIO_HTTP_503'):
+                    raise Held('READINESS_' + last) from None
                 time.sleep(1)
-        need(ready, last)
+        need(ready, 'READINESS_' + last)
         records, buckets, markers, total = inventory(get)
     finally:
         if net is not None:
@@ -333,6 +396,7 @@ def run_server(h, pg, scope, decision, until, image, volume, info, source_sha):
         's3BodyManifestSha256': h['digest'](manifest), 'bucketsRead': buckets, 'versionsRead': bodies,
         'deleteMarkersObserved': markers, 'bytesRead': total, 's3GetRequests': calls,
         'httpReadinessVerified': True, 'httpReadinessRequests': health_calls,
+        'httpClient': 'python-stdlib-sigv4',
         'reusedExtractedVolume': decision == READ_DECISION,
         'matchesPrior120Bodies': bodies == 120, 'networkMode': 'none', 'historicalRestoreOnly': True,
         'g3Complete': False, 'acceptanceCreditAdded': 0}

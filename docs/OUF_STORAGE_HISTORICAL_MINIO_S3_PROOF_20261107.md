@@ -1,3 +1,7 @@
+## Esito del tentativo
+
+[HELD curl 43](../evidence/storage-historical-minio-s3-curl-held-operator-20261107.json). [Ripresa con client HTTP Python](OUF_STORAGE_HISTORICAL_MINIO_HTTP_PROOF_20261107.md), decisione pendente sul nuovo avvio.
+
 # Completamento della prova S3 sulla copia MinIO
 
 Decisione approvata `GIOVANNI-NONPROD-ISOLATED-MINIO-S3-20261107-02`.
