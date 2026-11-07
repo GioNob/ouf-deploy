@@ -298,7 +298,7 @@ def restore_token_refresh(report):
     report['tokenTimersEnabled'] = len(timers)
 
 
-def retained_stack():
+def retained_snapshot():
     with PLAN.open('rb') as stream:
         raw = stream.read((1 << 20) + 1)
     require(len(raw) <= 1 << 20 and hashlib.sha256(raw).hexdigest() == PLAN_SHA, 'ORIGINAL_PLAN_MISMATCH')
@@ -330,15 +330,84 @@ def retained_stack():
         retained[replacement['Id']] = replacement
         replacements[role] = replacement
     docs = inspect(*bound.values())
+    return roles, bound, retained, replacements, docs
+
+
+def configuration_check(role, doc, reference, expected_image, expected_hash):
+    started_at = reference['State']['StartedAt']
+    before_config, after_config = reference['Config'], doc['Config']
+    before_host, after_host = reference['HostConfig'], doc['HostConfig']
+    changed_config = sorted(key for key in before_config.keys() | after_config.keys()
+                            if before_config.get(key) != after_config.get(key))
+    changed_host = sorted(key for key in before_host.keys() | after_host.keys()
+                          if key != 'RestartPolicy' and before_host.get(key) != after_host.get(key))
+    scalar_changes = []
+    for section, left, right, fields in (
+            ('Config', before_config, after_config, ('StopTimeout', 'OpenStdin', 'Tty')),
+            ('HostConfig', before_host, after_host, ('OomKillDisable', 'Init', 'Memory', 'MemorySwap', 'NanoCpus', 'PidsLimit'))):
+        for key in fields:
+            old, new = left.get(key), right.get(key)
+            if old != new and all(v is None or type(v) in (bool, int) for v in (old, new)):
+                scalar_changes.append({'field': section + '.' + key, 'before': old, 'after': new})
+    # Names only: never return environment values, command arguments, labels or mount sources.
+    def environment_names(config):
+        return dict(value.split('=', 1) for value in (config.get('Env') or []) if '=' in value)
+    old_env, new_env = environment_names(before_config), environment_names(after_config)
+    env_keys = sorted(key for key in old_env.keys() | new_env.keys() if old_env.get(key) != new_env.get(key))
+    result = {'role': role, 'statePermitted': doc['State']['Status'] in ('running', 'exited'),
+              'imageMatchesRetained': doc['Image'] == expected_image,
+              'fingerprintMatchesRetained': fingerprint(doc, started_at) == expected_hash,
+              'capturedBaselineMatchesExpectedFingerprint': fingerprint(reference, started_at) == expected_hash,
+              'changedConfigFields': changed_config, 'changedHostConfigFields': changed_host,
+              'mountsChanged': doc['Mounts'] != reference['Mounts'],
+              'pathChanged': doc.get('Path') != reference.get('Path'),
+              'argumentsChanged': doc.get('Args') != reference.get('Args'),
+              'changedEnvironmentKeys': [key for key in env_keys if re.fullmatch('[A-Z_][A-Z0-9_]{0,99}', key)],
+              'otherChangedEnvironmentKeyCount': sum(not bool(re.fullmatch('[A-Z_][A-Z0-9_]{0,99}', key)) for key in env_keys),
+              'safeScalarChanges': scalar_changes, 'sensitiveConfigurationValuesEmitted': False}
+    result['matches'] = all(result[key] for key in ('statePermitted', 'imageMatchesRetained', 'fingerprintMatchesRetained'))
+    return result
+
+
+def snapshot_checks(roles, bound, retained, replacements, docs):
+    checks = {}
+    for role, cid in bound.items():
+        reference = retained[cid]
+        expected = fingerprint(replacements[role], reference['State']['StartedAt']) if role in replacements else roles[role]['fingerprint']
+        checks[role] = configuration_check(role, docs[cid], reference, roles[role]['nativeImage'], expected)
+    return checks
+
+
+def retained_stack(report=None):
+    roles, bound, retained, replacements, docs = retained_snapshot()
+    checks = snapshot_checks(roles, bound, retained, replacements, docs)
+    if report is not None:
+        report['retainedConfigurationMismatches'] = [row for row in checks.values() if not row['matches']]
     for role, cid in bound.items():
         doc = docs[cid]
-        started_at = retained[cid]['State']['StartedAt']
-        expected = fingerprint(replacements[role], started_at) if role in replacements else roles[role]['fingerprint']
-        require(doc['State']['Status'] in ('running', 'exited') and doc['Image'] == roles[role]['nativeImage']
-                and fingerprint(doc, started_at) == expected, 'RETAINED_CONFIGURATION_CHANGED')
+        require(checks[role]['matches'], 'RETAINED_CONFIGURATION_CHANGED')
         if role in replacements:
             require(set(doc['NetworkSettings']['Networks']) == set(replacements[role]['NetworkSettings']['Networks']),
                     role.upper() + '_STORAGE_NETWORKS_CHANGED')
+    return bound, docs
+
+
+def retained_semantic(report):
+    roles, bound, retained, replacements, docs = retained_snapshot()
+    checks = snapshot_checks(roles, bound, retained, replacements, docs)
+    report['retainedConfigurationMismatches'] = [row for row in checks.values() if not row['matches']]
+    report['semanticConfigurationCheck'] = checks['semantic']
+    report['configurationCheckScope'] = 'SEMANTIC_EXACT_CONFIGURATION_AND_DEPENDENCY_IMAGE_RUNNING_STATE'
+    require(checks['semantic']['matches'], 'SEMANTIC_RETAINED_CONFIGURATION_CHANGED')
+    report['semanticDependencies'] = {}
+    for role in ('postgres', 'keycloak', 'gateway-owner', 'apisix', 'caddy'):
+        doc = docs[bound[role]]
+        report['semanticDependencies'][role] = {'running': doc['State']['Running'],
+                                              'imageMatchesRetained': checks[role]['imageMatchesRetained']}
+        require(doc['State']['Running'] and checks[role]['imageMatchesRetained'],
+                'SEMANTIC_DEPENDENCY_NOT_READY_' + role.upper().replace('-', '_'))
+    # This mode starts only Semantic. Other configuration differences remain visible;
+    # the e2e mode still requires every role's full retained fingerprint to match.
     return bound, docs
 
 
@@ -359,7 +428,7 @@ def start_role(role, bound, docs, report):
 
 
 def e2e(report):
-    bound, docs = retained_stack()
+    bound, docs = retained_stack(report)
     running = docker('ps', '-q', '--no-trunc').decode().split()
     others = sorted(set(running) - set(bound.values()))
     require(not others or all(
@@ -380,7 +449,7 @@ def e2e(report):
 
 
 def start_mcp(report):
-    bound, docs = retained_stack()
+    bound, docs = retained_stack(report)
     require(all(docs[bound[role]]['State']['Running'] for role in ('postgres', 'keycloak', 'gateway-owner',
                 'apisix', 'caddy')), 'MCP_DEPENDENCIES_NOT_RUNNING')
     start_role('mcp', bound, docs, report)
@@ -480,7 +549,7 @@ def main():
             elif mode == 'mcp':
                 start_mcp(report)
             elif mode == 'semantic':
-                bound, docs = retained_stack()
+                bound, docs = retained_semantic(report)
                 start_role('semantic', bound, docs, report)
                 report['status'] = 'OUF_SEMANTIC_APPLICATION_READY'
             else:

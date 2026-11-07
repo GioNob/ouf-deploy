@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.semantic-start-scope-fix.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASS_VPS_EXECUTION_PENDING",
+  "operatorReceipt": "evidence/semantic-start-retained-configuration-held-operator-20261107.json",
+  "observed": {
+    "status": "HELD",
+    "reason": "RETAINED_CONFIGURATION_CHANGED",
+    "changedRole": "NOT_REPORTED",
+    "changedFields": "NOT_REPORTED",
+    "rolesStarted": []
+  },
+  "sourceOrderingConclusion": {
+    "semanticStartRoleNotReached": true,
+    "gateSignalNotDispatched": true,
+    "basis": "retained_stack raises before start_role; no started or alreadyRunning roles"
+  },
+  "defect": {
+    "previousMode": "semantic validated every retained role with generic error",
+    "newMode": "Report every mismatch; require Semantic full fingerprint and dependency retained images/running state; mutate only Semantic",
+    "e2eFullStackCheckPreserved": true
+  },
+  "noUnknownMismatchAcceptedForSemantic": true,
+  "noBaselineFingerprintUpdated": true,
+  "noConfigurationEditedOnVps": true,
+  "secretValuesInDiagnostics": false,
+  "diagnosticValues": "Field names, env names only, and allowlisted non-secret numeric/boolean scalars",
+  "localChecks": [
+    {
+      "command": "python3 tests/check_runtime_semantic_scope.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/check_runtime_semantic_gate.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/check_runtime_two_storage_bindings.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS"
+    },
+    {
+      "command": "python3 tests/check_runtime_storage_binding.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS"
+    }
+  ],
+  "runtimeScriptSha256": "b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b",
+  "vpsActualMismatchStillUnknown": true,
+  "semanticApplicationReady": false,
+  "semanticSearchAfterRepairTested": false,
+  "nextAction": "Execute updated semantic mode; if Semantic itself differs, do not signal and report its detailed comparison. If Semantic matches and dependencies are running with retained images, perform the already authorized one-shot application start and readiness verification."
+}
