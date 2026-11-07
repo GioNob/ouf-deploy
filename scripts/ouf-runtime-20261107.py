@@ -21,9 +21,16 @@ IMAGE = 'sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2
 NETWORK = 'ouf-seaweedfs-private'
 SERVICE = 'ouf-seaweedfs-stage'
 LABEL = 'ouf.storage.oci33.runtime'
+TOKEN_SERVICES = (
+    'ouf-gateway-policy-token.service',
+    'ouf-ingestion-policy-token.service',
+    'ouf-onboarding-identity-token.service',
+    'ouf-policy-token@onboarding.service',
+    'ouf-policy-token@udp.service',
+)
 GROUPS = (
-    ('postgres', 'minio', 'etcd'),
-    ('keycloak', 'semantic', 'udp', 'udp-evidence-read', 'ingestion', 'ingestion-evidence-read'),
+    ('postgres', 'minio', 'etcd', 'keycloak'),
+    ('semantic', 'udp', 'udp-evidence-read', 'ingestion', 'ingestion-evidence-read'),
     ('onboarding',),
     ('gateway-owner', 'mcp'),
     ('apisix',),
@@ -72,6 +79,25 @@ def wait_started(cid, role):
     raise ValueError('START_DEADLINE_' + role.upper().replace('-', '_'))
 
 
+def restore_token_refresh(report):
+    timers = [unit.removesuffix('.service') + '.timer' for unit in TOKEN_SERVICES]
+    report['tokenRefreshServicesStarted'] = 0
+    for unit in TOKEN_SERVICES:
+        report['currentUnit'] = unit
+        command = subprocess.run(('/usr/bin/systemctl', 'start', unit), capture_output=True, timeout=120)
+        if command.returncode != 0:
+            state = subprocess.run(('/usr/bin/systemctl', 'show', unit, '--property=Result,ExecMainStatus'),
+                                   capture_output=True, text=True, timeout=15)
+            if state.returncode == 0:
+                report['unitResult'] = dict(line.split('=', 1) for line in state.stdout.splitlines() if '=' in line)
+            raise ValueError('TOKEN_REFRESH_FAILED')
+        report['tokenRefreshServicesStarted'] += 1
+    report.pop('currentUnit')
+    command = subprocess.run(('/usr/bin/systemctl', 'enable', '--now', *timers), capture_output=True, timeout=120)
+    require(command.returncode == 0, 'TOKEN_TIMERS_ENABLE_FAILED')
+    report['tokenTimersEnabled'] = len(timers)
+
+
 def e2e(report):
     with PLAN.open('rb') as stream:
         raw = stream.read((1 << 20) + 1)
@@ -95,7 +121,7 @@ def e2e(report):
         started_at = retained[cid]['State']['StartedAt']
         require(doc['State']['Status'] in ('running', 'exited') and doc['Image'] == roles[role]['nativeImage']
                 and fingerprint(doc, started_at) == roles[role]['fingerprint'], 'RETAINED_CONFIGURATION_CHANGED')
-    for group in GROUPS:
+    for index, group in enumerate(GROUPS):
         for role in group:
             report['currentRole'] = role
             if docs[bound[role]]['State']['Running']:
@@ -104,6 +130,9 @@ def e2e(report):
                 docker('start', bound[role], timeout=60)
                 report['startedRoles'].append(role)
             wait_started(bound[role], role)
+        if index == 0:
+            report['currentRole'] = 'host-token-refresh'
+            restore_token_refresh(report)
     report.pop('currentRole')
     report['status'] = 'ORIGINAL_OUF_STACK_STARTED'
 
@@ -189,11 +218,16 @@ def main():
     mode = sys.argv[1] if len(sys.argv) == 2 else ''
     report = {'status': 'HELD', 'mode': mode, 'startedRoles': [], 'alreadyRunningRoles': []}
     try:
-        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs'), 'ROOT_AND_EXACT_MODE_REQUIRED')
-        with open('/run/lock/ouf-runtime-' + mode + '.lock', 'a', opener=lambda path, flags:
+        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs', 'auth'), 'ROOT_AND_EXACT_MODE_REQUIRED')
+        lock_mode = 'e2e' if mode == 'auth' else mode
+        with open('/run/lock/ouf-runtime-' + lock_mode + '.lock', 'a', opener=lambda path, flags:
                   os.open(path, flags | os.O_NOFOLLOW, 0o600)) as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            (e2e if mode == 'e2e' else seaweedfs)(report)
+            if mode == 'auth':
+                restore_token_refresh(report)
+                report['status'] = 'OUF_TOKEN_REFRESH_RESTORED'
+            else:
+                (e2e if mode == 'e2e' else seaweedfs)(report)
     except (OSError, KeyError, subprocess.SubprocessError, ValueError) as exc:
         reason = str(exc)
         report['reason'] = reason if re.fullmatch('[A-Z][A-Z0-9_]+', reason) else type(exc).__name__
