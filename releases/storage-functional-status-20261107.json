@@ -80,6 +80,17 @@
       "applicationHttpUploadTested": false,
       "applicationBindingsChanged": false,
       "evidence": "evidence/storage-client-comparison-success-operator-20261107.json"
+    },
+    "currentCopySourceList": {
+      "status": "INCOMPLETE",
+      "observedAt": "2026-11-07T16:05:02.521344+00:00",
+      "sourceHttpStatus": 403,
+      "sourceCode": "AccessDenied",
+      "destinationRequests": 0,
+      "putAttempts": 0,
+      "sourceIdentityAtFailure": "ONBOARDING_APPLICATION",
+      "bindingChanged": false,
+      "receipt": "evidence/onboarding-current-copy-source403-operator-20261107.json"
     }
   },
   "milestones": [
@@ -147,7 +158,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Align current Onboarding object bucket, then recheck source during a brief Onboarding writer pause and switch its network/CA/S3 binding using the same installed image. Verify application upload, registered asset and governed read; UDP follows.",
+  "nextAction": "Retry current Onboarding bucket alignment using existing MinIO maintenance credentials (local checks PASS; live source access pending). Then pause Onboarding briefly, recheck/copy delta, switch the same installed image to SeaweedFS and verify application upload/governed read; UDP follows.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -174,7 +185,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Cause of application 502 unresolved; current bindings and E2E completion not demonstrated.",
+    "reason": "Installed Java/curl PUT/GET passed. Current source LIST was denied; corrected source identity awaits VPS validation. Application binding switch and repeatable E2E remain open.",
     "nextReestimateAfter": "F1"
   },
   "evidence": [
@@ -331,7 +342,7 @@
     "industrializationDeferred": true,
     "currentPolicy": "ouf-lab-authorization:60",
     "browser403ResolvedForObservedPicker": true,
-    "currentEvidenceCommit": "681935b6220dfee1bbd1149cfc23f393a12a41e2",
-    "currentEvidencePath": "evidence/storage-client-comparison-success-operator-20261107.json"
+    "currentEvidenceCommit": "1023dc35e20952c3c6a55a421f18795c5a72489b",
+    "currentEvidencePath": "evidence/onboarding-current-copy-source403-operator-20261107.json"
   }
 }

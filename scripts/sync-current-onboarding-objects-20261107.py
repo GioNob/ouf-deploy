@@ -6,10 +6,11 @@ import hmac
 import http.client
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import socket
 import ssl
+import stat
 import subprocess
 import tempfile
 import time
@@ -33,6 +34,199 @@ def need(ok, code):
         raise RuntimeError(code)
 
 
+# Existing MinIO binding reader adapted from ouf-deploy@681935b6.
+# InputBinding accepts existing file ownership/modes and never changes them.
+require = need
+Stop = RuntimeError
+
+
+def attrs(s):
+    return [getattr(s, k) for k in ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid',
+                                   'st_nlink', 'st_size', 'st_mtime_ns', 'st_ctime_ns')]
+
+"""Bounded MinIO file/env precedence, without shells, defaults or secret exports."""
+KEYS=('MINIO_ROOT_USER','MINIO_ROOT_PASSWORD','MINIO_ACCESS_KEY','MINIO_SECRET_KEY')
+SPACE=' \t\n\r\v\f\u0085\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000'
+def trim(value):return value.decode().strip(SPACE).encode()
+class Binding:
+ def __init__(self,pid,root=None,cwd=None):
+  self.root=os.open('/proc/'+str(pid)+'/root',os.O_RDONLY|os.O_DIRECTORY) if root is None else os.dup(root)
+  try:self.cwd=os.open('/proc/'+str(pid)+'/cwd',os.O_RDONLY|os.O_DIRECTORY) if cwd is None else os.dup(cwd)
+  except BaseException:os.close(self.root);raise
+  self.pid=pid if root is None else None;self.files={};self.probes={};self.opened=0;self.bytes=0;self.region=None;self.root_access=None
+ def close(self):os.close(self.cwd);os.close(self.root)
+ def path(self,raw):
+  require(type(raw) is str and 0<len(raw.encode())<=4096 and '\x00' not in raw and '\n' not in raw and '\r' not in raw,'BOUNDED_DECLARED_CREDENTIAL_REFERENCE_REQUIRED')
+  p=PurePosixPath(raw);require(not raw.startswith('//') and str(p)==raw and '..' not in p.parts and p.name not in ('','.','..'),'NO_TRAVERSAL_CREDENTIAL_REFERENCE_REQUIRED');return p
+ def node(self,anchor,parts):
+  fd=os.dup(anchor)
+  try:
+   for part in parts[:-1]:
+    new=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=fd);os.close(fd);fd=new
+   node=os.open(parts[-1],os.O_PATH|os.O_NOFOLLOW,dir_fd=fd)
+   return fd,node
+  except BaseException:os.close(fd);raise
+ def read(self,raw,limit,config=False,verify=False):
+  p=self.path(raw);anchor=self.root if p.is_absolute() else self.cwd;parts=p.parts[1:] if p.is_absolute() else p.parts;key=(p.is_absolute(),str(p),config)
+  require(verify or key in self.probes or len(self.probes)<9,'CREDENTIAL_METADATA_CANDIDATE_LIMIT')
+  if key in self.files and not verify:return self.files[key][0]
+  try:parent,node=self.node(anchor,parts)
+  except FileNotFoundError:
+   observed=None;value=None
+  else:
+   try:
+    info=os.fstat(node);require(stat.S_ISREG(info.st_mode) and info.st_uid==0 and not info.st_mode&0o007 and info.st_nlink==1 and 0<=info.st_size<=limit,'PRIVATE_BOUNDED_REGULAR_CREDENTIAL_SOURCE_REQUIRED');observed=attrs(info)
+    if verify:value=None
+    else:
+     require(self.opened<5,'CREDENTIAL_FILE_READ_LIMIT');self.opened+=1
+     fd=os.open(parts[-1],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent)
+     try:
+      require(attrs(os.fstat(fd))==observed,'CREDENTIAL_SOURCE_REBOUND');value=os.read(fd,limit+1)
+      require(len(value)==info.st_size and attrs(os.fstat(fd))==attrs(os.fstat(node))==observed,'CREDENTIAL_SOURCE_CHANGED');self.bytes+=len(value);require(self.bytes<=81920,'CREDENTIAL_BYTES_LIMIT')
+     finally:os.close(fd)
+   finally:os.close(node);os.close(parent)
+  if verify:require(self.probes[key]==observed,'CREDENTIAL_SOURCE_METADATA_CHANGED');return None
+  self.probes[key]=observed
+  if value is not None:self.files[key]=(value,limit)
+  return value
+ def secret(self,raw):
+  p=self.path(raw)
+  # MinIO pathJoin preserves the /run/secrets prefix for absolute arguments too.
+  candidate='/run/secrets/'+str(p).lstrip('/')
+  value=self.read(candidate,4096)
+  if value is None:value=self.read(str(p),4096)
+  return trim(value) if value is not None else b''
+ def stable(self):
+  if self.pid is not None:
+   require(attrs(os.stat('/proc/'+str(self.pid)+'/root'))[:5]==attrs(os.fstat(self.root))[:5] and attrs(os.stat('/proc/'+str(self.pid)+'/cwd'))[:5]==attrs(os.fstat(self.cwd))[:5],'CREDENTIAL_PROCESS_ROOT_OR_CWD_CHANGED')
+  for absolute,path,config in list(self.probes):self.read(path,65536 if config else 4096,config=config,verify=True)
+ def resolve(self,env):
+  effective={k:env[k].encode() for k in KEYS if k in env};origins={k:'EXPLICIT_ENV' for k in effective};region={k:env[k] for k in ['MINIO_REGION_NAME','MINIO_REGION','MINIO_API_ROOT_ACCESS'] if k in env}
+  for source,target in [('MINIO_ACCESS_KEY_FILE','MINIO_ROOT_USER'),('MINIO_SECRET_KEY_FILE','MINIO_ROOT_PASSWORD'),('MINIO_ROOT_USER_FILE','MINIO_ROOT_USER'),('MINIO_ROOT_PASSWORD_FILE','MINIO_ROOT_PASSWORD')]:
+   if env.get(source):
+    value=self.secret(env[source])
+    if value:effective[target]=value;origins[target]='DECLARED_SECRET_FILE'
+  if env.get('MINIO_CONFIG_ENV_FILE'):
+   value=self.read(env['MINIO_CONFIG_ENV_FILE'],65536,config=True)
+   if value is not None:
+    for line in value.decode().split('\n'):
+     line=line.strip(SPACE)
+     if not line or line.startswith('#'):continue
+     if line.startswith('export'):line=line[6:].strip(SPACE)
+     require('=' in line,'MINIO_CONFIG_ENV_ENTRY_REQUIRED');key,value=line.split('=',1)
+     if len(value)>=2 and value[0] in ('\"',"'") and value[-1]==value[0]:value=value[1:-1]
+     if key in KEYS:effective[key]=value.encode();origins[key]='DECLARED_CONFIG_ENV'
+     if key in ('MINIO_REGION_NAME','MINIO_REGION','MINIO_API_ROOT_ACCESS'):region[key]=value
+  require(bool(effective.get(KEYS[0]))==bool(effective.get(KEYS[1])),'COMPLETE_ROOT_CREDENTIAL_PAIR_REQUIRED')
+  pair=('MINIO_ROOT_USER','MINIO_ROOT_PASSWORD') if all(effective.get(k) for k in KEYS[:2]) else ('MINIO_ACCESS_KEY','MINIO_SECRET_KEY')
+  require(all(effective.get(k) for k in pair),'EXPLICIT_EFFECTIVE_CREDENTIAL_PAIR_REQUIRED')
+  values=[effective[k] for k in pair]
+  require(all(0<len(v)<=4096 and v==trim(v) and b'\x00' not in v and b'\n' not in v and b'\r' not in v for v in values),'EXACT_SDK_CREDENTIAL_VALUE_REQUIRED')
+  self.region=region.get('MINIO_REGION_NAME') or region.get('MINIO_REGION') or 'us-east-1'
+  self.root_access=region.get('MINIO_API_ROOT_ACCESS');self.stable();return values,{'selectedSources':[origins[k] for k in pair],'secretFilesOpened':self.opened,'sourceBytesRead':self.bytes,'metadataCandidates':len(self.probes),'rawValuesSpooled':False}
+
+class InputBinding(Binding):
+ def __init__(self,pid,root=None,cwd=None):
+  super().__init__(pid,root,cwd);self.observed={};self.reference_rows=[];self.preflight_done=False;self.policy_blocked=False
+ def inspect(self,raw,config=False):
+  try:p=self.path(raw)
+  except Stop:return None,{'kind':'INVALID_REFERENCE'}
+  key=(p.is_absolute(),str(p),config)
+  if key in self.observed:return key,self.observed[key]
+  require(len(self.observed)<9,'INPUT_METADATA_CANDIDATE_LIMIT');anchor=self.root if p.is_absolute() else self.cwd;parts=p.parts[1:] if p.is_absolute() else p.parts
+  current=os.dup(anchor);node=None
+  try:
+   row=None
+   for index,part in enumerate(parts):
+    node=os.open(part,os.O_PATH|os.O_NOFOLLOW,dir_fd=current);info=os.fstat(node)
+    if index<len(parts)-1:
+     if not stat.S_ISDIR(info.st_mode):row={'kind':'ANCESTOR_SYMLINK' if stat.S_ISLNK(info.st_mode) else 'ANCESTOR_NOT_DIRECTORY','metadata':attrs(info)};break
+     os.close(current);current=node;node=None
+    else:
+     mode=info.st_mode;kind='REGULAR' if stat.S_ISREG(mode) else 'SYMLINK' if stat.S_ISLNK(mode) else 'DIRECTORY' if stat.S_ISDIR(mode) else 'SPECIAL'
+     limit=65536 if config else 4096
+     row={'kind':kind,'metadata':attrs(info),'sizeWithinLimit':0<=info.st_size<=limit,'hasLink':info.st_nlink>=1,'readEligible':kind=='REGULAR' and info.st_nlink>=1 and 0<=info.st_size<=limit}
+  except FileNotFoundError:row={'kind':'MISSING'}
+  except OSError:row={'kind':'METADATA_UNAVAILABLE'}
+  finally:
+   if node is not None:os.close(node)
+   os.close(current)
+  self.observed[key]=row;self.probes[key]=row.get('metadata');return key,row
+ def preflight(self,env):
+  self.reference_rows=[];self.policy_blocked=False
+  for role,name in [('LEGACY_USER','MINIO_ACCESS_KEY_FILE'),('LEGACY_PASSWORD','MINIO_SECRET_KEY_FILE'),('ROOT_USER','MINIO_ROOT_USER_FILE'),('ROOT_PASSWORD','MINIO_ROOT_PASSWORD_FILE'),('CONFIG_ENV','MINIO_CONFIG_ENV_FILE')]:
+   if not env.get(name):continue
+   config=role=='CONFIG_ENV';raw=env[name]
+   try:p=self.path(raw)
+   except Stop:self.reference_rows.append({'source':role,'location':'DECLARED','kind':'INVALID_REFERENCE','required':True});self.policy_blocked=True;continue
+   candidates=[('DECLARED',str(p))] if config else [('SECRETS_PREFIX','/run/secrets/'+str(p).lstrip('/')),('DECLARED',str(p))]
+   scanned=[(location,*self.inspect(path,config)) for location,path in candidates]
+   first=scanned[0][2];selected=0 if config or first['kind'] not in ('MISSING','DIRECTORY') else 1
+   for index,(location,key,row) in enumerate(scanned):
+    required=index==selected;entry={'source':role,'location':location,'kind':row['kind'],'required':required}
+    if 'metadata' in row:
+     meta=row['metadata'];entry.update(mode=format(stat.S_IMODE(meta[2]),'04o'),rootOwned=meta[3]==0,singleLink=meta[5]==1,sizeWithinLimit=row.get('sizeWithinLimit',False))
+     failures=[]
+     if row['kind']!='REGULAR':failures.append('NOT_REGULAR')
+     if meta[3]!=0:failures.append('NON_ROOT_OWNER')
+     if meta[2]&0o007:failures.append('OTHER_PERMISSION_BITS')
+     if meta[5]!=1:failures.append('LINK_COUNT_NOT_ONE')
+     if not row.get('sizeWithinLimit',False):failures.append('SIZE_OUTSIDE_LIMIT')
+     entry['previousGuardFailedPredicates']=failures
+    if required and row['kind']!='MISSING' and not row.get('readEligible',False):self.policy_blocked=True
+    self.reference_rows.append(entry)
+  self.preflight_done=True;return self.public_metadata()
+ def public_metadata(self):
+  return {'metadataComplete':self.preflight_done,'readPolicy':'EXISTING_DECLARED_REGULAR_BOUNDED_STABLE_INPUTS_ONLY','sourceCustodyAdmitted':False,'policyBlocked':self.policy_blocked,'candidates':self.reference_rows,'filesOpened':self.opened,'sourceBytesRead':self.bytes,'rawValuesSpooled':False}
+ def read(self,raw,limit,config=False,verify=False):
+  require(self.preflight_done and not self.policy_blocked,'COMPLETE_INPUT_METADATA_PREFLIGHT_REQUIRED');p=self.path(raw);key=(p.is_absolute(),str(p),config);require(key in self.observed,'DECLARED_PREFLIGHTED_INPUT_ONLY')
+  initial=self.observed[key];self.observed.pop(key);self.probes.pop(key,None);_,actual=self.inspect(raw,config)
+  require(actual==initial,'DECLARED_INPUT_METADATA_CHANGED')
+  if verify:return None
+  if key in self.files:return self.files[key][0]
+  if actual['kind']=='MISSING':return None
+  require(actual.get('readEligible') is True,'DECLARED_REGULAR_BOUNDED_INPUT_REQUIRED')
+  anchor=self.root if p.is_absolute() else self.cwd;parts=p.parts[1:] if p.is_absolute() else p.parts
+  parent,node=self.node(anchor,parts)
+  try:
+   require(self.opened<5,'CREDENTIAL_FILE_READ_LIMIT');observed=actual['metadata'];require(attrs(os.fstat(node))==observed,'DECLARED_INPUT_REBOUND')
+   fd=os.open(parts[-1],os.O_RDONLY|os.O_NONBLOCK|os.O_NOFOLLOW,dir_fd=parent)
+   self.opened+=1
+   try:
+    require(attrs(os.fstat(fd))==observed and observed[6]<=81920-self.bytes,'DECLARED_INPUT_REBOUND_OR_BYTE_LIMIT');value=os.read(fd,min(limit+1,81920-self.bytes));self.bytes+=len(value)
+    require(len(value)==observed[6] and attrs(os.fstat(fd))==attrs(os.fstat(node))==observed,'DECLARED_INPUT_CHANGED')
+   finally:os.close(fd)
+  finally:os.close(node);os.close(parent)
+  self.files[key]=(value,limit);return value
+ def secret(self,raw):
+  p=self.path(raw);candidate='/run/secrets/'+str(p).lstrip('/');key=(True,candidate,False)
+  value=self.read(candidate,4096) if self.observed[key]['kind']=='REGULAR' else self.read(str(p),4096)
+  return trim(value) if value is not None else b''
+
+
+
+def source_credentials(container, report):
+    env = dict(e.split("=", 1) for e in container["Config"]["Env"] if "=" in e)
+    binding = InputBinding(container["State"]["Pid"])
+    try:
+        binding.preflight(env)
+        values, meta = binding.resolve(env)
+        report["sourceCredentialSource"] = "EXISTING_MINIO_SERVER_CONFIGURATION"
+        report["sourceCredentialOrigins"] = meta["selectedSources"]
+        report["sourceRootAccessDeclaration"] = binding.root_access or "NOT_DECLARED"
+        need(not binding.root_access or binding.root_access.lower() in ("on", "true", "1"),
+             "MINIO_ROOT_API_NOT_ENABLED_BY_DECLARATION")
+        need(re.fullmatch("[a-z0-9-]{1,63}", binding.region), "SOURCE_REGION_INVALID")
+        report["sourceRegion"] = binding.region
+        return tuple(v.decode() for v in values), binding.region
+    finally:
+        binding.close()
+
+
+def failure_reason(exc):
+    return str(exc) if isinstance(exc, RuntimeError) and re.fullmatch("[A-Z0-9_]{1,120}", str(exc)) else type(exc).__name__
+
+
 def digest(value):
     return hashlib.sha256(value).hexdigest()
 
@@ -52,7 +246,7 @@ def inspect(ref):
     return rows[0]
 
 
-def signed(method, path, host, auth, body, extra, stamp):
+def signed(method, path, host, auth, body, extra, stamp, region="us-east-1"):
     # Same SigV4 canonicalization used by the successful retained-data rehearsal.
     uri, _, query = path.partition('?')
     params = sorted((quote(k, safe='-_.~'), quote(v, safe='-_.~'))
@@ -67,10 +261,10 @@ def signed(method, path, host, auth, body, extra, stamp):
     canonical = '\n'.join((method, uri, query, lines, selected, payload))
     key, secret = auth
     day = stamp[:8]
-    scope = f'{day}/us-east-1/s3/aws4_request'
+    scope = f'{day}/{region}/s3/aws4_request'
     message = '\n'.join(('AWS4-HMAC-SHA256', stamp, scope, digest(canonical.encode())))
     signing = ('AWS4' + secret).encode()
-    for component in (day, 'us-east-1', 's3', 'aws4_request'):
+    for component in (day, region, 's3', 'aws4_request'):
         signing = hmac.digest(signing, component.encode(), 'sha256')
     signature = hmac.digest(signing, message.encode(), 'sha256').hex()
     headers['authorization'] = f'AWS4-HMAC-SHA256 Credential={key}/{scope},SignedHeaders={selected},Signature={signature}'
@@ -78,15 +272,18 @@ def signed(method, path, host, auth, body, extra, stamp):
 
 
 class S3:
-    def __init__(self, address, hostname, port, auth, ca=None):
+    def __init__(self, address, hostname, port, auth, ca=None, region="us-east-1", read_only=False):
         self.address, self.hostname, self.port, self.auth = address, hostname, port, auth
         self.context = ssl.create_default_context(cafile=str(ca)) if ca else None
         self.calls = 0
+        self.region, self.read_only = region, read_only
 
     def request(self, method, path, body=b'', extra=None, maximum=10*1024*1024):
         need(time.monotonic() < DEADLINE, 'COPY_DEADLINE')
+        need(not self.read_only or (method == 'GET' and path.startswith('/' + BUCKET)
+             and path[len(BUCKET)+1:len(BUCKET)+2] in ('/', '?')), 'SOURCE_READ_ONLY_BUCKET_SCOPE')
         uri, headers = signed(method, path, f'{self.hostname}:{self.port}', self.auth, body, extra or {},
-                              datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
+                              datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'), self.region)
         outer = self
         class Connection(http.client.HTTPConnection):
             def connect(self):
@@ -214,18 +411,16 @@ def run(report):
     env = dict(e.split('=', 1) for e in app['Config']['Env'] if '=' in e)
     need(env['OUF_ONBOARDING_STAGING_ENDPOINT'] == 'http://ouf-minio:9000'
          and env['OUF_ONBOARDING_STAGING_BUCKET'] == BUCKET, 'CURRENT_SOURCE_BINDING_CHANGED')
-    def credential(variable):
-        path = Path(env[variable])
-        need(path.is_absolute() and '..' not in path.parts, 'CREDENTIAL_PATH_INVALID')
-        return read(Path('/proc') / str(app['State']['Pid']) / 'root' / str(path).lstrip('/'), 4096).decode().strip()
-    source_auth = tuple(credential(k) for k in ('OUF_ONBOARDING_STAGING_ACCESS_KEY_FILE', 'OUF_ONBOARDING_STAGING_SECRET_KEY_FILE'))
+    report['phase'] = 'RESOLVE_SOURCE_MAINTENANCE_IDENTITY'
+    source_auth, source_region = source_credentials(minio, report)
     client = BINDINGS / 'clients/onboarding'
     target_env = json.loads(read(client / 'binding.private.json'))['environment']
     need(target_env['OUF_ONBOARDING_STAGING_ENDPOINT'] == 'https://ouf-seaweedfs-stage:9002'
          and target_env['OUF_ONBOARDING_STAGING_BUCKET'] == BUCKET, 'TARGET_BINDING_CHANGED')
     target_auth = tuple(read(client / name, 4096).decode().strip() for name in ('access-key', 'secret-key'))
     need(all(v and not any(c in v for c in '\r\n\x00') for v in (*source_auth, *target_auth)), 'CREDENTIAL_FILE_INVALID')
-    source = S3(minio['NetworkSettings']['Networks']['ouf-backend']['IPAddress'], 'ouf-minio', 9000, source_auth)
+    source = S3(minio['NetworkSettings']['Networks']['ouf-backend']['IPAddress'], 'ouf-minio', 9000, source_auth,
+                region=source_region, read_only=True)
     destination = S3(sea['NetworkSettings']['Networks']['ouf-seaweedfs-private']['IPAddress'], 'ouf-seaweedfs-stage', 9002,
                      target_auth, BINDINGS / 'config/tls/ca.pem')
     work = Path(tempfile.mkdtemp(prefix='onboarding-current-copy-', dir=ROOT))
@@ -257,12 +452,14 @@ if __name__ == '__main__':
               'objectsAlreadyMatched': 0, 'objectsCopiedAndVerified': 0, 'putAttempts': 0,
               'sourceObjectsModified': False, 'existingTargetObjectsOverwritten': False,
               'applicationBindingsChanged': False, 'databaseRequests': 0, 'serviceStops': 0,
-              'credentialValuesEmitted': False, 'targetTagsFreshlyCompared': False}
+              'credentialValuesEmitted': False, 'targetTagsFreshlyCompared': False,
+              'sourceS3Requests': 0, 'destinationS3Requests': 0,
+              'applicationPermissionsChanged': False, 'sourceRequestsReadOnly': True}
     try:
         run(report)
     except Exception as exc:
         report['status'] = 'INCOMPLETE'
-        report['reason'] = str(exc) if isinstance(exc, RuntimeError) and re.fullmatch('[A-Z_]+', str(exc)) else type(exc).__name__
+        report['reason'] = failure_reason(exc)
     report['finishedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     if 'privateEvidenceDirectory' in report:
         (Path(report['privateEvidenceDirectory']) / 'result.json').write_text(json.dumps(report, sort_keys=True) + '\n')

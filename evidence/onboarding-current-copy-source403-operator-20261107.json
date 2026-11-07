@@ -1,0 +1,23 @@
+{
+  "applicationBindingsChanged": false,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "destinationS3Requests": 0,
+  "existingTargetObjectsOverwritten": false,
+  "finishedAt": "2026-11-07T16:05:02.521344+00:00",
+  "lastS3Code": "AccessDenied",
+  "lastS3HttpStatus": 403,
+  "objectsAlreadyMatched": 0,
+  "objectsCopiedAndVerified": 0,
+  "phase": "LIST_CURRENT_SOURCE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/onboarding-current-copy-pgdhif_s",
+  "putAttempts": 0,
+  "reason": "RuntimeError",
+  "schema": "ouf.current-onboarding-object-alignment.v1",
+  "serviceStops": 0,
+  "sourceObjectsModified": false,
+  "sourceS3Requests": 1,
+  "startedAt": "2026-11-07T16:05:02.448783+00:00",
+  "status": "INCOMPLETE",
+  "targetTagsFreshlyCompared": false
+}

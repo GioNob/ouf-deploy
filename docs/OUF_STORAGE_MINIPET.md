@@ -17,7 +17,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento operativo 7 novembre:** il confronto VPS di curl e del client MinIO Java 8.6.0 dell'immagine Onboarding installata è riuscito su SeaweedFS, con TLS e hash coincidente. [Ricevuta](../evidence/storage-client-comparison-success-operator-20261107.json). È una prova del client, non ancora di HTTP applicativo/asset. Per F1 si conserva questa immagine; ora si allineano i file correnti e poi si cambia il binding Onboarding. [Passo attuale](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1–F6 restano aperti.
+**Aggiornamento operativo 7 novembre:** il confronto VPS di curl e del client MinIO Java 8.6.0 dell'immagine Onboarding installata è riuscito su SeaweedFS, con TLS e hash coincidente. [Ricevuta](../evidence/storage-client-comparison-success-operator-20261107.json). È una prova del client, non ancora di HTTP applicativo/asset. Per F1 si conserva questa immagine; l'allineamento dei file correnti ha però ricevuto 403 AccessDenied sul LIST MinIO con l'identità applicativa (zero richieste target). Il comando corretto usa l'identità di manutenzione già configurata in MinIO: test locali passati, accesso VPS da verificare. Poi si cambia il binding Onboarding. [Passo attuale](OUF_ONBOARDING_CURRENT_OBJECT_ALIGNMENT_20261107.md). F1–F6 restano aperti.
 
 Audit documentale e del codice selezionato: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -114,7 +114,7 @@ I dieci asset legacy senza proprietà provata e le altre classificazioni G0 non 
 
 ## 7. Tempi, limiti e consegna
 
-Non c'è una data di fine attendibile: la causa del 502 non è ancora provata, il binding effettivo deve essere verificato e il riuso del selettore richiede correzione e riconciliazione. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
+Non c'è una data di fine attendibile: curl e Java hanno superato il PUT/GET sul target, ma restano da completare copia corrente, cambio del binding e upload applicativo; il riuso del selettore richiede correzione e riconciliazione. Il vecchio 502 su un'altra configurazione non è il blocco attuale. La precedente previsione in numero di passi era già stata ritirata nel registro storico. Questo piano non la reintroduce.
 
 Dopo F1 si stima F2 sulla configurazione realmente corretta; dopo il primo E2E si misurano i tempi del secondo. Ogni blocco di lavoro deve produrre una correzione verificata, una prova funzionale o un impedimento preciso con l'azione necessaria. Se serve un'azione sul VPS, consegnare il solo comando attuale e il risultato richiesto, non una serie di preparazioni speculative.
 

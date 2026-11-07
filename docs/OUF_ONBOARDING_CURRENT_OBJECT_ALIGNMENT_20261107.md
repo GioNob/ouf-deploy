@@ -6,9 +6,11 @@ Per il primo percorso applicativo si mantiene l'immagine `7b9d3e91…`, corrispo
 
 ## Passo corrente
 
-[Script](../scripts/sync-current-onboarding-objects-20261107.py), SHA-256 `679895bff166d8f7aa256113398ef88f40f90811cd4a72c711199832ef63e5ed`.
+[Script](../scripts/sync-current-onboarding-objects-20261107.py), SHA-256 `13ee203be367eaf0c8679d163ca5b664c4b91ac5100efd61146e1c97c61e4fcc`.
 
-Legge gli oggetti correnti del solo bucket `ouf-managed-files` su MinIO usando le credenziali già configurate per Onboarding. Sulla destinazione usa la stessa identità SeaweedFS già provata; verifica TLS con la CA esistente. Il trasferimento avviene dal VPS tramite gli IP privati letti da Docker, mantenendo hostname HTTP e SNI corretti.
+Il primo tentativo si è fermato al LIST MinIO con `403 AccessDenied`, usando le credenziali di Onboarding: zero chiamate alla destinazione e zero PUT. [Ricevuta](../evidence/onboarding-current-copy-source403-operator-20261107.json).
+
+Il comando corretto legge gli oggetti correnti del solo bucket `ouf-managed-files` usando l'identità di manutenzione ricavata dalla configurazione MinIO già esistente. Riusa il lettore del repository per ambiente, file dichiarati e `config.env`; nessun default `minioadmin`, nessuna nuova credenziale o modifica di permessi. La validità dell'identità corrente e la sua abilitazione API restano da verificare sul VPS. Se mancano credenziali esplicite, l'accesso root è dichiarato disabilitato o il LIST è negato, il comando si ferma prima delle chiamate target. Sulla destinazione usa la stessa identità SeaweedFS già provata; verifica TLS con la CA esistente. Il trasferimento avviene dal VPS tramite gli IP privati letti da Docker, mantenendo hostname HTTP e SNI corretti.
 
 - Confronta corpo SHA-256, dimensione e metadati applicativi degli oggetti già presenti; non li riscrive.
 - Copia soltanto le chiavi mancanti, con `If-None-Match: *`, poi rilegge corpo e metadati.
@@ -32,4 +34,4 @@ Con lo snapshot allineato si prepara il cambio del solo Onboarding: stesso JAR/c
 
 Il bucket UDP e il suo client AWS Java sono il passo successivo. Questo successo non chiude F1/F2 finché manca il percorso applicativo reale.
 
-[Validazione locale](../evidence/onboarding-current-copy-prepared-20261107.json) · [Fixture HTTP mirata](../tests/check_onboarding_current_copy.py).
+[Validazione della correzione](../evidence/onboarding-current-copy-source-identity-fix-20261107.json) · [Fixture HTTP mirata](../tests/check_onboarding_current_copy.py).
