@@ -62,3 +62,8 @@ Giovanni ferma il filone parallelo e affida il seguito al solo agente principale
 Lettura live GRANTS/ROLES: policy ouf-lab-authorization:59. Il permesso admin di upload richiede dataAccessLabel e detailLevel; il selettore nel sorgente identificato fornisce un ResourceContext capability privo di attributi. Riproduzione locale con il valutatore originale: NO_APPLICABLE_GRANT prima, ALLOW dopo il delta mirato; 13 controlli PASS su fixture sintetica, non prova browser/VPS. Catalogo riletto identico prima della proposta: solo la voce upload cambia a resourceType=capability, allowedDataLabels=[], allowedDetailLevels=[]; altre 65 voci e 13 assegnazioni invariate. Proposta THS preparata PENDING, conferma umana necessaria, scadenza iniziale 15:26:20 UTC. Non è una pubblicazione di policy.
 
 Prossimo passo: leggere esito della conferma e policy risultante, poi riprovare il selettore reale. Il 403 browser e il distinto 502 SeaweedFS restano aperti. [Evidenza](../evidence/ths-upload-role-diagnosis-20261107.json).
+
+
+## 7 novembre 2026 — correzione upload pubblicata in policy :60
+
+Giovanni riporta la pubblicazione nella THS. Readback MCP conferma proposta PUBLISHED, revisione 1 e finalPolicyRef ouf-lab-authorization:60; la lettura dei grant riporta la stessa versione. Il catalogo ruoli è esattamente quello proposto: sola voce upload admin modificata, 9 ruoli, 13 assegnazioni e altre 65 voci conservati. Nuovo source.file.upload emette handoff 1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce in AWAITING_FILE_SELECTION. Selettore browser e upload ancora da verificare; nessuna prova storage acquisita. [Ricevuta](../evidence/ths-upload-policy60-published-20261107.json).
