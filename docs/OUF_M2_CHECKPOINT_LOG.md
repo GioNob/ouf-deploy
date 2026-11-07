@@ -47,3 +47,9 @@ Il selettore ha restituito lo stesso 403 in InPrivate. Il redirect OIDC effettiv
 ## 7 novembre 2026 — Account THS confermato
 
 L’operatore ha confermato il nome utente `ouf-admin` nella finestra InPrivate. Il login THS richiede già lo scope di upload. Preparata una lettura della configurazione Keycloak sul client `ouf-authorization-ths` per l’utente esatto. Usa un login amministrativo locale e due GET. L’esecuzione sul VPS e il riscontro sui claim restano pendenti. [Comando sorgente](../scripts/read-ouf-ths-upload-scope.py)
+
+## 7 novembre 2026 — Claim Keycloak attesi, decisione Onboarding da osservare
+
+La lettura operatore ha restituito HTTP 200 e quattro riscontri positivi per il token di esempio del client THS. Scope di upload incluso, soggetto `ouf-admin` e tenant attesi, attore HUMAN. Il risultato riguarda la configurazione Keycloak valutata e lascia aperta la decisione presa sulla richiesta browser.
+
+Sul ramo separato Onboarding è disponibile una modifica limitata al log dei rifiuti del selettore. Riporta codice di decisione, versione della policy e correlazione della richiesta. Il contratto HTTP 403 resta quello esistente. Modifica non distribuita sul VPS. [Commit Onboarding](https://github.com/GioNob/ouf-source-onboarding/commit/380e8dcb8f4ff259b3fea6814bb1f6981132f839)
