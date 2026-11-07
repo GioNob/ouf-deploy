@@ -1,0 +1,14 @@
+{
+  "acceptanceCreditAdded": 0,
+  "bucketsListed": 2,
+  "commonCutProven": false,
+  "loopbackOnlyVerified": true,
+  "objectsListed": 120,
+  "productionObjectsMigrated": 0,
+  "s3GetRequests": 5,
+  "schema": "ouf.storage-retained-oci33-stage.v1",
+  "stagedDataVerified": true,
+  "stagedFileBytes": 288601,
+  "stagingContainerRemoved": true,
+  "status": "ISOLATED_OCI33_STAGE_READY"
+}

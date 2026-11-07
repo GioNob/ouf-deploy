@@ -1,6 +1,6 @@
-## Passo corrente — staging OCI33 in due operazioni
+## Staging OCI33 riuscito sul VPS
 
-[Blocco unico VPS](OUF_STORAGE_OCI33_STAGING_20261107.md) per preparare una copia dei dati del rehearsal e avviarla una volta in rete isolata. L'esito sul VPS è pendente.
+Il VPS ha restituito `ISOLATED_OCI33_STAGE_READY`. La copia dei file è verificata, SeaweedFS ha elencato 2 bucket e 120 oggetti in rete isolata con 5 GET, poi il container è stato rimosso. I dati staged sono disponibili per configurare gli accessi applicativi. [Ricevuta operatore](../evidence/storage-retained-oci33-stage-ready-operator-20261107.json).
 
 ## 7 novembre — censimento amministrativo ed esterno
 
