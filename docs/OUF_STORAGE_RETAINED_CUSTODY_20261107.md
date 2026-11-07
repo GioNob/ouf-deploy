@@ -1,6 +1,10 @@
+## 7 novembre — copia storica sigillata sul VPS
+
+La [ricevuta operatore](../evidence/storage-retained-custody-sealed-operator-20261107.json) attesta 6.544.578.724 byte, 34 tar sorgente verificati e 53 membri con hash. Il comando di custodia è concluso. Lo scope root dell'archivio rimane privato. Per il PC Windows, preparare una copia cifrata separata leggibile dal solo account SCP già previsto. Verificare dimensione e SHA-256 prima della custodia indipendente. Nessun restore o credito di accettazione.
+
 # Custodia storica del materiale di cattura OUF
 
-**Qualifica nativa PASS.** Cifratura e decifratura con age, 34 tar sorgente, 14 rootfs, 53 digest verificati e controlli negativi in fixture isolata. [Esecuzione](https://github.com/GioNob/ouf-deploy/actions/runs/42352184254) · [Ricevuta di qualifica](../evidence/storage-retained-custody-qualified-20261107.json). Giovanni ha approvato l'esecuzione singola con «Autorizzo». [Decisione registrata](../evidence/storage-retained-custody-operator-decision-20261107.json). Esecuzione VPS pendente.
+**Qualifica nativa PASS.** Cifratura e decifratura con age, 34 tar sorgente, 14 rootfs, 53 digest verificati e controlli negativi in fixture isolata. [Esecuzione](https://github.com/GioNob/ouf-deploy/actions/runs/42352184254) · [Ricevuta di qualifica](../evidence/storage-retained-custody-qualified-20261107.json). Giovanni ha approvato l'esecuzione singola con «Autorizzo». [Decisione registrata](../evidence/storage-retained-custody-operator-decision-20261107.json). Esecuzione VPS conclusa.
 
 Decisione approvata `GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01` sul perimetro qualificato con age. La decisione di cattura precedente copriva un tentativo, ora consumato.
 
@@ -24,7 +28,7 @@ La fixture locale ha verificato corruzione, idempotenza del claim, errore del ci
 
 ## Comando pinned dopo la decisione
 
-Il comando richiede il riferimento esatto della nuova decisione. Il riferimento è un vincolo di provenienza e non autentica una decisione operativa. Eseguire soltanto dopo la sua registrazione.
+Il comando richiede il riferimento esatto della nuova decisione. Il riferimento è un vincolo di provenienza e non autentica una decisione operativa. Il comando qui conservato è già stato eseguito.
 
 ```bash
 sudo /usr/bin/python3 -I -B -S - <<'PY'
