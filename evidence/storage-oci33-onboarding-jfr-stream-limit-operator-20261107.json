@@ -1,0 +1,37 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 0,
+  "applicationErrorCode": "ONB_STAGING_WRITE_FAILED",
+  "decoderContainerRemoved": true,
+  "decoderExitCode": -9,
+  "decoderHints": [],
+  "exceptionEventsInUploadWindow": 0,
+  "flightRecorderParsed": false,
+  "previousDecoderHints": [],
+  "previousDecoderOutputBytes": 100663296,
+  "previousDecoderOutputReachedLimit": true,
+  "previousDecoderStderrBytes": 34,
+  "reason": "JFR_STREAM_BYTE_LIMIT",
+  "recordingBytes": 4415319,
+  "recordingSha256": "d01733a50c074e82e614c4124f37d1e987fe7d0087a65ecbfeebaae76fe389dd",
+  "recordingUnchanged": true,
+  "retainedOutputsTried": [
+    {
+      "bytes": 1780674822,
+      "parse": "JFR_STREAM_BYTE_LIMIT",
+      "source": "inline-decoder"
+    },
+    {
+      "bytes": 100663296,
+      "parse": "JFR_JSON_EVENT_INCOMPLETE",
+      "source": "first-decoder"
+    }
+  ],
+  "s3SdkExceptionEventsInRecording": 0,
+  "s3SdkExceptionEventsInUploadWindow": 0,
+  "s3TlsHandshakesInUploadWindow": 0,
+  "schema": "ouf.storage-oci33-onboarding-upload-jfr-readback.v1",
+  "status": "HELD",
+  "uploadRequests": 0,
+  "uploadWindowMilliseconds": 10396
+}

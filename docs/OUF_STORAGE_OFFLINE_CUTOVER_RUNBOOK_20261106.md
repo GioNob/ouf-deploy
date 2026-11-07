@@ -1,6 +1,6 @@
-## Coppia corrente — riuso degli eventi JFR e decodifica in streaming
+## Limite di espansione JFR confermato
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_ONBOARDING_UPLOAD_TRACE_20261107.md#blocco-unico-per-la-lettura-in-streaming) per recuperare l'esito del decoder e usare l'output già conservato, con lettura in streaming se necessario. Esecuzione pendente.
+Il VPS ha confermato che il primo output ha raggiunto il limite di 96 MiB e che il JSON inline misura 1.780.674.822 byte. Il wrapper ha terminato il decoder in streaming al proprio limite. La registrazione da 4.415.319 byte ha conservato lo stesso digest. I contatori delle eccezioni nella ricevuta sono valori iniziali, perché nessuna lettura è stata completata. [Ricevuta VPS](../evidence/storage-oci33-onboarding-jfr-stream-limit-operator-20261107.json).
 
 ## Decoder JFR sospeso sul VPS
 

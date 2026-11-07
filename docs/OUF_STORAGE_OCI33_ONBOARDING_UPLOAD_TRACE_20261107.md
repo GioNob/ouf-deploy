@@ -1,5 +1,7 @@
 # Upload isolato con Flight Recorder dopo HTTP 502
 
+Il VPS ha confermato che il primo output ha raggiunto il limite di 96 MiB e che il JSON inline misura 1.780.674.822 byte. Il wrapper ha terminato il decoder in streaming al proprio limite. La registrazione da 4.415.319 byte ha conservato lo stesso digest. I contatori delle eccezioni nella ricevuta sono valori iniziali, perché nessuna lettura è stata completata. [Ricevuta VPS](../evidence/storage-oci33-onboarding-jfr-stream-limit-operator-20261107.json).
+
 Il decoder ha restituito `DOCKER_START_FAILED` ed è stato rimosso. La registrazione rilevata prima dell'avvio misura 4.415.319 byte, SHA-256 `d01733a50c074e82e614c4124f37d1e987fe7d0087a65ecbfeebaae76fe389dd`. La decodifica e il controllo finale del file sono pendenti. Il codice di errore del wrapper copre anche un'uscita anomala dell'utility dopo l'avvio. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-jfr-decoder-held-operator-20261107.json).
 
 Il VPS ha confermato `ONB_STAGING_WRITE_FAILED` con HTTP 502 dopo un solo POST del nuovo intento. La lettura S3 pre-upload è riuscita. Flight Recorder ha conservato il file, mentre il riepilogo incorporato non l'ha decodificato. I contatori di eccezioni e handshake pari a zero in quella ricevuta sono valori iniziali del riepilogo. Tutti e tre i container sono stati rimossi. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-trace-held-operator-20261107.json).
@@ -11,7 +13,7 @@ La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-uploa
 
 Il tentativo precedente rimane conservato. La nuova operazione riguarda esclusivamente le copie. Durata massima 12 minuti. La scrittura e decodifica del file JFR sono state verificate localmente con il JRE dell'immagine esatta. Il tentativo VPS si è fermato sul 502.
 
-## Blocco unico per la lettura in streaming
+## Blocco streaming eseguito
 
 1. Verificare lo SHA-256 della registrazione e leggere le dimensioni e gli indizi del primo decoder. Provare a riusare gli eventi già conservati, anche se il file supera il limite del primo riepilogo.
 2. Se il JSON conservato è incompleto o assente, avviare solo il decoder dell'immagine esatta con rete isolata e input in sola lettura. Leggere gli eventi in streaming, senza creare un nuovo file JSON espanso. Conservare la sola sintesi redatta e verificare il digest della registrazione a fine lettura.
