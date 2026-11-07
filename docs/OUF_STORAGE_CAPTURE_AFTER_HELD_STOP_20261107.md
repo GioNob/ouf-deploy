@@ -1,3 +1,7 @@
+## 7 novembre — inventario post-export acquisito, custodia storica in qualifica
+
+La [ricevuta VPS](../evidence/storage-capture-post-export-operator-20261107.json) lega 34 tar sorgente, 14 rootfs, il tar immagini e il secondo inventario. Gli eventi 57 e il manifest globale sono assenti. Il tentativo resta consumato. La [proposta di custodia storica](OUF_STORAGE_RETAINED_CUSTODY_20261107.md) preserva il materiale sotto una decisione distinta e non dà credito MiniPET. Stato corrente **39,78%**.
+
 ## 7 novembre — acquisizione avanzata, chiusura e cifratura non raggiunte
 
 La [ricevuta](../evidence/storage-capture-late-unsealed-operator-20261107.json) conserva un'unica osservazione:56 marker di comando,stderr56 vuoto,34 tar sorgente e relativi manifest,tar immagini presente. Assenti manifest globale, bundle e archivio cifrato. Scan puntuale completato,0launcher/0processi con output nello scope,claim vecchio8196s. L'allowance3600s del tentativo è consumata; nessun replay,reset o estensione della scadenza. Lo spazio disponibile al readback era286525313024byte. Il motivo di arresto resta sconosciuto.
