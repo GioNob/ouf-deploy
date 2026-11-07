@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Read only the POST-window events from the existing OpenJDK JFR JSON."""
+"""Classify transport exceptions from the retained POST-window JFR JSON."""
+from collections import Counter
 from datetime import datetime
 import hashlib
 import json
@@ -10,7 +11,7 @@ import stat
 import sys
 from urllib.request import urlopen
 
-SCHEMA = 'ouf.storage-oci33-onboarding-upload-jfr-window.v1'
+SCHEMA = 'ouf.storage-oci33-onboarding-upload-jfr-transport.v1'
 JSON_BYTES = 1780674822
 WINDOW_MS = 10396
 EVENT = re.compile(
@@ -19,6 +20,12 @@ EVENT = re.compile(
 )
 HEADER = re.compile(rb'^\s*\{\s*"recording"\s*:\s*\{\s*"events"\s*:\s*\[')
 TRAILER = re.compile(rb'\]\s*}\s*}\s*$')
+TRANSPORT_CLASSES = {'java.net.ConnectException', 'java.net.SocketTimeoutException'}
+LINKAGE_CLASSES = {'java.lang.ClassNotFoundException', 'java.lang.NoSuchMethodError'}
+SELECTED_CLASSES = TRANSPORT_CLASSES | LINKAGE_CLASSES
+LOOPBACK = re.compile(r'(?<![\w.])(?P<ipv4>127\.0\.0\.1)(?![\w.])'
+                      r'|(?<![\w:])(?P<ipv6>0:0:0:0:0:0:0:1|::1)(?![\w:])')
+PORT = re.compile(r'\]?(?::|\s+port[= ])9002(?!\d)', re.I)
 
 
 def need(ok, code):
@@ -96,6 +103,83 @@ def selected(data, lower, upper, report):
         yield event
 
 
+def timestamp(values):
+    return datetime.fromisoformat(values['startTime'].replace('Z', '+00:00'))
+
+
+def frames(values):
+    for frame in (values.get('stackTrace') or {}).get('frames') or []:
+        method = frame.get('method') or {}
+        yield str((method.get('type') or {}).get('name', '')).replace('/', '.'), method.get('name')
+
+
+def phase(stack):
+    for owner, method in stack:
+        if (owner.endswith('.Http1ExchangeCodec') and method == 'readResponseHeaders'
+                or owner.endswith('.Http2Stream') and method == 'takeHeaders'):
+            return 'response-headers'
+        if (owner.endswith('.SSLSocketImpl') and method == 'startHandshake'
+                or owner.endswith('.ConnectPlan') and method == 'connectTls'):
+            return 'tls'
+        if (owner == 'java.net.Socket' and method == 'connect'
+                or owner.endswith('.ConnectPlan') and method == 'connectSocket'):
+            return 'tcp-connect'
+    return 'unclassified'
+
+
+def operation(stack):
+    for owner, method in stack:
+        if owner.startswith('io.minio.'):
+            if method in ('getRegion', 'getRegionAsync'):
+                return 'region-lookup'
+            if method in ('putObject', 'putObjectAsync'):
+                return 'put-object-call'
+    return 'unclassified'
+
+
+def thread_id(values):
+    key = (values.get('eventThread') or {}).get('javaThreadId')
+    return key if type(key) is int and key > 0 else None
+
+
+def observe_transport(event, handshakes, exceptions):
+    values = event['values']
+    key = thread_id(values)
+    if event['type'] == 'jdk.TLSHandshake':
+        if values.get('peerPort') == 9002 and key is not None:
+            when = timestamp(values)
+            handshakes[key] = min(handshakes.get(key, when), when)
+        return
+
+    name = str((values.get('thrownClass') or {}).get('name', '')).replace('/', '.')
+    if name not in SELECTED_CLASSES:
+        return
+    stack = list(frames(values))
+    if not any(owner.startswith(('io.minio.', 'okhttp3.', 'okio.'))
+               or owner.endswith('.MinioManagedFileStagingStore') for owner, _ in stack):
+        return
+
+    message = values.get('message')
+    message = message if isinstance(message, str) else ''
+    endpoints = {(m.lastgroup + '-loopback', bool(PORT.match(message, m.end())))
+                 for m in LOOPBACK.finditer(message)}
+    family, explicit_port = next(iter(endpoints)) if len(endpoints) == 1 else ('unclassified', False)
+    stage = 'linkage' if name in LINKAGE_CLASSES else phase(stack)
+    label = (name.rsplit('.', 1)[-1], stage, operation(stack), family, explicit_port)
+    exceptions.append((key, timestamp(values), label))
+
+
+def transport_groups(handshakes, exceptions):
+    grouped = Counter()
+    for key, when, label in exceptions:
+        previous = handshakes.get(key)
+        grouped[(*label, previous is not None and previous < when)] += 1
+
+    return [dict(exception=name, phase=stage, sdkOperation=op, loopbackAddressInMessage=family,
+                 addressHasExplicitS3Port=port, afterS3TlsOnSameThread=after, count=count)
+            for (name, stage, op, family, port, after), count in sorted(grouped.items())]
+
+
 def run(report):
     need(os.geteuid() == 0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,
          'ISOLATED_ROOT_REQUIRED')
@@ -139,7 +223,20 @@ def run(report):
             lower, upper = t0.st_mtime_ns / 1e9 - 0.25, t1.st_mtime_ns / 1e9 + 0.25
             with mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as data:
                 data.madvise(mmap.MADV_SEQUENTIAL)
-                h['summarize'](selected(data, lower, upper, report), lower, upper, report)
+                handshakes = {}
+                exceptions = []
+
+                def observe():
+                    for event in selected(data, lower, upper, report):
+                        observe_transport(event, handshakes, exceptions)
+                        yield event
+
+                h['summarize'](observe(), lower, upper, report)
+                need((report['eventHeadersScanned'], report['eventHeadersInUploadWindow'],
+                      report['exceptionEventsInUploadWindow'], report['s3SdkExceptionEventsInUploadWindow'],
+                      report['s3TlsHandshakesInUploadWindow'], report['retainedJsonClosed'])
+                     == (10048, 330, 329, 299, 1, True), 'PRIOR_WINDOW_READBACK_MISMATCH')
+                groups = transport_groups(handshakes, exceptions)
             need(frame(before) == frame(os.fstat(stream.fileno())) == frame(path.lstat()),
                  'RETAINED_JFR_JSON_CHANGED')
             report['retainedJsonUnchanged'] = True
@@ -148,13 +245,9 @@ def run(report):
         need(frame(original) == frame(after) and digest == current, 'JFR_RECORDING_CHANGED')
         report['recordingUnchanged'] = True
 
-    need(report['eventHeadersScanned'] > 0, 'JFR_EVENT_HEADERS_REQUIRED')
-    report['flightRecorderParsed'] = report['retainedJsonClosed']
-    if report['retainedJsonClosed']:
-        report['status'] = 'ONBOARDING_UPLOAD_JFR_WINDOW_READ_BACK'
-    else:
-        need(report['s3SdkExceptionEventsInUploadWindow'] > 0, 'JFR_PARTIAL_WINDOW_UNPROVEN')
-        report['status'] = 'ONBOARDING_UPLOAD_JFR_WINDOW_PARTIAL_EVIDENCE'
+    report['transportGroups'] = groups
+    report['flightRecorderParsed'] = True
+    report['status'] = 'ONBOARDING_UPLOAD_JFR_TRANSPORT_READ_BACK'
 
 
 def main():
