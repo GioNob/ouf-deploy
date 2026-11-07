@@ -4,7 +4,7 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Risultato corrente
 
-**Onboarding e UDP collegati a SeaweedFS. F1 PASS; F2 resta aperto per la normale operazione applicativa UDP. Il blocco semantico è osservato: nel container girano sh e sleep, nessun Java e nessun listener 8080. Avvio applicativo preparato, da eseguire sul VPS.**
+**Onboarding e UDP collegati a SeaweedFS. F1 PASS; F2 resta aperto per la normale operazione applicativa UDP. Il blocco semantico è osservato: nel container girano sh e sleep, nessun Java e nessun listener 8080. Il primo avvio si è fermato prima del segnale per RETAINED_CONFIGURATION_CHANGED; nuovo controllo con ambito Semantic e differenze esplicite pronto.**
 
 - **Policy :61 verificata:** proposta `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PUBLISHED, revisione 1. Catalogo live identico al proposto: tre permessi admin corretti (profilazione, stato job, creazione bozza), altri 63 e tutte le 13 assegnazioni invariati. La pubblicazione è stata confermata da Giovanni nella THS.
 - **Upload e lettura riusciti:** handoff `2de7b988-da47-4231-8443-0e5043214c42` → asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` STAGED → job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED → profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto via MCP. CSV UTF-8, separatore `;`, 13 righe e 20 colonne. Il sorgente installato verifica dimensione e hash del contenuto prima di salvare il profilo; il valore hash non è esposto dalla preview. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json).
@@ -26,7 +26,11 @@ Il sorgente del comando di attesa è identificato in `gated_creation_plan.py`: a
 
 Difetto dell'avviatore corretto: `running`/health assente era accettato anche con la sola shell. Il nuovo modo [`semantic`](OUF_SEMANTIC_APPLICATION_START_20261107.md) avvia soltanto l'applicazione Semantic nello stesso container, attende Java e HTTP readiness UP; nessun nuovo container o immagine. Se Java è già attivo controlla solo readiness. Un invio con esito incerto non viene ripetuto sulla stessa generazione. In `e2e`, Semantic viene ora avviato dopo Gateway/APISIX/Caddy.
 
-Test locali e prova shell→applicazione nello stesso PID PASS; ripartenze con i due marker storage ancora PASS. **Avvio VPS pendente.** L'applicazione può accedere al DB durante il normale avvio; nessuna query diretta dello script. Dopo l'esito positivo ripetere `semantic.search` via MCP, senza considerare readiness equivalente al successo della ricerca.
+**Primo comando di avvio: HELD `RETAINED_CONFIGURATION_CHANGED`**, prima di `start_role` e del segnale; `startedRoles` e `alreadyRunningRoles` vuoti. [Ricevuta](../evidence/semantic-start-retained-configuration-held-operator-20261107.json). Il confronto generico non indicava ruolo o campi: la differenza reale sul VPS resta sconosciuta.
+
+Corretto l'ambito del modo `semantic`: tutte le differenze sono riportate senza valori sensibili, ma per l'avvio singolo sono richiesti la configurazione esatta di Semantic e le immagini attese/stato running di PostgreSQL, Keycloak, Gateway owner, APISIX e Caddy. I marker storage rimangono verificati. Il modo `e2e` conserva il confronto completo di tutti i ruoli; nessuna impronta attesa è stata riscritta e nessuna differenza ignota è accettata per Semantic.
+
+Eseguire il [comando aggiornato](OUF_SEMANTIC_APPLICATION_START_20261107.md): avvia Semantic soltanto se il suo confronto passa; altrimenti restituisce `semanticConfigurationCheck` e `retainedConfigurationMismatches`. Quattro controlli locali PASS, compreso il rifiuto della differenza sullo stesso Semantic e la conservazione del controllo globale. **Esecuzione aggiornata VPS pendente.** L'applicazione può accedere al DB durante il normale avvio; nessuna query diretta dello script. Dopo il successo ripetere `semantic.search` via MCP.
 
 **Ancora da provare:** normale scrittura/lettura applicativa lake di UDP e CSV fino al grafo. Si prosegue dai riferimenti già acquisiti: semantica locale, eventuale OntoPiA governata, Ingestion, riconciliazione, grafo e ripetizione. La lettura dello stato Ingestion è un ostacolo osservato separato; nessun ampliamento di permessi preparato per aggirarlo.
 

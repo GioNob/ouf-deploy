@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_JAVA_NOT_STARTED",
+  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_START_PREFLIGHT_HELD",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -306,7 +306,7 @@
       "exactRuntimeGateNotYetExposed": true
     },
     "nextSemanticApplicationStart": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "HELD_BEFORE_SIGNAL",
       "script": "scripts/ouf-runtime-20261107.py",
       "mode": "semantic",
       "scriptCommit": "50561024b2bfdb7055514e132ee04690a35f835b",
@@ -320,7 +320,31 @@
       "localChecks": "PASS",
       "nativeShellSamePidExec": "PASS",
       "runbook": "docs/OUF_SEMANTIC_APPLICATION_START_20261107.md",
-      "evidence": "evidence/semantic-application-start-preparation-20261107.json"
+      "evidence": "evidence/semantic-application-start-preparation-20261107.json",
+      "operatorReceipt": "evidence/semantic-start-retained-configuration-held-operator-20261107.json"
+    },
+    "semanticStartPreflightHeld": {
+      "provenance": "OPERATOR_RECEIPT",
+      "reason": "RETAINED_CONFIGURATION_CHANGED",
+      "role": "UNKNOWN_NOT_REPORTED",
+      "fields": "UNKNOWN_NOT_REPORTED",
+      "startedRoles": [],
+      "signalDispatched": false,
+      "signalConclusionSource": "PINNED_CODE_ORDERING"
+    },
+    "nextSemanticScopedStart": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "script": "scripts/ouf-runtime-20261107.py",
+      "mode": "semantic",
+      "scriptCommit": "dd2351695dec265a5d3bffdcf5bcb08d27484703",
+      "sha256": "b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b",
+      "semanticFullFingerprintRequired": true,
+      "dependencyImagesAndRunningStateRequired": true,
+      "otherRoleDifferencesReported": true,
+      "e2eFullStackGuardPreserved": true,
+      "expectedFingerprintsChanged": false,
+      "localChecks": "PASS",
+      "evidence": "evidence/semantic-start-scope-fix-20261107.json"
     }
   },
   "milestones": [
@@ -395,7 +419,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run pinned ouf-runtime semantic mode on VPS: verify exact retained pre-application shell and current process, signal once with SIGUSR1, wait for Java in same PID and HTTP readiness. Then retry governed semantic.search and continue existing CSV. Do not repeat upload or storage switches.",
+  "nextAction": "Execute scoped semantic start. Require exact Semantic retained configuration and expected running dependency images. Report all other configuration differences without secrets; do not block single-role action on unrelated fingerprint differences. If Semantic itself differs, do not signal and use detailed comparison for next correction. e2e retains full-stack verification.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -422,7 +446,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Storage bindings completed. Missing Java process explains absent listener8080; runtime helper fix prepared. Actual application start, semantic search and normal UDP application/E2E still pending.",
+    "reason": "First Semantic start stopped before signal on generic retained configuration mismatch. Actual role/field remains unknown. Scoped startup and detailed diagnostics prepared; no successful Semantic start or E2E yet.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [
