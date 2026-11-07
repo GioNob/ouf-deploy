@@ -9,7 +9,7 @@ import datetime
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 from urllib.parse import urlsplit
@@ -102,13 +102,25 @@ def arguments(args):
     return declarations
 
 
-def jar_summary(app):
-    args = [app.get('Path', ''), *(app.get('Args') or [])]
-    need('-jar' in args and '/app/application.jar' in args, 'KNOWN_UDP_JAR_LAUNCH_REQUIRED')
-    # Read installed bytes through the running mount namespace; no Java process is launched.
-    pid = app['State']['Pid']
-    need(isinstance(pid, int) and pid > 0, 'UDP_PID_REQUIRED')
-    jar = Path('/proc') / str(pid) / 'root/app/application.jar'
+def launch_jar_path(app):
+    args = app.get('Args') or []
+    need(PurePosixPath(app.get('Path', '')).name == 'java' and args.count('-jar') == 1,
+         'DIRECT_JAVA_JAR_LAUNCH_NOT_IDENTIFIED')
+    index = args.index('-jar')
+    need(index + 1 < len(args), 'JAR_ARGUMENT_MISSING')
+    value = args[index + 1]
+    need(isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9_./-]+\.jar', value),
+         'JAR_ARGUMENT_NOT_CANONICAL')
+    path = PurePosixPath(value)
+    if not path.is_absolute():
+        directory = app['Config'].get('WorkingDir') or '/'
+        need(re.fullmatch(r'/[A-Za-z0-9_./-]*', directory), 'WORKING_DIRECTORY_NOT_CANONICAL')
+        path = PurePosixPath(directory) / path
+    need(path.is_absolute() and '..' not in path.parts, 'JAR_PATH_NOT_CANONICAL')
+    return str(path)
+
+
+def read_jar(jar):
     need(jar.stat().st_size <= 512 * 1024 * 1024, 'JAR_TOO_LARGE')
     with zipfile.ZipFile(jar) as archive:
         names = archive.namelist()
@@ -127,6 +139,23 @@ def jar_summary(app):
         return {'selectedLibraries': sorted(libs), 'adapterClassSha256': hashes,
                 'applicationYamlSha256': digest(raw),
                 'storageEnvironmentPlaceholders': [key.decode('ascii') for key in config_keys]}
+
+
+def jar_summary(app, proc_root=Path('/proc')):
+    # This optional read must not discard the independently collected Docker bindings.
+    # Read only the JAR selected by the direct launch; no shell evaluation or guessed path.
+    report = {'status': 'INCOMPLETE', 'pathSource': 'DOCKER_DIRECT_JAVA_JAR_ARGUMENT'}
+    try:
+        launch_path = launch_jar_path(app)
+        report['containerJarPath'] = launch_path
+        pid = app['State']['Pid']
+        need(isinstance(pid, int) and pid > 0, 'UDP_PID_REQUIRED')
+        result = read_jar(proc_root / str(pid) / 'root' / launch_path.lstrip('/'))
+        report.update(result)
+        report['status'] = 'READ'
+    except Exception as exc:
+        report['reason'] = str(exc) if str(exc) in SAFE_CODES else type(exc).__name__
+    return report
 
 
 def run():

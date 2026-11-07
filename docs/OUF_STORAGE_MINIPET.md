@@ -71,7 +71,7 @@ La causa del vecchio 502 nella diversa configurazione isolata resta storica e no
 
 ### F2: cambiare tutti i percorsi necessari, una volta sola
 
-Onboarding è già verificato. Prima del cambio UDP eseguire la [lettura corrente](OUF_UDP_CURRENT_STORAGE_READ_20261107.md): il sorgente conservato usa AWS SDK Java e DefaultCredentialsProvider, ma immagine/configurazione installate vanno rilette. Il comando non cambia servizi, DB o S3; verifica VPS ancora pendente.
+Onboarding è già verificato. Prima del cambio UDP eseguire la [lettura corrente](OUF_UDP_CURRENT_STORAGE_READ_20261107.md): il sorgente conservato usa AWS SDK Java e DefaultCredentialsProvider, ma immagine/configurazione installate vanno rilette. Il primo lettore si è fermato per un percorso JAR assunto erroneamente; ora ricava il percorso dall'avvio Java e conserva i binding anche se l'ispezione JAR è incompleta. Il comando corretto non cambia servizi, DB o S3; verifica VPS ancora pendente.
 
 | Percorso | Punto noto nel codice | Verifica minima |
 | --- | --- | --- |

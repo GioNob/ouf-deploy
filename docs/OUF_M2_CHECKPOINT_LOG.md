@@ -125,3 +125,10 @@ Giovanni conferma la pubblicazione; readback MCP: proposta 66ecf0fb-04e8-476b-9c
 Profilato lo stesso asset c51745c5-1fc0-4d36-bdcf-1e9a8a049c94, senza nuovo upload. Job f460d4d5-c6f7-4b65-b305-08091e9849cf QUEUED, poi SUCCEEDED; preview del profilo da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342 riuscita: CSV UTF-8, separatore punto e virgola, 13 righe/20 colonne. Il codice installato verifica dimensione e hash dei byte letti tramite Gateway prima di salvare il profilo. Hash e nome file non esposti dalla preview; nessun nuovo GET S3 indipendente. F1 PASS nel percorso Onboarding osservato; F2 e l'E2E ancora aperti. Coordinate STRING da interpretare prima del mapping; nessuna fonte/ingestion creata.
 
 Preparata lettura UDP corrente con script fissato e controlli locali PASS (redazione segreti, allowlist, argomenti, sole letture); esecuzione VPS pendente. Nessun cambio UDP né nuova distribuzione. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Comando UDP](OUF_UDP_CURRENT_STORAGE_READ_20261107.md).
+
+
+## 7 novembre 2026 — lettore UDP corretto dopo assunzione errata sul JAR
+
+Ricevuta operatore READ_INCOMPLETE, KNOWN_UDP_JAR_LAUNCH_REQUIRED, zero modifiche di configurazione e nessuna credenziale emessa. Il lettore fissava /app/application.jar come per Onboarding; il Dockerfile UDP al commit 0d40da05 dichiara /app/app.jar. Non è un guasto UDP/SeaweedFS provato, né una misura del percorso live.
+
+La correzione ricava il percorso dal -jar dell'avvio Java diretto, risolve i relativi contro WorkingDir e non esegue shell. L'ispezione facoltativa del JAR riporta INCOMPLETE senza perdere i binding Docker. Fixture locale della forma UDP e del JAR, percorso Onboarding/relativo, file mancante, wrapper e traversal: PASS, insieme alla redazione segreti. Nessuna nuova esecuzione VPS attestata. F1 resta PASS, F2 aperto. [Comando corretto](OUF_UDP_CURRENT_STORAGE_READ_20261107.md) · [Evidenza](../evidence/udp-storage-read-launch-fix-20261107.json).

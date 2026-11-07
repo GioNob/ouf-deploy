@@ -1,0 +1,49 @@
+{
+  "schema": "ouf.udp-storage-read-launch-fix.v1",
+  "date": "2026-11-07",
+  "status": "READER_FIXED_VPS_RETRY_PENDING",
+  "operatorEvidence": "evidence/udp-storage-read-launch-held-operator-20261107.json",
+  "defect": {
+    "introducedIn": "1c922e9decaafc93d90692918f6050b739946894",
+    "hardcodedPath": "/app/application.jar",
+    "sourceEvidence": {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "path": "Dockerfile",
+      "entrypoint": [
+        "java",
+        "-jar",
+        "/app/app.jar"
+      ]
+    },
+    "actualLiveJarPathStillUnknown": true,
+    "storageFailureProven": false
+  },
+  "correction": {
+    "pathSelection": "Parse direct Java -jar argument; resolve relative path against declared WorkingDir; reject traversal/unsupported launch without shell evaluation",
+    "optionalJarInspection": "Return status INCOMPLETE and a bounded reason without discarding Docker binding fields",
+    "rawCommandEmitted": false,
+    "serviceChanges": false
+  },
+  "validation": {
+    "result": "PASS",
+    "vpsExecuted": false,
+    "cases": [
+      "absolute UDP /app/app.jar from pinned Dockerfile",
+      "Onboarding /app/application.jar",
+      "relative app.jar with WorkingDir",
+      "synthetic packaged JAR read through proc-layout fixture",
+      "missing JAR returns partial metadata",
+      "shell wrapper not evaluated, secret suppressed",
+      "parent traversal rejected",
+      "existing credential redaction and read-only checks"
+    ],
+    "fixtureIsInstalledUdpImage": false
+  },
+  "script": {
+    "path": "scripts/read-current-udp-storage-20261107.py",
+    "bytes": 11410,
+    "sha256": "71cede5f23c97b20483fe340ef146a89aef86d66162276d6ad92bf08ce0de350"
+  },
+  "nextAction": "Run the corrected pinned read-only command once, inspect bindings and installedJar status, then prepare the UDP client and switch using observed settings."
+}

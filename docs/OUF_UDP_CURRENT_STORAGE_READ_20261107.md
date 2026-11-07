@@ -1,31 +1,35 @@
 # Lettura corrente UDP prima del passaggio a SeaweedFS
 
-Onboarding ha completato upload e profilo sul nuovo binding. UDP resta da verificare e collegare. Questo comando legge il container UDP identificato dal piano conservato, immagine, variabili/argomenti di storage, reti, classi e librerie S3 del JAR installato. Legge inoltre la configurazione SeaweedFS già preparata e controlla la presenza delle credenziali senza mostrarle.
+Onboarding ha completato upload e profilo sul nuovo binding. UDP resta da verificare e collegare.
 
-Non ferma servizi, non cambia configurazioni e non emette richieste S3 o DB. Non è un test di connettività né una lettura della configurazione Spring/JVM effettiva. Le dichiarazioni concorrenti vengono riportate senza presumere quale prevalga.
+Il primo comando si è fermato con `KNOWN_UDP_JAR_LAUNCH_REQUIRED`: il lettore assumeva il percorso Onboarding `/app/application.jar`, mentre il [Dockerfile UDP conservato](https://github.com/GioNob/ouf-udp-object-resolution/blob/0d40da05408a14db31d4d41af2372d6a71480291/Dockerfile) indica `/app/app.jar`. Il percorso live non è ancora stato restituito. [Ricevuta originale](../evidence/udp-storage-read-launch-held-operator-20261107.json).
 
-## Comando VPS
+Il comando corretto legge il percorso dall'argomento `-jar` dell'avvio Java diretto e non valuta shell. Raccoglie immagine, variabili/argomenti di storage, reti, classi e librerie S3. Legge la configurazione SeaweedFS preparata e verifica la presenza delle credenziali senza mostrarle. Se l'ispezione del JAR è incompleta, la sezione `udp.installedJar` lo dichiara senza eliminare gli altri binding.
 
-Commit 1c922e9decaafc93d90692918f6050b739946894; script 10.200 byte, SHA-256 `4629a87bfb6783b81b65e06c58bd3de0468ae0d8b8ce05fd43393e4925ca3339`.
+Non ferma servizi, non cambia configurazioni e non emette richieste S3 o DB. Non è un test di connettività né una lettura della configurazione Spring/JVM effettiva.
+
+## Comando VPS corretto
+
+Commit 8d34ce385f84d9b99fe507634a58d73f1c7cae50; script 11410 byte, SHA-256 `71cede5f23c97b20483fe340ef146a89aef86d66162276d6ad92bf08ce0de350`.
 
 ```bash
 sudo /usr/bin/timeout 120 /usr/bin/python3 -I -B -S - <<'PY'
 import hashlib, urllib.request
-url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/1c922e9decaafc93d90692918f6050b739946894/scripts/read-current-udp-storage-20261107.py'
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/8d34ce385f84d9b99fe507634a58d73f1c7cae50/scripts/read-current-udp-storage-20261107.py'
 with urllib.request.urlopen(url, timeout=25) as response:
-    raw = response.read(10201)
-if len(raw) != 10200 or hashlib.sha256(raw).hexdigest() != '4629a87bfb6783b81b65e06c58bd3de0468ae0d8b8ce05fd43393e4925ca3339':
+    raw = response.read(11411)
+if len(raw) != 11410 or hashlib.sha256(raw).hexdigest() != '71cede5f23c97b20483fe340ef146a89aef86d66162276d6ad92bf08ce0de350':
     raise SystemExit('STOP: dimensione o SHA-256 non corrispondente')
 exec(compile(raw, 'read-current-udp-storage-20261107.py', 'exec'), {'__name__': '__main__'})
 PY
 ```
 
-Riportare il JSON finale. Risultato atteso `UDP_BINDINGS_READ_ONLY`; su errore conserva un codice sintetico, senza messaggi che possano esporre segreti. Nessuna esecuzione VPS attestata da questo documento.
+Riportare il JSON finale. Risultato dei binding atteso `UDP_BINDINGS_READ_ONLY`; controllare separatamente `udp.installedJar.status`. Nessuna esecuzione VPS della correzione attestata da questo documento.
 
-## Verifiche locali e prossimo passo
+## Verifiche e seguito
 
-`python3 tests/check_current_udp_storage_read.py`: PASS per sintassi, redazione di endpoint con credenziali, selezione delle sole variabili consentite, forme degli argomenti e operazioni di sola lettura. Questi controlli non provano l'accesso al JAR tramite /proc sul VPS.
+`python3 tests/check_current_udp_storage_read.py`: PASS per forma d'avvio UDP del Dockerfile conservato, forma Onboarding, percorso relativo, lettura fixture JAR, JAR assente, wrapper non valutato, traversal rifiutato, redazione segreti e operazioni di sola lettura. La fixture non è l'immagine UDP installata. [Dettagli](../evidence/udp-storage-read-launch-fix-20261107.json).
 
-Dopo il risultato: identificare bucket/configurazione e SDK reali, riutilizzare l'immagine installata, confrontare gli oggetti correnti, verificare il client UDP con TLS e applicare il cambio con writer fermo. Il cambio UDP non è incluso in questo comando.
+Dopo il risultato: identificare bucket/configurazione e SDK reali, conservare l'immagine, confrontare gli oggetti correnti, verificare il client UDP con TLS e applicare il cambio a writer fermo. Il cambio UDP non è incluso in questo comando.
 
-L'asset CSV `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` e il profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` restano il punto di ripresa E2E; non ricaricare.
+Asset CSV `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`, profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`: punto di ripresa E2E, non ricaricare.

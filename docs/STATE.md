@@ -12,7 +12,9 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Prossima azione: lettura UDP sul VPS
 
-Eseguire il [blocco unico di sola lettura](OUF_UDP_CURRENT_STORAGE_READ_20261107.md) e riportare il JSON. Serve a conoscere immagine, bucket, endpoint, rete e SDK effettivamente installati, oltre alla configurazione SeaweedFS già preparata. Non ferma servizi né cambia binding; zero richieste S3/DB e nessun valore di credenziale emesso. Controlli locali PASS, esecuzione VPS ancora pendente.
+Il primo comando è terminato con `KNOWN_UDP_JAR_LAUNCH_REQUIRED`: errore del lettore, che assumeva `/app/application.jar`. Il Dockerfile UDP conservato dichiara `/app/app.jar`; il percorso live non è ancora restituito. Nessun servizio o binding modificato. Corretto il lettore per selezionare il JAR dall'argomento `-jar` e conservare comunque i binding se l'ispezione del JAR è incompleta. [Diagnosi e controlli](../evidence/udp-storage-read-launch-fix-20261107.json).
+
+Eseguire il [blocco unico corretto di sola lettura](OUF_UDP_CURRENT_STORAGE_READ_20261107.md) e riportare il JSON. Serve a conoscere immagine, bucket, endpoint, rete e SDK effettivamente installati, oltre alla configurazione SeaweedFS già preparata. Non ferma servizi né cambia binding; zero richieste S3/DB e nessun valore di credenziale emesso. Controlli locali PASS, inclusa la forma d'avvio UDP e una fixture JAR; esecuzione VPS della correzione ancora pendente.
 
 Poi: verificare il client UDP/TLS, allineare i suoi oggetti correnti e cambiare il binding conservando l'immagine. Dopo F2, proseguire questo CSV con semantica locale prima, eventuale OntoPiA governata, Ingestion, riconciliazione e grafo; ripetere il percorso secondo il [MiniPET funzionale, PR #55](https://github.com/GioNob/ouf-deploy/pull/55).
 
