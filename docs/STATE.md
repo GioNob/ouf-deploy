@@ -4,7 +4,7 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Risultato corrente
 
-**Onboarding e UDP collegati a SeaweedFS. F1 PASS; F2 resta aperto per la normale operazione applicativa UDP. La prosecuzione E2E incontra un 502 nella ricerca semantica.**
+**Onboarding e UDP collegati a SeaweedFS. F1 PASS; F2 resta aperto per la normale operazione applicativa UDP. La prosecuzione E2E incontra un 502 nella ricerca semantica: DNS corretto, TCP verso la porta configurata non riuscito; processo e porta in ascolto da verificare.**
 
 - **Policy :61 verificata:** proposta `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PUBLISHED, revisione 1. Catalogo live identico al proposto: tre permessi admin corretti (profilazione, stato job, creazione bozza), altri 63 e tutte le 13 assegnazioni invariati. La pubblicazione è stata confermata da Giovanni nella THS.
 - **Upload e lettura riusciti:** handoff `2de7b988-da47-4231-8443-0e5043214c42` → asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` STAGED → job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED → profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto via MCP. CSV UTF-8, separatore `;`, 13 righe e 20 colonne. Il sorgente installato verifica dimensione e hash del contenuto prima di salvare il profilo; il valore hash non è esposto dalla preview. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json).
@@ -20,7 +20,9 @@ Verifiche successive tramite capability `ouf-admin`:
 - `semantic.search(q=teatro, limit=20)`: **HTTP 502**, causa non ancora identificata.
 - `ouf.ingestion.status(limit=10)`: **authorization denied**, non ritentato. Nel catalogo corrente nessun grant `ouf.ingestion.status`; admin possiede `ouf.semantic.search`. I grant configurati non certificano la decisione effettiva della richiesta.
 
-La [lettura mirata del percorso semantico](OUF_SEMANTIC_UPSTREAM_READ_20261107.md) è pronta e verificata localmente: stato dei container selezionati, categorie dei log recenti, una GET delle rotte APISIX e DNS/TCP verso il registro nella rete del proxy. Nessun riavvio, cambio permessi, query DB o richiesta S3. Esecuzione VPS pendente. Non attribuire il 502 a SeaweedFS senza evidenza.
+**Lettura VPS delle 18:10:35 UTC / 19:10:35 CET completata:** Semantic, APISIX e Gateway owner running, immagini conservate; nome upstream corrispondente al registro, DNS risolve soltanto il suo indirizzo. TCP verso la porta configurata non riesce, anche usando direttamente l'indirizzo del registro dalla rete APISIX. Un indizio `connectionRefused` nei log APISIX non è correlato alla singola chiamata. Nessun log Semantic negli ultimi 30 minuti; non dimostra che Java sia avviato o che non vi siano errori precedenti. [Ricevuta](../evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json).
+
+La prima lettura non esponeva porta numerica, processi o listener. La [lettura estesa v2](OUF_SEMANTIC_UPSTREAM_READ_20261107.md) ora confronta avvio container/immagine, conta i processi Java e legge le porte TCP IPv4/IPv6 con appartenenza dei socket ai processi Java. Distingue i dati osservati dalle proprietà dichiarate. Test locali PASS; esecuzione VPS pendente. Nessun riavvio, cambio di rotta/permessi, query DB o richiesta S3. Non scegliere ancora fra processo assente, porta diversa, bind locale o blocco di rete.
 
 **Ancora da provare:** normale scrittura/lettura applicativa lake di UDP e CSV fino al grafo. Si prosegue dai riferimenti già acquisiti: semantica locale, eventuale OntoPiA governata, Ingestion, riconciliazione, grafo e ripetizione. La lettura dello stato Ingestion è un ostacolo osservato separato; nessun ampliamento di permessi preparato per aggirarlo.
 

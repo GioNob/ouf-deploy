@@ -1,39 +1,41 @@
-# Lettura del percorso semantico dopo il cambio storage
+# Registro semantico: processo e porta in ascolto
 
-## Esito che manca
+## Evidenza corrente
 
-La chiamata MCP `semantic.search` per `teatro` restituisce HTTP 502. Il profilo CSV è leggibile e MCP dichiara HEALTHY per il proprio modulo. Il catalogo corrente include il grant di ricerca semantica per admin: questo non prova l'autorizzazione effettiva lungo tutta la richiesta. Una lettura separata dello stato Ingestion è negata e non è stata ritentata; non va confusa con il 502. [Evidenza delle chiamate](../evidence/post-storage-e2e-entry-checks-20261107.json).
+La [lettura operatore delle 18:10:35 UTC del 7 novembre](../evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json) ha verificato:
+- Semantic, APISIX e Gateway owner running, con immagini conservate.
+- Nome upstream corrispondente al registro; DNS risolve soltanto il suo indirizzo.
+- Connessione TCP alla porta configurata non riuscita dalla rete APISIX, anche usando direttamente l'indirizzo del registro.
+- Un indizio `connectionRefused` nei log APISIX, senza correlazione alla singola chiamata; nessun log Semantic negli ultimi 30 minuti.
 
-Onboarding e UDP sono già collegati a SeaweedFS. Questa lettura cerca il blocco che impedisce di proseguire il CSV nel Semantic Registry locale.
+La prima lettura non mostrava porta numerica, processi o socket. Non prova ancora se Java manchi, usi una porta diversa, ascolti soltanto su localhost o sia irraggiungibile per un altro motivo. Il sorgente conservato `eccef11a…` dichiara Java con `/app/application.jar` e porta `${PORT:8080}`: sono valori del sorgente, non una verifica dell'esecuzione attuale.
 
-## Cosa legge
+## Lettura estesa v2
 
-Lo script usa il piano corrente del VPS, fissato tramite hash, per selezionare Semantic Registry, APISIX e Gateway owner. Verifica immagini e stato; legge al massimo 200 righe degli ultimi 30 minuti dei log Semantic/APISIX e restituisce solo conteggi di categorie note. Non stampa log grezzi o credenziali.
+Lo stesso script, aggiornato, aggiunge confronto tra avvio del container e dell'immagine, tipi dei processi presenti, numero di processi Java, proprietà di porta/indirizzo selezionate da env/JSON/JVM, listener TCP IPv4/IPv6 e appartenenza dei socket a Java. Non stampa argomenti grezzi, credenziali o log grezzi. Lo snapshot di processi/socket non è atomico; la stabilità dell'elenco processi è indicata nel risultato.
 
-Usa in memoria la chiave amministrativa già configurata per **una sola GET** delle rotte APISIX. Seleziona la rotta esatta di ricerca semantica e confronta gli upstream con il registro installato; verifica DNS e connessione TCP dalla rete APISIX. Se il registro è fermo lo segnala, senza avviarlo. Non esegue richieste di business, SQL o S3, non cambia configurazioni o permessi.
-
-Un esito di rete positivo non equivale a una ricerca semantica riuscita. Le categorie dei log non sono una traccia correlata alla singola richiesta. La lettura corrente serve a scegliere la correzione successiva, non assume che il problema storico di DNS del 16 ottobre sia ricomparso.
+Conserva una GET delle rotte APISIX, la verifica DNS/TCP e i conteggi di categorie dei log. Nessun avvio/stop, cambio di configurazione o permessi, richiesta di business, SQL o S3. [Preparazione e limiti](../evidence/semantic-process-read-preparation-20261107.json).
 
 ## Comando unico sul VPS
 
-Sorgente `ce3802c5bd3596cd3103ed47635cd1c344936caf`, 16626 byte, SHA-256 `2fc4d6c64e9901dbacd94f86f968c99849f31545f39933024bff540cd39da7a8`. Controlli locali PASS: selezione credenziale, oscuramento output, selezione rotta, registro fermo, namespace DNS/TCP e contratto GET. Esecuzione VPS ancora pendente.
+Commit `d4aa038f57c874666c2d619c08c5018b370b7272`, 24720 byte, SHA-256 `22e67557cf3d6b453ba15e2d72cb04139edc8b2d4d75325dec9fc6a5c387b07a`. Test locali della lettura e delle nuove proiezioni PASS; esecuzione VPS pendente.
 
 ```bash
-sudo /usr/bin/timeout 140 /usr/bin/python3 -I -B -S - <<'PY'
+sudo /usr/bin/timeout 160 /usr/bin/python3 -I -B -S - <<'PY'
 import hashlib
 import urllib.request
 
-url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/ce3802c5bd3596cd3103ed47635cd1c344936caf/scripts/read-current-semantic-upstream-20261107.py'
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/d4aa038f57c874666c2d619c08c5018b370b7272/scripts/read-current-semantic-upstream-20261107.py'
 with urllib.request.urlopen(url, timeout=20) as response:
-    raw = response.read(16627)
-if len(raw) != 16626 or hashlib.sha256(raw).hexdigest() != '2fc4d6c64e9901dbacd94f86f968c99849f31545f39933024bff540cd39da7a8':
+    raw = response.read(24721)
+if len(raw) != 24720 or hashlib.sha256(raw).hexdigest() != '22e67557cf3d6b453ba15e2d72cb04139edc8b2d4d75325dec9fc6a5c387b07a':
     raise SystemExit('STOP: dimensione o SHA-256 non corrispondente')
 exec(compile(raw, 'read-current-semantic-upstream-20261107.py', 'exec'), {'__name__': '__main__'})
 PY
 ```
 
-Riportare il JSON finale. `SEMANTIC_UPSTREAM_READ_COMPLETE` significa lettura completata, non problema risolto; gli indizi sono in `services` e `upstream`. Anche un risultato parziale può indicare il punto da correggere. Nessun riavvio automatico.
+Riportare il JSON, in particolare `semanticProcess` e `upstream`. `SEMANTIC_UPSTREAM_READ_COMPLETE` indica una lettura completa, non una correzione. Schema atteso: `ouf.current-semantic-upstream-read.v2`.
 
-## Dopo la lettura
+## Prossimo intervento
 
-Correggere soltanto la causa osservata e ripetere la ricerca semantica tramite la capability. Riprendere dall'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` e profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`, senza un nuovo upload. F2 applicativo UDP e F3–F6 restano aperti.
+Scegliere la correzione dal processo e dai listener effettivamente osservati; poi ripetere la ricerca semantica tramite capability. Non modificare DNS soltanto perché lo storico del 16 ottobre conteneva un errore DNS: oggi il nome risolve correttamente. Onboarding e UDP restano su SeaweedFS; normale operazione lake UDP e E2E fino al grafo ancora aperti. Riprendere dal CSV già profilato, senza nuovo upload.

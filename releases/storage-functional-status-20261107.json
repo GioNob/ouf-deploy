@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_SEARCH_502",
+  "status": "F1_PASS_UDP_SWITCH_COMPLETE_SEMANTIC_DNS_PASS_TCP_FAIL",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -257,14 +257,38 @@
       "permissionsModified": false
     },
     "nextSemanticRead": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "COMPLETED",
       "script": "scripts/read-current-semantic-upstream-20261107.py",
       "scriptCommit": "ce3802c5bd3596cd3103ed47635cd1c344936caf",
       "scriptSha256": "2fc4d6c64e9901dbacd94f86f968c99849f31545f39933024bff540cd39da7a8",
       "localChecks": "PASS",
       "serviceChanges": 0,
       "directDatabaseRequests": 0,
-      "s3Requests": 0
+      "s3Requests": 0,
+      "receipt": "evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json"
+    },
+    "currentSemanticUpstream": {
+      "provenance": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T18:10:35.576790+00:00",
+      "receipt": "evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json",
+      "retainedServicesRunning": true,
+      "dnsMatchesCurrentRegistry": true,
+      "tcpToConfiguredPort": false,
+      "correlatedRequestFailureProven": false,
+      "actualJavaProcessAndListenersKnown": false,
+      "exactCause": "UNRESOLVED"
+    },
+    "nextSemanticProcessRead": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "scriptCommit": "d4aa038f57c874666c2d619c08c5018b370b7272",
+      "script": "scripts/read-current-semantic-upstream-20261107.py",
+      "schema": "ouf.current-semantic-upstream-read.v2",
+      "sha256": "22e67557cf3d6b453ba15e2d72cb04139edc8b2d4d75325dec9fc6a5c387b07a",
+      "localChecks": "PASS",
+      "directDatabaseRequests": 0,
+      "s3Requests": 0,
+      "serviceChanges": 0,
+      "evidence": "evidence/semantic-process-read-preparation-20261107.json"
     }
   },
   "milestones": [
@@ -339,7 +363,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run pinned read-only semantic upstream diagnostic on VPS. Fix only the observed cause of semantic.search HTTP502, then resume existing CSV profile through local semantic registry, governed OntoPiA if necessary, Ingestion and UDP graph. Normal application lake operation and E2E remain unproven.",
+  "nextAction": "Run pinned semantic process/listener read v2 on VPS: expose numeric upstream port, compare container and image launch, observe Java processes and TCP listeners. DNS resolves correctly; no DNS rewrite or service restart until process/listener evidence identifies the next repair. Then resume governed semantic search and existing CSV E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -366,7 +390,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Onboarding F1, installed UDP client and UDP binding switch passed. Semantic search currently returns HTTP502; normal UDP application lake operation and E2E remain open. No duration promise.",
+    "reason": "Both storage bindings changed successfully. Semantic search returns502; DNS resolves correctly but TCP to configured registry port fails. Process/listener cause and normal UDP application/E2E operations remain unverified.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [

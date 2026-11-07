@@ -9,11 +9,13 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import signal
 import socket
 import stat
 import subprocess
 import sys
+from collections import Counter
 
 PLAN = Path('/var/lib/ouf-storage-migration/cold-host-bound-20261107-v1/plan.private.json')
 PLAN_SHA = 'f4cc75450360a1a30a7210b5ee8e492bc99c6737d98131537b87b65fa284cc3d'
@@ -101,6 +103,147 @@ def log_summary(cid):
             'hints': {key: len(re.findall(pattern, text, re.I))
                       for key, pattern in HINTS.items() if re.search(pattern, text, re.I)},
             'rawLogsEmitted': False, 'correlationWithFailedRequestProven': False}
+
+def proc_read(path, maximum):
+    # procfs reports size zero for cmdline and socket tables; do not apply file-size checks.
+    with open(path, 'rb') as stream:
+        raw = stream.read(maximum + 1)
+    need(len(raw) <= maximum, 'PROC_READ_LIMIT')
+    return raw
+
+def kind(value):
+    name = value.rsplit('/', 1)[-1]
+    return name if name in ('java', 'sh', 'bash', 'dash', 'sleep', 'tini', 'tail', 'python3') else 'other'
+
+def launch_summary(args):
+    need(isinstance(args, list) and all(isinstance(a, str) for a in args), 'LAUNCH_ARGUMENTS_INVALID')
+    result = {'executableKind': kind(args[0]) if args else 'none',
+              'javaJarArgumentPresent': '-jar' in args,
+              'sleepCommandPresent': any(re.search(r'\bsleep\b', a) for a in args),
+              'rawArgumentsEmitted': False}
+    selected = {}
+    for arg in args:
+        for key in ('server.port', 'management.server.port', 'server.address', 'spring.main.web-application-type'):
+            for prefix in ('-D' + key + '=', '--' + key + '='):
+                if arg.startswith(prefix):
+                    value = arg[len(prefix):]
+                    if re.fullmatch(r'[A-Za-z0-9.:[\]_-]{1,128}', value):
+                        selected[key] = value
+    result['selectedDeclaredProperties'] = selected
+    if '-jar' in args:
+        pos = args.index('-jar')
+        if pos + 1 < len(args) and re.fullmatch(r'/[A-Za-z0-9_./-]{1,240}\.jar', args[pos+1]):
+            result['jarPath'] = args[pos+1]
+    return result
+
+def docker_json(*args):
+    command = subprocess.run((*DOCKER, *args), capture_output=True, timeout=10)
+    need(command.returncode == 0 and len(command.stdout) <= 4*1024*1024, 'DOCKER_DIAGNOSTIC_READ_FAILED')
+    return json.loads(command.stdout)
+
+def process_rows(cid):
+    command = subprocess.run((*DOCKER, 'top', cid, '-eo', 'pid,ppid,comm'),
+                             capture_output=True, timeout=10)
+    need(command.returncode == 0 and len(command.stdout) <= 131072, 'PROCESS_LIST_READ_FAILED')
+    lines = command.stdout.decode().splitlines()
+    need(lines and lines[0].split() == ['PID', 'PPID', 'COMMAND'], 'PROCESS_LIST_SHAPE')
+    rows = [line.split(None, 2) for line in lines[1:] if line.strip()]
+    need(len(rows) <= 256 and all(len(row) == 3 and row[0].isdigit() and row[1].isdigit()
+                                for row in rows), 'PROCESS_LIST_LIMIT')
+    return rows
+
+def selected_environment(config):
+    values = dict(row.split('=', 1) for row in config.get('Env') or [])
+    selected = {key: value for key, value in values.items()
+                if key in ('PORT', 'SERVER_PORT', 'MANAGEMENT_SERVER_PORT', 'SERVER_ADDRESS',
+                           'SPRING_MAIN_WEB_APPLICATION_TYPE')
+                and re.fullmatch(r'[A-Za-z0-9.:[\]_-]{1,128}', value)}
+    raw = values.get('SPRING_APPLICATION_JSON')
+    json_selected = {}
+    if raw:
+        need(len(raw) <= 1024*1024, 'SPRING_JSON_LIMIT')
+        value = json.loads(raw)
+        need(isinstance(value, dict), 'SPRING_JSON_OBJECT_REQUIRED')
+        for key in ('server.port', 'management.server.port', 'server.address', 'spring.main.web-application-type'):
+            item = value.get(key)
+            if item is None:
+                item = value
+                for part in key.split('.'):
+                    item = item.get(part) if isinstance(item, dict) else None
+            if item is not None and re.fullmatch(r'[A-Za-z0-9.:[\]_-]{1,128}', str(item)):
+                json_selected[key] = item
+    jvm = {key: launch_summary(shlex.split(values.get(key, '')))['selectedDeclaredProperties']
+           for key in ('JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', 'JAVA_OPTS') if values.get(key)}
+    return {'environment': selected, 'selectedJvmProperties': jvm, 'springApplicationJsonPresent': bool(raw),
+            'selectedJsonProperties': json_selected, 'effectiveSpringConfigurationRead': False}
+
+def socket_rows(raw, ipv6):
+    rows = []
+    for line in raw.decode('ascii').splitlines()[1:]:
+        fields = line.split()
+        need(len(fields) >= 10, 'TCP_TABLE_SHAPE')
+        if fields[3] != '0A':
+            continue
+        address, port = fields[1].split(':')
+        packed = bytes.fromhex(address)
+        packed = b''.join(packed[i:i+4][::-1] for i in range(0, len(packed), 4))
+        ip = ipaddress.ip_address(packed)
+        need(ip.version == (6 if ipv6 else 4), 'TCP_ADDRESS_FAMILY')
+        scope = 'all-interfaces' if ip.is_unspecified else 'loopback' if ip.is_loopback else 'interface-address'
+        rows.append({'family': 'IPv6' if ipv6 else 'IPv4', 'port': int(port, 16),
+                     'bindScope': scope, 'inode': fields[9]})
+    need(len(rows) <= 256, 'LISTENER_LIMIT')
+    return rows
+
+def process_snapshot(registry, report):
+    pid = registry['State']['Pid']
+    need(registry['State']['Running'] and pid > 0, 'REGISTRY_NOT_RUNNING')
+    rows = process_rows(registry['Id'])
+    init = [row for row in rows if int(row[0]) == pid]
+    need(len(init) == 1, 'INIT_PROCESS_NOT_LISTED')
+    config = registry['Config']
+    image = docker_json('image', 'inspect', registry['Image'])
+    need(len(image) == 1, 'ONE_IMAGE_REQUIRED')
+    configured = (config.get('Entrypoint') or []) + (config.get('Cmd') or [])
+    image_args = (image[0]['Config'].get('Entrypoint') or []) + (image[0]['Config'].get('Cmd') or [])
+    summary = {'processCount': len(rows), 'processKinds': dict(Counter(kind(row[2]) for row in rows)),
+               'initProcessKind': kind(init[0][2]), 'containerLaunch': launch_summary(configured),
+               'imageDefaultLaunch': launch_summary(image_args),
+               'containerLaunchMatchesImageDefault': configured == image_args,
+               'declaredServerConfiguration': selected_environment(config),
+               'javaProcesses': [], 'listeners': [], 'rawArgumentsEmitted': False}
+    report['semanticProcess'] = summary
+    sockets = []
+    for name, ipv6 in (('tcp', False), ('tcp6', True)):
+        try:
+            sockets.extend(socket_rows(proc_read('/proc/' + str(pid) + '/net/' + name, 1024*1024), ipv6))
+        except FileNotFoundError:
+            if not ipv6:
+                raise
+    java_inodes = set()
+    for row in rows:
+        if kind(row[2]) != 'java':
+            continue
+        prefix = '/proc/' + row[0]
+        need(os.readlink(prefix + '/ns/pid') == os.readlink('/proc/' + str(pid) + '/ns/pid'),
+             'JAVA_PROCESS_NAMESPACE_CHANGED')
+        args = proc_read(prefix + '/cmdline', 1024*1024).rstrip(b'\0').decode().split('\0')
+        summary['javaProcesses'].append(launch_summary(args))
+        fds = list(Path(prefix + '/fd').iterdir())
+        need(len(fds) <= 8192, 'JAVA_FD_LIMIT')
+        for fd in fds:
+            try:
+                target = os.readlink(fd)
+            except FileNotFoundError:
+                continue
+            match = re.fullmatch(r'socket:\[(\d+)\]', target)
+            if match:
+                java_inodes.add(match[1])
+    summary['javaProcessCount'] = len(summary['javaProcesses'])
+    summary['listeners'] = [{k: v for k, v in row.items() if k != 'inode'} |
+                            {'ownedByObservedJavaProcess': row['inode'] in java_inodes} for row in sockets]
+    summary['processSetUnchangedDuringRead'] = rows == process_rows(registry['Id'])
+    summary['snapshotIsAtomic'] = False
 
 def selected_key(config):
     # The existing installation uses this exact external key when the literal list is empty.
@@ -271,6 +414,7 @@ def topology(route, gateway, registry, report):
         queries.append({'host': host, 'port': int(port)})
     report['upstream'] = {
         'nodeCount': len(queries), 'scheme': upstream.get('scheme', 'http'),
+        'configuredPorts': [q['port'] for q in queries],
         'commonNetworkCount': len(common),
         'configuredNamesMatchRegistry': [q['host'] in aliases or q['host'] in addresses for q in queries],
         'activeHealthCheckConfigured': bool((upstream.get('checks') or {}).get('active'))}
@@ -304,15 +448,24 @@ def execute(report):
     need(all(doc['Image'] == roles[name]['nativeImage'] for name, doc in selected.items()), 'RETAINED_IMAGE_CHANGED')
     for name in ('semantic', 'apisix'):
         report['services'][name]['recentLogSummary'] = log_summary(selected[name]['Id'])
+    if selected['semantic']['State']['Running']:
+        process_snapshot(selected['semantic'], report)
     need(selected['apisix']['State']['Running'], 'APISIX_NOT_RUNNING')
     route = route_read(selected['apisix'], report)
     topology(route, selected['apisix'], selected['semantic'], report)
+    if 'semanticProcess' in report:
+        listeners = report['semanticProcess']['listeners']
+        report['semanticProcess']['upstreamPortComparisons'] = [
+            {'port': port, 'listenerPresent': any(row['port'] == port for row in listeners),
+             'nonLoopbackListenerPresent': any(row['port'] == port and row['bindScope'] != 'loopback' for row in listeners),
+             'javaListenerPresent': any(row['port'] == port and row['ownedByObservedJavaProcess'] for row in listeners)}
+            for port in report['upstream']['configuredPorts']]
     need(all(stable_pin(inspect(doc['Id'])) == stable_pin(doc) for doc in selected.values()),
          'RUNTIME_CHANGED_DURING_READ')
     report.update(status='SEMANTIC_UPSTREAM_READ_COMPLETE', runtimeUnchangedDuringRead=True)
 
 def main():
-    report = {'schema': 'ouf.current-semantic-upstream-read.v1', 'status': 'READ_INCOMPLETE',
+    report = {'schema': 'ouf.current-semantic-upstream-read.v2', 'status': 'READ_INCOMPLETE',
               'serviceConfigurationChanged': False, 'serviceStops': 0, 'databaseRequests': 0,
               's3Requests': 0, 'permissionChanges': 0, 'credentialValuesEmitted': False,
               'rawLogsEmitted': False, 'businessRequestsIssued': 0}
