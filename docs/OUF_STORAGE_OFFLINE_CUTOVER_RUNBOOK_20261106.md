@@ -1,6 +1,6 @@
-## Coppia corrente — ripresa degli accessi S3 applicativi
+## Accessi S3 isolati verificati sul VPS
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_APP_BINDINGS_20261107.md) per riusare i binding esistenti e verificare i due accessi dopo l'HTTP 500 iniziale. Esito della ripresa pendente.
+L'operatore ha riportato `ISOLATED_OCI33_APP_BINDINGS_READY`. Le due identità esistenti hanno letto il rispettivo oggetto con hash coincidente e ricevuto AccessDenied sul bucket dell'altra, via TLS verificato. Sei GET complessive, due attese di avvio, container rimosso. Nessun container applicativo avviato. [Ricevuta operatore](../evidence/storage-oci33-app-bindings-ready-operator-20261107.json).
 
 ## Staging OCI33 riuscito sul VPS
 
