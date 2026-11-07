@@ -1,6 +1,6 @@
-## Coppia corrente — accessi S3 applicativi sullo staging
+## Coppia corrente — ripresa degli accessi S3 applicativi
 
-[Blocco unico sul VPS](OUF_STORAGE_OCI33_APP_BINDINGS_20261107.md) per creare configurazioni TLS e identità dei due servizi e verificare un accesso proprio e un diniego per ciascuno. Riscontro pendente.
+[Blocco unico sul VPS](OUF_STORAGE_OCI33_APP_BINDINGS_20261107.md) per riusare i binding esistenti e verificare i due accessi dopo l'HTTP 500 iniziale. Esito della ripresa pendente.
 
 ## Staging OCI33 riuscito sul VPS
 
