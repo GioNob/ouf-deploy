@@ -11,6 +11,7 @@ import re
 import shlex
 import signal
 import subprocess
+import tempfile
 import time
 
 SERVICE = 'ouf-registry-token-7cb59501000058b5dc5030ad.service'
@@ -18,7 +19,11 @@ LEGACY = ('ouf-policy-token@semantic.service', 'ouf-policy-token@semantic.timer'
 PROPERTIES = ('LoadState', 'ActiveState', 'SubState', 'UnitFileState', 'MainPID',
               'NRestarts', 'Result', 'ExecMainStatus', 'Type', 'User', 'Restart',
               'RootDirectory', 'NoNewPrivileges', 'ExecStart', 'ExecStartPre',
-              'ExecStartPost', 'ExecCondition', 'FragmentPath')
+              'ExecStartPost', 'ExecCondition', 'FragmentPath', 'DropInPaths',
+              'NeedDaemonReload', 'SendSIGKILL', 'TimeoutStopUSec', 'RuntimeDirectoryPreserve')
+START_HOOKS = ('ExecStartPre', 'ExecStartPost', 'ExecCondition')
+CAPTURE_OVERRIDE = Path('/etc/systemd/system') / (SERVICE + '.d') / 'zzzz-ouf-storage-offline-20261106.conf'
+CAPTURE_BYTES = b'[Service]\nRestart=no\nSendSIGKILL=no\nRuntimeDirectoryPreserve=yes\nTimeoutStopSec=120s\n'
 SUCCESS = 'SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK'
 
 def need(ok, code):
@@ -40,7 +45,23 @@ def unit_read(unit):
 def public_unit(fields):
     return {key: value for key, value in fields.items()
             if key not in ('ExecStart', 'ExecStartPre', 'ExecStartPost', 'ExecCondition',
-                           'FragmentPath', 'RootDirectory') and re.fullmatch('[A-Za-z0-9_-]{0,80}', value)}
+                           'FragmentPath', 'RootDirectory', 'DropInPaths') and re.fullmatch('[A-Za-z0-9_-]{0,80}', value)}
+
+def bus_read(*args):
+    result = subprocess.run(('/usr/bin/busctl', '--system', '--no-pager', *args),
+                            stdin=subprocess.DEVNULL, capture_output=True, timeout=15)
+    need(result.returncode == 0 and len(result.stdout) <= 8192, 'TYPED_SERVICE_METADATA_READ_FAILED')
+    return result.stdout.decode().strip()
+
+def empty_start_hooks():
+    raw = bus_read('call', 'org.freedesktop.systemd1', '/org/freedesktop/systemd1',
+                   'org.freedesktop.systemd1.Manager', 'GetUnit', 's', SERVICE)
+    match = re.fullmatch(r'o "(/org/freedesktop/systemd1/unit/[A-Za-z0-9_]+)"', raw)
+    need(match is not None, 'TYPED_UNIT_OBJECT_REQUIRED')
+    raw = bus_read('get-property', 'org.freedesktop.systemd1', match.group(1),
+                   'org.freedesktop.systemd1.Service', *START_HOOKS)
+    need(raw.splitlines() == ['a(sasbttttuii) 0'] * len(START_HOOKS),
+         'TYPED_EMPTY_START_HOOKS_REQUIRED')
 
 def legacy_guard(report):
     rows = {unit: unit_read(unit) for unit in LEGACY}
@@ -48,20 +69,76 @@ def legacy_guard(report):
     need(all(row['LoadState'] == 'masked' and row['ActiveState'] == 'inactive'
              for row in rows.values()), 'LEGACY_PRODUCER_MUST_REMAIN_MASKED_INACTIVE')
 
-def service_guard(row, c, unit_raw):
-    need(all(k in row for k in PROPERTIES), 'SERVICE_METADATA_INCOMPLETE')
+def service_guard(row, c, unit_raw, expected_restart='on-failure'):
+    need(all(k in row for k in PROPERTIES if k not in START_HOOKS), 'SERVICE_METADATA_INCOMPLETE')
     need(row['LoadState'] == 'loaded' and row['UnitFileState'] in ('disabled', 'enabled')
          and row['Type'] == 'simple' and row['User'] == 'root'
-         and row['Restart'] == 'on-failure' and row['NoNewPrivileges'] == 'yes'
+         and row['Restart'] == expected_restart and row['NoNewPrivileges'] == 'yes'
+         and row['NeedDaemonReload'] == 'no'
          and row['RootDirectory'] == c['destinations']['installationRoot'] + '/sandbox'
          and row['FragmentPath'] == c['serviceUnitPath'], 'INSTALLED_OPERATIONAL_UNIT_REQUIRED')
-    need(not any(row[k] for k in ('ExecStartPre', 'ExecStartPost', 'ExecCondition')),
+    need(not any(row.get(k) for k in START_HOOKS),
          'UNEXPECTED_OPERATIONAL_START_HOOK')
+    empty_start_hooks()  # Omitted textual properties are not proof of empty arrays.
     starts = [line[len('ExecStart=:'):] for line in unit_raw.decode().splitlines()
               if line.startswith('ExecStart=:')]
     actual = re.search(r'argv\[\]=(.*?);', row['ExecStart'])
     need(len(starts) == 1 and row['ExecStart'].count('argv[]=') == 1 and actual
          and shlex.split(actual.group(1)) == shlex.split(starts[0]), 'LOADED_WORKER_COMMAND_DIFFERS_FROM_REVIEW')
+
+def capture_override(row, owner, report):
+    paths = shlex.split(row.get('DropInPaths', ''))
+    need(len(paths) == len(set(paths)), 'DUPLICATE_DROPIN_PATH')
+    present = str(CAPTURE_OVERRIDE) in paths
+    report['captureOverrideListed'] = present
+    need(present == os.path.lexists(CAPTURE_OVERRIDE), 'CAPTURE_OVERRIDE_LOADED_DISK_MISMATCH')
+    snapshots = {path: owner['read'](path, 65536) for path in paths}
+    if present:
+        need(snapshots[str(CAPTURE_OVERRIDE)] == CAPTURE_BYTES, 'CAPTURE_OVERRIDE_BYTES_CHANGED')
+        need(all(row.get(k) == v for k, v in {'Restart': 'no', 'SendSIGKILL': 'no',
+             'RuntimeDirectoryPreserve': 'yes', 'TimeoutStopUSec': '2min'}.items()),
+             'CAPTURE_OVERRIDE_EFFECTIVE_SETTINGS_CHANGED')
+        report['captureOverrideExactBytesVerified'] = True
+    else:
+        need(row.get('Restart') == 'on-failure', 'UNEXPLAINED_OPERATIONAL_RESTART_POLICY')
+    return snapshots
+
+def restore_capture_override(report, snapshots, owner):
+    source = str(CAPTURE_OVERRIDE)
+    need(source in snapshots and owner['read'](source, 65536) == CAPTURE_BYTES,
+         'CAPTURE_OVERRIDE_CHANGED_BEFORE_RESTORE')
+    for path, raw in snapshots.items():
+        need(owner['read'](path, 65536) == raw, 'DROPIN_CHANGED_BEFORE_RESTORE')
+    root = Path(tempfile.mkdtemp(prefix='semantic-owner-restore-', dir='/var/lib/ouf-storage-migration'))
+    backup = root / 'capture-override.conf'
+    fd = os.open(backup, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, 'wb') as stream:
+        stream.write(CAPTURE_BYTES); stream.flush(); os.fsync(stream.fileno())
+    fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+    report['captureOverrideBackup'] = str(backup)
+    need(owner['read'](str(backup), 65536) == CAPTURE_BYTES
+         and owner['read'](source, 65536) == CAPTURE_BYTES, 'CAPTURE_OVERRIDE_BACKUP_OR_SOURCE_CHANGED')
+    CAPTURE_OVERRIDE.unlink()
+    report.update(captureOverrideRemoved=True, serviceConfigurationChanged=True)
+    fd = os.open(CAPTURE_OVERRIDE.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+    report['daemonReloadDispatched'] = True
+    need(command('daemon-reload').returncode == 0, 'MANAGER_RELOAD_FAILED_AFTER_OVERRIDE_REMOVAL')
+    after = unit_read(SERVICE)
+    need(set(shlex.split(after.get('DropInPaths', ''))) == set(snapshots) - {source},
+         'UNRELATED_DROPIN_MEMBERSHIP_CHANGED')
+    for path, raw in snapshots.items():
+        if path != source:
+            need(owner['read'](path, 65536) == raw, 'UNRELATED_DROPIN_BYTES_CHANGED')
+    need(all(after.get(k) == v for k, v in {'Restart': 'on-failure', 'SendSIGKILL': 'yes',
+         'RuntimeDirectoryPreserve': 'no', 'TimeoutStopUSec': '35s'}.items()),
+         'INSTALLED_RESTART_SETTINGS_NOT_RESTORED')
+    report['unrelatedDropInsPreserved'] = True
+    report['serviceAfterOverrideRestore'] = public_unit(after)
+    return after
 
 def claims(token):
     part = token.split('.')[1]
@@ -129,7 +206,10 @@ def execute(report, runtime, reader, owner):
     need(review['serviceUnit']['path'] == c['serviceUnitPath'], 'REVIEWED_UNIT_PATH_CHANGED')
     unit_raw = owner['read'](c['serviceUnitPath'], 65536, review['serviceUnit']['sha256'])
     before = unit_read(SERVICE); report['serviceBefore'] = public_unit(before)
-    service_guard(before, c, unit_raw)
+    report['omittedTextProperties'] = [key for key in PROPERTIES if key not in before]
+    snapshots = capture_override(before, owner, report)
+    service_guard(before, c, unit_raw, expected_restart='no' if str(CAPTURE_OVERRIDE) in snapshots else 'on-failure')
+    report['emptyStartHooksProvenByTypedRead'] = True
     verify_binding(doc, values, c, token, mount)
     report['installedOwnerMatchesCurrentTokenBinding'] = True
     ledger_path = Path(c['destinations']['ledgerRoot']) / 'state.json'
@@ -146,6 +226,8 @@ def execute(report, runtime, reader, owner):
     row, report['ledgerBefore'] = ledger()
     already_active = before['ActiveState'] == 'active' and before['SubState'] == 'running'
     need(row['state'] not in ('BLOCKED', 'REVOKED'), 'OWNER_LEDGER_REQUIRES_RECONCILIATION')
+    need(not already_active or str(CAPTURE_OVERRIDE) not in snapshots,
+         'RUNNING_OWNER_WITH_CAPTURE_OVERRIDE_REQUIRES_REVIEW')
     if not already_active:
         need(before['ActiveState'] in ('inactive', 'failed') and before['MainPID'] == '0',
              'OWNER_SERVICE_TRANSITION_IN_PROGRESS')
@@ -153,6 +235,12 @@ def execute(report, runtime, reader, owner):
              'PREVIOUS_GRANT_OR_PUBLICATION_OUTCOME_UNKNOWN')
         unchanged(doc, runtime)
         report['privateStartAttemptFile'] = claim_start(doc, raw)
+        if str(CAPTURE_OVERRIDE) in snapshots:
+            restored = restore_capture_override(report, snapshots, owner)
+            service_guard(restored, c, unit_raw)
+            need(restored['ActiveState'] in ('inactive', 'failed') and restored['MainPID'] == '0',
+                 'OWNER_STATE_CHANGED_DURING_OVERRIDE_RESTORE')
+            unchanged(doc, runtime)
         report['serviceStartDispatched'] = True
         result = command('start', SERVICE)
         report['serviceStartExitCode'] = result.returncode
@@ -195,9 +283,11 @@ def execute(report, runtime, reader, owner):
                   automaticRenewalCycleProven=False)
 
 def main():
-    report = {'schema': 'ouf.semantic-operational-owner-resume.v1', 'status': 'HELD',
+    report = {'schema': 'ouf.semantic-operational-owner-resume.v2', 'status': 'HELD',
               'service': SERVICE, 'serviceStartDispatched': False, 'serviceEnableDispatched': False,
               'credentialValuesEmitted': False, 'applicationConfigurationChanged': False,
+              'serviceConfigurationChanged': False, 'captureOverrideRemoved': False,
+              'daemonReloadDispatched': False,
               'applicationLoadedPolicyProven': False, 'permissionChanges': 0, 'serviceStops': 0,
               'businessRequestsIssued': 0, 'databaseQueriesIssuedByScript': 0, 's3Requests': 0,
               'policyGetAttempts': 0, 'operationalLedgerWritesByScript': 0,

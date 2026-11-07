@@ -426,6 +426,25 @@
     "nextSemanticOperationalOwnerResume": {
       "status": "PREPARED_NOT_EXECUTED_ON_VPS",
       "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "scriptCommit": "099f30a0d38af8170db5a5ddb67a055660bdaf1a",
+      "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
+      "sha256": "b272e84f636a03af5a72a82494085c7164b5c7ec9c9adcd30fdf0fb6cfb1b1c6",
+      "legacyMustRemainMasked": true,
+      "existingOwnerStoppedByCapture": true,
+      "generalRuntimeRestoreOmitsOwner": true,
+      "localChecks": "PASS_19_OFFLINE_SCENARIOS_WITH_REAL_TEMPORARY_OVERRIDE_FILES",
+      "applicationLoadedPolicyProven": false,
+      "automaticRenewalCycleProven": false,
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "version": 2,
+      "typedEmptyStartHooksRequired": true,
+      "restoreExactSingleCaptureOverrideBeforeStart": true,
+      "backupBeforeRemoval": true,
+      "unrelatedDropInsPreserved": true
+    },
+    "previousSemanticOperationalOwnerResume": {
+      "status": "HELD_BEFORE_EFFECTS",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
       "scriptCommit": "1d0a93a9dbb3dd1a3f26a9fa92c71af841427084",
       "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
       "sha256": "f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e",
@@ -435,7 +454,11 @@
       "localChecks": "PASS_13_OFFLINE_SCENARIOS",
       "applicationLoadedPolicyProven": false,
       "automaticRenewalCycleProven": false,
-      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md"
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "reason": "SERVICE_METADATA_INCOMPLETE",
+      "operatorReceipt": "evidence/semantic-operational-owner-metadata-held-operator-20261107.json",
+      "observedRestart": "no",
+      "missingPropertyNamesNotReported": true
     }
   },
   "milestones": [
@@ -510,7 +533,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Resume existing continuous registry token owner; keep legacy units masked. Verify current mounted publication and policy GET200, enable existing owner, then retry MCP semantic search.",
+  "nextAction": "Execute resume v2: typed D-Bus empty-hook checks; back up/remove only verified capture override for inactive existing owner; reload and verify original restart settings; then start, verify mounted token and policy GET200, enable owner, retry MCP search.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -537,7 +560,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Semantic running; policy token expired. First renewal command held without effects because it selected the masked legacy producer. Correct installed continuous owner resume prepared, VPS pending. Search, UDP application lake operation and E2E unproven.",
+    "reason": "Semantic running; policy token expired. Two preparatory commands held without effects: wrong masked producer, then incomplete text metadata and unhandled capture Restart=no. Resume v2 prepared, VPS pending. Search, normal UDP lake operation and E2E remain unproven.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [
