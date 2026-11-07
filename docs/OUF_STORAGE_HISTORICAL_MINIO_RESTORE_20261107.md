@@ -1,3 +1,15 @@
+## Esito VPS e log conservato
+
+La [ricevuta](../evidence/storage-historical-minio-restore-held-operator-20261107.json) riporta `MINIO_ISOLATED_READY_TIMEOUT`. Il ramo segue verifica manifest, estrazione, avvio con PID e pin del namespace. La disponibilità veniva misurata con GET S3 firmata. Il codice non distingueva avvio HTTP, errore curl e autenticazione e non ha iniziato l'inventario. Il container temporaneo è stato rimosso dal ramo di chiusura e il log è rimasto nello scope privato. L'esecuzione approvata è consumata.
+
+Primo dato utile: un solo riscontro dal log già conservato. Il comando non avvia container e restituisce dimensioni e occorrenze di soli frammenti consentiti.
+
+```bash
+f=/var/lib/ouf-storage-migration/historical-minio-restore-20261107-v1/minio.stderr.private
+sudo wc -lc "$f"
+sudo grep -Eio 'API: https?://127\.0\.0\.1:9000|MinIO Object Storage Server|FATAL|ERROR|permission denied|read-only file system|address already in use|unable to use the drive|insufficient read quorum|drive not found|unable to initialize|waiting for a minimum|invalid credentials|logging driver|exiting on signal' "$f" | sort -f | uniq -ic
+```
+
 # Ripristino isolato della copia storica MinIO
 
 Decisione approvata `GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01`. La [prova PostgreSQL](../evidence/storage-historical-postgres-restored-operator-20261107.json) è riuscita con 7 database aperti e 7 letture campione. La prova MinIO è il prossimo passo distinto.
