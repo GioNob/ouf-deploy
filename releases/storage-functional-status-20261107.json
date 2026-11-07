@@ -424,7 +424,7 @@
       "reason": "WRONG_LEGACY_PRODUCER_SELECTED_ALREADY_MASKED_BEFORE_CAPTURE"
     },
     "nextSemanticOperationalOwnerResume": {
-      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "status": "HELD_BEFORE_EFFECTS_V2_SUSPENDED",
       "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
       "scriptCommit": "099f30a0d38af8170db5a5ddb67a055660bdaf1a",
       "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
@@ -440,7 +440,9 @@
       "typedEmptyStartHooksRequired": true,
       "restoreExactSingleCaptureOverrideBeforeStart": true,
       "backupBeforeRemoval": true,
-      "unrelatedDropInsPreserved": true
+      "unrelatedDropInsPreserved": true,
+      "operatorReceipt": "evidence/semantic-operational-owner-dbus-held-operator-20261107.json",
+      "reason": "TYPED_SERVICE_METADATA_READ_FAILED"
     },
     "previousSemanticOperationalOwnerResume": {
       "status": "HELD_BEFORE_EFFECTS",
@@ -459,6 +461,17 @@
       "operatorReceipt": "evidence/semantic-operational-owner-metadata-held-operator-20261107.json",
       "observedRestart": "no",
       "missingPropertyNamesNotReported": true
+    },
+    "nextSemanticBusDiagnostic": {
+      "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+      "script": "scripts/read-semantic-systemd-bus-error-20261107.py",
+      "scriptCommit": "9745f249627469567f4a49d2cc7c3120b9bb4c90",
+      "sha256": "dfdfe61612f32804f3f3d7b7a2a0be8d5e4c3212ac18e5c50776d799a6b55396",
+      "maximumBusReads": 4,
+      "serviceMutations": 0,
+      "tokenReads": 0,
+      "localValidation": "SYNTAX_CHECK_ONLY",
+      "runbook": "docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md"
     }
   },
   "milestones": [
@@ -533,7 +546,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute resume v2: typed D-Bus empty-hook checks; back up/remove only verified capture override for inactive existing owner; reload and verify original restart settings; then start, verify mounted token and policy GET200, enable owner, retry MCP search.",
+  "nextAction": "Read exact D-Bus stage and busctl exit code/stderr without starting or modifying services. Resume mutation suspended until cause identified.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -560,7 +573,7 @@
   "estimate": {
     "status": "NOT_ESTIMABLE_YET",
     "historicalPercentageUsedForPlanning": false,
-    "reason": "Semantic running; policy token expired. Two preparatory commands held without effects: wrong masked producer, then incomplete text metadata and unhandled capture Restart=no. Resume v2 prepared, VPS pending. Search, normal UDP lake operation and E2E remain unproven.",
+    "reason": "Correct owner still inactive/disabled, mounted token expired. Resume v2 held before effects on D-Bus metadata read; stage and error missing. Read-only diagnostic prepared. Semantic search, UDP lake and E2E unproven.",
     "nextReestimateAfter": "SEMANTIC_SEARCH_RECOVERED_AND_UDP_APPLICATION_OPERATION"
   },
   "evidence": [

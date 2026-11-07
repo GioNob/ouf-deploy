@@ -1,6 +1,6 @@
 # Ripristino del rinnovo del token Semantic
 
-**Versione 2: lettura tipizzata degli hook e ripristino dell'override di cattura. Preparata e verificata localmente; esecuzione VPS pendente.**
+**SOSPESO dopo il tentativo v2 delle 20:43:40 CET: TYPED_SERVICE_METADATA_READ_FAILED, nessuna modifica.** Il prossimo comando è la [diagnosi D-Bus di sola lettura](OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md). Il ripristino riportato sotto è storico e non va rilanciato finché non si conosce l'errore della chiamata.
 
 ## Risultato del comando precedente
 
@@ -31,7 +31,7 @@ Legge il registro dei tentativi senza modificarlo. Prima di avviare si ferma su 
 
 Il programma può modificare la configurazione del solo servizio token e ricaricare systemd. Conserva l'override prima della rimozione; non rimuove gli altri drop-in. Non legge il client secret, non cambia grant, configurazione applicativa, reti o container e non emette credenziali. Il produttore riattivato può leggere la propria credenziale, richiedere token e aggiornare il proprio registro. Un HELD dopo una modifica **può lasciare l'override rimosso o il produttore in esecuzione**: conservare l'esito, non rilanciare alla cieca e non resettare file o contatori.
 
-## Comando attuale
+## Comando v2 sospeso
 
 Codice [`099f30a0`](https://github.com/GioNob/ouf-deploy/commit/099f30a0d38af8170db5a5ddb67a055660bdaf1a); script 17861 byte, SHA-256 `b272e84f636a03af5a72a82494085c7164b5c7ec9c9adcd30fdf0fb6cfb1b1c6`. [Preparazione](../evidence/semantic-operational-owner-resume-preparation-20261107.json).
 

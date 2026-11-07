@@ -22,7 +22,9 @@ Il tentativo MCP successivo `semantic.search(q=teatro, limit=20)`, account `ouf-
 
 **Esito delle 19:18:38 UTC:** il produttore corretto è loaded/simple/root, inactive/disabled e dichiara Restart=no. Il comando v1 termina `SERVICE_METADATA_INCOMPLETE` senza modifiche: non riportava quali proprietà mancassero. Il precedente codice di cattura usa già D-Bus per distinguere gli array vuoti omessi dall'output testuale e installa l'override Restart=no. Queste condizioni non erano state considerate. [Ricevuta](../evidence/semantic-operational-owner-metadata-held-operator-20261107.json).
 
-**Prossima azione:** [comando corretto v2](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md). Legge gli hook tipizzati; se path/byte/impostazioni coincidono con l'override di cattura, lo conserva e rimuove dal solo produttore operativo, ricarica systemd e verifica Restart=on-failure e gli altri drop-in invariati. Poi avvio, pubblicazione montata, GET policy200 e abilitazione al boot. Il registro bloccato o incerto impedisce modifiche. 19 scenari locali PASS, esecuzione VPS pendente. Dopo successo ricerca MCP; policy in memoria, ricevuta e rinnovo automatico successivo restano non provati.
+**Esito delle 20:43:40 CET (19:43:40 UTC):** v2 HELD/`TYPED_SERVICE_METADATA_READ_FAILED`, ancora senza effetti. Path e byte dell'override di cattura verificati; proprietà testuali omesse identificate: ExecStartPre, ExecStartPost, ExecCondition. Non è nota la fase D-Bus fallita: la v2 scarta exit code/stderr e accorpa GetUnit/get-property. I test precedenti simulavano D-Bus. [Ricevuta](../evidence/semantic-operational-owner-dbus-held-operator-20261107.json).
+
+**Prossima azione:** [diagnosi D-Bus di sola lettura](OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md), con fase, exit code, errore e tipo/conteggio degli hook. Non rilanciare per ora il ripristino v2. La causa del fallimento D-Bus non è provata; nessun nuovo mutatore consegnato. Dopo averla risolta: produttore operativo, token fresco/GET policy200, ricerca MCP.
 
 ## Binding storage acquisiti
 

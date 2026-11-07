@@ -204,3 +204,9 @@ Preparato `resume-current-semantic-operational-owner-20261107.py`, commit `1d0a9
 Ricevuta delle 19:18:38 UTC: HELD/SERVICE_METADATA_INCOMPLETE, servizio operativo corretto loaded/simple/root, inactive/disabled, Restart=no. Zero avvii, abilitazioni e GET policy. La v1 non esponeva i nomi mancanti. Il codice di cattura già usava array D-Bus tipizzati per gli hook vuoti e installava `zzzz-ouf-storage-offline-20261106.conf` con Restart=no: la ripartenza precedente non gestiva queste condizioni.
 
 Commit `099f30a0d38af8170db5a5ddb67a055660bdaf1a`: v2 legge gli hook tipizzati e conserva l'esatto override prima di rimuoverlo dal solo servizio operativo fermo; daemon-reload, verifica impostazioni originali e conservazione altri drop-in, poi avvio e verifica token/policy. Registro incerto e file alterati bloccano prima della modifica; legacy resta masked. 19 scenari locali PASS con systemd/HTTP simulati e override su file temporanei reali. VPS pendente; nessun nuovo credito F2–F6 o test MCP. [Comando](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md).
+
+## 7 novembre 2026, 20:43 CET — v2 fermata sulla lettura D-Bus
+
+Ricevuta operatore: TYPED_SERVICE_METADATA_READ_FAILED, zero modifiche/avvii/GET policy. Ora verificati path/byte dell'override e i tre nomi omessi (ExecStartPre, ExecStartPost, ExecCondition). La fase D-Bus e il messaggio d'errore non sono conservati dalla v2; causa aperta. Nessun successo operativo deducibile dai 19 scenari simulati.
+
+Preparata [lettura mirata](OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md), commit `9745f249627469567f4a49d2cc7c3120b9bb4c90`: GetUnit e singole proprietà, exit code/stderr del comando, solo tipo/conteggio dei risultati riusciti. Nessun token, LoadUnit o mutazione. Verifica sintattica locale; VPS pendente. Ripristino v2 sospeso fino alla diagnosi; F1 PASS e F2–F6 invariati.
