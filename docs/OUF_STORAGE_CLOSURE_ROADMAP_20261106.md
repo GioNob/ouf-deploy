@@ -1,3 +1,7 @@
+## 7 novembre — continuazione di sola cattura autorizzata
+
+Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 acquisita sul pacchetto esatto 67ad84d. [Ricevuta](../evidence/storage-capture-only-operator-decision-20261107.json). Ora eseguire una sola cattura sul VPS, senza ripetere il fermo e conservando l'anomalia etcd. Il prossimo risultato è l'archivio reale con digest e dimensione, poi Windows e restore isolato. Esecuzione ancora pendente; nessun credito MiniPET.
+
 ## Risultato corrente — sola cattura pronta per decisione
 
 **Il dubbio sul fermo è risolto dalle ricevute target:**49azioni/35policy/14servizi fermati,0running nell'ultimo inventario,nessuna cattura avviata. La nuova continuazione è qualificata conHOLDreale simulato e archivio decifrato;non reinvia gli arresti. [Pacchetto concreto](OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md),decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 pendente.

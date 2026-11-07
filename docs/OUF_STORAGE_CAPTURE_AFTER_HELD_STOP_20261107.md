@@ -1,6 +1,6 @@
 # Cattura dopo fermo HELD — pacchetto concreto del 7 novembre 2026
 
-**Stato: qualifica riuscita; pacchetto pronto. Decisione operatore sulla singola continuazione pendente. Non eseguire prima della decisione registrata.**
+**Stato: singola continuazione autorizzata da Giovanni il 7 novembre 2026; esecuzione VPS pendente.** Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01, [ricevuta](../evidence/storage-capture-only-operator-decision-20261107.json). Le motivazioni di consenso sotto conservano il contesto del pacchetto approvato; non richiedere nuovamente l'autorizzazione.
 
 ## Fatti acquisiti dal VPS
 

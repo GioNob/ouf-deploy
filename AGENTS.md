@@ -1,3 +1,11 @@
+## Decisione operatore 7 novembre 2026 — sola cattura autorizzata
+
+Giovanni risponde “Autorizzo” al pacchetto concreto del commit 67ad84d02584f518928ad1c8ca3b86de5a3e00e9. Decisione GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01 acquisita; ricevuta evidence/storage-capture-only-operator-decision-20261107.json. Autorizzata una sola continuazione per catturare e cifrare le 34 fonti già previste, incluso l'intero PostgreSQL condiviso, conservando esplicitamente l'anomalia dei tre exec etcd non attribuiti. Nessun nuovo arresto, cambio di policy, mutazione host o riavvio. Non richiedere nuovamente questo consenso.
+
+Consegnare il comando pinned in docs/OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md. Installer f9a8a5a6967bad69e74e23563f8460968068089f, 3913 byte, SHA256 45d65577bad7c135bc292575214a1121092f178121548b10cfff73ef8487d19d. Limiti e scadenza originali invariati; almeno 3600 secondi residui all'avvio, termine piano 1794081219. Vecchio fermo e scope consumati restano intatti. Nessun replay automatico in caso di HOLD.
+
+Attendere il JSON reale della cattura: autorizzazione registrata non equivale a esecuzione riuscita. Dopo SUCCESS usare percorso, dimensione e digest reali per Windows e restore isolato. Non ripetere qualifiche già riuscite. Nessun grant HUMAN autenticato, merge, deploy o riapertura. MiniPET invariato. HEAD 67ad84d confermato prima delle modifiche, nessun workflow attivo osservato; entrambe le PR54 draft/open, source d5155899 invariata.
+
 ## Checkpoint conclusivo 2026-11-07 — sola cattura qualificata, decisione distinta pendente
 
 Fermo target confermato nel journal (504file/184CLI,49azioni/35policy/14stop,0running su145,5gruppi),capture vuota. Noveeventi extra = treexecetcd exit0,non attribuiti/healthcheck noncorrispondente. Ricevuta evidence/storage-cold-event-target-operator-20261107.json. Nonripeterefermo,contenimentohost odiagnostica. Stato live richiede i nuovi guard della cattura.

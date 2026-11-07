@@ -9,7 +9,7 @@
     "immutable": true
   },
   "currentHandoff": "docs/handoffs/OUF_STORAGE_CLOSURE_HANDOFF_20261105.md",
-  "nextPlannedWork": "Acquire exact decision for qualified single capture-only continuation preserving held nonproduction state and unattributed etcd execs. Then deliver pinned command; on target archive success transfer to Windows and perform isolated restore before SeaweedFS. Never replay completed stop.",
+  "nextPlannedWork": "Deliver pinned command for approved single capture-only continuation and await target JSON. Do not repeat authorization or completed stop. After actual archive success: Windows transfer and isolated restore, then SeaweedFS.",
   "closureReview": {
     "document": "docs/OUF_STORAGE_CLOSURE_REVIEW_20261105.md",
     "deltaContract": "docs/OUF_STORAGE_DELTA_PLAN_20261105.md",
@@ -785,9 +785,9 @@
     "eventClassesIdentified": true
   },
   "captureAfterHeldStop": {
-    "status": "QUALIFIED_PACKAGE_READY_SEPARATE_DECISION_PENDING",
+    "status": "APPROVED_SINGLE_CAPTURE_TARGET_EXECUTION_PENDING",
     "decisionReference": "GIOVANNI-NONPROD-CAPTURE-ONLY-20261107-01",
-    "decisionRecorded": false,
+    "decisionRecorded": true,
     "targetExecuted": false,
     "stopSignalsProposed": 0,
     "restartPolicyChangesProposed": 0,
@@ -799,6 +799,7 @@
     "unitTestsPassed": 5,
     "package": "docs/OUF_STORAGE_CAPTURE_AFTER_HELD_STOP_20261107.md",
     "qualification": "evidence/storage-capture-after-held-stop-qualified-20261107.json",
-    "installerCommit": "f9a8a5a6967bad69e74e23563f8460968068089f"
+    "installerCommit": "f9a8a5a6967bad69e74e23563f8460968068089f",
+    "decisionEvidence": "evidence/storage-capture-only-operator-decision-20261107.json"
   }
 }
