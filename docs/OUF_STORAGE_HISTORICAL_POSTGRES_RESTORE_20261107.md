@@ -1,3 +1,7 @@
+## Esito PostgreSQL sul VPS
+
+[Prova riuscita](../evidence/storage-historical-postgres-restored-operator-20261107.json): 7 database aperti e 7 con una riga campione, stato cold verificato, 10 container complessivi e rete none. [Prossimo passo: MinIO](OUF_STORAGE_HISTORICAL_MINIO_RESTORE_20261107.md). MiniPET **39,78%**.
+
 ## Esito VPS e completamento del riscontro SQL
 
 La [ricevuta](../evidence/storage-historical-postgres-restore-held-operator-20261107.json) riporta `POSTGRES_ROW_READ_NOT_PROVEN`. Il ramo raggiunto segue verifica del manifest, estrazione, `pg_controldata` e apertura del catalogo. Il controllo precedente dipendeva da un messaggio `NOTICE`, che può essere filtrato. Il riscontro corretto restituisce una riga `SELECT`, come già fa il catalogo.
