@@ -1,0 +1,137 @@
+{
+  "adminRouteGetAttempts": 1,
+  "businessRequestsIssued": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "observedAt": "2026-11-07T18:18:23.490492+00:00",
+  "permissionChanges": 0,
+  "rawLogsEmitted": false,
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.current-semantic-upstream-read.v2",
+  "semanticProcess": {
+    "containerLaunch": {
+      "executableKind": "sh",
+      "jarPath": "/app/application.jar",
+      "javaJarArgumentPresent": true,
+      "rawArgumentsEmitted": false,
+      "selectedDeclaredProperties": {},
+      "sleepCommandPresent": true
+    },
+    "containerLaunchMatchesImageDefault": false,
+    "declaredServerConfiguration": {
+      "effectiveSpringConfigurationRead": false,
+      "environment": {},
+      "selectedJsonProperties": {},
+      "selectedJvmProperties": {},
+      "springApplicationJsonPresent": false
+    },
+    "imageDefaultLaunch": {
+      "executableKind": "java",
+      "jarPath": "/app/application.jar",
+      "javaJarArgumentPresent": true,
+      "rawArgumentsEmitted": false,
+      "selectedDeclaredProperties": {},
+      "sleepCommandPresent": false
+    },
+    "initProcessKind": "sh",
+    "javaProcessCount": 0,
+    "javaProcesses": [],
+    "listeners": [
+      {
+        "bindScope": "loopback",
+        "family": "IPv4",
+        "ownedByObservedJavaProcess": false,
+        "port": 38911
+      }
+    ],
+    "processCount": 2,
+    "processKinds": {
+      "sh": 1,
+      "sleep": 1
+    },
+    "processSetUnchangedDuringRead": true,
+    "rawArgumentsEmitted": false,
+    "snapshotIsAtomic": false,
+    "upstreamPortComparisons": [
+      {
+        "javaListenerPresent": false,
+        "listenerPresent": false,
+        "nonLoopbackListenerPresent": false,
+        "port": 8080
+      }
+    ]
+  },
+  "semanticRouteFound": true,
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "services": {
+    "apisix": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "recentLogSummary": {
+        "correlationWithFailedRequestProven": false,
+        "hints": {},
+        "linesRead": 200,
+        "rawLogsEmitted": false,
+        "read": true,
+        "tailLimit": 200,
+        "window": "30m"
+      },
+      "running": true,
+      "state": "running"
+    },
+    "gateway-owner": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "running": true,
+      "state": "running"
+    },
+    "semantic": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "recentLogSummary": {
+        "correlationWithFailedRequestProven": false,
+        "hints": {},
+        "linesRead": 0,
+        "rawLogsEmitted": false,
+        "read": true,
+        "tailLimit": 200,
+        "window": "30m"
+      },
+      "running": true,
+      "state": "running"
+    }
+  },
+  "status": "SEMANTIC_UPSTREAM_READ_COMPLETE",
+  "upstream": {
+    "activeHealthCheckConfigured": false,
+    "commonNetworkCount": 1,
+    "configuredNamesMatchRegistry": [
+      true
+    ],
+    "configuredPorts": [
+      8080
+    ],
+    "dnsAndTcp": [
+      {
+        "addressCount": 1,
+        "directRegistryTcpReachable": false,
+        "dnsUnavailable": false,
+        "matchedTcpReachable": false,
+        "matchesRegistry": true,
+        "onlyRegistryAddresses": true,
+        "rcode": 0
+      }
+    ],
+    "httpBusinessRequestMade": false,
+    "nodeCount": 1,
+    "scheme": "http"
+  }
+}
