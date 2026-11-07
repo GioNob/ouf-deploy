@@ -1,6 +1,6 @@
 # Ripristino isolato della copia storica MinIO
 
-Decisione proposta `GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01`. La [prova PostgreSQL](../evidence/storage-historical-postgres-restored-operator-20261107.json) è riuscita con 7 database aperti e 7 letture campione. La prova MinIO è il prossimo passo distinto.
+Decisione approvata `GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01`. La [prova PostgreSQL](../evidence/storage-historical-postgres-restored-operator-20261107.json) è riuscita con 7 database aperti e 7 letture campione. La prova MinIO è il prossimo passo distinto.
 
 ## Operazione
 
@@ -17,3 +17,31 @@ Decisione proposta `GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01`. La [pr
 Il driver riusa la verifica manifest di [PostgreSQL](../scripts/restore-retained-postgres.py) al commit `5ae47689adeaf39f241527c9364a2c0c9e9b0b9b`, 19.046 byte e SHA-256 `3ff2281f380dcab555d22966f78622a4f4bd00798e5e623e5db8fb95dee2513d`. Il comando VPS carica entrambe le versioni fissate, con Python isolato e `--decision-reference GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01`.
 
 Verificate localmente la sintassi e la lettura GET di un membro versionato. La prima prova effettiva con il materiale storico sarà sul VPS.
+
+## Esecuzione approvata
+
+Giovanni ha autorizzato un singolo tentativo. [Decisione](../evidence/storage-historical-minio-restore-operator-decision-20261107.json). Esecuzione VPS pendente.
+
+```bash
+sudo /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib, sys, urllib.request
+root = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/'
+def load(ref, role, size, sha):
+    name = f'restore-retained-{role}.py'
+    with urllib.request.urlopen(root + ref + '/scripts/' + name, timeout=30) as response:
+        raw = response.read(size + 1)
+    if len(raw) != size or hashlib.sha256(raw).hexdigest() != sha:
+        raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
+    mod = {'__name__': 'retained_' + role}
+    exec(compile(raw, name, 'exec'), mod)
+    return mod
+pg = load('5ae47689adeaf39f241527c9364a2c0c9e9b0b9b', 'postgres', 19046,
+          '3ff2281f380dcab555d22966f78622a4f4bd00798e5e623e5db8fb95dee2513d')
+mi = load('f3f22efb066cd814251ebb0f161d434727ce8083', 'minio', 13529,
+          '2b8636d90e9950237f92d6c3d29a8cf3e51ca3e1a6638d1afff219c7b9f9d4b3')
+sys.argv[1:] = ['--decision-reference', 'GIOVANNI-NONPROD-ISOLATED-MINIO-RESTORE-20261107-01']
+mi['main'](pg)
+PY
+```
+
+Conservare il JSON finale. In caso di HELD conservare anche lo scope privato.
