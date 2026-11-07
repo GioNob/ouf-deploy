@@ -1,0 +1,65 @@
+{
+  "schema": "ouf.compiled-module-lifecycle-inventory.v1",
+  "scope": "SeaweedFS generation29 exact hosted binary only; combined generation30 not evaluated",
+  "sourceCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "producerRun": 41696541570,
+  "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "buildInfoSha256": "4d0a9eabc3fb020456824361b0bb944c6de92c3250ae5df5e2ae3bf6785e0c11",
+  "compiledModules": 262,
+  "compiledPackages": 1811,
+  "graphEnvironment": {
+    "goVersion": "go1.27.3",
+    "CGO_ENABLED": "0",
+    "GOOS": "linux",
+    "GOARCH": "amd64"
+  },
+  "compiledImportGraphSha256": "c78d5499b3b360797c5def44dd52b03d37f416f3f614704146523fed217df28c",
+  "githubModulePathUniqueRepositories": 181,
+  "githubRepositoryMetadataResolvedForModules": 250,
+  "githubRepositoryMetadataUnknownForModules": [
+    "golang.org/x/crypto",
+    "golang.org/x/exp",
+    "golang.org/x/image",
+    "golang.org/x/net",
+    "golang.org/x/oauth2",
+    "golang.org/x/sync",
+    "golang.org/x/sys",
+    "golang.org/x/term",
+    "golang.org/x/text",
+    "golang.org/x/time",
+    "google.golang.org/protobuf",
+    "modernc.org/b"
+  ],
+  "archivedCompiledModules": [
+    "github.com/boltdb/bolt",
+    "github.com/envoyproxy/protoc-gen-validate",
+    "github.com/facebookgo/clock",
+    "github.com/facebookgo/stats",
+    "github.com/google/btree",
+    "github.com/mitchellh/colorstring",
+    "github.com/mitchellh/mapstructure",
+    "github.com/rcrowley/go-metrics",
+    "go.opencensus.io",
+    "gopkg.in/yaml.v3"
+  ],
+  "disabledCompiledModules": [],
+  "googleWire": {
+    "archived": true,
+    "compiledModulePresent": false,
+    "compiledPackagePresent": false,
+    "scope": "extra diagnostic query, not counted among compiled modules"
+  },
+  "maintenanceConclusions": "archived=false or recent pushed_at does not establish support; version-level policies can differ from active repository status",
+  "allDependenciesMaintainedClaimed": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "inventoryPath": "evidence/lifecycle262/compiled-module-inventory.json",
+  "inventorySha256": "43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3",
+  "completePackageSetMatchesGeneration29Baseline": true,
+  "pgvArchiveObservation": {
+    "date": "2026-05-27",
+    "source": "evidence/lifecycle262/pgv-archive-observation.json",
+    "compiledDescriptorOnlyNoGeneratorOrCveClaim": true
+  }
+}

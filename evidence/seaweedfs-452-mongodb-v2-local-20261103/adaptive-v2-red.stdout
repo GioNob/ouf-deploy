@@ -1,0 +1,8 @@
+{"Time":"2026-11-03T21:37:24.468414577+01:00","Action":"start","Package":"ouf.local/mongodb-adaptive-v2-control"}
+{"Time":"2026-11-03T21:37:24.482442881+01:00","Action":"run","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile"}
+{"Time":"2026-11-03T21:37:24.482562961+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Output":"=== RUN   TestMongoV2AdaptiveRetriesRemainDisabledInProfile\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:37:24.633510021+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Output":"--- PASS: TestMongoV2AdaptiveRetriesRemainDisabledInProfile (0.15s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:37:24.63355604+01:00","Action":"pass","Package":"ouf.local/mongodb-adaptive-v2-control","Test":"TestMongoV2AdaptiveRetriesRemainDisabledInProfile","Elapsed":0.15}
+{"Time":"2026-11-03T21:37:24.633580547+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T21:37:24.636201116+01:00","Action":"output","Package":"ouf.local/mongodb-adaptive-v2-control","Output":"ok  \touf.local/mongodb-adaptive-v2-control\t0.167s\n"}
+{"Time":"2026-11-03T21:37:24.63625019+01:00","Action":"pass","Package":"ouf.local/mongodb-adaptive-v2-control","Elapsed":0.168}

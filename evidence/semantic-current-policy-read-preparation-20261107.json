@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.semantic-current-policy-read-preparation.v1",
+  "source": "LOCAL_TESTS_AND_PINNED_SOURCE_REVIEW",
+  "recordedOn": "2026-11-07",
+  "script": "scripts/read-current-semantic-policy-20261107.py",
+  "scriptSha256": "28c17fd6fd7611efbcb5307644be0d2f44e0b745652f79bc0d70eeaedb8763d5",
+  "runtimeHelperSha256": "b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b",
+  "checks": "PASS",
+  "test": "tests/check_semantic_policy_read.py",
+  "covered": [
+    "conflicting declarations rejected",
+    "relaxed environment aliases",
+    "selected HTTPS path and no credentials/query",
+    "expired versus unexpired JWT metadata",
+    "read-only mount required",
+    "file source identity differs from mounted view",
+    "single GET with no redirect",
+    "no token/claim/path emission",
+    "runtime drift rejected"
+  ],
+  "testLimits": [
+    "No VPS execution",
+    "No Docker mounted-file integration in local sandbox",
+    "proc/PID/root open substituted by fixture root; remaining fd traversal and file reads use real temporary files",
+    "HTTP mocked; no assertion of Java transport or loaded application policy"
+  ],
+  "maxPolicyGetAttempts": 1,
+  "tokenRequests": 0,
+  "permissionChanges": 0,
+  "serviceChanges": 0,
+  "businessRequests": 0,
+  "directDatabaseQueries": 0,
+  "s3Requests": 0,
+  "execution": "PREPARED_NOT_EXECUTED_ON_VPS"
+}

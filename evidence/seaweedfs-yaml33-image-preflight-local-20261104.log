@@ -1,0 +1,51 @@
+test_all_vendor_origins_and_compiled_subset_are_distinct (test_generation_vendor_contract.VendorContractTests.test_all_vendor_origins_and_compiled_subset_are_distinct) ... ok
+test_canonical_module_versions_cannot_be_relabelled (test_generation_vendor_contract.VendorContractTests.test_canonical_module_versions_cannot_be_relabelled) ... ok
+test_divergent_input_checksum_between_vendor_and_binary_denied (test_generation_vendor_contract.VendorContractTests.test_divergent_input_checksum_between_vendor_and_binary_denied) ... ok
+test_inventory_paths_cannot_escape_vendor (test_generation_vendor_contract.VendorContractTests.test_inventory_paths_cannot_escape_vendor) ... ok
+test_legacy_yaml_and_previous_compiled_exclusions_denied (test_generation_vendor_contract.VendorContractTests.test_legacy_yaml_and_previous_compiled_exclusions_denied) ... ok
+test_missing_material_and_changed_bytes_denied (test_generation_vendor_contract.VendorContractTests.test_missing_material_and_changed_bytes_denied) ... ok
+test_missing_original_file_authentication_denied (test_generation_vendor_contract.VendorContractTests.test_missing_original_file_authentication_denied) ... ok
+test_missing_real_vendor_binding_denied (test_generation_vendor_contract.VendorContractTests.test_missing_real_vendor_binding_denied) ... ok
+test_no_all_maintained_or_authority_inference (test_generation_vendor_contract.VendorContractTests.test_no_all_maintained_or_authority_inference) ... ok
+test_only_reviewed_vendor_file_can_change (test_generation_vendor_contract.VendorContractTests.test_only_reviewed_vendor_file_can_change) ... ok
+test_original_parent_bytes_are_required (test_generation_vendor_contract.VendorContractTests.test_original_parent_bytes_are_required) ... ok
+test_origins_cannot_be_transferred_from_other_binary (test_generation_vendor_contract.VendorContractTests.test_origins_cannot_be_transferred_from_other_binary) ... ok
+test_replacement_and_duplicate_module_denied (test_generation_vendor_contract.VendorContractTests.test_replacement_and_duplicate_module_denied) ... ok
+test_separate_patch_domains_and_frozen_parent (test_generation_vendor_contract.VendorContractTests.test_separate_patch_domains_and_frozen_parent) ... ok
+test_source_prefix_and_dependency_patch_cannot_be_relabelled (test_generation_vendor_contract.VendorContractTests.test_source_prefix_and_dependency_patch_cannot_be_relabelled) ... ok
+test_unverified_cache_or_vendor_bytes_denied (test_generation_vendor_contract.VendorContractTests.test_unverified_cache_or_vendor_bytes_denied) ... ok
+test_vendor_build_mode_not_metadata_only (test_generation_vendor_contract.VendorContractTests.test_vendor_build_mode_not_metadata_only) ... ok
+test_vendor_no_h1_is_valid_but_original_h1_cannot_be_forged_into_it (test_generation_vendor_contract.VendorContractTests.test_vendor_no_h1_is_valid_but_original_h1_cannot_be_forged_into_it) ... ok
+test_vendor_tree_digest_divergence_denied (test_generation_vendor_contract.VendorContractTests.test_vendor_tree_digest_divergence_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.010s
+
+OK
+test_changed_aggregate_or_archive_bytes_fail_before_evidence_use (test_seaweedfs_yaml33_image_preflight.ImagePreflightTests.test_changed_aggregate_or_archive_bytes_fail_before_evidence_use) ... ok
+test_generation32_binary_cannot_be_used_as_the_yaml33_build (test_seaweedfs_yaml33_image_preflight.ImagePreflightTests.test_generation32_binary_cannot_be_used_as_the_yaml33_build) ... ok
+test_only_the_observed_inactive_footer_can_be_projected_out (test_seaweedfs_yaml33_image_preflight.ImagePreflightTests.test_only_the_observed_inactive_footer_can_be_projected_out) ... ok
+test_real_artifact_binds_image_inputs_without_claiming_image_qualification (test_seaweedfs_yaml33_image_preflight.ImagePreflightTests.test_real_artifact_binds_image_inputs_without_claiming_image_qualification) ... ok
+test_vendor_inventory_cannot_substitute_its_own_digest (test_seaweedfs_yaml33_image_preflight.ImagePreflightTests.test_vendor_inventory_cannot_substitute_its_own_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.345s
+
+OK
+{
+  "allVendorModules": 341,
+  "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+  "compiledModules": 214,
+  "compiledPackages": 1532,
+  "generation": 33,
+  "imageQualified": false,
+  "originalInputChecksumsAreNotPatchedSourceChecksums": true,
+  "originalInputZipsRehashedByThisPreflight": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.yaml33-image-build-preflight.v1",
+  "status": "OBSERVED_BUILD_PINS_VERIFIED_FRESH_IMAGE_QUALIFICATION_REQUIRED",
+  "targetOperations": 0,
+  "vendorFilesBound": 13918,
+  "workflowRun": 41776440912
+}

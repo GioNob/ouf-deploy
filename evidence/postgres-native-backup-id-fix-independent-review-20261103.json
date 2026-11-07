@@ -1,0 +1,15 @@
+{
+  "schema": "ouf.independent-pg-backup-id-fix-review.v1",
+  "status": "BOUNDED_ACCEPTANCE_OFFLINE_ONLY",
+  "sourceChanges": "Single runner literal native-fixture-0001 -> lab-native-fixture-0001",
+  "files": {
+    "tests/run_storage_postgres_fixture_native.py": "c7035e3d368bc1473bfb2231660f49650a75f49ba280e46bfe9cba4eea1a9220",
+    "tests/test_storage_recovery_native_lab_contract.py": "4ad4bdc665b932ca93be973eae9cb64441d4bf1573dcf4f7a45bdedd7be277b9"
+  },
+  "independentFoundationTestsPassed": 51,
+  "newTestUsesRealManifestAndCoordinatorAndBodyDigest": true,
+  "historicalSecondHostedResult": "5_PASS_2_ERROR_LAB_BACKUP_ID_REQUIRED",
+  "newHostedNativePassClaimed": false,
+  "guardOrAdapterRelaxation": false,
+  "targetOperations": 0
+}

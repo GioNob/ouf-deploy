@@ -1,0 +1,18 @@
+{
+  "acceptanceCreditAdded": 0,
+  "bodyMetadataAndTagsMatch": true,
+  "bucketsVerified": 2,
+  "bytesVerified": 203743,
+  "daemonImageId": "sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2",
+  "destinationKeySetMatches": true,
+  "existingImageReused": true,
+  "g4Complete": false,
+  "historicalRehearsalOnly": true,
+  "httpRequests": 615,
+  "imageId": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+  "objectsVerified": 120,
+  "productionObjectsMigrated": 0,
+  "schema": "ouf.storage-retained-to-oci33-rehearsal.v1",
+  "sourceManifestSha256": "c54d67b9ec8448e884a296c37e588845e3d128283af14e92c29b9bb3e3a8281f",
+  "status": "HISTORICAL_OCI33_REHEARSAL_PARITY_VERIFIED"
+}

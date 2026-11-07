@@ -1,0 +1,89 @@
+{
+  "acceptanceTestsPassed": 0,
+  "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+  "cohortArchiveSha256": "5a8a59be0d0ee6230322e4828cc1edef5ca1e24689dc2ff7f19ede830203430e",
+  "cohortArtifactBytes": 127980,
+  "cohortArtifactId": 13305200887,
+  "cohortProducerCommit": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+  "cohortProducerRunId": 41794344274,
+  "cohortReceiptSha256": "5b28de1dd43fca337064d41439d302d53dc7f470640fe3fc0d8d1292b1ec02dc",
+  "exactCohortPreflight": "PASS",
+  "existingCohortPathTriggerMatched": false,
+  "gatesClosed": 0,
+  "generation": 33,
+  "hostedRequired": [
+    "exactB33publisher verification",
+    "exactOCI33readback",
+    "loopback4role container isolation",
+    "one seed then readonly",
+    "A/B staged trust and bodyHEADLIST parity",
+    "same retainedstorage IDs and starttimes",
+    "5cleancontainerstops"
+  ],
+  "hotReloadQualified": false,
+  "interRoleLateralIsolationQualified": false,
+  "mTLSQualified": false,
+  "meaningfulNegativeControls": [
+    "equal-length object corruption",
+    "truncatedLIST containing expectedkey",
+    "repeatedseed action invalid",
+    "unexpected certificate rejected before HTTP",
+    "newgateway notdistinct",
+    "storage role changed",
+    "storage role restarted",
+    "publishedgatewayport",
+    "oldcertificatepaths reused"
+  ],
+  "offlineCryptography": "REAL_OPENSSL_CERTIFICATES_AND_PYTHON_SSL_MEMORY_BIO_HANDSHAKES",
+  "offlineTestsPassed": 10,
+  "productionSecretCustodyQualified": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "s3CredentialRotationQualified": false,
+  "schema": "ouf.storage-generation33-tls-rotation-local.v1",
+  "scriptSyntax": "PASS",
+  "status": "LOCAL_GUARDS_PASS_HOSTED_DOCKER_ROTATION_PENDING",
+  "targetOperations": 0,
+  "testFile": "tests/test_storage_tls_rotation_generation33.py",
+  "trustCases": {
+    "negative": [
+      "B-only rejectsA",
+      "A-only rejectsB",
+      "correctCA rejectswrongHostname before",
+      "correctCA rejectswrongHostname after"
+    ],
+    "positive": [
+      "A-only acceptsA",
+      "overlap acceptsA",
+      "B-only acceptsB",
+      "overlap acceptsB"
+    ]
+  },
+  "upstreamSource": {
+    "behavior": "Pinned S3 accepts key.file and cert.file and constructs a reloading server certificate. Default automatic reload cadence is five hours with an environment override. This laboratory instead uses an explicit clean gateway stop/remove/recreate and does not test hot reload.",
+    "commit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "files": [
+      {
+        "gitBlob": "29e9a23f2dab4a2c30cab9ed3d7be9a8d5af71f5",
+        "path": "weed/command/s3.go",
+        "sha256": "7703a44dc2e51e5d24a963c0cfea8c6eaa173053f3a6db56a5b1440602c1c84f"
+      },
+      {
+        "gitBlob": "aa25075e4a47cc11a6686c6756ac79898241b9aa",
+        "path": "weed/security/tls_reload.go",
+        "sha256": "32a80873f1bbea6c6b04232eee088709c30741d5f6bf649fc66a826b0e83c3fb"
+      },
+      {
+        "gitBlob": "c0288198e29ad5eb24d151eefad49dcc35d5b492",
+        "path": "weed/security/certreload/certreload.go",
+        "sha256": "3940451cdacec0c3dfecff272c24fc55da212a27dbfa5fc09e7648a94b236c66"
+      }
+    ],
+    "indexedBlobAndWorkingBytesMatch": true,
+    "patchedRootGitTree": "80632ef3a54debb04531c1913860d2f94d2b418d"
+  },
+  "workflowPythonHeredocs": "PASS",
+  "workflowShellBlocks": 5,
+  "workflowYaml": "PASS",
+  "zeroDowntimeQualified": false
+}

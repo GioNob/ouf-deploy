@@ -1,0 +1,18 @@
+{
+  "schema": "ouf.storage-g0-conversation-decision.v1",
+  "date": "2026-11-06",
+  "proposalId": "OUF-G0-COLLECT-20261106-01",
+  "proposalCommit": "b142ae01043d6834774c122c4810a0af5a6647a7",
+  "actorDeclared": "Giovanni",
+  "userReply": "autorizzo",
+  "provenance": "EXPLICIT_USER_CONVERSATION_AUTHORIZATION",
+  "scope": "ONE_BOUNDED_READ_ONLY_G0_COLLECTION_BY_OPERATOR_ON_VPS",
+  "status": "AUTHORIZED_NOT_EXECUTED",
+  "baseInputSha256": "6b5a2ba087cd5bfbc956f3bb240cf103b0bbf8d0aeaebb14d6a10f9aaaa22af1",
+  "runtimeAuthorityIssued": false,
+  "authenticatedHumanApproval": false,
+  "migrationAuthorized": false,
+  "deploymentAuthorized": false,
+  "retryAuthorized": false,
+  "acceptanceCreditAdded": 0
+}

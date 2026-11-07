@@ -1,0 +1,6 @@
+--- FAIL: TestMaintainedSaramaPreservesSelectedWireAndRetryProfile (0.00s)
+    sarama_config_test.go:18: migration changed broker version, SASL framing or negotiation
+FAIL
+FAIL	github.com/seaweedfs/seaweedfs/weed/notification/kafka	0.010s
+FAIL
+failed to start telemetry sidecar: os.Executable: readlink /proc/self/exe: no such file or directory

@@ -28,8 +28,9 @@ class Predecessor(unittest.TestCase):
             'sourceClosure':{'declaration':{'sourceCommit':process.AUTHORIZATION_ONLY_PREDECESSOR_SOURCE}},
             'sourceClosureHash':'c'*64,'privateInputHashes':{'cohortManifest':self.manifest},
             'scopes':{'finiteActionProcess':self.plan,'chatbotFileAuthorization':{'planHash':'d'*64}}}
+        now=int(time.time())
         self.decision={'approvedReviewHash':process.digest(self.review),'approvedSourceClosureHash':'c'*64,
-            'approvedAt':int(time.time())-3620,'expiresAt':int(time.time())-20,
+            'approvedAt':now-3620,'expiresAt':now-20,
             'decision':'APPROVE_ONE_FINITE_CHATBOT_FILE_COHORT_ACTION','state':'ACTIVE'}
         self.authority={'expiresAt':self.decision['expiresAt'],'finiteActionProcess':self.plan,
             'sourceClosureHash':'c'*64,'chatbotFileAuthorization':self.review['scopes']['chatbotFileAuthorization']}

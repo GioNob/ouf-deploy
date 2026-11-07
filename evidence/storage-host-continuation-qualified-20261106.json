@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.storage-host-continuation-qualified.v1",
+  "status": "NATIVE_PASS_SEPARATE_TARGET_DECISION_PENDING",
+  "codeCommit": "7887bf88a20d776745e6bb3e09158ecd6a712ff2",
+  "runId": 42308843588,
+  "jobId": 128204988421,
+  "productionSha256": "5522fde506a439651a923f929bed5d13fe3029a2be508fcebe0c1ec956e5c2c5",
+  "coreSha256": "05f4e5166a4818d6d6b5a33651e4d4d39888245b2ebe0a3d1ae07a9c28a148ec",
+  "nativeEvidence": "evidence/storage-host-continuation-native-20261106.json",
+  "operatorReadback": "evidence/storage-host-slice-readback-operator-20261106.json",
+  "nativeFailureRuns": [],
+  "targetExecuted": false,
+  "scopeExpanded": false,
+  "priorAttemptConsumed": true,
+  "newTimeAllowanceRequiresSeparateDecision": true,
+  "oldScopeAndJournalPreserved": true,
+  "installerStaticChecks": {
+    "syntax": true,
+    "twoPayloadDigests": true,
+    "targetExecuted": false
+  },
+  "acceptanceCreditAdded": 0
+}

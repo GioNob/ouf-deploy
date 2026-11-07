@@ -1,0 +1,56 @@
+{
+  "schema": "ouf.seaweedfs-generation30-replayed-binary-identity.v1",
+  "status": "LOCAL_BINARY_BYTE_IDENTITY_VERIFIED_NOT_IMAGE_QUALIFICATION",
+  "prefix29Tree": "574ad42543851ffe58cc025e14b1011609ff83de",
+  "replayedGeneration30Tree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+  "patchSha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+  "originalBinary": {
+    "path": "maintained30-stage/weed30",
+    "sha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "bytes": 219516458
+  },
+  "replayedBinary": {
+    "path": "maintained30-stage/weed30-replayed",
+    "sha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "bytes": 219516458
+  },
+  "observedHashCommand": {
+    "cwd": "/workspace/scratch/98dabd1608e5",
+    "args": [
+      "sha256sum",
+      "maintained30-stage/weed30",
+      "maintained30-stage/weed30-replayed"
+    ],
+    "exitCode": 0,
+    "retainedStdout": "evidence/seaweedfs-source30-integrated-local-20261103/replayed-binary-sha256.txt"
+  },
+  "replayedBuild": {
+    "completionReportedByParent": true,
+    "sessionIdReportedByParent": 22038,
+    "exactCommandTranscriptAvailable": false,
+    "reconstructedCommandClaimedAsObserved": false,
+    "stdout": {
+      "path": "evidence/seaweedfs-source30-integrated-local-20261103/replayed-build.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "evidence/seaweedfs-source30-integrated-local-20261103/replayed-build.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "stderrNote": "Telemetry sidecar cannot read /proc/self/exe; binary equality is directly verified separately."
+  },
+  "originalExecutionRecordPreserved": {
+    "commandCount": 11,
+    "sha256": "5d9d93d4d236e9400d5be589672cdd132adbe645ca8fec54b55449a76a1e3187",
+    "bytes": 4607
+  },
+  "limits": {
+    "buildRerunByThisPackagingTask": false,
+    "imageQualificationClaimed": false,
+    "runtimeQualificationClaimed": false,
+    "releaseAdmitted": false,
+    "targetOperations": 0
+  }
+}

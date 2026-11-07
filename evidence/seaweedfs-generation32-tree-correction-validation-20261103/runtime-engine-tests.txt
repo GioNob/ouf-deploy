@@ -1,0 +1,17 @@
+test_changed_binary_denied_before_output (test_storage_runtime_image.RuntimeImageTest.test_changed_binary_denied_before_output) ... ok
+test_changed_blob_is_rejected (test_storage_runtime_image.RuntimeImageTest.test_changed_blob_is_rejected) ... ok
+test_descriptor_traversal_and_symlink_are_rejected (test_storage_runtime_image.RuntimeImageTest.test_descriptor_traversal_and_symlink_are_rejected) ... ok
+test_empty_or_extra_scan_target_never_counts_as_clean (test_storage_runtime_image.RuntimeImageTest.test_empty_or_extra_scan_target_never_counts_as_clean) ... ok
+test_exact_least_privilege_filesystem_and_no_embedded_bindings (test_storage_runtime_image.RuntimeImageTest.test_exact_least_privilege_filesystem_and_no_embedded_bindings) ... ok
+test_existing_output_is_never_reinitialized (test_storage_runtime_image.RuntimeImageTest.test_existing_output_is_never_reinitialized) ... ok
+test_extra_docker_content_is_rejected (test_storage_runtime_image.RuntimeImageTest.test_extra_docker_content_is_rejected) ... ok
+test_receipt_cannot_claim_admission (test_storage_runtime_image.RuntimeImageTest.test_receipt_cannot_claim_admission) ... ok
+test_reproducible_oci_and_docker_have_same_exact_layer_and_config (test_storage_runtime_image.RuntimeImageTest.test_reproducible_oci_and_docker_have_same_exact_layer_and_config) ... ok
+test_sbom_missing_dependency_is_rejected (test_storage_runtime_image.RuntimeImageTest.test_sbom_missing_dependency_is_rejected) ... ok
+test_scan_of_another_image_is_rejected (test_storage_runtime_image.RuntimeImageTest.test_scan_of_another_image_is_rejected) ... ok
+test_valid_sbom_does_not_accept_licences_or_release (test_storage_runtime_image.RuntimeImageTest.test_valid_sbom_does_not_accept_licences_or_release) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.053s
+
+OK

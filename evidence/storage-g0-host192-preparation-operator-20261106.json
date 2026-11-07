@@ -1,0 +1,51 @@
+{
+  "schema": "ouf.storage-g0-host192-preparation-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "preparationCommit": "d9693d7a80e7fa42fa0c78e4526a249ca51e5268",
+  "qualifiedPackageCommit": "cfa806d57012f07ead428208b4b8ce9d13b7e1ed",
+  "result": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "candidateInputFile": "/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json",
+    "collectionScopeCreated": false,
+    "credentialsCopied": 0,
+    "g0Complete": false,
+    "inputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+    "limits": {
+      "attempts": 1,
+      "automaticReplayAllowed": false,
+      "databaseBytesEach": 33554432,
+      "databaseExports": 3,
+      "databaseRowsPerSection": 10000,
+      "engineBytes": 33554432,
+      "engineGets": 386,
+      "hostContainers": 192,
+      "priorControls": 17,
+      "priorEngineGets": 53,
+      "s3Bodies": 256,
+      "s3BodyBytes": 67108864,
+      "s3Requests": 3000,
+      "s3WireBytes": 134217728,
+      "seconds": 900
+    },
+    "localCredentialFilesValidated": 5,
+    "manifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+    "operationId": "seaweedfs-g0-20261106-v2",
+    "operatorInputsMissing": [
+      "OPERATOR_ACCESS",
+      "OPERATOR_CUSTODY",
+      "OPERATOR_WINDOW",
+      "OPERATOR_WRITERS",
+      "COLLECTION_DECISION_REFERENCE"
+    ],
+    "originalBundleModified": false,
+    "priorAttemptPreserved": true,
+    "priorAttemptReceiptsBound": 4,
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-host192-preparation-result.v1",
+    "status": "HOST192_STAGED_LOCAL_CHECK_PASSED_SEPARATE_DECISION_REQUIRED",
+    "targetCommandAuthorized": false
+  }
+}

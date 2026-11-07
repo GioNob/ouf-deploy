@@ -1,0 +1,79 @@
+{
+  "schema": "ouf.storage-g0-collection-proposal.v2",
+  "proposalId": "OUF-G0-COLLECT-20261106-02",
+  "status": "CONSUMED_SEALED_RECONCILIATION_FINDINGS",
+  "operationId": "seaweedfs-g0-20261106-v2",
+  "baseInput": "/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.review.json",
+  "baseInputSha256": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+  "packageManifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+  "qualifiedPackageCommit": "cfa806d57012f07ead428208b4b8ce9d13b7e1ed",
+  "executionInput": "/var/lib/ouf-g0-host192-preparation-20261106/inputs/package-input.collection.json",
+  "allowedInputDelta": {
+    "collectionDecisionRef": "OUF-G0-COLLECT-20261106-02"
+  },
+  "decisionReferenceIsProposalNotApproval": false,
+  "scope": "/var/lib/ouf-g0-network-preparation-20261106/evidence/seaweedfs-g0-20261106-v2",
+  "limits": {
+    "attempts": 1,
+    "automaticReplayAllowed": false,
+    "databaseBytesEach": 33554432,
+    "databaseExports": 3,
+    "databaseRowsPerSection": 10000,
+    "engineBytes": 33554432,
+    "engineGets": 386,
+    "hostContainers": 192,
+    "priorControls": 17,
+    "priorEngineGets": 53,
+    "s3Bodies": 256,
+    "s3BodyBytes": 67108864,
+    "s3Requests": 3000,
+    "s3WireBytes": 134217728,
+    "seconds": 900
+  },
+  "maxCumulativeEngineGets": 439,
+  "priorAttempt": {
+    "operationId": "seaweedfs-g0-20261106-v1",
+    "decisionRef": "OUF-G0-COLLECT-20261106-01",
+    "status": "CONSUMED_HELD_RECONCILED_NOT_REPLAYABLE",
+    "engineGets": 1,
+    "cumulativeEngineGets": 53,
+    "receiptSha256": {
+      "result": "09f6c8791f35a459d6325a9d42d808acd72d7bbee23e0f54ff7d68a7224f63c2",
+      "claim": "5bf27b0cd677efa3c4fb101e8431c84f6abcc622d1f28bc34ae5ee5a91ff6688",
+      "decision": "4a474ef3c8a67742f7148afff4b1d8da2691a1f603d9d767dcd6fbf887dce3d4",
+      "input": "aa002304872db4408f1910f76f18c8634e372d619428e2fb746f3e9754e86664"
+    }
+  },
+  "permittedEffects": [
+    "one exclusive private input/decision copy after explicit applicable decision",
+    "Docker complete inventory and inspect including stopped and non-roster containers",
+    "conditional authenticated MinIO inventory and body reads",
+    "three fixed PostgreSQL READ ONLY REPEATABLE READ exports",
+    "protected local evidence and reconciliation"
+  ],
+  "excludedEffects": [
+    "provider mutation",
+    "credential recopy or grant",
+    "container start stop exec",
+    "migration deployment endpoint change",
+    "writer drain or traffic reopening",
+    "old scope changes budget reset automatic retry"
+  ],
+  "operatorEvidenceMissing": [
+    "ACCESS",
+    "CUSTODY",
+    "WINDOW",
+    "WRITERS"
+  ],
+  "collectionDecisionRecorded": true,
+  "collectionExecuted": true,
+  "runtimeAuthorityIssued": false,
+  "authenticatedHumanApproval": false,
+  "g0Complete": false,
+  "acceptanceCreditAdded": 0,
+  "decisionReceipt": "evidence/storage-g0-host192-collection-decision-20261106.json",
+  "approvalProvenance": "EXPLICIT_USER_CONVERSATION_AUTHORIZATION",
+  "authorizationConsumed": true,
+  "operatorResultReceipt": "evidence/storage-g0-host192-collection-operator-20261106.json",
+  "replayAuthorized": false
+}

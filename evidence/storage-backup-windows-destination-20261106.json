@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.storage-backup-destination-choice.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_CHAT_DECISION",
+  "destinationKind": "OPERATOR_PC",
+  "operatingSystem": "Windows",
+  "custodian": "Giovanni",
+  "encryptedBackupRequested": true,
+  "publicGithubBackupSelected": false,
+  "localDirectory": null,
+  "sshEndpoint": null,
+  "availableBytes": null,
+  "finalArchivePath": null,
+  "finalArchiveBytes": null,
+  "finalArchiveSha256": null,
+  "encryptionRecipient": null,
+  "keyCustodyVerified": false,
+  "transferExecuted": false,
+  "restoreVerified": false,
+  "independentBackupVerified": false,
+  "acceptanceCreditAdded": 0,
+  "authorizesRuntimeStopOrDeploy": false
+}

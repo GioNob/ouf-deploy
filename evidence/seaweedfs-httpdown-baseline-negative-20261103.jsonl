@@ -1,0 +1,30 @@
+{"Time":"2026-11-03T20:41:10.722672688+01:00","Action":"start","Package":"ouf.httpdown.baseline"}
+{"Time":"2026-11-03T20:41:10.72564163+01:00","Action":"run","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace"}
+{"Time":"2026-11-03T20:41:10.72568146+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"=== RUN   TestLegacyNegativeShutdownControlRace\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:41:10.726207071+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"--- FAIL: TestLegacyNegativeShutdownControlRace (0.00s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:41:10.728365849+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"panic: send on closed channel [recovered, repanicked]\n"}
+{"Time":"2026-11-03T20:41:10.728382845+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\n"}
+{"Time":"2026-11-03T20:41:10.728389304+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"goroutine 8 [running]:\n"}
+{"Time":"2026-11-03T20:41:10.728394041+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"testing.tRunner.func1.2({0xa59c60, 0x7599a0})\n"}
+{"Time":"2026-11-03T20:41:10.728397116+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/testing/testing.go:2125 +0x232\n"}
+{"Time":"2026-11-03T20:41:10.728400171+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"testing.tRunner.func1()\n"}
+{"Time":"2026-11-03T20:41:10.728402284+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/testing/testing.go:2128 +0x329\n"}
+{"Time":"2026-11-03T20:41:10.728404237+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"panic({0xa59c60?, 0x7599a0?})\n"}
+{"Time":"2026-11-03T20:41:10.72840646+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/runtime/panic.go:859 +0x125\n"}
+{"Time":"2026-11-03T20:41:10.728422304+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"ouf%2ehttpdown%2ebaseline.(*server).Stop.func1()\n"}
+{"Time":"2026-11-03T20:41:10.728424587+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/httpdown30-stage/baseline/http_down.go:338 +0x27a\n"}
+{"Time":"2026-11-03T20:41:10.72842641+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"sync.(*Once).doSlow(0x1e5d7da03f0?, 0x1e5d7da0380?)\n"}
+{"Time":"2026-11-03T20:41:10.728428553+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/sync/once.go:78 +0xab\n"}
+{"Time":"2026-11-03T20:41:10.728430356+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"sync.(*Once).Do(...)\n"}
+{"Time":"2026-11-03T20:41:10.728432239+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/sync/once.go:69\n"}
+{"Time":"2026-11-03T20:41:10.728435314+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"ouf%2ehttpdown%2ebaseline.(*server).Stop(0x1e5d7e95520)\n"}
+{"Time":"2026-11-03T20:41:10.728437487+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/httpdown30-stage/baseline/http_down.go:314 +0x45\n"}
+{"Time":"2026-11-03T20:41:10.72844631+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"ouf%2ehttpdown%2ebaseline.TestLegacyNegativeShutdownControlRace(0x1e5d7eb4488)\n"}
+{"Time":"2026-11-03T20:41:10.728448624+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/httpdown30-stage/baseline/legacy_race_test.go:7 +0x119\n"}
+{"Time":"2026-11-03T20:41:10.728450346+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"testing.tRunner(0x1e5d7eb4488, 0xa9da38)\n"}
+{"Time":"2026-11-03T20:41:10.728452349+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/testing/testing.go:2195 +0xea\n"}
+{"Time":"2026-11-03T20:41:10.728454212+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"created by testing.(*T).Run in goroutine 1\n"}
+{"Time":"2026-11-03T20:41:10.728456125+01:00","Action":"output","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Output":"\t/workspace/scratch/98dabd1608e5/go-toolchain/src/testing/testing.go:2260 +0x4d4\n"}
+{"Time":"2026-11-03T20:41:10.728974064+01:00","Action":"fail","Package":"ouf.httpdown.baseline","Test":"TestLegacyNegativeShutdownControlRace","Elapsed":0}
+{"Time":"2026-11-03T20:41:10.728992863+01:00","Action":"output","Package":"ouf.httpdown.baseline","Output":"FAIL\touf.httpdown.baseline\t0.006s\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:41:10.729000804+01:00","Action":"fail","Package":"ouf.httpdown.baseline","Elapsed":0.006}

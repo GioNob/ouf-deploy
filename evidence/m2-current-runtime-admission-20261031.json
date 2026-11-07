@@ -1,0 +1,131 @@
+{
+  "schema": "ouf.discovery-current-runtime-admission-source-evidence.v1",
+  "date": "2026-10-31",
+  "sourceCommit": "1e83328768cc1845f47c9571d59628a115534653",
+  "sourceTree": "04dc5ca0ffafa547b1ed004b662babab8772f99f",
+  "pullRequest": 54,
+  "newModules": [
+    "tools/m2_discovery_installation_profile/running_admission.py",
+    "tools/m2_discovery_installation_profile/current_cohort.py"
+  ],
+  "qualification": {
+    "runId": 41216354395,
+    "jobId": 124581583544,
+    "conclusion": "success",
+    "finalLogRead": true,
+    "suites": [
+      {
+        "name": "running_admission",
+        "tests": 12,
+        "seconds": 1.654
+      },
+      {
+        "name": "current_cohort",
+        "tests": 7,
+        "seconds": 0.335
+      },
+      {
+        "name": "paused_frame_regression",
+        "tests": 8,
+        "seconds": 0.133
+      },
+      {
+        "name": "paused_node_regression",
+        "tests": 6,
+        "seconds": 0.183
+      }
+    ],
+    "failures": 0,
+    "skipped": 0,
+    "actual": [
+      "root file ownership and protected custody",
+      "Ed25519 signatures and current HUMAN fixture mandates",
+      "private evidence store and embedded source loader",
+      "Unix socket peer credentials and bounded 26 GET allowlist"
+    ],
+    "modeled": [
+      "Docker configuration and generation leaves",
+      "application process and mount leaves",
+      "current HTTP and SQL responses",
+      "selected runtime owner lineage in cohort composition tests"
+    ],
+    "notProven": [
+      "native Docker current cohort",
+      "target VPS admission",
+      "Registry Java E2E",
+      "TLS IAM database and lease admission as a whole"
+    ]
+  },
+  "previousSourceRegression": {
+    "sourceCommit": "e6bb7cfc38d858e3f30b9bd3ffc0e19cba3ff310",
+    "publication": {
+      "runId": 41215723632,
+      "jobId": 124579707215,
+      "tests": 14,
+      "seconds": 126.266,
+      "finalLogRead": true
+    },
+    "parentReview": {
+      "runId": 41215723630,
+      "jobId": 124579707114,
+      "suites": [
+        {
+          "tests": 8,
+          "seconds": 0.614
+        },
+        {
+          "tests": 12,
+          "seconds": 11.185
+        }
+      ],
+      "finalLogRead": true,
+      "newArtifactIndependentlyVerified": false
+    }
+  },
+  "publicMcpRead": {
+    "date": "2026-10-31",
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true,
+    "registryDiscoveryEnabledProven": false
+  },
+  "semantics": {
+    "runningRegistryFrame": [
+      "independent seven-mount policy recompiled",
+      "complete current OCI and five immutable file mounts plus configtree and token mounts",
+      "retained acceptance exact scope and current attestor signature",
+      "same attested process generation after gate exec",
+      "signed readiness scope and direct current Registry health address"
+    ],
+    "currentCohort": [
+      "new parent currentAdmission v2 binds exact private runtime inputs hash",
+      "unchanged original six-part compiler and Registry child bytes",
+      "13 role/name/configuration/generation bindings; 10 retained and 3 selected",
+      "two passes and 26 allowlisted Engine GETs; current boot, root processes and SO_PEERCRED",
+      "retained control plane quiescence rejected before target reads"
+    ],
+    "noEffects": [
+      "no signs or new token",
+      "no signal or container lifecycle",
+      "no manager start/restart",
+      "no kernel lease write or recovery lock",
+      "no producer release"
+    ]
+  },
+  "openWork": [
+    "full native sealed checkpoint and coordinated installation controller",
+    "current TLS/IAM/DB/backup/fencing/private custody/supply-chain/provider/worker/positive-lease composition",
+    "finite provider window and authorization preparation ordering",
+    "new source-sealed execution package and exact private review",
+    "M2 G5-G7, 24AT, 8UX, 8stability, boot/rotation and two real clients"
+  ],
+  "fullCohortProven": false,
+  "currentTargetAdmissionProven": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

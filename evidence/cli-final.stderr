@@ -1,0 +1,6 @@
+test_cli_writes_separate_supplement_and_rejects_raw_output (__main__.VendorSourceProfileTests.test_cli_writes_separate_supplement_and_rejects_raw_output) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.112s
+
+OK

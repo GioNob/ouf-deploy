@@ -1,0 +1,354 @@
+{
+  "total_count": 3,
+  "jobs": [
+    {
+      "id": 126145249828,
+      "run_id": 41701381292,
+      "workflow_name": "Storage 4.52 generation29 cohort and legal text rebinding",
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41701381292",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU_zEss8AAAAdXtfCJA",
+      "head_sha": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126145249828",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41701381292/job/126145249828",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-03T19:14:21Z",
+      "started_at": "2026-11-03T19:14:23Z",
+      "completed_at": "2026-11-03T19:14:49Z",
+      "name": "verify-boundaries",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T19:14:24Z",
+          "completed_at": "2026-11-03T19:14:24Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T19:14:24Z",
+          "completed_at": "2026-11-03T19:14:46Z"
+        },
+        {
+          "name": "Run python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation29_cohort.py -v",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T19:14:46Z",
+          "completed_at": "2026-11-03T19:14:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T19:14:46Z",
+          "completed_at": "2026-11-03T19:14:46Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T19:14:46Z",
+          "completed_at": "2026-11-03T19:14:46Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126145249828",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000106024,
+      "runner_name": "GitHub Actions 1000106024",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 126145503018,
+      "run_id": 41701381292,
+      "workflow_name": "Storage 4.52 generation29 cohort and legal text rebinding",
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41701381292",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU_zEss8AAAAdXtufKg",
+      "head_sha": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126145503018",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41701381292/job/126145503018",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-03T19:14:49Z",
+      "started_at": "2026-11-03T19:15:46Z",
+      "completed_at": "2026-11-03T19:19:16Z",
+      "name": "qualify-cohort",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T19:15:47Z",
+          "completed_at": "2026-11-03T19:15:49Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-03T19:15:49Z",
+          "completed_at": "2026-11-03T19:16:15Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-03T19:16:15Z",
+          "completed_at": "2026-11-03T19:16:47Z"
+        },
+        {
+          "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-03T19:16:47Z",
+          "completed_at": "2026-11-03T19:16:54Z"
+        },
+        {
+          "name": "Verify the published generation29 lock and fetch its exact artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-03T19:16:54Z",
+          "completed_at": "2026-11-03T19:17:01Z"
+        },
+        {
+          "name": "Reconstruct the exact patched source for legal text comparison",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-03T19:17:01Z",
+          "completed_at": "2026-11-03T19:17:02Z"
+        },
+        {
+          "name": "Acquire exact module archives for independent checksum and text verification",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-03T19:17:02Z",
+          "completed_at": "2026-11-03T19:18:49Z"
+        },
+        {
+          "name": "Reproduce generation29 image evidence and rebind only identical legal bytes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-03T19:18:49Z",
+          "completed_at": "2026-11-03T19:18:59Z"
+        },
+        {
+          "name": "Independently verify the generation29 publisher signature",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-03T19:18:59Z",
+          "completed_at": "2026-11-03T19:19:04Z"
+        },
+        {
+          "name": "Seal the new cohort evidence without granting admission",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-03T19:19:04Z",
+          "completed_at": "2026-11-03T19:19:04Z"
+        },
+        {
+          "name": "Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-03T19:19:04Z",
+          "completed_at": "2026-11-03T19:19:12Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-03T19:19:12Z",
+          "completed_at": "2026-11-03T19:19:13Z"
+        },
+        {
+          "name": "Export the actual uploaded artifact digest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-03T19:19:13Z",
+          "completed_at": "2026-11-03T19:19:13Z"
+        },
+        {
+          "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-11-03T19:19:13Z",
+          "completed_at": "2026-11-03T19:19:13Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-11-03T19:19:13Z",
+          "completed_at": "2026-11-03T19:19:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-03T19:19:14Z",
+          "completed_at": "2026-11-03T19:19:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-03T19:19:14Z",
+          "completed_at": "2026-11-03T19:19:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126145503018",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000106094,
+      "runner_name": "GitHub Actions 1000106094",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 126147936979,
+      "run_id": 41701381292,
+      "workflow_name": "Storage 4.52 generation29 cohort and legal text rebinding",
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "run_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/runs/41701381292",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU_zEss8AAAAdXwDC0w",
+      "head_sha": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/jobs/126147936979",
+      "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41701381292/job/126147936979",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-03T19:19:17Z",
+      "started_at": "2026-11-03T19:19:19Z",
+      "completed_at": null,
+      "name": "runtime-labs / verified-cohort-then-sequential-labs",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-03T19:19:20Z",
+          "completed_at": "2026-11-03T19:19:21Z"
+        },
+        {
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 2,
+          "started_at": "2026-11-03T19:19:21Z",
+          "completed_at": null
+        },
+        {
+          "name": "Test generation boundaries and child process routing",
+          "status": "pending",
+          "conclusion": null,
+          "number": 3,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Check committed generation29 lock and predecessor artifact ID",
+          "status": "pending",
+          "conclusion": null,
+          "number": 4,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Download and authenticate the successful predecessor cohort bundle",
+          "status": "pending",
+          "conclusion": null,
+          "number": 5,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Download only the bound generation29 producer archive",
+          "status": "pending",
+          "conclusion": null,
+          "number": 6,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Cold restore with mandatory MIME parity then identity TLS egress",
+          "status": "pending",
+          "conclusion": null,
+          "number": 7,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Collect bounded public evidence including failures",
+          "status": "pending",
+          "conclusion": null,
+          "number": 8,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Attest successful generation29 runtime evidence",
+          "status": "pending",
+          "conclusion": null,
+          "number": 9,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Retain public diagnostics",
+          "status": "pending",
+          "conclusion": null,
+          "number": 10,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "status": "pending",
+          "conclusion": null,
+          "number": 20,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/GioNob/ouf-deploy/check-runs/126147936979",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000106110,
+      "runner_name": "GitHub Actions 1000106110",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
+

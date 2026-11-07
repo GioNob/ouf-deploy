@@ -1,0 +1,139 @@
+{
+  "schema": "ouf.storage-g0-datasource-review-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "sourceCommit": "22554a8f74674bf9b0db7af9398c68d314f787c8",
+  "scriptSha256": "9f9b45099577c267ceef2a2fc28440fb9aa0b5e809068eb26102457ec1c967fa",
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "collectionScopeCreated": false,
+    "connectionDraftsChanged": false,
+    "credentialFilesWritten": 0,
+    "g0Complete": false,
+    "originalPreparationResultPreserved": true,
+    "processEnvironmentsRead": 3,
+    "providerRequests": 0,
+    "roles": {
+      "ingestion": {
+        "configurationVariablesPresent": [
+          "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        ],
+        "connectionPairs": {
+          "password": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "url": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "user": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          }
+        },
+        "effectiveConfigurationProven": false,
+        "javaVariablesMentioningDatasource": [],
+        "knownDatasourceVariablesPresent": [],
+        "otherDatasourceVariableCount": 0
+      },
+      "onboarding": {
+        "configurationVariablesPresent": [
+          "SPRING_APPLICATION_JSON",
+          "SPRING_CONFIG_ADDITIONAL_LOCATION"
+        ],
+        "connectionPairs": {
+          "password": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "url": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "user": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          }
+        },
+        "effectiveConfigurationProven": false,
+        "javaVariablesMentioningDatasource": [],
+        "knownDatasourceVariablesPresent": [],
+        "otherDatasourceVariableCount": 0
+      },
+      "udp": {
+        "configurationVariablesPresent": [
+          "SPRING_APPLICATION_JSON"
+        ],
+        "connectionPairs": {
+          "password": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "url": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          },
+          "user": {
+            "byteEqual": null,
+            "oufNonempty": true,
+            "oufPresent": true,
+            "springExactOufPlaceholder": false,
+            "springNonempty": false,
+            "springPresent": false
+          }
+        },
+        "effectiveConfigurationProven": false,
+        "javaVariablesMentioningDatasource": [],
+        "knownDatasourceVariablesPresent": [],
+        "otherDatasourceVariableCount": 0
+      }
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-datasource-review.v1",
+    "status": "DATASOURCE_OVERRIDE_METADATA_OBSERVED_REVIEW_REQUIRED",
+    "targetInputCheckPassed": false
+  },
+  "interpretation": {
+    "threeExplicitOufDatabaseTripletsPresent": true,
+    "directSpringDatasourceEnvironmentVariablesObserved": false,
+    "jsonOrAdditionalConfigurationSelectorsObserved": true,
+    "configurationContentsObserved": false,
+    "effectiveConfigurationProven": false,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  }
+}

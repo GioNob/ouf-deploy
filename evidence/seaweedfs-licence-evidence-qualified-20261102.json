@@ -1,0 +1,124 @@
+{
+  "schema": "ouf.storage-licence-evidence-dossier.v1",
+  "status": "PASS",
+  "archiveSha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67",
+  "archiveBytes": 2702322,
+  "producerSource": "81a0e32784a2c96f685773edfb65f0cc7849e7eb",
+  "producerRunId": 41541625141,
+  "archiveChecksumSubjects": 709,
+  "collectorSourcesCompared": 4,
+  "exactRuntimeComponents": 245,
+  "nativeIndependentGoH1Comparisons": 243,
+  "legalTexts": 374,
+  "classifierFiles": 296,
+  "rootClassifications": 245,
+  "unclassifiedRoots": [],
+  "licenceSeverities": {
+    "UNKNOWN": 3,
+    "LOW": 296,
+    "MEDIUM": 17,
+    "HIGH": 0,
+    "CRITICAL": 0
+  },
+  "mplSourceArchivesIndependentlyRehashed": 17,
+  "flatbuffersParentSourceFilesMatched": 10,
+  "downloadedModuleCodeExecuted": false,
+  "imageChanged": false,
+  "rawSpdxChanged": false,
+  "publisherSignatureVerifiedByThisScript": false,
+  "licenceReview": "OPEN",
+  "redistributionAccepted": false,
+  "overallSwG1": "OPEN",
+  "targetOperations": 0,
+  "publisherSignatureIndependentlyVerified": true,
+  "independentRunId": 41542075842,
+  "independentSource": "4d1183ee2855999419e1b60a8b4f85b74889d5c3",
+  "producerJobId": 125606961643,
+  "nativeArchive": {
+    "path": "evidence/artifacts/storage-licences-native-41541625141.zip",
+    "bytes": 2702322,
+    "sha256": "851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67"
+  },
+  "independentVerification": {
+    "runId": 41542075842,
+    "jobId": 125608476027,
+    "source": "4d1183ee2855999419e1b60a8b4f85b74889d5c3",
+    "status": "PASS",
+    "fullArchive": {
+      "artifactId": 13186622702,
+      "bytes": 4938554,
+      "sha256": "6529997cea97e721c02ae4f27d428bfa2e070993383884e40646c424b388db69"
+    },
+    "metadataArchive": {
+      "path": "evidence/artifacts/storage-licences-readback-41542075842-metadata.zip",
+      "bytes": 484968,
+      "sha256": "b22605210d48b7b26ae929c94e8f94851a27ba259a418866f3a12248fb74701e"
+    },
+    "readbackChecksumSubjects": 717,
+    "publisherSignatureVerified": true,
+    "omittedMemberCount": 690,
+    "omittedFullMembersAvailableInNativeArchive": true
+  },
+  "history": {
+    "originalCollection": {
+      "source": "2f19765fe66caa4d85097100c0ca912b37649db2",
+      "runId": 41539914970,
+      "artifactId": 13185626900,
+      "archiveBytes": 976318,
+      "archiveSha256": "1e9db76c6aa549b263554518ab2cc6d3a28bdd635ff74a56ba2f71fdd3844de3",
+      "assessment": "NATIVE_COLLECTION_PASS_NOT_FULL_ARCHIVE_ADMISSION"
+    },
+    "rateLimitStop": {
+      "source": "1384e626104e679cd2fb265a968c215dc78d83ad",
+      "runId": 41540742440,
+      "artifactId": 13185726999,
+      "archiveBytes": 439294,
+      "archiveSha256": "d84e815a5fd47ccf204118b3d4221974d7b852d078cf1dc427675d52cf0321b3",
+      "stage": "COLLECTING_PARENT_LICENCE_METADATA",
+      "reason": "UNAUTHENTICATED_GITHUB_API_RATE_LIMIT_403",
+      "promotedToSuccess": false
+    },
+    "archiveClosureStop": {
+      "source": "69c71dcdc803c32675a50e53320b79e24ab66b74",
+      "runId": 41541085942,
+      "artifactId": 13186837840,
+      "archiveBytes": 2699245,
+      "archiveSha256": "3026294c581060e86c4e593e0b47cc7ac2355b1252431e35b18fc34b3a948a8a",
+      "nativeJob": "PASS",
+      "independentArchiveAdmission": "HELD",
+      "reason": "FOUR_MANIFEST_MEMBERS_OMITTED_BY_UPLOAD_DEFAULT",
+      "oldRawReportsPreserved": true
+    }
+  },
+  "scope": {
+    "acceptedSecurityDispositionUnchanged": true,
+    "rawSpdxModified": false,
+    "old28StorageSourcesChanged": false,
+    "frozenMapsChanged": false,
+    "technicalRoadmap": "8/8",
+    "functionalRoadmap": "6/6",
+    "farmacieRows": 61,
+    "farmacieColumns": "10 OPEN / ministerial code STRING",
+    "realStorageObjectsCopied": 0,
+    "realStorageObjectsBodyVerified": 0,
+    "cumulativeTargetControls": 17,
+    "cumulativeEngineGets": 52,
+    "m2Accepted": false
+  },
+  "lifecycleReview": {
+    "status": "OPEN",
+    "component": "github.com/aws/aws-sdk-go",
+    "version": "v1.55.8",
+    "goSum": "h1:JRmEUbU52aJQZ2AjX4q4Wu7t4uZjOu71uyNmaWlUkJQ=",
+    "zipSha256": "c8ba172b5297abf62e50efc8a039e624a5d02b7c5a55c137499e797ffa540a19",
+    "upstreamEndOfSupport": "2025-07-31",
+    "officialSource": "https://aws.amazon.com/blogs/developer/announcing-end-of-support-for-aws-sdk-for-go-v1-on-july-31-2025/",
+    "compiledPresenceProven": true,
+    "activeRuntimePathProven": false,
+    "newCveClaimed": false,
+    "upstreamResolutionOrRemovalPending": true
+  },
+  "durableImageCustody": "OPEN",
+  "cohortQualification": "OPEN",
+  "releaseAdmitted": false
+}

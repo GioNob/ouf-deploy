@@ -1,0 +1,49 @@
+{
+  "action": "verify",
+  "deletedObjectAbsent": true,
+  "listPages": 2,
+  "mutatingRequestRetries": 0,
+  "objects": [
+    {
+      "bytes": 0,
+      "getContentType": "application/x-ouf-recovery-fixture",
+      "headContentType": "application/x-ouf-recovery-fixture",
+      "key": "empty",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 8388608,
+      "getContentType": "application/x-ouf-recovery-fixture",
+      "headContentType": "application/x-ouf-recovery-fixture",
+      "key": "large.bin",
+      "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f"
+    },
+    {
+      "bytes": 25,
+      "getContentType": "application/x-ouf-recovery-fixture",
+      "headContentType": "application/x-ouf-recovery-fixture",
+      "key": "overwritten.bin",
+      "sha256": "8e5586e2cde19738aca41a6a774d81ba4f06512b932995165486dd5092fa764d"
+    },
+    {
+      "bytes": 22,
+      "getContentType": "application/x-ouf-recovery-fixture",
+      "headContentType": "application/x-ouf-recovery-fixture",
+      "key": "unicode/citt\u00e0 + %.txt",
+      "sha256": "a2f1f304e2fb73de2e515aba2e6be77b0f07f06272801c1ecd7d5e0425414132"
+    }
+  ],
+  "octetStreamCompatibility": {
+    "bucket": "ouf-recovery-mime-fixture",
+    "bytes": 47,
+    "findings": [],
+    "g2Closed": false,
+    "getContentType": "application/octet-stream",
+    "headContentType": "application/octet-stream",
+    "key": "octet-stream.txt",
+    "mutatingRequestRetries": 0,
+    "requestedContentType": "application/octet-stream",
+    "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+    "status": "PASS"
+  }
+}

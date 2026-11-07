@@ -1,0 +1,245 @@
+{
+  "schema": "ouf.onboarding-storage-recovery-gate-qualification.v1",
+  "date": "2026-11-05",
+  "repository": "GioNob/ouf-source-onboarding",
+  "branch": "feat/storage-upload-intent-20261105",
+  "sourceCommit": "5d9ba774b0d8b38c2acab36e1736803a1158059d",
+  "scope": "Internal fail-closed authority/quiescence adapter boundary; synthetic PostgreSQL adapter only",
+  "productionAuthorityAdapterInstalled": false,
+  "productionGrantIssued": false,
+  "allDeploymentWritersQualified": false,
+  "native": {
+    "runId": 41998933870,
+    "jobId": 127148985529,
+    "status": "SUCCESS",
+    "ownerScenarios": 35,
+    "apiStorageTests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "physical": {
+    "runId": 41998934118,
+    "producerJobId": 127148987556,
+    "readbackJobId": 127149874682,
+    "status": "SUCCESS",
+    "receipt": {
+      "status": "PASS",
+      "targetOperations": 0,
+      "releaseAdmitted": false,
+      "namedPhysicalRecovery": true,
+      "actualOwnerTablesPreserved": true,
+      "pendingReconciledWithoutPut": true,
+      "staleApplicationWriterBlocked": true,
+      "staleS3PutDenied": true,
+      "missingWalBlocksS3": true,
+      "objects": 2,
+      "objectBytes": 36,
+      "cleanStorageStops": 12,
+      "cleanPostgresStops": 2,
+      "targetName": "ouf_onboarding_upload_frozen_v39",
+      "systemIdentifier": "7704610164890021928",
+      "postgresImageId": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "backupFiles": 1680,
+      "scope": "synthetic Onboarding owner only; no UDP/Ingestion or operational binding"
+    },
+    "readback": {
+      "archiveSha256": "152d18c24f17805150f9f28c5da64e04174791c9691cb571da808e3da5135ac9",
+      "backupFiles": 1680,
+      "checksums": 31,
+      "commit": "5d9ba774b0d8b38c2acab36e1736803a1158059d",
+      "independentNativeRestore": false,
+      "members": 32,
+      "negativeReadbacks": [
+        "EXACT_SOURCE_BINDING_SET",
+        "TERMINAL_PASS",
+        "COMPONENT_BINDING",
+        "EXACT_OWNER_AFTER_RESTORE",
+        "NEGATIVE_WAL_GATE"
+      ],
+      "objects": 2,
+      "sources": 265,
+      "status": "PASS",
+      "targetOperations": 0
+    }
+  },
+  "artifacts": [
+    {
+      "id": 13401423124,
+      "name": "onboarding-common-cut-41998934118",
+      "bytes": 7098554,
+      "sha256": "sha256:152d18c24f17805150f9f28c5da64e04174791c9691cb571da808e3da5135ac9",
+      "expiresAt": "2027-02-03T09:01:07Z",
+      "runId": 41998934118,
+      "commit": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+    },
+    {
+      "id": 13401099296,
+      "name": "onboarding-common-cut-readback-41998934118",
+      "bytes": 7097031,
+      "sha256": "sha256:563a849b6745ccd69669895088986e4a4237be50b4188740cec3959edd8ddbbf",
+      "expiresAt": "2027-02-03T09:01:07Z",
+      "runId": 41998934118,
+      "commit": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+    },
+    {
+      "id": 13401552858,
+      "name": "onboarding-upload-native-41998933870",
+      "bytes": 80388,
+      "sha256": "sha256:fb9dee43f9193a0c850abf73119452847e6ce7ebd894105ae7709e8f5a105661",
+      "expiresAt": "2027-02-03T09:01:07Z",
+      "runId": 41998933870,
+      "commit": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+    }
+  ],
+  "priorIncrement": {
+    "commit": "050a5a2aabba603234231275401bee7239126216",
+    "nativeRun": 41998540449,
+    "nativeScenarios": 33,
+    "apiStorageTests": 8,
+    "physicalRun": 41998540342,
+    "status": "SUCCESS",
+    "artifacts": [
+      {
+        "id": 13401532229,
+        "name": "onboarding-common-cut-readback-41998540342",
+        "bytes": 7101909,
+        "sha256": "sha256:bffcfecff9a1d2cdb9706f5c05f8dabe6aa73722a283731a9c3cbb8a27a96bad",
+        "expiresAt": "2027-02-03T08:58:06Z",
+        "runId": 41998540342,
+        "commit": "050a5a2aabba603234231275401bee7239126216"
+      },
+      {
+        "id": 13401511564,
+        "name": "onboarding-common-cut-41998540342",
+        "bytes": 7103754,
+        "sha256": "sha256:8b91689b617003b5489eae082229b30501feb84bd86222b03b47aaf3a93fd1e0",
+        "expiresAt": "2027-02-03T08:58:06Z",
+        "runId": 41998540342,
+        "commit": "050a5a2aabba603234231275401bee7239126216"
+      },
+      {
+        "id": 13401686792,
+        "name": "onboarding-upload-native-41998540449",
+        "bytes": 79116,
+        "sha256": "sha256:97f79522ea641cf6145335c6c02ed68eea901c267e8f8d35908e5156aaa90ab8",
+        "expiresAt": "2027-02-03T08:58:06Z",
+        "runId": 41998540449,
+        "commit": "050a5a2aabba603234231275401bee7239126216"
+      }
+    ]
+  },
+  "localValidation": {
+    "gitDiffCheck": "PASS",
+    "pythonSyntax": "PASS",
+    "walPlaceholderRegression": "PASS with workspace temp directory",
+    "firstTemporaryDirectoryCleanup": "FAILED: Windows sandbox temp cleanup permission; rerun in own checkout PASS",
+    "javaExecutedLocally": false,
+    "thirdLocalArtifactReadback": false
+  },
+  "priorDeployCheckpoint": {
+    "commit": "fd5e774c48b00c410ba203bf407b9373640a3bb2",
+    "successfulWorkflows": 50,
+    "totalWorkflows": 50
+  },
+  "authority": {
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "merge": false,
+    "deployment": false,
+    "sourceLockChanged": false,
+    "realObjects": 0,
+    "miniPetCredits": 18.3,
+    "miniPetTotal": 46,
+    "gatesPassed": 0,
+    "gatesTotal": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestsTotal": 21
+  },
+  "open": [
+    "Platform policy resource and trusted principal/THS/Gateway binding",
+    "Production authority issuance/revocation and denied-command audit",
+    "Quiescence evidence for all deployment writers",
+    "Fresh authority independent of restored backups",
+    "UDP/Ingestion and mixed rollout",
+    "Governed reopening and representative RPO/RTO"
+  ],
+  "status": "QUALIFIED_INTERNAL_BOUNDARY_AND_SYNTHETIC_ADAPTER",
+  "sourceCI": {
+    "successful": 8,
+    "total": 8,
+    "runs": [
+      {
+        "id": 41998940360,
+        "name": "R2f trusted review browser",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998940230,
+        "name": "Managed profile minimized diagnostic",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998940250,
+        "name": "Source Onboarding module CI",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998934287,
+        "name": "Managed profile minimized diagnostic",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998933870,
+        "name": "Onboarding durable upload native owner",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998934118,
+        "name": "Onboarding physical common cut and stale writer recovery",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998933767,
+        "name": "Source Onboarding module CI",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      },
+      {
+        "id": 41998933997,
+        "name": "R2f trusted review browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5d9ba774b0d8b38c2acab36e1736803a1158059d"
+      }
+    ],
+    "generalModuleTests": {
+      "reported": 400,
+      "skippedNative": 35,
+      "executed": 365,
+      "failures": 0,
+      "errors": 0
+    }
+  }
+}

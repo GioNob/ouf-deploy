@@ -1,0 +1,35 @@
+{
+  "source": "58e092b476ba198bfbc82111e30139359737884a",
+  "runId": 41993548186,
+  "jobId": 127131216031,
+  "conclusion": "failure",
+  "nativeTests": 22,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0,
+  "diagnosis": "First reconciliation returned registerOwned's map with tenant_id; replay returned files.asset's projection without that field. Same asset identity and bytes; response contract normalized in 13fb6970, assertions retained.",
+  "excerpt": "[ERROR] Tests run: 22, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 15.01 s <<< FAILURE! -- in it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest\n2026-11-05T08:20:56.9758926Z [ERROR] it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest.concurrentRecoveryCreatesOneReceipt -- Time elapsed: 0.295 s <<< FAILURE!\n2026-11-05T08:20:56.9787637Z org.opentest4j.AssertionFailedError: \n2026-11-05T08:20:56.9817375Z \n2026-11-05T08:20:56.9848548Z expected: {\"asset_id\"=48c07791-12b5-42f3-9614-5c3cfd1fb511, \"content_hash\"=\"sha256:cc14af022224aab0996f0100469dff2d7d708b1363c4ef50cf904ed9c524098e\", \"created_at\"=2026-11-05T08:20:46.209 (java.sql.Timestamp), \"media_type\"=\"text/csv\", \"retention_ref\"=\"retention://managed-files/30d\", \"size_bytes\"=23L, \"source_id\"=null, \"staging_ref\"=\"object://managed-files/1e404473-b200-4cd2-91b3-7d23b5abaebd\", \"status\"=\"STAGED\", \"tenant_id\"=\"tenant-a\", \"uploaded_by\"=\"alice\"}\n2026-11-05T08:20:56.9880117Z  but was: {\"asset_id\"=48c07791-12b5-42f3-9614-5c3cfd1fb511, \"content_hash\"=\"sha256:cc14af022224aab0996f0100469dff2d7d708b1363c4ef50cf904ed9c524098e\", \"created_at\"=2026-11-05T08:20:46.209 (java.sql.Timestamp), \"media_type\"=\"text/csv\", \"retention_ref\"=\"retention://managed-files/30d\", \"size_bytes\"=23L, \"source_id\"=null, \"staging_ref\"=\"object://managed-files/1e404473-b200-4cd2-91b3-7d23b5abaebd\", \"status\"=\"STAGED\", \"uploaded_by\"=\"alice\"}\n2026-11-05T08:20:56.9901633Z \tat it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest.concurrentRecoveryCreatesOneReceipt(ManagedFileUploadNativeTest.java:221)\n2026-11-05T08:20:56.9927296Z \n2026-11-05T08:20:56.9928812Z [ERROR] it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest.recoveryDrainReconcilesThenFreezesWithoutAnotherPut -- Time elapsed: 0.283 s <<< FAILURE!\n2026-11-05T08:20:56.9930667Z org.opentest4j.AssertionFailedError: \n2026-11-05T08:20:56.9931033Z \n2026-11-05T08:20:56.9933890Z expected: {\"asset_id\"=b8729e83-becd-4b56-bc2e-76f0db39f660, \"content_hash\"=\"sha256:cc14af022224aab0996f0100469dff2d7d708b1363c4ef50cf904ed9c524098e\", \"created_at\"=2026-11-05T08:20:51.365 (java.sql.Timestamp), \"media_type\"=\"text/csv\", \"retention_ref\"=\"retention://managed-files/30d\", \"size_bytes\"=23L, \"source_id\"=null, \"staging_ref\"=\"object://managed-files/0d068ee1-d382-417a-b1d6-00481724e8e3\", \"status\"=\"STAGED\", \"tenant_id\"=\"tenant-a\", \"uploaded_by\"=\"alice\"}\n2026-11-05T08:20:56.9939848Z  but was: {\"asset_id\"=b8729e83-becd-4b56-bc2e-76f0db39f660, \"content_hash\"=\"sha256:cc14af022224aab0996f0100469dff2d7d708b1363c4ef50cf904ed9c524098e\", \"created_at\"=2026-11-05T08:20:51.365 (java.sql.Timestamp), \"media_type\"=\"text/csv\", \"retention_ref\"=\"retention://managed-files/30d\", \"size_bytes\"=23L, \"source_id\"=null, \"staging_ref\"=\"object://managed-files/0d068ee1-d382-417a-b1d6-00481724e8e3\", \"status\"=\"STAGED\", \"uploaded_by\"=\"alice\"}\n2026-11-05T08:20:56.9944212Z \tat it.comune.trieste.ouf.onboarding.application.ManagedFileUploadNativeTest.recoveryDrainReconcilesThenFreezesWithoutAnotherPut(ManagedFileUploadNativeTest.java:175)\n2026-11-05T08:20:56.9945967Z \n2026-11-05T08:20:56.9946622Z ",
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 13398779453,
+        "name": "onboarding-upload-native-41993548186",
+        "size_in_bytes": 69213,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398779453",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398779453/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:21:00Z",
+        "expires_at": "2027-02-03T08:19:19Z",
+        "updated_at": "2026-11-05T08:21:00Z",
+        "digest": "sha256:152dc512444afe4d5f4d51aee42690fac435869f357e71c8d7e84a73640dea17",
+        "workflow_run": {
+          "id": 41993548186,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "58e092b476ba198bfbc82111e30139359737884a"
+        }
+      }
+    ]
+  }
+}

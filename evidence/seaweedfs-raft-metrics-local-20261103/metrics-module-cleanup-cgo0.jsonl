@@ -1,0 +1,8 @@
+{"Time":"2026-11-03T20:19:40.46562731+01:00","Action":"start","Package":"github.com/seaweedfs/seaweedfs/weed/server"}
+{"Time":"2026-11-03T20:19:40.524455004+01:00","Action":"run","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestRaftBoltStoreMetricsReachConfiguredPrometheusSink"}
+{"Time":"2026-11-03T20:19:40.524540924+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestRaftBoltStoreMetricsReachConfiguredPrometheusSink","Output":"=== RUN   TestRaftBoltStoreMetricsReachConfiguredPrometheusSink\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:19:40.564052812+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestRaftBoltStoreMetricsReachConfiguredPrometheusSink","Output":"--- PASS: TestRaftBoltStoreMetricsReachConfiguredPrometheusSink (0.04s)\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:19:40.564102637+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/server","Test":"TestRaftBoltStoreMetricsReachConfiguredPrometheusSink","Elapsed":0.04}
+{"Time":"2026-11-03T20:19:40.564126463+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T20:19:40.564186208+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/weed/server","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/weed/server\t0.098s\n"}
+{"Time":"2026-11-03T20:19:40.564236834+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/weed/server","Elapsed":0.099}

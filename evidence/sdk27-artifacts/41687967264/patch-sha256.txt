@@ -1,0 +1,1 @@
+f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883  ../patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch

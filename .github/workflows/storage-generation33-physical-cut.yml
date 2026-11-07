@@ -1,0 +1,243 @@
+name: Storage generation33 physical PostgreSQL and SeaweedFS common cut
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-physical-cut.yml
+      - scripts/run-storage-physical-cut33-lab.py
+      - tests/test_storage_physical_cut33.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-generation33-physical-cut-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quiesced-physical-cut:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      artifact-id: ${{ steps.evidence.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test physical cut binding and preserved common-cut and WAL boundaries
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint33/build-evidence"
+          for test in test_storage_physical_cut33.py test_storage_coordinated33_lab.py test_storage_postgres_pitr.py; do
+            python3 -I -B -S -m unittest discover -s tests -p "$test" -v 2>&1 | tee -a "$RUNNER_TEMP/joint33/build-evidence/offline-tests.log"
+          done
+      - name: Build the pinned PostgreSQL 17.11 fixture tools
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/joint33"
+          mkdir -p "$base/build-evidence"
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y build-essential bison flex
+          cd "$base"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --connect-timeout 15 --max-time 120 \
+            https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2 \
+            --output postgresql-17.11.tar.bz2
+          printf '%s\n' 'dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979  postgresql-17.11.tar.bz2' > build-evidence/source.sha256
+          sha256sum --strict --check build-evidence/source.sha256
+          tar -xjf postgresql-17.11.tar.bz2
+          cd postgresql-17.11
+          timeout 600 ./configure --prefix="$base/install" --without-readline --without-zlib --without-icu \
+            > ../build-evidence/configure.log 2>&1
+          timeout 600 make -j2 > ../build-evidence/make.log 2>&1
+          timeout 120 make install > ../build-evidence/install.log 2>&1
+          sha256sum "$base/install/bin/"{postgres,initdb,pg_ctl,psql,pg_basebackup,pg_verifybackup,pg_waldump,pg_isready} > ../build-evidence/binary-sha256.txt
+      - name: Fetch and bind the exact successful generation33 cohort and image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib, importlib.util, json, os, pathlib, subprocess
+          p=pathlib.Path('scripts/run-storage-coordinated33-lab.py')
+          spec=importlib.util.spec_from_file_location('rotation',p)
+          rotation=importlib.util.module_from_spec(spec);spec.loader.exec_module(rotation)
+          bound=rotation.labs.binding_api.load(pathlib.Path.cwd(),rotation.LOCK_SHA)
+          inputs=pathlib.Path(os.environ['RUNNER_TEMP'])/'joint33-inputs';inputs.mkdir()
+          def fetch(artifact_id,filename,expected_size,expected_sha):
+              dest=inputs/filename
+              url='https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/'+str(artifact_id)+'/zip'
+              subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+                              '--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','180',
+                              '--max-filesize',str(expected_size),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+                              '-H','Accept: application/vnd.github+json',url,'--output',str(dest)],check=True)
+              assert dest.stat().st_size==expected_size
+              with dest.open('rb') as stream:assert hashlib.file_digest(stream,'sha256').hexdigest()==expected_sha
+              return dest
+          cohort=fetch(rotation.COHORT_ARTIFACT_ID,'cohort.zip',rotation.COHORT_ARCHIVE_BYTES,rotation.COHORT_ARCHIVE_SHA)
+          receipt=rotation.labs.bind_cohort_artifact(cohort,inputs/'bound-cohort',bound,
+                                                    rotation.COHORT_ARCHIVE_SHA,rotation.COHORT_SHA)
+          rotation.binding(receipt)
+          image=bound['lock']['producerArtifact']
+          fetch(image['id'],'image.zip',image['bytes'],image['digest'].removeprefix('sha256:'))
+          PYCODE
+
+      - name: Verify the successful cohort publisher with its exact source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+          gh297/bin/gh attestation verify "$RUNNER_TEMP/joint33-inputs/bound-cohort/SHA256SUMS" \
+            --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation33-cohort.yml \
+            --source-digest 7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791 \
+            --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --format json > "$RUNNER_TEMP/joint33-inputs/cohort-publisher-verification.json"
+          test -s "$RUNNER_TEMP/joint33-inputs/cohort-publisher-verification.json"
+
+      - name: Bind the frozen ledger and cold storage to one named physical recovery point
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-physical-cut33-lab.py \
+            --pg-bin "$RUNNER_TEMP/joint33/install/bin" \
+            --image "$RUNNER_TEMP/joint33-inputs/image.zip" \
+            --cohort-receipt "$RUNNER_TEMP/joint33-inputs/bound-cohort/cohort-receipt.json" \
+            --work "$RUNNER_TEMP/joint33/lab"
+      - name: Preserve original backup payloads exact source and negative evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/joint33"
+          mkdir -p "$base/build-evidence" "$base/lab/evidence"
+          for name in cohort-publisher-verification.json bound-cohort/cohort-receipt.json; do
+            if test -f "$RUNNER_TEMP/joint33-inputs/$name"; then
+              cp "$RUNNER_TEMP/joint33-inputs/$name" "$base/build-evidence/$(basename "$name")"
+            fi
+          done
+          sha256sum '.github/workflows/storage-generation33-physical-cut.yml' \
+            'scripts/run-storage-physical-cut33-lab.py' \
+            'scripts/readback-storage-physical-cut33.py' \
+            'tests/test_storage_physical_cut33.py' \
+            'scripts/run-storage-coordinated33-lab.py' \
+            'tests/test_storage_coordinated33_lab.py' \
+            'tests/test_storage_postgres_pitr.py' \
+            'tests/run_storage_postgres_pitr.py' \
+            'tests/storage_pitr_archive.py' \
+            'tests/storage_response_loss.py' \
+            'scripts/run-seaweedfs-452-generation33-labs.py' \
+            'scripts/run-seaweedfs-452-cold-recovery.py' \
+            'scripts/run-seaweedfs-452-identity-tls.py' \
+            'scripts/storage-generation33-lab-binding.py' \
+            'scripts/readback-seaweedfs-452-generation33-image.py' \
+            'scripts/qualify-seaweedfs-452-generation33-image.py' \
+            'tests/run_storage_postgres_fixture_native.py' \
+            'tests/run_storage_postgres_logical_restore.py' \
+            'tests/run_storage_postgres_writer_fence.py' \
+            'tests/fixtures/storage-recovery/writer-fence.sql' \
+            'evidence/artifacts/seaweedfs-generation33-cohort-41794344274.zip' \
+            'tools/storage_recovery/coordinated.py' \
+            'tools/storage_recovery/manifest.py' \
+            'tools/storage_recovery/postgres_fixture.py' \
+            'tools/storage_recovery/profile.py' \
+            'tools/storage_security/generation_image_v4.py' \
+            'tools/storage_security/generation_readback_v1.py' \
+            'profiles/seaweedfs-452-lab/profile.json' \
+            'releases/seaweedfs-452-generation33-candidate-lock-20261104.json' \
+            'releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json' > "$base/build-evidence/repository-source-sha256.txt"
+          git rev-parse HEAD > "$base/build-evidence/repository-commit.txt"
+          cd "$base"
+          find build-evidence lab/evidence -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest successful synthetic evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/joint33/SHA256SUMS
+      - name: Retain complete public fixture evidence including failures
+        id: evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-physical-cut33-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/joint33/SHA256SUMS
+            ${{ runner.temp }}/joint33/build-evidence/
+            ${{ runner.temp }}/joint33/lab/evidence/
+          if-no-files-found: error
+          retention-days: 90
+
+  original-archive-readback:
+    needs: quiesced-physical-cut
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Acquire the exact original archive and verify producer terminal job
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.quiesced-physical-cut.outputs.artifact-id }}
+          PRODUCER_RESULT: ${{ needs.quiesced-physical-cut.result }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/joint33-readback"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'joint33-readback'
+          artifact=os.environ['ARTIFACT_ID'];assert artifact.isdecimal()
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          def get(path):
+              req=urllib.request.Request(base+path,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          meta=get('/actions/artifacts/'+artifact)
+          assert meta['workflow_run']['id']==int(os.environ['GITHUB_RUN_ID']) and meta['workflow_run']['head_sha']==os.environ['GITHUB_SHA']
+          assert not meta['expired'] and 0<meta['size_in_bytes']<=64*1024*1024 and meta['digest'].startswith('sha256:')
+          (out/'original-artifact.json').write_text(json.dumps(meta,indent=2)+'\n')
+          dest=out/'original.zip'
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https','--tlsv1.2',
+              '--connect-timeout','15','--max-time','180','--max-filesize',str(meta['size_in_bytes']),
+              '-H','Authorization: Bearer '+os.environ['GH_TOKEN'],'-H','Accept: application/vnd.github+json',
+              base+'/actions/artifacts/'+artifact+'/zip','--output',str(dest)],check=True)
+          assert dest.stat().st_size==meta['size_in_bytes']
+          with dest.open('rb') as f:assert hashlib.file_digest(f,'sha256').hexdigest()==meta['digest'].removeprefix('sha256:')
+          jobs=get('/actions/runs/'+os.environ['GITHUB_RUN_ID']+'/jobs?per_page=100')['jobs']
+          selected=[j for j in jobs if j['name']=='quiesced-physical-cut'];assert len(selected)==1
+          (out/'native-job.json').write_text(json.dumps(selected[0],indent=2)+'\n')
+          assert selected[0]['status']=='completed' and selected[0]['conclusion']=='success' and os.environ['PRODUCER_RESULT']=='success'
+          PY
+      - name: Independently verify all ZIP members sources and packaged physical backup bytes
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PY'
+          import importlib.util,json,os,pathlib
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'joint33-readback'
+          spec=importlib.util.spec_from_file_location('reader',pathlib.Path('scripts/readback-storage-physical-cut33.py'))
+          reader=importlib.util.module_from_spec(spec);spec.loader.exec_module(reader)
+          meta=json.loads((out/'original-artifact.json').read_bytes())
+          result=reader.verify(out/'original.zip',pathlib.Path.cwd(),meta['digest'].removeprefix('sha256:'),os.environ['GITHUB_SHA'])
+          (out/'readback.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          print('OUF_PHYSICAL_CUT_READBACK_JSON='+json.dumps(result,sort_keys=True))
+          PY
+      - name: Preserve unchanged original and independent readback
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-physical-cut33-readback-${{ github.run_id }}
+          path: ${{ runner.temp }}/joint33-readback/
+          if-no-files-found: error
+          retention-days: 90

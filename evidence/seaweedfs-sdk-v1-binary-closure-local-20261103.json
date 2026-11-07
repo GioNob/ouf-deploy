@@ -1,0 +1,85 @@
+{
+  "schema": "ouf.seaweedfs.storage-sdk-lifecycle.local-evidence.v1",
+  "recorded_at_utc": "2026-11-03T07:49:48Z",
+  "status": "SOURCE_GRAPH_CLEAN_LOCAL_LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "repository": "GioNob/ouf-deploy",
+  "branch": "feat/m2-discovery-complete-profile-20261029",
+  "pull_request": 54,
+  "seaweedfs_tag": "4.52",
+  "seaweedfs_commit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "previous_ouf_checkpoint": "33c9d99cfbabf05ca8db1b71a7eb82c2f76fc65e",
+  "source_commit": "e5a36b02fe46105b88500ceba9337cb79d06c91d",
+  "patch_sequence_count": 11,
+  "patch": {
+    "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch",
+    "bytes": 27526,
+    "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f"
+  },
+  "removed_package_manifest": {
+    "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1-removed-packages.txt",
+    "entries": 15,
+    "bytes": 627,
+    "sha256": "8e46843424e32a0244590abbe28ccbb07cdded76be86b2dcf656cd3b65fecc4e"
+  },
+  "changes": [
+    "replaced production aws.String, aws.Int64, aws.Bool, aws.Time and aws.StringValue calls with native pointers and a nil-safe local accessor",
+    "replaced production xmlutil.UnmarshalXML calls with an Apache-2.0 local decoder under the existing wire LICENSE and NOTICE",
+    "preserved historical final-character-data, multiple-root, truncated-document, flattened-list and xsi:type attribute behavior",
+    "kept the legacy implementation in tests only as an independent compatibility oracle"
+  ],
+  "local_validation": {
+    "exact_patch_reapplication_after_previous_ten": "PASS",
+    "exact_reapplication_byte_comparison_for_six_files": "PASS",
+    "focused_wire_and_s3api": "PASS",
+    "wire_race": "PASS",
+    "workflow_equivalent_suite": {
+      "pass_events": 5591,
+      "skip_events": 5,
+      "packages_passed": 20,
+      "failures": 0
+    },
+    "full_server_build": "PASS",
+    "git_diff_check": "PASS",
+    "binary": {
+      "bytes": 223555213,
+      "sha256": "d9873b7d5c484266c9226e90acf20215e7ed1985fe2b235171f617768471a98f",
+      "aws_sdk_go_v1_build_metadata": "ABSENT",
+      "aws_sdk_go_v2_build_metadata": "PRESENT"
+    }
+  },
+  "dependency_graph": {
+    "command": "CGO_ENABLED=0 go list -mod=readonly -deps ./weed",
+    "packages_total": 1811,
+    "aws_sdk_go_v1_packages": 0,
+    "productive_direct_importer_packages": 0,
+    "productive_direct_import_edges": 0,
+    "removed_packages_vs_previous_patch_sequence": 15,
+    "added_packages_vs_previous_patch_sequence": 0,
+    "deprecated_aws_sdk_go_v2_feature_s3_manager_packages": 0
+  },
+  "test_only_legacy_dependency": {
+    "go_mod_still_declares_aws_sdk_go_v1": true,
+    "test_files_importing_aws_sdk_go_v1": 23,
+    "production_go_files_importing_aws_sdk_go_v1": 0,
+    "purpose": "compatibility oracles, legacy signer fixtures and IAM client tests",
+    "next_work": "migrate or replace the remaining test-only consumers before removing the module from go.mod/go.sum"
+  },
+  "governance": {
+    "target_operations": 0,
+    "real_objects_copied": 0,
+    "gates_closed": "0/8",
+    "acceptance_tests_accepted": "0/21",
+    "human_or_ths_authority_consumed": false,
+    "scope17_52_engine_gets": "preserved",
+    "teatri_m1": "8/8 technical; 6/6 functional; preserved",
+    "farmacie": "61 rows; 10 OPEN/STRING; preserved"
+  },
+  "limitations": [
+    "zero SDK v1 in the production graph and binary is not a fresh OCI image, SBOM, vulnerability, licence, custody or cohort qualification",
+    "the unsupported module remains in go.mod and in the test graph until 23 legacy test consumers are migrated",
+    "the local decoder is constrained to the existing SeaweedFS request models and needs the retained compatibility tests for future changes",
+    "production identity refresh, TLS, egress, real provider semantics and target credentials remain unqualified",
+    "durable retry ownership, ambiguous multipart completion and crash recovery remain open",
+    "MinIO remains deployed and no target call, merge, deployment, grant, replay or release acceptance was performed"
+  ]
+}

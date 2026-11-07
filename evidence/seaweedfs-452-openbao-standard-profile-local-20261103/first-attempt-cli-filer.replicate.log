@@ -1,0 +1,42 @@
+I1103 20:40:09.618018 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618018 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618088 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618088 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618125 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618125 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618204 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618204 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618220 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618220 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618238 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618238 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618326 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618326 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618377 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618377 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+I1103 20:40:09.618487 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:09.618487 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.INFO.20261103-204009.5: no such file or directory
+E1103 20:40:09.619227 filer_replication.go:39 replication configuration rejected: OUF standard profile excludes OpenBao/Vault KMS
+E1103 20:40:09.619227 filer_replication.go:39 replication configuration rejected: OUF standard profile excludes OpenBao/Vault KMS
+glog: exiting because of error: log: cannot create log: open /tmp/weed-openbao-profile30.b82fc9d7a30f.root.log.ERROR.20261103-204009.5: no such file or directory
+
+Example: weed filer.replicate
+Default Usage:
+  -options string
+    	a file of command line options, each line in optionName=optionValue format
+Description:
+  replicate file changes to another destination
+
+	filer.replicate listens on filer notifications. If any file is updated, it will fetch the updated content,
+	and write to the other destination.
+
+	Run "weed scaffold -config=replication" to generate a replication.toml file and customize the parameters.

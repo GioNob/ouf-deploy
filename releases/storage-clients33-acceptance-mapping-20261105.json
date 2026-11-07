@@ -1,0 +1,94 @@
+{
+  "schema": "ouf.storage-clients33-acceptance-mapping.v1",
+  "candidateLockSha256": "c2b30130b078a86ca440351980c3e745d4132e256591ec05fe98a9bdfc9058f8",
+  "qualificationReceipt": "evidence/storage-clients33-qualified-20261105.json",
+  "rows": [
+    {
+      "criterion": "SW-AT01",
+      "status": "OPEN",
+      "evidenceCases": [
+        "source binding",
+        "publisher verification",
+        "raw dependency scan"
+      ],
+      "remaining": "Full service dependency/image closure and licence/lifecycle/custody review"
+    },
+    {
+      "criterion": "SW-AT02",
+      "status": "OPEN",
+      "evidenceCases": [
+        "onboardingOriginalAdapterRoundTripAndLimits",
+        "reservedReferenceIsValidatedBeforeAnyPut",
+        "onboardingTenMiBMultipart"
+      ],
+      "remaining": "Installed flow and asset/intent/database consistency"
+    },
+    {
+      "criterion": "SW-AT03",
+      "status": "OPEN",
+      "evidenceCases": [
+        "udpOriginalAdapterMetadataReadAndExactDelete"
+      ],
+      "remaining": "Application catalogue and lineage consistency"
+    },
+    {
+      "criterion": "SW-AT04",
+      "status": "OPEN",
+      "evidenceCases": [
+        "onboardingTenMiBMultipart",
+        "incompleteMultipartIsInventoriableWithoutPublishingAnObject"
+      ],
+      "remaining": "Retry, interruption, abort and cleanup"
+    },
+    {
+      "criterion": "SW-AT05",
+      "status": "OPEN",
+      "evidenceCases": [
+        "udpInventoryPaginatesBeyondThousand",
+        "unicodeAndReservedKeyCharactersPreserveBytesAndMetadata"
+      ],
+      "remaining": "Applicable real inventory completeness"
+    },
+    {
+      "criterion": "SW-AT06",
+      "status": "OPEN",
+      "evidenceCases": [
+        "udpOriginalAdapterMetadataReadAndExactDelete"
+      ],
+      "remaining": "Full namespace matrix and actual collision resolution"
+    },
+    {
+      "criterion": "SW-AT07",
+      "status": "OPEN",
+      "evidenceCases": [
+        "crossBucketAndUnknownCredentialDenied",
+        "prefixPolicyAndDeleteDenials",
+        "postFormCannotBypassPrefixPolicy"
+      ],
+      "remaining": "Anonymous/admin/tenant and installed identities"
+    },
+    {
+      "criterion": "SW-AT08",
+      "status": "OPEN",
+      "evidenceCases": [
+        "tlsRejectsAnUntrustedCertificate",
+        "isolated namespace"
+      ],
+      "remaining": "Lateral target access, invalid signature, operational custody and rotation"
+    },
+    {
+      "criterion": "SW-AT09",
+      "status": "OPEN",
+      "evidenceCases": [
+        "versionHistoryAndDeleteMarker",
+        "unicodeAndReservedKeyCharactersPreserveBytesAndMetadata",
+        "udpOriginalAdapterMetadataReadAndExactDelete"
+      ],
+      "remaining": "Applicable tags, hold, retention, encryption, notifications and presigned behaviour"
+    }
+  ],
+  "otherCriteriaStatus": "OPEN_AS_RECORDED_IN_CURRENT_CLOSURE_STATUS",
+  "acceptanceCreditAdded": 0,
+  "realObjectsCopied": 0,
+  "runtimeAuthorityIssued": false
+}

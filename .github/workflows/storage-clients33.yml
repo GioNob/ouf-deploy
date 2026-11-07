@@ -1,0 +1,125 @@
+name: Storage exact OCI33 current Onboarding and UDP contracts
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-clients33.yml
+      - scripts/run-storage-clients33.py
+      - tests/fixtures/storage-clients33/**
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+concurrency:
+  group: storage-clients33-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  exact-application-clients:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: d5155899b09dda298494b68cefa7e1f281167652
+          path: onboarding-source
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: 0d40da05408a14db31d4d41af2372d6a71480291
+          path: udp-source
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Fetch and bind the exact successful generation33 cohort and image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib, importlib.util, json, os, pathlib, subprocess
+          p=pathlib.Path('scripts/run-storage-generation33-tls-rotation.py')
+          spec=importlib.util.spec_from_file_location('rotation',p)
+          rotation=importlib.util.module_from_spec(spec);spec.loader.exec_module(rotation)
+          bound=rotation.labs.binding_api.load(pathlib.Path.cwd(),rotation.LOCK_SHA)
+          inputs=pathlib.Path(os.environ['RUNNER_TEMP'])/'clients33-inputs';inputs.mkdir()
+          def fetch(artifact_id,filename,expected_size,expected_sha):
+              dest=inputs/filename
+              url='https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/'+str(artifact_id)+'/zip'
+              subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+                              '--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','180',
+                              '--max-filesize',str(expected_size),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+                              '-H','Accept: application/vnd.github+json',url,'--output',str(dest)],check=True)
+              assert dest.stat().st_size==expected_size
+              with dest.open('rb') as stream:assert hashlib.file_digest(stream,'sha256').hexdigest()==expected_sha
+              return dest
+          cohort=fetch(rotation.COHORT_ARTIFACT_ID,'cohort.zip',rotation.COHORT_ARCHIVE_BYTES,rotation.COHORT_ARCHIVE_SHA)
+          receipt=rotation.labs.bind_cohort_artifact(cohort,inputs/'bound-cohort',bound,
+                                                    rotation.COHORT_ARCHIVE_SHA,rotation.COHORT_SHA)
+          rotation.binding(receipt)
+          image=bound['lock']['producerArtifact']
+          fetch(image['id'],'image.zip',image['bytes'],image['digest'].removeprefix('sha256:'))
+          PYCODE
+
+      - name: Verify the successful cohort publisher with its exact source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+          gh297/bin/gh attestation verify "$RUNNER_TEMP/clients33-inputs/bound-cohort/SHA256SUMS" \
+            --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation33-cohort.yml \
+            --source-digest 7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791 \
+            --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --format json > "$RUNNER_TEMP/clients33-inputs/cohort-publisher-verification.json"
+          test -s "$RUNNER_TEMP/clients33-inputs/cohort-publisher-verification.json"
+
+      - name: Bind original adapter sources and prepare offline Maven dependencies
+        run: |
+          python3 -I -B -S scripts/run-storage-clients33.py stage "$RUNNER_TEMP/clients33-lab" "$RUNNER_TEMP/clients33-inputs"
+          : > empty.trivyignore-clients33
+      - name: Scan the complete resolved fixture dependency jars
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: rootfs
+          scan-ref: ${{ runner.temp }}/clients33-lab/dependencies
+          format: json
+          output: ${{ runner.temp }}/clients33-inputs/trivy-clients.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: empty.trivyignore-clients33
+          exit-code: 0
+      - name: Run both real adapters against the exact isolated OCI33
+        run: python3 -I -B -S scripts/run-storage-clients33.py run "$RUNNER_TEMP/clients33-lab" "$RUNNER_TEMP/clients33-inputs"
+      - name: Seal source bindings and bounded public evidence including failures
+        if: always()
+        run: python3 -I -B -S scripts/run-storage-clients33.py seal "$RUNNER_TEMP/clients33-lab" "$RUNNER_TEMP/clients33-inputs"
+      - name: Attest successful client contract evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/clients33-lab/evidence/SHA256SUMS
+      - name: Retain public diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-clients33-${{ github.run_id }}
+          path: ${{ runner.temp }}/clients33-lab/evidence/
+          if-no-files-found: error
+          retention-days: 90

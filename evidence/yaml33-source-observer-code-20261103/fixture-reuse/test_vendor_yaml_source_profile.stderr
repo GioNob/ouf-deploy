@@ -1,0 +1,30 @@
+test_binary_legacy_module_rejected (__main__.VendorSourceProfileTests.test_binary_legacy_module_rejected) ... ok
+test_changed_patch_artifact_rejected (__main__.VendorSourceProfileTests.test_changed_patch_artifact_rejected) ... ok
+test_changed_root_source_rejected (__main__.VendorSourceProfileTests.test_changed_root_source_rejected) ... ok
+test_cli_writes_separate_supplement_and_rejects_raw_output (__main__.VendorSourceProfileTests.test_cli_writes_separate_supplement_and_rejects_raw_output) ... ok
+test_compiled_legacy_package_and_vendored_alias_rejected (__main__.VendorSourceProfileTests.test_compiled_legacy_package_and_vendored_alias_rejected) ... ok
+test_different_generation_parent_rejected (__main__.VendorSourceProfileTests.test_different_generation_parent_rejected) ... ok
+test_duplicate_module_path_at_different_version_rejected (__main__.VendorSourceProfileTests.test_duplicate_module_path_at_different_version_rejected) ... ok
+test_duplicate_or_wrong_canonical_spdx_node_rejected (__main__.VendorSourceProfileTests.test_duplicate_or_wrong_canonical_spdx_node_rejected) ... ok
+test_extra_vendor_edit_cannot_be_hidden_by_new_patched_hash (__main__.VendorSourceProfileTests.test_extra_vendor_edit_cannot_be_hidden_by_new_patched_hash) ... ok
+test_iceberg_feature_cannot_be_removed_to_pass (__main__.VendorSourceProfileTests.test_iceberg_feature_cannot_be_removed_to_pass) ... ok
+test_legacy_raw_scan_or_spdx_rejected (__main__.VendorSourceProfileTests.test_legacy_raw_scan_or_spdx_rejected) ... ok
+test_missing_original_module_input_rejected (__main__.VendorSourceProfileTests.test_missing_original_module_input_rejected) ... ok
+test_missing_regression_or_effective_workspace_rejected (__main__.VendorSourceProfileTests.test_missing_regression_or_effective_workspace_rejected) ... ok
+test_no_invented_ownership_or_maintenance (__main__.VendorSourceProfileTests.test_no_invented_ownership_or_maintenance) ... ok
+test_one_root_command_cannot_bypass_vendor (__main__.VendorSourceProfileTests.test_one_root_command_cannot_bypass_vendor) ... ok
+test_original_h1_must_match_the_frozen_root_lock (__main__.VendorSourceProfileTests.test_original_h1_must_match_the_frozen_root_lock) ... ok
+test_original_input_hash_cannot_be_relabelled_as_patched_hash (__main__.VendorSourceProfileTests.test_original_input_hash_cannot_be_relabelled_as_patched_hash) ... ok
+test_other_vendor_module_cannot_claim_upstream_h1 (__main__.VendorSourceProfileTests.test_other_vendor_module_cannot_claim_upstream_h1) ... ok
+test_replacement_module_rejected (__main__.VendorSourceProfileTests.test_replacement_module_rejected) ... ok
+test_scanner_upstream_name_and_purl_cannot_be_replaced (__main__.VendorSourceProfileTests.test_scanner_upstream_name_and_purl_cannot_be_replaced) ... ok
+test_source_mode_cannot_bypass_vendor (__main__.VendorSourceProfileTests.test_source_mode_cannot_bypass_vendor) ... ok
+test_unbound_draft_cannot_qualify (__main__.VendorSourceProfileTests.test_unbound_draft_cannot_qualify) ... ok
+test_upstream_archive_byte_identity_cannot_drift (__main__.VendorSourceProfileTests.test_upstream_archive_byte_identity_cannot_drift) ... ok
+test_upstream_h1_cannot_be_claimed_for_vendor_bytes (__main__.VendorSourceProfileTests.test_upstream_h1_cannot_be_claimed_for_vendor_bytes) ... ok
+test_valid_supplement_keeps_raw_records_and_ownership_open (__main__.VendorSourceProfileTests.test_valid_supplement_keeps_raw_records_and_ownership_open) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.310s
+
+OK

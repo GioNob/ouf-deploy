@@ -1,0 +1,37 @@
+name: Storage cold backup producer
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/storage-cold-backup.py
+      - tests/test_storage_cold_backup.py
+      - tests/qualify_storage_cold_backup_native.py
+      - .github/workflows/storage-cold-backup.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-cold-backup-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install encryption utility for isolated qualification
+        run: sudo apt-get update && sudo apt-get install -y age
+      - name: Guard and archive round-trip tests
+        run: sudo -n python3 -B -m unittest discover -s tests -p test_storage_cold_backup.py -v
+      - name: Native encrypted capture and isolated restore
+        run: sudo -n env GITHUB_ACTIONS=true python3 -B tests/qualify_storage_cold_backup_native.py "$RUNNER_TEMP/cold-backup-proof"
+      - name: Preserve only redacted qualification result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-cold-backup-result
+          path: ${{ runner.temp }}/cold-backup-proof/native-result.json
+          if-no-files-found: error
+          retention-days: 90

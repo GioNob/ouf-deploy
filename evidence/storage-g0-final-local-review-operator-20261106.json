@@ -1,0 +1,237 @@
+{
+  "schema": "ouf.storage-g0-final-local-review-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "script": {
+    "sourceCommit": "f02ba458a7e536c848abca001154dbf5f665a16e",
+    "path": "scripts/review-storage-g0-final-local-20261106.py",
+    "sha256": "c05d6cd89ef228873cfaec96d0173035d996d19071fc074178f3d60e997d1be1",
+    "bytes": 15597,
+    "downloadAndSha256ReportedOk": true
+  },
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "automaticReplayAllowed": false,
+    "bucketFeatureDetailsWithoutIdentity": [
+      {
+        "bucketPolicyAbsent": true,
+        "eventBridgeConfigurationPresent": false,
+        "grants": [
+          {
+            "granteeIdPresent": false,
+            "granteeMatchesOwnerId": null,
+            "groupAudience": "OTHER_OR_NONE",
+            "permission": "FULL_CONTROL",
+            "type": "CanonicalUser"
+          }
+        ],
+        "notificationDestinationCounts": {
+          "LambdaFunctionConfigurations": 0,
+          "QueueConfigurations": 0,
+          "TopicConfigurations": 0
+        },
+        "ownerIdPresent": false,
+        "publicAccessBlockUnsupported": true,
+        "versioningValues": {
+          "MFADelete": "NOT_SET",
+          "Status": "NOT_SET"
+        }
+      },
+      {
+        "bucketPolicyAbsent": true,
+        "eventBridgeConfigurationPresent": false,
+        "grants": [
+          {
+            "granteeIdPresent": false,
+            "granteeMatchesOwnerId": null,
+            "groupAudience": "OTHER_OR_NONE",
+            "permission": "FULL_CONTROL",
+            "type": "CanonicalUser"
+          }
+        ],
+        "notificationDestinationCounts": {
+          "LambdaFunctionConfigurations": 0,
+          "QueueConfigurations": 0,
+          "TopicConfigurations": 0
+        },
+        "ownerIdPresent": false,
+        "publicAccessBlockUnsupported": true,
+        "versioningValues": {
+          "MFADelete": "NOT_SET",
+          "Status": "NOT_SET"
+        }
+      }
+    ],
+    "credentialsRead": 0,
+    "effectiveAuthorizationProven": false,
+    "filesModified": 0,
+    "filesRead": 10,
+    "g0Complete": false,
+    "independentBackupVerified": false,
+    "localInputSha256": {
+      "baseInput": "dc0ab6d4bf36c03b8086ecbae1be1c3e2e381c94152be01dd1ff6bfbfcd04f6e",
+      "claim.private.json": "cec357cb3f8de0eae92157ce59828b3cf9667274cd93dd55d28c5cad7a1793b2",
+      "host-after.private.json": "63cfa2294e173082a2891aeefcaef43747002fffc36312906b6d01c6d0342b71",
+      "host-before.private.json": "63cfa2294e173082a2891aeefcaef43747002fffc36312906b6d01c6d0342b71",
+      "reconciliation.json": "5c0bc6d7351008da9dd53af5489dcf0167c280fe73e99db52de3e9f8c2e5db6a",
+      "runtimeDeclaration": "c958f52f6fc25c07a42a0a2b48ddab2f185316895dc449df1a14defe6b22ba97",
+      "seaweedfs-g0-20261106-v2-ingestion/export.private.jsonl": "c7f7dec685b9eab6183861b38ea208f7bb607add566bda8eb770852c176ab982",
+      "seaweedfs-g0-20261106-v2-onboarding/export.private.jsonl": "e998feb525c5b7d0e7c23a2e8bd09ecab757d66c1bbcd0518fcb5ea036fef79c",
+      "seaweedfs-g0-20261106-v2-s3/collection.private.json": "927b53fea852522999d8d8ba3f33b43c7462431ef127040e93c75f72586cf419",
+      "seaweedfs-g0-20261106-v2-s3/inventory-before.private.json": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55"
+    },
+    "managedPayloads": [
+      {
+        "checks": {
+          "assetExplicitTenantConflictsWithRun": false,
+          "assetExplicitTenantMatchesRun": false,
+          "assetHashMatchesObservedBody": true,
+          "assetSizeMatchesObservedBody": true,
+          "assetSourceMatchesRun": true,
+          "assetTenantFieldNull": true,
+          "bodyInBoundOnboardingBucket": true,
+          "quarantineRunAndAttemptLinked": true,
+          "runSnapshotHasConflictingManagedBinding": false,
+          "runSnapshotHasExactAssetAndStagingRef": false,
+          "uniqueAssetForExactStagingRef": true
+        },
+        "classification": "MANAGED_PAYLOAD_PHYSICAL_LINK_OBSERVED_OWNER_NOT_PROVEN",
+        "count": 2
+      }
+    ],
+    "originalFindingsModified": false,
+    "providerRequests": 0,
+    "runtimeAtCollection": {
+      "externalConsumersProvenAbsent": false,
+      "installedSourceMembershipProven": false,
+      "nonRosterContainers": 132,
+      "observationIsCurrentLiveProbe": false,
+      "roles": {
+        "apisix": {
+          "declaredRevision": null,
+          "nativeImage": "sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "caddy": {
+          "declaredRevision": null,
+          "nativeImage": "sha256:13ba145cba2f3e28fa801994876e4c086d1b95d5aa2a520a734765ffb6b12017",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 2,
+          "storageBindingCount": 0
+        },
+        "gateway-owner": {
+          "declaredRevision": null,
+          "nativeImage": "sha256:979de5eb0a554e0adfe924969627eb62362c4165974357afcee5bf30450f8f21",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "ingestion": {
+          "declaredRevision": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+          "nativeImage": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "ingestion-evidence-read": {
+          "declaredRevision": "7d85bfe0d1423bcb13e115f06c92d8a0baa1ebf7",
+          "nativeImage": "sha256:01bb94a698d9632a27abc490d298db345111c04be04fc9d4d97a758edc080385",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "keycloak": {
+          "declaredRevision": "df15afa5a3a8a2b10021f879ffa93b30fb36c73a",
+          "nativeImage": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "mcp": {
+          "declaredRevision": "1f2c28d7abadae78680b040ba7b58be62ef85ee9",
+          "nativeImage": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "minio": {
+          "declaredRevision": null,
+          "nativeImage": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 1,
+          "storageBindingCount": 0
+        },
+        "onboarding": {
+          "declaredRevision": "194b586508c6661b40a74d9c7f99ed3b876f5fbc",
+          "nativeImage": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 3
+        },
+        "postgres": {
+          "declaredRevision": null,
+          "nativeImage": "sha256:894f570c0cf0664ed5576a8fd5d5bfb8fb1b19d592885b686c3a88c8bd90c41f",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 1,
+          "storageBindingCount": 0
+        },
+        "semantic": {
+          "declaredRevision": "eccef11a97367f20e278db40b9ed6f45dd980c37",
+          "nativeImage": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 0
+        },
+        "udp": {
+          "declaredRevision": "0d40da05408a14db31d4d41af2372d6a71480291",
+          "nativeImage": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 2
+        },
+        "udp-evidence-read": {
+          "declaredRevision": "125510cf9d970aff7db66a0a8f27eb98b50bb6de",
+          "nativeImage": "sha256:8e54e2d33bab7209bb5718bb565662600816066170a763f849d560764226df9d",
+          "pausedAtCollection": false,
+          "runningAtCollection": true,
+          "rwMounts": 0,
+          "storageBindingCount": 2
+        }
+      },
+      "runningNonRosterContainers": 1,
+      "runningNonRosterSharingMinioMount": 0,
+      "runningNonRosterWithStorageBindings": 0,
+      "writerCensusComplete": false
+    },
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-final-local-review.v1",
+    "status": "LOCAL_PAYLOAD_FEATURE_RUNTIME_REVIEW_REQUIRED",
+    "tenantOwnershipProven": false,
+    "writerQuiescenceProven": false
+  },
+  "interpretation": {
+    "localEvidenceReviewCompleteWithOpenDispositions": true,
+    "original18FindingsPreserved": true,
+    "originalFindingsCleared": 0,
+    "managedPhysicalLinksObserved": 2,
+    "tenantOwnershipProven": false,
+    "currentRuntimeProven": false,
+    "historicalIntegrityAgainstPriorTrustedDigestProven": false,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  }
+}

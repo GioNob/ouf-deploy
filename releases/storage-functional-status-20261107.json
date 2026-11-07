@@ -1,0 +1,851 @@
+{
+  "schema": "ouf.storage-functional-status.v1",
+  "dateLocal": "2026-11-07",
+  "timezone": "Europe/Rome",
+  "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
+  "document": "docs/OUF_STORAGE_MINIPET.md",
+  "status": "F1_PASS_SEMANTIC_LOCAL_READ_PASS_SHARED_PROPERTY_ALIGNMENT_OPEN",
+  "audit": {
+    "repository": "GioNob/ouf-deploy",
+    "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+    "latestThsCommitIncluded": "74409f14c1c1547fca8b835e4e62640737b5f475",
+    "concurrentBranchChangesObserved": true,
+    "publicationStrategy": "ISOLATED_DOCUMENTATION_BRANCH_NO_MERGE",
+    "scope": "Targeted document, retained-receipt and source-code review; not exhaustive PR or live runtime audit",
+    "newRuntimeCalls": 0,
+    "newRuntimeTests": 0,
+    "newVulnerabilityScans": 0
+  },
+  "coordination": {
+    "ths403": "POLICY_60_PUBLISHED_PICKER_OPEN_FIRST_ASSET_STAGED",
+    "lastRepositoryObservation": "Current asset/profile and pinned Teatri semantic revision read via MCP after operator token-owner restore. Mapping prepared for current owner field/access choice; no draft or acquisition dispatched.",
+    "storage502": "DISTINCT_UNRESOLVED_FAILURE_NOT_PROVEN_TO_SHARE_CAUSE",
+    "sharedBranch": "feat/m2-discovery-complete-profile-20261029",
+    "currentPolicy": "ouf-lab-authorization:61",
+    "currentSemanticRead": "SEARCH_AND_EXACT_PUBLISHED_REVISION_PASS",
+    "currentSemanticBudget": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT"
+  },
+  "observations": {
+    "historicalCustody": {
+      "provenance": "OPERATOR_REPORTED_WINDOWS_RESULT_IN_GIT",
+      "archiveBytes": 6544578724,
+      "payloadMembersVerified": 53,
+      "evidenceMembersVerified": 3
+    },
+    "historicalPostgresRestore": {
+      "databasesOpened": 7,
+      "sampleRowsVerifiedPerDatabase": 1,
+      "fullDatabaseRowIntegrityProven": false
+    },
+    "historicalSeaweedfsRehearsal": {
+      "objectsVerified": 120,
+      "bytesVerified": 203743,
+      "bucketsVerified": 2,
+      "bodyMetadataAndTagsMatch": true,
+      "productionObjectsMigrated": 0
+    },
+    "isolatedS3Bindings": {
+      "ownBucketBodiesVerified": 2,
+      "crossBucketAccessDenied": 2,
+      "applicationContainersStarted": 0,
+      "tlsVerified": true
+    },
+    "isolatedApplicationUpload": {
+      "status": "HELD",
+      "httpStatus": 502,
+      "postgresUploadAckVerified": false,
+      "seaweedfsUploadBodyVerified": false
+    },
+    "firstUploadReadback": {
+      "intentState": "DISPATCHED",
+      "ackPresent": false,
+      "assetPresent": false,
+      "reservedObjectState": "ABSENT",
+      "reservedObjectHttpStatus": 404
+    },
+    "runtime": {
+      "provenance": "REPOSITORY_STATE_AND_OPERATOR_RUNBOOK_NOT_FRESH_LIVE_OBSERVATION",
+      "originalStackBackend": "MinIO",
+      "privateSeaweedfsStartedReported": true,
+      "applicationSwitchProven": false,
+      "sourceComparisonStillCurrentAfterRestart": "NOT_PROVEN",
+      "historicalObservation": true
+    },
+    "causeOf502": "UNKNOWN",
+    "currentClientComparison": {
+      "status": "BOTH_CLIENTS_PASSED",
+      "provenance": "OPERATOR_RECEIPT",
+      "onboardingImage": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+      "minioVersion": "8.6.0",
+      "javaVersion": "21.0.12.1",
+      "payloadBytes": 29,
+      "curlPutGet200": true,
+      "javaPutGetHashMatch": true,
+      "applicationHttpUploadTested": false,
+      "applicationBindingsChanged": false,
+      "evidence": "evidence/storage-client-comparison-success-operator-20261107.json"
+    },
+    "currentCopySourceList": {
+      "status": "INCOMPLETE",
+      "observedAt": "2026-11-07T16:05:02.521344+00:00",
+      "sourceHttpStatus": 403,
+      "sourceCode": "AccessDenied",
+      "destinationRequests": 0,
+      "putAttempts": 0,
+      "sourceIdentityAtFailure": "ONBOARDING_APPLICATION",
+      "bindingChanged": false,
+      "receipt": "evidence/onboarding-current-copy-source403-operator-20261107.json"
+    },
+    "currentOnboardingAlignment": {
+      "status": "CURRENT_ONBOARDING_OBJECTS_ALIGNED",
+      "observedAt": "2026-11-07T16:15:06.294471+00:00",
+      "sourceObjects": 12,
+      "sourceBytes": 40709,
+      "alreadyMatched": 10,
+      "copiedAndVerified": 2,
+      "sourceSnapshotUnchanged": true,
+      "applicationBindingsChanged": false,
+      "receipt": "evidence/onboarding-current-copy-aligned-operator-20261107.json"
+    },
+    "currentOnboardingSwitch": {
+      "status": "ONBOARDING_SEAWEEDFS_READY",
+      "operatorReceipt": "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
+      "finishedAt": "2026-11-07T16:42:28.988656+00:00",
+      "sameInstalledImage": true,
+      "endpoint": "https://ouf-seaweedfs-stage:9002",
+      "bucket": "ouf-managed-files",
+      "replacementContainerId": "d4f22ff3ed5f6dc20adaf58a7c9df4b13314f43c0d7e63e6773ad0a97ee0d859",
+      "readinessUp": true,
+      "originalRetainedStopped": true,
+      "objectsMatchedWhileStopped": 12,
+      "sourceBytes": 40709,
+      "existingTrustCertificatesPreserved": 118,
+      "privateCaAdded": true,
+      "applicationHttpUploadTested": false,
+      "udpBindingsChanged": false
+    },
+    "currentUploadHandoff": {
+      "handoffId": "2de7b988-da47-4231-8443-0e5043214c42",
+      "statusAtCreation": "AWAITING_FILE_SELECTION",
+      "source": "LIVE_MCP_RESPONSE",
+      "receipt": "evidence/onboarding-seaweedfs-upload-handoff-20261107.json",
+      "currentStatus": "STAGED",
+      "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+      "currentEvidence": "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json"
+    },
+    "currentApplicationProfile": {
+      "status": "SUCCEEDED",
+      "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+      "jobId": "f460d4d5-c6f7-4b65-b305-08091e9849cf",
+      "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+      "metadata": {
+        "rows": 13,
+        "columns": 20,
+        "encoding": "UTF-8",
+        "delimiter": ";",
+        "headerRow": 1
+      },
+      "governedReadProven": true,
+      "integrityCheckedByInstalledApplicationCode": true,
+      "hashValueExposed": false,
+      "source": "LIVE_MCP_RESPONSE",
+      "policyRef": "ouf-lab-authorization:61",
+      "evidence": "evidence/onboarding-seaweedfs-profile-success-20261107.json"
+    },
+    "nextUdpRead": {
+      "status": "COMPLETED",
+      "scriptCommit": "8d34ce385f84d9b99fe507634a58d73f1c7cae50",
+      "script": "scripts/read-current-udp-storage-20261107.py",
+      "sha256": "71cede5f23c97b20483fe340ef146a89aef86d66162276d6ad92bf08ce0de350",
+      "localChecks": "PASS",
+      "serviceConfigurationChanged": false,
+      "correctionEvidence": "evidence/udp-storage-read-launch-fix-20261107.json",
+      "receipt": "evidence/udp-current-storage-bindings-operator-20261107.json"
+    },
+    "udpBindingReadFirstAttempt": {
+      "schema": "ouf.current-udp-storage-bindings.v1",
+      "status": "READ_INCOMPLETE",
+      "reason": "KNOWN_UDP_JAR_LAUNCH_REQUIRED",
+      "serviceConfigurationChanged": false,
+      "credentialValuesEmitted": false,
+      "provenance": "OPERATOR_RECEIPT",
+      "evidence": "evidence/udp-storage-read-launch-held-operator-20261107.json"
+    },
+    "currentUdpBindings": {
+      "status": "UDP_BINDINGS_READ_ONLY",
+      "provenance": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T17:27:41.300877+00:00",
+      "receipt": "evidence/udp-current-storage-bindings-operator-20261107.json",
+      "image": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+      "jar": "/app/app.jar",
+      "sdk": "2.54.17",
+      "declaredEndpoint": "http://ouf-minio:9000",
+      "bucket": "ouf-udp",
+      "springApplicationJsonPresent": true,
+      "effectiveSpringConfigurationNotRead": true,
+      "sharedNetworks": []
+    },
+    "nextUdpClientProbe": {
+      "status": "COMPLETED",
+      "scriptCommit": "ad27a0ac6417e4c36599e3f1eb94f6ced71bd7dc",
+      "script": "scripts/probe-current-udp-seaweedfs-20261107.py",
+      "sha256": "612c796478c4c18a8ac1c21ba3a4890e17fbd3c77c266a4a521c2b381cde26f9",
+      "localChecks": "PASS",
+      "usesInstalledFactoryAndAdapter": true,
+      "maximumLogicalPutCalls": 1,
+      "applicationBindingsChanged": false,
+      "evidence": "evidence/udp-seaweedfs-client-probe-preparation-20261107.json",
+      "receipt": "evidence/udp-seaweedfs-client-success-operator-20261107.json"
+    },
+    "currentUdpInstalledClient": {
+      "status": "UDP_INSTALLED_CLIENT_PUT_HEAD_GET_MATCH",
+      "provenance": "OPERATOR_RECEIPT",
+      "finishedAt": "2026-11-07T17:39:37.058690+00:00",
+      "receipt": "evidence/udp-seaweedfs-client-success-operator-20261107.json",
+      "installedSdk": "2.54.17",
+      "sameInstalledFactoryAndAdapter": true,
+      "payloadBytes": 33,
+      "bodyMatches": true,
+      "metadataMatches": true,
+      "applicationBindingsChanged": false,
+      "springStarted": false,
+      "storageJsonDeclarations": [],
+      "effectiveSpringConfigurationRead": false
+    },
+    "nextUdpSwitch": {
+      "status": "COMPLETED",
+      "scriptCommit": "c5957208114803ade86630d0a8ff1d653c77b117",
+      "script": "scripts/switch-udp-to-seaweedfs-20261107.py",
+      "sha256": "e9f7235e4f46bfb0e0d9bf789120bff0f8363951c745c396f0460d7c860363a3",
+      "localChecks": "PASS",
+      "sameApplicationImage": true,
+      "alignmentWhileUdpStopped": true,
+      "applicationHttpLakeOperationTested": false,
+      "preparationEvidence": "evidence/udp-seaweedfs-switch-preparation-20261107.json",
+      "runbook": "docs/OUF_UDP_SEAWEEDFS_SWITCH_20261107.md",
+      "restartHelperSupportsBothApplicationMarkers": true,
+      "receipt": "evidence/udp-seaweedfs-ready-operator-20261107.json"
+    },
+    "currentUdpSwitch": {
+      "status": "UDP_SEAWEEDFS_READY",
+      "provenance": "OPERATOR_RECEIPT",
+      "finishedAt": "2026-11-07T17:59:28.257874+00:00",
+      "receipt": "evidence/udp-seaweedfs-ready-operator-20261107.json",
+      "sameApplicationImage": true,
+      "objectsMatchedWhileStopped": 110,
+      "sourceBytes": 181364,
+      "objectsCopiedAndVerified": 0,
+      "additionalTargetObjectsRetained": 0,
+      "ownDiagnosticObjectRemoved": true,
+      "sourceSnapshotUnchangedWhileStopped": true,
+      "readinessUp": true,
+      "containerNetworkTlsVerified": true,
+      "existingTrustCertificatesPreserved": 118,
+      "privateCaAdded": true,
+      "originalRetainedStopped": true,
+      "replacementContainerId": "ab0ce29e39cfd616e5eee4bff32c0babdd04a0efe5d918dcc85e9e363d488005",
+      "applicationHttpLakeOperationTested": false,
+      "endpoint": "https://ouf-seaweedfs-stage:9002",
+      "bucket": "ouf-udp"
+    },
+    "postStorageE2eEntry": {
+      "source": "LIVE_GOVERNED_OUF_TOOLS",
+      "evidence": "evidence/post-storage-e2e-entry-checks-20261107.json",
+      "profileRead": "PASS",
+      "mcpOperationalStatus": "HEALTHY",
+      "semanticSearch": "HTTP_502_CAUSE_UNKNOWN",
+      "ingestionStatus": "AUTHORIZATION_DENIED_NOT_RETRIED",
+      "configuredAdminSemanticSearch": true,
+      "configuredIngestionStatusGrant": false,
+      "permissionsModified": false
+    },
+    "nextSemanticRead": {
+      "status": "COMPLETED",
+      "script": "scripts/read-current-semantic-upstream-20261107.py",
+      "scriptCommit": "ce3802c5bd3596cd3103ed47635cd1c344936caf",
+      "scriptSha256": "2fc4d6c64e9901dbacd94f86f968c99849f31545f39933024bff540cd39da7a8",
+      "localChecks": "PASS",
+      "serviceChanges": 0,
+      "directDatabaseRequests": 0,
+      "s3Requests": 0,
+      "receipt": "evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json"
+    },
+    "currentSemanticUpstream": {
+      "provenance": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T18:10:35.576790+00:00",
+      "receipt": "evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json",
+      "retainedServicesRunning": true,
+      "dnsMatchesCurrentRegistry": true,
+      "tcpToConfiguredPort": false,
+      "correlatedRequestFailureProven": false,
+      "actualJavaProcessAndListenersKnown": false,
+      "exactCause": "UNRESOLVED"
+    },
+    "nextSemanticProcessRead": {
+      "status": "COMPLETED",
+      "scriptCommit": "d4aa038f57c874666c2d619c08c5018b370b7272",
+      "script": "scripts/read-current-semantic-upstream-20261107.py",
+      "schema": "ouf.current-semantic-upstream-read.v2",
+      "sha256": "22e67557cf3d6b453ba15e2d72cb04139edc8b2d4d75325dec9fc6a5c387b07a",
+      "localChecks": "PASS",
+      "directDatabaseRequests": 0,
+      "s3Requests": 0,
+      "serviceChanges": 0,
+      "evidence": "evidence/semantic-process-read-preparation-20261107.json",
+      "receipt": "evidence/semantic-no-java-operator-20261107.json"
+    },
+    "currentSemanticProcess": {
+      "provenance": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T18:18:23.490492+00:00",
+      "receipt": "evidence/semantic-no-java-operator-20261107.json",
+      "javaProcessCount": 0,
+      "processKinds": {
+        "sh": 1,
+        "sleep": 1
+      },
+      "configuredUpstreamPort": 8080,
+      "listenerAtUpstreamPort": false,
+      "containerLaunchMatchesImageDefault": false,
+      "exactRuntimeGateNotYetExposed": true
+    },
+    "nextSemanticApplicationStart": {
+      "status": "HELD_BEFORE_SIGNAL",
+      "script": "scripts/ouf-runtime-20261107.py",
+      "mode": "semantic",
+      "scriptCommit": "50561024b2bfdb7055514e132ee04690a35f835b",
+      "sha256": "cc8a6325ce860736142012fe61fa7110c1ae189a48a1484bee7ee4b3d4daed55",
+      "action": "VERIFY_EXACT_RETAINED_GATE_THEN_SINGLE_SIGUSR1_AND_WAIT_JAVA_READINESS",
+      "sameContainer": true,
+      "sameImage": true,
+      "configurationChange": false,
+      "applicationStartupMayAccessDatabase": true,
+      "noAutomaticSignalReplayForSameGeneration": true,
+      "localChecks": "PASS",
+      "nativeShellSamePidExec": "PASS",
+      "runbook": "docs/OUF_SEMANTIC_APPLICATION_START_20261107.md",
+      "evidence": "evidence/semantic-application-start-preparation-20261107.json",
+      "operatorReceipt": "evidence/semantic-start-retained-configuration-held-operator-20261107.json"
+    },
+    "semanticStartPreflightHeld": {
+      "provenance": "OPERATOR_RECEIPT",
+      "reason": "RETAINED_CONFIGURATION_CHANGED",
+      "role": "UNKNOWN_NOT_REPORTED",
+      "fields": "UNKNOWN_NOT_REPORTED",
+      "startedRoles": [],
+      "signalDispatched": false,
+      "signalConclusionSource": "PINNED_CODE_ORDERING"
+    },
+    "nextSemanticScopedStart": {
+      "status": "COMPLETED",
+      "script": "scripts/ouf-runtime-20261107.py",
+      "mode": "semantic",
+      "scriptCommit": "dd2351695dec265a5d3bffdcf5bcb08d27484703",
+      "sha256": "b3acd99dd437ebb454a5ba5550dd20fe222f3b1dc9de839627af21dabe77563b",
+      "semanticFullFingerprintRequired": true,
+      "dependencyImagesAndRunningStateRequired": true,
+      "otherRoleDifferencesReported": true,
+      "e2eFullStackGuardPreserved": true,
+      "expectedFingerprintsChanged": false,
+      "localChecks": "PASS",
+      "evidence": "evidence/semantic-start-scope-fix-20261107.json",
+      "receipt": "evidence/semantic-application-ready-operator-20261107.json"
+    },
+    "currentSemanticApplication": {
+      "source": "OPERATOR_RECEIPT",
+      "status": "OUF_SEMANTIC_APPLICATION_READY",
+      "sameContainer": true,
+      "sameImage": true,
+      "javaIsContainerInit": true,
+      "readinessHttpStatus": 200,
+      "configurationChanged": false,
+      "receipt": "evidence/semantic-application-ready-operator-20261107.json"
+    },
+    "currentSemanticSearch": {
+      "source": "LIVE_GOVERNED_OUF_TOOL",
+      "searchSucceeded": true,
+      "queries": [
+        {
+          "q": "teatro",
+          "results": 0
+        },
+        {
+          "q": "Theatre",
+          "results": 0
+        },
+        {
+          "q": "Teatri",
+          "results": 1
+        }
+      ],
+      "exactPublishedRevisionRead": true,
+      "statementCount": 105,
+      "completeRdfSnapshot": true,
+      "previous403ObservedOnTheseCalls": false,
+      "applicationLoadedPolicyVersionRead": false,
+      "evidence": "evidence/semantic-recovery-functional-read-20261107.json"
+    },
+    "restartComparison": {
+      "status": "OPEN",
+      "roles": [
+        "onboarding",
+        "udp"
+      ],
+      "changedConfigFields": [
+        "MacAddress"
+      ],
+      "expectedFingerprintsRewritten": false,
+      "e2eFullFingerprintCheckStillBlocks": true
+    },
+    "nextSemanticPolicyRead": {
+      "status": "COMPLETED",
+      "script": "scripts/read-current-semantic-policy-20261107.py",
+      "scriptCommit": "3612761e4fe2e33c0bfd8823a6e8b98f55aafe2d",
+      "sha256": "28c17fd6fd7611efbcb5307644be0d2f44e0b745652f79bc0d70eeaedb8763d5",
+      "maximumPolicyGets": 1,
+      "hostTransportOnly": true,
+      "applicationLoadedPolicyProven": false,
+      "permissionChanges": 0,
+      "serviceChanges": 0,
+      "tokenRequests": 0,
+      "localChecks": "PASS",
+      "runbook": "docs/OUF_SEMANTIC_POLICY_READ_20261107.md",
+      "evidence": "evidence/semantic-current-policy-read-preparation-20261107.json",
+      "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json"
+    },
+    "currentSemanticPolicyRead": {
+      "source": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T18:52:14.296969+00:00",
+      "mountedTokenExpired": true,
+      "expiryUtc": "2026-11-06T23:08:50+00:00",
+      "policyHttpStatus": 401,
+      "sameMountedAndHostFile": true,
+      "delegationKeyFormatValid": true,
+      "receiptSignatureTested": false,
+      "applicationLoadedPolicyProven": false,
+      "hostTransportOnly": true,
+      "receipt": "evidence/semantic-current-policy-expired-token-operator-20261107.json"
+    },
+    "nextSemanticTokenRenewal": {
+      "status": "SUPERSEDED_AFTER_NO_EFFECT_HELD",
+      "scriptCommit": "591041c8c546c17cee56b129b1a5c908215cbfc0",
+      "script": "scripts/restore-current-semantic-policy-token-20261107.py",
+      "sha256": "83fd7fae0d400bed243388166db529376e2b846db82870b62486d96a6049c21d",
+      "maximumManualServiceStarts": 1,
+      "conditionalOnExactExistingProducerAndOutput": true,
+      "timerEnabledOnlyAfterFreshTokenAndPolicyGet200": true,
+      "applicationRestart": false,
+      "permissionsChanged": false,
+      "localChecks": "PASS_OFFLINE_MOCKED_SYSTEMD_AND_HTTP",
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "operatorReceipt": "evidence/semantic-legacy-token-renewal-held-operator-20261107.json",
+      "reason": "WRONG_LEGACY_PRODUCER_SELECTED_ALREADY_MASKED_BEFORE_CAPTURE"
+    },
+    "nextSemanticOperationalOwnerResume": {
+      "status": "COMPLETED",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "scriptCommit": "c30f8c287bf4bb78cc07d73e18407eb019eec66e",
+      "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
+      "sha256": "32fc3f89772e16877654bf6fdab647ec2cf0307e1ced1a406e8314998f510295",
+      "legacyMustRemainMasked": true,
+      "existingOwnerStoppedByCapture": true,
+      "generalRuntimeRestoreOmitsOwner": true,
+      "localChecks": "PASS_25_OFFLINE_SCENARIOS_WITH_REAL_TEMPORARY_OVERRIDE_FILES",
+      "applicationLoadedPolicyProven": false,
+      "automaticRenewalCycleProven": false,
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "version": 3,
+      "typedEmptyStartHooksRequired": false,
+      "restoreExactSingleCaptureOverrideBeforeStart": true,
+      "backupBeforeRemoval": true,
+      "unrelatedDropInsPreserved": true,
+      "startHookProof": "HASH_PINNED_MAIN_UNIT_ALL_LOADED_DROPINS_NO_PENDING_RELOAD",
+      "directDbusCalls": 0,
+      "sourceByteReadbackBeforeStartAndEnable": true,
+      "operatorReceipt": "evidence/semantic-operational-owner-active-operator-20261107.json",
+      "noBlindReplay": true
+    },
+    "previousSemanticOperationalOwnerResume": {
+      "status": "HELD_BEFORE_EFFECTS",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "scriptCommit": "1d0a93a9dbb3dd1a3f26a9fa92c71af841427084",
+      "script": "scripts/resume-current-semantic-operational-owner-20261107.py",
+      "sha256": "f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e",
+      "legacyMustRemainMasked": true,
+      "existingOwnerStoppedByCapture": true,
+      "generalRuntimeRestoreOmitsOwner": true,
+      "localChecks": "PASS_13_OFFLINE_SCENARIOS",
+      "applicationLoadedPolicyProven": false,
+      "automaticRenewalCycleProven": false,
+      "runbook": "docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md",
+      "reason": "SERVICE_METADATA_INCOMPLETE",
+      "operatorReceipt": "evidence/semantic-operational-owner-metadata-held-operator-20261107.json",
+      "observedRestart": "no",
+      "missingPropertyNamesNotReported": true
+    },
+    "nextSemanticBusDiagnostic": {
+      "status": "COMPLETED_GET_UNIT_NOT_LOADED",
+      "script": "scripts/read-semantic-systemd-bus-error-20261107.py",
+      "scriptCommit": "9745f249627469567f4a49d2cc7c3120b9bb4c90",
+      "sha256": "dfdfe61612f32804f3f3d7b7a2a0be8d5e4c3212ac18e5c50776d799a6b55396",
+      "maximumBusReads": 4,
+      "serviceMutations": 0,
+      "tokenReads": 0,
+      "localValidation": "SYNTAX_CHECK_ONLY",
+      "runbook": "docs/OUF_SEMANTIC_SYSTEMD_BUS_DIAGNOSTIC_20261107.md",
+      "operatorReceipt": "evidence/semantic-systemd-get-unit-not-loaded-operator-20261107.json"
+    },
+    "previousSemanticSearch": {
+      "source": "LIVE_GOVERNED_OUF_TOOL",
+      "status": 403,
+      "code": "SEM_READ_RECEIPT_OR_POLICY_DENIED",
+      "attempts": 1,
+      "repeated": false,
+      "searchSucceeded": false,
+      "causeDistinguished": false,
+      "evidence": "evidence/semantic-ready-search-denial-20261107.json"
+    },
+    "currentSemanticOperationalOwner": {
+      "source": "OPERATOR_RECEIPT",
+      "observedAt": "2026-11-07T20:07:05.631718+00:00",
+      "status": "SEMANTIC_OPERATIONAL_OWNER_ACTIVE_TOKEN_FRESH_POLICY_GET_OK",
+      "receipt": "evidence/semantic-operational-owner-active-operator-20261107.json",
+      "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+      "active": true,
+      "enabled": true,
+      "captureOverrideRemoved": true,
+      "unrelatedDropInsPreserved": true,
+      "mountedTokenChanged": true,
+      "policyGetHttpStatus": 200,
+      "policyBundleVersion": 61,
+      "semanticRuntimeUnchanged": true,
+      "automaticRenewalCycleProven": false,
+      "applicationLoadedPolicyProven": false,
+      "permissionsChanged": false
+    },
+    "currentMappingProposal": {
+      "status": "OPEN_SELECTED_PROPERTY_REFERENCE_ALIGNMENT_INCOMPLETE",
+      "path": "releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json",
+      "reviewDocument": "docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md",
+      "sourceId": "teatri-seaweedfs-c51745c5",
+      "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+      "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+      "profileReReadSucceeded": true,
+      "allTwentyPropertyTermsAsserted": true,
+      "proposedAccessLabel": "OPEN",
+      "proposedTransform": "IDENTITY",
+      "csvCellsRemainLexical": true,
+      "createDraftDispatched": false,
+      "sourceActivation": false,
+      "ingestionDispatch": false,
+      "historicalSourceChanged": false,
+      "ownerAccessChoiceAcquired": true,
+      "sharedNamePropertyConfirmed": true,
+      "additionalTypeCandidate": true,
+      "localPropertyCount": 18,
+      "localPropertyDomain": "https://schema.org/PerformingArtsTheater",
+      "externalPropertyAlignmentComplete": false,
+      "propertyReviewDocument": "docs/OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md",
+      "propertyReviewEvidence": "evidence/teatri-column-semantic-reference-review-20261107.json",
+      "valueEnumerationNotRequested": true
+    },
+    "currentSemanticDiscoveryAvailability": {
+      "source": "CURRENT_TOOL_ENUMERATION_AND_REPOSITORY_PR_READS",
+      "externalRequestExposed": false,
+      "statusExposed": false,
+      "candidatesExposed": false,
+      "localGetSucceeded": true,
+      "webResearchSubstituted": false,
+      "mcpPr": 81,
+      "gatewayPr": 84,
+      "registryPr": 41,
+      "currentCandidateRuntimeBindingsVerified": false
+    },
+    "latestSemanticSearchAttempt": {
+      "q": "Cinema",
+      "success": false,
+      "code": "orchestration budget exhausted",
+      "retryable": false,
+      "automaticRetry": false,
+      "notAnEmptySearchResult": true,
+      "evidence": "evidence/teatri-column-semantic-reference-review-20261107.json"
+    },
+    "currentSemanticBudgetReview": {
+      "status": "DYNAMIC_PROFILE_BINDING_REQUIRED_FIXED_CANDIDATE_NOT_FOR_DEPLOYMENT",
+      "evidence": "evidence/semantic-analysis-budget-review-20261107.json",
+      "decision": "docs/OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md",
+      "codeCandidate": "https://github.com/GioNob/ouf-mcp-server/pull/82",
+      "candidateHead": "cdfb850b26d8d2e1c1481071c8a281a55a553bac",
+      "candidateTestsPassed": true,
+      "candidateDeployed": false,
+      "dynamicSizingImplemented": false,
+      "actualProfileColumns": 20,
+      "targetQualificationColumns": [
+        20,
+        50,
+        100,
+        200
+      ]
+    }
+  },
+  "milestones": [
+    {
+      "id": "F1",
+      "title": "Application upload and read on SeaweedFS",
+      "status": "PASS",
+      "dependsOn": [],
+      "owner": "storage",
+      "evidence": [
+        "evidence/onboarding-seaweedfs-ready-operator-20261107.json",
+        "evidence/onboarding-seaweedfs-upload-profile-authorization-20261107.json",
+        "evidence/onboarding-seaweedfs-profile-success-20261107.json"
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "Actual stack bindings and current data on SeaweedFS",
+      "status": "OPEN",
+      "dependsOn": [
+        "F1"
+      ],
+      "owner": "storage",
+      "evidence": [
+        "evidence/udp-seaweedfs-client-success-operator-20261107.json",
+        "evidence/udp-seaweedfs-ready-operator-20261107.json"
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "First CSV from chatbot to UDP graph",
+      "status": "OPEN",
+      "dependsOn": [
+        "F2",
+        "THS403_RESOLVED"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F4",
+      "title": "Second CSV and unchanged reimport",
+      "status": "OPEN",
+      "dependsOn": [
+        "F3"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F5",
+      "title": "Resume from another chat or session",
+      "status": "OPEN",
+      "dependsOn": [
+        "F3"
+      ],
+      "owner": "e2e",
+      "evidence": []
+    },
+    {
+      "id": "F6",
+      "title": "Deliver verified repeatable procedure",
+      "status": "OPEN",
+      "dependsOn": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "owner": "principal-agent-and-Giovanni",
+      "evidence": []
+    }
+  ],
+  "nextAction": "Bind semantic analysis to the verified owned source profile and derive its work budget from actual columns/planned work; preserve progress across rate windows. Fixed 60/min candidate stays draft and is not the dynamic solution. Then complete governed external discovery and shared property mapping, create draft/THS review and run Ingestion→UDP→graph; reuse existing upload/profile.",
+  "deferred": [
+    "DR_RPO_RTO",
+    "HA_HOST_LOSS",
+    "EXTENDED_FAULT_COMPACTION_TESTS",
+    "PRODUCTION_PERFORMANCE_SIZING",
+    "FULL_ROTATION",
+    "FULL_DEPENDENCY_AND_LICENSE_REVIEW",
+    "DURABLE_RELEASE_CUSTODY",
+    "48H_OBSERVATION",
+    "MINIO_DESTRUCTION",
+    "FORMAL_SW_G0_G7_SW_AT01_AT21_AND_FULL_M2_ACCEPTANCE"
+  ],
+  "formalAcceptance": {
+    "historicalRegister": "releases/minio-seaweedfs-closure-status-20261105.json",
+    "unchanged": true,
+    "gatesClosed": 0,
+    "gateCount": 8,
+    "acceptanceTestsPassed": 0,
+    "acceptanceTestCount": 21,
+    "notPrerequisiteToNonproductionFunctionalWork": true,
+    "productionReadyClaim": false,
+    "fullM2CompleteClaim": false
+  },
+  "estimate": {
+    "status": "NOT_ESTIMABLE_YET",
+    "historicalPercentageUsedForPlanning": false,
+    "reason": "Onboarding works on SeaweedFS; normal UDP lake operation and full flow remain unproven. Owner requested shared semantic property references; current MCP lacks external discovery and the last search exhausted orchestration budget.",
+    "nextReestimateAfter": "UDP_APPLICATION_OPERATION"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-custody-windows-verified-operator-20261107.json",
+      "gitBlobSha": "2925751f0abd1a3b56cf534ec44ddb29a8a361c9",
+      "liveObservation": false
+    },
+    {
+      "id": "E2",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-historical-postgres-restored-operator-20261107.json",
+      "gitBlobSha": "c7e996b50c72bb1a332a4f0b18f158bb456317af",
+      "liveObservation": false
+    },
+    {
+      "id": "E3",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-historical-minio-restored-operator-20261107.json",
+      "gitBlobSha": "70d2a19b3748a24ed1614fe18f91c43ed91dfe08",
+      "liveObservation": false
+    },
+    {
+      "id": "E4",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-oci33-rehearsal-parity-operator-20261107.json",
+      "gitBlobSha": "0a2a9765d80bf67d240f0e90bb4309821cb73fe2",
+      "liveObservation": false
+    },
+    {
+      "id": "E5",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-app-bindings-ready-operator-20261107.json",
+      "gitBlobSha": "7a968cd1e79e5fc42c89189185912a607acc548b",
+      "liveObservation": false
+    },
+    {
+      "id": "E6",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-http502-held-operator-20261107.json",
+      "gitBlobSha": "c6a11f0f5c99d7cf69a42ba58202180febd81af2",
+      "liveObservation": false
+    },
+    {
+      "id": "E7",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-readback-operator-20261107.json",
+      "gitBlobSha": "a2560c38d47965bd4599766a58f4e8d74188ea5a",
+      "liveObservation": false
+    },
+    {
+      "id": "E8",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-oci33-onboarding-upload-jfr-window-operator-20261107.json",
+      "gitBlobSha": "e2e4c68aececc5058a99bbe5f78080832de64305",
+      "liveObservation": false
+    },
+    {
+      "id": "E9_COMPARISON",
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "path": "evidence/storage-retained-source-comparison-match-operator-20261107.json",
+      "gitBlobSha": "d0863055807bd5794f440bc92ba723b2dc62717c",
+      "liveObservation": false
+    },
+    "evidence/semantic-analysis-budget-review-20261107.json"
+  ],
+  "sourceReferences": [
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "d5155899b09dda298494b68cefa7e1f281167652",
+      "paths": [
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/MinioManagedFileStagingStore.java",
+        "src/main/java/it/comune/trieste/ouf/onboarding/application/GatewayManagedFileObjectStore.java",
+        "pom.xml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "paths": [
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "4165b9e149be467d5d7c6bed35e4e1af4e249db1",
+      "paths": [
+        "src/main/resources/application.yml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "81fdf7a5f9f3ef02ed930a1db911d34cab1a9415",
+      "paths": [
+        "ouf-config/capabilities/ouf.object-storage.content.read.yaml"
+      ]
+    },
+    {
+      "repository": "GioNob/ouf-deploy",
+      "commit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
+      "paths": [
+        "scripts/ouf-runtime-20261107.py",
+        "scripts/boot-oci33-onboarding.py",
+        "releases/seaweedfs-452-generation33-candidate-lock-20261104.json",
+        "docs/OUF_STORAGE_G0_FINDINGS_DISPOSITION_20261106.md",
+        "docs/OUF_STORAGE_COHORT_DECISION_20261106.md"
+      ]
+    }
+  ],
+  "ciMetadataChecked": [
+    {
+      "repository": "GioNob/ouf-deploy",
+      "runId": 41782068047,
+      "head": "1a11295ad502a77dce76157423577b9766106bfe",
+      "conclusion": "success",
+      "scope": "Historical image workflow metadata; no new scan or log audit"
+    },
+    {
+      "repository": "GioNob/ouf-source-onboarding",
+      "runId": 42049214518,
+      "head": "d5155899b09dda298494b68cefa7e1f281167652",
+      "conclusion": "success",
+      "scope": "Historical module CI metadata; no new application execution"
+    }
+  ],
+  "effects": {
+    "sourceLocksModified": false,
+    "runtimeModified": false,
+    "permissionsChanged": false,
+    "dataChanged": false,
+    "mergePerformed": false
+  },
+  "takeover": {
+    "sourceCommit": "c83fe37e83572c4fd6b625f90e76cf5b519170a9",
+    "evidenceCommit": "d7c5f4b15606ee309c2128092074a55fdfa977e0",
+    "evidencePath": "evidence/ths-upload-role-diagnosis-20261107.json",
+    "originalAuditCountersAreHistorical": true,
+    "liveConfiguredPolicyRead": true,
+    "syntheticEvaluatorChecks": 13,
+    "checksResult": "PASS",
+    "humanProposalStateAtReceipt": "PUBLISHED",
+    "storage502Resolved": false,
+    "industrializationDeferred": true,
+    "currentPolicy": "ouf-lab-authorization:61",
+    "browser403ResolvedForObservedPicker": true,
+    "currentEvidenceCommit": "1c922e9decaafc93d90692918f6050b739946894",
+    "currentEvidencePath": "evidence/onboarding-seaweedfs-profile-success-20261107.json",
+    "profileAuthorizationProposalState": "PUBLISHED"
+  }
+}

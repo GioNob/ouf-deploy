@@ -1,0 +1,213 @@
+{
+  "schema": "ouf.m2-provider-docker-worker-qualification.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "status": "PR_NATIVE_FINITE_AND_JOINT_SEALED_PASS_HISTORICAL_UNKNOWN_CAUSE_OPEN",
+  "latestCandidateSource": "7d124c9c967c5a5f43945e2f183ff8b68ffb6406",
+  "originalBaselineConsulted": {
+    "Matrix": "1.7 original DOCX sections7.1\u20137.2",
+    "Blueprint": "0.3 original DOCX sections9\u201310",
+    "Registry": "1.3 original DOCX sections26.1/26.3/26.4",
+    "miniPetM2": "v1.3 sections1/2 and stable-discovery addendum",
+    "resilience": "v3"
+  },
+  "implementation": {
+    "realDockerV4ProviderFixture": "tests/qualify_m2_provider_docker_worker_native.py",
+    "sealedWorkerFixture": "tests/fixtures/m2_admitted_provider_sealed_worker_native.py",
+    "publicPeerOciSourceRevision": "tools/semantic_transaction_profiles/repair_peer_bundle_sources.py",
+    "consumedSourcesAndHistoricalRepairsUnchanged": true,
+    "privateCredentialAndJournalReadersUnchanged": true,
+    "selectedDiscoveryProviderScopeRequiresExactRevisedPeerSourceHash": true,
+    "noObservedCandidateOciUsedAsExpectedPolicy": true
+  },
+  "local": {
+    "workerCases": 13,
+    "providerProfileCases": 8,
+    "publicPeerOciCases": 7,
+    "earlySealedCompositionCases": 1,
+    "failuresInTheseCompletedSuites": 0,
+    "skips": 0,
+    "providerRuntimeLocalSuite": "INTERRUPTED_AFTER_THREE_PRINTED_PASS_NO_FULL_SUITE_CLAIM",
+    "immutableArtifactCases": {
+      "tests": 7,
+      "seconds": 19.773,
+      "failures": 0,
+      "skips": 0
+    }
+  },
+  "nativeFailuresRetained": [
+    {
+      "source": "c88491f1e97f292d154c75e0107dd0c16c1f9bee",
+      "prRun": 41150657477,
+      "job": 124386123678,
+      "reason": "BROKER_PHASE_COHORT_READY_DENIED",
+      "finalLogRead": true
+    },
+    {
+      "source": "c6ee4457921989c34767f49dbe2d17f3999aa2a4",
+      "prRun": 41150883331,
+      "job": 124386847196,
+      "reason": "PRIVATE_FILE_REQUIRED_FOR_CONTAINERD_PEER_CONFIG_JSON",
+      "finalLogRead": true
+    },
+    {
+      "source": "5833f5696604cd852ea0f4f71d748ecd5722e4ad",
+      "prRun": 41151277466,
+      "job": 124388130726,
+      "reason": "UNIT_CHECK_EXECUTED_AS_RUNNER_INSTEAD_OF_PRIVATE_ROOT_COPY",
+      "nativeStepSkipped": true,
+      "finalLogRead": true
+    },
+    {
+      "source": "e48e3fd797137fe8b7c6485bf2900e15fe66f92d",
+      "prRun": 41151383898,
+      "job": 124388475111,
+      "reason": "ADMISSION_PREPARATION_FAILED_OCI_MOUNT_DIFFERENCE",
+      "sealedStepSkipped": true,
+      "finalLogRead": true
+    },
+    {
+      "source": "59d6357eeffd584c7b1f7f4b969b4f45f3027a0a",
+      "prRun": 41151576204,
+      "job": 124389076278,
+      "reason": "PROVIDER_EXPECTED_AND_ACTUAL_OCI_DIFFER_ONLY_AT_MOUNTS",
+      "finalLogRead": true
+    },
+    {
+      "source": "30abc9c67c46e476492fb47de99dfc6b35534b6b",
+      "prRun": 41151813568,
+      "job": 124389818317,
+      "reason": "DOCKER_ADMITTED_RUNTIME_INTENTIONALLY_DOES_NOT_SUPPORT_PAUSE",
+      "realProviderAdmissionAndWorkerDnsRecoveryReached": true,
+      "finalLogRead": true
+    },
+    {
+      "source": "f532293eb60d586e99a26db91d7e54b1eb50613e",
+      "prRun": 41152054721,
+      "job": 124390589520,
+      "reason": "FINITE_DOCKER_HANDOFF_STEP_PASS_SEPARATE_SEALED_PREPARER_STEP_FAIL",
+      "finalLogRead": true
+    },
+    {
+      "source": "f6ace16126a9abfd314f3b11b9d35df968ae821f",
+      "prRun": 41152208212,
+      "job": 124391072273,
+      "reason": "SIGNED_AUTHORITY_WITHIN_HUMAN_WINDOW_REQUIRED_AFTER_WORKER_ACTIVE",
+      "finalLogRead": true,
+      "sealedWorkerStartedButWholeInstallationProofNotAccepted": true
+    },
+    {
+      "source": "5870e73f8d9fd13ed115f3aa7aced541cb7d4ccf",
+      "prRun": 41152535878,
+      "job": 124392083646,
+      "reason": "INITIAL_SEALED_START_OBSERVATION_UNKNOWN_AFTER_FIRST_ACTIVE_PUBLICATION",
+      "finalLogRead": true,
+      "specificDenialCauseNotYetEstablished": true
+    }
+  ],
+  "hypothesesNotYetQualified": [
+    "Prior sealed observation UNKNOWN was not reproduced when the next fresh fixture added diagnostics; no denial code was emitted in the passing run. Its cause remains unestablished. One positive job is not full stability acceptance."
+  ],
+  "limits": {
+    "syntheticImagesParentReviewAndRegistryAdmissionPredecessor": true,
+    "jointSealedWorkerNativeProofAccepted": true,
+    "fullCurrentCohortTlsIamDbFencingTrustProven": false,
+    "sealedPrivateCompilerAndOperatorDeliveryReady": false,
+    "capabilitiesPublished": false,
+    "farmacieToUdpProven": false,
+    "bootRotationAndTwoRealClientsProven": false,
+    "historicalSealedObservationUnknownCauseEstablished": false
+  },
+  "retained": {
+    "Teatri": "M1_G4_STEPWISE_ACQUIRED_TECHNICAL8OF8_FUNCTIONAL6OF6",
+    "Farmacie": "SAME_SUCCEEDED61ROWS10COLUMNS_MINISTERIAL_STRING_ALL10OPEN",
+    "M2_G5_G6_G7": "OPEN"
+  },
+  "effects": {
+    "targetOperations": 0,
+    "sourceAcquisitions": 0,
+    "newUploadsOrProfiling": 0,
+    "runtimeAuthorityIssued": false,
+    "targetApplyAuthorized": false,
+    "budgetReset": false,
+    "automaticReplayAllowed": false,
+    "merge": false,
+    "releaseAcceptance": false
+  },
+  "nativeFiniteDockerHandoff": {
+    "source": "f532293eb60d586e99a26db91d7e54b1eb50613e",
+    "prRun": 41152054721,
+    "job": 124390589520,
+    "step": "Actual Docker v4 admission lost reply and distinct worker with retained history",
+    "stepConclusion": "success",
+    "wholeJobConclusion": "failure",
+    "finalReportsRead": true,
+    "realProviderCreates": 1,
+    "realProviderStarts": 1,
+    "lostActualStartReplyReconciled": true,
+    "dnsRenewalBackoffAndRecoveryWithPreservedClocks": true,
+    "providerTerminationBlocksWithoutRestart": true,
+    "fullInitialAdmissionSeconds": 2.491,
+    "sealedUnitProvenByThisStep": false
+  },
+  "resolvedFixtureCauses": {
+    "runtimeFeatures": "Actual v4 provider admission and finite worker PASS after feature-only runtime bootstrap before daemon discovery; independent expected mounts unchanged.",
+    "publicPeerOci": "Seven real-file tests PASS under root custody; actual v4 provider passes cohort-ready with root0644 containerd peer configuration."
+  },
+  "nativeFiniteDockerHandoffCurrent": {
+    "source": "f6ace16126a9abfd314f3b11b9d35df968ae821f",
+    "prRun": 41152208212,
+    "job": 124391072474,
+    "wholeJobConclusion": "success",
+    "finalReportsRead": true,
+    "fullInitialAdmissionSeconds": 2.538,
+    "realProviderCreates": 1,
+    "realProviderStarts": 1,
+    "sealedUnitProvenByThisJob": false
+  },
+  "fullProtocol": {
+    "source": "e48e3fd797137fe8b7c6485bf2900e15fe66f92d",
+    "prRun": 41151383885,
+    "job": 124388475217,
+    "conclusion": "success",
+    "finalLogsRead": true,
+    "tests": 440,
+    "suites": 52,
+    "failures": 0,
+    "skips": 0,
+    "laterCommitsChangeOnlyNativeFixturesOrWorkflow": true
+  },
+  "nativeFiniteDockerHandoffLatest": {
+    "source": "5870e73f8d9fd13ed115f3aa7aced541cb7d4ccf",
+    "prRun": 41152535878,
+    "job": 124392083500,
+    "conclusion": "success",
+    "finalReportsRead": true,
+    "fullInitialAdmissionSeconds": 2.645
+  },
+  "nativeJointSealed": {
+    "source": "7d124c9c967c5a5f43945e2f183ff8b68ffb6406",
+    "prRun": 41152837404,
+    "finiteJob": 124393038001,
+    "sealedJob": 124393038158,
+    "bothJobConclusions": "success",
+    "bothFinalReportsRead": true,
+    "realProviderV4AdmissionAndLateSealedWorkerInOneFlow": true,
+    "sameRegistryProviderEngineParentChildKernelAndCommonInode": true,
+    "initialCreateAndStartEachOne": true,
+    "lostProviderAndManagerStartRepliesReconciledWithoutSecondStart": true,
+    "sigkillWorkerReentryPreservesStartedTimeAndCounters": true,
+    "providerTerminationRevokesBlocksWithoutRestartOrRearm": true,
+    "signingKeyHiddenAndOnlyCapNetAdmin": true,
+    "syntheticRegistryCompleteAdmissionImagesAndParentReview": true,
+    "workerFinalState": {
+      "state": "BLOCKED",
+      "reason": "LOCAL_AUTHORITY_UNPROVEN",
+      "attempts": 2,
+      "publicationCount": 5,
+      "reentryCount": 2
+    },
+    "priorUnknownWasNotReproducedWithDiagnosticWrapper": true,
+    "priorUnknownCauseEstablished": false
+  }
+}

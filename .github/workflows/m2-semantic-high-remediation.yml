@@ -1,0 +1,71 @@
+name: M2 exact Semantic replacement HIGH remediation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-semantic-high-remediation.yml'
+      - 'scripts/check-m2-semantic-high-remediation-20261101.py'
+      - 'tests/test_m2_semantic_high_remediation.py'
+permissions: {contents: read, actions: read, id-token: write, attestations: write}
+jobs:
+  qualify-existing-replacement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Reject false remediation and preserve original provenance holds
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_semantic_high_remediation.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_m2_retained_origin_evidence.py -v
+      - name: Preserve exact published replacement source and image bytes without a rebuild
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          python3 - <<'PY'
+          import json,resource,subprocess
+          case=json.load(open('releases/m2-current-core-artifact-origins-20261101.json'))['roles']['semantic']
+          def bounded_zip(): resource.setrlimit(resource.RLIMIT_FSIZE,(case['zipBytes'],case['zipBytes']))
+          with open('replacement.zip','wb') as out:
+              subprocess.run(['gh','api','repos/'+case['repository']+'/actions/artifacts/'+str(case['artifactId'])+'/zip'],
+                  stdout=out,check=True,timeout=300,preexec_fn=bounded_zip)
+          PY
+          python3 -I -B -S scripts/stage-m2-current-core-origin.py semantic replacement.zip prepared
+          mkdir remediation-evidence
+          cp prepared/origin-facts.json remediation-evidence/
+          # An explicit empty ignore file overrides repository and default ignore files.
+          : > remediation-evidence/empty.trivyignore
+      - name: Scan exact replacement OS and JAR at every severity including unfixed
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          input: prepared/image.docker.tar
+          format: json
+          output: remediation-evidence/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          trivyignores: remediation-evidence/empty.trivyignore
+          exit-code: 0
+      - name: Require all three vendor fixes plus unchanged full image admission gate
+        run: python3 -I -B -S scripts/check-m2-semantic-high-remediation-20261101.py remediation-evidence
+      - name: Bind reports, exact origin and remediation to publisher subject
+        run: |
+          cd remediation-evidence
+          sha256sum origin-facts.json trivy-image.json remediation-result.json empty.trivyignore > SHA256SUMS
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: provenance
+        with:
+          subject-path: remediation-evidence/SHA256SUMS
+          create-storage-record: false
+      - name: Preserve publisher bundle
+        run: cp '${{ steps.provenance.outputs.bundle-path }}' remediation-evidence/provenance.json
+      - name: Preserve actual reports including a failed admission
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-semantic-high-remediation-${{ github.run_id }}
+          path: remediation-evidence/
+          if-no-files-found: error
+          retention-days: 30

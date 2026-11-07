@@ -1,0 +1,13 @@
+diff --git a/go.mod b/go.mod
+index 1dc30d5f2..803372a68 100644
+--- a/go.mod
++++ b/go.mod
+@@ -28,7 +28,7 @@ require (
+ 	github.com/go-zookeeper/zk v1.0.4 // indirect
+ 	github.com/golang/protobuf v1.5.4
+ 	github.com/golang/snappy v1.0.0
+-	github.com/google/btree v1.1.3
++	github.com/google/btree v1.1.3 // indirect
+ 	github.com/google/uuid v1.6.0
+ 	github.com/google/wire v0.7.0 // indirect
+ 	github.com/googleapis/gax-go/v2 v2.24.1 // indirect

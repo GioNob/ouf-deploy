@@ -1,0 +1,116 @@
+{
+  "actualDockerVersion": "29.8.1",
+  "actualVendorFixture": {
+    "archiveBytes": 2235392,
+    "archiveSha256": "5e5425956fb28847744ee214231f4d513928693737dcbddb99184d6cf851e7ef",
+    "fixtureDoesNotEstablishTargetPrivateCause": true,
+    "missingOtherPlatformManifests": 8,
+    "missingUnknownAuxiliaryManifests": 7,
+    "observedNativeId": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+    "originalIdentityVerifierStopReproduced": true,
+    "presentClassicToOciRuntimeBindings": 1,
+    "reference": "docker.io/library/busybox:1.37.0",
+    "vendorContainerExecuted": false
+  },
+  "allFiveArtifactMembersRead": true,
+  "archiveHashReadsIncludeUnparsedConfigurationAndLayerBytes": true,
+  "automaticReplayAllowed": false,
+  "capsuleBytes": 271453,
+  "capsuleCommit": "af237a7eaa20a47f70e36c6ba6e1c8f8db2d38af",
+  "capsuleSha256": "480c97e51a7377346dba754b6ef8fb4641f9d5bb1c11287159a3e8971ef72a04",
+  "captureReplayed": false,
+  "configurationMembersOpened": 0,
+  "cumulativeDirectEngineGets": 35,
+  "currentOperatorCommandReady": false,
+  "date": "2026-11-01",
+  "downloadedArtifactMatchesLocalBuilder": true,
+  "errors": 0,
+  "failures": 0,
+  "frozenSourceDifferences": 0,
+  "frozenSourcesChecked": 235,
+  "layerMembersOpened": 0,
+  "localCryptographicTrustChainRerun": false,
+  "maximumAttempts": 1,
+  "maximumCumulativeControlAttempts": 10,
+  "maximumPrivateEvidenceBytes": 16777216,
+  "maximumPublicResultBytes": 65536,
+  "maximumSeconds": 600,
+  "missingBlobAdmitted": false,
+  "newEngineGets": 0,
+  "newLauncherQualified": false,
+  "originalClassicToOciRuntimeBindings": 13,
+  "originalNativeExportsDiagnosed": 13,
+  "priorInitialQualification": {
+    "allFourFinalLogsRead": true,
+    "refinement": "Private evidence uses bounded structural descriptor hashes, omits inline payloads and limits report to16MiB.",
+    "runs": [
+      41331988275,
+      41331994507
+    ],
+    "sourceCommit": "63f924d086647bb758c94c24f7566f12a6df0745",
+    "testsEach": 19
+  },
+  "priorTargetControlAttempts": 9,
+  "privateTargetCauseProven": false,
+  "protocolReferences": [
+    "https://docs.docker.com/reference/cli/docker/image/save/",
+    "https://github.com/opencontainers/image-spec/blob/main/image-layout.md#blobs"
+  ],
+  "qualification": [
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "push",
+      "jobs": [
+        124924345170,
+        124924345527
+      ],
+      "run": 41332158720,
+      "suites": 4,
+      "tests": 20
+    },
+    {
+      "allFinalLogsRead": true,
+      "conclusion": "success",
+      "event": "pull_request",
+      "jobs": [
+        124924367350,
+        124924367730
+      ],
+      "run": 41332165729,
+      "suites": 4,
+      "tests": 20
+    }
+  ],
+  "releaseAcceptance": false,
+  "resourceWarnings": 0,
+  "runtimeAuthorityIssued": false,
+  "runtimeBudgetResetOrGrant": false,
+  "schema": "ouf.m2-image-graph-source-qualified.v1",
+  "skips": 0,
+  "sourceArtifactId": 13093722988,
+  "sourceArtifactZipBytes": 99810,
+  "sourceArtifactZipSha256": "f71a739fc46b8f73c91f5d1545bc3cc686b7b40757055e239ea21e2302b77ad2",
+  "sourceCommit": "5fe748167569bae8dab39154bc187bf1435c40c7",
+  "sourceCount": 19,
+  "sourceMapSha256": "8c890dd5517b75a51d455e5e15dead66fe49d6a3bb24826203e1d19abfda55f9",
+  "sourcePublisherBundle": "evidence/m2-image-graph-source-20261101.sigstore.json",
+  "sourcePublisherResult": "evidence/m2-image-graph-source-publisher-20261101.json",
+  "sourcePublisherVerification": "ACTUAL_GH_2_97_0_CRYPTOGRAPHIC_VERIFY_ON_HOSTED_RUNNER_RESULT_AND_SIGNED_SUBJECT_READ_BACK",
+  "suiteTests": {
+    "actualDockerOriginalAndVendor": 2,
+    "exactNineScopeControlAndPrivateLimit": 5,
+    "graphPresenceAndBoundaries": 8,
+    "sealedCapsule": 5
+  },
+  "targetApplyAuthorized": false,
+  "targetDiagnosticExecuted": false,
+  "targetStopEvidence": "evidence/m2-image-byte-reconciliation-target-stop-20261101.json",
+  "teatriReferencesConsulted": [
+    "docs/handoffs/OUF_M1_COMPLETED_20261026.md",
+    "evidence/csv-m1-f5-f6-owner-verification-20261026.json",
+    "docs/OUF_M2_CODE_EVIDENCE_GAP_AUDIT_20261026.md"
+  ],
+  "timezone": "Europe/Rome",
+  "verificationReplayed": false
+}

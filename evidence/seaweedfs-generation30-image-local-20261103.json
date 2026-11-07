@@ -1,0 +1,225 @@
+{
+  "schema": "ouf.seaweedfs-generation30-image-local.v1",
+  "status": "SOURCE_AND_LOCAL_PACKAGING_VERIFIED_HOSTED_SCAN_PENDING_NOT_ADMITTED",
+  "generation": 30,
+  "manifestPath": "releases/seaweedfs-452-generation30-build-manifest-20261103.json",
+  "manifestSha256": "6e68ba7288bb0e7011003be34646fc01775a17aedff063d5c277e0c2841d0c8c",
+  "patch30": {
+    "path": "patches/seaweedfs/4.52-maintained-dependency-closure.patch",
+    "sha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422"
+  },
+  "build": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": false,
+    "tags": [],
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "compiledPackages": 1740,
+    "compiledPackagesSha256": "b5463bc0795b319fa6195640a419bd369fd5c9638ab99b153ba3aae7eb336a08",
+    "binaryModuleRows": 234,
+    "binaryModuleInventorySha256": "60f0a111f7b228b9855b9d8e1f54d2117ccdbe08f660288f95c7096410e883fa",
+    "rootLockfilesSha256": {
+      "go.mod": "2e7ef58f17dc8606f18c2c6851b79958b5240d6a1bc50ec637893437854bd070",
+      "go.sum": "c9b923fd2b52b3780a41e785c95c20364dc63d4910ab30f907f0e31e8fe6e395"
+    },
+    "patchedSourceTree": "13b3de2f130667ed060e94291fcf64b37b7f037a"
+  },
+  "regressionProfiles": {
+    "main": {
+      "profile": "main",
+      "counts": {
+        "skip_packages": 4,
+        "pass_tests": 6371,
+        "pass_packages": 30,
+        "skip_tests": 5
+      },
+      "logSha256": "e2a4c86cf9c1599dbb9868b2258875dca1eb8cedaf575de14ebf33f6aabbce5c",
+      "terminalTestsSha256": "ac5404abdc4137518911561b1af7f19e69bb805591d1023ddff55423ea135f0e",
+      "terminalPackagesSha256": "0a413b22aaf0ff0bdaa3fd57128d72c38fcdb465d750293130b8ab33960ac972",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "server": {
+      "profile": "server",
+      "counts": {
+        "pass_tests": 7,
+        "pass_packages": 1
+      },
+      "logSha256": "00423a06aa6f347153abf5a9ec95680c22a3e145bd38eb3e4135f07afa6fabf7",
+      "terminalTestsSha256": "284bed3612f12af2a94b6a6c412b2f67f09beffd89a8196331bd2b478bbe3230",
+      "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "storage": {
+      "profile": "storage",
+      "counts": {
+        "pass_tests": 54,
+        "skip_tests": 2,
+        "pass_packages": 1
+      },
+      "logSha256": "8cc7cd6dc55d1185485b3ebc802a1a58c18f70dad8e37bf5d984a42b5e2b2936",
+      "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+      "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+      "environmentConditionalOutcomes": {
+        "TestSortedFileNeedleMap_HoldsNoDescriptors": "skip",
+        "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": "skip"
+      },
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    },
+    "race": {
+      "profile": "race",
+      "counts": {
+        "pass_tests": 25,
+        "pass_packages": 2
+      },
+      "logSha256": "02c6b3ff2794a8f3d2cda59338edad87559292a8ffc92bd969f53ec25ab1f3d4",
+      "terminalTestsSha256": "e103b2d1a615669d91637c79ea894c5827c6e35bb4d15b22163ab95819b5c745",
+      "terminalPackagesSha256": "8c9b7d821a314333db697beef89ce06c92c06cb500543c773d2e1232490b7a6f",
+      "environmentConditionalOutcomes": {},
+      "status": "OBSERVED_TEST_IDENTITIES_VERIFIED_NOT_ACCEPTANCE",
+      "targetOperations": 0
+    }
+  },
+  "pythonTestsPassed": 46,
+  "generation30PipelineTestsPassed": 34,
+  "immutableRuntimeEngineTestsPassed": 12,
+  "syntax": {
+    "python": 6,
+    "shellBlocks": 17,
+    "yaml": true,
+    "status": "PASS"
+  },
+  "localDeterministicLayout": {
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "cohortQualification": "PENDING",
+    "configDigest": "sha256:31b99e914181a85a3e0ca3ca6b66621827df298235b215ccf1d0042fd4653771",
+    "dependencyMaintenance": {
+      "allDependenciesMaintained": false,
+      "status": "OPEN"
+    },
+    "dockerArchiveSha256": "2b273d56f5476d910f2656d251922256b7ed2a953ffc7a7022ab1e2495a181e4",
+    "freshSPDXPerformed": false,
+    "freshScanPerformed": false,
+    "generation": 30,
+    "layerDigest": "sha256:0c19dd2e3da79b470fe9cf3fb3f0573bcd1e5a836c4040ca4f9561c2b439ea34",
+    "manifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+    "overallSwG1": "OPEN",
+    "publisherProvenanceVerified": false,
+    "releaseAdmitted": false,
+    "runtimeAuthorityIssued": false,
+    "runtimeLabs30": "PENDING",
+    "schema": "ouf.storage-runtime-image.v1",
+    "scope": "LOCAL_DETERMINISTIC_PACKAGING_ONLY",
+    "scratchRootfs": true,
+    "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "status": "PACKAGED_NOT_ADMITTED",
+    "targetOperations": 0,
+    "thirdPartyLicencesAccepted": false,
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+    "user": "10001:10001"
+  },
+  "indexedReplay": {
+    "status": "EXACT_INDEXED_REPLAY_PASS",
+    "prefix29Tree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "generation30Tree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+    "patchSha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+    "workingTreeMatchesIndex": true,
+    "targetOperations": 0,
+    "releaseAdmitted": false
+  },
+  "dbCompatibility": {
+    "schema": "ouf.raftstore-local-compatibility.v1",
+    "status": "LOCAL_DB_FILE_COMPATIBILITY_VERIFIED_NOT_RUNTIME_ACCEPTANCE",
+    "testsPassed": [
+      "TestLocalFileReadByOldV2AndReadOnlyLocalDoesNotChangeBytes",
+      "TestLogStoreMonotonicInterfaceRemainsUnclaimed",
+      "TestOldV2FileReadAndWriteWithLocalThenReopenOldV2"
+    ],
+    "candidateModuleFilesUnchanged": {
+      "go.mod": "2e7ef58f17dc8606f18c2c6851b79958b5240d6a1bc50ec637893437854bd070",
+      "go.sum": "c9b923fd2b52b3780a41e785c95c20364dc63d4910ab30f907f0e31e8fe6e395"
+    },
+    "candidateRequirementPinsUnchanged": true,
+    "oracle": "github.com/hashicorp/raft-boltdb/v2@v2.4.2",
+    "oracleContainsArchivedBoltOutsideCandidateOnly": true,
+    "fixtureSha256": "76f2a6adcc11ed5031cf3ea324af948eae361883f7e9b5d75baa76bf41697c0c",
+    "dbFormatMigrationPerformed": false,
+    "crashOrPowerLossQualified": false,
+    "runtimeAuthorityIssued": false,
+    "targetOperations": 0
+  },
+  "proofFiles": [
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/actual-local-layout.json",
+      "bytes": 1122,
+      "sha256": "e3cdaacd864133bfd7e17989fca67281c8514defbb3e3f5ad601bb858f4e2151"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/all-unit-tests.txt",
+      "bytes": 7647,
+      "sha256": "f6be62b26e1fdd7336ad0941502d081fc6acff414afb728621dbc5cced8df3c5"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/db-compatibility-receipt.json",
+      "bytes": 920,
+      "sha256": "08febd174ebe46f5ede3ca86f1d38ff7980ea2ed7db9323c440adf6eec4ef45f"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/final-syntax.json",
+      "bytes": 75,
+      "sha256": "797e011f399c3921c72f745e0a2c88fc781d1b28f7e677d2b8706d0f3a21194b"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/indexed-replay-receipt.json",
+      "bytes": 345,
+      "sha256": "de34d1c99a41c58d6971a0b7c7d3daceb415b3b2384a22216a4c9d46be2f4812"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/verified-main.json",
+      "bytes": 537,
+      "sha256": "bc0e46fbc40f4c54bf9e325bc0c347bdf4af0d067d28a0b10622515a0e56de00"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/verified-race.json",
+      "bytes": 489,
+      "sha256": "d64118c4a827c2f4feabffdc628a49e3f14dec280eb128312fc3e5c121aabf37"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/verified-server.json",
+      "bytes": 490,
+      "sha256": "99a47b6cf3a19c15d4e82cfb83ff1671dbc85a0759ab2b028423842fbf19850b"
+    },
+    {
+      "path": "evidence/seaweedfs-generation30-image-local-20261103/verified-storage.json",
+      "bytes": 639,
+      "sha256": "636f2a91c28d63160b4428d2512161f6572d4e7334a77fc528a87eade8e77745"
+    }
+  ],
+  "previousGenerationSourcesModified": false,
+  "newSourceSealFiles": 44,
+  "imageArchiveMembersExpected": 22,
+  "realFreshVulnerabilityScanPerformed": false,
+  "realFreshSPDXPerformed": false,
+  "publisherProvenanceVerified": false,
+  "hostedQualificationRunId": null,
+  "cohortQualification": "PENDING",
+  "runtimeLabs30": "PENDING",
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "independentReviewFixes": [
+    "Conditional storage tests are bound to exact package as well as parent/child names.",
+    "DB comparison schema, status and external archived-oracle scope are enforced."
+  ]
+}

@@ -1,0 +1,778 @@
+{
+  "schema": "ouf.seaweedfs-generation31-runtime-hosted-readback.v1",
+  "status": "HOSTED_SYNTHETIC_GENERATION31_RUNTIME_PASS_NOT_ACCEPTANCE",
+  "runId": 41715991128,
+  "sourceCommit": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8",
+  "generation": 31,
+  "artifact": {
+    "id": 13270640992,
+    "node_id": "MDg6QXJ0aWZhY3QxMzI3MDY0MDk5Mg==",
+    "name": "storage-generation31-runtime-41715991128",
+    "size_in_bytes": 175359,
+    "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13270640992",
+    "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13270640992/zip",
+    "expired": false,
+    "digest": "sha256:ce13fc9a13d4fa7e7f8d93874565f4a47124f7ffbabbbd8ec02f1cab72006a92",
+    "created_at": "2026-11-03T20:53:47Z",
+    "updated_at": "2026-11-03T20:53:47Z",
+    "expires_at": "2027-02-01T20:48:45Z",
+    "workflow_run": {
+      "id": 41715991128,
+      "repository_id": 1409074354,
+      "head_repository_id": 1409074354,
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "head_sha": "9ead15c56717c2e301eeb1a2bc1af38b007bfdb8"
+    }
+  },
+  "archiveSha256": "ce13fc9a13d4fa7e7f8d93874565f4a47124f7ffbabbbd8ec02f1cab72006a92",
+  "manifestSha256": "3b994c2716b9858005a916ec624931441dd1aceabf2161dc98e193e8bc31830e",
+  "members": 62,
+  "allInternalHashesVerified": true,
+  "sourceHashesVerified": {
+    "scripts/run-seaweedfs-452-generation31-labs.py": "df7cc8c1c8962653a1541f8158501aaf1a3670d3df340b66273d9c73de9562a3",
+    "scripts/storage-generation31-lab-binding.py": "f8e81906bbc9b2c19dee4e227cb27529cdcbb5c8cfed569779a489045fa22f9a",
+    "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+    "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185",
+    "scripts/readback-seaweedfs-452-generation31-image.py": "a6a5b4b724f37bc27f45e12ebed5427461f8bba79111c93998a814ebe7a73be9",
+    "scripts/qualify-seaweedfs-452-generation31-image.py": "5e2904162446e9f806f0ed5c9953047551ea3efa1107d9622484e4dc7c91231a",
+    "scripts/verify-seaweedfs-452-generation31-cohort.py": "910bd2a1c01e42da9aa1434ea7fdf3793ff0b9f5e3cea317aed6a02ac3c97e28",
+    "tools/storage_security/generation_image_v2.py": "0435a7ce2507ddee1fdcd306ac856a18733c6d7fe1af53e5fe470c5ad373b719",
+    "tools/storage_security/generation_readback_v1.py": "d90a633307be766e3a7266226b3da2e8fadbdcff57fd9f11fb16b41e1909b59f",
+    "tools/storage_licenses/evidence.py": "1a85d04ee6c821f42f00b412ea57d3ca21ca401af1c9bd823a9d7b032aa3ee73",
+    "tests/test_storage_generation31_lab_binding.py": "75e643119a86e30eabffbcfff460c682d4ee82a9deb2f303d84204eca4518eee",
+    "tests/test_storage_generation31_labs.py": "e1ea1cf1723dc72a4810ae85e2788654ea2c03c231b2a41aa4e79c63113abc57",
+    "releases/seaweedfs-452-generation31-build-manifest-20261103.json": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+    "releases/seaweedfs-452-generation31-candidate-lock-20261103.json": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+    ".github/workflows/storage-452-generation31-runtime-labs.yml": "a167fe3a1c304be70de406da4787d0a82762c65f772f633820dbc6f667a95010"
+  },
+  "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  "cohortReceiptSha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798",
+  "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+  "coldRecovery": {
+    "objects": 5,
+    "bytes": 8388702,
+    "independentContainerIds": 8,
+    "rootsIndependent": true,
+    "cleanStopBeforeRestore": true,
+    "beforeAfterObjects": [
+      {
+        "key": "empty",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "large.bin",
+        "bytes": 8388608,
+        "sha256": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "overwritten.bin",
+        "bytes": 25,
+        "sha256": "8e5586e2cde19738aca41a6a774d81ba4f06512b932995165486dd5092fa764d",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      },
+      {
+        "key": "unicode/citt\u00e0 + %.txt",
+        "bytes": 22,
+        "sha256": "a2f1f304e2fb73de2e515aba2e6be77b0f07f06272801c1ecd7d5e0425414132",
+        "getContentType": "application/x-ouf-recovery-fixture",
+        "headContentType": "application/x-ouf-recovery-fixture"
+      }
+    ],
+    "octetStreamCompatibility": {
+      "bucket": "ouf-recovery-mime-fixture",
+      "bytes": 47,
+      "findings": [],
+      "g2Closed": false,
+      "getContentType": "application/octet-stream",
+      "headContentType": "application/octet-stream",
+      "key": "octet-stream.txt",
+      "mutatingRequestRetries": 0,
+      "requestedContentType": "application/octet-stream",
+      "sha256": "14f9c6ae9e1875a1b804984fe42b01c4e7f7edf4e0ccb7021325e4ba34214370",
+      "status": "PASS"
+    },
+    "backupFiles": 110,
+    "backupBytes": 8417282
+  },
+  "identity": {
+    "s3Cases": [
+      {
+        "attempts": 1,
+        "case": "bootstrap-create-ouf-identity-fixture",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-protected-ouf-identity-fixture",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-create-ouf-identity-other",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-other",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "bootstrap-protected-ouf-identity-other",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-other/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-put",
+        "errorCode": null,
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-get",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-list",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "outside-prefix-get",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "outside-prefix-put",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-fixture/outside.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "other-bucket-get",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-other/protected.txt",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "other-bucket-put",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-other/staging/no.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "prefix-delete-not-granted",
+        "errorCode": "AccessDenied",
+        "method": "DELETE",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "unscoped-list",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "outside-list",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "bucket-versioning-prefix-escalation",
+        "errorCode": "AccessDenied",
+        "method": "PUT",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "bucket-policy-admin",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "anonymous",
+        "errorCode": "AccessDenied",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "unknown-access-key",
+        "errorCode": "InvalidAccessKeyId",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "wrong-signature",
+        "errorCode": "SignatureDoesNotMatch",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 403
+      },
+      {
+        "attempts": 1,
+        "case": "denied-delete-preserved-object",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/staging/fixture.bin",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "protected-object-preserved",
+        "errorCode": null,
+        "method": "GET",
+        "path": "/ouf-identity-fixture/protected.txt",
+        "status": 200
+      },
+      {
+        "attempts": 1,
+        "case": "denied-outside-put-created-no-object",
+        "errorCode": "NoSuchKey",
+        "method": "GET",
+        "path": "/ouf-identity-fixture/outside.bin",
+        "status": 404
+      },
+      {
+        "attempts": 1,
+        "case": "denied-other-bucket-put-created-no-object",
+        "errorCode": "NoSuchKey",
+        "method": "GET",
+        "path": "/ouf-identity-other/staging/no.bin",
+        "status": 404
+      }
+    ],
+    "tlsNegatives": [
+      {
+        "ca": "ca.pem",
+        "host": "127.0.0.1",
+        "verificationRejected": true,
+        "verifyCode": 64,
+        "verifyMessage": "IP address mismatch, certificate is not valid for '127.0.0.1'."
+      },
+      {
+        "ca": "wrong-ca.pem",
+        "host": "localhost",
+        "verificationRejected": true,
+        "verifyCode": 20,
+        "verifyMessage": "unable to get local issuer certificate"
+      }
+    ],
+    "egress": [
+      {
+        "attempts": 1,
+        "destination": "192.0.2.1",
+        "errno": 101,
+        "errnoName": "ENETUNREACH",
+        "port": 443,
+        "transport": "TCP"
+      },
+      {
+        "attempts": 1,
+        "destination": "192.0.2.1",
+        "errno": 101,
+        "errnoName": "ENETUNREACH",
+        "port": 53,
+        "transport": "UDP"
+      }
+    ],
+    "policy": "GetObject/PutObject staging/* and prefix-conditioned ListBucket"
+  },
+  "all12ContainersDistinct": true,
+  "coldAndIdentitySequential": true,
+  "containerDetails": {
+    "original": [
+      {
+        "role": "master",
+        "id": "61fb39bf3ada7a94b52f7c7ddb2bc173dabdfa4c84c4aecf7fd451730d9fa462",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/original/master",
+        "startedAt": "2026-11-03T20:52:37.935173528Z",
+        "finishedAt": "2026-11-03T20:52:56.518825769Z"
+      },
+      {
+        "role": "volume",
+        "id": "c20f90c779571ddeb6664905357920fdd6b5e6cbb9a584d7b021037356e4f5fb",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/original/volume",
+        "startedAt": "2026-11-03T20:52:38.093169697Z",
+        "finishedAt": "2026-11-03T20:52:56.399639889Z"
+      },
+      {
+        "role": "filer",
+        "id": "199865e0dd0214f7a5de9c113b2491c0e13013e3c98f5e6c02d342e154ae90a1",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/original/filer",
+        "startedAt": "2026-11-03T20:52:38.229333639Z",
+        "finishedAt": "2026-11-03T20:52:55.29758727Z"
+      },
+      {
+        "role": "s3",
+        "id": "29a3b4b13ea64048e19c895d8d849376e9f260093743c3691c8b5081c9897cb5",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/original/s3",
+        "startedAt": "2026-11-03T20:52:38.335474066Z",
+        "finishedAt": "2026-11-03T20:52:54.633658429Z"
+      }
+    ],
+    "restored": [
+      {
+        "role": "master",
+        "id": "f937d38d0c83cd2eb8baf4f168e2c72c04fc53b39c93a85b2792e77439c26aa7",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/restored/master",
+        "startedAt": "2026-11-03T20:52:56.874180226Z",
+        "finishedAt": "2026-11-03T20:53:03.178729456Z"
+      },
+      {
+        "role": "volume",
+        "id": "99a75d3e2574ceed5bc60d418d11c4914e4adef7ed1301e538a2289e5982c931",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/restored/volume",
+        "startedAt": "2026-11-03T20:52:56.9830924Z",
+        "finishedAt": "2026-11-03T20:53:03.046946519Z"
+      },
+      {
+        "role": "filer",
+        "id": "7b24bd797af2577038bea5ed3a9b4a0a9274b0aa379fb98e96f16f2d92ae4ef6",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/restored/filer",
+        "startedAt": "2026-11-03T20:52:57.100027484Z",
+        "finishedAt": "2026-11-03T20:53:01.943528627Z"
+      },
+      {
+        "role": "s3",
+        "id": "627df1645055d838e6f2759ac50a7f4c76d3b1cdbf9877a29ce90efe6cfddc1c",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/cold/restored/s3",
+        "startedAt": "2026-11-03T20:52:57.226859832Z",
+        "finishedAt": "2026-11-03T20:53:01.624649844Z"
+      }
+    ],
+    "identity": [
+      {
+        "role": "master",
+        "id": "9226484e23ca950116758e3c42620ac4fbedfb01b77481367a155648f5ac530b",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/identity/fixture/master",
+        "startedAt": "2026-11-03T20:53:14.873637035Z",
+        "finishedAt": "2026-11-03T20:53:33.074934453Z"
+      },
+      {
+        "role": "volume",
+        "id": "103fcd325ad999ce8e747272ef8f25a476504905e3de95dcb6206f3f84414877",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/identity/fixture/volume",
+        "startedAt": "2026-11-03T20:53:14.984247771Z",
+        "finishedAt": "2026-11-03T20:53:32.967776942Z"
+      },
+      {
+        "role": "filer",
+        "id": "cffa7416f251bf4416c2cb817983d81d3c0156bb0bdadf22385025e7bb998046",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/identity/fixture/filer",
+        "startedAt": "2026-11-03T20:53:15.167238198Z",
+        "finishedAt": "2026-11-03T20:53:31.865626679Z"
+      },
+      {
+        "role": "s3",
+        "id": "806091b8752f4ba87609e42a7e3e104b82a7f342b189620681b8b1ed9cd05d35",
+        "dataMount": "/home/runner/work/_temp/generation31-runtime/identity/fixture/s3",
+        "startedAt": "2026-11-03T20:53:15.28263453Z",
+        "finishedAt": "2026-11-03T20:53:31.511587257Z"
+      }
+    ]
+  },
+  "maximumConcurrentContainers": 4,
+  "rawEvidence": {
+    "allOriginalBytesPreserved": true,
+    "binaryMembers": [
+      "cohort/modified-raftstore-source.tar.gz"
+    ],
+    "allOtherMembersUtf8": true,
+    "zipIncluded": false,
+    "files": [
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/SHA256SUMS",
+        "bytes": 6245,
+        "sha256": "3b994c2716b9858005a916ec624931441dd1aceabf2161dc98e193e8bc31830e"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/SHA256SUMS",
+        "bytes": 948,
+        "sha256": "150d932b7cea1c1b3831f627e5d6217b45c3dd78c4bbe198b780713e707fe767"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/cohort-receipt.json",
+        "bytes": 1313,
+        "sha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/licence-rebinding.json",
+        "bytes": 189079,
+        "sha256": "afbd138bd0bf5db48dd6b4c223695a2a20d03c6ac66f8805c010076f3aac26b9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/modified-raftstore-source-manifest.json",
+        "bytes": 1368,
+        "sha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/modified-raftstore-source.tar.gz",
+        "bytes": 11139,
+        "sha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/module-downloads.jsonl",
+        "bytes": 165001,
+        "sha256": "6a3371a0deeacdf7e4fd3bceb477ad31e7a2516e165c8cd81927d0ea3818cb14"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/ordered-patches.txt",
+        "bytes": 1641,
+        "sha256": "083f8605478d0fe5a53418fcff622c0d11926cc23e59f8151c3e67e4eaea3a5d"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/producer/SHA256SUMS",
+        "bytes": 1876,
+        "sha256": "c30455a9b5aba7730e2eac74f2445ab9c0f279f4047ae0458f70d89a11002873"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/producer/provenance.json",
+        "bytes": 11992,
+        "sha256": "7678c24718b3b4ec26d8c7fa36b533148c2412f195594d572cfb228ee5a26fe9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/publisher-verification.json",
+        "bytes": 15264,
+        "sha256": "ff17e4f74630fe9c6cbbebfbe8245aaea98fcc3716ce967f9cef15b452978c87"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cohort/seaweedfs-452-generation31-candidate-lock-20261103.json",
+        "bytes": 5826,
+        "sha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/cold-backup-manifest.json",
+        "bytes": 15223,
+        "sha256": "09acc22a0bf9f188d3d6320873d2e0579e1513736d82a39b5d4505d97e3bc43b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/exact-image.json",
+        "bytes": 902,
+        "sha256": "25264bb74eab5a7adb2101d34995ca25fd9fcb8a6c22459ce2b80107aedaf031"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-containers.json",
+        "bytes": 30424,
+        "sha256": "4ac3686c98f6524e3889d3783b658cbda69d61f332c3a3553fd94ef195344ede"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-filer-stopped.json",
+        "bytes": 268,
+        "sha256": "00143e27ff4f40accf11fb489d599c7cc5d26e6a4e773d6e78e0b3d03219c97f"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-filer.log",
+        "bytes": 5670,
+        "sha256": "458688021128f95e91ac6657b184659fc961da6d04b35d17e531ba95fcb3581a"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-lock-ring-ready.json",
+        "bytes": 133,
+        "sha256": "92031239240df960b8481aab08a6c607a5125289207f8aad922f9c9f502bb593"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-master-stopped.json",
+        "bytes": 269,
+        "sha256": "58f31230babe533981e8b56825a325a393ebf250ee201662192cff3bbb447675"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-master.log",
+        "bytes": 18764,
+        "sha256": "78fdbe43209d3fe45203d3da14f2008650f53980d8244c95581d9da1136c0445"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-s3-stopped.json",
+        "bytes": 269,
+        "sha256": "5c85d8885bbab226200dd1b3efb1d1c1978fc44a95cc1784ef73433b90b34c61"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-s3.log",
+        "bytes": 2033,
+        "sha256": "ecc40fde68bfe212837f5123ebe38d4f841f5d2f4f142a23566ffdda39fdd01b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-seed.json",
+        "bytes": 1673,
+        "sha256": "1dd08412e49f2b0268a968db166d72373a7945c8db43108bf691208033ab0b79"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-volume-stopped.json",
+        "bytes": 269,
+        "sha256": "2a9b27cd01df2035f1f4e236839978635f71c218284cdd129d9f6d0306a41004"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-original-volume.log",
+        "bytes": 7006,
+        "sha256": "be40f0da7a5e60851b5784aa779a466a65f1b1d47f1432c0fd24e259479db9a5"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-containers.json",
+        "bytes": 30422,
+        "sha256": "e9bd0acca1306c43abf4777464808f91b2ff31e36d615c901a0e2a973a54affe"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "a46ab8d151f1048a32642aeddc4c9ddd9e5226e9f0bc63fc2f4e699fc08697cc"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-filer.log",
+        "bytes": 4602,
+        "sha256": "acf7b431ecb5b45890845316873e2724545da4dca972d9beaccc66aea26fc837"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-lock-ring-ready.json",
+        "bytes": 132,
+        "sha256": "ecef33ba94837996823cc3489ff7d7ecf40aa7477c2a451335e1ae48017248cf"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-master-stopped.json",
+        "bytes": 269,
+        "sha256": "f6f3cdb726ee9910efd51f462e28246090f895193545c09922dc02cb13aaa9d3"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-master.log",
+        "bytes": 13208,
+        "sha256": "125b7b8459e751fb62c05557d1adf543026b357ad933ce1eb436737f441be0aa"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-ready.json",
+        "bytes": 29,
+        "sha256": "787cf41be328745ebb351d4da2866aaab8b16fa9e2f9ac948e37da6a12bb358b"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-routes.json",
+        "bytes": 735,
+        "sha256": "c98867bed49710425e06db702912151cabe4bd36878477c70f150006c5c546d9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-s3-stopped.json",
+        "bytes": 269,
+        "sha256": "7e90aaacc21d55861b57eac31d970711d09508ca22ef035356b6ebcef3bbc022"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-s3.log",
+        "bytes": 1957,
+        "sha256": "717c4234f79e6966f97bbcd90c5308ffac2cbcd6a44a929d8041cc97b170bfd8"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-verify.json",
+        "bytes": 1675,
+        "sha256": "e8c8f90c4b0ef9b1a1827485a139e9a7ffec563014f7bf7d5802253375131ad9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-volume-stopped.json",
+        "bytes": 267,
+        "sha256": "4abe179c11a4d10724e466b278006033198b5b9b3ff7aafec1d5b3acf1ff54b9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/ouf-cold-2381-restored-volume.log",
+        "bytes": 880,
+        "sha256": "00470778c5c7b00e399ef7c025af3bafc0ed7fdc5eb05340ccb2ac91feb235b4"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/cold/recovery-result.json",
+        "bytes": 1906,
+        "sha256": "f66f460f54bec6e144e1b13ff43efc22c50a704c80761047e6653c20bbe360a8"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ca.pem",
+        "bytes": 1131,
+        "sha256": "0e635570f49fbc6e5c80bd95ecc39b7d1e5ca21bebf7516edc6b5501ef7d9063"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/containers.json",
+        "bytes": 30672,
+        "sha256": "2027856a139abec7378b326f63510e313353347d57c29d1c7da3911e69d498d3"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/exact-image.json",
+        "bytes": 902,
+        "sha256": "25264bb74eab5a7adb2101d34995ca25fd9fcb8a6c22459ce2b80107aedaf031"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/fixture-policy.json",
+        "bytes": 1067,
+        "sha256": "eefee2f7451869fc168f9bf6eb23c7391b5bc222bcd7e4e803481e41d7187123"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/identity-result.json",
+        "bytes": 916,
+        "sha256": "62b9486cddb8978412bb623da4dc11b18b882dea38a96c697e19b1f6ee42b482"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/lock-ring-ready.json",
+        "bytes": 80,
+        "sha256": "4e671844eab816d974b0e3e382666b1b1e4fea01de3dbc792f0a37637c7723ec"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/network.json",
+        "bytes": 1245,
+        "sha256": "be0e5f8d65bed53bde2dd14f74eaba9b7b07d81669667e9afa46dc480b720e48"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-filer-stopped.json",
+        "bytes": 269,
+        "sha256": "d69f184296dffe72ecd8f360f8568a6314d5ae893f1495ae8142c15745394973"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-filer.log",
+        "bytes": 5601,
+        "sha256": "7b6e66c0b342819d98b5d8b71d0f1f801e584d29a4ffaffbba62ca80180fb500"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-master-stopped.json",
+        "bytes": 269,
+        "sha256": "d2178be009fb9aca153a46653681b91fe7faa17c0b7e6e5ae57c7973304f0730"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-master.log",
+        "bytes": 18585,
+        "sha256": "38a0d7fdee36f0469d2ffc323ea46e98e5892ca6278b459f5f83075ea63ea0dd"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-ready.json",
+        "bytes": 50,
+        "sha256": "8f3b0680983866440b0144d433beacace4a31379a6cbefcb4d8e82621fcca4ea"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-s3-stopped.json",
+        "bytes": 268,
+        "sha256": "2c04652565b6976396e84d584cfe37eb7a4a24849812b5e42c71110b66d288e9"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-s3.log",
+        "bytes": 2279,
+        "sha256": "73410093035105d5c1cf79080ef10b809c2bec03a45de6d88ff000bb8e0fb3bd"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-verify.json",
+        "bytes": 5608,
+        "sha256": "a292eb2c1554e64c542cfe675d70d5ec59652c4d001d724828c7e7dffa5ff984"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-volume-stopped.json",
+        "bytes": 269,
+        "sha256": "cd2ca7e12a753826738c3c7e327caaf0a5fe9210654afc6efe6d4273b238cd61"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/ouf-identity-2381-volume.log",
+        "bytes": 6957,
+        "sha256": "3629f90d1815219e9aec07a7e8317c90402520fb452e381f996581e2440aec65"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/server.pem",
+        "bytes": 1176,
+        "sha256": "f56e8d7297dce9dbbbc917dff256221a116bd949702bef86196c5c350e2d1945"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/identity/wrong-ca.pem",
+        "bytes": 1147,
+        "sha256": "3fdf02422fb1e31b2b010f2342e3bc29ba1801ac2ceb738a3b14696178af3854"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/runtime-result.json",
+        "bytes": 1198,
+        "sha256": "5855acda3d8b750267023afc64048753b3674b2b59831322e284a5cdac564396"
+      },
+      {
+        "path": "evidence/seaweedfs-generation31-runtime-hosted-41715991128/source-sha256.json",
+        "bytes": 1838,
+        "sha256": "6c67fa7db0beaa17c1f370d8a7f12860c55c69ea7e517b9b6bd11aa84a04e578"
+      }
+    ]
+  },
+  "limits": [
+    "Synthetic storage cold restore only; PostgreSQL coordinated recovery not exercised.",
+    "No production migration, target credentials, mTLS, lateral isolation or certificate rotation qualified.",
+    "MIME31 regression passes; historical15 failure is preserved, not overwritten.",
+    "Licence review, redistribution acceptance and durable image custody remain separate OPEN authorities."
+  ],
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "workflow": ".github/workflows/storage-452-generation31-cohort.yml",
+  "runAttempt": 1,
+  "wholeWorkflowConclusion": "success",
+  "runtimeJobId": 126197618474,
+  "hostedJobMetadata": {
+    "path": "evidence/seaweedfs-generation31-runtime-jobs-41715991128.json",
+    "sha256": "5d153654e6216f58be1571d08c36e435a0b25730399b4950dc6cab29e7899fb5"
+  },
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "modifiedMplSource": {
+    "archiveSha256": "2767531e9510840ba159cdbb9062633dad51d4d2b5984b7d57c1aabcb38d177e",
+    "manifestSha256": "0b65ee710cf88f9bd2b76c0918377f10b71c6225d8937732ae6871e875569d53"
+  },
+  "independentReadbackChecks": {
+    "all62MembersHashed": true,
+    "all15SourceInputsBoundToPublishedCommit": true,
+    "cohortCopyEqualsActualHostedArchive": true,
+    "allExpectedS3AuthorityCasesReadIndividually": true,
+    "allBodiesAndMimeComparedBeforeAfter": true,
+    "allContainersNonrootReadOnlyNoNetworkAndCleanStopped": true,
+    "sourceHelpersUnmodified": true
+  }
+}

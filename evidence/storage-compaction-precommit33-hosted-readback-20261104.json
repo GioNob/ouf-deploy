@@ -1,0 +1,278 @@
+{
+  "acceptanceTestsPassed": 0,
+  "betweenRenamesQualified": false,
+  "checksumsVerified": 1176,
+  "cleanFinalStopsReported": 55,
+  "distinctContainersReported": 98,
+  "frozenPhase": {
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "filesBefore": {
+      ".dat": {
+        "allocatedBytes": 5246976,
+        "bytes": 5243072,
+        "device": 66305,
+        "inode": 9439852,
+        "sha256": "61c852da7452311674bac628a365735b69baf43668824415fe6223eca0f44ebd"
+      },
+      ".idx": {
+        "allocatedBytes": 4096,
+        "bytes": 48,
+        "device": 66305,
+        "inode": 9439859,
+        "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+      }
+    },
+    "filesFrozen": {
+      ".cpd": {
+        "allocatedBytes": 1052672,
+        "bytes": 1048688,
+        "device": 66305,
+        "inode": 9439974,
+        "sha256": "e46b0192e0adb9bba0c5a2ad44b1bff1c279e9c5cdcbdb77e83f94c103c973aa"
+      },
+      ".cpx": {
+        "allocatedBytes": 4096,
+        "bytes": 16,
+        "device": 66305,
+        "inode": 9439975,
+        "sha256": "44fb6027d853f97664542f82e1b9fa195ca9598e7e82ec37dee026af508a8b1a"
+      },
+      ".dat": {
+        "allocatedBytes": 5246976,
+        "bytes": 5243072,
+        "device": 66305,
+        "inode": 9439852,
+        "sha256": "61c852da7452311674bac628a365735b69baf43668824415fe6223eca0f44ebd"
+      },
+      ".idx": {
+        "allocatedBytes": 4096,
+        "bytes": 48,
+        "device": 66305,
+        "inode": 9439859,
+        "sha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483"
+      }
+    },
+    "processBefore": {
+      "cgroup": "0::/system.slice/docker-1659680b1f3df57d8102b6ff399c65f8db7a7641eacffd8f5b84ce719af4e781.scope\n",
+      "networkNamespace": "net:[4026532688]",
+      "pid": 25075,
+      "startTicks": 56874
+    },
+    "processFrozen": {
+      "cgroup": "0::/system.slice/docker-1659680b1f3df57d8102b6ff399c65f8db7a7641eacffd8f5b84ce719af4e781.scope\n",
+      "networkNamespace": "net:[4026532688]",
+      "pid": 25075,
+      "startTicks": 56874
+    },
+    "signal": "SIGSTOP",
+    "status": "OBSERVED_PRECOMMIT_FROZEN",
+    "threadStates": {
+      "25075": "T",
+      "25365": "T",
+      "25367": "T",
+      "25368": "T",
+      "25369": "T",
+      "25374": "T",
+      "25375": "T",
+      "25379": "T"
+    },
+    "vacuumResubmissions": 0
+  },
+  "gatesClosed": 0,
+  "intentionalDeathsReported": 43,
+  "localArchiveReadback": false,
+  "members": 1177,
+  "nativeScenarios": 11,
+  "networkRemovedCount": 11,
+  "originalZipBytes": 2227404,
+  "originalZipSha256": "4a20535663dc6881bf533a13416152112c3c0441fa815d39c1ca6f9a355dd42c",
+  "postMarkerQualified": false,
+  "powerLossQualified": false,
+  "producerCommit": "6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96",
+  "recovery": {
+    "additionalVacuumCommands": 0,
+    "allRulesBeforeAnyRestartExec": true,
+    "allServicesStoppedBeforeReplacement": true,
+    "allocatedDatBlocksPreserved": true,
+    "applicationProcessesReplaced": 4,
+    "baselineS3Parity": true,
+    "clientUnchanged": true,
+    "compactionCrashQualified": true,
+    "directChunk404": true,
+    "directMetadataIdentical": true,
+    "exactDatAndIndexSnapshotsPreserved": true,
+    "exitCode": 137,
+    "filerResponseBytesAfter": 1954,
+    "filerResponseBytesBefore": 0,
+    "mutatingRetries": 0,
+    "newContainerIds": {
+      "filer": "a304e7beb994e4288ae766c660055d1326fb7bcf28ce2565a51d097b9cca2b1b",
+      "master": "6f8d4ebc43984dff472672befd8e2af22d12cfafd88995e7d7ab91751a482fab",
+      "s3": "6d397d2c084370c7e876e26b40912528cddd01dacc676a0e44ebd1c66080b476",
+      "volume": "c8a654c5086aa36eb0f56b56d773d19b04413d41d8fffb4b8b530216396598df"
+    },
+    "oldContainerIds": {
+      "filer": "0445f7d37831bb582280bd5f7e201fa814fb4cee17d2b0e6ac1e344106cdd5ab",
+      "master": "6a7c71abf918e01a3bdde62b2a7bfc7e2e536a0c658912131409795b6d2b57ec",
+      "s3": "2fb28ba2611b30a74b1cee51027c5ffcc26672061e4e8073f897c4c05abcc7bc",
+      "volume": "1659680b1f3df57d8102b6ff399c65f8db7a7641eacffd8f5b84ce719af4e781"
+    },
+    "oomKilled": false,
+    "orphanPayloadAndIndexRemainAbsent": false,
+    "powerLossQualified": false,
+    "recoveryPutRequests": 0,
+    "recoveryReadAttempts": 1,
+    "s3ObjectAbsent": true,
+    "signal": "SIGKILL",
+    "stoppedStorageUnchangedBeforeExec": true,
+    "topologyAndRegistrationRecovered": true,
+    "topologyReadAttempts": 1,
+    "volumeResponseBytesAfter": 8398318,
+    "volumeResponseBytesBefore": 0
+  },
+  "schema": "ouf.storage-compaction-precommit-readback.v1",
+  "secondNativeExecution": false,
+  "sourceBinding": {
+    "allOrderedPatchesVerified": {
+      "patches/iceberg-go/0.7.0-maintained-yaml-vendor.patch": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef",
+      "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40",
+      "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19",
+      "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24",
+      "patches/seaweedfs/4.52-go-network-security-fixes.patch": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e",
+      "patches/seaweedfs/4.52-iam-module-sdk-v2.patch": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a",
+      "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5",
+      "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b",
+      "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3",
+      "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7",
+      "patches/seaweedfs/4.52-kms-sdk-v2.patch": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a",
+      "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1",
+      "patches/seaweedfs/4.52-maintained-dependency-closure.patch": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+      "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9",
+      "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8",
+      "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8",
+      "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad",
+      "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b",
+      "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+      "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6",
+      "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530",
+      "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883",
+      "patches/seaweedfs/4.52-s3-content-type-persistence.patch": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc",
+      "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f",
+      "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d",
+      "patches/seaweedfs/4.52-s3backend-sdk-v2.patch": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9",
+      "patches/seaweedfs/4.52-s3sink-sdk-v2.patch": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4",
+      "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398",
+      "patches/seaweedfs/4.52-sqs-sdk-v2.patch": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3",
+      "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c",
+      "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714",
+      "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30",
+      "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+    },
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "instrumentedBuild": false,
+    "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "patchedRootSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "reviewedUnmodifiedSourceSha256": {
+      "weed/command/volume.go": "5816a02b60965936952247c7cc6ae4d8239f4205d9eaf5aaf608d7a9efaeeb07",
+      "weed/server/volume_grpc_vacuum.go": "a35efc7af662020e803e32a42f8f6ee6ad74ec20b34ebb286bde3ea4fb61b304",
+      "weed/storage/store_vacuum.go": "2ffb157a058359f8279eb1d973d0b173059de1947620e65cf1c14649a132814c",
+      "weed/storage/volume_vacuum.go": "725690746dcb0bfaf05a8ded782fc2971ba483bb8652b763d839eb9f61c4f96a",
+      "weed/topology/topology_vacuum.go": "9671a1fb2722e85e15ed6cd103397b8667560538553e6a40e941b832681a6976"
+    },
+    "scope": "reviewed paths unchanged by all generation33 patches; candidate binding, not a rebuild",
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3"
+  },
+  "sourceBindingsVerified": 34,
+  "status": "HOSTED_ORIGINAL_ARCHIVE_READBACK_PASS",
+  "targetOperations": 0,
+  "testsPassed": 146,
+  "witness": {
+    "cookieHex": "33aabbcc",
+    "datBytes": 5243072,
+    "datFile": "ouf-identity-fixture_7.dat",
+    "datSha256": "61c852da7452311674bac628a365735b69baf43668824415fe6223eca0f44ebd",
+    "dataBytes": 1048593,
+    "dataOffset": 4194412,
+    "dataSha256": "88750de893a15f19daabf07592666678d399ed4c10feba3bf1d93c2a1d10cd6c",
+    "fileId": "7,0100000000002133aabbcc",
+    "indexBytes": 48,
+    "indexPrefixSha256": "ad81ca1558ea8a8ddfe98cdadfa2d93d84186eec808caaa2de27234fa07c6a1e",
+    "indexRecord": 2,
+    "indexSha256": "72234f84e47c1b445edbe97286138c6d88f1f56b33e89efeac91686154196483",
+    "mutatingRequests": 0,
+    "needleId": 281474976710689,
+    "needleOffset": 4194392,
+    "needleSize": 1048651,
+    "prefixSha256": "b8a58ac9b643c579bfe054f1658328ea2a510f2d83c8b224af506e54f636e1a1",
+    "volumeId": "7"
+  },
+  "nativeRun": {
+    "id": 41859638833,
+    "jobId": 126677564586,
+    "source": "6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96",
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41859638833",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "readbackRun": {
+    "id": 41861664588,
+    "jobId": 126684809823,
+    "source": "aedcec769c33e02334711a59d62b039840b5e14c",
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41861664588",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "originalArtifact": {
+    "id": 13340730378,
+    "name": "storage-generation33-lateral-isolation-41859638833",
+    "size_in_bytes": 2227404,
+    "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13340730378",
+    "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13340730378/zip",
+    "expired": false,
+    "created_at": "2026-11-04T15:47:18Z",
+    "expires_at": "2027-02-02T15:37:15Z",
+    "updated_at": "2026-11-04T15:47:18Z",
+    "digest": "sha256:4a20535663dc6881bf533a13416152112c3c0441fa815d39c1ca6f9a355dd42c",
+    "workflow_run": {
+      "id": 41859638833,
+      "repository_id": 1409074354,
+      "head_repository_id": 1409074354,
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "head_sha": "6db28abd0e83f95e45b1d8e4c921b69ed5a2ac96"
+    }
+  },
+  "retainedReadbackArtifact": {
+    "id": 13340131675,
+    "name": "storage-generation33-precommit-readback-41861664588",
+    "size_in_bytes": 1932132,
+    "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13340131675",
+    "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13340131675/zip",
+    "expired": false,
+    "created_at": "2026-11-04T15:49:16Z",
+    "expires_at": "2027-02-02T15:49:05Z",
+    "updated_at": "2026-11-04T15:49:16Z",
+    "digest": "sha256:5630dd3df4f807d1dbacc5ed790d1ece2a0d9b546c6e5a8a2cc1b7d15106e85a",
+    "workflow_run": {
+      "id": 41861664588,
+      "repository_id": 1409074354,
+      "head_repository_id": 1409074354,
+      "head_branch": "feat/m2-discovery-complete-profile-20261029",
+      "head_sha": "aedcec769c33e02334711a59d62b039840b5e14c"
+    }
+  },
+  "retainedFailedReadback": {
+    "runId": 41860752790,
+    "jobId": 126681551042,
+    "artifactId": 13339722820,
+    "artifactBytes": 2547,
+    "artifactSha256": "91eb9f44f99193954dad34914191a2793cf5f316bde69c4095f4134d41c3bf97",
+    "failure": "HTTP401 on signed-storage redirect; no native rerun, repaired download with cross-origin Authorization stripping"
+  },
+  "custody": {
+    "originalArchive": "GitHub Actions artifact, also nested unchanged in independent readback artifact",
+    "expiresAt": "2027-02-02",
+    "durableRepositoryArchive": false
+  },
+  "observedPhaseLimit": "Complete .cpd/.cpx copies present before marker; not demonstrated mid-record copying, post-marker or between-renames interruption.",
+  "publisherSignatureVerifiedByThisReadback": false
+}

@@ -1,0 +1,546 @@
+{
+  "accounting_gap_session": {
+    "path": "tools/semantic_policy_token_owner/accounting_gap_session.py",
+    "sha256": "f533dd9820b37bd13642829a756b95f5d36ccd26e7b5f22ad785e94a957678df"
+  },
+  "adaptive_supervisor": {
+    "path": "tools/semantic_lease_recovery/adaptive_supervisor.py",
+    "sha256": "08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c"
+  },
+  "assemble_provider_profiles": {
+    "path": "tools/semantic_transaction_profiles/assemble_provider_profiles.py",
+    "sha256": "890dff15e3826175ef01467a812cdd523e8ea5d50a306ad8727f866475ab9734"
+  },
+  "atomic_review_intake": {
+    "path": "tools/semantic_application_cutover/atomic_review_intake.py",
+    "sha256": "c113f578b027c39573b4562cd3ac324abb8108a393b82dde19f8eb53d98e0ea6"
+  },
+  "authenticate_provider_transaction": {
+    "path": "tools/semantic_transaction_profiles/authenticate_provider_transaction.py",
+    "sha256": "b47e245abab2bb55ccd172c5e3f8da2a0b167e89c588811159f87cc4d929f258"
+  },
+  "bounded_recovery": {
+    "path": "tools/semantic_lease_recovery/bounded_recovery.py",
+    "sha256": "ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd"
+  },
+  "compile_creation_frame_policy": {
+    "path": "tools/semantic_frame_compiler/compile_creation_frame_policy.py",
+    "sha256": "36ee627e524415002a98fede8d7e61ad22ae95b6fec6b6686c1e01d878be570d"
+  },
+  "compile_file_only_frame_policy": {
+    "path": "tools/semantic_frame_compiler/compile_file_only_frame_policy.py",
+    "sha256": "945b9d02991454acc0f42c34779fb0f2fdc3868124892aef075f03b67bd2d6f0"
+  },
+  "compile_semantic_proposal_frame_policy": {
+    "path": "tools/semantic_frame_compiler/compile_semantic_proposal_frame_policy.py",
+    "sha256": "02a11b2a98cb13842d68cb5c2a4d87463ff5928f936b4271d4d1ad7ace44abf2"
+  },
+  "compile_six_mount_frame_policy": {
+    "path": "tools/semantic_frame_compiler/compile_six_mount_frame_policy.py",
+    "sha256": "41493cfd6d6063d1c273643eb2a509bef9e9ce09e88fe88da7408502c49ebf4e"
+  },
+  "configtree_mount_observation": {
+    "path": "tools/semantic_application_cutover/configtree_mount_observation.py",
+    "sha256": "9bd9dff615e21b7e92c29ee808dd2e74ef99dc1b3071a8e3b2e453b3ba9be2e0"
+  },
+  "continuous_supervisor": {
+    "path": "tools/semantic_lease_recovery/continuous_supervisor.py",
+    "sha256": "8084748c0ffb5e009e8e59c4c5ecaaf08451fb2cc35540135e2db9a55d12ae0e"
+  },
+  "credential_reestablishment": {
+    "path": "tools/semantic_policy_token_owner/credential_reestablishment.py",
+    "sha256": "856859b31c1a68464c91820d45c5a9301fdce4644bfa0e87855362bce980ce9d"
+  },
+  "credential_transaction": {
+    "path": "tools/semantic_policy_token_owner/credential_transaction.py",
+    "sha256": "233ef347de3edb544cc4d9b092f77a37650d45bd272a2fa113e4f96d50a112b8"
+  },
+  "cutover_authority": {
+    "path": "tools/semantic_application_cutover/cutover_authority.py",
+    "sha256": "1a93c1c3236037a21f6cade5f6064544e9ec5e405fc578109ee3eadfe8ad6ccd"
+  },
+  "cutover_executor": {
+    "path": "tools/semantic_application_cutover/cutover_executor.py",
+    "sha256": "3f9a0924aad6e35e330c53d3294e10b3e3a984b39f8ce427d963caec676322a1"
+  },
+  "deadline_backend": {
+    "path": "tools/semantic_lease_recovery/deadline_backend.py",
+    "sha256": "9918af051a94e1a345a1cb6b73069444e73fdec0918b5494f79b52f8bb2537a2"
+  },
+  "dns": {
+    "path": "tools/semantic_lease_recovery/dns.py",
+    "sha256": "f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f"
+  },
+  "engine_creation": {
+    "path": "tools/semantic_application_cutover/engine_creation.py",
+    "sha256": "8a9a5c039a245f48e38cfeb8095eb132a9f6bf0d0d0eba2c707ade54999df2f2"
+  },
+  "file_only_profile": {
+    "path": "tools/semantic_application_cutover/file_only_profile.py",
+    "sha256": "1b6ec4f9d01bb47a0071066d32e56159ca7ce4298aba398b592a68cc17112a07"
+  },
+  "first_controlled_grant": {
+    "path": "tools/semantic_policy_token_owner/first_controlled_grant.py",
+    "sha256": "51a60e914fea7aba65b326ce4b23f9f5c2bdfc6edfa60a2377d80467b7d20336"
+  },
+  "gated_creation_plan": {
+    "path": "tools/semantic_application_cutover/gated_creation_plan.py",
+    "sha256": "a4e13489d52697117246f979c42a2df766d19f67c7a99e0922c3bb4ac6b45c44"
+  },
+  "gated_process_observation": {
+    "path": "tools/semantic_application_cutover/gated_process_observation.py",
+    "sha256": "6076599fdc0bcd3a507cbf3d514decc224e5fc6932ef7a4e256767d8801ba9c2"
+  },
+  "guarded_runtime_switch": {
+    "path": "tools/semantic_transaction_profiles/guarded_runtime_switch.py",
+    "sha256": "1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd"
+  },
+  "iam_binding_candidate": {
+    "path": "tools/semantic_policy_token_owner/iam_binding_candidate.py",
+    "sha256": "dcfab9f362ddfd9be95dcd41ee8281d5cecc074918e4ed3995e19dd17da1801b"
+  },
+  "iam_governance_intake": {
+    "path": "tools/semantic_policy_token_owner/iam_governance_intake.py",
+    "sha256": "6dd8efb3f4e1728d429eb88c8dc8654527093756ea352da17e4df2effec90c2b"
+  },
+  "iam_mapper_enrichment": {
+    "path": "tools/semantic_policy_token_owner/iam_mapper_enrichment.py",
+    "sha256": "6b6cbfdfd2a4b628c35d8a7eeb087339e15e0ae49aff8be1f359f74de7e0699e"
+  },
+  "image_custody": {
+    "path": "tools/semantic_application_cutover/image_custody.py",
+    "sha256": "9391a7d497943bd0412d96405d51359cd11a2b0db7106d30f272d28e8f0fc6b2"
+  },
+  "image_import": {
+    "path": "tools/semantic_application_cutover/image_import.py",
+    "sha256": "4f3a199c92ea30d48c795502e8d684641e67e87761b508dbb7ee6ad3d9da4459"
+  },
+  "lease_recovery_budget": {
+    "path": "tools/semantic_lease_recovery/lease_recovery_budget.py",
+    "sha256": "c4a70c54823934e8d0ede9a5dff52ec93e896826b36445f21048c9519e2aeedf"
+  },
+  "legacy_retirement": {
+    "path": "tools/semantic_policy_token_owner/legacy_retirement.py",
+    "sha256": "e605b12423cc705b1aaa8dc3d4174f7312ef17e7ba7f14367cf74f98663da54e"
+  },
+  "migration_root_custody": {
+    "path": "tools/semantic_policy_token_owner/migration_root_custody.py",
+    "sha256": "1b8aaa23d26ad9b6e04d7b61eead1af1f80ad4c6cd131d48c21ce7e183b207c2"
+  },
+  "native_evidence_store": {
+    "path": "tools/semantic_application_cutover/native_evidence_store.py",
+    "sha256": "a8f75d9a071ad4d026d6c51e3746888aff51a2654f660b316061ed2066fa31f6"
+  },
+  "nft_seconds_backend": {
+    "path": "tools/semantic_lease_recovery/nft_seconds_backend.py",
+    "sha256": "04cd115c756158ce2c04f32608380d7a40f4577d85785dfe46571825876545c1"
+  },
+  "paused_node_acceptance": {
+    "path": "tools/semantic_application_cutover/paused_node_acceptance.py",
+    "sha256": "d1686ea61b7c7674b2306e90794145d552a40fcc3223435094a0dec7bc458162"
+  },
+  "projected_frame_observation": {
+    "path": "tools/semantic_application_cutover/projected_frame_observation.py",
+    "sha256": "7a74df23b09a89db368d5b96ddaaf08061e46a19a226b6dc69ca905c24dfdba9"
+  },
+  "publish_provider_transaction": {
+    "path": "tools/semantic_transaction_profiles/publish_provider_transaction.py",
+    "sha256": "7777f33432bbfadd56f89fd2ed0122ce1c14e41d797498d94fa7bdb3324d0080"
+  },
+  "readback_margin_compiler": {
+    "path": "tools/semantic_lease_recovery/readback_margin_compiler.py",
+    "sha256": "814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d"
+  },
+  "recovery_journal": {
+    "path": "tools/semantic_lease_recovery/recovery_journal.py",
+    "sha256": "43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d"
+  },
+  "resilient_lease_adapter": {
+    "path": "tools/semantic_lease_recovery/resilient_lease_adapter.py",
+    "sha256": "beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683"
+  },
+  "tools.chatbot_file_cohort.authorization": {
+    "path": "tools/chatbot_file_cohort/authorization.py",
+    "sha256": "e25589499db42477936ef4fa7611be1ba41918785ae30a438ca370c851919951"
+  },
+  "tools.chatbot_file_cohort.containers": {
+    "path": "tools/chatbot_file_cohort/containers.py",
+    "sha256": "ad692a82bdd12784242c7b72e544d5300c1a0060be2d214a1864d1dd9a14d0bf"
+  },
+  "tools.chatbot_file_cohort.gateway": {
+    "path": "tools/chatbot_file_cohort/gateway.py",
+    "sha256": "5e7182d899a25a299b103d63f6bf81822280f09e58b963c38f735aa2a4fee72f"
+  },
+  "tools.chatbot_file_cohort.gateway_preparation": {
+    "path": "tools/chatbot_file_cohort/gateway_preparation.py",
+    "sha256": "1fbbbb12d5387b3b4940c7d1754cf2730c0d147f1d0ed4208dc6ce8a211fc87f"
+  },
+  "tools.chatbot_file_cohort.gateway_runtime": {
+    "path": "tools/chatbot_file_cohort/gateway_runtime.py",
+    "sha256": "98af07376b48ed92bc32602b15338027e9307f880c87fdd9de886761d0cacf8e"
+  },
+  "tools.chatbot_file_cohort.images": {
+    "path": "tools/chatbot_file_cohort/images.py",
+    "sha256": "08a3a486f80860552a16ff3c83cca6a92ceb19960ff69f0d7bd3a786d7f5c5cb"
+  },
+  "tools.chatbot_file_cohort.plan": {
+    "path": "tools/chatbot_file_cohort/plan.py",
+    "sha256": "3f175a093f2564cba65635982c039d1d73617ef3c7d3116d1e1afc661a57df9e"
+  },
+  "tools.m2_discovery_installation_profile.audit": {
+    "path": "tools/m2_discovery_installation_profile/audit.py",
+    "sha256": "e8b7813a8f6f009054593025dc2df9b79315bf2100a70f02a41973a0536658c3"
+  },
+  "tools.m2_discovery_installation_profile.cohort_images": {
+    "path": "tools/m2_discovery_installation_profile/cohort_images.py",
+    "sha256": "ff0da48220fe9cdf5ab2c52e926c3ec306bd7eca9fde7debe6912497e50d00a0"
+  },
+  "tools.m2_discovery_installation_profile.custody_capture": {
+    "path": "tools/m2_discovery_installation_profile/custody_capture.py",
+    "sha256": "834dd9b0b7e9f7b02fc07c7080f6d3e51cc7b7fd541691f26942e136a08c00cf"
+  },
+  "tools.m2_discovery_installation_profile.discovery_nft_backend": {
+    "path": "tools/m2_discovery_installation_profile/discovery_nft_backend.py",
+    "sha256": "facbdd03f2351d44352e9311c9818f42189cb3959a49a939526d2fd173c353cb"
+  },
+  "tools.m2_discovery_installation_profile.executor": {
+    "path": "tools/m2_discovery_installation_profile/executor.py",
+    "sha256": "18ef76707c499e4fc62407f8fba830c57a1f8b8801a31be728b4397aade491da"
+  },
+  "tools.m2_discovery_installation_profile.frame": {
+    "path": "tools/m2_discovery_installation_profile/frame.py",
+    "sha256": "ce89b94e03d20d8dc9cfb21001aeaa9b79d3dcc207769520647a5c1860c44b74"
+  },
+  "tools.m2_discovery_installation_profile.frame_inputs": {
+    "path": "tools/m2_discovery_installation_profile/frame_inputs.py",
+    "sha256": "01a237fd8d94b361a37c89e07599b0c1013966414500ea89f0639be2c12e8365"
+  },
+  "tools.m2_discovery_installation_profile.gate_peer_window": {
+    "path": "tools/m2_discovery_installation_profile/gate_peer_window.py",
+    "sha256": "e0d195c71af64de9e3776bef1909186c773ee002bd8febbc6d2b7934b9909a56"
+  },
+  "tools.m2_discovery_installation_profile.gateway_runtime": {
+    "path": "tools/m2_discovery_installation_profile/gateway_runtime.py",
+    "sha256": "3a229b0fda9c52e0e44369621b8107e3d73be3adb3e33ca8003ab062b92f9572"
+  },
+  "tools.m2_discovery_installation_profile.infrastructure_review": {
+    "path": "tools/m2_discovery_installation_profile/infrastructure_review.py",
+    "sha256": "f6885f56739d0b8ef685821b135d5d5443c415b25f314d2d0ef2b7c7b7fc73ee"
+  },
+  "tools.m2_discovery_installation_profile.installation_lock": {
+    "path": "tools/m2_discovery_installation_profile/installation_lock.py",
+    "sha256": "cf90c2d7d52efb5656019f83a13ab0f1b35d54aab67868f02e4f2e308e4d726c"
+  },
+  "tools.m2_discovery_installation_profile.installed_lease_guard": {
+    "path": "tools/m2_discovery_installation_profile/installed_lease_guard.py",
+    "sha256": "71b1a3fc64d31808e48c4c8550c6bc3354d2a7a3dcda5569c348dc00fd47c4af"
+  },
+  "tools.m2_discovery_installation_profile.installed_lease_session": {
+    "path": "tools/m2_discovery_installation_profile/installed_lease_session.py",
+    "sha256": "ea90863b14ba697e8c23a2c4a6dad7475ad1cd2c5a7ded5b6ddb813e2310e5fa"
+  },
+  "tools.m2_discovery_installation_profile.lease_attestation": {
+    "path": "tools/m2_discovery_installation_profile/lease_attestation.py",
+    "sha256": "a075ecee37c18ec40497d751fd62274060b8e6aa66a45823aaf6e34641b8f0ca"
+  },
+  "tools.m2_discovery_installation_profile.lease_capsule": {
+    "path": "tools/m2_discovery_installation_profile/lease_capsule.py",
+    "sha256": "eca4a8f78984a3228763839e5f0ac584a0df1600d55eb78254504156c26bb54a"
+  },
+  "tools.m2_discovery_installation_profile.lease_file_installation": {
+    "path": "tools/m2_discovery_installation_profile/lease_file_installation.py",
+    "sha256": "faf341c0db4758748ec361511ef3bed3e425fdde9c4f3e4033a7b707d7272ae0"
+  },
+  "tools.m2_discovery_installation_profile.lease_installation_phase": {
+    "path": "tools/m2_discovery_installation_profile/lease_installation_phase.py",
+    "sha256": "7f181a85d9d2cc65319b5a5967565dc92621b3fbbd3507814f05217e1abd26d3"
+  },
+  "tools.m2_discovery_installation_profile.lease_installation_template": {
+    "path": "tools/m2_discovery_installation_profile/lease_installation_template.py",
+    "sha256": "6d13c0e89c7c7fb5f41a70b78b363592ace9dc570c05b28fa3e1629a385346b2"
+  },
+  "tools.m2_discovery_installation_profile.lease_materialization": {
+    "path": "tools/m2_discovery_installation_profile/lease_materialization.py",
+    "sha256": "08a313b5284094b173fd18638a85640bc598229f62dc1ccd966ff899b8f1b99c"
+  },
+  "tools.m2_discovery_installation_profile.lease_observation": {
+    "path": "tools/m2_discovery_installation_profile/lease_observation.py",
+    "sha256": "77fa1cc0033bbd184b0f3e117cab8efe63d3dabfaee75fefd829645258ceeab2"
+  },
+  "tools.m2_discovery_installation_profile.lease_observation_inputs": {
+    "path": "tools/m2_discovery_installation_profile/lease_observation_inputs.py",
+    "sha256": "646a13f58ddc116929537e933d901991ea86cd57714345a449e9a331ee8c8334"
+  },
+  "tools.m2_discovery_installation_profile.lease_registration": {
+    "path": "tools/m2_discovery_installation_profile/lease_registration.py",
+    "sha256": "9691731198213f3f3873e6f4e2077fe39c1e52507fc0f9bfa92f0ea59d2e6051"
+  },
+  "tools.m2_discovery_installation_profile.lease_service": {
+    "path": "tools/m2_discovery_installation_profile/lease_service.py",
+    "sha256": "bd6893d46d92ebec143ab6cf562fdf379afa3162e1e96d6712d925e462781c23"
+  },
+  "tools.m2_discovery_installation_profile.lease_start_owner": {
+    "path": "tools/m2_discovery_installation_profile/lease_start_owner.py",
+    "sha256": "daca9560a4e304fe352e515d9208fe4923f59e8707d25db6f5c72e82f5c9ef5a"
+  },
+  "tools.m2_discovery_installation_profile.lease_unit": {
+    "path": "tools/m2_discovery_installation_profile/lease_unit.py",
+    "sha256": "177baa0f8158b100e233ee539dd419c7767954a0d4d915b9beb39eadf92bfaec"
+  },
+  "tools.m2_discovery_installation_profile.lease_worker": {
+    "path": "tools/m2_discovery_installation_profile/lease_worker.py",
+    "sha256": "c3e5a437a54a2d3123f0cf3a7d933f49004dd03ab4c768b3a2f390da2be0f524"
+  },
+  "tools.m2_discovery_installation_profile.mcp_runtime": {
+    "path": "tools/m2_discovery_installation_profile/mcp_runtime.py",
+    "sha256": "8a6d6e4e3a9f784ca0979b8ff4d5b7719f3da31392fa0839e6a11299f9dc36ab"
+  },
+  "tools.m2_discovery_installation_profile.native_generation_probe": {
+    "path": "tools/m2_discovery_installation_profile/native_generation_probe.py",
+    "sha256": "f38f3574303917231dce80efbcd87a69704b3980e43f8f48e1ebb828075a3bdf"
+  },
+  "tools.m2_discovery_installation_profile.native_profile": {
+    "path": "tools/m2_discovery_installation_profile/native_profile.py",
+    "sha256": "eeb44b19066c3155617d03cd9342d41f960b81833fee38ad5dbec716789b1131"
+  },
+  "tools.m2_discovery_installation_profile.node_observation": {
+    "path": "tools/m2_discovery_installation_profile/node_observation.py",
+    "sha256": "f94b966a50cdb17d7e9f4a1a950d5b415857474ff1dad95f12187a744401a1d7"
+  },
+  "tools.m2_discovery_installation_profile.node_owner": {
+    "path": "tools/m2_discovery_installation_profile/node_owner.py",
+    "sha256": "dadb11afa39196102ea53f700de88404932e6451ef2145343a898646f7f83315"
+  },
+  "tools.m2_discovery_installation_profile.observation": {
+    "path": "tools/m2_discovery_installation_profile/observation.py",
+    "sha256": "cc1211ccffd101323c5fa33e89cd03af3af936f06eac3e1b8ed79d4d848cf9d9"
+  },
+  "tools.m2_discovery_installation_profile.parent_authority": {
+    "path": "tools/m2_discovery_installation_profile/parent_authority.py",
+    "sha256": "8d0233593b59c93bd640286e826881d24a59b131fdb477adfad06a4663b097c6"
+  },
+  "tools.m2_discovery_installation_profile.parent_review": {
+    "path": "tools/m2_discovery_installation_profile/parent_review.py",
+    "sha256": "da7246caeed13d888cfd4ac03b8f1f2fa63cf0baff9d799e9a83ab3fc262ceb1"
+  },
+  "tools.m2_discovery_installation_profile.paused_attestation": {
+    "path": "tools/m2_discovery_installation_profile/paused_attestation.py",
+    "sha256": "f153fff1f703fc7d686e1c9e83533450277171e544cdd473e9c400f6057bd3af"
+  },
+  "tools.m2_discovery_installation_profile.paused_binding": {
+    "path": "tools/m2_discovery_installation_profile/paused_binding.py",
+    "sha256": "33ba4748cee858632222ffde849311902a9c45337c43e6aca50963b334e7a747"
+  },
+  "tools.m2_discovery_installation_profile.private_review": {
+    "path": "tools/m2_discovery_installation_profile/private_review.py",
+    "sha256": "ae61211643478a1a7d6476129270bed41d29c18a362a77eaf093a2c1fc31ff17"
+  },
+  "tools.m2_discovery_installation_profile.provider_admission": {
+    "path": "tools/m2_discovery_installation_profile/provider_admission.py",
+    "sha256": "ea50f089152b1b7b5ecbdd1a3c3e5afb1be47bffb07e4a49fbf2b3fd683243f7"
+  },
+  "tools.m2_discovery_installation_profile.provider_creation": {
+    "path": "tools/m2_discovery_installation_profile/provider_creation.py",
+    "sha256": "c32401471ab4ecfb7943cb7324e9a63ffa9d2296e80bb837ecd52867446de76f"
+  },
+  "tools.m2_discovery_installation_profile.provider_installation_phase": {
+    "path": "tools/m2_discovery_installation_profile/provider_installation_phase.py",
+    "sha256": "56a5b67af6e89351c574ba3bcb09cf7aa4b233376bfe11adfddb0eaa71ae2281"
+  },
+  "tools.m2_discovery_installation_profile.provider_installation_template": {
+    "path": "tools/m2_discovery_installation_profile/provider_installation_template.py",
+    "sha256": "de4ee43ed47a79fb0b237cba5522b798b9c86a600e62031ba2352ccb09d56959"
+  },
+  "tools.m2_discovery_installation_profile.provider_materialized_admission": {
+    "path": "tools/m2_discovery_installation_profile/provider_materialized_admission.py",
+    "sha256": "42aad3b6b64bf7d65ca727cfe0642c1076714a25d8153ecb976596d8b0ba7852"
+  },
+  "tools.m2_discovery_installation_profile.provider_profile_publication": {
+    "path": "tools/m2_discovery_installation_profile/provider_profile_publication.py",
+    "sha256": "056aac156b077c70a3d475385130fa6435dafed132cd4e3915e3f8dabab41d17"
+  },
+  "tools.m2_discovery_installation_profile.provider_profiles": {
+    "path": "tools/m2_discovery_installation_profile/provider_profiles.py",
+    "sha256": "26e7da23fd72f3a5756df82b380cd2b236f93d0459e3169193b60977c6b49f11"
+  },
+  "tools.m2_discovery_installation_profile.provider_runtime_installation": {
+    "path": "tools/m2_discovery_installation_profile/provider_runtime_installation.py",
+    "sha256": "4ea8ab8940f03ff2622df87b7bd16833569137720d51c7cb1aad0c02c1296408"
+  },
+  "tools.m2_discovery_installation_profile.publication_primitives": {
+    "path": "tools/m2_discovery_installation_profile/publication_primitives.py",
+    "sha256": "0c5f427cad7167ef48c24f92e91484598ed339553443436d70dc6c2b6c226f61"
+  },
+  "tools.m2_discovery_installation_profile.publication_review": {
+    "path": "tools/m2_discovery_installation_profile/publication_review.py",
+    "sha256": "e79bb98da1c0a921506783c63ee989d0a9071a96d6d8cc869901bbe54f251603"
+  },
+  "tools.m2_discovery_installation_profile.token_mount_observation": {
+    "path": "tools/m2_discovery_installation_profile/token_mount_observation.py",
+    "sha256": "731945b516de4f8d757b76f1efd4b3bff3d1f17b82e07b228569f2943d70f441"
+  },
+  "tools.m2_discovery_installation_profile.transport_template": {
+    "path": "tools/m2_discovery_installation_profile/transport_template.py",
+    "sha256": "ab9a2d116db2125f2bd271f276c5db1a75d849d5e56daa1dcd3057bd788790e1"
+  },
+  "tools.materialize_semantic_shared_faces": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_semantic_shared_faces.py",
+    "sha256": "66986436206e9448e0bad58b651f4802a53e54eb179327c7050d963c22f33b62"
+  },
+  "tools.materialize_southbound_kernel": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel.py",
+    "sha256": "98e3004300226fecd509a46c009585df14021927f20d4e5c82d8ff7a8a8180de"
+  },
+  "tools.materialize_southbound_lease_refresh": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_lease_refresh.py",
+    "sha256": "1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084"
+  },
+  "tools.semantic_application_cutover.gated_creation_plan": {
+    "path": "tools/semantic_application_cutover/gated_creation_plan.py",
+    "sha256": "a4e13489d52697117246f979c42a2df766d19f67c7a99e0922c3bb4ac6b45c44"
+  },
+  "tools.semantic_application_cutover.transition_journal": {
+    "path": "tools/semantic_application_cutover/transition_journal.py",
+    "sha256": "665b644b61ad8d6ad1e9b9e169d1699bdcb2bc5af30a63464d32f6d8fca330c1"
+  },
+  "tools.semantic_frame_compiler.compile_creation_frame_policy": {
+    "path": "tools/semantic_frame_compiler/compile_creation_frame_policy.py",
+    "sha256": "36ee627e524415002a98fede8d7e61ad22ae95b6fec6b6686c1e01d878be570d"
+  },
+  "tools.semantic_lease_recovery.bounded_recovery": {
+    "path": "tools/semantic_lease_recovery/bounded_recovery.py",
+    "sha256": "ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd"
+  },
+  "tools.semantic_lease_recovery.recovery_journal": {
+    "path": "tools/semantic_lease_recovery/recovery_journal.py",
+    "sha256": "43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d"
+  },
+  "tools.semantic_policy_token_owner.iam_admission": {
+    "path": "tools/semantic_policy_token_owner/iam_admission.py",
+    "sha256": "4519d1d8685e29329d47378302fa1bf9ddbb6a36325b0181020a9c8eb0e29f16"
+  },
+  "tools.semantic_policy_token_owner.installed_owner": {
+    "path": "tools/semantic_policy_token_owner/installed_owner.py",
+    "sha256": "5455d56e973f6c6d9a35900193ac50dab44147a9bd7dedfa13d356bd91901cba"
+  },
+  "tools.semantic_policy_token_owner.owner_installation": {
+    "path": "tools/semantic_policy_token_owner/owner_installation.py",
+    "sha256": "e028d27aeec4f0a109a1d5171565370eafd1c7ddfcdfcb035d0c4f621cbe15b5"
+  },
+  "tools.semantic_policy_token_owner.producer": {
+    "path": "tools/semantic_policy_token_owner/producer.py",
+    "sha256": "2b218432f719c4bb4efa47a2786238b518617ac09023e588e8e605cb18f7c4dd"
+  },
+  "tools.semantic_policy_token_owner.reporter": {
+    "path": "tools/semantic_policy_token_owner/reporter.py",
+    "sha256": "2e157f06ffda14685be5377c35e61085da88b3dd9885a585f98a29aaf7c76f72"
+  },
+  "tools.semantic_policy_token_owner.source_stage": {
+    "path": "tools/semantic_policy_token_owner/source_stage.py",
+    "sha256": "4cd6307f24bc9f16acc9309d49410dd7b4ba2892385df2a393dc79edc108dc57"
+  },
+  "tools.semantic_policy_token_owner.supervisor": {
+    "path": "tools/semantic_policy_token_owner/supervisor.py",
+    "sha256": "1c83ad2482faa61c5ea8e76223996856221aebdb6e3acd4c9fea15c87c4cbdbf"
+  },
+  "tools.semantic_policy_token_owner.worker_entry": {
+    "path": "tools/semantic_policy_token_owner/worker_entry.py",
+    "sha256": "25f09f30823e4d9b6caaf9fefa36e68597604c594409570aa80c827f48f9dfe4"
+  },
+  "tools.semantic_provider_deployment_admission": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_admission.py",
+    "sha256": "fccde9a325939b400a95dc5e8714755727ed57b476b01c82019a15ffac8f8df4"
+  },
+  "tools.semantic_provider_deployment_authentication": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_authentication.py",
+    "sha256": "29e1942733abc74e8eb21eb927427c3e6e39806b06492f1dc614bd0805e53013"
+  },
+  "tools.semantic_provider_deployment_consumption": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_consumption.py",
+    "sha256": "053e2e5031cd51adf957388296a808cd8ba824dbc2ab671143e756312d050aef"
+  },
+  "tools.semantic_provider_deployment_producer": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_producer.py",
+    "sha256": "582371358c769f7724fb76bb17fd5e11530a09ab06c19a3a66351fc77d984776"
+  },
+  "tools.semantic_provider_deployment_protocol": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_protocol.py",
+    "sha256": "53f5629c3a57de622e51a05f9bf86b29f34328bf5756857afa458fb738f24e15"
+  },
+  "tools.semantic_provider_deployment_signing": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_signing.py",
+    "sha256": "b079f11f1175afb3bcf3f2e33bfa3d06fe188a38fd8fa53b0e52d1d80cd31cad"
+  },
+  "tools.semantic_provider_dns": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_dns.py",
+    "sha256": "c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930"
+  },
+  "tools.semantic_provider_installer_approval": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_installer_approval.py",
+    "sha256": "75b637b792ba1c83da95166f6c16db4c200e5affbd9220875b00de8fdb9b2c72"
+  },
+  "tools.semantic_provider_lease_coordination": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_coordination.py",
+    "sha256": "e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587"
+  },
+  "tools.semantic_provider_lease_nft": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_nft.py",
+    "sha256": "7a5f2b21c096228a3e4d298674e380f667c3004dd6d8ec19934a2302844c0f93"
+  },
+  "tools.semantic_provider_lease_owner": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner.py",
+    "sha256": "92736eebeccf344e565186bce94d29c65ffe1d50638d57eae81486e7b26e884d"
+  },
+  "tools.semantic_provider_node_observation": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_node_observation.py",
+    "sha256": "5a355a9904b6fc4bf665bb79c438e1cb9f3d11f8c2505b16df9834c046fde9c2"
+  },
+  "tools.semantic_provider_peer_bindings": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_peer_bindings.py",
+    "sha256": "4d99b60459d7122b5126d8424fb6233a9f3de15858219cd9061131b23f45af8b"
+  },
+  "tools.semantic_provider_preexec": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec.py",
+    "sha256": "53eb9b79efcdca0ffe93bb0c80a582a285caf9126fd97e930fa503b6106eb797"
+  },
+  "tools.semantic_provider_preexec_native": {
+    "path": "tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py",
+    "sha256": "ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528"
+  },
+  "tools.semantic_registry_operational_owner": {
+    "path": "tools/semantic_registry_operational_owner/__init__.py",
+    "sha256": "8961fa90a491b1d1af193170e33adb77beac535a64fd254b14268f36e94d489c"
+  },
+  "tools.semantic_registry_operational_owner.contract": {
+    "path": "tools/semantic_registry_operational_owner/contract.py",
+    "sha256": "9d1d15950f24843958ed5944ebbe4474b8da6d370a19f8cc13c8c508e3ad3a45"
+  },
+  "tools.semantic_registry_operational_owner.core": {
+    "path": "tools/semantic_registry_operational_owner/core.py",
+    "sha256": "5ef38d897dce2a03e5d3583d001166cb9fc0e28e67497cdc608074ac53843a2c"
+  },
+  "tools.semantic_registry_operational_owner.guard": {
+    "path": "tools/semantic_registry_operational_owner/guard.py",
+    "sha256": "c0a0faa63042fe2573390c6b6dd6a47a3d76dc60d25f2914a4e1da84e0b47860"
+  },
+  "tools.semantic_registry_operational_owner.installation": {
+    "path": "tools/semantic_registry_operational_owner/installation.py",
+    "sha256": "fe3f029bcadaa0221bc6cf0fec1035b2b731bc0cbfe4c0f3f13d92c1e9b81deb"
+  },
+  "tools.semantic_registry_operational_owner.store": {
+    "path": "tools/semantic_registry_operational_owner/store.py",
+    "sha256": "74ace46309720c7ffc3365e5089b66783283a8930a01a26419f9a3c0ba6f41e1"
+  },
+  "tools.semantic_transaction_profiles.assemble_provider_profiles": {
+    "path": "tools/semantic_transaction_profiles/assemble_provider_profiles.py",
+    "sha256": "890dff15e3826175ef01467a812cdd523e8ea5d50a306ad8727f866475ab9734"
+  },
+  "tools.semantic_transaction_profiles.assemble_provider_profiles_v2": {
+    "path": "tools/semantic_transaction_profiles/assemble_provider_profiles_v2.py",
+    "sha256": "80abd850a1284316301dca54076a6116520c442572352bb126dd2dc81dfc17e8"
+  },
+  "transition_journal": {
+    "path": "tools/semantic_application_cutover/transition_journal.py",
+    "sha256": "665b644b61ad8d6ad1e9b9e169d1699bdcb2bc5af30a63464d32f6d8fca330c1"
+  }
+}

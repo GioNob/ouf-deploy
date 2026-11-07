@@ -1,0 +1,159 @@
+{
+  "schema": "ouf.storage-postgres-publication-fence-hosted.v1",
+  "status": "VERIFIED_NATIVE_SYNTHETIC_PUBLICATION_FENCE_NOT_TARGET_ACCEPTANCE",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791",
+  "workflowRunId": 41794344238,
+  "workflowJobId": 126454780503,
+  "workflowUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41794344238",
+  "workflowConclusion": "success",
+  "offlineTestsPassed": 7,
+  "originalArtifact": {
+    "id": 13305236490,
+    "path": "evidence/artifacts/storage-postgres-publication-fence-41794344238.zip",
+    "bytes": 71600,
+    "sha256": "3ee85a6be1e23a40b0fe271177f22dfc7d7b36a2154aa6d9aaa9ca6cfdbd547b",
+    "githubDigestMatched": true,
+    "members": 104,
+    "internalChecksumsVerified": 103,
+    "expiresAt": "2027-02-02T07:44:18Z"
+  },
+  "attestation": {
+    "createdByHostedJob": true,
+    "subject": "SHA256SUMS",
+    "subjectSha256": "37d463350326ec6a2e0b2505f28a6a0c3a547df18f3cfa13f61ee089bc330f41",
+    "url": "https://github.com/GioNob/ouf-deploy/attestations/63475062",
+    "localCryptographicVerificationPerformed": false,
+    "separateConsumerSignatureVerificationPerformed": false
+  },
+  "sourceBindingsVerifiedAgainstExactGitTree": [
+    {
+      "path": ".github/workflows/storage-postgres-writer-fence.yml",
+      "sha256": "e8df2e7c523408610e6723c201d83903d680858509eccfd10b384f41d7c9e538",
+      "gitBlobSha": "5fba84e1d096f87d29bfc25af3ac51edbbed173e"
+    },
+    {
+      "path": "tests/run_storage_postgres_writer_fence.py",
+      "sha256": "c983b45b83a0466ad4962799bc199cf66e0fb00ae08c87eb7be42dd145e0f109",
+      "gitBlobSha": "dc4d2b3be7b98d6d03e980466d27f4f5ec073c51"
+    },
+    {
+      "path": "tests/test_storage_postgres_writer_fence.py",
+      "sha256": "6d45aadf1ed926976bddcbc44a7e655fc0e88aebe1bba39a419c52c794655412",
+      "gitBlobSha": "b8f0082a1e8600dfc3624f45080e3e24ae9ceb80"
+    },
+    {
+      "path": "tests/fixtures/storage-recovery/writer-fence.sql",
+      "sha256": "49d64f540ad476129ec978aa065f9c07bb7d463d69c506c814982e9bb204f042",
+      "gitBlobSha": "c168fe6eb87e57c29cd10a4b4a93d25a1172399e"
+    },
+    {
+      "path": "tests/run_storage_postgres_fixture_native.py",
+      "sha256": "c730cd625cd3c23bb69881d220135662c2b9b8d570f16a5d9485efb204948780",
+      "gitBlobSha": "dc7a2a6ef9d51ea1805ae551cad706f3409b2069"
+    },
+    {
+      "path": "tools/storage_recovery/coordinated.py",
+      "sha256": "5e691c0e51d4e7b986b97cd1f51992d74893bf90f50396ea0033585168c20499",
+      "gitBlobSha": "14f58dffec9734c453319f13227e590c73a2cc5c"
+    },
+    {
+      "path": "tools/storage_recovery/manifest.py",
+      "sha256": "ca368243e5dfbe5cffde6b9f6130ec17a59ae95a4fcc3c76105ccf41797716d6",
+      "gitBlobSha": "6ec115ff52de5e887dc7269ec2d95f90d2c2860c"
+    },
+    {
+      "path": "tools/storage_recovery/postgres_fixture.py",
+      "sha256": "772a1b93e1acd4ab191d2621766c51ef7ef1fbe0534d3a1553ce076b3b379f5b",
+      "gitBlobSha": "f0decf417c1d60d244274b17b3013e914f9dfa38"
+    },
+    {
+      "path": "tools/storage_recovery/profile.py",
+      "sha256": "bbe1b3015374d1b6ead80bf86d4718c249979dc82cc1add356d96c1f430c187e",
+      "gitBlobSha": "9c5bffc8b8ed6d55f835552d61f153d862cf8d94"
+    },
+    {
+      "path": "profiles/seaweedfs-452-lab/profile.json",
+      "sha256": "44143abba2540321d778546a2365eab97c7ed3fbe40421baaf4e422b3e6b3f37",
+      "gitBlobSha": "0bb23a8ce7cc80e51ab3350728d46f55e5dfe364"
+    }
+  ],
+  "nativeReceipt": {
+    "acceptanceTestsPassed": 0,
+    "checkCount": 23,
+    "checksPassed": [
+      "null-control-input-does-not-transition",
+      "atomic-single-reservation",
+      "durable-effect-before-ack",
+      "stable-ack-replay-no-second-effect",
+      "same-key-different-intent-denied",
+      "persist-inflight-intent",
+      "atomic-one-controller-transition",
+      "late-worker-publication-denied",
+      "old-generation-new-claim-denied",
+      "draining-new-generation-claim-denied",
+      "pending-ambiguity-prevents-frozen",
+      "writer-privilege-denial",
+      "writer-privilege-denial",
+      "writer-privilege-denial",
+      "restart-preserves-epoch-intents-and-history",
+      "restarted-stale-worker-denied",
+      "ambiguous-retry-does-not-resend",
+      "wrong-reconciliation-digest-denied",
+      "exact-body-reconciliation",
+      "reconciliation-idempotent",
+      "stale-controller-version-denied",
+      "freeze-after-all-intents-terminal",
+      "frozen-generation-no-new-write"
+    ],
+    "cleanStop": true,
+    "durableObjectEffects": 2,
+    "externalEffect": "two fsynced local synthetic files; no S3 writes",
+    "externalStorageWritesFenced": false,
+    "finalLedgerSha256": "45c8afbbcc2ad77cad2244822888fad66c051f1c0035c540ddde70ee0e45aa7c",
+    "gatesClosed": 0,
+    "oneRestartPreservedState": true,
+    "originalAckPreserved": true,
+    "pitrQualified": false,
+    "postgresVersion": "17.11",
+    "productionCodeChanged": false,
+    "publicationFenceEnforcedInFixture": true,
+    "realConcurrentClients": 2,
+    "releaseAdmitted": false,
+    "rpoMeasured": false,
+    "rtoMeasured": false,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-postgres-publication-fence-fixture.v1",
+    "scope": "Disposable fixture role and schema only; not deployed OUF writer controls.",
+    "simultaneousRecoveryCutQualified": false,
+    "status": "NATIVE_SYNTHETIC_PUBLICATION_FENCE_PASS",
+    "targetOperations": 0,
+    "targetWriterFenceQualified": false,
+    "unresolvedIntentsBlockFreeze": true
+  },
+  "independentReadback": {
+    "finalLedgerAndExactOrderedHistoryVerified": true,
+    "twoRetainedFixtureBodiesRehashed": true,
+    "bodyBytes": 60,
+    "acknowledgedAndReconciledStatesVerified": true
+  },
+  "limits": [
+    "Publication gate in a disposable PostgreSQL schema only, not fencing of external S3 writes or deployed OUF writers.",
+    "The two actual external effects are fsynced local fixture files, not SeaweedFS objects.",
+    "No simultaneous PostgreSQL/S3 recovery cut, WAL/PITR or representative RPO/RTO.",
+    "Hosted attestation creation is observed; consumer/local cryptographic publisher verification is not claimed."
+  ],
+  "preserved": {
+    "consumedScopes": 17,
+    "cumulativeEngineGets": 52,
+    "teatriTechnical": "8/8",
+    "teatriFunctional": "6/6",
+    "farmacieRows": 61,
+    "farmacieOpen": 10,
+    "farmacieType": "STRING",
+    "minioActive": true,
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0
+  }
+}

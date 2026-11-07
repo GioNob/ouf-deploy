@@ -1,0 +1,29 @@
+# Generazione 29 — coorte tecnica e riassociazione dei testi legali
+
+Questa coorte usa soltanto la nuova generazione standard a 29 patch, binario `a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7`. I lock, reader, coorte e risultati della generazione15 restano invariati. Il lock29 viene prodotto soltanto dai dati reali della nuova pipeline: nessun identificatore o digest provvisorio può ammettere un laboratorio.
+
+La fase A è **hosted PASS** nel run [41696541570](https://github.com/GioNob/ouf-deploy/actions/runs/41696541570), commit `041992eacd851d277cd049f03b9fe68a393e6df4`: quattro job riusciti, 6.156 test PASS / 5 skip su 21 package. Gli artifact reali sono stati scaricati e ricontrollati; il reader29 ha riprodotto OCI e assessment, 20 checksum e 37 sorgenti. La nuova scan ha zero rilievi in tutte e cinque le severità. La [ricevuta A](../evidence/seaweedfs-452-generation29-image-hosted-20261103.json), il [lock29](../releases/seaweedfs-452-generation29-candidate-lock-20261103.json) e il readback ZIP trattenuto vincolano i bytes effettivi.
+
+La [coorte locale](../evidence/seaweedfs-452-generation29-cohort-local-20261103.json) è PASS sui nuovi artifact e ha riprodotto esattamente la [riassociazione dei testi](../evidence/seaweedfs-452-generation29-licence-rebinding-local-20261103.json). La qualifica hosted della fase B e i laboratori runtime29 restano da eseguire; i loro esiti non sono anticipati da queste prove locali.
+
+## Riuso ammesso e confronto effettivo
+
+Il nuovo binario contiene le stesse 262 righe di moduli, con identici nomi, versioni e checksum Go, del profilo standard precedente. L'hash dell'inventario è `dfedc0d9f4b48e3886dea9c072c329bbe2b297474d402a888a3d3ae0d2a5ebd3`. Questa uguaglianza consente di ricontrollare i testi già raccolti; non trasferisce i risultati dello scanner vulnerabilità o la vecchia SPDX alla nuova immagine.
+
+Il verificatore ricostruisce i 262 insiemi di testi da due archivi immutabili: corpus storico SHA256 `851d65dc1ac3788178978b9effc04c257475492ad6d3e5dcc04346d033288c67` e delta patch15 SHA256 `7cf2b9dc596ded071c9c75f1bfeb87245f443e25984b9cddf8bf4f411791eda2`. Verifica tutti i loro checksum interni e poi ricalcola SHA256 dei 262 ZIP modulo, h1 dei contenuti e checksum go.mod prima di confrontare i 353 testi byte per byte. Non esegue il codice dei moduli.
+
+I 17 archivi MPL trattenuti devono coincidere con gli ZIP verificati e con l'identità del modulo. Il supplemento parent di Flatbuffers resta legato al medesimo commit e blob Git: tutti i dieci file del modulo vengono confrontati con quella prova. I nove testi del sorgente SeaweedFS vengono confrontati con la sorgente a 29 patch; il set deve essere completo. I 39 testi della toolchain devono coincidere con Go1.27.3. Il LICENSE upstream resta SHA256 `d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613`.
+
+Il preflight locale ha verificato 389.686.767 byte di ZIP, senza divergenze. Le tre classificazioni UNKNOWN precedenti rimangono tali per gli stessi testi; non sono reinterpretate come un'autorizzazione legale. La ricevuta indica esplicitamente che non è stata effettuata una nuova classificazione, che redistribuzione e review licenze restano aperte e che non vengono trasferite vecchie scan/SPDX.
+
+## Binding alla nuova immagine
+
+Il nuovo [verificatore](../scripts/verify-seaweedfs-452-generation29-cohort.py) richiede producer ZIP29 e readback indipendente29 esatti, identificati dal nuovo lockv2. Ricostruisce OCI e assessment con il reader29, confronta tutti gli otto membri del readback ospitato e verifica i binding del record publisher: repository, workflow29, commit, tentativo, run e subject del manifest. HIGH, CRITICAL o UNKNOWN vulnerabilità impediscono il successo; LOW e MEDIUM rimangono visibili secondo la regola del profilo. Le tre classificazioni licenze UNKNOWN sono un dominio distinto dalle severità delle vulnerabilità.
+
+Il [workflow](../.github/workflows/storage-452-generation29-cohort.yml) verifica inoltre la firma producer con `gh 2.97.0` a checksum fisso. Il Python dichiara soltanto il confronto del record di verifica e non finge di effettuare da solo la verifica crittografica. Il job acquisisce gli esatti ZIP modulo dal Go proxy con SumDB, ricostruisce l'albero sorgente `574ad42543851ffe58cc025e14b1011609ff83de` e ripete i confronti dei testi. Produce `licence-rebinding.json`, `cohort-receipt.json`, prova publisher e manifest attestato.
+
+La ricevuta della coorte conserva `candidateLockSha256`, binario, OCI e digest di entrambi gli artifact. Una ricevuta hosted verrà trattenuta nel repository soltanto dopo il completamento e la verifica del job. Il job `qualify-cohort` pubblica un bundle di nove file soltanto al termine delle verifiche; espone ID e SHA256 effettivi restituiti da upload-artifact, più gli hash calcolati del lock e della ricevuta. Il job `runtime-labs`, dipendente dal successo dell'intero job, richiama automaticamente il workflow riusabile dei laboratori. Quel workflow scarica il bundle esatto, verifica tutti gli otto checksum, il lock identico al repository e i binding della ricevuta prima di qualsiasi avvio Docker; riesamina poi l'archivio immagine con il reader29. Non serve un dispatch umano né una ricevuta hosted inventata preventivamente nel repository.
+
+## Limiti
+
+La dichiarazione di chiusura lifecycle è limitata a AWS SDK Go v1 e al manager S3 deprecato; non certifica la manutenzione generale di ogni altro modulo. Le prove sono sviluppo/qualifica e non accettazione target. `releaseAdmitted=false`, `runtimeAuthorityIssued=false`, `targetOperations=0`; review licenze, redistribuzione e custodia durevole restano OPEN. Nessuna funzione dei PET/HUMAN/THS è trasferita al verificatore. Scope consumati, Teatri/M1 e Farmacie restano invariati; MinIO resta in servizio.

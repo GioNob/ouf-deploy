@@ -1,0 +1,63 @@
+{
+  "schema": "ouf.storage.seaweedfs.sdk-v1-test-closure.v1",
+  "generated_at": "2026-11-03T10:05:00+01:00",
+  "upstream": {
+    "repository": "seaweedfs/seaweedfs",
+    "commit": "984eac6a790be89e2a11de175a7413e1e3e32dd3"
+  },
+  "previous_checkpoint": "c84347b91ba43e2f0a395c476f781fc61f058a3f",
+  "patch": {
+    "name": "4.52-test-fixtures-remove-sdk-v1.patch",
+    "sha256": "d772a087347f23f75c13b15c7179b6ad7845d053ea6ca9b31cec92917f6b3b16",
+    "bytes": 91931,
+    "files": 26,
+    "exact_reapply": true,
+    "byte_compare": true
+  },
+  "qualified_storage_test_graph": {
+    "packages": 1839,
+    "aws_sdk_go_v1_packages": 0,
+    "weed_source_importers": 0
+  },
+  "production_graph": {
+    "packages": 1811,
+    "aws_sdk_go_v1_packages": 0
+  },
+  "regression_suite": {
+    "test_pass": 5591,
+    "test_skip": 5,
+    "package_pass": 20,
+    "failures": []
+  },
+  "binary": {
+    "sha256": "d9873b7d5c484266c9226e90acf20215e7ed1985fe2b235171f617768471a98f",
+    "bytes": 223555213,
+    "same_as_patch_11": true,
+    "aws_sdk_go_v1_build_metadata": false
+  },
+  "extended_non_acceptance_scan": {
+    "scope": "./weed/...",
+    "test_pass": 15312,
+    "test_skip": 75,
+    "package_pass": 160,
+    "green": false,
+    "failing_packages": ["weed/mount", "weed/shell", "weed/server"],
+    "classification": "outside the 20-package storage baseline; sandbox/environment assumptions; not used as acceptance evidence"
+  },
+  "remaining_repository_v1": {
+    "root_go_mod_version": "v1.55.8",
+    "root_module_importers_outside_weed": 20,
+    "nested_test_s3_iam_go_mod_version": "v1.44.0",
+    "nested_test_s3_iam_importers": 13,
+    "claim": "qualified storage graph clean; repository/module eradication not yet complete"
+  },
+  "governance": {
+    "target_operations": 0,
+    "gate_acceptance": "0/8",
+    "acceptance_tests": "0/21",
+    "real_objects_copied": "0/120",
+    "scope17_52_engine_get": "preserved",
+    "teatri_m1": "8/8 technical; 6/6 functional; preserved",
+    "farmacie": "61 rows; 10 OPEN/STRING; preserved"
+  }
+}

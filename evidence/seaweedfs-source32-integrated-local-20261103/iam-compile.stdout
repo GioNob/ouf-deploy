@@ -1,0 +1,5 @@
+{"Time":"2026-11-03T22:03:14.100729425+01:00","Action":"start","Package":"github.com/seaweedfs/seaweedfs/test/s3/iam"}
+{"Time":"2026-11-03T22:03:14.104273581+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/s3/iam","Output":"testing: warning: no tests to run\n"}
+{"Time":"2026-11-03T22:03:14.104395464+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/s3/iam","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-11-03T22:03:14.104756533+01:00","Action":"output","Package":"github.com/seaweedfs/seaweedfs/test/s3/iam","Output":"ok  \tgithub.com/seaweedfs/seaweedfs/test/s3/iam\t0.004s [no tests to run]\n"}
+{"Time":"2026-11-03T22:03:14.105845532+01:00","Action":"pass","Package":"github.com/seaweedfs/seaweedfs/test/s3/iam","Elapsed":0.005}

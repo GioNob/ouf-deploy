@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.storage-backup-linux-cipher-operator-receipt.v1",
+  "source": "Giovanni: operator-supplied JSON, 2026-11-06; not an independent live collection",
+  "reportedResult": {
+    "acceptanceCreditAdded": 0,
+    "ageArchiveSha256": "cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10",
+    "ageBinarySha256": "eb7dd1b518f0a307c99cd97782623c5321da049154b04acd2d98d21aa7bc9b2c",
+    "ageVersion": "v1.3.2",
+    "applicationDataReads": 0,
+    "automaticReplayAllowed": false,
+    "ciphertextBytes": 724,
+    "ciphertextSha256": "ae7b0c220d8c23fcc44e860d221e290dfa62b89443faa80a5e7aeef050693358",
+    "crossPlatformDecryptProven": false,
+    "privateKeyRead": false,
+    "probeBytes": 512,
+    "probeSha256": "29dde7690fa55acfe33b59502cab3952b0e399840db8d9b38f4dbbd0f167dbe4",
+    "providerRequests": 0,
+    "recipientFileSha256": "20582d7f592199d5964fc64ece8d035bdf3b93df026c5e222eca615c0f8bb2c0",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-backup-linux-cipher.v1",
+    "status": "LINUX_CIPHER_PREPARED_WINDOWS_DECRYPT_REQUIRED",
+    "targetCapturePerformed": false
+  },
+  "ciphertextBase64OmittedFromPublicGit": true,
+  "conversationCiphertextLocallyDecodedAndSha256Verified": true,
+  "decodedCiphertextBytes": 724,
+  "ageHeaderVerified": true,
+  "agentDecryptionPerformed": false,
+  "fullPublicKeyAndPersonalPathsPublished": false,
+  "acceptanceCreditAdded": 0
+}

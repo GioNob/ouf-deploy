@@ -2,6 +2,7 @@
 import copy
 import ast
 import base64
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -176,7 +177,11 @@ class BindingCandidateTest(unittest.TestCase):
     def test_exact_documented_delivery_binds_retained_snapshot_hash_and_memory_source(self):
         text = (ROOT / 'releases/POLICY_TOKEN_IAM_BINDING_COMPILATION_20261013.md').read_text()
         command = text.split("python3 - <<'PY' | tee ouf-policy-token-iam-binding-compilation.json\n", 1)[1].split('\nPY\n', 1)[0]
-        raw = SOURCE.read_bytes(); calls = []
+        # This command intentionally pins the consumed 13 October source, not
+        # the later compiler tested by the other cases in this module.
+        raw = (ROOT/'tests/fixtures/policy_token_iam_binding_bcd20f30085.source').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),'a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d')
+        calls = []
         with tempfile.TemporaryDirectory(dir=ROOT) as temp:
             home = Path(temp); gh = home / 'ouf-gh-2.102.0.PNoFbF/gh_2.102.0_linux_amd64/bin/gh'
             gh.parent.mkdir(parents=True); gh.write_text('UNEXECUTED_FIXTURE_GH'); gh.chmod(0o700)
@@ -197,5 +202,18 @@ class BindingCandidateTest(unittest.TestCase):
             with patch('pathlib.Path.home', return_value=home), patch('shutil.which', return_value=None), patch('subprocess.run', side_effect=run):
                 with self.assertRaises(SystemExit) as result: exec(compile(command, '<documented-binding-command>', 'exec'), {})
             self.assertEqual(result.exception.code, 0); self.assertEqual(len(calls), 2)
+
+    def test_historical_command_rejects_current_compiler_before_sudo(self):
+        text=(ROOT/'releases/POLICY_TOKEN_IAM_BINDING_COMPILATION_20261013.md').read_text()
+        command=text.split("python3 - <<'PY' | tee ouf-policy-token-iam-binding-compilation.json\n",1)[1].split('\nPY\n',1)[0]
+        raw=SOURCE.read_bytes()
+        self.assertNotEqual(hashlib.sha256(raw).hexdigest(),'a8cf18ea78b3acc7261838711345a218e678bfaf11e498dcba6859862d6b655d')
+        with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+            with (patch('pathlib.Path.home',return_value=Path(temp)),patch('shutil.which',return_value='/fixture/unexecuted-gh'),
+                patch('subprocess.run',return_value=subprocess.CompletedProcess([],0,base64.b64encode(raw))) as run):
+                with self.assertRaises(SystemExit) as result:exec(compile(command,'<historical-binding-command>','exec'),{})
+        self.assertEqual(result.exception.code,'phase=DELIVERY reason=SOURCE_HASH_MISMATCH; no sudo executed')
+        self.assertEqual(run.call_count,1)
+        self.assertEqual(run.call_args.args[0][0],'/fixture/unexecuted-gh')
 
 if __name__ == '__main__': unittest.main()

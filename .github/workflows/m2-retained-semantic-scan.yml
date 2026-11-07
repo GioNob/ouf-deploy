@@ -1,0 +1,54 @@
+name: M2 fresh scan of the signed original retained Semantic
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - '.github/workflows/m2-retained-semantic-scan.yml'
+      - 'scripts/check-m2-retained-semantic-scan-20261101.py'
+permissions: {contents: read, actions: read}
+jobs:
+  scan-exact-retained-semantic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Preserve and audit the exact original signed-cohort image without building or importing it
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=5s 300s gh api repos/GioNob/ouf-deploy/actions/artifacts/11907557440/zip > original.zip
+          fixture="/var/lib/ouf-retained-semantic-scan-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture/repository"
+          sudo cp -a scripts tools evidence "$fixture/repository/"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo python3 -I -B -S "$fixture/repository/scripts/preserve-m2-retained-semantic-origin-20261101.py" "$GITHUB_WORKSPACE/original.zip" "$fixture/output"
+          sudo cp -a "$fixture/output/preserved" scan-evidence
+          sudo chown -R "$(id -u):$(id -g)" scan-evidence
+          sudo cp "$fixture/output/verified-original/package/semantic/image.docker.tar" retained-semantic-image.tar
+          sudo chown "$(id -u):$(id -g)" retained-semantic-image.tar
+          printf '%s  %s\n' a0f1e2252f01a0e4a45c1262f124298000c56d206bdf9953b78bcd6b3ad4017a retained-semantic-image.tar | sha256sum --check --strict
+      - name: Scan original bytes at every severity, including unfixed findings
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.70.0
+          scan-type: image
+          input: retained-semantic-image.tar
+          format: json
+          output: scan-evidence/trivy-image.json
+          list-all-pkgs: true
+          scanners: vuln
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: 0
+      - name: Apply the unchanged image-bound HIGH CRITICAL UNKNOWN gate
+        run: python3 -I -B -S scripts/check-m2-retained-semantic-scan-20261101.py scan-evidence
+      - name: Retain actual report even when the original image is held
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-retained-semantic-scan-${{ github.run_id }}
+          path: scan-evidence/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,109 @@
+{
+  "schema": "ouf.storage-target-baseline-assessment.v1",
+  "date": "2026-11-02",
+  "receipt": "evidence/seaweedfs-private-baseline-target-20261102.json",
+  "status": "METADATA_CAPTURE_COMPLETE_NOT_ADMITTED",
+  "observations": {
+    "control": 16,
+    "cumulativeControlAttempts": 16,
+    "cumulativeEngineGets": 52,
+    "s3Requests": 265,
+    "s3Complete": true,
+    "records": 120,
+    "buckets": 2,
+    "logicalBytesAcrossVersions": 203743,
+    "advertisedOufHashes": 110,
+    "objectsWithoutAdvertisedOufHash": 10,
+    "verifiedObjectBodies": 0,
+    "namespaceGate": "PASS",
+    "unsupportedBucketFeatureResponses": 2,
+    "unsupportedFeatureNames": "NOT_PRESENT_IN_PUBLIC_RECEIPT",
+    "versionedRecords": 0,
+    "deleteMarkers": 0,
+    "incompleteMultipartUploads": 0,
+    "defaultEncryptedBuckets": 0,
+    "defaultEncryptionObservationDoesNotProveAllObjectsUnencrypted": true
+  },
+  "custody": {
+    "currentRootPasswordSource": {
+      "kind": "REGULAR",
+      "mode": "0600",
+      "rootOwned": false,
+      "singleLink": true,
+      "sizeWithinLimit": true
+    },
+    "priorGuardViolationSufficientNow": "NON_ROOT_OWNER",
+    "control15ExactHistoricalPredicate": "NOT_RETROSPECTIVELY_PROVEN",
+    "effectiveSources": [
+      "EXPLICIT_ENV",
+      "DECLARED_SECRET_FILE"
+    ],
+    "sourceFilesOpened": 1,
+    "sourceBytesRead": 65,
+    "credentialValuesSpooled": false,
+    "credentialSourceCustodyAdmitted": false,
+    "metadataCandidateRows": 9,
+    "uniqueMetadataCandidates": 7
+  },
+  "host": {
+    "observedAtControl": 14,
+    "retainedSnapshots": 13,
+    "otherTwelveBindingsRefreshed": false,
+    "memoryAvailableBytes": 11830857728,
+    "dataFreeBytes": 293381369856,
+    "dataTotalBytes": 539792977920,
+    "capacityAdmitted": false,
+    "throughputMeasured": false,
+    "independentDestinationPlacementProven": false
+  },
+  "remaining": {
+    "privateFeatureClassification": true,
+    "objectBodyHashesForAll120": true,
+    "activeWriterAndExternalConsumerCensus": true,
+    "databaseReferenceReconciliation": true,
+    "backupAndIndependentDestination": true,
+    "serverSecurityGate": "HELD_ONE_UNKNOWN",
+    "allEightGates": "OPEN",
+    "all21AcceptanceTests": "OPEN",
+    "m2Accepted": false
+  },
+  "next": {
+    "offlinePlanner": "QUALIFIED_AWAITING_OPERATOR",
+    "control": 17,
+    "maximumNewEngineGets": 0,
+    "maximumNewS3Requests": 0,
+    "maximumCredentialFileReads": 0,
+    "sourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+    "retainedHostBaselineHash": "49aaea817bff55ff5ab901f2f54784e97ac85b7e2bbf2ec489055bab94c790c4",
+    "privatePlanOnly": true,
+    "copyEngineImplemented": false,
+    "targetExecuted": false,
+    "producerSource": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+    "producerRunId": 41488131645,
+    "independentRunId": 41488523185,
+    "instructions": "docs/OUF_SEAWEEDFS_OFFLINE_PLAN_20261102.md",
+    "dossier": "evidence/seaweedfs-offline-plan-qualified-20261102.json"
+  },
+  "sourcesConsulted": [
+    {
+      "path": "docs/OUF_MINIO_SEAWEEDFS_MINIPET_v1_0_20261102.md",
+      "ref": "d45fed08b039d7106c3e1e7085f17c2bfcadc0fb",
+      "sections": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ]
+    },
+    {
+      "path": "releases/PET_ROADMAP_RECONCILIATION_20261010.md",
+      "ref": "d45fed08b039d7106c3e1e7085f17c2bfcadc0fb",
+      "scope": "normative-version introduction; not the unavailable original PET attachments"
+    }
+  ],
+  "fullOriginalPetComplianceClaimed": false,
+  "migrationPerformed": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "newTargetOperationsSinceReceipt16": 0
+}

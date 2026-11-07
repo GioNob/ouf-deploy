@@ -1,0 +1,43 @@
+{
+  "schema": "ouf.storage.postgres-logical-restore-local-delivery.v1",
+  "baseCommit": "4bd8c2645766ffbe407ca744c7bd72691a46ef9c",
+  "files": [
+    {
+      "path": ".github/workflows/storage-postgres-native-fixture.yml",
+      "sha256": "858d55e1ac810324ff936b813236328c3ac1e2338c23f1574e4a2e7e12b1732b",
+      "bytes": 5617
+    },
+    {
+      "path": "tests/run_storage_postgres_fixture_native.py",
+      "sha256": "c730cd625cd3c23bb69881d220135662c2b9b8d570f16a5d9485efb204948780",
+      "bytes": 19191
+    },
+    {
+      "path": "tests/run_storage_postgres_logical_restore.py",
+      "sha256": "d8abe6824345914030ed90be952af31865c923243f5ef966f8091b223d22eac6",
+      "bytes": 7044
+    },
+    {
+      "path": "tests/test_storage_postgres_logical_restore_contract.py",
+      "sha256": "fef11a3f9682c17b2682c087a34c11fa28ecdd9b4096b22d29764b849bb5461c",
+      "bytes": 2772
+    }
+  ],
+  "historicalNativeCaseClassByteIdentical": true,
+  "tests": {
+    "offlinePassed": 14,
+    "historicalContractPassed": 10,
+    "restoreContractPassed": 4,
+    "workflowYamlParsed": true,
+    "embeddedShellSyntaxPassed": 4,
+    "nativeLogicalRestore": "PENDING_HOSTED"
+  },
+  "targetOperations": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "livePostgresRecoveryQualified": false,
+  "seaweedfsExercised": false,
+  "pitrQualified": false,
+  "rpoMeasured": false,
+  "rtoMeasured": false
+}

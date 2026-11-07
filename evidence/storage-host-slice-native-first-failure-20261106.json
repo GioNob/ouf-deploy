@@ -1,0 +1,13 @@
+{
+  "schema": "ouf.storage-host-slice-native-failure.v1",
+  "runId": 42307935628,
+  "jobId": 128201918354,
+  "commit": "4cc44dc7862264ce7bfbe2786c1fc184d2d2ed9a",
+  "unitTestsPass": 4,
+  "failedStage": "inactive cgroup probe before apply",
+  "reason": "SLICE_CGROUP_REQUIRED",
+  "finding": "Never-started instantiated service slice has typed empty ControlGroup; canonical hierarchy must be bound before it exists",
+  "fixtureDelta": "Two real instantiated service names expose escaped template slices; previously five simple names",
+  "targetExecuted": false,
+  "acceptanceCreditAdded": 0
+}

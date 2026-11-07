@@ -1,0 +1,65 @@
+test_ambiguous_or_nonquiescent_fence_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_ambiguous_or_nonquiescent_fence_rejected) ... ok
+test_bad_reference_or_socket_rejected_before_process (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_bad_reference_or_socket_rejected_before_process) ... ok
+test_descendant_retaining_pipes_cannot_hold_adapter_open (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_descendant_retaining_pipes_cannot_hold_adapter_open) ... ok
+test_duplicate_json_fields_trailing_frames_and_invalid_json_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_duplicate_json_fields_trailing_frames_and_invalid_json_rejected) ... ok
+test_export_feeds_body_reconciler_and_corruption_remains_visible (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_export_feeds_body_reconciler_and_corruption_remains_visible) ... ok
+test_nonzero_exit_with_valid_json_never_yields_snapshot (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_nonzero_exit_with_valid_json_never_yields_snapshot) ... ok
+test_oversized_or_inconsistent_catalog_rejected (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_oversized_or_inconsistent_catalog_rejected) ... ok
+test_password_file_is_private_empty_regular_and_removed_after_success (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_private_empty_regular_and_removed_after_success) ... ERROR
+test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) ... 
+  test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='warning') ... FAIL
+  test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='exit') ... FAIL
+  test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='timeout') ... FAIL
+test_psql_command_is_fixed_readonly_and_environment_is_not_inherited (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_psql_command_is_fixed_readonly_and_environment_is_not_inherited) ... ok
+test_real_subprocess_exports_compatible_complete_inputs_without_health_claim (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_real_subprocess_exports_compatible_complete_inputs_without_health_claim) ... ok
+test_stderr_warning_blocks_otherwise_valid_snapshot (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_stderr_warning_blocks_otherwise_valid_snapshot) ... ok
+test_streaming_stderr_limit_stops_producer_and_redacts_payload (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_streaming_stderr_limit_stops_producer_and_redacts_payload) ... ok
+test_streaming_stdout_limit_stops_producer_without_unbounded_buffer (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_streaming_stdout_limit_stops_producer_without_unbounded_buffer) ... ok
+test_timeout_kills_process_and_does_not_retry (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_timeout_kills_process_and_does_not_retry) ... ok
+
+======================================================================
+ERROR: test_password_file_is_private_empty_regular_and_removed_after_success (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_private_empty_regular_and_removed_after_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tests/test_storage_recovery_postgres_fixture.py", line 129, in test_password_file_is_private_empty_regular_and_removed_after_success
+    self.run_peer(code)
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tests/test_storage_recovery_postgres_fixture.py", line 41, in run_peer
+    return adapter.read_fixture_snapshot(psql=self.peer(code), socket_directory=self.root,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tools/storage_recovery/postgres_fixture.py", line 198, in read_fixture_snapshot
+    raw = _run_bounded(argv, timeout=timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tools/storage_recovery/postgres_fixture.py", line 102, in _run_bounded
+    require(stderr_count == 0, "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT")
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tools/storage_recovery/coordinated.py", line 32, in require
+    raise ReconciliationError(code)
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+======================================================================
+FAIL: test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='warning')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tests/test_storage_recovery_postgres_fixture.py", line 146, in test_password_file_is_removed_on_warning_exit_and_timeout
+    self.assertFalse(password.exists())
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='exit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tests/test_storage_recovery_postgres_fixture.py", line 146, in test_password_file_is_removed_on_warning_exit_and_timeout
+    self.assertFalse(password.exists())
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_password_file_is_removed_on_warning_exit_and_timeout (test_storage_recovery_postgres_fixture.PostgresFixtureAdapterTests.test_password_file_is_removed_on_warning_exit_and_timeout) (mode='timeout')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/98dabd1608e5/pg-native-passfile-fix-stage/proposal/tests/test_storage_recovery_postgres_fixture.py", line 146, in test_password_file_is_removed_on_warning_exit_and_timeout
+    self.assertFalse(password.exists())
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.830s
+
+FAILED (failures=3, errors=1)

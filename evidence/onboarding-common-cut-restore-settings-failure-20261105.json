@@ -1,0 +1,51 @@
+{
+  "source": "13fb6970c1727751ab15767319ae5cd6b2f69ddc",
+  "runId": 41994377678,
+  "nativeJob": 127133906182,
+  "readbackJob": 127134593544,
+  "conclusion": "failure",
+  "diagnosis": "Python percent formatting treated PostgreSQL restore_command %f as a floating-point placeholder. Failure occurred while writing negative restore settings, before starting a restored PostgreSQL or S3. Config generation now uses f-string with literal %f/%p, covered by a regression.",
+  "traceback": "Traceback (most recent call last):\n2026-11-05T08:27:19.4709609Z   File \"/home/runner/work/ouf-source-onboarding/ouf-source-onboarding/scripts/ci-upload-common-cut.py\", line 187, in <module>\n2026-11-05T08:27:19.4710718Z     if __name__=='__main__':main()\n2026-11-05T08:27:19.4711191Z                             ^^^^^^\n2026-11-05T08:27:19.4712986Z   File \"/home/runner/work/ouf-source-onboarding/ouf-source-onboarding/scripts/ci-upload-common-cut.py\", line 150, in main\n2026-11-05T08:27:19.4714096Z     start_restore(PG,negative,badwal,image['Id'])\n2026-11-05T08:27:19.4715202Z   File \"/home/runner/work/ouf-source-onboarding/ouf-source-onboarding/scripts/ci-upload-common-cut.py\", line 80, in start_restore\n2026-11-05T08:27:19.4716811Z     f.write(\"\\nrestore_command = 'cp /archive/%f %p'\\nrecovery_target_name = '%s'\\nrecovery_target_action = 'promote'\\nhot_standby = off\\narchive_mode = off\\n\"%TARGET)\n2026-11-05T08:27:19.4717811Z             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~\n2026-11-05T08:27:19.4718383Z TypeError: must be real number, not str\n2026-11-05T08:27:19.4848562Z ",
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 13399916120,
+        "name": "onboarding-common-cut-readback-41994377678",
+        "size_in_bytes": 7063096,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399916120",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13399916120/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:27:31Z",
+        "expires_at": "2027-02-03T08:25:44Z",
+        "updated_at": "2026-11-05T08:27:31Z",
+        "digest": "sha256:2c8fcbea4ec236ae06d46fe66554030170b89471439e9bb15c1adeb2409c9f61",
+        "workflow_run": {
+          "id": 41994377678,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "13fb6970c1727751ab15767319ae5cd6b2f69ddc"
+        }
+      },
+      {
+        "id": 13398909020,
+        "name": "onboarding-common-cut-41994377678",
+        "size_in_bytes": 7062015,
+        "url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398909020",
+        "archive_download_url": "https://api.github.com/repos/GioNob/ouf-source-onboarding/actions/artifacts/13398909020/zip",
+        "expired": false,
+        "created_at": "2026-11-05T08:27:20Z",
+        "expires_at": "2027-02-03T08:25:44Z",
+        "updated_at": "2026-11-05T08:27:20Z",
+        "digest": "sha256:788635aeb1ea1379bb2099e044b364c9ae145b22b7942abf08565e41453c9ac9",
+        "workflow_run": {
+          "id": 41994377678,
+          "repository_id": 1365812393,
+          "head_repository_id": 1365812393,
+          "head_branch": "feat/storage-upload-intent-20261105",
+          "head_sha": "13fb6970c1727751ab15767319ae5cd6b2f69ddc"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "acceptanceTestsPassed": 0,
+  "additionalHistoricalFindingsNowAbsent": [
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+    "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric",
+    "cloud.google.com/go/pubsub",
+    "go.mongodb.org/mongo-driver",
+    "github.com/Shopify/sarama",
+    "github.com/armon/go-metrics"
+  ],
+  "allDependenciesMaintained": false,
+  "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+  "buildInfoSha256": "caad10a5be63aaf918263890619ebfcca8fffd3915b09d71c8b1923ba5c38d41",
+  "compiledModules": 214,
+  "compiledPackageGraphSha256": "6b9e10abeca244b4129149dbac28fd7b8c8b2c2007dd3cf722bf43e1cfdcb1b3",
+  "compiledPackages": 1532,
+  "durableImageCustody": "OPEN",
+  "evidenceArchive": {
+    "bytes": 149167,
+    "internalChecksums": 5,
+    "members": 6,
+    "path": "evidence/artifacts/seaweedfs-generation33-lifecycle-observations-20261104.zip",
+    "sha256": "979f303755158ba1632aa2ae74817e33fdd5fd8bedab92e10a669e54a83d9c7f"
+  },
+  "formerUnknownMetadata": {
+    "baselineUnknownCount": 12,
+    "exactCommitAndGoModMirrorBindings": 11,
+    "remainingCurrentStatusUnknown": [
+      "modernc.org/b"
+    ],
+    "resolvedModules": [
+      "golang.org/x/crypto",
+      "golang.org/x/exp",
+      "golang.org/x/image",
+      "golang.org/x/net",
+      "golang.org/x/oauth2",
+      "golang.org/x/sync",
+      "golang.org/x/sys",
+      "golang.org/x/term",
+      "golang.org/x/text",
+      "golang.org/x/time",
+      "google.golang.org/protobuf"
+    ]
+  },
+  "gatesClosed": 0,
+  "licenseReview": "OPEN",
+  "maintenanceOwnershipForLocalPatches": "OPEN",
+  "moduleInfoOriginsMissing": [
+    "github.com/arangodb/go-velocypack",
+    "github.com/beorn7/perks",
+    "github.com/bwmarrin/snowflake",
+    "github.com/go-logr/stdr",
+    "github.com/hashicorp/errwrap",
+    "github.com/hashicorp/go-immutable-radix",
+    "github.com/hashicorp/go-multierror",
+    "github.com/jackc/pgpassfile",
+    "github.com/karlseguin/ccache/v2",
+    "github.com/kr/fs",
+    "github.com/kurin/blazer",
+    "github.com/kylelemons/godebug",
+    "github.com/lithammer/shortuuid/v3",
+    "github.com/munnerz/goautoneg",
+    "github.com/oklog/ulid",
+    "github.com/peterh/liner",
+    "github.com/pkg/errors",
+    "github.com/posener/complete",
+    "github.com/syndtr/goleveldb",
+    "github.com/tidwall/pretty",
+    "github.com/tsuna/gohbase",
+    "github.com/tylertreat/BoomFilters",
+    "github.com/valyala/bytebufferpool",
+    "github.com/xeipuuv/gojsonpointer",
+    "github.com/xeipuuv/gojsonreference",
+    "github.com/xeipuuv/gojsonschema",
+    "gopkg.in/inf.v0",
+    "modernc.org/b"
+  ],
+  "moduleInputOriginsSha256": "d9b67e4f0a4533186764bf7c7a884e24b84e625605a76f5efec4770d65b4cd6e",
+  "observedDate": "2026-11-04",
+  "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+  "originLimit": "Twenty-eight original Go .info records lack a VCS Origin. Public repository metadata bindings do not invent missing commit provenance. ZIP/h1 remain authenticated input identities.",
+  "originalArchivedCensus": {
+    "allAbsentFromBinaryAndPackageGraph": true,
+    "baselineGeneration": 29,
+    "baselinePath": "evidence/seaweedfs-generation29-lifecycle-inventory-20261103.json",
+    "moduleCount": 10,
+    "modules": [
+      "github.com/boltdb/bolt",
+      "github.com/envoyproxy/protoc-gen-validate",
+      "github.com/facebookgo/clock",
+      "github.com/facebookgo/stats",
+      "github.com/google/btree",
+      "github.com/mitchellh/colorstring",
+      "github.com/mitchellh/mapstructure",
+      "github.com/rcrowley/go-metrics",
+      "go.opencensus.io",
+      "gopkg.in/yaml.v3"
+    ]
+  },
+  "producerArtifact": {
+    "bytes": 174223468,
+    "id": 13299559178,
+    "sha256": "4175ae9f0f5e4f6e71729084e0bfc2d9e8a2d39d3c5908dc51e5c4c695bd6121"
+  },
+  "producerRunId": 41782068047,
+  "realObjectsCopied": 0,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "repositoryMetadata": {
+    "currentStatusUnknownModules": [
+      "modernc.org/b"
+    ],
+    "firstRecordedAt": "2026-11-04T07:37:23.887Z",
+    "freshArchivedRepositories": 0,
+    "freshDisabledRepositories": 0,
+    "freshMetadataBoundCompiledModules": 213,
+    "freshPublicGitHubRepositories": 173,
+    "inheritedMetadataUsedAsCurrent": 0,
+    "lastRecordedAt": "2026-11-04T07:37:23.894Z",
+    "notArchivedDoesNotEstablishSupport": true
+  },
+  "repositorySourceCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+  "residualVersionPolicies": [
+    {
+      "classification": "DEPRECATED_NO_NEW_FEATURES_SUPPORT_NOT_ESTABLISHED",
+      "externalCompiledImporters": [
+        "github.com/seaweedfs/seaweedfs/weed/filer/arangodb"
+      ],
+      "interpretation": "Pinned README deprecates this driver version and excludes new features; it does not establish that security fixes have ended.",
+      "module": "github.com/arangodb/go-driver",
+      "version": "v1.6.9"
+    },
+    {
+      "classification": "DEPRECATED_LEGACY_PROTOBUF_API",
+      "externalCompiledImporters": [
+        "github.com/jhump/protoreflect/desc",
+        "github.com/jhump/protoreflect/desc/internal",
+        "github.com/jhump/protoreflect/internal",
+        "github.com/seaweedfs/seaweedfs/weed/mq/client/pub_client",
+        "github.com/tsuna/gohbase/pb",
+        "go.etcd.io/etcd/api/v3/etcdserverpb",
+        "go.etcd.io/etcd/client/v3"
+      ],
+      "interpretation": "Pinned go.mod recommends google.golang.org/protobuf. Deprecation alone does not prove no maintenance.",
+      "module": "github.com/golang/protobuf",
+      "version": "v1.5.4"
+    },
+    {
+      "classification": "MAINTENANCE_MODE_BUG_FIXES_WELCOMED",
+      "externalCompiledImporters": [
+        "github.com/Jille/raft-grpc-transport",
+        "github.com/ThreeDotsLabs/watermill/message",
+        "github.com/ThreeDotsLabs/watermill/message/router/middleware",
+        "github.com/ThreeDotsLabs/watermill/pubsub/gochannel",
+        "github.com/arangodb/go-driver"
+      ],
+      "interpretation": "Pinned README excludes new functionality but explicitly welcomes bug fixes and issue reports.",
+      "module": "github.com/pkg/errors",
+      "version": "v0.9.1"
+    },
+    {
+      "classification": "MAINTENANCE_MODE_CRITICAL_AND_SECURITY_FIXES",
+      "externalCompiledImporters": [
+        "cloud.google.com/go/auth/httptransport",
+        "cloud.google.com/go/kms/apiv1",
+        "cloud.google.com/go/longrunning/autogen",
+        "github.com/googleapis/gax-go/v2",
+        "github.com/googleapis/gax-go/v2/apierror",
+        "github.com/googleapis/gax-go/v2/iterator",
+        "github.com/seaweedfs/seaweedfs/weed/kms/gcp"
+      ],
+      "interpretation": "Pinned README states critical and security issues will be addressed; no new features.",
+      "module": "google.golang.org/api",
+      "version": "v0.297.0"
+    },
+    {
+      "classification": "EXPERIMENTAL_COMPATIBILITY_RISK",
+      "externalCompiledImporters": [
+        "github.com/antlr4-go/antlr/v4",
+        "github.com/apache/arrow-go/v18/arrow",
+        "github.com/apache/arrow-go/v18/arrow/array",
+        "github.com/apache/arrow-go/v18/arrow/compute/internal/kernels",
+        "github.com/apache/arrow-go/v18/arrow/scalar",
+        "github.com/apache/arrow-go/v18/internal/utils",
+        "github.com/apache/arrow-go/v18/parquet/file",
+        "github.com/apache/arrow-go/v18/parquet/variant",
+        "github.com/apache/iceberg-go/internal",
+        "github.com/seaweedfs/seaweedfs/weed/shell"
+      ],
+      "interpretation": "The compiled packages are constraints, maps, mmap and slices. No package under exp/old is compiled. Experimental is distinct from end of maintenance.",
+      "module": "golang.org/x/exp",
+      "version": "v0.0.0-20260813180055-c1d0aacb2297"
+    },
+    {
+      "classification": "VERSION_SUPPORT_NOT_ESTABLISHED",
+      "externalCompiledImporters": [
+        "github.com/seaweedfs/seaweedfs/weed/filer/leveldb",
+        "github.com/seaweedfs/seaweedfs/weed/filer/leveldb2",
+        "github.com/seaweedfs/seaweedfs/weed/filer/leveldb3",
+        "github.com/seaweedfs/seaweedfs/weed/storage",
+        "github.com/seaweedfs/seaweedfs/weed/storage/needle_map",
+        "github.com/seaweedfs/seaweedfs/weed/util/chunk_cache"
+      ],
+      "interpretation": "No archival flag or explicit end-of-support declaration observed. A 2024 last-push timestamp is not sufficient to classify abandonment.",
+      "module": "github.com/syndtr/goleveldb",
+      "version": "v1.0.1-0.20190318030020-c3a204f8e965"
+    },
+    {
+      "classification": "CURRENT_REPOSITORY_STATUS_AND_VERSION_SUPPORT_UNKNOWN",
+      "externalCompiledImporters": [
+        "github.com/tsuna/gohbase"
+      ],
+      "interpretation": "Canonical GitLab is declared by the old upstream repository and linked by pkg.go.dev. Its current archive/support status could not be read; the archived old GitHub location is not applied to the moved module.",
+      "module": "modernc.org/b",
+      "version": "v1.0.0"
+    },
+    {
+      "classification": "LOCAL_VENDOR_PATCH_MAINTENANCE_OWNER_OPEN",
+      "externalCompiledImporters": [
+        "github.com/seaweedfs/seaweedfs/weed/admin/dash",
+        "github.com/seaweedfs/seaweedfs/weed/s3api/iceberg",
+        "github.com/seaweedfs/seaweedfs/weed/s3api/s3tables",
+        "github.com/seaweedfs/seaweedfs/weed/worker/tasks/iceberg"
+      ],
+      "interpretation": "Upstream repository metadata concerns the original project. It does not establish maintenance ownership for the locally modified YAML import; that obligation remains open.",
+      "module": "github.com/apache/iceberg-go",
+      "version": "v0.7.0"
+    }
+  ],
+  "rootGraphOptionalLegacyEdgesMayRemain": true,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation33-lifecycle-census.v1",
+  "scope": "EXACT_COMPILED_STANDARD_PROFILE_ONLY",
+  "scopePreserved": {
+    "consumedScopes": 17,
+    "engineGetTotal": 52,
+    "farmacieOpen": 10,
+    "farmacieRows": 61,
+    "farmacieType": "STRING",
+    "teatriM1Functional": 6,
+    "teatriM1Technical": 8
+  },
+  "sourceArtifact": {
+    "bytes": 3133029,
+    "id": 13299543386,
+    "sha256": "f88fd569fc8999e1556a58dc33a47ed34bcfe5ce8f4321c4c4cc2997b23b180f"
+  },
+  "status": "COMPILED_METADATA_CENSUS_COMPLETE_VERSION_SUPPORT_REVIEW_OPEN",
+  "targetFeatureBinding": "OPEN",
+  "targetOperations": 0
+}

@@ -1,0 +1,83 @@
+{
+  "adminRouteGetAttempts": 1,
+  "businessRequestsIssued": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "observedAt": "2026-11-07T18:10:35.576790+00:00",
+  "permissionChanges": 0,
+  "rawLogsEmitted": false,
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.current-semantic-upstream-read.v1",
+  "semanticRouteFound": true,
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "services": {
+    "apisix": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "recentLogSummary": {
+        "correlationWithFailedRequestProven": false,
+        "hints": {
+          "connectionRefused": 1
+        },
+        "linesRead": 200,
+        "rawLogsEmitted": false,
+        "read": true,
+        "tailLimit": 200,
+        "window": "30m"
+      },
+      "running": true,
+      "state": "running"
+    },
+    "gateway-owner": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "running": true,
+      "state": "running"
+    },
+    "semantic": {
+      "exitCode": 0,
+      "health": null,
+      "imageMatchesRetained": true,
+      "oomKilled": false,
+      "recentLogSummary": {
+        "correlationWithFailedRequestProven": false,
+        "hints": {},
+        "linesRead": 0,
+        "rawLogsEmitted": false,
+        "read": true,
+        "tailLimit": 200,
+        "window": "30m"
+      },
+      "running": true,
+      "state": "running"
+    }
+  },
+  "status": "SEMANTIC_UPSTREAM_READ_COMPLETE",
+  "upstream": {
+    "activeHealthCheckConfigured": false,
+    "commonNetworkCount": 1,
+    "configuredNamesMatchRegistry": [
+      true
+    ],
+    "dnsAndTcp": [
+      {
+        "addressCount": 1,
+        "directRegistryTcpReachable": false,
+        "dnsUnavailable": false,
+        "matchedTcpReachable": false,
+        "matchesRegistry": true,
+        "onlyRegistryAddresses": true,
+        "rcode": 0
+      }
+    ],
+    "httpBusinessRequestMade": false,
+    "nodeCount": 1,
+    "scheme": "http"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "acceptanceCreditAdded": 0,
+  "captureEventCoverageProven": false,
+  "commonCutProven": false,
+  "custodyManifestVerified": true,
+  "dockerReadCommands": 4,
+  "g0ObjectSetsMatch": true,
+  "g0ObjectsMatched": 120,
+  "runningContainersObserved": 0,
+  "schema": "ouf.storage-retained-source-comparison.v1",
+  "sources": {
+    "minio": {
+      "currentEntries": 325,
+      "differingEntries": 0,
+      "historicalEntries": 325
+    },
+    "postgres": {
+      "currentEntries": 5032,
+      "differingEntries": 0,
+      "historicalEntries": 5032
+    }
+  },
+  "status": "RETAINED_SOURCE_COMPARISON_MATCH",
+  "stoppedSourceBindingsVerified": true
+}

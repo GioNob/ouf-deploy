@@ -1,0 +1,18 @@
+test_ambiguous_mutation_has_no_retry (test_seaweedfs_452_identity_tls.IdentityLabTests.test_ambiguous_mutation_has_no_retry) ... ok
+test_certificate_readiness_error_has_no_retry (test_seaweedfs_452_identity_tls.IdentityLabTests.test_certificate_readiness_error_has_no_retry) ... ok
+test_denials_require_exact_status_and_s3_code (test_seaweedfs_452_identity_tls.IdentityLabTests.test_denials_require_exact_status_and_s3_code) ... ok
+test_egress_requires_kernel_route_denial (test_seaweedfs_452_identity_tls.IdentityLabTests.test_egress_requires_kernel_route_denial) ... ok
+test_fixture_policy_is_exact_bucket_and_prefix_only (test_seaweedfs_452_identity_tls.IdentityLabTests.test_fixture_policy_is_exact_bucket_and_prefix_only) ... ok
+test_late_readiness_success_does_not_exceed_budget (test_seaweedfs_452_identity_tls.IdentityLabTests.test_late_readiness_success_does_not_exceed_budget) ... ok
+test_non_ci_run_fails_before_side_effect (test_seaweedfs_452_identity_tls.IdentityLabTests.test_non_ci_run_fails_before_side_effect) ... ok
+test_operational_timeout_allows_first_volume_allocation_without_retry (test_seaweedfs_452_identity_tls.IdentityLabTests.test_operational_timeout_allows_first_volume_allocation_without_retry) ... ok
+test_permanent_readiness_error_has_no_retry (test_seaweedfs_452_identity_tls.IdentityLabTests.test_permanent_readiness_error_has_no_retry) ... ok
+test_signatures_bind_credentials_payload_and_request_target (test_seaweedfs_452_identity_tls.IdentityLabTests.test_signatures_bind_credentials_payload_and_request_target) ... ok
+test_generated_ca_trusts_localhost (test_seaweedfs_452_identity_tls.TLSFixtureTests.test_generated_ca_trusts_localhost) ... ok
+test_wrong_ca_rejected (test_seaweedfs_452_identity_tls.TLSFixtureTests.test_wrong_ca_rejected) ... ok
+test_wrong_hostname_rejected (test_seaweedfs_452_identity_tls.TLSFixtureTests.test_wrong_hostname_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.677s
+
+OK

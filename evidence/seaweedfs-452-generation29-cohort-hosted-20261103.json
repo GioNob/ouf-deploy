@@ -1,0 +1,125 @@
+{
+  "artifact": {
+    "bytes": 119535,
+    "checksummedMembers": 8,
+    "expiresAt": "2027-02-01T19:14:20Z",
+    "id": 13264050910,
+    "members": 9,
+    "name": "seaweedfs-generation29-cohort-41701381292",
+    "path": "evidence/artifacts/seaweedfs-generation29-cohort-41701381292.zip",
+    "sha256": "b7c964366bfa20ff2f4af571fcc68a57dcc24c25c5db463e2b495a09f05ec56c"
+  },
+  "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+  "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+  "checkedAtUtc": "2026-11-03T19:21:22.020426+00:00",
+  "checks": {
+    "boundaryTestsPassed": 12,
+    "cohortAttestationCreatedHosted": true,
+    "cohortAttestationCryptographicallyReverifiedLocally": false,
+    "cohortAttestationSubjectSha256": "3d717969f23be59dd305e026cfa38cbe62f0ba2e10c962f16db6a236b9252a75",
+    "cohortAttestationUrl": "https://github.com/GioNob/ouf-deploy/attestations/63260049",
+    "exactModuleDownloadRecords": 262,
+    "hostedReceiptEqualsIndependentLocalReplay": true,
+    "moduleLegalTexts": 353,
+    "moduleZipBytesReverifiedHosted": 389686767,
+    "mplSourceArchives": 17,
+    "orderedPatches": 29,
+    "publisherSignatureReverifiedHosted": true,
+    "publisherVerificationRecordLocallyBound": true,
+    "rootLegalFiles": 9,
+    "stdlibLegalFiles": 39
+  },
+  "cohortJobs": [
+    {
+      "completedAt": "2026-11-03T19:14:49Z",
+      "conclusion": "success",
+      "id": 126145249828,
+      "name": "verify-boundaries"
+    },
+    {
+      "completedAt": "2026-11-03T19:19:16Z",
+      "conclusion": "success",
+      "id": 126145503018,
+      "name": "qualify-cohort"
+    }
+  ],
+  "cohortReceiptSha256": "9fc580014adb20ab50d321a1e7be84f9aa788dfbbbf1b832eaa87f7d25f02eca",
+  "durableImageCustody": "OPEN",
+  "generation": 29,
+  "legalTextRebindingSha256": "61b8bf30e025d6e361e47e519b156529386a50923d3ab993947b87cd02d8d196",
+  "licenceReview": "OPEN",
+  "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+  "producerCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "producerRunId": 41696541570,
+  "redistributionAccepted": false,
+  "releaseAdmitted": false,
+  "retainedRawEvidence": {
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/artifacts-cohort-success.json": {
+      "bytes": 951,
+      "sha256": "e397b306c1e98c267f02dd8678f0f5617de2f40178735d76b88f32abb283eadc"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/SHA256SUMS": {
+      "bytes": 743,
+      "sha256": "3d717969f23be59dd305e026cfa38cbe62f0ba2e10c962f16db6a236b9252a75"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/cohort-receipt.json": {
+      "bytes": 1009,
+      "sha256": "9fc580014adb20ab50d321a1e7be84f9aa788dfbbbf1b832eaa87f7d25f02eca"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/licence-rebinding.json": {
+      "bytes": 205502,
+      "sha256": "61b8bf30e025d6e361e47e519b156529386a50923d3ab993947b87cd02d8d196"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/module-downloads.jsonl": {
+      "bytes": 183041,
+      "sha256": "7f568b02bacd80a1eaf7d666877895da6566d4c4823a711f13a21b9f8b92e5c1"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/ordered-patches.txt": {
+      "bytes": 1519,
+      "sha256": "c01407908caadde67949c6772138fe3fb472402933bd54d7f1b27aef0bb68e46"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/producer/SHA256SUMS": {
+      "bytes": 1876,
+      "sha256": "15a0030b12a1138bba2cda4f4dd99dc0c9e67a3a3d187c42c14ee5ae86edb058"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/producer/provenance.json": {
+      "bytes": 12176,
+      "sha256": "f1559542390b2a93340933be45d74fef5917aa8973cd413ce8cce30f275aaead"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/publisher-verification.json": {
+      "bytes": 15448,
+      "sha256": "e50958c30856de8308ef6a3d9dcd2d44e2fb87077ad1d1737d5ff2f3c161def9"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/cohort/seaweedfs-452-generation29-candidate-lock-20261103.json": {
+      "bytes": 3960,
+      "sha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/jobs-cohort-success.json": {
+      "bytes": 12620,
+      "sha256": "43a33cd116ba8d06fe1fe4d80b6d4a7de262971242ab45e909f5d31375d92cb5"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/qualify-cohort-job126145503018.log": {
+      "bytes": 50627,
+      "sha256": "5a6e140e66c5205e1a7ea13aa908f289702c2d1c85ec817e99f37476dcba432f"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/run-cohort-success.json": {
+      "bytes": 14242,
+      "sha256": "f5a6595c3bc0365b8af16c1da5ee1582a36fe45d0f6b23eaca212fc71bc50a50"
+    },
+    "evidence/seaweedfs-452-generation29-cohort-hosted-20261103/verify-boundaries-job126145249828.log": {
+      "bytes": 13379,
+      "sha256": "c279587741ff158fc7406f141df117dc40b351030ee8612d98f35af0e26e6636"
+    }
+  },
+  "runAttempt": 1,
+  "runId": 41701381292,
+  "runtimeAuthorityIssued": false,
+  "runtimeLabsStatusAtCheck": "IN_PROGRESS_SEPARATE_RECEIPT_REQUIRED",
+  "schema": "ouf.seaweedfs-generation29-hosted-cohort.v1",
+  "scope": "Repository qualification only. AWS SDK v1 and deprecated S3 manager claims only; no universal maintained-dependency claim and no acceptance gate closure.",
+  "sourceCommit": "7a71218586bcdbc50e1c983a1a12158dc9660de9",
+  "status": "HOSTED_TECHNICAL_COHORT_VERIFIED_NOT_ADMITTED",
+  "targetOperations": 0,
+  "wholeWorkflowConclusionAtCheck": null,
+  "workflow": ".github/workflows/storage-452-generation29-cohort.yml"
+}

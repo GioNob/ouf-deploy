@@ -1,0 +1,76 @@
+{
+  "name": "storage-bucket-policy-tests-sdk-v2",
+  "workflowPath": ".github/workflows/storage-bucket-policy-tests-sdk-v2.yml",
+  "runId": 41687967247,
+  "jobId": 126098660427,
+  "conclusion": "success",
+  "headSha": "70cd2671b41b0f775889826b2617811451a5e2ba",
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41687967247",
+  "artifact": {
+    "id": 13255334989,
+    "name": "storage-bucket-policy-sdk-v2-41687967247",
+    "sha256": "97f7196c6defc763b86bb6234753ad00ea99de98e93c5aa5b5719025cdcc0af0",
+    "sizeInBytes": 14601,
+    "downloadVerified": true,
+    "expiresAt": "2027-02-01T17:49:39Z"
+  },
+  "manifestSha256": "323a5aca4a5cc76d5c922607623fed98cfef4f268df110058a6d0ac976754839",
+  "manifestEntriesVerified": 7,
+  "fileManifest": [
+    {
+      "file": "compile.log",
+      "sha256": "20baa604bfb19377982fefc23e90247e9b86cb1b5f8f3456d05fa47c2cba0ed6",
+      "size": 76
+    },
+    {
+      "file": "policy-test-deps.txt",
+      "sha256": "2f1a01833f03826f391df38e0f2826bd42cc9067783ad26314348c987ca056e0",
+      "size": 74769
+    },
+    {
+      "file": "test.log",
+      "sha256": "30994b35410796ee10bd7528d61cb6ba80c1a14355e6c36c1a05530efb7e31f6",
+      "size": 58
+    },
+    {
+      "file": "upstream-source-sha.txt",
+      "sha256": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93",
+      "size": 41
+    },
+    {
+      "file": "patch-sha256.txt",
+      "sha256": "48da2e0a5de051353a1537c2e6018e31b6b43c9c61851ce6163dd27bf1ef7bca",
+      "size": 125
+    },
+    {
+      "file": "patch-stat.txt",
+      "sha256": "bc3cc6b51dbb16330d5dd39b90ef17a4820b4a8703287f953354c4c3e02e8913",
+      "size": 6395
+    },
+    {
+      "file": "remaining-direct-importers.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "tests": {
+    "topLevelPass": null,
+    "subcasesPass": null,
+    "names": [],
+    "subcases": [],
+    "liveIntegrationRun": false,
+    "selectedTopLevelTestCount": 4,
+    "selection": "^TestBucketPolicySDKV2",
+    "verboseResultAvailable": false,
+    "note": "The dedicated workflow logs package success without -v; named results are cross-checked in the cumulative root IAM workflow."
+  },
+  "dependencyGraphs": [
+    {
+      "file": "policy-test-deps.txt",
+      "packageCount": 1801,
+      "sdkV1Packages": 0,
+      "sha256": "2f1a01833f03826f391df38e0f2826bd42cc9067783ad26314348c987ca056e0"
+    }
+  ],
+  "directImporters": 0
+}

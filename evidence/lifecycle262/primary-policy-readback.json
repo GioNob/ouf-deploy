@@ -1,0 +1,47 @@
+[
+  {
+    "key": "mongodb-v1-policy",
+    "url": "https://raw.githubusercontent.com/mongodb/mongo-go-driver/v1.17.9/README.md",
+    "observedAt": "2026-11-03T19:28:36.015Z",
+    "error": null,
+    "bodySha256": "5448ba8127b2d320d6a3a2005e712b02403a87f0f24e3f54c83ae8fbd6b3481a",
+    "bodyBytes": 8084,
+    "boundedExcerpt": "Bug fixes and critical updates to this version will be made available until early 2026."
+  },
+  {
+    "key": "yaml-v3-unmaintained-policy",
+    "url": "https://raw.githubusercontent.com/go-yaml/yaml/v3/README.md",
+    "observedAt": "2026-11-03T19:28:37.567Z",
+    "error": null,
+    "bodySha256": "3301fe9b2763543b990e6ae80dc34e3f49999adad8306ec1d187e6d3280289f3",
+    "bodyBytes": 4633,
+    "boundedExcerpt": "THIS PROJECT IS UNMAINTAINED"
+  },
+  {
+    "key": "gcp-detector-policy",
+    "url": "https://raw.githubusercontent.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp/v1.38.0/detectors/gcp/README.md",
+    "observedAt": "2026-11-03T19:28:39.551Z",
+    "error": null,
+    "bodySha256": "46715ecdc62fa4b99a88b1a18245abea64a96873841e47c2c87df8b45e5e1b61",
+    "bodyBytes": 465,
+    "boundedExcerpt": "This package is deprecated and will no longer be maintained."
+  },
+  {
+    "key": "gcp-metric-exporter-policy",
+    "url": "https://raw.githubusercontent.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric/v0.61.0/exporter/metric/README.md",
+    "observedAt": "2026-11-03T19:28:41.341Z",
+    "error": null,
+    "bodySha256": "84c395b9956c324ec1b7cb56a2d998f200b54db2629eab9b7ae4e5bfae6de2ee",
+    "bodyBytes": 3563,
+    "boundedExcerpt": "The OpenTelemetry Google Cloud Monitoring exporter for Go is deprecated and will be archived after January 1st, 2027."
+  },
+  {
+    "key": "inf-origin",
+    "url": "https://raw.githubusercontent.com/go-inf/inf/master/dec.go",
+    "observedAt": "2026-11-03T19:28:42.217Z",
+    "error": null,
+    "bodySha256": "740d8ee99e5813472f85a0722b7cc772a0ff91ec7eeb99a876d8c03608de2263",
+    "bodyBytes": 16608,
+    "boundedExcerpt": "package inf // import \"gopkg.in/inf.v0\""
+  }
+]

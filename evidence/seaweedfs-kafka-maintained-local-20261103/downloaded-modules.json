@@ -1,0 +1,34 @@
+[
+  {
+    "module": "github.com/IBM/sarama",
+    "version": "v1.61.1",
+    "zipSha256": "a5ad3d6018945af59d4c851ee398784561e1c21bf99f870a4ff1fe4a5f3d9082",
+    "zipBytes": 742037,
+    "h1": "h1:I59MWPHQUWqJNdRpsDUcbeCriog8SxjQaPfHNWxidEg=",
+    "goModH1": "h1:dITlGHIiCQL/maGtBfDHNMDvyWgC9Ww//8pmlsU3RUs="
+  },
+  {
+    "module": "github.com/eapache/go-resiliency",
+    "version": "v1.7.0",
+    "zipSha256": "a244568c59d0f83f8a9a0a2efba62dc4be54aa5d191ec90875ee9b583fa69a20",
+    "zipBytes": 21732,
+    "h1": "h1:n3NRTnBn5N0Cbi/IeOHuQn9s2UwVUH7Ga0ZWcP+9JTA=",
+    "goModH1": "h1:5yPzW0MIvSe0JDsv0v+DvcjEv2FyD6iZYSs1ZI+iQho="
+  },
+  {
+    "module": "github.com/pierrec/lz4/v4",
+    "version": "v4.1.31",
+    "zipSha256": "bb763beab6db662ff30f5137207df13c5757d7f2bafada7dded242d7967eceea",
+    "zipBytes": 47777060,
+    "h1": "h1:TI8ck6XSudzSzotzAmy0+kh/KpRHaVsKLPzS97gRyNg=",
+    "goModH1": "h1:7SE9MC2STkNtL4PIwGhjmyVwvILaGI9/COYQNBhKM/c="
+  },
+  {
+    "module": "github.com/rcrowley/go-metrics",
+    "version": "v0.0.0-20250401214520-65e299d6c5c9",
+    "zipSha256": "a8c9e9792ad16f31ef8c32232de6243cc02147175661c9f64bc7b292f1c4d0cc",
+    "zipBytes": 59029,
+    "h1": "h1:bsUq1dX0N8AOIL7EB/X911+m4EHsnWEHeJ0c+3TTBrg=",
+    "goModH1": "h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4="
+  }
+]

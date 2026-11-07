@@ -21,6 +21,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Root-managed cryptographic fixture dependency
+        run: sudo apt-get update -qq && sudo apt-get install -y python3-cryptography
       - name: Root-custodied isolated source tree
         run: |
           sudo install -d -m 0700 /root/ouf-registry-tests
@@ -30,12 +32,14 @@ jobs:
         run: |
           sudo bash -eu -c '
           cd /root/ouf-registry-tests
-          python3 -m unittest discover -s tools/semantic_registry_recovery_execution/tests -v
-          python3 -m unittest discover -s tests -p test_paused_workload_binding.py -v
-          python3 -m unittest discover -s tests -p test_file_only_retained_checkpoint.py -v
-          python3 -m unittest discover -s tests -p test_file_only_frame_compiler.py -v
-          python3 -m unittest discover -s tests -p test_paused_node_acceptance_native.py -v
-          OUF_NATIVE_MOUNTS=1 python3 -m unittest discover -s tests -p test_renewable_token_mount.py -v
+          install -d -m 0700 /root/ouf-registry-tests/private-tmp
+          export TMPDIR=/root/ouf-registry-tests/private-tmp
+          python3 -I -B -S tests/run_registry_recovery_isolated.py components
+          python3 -I -B -S tests/run_registry_recovery_isolated.py paused-binding
+          python3 -I -B -S tests/run_registry_recovery_isolated.py retained-checkpoint
+          python3 -I -B -S tests/run_registry_recovery_isolated.py compiler
+          python3 -I -B -S tests/run_registry_recovery_isolated.py acceptance
+          OUF_NATIVE_MOUNTS=1 python3 -I -B -S tests/run_registry_recovery_isolated.py mount
           '
   native-paused-generation:
     runs-on: ubuntu-24.04

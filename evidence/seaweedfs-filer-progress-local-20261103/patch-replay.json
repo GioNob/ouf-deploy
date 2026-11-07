@@ -1,0 +1,13 @@
+{
+  "patch": "patches/seaweedfs/4.52-filer-progress-maintained.patch",
+  "sha256": "d9eaf21ca405e1b4feee97d185f04acd0ae015b90b8e6cd3f27336774d04f9f2",
+  "bytes": 10898,
+  "changedFiles": [
+    "go.mod",
+    "go.sum",
+    "weed/replication/sink/filersink/chunk_progress.go",
+    "weed/replication/sink/filersink/chunk_progress_test.go",
+    "weed/replication/sink/filersink/fetch_write.go"
+  ],
+  "exactIndexedReplay": "PASS"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "ouf.storage-g0-db-continuation-local-validation.v1",
+  "date": "2026-11-06",
+  "localCasesPassed": 14,
+  "failures": 0,
+  "skips": 0,
+  "processReadersInjected": true,
+  "originalFileReaderUsedOnLocalFixtures": true,
+  "dedicatedCiStatus": "PENDING_NEW_COMMIT",
+  "vpsExecutionConfirmed": false,
+  "nativeProviderQualificationPerformed": false,
+  "sourceSha256": {
+    "scripts/continue-storage-g0-databases-20261106.py": "22e18096f4dfbebee8555795c6dad8d49eb9b7449dbe591adfba39debc5fa0f7",
+    "tests/test_storage_g0_database_continuation.py": "c243d82b09100f17cd98c44968de6830f4c5d2f8765523177bf2d1d072ddef82",
+    ".github/workflows/storage-g0-database-continuation.yml": "8e2081ebec22e8b3868c7e2d9766066e35ba8cd3f1bdb2dc7d0c70fe4a145da5",
+    "scripts/review-storage-g0-datasource-20261106.py": "9f9b45099577c267ceef2a2fc28440fb9aa0b5e809068eb26102457ec1c967fa",
+    "tools/chatbot_file_cohort/preparation.py": "03234abf4795d710fa1fbbfaeed04fb0a7f8cf54c2ee102ea08efe504694c071",
+    "tools/storage_planning/g0_input_draft.py": "ded6eed9b0da0b67f7434f588b384b43ffd3986a75fe91d406ff1abf18699320"
+  },
+  "sourceGuardChanged": false,
+  "historicalCohortEntryPointExecuted": false,
+  "providerRequests": 0,
+  "runtimeAuthorityIssued": false,
+  "acceptanceCreditAdded": 0,
+  "prePublicationCorrection": "Verify preserved S3 config identity/existence and all seventeen control IDs before generating a combined candidate; rerun fourteen tests after the code change."
+}

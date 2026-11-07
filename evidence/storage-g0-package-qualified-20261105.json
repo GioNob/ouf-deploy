@@ -1,0 +1,113 @@
+{
+  "schema": "ouf.storage-g0-package-qualified.v1",
+  "date": "2026-11-05",
+  "status": "PASS_PACKAGE_AND_HOST_FIXTURE_NOT_TARGET_COLLECTION",
+  "deployCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+  "runId": 42120934027,
+  "jobId": 127572776955,
+  "artifact": {
+    "id": 13459750069,
+    "bytes": 7325967,
+    "sha256": "8612c84271ab554647b44941fa23d710ac786885b42033cd0e86d086a3fa4e47",
+    "expiresAt": "2027-02-03T22:22:25Z",
+    "durableCustodyProven": false
+  },
+  "delivery": {
+    "deployCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+    "inputTemplateIsNotFilled": true,
+    "manifestSha256": "b789786ca9c129c7e80e19ba59c2927162a3f2b2c44fa1adbccecef7ff99ba5e",
+    "packageBytes": 7268733,
+    "packageSha256": "e06ce7c10427fb23291cc0a6938c77ad32db772e780505f588d0793fb4dd3295",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-package-delivery.v1",
+    "targetCommandAuthorized": false,
+    "targetOperations": 0
+  },
+  "readback": {
+    "schema": "ouf.storage-g0-package-readback.v1",
+    "status": "PASS_OFFLINE_NOT_TARGET_COLLECTION",
+    "deployCommit": "e7c46c736f8d512e8b0897eedccb7566413db8a3",
+    "archiveSha256": "8612c84271ab554647b44941fa23d710ac786885b42033cd0e86d086a3fa4e47",
+    "archiveBytes": 7325967,
+    "members": 10,
+    "checksums": 9,
+    "exactGitSources": 19,
+    "packageMembers": 12,
+    "packageSha256": "e06ce7c10427fb23291cc0a6938c77ad32db772e780505f588d0793fb4dd3295",
+    "packageBytes": 7268733,
+    "packageManifestSha256": "b789786ca9c129c7e80e19ba59c2927162a3f2b2c44fa1adbccecef7ff99ba5e",
+    "unitTests": 13,
+    "nativeHostEngineGets": 4,
+    "nativeHostContainers": 1,
+    "targetOperations": 0,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  },
+  "negativeReadback": [
+    {
+      "case": "fabricated runtime admission",
+      "result": "REJECTED",
+      "reason": "NO_TARGET_ADMISSION"
+    },
+    {
+      "case": "container started but reported passive",
+      "result": "REJECTED",
+      "reason": "NATIVE_HOST_ONLY_RESULT"
+    },
+    {
+      "case": "altered source with renewed checksums",
+      "result": "REJECTED",
+      "reason": "EXACT_GIT_BLOB"
+    }
+  ],
+  "nativeHost": {
+    "beforeAfterEqual": true,
+    "capacityObservedWithoutIndependenceInference": true,
+    "containersObserved": 1,
+    "engineBytes": 17288,
+    "fixtureCreates": 1,
+    "fixtureStarts": 0,
+    "fullS3DbCompositionNativeRerun": false,
+    "mutationPathDeniedBeforeNetwork": true,
+    "requestsReserved": 4,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-package-host-native.v1",
+    "secretValuesRedacted": true,
+    "status": "PASS_DISPOSABLE_HOST_OBSERVATION_ONLY",
+    "stoppedContainerObservedWithoutStarting": true,
+    "targetOperations": 0
+  },
+  "qualificationScope": {
+    "compositionUnitTests": 13,
+    "compositionUsesFakeProviders": true,
+    "nativeHostFixture": true,
+    "fullS3PostgresCompositionNative": false,
+    "previousProviderLabsManuallyRerun": false,
+    "binaryScanFindings": 0,
+    "qualifiedComponentFilesUnchanged": 7
+  },
+  "failedCandidate": {
+    "commit": "1e51f80ff33ae41b51b07ba2739205060e98b399",
+    "runId": 42120556804,
+    "jobId": 127571484860,
+    "conclusion": "failure",
+    "artifactProduced": false,
+    "guard": "QUALIFIED_COMPONENT_BYTES_UNCHANGED",
+    "cause": "Profile was generated from stale local go.mod/go.sum; authoritative Git and prior native source archives agree. No production component changed.",
+    "correction": "Rebound profile to exact Git bytes verified against both prior native archives; build now records expected/observed bindings before checking and seals incomplete-build evidence.",
+    "logExcerpt": "evidence/storage-g0-package-first-failure-20261105.log"
+  },
+  "targetReadinessReceipt": "evidence/storage-g0-operator-preflight-20261105.json",
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "g0Complete": false,
+  "progressCreditAdded": 0,
+  "limitations": [
+    "Host network only; target reachability and namespace requirements unverified.",
+    "collectionDecisionRef is provenance, not authenticated runtime authority.",
+    "Operator declarations require origin, freshness and applicability review.",
+    "No common S3/DB cut or writer quiescence proved.",
+    "Versioning, multipart and out-of-profile references remain held.",
+    "Remote PostgreSQL TLS and full installed service security remain unqualified."
+  ]
+}

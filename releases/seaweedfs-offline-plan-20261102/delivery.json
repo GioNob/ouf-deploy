@@ -1,0 +1,24 @@
+{
+  "schema": "ouf.storage-offline-plan-delivery.v1",
+  "producerSource": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+  "sourceCount": 2,
+  "sources": {
+    "tools/storage_planning/inventory_manifest.py": "5aabd44d0df99e08f95cfa7d085e449b05ad1d4fd5c5c581364675d2930baec1",
+    "tools/storage_planning/target_plan_20261102.py": "4cb27cc2f190fb2a21a35acd391294383f7ddb476292cd533cc1afd7b9c07670"
+  },
+  "capsuleSha256": "da26578f948dccba32d092fe987108af13cc697699880cb8d4e4e6c043aa51db",
+  "capsuleBytes": 27055,
+  "sourceInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+  "scopePath": "/etc/ouf/deploy-snapshots/seaweedfs-offline-plan-20261102-v1",
+  "installPath": "/usr/local/lib/ouf-storage-offline-plan-20261102",
+  "controlAttempt": 17,
+  "previousControlAttempts": 16,
+  "previousEngineGets": 52,
+  "newEngineGets": 0,
+  "newS3Requests": 0,
+  "credentialFileReads": 0,
+  "objectBodiesRead": 0,
+  "oldScopeRearmed": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false
+}

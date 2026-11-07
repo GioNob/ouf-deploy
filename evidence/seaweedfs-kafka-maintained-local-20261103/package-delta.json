@@ -1,0 +1,16 @@
+{
+  "before": 1811,
+  "after": 1811,
+  "removed": [
+    "github.com/Shopify/sarama",
+    "github.com/eapache/go-xerial-snappy",
+    "github.com/eapache/queue"
+  ],
+  "added": [
+    "github.com/IBM/sarama",
+    "github.com/IBM/sarama/internal/queue",
+    "github.com/klauspost/compress/snappy/xerial"
+  ],
+  "CGO_ENABLED": "0",
+  "buildVcs": "disabled for graph observation only; no qualified executable generated"
+}

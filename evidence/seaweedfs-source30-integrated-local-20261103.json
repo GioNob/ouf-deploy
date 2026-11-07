@@ -1,0 +1,258 @@
+{
+  "schema": "ouf.seaweedfs-generation30-integrated-source-local.v1",
+  "status": "LOCAL_SOURCE_AND_BINARY_PASS_NOT_IMAGE_OR_RUNTIME_QUALIFIED",
+  "base": {
+    "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "prefix29Tree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "currentQualifiedGenerationRetained": 29
+  },
+  "candidate": {
+    "sourceGeneration": 30,
+    "patchPath": "patches/seaweedfs/4.52-maintained-dependency-closure.patch",
+    "patchSha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422",
+    "patchBytes": 205863,
+    "patchedTree": "13b3de2f130667ed060e94291fcf64b37b7f037a",
+    "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+    "binaryBytes": 219516458,
+    "toolchain": "go1.27.3",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "CGO_ENABLED": "0",
+    "changedFiles": 48,
+    "sourceFilesByteMatchIndexedReplay": true,
+    "replayedBinaryIdentity": {
+      "receiptPath": "evidence/seaweedfs-source30-integrated-local-20261103/replayed-binary-identity.json",
+      "receiptSha256": "4d4a5b860dcd1e217d7d9d9d55085c4f643cefe860e2277f95adcdc9d15d18e3",
+      "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+      "binaryBytes": 219516458,
+      "exactReplayBuildCommandTranscriptAvailable": false
+    }
+  },
+  "tests": {
+    "main": {
+      "passEvents": 6371,
+      "skipTests": 5,
+      "packagesWithTests": 30,
+      "packagesWithoutTests": 4
+    },
+    "serverFocused": {
+      "passEvents": 7
+    },
+    "storageFocused": {
+      "passEvents": 54,
+      "environmentSkips": 2,
+      "skipReasons": [
+        "Cannot enumerate /proc descriptors",
+        "Root ignores directory permission restrictions"
+      ]
+    },
+    "aggregateMainServerStoragePassEvents": 6432,
+    "uniqueTestCountClaimed": false,
+    "raceSeparate": {
+      "CGO_ENABLED": "1",
+      "passEvents": 25,
+      "packages": 2
+    },
+    "oldV2AndLocalDBCompatibilitySeparate": {
+      "passEvents": 3,
+      "oracle": "github.com/hashicorp/raft-boltdb/v2@v2.4.2",
+      "oracleExcludedFromCandidateModule": true
+    },
+    "deniedProfiles": [
+      {
+        "tags": "elastic",
+        "exitCode": 1,
+        "expectedDiagnostic": "ELASTIC_OR_RCLONE",
+        "binaryProduced": false
+      },
+      {
+        "tags": "rclone",
+        "exitCode": 1,
+        "expectedDiagnostic": "ELASTIC_OR_RCLONE",
+        "binaryProduced": false
+      },
+      {
+        "tags": "kafka",
+        "exitCode": 1,
+        "expectedDiagnostic": "KAFKA_NOTIFICATION_OR_REPLICATION",
+        "binaryProduced": false
+      },
+      {
+        "tags": "openbao",
+        "exitCode": 1,
+        "expectedDiagnostic": "OPENBAO_OR_VAULT",
+        "binaryProduced": false
+      },
+      {
+        "tags": "vault",
+        "exitCode": 1,
+        "expectedDiagnostic": "OPENBAO_OR_VAULT",
+        "binaryProduced": false
+      },
+      {
+        "tags": "kafka,openbao,vault",
+        "exitCode": 1,
+        "expectedDiagnostic": "OPENBAO_OR_VAULT",
+        "binaryProduced": false
+      }
+    ],
+    "mainRawPhysicalJsonLines": 32041,
+    "allRawJsonLinesParse": true,
+    "failEvents": 0,
+    "fullServerSuiteClaimed": false
+  },
+  "dependencies": {
+    "compiledModulesBefore": 262,
+    "compiledModulesAfter": 234,
+    "compiledModulesRemoved": 28,
+    "compiledModulesAdded": 0,
+    "retainedCompiledVersionsChanged": 0,
+    "productionPackagesBefore": 1811,
+    "productionPackagesAfter": 1740,
+    "rootGraphEdges": 4448,
+    "rootModules": 789,
+    "rootGraphExitCode": 0,
+    "rootModuleListExitCode": 0,
+    "tidyFixedPointEmpty": true,
+    "retainedRootRequirementPinChanges": 0,
+    "retainedH1Changes": 0,
+    "rootGraphIsNotCompiledInventory": true
+  },
+  "lifecycle": {
+    "status": "OPEN",
+    "allDependenciesMaintainedClaimed": false,
+    "baselineInventoryPath": "evidence/lifecycle262/compiled-module-inventory.json",
+    "baselineInventorySha256": "43a2fbaa8afc194ad9b5f180ec91178201e4f339515ca45daf37cf52b46272c3",
+    "archivedCompiledRemoved": [
+      "github.com/boltdb/bolt",
+      "github.com/facebookgo/clock",
+      "github.com/facebookgo/stats",
+      "github.com/google/btree",
+      "github.com/mitchellh/mapstructure",
+      "github.com/rcrowley/go-metrics"
+    ],
+    "archivedCompiledRemaining": [
+      "github.com/envoyproxy/protoc-gen-validate",
+      "github.com/mitchellh/colorstring",
+      "go.opencensus.io",
+      "gopkg.in/yaml.v3"
+    ],
+    "additionalCompiledPolicyGaps": [
+      "go.mongodb.org/mongo-driver v1 support window passed",
+      "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp declared no longer maintained"
+    ],
+    "metadataUnknownRetained": [
+      "golang.org/x/crypto",
+      "golang.org/x/exp",
+      "golang.org/x/image",
+      "golang.org/x/net",
+      "golang.org/x/oauth2",
+      "golang.org/x/sync",
+      "golang.org/x/sys",
+      "golang.org/x/term",
+      "golang.org/x/text",
+      "golang.org/x/time",
+      "google.golang.org/protobuf",
+      "modernc.org/b"
+    ],
+    "targetKafkaRequirementsBound": false,
+    "targetOpenBaoVaultRequirementsBound": false
+  },
+  "localMPLSource": {
+    "archivePath": "evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source.tar.gz",
+    "manifestPath": "evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source-manifest.json",
+    "derivedFrom": "github.com/hashicorp/raft-boltdb/v2@v2.4.2",
+    "sourceLicenseAndProvenancePreserved": true,
+    "newCohort30LicenseBinding": "PENDING",
+    "redistributionDecisionGranted": false,
+    "durableCustodySatisfied": false
+  },
+  "executionHistory": {
+    "recordPath": "evidence/seaweedfs-source30-integrated-local-20261103/execution-record.json",
+    "observedCommands": 11,
+    "environmentCapture": "CONTROLLED_OVERRIDES_ONLY",
+    "inheritedEnvironmentCaptured": false,
+    "historySource": "Actual parent tool invocations recorded by parent; raw outputs retained and independently re-read",
+    "testEventsCountedFromOriginalPhysicalLines": true
+  },
+  "frontInputManifests": {
+    "metrics30": {
+      "sourceLocalPath": "metrics30-stage/proposal/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/metrics30-DELIVERY_FILES.json",
+      "sha256": "0a6095fc51c524c236c3ff43394baa93b4a7979c82b46704e7b0406a09be90cf",
+      "bytes": 6257
+    },
+    "mapstructure30": {
+      "sourceLocalPath": "mapstructure30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/mapstructure30-DELIVERY_FILES.json",
+      "sha256": "f41dd816c39ec5167d147a4f48e85f538a38a822a69751bbb5f29814a36b5600",
+      "bytes": 2829
+    },
+    "bolt30": {
+      "sourceLocalPath": "bolt30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/bolt30-DELIVERY_FILES.json",
+      "sha256": "3fa042a98e3b86962d301d8514129f21f883cf709c1bf9cb6e400701afac6c6f",
+      "bytes": 2864
+    },
+    "kafka-profile30": {
+      "sourceLocalPath": "kafka-profile30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/kafka-profile30-DELIVERY_FILES.json",
+      "sha256": "d8e8105700bc46a8cc9c60c4831cbeb430f59bb16393c1bf11b513d3920761e2",
+      "bytes": 6753
+    },
+    "openbao-profile30": {
+      "sourceLocalPath": "openbao-profile30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/openbao-profile30-DELIVERY_FILES.json",
+      "sha256": "0c76ac8941f4c83ec8dca850ff104ce5ea6431c158a95fd419f617221f88f002",
+      "bytes": 9770
+    },
+    "btree30": {
+      "sourceLocalPath": "btree30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/btree30-DELIVERY_FILES.json",
+      "sha256": "c0c0021869c51d8e625a2789a808bed637cf9769373ef3546eea88e1057d5784",
+      "bytes": 1540
+    },
+    "httpdown30": {
+      "sourceLocalPath": "httpdown30-stage/DELIVERY_FILES.json",
+      "retainedDeliveryManifest": "evidence/seaweedfs-source30-integrated-local-20261103/front-inputs/httpdown30-DELIVERY_FILES.json",
+      "sha256": "d34e5a94336b2206a455f82332ce68fa2f67f2d7f389f1e5d33276e4a3cd44db",
+      "bytes": 2354
+    }
+  },
+  "preservation": {
+    "rawManifestPath": "evidence/seaweedfs-source30-integrated-local-20261103/raw-retention.json",
+    "inputManifestPath": "evidence/seaweedfs-source30-integrated-local-20261103/SHA256-inputs.json",
+    "allRetainedInputHashesReverified": true,
+    "largeLogsGzipDeterministic": true,
+    "originalAndCompressedHashesRecorded": true,
+    "helperScriptsPublished": false
+  },
+  "limits": {
+    "localCveScanClaimed": false,
+    "image30QualificationClaimed": false,
+    "runtime30QualificationClaimed": false,
+    "generation29ProofTransferred": false,
+    "newRuntimeAuthorityIssued": false,
+    "targetOperations": 0,
+    "releaseAdmitted": false,
+    "mergeOrDeployPerformed": false,
+    "activeStorageBackend": "MinIO",
+    "gatesPassed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjectsCopied": 0,
+    "consumedScopes": 17,
+    "cumulativeEngineGET": 52,
+    "teatriTechnical": "8/8",
+    "teatriFunctional": "6/6",
+    "farmacie": {
+      "rows": 61,
+      "open": 10,
+      "type": "STRING"
+    },
+    "progressPercentRounded": 38,
+    "uncertaintyPercentagePoints": 10,
+    "weightedCredit": 17.5,
+    "totalWeight": 46,
+    "newProgressCredit": 0
+  }
+}

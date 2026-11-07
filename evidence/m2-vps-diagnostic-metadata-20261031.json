@@ -1,0 +1,69 @@
+{
+  "schema": "ouf.m2-vps-minimized-operator-diagnostics.v1",
+  "date": "2026-10-31",
+  "timezone": "Europe/Rome",
+  "provenance": "USER_PASTED_OUTPUT_OF_READ_ONLY_SYSTEMCTL_AND_DOCKER_METADATA_COMMANDS",
+  "independentlyReadOnHost": false,
+  "bootGuard": {
+    "unit": "ouf-semantic-boot-guard.service",
+    "type": "oneshot",
+    "remainAfterExit": true,
+    "loadState": "loaded",
+    "activeState": "active",
+    "subState": "exited",
+    "result": "success",
+    "mainPid": 0,
+    "exitStatus": 0,
+    "restarts": 0
+  },
+  "historicalWorkerUnits": {
+    "ouf-semantic-provider-lease-r8.service": "not-found",
+    "ouf-semantic-provider-lease-dns-r9.service": "not-found"
+  },
+  "registry": {
+    "containerId": "790c62742c92eabc095d4ab22f2070e0c40a41e4a219685a7d8120e4661e4e5d",
+    "imageId": "sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3",
+    "running": true,
+    "paused": false,
+    "declaredEnvironmentFlags": {
+      "OUF_DISCOVERY_WORKER_ENABLED": false,
+      "OUF_SCHEMA_GOV_ENABLED": false
+    },
+    "sameContainerAndImageAsOctober29Capture": true,
+    "effectiveConfigurationProven": false,
+    "sameProcessGenerationProven": false
+  },
+  "mcp": {
+    "containerId": "756f70a813a0a01218b9d9a07d56c01702364b67943181b8cc339be98d96531a",
+    "imageId": "sha256:a52180123104ac97e4979ad1b9b291654b076692da51708bb2a377301fef1220",
+    "listedStatus": "Up 3 days"
+  },
+  "onboarding": {
+    "containerId": "63a6e12202e700b8439d73e19e9375067a53021bc58b80d09f3a7f2bde2446ad",
+    "imageId": "sha256:7b9d3e918beea500929cb9e3e88165b6c574cedac6067e56206fb2ffa1d65b51",
+    "listedStatus": "Up 2 days"
+  },
+  "historicalProviders": {
+    "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67": {
+      "name": "ouf-semantic-provider-v2",
+      "listedStatus": "Exited (137) 13 days ago",
+      "terminationCauseProven": false
+    },
+    "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916": {
+      "name": "ouf-semantic-southbound-v2",
+      "listedStatus": "Exited (0) 13 days ago",
+      "currentAdmissionProven": false
+    }
+  },
+  "currentQuiescedIncidentDemonstrated": false,
+  "previousCiQuiescedFixEvidence": "evidence/m2-quiesced-recovery-reader-20261031.json",
+  "newOperatorReadRequiredForThisClarification": false,
+  "workerRestartAuthorized": false,
+  "historicalContainerRestartAuthorized": false,
+  "flagToggleAuthorized": false,
+  "runtimeAuthorityIssued": false,
+  "targetApplyAuthorized": false,
+  "fullCurrentCohortProven": false,
+  "applicationE2EProven": false,
+  "releaseAcceptance": false
+}

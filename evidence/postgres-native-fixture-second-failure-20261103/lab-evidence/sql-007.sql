@@ -1,0 +1,1 @@
+UPDATE ouf_recovery_fixture.objects SET ack_state='PENDING' WHERE object_key='binary'

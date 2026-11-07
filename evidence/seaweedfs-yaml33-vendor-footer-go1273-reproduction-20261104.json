@@ -1,0 +1,23 @@
+{
+  "schema": "ouf.yaml33.vendor-footer-regression.v1",
+  "toolchain": "go1.27.3 linux/amd64",
+  "scope": "Synthetic local Go module and file-only proxy",
+  "goModVendorExit": 0,
+  "generatedModulesTxt": [
+    "# example.invalid/component v1.2.3",
+    "## explicit; go 1.27.0",
+    "example.invalid/component",
+    "# github.com/tyler-smith/go-bip39 => github.com/cosmos/go-bip39 v1.0.0"
+  ],
+  "before": "EXACT_VENDOR_MODULE_HEADERS_REQUIRED",
+  "after": [
+    [
+      "example.invalid/component",
+      "v1.2.3"
+    ]
+  ],
+  "upstreamReplacePresentInReplayedGeneration32": true,
+  "goBip39AbsentFromFirstRunModuleGraph": true,
+  "fullSourceObservationRun": 41776440912,
+  "targetOperations": 0
+}

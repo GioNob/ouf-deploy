@@ -1,0 +1,42 @@
+name: Storage 4.52 YAML33 image input preflight
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-452-yaml33-image-preflight.yml
+      - scripts/verify-seaweedfs-yaml33-observation.py
+      - scripts/prepare_iceberg_vendor_patch.py
+      - tests/test_seaweedfs_yaml33_image_preflight.py
+      - tests/test_generation_vendor_contract.py
+      - tools/storage_security/generation_vendor_contract.py
+      - tools/storage_security/vendor_yaml_source.py
+      - config/seaweedfs-generation33-vendor-source-profile.json
+      - releases/seaweedfs-452-generation32-build-manifest-20261103.json
+      - releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json
+      - patches/seaweedfs/**
+      - patches/iceberg-go/**
+      - evidence/artifacts/seaweedfs-yaml33-source-observation-41776440912.zip
+      - evidence/seaweedfs-yaml33-source-observation-hosted-20261104.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storage-452-yaml33-image-preflight-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify original archived observation, exact source inputs and fail-closed boundaries
+        run: |
+          python3 -I -B -S -m unittest discover -s tests -p test_generation_vendor_contract.py -v
+          python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_yaml33_image_preflight.py -v
+          python3 -I -B -S scripts/verify-seaweedfs-yaml33-observation.py

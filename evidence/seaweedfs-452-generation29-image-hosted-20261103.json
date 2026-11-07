@@ -1,0 +1,143 @@
+{
+  "schema": "ouf.seaweedfs-generation29-hosted-image.v1",
+  "status": "HOSTED_PASS_BYTES_REVERIFIED_NOT_ADMITTED",
+  "checkedAt": "2026-11-03T19:08:28.591285+00:00",
+  "generation": 29,
+  "producerCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+  "runId": 41696541570,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/41696541570",
+  "jobs": [
+    {
+      "id": 126128466294,
+      "name": "qualify-standard-profile",
+      "conclusion": "success"
+    },
+    {
+      "id": 126128467105,
+      "name": "verify",
+      "conclusion": "success"
+    },
+    {
+      "id": 126134052077,
+      "name": "runtime_candidate",
+      "conclusion": "success"
+    },
+    {
+      "id": 126134843842,
+      "name": "independent_image_readback",
+      "conclusion": "success"
+    }
+  ],
+  "buildEvidenceArtifact": {
+    "id": 13262317346,
+    "bytes": 595615,
+    "digest": "sha256:e68d023bb18d756ae2fe96e95ad8c4ffbd16f39c4a90444803328e20924aca36",
+    "verification": {
+      "manifestSha256": "cb0eb4a8bf04b2f5185b60f9db01033cdb57288857a0cfac8d1be9b6b42dd934",
+      "verifiedFiles": 28,
+      "regressionCounts": {
+        "pass_tests": 6156,
+        "pass_packages": 21,
+        "skip_packages": 6,
+        "skip_tests": 5
+      },
+      "files": {
+        "build-info.txt": "4d0a9eabc3fb020456824361b0bb944c6de92c3250ae5df5e2ae3bf6785e0c11",
+        "denied-elastic-rclone.log": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "denied-elastic.log": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+        "denied-rclone.log": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+        "kafka-compile.jsonl": "076eae97cb05e9ee6c38f1629fa55444ec5ae87006c54429bd170af5d26b41d5",
+        "kafka-compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "kafka-tidy.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "kafka-tidy.stderr": "4c77327ac1cf1d61efde104ace8742c3a429f584130472a29c1da4e81de7f41c",
+        "nested-iam-regressions.jsonl": "9b6688c95e431f1ae84b61d9edeb0f0236da42fb5bda29909d637f8733a408e4",
+        "nested-iam-regressions.stderr": "a4ab218bbf91629bd1802003ce366fc5e555ab7f22454ebb068c579893382b84",
+        "nested-lockfiles-before.sha256": "88ece19efe729ba135d7c9b712e132e0f146ac00d20bf4701346bd2c15edbd72",
+        "ordered-patch-paths.txt": "c01407908caadde67949c6772138fe3fb472402933bd54d7f1b27aef0bb68e46",
+        "patch-stat.txt": "3b0a6c007a3a5424180b608e3df3c801aa2fd34b8f73b23c495431406e9be875",
+        "patched-source-tree.txt": "91b0744569a81f2ed6cff5b30b5b8ee0cd9ca6db85d821323d95e0de0ccda3b2",
+        "patches-sha256.txt": "539bb9442f9749253488aa0100a09e6279493b9aeb9c440530bb786834beacdc",
+        "production-deps.txt": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+        "regression-counts.json": "7e4264049e24545df3f6ab74b92966ff351a2b4ee421cd7e4104e262389c19ea",
+        "regressions.jsonl": "e2e9477a5da0e7ed56a8a2dc7ffb21bf197783a1845e70d0638bf615b352b0b5",
+        "regressions.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "remaining-direct-sdk-v1-importers.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "root-iam-regressions.jsonl": "5a0803fd3ef70a141e0c23d5e2a995bf3ae170ce95d61b4ce6c60ef58b4e73b8",
+        "root-iam-regressions.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "root-lockfiles-sha256.txt": "d78785e00293918be9d3a83b49da93919c8d3f6a25f83227a225912918861366",
+        "root-module-graph.txt": "a66fa53f1e63ced036d67db2b5d6e0c9199a54a02519226e0edc8bd525941714",
+        "root-modules.txt": "5cf1ab27fd6620018f76a1f5b280f7f9512585e7b75e224a1fb4777738c91382",
+        "tidy.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tidy.stderr": "98adda3b349116e191bd2bc2cbc92d88b6cdbb359ce9c349d05956390e3eb97d",
+        "upstream-source-sha.txt": "44bd879257a488d24b530c78d7d14f48609e641071ca822368fd4018d7c9dc93"
+      }
+    }
+  },
+  "producerArtifact": {
+    "id": 13261202810,
+    "bytes": 194362590,
+    "digest": "sha256:745b49a525412848cc9ea3c03c674f60f033681afc93bd5591ed7a50f20a7dca",
+    "expiresAt": "2027-02-01T18:43:38Z",
+    "retention": "TEMPORARY_CI"
+  },
+  "independentReadback": {
+    "id": 13261522735,
+    "bytes": 28167,
+    "digest": "sha256:15bf6c843014e4014485a880e0e88742dc210d3e74406a1e1cb203ddee963c7a",
+    "expiresAt": "2027-02-01T18:43:38Z",
+    "path": "evidence/artifacts/seaweedfs-452-generation29-image-readback-41696541570.zip",
+    "verifiedInternalChecksums": 20,
+    "verifiedSourceFiles": 37,
+    "assessmentReproduced": true,
+    "ociReconstructed": true,
+    "publisherSignatureVerifiedByHostedJob": true,
+    "locallyByteReverified": true
+  },
+  "byteReadback": {
+    "archiveSha256": "745b49a525412848cc9ea3c03c674f60f033681afc93bd5591ed7a50f20a7dca",
+    "binarySha256": "a0c74718e584942f58c02214f6b3abe46b71cd47d4995b8da3aa002dcdadeef7",
+    "checksumMembersVerified": 20,
+    "generation": 29,
+    "imageConfigDigest": "sha256:77fca36f4b76b0a35b84c3ec4391f129d191e0ef21e04a04798ff81bef57fbbd",
+    "ociManifestDigest": "sha256:f8679022d5baff88c33285b501317510ac4d1713cc4901f99999a1df937b18bd",
+    "patchedSourceTree": "574ad42543851ffe58cc025e14b1011609ff83de",
+    "producerCommit": "041992eacd851d277cd049f03b9fe68a393e6df4",
+    "producerRunId": 41696541570,
+    "publisherSignatureVerifiedByThisScript": false,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "schema": "ouf.seaweedfs-452-generation29-image-readback.v1",
+    "sdkLifecycle": "AWS_SDK_V1_ABSENT",
+    "sourceFilesVerified": 37,
+    "targetOperations": 0,
+    "vulnerabilitySubgate": "PASS_RAW"
+  },
+  "buildManifestSha256": "cddbcd4f40c13cb8e86d49d9bf30dc85109aeb3fa50334d92c4690e622d952c9",
+  "candidateLockPath": "releases/seaweedfs-452-generation29-candidate-lock-20261103.json",
+  "candidateLockSha256": "ed2a3b045420e91cd0ece7c2a8cbf9ccdedbf1145fc7fb3203b2d080c2bdf7bc",
+  "freshScanSha256": "b66839208a62788431e354d4f4ee64e208e6e3a8b6e991ba2aeef702f72e9189",
+  "freshSpdxSha256": "464b6cf642fca3c256bb3cf93de56ecdfb03e8567a62aac1562feedcbecea765",
+  "scannedBinaryComponents": 264,
+  "spdxRecords": 266,
+  "rawSeverityCounts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "LOW": 0,
+    "MEDIUM": 0,
+    "UNKNOWN": 0
+  },
+  "scanAndSpdxInventoriesMatchBinary": true,
+  "publisherSignatureVerifiedByHostedReader": true,
+  "localCryptographicSignatureVerificationClaimed": false,
+  "phaseBHostedCohort": "PENDING",
+  "runtimeLabs29": "PENDING",
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0
+}

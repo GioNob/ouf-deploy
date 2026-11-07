@@ -1,0 +1,123 @@
+test_corrupt_body_is_detected_despite_valid_database_metadata (__main__.NativeTests.test_corrupt_body_is_detected_despite_valid_database_metadata) ... ERROR
+test_mixed_generations_block_snapshot (__main__.NativeTests.test_mixed_generations_block_snapshot) ... FAIL
+test_pending_ack_blocks_snapshot (__main__.NativeTests.test_pending_ack_blocks_snapshot) ... FAIL
+test_pending_counter_blocks_snapshot (__main__.NativeTests.test_pending_counter_blocks_snapshot) ... FAIL
+test_real_snapshot_and_file_body_hash_reconcile (__main__.NativeTests.test_real_snapshot_and_file_body_hash_reconcile) ... ERROR
+test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced (__main__.NativeTests.test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced) ... ERROR
+test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent (__main__.NativeTests.test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent) ... ERROR
+
+======================================================================
+ERROR: test_corrupt_body_is_detected_despite_valid_database_metadata (__main__.NativeTests.test_corrupt_body_is_detected_despite_valid_database_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 253, in test_corrupt_body_is_detected_despite_valid_database_metadata
+    snapshot = self.lab.snapshot()
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 184, in snapshot
+    result = postgres_fixture.read_fixture_snapshot(psql=self.binary("psql"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 198, in read_fixture_snapshot
+    raw = _run_bounded(argv, timeout=timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 102, in _run_bounded
+    require(stderr_count == 0, "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT")
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/coordinated.py", line 32, in require
+    raise ReconciliationError(code)
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+======================================================================
+ERROR: test_real_snapshot_and_file_body_hash_reconcile (__main__.NativeTests.test_real_snapshot_and_file_body_hash_reconcile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 246, in test_real_snapshot_and_file_body_hash_reconcile
+    report = self.lab.reconcile(self.lab.snapshot())
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 184, in snapshot
+    result = postgres_fixture.read_fixture_snapshot(psql=self.binary("psql"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 198, in read_fixture_snapshot
+    raw = _run_bounded(argv, timeout=timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 102, in _run_bounded
+    require(stderr_count == 0, "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT")
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/coordinated.py", line 32, in require
+    raise ReconciliationError(code)
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+======================================================================
+ERROR: test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced (__main__.NativeTests.test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 268, in test_select_only_role_cannot_mutate_and_owner_read_only_is_enforced
+    self.lab.snapshot()
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 184, in snapshot
+    result = postgres_fixture.read_fixture_snapshot(psql=self.binary("psql"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 198, in read_fixture_snapshot
+    raw = _run_bounded(argv, timeout=timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 102, in _run_bounded
+    require(stderr_count == 0, "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT")
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/coordinated.py", line 32, in require
+    raise ReconciliationError(code)
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+======================================================================
+ERROR: test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent (__main__.NativeTests.test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 303, in test_uncommitted_changes_are_invisible_and_atomic_commit_is_coherent
+    observed = self.lab.snapshot()
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 184, in snapshot
+    result = postgres_fixture.read_fixture_snapshot(psql=self.binary("psql"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 198, in read_fixture_snapshot
+    raw = _run_bounded(argv, timeout=timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/postgres_fixture.py", line 102, in _run_bounded
+    require(stderr_count == 0, "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT")
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tools/storage_recovery/coordinated.py", line 32, in require
+    raise ReconciliationError(code)
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+======================================================================
+FAIL: test_mixed_generations_block_snapshot (__main__.NativeTests.test_mixed_generations_block_snapshot)
+----------------------------------------------------------------------
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 282, in test_mixed_generations_block_snapshot
+    with self.assertRaisesRegex(coordinated.ReconciliationError, "ROW_GENERATION_MISMATCH"):
+AssertionError: "ROW_GENERATION_MISMATCH" does not match "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT"
+
+======================================================================
+FAIL: test_pending_ack_blocks_snapshot (__main__.NativeTests.test_pending_ack_blocks_snapshot)
+----------------------------------------------------------------------
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 272, in test_pending_ack_blocks_snapshot
+    with self.assertRaisesRegex(coordinated.ReconciliationError, "PENDING_ACK_RECONCILIATION_REQUIRED"):
+AssertionError: "PENDING_ACK_RECONCILIATION_REQUIRED" does not match "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT"
+
+======================================================================
+FAIL: test_pending_counter_blocks_snapshot (__main__.NativeTests.test_pending_counter_blocks_snapshot)
+----------------------------------------------------------------------
+tools.storage_recovery.coordinated.ReconciliationError: POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/ouf-deploy/ouf-deploy/tests/run_storage_postgres_fixture_native.py", line 277, in test_pending_counter_blocks_snapshot
+    with self.assertRaisesRegex(coordinated.ReconciliationError, "PENDING_ACK_RECONCILIATION_REQUIRED"):
+AssertionError: "PENDING_ACK_RECONCILIATION_REQUIRED" does not match "POSTGRES_FIXTURE_DIAGNOSTIC_OUTPUT"
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.102s
+
+FAILED (failures=3, errors=4)

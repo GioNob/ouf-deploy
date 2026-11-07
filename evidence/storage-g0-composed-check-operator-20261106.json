@@ -1,0 +1,102 @@
+{
+  "schema": "ouf.storage-g0-composed-check-operator-receipt.v1",
+  "date": "2026-11-06",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "deliveryCheckpoint": "5cb1bb403f72c95dfa727e416e4b7a241fc529e7",
+  "preflight": {
+    "acceptanceCreditAdded": 0,
+    "boundInputSha256": {
+      "connection:ingestion": "a8886bbd14fed01aa863179a3364946fcc577139b973e414239cbd59346bcc75",
+      "connection:onboarding": "6578413567754d9598ff3e53eabd64fe4d22228f0d01f09366f3b26002164952",
+      "connection:s3": "42dba0ef889090707f48566340a06e20cb504b9c98ec6fc2442b6a8a55e1f512",
+      "connection:udp": "6ab5f2a0f7fdddbae7f09ea8d3192038226254404d982b233c7cdd6807715ca0",
+      "history:1": "0922ad7330417ed9da7a472cad266174ace344c12fa7c5c420f8083ca1fe8d2c",
+      "history:10": "95e66e217be370477f7bece3a3ac7313857c92d73dd7d6fabd41c2200f67cea7",
+      "history:11": "039f03a7593c0b826e6597f755c838f85efa197d17d7df3339512f5ee7c52bcc",
+      "history:12": "ca16c7e3799d916517cba7e0c0d0456c57bd949184bd103d3fa3204110768a09",
+      "history:13": "057d75ad979c3f2e2e973bc57dcf92f377e07de7d972f18006589257c9fc8bd4",
+      "history:14": "082ee663c15401e4092cb0efd1264883f58fa32ceec8a4a69d4e3590df2ec6b4",
+      "history:15": "559cd682d5009c9ffcfe99f14f3e67b49df467dd0947402ec08284de170bc4ac",
+      "history:16": "919c401d80076cabd51032cc773d7300dd781ccf1b23336ce6a5eed00c187ce4",
+      "history:17": "2956e017765c8e2c8fb0bd9d78170676600619ee7a582d2364a45ed309810929",
+      "history:2": "59935457cad39f7ffe245c8e76a71216b73ebf49bc27c7a20e5bf4e1c7612c0f",
+      "history:3": "a7a7601c5f78dd55ad43839c588cddaded3a61471517dbf6b7917ffbfd9f4319",
+      "history:4": "621124d289f36598cd7ae3675d3853303f5498d1600183a404486ecc633a6143",
+      "history:5": "39426368418d74a71e894d82f88fed3f7fba40734d25269a18438a63adf14881",
+      "history:6": "ac206493fa3e9e4d7af098fe8d3a8aec9325162c3167858cff37a0dd57cc6a7b",
+      "history:7": "9733fa7c6168a5073f06ea02b89cd015da505ce8bc0bbbbe4f95e614b2b5a4de",
+      "history:8": "d1e98ad391ccc5d339ce853a8b88afc12bcb1eb8737887d5c807321fd68e0955",
+      "history:9": "8bec830155b26ee665298b6e35f8bb53d41e1ee8ba0333e4e2209829dfea1380",
+      "network": "c0700c8f6b35e6e00d58458c39ccc24a0c3994298a822e74a046ac3bd00e4ecb",
+      "operator:runtime": "c958f52f6fc25c07a42a0a2b48ddab2f185316895dc449df1a14defe6b22ba97"
+    },
+    "g0Complete": false,
+    "inputSha256": "8643c92990916d9717d92d3dcc18d1c89f1a33e4d31e4c2a3f4b7dae91ce6a7b",
+    "limits": {
+      "attempts": 1,
+      "automaticReplayAllowed": false,
+      "databaseBytesEach": 33554432,
+      "databaseExports": 3,
+      "databaseRowsPerSection": 10000,
+      "engineBytes": 33554432,
+      "engineGets": 130,
+      "priorControls": 17,
+      "priorEngineGets": 52,
+      "s3Bodies": 256,
+      "s3BodyBytes": 67108864,
+      "s3Requests": 3000,
+      "s3WireBytes": 134217728,
+      "seconds": 900
+    },
+    "operatorInputsMissing": [
+      "OPERATOR_ACCESS",
+      "OPERATOR_CAPACITY",
+      "OPERATOR_CUSTODY",
+      "OPERATOR_WINDOW",
+      "OPERATOR_WRITERS",
+      "COLLECTION_DECISION_REFERENCE"
+    ],
+    "packageManifestSha256": "1e542f786ac1606cf72f273bc079eaa5b06b6bd22a210d615c10d13a9d9f8adf",
+    "runtimeAuthorityIssued": false,
+    "runtimeAuthorityVerified": false,
+    "schema": "ouf.storage-g0-package-preflight.v1",
+    "status": "LOCAL_INPUTS_BOUND_EXTERNAL_ADMISSION_REQUIRED",
+    "targetCommandAuthorized": false,
+    "targetReads": 0
+  },
+  "capacityPathPrecheck": {
+    "acceptanceCreditAdded": 0,
+    "capacitySufficiencyProven": false,
+    "filesModified": 0,
+    "g0Complete": false,
+    "paths": {
+      "backup": {
+        "collectorAncestryCompatible": false,
+        "exactDirectoryPresent": false,
+        "finding": "PATH_NOT_PRESENT"
+      },
+      "destination": {
+        "collectorAncestryCompatible": false,
+        "exactDirectoryPresent": false,
+        "finding": "PATH_NOT_PRESENT"
+      },
+      "source": {
+        "collectorAncestryCompatible": true,
+        "exactDirectoryPresent": true,
+        "finding": null
+      }
+    },
+    "providerRequests": 0,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-capacity-path-precheck.v1"
+  },
+  "interpretation": {
+    "localConnectionAndHistoryBindingCheckPassed": true,
+    "technicalCaptureExecuted": false,
+    "capacityDestinationAndBackupAbsent": true,
+    "sourceAncestryCompatibleWithCollector": true,
+    "sourceCustodyAdmitted": false,
+    "g0Complete": false,
+    "acceptanceCreditAdded": 0
+  }
+}

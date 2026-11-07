@@ -1,0 +1,48 @@
+{
+  "baselinePath": "google-profile32-stage/proposal/evidence/seaweedfs-google-profile-20261103/baseline-shell-terminals.jsonl",
+  "baselineSha256": "cd843612d142c725d10289b7a43289749cfdecc95329b74e82775ed4144f4a78",
+  "exactFailureIdentityParity": true,
+  "failedTests": [
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsMvMovesIntoExistingDestinationDirectory"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyManifestResolutionFailure"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyPruneEntryGuards"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyVerifyEntryPrunability"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestFsVerifyVerifyEntryPrunability/missing_on_all_locations"
+    ],
+    [
+      "github.com/seaweedfs/seaweedfs/weed/shell",
+      "TestS3BucketCreateRequestsExclusiveCreate"
+    ]
+  ],
+  "requiredHostedStatus": "REQUIRED_HOSTED_PASS_NOT_LOCALLY_OBSERVED"
+}

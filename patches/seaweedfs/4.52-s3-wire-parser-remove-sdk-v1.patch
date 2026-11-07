@@ -1,0 +1,758 @@
+diff --git a/weed/s3api/filer_multipart.go b/weed/s3api/filer_multipart.go
+index e077106..6eb7e5f 100644
+--- a/weed/s3api/filer_multipart.go
++++ b/weed/s3api/filer_multipart.go
+@@ -24,7 +24,6 @@ import (
+ 	"github.com/seaweedfs/seaweedfs/weed/stats"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/google/uuid"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+ 	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+@@ -153,7 +152,7 @@ func (s3a *S3ApiServer) createMultipartUpload(r *http.Request, input *s3.CreateM
+ 		CreateMultipartUploadOutput: s3.CreateMultipartUploadOutput{
+ 			Bucket:   input.Bucket,
+ 			Key:      objectKey(input.Key),
+-			UploadId: aws.String(uploadIdString),
++			UploadId: new(uploadIdString),
+ 		},
+ 		ChecksumAlgorithm: checksumAlgorithmNameFromHeaderName(checksumHeaderName),
+ 		ChecksumType:      checksumType,
+@@ -249,16 +248,16 @@ type multipartCompletionState struct {
+ 
+ func completeMultipartResult(r *http.Request, input *s3.CompleteMultipartUploadInput, etag string, entry *filer_pb.Entry) *CompleteMultipartUploadResult {
+ 	result := &CompleteMultipartUploadResult{
+-		Location: aws.String(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
++		Location: new(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
+ 		Bucket:   input.Bucket,
+-		ETag:     aws.String(etag),
++		ETag:     new(etag),
+ 		Key:      objectKey(input.Key),
+ 	}
+ 	if entry != nil && entry.Extended != nil {
+ 		if versionIdBytes, ok := entry.Extended[s3_constants.ExtVersionIdKey]; ok {
+ 			versionId := string(versionIdBytes)
+ 			if versionId != "" && versionId != "null" {
+-				result.VersionId = aws.String(versionId)
++				result.VersionId = new(versionId)
+ 			}
+ 		}
+ 		result.SetChecksum(string(entry.Extended[s3_constants.ExtChecksumAlgorithm]), string(entry.Extended[s3_constants.ExtChecksumValue]))
+@@ -838,11 +837,11 @@ func (s3a *S3ApiServer) completeMultipartUpload(r *http.Request, input *s3.Compl
+ 			// For versioned buckets, all content is stored in .versions directory
+ 			// The latest version information is tracked in the .versions directory metadata
+ 			output = &CompleteMultipartUploadResult{
+-				Location:     aws.String(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
++				Location:     new(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
+ 				Bucket:       input.Bucket,
+-				ETag:         aws.String(etagQuote),
++				ETag:         new(etagQuote),
+ 				Key:          objectKey(input.Key),
+-				VersionId:    aws.String(versionId),
++				VersionId:    new(versionId),
+ 				ChecksumType: completionState.checksumType,
+ 			}
+ 			output.SetChecksum(completionState.checksumHeaderName, completionState.checksumValue)
+@@ -935,9 +934,9 @@ func (s3a *S3ApiServer) completeMultipartUpload(r *http.Request, input *s3.Compl
+ 
+ 			// Note: Suspended versioning should NOT return VersionId field according to AWS S3 spec
+ 			output = &CompleteMultipartUploadResult{
+-				Location:     aws.String(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
++				Location:     new(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
+ 				Bucket:       input.Bucket,
+-				ETag:         aws.String(etagQuote),
++				ETag:         new(etagQuote),
+ 				Key:          objectKey(input.Key),
+ 				ChecksumType: completionState.checksumType,
+ 				// VersionId field intentionally omitted for suspended versioning
+@@ -1022,9 +1021,9 @@ func (s3a *S3ApiServer) completeMultipartUpload(r *http.Request, input *s3.Compl
+ 
+ 		// For non-versioned buckets, return response without VersionId
+ 		output = &CompleteMultipartUploadResult{
+-			Location:     aws.String(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
++			Location:     new(fmt.Sprintf("%s://%s/%s/%s", getRequestScheme(r), r.Host, url.PathEscape(*input.Bucket), urlPathEscape(*input.Key))),
+ 			Bucket:       input.Bucket,
+-			ETag:         aws.String(etagQuote),
++			ETag:         new(etagQuote),
+ 			Key:          objectKey(input.Key),
+ 			ChecksumType: completionState.checksumType,
+ 		}
+@@ -1408,7 +1407,7 @@ func (p *multipartUploadPage) add(entry *filer_pb.Entry) {
+ 		return
+ 	}
+ 	input := p.input
+-	key := *objectKey(aws.String(string(entry.Extended[s3_constants.ExtMultipartObjectKey])))
++	key := *objectKey(new(string(entry.Extended[s3_constants.ExtMultipartObjectKey])))
+ 	if *input.Prefix != "" && !strings.HasPrefix(key, *input.Prefix) {
+ 		return
+ 	}
+@@ -1418,7 +1417,7 @@ func (p *multipartUploadPage) add(entry *filer_pb.Entry) {
+ 	c := multipartCandidate{key: key, entry: entry}
+ 	// with a delimiter, keys that go on past it after the prefix are listed
+ 	// once as their common prefix, which counts toward max-uploads
+-	if delimiter := aws.StringValue(input.Delimiter); delimiter != "" {
++	if delimiter := stringValue(input.Delimiter); delimiter != "" {
+ 		if i := strings.Index(key[len(*input.Prefix):], delimiter); i >= 0 {
+ 			commonPrefix := key[:len(*input.Prefix)+i+len(delimiter)]
+ 			if p.prefixes[commonPrefix] || *input.KeyMarker != "" && commonPrefix <= *input.KeyMarker {
+@@ -1448,10 +1447,10 @@ func (p *multipartUploadPage) result() *ListMultipartUploadsResult {
+ 		Bucket:         input.Bucket,
+ 		Delimiter:      input.Delimiter,
+ 		KeyMarker:      input.KeyMarker,
+-		MaxUploads:     aws.Int64(int64(p.limit)),
++		MaxUploads:     new(int64(p.limit)),
+ 		Prefix:         input.Prefix,
+ 		UploadIdMarker: input.UploadIdMarker,
+-		IsTruncated:    aws.Bool(false),
++		IsTruncated:    new(false),
+ 	}
+ 	candidates := make([]multipartCandidate, len(p.top))
+ 	copy(candidates, p.top)
+@@ -1462,23 +1461,23 @@ func (p *multipartUploadPage) result() *ListMultipartUploadsResult {
+ 			continue
+ 		}
+ 		upload := &s3.MultipartUpload{
+-			Key:      aws.String(c.key),
+-			UploadId: aws.String(c.entry.Name),
++			Key:      new(c.key),
++			UploadId: new(c.entry.Name),
+ 		}
+ 		if c.entry.Attributes != nil {
+-			upload.Initiated = aws.Time(time.Unix(c.entry.Attributes.Crtime, int64(c.entry.Attributes.CrtimeNs)))
++			upload.Initiated = new(time.Unix(c.entry.Attributes.Crtime, int64(c.entry.Attributes.CrtimeNs)))
+ 		}
+ 		output.Upload = append(output.Upload, upload)
+ 	}
+ 	if p.more {
+ 		last := candidates[len(candidates)-1]
+-		output.IsTruncated = aws.Bool(true)
+-		output.NextKeyMarker = aws.String(last.key)
++		output.IsTruncated = new(true)
++		output.NextKeyMarker = new(last.key)
+ 		if last.entry != nil {
+-			output.NextUploadIdMarker = aws.String(last.entry.Name)
++			output.NextUploadIdMarker = new(last.entry.Name)
+ 		}
+ 	}
+-	if aws.StringValue(input.EncodingType) == s3.EncodingTypeUrl {
++	if stringValue(input.EncodingType) == s3.EncodingTypeUrl {
+ 		// AWS url-encodes these key-named elements when encoding-type=url is
+ 		// requested; without it XML 1.0 cannot carry the keys at all and the
+ 		// encoder replaces their characters with U+FFFD.
+@@ -1515,7 +1514,14 @@ func encodeMultipartUploadURLField(value *string) *string {
+ 	if value == nil {
+ 		return nil
+ 	}
+-	return aws.String(urlQueryEscape(*value))
++	return new(urlQueryEscape(*value))
++}
++
++func stringValue(value *string) string {
++	if value == nil {
++		return ""
++	}
++	return *value
+ }
+ 
+ type ListPartsResult struct {
+@@ -1561,7 +1567,7 @@ func (s3a *S3ApiServer) listObjectParts(input *s3.ListPartsInput) (output *ListP
+ 		UploadId:         input.UploadId,
+ 		MaxParts:         input.MaxParts,         // the maximum number of parts to return.
+ 		PartNumberMarker: input.PartNumberMarker, // the part number starts after this, exclusive
+-		StorageClass:     aws.String("STANDARD"),
++		StorageClass:     new("STANDARD"),
+ 	}
+ 
+ 	// part files are "%04d_<uuid>.part" (legacy "%04d.part"). '_' sorts after
+@@ -1569,7 +1575,7 @@ func (s3a *S3ApiServer) listObjectParts(input *s3.ListPartsInput) (output *ListP
+ 	// and a page of max-parts=1 never advances. The next part number sorts
+ 	// past both name shapes of the marker part.
+ 	if *input.PartNumberMarker >= math.MaxInt64 {
+-		output.IsTruncated = aws.Bool(false)
++		output.IsTruncated = new(false)
+ 		return output, s3err.ErrNone
+ 	}
+ 	entries, isLast, err := s3a.list(s3a.genUploadsFolder(*input.Bucket)+"/"+*input.UploadId, "", fmt.Sprintf("%04d", *input.PartNumberMarker+1), true, uint32(*input.MaxParts))
+@@ -1586,7 +1592,7 @@ func (s3a *S3ApiServer) listObjectParts(input *s3.ListPartsInput) (output *ListP
+ 	// Note: The upload directory is sort of a marker of the existence of an multipart upload request.
+ 	// So can not just delete empty upload folders.
+ 
+-	output.IsTruncated = aws.Bool(!isLast)
++	output.IsTruncated = new(!isLast)
+ 
+ 	for _, entry := range entries {
+ 		if strings.HasSuffix(entry.Name, multipartExt) && !entry.IsDirectory {
+@@ -1602,23 +1608,23 @@ func (s3a *S3ApiServer) listObjectParts(input *s3.ListPartsInput) (output *ListP
+ 
+ 			partETag := getEtagFromEntry(entry)
+ 			part := &s3.Part{
+-				PartNumber:   aws.Int64(int64(partNumber)),
+-				LastModified: aws.Time(time.Unix(entry.Attributes.Mtime, 0).UTC()),
+-				Size:         aws.Int64(int64(filer.FileSize(entry))),
+-				ETag:         aws.String(partETag),
++				PartNumber:   new(int64(partNumber)),
++				LastModified: new(time.Unix(entry.Attributes.Mtime, 0).UTC()),
++				Size:         new(int64(filer.FileSize(entry))),
++				ETag:         new(partETag),
+ 			}
+ 			output.Part = append(output.Part, part)
+ 			glog.V(3).Infof("listObjectParts: Added part %d, size=%d, etag=%s",
+ 				partNumber, filer.FileSize(entry), partETag)
+ 			if !isLast {
+-				output.NextPartNumberMarker = aws.Int64(int64(partNumber))
++				output.NextPartNumberMarker = new(int64(partNumber))
+ 			}
+ 		}
+ 	}
+ 
+ 	// a page that surfaced no parts has no next page to claim
+ 	if len(output.Part) == 0 {
+-		output.IsTruncated = aws.Bool(false)
++		output.IsTruncated = new(false)
+ 		output.NextPartNumberMarker = nil
+ 	}
+ 
+diff --git a/weed/s3api/s3api_acl_helper.go b/weed/s3api/s3api_acl_helper.go
+index 37cc049..5b5c592 100644
+--- a/weed/s3api/s3api_acl_helper.go
++++ b/weed/s3api/s3api_acl_helper.go
+@@ -6,12 +6,11 @@ import (
+ 	"net/http"
+ 	"strings"
+ 
+-	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	util_http "github.com/seaweedfs/seaweedfs/weed/util/http"
+ )
+ 
+@@ -44,7 +43,7 @@ func ExtractAcl(r *http.Request, accountManager AccountManager, ownership, bucke
+ 		defer util_http.CloseRequest(r)
+ 
+ 		var acp s3.AccessControlPolicy
+-		err := xmlutil.UnmarshalXML(&acp, xml.NewDecoder(r.Body), "")
++		err := s3.UnmarshalXML(&acp, xml.NewDecoder(r.Body), "")
+ 		if err != nil || acp.Owner == nil || acp.Owner.ID == nil {
+ 			return nil, s3err.ErrInvalidRequest
+ 		}
+diff --git a/weed/s3api/s3api_bucket_handlers.go b/weed/s3api/s3api_bucket_handlers.go
+index e576259..3de0ddd 100644
+--- a/weed/s3api/s3api_bucket_handlers.go
++++ b/weed/s3api/s3api_bucket_handlers.go
+@@ -15,7 +15,6 @@ import (
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3bucket"
+ 
+ 	"github.com/seaweedfs/seaweedfs/weed/filer"
+@@ -1442,7 +1441,7 @@ func (s3a *S3ApiServer) PutBucketOwnershipControls(w http.ResponseWriter, r *htt
+ 	var v s3.OwnershipControls
+ 	defer util_http.CloseRequest(r)
+ 
+-	err := xmlutil.UnmarshalXML(&v, xml.NewDecoder(r.Body), "")
++	err := s3.UnmarshalXML(&v, xml.NewDecoder(r.Body), "")
+ 	if err != nil {
+ 		s3err.WriteErrorResponse(w, r, s3err.ErrInvalidRequest)
+ 		return
+@@ -1583,7 +1582,7 @@ func (s3a *S3ApiServer) PutBucketVersioningHandler(w http.ResponseWriter, r *htt
+ 	var versioningConfig s3.VersioningConfiguration
+ 	defer util_http.CloseRequest(r)
+ 
+-	err := xmlutil.UnmarshalXML(&versioningConfig, xml.NewDecoder(r.Body), "")
++	err := s3.UnmarshalXML(&versioningConfig, xml.NewDecoder(r.Body), "")
+ 	if err != nil {
+ 		glog.Warningf("PutBucketVersioningHandler xml decode: %s", err)
+ 		s3err.WriteErrorResponse(w, r, s3err.ErrMalformedXML)
+diff --git a/weed/s3api/s3api_object_handlers_multipart.go b/weed/s3api/s3api_object_handlers_multipart.go
+index 823cbe5..5817378 100644
+--- a/weed/s3api/s3api_object_handlers_multipart.go
++++ b/weed/s3api/s3api_object_handlers_multipart.go
+@@ -14,14 +14,13 @@ import (
+ 	"strings"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+-	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	"github.com/google/uuid"
+ 	"github.com/pquerna/cachecontrol/cacheobject"
+ 	"github.com/seaweedfs/seaweedfs/weed/glog"
+ 	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
++	s3 "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+ 	stats_collect "github.com/seaweedfs/seaweedfs/weed/stats"
+ )
+ 
+@@ -107,8 +106,8 @@ func (s3a *S3ApiServer) NewMultipartUploadHandler(w http.ResponseWriter, r *http
+ 	}
+ 
+ 	createMultipartUploadInput := &s3.CreateMultipartUploadInput{
+-		Bucket:   aws.String(bucket),
+-		Key:      objectKey(aws.String(object)),
++		Bucket:   new(bucket),
++		Key:      objectKey(new(object)),
+ 		Metadata: make(map[string]*string),
+ 	}
+ 
+@@ -119,7 +118,7 @@ func (s3a *S3ApiServer) NewMultipartUploadHandler(w http.ResponseWriter, r *http
+ 		return
+ 	}
+ 	for k, v := range metadata {
+-		createMultipartUploadInput.Metadata[k] = aws.String(string(v))
++		createMultipartUploadInput.Metadata[k] = new(string(v))
+ 	}
+ 
+ 	contentType := r.Header.Get("Content-Type")
+@@ -185,9 +184,9 @@ func (s3a *S3ApiServer) CompleteMultipartUploadHandler(w http.ResponseWriter, r
+ 	}
+ 
+ 	response, errCode := s3a.completeMultipartUpload(r, &s3.CompleteMultipartUploadInput{
+-		Bucket:   aws.String(bucket),
+-		Key:      objectKey(aws.String(object)),
+-		UploadId: aws.String(uploadID),
++		Bucket:   new(bucket),
++		Key:      objectKey(new(object)),
++		UploadId: new(uploadID),
+ 	}, parts)
+ 
+ 	glog.V(3).Info("CompleteMultipartUploadHandler", string(s3err.EncodeXMLResponse(response)), errCode)
+@@ -232,9 +231,9 @@ func (s3a *S3ApiServer) AbortMultipartUploadHandler(w http.ResponseWriter, r *ht
+ 	}
+ 
+ 	response, errCode := s3a.abortMultipartUpload(&s3.AbortMultipartUploadInput{
+-		Bucket:   aws.String(bucket),
+-		Key:      objectKey(aws.String(object)),
+-		UploadId: aws.String(uploadID),
++		Bucket:   new(bucket),
++		Key:      objectKey(new(object)),
++		UploadId: new(uploadID),
+ 	})
+ 
+ 	if errCode != s3err.ErrNone {
+@@ -285,13 +284,13 @@ func (s3a *S3ApiServer) ListMultipartUploadsHandler(w http.ResponseWriter, r *ht
+ 	}
+ 
+ 	response, errCode := s3a.listMultipartUploads(&s3.ListMultipartUploadsInput{
+-		Bucket:         aws.String(bucket),
+-		Delimiter:      aws.String(delimiter),
+-		EncodingType:   aws.String(encodingType),
+-		KeyMarker:      aws.String(keyMarker),
+-		MaxUploads:     aws.Int64(int64(maxUploads)),
+-		Prefix:         aws.String(prefix),
+-		UploadIdMarker: aws.String(uploadIDMarker),
++		Bucket:         new(bucket),
++		Delimiter:      new(delimiter),
++		EncodingType:   new(encodingType),
++		KeyMarker:      new(keyMarker),
++		MaxUploads:     new(int64(maxUploads)),
++		Prefix:         new(prefix),
++		UploadIdMarker: new(uploadIDMarker),
+ 	})
+ 
+ 	glog.V(3).Infof("ListMultipartUploadsHandler %s errCode=%d", string(s3err.EncodeXMLResponse(response)), errCode)
+@@ -335,11 +334,11 @@ func (s3a *S3ApiServer) ListObjectPartsHandler(w http.ResponseWriter, r *http.Re
+ 	}
+ 
+ 	response, errCode := s3a.listObjectParts(&s3.ListPartsInput{
+-		Bucket:           aws.String(bucket),
+-		Key:              objectKey(aws.String(object)),
+-		MaxParts:         aws.Int64(int64(maxParts)),
+-		PartNumberMarker: aws.Int64(int64(partNumberMarker)),
+-		UploadId:         aws.String(uploadID),
++		Bucket:           new(bucket),
++		Key:              objectKey(new(object)),
++		MaxParts:         new(int64(maxParts)),
++		PartNumberMarker: new(int64(partNumberMarker)),
++		UploadId:         new(uploadID),
+ 	})
+ 
+ 	if errCode != s3err.ErrNone {
+@@ -552,9 +551,9 @@ func (s3a *S3ApiServer) checkUploadStillOpen(w http.ResponseWriter, r *http.Requ
+ 	}
+ 	// the upload is gone either way, so the client still hears NoSuchUpload
+ 	if _, code := s3a.abortMultipartUpload(&s3.AbortMultipartUploadInput{
+-		Bucket:   aws.String(bucket),
+-		Key:      objectKey(aws.String(object)),
+-		UploadId: aws.String(uploadID),
++		Bucket:   new(bucket),
++		Key:      objectKey(new(object)),
++		UploadId: new(uploadID),
+ 	}); code != s3err.ErrNone && code != s3err.ErrNoSuchUpload {
+ 		glog.Warningf("checkUploadStillOpen %s/%s: part left behind, cleanup failed", bucket, uploadID)
+ 	}
+diff --git a/weed/s3api/wire/types_test.go b/weed/s3api/wire/types_test.go
+index e3282a8..86900e0 100644
+--- a/weed/s3api/wire/types_test.go
++++ b/weed/s3api/wire/types_test.go
+@@ -5,12 +5,12 @@ import (
+ 	"encoding/json"
+ 	"encoding/xml"
+ 	"fmt"
+-	"github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+ 	"reflect"
+ 	"strings"
+ 	"testing"
+ 	"time"
+ 
++	legacyxml "github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil"
+ 	legacy "github.com/aws/aws-sdk-go/service/s3"
+ )
+ 
+@@ -153,8 +153,8 @@ func TestLegacyRequestParsing(t *testing.T) {
+ 	}
+ 	for n, tc := range cases {
+ 		t.Run(fmt.Sprint(n), func(t *testing.T) {
+-			a := xmlutil.UnmarshalXML(tc.local, xml.NewDecoder(strings.NewReader(tc.body)), "")
+-			b := xmlutil.UnmarshalXML(tc.old, xml.NewDecoder(strings.NewReader(tc.body)), "")
++			a := UnmarshalXML(tc.local, xml.NewDecoder(strings.NewReader(tc.body)), "")
++			b := legacyxml.UnmarshalXML(tc.old, xml.NewDecoder(strings.NewReader(tc.body)), "")
+ 			if fmt.Sprint(a) != fmt.Sprint(b) {
+ 				t.Fatalf("parser errors differ: %v / %v", a, b)
+ 			}
+diff --git a/weed/s3api/wire/xml_decode.go b/weed/s3api/wire/xml_decode.go
+new file mode 100644
+index 0000000..83908ec
+--- /dev/null
++++ b/weed/s3api/wire/xml_decode.go
+@@ -0,0 +1,334 @@
++// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
++// SPDX-License-Identifier: Apache-2.0
++//
++// This decoder is derived from aws-sdk-go v1.55.8/private/protocol/xml/xmlutil.
++// It is kept local to preserve the request-wire behavior while removing the
++// unsupported SDK from the production dependency graph. See LICENSE and NOTICE.
++package wire
++
++import (
++	"encoding/base64"
++	"encoding/xml"
++	"fmt"
++	"io"
++	"math"
++	"reflect"
++	"strconv"
++	"strings"
++	"time"
++)
++
++type xmlNode struct {
++	name       xml.Name
++	children   map[string][]*xmlNode
++	text       string
++	attr       []xml.Attr
++	namespaces map[string]string
++	parent     *xmlNode
++}
++
++// UnmarshalXML preserves the historical AWS SDK v1 request decoder semantics.
++// In particular, the final character-data segment wins, every top-level root
++// is parsed in order, and syntax errors after a complete root are still errors.
++func UnmarshalXML(v any, decoder *xml.Decoder, wrapper string) error {
++	node, err := xmlToNode(decoder, nil)
++	if err != nil {
++		return err
++	}
++	for _, roots := range node.children {
++		for _, root := range roots {
++			if wrapped, ok := root.children[wrapper]; ok {
++				root = wrapped[0]
++			}
++			if err := parseXMLValue(reflect.ValueOf(v), root, ""); err != nil {
++				if err == io.EOF {
++					return nil
++				}
++				return err
++			}
++		}
++	}
++	return nil
++}
++
++func xmlToNode(decoder *xml.Decoder, start *xml.StartElement) (*xmlNode, error) {
++	out := &xmlNode{}
++	for {
++		token, err := decoder.Token()
++		if err != nil {
++			if err == io.EOF {
++				break
++			}
++			return out, err
++		}
++		if token == nil {
++			break
++		}
++		switch typed := token.(type) {
++		case xml.CharData:
++			out.text = string(typed.Copy())
++		case xml.StartElement:
++			element := typed.Copy()
++			out.attr = element.Attr
++			if out.children == nil {
++				out.children = map[string][]*xmlNode{}
++			}
++			name := typed.Name.Local
++			child, childErr := xmlToNode(decoder, &element)
++			out.findNamespaces()
++			if childErr != nil {
++				return out, childErr
++			}
++			child.name = typed.Name
++			child.findNamespaces()
++			parentCopy := *out
++			child.parent = &parentCopy
++			out.children[name] = append(out.children[name], child)
++		case xml.EndElement:
++			if start != nil && start.Name.Local == typed.Name.Local {
++				return out, nil
++			}
++			out = &xmlNode{}
++		}
++	}
++	return out, nil
++}
++
++func (node *xmlNode) findNamespaces() {
++	node.namespaces = map[string]string{}
++	for _, attr := range node.attr {
++		if attr.Name.Space == "xmlns" {
++			node.namespaces[attr.Value] = attr.Name.Local
++		}
++	}
++}
++
++func (node *xmlNode) findAttribute(name string) (string, bool) {
++	for current := node; current != nil; current = current.parent {
++		for _, attr := range current.attr {
++			namespace := attr.Name.Space
++			if prefix, ok := current.namespaces[namespace]; ok {
++				namespace = prefix
++			}
++			if name == fmt.Sprintf("%s:%s", namespace, attr.Name.Local) {
++				return attr.Value, true
++			}
++		}
++	}
++	return "", false
++}
++
++func parseXMLValue(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	if xmlTag := tag.Get("xml"); xmlTag != "" && strings.SplitAfterN(xmlTag, ",", 2)[0] == "-" {
++		return nil
++	}
++	valueType := value.Type()
++	if valueType.Kind() == reflect.Ptr {
++		valueType = valueType.Elem()
++	}
++	kind := tag.Get("type")
++	if kind == "" {
++		switch valueType.Kind() {
++		case reflect.Struct:
++			if _, ok := value.Interface().(*time.Time); !ok {
++				kind = "structure"
++			}
++		case reflect.Slice:
++			if _, ok := value.Interface().([]byte); !ok {
++				kind = "list"
++			}
++		case reflect.Map:
++			kind = "map"
++		}
++	}
++	switch kind {
++	case "structure":
++		if field, ok := valueType.FieldByName("_"); ok {
++			tag = field.Tag
++		}
++		return parseXMLStruct(value, node, tag)
++	case "list":
++		return parseXMLList(value, node, tag)
++	case "map":
++		return parseXMLMap(value, node, tag)
++	default:
++		return parseXMLScalar(value, node, tag)
++	}
++}
++
++func parseXMLStruct(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	valueType := value.Type()
++	if value.Kind() == reflect.Ptr {
++		if value.IsNil() {
++			value.Set(reflect.New(value.Type().Elem()))
++		}
++		value = value.Elem()
++		valueType = valueType.Elem()
++	}
++	if payload := tag.Get("payload"); payload != "" {
++		field, _ := valueType.FieldByName(payload)
++		return parseXMLStruct(value.FieldByName(payload), node, field.Tag)
++	}
++	for i := 0; i < valueType.NumField(); i++ {
++		field := valueType.Field(i)
++		if first := field.Name[0:1]; strings.ToLower(first) == first {
++			continue
++		}
++		name := field.Name
++		if field.Tag.Get("flattened") != "" && field.Tag.Get("locationNameList") != "" {
++			name = field.Tag.Get("locationNameList")
++		} else if location := field.Tag.Get("locationName"); location != "" {
++			name = location
++		}
++		elements := node.children[name]
++		if elements == nil {
++			if attribute, ok := node.findAttribute(name); ok {
++				elements = []*xmlNode{{text: attribute}}
++			}
++		}
++		member := value.FieldByName(field.Name)
++		for _, element := range elements {
++			if err := parseXMLValue(member, element, field.Tag); err != nil {
++				return err
++			}
++		}
++	}
++	return nil
++}
++
++func parseXMLList(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	valueType := value.Type()
++	if tag.Get("flattened") == "" {
++		memberName := "member"
++		if name := tag.Get("locationNameList"); name != "" {
++			memberName = name
++		}
++		children := node.children[memberName]
++		if children != nil {
++			if value.IsNil() {
++				value.Set(reflect.MakeSlice(valueType, len(children), len(children)))
++			}
++			for i, child := range children {
++				if err := parseXMLValue(value.Index(i), child, ""); err != nil {
++					return err
++				}
++			}
++		}
++		return nil
++	}
++	if value.IsNil() {
++		value.Set(reflect.MakeSlice(valueType, 0, 0))
++	}
++	value.Set(reflect.Append(value, reflect.Zero(valueType.Elem())))
++	return parseXMLValue(value.Index(value.Len()-1), node, "")
++}
++
++func parseXMLMap(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	if value.IsNil() {
++		value.Set(reflect.MakeMap(value.Type()))
++	}
++	if tag.Get("flattened") == "" {
++		for _, entry := range node.children["entry"] {
++			if err := parseXMLMapEntry(value, entry, tag); err != nil {
++				return err
++			}
++		}
++		return nil
++	}
++	return parseXMLMapEntry(value, node, tag)
++}
++
++func parseXMLMapEntry(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	keyName, valueName := "key", "value"
++	if name := tag.Get("locationNameKey"); name != "" {
++		keyName = name
++	}
++	if name := tag.Get("locationNameValue"); name != "" {
++		valueName = name
++	}
++	keys := node.children[keyName]
++	values := node.children[valueName]
++	for i, key := range keys {
++		if i >= len(values) {
++			return fmt.Errorf("map value missing for key %q", key.text)
++		}
++		decoded := reflect.New(value.Type().Elem()).Elem()
++		if err := parseXMLValue(decoded, values[i], ""); err != nil {
++			return err
++		}
++		value.SetMapIndex(reflect.ValueOf(key.text), decoded)
++	}
++	return nil
++}
++
++func parseXMLScalar(value reflect.Value, node *xmlNode, tag reflect.StructTag) error {
++	switch value.Interface().(type) {
++	case *string:
++		value.Set(reflect.ValueOf(new(node.text)))
++	case []byte:
++		decoded, err := base64.StdEncoding.DecodeString(node.text)
++		if err != nil {
++			return err
++		}
++		value.Set(reflect.ValueOf(decoded))
++	case *bool:
++		decoded, err := strconv.ParseBool(node.text)
++		if err != nil {
++			return err
++		}
++		value.Set(reflect.ValueOf(new(decoded)))
++	case *int64:
++		decoded, err := strconv.ParseInt(node.text, 10, 64)
++		if err != nil {
++			return err
++		}
++		value.Set(reflect.ValueOf(new(decoded)))
++	case *float64:
++		var decoded float64
++		var err error
++		switch {
++		case strings.EqualFold(node.text, "NaN"):
++			decoded = math.NaN()
++		case strings.EqualFold(node.text, "Infinity"):
++			decoded = math.Inf(1)
++		case strings.EqualFold(node.text, "-Infinity"):
++			decoded = math.Inf(-1)
++		default:
++			decoded, err = strconv.ParseFloat(node.text, 64)
++		}
++		if err != nil {
++			return err
++		}
++		value.Set(reflect.ValueOf(new(decoded)))
++	case *time.Time:
++		decoded, err := parseXMLTime(tag.Get("timestampFormat"), node.text)
++		if err != nil {
++			return err
++		}
++		value.Set(reflect.ValueOf(new(decoded)))
++	default:
++		return fmt.Errorf("unsupported XML value: %v (%s)", value.Interface(), value.Type())
++	}
++	return nil
++}
++
++func parseXMLTime(format, text string) (time.Time, error) {
++	switch format {
++	case "unixTimestamp":
++		seconds, err := strconv.ParseFloat(text, 64)
++		if err != nil {
++			return time.Time{}, err
++		}
++		whole, fraction := math.Modf(seconds)
++		return time.Unix(int64(whole), int64(fraction*float64(time.Second))).UTC(), nil
++	case "rfc822":
++		for _, layout := range []string{time.RFC1123, time.RFC1123Z, time.RFC822, time.RFC822Z} {
++			if parsed, err := time.Parse(layout, text); err == nil {
++				return parsed, nil
++			}
++		}
++		return time.Time{}, fmt.Errorf("invalid RFC822 timestamp %q", text)
++	default:
++		return time.Parse(time.RFC3339Nano, text)
++	}
++}

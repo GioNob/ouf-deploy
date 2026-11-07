@@ -1,0 +1,272 @@
+--- a/weed/filer/filerstore_wrapper.go
++++ b/weed/filer/filerstore_wrapper.go
+@@ -218,7 +218,9 @@
+ 	if entry == nil {
+ 		return
+ 	}
+-	if !entry.IsDirectory() && entry.Mime == "application/octet-stream" {
++	// S3 Content-Type is object metadata, including an explicit octet-stream.
++	// Keep the native filer normalization for entries without S3 metadata.
++	if !entry.IsDirectory() && !entry.isS3Entry() && entry.Mime == "application/octet-stream" {
+ 		entry.Mime = ""
+ 	}
+ }
+--- a/weed/filer/filerstore_wrapper_test.go
++++ b/weed/filer/filerstore_wrapper_test.go
+@@ -7,6 +7,7 @@
+ 	"testing"
+ 	"time"
+ 
++	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+ 	"github.com/seaweedfs/seaweedfs/weed/util"
+ 	"github.com/stretchr/testify/assert"
+ 	"github.com/stretchr/testify/require"
+@@ -14,9 +15,10 @@
+ 
+ func TestFilerStoreWrapperMimeNormalization(t *testing.T) {
+ 	tests := []struct {
+-		name     string
+-		mode     os.FileMode
+-		wantMime string
++		name       string
++		mode       os.FileMode
++		wantMime   string
++		s3Metadata map[string][]byte
+ 	}{
+ 		{
+ 			name:     "files strip octet-stream",
+@@ -28,6 +30,11 @@
+ 			mode:     os.ModeDir | 0o770,
+ 			wantMime: "application/octet-stream",
+ 		},
++
++		{name: "S3 ETag preserves explicit octet-stream", mode: 0o660, wantMime: "application/octet-stream",
++			s3Metadata: map[string][]byte{s3_constants.ExtETagKey: []byte("fixture-etag")}},
++		{name: "S3 owner preserves explicit octet-stream", mode: 0o660, wantMime: "application/octet-stream",
++			s3Metadata: map[string][]byte{s3_constants.ExtAmzOwnerKey: []byte("fixture-owner")}},
+ 	}
+ 
+ 	operations := []struct {
+@@ -40,6 +47,9 @@
+ 				return fsw.InsertEntry(ctx, entry)
+ 			},
+ 		},
++		{name: "insert known absent", run: func(fsw *FilerStoreWrapper, ctx context.Context, entry *Entry) error {
++			return fsw.InsertEntryKnownAbsent(ctx, entry)
++		}},
+ 		{
+ 			name: "update",
+ 			run: func(fsw *FilerStoreWrapper, ctx context.Context, entry *Entry) error {
+@@ -55,6 +65,7 @@
+ 				wrapper := NewFilerStoreWrapper(store)
+ 				entry := &Entry{
+ 					FullPath: util.FullPath("/buckets/test/object"),
++					Extended: tt.s3Metadata,
+ 					Attr: Attr{
+ 						Mode: tt.mode,
+ 						Mime: "application/octet-stream",
+--- /dev/null
++++ b/weed/s3api/s3api_object_content_type_persistence_test.go
+@@ -0,0 +1,202 @@
++package s3api
++
++import (
++	"bytes"
++	"context"
++	"fmt"
++	"io"
++	"net"
++	"net/http"
++	"net/http/httptest"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/gorilla/mux"
++	"github.com/seaweedfs/seaweedfs/weed/filer"
++	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
++	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
++	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
++	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
++	"github.com/seaweedfs/seaweedfs/weed/util"
++	"github.com/seaweedfs/seaweedfs/weed/util/chunk_cache"
++	"github.com/stretchr/testify/require"
++	"google.golang.org/grpc"
++	"google.golang.org/protobuf/proto"
++)
++
++// The volume HTTP write protocol is multipart. Store the part bytes, not the
++// multipart envelope, so the real GET path must return exactly the PUT body.
++func startContentTypeVolume(t *testing.T) *fakeVolumeServer {
++	t.Helper()
++	volume := &fakeVolumeServer{stored: map[string][]byte{}}
++	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		fid := strings.TrimPrefix(r.URL.Path, "/")
++		if r.Method == http.MethodGet || r.Method == http.MethodHead {
++			volume.mu.Lock()
++			body, ok := volume.stored[fid]
++			volume.mu.Unlock()
++			if !ok {
++				http.NotFound(w, r)
++				return
++			}
++			w.Header().Set("Content-Length", fmt.Sprint(len(body)))
++			if r.Method == http.MethodGet {
++				w.Write(body)
++			}
++			return
++		}
++		reader, err := r.MultipartReader()
++		if err != nil {
++			http.Error(w, err.Error(), 400)
++			return
++		}
++		part, err := reader.NextPart()
++		if err != nil {
++			http.Error(w, err.Error(), 400)
++			return
++		}
++		body, err := io.ReadAll(io.LimitReader(part, 1024*1024))
++		if err != nil {
++			http.Error(w, err.Error(), 400)
++			return
++		}
++		volume.mu.Lock()
++		volume.stored[fid] = body
++		volume.mu.Unlock()
++		w.WriteHeader(http.StatusCreated)
++		fmt.Fprintf(w, `{"size":%d}`, len(body))
++	}))
++	t.Cleanup(server.Close)
++	volume.httpAddr = strings.TrimPrefix(server.URL, "http://")
++	listener, err := net.Listen("tcp", "127.0.0.1:0")
++	require.NoError(t, err)
++	grpcServer := grpc.NewServer()
++	volume_server_pb.RegisterVolumeServerServer(grpcServer, volume)
++	go grpcServer.Serve(listener)
++	t.Cleanup(grpcServer.Stop)
++	volume.grpcPort = uint32(listener.Addr().(*net.TCPAddr).Port)
++	return volume
++}
++
++// Keep the real FilerStoreWrapper in the RPC persistence path: a mock that
++// only retains the outgoing protobuf misses MIME normalization on disk writes.
++type contentTypeStore struct {
++	filer.FilerStore
++	backend *ambiguousPutFiler
++}
++
++func (*contentTypeStore) GetName() string { return "content-type-regression" }
++func (s *contentTypeStore) InsertEntry(ctx context.Context, entry *filer.Entry) error {
++	data, err := proto.Marshal(entry.ToProtoEntry())
++	if err != nil {
++		return err
++	}
++	persisted := new(filer_pb.Entry)
++	if err := proto.Unmarshal(data, persisted); err != nil {
++		return err
++	}
++	s.backend.mu.Lock()
++	defer s.backend.mu.Unlock()
++	s.backend.entries[string(entry.FullPath)] = persisted
++	return nil
++}
++func (s *contentTypeStore) FindEntry(ctx context.Context, path util.FullPath) (*filer.Entry, error) {
++	s.backend.mu.Lock()
++	defer s.backend.mu.Unlock()
++	entry := s.backend.entries[string(path)]
++	if entry == nil {
++		return nil, filer_pb.ErrNotFound
++	}
++	return filer.FromPbEntry("/buckets/b", proto.Clone(entry).(*filer_pb.Entry)), nil
++}
++
++type contentTypeFiler struct {
++	*ambiguousPutFiler
++	wrapper *filer.FilerStoreWrapper
++}
++
++// Real volume IDs have a canonical representation; the generic upload-only
++// fixture returns padded IDs, which would differ after chunk serialization.
++func (f *contentTypeFiler) AssignVolume(ctx context.Context, req *filer_pb.AssignVolumeRequest) (*filer_pb.AssignVolumeResponse, error) {
++	response, err := f.ambiguousPutFiler.AssignVolume(ctx, req)
++	if err != nil {
++		return nil, err
++	}
++	id, err := needle.ParseFileIdFromString(response.FileId)
++	if err != nil {
++		return nil, err
++	}
++	response.FileId = id.String()
++	return response, nil
++}
++
++func (f *contentTypeFiler) CreateEntry(ctx context.Context, req *filer_pb.CreateEntryRequest) (*filer_pb.CreateEntryResponse, error) {
++	if err := f.wrapper.InsertEntry(ctx, filer.FromPbEntry(req.Directory, req.Entry)); err != nil {
++		return nil, err
++	}
++	return &filer_pb.CreateEntryResponse{}, nil
++}
++
++func TestS3ContentTypeSurvivesFilerPersistence(t *testing.T) {
++	for _, tc := range []struct {
++		name, key, contentType, want string
++		body                         []byte
++	}{
++		{"explicit octet-stream overrides txt extension", "binary.txt", "application/octet-stream", "application/octet-stream", []byte("plain looking bytes\n")},
++		{"explicit octet-stream overrides json extension", "binary.json", "application/octet-stream", "application/octet-stream", []byte("{\"fixture\":true}")},
++		{"empty object retains explicit type", "empty.txt", "application/octet-stream", "application/octet-stream", nil},
++		{"custom explicit type retained", "custom.txt", "application/x-ouf-fixture", "application/x-ouf-fixture", []byte("fixture\n")},
++		{"missing type still detected", "inferred.bin", "", "text/plain; charset=utf-8", []byte("plain text fixture\n")},
++		{"missing type empty object keeps PUT default", "empty-default.txt", "", "application/octet-stream", nil},
++		{"missing type binary body keeps detected type", "binary-default.txt", "", "application/octet-stream", []byte{0, 1, 2, 3, 255}},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			volume := startContentTypeVolume(t)
++			backend := &ambiguousPutFiler{volume: volume, apply: true, entries: map[string]*filer_pb.Entry{}}
++			store := &contentTypeStore{backend: backend}
++			persistence := &contentTypeFiler{ambiguousPutFiler: backend, wrapper: filer.NewFilerStoreWrapper(store)}
++			address := startFakeFiler(t, persistence)
++			s3a := newPutTestServer(t, address)
++			s3a.readerCache = filer.NewReaderCache(2, (*chunk_cache.TieredChunkCache)(nil), s3a.filerClient.GetLookupFileIdFunction(), s3a.filerClient)
++			s3a.iam = NewIdentityAccessManagementWithStore(s3a.option, nil, "memory")
++			t.Cleanup(s3a.iam.Shutdown)
++			bucketEntry := &filer_pb.Entry{Name: "b", IsDirectory: true, Attributes: &filer_pb.FuseAttributes{}, Extended: map[string][]byte{s3_constants.ExtAmzOwnerKey: []byte(AccountAdmin.Id)}}
++			backend.entries["/buckets/b"] = bucketEntry
++			s3a.bucketConfigCache = NewBucketConfigCache(time.Minute)
++			s3a.bucketConfigCache.Set("b", &BucketConfig{Name: "b", Owner: AccountAdmin.Id})
++			s3a.bucketRegistry = NewBucketRegistry(s3a)
++			s3a.bucketRegistry.LoadBucketMetadata(bucketEntry)
++			ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
++			defer cancel()
++			request := func(method string) *http.Request {
++				r := httptest.NewRequest(method, "/b/"+tc.key, bytes.NewReader(tc.body)).WithContext(ctx)
++				return mux.SetURLVars(r, map[string]string{"bucket": "b", "object": tc.key})
++			}
++			put := request(http.MethodPut)
++			if tc.contentType != "" {
++				put.Header.Set("Content-Type", tc.contentType)
++			}
++			output := httptest.NewRecorder()
++			s3a.PutObjectHandler(output, put)
++			require.Equal(t, http.StatusOK, output.Code, output.Body.String())
++			stored, err := store.FindEntry(ctx, util.FullPath("/buckets/b/"+tc.key))
++			require.NoError(t, err)
++			require.Equal(t, tc.want, stored.Mime, "persisted MIME must survive a fresh protobuf decode")
++			require.NotEmpty(t, stored.Extended[s3_constants.ExtETagKey], "actual PUT stamps S3 object metadata")
++			for _, method := range []string{http.MethodGet, http.MethodHead} {
++				response := httptest.NewRecorder()
++				if method == http.MethodGet {
++					s3a.GetObjectHandler(response, request(method))
++				} else {
++					s3a.HeadObjectHandler(response, request(method))
++				}
++				require.Equal(t, http.StatusOK, response.Code, response.Body.String())
++				require.Equal(t, tc.want, response.Header().Get("Content-Type"), method)
++				if method == http.MethodGet {
++					require.Equal(t, string(tc.body), response.Body.String())
++				}
++			}
++		})
++	}
++}

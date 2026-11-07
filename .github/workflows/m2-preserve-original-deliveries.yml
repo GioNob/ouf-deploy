@@ -1,0 +1,101 @@
+name: M2 preserve original MCP UDP deliveries
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths: ['scripts/preserve-original-mcp-udp.py','scripts/qualify-original-mcp-udp-native.py', '.github/workflows/m2-preserve-original-deliveries.yml']
+permissions: {contents: read, actions: read}
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download exact existing archive without rebuilding any image
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --connect-timeout 15 --max-time 300 --max-filesize 1708479761 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/11907557440/zip \
+            -o original.zip
+          fixture="/var/lib/ouf-original-members-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo install -d -m 0700 "$fixture/repository"
+          sudo cp -a scripts tools "$fixture/repository/"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo python3 -I -B -S "$fixture/repository/scripts/preserve-original-mcp-udp.py" \
+            "$GITHUB_WORKSPACE/original.zip" "$fixture/output"
+          mkdir preserved
+          sudo cp -a "$fixture/output/mcp" "$fixture/output/udp" "$fixture/output/origin" "$fixture/output/receipt.json" preserved/
+          sudo chown -R "$(id -u):$(id -g)" preserved
+      - uses: sigstore/cosign-installer@af595e623eec1ede52d6322f53b635d5def0a95a
+        with: {cosign-release: v3.1.3}
+      - name: Verify the original publisher and original unchanged signed subject
+        run: |
+          set -euo pipefail
+          cosign verify-blob preserved/origin/COHORT_SHA256SUMS \
+            --bundle preserved/origin/COHORT_SHA256SUMS.sigstore.json \
+            --certificate-identity 'https://github.com/GioNob/ouf-deploy/.github/workflows/semantic-proposal-candidate-package.yml@refs/heads/codex/complete-file-cohort-package-20261014' \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-github-workflow-repository GioNob/ouf-deploy \
+            --certificate-github-workflow-sha 8bff54a52a0ce15daccaf2aee932004f106dd178
+      - name: Use official Docker 29.8.1 in an isolated disposable data root
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check --strict
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          /opt/ouf-docker-29/dockerd --version
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          printf '%s\n' '{"features":{"containerd-snapshotter":true},"exec-opts":["native.cgroupdriver=systemd"]}' > /tmp/ouf-docker-29.json
+          sudo systemd-run --unit=ouf-docker-contract-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_DOCKER_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+          test "$(sudo docker info --format '{{.Driver}}')" = overlayfs
+          test "$(sudo docker info --format '{{.CgroupDriver}}')" = systemd
+      - name: Compare original import and controlled envelopes without starting any container
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-original-members-${GITHUB_RUN_ID}"
+          sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            python3 -I -B -S "$fixture/repository/scripts/qualify-original-mcp-udp-native.py" "$fixture/output"
+          sudo cp "$fixture/output/native-import-envelopes.json" preserved/
+          sudo chown "$(id -u):$(id -g)" preserved/native-import-envelopes.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-original-mcp-${{ github.run_id }}
+          path: |
+            preserved/mcp/
+            preserved/origin/
+            preserved/receipt.json
+            preserved/native-import-envelopes.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m2-original-udp-${{ github.run_id }}
+          path: |
+            preserved/udp/
+            preserved/origin/
+            preserved/receipt.json
+            preserved/native-import-envelopes.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6

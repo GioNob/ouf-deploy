@@ -1,0 +1,20 @@
+{
+  "schema": "ouf.storage-cold-preparation-operator-receipt.v1",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "downloadAndSha256ReportedSuccessful": true,
+  "programInstalledReported": true,
+  "reportedResult": {
+    "status": "HELD",
+    "reason": "EPHEMERAL_OR_DEVICE_MOUNT_REQUIRES_REVIEW",
+    "automaticReplayAllowed": false,
+    "automaticRestartAllowed": false,
+    "runtimeAuthorityIssued": false,
+    "acceptanceCreditAdded": 0
+  },
+  "mountIdentityKnown": false,
+  "producerChanged": false,
+  "targetCaptureExecuted": false,
+  "nextAction": "READ_RETAINED_INVENTORY_NO_PROVIDER_CALLS",
+  "localReadbackTestsPassed": 6,
+  "readbackTargetExecuted": false
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "command": [
+      "/workspace/scratch/98dabd1608e5/openbao-profile30-stage/weed-openbao-profile30",
+      "-logtostderr=true",
+      "filer.replicate"
+    ],
+    "exitCode": 2,
+    "denied": true,
+    "logFailure": false,
+    "outputSha256": "3fceb02e85ab6a77ed9ce6000c4519a4087881f46e45a3a3c3021c4681854e0b"
+  },
+  {
+    "command": [
+      "/workspace/scratch/98dabd1608e5/openbao-profile30-stage/weed-openbao-profile30",
+      "-logtostderr=true",
+      "filer.backup"
+    ],
+    "exitCode": 2,
+    "denied": true,
+    "logFailure": false,
+    "outputSha256": "0ec0b64230e8720daca3c09e08685c61b3a86b5494af57f684c26ad2f3af2a5f"
+  }
+]

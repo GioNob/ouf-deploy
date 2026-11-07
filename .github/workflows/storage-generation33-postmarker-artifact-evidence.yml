@@ -1,0 +1,98 @@
+name: Storage generation33 postmarker exact artifact evidence during status delay
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-postmarker-artifact-evidence.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: storage-postmarker-artifact-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-published-artifact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          path: verifier
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: 18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31
+          path: producer
+      - name: Acquire exact original and retain native control-plane observations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/postmarker-artifact-evidence"
+          python3 -I -B -S - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'postmarker-artifact-evidence'
+          base='https://api.github.com/repos/GioNob/ouf-deploy'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(base+path,headers=headers),timeout=30) as r:return json.load(r)
+          producer='18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31'
+          run=get('/actions/runs/41864590947');jobs=get('/actions/runs/41864590947/jobs?filter=all&per_page=100')
+          assert run['head_sha']==producer and run['run_attempt']==1
+          (out/'native-run-observed.json').write_text(json.dumps(run,indent=2)+'\n')
+          (out/'native-jobs-observed.json').write_text(json.dumps(jobs,indent=2)+'\n')
+          a=get('/actions/artifacts/13343120116')
+          assert a['id']==13343120116 and not a['expired']
+          assert a['name']=='storage-generation33-lateral-isolation-41864590947'
+          assert a['workflow_run']['id']==41864590947 and a['workflow_run']['head_sha']==producer
+          assert a['size_in_bytes']==3447908 and a['digest']=='sha256:be6f6164165c07bf1e8982cc0a14b8371c46177ba109135cea26134a48e7a4e0'
+          (out/'original-artifact.json').write_text(json.dumps(a,indent=2)+'\n')
+          dest=out/'original-native.zip'
+          # Read-only download; curl does not forward Authorization across hosts.
+          subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+              '--proto-redir','=https','--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','90',
+              '--max-filesize','3447908','-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+              '-H','Accept: application/vnd.github+json',a['archive_download_url'],'--output',str(dest)],check=True)
+          raw=dest.read_bytes()
+          assert len(raw)==3447908 and hashlib.sha256(raw).hexdigest()==a['digest'].removeprefix('sha256:')
+          PY
+      - name: Verify content independently while keeping native terminal status separate
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PY'
+          import importlib.util,json,os,pathlib
+          root=pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'postmarker-artifact-evidence'
+          spec=importlib.util.spec_from_file_location('readback',root/'verifier/scripts/readback-storage-generation33-commit-crash.py')
+          module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+          result=module.verify(out/'original-native.zip',root/'producer',
+              'be6f6164165c07bf1e8982cc0a14b8371c46177ba109135cea26134a48e7a4e0',
+              '18b93a7f6f704a6b9f7c959c9f6c088eb5b1cb31')
+          run=json.loads((out/'native-run-observed.json').read_bytes())
+          jobs=json.loads((out/'native-jobs-observed.json').read_bytes())['jobs']
+          terminal=run['status']=='completed' and run['conclusion']=='success' and len(jobs)==1 and jobs[0]['id']==126695427394 and jobs[0]['status']=='completed' and jobs[0]['conclusion']=='success'
+          report={'schema':'ouf.storage-postmarker-artifact-evidence.v1',
+              'status':'EVIDENCE_VERIFIED_NATIVE_STATUS_CONFIRMED' if terminal else 'EVIDENCE_VERIFIED_NATIVE_STATUS_UNCONFIRMED',
+              'nativeTerminalSuccessConfirmed':terminal,'nativeRunStatus':run['status'],
+              'nativeRunConclusion':run['conclusion'],'nativeJobStatus':jobs[0]['status'] if len(jobs)==1 else 'ambiguous',
+              'nativeJobConclusion':jobs[0]['conclusion'] if len(jobs)==1 else None,
+              'originalArtifactId':13343120116,'originalRunId':41864590947,'readback':result,
+              'secondNativeExecution':False,'existingStrictReadbackUnchanged':True,
+              'targetOperations':0,'gatesClosed':0,'acceptanceTestsPassed':0}
+          (out/'evidence-readback.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('OUF_POSTMARKER_EVIDENCE_JSON='+json.dumps(report,sort_keys=True))
+          PY
+      - name: Retain original bytes, verified evidence and observed status even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-postmarker-artifact-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/postmarker-artifact-evidence/
+          if-no-files-found: error
+          retention-days: 90

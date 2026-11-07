@@ -1,0 +1,22 @@
+I1103 20:40:17.703944 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.704650 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.704734 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.704841 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.704890 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.704926 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.705020 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.705088 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+I1103 20:40:17.705170 network.go:14 failed to detect net interfaces: route ip+net: netlinkrib: operation not permitted
+E1103 20:40:17.705971 filer_replication.go:39 replication configuration rejected: OUF standard profile excludes OpenBao/Vault KMS
+
+Example: weed filer.replicate
+Default Usage:
+  -options string
+    	a file of command line options, each line in optionName=optionValue format
+Description:
+  replicate file changes to another destination
+
+	filer.replicate listens on filer notifications. If any file is updated, it will fetch the updated content,
+	and write to the other destination.
+
+	Run "weed scaffold -config=replication" to generate a replication.toml file and customize the parameters.

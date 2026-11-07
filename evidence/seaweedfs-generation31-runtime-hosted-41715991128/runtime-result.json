@@ -1,0 +1,25 @@
+{
+  "schema": "ouf.seaweedfs-generation31-runtime-labs.v1",
+  "generation": 31,
+  "status": "SYNTHETIC_COLD_MIME_IDENTITY_TLS_EGRESS_PASS_NOT_ACCEPTANCE",
+  "candidateLockSha256": "19cd03cccee7c6cc2f54f8665e48f5541b9594789ed84442c387616629041eba",
+  "cohortReceiptSha256": "b9d72ddeee6f96c392604008f6f9b4b1f4bffaef56142851fe3cea3bbf37c798",
+  "buildManifestSha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+  "binarySha256": "5b7e3dcf61d6b3b7b2b44135dd0db980e43e3d96e5e7e87210c543f790448b02",
+  "ociManifestDigest": "sha256:5af4cbe11899c7d4ef131e37d0c61912b2e9930d66ec21ae69cf38cbc32d9484",
+  "octetStreamBeforeAndAfterRestore": "PASS",
+  "identityS3Cases": 23,
+  "tlsNegatives": 2,
+  "egressProbes": 2,
+  "maximumConcurrentContainers": 4,
+  "labsSequential": true,
+  "harnessSourceSha256": {
+    "scripts/run-seaweedfs-452-cold-recovery.py": "a4cbc41ec35ff220868c616ce323612d8e89eec42e0cbd9c47332c25f4344089",
+    "scripts/run-seaweedfs-452-identity-tls.py": "50f75e99b0f3f012b2651e6856fecfc3f1742d20676c70c36499f30e84e75185"
+  },
+  "targetOperations": 0,
+  "gatesClosed": 0,
+  "acceptanceTestsPassed": 0,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false
+}

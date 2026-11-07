@@ -1,0 +1,108 @@
+name: Storage generation32 synthetic PostgreSQL and S3 restore
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-452-generation32-coordinated-recovery.yml
+      - scripts/run-storage-coordinated32-lab.py
+      - tests/test_storage_coordinated32_lab.py
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-452-generation32-coordinated-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  coordinated-synthetic-fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify the bounded joint fixture and GET contract
+        run: python3 -I -B -S -m unittest discover -s tests -p test_storage_coordinated32_lab.py -v
+      - name: Build the pinned PostgreSQL 17.11 fixture tools
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/coordinated32"
+          mkdir -p "$base/build-evidence"
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y build-essential bison flex
+          cd "$base"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --connect-timeout 15 --max-time 120 \
+            https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2 \
+            --output postgresql-17.11.tar.bz2
+          printf '%s\n' 'dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979  postgresql-17.11.tar.bz2' > build-evidence/source.sha256
+          sha256sum --strict --check build-evidence/source.sha256
+          tar -xjf postgresql-17.11.tar.bz2
+          cd postgresql-17.11
+          timeout 600 ./configure --prefix="$base/install" --without-readline --without-zlib --without-icu \
+            > ../build-evidence/configure.log 2>&1
+          timeout 600 make -j2 > ../build-evidence/make.log 2>&1
+          timeout 120 make install > ../build-evidence/install.log 2>&1
+          sha256sum "$base/install/bin/"{postgres,initdb,pg_ctl,psql,pg_dump,pg_restore} > ../build-evidence/binary-sha256.txt
+      - name: Download the pinned generation32 producer artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/coordinated32"
+          curl --fail --location --silent --show-error --retry 2 \
+            --connect-timeout 15 --max-time 180 --max-filesize 536870912 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13274791692/zip" \
+            --output "$base/generation32-image.zip"
+          printf '%s\n' 'c7d7dd91360eb74487d4c9c7603e30db2f63c39cbe8e97099bdb862ee0b661fc  generation32-image.zip' > "$base/build-evidence/image.sha256"
+          (cd "$base" && sha256sum --strict --check build-evidence/image.sha256)
+      - name: Restore the PostgreSQL catalog and the independently copied OCI32 storage
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/coordinated32"
+          python3 -I -B -S scripts/run-storage-coordinated32-lab.py run \
+            --pg-bin "$base/install/bin" --image "$base/generation32-image.zip" --work "$base/lab"
+      - name: Bind source and bounded evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/coordinated32"
+          mkdir -p "$base/build-evidence" "$base/lab/evidence"
+          sha256sum .github/workflows/storage-452-generation32-coordinated-recovery.yml \
+            scripts/run-storage-coordinated32-lab.py tests/test_storage_coordinated32_lab.py \
+            scripts/{run-seaweedfs-452-generation32-labs,run-seaweedfs-452-cold-recovery,storage-generation32-lab-binding,readback-seaweedfs-452-generation32-image}.py \
+            tests/{run_storage_postgres_fixture_native,run_storage_postgres_logical_restore}.py \
+            tests/fixtures/storage-recovery/catalog.sql tools/storage_recovery/{coordinated,manifest,postgres_fixture,profile}.py \
+            profiles/seaweedfs-452-lab/profile.json \
+            releases/seaweedfs-452-generation32-{candidate-lock,build-manifest}-20261103.json \
+            evidence/artifacts/seaweedfs-generation32-cohort-41778371999.zip \
+            > "$base/build-evidence/repository-source-sha256.txt"
+          git rev-parse HEAD > "$base/build-evidence/repository-commit.txt"
+          cd "$base"
+          find build-evidence lab/evidence -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+      - name: Attest the evidence manifest
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/coordinated32/SHA256SUMS
+      - name: Retain synthetic evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-coordinated32-fixture-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/coordinated32/SHA256SUMS
+            ${{ runner.temp }}/coordinated32/build-evidence/
+            ${{ runner.temp }}/coordinated32/lab/evidence/
+          if-no-files-found: error
+          retention-days: 90

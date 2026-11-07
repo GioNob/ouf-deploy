@@ -1,0 +1,62 @@
+{
+  "schema": "ouf.storage-g0-local-readback-operator-record.v1",
+  "date": "2026-11-06",
+  "operationId": "seaweedfs-g0-20261106-v2",
+  "provenance": "USER_REPORTED_TERMINAL_OUTPUT_NOT_AGENT_TARGET_OBSERVATION",
+  "readbackCommit": "de87b9fbaff5cdf6237bdabe16a950b5cc3660eb",
+  "report": {
+    "acceptanceCreditAdded": 0,
+    "accessClassificationCounts": {
+      "ACL_OWNER_OR_GRANTS_UNPROVEN": 2
+    },
+    "automaticReplayAllowed": false,
+    "capacityBytes": {
+      "backup": {
+        "availableBytes": 293049417728,
+        "totalBytes": 539792977920
+      },
+      "destination": {
+        "availableBytes": 293049417728,
+        "totalBytes": 539792977920
+      },
+      "source": {
+        "availableBytes": 293049417728,
+        "totalBytes": 539792977920
+      }
+    },
+    "capacityPathsShareDevice": true,
+    "credentialsRead": 0,
+    "dbFindingCounts": {
+      "ADDITIONAL_REFERENCE_REQUIRES_CLASSIFICATION": 4,
+      "ASSET_OWNER_UNRESOLVED": 10,
+      "QUARANTINE_REFERENCE_REQUIRES_CLASSIFICATION": 4
+    },
+    "dbStatistics": {
+      "bodyObjects": 120,
+      "bodyReferencesChecked": 120,
+      "classifiedBodies": 120,
+      "exportRows": 353
+    },
+    "effectiveAuthorizationProven": false,
+    "filesModified": 0,
+    "filesRead": 5,
+    "g0Complete": false,
+    "historicalIntegrityAgainstPriorTrustedDigestProven": false,
+    "independentBackupVerified": false,
+    "localReceiptSha256": {
+      "access-review.json": "bc9c59814d2aeb8155b3efbeb63282b998363eab81c0bcb42f7e1419562d040f",
+      "capacity.private.json": "3b1545f3f0b5b294699d43d75492712660376cd6552a6df408e90d7c8a52d740",
+      "claim.private.json": "cec357cb3f8de0eae92157ce59828b3cf9667274cd93dd55d28c5cad7a1793b2",
+      "reconciliation.json": "5c0bc6d7351008da9dd53af5489dcf0167c280fe73e99db52de3e9f8c2e5db6a",
+      "result.json": "295b7661c10a30933cb28efa68c6b0ddf5e59f2102f6788558a573ec2905ec56"
+    },
+    "pointInTimeCommonCutProven": false,
+    "providerRequests": 0,
+    "resultMatchesReported": true,
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.storage-g0-sealed-findings-readback.v1",
+    "status": "LOCAL_SEALED_FINDINGS_READ",
+    "writerQuiescenceProven": false
+  },
+  "referenceClassificationExecuted": false
+}

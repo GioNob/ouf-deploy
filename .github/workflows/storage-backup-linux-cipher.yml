@@ -1,0 +1,33 @@
+name: Storage backup Linux cipher preparation
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/prepare-storage-backup-cipher-linux.py
+      - tests/qualify_storage_backup_cipher_linux.py
+      - .github/workflows/storage-backup-linux-cipher.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-backup-linux-cipher-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Download exact official Linux archive
+        run: curl --fail --silent --show-error --location --max-time 120 'https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz' --output "$RUNNER_TEMP/age-linux.tar.gz"
+      - name: Qualify exclusive installation and synthetic recipient
+        run: sudo python3 -I -B -S tests/qualify_storage_backup_cipher_linux.py "$RUNNER_TEMP/age-linux.tar.gz"
+      - name: Preserve redacted report only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-backup-linux-cipher-result
+          path: cipher-native-result.json
+          if-no-files-found: error
+          retention-days: 90

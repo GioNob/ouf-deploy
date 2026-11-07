@@ -1,0 +1,107 @@
+name: M2 sealed complete parent review
+on:
+  push:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_current_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','scripts/export-m2-discovery-current-review.py','.github/workflows/m2-discovery-parent-review.yml']
+  pull_request:
+    paths: ['tools/m2_discovery_installation_profile/**','tools/chatbot_file_cohort/authorization.py','tools/chatbot_file_cohort/gateway_preparation.py','catalogue/m2-semantic-discovery-capabilities.json','tests/test_m2_discovery_parent_review.py','tests/test_m2_discovery_current_review.py','tests/test_m2_discovery_publication_review.py','scripts/export-m2-discovery-parent-review.py','scripts/export-m2-discovery-current-review.py','.github/workflows/m2-discovery-parent-review.yml']
+permissions: {contents: read, id-token: write, attestations: write}
+jobs:
+  complete-parent-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-source-onboarding
+          ref: be388e1462778438a208c2e00e166370fee32189
+          path: .pairwise/onboarding
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 60788cf965334441be0a33c345f5c0bcd66cbdde
+          path: .pairwise/gateway
+          persist-credentials: false
+      - name: Pinned public compilers, six exact review parts and isolated private publication
+        run: |
+          set -euo pipefail
+          fixture="/var/lib/ouf-parent-review-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          for suite in test_m2_discovery_publication_review.py test_m2_discovery_parent_review.py test_m2_discovery_current_review.py; do
+            sudo env OUF_NATIVE_UIDS=1 OUF_NATIVE_SOCKETS=1 PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+              OUF_CHATBOT_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+              OUF_REVISION_ONBOARDING_ROOT="$fixture/repository/.pairwise/onboarding" \
+              OUF_PUBLICATION_GATEWAY_ROOT="$fixture/repository/.pairwise/gateway" \
+              python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p "$suite" -v
+          done
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-discovery-parent-review.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --gateway-root "$fixture/repository/.pairwise/gateway" \
+            --onboarding-root "$fixture/repository/.pairwise/onboarding" \
+            --output "$GITHUB_WORKSPACE/parent-review-compiler.py" > parent-review-compiler.json
+          sudo python3 -I -B -S "$fixture/repository/scripts/export-m2-discovery-current-review.py" \
+            --root "$fixture/repository" --source-revision "$GITHUB_SHA" \
+            --gateway-root "$fixture/repository/.pairwise/gateway" \
+            --onboarding-root "$fixture/repository/.pairwise/onboarding" \
+            --output "$GITHUB_WORKSPACE/current-parent-review-compiler.py" > current-parent-review-compiler.json
+          # The exported artifact contains sealed public source only. The upload
+          # action runs as runner; private preparation files stay root-owned.
+          sudo chown "$(id -u):$(id -g)" "$GITHUB_WORKSPACE/current-parent-review-compiler.py"
+      - name: Install the already qualified exact offline publisher verifier
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o /tmp/ouf-gh-2.97.0.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 /tmp/ouf-gh-2.97.0.tar.gz | sha256sum --check --strict
+          sudo install -d -m 0700 /var/lib/ouf-publisher-gh297
+          sudo tar -xzf /tmp/ouf-gh-2.97.0.tar.gz --strip-components=1 -C /var/lib/ouf-publisher-gh297
+          sudo chown -R root:root /var/lib/ouf-publisher-gh297
+          sudo /var/lib/ouf-publisher-gh297/bin/gh --version
+      - name: Retain exact compiler bytes and explicit public Sigstore trust roots
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          set -euo pipefail
+          mkdir publisher-fixture
+          cp current-parent-review-compiler.py publisher-fixture/artifact.bin
+          cmp current-parent-review-compiler.py publisher-fixture/artifact.bin
+          sudo --preserve-env=GH_TOKEN /var/lib/ouf-publisher-gh297/bin/gh attestation trusted-root > publisher-fixture/trusted-root.jsonl
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        id: current-review-provenance
+        with:
+          subject-path: current-parent-review-compiler.py
+          create-storage-record: false
+      - name: Verify the actual exported compiler offline and deny altered bytes or identity
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.current-review-provenance.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          cp "$PROVENANCE_BUNDLE" publisher-fixture/bundle.json
+          fixture="/var/lib/ouf-current-review-publisher-${GITHUB_RUN_ID}"
+          sudo install -d -m 0700 "$fixture"
+          sudo cp -a . "$fixture/repository"
+          sudo chown -R root:root "$fixture"
+          sudo chmod -R go-w "$fixture"
+          sudo unshare --net -- env GITHUB_ACTIONS=true PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+            OUF_PUBLISHER_FIXTURE_ROOT="$fixture/repository/publisher-fixture" \
+            OUF_GH_PUBLISHER_BINARY=/var/lib/ouf-publisher-gh297/bin/gh \
+            OUF_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" OUF_GITHUB_REPOSITORY_ID="$GITHUB_REPOSITORY_ID" \
+            OUF_GITHUB_OWNER_ID="$GITHUB_REPOSITORY_OWNER_ID" OUF_GITHUB_SOURCE_REF="$GITHUB_REF" \
+            OUF_GITHUB_SOURCE_SHA="$GITHUB_SHA" OUF_GITHUB_SIGNER_SHA="$GITHUB_WORKFLOW_SHA" \
+            OUF_GITHUB_PUBLISHER_WORKFLOW_PATH=.github/workflows/m2-discovery-parent-review.yml \
+            python3 -I -B -S -m unittest discover -s "$fixture/repository/tests" -p qualify_m2_discovery_current_publisher_native.py -v
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: complete-parent-review-compiler
+          path: |
+            parent-review-compiler.py
+            parent-review-compiler.json
+            current-parent-review-compiler.py
+            current-parent-review-compiler.json
+            publisher-fixture/bundle.json
+            publisher-fixture/trusted-root.jsonl
+          if-no-files-found: error

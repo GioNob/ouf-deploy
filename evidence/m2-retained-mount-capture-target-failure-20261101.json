@@ -1,0 +1,38 @@
+{
+  "automaticReplayAllowed": false,
+  "correctionStatus": "DISTINCT_CORRECTIVE_READER_QUALIFIED_OPERATOR_INPUT_REQUIRED",
+  "correctiveQualification": "evidence/m2-retained-mount-role-correction-qualified-20261101.json",
+  "correctiveReaderSource": "fff3a2dc617d115a2849ae2a4c4f90a34e249a4e",
+  "deliveredCapsuleSha256": "dfdedd2e038b524277d6db8ed9f00808798366e45552863b471f5d7de67014fa",
+  "deliveredLauncherCommit": "ef664e159ea4bc6981d2799dae6c93a1d0a4c8c7",
+  "evidenceOrigin": "OPERATOR_PASTED_PUBLIC_RESULT",
+  "independentTargetFilesystemRead": false,
+  "observedDate": "2026-11-01",
+  "predecessorMustBePreserved": true,
+  "qualificationGap": "Original unit/native fixtures used role names as inventory labels and missed producer-compatible heterogeneous aliases. CI success did not prove actual target seed compatibility.",
+  "releaseAcceptance": false,
+  "result": {
+    "automaticReplayAllowed": false,
+    "reasonCode": "EXACT_UNADMITTED_THIRTEEN_PEER_SEED_REQUIRED",
+    "runtimeAuthorityIssued": false,
+    "schema": "ouf.m2-retained-mount-capture-result.v1",
+    "scopeConsumed": true,
+    "status": "STOP_RECONCILE",
+    "targetApplyAuthorized": false
+  },
+  "resultCanonicalSha256": "0922ad7330417ed9da7a472cad266174ace344c12fa7c5c420f8083ca1fe8d2c",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-retained-mount-capture-target-failure.v1",
+  "scopeConsumed": true,
+  "sourceDiagnosis": {
+    "actualProducerContract": "inventory aliases; exact IDs/full stable binding/process pins select roles",
+    "correctionMustIndependentlyVerifySeedHashSchemaFlagsAndAliasDomain": true,
+    "failedGuard": "set(observations)==set(processPins)==logicalRoles",
+    "predecessorClockPersisted": false,
+    "priorSameContractFix": "tools/m2_discovery_installation_profile/material_role_preparation.py",
+    "privateTargetCauseIndependentlyRead": false,
+    "reportedCountersAvailable": false,
+    "zeroEngineAndMountReadsBasis": "UNIQUE_REASON_CALL_SITE_IN_EXACT_OLD_SOURCE_BEFORE_ROOTS_ENGINE_OR_MOUNTS"
+  },
+  "targetApplyAuthorized": false
+}

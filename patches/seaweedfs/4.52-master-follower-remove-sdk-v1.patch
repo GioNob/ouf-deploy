@@ -1,0 +1,56 @@
+diff --git a/weed/command/master_follower.go b/weed/command/master_follower.go
+index b243e099abac564d3de28090d52a31b5e4d104d7..a0c9e7778e31a821a8b3c6886ca13def09c553f1 100644
+--- a/weed/command/master_follower.go
++++ b/weed/command/master_follower.go
+@@ -5,7 +5,6 @@ import (
+ 	"fmt"
+ 	"time"
+ 
+-	"github.com/aws/aws-sdk-go/aws"
+ 	"github.com/gorilla/mux"
+ 	"google.golang.org/grpc/reflection"
+ 
+@@ -35,22 +34,22 @@ func init() {
+ 	// refuse the identical one through a follower.
+ 	mf.fileSizeLimitMB = cmdMasterFollower.Flag.Int("fileSizeLimitMB", 256, "limit the file size accepted by /submit, should match the leader's -fileSizeLimitMB")
+ 
+-	mf.ip = aws.String(util.DetectedHostAddress())
+-	mf.metaFolder = aws.String("")
++	mf.ip = new(util.DetectedHostAddress())
++	mf.metaFolder = new("")
+ 	mf.volumeSizeLimitMB = nil
+ 	mf.volumePreallocate = nil
+ 	mf.defaultReplication = nil
+-	mf.garbageThreshold = aws.Float64(0.1)
++	mf.garbageThreshold = new(0.1)
+ 	mf.whiteList = nil
+-	mf.disableHttp = aws.Bool(false)
+-	mf.metricsAddress = aws.String("")
+-	mf.metricsIntervalSec = aws.Int(0)
+-	mf.raftResumeState = aws.Bool(false)
+-	mf.maxParallelVacuumPerServer = aws.Int(1)
+-	mf.vacuumIntervalSeconds = aws.Int(840)
+-	mf.vacuumDeleteEmptyAfterSeconds = aws.Int(0)
+-	mf.telemetryUrl = aws.String("https://telemetry.seaweedfs.com/api/collect")
+-	mf.telemetryEnabled = aws.Bool(false)
++	mf.disableHttp = new(false)
++	mf.metricsAddress = new("")
++	mf.metricsIntervalSec = new(0)
++	mf.raftResumeState = new(false)
++	mf.maxParallelVacuumPerServer = new(1)
++	mf.vacuumIntervalSeconds = new(840)
++	mf.vacuumDeleteEmptyAfterSeconds = new(0)
++	mf.telemetryUrl = new("https://telemetry.seaweedfs.com/api/collect")
++	mf.telemetryEnabled = new(false)
+ }
+ 
+ var cmdMasterFollower = &Command{
+@@ -111,7 +110,7 @@ func startMasterFollower(masterOptions MasterOptions) {
+ 				return fmt.Errorf("get master grpc address %v configuration: %w", masters, err)
+ 			}
+ 			masterOptions.defaultReplication = &resp.DefaultReplication
+-			masterOptions.volumeSizeLimitMB = aws.Uint(uint(resp.VolumeSizeLimitMB))
++			masterOptions.volumeSizeLimitMB = new(uint(resp.VolumeSizeLimitMB))
+ 			masterOptions.volumePreallocate = &resp.VolumePreallocate
+ 			return nil
+ 		})

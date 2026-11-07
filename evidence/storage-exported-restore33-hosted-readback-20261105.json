@@ -1,0 +1,189 @@
+{
+  "schema": "ouf.exported-restore33.hosted-readback.v1",
+  "status": "EXPORTED_RESTORE33_QUALIFIED_NOT_ADMITTED",
+  "date": "2026-11-05",
+  "branch": "feat/m2-discovery-complete-profile-20261029",
+  "producerCommit": "c096897c119f6cfc375d16260ff2ab44a23d52c7",
+  "run": {
+    "id": 41976132880,
+    "attempt": 1,
+    "headSha": "c096897c119f6cfc375d16260ff2ab44a23d52c7",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/GioNob/ouf-deploy/actions/runs/41976132880",
+    "createdAt": "2026-11-05T05:46:38Z",
+    "updatedAt": "2026-11-05T05:49:56Z"
+  },
+  "jobs": [
+    {
+      "id": 127075295372,
+      "name": "exported-backup-restore",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 127076271029,
+      "name": "original-archive-readback",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13391443633,
+      "name": "storage-exported-restore33-readback-41976132880",
+      "size_in_bytes": 6121194,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13391443633",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13391443633/zip",
+      "expired": false,
+      "created_at": "2026-11-05T05:49:52Z",
+      "expires_at": "2027-02-03T05:46:39Z",
+      "updated_at": "2026-11-05T05:49:52Z",
+      "digest": "sha256:274ab26178f7d1fc1b690b66f9c0a6ccf69fec52b57844fa625d46eae51b75df",
+      "workflow_run": {
+        "id": 41976132880,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "c096897c119f6cfc375d16260ff2ab44a23d52c7"
+      }
+    },
+    {
+      "id": 13391179599,
+      "name": "storage-exported-restore33-41976132880",
+      "size_in_bytes": 6128331,
+      "url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13391179599",
+      "archive_download_url": "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13391179599/zip",
+      "expired": false,
+      "created_at": "2026-11-05T05:49:34Z",
+      "expires_at": "2027-02-03T05:46:39Z",
+      "updated_at": "2026-11-05T05:49:34Z",
+      "digest": "sha256:95b8281329907bb4e4e519412db8fe1d59a9209f5f8fe42e64aef5f4ab025b21",
+      "workflow_run": {
+        "id": 41976132880,
+        "repository_id": 1409074354,
+        "head_repository_id": 1409074354,
+        "head_branch": "feat/m2-discovery-complete-profile-20261029",
+        "head_sha": "c096897c119f6cfc375d16260ff2ab44a23d52c7"
+      }
+    }
+  ],
+  "hostedReadback": {
+    "archiveBytes": 6128331,
+    "archiveSha256": "95b8281329907bb4e4e519412db8fe1d59a9209f5f8fe42e64aef5f4ab025b21",
+    "backupBytesVerified": {
+      "basebackup": 46885503,
+      "cold-backup": 22305,
+      "wal-archive": 67109203
+    },
+    "backupFilesVerified": {
+      "basebackup": 1282,
+      "cold-backup": 104,
+      "wal-archive": 5
+    },
+    "checksumsVerified": 85,
+    "cleanStorageStopsVerified": 4,
+    "members": 86,
+    "nativeReceipt": {
+      "acceptanceTestsPassed": 0,
+      "allAcknowledgementsPreserved": true,
+      "allStartedProcessesStopped": true,
+      "backupFiles": {
+        "basebackup": 1282,
+        "cold-backup": 104,
+        "wal-archive": 5
+      },
+      "cleanContainerStops": 4,
+      "cleanPostgresStops": 1,
+      "completeProductionBackupClaimed": false,
+      "fixtureObjectsSeeded": 0,
+      "fixtureSourceClustersCreated": 0,
+      "freshHostedRestoreQualified": true,
+      "gatesClosed": 0,
+      "lateralIsolationQualified": false,
+      "liveAtomicSnapshotQualified": false,
+      "mutatingRetries": 0,
+      "originalArtifact": 13362874826,
+      "originalInputsUnchanged": true,
+      "originalRun": 41914041465,
+      "originalRunDistinctFromRestoreRun": true,
+      "originalZipSha256": "33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+      "pitrQualified": false,
+      "producerCommit": "7444df039a8b4990d1518a343f4f57a698db0b74",
+      "producerWorkingDirectoriesSupplied": false,
+      "productionCodeChanged": false,
+      "recoveryPutRequests": 0,
+      "releaseAdmitted": false,
+      "restoreCommit": "c096897c119f6cfc375d16260ff2ab44a23d52c7",
+      "restoreRun": "41976132880",
+      "restoredSystemIdentifier": "7704428212093439541",
+      "rpoMeasured": false,
+      "rtoMeasured": false,
+      "runtimeAuthorityIssued": false,
+      "s3DeniedMutations": 3,
+      "s3ObjectBytesReadPerPass": 77,
+      "s3ObjectsReconciled": 2,
+      "sourceSystemIdentifier": "7704428212093439541",
+      "sqlReadinessProbeAttempts": 3,
+      "status": "EXPORTED_RESTORE33_PASS",
+      "targetLsn": "0/4008E28",
+      "targetName": "ouf_joint33_frozen_epoch2",
+      "targetOperations": 0,
+      "targetPitrQualified": false,
+      "targetWalSegment": "000000010000000000000004",
+      "targetWriterFenceQualified": false,
+      "zeroProductionAcknowledgedLossQualified": false
+    },
+    "originalChecksumsVerified": 213,
+    "originalSourceBindingsVerified": 30,
+    "originalZipSha256": "33b5a7124d3990dce5c0049ff0a33653fec2d6fb29f07edb767a9680b8a441e3",
+    "restoreCommit": "c096897c119f6cfc375d16260ff2ab44a23d52c7",
+    "restoreRelease": {
+      "canary": "cut",
+      "inRecovery": "f",
+      "ledgerSha256": "01bcd20394cc7f5803c99cf43293361ce6c3c4b959eba593428000b3ecbd45d5",
+      "restoredS3ProcessesStarted": 0,
+      "restoredStaleFinish": "FENCED",
+      "restoredSystemIdentifier": "7704428212093439541",
+      "restoredWriterReserve": "FENCED",
+      "sourceSystemIdentifier": "7704428212093439541",
+      "status": "DB_VERIFIED_BEFORE_S3_START"
+    },
+    "restoreRun": "41976132880",
+    "s3Bytes": 77,
+    "s3Objects": 2,
+    "sourceBindingsVerified": 34,
+    "status": "EXPORTED_RESTORE33_READBACK_PASS",
+    "targetOperations": 0,
+    "testsPassed": 44
+  },
+  "localReadbackIdentical": true,
+  "localValidation": {
+    "newTestsPassed": 9,
+    "physicalCutTestsPassed": 15,
+    "allOriginalExportFilesExtracted": 1391,
+    "allOriginalExportBytesVerified": 114017011,
+    "nativeLocalRestoreExecuted": false,
+    "partialCheckoutLimitationsPreserved": "common-cut 10 PASS / 1 missing vendor-profile preparation error; PITR test absent, 0 executed locally. Full 44-test suite passed in hosted checkout."
+  },
+  "storageCustody": {
+    "unchangedOriginalIncluded": true,
+    "hostedOriginalCopyIncluded": true,
+    "newDurableGitZipCustodyClaimed": false,
+    "actionsRetentionDays": 90
+  },
+  "historicalEvidencePreserved": true,
+  "limits": {
+    "miniPET": "18.3/46 = 39.78%",
+    "gatesClosed": 0,
+    "acceptanceTestsPassed": 0,
+    "realObjects": 0,
+    "targetOperations": 0,
+    "minioUnchanged": true,
+    "productionAdmission": false,
+    "productionRpoRtoQualified": false,
+    "powerLossQualified": false,
+    "productionWriterFenceQualified": false
+  },
+  "nextBoundedScope": "Review residual MiniPET gates and actual OUF application writer bindings for PostgreSQL and S3; map fence integration requirements without target changes or admission."
+}

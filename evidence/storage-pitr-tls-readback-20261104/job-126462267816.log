@@ -1,0 +1,414 @@
+﻿2026-11-04T08:04:08.8966983Z Current runner version: '2.338.2'
+2026-11-04T08:04:08.8991379Z ##[group]Runner Image Provisioner
+2026-11-04T08:04:08.8992267Z Hosted Compute Agent
+2026-11-04T08:04:08.8992946Z Version: 20261021.618
+2026-11-04T08:04:08.8993581Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T08:04:08.8994322Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T08:04:08.8995096Z Worker ID: {e42ef8ea-d251-4759-b993-9140ae1e4ff1}
+2026-11-04T08:04:08.8996179Z Region: southcentralus
+2026-11-04T08:04:08.8996852Z Cloud: Azure
+2026-11-04T08:04:08.8997385Z ##[endgroup]
+2026-11-04T08:04:08.8998663Z ##[group]Operating System
+2026-11-04T08:04:08.8999697Z Ubuntu
+2026-11-04T08:04:08.9000211Z 24.04.5
+2026-11-04T08:04:08.9000712Z LTS
+2026-11-04T08:04:08.9001221Z ##[endgroup]
+2026-11-04T08:04:08.9001756Z ##[group]Runner Image
+2026-11-04T08:04:08.9002355Z Image: ubuntu-24.04
+2026-11-04T08:04:08.9002935Z Version: 20261025.353.1
+2026-11-04T08:04:08.9004219Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T08:04:08.9006134Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T08:04:08.9007173Z ##[endgroup]
+2026-11-04T08:04:08.9008428Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T08:04:08.9010727Z Attestations: write
+2026-11-04T08:04:08.9011313Z Contents: read
+2026-11-04T08:04:08.9011890Z Metadata: read
+2026-11-04T08:04:08.9012431Z ##[endgroup]
+2026-11-04T08:04:08.9014361Z Secret source: Actions
+2026-11-04T08:04:08.9015269Z Cache mode: write
+2026-11-04T08:04:08.9016455Z Prepare workflow directory
+2026-11-04T08:04:08.9369887Z Prepare all required actions
+2026-11-04T08:04:08.9418713Z Getting action download info
+2026-11-04T08:04:09.2030866Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-04T08:04:09.3380804Z Download action repository 'actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be' (SHA:e8998f949152b193b063cb0ec769d69d929409be)
+2026-11-04T08:04:09.7023977Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-04T08:04:09.9792233Z Getting action download info
+2026-11-04T08:04:10.0904490Z Download action repository 'actions/attest-build-provenance@1176ef556905f349f669722abf30bce1a6e16e01' (SHA:1176ef556905f349f669722abf30bce1a6e16e01)
+2026-11-04T08:04:10.5097131Z Download action repository 'actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc' (SHA:ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc)
+2026-11-04T08:04:10.9795488Z Complete job name: verify-current-plan
+2026-11-04T08:04:11.0781989Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-04T08:04:11.0783826Z with:
+2026-11-04T08:04:11.0784909Z   persist-credentials: false
+2026-11-04T08:04:11.0786346Z   repository: GioNob/ouf-deploy
+2026-11-04T08:04:11.0795206Z   token: ***
+2026-11-04T08:04:11.0796404Z   ssh-strict: true
+2026-11-04T08:04:11.0797492Z   ssh-user: git
+2026-11-04T08:04:11.0798506Z   clean: true
+2026-11-04T08:04:11.0799573Z   sparse-checkout-cone-mode: true
+2026-11-04T08:04:11.0800784Z   fetch-depth: 1
+2026-11-04T08:04:11.0802246Z   fetch-tags: false
+2026-11-04T08:04:11.0803347Z   show-progress: true
+2026-11-04T08:04:11.0804432Z   lfs: false
+2026-11-04T08:04:11.0805618Z   submodules: false
+2026-11-04T08:04:11.0806704Z   set-safe-directory: true
+2026-11-04T08:04:11.0808148Z ##[endgroup]
+2026-11-04T08:04:11.4896271Z Syncing repository: GioNob/ouf-deploy
+2026-11-04T08:04:11.4898525Z ##[group]Getting Git version info
+2026-11-04T08:04:11.4899613Z Working directory is '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:11.4900855Z [command]/usr/bin/git version
+2026-11-04T08:04:11.4950076Z git version 2.56.0
+2026-11-04T08:04:11.4968056Z ##[endgroup]
+2026-11-04T08:04:11.4981857Z Temporarily overriding HOME='/home/runner/work/_temp/f2fa4c57-26f7-41e3-854e-9f8601469849' before making global git config changes
+2026-11-04T08:04:11.4983891Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:04:11.4987344Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:11.5035802Z Deleting the contents of '/home/runner/work/ouf-deploy/ouf-deploy'
+2026-11-04T08:04:11.5038958Z ##[group]Initializing the repository
+2026-11-04T08:04:11.5043555Z [command]/usr/bin/git init /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:11.5150537Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T08:04:11.5151932Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T08:04:11.5152908Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T08:04:11.5153614Z hint: call:
+2026-11-04T08:04:11.5154047Z hint:
+2026-11-04T08:04:11.5154704Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T08:04:11.5155433Z hint:
+2026-11-04T08:04:11.5156026Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T08:04:11.5156949Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T08:04:11.5157673Z hint:
+2026-11-04T08:04:11.5158108Z hint: 	git branch -m <name>
+2026-11-04T08:04:11.5158529Z hint:
+2026-11-04T08:04:11.5159190Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T08:04:11.5163128Z Initialized empty Git repository in /home/runner/work/ouf-deploy/ouf-deploy/.git/
+2026-11-04T08:04:11.5176520Z [command]/usr/bin/git remote add origin https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:11.5221386Z ##[endgroup]
+2026-11-04T08:04:11.5222720Z ##[group]Disabling automatic garbage collection
+2026-11-04T08:04:11.5225222Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T08:04:11.5258278Z ##[endgroup]
+2026-11-04T08:04:11.5259292Z ##[group]Setting up auth
+2026-11-04T08:04:11.5265235Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:11.5298598Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:11.5670488Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:11.5707930Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:11.5914772Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T08:04:11.5962156Z ##[endgroup]
+2026-11-04T08:04:11.5963340Z ##[group]Fetching the repository
+2026-11-04T08:04:11.5976741Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9fbe9ef71ba296523e904686d7409b4c9150209f:refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:15.5131729Z From https://github.com/GioNob/ouf-deploy
+2026-11-04T08:04:15.5132568Z  * [new ref]         9fbe9ef71ba296523e904686d7409b4c9150209f -> origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:15.5136067Z ##[endgroup]
+2026-11-04T08:04:15.5136629Z ##[group]Determining the checkout info
+2026-11-04T08:04:15.5138374Z ##[endgroup]
+2026-11-04T08:04:15.5145157Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T08:04:15.5207257Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T08:04:15.5235675Z ##[group]Checking out the ref
+2026-11-04T08:04:15.5241843Z [command]/usr/bin/git checkout --progress --force -B feat/m2-discovery-complete-profile-20261029 refs/remotes/origin/feat/m2-discovery-complete-profile-20261029
+2026-11-04T08:04:16.1051340Z Switched to a new branch 'feat/m2-discovery-complete-profile-20261029'
+2026-11-04T08:04:16.1058627Z branch 'feat/m2-discovery-complete-profile-20261029' set up to track 'origin/feat/m2-discovery-complete-profile-20261029'.
+2026-11-04T08:04:16.1085065Z ##[endgroup]
+2026-11-04T08:04:16.1123832Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T08:04:16.1148566Z 9fbe9ef71ba296523e904686d7409b4c9150209f
+2026-11-04T08:04:16.1161213Z ##[group]Removing auth
+2026-11-04T08:04:16.1170356Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:16.1194491Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:16.1411803Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:16.1438142Z http.https://github.com/.extraheader
+2026-11-04T08:04:16.1447310Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T08:04:16.1591640Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:16.1798744Z ##[endgroup]
+2026-11-04T08:04:16.2012738Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:16.2013252Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:16.2013848Z [36;1mevidence="$RUNNER_TEMP/storage-plan-current-evidence"[0m
+2026-11-04T08:04:16.2014306Z [36;1mmkdir -p "$evidence"[0m
+2026-11-04T08:04:16.2014705Z [36;1mpython3 -I -B -S -m unittest discover \[0m
+2026-11-04T08:04:16.2015195Z [36;1m  -s tests -p test_minio_seaweedfs_plan_current.py -v 2>&1 |[0m
+2026-11-04T08:04:16.2016048Z [36;1m  tee "$evidence/test.log"[0m
+2026-11-04T08:04:16.2016634Z [36;1mpython3 -I -B -S scripts/verify-minio-seaweedfs-plan-current.py \[0m
+2026-11-04T08:04:16.2017185Z [36;1m  --output "$evidence/verification.json"[0m
+2026-11-04T08:04:16.2034060Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:16.2034476Z ##[endgroup]
+2026-11-04T08:04:16.3084741Z test_admission_authority_and_target_operations_fail_closed (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_admission_authority_and_target_operations_fail_closed) ... ok
+2026-11-04T08:04:16.3165087Z test_all_artifacts_need_verified_download_and_graph_manifest_binding (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_all_artifacts_need_verified_download_and_graph_manifest_binding) ... ok
+2026-11-04T08:04:16.3249958Z test_binary_identity_and_optional_module_limits_remain_explicit (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_binary_identity_and_optional_module_limits_remain_explicit) ... ok
+2026-11-04T08:04:16.3272141Z test_candidate_lock_is_immutable_and_hash_bound (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_candidate_lock_is_immutable_and_hash_bound) ... ok
+2026-11-04T08:04:16.3280914Z test_cold_preserved_paths_reject_traversal_and_duplicates (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_cold_preserved_paths_reject_traversal_and_duplicates) ... ok
+2026-11-04T08:04:16.3292259Z test_cold_receipt_and_raw_bytes_are_both_required (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_cold_receipt_and_raw_bytes_are_both_required) ... ok
+2026-11-04T08:04:16.3310123Z test_cold_recovery_cannot_be_transferred_to_new_image (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_cold_recovery_cannot_be_transferred_to_new_image) ... ok
+2026-11-04T08:04:16.3347211Z test_cold_restore_success_does_not_close_mime_or_acceptance (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_cold_restore_success_does_not_close_mime_or_acceptance) ... ok
+2026-11-04T08:04:16.3401227Z test_exact_workflow_identity_and_source_are_required (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_exact_workflow_identity_and_source_are_required) ... ok
+2026-11-04T08:04:16.3446398Z test_gate_acceptance_and_object_counts_fail_closed (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_gate_acceptance_and_object_counts_fail_closed) ... ok
+2026-11-04T08:04:16.3462268Z test_generation29_does_not_inherit_old_binary_or_runtime_proof (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_generation29_does_not_inherit_old_binary_or_runtime_proof) ... ok
+2026-11-04T08:04:16.3506517Z test_generation29_phase_a_cannot_claim_cohort_runtime_or_admission (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_generation29_phase_a_cannot_claim_cohort_runtime_or_admission) ... ok
+2026-11-04T08:04:16.3508762Z test_generation29_requires_exact_readback_and_manifest_bytes (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_generation29_requires_exact_readback_and_manifest_bytes) ... ok
+2026-11-04T08:04:16.3514736Z test_generation29_signature_scope_is_precise (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_generation29_signature_scope_is_precise) ... ok
+2026-11-04T08:04:16.3516991Z test_historical_451_and_current_452_are_separate (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_historical_451_and_current_452_are_separate) ... ok
+2026-11-04T08:04:16.3533398Z test_historical_evidence_blocks_are_byte_value_stable (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_historical_evidence_blocks_are_byte_value_stable) ... ok
+2026-11-04T08:04:16.3559414Z test_hosted_test_dossier_sequence_is_exact (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_hosted_test_dossier_sequence_is_exact) ... ok
+2026-11-04T08:04:16.3623512Z test_known_mime_failure_remains_open_and_does_not_invent_headers (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_known_mime_failure_remains_open_and_does_not_invent_headers) ... ok
+2026-11-04T08:04:16.3657086Z test_minio_and_consumed_scope_remain_frozen (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_minio_and_consumed_scope_remain_frozen) ... ok
+2026-11-04T08:04:16.3689792Z test_pending_view_resolves_only_through_hosted_receipt (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_pending_view_resolves_only_through_hosted_receipt) ... ok
+2026-11-04T08:04:16.3698030Z test_preserved_raw_evidence_rejects_missing_and_changed_bytes (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_preserved_raw_evidence_rejects_missing_and_changed_bytes) ... ok
+2026-11-04T08:04:16.3704883Z test_preserved_raw_evidence_rejects_path_traversal (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_preserved_raw_evidence_rejects_path_traversal) ... ok
+2026-11-04T08:04:16.3722287Z test_progress_credit_is_bound_to_actual_cold_evidence (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_progress_credit_is_bound_to_actual_cold_evidence) ... ok
+2026-11-04T08:04:16.3738602Z test_progress_is_recomputed_from_original_weights (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_progress_is_recomputed_from_original_weights) ... ok
+2026-11-04T08:04:16.3814320Z test_receipt_hash_lock_and_patch27_are_bound (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_receipt_hash_lock_and_patch27_are_bound) ... ok
+2026-11-04T08:04:16.5168006Z test_repository_current_plan_passes (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_repository_current_plan_passes) ... ok
+2026-11-04T08:04:16.5309924Z test_source_closure_does_not_promote_recovery_or_target_acceptance (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_source_closure_does_not_promote_recovery_or_target_acceptance) ... ok
+2026-11-04T08:04:16.5469862Z test_source_receipt_must_be_hosted_pass_and_six_distinct_successes (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_source_receipt_must_be_hosted_pass_and_six_distinct_successes) ... ok
+2026-11-04T08:04:16.5534135Z test_standard_hosted_receipt_patch_and_source_are_bound (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_standard_hosted_receipt_patch_and_source_are_bound) ... ok
+2026-11-04T08:04:16.5589929Z test_standard_profile_is_scoped_and_excluded_tags_stay_denied (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_standard_profile_is_scoped_and_excluded_tags_stay_denied) ... ok
+2026-11-04T08:04:16.5624945Z test_standard_retained_proof_rejects_missing_bytes_and_path_escape (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_standard_retained_proof_rejects_missing_bytes_and_path_escape) ... ok
+2026-11-04T08:04:16.5724704Z test_zero_source_importers_does_not_allow_incomplete_scan (test_minio_seaweedfs_plan_current.CurrentStoragePlanTest.test_zero_source_importers_does_not_allow_incomplete_scan) ... ok
+2026-11-04T08:04:16.5960382Z test_actual_generation29_joins_independent_image_cohort_and_runtime (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_actual_generation29_joins_independent_image_cohort_and_runtime) ... ok
+2026-11-04T08:04:16.5992320Z test_exact_receipt_and_lock_bytes_required (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_exact_receipt_and_lock_bytes_required) ... ok
+2026-11-04T08:04:16.5996709Z test_fresh_runtime_does_not_increase_progress_credit (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_fresh_runtime_does_not_increase_progress_credit) ... ok
+2026-11-04T08:04:16.6044247Z test_historical_image_cannot_replace_generation29_identity (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_historical_image_cannot_replace_generation29_identity) ... ok
+2026-11-04T08:04:16.6064746Z test_historical_snapshots_remain_immutable_and_keep_old_mime_failure (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_historical_snapshots_remain_immutable_and_keep_old_mime_failure) ... ok
+2026-11-04T08:04:16.6129037Z test_known_lifecycle_residuals_cannot_be_silently_closed (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_known_lifecycle_residuals_cannot_be_silently_closed) ... ok
+2026-11-04T08:04:16.6147384Z test_legacy_source_receipt_is_not_relabelled_as_new_binary (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_legacy_source_receipt_is_not_relabelled_as_new_binary) ... ok
+2026-11-04T08:04:16.6734907Z test_lifecycle_evidence_must_match_actual_qualified_binary_and_raw_bytes (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_lifecycle_evidence_must_match_actual_qualified_binary_and_raw_bytes) ... ok
+2026-11-04T08:04:16.6845538Z test_mime_regression_does_not_repair_history_or_close_general_acceptance (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_mime_regression_does_not_repair_history_or_close_general_acceptance) ... ok
+2026-11-04T08:04:16.6969986Z test_no_authority_custody_or_backend_promotion (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_no_authority_custody_or_backend_promotion) ... ok
+2026-11-04T08:04:16.7080655Z test_no_unqualified_patch_or_image_promotion (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_no_unqualified_patch_or_image_promotion) ... ok
+2026-11-04T08:04:16.9040601Z test_qualified_patch_harness_and_job_evidence_cannot_drift (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_qualified_patch_harness_and_job_evidence_cannot_drift) ... ok
+2026-11-04T08:04:16.9066975Z test_raw_file_paths_and_duplicates_are_rejected (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_raw_file_paths_and_duplicates_are_rejected) ... ok
+2026-11-04T08:04:16.9095020Z test_receipt_object_cannot_disagree_with_its_pinned_bytes (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_receipt_object_cannot_disagree_with_its_pinned_bytes) ... ok
+2026-11-04T08:04:16.9130059Z test_runtime_raw_bytes_are_required_not_just_success_boolean (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_runtime_raw_bytes_are_required_not_just_success_boolean) ... ok
+2026-11-04T08:04:16.9262041Z test_wider_lifecycle_inventory_unknowns_and_policy_states_stay_open (test_minio_seaweedfs_plan_current.QualifiedGeneration29PlanTest.test_wider_lifecycle_inventory_unknowns_and_policy_states_stay_open) ... ok
+2026-11-04T08:04:16.9404441Z test_arbitrary_old_plan_field_cannot_be_changed (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_arbitrary_old_plan_field_cannot_be_changed) ... ok
+2026-11-04T08:04:16.9830230Z test_changed_or_missing_receipt_and_symlink_are_rejected (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_changed_or_missing_receipt_and_symlink_are_rejected) ... ok
+2026-11-04T08:04:16.9832341Z test_checksum_missing_extra_or_changed_member_rejected (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_checksum_missing_extra_or_changed_member_rejected) ... ok
+2026-11-04T08:04:16.9837227Z test_checksums_reject_duplicate_name (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_checksums_reject_duplicate_name) ... ok
+2026-11-04T08:04:17.2561827Z test_current31_cannot_grant_authority_or_claim_maintenance (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_current31_cannot_grant_authority_or_claim_maintenance) ... ok
+2026-11-04T08:04:17.3241606Z test_current31_cannot_transfer_old29_binary (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_current31_cannot_transfer_old29_binary) ... ok
+2026-11-04T08:04:17.4582052Z test_current_mime_pass_cannot_repair_old_loss_or_close_g2 (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_current_mime_pass_cannot_repair_old_loss_or_close_g2) ... ok
+2026-11-04T08:04:17.4598202Z test_entire_pre31_plan_reconstructs_exactly (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_entire_pre31_plan_reconstructs_exactly) ... ok
+2026-11-04T08:04:17.5265139Z test_historical31_and_old29_qualified_history (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_historical31_and_old29_qualified_history) ... ok
+2026-11-04T08:04:17.5280705Z test_historical_binary_cannot_be_rewritten (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_historical_binary_cannot_be_rewritten) ... ok
+2026-11-04T08:04:17.5298835Z test_proto32_cannot_inherit_qualification_or_progress (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_proto32_cannot_inherit_qualification_or_progress) ... ok
+2026-11-04T08:04:17.5796420Z test_raw_cohort_runtime_and_local_mpl_are_exact (test_minio_seaweedfs_plan_current.QualifiedGeneration31PlanTest.test_raw_cohort_runtime_and_local_mpl_are_exact) ... ok
+2026-11-04T08:04:17.6062011Z test_exact_hosted_evidence_and_current_view (test_minio_seaweedfs_plan_current.QualifiedGeneration32PlanTest.test_exact_hosted_evidence_and_current_view) ... ok
+2026-11-04T08:04:17.6086407Z test_history_and_next_prototype_are_immutable (test_minio_seaweedfs_plan_current.QualifiedGeneration32PlanTest.test_history_and_next_prototype_are_immutable) ... ok
+2026-11-04T08:04:17.6094302Z test_missing_or_altered_runtime_archive_is_rejected (test_minio_seaweedfs_plan_current.QualifiedGeneration32PlanTest.test_missing_or_altered_runtime_archive_is_rejected) ... ok
+2026-11-04T08:04:17.6626711Z test_no_transfer_or_admission_in_current_view (test_minio_seaweedfs_plan_current.QualifiedGeneration32PlanTest.test_no_transfer_or_admission_in_current_view) ... ok
+2026-11-04T08:04:17.6731990Z test_all_pre33_history_and_scope_immutable (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_all_pre33_history_and_scope_immutable) ... ok
+2026-11-04T08:04:17.7134155Z test_archived_census_closure_does_not_mean_all_dependencies_maintained (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_archived_census_closure_does_not_mean_all_dependencies_maintained) ... ok
+2026-11-04T08:04:17.7173741Z test_engineering_credit_keeps_history_and_requires_both_proofs (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_engineering_credit_keeps_history_and_requires_both_proofs) ... ok
+2026-11-04T08:04:17.7746664Z test_exact_hosted_evidence_and_full32_history (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_exact_hosted_evidence_and_full32_history) ... ok
+2026-11-04T08:04:17.7754111Z test_missing_and_wrong_archive_rejected (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_missing_and_wrong_archive_rejected) ... ok
+2026-11-04T08:04:17.7971382Z test_modified_source_and_raw_scanner_identities_are_separate (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_modified_source_and_raw_scanner_identities_are_separate) ... ok
+2026-11-04T08:04:17.9746394Z test_no_old_binary_runtime_or_target_qualification_transfer (test_minio_seaweedfs_plan_current.QualifiedGeneration33PlanTest.test_no_old_binary_runtime_or_target_qualification_transfer) ... ok
+2026-11-04T08:04:17.9748313Z 
+2026-11-04T08:04:17.9748866Z ----------------------------------------------------------------------
+2026-11-04T08:04:17.9750024Z Ran 71 tests in 1.688s
+2026-11-04T08:04:17.9750288Z 
+2026-11-04T08:04:17.9750482Z OK
+2026-11-04T08:04:18.1744227Z ##[group]Run set -euo pipefail
+2026-11-04T08:04:18.1744828Z [36;1mset -euo pipefail[0m
+2026-11-04T08:04:18.1745263Z [36;1mevidence="$RUNNER_TEMP/storage-plan-current-evidence"[0m
+2026-11-04T08:04:18.1746076Z [36;1msha256sum \[0m
+2026-11-04T08:04:18.1746442Z [36;1m  releases/minio-seaweedfs-plan-20261102.json \[0m
+2026-11-04T08:04:18.1746918Z [36;1m  releases/seaweedfs-452-candidate-lock-20261103.json \[0m
+2026-11-04T08:04:18.1747483Z [36;1m  evidence/seaweedfs-452-cohort-readback-hosted-20261103.json \[0m
+2026-11-04T08:04:18.1748054Z [36;1m  evidence/seaweedfs-sdk-v1-basic-tests-local-20261103.json \[0m
+2026-11-04T08:04:18.1748612Z [36;1m  evidence/seaweedfs-sdk-v1-multipart-tool-local-20261103.json \[0m
+2026-11-04T08:04:18.1749202Z [36;1m  evidence/seaweedfs-sdk-v1-volume-grpc-test-local-20261103.json \[0m
+2026-11-04T08:04:18.1749951Z [36;1m  evidence/seaweedfs-sdk-v1-s3tables-signer-local-20261103.json \[0m
+2026-11-04T08:04:18.1750664Z [36;1m  evidence/seaweedfs-sdk-v1-sse-tests-local-20261103.json \[0m
+2026-11-04T08:04:18.1751191Z [36;1m  evidence/seaweedfs-sdk-v1-iam-sts-signer-local-20261103.json \[0m
+2026-11-04T08:04:18.1751737Z [36;1m  evidence/seaweedfs-sdk27-hosted-20261103.json \[0m
+2026-11-04T08:04:18.1752149Z [36;1m  evidence/sdk27-artifacts/*/* \[0m
+2026-11-04T08:04:18.1752656Z [36;1m  evidence/seaweedfs-ouf-standard-module-closure-hosted-20261103.json \[0m
+2026-11-04T08:04:18.1753234Z [36;1m  evidence/storage-ouf-standard-41691297148/* \[0m
+2026-11-04T08:04:18.1753741Z [36;1m  evidence/seaweedfs-452-cold-recovery-mime-failed-20261103.json \[0m
+2026-11-04T08:04:18.1754342Z [36;1m  evidence/seaweedfs-452-cold-recovery-hosted-20261103.json \[0m
+2026-11-04T08:04:18.1754869Z [36;1m  evidence/seaweedfs-452-cold-recovery-hosted-20261103/* \[0m
+2026-11-04T08:04:18.1755562Z [36;1m  evidence/seaweedfs-452-generation29-image-hosted-20261103.json \[0m
+2026-11-04T08:04:18.1756199Z [36;1m  releases/seaweedfs-452-generation29-build-manifest-20261103.json \[0m
+2026-11-04T08:04:18.1756761Z [36;1m  patches/seaweedfs/4.52-ouf-standard-optional-closure.patch \[0m
+2026-11-04T08:04:18.1757317Z [36;1m  patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch \[0m
+2026-11-04T08:04:18.1757810Z [36;1m  patches/seaweedfs/4.52-normal-tests-sdk-v2.patch \[0m
+2026-11-04T08:04:18.1758339Z [36;1m  patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch \[0m
+2026-11-04T08:04:18.1758894Z [36;1m  patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch \[0m
+2026-11-04T08:04:18.1759407Z [36;1m  patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch \[0m
+2026-11-04T08:04:18.1759891Z [36;1m  patches/seaweedfs/4.52-iam-module-sdk-v2.patch \[0m
+2026-11-04T08:04:18.1760367Z [36;1m  scripts/verify-minio-seaweedfs-plan-current.py \[0m
+2026-11-04T08:04:18.1760803Z [36;1m  tests/test_minio_seaweedfs_plan_current.py \[0m
+2026-11-04T08:04:18.1761300Z [36;1m  .github/workflows/storage-plan-current.yml \[0m
+2026-11-04T08:04:18.1761744Z [36;1m  > "$evidence/input-sha256.txt"[0m
+2026-11-04T08:04:18.1762195Z [36;1mpython3 -I -B -S - <<'PYCODE' >> "$evidence/input-sha256.txt"[0m
+2026-11-04T08:04:18.1762655Z [36;1mimport hashlib, json, os[0m
+2026-11-04T08:04:18.1763009Z [36;1mfrom pathlib import Path[0m
+2026-11-04T08:04:18.1763581Z [36;1mplan = json.loads(Path('releases/minio-seaweedfs-plan-20261102.json').read_bytes())[0m
+2026-11-04T08:04:18.1764355Z [36;1mpaths = {'scripts/verify-minio-seaweedfs-plan-generation31.py'}[0m
+2026-11-04T08:04:18.1765424Z [36;1mfor current in (plan['currentQualification'], plan['historicalQualification32'], plan['historicalQualification31'], plan['historicalQualification29']):[0m
+2026-11-04T08:04:18.1766215Z [36;1m    generation = current['generation'][0m
+2026-11-04T08:04:18.1766724Z [36;1m    cohort = json.loads(Path(current['cohortReceipt']).read_bytes())[0m
+2026-11-04T08:04:18.1767369Z [36;1m    runtime = json.loads(Path(current['runtimeReceipt']).read_bytes())[0m
+2026-11-04T08:04:18.1768229Z [36;1m    manifest_path = ('releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json' if generation == 33[0m
+2026-11-04T08:04:18.1769066Z [36;1m                     else f'releases/seaweedfs-452-generation{generation}-build-manifest-20261103.json')[0m
+2026-11-04T08:04:18.1769731Z [36;1m    manifest = json.loads(Path(manifest_path).read_bytes())[0m
+2026-11-04T08:04:18.1770491Z [36;1m    paths.update((current['candidateLock'], current['imageReceipt'], current['cohortReceipt'], current['runtimeReceipt'], manifest_path))[0m
+2026-11-04T08:04:18.1771211Z [36;1m    if generation == 33:[0m
+2026-11-04T08:04:18.1771669Z [36;1m        lock = json.loads(Path(current['candidateLock']).read_bytes())[0m
+2026-11-04T08:04:18.1772234Z [36;1m        image = json.loads(Path(current['imageReceipt']).read_bytes())[0m
+2026-11-04T08:04:18.1772821Z [36;1m        paths.add('scripts/verify-minio-seaweedfs-plan-generation33.py')[0m
+2026-11-04T08:04:18.1773554Z [36;1m        paths.add('evidence/seaweedfs-generation33-cohort-replay-local-20261104.json')[0m
+2026-11-04T08:04:18.1774203Z [36;1m        paths.update(runtime['sourceHashesVerified'])[0m
+2026-11-04T08:04:18.1774871Z [36;1m        paths.update(item['path'] for item in manifest['orderedSourcePatches'] + manifest['orderedDependencyPatches'])[0m
+2026-11-04T08:04:18.1775846Z [36;1m        paths.update((cohort['artifact']['path'], runtime['artifact']['path']))[0m
+2026-11-04T08:04:18.1776577Z [36;1m        paths.update(lock[key]['path'] for key in ('licenceRebinding','mongoV2LegalDelta','vendorSourceProfile'))[0m
+2026-11-04T08:04:18.1777345Z [36;1m        paths.update(image[key]['path'] for key in ('sourceArtifact','independentReadback'))[0m
+2026-11-04T08:04:18.1778173Z [36;1m        paths.update(image['rawEvidence']['directory']+'/'+name for name in image['rawEvidence']['originalMemberBytes'])[0m
+2026-11-04T08:04:18.1778780Z [36;1m        continue[0m
+2026-11-04T08:04:18.1779128Z [36;1m    if generation == 32:[0m
+2026-11-04T08:04:18.1779591Z [36;1m        lock = json.loads(Path(current['candidateLock']).read_bytes())[0m
+2026-11-04T08:04:18.1780202Z [36;1m        paths.add('scripts/verify-minio-seaweedfs-plan-generation32.py')[0m
+2026-11-04T08:04:18.1780841Z [36;1m        paths.update(runtime['sourceHashesVerified'])[0m
+2026-11-04T08:04:18.1781418Z [36;1m        paths.update(item['path'] for item in manifest['orderedPatches'])[0m
+2026-11-04T08:04:18.1782023Z [36;1m        paths.update((cohort['artifact']['path'], runtime['artifact']['path']))[0m
+2026-11-04T08:04:18.1782602Z [36;1m        paths.update(lock[key]['path'] for key in ([0m
+2026-11-04T08:04:18.1783207Z [36;1m            'buildEvidenceArtifact', 'independentReadback', 'licenceRebinding', 'mongoV2LegalDelta'))[0m
+2026-11-04T08:04:18.1783809Z [36;1m        continue[0m
+2026-11-04T08:04:18.1784310Z [36;1m    jobs = runtime.get('hostedJobMetadata', runtime.get('workflowJobsEvidence'))[0m
+2026-11-04T08:04:18.1785430Z [36;1m    paths.add(jobs['path'])[0m
+2026-11-04T08:04:18.1786436Z [36;1m    paths.update(cohort['retainedRawEvidence'])[0m
+2026-11-04T08:04:18.1786948Z [36;1m    paths.update(item['path'] for item in runtime['rawEvidence']['files'])[0m
+2026-11-04T08:04:18.1787482Z [36;1m    paths.update(runtime['sourceHashesVerified'])[0m
+2026-11-04T08:04:18.1787976Z [36;1m    paths.update(item['path'] for item in manifest['orderedPatches'])[0m
+2026-11-04T08:04:18.1788533Z [36;1m    if generation == 31:[0m
+2026-11-04T08:04:18.1789074Z [36;1m        image = json.loads(Path(current['imageReceipt']).read_bytes())[0m
+2026-11-04T08:04:18.1789590Z [36;1m        paths.update(image['preservedFiles'])[0m
+2026-11-04T08:04:18.1790131Z [36;1m        paths.add(image['buildEvidenceArtifact']['path'])[0m
+2026-11-04T08:04:18.1790608Z [36;1m        paths.add(image['independentReadback']['path'])[0m
+2026-11-04T08:04:18.1791038Z [36;1m        paths.add(cohort['artifact']['path'])[0m
+2026-11-04T08:04:18.1791643Z [36;1mfor field in ('coordinatedGeneration32Receipt','publicationFenceFixtureReceipt'):[0m
+2026-11-04T08:04:18.1792313Z [36;1m    path=plan['engineeringRecovery33'][field][0m
+2026-11-04T08:04:18.1792802Z [36;1m    receipt=json.loads(Path(path).read_bytes())[0m
+2026-11-04T08:04:18.1793294Z [36;1m    paths.add(path); paths.add(receipt['originalArtifact']['path'])[0m
+2026-11-04T08:04:18.1793941Z [36;1m    paths.update(row['path'] for row in receipt['sourceBindingsVerifiedAgainstExactGitTree'])[0m
+2026-11-04T08:04:18.1794700Z [36;1mlifecycle = plan['historicalQualification29']['dependencyLifecycle']['widerInventoryAssessment'][0m
+2026-11-04T08:04:18.1795417Z [36;1mpaths.add(lifecycle['inventoryReceipt'])[0m
+2026-11-04T08:04:18.1796017Z [36;1mpaths.update(str(path) for path in Path('evidence/lifecycle262').rglob('*') if path.is_file())[0m
+2026-11-04T08:04:18.1796777Z [36;1mexisting = Path(os.environ['RUNNER_TEMP']) / 'storage-plan-current-evidence/input-sha256.txt'[0m
+2026-11-04T08:04:18.1797550Z [36;1mpaths.difference_update(line.split('  ', 1)[1] for line in existing.read_text().splitlines())[0m
+2026-11-04T08:04:18.1798126Z [36;1mfor name in sorted(paths):[0m
+2026-11-04T08:04:18.1798596Z [36;1m    print(hashlib.sha256(Path(name).read_bytes()).hexdigest() + '  ' + name)[0m
+2026-11-04T08:04:18.1799067Z [36;1mPYCODE[0m
+2026-11-04T08:04:18.1799390Z [36;1mcd "$evidence"[0m
+2026-11-04T08:04:18.1799892Z [36;1msha256sum input-sha256.txt test.log verification.json | LC_ALL=C sort > SHA256SUMS[0m
+2026-11-04T08:04:18.1800494Z [36;1msha256sum --strict --check SHA256SUMS[0m
+2026-11-04T08:04:18.1813840Z shell: /usr/bin/bash -e {0}
+2026-11-04T08:04:18.1814209Z ##[endgroup]
+2026-11-04T08:04:18.2377986Z test.log: OK
+2026-11-04T08:04:18.2378471Z verification.json: OK
+2026-11-04T08:04:18.2378998Z input-sha256.txt: OK
+2026-11-04T08:04:18.2521227Z ##[group]Run actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+2026-11-04T08:04:18.2521761Z with:
+2026-11-04T08:04:18.2522203Z   subject-path: /home/runner/work/_temp/storage-plan-current-evidence/SHA256SUMS
+2026-11-04T08:04:18.2522709Z   push-to-registry: false
+2026-11-04T08:04:18.2523051Z   show-summary: true
+2026-11-04T08:04:18.2525724Z   github-token: ***
+2026-11-04T08:04:18.2526040Z ##[endgroup]
+2026-11-04T08:04:18.2588327Z ##[start-action display=Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01;id=__actions_attest-build-provenance.generate-build-provenance-predicate]
+2026-11-04T08:04:18.2634002Z ##[group]Run actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01
+2026-11-04T08:04:18.2634602Z ##[endgroup]
+2026-11-04T08:04:19.0591759Z ##[end-action id=__actions_attest-build-provenance.generate-build-provenance-predicate;outcome=success;conclusion=success;duration_ms=800]
+2026-11-04T08:04:19.0597186Z ##[start-action display=Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc;id=__actions_attest-build-provenance.attest]
+2026-11-04T08:04:19.0638290Z ##[group]Run actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc
+2026-11-04T08:04:19.0638662Z with:
+2026-11-04T08:04:19.0639014Z   subject-path: /home/runner/work/_temp/storage-plan-current-evidence/SHA256SUMS
+2026-11-04T08:04:19.0639499Z   predicate-type: https://slsa.dev/provenance/v1
+2026-11-04T08:04:19.0642644Z   predicate: {"buildDefinition":{"buildType":"https://actions.github.io/buildtypes/workflow/v1","externalParameters":{"workflow":{"ref":"refs/heads/feat/m2-discovery-complete-profile-20261029","repository":"https://github.com/GioNob/ouf-deploy","path":".github/workflows/storage-plan-current.yml"}},"internalParameters":{"github":{"event_name":"push","repository_id":"1409074354","repository_owner_id":"96419716","runner_environment":"github-hosted"}},"resolvedDependencies":[{"uri":"git+https://github.com/GioNob/ouf-deploy@refs/heads/feat/m2-discovery-complete-profile-20261029","digest":{"gitCommit":"9fbe9ef71ba296523e904686d7409b4c9150209f"}}]},"runDetails":{"builder":{"id":"https://github.com/GioNob/ouf-deploy/.github/workflows/storage-plan-current.yml@refs/heads/feat/m2-discovery-complete-profile-20261029"},"metadata":{"invocationId":"https://github.com/GioNob/ouf-deploy/actions/runs/41796663988/attempts/1"}}}
+2026-11-04T08:04:19.0645988Z   push-to-registry: false
+2026-11-04T08:04:19.0646246Z   show-summary: true
+2026-11-04T08:04:19.0648661Z   github-token: ***
+2026-11-04T08:04:19.0648905Z ##[endgroup]
+2026-11-04T08:04:20.5440266Z Attestation created for SHA256SUMS@sha256:176296fb39537a383f4d89ef4db845ca5e1966a801f1ac2102d4df3e0922e91a
+2026-11-04T08:04:20.5442162Z ##[group][36mAttestation signed using certificate from Public Good Sigstore instance[39m
+2026-11-04T08:04:20.5443122Z -----BEGIN CERTIFICATE-----
+2026-11-04T08:04:20.5445114Z MIIICjCCB5CgAwIBAgIUI8/E5OvziVNyUx6UQUYtPKIAkB8wCgYIKoZIzj0EAwMw
+2026-11-04T08:04:20.5446353Z NzEVMBMGA1UEChMMc2lnc3RvcmUuZGV2MR4wHAYDVQQDExVzaWdzdG9yZS1pbnRl
+2026-11-04T08:04:20.5447325Z cm1lZGlhdGUwHhcNMjYxMTA0MDgwNDE5WhcNMjYxMTA0MDgxNDE5WjAAMFkwEwYH
+2026-11-04T08:04:20.5448397Z KoZIzj0CAQYIKoZIzj0DAQcDQgAE9B3n2py/Ig8wAcrjAAaygtjQeqkDiQxdN//F
+2026-11-04T08:04:20.5449339Z a+UIgLxdLvjX2Dp5zGQW09uogIhAlBPb37wSRQpV1j3OeD2ajaOCBq8wggarMA4G
+2026-11-04T08:04:20.5450403Z A1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSMEGDAWgBTf
+2026-11-04T08:04:20.5451378Z 0+nPViQRlvmo2OkoVaLGLhhkPzCBlwYDVR0RAQH/BIGMMIGJhoGGaHR0cHM6Ly9n
+2026-11-04T08:04:20.5452385Z aXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95Ly5naXRodWIvd29ya2Zsb3dzL3N0
+2026-11-04T08:04:20.5453302Z b3JhZ2UtcGxhbi1jdXJyZW50LnltbEByZWZzL2hlYWRzL2ZlYXQvbTItZGlzY292
+2026-11-04T08:04:20.5454229Z ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAyNjEwMjkwOQYKKwYBBAGDvzABAQQraHR0
+2026-11-04T08:04:20.5455112Z cHM6Ly90b2tlbi5hY3Rpb25zLmdpdGh1YnVzZXJjb250ZW50LmNvbTASBgorBgEE
+2026-11-04T08:04:20.5456189Z AYO/MAECBARwdXNoMDYGCisGAQQBg78wAQMEKDlmYmU5ZWY3MWJhMjk2NTIzZTkw
+2026-11-04T08:04:20.5457291Z NDY4NmQ3NDA5YjRjOTE1MDIwOWYwMAYKKwYBBAGDvzABBAQiU3RvcmFnZSBjdXJy
+2026-11-04T08:04:20.5457916Z ZW50IHF1YWxpZmljYXRpb24gcGxhbjAfBgorBgEEAYO/MAEFBBFHaW9Ob2Ivb3Vm
+2026-11-04T08:04:20.5458452Z LWRlcGxveTBEBgorBgEEAYO/MAEGBDZyZWZzL2hlYWRzL2ZlYXQvbTItZGlzY292
+2026-11-04T08:04:20.5459075Z ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAyNjEwMjkwOwYKKwYBBAGDvzABCAQtDCto
+2026-11-04T08:04:20.5459636Z dHRwczovL3Rva2VuLmFjdGlvbnMuZ2l0aHVidXNlcmNvbnRlbnQuY29tMIGYBgor
+2026-11-04T08:04:20.5460189Z BgEEAYO/MAEJBIGJDIGGaHR0cHM6Ly9naXRodWIuY29tL0dpb05vYi9vdWYtZGVw
+2026-11-04T08:04:20.5460797Z bG95Ly5naXRodWIvd29ya2Zsb3dzL3N0b3JhZ2UtcGxhbi1jdXJyZW50LnltbEBy
+2026-11-04T08:04:20.5461356Z ZWZzL2hlYWRzL2ZlYXQvbTItZGlzY292ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAy
+2026-11-04T08:04:20.5462186Z NjEwMjkwOAYKKwYBBAGDvzABCgQqDCg5ZmJlOWVmNzFiYTI5NjUyM2U5MDQ2ODZk
+2026-11-04T08:04:20.5462956Z NzQwOWI0YzkxNTAyMDlmMB0GCisGAQQBg78wAQsEDwwNZ2l0aHViLWhvc3RlZDA0
+2026-11-04T08:04:20.5463829Z BgorBgEEAYO/MAEMBCYMJGh0dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3VmLWRl
+2026-11-04T08:04:20.5464564Z cGxveTA4BgorBgEEAYO/MAENBCoMKDlmYmU5ZWY3MWJhMjk2NTIzZTkwNDY4NmQ3
+2026-11-04T08:04:20.5465480Z NDA5YjRjOTE1MDIwOWYwRgYKKwYBBAGDvzABDgQ4DDZyZWZzL2hlYWRzL2ZlYXQv
+2026-11-04T08:04:20.5466337Z bTItZGlzY292ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAyNjEwMjkwGgYKKwYBBAGD
+2026-11-04T08:04:20.5467141Z vzABDwQMDAoxNDA5MDc0MzU0MCkGCisGAQQBg78wARAEGwwZaHR0cHM6Ly9naXRo
+2026-11-04T08:04:20.5467897Z dWIuY29tL0dpb05vYjAYBgorBgEEAYO/MAERBAoMCDk2NDE5NzE2MIGYBgorBgEE
+2026-11-04T08:04:20.5468644Z AYO/MAESBIGJDIGGaHR0cHM6Ly9naXRodWIuY29tL0dpb05vYi9vdWYtZGVwbG95
+2026-11-04T08:04:20.5469585Z Ly5naXRodWIvd29ya2Zsb3dzL3N0b3JhZ2UtcGxhbi1jdXJyZW50LnltbEByZWZz
+2026-11-04T08:04:20.5470763Z L2hlYWRzL2ZlYXQvbTItZGlzY292ZXJ5LWNvbXBsZXRlLXByb2ZpbGUtMjAyNjEw
+2026-11-04T08:04:20.5471665Z MjkwOAYKKwYBBAGDvzABEwQqDCg5ZmJlOWVmNzFiYTI5NjUyM2U5MDQ2ODZkNzQw
+2026-11-04T08:04:20.5472584Z OWI0YzkxNTAyMDlmMBQGCisGAQQBg78wARQEBgwEcHVzaDBYBgorBgEEAYO/MAEV
+2026-11-04T08:04:20.5473544Z BEoMSGh0dHBzOi8vZ2l0aHViLmNvbS9HaW9Ob2Ivb3VmLWRlcGxveS9hY3Rpb25z
+2026-11-04T08:04:20.5474415Z L3J1bnMvNDE3OTY2NjM5ODgvYXR0ZW1wdHMvMTAWBgorBgEEAYO/MAEWBAgMBnB1
+2026-11-04T08:04:20.5475477Z YmxpYzB1BgorBgEEAYO/MAEYBGcMZXJlcG86R2lvTm9iQDk2NDE5NzE2L291Zi1k
+2026-11-04T08:04:20.5476415Z ZXBsb3lAMTQwOTA3NDM1NDpyZWY6cmVmcy9oZWFkcy9mZWF0L20yLWRpc2NvdmVy
+2026-11-04T08:04:20.5477370Z eS1jb21wbGV0ZS1wcm9maWxlLTIwMjYxMDI5MIGKBgorBgEEAdZ5AgQCBHwEegB4
+2026-11-04T08:04:20.5478271Z AHYA3T0wasbHETJjGR4cmWc3AqJKXrjePK3/h4pygC8p7o4AAAGhpZZmNQAABAMA
+2026-11-04T08:04:20.5479199Z RzBFAiAyd51wH2QwYGkCnnRMVjAcsurq+J21ZhnMEo+HJBEw5wIhAM82VWYArQz8
+2026-11-04T08:04:20.5480152Z GFsUzhK9GGRewnY33Rg9tRTxSuDTsfQpMAoGCCqGSM49BAMDA2gAMGUCMQDyWRj0
+2026-11-04T08:04:20.5480891Z OvX3E73jcgOXtWQ+qHSwuIcR60d7rqgVh0Eubt9rTOg4fBULr/pZklBxQdICMDZ3
+2026-11-04T08:04:20.5481585Z sIjkA4+pZVxI8IMyRXW3mBxTYYDkGaFqMFuJD8EKPaW1ZkXD1oS9QdILjAABKQ==
+2026-11-04T08:04:20.5482289Z -----END CERTIFICATE-----
+2026-11-04T08:04:20.5482672Z 
+2026-11-04T08:04:20.5483260Z ##[endgroup]
+2026-11-04T08:04:20.5484090Z [36mAttestation signature uploaded to Rekor transparency log[39m
+2026-11-04T08:04:20.5485096Z https://search.sigstore.dev?logIndex=3687301764
+2026-11-04T08:04:20.5486255Z [36mAttestation uploaded to repository[39m
+2026-11-04T08:04:20.5487044Z https://github.com/GioNob/ouf-deploy/attestations/63480368
+2026-11-04T08:04:20.6019634Z ##[end-action id=__actions_attest-build-provenance.attest;outcome=success;conclusion=success;duration_ms=1542]
+2026-11-04T08:04:20.6099432Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-04T08:04:20.6100021Z with:
+2026-11-04T08:04:20.6100359Z   name: storage-plan-current-41796663988
+2026-11-04T08:04:20.6100853Z   path: /home/runner/work/_temp/storage-plan-current-evidence/
+2026-11-04T08:04:20.6101316Z   if-no-files-found: error
+2026-11-04T08:04:20.6101662Z   retention-days: 90
+2026-11-04T08:04:20.6102061Z   compression-level: 6
+2026-11-04T08:04:20.6102378Z   overwrite: false
+2026-11-04T08:04:20.6102708Z   include-hidden-files: false
+2026-11-04T08:04:20.6103070Z ##[endgroup]
+2026-11-04T08:04:20.7770860Z (node:2372) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T08:04:20.7771725Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T08:04:20.7851470Z With the provided path, there will be 4 files uploaded
+2026-11-04T08:04:20.7853345Z Artifact name is valid!
+2026-11-04T08:04:20.7854224Z Root directory input is valid!
+2026-11-04T08:04:21.0660019Z Beginning upload of artifact content to blob storage
+2026-11-04T08:04:21.0919449Z (node:2372) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-04T08:04:21.2582366Z Uploaded bytes 22560
+2026-11-04T08:04:21.2981577Z Finished uploading artifact content to blob storage!
+2026-11-04T08:04:21.2982390Z SHA256 digest of uploaded artifact zip is 4777b1ccd480a56bcb56bdc1c5067a76ad8f88b3e50cafd454de06674925e9bf
+2026-11-04T08:04:21.2984228Z Finalizing artifact upload
+2026-11-04T08:04:21.7212317Z Artifact storage-plan-current-41796663988.zip successfully finalized. Artifact ID 13305562650
+2026-11-04T08:04:21.7213176Z Artifact storage-plan-current-41796663988 has been successfully uploaded! Final size is 22560 bytes. Artifact ID is 13305562650
+2026-11-04T08:04:21.7219059Z Artifact download URL: https://github.com/GioNob/ouf-deploy/actions/runs/41796663988/artifacts/13305562650
+2026-11-04T08:04:21.7394612Z Post job cleanup.
+2026-11-04T08:04:21.8226114Z [command]/usr/bin/git version
+2026-11-04T08:04:21.8265988Z git version 2.56.0
+2026-11-04T08:04:21.8301199Z Temporarily overriding HOME='/home/runner/work/_temp/f0bafcd9-de78-4955-a561-d912feb77d0a' before making global git config changes
+2026-11-04T08:04:21.8302579Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T08:04:21.8306234Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ouf-deploy/ouf-deploy
+2026-11-04T08:04:21.8347547Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T08:04:21.8379961Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T08:04:21.8623571Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T08:04:21.8657543Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T08:04:21.9026822Z Cleaning up orphan processes
+2026-11-04T08:04:21.9368444Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/attest-build-provenance/predicate@1176ef556905f349f669722abf30bce1a6e16e01, actions/attest@ce27ba3b4a9a139d9a20a4a07d69fabb52f1e5bc, actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

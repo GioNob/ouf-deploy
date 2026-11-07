@@ -1,0 +1,601 @@
+{
+  "schema": "ouf.seaweedfs-generation-build-manifest.v1",
+  "generation": 32,
+  "status": "SOURCE_REVIEWED_BUILD_PINNED_NOT_ADMITTED",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "orderedPatches": [
+    {
+      "path": "patches/seaweedfs/4.52-listing-remove-sdk-v1.patch",
+      "sha256": "5163410b0c1e4f524a3a19a3ba487a8a01307a5de737036d2cd5bf63d9c59cd1"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-bucket-xml-response-remove-sdk-v1.patch",
+      "sha256": "777210894faf79a581172df8d7b44ce2ef90e217b3d5f0997d4e61c2f6738f24"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-master-follower-remove-sdk-v1.patch",
+      "sha256": "25d35f2154c815ccbd49415b4624cf0f9de821d5019709764b43a154e7f2edc8"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-wire-remove-sdk-v1.patch",
+      "sha256": "1fe2238d34096cf0c7d948e08f6a148d16d23cb96827a36daeebd9da1f1954d3"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+      "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-sqs-sdk-v2.patch",
+      "sha256": "53d01c3c9fd604365874f7aa8f12e88231267fa3ba46895e029fbefebbf919c3"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-kms-sdk-v2.patch",
+      "sha256": "6df667c5408dc97c7dbd447620c2ea6b688fc0b37bb2d43f2d471e9326c3f31a"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3sink-sdk-v2.patch",
+      "sha256": "fdb8cfc105b2cf5a8254085c8518ff35ad2d2dd00b3b4b13e05f33cc31d75cd4"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3backend-sdk-v2.patch",
+      "sha256": "3b99b23c7855339635ae08b25fd9db22caacc9ea420ee544c86adf24e8944ed9"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-remote-storage-s3-sdk-v2.patch",
+      "sha256": "63a8b9dc591f6d1b48d491b140b5a7611da92e0903cc26e3a346b1f17a8ce530"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-wire-parser-remove-sdk-v1.patch",
+      "sha256": "fe9d28e137b0f37a00fc134ce01c20275d5c01b8e4cc83e014aceb32e554e95f"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-test-fixtures-remove-sdk-v1.patch",
+      "sha256": "89d017e69418aa93671b4fd4c219d5cbcf571367b50426303697ba939c4b0a30"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-storage-test-tools-sdk-v2.patch",
+      "sha256": "59b72ea7a8d57bfd63a67d267f2fe4f95bb9d8c701a499c80f8698af2348f714"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-remote-cache-tests-sdk-v2.patch",
+      "sha256": "1dc0dd0514dd0af43d928eff8bc8a9ed4739c66b8ebb4a6f62d9a449110344d6"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-go-network-security-fixes.patch",
+      "sha256": "a32f169988281c2702b24af0fb8f9868930b50226f0bdda7f9276f7f24dde53e"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-basic-tests-sdk-v2.patch",
+      "sha256": "ee5fd114aff8f2cb527740171b07ba460fba83c1b33a96ccac807b869aa79a40"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-multipart-tool-sdk-v2.patch",
+      "sha256": "3477b4233312670e5e6174e9e734d1590b9f38445fe0991f0bf2f63c89ea7cf8"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-volume-grpc-s3-test-sdk-v2.patch",
+      "sha256": "743687801734174592e8ac5e48c0b8d8be64ea33d187d51cff8069d0f0e5fac7"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3tables-signer-sdk-v2.patch",
+      "sha256": "aeeb5ceeb6cbeb2f176f3d4ae40561a7b7e70ddbd702598e7d097114cbfbd398"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-sse-tests-sdk-v2.patch",
+      "sha256": "53ea30a77b924f78832bd424ae9bde65315c587a845c5c98884bbfefd4bc259c"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-sts-signer-sdk-v2.patch",
+      "sha256": "cf755f4046011666806b538b1835abf5188c648066f2c1f4d106598355bcf44b"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-bucket-policy-tests-sdk-v2.patch",
+      "sha256": "d97a3360ff974525d4e080f2fe7ec8344113cd2f9c27453289034d292a5a4e19"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-normal-tests-sdk-v2.patch",
+      "sha256": "431f6dbcaf751ce447aa14cb3fb1d7386eb47733ea6b972a7d179dee7e715d9b"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-service-account-sdk-v2.patch",
+      "sha256": "bbbffe7b5a3ff2c5750b6dc974172b3e32de460abc50a6f69a7bc55f27b678b5"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-kafka-test-module-remove-sdk-v1.patch",
+      "sha256": "11a1ed01867dcba555389ec82e2f65d6b188dc23a97419ed5bfcfbccb2cc27a7"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-root-iam-tests-sdk-v2.patch",
+      "sha256": "f3fc1c0c20b04c4885efd0ce747fad2d52822116510379e0c337a5ba73d6b883"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-iam-module-sdk-v2.patch",
+      "sha256": "7d1fb3c4f47ea82be66fe7794793534079cf56f1d0e42ea1a87211ea3abc869a"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+      "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-s3-content-type-persistence.patch",
+      "sha256": "54982d752afc77e680cfa75b5ada1febc6680709bdb46f8d284f2090448849bc"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-maintained-dependency-closure.patch",
+      "sha256": "78b2f5462c2d283b0a0d6d79dc5d620bfe9e3ca6dabac559faa55830aa1fb422"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-native-kafka-btree-module-closure.patch",
+      "sha256": "0120cc01549a960177294610ecd26b495b5f867af5ef8b1b9321dba17ddc16ad"
+    },
+    {
+      "path": "patches/seaweedfs/4.52-maintained-profiles-mongodb-v2-generation32.patch",
+      "sha256": "f1b2fa148663e8206415d957954241d37f66294ef1fd9aa8a7c217ec20b18bf9"
+    }
+  ],
+  "build": {
+    "go": "1.27.3",
+    "os": "linux",
+    "arch": "amd64",
+    "cgo": false,
+    "tags": [],
+    "binarySha256": "33c54c173912884a5e38779d0bdbfd7cbce3a3955b8aa4434535bba99bcf7511",
+    "compiledPackages": 1533,
+    "compiledPackagesSha256": "eb8f1f4415985f4bf56a58e6ffe8b460d10ce94653dbaeec26494c0eafa48cb1",
+    "binaryModuleRows": 215,
+    "binaryModuleInventorySha256": "fe94eea6d02221eb90a5a06ab9d8e578a70ebf66b40b8ec7fc60801f8532d465",
+    "rootLockfilesSha256": {
+      "go.mod": "eb6b1c7d7871c857fae8da9e9cb6f282c2812bb988a29b76a6fbab5b9441bdc8",
+      "go.sum": "5bf04778982209263172e76833a9800eb7b2470d8613b4ad50934570544297a4"
+    },
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d"
+  },
+  "observedLocalRegression": {
+    "packagesPassed": 41,
+    "packagesSkipped": 9,
+    "testsPassed": 6656,
+    "testsSkipped": 12
+  },
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false,
+  "targetOperations": 0,
+  "dependencyMaintenance": {
+    "status": "OPEN",
+    "allDependenciesMaintained": false
+  },
+  "regressionProfiles": {
+    "main": {
+      "observedLocalCounts": {
+        "pass_tests": 6656,
+        "pass_packages": 41,
+        "skip_packages": 9,
+        "skip_tests": 12
+      },
+      "observedLogSha256": "e9d101c4747114d87f89ac4143234f9223e2da635725171d0327faf1dc6c9992",
+      "terminalTestsSha256": "31b8013f28af6703b64cb48cb2c7849578a54c9401bdca3732663cbb50e4d283",
+      "terminalPackagesSha256": "41ee96be03d54f90ffd27ed05e7430ea204f812241cf557fdceac2ae19c44fcf",
+      "environmentConditionalTests": {}
+    },
+    "server": {
+      "observedLocalCounts": {
+        "pass_tests": 982,
+        "skip_tests": 2,
+        "pass_packages": 1
+      },
+      "observedLogSha256": "d8c9238e0807d9a1714c5e67825b0533cf684a6cc75d1af1f25d817fd0f4030c",
+      "terminalTestsSha256": "b05d54925d930f4e3d550ebddd6f8182bb4a3fa90683d5a2ab8a0cc56763e148",
+      "terminalPackagesSha256": "4a9e99d596111f0d7e05a0bc625ee4067ef915dde2b577ed18497cca0e5a4201",
+      "environmentConditionalTests": {
+        "TestGuardedPeerHTTPClientUploadsOverTLS": [],
+        "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade": []
+      },
+      "environmentConditionalPackage": "github.com/seaweedfs/seaweedfs/weed/server"
+    },
+    "storage": {
+      "observedLocalCounts": {
+        "pass_tests": 54,
+        "skip_tests": 2,
+        "pass_packages": 1
+      },
+      "observedLogSha256": "db4c0562975f3efbe547819e24d8044a5fbcad9b6777627c4f5fc6add6dcff4c",
+      "terminalTestsSha256": "6ad75c5b9bf23def24c0a1891393a5b4ee28d737782bcef9dba46cf5291b2ff3",
+      "terminalPackagesSha256": "211d61f322c3c35d86ec1413455e0d69533c0343227db95bef23f2037cd84c91",
+      "environmentConditionalTests": {
+        "TestSortedFileNeedleMap_HoldsNoDescriptors": [
+          "TestSortedFileNeedleMap_HoldsNoDescriptors/readonly",
+          "TestSortedFileNeedleMap_HoldsNoDescriptors/remote"
+        ],
+        "TestRebuildIdx_UnwritableIdxDirSkipsOnlyThisVolume": []
+      },
+      "environmentConditionalPackage": "github.com/seaweedfs/seaweedfs/weed/storage"
+    },
+    "race": {
+      "observedLocalCounts": {
+        "pass_tests": 185,
+        "pass_packages": 3
+      },
+      "observedLogSha256": "e5aef26337cc176aa0cfac6669c0a14b84e29439c375b5ff300edd673a7bffe9",
+      "terminalTestsSha256": "75b78befff533cc7d25da5b8ce7cc4e68ed580a25b348209ea51b1556f81022a",
+      "terminalPackagesSha256": "e61b223abd9c126c02a1c823464279533023377980e98566a40531cabd03dae0",
+      "environmentConditionalTests": {}
+    }
+  },
+  "sourceRevision": {
+    "kind": "MAINTAINED_CLIENTS_AND_EXPLICIT_STORAGE_PROFILE",
+    "previousGeneration": 31,
+    "previousManifestSha256": "9a2a00893a07a33e432ac35f6d06da79fd27181ebf16d2fbc4b45f5f9e697719",
+    "freshHostedQualificationRequired": true,
+    "excludedGoogleFeatures": [
+      "gcs-remote-storage",
+      "gcs-replication-sink",
+      "google-pubsub-notification",
+      "google-pubsub-replication-input"
+    ]
+  },
+  "compiledDependencyPolicy": {
+    "scope": "COMPILED_STANDARD_PROFILE_ONLY",
+    "excludedModulePaths": [
+      "github.com/aws/aws-sdk-go",
+      "github.com/aws/aws-sdk-go-v2/feature/s3/manager",
+      "github.com/boltdb/bolt",
+      "github.com/hashicorp/raft-boltdb",
+      "github.com/mitchellh/mapstructure",
+      "github.com/rcrowley/go-metrics",
+      "github.com/Shopify/sarama",
+      "github.com/facebookgo/clock",
+      "github.com/facebookgo/stats",
+      "go.opencensus.io",
+      "github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp",
+      "github.com/envoyproxy/protoc-gen-validate",
+      "github.com/mitchellh/colorstring",
+      "go.mongodb.org/mongo-driver"
+    ],
+    "rootModuleGraphLegacyEdgesMayRemain": true,
+    "allDependenciesMaintained": false,
+    "yamlLifecycleStatus": "OPEN",
+    "targetFeatureBinding": "OPEN",
+    "freshQualificationRequired": true
+  },
+  "requiredHostedRegression": {
+    "shell": {
+      "status": "REQUIRED_HOSTED_PASS_NOT_LOCALLY_OBSERVED",
+      "package": "github.com/seaweedfs/seaweedfs/weed/shell",
+      "tests": [
+        "TestBalance",
+        "TestBalanceByDiskUsage",
+        "TestBalanceByDiskUsageMixedReportingFallsBackToDataSize",
+        "TestBalanceByDiskUsageUsesPhysicalDiskUsageWhenReported",
+        "TestBalanceDoesNotDrainOntoOneNode",
+        "TestBalanceGateSteersToEmptierDisk",
+        "TestBalanceParallel",
+        "TestBalanceSkipsPhysicallyFullTarget",
+        "TestBalanceSkipsRemoteStorageVolumes",
+        "TestBalanceSkipsRemoteStorageVolumes/maxParallelization=0",
+        "TestBalanceSkipsRemoteStorageVolumes/maxParallelization=2",
+        "TestBalanceVolumesPerExec",
+        "TestBuildDistributionCounts",
+        "TestBuildDistributionCounts_NilFidFallback",
+        "TestCircuitBreakerShell",
+        "TestClassifyReplicaSet",
+        "TestClassifyReplicaSet/000_duplicate_copy_trims",
+        "TestClassifyReplicaSet/010_missing_a_replica_adds",
+        "TestClassifyReplicaSet/010_surplus_count_but_missing_rack_spread_adds",
+        "TestClassifyReplicaSet/010_well_placed_needs_nothing",
+        "TestClassifyReplicaSet/110_misplaced_with_surplus_trims",
+        "TestClassifyReplicaSet/110_misplaced_without_surplus_adds_before_trimming",
+        "TestCollectCollectionInfoEC",
+        "TestCollectCollectionInfoMixed",
+        "TestCollectCollectionInfoRegularVolumeDedupesReplicas",
+        "TestCollectRemoteVolumesWithInfo",
+        "TestCollectRemoteVolumesWithInfo/empty_pattern_matches_empty_collection_only",
+        "TestCollectRemoteVolumesWithInfo/match_all_collections",
+        "TestCollectRemoteVolumesWithInfo/match_bucket_collection",
+        "TestCollectRemoteVolumesWithInfo/match_collection_prefix",
+        "TestCollectRemoteVolumesWithInfo/match_specific_collection",
+        "TestCollectRemoteVolumesWithInfo/no_match",
+        "TestCollectRemoteVolumesWithInfoCaptures",
+        "TestCollectRemoteVolumesWithInfoInvalidPattern",
+        "TestCollectVolumeMarkTargetsByCollection",
+        "TestCollectVolumeMarkTargetsByCollectionMatchesDefaultCollection",
+        "TestCollectVolumeMarkTargetsByCollectionRejectsEmptyCollection",
+        "TestCollectVolumeMarkTargetsByCollectionReportsMissingCollection",
+        "TestCollectVolumeServersByDcRackNode_NodeFilter",
+        "TestCollectVolumeServersByDcRackNode_RackFilter",
+        "TestCollectVolumeTierCompactLocations",
+        "TestCollectVolumeTierUploadLocationsFiltersCollection",
+        "TestCollectVolumeTierUploadLocationsPrefersTieredReplica",
+        "TestCompileCollectionPattern",
+        "TestComputeOwnerTarget_EvenDivision",
+        "TestComputeOwnerTarget_InactiveNodesDrainToZero",
+        "TestComputeOwnerTarget_UnevenDivision",
+        "TestConfigureReplicationOnVolumeServersConfiguresReplicasOneAtATime",
+        "TestConfigureReplicationOnVolumeServersReportsEveryFailingServer",
+        "TestConfigureReplicationOnVolumeServersReportsEveryFailingServer/maxParallelization=1",
+        "TestConfigureReplicationOnVolumeServersReportsEveryFailingServer/maxParallelization=10",
+        "TestConfigureReplicationOnVolumeServersRunsServersInParallelUpToTheLimit",
+        "TestCreateMergePlan_CollectionFilter",
+        "TestCreateMergePlan_DirectedAllowsEmptyTarget",
+        "TestCreateMergePlan_DirectedRejectsIneligible",
+        "TestCreateMergePlan_DirectedRejectsIneligible/empty_source",
+        "TestCreateMergePlan_DirectedRejectsIneligible/readonly_source",
+        "TestCreateMergePlan_DirectedRejectsIneligible/readonly_target",
+        "TestCreateMergePlan_DirectedRejectsIneligible/wrong_collection",
+        "TestCreateMergePlan_DirectedRejectsSelfMap",
+        "TestCreateMergePlan_DistributesAcrossMultipleTargets",
+        "TestCreateMergePlan_HonorsExplicitDirection",
+        "TestCreateMergePlan_MultiTargetRejectsInsufficientCapacity",
+        "TestCreateMergePlan_TargetListRestrictsHeuristic",
+        "TestDeleteEmptySelection",
+        "TestDeleteEntryCutoff",
+        "TestDisplayBucketAccess",
+        "TestDisplayBucketAccess_None",
+        "TestDoVolumeCheckDiskDoesNotResurrectAbsentNeedle",
+        "TestDoVolumeCheckDiskResurrectQueuesProvenMissingWrite",
+        "TestDoVolumeCheckDiskResurrectSkipsVacuumedTarget",
+        "TestEvacuatePrefersLowerVolumeRatio",
+        "TestEvaluateMergedVolume",
+        "TestEveryNodeNamesGrpcPort",
+        "TestFileFilter_matchesName",
+        "TestFileFilter_matchesName/exclude_match",
+        "TestFileFilter_matchesName/exclude_mismatch",
+        "TestFileFilter_matchesName/include_match",
+        "TestFileFilter_matchesName/include_mismatch",
+        "TestFileFilter_matchesName/no_filters",
+        "TestFileFilter_matches_minCacheAge",
+        "TestFileFilter_matches_minCacheAge/nil_attributes,_should_not_match",
+        "TestFileFilter_matches_minCacheAge/no_minCacheAge",
+        "TestFileFilter_matches_minCacheAge/no_remote_entry,_uses_crtime_-_old,_should_match",
+        "TestFileFilter_matches_minCacheAge/no_remote_entry,_uses_crtime_-_recent,_should_not_match",
+        "TestFileFilter_matches_minCacheAge/old_cache,_should_match",
+        "TestFileFilter_matches_minCacheAge/recent_cache,_should_not_match",
+        "TestFileFilter_matches_minCacheAge/remote_entry_with_0_sync_ts,_uses_crtime_-_recent,_should_not_match",
+        "TestFilerAddressConfiguredSkipsDiscovery",
+        "TestFilerDiscoveryRetriesAfterEmptyResult",
+        "TestFilerDiscoveryRetriesUntilFilerAppears",
+        "TestFilerDiscoveryReturnsEmptyAtDeadline",
+        "TestFilerDiscoveryStopsOnNonTransientError",
+        "TestFilterLocationsByDataCenter",
+        "TestFindDuplicateVolumeIds",
+        "TestFindDuplicateVolumeIds/default_empty_collection_counts_as_its_own_collection",
+        "TestFindDuplicateVolumeIds/flags_id_shared_across_collections",
+        "TestFindDuplicateVolumeIds/normal_volume_and_ec_shard_sharing_an_id_across_collections",
+        "TestFindDuplicateVolumeIds/replicas_of_one_volume_are_not_duplicates",
+        "TestFindRemoteVolumeInTopology",
+        "TestFindRemoteVolumeInTopology/filter_by_matching_collection_exact",
+        "TestFindRemoteVolumeInTopology/filter_by_matching_collection_regex",
+        "TestFindRemoteVolumeInTopology/filter_by_non-matching_collection",
+        "TestFindRemoteVolumeInTopology/find_existing_remote_volume",
+        "TestFindRemoteVolumeInTopology/find_remote_volume_on_another_server",
+        "TestFindRemoteVolumeInTopology/find_remote_volume_with_different_backend",
+        "TestFindRemoteVolumeInTopology/local_volume_not_found_as_remote",
+        "TestFindRemoteVolumeInTopology/non-existent_volume_not_found",
+        "TestFindRemoteVolumeInTopologyInvalidPattern",
+        "TestFixReplicationCollectionPattern",
+        "TestFixReplicationCollectionPattern/default_pattern_matches_empty_collection",
+        "TestFixReplicationCollectionPattern/default_pattern_rejects_named_collection",
+        "TestFixReplicationCollectionPattern/empty_pattern_matches_any_collection",
+        "TestFixReplicationCollectionPattern/empty_pattern_matches_empty_collection",
+        "TestFixReplicationCollectionPattern/exact_match",
+        "TestFixReplicationCollectionPattern/exact_mismatch",
+        "TestFixReplicationCollectionPattern/list_matches_a_listed_collection",
+        "TestFixReplicationCollectionPattern/list_rejects_an_unlisted_collection",
+        "TestFixReplicationCollectionPattern/prefix_wildcard_match",
+        "TestFixReplicationCollectionPattern/prefix_wildcard_mismatch",
+        "TestFixReplicationCollectionPattern/single_char_wildcard_match",
+        "TestFixReplicationCollectionPattern/single_char_wildcard_mismatch",
+        "TestFixUnderReplicatedVolumesInParallel",
+        "TestFormatShardLabel",
+        "TestFsMetaLoadCreatesAllEntries",
+        "TestFsMetaLoadPrefersWorkerErrorOverReadError",
+        "TestFsMetaLoadReturnsErrorOnCorruptData",
+        "TestFsMetaLoadReturnsErrorOnCorruptData/malformed_proto",
+        "TestFsMetaLoadReturnsErrorOnCorruptData/truncated_entry_data",
+        "TestFsMetaLoadReturnsWorkerError",
+        "TestFsMetaLoadWaitsForInflightCreateAtEOF",
+        "TestFsMetaLoadWaitsForInflightCreateOnCorruptData",
+        "TestFsMvMovesIntoExistingDestinationDirectory",
+        "TestFsVerifyIsNeedleMissingError",
+        "TestFsVerifyManifestResolutionFailure",
+        "TestFsVerifyManifestResolutionFailure/healthy_raw_needle_but_unresolvable_manifest_is_not_verified",
+        "TestFsVerifyManifestResolutionFailure/missing_manifest_needle_is_prunable",
+        "TestFsVerifyPruneEntryGuards",
+        "TestFsVerifyVerifyEntryPrunability",
+        "TestFsVerifyVerifyEntryPrunability/concurrent_path_matches_sequential",
+        "TestFsVerifyVerifyEntryPrunability/healthy_on_one_of_two_locations",
+        "TestFsVerifyVerifyEntryPrunability/missing_on_all_locations",
+        "TestGetVolumeSize_ClampsDeletedOverSize",
+        "TestIsEmptyVolumeDeleteCandidate",
+        "TestIsEmptyVolumeDeleteCandidate/all_needles_deleted_is_empty",
+        "TestIsEmptyVolumeDeleteCandidate/deletable_read-only_volume_can_go",
+        "TestIsEmptyVolumeDeleteCandidate/live_needles_keep_the_volume",
+        "TestIsEmptyVolumeDeleteCandidate/never_written_volume_is_kept",
+        "TestIsEmptyVolumeDeleteCandidate/overwrites_alone_are_not_empty",
+        "TestIsEmptyVolumeDeleteCandidate/protected_read-only_volume_is_kept",
+        "TestIsEmptyVolumeDeleteCandidate/recent_all-deleted_volume_is_kept",
+        "TestIsEmptyVolumeDeleteCandidate/remote-backed_garbage_is_kept",
+        "TestIsEmptyVolumeDeleteCandidate/remote-backed_replica_is_kept",
+        "TestIsEmptyVolumeDeleteCandidate/small_.dat_is_empty",
+        "TestIsGoodMove",
+        "TestLiveDivergenceClassifiesOneSidedVsTwoSided",
+        "TestManifestMayReferencePlan",
+        "TestMergeEdgeCaseHandling",
+        "TestMergeNeedleStreamsComplexDuplication",
+        "TestMergeNeedleStreamsDoesNotDeduplicateAcrossWindows",
+        "TestMergeNeedleStreamsLargeIDs",
+        "TestMergeNeedleStreamsLastModifiedFallback",
+        "TestMergeNeedleStreamsOrdersByTimestamp",
+        "TestMergeNeedleStreamsSameStreamDuplicates",
+        "TestMergeNeedleStreamsSingleStream",
+        "TestMergeNeedleStreamsTimeWindowDeduplication",
+        "TestMergeNeedleStreamsWithEmptyStream",
+        "TestMergeWorkflowValidation",
+        "TestMisplacedChecking",
+        "TestNeedleBlobFromNeedleRoundTrip",
+        "TestNoLockDoesNotOutliveTheCommandThatSetIt",
+        "TestNoLockResetRestoresTheRequirementForEveryInvocation",
+        "TestOUFGoogleProfileConfigureBeforeFiler",
+        "TestParseShardsSpec_BadRange",
+        "TestParseShardsSpec_DedupSort",
+        "TestParseShardsSpec_OutOfRange",
+        "TestParseShardsSpec_Range",
+        "TestParseShardsSpec_Set",
+        "TestParseTargetVolumeIds",
+        "TestParsing",
+        "TestPickOneMisplacedVolumeRelocatesReadOnlyReplicas",
+        "TestPickOneReplicaToDeletePreservesPlacement",
+        "TestPickOneReplicaToDeleteSkipsReadOnlySurvivor",
+        "TestPickOneReplicaToDeleteSkipsReadOnlySurvivor/refuses_to_delete_the_only_writable_replica_while_a_read-only_survivor_remains",
+        "TestPickOneReplicaToDeleteSkipsReadOnlySurvivor/refuses_when_all_replicas_are_read-only",
+        "TestPickOneReplicaToDeleteSkipsReadOnlySurvivor/trims_the_smallest_writable_replica_and_never_the_read-only_one",
+        "TestPickingMisplacedVolumeToDelete",
+        "TestPlanDistribution_Primary_BalancesChunks",
+        "TestPlanDistribution_Primary_NoMovesWhenBalanced",
+        "TestPlanDistribution_Replica_BalancesOwnerAndCopies",
+        "TestPlanDistribution_RoundRobin_AssignsByOffset",
+        "TestPlanDistribution_RoundRobin_OffsetOrdering",
+        "TestPlanLocalToRemoteSync",
+        "TestPlanLocalToRemoteSync/copy_local-only_files,_no_delete_flag",
+        "TestPlanLocalToRemoteSync/delete_flag_removes_remote-only_files",
+        "TestPlanLocalToRemoteSync/delete_ignores_size/age_filters",
+        "TestPlanLocalToRemoteSync/delete_removes_orphaned_files,_directory_entries_left_alone",
+        "TestPlanLocalToRemoteSync/delete_respects_exclude_pattern",
+        "TestPlanLocalToRemoteSync/delete_respects_include_pattern",
+        "TestPlanLocalToRemoteSync/delete_with_empty_local_storage_removes_all_remote_files",
+        "TestPlanLocalToRemoteSync/directory_present_locally_is_not_deleted",
+        "TestPlanLocalToRemoteSync/exclude_pattern_protects_remote_files_under_nested_directory",
+        "TestPlanLocalToRemoteSync/forceUpdate_copies_files_that_exist_on_remote",
+        "TestPlanLocalToRemoteSync/local_directories_are_not_copied",
+        "TestPlanLocalToRemoteSync/remote_files_outside_-dir_are_never_deleted",
+        "TestPlanOwnerMoves_AlreadyBalanced",
+        "TestPlanOwnerMoves_BasicBalance",
+        "TestPlanTierCompactResync",
+        "TestPrintClusterInfo",
+        "TestPrintClusterInfo_multiDiskPerNode",
+        "TestPrintFilesInfo",
+        "TestPrintRedistributionPlan_Output",
+        "TestPrintStorageInfo",
+        "TestPrintVolumeInfo",
+        "TestProcessEachCmdPreservesRegisteredCommandError",
+        "TestProcessEachCmdReturnsErrors",
+        "TestRaftLeaderTransfer_HasTag",
+        "TestRaftLeaderTransfer_Help",
+        "TestRaftLeaderTransfer_Name",
+        "TestRaftLeaderTransfer_UnknownFlag",
+        "TestRaftLeaderTransfer_ValidateTargetAddressWithoutId",
+        "TestRaftLeaderTransfer_ValidateTargetIdWithoutAddress",
+        "TestReadFilerFileIdFileRejectsTruncatedHardLinkId",
+        "TestReadOnlyVolumesAboveThreshold",
+        "TestRelevantNodes",
+        "TestReportDivergenceVerdictEmitsCopyCommand",
+        "TestReserveTargetSpreadsAcrossServers",
+        "TestResolveShardSelection_Mutex",
+        "TestResolveShardSelection_SingleShard",
+        "TestRunShellConnectTimeout",
+        "TestS3BucketCreateRequestsExclusiveCreate",
+        "TestSatisfyReplicaCurrentLocation",
+        "TestSatisfyReplicaCurrentLocation/test_001",
+        "TestSatisfyReplicaCurrentLocation/test_010",
+        "TestSatisfyReplicaCurrentLocation/test_011",
+        "TestSatisfyReplicaCurrentLocation/test_100",
+        "TestSatisfyReplicaCurrentLocation/test_110",
+        "TestSatisfyReplicaPlacement00x",
+        "TestSatisfyReplicaPlacement01x",
+        "TestSatisfyReplicaPlacement100",
+        "TestSatisfyReplicaPlacementComplicated",
+        "TestSelectActiveNodes_AllNodes",
+        "TestSelectActiveNodes_LimitToTwo",
+        "TestShortName",
+        "TestShouldSkipVolume",
+        "TestShouldSkipVolume/both_volumes_modified_after_pulse_cutoff_with_same_file_counts_should_be_skipped",
+        "TestShouldSkipVolume/different_delete_counts_with_syncDeletions_disabled_should_be_skipped_if_file_counts_match",
+        "TestShouldSkipVolume/different_delete_counts_with_syncDeletions_enabled_should_not_be_skipped",
+        "TestShouldSkipVolume/different_file_counts_should_not_be_skipped",
+        "TestShouldSkipVolume/different_modification_times_with_same_file_counts_should_be_skipped",
+        "TestShouldSkipVolume/identical_volumes_should_be_skipped",
+        "TestShouldSkipVolume/large_file_count_difference_with_old_modification_time_should_not_be_skipped",
+        "TestShouldSkipVolume/one_volume_modified_before_pulse_cutoff_with_different_file_counts_should_not_be_skipped",
+        "TestShouldSkipVolume/recently_modified_volumes_with_same_file_counts_should_be_skipped",
+        "TestShouldSkipVolume/volumes_modified_exactly_at_pulse_cutoff_boundary_with_different_counts_should_not_be_skipped",
+        "TestShouldSkipVolume/volumes_modified_just_after_pulse_cutoff_boundary_with_same_counts_should_be_skipped",
+        "TestShouldSkipVolume/volumes_with_zero_and_non-zero_file_counts_should_not_be_skipped",
+        "TestShouldSkipVolume/volumes_with_zero_file_counts_should_be_skipped",
+        "TestSplitCSVSet",
+        "TestSplitCSVSet/commas_only_is_empty_set_(no_filter)",
+        "TestSplitCSVSet/empty_input_is_empty_set_(no_filter)",
+        "TestSplitCSVSet/multi",
+        "TestSplitCSVSet/single",
+        "TestSplitCSVSet/skips_empty_items",
+        "TestSplitCSVSet/trims_whitespace",
+        "TestSplitCSVSet/whitespace_and_commas_only_is_empty_set_(no_filter)",
+        "TestSplitCSVSet/whitespace_only_is_empty_set_(no_filter)",
+        "TestUpdateBucketActions_None",
+        "TestUpdateBucketActions_PreservesGlobalActions",
+        "TestUpdateBucketActions_PreservesOtherBuckets",
+        "TestUpdateBucketActions_ReplaceActions",
+        "TestUpdateBucketActions_SetActions",
+        "TestUploadCompleted",
+        "TestUploadCompleted/a_version_file_carries_the_upload_id",
+        "TestUploadCompleted/lookup_error_propagates",
+        "TestUploadCompleted/no_object_and_no_versions",
+        "TestUploadCompleted/object_entry_carries_the_upload_id",
+        "TestUploadCompleted/object_entry_has_a_different_upload_id",
+        "TestUploadCompleted/trailing_slash_key_resolves_inside_its_directory",
+        "TestUploadCompleted/upload_dir_without_an_object_key",
+        "TestUploadCompleted/versions_list_not_found_means_no_completed_object",
+        "TestVacuumRequestsForPattern",
+        "TestVacuumRequestsForVolumeIds",
+        "TestVolumeBalanceMoveOptions",
+        "TestVolumeCheckDiskHelperMethods",
+        "TestVolumeFsckCanPurgeDirectory",
+        "TestVolumeFsckCheckOneVolumeQueuesOrphansWithHardLinkId",
+        "TestVolumeFsckCollectFilerFileIdsReachesOutsideBucket",
+        "TestVolumeFsckHttpDeleteRecordsParentDirectory",
+        "TestVolumeFsckPurgeEmptyDirectories",
+        "TestVolumeFsckPurgeEmptyDirectoriesKeepsChangedDirectory",
+        "TestVolumeFsckPurgeEmptyDirectoriesKeepsFreshDirectory",
+        "TestVolumeFsckPurgeHardLinksSerialized",
+        "TestVolumeFsckPurgeWorkerLimit",
+        "TestVolumeFsckPurgeWorkersAtLeastOne",
+        "TestVolumeMarkRejectsCollectionWithNodeOrVolumeId",
+        "TestVolumeMarkRejectsEmptyCollectionFlag",
+        "TestVolumeSelection",
+        "TestVolumeSelectionByDataCenter",
+        "TestVolumeServerAddressesUseRegisteredGrpcPort",
+        "TestVolumeServerEvacuate",
+        "TestWarnUnreferencedSources",
+        "TestWarnUnreferencedSources_ConcurrentRecording",
+        "TestWriteDataNodeInfo_SplitsCollapsedDisksByPhysicalDiskId",
+        "TestWriteDuplicateVolumeIdWarning",
+        "TestWriteTopologyInfo_PrintsParentHeadersOnce"
+      ],
+      "localFailureLogSha256": "d1d4a897b2ee64d3133f32903426e581b9f204dd39a7e35bcd05561af0a11f98"
+    }
+  },
+  "localRegressionProvenance": {
+    "schema": "ouf.generation32-derived-observations.v1",
+    "rawInputs": [
+      {
+        "path": "combined-tests.stdout",
+        "sha256": "8d8a6d9433068321c96f9dabd7f323e291fa14549214a52be16bbe3b684f005c"
+      },
+      {
+        "path": "supplemental-tests.stdout",
+        "sha256": "533348a075d1c17030ec484187774c144645084b5e5309da3d295c59cc6bd847"
+      }
+    ],
+    "derivation": "main = combined excluding exact server/shell packages, followed by supplemental distinct packages; server and shell preserve their complete observed event streams. No event failures converted into PASS. Broad exit1 retained.",
+    "fullBroadResult": "7650_PASS_14_SKIP_10_FAIL_EVENTS_PRESERVED",
+    "shellLocalCounts": {
+      "pass": 296,
+      "fail": 10
+    },
+    "shellLocalPackageCounts": {
+      "fail": 1
+    },
+    "shellFailureParitySha256": "b2d73ef8254f0788b05cdbcda849a959d1c869502101733caa2c509e471a43d7",
+    "hostedServerTLSMustPass": [
+      "TestGuardedPeerHTTPClientUploadsOverTLS",
+      "TestGuardedPeerHTTPClientRejectsHTTPSDowngrade"
+    ]
+  }
+}

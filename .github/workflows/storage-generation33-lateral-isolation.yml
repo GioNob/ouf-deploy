@@ -1,0 +1,340 @@
+name: Storage generation33 native lateral network isolation
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-generation33-lateral-isolation.yml
+      - scripts/run-storage-generation33-lateral-isolation.py
+      - tests/test_storage_lateral_isolation_generation33.py
+      - tests/test_storage_volume_crash_generation33.py
+      - tests/test_storage_filer_crash_generation33.py
+      - tests/test_storage_master_crash_generation33.py
+      - tests/test_storage_all_crash_generation33.py
+      - tests/test_storage_stream_interruption_generation33.py
+      - scripts/storage-generation33-stream-interruption.py
+      - scripts/storage-generation33-orphan-cleanup.py
+      - scripts/storage-generation33-compaction.py
+      - tests/test_storage_compaction_generation33.py
+      - tests/test_storage_compaction_restart_generation33.py
+      - scripts/storage-generation33-compaction-crash.py
+      - scripts/storage-generation33-commit-crash.py
+      - scripts/storage-generation33-interrename-crash.py
+      - tests/test_storage_interrename_crash_generation33.py
+      - scripts/storage-generation33-markeronly-crash.py
+      - tests/test_storage_markeronly_crash_generation33.py
+      - tests/test_storage_commit_crash_generation33.py
+      - scripts/bind-storage-generation33-compaction-source.py
+      - tests/test_storage_compaction_crash_generation33.py
+      - scripts/storage-generation33-relocation.py
+      - tests/test_storage_relocation_generation33.py
+      - tests/test_storage_orphan_cleanup_generation33.py
+      - scripts/run-storage-generation33-credential-rotation.py
+      - tests/test_storage_credential_rotation_generation33.py
+      - tests/fixtures/storage-recovery/network-gate.c
+      - scripts/run-storage-generation33-tls-rotation.py
+      - tests/test_storage_tls_rotation_generation33.py
+      - releases/seaweedfs-452-generation33-candidate-lock-20261104.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-generation33-lateral-isolation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-cohort-lateral-isolation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Install bounded fixture tooling and build the static launch barrier
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y gcc libc6-dev nftables
+          cc -std=c11 -O2 -Wall -Wextra -Werror -static tests/fixtures/storage-recovery/network-gate.c -o "$RUNNER_TEMP/network-gate"
+          sha256sum "$RUNNER_TEMP/network-gate" > "$RUNNER_TEMP/network-gate.sha256"
+          cc --version > "$RUNNER_TEMP/network-gate-compiler.txt"
+
+      - name: Test service recovery, compaction persistence, launch barriers and credential and TLS boundaries
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_lateral_isolation_generation33.py -v 2>&1 | tee "$RUNNER_TEMP/lateral33-offline-tests.log"
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_volume_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_credential_rotation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_tls_rotation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_filer_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_master_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_all_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_stream_interruption_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_orphan_cleanup_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_compaction_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_compaction_restart_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_relocation_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Test phase discrimination and rollback invariants
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_compaction_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Test post-marker phase rejection and native ptrace mechanics
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_commit_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Test mixed generation rejection and actual first-rename execution
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_interrename_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Test completed pair marker-only phase and real unlink entry freeze
+        run: |
+          set -euo pipefail
+          python3 -I -B -S -m unittest discover -s tests -p test_storage_markeronly_crash_generation33.py -v 2>&1 | tee -a "$RUNNER_TEMP/lateral33-offline-tests.log"
+
+      - name: Bind reviewed compaction source through all generation33 patches
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/bind-storage-generation33-compaction-source.py "$RUNNER_TEMP/lateral33-compaction-source"
+
+      - name: Fetch and bind the exact successful generation33 cohort and image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib, importlib.util, json, os, pathlib, subprocess
+          p=pathlib.Path('scripts/run-storage-generation33-lateral-isolation.py')
+          spec=importlib.util.spec_from_file_location('rotation',p)
+          rotation=importlib.util.module_from_spec(spec);spec.loader.exec_module(rotation)
+          bound=rotation.labs.binding_api.load(pathlib.Path.cwd(),rotation.LOCK_SHA)
+          inputs=pathlib.Path(os.environ['RUNNER_TEMP'])/'lateral33-inputs';inputs.mkdir()
+          def fetch(artifact_id,filename,expected_size,expected_sha):
+              dest=inputs/filename
+              url='https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/'+str(artifact_id)+'/zip'
+              subprocess.run(['curl','--fail','--location','--silent','--show-error','--proto','=https',
+                              '--tlsv1.2','--retry','2','--connect-timeout','15','--max-time','180',
+                              '--max-filesize',str(expected_size),'-H','Authorization: Bearer '+os.environ['GH_TOKEN'],
+                              '-H','Accept: application/vnd.github+json',url,'--output',str(dest)],check=True)
+              assert dest.stat().st_size==expected_size
+              with dest.open('rb') as stream:assert hashlib.file_digest(stream,'sha256').hexdigest()==expected_sha
+              return dest
+          cohort=fetch(rotation.COHORT_ARTIFACT_ID,'cohort.zip',rotation.COHORT_ARCHIVE_BYTES,rotation.COHORT_ARCHIVE_SHA)
+          receipt=rotation.labs.bind_cohort_artifact(cohort,inputs/'bound-cohort',bound,
+                                                    rotation.COHORT_ARCHIVE_SHA,rotation.COHORT_SHA)
+          rotation.binding(receipt)
+          image=bound['lock']['producerArtifact']
+          fetch(image['id'],'image.zip',image['bytes'],image['digest'].removeprefix('sha256:'))
+          PYCODE
+
+      - name: Verify the successful cohort publisher with its exact source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 \
+            https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+          gh297/bin/gh attestation verify "$RUNNER_TEMP/lateral33-inputs/bound-cohort/SHA256SUMS" \
+            --repo GioNob/ouf-deploy \
+            --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation33-cohort.yml \
+            --source-digest 7a00b8bfaf8a2cefdc2aff278be62fd5b7f28791 \
+            --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --format json > "$RUNNER_TEMP/lateral33-inputs/cohort-publisher-verification.json"
+          test -s "$RUNNER_TEMP/lateral33-inputs/cohort-publisher-verification.json"
+
+      - name: Exercise five distinct namespaces with rules installed before service execution
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate"
+
+      - name: SIGKILL the acknowledged volume and recover through a fresh gated namespace
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-volume-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-volume
+
+      - name: SIGKILL the filer and recover persistent metadata without reseeding
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-filer-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-filer
+
+      - name: SIGKILL the master and verify fresh topology and peer registration
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-master-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-master
+
+      - name: SIGKILL all services and recover from retained roots behind fresh gates
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-all-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-all
+
+      - name: Interrupt an incomplete PUT after its prefix reaches the volume and reconcile without replay
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-stream-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --interrupt-stream
+
+      - name: Qualify automatic orphan tombstone and direct chunk absence with the single required gRPC link
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-cleanup-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --cleanup-stream
+
+      - name: Compact only the orphan volume and verify allocated space and every live chunk
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-compaction-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --compact-stream
+
+      - name: Restart all services after compaction and verify retained allocation and absence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-compaction-restart-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --restart-compact
+
+      - name: Relocate a live native chunk across a tombstoned record and verify restart persistence
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-relocation-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --relocate-live
+
+      - name: Crash the observed precommit compaction and recover without resubmission
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-compaction-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-compact
+
+      - name: Crash after durable commit marker before first rename and verify rollforward
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-commit-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-commit
+
+      - name: Crash after DAT rename before IDX rename and verify coherent rollforward
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-interrename-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-rename
+
+      - name: Crash after both renames before marker removal and preserve the completed pair
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-storage-generation33-lateral-isolation.py run \
+            "$RUNNER_TEMP/lateral33-inputs/image.zip" "$RUNNER_TEMP/lateral33-markeronly-crash-lab" \
+            "$RUNNER_TEMP/lateral33-inputs/bound-cohort/cohort-receipt.json" "$RUNNER_TEMP/network-gate" --crash-marker
+
+      - name: Preserve bounded public evidence and reject private-key material
+        if: always()
+        run: |
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib,json,os,pathlib,shutil,subprocess
+          temp=pathlib.Path(os.environ['RUNNER_TEMP']);out=temp/'lateral33-evidence';out.mkdir()
+          work=temp/'lateral33-lab/evidence';inputs=temp/'lateral33-inputs'
+          total=0
+          def copy_public(source,dest):
+              global total
+              if source.is_symlink() or not source.is_file():raise ValueError('REGULAR_PUBLIC_EVIDENCE_REQUIRED')
+              raw=source.read_bytes();total+=len(raw)
+              if len(raw)>16*1024*1024 or total>64*1024*1024:raise ValueError('EVIDENCE_SIZE_BUDGET')
+              if source.suffix=='.key' or any(marker in raw for marker in
+                  (b'-----BEGIN PRIVATE KEY',b'-----BEGIN RSA PRIVATE KEY',b'-----BEGIN EC PRIVATE KEY')):
+                  raise ValueError('PRIVATE_KEY_MUST_NOT_ENTER_EVIDENCE')
+              dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
+          for work,destination in ((temp/'lateral33-lab/evidence','lab'),(temp/'lateral33-volume-crash-lab/evidence','crash-lab'),
+                                   (temp/'lateral33-filer-crash-lab/evidence','filer-crash-lab'),
+                                   (temp/'lateral33-master-crash-lab/evidence','master-crash-lab'),
+                                   (temp/'lateral33-all-crash-lab/evidence','all-crash-lab'),
+                                   (temp/'lateral33-stream-lab/evidence','stream-lab'),
+                                   (temp/'lateral33-cleanup-lab/evidence','cleanup-lab'),
+                                   (temp/'lateral33-compaction-lab/evidence','compaction-lab'),
+                                   (temp/'lateral33-compaction-restart-lab/evidence','compaction-restart-lab'),
+                                   (temp/'lateral33-relocation-lab/evidence','relocation-lab'),
+                                   (temp/'lateral33-compaction-crash-lab/evidence','compaction-crash-lab'),
+                                   (temp/'lateral33-commit-crash-lab/evidence','commit-crash-lab'),
+                                   (temp/'lateral33-interrename-crash-lab/evidence','interrename-crash-lab'),
+                                   (temp/'lateral33-markeronly-crash-lab/evidence','markeronly-crash-lab'),
+                                   (temp/'lateral33-compaction-source','compaction-source')):
+              if work.is_dir():
+                  for source in sorted(work.iterdir()):copy_public(source,out/destination/source.name)
+          for name in ('cohort-publisher-verification.json','bound-cohort/cohort-receipt.json','bound-cohort/SHA256SUMS'):
+              source=inputs/name
+              if source.is_file():copy_public(source,out/'input-verification'/name)
+          if (temp/'lateral33-offline-tests.log').is_file():copy_public(temp/'lateral33-offline-tests.log',out/'offline-tests.log')
+          (out/'source-commit.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD']).decode())
+          for name in ('network-gate.sha256','network-gate-compiler.txt'):
+              if (temp/name).is_file():copy_public(temp/name,out/name)
+          paths=['scripts/storage-generation33-markeronly-crash.py','tests/test_storage_markeronly_crash_generation33.py','scripts/storage-generation33-interrename-crash.py','tests/test_storage_interrename_crash_generation33.py','scripts/storage-generation33-commit-crash.py','tests/test_storage_commit_crash_generation33.py','scripts/storage-generation33-compaction-crash.py','scripts/bind-storage-generation33-compaction-source.py',
+                 'tests/test_storage_compaction_crash_generation33.py','scripts/run-storage-generation33-credential-rotation.py','tests/test_storage_credential_rotation_generation33.py',
+                 'tests/fixtures/storage-recovery/network-gate.c','scripts/run-storage-generation33-tls-rotation.py','tests/test_storage_tls_rotation_generation33.py',
+                 'scripts/run-storage-generation33-lateral-isolation.py','tests/test_storage_lateral_isolation_generation33.py',
+                 'tests/test_storage_volume_crash_generation33.py','tests/test_storage_filer_crash_generation33.py','tests/test_storage_master_crash_generation33.py','tests/test_storage_all_crash_generation33.py',
+                 'scripts/storage-generation33-stream-interruption.py','tests/test_storage_stream_interruption_generation33.py',
+                 'scripts/storage-generation33-orphan-cleanup.py','tests/test_storage_orphan_cleanup_generation33.py',
+                 'scripts/storage-generation33-compaction.py','tests/test_storage_compaction_generation33.py',
+                 'tests/test_storage_compaction_restart_generation33.py',
+                 'scripts/storage-generation33-relocation.py','tests/test_storage_relocation_generation33.py',
+                 '.github/workflows/storage-generation33-lateral-isolation.yml','scripts/run-seaweedfs-452-generation33-labs.py',
+                 'scripts/storage-generation33-lab-binding.py','scripts/run-seaweedfs-452-cold-recovery.py',
+                 'scripts/run-seaweedfs-452-identity-tls.py','scripts/readback-seaweedfs-452-generation33-image.py',
+                 'scripts/qualify-seaweedfs-452-generation33-image.py','tools/storage_security/generation_image_v4.py',
+                 'tools/storage_security/generation_readback_v1.py','releases/seaweedfs-452-generation33-candidate-lock-20261104.json',
+                 'releases/seaweedfs-452-generation33-vendor-build-manifest-20261104.json']
+          (out/'source-sha256.json').write_text(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in paths},indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n'
+                                             for p in sorted(out.rglob('*')) if p.is_file() and p!=out/'SHA256SUMS'))
+          PYCODE
+          cd "$RUNNER_TEMP/lateral33-evidence"
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest successful native isolation and joint and individual crash evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/lateral33-evidence/SHA256SUMS
+
+      - name: Retain public diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation33-lateral-isolation-${{ github.run_id }}
+          path: ${{ runner.temp }}/lateral33-evidence/
+          if-no-files-found: error
+          retention-days: 90
+

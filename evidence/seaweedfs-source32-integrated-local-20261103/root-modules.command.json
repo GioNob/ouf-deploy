@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "list",
+    "-mod=readonly",
+    "-m",
+    "-json",
+    "all"
+  ],
+  "cwd": "source32-integrated-stage/source",
+  "exitCode": 1,
+  "elapsedSeconds": 0.076,
+  "CGO_ENABLED": "0",
+  "GOOS": "linux",
+  "GOARCH": "amd64",
+  "GOPROXY": "off"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "ouf.postgres-passfile-correction-local.v1",
+  "status": "LOCAL_REGRESSION_PASS_HOSTED_FIX_UNVERIFIED",
+  "failedHostedRun": 41715990786,
+  "publishedFailure": {
+    "nativeTests": 7,
+    "pass": 0,
+    "fail": 3,
+    "error": 4,
+    "skip": 0
+  },
+  "originalAdapterSha256": "5f38344d93b9e2144688897ad2d2a82702f7aaeed447e994b080b33d2fc6b6f6",
+  "correctedAdapterSha256": "772a1b93e1acd4ab191d2621766c51ef7ef1fbe0534d3a1553ce076b3b379f5b",
+  "localTests": {
+    "fullFoundationPassed": 50,
+    "adapterPassed": 16,
+    "harnessPassed": 9,
+    "profileManifestCoordinatorPassed": 25,
+    "failed": 0,
+    "skipped": 0
+  },
+  "redBaseline": {
+    "testsRun": 15,
+    "failuresIncludingSubcases": 3,
+    "errors": 1,
+    "logSha256": "195748b761c1dd735f0ed5ea64c9ef67cdead2821ea3cfe8bd78ef876c119dfa"
+  },
+  "fixedSqlUnchanged": true,
+  "stderrStillRejected": true,
+  "credentialsWritten": false,
+  "hostedFixExecuted": false,
+  "targetOperations": 0,
+  "pitrQualified": false,
+  "writerFenceEnforcedByAdapter": false,
+  "releaseAdmitted": false,
+  "runtimeAuthorityIssued": false
+}

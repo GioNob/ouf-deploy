@@ -1,0 +1,31 @@
+{
+  "schema": "ouf.storage-host-bound-cold-qualified.v1",
+  "status": "NATIVE_PASS_TARGET_DECISION_PENDING",
+  "codeCommit": "ac0b5b862e7e1209756f596c5ae293c366c7b49e",
+  "runId": 42310506109,
+  "jobId": 128210457310,
+  "productionSha256": "ef76ef3efbbad2caebbfbabbb5c6d40a00fd5cbe09e486cb6ed94e43903af53d",
+  "nativeEvidence": "evidence/storage-host-bound-cold-native-20261107.json",
+  "failureHistory": [
+    "evidence/storage-host-bound-cold-native-first-failure-20261107.json"
+  ],
+  "targetHostReceipt": "evidence/storage-host-continuation-success-operator-20261107.json",
+  "targetCapturePerformed": false,
+  "targetAcceptanceProven": false,
+  "priorSuccessfulProofsReused": [
+    "storage-test-cold-stop-qualified-20261106",
+    "VPS-to-Windows crypto"
+  ],
+  "fixtureLimits": [
+    "14BusyBoxsignalhandlers,not14OUFapplications",
+    "No PostgreSQL/MinIO workload in new fixture; prior native restore proofs retained",
+    "Extracted five runtime fixture bodies,not independent target restore",
+    "Ubuntu24runner,not targetDebian13"
+  ],
+  "installerStaticChecks": {
+    "syntax": true,
+    "payloadPin": true,
+    "targetExecuted": false
+  },
+  "acceptanceCreditAdded": 0
+}

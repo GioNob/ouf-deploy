@@ -1,0 +1,150 @@
+{
+  "schema": "ouf.m2-worker-observation-diagnostics-qualification.v1",
+  "sourceCommit": "07734a75aa4c2a2c8e2d87519974d04fd8ea590a",
+  "status": "LOCAL_REGRESSION_AND_CURRENT_PROTOCOL_DOCKER_NATIVE_PASS_HISTORICAL_CAUSE_OPEN",
+  "problem": {
+    "startOwner": "Discarded the observation denial when converting a privileged read to UNKNOWN.",
+    "workerSequence": "Discarded the pending substage observation, retaining only the completed stage count.",
+    "historicalNativeUnknownCauseProven": false
+  },
+  "change": {
+    "publicReasonVocabulary": "Finite allowlist of observation denial codes; all other messages are unproven.",
+    "readFailureCategories": [
+      "PROCESS_READ_UNPROVEN",
+      "READ_CONTENTION",
+      "IO_READ_UNPROVEN",
+      "READ_DENIED",
+      "READ_UNPROVEN"
+    ],
+    "pendingSequenceRetainsStageObservation": true,
+    "arbitraryExceptionFormattingAllowed": false,
+    "privatePathsErrnoArgumentsOrProcessOutputExported": false,
+    "newRetryOrDispatch": false,
+    "positiveEvidenceOnDeniedRead": false,
+    "authorityIssued": false,
+    "budgetReset": false
+  },
+  "controlledPreFix": {
+    "method": "In a separate disposable test process, restore only the two original observe methods from the retained local predecessor AST; run the two new regression cases.",
+    "regressionCases": 2,
+    "expectedMissingDiagnosticErrors": 2,
+    "unexpectedFailures": 0,
+    "missingFields": [
+      "workerObservationFailure",
+      "unprovenStage"
+    ],
+    "seconds": 21.217,
+    "workingTreeOrFrozenSourceChanged": false,
+    "historicalNativeUnknownReproduced": false
+  },
+  "localSuccessor": {
+    "startOwner": {
+      "tests": 9,
+      "seconds": 6.76,
+      "failures": 0,
+      "skips": 0
+    },
+    "workerInstallationSequence": {
+      "tests": 15,
+      "seconds": 173.703,
+      "failures": 0,
+      "skips": 0
+    },
+    "diffWhitespaceClean": true,
+    "assertions": [
+      "One consumed manager start is not dispatched again.",
+      "UNKNOWN creates no positive worker evidence and does not change the start or sequence journal.",
+      "Known observation codes survive both owners; private process/IO messages and custom __str__ are excluded.",
+      "A separately requested positive read reconciles the existing claim without another start."
+    ]
+  },
+  "currentSourceCI": {
+    "event": "pull_request",
+    "protocolRun": 41153678695,
+    "protocolJob": 124395659985,
+    "dockerProviderWorkerRun": 41153678783,
+    "finiteJob": 124395660746,
+    "sealedJob": 124395660459,
+    "status": "FINAL_REPORTS_READ",
+    "dockerNativeConclusion": "success",
+    "finiteFinalReportRead": true,
+    "sealedFinalReportRead": true,
+    "protocolConclusion": "success",
+    "additionalReadReports": [
+      {
+        "run": 41153678754,
+        "job": 124395660081,
+        "conclusion": "success",
+        "scope": "Distinct worker real systemd/DNS/nft, outage/recovery and exhaustion without new queries; finite virtual four-hour outage, not a target proof."
+      },
+      {
+        "run": 41153678861,
+        "job": 124395660872,
+        "conclusion": "success",
+        "scope": "Real Docker MCP lifecycle, HTTP503 Retry-After then204, lost start reconciliation and preserved clocks; static HTTP fixture, not real MCP application."
+      }
+    ],
+    "protocolTests": 443,
+    "protocolSuites": 52,
+    "protocolFailures": 0,
+    "protocolSkips": 0,
+    "protocolFinalLogRead": true
+  },
+  "preservedLimits": {
+    "historicalNativeUnknownCause": "OPEN",
+    "otherMcpAndWorkerAnomalyCauses": "OPEN",
+    "fullStabilityAccepted": false,
+    "fullCurrentCohortProven": false,
+    "actualFarmacieToUdpProven": false,
+    "capabilitiesPublished": false,
+    "targetApplyAuthorized": false,
+    "runtimeAuthorityIssued": false,
+    "automaticReplayAllowed": false,
+    "budgetReset": false,
+    "releaseAcceptance": false
+  },
+  "preservedSourceIdentity": {
+    "originalPeerSourceSha256": "4d99b60459d7122b5126d8424fb6233a9f3de15858219cd9061131b23f45af8b",
+    "frozenWorkerPinsRechecked": 37,
+    "allUnchanged": true,
+    "diagnosticsInsideFrozenWorkerCapsule": false
+  },
+  "currentLiveRead": {
+    "date": "2026-10-31",
+    "account": "ouf-admin",
+    "capability": "ouf.system.status",
+    "result": {
+      "module": "MCP",
+      "status": "HEALTHY",
+      "actionRequired": false,
+      "partial": false,
+      "visibilityClass": "PUBLIC_OPERATIONAL",
+      "redacted": true
+    },
+    "provesDiscoveryPublishedOrReady": false,
+    "discoveryRequestStatusCandidatesToolsExposedInThisSession": false,
+    "liveMutationsThisContinuation": 0
+  },
+  "nextImplementationBoundaries": [
+    {
+      "boundary": "Registry full current admission",
+      "retainedProof": "Actual paused peer and independent OCI/rootfs are shared with provider and worker.",
+      "remaining": "Replace the explicitly modeled Registry verify_retained predecessor with the concrete existing Registry/native token-owner path in the combined cohort."
+    },
+    {
+      "boundary": "Selected runtime and sealed release checkpoint",
+      "retainedProof": "Typed selected-owner composition, independent component effects and the transition fence are qualified in their stated scopes.",
+      "remaining": "Compose current TLS/IAM/DB/fencing/trust, full Registry, Gateway and MCP under the same parent/child before existing producer release."
+    },
+    {
+      "boundary": "Coordinated capability publication and actual client flow",
+      "retainedProof": "Repository authorization/profile work remains separate from installative admission.",
+      "remaining": "Review and qualify persistent coordinated publication; invoke real OntoPiA request/status/candidates through OUF and then Farmacie\u2192Ingestion\u2192UDP with all61outcomes."
+    },
+    {
+      "boundary": "Private compiler-review-CLI",
+      "retainedProof": "Static templates, scoped owners and pure source preparation remain reusable.",
+      "remaining": "Assemble concrete current private inputs and review without adopting observed OCI as expected policy or reusing consumed scopes; no operator command is ready."
+    }
+  ]
+}

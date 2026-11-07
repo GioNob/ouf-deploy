@@ -1,0 +1,64 @@
+{
+  "schema": "ouf.post-storage-e2e-entry-checks.v1",
+  "date": "2026-11-07",
+  "source": "LIVE_GOVERNED_OUF_TOOLS_AFTER_OPERATOR_UDP_SWITCH_RECEIPT",
+  "udpSwitchReceipt": "evidence/udp-seaweedfs-ready-operator-20261107.json",
+  "applicationHttpLakeOperationTested": false,
+  "assetProfile": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "read": "PASS",
+    "rows": 13,
+    "columns": 20,
+    "rerunProfiling": false
+  },
+  "mcpOperationalStatus": {
+    "module": "MCP",
+    "status": "HEALTHY",
+    "actionRequired": false,
+    "partial": false,
+    "visibilityClass": "PUBLIC_OPERATIONAL",
+    "redacted": true
+  },
+  "semanticSearch": {
+    "arguments": {
+      "q": "teatro",
+      "limit": 20
+    },
+    "result": "HTTP_502",
+    "cause": "UNKNOWN",
+    "storageCauseProven": false
+  },
+  "ingestionStatus": {
+    "arguments": {
+      "limit": 10
+    },
+    "result": "AUTHORIZATION_DENIED",
+    "retryable": false,
+    "automaticallyRetried": false
+  },
+  "roleCatalog": {
+    "roles": 9,
+    "assignments": 13,
+    "adminHasSemanticSearch": true,
+    "adminHasIngestionStatus": false,
+    "ingestionStatusGrantFoundAnywhere": false,
+    "meaning": "CONFIGURED_GRANTS_NOT_EFFECTIVE_DECISIONS",
+    "permissionsModified": false
+  },
+  "diagnosticPreparation": {
+    "script": "scripts/read-current-semantic-upstream-20261107.py",
+    "localChecks": "PASS",
+    "scriptSha256": "2fc4d6c64e9901dbacd94f86f968c99849f31545f39933024bff540cd39da7a8",
+    "test": "python3 tests/check_semantic_upstream_read.py scripts/read-current-semantic-upstream-20261107.py",
+    "tested": "Admin credential selection, redaction, exact route selection, stopped registry, explicit namespace DNS/TCP and GET-only contract",
+    "vpsExecution": "PENDING",
+    "directDatabaseRequests": 0,
+    "s3Requests": 0,
+    "serviceChanges": 0,
+    "adminRouteGetRequests": 1,
+    "limitation": "Logs are category counts, not a correlated request trace; network reachability alone is not semantic search success"
+  },
+  "nextAction": "Read current semantic service and APISIX upstream on VPS, then fix observed cause and resume local semantic search. No new upload or storage switch.",
+  "e2eComplete": false
+}

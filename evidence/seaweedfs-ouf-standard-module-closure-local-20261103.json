@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "status": "LOCAL_PASS_HOSTED_PENDING",
+  "date": "2026-11-03",
+  "scope": "SeaweedFS 4.52 OUF standard profile only; no elastic/rclone tagged integration support",
+  "upstreamCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "patchCount": 28,
+  "patch28": {
+    "path": "patches/seaweedfs/4.52-ouf-standard-optional-closure.patch",
+    "sha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79"
+  },
+  "rootModuleRequirements": {
+    "before": 497,
+    "after": 386,
+    "removed": {
+      "github.com/Azure/azure-sdk-for-go/sdk/storage/azfile": "v1.7.0",
+      "github.com/FilenCloudDienste/filen-sdk-go": "v0.0.39",
+      "github.com/Files-com/files-sdk-go/v3": "v3.3.194",
+      "github.com/IBM/go-sdk-core/v5": "v5.23.1",
+      "github.com/Max-Sum/base32768": "v0.0.0-20230304063302-18e6ce5945fd",
+      "github.com/ProtonMail/bcrypt": "v0.0.0-20211005172633-e235017c1baf",
+      "github.com/ProtonMail/gluon": "v0.17.1-0.20230724134000-308be39be96e",
+      "github.com/ProtonMail/go-crypto": "v1.4.1",
+      "github.com/ProtonMail/go-srp": "v0.0.7",
+      "github.com/ProtonMail/gopenpgp/v3": "v3.4.1",
+      "github.com/PuerkitoBio/goquery": "v1.12.0",
+      "github.com/a1ex3/zstd-seekable-format-go/pkg": "v0.10.0",
+      "github.com/abbot/go-http-auth": "v0.4.0",
+      "github.com/adrg/xdg": "v0.5.3",
+      "github.com/anchore/go-lzo": "v0.1.1",
+      "github.com/andybalholm/cascadia": "v1.3.4",
+      "github.com/appscode/go-querystring": "v0.0.0-20170504095604-0126cfb3f1dc",
+      "github.com/aws/aws-sdk-go": "v1.55.8",
+      "github.com/aws/aws-sdk-go-v2/feature/s3/manager": "v1.22.34",
+      "github.com/bahlo/generic-list-go": "v0.2.0",
+      "github.com/boombuler/barcode": "v1.1.0",
+      "github.com/bradenaw/juniper": "v0.15.3",
+      "github.com/buengese/sgzip": "v0.1.1",
+      "github.com/buger/jsonparser": "v1.2.0",
+      "github.com/calebcase/tmpfile": "v1.0.3",
+      "github.com/chilts/sid": "v0.0.0-20190607042430-660e94789ec9",
+      "github.com/cloudflare/circl": "v1.6.4",
+      "github.com/cloudinary/cloudinary-go/v2": "v2.16.0",
+      "github.com/cloudsoda/go-smb2": "v0.0.0-20260701064823-d8c5600d73b8",
+      "github.com/cloudsoda/sddl": "v0.0.0-20250224235906-926454e91efc",
+      "github.com/colinmarc/hdfs/v2": "v2.4.0",
+      "github.com/cronokirby/saferith": "v0.33.1-0.20250226174546-1f11f94ce488",
+      "github.com/diskfs/go-diskfs": "v1.9.4",
+      "github.com/dromara/dongle": "v1.0.1",
+      "github.com/dropbox/dropbox-sdk-go-unofficial/v6": "v6.4.0",
+      "github.com/emersion/go-message": "v0.18.2",
+      "github.com/emersion/go-vcard": "v0.0.0-20260618161152-d854b7e0e2d3",
+      "github.com/flynn/noise": "v1.1.0",
+      "github.com/gabriel-vasile/mimetype": "v1.4.13",
+      "github.com/geoffgarside/ber": "v1.2.0",
+      "github.com/gin-gonic/gin": "v1.11.0",
+      "github.com/go-chi/chi/v5": "v5.4.0",
+      "github.com/go-darwin/apfs": "v0.0.0-20211011131704-f84b94dbf348",
+      "github.com/go-git/go-billy/v5": "v5.9.0",
+      "github.com/go-openapi/errors": "v0.22.8",
+      "github.com/go-openapi/strfmt": "v0.27.0",
+      "github.com/go-playground/locales": "v0.14.1",
+      "github.com/go-playground/universal-translator": "v0.18.1",
+      "github.com/go-playground/validator/v10": "v10.30.3",
+      "github.com/go-resty/resty/v2": "v2.17.2",
+      "github.com/gofrs/flock": "v0.13.0",
+      "github.com/gopherjs/gopherjs": "v1.17.2",
+      "github.com/gorilla/schema": "v1.4.1",
+      "github.com/internxt/rclone-adapter": "v0.0.0-20260708165336-dd6561bacfa2",
+      "github.com/jcmturner/goidentity/v6": "v6.0.1",
+      "github.com/jlaffaye/ftp": "v0.2.1-0.20251026020404-6602e981a1bb",
+      "github.com/jmespath/go-jmespath": "v0.4.0",
+      "github.com/josharian/intern": "v1.0.0",
+      "github.com/json-iterator/go": "v1.1.12",
+      "github.com/jtolds/gls": "v4.20.0+incompatible",
+      "github.com/jtolio/noiseconn": "v0.0.0-20231127013910-f6d9ecbf1de7",
+      "github.com/jzelinskie/whirlpool": "v0.0.0-20201016144138-0675e54bb004",
+      "github.com/koofr/go-httpclient": "v0.0.0-20240520111329-e20f8f203988",
+      "github.com/koofr/go-koofrclient": "v0.0.0-20221207135200-cbd7fc9ad6a6",
+      "github.com/lanrat/extsort": "v1.4.2",
+      "github.com/leodido/go-urn": "v1.4.0",
+      "github.com/lpar/calendar": "v0.2.0",
+      "github.com/mailru/easyjson": "v0.9.2",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.2",
+      "github.com/ncw/swift/v2": "v2.0.5",
+      "github.com/oklog/ulid/v2": "v2.1.1",
+      "github.com/olivere/elastic/v7": "v7.0.32",
+      "github.com/onsi/ginkgo/v2": "v2.23.3",
+      "github.com/oracle/oci-go-sdk/v65": "v65.121.0",
+      "github.com/panjf2000/ants/v2": "v2.12.1",
+      "github.com/patrickmn/go-cache": "v2.1.0+incompatible",
+      "github.com/pengsrc/go-shared": "v0.2.1-0.20190131101655-1999055a4a14",
+      "github.com/pkg/xattr": "v0.4.12",
+      "github.com/pquerna/otp": "v1.5.0",
+      "github.com/putdotio/go-putio/putio": "v0.0.0-20200123120452-16d982cac2b8",
+      "github.com/quic-go/qpack": "v0.6.0",
+      "github.com/rclone/Proton-API-Bridge": "v1.0.5",
+      "github.com/rclone/go-proton-api": "v1.0.4",
+      "github.com/rclone/rclone": "v1.75.1",
+      "github.com/relvacode/iso8601": "v1.7.0",
+      "github.com/rfjakob/eme": "v1.2.0",
+      "github.com/sabhiram/go-gitignore": "v0.0.0-20210923224102-525f6e181f06",
+      "github.com/samber/lo": "v1.53.0",
+      "github.com/skratchdot/open-golang": "v0.0.0-20200116055534-eef842397966",
+      "github.com/smarty/assertions": "v1.15.0",
+      "github.com/sony/gobreaker/v2": "v2.4.0",
+      "github.com/spacemonkeygo/monkit/v3": "v3.0.25-0.20251022131615-eb24eb109368",
+      "github.com/t3rm1n4l/go-mega": "v0.0.0-20260717075258-c6acd6a5bd04",
+      "github.com/tyler-smith/go-bip39": "v1.1.0",
+      "github.com/ulikunitz/xz": "v0.5.15",
+      "github.com/unknwon/goconfig": "v1.0.0",
+      "github.com/wk8/go-ordered-map/v2": "v2.1.8",
+      "github.com/xanzy/ssh-agent": "v0.3.3",
+      "github.com/yunify/qingstor-sdk-go/v3": "v3.2.0",
+      "github.com/zeebo/blake3": "v0.2.4",
+      "github.com/zeebo/errs": "v1.4.0",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "gopkg.in/validator.v2": "v2.0.1",
+      "gopkg.in/yaml.v2": "v2.4.0",
+      "moul.io/http2curl/v2": "v2.3.0",
+      "sigs.k8s.io/yaml": "v1.6.0",
+      "storj.io/common": "v0.0.0-20260629224719-ba1bff0a7846",
+      "storj.io/drpc": "v1.0.0",
+      "storj.io/eventkit": "v0.0.0-20260716074419-6861a92e2aa5",
+      "storj.io/infectious": "v0.0.2",
+      "storj.io/picobuf": "v0.0.4",
+      "storj.io/uplink": "v1.14.3"
+    },
+    "addedExistingTransitiveTestHelpers": {
+      "github.com/onsi/gomega": "v1.37.0",
+      "github.com/zeebo/assert": "v1.3.1"
+    },
+    "retainedVersionChanges": {}
+  },
+  "rootModuleGraph": {
+    "beforeEdges": 5902,
+    "afterEdges": 4624,
+    "sdkV1OccurrencesAfter": 0,
+    "deprecatedS3ManagerOccurrencesAfter": 0,
+    "elasticOccurrencesAfter": 0,
+    "rcloneOccurrencesAfter": 0,
+    "tidyFixedPoint": true
+  },
+  "standardProductionGraph": {
+    "packages": 1811,
+    "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+    "identicalToQualifiedCandidate": true
+  },
+  "binary": {
+    "sha256": "85fa52c68a783f3cf4d54ae6064e7b46d022982c1bef4460616dd76cdc609033",
+    "identicalToQualified15PatchCandidate": true,
+    "goVersion": "go1.27.3",
+    "platform": "linux/amd64",
+    "CGO_ENABLED": "0",
+    "flags": [
+      "-mod=readonly",
+      "-trimpath"
+    ],
+    "vcsRevision": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "vcsTime": "2026-11-02T11:24:06Z",
+    "vcsModified": true
+  },
+  "regressions": {
+    "exitCode": 0,
+    "counts": {
+      "skip_packages": 6,
+      "pass_tests": 5591,
+      "pass_packages": 20,
+      "skip_tests": 5
+    },
+    "passedPackages": [
+      "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "github.com/seaweedfs/seaweedfs/weed/iam",
+      "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "github.com/seaweedfs/seaweedfs/weed/notification/aws_sqs",
+      "github.com/seaweedfs/seaweedfs/weed/remote_storage/s3",
+      "github.com/seaweedfs/seaweedfs/weed/replication/sub",
+      "github.com/seaweedfs/seaweedfs/weed/kms/aws",
+      "github.com/seaweedfs/seaweedfs/weed/kms",
+      "github.com/seaweedfs/seaweedfs/weed/replication/sink/s3sink",
+      "github.com/seaweedfs/seaweedfs/weed/storage/backend/s3_backend",
+      "github.com/seaweedfs/seaweedfs/weed/command",
+      "github.com/seaweedfs/seaweedfs/weed/s3api"
+    ],
+    "skippedTests": [
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestCheckGovernanceBypassPermissionIntegrationBehavior"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernanceBypassWithIAMPermission"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernancePermissionIntegration"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestGovernancePermissionEndToEnd"
+      },
+      {
+        "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+        "test": "TestImplicitDirectoryIntegration"
+      }
+    ],
+    "flags": [
+      "-mod=readonly",
+      "-count=1",
+      "-timeout=3m",
+      "-json"
+    ]
+  },
+  "negativeTagBuilds": {
+    "elastic": {
+      "exit": 1,
+      "explicitUnsupportedGuard": true
+    },
+    "rclone": {
+      "exit": 1,
+      "explicitUnsupportedGuard": true
+    },
+    "elastic,rclone": {
+      "exit": 1,
+      "explicitUnsupportedGuard": true
+    }
+  },
+  "patchReapplication": {
+    "baseline": "upstream984e plus patches1-27",
+    "patch28Applies": true,
+    "fullReplayTreeByteIdenticalToTestedPrototype": true,
+    "regularFiles": 4533,
+    "unexpectedFiles": [],
+    "missingFiles": [],
+    "changedFiles": [],
+    "ignoredPaths": [
+      ".git/**"
+    ],
+    "patchSha256": "b8387b32bfcb1f8bb7f4cb30d781c5035a6a46b1a82c6a655e318cf794f2bf79",
+    "treeManifestSha256": "f59c503bce03b9b3f4caaa444bf6c039ce4619939c65206a88f4b29b6d40e410",
+    "paths": [
+      "go.mod",
+      "go.sum",
+      "weed/filer/elastic/v7/elastic_store.go",
+      "weed/filer/elastic/v7/elastic_store_kv.go",
+      "weed/command/filer_meta_tail_elastic.go",
+      "weed/storage/backend/rclone_backend/rclone_backend.go",
+      "weed/storage/backend/rclone_backend/rclone_progress.go",
+      "weed/storage/backend/rclone_backend/rclone_backend_test.go",
+      "weed/command/ouf_unsupported_optional_tags.go",
+      "test/kafka/go.mod"
+    ]
+  },
+  "rawLocalEvidence": {
+    "module-graph-before.txt": {
+      "sha256": "c27621608e77872bb5e972e333c93638fc3e95d3c535bb066582f676e09a0146",
+      "bytes": 470725
+    },
+    "module-graph-after.txt": {
+      "sha256": "a66fa53f1e63ced036d67db2b5d6e0c9199a54a02519226e0edc8bd525941714",
+      "bytes": 369141
+    },
+    "default-deps-before.txt": {
+      "sha256": "31458a72fafc5f8ac0a38cac42dce1a2e1d7a54343512ab72d3a26e42428893c",
+      "bytes": 74977
+    },
+    "default-deps-after.txt": {
+      "sha256": "31458a72fafc5f8ac0a38cac42dce1a2e1d7a54343512ab72d3a26e42428893c",
+      "bytes": 74977
+    },
+    "production-deps-sorted.txt": {
+      "sha256": "cb2536b10d73bc04e587c257a75a622c6b3cf855f1d232f26dba246b43b03f4a",
+      "bytes": 74977
+    },
+    "tidy.log": {
+      "sha256": "7cb2a279b254f7df617cfc72f377619e9cbab77352fe15a49e3b684417ea2584",
+      "bytes": 12311
+    },
+    "tidy-after.diff": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tidy-after.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "build-exact.log": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "build-info.txt": {
+      "sha256": "788bbfc819ca71bdfadc4c4764780e329cf57660517415b61d38478c65e7bc66",
+      "bytes": 25454
+    },
+    "qualified-regressions.jsonl": {
+      "sha256": "61fc0140fc93bc4167bdf1dae7281571a56be43d67e9a99b1cf5f1afa7010157",
+      "bytes": 7285115
+    },
+    "qualified-regressions.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "tag-elastic.log": {
+      "sha256": "5356f6b4b779463f717c1be2a582342fb377f73443ac78f71d2df78b289de884",
+      "bytes": 339
+    },
+    "tag-rclone.log": {
+      "sha256": "19efbfc1192c284b61fc2e17b1ebf7205cce8ee5627ff0628ac25e3ba80fde53",
+      "bytes": 164
+    },
+    "tag-elastic-rclone.log": {
+      "sha256": "6f7702c92ac8d26b4a859de2e5f30541bf5ebad8842529abd67890001cee3677",
+      "bytes": 238
+    },
+    "tag-guard-results.json": {
+      "sha256": "47e58dd40ac0ab1f7dc0c733305cffd320639b6987fca9c8b91e56e6850f615f",
+      "bytes": 225
+    },
+    "regression-counts.json": {
+      "sha256": "2b5f558727733dfa7fdd8bb04bbacd457e96aefa2acf36f5f0217868ddcc9cca",
+      "bytes": 89
+    },
+    "reapply-result.json": {
+      "sha256": "5ff59e58a65498214d6d149d3cb0ab602b653dc519698779fdcc35c5ce326700",
+      "bytes": 570
+    },
+    "root-iam-regressions.jsonl": {
+      "sha256": "af750fd31196f21f18e1c7ea40b460c2894d06fa55d6c9c46442dfdac314f6d0",
+      "bytes": 26328
+    },
+    "root-iam-regressions.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "nested-iam-regressions.jsonl": {
+      "sha256": "20a3091031d1868d2f834e2ef61c30b50442cbf6a3507ff4e2d84ec920b4865c",
+      "bytes": 15966
+    },
+    "nested-iam-regressions.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "kafka-tidy.diff": {
+      "sha256": "acb5fe7d241016d1b6cdd55eb7a6b71278f2c56e085dbdd67a4d92513c8c1fb2",
+      "bytes": 492
+    },
+    "kafka-tidy-final.diff": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "kafka-tidy-final.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "kafka-compile.jsonl": {
+      "sha256": "9e003af1a7769825c9f25e29449712ab6637517ea41575eeac9de20bf1c39af0",
+      "bytes": 4299
+    },
+    "kafka-compile.stderr": {
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    "source-delta.json": {
+      "sha256": "0ad753a9078f99af214fcef4e79ef050b7ad6406bb160574041ac2fa8fe866cd",
+      "bytes": 539
+    },
+    "full-replay-result.json": {
+      "sha256": "57f6fe2b5fde466a8905ccdce7b720f376a380d236f21bbe7ae0e1d134bbe1d2",
+      "bytes": 895
+    },
+    "full-replay-file-manifest.json": {
+      "sha256": "118a04ad3a72e9333958945c579409c78e0bcca14581aec19fa56900e6d85437",
+      "bytes": 515233
+    }
+  },
+  "limits": [
+    "Root module closure only, not a claim about every independent nested module or upstream SeaweedFS distribution.",
+    "Full upstream elastic/rclone builds intentionally unsupported; Makefile full_install/full tags incompatible.",
+    "Inherited filer.meta.tail -es rebuild advice is historical and invalid for this explicitly limited profile.",
+    "No target operation or actual target binding validation; no gate or acceptance test closed.",
+    "Existing qualified OCI, lock, scope17/52 Engine GET, Teatri/M1 and Farmacie results unchanged.",
+    "Full licenses, redistribution, durable custody, target recovery and migration remain separate gates."
+  ],
+  "postPruneRegressions": {
+    "rootIAMPolicyNormal": {
+      "exitCode": 0,
+      "counts": {
+        "pass_tests": 24,
+        "pass_packages": 2
+      },
+      "topLevelTests": 16,
+      "subcases": 8
+    },
+    "nestedIAM": {
+      "exitCode": 0,
+      "counts": {
+        "pass_tests": 18,
+        "pass_packages": 1
+      },
+      "topLevelTests": 14,
+      "subcases": 4
+    },
+    "kafkaCompile": {
+      "exitCode": 0,
+      "counts": {
+        "skip_packages": 2,
+        "pass_packages": 4
+      },
+      "compiledPackages": 6
+    },
+    "kafkaTidyFixedPoint": true
+  },
+  "nestedLockfiles": {
+    "test/s3/iam/go.mod": {
+      "beforeSha256": "f52ebe5060c285796722ea36851c0a5f991f67b3a5586b2987c8940f00ea62ff",
+      "afterSha256": "f52ebe5060c285796722ea36851c0a5f991f67b3a5586b2987c8940f00ea62ff",
+      "identical": true
+    },
+    "test/s3/iam/go.sum": {
+      "beforeSha256": "28cdd28aa2d4f88fa9349e2ddf4f4d7ab398e4bf486dae55e9f99627904fe750",
+      "afterSha256": "28cdd28aa2d4f88fa9349e2ddf4f4d7ab398e4bf486dae55e9f99627904fe750",
+      "identical": true
+    },
+    "test/kafka/go.mod": {
+      "beforeSha256": "8baf9d4f13817d9aae1b401160dc8d9fbc8d8c2dea332bd14168b315a8b12601",
+      "afterSha256": "a0f6ac2320732750d0c25221bb6f1689650397d44f822e62359e46dbf8eba30f",
+      "identical": false
+    },
+    "test/kafka/go.sum": {
+      "beforeSha256": "4ef43b62ed89d0b777f93c6ab26c5e9d44bad8bef7e0a1796a6d3c58878c27e9",
+      "afterSha256": "4ef43b62ed89d0b777f93c6ab26c5e9d44bad8bef7e0a1796a6d3c58878c27e9",
+      "identical": true
+    }
+  },
+  "nestedLockfilesChangeReason": "Kafka go.mod removes only redundant indirect gomega v1.37.0 after root tidy makes that existing transitive helper explicit. No module versions changed; Kafka go.sum and IAM locks identical.",
+  "packagingReviewCorrection": {
+    "priorPatchSha256": "e11505984ac7ce487ff4a15af0674328a2e678d0473590fe7ee21170d8be8ab8",
+    "problem": "Missing Git deleted/new-file mode metadata created an unintended empty dev/null during the old replay; touched-path-only comparison did not detect the extra file.",
+    "correction": "Added six deleted-file mode headers and one new-file mode header. Fresh full replay of 4533 regular files exactly matches the tested prototype, excluding only .git.",
+    "testedPrototypeUnaffected": true,
+    "supersedesTouchedPathOnlyReplay": true
+  }
+}

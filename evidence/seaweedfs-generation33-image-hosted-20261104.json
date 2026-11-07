@@ -1,0 +1,663 @@
+{
+  "acceptanceTestsPassed": 0,
+  "allDependenciesMaintained": false,
+  "assessment": {
+    "appliedApplicabilityDispositions": [],
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "buildSourceSha256": "86aaba798190217d4d813d9575783ffffcab099a0ad0a65ae594a36f289766d6",
+    "cohortQualification": "OPEN",
+    "configDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "dependencyMaintenance": {
+      "allDependenciesMaintained": false,
+      "status": "OPEN"
+    },
+    "deprecatedS3ManagerPresent": false,
+    "dockerArchiveSha256": "5683622c9924be6192babb5a49588c7cb1ec53e5bf9257ed48225aa61ed26b12",
+    "durableReleaseCustody": "OPEN",
+    "freshScanSha256": "69c9031e163e172d957b3aed9c786ea3759b27b4f8ba0aed8b8465dedf2e9aa9",
+    "generation": 33,
+    "layerDigest": "sha256:2659751a1733834f69e0d77e15081775ec95d724b9e51cc16a9eaf401139c577",
+    "licenceReview": "OPEN",
+    "manifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "overallSwG1": "OPEN",
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "producerCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+    "rawPackageIds": {
+      "github.com/apache/iceberg-go": "SPDXRef-Package-7c8fd3d5984b53b",
+      "go.yaml.in/yaml/v3": "SPDXRef-Package-9cc0a6eaad4b6d31"
+    },
+    "rawScanSha256": "69c9031e163e172d957b3aed9c786ea3759b27b4f8ba0aed8b8465dedf2e9aa9",
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "rawSpdxSha256": "c30c7163ddd806fb17200cfa2e2c325c787dd15f6e607ddec131857d8829507e",
+    "releaseAdmitted": false,
+    "runId": 41782068047,
+    "runtimeAuthorityIssued": false,
+    "sbomSha256": "c30c7163ddd806fb17200cfa2e2c325c787dd15f6e607ddec131857d8829507e",
+    "scanMatchesAllBinaryModules": true,
+    "scannedBinaryComponents": 216,
+    "schema": "ouf.storage-runtime-image.v1",
+    "scratchRootfs": true,
+    "sdkLifecycle": {
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "compiledPackageCount": 1532,
+      "compiledSdkV1Packages": [],
+      "imageConfigDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+      "releaseAdmitted": false,
+      "sbomSdkV1Modules": [],
+      "scannedModuleCount": 216,
+      "scannedSdkV1Modules": [],
+      "schema": "ouf.storage-sdk-lifecycle-assessment.v1",
+      "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+      "status": "AWS_SDK_V1_ABSENT",
+      "targetOperations": 0
+    },
+    "sourceCommit": "984eac6a790be89e2a11de175a7413e1e3e32dd3",
+    "spdxMatchesAllBinaryModules": true,
+    "spdxPackages": 218,
+    "status": "IMAGE_EVIDENCE_PREPARED_NOT_ADMITTED",
+    "targetOperations": 0,
+    "thirdPartyLicencesAccepted": false,
+    "unresolvedHighCriticalUnknown": [],
+    "upstreamLicenceSha256": "d789d433cc11da163273d1e39be2e8fa67642f9a58ef220d3f258fa9c14ef613",
+    "user": "10001:10001",
+    "vendorSourceSupplement": {
+      "allDependenciesMaintained": false,
+      "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+      "maintenance": {
+        "reviewCadence": "EACH_CANDIDATE_AND_WEEKLY_WHILE_PATCH_ACTIVE",
+        "status": "OPEN",
+        "technicalOwner": null
+      },
+      "profileSha256": "8b0e5384fd2393934fb8f2997b61a7749146bd418e56f6aac6b141481b8077fc",
+      "rawArtifactsRewritten": false,
+      "rawPackageIds": {
+        "github.com/apache/iceberg-go": "SPDXRef-Package-7c8fd3d5984b53b",
+        "go.yaml.in/yaml/v3": "SPDXRef-Package-9cc0a6eaad4b6d31"
+      },
+      "rawScanSha256": "69c9031e163e172d957b3aed9c786ea3759b27b4f8ba0aed8b8465dedf2e9aa9",
+      "rawSpdxSha256": "c30c7163ddd806fb17200cfa2e2c325c787dd15f6e607ddec131857d8829507e",
+      "relationships": [
+        {
+          "from": "patched-iceberg-source",
+          "to": "upstream-iceberg-source",
+          "type": "DESCENDANT_OF"
+        },
+        {
+          "from": "locked-yaml-import-patch",
+          "to": "upstream-iceberg-source",
+          "type": "PATCH_FOR"
+        },
+        {
+          "from": "locked-yaml-import-patch",
+          "to": "patched-iceberg-source",
+          "type": "PATCH_APPLIED"
+        },
+        {
+          "from": "bound-binary-reference",
+          "to": "patched-iceberg-source",
+          "type": "GENERATED_FROM"
+        }
+      ],
+      "releaseAdmitted": false,
+      "runtimeAuthorityIssued": false,
+      "schema": "ouf.modified-dependency-source-provenance.v1",
+      "sourcePatch": {
+        "file": "github.com/apache/iceberg-go/config/config.go",
+        "modifiedFileSha256": "9983e5e82a9372e9f47db6ccc5a55d9b747fd503caaedb5619e4b37e95c75ab4",
+        "originalFileSha256": "30ec8eebf86cd2f5df0c8d6bbf8661c0bf72d10fc8c025d6943c9565ae13a604",
+        "sha256": "001459c5254303378cb30dafaceec1777cbb143957fa6afb5e2e7eb8cbb46eef"
+      },
+      "standaloneSpdxDocument": false,
+      "status": "SOURCE_PROFILE_SUPPLEMENT_VERIFIED_NOT_RELEASE_ADMITTED",
+      "upstream": {
+        "checksumDoesNotDescribePatchedSource": true,
+        "commit": "89a9104ec3639d38ab07e4461721cb5270e95571",
+        "h1InputOnly": "h1:bTD6Pb4uM4sWcMfIx0/cV1haHMc84r+CvPieUqYzD4I=",
+        "module": "github.com/apache/iceberg-go",
+        "version": "v0.7.0",
+        "zipSha256": "a042ec87708c376362859041b1741213dc4e05400cad7ad0220ea4361a250d55"
+      },
+      "vendor": {
+        "baseTreeSha256": "1e39ce238b15e68f5494e0588b23c26a2adfa6fbdce6f665a046bdc653fc2646",
+        "fileCount": 13918,
+        "modulesTxtSha256": "0e6e07da9b88a1ef9f0bb6281e4b404f5bdf5c69673b5a555b7ed3d72759ea17",
+        "patchedTreeSha256": "a1db34fc4e07e0403c544bbc1398a18e4e8cdb17856da2fadefa1da86f56b547"
+      }
+    },
+    "vulnerabilitySubgate": "PASS_RAW"
+  },
+  "byteReadback": {
+    "archiveSha256": "4175ae9f0f5e4f6e71729084e0bfc2d9e8a2d39d3c5908dc51e5c4c695bd6121",
+    "binarySha256": "c301b4f487f17f4d9b8dfe1b26885ec4ea6141e1ace73b8dfaadff70bd714dfc",
+    "checksumMembersVerified": 20,
+    "generation": 33,
+    "imageConfigDigest": "sha256:3b972a3ca20f98b73554f0772a2df4f1a5ef4441298299a443f0e605f10ec9b6",
+    "ociManifestDigest": "sha256:5bfda2ef577b3c33216b82fb3eb1bed3ad76842ed13fc0a114ef94084b20da4d",
+    "patchedSourceTree": "80632ef3a54debb04531c1913860d2f94d2b418d",
+    "producerCommit": "1a11295ad502a77dce76157423577b9766106bfe",
+    "producerRunId": 41782068047,
+    "publisherSignatureVerifiedByThisScript": false,
+    "rawSeverityCounts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 0
+    },
+    "schema": "ouf.seaweedfs-452-generation-image-readback.v1",
+    "sdkLifecycle": "AWS_SDK_V1_ABSENT",
+    "sourceFilesVerified": 75,
+    "targetOperations": 0,
+    "vulnerabilitySubgate": "PASS_RAW"
+  },
+  "currentFullyQualifiedTechnicalGeneration": 32,
+  "durableImageCustody": "OPEN",
+  "gatesClosed": 0,
+  "generation": 33,
+  "independentReadback": {
+    "allSevenReproducedFilesByteIdentical": true,
+    "bytes": 29743,
+    "digest": "sha256:f5ac37a2053651497499d728f11e2d5e741f425894a530b1e3e74d8b6d855c83",
+    "expiresAt": "2027-02-02T05:54:10Z",
+    "id": 13299653783,
+    "path": "evidence/artifacts/seaweedfs-generation33-independent-image-readback-41782068047.zip",
+    "publisherSignatureReverifiedLocally": false,
+    "publisherSignatureVerifiedByHostedJob": true
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 126415668297,
+      "logs_url": null,
+      "name": "verify",
+      "run_id": 41782068047,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Test exact vendor and image evidence boundaries",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 7,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 126415733780,
+      "logs_url": null,
+      "name": "qualify-standard-profile",
+      "run_id": 41782068047,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Reconstruct the vendor sources and execute two fresh pinned builds",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Reuse the isolated observer caches for regressions",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run the inherited main test identities on the generation33 vendor tree",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Qualify the complete observed server suite and focused storage compaction",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute shell integration requirements needing Unix sockets on the hosted runner",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Race-check shutdown coordination and local bbolt raft store",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify old-v2 and local bbolt DB compatibility in an isolated comparator module",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Recheck root IAM fixtures and independently qualified nested modules",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify combined exclusions, module cache and tracked source after regressions",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind source, fresh vendor provenance, executable and regression records",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "number": 16,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+          "number": 30,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 31,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 32,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 33,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 126419368788,
+      "logs_url": null,
+      "name": "runtime_candidate",
+      "run_id": 41782068047,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Read the exact reviewed generation image tag",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Package the exact standard build into a deterministic OCI layout",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Scan the candidate image with all severities and unfixed findings",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind SPDX and raw findings to the exact image and test its version entrypoint",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Seal evidence and input source hashes",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Attest the candidate image evidence",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run cp \"/home/runner/work/_temp/QadCui/attestation.json\" candidate-image/provenance.json",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Scan the candidate image with all severities and unfixed findings",
+          "number": 21,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 22,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 23,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "id": 126419652963,
+      "logs_url": null,
+      "name": "independent_image_readback",
+      "run_id": 41782068047,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the pinned provenance verifier",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Re-read the exact ZIP and verify publisher provenance on a separate runner",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "licenceReview": "OPEN",
+  "producerArtifact": {
+    "digest": "sha256:4175ae9f0f5e4f6e71729084e0bfc2d9e8a2d39d3c5908dc51e5c4c695bd6121",
+    "expires_at": "2027-02-02T05:54:10Z",
+    "id": 13299559178,
+    "size_in_bytes": 174223468
+  },
+  "producerRetention": "TEMPORARY_CI_NOT_DURABLE_CUSTODY",
+  "progress": {
+    "estimatePercent": 38,
+    "totalWeight": 46,
+    "uncertaintyPercentagePoints": 10,
+    "weightedCredits": 17.5
+  },
+  "rawEvidence": {
+    "directory": "evidence/seaweedfs-generation33-image-raw-20261104",
+    "originalMemberBytes": {
+      "SHA256SUMS": {
+        "bytes": 1886,
+        "sha256": "8e5b234697b16ba85510ff0b09ebf8d2f8509d56bf7dc9ccb34dfcfe641f099b"
+      },
+      "assessment.json": {
+        "bytes": 4742,
+        "sha256": "68c518182aa32290adf4d2f1c007103d3cb77681f63baee7ba344dae171216ef"
+      },
+      "build-info.txt": {
+        "bytes": 10656,
+        "sha256": "caad10a5be63aaf918263890619ebfcca8fffd3915b09d71c8b1923ba5c38d41"
+      },
+      "build-source.json": {
+        "bytes": 4367,
+        "sha256": "86aaba798190217d4d813d9575783ffffcab099a0ad0a65ae594a36f289766d6"
+      },
+      "daemon-image-id.txt": {
+        "bytes": 72,
+        "sha256": "84dc7b4a5969346017b46a292f8c419caedaa2d46fb7d2e27572b2bc55077a31"
+      },
+      "fresh-image-scan.json": {
+        "bytes": 118813,
+        "sha256": "69c9031e163e172d957b3aed9c786ea3759b27b4f8ba0aed8b8465dedf2e9aa9"
+      },
+      "generation-manifest.json": {
+        "bytes": 9054,
+        "sha256": "6fa4e051e4a5c3f41c262ce4b3d1b0b36c0de27d462c930268ef99a542b40232"
+      },
+      "image-record.json": {
+        "bytes": 837,
+        "sha256": "a7937377193fdd58630d5197fcd65cfa0f562c10dc1b753743407bab7f6914b3"
+      },
+      "image.spdx.json": {
+        "bytes": 337079,
+        "sha256": "c30c7163ddd806fb17200cfa2e2c325c787dd15f6e607ddec131857d8829507e"
+      },
+      "index.json": {
+        "bytes": 236,
+        "sha256": "51b9dec102daf442743f2cd7e43fd53dbc4c5facf50a56135dace2d163119be0"
+      },
+      "oci-layout": {
+        "bytes": 31,
+        "sha256": "561356159fc692da9a55978e206a495b7835abcc4778fa9d13138a0530304878"
+      },
+      "original-candidate.json": {
+        "bytes": 379,
+        "sha256": "c4cebd203d4b38226101e7b0ece6ff4ddfecbf09be3bfa05d502aad7c3b055c8"
+      },
+      "original-compiled-packages.json": {
+        "bytes": 64663,
+        "sha256": "bc6f09c254e16e7ddf566cdb508491d029565fd50928f0083398fbe89736ee5f"
+      },
+      "provenance.json": {
+        "bytes": 12090,
+        "sha256": "fceec3ce5c91bd0d2be7361aba0e59d46ae406ed58f2e7152f28d05abceeee2d"
+      },
+      "root-module-graph.txt": {
+        "bytes": 332904,
+        "sha256": "f25e5508e27ddf9c3812ccb21a2224089a084acf76eef2dbcb29e2fd9c44abd2"
+      },
+      "source-SHA256SUMS": {
+        "bytes": 8772,
+        "sha256": "c009c0033320796d1a57bb52b7a13cc58a26f76a9b862377d9b5d760d089f520"
+      },
+      "version-smoke.txt": {
+        "bytes": 31,
+        "sha256": "8ba0650a9e1ffb8194bf2aa492023b651c034c1c1f1d31920b79002f0fa2c0d4"
+      }
+    }
+  },
+  "realObjectsCopied": 0,
+  "redistributionAccepted": false,
+  "regressionEventCounts": {
+    "compat-tests.jsonl": {
+      "pass_packages": 1,
+      "pass_tests": 3
+    },
+    "kafka-compile.jsonl": {
+      "pass_packages": 4,
+      "skip_packages": 2
+    },
+    "nested-iam-regressions.jsonl": {
+      "pass_packages": 1,
+      "pass_tests": 18
+    },
+    "race.jsonl": {
+      "pass_packages": 3,
+      "pass_tests": 185
+    },
+    "regressions.jsonl": {
+      "pass_packages": 41,
+      "pass_tests": 6656,
+      "skip_packages": 9,
+      "skip_tests": 12
+    },
+    "root-iam-regressions.jsonl": {
+      "pass_packages": 2,
+      "pass_tests": 24
+    },
+    "server-focused.jsonl": {
+      "pass_packages": 1,
+      "pass_tests": 984
+    },
+    "shell-hosted.jsonl": {
+      "pass_packages": 1,
+      "pass_tests": 306
+    },
+    "storage-focused.jsonl": {
+      "pass_packages": 1,
+      "pass_tests": 58
+    }
+  },
+  "releaseAdmitted": false,
+  "run": {
+    "conclusion": "success",
+    "event": "push",
+    "head_branch": "feat/m2-discovery-complete-profile-20261029",
+    "head_sha": "1a11295ad502a77dce76157423577b9766106bfe",
+    "html_url": "https://github.com/GioNob/ouf-deploy/actions/runs/41782068047",
+    "id": 41782068047,
+    "path": ".github/workflows/storage-452-generation33-image.yml",
+    "run_attempt": 1,
+    "status": "completed"
+  },
+  "runtime33": "PENDING_NEW_EXACT_COHORT_AND_RUNTIME_NO_TRANSFER_FROM_32",
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.seaweedfs-generation33-image-hosted-evidence.v1",
+  "scopePreserved": {
+    "consumedScopes": 17,
+    "engineGetTotal": 52,
+    "farmacieOpen": 10,
+    "farmacieRows": 61,
+    "farmacieType": "STRING",
+    "teatriM1Functional": 6,
+    "teatriM1Technical": 8
+  },
+  "sourceArtifact": {
+    "additionalSourceArtifactMembers": 15,
+    "bytes": 3133029,
+    "digest": "sha256:f88fd569fc8999e1556a58dc33a47ed34bcfe5ce8f4321c4c4cc2997b23b180f",
+    "expiresAt": "2027-02-02T05:54:10Z",
+    "id": 13299543386,
+    "observationChecksumsVerified": 234,
+    "path": "evidence/artifacts/seaweedfs-generation33-source-and-regressions-41782068047.zip",
+    "producerBundleMemberBytesMatched": 251,
+    "uniqueMembers": 266
+  },
+  "sourceGitIdentityVerification": {
+    "commit": "1a11295ad502a77dce76157423577b9766106bfe",
+    "matchedBlobs": 75,
+    "method": "LOCAL_GIT_BLOB_IDENTITIES_MATCH_EXACT_GITHUB_COMMIT_TREE_AND_SOURCE_SHA256SUMS"
+  },
+  "status": "A33_HOSTED_SUCCESS_INDEPENDENT_LOCAL_READBACK_REPRODUCED_B33_PENDING",
+  "targetOperations": 0,
+  "vendorBuildInfoH1": "EMPTY_BY_DESIGN_AUTHENTIC_ORIGINAL_MODULE_ZIP_H1_RECORDED_SEPARATELY"
+}

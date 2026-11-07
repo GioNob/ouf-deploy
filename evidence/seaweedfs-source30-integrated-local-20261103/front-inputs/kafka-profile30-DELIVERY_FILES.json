@@ -1,0 +1,159 @@
+{
+  "files": [
+    {
+      "path": "docs/OUF_SEAWEEDFS_STANDARD_KAFKA_EXCLUSION_20261103.md",
+      "sha256": "01c4bc04724dddac7f41e406a18959513cee841bbacc6593b4ffb96298cbcab0",
+      "bytes": 5257
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/denied-kafka-tag.stderr",
+      "sha256": "dc9aa7875eaf92fba081bf39af3b63616be479c5bfd1b96ade94960997eb2a79",
+      "bytes": 328
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/denied-kafka-tag.txt",
+      "sha256": "3a56caedac2c98c9585f19a99cc6e20a5811db464184f71626fceb0d73a1bf60",
+      "bytes": 69
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/filer-preflight-tests.jsonl",
+      "sha256": "6e045c37687d81412d505c25b300480521e90f13a80dff06bdef93ec702240a7",
+      "bytes": 6444
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/filer-preflight-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/focused-tests.jsonl",
+      "sha256": "838a8f624ab63a090241216522a76de5e8d50ce4714b8cafce43a76de402fb8c",
+      "bytes": 123428
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/focused-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-focused-tests.jsonl",
+      "sha256": "3a1b4ab9562acbd2ee6382f964d6117c1df1092481b49ed867bb773de3cf36d0",
+      "bytes": 14165
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-focused-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/independent-review-kafka-tag-negative.log",
+      "sha256": "1157b495ce607818480aa357bf38c3eb2df5fd65e5fc6886e8d5c28071ff206c",
+      "bytes": 397
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build-info.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build-info.txt",
+      "sha256": "349d367ffeb7dda41238069d6dd06d5d3f8411343b5217eb8fde627f256d0607",
+      "bytes": 24118
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/local-build.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/patch-replay.json",
+      "sha256": "43d44d40c1406d33df58978d8e71ec499c2d8d1e7ab90618cf359c28a64c75dd",
+      "bytes": 917
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/preflight-negative-control.jsonl",
+      "sha256": "df1193c770712bfbcd4872ea112e07101eb8ff287f7b08a40846d25e70ee2a33",
+      "bytes": 31582
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/preflight-negative-control.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/production-deps.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/production-deps.txt",
+      "sha256": "182bd9f22ceb08afda68f7f3ae009b525b9e6678772460cd8d7579a2f10a67f2",
+      "bytes": 73210
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-historical-trace-module-reasons.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-historical-trace-module-reasons.txt",
+      "sha256": "278695f1ad48e5bed132307adef2ca368d5b2aff5039bf6a14fd7acb37b59c8a",
+      "bytes": 851
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-module-graph.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/root-module-graph.txt",
+      "sha256": "6f326025857a602cc2480e1b9b26371201e6cb18dd1cd012c16597a6d560ffd2",
+      "bytes": 364088
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/security-regression-tests.jsonl",
+      "sha256": "b632c6c8c24b51470bc9abffcba59b9cabed06126acefe141eda06d9e8b5b982",
+      "bytes": 34772
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/security-regression-tests.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/tidy-fixed-point.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/tidy-fixed-point.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/weed-compile.stderr",
+      "sha256": "cc977d39c50c1010f24c2096ef04142c6745489a33d5d2e773e4a44d67dee381",
+      "bytes": 101
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103/weed-compile.txt",
+      "sha256": "a4a3125d4767fab19a8bdc86fa6b9a886049ea606a78d8c1ab808a530bdafa1b",
+      "bytes": 57
+    },
+    {
+      "path": "evidence/seaweedfs-standard-kafka-exclusion-local-20261103.json",
+      "sha256": "c9297720c4997413901fc860a1abd73f54b7eecad0a8e7f568c4390370ffa643",
+      "bytes": 13038
+    },
+    {
+      "path": "patches/seaweedfs/4.52-ouf-standard-kafka-exclusion.patch",
+      "sha256": "14a2df91229fa79ca06e849793dbf0be5afb79273492964bb05a15e49d68ff47",
+      "bytes": 52558
+    }
+  ]
+}

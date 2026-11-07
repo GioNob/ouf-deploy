@@ -1,0 +1,100 @@
+{
+  "currentTargetImagesReplaced": false,
+  "finalFiveJobLogsRead": true,
+  "findings": [
+    {
+      "FixedVersion": "1.2.1-r0",
+      "InstalledVersion": "1.2.0-r1",
+      "PkgName": "brotli-libs",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-111497",
+      "Severity": "CRITICAL",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-111497",
+      "role": "ingestion"
+    },
+    {
+      "FixedVersion": "1.2.6-r3",
+      "InstalledVersion": "1.2.6-r2",
+      "PkgName": "musl",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-107891",
+      "Severity": "UNKNOWN",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-107891",
+      "role": "ingestion"
+    },
+    {
+      "FixedVersion": "1.2.6-r3",
+      "InstalledVersion": "1.2.6-r2",
+      "PkgName": "musl-utils",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-107891",
+      "Severity": "UNKNOWN",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-107891",
+      "role": "ingestion"
+    },
+    {
+      "FixedVersion": "1.2.1-r0",
+      "InstalledVersion": "1.2.0-r1",
+      "PkgName": "brotli-libs",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-111497",
+      "Severity": "CRITICAL",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-111497",
+      "role": "udp"
+    },
+    {
+      "FixedVersion": "1.2.6-r3",
+      "InstalledVersion": "1.2.6-r2",
+      "PkgName": "musl",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-107891",
+      "Severity": "UNKNOWN",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-107891",
+      "role": "udp"
+    },
+    {
+      "FixedVersion": "1.2.6-r3",
+      "InstalledVersion": "1.2.6-r2",
+      "PkgName": "musl-utils",
+      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-107891",
+      "Severity": "UNKNOWN",
+      "Status": "fixed",
+      "VulnerabilityID": "CVE-2026-107891",
+      "role": "udp"
+    }
+  ],
+  "heldArtifactIds": {
+    "ingestion": 13085765696,
+    "udp": 13085333366
+  },
+  "heldForActualOsFindings": [
+    "ingestion",
+    "udp"
+  ],
+  "newSourceRepairCase": "releases/m2-original-runtime-os-repair-case-20261101.json",
+  "qualifiedArtifactIds": {
+    "mcp": 13085452289,
+    "onboarding": 13086110077
+  },
+  "releaseAcceptance": false,
+  "runId": 41311454637,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.m2-current-core-original-scan-result.v1",
+  "semanticDownloadFailure": {
+    "artifactId": 13066396654,
+    "correctArtifactConfirmedViaApi": true,
+    "correctArtifactRepository": "GioNob/ouf-semantic-registry",
+    "incorrectArtifactRepository": "GioNob/ouf-deploy",
+    "sourceCommit": "4c8bcdeffd7c7cd239fc5a18bc28569f07b9bd08",
+    "status": 404,
+    "zipSha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba"
+  },
+  "sourceCommit": "93d61391b73af35b8ab12de5c2a75c11fb0247b9",
+  "sourceRepairCandidatesQualified": false,
+  "successful": [
+    "mcp",
+    "onboarding"
+  ],
+  "targetApplyAuthorized": false,
+  "unitContractTestsPerJob": 4
+}

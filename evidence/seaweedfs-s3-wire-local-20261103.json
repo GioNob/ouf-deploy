@@ -1,0 +1,108 @@
+{
+  "status": "LAB_QUALIFIED_NOT_RUNTIME_ADMITTED",
+  "source": "seaweedfs/seaweedfs@984eac6a790be89e2a11de175a7413e1e3e32dd3",
+  "prerequisite_patches": 4,
+  "patch": "patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+  "go": "1.27.3",
+  "CGO_ENABLED": 0,
+  "GOPROXY": "off",
+  "module_mode": "readonly",
+  "suite": "./weed/command ./weed/iam/... ./weed/iamapi ./weed/s3api ./weed/s3api/s3_constants ./weed/s3api/wire ./weed/s3api/s3err",
+  "test_pass_events": 5422,
+  "test_skip_events": 5,
+  "packages": [
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/utils",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/sts",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/s3err",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api/wire",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/policy",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iamapi",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/oidc",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/iam/integration",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/command",
+      "status": "pass"
+    },
+    {
+      "package": "github.com/seaweedfs/seaweedfs/weed/s3api",
+      "status": "pass"
+    }
+  ],
+  "graph": {
+    "total_packages": 1750,
+    "sdk_v1_packages": 54,
+    "sdk_v1_direct_importer_packages": 7,
+    "sdk_v1_direct_import_edges": 39,
+    "delta_from_four_patches": {
+      "added": [
+        "github.com/seaweedfs/seaweedfs/weed/s3api/wire"
+      ],
+      "removed": []
+    }
+  },
+  "files": [
+    {
+      "path": "deploy/patches/seaweedfs/4.52-s3-wire-remove-sdk-v1.patch",
+      "bytes": 45305,
+      "sha256": "64daedd2a53ad737b894306a8ee0bf3db952c9442092ca2dfc3224ba51d7764d"
+    },
+    {
+      "path": "toolchain/s3-wire-combined-tests.jsonl",
+      "bytes": 7110519,
+      "sha256": "b11150f83b1d023af3b6b3251a038b9f17b4e55be27982769b41109865a88c0d"
+    },
+    {
+      "path": "toolchain/s3-wire-import-edges.txt",
+      "bytes": 458899,
+      "sha256": "e20af68af7e421230503116a8bcdd3c67ad016d825a02b500113a56d8c1ae998"
+    },
+    {
+      "path": "toolchain/weed-4.52-s3-wire-lab",
+      "bytes": 221464964,
+      "sha256": "ba0ff939b71c6bc0099b7a20f5e18fa437e29fec48c52c3a3ff839175cb78ce4"
+    }
+  ],
+  "limitations": [
+    "Local full suite first failed because /tmp was absent; rerun uses explicit writable TMPDIR. Original failure log retained locally.",
+    "PASS counts include subtests; suite adds command and s3_constants, so not directly comparable to earlier 4806 count.",
+    "SDK v1 remains in executable via parser/helpers and cloud integrations. New models are maintained locally and retain SDK attribution.",
+    "No target effects, copied real objects, OCI qualification, fresh image scan, release custody or runtime admission.",
+    "Local logs and executable hashes describe this scratch build; CI independently reconstructs source and retains metadata/logs for 90 days, not durable release custody."
+  ]
+}

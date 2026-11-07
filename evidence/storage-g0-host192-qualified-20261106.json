@@ -1,0 +1,71 @@
+{
+  "schema": "ouf.storage-g0-host192-qualified.v1",
+  "date": "2026-11-06",
+  "sourceCommit": "cfa806d57012f07ead428208b4b8ce9d13b7e1ed",
+  "runId": 42218997469,
+  "jobId": 127896037862,
+  "status": "PASS_NATIVE_COMPOSITION_NOT_TARGET_ACCEPTANCE",
+  "tests": {
+    "hostProfile": 12,
+    "composition": 13,
+    "network": 14,
+    "ciSkips": 0
+  },
+  "native": {
+    "containersInspectedEachPass": 145,
+    "nonRosterStoppedContainers": 132,
+    "legacyHeldEngineGets": 1,
+    "engineGets": 292,
+    "cumulativeEngineGets": 345,
+    "namespaceChildren": 4,
+    "databaseExports": 3,
+    "syntheticBodies": 2,
+    "syntheticBodyBytes": 6,
+    "joinFindings": 0,
+    "migrations": 95,
+    "cleanFixtureExits": 145,
+    "priorReceiptsPreserved": true,
+    "wrongNamespaceDenied": true,
+    "deadOwnerDenied": true,
+    "replayDenied": true
+  },
+  "artifact": {
+    "id": 13503145473,
+    "bytes": 7410684,
+    "sha256": "de00f5c374ad3eb3280eeb4737a32277dec50d943ad7a1f4b1e9aaf3ca40b41c",
+    "expiresAt": "2027-02-04T12:36:43Z",
+    "members": 28,
+    "checksums": 27,
+    "exactGitSources": 121,
+    "readback": "PASS",
+    "semanticAlterationsDenied": 3
+  },
+  "package": {
+    "members": 15,
+    "bytes": 7275854,
+    "sha256": "5d9d1c2400046a0a34af811246cd318575f9b9714d904c243ec850bcf29731e8",
+    "manifestSha256": "1496517d24b65aaa20dce7cdb3bb4440ffbf2bc620c3dfd0ffffc17ea22b0f69",
+    "inventorySha256": "12ce46352d731d03861cf1196701869e61e27ecd29ce7d6011b2a13c4422f716",
+    "inventoryByteIdenticalTo9053aa38": true,
+    "changedMembersExceptManifest": [
+      "README.md",
+      "tools/storage_planning/g0_host.py",
+      "tools/storage_planning/g0_package.py"
+    ],
+    "binaryScansUnresolved": 0
+  },
+  "limits": {
+    "hostContainers": 192,
+    "engineGets": 386,
+    "engineBytes": 33554432,
+    "hostPhaseSeconds": 60,
+    "totalSeconds": 900,
+    "priorEngineGets": 53,
+    "maxCumulativeEngineGets": 439
+  },
+  "targetOperations": 0,
+  "runtimeAuthorityIssued": false,
+  "newCollectionAuthorized": false,
+  "g0Complete": false,
+  "acceptanceCreditAdded": 0
+}

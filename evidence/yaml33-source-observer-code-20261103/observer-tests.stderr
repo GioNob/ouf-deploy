@@ -1,0 +1,15 @@
+test_added_source_missing_from_original_archive_is_rejected (__main__.ObservationTests.test_added_source_missing_from_original_archive_is_rejected) ... ok
+test_all_baseline_files_bind_to_original_zip (__main__.ObservationTests.test_all_baseline_files_bind_to_original_zip) ... ok
+test_authentic_archive_alongside_modified_vendor_is_rejected (__main__.ObservationTests.test_authentic_archive_alongside_modified_vendor_is_rejected) ... ok
+test_existing_work_or_source_nested_work_is_rejected (__main__.ObservationTests.test_existing_work_or_source_nested_work_is_rejected) ... ok
+test_failed_command_retains_stderr_and_exit_code (__main__.ObservationTests.test_failed_command_retains_stderr_and_exit_code) ... ok
+test_finalizer_hashes_failed_observation_without_binary_or_vendor (__main__.ObservationTests.test_finalizer_hashes_failed_observation_without_binary_or_vendor) ... ok
+test_module_header_enumeration_does_not_pretend_binary_build_info (__main__.ObservationTests.test_module_header_enumeration_does_not_pretend_binary_build_info) ... ok
+test_timeout_kills_process_group_and_preserves_diagnostics (__main__.ObservationTests.test_timeout_kills_process_group_and_preserves_diagnostics) ... ok
+test_unowned_vendor_file_is_rejected (__main__.ObservationTests.test_unowned_vendor_file_is_rejected) ... ok
+test_vendor_headers_cannot_hide_replacement_or_duplicate_identity (__main__.ObservationTests.test_vendor_headers_cannot_hide_replacement_or_duplicate_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.128s
+
+OK

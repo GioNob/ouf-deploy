@@ -1,0 +1,194 @@
+name: Storage 4.52 generation31 cohort and legal text rebinding
+
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - .github/workflows/storage-452-generation31-cohort.yml
+      - scripts/verify-seaweedfs-452-generation31-cohort.py
+      - tests/test_seaweedfs_452_generation31_cohort.py
+      - releases/seaweedfs-452-generation31-candidate-lock-20261103.json
+      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source-manifest.json
+      - evidence/seaweedfs-source30-integrated-local-20261103/raftstore-modified-source.tar.gz
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  attestations: write
+  id-token: write
+
+concurrency:
+  group: storage-452-generation31-cohort-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_generation31_cohort.py -v
+
+  qualify-cohort:
+    needs: verify-boundaries
+    outputs:
+      cohort-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      cohort-archive-sha256: ${{ steps.bundle.outputs.archive-sha256 }}
+      lock-sha256: ${{ steps.seal.outputs.lock-sha256 }}
+      cohort-receipt-sha256: ${{ steps.seal.outputs.cohort-receipt-sha256 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CGO_ENABLED: '0'
+      GOTOOLCHAIN: local
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: seaweedfs/seaweedfs
+          ref: 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          path: seaweedfs
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Verify the published generation31 lock and fetch its exact artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cohort31-inputs"
+          python3 -I -B -S - <<'PYCODE'
+          import importlib.util, json, os, pathlib, subprocess
+          path = pathlib.Path('scripts/verify-seaweedfs-452-generation31-cohort.py')
+          spec = importlib.util.spec_from_file_location('cohort31', path)
+          cohort = importlib.util.module_from_spec(spec); spec.loader.exec_module(cohort)
+          lock_path = pathlib.Path('releases/seaweedfs-452-generation31-candidate-lock-20261103.json')
+          lock = json.loads(lock_path.read_bytes()); cohort.validate_lock(lock)
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'cohort31-inputs'
+          for field, filename in [('producerArtifact', 'candidate.zip'), ('independentReadback', 'readback.zip')]:
+              artifact = lock[field]; dest = out / filename
+              url = 'https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/' + str(artifact['id']) + '/zip'
+              subprocess.run(['curl', '--fail', '--silent', '--show-error', '--location', '--proto', '=https',
+                              '--tlsv1.2', '--max-time', '180', '--max-filesize', '536870912',
+                              '--header', 'Authorization: Bearer ' + os.environ['GH_TOKEN'],
+                              '--header', 'Accept: application/vnd.github+json', url, '--output', str(dest)], check=True)
+              assert dest.stat().st_size == artifact['bytes']
+              assert cohort.sha(dest) == artifact['digest'].removeprefix('sha256:')
+          (out / 'lock-sha256.txt').write_text(cohort.sha(lock_path) + '\n')
+          PYCODE
+      - name: Reconstruct the exact patched source for legal text comparison
+        working-directory: seaweedfs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 984eac6a790be89e2a11de175a7413e1e3e32dd3
+          python3 -I -B -S ../scripts/qualify-seaweedfs-452-generation31-image.py patch-paths > "$RUNNER_TEMP/cohort31-inputs/ordered-patches.txt"
+          while IFS= read -r patch; do
+            git apply --check "../$patch"
+            git apply --index "../$patch"
+          done < "$RUNNER_TEMP/cohort31-inputs/ordered-patches.txt"
+          git diff --cached --check
+          test "$(git write-tree)" = c2b7d4bd32316af277a76fb21c09894004c24b4b
+      - name: Acquire exact module archives for independent checksum and text verification
+        run: |
+          set -euo pipefail
+          python3 -I -B -S - <<'PYCODE'
+          import importlib.util, json, os, pathlib, subprocess, zipfile
+          spec = importlib.util.spec_from_file_location('cohort31', pathlib.Path('scripts/verify-seaweedfs-452-generation31-cohort.py'))
+          cohort = importlib.util.module_from_spec(spec); spec.loader.exec_module(cohort)
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'cohort31-inputs'
+          with zipfile.ZipFile(out / 'candidate.zip') as archive:
+              modules = cohort.binary_modules(archive.read('build-info.txt'))
+          with (out / 'module-downloads.jsonl').open('w') as log:
+              for name, version, expected_sum in modules:
+                  result = subprocess.run(['go', 'mod', 'download', '-json', name + '@' + version],
+                                          check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
+                  record = json.loads(result.stdout)
+                  assert record['Path'] == name and record['Version'] == version and record['Sum'] == expected_sum
+                  log.write(json.dumps(record, sort_keys=True) + '\n')
+          PYCODE
+      - name: Reproduce generation31 image evidence and rebind only identical legal bytes
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/verify-seaweedfs-452-generation31-cohort.py \
+            --lock releases/seaweedfs-452-generation31-candidate-lock-20261103.json \
+            --candidate "$RUNNER_TEMP/cohort31-inputs/candidate.zip" \
+            --readback "$RUNNER_TEMP/cohort31-inputs/readback.zip" \
+            --historical evidence/artifacts/storage-licences-native-41541625141.zip \
+            --delta evidence/artifacts/seaweedfs-452-patch15-licence-delta.zip \
+            --cache "$(go env GOMODCACHE)" --source seaweedfs --go-root "$(go env GOROOT)" \
+            --output "$RUNNER_TEMP/cohort31-evidence"
+      - name: Independently verify the generation31 publisher signature
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 --max-time 90 https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh297.tar.gz
+          printf '%s  %s\n' a2c9b8497e1f85b1ad0dfcb78b5a622e098801b8e461e459e88e1ee12f018112 gh297.tar.gz | sha256sum --check --strict
+          mkdir gh297
+          tar --no-same-owner -xzf gh297.tar.gz --strip-components=1 -C gh297 gh_2.97.0_linux_amd64/bin/gh
+          producer="$(python3 -c 'import json; print(json.load(open("releases/seaweedfs-452-generation31-candidate-lock-20261103.json"))["producerCommit"])')"
+          gh297/bin/gh attestation verify "$RUNNER_TEMP/cohort31-evidence/producer/SHA256SUMS" \
+            --repo GioNob/ouf-deploy --signer-workflow GioNob/ouf-deploy/.github/workflows/storage-452-generation31-image.yml \
+            --source-digest "$producer" --source-ref refs/heads/feat/m2-discovery-complete-profile-20261029 \
+            --deny-self-hosted-runners --bundle "$RUNNER_TEMP/cohort31-evidence/producer/provenance.json" \
+            --format json > "$RUNNER_TEMP/cohort31-evidence/publisher-verification.json"
+          test -s "$RUNNER_TEMP/cohort31-evidence/publisher-verification.json"
+      - name: Seal the new cohort evidence without granting admission
+        id: seal
+        run: |
+          set -euo pipefail
+          cp releases/seaweedfs-452-generation31-candidate-lock-20261103.json "$RUNNER_TEMP/cohort31-evidence/"
+          cp "$RUNNER_TEMP/cohort31-inputs/ordered-patches.txt" "$RUNNER_TEMP/cohort31-evidence/"
+          cp "$RUNNER_TEMP/cohort31-inputs/module-downloads.jsonl" "$RUNNER_TEMP/cohort31-evidence/"
+          cd "$RUNNER_TEMP/cohort31-evidence"
+          find . -type f ! -path './SHA256SUMS' -printf '%P\0' | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+          python3 -I -B -S - <<'PYCODE' >> "$GITHUB_OUTPUT"
+          import hashlib
+          from pathlib import Path
+          for key, filename in [('lock-sha256', 'seaweedfs-452-generation31-candidate-lock-20261103.json'),
+                                ('cohort-receipt-sha256', 'cohort-receipt.json')]:
+              print(key + '=' + hashlib.sha256(Path(filename).read_bytes()).hexdigest())
+          PYCODE
+      - uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/cohort31-evidence/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: upload
+        if: always()
+        with:
+          name: seaweedfs-generation31-cohort-${{ github.run_id }}
+          path: ${{ runner.temp }}/cohort31-evidence/
+          if-no-files-found: warn
+          retention-days: 90
+
+
+      - name: Export the actual uploaded artifact digest
+        id: bundle
+        env:
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+        run: |
+          python3 -I -B -S - <<'PYCODE' >> "$GITHUB_OUTPUT"
+          import os, re
+          digest = os.environ['ARTIFACT_DIGEST'].removeprefix('sha256:')
+          assert re.fullmatch('[0-9a-f]{64}', digest)
+          print('archive-sha256=' + digest)
+          PYCODE
+
+  runtime-labs:
+    needs: qualify-cohort
+    uses: ./.github/workflows/storage-452-generation31-runtime-labs.yml
+    with:
+      cohort-artifact-id: ${{ needs.qualify-cohort.outputs.cohort-artifact-id }}
+      cohort-archive-sha256: ${{ needs.qualify-cohort.outputs.cohort-archive-sha256 }}
+      lock-sha256: ${{ needs.qualify-cohort.outputs.lock-sha256 }}
+      cohort-receipt-sha256: ${{ needs.qualify-cohort.outputs.cohort-receipt-sha256 }}

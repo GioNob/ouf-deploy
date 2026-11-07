@@ -1,0 +1,165 @@
+name: Storage generation32 exact runtime laboratories
+
+on:
+  workflow_call:
+    inputs:
+      lock-sha256:
+        description: Exact committed generation32 candidate lock SHA256
+        required: true
+        type: string
+      cohort-receipt-sha256:
+        description: SHA256 of the successful predecessor cohort receipt
+        required: true
+        type: string
+      cohort-artifact-id:
+        description: Artifact ID from the successful qualify-cohort job
+        required: true
+        type: string
+      cohort-archive-sha256:
+        description: SHA256 returned by upload-artifact for that exact bundle
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-452-generation32-runtime-labs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verified-cohort-then-sequential-labs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      LOCK_SHA: ${{ inputs['lock-sha256'] }}
+      COHORT_ARTIFACT_ID: ${{ inputs['cohort-artifact-id'] }}
+      COHORT_ARCHIVE_SHA: ${{ inputs['cohort-archive-sha256'] }}
+      COHORT_SHA: ${{ inputs['cohort-receipt-sha256'] }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Test generation boundaries and child process routing
+        run: python3 -I -B -S -m unittest discover -s tests -p 'test_storage_generation32_*.py' -v
+
+      - name: Check committed generation32 lock and predecessor artifact ID
+        id: binding
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-seaweedfs-452-generation32-labs.py lock-info "$LOCK_SHA"
+          [[ "$COHORT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          python3 -I -B -S - <<'PYCODE'
+          import json, os, pathlib
+          lock = json.loads(pathlib.Path('releases/seaweedfs-452-generation32-candidate-lock-20261103.json').read_bytes())
+          artifact = lock['producerArtifact']
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('artifact_id=' + str(artifact['id']) + '\n')
+          PYCODE
+
+      - name: Download and authenticate the successful predecessor cohort bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 2 \
+            --connect-timeout 15 --max-time 180 --max-filesize 33554432 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/${COHORT_ARTIFACT_ID}/zip" \
+            --output "$RUNNER_TEMP/generation32-cohort.zip"
+          python3 -I -B -S scripts/run-seaweedfs-452-generation32-labs.py bind-cohort \
+            "$RUNNER_TEMP/generation32-cohort.zip" "$RUNNER_TEMP/generation32-cohort-bound" \
+            "$LOCK_SHA" "$COHORT_SHA" "$COHORT_ARCHIVE_SHA"
+          python3 -I -B -S scripts/run-seaweedfs-452-generation32-labs.py preflight "$LOCK_SHA" "$COHORT_SHA" \
+            --cohort-receipt "$RUNNER_TEMP/generation32-cohort-bound/cohort-receipt.json"
+
+      - name: Download only the bound generation32 producer archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ steps.binding.outputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 2 \
+            --connect-timeout 15 --max-time 180 --max-filesize 536870912 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output "$RUNNER_TEMP/generation32-image.zip"
+
+      - name: Cold restore with mandatory MIME parity then identity TLS egress
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-seaweedfs-452-generation32-labs.py run \
+            "$RUNNER_TEMP/generation32-image.zip" "$RUNNER_TEMP/generation32-runtime" \
+            "$LOCK_SHA" "$COHORT_SHA" \
+            --cohort-receipt "$RUNNER_TEMP/generation32-cohort-bound/cohort-receipt.json"
+
+      - name: Collect bounded public evidence including failures
+        if: always()
+        run: |
+          python3 -I -B -S - <<'PYCODE'
+          import hashlib, json, os, pathlib, shutil
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          work = root / 'generation32-runtime'
+          out = root / 'generation32-runtime-evidence'
+          out.mkdir()
+          cohort = root / 'generation32-cohort-bound'
+          if cohort.is_dir():
+              shutil.copytree(cohort, out / 'cohort')
+          for mode in ('cold', 'identity'):
+              source = work / mode / 'evidence'
+              if source.is_dir():
+                  for path in sorted(source.iterdir()):
+                      if path.is_symlink() or not path.is_file():
+                          raise ValueError('REGULAR_LAB_EVIDENCE_REQUIRED')
+                      destination = out / mode / path.name
+                      destination.parent.mkdir(exist_ok=True)
+                      shutil.copyfile(path, destination)
+          for name in ('runtime-result.json', 'runtime-failure.json'):
+              if (work / name).is_file():
+                  shutil.copyfile(work / name, out / name)
+          paths = ['scripts/run-seaweedfs-452-generation32-labs.py',
+                   'scripts/storage-generation32-lab-binding.py',
+                   'scripts/run-seaweedfs-452-cold-recovery.py',
+                   'scripts/run-seaweedfs-452-identity-tls.py',
+                   'scripts/readback-seaweedfs-452-generation32-image.py',
+                   'scripts/qualify-seaweedfs-452-generation32-image.py',
+                   'scripts/verify-seaweedfs-452-generation32-cohort.py',
+                   'tools/storage_security/generation_image_v3.py',
+                   'tools/storage_security/generation_readback_v1.py',
+                   'tools/storage_licenses/evidence.py',
+                   'tests/test_storage_generation32_lab_binding.py',
+                   'tests/test_storage_generation32_labs.py',
+                   'releases/seaweedfs-452-generation32-build-manifest-20261103.json',
+                   'releases/seaweedfs-452-generation32-candidate-lock-20261103.json',
+                   'evidence/seaweedfs-452-generation32-mongodb-v2-legal-delta-20261104.json',
+                   '.github/workflows/storage-452-generation32-runtime-labs.yml']
+          (out / 'source-sha256.json').write_text(json.dumps({p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+                                                           for p in paths if pathlib.Path(p).is_file()}, indent=2)+'\n')
+          (out / 'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(out))+'\n'
+                                               for p in sorted(out.rglob('*')) if p.is_file() and p != out / 'SHA256SUMS'))
+          PYCODE
+          cd "$RUNNER_TEMP/generation32-runtime-evidence"
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest successful generation32 runtime evidence
+        if: success()
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/generation32-runtime-evidence/SHA256SUMS
+
+      - name: Retain public diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-generation32-runtime-${{ github.run_id }}
+          path: ${{ runner.temp }}/generation32-runtime-evidence/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,55 @@
+name: Storage nonproduction cold stop
+on:
+  push:
+    branches: [feat/m2-discovery-complete-profile-20261029]
+    paths:
+      - scripts/storage-cold-backup-v4.py
+      - tests/test_storage_cold_mount_identity.py
+      - tests/qualify_storage_cold_backup_v4_native.py
+      - scripts/storage-test-cold-stop.py
+      - tools/storage_planning/cold_stop_proposal.py
+      - tests/test_storage_test_cold_stop.py
+      - tests/test_storage_cold_stop_proposal.py
+      - tests/qualify_storage_test_cold_stop_native.py
+      - .github/workflows/storage-test-cold-stop.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-test-cold-stop-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install age for disposable capture qualification
+        run: sudo apt-get update && sudo apt-get install -y age
+      - name: Reuse exact successful stop cohort (no new stop test)
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib
+          from pathlib import Path
+          expected = {
+            'scripts/storage-cold-backup.py': 'b23a822d0fd7000ac8806d47ff66c0ab053f0fa60ce33998268af792b9db53ac',
+            'scripts/storage-cold-backup-v4.py': '8786a65a8bcde2706a3dc05a96a60ad04682cab6baa697e286b2dc525b17b3b9',
+            'scripts/storage-test-cold-stop.py': 'b3b28645ed377459fbe577fe4eb5eb8fb351a0e2c0e3f7067d5745f6f83ad2b5',
+            'tools/storage_planning/cold_stop_proposal.py': '121f998eabb7f09b00d6e2cc22bbeaa49c78cec3b535f02c46e57e6eb9c71e68'}
+          for path, digest in expected.items():
+              assert hashlib.sha256(Path(path).read_bytes()).hexdigest() == digest, path
+          print('Reused run42295413282 step5 PASS and23unit tests; new scope is corrected fixture adapter + v4 restore.')
+          PYCODE
+      - name: Native v4 encrypted capture and isolated database/object restore
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B -S tests/qualify_storage_cold_backup_v4_native.py "$RUNNER_TEMP/cold-backup-v4-proof"
+      - name: Preserve redacted report only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-test-cold-stop-result
+          path: |
+            ${{ runner.temp }}/cold-backup-v4-proof/native-result.json
+          if-no-files-found: error
+          retention-days: 90

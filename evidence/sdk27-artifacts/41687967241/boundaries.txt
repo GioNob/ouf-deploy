@@ -1,0 +1,6 @@
+status=KAFKA_LOCKFILE_AND_COMPILE_VERIFIED_NOT_LIVE_ACCEPTANCE
+liveKafkaRoundtrip=false
+qualifiedImageChanged=false
+releaseAdmitted=false
+runtimeAuthorityIssued=false
+targetOperations=0

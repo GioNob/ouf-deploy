@@ -1,0 +1,13 @@
+test_archive_reencoding_with_same_content_h1_changes_pinned_bytes (__main__.ModuleOriginTests.test_archive_reencoding_with_same_content_h1_changes_pinned_bytes) ... ok
+test_changed_gomod_content_rejected (__main__.ModuleOriginTests.test_changed_gomod_content_rejected) ... ok
+test_download_record_stream_and_array_are_equivalent (__main__.ModuleOriginTests.test_download_record_stream_and_array_are_equivalent) ... ok
+test_duplicate_module_input_rejected (__main__.ModuleOriginTests.test_duplicate_module_input_rejected) ... ok
+test_forged_h1_not_in_root_lock_rejected (__main__.ModuleOriginTests.test_forged_h1_not_in_root_lock_rejected) ... ok
+test_missing_module_input_rejected (__main__.ModuleOriginTests.test_missing_module_input_rejected) ... ok
+test_other_module_archive_cannot_substitute_upstream (__main__.ModuleOriginTests.test_other_module_archive_cannot_substitute_upstream) ... ok
+test_real_zip_and_gomod_h1_recomputed_for_every_module (__main__.ModuleOriginTests.test_real_zip_and_gomod_h1_recomputed_for_every_module) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.324s
+
+OK

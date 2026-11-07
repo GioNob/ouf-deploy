@@ -1,0 +1,80 @@
+name: Storage 4.52 isolated identity TLS egress
+
+on:
+  push:
+    branches:
+      - feat/m2-discovery-complete-profile-20261029
+    paths:
+      - .github/workflows/storage-452-identity-tls.yml
+      - scripts/run-seaweedfs-452-identity-tls.py
+      - tests/test_seaweedfs_452_identity_tls.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: storage-452-identity-tls-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-image-identity-tls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Test bounded identity and TLS primitives
+        run: python3 -I -B -S -m unittest discover -s tests -p test_seaweedfs_452_identity_tls.py -v
+
+      - name: Download the exact already-qualified OCI producer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --retry 2 --connect-timeout 15 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/GioNob/ouf-deploy/actions/artifacts/13224053625/zip \
+            --output "$RUNNER_TEMP/seaweedfs-452-exact.zip"
+          printf '%s  %s\n' bca4d0a493717812d464f9dc6c7478d918c5dd7f56cd7b5d21f0d4fbcccaeed9 \
+            "$RUNNER_TEMP/seaweedfs-452-exact.zip" | sha256sum --strict --check
+
+      - name: Run four isolated roles with exact identity policies and TLS
+        run: |
+          set -euo pipefail
+          python3 -I -B -S scripts/run-seaweedfs-452-identity-tls.py run \
+            "$RUNNER_TEMP/seaweedfs-452-exact.zip" "$RUNNER_TEMP/storage-452-identity-tls"
+          evidence="$RUNNER_TEMP/storage-452-identity-tls/evidence"
+          sha256sum scripts/run-seaweedfs-452-identity-tls.py \
+            scripts/run-seaweedfs-452-cold-recovery.py \
+            scripts/readback-seaweedfs-452-image.py \
+            tests/test_seaweedfs_452_identity_tls.py \
+            releases/seaweedfs-452-candidate-lock-20261103.json \
+            .github/workflows/storage-452-identity-tls.yml \
+            > "$evidence/source-sha256.txt"
+          cd "$evidence"
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 \
+            | LC_ALL=C sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --strict --check SHA256SUMS
+
+      - name: Attest the bounded identity TLS egress evidence
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be
+        with:
+          subject-path: ${{ runner.temp }}/storage-452-identity-tls/evidence/SHA256SUMS
+
+      - name: Retain diagnostics, including partial failed runs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: storage-452-identity-tls-${{ github.run_id }}
+          path: ${{ runner.temp }}/storage-452-identity-tls/evidence/
+          if-no-files-found: error
+          retention-days: 90

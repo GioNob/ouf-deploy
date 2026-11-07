@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.seaweedfs-patched-security-readback.v1",
+  "runId": 41382769649,
+  "jobId": 125076949361,
+  "source": "bd0de83ed18e4ce3cc6ddaa1679213025e637d31",
+  "artifactId": 13114635513,
+  "artifactBytes": 271346002,
+  "artifactSha256": "3b04670fb52d37a4d5530dad1fd0370a7a81c4aecf950f5d6ddb8b51320ce826",
+  "allOriginalChecksumMembersIndependentlyRead": true,
+  "metadataArchive": "evidence/artifacts/seaweedfs-patched-held-41382769649.zip",
+  "metadataArchiveSha256": "d2672dd9d38227538862ffe79cd8df87a854c833271467da711dfbdce6f2bf82",
+  "candidate": {
+    "assetBytes": 47534485,
+    "assetSha256": "c03be37416a8ee672c77766e20b22a4e1430744c3af2668599a4b6eeaec14cee",
+    "binarySha256": "bb9f768e5afca39c7fdc2113e5caafd9f911d4537917dd25c520ee4dbdab1f74",
+    "buildToolchain": "go1.27.3",
+    "cgoEnabled": false,
+    "declaredSource": "153ab668c99731a6d29492bf6c61d0b4fa701101",
+    "dependencyPatchSha256": "e00e55e9210cc931e985ae218be39650fe403d6ac6568f046e9bb46077c47820",
+    "findings": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "LOW": 0,
+      "MEDIUM": 0,
+      "UNKNOWN": 1
+    },
+    "installed": false,
+    "release": "4.51",
+    "scanSha256": "9b3f50ed8eefc0d7895368a22902a56b1e6991631475f4e530e6a33e64706f12",
+    "schema": "ouf.seaweedfs-evaluation.v1",
+    "securityGate": "HELD",
+    "sourceBinaryEqualityProven": false,
+    "targetOperations": 0,
+    "upstreamBinaryRebuilt": true,
+    "upstreamPublisherCryptographicallyVerified": false
+  },
+  "compiledPackageCount": 1738,
+  "openpgpImported": false,
+  "serverExecuted": false,
+  "targetOperations": 0,
+  "releaseAdmitted": false
+}

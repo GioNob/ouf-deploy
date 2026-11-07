@@ -1,0 +1,21 @@
+{
+  "calls": [
+    {
+      "errorMessage": "Call failed: Unit ouf-registry-token-7cb59501000058b5dc5030ad.service not loaded.",
+      "errorTruncated": false,
+      "exitCode": 1,
+      "phase": "GET_UNIT",
+      "stderrBytes": 82,
+      "stdoutBytes": 0
+    }
+  ],
+  "credentialFilesRead": 0,
+  "credentialValuesEmitted": false,
+  "observedAt": "2026-11-07T19:56:29.172844+00:00",
+  "schema": "ouf.semantic-systemd-bus-diagnostic.v1",
+  "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "status": "READ_INCOMPLETE",
+  "successfulHookValuesEmitted": false
+}

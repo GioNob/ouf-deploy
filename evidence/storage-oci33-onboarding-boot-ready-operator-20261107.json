@@ -1,0 +1,21 @@
+{
+  "acceptanceCreditAdded": 0,
+  "applicationContainersStarted": 1,
+  "cleanupIncomplete": false,
+  "containersRemoved": 3,
+  "containersStarted": 3,
+  "diagnosticHints": {},
+  "flywayVersionsVerified": [
+    39,
+    40,
+    41
+  ],
+  "onboardingReadinessUp": true,
+  "postgresCopyPrepared": true,
+  "postgresReady": true,
+  "privateContainerLogsRetained": 0,
+  "schema": "ouf.storage-oci33-onboarding-boot.v1",
+  "seaweedfsTlsReady": true,
+  "status": "ISOLATED_ONBOARDING_STACK_READY",
+  "storageCopyPrepared": true
+}

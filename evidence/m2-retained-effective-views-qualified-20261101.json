@@ -1,0 +1,60 @@
+{
+  "actualTargetKernelViewsObservedByAgent": false,
+  "all235FrozenAndEightStaticCapsuleSourcesUnchanged": true,
+  "completePrivateCustodyProven": false,
+  "controllerVersion": 7,
+  "fixtureCorrection": {
+    "initialHelperDidNotReachThreeNegativeObserverAssertions": true,
+    "initialSourceNativeRun": 41301044374,
+    "namespaceCwdAndDetachedBindHelperFix": "f44839426cd1563dc8d8db4725fe54bf19bb8224",
+    "productionGuardsRelaxedToPass": false,
+    "singleReboundMountFixtureFix": "9b90f266cdbacb21cf0318365d02c53803899ef0"
+  },
+  "general": {
+    "allLogsRead": true,
+    "jobs": [
+      124831833344,
+      124831833515,
+      124831833522,
+      124831833533,
+      124831833568
+    ],
+    "runId": 41301044446,
+    "suites": 29,
+    "tests": 209
+  },
+  "kernelContract": "https://www.kernel.org/doc/html/latest/filesystems/proc.html#proc-pid-mountinfo-information-about-mounts",
+  "kernelObserverEngineGets": 0,
+  "liveOwnerAuthenticated": false,
+  "mountedFileContentBytesRead": 0,
+  "nativePositiveAndNegativeControls": {
+    "Docker": "29.8.1",
+    "actualProcessRestartDenied": true,
+    "differentStaticSourceSingleEffectiveMountDenied": true,
+    "hostAndEffectiveViewInodesAndDescriptorMountIdsMatch": true,
+    "liveTokenAndSQLiteContentRead": false,
+    "nestedShadowMountDenied": true,
+    "readonly": 25,
+    "retainedProcesses": 10,
+    "writable": 4,
+    "writeableEffectiveMountWithUnchangedDockerConfigDenied": true
+  },
+  "nativeReads": 28,
+  "productionSource": "bb3872b07ea2ef2e68d009a22aaf34a666760fb4",
+  "qualifiedNativeFixtureSource": "9b90f266cdbacb21cf0318365d02c53803899ef0",
+  "releaseAcceptance": false,
+  "runtimeAuthorityIssued": false,
+  "schema": "ouf.retained-effective-views-source-qualified.v1",
+  "targetApplyAuthorized": false,
+  "targeted": {
+    "allLogsRead": true,
+    "jobs": [
+      124833003708,
+      124833003918
+    ],
+    "runId": 41301443890,
+    "suites": 4,
+    "tests": 33
+  },
+  "typedOwners": 15
+}

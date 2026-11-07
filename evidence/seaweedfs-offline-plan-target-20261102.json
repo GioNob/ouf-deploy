@@ -1,0 +1,149 @@
+{
+  "activeWritersProven": false,
+  "automaticReplayAllowed": false,
+  "bucketFeatureStatusCounts": {
+    "acl": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "cors": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "encryption": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "lifecycle": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "notification": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "objectLock": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "policy": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "publicAccessBlock": {
+      "ABSENT": 0,
+      "PRESENT": 0,
+      "UNSUPPORTED": 2,
+      "configured": 0
+    },
+    "replication": {
+      "ABSENT": 2,
+      "PRESENT": 0,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    },
+    "versioning": {
+      "ABSENT": 0,
+      "PRESENT": 2,
+      "UNSUPPORTED": 0,
+      "configured": 0
+    }
+  },
+  "capacityAndMemoryReobserved": false,
+  "configuredStorageRolesAtControl14": [
+    "onboarding",
+    "udp",
+    "udp-evidence-read"
+  ],
+  "control16EvidenceStableDuringAnalysis": true,
+  "credentialFilesOpened": 0,
+  "cumulativeControlAttempts": 17,
+  "cumulativeDirectEngineGets": 52,
+  "directEngineGets": 0,
+  "externalConsumersProvenAbsent": false,
+  "historicalVersionCopyOrderProven": false,
+  "migrationReady": false,
+  "objectAttributeCounts": {
+    "encryptedObjects": 0,
+    "objectsWithCacheControl": 0,
+    "objectsWithContentEncoding": 0,
+    "objectsWithKmsKeyReference": 0,
+    "objectsWithLegalHold": 0,
+    "objectsWithRetentionDate": 0,
+    "objectsWithTags": 0
+  },
+  "objectBodiesRead": 0,
+  "objectsRequiringFullBodyVerification": 120,
+  "objectsWithoutAdvertisedHash": 10,
+  "offlinePlanProducer": "969e45ee3bdbcb426aeaca2b93872b46c6932445",
+  "offlinePlanPublication": "a8f767edd7e9cd8b043f4092c73279b1b1c2c052",
+  "otherTwelveContainerBindingsRefreshed": false,
+  "pointInTimeSnapshotProven": false,
+  "policyDocumentsToTranslate": 0,
+  "priorScopesModified": false,
+  "privateMetadataBytesRead": 93238,
+  "privateMetadataFilesOpened": 4,
+  "privatePlanSha256": "debed37f949b00f008eae77feecd103c8d4834e105c0d6c727b188e6aafbb501",
+  "records": 120,
+  "releaseAcceptance": false,
+  "retainedContainerSnapshots": 13,
+  "retainedHostBaselineControl": 14,
+  "runtimeAuthorityIssued": false,
+  "s3Requests": 0,
+  "schema": "ouf.storage-offline-plan-summary.v1",
+  "scopeConsumed": true,
+  "sourceInventoryControl": 16,
+  "sourcePrivateInventorySha256": "43571bb43921f74adfa5974a0903acb54ee1eadecbc9d5d0d70539ce5cadba55",
+  "sourceSummary": {
+    "buckets": 2,
+    "bytesAcrossVersions": 203743,
+    "defaultEncryptedBuckets": 0,
+    "deleteMarkers": 0,
+    "fileDirectoryCollisions": 0,
+    "incompleteMultipartBytes": 0,
+    "incompleteMultipartUploads": 0,
+    "lifecycleBuckets": 0,
+    "namespaceGate": "PASS",
+    "notificationConfiguredBuckets": 0,
+    "objectLockEnabledBuckets": 0,
+    "objectVersions": 120,
+    "objectsWithAdvertisedOufHash": 110,
+    "replicatedBuckets": 0,
+    "trailingSlashKeys": 0,
+    "unsafePathKeys": 0,
+    "unsupportedBucketFeatures": 2,
+    "versionedRecords": 0,
+    "versioningEnabledBuckets": 0
+  },
+  "status": "PRIVATE_PLAN_PREPARED_NOT_ADMITTED",
+  "storageReferenceNameCountsAtControl14": {
+    "AWS_DEFAULT_REGION": 0,
+    "AWS_REGION": 0,
+    "OUF_ONBOARDING_OBJECT_STORE_GATEWAY_BASE_URL": 1,
+    "OUF_ONBOARDING_OBJECT_STORE_READ_PATH": 0,
+    "OUF_ONBOARDING_STAGING_BUCKET": 1,
+    "OUF_ONBOARDING_STAGING_ENDPOINT": 1,
+    "OUF_UDP_LAKE_S3_BUCKET": 0,
+    "OUF_UDP_LAKE_S3_ENDPOINT": 0,
+    "OUF_UDP_S3_BUCKET": 2,
+    "OUF_UDP_S3_ENDPOINT": 2
+  },
+  "targetApplyAuthorized": false,
+  "unrecognizedAdvertisedHashFormats": 0,
+  "verifiedBodies": 0,
+  "writerInventoryComplete": false
+}

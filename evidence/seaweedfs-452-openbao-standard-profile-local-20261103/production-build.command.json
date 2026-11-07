@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/workspace/scratch/98dabd1608e5/go-toolchain/bin/go",
+    "build",
+    "-mod=readonly",
+    "-trimpath",
+    "-o",
+    "/workspace/scratch/98dabd1608e5/openbao-profile30-stage/weed-openbao-profile30",
+    "./weed"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 22.575
+}

@@ -1,0 +1,27 @@
+package it.comune.trieste.ouf.storage;
+
+import it.comune.trieste.ouf.udp.S3LakeObjectStorageAdapter;
+import java.util.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import software.amazon.awssdk.services.s3.model.*;
+
+class SeaweedRecoveryTest {
+ @Test void restoresAllBytesMetadataAndNamespaceFromIndependentColdCopy() throws Exception {
+  try(var udpClient=SeaweedContractTest.client("lab-udp","lab-udp-secret-not-production");var staging=SeaweedContractTest.client("lab-staging","lab-staging-secret-not-production");var admin=SeaweedContractTest.client("lab-admin","lab-admin-secret-not-production")){
+   var udp=new S3LakeObjectStorageAdapter(udpClient,"ouf-udp");
+   var inventory=udp.inventory();assertEquals(1005,inventory.size());
+   for(var object:inventory){byte[] bytes=udp.read(object.locator());assertEquals(object.contentHash(),SeaweedContractTest.hash(bytes));assertEquals(object.sizeBytes(),bytes.length);}
+   var managed=admin.listObjectsV2(ListObjectsV2Request.builder().bucket("ouf-managed-files").build()).contents();assertEquals(2,managed.size());
+   byte[] big=new byte[10*1024*1024];new Random(42).nextBytes(big);
+   Set<String> expected=new HashSet<>(List.of(SeaweedContractTest.hash(big),SeaweedContractTest.hash("codice,nome\n00001,Farmacia test sintetica\n".getBytes(java.nio.charset.StandardCharsets.UTF_8))));
+   for(var object:managed){var response=staging.getObjectAsBytes(GetObjectRequest.builder().bucket("ouf-managed-files").key(object.key()).build());assertEquals("text/csv",response.response().contentType());assertTrue(expected.remove(SeaweedContractTest.hash(response.asByteArray())));}
+   assertTrue(expected.isEmpty());assertTrue(udp.head("contract/one").isEmpty());
+   var history=admin.listObjectVersions(ListObjectVersionsRequest.builder().bucket("ouf-versioned").build());assertEquals(2,history.versions().size());assertEquals(1,history.deleteMarkers().size());
+   Set<String> versions=new HashSet<>(List.of("first-version","second-version"));
+   for(var version:history.versions())assertTrue(versions.remove(admin.getObjectAsBytes(GetObjectRequest.builder().bucket("ouf-versioned").key(version.key()).versionId(version.versionId()).build()).asUtf8String()));assertTrue(versions.isEmpty());
+   var pending=admin.listMultipartUploads(ListMultipartUploadsRequest.builder().bucket("ouf-udp").build()).uploads();assertEquals(1,pending.size());
+   var parts=admin.listParts(ListPartsRequest.builder().bucket("ouf-udp").key(pending.getFirst().key()).uploadId(pending.getFirst().uploadId()).build()).parts();assertEquals(1,parts.size());assertEquals(5242880L,parts.getFirst().size().longValue());
+  }
+ }
+}

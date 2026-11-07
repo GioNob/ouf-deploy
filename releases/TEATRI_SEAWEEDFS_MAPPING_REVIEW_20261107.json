@@ -1,0 +1,646 @@
+{
+  "schema": "ouf.teatri-seaweedfs-mapping-review.v1",
+  "status": "OPEN_SELECTED_PROPERTY_REFERENCE_ALIGNMENT_INCOMPLETE",
+  "source": "CURRENT_GOVERNED_PREVIEW_AND_PINNED_LOCAL_SEMANTIC_READ",
+  "createDraft": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "sourceId": "teatri-seaweedfs-c51745c5",
+    "name": "Teatri di Trieste - verifica SeaweedFS 2026-11-07",
+    "owner": "b93d8cf6-cd14-4ee6-91d7-84cd76c4f500",
+    "targetClassIri": "https://schema.org/PerformingArtsTheater",
+    "semanticRefs": [
+      "https://api.ouf-lab.it/semantic/teatri#TeatriOntology@1.0.0"
+    ],
+    "sourceObjectKeyFields": [
+      "nome_teatro"
+    ],
+    "fields": [
+      {
+        "fieldName": "nome_teatro",
+        "targetPropertyIri": "https://schema.org/name",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "tipologia",
+        "targetPropertyIri": "https://schema.org/additionalType",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "toponimo",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "nome_indirizzo",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "civico",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "cap",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "citta",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "provincia",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "latitudine",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "longitudine",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "sistema_riferimento",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "precisione_coordinate",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "capienza_posti",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "spettacoli_stagione",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "stagione_riferimento",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "note",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#note",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "fonte_indirizzo",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "fonte_coordinate",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "fonte_altri_dati",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      },
+      {
+        "fieldName": "data_verifica",
+        "targetPropertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "extractionDecision": "INCLUDE",
+        "dataAccessLabel": "OPEN",
+        "transform": "IDENTITY"
+      }
+    ],
+    "link_id": "link_6aafef96b4148191b767e9af7b756a07"
+  },
+  "semanticEvidence": {
+    "semanticId": "https://api.ouf-lab.it/semantic/teatri#TeatriOntology",
+    "semanticVersion": "1.0.0",
+    "revisionId": "a1db3912-2b72-42eb-af88-a775fcd0e2ab",
+    "publicationSetId": "9fe7d1ee-9e13-40bc-ad50-53e36ea0076b",
+    "publicationChecksum": "632fe084bdb359afe419bbf5651fc4711930c31e5cf1503c8da19cace803af28",
+    "contentHash": "c96bb4c80f2c5b32616b2c8632438213dd7e269728e005612acb46970830da1f",
+    "rdfHash": "6e4668ea42cf1c75b822e17a8ca9cb71fb2c4d8f500eed628282fa6039a6dbaa",
+    "completeSnapshot": true,
+    "statementCount": 105,
+    "allTwentyPropertiesAndClassAsserted": true
+  },
+  "profileEvidence": {
+    "assetId": "c51745c5-1fc0-4d36-bdcf-1e9a8a049c94",
+    "profileId": "da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342",
+    "profileVersion": 1,
+    "metadata": {
+      "rows": 13,
+      "columns": 20,
+      "encoding": "UTF-8",
+      "delimiter": ";",
+      "headerRow": 1
+    },
+    "recordModel": "ONE_ROW_ONE_SOURCE_OBJECT",
+    "identityProposal": {
+      "stabilityLimit": "Identity remains stable while the proposed key remains stable",
+      "sourceFields": [
+        "nome_teatro"
+      ],
+      "strategy": "NATIVE_KEY",
+      "normalizationRuleRef": "normalization://managed-file/native-key-v1"
+    },
+    "proposalStatus": "PENDING_HUMAN_REVIEW",
+    "fullCsvByteIdentityWithHistoricalAssetProven": false
+  },
+  "decisionsProposed": {
+    "sourceObjectKeyFields": [
+      "nome_teatro"
+    ],
+    "keyStabilityLimit": "Identity remains stable while the approved source key remains stable",
+    "allFieldAccessLabels": "OPEN",
+    "allTransforms": "IDENTITY",
+    "csvCellsRemainLexical": true,
+    "capIsString": true,
+    "capacityQualifiedByNotes": true,
+    "coordinateQualifiersPreserved": true,
+    "semanticEquivalenceWithCinemaAsserted": false
+  },
+  "validation": {
+    "profileColumnsExactlyMatchReviewedMapping": true,
+    "snapshotComplete": true,
+    "targetClassAsserted": true,
+    "semanticPinMatchesHistorical": true,
+    "properties": [
+      {
+        "field": "nome_teatro",
+        "iri": "https://schema.org/name",
+        "datatypeProperty": false,
+        "stringRange": false,
+        "domainMatches": false,
+        "rdfProperty": true
+      },
+      {
+        "field": "tipologia",
+        "iri": "https://schema.org/additionalType",
+        "datatypeProperty": false,
+        "stringRange": false,
+        "domainMatches": false,
+        "rdfProperty": true
+      },
+      {
+        "field": "toponimo",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "nome_indirizzo",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "civico",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#civico",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "cap",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#cap",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "citta",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#citta",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "provincia",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "latitudine",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "longitudine",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "sistema_riferimento",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "precisione_coordinate",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "capienza_posti",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "spettacoli_stagione",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "stagione_riferimento",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "note",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#note",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "fonte_indirizzo",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "fonte_coordinate",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "fonte_altri_dati",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      },
+      {
+        "field": "data_verifica",
+        "iri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+        "datatypeProperty": true,
+        "stringRange": true,
+        "domainMatches": true,
+        "rdfProperty": false
+      }
+    ],
+    "allTwentyPropertyTermsAsserted": true,
+    "schemaTermsHaveNoExplicitRangeOrDomainInSnapshot": true
+  },
+  "historicalReference": {
+    "reviewPath": "releases/TEATRI_MANAGED_CSV_ONBOARDING_REVIEW_20261017.json",
+    "sourceId": "teatri-csv-6609b245",
+    "onboardingVersionId": "9860853e-e8f3-4b93-b9d2-03521a039962",
+    "historicalSourceChanged": false,
+    "historicalAcquisitionReplayed": false,
+    "previousHumanApprovalReused": false
+  },
+  "reviewQuestion": null,
+  "effects": {
+    "createDraftDispatched": false,
+    "reviewPrepareDispatched": false,
+    "sourceApproval": false,
+    "sourceActivation": false,
+    "ingestionDispatch": false,
+    "permissionsChanged": false
+  },
+  "nextStep": "Complete the requested shared property-reference review via governed semantic MCP discovery; current fields retain historical local terms as a provisional baseline. After reference selection create DRAFT and prepare native THS review. OPEN classification does not override current redaction.",
+  "ownerDirection": {
+    "openClassificationSelected": true,
+    "propertyReferenceReviewRequested": true,
+    "valueEnumerationReviewRequiredByThisRequest": false,
+    "userDelegatedSemanticAnalysis": true
+  },
+  "columnReferenceReview": [
+    {
+      "field": "nome_teatro",
+      "canonicalMeaningToMatch": "Nome del luogo",
+      "currentPublishedPropertyIri": "https://schema.org/name",
+      "status": "SHARED_TERM_CONFIRMED",
+      "sourceInterpretation": "Nome proprio del luogo; il nome CSV può restare nome_teatro.",
+      "qualification": "Proprietà schema.org presente nello snapshot; nessun vocabolario di valori richiesto.",
+      "assertedLocalDefinition": null,
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "tipologia",
+      "canonicalMeaningToMatch": "Classificazione aggiuntiva del luogo",
+      "currentPublishedPropertyIri": "https://schema.org/additionalType",
+      "status": "SHARED_TERM_CANDIDATE",
+      "sourceInterpretation": "Verificare che additionalType rappresenti la classificazione intesa, senza confondere genere artistico, funzione e forma organizzativa.",
+      "qualification": "Termine condiviso presente; definizione/range esterni non esposti nello snapshot. Nessuna equivalenza tra categorie dichiarata.",
+      "assertedLocalDefinition": null,
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "toponimo",
+      "canonicalMeaningToMatch": "Tipo di elemento stradale",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#toponimo",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Il campione contiene Via, Viale, Piazza, Riva: è il tipo odonimico, non il nome della strada.",
+      "qualification": "Cercare una proprietà condivisa per la componente dell'indirizzo; nessun IRI nazionale verificato.",
+      "assertedLocalDefinition": "Tipo di elemento stradale riportato dalla fonte, distinto dal nome e dal numero civico; non e un indirizzo completo.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "nome_indirizzo",
+      "canonicalMeaningToMatch": "Denominazione della strada",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#nome_indirizzo",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Componente nominale dell'indirizzo, distinta da tipo e civico.",
+      "qualification": "Non chiamarla indirizzo completo; eventuale proprietà su una risorsa indirizzo richiede mapping strutturale.",
+      "assertedLocalDefinition": "Componente nominale dell indirizzo riportata dalla fonte; non include implicitamente toponimo e civico.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "civico",
+      "canonicalMeaningToMatch": "Numero civico",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#civico",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Identificativo lessicale, con possibili suffissi o discrepanze documentate nelle note.",
+      "qualification": "Non convertirlo in quantità; proprietà di indirizzo da allineare.",
+      "assertedLocalDefinition": "Numero civico lessicale riportato dalla fonte, compresi eventuali suffissi; nessuna risoluzione di indirizzi discordanti.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "cap",
+      "canonicalMeaningToMatch": "Codice postale",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#cap",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Codice lessicale con zeri iniziali preservati.",
+      "qualification": "Riferimento condiviso di indirizzo da trovare; nessuna conversione in intero.",
+      "assertedLocalDefinition": "Codice postale lessicale del luogo riportato dalla fonte. Conservare gli zeri iniziali dai byte CSV; il tipo LONG del profiler non autorizza conversioni numeriche.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "citta",
+      "canonicalMeaningToMatch": "Località dell'indirizzo",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#citta",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "La colonna indica una località; non basta il nome per identificarla come entità amministrativa.",
+      "qualification": "Proprietà descrittiva o relazione a luogo da scegliere sulla definizione verificata.",
+      "assertedLocalDefinition": "Localita dell indirizzo riportata dalla fonte; questa proprieta piatta non asserisce una risorsa PostalAddress.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "provincia",
+      "canonicalMeaningToMatch": "Riferimento provinciale dell'indirizzo",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#provincia",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Sigla/nome riportati dalla fonte; il mapping attuale non risolve un'entità amministrativa.",
+      "qualification": "Definizione, range e contesto temporale da verificare prima di una relazione.",
+      "assertedLocalDefinition": "Provincia dell indirizzo riportata dalla fonte; il testo non e risolto in una entita amministrativa.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "latitudine",
+      "canonicalMeaningToMatch": "Latitudine della posizione dichiarata",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#latitudine",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Valore da collegare a sistema di riferimento e precisione.",
+      "qualification": "Formato 4.565.094 ambiguo; niente asserzione numerica o trasformazione geografica automatica.",
+      "assertedLocalDefinition": "Valore di latitudine riportato dalla fonte, da interpretare insieme a sistema_riferimento e precisione_coordinate; non equivale a una trasformazione WGS84 verificata.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "longitudine",
+      "canonicalMeaningToMatch": "Longitudine della posizione dichiarata",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#longitudine",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Valore da collegare a sistema di riferimento e precisione.",
+      "qualification": "Formato 1.376.850 ambiguo; niente asserzione numerica o trasformazione geografica automatica.",
+      "assertedLocalDefinition": "Valore di longitudine riportato dalla fonte, da interpretare insieme a sistema_riferimento e precisione_coordinate; non equivale a una trasformazione WGS84 verificata.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "sistema_riferimento",
+      "canonicalMeaningToMatch": "Sistema di riferimento delle coordinate",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#sistema_riferimento",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Descrive il riferimento spaziale dichiarato.",
+      "qualification": "Proprietà condivisa distinta da latitudine/longitudine; nessuna trasformazione dedotta.",
+      "assertedLocalDefinition": "Sistema di riferimento dichiarato dalla fonte per le coordinate; nessuna trasformazione o completamento implicito.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "precisione_coordinate",
+      "canonicalMeaningToMatch": "Precisione e riferimento geometrico dichiarati",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#precisione_coordinate",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Il testo combina oggetto geometrico e accuratezza approssimata.",
+      "qualification": "Può richiedere due proprietà; non ridurre a un numero perdendo edificio/punto.",
+      "assertedLocalDefinition": "Descrizione della precisione e del riferimento geometrico riportata dalla fonte; non convertita in una tolleranza numerica.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "capienza_posti",
+      "canonicalMeaningToMatch": "Capienza in posti della struttura o sala indicata",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#capienza_posti",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Le note possono qualificare una singola sala anziché l'intero teatro.",
+      "qualification": "Proprietà di capacità da cercare con ambito e unità; non assumere capacità totale.",
+      "assertedLocalDefinition": "Posti riportati dalla fonte. Il valore puo riferirsi a una singola sala secondo note; non asserisce la capienza totale del luogo.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "spettacoli_stagione",
+      "canonicalMeaningToMatch": "Numero di spettacoli nel periodo indicato",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#spettacoli_stagione",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Conteggio qualificato dalla stagione; non elenco di eventi.",
+      "qualification": "Proprietà o misura condivisa da individuare preservando il periodo.",
+      "assertedLocalDefinition": "Numero di spettacoli riportato dalla fonte per stagione_riferimento; non un totale senza periodo e non un elenco di eventi.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "stagione_riferimento",
+      "canonicalMeaningToMatch": "Periodo della misura relativa agli spettacoli",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#stagione_riferimento",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Etichetta di stagione, non date di inizio/fine già note.",
+      "qualification": "Proprietà temporale da allineare senza inventare gli estremi.",
+      "assertedLocalDefinition": "Etichetta della stagione cui si riferisce la misura spettacoli_stagione; nessuna data di inizio o fine inferita.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "note",
+      "canonicalMeaningToMatch": "Annotazioni della fonte sul record",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#note",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Qualificazioni e discrepanze riportate dalla fonte.",
+      "qualification": "Cercare proprietà condivisa di annotazione; non sinonimo automatico della descrizione del luogo.",
+      "assertedLocalDefinition": "Annotazioni della fonte che qualificano i valori riportati, compresi ambito della capienza e discrepanze dell indirizzo.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "fonte_indirizzo",
+      "canonicalMeaningToMatch": "Provenienza delle informazioni di indirizzo",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_indirizzo",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Riferimento di fonte riferito ad alcune proprietà.",
+      "qualification": "Modellare la provenienza qualificata; non confonderla col sito del teatro.",
+      "assertedLocalDefinition": "Riferimento di provenienza riportato per i dati di indirizzo; non il sito ufficiale del teatro e non un ordine di accesso alla URL.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "fonte_coordinate",
+      "canonicalMeaningToMatch": "Provenienza delle coordinate",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_coordinate",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Riferimento di fonte relativo alla posizione dichiarata.",
+      "qualification": "Non attesta indipendentemente l'esattezza delle coordinate.",
+      "assertedLocalDefinition": "Riferimento di provenienza riportato per le coordinate; non una verifica geografica e non un ordine di accesso alla URL.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "fonte_altri_dati",
+      "canonicalMeaningToMatch": "Provenienza degli altri dati",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#fonte_altri_dati",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Riferimento di fonte con ambito da conservare.",
+      "qualification": "Non collassare le tre provenienze perdendo l'associazione alle proprietà.",
+      "assertedLocalDefinition": "Riferimento di provenienza riportato per altri dati; non una equivalenza di identita e non un ordine di accesso alla URL.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    },
+    {
+      "field": "data_verifica",
+      "canonicalMeaningToMatch": "Data della verifica dichiarata dalla fonte",
+      "currentPublishedPropertyIri": "https://api.ouf-lab.it/semantic/teatri#data_verifica",
+      "status": "LOCAL_TERM_EXTERNAL_ALIGNMENT_OPEN",
+      "sourceInterpretation": "Data del controllo descritto dalla fonte.",
+      "qualification": "Non equivale alla data di modifica o ingestione dell'oggetto.",
+      "assertedLocalDefinition": "Data di verifica dichiarata dalla fonte per il record; non data di modifica dell oggetto urbano o prova indipendente della verifica.",
+      "dataAccessLabel": "OPEN",
+      "valueVocabularyRequested": false,
+      "externalReplacementIri": null
+    }
+  ]
+}
