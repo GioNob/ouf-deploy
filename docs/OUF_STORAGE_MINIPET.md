@@ -17,7 +17,7 @@ Questo MiniPET serve a finire il percorso funzionante. Non dichiara il sistema p
 
 ## 2. Dove siamo davvero
 
-**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. Il client UDP originale ha superato PUT/HEAD/GET su SeaweedFS alle 18:39 CET, corpo di 33 byte, hash e metadati coincidenti. Il servizio UDP mantiene ancora il binding MinIO. Il prossimo passo è il [cambio effettivo UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md), preparato e verificato localmente, da eseguire sul VPS. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
+**Aggiornamento operativo 7 novembre:** Onboarding è collegato a SeaweedFS con la stessa immagine. Dopo la pubblicazione verificata della policy :61, l'asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` è stato profilato: job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED; profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342` letto, CSV UTF-8 con 13 righe e 20 colonne. **F1 PASS**, F2–F6 aperti. Il client UDP originale ha superato PUT/HEAD/GET su SeaweedFS alle 18:39 CET, corpo di 33 byte, hash e metadati coincidenti. UDP è passato a SeaweedFS alle 18:59 CET: 110 oggetti/181.364 byte coincidenti, stessa immagine, readiness/TLS verificati, vecchio container spento. La ricerca semantica successiva risponde HTTP 502: prossimo passo, [lettura mirata del percorso semantico](OUF_SEMANTIC_UPSTREAM_READ_20261107.md). La normale operazione applicativa lake resta da provare. [Evidenza](../evidence/onboarding-seaweedfs-profile-success-20261107.json) · [Stato](STATE.md).
 
 Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sopra: deploy **6c17d701**, aggiornamenti THS incorporati fino a **74409f14**; Onboarding **d5155899**, UDP **0d40da05**, Ingestion **4165b9e1** e contratto di lettura Gateway **81fdf7a5**. Le ricevute VPS/Windows sono risultati dell'operatore conservati in Git, non nuove osservazioni live dell'auditor. [Registro delle fonti e limiti](../releases/storage-functional-status-20261107.json).
 
@@ -33,7 +33,7 @@ Fonti dell'audit iniziale, storiche rispetto all'aggiornamento operativo qui sop
 | STATE e runbook di avvio riportano stack originale su MinIO e OCI33 su rete privata [E9] | Esistono due backend; manca il cambio applicativo verificato | L'avvio di SeaweedFS non cambia i binding e non sincronizza nuove scritture MinIO |
 | 403 THS anche in InPrivate, account ouf-admin confermato [E10] | Blocco dell'ingresso utente, ora seguito dall'agente principale | Non prova un difetto di SeaweedFS |
 
-**Stato corrente:** sono riusciti confronto PUT/GET dei client Onboarding, allineamento dei file, passaggio Onboarding, upload e lettura/profilazione dello stesso asset, e PUT/HEAD/GET del client UDP originale su SeaweedFS. Restano il collegamento UDP e il percorso fino al grafo, poi la ripetizione senza riparazioni manuali.
+**Stato corrente:** sono riusciti confronto PUT/GET dei client Onboarding, allineamento dei file, passaggio Onboarding, upload e lettura/profilazione dello stesso asset, e PUT/HEAD/GET del client UDP originale su SeaweedFS. Il collegamento UDP è ora riuscito; restano la sua normale operazione applicativa e il percorso fino al grafo, poi la ripetizione senza riparazioni manuali.
 
 La percentuale **39,78%** del vecchio registro è una stima euristica del 4 novembre basata su crediti di lavoro. Non misura né funzionalità né tempo residuo. Non sarà usata per pianificare o rendicontare questo percorso. I vecchi 0/8 gate e 0/21 AT restano stato della precedente accettazione formale, non una lista da chiudere prima di far funzionare il sistema.
 
@@ -73,7 +73,9 @@ La causa del vecchio 502 nella diversa configurazione isolata resta storica e no
 
 Onboarding è già verificato. La [prova UDP delle 18:39 CET](../evidence/udp-seaweedfs-client-success-operator-20261107.json) è PASS: factory e adapter installati, AWS SDK 2.54.17, PUT/HEAD/GET HTTPS, 33 byte, corpo/hash/metadati coincidenti. Le proprietà storage selezionate nel JSON dichiarato sono assenti. Spring non avviato; servizio originale invariato.
 
-Eseguire ora il [cambio UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md): fermata temporanea del solo UDP, confronto/copia dei dati correnti a writer fermo, stessa immagine `ae78f604…`, endpoint HTTPS, identità target e CA; vecchio container conservato spento. Il proprio diagnostico viene rimosso solo dopo verifica di hash, gli altri extra target sono conservati. Avviatore aggiornato per i due marker. Prove locali PASS, **cambio VPS pendente**. Readiness e TLS del sostituto non chiuderanno F2 da soli: segue una normale operazione applicativa lake e la verifica del percorso Ingestion→UDP.
+**Cambio UDP completato** alle 18:59 CET: [ricevuta](../evidence/udp-seaweedfs-ready-operator-20261107.json) con 110 oggetti/181.364 byte coincidenti, zero copie aggiuntive, sorgente invariata a writer fermo, diagnostico rimosso e zero extra target. Stessa immagine, nuova rete/binding HTTPS, readiness/TLS e 118 certificati JDK conservati più CA. Vecchio container spento. Non ripetere il cambio.
+
+F2 non è ancora PASS: manca la normale operazione applicativa lake. La prosecuzione E2E ha trovato `semantic.search` HTTP 502; il profilo CSV è ancora leggibile, MCP HEALTHY per il proprio modulo. Una lettura separata di stato Ingestion è negata; quel grant non è nel catalogo corrente, mentre semantic.search è presente per admin. Nessun legame con SeaweedFS provato. La [lettura mirata](OUF_SEMANTIC_UPSTREAM_READ_20261107.md) di stato, rotta, DNS/TCP e categorie dei log è pronta, con test locali PASS e nessuna modifica VPS. Risolvere il blocco semantico osservato e continuare dal profilo esistente.
 
 | Percorso | Punto noto nel codice | Verifica minima |
 | --- | --- | --- |
@@ -86,7 +88,7 @@ Scegliere esplicitamente la generazione applicativa da usare. Non aggiornare tut
 
 MinIO è stato riavviato dopo la copia storica. Il confronto precedente, fatto con sorgenti ferme, resta valido per quel momento; **non certifica l'uguaglianza attuale**. Durante il cambio non devono esserci scritture concorrenti sui due backend. Usare una pausa circoscritta dei writer e una copia/riconciliazione del dataset corrente; con i 120 oggetti storici non è giustificato costruire prima una migrazione online complessa. Se il dataset è cambiato, si lavora sui conteggi reali nuovi.
 
-Il comando `seaweedfs` esistente avvia un servizio aggregato su rete interna, senza porte pubblicate, con volume separato e restart=no. È un punto di partenza funzionante per la prova; non occorre trasformarlo ora in una topologia HA. Restano da verificare i collegamenti dai container applicativi: un handshake nel namespace SeaweedFS non li dimostra.
+Il comando `seaweedfs` esistente avvia un servizio aggregato su rete interna, senza porte pubblicate, con volume separato e restart=no. È un punto di partenza funzionante per la prova; non occorre trasformarlo ora in una topologia HA. I collegamenti dei container Onboarding e UDP sono ora verificati nelle rispettive ricevute di cambio; la sola readiness non sostituisce la prova applicativa UDP ancora aperta.
 
 ### F3–F5: che cosa rende l'E2E una prova reale
 

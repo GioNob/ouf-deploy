@@ -1,6 +1,6 @@
 # Prova UDP installato → SeaweedFS
 
-**ESEGUITA CON SUCCESSO** il 7 novembre 2026 alle 17:39:37 UTC: PUT/HEAD/GET, 33 byte, hash e metadati coincidenti, servizio originale invariato. [Ricevuta](../evidence/udp-seaweedfs-client-success-operator-20261107.json). Non ripetere questa prova: il prossimo passo è il [cambio UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md). Quanto segue conserva la procedura eseguita.
+**ESEGUITA CON SUCCESSO** il 7 novembre 2026 alle 17:39:37 UTC: PUT/HEAD/GET, 33 byte, hash e metadati coincidenti, servizio originale invariato. [Ricevuta](../evidence/udp-seaweedfs-client-success-operator-20261107.json). Non ripetere questa prova: anche il [cambio UDP](OUF_UDP_SEAWEEDFS_SWITCH_20261107.md) è ora completato. Prossima azione in [STATE](STATE.md). Quanto segue conserva la procedura eseguita.
 
 La lettura corrente ha identificato UDP `sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52`, JAR `/app/app.jar` e AWS SDK `2.54.17`. Il target già preparato è `https://ouf-seaweedfs-stage:9002`, bucket `ouf-udp`, path-style true, us-east-1. [Ricevuta](../evidence/udp-current-storage-bindings-operator-20261107.json).
 
