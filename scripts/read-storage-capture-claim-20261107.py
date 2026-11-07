@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import stat
 import sys
+import time
 
 
 AREA = Path('/var/lib/ouf-storage-migration/capture-after-held-stop-20261107-v1')
@@ -78,7 +79,111 @@ def open_directory(stack, path, parent=None, private=False):
     return fd
 
 
-def readback(area):
+def capture_processes(area, proc_root='/proc'):
+    """Observe the exact launcher and workers retaining scope output descriptors."""
+    program = b'/var/lib/ouf-storage-capture-after-held-stop-20261107.py'
+    python = os.path.realpath(sys.executable)
+    scope = str(area) + '/'
+    launchers, workers, complete = 0, 0, True
+    deadline = time.monotonic() + 5
+    try:
+        processes = os.scandir(proc_root)
+    except OSError:
+        return {'launcherMatches': 0, 'scopeOutputProcessMatches': 0,
+                'localProcessScanCompleted': False}
+    with processes:
+        for index, entry in enumerate(processes):
+            if index >= 8192 or time.monotonic() >= deadline:
+                complete = False
+                break
+            if not entry.name.isdecimal():
+                continue
+            try:
+                if entry.stat(follow_symlinks=False).st_uid != 0:
+                    continue
+                try:
+                    executable = os.readlink(entry.path + '/exe')
+                except FileNotFoundError:
+                    executable = None
+                if executable in (python, python + ' (deleted)'):
+                    with open(entry.path + '/cmdline', 'rb') as command:
+                        args = command.read(8193).split(b'\0')
+                    if args[1:7] == [b'-I', b'-B', b'-S', program,
+                                     b'--decision-reference', DECISION.encode()]:
+                        launchers += 1
+                for number in ('1', '2'):
+                    try:
+                        if os.readlink(entry.path + '/fd/' + number).startswith(scope):
+                            workers += 1
+                            break
+                    except FileNotFoundError:
+                        pass
+            except FileNotFoundError:
+                continue
+            except PermissionError:
+                complete = False
+    return {'launcherMatches': launchers, 'scopeOutputProcessMatches': workers,
+            'localProcessScanCompleted': complete}
+
+
+def stderr_hints(capture, name, info):
+    if not info.st_size:
+        return []
+    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_NOATIME, dir_fd=capture)
+    with os.fdopen(fd, 'rb') as stream:
+        need(frame(info) == frame(os.fstat(fd)), 'COMMAND_METADATA_CHANGED')
+        stream.seek(max(info.st_size - 16384, 0))
+        sample = stream.read(16384).lower()
+        need(frame(info) == frame(os.fstat(fd)), 'COMMAND_METADATA_CHANGED')
+    indicators = (
+        (b'no space left on device', 'NO_SPACE_REPORTED'),
+        (b'file size limit exceeded', 'FILE_SIZE_LIMIT_REPORTED'),
+        (b'file changed as we read it', 'TAR_SOURCE_CHANGE_REPORTED'),
+        (b'no such file or directory', 'PATH_MISSING_REPORTED'),
+        (b'permission denied', 'PERMISSION_DENIED_REPORTED'),
+        (b'input/output error', 'IO_ERROR_REPORTED'),
+    )
+    return [label for needle, label in indicators if needle in sample]
+
+
+def unsealed_progress(capture, scope, area, stack, include_processes):
+    if capture is None:
+        return {}
+    processes = capture_processes(area) if include_processes else {}
+    commands = []
+    for ordinal in range(1, 257):
+        name = 'command-%03d.stderr.private' % ordinal
+        info = file_info(capture, name)
+        if info is not None:
+            commands.append((ordinal, name, info))
+    result = dict(processes, startedCommandMarkers=len(commands))
+    if commands:
+        ordinal, name, info = commands[-1]
+        result.update(lastCommandOrdinal=ordinal, lastCommandStderrBytes=info.st_size)
+        if (not processes or processes['localProcessScanCompleted']
+                and not (processes['launcherMatches'] or processes['scopeOutputProcessMatches'])):
+            result['lastCommandStderrHints'] = stderr_hints(capture, name, info)
+    try:
+        payload = open_directory(stack, 'payload', capture, private=True)
+    except FileNotFoundError:
+        payload = None
+    claim = file_info(scope, 'claim.private.json')
+    space = os.fstatvfs(capture)
+    result.update(
+        scopeClaimAgeSeconds=None if claim is None else max(0, int(time.time() - claim.st_mtime)),
+        captureAvailableBytes=space.f_bavail * space.f_frsize,
+        payloadPresent=payload is not None,
+        sourceTarMarkers=0 if payload is None else sum(file_info(payload, 'source-%03d.tar' % i) is not None
+                                                       for i in range(34)),
+        sourceManifestsPresent=payload is not None and file_info(payload, 'source-manifests.private.json') is not None,
+        imageTarPresent=payload is not None and file_info(payload, 'images.tar') is not None,
+        memberManifestPresent=payload is not None and file_info(payload, 'manifest.private.json') is not None,
+        plaintextBundleMarker=file_info(capture, 'backup.tar.partial') is not None,
+    )
+    return result
+
+
+def readback(area, include_processes=False):
     report = {'schema': READER_SCHEMA, 'providerRequests': 0, 'targetWrites': 0,
               'archiveRehashed': False, 'acceptanceCreditAdded': 0}
     with contextlib.ExitStack() as stack:
@@ -104,7 +209,8 @@ def readback(area):
         archive = None if capture is None else file_info(capture, 'backup.tar.age')
         report['archivePresent'] = archive is not None
         if file_info(scope, 'result.json') is None:
-            return dict(report, status='CAPTURE_OUTCOME_UNSEALED')
+            return dict(report, status='CAPTURE_OUTCOME_UNSEALED',
+                        progress=unsealed_progress(capture, scope, area, stack, include_processes))
 
         need(archive is not None and not report['encryptedPartialPresent'] and report['planPresent'],
              'FINAL_CAPTURE_FILES_REQUIRED')
@@ -149,7 +255,7 @@ def main():
     try:
         need(os.geteuid() == os.getegid() == 0 and sys.flags.isolated and sys.flags.no_site
              and sys.dont_write_bytecode and len(sys.argv) == 1, 'ROOT_ISOLATED_READBACK_REQUIRED')
-        report = readback(AREA)
+        report = readback(AREA, include_processes=True)
     except (ReadbackHeld, OSError, ValueError) as error:
         reason = str(error) if isinstance(error, ReadbackHeld) else 'LOCAL_READBACK_UNAVAILABLE'
         print(json.dumps({'schema': READER_SCHEMA, 'status': 'READBACK_HELD', 'reason': reason,

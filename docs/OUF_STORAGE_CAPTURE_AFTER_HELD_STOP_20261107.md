@@ -1,3 +1,9 @@
+## 7 novembre — cattura avviata, esito non sigillato
+
+Il [JSON dell'operatore](../evidence/storage-capture-unsealed-operator-20261107.json) attesta claim esterno, piano, directory e claim interno del produttore. Alla lettura erano assenti ricevuta interna, ricevuta finale utilizzabile, archivio e cifrato parziale. Il claim interno precede inventario Docker e archiviazione. Non identifica lo stadio successivo, l'errore originario o l'attività corrente.
+
+Il [lettore aggiornato](../scripts/read-storage-capture-claim-20261107.py) osserva gli indicatori locali dei comandi e delle fasi, lo spazio disponibile e, su Linux, il launcher esatto e processi con stdout/stderr nello scope. La scansione è puntuale e limitata; un conteggio zero non conferisce autorità di recupero. Soltanto classi di stderr riconosciute e conteggi possono uscire; nessun log o nome privato. Otto prove locali PASS, inclusa fixture dei descrittori proc, redazione, progressione parziale e ricevuta sigillata. Il tentativo e i parziali restano conservati; l'eventuale esito originale del primo terminale è il dato più diretto sulla causa. MiniPET 39,78%, credito aggiunto zero.
+
 ## 7 novembre — claim di cattura già presente
 
 L'operatore ha riportato il riuso esatto dei due strumenti e `HELD/CAPTURE_CONTINUATION_ALREADY_CLAIMED`. Il tentativo osservato si è fermato prima di iniziare una nuova cattura. Il precedente esito sul VPS è da riconciliare con [la ricevuta](../evidence/storage-capture-claim-held-operator-20261107.json) e [il lettore locale](../scripts/read-storage-capture-claim-20261107.py). Usare il comando di lettura ancorato a commit e SHA-256 consegnato all'operatore. Lo scope resta conservato. Nessun replay, reset o uso di un parziale per Windows.
