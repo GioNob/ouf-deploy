@@ -43,3 +43,7 @@ Aperto un MiniPET dedicato alla sostituzione S3. Il piano partiva con 8 gate e 2
 ## 7 novembre 2026 — Verifica della sessione THS
 
 Il selettore ha restituito lo stesso 403 in InPrivate. Il redirect OIDC effettivo del client THS include lo scope `ouf.managed-source.file.upload`. La lettura della policy `ouf-lab-authorization:59` ha trovato un ruolo con questa capability per `ouf-admin` e nessun grant di upload per `giovanni-chatgpt`. Rimane da identificare il soggetto della sessione browser e verificare il permesso effettivo.
+
+## 7 novembre 2026 — Account THS confermato
+
+L’operatore ha confermato il nome utente `ouf-admin` nella finestra InPrivate. Il login THS richiede già lo scope di upload. Preparata una lettura della configurazione Keycloak sul client `ouf-authorization-ths` per l’utente esatto. Usa un login amministrativo locale e due GET. L’esecuzione sul VPS e il riscontro sui claim restano pendenti. [Comando sorgente](../scripts/read-ouf-ths-upload-scope.py)
