@@ -1,6 +1,6 @@
 # Passaggio UDP corrente a SeaweedFS
 
-**Stato: preparato e verificato localmente; esecuzione VPS pendente.** Questo è il cambio effettivo di UDP. Onboarding è già su SeaweedFS e non viene riavviato.
+**ESEGUITO CON SUCCESSO** il 7 novembre 2026 alle 17:59:28 UTC / 18:59:28 CET. [Ricevuta](../evidence/udp-seaweedfs-ready-operator-20261107.json): 110 oggetti/181.364 byte coincidenti, stessa immagine, readiness e TLS verificati, vecchio container spento, proprio diagnostico rimosso, zero extra target. Non rilanciare il cambio. Onboarding resta su SeaweedFS. La procedura sotto è conservata come storia dell'esecuzione; lo stato corrente è in [STATE](STATE.md).
 
 ## Evidenza acquisita
 
