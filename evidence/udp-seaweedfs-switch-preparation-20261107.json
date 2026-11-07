@@ -1,0 +1,76 @@
+{
+  "schema": "ouf.udp-seaweedfs-switch-preparation.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASS_VPS_SWITCH_PENDING",
+  "scope": "Current UDP bucket alignment while original UDP is stopped, then replacement using the same installed image and private SeaweedFS bindings.",
+  "script": "scripts/switch-udp-to-seaweedfs-20261107.py",
+  "scriptBytes": 47606,
+  "scriptSha256": "e9f7235e4f46bfb0e0d9bf789120bff0f8363951c745c396f0460d7c860363a3",
+  "runtimeHelper": "scripts/ouf-runtime-20261107.py",
+  "runtimeHelperSha256": "333d2b01bd507900ad2e4e10d0994714ed516b40d7fe81f6f51ea705302fbf48",
+  "operatorClientProbeReceipt": "evidence/udp-seaweedfs-client-success-operator-20261107.json",
+  "localChecks": [
+    {
+      "command": "python3 tests/check_udp_switch.py scripts/switch-udp-to-seaweedfs-20261107.py",
+      "result": "PASS",
+      "tests": 7,
+      "scope": "Mocked Docker lifecycle, preserved config/routes/image/mounts, credential replacement, JSON precedence guards, stopped-writer copy, copy/create failure restore, no automatic rollback after start dispatch"
+    },
+    {
+      "command": "python3 tests/check_udp_copy.py scripts/switch-udp-to-seaweedfs-20261107.py",
+      "result": "PASS",
+      "scope": "Local HTTP fixture using embedded S3 copier: copy/readback, reuse, content conflict, tagged new object hold, source drift, source LIST403, source writes blocked, owned diagnostic cleanup guarded by size/hash"
+    },
+    {
+      "command": "python3 tests/check_runtime_two_storage_bindings.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS",
+      "scope": "Independent Onboarding and UDP replacement markers, refusal of incomplete marker, old owner running or modified replacement config"
+    },
+    {
+      "command": "python3 tests/check_runtime_storage_binding.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS",
+      "scope": "Existing Onboarding marker regression"
+    },
+    {
+      "check": "Python syntax for switch and runtime helper",
+      "result": "PASS"
+    }
+  ],
+  "runtimeExecutionByAgent": false,
+  "vpsSwitchExecuted": false,
+  "applicationHttpLakeOperationTested": false,
+  "applicationBindingsChanged": false,
+  "secretsIncluded": false,
+  "permissionsChanged": false,
+  "applicationImageChanged": false,
+  "directDatabaseRequests": 0,
+  "plannedEffects": {
+    "temporaryServiceStop": "UDP_ONLY",
+    "sourceBucket": "ouf-udp",
+    "sourceS3ReadOnly": true,
+    "destinationCopy": "MISSING_KEYS_ONLY_IF_NONE_MATCH",
+    "existingDestinationDifferent": "HOLD_WITHOUT_OVERWRITE",
+    "sourceSnapshotRecheckedWhileStopped": true,
+    "knownOwnedDiagnostic": "DELETE_ONLY_AFTER_MATCHING_33_BYTES_AND_SHA256",
+    "otherTargetExtras": "RETAIN_AND_REPORT_COUNT",
+    "jvmTrust": "MERGE_ORIGINAL_JDK_CERTIFICATES_WITH_PRIVATE_CA",
+    "credentials": "TARGET_DEFAULT_PROFILE_FILE_REPLACES_SOURCE_STATIC_AWS_ENV",
+    "sourceStoppedContainer": "RETAIN_WITH_RESTART_DISABLED",
+    "onboardingBindingsChanged": false,
+    "applicationRestartMayAccessDatabase": true,
+    "preReplacementStartFailure": "ATTEMPT_ORIGINAL_RESTORE",
+    "postReplacementStartFailure": "HOLD_NO_AUTOMATIC_MINIO_ROLLBACK",
+    "restartHelper": "RESOLVES_BOTH_ONBOARDING_AND_UDP_MARKERS"
+  },
+  "limits": {
+    "maxObjects": 512,
+    "maxBytesPerObject": 67108864,
+    "maxTotalBytes": 268435456,
+    "maxCopyAndSwitchSeconds": 600,
+    "reservedPreStartRestoreSeconds": 90,
+    "targetTagsFreshlyCompared": false,
+    "newTaggedSourceObjects": "HOLD",
+    "sourceEmpty": "HOLD",
+    "normalApplicationOperationAndE2E": "PENDING"
+  }
+}

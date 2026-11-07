@@ -1,0 +1,238 @@
+"""Focused replacement sequencing fixture; native Docker/VPS are not simulated as proven."""
+import copy
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import types
+import unittest
+from unittest.mock import patch
+
+spec = importlib.util.spec_from_file_location('switch', Path(sys.argv[1]))
+s = importlib.util.module_from_spec(spec); spec.loader.exec_module(s)
+
+
+def original(image):
+    return {'Id': 'a' * 64, 'Name': '/ouf-udp', 'Image': image,
+        'State': {'Running': True, 'Restarting': False, 'Status': 'running', 'Pid': 123,
+                  'StartedAt': 'original-start'},
+        'Config': {'Image': 'installed:tag', 'User': '10004:10004',
+            'Entrypoint': ['java', '-jar', '/app/app.jar'], 'Cmd': [],
+            'Env': ['OUF_UDP_S3_ENDPOINT=http://ouf-minio:9000',
+                    'OUF_UDP_S3_BUCKET=ouf-udp', 'OUF_UDP_S3_REGION=us-east-1', 'OUF_UDP_S3_PATH_STYLE=true',
+                    'AWS_ACCESS_KEY_ID=old-identity', 'AWS_SECRET_ACCESS_KEY=old-secret',
+                    'SPRING_APPLICATION_JSON={"server":{"port":8080},"unrelated":"preserve"}',
+                    'JAVA_TOOL_OPTIONS=-Xmx512m', 'UNRELATED=keep'], 'Labels': {'existing': 'kept'}},
+        'HostConfig': {'NetworkMode': s.BACKEND, 'AutoRemove': False, 'VolumesFrom': None,
+            'Memory': 600000000, 'PidsLimit': 128, 'SecurityOpt': ['no-new-privileges'],
+            'Binds': ['/retained/secrets:/run/secrets:ro'], 'Mounts': [],
+            'RestartPolicy': {'Name': 'unless-stopped', 'MaximumRetryCount': 0},
+            'PortBindings': {}, 'OomKillDisable': False},
+        'Mounts': [{'Type': 'bind', 'Source': '/retained/secrets', 'Destination': '/run/secrets',
+                    'RW': False, 'Propagation': 'rprivate'}],
+        'NetworkSettings': {'Networks': {s.BACKEND: {'NetworkID': 'backend-id',
+            'IPAddress': '172.24.0.12', 'GlobalIPv6Address': '', 'Gateway': '172.24.0.1',
+            'MacAddress': '02:42:ac:18:00:0c', 'Aliases': ['ouf-udp', 'owner-alias'],
+            'IPAMConfig': None}}}}
+
+
+class SwitchTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(dir=Path(__file__).parent)
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name).resolve()
+        self.helper = s.copier()
+        self.app = original(self.helper.APP_IMAGE)
+
+    def test_request_preserves_resources_mounts_image_and_routes(self):
+        request = s.make_request(self.app, self.root, 'token', self.helper.APP_IMAGE)
+        env = dict(row.split('=', 1) for row in request['Env'])
+        self.assertEqual(request['Image'], self.app['Image'])
+        self.assertEqual(request['HostConfig']['Memory'], 600000000)
+        self.assertEqual(request['HostConfig']['Binds'], self.app['HostConfig']['Binds'])
+        self.assertEqual(request['HostConfig']['SecurityOpt'], ['no-new-privileges'])
+        self.assertEqual(env['UNRELATED'], 'keep')
+        self.assertNotIn('AWS_ACCESS_KEY_ID', env)
+        self.assertNotIn('AWS_SECRET_ACCESS_KEY', env)
+        self.assertEqual(env['AWS_SHARED_CREDENTIALS_FILE'], s.DEST + '/credentials')
+        self.assertEqual(env['SPRING_APPLICATION_JSON'], '{"server":{"port":8080},"unrelated":"preserve"}')
+        self.assertIn('-Xmx512m', env['JAVA_TOOL_OPTIONS'])
+        self.assertEqual(request['NetworkingConfig']['EndpointsConfig'][s.BACKEND]['IPAMConfig']['IPv4Address'], '172.24.0.12')
+        self.assertEqual(request['NetworkingConfig']['EndpointsConfig'][s.BACKEND]['Aliases'], ['ouf-udp', 'owner-alias'])
+        self.assertEqual(env['OUF_UDP_S3_ENDPOINT'], 'https://ouf-seaweedfs-stage:9002')
+        self.assertTrue(request['HostConfig']['Mounts'][-1]['ReadOnly'])
+
+    def test_staging_cli_override_replaced_and_custom_truststore_rejected(self):
+        self.app['Config']['Cmd'] = ['--server.port=8081', '--ouf.udp.lake.s3.endpoint',
+                                     'http://old:9000', '--ouf.udp.lake.s3.bucket=old']
+        request = s.make_request(self.app, self.root, 'token', self.helper.APP_IMAGE)
+        self.assertNotIn('http://old:9000', request['Cmd'])
+        self.assertEqual(sum(a.startswith('--ouf.udp.lake.s3.endpoint=') for a in request['Cmd']), 1)
+        self.assertIn('--server.port=8081', request['Cmd'])
+        self.app['Config']['Env'].append('JDK_JAVA_OPTIONS=-Djavax.net.ssl.trustStore=/custom')
+        with self.assertRaisesRegex(RuntimeError, '^EXISTING_CUSTOM_TRUSTSTORE_REQUIRES_MERGE$'):
+            s.make_request(self.app, self.root, 'token', self.helper.APP_IMAGE)
+
+    def test_json_storage_drift_rejected_and_port_precedence(self):
+        s.verify_source_binding(self.app)
+        self.app['Config']['Env'].append('PORT=8082')
+        self.assertEqual(s.readiness_port(self.app), 8080)  # JSON server.port overrides YAML placeholder.
+        self.app['Config']['Cmd'] = ['--management.server.port=9090']
+        self.assertEqual(s.readiness_port(self.app), 9090)
+        self.app['Config']['Env'] = [row for row in self.app['Config']['Env']
+                                    if not row.startswith('SPRING_APPLICATION_JSON=')]
+        self.app['Config']['Env'].append('SPRING_APPLICATION_JSON={"ouf.udp.lake.s3.endpoint":"http://other:9000"}')
+        with self.assertRaisesRegex(RuntimeError, '^UDP_STORAGE_JSON_CHANGED_SINCE_PROBE$'):
+            s.verify_source_binding(self.app)
+
+    def run_switch(self, fail=None):
+        h = self.helper
+        h.ROOT = self.root; h.PLAN = self.root / 'plan.json'; h.BINDINGS = self.root / 'bindings'
+        (h.BINDINGS / 'config/tls').mkdir(parents=True)
+        (h.BINDINGS / 'config/tls/ca.pem').write_bytes(b'fixture-ca')
+        client = h.BINDINGS / 'clients/udp'; client.mkdir(parents=True)
+        (client / 'binding.private.json').write_text(json.dumps({'environment': {
+            'OUF_UDP_S3_ENDPOINT': 'https://ouf-seaweedfs-stage:9002',
+            'OUF_UDP_S3_BUCKET': h.BUCKET, 'OUF_UDP_S3_REGION': 'us-east-1', 'OUF_UDP_S3_PATH_STYLE': 'true'}}))
+        (client / 'credentials').write_text('[default]\naws_access_key_id=fixture-access\naws_secret_access_key=fixture-secret\n')
+        prior = self.root / 'prior'; prior.mkdir()
+        manifest = [{'key': 'lake/fixture', 'sha256': s.digest(b'fixture-body'),
+                     'size': 12, 'metadata': {}}]
+        manifest_raw = json.dumps(manifest).encode()
+        manifest_sha = s.digest(manifest_raw)
+        (prior / 'objects-verified.private.json').write_bytes(manifest_raw)
+        (prior / 'result.json').write_text(json.dumps({'status': 'UDP_INSTALLED_CLIENT_PUT_HEAD_GET_MATCH', 'udpImage': s.APP_IMAGE, 'diagnosticObjectKey': s.DIAGNOSTIC_KEY, 'payloadSha256': s.DIAGNOSTIC_SHA, 'javaTransfer': {'bodyMatches': True, 'metadataMatches': True}, 'sourceApplicationJsonStorage': {'storageDeclarations': []}}))
+        minio = copy.deepcopy(self.app)
+        minio.update(Id='b' * 64, Name='/ouf-minio', Image='sha256:source')
+        sea = copy.deepcopy(self.app)
+        sea.update(Id='c' * 64, Name='/ouf-seaweedfs-stage', Image=h.SEA_IMAGE)
+        sea['NetworkSettings']['Networks'] = {s.PRIVATE: {'IPAddress': '172.30.0.2'}}
+        roles = {'udp': {'containerId': self.app['Id']},
+                 'minio': {'containerId': minio['Id'], 'nativeImage': minio['Image']}}
+        h.PLAN.write_text(json.dumps({'roles': roles})); h.PLAN_SHA = s.digest(h.PLAN.read_bytes())
+        docs = {row['Id']: copy.deepcopy(row) for row in [self.app, minio, sea]}
+        events = []
+        class FakeEngine:
+            def inspect(self, ref):
+                for doc in docs.values():
+                    if ref in (doc['Id'], doc['Name'].lstrip('/')):
+                        return copy.deepcopy(doc)
+                raise AssertionError('fixture reference missing')
+
+            def request(self, method, path, body=None, **kwargs):
+                events.append((method, path))
+                if method == 'GET' and path == '/networks/' + s.PRIVATE:
+                    return {'Internal': True, 'Driver': 'bridge'}
+                if path.startswith('/containers/create?'):
+                    candidate = copy.deepcopy(self_outer.app)
+                    candidate.update(Id='d' * 64, Name='/ouf-udp')
+                    candidate['Config'] = {k: copy.deepcopy(v) for k, v in body.items() if k not in ('HostConfig', 'NetworkingConfig')}
+                    candidate['HostConfig'] = copy.deepcopy(body['HostConfig'])
+                    candidate['State'].update(Status='created', Running=False, Pid=0)
+                    candidate['Mounts'].append({'Type': 'bind', 'Source': body['HostConfig']['Mounts'][-1]['Source'],
+                        'Destination': s.DEST, 'RW': False, 'Propagation': 'rprivate'})
+                    candidate['NetworkSettings']['Networks'][s.PRIVATE] = {'IPAddress': '172.30.0.3'}
+                    docs[candidate['Id']] = candidate
+                    if fail == 'lost-create':
+                        raise OSError('simulated lost response')
+                    return {'Id': candidate['Id']}
+                if path.startswith('/networks/') and path.endswith('/disconnect'):
+                    docs[body['Container']]['NetworkSettings']['Networks'].pop(s.BACKEND)
+                    return None
+                if path.startswith('/networks/') and path.endswith('/connect'):
+                    docs[body['Container']]['NetworkSettings']['Networks'][s.BACKEND] = copy.deepcopy(self_outer.app['NetworkSettings']['Networks'][s.BACKEND])
+                    return None
+                if path.startswith('/containers/'):
+                    cid = path.split('/')[2].split('?')[0]
+                    doc = docs[cid]
+                    if method == 'DELETE':
+                        del docs[cid]; return None
+                    if '/update' in path:
+                        doc['HostConfig'].update(copy.deepcopy(body))
+                    elif '/stop?' in path:
+                        doc['State'].update(Status='exited', Running=False, Pid=0)
+                    elif '/rename?' in path:
+                        doc['Name'] = '/' + path.split('name=')[1]
+                    elif '/start' in path:
+                        doc['State'].update(Status='running', Running=True, Pid=999)
+                        if cid == 'd' * 64 and fail == 'lost-start':
+                            raise OSError('simulated lost start response')
+                    else:
+                        raise AssertionError(path)
+                    return None
+                raise AssertionError((method, path))
+        self_outer = self
+        engine = FakeEngine()
+        def fake_docker(*args, **kwargs):
+            output = b''
+            if args[0:2] == ('container', 'ls'):
+                output = b'\n'.join(json.dumps({'ID': d['Id'], 'Names': d['Name'].lstrip('/')}).encode() for d in docs.values())
+            elif args[-2:] in (('id', '-u'), ('id', '-g')):
+                output = b'10004\n'
+            return types.SimpleNamespace(returncode=0, stdout=output, stderr=b'')
+        class FakeS3:
+            def __init__(self, *args, **kwargs): self.calls = 0
+            def request(self, *args, **kwargs):
+                self.calls += 1
+                return 200, b'id,label\n1,ouf-udp-storage-probe\n', []
+        rows = [{'Key': 'lake/fixture', 'Size': 12, 'ETag': 'fixture-etag', 'LastModified': 'fixture'}]
+        def align(source, destination, given_rows, report, journal):
+            self.assertFalse(docs[self.app['Id']]['State']['Running'])
+            events.append(('ALIGN', 'original-stopped'))
+            if fail == 'copy':
+                raise RuntimeError('EXISTING_TARGET_OBJECT_DIFFERS')
+            report['objectsAlreadyMatched'] += 1
+            return manifest
+        h.source_credentials = lambda *args: (('synthetic-user', 'synthetic-secret'), 'us-east-1')
+        h.S3 = FakeS3; h.listing = lambda *args: copy.deepcopy(rows); h.align = align
+        def fake_trust(app, folder, ca, report):
+            (folder / 'truststore.p12').write_bytes(b'fixture-trust')
+        report = {'status': 'INCOMPLETE', 'objectsAlreadyMatched': 0, 'objectsCopiedAndVerified': 0, 'putAttempts': 0}
+        with patch.multiple(s, ROOT=self.root, MARKER=self.root / 'current.json', PREVIOUS=prior,
+                CA_SHA=s.digest(b'fixture-ca'), copier=lambda: h, Engine=lambda: engine, docker=fake_docker,
+                prepare_truststore=fake_trust, readiness=lambda *args: True,
+                verify_installed_classes=lambda app: None, require_host_tls_tools=lambda: None,
+                network_tls=lambda *args: None, clean_own_diagnostic=lambda m,d,r: r.update(ownDiagnosticObjectRemoved=True)), patch.object(s.os, 'chown'):
+            if fail:
+                with self.assertRaises((RuntimeError, OSError)):
+                    s.execute(report)
+            else:
+                s.execute(report)
+        return report, docs, events
+
+    def test_success_freezes_original_before_align_then_starts_new(self):
+        report, docs, events = self.run_switch()
+        self.assertEqual(report['status'], 'UDP_SEAWEEDFS_READY')
+        self.assertFalse(docs['a' * 64]['State']['Running'])
+        self.assertTrue(docs['d' * 64]['State']['Running'])
+        self.assertTrue(report['sourceSnapshotUnchangedWhileStopped'])
+        self.assertLess(events.index(('ALIGN', 'original-stopped')),
+                        events.index(('POST', '/containers/' + 'd' * 64 + '/start')))
+
+    def test_copy_failure_restores_original_without_starting_replacement(self):
+        report, docs, events = self.run_switch('copy')
+        self.assertTrue(report['originalRestoredBeforeReplacementStart'])
+        self.assertTrue(docs['a' * 64]['State']['Running'])
+        self.assertNotIn('d' * 64, docs)
+        self.assertFalse((self.root / 'current.json').exists())
+
+    def test_lost_create_response_removes_only_created_candidate_and_restores_original(self):
+        report, docs, events = self.run_switch('lost-create')
+        self.assertTrue(report['originalRestoredBeforeReplacementStart'])
+        self.assertTrue(docs['a' * 64]['State']['Running'])
+        self.assertEqual(docs['a' * 64]['Name'], '/ouf-udp')
+        self.assertNotIn('d' * 64, docs)
+
+    def test_lost_start_response_never_restarts_minio_writer(self):
+        report, docs, events = self.run_switch('lost-start')
+        self.assertFalse(docs['a' * 64]['State']['Running'])
+        self.assertTrue(docs['d' * 64]['State']['Running'])
+        self.assertIsNone(report['applicationBindingsChanged'])
+        self.assertNotIn(('POST', '/containers/' + 'a' * 64 + '/start'), events)
+        self.assertTrue((self.root / 'current.json').exists())
+
+
+unittest.main(argv=[sys.argv[0]])
