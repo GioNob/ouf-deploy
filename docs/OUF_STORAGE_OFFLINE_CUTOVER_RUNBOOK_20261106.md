@@ -1,3 +1,7 @@
+## Passo corrente — staging OCI33 in due operazioni
+
+[Blocco unico VPS](OUF_STORAGE_OCI33_STAGING_20261107.md) per preparare una copia dei dati del rehearsal e avviarla una volta in rete isolata. L'esito sul VPS è pendente.
+
 ## 7 novembre — censimento amministrativo ed esterno
 
 Giovanni riferisce «nessun noto» per ulteriori strumenti amministrativi e consumer esterni con scritture dirette su MinIO o PostgreSQL. [Ricevuta](../evidence/storage-external-writers-owner-observation-20261107.json). I percorsi applicativi già mappati e i contenimenti host osservati restano acquisiti. La dichiarazione registra quanto noto all'operatore. L'assenza tecnica dei percorsi e la tenuta del blocco devono risultare dal pacchetto operativo.
