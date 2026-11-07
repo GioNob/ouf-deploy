@@ -1,3 +1,5 @@
+> **Sequenza operativa superata il 7 novembre 2026.** La priorità dell'owner è ora SeaweedFS funzionante → E2E ripetibile. Usare [MiniPET corrente](OUF_STORAGE_MINIPET.md) e [STATE](STATE.md). Questo documento conserva proposte, prove e comandi storici: non eseguirli automaticamente e non dedurre lo stato corrente dai checkpoint sotto. DR/RPO/RTO e industrializzazione sono rinviati. Il piano strutturato associato resta DRAFT, non viene promosso a eseguibile.
+
 ## Coppia corrente — finestra JFR letta e verifica mirata del trasporto
 
 Il VPS ha letto il JSON JFR completo nella finestra di 10,396 secondi. Ha osservato 329 eventi di eccezione, 299 con frame S3 SDK, un handshake TLS sulla porta 9002 e gli indizi di rifiuto della connessione e loopback IPv6. I due file conservati sono risultati invariati. Il riepilogo aggregato non lega il rifiuto o il timeout a una specifica operazione né prova che il PUT sia arrivato a SeaweedFS. [Ricevuta VPS](../evidence/storage-oci33-onboarding-upload-jfr-window-operator-20261107.json).
@@ -181,3 +183,4 @@ Riutilizzare senza riesecuzione immotivata:
 2. **Fermo e ritorno:** completare il pacchetto operativo con censimento degli11percorsi e del container attivo fuori roster, evidenza di accessi, backup indipendente/restore, finestra e comandi legati ai binding. Uscita: proposta realmente eseguibile e reviewabile, o elenco minimo degli input che richiedono l'azione di Giovanni. Non richiedere ora un'approvazione al cutover incompleto.
 
 MiniPET18,3/46=39,78%;0/8gate,0/21AT,0/120migrati. Questo runbook e la registrazione degli esiti non sono nuovi passi di migrazione e non aggiungono credito.
+
