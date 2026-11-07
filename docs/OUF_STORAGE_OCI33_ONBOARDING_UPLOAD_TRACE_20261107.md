@@ -11,6 +11,27 @@ La [lettura del tentativo precedente](../evidence/storage-oci33-onboarding-uploa
 
 Il tentativo precedente rimane conservato. La nuova operazione riguarda esclusivamente le copie. Durata massima 12 minuti. La scrittura e decodifica del file JFR sono state verificate localmente con il JRE dell'immagine esatta. Il tentativo VPS si è fermato sul 502.
 
+## Blocco unico per la lettura in streaming
+
+1. Verificare lo SHA-256 della registrazione e leggere le dimensioni e gli indizi del primo decoder. Provare a riusare gli eventi già conservati, anche se il file supera il limite del primo riepilogo.
+2. Se il JSON conservato è incompleto o assente, avviare solo il decoder dell'immagine esatta con rete isolata e input in sola lettura. Leggere gli eventi in streaming, senza creare un nuovo file JSON espanso. Conservare la sola sintesi redatta e verificare il digest della registrazione a fine lettura.
+
+Il limite del primo output è una causa possibile, da verificare sul VPS. Il nuovo blocco riporta la dimensione effettiva, il raggiungimento del limite e, se serve un nuovo decoder, il suo codice di uscita. Esecuzione VPS pendente, durata massima quattro minuti. Verificati localmente la lettura a blocchi, UTF-8 e il rifiuto di un JSON troncato.
+
+```bash
+sudo /usr/bin/timeout 240 /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib, urllib.request
+url = 'https://raw.githubusercontent.com/GioNob/ouf-deploy/98dd534673a2843438cab1b5da8679fd6d1db11e/scripts/read-oci33-onboarding-upload-jfr.py'
+with urllib.request.urlopen(url, timeout=25) as response:
+    raw = response.read(19366)
+if len(raw) != 19365 or hashlib.sha256(raw).hexdigest() != '28c0232cd3005095b4c257bcbbf4ed76c9778c82bb56063689f4324b03e14b79':
+    raise SystemExit('HELD: SHA-256 o dimensione non corrispondente')
+exec(compile(raw, 'read-oci33-onboarding-upload-jfr.py', 'exec'), {'__name__': '__main__'})
+PY
+```
+
+Riportare solo il JSON finale.
+
 ## Blocco della prima decodifica eseguita
 
 1. Montare la registrazione esistente in sola lettura nel container dell'immagine esatta, avviando solo l'eseguibile `jfr` con rete `none`.
