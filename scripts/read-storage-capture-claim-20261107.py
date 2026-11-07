@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read the retained capture outcome. No provider calls, writes or replay."""
 import contextlib
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -54,17 +55,21 @@ def file_info(parent, name):
     return info
 
 
-def receipt(parent, name):
+def read_private(parent, name, limit):
     info = file_info(parent, name)
-    need(info is not None and 0 < info.st_size <= 8192, 'RECEIPT_MISSING_OR_INVALID_SIZE')
+    need(info is not None and info.st_size <= limit, 'RECEIPT_MISSING_OR_INVALID_SIZE')
     fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_NOATIME, dir_fd=parent)
     with os.fdopen(fd, 'rb') as stream:
         need(frame(info) == frame(os.fstat(fd)), 'RECEIPT_CHANGED')
-        raw = stream.read(8193)
+        raw = stream.read(limit + 1)
         current = file_info(parent, name)
         need(len(raw) == info.st_size and current is not None
              and frame(info) == frame(os.fstat(fd)) == frame(current), 'RECEIPT_CHANGED')
-    result = json.loads(raw, object_pairs_hook=unique_object)
+    return raw
+
+
+def receipt(parent, name):
+    result = json.loads(read_private(parent, name, 8192), object_pairs_hook=unique_object)
     need(isinstance(result, dict), 'RECEIPT_OBJECT_REQUIRED')
     return result
 
@@ -146,6 +151,90 @@ def stderr_hints(capture, name, info):
     return [label for needle, label in indicators if needle in sample]
 
 
+def retained_inventory(capture, first, selected):
+    raw = [read_private(capture, 'command-%03d.private' % i, 32 << 20)
+           for i in range(first, first + 3)]
+    ids = raw[0].decode('ascii').split()
+    need(14 < len(ids) <= 192 and len(set(ids)) == len(ids)
+         and all(re.fullmatch('[a-f0-9]{64}', cid) for cid in ids), 'RETAINED_INVENTORY_ID_SET')
+    details = json.loads(raw[1], object_pairs_hook=unique_object)
+    others = [json.loads(row, object_pairs_hook=unique_object) for row in raw[2].splitlines()]
+    need(isinstance(details, list) and len(details) == len(selected)
+         and all(isinstance(row, dict) for row in details + others), 'RETAINED_INVENTORY_SHAPE')
+    host = {row.get('Id'): row for row in details + others}
+    need({row.get('Id') for row in details} == selected and set(host) == set(ids)
+         and len(details) + len(others) == len(ids), 'RETAINED_INVENTORY_MEMBERSHIP')
+    return host
+
+
+def late_capture(capture, scope, payload, last):
+    claim = receipt(scope, 'claim.private.json')
+    raw = read_private(scope, 'plan.private.json', 32 << 20)
+    plan = json.loads(raw, object_pairs_hook=unique_object)
+    plan_sha = hashlib.sha256(raw).hexdigest()
+    need(same_fields(claim, {'decisionReference': DECISION, 'originalPlanSha256': ORIGINAL_PLAN,
+         'retainedJournalDigest': JOURNAL, 'planSha256': plan_sha,
+         'priorCumulativeStopCommandCalls': 184, 'legacyValidUntilEpoch': 1794081219}),
+         'LATE_CAPTURE_PLAN_CLAIM_MISMATCH')
+    inner = receipt(capture, 'capture-claim.private.json')
+    need(same_fields(inner, {'decisionReference': DECISION, 'planSha256': plan_sha, 'attempts': 1}),
+         'LATE_CAPTURE_INNER_CLAIM_MISMATCH')
+    roles = plan['roles']
+    need(len(roles) == 14 and len(plan['sources']) == 34 and all(
+         re.fullmatch(r'[a-z][a-z0-9-]{0,39}', role) for role in roles), 'LATE_CAPTURE_TARGET_ROSTER')
+    has_networks = file_info(payload, 'networks.private.json') is not None
+    last_export = 3 + int(has_networks) + 34 + 1 + len(roles)
+    inventory_end = last_export + 3
+    event_ordinal = inventory_end + 1
+    source_files = [file_info(payload, 'source-%03d.tar' % i) for i in range(34)]
+    rootfs_files = [file_info(payload, role + '.rootfs.tar') for role in roles]
+    image = file_info(payload, 'images.tar')
+    claim_info = file_info(capture, 'capture-claim.private.json')
+    ordinal, _, stderr = last
+    stdout = file_info(capture, 'command-%03d.private' % ordinal)
+    latest_ns = max(stderr.st_mtime_ns, 0 if stdout is None else stdout.st_mtime_ns)
+    result = {
+        'networkInspectMarkerPresent': has_networks,
+        'lastRootfsExportOrdinal': last_export,
+        'lastPostExportInventoryOrdinal': inventory_end,
+        'expectedCaptureEventsOrdinal': event_ordinal,
+        'captureEventsCommandMarkerPresent': file_info(
+            capture, 'command-%03d.stderr.private' % event_ordinal) is not None,
+        'elapsedFromInnerClaimToLastCommandSeconds': max(0, (latest_ns - claim_info.st_mtime_ns) // 10**9),
+        'sourceArchiveBytes': sum(item.st_size for item in source_files if item is not None),
+        'rootfsTarMarkers': sum(item is not None for item in rootfs_files),
+        'rootfsArchiveBytes': sum(item.st_size for item in rootfs_files if item is not None),
+        'imageArchiveBytes': 0 if image is None else image.st_size,
+        'retainedInventoryComparisonPerformed': False,
+    }
+    if ordinal >= inventory_end:
+        try:
+            selected = {row['containerId'] for row in roles.values()}
+            before = retained_inventory(capture, 1, selected)
+            after = retained_inventory(capture, last_export + 1, selected)
+            result.update(
+                retainedInventoryComparisonPerformed=True,
+                retainedInventoryCount=len(after),
+                retainedInventoryMembershipMatches=set(before) == set(after),
+                retainedInventoryRunningCount=sum(row['State']['Running'] is True for row in after.values()),
+                retainedSelectedStateChangedCount=sum(before[cid]['State'] != after[cid]['State']
+                                                     for cid in selected),
+            )
+        except (ReadbackHeld, OSError, ValueError, KeyError, TypeError) as error:
+            result['retainedInventoryHold'] = str(error) if isinstance(error, ReadbackHeld) else 'RETAINED_INVENTORY_UNVERIFIED'
+    if ordinal >= event_ordinal and result['captureEventsCommandMarkerPresent']:
+        try:
+            events = read_private(capture, 'command-%03d.private' % event_ordinal, 4 << 20)
+            rows = [json.loads(row, object_pairs_hook=unique_object) for row in events.splitlines()]
+            selected = {row['containerId'] for row in roles.values()}
+            result['retainedCaptureEventCount'] = len(rows)
+            result['retainedUnexpectedCaptureEventCount'] = sum(
+                row.get('Action') != 'export' or (row.get('Actor') or {}).get('ID') not in selected for row in rows)
+        except (ReadbackHeld, OSError, ValueError, AttributeError, TypeError):
+            result['retainedCaptureEventsUnverified'] = True
+    return result
+
+
 def unsealed_progress(capture, scope, area, stack, include_processes):
     if capture is None:
         return {}
@@ -180,6 +269,13 @@ def unsealed_progress(capture, scope, area, stack, include_processes):
         memberManifestPresent=payload is not None and file_info(payload, 'manifest.private.json') is not None,
         plaintextBundleMarker=file_info(capture, 'backup.tar.partial') is not None,
     )
+    if (commands and commands[-1][0] >= 52 and result['sourceManifestsPresent']
+            and processes.get('localProcessScanCompleted') and not (
+                processes['launcherMatches'] or processes['scopeOutputProcessMatches'])):
+        try:
+            result['lateCapture'] = late_capture(capture, scope, payload, commands[-1])
+        except (ReadbackHeld, OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            result['lateCaptureHold'] = str(error) if isinstance(error, ReadbackHeld) else 'LATE_CAPTURE_UNVERIFIED'
     return result
 
 

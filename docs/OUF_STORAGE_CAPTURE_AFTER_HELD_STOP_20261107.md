@@ -1,3 +1,15 @@
+## 7 novembre — acquisizione avanzata, chiusura e cifratura non raggiunte
+
+La [ricevuta](../evidence/storage-capture-late-unsealed-operator-20261107.json) conserva un'unica osservazione:56 marker di comando,stderr56 vuoto,34 tar sorgente e relativi manifest,tar immagini presente. Assenti manifest globale, bundle e archivio cifrato. Scan puntuale completato,0launcher/0processi con output nello scope,claim vecchio8196s. L'allowance3600s del tentativo è consumata; nessun replay,reset o estensione della scadenza. Lo spazio disponibile al readback era286525313024byte. Il motivo di arresto resta sconosciuto.
+
+Con marker delle reti,56 è l'ultima chiamata del secondo inventario e57 è la finestra eventi. Senza marker delle reti,55 chiude l'inventario e56 è la chiamata eventi. Il [lettore aggiornato](../scripts/read-storage-capture-claim-20261107.py) vincola i claim al piano, distingue i due percorsi e restituisce dimensioni dei tar, conteggi e confronto degli inventari conservati, stato di avvio eventi e intervallo fino all'ultimo comando. Nessuna richiesta Docker, modifica di file, lettura dei corpi tar o pubblicazione di identificatori. Sei fixture locali PASS. Il confronto è storico e non attesta validità dei tar o stato live.
+
+### Percorso di recupero da qualificare dopo il readback
+
+1. Classificare causa e stato dei parziali. Se corpi, inventari e tempi ammettono riuso, preparare una continuazione distinta su scope esclusivo, vincolata a claim, piano, inventari ed esatte identità dei membri conservati. Addebitare 3600s e tutti i comandi/byte già consumati; il solo conteggio marker non prova successo. Il percorso precedente non viene riaperto.
+2. Per un recupero riutilizzabile, rivalidare tutti i 34 tar contro i manifest sorgente, i 14 rootfs e il tar immagini. Verificare fonti runtime, host e inventari correnti e copertura eventi per l'intervallo. Se la copertura o un'identità non regge, preservare il parziale come tale e qualificare una nuova cattura con decisione e limiti espliciti. Una copia forense cifrata può conservare l'incertezza, ma non sostituisce un backup accettato.
+3. Prima di un nuovo comando che produca l'archivio, presentare solo il pacchetto concreto con tempi/byte/comandi separati, scadenza originale e prova negativa. Poi trasferimento Windows con digest effettivo e restore isolato. Stato MiniPET **39,78%**, 0/8 gate, 0/21 test, 0/120 migrati. Nessun credito per questo checkpoint.
+
 ## 7 novembre — cattura avviata, esito non sigillato
 
 Il [JSON dell'operatore](../evidence/storage-capture-unsealed-operator-20261107.json) attesta claim esterno, piano, directory e claim interno del produttore. Alla lettura erano assenti ricevuta interna, ricevuta finale utilizzabile, archivio e cifrato parziale. Il claim interno precede inventario Docker e archiviazione. Non identifica lo stadio successivo, l'errore originario o l'attività corrente.
