@@ -157,3 +157,9 @@ Capacità successive: preview CSV leggibile; MCP HEALTHY; ricerca semantica `tea
 Ricevuta VPS delle 18:10:35 UTC / 19:10:35 CET: container Semantic/APISIX/Gateway owner running, immagini conservate, nome upstream corretto e DNS riferito soltanto all'indirizzo corrente del registro. TCP dalla rete APISIX non riesce neppure verso l'indirizzo diretto. Indizio connectionRefused non correlato nei log APISIX; zero righe Semantic nella finestra di 30 minuti. [Ricevuta](../evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json).
 
 La lettura precedente non esponeva processi e porta numerica. Estesa la [lettura v2](OUF_SEMANTIC_UPSTREAM_READ_20261107.md) con confronto avvio container/immagine, Java e listener/ownership IPv4/IPv6. Il Dockerfile del sorgente conservato eccef11a dichiara java -jar /app/application.jar e application.yml porta ${PORT:8080}; nessuna conclusione sulla configurazione effettiva corrente. Test locali PASS, esecuzione VPS pendente. Nessuna correzione di rotta, riavvio o grant effettuata.
+
+## 7 novembre 2026 — Nessun Java nel registro; avviatore corretto
+
+Ricevuta v2 delle 18:18:23 UTC / 19:18:23 CET: Semantic contiene soltanto sh/sleep, nessun Java, nessun listener 8080. [Ricevuta](../evidence/semantic-no-java-operator-20261107.json). Il comando di attesa nel sorgente richiede SIGUSR1 prima di exec Java. L'avviatore usato per la ripartenza controllava soltanto container running/health assente: difetto identificato.
+
+Preparata correzione in `ouf-runtime-20261107.py`, modo semantic: verifica esatta del comando/processo/UID/privilegi e generazione, singolo segnale registrato, attesa Java nello stesso PID e readiness. In e2e Semantic passa dopo Gateway/APISIX/Caddy. Test locali, fixture shell nativa e regressioni Onboarding/UDP PASS. Nessun avvio VPS ancora eseguito; [comando](OUF_SEMANTIC_APPLICATION_START_20261107.md). Dopo il risultato occorre verificare semantic.search, non attribuire readiness a successo E2E.

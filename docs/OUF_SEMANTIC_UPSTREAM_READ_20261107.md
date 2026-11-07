@@ -1,5 +1,7 @@
 # Registro semantico: processo e porta in ascolto
 
+**LETTURA v2 COMPLETATA** alle 18:18:23 UTC del 7 novembre: soltanto sh/sleep, zero Java e nessun listener 8080. [Ricevuta](../evidence/semantic-no-java-operator-20261107.json). Non ripetere per il prossimo passo: usare l'[avvio applicativo preparato](OUF_SEMANTIC_APPLICATION_START_20261107.md). Quanto segue conserva la procedura diagnostica eseguita.
+
 ## Evidenza corrente
 
 La [lettura operatore delle 18:10:35 UTC del 7 novembre](../evidence/semantic-upstream-dns-pass-tcp-fail-operator-20261107.json) ha verificato:

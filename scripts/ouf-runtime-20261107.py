@@ -2,10 +2,12 @@
 """Resume the retained OUF stack or start the pinned SeaweedFS service."""
 import hashlib
 import fcntl
+import http.client
 import json
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
 import tempfile
@@ -20,6 +22,11 @@ LIVE = STAGE.parent / 'runtime-oci33-v1'
 IMAGE = 'sha256:d23a50eb6cf56dc994ddc10f43590cc9a8a22a20019cab36d4ad00c3ad3b4af2'
 NETWORK = 'ouf-seaweedfs-private'
 SERVICE = 'ouf-seaweedfs-stage'
+SEMANTIC_IMAGE = 'sha256:b61bc39c1593c28404a8258962008c024d13689d7e9b132e6a85619580003ca3'
+SEMANTIC_JAVA = ['java', '-XX:MaxRAMPercentage=75', '-jar', '/app/application.jar']
+SEMANTIC_GATE = 'OUF_APPLICATION_GATE=0; trap "OUF_APPLICATION_GATE=1" USR1; while [ "$OUF_APPLICATION_GATE" = 0 ]; do sleep 1 & wait "$!"; done; exec "$@"'
+SEMANTIC_ENTRY = ['/bin/sh', '-c', SEMANTIC_GATE, 'ouf-gated-application']
+SEMANTIC_STARTS = PLAN.parent.parent / 'semantic-application-starts'
 LABEL = 'ouf.storage.oci33.runtime'
 TOKEN_SERVICES = (
     'ouf-gateway-policy-token.service',
@@ -30,11 +37,12 @@ TOKEN_SERVICES = (
 )
 GROUPS = (
     ('postgres', 'minio', 'etcd', 'keycloak'),
-    ('semantic', 'udp', 'udp-evidence-read', 'ingestion', 'ingestion-evidence-read'),
+    ('udp', 'udp-evidence-read', 'ingestion', 'ingestion-evidence-read'),
     ('onboarding',),
     ('gateway-owner',),
     ('apisix',),
     ('caddy',),
+    ('semantic',),
     ('mcp',),
 )
 MCP_BOOT_MESSAGES = {
@@ -54,6 +62,144 @@ MCP_ERROR_HINT = re.compile(r'\b(?:401|403|404|500|502|503|504|invalid_client|in
 def require(condition, code):
     if not condition:
         raise ValueError(code)
+
+def process_bytes(path):
+    with open(path, 'rb') as stream:
+        raw = stream.read(65537)
+    require(len(raw) <= 65536, 'SEMANTIC_PROCESS_READ_LIMIT')
+    return raw
+
+def semantic_process(doc):
+    require(doc['Image'] == SEMANTIC_IMAGE and doc['Config'].get('Entrypoint') == SEMANTIC_ENTRY
+            and doc['Config'].get('Cmd') == SEMANTIC_JAVA and doc['Config'].get('User') == '10001:10001',
+            'SEMANTIC_RETAINED_GATE_CONFIGURATION_CHANGED')
+    state = doc['State']
+    require(state['Running'] and not state.get('Paused') and not state.get('Restarting')
+            and state['Pid'] > 1, 'SEMANTIC_PROCESS_NOT_RUNNING')
+    root = Path('/proc') / str(state['Pid'])
+    def generation():
+        fields = process_bytes(root / 'stat').decode().rsplit(')', 1)[1].split()
+        return {'pid': state['Pid'], 'startTicks': int(fields[19]),
+                'networkNamespaceInode': (root / 'ns/net').stat().st_ino}
+    before = generation()
+    raw = process_bytes(root / 'cmdline')
+    require(raw.endswith(b'\0'), 'SEMANTIC_PROCESS_ARGUMENTS_INVALID')
+    args = [value.decode() for value in raw[:-1].split(b'\0')]
+    status = dict(line.split(':', 1) for line in process_bytes(root / 'status').decode().splitlines() if ':' in line)
+    require(status.get('Uid', '').split() == ['10001']*4 and status.get('NoNewPrivs', '').strip() == '1'
+            and all(int(status.get(key, '-1').strip(), 16) == 0
+                    for key in ('CapInh', 'CapPrm', 'CapEff', 'CapBnd', 'CapAmb')),
+            'SEMANTIC_PROCESS_IDENTITY_CHANGED')
+    caught = int(status.get('SigCgt', '0').strip(), 16) & (1 << (signal.SIGUSR1 - 1))
+    kind = 'GATE_WAITING' if args == SEMANTIC_ENTRY + SEMANTIC_JAVA and caught else 'APPLICATION_RUNNING' if args == SEMANTIC_JAVA else 'UNPROVEN'
+    require(before == generation() and raw == process_bytes(root / 'cmdline'), 'SEMANTIC_PROCESS_CHANGED_DURING_READ')
+    require(kind != 'UNPROVEN', 'SEMANTIC_GATE_OR_APPLICATION_NOT_PROVEN')
+    return {'generation': before, 'processKind': kind}
+
+def semantic_readiness(doc):
+    endpoint = doc['NetworkSettings']['Networks'].get('ouf-backend') or {}
+    require(endpoint.get('IPAddress'), 'SEMANTIC_BACKEND_ADDRESS_MISSING')
+    connection = http.client.HTTPConnection(endpoint['IPAddress'], 8080, timeout=3)
+    try:
+        connection.request('GET', '/actuator/health/readiness')
+        response = connection.getresponse()
+        raw = response.read(65537)
+        try:
+            up = len(raw) <= 65536 and json.loads(raw).get('status') == 'UP'
+        except (ValueError, AttributeError):
+            up = False
+        return response.status, response.status == 200 and up
+    except (OSError, http.client.HTTPException):
+        return None, False
+    finally:
+        connection.close()
+
+def semantic_startup_details(cid, since, report):
+    result = subprocess.run((*DOCKER, 'logs', '--since', since, '--tail', '100', cid),
+                            capture_output=True, timeout=12)
+    raw = result.stdout + result.stderr
+    require(len(raw) <= 3*1024*1024, 'SEMANTIC_LOG_READ_LIMIT')
+    categories = {
+        'startupFailed': r'APPLICATION FAILED TO START|Application run failed',
+        'databaseAuthenticationFailed': r'password authentication failed|no pg_hba.conf entry',
+        'databaseOrMigrationError': r'PSQLException|FlywayException|FlywayValidateException|migration failed',
+        'connectionRefused': r'connection refused',
+        'tlsFailure': r'SSLHandshakeException|unable to find valid certification path',
+        'authorizationDenied': r'authorization denied|access denied|access_denied',
+        'expiredToken': r'token expired|token has expired|Jwt expired|JWT expired',
+        'requiredConfigurationMissing': r'Could not resolve placeholder|APPLICATION_CONFIGURATION_REQUIRED',
+        'applicationStarted': r'Started SemanticRegistryApplication',
+    }
+    text = raw.decode(errors='replace') if result.returncode == 0 else ''
+    report['semanticStartupLog'] = {'read': result.returncode == 0, 'tailLimit': 100,
+        'hints': {key: len(re.findall(pattern, text, re.I)) for key, pattern in categories.items()
+                  if re.search(pattern, text, re.I)}, 'rawLogsEmitted': False}
+
+def claim_semantic_start(cid, observed, doc):
+    SEMANTIC_STARTS.mkdir(mode=0o700, parents=True, exist_ok=True)
+    identity = {'containerId': cid, 'generation': observed['generation'], 'startedAt': doc['State']['StartedAt']}
+    name = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
+    path = SEMANTIC_STARTS / (name + '.json')
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    except FileExistsError:
+        raise ValueError('SEMANTIC_SIGNAL_ALREADY_CLAIMED_READBACK_REQUIRED') from None
+    with os.fdopen(fd, 'w') as stream:
+        json.dump({'schema': 'ouf.semantic-application-start-attempt.v1', **identity,
+                   'signal': 'SIGUSR1', 'signalMayBeDispatched': True, 'automaticSignalReplayAllowed': False}, stream)
+        stream.flush(); os.fsync(stream.fileno())
+    fd = os.open(SEMANTIC_STARTS, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return path
+
+def ensure_semantic_application(cid, report):
+    doc = inspect(cid)[cid]
+    observed = semantic_process(doc)
+    report.update(semanticProcessBefore=observed['processKind'], semanticSameContainer=True,
+                  semanticSameImage=True, semanticConfigurationChanged=False,
+                  semanticApplicationMayAccessDatabase=True, credentialValuesEmitted=False)
+    if observed['processKind'] == 'GATE_WAITING':
+        path = claim_semantic_start(cid, observed, doc)
+        report['semanticStartAttemptFile'] = str(path)
+        fresh = inspect(cid)[cid]
+        require(fresh['State']['StartedAt'] == doc['State']['StartedAt']
+                and semantic_process(fresh) == observed, 'SEMANTIC_GATE_CHANGED_BEFORE_SIGNAL')
+        report['semanticGateSignalDispatched'] = True
+        docker('kill', '--signal=SIGUSR1', cid, timeout=15)
+        report['semanticGateSignalAcknowledged'] = True
+    deadline = time.monotonic() + 150
+    try:
+        while time.monotonic() < deadline:
+            actual = inspect(cid)[cid]
+            report.update(semanticStateAfter=actual['State'].get('Status'),
+                          semanticExitCode=actual['State'].get('ExitCode'),
+                          semanticOomKilled=actual['State'].get('OOMKilled'))
+            require(actual['State']['Running'], 'SEMANTIC_EXITED_DURING_START')
+            require(actual['State']['Pid'] == doc['State']['Pid']
+                    and actual['State']['StartedAt'] == doc['State']['StartedAt'], 'SEMANTIC_GENERATION_CHANGED')
+            # exec replaces the shell in the same process; a transition read can straddle exec.
+            try:
+                current = semantic_process(actual)
+            except ValueError as error:
+                if str(error) != 'SEMANTIC_PROCESS_CHANGED_DURING_READ':
+                    raise
+                time.sleep(1)
+                continue
+            require(current['generation'] == observed['generation'], 'SEMANTIC_PROCESS_GENERATION_CHANGED')
+            report['semanticProcessAfter'] = current['processKind']
+            if current['processKind'] == 'APPLICATION_RUNNING':
+                status, ready = semantic_readiness(actual)
+                report['semanticReadinessHttpStatus'] = status
+                if ready:
+                    report.update(semanticReadinessUp=True, semanticJavaIsContainerInit=True)
+                    return
+            time.sleep(2)
+        raise ValueError('SEMANTIC_APPLICATION_READINESS_TIMEOUT')
+    finally:
+        semantic_startup_details(cid, doc['State']['StartedAt'], report)
 
 
 def docker(*args, timeout=30):
@@ -206,6 +352,8 @@ def start_role(role, bound, docs, report):
         report['startedRoles'].append(role)
     if role == 'mcp':
         wait_mcp(cid, report)
+    elif role == 'semantic':
+        ensure_semantic_application(cid, report)
     else:
         wait_started(cid, role)
 
@@ -321,7 +469,7 @@ def main():
     mode = sys.argv[1] if len(sys.argv) == 2 else ''
     report = {'status': 'HELD', 'mode': mode, 'startedRoles': [], 'alreadyRunningRoles': []}
     try:
-        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs', 'auth', 'mcp'), 'ROOT_AND_EXACT_MODE_REQUIRED')
+        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs', 'auth', 'mcp', 'semantic'), 'ROOT_AND_EXACT_MODE_REQUIRED')
         lock_mode = 'seaweedfs' if mode == 'seaweedfs' else 'e2e'
         with open('/run/lock/ouf-runtime-' + lock_mode + '.lock', 'a', opener=lambda path, flags:
                   os.open(path, flags | os.O_NOFOLLOW, 0o600)) as lock:
@@ -331,6 +479,10 @@ def main():
                 report['status'] = 'OUF_TOKEN_REFRESH_RESTORED'
             elif mode == 'mcp':
                 start_mcp(report)
+            elif mode == 'semantic':
+                bound, docs = retained_stack()
+                start_role('semantic', bound, docs, report)
+                report['status'] = 'OUF_SEMANTIC_APPLICATION_READY'
             else:
                 (e2e if mode == 'e2e' else seaweedfs)(report)
     except (OSError, KeyError, subprocess.SubprocessError, ValueError) as exc:

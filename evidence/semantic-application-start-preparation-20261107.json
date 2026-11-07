@@ -1,0 +1,67 @@
+{
+  "schema": "ouf.semantic-application-start-preparation.v1",
+  "date": "2026-11-07",
+  "status": "LOCAL_CHECKS_PASS_VPS_START_PENDING",
+  "operatorReceipt": "evidence/semantic-no-java-operator-20261107.json",
+  "observedCause": {
+    "javaProcesses": 0,
+    "processKinds": {
+      "sh": 1,
+      "sleep": 1
+    },
+    "upstreamPort": 8080,
+    "listenerAtUpstreamPort": false
+  },
+  "sourceGate": {
+    "repository": "GioNob/ouf-deploy",
+    "commit": "969ba8e293a20b81595985920c96c447f4847174",
+    "path": "tools/semantic_application_cutover/gated_creation_plan.py",
+    "profile": "ouf.semantic-preapplication-gate.v2",
+    "releaseSignal": "SIGUSR1",
+    "exactRuntimeGateMustMatchBeforeSignal": true
+  },
+  "runtimeBug": {
+    "previousBehaviour": "Generic running container check accepted pre-application shell as started service",
+    "newBehaviour": "Exact gate release or existing Java recognition, then HTTP readiness; Semantic starts after Gateway/APISIX/Caddy in e2e"
+  },
+  "script": "scripts/ouf-runtime-20261107.py",
+  "mode": "semantic",
+  "sha256": "cc8a6325ce860736142012fe61fa7110c1ae189a48a1484bee7ee4b3d4daed55",
+  "plannedEffects": {
+    "sameContainer": true,
+    "sameImage": true,
+    "configurationUnchanged": true,
+    "signalMaxPerProcessGeneration": 1,
+    "credentialChanges": 0,
+    "directDatabaseQueries": 0,
+    "applicationStartupMayAccessDatabase": true,
+    "oldAttemptWithLostResponse": "NO_AUTOMATIC_SIGNAL_REPLAY",
+    "alreadyJava": "READINESS_ONLY"
+  },
+  "localChecks": [
+    {
+      "command": "python3 tests/check_runtime_semantic_gate.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS",
+      "scope": "PID/UID/capability/trap guard; one signal; existing Java no signal; lost-ACK no signal replay; changed/unknown process rejected; readiness required; startup dependency order"
+    },
+    {
+      "command": "Native /bin/sh gate fixture with tracing and SIGUSR1",
+      "result": "PASS",
+      "scope": "Known gate waits then execs fixture application in same PID; not Java/Spring/VPS readiness"
+    },
+    {
+      "command": "python3 tests/check_runtime_two_storage_bindings.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS",
+      "scope": "Both replacement containers retained; pending switch, old writer and drift rejected"
+    },
+    {
+      "command": "python3 tests/check_runtime_storage_binding.py scripts/ouf-runtime-20261107.py",
+      "result": "PASS",
+      "scope": "Existing Onboarding replacement regression"
+    }
+  ],
+  "vpsStartExecuted": false,
+  "semanticSearchAfterRepairTested": false,
+  "e2eComplete": false,
+  "limitation": "First native fixture attempted procfs child observation unavailable in local runtime; revised fixture observes shell trace after installed trap. No application process launched on VPS by these tests."
+}
