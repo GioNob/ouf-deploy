@@ -32,10 +32,23 @@ GROUPS = (
     ('postgres', 'minio', 'etcd', 'keycloak'),
     ('semantic', 'udp', 'udp-evidence-read', 'ingestion', 'ingestion-evidence-read'),
     ('onboarding',),
-    ('gateway-owner', 'mcp'),
+    ('gateway-owner',),
     ('apisix',),
     ('caddy',),
+    ('mcp',),
 )
+MCP_BOOT_MESSAGES = {
+    'database connection failed', 'database schema is not ready; run the migration role first',
+    'manifest load failed', 'manifest persistence failed', 'workload identity initialization failed',
+    'authorization policy bundle client initialization failed', 'authorization policy bundle bootstrap failed',
+    'invalid authorization bundle refresh configuration', 'Gateway client initialization failed',
+    'fingerprint key initialization failed', 'kernel initialization failed', 'HTTP server failed',
+    'OUF MCP server listening',
+}
+MCP_ERROR_HINT = re.compile(r'\b(?:401|403|404|500|502|503|504|invalid_client|invalid_grant|'
+                            r'token expired|connection refused|i/o timeout|context deadline exceeded|'
+                            r'no such host|certificate signed by unknown authority|permission denied|'
+                            r'password authentication failed|no pg_hba.conf entry)\b', re.I)
 
 
 def require(condition, code):
@@ -79,6 +92,47 @@ def wait_started(cid, role):
     raise ValueError('START_DEADLINE_' + role.upper().replace('-', '_'))
 
 
+def mcp_details(cid, state, report):
+    report['mcpState'] = state['Status']
+    report['mcpExitCode'] = state['ExitCode']
+    report['mcpOomKilled'] = state['OOMKilled']
+    logs = subprocess.run((*DOCKER, 'logs', '--since', state['StartedAt'], '--tail', '40', cid),
+                          capture_output=True, text=True, timeout=15)
+    report['mcpLogsRead'] = logs.returncode == 0
+    messages, hints = set(), set()
+    if logs.returncode == 0:
+        for line in (logs.stdout + '\n' + logs.stderr).splitlines():
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            message = row.get('msg') if isinstance(row, dict) else None
+            if isinstance(message, str) and message in MCP_BOOT_MESSAGES:
+                messages.add(message)
+                hints.update(match.lower() for match in MCP_ERROR_HINT.findall(str(row.get('error', ''))))
+    report['mcpStartupMessages'] = sorted(messages)
+    report['mcpErrorHints'] = sorted(hints)
+
+
+def wait_mcp(cid, report):
+    probe = ('import http.client; c=http.client.HTTPConnection("127.0.0.1",8080,timeout=2); '
+             'c.request("GET","/health/ready"); raise SystemExit(c.getresponse().status != 204)')
+    deadline = time.monotonic() + 45
+    while time.monotonic() < deadline:
+        state = inspect(cid)[cid]['State']
+        if not state['Running']:
+            mcp_details(cid, state, report)
+            raise ValueError('MCP_EXITED_DURING_START')
+        result = subprocess.run(('/usr/bin/nsenter', '--target', str(state['Pid']), '--net', sys.executable,
+                                 '-I', '-B', '-S', '-c', probe), capture_output=True, timeout=5)
+        if result.returncode == 0:
+            report['mcpReadyHttpStatus'] = 204
+            return
+        time.sleep(2)
+    mcp_details(cid, inspect(cid)[cid]['State'], report)
+    raise ValueError('MCP_READINESS_DEADLINE')
+
+
 def restore_token_refresh(report):
     timers = [unit.removesuffix('.service') + '.timer' for unit in TOKEN_SERVICES]
     report['tokenRefreshServicesStarted'] = 0
@@ -98,7 +152,7 @@ def restore_token_refresh(report):
     report['tokenTimersEnabled'] = len(timers)
 
 
-def e2e(report):
+def retained_stack():
     with PLAN.open('rb') as stream:
         raw = stream.read((1 << 20) + 1)
     require(len(raw) <= 1 << 20 and hashlib.sha256(raw).hexdigest() == PLAN_SHA, 'ORIGINAL_PLAN_MISMATCH')
@@ -109,32 +163,54 @@ def e2e(report):
             all(re.fullmatch('[a-f0-9]{64}', cid) for cid in bound.values()), 'ORIGINAL_IDS_MISMATCH')
     retained = {doc['Id']: doc for doc in json.loads(ORIGINAL_INSPECT.read_bytes())}
     require(set(retained) == set(bound.values()), 'ORIGINAL_INSPECT_MISMATCH')
-    running = docker('ps', '-q', '--no-trunc').decode().split()
-    others = sorted(set(running) - set(bound.values()))
-    require(not others or all(
-        doc['Name'] == '/' + SERVICE and doc['Image'] == IMAGE
-        and (doc['Config']['Labels'] or {}).get(LABEL) == 'true'
-        for doc in inspect(*others).values()), 'UNEXPECTED_RUNNING_CONTAINER')
     docs = inspect(*bound.values())
     for role, cid in bound.items():
         doc = docs[cid]
         started_at = retained[cid]['State']['StartedAt']
         require(doc['State']['Status'] in ('running', 'exited') and doc['Image'] == roles[role]['nativeImage']
                 and fingerprint(doc, started_at) == roles[role]['fingerprint'], 'RETAINED_CONFIGURATION_CHANGED')
+    return bound, docs
+
+
+def start_role(role, bound, docs, report):
+    report['currentRole'] = role
+    cid = bound[role]
+    if docs[cid]['State']['Running']:
+        report['alreadyRunningRoles'].append(role)
+    else:
+        docker('start', cid, timeout=60)
+        report['startedRoles'].append(role)
+    if role == 'mcp':
+        wait_mcp(cid, report)
+    else:
+        wait_started(cid, role)
+
+
+def e2e(report):
+    bound, docs = retained_stack()
+    running = docker('ps', '-q', '--no-trunc').decode().split()
+    others = sorted(set(running) - set(bound.values()))
+    require(not others or all(
+        doc['Name'] == '/' + SERVICE and doc['Image'] == IMAGE
+        and (doc['Config']['Labels'] or {}).get(LABEL) == 'true'
+        for doc in inspect(*others).values()), 'UNEXPECTED_RUNNING_CONTAINER')
     for index, group in enumerate(GROUPS):
         for role in group:
-            report['currentRole'] = role
-            if docs[bound[role]]['State']['Running']:
-                report['alreadyRunningRoles'].append(role)
-            else:
-                docker('start', bound[role], timeout=60)
-                report['startedRoles'].append(role)
-            wait_started(bound[role], role)
+            start_role(role, bound, docs, report)
         if index == 0:
             report['currentRole'] = 'host-token-refresh'
             restore_token_refresh(report)
     report.pop('currentRole')
     report['status'] = 'ORIGINAL_OUF_STACK_STARTED'
+
+
+def start_mcp(report):
+    bound, docs = retained_stack()
+    require(all(docs[bound[role]]['State']['Running'] for role in ('postgres', 'keycloak', 'gateway-owner',
+                'apisix', 'caddy')), 'MCP_DEPENDENCIES_NOT_RUNNING')
+    start_role('mcp', bound, docs, report)
+    report.pop('currentRole')
+    report['status'] = 'OUF_MCP_READY'
 
 
 def seaweedfs(report):
@@ -218,14 +294,16 @@ def main():
     mode = sys.argv[1] if len(sys.argv) == 2 else ''
     report = {'status': 'HELD', 'mode': mode, 'startedRoles': [], 'alreadyRunningRoles': []}
     try:
-        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs', 'auth'), 'ROOT_AND_EXACT_MODE_REQUIRED')
-        lock_mode = 'e2e' if mode == 'auth' else mode
+        require(os.geteuid() == 0 and mode in ('e2e', 'seaweedfs', 'auth', 'mcp'), 'ROOT_AND_EXACT_MODE_REQUIRED')
+        lock_mode = 'seaweedfs' if mode == 'seaweedfs' else 'e2e'
         with open('/run/lock/ouf-runtime-' + lock_mode + '.lock', 'a', opener=lambda path, flags:
                   os.open(path, flags | os.O_NOFOLLOW, 0o600)) as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             if mode == 'auth':
                 restore_token_refresh(report)
                 report['status'] = 'OUF_TOKEN_REFRESH_RESTORED'
+            elif mode == 'mcp':
+                start_mcp(report)
             else:
                 (e2e if mode == 'e2e' else seaweedfs)(report)
     except (OSError, KeyError, subprocess.SubprocessError, ValueError) as exc:
