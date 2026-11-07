@@ -48,7 +48,7 @@ Le risposte conservate sono evidenza storica con data: prima dell'adozione va ve
 
 Ordine residuo:
 
-1. Comporre e distribuire il candidato qualificato con Onboarding PR55, Gateway PR86 e Registry PR41 e i relativi pacchetti. Non distribuire PR82 da solo come soluzione dinamica.
+1. Eseguire la [lettura corrente del target](OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md), poi comporre MCP PR83 con Onboarding PR55 e il delta Gateway PR86. Il Registry trattenuto deriva già da `c2dae77b`, successivo al candidato PR41: conservarlo se confermato, senza downgrade. Il ramo Gateway diverge dal sorgente dell'owner operativo trattenuto: non sostituire il pacchetto intero. Non distribuire PR82 da solo come soluzione dinamica.
 2. Verificare sul target provider/worker, pubblicazione delle capacità e grant correnti. La connessione non espone discovery; una lettura del catalogo CAPABILITIES ha restituito HTTP 400, quindi i grant attuali non sono stati verificati e la causa non è attribuita.
 3. Prima discovery reale di proprietà sul profilo Teatri conservato; motivare associazioni e irrisolti per ogni colonna.
 4. Bozza/review THS e Ingestion→UDP→grafo; normale operazione lake su SeaweedFS e seconda esecuzione riuscita.

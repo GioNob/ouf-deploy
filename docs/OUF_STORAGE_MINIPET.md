@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.7 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.8 — 7 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -53,6 +53,8 @@ La percentuale **39,78%** del vecchio registro è una stima euristica del 4 nove
 Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risultato e sequenza; [registro funzionale](../releases/storage-functional-status-20261107.json) per esiti e prove. La cronologia resta in Git e nel log M2, non in testa al piano.
 
 ## 4. Roadmap funzionale
+
+**Passo corrente:** [inventario del target e correzione della sequenza di rilascio](OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md). Il Registry trattenuto è successivo al candidato discovery PR41: evitare un downgrade. Gateway PR86 diverge dal ramo dell'owner operativo: applicare solo il delta necessario dopo riconciliazione. Il lettore preparato non distribuisce nulla; esito VPS ancora atteso. Budget dinamico, limiti 1024 e discovery rimangono candidati da installare/attivare, non risultati live.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

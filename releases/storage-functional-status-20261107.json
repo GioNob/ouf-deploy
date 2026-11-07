@@ -916,6 +916,18 @@
       "targetRunId": 42420569961,
       "fullRunId": 42420569963,
       "all23WorkflowsPassed": true
+    },
+    "rolloutPreparation": {
+      "status": "TARGET_RUNTIME_READ_PREPARED_AWAITING_OPERATOR_RESULT",
+      "document": "docs/OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md",
+      "evidence": "evidence/analysis-discovery-rollout-preflight-20261107.json",
+      "readerCommit": "7bdf0e107b534e9db90aabe5e0388c627b7150b8",
+      "retainedRegistryIsDescendantOfDiscoveryCandidate": true,
+      "registryDowngradeRequired": false,
+      "gatewaySourceHistoriesDiverged": true,
+      "gatewayOperationalOwnerToPreserve": true,
+      "targetReadExecuted": false,
+      "runtimeChanged": false
     }
   }
 }
