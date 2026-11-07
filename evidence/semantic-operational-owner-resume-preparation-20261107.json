@@ -1,48 +1,52 @@
 {
-  "schema": "ouf.semantic-operational-owner-resume-preparation.v1",
+  "schema": "ouf.semantic-operational-owner-resume-preparation.v2",
   "status": "PREPARED_NOT_EXECUTED_ON_VPS",
   "date": "2026-11-07",
-  "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
-  "supersededScript": "scripts/restore-current-semantic-policy-token-20261107.py",
-  "supersededReason": "Selected masked legacy producer instead of installed continuous owner; prior metadata already distinguished them.",
-  "operatorReceipt": "evidence/semantic-legacy-token-renewal-held-operator-20261107.json",
-  "sources": [
-    "evidence/storage-runtime-writer-metadata-operator-20261106.json",
-    "evidence/storage-host-continuation-success-operator-20261107.json",
-    "tools/semantic_registry_operational_owner/core.py",
-    "tools/semantic_registry_operational_owner/guard.py",
-    "tools/semantic_registry_operational_owner/service.py",
-    "scripts/observe-registry-operational-owner-20261024.py",
-    "scripts/repair-registry-network-projection-20261024.py"
-  ],
-  "knownHistory": {
-    "correctOwnerActiveBeforeCapture": true,
-    "correctOwnerDisabledAndStoppedByCapture": true,
-    "legacyUnitsAlreadyMaskedBeforeCapture": true,
-    "generalRuntimeRestarterOmitsOperationalOwner": true
+  "operatorReceipt": "evidence/semantic-operational-owner-metadata-held-operator-20261107.json",
+  "supersedesCodeCommit": "1d0a93a9dbb3dd1a3f26a9fa92c71af841427084",
+  "known": {
+    "currentServiceLoadedInactiveDisabled": true,
+    "currentRestart": "no",
+    "previousAttemptNoEffects": true,
+    "exactMissingTextPropertiesNotReportedByV1": true,
+    "captureSourceWritesRestartNoOverride": true,
+    "priorCaptureCodeAlreadyUsesTypedReadsForOmittedEmptyArrays": true
+  },
+  "correction": {
+    "startHooksReadFromTypedSystemdProperties": true,
+    "missingTextPropertyNamesReported": true,
+    "captureOverrideExactPath": "/etc/systemd/system/ouf-registry-token-7cb59501000058b5dc5030ad.service.d/zzzz-ouf-storage-offline-20261106.conf",
+    "requireExactCaptureBytesAndEffectiveSettings": true,
+    "backupBeforeRemovingSingleOverride": true,
+    "unrelatedDropInsPreservedAndCompared": true,
+    "expectedRestartAfterReload": "on-failure",
+    "restoreBeforeStart": true,
+    "retainLegacyMasks": true,
+    "doNotResetOwnerLedger": true
+  },
+  "effects": {
+    "applicationConfigurationChanged": false,
+    "serviceConfigurationMayChange": true,
+    "managerReloadMayOccur": true,
+    "maximumManualServiceStarts": 1,
+    "maximumPolicyGets": 1,
+    "existingOwnerMayRenewAndWriteOwnLedger": true
   },
   "localValidation": {
     "result": "PASS",
-    "scenarioCount": 13,
-    "kind": "OFFLINE_MOCKED_MANAGER_AND_HTTP",
-    "realVpsExecution": false,
-    "realOauthRequests": 0
+    "scenarios": 19,
+    "scope": "OFFLINE_MOCKED_SYSTEMD_AND_HTTP_WITH_REAL_TEMPORARY_OVERRIDE_FILES",
+    "liveSystemdTest": false,
+    "vpsExecution": false
   },
-  "limits": {
-    "maximumManualServiceStarts": 1,
-    "legacyUnmaskOperations": 0,
-    "maximumPolicyGets": 1,
-    "publicationObservationWindowSeconds": 90,
-    "enableServiceOnlyAfterMountedFreshTokenAndPolicy200": true,
-    "operationalLedgerWritesByScript": 0,
-    "existingOwnerMayRenewAndWriteOwnLedger": true,
-    "applicationRestart": false,
-    "applicationLoadedPolicyProven": false,
-    "automaticRenewalCycleProven": false
-  },
+  "sources": [
+    "scripts/storage-host-containment-20261106.py",
+    "evidence/storage-host-continuation-success-operator-20261107.json",
+    "tools/semantic_registry_operational_owner/installation.py"
+  ],
   "script": {
     "path": "scripts/resume-current-semantic-operational-owner-20261107.py",
-    "sha256": "f99d29dfe5be132e448a0f64293729d6ada4665965856c1bdece04ec0dc38f5e",
-    "bytes": 12441
+    "sha256": "b272e84f636a03af5a72a82494085c7164b5c7ec9c9adcd30fdf0fb6cfb1b1c6",
+    "bytes": 17861
   }
 }
