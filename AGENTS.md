@@ -6,6 +6,10 @@ Far funzionare SeaweedFS, poi rendere ripetibile l'E2E CSV fino al grafo UDP. In
 
 Giovanni ha fermato il filone parallelo e affidato anche il 403/THS al solo agente principale. La correzione del grant upload è pubblicata nella policy :60; il selettore si apre e il primo handoff è STAGED. Il riuso dello stesso link per un altro file ha dato HTTP_500: preservare la prima ricevuta e riconciliare il secondo esito prima di ripetere. Il 502 della prova isolata Onboarding→SeaweedFS è distinto finché una prova non li collega.
 
+## Regola MAC da consultare prima di modificare i container
+
+Prima di creare/sostituire container o confrontare `Config`/`NetworkSettings`, leggere [la regola permanente MAC](docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) e il [precedente del 25 ottobre](docs/handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md). Distinguere `Config.MacAddress` legacy dagli endpoint per rete. La primitiva `tools/acquisition_read_native/retained_mac.py` copre soltanto il vecchio container dopo STOP/DETACH provati: non usarla per ammettere automaticamente differenze sui sostituti running. Vietate esclusioni globali del campo o riscritture delle impronte. Per un caso diverso riportare presenza/tipo del campo prima e dopo, corrispondenza con gli endpoint e fase del lifecycle; qualificare quel profilo prima di modificare il guard. Non riscoprire il problema come se il precedente non esistesse.
+
 ## Da leggere per riprendere
 
 1. [Stato corrente](docs/STATE.md): blocco e prossima azione.

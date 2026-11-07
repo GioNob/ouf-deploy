@@ -25,3 +25,11 @@ Questa regola nasce da errori ripetuti dell’assistente nel riutilizzare lo sto
 Non chiamare un controller pronto per il VPS finché i test legacy di cui sopra non passano senza skip, con log diretti letti e profili realmente presenti nelle fixture. Registrare limiti e differenze fra dati/chiavi/owner sintetici CI e prove server. Il superamento del gate non implica E2E o release acceptance.
 
 Questa regola resta in AGENTS.md e nel repository per le chat successive. Non si basa sulla promessa di memoria dell’assistente. I test e la review del codice devono impedirne la regressione.
+
+## Richiamo del 7 novembre 2026 — confronto dei sostituti SeaweedFS
+
+Giovanni ha segnalato nuovamente il precedente. Il documento era ancora presente, ma il richiamo non compare negli AGENTS dei due rami correnti prima di questa correzione (operativo `de8e048b`, documentazione `738a8792`). Il nuovo avviatore `scripts/ouf-runtime-20261107.py` confronta il Config completo e segnala soltanto il nome del campo diverso: questo non basta a distinguere una transizione legacy nota da un cambiamento reale. Il precedente non è stato consultato prima di quel controllo: omissione dell'assistente.
+
+La ricevuta del 7 novembre identifica `Config.MacAddress` come unico campo Config diverso per i sostituti Onboarding e UDP; non espone presenza, tipo o valore prima/dopo né confronto corrente degli endpoint. Gli script di cambio conservano `replacement-container.private.json` **dopo** avvio e readiness, non prima di start. La regola del vecchio container fermo/detached del 25 ottobre non può essere trasferita automaticamente a questi sostituti running.
+
+Ripristinato il richiamo esplicito negli AGENTS di entrambi i rami. Prima di correggere il guard, leggere dai riferimenti già conservati la forma precisa del delta e la corrispondenza degli endpoint per rete; riusare la primitiva solo se il profilo coincide. Nessuna esclusione globale di MacAddress, normalizzazione generica, modifica runtime o riscrittura delle impronte effettuata. Il controllo della policy Semantic già consegnato resta valido e il suo comando pinned non cambia.

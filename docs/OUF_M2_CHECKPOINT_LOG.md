@@ -178,3 +178,10 @@ Ricevuta operatore `OUF_SEMANTIC_APPLICATION_READY`: GATE_WAITING → APPLICATIO
 La successiva ricerca MCP `teatro`, limit 20, account ouf-admin, termina 403 `SEM_READ_RECEIPT_OR_POLICY_DENIED`; non ripetuta. Il codice installato accorpa verifica della ricevuta e decisione della policy, quindi causa non ancora distinta. Il grant admin è già presente nel catalogo letto. Preparato un controllo delle dichiarazioni selezionate e del token montato, con un solo GET HTTPS al canale policy. Nessun nuovo token, permesso o riavvio. Test locali PASS; esecuzione VPS pendente. Trasporto host e stato della policy in memoria sono distinti.
 
 [Avvio](../evidence/semantic-application-ready-operator-20261107.json) · [403 e sorgenti](../evidence/semantic-ready-search-denial-20261107.json) · [Comando corrente](OUF_SEMANTIC_POLICY_READ_20261107.md).
+
+
+## 7 novembre 2026 — recuperata la regola permanente MAC indicata dall'owner
+
+Consultati integralmente `docs/OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md`, `docs/handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md` e `tools/acquisition_read_native/retained_mac.py`. L'appunto esisteva: l'omissione è dell'assistente. Nei due AGENTS correnti non era richiamato; ripristinato il riferimento nella parte iniziale, senza nuovo checkpoint operativo da eseguire. La regola distingue Config legacy ed endpoint e vieta l'esclusione globale del campo.
+
+L'attuale ricevuta indica il solo nome MacAddress sui sostituti Onboarding/UDP, mentre la primitiva storica riguarda il vecchio CID fermo e senza endpoint dopo STOP/DETACH. Dai sorgenti degli switch, gli snapshot dei sostituti sono salvati dopo avvio/readiness. Non sono ancora noti presenza/tipo prima-dopo e corrispondenza corrente degli endpoint: nessuna equivalenza dichiarata, guard non allentato, impronte non cambiate. Il comando già consegnato per il 403 Semantic rimane valido. Nessun effetto VPS di questo aggiornamento documentale.
