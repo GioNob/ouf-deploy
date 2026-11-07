@@ -1,0 +1,85 @@
+{
+  "schema": "ouf.udp-seaweedfs-client-probe-preparation.v1",
+  "date": "2026-11-07",
+  "status": "PREPARED_NOT_EXECUTED_ON_VPS",
+  "currentBindingEvidence": "evidence/udp-current-storage-bindings-operator-20261107.json",
+  "facts": {
+    "installedImage": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+    "installedJar": "/app/app.jar",
+    "installedAwsSdk": "2.54.17",
+    "sourceDeclaredEndpoint": "http://ouf-minio:9000",
+    "bucket": "ouf-udp",
+    "sourceSpringApplicationJsonPresent": true,
+    "effectiveSpringConfigurationNotRead": true,
+    "sharedNetworks": [],
+    "targetEndpoint": "https://ouf-seaweedfs-stage:9002",
+    "targetCredentialsAlreadyPrepared": true
+  },
+  "probeScope": {
+    "sourceJsonRead": "Allowlist endpoint/bucket/region/path-style; other values and credential values not emitted",
+    "installedClasses": "Construct original S3LakeConfiguration, invoke lakeS3Client factory and original S3LakeObjectStorageAdapter.put/head/read after SHA checks",
+    "targetCredentialChain": "DefaultCredentialsProvider with only prepared shared credentials profile and EC2 metadata disabled",
+    "temporaryContainer": true,
+    "springStarted": false,
+    "applicationStopped": false,
+    "applicationBindingsChanged": false,
+    "databaseAccess": false,
+    "sourceS3Requests": 0,
+    "logicalTargetOperations": [
+      "HEAD new diagnostic UUID key must be absent",
+      "PUT via installed adapter, then its HEAD",
+      "GET via installed adapter; compare full bytes/hash/metadata"
+    ],
+    "maximumLogicalPutCalls": 1,
+    "sdkDefaultRetriesRetained": true,
+    "diagnosticObjectRetained": true,
+    "temporaryContainerAndCredentialCopyRemovedOnExit": true
+  },
+  "validation": {
+    "javaCompiled": true,
+    "javaTargetRelease": 17,
+    "javaInvalidInputFailureReceiptChecked": true,
+    "localOrchestration": "PASS",
+    "cases": [
+      "source JSON nested and flat properties",
+      "non-storage secret omitted",
+      "credential-bearing URL redacted",
+      "duplicate JSON keys rejected",
+      "successful orchestration fixture",
+      "target drift before create",
+      "failed transfer cleanup",
+      "cleanup timeout still removes credential copy",
+      "embedded bytecode SHA"
+    ],
+    "installedSdkActuallyExecuted": false,
+    "seaweedfsActuallyContacted": false
+  },
+  "code": {
+    "python": {
+      "path": "scripts/probe-current-udp-seaweedfs-20261107.py",
+      "bytes": 25198,
+      "sha256": "612c796478c4c18a8ac1c21ba3a4890e17fbd3c77c266a4a521c2b381cde26f9"
+    },
+    "java": {
+      "path": "tools/storage/UdpStorageClientProbe.java",
+      "sha256": "0f484db686e7cd9baf84d43c9fb489231d9714c234c9a3b482e8995649f8db3c",
+      "classSha256": "acab7bfc5ce9c4e7b9ca7e66a179832a53532119787b0ad631ba671f532c0357"
+    }
+  },
+  "references": [
+    {
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "0d40da05408a14db31d4d41af2372d6a71480291",
+      "paths": [
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeConfiguration.java",
+        "src/main/java/it/comune/trieste/ouf/udp/S3LakeObjectStorageAdapter.java",
+        "src/main/java/it/comune/trieste/ouf/udp/LakeObjectStoragePort.java"
+      ]
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/reference/features/external-config.html",
+      "scope": "Documented ordering: JSON properties after OS env, command line after JSON. Not proof of effective target runtime values."
+    }
+  ],
+  "nextAction": "Run pinned probe on VPS. If installed client PUT/HEAD/GET succeeds, align current UDP objects and switch its binding with writer stopped. Do not restart old Onboarding or reupload the existing CSV."
+}
