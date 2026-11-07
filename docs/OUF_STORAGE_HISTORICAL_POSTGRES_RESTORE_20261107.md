@@ -1,3 +1,9 @@
+## Esito VPS e completamento del riscontro SQL
+
+La [ricevuta](../evidence/storage-historical-postgres-restore-held-operator-20261107.json) riporta `POSTGRES_ROW_READ_NOT_PROVEN`. Il ramo raggiunto segue verifica del manifest, estrazione, `pg_controldata` e apertura del catalogo. Il controllo precedente dipendeva da un messaggio `NOTICE`, che può essere filtrato. Il riscontro corretto restituisce una riga `SELECT`, come già fa il catalogo.
+
+Usare [il programma aggiornato](../scripts/restore-retained-postgres.py) con `--finish-row-proof` e il riferimento della decisione esistente. Questo modo usa il cluster già estratto, verifica claim e log precedenti e mantiene il massimo totale di 18 avvii. Il limite della sola lettura campione è 180 secondi. Log e claim nuovi sono separati in `row-proof-v1`. La query usa una tabella temporanea nella copia isolata. La prova originale di estrazione rimane registrata sotto. MiniPET **39,78%**.
+
 # Prova di ripristino PostgreSQL dalla custodia storica
 
 Decisione approvata `GIOVANNI-NONPROD-ISOLATED-POSTGRES-RESTORE-20261107-01`.

@@ -159,17 +159,17 @@ def extract_cluster(h, plan, members, until):
     return image, cluster, s.st_uid, s.st_gid, member
 
 
-def docker_probe(until, token, image, cluster, uid, gid, ordinal, entrypoint, args, sql=None):
+def docker_probe(until, token, image, cluster, uid, gid, ordinal, entrypoint, args, sql=None, scope=NEW):
     name = f'ouf-pg-historical-{token}-{ordinal}'
     env = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C', 'LC_ALL': 'C'}
-    cmd = [DOCKER, '--host', 'unix:///run/docker.sock', '--config', str(NEW / 'docker-client')]
+    cmd = [DOCKER, '--host', 'unix:///run/docker.sock', '--config', str(scope / 'docker-client')]
     argv = cmd + ['run', '--rm', '-i', '--name', name, '--pull=never', '--network=none',
         '--label', 'ouf.restore-run=' + token, '--log-driver=none',
         '--restart=no', '--read-only', '--cap-drop=ALL', '--security-opt=no-new-privileges',
         '--memory=1g', '--cpus=1', '--pids-limit=64', '--tmpfs', '/tmp:rw,nosuid,nodev,size=64m',
         '--user', f'{uid}:{gid}', '-e', 'LC_ALL=C', '--mount',
         'type=bind,src=' + str(cluster) + ',dst=/isolated-pg', '--entrypoint', entrypoint, image, *args]
-    path = NEW / f'docker-{ordinal:02d}.private'
+    path = scope / f'docker-{ordinal:02d}.private'
     try:
         with path.open('xb') as log:
             result = subprocess.run(argv, input=sql, stdout=log, stderr=subprocess.STDOUT,
@@ -188,6 +188,94 @@ def docker_probe(until, token, image, cluster, uid, gid, ordinal, entrypoint, ar
     content = path.read_bytes()
     need(not re.search(rb'\b(?:ERROR|FATAL|PANIC):', content), 'ISOLATED_POSTGRES_SQL_FAILED')
     return content
+
+
+SINGLE = ['--single', '-D', '/isolated-pg', '-c', 'config_file=/dev/null',
+          '-c', 'shared_preload_libraries=', '-c', 'exit_on_error=on']
+ROW_PROBE = (
+    b"SET search_path=pg_catalog,pg_temp;\n"
+    b"CREATE TEMP TABLE ouf_restore_probe (sample integer);\n"
+    b"DO $$ DECLARE t record; n integer := 0; BEGIN FOR t IN SELECT s.nspname, c.relname "
+    b"FROM pg_class c JOIN pg_namespace s ON s.oid=c.relnamespace WHERE c.relkind='r' "
+    b"AND s.nspname NOT IN ('pg_catalog','information_schema') AND s.nspname NOT LIKE 'pg_toast%' "
+    b"AND s.nspname NOT LIKE 'pg_temp%' ORDER BY c.reltuples DESC, c.oid LIMIT 8 LOOP "
+    b"EXECUTE format('SELECT count(*) FROM (SELECT 1 FROM %I.%I LIMIT 1) q',t.nspname,t.relname) INTO n; "
+    b"EXIT WHEN n=1; END LOOP; INSERT INTO pg_temp.ouf_restore_probe VALUES (n); END $$;\n"
+    b"SELECT 'OUF_SAMPLE_ROWS=' || sample FROM pg_temp.ouf_restore_probe;\n"
+)
+
+
+def catalog_names(catalog):
+    names = [bytes.fromhex(v.decode()).decode('utf-8') for v in re.findall(rb'OUF_DB_HEX=([0-9a-f]+)', catalog)]
+    need(1 <= len(names) <= 16 and len(set(names)) == len(names) and all(
+        re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]{0,62}', n) for n in names), 'POSTGRES_DATABASE_SET_REQUIRES_REVIEW')
+    return names
+
+
+def retained_log(h, ordinal):
+    raw = h['protected'](NEW / f'docker-{ordinal:02d}.private', private=True, limit=1 << 20)
+    need(not re.search(rb'\b(?:ERROR|FATAL|PANIC):', raw), 'PRIOR_POSTGRES_ERROR_REQUIRES_REVIEW')
+    return raw
+
+
+def finish_row_proof(h, decision):
+    need(decision == DECISION, 'EXACT_RESTORE_DECISION_REQUIRED')
+    scope = NEW / 'row-proof-v1'
+    need(not os.path.lexists(NEW / 'result.json') and not os.path.lexists(scope), 'ROW_PROOF_ALREADY_EXISTS')
+    claim = h['decode'](h['protected'](NEW / 'claim.private.json', private=True, limit=8192))
+    need(claim.get('schema') == SCHEMA and claim.get('decisionReference') == DECISION
+         and claim.get('manifestSha256') == MANIFEST_SHA and claim.get('maximumContainerRuns') == 18
+         and claim.get('networkMode') == 'none' and claim.get('historicalRestoreOnly') is True,
+         'PRIOR_RESTORE_CLAIM_MISMATCH')
+    control = retained_log(h, 1)
+    need(re.search(rb'^Database cluster state:\s+shut down\s*$', control, re.M), 'PRIOR_COLD_CONTROL_UNPROVEN')
+    names = catalog_names(retained_log(h, 2))
+    ordinals = sorted(int(p.name[7:9]) for p in NEW.glob('docker-??.private')
+                      if re.fullmatch(r'docker-[0-9]{2}\.private', p.name))
+    need(3 <= len(ordinals) <= 2 + len(names) and ordinals == list(range(1, len(ordinals) + 1)),
+         'PRIOR_POSTGRES_LOG_SEQUENCE')
+    samples, pending = [], []
+    for i, name in enumerate(names, 3):
+        out = retained_log(h, i) if i in ordinals else b''
+        notices = re.findall(rb'\bNOTICE:\s+OUF_SAMPLE_ROWS=([01])\b', out)
+        if len(notices) == 1:
+            samples.append(int(notices[0]))
+        else:
+            pending.append(name)
+    need(len(ordinals) + len(pending) <= 18, 'ORIGINAL_CONTAINER_BUDGET_EXHAUSTED')
+    seal = h['decode'](h['protected'](SEALED / 'claim.private.json', private=True, limit=8192))
+    plan_raw = h['protected'](PAYLOAD / 'plan.private.json', private=True)
+    need(seal.get('originalPlanSha256') == h['digest'](plan_raw), 'PRIOR_PLAN_CHANGED')
+    config_raw = h['protected'](PAYLOAD / 'containers.private.json', private=True)
+    image, _, source, suffix = source_binding(h, h['decode'](plan_raw), {
+        'containers.private.json': {'sha256': h['digest'](config_raw)}})
+    cluster = NEW / 'data' / source.name / str(suffix)
+    info = cluster.lstat()
+    need(cluster.resolve(strict=True) == cluster and stat.S_ISDIR(info.st_mode) and info.st_uid > 0
+         and (cluster / 'PG_VERSION').is_file() and not os.path.lexists(cluster / 'postmaster.pid'),
+         'ISOLATED_CLUSTER_NOT_READY')
+    until = time.monotonic() + 180
+    scope.mkdir(mode=0o700)
+    token = secrets.token_hex(8)
+    h['new'](scope / 'claim.private.json', h['canonical']({'schema': SCHEMA, 'decisionReference': decision,
+        'manifestSha256': MANIFEST_SHA, 'priorContainerRuns': len(ordinals), 'pendingDatabases': len(pending),
+        'maximumTotalContainerRuns': 18, 'isolatedRunToken': token}))
+    (scope / 'docker-client').mkdir(mode=0o700)
+    for i, name in enumerate(pending, 1):
+        out = docker_probe(until, token, image, cluster, info.st_uid, info.st_gid, i,
+                           'postgres', SINGLE + [name], ROW_PROBE, scope)
+        rows = re.findall(rb'OUF_SAMPLE_ROWS=([01])\b', out)
+        need(len(rows) == 1, 'POSTGRES_SAMPLE_RESULT_MISSING')
+        samples.append(int(rows[0]))
+    need(len(samples) == len(names) and sum(samples) > 0, 'POSTGRES_APPLICATION_ROW_REQUIRED')
+    result = {'schema': SCHEMA, 'status': 'ISOLATED_HISTORICAL_POSTGRES_RESTORED',
+        'privateManifestSha256': MANIFEST_SHA, 'coldControlStateVerified': True,
+        'databasesOpened': len(names), 'databasesWithSampleRow': sum(samples),
+        'priorContainerRuns': len(ordinals), 'additionalContainerRuns': len(pending),
+        'reusedExtractedCluster': True, 'networkMode': 'none', 'historicalRestoreOnly': True,
+        'minioRestored': False, 'g3Complete': False, 'acceptanceCreditAdded': 0}
+    h['new'](scope / 'result.json', h['canonical'](result))
+    return result
 
 
 def execute(h, decision):
@@ -210,22 +298,12 @@ def execute(h, decision):
     image, cluster, uid, gid, member = extract_cluster(h, plan, members, until)
     control = docker_probe(until, token, image, cluster, uid, gid, 1, 'pg_controldata', ['/isolated-pg'])
     need(re.search(rb'^Database cluster state:\s+shut down\s*$', control, re.M), 'POSTGRES_COLD_SHUTDOWN_REQUIRED')
-    single = ['--single', '-D', '/isolated-pg', '-c', 'config_file=/dev/null',
-              '-c', 'shared_preload_libraries=', '-c', 'exit_on_error=on']
-    catalog = docker_probe(until, token, image, cluster, uid, gid, 2, 'postgres', single + ['template1'],
+    catalog = docker_probe(until, token, image, cluster, uid, gid, 2, 'postgres', SINGLE + ['template1'],
         b"SELECT 'OUF_DB_HEX=' || encode(convert_to(datname,'UTF8'),'hex') FROM pg_database WHERE datallowconn AND NOT datistemplate ORDER BY datname;\n")
-    names = [bytes.fromhex(v.decode()).decode('utf-8') for v in re.findall(rb'OUF_DB_HEX=([0-9a-f]+)', catalog)]
-    need(1 <= len(names) <= 16 and len(set(names)) == len(names) and all(
-        re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]{0,62}', n) for n in names), 'POSTGRES_DATABASE_SET_REQUIRES_REVIEW')
-    probe = (b"DO $$ DECLARE t record; n bigint; BEGIN SELECT s.nspname, c.relname INTO t FROM pg_class c "
-        b"JOIN pg_namespace s ON s.oid=c.relnamespace WHERE c.relkind='r' AND s.nspname NOT IN "
-        b"('pg_catalog','information_schema') AND s.nspname NOT LIKE 'pg_toast%' ORDER BY c.reltuples DESC LIMIT 1; "
-        b"IF FOUND THEN EXECUTE format('SELECT count(*) FROM (SELECT 1 FROM %I.%I LIMIT 1) q', "
-        b"t.nspname,t.relname) INTO n; RAISE NOTICE 'OUF_SAMPLE_ROWS=%',n; "
-        b"ELSE RAISE NOTICE 'OUF_SAMPLE_ROWS=0'; END IF; END $$;\n")
+    names = catalog_names(catalog)
     samples = 0
     for i, name in enumerate(names, 3):
-        out = docker_probe(until, token, image, cluster, uid, gid, i, 'postgres', single + [name], probe)
+        out = docker_probe(until, token, image, cluster, uid, gid, i, 'postgres', SINGLE + [name], ROW_PROBE)
         match = re.findall(rb'OUF_SAMPLE_ROWS=([01])\b', out)
         need(len(match) == 1, 'POSTGRES_ROW_READ_NOT_PROVEN')
         samples += int(match[0])
@@ -246,9 +324,11 @@ if __name__ == '__main__':
              and sys.dont_write_bytecode, 'ROOT_ISOLATED_REQUIRED')
         parser = argparse.ArgumentParser()
         parser.add_argument('--decision-reference', required=True)
+        parser.add_argument('--finish-row-proof', action='store_true')
         args = parser.parse_args()
         os.umask(0o077)
-        print(json.dumps(execute(load_producer(), args.decision_reference), sort_keys=True))
+        run = finish_row_proof if args.finish_row_proof else execute
+        print(json.dumps(run(load_producer(), args.decision_reference), sort_keys=True))
     except Exception as error:
         code = str(error)
         if not (type(error).__name__ == 'Held' and re.fullmatch('[A-Z0-9_]{1,96}', code)):
