@@ -1,0 +1,83 @@
+{
+  "applicationConfigurationChanged": false,
+  "applicationLoadedPolicyProven": false,
+  "businessRequestsIssued": 0,
+  "captureOverrideExactBytesVerified": true,
+  "captureOverrideListed": true,
+  "captureOverrideRemoved": false,
+  "credentialValuesEmitted": false,
+  "daemonReloadDispatched": false,
+  "databaseQueriesIssuedByScript": 0,
+  "existingOwnerMayRequestTokensAndWriteLedger": true,
+  "legacyUnits": {
+    "ouf-policy-token@semantic.service": {
+      "ActiveState": "inactive",
+      "ExecMainStatus": "0",
+      "LoadState": "masked",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "NeedDaemonReload": "no",
+      "NoNewPrivileges": "no",
+      "Restart": "no",
+      "Result": "success",
+      "RuntimeDirectoryPreserve": "no",
+      "SendSIGKILL": "yes",
+      "SubState": "dead",
+      "Type": "",
+      "UnitFileState": "masked",
+      "User": ""
+    },
+    "ouf-policy-token@semantic.timer": {
+      "ActiveState": "inactive",
+      "LoadState": "masked",
+      "NeedDaemonReload": "no",
+      "Result": "success",
+      "SubState": "dead",
+      "UnitFileState": "masked"
+    }
+  },
+  "observedAt": "2026-11-07T19:43:40.143088+00:00",
+  "omittedTextProperties": [
+    "ExecStartPre",
+    "ExecStartPost",
+    "ExecCondition"
+  ],
+  "operationalLedgerWritesByScript": 0,
+  "permissionChanges": 0,
+  "policyGetAttempts": 0,
+  "reason": "TYPED_SERVICE_METADATA_READ_FAILED",
+  "s3Requests": 0,
+  "schema": "ouf.semantic-operational-owner-resume.v2",
+  "service": "ouf-registry-token-7cb59501000058b5dc5030ad.service",
+  "serviceBefore": {
+    "ActiveState": "inactive",
+    "ExecMainStatus": "0",
+    "LoadState": "loaded",
+    "MainPID": "0",
+    "NRestarts": "0",
+    "NeedDaemonReload": "no",
+    "NoNewPrivileges": "yes",
+    "Restart": "no",
+    "Result": "success",
+    "RuntimeDirectoryPreserve": "yes",
+    "SendSIGKILL": "no",
+    "SubState": "dead",
+    "TimeoutStopUSec": "2min",
+    "Type": "simple",
+    "UnitFileState": "disabled",
+    "User": "root"
+  },
+  "serviceConfigurationChanged": false,
+  "serviceEnableDispatched": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "HELD",
+  "tokenBefore": {
+    "claimsAreMetadataOnly": true,
+    "expiredAtRead": true,
+    "expiryEpoch": 1794006530,
+    "expiryUtc": "2026-11-06T23:08:50+00:00",
+    "notYetValidAtRead": false,
+    "signatureVerifiedLocally": false
+  }
+}
