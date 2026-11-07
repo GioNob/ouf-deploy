@@ -1,3 +1,7 @@
+## Esito dello staging VPS
+
+Il download diretto ha restituito HTTP 200 e SHA-256 conforme. [Ricevuta](../evidence/storage-oci33-zip-staged-operator-20261107.json). [Proposta per caricamento e rehearsal in una singola esecuzione](OUF_STORAGE_RETAINED_OCI33_REHEARSAL_20261107.md).
+
 # Trasferire l’artefatto SeaweedFS OCI33 sul VPS
 
 L'[immagine esatta manca sul VPS](../evidence/storage-oci33-image-absent-operator-20261107.json). Scaricare lo [ZIP OCI33 da GitHub Actions](https://github.com/GioNob/ouf-deploy/actions/runs/41782068047/artifacts/13299559178) con la sessione GitHub già in uso. Il file è `seaweedfs-452-generation33-candidate-image-41782068047.zip`. Il comando verifica dimensione e SHA-256 sul PC, crea una directory privata nuova nella home di `oufadmin` e copia lo ZIP con SCP e host key obbligatoria. Nessun container viene avviato.
