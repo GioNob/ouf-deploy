@@ -1,5 +1,7 @@
 # Custodia storica del materiale di cattura OUF
 
+**Qualifica nativa PASS.** Cifratura e decifratura con age, 34 tar sorgente, 14 rootfs, 53 digest verificati e controlli negativi in fixture isolata. [Esecuzione](https://github.com/GioNob/ouf-deploy/actions/runs/42352184254) · [Ricevuta di qualifica](../evidence/storage-retained-custody-qualified-20261107.json). Decisione VPS ancora da acquisire.
+
 Decisione proposta `GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01`. L'esecuzione sul VPS richiede la decisione distinta su questo perimetro e la qualifica nativa con age. La decisione di cattura precedente copriva un tentativo, ora consumato.
 
 ## Evidenza del VPS
@@ -19,3 +21,32 @@ I 34 tar sorgente, 14 tar rootfs e il tar immagini sommano 6.540.999.168 byte. I
 [Script](../scripts/seal-retained-storage-capture-20261107.py) · [Qualifica nativa](../.github/workflows/storage-retained-custody.yml)
 
 La fixture locale ha verificato corruzione, idempotenza del claim, errore del cifratore, integrità dei membri e conservazione degli originali. Il test locale usa pass-through. Il workflow separato verifica cifratura e decifratura con age su fixture isolate.
+
+## Comando pinned dopo la decisione
+
+Il comando richiede il riferimento esatto della nuova decisione. Il riferimento è un vincolo di provenienza e non autentica una decisione operativa. Eseguire soltanto dopo la sua registrazione.
+
+```bash
+sudo /usr/bin/python3 -I -B -S - <<'PY'
+import hashlib
+import sys
+import urllib.request
+
+url = (
+    "https://raw.githubusercontent.com/GioNob/ouf-deploy/"
+    "45d18601a8b0993c5a843477809197c3d02574fa/"
+    "scripts/seal-retained-storage-capture-20261107.py"
+)
+with urllib.request.urlopen(url, timeout=30) as response:
+    raw = response.read(14301)
+if len(raw) != 14300 or hashlib.sha256(raw).hexdigest() != "1e269721c9ee0104cf7ead1e35505048a7152ab4a61102eee6a7e000c5128d1e":
+    raise SystemExit("HELD: download o SHA256 non corrispondente")
+sys.argv[1:] = [
+    "--decision-reference", "GIOVANNI-NONPROD-HISTORICAL-CUSTODY-20261107-01",
+    "--historical-custody-only",
+]
+exec(compile(raw, "verified-retained-custody", "exec"), {"__name__": "__main__"})
+PY
+```
+
+Attendere il JSON finale. Un HOLD conserva la prova locale e ferma il tentativo. Dopo `HISTORICAL_CUSTODY_ARCHIVE_SEALED` usare percorso, byte e SHA-256 effettivi per la copia indipendente.
