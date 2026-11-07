@@ -1,3 +1,7 @@
+## Esito del controllo OCI33
+
+L'[immagine non è presente](../evidence/storage-oci33-image-absent-operator-20261107.json). [Trasferimento dell'artefatto esatto](OUF_STORAGE_OCI33_WINDOWS_STAGE_20261107.md): scaricare lo ZIP da Actions e inviarlo nella nuova directory privata, senza avvio di servizi.
+
 # Dalla copia storica a SeaweedFS OCI33
 
 La [ricevuta MinIO](../evidence/storage-historical-minio-restored-operator-20261107.json) conferma 120 corpi da due bucket, 203.743 byte e zero marker. Il [ripristino PostgreSQL](../evidence/storage-historical-postgres-restored-operator-20261107.json) conferma 7 database e 7 letture campione. La copertura degli eventi e la consistenza della generazione comune restano aperte. MiniPET **39,78%**, zero corpi migrati.
