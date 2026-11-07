@@ -8,7 +8,7 @@ Le successive [chiamate MCP](evidence/semantic-recovery-functional-read-20261107
 
 Le diagnosi HELD sono storiche: GetUnit può non trovare l'unità inattiva non caricata. La v3 eseguita verifica main fragment/all drop-in e NeedDaemonReload=no, senza dedurre array vuoti dai campi omessi né usare D-Bus diretto. [Runbook](docs/OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md).
 
-Riprendere da asset/profilo e [mapping pronto](docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md), senza nuovo upload/profilazione. Chiedere solo la scelta concreta dei campi/accesso del nuovo asset prima della creazione prevista dal contratto MCP; non trasferire automaticamente l'approvazione HUMAN della vecchia sorgente.
+Riprendere da asset/profilo e [mapping](docs/OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md), senza nuovo upload/profilazione. **OPEN per tutte le 20 colonne è acquisito.** L'owner chiede proprietà condivise identificate da URI per il significato delle colonne, non enumerazioni dei valori: [analisi per colonna](docs/OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md). I 18 termini locali con dominio PerformingArtsTheater non sono automaticamente riusabili su tipi diversi. Discovery esterna non esposta nella connessione; candidati già esistenti da riconciliare col runtime, senza URI inventati o sostituzione con web research. L'ultima ricerca Cinema è stata rifiutata per orchestration budget exhausted/retryable:false: non ripeterla alla cieca o resettare il budget. La review HUMAN della futura sorgente resta distinta dall'analisi.
 
 ## Priorità corrente dell'owner — 7 novembre 2026
 

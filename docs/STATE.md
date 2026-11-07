@@ -12,11 +12,17 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 ## Prossimo passo concreto
 
-[Mapping proposto per il nuovo CSV](OUF_TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.md): riuso di Teatri 1.0.0, tutte le 20 colonne incluse, `RESTRICTED`, `IDENTITY`, chiave `nome_teatro`. Corrispondenza delle 20 colonne e presenza dei termini verificate sul profilo attuale e sulla revisione pubblicata. CAP e coordinate restano testo: nessuna conversione di `4.565.094`/`1.376.850` in coordinate numeriche.
+**Scelta OPEN acquisita per tutte le 20 colonne.** L'owner richiede l'associazione delle colonne a proprietà semantiche condivise (URI stabili) per confronti tra oggetti diversi; non chiede vocabolari per enumerare i valori. [Tabella completa delle 20 colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 
-**Manca la scelta dell'owner sul mapping/accesso del nuovo asset.** Il contratto di `source.onboarding.create` richiede profilo rivisto e scelte dei campi/semantica; il successo della vecchia sorgente non approva automaticamente quella nuova. Preparato il [payload esatto](../releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json), non inviato. Dopo la scelta: creare una bozza idempotente, leggere versione/hash e preparare la review nativa THS, quindi proseguire Ingestion→UDP→grafo. L'approvazione HUMAN resta nella THS.
+La nuova lettura MCP della revisione Teatri conferma 105 statement: due termini schema.org (`name` e il candidato `additionalType`), 18 proprietà locali con dominio PerformingArtsTheater e range string. La presenza di una proprietà locale non chiude la scelta di un riferimento generale. Le ricerche per `nome`, `indirizzo` e `coordinate` sono vuote; non dimostrano assenza dei termini dentro gli snapshot.
 
-Non ricaricare o riprofilare. Non ripubblicare l'ontologia né riavviare il produttore già ripristinato. La sorgente storica `teatri-csv-6609b245` e le sue acquisizioni restano invariate; la proposta riguarda `teatri-seaweedfs-c51745c5`. Nessuna bozza applicativa, attivazione o nuova Ingestion inviata in questa fase.
+**Impedimento:** la connessione non espone discovery.request/status/candidates per OntoPiA/schema.gov.it. Esistono candidati in MCP PR81, Gateway PR84 e Registry PR41, ancora aperti/non merged; non dedurre installazione dal codice. Il prossimo intervento deve riconciliare i binding attuali e completare questo percorso funzionale conservando file/SeaweedFS. Non inventare URI o sostituire la richiesta con ricerca web/import manuali.
+
+L'ultima ricerca `Cinema` ha risposto `orchestration budget exhausted`, `retryable:false`: esito conservato, nessun retry, reset o cambio account. [Evidenza](../evidence/teatri-column-semantic-reference-review-20261107.json).
+
+Il [payload OPEN](../releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json) è aggiornato come proposta di lavoro; mantiene temporaneamente i riferimenti precedenti e **non è ancora la scelta finale dei termini condivisi**. Nessuna bozza applicativa o Ingestion inviata. Dopo il mapping: bozza idempotente, review THS, Ingestion→UDP→grafo e normale operazione lake su SeaweedFS.
+
+Non ricaricare o riprofilare, non ripubblicare Teatri e non riavviare il produttore token già ripristinato. La sorgente storica `teatri-csv-6609b245` è invariata; la proposta riguarda `teatri-seaweedfs-c51745c5`. Coordinate originali conservate senza conversioni.
 
 ## Ripristino Semantic acquisito
 
