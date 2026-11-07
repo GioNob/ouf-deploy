@@ -102,6 +102,19 @@ def copy_checked(src, dst, digest, maximum, until, expected=None):
         os.fsync(out.fileno())
 
 
+def archive_config(archive):
+    with tarfile.open(archive, 'r:') as tar:
+        manifest = tar.getmember('manifest.json')
+        need(manifest.isfile() and 0 < manifest.size <= 1 << 20, 'OCI33_DOCKER_MANIFEST_MEMBER')
+        doc = json.load(tar.extractfile(manifest))
+        need(isinstance(doc, list) and len(doc) == 1, 'OCI33_DOCKER_MANIFEST')
+        info = tar.getmember(doc[0]['Config'])
+        need(info.isfile() and 0 < info.size <= 1 << 20, 'OCI33_IMAGE_CONFIG_MEMBER')
+        raw = tar.extractfile(info).read()
+        need('sha256:' + hashlib.sha256(raw).hexdigest() == IMAGE, 'OCI33_IMAGE_CONFIG_DIGEST')
+    return json.loads(raw), doc[0].get('RepoTags') or []
+
+
 def prepare_image(scope, docker, until):
     account = pwd.getpwnam('oufadmin')
     supplied = os.path.join(account.pw_dir, ZIP_PATH)
@@ -125,19 +138,45 @@ def prepare_image(scope, docker, until):
         need(len(candidates) == 1 and 0 < candidates[0].file_size <= 512 << 20, 'OCI33_DOCKER_ARCHIVE_MEMBER')
         with z.open(candidates[0]) as src:
             copy_checked(src, archive, TAR_SHA, 512 << 20, until, candidates[0].file_size)
-    with tarfile.open(archive, 'r:') as tar:
-        doc = json.load(tar.extractfile('manifest.json'))
-        need(isinstance(doc, list) and len(doc) == 1, 'OCI33_DOCKER_MANIFEST')
-        info = tar.getmember(doc[0]['Config'])
-        need(info.isfile() and 0 < info.size <= 1 << 20, 'OCI33_IMAGE_CONFIG_MEMBER')
-        need('sha256:' + hashlib.sha256(tar.extractfile(info).read()).hexdigest() == IMAGE, 'OCI33_IMAGE_CONFIG_DIGEST')
-        tags = doc[0].get('RepoTags') or []
+    _, tags = archive_config(archive)
     rows = [json.loads(line) for line in docker('image', 'ls', '--no-trunc', '--format', '{{json .}}').splitlines()]
     existing = {row['Repository'] + ':' + row['Tag']: row['ID'] for row in rows}
     need(all(isinstance(tag, str) and existing.get(tag, IMAGE) == IMAGE for tag in tags), 'OCI33_TAG_CONFLICT')
     docker('load', '--input', str(archive), timeout=120)
     checked = docker('image', 'inspect', '--format', '{{.Id}} {{.Config.User}}', IMAGE)
     need(checked.split() == [IMAGE, '10001:10001'], 'OCI33_LOADED_IDENTITY')
+    return IMAGE
+
+
+def reuse_loaded_image(h, pg, prior, scope, docker, until):
+    archive = prior / 'runtime.docker.tar'
+    need(pg['private_hash'](h, archive, until)['sha256'] == TAR_SHA, 'RETAINED_DOCKER_ARCHIVE_CHANGED')
+    config, tags = archive_config(archive)
+    need(len(tags) == 1 and re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9._/:-]{0,199}', tags[0]),
+         'OCI33_EXACT_ARCHIVE_TAG_REQUIRED')
+    tag = tags[0]
+
+    def inspect():
+        raw = docker('image', 'inspect', tag)
+        rows = json.loads(raw)
+        need(len(rows) == 1, 'OCI33_INSPECT_CARDINALITY')
+        row = rows[0]
+        need(re.fullmatch('sha256:[a-f0-9]{64}', row.get('Id', ''))
+             and row['Config']['User'] == config['config']['User'] == '10001:10001'
+             and row['RootFS']['Layers'] == config['rootfs']['diff_ids'],
+             'OCI33_LOADED_LAYER_OR_USER_MISMATCH')
+        return row['Id']
+
+    image_id = inspect()
+    exported = scope / 'loaded-image-proof.tar'
+    docker('image', 'save', '--output', str(exported), tag, timeout=min(120, until-time.monotonic()))
+    need(0 < exported.stat().st_size <= 512 << 20, 'OCI33_EXPORTED_IMAGE_SIZE')
+    exported_config, _ = archive_config(exported)
+    need(exported_config == config and inspect() == image_id, 'OCI33_LOADED_CONFIG_OR_TAG_CHANGED')
+    h['new'](scope / 'loaded-image.private.json', h['canonical']({
+        'expectedConfigDigest': IMAGE, 'daemonImageId': image_id, 'tag': tag,
+        'retainedArchiveSha256': TAR_SHA, 'rawConfigVerifiedFromImageSave': True}))
+    return image_id
 
 
 def objects(h, pg, mi):
@@ -201,12 +240,21 @@ def object_tags(body):
     return dict(tags)
 
 
-def run(h, pg, mi, decision):
+def run(h, pg, mi, decision, resume=False):
     need(decision == DECISION, 'EXACT_REHEARSAL_DECISION_REQUIRED')
     until = time.monotonic() + SECONDS
-    scope = pg['ROOT'] / 'historical-oci33-rehearsal-20261107-v1'
+    prior = pg['ROOT'] / 'historical-oci33-rehearsal-20261107-v1'
+    scope = prior / 'copy-proof-v1' if resume else prior
     need(not os.path.lexists(scope) and shutil.disk_usage(pg['ROOT']).free >= 3 << 30,
          'FRESH_REHEARSAL_SCOPE_AND_SPACE_REQUIRED')
+    if resume:
+        claim = h['decode'](h['protected'](prior / 'claim.private.json', private=True, limit=8192))
+        need(claim.get('schema') == SCHEMA and claim.get('decisionReference') == DECISION
+             and claim.get('sourceManifestSha256') == BODY_MANIFEST and claim.get('destinationImage') == IMAGE
+             and claim.get('maximumContainerRuns') == 2 and re.fullmatch('[a-f0-9]{16}', claim.get('runToken', ''))
+             and not any(os.path.lexists(prior / name) for name in
+                         ('config', 'destination-data', 'result.json', 'copy-journal.private.jsonl')),
+             'PRIOR_REHEARSAL_PHASE_REQUIRES_REVIEW')
     rows, source_image, volume, info = objects(h, pg, mi)
     token = secrets.token_hex(8)
     parent = h['runtime_parent'](scope)
@@ -225,10 +273,16 @@ def run(h, pg, mi, decision):
     def docker(*args, timeout=20):
         result = subprocess.run(docker_base + list(args), stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL, env=ENV, timeout=timeout)
-        need(result.returncode == 0, 'DOCKER_' + args[0].upper() + '_FAILED')
+        action = '_'.join(args[:2]) if args[0] == 'image' else args[0]
+        need(result.returncode == 0, 'DOCKER_' + action.upper() + '_FAILED')
         return result.stdout.decode().strip()
 
-    prepare_image(scope, docker, until)
+    if resume:
+        need(not docker('ps', '-aq', '--filter', 'label=ouf.rehearsal=' + claim['runToken']),
+             'PRIOR_REHEARSAL_CONTAINER_PRESENT')
+        destination_image = reuse_loaded_image(h, pg, prior, scope, docker, until)
+    else:
+        destination_image = prepare_image(scope, docker, until)
     source_name, dest_name = ('ouf-oci33-' + token + '-' + role for role in ('source', 'destination'))
     source_auth = ('restore' + secrets.token_hex(8), secrets.token_hex(24))
     dest_auth = ('rehearsal' + secrets.token_hex(8), secrets.token_hex(24))
@@ -329,7 +383,7 @@ def run(h, pg, mi, decision):
                '--user', '10001:10001', '--workdir', '/config',
                '--mount', 'type=bind,src=' + str(data) + ',dst=/data',
                '--mount', 'type=bind,src=' + str(config) + ',dst=/config,readonly',
-               IMAGE, '-logtostderr=true', 'server', '-ip=127.0.0.1', '-ip.bind=127.0.0.1',
+               destination_image, '-logtostderr=true', 'server', '-ip=127.0.0.1', '-ip.bind=127.0.0.1',
                '-dir=/data', '-master.port=19332', '-master.volumeSizeLimitMB=32', '-volume.port=18082',
                '-volume.max=128', '-filer', '-filer.port=18882', '-s3', '-s3.port=9002',
                '-s3.port.iceberg=0', '-s3.port.lance=0', '-s3.config=/config/s3.json')
@@ -403,6 +457,7 @@ def run(h, pg, mi, decision):
         'bucketsVerified': 2, 'objectsVerified': verified, 'bytesVerified': total,
         'bodyMetadataAndTagsMatch': True, 'destinationKeySetMatches': True,
         'sourceManifestSha256': BODY_MANIFEST, 'imageId': IMAGE, 'httpRequests': requests,
+        'daemonImageId': destination_image, 'existingImageReused': resume,
         'historicalRehearsalOnly': True, 'productionObjectsMigrated': 0,
         'g4Complete': False, 'acceptanceCreditAdded': 0}
     h['new'](scope / 'result.json', h['canonical'](result))
@@ -412,11 +467,13 @@ def run(h, pg, mi, decision):
 def main(pg, mi):
     parser = argparse.ArgumentParser()
     parser.add_argument('--decision-reference', required=True)
+    parser.add_argument('--finish-loaded-image', action='store_true')
     args = parser.parse_args()
     os.umask(0o077)
     try:
         need(os.geteuid() == os.getegid() == 0, 'ROOT_REQUIRED')
-        print(json.dumps(run(pg['load_producer'](), pg, mi, args.decision_reference), sort_keys=True))
+        print(json.dumps(run(pg['load_producer'](), pg, mi, args.decision_reference,
+                             resume=args.finish_loaded_image), sort_keys=True))
     except Exception as error:
         code = str(error)
         if not (type(error).__name__ == 'Held' and re.fullmatch('[A-Z0-9_]{1,96}', code)):
