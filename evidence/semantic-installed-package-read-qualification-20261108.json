@@ -1,6 +1,6 @@
 {
   "schema": "ouf.semantic-installed-package-read-qualification.v1",
-  "status": "READER_QUALIFIED_TARGET_READ_AWAITED",
+  "status": "READER_QUALIFIED_TARGET_PACKAGE_READ_COMPLETE",
   "sourceCommit": "f636440dac4df2469e97d919c44fd64693b1fcea",
   "script": "scripts/read-semantic-installed-package-20261108.py",
   "scriptSha256": "9d409461d89debecdd682d541a34b226354895a5e4808b2504024760717340c1",
@@ -34,7 +34,7 @@
     "containerChanges": 0,
     "heldAttemptModified": false
   },
-  "targetReadExecuted": false,
+  "targetReadExecuted": true,
   "withdrawnInference": "Candidate source-lock and retained image equality do not prove candidate source membership of the current JAR",
   "sourceLockExplicitRuntimeMembershipProven": false,
   "limitations": [
@@ -42,5 +42,7 @@
     "No new container lifecycle qualification; existing exact frame helper reused",
     "Class presence and revision labels are metadata, not behavior or provenance proof",
     "No migration/apply continuation authorized by reader result alone"
-  ]
+  ],
+  "targetReceipt": "evidence/semantic-installed-package-operator-extract-20261108.json",
+  "targetObservation": "V1_V10_MATCH_CANDIDATE_PREFIX_V11_V12_AND_DISCOVERY_CLASSES_ABSENT"
 }

@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run the read-only installed Semantic package reader. The V11/V12 preflight stopped before Java/SQL on INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE. Candidate source-lock did not prove runtime membership; withdraw the inference that the retained image already contains c2dae77b. Read exact migration hashes/missing-extra-changed files, selected libraries/classes and safe metadata, then reconcile application/schema compatibility. Preserve the held attempt; do not replay migration, reset its directory or repeat the completed Gateway update.",
+  "nextAction": "Execute the qualified coherent Semantic application and V11/V12 upgrade using exact artifact13066396654/source c2dae77b. Current JAR is V1–V10 with missing discovery classes, not the candidate. Delivery source c52804a and CI42506812587 qualify the archived image through replacement, packaged Flyway and readiness on both Docker29.8.1 backends. Target execution awaited. Requires existing authenticated GitHub CLI or explicit local exact archive; availability on target is unobserved. Preserve held migration attempt and completed Gateway/SeaweedFS/Teatri results. Then MCP14/1024 service rollout, provider binding/delegation/transport/grants, semantic mapping and Ingestion→UDP.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -928,8 +928,8 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "GATEWAY_APPLIED_SEMANTIC_PACKAGE_MISMATCH_READ_PREPARED",
-      "document": "docs/OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md",
+      "status": "GATEWAY_APPLIED_SEMANTIC_IMAGE_AND_SCHEMA_UPGRADE_QUALIFIED",
+      "document": "docs/OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
       "targetReadExecuted": true,
@@ -939,7 +939,7 @@
       "workerEnabledEnv": false,
       "effectiveProviderConfigurationProven": false,
       "currentMcpIsRetainedOldImage": true,
-      "registryImageIsRetainedNewerVersion": null,
+      "registryImageIsRetainedNewerVersion": false,
       "storageReplacementMacDeltaPresent": false,
       "otherFiveConfigMacDelta": "ABSENT_TO_VALID_ENDPOINT_COHERENT_STRING",
       "dependencyReaderCommit": "870b5e0cab438de2ed33936c97da28a6930da263",
@@ -1082,20 +1082,48 @@
       "registryImageMatchesRetained": true,
       "registryRuntimeCandidateSourceMembershipProven": false,
       "semanticInstalledPackageRead": {
-        "status": "READER_QUALIFIED_TARGET_AWAITED",
+        "status": "SEMANTIC_INSTALLED_PACKAGE_READ",
         "sourceCommit": "f636440dac4df2469e97d919c44fd64693b1fcea",
         "script": "scripts/read-semantic-installed-package-20261108.py",
         "scriptSha256": "9d409461d89debecdd682d541a34b226354895a5e4808b2504024760717340c1",
-        "targetExecuted": false,
+        "targetExecuted": true,
         "qualification": "evidence/semantic-installed-package-read-qualification-20261108.json",
         "ciRun": 42504819787,
         "ciJob": 128805066674,
         "tests": 6,
         "skips": 0,
-        "logsRead": true
+        "logsRead": true,
+        "observedAt": "2026-11-08T17:29:05.916002+00:00",
+        "receipt": "evidence/semantic-installed-package-operator-extract-20261108.json",
+        "installedMigrations": [
+          1,
+          10
+        ],
+        "installedPrefixAllMatches": true,
+        "missingCandidateMigrations": [
+          11,
+          12
+        ],
+        "missingDiscoveryClasses": 3,
+        "jarSha256": "e0c26f0e0dea02b52f23e874b9494362dd2d58cc787e918a94948ff08340e786",
+        "runtimeChanged": false
       },
-      "semanticPackageMismatchDetailsKnown": false,
-      "semanticRuntimeSchemaCompatibilityProven": false
+      "semanticPackageMismatchDetailsKnown": true,
+      "semanticRuntimeSchemaCompatibilityProven": false,
+      "semanticApplicationUpgrade": {
+        "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+        "sourceCommit": "c52804add2b26f5f9dad6e84073844cdc75aa880",
+        "deliveryCommit": "b2ef4a4d343716b40ae35a409c6a910a63f88721",
+        "script": "scripts/upgrade-semantic-application-20261108.py",
+        "candidateSourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+        "artifactId": 13066396654,
+        "qualification": "evidence/semantic-application-upgrade-qualification-20261108.json",
+        "ciRun": 42506812587,
+        "targetExecuted": false,
+        "providerActivationIncluded": false,
+        "discoveryFunctionalTested": false,
+        "automaticReplayAllowed": false
+      }
     }
   }
 }

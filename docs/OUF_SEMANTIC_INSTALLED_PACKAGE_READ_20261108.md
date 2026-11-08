@@ -1,5 +1,7 @@
 # Semantic: identificare il JAR installato dopo il blocco della migrazione
 
+**LETTURA COMPLETATA alle18:29 CET. Non ripetere il comando sotto.** [Estratto operatore](../evidence/semantic-installed-package-operator-extract-20261108.json): V1–V10 coincidenti, V11/V12 e tre classi discovery assenti; JAR e runtime invariati. Occorre aggiornare applicazione e schema insieme. [Consegna corrente](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md).
+
 [Ricevuta delle 18:16:23 CET dell'8 novembre](../evidence/semantic-v11-v12-held-operator-20261108.json): `HELD / INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE`. Zero sessioni DB, avvii Java, migrazioni, file helper nel container o stop di servizi. Il controllo si è fermato sul confronto dei file SQL; il dettaglio mancante non permette di dire se alcuni file siano assenti, aggiuntivi o modificati.
 
 **Errore nella ricostruzione dell'assistente:** il [source-lock del candidato](../releases/m2-current-core-source-lock-20261101.json) dichiara `allRuntimeArtifactMembershipProven:false`. L'uguaglianza dell'immagine corrente con quella trattenuta non prova che il suo JAR sia il candidato c2dae77b. È ritirata l'affermazione che il Registry in esecuzione sia già quella versione più recente. Le prove native del migratore usavano un JAR ricostruito dal candidato; non dimostravano il contenuto del JAR sul VPS.
@@ -22,7 +24,7 @@ Nessun contenuto SQL, classi, YAML, argomento grezzo, ambiente completo o creden
 
 Il lettore richiede che il tentativo fermato contenga soltanto `attempt.json`, come previsto dal punto di stop; lo rilegge e lo lascia invariato. Conserva il nuovo resoconto in una directory separata. Non cancellare `/var/lib/ouf-storage-migration/semantic-v11-v12-20261108` né rilanciare il migratore.
 
-## Comando operatore corrente
+## Comando storico già eseguito
 
 ```bash
 (

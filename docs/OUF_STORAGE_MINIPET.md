@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.14 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.15 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** Gateway applicato e verificato: 87 route, otto modifiche e 79 conservate. Semantic DB è letto a V10, checksum del prefisso candidato coincidenti, richieste discovery vuote. La migrazione delle 18:16 CET si è fermata prima di SQL/Java perché i file del JAR differiscono dal candidato. L'attribuzione del sorgente candidato al runtime era un'inferenza non provata dell'assistente, ora ritirata. [Prossimo comando](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md): leggere migrazioni/librerie/classi del JAR corrente senza effetti runtime. Poi riconciliare la compatibilità applicazione/schema prima di un nuovo intervento. Conservare il tentativo, Teatri, SeaweedFS e Gateway; MCP14/rollout1024/budget, provider/grant/attivazione e mapping restano aperti.
+**Passo corrente:** Gateway applicato (87 route, otto modifiche/79 conservate). La lettura Semantic delle18:29 CET prova V1–V10 nel JAR e assenza di V11/V12 e delle classi discovery; anche il DB osservato è aV10. Il tentativo precedente non ha eseguito SQL/Java. È stato preparato l'[aggiornamento coerente Registry+schema](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md), con l'artefatto originale c2dae77b verificato e prove native riuscite su Docker classic/containerd. Esecuzione VPS attesa. Conservare lo scope fermato, Teatri, SeaweedFS e Gateway. Dopo: MCP14/rollout1024/budget, binding/trasporto/delega/grant discovery, mapping e Ingestion→UDP.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

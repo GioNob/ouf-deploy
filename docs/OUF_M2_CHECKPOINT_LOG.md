@@ -325,3 +325,14 @@ Errore della ricostruzione dell'assistente: il source-lock del candidato, che di
 Preparato il [lettore mirato](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md), sorgente `f636440dac4df2469e97d919c44fd64693b1fcea`: due GET Docker, JAR del processo corrente, hash e metadati selezionati, nessun exec/Java/SQL o effetto applicativo. Confronto preciso delle migrazioni e presenza/hash delle classi discovery; label/presenza non dichiarate prove di comportamento o provenienza. Tentativo precedente invariato, nuovo resoconto separato.
 
 [CI42504819787](https://github.com/GioNob/ouf-deploy/actions/runs/42504819787), job128805066674:6 test riusciti/zero skip, log letti; sei locali. Fixture archivi e redazione, non JAR target. [Qualifica](../evidence/semantic-installed-package-read-qualification-20261108.json). STATE, MiniPET2.14, registro e runbook corretti. Risultato target della lettura atteso; prima riconciliare applicazione/schema, poi scegliere l'intervento. Gateway e F1 conservati.
+
+
+## 8 novembre2026 — package corrente identificato; sostituzione coerente qualificata
+
+Ricevuta operatore18:29 CET: JAR e runtime invariati, sole V1–V10 identiche al prefisso candidato, V11/V12 e tre classi discovery assenti; label eccef11a. Il vecchio tentativo rimane solo pre-dispatch. Salvato un estratto esplicito della ricevuta, non presentato come copia integrale.
+
+Scaricato l'artefatto originale13066396654: ZIP203.419.418byte/hash coincidente, otto payload,221 blob Git del sorgente c2dae77b, dodici SQL/YAML e JAR nel layer verificati. Il sorgente dichiarato dal vecchio container ha YAML coincidente, senza dedurre l'identità dell'intero pacchetto. Serve applicazione+schema, non SQL aggiunto al vecchio JAR.
+
+Controller c52804a, CI42506812587: job128811107718 containerd e128811107823 classic PASS; ciascuno2 cicli nativi e6 negativi MAC, zero skip, log letti. Artefatto originale, UID10001/configtree, DB owner nonadmin, V10→V12, history e ricevuta preservate, avvio Java e readiness. Conservati fallimenti CI su identificativo OCI e default Engine OOM/alias; correzioni puntuali, nessuna omissione globale di MAC. Fixture precedente in attesa, IAM/provider sintetici, nessun risultato VPS/E2E dedotto.
+
+Consegna b2ef4a4d343716b40ae35a409c6a910a63f88721 con downloader pinned e alternativa ZIP locale. Disponibilità gh/accesso/ZIP sul VPS non osservata. Stato e MiniPET2.15 ripuliti: prossimo passo sostituzione Registry qualificata, poi MCP14/1024, provider/delega/grant e mapping Teatri→Ingestion→UDP. Nessun nuovo consenso generico, nessun merge, replay Gateway/vecchio migratore o modifica target effettuata dall'agente.
