@@ -1,6 +1,6 @@
 # Ingestion 1024: continuazione dal container già fermo
 
-8 novembre 2026. Continuazione qualificata e consegnata; **risultato VPS ancora atteso**. L'immagine candidata è già importata, il vecchio Ingestion è fermo. Non ripetere l'installer originario o il vecchio avvio.
+8 novembre 2026. **Continuazione completata sul VPS alle 22:48 CET: INGESTION_WIDE_1024_READY.** Candidato avviato, vecchio trattenuto spento. Non ripetere installer, continuazione o vecchio avvio.
 
 ## Stato target acquisito
 
@@ -25,26 +25,14 @@ Vecchio journal `ingestion-wide-upgrade-20261108`; nuovo journal esclusivo `inge
 
 ## Qualifica e limiti
 
-[CI42526435616](https://github.com/GioNob/ouf-deploy/actions/runs/42526435616), source9f1dfd3a: Docker29.8.1 classic/containerd, job128870984249/128870984118. Per backend: sei test guard precedenti, sette nuovi e due cicli nativi; zero skip, log letti. Entrambi i profili richiedono MAC legacy presente all'origine e dopo STOP, assente solo dopo DETACH. Il candidato archiviato si avvia; ActivationLoop riconcilia almeno due volte le medesime pubblicazioni consumate. V18 e sei tabelle identiche, solo metadata polling cambiati. Readiness200 e endpoint preservati, nessuno stop/import nel percorso residuo.
+[CI 42526435616](https://github.com/GioNob/ouf-deploy/actions/runs/42526435616), source 9f1dfd3a: Docker29.8.1 classic/containerd, job 128870984249/128870984118. Per backend: sei test guard precedenti, sette nuovi e due cicli nativi; zero skip, log letti. Entrambi i profili richiedono MAC legacy presente all'origine e dopo STOP, assente solo dopo DETACH. Il candidato archiviato si avvia; ActivationLoop riconcilia almeno due volte le medesime pubblicazioni consumate. V18 e sei tabelle identiche, solo metadata polling cambiati. Readiness200 e endpoint preservati, nessuno stop/import nel percorso residuo.
 
 Il predecessore CI usa il candidato, non il vecchio binario VPS; dati, token, chiavi e Gateway sono sintetici. Non riproduce tutta la configurazione Spring target né prova la causa storica. Readiness non è ingestione funzionale1024 o E2E. [Evidenza](../evidence/ingestion-wide-resume-qualification-20261108.json).
 
-## Comando corrente sul VPS
+## Risultato sul VPS: completato, non rieseguire
 
-Delivery `468fb612447f14d7dd022cdbd7d138cc69012fe7`. Otto file riletti e verificati; catena moduli importata senza main, wrapper riletto e sintassi Bash verificata. Riusa l'immagine già presente.
+La [ricevuta delle 22:48 CET](../evidence/ingestion-wide-ready-operator-20261108.json) attesta INGESTION_WIDE_1024_READY, readiness 200, container a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020 e immagine 562e4c6e. Tutti i controlli dichiarati sono riusciti: storia e sei tabelle immutate, campi stabili scheduler invariati, due pianificazioni DISABLED/consumate/senza lease; mount/ENV/argomenti ed endpoint preservati, vecchio spento. Nessun import/stop/migratore esplicito; tre sessioni READ ONLY.
 
-```bash
-(
-  set -euo pipefail
-  ouf_resume=$(mktemp /tmp/ouf-ingestion-resume.XXXXXX)
-  trap 'rm -f -- "$ouf_resume"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/468fb612447f14d7dd022cdbd7d138cc69012fe7/scripts/deliver-ingestion-wide-resume-20261108.sh' \
-    -o "$ouf_resume"
-  printf '%s  %s\n' '51a207cc40479be8b88e43e9621210d6657c3777269a393a5a58be7eb36ddf41' "$ouf_resume" | sha256sum -c -
-  bash "$ouf_resume"
-)
-```
+schedulePollMetadataChanged=false: il candidato CI ha provato il polling reale, ma questa ricevuta target non osserva un avanzamento di quei due campi. La causa storica del delta prima/dopo stop resta non provata. wideIngestionFunctionalTested=false: readiness non chiude la prova 1024 o E2E.
 
-Restituire il JSON finale, atteso `INGESTION_WIDE_1024_READY`. Se HELD, leggere il punto raggiunto senza replay. Dopo readiness target: UDP1024, provider/strumenti discovery, mapping del profilo Teatri conservato, THS→Ingestion→UDP e ripetizione E2E.
+Delivery 468fb612447f14d7dd022cdbd7d138cc69012fe7 eseguita; comando conservato nello storico Git, non ripetere. Il prossimo passo corrente è [UDP 1024](OUF_UDP_WIDE_UPGRADE_20261108.md).

@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_INGESTION_RESIDUAL_QUALIFIED_TARGET_PENDING",
+  "status": "F1_PASS_INGESTION_1024_READY_UDP_PREFLIGHT_NEXT",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified residual Ingestion continuation from the proven stopped prefix; no reimport/stop/replay. Await target readiness JSON, then UDP1024, provider/tool activation and retained Teatri E2E.",
+  "nextAction": "Run read-only UDP wide preflight, preserving current SeaweedFS/TLS and existing work. Ingestion1024 target readiness is proven; do not replay its completed installers. Then qualify UDP replacement, activate discovery/tools and complete retained Teatri E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1426,7 +1426,7 @@
         },
         "knownGuardLimitation": "Whole ing_schedule fingerprint includes discovery_verified_at/lock_version which source reconciliation updates even for unchanged publication. Exact historical changed columns unavailable; not a proven target cause.",
         "residualContinuation": {
-          "status": "QUALIFIED_NOT_TARGET_EXECUTED",
+          "status": "INGESTION_WIDE_1024_READY",
           "sourceCommit": "9f1dfd3af254606afc28b85d4eef5c9d54d35b3a",
           "script": "scripts/resume-ingestion-wide-20261108.py",
           "scriptSha256": "ab43c6d02e7d8ada08a3325f1e0b9a8559fff7324338b98d117371497bf54390",
@@ -1444,14 +1444,49 @@
           "skips": 0,
           "logsRead": true,
           "actualArchivedApplicationPollingTested": true,
-          "targetExecuted": false,
-          "targetReadinessProven": false,
+          "targetExecuted": true,
+          "targetReadinessProven": true,
           "plannedImageImports": 0,
           "plannedServiceStops": 0,
           "plannedReadOnlyDatabaseSessions": 3,
           "automaticReplay": false,
-          "automaticRollback": false
-        }
+          "automaticRollback": false,
+          "operatorReceipt": "evidence/ingestion-wide-ready-operator-20261108.json",
+          "observedAt": "2026-11-08T21:48:59.320592+00:00",
+          "replacementContainerId": "a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020",
+          "sixBusinessTablesUnchanged": true,
+          "scheduleStableFieldsUnchanged": true,
+          "schedulePollMetadataChanged": false,
+          "wideIngestionFunctionalTested": false
+        },
+        "currentStatus": "RESIDUAL_COMPLETED_INGESTION_WIDE_1024_READY"
+      },
+      "currentIngestionContainerId": "a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020",
+      "udpWidePreflight": {
+        "status": "QUALIFIED_READ_ONLY_NOT_TARGET_EXECUTED",
+        "candidateSource": "c0cf1702b2eb971718996a959414caee004af494",
+        "script": "scripts/read-udp-wide-preflight-20261108.py",
+        "sourceCommit": "b5a0a7b7177471218e42ce3e2ba2602c3fdf63f1",
+        "targetExecuted": false,
+        "readOnly": true,
+        "plannedReadOnlyDatabaseSessions": 1,
+        "historicalCiHasImageArtifact": false,
+        "newExactSourceArchiveInPreparation": false,
+        "deliveryCommit": "73d98958ca93a38cbb34ecf14c9e4b3651fcac4d",
+        "deliveryScript": "scripts/deliver-udp-wide-preflight-20261108.sh",
+        "deliverySha256": "3840a8899299cb961c205e26aff80fb1d54f4a68d696730fc6edacff975b2c6f",
+        "qualification": "evidence/udp-wide-preflight-qualification-20261108.json",
+        "ciRun": 42527648147,
+        "ciJob": 128874710706,
+        "tests": 6,
+        "skips": 0,
+        "logsRead": true,
+        "deliveredFilesReadBack": 5,
+        "archiveCiRun": 42527648108,
+        "artifactId": 13635797332,
+        "archiveEvidence": "evidence/udp-wide-archive-ci-20261108.json",
+        "archiveDownloadBytesIndependentlyVerified": false,
+        "candidateStartupTested": false
       }
     }
   }

@@ -2,7 +2,7 @@
 
 Decisione di Giovanni, 7 novembre 2026: portare a **1024** il limite, adeguando i passaggi correlati e il budget di lavoro. Caso concreto: una pratica dello Sportello Unico dell'Edilizia può contenere 300–400 dati. La pratica resta **un unico oggetto logico**; pagine di schema e letture progressive sono dettagli di elaborazione.
 
-Stato: primo incremento di codice qualificato, su cinque PR draft. CI dei cinque moduli riuscita; dettagli e commit esatti nell'evidenza collegata. Il primo incremento del 7 novembre non ha distribuito servizi o modificato dati sul VPS. Aggiornamento dell'8 novembre: Gateway applicato e MCP PR83 installato con migrazione 14/readiness 204; Onboarding/Ingestion/UDP restano da distribuire. Nessun nuovo caricamento o acquisizione applicativa. Aggiornamento successivo: [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83) aggiunge piano dinamico, esecuzione e progressi persistenti e compone la discovery. [Stato corrente e limiti](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md). Il pacchetto MCP PR83 è installato, gli strumenti nuovi restano INACTIVE; la sola finestra fissa a 60/minuto non è la soluzione.
+Stato: primo incremento di codice qualificato, su cinque PR draft. CI dei cinque moduli riuscita; dettagli e commit esatti nell'evidenza collegata. Il primo incremento del 7 novembre non ha distribuito servizi o modificato dati sul VPS. Aggiornamento dell'8 novembre: Gateway applicato e MCP PR83 installato con migrazione 14/readiness 204; Onboarding 1024 e Ingestion 1024 sono successivamente installati e pronti; resta UDP 1024. [Stato corrente](STATE.md). Nessun nuovo caricamento o acquisizione applicativa. Aggiornamento successivo: [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83) aggiunge piano dinamico, esecuzione e progressi persistenti e compone la discovery. [Stato corrente e limiti](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md). Il pacchetto MCP PR83 è installato, gli strumenti nuovi restano INACTIVE; la sola finestra fissa a 60/minuto non è la soluzione.
 
 ## Catena modificata
 
@@ -63,9 +63,9 @@ La CI Onboarding sul primo candidato corretto ha eseguito **383 test senza error
 | --- | --- |
 | Esaurimento memoria proporzionale alle celle | CSV profiler e Ingestion non trattengono più tutta la tabella; prova limite a 384 MiB. Il profiler conserva conteggi distinti esatti, quindi il consumo dipende anche dalla cardinalità. XLSX non ha questa qualifica di memoria |
 | Perdita di campi a valle | Array, proprietà e segnali allineati; verificato l'ultimo campo e il rifiuto della 1025ª colonna. E2E reale ancora necessario |
-| 413/timeout dopo un upload riuscito | Contratti e materializzatori allineati; test APISIX. Binding effettivi VPS non aggiornati o verificati in questo incremento |
-| Analisi semantica fermata dalla quota | Ancora aperto: la quota al minuto protegge il servizio, non dimensiona l'intera analisi |
-| Lavoro perso o ripetuto dopo interruzione | Checkpoint CSV e idempotenza della bozza verificati. Avanzamento semantico per colonna da implementare |
+| 413/timeout dopo un upload riuscito | Contratti e materializzatori allineati; test APISIX. Gateway aggiornato e verificato successivamente; supporto funzionale completo1024 ancora da provare |
+| Analisi semantica fermata dalla quota | Piano/progresso persistente PR83 implementato e installato; strumenti INACTIVE e prova live ancora aperta |
+| Lavoro perso o ripetuto dopo interruzione | Checkpoint CSV e idempotenza della bozza verificati. Avanzamento semantico persistente implementato in PR83; prova live ancora aperta |
 | Costo UDP con molte proprietà e candidati | Decoder e decisione deterministica qualificati; cardinalità dei candidati resta limitata. Carico concorrente e normale scrittura lake non qualificati qui |
 | Dati SUE potenzialmente personali | Nessuna estensione automatica della scelta OPEN di Teatri ai dati edilizi; access label resta decisione specifica per proprietà |
 | Rollout con stato del container diverso | Nessun rollout in questo incremento. Conservare la lezione MacAddress e leggere il profilo del lifecycle applicabile; niente hash riscritti o ignore globale |
