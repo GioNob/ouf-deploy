@@ -27,9 +27,11 @@ class Native(unittest.TestCase):
    if p.returncode==0:break
    time.sleep(0.5)
   else:raise AssertionError('fixture not ready')
+  command(*DOCKER,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','fixture','-d','fixture',
+    input=b'ALTER ROLE fixture NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;')
   port=json.loads(command(*DOCKER,'inspect',cls.pg))[0]['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
   cls.host='jdbc:postgresql://127.0.0.1:'+port+'/fixture';cls.url='jdbc:postgresql://'+cls.pg+':5432/fixture'
-  command(*DOCKER,'run','-d','--name',cls.sem,'--network',cls.tag,
+  command(*DOCKER,'run','-d','--name',cls.sem,'--network',cls.tag,'--user','10001:10001',
     '-v',str(ROOT/'native-package/application.jar')+':/app/application.jar:ro',
     '-v',str(cls.path)+':/run/fixture:ro','-e','OUF_SEM_DB_URL='+cls.url,'-e','OUF_SEM_DB_USER=fixture',
     '-e','SPRING_CONFIG_IMPORT=configtree:/run/fixture/','-e','SPRING_FLYWAY_ENABLED=false',

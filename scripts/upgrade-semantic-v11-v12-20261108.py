@@ -95,7 +95,7 @@ def run(report):
         host,path=stage_class(sem,bundle);report['temporaryHelperStaged']=True
         need(a.stable_frame(h,h.inspect(CID))==a.stable_frame(h,sem) and a.stable_frame(h,h.inspect(pg['Id']))==a.stable_frame(h,pg),'RUNTIME_CHANGED_BEFORE_DISPATCH')
         a.private(WORK,'java-intent.json',{'versions':[11,12],'classSha256':bundle['classSha256'],'sourceCommit':SOURCE})
-        report['javaExecutionDispatched']=True;report['databaseWrites']=None
+        report['javaExecutionDispatched']=True;report['databaseWrites']=None;report['migrationDispatched']=None
         result=invoke(c,sem,path,env['OUF_SEM_DB_URL'],user,'21558')
         c.save_private(WORK,'java.stdout.private',result.stdout);c.save_private(WORK,'java.stderr.private',result.stderr)
         rows=[json.loads(line[len(b'OUF_SEMANTIC_UPGRADE '):]) for line in result.stdout.splitlines() if line.startswith(b'OUF_SEMANTIC_UPGRADE ')]
