@@ -1,6 +1,6 @@
 # Onboarding 1024: sostituzione preservando SeaweedFS
 
-8 novembre 2026. **Aggiornamento completato sul VPS alle 21:16 CET. Non ripetere l'installer.** Semantic V12 e MCP V14 sono già pronti; non rieseguire i loro installer. Il prossimo intervento riguarda soltanto Onboarding.
+8 novembre 2026. **Aggiornamento completato sul VPS alle 21:16 CET. Non ripetere l'installer.** Semantic V12 e MCP V14 sono già pronti; non rieseguire i loro installer. Il prossimo intervento riguarda Ingestion.
 
 ## Prerequisiti acquisiti
 
@@ -28,7 +28,7 @@ Il predecessore CI usa lo stesso candidato; il vecchio binario VPS non è esegui
 
 ## Esito acquisito
 
-La [ricevuta operatore](../evidence/onboarding-wide-ready-operator-20261108.json) conferma `ONBOARDING_WIDE_1024_READY`, nuovo container `d0b9ff8400f802645e12e72a8e921826253f4934582a0201070da4f9f1a6e3b5`, immagine containerd `sha256:880bbf92867a19c0bf45ad918e7cf85c4f5ea07ed57b462c10fcea96a4af2544`, readiness200. Tutte le verifiche di preservazione sono riuscite: storia V38, righe Teatri, due reti/IP/MAC/alias, mount/truststore e argomenti Java. Il metadata JAVA_VERSION è allineato all'immagine. Vecchio Onboarding SeaweedFS trattenuto spento; writer MinIO sempre spento.
+La [ricevuta operatore](../evidence/onboarding-wide-ready-operator-20261108.json) conferma `ONBOARDING_WIDE_1024_READY`, nuovo container `d0b9ff8400f802645e12e72a8e921826253f4934582a0201070da4f9f1a6e3b5`, immagine containerd `sha256:880bbf92867a19c0bf45ad918e7cf85c4f5ea07ed57b462c10fcea96a4af2544`, readiness 200. Tutte le verifiche di preservazione sono riuscite: storia V38, righe Teatri, due reti/IP/MAC/alias, mount/truststore e argomenti Java. Il metadata JAVA_VERSION è allineato all'immagine. Vecchio Onboarding SeaweedFS trattenuto spento; writer MinIO sempre spento.
 
 Nessun migratore esplicito, scrittura credenziale, grant, route, richiesta S3/business da script. Il normale avvio applicativo può accedere al database e ai job esistenti. `wideProfileFunctionalTested:false`: non è stata ripetuta la profilazione e non è una prova E2E.
 

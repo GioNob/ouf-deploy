@@ -21,4 +21,4 @@ Lettore qualificato: [CI 42516065460](https://github.com/GioNob/ouf-deploy/actio
 
 La [ricevuta operatore delle 20:58 CET](../evidence/onboarding-wide-preflight-operator-20261108.json) è `ONBOARDING_WIDE_PREFLIGHT_READ`. Tutte le 38 migrazioni e application.yml del JAR installato coincidono col candidato; storia V38 esatta su OID21552, ruolo non superuser. Argomenti SeaweedFS del processo, file credenziale montati e hash truststore corrispondono allo switch riuscito. Due reti, legacy MAC valido coerente con un endpoint, vecchio MinIO writer spento. Le classi wide non sono ancora installate, come atteso.
 
-La lettura non ha modificato servizi o dati. Il comando storico resta nella versione Git precedente; il **solo comando corrente** è ora la [sostituzione Onboarding 1024](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md), con qualifica specifica a due reti.
+La lettura non ha modificato servizi o dati. Il comando storico resta nella versione Git precedente; anche la [sostituzione Onboarding 1024](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md) è stata completata alle 21:16 CET. Non ripetere questi interventi; il [passo corrente](STATE.md) riguarda Ingestion.
