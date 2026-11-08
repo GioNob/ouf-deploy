@@ -1,6 +1,6 @@
 # Stato corrente OUF
 
-Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionante, poi E2E ripetibile; industrializzazione dopo**. Esecuzione sequenziale del solo agente principale.
+Aggiornato l'**8 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionante, poi E2E ripetibile; industrializzazione dopo**. Esecuzione sequenziale del solo agente principale.
 
 ## Risultato corrente
 
@@ -20,7 +20,9 @@ Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionan
 
 La nuova lettura MCP della revisione Teatri conferma 105 statement: due termini schema.org (`name` e il candidato `additionalType`), 18 proprietà locali con dominio PerformingArtsTheater e range string. La presenza di una proprietà locale non chiude la scelta di un riferimento generale. Le ricerche per `nome`, `indirizzo` e `coordinate` sono vuote; non dimostrano assenza dei termini dentro gli snapshot.
 
-**Prossima azione operatore: [lettura unica del target con comando verificato](OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md).** Nessun rollout eseguito. Il source-lock Registry conserva già `c2dae77b`, discendente del candidato discovery con una successiva correzione alle credenziali: non installare automaticamente il vecchio PR41. Il candidato Gateway PR86 diverge dal ramo dell'owner operativo trattenuto; riconciliare route/plugin/limiti senza sostituire quel servizio alla cieca. Il nuovo lettore controlla identità, dichiarazioni provider/worker, binding dei sostituti SeaweedFS e forma del delta MAC, senza cambiare servizi. Dieci prove locali/CI riuscite; risultato VPS atteso.
+**Inventario VPS acquisito alle 09:11 CET dell'8 novembre:** sette immagini coincidono con quelle trattenute; Onboarding/UDP conservano Config, mount, reti e dichiarazioni SeaweedFS, vecchi writer spenti. Registry è la versione più recente da conservare, ma provider e worker sono dichiarati `false`; MCP è ancora la vecchia immagine. [Ricevuta](../evidence/analysis-discovery-runtime-operator-20261108.json).
+
+**Prossima azione operatore: [lettura mirata di route, mount provider e schema DB](OUF_DISCOVERY_CONTRACT_READ_20261108.md).** Un GET Admin APISIX e due sessioni PostgreSQL READ ONLY, senza avvii, migrazioni, grant, token o richieste provider. Serve a scegliere il delta Gateway, il percorso di migrazione MCP e rilevare backlog discovery prima dell'accensione del worker. Dieci prove CI riuscite, inclusa PostgreSQL reale; risultato di questa lettura ancora atteso. L'inventario generale già riuscito non va ripetuto.
 
 **Impedimento funzionale:** la connessione non espone discovery.request/status/candidates per OntoPiA/schema.gov.it. MCP PR83 compone discovery, 1024 colonne e analisi persistente, ma resta da installare/attivare con contratti compatibili e grant verificati. Le route correnti, lo schema DB e i grant non sono dimostrati dal nuovo inventario Docker. Conservare file/SeaweedFS; non inventare URI o sostituire la richiesta con ricerca web/import manuali.
 
@@ -47,7 +49,7 @@ Le unità legacy `ouf-policy-token@semantic.service/.timer` restano masked. Le p
 
 ## Problemi ancora aperti
 
-- **Riavvio generale e MAC:** vedere la [regola permanente](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) e il [caso del 25 ottobre](handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md). Il riferimento è in AGENTS. La primitiva storica copre il vecchio container dopo STOP/DETACH, non automaticamente i sostituti running. Onboarding e UDP differiscono soltanto per `Config.MacAddress` nel confronto osservato; immagini, ambiente, argomenti e mount coincidono. Non è stata applicata normalizzazione e le impronte attese non sono cambiate. Il modo generale `e2e` può ancora fermarsi; mancano presenza/tipo prima-dopo del campo legacy e corrispondenza con gli endpoint per rete. L'avviatore generale omette inoltre il produttore continuo ora ripristinato: integrare consapevolmente il suo lifecycle, senza inventare un timer.
+- **Riavvio generale e MAC:** [regola permanente](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md). Nella ricevuta dell'8 novembre Onboarding/UDP non differiscono più dalla cattura dei sostituti, compreso il campo legacy. Negli altri cinque servizi l'unico delta Config è ABSENT→STRING, unicast nonzero e coerente con un endpoint; anche NetworkSettings differisce dalla cattura. Questi due snapshot non autorizzano a normalizzare il lifecycle. Nessuna impronta riscritta. Il vecchio avviatore generale può ancora fermarsi e omette il produttore continuo Semantic ripristinato: non rieseguirlo come scorciatoia.
 - **F2–F6:** normale operazione lake UDP, nuovo CSV fino al grafo, seconda esecuzione e ripresa da altra sessione. Il blocco della ricerca Semantic è superato per le chiamate osservate; nessun E2E completo dichiarato.
 - **Stato Ingestion:** `ouf.ingestion.status(limit=10)` era negato; nessun grant di quella capability nel catalogo letto. Lettura non ripetuta né permessi ampliati per aggirarla.
 - **Riuso vecchio selettore Farmacie→Teatri:** HTTP_500, handoff `1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce` conserva asset `8061fad3-1a8b-4f65-9e4a-bfead7974cb7`. Rifiuto di riassociare il medesimo handoff riprodotto sul codice; manca l'eccezione live e resta da riconciliare la possibile seconda persistenza. Nessuna cancellazione. [Evidenza](../evidence/ths-upload-reuse-storage-next-20261107.json).

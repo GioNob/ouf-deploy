@@ -918,16 +918,33 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "TARGET_RUNTIME_READ_PREPARED_AWAITING_OPERATOR_RESULT",
-      "document": "docs/OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md",
-      "evidence": "evidence/analysis-discovery-rollout-preflight-20261107.json",
-      "readerCommit": "7bdf0e107b534e9db90aabe5e0388c627b7150b8",
-      "retainedRegistryIsDescendantOfDiscoveryCandidate": true,
-      "registryDowngradeRequired": false,
-      "gatewaySourceHistoriesDiverged": true,
-      "gatewayOperationalOwnerToPreserve": true,
-      "targetReadExecuted": false,
-      "runtimeChanged": false
+      "status": "TARGET_INVENTORY_RECEIVED_DISCOVERY_DEPENDENCY_READ_PREPARED",
+      "document": "docs/OUF_DISCOVERY_CONTRACT_READ_20261108.md",
+      "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
+      "observedAt": "2026-11-08T08:11:33.056933+00:00",
+      "targetReadExecuted": true,
+      "storageBindingsPreserved": true,
+      "oldWritersStopped": true,
+      "providerEnabledEnv": false,
+      "workerEnabledEnv": false,
+      "effectiveProviderConfigurationProven": false,
+      "currentMcpIsRetainedOldImage": true,
+      "registryImageIsRetainedNewerVersion": true,
+      "storageReplacementMacDeltaPresent": false,
+      "otherFiveConfigMacDelta": "ABSENT_TO_VALID_ENDPOINT_COHERENT_STRING",
+      "dependencyReaderCommit": "870b5e0cab438de2ed33936c97da28a6930da263",
+      "dependencyReaderPath": "scripts/read-discovery-contract-20261108.py",
+      "dependencyReaderTargetExecuted": false,
+      "dependencyReaderNativeCi": {
+        "run": 42463068093,
+        "job": 128676349535,
+        "tests": 10,
+        "skips": 0,
+        "conclusion": "success",
+        "logsRead": true
+      },
+      "runtimeChanged": false,
+      "policyGrantsRead": false
     }
   }
 }

@@ -15,9 +15,9 @@ La precedente indicazione di distribuire anche Registry PR41 era troppo generica
 
 Fonti: [source-lock corrente](../releases/m2-current-core-source-lock-20261101.json), [delta Registry](https://github.com/GioNob/ouf-semantic-registry/compare/4f8fb581916075a539bda4428be7bd8af073a569...c2dae77b42f1811b704465f6ab813c91d808ade4), [delta Gateway](https://github.com/GioNob/ouf-api-gateway/compare/81fdf7a5f9f3ef02ed930a1db911d34cab1a9415...560fbf6e769c7639a0bc0ddb09380811a4e324e4). Un source-lock non prova da solo la configurazione attuale del processo.
 
-## Unica azione operatore in questo passaggio
+## Inventario acquisito — comando storico, non ripetere
 
-Eseguire sul VPS e restituire soltanto il JSON stampato. L'assistente non dispone qui di una sessione sul VPS. Il comando scarica una revisione immutabile, verifica SHA256 ed esegue il lettore in modalità Python isolata.
+Eseguito l'8 novembre alle 09:11 CET: [ricevuta](../evidence/analysis-discovery-runtime-operator-20261108.json). Il nuovo passo è la [lettura mirata delle dipendenze](OUF_DISCOVERY_CONTRACT_READ_20261108.md). Il blocco seguente resta soltanto come provenienza. L'assistente non dispone qui di una sessione sul VPS. Il comando scarica una revisione immutabile, verifica SHA256 ed esegue il lettore in modalità Python isolata.
 
 ```bash
 (
@@ -55,4 +55,4 @@ Il `SchemaGovProvider` del sorgente trattenuto costruisce una ricerca lessicale 
 
 ## Qualificazione e limiti
 
-Dieci prove locali del lettore riuscite: ricevute e impronte, sostituti SeaweedFS, tutte le forme MAC, conflitti nelle dichiarazioni, redazione dei segreti, writer originario acceso, riavvio durante lettura, hash errato, custodia dei file privati e errori senza contenuto sensibile. Usano fixture e Docker inspect simulato: non sono una prova del VPS o del ciclo nativo di sostituzione container. Le stesse dieci prove sono riuscite nella [CI 42422417213](https://github.com/GioNob/ouf-deploy/actions/runs/42422417213), job 128553489638; log letti. Il risultato della lettura target è ancora atteso.
+Dieci prove locali del lettore riuscite: ricevute e impronte, sostituti SeaweedFS, tutte le forme MAC, conflitti nelle dichiarazioni, redazione dei segreti, writer originario acceso, riavvio durante lettura, hash errato, custodia dei file privati e errori senza contenuto sensibile. Usano fixture e Docker inspect simulato: non sono una prova del VPS o del ciclo nativo di sostituzione container. Le stesse dieci prove sono riuscite nella [CI 42422417213](https://github.com/GioNob/ouf-deploy/actions/runs/42422417213), job 128553489638; log letti. Il risultato di questo inventario target è acquisito nella ricevuta dell'8 novembre.
