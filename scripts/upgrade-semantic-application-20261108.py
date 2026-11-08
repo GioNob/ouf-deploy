@@ -92,7 +92,10 @@ def verify_replacement(old,req,actual,started):
  config=copy.deepcopy(actual['Config']);net,ep=next(iter(req['NetworkingConfig']['EndpointsConfig'].items()))
  if 'MacAddress' in config:need(config.pop('MacAddress')==ep['MacAddress'],'REPLACEMENT_LEGACY_MAC_CHANGED')
  need(config==expected,'REPLACEMENT_CONFIG_CHANGED')
- need(actual['Image']==req['Image'] and actual['HostConfig']==req['HostConfig'] and mounts(actual)==mounts(old),'REPLACEMENT_IMAGE_HOST_MOUNTS_CHANGED')
+ expected_host=copy.deepcopy(req['HostConfig'])
+ # With the observed cgroup-v2 default, Engine drops false back to null at START.
+ if started and old['HostConfig'].get('OomKillDisable') is None and expected_host.get('OomKillDisable') is False:expected_host['OomKillDisable']=None
+ need(actual['Image']==req['Image'] and actual['HostConfig']==expected_host and mounts(actual)==mounts(old),'REPLACEMENT_IMAGE_HOST_MOUNTS_CHANGED')
  need(set(actual['NetworkSettings']['Networks'])=={net},'REPLACEMENT_NETWORK_SET_CHANGED')
  current=actual['NetworkSettings']['Networks'][net]
  need(current['IPAMConfig']==ep['IPAMConfig'] and set(current.get('Aliases') or [])==set(ep['Aliases'])|{actual['Id'][:12]},'REPLACEMENT_ADDRESS_ALIASES_CHANGED')
@@ -137,6 +140,7 @@ def run(report,archive):
  mac=module('retained_mac',base/'retained_mac.py','cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce')
  a,c,h=u.load_helpers();engine=Engine()
  need(archive.is_file() and archive.stat().st_size==203419418 and file_sha(archive)==ZIP_SHA,'EXACT_CANDIDATE_ZIP_REQUIRED')
+ need(not (WORK.parent/'semantic-discovery-current.json').exists(),'CURRENT_REPLACEMENT_MARKER_EXISTS')
  WORK.mkdir(mode=0o700);report['privateEvidenceDirectory']=str(WORK)
  record=lambda n,v:a.private(WORK,n,v)
  record('attempt.json',{'sourceCommit':SOURCE,'artifactId':13066396654,'archiveSha256':ZIP_SHA})
@@ -193,6 +197,7 @@ def run(report,archive):
  report.update(status='SEMANTIC_APPLICATION_V12_READY',readinessUp=True,oldRetainedStopped=True,backendAddressAliasesPreserved=True,
                providerEnabled=False,workerEnabled=False,discoveryFunctionalTested=False)
  record('complete.json',report)
+ a.private(WORK.parent,'semantic-discovery-current.json',{'containerId':live['Id'],'imageId':live['Image'],'sourceCommit':SOURCE,'evidenceDirectory':str(WORK),'previousContainerId':old['Id']})
 
 def main():
  report={'schema':'ouf.semantic-application-upgrade.v1','status':'HELD','credentialValuesEmitted':False,
