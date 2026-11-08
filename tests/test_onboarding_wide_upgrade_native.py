@@ -23,15 +23,15 @@ class Native(unittest.TestCase):
   assert cls.image in (record['classicImageId'],record['containerdImageId']);cls.jarsha=record['jarSha256']
   for net in (m.BACKEND,m.PRIVATE):cmd(*D,'network','create','--internal',net)
   cls.gateway=json.loads(cmd(*D,'network','inspect',m.BACKEND))[0]['IPAM']['Config'][0]['Gateway']
-  cmd(*D,'run','-d','--name',cls.pg,'--network',m.BACKEND,'-p','127.0.0.1::5432','-e','POSTGRES_PASSWORD=fixture-only','postgres:17')
+  cmd(*D,'run','-d','--name',cls.pg,'--network',m.BACKEND,'-e','POSTGRES_PASSWORD=fixture-only','postgres:17')
   for _ in range(60):
    if subprocess.run((*D,'exec',cls.pg,'pg_isready','-U','postgres'),capture_output=True).returncode==0:break
    time.sleep(1)
   else:raise AssertionError('postgres not ready')
   cmd(*D,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','postgres',input=b"CREATE ROLE fixture LOGIN SUPERUSER PASSWORD 'fixture-only';CREATE DATABASE fixture OWNER fixture;")
-  port=json.loads(cmd(*D,'inspect',cls.pg))[0]['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
+  address=json.loads(cmd(*D,'inspect',cls.pg))[0]['NetworkSettings']['Networks'][m.BACKEND]['IPAddress']
   cmd(os.environ['QUALIFIED_JAVA'],'-cp',str(ROOT/'onboarding-native/classes')+':'+str(ROOT/'onboarding-native/lib/*'),'NativeOnboardingBaseline',
-      'jdbc:postgresql://127.0.0.1:'+port+'/fixture',str(ROOT/'onboarding-native/migrations'))
+      'jdbc:postgresql://'+address+':5432/fixture',str(ROOT/'onboarding-native/migrations'))
   cmd(*D,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','postgres',input=b'ALTER ROLE fixture NOSUPERUSER;')
   # Synthetic retained data; no job exists to trigger background ingestion/profile work.
   cls.sql("INSERT INTO ouf_onboarding.managed_file_asset(asset_id,staging_ref,content_hash,media_type,size_bytes,uploaded_by,retention_ref,status,tenant_id) VALUES('c51745c5-1fc0-4d36-bdcf-1e9a8a049c94','object://managed-files/fixture','sha256:'||repeat('a',64),'text/csv',7,'fixture','fixture','PROFILED','fixture');INSERT INTO ouf_onboarding.file_profile(profile_id,asset_id,version,format,metadata,inferred_schema,candidate_keys,sample_ref) VALUES('da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342','c51745c5-1fc0-4d36-bdcf-1e9a8a049c94',1,'CSV','{}','[]','[]','fixture');")
