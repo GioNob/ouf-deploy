@@ -421,3 +421,12 @@ Qualifica lettore Ingestion completata: CI42519952141/job128851048745, cinque te
 
 
 Archivio Ingestion completato in CI42519952111/job128851048633: nove testCSV384MiB PASS, probeSQLite/XLSX PASS e scansione senzaHIGH/CRITICAL. Nuova build dell'esatto c85d9fd3, non immagine storica recuperata. Artifact13633320899/ZIP83e15e24, scaricato e verificato; 18blobOCI, JARd0e2acc4 e migrazioni/YAML corrispondenti al sorgente. Immagineclassic ac7936d6; manifestOCI562e4c6e non ancora importato/provato concontainerd native. Nessun avvio applicativo o cambioVPS. [Pacchetto](../evidence/ingestion-wide-candidate-package-20261108.json).
+
+
+## 8 novembre 2026 — Ingestion preflight acquisito, installer1024 qualificato
+
+Ricevuta operatore21:43CET: INGESTION_WIDE_PREFLIGHT_READ, CIDd69c3f76/image d173aa8b, frame1a7e2cf5; JAR54424047 ancora precedente. Migrazioni e YAML coincidono col candidato, storia V1–V18 esatta sul DB21554 con ruolo non superuser; tre run SUCCEEDED,34 handoff ACKED, zero lease non scadute alla lettura. Nessun effetto runtime. Estratto esplicitamente parziale in evidence/ingestion-wide-preflight-operator-extract-20261108.json; dettagli completi nella ricevuta dell’operatore e prove private ux56chih.
+
+Controller5d926783, CI42522348023: job128858382810 containerd e128858383044 classic PASS,6 test guard e2 cicli nativi ciascuno, zero skip, log letti. Stesso archivio13633320899/JARd0e2acc4, PostgreSQL17/V18, ruolo ordinario, Flywayfalse, configurazione esterna/execution beans/Gateway-read key sintetici. Entrambi i profili legacy inizialmente presenti e poi assenti solo dopo STOP/DETACH, sostituto IP/MAC/alias preservati, HTTP200 e storia/righe confrontate invariate. Il predecessore CI è il candidato, non una copia del vecchio JAR VPS; non è E2E.
+
+Consegna e1bf9e3a9194992feeceed88d67167509903b916, wrapperSHA d1d3b916401add3f7e3740379e1cf4fe1872c414fe6008bafba5e697c8cd2bc7. Otto file letti nuovamente da GitHub/hash verificati, ZIP già verificato integralmente, shell syntax e readback wrapper esatti. Un solo intervento; nessun replay/rollback automatico. Stato e sette tabelle confrontati prima, dopo stop e dopo avvio; nessun migratore esplicito. Target ancora invariato secondo ultima ricevuta: installer da eseguire, non installazione già riuscita. STATE/MiniPET2.25/registro aggiornati; prossima azione in docs/OUF_INGESTION_WIDE_UPGRADE_20261108.md.
