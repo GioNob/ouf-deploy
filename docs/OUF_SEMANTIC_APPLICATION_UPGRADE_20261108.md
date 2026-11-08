@@ -1,6 +1,34 @@
 # Semantic: aggiornamento coerente dell'applicazione e del database
 
-8 novembre 2026, Europe/Rome. **Consegna qualificata, esecuzione VPS attesa.**
+8 novembre 2026, Europe/Rome. **V11/V12 migrate e validate sul VPS; nuova applicazione terminata durante l'avvio.**
+
+## Diagnosi corrente
+
+[Ricevuta delle 19:09 CET](../evidence/semantic-application-upgrade-held-operator-20261108.json): l'immagine candidata è stata importata, il vecchio processo fermato/scollegato e il replacement avviato in attesa. Flyway ha eseguito due migrazioni, validato V11/V12 e preservato la storia; `recovery_state` è presente. Dopo il segnale di avvio Java il replacement è uscito: `HELD / APPLICATION_EXITED`. La causa non è contenuta nella ricevuta. Non eseguire nuovamente i comandi di installazione o migrazione riportati più sotto come storico.
+
+Comando attuale: tre letture inspect (replacement prima/dopo e vecchio container) e una lettura degli ultimi 800 record di log. Nessun docker exec/start, query DB, migrazione o modifica di configurazione. I file di evidenza sono nuovi, privati root sotto `/var/lib/ouf-storage-migration/semantic-exit-read-*`; il journal dell'aggiornamento resta intatto.
+
+Il parser espone classi di eccezione note, nomi di bean/proprietà noti, codici presenti nel sorgente candidato e righe sorgente riconosciute. I messaggi arbitrari rimangono privati; eventuali dettagli non riconosciuti possono richiedere una lettura più mirata. Tre prove locali di estrazione e mancata esposizione di valori sensibili PASS, compilazione Python riuscita; nessun log target ancora letto. [Ambito delle prove](../evidence/semantic-exit-reader-qualification-20261108.json).
+
+```bash
+(
+  set -eu
+  ouf_read=$(mktemp /tmp/ouf-semantic-exit.XXXXXX)
+  trap 'rm -f -- "$ouf_read"' EXIT
+  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 30 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/7271dcce93e2ab35c575d2b32f038425a5a05ba3/scripts/read-semantic-application-exit-20261108.py' \
+    -o "$ouf_read"
+  printf '%s  %s\n' \
+    '68a3e85307fdefed431e3ea286ac55e32f388435522393fecc6784765c54fc00' \
+    "$ouf_read" | sha256sum -c -
+  sudo python3 -I -B "$ouf_read"
+)
+```
+
+Restituire il JSON pubblico. Il risultato completo della lettura è `SEMANTIC_EXIT_READ_COMPLETE`; non attesta un riavvio riuscito. Prima riconciliare il motivo d'uscita, poi correggere e avviare soltanto il replacement corrente. Il database è già migrato.
+
+## Stato precedente all'intervento
 
 La [lettura operatore delle 18:29 CET](../evidence/semantic-installed-package-operator-extract-20261108.json) prova che il JAR corrente contiene soltanto V1–V10, tutte coincidenti col candidato. Mancano V11/V12 e tre classi del percorso discovery. Il database letto alle17:56 CET è anch'esso a V10. Il precedente tentativo non ha eseguito Java o SQL; la sua directory resta intatta.
 
@@ -41,7 +69,7 @@ Sorgente `c52804add2b26f5f9dad6e84073844cdc75aa880`. [CI42506812587](https://git
 
 Conservati i tentativi CI falliti prima della correzione: identità containerd, OomKillDisable tra CREATE/START e alias del nuovo CID. Non sono stati errori sul VPS. Le ulteriori sei prove negative del helper Flyway restano quelle della qualifica precedente, non vengono contate come prove del nuovo target.
 
-## Comando operatore
+## Consegna precedente — non rieseguire
 
 La prima consegna si è fermata con `GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED`: [ricevuta operatore](../evidence/semantic-delivery-incomplete-operator-20261108.json), nessuna modifica ai servizi. Non è stato avviato il controller.
 
@@ -65,6 +93,6 @@ Lo script `5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7` verifica lo ZIP e la conseg
 )
 ```
 
-Esito atteso: `SEMANTIC_APPLICATION_V12_READY`. Restituire il JSON pubblico. La readiness non è ancora una prova di discovery o E2E. Se il risultato è HELD dopo un effetto, conservare le prove e non rilanciare. La directory di questo intervento è `/var/lib/ouf-storage-migration/semantic-application-upgrade-20261108`, separata dal tentativo V11/V12 precedente. A successo si scrive il marker privato `semantic-discovery-current.json` con nuovo CID/immagine/riferimento prove. I vecchi avviatori e i lettori pinned al CID precedente non vanno usati per avviare o attestare il sostituto.
+L'esito previsto della consegna originaria era `SEMANTIC_APPLICATION_V12_READY`; il risultato effettivo è invece riportato nella diagnosi corrente. La readiness non è ancora una prova di discovery o E2E. Se il risultato è HELD dopo un effetto, conservare le prove e non rilanciare. La directory di questo intervento è `/var/lib/ouf-storage-migration/semantic-application-upgrade-20261108`, separata dal tentativo V11/V12 precedente. A successo si scrive il marker privato `semantic-discovery-current.json` con nuovo CID/immagine/riferimento prove. I vecchi avviatori e i lettori pinned al CID precedente non vanno usati per avviare o attestare il sostituto.
 
 Il reader installato e il migratore precedente sono comandi storici da non ripetere. Il nuovo controller importa soltanto le funzioni del vecchio migratore: non ne esegue il main o lo scope consumato.

@@ -15,19 +15,19 @@ Conservare Teatri senza nuovo upload o profilo:
 
 Gateway già applicato e verificato: **87 route, otto modifiche, 79 conservate**, owner invariato. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Non rieseguire l'applicazione del delta.
 
-## Blocco corrente e correzione
+## Blocco corrente e prossima azione
 
-La lettura delle **18:29 CET** identifica il JAR installato: solo V1–V10, tutte coincidenti col prefisso candidato; V11/V12 e le classi `DiscoveryJobService`, `SemanticDiscoveryMcpApi`, `SemanticDiscoveryDelegation` sono assenti. [Estratto della ricevuta](../evidence/semantic-installed-package-operator-extract-20261108.json).
+**Alle 19:09 CET l'aggiornamento ha applicato e validato V11/V12, poi il nuovo Semantic è terminato durante l'avvio.** [Ricevuta operatore completa](../evidence/semantic-application-upgrade-held-operator-20261108.json): `HELD / APPLICATION_EXITED`, due migrazioni eseguite, storia precedente preservata e colonna `recovery_state` presente. Questo supera lo stato storico “DB a V10”.
 
-Il DB osservato è anch'esso a V10 (OID21558), con checksum coincidenti e nessuna richiesta discovery. Il tentativo precedente si è fermato **prima di Java/SQL**. Conservare `/var/lib/ouf-storage-migration/semantic-v11-v12-20261108`; non rilanciarlo. Era errata l'attribuzione del candidato al container corrente basata sul solo source-lock: l'assistente l'ha ritirata.
+Il replacement è `11d9362c7db484a2204266062fd54b5c08fbf1da7382076fb2a164bc1a9dd070`, immagine esatta `sha256:89e84f7a6208afa74039de7057c46ad5c9981fb283b22d9b93fa014e92d1b048`. Il pacchetto contiene le dodici migrazioni coincidenti col sorgente. Il vecchio container è stato fermato e scollegato; la transizione MAC prevista è stata riconosciuta. Nessun rollback automatico, richiesta S3, scrittura Gateway o attivazione provider.
 
-**Occorre aggiornare insieme applicazione Registry e schema.** Il candidato esatto `c2dae77b`, artifact13066396654, è stato scaricato e verificato: otto payload, 221 blob sorgente, JAR nell'immagine, V1–V12 e YAML. [Consegna e stato della verifica](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md). La preparazione in Git non è un'installazione sul VPS.
+**La causa dell'uscita Java non è ancora nota.** La ricevuta non contiene il log d'avvio. Il [comando corrente di sola lettura](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md#diagnosi-corrente) legge stato e log del CID esatto, mantiene i log completi privati sul VPS e restituisce simboli/diagnostiche riconosciuti senza valori di configurazione. Non avvia processi applicativi e non interroga il database.
 
-**Consegna corretta dopo il risultato operatore:** `DELIVERY_INCOMPLETE / GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED`, nessun servizio modificato e controller non avviato. Il [nuovo comando](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md#comando-operatore) scarica senza gh l'artefatto pubblico tramite nightly.link e verifica il suo hash. Download completo verificato nell'ambiente dell'assistente; raggiungibilità VPS ed esecuzione dell'aggiornamento ancora attese. Controller e qualifica runtime invariati.
+Conservare `/var/lib/ouf-storage-migration/semantic-application-upgrade-20261108` e il vecchio scope `semantic-v11-v12-20261108`. Non rilanciare installer o migratore e non riavviare il vecchio JAR contro lo schema aggiornato. La precedente qualifica CI resta valida nel suo ambito, ma non ha provato tutte le configurazioni reali del VPS.
 
 ## Sequenza rimanente
 
-1. Sostituire il Registry con il pacchetto verificato; migrare V11/V12 con il vecchio processo fermo, poi avviare Java e verificare readiness. Provider e worker restano disabilitati fino alla configurazione del loro percorso.
+1. Leggere il motivo d'uscita del nuovo Registry, correggere il difetto osservato e completare l'avvio del sostituto a V12 senza ripetere le migrazioni. Verificare readiness prima di continuare. Provider e worker restano disabilitati fino alla configurazione del loro percorso.
 2. Distribuire il candidato MCP PR83 (analisi persistente, discovery e 1024 colonne) con migrazione14: DB corrente osservato a1–13. Comporre i candidati Onboarding/Ingestion/UDP da1024 conservando i binding SeaweedFS già funzionanti. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
