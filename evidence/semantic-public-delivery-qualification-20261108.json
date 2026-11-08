@@ -1,0 +1,42 @@
+{
+  "schema": "ouf.semantic-public-delivery-qualification.v1",
+  "observedAt": "2026-11-08T18:03:12Z",
+  "status": "PUBLIC_ARCHIVE_FULL_BYTES_MATCH",
+  "operatorPreviousResult": {
+    "status": "DELIVERY_INCOMPLETE",
+    "reason": "GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED",
+    "serviceChanges": false
+  },
+  "download": {
+    "url": "https://nightly.link/GioNob/ouf-semantic-registry/actions/artifacts/13066396654.zip",
+    "transport": "THIRD_PARTY_PUBLIC_REDIRECT_TO_GITHUB_ARTIFACT_STORAGE",
+    "finalHostObserved": "productionresultssa6.blob.core.windows.net",
+    "credentialsUsed": false,
+    "bytes": 203419418,
+    "sha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba",
+    "fullBytesVerified": true,
+    "curlRange": "0-203419417",
+    "curlExitCode": 0,
+    "priorAttempt": "PROXY_CONNECT_TIMEOUT_BEFORE_SUCCESSFUL_FULL_RANGE_GET",
+    "signedRedirectUrlRetainedInPublicEvidence": false
+  },
+  "delivery": {
+    "script": "scripts/install-semantic-public-archive-20261108.sh",
+    "sha256": "3793349ceef493ec120f47d0c592c9c458fc1d7680af63fd4b13cdd6fc9ee6e8",
+    "bashSyntaxPassed": true,
+    "requiresGh": false,
+    "passesExactArchiveThrough": "OUF_SEMANTIC_CANDIDATE_ZIP",
+    "innerDeliveryCommit": "b2ef4a4d343716b40ae35a409c6a910a63f88721",
+    "innerDeliverySha256": "a60efbfd90f386ab7718dca9a3b5b8daa448122629edf318631f91af6ea3d8bd",
+    "controllerSourceCommit": "c52804add2b26f5f9dad6e84073844cdc75aa880",
+    "controllerChanged": false
+  },
+  "controllerQualification": "evidence/semantic-application-upgrade-qualification-20261108.json",
+  "targetExecutionProven": false,
+  "targetChangesByAgent": false,
+  "limitations": [
+    "Public download was verified from the assistant environment; VPS reachability remains unobserved.",
+    "GitHub artifact retention/availability still applies; this is not a new mirrored release.",
+    "No controller execution or new native test claimed by this transport-only qualification."
+  ]
+}
