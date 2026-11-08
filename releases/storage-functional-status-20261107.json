@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the pinned Ingestion wide installer once and return its JSON; preserve V18 and compare retained work across stop/start. No target Ingestion installation is yet proven.",
+  "nextAction": "The operator repeated the read-only Ingestion preflight at 21:11 UTC with the same container/frame/JAR/activity. Execute the already-qualified pinned installer once and return its JSON. No target Ingestion installation is yet proven.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1321,8 +1321,8 @@
         "candidatePackage": "evidence/ingestion-wide-candidate-package-20261108.json",
         "artifactId": 13633320899,
         "applicationStartupTested": false,
-        "observedAt": "2026-11-08T20:43:20.473677+00:00",
-        "operatorReceipt": "evidence/ingestion-wide-preflight-operator-extract-20261108.json",
+        "observedAt": "2026-11-08T21:11:57.292753+00:00",
+        "operatorReceipt": "evidence/ingestion-wide-preflight-repeat-operator-extract-20261108.json",
         "exactCandidateMigrationHistory": true,
         "databaseOid": "21554",
         "applicationRoleSuperuser": false,
@@ -1334,7 +1334,11 @@
             "ACKED": 34
           },
           "unexpiredPartitionLeases": 0
-        }
+        },
+        "previousOperatorReceipt": "evidence/ingestion-wide-preflight-operator-extract-20261108.json",
+        "previousObservedAt": "2026-11-08T20:43:20.473677+00:00",
+        "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/ingestion-wide-preflight-8t473zuc",
+        "sameContainerFrameJarAndActivityAsPreviousRead": true
       },
       "ingestionWideUpgrade": {
         "status": "QUALIFIED_TARGET_INSTALLATION_AWAITED",
