@@ -1,0 +1,34 @@
+{
+  "activityBefore": {
+    "handoffStates": {
+      "ACKED": 34
+    },
+    "runStates": {
+      "SUCCEEDED": 3
+    },
+    "unexpiredPartitionLeases": 0
+  },
+  "applicationStartDispatched": false,
+  "applicationStartupMayAccessDatabaseAndExistingWork": true,
+  "automaticReplay": false,
+  "automaticRollback": false,
+  "businessRequestsIssued": 0,
+  "candidateImageId": "sha256:562e4c6e19d5227f00fb3159deb506da256d2245ee4a40a652b0c03865704baa",
+  "credentialFileContentsRead": 0,
+  "credentialFileWrites": 0,
+  "credentialValuesEmitted": false,
+  "databaseWritesByScript": 0,
+  "explicitMigrationDispatched": false,
+  "gatewayWrites": 0,
+  "imageImported": true,
+  "observedAt": "2026-11-08T21:14:33.577801+00:00",
+  "oldStopDispatched": true,
+  "permissionChanges": 0,
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/ingestion-wide-upgrade-20261108",
+  "readOnlyDatabaseSessionsAttempted": 2,
+  "reason": "RETAINED_DATABASE_STATE_CHANGED",
+  "rowPayloadsEmitted": false,
+  "s3RequestsByScript": 0,
+  "schema": "ouf.ingestion-wide-upgrade.v1",
+  "status": "HELD"
+}
