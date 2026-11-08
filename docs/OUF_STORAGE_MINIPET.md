@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.18 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.19 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** Gateway già applicato: 87 route, otto modifiche e 79 conservate. V11/V12 migrate e validate alle 19:09 CET, storia preservata. Il log letto alle 19:25 CET identifica il blocco d'avvio: `semanticDiscoveryDelegation`, `SEM_DISCOVERY_DELEGATION_KEY_UNAVAILABLE`, `NoSuchFileException`. Nuovo container fermo, ExitCode 1 senza OOM; vecchio ancora fermo. La fixture d'avvio non copriva il parametro chiave discovery valorizzato. Eseguire la [lettura dei binding correnti](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md#diagnosi-corrente), correggere percorso/mount usando il firmatario Gateway verificato e completare l'avvio del sostituto. Non ripetere installer o migrazione. Conservare journal, Teatri, SeaweedFS e Gateway. Dopo readiness: MCP14/rollout1024/budget, trasporto/delega/grant discovery, mapping e Ingestion→UDP.
+**Passo corrente:** V11/V12 migrate e validate; il nuovo Semantic è fermo perché il riferimento discovery punta a un file senza mount. La lettura delle 19:40 CET conferma che Gateway usa la chiave read-owner e che il relativo file è già montato in Semantic. È qualificata la [correzione di un solo parametro ENV](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md#correzione-corrente), subordinata al confronto dei byte sul target. CI classic/containerd riproduce l'errore e prova la correzione con V12/ricevuta preservati. Esecuzione VPS attesa. Nessuna nuova chiave, route o migrazione; vecchi container/journal conservati. Gateway resta a 87 route, otto modifiche e 79 conservate. Dopo readiness: MCP14/rollout1024/budget, trasporto/delega/grant discovery, mapping e Ingestion→UDP.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

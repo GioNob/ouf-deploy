@@ -361,3 +361,14 @@ Causa dell'uscita ancora ignota: la ricevuta non include il log. Preparato letto
 Il costruttore candidato legge la chiave se il parametro è non vuoto. La fixture nativa precedente non configurava quel parametro: questo limite spiega perché il PASS d'avvio non aveva coperto il difetto di binding reale. Non dedurre dal solo NoSuchFileException se manchi il mount, la sorgente o sia errato il percorso.
 
 Preparato lettore d5ac065cd92f6f2b21b313009fc5c703b8a98547: dichiarazioni selezionate/errore conservato/metadata del mount host e GET corrente route APISIX; riferimenti del firmatario senza valori di chiavi. Nessuna correzione o ripartenza ancora eseguita. Tre prove locali mirate PASS e compilazione Python riuscita, senza nuova prova runtime dichiarata. STATE, MiniPET 2.18, registro e runbook aggiornati. Prossimo passo correzione del binding nominativo, prova con chiave configurata, avvio del sostituto a schema V12.
+
+
+## 8 novembre 2026 — binding identificato; correzione chiave qualificata
+
+Ricevuta operatore delle 19:40 CET: path discovery senza mount, file read-owner già montato read-only UID/GID 10001 modo 0400. Tutte e quattro le route selezionate usano OUF_SEMANTIC_READ_OWNER_KEY, distinta dal riferimento MCP; issuer/audience/workload dichiarati coincidenti. Byte ancora non confrontati. Nessun effetto della lettura.
+
+Correzione bece4c5b3dbaf20dcec05b19b4352284a23cc92e: confronto fresco file/firmatario, un solo ENV modificato nel sostituto, stessa immagine/mount/endpoint, vecchio V10 e V12 fallito conservati spenti. Nessuna chiave scritta, import immagine, routePUT o migratore. Letture DB prima/dopo richiedono V12 e storia invariata; nuovo journal distinto. Log pubblicabili raccolti automaticamente se il nuovo avvio fallisce.
+
+CI42511861759, job128826450209 classic e128826450480 containerd PASS: ciascuno 5 test mirati, 6 negativi MAC e 2 native, zero skip, log letti. Artefatto originale, parametro chiave non vuoto: errore mancante riprodotto, correzione/readiness riuscite, storia V12 e ricevuta sintetica preservate. Due profili legacy inizialmente presenti, processo terminato prima del detach, MAC endpoint preservata. La lacuna precedente è coperta per questo binding; IAM/policy/provider target non qualificati dalla fixture.
+
+Consegna 7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4, SHA shell c3c741a73f3f98db400665875eaae786fa070d937065b78c763f20c1c34beae7. Sintassi shell e pin delle dipendenze verificati. STATE, MiniPET2.19 e registro aggiornati. Esecuzione VPS della correzione ancora attesa; nessuna readiness/E2E target affermata.

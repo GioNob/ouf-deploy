@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_SEMANTIC_V12_MIGRATED_DISCOVERY_KEY_FILE_NOT_FOUND",
+  "status": "F1_PASS_SEMANTIC_V12_KEY_REFERENCE_REPAIR_QUALIFIED_TARGET_AWAITED",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run exact read-only discovery-key binding reader d5ac065cd92f6f2b21b313009fc5c703b8a98547: correlate the failed log path with current Semantic ENV/JSON/arguments, stopped-container mount/host metadata, and current Gateway route signer reference. Then repair only the identified binding and resume current V12 replacement with configured-key coverage. No migration/installer replay or old container restart. The missing-file startup cause is observed; source path/mount/signing-key correspondence is not yet resolved.",
+  "nextAction": "Execute the qualified one-ENV discovery-key repair at delivery 7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4. Freshly compare existing semantic-read-owner.key bytes with current APISIX owner signer and require distinct MCP delegation, then replace the exited V12 container using the same image/mounts/endpoint and prove readiness plus unchanged V12 history. No key generation/copy, route write, image import, explicit migration or old V10 restart. Target execution awaited; then continue MCP14/1024 rollout and Teatri E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1115,7 +1115,7 @@
       "semanticPackageMismatchDetailsKnown": true,
       "semanticRuntimeSchemaCompatibilityProven": false,
       "semanticApplicationUpgrade": {
-        "status": "TARGET_V12_MIGRATED_DISCOVERY_KEY_FILE_NOT_FOUND",
+        "status": "TARGET_V12_MIGRATED_KEY_REFERENCE_REPAIR_QUALIFIED",
         "sourceCommit": "c52804add2b26f5f9dad6e84073844cdc75aa880",
         "deliveryCommit": "b2ef4a4d343716b40ae35a409c6a910a63f88721",
         "script": "scripts/upgrade-semantic-application-20261108.py",
@@ -1167,15 +1167,34 @@
           "exception": "java.nio.file.NoSuchFileException",
           "observation": "2026-11-08T18:25:54.818262+00:00",
           "receipt": "evidence/semantic-application-exit-operator-20261108.json",
-          "pathOrMountDefectResolved": false
+          "pathOrMountDefectResolved": true,
+          "resolutionMeaning": "Diagnosis resolved, not repaired on target: configured discovery path has no mount."
         },
         "nextBindingRead": {
           "sourceCommit": "d5ac065cd92f6f2b21b313009fc5c703b8a98547",
           "script": "scripts/read-semantic-discovery-key-binding-20261108.py",
           "qualification": "evidence/semantic-discovery-key-binding-reader-qualification-20261108.json",
-          "targetExecuted": false
+          "targetExecuted": true,
+          "status": "SEMANTIC_DISCOVERY_KEY_BINDING_READ",
+          "operatorReceipt": "evidence/semantic-discovery-key-binding-operator-20261108.json"
         },
-        "nativeCoverageGap": "Original native startup fixture did not set discovery-delegation.key-file; the nonempty missing-file VPS binding was not exercised."
+        "nativeCoverageGap": "Original native startup fixture did not set discovery-delegation.key-file; the nonempty missing-file VPS binding was not exercised.",
+        "discoveryKeyRepair": {
+          "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+          "sourceCommit": "bece4c5b3dbaf20dcec05b19b4352284a23cc92e",
+          "deliveryCommit": "7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4",
+          "script": "scripts/repair-semantic-discovery-key-20261108.py",
+          "qualification": "evidence/semantic-discovery-key-repair-qualification-20261108.json",
+          "ciRun": 42511861759,
+          "property": "ouf.semantic.discovery-delegation.key-file",
+          "oldPath": "/run/secrets/semantic-discovery-owner.key",
+          "newPath": "/run/secrets/semantic-read-owner.key",
+          "keyBytesComparedOnTarget": false,
+          "targetExecuted": false,
+          "automaticReplayAllowed": false,
+          "providerActivationIncluded": false,
+          "discoveryFunctionalTested": false
+        }
       }
     }
   }

@@ -1,47 +1,38 @@
 # Semantic: aggiornamento coerente dell'applicazione e del database
 
-8 novembre 2026, Europe/Rome. **V11/V12 migrate e validate; avvio bloccato dal file chiave discovery non trovato.**
+8 novembre 2026, Europe/Rome. **V11/V12 migrate e validate; correzione del riferimento chiave qualificata, esecuzione VPS attesa.**
 
-## Diagnosi corrente
+## Correzione corrente
 
-La [ricevuta delle 19:25 CET](../evidence/semantic-application-exit-operator-20261108.json) identifica la catena: `semanticDiscoveryDelegation` → `SEM_DISCOVERY_DELEGATION_KEY_UNAVAILABLE` → `java.nio.file.NoSuchFileException`. Replacement fermo, ExitCode 1 e OOMKilled false; vecchio container fermo, nessun marker di completamento. V11/V12 restano migrate e validate dalla ricevuta precedente delle 19:09 CET. Non rilanciare installer, migratore o vecchio JAR.
+La [lettura delle 19:40 CET](../evidence/semantic-discovery-key-binding-operator-20261108.json) completa la diagnosi: `/run/secrets/semantic-discovery-owner.key` è il path dell'errore ed è privo di mount. `/run/secrets/semantic-read-owner.key` è un bind read-only esistente, file regolare UID/GID 10001 e modo 0400. Le tre route discovery e search selezionano `OUF_SEMANTIC_READ_OWNER_KEY`, distinto dal riferimento della delegazione MCP; issuer/audience/workload dichiarati coincidono. Il confronto dei byte resta una verifica da effettuare sul target prima della correzione.
 
-Nel sorgente candidato il costruttore legge il file configurato in `ouf.semantic.discovery-delegation.key-file`. Se il parametro è vuoto il componente si costruisce ma non verifica ricevute; se è valorizzato e il file manca l'avvio fallisce. La fixture nativa usata per la qualifica non impostava questo parametro: mancava la copertura del binding reale. La diagnosi è provata dal log, mentre il motivo preciso dell'assenza del file (mount, sorgente o percorso) è ancora da leggere.
+Il controller cambia un solo valore ENV, conservandone il nome effettivamente dichiarato: `ouf.semantic.discovery-delegation.key-file` da `/run/secrets/semantic-discovery-owner.key` a `/run/secrets/semantic-read-owner.key`. Non disabilita la verifica delle ricevute. Le funzioni Gateway mantengono i domini di firma distinti per discovery e lettura. Nessuna chiave nuova, copia, rotazione o modifica dei permessi/file.
 
-Il nuovo lettore raccoglie in un solo passaggio le dichiarazioni ENV/JSON/argomenti e l'esatto path nel log conservato; ispeziona i mount e i metadata dei soli percorsi host corrispondenti. Il container è fermo: questi metadata non equivalgono alla vista filesystem di un processo in esecuzione. Legge inoltre le quattro route Semantic selezionate mediante un GET Admin APISIX, mostrando soltanto nomi dei riferimenti ENV, formato della chiave e confronti di issuer/audience/workload.
+1. Rileggere il frame fermo selezionato, il journal dell'aggiornamento, le route correnti e il file chiave. Richiedere uguaglianza esatta dei byte con il firmatario owner corrente e differenza dalla delegazione MCP; controllare schema/checksum V1–V12 e assenza di discovery in corso.
+2. Adottare lo stesso CID V12 già uscito, senza inviare un nuovo STOP. Detach e rename con il guard MAC verificato; conservare il container col suffisso `-before-discovery-key-fix-20261108`. Creare un sostituto con la stessa immagine, configurazione salvo il parametro, mount, IP e alias. Il nuovo CID avrà anche il proprio alias Docker.
+3. Con il nuovo processo ancora in attesa, verificare JAR esatto, mount/file effettivo e route ancora coincidenti. Avviare Java, verificare readiness e storia V12 invariata, conservando V10 e V12 fallito spenti. Il normale avvio Spring può validare/accedere al DB; il controller non invoca il migratore né applica SQL di migrazione.
 
-La preparazione Gateway precedente aveva ricavato le costanti delle nuove route discovery dalla route consultation/read. Il lettore verifica la configurazione corrente e segnala se i riferimenti coincidono; non presume quale chiave sia quella corretta e non ne copia il valore. Chiave owner e delegazione MCP devono restare distinte come richiesto dal materializzatore Gateway. Nessuna prova di firma funzionale è ancora prodotta.
+Sorgente `bece4c5b3dbaf20dcec05b19b4352284a23cc92e`. [CI 42511861759](https://github.com/GioNob/ouf-deploy/actions/runs/42511861759), job 128826450209 classic e 128826450480 containerd: ciascuno 5 controlli mirati, 6 negativi MAC e 2 prove native PASS, zero skip, log letti. Le prove native usano l'artefatto originale, UID10001, file chiave configurato/montato e PostgreSQL17: riproducono prima l'errore reale, poi verificano il cambio del solo ENV, la presenza MAC legacy iniziale, il detach del processo uscito, l'avvio riuscito e la conservazione di storia V12/ricevuta. [Qualifica](../evidence/semantic-discovery-key-repair-qualification-20261108.json).
 
-Codice `d5ac065cd92f6f2b21b313009fc5c703b8a98547`; tre test locali PASS per conflitti di dichiarazione, metadata senza lettura contenuti/symlink e proiezione del firmatario senza valori sensibili; compilazione Python riuscita. [Ambito e limiti](../evidence/semantic-discovery-key-binding-reader-qualification-20261108.json). Riusa due helper già fissati e verificati. Nessuna modifica di servizi, chiavi, route, autorizzazioni o database; lettura della credenziale Admin già esistente, nessuna lettura dei contenuti dei file chiave Semantic.
+La fixture precedente non configurava la chiave e non aveva coperto il guasto. La nuova prova lo copre; mantiene però identità/chiavi sintetiche e non abilita l'IAM reale o contatta policy/provider del VPS. Non è una prova di discovery o E2E. Se il nuovo avvio fallisce, il controller raccoglie le diagnostiche pubblicabili dei log nella stessa ricevuta.
 
 ```bash
 (
   set -eu
-  ouf_work=$(mktemp -d /tmp/ouf-semantic-key.XXXXXX)
-  trap 'rm -rf -- "$ouf_work"' EXIT
-  ouf_base='https://raw.githubusercontent.com/GioNob/ouf-deploy/d5ac065cd92f6f2b21b313009fc5c703b8a98547/scripts'
-  for ouf_file in \
-    read-semantic-discovery-key-binding-20261108.py \
-    read-discovery-contract-20261108.py \
-    read-analysis-discovery-runtime-20261107.py
-  do
-    curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-      --connect-timeout 10 --max-time 30 \
-      "$ouf_base/$ouf_file" -o "$ouf_work/$ouf_file"
-  done
-  (
-    cd "$ouf_work"
-    sha256sum -c - <<'SHA256'
-dad3bca82b930b2dded125183323fcb124ecb9ca127b699109498fb4ca2780a2  read-semantic-discovery-key-binding-20261108.py
-468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277  read-discovery-contract-20261108.py
-ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4  read-analysis-discovery-runtime-20261107.py
-SHA256
-  )
-  sudo python3 -I -B "$ouf_work/read-semantic-discovery-key-binding-20261108.py"
+  ouf_fix=$(mktemp /tmp/ouf-semantic-key-fix.XXXXXX)
+  trap 'rm -f -- "$ouf_fix"' EXIT
+  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 30 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4/scripts/repair-semantic-discovery-key-delivery-20261108.sh' \
+    -o "$ouf_fix"
+  printf '%s  %s\n' \
+    'c3c741a73f3f98db400665875eaae786fa070d937065b78c763f20c1c34beae7' \
+    "$ouf_fix" | sha256sum -c -
+  bash "$ouf_fix"
 )
 ```
 
-Restituire il JSON pubblico. Esito della lettura: `SEMANTIC_DISCOVERY_KEY_BINDING_READ`, oppure `READ_PARTIAL` con quanto è stato acquisito. I file completi restano privati root in `/var/lib/ouf-storage-migration/semantic-key-binding-*`. Dopo il risultato preparare la correzione nominativa del binding e la ripresa del sostituto, con la chiave configurata inclusa nella prova. La lettura precedente dei log è completata e non va ripetuta.
+Esito atteso: `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`. Restituire il JSON pubblico. Nuovo journal `/var/lib/ouf-storage-migration/semantic-discovery-key-repair-20261108`; a successo il marker `semantic-discovery-current.json` indicherà il nuovo CID. Nessun replay o rollback automatico: in caso HELD conservare tutto e riportare l'esito. I vecchi comandi di installazione, migrazione e diagnosi sono completati/storici e non vanno ripetuti.
 
 ## Stato precedente all'intervento
 
