@@ -1,6 +1,6 @@
 # Onboarding 1024: sostituzione preservando SeaweedFS
 
-8 novembre 2026. **Controller qualificato, esecuzione VPS ancora attesa.** Semantic V12 e MCP V14 sono già pronti; non rieseguire i loro installer. Il prossimo intervento riguarda soltanto Onboarding.
+8 novembre 2026. **Aggiornamento completato sul VPS alle 21:16 CET. Non ripetere l'installer.** Semantic V12 e MCP V14 sono già pronti; non rieseguire i loro installer. Il prossimo intervento riguarda soltanto Onboarding.
 
 ## Prerequisiti acquisiti
 
@@ -26,26 +26,10 @@ Il ciclo prova: avvio → stop → detach privato (legacy invariato) → detach 
 
 Il predecessore CI usa lo stesso candidato; il vecchio binario VPS non è eseguito nella fixture. I dati, le credenziali e la CA sono sintetici; la preparazione del solo database usa temporaneamente privilegi poi revocati prima di entrambi gli avvii. IAM e S3 sono configurazioni fittizie: non sono una prova del trasferimento target o dell'E2E. Il primo run 42518460282 si fermò nel setup PostgreSQL su rete interna, prima di qualsiasi test native; corretto l'indirizzo della fixture senza cambiare il controller.
 
-## Unico comando corrente
+## Esito acquisito
 
-Consegna `a924345385c863246fc597bbe1321965e4f93173`; controller e dipendenze fissati a e5bec2ee e verificati tramite SHA256 prima dell'esecuzione privilegiata. Non richiede gh sul VPS.
+La [ricevuta operatore](../evidence/onboarding-wide-ready-operator-20261108.json) conferma `ONBOARDING_WIDE_1024_READY`, nuovo container `d0b9ff8400f802645e12e72a8e921826253f4934582a0201070da4f9f1a6e3b5`, immagine containerd `sha256:880bbf92867a19c0bf45ad918e7cf85c4f5ea07ed57b462c10fcea96a4af2544`, readiness200. Tutte le verifiche di preservazione sono riuscite: storia V38, righe Teatri, due reti/IP/MAC/alias, mount/truststore e argomenti Java. Il metadata JAVA_VERSION è allineato all'immagine. Vecchio Onboarding SeaweedFS trattenuto spento; writer MinIO sempre spento.
 
-```bash
-(
-  set -eu
-  ouf_install=$(mktemp /tmp/ouf-onboarding-wide-install.XXXXXX)
-  trap 'rm -f -- "$ouf_install"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/a924345385c863246fc597bbe1321965e4f93173/scripts/install-onboarding-wide-public-archive-20261108.sh' \
-    -o "$ouf_install"
-  printf '%s  %s\n' \
-    'bc2e5318f33737be0fd8e0d28559b5ea24293340259938b2705955cd89cb1dd1' \
-    "$ouf_install" | sha256sum -c -
-  bash "$ouf_install"
-)
-```
+Nessun migratore esplicito, scrittura credenziale, grant, route, richiesta S3/business da script. Il normale avvio applicativo può accedere al database e ai job esistenti. `wideProfileFunctionalTested:false`: non è stata ripetuta la profilazione e non è una prova E2E.
 
-Restituire il JSON finale. L'esito atteso è `ONBOARDING_WIDE_1024_READY`, con storia e righe Teatri invariate, reti/mount/truststore conservati e readiness UP. `wideProfileFunctionalTested:false` resta corretto: la readiness del pacchetto non è una nuova profilazione né l'E2E.
-
-In caso di HELD, conservare journal e output e non rilanciare il comando né riavviare il vecchio container. Nessun rollback o replay automatico. Dopo l'esito positivo: Ingestion/UDP 1024, percorso provider e attivazione strumenti, analisi sul profilo Teatri conservato, review THS → Ingestion → UDP → grafo e ripetizione.
+Consegna eseguita `a924345385c863246fc597bbe1321965e4f93173`; il comando è conservato nella [versione storica](https://github.com/GioNob/ouf-deploy/blob/358eed3266ad8fed1d6ecd7ae3498399bfab622c/docs/OUF_ONBOARDING_WIDE_UPGRADE_20261108.md). Non rieseguire. Prossimo componente: Ingestion; asset e profilo Teatri restano quelli in STATE.

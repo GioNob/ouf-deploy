@@ -15,7 +15,7 @@ Conservare Teatri senza nuovo upload o profilo:
 
 Gateway già applicato e verificato: **87 route, otto modifiche, 79 conservate**, owner invariato. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Non rieseguire l'applicazione del delta.
 
-## Semantic e MCP pronti; prossimo componente Onboarding
+## Semantic, MCP e Onboarding pronti; prossimo componente Ingestion
 
 **Semantic V12 è pronto.** La [ricevuta operatore delle 19:59 CET](../evidence/semantic-discovery-key-repaired-operator-20261108.json) conferma `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`: nuovo container `ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a`, stessa immagine candidata c2dae77b, chiave esistente uguale al firmatario Gateway. Modificato soltanto `OUF_SEMANTIC_DISCOVERY_DELEGATION_KEY_FILE`; mount, indirizzi e alias conservati. Storia V1–V12 invariata, nessun migratore esplicito, nuova chiave, import immagine o route write. V10 e V12 fallito sono conservati spenti. Non ripetere la correzione.
 
@@ -25,13 +25,13 @@ Provider e worker restano disabilitati; nessuna richiesta discovery o business �
 
 I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o discovery è dimostrata dall'avvio. Il percorso Teatri fino al grafo resta aperto.
 
-**Preflight Onboarding acquisito alle 20:58 CET.** [Ricevuta](../evidence/onboarding-wide-preflight-operator-20261108.json): JAR e database V1–V38 coerenti col candidato cc6c7869, endpoint e truststore SeaweedFS conservati, due reti e vecchio writer MinIO spento. Nessuna migrazione nuova richiesta.
+**Onboarding 1024 è installato e pronto.** La [ricevuta delle 21:16 CET](../evidence/onboarding-wide-ready-operator-20261108.json) conferma `ONBOARDING_WIDE_1024_READY`: container d0b9ff84, immagine archiviata 880bbf92, readiness HTTP200. Entrambe le reti con indirizzi/MAC/alias, mount/truststore e argomenti Java conservati. Storia V38 e righe Teatri invariate; nessun migratore esplicito. Il predecessore SeaweedFS e il vecchio writer MinIO restano spenti. **Non ripetere l'installer.** La profilazione funzionale 1024 non è stata eseguita.
 
-**Prossima azione: installare Onboarding 1024.** Il controller conserva entrambe le reti, IP, MAC, alias, mount e argomenti Java; confronta storia V38 e impronte private delle righe asset/profilo Teatri prima/dopo. Qualificato su Docker 29.8.1 classic/containerd con quattro test mirati e due profili legacy native per backend, zero skip, JAR archiviato avviato e CA privata verificata. [Comando corrente e limiti](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md) · [CI](https://github.com/GioNob/ouf-deploy/actions/runs/42518570091). L'esecuzione sul VPS è attesa: Onboarding non è ancora dichiarato aggiornato e la prova funzionale 1024 resta aperta.
+**Prossima azione: Ingestion.** Il candidato c85d9fd3 modifica adapter CSV e test, senza delta alle 18 migrazioni o alla configurazione YAML. La CI storica conserva report ma non l'immagine: in preparazione un archivio installabile dello stesso commit, dichiarato come nuova build. Il lettore mirato confronta JAR, storia V18 e conteggi di lavorazioni/consegne sul database dichiarato, senza leggere payload/identificativi/checkpoint né avviare job. Qualifica CI in corso; nessun cambio Ingestion sul VPS.
 
 ## Sequenza rimanente
 
-1. Eseguire la sostituzione Onboarding qualificata e acquisire il JSON finale; nessun nuovo upload/profilo Teatri. Semantic e MCP sono pronti: nessun replay dei loro interventi.
+1. Completare la qualifica del lettore Ingestion e dell'archivio del candidato, acquisire il preflight del servizio attuale. Semantic, MCP e Onboarding sono pronti: nessun replay dei loro interventi.
 2. Proseguire con Ingestion e UDP a 1024, conservando i binding SeaweedFS già funzionanti. MCP porta analisi persistente/discovery/pagine schema; il supporto completo1024 richiede anche i moduli proprietari. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).

@@ -408,3 +408,10 @@ Controller d62a1707 invariato alla qualifica e5bec2ee: archivio originale cc6c78
 CI42518570091/job128846853225 classic e128846853003 containerd PASS: quattro unit e due native ciascuno, zero skip, log letti. Legacy inizialmente presente in entrambe le fixture, conservato al primo detach e assente al secondo; JAR archiviato avviato, readiness200, CA privata JVM verificata, storia/righe sintetiche invariate. Primo run42518460282 fallito nel setup PostgreSQL su rete interna prima dei native; corretto soltanto l'indirizzo della fixture. Predecessore CI con lo stesso candidato e dati/IAM/S3 sintetici: nessuna prova target aggiuntiva.
 
 Consegna a924345385c863246fc597bbe1321965e4f93173, shell SHA256 bc2e5318f33737be0fd8e0d28559b5ea24293340259938b2705955cd89cb1dd1; download pubblico completo, pin di sette dipendenze e sintassi shell verificati. [Comando corrente](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md). STATE/MiniPET2.23/registro aggiornati. Esecuzione VPS attesa; F1 resta PASS, F2–F6 e analisi/discovery/mapping aperti.
+
+
+## 8 novembre 2026, 21:16 CET — Onboarding 1024 pronto sul VPS
+
+[Ricevuta operatore](../evidence/onboarding-wide-ready-operator-20261108.json): `ONBOARDING_WIDE_1024_READY`, nuovo container d0b9ff84, immagine archiviata containerd880bbf92, readiness200. StoriaV38 e righe Teatri invariate; entrambe le reti/IP/MAC/alias e mount/truststore/argomentiJava conservati. Profilo MAC a due reti riuscito. Predecessore SeaweedFS trattenuto spento e vecchio writerMinIO sempre spento; nessun migratore esplicito, grant, route, credenziale o richiesta S3/business da script. Non ripetere l'installer. La profilazione funzionale1024 resta aperta.
+
+Ingestion c85d9fd3: un commit sull'installato4165b9e1, soltanto adapterCSV e test; V1–V18 e YAML invariati. CI42416624781 riuscita ma non archivia il binario/immagine; viene preparata una nuova build dell'esatto commit con archivio e qualifiche pertinenti. Lettore read-only mirato in preparazione: pacchetto installato, storia e conteggi attività, senza payload/identificativi/checkpoint. Nessun nuovo effetto VPS. STATE/MiniPET2.24/registro aggiornati.
