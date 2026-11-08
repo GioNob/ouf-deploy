@@ -23,6 +23,8 @@ Il DB osservato è anch'esso a V10 (OID21558), con checksum coincidenti e nessun
 
 **Occorre aggiornare insieme applicazione Registry e schema.** Il candidato esatto `c2dae77b`, artifact13066396654, è stato scaricato e verificato: otto payload, 221 blob sorgente, JAR nell'immagine, V1–V12 e YAML. [Consegna e stato della verifica](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md). La preparazione in Git non è un'installazione sul VPS.
 
+**Consegna corretta dopo il risultato operatore:** `DELIVERY_INCOMPLETE / GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED`, nessun servizio modificato e controller non avviato. Il [nuovo comando](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md#comando-operatore) scarica senza gh l'artefatto pubblico tramite nightly.link e verifica il suo hash. Download completo verificato nell'ambiente dell'assistente; raggiungibilità VPS ed esecuzione dell'aggiornamento ancora attese. Controller e qualifica runtime invariati.
+
 ## Sequenza rimanente
 
 1. Sostituire il Registry con il pacchetto verificato; migrare V11/V12 con il vecchio processo fermo, poi avviare Java e verificare readiness. Provider e worker restano disabilitati fino alla configurazione del loro percorso.

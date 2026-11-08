@@ -43,7 +43,11 @@ Conservati i tentativi CI falliti prima della correzione: identità containerd, 
 
 ## Comando operatore
 
-La consegna scarica l'archivio originale con **GitHub CLI già autenticata**, oppure usa il percorso esplicito nella variabile `OUF_SEMANTIC_CANDIDATE_ZIP`. La disponibilità di gh/accesso o dello ZIP sul VPS non è stata osservata: se manca, la consegna si ferma prima di modificare servizi e restituisce `DELIVERY_INCOMPLETE`. Non installa software o configura account. L'archivio è di203MB e tutti gli hash sono fissati.
+La prima consegna si è fermata con `GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED`: [ricevuta operatore](../evidence/semantic-delivery-incomplete-operator-20261108.json), nessuna modifica ai servizi. Non è stato avviato il controller.
+
+La nuova consegna **non richiede gh o autenticazione GitHub**: scarica l'artefatto pubblico esatto tramite nightly.link, un servizio terzo che rimanda allo storage degli artifact GitHub. Il download integrale di203.419.418 byte è stato eseguito nell'ambiente dell'assistente e l'hash coincide con quello già qualificato. Una precedente connessione era scaduta; la successiva richiesta dell'intero intervallo è riuscita. [Verifica del trasporto](../evidence/semantic-public-delivery-qualification-20261108.json). La raggiungibilità dal VPS non è ancora osservata e resta applicabile la retention dell'artifact GitHub.
+
+Lo script `5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7` verifica lo ZIP e la consegna interna pinned `b2ef4a4d343716b40ae35a409c6a910a63f88721`, passa lo ZIP con `OUF_SEMANTIC_CANDIDATE_ZIP` e usa lo stesso controller qualificato `c52804a`. Nessuna modifica al codice di aggiornamento, nessuna nuova qualifica runtime dedotta da questa prova di download. I controlli avvengono prima di sudo e dell'intervento sui servizi.
 
 ```bash
 (
@@ -52,10 +56,10 @@ La consegna scarica l'archivio originale con **GitHub CLI già autenticata**, op
   trap 'rm -f -- "$ouf_install"' EXIT
   curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
     --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/b2ef4a4d343716b40ae35a409c6a910a63f88721/scripts/install-semantic-application-20261108.sh' \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7/scripts/install-semantic-public-archive-20261108.sh' \
     -o "$ouf_install"
   printf '%s  %s\n' \
-    'a60efbfd90f386ab7718dca9a3b5b8daa448122629edf318631f91af6ea3d8bd' \
+    '3793349ceef493ec120f47d0c592c9c458fc1d7680af63fd4b13cdd6fc9ee6e8' \
     "$ouf_install" | sha256sum -c -
   bash "$ouf_install"
 )

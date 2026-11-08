@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified coherent Semantic application and V11/V12 upgrade using exact artifact13066396654/source c2dae77b. Current JAR is V1–V10 with missing discovery classes, not the candidate. Delivery source c52804a and CI42506812587 qualify the archived image through replacement, packaged Flyway and readiness on both Docker29.8.1 backends. Target execution awaited. Requires existing authenticated GitHub CLI or explicit local exact archive; availability on target is unobserved. Preserve held migration attempt and completed Gateway/SeaweedFS/Teatri results. Then MCP14/1024 service rollout, provider binding/delegation/transport/grants, semantic mapping and Ingestion→UDP.",
+  "nextAction": "Execute the qualified coherent Semantic application and V11/V12 upgrade through the public-archive delivery, commit 5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7. Previous operator delivery stopped before controller execution: GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED, serviceChanges=false. New delivery requires no gh, verifies exact artifact13066396654 SHA256 and invokes the unchanged qualified controller c52804a. Full archive public download verified from the assistant environment; VPS reachability and application replacement remain unobserved. Preserve held migration attempt and completed Gateway/SeaweedFS/Teatri results. Then MCP14/1024 service rollout, provider binding/delegation/transport/grants, semantic mapping and Ingestion→UDP.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1122,7 +1122,18 @@
         "targetExecuted": false,
         "providerActivationIncluded": false,
         "discoveryFunctionalTested": false,
-        "automaticReplayAllowed": false
+        "automaticReplayAllowed": false,
+        "publicDelivery": {
+          "commit": "5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7",
+          "script": "scripts/install-semantic-public-archive-20261108.sh",
+          "qualification": "evidence/semantic-public-delivery-qualification-20261108.json",
+          "previousOperatorReceipt": "evidence/semantic-delivery-incomplete-operator-20261108.json",
+          "requiresGh": false,
+          "fullDownloadHashVerified": true,
+          "targetDownloadProven": false,
+          "targetExecuted": false,
+          "controllerChanged": false
+        }
       }
     }
   }

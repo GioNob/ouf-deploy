@@ -336,3 +336,12 @@ Scaricato l'artefatto originale13066396654: ZIP203.419.418byte/hash coincidente,
 Controller c52804a, CI42506812587: job128811107718 containerd e128811107823 classic PASS; ciascuno2 cicli nativi e6 negativi MAC, zero skip, log letti. Artefatto originale, UID10001/configtree, DB owner nonadmin, V10→V12, history e ricevuta preservate, avvio Java e readiness. Conservati fallimenti CI su identificativo OCI e default Engine OOM/alias; correzioni puntuali, nessuna omissione globale di MAC. Fixture precedente in attesa, IAM/provider sintetici, nessun risultato VPS/E2E dedotto.
 
 Consegna b2ef4a4d343716b40ae35a409c6a910a63f88721 con downloader pinned e alternativa ZIP locale. Disponibilità gh/accesso/ZIP sul VPS non osservata. Stato e MiniPET2.15 ripuliti: prossimo passo sostituzione Registry qualificata, poi MCP14/1024, provider/delega/grant e mapping Teatri→Ingestion→UDP. Nessun nuovo consenso generico, nessun merge, replay Gateway/vecchio migratore o modifica target effettuata dall'agente.
+
+
+## 8 novembre2026 — consegna senza gh, archivio pubblico verificato
+
+Ricevuta operatore: DELIVERY_INCOMPLETE/GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED, serviceChanges:false. Il ramo della shell esce prima del controller; non è un fallimento della sostituzione applicativa o della migrazione.
+
+Scaricato l'intero artifact13066396654 via nightly.link (redirect pubblico allo storage GitHub):203.419.418byte, SHA256 1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba coincidente. Nessuna credenziale. Una connessione precedente scaduta, successivo GET range0–203419417 riuscito. URL firmato non pubblicato. Verifica dall'ambiente assistente, non dal VPS.
+
+Consegna 5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7: script shell verificato con bash -n, ZIP e installer interno pinned con hash; passa OUF_SEMANTIC_CANDIDATE_ZIP al medesimo installer b2ef4a4. Nessun cambiamento al controller c52804a o alla sua qualifica nativa. Non installa gh e non configura account. MiniPET2.16 e registro aggiornati. Applicazione/schema sul VPS ancora in attesa; niente replay dei comandi storici.
