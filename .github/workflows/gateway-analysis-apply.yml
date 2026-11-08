@@ -1,0 +1,17 @@
+name: Gateway delta apply qualification
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths: ['scripts/apply-gateway-analysis-delta-20261108.py', 'tests/test_gateway_analysis_apply.py', '.github/workflows/gateway-analysis-apply.yml']
+  pull_request:
+    paths: ['scripts/apply-gateway-analysis-delta-20261108.py', 'tests/test_gateway_analysis_apply.py', '.github/workflows/gateway-analysis-apply.yml']
+permissions: {contents: read}
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Qualify eight writes on actual APISIX and missing-column read on PostgreSQL
+        run: sudo env OUF_NATIVE_GATEWAY_DELTA=1 "$(command -v python3)" -I -B -m unittest discover -s tests -p test_gateway_analysis_apply.py -v
