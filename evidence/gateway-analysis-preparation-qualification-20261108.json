@@ -1,0 +1,34 @@
+{
+  "schema": "ouf.gateway-analysis-preparation-qualification.v1",
+  "repository": "GioNob/ouf-deploy",
+  "sourceCommit": "5a8449b1a145a9607c5b9af537bd53d790c18aaf",
+  "script": "scripts/prepare-gateway-analysis-delta-20261108.py",
+  "scriptSha256": "7ce1ba4bf321933d57896b507106615df9f61c47415d514a5692b7c47159b6a7",
+  "sourceAssets": "releases/gateway-analysis-assets-20261108.json",
+  "sourceAssetsSha256": "98d199c4c00dc88b9cc95b5bbdcf0209aa35a938a8e910369ed59c21f4d62aaf",
+  "gatewayBaseline": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+  "gatewayCandidate": "560fbf6e769c7639a0bc0ddb09380811a4e324e4",
+  "ci": {
+    "run": 42464333835,
+    "job": 128680226233,
+    "conclusion": "success",
+    "tests": 9,
+    "skips": 0,
+    "logsRead": true,
+    "jsonschemaVersion": "4.25.1"
+  },
+  "local": {
+    "passed": 8,
+    "skipped": 1,
+    "skipReason": "JSONSCHEMA_AVAILABLE_IN_CI"
+  },
+  "proposedUpdates": 5,
+  "proposedAdditions": 3,
+  "unchangedRoutes": 79,
+  "scope": "OFFLINE_PROPOSAL_COMPILATION_FIXTURES_AND_REAL_JSON_SCHEMA_VALIDATION",
+  "targetExecutionObserved": false,
+  "liveApisixApplyTested": false,
+  "applyImplemented": false,
+  "runtimeChanged": false,
+  "freshRuntimeReadRequiredBeforeApply": true
+}

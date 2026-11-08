@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Package/deploy the source-qualified composed MCP PR83 with matching Onboarding55, Gateway86 and Registry41; verify target discovery provider/worker, capability publication and current grants, then activate coherent bindings. Run real property discovery on retained Teatri profile, record matches/unresolved columns, then draft/THS/Ingestion→UDP→graph and repeat. Do not reupload/reprofile or reset retained budgets.",
+  "nextAction": "Prepare the offline Gateway delta from retained 2026-11-08 08:31 UTC routes: five updates, three discovery additions, 79 unchanged; classify retained Semantic SQL stderr without another query. Then reconcile before any apply; coordinate MCP PR83 migration14 and compatible Onboarding while preserving newer Registry and operational Gateway owner. Resolve provider binding, southbound transport, Semantic backlog and grants before activation. No new upload/reprofile, budget reset or old writer restart.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -762,7 +762,9 @@
       "gitBlobSha": "d0863055807bd5794f440bc92ba723b2dc62717c",
       "liveObservation": false
     },
-    "evidence/semantic-analysis-budget-review-20261107.json"
+    "evidence/semantic-analysis-budget-review-20261107.json",
+    "evidence/discovery-contract-operator-summary-20261108.json",
+    "evidence/gateway-analysis-preparation-qualification-20261108.json"
   ],
   "sourceReferences": [
     {
@@ -918,8 +920,8 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "TARGET_INVENTORY_RECEIVED_DISCOVERY_DEPENDENCY_READ_PREPARED",
-      "document": "docs/OUF_DISCOVERY_CONTRACT_READ_20261108.md",
+      "status": "DEPENDENCY_READ_PARTIAL_RECEIVED_OFFLINE_GATEWAY_DELTA_PREPARED",
+      "document": "docs/OUF_GATEWAY_ANALYSIS_DELTA_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
       "targetReadExecuted": true,
@@ -934,7 +936,7 @@
       "otherFiveConfigMacDelta": "ABSENT_TO_VALID_ENDPOINT_COHERENT_STRING",
       "dependencyReaderCommit": "870b5e0cab438de2ed33936c97da28a6930da263",
       "dependencyReaderPath": "scripts/read-discovery-contract-20261108.py",
-      "dependencyReaderTargetExecuted": false,
+      "dependencyReaderTargetExecuted": true,
       "dependencyReaderNativeCi": {
         "run": 42463068093,
         "job": 128676349535,
@@ -944,7 +946,39 @@
         "logsRead": true
       },
       "runtimeChanged": false,
-      "policyGrantsRead": false
+      "policyGrantsRead": false,
+      "dependencyReaderTargetReceipt": "evidence/discovery-contract-operator-summary-20261108.json",
+      "dependencyReaderObservedAt": "2026-11-08T08:31:53.125232+00:00",
+      "mcpMigrationPrefix": [
+        1,
+        13
+      ],
+      "remainingMcpMigrations": [
+        14
+      ],
+      "semanticDatabaseRead": "READ_INCOMPLETE",
+      "semanticDatabaseCauseKnown": false,
+      "discoveryBacklogKnown": false,
+      "providerCredentialMount": "NO_DECLARED_MOUNT",
+      "providerSouthboundConfigurationProven": false,
+      "gatewayRouteCount": 84,
+      "gatewayDiscoveryExecuteRoutesFound": 0,
+      "gatewayProposal": {
+        "status": "SOURCE_QUALIFIED_TARGET_PREPARATION_AWAITED_NOT_APPLIED",
+        "sourceCommit": "5a8449b1a145a9607c5b9af537bd53d790c18aaf",
+        "script": "scripts/prepare-gateway-analysis-delta-20261108.py",
+        "updates": 5,
+        "additions": 3,
+        "unchangedRoutes": 79,
+        "applyImplemented": false,
+        "targetExecuted": false,
+        "qualification": "evidence/gateway-analysis-preparation-qualification-20261108.json",
+        "ciRun": 42464333835,
+        "ciJob": 128680226233,
+        "tests": 9,
+        "skips": 0,
+        "logsRead": true
+      }
     }
   }
 }

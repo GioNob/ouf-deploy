@@ -13,9 +13,11 @@
 
 La ricevuta non misura readiness, non legge route/permessi e non prova la configurazione Spring effettiva. L'associazione immagine/sorgente deriva dalle fonti trattenute; l'inventario conferma l'immagine corrente, non ricostruisce nuovamente l'artefatto.
 
-## Passo operatore corrente
+## Comando storico già eseguito — non ripetere
 
-L'inventario generale è acquisito e non va ripetuto. Il comando seguente legge soltanto le dipendenze specifiche mancanti:
+Il comando seguente è conservato come provenienza della ricevuta delle 09:31:53 CET; non è il passo corrente. La lettura è READ_PARTIAL: MCP 1–13 esatte, solo14 mancante; 84 route, discovery assente e vecchi limiti; credenziale provider senza mount dichiarato; lettura Semantic DB fallita, causa/backlog non noti. [Sintesi operatore](../evidence/discovery-contract-operator-summary-20261108.json). Proseguire dalla [preparazione offline Gateway](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md), senza ripetere l'inventario.
+
+Ambito del comando storico:
 
 1. Un GET Admin delle route APISIX, usando la credenziale della configurazione montata. Mostra presenza esatta o per prefisso delle route discovery/provider e i limiti delle route preview/profile/create/review-prepare richieste dal percorso a 1024 colonne; non confonde presenza con autorizzazione effettiva.
 2. Metadati della credenziale provider nel filesystem visto da Semantic: mount, presenza, proprietario, gruppo e modalità. Non ne legge il contenuto e non chiede token.
@@ -60,4 +62,4 @@ I grant correnti e la configurazione effettiva JVM restano non provati da questo
 
 ## Prove
 
-Nove prove locali riuscite; la prova PostgreSQL è eseguita in CI. [Run 42463068093](https://github.com/GioNob/ouf-deploy/actions/runs/42463068093), job `128676349535`: dieci prove riuscite, zero skip, log letti. PostgreSQL 17 reale isolato con utenti fixture non amministrativi; verificati checksum/conteggi e rifiuto di una scrittura in transazione READ ONLY. Route e vista del mount sono fixture: non sono prove del VPS, del provider o del lifecycle di sostituzione. Il risultato target di questo secondo lettore è ancora atteso.
+Nove prove locali riuscite; la prova PostgreSQL è eseguita in CI. [Run 42463068093](https://github.com/GioNob/ouf-deploy/actions/runs/42463068093), job `128676349535`: dieci prove riuscite, zero skip, log letti. PostgreSQL 17 reale isolato con utenti fixture non amministrativi; verificati checksum/conteggi e rifiuto di una scrittura in transazione READ ONLY. Route e vista del mount sono fixture: non sono prove del VPS, del provider o del lifecycle di sostituzione. Il risultato target è ora acquisito come READ_PARTIAL; non annulla i risultati riusciti e non prova la causa dell'errore Semantic.
