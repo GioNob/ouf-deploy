@@ -1,0 +1,19 @@
+name: Gateway analysis delta preparation
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths: ['scripts/prepare-gateway-analysis-delta-20261108.py', 'releases/gateway-analysis-assets-20261108.json', 'tests/test_gateway_analysis_delta.py', '.github/workflows/gateway-analysis-delta.yml']
+  pull_request:
+    paths: ['scripts/prepare-gateway-analysis-delta-20261108.py', 'releases/gateway-analysis-assets-20261108.json', 'tests/test_gateway_analysis_delta.py', '.github/workflows/gateway-analysis-delta.yml']
+permissions: {contents: read}
+jobs:
+  preparation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Install schema validator used by the qualified Gateway candidate
+        run: python3 -m pip install jsonschema==4.25.1
+      - name: Preserve 79 routes, validate exact deltas and reject 1025 columns
+        run: python3 -I -B -m unittest discover -s tests -p test_gateway_analysis_delta.py -v
