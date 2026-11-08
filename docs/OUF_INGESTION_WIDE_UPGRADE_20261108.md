@@ -1,16 +1,36 @@
-# Ingestion 1024: installazione dell'archivio qualificato
+# Ingestion 1024: intervento fermato dopo lo stop
 
-8 novembre 2026. Il [preflight operatore delle 21:43 CET](../evidence/ingestion-wide-preflight-operator-extract-20261108.json) è acquisito: V1–V18 coincidono con il candidato, tre run SUCCEEDED, 34 handoff ACKED e zero lease di partizione non scadute al momento della lettura. Il servizio corrente usa ancora il vecchio JAR. **Non ripetere il lettore.**
+8 novembre 2026, 22:14 CET. [Ricevuta operatore](../evidence/ingestion-wide-upgrade-held-operator-20261108.json): `HELD`, motivo `RETAINED_DATABASE_STATE_CHANGED`. L’immagine candidata è stata importata. Il vecchio stop è stato inviato, l’applicazione candidata non è stata avviata. Il controllo che ha fermato il controller segue la conferma del vecchio fermo e precede detach, rename e create.
 
-## Intervento
+**Non rieseguire l’installer e non riavviare il vecchio container.** Journal e archivio rimangono in `/var/lib/ouf-storage-migration/ingestion-wide-upgrade-20261108`. Nessun rollback o replay automatico. Il motivo non specifica ancora quale sezione è cambiata: non attribuirlo a una migrazione, perdita dati o normale attività del servizio senza la lettura seguente.
 
-Installare l'immagine archiviata del sorgente `c85d9fd3be215e518dc6e7d075797720b5afbd91`, artifact 13633320899 della CI 42519952111. È la nuova build dello stesso sorgente già documentata, non un rebuild durante l'intervento VPS. [Pacchetto](../evidence/ingestion-wide-candidate-package-20261108.json).
+## Prossima azione: leggere il delta conservato
 
-Il controller verifica il frame esatto d69c3f76, il vecchio JAR e la generazione osservata, PostgreSQL retained, readiness e dichiarazioni Flyway false sia nell'ambiente sia negli argomenti Java. Rilegge la storia V18 e lo stato prima dello stop, a servizio fermo e dopo l'avvio. PostgreSQL calcola impronte aggregate di `ing_run`, `ing_partition`, `processing_attempt`, `ing_lineage`, `handoff_outbox`, `runtime_configuration_snapshot`, `ing_schedule`: identificativi, payload e checkpoint non vengono trasferiti nel report. Le impronte sono confronti di invarianza delle righe, non prove crittografiche contro modifiche intenzionali.
+Il lettore standalone confronta `before-database.private.json` e `stopped-database.private.json`: espone sezioni cambiate, versioni/campi di storia cambiati, conteggi attività e nomi delle tabelle con conteggi/impronte differenti. Non espone impronte, righe, identificativi, payload o checkpoint. Legge inoltre gli inspect già salvati e fa un solo nuovo inspect del vecchio CID per riportarne lo stato corrente. I confronti Config sono esatti e soltanto informativi; nessuna regola MAC viene allentata.
 
-Conserva i quattro mount in sola lettura, l'ambiente applicativo, gli argomenti Java, IP/MAC/alias della rete backend e lo stato applicativo confrontato. Cambiano immagine, etichette di provenienza e metadato JAVA_VERSION. Il vecchio container viene fermato, scollegato e conservato con suffisso `-before-wide-20261108`; il sostituto parte inizialmente in attesa, verifica il JAR archiviato e poi avvia Java. Nessuna migrazione esplicita, richiesta business, replay, reset di budget o modifica Gateway/credenziali. Onboarding e UDP non vengono sostituiti da questo comando.
+Nessuna nuova query SQL, lettura di file credenziali, richiesta business/S3, start/stop, import, scrittura o modifica delle prove. Le impronte precedenti consentono di localizzare la tabella cambiata, **non di ricostruire le singole righe o la causa**. Eventuali informazioni successive saranno limitate a ciò che il risultato richiede.
 
-È prevista un'interruzione di Ingestion durante il cambio. L'applicazione avviata può accedere al database e al lavoro già presente: i conteggi non costituiscono una garanzia di quiescenza futura. Se i confronti falliscono, il controller conserva le prove e restituisce HELD; non riavvia automaticamente il vecchio servizio e non ripete operazioni. Non rilanciare il comando dopo HELD.
+Qualifica del lettore: cinque test locali su fixture sintetiche, tutti PASS, zero skip: sezione/tabella esatta, differenze storia/conteggi, rifiuto di metadati arbitrari, preservazione dei file e un solo inspect simulato, risultato parziale se inspect fallisce. Nessuna prova target ancora eseguita. Fonte `1aa15097ce855a069c18b72899c44bb49795f8f6`, SHA256 `d04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c`.
+
+## Comando corrente sul VPS
+
+```bash
+(
+  set -eu
+  ouf_read=$(mktemp /tmp/ouf-ingestion-held-read.XXXXXX)
+  trap 'rm -f -- "$ouf_read"' EXIT
+  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 30 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/1aa15097ce855a069c18b72899c44bb49795f8f6/scripts/read-ingestion-wide-held-state-20261108.py' \
+    -o "$ouf_read"
+  printf '%s  %s\n' \
+    'd04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c' \
+    "$ouf_read" | sha256sum -c -
+  sudo python3 -I -B "$ouf_read"
+)
+```
+
+Restituire il JSON: atteso `INGESTION_HELD_STATE_READ_COMPLETE`, oppure `READ_PARTIAL`/`READ_INCOMPLETE` con informazioni disponibili. Il lettore non fa ripartire Ingestion. La continuazione residua verrà preparata sul risultato, conservando import e stop già compiuti.
 
 ## Qualifica e limiti
 
@@ -18,26 +38,5 @@ Conserva i quattro mount in sola lettura, l'ambiente applicativo, gli argomenti 
 
 Entrambe le fixture MAC partono con `Config.MacAddress` realmente presente: configurazione legacy esplicita e compatibilità endpoint-only. Dopo STOP/DETACH deve essere assente; seguono rename e sostituzione con IP/MAC/alias preservati. Il controller riusa la primitiva stretta già qualificata; non ignora globalmente il campo. [Regola MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md), [evidenza della qualifica](../evidence/ingestion-wide-upgrade-qualification-20261108.json).
 
-Il predecessore CI usa il candidato archiviato, non una copia del vecchio binario VPS. Configurazione e dati CI sono sintetici: non riproducono integralmente la configurazione Spring effettiva del VPS. La qualifica dimostra avvio e sostituzione nativi, **non l'ingestione funzionale di 1024 colonne o l'E2E fino al grafo**. La ricevuta di installazione VPS è ancora attesa.
+Il predecessore CI usa il candidato archiviato, non una copia del vecchio binario VPS. Configurazione e dati CI sono sintetici: non riproducono integralmente la configurazione Spring effettiva del VPS. La qualifica dimostra avvio e sostituzione nativi, **non l'ingestione funzionale di 1024 colonne o l'E2E fino al grafo**. La successiva ricevuta VPS riporta HELD dopo lo stop. La causa della differenza fra le letture del database è ancora da classificare; non chiamare il candidato installato e pronto.
 
-## Comando sul VPS
-
-Consegna `e1bf9e3a9194992feeceed88d67167509903b916`; otto file letti nuovamente da GitHub e verificati contro i pin, ZIP verificato integralmente, sintassi shell controllata. Il wrapper non richiede GitHub CLI.
-
-```bash
-(
-  set -eu
-  ouf_install=$(mktemp /tmp/ouf-ingestion-wide-install.XXXXXX)
-  trap 'rm -f -- "$ouf_install"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/e1bf9e3a9194992feeceed88d67167509903b916/scripts/install-ingestion-wide-public-archive-20261108.sh' \
-    -o "$ouf_install"
-  printf '%s  %s\n' \
-    'd1d3b916401add3f7e3740379e1cf4fe1872c414fe6008bafba5e697c8cd2bc7' \
-    "$ouf_install" | sha256sum -c -
-  bash "$ouf_install"
-)
-```
-
-Restituire il JSON finale: risultato atteso `INGESTION_WIDE_1024_READY`, oppure HELD con motivo e directory delle prove. Successo significa candidato installato e pronto, con stato confrontato invariato. Dopo la ricevuta: UDP1024, discovery/strumenti, mapping del profilo Teatri già esistente, THS→Ingestion→UDP→grafo e ripetizione. Nessun nuovo upload o profilo Teatri per questo aggiornamento.
