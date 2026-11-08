@@ -192,15 +192,18 @@ def publish(plan, expected, admin, work, report):
 
 SEMANTIC_QUERY = """BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY;
 SET LOCAL statement_timeout='5s'; SET LOCAL lock_timeout='1s';
+SELECT CASE WHEN EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='ouf_sem.discovery_request'::regclass
+ AND attname='recovery_state' AND attnum>0 AND NOT attisdropped)
+ THEN 'recovery_state' ELSE 'NULL::text' END AS recovery_expression \\gset
 SELECT json_build_object(
  'readOnly',current_setting('transaction_read_only')='on',
  'databaseOid',(SELECT oid FROM pg_database WHERE datname=current_database()),
  'migrations',(SELECT coalesce(json_agg(json_build_object('version',version,'checksum',checksum,'success',success) ORDER BY installed_rank),'[]'::json) FROM ouf_sem.flyway_schema_history),
  'recoveryColumnPresent',EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='ouf_sem.discovery_request'::regclass AND attname='recovery_state' AND attnum>0 AND NOT attisdropped),
  'discoveryStates',(SELECT coalesce(json_agg(x),'[]'::json) FROM (
-   SELECT state,to_jsonb(d)->>'recovery_state' AS recovery_state,count(*) AS count
-   FROM ouf_sem.discovery_request d GROUP BY state,to_jsonb(d)->>'recovery_state'
-   ORDER BY state,to_jsonb(d)->>'recovery_state') x));
+   SELECT state,:recovery_expression AS recovery_state,count(*) AS count
+   FROM ouf_sem.discovery_request GROUP BY state,:recovery_expression
+   ORDER BY state,:recovery_expression) x));
 ROLLBACK;
 """
 

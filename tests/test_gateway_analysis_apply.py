@@ -1,5 +1,6 @@
 import copy
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -8,6 +9,8 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from contextlib import redirect_stdout
+from types import SimpleNamespace
 
 import test_gateway_analysis_delta as fixture
 
@@ -63,6 +66,18 @@ class MemoryAdmin:
 
 
 class PublisherTests(unittest.TestCase):
+    def test_existing_attempt_exits_before_credentials_or_engine_reads(self):
+        plan, _ = setup_plan()
+        h = SimpleNamespace(read=lambda *_: json.dumps(plan), parse=json.loads)
+        with tempfile.TemporaryDirectory() as temp, patch.object(p, 'WORK', Path(temp)), \
+                patch.object(p, 'helpers', return_value=(None, h)), patch.object(p, 'validate_plan', return_value={}), \
+                patch.object(p.os, 'geteuid', return_value=0), redirect_stdout(io.StringIO()) as stdout:
+            p.main()
+        value = json.loads(stdout.getvalue())
+        self.assertEqual(value['reason'], 'PREVIOUS_ATTEMPT_EXISTS_DO_NOT_REPLAY')
+        self.assertEqual(value['adminPutAttempts'], 0)
+        self.assertEqual(value['adminCredentialConfigurationsRead'], 0)
+
     def test_exact_plan_and_desired_hashes_required(self):
         plan, expected = setup_plan()
         hashes = [p.digest(c['desired']) for c in plan['changes']]
@@ -144,12 +159,14 @@ class NativeTests(unittest.TestCase):
             etcd = docker('run','-d','--name',name+'-etcd','--network',net,'quay.io/coreos/etcd:v3.5.17',
                           'etcd','--listen-client-urls=http://0.0.0.0:2379','--advertise-client-urls=http://'+name+'-etcd:2379')
             self.addCleanup(lambda: docker('rm','-f',etcd))
-            config = {'apisix': {'node_listen':9080, 'extra_lua_path':'/usr/local/apisix/conf/?.lua', 'lua_module_hook':'ouf_json_precision'},
-                      'deployment': {'role':'traditional', 'role_traditional':{'config_provider':'etcd'},
-                        'admin': {'admin_listen':{'ip':'0.0.0.0','port':9180},'allow_admin':['127.0.0.1/32'],
-                                  'admin_key':[{'name':'admin','key':'synthetic-ci-admin-key-1234567890','role':'admin'}]},
-                        'etcd': {'host':['http://'+name+'-etcd:2379']}}}
-            (root/'config.yaml').write_text(json.dumps(config))
+            config = ('apisix:\n  node_listen: 9080\n  extra_lua_path: /usr/local/apisix/conf/?.lua\n'
+                      '  lua_module_hook: ouf_json_precision\ndeployment:\n  role: traditional\n'
+                      '  role_traditional:\n    config_provider: etcd\n  admin:\n'
+                      '    admin_listen:\n      ip: 0.0.0.0\n      port: 9180\n'
+                      '    allow_admin:\n      - 127.0.0.1/32\n    admin_key:\n'
+                      '      - name: admin\n        key: synthetic-ci-admin-key-1234567890\n        role: admin\n'
+                      '  etcd:\n    host:\n      - http://' + name + '-etcd:2379\n')
+            (root/'config.yaml').write_text(config)
             asset = ROOT/'tools/chatbot_file_cohort/assets/apisix'
             cid = docker('run','-d','--name',name+'-apisix','--network',net,
                          '-v',str(root/'config.yaml')+':/usr/local/apisix/conf/config.yaml:ro',
