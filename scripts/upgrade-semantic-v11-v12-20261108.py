@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 HELPER='apply-gateway-analysis-delta-20261108.py'
 HELPER_SHA='7064c8443bb323c12a56846267e4faa9cb25bf3e6dfb35455e753fbe71ce8b01'
-JAVA_SHA='2342650df703dfb67a36636faf515c818f78a56ec7ab04608ac43183c2989d84'
+JAVA_SHA='f973b61831e55831525939167d3e2114baf9a97635554d59d7a07c57baadfd4f'
 SOURCE='c2dae77b42f1811b704465f6ab813c91d808ade4'
 ROOT=Path('/var/lib/ouf-storage-migration')
 WORK=ROOT/'semantic-v11-v12-20261108'

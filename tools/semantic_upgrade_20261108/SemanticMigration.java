@@ -50,10 +50,12 @@ public final class SemanticMigration {
           .validateOnMigrate(true).outOfOrder(false).connectRetries(0).lockRetryCount(0)
           .initSql("SET lock_timeout='3s'; SET statement_timeout='20s';")
           .load();
-        flyway.validate();
         var pending=flyway.info().pending();
         need(pending.length==2&&"11".equals(pending[0].getVersion().toString())&&"12".equals(pending[1].getVersion().toString())
           &&Objects.equals(pending[0].getChecksum(),CHECKSUMS[10])&&Objects.equals(pending[1].getChecksum(),CHECKSUMS[11]),"EXACT_V11_V12_REQUIRED");
+        // The two exact pending versions above are expected before migrate.
+        // Validate the installed history without treating those as an error.
+        Flyway.configure().configuration(flyway.getConfiguration()).ignoreMigrationPatterns("*:pending").load().validate();
         phase="MIGRATION_DISPATCHED";
         System.out.println("OUF_SEMANTIC_UPGRADE {\"status\":\"MIGRATION_DISPATCHED\",\"versions\":[11,12]}");System.out.flush();
         var result=flyway.migrate();

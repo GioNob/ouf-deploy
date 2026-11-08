@@ -23,7 +23,7 @@ class Native(unittest.TestCase):
   command(*DOCKER,'network','create',cls.tag)
   command(*DOCKER,'run','-d','--name',cls.pg,'--network',cls.tag,'-p','127.0.0.1::5432','-e','POSTGRES_USER=fixture','-e','POSTGRES_PASSWORD=fixture-only','-e','POSTGRES_DB=fixture','postgres:17')
   for _ in range(60):
-   p=subprocess.run((*DOCKER,'exec',cls.pg,'pg_isready','-U','fixture'),capture_output=True)
+   p=subprocess.run((*DOCKER,'exec',cls.pg,'pg_isready','-h','127.0.0.1','-U','fixture'),capture_output=True)
    if p.returncode==0:break
    time.sleep(0.5)
   else:raise AssertionError('fixture not ready')
@@ -75,6 +75,12 @@ class Native(unittest.TestCase):
  def test_backlog_rejected_before_write(self):
   oid=self.baseline();self.sql("insert into ouf_sem.discovery_request(request_id,requested_artifact_type,intent,state,created_by_subject) values(gen_random_uuid(),'CLASS','synthetic','PENDING','fixture')")
   p,rows=self.invoke(oid);self.assertNotEqual(p.returncode,0);self.assertEqual(rows[-1]['reason'],'DISCOVERY_REQUESTS_CHANGED')
+  self.assertEqual(self.sql("select max(version::int) from ouf_sem.flyway_schema_history"),'10')
+ def test_flyway_rejects_history_description_drift_without_repair(self):
+  oid=self.baseline();self.sql("update ouf_sem.flyway_schema_history set description='changed fixture' where version='1'")
+  p,rows=self.invoke(oid);self.assertNotEqual(p.returncode,0)
+  self.assertEqual(rows[-1]['reason'],'FlywayValidateException')
+  self.assertFalse(any(x['status']=='MIGRATION_DISPATCHED' for x in rows))
   self.assertEqual(self.sql("select max(version::int) from ouf_sem.flyway_schema_history"),'10')
  def test_wrong_database_oid_rejected(self):
   self.baseline();p,rows=self.invoke('0');self.assertNotEqual(p.returncode,0);self.assertEqual(rows[-1]['reason'],'DATABASE_OID_CHANGED')
