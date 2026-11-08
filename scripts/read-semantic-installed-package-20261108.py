@@ -39,10 +39,12 @@ def summarize(z,expected):
     migrations=[];actual={}
     for name in sorted(n for n in names if n.startswith(PREFIX) and n.endswith('.sql')):
         leaf=name.removeprefix(PREFIX)
-        need(re.fullmatch(r'V[0-9]{1,6}__[A-Za-z0-9_-]{1,120}\.sql',leaf),'UNEXPECTED_MIGRATION_NAME')
+        need(re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]{0,150}\.sql',leaf),'UNEXPECTED_MIGRATION_PATH')
         raw=selected(name,2*1024*1024);digest=sha(raw);actual[leaf]=digest
+        try:checksum=crc(raw)
+        except UnicodeError:checksum=None
         migrations.append({'name':leaf,'bytes':len(raw),'sha256':digest,
-          'flywayStyleCrc32Utf8':crc(raw),'candidateSha256':expected['files'].get(leaf),
+          'flywayStyleCrc32Utf8':checksum,'utf8Decodable':checksum is not None,'candidateSha256':expected['files'].get(leaf),
           'matchesCandidate':digest==expected['files'].get(leaf)})
     need(len(migrations)<=64,'BOUNDED_MIGRATION_COUNT_REQUIRED')
     classes={}

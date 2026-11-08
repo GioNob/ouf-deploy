@@ -31,6 +31,12 @@ class PackageRead(unittest.TestCase):
   result=self.summarize(entries,expected)
   self.assertEqual(result['changedCandidateFiles'],['V10__fixture.sql']);self.assertEqual(result['additionalInstalledFiles'],['V13__extra.sql'])
   self.assertEqual(result['missingCandidateFiles'],[])
+ def test_extra_repeatable_and_non_utf8_files_remain_visible(self):
+  entries,expected=self.fixture();entries[r.PREFIX+'R__legacy.sql']=b'\xff'
+  result=self.summarize(entries,expected)
+  self.assertEqual(result['additionalInstalledFiles'],['R__legacy.sql'])
+  row=next(x for x in result['migrations'] if x['name']=='R__legacy.sql')
+  self.assertFalse(row['utf8Decodable']);self.assertIsNone(row['flywayStyleCrc32Utf8']);self.assertEqual(row['sha256'],r.sha(b'\xff'))
  def test_duplicate_or_unbounded_entries_rejected(self):
   entries,expected=self.fixture();stream=io.BytesIO()
   with warnings.catch_warnings():
