@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_INGESTION_UPGRADE_HELD_AFTER_STOP_DATABASE_DELTA_UNCLASSIFIED",
+  "status": "F1_PASS_INGESTION_STOPPED_SCHEDULE_DELTA_LOCALIZED_API_VIEWS_UNRESOLVED",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Read the retained Ingestion before/stopped database summaries and inspect the old container once. Identify the changed sections/tables before designing a residual continuation. Do not replay the installer, reimport, repeat stop or restart the old service.",
+  "nextAction": "Run the qualified combined stopped Ingestion read: API1.44 versus the retained API1.44 snapshots, side-by-side CLI view, one READ ONLY database session for current schedule metadata and unchanged work. Preserve the held journal; do not replay import/stop/installer.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1374,14 +1374,50 @@
         "targetReadinessProven": false,
         "databaseDeltaCauseProven": false,
         "nextRead": {
+          "sourceCommit": "e22ef8e3758b216789c20c0d2aa5b5d717126c41",
+          "deliveryCommit": "cd143d9df586d1a9f76d71cc48cb82994d157ab3",
+          "script": "scripts/read-ingestion-resume-prerequisites-20261108.py",
+          "scriptSha256": "0ea9e19b93be285f72e3431b38beb66814392f42e1023733c0728387563c0ab2",
+          "deliveryScript": "scripts/deliver-ingestion-resume-prerequisites-20261108.sh",
+          "deliverySha256": "2c5ea6d606eb97e87ea067f1e3b6647405fe651963ec35b38c1e31cdd6c25548",
+          "qualification": "evidence/ingestion-resume-prerequisites-qualification-20261108.json",
+          "ciRun": 42525366640,
+          "ciJob": 128867703808,
+          "tests": 7,
+          "skips": 0,
+          "logsRead": true,
+          "targetExecuted": false,
+          "readOnlyDatabaseSessionsPlanned": 1,
+          "dockerInspectAttemptsPlanned": 4,
+          "primaryDockerApi": "1.44",
+          "serviceChanges": false
+        },
+        "heldStateRead": {
           "sourceCommit": "1aa15097ce855a069c18b72899c44bb49795f8f6",
           "script": "scripts/read-ingestion-wide-held-state-20261108.py",
           "sha256": "d04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c",
           "localTests": 5,
-          "targetExecuted": false,
+          "targetExecuted": true,
           "newDatabaseQueries": 0,
-          "dockerInspectAttemptsPlanned": 1
-        }
+          "dockerInspectAttemptsPlanned": 1,
+          "status": "INGESTION_HELD_STATE_READ_COMPLETE",
+          "operatorReceipt": "evidence/ingestion-wide-held-state-operator-20261108.json",
+          "observedAt": "2026-11-08T21:20:55.347536+00:00",
+          "changedTables": [
+            "ing_schedule"
+          ],
+          "scheduleRowsBefore": 2,
+          "scheduleRowsAfter": 2,
+          "migrationHistoryUnchanged": true,
+          "otherRetainedTablesUnchanged": true,
+          "oldRunning": false,
+          "oldPidZero": true,
+          "sameGeneration": true,
+          "detachIntentPresent": false,
+          "createIntentPresent": false,
+          "configAndNetworkComparisonConfoundedByApiViews": true
+        },
+        "knownGuardLimitation": "Whole ing_schedule fingerprint includes discovery_verified_at/lock_version which source reconciliation updates even for unchanged publication. Exact historical changed columns unavailable; not a proven target cause."
       }
     }
   }

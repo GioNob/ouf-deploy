@@ -1,42 +1,51 @@
-# Ingestion 1024: intervento fermato dopo lo stop
+# Ingestion 1024: lettura per riprendere l’intervento fermato
 
-8 novembre 2026, 22:14 CET. [Ricevuta operatore](../evidence/ingestion-wide-upgrade-held-operator-20261108.json): `HELD`, motivo `RETAINED_DATABASE_STATE_CHANGED`. L’immagine candidata è stata importata. Il vecchio stop è stato inviato, l’applicazione candidata non è stata avviata. Il controllo che ha fermato il controller segue la conferma del vecchio fermo e precede detach, rename e create.
+8 novembre 2026. Ingestion è fermo dopo lo stop dell’installer delle 22:14 CET. L’immagine candidata è già importata. **Non rilanciare l’installer, non reimportare e non riavviare il vecchio servizio.** Il journal è conservato in `/var/lib/ouf-storage-migration/ingestion-wide-upgrade-20261108`.
 
-**Non rieseguire l’installer e non riavviare il vecchio container.** Journal e archivio rimangono in `/var/lib/ouf-storage-migration/ingestion-wide-upgrade-20261108`. Nessun rollback o replay automatico. Il motivo non specifica ancora quale sezione è cambiata: non attribuirlo a una migrazione, perdita dati o normale attività del servizio senza la lettura seguente.
+## Risultato acquisito
 
-## Prossima azione: leggere il delta conservato
+La [ricevuta delle 22:20 CET](../evidence/ingestion-wide-held-state-operator-20261108.json) localizza il delta prima/dopo stop nella sola `ing_schedule`: due righe prima e dopo, impronta diversa. Restano identici storia V18, tre run, tre partizioni/checkpoint, 34 lineage, 34 handoff ACKED, 36 processing attempt e tre snapshot. Il vecchio container è fermo, PID0, exit143, non OOM; stessa identità, generazione, nome, mount, HostConfig e argomenti. Non risultano intenti di detach, rename, create o start candidato.
 
-Il lettore standalone confronta `before-database.private.json` e `stopped-database.private.json`: espone sezioni cambiate, versioni/campi di storia cambiati, conteggi attività e nomi delle tabelle con conteggi/impronte differenti. Non espone impronte, righe, identificativi, payload o checkpoint. Legge inoltre gli inspect già salvati e fa un solo nuovo inspect del vecchio CID per riportarne lo stato corrente. I confronti Config sono esatti e soltanto informativi; nessuna regola MAC viene allentata.
+Il confronto Config/rete del precedente lettore usava la CLI senza API fissata mentre le catture originali usano API1.44. È un difetto di quel confronto: differenze di rappresentazione non bastano per dichiarare un cambiamento reale. La nuova lettura usa API1.44 per entrambi i lati e affianca la vista CLI; non ignora MacAddress.
 
-Nessuna nuova query SQL, lettura di file credenziali, richiesta business/S3, start/stop, import, scrittura o modifica delle prove. Le impronte precedenti consentono di localizzare la tabella cambiata, **non di ricostruire le singole righe o la causa**. Eventuali informazioni successive saranno limitate a ciò che il risultato richiede.
+## Limite del controllo precedente
 
-Qualifica del lettore: cinque test locali su fixture sintetiche, tutti PASS, zero skip: sezione/tabella esatta, differenze storia/conteggi, rifiuto di metadati arbitrari, preservazione dei file e un solo inspect simulato, risultato parziale se inspect fallisce. Nessuna prova target ancora eseguita. Fonte `1aa15097ce855a069c18b72899c44bb49795f8f6`, SHA256 `d04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c`.
+Nel [sorgente ActivationRepository](https://github.com/GioNob/ouf-ingestion-runtime/blob/c85d9fd3be215e518dc6e7d075797720b5afbd91/src/main/java/it/comune/trieste/ouf/ingestion/ActivationRepository.java), la riconciliazione aggiorna `discovery_verified_at` e incrementa `lock_version` anche sulla medesima pubblicazione. ActivationLoop ha polling predefinito di10secondi quando abilitato. Il guard che pretendeva l’impronta completa immutata mentre il servizio girava era troppo rigido. La fixture nativa precedente non esercitava questo polling con pianificazioni presenti.
 
-## Comando corrente sul VPS
+Questo **non prova quali campi siano cambiati nel caso VPS**. Le vecchie prove conservano soltanto impronte aggregate e non permettono di ricostruirli retroattivamente; inoltre il comportamento del vecchio binario installato non è dimostrato dal sorgente candidato. Non chiamare il delta già spiegato o accettato e non riscrivere le prove.
+
+## Lettura corrente
+
+Un solo comando raccoglie:
+
+- differenze esatte dei nomi campo Config e NetworkSettings/endpoint, forma della MAC nelle tre catture e corrispondenze con l’endpoint originale; nessun valore sensibile;
+- confronto API1.44/CLI senza dedurre automaticamente una nuova policy di lifecycle;
+- una sessione SQL REPEATABLE READ READ ONLY, timeout statement5s/lock1s, nel database dichiarato sull’esatto PostgreSQL retained: storia, conteggi e impronte correnti delle sette tabelle confrontati con la lettura dopo stop;
+- metadata delle pianificazioni: stato, one-shot, pubblicazione consumata/abilitata, lease, contatori e date; nessun identificativo, payload o sync_profile trasferito;
+- una nuova impronta privata dello scheduler che esclude soltanto i due campi del polling e continua a coprire gli altri campi. È una misura aggiuntiva dello stato attuale, non un’approvazione del delta storico.
+
+Quattro inspect nominativi complessivi: due API1.44 del vecchio container, una vista CLI e PostgreSQL. Nessuna modifica a servizi, immagini, permessi o database; nessuna richiesta business/S3/token né lettura di file credenziali. Le nuove prove sono salvate in una directory privata separata; le vecchie restano identiche.
+
+## Qualifica
+
+[CI42525366640](https://github.com/GioNob/ouf-deploy/actions/runs/42525366640), job128867703808, source `e22ef8e3758b216789c20c0d2aa5b5d717126c41`: sette test PASS, zero skip, log letti. Query esatta eseguita su PostgreSQL17 con ruolo non superuser dotato soltanto di SELECT; le letture conservano le righe sintetiche. Il test riproduce il cambio dell’impronta completa dopo gli aggiornamenti dei due campi polling, la stabilità dell’impronta ristretta e il suo cambiamento per un diverso checksum di pubblicazione. Test delle viste Docker puri/sintetici, non una nuova qualifica di STOP/DETACH. [Prove e limiti](../evidence/ingestion-resume-prerequisites-qualification-20261108.json).
+
+## Comando sul VPS
 
 ```bash
 (
   set -eu
-  ouf_read=$(mktemp /tmp/ouf-ingestion-held-read.XXXXXX)
+  ouf_read=$(mktemp /tmp/ouf-ingestion-resume-read.XXXXXX)
   trap 'rm -f -- "$ouf_read"' EXIT
   curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
     --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/1aa15097ce855a069c18b72899c44bb49795f8f6/scripts/read-ingestion-wide-held-state-20261108.py' \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/cd143d9df586d1a9f76d71cc48cb82994d157ab3/scripts/deliver-ingestion-resume-prerequisites-20261108.sh' \
     -o "$ouf_read"
   printf '%s  %s\n' \
-    'd04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c' \
+    '2c5ea6d606eb97e87ea067f1e3b6647405fe651963ec35b38c1e31cdd6c25548' \
     "$ouf_read" | sha256sum -c -
-  sudo python3 -I -B "$ouf_read"
+  bash "$ouf_read"
 )
 ```
 
-Restituire il JSON: atteso `INGESTION_HELD_STATE_READ_COMPLETE`, oppure `READ_PARTIAL`/`READ_INCOMPLETE` con informazioni disponibili. Il lettore non fa ripartire Ingestion. La continuazione residua verrà preparata sul risultato, conservando import e stop già compiuti.
-
-## Qualifica e limiti
-
-[CI 42522348023](https://github.com/GioNob/ouf-deploy/actions/runs/42522348023), source `5d926783e3ec3d277b70d4962aa82f37cf2e1b18`: Docker 29.8.1 classic e containerd, sei test dei guard e due cicli nativi per backend, zero skip, log diretti letti. L'archivio esatto parte con PostgreSQL17/V18 e ruolo applicativo non superuser; Flyway resta disabilitato. Configurazione esterna, execution beans e Gateway-read con chiave sintetica sono esercitati. Readiness HTTP200, storia e righe sintetiche conservate.
-
-Entrambe le fixture MAC partono con `Config.MacAddress` realmente presente: configurazione legacy esplicita e compatibilità endpoint-only. Dopo STOP/DETACH deve essere assente; seguono rename e sostituzione con IP/MAC/alias preservati. Il controller riusa la primitiva stretta già qualificata; non ignora globalmente il campo. [Regola MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md), [evidenza della qualifica](../evidence/ingestion-wide-upgrade-qualification-20261108.json).
-
-Il predecessore CI usa il candidato archiviato, non una copia del vecchio binario VPS. Configurazione e dati CI sono sintetici: non riproducono integralmente la configurazione Spring effettiva del VPS. La qualifica dimostra avvio e sostituzione nativi, **non l'ingestione funzionale di 1024 colonne o l'E2E fino al grafo**. La successiva ricevuta VPS riporta HELD dopo lo stop. La causa della differenza fra le letture del database è ancora da classificare; non chiamare il candidato installato e pronto.
-
+Restituire il JSON finale, atteso `INGESTION_RESUME_PREREQUISITES_READ`. Il comando lascia Ingestion fermo. Il risultato serve a preparare la continuazione residua conservando import e stop già compiuti; l’E2E e l’ingestione funzionale1024 restano aperti.

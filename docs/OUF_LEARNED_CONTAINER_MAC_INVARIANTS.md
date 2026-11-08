@@ -50,3 +50,8 @@ Il controller `scripts/upgrade-onboarding-wide-20261108.py` implementa questa po
 ## Qualifica Ingestion a una rete — 8 novembre 2026
 
 [CI42522348023](https://github.com/GioNob/ouf-deploy/actions/runs/42522348023), source5d926783: archivio candidato Ingestion avviato su Docker29.8.1 classic/containerd. Entrambi i profili EXPLICIT_LEGACY_CONFIG e ENDPOINT_ONLY_COMPAT_CONFIG hanno realmente Config.MacAddress presente all’origine e assente dopo STOP/DETACH; segue rename e sostituto con IP/MAC/alias conservati, vecchio trattenuto spento. Sei test guard e due cicli nativi per backend, zero skip; log letti. Il controller riusa `retained_mac.verify_detached`, aggiunge il controllo Path/Args e non introduce una nuova eccezione generica. V18, stato sintetico, configurazione esterna e Gateway-read key esercitati. [Prove e limiti](../evidence/ingestion-wide-upgrade-qualification-20261108.json). Ricevuta installazione VPS ancora attesa; non confondere questa qualifica con un successo target.
+
+
+## Confronto API1.44 e CLI nel lettore Ingestion — 8 novembre 2026
+
+La ricevuta22:20CET riporta Config/rete differenti nel vecchio fermo, stessa generazione, un nome di rete e nessun detach nel journal. Il lettore `read-ingestion-wide-held-state-20261108.py` confrontava un inspect CLI senza API fissata con gli snapshot del controller API1.44: difetto del confronto, non prova di una nuova transizione lifecycle. Il successivo lettore `read-ingestion-resume-prerequisites-20261108.py` usa API1.44 per il confronto primario e affianca la CLI per distinguere le viste. Nessuna normalizzazione MAC o eccezione ai guard introdotta. Risultato target ancora atteso. [Stato corrente](OUF_INGESTION_WIDE_UPGRADE_20261108.md).
