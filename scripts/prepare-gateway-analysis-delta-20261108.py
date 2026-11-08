@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 ROOT = Path('/var/lib/ouf-storage-migration')
 INPUT = ROOT / 'discovery-contract-read-guaps__4'
 ASSETS = 'gateway-analysis-assets-20261108.json'
-ASSETS_SHA = '98d199c4c00dc88b9cc95b5bbdcf0209aa35a938a8e910369ed59c21f4d62aaf'
+ASSETS_SHA = 'abc984168e6942e58ab2f3536a874c69a0233f41e4a8412eee56d927345958df'
 PREFIX = '/internal/capabilities/v1/execute/managed.file/'
 DISCOVERY = '/internal/capabilities/v1/execute/semantic/discovery/'
 BEFORE = {
@@ -81,11 +81,33 @@ def source(a, version, path):
 
 def schema(a, version, mode):
     if mode == 'review-prepare':
-        return json.loads(source(a, version, 'schemas/mcp-gateway-onboarding-review-prepare-dispatch-v1.json'))
+        canonical = json.loads(source(a, version, 'schemas/mcp-gateway-onboarding-review-prepare-dispatch-v1.json'))
+        identifier = ('urn:ouf:managed-file-execution-proposal:lexical-csv:v1' if version == 'old'
+                      else 'urn:ouf:managed-file-execution-proposal:typed-csv:v2')
+        return review_projection(canonical, identifier)
     alternatives = json.loads(source(a, version, 'schemas/mcp-gateway-managed-file-dispatch-v1.json'))['oneOf']
     matches = [s for s in alternatives if s['properties']['CapabilityID']['const'] == CAPS[mode]]
     need(matches, 'CAPABILITY_SCHEMA_REQUIRED')
     return matches[0] if len(matches) == 1 else {'oneOf': matches}
+
+
+def review_projection(canonical, identifier):
+    """Preserve the deployed APISIX metadata fix, never validation constraints."""
+    result = copy.deepcopy(canonical)
+    def visit(value):
+        if isinstance(value, dict):
+            need(not {'$ref', '$dynamicRef', '$recursiveRef'} & set(value),
+                 'SCHEMA_REFERENCE_PREVENTS_METADATA_PROJECTION')
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child)
+    visit(result)
+    proposal = result['properties']['Arguments']['properties']['executionProposal']
+    need(proposal.get('$id') == identifier, 'QUALIFIED_NESTED_IDENTIFIER_REQUIRED')
+    del proposal['$id']
+    return result
 
 
 def function_source(a, version, kind, constants):
@@ -142,7 +164,7 @@ def compile_plan(data, a):
         need(common is None or common == constants, 'SAME_MANAGED_OWNER_BINDINGS_REQUIRED')
         common = constants
         need(old['plugins']['request-validation']['body_schema'] == schema(a, 'old', mode),
-             'INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE')
+             'INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE_' + mode.upper().replace('-', '_'))
         new = copy.deepcopy(old)
         cap = 3145728 if mode in ('create', 'review-prepare') else 65536
         seconds = 3 if mode == 'profile' else 10
@@ -205,8 +227,14 @@ def classify_error(raw):
                 'DATABASE_NOT_FOUND': rb'database [^\n]{1,160} does not exist',
                 'DATABASE_CONNECTION_FAILED': rb'could not connect|connection refused',
                 'SQL_TIMEOUT': rb'canceling statement due to (?:statement|lock) timeout'}
+    # Only identifiers already present in the fixed public query may be emitted.
+    # Do not emit arbitrary SQL fragments, table names or values from stderr.
+    known = {'version', 'checksum', 'success', 'installed_rank', 'state', 'recovery_state'}
+    missing = {m.group(1).decode('ascii') for m in re.finditer(
+        rb'column "([a-z_]{1,32})" does not exist', raw) if m.group(1).decode('ascii') in known}
     return {'source': 'RETAINED_STDERR_ONLY_NO_NEW_QUERY', 'empty': not bool(raw.strip()),
             'hints': [name for name, pattern in patterns.items() if re.search(pattern, raw, re.I)],
+            'knownQueryColumnsReportedMissing': sorted(missing),
             'rawErrorEmitted': False, 'causeProven': False}
 
 

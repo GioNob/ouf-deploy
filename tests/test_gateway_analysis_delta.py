@@ -45,6 +45,46 @@ def fixture():
 
 
 class DeltaTests(unittest.TestCase):
+    def test_baseline_schema_hashes_equal_independent_operator_receipt(self):
+        # These are the four target hashes received at 08:31 UTC, not produced
+        # by fixture() or the same generator being tested. The v1 baseline fails.
+        observed = {
+            'preview': 'f8ce093b054ae3454e833c89b13cd5f6fa2fb72443706e77c42dadcf08c2ca26',
+            'profile': 'ddb6a19e5f239c2163635020f3ff9577937e314871a0f0734336aca53094f616',
+            'create': 'fed8367c8a322f0e079fbe95b24df4f4b39e7961751d8bec7375fa8eb0cc1458',
+            'review-prepare': '9342baa80786e1c7069347362f655e34de4b039b46d19e32a25c23224fa0b71f',
+        }
+        for mode, digest in observed.items():
+            self.assertEqual(m.digest(m.schema(A, 'old', mode)), digest, mode)
+
+    def test_review_projection_preserves_every_validation_constraint(self):
+        for version in ('old', 'candidate'):
+            canonical = json.loads(m.source(A, version, 'schemas/mcp-gateway-onboarding-review-prepare-dispatch-v1.json'))
+            projected = m.schema(A, version, 'review-prepare')
+            proposal = projected['properties']['Arguments']['properties']['executionProposal']
+            self.assertNotIn('$id', proposal)
+            proposal['$id'] = canonical['properties']['Arguments']['properties']['executionProposal']['$id']
+            self.assertEqual(projected, canonical)
+            self.assertEqual(projected['properties']['Arguments']['properties']['expectedVersion']['maximum'], 9007199254740991)
+
+    def test_review_projection_rejects_reference_or_unknown_identifier(self):
+        canonical = json.loads(m.source(A, 'candidate', 'schemas/mcp-gateway-onboarding-review-prepare-dispatch-v1.json'))
+        identifier = 'urn:ouf:managed-file-execution-proposal:typed-csv:v2'
+        for keyword in ('$ref', '$dynamicRef', '$recursiveRef'):
+            invalid = copy.deepcopy(canonical)
+            invalid['properties']['Arguments']['properties']['executionProposal'][keyword] = '#/known'
+            with self.assertRaisesRegex(RuntimeError, 'SCHEMA_REFERENCE_PREVENTS'):
+                m.review_projection(invalid, identifier)
+        with self.assertRaisesRegex(RuntimeError, 'QUALIFIED_NESTED_IDENTIFIER_REQUIRED'):
+            m.review_projection(canonical, 'urn:unexpected')
+
+    def test_only_fixed_query_column_names_are_reported_from_stderr(self):
+        self.assertEqual(m.classify_error(b'ERROR: column "recovery_state" does not exist')['knownQueryColumnsReportedMissing'], ['recovery_state'])
+        output = m.classify_error(b'ERROR: column "private_secret" does not exist')
+        self.assertEqual(output['knownQueryColumnsReportedMissing'], [])
+        self.assertNotIn('private_secret', json.dumps(output))
+        self.assertFalse(output['causeProven'])
+
     def test_only_five_updates_three_additions_and_no_input_mutation(self):
         data, pins = fixture()
         before = copy.deepcopy(data)
