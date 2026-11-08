@@ -62,6 +62,8 @@ def request(old,image):
  declared={m['Target'] for m in h.get('Mounts') or []}
  declared.update(b.split(':')[1] for b in h.get('Binds') or [])
  need(all(m['Type']=='bind' and not m['RW'] and m['Destination'] in declared for m in old['Mounts']),'EXPLICIT_READONLY_BIND_MOUNTS_REQUIRED')
+ # API1.44 materializes null OomKillDisable as false on CREATE.
+ if h.get('OomKillDisable') is None:h['OomKillDisable']=False
  c['Image']=image;c.pop('MacAddress',None)
  c['Labels']=dict(c.get('Labels') or {},**{'org.opencontainers.image.revision':SOURCE,'ouf.semantic.functional-upgrade':SOURCE})
  # Image-owned Java metadata must describe the new JRE, not the old image.
@@ -93,7 +95,7 @@ def verify_replacement(old,req,actual,started):
  need(actual['Image']==req['Image'] and actual['HostConfig']==req['HostConfig'] and mounts(actual)==mounts(old),'REPLACEMENT_IMAGE_HOST_MOUNTS_CHANGED')
  need(set(actual['NetworkSettings']['Networks'])=={net},'REPLACEMENT_NETWORK_SET_CHANGED')
  current=actual['NetworkSettings']['Networks'][net]
- need(current['IPAMConfig']==ep['IPAMConfig'] and set(current.get('Aliases') or [])==set(ep['Aliases']),'REPLACEMENT_ADDRESS_ALIASES_CHANGED')
+ need(current['IPAMConfig']==ep['IPAMConfig'] and set(current.get('Aliases') or [])==set(ep['Aliases'])|{actual['Id'][:12]},'REPLACEMENT_ADDRESS_ALIASES_CHANGED')
  if started:need(current['IPAddress']==ep['IPAMConfig']['IPv4Address'] and current['MacAddress']==ep['MacAddress'],'REPLACEMENT_ENDPOINT_CHANGED')
  need(actual['State']['Running'] is started,'REPLACEMENT_RUNNING_STATE_CHANGED')
 
