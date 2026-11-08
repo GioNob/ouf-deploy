@@ -21,14 +21,14 @@ class Native(unittest.TestCase):
   cls.tmp=tempfile.TemporaryDirectory();cls.path=Path(cls.tmp.name);cls.path.chmod(0o755)
   (cls.path/'spring.datasource.password').write_text('fixture-only');(cls.path/'spring.datasource.password').chmod(0o444)
   command(*DOCKER,'network','create',cls.tag)
-  command(*DOCKER,'run','-d','--name',cls.pg,'--network',cls.tag,'-p','127.0.0.1::5432','-e','POSTGRES_USER=fixture','-e','POSTGRES_PASSWORD=fixture-only','-e','POSTGRES_DB=fixture','postgres:17')
+  command(*DOCKER,'run','-d','--name',cls.pg,'--network',cls.tag,'-p','127.0.0.1::5432','-e','POSTGRES_USER=postgres','-e','POSTGRES_PASSWORD=fixture-only','-e','POSTGRES_DB=postgres','postgres:17')
   for _ in range(60):
-   p=subprocess.run((*DOCKER,'exec',cls.pg,'pg_isready','-h','127.0.0.1','-U','fixture'),capture_output=True)
+   p=subprocess.run((*DOCKER,'exec',cls.pg,'pg_isready','-h','127.0.0.1','-U','postgres'),capture_output=True)
    if p.returncode==0:break
    time.sleep(0.5)
   else:raise AssertionError('fixture not ready')
-  command(*DOCKER,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','fixture','-d','fixture',
-    input=b'ALTER ROLE fixture NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;')
+  command(*DOCKER,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','postgres','-d','postgres',
+    input=b"CREATE ROLE fixture LOGIN PASSWORD 'fixture-only' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; CREATE DATABASE fixture OWNER fixture;")
   port=json.loads(command(*DOCKER,'inspect',cls.pg))[0]['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
   cls.host='jdbc:postgresql://127.0.0.1:'+port+'/fixture';cls.url='jdbc:postgresql://'+cls.pg+':5432/fixture'
   command(*DOCKER,'run','-d','--name',cls.sem,'--network',cls.tag,'--user','10001:10001',
@@ -57,6 +57,8 @@ class Native(unittest.TestCase):
   return p,rows
  def test_native_configtree_packaged_flyway_migration_preserves_history_and_receipt(self):
   oid=self.baseline()
+  self.assertEqual(command(*DOCKER,'exec',self.sem,'id','-u').strip(),b'10001')
+  self.assertEqual(self.sql('select rolsuper or rolcreaterole or rolcreatedb or rolbypassrls from pg_roles where rolname=current_user'),'f')
   self.sql("insert into ouf_sem.proposal_command_receipt(tenant_id,principal_id,idempotency_key,operation,request_hash,result_json) values('fixture','fixture','keep-me','CREATE',repeat('a',64),'{\"retained\":true}');")
   before=self.sql("select json_agg(t) from (select * from ouf_sem.flyway_schema_history order by installed_rank)t")
   p,rows=self.invoke(oid)
