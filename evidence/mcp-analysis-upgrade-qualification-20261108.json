@@ -1,0 +1,60 @@
+{
+  "schema": "ouf.mcp-analysis-upgrade-qualification.v1",
+  "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+  "sourceCommit": "fcd06cd5b4fea69e7eaa59a4d5731b0bfc3131df",
+  "controllerCommit": "149c4427110aec0b9b0e03a1827e4d165662d397",
+  "script": "scripts/upgrade-mcp-analysis-20261108.py",
+  "scriptSha256": "5f6739852c1a0d4318d6427c229409882a0f66ab1ad7110ed3c599300fa24758",
+  "candidateSource": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+  "publisherSource": "e2a474ea09bf9c3cb130103ca142f1a128942a80",
+  "artifactId": 13593930449,
+  "artifactZipSha256": "2eae47d8c90b00b992bc916e5ce5a5bd32d9e724abe27d2838bd5d08ebc68d5e",
+  "binarySha256": "11f9bb088b6f86d2f82c945728cb904c46d8c43a866b4df4cec2a6531e10605a",
+  "ciRun": 42514478247,
+  "jobs": [
+    {
+      "id": 128834381576,
+      "backend": "containerd",
+      "conclusion": "success"
+    },
+    {
+      "id": 128834381676,
+      "backend": "classic",
+      "conclusion": "success"
+    }
+  ],
+  "logsRead": true,
+  "perBackend": {
+    "unitTestsPassed": 4,
+    "strictMacNegativeTestsPassed": 6,
+    "nativeProfilesPassed": 2,
+    "signedExpiredFixtureTestPassed": 1,
+    "skipped": 0
+  },
+  "proofs": [
+    "Exact archived binary, no application rebuild",
+    "V1-13 fixture prefix followed by ordinary migrate command as non-superuser role; only V14 added",
+    "Prior migration rows including timestamps and synthetic application session unchanged",
+    "Client credentials from UID10005 files and policy refresh over TLS with trusted fixture CA",
+    "Expired cryptographically valid reprocessing deployment files remain unchanged and expire check still denies authority",
+    "Explicit legacy and endpoint-only inputs both reproduce present Config.MacAddress before STOP/DETACH, absence after, same endpoint MAC/IP/aliases on replacement",
+    "Replacement readiness HTTP204, old container retained stopped"
+  ],
+  "limits": [
+    "No target execution or application business call.",
+    "Synthetic database, trust policy, signed permit, OAuth issuer and policy endpoint.",
+    "The same archived candidate on V13 serves as the disposable predecessor; the old VPS binary is checked by its observed digest but is not executed in CI.",
+    "No target provider/grant/discovery validation or functional analysis; six new descriptors remain INACTIVE.",
+    "Migration writes schema/history; normal server startup persists a manifest and may request tokens/access policy. No permission, budget or permit renewal."
+  ],
+  "previousRun": {
+    "id": 42514286601,
+    "conclusion": "failure",
+    "cause": "Fixture used /picker instead of required /trusted-human/managed-files/; kernel rejected fixture URL before replacement.",
+    "controllerChangedForFix": false,
+    "targetEffects": false
+  },
+  "targetExecuted": false,
+  "automaticRollback": false,
+  "automaticReplay": false
+}
