@@ -23,6 +23,11 @@ class Unit(unittest.TestCase):
   o=doc();a=copy.deepcopy(o);a['Config']['MacAddress']=None;a['Config']['Env']=['SECRET=changed'];a['Config']['UnknownPrivateKey']='PRIVATE_VALUE'
   r=m.frame_report(o,o,a);self.assertEqual(r['stages']['current']['legacy']['kind'],'NULL');self.assertFalse(r['environmentUnchanged'])
   self.assertEqual(r['configBeforeToCurrent']['otherChangedFieldCount'],1);self.assertNotIn('UnknownPrivateKey',json.dumps(r))
+ def test_api_views_distinguish_representation_from_runtime(self):
+  o=doc();cli=copy.deepcopy(o);cli['Config'].pop('MacAddress');cli['NetworkSettings']['Networks']['ouf-backend'].pop('MacAddress')
+  r=m.api_views(o,o,o,cli);self.assertTrue(r['sameContainerAndGeneration']);self.assertFalse(r['configEqualAcrossViews'])
+  self.assertFalse(r['networkSettingsEqualAcrossViews']);self.assertEqual(r['retainedAndPrimaryApi'],'1.44')
+  self.assertIn('NOT_A_RUNTIME_CHANGE_PROOF',r['interpretation'])
  def test_identity_difference_rejected(self):
   o=doc();a=copy.deepcopy(o);a['Id']='other'
   with self.assertRaises(RuntimeError):m.frame_report(o,o,a)

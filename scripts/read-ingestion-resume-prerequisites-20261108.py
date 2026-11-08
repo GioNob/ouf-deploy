@@ -112,6 +112,13 @@ def database_summary(value,stopped,f):
   'stableScheduleFingerprintRetainedPrivately':True,'stableFingerprintExcludes':['discovery_verified_at','lock_version'],
   'historicalChangedColumnsRecoverable':False,'reason':'EARLIER_EVIDENCE_HAS_ONLY_WHOLE_TABLE_FINGERPRINTS',
   'queryScope':'DECLARED_APPLICATION_DATABASE_ON_RETAINED_POSTGRES','credentialValuesEmitted':False}
+def api_views(old,stopped,pinned,cli):
+ return {'retainedAndPrimaryApi':'1.44','previousReaderCliApiWasNotPinned':True,
+  'sameContainerAndGeneration':all(d['Id']==pinned['Id'] and d['State']['StartedAt']==pinned['State']['StartedAt'] for d in (old,stopped,cli)),
+  'configEqualAcrossViews':pinned['Config']==cli['Config'],
+  'networkSettingsEqualAcrossViews':pinned['NetworkSettings']==cli['NetworkSettings'],
+  'cliView':frame_report(old,stopped,cli),
+  'interpretation':'DIFFERENT_REPRESENTATIONS_ARE_NOT_A_RUNTIME_CHANGE_PROOF'}
 def db_binding(doc,pg,c,h):
  env=h.environment(doc);translated=copy.deepcopy(doc)
  translated['Config']['Env']=[x for x in doc['Config']['Env'] if not x.startswith(('OUF_SEM_DB_URL=','OUF_SEM_DB_USER='))]
@@ -127,6 +134,11 @@ def run(report):
  work=Path(tempfile.mkdtemp(prefix='ingestion-resume-read-',dir=ROOT.parent));os.chmod(work,0o700);report['privateEvidenceDirectory']=str(work)
  c.save_private(work,'current-ingestion.private.json',(json.dumps(current,sort_keys=True)+'\n').encode())
  report['currentFrameSha256']=h.digest(h.frame(current))
+ report['dockerInspectAttempts']+=1
+ cli=f.inspect_old()
+ report['apiViewComparison']=api_views(old,stopped,current,cli)
+ report['apiViewComparison']['cliApiOverrideEnvironmentPresent']=bool(os.environ.get('DOCKER_API_VERSION'))
+ c.save_private(work,'cli-ingestion.private.json',(json.dumps(cli,sort_keys=True)+'\n').encode())
  report['journalFilesPresent']={n:(ROOT/n).exists() for n in f.JOURNAL};report['currentReplacementMarkerPresent']=(ROOT.parent/'ingestion-wide-current.json').exists()
  pg=h.inspect(roles['postgres']['containerId']);report['dockerInspectAttempts']+=1
  need(pg['Image']==roles['postgres']['nativeImage'] and pg['State']['Running'],'POSTGRES_BINDING_CHANGED')
