@@ -67,6 +67,25 @@ class MemoryAdmin:
 
 
 class PublisherTests(unittest.TestCase):
+    def test_mount_order_only_preserves_all_records_and_mac(self):
+        h = SimpleNamespace(frame=lambda d: copy.deepcopy(d))
+        original = {'Mounts':[{'Destination':'/b','Source':'/host/b','RW':False},
+                              {'Destination':'/a','Source':'/host/a','RW':False}],
+                    'Config':{'MacAddress':'02:11:22:33:44:55'}}
+        reordered=copy.deepcopy(original);reordered['Mounts'].reverse()
+        self.assertEqual(p.stable_frame(h, original),p.stable_frame(h, reordered))
+        for field,value in [('Source','/different'),('RW',True),('Destination','/different')]:
+            changed=copy.deepcopy(reordered);changed['Mounts'][0][field]=value
+            self.assertNotEqual(p.stable_frame(h, original),p.stable_frame(h, changed))
+        for value in (None,'','02:11:22:33:44:66'):
+            changed=copy.deepcopy(reordered);changed['Config']['MacAddress']=value
+            self.assertNotEqual(p.stable_frame(h, original),p.stable_frame(h, changed))
+        changed=copy.deepcopy(reordered);del changed['Config']['MacAddress']
+        self.assertNotEqual(p.stable_frame(h, original),p.stable_frame(h, changed))
+        changed=copy.deepcopy(reordered);changed['Mounts'][1]['Destination']='/a'
+        with self.assertRaisesRegex(RuntimeError,'UNIQUE_COMPLETE_MOUNT_RECORDS_REQUIRED'):
+            p.stable_frame(h,changed)
+
     def test_existing_attempt_exits_before_credentials_or_engine_reads(self):
         plan, _ = setup_plan()
         h = SimpleNamespace(read=lambda *_: json.dumps(plan), parse=json.loads)
@@ -197,20 +216,19 @@ class NativeTests(unittest.TestCase):
             print('SYNTHETIC_STARTUP_FRAME_FIELDS '+json.dumps([k for k in first if first[k]!=ready[k]]))
             counters = {'adminCredentialConfigurationsRead':0,'externalAdminKeyFilesRead':0,'adminGetAttempts':0}
             class DiagnosticAdmin(p.Admin):
+                mount_reorders = 0
                 def guard(self):
                     actual = self.h.frame(self.h.inspect(self.apisix['Id']))
                     expected_frame = self.h.frame(self.apisix)
                     if actual != expected_frame:
-                        print('SYNTHETIC_GUARD_DIFFERENCE '+json.dumps({
-                            'fields': [k for k in actual if actual[k]!=expected_frame[k]],
-                            'configKeys': [k for k in set(actual['Config'])|set(expected_frame['Config']) if actual['Config'].get(k)!=expected_frame['Config'].get(k)],
-                            'expectedState':expected_frame['State'],'actualState':actual['State'],
-                            'expectedNetworks':expected_frame['NetworkSettings'],'actualNetworks':actual['NetworkSettings']},sort_keys=True))
-                    p.need(actual == expected_frame, 'APISIX_RUNTIME_CHANGED')
+                        same_records = sorted(actual['Mounts'],key=lambda m:m['Destination']) == sorted(expected_frame['Mounts'],key=lambda m:m['Destination'])
+                        fields = [k for k in actual if actual[k]!=expected_frame[k]]
+                        if fields == ['Mounts'] and same_records: self.mount_reorders += 1
+                        else: print('SYNTHETIC_OTHER_FRAME_CHANGE '+json.dumps({'fields':fields,'sameMountRecords':same_records}))
+                    super().guard()
             admin = DiagnosticAdmin(c, h, doc, counters)
             plan, expected = setup_plan()
-            for ordinal, (rid, row) in enumerate(expected.items()):
-                print('SYNTHETIC_ROUTE_SEED '+str(ordinal),flush=True)
+            for rid, row in expected.items():
                 response = admin.put(rid,row)
                 self.assertIn(response['httpStatus'],(200,201),json.dumps(response)[:1800])
             self.assertEqual(admin.routes(), expected)
@@ -218,6 +236,7 @@ class NativeTests(unittest.TestCase):
             p.publish(plan, expected, admin, work, result)
             self.assertEqual(result['routeWritesVerified'],8)
             self.assertEqual(result['finalRouteCount'],87)
+            print('SYNTHETIC_EXACT_MOUNT_REORDER_OBSERVATIONS '+str(admin.mount_reorders))
             review = admin.routes()['file-review-prepare']['plugins']['request-validation']['body_schema']
             self.assertEqual(review['properties']['Arguments']['properties']['expectedVersion']['maximum'],9007199254740991)
             with self.assertRaises(FileExistsError): work.mkdir(mode=0o700)

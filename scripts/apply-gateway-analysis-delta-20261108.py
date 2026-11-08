@@ -20,6 +20,7 @@ ROOT = Path('/var/lib/ouf-storage-migration')
 PROPOSAL = ROOT / 'gateway-analysis-proposal-9rj147d5/proposal.private.json'
 PROPOSAL_SHA = '2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19'
 WORK = ROOT / ('gateway-analysis-apply-' + PROPOSAL_SHA[:16])
+OBSERVED = ROOT / 'analysis-discovery-read-q6s57fid'
 HELPER = 'read-discovery-contract-20261108.py'
 HELPER_SHA = '468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277'
 DESIRED = [
@@ -75,6 +76,21 @@ def body(row):
     # APISIX owns these timestamps. All other fields remain exact, including id,
     # numeric contract bounds, plugins, credentials and upstream configuration.
     return {k: v for k, v in row.items() if k not in ('create_time', 'update_time')}
+
+
+def stable_frame(h, doc):
+    """Docker mount records form a destination-keyed set, not an ordered list.
+
+    Keep every mount field and every Config/NetworkSettings/MAC field exact.
+    The original recorded frame hashes are verified before this comparison.
+    """
+    value = copy.deepcopy(h.frame(doc))
+    mounts = value['Mounts']
+    need(type(mounts) is list and len(mounts) <= 64 and
+         all(type(m) is dict and isinstance(m.get('Destination'), str) and m['Destination'] for m in mounts) and
+         len({m['Destination'] for m in mounts}) == len(mounts), 'UNIQUE_COMPLETE_MOUNT_RECORDS_REQUIRED')
+    value['Mounts'] = sorted(mounts, key=lambda m: m['Destination'])
+    return value
 
 
 def route_map(data):
@@ -138,7 +154,7 @@ class Admin:
         self.key = c.selected_key(raw, h, report)
 
     def guard(self):
-        need(self.h.frame(self.h.inspect(self.apisix['Id'])) == self.h.frame(self.apisix),
+        need(stable_frame(self.h, self.h.inspect(self.apisix['Id'])) == stable_frame(self.h, self.apisix),
              'APISIX_RUNTIME_CHANGED')
 
     def request(self, method, path, value=None):
@@ -227,8 +243,8 @@ def semantic_read(c, h, semantic, postgres, work, report):
              (x['recovery_state'] is None or x['recovery_state'] in allowed) and
              type(x['count']) is int and x['count'] >= 0 for x in value['discoveryStates']),
          'UNEXPECTED_DISCOVERY_STATE')
-    need(h.frame(h.inspect(semantic['Id'])) == h.frame(semantic) and
-         h.frame(h.inspect(postgres['Id'])) == h.frame(postgres), 'DATABASE_BINDING_CHANGED')
+    need(stable_frame(h, h.inspect(semantic['Id'])) == stable_frame(h, semantic) and
+         stable_frame(h, h.inspect(postgres['Id'])) == stable_frame(h, postgres), 'DATABASE_BINDING_CHANGED')
     private(work, 'semantic-metadata.private.json', value)
     value.update(status='SEMANTIC_METADATA_READ', identifiersOrIntentsRead=False,
                  v12RecordedSuccessful=any(str(row['version']) == '12' and row['success'] is True for row in value['migrations']),
@@ -265,7 +281,9 @@ def main():
             need(doc['Image'] == roles[name]['nativeImage'] and doc['State']['Running'] and
                  not doc['State'].get('Paused') and not doc['State'].get('Restarting'), 'EXPECTED_RUNNING_IMAGE_REQUIRED')
             if name in c.FRAME_PINS:
-                need(h.digest(h.frame(doc)) == c.FRAME_PINS[name], 'CURRENT_RUNTIME_FRAME_CHANGED')
+                captured = h.parse(h.read(OBSERVED / (name + '.private.json'), 2 * 1024 * 1024))
+                need(h.digest(h.frame(captured)) == c.FRAME_PINS[name], 'OBSERVED_FRAME_EVIDENCE_CHANGED')
+                need(stable_frame(h, doc) == stable_frame(h, captured), 'CURRENT_RUNTIME_FRAME_CHANGED')
         try:
             report['semanticDatabase'] = semantic_read(c, h, docs['semantic'], docs['postgres'], WORK, report)
         except (OSError, ValueError, RuntimeError, KeyError, subprocess.TimeoutExpired) as exc:
