@@ -1243,13 +1243,21 @@
       },
       "currentMcpContainerId": "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943",
       "onboardingWidePreflight": {
-        "status": "PREPARED_QUALIFICATION_PENDING",
+        "status": "QUALIFIED_TARGET_READ_AWAITED",
         "candidateSource": "cc6c7869b308c695460d8491a121084893a3c323",
         "artifactId": 13592211485,
         "script": "scripts/read-onboarding-wide-preflight-20261108.py",
         "targetExecuted": false,
         "readOnly": true,
-        "twoNetworksMustBePreserved": true
+        "twoNetworksMustBePreserved": true,
+        "sourceCommit": "91568e8deaf41bfd059b4a3ec41a91e2c5c953c7",
+        "deliveryCommit": "e0377f5c67a5320ce8bc6954ed063b225067c97c",
+        "qualification": "evidence/onboarding-wide-preflight-qualification-20261108.json",
+        "ciRun": 42516065460,
+        "ciJob": 128839231269,
+        "tests": 5,
+        "skips": 0,
+        "logsRead": true
       }
     }
   }

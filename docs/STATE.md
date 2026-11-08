@@ -25,7 +25,7 @@ Provider e worker restano disabilitati; nessuna richiesta discovery o business �
 
 I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o discovery è dimostrata dall'avvio. Il percorso Teatri fino al grafo resta aperto.
 
-**Prossima azione: Onboarding a 1024 colonne.** Il candidato cc6c7869 è discendente del sorgente installato e non modifica le 38 migrazioni. Archivio originale, JAR e risorse verificati. Il sostituto SeaweedFS ha due reti, entrambe da preservare: non riusare il controller MCP/Semantic a rete singola. Si prepara una lettura mirata del JAR installato, storia Flyway e binding SeaweedFS/TLS prima della sostituzione, senza upload o nuova profilazione. [Lettura Onboarding](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md).
+**Prossima azione: Onboarding a 1024 colonne.** Il candidato cc6c7869 è discendente del sorgente installato e non modifica le 38 migrazioni. Archivio originale, JAR e risorse verificati. Il sostituto SeaweedFS ha due reti, entrambe da preservare: non riusare il controller MCP/Semantic a rete singola. È pronto il lettore mirato del JAR installato, storia Flyway e binding SeaweedFS/TLS: cinque test CI riusciti, incluso PostgreSQL 17 con ruolo di sola lettura. Esecuzione VPS attesa; nessun upload o nuova profilazione. [Lettura Onboarding](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md).
 
 ## Sequenza rimanente
 

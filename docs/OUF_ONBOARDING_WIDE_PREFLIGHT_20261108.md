@@ -14,4 +14,25 @@ Il container ha **due reti**, backend e SeaweedFS. Il controller MCP/Semantic a 
 
 ## Consegna
 
-Lettore preparato; qualifica PostgreSQL CI in corso. Comando operatore ancora da pubblicare. Esito previsto della lettura: `ONBOARDING_WIDE_PREFLIGHT_READ`. Tale esito non certifica l'avvio del candidato o l'E2E: i booleani di confronto distinguono esplicitamente eventuali differenze. La ricevuta permette di scegliere una sostituzione senza migrazione oppure di fermarsi su una differenza concreta.
+Lettore qualificato: [CI 42516065460](https://github.com/GioNob/ouf-deploy/actions/runs/42516065460), job 128839231269, cinque test PASS e zero skip, log letti. La prova PostgreSQL 17 usa un ruolo non superuser con solo SELECT sulla storia e ne verifica l'invarianza. Le prove coprono checksum/versioni mancanti o cambiati, binding JDBC, redazione dei valori e confronto delle risorse JAR. [Qualifica e limiti](../evidence/onboarding-wide-preflight-qualification-20261108.json). Non è una prova della sostituzione a due reti o dell'avvio del candidato. Esito previsto della lettura: `ONBOARDING_WIDE_PREFLIGHT_READ`. Tale esito non certifica l'avvio del candidato o l'E2E: i booleani di confronto distinguono esplicitamente eventuali differenze. La ricevuta permette di scegliere una sostituzione senza migrazione oppure di fermarsi su una differenza concreta.
+
+
+Eseguire sul VPS:
+
+```bash
+(
+  set -eu
+  ouf_read=$(mktemp /tmp/ouf-onboarding-wide-read.XXXXXX)
+  trap 'rm -f -- "$ouf_read"' EXIT
+  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+    --connect-timeout 10 --max-time 30 \
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/e0377f5c67a5320ce8bc6954ed063b225067c97c/scripts/deliver-onboarding-wide-preflight-20261108.sh' \
+    -o "$ouf_read"
+  printf '%s  %s\n' \
+    'bce96bc653bf89e1d8b15bb8f11266bd778c38ebebb162cd692f87062a38428d' \
+    "$ouf_read" | sha256sum -c -
+  bash "$ouf_read"
+)
+```
+
+Restituire il JSON finale. L'esecuzione crea soltanto i file privati di evidenza e la sessione SQL di lettura descritta; nessuna modifica ai servizi o ai dati applicativi.
