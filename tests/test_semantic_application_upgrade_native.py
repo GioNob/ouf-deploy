@@ -56,7 +56,17 @@ class Native(unittest.TestCase):
   return old
  def exercise(self,explicit):
   oid=self.baseline();old=self.old(explicit);req=r.request(old,self.image);events={};report={}
-  current=r.replace(self.e,old,req,m,lambda k,v:events.setdefault(k,v),report);self.ids.append(current['Id'])
+  try:
+   current=r.replace(self.e,old,req,m,lambda k,v:events.setdefault(k,v),report)
+  except Exception:
+   actual=self.e.inspect(report['replacementContainerId']) if report.get('replacementContainerId') else None
+   if actual:
+    print('CI_ONLY_REPLACEMENT_DIFF '+json.dumps({'image':[req['Image'],actual['Image']],
+     'host':{k:[req['HostConfig'].get(k),actual['HostConfig'].get(k)] for k in set(req['HostConfig'])|set(actual['HostConfig']) if req['HostConfig'].get(k)!=actual['HostConfig'].get(k)},
+     'mounts':[r.mounts(old),r.mounts(actual)],'networks':actual['NetworkSettings']['Networks']}),flush=True)
+   raise
+  finally:
+   if report.get('replacementContainerId'):self.ids.append(report['replacementContainerId'])
   r.gate_running(current)
   self.assertEqual(r.file_sha(pathlib.Path('/proc',str(current['State']['Pid']),'root/app/application.jar')),r.JAR_SHA)
   self.assertEqual(self.sql('select max(version::int) from ouf_sem.flyway_schema_history'),'10')
