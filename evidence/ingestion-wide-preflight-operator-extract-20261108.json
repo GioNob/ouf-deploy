@@ -1,0 +1,108 @@
+{
+  "schema": "ouf.ingestion-wide-preflight.operator-extract.v1",
+  "provenance": "Selected fields copied from the operator JSON in this conversation; not a new target observation. Full migration timestamps, dependency list and full class/migration hash lists are omitted here.",
+  "originalSchema": "ouf.ingestion-wide-preflight.v1",
+  "status": "INGESTION_WIDE_PREFLIGHT_READ",
+  "observedAt": "2026-11-08T20:43:20.473677+00:00",
+  "currentContainerId": "d69c3f763d75f8c8f8db382fef0159a4dd5a3b99ee62ae8737a24421f4285c14",
+  "currentImageId": "sha256:d173aa8beeb9a1ac29c35a163e254a902e95fedad2871e328886a41831c10697",
+  "currentFrameSha256": "1a7e2cf521248433a0319681ca1c3739889ab876a7d3360056067c662048fe62",
+  "currentLegacyMac": {
+    "endpointCount": 1,
+    "formatValid": true,
+    "kind": "STRING",
+    "matchingEndpointCount": 1,
+    "unicastNonzero": true
+  },
+  "networks": [
+    "ouf-backend"
+  ],
+  "mountCount": 4,
+  "readOnlyMountCount": 4,
+  "processIsJava": true,
+  "runtimeUnchangedDuringRead": true,
+  "sourceCommit": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+  "configuration": {
+    "scope": "DECLARATIONS_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+    "externalConfigContentsRead": false,
+    "rawArgumentsEmitted": false,
+    "springApplicationJsonPresent": false,
+    "selectedProperties": {
+      "ouf.ingestion.gateway-read.enabled": [
+        {
+          "origin": "PACKAGED_YAML_VARIABLE",
+          "summary": "true"
+        }
+      ],
+      "ouf.ingestion.gateway-read.key-file": [
+        {
+          "origin": "PACKAGED_YAML_VARIABLE",
+          "summary": "PRESENT"
+        }
+      ],
+      "spring.config.additional-location": [
+        {
+          "origin": "ENV",
+          "summary": "PRESENT"
+        }
+      ],
+      "spring.flyway.enabled": [
+        {
+          "origin": "ENV",
+          "summary": "false"
+        },
+        {
+          "origin": "RUNNING_ARGUMENT",
+          "summary": "false"
+        }
+      ]
+    }
+  },
+  "package": {
+    "allMigrationFilesMatchCandidate": true,
+    "applicationYamlMatchesCandidate": true,
+    "migrationCount": 18,
+    "jarBytes": 66192909,
+    "jarSha256": "54424047880b6c96c512efb55dbd1c241e98180f4d679c342760980385f771f1",
+    "comparisonScope": "SOURCE_MIGRATION_AND_YAML_RESOURCES_NOT_NEW_IMAGE_MEMBERSHIP",
+    "classPresenceProvesRuntimeBehavior": false,
+    "selectedInstalledClasses": {
+      "ManagedTabularAdapter$CsvCursor.class": {
+        "present": false,
+        "sha256": null
+      }
+    }
+  },
+  "database": {
+    "activity": {
+      "handoffStates": {
+        "ACKED": 34
+      },
+      "runStates": {
+        "SUCCEEDED": 3
+      },
+      "unexpiredPartitionLeases": 0
+    },
+    "activityMeaning": "COUNTS_AT_READ_TIME_NOT_QUIESCENCE_OR_RESTART_AUTHORITY",
+    "applicationRoleSuperuser": false,
+    "databaseOid": "21554",
+    "exactCandidateMigrationHistory": true,
+    "migrationExecuted": false,
+    "readOnly": true,
+    "scope": "READ_ONLY_HISTORY_ON_DECLARED_APPLICATION_DATABASE_NOT_EFFECTIVE_SPRING_BINDING"
+  },
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/ingestion-wide-preflight-ux56chih",
+  "candidateStartupTested": false,
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "businessRequestsIssued": 0,
+  "databaseWrites": 0,
+  "imageImports": 0,
+  "migrationDispatched": false,
+  "readOnlyDatabaseSessionsAttempted": 1,
+  "s3Requests": 0,
+  "tokenRequests": 0,
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "identifiersPayloadsOrCheckpointsRead": false
+}
