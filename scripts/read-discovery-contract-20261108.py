@@ -366,6 +366,8 @@ def collect(h, report):
         report['components']['provider'] = {'status': 'READ_INCOMPLETE', 'reason': safe_reason(exc)}
     selected_paths = ['/mcp', '/internal/capabilities/v1/execute'] + [
         '/internal/capabilities/v1/execute/semantic/discovery/' + op for op in ('request', 'status', 'candidates')]
+    selected_paths += ['/internal/capabilities/v1/execute/managed.file/' + op
+                       for op in ('preview', 'profile', 'create', 'review-prepare')]
     # Only configured provider paths are added; no endpoint guessed from source defaults.
     selected_paths += paths
     for name, action in (
