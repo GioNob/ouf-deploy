@@ -1,10 +1,10 @@
 # Semantic: aggiornamento coerente dell'applicazione e del database
 
-8 novembre 2026, Europe/Rome. **V11/V12 migrate e validate; correzione del riferimento chiave qualificata, esecuzione VPS attesa.**
+8 novembre 2026, Europe/Rome. **Semantic V12 pronto sul VPS; correzione conclusa alle 19:59 CET.** [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json): chiave uguale al Gateway, stesso pacchetto e mount, storia V12 invariata. Vecchi container spenti; provider/worker disabilitati. Nessuna discovery funzionale provata. Prossimo passo: [MCP](OUF_MCP_ANALYSIS_PREFLIGHT_20261108.md).
 
-## Correzione corrente
+## Correzione eseguita — comando storico, non ripetere
 
-La [lettura delle 19:40 CET](../evidence/semantic-discovery-key-binding-operator-20261108.json) completa la diagnosi: `/run/secrets/semantic-discovery-owner.key` è il path dell'errore ed è privo di mount. `/run/secrets/semantic-read-owner.key` è un bind read-only esistente, file regolare UID/GID 10001 e modo 0400. Le tre route discovery e search selezionano `OUF_SEMANTIC_READ_OWNER_KEY`, distinto dal riferimento della delegazione MCP; issuer/audience/workload dichiarati coincidono. Il confronto dei byte resta una verifica da effettuare sul target prima della correzione.
+La [lettura delle 19:40 CET](../evidence/semantic-discovery-key-binding-operator-20261108.json) completa la diagnosi: `/run/secrets/semantic-discovery-owner.key` è il path dell'errore ed è privo di mount. `/run/secrets/semantic-read-owner.key` è un bind read-only esistente, file regolare UID/GID 10001 e modo 0400. Le tre route discovery e search selezionano `OUF_SEMANTIC_READ_OWNER_KEY`, distinto dal riferimento della delegazione MCP; issuer/audience/workload dichiarati coincidono. Il successivo confronto sul target è riuscito: i byte coincidono col firmatario Gateway.
 
 Il controller cambia un solo valore ENV, conservandone il nome effettivamente dichiarato: `ouf.semantic.discovery-delegation.key-file` da `/run/secrets/semantic-discovery-owner.key` a `/run/secrets/semantic-read-owner.key`. Non disabilita la verifica delle ricevute. Le funzioni Gateway mantengono i domini di firma distinti per discovery e lettura. Nessuna chiave nuova, copia, rotazione o modifica dei permessi/file.
 
@@ -32,7 +32,7 @@ La fixture precedente non configurava la chiave e non aveva coperto il guasto. L
 )
 ```
 
-Esito atteso: `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`. Restituire il JSON pubblico. Nuovo journal `/var/lib/ouf-storage-migration/semantic-discovery-key-repair-20261108`; a successo il marker `semantic-discovery-current.json` indicherà il nuovo CID. Nessun replay o rollback automatico: in caso HELD conservare tutto e riportare l'esito. I vecchi comandi di installazione, migrazione e diagnosi sono completati/storici e non vanno ripetuti.
+Esito acquisito: `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`. Journal `/var/lib/ouf-storage-migration/semantic-discovery-key-repair-20261108`; sostituto `ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a`. Non ripetere il comando, il migratore o le diagnosi storiche. La ricevuta attesta readiness e storia invariata; non attesta discovery o E2E.
 
 ## Stato precedente all'intervento
 

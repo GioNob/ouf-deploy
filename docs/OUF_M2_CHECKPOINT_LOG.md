@@ -372,3 +372,10 @@ Correzione bece4c5b3dbaf20dcec05b19b4352284a23cc92e: confronto fresco file/firma
 CI42511861759, job128826450209 classic e128826450480 containerd PASS: ciascuno 5 test mirati, 6 negativi MAC e 2 native, zero skip, log letti. Artefatto originale, parametro chiave non vuoto: errore mancante riprodotto, correzione/readiness riuscite, storia V12 e ricevuta sintetica preservate. Due profili legacy inizialmente presenti, processo terminato prima del detach, MAC endpoint preservata. La lacuna precedente è coperta per questo binding; IAM/policy/provider target non qualificati dalla fixture.
 
 Consegna 7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4, SHA shell c3c741a73f3f98db400665875eaae786fa070d937065b78c763f20c1c34beae7. Sintassi shell e pin delle dipendenze verificati. STATE, MiniPET2.19 e registro aggiornati. Esecuzione VPS della correzione ancora attesa; nessuna readiness/E2E target affermata.
+
+
+## 8 novembre 2026, 19:59 CET — Semantic V12 pronto; pacchetto MCP verificato
+
+Ricevuta operatore `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`: chiave esistente uguale al firmatario Gateway, cambio del solo parametro discovery, sostituto ef35ea78 con stessa immagine/mount/indirizzi/alias. StoriaV12 invariata, nessuna migrazione esplicita o scrittura chiave/route; V10 e V12 fallito trattenuti spenti. Provider e worker rimangono disabilitati. [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json). Correzione conclusa, non ripetere.
+
+MCP PR83 ancora non installato: verificato l'archivio originale13593930449/run42420569963, cinque payload, dieci blob OCI e manifest nel binario. Il merge CI e la testa candidata hanno lo stesso albero Git. [Pacchetto](../evidence/mcp-analysis-candidate-package-20261108.json). Preparato lettore mirato fd55b273 per binding avvio/metadata reprocessing/permessi ordinari14: CI42513291665, sei nuovi test PASS inclusa query PostgreSQL; nove helper PASS e un helper native storico saltato in questo job. Nessun effetto VPS dell'assistente; [comando corrente](OUF_MCP_ANALYSIS_PREFLIGHT_20261108.md). F1 resta PASS; F2–F6, discovery reale e mapping restano aperti.
