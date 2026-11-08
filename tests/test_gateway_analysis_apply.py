@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -174,16 +175,28 @@ class NativeTests(unittest.TestCase):
                          '-v',str(asset/'jsonschema.lua')+':/usr/local/apisix/deps/share/lua/5.1/jsonschema.lua:ro',
                          'apache/apisix@sha256:84e6b5e787e9f889ebff88161cb9a16599bafcffa236c6b54c7f779a0655940d')
             self.addCleanup(lambda: docker('rm','-f',cid))
-            c, h = p.helpers(); doc = h.inspect(cid)
-            counters = {'adminCredentialConfigurationsRead':0,'externalAdminKeyFilesRead':0,'adminGetAttempts':0}
-            admin = p.Admin(c, h, doc, counters)
+            c, h = p.helpers(); initial = h.inspect(cid)
             deadline = time.monotonic()+40
             while True:
+                doc = h.inspect(cid)
                 try:
-                    if admin.request('GET','/apisix/admin/routes')['httpStatus'] == 200: break
-                except RuntimeError:
+                    probe = subprocess.run(['/usr/bin/nsenter','--target',str(doc['State']['Pid']),'--net',sys.executable,
+                                            '-I','-B','-S','-c',p.ADMIN_CHILD], capture_output=True,timeout=12,
+                                           input=json.dumps({'method':'GET','path':'/apisix/admin/routes',
+                                                             'key':'synthetic-ci-admin-key-1234567890'}).encode())
+                    if probe.returncode == 0 and json.loads(probe.stdout)['httpStatus'] == 200: break
+                except (RuntimeError, ValueError):
                     pass
                 self.assertLess(time.monotonic(),deadline,'APISIX did not start'); time.sleep(1)
+            # The fixture is freshly created; take its baseline after startup.
+            # Production compares the unchanged running generation from receipt.
+            doc = h.inspect(cid)
+            self.assertTrue(doc['State']['Running']); self.assertEqual(doc['RestartCount'],0)
+            self.assertEqual(doc['Id'],initial['Id']);self.assertEqual(doc['Image'],initial['Image'])
+            first, ready = h.frame(initial), h.frame(doc)
+            print('SYNTHETIC_STARTUP_FRAME_FIELDS '+json.dumps([k for k in first if first[k]!=ready[k]]))
+            counters = {'adminCredentialConfigurationsRead':0,'externalAdminKeyFilesRead':0,'adminGetAttempts':0}
+            admin = p.Admin(c, h, doc, counters)
             plan, expected = setup_plan()
             for rid, row in expected.items():
                 response = admin.put(rid,row)
