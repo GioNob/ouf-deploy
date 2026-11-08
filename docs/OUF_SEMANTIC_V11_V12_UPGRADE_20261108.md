@@ -1,5 +1,7 @@
 # Semantic: completare le migrazioni V11 e V12
 
+**SOSPESO — tentativo eseguito e fermato alle 18:16 CET. Non ripetere il comando sotto.** [Ricevuta](../evidence/semantic-v11-v12-held-operator-20261108.json): package installato diverso dal candidato, zero sessioni DB/Java/migrazioni. La compatibilità del codice installato non è dimostrata dal source-lock. [Passo corrente: lettura del JAR](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md).
+
 La [ricevuta delle 17:56 CET dell'8 novembre](../evidence/gateway-analysis-applied-operator-20261108.json) conferma le otto route Gateway applicate/rilette, 87 totali e 79 conservate. Il comando Gateway è concluso: non ripeterlo.
 
 Semantic: database OID 21558, Flyway V1–V10 riuscite, `recovery_state` assente e zero richieste discovery nella lettura. I dieci checksum coincidono con i file del sorgente trattenuto `c2dae77b42f1811b704465f6ab813c91d808ade4`. Mancano V11 e V12. Questo non chiude la verifica della versione dei file dentro il JAR installato: la esegue il nuovo comando prima di qualsiasi migrazione.
@@ -28,7 +30,7 @@ Il JAR CI è ricostruito dal sorgente trattenuto; non è un'esportazione dei byt
 
 La prima validazione preliminare respingeva le versioni pending; è stata corretta senza repair né allentare i controlli sulle versioni ammesse. La prima fixture non amministrativa tentava di modificare il superuser bootstrap PostgreSQL, operazione rifiutata: ora usa un ruolo distinto. Esiti precedenti e limiti conservati nell'[evidenza](../evidence/semantic-v11-v12-upgrade-qualification-20261108.json). Tutti e cinque i workflow PR del sorgente sono success. Nessuna prova VPS/mapping/E2E derivata dalla CI.
 
-## Unico comando corrente
+## Comando storico sospeso — non ripetere
 
 I tre script precedenti vengono importati come librerie: non viene rieseguito il comando Gateway.
 

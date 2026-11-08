@@ -314,3 +314,14 @@ Preparato il [comando Semantic](OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md): immag
 Sorgente `33c54cf4b57a7577b9b9a8221e82d6c476976ffa`, consegna `03d2e7acf11ee3bc1f4b4a7ef164364896273831`. [CI42503772280](https://github.com/GioNob/ouf-deploy/actions/runs/42503772280), job128801887169:6 PASS/0 skip, log letti. UID10001 e ruolo DB non amministratore verificati; JRE/PropertiesLauncher/configtree/Flyway reali, storia e ricevuta sintetica preservate. Controlli negativi su checksum, descrizione Flyway, backlog, OID, package/configurazione e ripetizione. Prima prova fermata alla validazione pending; corretta soltanto la fase preliminare dopo verifica esatta delle due versioni. Fixture non amministrativa corretta usando un ruolo distinto dal bootstrap superuser. [Esiti e limiti](../evidence/semantic-v11-v12-upgrade-qualification-20261108.json).
 
 STATE, MiniPET2.13 e registro allineati. Migrazione VPS ancora da eseguire; MCP14, rollout1024/budget, provider/grant/attivazione e mapping restano aperti. F1 conservato, F2–F6 non dichiarati conclusi.
+
+
+## 8 novembre 2026 — package Semantic diverso, migrazione non partita
+
+[Ricevuta delle 18:16:23 CET](../evidence/semantic-v11-v12-held-operator-20261108.json): HELD/INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE. Zero sessioni DB, esecuzioni Java, migrazioni, helper nel container o stop. Tentativo conservato in /var/lib/ouf-storage-migration/semantic-v11-v12-20261108; nessun replay.
+
+Errore della ricostruzione dell'assistente: il source-lock del candidato, che dichiara allRuntimeArtifactMembershipProven=false, non prova il sorgente del JAR corrente. La corrispondenza imageId con la cattura trattenuta non colma questa lacuna. Ritirata l'affermazione “Registry già versione più recente”. I sei test nativi del migratore restano prove sul JAR ricostruito, non del package VPS. Non è ancora noto se la differenza riguardi file mancanti, aggiuntivi o byte cambiati.
+
+Preparato il [lettore mirato](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md), sorgente `f636440dac4df2469e97d919c44fd64693b1fcea`: due GET Docker, JAR del processo corrente, hash e metadati selezionati, nessun exec/Java/SQL o effetto applicativo. Confronto preciso delle migrazioni e presenza/hash delle classi discovery; label/presenza non dichiarate prove di comportamento o provenienza. Tentativo precedente invariato, nuovo resoconto separato.
+
+[CI42504819787](https://github.com/GioNob/ouf-deploy/actions/runs/42504819787), job128805066674:6 test riusciti/zero skip, log letti; sei locali. Fixture archivi e redazione, non JAR target. [Qualifica](../evidence/semantic-installed-package-read-qualification-20261108.json). STATE, MiniPET2.14, registro e runbook corretti. Risultato target della lettura atteso; prima riconciliare applicazione/schema, poi scegliere l'intervento. Gateway e F1 conservati.

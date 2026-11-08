@@ -1,6 +1,6 @@
 {
   "schema": "ouf.semantic-v11-v12-upgrade-qualification.v1",
-  "status": "SOURCE_QUALIFIED_TARGET_MIGRATION_NOT_EXECUTED",
+  "status": "SOURCE_NATIVE_QUALIFIED_TARGET_PACKAGE_MISMATCH",
   "sourceCommit": "33c54cf4b57a7577b9b9a8221e82d6c476976ffa",
   "semanticSourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
   "targetReceipt": "evidence/gateway-analysis-applied-operator-20261108.json",
@@ -102,5 +102,16 @@
     "No provider transport, grant, MCP deployment or functional E2E proved",
     "No full application test suite rerun in this workflow; six focused native tests"
   ],
-  "deliveryCommit": "03d2e7acf11ee3bc1f4b4a7ef164364896273831"
+  "deliveryCommit": "03d2e7acf11ee3bc1f4b4a7ef164364896273831",
+  "targetAttemptExecuted": true,
+  "applicableToObservedTargetPackage": false,
+  "targetPreflight": {
+    "receipt": "evidence/semantic-v11-v12-held-operator-20261108.json",
+    "observedAt": "2026-11-08T17:16:23.256284+00:00",
+    "status": "HELD",
+    "reason": "INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE",
+    "javaExecutionDispatched": false,
+    "databaseRequests": 0,
+    "migrationDispatched": false
+  }
 }

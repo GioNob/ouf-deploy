@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.13 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.14 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** Gateway aggiornato e verificato alle 17:56 CET: cinque modifiche, tre aggiunte, 87 route totali, 79 conservate. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Semantic DB è letto: V1–V10 con checksum del sorgente, `recovery_state` assente e zero richieste discovery. [Prossimo comando](OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md): completare V11/V12 con il Flyway dell'immagine corrente, verificando prima JAR/configurazione/binding e mantenendo provider/worker disabilitati. Sei prove native riuscite/zero skip, UID10001 e ruolo DB non amministratore verificati. Resta da osservare l'esecuzione VPS; poi MCP14/servizi compatibili1024, binding provider/grant/attivazione discovery e mapping del profilo esistente. Conservare Registry più recente, owner Gateway e storage.
+**Passo corrente:** Gateway applicato e verificato: 87 route, otto modifiche e 79 conservate. Semantic DB è letto a V10, checksum del prefisso candidato coincidenti, richieste discovery vuote. La migrazione delle 18:16 CET si è fermata prima di SQL/Java perché i file del JAR differiscono dal candidato. L'attribuzione del sorgente candidato al runtime era un'inferenza non provata dell'assistente, ora ritirata. [Prossimo comando](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md): leggere migrazioni/librerie/classi del JAR corrente senza effetti runtime. Poi riconciliare la compatibilità applicazione/schema prima di un nuovo intervento. Conservare il tentativo, Teatri, SeaweedFS e Gateway; MCP14/rollout1024/budget, provider/grant/attivazione e mapping restano aperti.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

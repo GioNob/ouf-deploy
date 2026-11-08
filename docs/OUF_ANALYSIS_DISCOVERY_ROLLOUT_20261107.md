@@ -1,5 +1,7 @@
 # Analisi dinamica e discovery: preparazione del rilascio
 
+**Correzione dell'8 novembre, 18:16 CET:** il JAR corrente non coincide con le migrazioni del candidato. Il source-lock qui citato descrive il candidato e dichiara `allRuntimeArtifactMembershipProven:false`; il solo imageId trattenuto non ne prova la presenza nel runtime. È ritirata l'attribuzione del candidato più recente all'immagine corrente. [Lettura del package installato](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md) prima di decidere migrazione o sostituzione; conservare lo stato corrente senza replay.
+
 7 novembre 2026, Europe/Rome. Il codice del candidato MCP PR83 è qualificato; non è installato e i sei nuovi strumenti sono INACTIVE. Nessuna nuova discovery o associazione OntoPiA è stata eseguita. F1 rimane acquisito, F2–F6 aperti.
 
 ## Correzione della sequenza di rilascio
