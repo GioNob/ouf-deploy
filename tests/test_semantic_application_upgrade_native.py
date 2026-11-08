@@ -22,7 +22,7 @@ class Native(unittest.TestCase):
   cls.tag='ouf-sem-roll-'+uuid.uuid4().hex[:10];cls.pg=cls.tag+'-pg';cls.ids=[];cls.e=r.Engine()
   cmd(*D,'load','-i',str(ROOT/'registry-candidate/image.docker.tar'))
   cls.image=json.loads(cmd(*D,'image','inspect','ouf-cohort-semantic:'+r.SOURCE))[0]['Id']
-  assert cls.image in (r.CONFIG_ID,r.NATIVE_ID)
+  assert cls.image in (r.CONFIG_ID,r.NATIVE_ID), cls.image
   cmd(*D,'network','create',cls.tag)
   cmd(*D,'run','-d','--name',cls.pg,'--network',cls.tag,'-p','127.0.0.1::5432','-e','POSTGRES_PASSWORD=fixture-only','postgres:17')
   for _ in range(60):

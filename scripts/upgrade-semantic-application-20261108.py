@@ -13,7 +13,7 @@ ZIP_SHA='1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba'
 ARCHIVE_SHA='7f6482b79589fd1063eaf96508ea948d6411a7b4f0dbe76d663746a08953a223'
 JAR_SHA='e69f961a06fa37d019f4015d98dd5419ee9da1fa1387b5b0edaac4214a0cb016'
 CONFIG_ID='sha256:a6f00cda30f1c570082c94cb49d5564f40d512758441f6b6eac75e21f423d14f'
-NATIVE_ID='sha256:d06aeb529724ca198b1cb87a1f868143cfbe7ad6eb05dc4ccdf2b6400cc39d64'
+NATIVE_ID='sha256:89e84f7a6208afa74039de7057c46ad5c9981fb283b22d9b93fa014e92d1b048' # OCI manifest in the exact archive
 OLD_JAR='e0c26f0e0dea02b52f23e874b9494362dd2d58cc787e918a94948ff08340e786'
 WORK=Path('/var/lib/ouf-storage-migration/semantic-application-upgrade-20261108')
 JAVA=['java','-XX:MaxRAMPercentage=75','-jar','/app/application.jar']
@@ -166,7 +166,7 @@ def run(report,archive):
  report['candidatePackage']=u.package(current,json.loads((base/'semantic-migration-source-20261108.json').read_bytes()))
  bundle=json.loads((base/'semantic-migration-helper-20261108.json').read_bytes());host,path=u.stage_class(current,bundle)
  try:
-  gate_running(current);record('migration-intent.json',{'versions':[11,12]});report['javaMigrationDispatched']=True
+  gate_running(current);record('migration-intent.json',{'versions':[11,12]});report['javaMigrationDispatched']=True;report['migrationDispatched']=None
   result=u.invoke(c,current,path,env['OUF_SEM_DB_URL'],user,'21558')
   c.save_private(WORK,'migration.stdout.private',result.stdout);c.save_private(WORK,'migration.stderr.private',result.stderr)
   rows=[json.loads(l.split(b' ',1)[1]) for l in result.stdout.splitlines() if l.startswith(b'OUF_SEMANTIC_UPGRADE ')]
