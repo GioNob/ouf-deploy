@@ -86,7 +86,7 @@ class Native(unittest.TestCase):
    'MCP_OIDC_CLIENT_ID=fixture','MCP_OIDC_CLIENT_SECRET_FILE=/run/fixture-secrets/client','MCP_OIDC_TOKEN_ENDPOINT='+self.origin+'/token',
    'MCP_AUTHORIZATION_BUNDLE_ENDPOINT='+self.origin+'/policy','MCP_GATEWAY_ENDPOINT='+self.origin+'/execute',
    'MCP_FINGERPRINT_KEY_FILE=/run/fixture-secrets/fingerprint','SSL_CERT_FILE=/run/fixture-ca/ca.pem',
-   'MCP_MANAGED_UPLOAD_ENABLED=picker','MCP_MANAGED_FILE_PICKER_URL='+self.origin+'/picker',
+   'MCP_MANAGED_UPLOAD_ENABLED=picker','MCP_MANAGED_FILE_PICKER_URL='+self.origin+'/trusted-human/managed-files/',
    'MCP_REPROCESSING_KEY_PROFILE_FILE=/run/fixture-public/profile.json','MCP_REPROCESSING_PERMIT_FILE=/run/fixture-public/permit.json',
    'MCP_REPROCESSING_EXISTING_POLICY_FILE=/run/fixture-public/policy.json','MCP_REPROCESSING_KEY_PROFILE_SHA256='+(ROOT/'mcp-fixture/profile.sha256').read_text()]
   req={'Image':self.image,'User':'10005:10005','WorkingDir':'/app','Env':env,'Entrypoint':u.ENTRY,'Cmd':u.APP,
