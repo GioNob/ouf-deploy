@@ -1,0 +1,106 @@
+{
+  "schema": "ouf.semantic-v11-v12-upgrade-qualification.v1",
+  "status": "SOURCE_QUALIFIED_TARGET_MIGRATION_NOT_EXECUTED",
+  "sourceCommit": "33c54cf4b57a7577b9b9a8221e82d6c476976ffa",
+  "semanticSourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+  "targetReceipt": "evidence/gateway-analysis-applied-operator-20261108.json",
+  "targetObservedAt": "2026-11-08T16:56:09.269124+00:00",
+  "observedDatabaseOid": "21558",
+  "observedSuccessfulVersionPrefix": [
+    1,
+    10
+  ],
+  "observedDiscoveryRequests": 0,
+  "observedRecoveryColumnPresent": false,
+  "sourcePrefixChecksumsMatchOperatorReceipt": true,
+  "expectedPendingVersions": [
+    11,
+    12
+  ],
+  "migrationSourceManifest": "releases/semantic-migration-source-20261108.json",
+  "controllerSha256": "af319a963f8556f5feb7459d369afe1e362f482562cb674d8a6028c5f1a128cc",
+  "javaSourceSha256": "f973b61831e55831525939167d3e2114baf9a97635554d59d7a07c57baadfd4f",
+  "javaClassSha256": "440c921f97f1023405c7185a37793f76decaa2097a05a0b24bfa28e98d374e73",
+  "targetMigrationExecuted": false,
+  "targetImageReplaced": false,
+  "ci": {
+    "run": 42503772280,
+    "job": 128801887169,
+    "conclusion": "success",
+    "tests": 6,
+    "skips": 0,
+    "logsRead": true,
+    "javaClassMatchesRetainedBundle": true,
+    "mergeCommitLine": "HEAD is now at 08a7302 Merge 33c54cf4b57a7577b9b9a8221e82d6c476976ffa into d34a8a92897fbfe652227635fd9cb8c389bfcb43",
+    "allFiveWorkflowsSuccess": true
+  },
+  "native": {
+    "postgres": "17",
+    "java": "21",
+    "springBoot": "4.0.8",
+    "packageBuiltFromRetainedSource": true,
+    "installedLibraryTransport": "DOCKER_EXEC_JRE_PROPERTIES_LAUNCHER",
+    "configTreePasswordRead": true,
+    "applicationSpringContextStarted": false,
+    "realMigrationVersions": [
+      11,
+      12
+    ],
+    "fullPriorFlywayRowsPreserved": true,
+    "syntheticProposalReceiptPreserved": true,
+    "secondInvocationRejected": true,
+    "checksumDriftRejected": true,
+    "descriptionDriftRejectedByFlyway": true,
+    "unexpectedBacklogRejected": true,
+    "wrongDatabaseOidRejected": true,
+    "sourceJarDriftRejected": true,
+    "processUid": 10001,
+    "processUidAsserted": true,
+    "databaseRoleNonAdministrative": true,
+    "roleFlagsAsserted": true
+  },
+  "effects": {
+    "javaHelperStagedTemporarily": true,
+    "javaMaxHeapMiB": 256,
+    "flywayGroupTransaction": true,
+    "automaticRetry": false,
+    "repairOrClean": false,
+    "manualFlywayHistoryMutation": false,
+    "providerStarted": false,
+    "workerStarted": false,
+    "containerReplacement": false
+  },
+  "priorCi": [
+    {
+      "run": 42503160410,
+      "job": 128800060984,
+      "conclusion": "failure",
+      "scope": "Four tests passed; pre-migration validation rejected pending baseline before writes",
+      "reasonObserved": "FlywayValidateException",
+      "correction": "Verify the exact two pending versions/checksums first, allow pending only during pre-validation, retain normal final validation."
+    },
+    {
+      "run": 42503345478,
+      "job": 128800617128,
+      "conclusion": "success",
+      "tests": 6,
+      "skips": 0,
+      "scope": "Root JRE and administrative fixture DB owner; later tightened to target UID and non-administrative owner."
+    },
+    {
+      "run": 42503639293,
+      "job": 128801489521,
+      "conclusion": "failure",
+      "tests": 0,
+      "scope": "Fixture setup attempted to demote PostgreSQL bootstrap superuser; PostgreSQL rejected it. Fixed by creating a separate non-administrative database owner."
+    }
+  ],
+  "limitations": [
+    "CI uses a newly built JAR from the retained source, not the VPS OCI bytes; target verifies exact installed migrations/YAML before running its installed libraries",
+    "Configuration reconstructed using packaged Spring/configtree is not a direct inspection of the existing JVM's memory",
+    "No target migration receipt yet",
+    "No provider transport, grant, MCP deployment or functional E2E proved",
+    "No full application test suite rerun in this workflow; six focused native tests"
+  ],
+  "deliveryCommit": "03d2e7acf11ee3bc1f4b4a7ef164364896273831"
+}

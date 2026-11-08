@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified eight-route Gateway apply plus one read-only Semantic metadata session. Prepared target proposal 2876c0c3... passed at 16:32 UTC. Read Flyway history, actual recovery_state presence and aggregate discovery states before choosing any migration. Source 57647000 has 10 native/unit CI tests passed, zero skips. Preserve Gateway owner, containers, Teatri and SeaweedFS; no provider/worker activation or retry on an uncertain write. Target apply remains unobserved.",
+  "nextAction": "Run the qualified installed-Flyway Semantic V11/V12 migration against the verified V10 database. Gateway eight-route update is complete: do not repeat it. Revalidate installed migration bytes, resolved datasource/OID and disabled provider/worker, preserve prior history, no repair/clean/manual history changes. After target confirmation continue MCP14/coherent 1024 service rollout and provider/grant activation. Preserve Teatri and SeaweedFS.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -768,7 +768,9 @@
     "evidence/gateway-analysis-preparation-held-operator-20261108.json",
     "evidence/gateway-analysis-baseline-fix-qualification-20261108.json",
     "evidence/gateway-analysis-prepared-operator-20261108.json",
-    "evidence/gateway-analysis-apply-qualification-20261108.json"
+    "evidence/gateway-analysis-apply-qualification-20261108.json",
+    "evidence/gateway-analysis-applied-operator-20261108.json",
+    "evidence/semantic-v11-v12-upgrade-qualification-20261108.json"
   ],
   "sourceReferences": [
     {
@@ -924,8 +926,8 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "GATEWAY_DELTA_PREPARED_APPLY_NATIVE_QUALIFIED_TARGET_AWAITED",
-      "document": "docs/OUF_GATEWAY_ANALYSIS_APPLY_20261108.md",
+      "status": "GATEWAY_APPLIED_SEMANTIC_V10_READ_V11_V12_UPGRADE_PREPARED",
+      "document": "docs/OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
       "targetReadExecuted": true,
@@ -949,7 +951,7 @@
         "conclusion": "success",
         "logsRead": true
       },
-      "runtimeChanged": false,
+      "runtimeChanged": true,
       "policyGrantsRead": false,
       "dependencyReaderTargetReceipt": "evidence/discovery-contract-operator-summary-20261108.json",
       "dependencyReaderObservedAt": "2026-11-08T08:31:53.125232+00:00",
@@ -960,13 +962,13 @@
       "remainingMcpMigrations": [
         14
       ],
-      "semanticDatabaseRead": "READ_INCOMPLETE",
-      "semanticDatabaseCauseKnown": false,
-      "discoveryBacklogKnown": false,
+      "semanticDatabaseRead": "SEMANTIC_METADATA_READ",
+      "semanticDatabaseCauseKnown": true,
+      "discoveryBacklogKnown": true,
       "providerCredentialMount": "NO_DECLARED_MOUNT",
       "providerSouthboundConfigurationProven": false,
-      "gatewayRouteCount": 84,
-      "gatewayDiscoveryExecuteRoutesFound": 0,
+      "gatewayRouteCount": 87,
+      "gatewayDiscoveryExecuteRoutesFound": 3,
       "gatewayProposal": {
         "status": "GATEWAY_DELTA_PREPARED_NOT_APPLIED",
         "sourceCommit": "8a12592fdbf7b321a8b3c564081a1ab90b5b8c80",
@@ -1013,22 +1015,60 @@
         "runtimeChanged": false
       },
       "gatewayApply": {
-        "status": "SOURCE_NATIVE_QUALIFIED_TARGET_APPLY_NOT_EXECUTED",
+        "status": "GATEWAY_EIGHT_ROUTES_APPLIED_VERIFIED",
         "sourceCommit": "57647000a4d66ce4bc659ed54631e44ea8959978",
         "script": "scripts/apply-gateway-analysis-delta-20261108.py",
         "sourceSha256": "7064c8443bb323c12a56846267e4faa9cb25bf3e6dfb35455e753fbe71ce8b01",
         "applyImplemented": true,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "qualification": "evidence/gateway-analysis-apply-qualification-20261108.json",
         "ciRun": 42501682255,
         "ciJob": 128795585765,
         "tests": 10,
         "skips": 0,
-        "logsRead": true
+        "logsRead": true,
+        "observedAt": "2026-11-08T16:56:09.269124+00:00",
+        "receipt": "evidence/gateway-analysis-applied-operator-20261108.json",
+        "routeWritesVerified": 8,
+        "adminGetAttempts": 17,
+        "finalRouteCount": 87,
+        "unchangedRoutesVerified": 79,
+        "gatewayOwnerReplaced": false
       },
       "semanticMissingColumnName": "recovery_state",
-      "semanticV12RecordedSuccessful": null,
-      "semanticRecoveryColumnCurrentlyPresent": null
+      "semanticV12RecordedSuccessful": false,
+      "semanticRecoveryColumnCurrentlyPresent": false,
+      "discoveryRequestCountAtRead": 0,
+      "semanticMigrationPrefix": [
+        1,
+        10
+      ],
+      "semanticMigrationSourceChecksumsMatch": true,
+      "remainingSemanticMigrations": [
+        11,
+        12
+      ],
+      "semanticMigration": {
+        "status": "SOURCE_NATIVE_QUALIFIED_TARGET_AWAITED",
+        "sourceCommit": "33c54cf4b57a7577b9b9a8221e82d6c476976ffa",
+        "deliveryCommit": "03d2e7acf11ee3bc1f4b4a7ef164364896273831",
+        "script": "scripts/upgrade-semantic-v11-v12-20261108.py",
+        "qualification": "evidence/semantic-v11-v12-upgrade-qualification-20261108.json",
+        "ciRun": 42503772280,
+        "ciJob": 128801887169,
+        "tests": 6,
+        "skips": 0,
+        "logsRead": true,
+        "targetExecuted": false,
+        "versions": [
+          11,
+          12
+        ],
+        "manualHistoryWrites": false,
+        "repairOrClean": false,
+        "providerEnableDispatched": false,
+        "containerReplacement": false
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.12 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.13 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** conservare Registry più recente e owner Gateway operativo. Inventario e dipendenze sono acquisiti: MCP1–13 esatte, resta14; credenziale provider senza mount dichiarato, worker/provider dichiarati false. Preparazione Gateway riuscita alle17:32 CET, proposta `2876c0c3…`, cinque aggiornamenti/tre aggiunte e79 route conservate. [Prossimo comando](OUF_GATEWAY_ANALYSIS_APPLY_20261108.md): applicare le otto route con verifica fresca, ACK/rilettura e nessun retry automatico, più una sessione Semantic READ ONLY. Sorgente `57647000`, dieci test CI riusciti senza skip su APISIX/PostgreSQL reali. Lo stderr identifica `recovery_state`, introdotta dal sorgente V12; storia Flyway e backlog target ancora ignoti. Applicazione target attesa; budget dinamico, limiti1024 e discovery restano candidati applicativi da installare/attivare.
+**Passo corrente:** Gateway aggiornato e verificato alle 17:56 CET: cinque modifiche, tre aggiunte, 87 route totali, 79 conservate. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Semantic DB è letto: V1–V10 con checksum del sorgente, `recovery_state` assente e zero richieste discovery. [Prossimo comando](OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md): completare V11/V12 con il Flyway dell'immagine corrente, verificando prima JAR/configurazione/binding e mantenendo provider/worker disabilitati. Sei prove native riuscite/zero skip, UID10001 e ruolo DB non amministratore verificati. Resta da osservare l'esecuzione VPS; poi MCP14/servizi compatibili1024, binding provider/grant/attivazione discovery e mapping del profilo esistente. Conservare Registry più recente, owner Gateway e storage.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

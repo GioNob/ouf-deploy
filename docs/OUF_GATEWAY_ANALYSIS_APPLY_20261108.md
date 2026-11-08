@@ -1,6 +1,6 @@
 # Applicazione del delta Gateway e lettura Semantic
 
-8 novembre 2026. La preparazione delle 17:32 CET è [riuscita](../evidence/gateway-analysis-prepared-operator-20261108.json): proposta `2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19`, cinque aggiornamenti, tre aggiunte e 79 route conservate. Non ripetere il preparatore. L'applicazione sul VPS non è ancora osservata.
+8 novembre 2026. La preparazione delle 17:32 CET è [riuscita](../evidence/gateway-analysis-prepared-operator-20261108.json): proposta `2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19`, cinque aggiornamenti, tre aggiunte e 79 route conservate. Non ripetere il preparatore. **Applicazione eseguita alle 17:56 CET:** otto route verificate, 87 totali/79 conservate, Semantic V10 letto e nessuna richiesta discovery. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Non ripetere il comando sotto; [prossimo passo Semantic V11/V12](OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md).
 
 ## Effetti del prossimo comando
 
@@ -28,7 +28,7 @@ Coperti inoltre proposta errata, route divergenti, ACK perduto senza ripetizione
 
 Le prime prove native hanno trovato una fixture YAML da correggere e il falso disallineamento dei mount: conservate nell'[evidenza di qualifica](../evidence/gateway-analysis-apply-qualification-20261108.json). Otto test locali riusciti, i due nativi eseguiti in CI. Tutti e quattro i workflow PR del sorgente sono success.
 
-## Unico comando operatore corrente
+## Comando storico già eseguito — non ripetere
 
 Questo comando **scrive le otto route APISIX** e legge i metadati Semantic. I tre file sono scaricati dal commit qualificato e verificati per SHA256; i due lettori sono importati come librerie, non rieseguiti come comandi autonomi. Limite applicazione: 380 secondi; al massimo otto PUT e 17 GET Admin. Nessun retry automatico.
 
