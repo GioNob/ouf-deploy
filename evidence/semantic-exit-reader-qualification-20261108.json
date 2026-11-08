@@ -1,0 +1,30 @@
+{
+  "schema": "ouf.semantic-exit-reader-qualification.v1",
+  "status": "LOCAL_REDACTION_AND_STATE_EXTRACTION_TESTS_PASS",
+  "script": "scripts/read-semantic-application-exit-20261108.py",
+  "scriptSha256": "68a3e85307fdefed431e3ea286ac55e32f388435522393fecc6784765c54fc00",
+  "tests": {
+    "command": "python3 -m unittest discover -s semantic-rollout -p test_read_exit.py -v",
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "scope": [
+      "Known exception chain, source frame and source error code preserved while secret values omitted",
+      "Unknown exception/bean text omitted; known unresolved property name retained without its value",
+      "Docker inspect exposes only selected typed state and booleans, omitting environment and engine error text"
+    ]
+  },
+  "pythonSyntaxPassed": true,
+  "allowlistSource": {
+    "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+    "artifactId": 13066396654,
+    "jarSha256": "e69f961a06fa37d019f4015d98dd5419ee9da1fa1387b5b0edaac4214a0cb016"
+  },
+  "targetExecutionProven": false,
+  "runtimeFixIncluded": false,
+  "limitations": [
+    "No target exit log has been read by the assistant; APPLICATION_EXITED cause remains unknown.",
+    "Parser emits allowlisted symbols and static signals, not arbitrary error messages; unrecognized details stay in root-private raw logs.",
+    "Docker reads and private evidence files only; no start, exec, configuration update, database query or migration."
+  ]
+}
