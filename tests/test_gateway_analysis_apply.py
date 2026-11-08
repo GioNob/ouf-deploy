@@ -196,9 +196,21 @@ class NativeTests(unittest.TestCase):
             first, ready = h.frame(initial), h.frame(doc)
             print('SYNTHETIC_STARTUP_FRAME_FIELDS '+json.dumps([k for k in first if first[k]!=ready[k]]))
             counters = {'adminCredentialConfigurationsRead':0,'externalAdminKeyFilesRead':0,'adminGetAttempts':0}
-            admin = p.Admin(c, h, doc, counters)
+            class DiagnosticAdmin(p.Admin):
+                def guard(self):
+                    actual = self.h.frame(self.h.inspect(self.apisix['Id']))
+                    expected_frame = self.h.frame(self.apisix)
+                    if actual != expected_frame:
+                        print('SYNTHETIC_GUARD_DIFFERENCE '+json.dumps({
+                            'fields': [k for k in actual if actual[k]!=expected_frame[k]],
+                            'configKeys': [k for k in set(actual['Config'])|set(expected_frame['Config']) if actual['Config'].get(k)!=expected_frame['Config'].get(k)],
+                            'expectedState':expected_frame['State'],'actualState':actual['State'],
+                            'expectedNetworks':expected_frame['NetworkSettings'],'actualNetworks':actual['NetworkSettings']},sort_keys=True))
+                    p.need(actual == expected_frame, 'APISIX_RUNTIME_CHANGED')
+            admin = DiagnosticAdmin(c, h, doc, counters)
             plan, expected = setup_plan()
-            for rid, row in expected.items():
+            for ordinal, (rid, row) in enumerate(expected.items()):
+                print('SYNTHETIC_ROUTE_SEED '+str(ordinal),flush=True)
                 response = admin.put(rid,row)
                 self.assertIn(response['httpStatus'],(200,201),json.dumps(response)[:1800])
             self.assertEqual(admin.routes(), expected)
