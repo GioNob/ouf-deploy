@@ -1,6 +1,6 @@
 # MCP: candidato analisi persistente e migrazione14
 
-8 novembre 2026. **Installazione qualificata, esecuzione VPS attesa.** Il preflight target è riuscito; Semantic V12 è già pronto. Questo intervento aggiorna soltanto MCP.
+8 novembre 2026. **Installazione completata sul VPS alle 20:26 CET.** [Ricevuta operatore](../evidence/mcp-analysis-ready-operator-20261108.json): `MCP_ANALYSIS_V14_READY`, schema 14 verificato, readiness 204, storia/ENV/mount/endpoint e file del permesso scaduto conservati. Vecchio MCP spento. Non ripetere questo installer o la migrazione. Il preflight target è riuscito; Semantic V12 è già pronto. Questo intervento aggiorna soltanto MCP.
 
 ## Base concreta e risultato richiesto
 
@@ -17,7 +17,7 @@ Il [pacchetto originale](../evidence/mcp-analysis-candidate-package-20261108.jso
 
 La sostituzione interrompe temporaneamente MCP. Non modifica Onboarding, UDP, SeaweedFS, Semantic o route Gateway. Il nuovo pacchetto mantiene i sei strumenti analisi/discovery INACTIVE: l'installazione non prova né attiva la discovery. Nessun budget o permesso storico viene rinnovato.
 
-## Comando corrente
+## Comando storico eseguito — non ripetere
 
 Scarica anche l'archivio originale pubblico verificato, senza richiedere `gh`.
 

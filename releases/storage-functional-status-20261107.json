@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified exact-archive MCP replacement and ordinary migration14; verify retained history and readiness, then provider path and inactive-tool activation.",
+  "nextAction": "Read current Onboarding package, Flyway history and SeaweedFS/TLS bindings; qualify the 1024-column replacement preserving both networks. MCP14 and Semantic12 are ready, tools remain inactive.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -863,7 +863,7 @@
     "profileAuthorizationProposalState": "PUBLISHED"
   },
   "wideObjects1024": {
-    "status": "WIDE_AND_DYNAMIC_ANALYSIS_SOURCE_CANDIDATES_QUALIFIED_NOT_DEPLOYED",
+    "status": "MCP_AND_GATEWAY_INSTALLED_OWNER_MODULES_PENDING",
     "requiredMaxColumns": 1024,
     "reason": "SUE instances may contain 300–400 fields; one logical object",
     "document": "docs/OUF_WIDE_OBJECTS_1024_20261107.md",
@@ -895,9 +895,9 @@
         "pr": 49
       }
     ],
-    "vpsChanged": false,
+    "vpsChanged": true,
     "dynamicAnalysisBudgetImplemented": true,
-    "dynamicAnalysisBudgetInstalled": false,
+    "dynamicAnalysisBudgetInstalled": true,
     "dynamicAnalysisCandidate": {
       "repository": "GioNob/ouf-mcp-server",
       "pr": 83,
@@ -907,13 +907,13 @@
     }
   },
   "profileAnalysis": {
-    "status": "SOURCE_CANDIDATE_QUALIFIED_NOT_DEPLOYED",
+    "status": "MCP_INSTALLED_ANALYSIS_TOOLS_INACTIVE",
     "sourceCommit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
     "pr": 83,
     "evidence": "evidence/profile-analysis-discovery-20261107.json",
     "document": "docs/OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md",
     "candidateImplemented": true,
-    "installed": false,
+    "installed": true,
     "liveDiscoveryTested": false,
     "semanticMappingsComplete": false,
     "backgroundScheduler": false,
@@ -932,7 +932,7 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "GATEWAY_APPLIED_SEMANTIC_V12_READY_MCP_UPGRADE_QUALIFIED",
+      "status": "GATEWAY_APPLIED_SEMANTIC_V12_AND_MCP_V14_READY",
       "document": "docs/OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
@@ -942,7 +942,7 @@
       "providerEnabledEnv": false,
       "workerEnabledEnv": false,
       "effectiveProviderConfigurationProven": false,
-      "currentMcpIsRetainedOldImage": true,
+      "currentMcpIsRetainedOldImage": false,
       "registryImageIsRetainedNewerVersion": false,
       "storageReplacementMacDeltaPresent": false,
       "otherFiveConfigMacDelta": "ABSENT_TO_VALID_ENDPOINT_COHERENT_STRING",
@@ -963,11 +963,9 @@
       "dependencyReaderObservedAt": "2026-11-08T08:31:53.125232+00:00",
       "mcpMigrationPrefix": [
         1,
-        13
-      ],
-      "remainingMcpMigrations": [
         14
       ],
+      "remainingMcpMigrations": [],
       "semanticDatabaseRead": "SEMANTIC_METADATA_READ",
       "semanticDatabaseCauseKnown": true,
       "discoveryBacklogKnown": true,
@@ -1218,7 +1216,7 @@
         "signatureVerifiedByReader": false
       },
       "mcpApplicationUpgrade": {
-        "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+        "status": "MCP_ANALYSIS_V14_READY",
         "sourceCommit": "fcd06cd5b4fea69e7eaa59a4d5731b0bfc3131df",
         "deliveryCommit": "e330ea6805a07f6df4f7eec7eb3ca28b5389faf4",
         "script": "scripts/upgrade-mcp-analysis-20261108.py",
@@ -1226,11 +1224,32 @@
         "artifactId": 13593930449,
         "qualification": "evidence/mcp-analysis-upgrade-qualification-20261108.json",
         "ciRun": 42514478247,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "newMigrationVersion": 14,
         "privilegedMigration": false,
         "toolsActivated": false,
-        "automaticReplayAllowed": false
+        "automaticReplayAllowed": false,
+        "operatorReceipt": "evidence/mcp-analysis-ready-operator-20261108.json",
+        "observedAt": "2026-11-08T19:26:58.755239+00:00",
+        "replacementContainerId": "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943",
+        "candidateImageId": "sha256:d76fda00f9340dcea62ed1be58b1db3ebfb4d64d4be5449ffc07ab2c845254ff",
+        "readinessHttpStatus": 204,
+        "priorMigrationHistoryPreserved": true,
+        "existingEnvironmentPreserved": true,
+        "existingMountsPreserved": true,
+        "expiredReprocessingFilesUnchanged": true,
+        "oldRetainedStopped": true,
+        "analysisFunctionalTested": false
+      },
+      "currentMcpContainerId": "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943",
+      "onboardingWidePreflight": {
+        "status": "PREPARED_QUALIFICATION_PENDING",
+        "candidateSource": "cc6c7869b308c695460d8491a121084893a3c323",
+        "artifactId": 13592211485,
+        "script": "scripts/read-onboarding-wide-preflight-20261108.py",
+        "targetExecuted": false,
+        "readOnly": true,
+        "twoNetworksMustBePreserved": true
       }
     }
   }

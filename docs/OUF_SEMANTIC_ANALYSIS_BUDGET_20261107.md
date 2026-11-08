@@ -1,6 +1,6 @@
 # Budget dell'analisi semantica proporzionato al lavoro
 
-Aggiornamento del 7 novembre 2026. Requisito: oggetti fino a 1024 colonne, compresi casi SUE da 300–400 campi. Candidato [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83), sorgente `907ace32100d44a0fcf1fcbda5d713ee7bd8fd94`. I nuovi strumenti restano INACTIVE e il VPS non è stato aggiornato.
+Aggiornamento del 7 novembre 2026. Requisito: oggetti fino a 1024 colonne, compresi casi SUE da 300–400 campi. Candidato [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83), sorgente `907ace32100d44a0fcf1fcbda5d713ee7bd8fd94`. Il pacchetto è installato sul VPS con migrazione 14 verificata e readiness HTTP 204 ([ricevuta delle 20:26 CET dell'8 novembre](../evidence/mcp-analysis-ready-operator-20261108.json)); i nuovi strumenti restano INACTIVE e l'analisi funzionale resta da provare.
 
 ## Implementazione disponibile nel candidato
 

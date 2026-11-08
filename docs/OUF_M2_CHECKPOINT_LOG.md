@@ -388,3 +388,10 @@ MCP PR83 ancora non installato: verificato l'archivio originale13593930449/run42
 Controller fcd06cd5, SHA256 5f6739852c1a0d4318d6427c229409882a0f66ab1ad7110ed3c599300fa24758: archivio originale PR83, ENV/mount e endpoint conservati, vecchio MCP fermato/trattenuto, migrazione ordinaria14 sotto UID10005, controllo storia completa e readiness204. Nessun reset, nuovo grant, provider o strumento attivato. [Installazione](OUF_MCP_ANALYSIS_UPGRADE_20261108.md).
 
 CI42514478247 PASS su classic/containerd, log letti, zero skip: quattro unit, sei negativi MAC, due native e fixture firmata scaduta per backend. Storia e sessione sintetica conservate, file firmati invariati, token/policy su TLS. Il predecessore CI usa lo stesso candidato su schema13: il vecchio binario VPS è verificato dal digest osservato ma non eseguito in CI. Il primo run42514286601 è fallito sul path del picker della fixture, corretto senza cambiare il controller. Delivery e330ea6805a07f6df4f7eec7eb3ca28b5389faf4; nessun effetto VPS ancora attestato.
+
+
+## 8 novembre 2026, 20:26 CET — MCP PR83 e migrazione 14 pronti sul VPS
+
+[Ricevuta operatore](../evidence/mcp-analysis-ready-operator-20261108.json): `MCP_ANALYSIS_V14_READY`, nuovo container 41c1e01d, immagine archiviata d76fda00, migrazione ordinaria 14 verificata e readiness HTTP 204. Storia 1–13 inclusi timestamp, ENV, mount, endpoint/alias e file del permesso storico scaduto invariati. Vecchio MCP conservato spento. Nessun migratore privilegiato, scrittura credenziale, grant, route, S3 o richiesta business; strumenti ancora INACTIVE. L'avvio normale può accedere a token/policy/database. Non rigiocare l'installer.
+
+Prossimo componente Onboarding cc6c7869: sorgente discendente del 73498c17 installato, nessun delta alle migrazioni. Archivio originale verificato (24 blob OCI, JAR e risorse V1–V38). Il sostituto SeaweedFS ha due reti; preparata lettura mirata di pacchetto/storia/binding prima di qualificare la sostituzione. F1 resta acquisito; F2–F6, analisi/discovery e mapping restano aperti.
