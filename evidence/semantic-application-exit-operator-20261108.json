@@ -1,0 +1,140 @@
+{
+  "businessRequestsIssued": 0,
+  "containerStateUnchangedDuringRead": true,
+  "credentialFilesRead": 0,
+  "credentialValuesEmitted": false,
+  "currentReplacementMarkerPresent": false,
+  "databaseRequests": 0,
+  "journalFilesPresent": {
+    "application-start-intent.json": true,
+    "complete.json": false,
+    "created.json": true,
+    "migration-intent.json": true,
+    "migration.stdout.private": true
+  },
+  "logs": {
+    "exitCode": 0,
+    "read": true,
+    "stderr": {
+      "arbitraryMessagesEmitted": false,
+      "exceptionChain": [],
+      "knownBeans": [],
+      "knownErrorCodes": [],
+      "linesRead": 0,
+      "rawLogsEmitted": false,
+      "scope": "ALLOWLISTED_SYMBOLS_AND_STATIC_SIGNALS_NOT_COMPLETE_ERROR_TEXT",
+      "signals": [],
+      "sourceFrames": [],
+      "unknownExceptionOccurrencesOmitted": 0,
+      "unresolvedKnownProperties": []
+    },
+    "stdout": {
+      "arbitraryMessagesEmitted": false,
+      "exceptionChain": [
+        {
+          "causedBy": false,
+          "class": "org.springframework.beans.factory.BeanCreationException",
+          "line": 24
+        },
+        {
+          "causedBy": true,
+          "class": "org.springframework.beans.BeanInstantiationException",
+          "line": 61
+        },
+        {
+          "causedBy": true,
+          "class": "java.lang.IllegalStateException",
+          "line": 66
+        },
+        {
+          "causedBy": true,
+          "class": "java.nio.file.NoSuchFileException",
+          "line": 73
+        }
+      ],
+      "knownBeans": [
+        "semanticDiscoveryDelegation"
+      ],
+      "knownErrorCodes": [
+        "SEM_DISCOVERY_DELEGATION_KEY_UNAVAILABLE"
+      ],
+      "linesRead": 85,
+      "rawLogsEmitted": false,
+      "scope": "ALLOWLISTED_SYMBOLS_AND_STATIC_SIGNALS_NOT_COMPLETE_ERROR_TEXT",
+      "signals": [
+        "APPLICATION_RUN_FAILED",
+        "CONTEXT_INITIALIZATION_CANCELLED"
+      ],
+      "sourceFrames": [
+        {
+          "class": "it.comune.trieste.ouf.semantic.SemanticRegistryApplication",
+          "sourceLine": 10
+        }
+      ],
+      "unknownExceptionOccurrencesOmitted": 0,
+      "unresolvedKnownProperties": []
+    },
+    "truncated": false
+  },
+  "migrationDispatched": false,
+  "observedAt": "2026-11-08T18:25:54.818262+00:00",
+  "previousContainer": {
+    "engineErrorPresent": false,
+    "exactContainer": true,
+    "expectedCandidateImage": false,
+    "read": true,
+    "state": {
+      "Dead": false,
+      "ExitCode": 143,
+      "FinishedAt": "2026-11-08T18:09:41.837514609Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 0,
+      "Restarting": false,
+      "Running": false,
+      "StartedAt": "2026-11-07T13:56:01.658276785Z"
+    }
+  },
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/semantic-exit-read-rbfh5_8f",
+  "rawLogsEmitted": false,
+  "replacementAfter": {
+    "engineErrorPresent": false,
+    "exactContainer": true,
+    "expectedCandidateImage": true,
+    "read": true,
+    "state": {
+      "Dead": false,
+      "ExitCode": 1,
+      "FinishedAt": "2026-11-08T18:09:48.656258743Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 0,
+      "Restarting": false,
+      "Running": false,
+      "StartedAt": "2026-11-08T18:09:42.040125967Z"
+    }
+  },
+  "replacementBefore": {
+    "engineErrorPresent": false,
+    "exactContainer": true,
+    "expectedCandidateImage": true,
+    "read": true,
+    "state": {
+      "Dead": false,
+      "ExitCode": 1,
+      "FinishedAt": "2026-11-08T18:09:48.656258743Z",
+      "OOMKilled": false,
+      "Paused": false,
+      "Pid": 0,
+      "Restarting": false,
+      "Running": false,
+      "StartedAt": "2026-11-08T18:09:42.040125967Z"
+    }
+  },
+  "s3Requests": 0,
+  "schema": "ouf.semantic-application-exit-read.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "SEMANTIC_EXIT_READ_COMPLETE"
+}
