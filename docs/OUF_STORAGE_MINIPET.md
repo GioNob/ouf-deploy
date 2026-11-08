@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.22 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.23 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** Semantic V12 è pronto: [ricevuta delle 19:59 CET](../evidence/semantic-discovery-key-repaired-operator-20261108.json), chiave uguale al firmatario Gateway, singolo parametro corretto, stessa immagine e mount, storia V12 invariata. V10 e V12 fallito restano spenti; non ripetere la correzione. Provider e worker sono ancora disabilitati. Gateway resta a 87 route, otto modifiche e 79 conservate. Il preflight MCP delle20:09 CET è acquisito: schema1–13 esatto, permessi14 e file montati, permesso storico scaduto conservato. L'[installazione MCP+14](OUF_MCP_ANALYSIS_UPGRADE_20261108.md) è completata sul VPS alle 20:26 CET: migrazione ordinaria 14 verificata, storia e file del permesso scaduto invariati, readiness 204, vecchio container spento. [Ricevuta](../evidence/mcp-analysis-ready-operator-20261108.json). Non ripetere l'installer. Prossimo passo: [lettura mirata Onboarding](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md), poi sostituzione 1024 preservando le due reti e il TLS SeaweedFS. Seguono Ingestion/UDP, percorso provider e attivazione strumenti, mapping e Ingestion→UDP.
+**Passo corrente:** Semantic V12 è pronto: [ricevuta delle 19:59 CET](../evidence/semantic-discovery-key-repaired-operator-20261108.json), chiave uguale al firmatario Gateway, singolo parametro corretto, stessa immagine e mount, storia V12 invariata. V10 e V12 fallito restano spenti; non ripetere la correzione. Provider e worker sono ancora disabilitati. Gateway resta a 87 route, otto modifiche e 79 conservate. Il preflight MCP delle20:09 CET è acquisito: schema1–13 esatto, permessi14 e file montati, permesso storico scaduto conservato. L'[installazione MCP+14](OUF_MCP_ANALYSIS_UPGRADE_20261108.md) è completata sul VPS alle 20:26 CET: migrazione ordinaria 14 verificata, storia e file del permesso scaduto invariati, readiness 204, vecchio container spento. [Ricevuta](../evidence/mcp-analysis-ready-operator-20261108.json). Non ripetere l'installer. Il preflight Onboarding delle 20:58 CET è positivo: risorse e storia V38 coerenti col candidato, due reti e binding SeaweedFS/TLS conservati. Prossimo passo: [sostituzione Onboarding 1024](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md), qualificata su classic/containerd con due profili legacy e JAR archiviato. Esecuzione VPS attesa, nessuna nuova migrazione prevista; asset/profilo Teatri da preservare. Seguono Ingestion/UDP, percorso provider e attivazione strumenti, mapping e Ingestion→UDP.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

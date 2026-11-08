@@ -397,3 +397,14 @@ CI42514478247 PASS su classic/containerd, log letti, zero skip: quattro unit, se
 Prossimo componente Onboarding cc6c7869: sorgente discendente del 73498c17 installato, nessun delta alle migrazioni. Archivio originale verificato (24 blob OCI, JAR e risorse V1–V38). Il sostituto SeaweedFS ha due reti; preparata lettura mirata di pacchetto/storia/binding prima di qualificare la sostituzione. F1 resta acquisito; F2–F6, analisi/discovery e mapping restano aperti.
 
 Qualifica lettore Onboarding completata: CI42516065460/job128839231269, cinque test PASS/zero skip, log letti, inclusa query PostgreSQL 17 con ruolo SELECT-only e storia invariata. Source 91568e8d, delivery e0377f5c. [Comando corrente](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md); esecuzione VPS attesa, nessuna prova di sostituzione container attribuita al lettore.
+
+
+## 8 novembre 2026, 20:58 CET — Onboarding V38 coerente; sostituzione 1024 qualificata
+
+[Ricevuta operatore](../evidence/onboarding-wide-preflight-operator-20261108.json): container d4f22ff3, JAR installato, 38 migrazioni e YAML confrontati; storia V38 esatta, OID21552, ruolo non superuser. Endpoint, file credenziale montati e truststore SeaweedFS coincidono con lo switch; due reti, vecchio writer MinIO spento. Nessuna modifica.
+
+Controller d62a1707 invariato alla qualifica e5bec2ee: archivio originale cc6c7869, stop/detach privato poi backend, vecchio trattenuto spento, nuovo avvio con entrambi gli IP/MAC/alias e mount/argomenti conservati. Nessun migratore esplicito. Controllo storia V38 e impronte private delle due righe Teatri prima/dopo; nessun nuovo upload/profilo.
+
+CI42518570091/job128846853225 classic e128846853003 containerd PASS: quattro unit e due native ciascuno, zero skip, log letti. Legacy inizialmente presente in entrambe le fixture, conservato al primo detach e assente al secondo; JAR archiviato avviato, readiness200, CA privata JVM verificata, storia/righe sintetiche invariate. Primo run42518460282 fallito nel setup PostgreSQL su rete interna prima dei native; corretto soltanto l'indirizzo della fixture. Predecessore CI con lo stesso candidato e dati/IAM/S3 sintetici: nessuna prova target aggiuntiva.
+
+Consegna a924345385c863246fc597bbe1321965e4f93173, shell SHA256 bc2e5318f33737be0fd8e0d28559b5ea24293340259938b2705955cd89cb1dd1; download pubblico completo, pin di sette dipendenze e sintassi shell verificati. [Comando corrente](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md). STATE/MiniPET2.23/registro aggiornati. Esecuzione VPS attesa; F1 resta PASS, F2–F6 e analisi/discovery/mapping aperti.

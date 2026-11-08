@@ -25,12 +25,14 @@ Provider e worker restano disabilitati; nessuna richiesta discovery o business �
 
 I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o discovery è dimostrata dall'avvio. Il percorso Teatri fino al grafo resta aperto.
 
-**Prossima azione: Onboarding a 1024 colonne.** Il candidato cc6c7869 è discendente del sorgente installato e non modifica le 38 migrazioni. Archivio originale, JAR e risorse verificati. Il sostituto SeaweedFS ha due reti, entrambe da preservare: non riusare il controller MCP/Semantic a rete singola. È pronto il lettore mirato del JAR installato, storia Flyway e binding SeaweedFS/TLS: cinque test CI riusciti, incluso PostgreSQL 17 con ruolo di sola lettura. Esecuzione VPS attesa; nessun upload o nuova profilazione. [Lettura Onboarding](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md).
+**Preflight Onboarding acquisito alle 20:58 CET.** [Ricevuta](../evidence/onboarding-wide-preflight-operator-20261108.json): JAR e database V1–V38 coerenti col candidato cc6c7869, endpoint e truststore SeaweedFS conservati, due reti e vecchio writer MinIO spento. Nessuna migrazione nuova richiesta.
+
+**Prossima azione: installare Onboarding 1024.** Il controller conserva entrambe le reti, IP, MAC, alias, mount e argomenti Java; confronta storia V38 e impronte private delle righe asset/profilo Teatri prima/dopo. Qualificato su Docker 29.8.1 classic/containerd con quattro test mirati e due profili legacy native per backend, zero skip, JAR archiviato avviato e CA privata verificata. [Comando corrente e limiti](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md) · [CI](https://github.com/GioNob/ouf-deploy/actions/runs/42518570091). L'esecuzione sul VPS è attesa: Onboarding non è ancora dichiarato aggiornato e la prova funzionale 1024 resta aperta.
 
 ## Sequenza rimanente
 
-1. Acquisire il confronto mirato Onboarding tra pacchetto attuale, database e candidato 1024; preparare la sostituzione con entrambe le reti SeaweedFS/backend conservate. Semantic e MCP sono pronti: nessun replay dei loro interventi.
-2. Comporre i candidati Onboarding/Ingestion/UDP da1024 conservando i binding SeaweedFS già funzionanti. MCP porta analisi persistente/discovery/pagine schema; il supporto completo1024 richiede anche i moduli proprietari. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
+1. Eseguire la sostituzione Onboarding qualificata e acquisire il JSON finale; nessun nuovo upload/profilo Teatri. Semantic e MCP sono pronti: nessun replay dei loro interventi.
+2. Proseguire con Ingestion e UDP a 1024, conservando i binding SeaweedFS già funzionanti. MCP porta analisi persistente/discovery/pagine schema; il supporto completo1024 richiede anche i moduli proprietari. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 5. Completare review THS → Ingestion → UDP e leggere il grafo; ripetere con un secondo CSV senza riparazioni manuali, quindi provare la ripresa da una nuova conversazione.

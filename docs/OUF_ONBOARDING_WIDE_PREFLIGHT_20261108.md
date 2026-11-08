@@ -4,7 +4,7 @@
 
 Il candidato `cc6c7869b308c695460d8491a121084893a3c323` è avanti di cinque commit sul sorgente installato `73498c17596ae155a3ed9ab36acfd6bb69da9846`, senza modifica alle migrazioni o application.yml. L'archivio originale 13592211485 del run 42416934327 è verificato: ZIP SHA256 `0894eceebb12bb8e81aceb6293713374ce6a3f2e6cdf50bb1be36f6b478bd0d0`, 24 blob OCI, JAR e 38 migrazioni coerenti con i blob Git. Il publisher CI cddc891e e il candidato hanno lo stesso albero. [Record del pacchetto](../scripts/onboarding-wide-candidate-package-20261108.json). Nessuna nuova build o import sul VPS.
 
-## Lettura necessaria
+## Lettura completata
 
 Il lettore verifica l'esatto container SeaweedFS corrente, il frame osservato l'8 novembre e il vecchio writer MinIO spento. Legge il JAR in esecuzione dal filesystem del processo; confronta nomi/hash delle migrazioni e YAML con il candidato. Controlla gli argomenti storage del processo, i metadata dei due file credenziale senza leggerne i contenuti, e l'hash del truststore dello switch. La configurazione dichiarata non è presentata come configurazione Spring effettiva.
 
@@ -17,22 +17,8 @@ Il container ha **due reti**, backend e SeaweedFS. Il controller MCP/Semantic a 
 Lettore qualificato: [CI 42516065460](https://github.com/GioNob/ouf-deploy/actions/runs/42516065460), job 128839231269, cinque test PASS e zero skip, log letti. La prova PostgreSQL 17 usa un ruolo non superuser con solo SELECT sulla storia e ne verifica l'invarianza. Le prove coprono checksum/versioni mancanti o cambiati, binding JDBC, redazione dei valori e confronto delle risorse JAR. [Qualifica e limiti](../evidence/onboarding-wide-preflight-qualification-20261108.json). Non è una prova della sostituzione a due reti o dell'avvio del candidato. Esito previsto della lettura: `ONBOARDING_WIDE_PREFLIGHT_READ`. Tale esito non certifica l'avvio del candidato o l'E2E: i booleani di confronto distinguono esplicitamente eventuali differenze. La ricevuta permette di scegliere una sostituzione senza migrazione oppure di fermarsi su una differenza concreta.
 
 
-Eseguire sul VPS:
+## Esito acquisito: non ripetere la lettura
 
-```bash
-(
-  set -eu
-  ouf_read=$(mktemp /tmp/ouf-onboarding-wide-read.XXXXXX)
-  trap 'rm -f -- "$ouf_read"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/e0377f5c67a5320ce8bc6954ed063b225067c97c/scripts/deliver-onboarding-wide-preflight-20261108.sh' \
-    -o "$ouf_read"
-  printf '%s  %s\n' \
-    'bce96bc653bf89e1d8b15bb8f11266bd778c38ebebb162cd692f87062a38428d' \
-    "$ouf_read" | sha256sum -c -
-  bash "$ouf_read"
-)
-```
+La [ricevuta operatore delle 20:58 CET](../evidence/onboarding-wide-preflight-operator-20261108.json) è `ONBOARDING_WIDE_PREFLIGHT_READ`. Tutte le 38 migrazioni e application.yml del JAR installato coincidono col candidato; storia V38 esatta su OID21552, ruolo non superuser. Argomenti SeaweedFS del processo, file credenziale montati e hash truststore corrispondono allo switch riuscito. Due reti, legacy MAC valido coerente con un endpoint, vecchio MinIO writer spento. Le classi wide non sono ancora installate, come atteso.
 
-Restituire il JSON finale. L'esecuzione crea soltanto i file privati di evidenza e la sessione SQL di lettura descritta; nessuna modifica ai servizi o ai dati applicativi.
+La lettura non ha modificato servizi o dati. Il comando storico resta nella versione Git precedente; il **solo comando corrente** è ora la [sostituzione Onboarding 1024](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md), con qualifica specifica a due reti.
