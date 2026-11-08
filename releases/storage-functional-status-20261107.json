@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_INGESTION_STOPPED_SCHEDULE_DELTA_LOCALIZED_API_VIEWS_UNRESOLVED",
+  "status": "F1_PASS_INGESTION_RESIDUAL_QUALIFIED_TARGET_PENDING",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run the qualified combined stopped Ingestion read: API1.44 versus the retained API1.44 snapshots, side-by-side CLI view, one READ ONLY database session for current schedule metadata and unchanged work. Preserve the held journal; do not replay import/stop/installer.",
+  "nextAction": "Execute the qualified residual Ingestion continuation from the proven stopped prefix; no reimport/stop/replay. Await target readiness JSON, then UDP1024, provider/tool activation and retained Teatri E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1386,11 +1386,18 @@
           "tests": 7,
           "skips": 0,
           "logsRead": true,
-          "targetExecuted": false,
+          "targetExecuted": true,
           "readOnlyDatabaseSessionsPlanned": 1,
           "dockerInspectAttemptsPlanned": 4,
           "primaryDockerApi": "1.44",
-          "serviceChanges": false
+          "serviceChanges": false,
+          "status": "INGESTION_RESUME_PREREQUISITES_READ",
+          "operatorReceipt": "evidence/ingestion-resume-prerequisites-operator-20261108.json",
+          "observedAt": "2026-11-08T21:32:17.430684+00:00",
+          "api144FrameMatchesStopped": true,
+          "cliViewDiffers": true,
+          "databaseMatchesStopped": true,
+          "bothSchedulesDisabledConsumedUnleased": true
         },
         "heldStateRead": {
           "sourceCommit": "1aa15097ce855a069c18b72899c44bb49795f8f6",
@@ -1417,7 +1424,34 @@
           "createIntentPresent": false,
           "configAndNetworkComparisonConfoundedByApiViews": true
         },
-        "knownGuardLimitation": "Whole ing_schedule fingerprint includes discovery_verified_at/lock_version which source reconciliation updates even for unchanged publication. Exact historical changed columns unavailable; not a proven target cause."
+        "knownGuardLimitation": "Whole ing_schedule fingerprint includes discovery_verified_at/lock_version which source reconciliation updates even for unchanged publication. Exact historical changed columns unavailable; not a proven target cause.",
+        "residualContinuation": {
+          "status": "QUALIFIED_NOT_TARGET_EXECUTED",
+          "sourceCommit": "9f1dfd3af254606afc28b85d4eef5c9d54d35b3a",
+          "script": "scripts/resume-ingestion-wide-20261108.py",
+          "scriptSha256": "ab43c6d02e7d8ada08a3325f1e0b9a8559fff7324338b98d117371497bf54390",
+          "deliveryCommit": "468fb612447f14d7dd022cdbd7d138cc69012fe7",
+          "deliveryScript": "scripts/deliver-ingestion-wide-resume-20261108.sh",
+          "deliverySha256": "51a207cc40479be8b88e43e9621210d6657c3777269a393a5a58be7eb36ddf41",
+          "ciRun": 42526435616,
+          "ciJobs": [
+            128870984249,
+            128870984118
+          ],
+          "qualification": "evidence/ingestion-wide-resume-qualification-20261108.json",
+          "guardTestsPerBackend": 13,
+          "nativeProfilesPerBackend": 2,
+          "skips": 0,
+          "logsRead": true,
+          "actualArchivedApplicationPollingTested": true,
+          "targetExecuted": false,
+          "targetReadinessProven": false,
+          "plannedImageImports": 0,
+          "plannedServiceStops": 0,
+          "plannedReadOnlyDatabaseSessions": 3,
+          "automaticReplay": false,
+          "automaticRollback": false
+        }
       }
     }
   }
