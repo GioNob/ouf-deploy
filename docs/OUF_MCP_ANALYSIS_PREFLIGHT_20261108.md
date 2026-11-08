@@ -1,6 +1,6 @@
 # MCP: lettura mirata prima dell'analisi persistente
 
-8 novembre 2026. Semantic V12 è pronto sul VPS; provider/worker sono ancora disabilitati. Non ripetere il suo aggiornamento o la correzione della chiave.
+8 novembre 2026. **Preflight completato alle20:09 CET:** [ricevuta](../evidence/mcp-analysis-preflight-operator-20261108.json), schema1–13 esatto, ruolo ordinario con permessi14 e cinque file montati. Permesso storico scaduto, nessun rinnovo. Prossimo passo: [installazione qualificata](OUF_MCP_ANALYSIS_UPGRADE_20261108.md). Semantic V12 resta pronto; provider/worker disabilitati.
 
 ## Perché serve questo passo
 
@@ -8,7 +8,7 @@ La lettura precedente ha provato che MCP usa il database OID21560 con migrazioni
 
 L'archivio originale MCP PR83 è stato scaricato e verificato: artifact13593930449, run42420569963, ZIP SHA256 `2eae47d8c90b00b992bc916e5ce5a5bd32d9e724abe27d2838bd5d08ebc68d5e`. Il sorgente dichiarato dal publisher è il merge di prova `e2a474ea09bf9c3cb130103ca142f1a128942a80`; il suo albero Git `3354e594938fc0c9131b1532a93ae7b5105b832d` è identico alla testa candidata `907ace32100d44a0fcf1fcbda5d713ee7bd8fd94`. Verificati tutti i cinque payload, dieci blob OCI e il manifest rispetto al blob Git; gli stessi byte del manifest sono presenti nel binario. Questo non prova il comportamento del pacchetto sul VPS. [Evidenza](../evidence/mcp-analysis-candidate-package-20261108.json).
 
-## Comando corrente
+## Comando eseguito — non ripetere
 
 Il lettore verifica il frame MCP osservato l'8 novembre, identifica il processo e il binario installato, legge soltanto i metadata dei file credenziale dal mount effettivo e confronta una seconda volta i frame. Se configurati, legge i tre file pubblici della configurazione firmata di reprocessing per riassumere hash/scadenza; non ne verifica la firma e non rinnova permessi o budget.
 
@@ -37,10 +37,10 @@ SHA256
 )
 ```
 
-Esito di lettura atteso: `MCP_ANALYSIS_PREFLIGHT_READ`. Non equivale ad autorizzazione di rilascio, compatibilità completa o installazione. Un file mancante o un privilegio assente resta visibile; i permessi non vengono modificati. Un frame diverso produce READ_INCOMPLETE: va riconciliato, non normalizzato.
+Esito di lettura acquisito: `MCP_ANALYSIS_PREFLIGHT_READ`. Non equivale ad autorizzazione di rilascio, compatibilità completa o installazione. Un file mancante o un privilegio assente resta visibile; i permessi non vengono modificati. Un frame diverso produce READ_INCOMPLETE: va riconciliato, non normalizzato.
 
 ## Prove e seguito
 
 [CI42513291665](https://github.com/GioNob/ouf-deploy/actions/runs/42513291665), job128830770569: sei test del nuovo lettore PASS, zero skip, inclusa query nativa PostgreSQL17 con ruolo non superuser; storia invariata e rilevazione della revoca CREATE. Nove test del helper esistente PASS; il suo precedente test native Docker è saltato in questo job, con la qualifica dedicata storica conservata. Localmente cinque test puri PASS; PostgreSQL non eseguito. [Dettagli](../evidence/mcp-analysis-preflight-qualification-20261108.json).
 
-Dopo l'esito: preparare e qualificare sostituzione MCP con archivio esatto e migrazione ordinaria14, preservando storia, mount e binding. Il vecchio migratore privilegiato12→13 non è un migratore generico. I sei strumenti nuovi sono ancora INACTIVE: installare l'immagine non attiva automaticamente analisi/discovery. Seguono configurazione del provider, delega/grant, attivazione degli strumenti e prova sul profilo Teatri esistente. Nessuna nuova profilazione o reset del lavoro già consumato.
+La sostituzione MCP con archivio esatto e migrazione ordinaria14 è ora qualificata: [comando successivo](OUF_MCP_ANALYSIS_UPGRADE_20261108.md). Il vecchio migratore privilegiato12→13 non è un migratore generico. I sei strumenti nuovi sono ancora INACTIVE: installare l'immagine non attiva automaticamente analisi/discovery. Seguono configurazione del provider, delega/grant, attivazione degli strumenti e prova sul profilo Teatri esistente. Nessuna nuova profilazione o reset del lavoro già consumato.

@@ -21,12 +21,17 @@ Gateway già applicato e verificato: **87 route, otto modifiche, 79 conservate**
 
 Provider e worker restano disabilitati; nessuna richiesta discovery o business è stata eseguita. Readiness non equivale a discovery funzionante, mapping completo o E2E. [Runbook e qualifica](OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md).
 
-**MCP PR83:** archivio originale CI verificato, ancora non installato. Il publisher usa il merge di prova `e2a474ea`, il cui albero Git è identico al candidato `907ace32`. Verificati ZIP, payload, blob OCI e manifest rispetto al sorgente. [Evidenza](../evidence/mcp-analysis-candidate-package-20261108.json). Prima di preparare la sostituzione serve la lettura mirata dei binding di avvio e dei permessi applicativi per la migrazione 14; non basta il risultato del CI sul sorgente. [Passo corrente](OUF_MCP_ANALYSIS_PREFLIGHT_20261108.md).
+**MCP PR83: prerequisiti target acquisiti; sostituzione qualificata, non ancora eseguita sul VPS.** La [lettura delle 20:09 CET](../evidence/mcp-analysis-preflight-operator-20261108.json) conferma database OID21560 con prefisso1–13 esatto, permessi ordinari per la14 e ruolo non superuser. Tutti i cinque file di avvio sono montati, coerenti col file host; il permesso storico di reprocessing è scaduto e rimane conservato senza rinnovo o reset.
+
+Il controller usa l'archivio originale della PR83, conserva ENV/mount/IP/alias e sostituisce soltanto MCP. Invoca `migrate` come UID10005 con la configurazione applicativa corrente, verifica la sola aggiunta14 e la storia1–13 invariata, avvia il server e richiede HTTP204. Il vecchio MCP resta fermo. [Comando corrente](OUF_MCP_ANALYSIS_UPGRADE_20261108.md).
+
+[CI42514478247](https://github.com/GioNob/ouf-deploy/actions/runs/42514478247), classic/containerd PASS, log letti: quattro test mirati, sei negativi MAC, due lifecycle nativi e una fixture firmata scaduta per backend; zero skip. Migrazione con ruolo ordinario, sessione e storia preservate, OAuth/policy su TLS, readiness204. Identità/dati sono sintetici; non è una prova del VPS o dell'E2E. [Qualifica](../evidence/mcp-analysis-upgrade-qualification-20261108.json). I sei nuovi strumenti restano INACTIVE anche dopo questa installazione.
+
 
 ## Sequenza rimanente
 
-1. Leggere in un solo passo i binding di avvio MCP, i metadata pubblici della configurazione di reprocessing e i permessi DB per la migrazione 14; poi qualificare la sostituzione sul profilo osservato. Non riaprire il guasto Semantic appena chiuso.
-2. Distribuire il candidato MCP PR83 (analisi persistente, discovery e 1024 colonne) con migrazione14: DB corrente osservato a1–13. Comporre i candidati Onboarding/Ingestion/UDP da1024 conservando i binding SeaweedFS già funzionanti. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
+1. Eseguire l'installazione MCP qualificata e verificare schema14/readiness con storia conservata. Non riaprire il guasto Semantic chiuso, non ripetere il preflight e non rinnovare il permesso storico scaduto.
+2. Comporre i candidati Onboarding/Ingestion/UDP da1024 conservando i binding SeaweedFS già funzionanti. MCP porta analisi persistente/discovery/pagine schema; il supporto completo1024 richiede anche i moduli proprietari. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 5. Completare review THS → Ingestion → UDP e leggere il grafo; ripetere con un secondo CSV senza riparazioni manuali, quindi provare la ripresa da una nuova conversazione.

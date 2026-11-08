@@ -1,6 +1,6 @@
 # Analisi dinamica e discovery: preparazione del rilascio
 
-**Stato dell'8 novembre, 19:59 CET:** Gateway applicato; candidato originale Semantic c2dae77b installato con V11/V12 migrate e validate, chiave corretta e readiness riuscita. [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json). Provider/worker restano disabilitati. Archivio MCP PR83 verificato, non installato: [prossima lettura mirata](OUF_MCP_ANALYSIS_PREFLIGHT_20261108.md). Non ripetere migratore, correzione Semantic o delta Gateway.
+**Stato dell'8 novembre, 19:59 CET:** Gateway applicato; candidato originale Semantic c2dae77b installato con V11/V12 migrate e validate, chiave corretta e readiness riuscita. [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json). Provider/worker restano disabilitati. MCP PR83: preflight delle20:09 CET positivo, [installazione qualificata](OUF_MCP_ANALYSIS_UPGRADE_20261108.md) ancora da eseguire. Non ripetere migratore, correzione Semantic o delta Gateway.
 
 7 novembre 2026, Europe/Rome. Il codice del candidato MCP PR83 è qualificato; non è installato e i sei nuovi strumenti sono INACTIVE. Nessuna nuova discovery o associazione OntoPiA è stata eseguita. F1 rimane acquisito, F2–F6 aperti.
 
