@@ -1,5 +1,7 @@
 # Gateway: delta 1024 colonne e discovery da dati già acquisiti
 
+**Preparazione eseguita e riuscita alle 17:32 CET. Non ripetere il comando storico sotto.** [Ricevuta](../evidence/gateway-analysis-prepared-operator-20261108.json). Prossimo passo: [applicazione delle otto route e lettura Semantic](OUF_GATEWAY_ANALYSIS_APPLY_20261108.md). Lo stderr ha identificato `recovery_state`; la storia Flyway corrente non è ancora letta.
+
 8 novembre 2026, preparatore corretto. La prima preparazione delle 09:53 CET si è fermata su `INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE`, senza effetti runtime. Errore del preparatore: la baseline preview includeva già ASSETS; review usava uno schema successivo e ometteva la proiezione APISIX già applicata il 16 ottobre. Ricostruite dai sorgenti le quattro impronte esatte della ricevuta, conservando il controllo stretto. [Ricevuta](../evidence/gateway-analysis-preparation-held-operator-20261108.json). Il comando qui sotto sostituisce quello precedente; produce una proposta privata, non applica route e non modifica servizi.
 
 ## Risultato e interventi
@@ -30,7 +32,7 @@ Baseline sorgente ricostruita: schema managed-file da `75733a974798c40d23e320111
 
 Il candidato resta `560fbf6e769c7639a0bc0ddb09380811a4e324e4`. Anche per lo schema review candidato viene proiettato soltanto l'identificatore annidato noto: riferimenti o identificatori inattesi sono rifiutati. Vincoli, limiti numerici e semantica di validazione sono conservati. Questa composizione corretta è verificata offline; non è ancora una prova di applicazione APISIX. Nessuna sostituzione del ramo/immagine dell'owner Gateway.
 
-## Unico comando operatore corrente
+## Comando storico già eseguito — non ripetere
 
 Legge soltanto `routes.private.json` e `semantic-database.stderr.private` in `/var/lib/ouf-storage-migration/discovery-contract-read-guaps__4`. Le sole richieste di rete del comando sono i due download GitHub; il programma Python non emette HTTP, Docker, SQL, token, provider o S3.
 

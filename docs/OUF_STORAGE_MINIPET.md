@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.11 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.12 — 8 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -54,7 +54,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 ## 4. Roadmap funzionale
 
-**Passo corrente:** [inventario del target e correzione della sequenza di rilascio](OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md). Il Registry trattenuto è successivo al candidato discovery PR41: evitare un downgrade. Gateway PR86 diverge dal ramo dell'owner operativo: applicare solo il delta necessario dopo riconciliazione. L'inventario VPS dell'8 novembre è acquisito: storage conservato, provider/worker dichiarati false, vecchio MCP. La lettura dipendenze delle 09:31 CET è acquisita: MCP 1–13 esatte, resta 14; 84 route con vecchi limiti e discovery assente; credenziale provider senza mount dichiarato; lettura Semantic DB fallita e backlog sconosciuto. Il [passo corrente](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md) prepara offline cinque aggiornamenti e tre aggiunte Gateway, conserva 79 route e classifica l'errore SQL già salvato. La prima preparazione target si è fermata senza effetti per baseline del preparatore errata. Correzione sorgente `8a12592f`: quattro schemi ricostruiti con impronte target esatte, proiezione APISIX preservata; 13 test CI riusciti/zero skip. Stderr Semantic classifica MISSING_COLUMN, senza nome o migrazione provati. Comando corrente aggiornato, risultato corretto e applicazione ancora da eseguire. Budget dinamico, limiti 1024 e discovery rimangono candidati da installare/attivare, non risultati live.
+**Passo corrente:** conservare Registry più recente e owner Gateway operativo. Inventario e dipendenze sono acquisiti: MCP1–13 esatte, resta14; credenziale provider senza mount dichiarato, worker/provider dichiarati false. Preparazione Gateway riuscita alle17:32 CET, proposta `2876c0c3…`, cinque aggiornamenti/tre aggiunte e79 route conservate. [Prossimo comando](OUF_GATEWAY_ANALYSIS_APPLY_20261108.md): applicare le otto route con verifica fresca, ACK/rilettura e nessun retry automatico, più una sessione Semantic READ ONLY. Sorgente `57647000`, dieci test CI riusciti senza skip su APISIX/PostgreSQL reali. Lo stderr identifica `recovery_state`, introdotta dal sorgente V12; storia Flyway e backlog target ancora ignoti. Applicazione target attesa; budget dinamico, limiti1024 e discovery restano candidati applicativi da installare/attivare.
 
 Le righe sono risultati da chiudere, non promesse di durata né nuovi strumenti da costruire. Stato corrente: **F1 PASS**, **F2–F6 OPEN**.
 

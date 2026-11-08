@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute corrected offline Gateway preparer 8a12592f against the same retained private files. First attempt stopped without effects due to incorrect preparer baseline; all four expected schemas now match independently received target hashes, and APISIX metadata projection is preserved. No fresh SQL/HTTP or runtime write. Retained SQL stderr shows MISSING_COLUMN; extract only known query identifiers, do not infer a missing migration. Then reconcile fresh route state before apply, coordinate MCP14/Onboarding and provider/backlog/grants. Preserve Teatri/SeaweedFS.",
+  "nextAction": "Execute the qualified eight-route Gateway apply plus one read-only Semantic metadata session. Prepared target proposal 2876c0c3... passed at 16:32 UTC. Read Flyway history, actual recovery_state presence and aggregate discovery states before choosing any migration. Source 57647000 has 10 native/unit CI tests passed, zero skips. Preserve Gateway owner, containers, Teatri and SeaweedFS; no provider/worker activation or retry on an uncertain write. Target apply remains unobserved.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -766,7 +766,9 @@
     "evidence/discovery-contract-operator-summary-20261108.json",
     "evidence/gateway-analysis-preparation-qualification-20261108.json",
     "evidence/gateway-analysis-preparation-held-operator-20261108.json",
-    "evidence/gateway-analysis-baseline-fix-qualification-20261108.json"
+    "evidence/gateway-analysis-baseline-fix-qualification-20261108.json",
+    "evidence/gateway-analysis-prepared-operator-20261108.json",
+    "evidence/gateway-analysis-apply-qualification-20261108.json"
   ],
   "sourceReferences": [
     {
@@ -922,8 +924,8 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "GATEWAY_PREPARATION_BASELINE_ERROR_CORRECTED_TARGET_RETRY_AWAITED",
-      "document": "docs/OUF_GATEWAY_ANALYSIS_DELTA_20261108.md",
+      "status": "GATEWAY_DELTA_PREPARED_APPLY_NATIVE_QUALIFIED_TARGET_AWAITED",
+      "document": "docs/OUF_GATEWAY_ANALYSIS_APPLY_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
       "targetReadExecuted": true,
@@ -966,14 +968,14 @@
       "gatewayRouteCount": 84,
       "gatewayDiscoveryExecuteRoutesFound": 0,
       "gatewayProposal": {
-        "status": "BASELINE_CORRECTED_SOURCE_QUALIFIED_NOT_APPLIED",
+        "status": "GATEWAY_DELTA_PREPARED_NOT_APPLIED",
         "sourceCommit": "8a12592fdbf7b321a8b3c564081a1ab90b5b8c80",
         "script": "scripts/prepare-gateway-analysis-delta-20261108.py",
         "updates": 5,
         "additions": 3,
         "unchangedRoutes": 79,
         "applyImplemented": false,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "qualification": "evidence/gateway-analysis-baseline-fix-qualification-20261108.json",
         "ciRun": 42465156653,
         "ciJob": 128682843439,
@@ -981,10 +983,15 @@
         "skips": 0,
         "logsRead": true,
         "observedSchemaHashesMatched": 4,
-        "installedReviewMetadataProjectionPreserved": true
+        "installedReviewMetadataProjectionPreserved": true,
+        "observedAt": "2026-11-08T16:32:01.078586+00:00",
+        "receipt": "evidence/gateway-analysis-prepared-operator-20261108.json",
+        "proposalSha256": "2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19",
+        "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/gateway-analysis-proposal-9rj147d5",
+        "runtimeChanged": false
       },
       "semanticDatabaseErrorHint": "MISSING_COLUMN",
-      "semanticMissingColumnNameKnown": false,
+      "semanticMissingColumnNameKnown": true,
       "previousGatewayProposal": {
         "status": "PREPARATION_INCOMPLETE",
         "sourceCommit": "5a8449b1a145a9607c5b9af537bd53d790c18aaf",
@@ -1004,7 +1011,24 @@
         "reason": "INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE",
         "receipt": "evidence/gateway-analysis-preparation-held-operator-20261108.json",
         "runtimeChanged": false
-      }
+      },
+      "gatewayApply": {
+        "status": "SOURCE_NATIVE_QUALIFIED_TARGET_APPLY_NOT_EXECUTED",
+        "sourceCommit": "57647000a4d66ce4bc659ed54631e44ea8959978",
+        "script": "scripts/apply-gateway-analysis-delta-20261108.py",
+        "sourceSha256": "7064c8443bb323c12a56846267e4faa9cb25bf3e6dfb35455e753fbe71ce8b01",
+        "applyImplemented": true,
+        "targetExecuted": false,
+        "qualification": "evidence/gateway-analysis-apply-qualification-20261108.json",
+        "ciRun": 42501682255,
+        "ciJob": 128795585765,
+        "tests": 10,
+        "skips": 0,
+        "logsRead": true
+      },
+      "semanticMissingColumnName": "recovery_state",
+      "semanticV12RecordedSuccessful": null,
+      "semanticRecoveryColumnCurrentlyPresent": null
     }
   }
 }

@@ -292,3 +292,14 @@ Errore nel preparatore, non nuovo guasto SeaweedFS. Il suo schema preview includ
 Sorgente corretto `8a12592fdbf7b321a8b3c564081a1ab90b5b8c80`. [CI 42465156653](https://github.com/GioNob/ouf-deploy/actions/runs/42465156653), job128682843439: 13 PASS, zero skip, log letti; dodici locali, validatore JSON Schema in CI. La nuova regressione usa le impronte della ricevuta, indipendenti dal generatore. I nove test precedenti non coprivano questa divergenza e non provavano compatibilità target.
 
 [Comando corrente aggiornato](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md): stessi file privati, preparazione soltanto; può esporre dallo stderr esclusivamente i nomi della query pubblica già nota. Non riesegue SQL, non installa route, non riavvia servizi. Risultato della correzione atteso; F1 conservato, F2–F6 aperti.
+
+
+## 8 novembre 2026 — proposta Gateway acquisita, applicazione qualificata
+
+[Ricevuta operatore delle 17:32:01 CET](../evidence/gateway-analysis-prepared-operator-20261108.json): GATEWAY_DELTA_PREPARED_NOT_APPLIED, proposta `2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19`. Cinque aggiornamenti/tre aggiunte,79 route conservate; nessun effetto runtime. Stderr identifica recovery_state, introdotta nel sorgente Semantic V12; non dedotta la storia Flyway corrente.
+
+Implementato l'applicatore `57647000a4d66ce4bc659ed54631e44ea8959978`: proposta/impronte esatte, confronto fresco dell'intera mappa, massimo8 PUT con intento durevole/ACK/rilettura, nessun retry/rollback automatico. Directory unica impedisce una ripetizione cieca. Nessun lifecycle container, owner sostituito, token/provider/S3/business. Una sessione SQL READ ONLY legge migrazioni, colonna effettiva e conteggi per stato senza identificativi o payload.
+
+[CI42501682255](https://github.com/GioNob/ouf-deploy/actions/runs/42501682255), job128795585765:10 PASS/0 skip, log letti; APISIX reale con etcd e PostgreSQL17. Le prime prove native hanno trovato una fixture YAML errata e poi variazioni dell'ordine Mounts. Verificata uguaglianza dei record completi:28 variazioni d'ordine osservate nella prova riuscita. Il confronto ordina soltanto per Destination univoca, mantiene ogni campo mount e Config/MAC esatti, verifica prima gli hash originali della cattura. Gli errori e i limiti sono registrati nella [qualifica](../evidence/gateway-analysis-apply-qualification-20261108.json). Tutti e quattro i workflow PR del sorgente sono success.
+
+[Unico comando corrente](OUF_GATEWAY_ANALYSIS_APPLY_20261108.md) pronto per l'operatore; applicazione sul VPS ancora attesa. Aggiornati STATE, MiniPET2.12 e registro. F1 conservato; F2–F6 e rollout completo1024/budget/discovery restano aperti.
