@@ -282,3 +282,13 @@ Il provider punta a un distinto gateway southbound; l'assenza dei path nell'APIS
 Preparatore offline `5a8449b1a145a9607c5b9af537bd53d790c18aaf`: da route e stderr già conservati compone cinque aggiornamenti e tre aggiunte, conserva79 route e i binding IAM esistenti; nessuna sostituzione dell'owner Gateway, nessuna route provider creata. Script senza HTTP/Docker/SQL, applicazione non implementata, risultato target atteso. [Unico comando corrente](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md).
 
 [CI42464333835](https://github.com/GioNob/ouf-deploy/actions/runs/42464333835), job128680226233:9 PASS/0 skip, log letti, validatore JSON Schema reale1024/1025 e fixture di composizione/conservazione, non prova live APISIX. Gli altri due workflow PR dello stesso commit sono success. STATE, MiniPET2.10 e registro allineati. F1 conservato; F2–F6, installazione/attivazione budget dinamico, discovery e mapping restano aperti.
+
+## 8 novembre 2026 — correzione della baseline del preparatore Gateway
+
+[Ricevuta delle 09:53:25 CET](../evidence/gateway-analysis-preparation-held-operator-20261108.json): PREPARATION_INCOMPLETE/INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE; zero effetti runtime, query e richieste Admin/provider. Lo stderr già conservato indica MISSING_COLUMN; nome e migrazione non dimostrati.
+
+Errore nel preparatore, non nuovo guasto SeaweedFS. Il suo schema preview includeva ASSETS non ancora installato. Review installata coincide con lo schema lessicale storico dopo la proiezione del solo identificatore annidato, già qualificata/documentata il 16 ottobre. Ricostruite tutte e quattro le impronte esatte da sorgenti, senza normalizzare lo schema target o allentare il confronto. Il candidato review conserva la stessa proiezione in assenza di riferimenti, mantenendo tutti i vincoli. Il controllo stretto è preservato.
+
+Sorgente corretto `8a12592fdbf7b321a8b3c564081a1ab90b5b8c80`. [CI 42465156653](https://github.com/GioNob/ouf-deploy/actions/runs/42465156653), job128682843439: 13 PASS, zero skip, log letti; dodici locali, validatore JSON Schema in CI. La nuova regressione usa le impronte della ricevuta, indipendenti dal generatore. I nove test precedenti non coprivano questa divergenza e non provavano compatibilità target.
+
+[Comando corrente aggiornato](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md): stessi file privati, preparazione soltanto; può esporre dallo stderr esclusivamente i nomi della query pubblica già nota. Non riesegue SQL, non installa route, non riavvia servizi. Risultato della correzione atteso; F1 conservato, F2–F6 aperti.

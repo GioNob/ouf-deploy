@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Prepare the offline Gateway delta from retained 2026-11-08 08:31 UTC routes: five updates, three discovery additions, 79 unchanged; classify retained Semantic SQL stderr without another query. Then reconcile before any apply; coordinate MCP PR83 migration14 and compatible Onboarding while preserving newer Registry and operational Gateway owner. Resolve provider binding, southbound transport, Semantic backlog and grants before activation. No new upload/reprofile, budget reset or old writer restart.",
+  "nextAction": "Execute corrected offline Gateway preparer 8a12592f against the same retained private files. First attempt stopped without effects due to incorrect preparer baseline; all four expected schemas now match independently received target hashes, and APISIX metadata projection is preserved. No fresh SQL/HTTP or runtime write. Retained SQL stderr shows MISSING_COLUMN; extract only known query identifiers, do not infer a missing migration. Then reconcile fresh route state before apply, coordinate MCP14/Onboarding and provider/backlog/grants. Preserve Teatri/SeaweedFS.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -764,7 +764,9 @@
     },
     "evidence/semantic-analysis-budget-review-20261107.json",
     "evidence/discovery-contract-operator-summary-20261108.json",
-    "evidence/gateway-analysis-preparation-qualification-20261108.json"
+    "evidence/gateway-analysis-preparation-qualification-20261108.json",
+    "evidence/gateway-analysis-preparation-held-operator-20261108.json",
+    "evidence/gateway-analysis-baseline-fix-qualification-20261108.json"
   ],
   "sourceReferences": [
     {
@@ -920,7 +922,7 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "DEPENDENCY_READ_PARTIAL_RECEIVED_OFFLINE_GATEWAY_DELTA_PREPARED",
+      "status": "GATEWAY_PREPARATION_BASELINE_ERROR_CORRECTED_TARGET_RETRY_AWAITED",
       "document": "docs/OUF_GATEWAY_ANALYSIS_DELTA_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
@@ -964,20 +966,44 @@
       "gatewayRouteCount": 84,
       "gatewayDiscoveryExecuteRoutesFound": 0,
       "gatewayProposal": {
-        "status": "SOURCE_QUALIFIED_TARGET_PREPARATION_AWAITED_NOT_APPLIED",
-        "sourceCommit": "5a8449b1a145a9607c5b9af537bd53d790c18aaf",
+        "status": "BASELINE_CORRECTED_SOURCE_QUALIFIED_NOT_APPLIED",
+        "sourceCommit": "8a12592fdbf7b321a8b3c564081a1ab90b5b8c80",
         "script": "scripts/prepare-gateway-analysis-delta-20261108.py",
         "updates": 5,
         "additions": 3,
         "unchangedRoutes": 79,
         "applyImplemented": false,
         "targetExecuted": false,
+        "qualification": "evidence/gateway-analysis-baseline-fix-qualification-20261108.json",
+        "ciRun": 42465156653,
+        "ciJob": 128682843439,
+        "tests": 13,
+        "skips": 0,
+        "logsRead": true,
+        "observedSchemaHashesMatched": 4,
+        "installedReviewMetadataProjectionPreserved": true
+      },
+      "semanticDatabaseErrorHint": "MISSING_COLUMN",
+      "semanticMissingColumnNameKnown": false,
+      "previousGatewayProposal": {
+        "status": "PREPARATION_INCOMPLETE",
+        "sourceCommit": "5a8449b1a145a9607c5b9af537bd53d790c18aaf",
+        "script": "scripts/prepare-gateway-analysis-delta-20261108.py",
+        "updates": 5,
+        "additions": 3,
+        "unchangedRoutes": 79,
+        "applyImplemented": false,
+        "targetExecuted": true,
         "qualification": "evidence/gateway-analysis-preparation-qualification-20261108.json",
         "ciRun": 42464333835,
         "ciJob": 128680226233,
         "tests": 9,
         "skips": 0,
-        "logsRead": true
+        "logsRead": true,
+        "observedAt": "2026-11-08T08:53:25.807833+00:00",
+        "reason": "INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE",
+        "receipt": "evidence/gateway-analysis-preparation-held-operator-20261108.json",
+        "runtimeChanged": false
       }
     }
   }
