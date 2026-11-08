@@ -1,0 +1,50 @@
+{
+  "schema": "ouf.ingestion-resume-prerequisites-qualification.v1",
+  "sourceCommit": "e22ef8e3758b216789c20c0d2aa5b5d717126c41",
+  "script": "scripts/read-ingestion-resume-prerequisites-20261108.py",
+  "scriptSha256": "0ea9e19b93be285f72e3431b38beb66814392f42e1023733c0728387563c0ab2",
+  "ciRun": 42525366640,
+  "ciJob": 128867703808,
+  "tests": 7,
+  "skips": 0,
+  "logsRead": true,
+  "nativeDatabase": "PostgreSQL17",
+  "selectOnlyRole": true,
+  "sqlReadOnly": true,
+  "syntheticRowsUnchangedByReads": true,
+  "normalPollingFieldsReproduceWholeScheduleFingerprintChange": true,
+  "stableFingerprintRejectsPublicationChecksumChange": true,
+  "scheduleStableFingerprintExcludes": [
+    "discovery_verified_at",
+    "lock_version"
+  ],
+  "retainedAndPrimaryDockerApi": "1.44",
+  "previousReaderCliApiWasNotPinned": true,
+  "parallelApiViewReadIncluded": true,
+  "runtimeChanges": 0,
+  "serviceStops": 0,
+  "targetExecuted": false,
+  "deliveryFilesReadBack": 4,
+  "deliveryHashesVerified": true,
+  "shellSyntaxChecked": true,
+  "sourceFinding": {
+    "repository": "GioNob/ouf-ingestion-runtime",
+    "commit": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+    "files": [
+      "src/main/java/it/comune/trieste/ouf/ingestion/ActivationLoop.java",
+      "src/main/java/it/comune/trieste/ouf/ingestion/ActivationRepository.java"
+    ],
+    "pollDefaultMs": 10000,
+    "reconciliationUpdatesEvenForSamePublication": [
+      "discovery_verified_at",
+      "lock_version"
+    ],
+    "targetCauseProven": false
+  },
+  "limitations": [
+    "Earlier evidence contains only whole-table fingerprints; historical changed columns cannot be reconstructed.",
+    "The SQL fixture and Docker representation fixtures are synthetic; this does not qualify a new container lifecycle exception.",
+    "The fixture database OID is normalized only for pure output validation; the target reader independently requires database21554.",
+    "The installed old binary's activation behavior is not established by reading candidate source. No exact target cause is claimed."
+  ]
+}
