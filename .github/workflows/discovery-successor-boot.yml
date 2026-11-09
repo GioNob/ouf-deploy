@@ -6,6 +6,7 @@ on:
       - scripts/activate-discovery-coordinator-boot-20261109.py
       - tests/test_discovery_boot_activation.py
       - tests/native_discovery_boot_activation.py
+      - tests/native_discovery_boot_systemd.py
       - evidence/discovery-coordinator-staged-operator-20261109.json
       - .github/workflows/discovery-successor-boot.yml
   pull_request:
@@ -13,6 +14,7 @@ on:
       - scripts/activate-discovery-coordinator-boot-20261109.py
       - tests/test_discovery_boot_activation.py
       - tests/native_discovery_boot_activation.py
+      - tests/native_discovery_boot_systemd.py
       - evidence/discovery-coordinator-staged-operator-20261109.json
       - .github/workflows/discovery-successor-boot.yml
 permissions: {contents: read}
@@ -37,6 +39,8 @@ jobs:
           done
       - name: Receipt and systemd command contracts
         run: sudo python3 -I -B -m unittest discover -s tests -p test_discovery_boot_activation.py -v
+      - name: Real systemd empty and populated command arrays
+        run: sudo --preserve-env=GITHUB_ACTIONS python3 -I -B tests/native_discovery_boot_systemd.py
       - name: Install nft for disposable namespace
         run: |
           sudo apt-get update -qq

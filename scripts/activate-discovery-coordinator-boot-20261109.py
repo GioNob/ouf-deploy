@@ -24,6 +24,8 @@ STAGE_SHA = '8e9cfe1e8073d33423e11f51e0a790530ec14e3cedbc6a5620a0ecff962e815d'
 STAGED = Path('/etc/ouf/deploy-snapshots/discovery-coordinator-successor-20261109-uz9gw5ny')
 RESULT = Path('/var/lib/ouf-storage-migration/discovery-coordination-stage-5lxy439w/result.json')
 RESULT_SHA = '855e637ce5585269c4eae33b13b23b4b3e1a92c3b305c1d1ba3a6cabfc4ca45f'
+HELD_RESULT = Path('/var/lib/ouf-storage-migration/discovery-boot-activation-a2tzafec/result.json')
+HELD_RESULT_SHA = '865ee49a11d64aba5e2e72858cf757511c199e04ffb84948c33fd515ae7c2466'
 PREPARATION_SHA = '3c693988ded91ecaa29c491c7bf5b537adf78a93c1e2511eada28f7af0f40b21'
 OWNER_SHA = '5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd970dd8df'
 PROFILE_SHA = '8135b9839e8ba5dc2e98068c0dd6f631d56f1fd7b91e2e4d456ea3f5d1a35fb7'
@@ -70,6 +72,14 @@ def sealed(c, path, expected):
 
 def verify_receipt(raw):
     need(sha(raw) == RESULT_SHA, 'EXACT_STAGED_RECEIPT_REQUIRED')
+
+
+def verify_prepublication_hold(raw):
+    need(sha(raw) == HELD_RESULT_SHA, 'EXACT_PREPUBLICATION_HOLD_REQUIRED')
+    held = json.loads(raw)
+    need(held['reason'] == 'SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED'
+         and held['operationIntentPresent'] is False and held['publicationAttempted'] is False
+         and held['activeInstallationPointerChanged'] is False, 'PREPUBLICATION_HOLD_REQUIRED')
 
 
 def context(c, old_pointer):
@@ -160,13 +170,32 @@ PROPERTIES = ('LoadState','ActiveState','SubState','MainPID','ControlPID','NeedD
               'ReadWritePaths','ReadOnlyPaths','InaccessiblePaths','PrivateNetwork','PrivateUsers')
 
 
-def loaded(command, run=systemctl):
+def empty_guard_prestart():
+    """Prove an empty command array; systemctl may omit empty structured values."""
+    args = ['/usr/bin/busctl', '--system', '--no-pager', 'get-property',
+            'org.freedesktop.systemd1',
+            '/org/freedesktop/systemd1/unit/ouf_2dsemantic_2dboot_2dguard_2eservice',
+            'org.freedesktop.systemd1.Service', 'ExecStartPre']
+    with tempfile.TemporaryFile() as output:
+        result = subprocess.run(args, stdin=subprocess.DEVNULL, stdout=output,
+                                stderr=subprocess.DEVNULL, timeout=15, env=ENV)
+        output.seek(0); raw = output.read(65537)
+    need(result.returncode == 0 and raw == b'a(sasbttttuii) 0\n',
+         'EMPTY_GUARD_PRESTART_NOT_PROVEN')
+
+
+def loaded(command, run=systemctl, prove_empty=empty_guard_prestart):
     result = {}
     for unit, prop in (('ouf-semantic-boot-guard.service','ExecStart'), ('docker.service','ExecStartPre')):
         raw = run(['show',unit,'--property='+','.join(PROPERTIES),'--no-pager'])
         rows = {}
         for line in raw.splitlines():
             key, sep, value = line.partition('='); need(sep and key not in rows, 'TYPED_SYSTEMD_METADATA_REQUIRED'); rows[key] = value
+        # Only the observed guard omission has a typed fallback. Never default
+        # unknown/missing fields, or Docker's required pre-start command, to empty.
+        if unit == 'ouf-semantic-boot-guard.service' and set(PROPERTIES)-set(rows) == {'ExecStartPre'}:
+            prove_empty()
+            rows['ExecStartPre'] = ''
         need(set(rows) == set(PROPERTIES) and rows['LoadState'] == 'loaded'
              and rows['NeedDaemonReload'] == 'no' and rows['ControlPID'] == '0', 'SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED')
         commands = re.findall(r'argv\[\]=(.*?) ;', rows[prop])
@@ -280,6 +309,8 @@ def main():
         need(os.geteuid() == 0 and sys.flags.isolated and sys.dont_write_bytecode, 'ISOLATED_ROOT_REQUIRED')
         os.umask(0o077); c = dependency(); report['phase'] = 'VERIFY_COMPLETED_SUCCESSOR'
         need(not os.path.lexists(CLAIM), 'EXISTING_ACTIVATION_INTENT_PRESERVED')
+        verify_prepublication_hold(c.p.read_private(HELD_RESULT))
+        report['reconciledPrepublicationHold'] = True
         old_pointer = c.p.read_private(POINTER); ctx = context(c, old_pointer)
         work = Path(tempfile.mkdtemp(prefix='discovery-boot-activation-', dir=CLAIM.parent)); report['privateEvidenceDirectory'] = str(work)
         with locks(c, ctx):

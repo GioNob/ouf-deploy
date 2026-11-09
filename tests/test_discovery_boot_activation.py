@@ -32,6 +32,13 @@ def loader(rows):
 
 
 class BootActivation(unittest.TestCase):
+    def test_continuation_binds_exact_preserved_prepublication_hold(self):
+        receipt=json.loads((ROOT/'evidence/discovery-successor-boot-held-operator-20261109.json').read_bytes())
+        raw=m.encoded(receipt)+b'\n'; self.assertEqual(1195,len(raw));m.verify_prepublication_hold(raw)
+        receipt['publicationAttempted']=True
+        with self.assertRaisesRegex(RuntimeError,'EXACT_PREPUBLICATION_HOLD_REQUIRED'):
+            m.verify_prepublication_hold(m.encoded(receipt)+b'\n')
+
     def test_exact_complete_staged_receipt_uses_producer_serialization(self):
         receipt = json.loads((ROOT/'evidence/discovery-coordinator-staged-operator-20261109.json').read_bytes())
         raw = m.encoded(receipt)+b'\n'; self.assertEqual(1646,len(raw)); m.verify_receipt(raw)
@@ -82,6 +89,54 @@ class BootActivation(unittest.TestCase):
             rows=metadata('exact');rows['docker.service'][key]=value
             with self.subTest(key=key),self.assertRaisesRegex(RuntimeError,'SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED'):
                 m.loaded('exact',loader(rows))
+
+    def test_observed_guard_omission_requires_typed_empty_proof(self):
+        rows=metadata('exact'); del rows['ouf-semantic-boot-guard.service']['ExecStartPre']; calls=[]
+        result=m.loaded('exact',loader(rows),lambda:calls.append('typed-read'))
+        self.assertEqual(['typed-read'],calls)
+        self.assertEqual('',result['ouf-semantic-boot-guard.service']['ExecStartPre'])
+        def denied(): raise RuntimeError('EMPTY_GUARD_PRESTART_NOT_PROVEN')
+        with self.assertRaisesRegex(RuntimeError,'EMPTY_GUARD_PRESTART_NOT_PROVEN'):
+            m.loaded('exact',loader(rows),denied)
+
+    def test_other_omissions_are_not_defaulted(self):
+        for unit in metadata('exact'):
+            for key in m.PROPERTIES:
+                if unit.startswith('ouf-') and key == 'ExecStartPre': continue
+                rows=metadata('exact'); del rows[unit][key]
+                with self.subTest(unit=unit,key=key),self.assertRaisesRegex(RuntimeError,'SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED'):
+                    m.loaded('exact',loader(rows),lambda:self.fail('unexpected fallback'))
+
+    def test_typed_empty_proof_requires_exact_signature_and_zero_elements(self):
+        def call(raw, code=0):
+            def fake(args, **kw):
+                self.assertEqual(['/usr/bin/busctl','--system','--no-pager','get-property',
+                    'org.freedesktop.systemd1',
+                    '/org/freedesktop/systemd1/unit/ouf_2dsemantic_2dboot_2dguard_2eservice',
+                    'org.freedesktop.systemd1.Service','ExecStartPre'],args)
+                self.assertEqual(15,kw['timeout']); kw['stdout'].write(raw)
+                return types.SimpleNamespace(returncode=code)
+            with patch.object(m.subprocess,'run',fake): m.empty_guard_prestart()
+        call(b'a(sasbttttuii) 0\n')
+        for raw,code in [(b'',0),(b'as 0\n',0),(b'a(sasbttttuii) 1 "foreign"\n',0),
+                         (b'a(sasbttttuii) 0\n',1),(b'a(sasbttttuii) 0\nextra\n',0)]:
+            with self.subTest(raw=raw,code=code),self.assertRaisesRegex(RuntimeError,'EMPTY_GUARD_PRESTART_NOT_PROVEN'):
+                call(raw,code)
+
+    def test_prestart_proof_preserves_metadata_comparison_and_reload_denial(self):
+        before=metadata('old'); after=metadata('new')
+        del before['ouf-semantic-boot-guard.service']['ExecStartPre']
+        del after['ouf-semantic-boot-guard.service']['ExecStartPre']
+        before=m.loaded('old',loader(before),lambda:None)
+        after=m.loaded('new',loader(after),lambda:None)
+        m.verify_loaded_delta(before,after,'new',False)
+        after['ouf-semantic-boot-guard.service']['ExecStartPre']='foreign'
+        with self.assertRaisesRegex(RuntimeError,'UNRELATED_LOADED_UNIT_METADATA_CHANGED'):
+            m.verify_loaded_delta(before,after,'new',False)
+        rows=metadata('old'); del rows['ouf-semantic-boot-guard.service']['ExecStartPre']
+        rows['ouf-semantic-boot-guard.service']['NeedDaemonReload']='yes'
+        with self.assertRaisesRegex(RuntimeError,'SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED'):
+            m.loaded('old',loader(rows),lambda:None)
 
     def test_pid_and_unrelated_metadata_changes_refused(self):
         before=metadata('old');after=metadata('new');m.verify_loaded_delta(before,after,'new',False)
