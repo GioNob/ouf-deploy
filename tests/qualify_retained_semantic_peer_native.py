@@ -85,7 +85,7 @@ class NativePeer(unittest.TestCase):
             baseline = (ROOT / 'tools/semantic_frame_compiler/containerd-overlayfs-southbound.json').read_bytes()
             recipe = compile_peer(baseline, retained, context, engine_profile=ENGINE)
             io = reader.PeerIO(private, native, work, cid, pid, matches[0] + '/' + cid,
-                               runc='/opt/ouf-docker-29/runc')
+                               runc='/usr/sbin/ouf-peer-ci-runc')
             observed = json.loads(io.read_bundle(matches[0] + '/' + cid + '/config.json'))
             (work / 'expected-oci.json').write_text(json.dumps(recipe['expectedOci'], indent=2))
             (work / 'observed-oci.json').write_text(json.dumps(observed, indent=2))
