@@ -1,0 +1,62 @@
+{
+  "activityBefore": {
+    "handoff_intake": {
+      "PROCESSED": 34
+    },
+    "lake_maintenance_schedule": {
+      "READY": 1
+    },
+    "lake_object": {
+      "VERIFIED": 110
+    },
+    "lake_shadow_rebuild_plan": {},
+    "maintenanceDue": 0,
+    "materialization_job": {
+      "SUCCEEDED": 34
+    },
+    "unexpiredLeases": {
+      "lake_maintenance_schedule": 0,
+      "lake_object": 0,
+      "lake_shadow_rebuild_plan": 0,
+      "materialization_job": 0
+    }
+  },
+  "applicationStartDispatched": true,
+  "applicationStartupMayAccessDatabaseAndExistingWork": true,
+  "applicationStartupMayAccessS3": true,
+  "automaticReplay": false,
+  "automaticRollback": false,
+  "bothNetworkAddressesAliasesMacPreserved": true,
+  "businessRequestsIssued": 0,
+  "candidateImageId": "sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec",
+  "credentialFileContentsRead": 0,
+  "credentialFileWrites": 0,
+  "credentialValuesEmitted": false,
+  "databaseWritesByScript": 0,
+  "environmentPreservedExceptImageJavaVersion": true,
+  "explicitMigrationDispatched": false,
+  "gatewayWrites": 0,
+  "imageImported": true,
+  "javaProcessArgumentsPreserved": true,
+  "migrationHistoryUnchanged": true,
+  "observedAt": "2026-11-09T05:58:41.161501+00:00",
+  "oldMacTransition": "TWO_NETWORK_BACKEND_LEGACY_MAC_DETACH_LAST_V1",
+  "oldMinioWriterStopped": true,
+  "oldRetainedStopped": true,
+  "oldStopDispatched": true,
+  "permissionChanges": 0,
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/udp-wide-upgrade-20261109",
+  "readOnlyDatabaseSessionsAttempted": 3,
+  "readinessHttpStatus": 200,
+  "readinessUp": true,
+  "replacementContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7",
+  "replacementGateStarted": true,
+  "retainedRowsUnchanged": true,
+  "retainedTableCount": 59,
+  "s3RequestsByScript": 0,
+  "schema": "ouf.udp-wide-upgrade.v1",
+  "status": "UDP_WIDE_1024_READY",
+  "storageMountsAndTruststorePreserved": true,
+  "truststoreReads": 3,
+  "wideUdpFunctionalTested": false
+}

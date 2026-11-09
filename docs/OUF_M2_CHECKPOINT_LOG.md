@@ -479,3 +479,10 @@ Scaricato artifact13635797332 e verificati ZIP/gzip/blob/JAR/resources; il link 
 CI42568440028 source 2a9e90cfb4a18d8a221ece1cde1019257684bdf5: classic/containerd,7 guard+2 cicli nativi ciascuno,zero skip,log letti. V36/59 tabelle sintetiche preservate,ruolo ordinario,due reti e legacy MAC corretti,JVM TLS con CA privata. Il precedente CI42568313188 falliva prima dell'avvio UDP per attesa PostGIS socket anziché TCP; fixture corretta. [Qualifica](../evidence/udp-wide-upgrade-qualification-20261109.json).
 
 Delivery b9fa2199e22dadfd75957f773d5324228e1da4ff,8 file riletti/hash verificati,wrapper riletto e Bash verificato. [Comando](OUF_UDP_WIDE_UPGRADE_20261108.md). Esecuzione VPS attesa, nessun effetto target dell'agente; Ingestion/Onboarding/MCP/Semantic già pronti non toccati. F1 PASS,F2–F6 aperti. Nessun merge/E2E dichiarato.
+
+
+## 9 novembre 2026 — UDP1024 installato, discovery ancora da attivare
+
+**UDP 1024 è installato e pronto.** La [ricevuta delle 06:58 CET del 9 novembre](../evidence/udp-wide-ready-operator-20261109.json) conferma `UDP_WIDE_1024_READY`: nuovo container `ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7`, immagine `sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec`, readiness HTTP 200. Storia delle migrazioni e 59 tabelle conservate, entrambe le reti/IP/MAC/alias, mount, truststore e argomenti Java preservati; vecchio UDP e vecchio writer MinIO spenti. Tre letture DB READ ONLY, nessun migratore esplicito o richiesta business/S3 dello script. Il normale avvio può accedere a DB e S3. **Non ripetere l'installer.** La prova funzionale1024 e la normale operazione lake restano aperte.
+
+STATE/MiniPET2.31/AGENTS/registro/runbook aggiornati dalla ricevuta dell'operatore. Installazione dei componenti completata, non prova funzionale1024. Prossimo intervento: lettura mirata dei binding provider/southbound e attivazione MCP, preservando Teatri e la priorità SeaweedFS→E2E. F1 PASS; F2–F6 aperti. Nessun merge o nuova modifica target dell'agente.

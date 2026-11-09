@@ -1,6 +1,6 @@
-# UDP 1024: sostituzione qualificata, esecuzione VPS attesa
+# UDP 1024: installazione completata, prova funzionale aperta
 
-9 novembre 2026, Europe/Rome. Ingestion, Onboarding, MCP e Semantic aggiornati sono già pronti: non ripetere i loro installer. UDP usa ancora SeaweedFS con il codice precedente. Questo passo sostituisce soltanto il container UDP mantenendo configurazione, reti e dati.
+9 novembre 2026, Europe/Rome. **UDP 1024 è installato e pronto.** La [ricevuta delle 06:58 CET del 9 novembre](../evidence/udp-wide-ready-operator-20261109.json) conferma `UDP_WIDE_1024_READY`: nuovo container `ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7`, immagine `sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec`, readiness HTTP 200. Storia delle migrazioni e 59 tabelle conservate, entrambe le reti/IP/MAC/alias, mount, truststore e argomenti Java preservati; vecchio UDP e vecchio writer MinIO spenti. Tre letture DB READ ONLY, nessun migratore esplicito o richiesta business/S3 dello script. Il normale avvio può accedere a DB e S3. **Non ripetere l'installer.** La prova funzionale1024 e la normale operazione lake restano aperte.
 
 ## Risultato acquisito
 
@@ -20,32 +20,16 @@ Il candidato archiviato raggiunge readiness200 con utente10004:10004 e ruolo DB 
 
 La prima esecuzione CI42568313188 falliva durante la preparazione PostGIS usa-e-getta: controllo socket locale prima del listener TCP definitivo. Corretto solo il controllo della fixture; nessun effetto VPS.
 
-## Comando sul VPS
+## Consegna eseguita — non ripetere
 
-Delivery b9fa2199e22dadfd75957f773d5324228e1da4ff; wrapper SHA256 f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225. Otto sorgenti/helper riletti e verificati; wrapper riletto e sintassi Bash verificata. Download pubblico per run/nome provato e identico allo ZIP GitHub. Il precedente URL per solo artifactID restituiva404: non è usato nella consegna.
-
-```bash
-(
-  set -euo pipefail
-  ouf_udp_install=$(mktemp /tmp/ouf-udp-wide-install.XXXXXX)
-  trap 'rm -f -- "$ouf_udp_install"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/b9fa2199e22dadfd75957f773d5324228e1da4ff/scripts/install-udp-wide-public-archive-20261109.sh' \
-    -o "$ouf_udp_install"
-  printf '%s  %s\n' 'f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225' "$ouf_udp_install" | sha256sum -c -
-  bash "$ouf_udp_install"
-)
-```
-
-Il wrapper accetta anche il percorso di uno ZIP locale come unico argomento, verificando lo stesso hash. Non richiede GitHub CLI.
+Delivery `b9fa2199e22dadfd75957f773d5324228e1da4ff`; wrapper SHA256 `f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225`. Otto sorgenti/helper e wrapper riletti e verificati prima della consegna. Il comando storico è conservato nella versione Git precedente; la ricevuta conferma il completamento sul VPS.
 
 L'installer verifica lo stesso frame API1.44 del preflight, JAR e truststore; importa il pacchetto, ricontrolla attività e storia con sessioni READ ONLY, quindi ferma il vecchio UDP e conserva entrambi gli endpoint nel sostituto. Richiede assenza di lavoro incompleto e manutenzione non prevista nei successivi10minuti. Il poll di manutenzione non modifica righe quando non trova un lavoro dovuto, secondo il codice del repository. Non introduce tolleranze sui campi o scritture alle pianificazioni. Confronta storia e impronte delle59 tabelle prima dello stop, dopo lo stop e dopo l'avvio; i payload rimangono nel database.
 
 Conserva ENV (incluso Spring JSON), argomenti Java, file credenziali, truststore e mount; cambia soltanto immagine/metadati di provenienza e dichiarazione della versione Java dell'immagine. Nessun migratore esplicito, replay, nuovo upload o richiesta business. Il normale avvio applicativo può accedere a DB/S3 secondo la configurazione esistente. Vecchio UDP e vecchio writer MinIO restano spenti.
 
-Esito atteso: **UDP_WIDE_1024_READY**. La ricevuta deve attestare readiness,59 tabelle e storia invariati, reti e storage conservati. Se HELD, conservare il JSON e le prove private; non rilanciare o riavviare il vecchio. Un tentativo già iniziato non viene ripetuto automaticamente.
+Esito acquisito: **UDP_WIDE_1024_READY**, readiness200 e storia/59 tabelle invariate. È una ricevuta dell'operatore; nessuna nuova ispezione live dell'agente. La procedura completata non va rilanciata.
 
-## Dopo la ricevuta
+## Passo successivo
 
 Readiness non dimostra UDP funzionale1024 né E2E. Seguono verifica funzionale dei moduli, credenziale/trasporto/delega/grant e attivazione discovery, associazione delle colonne Teatri a proprietà OntoPiA, review THS→Ingestion→UDP→grafo. Conservare asset/profilo Teatri. F2–F6 restano aperti.

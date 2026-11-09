@@ -15,7 +15,7 @@ Conservare Teatri senza nuovo upload o profilo:
 
 Gateway già applicato e verificato: **87 route, otto modifiche, 79 conservate**, owner invariato. [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json). Non rieseguire l'applicazione del delta.
 
-## Semantic, MCP, Onboarding e Ingestion pronti; prossimo componente UDP
+## Componenti aggiornati e pronti; discovery ancora da attivare
 
 **Semantic V12 è pronto.** La [ricevuta operatore delle 19:59 CET](../evidence/semantic-discovery-key-repaired-operator-20261108.json) conferma `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`: nuovo container `ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a`, stessa immagine candidata c2dae77b, chiave esistente uguale al firmatario Gateway. Modificato soltanto `OUF_SEMANTIC_DISCOVERY_DELEGATION_KEY_FILE`; mount, indirizzi e alias conservati. Storia V1–V12 invariata, nessun migratore esplicito, nuova chiave, import immagine o route write. V10 e V12 fallito sono conservati spenti. Non ripetere la correzione.
 
@@ -29,13 +29,13 @@ I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o
 
 **Ingestion 1024 è installato e pronto.** La [ricevuta delle 22:48 CET](../evidence/ingestion-wide-ready-operator-20261108.json) conferma INGESTION_WIDE_1024_READY, readiness 200 e nuovo container `a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020`, immagine `sha256:562e4c6e19d5227f00fb3159deb506da256d2245ee4a40a652b0c03865704baa`. Storia delle migrazioni, sei tabelle di lavoro e campi stabili delle pianificazioni invariati; entrambe le pianificazioni DISABLED, consumate e senza lease. In questa finestra anche i due metadata polling sono invariati: non è una prova di rinnovo periodico. Endpoint/IP/MAC/alias, mount, ENV e argomenti conservati; Flyway disabilitato, vecchio trattenuto spento. Nessun nuovo import/stop/migratore esplicito; tre letture READ ONLY. **Non ripetere installer o continuazione.** La prova funzionale1024 resta aperta. [Esito e limiti](OUF_INGESTION_WIDE_UPGRADE_20261108.md).
 
-**UDP 1024: installer qualificato e consegnato, esecuzione VPS attesa.** Preflight delle06:27CET acquisito: V36 esatta,34 handoff e34 job conclusi,110 oggetti VERIFIED,nessuna lease attiva alla lettura. Archivio esatto scaricato e hash verificati. CI42568440028 classic/containerd PASS, zero skip: due profili legacy MAC reali, due reti preservate, candidato avviato con readiness200 e CA privata, storia/59 tabelle sintetiche invariate. Nessun nuovo effetto target. [Comando corrente, prove e limiti](OUF_UDP_WIDE_UPGRADE_20261108.md).
+**UDP 1024 è installato e pronto.** La [ricevuta delle 06:58 CET del 9 novembre](../evidence/udp-wide-ready-operator-20261109.json) conferma `UDP_WIDE_1024_READY`: nuovo container `ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7`, immagine `sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec`, readiness HTTP 200. Storia delle migrazioni e 59 tabelle conservate, entrambe le reti/IP/MAC/alias, mount, truststore e argomenti Java preservati; vecchio UDP e vecchio writer MinIO spenti. Tre letture DB READ ONLY, nessun migratore esplicito o richiesta business/S3 dello script. Il normale avvio può accedere a DB e S3. **Non ripetere l'installer.** La prova funzionale1024 e la normale operazione lake restano aperte.
 
 ## Sequenza rimanente
 
-1. Eseguire l'installer UDP qualificato e restituire la ricevuta, attesa UDP_WIDE_1024_READY. [Comando immutabile](OUF_UDP_WIDE_UPGRADE_20261108.md). Non ripetere il preflight né gli installer già completati. In caso HELD conservare le prove, senza rilancio.
-2. Verificare il supporto funzionale1024 dei moduli aggiornati; per l'E2E conservare asset/profilo Teatri. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
-3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
+1. Verificare i binding attuali del provider/southbound, la credenziale montata e il meccanismo di attivazione degli strumenti. L'ultima lettura riportava provider/worker disabilitati e nessun mount della credenziale; questi punti richiedono una lettura corrente mirata, non un altro rollout UDP.
+2. Configurare e verificare trasporto, credenziale, delega e grant discovery; attivare gli strumenti previsti. Il gateway southbound dichiarato è `ouf-semantic-southbound-v2:10443`; le route APISIX pubbliche da sole non ne provano il funzionamento.
+3. Verificare il supporto funzionale1024 dei moduli aggiornati su un fixture distinto; per l'E2E conservare asset/profilo Teatri. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 5. Completare review THS → Ingestion → UDP e leggere il grafo; ripetere con un secondo CSV senza riparazioni manuali, quindi provare la ripresa da una nuova conversazione.
 

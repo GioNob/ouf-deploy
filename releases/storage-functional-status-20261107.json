@@ -4,7 +4,7 @@
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_UDP_1024_INSTALLER_QUALIFIED_TARGET_PENDING",
+  "status": "F1_PASS_WIDE_COMPONENTS_READY_DISCOVERY_ACTIVATION_PENDING",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute pinned qualified UDP1024 installer and return receipt; preserve SeaweedFS/TLS, existing data and stopped MinIO writers. Do not replay completed preflight/installers. Then functional1024, governed discovery activation, retained Teatri mapping and E2E.",
+  "nextAction": "Read current provider/southbound and MCP activation bindings, then configure missing discovery dependencies and activate tools. Preserve existing Teatri asset/profile; functional1024 and normal UDP lake operation/E2E remain unproven. Completed installers must not be replayed.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -868,7 +868,7 @@
     "profileAuthorizationProposalState": "PUBLISHED"
   },
   "wideObjects1024": {
-    "status": "ONBOARDING_MCP_GATEWAY_INSTALLED_INGESTION_UDP_PENDING",
+    "status": "GATEWAY_MCP_ONBOARDING_INGESTION_UDP_INSTALLED_READY_FUNCTIONAL_TEST_PENDING",
     "requiredMaxColumns": 1024,
     "reason": "SUE instances may contain 300–400 fields; one logical object",
     "document": "docs/OUF_WIDE_OBJECTS_1024_20261107.md",
@@ -1498,7 +1498,7 @@
         "candidateStartupScope": "NATIVE_CI_NOT_TARGET"
       },
       "udpWideUpgrade": {
-        "status": "QUALIFIED_DELIVERED_NOT_TARGET_EXECUTED",
+        "status": "UDP_WIDE_1024_READY",
         "sourceCommit": "2a9e90cfb4a18d8a221ece1cde1019257684bdf5",
         "candidateSource": "c0cf1702b2eb971718996a959414caee004af494",
         "deliveryCommit": "b9fa2199e22dadfd75957f773d5324228e1da4ff",
@@ -1518,9 +1518,27 @@
         "wrapperReadBack": true,
         "qualification": "evidence/udp-wide-upgrade-qualification-20261109.json",
         "downloadedPackage": "evidence/udp-wide-downloaded-package-20261109.json",
-        "targetExecuted": false,
-        "readinessProvesFunctional1024": false
-      }
+        "targetExecuted": true,
+        "readinessProvesFunctional1024": false,
+        "operatorReceipt": "evidence/udp-wide-ready-operator-20261109.json",
+        "observedAt": "2026-11-09T05:58:41.161501+00:00",
+        "replacementContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7",
+        "candidateImageId": "sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec",
+        "readinessHttpStatus": 200,
+        "readinessUp": true,
+        "migrationHistoryUnchanged": true,
+        "retainedRowsUnchanged": true,
+        "retainedTableCount": 59,
+        "storageMountsAndTruststorePreserved": true,
+        "bothNetworkAddressesAliasesMacPreserved": true,
+        "oldRetainedStopped": true,
+        "oldMinioWriterStopped": true,
+        "businessRequestsIssued": 0,
+        "s3RequestsByScript": 0,
+        "explicitMigrationDispatched": false,
+        "wideUdpFunctionalTested": false
+      },
+      "currentUdpContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7"
     }
   }
 }
