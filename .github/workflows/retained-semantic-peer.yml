@@ -1,0 +1,88 @@
+name: Retained Semantic peer recipe
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - tools/semantic_frame_compiler/compile_retained_semantic_peer.py
+      - scripts/read-retained-semantic-peer-20261109.py
+      - tests/test_retained_semantic_peer.py
+      - tests/qualify_retained_semantic_peer_native.py
+      - .github/workflows/retained-semantic-peer.yml
+  pull_request:
+    paths:
+      - tools/semantic_frame_compiler/compile_retained_semantic_peer.py
+      - scripts/read-retained-semantic-peer-20261109.py
+      - tests/test_retained_semantic_peer.py
+      - tests/qualify_retained_semantic_peer_native.py
+      - .github/workflows/retained-semantic-peer.yml
+permissions: {contents: read, actions: read}
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Independent expectation and negative matrix
+        run: python3 -m unittest discover -s tests -p test_retained_semantic_peer.py -v
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: GioNob/ouf-semantic-registry
+          name: m2-native-credential-discovery-offline-candidate-41263544004
+          run-id: 41263544004
+          github-token: ${{ github.token }}
+          path: registry-candidate
+      - name: Verify exact archived payload and publisher
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          (cd registry-candidate && sha256sum -c SHA256SUMS)
+          echo '7f6482b79589fd1063eaf96508ea948d6411a7b4f0dbe76d663746a08953a223  registry-candidate/image.docker.tar' | sha256sum -c -
+          echo 'e69f961a06fa37d019f4015d98dd5419ee9da1fa1387b5b0edaac4214a0cb016  registry-candidate/application.jar' | sha256sum -c -
+          gh attestation verify registry-candidate/image.docker.tar --repo GioNob/ouf-semantic-registry \
+            --signer-workflow GioNob/ouf-semantic-registry/.github/workflows/m2-discovery-composed-candidate.yml \
+            --source-digest 4c8bcdeffd7c7cd239fc5a18bc28569f07b9bd08 \
+            --source-ref refs/heads/fix/m2-native-provider-credential-custody-20261101 \
+            --deny-self-hosted-runners --bundle registry-candidate/provenance.json
+      - name: Reuse exact historical Docker29.8.1 in isolated hosted data root
+        env: {SELECTED_STORE: containerd}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check -
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          Path('/tmp/ouf-docker-29.json').write_text(json.dumps({'features':{'containerd-snapshotter':os.environ['SELECTED_STORE']=='containerd'},'exec-opts':['native.cgroupdriver=systemd']}))
+          PY_CONFIG
+          sudo systemd-run --unit=ouf-docker-mac-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_MAC_ENGINE_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Exact image, retained request, complete OCI and reciprocal links
+        run: sudo env GITHUB_ACTIONS=true PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin python3 -I -B -S tests/qualify_retained_semantic_peer_native.py
+      - name: Retain disposable fixture comparison on failure
+        if: failure()
+        run: |
+          sudo journalctl --unit=ouf-docker-mac-daemon --no-pager --lines=50
+          sudo find /var/lib -maxdepth 2 -type f -path '/var/lib/retained-peer-ci-*/*-oci.json' -exec sh -c 'cp "$1" "/tmp/$(basename "$(dirname "$1")")-$(basename "$1")"' sh {} \;
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: retained-peer-comparison-${{ github.run_id }}
+          path: /tmp/retained-peer-ci-*-oci.json
+          if-no-files-found: warn
+          retention-days: 7
