@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified coordinator quiescence after the completed southbound placeholder removal. Recheck current absence and empty owned sets under existing locks, invoke existing Coordinator.quiesce without lease/start authorization. Then qualify a fresh admitted provider generation, Semantic credential/TLS, backlog/grants and MCP PR84 installation.",
+  "nextAction": "Run the qualified read-only nft drift comparison: retained driver exact seal, current default/numeric renderings and bound installed boot baseline. Quiescence was held before intent or writes; do not rerun or rebind hashes. Resolve the observed difference before quiescence and fresh provider admission.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1683,7 +1683,7 @@
         "coordinatorQuiescence": {
           "schema": "ouf.discovery-coordinator-quiescence-qualification.v1",
           "date": "2026-11-09",
-          "status": "QUALIFIED_TARGET_PENDING",
+          "status": "HELD",
           "sourceCommit": "3c961d3e897d3573e6c7af2abe49cac8f53c9f45",
           "script": "scripts/quiesce-discovery-coordinator-20261109.py",
           "scriptSha256": "23028447dbc9980f1e04a3c2f4583d9d9ec16624c9200854955b1ba72e69baa8",
@@ -1709,7 +1709,7 @@
           "skips": 0,
           "nativeScope": "REAL_NFTABLES_AND_PRIVATE_COORDINATOR_JOURNAL_IN_DISPOSABLE_NETWORK_AND_MOUNT_NAMESPACES",
           "fullVpsControllerTested": false,
-          "targetExecuted": false,
+          "targetExecuted": true,
           "sourceReadBack": true,
           "bashSyntaxChecked": true,
           "plannedCoordinatorTransitions": [
@@ -1749,10 +1749,75 @@
             "Quiescence does not admit or start a new provider generation"
           ],
           "qualification": "evidence/discovery-coordinator-quiescence-qualification-20261109.json",
-          "sourceFilesReadBack": 11
+          "sourceFilesReadBack": 11,
+          "operatorReceipt": "evidence/discovery-coordinator-quiescence-held-operator-20261109.json",
+          "observedAt": "2026-11-09T08:31:42.432665+00:00",
+          "reason": "NFT_INSTALLATION_STRUCTURE_DRIFT",
+          "operationIntentPresent": false,
+          "nftFlushBatchesAttempted": 0,
+          "coordinatorJournalTransitions": [],
+          "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-coordinator-quiesce-j3rrvd1i",
+          "targetQuiescenceProven": false,
+          "targetExecutionScope": "PREFLIGHT_EXECUTED_HELD_BEFORE_INTENT",
+          "fullVpsControllerCompleted": false
         },
-        "currentBlock": "COORDINATOR_BLOCKED_AFTER_PLACEHOLDER_REMOVAL_QUIESCENCE_READY_TARGET_PENDING",
-        "coordinatorQuiescenceCommandDelivered": true
+        "currentBlock": "NFT_INSTALLATION_STRUCTURE_DRIFT_BEFORE_INTENT_READ_ONLY_COMPARISON_READY",
+        "coordinatorQuiescenceCommandDelivered": true,
+        "nftDriftRead": {
+          "schema": "ouf.discovery-nft-drift-read-qualification.v1",
+          "date": "2026-11-09",
+          "status": "QUALIFIED_TARGET_PENDING",
+          "sourceCommit": "fcc4b80ade8a5d16e44c3e6b60d6305990beec76",
+          "script": "scripts/read-discovery-nft-drift-20261109.py",
+          "scriptSha256": "1c30699b12129fd2c322753167932871a171e744c8d780a31142789eb4326b06",
+          "deliveryScript": "scripts/deliver-discovery-nft-drift-20261109.sh",
+          "deliverySha256": "866263d9273e25c03ab0375d693d0f6ca5b3b9be63fd5643be71c77e7a94f870",
+          "prerequisiteReceipt": "evidence/discovery-coordinator-quiescence-held-operator-20261109.json",
+          "privateReceiptCanonicalSha256": "87b112700f76483227c5db8e0fa08b047f3fdd27886d1495e862263c03b0743a",
+          "ciRun": 42587680408,
+          "ciJob": 129061314739,
+          "ciHeadSha": "fcc4b80ade8a5d16e44c3e6b60d6305990beec76",
+          "conclusion": "success",
+          "logsRead": true,
+          "unitTests": 8,
+          "nativeTests": 2,
+          "skips": 0,
+          "nativeScope": "REAL_NFT_READS_AND_TABLE_RECREATION_IN_DISPOSABLE_LINUX_NAMESPACE",
+          "fullVpsControllerTested": false,
+          "targetExecuted": false,
+          "sourceFilesReadBack": 12,
+          "bashSyntaxChecked": true,
+          "plannedNftTableReads": 8,
+          "maxMetadataFiles": 32,
+          "deadlineSeconds": 120,
+          "plannedNftWrites": 0,
+          "plannedRuntimeJournalWrites": 0,
+          "plannedServiceStarts": 0,
+          "plannedServiceStops": 0,
+          "plannedDatabaseRequests": 0,
+          "plannedProviderRequests": 0,
+          "plannedS3Requests": 0,
+          "plannedTokenRequests": 0,
+          "plannedCredentialFileContentsRead": 0,
+          "plannedDnsQueries": 0,
+          "quiescenceImplemented": false,
+          "expectedHashesChanged": false,
+          "automaticReplayAllowed": false,
+          "causeOfTargetDriftKnown": false,
+          "compares": [
+            "retained preflight numeric tables",
+            "fresh default and numeric nft output, twice each",
+            "retained driver exact structure hash",
+            "hash-bound installed boot owner and boot footprint"
+          ],
+          "limitations": [
+            "Boot footprint deliberately excludes metainfo, native handles and counter/expiry fields; diagnostic only, not ownership adoption",
+            "Installed pointer files do not prove effective loaded systemd configuration",
+            "Changes in native handles reproduced in CI do not establish target historical cause",
+            "Missing or contradictory boot baseline is reported explicitly without altering rules or authority"
+          ],
+          "qualification": "evidence/discovery-nft-drift-read-qualification-20261109.json"
+        }
       },
       "discoveryLifecycleRead": {
         "status": "DISCOVERY_LIFECYCLE_READ_COMPLETE",

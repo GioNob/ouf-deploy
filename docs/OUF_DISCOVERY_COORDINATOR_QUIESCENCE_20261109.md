@@ -1,6 +1,6 @@
 # Discovery: quiescenza del coordinatore
 
-9 novembre 2026. **Comando qualificato, esecuzione VPS pendente.** La [rimozione del segnaposto](../evidence/discovery-placeholder-removed-operator-20261109.json) è conclusa; non va ripetuta.
+9 novembre 2026. **Eseguito sul VPS alle 09:31 CET: HELD per NFT_INSTALLATION_STRUCTURE_DRIFT, prima di intento o scritture. Non rilanciare.** [Ricevuta](../evidence/discovery-coordinator-quiescence-held-operator-20261109.json). Il prossimo passo è il [confronto in sola lettura](OUF_DISCOVERY_NFT_DRIFT_READ_20261109.md). La [rimozione del segnaposto](../evidence/discovery-placeholder-removed-operator-20261109.json) è conclusa; non va ripetuta.
 
 ## Risultato cercato
 
@@ -34,4 +34,4 @@ L'intento è `/var/lib/ouf-storage-migration/discovery-coordinator-quiesce-20261
 
 Le prove native usano nftables reale e journal privato in namespace Linux usa e getta. Verificano BLOCKED → QUIESCED, struttura conservata e lease/start false; una modifica estranea alla struttura viene preservata e causa arresto prima di qualsiasi scrittura. Le prove unitarie coprono anche set non vuoti, fallimento del flush, assenza di intento, hash errato e rifiuto di comandi o batch diversi.
 
-Non è una prova dell'intero controller contro il VPS. [Evidenza della qualifica](../evidence/discovery-coordinator-quiescence-qualification-20261109.json). F2–F6 restano aperti; seguono nuova generazione provider, credenziale/TLS Semantic, controllo backlog/grant e pubblicazione MCP già candidata.
+La successiva esecuzione VPS si è fermata al controllo di proprietà: i test qui descritti non coprivano la corrispondenza tra l'impronta storica e quella attuale. La causa della differenza resta aperta. [Evidenza della qualifica](../evidence/discovery-coordinator-quiescence-qualification-20261109.json). F2–F6 restano aperti; seguono nuova generazione provider, credenziale/TLS Semantic, controllo backlog/grant e pubblicazione MCP già candidata.

@@ -8,11 +8,11 @@
 
 La [ricevuta delle 09:06 CET](../evidence/discovery-placeholder-removed-operator-20261109.json) conferma **SOUTHBOUND_UNMOUNTED_PLACEHOLDER_REMOVED**: rimosso il solo segnaposto già smontato, senza umount. Frame dei container, journal storici e metadata containerd conservati. Non ripetere il comando concluso.
 
-**Il coordinatore resta BLOCKED**, con set vuoti osservati sotto lock. Provider non pronto e nuova generazione non ammessa.
+La [quiescenza delle 09:31 CET](../evidence/discovery-coordinator-quiescence-held-operator-20261109.json) si è fermata con **NFT_INSTALLATION_STRUCTURE_DRIFT**. Due letture nft, **nessun intento registrato, nessuna scrittura nft o transizione del journal**. Il coordinatore non è stato portato a QUIESCED; provider non pronto. Non rilanciare il comando di quiescenza.
 
-**Prossima azione concreta:** [quiescenza del coordinatore](OUF_DISCOVERY_COORDINATOR_QUIESCENCE_20261109.md), sorgente 3c961d3e. Il comando usa `Coordinator.quiesce()` del repository: un solo batch svuota i quattro set posseduti, poi verifica `QUIESCED`, lease e avvio disabilitati. Conserva la struttura delle regole e i journal dei vecchi provider. **7 test unitari e 2 prove con nftables reale PASS**, zero skip; esecuzione VPS pendente.
+**Prossima azione concreta:** [confronto mirato delle impronte nft](OUF_DISCOVERY_NFT_DRIFT_READ_20261109.md), sorgente fcc4b80a, in sola lettura. Confronta tabelle conservate, output corrente ordinario/numerico, impronta attesa dal driver e configurazione di boot installata. Otto letture nft, nessuna modifica delle impronte o delle regole. **8 test unitari e 2 prove con nftables reale PASS**, zero skip; esecuzione VPS pendente.
 
-Dopo questa transizione resta da qualificare l'ammissione e l'avvio di una nuova generazione provider. Il successo dei test o della quiescenza non dimostra discovery funzionante.
+L'impronta del proprietario include identificativi nativi e metainfo. In CI la ricreazione delle stesse regole cambia quell'impronta e conserva quella di boot; **non è ancora la causa dimostrata sul VPS**. Il confronto serve a distinguere questo caso da rendering diverso, driver non allineato o differenze nelle regole. Quiescenza, nuova ammissione e avvio provider restano aperti.
 
 **Altre dipendenze già identificate:** Semantic è running ma provider/worker restano dichiarati disabilitati; credenziale e truststore preparati sono coerenti ma non installati. Certificati validi per data/nome, TLS/issuer non provati. Legacy provider fermo e scollegato, da conservare. MCP PR84 ha qualificato codice e immagine con sei descrittori ACTIVE; non è installata, il VPS resta PR83/INACTIVE. [Stato del controllo di avvio concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
@@ -41,7 +41,7 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-1. Eseguire la quiescenza già preparata; qualificare e avviare la nuova generazione provider; collegare credenziale/TLS Semantic. Rimozione del segnaposto e inventario dei binding sono conclusi.
+1. Risolvere la differenza delle impronte nft con il confronto mirato già preparato; completare quiescenza e nuova generazione provider, poi credenziale/TLS Semantic. Segnaposto già rimosso; evitare inventari generali e replay dei comandi conclusi.
 2. Verificare trasporto, identità e backlog prima di abilitare il worker; pubblicare la build MCP con i sei strumenti attivi e grant coerenti.
 3. Usare analisi persistente e discovery sul profilo Teatri esistente, associare le colonne a proprietà, completare review THS → Ingestion → UDP e leggere il grafo.
 4. Provare il caso ampio su fixture distinto e ripetere il percorso con un secondo CSV senza riparazioni manuali; verificare la ripresa da una nuova conversazione.

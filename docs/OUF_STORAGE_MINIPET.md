@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.37 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.38 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -56,7 +56,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 **Componenti installati:** Semantic V12, MCP con schema 14 e Onboarding/Ingestion/UDP con supporto candidato a 1024 colonne hanno raggiunto readiness. Le rispettive ricevute conservano storia, dati e binding previsti; gli installer conclusi non vanno ripetuti. Il percorso funzionale a 1024 colonne resta da provare. [Riepilogo e ricevute](STATE.md#componenti-già-aggiornati).
 
-**Blocco corrente della discovery:** provider v2 e southbound v2 sono fermi. Il segnaposto southbound è stato rimosso alle 09:06 CET senza smontaggi e con frame/journal conservati. Il coordinatore resta BLOCKED con set vuoti. È pronto il comando di [quiescenza](OUF_DISCOVERY_COORDINATOR_QUIESCENCE_20261109.md): 7 test unitari e 2 prove con nftables reale passati, nessuno saltato; VPS ancora da eseguire. La transizione prevista a QUIESCED conserva lease e avvio disabilitati. Seguono nuova generazione ammessa, credenziale/truststore Semantic e verifica del trasporto prima dell'abilitazione del worker.
+**Blocco corrente della discovery:** provider v2 e southbound v2 sono fermi. Il segnaposto southbound è stato rimosso alle 09:06 CET. Il tentativo di quiescenza delle 09:31 CET è HELD per NFT_INSTALLATION_STRUCTURE_DRIFT, prima di intento, scritture nft o transizioni. Non ripeterlo. È pronto il [confronto mirato in sola lettura](OUF_DISCOVERY_NFT_DRIFT_READ_20261109.md): impronta del driver, tabelle correnti in due rappresentazioni e baseline di boot. 8 test unitari e 2 nativi passati; causa sul VPS ancora da determinare. La ricreazione delle tabelle può cambiare gli identificativi inclusi nell'impronta: riprodotto in CI, non provato come evento sul VPS. Seguono correzione coerente del binding o della struttura, quiescenza, nuova generazione ammessa, credenziale/truststore Semantic e verifica del trasporto prima dell'abilitazione del worker.
 
 La [PR MCP 84](https://github.com/GioNob/ouf-mcp-server/pull/84) ha qualificato il manifesto ACTIVE dei sei strumenti e prodotto l'immagine CI. Non è installata: sul VPS restano i descrittori INACTIVE della PR 83. [Evidenza](../evidence/mcp-analysis-discovery-publication-20261109.json). Dopo l'attivazione coerente del percorso, continuare sul profilo Teatri esistente: mapping dei nomi delle colonne, review THS, Ingestion, UDP e lettura del grafo. F2–F6 restano aperti.
 
