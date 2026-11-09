@@ -1,0 +1,29 @@
+{
+  "schema": "ouf.discovery-generation-input-qualification.v1",
+  "date": "2026-11-09",
+  "status": "QUALIFIED_INPUT_PREPARATION_TARGET_PENDING",
+  "sourceCommit": "b088b1f84b70e2203aa2f5c7463e37f4b988ca07",
+  "scriptSha256": "7a3d618aa933c42cfcdac3eb5965e97521a64934dd778aa1c66b244f7d4f99a0",
+  "deliverySha256": "965059899e07456c97d5345ddfe74cea5e3a150cc92daef541007d03a56a6046",
+  "ciRun": 42604343907,
+  "ciJob": 129116339541,
+  "conclusion": "success",
+  "logsRead": true,
+  "tests": 8,
+  "skips": 0,
+  "sourceFilesReadBack": 15,
+  "bashSyntaxChecked": true,
+  "deliveryRoutingSimulated": true,
+  "targetExecuted": false,
+  "runtimeConfigurationProduced": false,
+  "containerCreates": 0,
+  "signaturesProduced": 0,
+  "historicalAuthorityReused": false,
+  "newGenerationAdmitted": false,
+  "automaticReplayAllowed": false,
+  "limitations": [
+    "Controlled pure/file tests; full VPS controller not executed.",
+    "Historical templates are evidence, not current independently admitted identities.",
+    "Creation, peer expectations, signing, runtime switch and provider start remain pending."
+  ]
+}
