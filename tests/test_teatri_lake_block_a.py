@@ -152,6 +152,94 @@ class BlockA(unittest.TestCase):
             with self.assertRaisesRegex(a.Held, 'PREDECESSOR_RUNNING_d69c3f763d75'):
                 a.old_writers()
 
+    def external_configuration(self, enabled='true'):
+        self.doc['Mounts'] = [{'Destination': '/config', 'Source': '/etc/ouf/ingestion', 'Type': 'bind', 'RW': False}]
+        direct = {a.canon('spring.config.additional-location'): [('file:/config/ingestion.properties', 'ENV')]}
+        a.CACHE['ingestion'] = (self.doc, direct, {})
+        root = b'spring.config.import=child.properties\nspring.datasource.password=SECRET\n'
+        child = (('ouf.ingestion.execution.enabled=' + enabled + '\n') if enabled is not None else '')
+        child += 'ouf.ingestion.activation.gateway-url=https://api.ouf-lab.it\nouf.ingestion.activation.token-file=/run/token\n'
+        files = {'/config/ingestion.properties': root, '/config/child.properties': child.encode()}
+        with patch.object(a, 'mounted', side_effect=lambda doc, path, maximum: (files[path], path)):
+            observed = a.config_sources()
+        self.assertNotIn('SECRET', json.dumps(observed))
+        return observed
+
+    def test_external_properties_and_relative_import_report_mount_origins(self):
+        result = self.external_configuration()
+        self.assertEqual(result['executionEnabled'], 'true')
+        self.assertEqual(result['files'][1]['hostPath'], '/etc/ouf/ingestion/child.properties')
+        self.assertEqual(a.setting(a.CACHE['ingestion'][1], 'ouf.ingestion.activation.token-file'), '/run/token')
+        self.assertTrue(a.ingestion_config()['executionEnabled'])
+
+    def test_false_execution_is_reported_without_enablement(self):
+        self.external_configuration('false')
+        with self.assertRaisesRegex(a.Held, 'INGESTION_EXECUTION_FALSE') as found:
+            a.ingestion_config()
+        self.assertEqual(found.exception.observation['configurationWrites'], 0)
+
+    def test_absent_execution_stays_absent_not_false(self):
+        result = self.external_configuration(None)
+        self.assertEqual(result['executionEnabled'], 'ABSENT')
+        with self.assertRaisesRegex(a.Held, 'ABSENT_IN_INSPECTED_SOURCES'):
+            a.ingestion_config()
+
+    def test_properties_escapes_continuations_and_yaml_scalars(self):
+        result = a.properties(b'key\\:name = value\\\n  continued\nflag: false\n', '.properties')
+        self.assertEqual(result, {'key:name': 'valuecontinued', 'flag': 'false'})
+        result = a.properties(b'ouf:\n  ingestion:\n    execution.enabled: true\n', '.yml')
+        self.assertEqual(result['ouf.ingestion.execution.enabled'], 'true')
+        with self.assertRaisesRegex(a.Held, 'MULTIDOCUMENT'):
+            a.properties(b'a=1\n#---\na=2\n', '.properties')
+
+    def test_unsupported_config_uri_does_not_echo_credentials(self):
+        a.CACHE['ingestion'] = (self.doc, {a.canon('spring.config.import'): [('https://user:SECRET@host/config', 'ENV')]}, {})
+        with self.assertRaises(a.Held) as found:
+            a.config_sources()
+        self.assertNotIn('SECRET', json.dumps(found.exception.observation))
+        self.assertIn('UNSUPPORTED', str(found.exception))
+
+    def test_units_read_is_show_only_and_reports_loaded_cadence(self):
+        service = {'LoadState': 'loaded', 'ActiveState': 'inactive', 'SubState': 'dead', 'NeedDaemonReload': 'no', 'ExecStart': '/usr/bin/python3 /opt/ouf/ops/refresh-policy-token.py SECRET', 'Result': 'success', 'ExecMainStatus': '0'}
+        timer = {'LoadState': 'loaded', 'ActiveState': 'active', 'Unit': 'ouf-policy-token@udp.service', 'NeedDaemonReload': 'no', 'TimersMonotonic': '{ OnUnitActiveUSec=1min 30s ; next_elapse=2min }', 'NextElapseUSecMonotonic': '2min', 'AccuracyUSec': '1s', 'RandomizedDelayUSec': '0'}
+        seen = []
+        def command(args):
+            seen.append(args)
+            self.assertEqual(args[:2], ['/usr/bin/systemctl', 'show'])
+            row = service if args[2].endswith('.service') else timer
+            return ('\n'.join(k + '=' + v for k, v in row.items()) + '\n').encode()
+        with patch.object(a, 'command', side_effect=command), patch.object(a.time, 'monotonic', return_value=100):
+            result = a.udp_renewal_units()
+        self.assertEqual(result['intervalsSeconds']['OnUnitActiveUSec'], 90)
+        self.assertEqual(result['nextTriggerInSeconds'], 20)
+        self.assertNotIn('SECRET', json.dumps(result))
+        self.assertEqual(len(seen), 2)
+
+    def test_natural_renewal_observed_in_mount_without_starting_service(self):
+        self.doc['Mounts'] = [{'Destination': '/run', 'Source': '/var/lib/ouf/udp', 'Type': 'bind', 'RW': False}]
+        a.CACHE['udp'] = (self.doc, {a.canon('ouf.authorization.registry-token-file'): [('/run/token', 'ENV')]}, {})
+        initial = {'nextTriggerInSeconds': 10, 'schedulingSlackSeconds': 1, 'timer': {'LastTriggerUSec': 'before'}}
+        a.CACHE['udpRenewalUnits'] = initial
+        clock, samples = [0], [0]
+        def sample(role, field):
+            samples[0] += 1
+            a.CACHE['udpTokenSample'] = {'exp': 1000 if samples[0] == 1 else 1300, 'fingerprint': str(samples[0])}
+            return {'secondsRemaining': 290}
+        after = {'nextTriggerInSeconds': 90, 'schedulingSlackSeconds': 1, 'timer': {'LastTriggerUSec': 'after'}, 'service': {'ActiveState': 'inactive', 'Result': 'success', 'ExecMainStatus': '0'}}
+        with patch.object(a, 'token_metadata', side_effect=sample), patch.object(a, 'udp_renewal_units', return_value=after), patch.object(a.time, 'monotonic', side_effect=lambda: clock[0]), patch.object(a.time, 'sleep', side_effect=lambda n: clock.__setitem__(0, clock[0] + n)):
+            result = a.udp_renewal_observation()
+        self.assertTrue(result['automaticRenewalObserved'])
+        self.assertEqual(result['hostTokenPath'], '/var/lib/ouf/udp/token')
+        self.assertEqual(result['tokenGrantRequestsByReader'], 0)
+
+    def test_timer_after_token_expiry_is_not_accepted(self):
+        a.CACHE['udpRenewalUnits'] = {'nextTriggerInSeconds': 300, 'schedulingSlackSeconds': 1}
+        a.CACHE['udpTokenSample'] = {'exp': 1000, 'fingerprint': 'private'}
+        with patch.object(a, 'token_metadata', return_value={'secondsRemaining': 264}), patch.object(a.time, 'sleep') as sleep:
+            with self.assertRaisesRegex(a.Held, 'NEXT_UDP_RENEWAL_NOT_BEFORE_TOKEN_EXPIRY'):
+                a.udp_renewal_observation()
+        sleep.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()
