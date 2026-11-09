@@ -1,6 +1,6 @@
 # Discovery: riconciliazione del lifecycle corrente
 
-9 novembre 2026. Stato: **lettore pronto, esecuzione VPS pendente**. La ricevuta delle 06:51 UTC riporta adapter DELETED e southbound DELETING; non contiene lo stato nativo necessario a scegliere il recupero.
+9 novembre 2026. Stato: **lettura VPS conclusa alle 08:46 CET**, [ricevuta](../evidence/discovery-lifecycle-operator-20261109.json). Prossimo passo: [rimozione condizionata del residuo southbound](OUF_DISCOVERY_PLACEHOLDER_RECOVERY_20261109.md). Non ripetere il lettore separatamente; il recupero include le proprie verifiche correnti. La ricevuta delle 06:51 UTC riporta adapter DELETED e southbound DELETING; non contiene lo stato nativo necessario a scegliere il recupero.
 
 ## Cosa verifica il prossimo comando
 

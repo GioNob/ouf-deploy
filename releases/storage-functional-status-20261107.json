@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the delivered exact-provider native lifecycle reader; use observed task/process/journal/namespace/nft residues to qualify residual cleanup and fresh admitted generation. No old journal reset or consumed-scope replay. Then Semantic credential/TLS, backlog/grants and installation of already-qualified MCP PR84.",
+  "nextAction": "Execute the conditional removal of the exact already-unmounted southbound namespace placeholder. Existing runtime journals and blocked empty lease state remain preserved. Then qualify coordinator quiescence and a fresh admitted provider generation, Semantic credential/TLS, backlog/grants and MCP PR84 installation.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -778,7 +778,9 @@
     "evidence/onboarding-wide-ready-operator-20261108.json",
     "evidence/ingestion-wide-preflight-qualification-20261108.json",
     "evidence/ingestion-wide-candidate-package-20261108.json",
-    "evidence/discovery-lifecycle-reader-qualification-20261109.json"
+    "evidence/discovery-lifecycle-reader-qualification-20261109.json",
+    "evidence/discovery-lifecycle-operator-20261109.json",
+    "evidence/discovery-placeholder-reconciliation-qualification-20261109.json"
   ],
   "sourceReferences": [
     {
@@ -1613,13 +1615,67 @@
       "providerRecovery": {
         "status": "CURRENT_INSTALLER_NOT_YET_QUALIFIED",
         "historicalNativeProofIsCurrentInstaller": false,
-        "nativeTaskAndHandleReconciliationPending": true,
+        "nativeTaskAndHandleReconciliationPending": false,
         "historicalJournalResetAllowed": false,
         "currentVpsRecoveryCommandDelivered": false,
-        "nativeLifecycleReadCommandDelivered": true
+        "nativeLifecycleReadCommandDelivered": true,
+        "nativeTaskAndHandleStateObserved": true,
+        "placeholderRecovery": {
+          "status": "QUALIFIED_TARGET_PENDING",
+          "schema": "ouf.discovery-placeholder-reconciliation-qualification.v1",
+          "date": "2026-11-09",
+          "sourceCommit": "633aecc9ca6585ef3684f560125f64652d115c87",
+          "script": "scripts/reconcile-discovery-placeholder-20261109.py",
+          "scriptSha256": "94649eefceddc348c92172872bf0cb180c21bd057ae84f7b371d9b2aa6c6259f",
+          "deliveryScript": "scripts/deliver-discovery-placeholder-20261109.sh",
+          "deliverySha256": "f9979873b9758d893dd146b8d42da51ecc8fd66162cad10b8ff2f79b37d54e93",
+          "prerequisiteReceipt": "evidence/discovery-lifecycle-operator-20261109.json",
+          "privateReceiptCanonicalSha256": "61976131c5f709934b6e3b598ab7874476a9affbae100aca016692caba7e593e",
+          "observedPlaceholderInode": 4040196,
+          "expectedPlaceholderBytes": "{}",
+          "ciRun": 42582681407,
+          "ciJob": 129044958878,
+          "conclusion": "success",
+          "logsRead": true,
+          "unitTests": 9,
+          "nativeTests": 2,
+          "skips": 0,
+          "nativeScope": "DISPOSABLE_LINUX_MOUNT_AND_NETWORK_NAMESPACES_NSFS_AND_REGULAR_BIND_MOUNTS",
+          "fullVpsControllerTested": false,
+          "targetExecuted": false,
+          "bashSyntaxChecked": true,
+          "onlyPlannedExistingFileRemoval": "EXACT_ALREADY_UNMOUNTED_SOUTHBOUND_NETNS_PLACEHOLDER",
+          "preserved": [
+            "runtime journals",
+            "coordinator BLOCKED state",
+            "empty lease sets",
+            "containerd metadata",
+            "container frames",
+            "Teatri",
+            "SeaweedFS"
+          ],
+          "namespaceUnmounts": 0,
+          "plannedServiceStarts": 0,
+          "plannedServiceStops": 0,
+          "plannedNftWrites": 0,
+          "plannedRuntimeJournalWrites": 0,
+          "plannedDatabaseRequests": 0,
+          "plannedProviderRequests": 0,
+          "plannedTokenRequests": 0,
+          "maxNativeReadCommands": 24,
+          "deadlineSeconds": 180,
+          "automaticReplayAllowed": false,
+          "limitations": [
+            "Target placeholder filesystem/mount identity and bytes are verified by the command before the only unlink",
+            "This action does not admit a fresh provider generation or start discovery",
+            "Retained journal state DELETING is not reset"
+          ]
+        },
+        "freshAdmissionPending": true,
+        "placeholderRecoveryCommandDelivered": true
       },
       "discoveryLifecycleRead": {
-        "status": "READER_QUALIFIED_TARGET_PENDING",
+        "status": "DISCOVERY_LIFECYCLE_READ_COMPLETE",
         "schema": "ouf.discovery-lifecycle-reader-qualification.v1",
         "date": "2026-11-09",
         "sourceCommit": "789a2e131abda301424f7d011b545e4607a5703b",
@@ -1637,7 +1693,7 @@
         "logsRead": true,
         "sourceFilesReadBack": 3,
         "bashSyntaxChecked": true,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "cleanupImplemented": false,
         "startImplemented": false,
         "knownRuntimeWrapperSha256": "55de41662098c1059a03d06ffb77bc965e5b033b9c3529dcfc7143808324efdd",
@@ -1657,7 +1713,20 @@
           "Current native task/runtime/process/guard/namespace state",
           "Cleanup feasibility and exact residual operation",
           "Fresh generation admission and live provider transport"
-        ]
+        ],
+        "observedAt": "2026-11-09T07:46:05.646202+00:00",
+        "operatorReceipt": "evidence/discovery-lifecycle-operator-20261109.json",
+        "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-lifecycle-rman5rz0",
+        "adapterClassification": "NO_NATIVE_RESIDUE_OBSERVED",
+        "southboundClassification": "GUARD_OR_NAMESPACE_HANDLE_REMAINS",
+        "southboundNamespaceInode": 4040196,
+        "namespaceInodeMatchesRetained": false,
+        "nativeTaskAndProcessPresent": false,
+        "ownedTableFamiliesPresent": false,
+        "coordinationState": "BLOCKED",
+        "providerLeaseElements": 0,
+        "cleanupQualified": false,
+        "startQualified": false
       }
     },
     "activationMechanism": {

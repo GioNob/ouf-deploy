@@ -4,22 +4,19 @@
 
 ## Risultato e blocco attuale
 
-**F1 PASS; F2–F6 aperti.** Onboarding e UDP sono collegati a SeaweedFS. Upload e profilo Onboarding sono riusciti. La normale operazione lake UDP e l'E2E fino al grafo restano da provare.
+**F1 PASS; F2–F6 aperti.** Onboarding e UDP sono collegati a SeaweedFS. Upload e profilo Onboarding sono riusciti; normale operazione lake UDP ed E2E fino al grafo restano da provare.
 
-Le ricevute delle [07:24](../evidence/discovery-activation-bindings-operator-20261109.json) e [07:51 CET](../evidence/discovery-startup-inputs-operator-20261109.json) identificano gli ostacoli discovery:
+La [lettura del lifecycle delle 08:46 CET](../evidence/discovery-lifecycle-operator-20261109.json) ha risolto l'incertezza sui residui:
 
-- provider v2 e southbound v2 sono entrambi **exited**; le reti condivise risultano configurate, senza prova di connettività;
-- Semantic è in esecuzione Java con listener 8080, ma provider/worker sono dichiarati disabilitati e la credenziale provider non ha mount;
-- MCP è running con l'immagine attesa; i sei strumenti analisi/discovery sono INACTIVE nel manifesto incorporato. Policy o ENV da sole non li espongono: serve la build con manifesto aggiornato;
-- provider legacy è created e scollegato: mantenerlo fermo.
+- **adapter:** nessun residuo nativo osservato; journal DELETED/CLEANED/ROLLED_BACK;
+- **southbound:** nessun processo, task, shim, directory runc o tabella propria. Restano metadata containerd e il percorso netns con inode 4040196, diverso da quello registrato; journal DELETING/PROTECTED;
+- **coordinatore:** BLOCKED, lease non autorizzata, tutti i set osservati vuoti. Nessun tentativo di avvio.
 
-**Controllo di avvio concluso:** configurazioni coerenti, certificati validi per data/nome, credenziale e truststore preparati ancora coerenti ma non installati. Nessun handshake o token richiesto. Il runtime personalizzato v4 conserva adapter **DELETED** e southbound **DELETING**. Il report non dimostra task/handle nativi residui né la causa di DELETING; `startAdmitted:false` non è un diniego ricevuto durante un tentativo.
+**Prossima azione concreta:** [rimozione verificata del segnaposto southbound](OUF_DISCOVERY_PLACEHOLDER_RECOVERY_20261109.md), sorgente 633aecc9. Il comando acquisisce i lock esistenti e ricontrolla le precondizioni; può rimuovere soltanto il file già smontato, con inode e byte attesi.9 test unitari e 2 prove Linux native PASS. Esecuzione VPS pendente.
 
-**Blocco principale:** manca un ripristino verificato per questa installazione. Riconciliare la pulizia southbound, poi preparare una nuova generazione ammessa senza riscrivere i vecchi journal o rigiocare i claim. Le prove native storiche provider/worker sono utili, ma non sono un avviatore già pronto per il VPS corrente. Nessun nuovo comando operatore di avvio è consegnato.
+L'inode diverso, da solo, non dimostra che il file sia un segnaposto: il comando ne verifica filesystem, mount, contenuto e identità prima dell'unlink. I journal storici e il coordinatore BLOCKED vengono conservati. Dopo la rimozione restano quiescenza del coordinatore e nuova generazione ammessa; non c'è ancora un comando di avvio provider qualificato per questa installazione.
 
-È pronto il [controllo mirato del lifecycle](OUF_DISCOVERY_LIFECYCLE_READ_20261109.md): legge runc, task/container di containerd, generazioni dei processi, journal, namespace e regole dei soli due provider v2. Sorgente789a2e13,16 regressioni PASS in CI; ancora da eseguire sul VPS. Non avvia o pulisce servizi. Il risultato serve a delimitare il recupero residuo prima della nuova generazione.
-
-**Incremento completato sul codice:** [MCP PR84](https://github.com/GioNob/ouf-mcp-server/pull/84) pubblica esattamente i sei descrittori analisi/discovery e verifica gli ingressi MCP ordinari e i dinieghi. Test SDK/Gateway, PostgreSQL, suite completa/race, controlli statici e scansione dipendenze riusciti; immagine archiviata, nessuna installazione; l'immagine VPS resta PR83/INACTIVE. [Dettagli del controllo concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
+**Altre dipendenze già identificate:** Semantic è running ma provider/worker restano dichiarati disabilitati; credenziale e truststore preparati sono coerenti ma non installati. Certificati validi per data/nome, TLS/issuer non provati. Legacy provider fermo e scollegato, da conservare. MCP PR84 ha qualificato codice e immagine con sei descrittori ACTIVE; non è installata, il VPS resta PR83/INACTIVE. [Stato del controllo di avvio concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
 ## Componenti già aggiornati
 
@@ -46,7 +43,7 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-1. Eseguire il controllo mirato del lifecycle già preparato; dai residui osservati completare/qualificare il ripristino provider con nuova generazione; collegare credenziale/TLS Semantic. I binding di avvio sono già letti: non ripetere l'inventario.
+1. Eseguire la rimozione circoscritta già preparata; completare quiescenza del coordinatore e nuova generazione provider; collegare credenziale/TLS Semantic. I binding di avvio sono già letti: non ripetere l'inventario.
 2. Verificare trasporto, identità e backlog prima di abilitare il worker; pubblicare la build MCP con i sei strumenti attivi e grant coerenti.
 3. Usare analisi persistente e discovery sul profilo Teatri esistente, associare le colonne a proprietà, completare review THS → Ingestion → UDP e leggere il grafo.
 4. Provare il caso ampio su fixture distinto e ripetere il percorso con un secondo CSV senza riparazioni manuali; verificare la ripresa da una nuova conversazione.
