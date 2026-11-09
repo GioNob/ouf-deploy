@@ -56,3 +56,8 @@ Ordine residuo:
 F1 rimane acquisito; F2–F6 sono aperti. Non ripetere upload, profilazione, pubblicazione Teatri o ripristino del produttore token. OPEN vale per Teatri, non automaticamente per SUE. Nessun DR/RPO/RTO aggiunto.
 
 La precedente correzione della sola finestra e le sue prove restano nello [storico](../evidence/semantic-analysis-budget-review-20261107.json). [Descrizione tecnica del candidato](https://github.com/GioNob/ouf-mcp-server/blob/907ace32100d44a0fcf1fcbda5d713ee7bd8fd94/docs/PROFILE_ANALYSIS_20261107.md).
+
+
+## Attivazione — verifica del 9 novembre
+
+L'installazione PR83 è riuscita, ma i sei strumenti sono INACTIVE nel manifesto incorporato. `manifest.Load()` legge l'embed e il kernel registra soltanto strumenti ACTIVE: policy/ENV da sole non li espongono. Occorre la build con manifesto aggiornato insieme alle dipendenze e ai grant. [Lettura mirata pronta e fonti](OUF_DISCOVERY_ACTIVATION_BINDINGS_20261109.md). Non ripetere migrazione14, upload o profiling, non resettare il budget e non usare modifiche dirette al DB come pubblicazione del manifesto.

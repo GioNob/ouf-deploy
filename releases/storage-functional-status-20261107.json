@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Read current provider/southbound and MCP activation bindings, then configure missing discovery dependencies and activate tools. Preserve existing Teatri asset/profile; functional1024 and normal UDP lake operation/E2E remain unproven. Completed installers must not be replayed.",
+  "nextAction": "Execute the pinned read-only discovery dependency reader; resolve concrete missing provider/southbound bindings and prepare MCP build with six ACTIVE manifest entries plus grants. Keep existing Teatri profile and persistent budget. Functional1024 and normal UDP lake/E2E remain open.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -937,7 +937,7 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "SEMANTIC_V12_MCP_V14_ONBOARDING_INGESTION_1024_READY_UDP_INSTALL_PENDING",
+      "status": "SEMANTIC_V12_MCP_V14_ONBOARDING_INGESTION_UDP_1024_READY_DISCOVERY_PENDING",
       "document": "docs/OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
@@ -1538,7 +1538,38 @@
         "explicitMigrationDispatched": false,
         "wideUdpFunctionalTested": false
       },
-      "currentUdpContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7"
+      "currentUdpContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7",
+      "discoveryActivationRead": {
+        "status": "DELIVERED_NOT_TARGET_EXECUTED",
+        "sourceCommit": "73bb41e5d6165ec704b06cb45c3a198669ebc6e1",
+        "deliveryCommit": "08e179dbf5cefc415f2eb469d9bbfba2c00cef00",
+        "script": "scripts/read-discovery-activation-bindings-20261109.py",
+        "scriptSha256": "7f9232b3c2832a57769f0271003b1ce0f2ea57b7e6b0ba266e02dbf6549cc8a7",
+        "deliveryScript": "scripts/deliver-discovery-activation-bindings-20261109.sh",
+        "deliverySha256": "5cabf7aa7cece2f7afa13a25e049ad26cfec662d0c277da887cf28f4a05f4a5b",
+        "qualification": "evidence/discovery-activation-bindings-qualification-20261109.json",
+        "tests": 9,
+        "skips": 0,
+        "qualificationScope": "LOCAL_UNIT_FIXTURES_NOT_NATIVE_DOCKER",
+        "sourceFilesReadBack": 3,
+        "wrapperReadBack": true,
+        "bashSyntaxChecked": true,
+        "targetExecuted": false,
+        "maxDockerGetAttempts": 13,
+        "plannedDatabaseRequests": 0,
+        "plannedTokenRequests": 0,
+        "plannedProviderRequests": 0,
+        "serviceChanges": false
+      }
+    },
+    "activationMechanism": {
+      "scope": "PINNED_INSTALLED_SOURCE_NOT_LIVE_TOOLS_LIST",
+      "sourceCommit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+      "manifestEmbedded": true,
+      "newToolsPublicationState": "INACTIVE",
+      "activeManifestBuildRequired": true,
+      "environmentOrPolicyAloneSufficient": false,
+      "publicationDispatched": false
     }
   }
 }

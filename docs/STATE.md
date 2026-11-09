@@ -23,7 +23,7 @@ Provider e worker restano disabilitati; nessuna richiesta discovery o business �
 
 **MCP PR83 è installato e pronto.** La [ricevuta operatore delle 20:26 CET](../evidence/mcp-analysis-ready-operator-20261108.json) conferma `MCP_ANALYSIS_V14_READY`, migrazione ordinaria 14 verificata, storia 1–13 e timestamp conservati, readiness HTTP 204. Nuovo container `41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943`, immagine candidata `sha256:d76fda00f9340dcea62ed1be58b1db3ebfb4d64d4be5449ffc07ab2c845254ff`. ENV, mount, indirizzi e alias conservati; vecchio MCP spento. I file del permesso storico scaduto sono invariati. Non ripetere installer o migrazione. [Runbook](OUF_MCP_ANALYSIS_UPGRADE_20261108.md).
 
-I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o discovery è dimostrata dall'avvio. Il percorso Teatri fino al grafo resta aperto.
+I sei strumenti analisi/discovery restano INACTIVE nel manifesto incorporato nel binario: un grant o un flag ENV da soli non li espongono. È necessaria una build con manifesto aggiornato, con dipendenze e grant coerenti. Nessuna analisi funzionale o discovery è dimostrata dall'avvio. Il percorso Teatri fino al grafo resta aperto.
 
 **Onboarding 1024 è installato e pronto.** La [ricevuta delle 21:16 CET](../evidence/onboarding-wide-ready-operator-20261108.json) conferma `ONBOARDING_WIDE_1024_READY`: container d0b9ff84, immagine archiviata 880bbf92, readiness HTTP200. Entrambe le reti con indirizzi/MAC/alias, mount/truststore e argomenti Java conservati. Storia V38 e righe Teatri invariate; nessun migratore esplicito. Il predecessore SeaweedFS e il vecchio writer MinIO restano spenti. **Non ripetere l'installer.** La profilazione funzionale 1024 non è stata eseguita.
 
@@ -33,8 +33,8 @@ I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o
 
 ## Sequenza rimanente
 
-1. Verificare i binding attuali del provider/southbound, la credenziale montata e il meccanismo di attivazione degli strumenti. L'ultima lettura riportava provider/worker disabilitati e nessun mount della credenziale; questi punti richiedono una lettura corrente mirata, non un altro rollout UDP.
-2. Configurare e verificare trasporto, credenziale, delega e grant discovery; attivare gli strumenti previsti. Il gateway southbound dichiarato è `ouf-semantic-southbound-v2:10443`; le route APISIX pubbliche da sole non ne provano il funzionamento.
+1. Eseguire la [lettura mirata pronta](OUF_DISCOVERY_ACTIVATION_BINDINGS_20261109.md): generazioni attuali Semantic/MCP, provider/southbound nominati, reti/processi/listener e metadata del mount credenziale. Source e wrapper riletti, nove test locali riusciti; nessuna prova Docker nativa o esecuzione target ancora dichiarata. Nessuna richiesta DB/token/business o modifica di servizi. L'ultima osservazione riportava provider/worker disabilitati e nessun mount della credenziale.
+2. Configurare e verificare trasporto, credenziale, delega e grant discovery; pubblicare la build MCP con i sei strumenti attivi e relativi grant. Il gateway southbound dichiarato è `ouf-semantic-southbound-v2:10443`; le route APISIX pubbliche da sole non ne provano il funzionamento.
 3. Verificare il supporto funzionale1024 dei moduli aggiornati su un fixture distinto; per l'E2E conservare asset/profilo Teatri. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
 5. Completare review THS → Ingestion → UDP e leggere il grafo; ripetere con un secondo CSV senza riparazioni manuali, quindi provare la ripresa da una nuova conversazione.
