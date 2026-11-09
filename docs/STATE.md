@@ -6,14 +6,18 @@
 
 **F1 PASS; F2–F6 aperti.** Onboarding e UDP sono collegati a SeaweedFS. Upload e profilo Onboarding sono riusciti. La normale operazione lake UDP e l'E2E fino al grafo restano da provare.
 
-La [ricevuta delle 07:24 CET](../evidence/discovery-activation-bindings-operator-20261109.json) identifica gli ostacoli discovery:
+Le ricevute delle [07:24](../evidence/discovery-activation-bindings-operator-20261109.json) e [07:51 CET](../evidence/discovery-startup-inputs-operator-20261109.json) identificano gli ostacoli discovery:
 
 - provider v2 e southbound v2 sono entrambi **exited**; le reti condivise risultano configurate, senza prova di connettività;
 - Semantic è in esecuzione Java con listener 8080, ma provider/worker sono dichiarati disabilitati e la credenziale provider non ha mount;
 - MCP è running con l'immagine attesa; i sei strumenti analisi/discovery sono INACTIVE nel manifesto incorporato. Policy o ENV da sole non li espongono: serve la build con manifesto aggiornato;
 - provider legacy è created e scollegato: mantenerlo fermo.
 
-**Prossima azione operatore:** [controllo di avvio v2 pronto](OUF_DISCOVERY_STARTUP_READ_20261109.md). Verifica runtime personalizzato, configurazione/TLS e materiale credenziale già preparato. Non avvia servizi. Due sorgenti e wrapper riletti, dieci test locali con OpenSSL riusciti; nuovo reader non ancora eseguito sul VPS. La precedente lettura è conclusa e non va ripetuta.
+**Controllo di avvio concluso:** configurazioni coerenti, certificati validi per data/nome, credenziale e truststore preparati ancora coerenti ma non installati. Nessun handshake o token richiesto. Il runtime personalizzato v4 conserva adapter **DELETED** e southbound **DELETING**. Il report non dimostra task/handle nativi residui né la causa di DELETING; `startAdmitted:false` non è un diniego ricevuto durante un tentativo.
+
+**Blocco principale:** manca un ripristino verificato per questa installazione. Riconciliare la pulizia southbound, poi preparare una nuova generazione ammessa senza riscrivere i vecchi journal o rigiocare i claim. Le prove native storiche provider/worker sono utili, ma non sono un avviatore già pronto per il VPS corrente. Nessun nuovo comando operatore di avvio è consegnato.
+
+**Incremento separato dello stesso percorso:** [MCP PR84](https://github.com/GioNob/ouf-mcp-server/pull/84) pubblica esattamente i sei descrittori analisi/discovery e verifica gli ingressi MCP ordinari e i dinieghi. CI in corso, nessuna installazione; l'immagine VPS resta PR83/INACTIVE. [Dettagli del controllo concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
 ## Componenti già aggiornati
 
@@ -40,7 +44,7 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-1. Leggere i binding di avvio, poi ripristinare il percorso provider/southbound e collegare credenziale/TLS Semantic. Non assumere che il vecchio runtime accetti un semplice restart; non riusare scope consumati.
+1. Riconciliare il lifecycle southbound e completare/qualificare il ripristino provider con nuova generazione; collegare credenziale/TLS Semantic. I binding di avvio sono già letti: non ripetere l'inventario.
 2. Verificare trasporto, identità e backlog prima di abilitare il worker; pubblicare la build MCP con i sei strumenti attivi e grant coerenti.
 3. Usare analisi persistente e discovery sul profilo Teatri esistente, associare le colonne a proprietà, completare review THS → Ingestion → UDP e leggere il grafo.
 4. Provare il caso ampio su fixture distinto e ripetere il percorso con un secondo CSV senza riparazioni manuali; verificare la ripresa da una nuova conversazione.

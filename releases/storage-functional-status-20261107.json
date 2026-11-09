@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Inspect the retained v2 provider/southbound startup runtime and current mounted configuration; prepare restoration of these exact components plus missing Semantic credential/TLS bindings. Legacy provider remains stopped. MCP ACTIVE manifest build and grants still required.",
+  "nextAction": "Reconcile southbound native lifecycle/cleanup and qualify a fresh admitted provider generation; do not reset existing journals or replay prior scopes. Startup-input read completed. MCP PR84 builds six ACTIVE descriptors independently; no target installation until dependencies, Semantic credential/trust binding, backlog and grants are checked.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1570,7 +1570,7 @@
         "connectivityTested": false
       },
       "discoveryStartupRead": {
-        "status": "DELIVERED_NOT_TARGET_EXECUTED",
+        "status": "DISCOVERY_STARTUP_INPUTS_READ",
         "sourceCommit": "066168fafad38c0f722541e710fb46ce2ac370de",
         "deliveryCommit": "8d44de9007487e312514d42dbfc5a0a0beadeccf",
         "script": "scripts/read-discovery-startup-20261109.py",
@@ -1583,7 +1583,7 @@
         "sourceFilesReadBack": 2,
         "wrapperReadBack": true,
         "bashSyntaxChecked": true,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "maxDockerGets": 8,
         "maxSourceFiles": 40,
         "plannedCredentialReadLimit": 1,
@@ -1592,7 +1592,29 @@
         "serviceChanges": false,
         "plannedTokenRequests": 0,
         "plannedDatabaseRequests": 0,
-        "plannedProviderRequests": 0
+        "plannedProviderRequests": 0,
+        "operatorReceipt": "evidence/discovery-startup-inputs-operator-20261109.json",
+        "observedAt": "2026-11-09T06:51:46.827194+00:00",
+        "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-startup-inputs-te5d6tiq",
+        "runtimeJournalStates": {
+          "adapter": "DELETED",
+          "southbound": "DELETING"
+        },
+        "nativeTaskStateProven": false,
+        "startAttempted": false,
+        "startAdmittedMeaning": "READER_CONSTANT_NOT_AN_OBSERVED_ADMISSION_DECISION",
+        "preparedMaterialConsistent": true,
+        "preparedMaterialInstalled": false,
+        "certificateNamesAndDatesMatch": true,
+        "tlsHandshakeTested": false,
+        "credentialValidityAtIssuerTested": false
+      },
+      "providerRecovery": {
+        "status": "CURRENT_INSTALLER_NOT_YET_QUALIFIED",
+        "historicalNativeProofIsCurrentInstaller": false,
+        "nativeTaskAndHandleReconciliationPending": true,
+        "historicalJournalResetAllowed": false,
+        "currentVpsRecoveryCommandDelivered": false
       }
     },
     "activationMechanism": {
@@ -1603,6 +1625,17 @@
       "activeManifestBuildRequired": true,
       "environmentOrPolicyAloneSufficient": false,
       "publicationDispatched": false
+    },
+    "publicationCandidate": {
+      "repository": "GioNob/ouf-mcp-server",
+      "pr": 84,
+      "branch": "feat/publish-analysis-discovery-20261109",
+      "sourceCommit": "6bbe1b587dfa6eee8ef503f11e846731c5ebd80e",
+      "status": "CI_IN_PROGRESS_NOT_INSTALLED",
+      "changedDescriptors": 6,
+      "installedToolsRemainInactive": true,
+      "authorizationBindingsChanged": false,
+      "budgetsReset": false
     }
   }
 }
