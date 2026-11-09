@@ -15,6 +15,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import traceback
 from datetime import datetime, timezone
 
 STARTUP = 'read-discovery-startup-20261109.py'
@@ -263,6 +264,7 @@ def classify(row):
 
 
 def collect(report, h, s, reader, native, work):
+    report['phase'] = 'VERIFY_RETAINED_RUNTIME'
     docs = {role: h.inspect(s.PINS[role][0]) for role in ROLES}
     for role, doc in docs.items():
         need(h.digest(h.frame(doc)) == s.PINS[role][1], 'RETAINED_PROVIDER_FRAME_CHANGED')
@@ -285,6 +287,7 @@ def collect(report, h, s, reader, native, work):
     report['components'] = {}
     records = {}; coordination_binding = None
     for role in ROLES:
+        report.update(phase='READ_CLEANUP_JOURNALS', currentRole=role)
         cid = docs[role]['Id']; root = registry / cid
         adapter = journal(reader, root / 'adapter.json', 'ouf.semantic-docker-runtime-journal.v1')
         need(adapter is not None and adapter['containerId'] == cid and adapter['configurationHash'] == runtime_binding(cfg, cid), 'BOUND_RUNTIME_JOURNAL_REQUIRED')
@@ -327,6 +330,7 @@ def collect(report, h, s, reader, native, work):
     need(coordinate is not None and coordinate['state'] in ('QUIESCED', 'LEASE_READY', 'LEASE_UPDATING', 'QUIESCING', 'BLOCKED') and type(coordinate['leaseAuthorized']) is bool, 'COORDINATION_STATE_REQUIRED')
     report['coordination'] = {'state': coordinate['state'], 'leaseAuthorized': coordinate['leaseAuthorized'], 'lockAcquired': False}
     # Native absence is established only by successful reads, never stderr matching.
+    report['phase'] = 'READ_NATIVE_PROCESS_AND_CONTAINERD_STATE'
     processes = process_bindings(cids)
     need(processes['dockerEndpoints'] == ['/run/containerd/containerd.sock'], 'EXPLICIT_DOCKER_CONTAINERD_ENDPOINT_REQUIRED')
     report['containerdEndpointSource'] = 'CURRENT_DOCKER_ARGUMENT'
@@ -335,6 +339,7 @@ def collect(report, h, s, reader, native, work):
     containers = container_ids(native.read('ctr', '/usr/bin/ctr', ctr_args + ['containers', 'list', '--quiet']), cids)
     native_records = {}
     for role, binding in records.items():
+        report.update(phase='READ_NATIVE_ROLE_STATE', currentRole=role)
         cid = docs[role]['Id']; row = report['components'][role]
         raw = native.read('runc', cfg['runtimePath'], ['--root', str(binding['root']), 'list', '--format', 'json'], cfg['runtimeSha256'])
         row['runc'] = runc_rows(raw, cids)[cid]
@@ -354,6 +359,7 @@ def collect(report, h, s, reader, native, work):
         native_records[role] = {'containerdMetadata': meta, 'runc': row['runc'], 'tables': table_raws, 'shims': row['shims']}
         row['classification'] = classify(row)
     table = coordination_binding[1]
+    report['phase'] = 'READ_SHARED_LEASE_TABLES'
     need(re.fullmatch('[A-Za-z][A-Za-z0-9_]{0,63}', table), 'LEASE_TABLE_NAME_REQUIRED')
     lease_tables = {}
     families = nft_families(native.read('nft', coordination_binding[2], ['-j', '-n', 'list', 'tables'], coordination_binding[3]), table)
@@ -368,6 +374,7 @@ def collect(report, h, s, reader, native, work):
     native_records['leaseTables'] = lease_tables
     (work / 'native-selected.private.json').write_bytes(encoded(native_records))
     # Preserve exact MAC/config views. This reader performs no STOP or DETACH.
+    report['phase'] = 'VERIFY_READ_STABILITY'
     for role, doc in docs.items():
         need(h.frame(h.inspect(doc['Id'])) == h.frame(doc), 'PROVIDER_CHANGED_DURING_READ')
     after_info = s.engine_info()
@@ -386,7 +393,7 @@ def collect(report, h, s, reader, native, work):
             need(parse(native.read('ctr', '/usr/bin/ctr', ctr_args + ['containers', 'info', cid])) == native_records[role]['containerdMetadata'], 'CONTAINERD_METADATA_CHANGED')
     need(process_bindings(cids) == processes, 'PROVIDER_PROCESS_BINDINGS_CHANGED')
     report.update(status='DISCOVERY_LIFECYCLE_READ_COMPLETE', containerFramesAndJournalsUnchanged=True,
-                  snapshotAtomic=False, cleanupQualified=False, startQualified=False)
+                  phase='COMPLETE', snapshotAtomic=False, cleanupQualified=False, startQualified=False)
 
 
 def main():
@@ -411,7 +418,9 @@ def main():
         reader = s.Reader(); native = Native(work)
         collect(report, h, s, reader, native, work)
     except Exception as exc:
-        report.update(status='READ_INCOMPLETE', reason=code(exc))
+        report.update(status='READ_INCOMPLETE', reason=code(exc), errorLocation=[
+            {'file': Path(f.filename).name, 'function': f.name, 'line': f.lineno}
+            for f in traceback.extract_tb(exc.__traceback__)[-3:]])
     finally:
         signal.alarm(0)
         if native is not None:
