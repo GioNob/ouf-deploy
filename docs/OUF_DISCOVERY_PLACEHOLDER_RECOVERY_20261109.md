@@ -1,6 +1,6 @@
 # Discovery: rimozione verificata del segnaposto southbound
 
-9 novembre 2026. **Comando qualificato per la rimozione circoscritta, ancora da eseguire sul VPS.**
+9 novembre 2026. **Esecuzione conclusa sul VPS alle 09:06 CET. Non ripetere.** [Ricevuta operatore](../evidence/discovery-placeholder-removed-operator-20261109.json): segnaposto rimosso, nessun umount, frame e journal invariati; coordinatore ancora BLOCKED.
 
 ## Evidenza corrente
 
@@ -27,12 +27,12 @@ L'intento distinto è in `/var/lib/ouf-storage-migration/discovery-southbound-pl
 
 ## Esito e passo successivo
 
-Esito atteso: `SOUTHBOUND_UNMOUNTED_PLACEHOLDER_REMOVED`. Significa rimozione dell'ultimo residuo filesystem osservato. Il coordinatore resta BLOCKED e i journal storici restano conservati: **providerReady=false e newGenerationAdmitted=false**.
+Esito ricevuto: `SOUTHBOUND_UNMOUNTED_PLACEHOLDER_REMOVED`. Significa rimozione dell'ultimo residuo filesystem osservato. Il coordinatore resta BLOCKED e i journal storici restano conservati: **providerReady=false e newGenerationAdmitted=false**.
 
-Restano da qualificare la quiescenza del coordinatore e l'ammissione di una nuova generazione provider, poi credenziale/TLS Semantic, backlog/grant e installazione MCP PR84 già compilata. Non usare il successo di questa rimozione come autorizzazione tecnica a riavviare i vecchi CID.
+La [quiescenza del coordinatore](OUF_DISCOVERY_COORDINATOR_QUIESCENCE_20261109.md) è ora qualificata e da eseguire; resta da qualificare l'ammissione di una nuova generazione provider, poi credenziale/TLS Semantic, backlog/grant e installazione MCP PR84 già compilata. Non usare il successo di questa rimozione come autorizzazione tecnica a riavviare i vecchi CID.
 
 ## Qualificazione
 
-[CI 42582681407](https://github.com/GioNob/ouf-deploy/actions/runs/42582681407), job129044958878:9 test unitari e 2 prove Linux native, zero skip, log letti. Le prove native montano realmente nsfs e un bind mount ordinario in namespace usa e getta; entrambi sono preservati. Dopo umount della fixture viene rimosso soltanto il segnaposto originale. Coperte inoltre sostituzione inode dopo intento, contenuto/permessi/link differenti, intento fallito e precondizioni con processi o lease presenti.
+[CI 42582681407](https://github.com/GioNob/ouf-deploy/actions/runs/42582681407), job 129044958878: 9 test unitari e 2 prove Linux native, zero skip, log letti. Le prove native montano realmente nsfs e un bind mount ordinario in namespace usa e getta; entrambi sono preservati. Dopo umount della fixture viene rimosso soltanto il segnaposto originale. Coperte inoltre sostituzione inode dopo intento, contenuto/permessi/link differenti, intento fallito e precondizioni con processi o lease presenti.
 
-La prova nativa copre il confine filesystem; l'intero controller contro i metadata del VPS è ancora da eseguire. [Evidenza](../evidence/discovery-placeholder-reconciliation-qualification-20261109.json). Questo passo non cambia F1–F6 e non prova E2E.
+La prova nativa copre il confine filesystem; l'esecuzione del controller sul VPS è documentata nella ricevuta operatore sopra. [Evidenza](../evidence/discovery-placeholder-reconciliation-qualification-20261109.json). Questo passo non cambia F1–F6 e non prova E2E.
