@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Unsigned generation inputs completed at 10:55:17 UTC. Do not repeat preparation or boot. Consume the exact receipt and three private files to prepare fresh creation profiles and current Semantic peer bindings with independent OCI/rootfs expectations, then fresh governed identity/authority and runtime publication/switch/start. No new VPS command is qualified at this checkpoint.",
+  "nextAction": "Run the pinned generation recipe source reader once and preserve its final receipt. It consumes the completed input preparation, recompiles independent recipes and reports installed-policy differences and historical peer bindings without runtime effects. Then complete the fresh multi-network pair and current Semantic peer profile, authority and governed creation/admission/switch/start. Do not repeat boot or input preparation; no new-generation installer is ready.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -2086,6 +2086,40 @@
           "inputsAreNotRuntimeProfiles": true,
           "operatorReceiptProducerBytes": 1383,
           "operatorReceiptProducerSha256": "8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15"
+        },
+        "generationRecipeSourceRead": {
+          "schema": "ouf.discovery-generation-source-read-qualification.v1",
+          "date": "2026-11-09",
+          "status": "QUALIFIED_AWAITING_OPERATOR_RECEIPT",
+          "sourceCommit": "a14e6b61c2efe56f838507990850812d694407d1",
+          "scriptSha256": "8c2057538e3cfc3b3c6f1ef3a315268a0a4362e409b09ce527e67360e5a9d77b",
+          "deliverySha256": "2fa6efe644ee81094c62408312b81bf60aecff5469118b198eec851b0fe90b3f",
+          "ciRun": 42608238333,
+          "ciJob": 129129595875,
+          "ciConclusion": "success",
+          "directLogsRead": true,
+          "tests": 11,
+          "skipped": 0,
+          "deliveryPinnedSources": 17,
+          "deliverySimulatedDispatches": 1,
+          "operatorReceiptReceived": false,
+          "runtimeObserved": false,
+          "nativeCreationQualifiedByTheseTests": false,
+          "requiredInputReceiptSha256": "8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15",
+          "independentCompilerReused": "tools/semantic_frame_compiler/compile_creation_frame_policy.py",
+          "currentSemanticPeerStillRequiresIndependentReview": true,
+          "historicalRootfsSealsAreNotNewGenerationExpectations": true,
+          "newGenerationAdmitted": false,
+          "providerReady": false,
+          "sourceFindings": [
+            "Current provider installation template requires one network and an owned newly-created Registry peer.",
+            "Existing cohort assembly and peer resolver support multiple NICs; no target generation was assembled or admitted here."
+          ],
+          "limits": [
+            "Fixture documents are synthetic; the two independent Engine baselines are retained repository inputs.",
+            "No target OCI, rootfs or transport compatibility is established before the operator read.",
+            "Historical signature validity and current authority are not asserted."
+          ]
         }
       },
       "discoveryLifecycleRead": {

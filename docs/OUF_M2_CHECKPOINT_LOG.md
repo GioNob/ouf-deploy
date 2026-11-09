@@ -593,3 +593,10 @@ CI42604343907/job129116339541 SUCCESS,8test/0skip e log letti. Prove pure e file
 [Ricevuta delle 11:55:17 CET](../evidence/discovery-generation-inputs-prepared-operator-20261109.json): DISCOVERY_GENERATION_INPUTS_PREPARED, due ruoli e tre hash verificati, directory discovery-generation-inputs-99d46y_j. Quattro percorsi storici di identità per ruolo; nessuna nuova identità o autorità. Coordinatore QUIESCED, wrapper/puntatore/journal invariati, zero CREATE/firme/avvii/reload/nft/richieste applicative. Intento presente: non ripetere il preparatore. Ricevuta originale34campi/1.383byte, SHA8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15.
 
 Prossimo sviluppo: consumare gli input esatti per il profilo di creazione e i binding del peer Semantic corrente, con aspettative OCI/rootfs indipendenti e nuove identità/autorità. Firma, ammissione, switch e avvio non sono effettuati; nessun nuovo comando VPS consegnato. F1 PASS, F2–F6 aperti.
+
+
+## 9 novembre 2026 — Lettore delle ricette della nuova generazione qualificato
+
+Sorgente a14e6b61c2efe56f838507990850812d694407d1; CI42608238333/job129129595875 PASS,11test/0skip, log diretti letti. Consuma la ricevuta e i tre input delle11:55:17CET; ricompila i draft OCI indipendenti e confronta le policy installate, esponendo soltanto percorsi delle differenze, NIC/peer e sigilli storici. Nessuna autenticazione o riemissione di autorità; gli indici peer e i sigilli storici non diventano correnti. Il componente recente a una rete/Registry nuovo non è già un installer per la coppia a più reti con Semantic esistente.
+
+Consegna a17hash verificata con dispatch simulato unico e pulizia download; sorgente/compilatore riletti da GitHub. Nessuna invocazione VPS eseguita dall'agente: ricevuta attesa. Nessuna chiusura F2–F6. [Runbook](OUF_DISCOVERY_GENERATION_SOURCES_20261109.md), [qualifica](../evidence/discovery-generation-source-read-qualification-20261109.json). Non ripetere staging, boot o preparatore già conclusi.
