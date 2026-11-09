@@ -1,7 +1,11 @@
 import copy
 import importlib.util
+import io
+import json
+import contextlib
 from pathlib import Path
 import tempfile
+import types
 import unittest
 from unittest.mock import patch
 
@@ -38,6 +42,59 @@ def inputs(root, structure, footprint, nft='/usr/sbin/nft', nft_sha='a' * 64):
 
 
 class SuccessorContracts(unittest.TestCase):
+    def receipt(self):
+        return json.loads((ROOT / 'evidence/discovery-nft-drift-operator-20261109.json').read_bytes())
+
+    def test_complete_operator_receipt_passes_original_producer_bytes(self):
+        receipt = self.receipt()
+        self.assertIs(False, receipt['installedBoot']['retainedPreflightFootprintMatches'])
+        raw = d.encoded(receipt)
+        self.assertEqual('fcea4316cd6daa153c454c6ddab59feedf61ff57ffc5f921eac6eb4e6ac8eeb3', m.sha(raw))
+        m.verify_reviewed_receipt(raw)
+
+    def test_omitted_operator_field_reproduces_bad_pin_and_is_rejected(self):
+        receipt = self.receipt(); del receipt['installedBoot']['retainedPreflightFootprintMatches']
+        raw = d.encoded(receipt)
+        self.assertEqual('ac43eb0ab617bb0039cfc431bf427ca88ec5e81f513a540da54ef21bc430fde2', m.sha(raw))
+        with self.assertRaisesRegex(RuntimeError, 'EXACT_DRIFT_RECEIPT_REQUIRED'): m.verify_reviewed_receipt(raw)
+
+    def test_changed_field_or_bytes_still_rejected(self):
+        receipt = self.receipt(); exact = d.encoded(receipt)
+        receipt['installedBoot']['retainedPreflightFootprintMatches'] = True
+        for raw in (d.encoded(receipt), exact.rstrip(b'\n'), exact + b'\n'):
+            with self.subTest(sha=m.sha(raw)), self.assertRaisesRegex(RuntimeError, 'EXACT_DRIFT_RECEIPT_REQUIRED'):
+                m.verify_reviewed_receipt(raw)
+
+    def run_receipt_preflight(self, raw):
+        # Run main's actual first gate; no Docker, nft or filesystem mutations.
+        p = q.load_helper('reconcile-discovery-placeholder-20261109.py')
+        l = q.load_helper('read-discovery-lifecycle-20261109.py')
+        fake_q = types.SimpleNamespace(load_helper=lambda name: p if name.startswith('reconcile-') else l,
+                                       load_core=lambda: core, CLAIM=q.CLAIM, RECEIPT=q.RECEIPT)
+        fake_d = types.SimpleNamespace(load_quiesce=lambda: fake_q)
+        output = io.StringIO()
+        with patch.object(m, 'load_drift', return_value=fake_d), patch.object(m.os, 'geteuid', return_value=0), \
+             patch.object(m.os, 'umask'), patch.object(m.os.path, 'lexists', return_value=False), \
+             patch.object(m.signal, 'signal'), patch.object(m.signal, 'alarm'), \
+             patch.object(p, 'read_private', side_effect=[raw, RuntimeError('FOLLOWING_PREFLIGHT_REACHED')]) as read, \
+             patch.object(p, 'save') as save, patch.object(m.os, 'mkdir') as mkdir, \
+             contextlib.redirect_stdout(output):
+            self.assertEqual(1, m.main())
+            save.assert_not_called(); mkdir.assert_not_called()
+        return json.loads(output.getvalue()), read.call_count
+
+    def test_main_accepts_complete_receipt_then_reaches_next_read_without_intent(self):
+        report, reads = self.run_receipt_preflight(d.encoded(self.receipt()))
+        self.assertEqual('FOLLOWING_PREFLIGHT_REACHED', report['reason']); self.assertEqual(2, reads)
+        self.assertEqual(m.RECEIPT_SHA, report['reviewedReceiptSha256'])
+        self.assertFalse(report['operationIntentPresent']); self.assertFalse(report['stagedContextCreated'])
+
+    def test_main_rejects_incomplete_receipt_before_following_read_or_writes(self):
+        receipt = self.receipt(); del receipt['installedBoot']['retainedPreflightFootprintMatches']
+        report, reads = self.run_receipt_preflight(d.encoded(receipt))
+        self.assertEqual('EXACT_DRIFT_RECEIPT_REQUIRED', report['reason']); self.assertEqual(1, reads)
+        self.assertFalse(report['operationIntentPresent']); self.assertFalse(report['stagedContextCreated'])
+
     def test_new_context_changes_only_binding_and_journal_locations(self):
         owner, boot, profile = inputs(Path('/old'), 'a' * 64, 'b' * 64)
         before = copy.deepcopy((owner, boot, profile))

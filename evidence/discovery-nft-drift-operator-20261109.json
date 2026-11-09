@@ -81,7 +81,8 @@
     },
     "scope": "HASH_BOUND_ACTIVE_POINTER_FILES_NOT_EFFECTIVE_SYSTEMD_OR_NEW_AUTHORITY",
     "status": "BOUND_BOOT_BASELINE_READ",
-    "systemdLoadedConfigurationRead": false
+    "systemdLoadedConfigurationRead": false,
+    "retainedPreflightFootprintMatches": false
   },
   "metadataFilesRead": 14,
   "nftTableReadAttempts": 8,

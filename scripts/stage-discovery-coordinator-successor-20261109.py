@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 DRIFT = 'read-discovery-nft-drift-20261109.py'
 DRIFT_SHA = '1c30699b12129fd2c322753167932871a171e744c8d780a31142789eb4326b06'
 RECEIPT = Path('/var/lib/ouf-storage-migration/discovery-nft-drift-f02sxuus/result.json')
-RECEIPT_SHA = 'ac43eb0ab617bb0039cfc431bf427ca88ec5e81f513a540da54ef21bc430fde2'
+RECEIPT_SHA = 'fcea4316cd6daa153c454c6ddab59feedf61ff57ffc5f921eac6eb4e6ac8eeb3'
 OLD_STRUCTURE = '0ae74914cbfcfaef1b2408e8d8de482772f3e524c08d5da231a032dd57863d09'
 CURRENT_STRUCTURE = '1eddee4c1203c07a5643c97c7f8173cd1ea14e35fe7079ad4c73148bce647391'
 BOOT_FOOTPRINT = '7e10bda7a1c83b9688f0f84a1be346061eba4f6e1db9ff3d80c3f59656a1fc7f'
@@ -42,6 +42,11 @@ def need(ok, reason):
 def encoded(value): return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
 def sha(raw): return hashlib.sha256(raw).hexdigest()
 def digest(value): return sha(encoded(value))
+
+
+def verify_reviewed_receipt(raw):
+    # The producer writes compact sorted JSON plus LF; retain exact byte equality.
+    need(sha(raw) == RECEIPT_SHA, 'EXACT_DRIFT_RECEIPT_REQUIRED')
 
 
 def load_drift():
@@ -140,7 +145,9 @@ def main():
             need(path not in saved or saved[path] == raw, 'SOURCE_CHANGED_DURING_STAGE')
             saved[path] = raw; return raw
         report['phase'] = 'VERIFY_REVIEWED_DRIFT_RECEIPT'
-        need(sha(read(RECEIPT)) == RECEIPT_SHA, 'EXACT_DRIFT_RECEIPT_REQUIRED')
+        receipt_raw = read(RECEIPT)
+        report['reviewedReceiptSha256'] = sha(receipt_raw)
+        verify_reviewed_receipt(receipt_raw)
         need(not os.path.lexists(CLAIM) and not os.path.lexists(q.CLAIM), 'PREVIOUS_INTENT_PRESERVED_DO_NOT_REPLAY')
         retained = l.parse(read(RECEIPT.parent / 'selected.private.json'))
         bindings = l.parse(read(q.RECEIPT.parent / 'source-bindings.private.json'))

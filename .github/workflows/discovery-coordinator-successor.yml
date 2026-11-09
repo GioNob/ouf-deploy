@@ -5,12 +5,14 @@ on:
     paths:
       - scripts/stage-discovery-coordinator-successor-20261109.py
       - tests/test_discovery_coordinator_successor.py
+      - evidence/discovery-nft-drift-operator-20261109.json
       - tests/native_discovery_coordinator_successor.py
       - .github/workflows/discovery-coordinator-successor.yml
   pull_request:
     paths:
       - scripts/stage-discovery-coordinator-successor-20261109.py
       - tests/test_discovery_coordinator_successor.py
+      - evidence/discovery-nft-drift-operator-20261109.json
       - tests/native_discovery_coordinator_successor.py
       - .github/workflows/discovery-coordinator-successor.yml
 permissions: {contents: read}
