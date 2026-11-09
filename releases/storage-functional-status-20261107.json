@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute b088b1f8 unsigned generation input preparation once. It binds the completed boot to historical adapter/southbound templates in separate private artifacts without runtime switch, creation, signatures or start. Then prepare current peer/independent OCI and fresh reviewed identity/authority for the existing provider owners. Do not repeat completed boot or reuse old claims.",
+  "nextAction": "Unsigned generation inputs completed at 10:55:17 UTC. Do not repeat preparation or boot. Consume the exact receipt and three private files to prepare fresh creation profiles and current Semantic peer bindings with independent OCI/rootfs expectations, then fresh governed identity/authority and runtime publication/switch/start. No new VPS command is qualified at this checkpoint.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1613,7 +1613,7 @@
         "credentialValidityAtIssuerTested": false
       },
       "providerRecovery": {
-        "status": "BOOT_BOUND_FRESH_PROVIDER_RUNTIME_COMPOSITION_PENDING",
+        "status": "GENERATION_INPUTS_PREPARED_CURRENT_PEER_AND_CREATION_PROFILE_PENDING",
         "historicalNativeProofIsCurrentInstaller": false,
         "nativeTaskAndHandleReconciliationPending": false,
         "historicalJournalResetAllowed": false,
@@ -1761,7 +1761,7 @@
           "targetExecutionScope": "PREFLIGHT_EXECUTED_HELD_BEFORE_INTENT",
           "fullVpsControllerCompleted": false
         },
-        "currentBlock": "FRESH_PROVIDER_GENERATION_NOT_YET_PREPARED_OR_ADMITTED",
+        "currentBlock": "FRESH_IDENTITIES_PEER_EXPECTATIONS_AND_AUTHORITY_PENDING",
         "coordinatorQuiescenceCommandDelivered": true,
         "nftDriftRead": {
           "schema": "ouf.discovery-nft-drift-read-qualification.v1",
@@ -2032,12 +2032,14 @@
           "currentTargetAssemblyQualified": false,
           "nextWork": "Bind fresh creation, separately published profiles and runtime switch/admission to the boot-selected QUIESCED coordinator; preserve historical journals and reject reused claims.",
           "newOperatorCommandDelivered": true,
-          "operatorCommandScope": "UNSIGNED_INPUT_PREPARATION_ONLY_NOT_RUNTIME_INSTALLER"
+          "operatorCommandScope": "UNSIGNED_INPUT_PREPARATION_ONLY_NOT_RUNTIME_INSTALLER",
+          "operatorCommandCompleted": true,
+          "nextOperatorCommandDelivered": false
         },
         "generationInputPreparation": {
           "schema": "ouf.discovery-generation-input-qualification.v1",
           "date": "2026-11-09",
-          "status": "QUALIFIED_INPUT_PREPARATION_TARGET_PENDING",
+          "status": "DISCOVERY_GENERATION_INPUTS_PREPARED",
           "sourceCommit": "b088b1f84b70e2203aa2f5c7463e37f4b988ca07",
           "scriptSha256": "7a3d618aa933c42cfcdac3eb5965e97521a64934dd778aa1c66b244f7d4f99a0",
           "deliverySha256": "965059899e07456c97d5345ddfe74cea5e3a150cc92daef541007d03a56a6046",
@@ -2050,7 +2052,7 @@
           "sourceFilesReadBack": 15,
           "bashSyntaxChecked": true,
           "deliveryRoutingSimulated": true,
-          "targetExecuted": false,
+          "targetExecuted": true,
           "runtimeConfigurationProduced": false,
           "containerCreates": 0,
           "signaturesProduced": 0,
@@ -2063,7 +2065,27 @@
             "Creation, peer expectations, signing, runtime switch and provider start remain pending."
           ],
           "qualification": "evidence/discovery-generation-input-qualification-20261109.json",
-          "document": "docs/OUF_DISCOVERY_GENERATION_INPUTS_20261109.md"
+          "document": "docs/OUF_DISCOVERY_GENERATION_INPUTS_20261109.md",
+          "fullVpsControllerCompleted": true,
+          "operatorReceipt": "evidence/discovery-generation-inputs-prepared-operator-20261109.json",
+          "observedAt": "2026-11-09T10:55:17.366273+00:00",
+          "preparationDirectory": "/etc/ouf/deploy-snapshots/discovery-generation-inputs-99d46y_j",
+          "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-generation-inputs-cv_hy837",
+          "fileHashes": {
+            "adapter-inputs.private.json": "896117c1df0cff8e89eb46a38f380770127752766032cb76862b7234232f3ed1",
+            "generation-plan.private.json": "53a6f06a58133779654eebb9fbfd302d2ce4160f5262e0fb0e8d37610c7394fb",
+            "southbound-inputs.private.json": "a4024aaf0e8ae89ee35fdd0a7aae244fde4611ae22b79611432e7a59647ed98d"
+          },
+          "historicalIdentityReferenceCounts": {
+            "adapter": 4,
+            "southbound": 4
+          },
+          "rolesPrepared": 2,
+          "operationIntentPresent": true,
+          "pendingFreshIdentityAndAuthority": true,
+          "inputsAreNotRuntimeProfiles": true,
+          "operatorReceiptProducerBytes": 1383,
+          "operatorReceiptProducerSha256": "8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15"
         }
       },
       "discoveryLifecycleRead": {

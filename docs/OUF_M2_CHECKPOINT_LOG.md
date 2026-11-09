@@ -587,3 +587,9 @@ Coordinatore selezionato QUIESCED; lease/start false, provider non pronto, gener
 Source b088b1f84b70e2203aa2f5c7463e37f4b988ca07 collega i template storici di adapter/southbound alla selezione del coordinatore di boot, in file privati separati e non eseguibili dal runtime. Ricevuta boot completa, pointer/guard/metadata correnti e sorgenti hash-bound verificati; nessuna credenziale, firma, CREATE, switch, avvio o modifica nft. Nuovi CID/transazioni, peer/OCI indipendenti e autorità restano da preparare.
 
 CI42604343907/job129116339541 SUCCESS,8test/0skip e log letti. Prove pure e file reali0600, parziali e replay rifiutati;15sorgenti riletti, wrapper sintatticamente valido e dispatch simulato al solo preparatore. [Runbook](OUF_DISCOVERY_GENERATION_INPUTS_20261109.md), VPS pendente. Boot non ripetibile; F2–F6 restano aperti.
+
+## 9 novembre 2026 — Input privati della nuova generazione completati sul VPS
+
+[Ricevuta delle 11:55:17 CET](../evidence/discovery-generation-inputs-prepared-operator-20261109.json): DISCOVERY_GENERATION_INPUTS_PREPARED, due ruoli e tre hash verificati, directory discovery-generation-inputs-99d46y_j. Quattro percorsi storici di identità per ruolo; nessuna nuova identità o autorità. Coordinatore QUIESCED, wrapper/puntatore/journal invariati, zero CREATE/firme/avvii/reload/nft/richieste applicative. Intento presente: non ripetere il preparatore. Ricevuta originale34campi/1.383byte, SHA8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15.
+
+Prossimo sviluppo: consumare gli input esatti per il profilo di creazione e i binding del peer Semantic corrente, con aspettative OCI/rootfs indipendenti e nuove identità/autorità. Firma, ammissione, switch e avvio non sono effettuati; nessun nuovo comando VPS consegnato. F1 PASS, F2–F6 aperti.
