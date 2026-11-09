@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the qualified corrected boot continuation at 6f378f07: reconcile the exact preserved pre-publication HELD receipt, require no activation intent, and prove the omitted guard ExecStartPre is a typed empty array before publication. Two boot commands, daemon-reload and pointer only; no Docker restart or provider start. Do not repeat staging or the obsolete wrapper.",
+  "nextAction": "Boot binding completed at 10:42:59 UTC; do not repeat staging, diagnosis or activation. Prepare and qualify a fresh provider/runtime generation on the boot-selected QUIESCED coordinator using existing creation/profile/admission/runtime-switch owners and current bindings. Old runtime configuration and journals stay preserved; no current VPS command is ready. Then Semantic credential/TLS, worker and MCP publication, and the existing Teatri E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1613,7 +1613,7 @@
         "credentialValidityAtIssuerTested": false
       },
       "providerRecovery": {
-        "status": "CURRENT_INSTALLER_NOT_YET_QUALIFIED",
+        "status": "BOOT_BOUND_FRESH_PROVIDER_RUNTIME_COMPOSITION_PENDING",
         "historicalNativeProofIsCurrentInstaller": false,
         "nativeTaskAndHandleReconciliationPending": false,
         "historicalJournalResetAllowed": false,
@@ -1761,7 +1761,7 @@
           "targetExecutionScope": "PREFLIGHT_EXECUTED_HELD_BEFORE_INTENT",
           "fullVpsControllerCompleted": false
         },
-        "currentBlock": "SUCCESSOR_STAGED_QUIESCED_BOOT_BINDING_TARGET_PENDING",
+        "currentBlock": "FRESH_PROVIDER_GENERATION_NOT_YET_PREPARED_OR_ADMITTED",
         "coordinatorQuiescenceCommandDelivered": true,
         "nftDriftRead": {
           "schema": "ouf.discovery-nft-drift-read-qualification.v1",
@@ -1931,11 +1931,11 @@
           "activeCoordinationState": "BLOCKED",
           "activeInstallationPointerChanged": false
         },
-        "activeCoordinatorQuiescenceProven": false,
+        "activeCoordinatorQuiescenceProven": true,
         "coordinatorSuccessorBootBinding": {
           "schema": "ouf.discovery-successor-boot-qualification.v1",
           "date": "2026-11-09",
-          "status": "PREINTENT_HOLD_DIAGNOSED_TYPED_EMPTY_CONTINUATION_QUALIFIED",
+          "status": "DISCOVERY_SUCCESSOR_BOOT_BOUND",
           "sourceCommit": "cf2de72e76c83e299348c3dc70de36defacb1039",
           "script": "scripts/activate-discovery-coordinator-boot-20261109.py",
           "scriptSha256": "153cd72eff8c50413cafce9875f272cd8eeddfbd4366c4f0e3f894665f8ce8ae",
@@ -1954,7 +1954,7 @@
           "skips": 0,
           "unitTestsRerunAtHandoff": true,
           "systemdSimulated": true,
-          "fullVpsControllerTested": false,
+          "fullVpsControllerTested": true,
           "targetExecuted": true,
           "sourceFilesReadBack": 14,
           "bashSyntaxChecked": true,
@@ -1981,12 +1981,11 @@
             "New provider generation, Semantic credential/TLS and MCP publication remain pending."
           ],
           "qualification": "evidence/discovery-successor-boot-qualification-20261109.json",
-          "operatorReceipt": "evidence/discovery-successor-boot-held-operator-20261109.json",
-          "observedAt": "2026-11-09T10:24:44.524755+00:00",
-          "targetReason": "SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED",
-          "operationIntentPresent": false,
-          "publicationAttempted": false,
-          "activeInstallationPointerChanged": false,
+          "operatorReceipt": "evidence/discovery-successor-boot-bound-operator-20261109.json",
+          "observedAt": "2026-11-09T10:42:59.230146+00:00",
+          "operationIntentPresent": true,
+          "publicationAttempted": true,
+          "activeInstallationPointerChanged": true,
           "systemdReadScript": "scripts/read-discovery-boot-systemd-20261109.py",
           "systemdReadTargetExecuted": true,
           "activationControllerChanged": true,
@@ -1996,7 +1995,43 @@
           "dockerMainPidObserved": "26930",
           "continuationQualification": "evidence/discovery-boot-empty-prestart-qualification-20261109.json",
           "continuationSourceCommit": "6f378f07921baefd092b0b20b7f6368c0d10dd09",
-          "continuationTargetExecuted": false
+          "continuationTargetExecuted": true,
+          "previousAttempt": {
+            "operatorReceipt": "evidence/discovery-successor-boot-held-operator-20261109.json",
+            "observedAt": "2026-11-09T10:24:44.524755+00:00",
+            "reason": "SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED",
+            "operationIntentPresent": false,
+            "publicationAttempted": false
+          },
+          "fullVpsControllerCompleted": true,
+          "activeCoordinationState": "QUIESCED",
+          "installedObserverPassed": true,
+          "loadedBootCommandsVerified": true,
+          "dockerPidUnchanged": true,
+          "containerFramesUnchanged": true,
+          "bootWriteDirectoryAdded": true,
+          "daemonReloadDispatched": true,
+          "installationDirectory": "/etc/ouf/deploy-snapshots/semantic-coordinated-boot-install-successor-b3c3uwwt",
+          "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-boot-activation-f_9dwjoh",
+          "providerGenerationActivationPending": true,
+          "oldRuntimeConfigurationChanged": false,
+          "oldRuntimeJournalWrites": 0,
+          "operatorReceiptProducerBytes": 1434,
+          "operatorReceiptProducerSha256": "ffd4362f54b766a25c7afa0dc9f62129284a72b616cfdf518c39a79f64fea585"
+        },
+        "activeCoordinatorQuiescenceScope": "BOOT_SELECTED_SUCCESSOR_AT_OPERATOR_OBSERVATION",
+        "freshGenerationSourceReview": {
+          "repository": "GioNob/ouf-deploy",
+          "commit": "82b4ce6077ed295331357e54a57a7c8af069ba68",
+          "components": [
+            "tools/m2_discovery_installation_profile/provider_creation.py",
+            "tools/m2_discovery_installation_profile/provider_profile_publication.py",
+            "tools/m2_discovery_installation_profile/provider_materialized_admission.py",
+            "tools/m2_discovery_installation_profile/provider_runtime_installation.py"
+          ],
+          "currentTargetAssemblyQualified": false,
+          "nextWork": "Bind fresh creation, separately published profiles and runtime switch/admission to the boot-selected QUIESCED coordinator; preserve historical journals and reject reused claims.",
+          "newOperatorCommandDelivered": false
         }
       },
       "discoveryLifecycleRead": {

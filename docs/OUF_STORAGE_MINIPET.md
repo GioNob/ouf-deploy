@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.42 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.43 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -56,7 +56,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 **Componenti installati:** Semantic V12, MCP con schema 14 e Onboarding/Ingestion/UDP con supporto candidato a 1024 colonne hanno raggiunto readiness. Le rispettive ricevute conservano storia, dati e binding previsti; gli installer conclusi non vanno ripetuti. Il percorso funzionale a 1024 colonne resta da provare. [Riepilogo e ricevute](STATE.md#componenti-già-aggiornati).
 
-**Blocco corrente della discovery:** provider v2 e southbound v2 restano fermi. Segnaposto e confronto nft sono conclusi. Dopo il primo HELD per hash calcolato sulla copia incompleta, lo staging corretto è riuscito alle 10:56 CET: [ricevuta](../evidence/discovery-coordinator-staged-operator-20261109.json). Il contesto separato è QUIESCED senza lease/avvio; attivo storico BLOCKED e puntatore invariato. Non ripetere lo staging. Il prossimo passo è il [collegamento al boot](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md): due comandi systemd, daemon-reload e puntatore, senza riavvio Docker/provider. Il primo tentativo è HELD prima della pubblicazione per ExecStartPre omesso dal guard. La diagnosi delle 11:33 CET individua il campo; la continuazione 6f378f07 richiede prova tipizzata di array vuoto. CI: 14 unitari, 1 test con systemd reale e 3 native pubblicazione/nft PASS; esecuzione corretta VPS pendente, nessun replay del vecchio wrapper. Restano nuova generazione provider, credenziale/TLS Semantic, backlog/grant e installazione MCP PR84. Né STAGED né BOOT_BOUND dimostrano discovery, reboot o E2E.
+**Blocco corrente della discovery:** il [collegamento boot delle 11:42:59 CET](../evidence/discovery-successor-boot-bound-operator-20261109.json) è riuscito: puntatore aggiornato, comandi caricati e osservatore verificati, PID Docker e frame container invariati. Il coordinatore selezionato è QUIESCED senza lease/start; provider v2/southbound v2 non avviati e nuova generazione non ammessa. Segnaposto, confronto nft, staging e boot sono conclusi: non ripeterli. Prossimo lavoro: comporre per l'installazione corrente la nuova generazione provider/runtime con gli owner esistenti di creazione, profili, ammissione e switch; nessun comando VPS pronto in questo checkpoint. Poi credenziale/TLS Semantic, backlog/grant e installazione MCP PR84. BOOT_BOUND non dimostra discovery, reboot o E2E. [Stato](STATE.md).
 
 La [PR MCP 84](https://github.com/GioNob/ouf-mcp-server/pull/84) ha qualificato il manifesto ACTIVE dei sei strumenti e prodotto l'immagine CI. Non è installata: sul VPS restano i descrittori INACTIVE della PR 83. [Evidenza](../evidence/mcp-analysis-discovery-publication-20261109.json). Dopo l'attivazione coerente del percorso, continuare sul profilo Teatri esistente: mapping dei nomi delle colonne, review THS, Ingestion, UDP e lettura del grafo. F2–F6 restano aperti.
 
