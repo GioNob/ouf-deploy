@@ -1568,6 +1568,31 @@
         "semanticCredentialMount": "NO_DECLARED_MOUNT",
         "sharedNetworksDeclared": true,
         "connectivityTested": false
+      },
+      "discoveryStartupRead": {
+        "status": "DELIVERED_NOT_TARGET_EXECUTED",
+        "sourceCommit": "066168fafad38c0f722541e710fb46ce2ac370de",
+        "deliveryCommit": "8d44de9007487e312514d42dbfc5a0a0beadeccf",
+        "script": "scripts/read-discovery-startup-20261109.py",
+        "scriptSha256": "0df0567b786f6d5317951c838062e166a4d5037a07d95a3c145b578949372a89",
+        "deliveryScript": "scripts/deliver-discovery-startup-20261109.sh",
+        "deliverySha256": "c67471fd1ea84842adac361c597582df79f8d19af4c2a55241a581c757bd1309",
+        "qualification": "evidence/discovery-startup-reader-qualification-20261109.json",
+        "tests": 10,
+        "skips": 0,
+        "sourceFilesReadBack": 2,
+        "wrapperReadBack": true,
+        "bashSyntaxChecked": true,
+        "targetExecuted": false,
+        "maxDockerGets": 8,
+        "maxSourceFiles": 40,
+        "plannedCredentialReadLimit": 1,
+        "embeddedPrivateTlsKeyMayBeRead": true,
+        "credentialValuesEmitted": false,
+        "serviceChanges": false,
+        "plannedTokenRequests": 0,
+        "plannedDatabaseRequests": 0,
+        "plannedProviderRequests": 0
       }
     },
     "activationMechanism": {

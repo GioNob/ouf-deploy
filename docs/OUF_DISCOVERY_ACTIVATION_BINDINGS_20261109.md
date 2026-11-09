@@ -10,9 +10,9 @@ Quindi un grant o un flag ENV da soli non espongono questi sei strumenti: occorr
 
 Semantic source `c2dae77b42f1811b704465f6ab813c91d808ade4` usa client credentials per il gateway provider; richiede endpoint token HTTPS, scope e file credenziale leggibile con custody ammessa. Il provider usa una ricerca lessicale sulle etichette/URI. Non dedurre da questo codice che credenziale, token o rete siano attualmente funzionanti.
 
-## Lettura necessaria sul VPS
+## Lettura completata sul VPS
 
-L'ultima osservazione aveva provider/worker disabilitati, gateway dichiarato `https://ouf-semantic-southbound-v2:10443` e nessun mount dichiarato per la credenziale provider. Non sappiamo ancora se i componenti southbound/provider siano presenti, avviati e collegati alle reti necessarie. Le route APISIX pubbliche non rispondono a questa domanda.
+[Ricevuta delle 07:24 CET](../evidence/discovery-activation-bindings-operator-20261109.json): Semantic e MCP running; provider v2 e southbound v2 exited, reti condivise configurate. Credenziale Semantic senza mount; provider/worker dichiarati false. Legacy created/senza reti, da mantenere fermo. Nessuna connettività o autenticazione provata. Prossimo passo: [binding di avvio](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
 Il reader osserva gli esatti Semantic e MCP delle ultime ricevute; risolve solo i nomi `ouf-semantic-southbound-v2`, `ouf-semantic-provider-v2` e `ouf-semantic-provider`. Sono nomi da verificare, non identità già provate. Se assenti, lo segnala senza pretendere che non esistano provider con altri nomi. Non elenca indiscriminatamente container o file del server.
 
@@ -25,31 +25,15 @@ Produce:
 
 Massimo13GET Docker e90secondi per il reader. Nessuna query DB, lettura del contenuto di credenziali/config, richiesta token/provider/business, modifica di servizi o permessi. Le ispezioni selezionate complete restano nella directory privata0600/0700; il JSON pubblico non contiene ENV grezze, argomenti o segreti. Il backlog dei job e il trasporto JVM non vengono provati da questa lettura: saranno verificati prima di abilitare il worker.
 
-## Comando operatore
+## Consegna completata
 
-Eseguire sul VPS come oufadmin. È richiesta solo la normale eventuale password sudo locale.
-
-```bash
-(
-  set -euo pipefail
-  ouf_discovery_read=$(mktemp /tmp/ouf-discovery-read.XXXXXX)
-  trap 'rm -f -- "$ouf_discovery_read"' EXIT
-  curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
-    --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/08e179dbf5cefc415f2eb469d9bbfba2c00cef00/scripts/deliver-discovery-activation-bindings-20261109.sh' \
-    -o "$ouf_discovery_read"
-  printf '%s  %s\n' '5cabf7aa7cece2f7afa13a25e049ad26cfec662d0c277da887cf28f4a05f4a5b' "$ouf_discovery_read" | sha256sum -c -
-  bash "$ouf_discovery_read"
-)
-```
-
-Restituire il JSON finale, non i file privati. Esito di lettura atteso: `DISCOVERY_ACTIVATION_BINDINGS_READ`; componenti assenti sono un risultato utile e non equivalgono a readiness. `READ_INCOMPLETE` riporta il motivo; non correggere valori o avviare componenti per forzare l'esito.
+La lettura è stata eseguita con successo. Il comando storico resta nella versione Git precedente; non ripeterlo per proseguire. La ricevuta documenta zero modifiche e zero richieste DB/token/provider/business.
 
 ## Qualifica e limiti
 
 Source `73bb41e5d6165ec704b06cb45c3a198669ebc6e1`, script SHA256 `7f9232b3c2832a57769f0271003b1ce0f2ea57b7e6b0ba266e02dbf6549cc8a7`. Delivery `08e179dbf5cefc415f2eb469d9bbfba2c00cef00`, wrapper SHA256 `5cabf7aa7cece2f7afa13a25e049ad26cfec662d0c277da887cf28f4a05f4a5b`. Tre sorgenti e wrapper riletti byte per byte; sintassi Bash verificata.
 
-Nove test locali, zero errori/skip: redazione, assenze, cambio immagine, variazione frame/MAC, scope GET, parser processi/porte e metadata indisponibili. [Evidenza](../evidence/discovery-activation-bindings-qualification-20261109.json). Il probe diretto /proc nel workspace non era disponibile (FileNotFoundError): non è contato come test nativo riuscito. Nessuna qualifica Docker reale o esecuzione VPS di questo reader è dichiarata.
+Nove test locali, zero errori/skip: redazione, assenze, cambio immagine, variazione frame/MAC, scope GET, parser processi/porte e metadata indisponibili. [Evidenza](../evidence/discovery-activation-bindings-qualification-20261109.json). Il probe diretto /proc nel workspace non era disponibile (FileNotFoundError): non è contato come test nativo riuscito. Nessuna qualifica Docker nativa CI è dichiarata; l'esecuzione VPS è successivamente documentata dalla ricevuta collegata.
 
 ## Dopo il risultato
 

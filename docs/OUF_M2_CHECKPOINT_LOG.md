@@ -496,3 +496,8 @@ Il sorgente MCP installato incorpora il manifesto con sei strumenti INACTIVE; ma
 ## 9 novembre 2026 — discovery: provider v2 e southbound v2 fermi
 
 Ricevuta operatore 07:24 CET DISCOVERY_ACTIVATION_BINDINGS_READ: Semantic ef35ea78 Java con listener8080, MCP41c1e01d running, immagini attese. Provider v2 f3d59af9 e southbound v2 1fc5ae6a exited; reti condivise configurate ma connettività non testata. Semantic dichiara provider/worker false e credenziale senza mount. Legacy10a62374 created/senza reti, da mantenere fermo. Zero DB/token/business/config/credential contents o modifiche. [Ricevuta](../evidence/discovery-activation-bindings-operator-20261109.json). I container v2 corrispondono agli ID storici della creazione/avvio con runtime personalizzato; il runtime corrente deve essere letto prima di un nuovo start. Nessun riavvio o riuso di scope consumati effettuato.
+
+
+## 9 novembre 2026 — controllo avvio provider v2 pronto
+
+Preparato il reader di runtime registrato, configurazione APISIX/adapter, certificati e materiale esistente del 29 ottobre, vincolato ai tre frame correnti. Nessun target code eseguito, broker/start/DB/token/provider invocato. Confronto di una credenziale preparata e lettura della configurazione con TLS key incorporata senza emissione di valori o hash della credenziale. Source 066168fafad38c0f722541e710fb46ce2ac370de, delivery 8d44de9007487e312514d42dbfc5a0a0beadeccf, due file e wrapper riletti. Dieci test locali PASS/zero skip, incluso OpenSSL reale su certificato temporaneo; nessuna prova Docker nativa o esecuzione VPS del nuovo reader. [Comando](OUF_DISCOVERY_STARTUP_READ_20261109.md). STATE reso più compatto, MiniPET2.33/AGENTS/registro aggiornati. Nessun merge o ripristino runtime dichiarato.
