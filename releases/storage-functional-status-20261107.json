@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Bind the completed QUIESCED successor to boot using source cf2de72e: two systemd commands, daemon-reload and active pointer; no Docker restart or provider start. Staging succeeded at 09:56 UTC and must not be repeated. New provider generation remains pending; any HELD requires reconciliation without replay.",
+  "nextAction": "Read the two loaded systemd units with the bounded diagnostic reader, identify the exact failed predicate, then reconcile. No activation replay or daemon-reload. Completed successor staging and historical journals preserved; new provider generation pending.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1935,7 +1935,7 @@
         "coordinatorSuccessorBootBinding": {
           "schema": "ouf.discovery-successor-boot-qualification.v1",
           "date": "2026-11-09",
-          "status": "QUALIFIED_TARGET_PENDING",
+          "status": "TARGET_HELD_BEFORE_INTENT_SYSTEMD_PREDICATE_UNRESOLVED",
           "sourceCommit": "cf2de72e76c83e299348c3dc70de36defacb1039",
           "script": "scripts/activate-discovery-coordinator-boot-20261109.py",
           "scriptSha256": "153cd72eff8c50413cafce9875f272cd8eeddfbd4366c4f0e3f894665f8ce8ae",
@@ -1955,7 +1955,7 @@
           "unitTestsRerunAtHandoff": true,
           "systemdSimulated": true,
           "fullVpsControllerTested": false,
-          "targetExecuted": false,
+          "targetExecuted": true,
           "sourceFilesReadBack": 14,
           "bashSyntaxChecked": true,
           "deliveryRoutingTestedWithSimulatedCurlAndSudo": true,
@@ -1980,7 +1980,16 @@
             "Observer is bound to exact staged files/current native generation; no future reboot readiness is claimed.",
             "New provider generation, Semantic credential/TLS and MCP publication remain pending."
           ],
-          "qualification": "evidence/discovery-successor-boot-qualification-20261109.json"
+          "qualification": "evidence/discovery-successor-boot-qualification-20261109.json",
+          "operatorReceipt": "evidence/discovery-successor-boot-held-operator-20261109.json",
+          "observedAt": "2026-11-09T10:24:44.524755+00:00",
+          "targetReason": "SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED",
+          "operationIntentPresent": false,
+          "publicationAttempted": false,
+          "activeInstallationPointerChanged": false,
+          "systemdReadScript": "scripts/read-discovery-boot-systemd-20261109.py",
+          "systemdReadTargetExecuted": false,
+          "activationControllerChanged": false
         }
       },
       "discoveryLifecycleRead": {

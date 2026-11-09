@@ -563,3 +563,9 @@ La ricevuta operatore delle 10:56 CET coincide con `evidence/discovery-coordinat
 Il lavoro successivo della chat precedente è il controller di collegamento boot in cf2de72e. CI push 42599093020/job129098851349: 9 unitari e 3 nativi PASS/0skip, log letti; CI PR42599102979 SUCCESS. Unitari rieseguiti in questa sessione. Completato wrapper con 14 sorgenti verificati, sintassi Bash e routing provato con curl/sudo simulati. Il controller rimane byte-identico a quello qualificato.
 
 [Runbook corrente](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md): due comandi systemd, daemon-reload e puntatore, senza restart Docker/provider. systemd è simulato in CI; VPS pendente, nuova generazione e reboot reale non provati. F1 PASS, F2–F6 aperti; nessuna osservazione live nuova, merge, grant o attivazione di dominio.
+
+## 9 novembre 2026 — Boot HELD prima della pubblicazione, diagnosi systemd mirata
+
+Ricevuta operatore 10:24:44 UTC / 11:24:44 CET: SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED nella verifica delle unità caricate. Intento e pubblicazione false; nessun restart/start o cambio puntatore. [Ricevuta](../evidence/discovery-successor-boot-held-operator-20261109.json). Non ripetere il controller.
+
+Il lettore mirato confronta le proprietà restituite per le due unità con/senza --all e separa i quattro predicati della riga 170. Verifica locale simulata PASS, VPS pendente. Nessuna correzione del controllo esatto o del controller effettuata: systemd v252 mostra già valori vuoti con --property; la causa concreta va osservata. STATE e registro aggiornati, F2–F6 invariati.

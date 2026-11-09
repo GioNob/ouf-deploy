@@ -16,7 +16,9 @@ La [preparazione delle 10:46 CET](../evidence/discovery-coordinator-stage-held-o
 
 La [ricevuta delle 10:56 CET](../evidence/discovery-coordinator-staged-operator-20261109.json) conferma **DISCOVERY_COORDINATOR_SUCCESSOR_STAGED_QUIESCED**: contesto separato creato, guard superato, journal QUIESCED senza lease/avvio. Coordinatore attivo storico BLOCKED, puntatore e servizi invariati, nessuna richiesta applicativa. **Non ripetere lo staging completato.**
 
-**Prossima azione concreta:** eseguire il [collegamento del successore al boot](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md), sorgente cf2de72e. Aggiorna due comandi systemd e il puntatore attivo, esegue daemon-reload e verifica comandi caricati, PID Docker e osservatore. Nessun riavvio Docker o avvio provider. **9 test unitari e 3 prove native PASS**; systemd simulato in CI, esecuzione VPS pendente.
+**Boot fermato alle 11:24 CET:** la [ricevuta](../evidence/discovery-successor-boot-held-operator-20261109.json) riporta `HELD / SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED` alla riga 170 del lettore `loaded`, prima di intento o pubblicazione. Nessun cambio del puntatore, restart Docker, avvio provider o scrittura nft. L'evidenza privata resta in `/var/lib/ouf-storage-migration/discovery-boot-activation-a2tzafec`.
+
+**Prossima azione concreta:** sola [lettura mirata systemd](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md#diagnosi-del-blocco-delle-1124-cet), senza replay del controller e senza daemon-reload. Il controllo riunisce quattro condizioni: insieme completo delle proprietà, LoadState=loaded, NeedDaemonReload=no, ControlPID=0. La ricevuta non identifica quella fallita. Non attribuire il blocco alla sola assenza di `--all`: il sorgente systemd v252 abilita già i valori vuoti quando si usa `--property`. La versione e il risultato del VPS restano da osservare.
 
 La nuova generazione provider resta da preparare/ammettere. L'esito previsto `DISCOVERY_SUCCESSOR_BOOT_BOUND` non prova provider pronto, reboot reale o discovery; lease/start restano false. Il vecchio journal resta BLOCKED. Se HELD, conservare il JSON senza replay: una pubblicazione parziale richiede riconciliazione.
 
