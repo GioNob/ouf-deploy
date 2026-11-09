@@ -469,3 +469,13 @@ Ricevuta operatore21:48:59UTC/22:48CET: INGESTION_WIDE_1024_READY, readiness200,
 UDP PR49 sourcec0cf1702 modifica soltanto il decoder d’identità, test e workflow: nessuna migrazione. Lettore read-udp-wide-preflight-20261108.py qualificato su commitb5a0a7b7, CI42527648147/job128874710706: sei PASS, zero skip, query su PostgreSQL17/PostGIS3.5 dopo36script in fixture, SELECT-only e righe invariate. API1.44, JAR/storia e conteggi attività, dichiarazioni SeaweedFS e metadata credenziale/hash truststore; zero stop/migrazioni/S3/token. Target non eseguito. Delivery73d98958ca93a38cbb34ecf14c9e4b3651fcac4d, wrapperSHA3840a8899299cb961c205e26aff80fb1d54f4a68d696730fc6edacff975b2c6f, cinque file riletti e verificati. Comando in OUF_UDP_WIDE_UPGRADE_20261108.md.
 
 Archivio UDP nuovo dal sorgente esatto: CI42527648108/job128874710495 SUCCESS,19test identità/zero skip, immagine10004:10004 e scanHIGH/CRITICALPASS. Artifact13635797332/ZIPf0f55c74…,113722451byte. SQL36/YAML estratti coincidono col sorgente in CI; JAR7690ad46…. Log letti, byte scaricati non ancora verificati indipendentemente e nessun avvio candidato. Non chiamarlo immagine storica o installazione. Registry/STATE/MiniPET2.29/AGENTS e documenti aggiornati; prossimo passo preflight UDP, poi qualifica sostituzione e discovery/E2E. Nessun merge.
+
+## 9 novembre 2026 — UDP preflight acquisito e installer qualificato
+
+Ricevuta06:27CET UDP_WIDE_PREFLIGHT_READ: V36 esatta,34 handoff PROCESSED/34 job SUCCEEDED/110 lake VERIFIED,nessuna lease non scaduta e manutenzione non dovuta alla lettura, due reti SeaweedFS e truststore invariati. [Ricevuta integrale](../evidence/udp-wide-preflight-operator-20261109.json).
+
+Scaricato artifact13635797332 e verificati ZIP/gzip/blob/JAR/resources; il link pubblico per run/nome restituisce gli stessi byte. Factory/adapter S3 e motore identità selezionati uguali all'installato; classe PublishedIdentityPolicy diversa. Nessuna equivalenza totale del vecchio pacchetto dichiarata.
+
+CI42568440028 source 2a9e90cfb4a18d8a221ece1cde1019257684bdf5: classic/containerd,7 guard+2 cicli nativi ciascuno,zero skip,log letti. V36/59 tabelle sintetiche preservate,ruolo ordinario,due reti e legacy MAC corretti,JVM TLS con CA privata. Il precedente CI42568313188 falliva prima dell'avvio UDP per attesa PostGIS socket anziché TCP; fixture corretta. [Qualifica](../evidence/udp-wide-upgrade-qualification-20261109.json).
+
+Delivery b9fa2199e22dadfd75957f773d5324228e1da4ff,8 file riletti/hash verificati,wrapper riletto e Bash verificato. [Comando](OUF_UDP_WIDE_UPGRADE_20261108.md). Esecuzione VPS attesa, nessun effetto target dell'agente; Ingestion/Onboarding/MCP/Semantic già pronti non toccati. F1 PASS,F2–F6 aperti. Nessun merge/E2E dichiarato.

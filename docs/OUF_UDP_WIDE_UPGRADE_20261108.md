@@ -1,43 +1,51 @@
-# UDP 1024: lettura corrente prima della sostituzione
+# UDP 1024: sostituzione qualificata, esecuzione VPS attesa
 
-8 novembre 2026. Ingestion 1024 è pronto sul VPS; non ripetere i suoi installer. UDP rimane collegato a SeaweedFS con il codice precedente. Il prossimo passo è una lettura, senza stop, import, migrazione o richieste S3.
+9 novembre 2026, Europe/Rome. Ingestion, Onboarding, MCP e Semantic aggiornati sono già pronti: non ripetere i loro installer. UDP usa ancora SeaweedFS con il codice precedente. Questo passo sostituisce soltanto il container UDP mantenendo configurazione, reti e dati.
 
-## Candidato e pacchetto
+## Risultato acquisito
 
-[PR49](https://github.com/GioNob/ouf-udp-object-resolution/pull/49), source `c0cf1702b2eb971718996a959414caee004af494`: limite dei segnali d'identità da 32 a 1024, copertura delle proprietà e regole d'identità conservate. Nessuna migrazione nuova nel delta. La build storica42416490615 conserva rapporti, non un'immagine distribuibile.
+La [ricevuta delle06:27CET](../evidence/udp-wide-preflight-operator-20261109.json) conferma il CID ab0ce29e e la storia V1–V36 esatta. Alla lettura:34 handoff PROCESSED,34 job SUCCEEDED,110 oggetti lake VERIFIED; una manutenzione READY non dovuta, nessuna lease non scaduta o piano shadow. Sono osservazioni a quell'istante, ricontrollate dall'installer prima dello stop.
 
-[CI 42527648108](https://github.com/GioNob/ouf-deploy/actions/runs/42527648108), job 128874710495, ha costruito e archiviato quel sorgente esatto:19 test identità a384 MiB PASS senza skip, immagine non-root10004:10004, gate HIGH/CRITICAL superato. I36 script e application.yml estratti dal JAR coincidono con il sorgente; quattro classi selezionate identificate. Artifact 13635797332, `udp-wide-image-42527648108`, ZIP 113722451 byte, SHA256 `f0f55c74a4674e78e6982ffa3575f2c7bcc96741dfdcde5da288863f0cf78340`.
+Gli argomenti storage puntano a https://ouf-seaweedfs-stage:9002, bucket ouf-udp, path-style=true. Truststore e file credenziale montati correttamente; due reti, vecchio writer MinIO spento. Queste dichiarazioni non sono una lettura completa della configurazione Spring effettiva.
 
-Sono prove CI e metadata del provider: i byte scaricati dell'archivio non sono ancora stati riletti indipendentemente; nessun import o avvio candidato sul VPS. Il prossimo installer dovrà usare quel pacchetto verificato e qualificare il lifecycle a due reti preservando TLS/credenziali esistenti. [Registro archivio](../evidence/udp-wide-archive-ci-20261108.json).
+## Candidato esatto e qualifica
 
-## Lettura qualificata
+[PR49](https://github.com/GioNob/ouf-udp-object-resolution/pull/49), source c0cf1702b2eb971718996a959414caee004af494, alza da32 a1024 il limite dei segnali di identità. Nessuna nuova migrazione. [Archivio originario](https://github.com/GioNob/ouf-deploy/actions/runs/42527648108), artifact13635797332, contiene l'immagine usata per tutte le prove e per la consegna.
 
-`scripts/read-udp-wide-preflight-20261108.py`, source deploy `b5a0a7b7177471218e42ce3e2ba2602c3fdf63f1`, SHA256 `fa8239a9c6ddd99ea6cddd9a11ae5246d3e63440a54d70c7c6eeef8f87d2664f`.
+I byte ZIP, gzip, blob OCI, JAR,36 migrazioni e YAML sono stati riletti e verificati. Factory/adapter S3 e motore identità selezionati hanno hash uguale all'installato; PublishedIdentityPolicy cambia. Non è un confronto di tutte le classi/librerie con il vecchio JAR. [Record del pacchetto](../evidence/udp-wide-downloaded-package-20261109.json).
 
-- Osserva il CID UDP già sostituito `ab0ce29e39cfd616e5eee4bff32c0babdd04a0efe5d918dcc85e9e363d488005`, immagine `sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52`, tramite Docker API1.44; verifica che il vecchio writer MinIO sia spento.
-- Legge il JAR indicato dal processo Java e confronta migrazioni/YAML col candidato. Raccoglie la forma MAC e il frame corrente senza introdurre normalizzazioni o autorità per una sostituzione.
-- Controlla dichiarazioni SeaweedFS negli argomenti e nell'ENV, metadata del file credenziale e hash del truststore montato. Non legge il contenuto delle credenziali né emette argomenti, ENV o log grezzi. Queste dichiarazioni non equivalgono alla configurazione Spring effettiva completa.
-- Esegue una sessione SQL REPEATABLE READ / READ ONLY con timeout: storia migrazioni e conteggi di handoff, job di materializzazione, oggetti lake, pianificazioni manutenzione, piani shadow e lease non scadute. Nessun identificativo, payload o checkpoint applicativo viene restituito. I conteggi non sono garanzia di quiete futura o autorizzazione al riavvio.
-- Ricontrolla frame e JAR al termine. Salva prove private nel percorso riportato nel JSON, sotto `/var/lib/ouf-storage-migration`.
+[CI42568440028](https://github.com/GioNob/ouf-deploy/actions/runs/42568440028), source 2a9e90cfb4a18d8a221ece1cde1019257684bdf5: Docker29.8.1 classic e containerd, sette test guard più due cicli nativi per backend, zero skip, log letti. Entrambi i profili richiedono legacy MAC realmente presente prima dello stop. Detach privato prima/backend ultimo, rename e nuovo avvio conservano IP/MAC/alias di entrambe le reti. Non si esclude globalmente MacAddress.
 
-[CI 42527648147](https://github.com/GioNob/ouf-deploy/actions/runs/42527648147), job 128874710706: sei test PASS, zero skip, log letti. Query esatta su PostgreSQL17/PostGIS3.5 dopo applicazione dei 36 script nel database usa-e-getta, ruolo con soli SELECT, dati fixture invariati; rilevazione lavoro PAUSED e lease attiva verificata. Non è una prova di avvio candidato o E2E. [Qualifica](../evidence/udp-wide-preflight-qualification-20261108.json).
+Il candidato archiviato raggiunge readiness200 con utente10004:10004 e ruolo DB ordinario su PostgreSQL17/PostGIS3.5, storia V36 e59 tabelle sintetiche invariate. Spring JSON, argomenti e mount sono conservati; recovery API abilitata, polling manutenzione/shadow configurato con lavoro non dovuto. Probe JVM HTTPS con CA privata riuscito. Il predecessore della fixture usa la stessa immagine candidata; il vecchio pacchetto VPS è vincolato separatamente da frame e hash. Nessuna prova S3 PUT/GET o normale operazione lake è inclusa in questa qualifica. [Prove e limiti](../evidence/udp-wide-upgrade-qualification-20261109.json).
 
-## Comando corrente sul VPS
+La prima esecuzione CI42568313188 falliva durante la preparazione PostGIS usa-e-getta: controllo socket locale prima del listener TCP definitivo. Corretto solo il controllo della fixture; nessun effetto VPS.
 
-Delivery `73d98958ca93a38cbb34ecf14c9e4b3651fcac4d`; cinque file riletti/hash verificati, helper e manifest importati senza main, sintassi Bash e wrapper verificati.
+## Comando sul VPS
+
+Delivery b9fa2199e22dadfd75957f773d5324228e1da4ff; wrapper SHA256 f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225. Otto sorgenti/helper riletti e verificati; wrapper riletto e sintassi Bash verificata. Download pubblico per run/nome provato e identico allo ZIP GitHub. Il precedente URL per solo artifactID restituiva404: non è usato nella consegna.
 
 ```bash
 (
   set -euo pipefail
-  ouf_udp_read=$(mktemp /tmp/ouf-udp-preflight.XXXXXX)
-  trap 'rm -f -- "$ouf_udp_read"' EXIT
+  ouf_udp_install=$(mktemp /tmp/ouf-udp-wide-install.XXXXXX)
+  trap 'rm -f -- "$ouf_udp_install"' EXIT
   curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
     --connect-timeout 10 --max-time 30 \
-    'https://raw.githubusercontent.com/GioNob/ouf-deploy/73d98958ca93a38cbb34ecf14c9e4b3651fcac4d/scripts/deliver-udp-wide-preflight-20261108.sh' \
-    -o "$ouf_udp_read"
-  printf '%s  %s\n' '3840a8899299cb961c205e26aff80fb1d54f4a68d696730fc6edacff975b2c6f' "$ouf_udp_read" | sha256sum -c -
-  bash "$ouf_udp_read"
+    'https://raw.githubusercontent.com/GioNob/ouf-deploy/b9fa2199e22dadfd75957f773d5324228e1da4ff/scripts/install-udp-wide-public-archive-20261109.sh' \
+    -o "$ouf_udp_install"
+  printf '%s  %s\n' 'f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225' "$ouf_udp_install" | sha256sum -c -
+  bash "$ouf_udp_install"
 )
 ```
 
-Restituire il JSON finale, atteso `UDP_WIDE_PREFLIGHT_READ`. La lettura lascia servizi e database invariati. Dopo il risultato: verifica indipendente dell'archivio e sostituzione qualificata, poi provider/strumenti discovery, mapping Teatri conservato e percorso fino al grafo. Readiness Ingestion e archiviazione UDP non chiudono F2–F6.
+Il wrapper accetta anche il percorso di uno ZIP locale come unico argomento, verificando lo stesso hash. Non richiede GitHub CLI.
+
+L'installer verifica lo stesso frame API1.44 del preflight, JAR e truststore; importa il pacchetto, ricontrolla attività e storia con sessioni READ ONLY, quindi ferma il vecchio UDP e conserva entrambi gli endpoint nel sostituto. Richiede assenza di lavoro incompleto e manutenzione non prevista nei successivi10minuti. Il poll di manutenzione non modifica righe quando non trova un lavoro dovuto, secondo il codice del repository. Non introduce tolleranze sui campi o scritture alle pianificazioni. Confronta storia e impronte delle59 tabelle prima dello stop, dopo lo stop e dopo l'avvio; i payload rimangono nel database.
+
+Conserva ENV (incluso Spring JSON), argomenti Java, file credenziali, truststore e mount; cambia soltanto immagine/metadati di provenienza e dichiarazione della versione Java dell'immagine. Nessun migratore esplicito, replay, nuovo upload o richiesta business. Il normale avvio applicativo può accedere a DB/S3 secondo la configurazione esistente. Vecchio UDP e vecchio writer MinIO restano spenti.
+
+Esito atteso: **UDP_WIDE_1024_READY**. La ricevuta deve attestare readiness,59 tabelle e storia invariati, reti e storage conservati. Se HELD, conservare il JSON e le prove private; non rilanciare o riavviare il vecchio. Un tentativo già iniziato non viene ripetuto automaticamente.
+
+## Dopo la ricevuta
+
+Readiness non dimostra UDP funzionale1024 né E2E. Seguono verifica funzionale dei moduli, credenziale/trasporto/delega/grant e attivazione discovery, associazione delle colonne Teatri a proprietà OntoPiA, review THS→Ingestion→UDP→grafo. Conservare asset/profilo Teatri. F2–F6 restano aperti.

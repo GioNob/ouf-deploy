@@ -1,10 +1,10 @@
 {
   "schema": "ouf.storage-functional-status.v1",
-  "dateLocal": "2026-11-08",
+  "dateLocal": "2026-11-09",
   "timezone": "Europe/Rome",
   "ownerDirection": "MAKE_SEAWEEDFS_WORK_THEN_REPEATABLE_E2E_INDUSTRIALIZE_LATER",
   "document": "docs/OUF_STORAGE_MINIPET.md",
-  "status": "F1_PASS_INGESTION_1024_READY_UDP_PREFLIGHT_NEXT",
+  "status": "F1_PASS_UDP_1024_INSTALLER_QUALIFIED_TARGET_PENDING",
   "audit": {
     "repository": "GioNob/ouf-deploy",
     "evidenceCommit": "6c17d701221322ad8d5c8284254a6aa1eb0d727f",
@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run read-only UDP wide preflight, preserving current SeaweedFS/TLS and existing work. Ingestion1024 target readiness is proven; do not replay its completed installers. Then qualify UDP replacement, activate discovery/tools and complete retained Teatri E2E.",
+  "nextAction": "Execute pinned qualified UDP1024 installer and return receipt; preserve SeaweedFS/TLS, existing data and stopped MinIO writers. Do not replay completed preflight/installers. Then functional1024, governed discovery activation, retained Teatri mapping and E2E.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -937,7 +937,7 @@
       "all23WorkflowsPassed": true
     },
     "rolloutPreparation": {
-      "status": "SEMANTIC_V12_MCP_V14_ONBOARDING_1024_READY",
+      "status": "SEMANTIC_V12_MCP_V14_ONBOARDING_INGESTION_1024_READY_UDP_INSTALL_PENDING",
       "document": "docs/OUF_SEMANTIC_APPLICATION_UPGRADE_20261108.md",
       "targetReceipt": "evidence/analysis-discovery-runtime-operator-20261108.json",
       "observedAt": "2026-11-08T08:11:33.056933+00:00",
@@ -1463,11 +1463,11 @@
       },
       "currentIngestionContainerId": "a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020",
       "udpWidePreflight": {
-        "status": "QUALIFIED_READ_ONLY_NOT_TARGET_EXECUTED",
+        "status": "UDP_WIDE_PREFLIGHT_READ",
         "candidateSource": "c0cf1702b2eb971718996a959414caee004af494",
         "script": "scripts/read-udp-wide-preflight-20261108.py",
         "sourceCommit": "b5a0a7b7177471218e42ce3e2ba2602c3fdf63f1",
-        "targetExecuted": false,
+        "targetExecuted": true,
         "readOnly": true,
         "plannedReadOnlyDatabaseSessions": 1,
         "historicalCiHasImageArtifact": false,
@@ -1485,8 +1485,41 @@
         "archiveCiRun": 42527648108,
         "artifactId": 13635797332,
         "archiveEvidence": "evidence/udp-wide-archive-ci-20261108.json",
-        "archiveDownloadBytesIndependentlyVerified": false,
-        "candidateStartupTested": false
+        "archiveDownloadBytesIndependentlyVerified": true,
+        "candidateStartupTested": true,
+        "targetReceipt": "evidence/udp-wide-preflight-operator-20261109.json",
+        "observedAt": "2026-11-09T05:27:31.013327+00:00",
+        "databaseVersion": 36,
+        "handoffProcessed": 34,
+        "jobsSucceeded": 34,
+        "lakeObjectsVerified": 110,
+        "unexpiredLeases": 0,
+        "maintenanceDueAtRead": 0,
+        "candidateStartupScope": "NATIVE_CI_NOT_TARGET"
+      },
+      "udpWideUpgrade": {
+        "status": "QUALIFIED_DELIVERED_NOT_TARGET_EXECUTED",
+        "sourceCommit": "2a9e90cfb4a18d8a221ece1cde1019257684bdf5",
+        "candidateSource": "c0cf1702b2eb971718996a959414caee004af494",
+        "deliveryCommit": "b9fa2199e22dadfd75957f773d5324228e1da4ff",
+        "script": "scripts/upgrade-udp-wide-20261109.py",
+        "deliveryScript": "scripts/install-udp-wide-public-archive-20261109.sh",
+        "deliverySha256": "f9ded8b27edcd212557c50976d6bc09634c52bb794dd530718dd2c864264d225",
+        "qualifiedCiRun": 42568440028,
+        "jobs": [
+          129000019768,
+          129000019662
+        ],
+        "guardTestsPerBackend": 7,
+        "nativeTestsPerBackend": 2,
+        "skips": 0,
+        "logsRead": true,
+        "sourceFilesReadBack": 8,
+        "wrapperReadBack": true,
+        "qualification": "evidence/udp-wide-upgrade-qualification-20261109.json",
+        "downloadedPackage": "evidence/udp-wide-downloaded-package-20261109.json",
+        "targetExecuted": false,
+        "readinessProvesFunctional1024": false
       }
     }
   }

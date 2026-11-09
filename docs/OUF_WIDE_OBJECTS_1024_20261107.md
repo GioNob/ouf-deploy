@@ -78,3 +78,7 @@ La CI Onboarding sul primo candidato corretto ha eseguito **383 test senza error
 4. **Composizione e prova funzionale:** distribuire un insieme coerente conservando SeaweedFS e gli ID correnti; provare il percorso Teatri conservato fino alla normale scrittura lake UDP, quindi ripeterlo. Usare un fixture distinto per il caso SUE ampio; non ricaricare il file reale per dimostrare i test di codice.
 
 Il lavoro è diviso in incrementi verificabili perché il limite di schema e il coordinamento durevole dell'analisi sono modifiche diverse. Questo documento chiude il rischio di dimenticare i passaggi a valle, **non dimostra il funzionamento dell'analisi dinamica né chiude F2–F6**. L'installazione successiva del pacchetto MCP PR83 è documentata dalla [ricevuta dell'8 novembre](../evidence/mcp-analysis-ready-operator-20261108.json).
+
+## Aggiornamento distribuzione — 9 novembre 2026
+
+UDP preflight target acquisito: V36 e binding SeaweedFS coerenti,34 handoff/34 job conclusi e110 oggetti VERIFIED. Archivio c0cf1702 scaricato e verificato; installer qualificato in CI42568440028 su classic/containerd, due profili legacy,59 tabelle sintetiche invariate e TLS JVM. [Comando e limiti](OUF_UDP_WIDE_UPGRADE_20261108.md). Ricevuta UDP_WIDE_1024_READY ancora attesa; nessuna prova funzionale1024 o E2E aggiunta. Gli altri quattro componenti aggiornati restano pronti, strumenti discovery ancora da attivare.
