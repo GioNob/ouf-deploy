@@ -1,0 +1,85 @@
+name: UDP archived wide candidate upgrade
+on:
+  pull_request:
+    paths:
+      - scripts/upgrade-udp-wide-20261109.py
+      - tests/test_udp_wide_upgrade.py
+      - tests/test_udp_wide_upgrade_native.py
+      - tools/udp_wide_20261108/**
+      - .github/workflows/udp-wide-upgrade.yml
+permissions: {contents: read, actions: read}
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        store: [classic, containerd]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21'}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: GioNob/ouf-deploy
+          name: udp-wide-image-42527648108
+          run-id: 42527648108
+          github-token: ${{ github.token }}
+          path: udp-candidate
+      - name: Verify archive and compile only disposable baseline and TLS probe
+        run: |
+          (cd udp-candidate && sha256sum -c SHA256SUMS)
+          echo 'b7a8dd1ad2e8840ba5b873b4290c387a510d0ffcab33b7d8b9348038b3f77768  udp-candidate/image.tar.gz' | sha256sum -c -
+          python3 - <<'PY_FIXTURE'
+          import pathlib,tarfile,hashlib,zipfile,io,subprocess
+          p=pathlib.Path('udp-native')
+          for d in ('classes','lib','migrations'):(p/d).mkdir(parents=True,exist_ok=True)
+          jar=None
+          with tarfile.open('udp-candidate/image.tar.gz','r|gz') as t:
+            for member in t:
+              if member.name=='blobs/sha256/88f92855abcd56eeaaa78a567e323dbd885ee14de30c1b04a8d5e75355b80aa0':
+                raw=t.extractfile(member).read()
+                assert hashlib.sha256(raw).hexdigest()==member.name.rsplit('/',1)[1]
+                with tarfile.open(fileobj=io.BytesIO(raw)) as layer:jar=layer.extractfile('app/app.jar').read()
+          assert hashlib.sha256(jar).hexdigest()=='7690ad46ec3e4973feeb0ee7f58c847605ce545b9177778378c36c0219dc1a7b'
+          with zipfile.ZipFile(io.BytesIO(jar)) as z:
+            for n in z.namelist():
+              if n.startswith('BOOT-INF/lib/') and n.endswith('.jar'):(p/'lib'/pathlib.Path(n).name).write_bytes(z.read(n))
+              if n.startswith('BOOT-INF/classes/db/migration/') and n.endswith('.sql'):(p/'migrations'/pathlib.Path(n).name).write_bytes(z.read(n))
+          subprocess.run(['javac','--release','21','-cp',str(p/'lib/*'),'-d',str(p/'classes'),'tools/udp_wide_20261108/NativeUdpBaseline.java','tools/onboarding_wide_20261108/NativeTrustProbe.java'],check=True)
+          PY_FIXTURE
+      - name: Two-network negative matrix and preserved request
+        run: python3 -m unittest discover -s tests -p test_udp_wide_upgrade.py -v
+      - name: Reuse exact historical Docker29.8.1 in isolated hosted data root
+        env: {SELECTED_STORE: '${{ matrix.store }}'}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz -o /tmp/ouf-docker-29.8.1.tgz
+          printf '%s  %s\n' d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70 /tmp/ouf-docker-29.8.1.tgz | sha256sum --check -
+          sudo install -d -m 755 /opt/ouf-docker-29
+          sudo tar -xzf /tmp/ouf-docker-29.8.1.tgz --strip-components=1 -C /opt/ouf-docker-29
+          sudo chown -R root:root /opt/ouf-docker-29
+          sudo systemctl stop docker.service docker.socket
+          sudo systemctl start containerd.service
+          sudo install -d -m 700 /var/lib/ouf-docker-29
+          python3 - <<'PY_CONFIG'
+          import json,os
+          from pathlib import Path
+          Path('/tmp/ouf-docker-29.json').write_text(json.dumps({'features':{'containerd-snapshotter':os.environ['SELECTED_STORE']=='containerd'},'exec-opts':['native.cgroupdriver=systemd']}))
+          PY_CONFIG
+          sudo systemd-run --unit=ouf-docker-mac-daemon --property=Restart=no \
+            --setenv=PATH=/opt/ouf-docker-29:/usr/sbin:/usr/bin:/sbin:/bin \
+            /opt/ouf-docker-29/dockerd --config-file=/tmp/ouf-docker-29.json \
+            --host=unix:///var/run/docker.sock --data-root=/var/lib/ouf-docker-29 \
+            --exec-root=/run/docker --pidfile=/run/ouf-docker-29.pid \
+            --containerd=/run/containerd/containerd.sock
+          for OUF_MAC_ENGINE_POLL in $(seq 1 60); do
+            if sudo docker info > /tmp/ouf-docker-29-info.txt 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test "$(sudo docker version --format '{{.Server.Version}}')" = 29.8.1
+      - name: Archived UDP, two legacy profiles, V36 and JVM private CA
+        run: sudo env QUALIFIED_JAVA="$JAVA_HOME/bin/java" QUALIFIED_KEYTOOL="$JAVA_HOME/bin/keytool" python3 -I -B tests/test_udp_wide_upgrade_native.py

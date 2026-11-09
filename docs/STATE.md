@@ -1,6 +1,6 @@
 # Stato corrente OUF
 
-8 novembre 2026, Europe/Rome. Priorità dell'owner: **SeaweedFS funzionante, poi E2E ripetibile**. Requisiti aggiunti: 1024 colonne e budget proporzionato al lavoro, con discovery di proprietà OntoPiA. Solo agente principale; industrializzazione rinviata.
+9 novembre 2026, Europe/Rome. Priorità dell'owner: **SeaweedFS funzionante, poi E2E ripetibile**. Requisiti aggiunti: 1024 colonne e budget proporzionato al lavoro, con discovery di proprietà OntoPiA. Solo agente principale; industrializzazione rinviata.
 
 ## Risultato acquisito
 
@@ -33,7 +33,7 @@ I sei strumenti analisi/discovery restano INACTIVE; nessuna analisi funzionale o
 
 ## Sequenza rimanente
 
-1. Eseguire la lettura UDP consegnata, poi qualificare e applicare la sostituzione mantenendo SeaweedFS/TLS e il lavoro esistente. Risultato preflight target ancora atteso.
+1. Qualificare e applicare la sostituzione UDP mantenendo SeaweedFS/TLS e il lavoro esistente. [Preflight ricevuto alle06:27CET](../evidence/udp-wide-preflight-operator-20261109.json): V1–V36 esatte,34 handoff PROCESSED/34 job SUCCEEDED/110 oggetti VERIFIED,nessuna lease non scaduta e manutenzione non dovuta alla lettura. Archivio scaricato e hash verificato; controller in qualifica, non ancora consegnato. Nessun nuovo effetto VPS.
 2. Verificare il supporto funzionale1024 dei moduli aggiornati; per l'E2E conservare asset/profilo Teatri. [Contratti e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
 3. Configurare e verificare credenziale, trasporto e delega discovery sul gateway southbound `ouf-semantic-southbound-v2:10443`; verificare grant e attivare gli strumenti previsti. Il mount della credenziale provider non è attualmente dichiarato; non dedurre disponibilità dalle route APISIX.
 4. Usare l'analisi persistente sul profilo Teatri esistente e trovare proprietà condivise per le colonne. Nessun URI inventato o import manuale sostitutivo. [Budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) e [colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).

@@ -1,0 +1,622 @@
+{
+  "businessRequestsIssued": 0,
+  "candidateStartupTested": false,
+  "configuration": {
+    "allStorageArgumentsMatchSeaweedfsSwitch": true,
+    "externalConfigContentsRead": false,
+    "profileMatchesSwitch": true,
+    "rawArgumentsEmitted": false,
+    "scope": "DECLARED_ENV_AND_RUNNING_ARGUMENTS_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+    "selectedProperties": {
+      "ouf.udp.materialization-recovery.enabled": [
+        {
+          "origin": "PACKAGED_YAML_VARIABLE",
+          "summary": "true"
+        }
+      ]
+    },
+    "sharedCredentialsFileMatchesSwitch": true,
+    "springApplicationJsonPresent": true,
+    "staticAwsCredentialEnvironmentPresent": false,
+    "storageArgumentMatchesSeaweedfsSwitch": {
+      "bucket": true,
+      "endpoint": true,
+      "path-style": true,
+      "region": true
+    },
+    "storageEnvironmentMatchesSeaweedfsSwitch": {
+      "bucket": true,
+      "endpoint": true,
+      "path-style": true,
+      "region": true
+    },
+    "truststoreDeclarationMatchesSwitch": true
+  },
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "currentContainerId": "ab0ce29e39cfd616e5eee4bff32c0babdd04a0efe5d918dcc85e9e363d488005",
+  "currentFrameSha256": "78bf456d7165d8a2b33bc7c3db8cc7c206f8e20fb0cfca95dbf1ad1201f6f058",
+  "currentImageId": "sha256:ae78f604ef485dda3751222ce418e03027d2db87bc49d8cb1faf8de3e2b60b52",
+  "currentLegacyMac": {
+    "endpointCount": 2,
+    "formatValid": true,
+    "kind": "STRING",
+    "matchingEndpointCount": 1,
+    "unicastNonzero": true
+  },
+  "database": {
+    "activity": {
+      "handoff_intake": {
+        "PROCESSED": 34
+      },
+      "lake_maintenance_schedule": {
+        "READY": 1
+      },
+      "lake_object": {
+        "VERIFIED": 110
+      },
+      "lake_shadow_rebuild_plan": {},
+      "maintenanceDue": 0,
+      "materialization_job": {
+        "SUCCEEDED": 34
+      },
+      "unexpiredLeases": {
+        "lake_maintenance_schedule": 0,
+        "lake_object": 0,
+        "lake_shadow_rebuild_plan": 0,
+        "materialization_job": 0
+      }
+    },
+    "activityMeaning": "COUNTS_AT_READ_TIME_NOT_QUIESCENCE_OR_RESTART_AUTHORITY",
+    "applicationRoleSuperuser": false,
+    "databaseOid": "21556",
+    "exactCandidateMigrationHistory": true,
+    "migrationExecuted": false,
+    "migrations": [
+      {
+        "checksum": null,
+        "installedOn": "2026-09-17T17:10:40.038869",
+        "installedRank": 0,
+        "success": true,
+        "type": "SCHEMA",
+        "version": null
+      },
+      {
+        "checksum": -52230585,
+        "installedOn": "2026-09-17T17:10:40.061331",
+        "installedRank": 1,
+        "success": true,
+        "type": "SQL",
+        "version": "1"
+      },
+      {
+        "checksum": -744760032,
+        "installedOn": "2026-09-17T17:10:40.150112",
+        "installedRank": 2,
+        "success": true,
+        "type": "SQL",
+        "version": "2"
+      },
+      {
+        "checksum": 647181559,
+        "installedOn": "2026-09-17T17:10:40.199617",
+        "installedRank": 3,
+        "success": true,
+        "type": "SQL",
+        "version": "3"
+      },
+      {
+        "checksum": -1155247595,
+        "installedOn": "2026-09-17T17:10:40.241842",
+        "installedRank": 4,
+        "success": true,
+        "type": "SQL",
+        "version": "4"
+      },
+      {
+        "checksum": -1800875911,
+        "installedOn": "2026-09-17T17:10:40.291487",
+        "installedRank": 5,
+        "success": true,
+        "type": "SQL",
+        "version": "5"
+      },
+      {
+        "checksum": 887404116,
+        "installedOn": "2026-09-17T17:10:40.349274",
+        "installedRank": 6,
+        "success": true,
+        "type": "SQL",
+        "version": "6"
+      },
+      {
+        "checksum": -1523353946,
+        "installedOn": "2026-09-17T17:10:40.370876",
+        "installedRank": 7,
+        "success": true,
+        "type": "SQL",
+        "version": "7"
+      },
+      {
+        "checksum": 518442206,
+        "installedOn": "2026-09-17T17:10:40.386676",
+        "installedRank": 8,
+        "success": true,
+        "type": "SQL",
+        "version": "8"
+      },
+      {
+        "checksum": -199210382,
+        "installedOn": "2026-09-17T17:10:40.398669",
+        "installedRank": 9,
+        "success": true,
+        "type": "SQL",
+        "version": "9"
+      },
+      {
+        "checksum": 491818960,
+        "installedOn": "2026-09-17T17:10:40.407413",
+        "installedRank": 10,
+        "success": true,
+        "type": "SQL",
+        "version": "10"
+      },
+      {
+        "checksum": -1824633093,
+        "installedOn": "2026-09-17T17:10:40.444922",
+        "installedRank": 11,
+        "success": true,
+        "type": "SQL",
+        "version": "11"
+      },
+      {
+        "checksum": 908347656,
+        "installedOn": "2026-09-17T17:10:40.453509",
+        "installedRank": 12,
+        "success": true,
+        "type": "SQL",
+        "version": "12"
+      },
+      {
+        "checksum": 739027995,
+        "installedOn": "2026-09-17T17:10:40.470884",
+        "installedRank": 13,
+        "success": true,
+        "type": "SQL",
+        "version": "13"
+      },
+      {
+        "checksum": 61207461,
+        "installedOn": "2026-09-17T17:10:40.495236",
+        "installedRank": 14,
+        "success": true,
+        "type": "SQL",
+        "version": "14"
+      },
+      {
+        "checksum": -1718975492,
+        "installedOn": "2026-09-17T17:10:40.505646",
+        "installedRank": 15,
+        "success": true,
+        "type": "SQL",
+        "version": "15"
+      },
+      {
+        "checksum": -969460423,
+        "installedOn": "2026-09-17T17:10:40.526491",
+        "installedRank": 16,
+        "success": true,
+        "type": "SQL",
+        "version": "16"
+      },
+      {
+        "checksum": 490009295,
+        "installedOn": "2026-09-17T17:10:40.53858",
+        "installedRank": 17,
+        "success": true,
+        "type": "SQL",
+        "version": "17"
+      },
+      {
+        "checksum": -1000976960,
+        "installedOn": "2026-09-17T17:10:40.564734",
+        "installedRank": 18,
+        "success": true,
+        "type": "SQL",
+        "version": "18"
+      },
+      {
+        "checksum": 169180654,
+        "installedOn": "2026-09-17T17:10:40.575241",
+        "installedRank": 19,
+        "success": true,
+        "type": "SQL",
+        "version": "19"
+      },
+      {
+        "checksum": 26228480,
+        "installedOn": "2026-09-17T17:10:40.583065",
+        "installedRank": 20,
+        "success": true,
+        "type": "SQL",
+        "version": "20"
+      },
+      {
+        "checksum": 672268981,
+        "installedOn": "2026-09-17T17:10:40.59518",
+        "installedRank": 21,
+        "success": true,
+        "type": "SQL",
+        "version": "21"
+      },
+      {
+        "checksum": -252379595,
+        "installedOn": "2026-09-17T17:10:40.618698",
+        "installedRank": 22,
+        "success": true,
+        "type": "SQL",
+        "version": "22"
+      },
+      {
+        "checksum": 561679179,
+        "installedOn": "2026-09-17T17:10:40.626985",
+        "installedRank": 23,
+        "success": true,
+        "type": "SQL",
+        "version": "23"
+      },
+      {
+        "checksum": -835784960,
+        "installedOn": "2026-09-17T17:10:40.633449",
+        "installedRank": 24,
+        "success": true,
+        "type": "SQL",
+        "version": "24"
+      },
+      {
+        "checksum": -1491487699,
+        "installedOn": "2026-09-17T17:10:40.649868",
+        "installedRank": 25,
+        "success": true,
+        "type": "SQL",
+        "version": "25"
+      },
+      {
+        "checksum": -369310849,
+        "installedOn": "2026-09-17T17:10:40.672816",
+        "installedRank": 26,
+        "success": true,
+        "type": "SQL",
+        "version": "26"
+      },
+      {
+        "checksum": -971238326,
+        "installedOn": "2026-09-29T03:36:53.225217",
+        "installedRank": 27,
+        "success": true,
+        "type": "SQL",
+        "version": "27"
+      },
+      {
+        "checksum": 1298756818,
+        "installedOn": "2026-09-29T03:36:53.282168",
+        "installedRank": 28,
+        "success": true,
+        "type": "SQL",
+        "version": "28"
+      },
+      {
+        "checksum": 2068388741,
+        "installedOn": "2026-09-29T03:36:53.359215",
+        "installedRank": 29,
+        "success": true,
+        "type": "SQL",
+        "version": "29"
+      },
+      {
+        "checksum": -419854425,
+        "installedOn": "2026-09-29T03:36:53.387283",
+        "installedRank": 30,
+        "success": true,
+        "type": "SQL",
+        "version": "30"
+      },
+      {
+        "checksum": 80452861,
+        "installedOn": "2026-09-29T03:36:53.427446",
+        "installedRank": 31,
+        "success": true,
+        "type": "SQL",
+        "version": "31"
+      },
+      {
+        "checksum": 909978875,
+        "installedOn": "2026-09-29T03:36:53.447446",
+        "installedRank": 32,
+        "success": true,
+        "type": "SQL",
+        "version": "32"
+      },
+      {
+        "checksum": -819055726,
+        "installedOn": "2026-09-29T03:36:53.465736",
+        "installedRank": 33,
+        "success": true,
+        "type": "SQL",
+        "version": "33"
+      },
+      {
+        "checksum": 592479726,
+        "installedOn": "2026-09-29T03:36:53.480114",
+        "installedRank": 34,
+        "success": true,
+        "type": "SQL",
+        "version": "34"
+      },
+      {
+        "checksum": -376865285,
+        "installedOn": "2026-10-17T20:27:33.277828",
+        "installedRank": 35,
+        "success": true,
+        "type": "SQL",
+        "version": "35"
+      },
+      {
+        "checksum": -1335086670,
+        "installedOn": "2026-10-18T00:28:51.302614",
+        "installedRank": 36,
+        "success": true,
+        "type": "SQL",
+        "version": "36"
+      }
+    ],
+    "readOnly": true,
+    "scope": "READ_ONLY_HISTORY_ON_DECLARED_APPLICATION_DATABASE_NOT_EFFECTIVE_SPRING_BINDING"
+  },
+  "databaseWrites": 0,
+  "identifiersPayloadsOrCheckpointsRead": false,
+  "imageImports": 0,
+  "migrationDispatched": false,
+  "mountCount": 3,
+  "networks": [
+    "ouf-backend",
+    "ouf-seaweedfs-private"
+  ],
+  "observedAt": "2026-11-09T05:27:31.013327+00:00",
+  "oldMinioWriterStopped": true,
+  "package": {
+    "allMigrationFilesMatchCandidate": true,
+    "applicationYamlMatchesCandidate": true,
+    "classPresenceProvesRuntimeBehavior": false,
+    "comparisonScope": "SOURCE_MIGRATION_AND_YAML_RESOURCES_NOT_NEW_IMAGE_MEMBERSHIP",
+    "jarBytes": 46729593,
+    "jarSha256": "15818fe09317c909271d05198cc6bc5e55558268427dac3e43e14259b308ed84",
+    "migrationCount": 36,
+    "migrations": [
+      {
+        "name": "V10__lake_object_lifecycle.sql",
+        "sha256": "fba0dcc22de4cd98e51f46f9667d7283bba8c42e9addf10727d453233a52a24b"
+      },
+      {
+        "name": "V11__handoff_raw_lake_reference.sql",
+        "sha256": "5fcaa3ac5aa5db81c2bdcad955cbedc7a5cd1894e9782b3cf0a46747c802ab32"
+      },
+      {
+        "name": "V12__lake_maintenance_scheduler.sql",
+        "sha256": "7ed3f5ba9431176918dc328e2193546665a1323a07a4c8e870ea343af268ab28"
+      },
+      {
+        "name": "V13__lake_shadow_rebuild.sql",
+        "sha256": "5c9d5efe92076880e83a32fe8f2c4e8e483ca3df4f95e0e2ceffd27ea1689b80"
+      },
+      {
+        "name": "V14__shadow_rebuild_fencing_and_rollback.sql",
+        "sha256": "dad5e2f33b70177f87f4919e1508e7eb2f69e96c112575465654905f9aaa820d"
+      },
+      {
+        "name": "V15__historical_reproduce.sql",
+        "sha256": "ee3fee6101ee2547fac4403d98958caeda3796f3543f0517066f13bd0d44c5c9"
+      },
+      {
+        "name": "V16__materialization_reference_integrity.sql",
+        "sha256": "bf4c02fe476be49ace79a0e71ec50202c9ea3fe99d9388617e00028ac95949e9"
+      },
+      {
+        "name": "V17__selective_bitemporal_delta_history.sql",
+        "sha256": "5f5e6fb2da7f5770b9fa6ca8ac2ba76b9d322b1a362eb3e0ace8d81224896814"
+      },
+      {
+        "name": "V18__capability_retry_guard.sql",
+        "sha256": "f83874c5277783e3b7c182579dcc8f4f562810e4a682a47701ed6f1b6ce6a251"
+      },
+      {
+        "name": "V19__source_raw_handoff_reference.sql",
+        "sha256": "6736643837d0cbc43acf99b5c1cc65163b5ee0bc4698883d50d43fd0209f0e82"
+      },
+      {
+        "name": "V1__handoff_and_resolution_core.sql",
+        "sha256": "1b5ea3387b9a964ab58f5da4a8439f8ae2652f2d799effd115076859a7ebc314"
+      },
+      {
+        "name": "V20__governed_coordinate_transformations.sql",
+        "sha256": "716157ae957f9cf55214f00f6e17f8c2d1c702ecdc5c2c51f88ecdd75084f478"
+      },
+      {
+        "name": "V21__pinned_relationship_reconciliation.sql",
+        "sha256": "2855fdecff9ca4038d746e67fa057568b6b05d1dcf03b620b846dbb85706bdde"
+      },
+      {
+        "name": "V22__weighted_identity_evidence.sql",
+        "sha256": "543ee9a5461139b3698edef4c01dae33026e61a11fc1514ae7b31699bc9d69fc"
+      },
+      {
+        "name": "V23__geometry_authority_conflict.sql",
+        "sha256": "fecc2f227b1ce6895f9d2a55f6c8ea524fd9cbcd869e876d7efaa6a0cb69445b"
+      },
+      {
+        "name": "V24__human_geometry_decisions.sql",
+        "sha256": "b4e2f023335a16ba9b424dfcc3f18f200712fae324de9da128b441161f5c2ed8"
+      },
+      {
+        "name": "V25__human_property_decisions.sql",
+        "sha256": "1e432653d62c82dd3c1ed3c5c9d9a27682b835d40479d873183d44fb1252c44f"
+      },
+      {
+        "name": "V26__geometry_roles_and_validity.sql",
+        "sha256": "53e84a127549f91d3520e6f8afeaedc88bfeffe1da2186873659064e91e4700e"
+      },
+      {
+        "name": "V27__identity_scope_serialization.sql",
+        "sha256": "cd1b07587c8f24e204c20fd5125e8575c77a7a262d3f0f1d9ae81b1a5362aabe"
+      },
+      {
+        "name": "V28__identity_value_lookup.sql",
+        "sha256": "324a69e64ff1faf20627bf2519d9ee069807c8649aa12c6b7ddb12b3d1be5652"
+      },
+      {
+        "name": "V29__identity_field_shape_catalog.sql",
+        "sha256": "17fe08e0cbd8df76d30babadb2124a2d0aa3019904728bf94159f97c76914859"
+      },
+      {
+        "name": "V2__canonical_revision_authority.sql",
+        "sha256": "fa450cbe250ea4391d71418028f55503e08159c9b4aac1e7c30ca5996a54bb5f"
+      },
+      {
+        "name": "V30__resolution_review_package.sql",
+        "sha256": "f64538ba09fd526b84926f91bf0188d754e22e5a9e3fcc176e4e64c1f9e193f8"
+      },
+      {
+        "name": "V31__serialize_identity_coverage_invalidation.sql",
+        "sha256": "e600eb4818afd4a60f1a4dc90f1215410cb12a3cf9bf510bc1a4aa0fe06906c0"
+      },
+      {
+        "name": "V32__governed_identity_preactivation_attestation.sql",
+        "sha256": "070c29c16b43d49f6aa2827f407373d5a0d5e2628e6225dfd9a9b3c55a048313"
+      },
+      {
+        "name": "V33__human_new_identity_decision.sql",
+        "sha256": "8a1f8049781ea13aef864cc4d35f0a379bba1960fe9916c99d5eaaf095b2ee91"
+      },
+      {
+        "name": "V34__repeat_human_review_after_stale_coverage.sql",
+        "sha256": "13735a76f1cba075d5f7a600cc9a9676c823c9c398f59d6de2aa8a13dc1672ac"
+      },
+      {
+        "name": "V35__linked_property_reconciliation.sql",
+        "sha256": "d9937d14b53471ea718ea3ec91c8fc729a48f4e9fbe9bfd23f9673e718705c1f"
+      },
+      {
+        "name": "V36__publication_dependency_recovery.sql",
+        "sha256": "9e9c045383561a333c177e7582abc718f84b02b9820388df80a7e5d8e8601c24"
+      },
+      {
+        "name": "V3__relationship_resolution.sql",
+        "sha256": "f535e17a08b7b570333cd7ed42132ceeb23f01b0002c8f0292c84dd1790eb660"
+      },
+      {
+        "name": "V4__spatial_resolution.sql",
+        "sha256": "7a95b46d260e9767f25d0dd9cd69139f6992f0bde1df518b180e9d4bc7329173"
+      },
+      {
+        "name": "V5__human_resolution_merge_split.sql",
+        "sha256": "3c1e3381e6b9fe955e3d7dd20245ed96aba246b6e18c9cc1db38a6130465257f"
+      },
+      {
+        "name": "V6__merge_repoint_and_contribution_links.sql",
+        "sha256": "b55c6fbaa460ac6035613b5c22e27b5a0439711481747a22060f95a216165d7c"
+      },
+      {
+        "name": "V7__governed_serving.sql",
+        "sha256": "bf8a874226296a72d57471d3655f11f1643a4040e9cb1bb38dcfec38a3438739"
+      },
+      {
+        "name": "V8__query_complexity_budget.sql",
+        "sha256": "c416c4be18099730eb4c6cd7525623d60d906212429115a36fa06829de2b7b31"
+      },
+      {
+        "name": "V9__spatial_query_budget.sql",
+        "sha256": "ce7122f87f83a35df8a004011b09cd27fdbc3fbbfae647d1dfb38dae88c10389"
+      }
+    ],
+    "selectedClasses": {},
+    "selectedInstalledClasses": {
+      "GovernedIdentityEngine.class": {
+        "present": true,
+        "sha256": "fe2b632b64b24f6eca29afebd98302ee91f38771dc95cadce1fbc993261f33f1"
+      },
+      "PublishedIdentityPolicy.class": {
+        "present": true,
+        "sha256": "1caa5965a16eab340a58bdcee90dde05d3bafbc10aa8ff4d517b802bb178e690"
+      },
+      "S3LakeConfiguration.class": {
+        "present": true,
+        "sha256": "5036160bbd46809ee87adb285e489547fc0a713e97a85327d6097be59b1530e6"
+      },
+      "S3LakeObjectStorageAdapter.class": {
+        "present": true,
+        "sha256": "5a6bd871ce01e2235ab98f74e6307016ebec9996e62e42fccc11ca951eaa7bf8"
+      }
+    },
+    "selectedLibraries": [
+      "spring-boot-webmvc-4.0.8.jar",
+      "spring-boot-servlet-4.0.8.jar",
+      "spring-boot-http-converter-4.0.8.jar",
+      "spring-boot-web-server-4.0.8.jar",
+      "spring-boot-autoconfigure-4.0.8.jar",
+      "spring-boot-flyway-4.0.8.jar",
+      "spring-boot-jdbc-4.0.8.jar",
+      "spring-boot-sql-4.0.8.jar",
+      "spring-boot-transaction-4.0.8.jar",
+      "spring-boot-persistence-4.0.8.jar",
+      "spring-boot-jackson2-4.0.8.jar",
+      "spring-boot-4.0.8.jar",
+      "spring-boot-tomcat-4.0.8.jar",
+      "spring-boot-security-4.0.8.jar",
+      "spring-boot-security-oauth2-resource-server-4.0.8.jar",
+      "spring-boot-micrometer-metrics-4.0.8.jar",
+      "spring-boot-micrometer-observation-4.0.8.jar",
+      "spring-boot-actuator-autoconfigure-4.0.8.jar",
+      "spring-boot-actuator-4.0.8.jar",
+      "spring-boot-health-4.0.8.jar",
+      "flyway-database-postgresql-11.14.1.jar",
+      "flyway-core-11.14.1.jar",
+      "postgresql-42.7.13.jar",
+      "spring-boot-jarmode-tools-4.0.8.jar"
+    ]
+  },
+  "primaryDockerApi": "1.44",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/udp-wide-preflight-qol14bw8",
+  "readOnlyDatabaseSessionsAttempted": 1,
+  "readOnlyMountCount": 3,
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.udp-wide-preflight.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStops": 0,
+  "sourceCommit": "c0cf1702b2eb971718996a959414caee004af494",
+  "status": "UDP_WIDE_PREFLIGHT_READ",
+  "storageCredentialFileMetadata": {
+    "contentsRead": false,
+    "gid": 10004,
+    "modeOctal": "0400",
+    "nonempty": true,
+    "readOnlyMount": true,
+    "sameAsHostSource": true,
+    "status": "MOUNTED_REGULAR_FILE",
+    "uid": 10004
+  },
+  "tokenRequests": 0,
+  "truststore": {
+    "contentsRead": true,
+    "gid": 10004,
+    "matchesSwitch": true,
+    "modeOctal": "0400",
+    "nonempty": true,
+    "readOnlyMount": true,
+    "sameAsHostSource": true,
+    "sha256": "3c1a048732b8db22d785de8fd087459901ac6a79e16f3b904435c660b039c083",
+    "status": "MOUNTED_REGULAR_FILE",
+    "uid": 10004
+  },
+  "truststoreFilesRead": 1
+}
