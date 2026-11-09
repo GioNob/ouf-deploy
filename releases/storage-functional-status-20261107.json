@@ -1630,12 +1630,18 @@
       "repository": "GioNob/ouf-mcp-server",
       "pr": 84,
       "branch": "feat/publish-analysis-discovery-20261109",
-      "sourceCommit": "6bbe1b587dfa6eee8ef503f11e846731c5ebd80e",
-      "status": "CI_IN_PROGRESS_NOT_INSTALLED",
+      "sourceCommit": "225e625a63536dabd4fc0ebdbb90d8b7be7ccfb8",
+      "status": "SOURCE_CI_AND_IMAGE_READY_NOT_INSTALLED",
       "changedDescriptors": 6,
       "installedToolsRemainInactive": true,
       "authorizationBindingsChanged": false,
-      "budgetsReset": false
+      "budgetsReset": false,
+      "qualification": "evidence/mcp-analysis-discovery-publication-20261109.json",
+      "fullCiRun": 42578075516,
+      "fullCiJob": 129030204635,
+      "discoveryGatewayCiRun": 42578075637,
+      "imageArtifactId": 13656651066,
+      "imageArchiveIndependentlyVerified": false
     }
   }
 }

@@ -17,7 +17,7 @@ Le ricevute delle [07:24](../evidence/discovery-activation-bindings-operator-202
 
 **Blocco principale:** manca un ripristino verificato per questa installazione. Riconciliare la pulizia southbound, poi preparare una nuova generazione ammessa senza riscrivere i vecchi journal o rigiocare i claim. Le prove native storiche provider/worker sono utili, ma non sono un avviatore già pronto per il VPS corrente. Nessun nuovo comando operatore di avvio è consegnato.
 
-**Incremento separato dello stesso percorso:** [MCP PR84](https://github.com/GioNob/ouf-mcp-server/pull/84) pubblica esattamente i sei descrittori analisi/discovery e verifica gli ingressi MCP ordinari e i dinieghi. CI in corso, nessuna installazione; l'immagine VPS resta PR83/INACTIVE. [Dettagli del controllo concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
+**Incremento completato sul codice:** [MCP PR84](https://github.com/GioNob/ouf-mcp-server/pull/84) pubblica esattamente i sei descrittori analisi/discovery e verifica gli ingressi MCP ordinari e i dinieghi. Test SDK/Gateway, PostgreSQL, suite completa/race, controlli statici e scansione dipendenze riusciti; immagine archiviata, nessuna installazione; l'immagine VPS resta PR83/INACTIVE. [Dettagli del controllo concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
 ## Componenti già aggiornati
 

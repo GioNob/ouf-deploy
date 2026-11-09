@@ -1,0 +1,342 @@
+{
+  "schema": "ouf.mcp-analysis-discovery-publication-qualification.v1",
+  "repository": "GioNob/ouf-mcp-server",
+  "pr": 84,
+  "sourceCommit": "225e625a63536dabd4fc0ebdbb90d8b7be7ccfb8",
+  "manifestVersion": "1.10.0-profile-analysis-and-discovery",
+  "changedPublicationStates": 6,
+  "updatedObsoleteDescriptions": 3,
+  "executionCodeChanged": false,
+  "authorizationBindingsChanged": false,
+  "sourceFilesReadBack": 10,
+  "targetInstalled": false,
+  "targetProviderFunctionalTested": false,
+  "targetE2EProven": false,
+  "profileQualification": {
+    "sourceCommit": "eeba36edd9b182b1432bbf57d7bcbff1cb748014",
+    "run": 42577858718,
+    "job": 129029527599,
+    "conclusion": "success",
+    "logsRead": true,
+    "scope": "GO_RACE_SDK_POSTGRES_BUILD",
+    "sameGoAndManifestBytesAsCurrentHead": true
+  },
+  "discoveryGatewayQualification": {
+    "sourceCommit": "225e625a63536dabd4fc0ebdbb90d8b7be7ccfb8",
+    "run": 42578075637,
+    "job": 129030205026,
+    "conclusion": "success",
+    "logsRead": true,
+    "requiredPublishedTestsObserved": true,
+    "httpclientPackageHasNoMatchingTests": true,
+    "scope": "SDK_AND_PINNED_GATEWAY_SCHEMA_PAIRWISE_NOT_LIVE_PROVIDER"
+  },
+  "fullQualification": {
+    "run": 42578075516,
+    "job": 129030204635,
+    "status": "completed",
+    "conclusion": "success",
+    "logsRead": true,
+    "normalAndRaceTestsPassed": true,
+    "postgresTestsPassed": true,
+    "staticcheckPassed": true,
+    "nilnessPassed": true,
+    "govulncheckResult": "NO_VULNERABILITIES_FOUND",
+    "imageBuildAndArchivePassed": true
+  },
+  "historicalFailures": [
+    {
+      "run": 42577161685,
+      "reason": "GOFMT_TRAILING_BLANK_LINE",
+      "corrected": true
+    },
+    {
+      "run": 42577161776,
+      "reason": "TEST_ASSUMED_RELEASE_DISCOVERY_INACTIVE",
+      "corrected": true
+    },
+    {
+      "run": 42577596660,
+      "reason": "EXPLICIT_FIXTURE_MANIFEST_MISSING_FROM_TEST_DATABASE",
+      "corrected": true
+    }
+  ],
+  "operatorReceipt": "evidence/discovery-startup-inputs-operator-20261109.json",
+  "remaining": [
+    "NATIVE_SOUTHBOUND_LIFECYCLE_RECONCILIATION",
+    "FRESH_PROVIDER_GENERATION_QUALIFIED_INSTALLER",
+    "SEMANTIC_CREDENTIAL_TRUST_BINDING_AND_AUTH_TRANSPORT",
+    "WORKER_BACKLOG_AND_GRANTS",
+    "MCP_TARGET_INSTALLATION",
+    "TEATRI_ANALYSIS_AND_REPEATABLE_UDP_E2E"
+  ],
+  "imageArtifact": {
+    "id": 13656651066,
+    "name": "acquisition-mcp-image-42578075516",
+    "bytes": 9905775,
+    "digest": "sha256:6c8d62c22d7e7de33825d8db3590a2e27bdfcd188683cc210a76288e2e8721e9",
+    "headSha": "225e625a63536dabd4fc0ebdbb90d8b7be7ccfb8",
+    "archiveDownloadedAndIndependentlyVerified": false
+  },
+  "currentRunResults": [
+    {
+      "id": 42578081095,
+      "name": "MCP evidence and late recovery",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42578081330,
+      "name": "Generic source revision MCP qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081275,
+      "name": "CSV durable recovery owner contracts",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081281,
+      "name": "Incident priority resilience v3",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081182,
+      "name": "Permission catalogue real SDK regression",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081274,
+      "name": "Chatbot dispatch Gateway schemas",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081089,
+      "name": "Authorization Java Go conformance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081325,
+      "name": "Semantic proposal channel qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081186,
+      "name": "Bounded acquisition read MCP binding",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081293,
+      "name": "Wide managed schema contracts",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081137,
+      "name": "Publication HTTP and MCP tool qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081264,
+      "name": "Private operational audit capture qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081154,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081132,
+      "name": "Acquisition denial safe diagnostics",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081344,
+      "name": "M2 governed discovery composition",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081149,
+      "name": "Operational aggregate delegated context qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081224,
+      "name": "Bounded publication composition qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081207,
+      "name": "Persistent publication vector PostgreSQL qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081284,
+      "name": "Operational incident cursor HTTP qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081309,
+      "name": "Durable profile analysis budget",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081229,
+      "name": "Operational control budget PostgreSQL qualification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578081358,
+      "name": "Semantic read window budget",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075637,
+      "name": "M2 governed discovery composition",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075709,
+      "name": "Bounded publication composition qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075626,
+      "name": "Operational cursor metadata PostgreSQL qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075685,
+      "name": "Operational incident cursor HTTP qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075554,
+      "name": "Incident priority resilience v3",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075502,
+      "name": "Authorization Java Go conformance",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075596,
+      "name": "CSV durable recovery owner contracts",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075566,
+      "name": "Generic source revision MCP qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075563,
+      "name": "Semantic proposal channel qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075512,
+      "name": "Persistent publication vector PostgreSQL qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075577,
+      "name": "Publication HTTP and MCP tool qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075524,
+      "name": "Private operational audit capture qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075534,
+      "name": "Operational aggregate delegated context qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075559,
+      "name": "Operational control budget PostgreSQL qualification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42578075516,
+      "name": "MCP evidence and late recovery",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}
