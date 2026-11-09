@@ -12,7 +12,9 @@ La quiescenza delle 09:31 CET si è fermata prima di intento o scritture per NFT
 
 Il codice di boot prevede esplicitamente una riconciliazione dopo la perdita della generazione nativa. Riscrivere soltanto lo stato del vecchio journal lascerebbe il controllo esatto incompatibile.
 
-**Prossima azione concreta:** [preparare il coordinatore della nuova generazione](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md), sorgente 140eaae6. Il comando ricontrolla impronta corrente e boot, poi crea un contesto separato con nuovo binding, journal QUIESCED senza lease/avvio e dieci sorgenti originali verificati. Il controllo originale viene conservato. **6 test unitari e 2 prove native PASS**, incluso il comando originale su tabelle realmente ricreate. Esecuzione VPS pendente.
+La [preparazione delle 10:46 CET](../evidence/discovery-coordinator-stage-held-operator-20261109.json) si è fermata su `EXACT_DRIFT_RECEIPT_REQUIRED`, prima di intento, creazione del contesto o modifiche. Errore nella consegna: la copia della ricevuta usata per calcolare l'hash ometteva `installedBoot.retainedPreflightFootprintMatches: false`, presente nel JSON operatore. L'omissione riproduce esattamente il vecchio hash; il file VPS non viene riscritto.
+
+**Prossima azione concreta:** eseguire la [preparazione corretta](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md), sorgente c73bcf94. Il pin corrisponde ora alla ricevuta completa serializzata dal produttore originale. Il confronto esatto, il rifiuto di intenti preesistenti e tutti i controlli successivi restano attivi. **11 test unitari e 2 prove native PASS**, inclusi il primo controllo di `main` e il comando owner originale. Esecuzione della versione corretta sul VPS pendente.
 
 **È preparazione, non attivazione:** il coordinatore attivo resta BLOCKED e i vecchi driver/journal non cambiano. L'installazione coerente del nuovo contesto con boot e nuova generazione provider resta da qualificare; nessun avvio provider è ancora pronto.
 

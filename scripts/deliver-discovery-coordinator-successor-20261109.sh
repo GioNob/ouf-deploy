@@ -5,7 +5,7 @@ if (( $# != 0 )); then printf '%s\n' 'Usage: separate coordinator preparation (n
 umask 077
 ouf_coordinator_stage_dir=$(mktemp -d /tmp/ouf-coordinator-stage.XXXXXX)
 trap 'rm -rf -- "$ouf_coordinator_stage_dir"' EXIT
-ouf_coordinator_stage_source='140eaae6c6b4012c1d88b84ce33a761f442598e3'
+ouf_coordinator_stage_source='c73bcf94e305b1e812088753b38d1a2f176d9724'
 mkdir "$ouf_coordinator_stage_dir/core"
 for ouf_coordinator_stage_name in reconcile-discovery-placeholder-20261109.py read-discovery-lifecycle-20261109.py read-discovery-startup-20261109.py read-analysis-discovery-runtime-20261107.py quiesce-discovery-coordinator-20261109.py read-discovery-nft-drift-20261109.py stage-discovery-coordinator-successor-20261109.py; do
   curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
@@ -34,7 +34,7 @@ c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930  core/semantic_
 92736eebeccf344e565186bce94d29c65ffe1d50638d57eae81486e7b26e884d  core/semantic_provider_lease_owner.py
 e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587  core/semantic_provider_lease_coordination.py
 1c30699b12129fd2c322753167932871a171e744c8d780a31142789eb4326b06  read-discovery-nft-drift-20261109.py
-ba7fab0235a23d7087191348faa3ffdcfd1c7f99917298b1d2cc6e4f9fcfb784  stage-discovery-coordinator-successor-20261109.py
+8e9cfe1e8073d33423e11f51e0a790530ec14e3cedbc6a5620a0ecff962e815d  stage-discovery-coordinator-successor-20261109.py
 SHA256
 )
 sudo python3 -I -B "$ouf_coordinator_stage_dir/stage-discovery-coordinator-successor-20261109.py"

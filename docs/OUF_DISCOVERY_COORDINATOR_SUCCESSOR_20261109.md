@@ -1,6 +1,6 @@
 # Discovery: preparazione separata del coordinatore successore
 
-9 novembre 2026. **Preparazione qualificata; VPS pendente. Non è attivazione.**
+9 novembre 2026. **Primo tentativo HELD prima dell'intento; correzione del pin qualificata, VPS pendente. Non è attivazione.**
 
 ## Evidenza che consente il passo
 
@@ -10,9 +10,17 @@ Il [protocollo di boot originale](https://github.com/GioNob/ouf-api-gateway/blob
 
 Il nuovo passo prepara il contesto della generazione successiva. Non riscrive la storia del vecchio proprietario e non rende valido un suo driver consumato.
 
+## Correzione della ricevuta prima del nuovo tentativo
+
+La [ricevuta delle 10:46 CET](../evidence/discovery-coordinator-stage-held-operator-20261109.json) registra `EXACT_DRIFT_RECEIPT_REQUIRED` prima di intento, directory di preparazione, nft o servizi. Il pin precedente era stato calcolato su una copia incompleta del JSON operatore: mancava `installedBoot.retainedPreflightFootprintMatches: false`.
+
+La copia completa, passata alla funzione `encoded` del produttore originale, produce 3.128 byte e SHA-256 `fcea4316cd6daa153c454c6ddab59feedf61ff57ffc5f921eac6eb4e6ac8eeb3`. Togliere quel solo campo riproduce `ac43eb0ab617bb0039cfc431bf427ca88ec5e81f513a540da54ef21bc430fde2`, il pin errato. Sono corretti il documento in Git e il pin del consumatore; il file privato VPS resta intatto. Non si accetta un hash letto arbitrariamente dal VPS e non si normalizza il JSON durante la verifica.
+
+Cinque nuove prove coprono ricevuta completa, omissione riprodotta, rifiuto di campi/byte alterati e ingresso reale di `main`: la ricevuta completa raggiunge la lettura successiva; quella incompleta è rifiutata prima, senza intento o scritture. La versione corretta può essere eseguita dopo questo specifico arresto prima dell'intento. Se un intento esiste nel frattempo, il controllo originale la ferma.
+
 ## Consegna e controlli
 
-[Wrapper](../scripts/deliver-discovery-coordinator-successor-20261109.sh), SHA-256 `df45df162c40637a97a12ac87ba5fa3bc5c155ed7ad7b5fa00e971f7748a4df0`; sorgenti al commit [140eaae6c6b4012c1d88b84ce33a761f442598e3](https://github.com/GioNob/ouf-deploy/commit/140eaae6c6b4012c1d88b84ce33a761f442598e3). Verifica tredici file scaricati, poi esegue Python isolato tramite sudo.
+[Wrapper](../scripts/deliver-discovery-coordinator-successor-20261109.sh), SHA-256 `0f451255903df58b65665ccb3e605772d76789b9ca0ab702aa2f1e402191d039`; sorgenti al commit [c73bcf94e305b1e812088753b38d1a2f176d9724](https://github.com/GioNob/ouf-deploy/commit/c73bcf94e305b1e812088753b38d1a2f176d9724). Verifica tredici file scaricati, poi esegue Python isolato tramite sudo.
 
 Sotto i lock esistenti dei runtime, della coorte e delle lease:
 
@@ -47,7 +55,7 @@ L'intento è `/var/lib/ouf-storage-migration/discovery-coordinator-successor-sta
 
 ## Verifiche eseguite
 
-[CI 42590320335](https://github.com/GioNob/ouf-deploy/actions/runs/42590320335), job 129070074610: **6 test unitari e 2 nativi, zero skip**, log letti.
+[CI 42596438560](https://github.com/GioNob/ouf-deploy/actions/runs/42596438560), job 129090107145: **11 test unitari e 2 nativi, zero skip**, log letti.
 
 Le prove native ricreano realmente le tabelle in un namespace isolato, preparano file privati e avviano in un processo isolato il comando owner originale in modalità guard. Il nuovo pacchetto passa, il vecchio journal resta invariato; una regola estranea viene rifiutata sia dal confronto di boot sia dal guard esatto. Coperte inoltre sorgenti alterati/aggiunti, riuso di directory/transazione e conservazione di file già esistenti.
 
