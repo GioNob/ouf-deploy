@@ -1,0 +1,184 @@
+{
+  "businessRequestsIssued": 0,
+  "cleanupQualified": false,
+  "components": {
+    "adapter": {
+      "classification": "NO_NATIVE_RESIDUE_OBSERVED",
+      "containerdMetadataPresent": false,
+      "containerdTask": {
+        "present": false
+      },
+      "generations": {
+        "admission": {
+          "recordedGenerationAlive": false,
+          "recordedPidPresent": false
+        },
+        "preexec": {
+          "recordedGenerationAlive": false,
+          "recordedPidPresent": false
+        }
+      },
+      "journalStates": {
+        "adapter": "DELETED",
+        "admission": "CLEANED",
+        "broker": "CLEANED",
+        "preexec": "ROLLED_BACK"
+      },
+      "namespaceHandle": {
+        "matchesRecordedInode": null,
+        "present": false
+      },
+      "ownedTableFamilies": [],
+      "runc": {
+        "present": false
+      },
+      "runcDirectory": {
+        "present": false
+      },
+      "shimCount": 0,
+      "shims": []
+    },
+    "southbound": {
+      "classification": "GUARD_OR_NAMESPACE_HANDLE_REMAINS",
+      "containerdMetadataPresent": true,
+      "containerdTask": {
+        "present": false
+      },
+      "generations": {
+        "admission": {
+          "recordedGenerationAlive": false,
+          "recordedPidPresent": false
+        },
+        "preexec": {
+          "recordedGenerationAlive": false,
+          "recordedPidPresent": false
+        }
+      },
+      "journalStates": {
+        "adapter": "DELETING",
+        "admission": "PROTECTED",
+        "broker": "PROTECTED",
+        "preexec": "PROTECTED"
+      },
+      "namespaceHandle": {
+        "directory": false,
+        "inode": 4040196,
+        "matchesRecordedInode": false,
+        "present": true,
+        "symlink": false
+      },
+      "ownedTableFamilies": [],
+      "runc": {
+        "present": false
+      },
+      "runcDirectory": {
+        "present": false
+      },
+      "shimCount": 0,
+      "shims": []
+    }
+  },
+  "containerFramesAndJournalsUnchanged": true,
+  "containerdEndpointSource": "CURRENT_DOCKER_ARGUMENT",
+  "coordination": {
+    "bridge": {
+      "elementCount": 0,
+      "setCount": 2
+    },
+    "inet": {
+      "elementCount": 0,
+      "setCount": 2
+    },
+    "leaseAuthorized": false,
+    "lockAcquired": false,
+    "state": "BLOCKED",
+    "tableFamiliesPresent": [
+      "bridge",
+      "inet"
+    ]
+  },
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "currentRole": "southbound",
+  "databaseRequests": 0,
+  "historicalAuthorityReused": false,
+  "journalWrites": 0,
+  "nativeLifecycleWrites": 0,
+  "nativeReadCommands": [
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "nft"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "runc"
+    },
+    {
+      "exitCode": 0,
+      "kind": "ctr"
+    }
+  ],
+  "observedAt": "2026-11-09T07:46:05.646202+00:00",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-lifecycle-rman5rz0",
+  "providerRequests": 0,
+  "rawLogsEmitted": false,
+  "runtimeWrapperInvoked": false,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-lifecycle-read.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "snapshotAtomic": false,
+  "startQualified": false,
+  "status": "DISCOVERY_LIFECYCLE_READ_COMPLETE",
+  "tokenRequests": 0
+}
