@@ -1,6 +1,6 @@
 # Discovery: confronto mirato delle impronte nft
 
-9 novembre 2026. **Lettore qualificato; esecuzione VPS pendente.**
+9 novembre 2026. **Lettura completata sul VPS alle 09:48 CET.** [Ricevuta](../evidence/discovery-nft-drift-operator-20261109.json): BOOT_FOOTPRINT_MATCHES_EXACT_DRIVER_HASH_DIFFERS, letture stabili e set vuoti, binding driver/proprietario coincidenti. Footprint ordinario uguale a quello di boot; impronta esatta diversa. Nessuna modifica. Proseguire dalla [preparazione del coordinatore successore](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md), senza ripetere questo lettore.
 
 ## Fatto e domanda da risolvere
 
