@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Generation source read completed at 11:25:29 UTC; do not repeat it, boot or preparation. Both independent recipes match installed policies. Pure two-role successor composition is qualified, including replacement of historical Semantic BRIDGE_PORT 1377 with a complete declaration. Next compile and verify the current/selected Semantic expectation from retained pre-CREATE inputs, then integrate governed pair creation, fresh rootfs expectations and authority with publication/switch/start. No target installer or new VPS command is ready.",
+  "nextAction": "Run the pinned retained Semantic peer reader once and reconcile its JSON. Independent pre-CREATE recipe and complete OCI/reciprocal NIC observation are qualified in CI with the exact archived image; no target observation has occurred. Do not repeat completed boot, input preparation or generation source read. A matched peer remains unauthorized and must be recompiled/reobserved for any replacement Semantic generation. Then integrate governed pair creation, fresh rootfs expectations and authority with existing publication/switch/start owners.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -2179,6 +2179,101 @@
             "Complete Semantic declaration replaces historical numeric peer",
             "Same selected successor coordinator for both roles"
           ]
+        },
+        "retainedSemanticPeerRecipe": {
+          "schema": "ouf.retained-semantic-peer-qualification.v1",
+          "date": "2026-11-09",
+          "status": "READ_PACKAGE_NATIVE_QUALIFIED_TARGET_PENDING",
+          "sourceCommit": "8f99ad0a91e7276cf479b65b24d646a227328fc6",
+          "reader": "scripts/read-retained-semantic-peer-20261109.py",
+          "readerSha256": "80c7b789c735a562f5c04b3a9b56120716b933053f3e8e247e5fff21ceed1edc",
+          "compiler": "tools/semantic_frame_compiler/compile_retained_semantic_peer.py",
+          "compilerSha256": "a6a1f5fac3dfab9fde02402bc6c4ed422c068f0d7a4837a09fe92c9bbb7f4d24",
+          "wrapper": "scripts/deliver-retained-semantic-peer-20261109.sh",
+          "wrapperSha256": "3c66249e0526546afeb11c5336bdc1663d9fe2ad16e797f698cd3efe32e15739",
+          "sourceFileCount": 9,
+          "sourceBlobsComparedToLocal": true,
+          "ciRun": 42620047391,
+          "ciJob": 129169531485,
+          "ciConclusion": "success",
+          "directLogsRead": true,
+          "unitTests": 13,
+          "nativeTests": 2,
+          "skippedTests": 0,
+          "nativeEngine": {
+            "serverVersion": "29.8.1",
+            "storageDriver": "overlayfs",
+            "cgroupDriver": "systemd",
+            "backend": "containerd-overlayfs"
+          },
+          "image": {
+            "nativeImageId": "sha256:89e84f7a6208afa74039de7057c46ad5c9981fb283b22d9b93fa014e92d1b048",
+            "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+            "archiveSha256": "7f6482b79589fd1063eaf96508ea948d6411a7b4f0dbe76d663746a08953a223",
+            "archivedPayloadHashVerified": true,
+            "publisherAttestationVerified": true
+          },
+          "nativeCases": [
+            {
+              "mountDeclaration": "Binds",
+              "initialExplicitHostname": false,
+              "finiteCpu": false
+            },
+            {
+              "mountDeclaration": "Mounts",
+              "initialExplicitHostname": true,
+              "finiteCpu": true
+            }
+          ],
+          "fullIndependentOciMatchedInCi": true,
+          "reciprocalLinksObservedInCi": true,
+          "javaStartedInCi": false,
+          "syntheticPrivateInputs": true,
+          "syntheticNetworksAndIdentities": true,
+          "negativeChecks": [
+            "wrong full OCI hash",
+            "writable runtime bundle",
+            "lifecycle command denied",
+            "unknown host properties even null",
+            "kernel and resource overrides",
+            "writable or shadowing mounts",
+            "shared namespace",
+            "global legacy MAC in creation request",
+            "higher-priority feature overrides"
+          ],
+          "qualificationCorrections": [
+            {
+              "sourceCommit": "ba173fda20ad7814273a24bbabe4ddf39d7fbf77",
+              "ciRun": 42619613735,
+              "ciJob": 129168067442,
+              "reason": "CI executable ancestor failed root custody",
+              "resolution": "Use root-controlled /usr/sbin for the CI runc copy; target executable guard unchanged"
+            },
+            {
+              "sourceCommit": "069e9016c53da3a6af88c7bc95d859a028d5c9c8",
+              "ciRun": 42619795746,
+              "ciJob": 129168669392,
+              "reason": "containerd OCI file has a different native mode from private receipts",
+              "resolution": "Separate exact-path root-owned 0600/0644 stable runtime bundle reader; private 0600 reader unchanged; writable-mode negative case added"
+            }
+          ],
+          "targetContainerId": "ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a",
+          "targetInvocationPerformed": false,
+          "targetPrecreateBytesReadHere": false,
+          "targetPeerObserved": false,
+          "observedOciUsedAsExpectation": false,
+          "mountContentsVerified": false,
+          "rootfsSealProduced": false,
+          "signaturesProduced": 0,
+          "expectationAuthorityIssued": false,
+          "newGenerationAdmitted": false,
+          "providerReady": false,
+          "leaseAuthorized": false,
+          "startAuthorized": false,
+          "reuseAfterSemanticReplacementAllowed": false,
+          "next": "Run the pinned read package once and reconcile its receipt before governed pair creation/admission.",
+          "qualification": "evidence/retained-semantic-peer-qualification-20261109.json",
+          "runbook": "docs/OUF_RETAINED_SEMANTIC_PEER_20261109.md"
         }
       },
       "discoveryLifecycleRead": {

@@ -609,3 +609,12 @@ Ricevuta operatore delle 12:25:29 CET: DISCOVERY_GENERATION_SOURCES_READ, 25 met
 Sorgente 33f05f1159da7a04396ded70be0d60f6b26dc2a1: nuova composizione pura della coppia. Ricompila i frame con CID distinti, conserva NIC/MAC e flussi, collega i peer reciproci e richiede una dichiarazione Semantic completa al posto di 1377. Seleziona lo stesso coordinatore successore senza cambiare kernel/DNS/lock. Nessuna firma, proprietà CREATE, aspettativa rootfs o ammissione ricavata dai dati storici. CI 42610077499, job 129135939384: 11 test PASS, zero skip, log diretti letti. Topologia operatore e baseline indipendenti, documenti/identità sintetici: non prova native VPS.
 
 [Composizione e prossimo lavoro](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md): aspettativa Semantic indipendente dai documenti pre-CREATE conservati, da verificare e integrare con nuove creazioni/sigilli/mandati e owner esistenti. Nessun nuovo comando VPS qualificato; F2–F6 aperti.
+
+
+## 9 novembre 2026 — Ricetta indipendente del peer Semantic e lettore qualificato
+
+Sorgente 8f99ad0a91e7276cf479b65b24d646a227328fc6, CI 42620047391, job 129169531485: 13 test unitari e 2 nativi PASS, nessun test saltato, log diretti letti. Immagine archiviata esatta verificata anche tramite attestazione del produttore. Due richieste complete ereditate da un predecessore isolato, con Binds/Mounts e hostname conservato: intera OCI derivata dalla baseline indipendente coincidente e collegamenti reciproci osservati. Java non avviato; nessuna richiesta applicativa.
+
+La prima esecuzione CI si era fermata sulla custodia dell'eseguibile sotto /opt del runner, corretta spostando la copia runc di fixture sotto /usr/sbin. La seconda ha distinto il bundle OCI containerd 0644 dalle ricevute private 0600: lettore dedicato root-owned e stabile, senza modificare il controllo dei documenti privati; test negativo sul file scrivibile da altri. Entrambi gli esiti restano nella [qualifica](../evidence/retained-semantic-peer-qualification-20261109.json).
+
+Pronto [il pacchetto di sola lettura](OUF_RETAINED_SEMANTIC_PEER_20261109.md), nove sorgenti vincolati a commit e SHA256. VPS non ancora osservato, nessuna ammissione o autorità. La dichiarazione del Semantic corrente non è riusabile automaticamente dopo la futura sostituzione per credenziale/provider. Attendere e riconciliare il JSON operatore, poi collegare creazione governata della coppia, nuovi sigilli e mandati. F2–F6 restano aperti.
