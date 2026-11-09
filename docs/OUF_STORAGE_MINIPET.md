@@ -1,6 +1,6 @@
 # OUF — MiniPET operativo: SeaweedFS funzionante → E2E ripetibile
 
-**Versione 2.46 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
+**Versione 2.47 — 9 novembre 2026, Europe/Rome.** Owner: Giovanni. Esecuzione: agente principale, sequenziale. Stato: **F1 riuscito sul percorso Onboarding; F2–F6 aperti**.
 
 ## 1. Decisione e risultato da ottenere
 
@@ -58,7 +58,7 @@ Da ora: [STATE.md](STATE.md) per il prossimo passo; questo documento per risulta
 
 **Blocco corrente della discovery:** il [collegamento boot delle 11:42:59 CET](../evidence/discovery-successor-boot-bound-operator-20261109.json) è riuscito: puntatore aggiornato, comandi caricati e osservatore verificati, PID Docker e frame container invariati. Il coordinatore selezionato è QUIESCED senza lease/start; provider v2/southbound v2 non avviati e nuova generazione non ammessa. Segnaposto, confronto nft, staging e boot sono conclusi: non ripeterli. Prossimo lavoro: comporre per l'installazione corrente la nuova generazione provider/runtime con gli owner esistenti di creazione, profili, ammissione e switch; [input privati non firmati preparati sul VPS alle 11:55:17 CET](../evidence/discovery-generation-inputs-prepared-operator-20261109.json), due ruoli e tre file verificati. Non ripetere il preparatore. Restano profilo di creazione, peer corrente con aspettative indipendenti, nuove identità e autorità; nessuna creazione/ammissione o avvio effettuati. Poi credenziale/TLS Semantic, backlog/grant e installazione MCP PR84. BOOT_BOUND non dimostra discovery, reboot o E2E. [Stato](STATE.md).
 
-La [lettura delle ricette private](OUF_DISCOVERY_GENERATION_SOURCES_20261109.md) è qualificata con11test CI e consegna a17hash; ricevuta VPS attesa. Serve a esporre i binding NIC/peer mancanti dalla ricevuta aggregata e confrontare i profili installati con le ricette indipendenti, senza valori privati o effetti runtime. Il componente recente a una rete/nuovo Registry non è automaticamente applicabile alla coppia esistente. Nessun nuovo sigillo, mandato o installer è dichiarato pronto.
+La [lettura delle ricette private](OUF_DISCOVERY_GENERATION_SOURCES_20261109.md) è conclusa alle 12:25:29 CET: entrambe le ricette indipendenti coincidono con le policy installate; due NIC adapter, tre southbound, peer reciproci coerenti. L'ingresso Semantic è ancora il BRIDGE_PORT storico 1377. Non ripetere il lettore. La [composizione pura della coppia successore](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md) è implementata e qualificata in 11 test CI: ricompila i frame con nuove identità e richiede una dichiarazione Semantic completa. Non produce sigilli rootfs, mandati o runtime. Restano aspettativa indipendente del Semantic corrente, creazione/ammissione e switch/avvio governati; nessun nuovo comando VPS pronto.
 
 La [PR MCP 84](https://github.com/GioNob/ouf-mcp-server/pull/84) ha qualificato il manifesto ACTIVE dei sei strumenti e prodotto l'immagine CI. Non è installata: sul VPS restano i descrittori INACTIVE della PR 83. [Evidenza](../evidence/mcp-analysis-discovery-publication-20261109.json). Dopo l'attivazione coerente del percorso, continuare sul profilo Teatri esistente: mapping dei nomi delle colonne, review THS, Ingestion, UDP e lettura del grafo. F2–F6 restano aperti.
 

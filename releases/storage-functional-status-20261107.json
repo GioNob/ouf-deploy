@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Run the pinned generation recipe source reader once and preserve its final receipt. It consumes the completed input preparation, recompiles independent recipes and reports installed-policy differences and historical peer bindings without runtime effects. Then complete the fresh multi-network pair and current Semantic peer profile, authority and governed creation/admission/switch/start. Do not repeat boot or input preparation; no new-generation installer is ready.",
+  "nextAction": "Generation source read completed at 11:25:29 UTC; do not repeat it, boot or preparation. Both independent recipes match installed policies. Pure two-role successor composition is qualified, including replacement of historical Semantic BRIDGE_PORT 1377 with a complete declaration. Next compile and verify the current/selected Semantic expectation from retained pre-CREATE inputs, then integrate governed pair creation, fresh rootfs expectations and authority with publication/switch/start. No target installer or new VPS command is ready.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -2090,7 +2090,7 @@
         "generationRecipeSourceRead": {
           "schema": "ouf.discovery-generation-source-read-qualification.v1",
           "date": "2026-11-09",
-          "status": "QUALIFIED_AWAITING_OPERATOR_RECEIPT",
+          "status": "DISCOVERY_GENERATION_SOURCES_READ",
           "sourceCommit": "a14e6b61c2efe56f838507990850812d694407d1",
           "scriptSha256": "8c2057538e3cfc3b3c6f1ef3a315268a0a4362e409b09ce527e67360e5a9d77b",
           "deliverySha256": "2fa6efe644ee81094c62408312b81bf60aecff5469118b198eec851b0fe90b3f",
@@ -2102,7 +2102,7 @@
           "skipped": 0,
           "deliveryPinnedSources": 17,
           "deliverySimulatedDispatches": 1,
-          "operatorReceiptReceived": false,
+          "operatorReceiptReceived": true,
           "runtimeObserved": false,
           "nativeCreationQualifiedByTheseTests": false,
           "requiredInputReceiptSha256": "8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15",
@@ -2119,6 +2119,65 @@
             "Fixture documents are synthetic; the two independent Engine baselines are retained repository inputs.",
             "No target OCI, rootfs or transport compatibility is established before the operator read.",
             "Historical signature validity and current authority are not asserted."
+          ],
+          "operatorReceipt": "evidence/discovery-generation-sources-read-operator-20261109.json",
+          "observedAt": "2026-11-09T11:25:29.477919+00:00",
+          "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-generation-sources-b57yoer0",
+          "producerReceiptSha256": "8a0ed83e6cbbcd4f46802d610c5382a57605381242896a0145174f7fe2a31d3d",
+          "producerReceiptBytes": 7224,
+          "metadataFilesRead": 25,
+          "bothIndependentRecipesMatchInstalledPolicies": true,
+          "historicalNetworkCounts": {
+            "adapter": 2,
+            "southbound": 3
+          },
+          "historicalSemanticBridgePort": 1377,
+          "repeatReadAllowed": false
+        },
+        "successorCohortComposition": {
+          "schema": "ouf.discovery-successor-cohort-composition-qualification.v1",
+          "date": "2026-11-09",
+          "status": "PURE_COMPOSITION_QUALIFIED_NOT_TARGET_INSTALLER",
+          "sourceCommit": "33f05f1159da7a04396ded70be0d60f6b26dc2a1",
+          "module": "tools/semantic_cohort_admission/compose_successor_cohort.py",
+          "moduleSha256": "823aa871055fcb7e6f53c7bcd27208914fbf02e604d9ee062e5240f647c2f6b1",
+          "ciRun": 42610077499,
+          "ciJob": 129135939384,
+          "ciConclusion": "success",
+          "directLogsRead": true,
+          "tests": 11,
+          "skipped": 0,
+          "operatorSourceReceipt": "evidence/discovery-generation-sources-read-operator-20261109.json",
+          "operatorSourceReceiptProducerSha256": "8a0ed83e6cbbcd4f46802d610c5382a57605381242896a0145174f7fe2a31d3d",
+          "operatorSourceReceiptProducerBytes": 7224,
+          "sourceReceiptCanonicalHashWithoutFinalLf": "adfa9d9da7b389712f3e6af995909313d5f91e637edd5dbe96b9c0bfdbefafc6",
+          "historicalNetworkCounts": {
+            "adapter": 2,
+            "southbound": 3
+          },
+          "historicalSemanticBridgePort": 1377,
+          "runtimeObserved": false,
+          "targetInvocationPerformed": false,
+          "nativeCreationQualifiedByTheseTests": false,
+          "targetInstallerReady": false,
+          "currentSemanticPeerStillRequiresIndependentReview": true,
+          "freshCreationOwnershipStillRequired": true,
+          "freshRootfsExpectationsStillRequired": true,
+          "freshAuthorityStillRequired": true,
+          "providerReady": false,
+          "fixtureScope": "Operator NIC/flow topology plus retained independent Engine baselines; synthetic launch documents, new identities and authority references.",
+          "preserved": [
+            "Historical templates and recipes",
+            "NIC IP/MAC/interface bindings",
+            "Transport endpoints, ports and authority references",
+            "Frozen runtime source closures"
+          ],
+          "closedChanges": [
+            "Fresh role CIDs and transactions",
+            "Independent frame compilation for new contexts",
+            "Reciprocal peer declarations for both new roles",
+            "Complete Semantic declaration replaces historical numeric peer",
+            "Same selected successor coordinator for both roles"
           ]
         }
       },

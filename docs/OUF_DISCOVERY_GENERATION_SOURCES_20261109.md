@@ -1,6 +1,8 @@
 # Lettura delle ricette della nuova generazione — 9 novembre 2026
 
-**Qualificata, ricevuta VPS ancora attesa.** Boot e preparazione degli input sono conclusi. Questa lettura serve a ricostruire i riferimenti privati necessari per comporre il profilo di creazione della nuova coppia; non è un installer.
+**Conclusa sul VPS alle 12:25:29 CET. Non ripetere il lettore.** La [ricevuta operatore](../evidence/discovery-generation-sources-read-operator-20261109.json) riporta `DISCOVERY_GENERATION_SOURCES_READ`, phaseCOMPLETE: 25 metadata stabili durante la lettura. Entrambe le ricette indipendenti ricompilate coincidono con le policy installate; nessuna differenza OCI rilevata in questo confronto tra documenti. Runtime non osservato e nessun effetto runtime.
+
+Adapter a due NIC, southbound a tre; dichiarazioni reciproche coerenti. Il secondo flusso southbound resta `WORKLOAD_GATEWAY`, da 172.18.0.6 a 172.18.0.14:10443/tcp, con BRIDGE_PORT storico 1377. Non è una dichiarazione indipendente del Semantic corrente. [Composizione successore implementata separatamente](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md).
 
 ## Perché occorre questo passo
 
@@ -20,10 +22,10 @@ Il risultato espone i binding NIC, i peer dichiarati e i riferimenti numerici st
 - [CI 42608238333](https://github.com/GioNob/ouf-deploy/actions/runs/42608238333), job129129595875: **11 test, zero skip, PASS**, log diretti letti. Fixture con documenti sintetici e baseline Engine indipendenti già conservate; nessuna osservazione VPS o prova native di nuova creazione.
 - Consegna verificata localmente: sintassi bash, 17 hash corrispondenti, un solo dispatch al lettore e pulizia dei soli download temporanei. curl/sudo sostituiti nella prova; nessuna esecuzione operativa locale.
 
-## Invocazione ed esito
+## Esito conservato
 
-Eseguire una volta il comando di consegna fissato al commit fornito in chat. Python opera con `-I -B`, limite totale di90secondi, metadata bounded e directory di evidenza nuova sotto `/var/lib/ouf-storage-migration/discovery-generation-sources-*`. La consegna scarica e verifica17 sorgenti; importa le dipendenze precedenti senza chiamarne gli entrypoint operativi.
+Evidenza privata: `/var/lib/ouf-storage-migration/discovery-generation-sources-b57yoer0`. Ricevuta `result.json`, 7.224 byte nel formato del produttore (JSON canonico più LF), SHA256 `8a0ed83e6cbbcd4f46802d610c5382a57605381242896a0145174f7fe2a31d3d`. Il file pubblico conserva tutti i 36 campi e i due ruoli; il suo formato indentato ha byte diversi.
 
-Esito atteso: `DISCOVERY_GENERATION_SOURCES_READ`, phaseCOMPLETE. Inviare soltanto il JSON finale. In caso HELD conservare la directory e la ricevuta, senza rilanciare il comando. Il lettore scrive solo la nuova evidenza; non modifica configurazioni, puntatore, journal, servizi o container. Non effettua richieste Engine, database, provider, token, DNS o S3; i contatori si riferiscono al lettore Python, non al download HTTPS della consegna.
+La ricevuta conferma zero letture dei file credenziali/mount, firme, CREATE, richieste Engine o applicative. Puntatore, wrapper e journal invariati. I sigilli rootfs restano storici; firme non verificate e nessuna nuova autorità o ammissione. Non trasformare il confronto positivo dei documenti in readiness o compatibilità live.
 
-La ricevuta consentirà di chiudere la composizione concreta delle ricette e identificare le correzioni di contesto già presenti. Restano poi peer Semantic corrente con aspettative indipendenti, nuove identità/autorità, pubblicazione e switch/avvio governati. Non ripetere boot, staging o preparazione. Provider pronto, discovery ed E2E restano non provati.
+La composizione pura della nuova coppia è ora qualificata separatamente: usa queste ricette e sostituisce il solo peer numerico storico con una dichiarazione completa. Restano l'aspettativa indipendente del Semantic corrente, la prova delle nuove creazioni e dei sigilli rootfs, l'autorità e l'integrazione di pubblicazione/switch/avvio. Non ripetere boot, staging, preparazione o questo lettore. Nessun nuovo comando VPS è qualificato da questo checkpoint.
