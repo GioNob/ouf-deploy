@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Reconcile southbound native lifecycle/cleanup and qualify a fresh admitted provider generation; do not reset existing journals or replay prior scopes. Startup-input read completed. MCP PR84 builds six ACTIVE descriptors independently; no target installation until dependencies, Semantic credential/trust binding, backlog and grants are checked.",
+  "nextAction": "Execute the delivered exact-provider native lifecycle reader; use observed task/process/journal/namespace/nft residues to qualify residual cleanup and fresh admitted generation. No old journal reset or consumed-scope replay. Then Semantic credential/TLS, backlog/grants and installation of already-qualified MCP PR84.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -777,7 +777,8 @@
     "evidence/onboarding-wide-upgrade-qualification-20261108.json",
     "evidence/onboarding-wide-ready-operator-20261108.json",
     "evidence/ingestion-wide-preflight-qualification-20261108.json",
-    "evidence/ingestion-wide-candidate-package-20261108.json"
+    "evidence/ingestion-wide-candidate-package-20261108.json",
+    "evidence/discovery-lifecycle-reader-qualification-20261109.json"
   ],
   "sourceReferences": [
     {
@@ -1614,7 +1615,49 @@
         "historicalNativeProofIsCurrentInstaller": false,
         "nativeTaskAndHandleReconciliationPending": true,
         "historicalJournalResetAllowed": false,
-        "currentVpsRecoveryCommandDelivered": false
+        "currentVpsRecoveryCommandDelivered": false,
+        "nativeLifecycleReadCommandDelivered": true
+      },
+      "discoveryLifecycleRead": {
+        "status": "READER_QUALIFIED_TARGET_PENDING",
+        "schema": "ouf.discovery-lifecycle-reader-qualification.v1",
+        "date": "2026-11-09",
+        "sourceCommit": "789a2e131abda301424f7d011b545e4607a5703b",
+        "script": "scripts/read-discovery-lifecycle-20261109.py",
+        "scriptSha256": "4824c247ddb7c0c90b8740ebcaa1c2681dccd9efd7811666cb1c86210b322e67",
+        "deliveryScript": "scripts/deliver-discovery-lifecycle-20261109.sh",
+        "deliverySha256": "d645f3a8ca54930bacb55a047a6ffbe183c8e2d1dcced98bcc3a26989f9958d3",
+        "qualificationScope": "LOCAL_AND_GITHUB_UNIT_FIXTURES_NOT_LIVE_NATIVE_TARGET",
+        "tests": 16,
+        "helperRegressionTests": 10,
+        "skips": 0,
+        "ciRun": 42580864748,
+        "ciJob": 129038979362,
+        "conclusion": "success",
+        "logsRead": true,
+        "sourceFilesReadBack": 3,
+        "bashSyntaxChecked": true,
+        "targetExecuted": false,
+        "cleanupImplemented": false,
+        "startImplemented": false,
+        "knownRuntimeWrapperSha256": "55de41662098c1059a03d06ffb77bc965e5b033b9c3529dcfc7143808324efdd",
+        "knownRuntimeConfigurationSha256": "7462e41e6b40a3bb1ac23760f223a34a958bcd34151ce165f6f4625d942740c5",
+        "plannedDockerGets": 6,
+        "maxNativeReadCommands": 24,
+        "maxRuntimeFileReads": 40,
+        "deadlineSeconds": 120,
+        "plannedCredentialFileReads": 0,
+        "plannedDatabaseRequests": 0,
+        "plannedProviderRequests": 0,
+        "plannedTokenRequests": 0,
+        "plannedServiceChanges": 0,
+        "plannedJournalWrites": 0,
+        "snapshotAtomic": false,
+        "unknowns": [
+          "Current native task/runtime/process/guard/namespace state",
+          "Cleanup feasibility and exact residual operation",
+          "Fresh generation admission and live provider transport"
+        ]
       }
     },
     "activationMechanism": {
