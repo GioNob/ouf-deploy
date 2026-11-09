@@ -25,7 +25,7 @@ class Native(unittest.TestCase):
   cls.gateway=json.loads(cmd(*D,'network','inspect',m.BACKEND))[0]['IPAM']['Config'][0]['Gateway']
   cmd(*D,'run','-d','--name',cls.pg,'--network',m.BACKEND,'-e','POSTGRES_PASSWORD=fixture-only','postgis/postgis:17-3.5-alpine')
   for _ in range(60):
-   if subprocess.run((*D,'exec',cls.pg,'pg_isready','-U','postgres'),capture_output=True).returncode==0:break
+   if subprocess.run((*D,'exec',cls.pg,'pg_isready','-h','127.0.0.1','-U','postgres'),capture_output=True).returncode==0:break
    time.sleep(1)
   else:raise AssertionError('postgres not ready')
   cmd(*D,'exec','-i',cls.pg,'psql','-X','-v','ON_ERROR_STOP=1','-U','postgres',input=b"CREATE ROLE fixture LOGIN SUPERUSER PASSWORD 'fixture-only';CREATE DATABASE fixture OWNER fixture;")
