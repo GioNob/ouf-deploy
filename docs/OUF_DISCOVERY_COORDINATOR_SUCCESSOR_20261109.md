@@ -1,6 +1,8 @@
 # Discovery: preparazione separata del coordinatore successore
 
-9 novembre 2026. **Primo tentativo HELD prima dell'intento; correzione del pin qualificata, VPS pendente. Non è attivazione.**
+9 novembre 2026. **Staging corretto completato sul VPS alle 10:56 CET. Non ripetere il comando. Non è attivazione.**
+
+[Ricevuta operatore](../evidence/discovery-coordinator-staged-operator-20261109.json): nuovo contesto QUIESCED, guard superato, attivo storico BLOCKED e puntatore invariato. Prossimo passo: [collegamento al boot](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md). Le sezioni seguenti conservano la consegna già eseguita.
 
 ## Evidenza che consente il passo
 
@@ -51,7 +53,7 @@ Si creano solo file nuovi di preparazione/evidenza. Nessuna modifica al puntator
 
 L'intento è `/var/lib/ouf-storage-migration/discovery-coordinator-successor-stage-20261109`. Una directory o un intento parziale restano conservati; nessun replay automatico. Durata massima 180 secondi. In caso di HELD restituire il JSON senza rilanciare.
 
-**Il passaggio successivo è l'attivazione coerente di questo contesto insieme a boot e nuova generazione runtime/provider.** Il comando qui consegnato non modifica il loro riferimento attivo. Tale attivazione va ancora preparata e qualificata; non riavviare i vecchi CID e non usare STAGED come prova di discovery o E2E.
+**Il passaggio successivo è l'attivazione coerente di questo contesto insieme a boot e nuova generazione runtime/provider.** Il comando qui consegnato non modifica il loro riferimento attivo. Il solo collegamento al boot è ora qualificato nel runbook successivo; la nuova generazione provider resta da preparare e qualificare; non riavviare i vecchi CID e non usare STAGED come prova di discovery o E2E.
 
 ## Verifiche eseguite
 
@@ -59,4 +61,4 @@ L'intento è `/var/lib/ouf-storage-migration/discovery-coordinator-successor-sta
 
 Le prove native ricreano realmente le tabelle in un namespace isolato, preparano file privati e avviano in un processo isolato il comando owner originale in modalità guard. Il nuovo pacchetto passa, il vecchio journal resta invariato; una regola estranea viene rifiutata sia dal confronto di boot sia dal guard esatto. Coperte inoltre sorgenti alterati/aggiunti, riuso di directory/transazione e conservazione di file già esistenti.
 
-Sul VPS il comando di preparazione usa direttamente il nucleo originale del guard con lock già detenuto; non avvia un processo lease o il comando di ripristino del boot. L'intero controller sul VPS resta da eseguire. [Evidenza](../evidence/discovery-coordinator-successor-stage-qualification-20261109.json). F2–F6 restano aperti.
+Sul VPS il comando di preparazione usa direttamente il nucleo originale del guard con lock già detenuto; non avvia un processo lease o il comando di ripristino del boot. L'intero controller di staging è stato eseguito con successo secondo la ricevuta operatore. [Evidenza](../evidence/discovery-coordinator-successor-stage-qualification-20261109.json). F2–F6 restano aperti.

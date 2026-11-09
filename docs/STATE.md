@@ -14,9 +14,11 @@ Il codice di boot prevede esplicitamente una riconciliazione dopo la perdita del
 
 La [preparazione delle 10:46 CET](../evidence/discovery-coordinator-stage-held-operator-20261109.json) si è fermata su `EXACT_DRIFT_RECEIPT_REQUIRED`, prima di intento, creazione del contesto o modifiche. Errore nella consegna: la copia della ricevuta usata per calcolare l'hash ometteva `installedBoot.retainedPreflightFootprintMatches: false`, presente nel JSON operatore. L'omissione riproduce esattamente il vecchio hash; il file VPS non viene riscritto.
 
-**Prossima azione concreta:** eseguire la [preparazione corretta](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md), sorgente c73bcf94. Il pin corrisponde ora alla ricevuta completa serializzata dal produttore originale. Il confronto esatto, il rifiuto di intenti preesistenti e tutti i controlli successivi restano attivi. **11 test unitari e 2 prove native PASS**, inclusi il primo controllo di `main` e il comando owner originale. Esecuzione della versione corretta sul VPS pendente.
+La [ricevuta delle 10:56 CET](../evidence/discovery-coordinator-staged-operator-20261109.json) conferma **DISCOVERY_COORDINATOR_SUCCESSOR_STAGED_QUIESCED**: contesto separato creato, guard superato, journal QUIESCED senza lease/avvio. Coordinatore attivo storico BLOCKED, puntatore e servizi invariati, nessuna richiesta applicativa. **Non ripetere lo staging completato.**
 
-**È preparazione, non attivazione:** il coordinatore attivo resta BLOCKED e i vecchi driver/journal non cambiano. L'installazione coerente del nuovo contesto con boot e nuova generazione provider resta da qualificare; nessun avvio provider è ancora pronto.
+**Prossima azione concreta:** eseguire il [collegamento del successore al boot](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md), sorgente cf2de72e. Aggiorna due comandi systemd e il puntatore attivo, esegue daemon-reload e verifica comandi caricati, PID Docker e osservatore. Nessun riavvio Docker o avvio provider. **9 test unitari e 3 prove native PASS**; systemd simulato in CI, esecuzione VPS pendente.
+
+La nuova generazione provider resta da preparare/ammettere. L'esito previsto `DISCOVERY_SUCCESSOR_BOOT_BOUND` non prova provider pronto, reboot reale o discovery; lease/start restano false. Il vecchio journal resta BLOCKED. Se HELD, conservare il JSON senza replay: una pubblicazione parziale richiede riconciliazione.
 
 **Altre dipendenze già identificate:** Semantic è running ma provider/worker restano dichiarati disabilitati; credenziale e truststore preparati sono coerenti ma non installati. Certificati validi per data/nome, TLS/issuer non provati. Legacy provider fermo e scollegato, da conservare. MCP PR84 ha qualificato codice e immagine con sei descrittori ACTIVE; non è installata, il VPS resta PR83/INACTIVE. [Stato del controllo di avvio concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
@@ -45,7 +47,7 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-1. Preparare il nuovo contesto coordinatore già qualificato; collegarlo coerentemente al boot e alla nuova generazione provider prima dell'attivazione, poi credenziale/TLS Semantic. Segnaposto e confronto nft conclusi; nessun replay dei vecchi CID o journal.
+1. Collegare al boot il contesto coordinatore già preparato; qualificare/ammettere una nuova generazione provider, poi credenziale/TLS Semantic. Segnaposto e confronto nft conclusi; nessun replay dei vecchi CID o journal.
 2. Verificare trasporto, identità e backlog prima di abilitare il worker; pubblicare la build MCP con i sei strumenti attivi e grant coerenti.
 3. Usare analisi persistente e discovery sul profilo Teatri esistente, associare le colonne a proprietà, completare review THS → Ingestion → UDP e leggere il grafo.
 4. Provare il caso ampio su fixture distinto e ripetere il percorso con un secondo CSV senza riparazioni manuali; verificare la ripresa da una nuova conversazione.
