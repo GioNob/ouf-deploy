@@ -87,6 +87,14 @@ class NativePeer(unittest.TestCase):
             io = reader.PeerIO(private, native, work, cid, pid, matches[0] + '/' + cid,
                                runc='/usr/sbin/ouf-peer-ci-runc')
             observed = json.loads(io.read_bundle(matches[0] + '/' + cid + '/config.json'))
+            bundle_path = Path(matches[0]) / cid / 'config.json'
+            mode = bundle_path.stat().st_mode & 0o777
+            self.assertIn(mode, (0o600, 0o644))
+            try:
+                bundle_path.chmod(0o666)
+                with self.assertRaisesRegex(RuntimeError, 'ROOT_CONTROLLED_RUNTIME_BUNDLE_REQUIRED'):
+                    io.read_bundle(str(bundle_path))
+            finally: bundle_path.chmod(mode)
             (work / 'expected-oci.json').write_text(json.dumps(recipe['expectedOci'], indent=2))
             (work / 'observed-oci.json').write_text(json.dumps(observed, indent=2))
             diff = reader.differences(recipe['expectedOci'], observed)

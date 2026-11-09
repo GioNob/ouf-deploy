@@ -106,7 +106,26 @@ class PeerIO:
 
     def read_bundle(self, filename):
         need(filename == self.bundle + '/config.json', 'EXACT_CURRENT_BUNDLE_REQUIRED')
-        return self.private.read_private(filename, 131072)
+        # containerd publishes config.json as root-owned 0644. That runtime
+        # document has a different custody profile from our private 0600
+        # receipts. Keep the private reader unchanged and forbid all writes
+        # by group/other, links, oversized files and changes during this read.
+        path = Path(filename); parent = self.private.open_parent(path); fd = None
+        try:
+            fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+            before = os.fstat(fd)
+            need(stat.S_ISREG(before.st_mode) and before.st_uid == before.st_gid == 0
+                 and stat.S_IMODE(before.st_mode) in (0o600, 0o644) and before.st_nlink == 1
+                 and 0 < before.st_size <= 131072, 'ROOT_CONTROLLED_RUNTIME_BUNDLE_REQUIRED')
+            with os.fdopen(os.dup(fd), 'rb') as stream: raw = stream.read(131073)
+            need(len(raw) == before.st_size and self.private.identity(before) ==
+                 self.private.identity(os.fstat(fd)) ==
+                 self.private.identity(os.stat(path.name, dir_fd=parent, follow_symlinks=False)),
+                 'RUNTIME_BUNDLE_CHANGED_DURING_READ')
+            return raw
+        finally:
+            if fd is not None: os.close(fd)
+            os.close(parent)
 
     def generation(self, pid):
         need(type(pid) is int and pid == self.pid and pid > 1, 'ENGINE_RUNC_PID_MUST_AGREE')
