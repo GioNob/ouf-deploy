@@ -1,0 +1,45 @@
+name: Discovery successor boot activation
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - scripts/activate-discovery-coordinator-boot-20261109.py
+      - tests/test_discovery_boot_activation.py
+      - tests/native_discovery_boot_activation.py
+      - evidence/discovery-coordinator-staged-operator-20261109.json
+      - .github/workflows/discovery-successor-boot.yml
+  pull_request:
+    paths:
+      - scripts/activate-discovery-coordinator-boot-20261109.py
+      - tests/test_discovery_boot_activation.py
+      - tests/native_discovery_boot_activation.py
+      - evidence/discovery-coordinator-staged-operator-20261109.json
+      - .github/workflows/discovery-successor-boot.yml
+permissions: {contents: read}
+jobs:
+  boot-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: df103735c1fe75a31e6d4c752360e9368e6aa52d
+          path: gateway-source
+          persist-credentials: false
+      - name: Stage pinned repository core
+        run: |
+          mkdir -p scripts/core
+          for name in materialize_southbound_kernel semantic_provider_dns materialize_southbound_lease_refresh semantic_provider_lease_nft semantic_provider_lease_owner semantic_provider_lease_coordination; do
+            cp "tools/semantic_cohort_admission/cohort-draft/tools/$name.py" "scripts/core/$name.py"
+          done
+      - name: Receipt and systemd command contracts
+        run: sudo python3 -I -B -m unittest discover -s tests -p test_discovery_boot_activation.py -v
+      - name: Install nft for disposable namespace
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nftables
+      - name: Private publication and unchanged native guard
+        run: sudo unshare --mount --net --propagation private python3 -I -B tests/native_discovery_boot_activation.py
