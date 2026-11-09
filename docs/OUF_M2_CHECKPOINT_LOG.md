@@ -491,3 +491,8 @@ STATE/MiniPET2.31/AGENTS/registro/runbook aggiornati dalla ricevuta dell'operato
 ## 9 novembre 2026 — attivazione MCP e lettura dipendenze pronta
 
 Il sorgente MCP installato incorpora il manifesto con sei strumenti INACTIVE; main e kernel leggono l'embed, il kernel registra soltanto ACTIVE. Policy/ENV da sole non li espongono. Nessun cambio pubblicazione eseguito. Reader source 73bb41e5d6165ec704b06cb45c3a198669ebc6e1, delivery 08e179dbf5cefc415f2eb469d9bbfba2c00cef00, tre file e wrapper riletti, nove test locali PASS/zero skip e sintassi Bash verificata. Il probe /proc locale non disponibile non è contato come prova nativa. Massimo13GET Docker, metadata dei mount e namespace; zero DB/token/business/credenziali lette, nessuna modifica servizi. Target ancora non eseguito. [Comando e limiti](OUF_DISCOVERY_ACTIVATION_BINDINGS_20261109.md). STATE/MiniPET2.32/registro aggiornati; asset/profilo Teatri invariati, nessun merge.
+
+
+## 9 novembre 2026 — discovery: provider v2 e southbound v2 fermi
+
+Ricevuta operatore 07:24 CET DISCOVERY_ACTIVATION_BINDINGS_READ: Semantic ef35ea78 Java con listener8080, MCP41c1e01d running, immagini attese. Provider v2 f3d59af9 e southbound v2 1fc5ae6a exited; reti condivise configurate ma connettività non testata. Semantic dichiara provider/worker false e credenziale senza mount. Legacy10a62374 created/senza reti, da mantenere fermo. Zero DB/token/business/config/credential contents o modifiche. [Ricevuta](../evidence/discovery-activation-bindings-operator-20261109.json). I container v2 corrispondono agli ID storici della creazione/avvio con runtime personalizzato; il runtime corrente deve essere letto prima di un nuovo start. Nessun riavvio o riuso di scope consumati effettuato.

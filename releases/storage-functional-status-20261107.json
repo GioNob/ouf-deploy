@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Execute the pinned read-only discovery dependency reader; resolve concrete missing provider/southbound bindings and prepare MCP build with six ACTIVE manifest entries plus grants. Keep existing Teatri profile and persistent budget. Functional1024 and normal UDP lake/E2E remain open.",
+  "nextAction": "Inspect the retained v2 provider/southbound startup runtime and current mounted configuration; prepare restoration of these exact components plus missing Semantic credential/TLS bindings. Legacy provider remains stopped. MCP ACTIVE manifest build and grants still required.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1540,7 +1540,7 @@
       },
       "currentUdpContainerId": "ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7",
       "discoveryActivationRead": {
-        "status": "DELIVERED_NOT_TARGET_EXECUTED",
+        "status": "DISCOVERY_ACTIVATION_BINDINGS_READ",
         "sourceCommit": "73bb41e5d6165ec704b06cb45c3a198669ebc6e1",
         "deliveryCommit": "08e179dbf5cefc415f2eb469d9bbfba2c00cef00",
         "script": "scripts/read-discovery-activation-bindings-20261109.py",
@@ -1554,12 +1554,20 @@
         "sourceFilesReadBack": 3,
         "wrapperReadBack": true,
         "bashSyntaxChecked": true,
-        "targetExecuted": false,
+        "targetExecuted": true,
         "maxDockerGetAttempts": 13,
         "plannedDatabaseRequests": 0,
         "plannedTokenRequests": 0,
         "plannedProviderRequests": 0,
-        "serviceChanges": false
+        "serviceChanges": false,
+        "operatorReceipt": "evidence/discovery-activation-bindings-operator-20261109.json",
+        "observedAt": "2026-11-09T06:24:10.472778+00:00",
+        "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-activation-bindings-wnq2xhlz",
+        "providerV2Running": false,
+        "southboundV2Running": false,
+        "semanticCredentialMount": "NO_DECLARED_MOUNT",
+        "sharedNetworksDeclared": true,
+        "connectivityTested": false
       }
     },
     "activationMechanism": {
