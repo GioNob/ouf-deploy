@@ -569,3 +569,9 @@ Il lavoro successivo della chat precedente è il controller di collegamento boot
 Ricevuta operatore 10:24:44 UTC / 11:24:44 CET: SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED nella verifica delle unità caricate. Intento e pubblicazione false; nessun restart/start o cambio puntatore. [Ricevuta](../evidence/discovery-successor-boot-held-operator-20261109.json). Non ripetere il controller.
 
 Il lettore mirato confronta le proprietà restituite per le due unità con/senza --all e separa i quattro predicati della riga 170. Verifica locale simulata PASS, VPS pendente. Nessuna correzione del controllo esatto o del controller effettuata: systemd v252 mostra già valori vuoti con --property; la causa concreta va osservata. STATE e registro aggiornati, F2–F6 invariati.
+
+## 9 novembre 2026 — ExecStartPre omesso: correzione verificata con systemd reale
+
+La [lettura operatore delle 11:33 CET](../evidence/discovery-boot-systemd-operator-20261109.json) omette solo ExecStartPre del guard con/senza --all. Docker supera i predicati, PID26930; NeedDaemonReload=no e ControlPID=0 per entrambe le unità. Nessun effetto runtime.
+
+Sorgente 6f378f07921baefd092b0b20b7f6368c0d10dd09: prova busctl del valore tipizzato esatto a(sasbttttuii) 0 solo per il campo omesso. Gli altri campi restano obbligatori; comandi, metadata e PID restano verificati. Ricevuta HELD originale vincolata a 1195 byte/SHA865ee49a, nessun intento esistente riutilizzato. CI42602163458/job129109035198 SUCCESS, log letti: 14 unitari, 1 test reale systemd che riproduce omissione e rifiuta array popolato, 3 native pubblicazione/nft. [Qualifica](../evidence/discovery-boot-empty-prestart-qualification-20261109.json). Continuazione VPS pendente, wrapper aggiornato al sorgente qualificato. Nessun restart Docker/provider; F2–F6 aperti.

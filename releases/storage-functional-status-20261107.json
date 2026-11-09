@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Read the two loaded systemd units with the bounded diagnostic reader, identify the exact failed predicate, then reconcile. No activation replay or daemon-reload. Completed successor staging and historical journals preserved; new provider generation pending.",
+  "nextAction": "Execute the qualified corrected boot continuation at 6f378f07: reconcile the exact preserved pre-publication HELD receipt, require no activation intent, and prove the omitted guard ExecStartPre is a typed empty array before publication. Two boot commands, daemon-reload and pointer only; no Docker restart or provider start. Do not repeat staging or the obsolete wrapper.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
@@ -1935,7 +1935,7 @@
         "coordinatorSuccessorBootBinding": {
           "schema": "ouf.discovery-successor-boot-qualification.v1",
           "date": "2026-11-09",
-          "status": "TARGET_HELD_BEFORE_INTENT_SYSTEMD_PREDICATE_UNRESOLVED",
+          "status": "PREINTENT_HOLD_DIAGNOSED_TYPED_EMPTY_CONTINUATION_QUALIFIED",
           "sourceCommit": "cf2de72e76c83e299348c3dc70de36defacb1039",
           "script": "scripts/activate-discovery-coordinator-boot-20261109.py",
           "scriptSha256": "153cd72eff8c50413cafce9875f272cd8eeddfbd4366c4f0e3f894665f8ce8ae",
@@ -1988,8 +1988,15 @@
           "publicationAttempted": false,
           "activeInstallationPointerChanged": false,
           "systemdReadScript": "scripts/read-discovery-boot-systemd-20261109.py",
-          "systemdReadTargetExecuted": false,
-          "activationControllerChanged": false
+          "systemdReadTargetExecuted": true,
+          "activationControllerChanged": true,
+          "systemdReadOperatorReceipt": "evidence/discovery-boot-systemd-operator-20261109.json",
+          "missingProperty": "guard.ExecStartPre",
+          "withAllAlsoOmits": true,
+          "dockerMainPidObserved": "26930",
+          "continuationQualification": "evidence/discovery-boot-empty-prestart-qualification-20261109.json",
+          "continuationSourceCommit": "6f378f07921baefd092b0b20b7f6368c0d10dd09",
+          "continuationTargetExecuted": false
         }
       },
       "discoveryLifecycleRead": {

@@ -5,7 +5,7 @@ if (( $# != 0 )); then printf '%s\n' 'Usage: successor boot binding (no argument
 umask 077
 ouf_boot_binding_dir=$(mktemp -d /tmp/ouf-boot-binding.XXXXXX)
 trap 'rm -rf -- "$ouf_boot_binding_dir"' EXIT
-ouf_boot_binding_source='cf2de72e76c83e299348c3dc70de36defacb1039'
+ouf_boot_binding_source='6f378f07921baefd092b0b20b7f6368c0d10dd09'
 mkdir "$ouf_boot_binding_dir/core"
 for ouf_boot_binding_name in reconcile-discovery-placeholder-20261109.py read-discovery-lifecycle-20261109.py read-discovery-startup-20261109.py read-analysis-discovery-runtime-20261107.py quiesce-discovery-coordinator-20261109.py read-discovery-nft-drift-20261109.py stage-discovery-coordinator-successor-20261109.py activate-discovery-coordinator-boot-20261109.py; do
   curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
@@ -35,7 +35,7 @@ c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930  core/semantic_
 e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587  core/semantic_provider_lease_coordination.py
 1c30699b12129fd2c322753167932871a171e744c8d780a31142789eb4326b06  read-discovery-nft-drift-20261109.py
 8e9cfe1e8073d33423e11f51e0a790530ec14e3cedbc6a5620a0ecff962e815d  stage-discovery-coordinator-successor-20261109.py
-153cd72eff8c50413cafce9875f272cd8eeddfbd4366c4f0e3f894665f8ce8ae  activate-discovery-coordinator-boot-20261109.py
+3538db93c67b230cf5aacdb45250df6c39da5f9727528859b8a91c0bfff2ae48  activate-discovery-coordinator-boot-20261109.py
 SHA256
 )
 sudo python3 -I -B "$ouf_boot_binding_dir/activate-discovery-coordinator-boot-20261109.py"
