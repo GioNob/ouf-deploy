@@ -1,0 +1,105 @@
+{
+  "automaticReplayAllowed": false,
+  "businessRequestsIssued": 0,
+  "causeOfHistoricalDriftProven": false,
+  "classification": "BOOT_FOOTPRINT_MATCHES_EXACT_DRIVER_HASH_DIFFERS",
+  "comparison": {
+    "bootComparisonProfile": "EXCLUDES_METAINFO_HANDLES_AND_COUNTER_EXPIRY_FIELDS_ONLY_NOT_AUTHORITY",
+    "defaultMatchesExpected": false,
+    "expectedDriverStructureSha256": "0ae74914cbfcfaef1b2408e8d8de482772f3e524c08d5da231a032dd57863d09",
+    "heldToCurrentNumericDifferences": {},
+    "numericMatchesExpected": false,
+    "numericMatchesHeldPreflight": true,
+    "observedStructureSha256": {
+      "default": "1eddee4c1203c07a5643c97c7f8173cd1ea14e35fe7079ad4c73148bce647391",
+      "defaultAgain": "1eddee4c1203c07a5643c97c7f8173cd1ea14e35fe7079ad4c73148bce647391",
+      "numeric": "3842f24043fd2fdb846a65f039b97a052462fd0b17001c8e1c7d6dca7ecada99",
+      "numericAgain": "3842f24043fd2fdb846a65f039b97a052462fd0b17001c8e1c7d6dca7ecada99"
+    },
+    "renderingDifferences": {
+      "rule": 25,
+      "set": 46
+    },
+    "retainedPreflightStructureSha256": "3842f24043fd2fdb846a65f039b97a052462fd0b17001c8e1c7d6dca7ecada99",
+    "stableAcrossReads": true
+  },
+  "coordination": {
+    "leaseAuthorized": false,
+    "startAuthorized": false,
+    "state": "BLOCKED"
+  },
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "currentObjectCounts": {
+    "bridge": {
+      "chain": 2,
+      "elements": 0,
+      "metainfo": 1,
+      "other": 0,
+      "rule": 28,
+      "set": 2,
+      "table": 1
+    },
+    "inet": {
+      "chain": 4,
+      "elements": 0,
+      "metainfo": 1,
+      "other": 0,
+      "rule": 28,
+      "set": 2,
+      "table": 1
+    }
+  },
+  "databaseRequests": 0,
+  "dnsQueries": 0,
+  "expectedHashesChanged": false,
+  "historicalAuthorityReused": false,
+  "installedBoot": {
+    "allOwnerBindingsMatchDriver": true,
+    "anyCurrentFootprintMatches": true,
+    "currentFootprintMatches": {
+      "default": true,
+      "defaultAgain": true,
+      "numeric": false,
+      "numericAgain": false
+    },
+    "currentFootprintSha256": {
+      "default": "7e10bda7a1c83b9688f0f84a1be346061eba4f6e1db9ff3d80c3f59656a1fc7f",
+      "defaultAgain": "7e10bda7a1c83b9688f0f84a1be346061eba4f6e1db9ff3d80c3f59656a1fc7f",
+      "numeric": "1d991657c887db5af68c55811f4b6ac0cdc5521372e1055145478ebea66d93ba",
+      "numericAgain": "1d991657c887db5af68c55811f4b6ac0cdc5521372e1055145478ebea66d93ba"
+    },
+    "expectedFootprintSha256": "7e10bda7a1c83b9688f0f84a1be346061eba4f6e1db9ff3d80c3f59656a1fc7f",
+    "installedOwnerExpectedStructureSha256": "0ae74914cbfcfaef1b2408e8d8de482772f3e524c08d5da231a032dd57863d09",
+    "installedOwnerMatchesDriver": {
+      "coordinationBinding": true,
+      "expectedStructureHash": true,
+      "journalFile": true,
+      "kernel": true,
+      "lockFile": true,
+      "nftPath": true
+    },
+    "scope": "HASH_BOUND_ACTIVE_POINTER_FILES_NOT_EFFECTIVE_SYSTEMD_OR_NEW_AUTHORITY",
+    "status": "BOUND_BOOT_BASELINE_READ",
+    "systemdLoadedConfigurationRead": false
+  },
+  "metadataFilesRead": 14,
+  "nftTableReadAttempts": 8,
+  "nftWrites": 0,
+  "observedAt": "2026-11-09T08:48:07.601376+00:00",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-nft-drift-f02sxuus",
+  "providerRequests": 0,
+  "quiescenceAttempted": false,
+  "quiescenceIntentPresent": false,
+  "rawRulesEmitted": false,
+  "runtimeJournalWrites": 0,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-nft-drift-read.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "sourceFilesUnchanged": true,
+  "status": "DISCOVERY_NFT_DRIFT_READ_COMPLETE",
+  "tokenRequests": 0
+}
