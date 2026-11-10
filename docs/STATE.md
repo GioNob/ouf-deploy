@@ -1,10 +1,10 @@
 # Stato corrente OUF
 
-9 novembre 2026, Europe/Rome. Priorità: **SeaweedFS funzionante, poi E2E ripetibile**. Requisiti: 1024 colonne e budget proporzionato al lavoro, discovery OntoPiA del significato delle colonne. Agente principale, esecuzione sequenziale; industrializzazione rinviata.
+10 novembre 2026, Europe/Rome. Priorità operativa **discovery OntoPiA live su schema.gov.it dal chatbot**, senza fallback locale. Agente principale, esecuzione sequenziale. Per ogni effetto sul VPS e per ogni merge serve un sì esplicito di Giovanni.
 
 ## Risultato e blocco attuale
 
-**F1 PASS; F2–F6 aperti.** Onboarding e UDP sono collegati a SeaweedFS. Upload e profilo Onboarding sono riusciti; normale operazione lake UDP ed E2E fino al grafo restano da provare.
+**F1 PASS; F2–F6 aperti nel registro funzionale.** Onboarding e UDP sono collegati a SeaweedFS. Il [caso Teatri v4](https://github.com/GioNob/ouf-deploy/pull/56) è concluso fino alla ricerca MCP. I 13 teatri sono stati ricondotti agli UUID storici. Preservare i dati e il kit di quella PR.
 
 **Collegamento al boot completato alle 11:42:59 CET.** La [ricevuta operatore](../evidence/discovery-successor-boot-bound-operator-20261109.json) riporta `DISCOVERY_SUCCESSOR_BOOT_BOUND`: puntatore attivo aggiornato, comandi systemd caricati verificati, daemon-reload effettuato, osservatore installato superato e PID Docker invariato. Aggiunta la sola directory staged a ReadWritePaths del guard. Frame container, contesti storici e staging conservati; nessun avvio/stop, restart Docker, scrittura nft o richiesta applicativa. È l'esito dell'invocazione osservata, non una verifica live successiva.
 
@@ -49,10 +49,15 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-1. Preparare e qualificare la nuova generazione provider/runtime sul coordinatore collegato al boot, poi ammetterla e verificare credenziale/TLS Semantic. Boot già concluso; nessun replay dei vecchi CID o journal.
-2. Verificare trasporto, identità e backlog prima di abilitare il worker; pubblicare la build MCP con i sei strumenti attivi e grant coerenti.
-3. Usare analisi persistente e discovery sul profilo Teatri esistente, associare le colonne a proprietà, completare review THS → Ingestion → UDP e leggere il grafo.
-4. Provare il caso ampio su fixture distinto e ripetere il percorso con un secondo CSV senza riparazioni manuali; verificare la ripresa da una nuova conversazione.
+- **1 — Lettura del peer Semantic.** Eseguire una sola volta il lettore consegnato e riconciliare il JSON. Il passo è in attesa della ricevuta VPS.
+- **2 — Nuova generazione provider/runtime.** Creare e ammettere la coppia sul coordinatore già collegato al boot. Verificare credenziale e TLS di Semantic verso schema.gov.it.
+- **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
+- **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
+- **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
+  - Rendere raggiungibile e completare la pagina THS con scheda, differenze, approvazione, rifiuto e pubblicazione. Rinnovare la sessione lato server e provare la ripresa dopo la scadenza del token durante una revisione lunga. Verificare separatamente la durata e la ripresa della challenge.
+  - Esporre le route northbound Gateway per scheda, decisione e pubblicazione verso l'API esistente, con le rispettive autorizzazioni HUMAN.
+  - Restituire da `semantic.review.prepare` l'URL HTTPS diretto generato da OUF per la challenge. Il chatbot usa l'URL restituito dal servizio.
+- **5 — Prova applicativa.** In una chat nuova, con ouf-admin, eseguire una discovery MCP reale e leggere stato e candidati OntoPiA con IRI, etichette e versione. Aprire dal link OUF una review, approvare e pubblicare il riferimento, poi provare che `source.onboarding.create` lo accetta in una bozza di prova separata. Mappare anche il profilo Teatri esistente senza creare nuove versioni della fonte.
 
 Ogni passo richiede un risultato applicativo osservato. Nessuna data finale attendibile è ancora dimostrata. [MiniPET](OUF_STORAGE_MINIPET.md), [budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md), [contratti 1024](OUF_WIDE_OBJECTS_1024_20261107.md), [cronologia](OUF_M2_CHECKPOINT_LOG.md).
 
