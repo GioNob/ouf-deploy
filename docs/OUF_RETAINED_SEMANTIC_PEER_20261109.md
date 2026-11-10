@@ -1,6 +1,6 @@
 # Peer Semantic corrente: ricetta indipendente e lettura nativa
 
-Il pacchetto è qualificato in CI ed è pronto per la lettura sul VPS. **La lettura sul VPS non è ancora avvenuta.** Serve a sostituire il solo riferimento storico BRIDGE_PORT 1377 con una dichiarazione completa e verificabile del Semantic corrente, prima di comporre la nuova coppia provider.
+**Lettura sul VPS completata il 10 novembre 2026 alle 13:29:10 CET.** La ricevuta operatore è `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORIZED`. Il confronto OCI è riuscito senza differenze e il collegamento reciproco è stato verificato. La dichiarazione del Semantic osservato è disponibile per la composizione della coppia, al posto del riferimento storico BRIDGE_PORT 1377. Conservare l'evidenza privata e usare la dichiarazione soltanto per la generazione osservata.
 
 Il lettore ricostruisce la richiesta pre-CREATE della riparazione dell'8 novembre usando il produttore già qualificato e la sola correzione della variabile della chiave discovery. Confronta la ricostruzione con `request.private.json`, i riferimenti di creazione/completamento e il frame corrente API 1.44 già fissato per hash. Le copie private restano sul VPS; non legge i contenuti dei mount o i file delle credenziali.
 

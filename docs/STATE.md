@@ -16,7 +16,10 @@ Il coordinatore selezionato dal boot è **QUIESCED**, con lease/start false. La 
 
 **Composizione della coppia implementata e qualificata in 11 test CI.** Il [compilatore](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md) conserva NIC/MAC, flussi e ricette indipendenti; richiede CID/transazioni distinti, ricompila i frame e collega i due nuovi peer reciproci. Sostituisce 1377 con una dichiarazione Semantic completa, senza inventare un nuovo indice. Produce soltanto una proposta non firmata, non un runtime ammesso.
 
-**Peer Semantic: pacchetto di lettura qualificato, VPS ancora da osservare.** La [ricetta indipendente](OUF_RETAINED_SEMANTIC_PEER_20261109.md) ricostruisce la richiesta pre-CREATE conservata; baseline Docker 29.8.1, hostname ereditato e gate iniziale restano espliciti. CI con immagine esatta: intera OCI e link reciproci verificati, 13 test unitari e 2 nativi PASS, senza eseguire Java. Il wrapper vincolato a sorgenti/hash legge il solo Semantic corrente e scrive nuova evidenza privata. **Prossimo passo operativo:** eseguire una volta il lettore consegnato e riconciliare il JSON; nessun effetto di avvio o ammissione. Se Semantic verrà sostituito per credenziale/provider, ricompilare e riosservare la dichiarazione per quella generazione. Restano creazioni governate della coppia, nuovi sigilli rootfs e mandati, pubblicazione/switch/avvio con gli owner esistenti. Nessun installer di nuova generazione pronto.
+**Peer Semantic verificato il 10 novembre alle 13:29:10 CET.** La ricevuta operatore riporta `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORIZED`.
+La ricetta indipendente coincide con l'intera configurazione OCI e il collegamento di rete coincide con la dichiarazione.
+La lettura ha scritto una directory di evidenza privata e non ha ammesso o avviato la nuova generazione. Il controllo vale per il Semantic osservato.
+**Prossimo passo:** preparare la creazione governata della coppia e i nuovi sigilli. Il lettore è concluso. [Runbook](OUF_RETAINED_SEMANTIC_PEER_20261109.md).
 
 Gli input preparati non sono profili runtime e non attestano ammissione, provider pronto, TLS/issuer o discovery. Non reimpostare DELETED/DELETING e non riavviare i vecchi CID.
 
@@ -49,7 +52,7 @@ Teatri, senza nuovo upload o profilo:
 
 ## Sequenza rimanente
 
-- **1 — Lettura del peer Semantic.** Eseguire una sola volta il lettore consegnato e riconciliare il JSON. Il passo è in attesa della ricevuta VPS.
+- **1 — Lettura del peer Semantic.** Conclusa con ricevuta operatore riconciliata. Conservare la dichiarazione per la generazione osservata.
 - **2 — Nuova generazione provider/runtime.** Creare e ammettere la coppia sul coordinatore già collegato al boot. Verificare credenziale e TLS di Semantic verso schema.gov.it.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
