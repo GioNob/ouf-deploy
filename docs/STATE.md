@@ -53,7 +53,10 @@ Teatri, senza nuovo upload o profilo:
 ## Sequenza rimanente
 
 - **1 — Lettura del peer Semantic.** Conclusa con ricevuta operatore riconciliata. Conservare la dichiarazione per la generazione osservata.
-- **2 — Nuova generazione provider/runtime.** Creare e ammettere la coppia sul coordinatore già collegato al boot. Verificare credenziale e TLS di Semantic verso schema.gov.it.
+- **2 — Nuova generazione provider/runtime, in preparazione.** Separare la creazione dei due container fermi dall'ammissione. La prima operazione deve produrre due nuovi ID, mantenere gli alias DNS usati da TLS e verificare due reti per l'adapter e tre per il southbound. [Precedente di creazione a container fermi](../releases/PROVIDER_V2_STOPPED_CREATION.md).
+  Il controller storico della creazione è vincolato al runtime vuoto di ottobre. L'owner di installazione successivo richiede una sola rete e un Registry creato nella propria finestra. Usare il compilatore già qualificato per la coppia e mantenere i controlli di custodia e proprietà della creazione.
+  Prima di ammettere la coppia, associare il peer alla generazione Semantic che monta la credenziale e il truststore. Se cambia la generazione, serve una dichiarazione indipendente e un'osservazione nuova. Verificare credenziale e TLS lungo il percorso verso schema.gov.it prima del passo 3.
+  Il primo comando VPS resta da preparare e verificare. L'esito atteso per la sola creazione è una ricevuta con due ID nuovi, entrambi mai avviati.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
