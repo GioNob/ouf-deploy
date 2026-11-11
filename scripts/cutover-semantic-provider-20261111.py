@@ -43,6 +43,7 @@ TRUST_TARGET = "/run/ouf-discovery-trust/merged-trust.p12"
 ARGS_TARGET = "/run/ouf-discovery-trust/java.args"
 LABEL = "ouf.semantic.provider-cutover.plan"
 DOCKER_SOCKET = "/run/docker.sock"
+RECONNECT_API = "1.54"
 READINESS = "/actuator/health/readiness"
 SEMANTIC_HEALTH = ("/actuator/health/liveness", READINESS, "/actuator/health")
 CUTOVER_HEALTH = "/actuator/health/cutover"
@@ -114,9 +115,9 @@ class UnixEngine(http.client.HTTPConnection):
         self.sock.connect(DOCKER_SOCKET)
 
 
-def engine(deadline, method, resource, body=None, *, allow_absent=False):
+def engine(deadline, method, resource, body=None, *, allow_absent=False, api="1.44"):
     with closing(UnixEngine("localhost", timeout=remaining(deadline, 23))) as connection:
-        connection.request(method, "/v1.44" + resource, body=None if body is None else canonical(body),
+        connection.request(method, f"/v{api}" + resource, body=None if body is None else canonical(body),
                            headers={"Content-Type": "application/json"})
         with connection.getresponse() as response:
             raw = response.read(2_097_153)
@@ -257,6 +258,8 @@ def plan(rollout, mac, trust):
     info = engine(deadline, "GET", "/info")
     require((info["ServerVersion"], info["Driver"], info["CgroupDriver"], info["DockerRootDir"])
             == ("29.8.1", "overlayfs", "systemd", "/var/lib/docker"), "ENGINE_PROFILE_CHANGED")
+    require(engine(deadline, "GET", "/version", api=RECONNECT_API)["Version"] == info["ServerVersion"],
+            "MAC_PRESERVING_RECONNECT_API_UNPROVEN")
     old = inspect(deadline, OLD)
     fields = ("Id", "Image", "Config", "HostConfig", "Mounts", "Path", "Args", "NetworkSettings")
     frame = {key: old.get(key) for key in fields}
@@ -325,6 +328,7 @@ def plan(rollout, mac, trust):
         "health": {"currentAndRestoredSemantic": list(SEMANTIC_HEALTH), "newSemantic": CUTOVER_HEALTH,
                    "gatewayBackend": READINESS, "mcp": "/health/ready"},
         "limitsSeconds": {"forward": START_SECONDS, "health": HEALTH_SECONDS, "automaticRestore": RESTORE_SECONDS},
+        "rollbackNetworkConnectApi": RECONNECT_API,
         "mutations": ["stop and detach old CID", "rename old CID", "create new CID", "start gate and release Java",
                       "on failure stop, detach and rename new CID", "reattach, rename and restart old CID"],
     }
@@ -404,8 +408,9 @@ def restore(rollout, old, manifest, digest, new_id):
             for field in ("Links", "DriverOpts"):
                 if original.get(field):
                     settings[field] = original[field]
+            # Older API versions silently discard a requested MAC on network connect.
             engine(deadline, "POST", f"/networks/{NETWORK_ID}/connect",
-                   {"Container": OLD, "EndpointConfig": settings})
+                   {"Container": OLD, "EndpointConfig": settings}, api=RECONNECT_API)
         else:
             require(set(actual["NetworkSettings"]["Networks"]) == {NETWORK}, "RESTORE_OLD_NETWORK_CHANGED")
         action(deadline, OLD, "start")
