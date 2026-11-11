@@ -219,26 +219,26 @@ def build_request(preflight, name, noswap):
 
     host["Binds"] = None
     host["Mounts"] = mounts
-    host["NetworkMode"] = preflight.NETWORKS[next(iter(ENDPOINTS[name]))][0]
+    host["NetworkMode"] = next(iter(ENDPOINTS[name]))
     request["NetworkingConfig"] = {"EndpointsConfig": {
-        preflight.NETWORKS[network][0]: {"IPAMConfig": {"IPv4Address": ip}, "Aliases": [name], "MacAddress": mac}
+        network: {"IPAMConfig": {"IPv4Address": ip}, "Aliases": [name], "MacAddress": mac}
         for network, (ip, mac) in ENDPOINTS[name].items()
     }}
     return request
 
 
-def summarize_request(preflight, name, request):
+def summarize_request(name, request):
     endpoints = request["NetworkingConfig"]["EndpointsConfig"]
     networks = {}
-    for network in ENDPOINTS[name]:
-        endpoint = endpoints[preflight.NETWORKS[network][0]]
+    for network, endpoint in endpoints.items():
         networks[network] = {
             "requestedIPv4": endpoint["IPAMConfig"]["IPv4Address"],
             "requestedMacAddress": endpoint["MacAddress"],
             "aliases": endpoint["Aliases"],
         }
     return {"name": name + "-successor", "imageId": request["Image"],
-            "runtime": request["HostConfig"]["Runtime"], "networks": networks,
+            "runtime": request["HostConfig"]["Runtime"], "networkMode": request["HostConfig"]["NetworkMode"],
+            "networks": networks,
             "bindMountCount": len(request["HostConfig"]["Mounts"]),
             "environmentVariableCount": len(request["Env"])}
 
@@ -289,6 +289,7 @@ def guard(preflight, created=None):
             own_aliases = [row for row in data["aliasClaims"] if row["id"] == cid]
             own_claims = [row for row in data["targets"][ip]["containerClaims"] if row["id"] == cid]
             require(len(own_aliases) == len(own_claims) == 1 and not own_aliases[0]["live"]
+                    and role in own_aliases[0]["aliases"]
                     and own_claims[0]["requestedIPv4"] == ip and not own_claims[0]["assignedIPv4"]
                     and not own_claims[0]["endpointId"], "FIRST_CANDIDATE_NETWORK_STATE_CHANGED")
             data["aliasClaims"].remove(own_aliases[0])
@@ -365,7 +366,7 @@ def main():
         if args.plan:
             guard(preflight)
             report["planSha256"] = plan_sha
-            report["plannedRequests"] = [summarize_request(preflight, name, request)
+            report["plannedRequests"] = [summarize_request(name, request)
                                          for name, request in requests.items()]
             report["status"] = "PLAN_READY"
             print(json.dumps(report, sort_keys=True))
