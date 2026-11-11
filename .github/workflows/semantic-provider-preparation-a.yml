@@ -1,0 +1,18 @@
+name: Semantic provider preparation A
+on:
+  pull_request:
+    paths:
+      - scripts/prepare-semantic-provider-a-20261111.py
+      - scripts/deliver-semantic-provider-preparation-a-20261111.sh
+      - tests/test_semantic_provider_preparation_a.py
+      - .github/workflows/semantic-provider-preparation-a.yml
+permissions: {contents: read}
+jobs:
+  native-observation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exercise staging, SSL selection and reciprocal veth observation
+        run: sudo -n env OUF_A_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_preparation_a.py -v
