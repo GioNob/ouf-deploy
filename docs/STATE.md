@@ -61,7 +61,9 @@ Teatri, senza nuovo upload o profilo:
   Creazione sospesa prima di qualsiasi scrittura. La ricetta storica del southbound inserisce credenziali nelle variabili Docker, che Docker conserva nei metadati della nuova istanza.
   L’11 novembre è stata preparata la [bozza del comando](../scripts/create-discovery-stopped-candidates-20261111.py). Elimina il segreto OIDC di APISIX dalla ricetta JWT/JWKS e legge la chiave HMAC dal file protetto all’avvio.
   La bozza ripete il controllo IP e alias prima di ciascun CREATE. Le prove locali con dati sintetici coprono la trasformazione delle route, il lancio e il rifiuto di un conflitto IPAM.
-  Prossimo passo: qualificare la bozza su Docker e sull’immagine APISIX effettiva prima della consegna operativa. La creazione sul VPS richiede il sì dell’owner.
+  La revisione ha aggiunto il confronto delle variabili storiche con l’immagine, la scelta di `noswap` in base al kernel e la rimozione separata del solo primo candidato. I test locali usano dati sintetici.
+  Il [lettore in sola lettura](../scripts/read-discovery-stopped-image-review-20261111.py) rileva i nomi Env, la versione e il plugin APISIX del rootfs conservato, i permessi del UID 636 e il kernel VPS. Attesa la ricevuta prima di chiudere la qualifica.
+  Il comando di creazione e l’eventuale rimozione del primo candidato richiedono ciascuno il sì dell’owner.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
