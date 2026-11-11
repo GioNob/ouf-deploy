@@ -62,8 +62,10 @@ class CutoverTests(unittest.TestCase):
                       "scope": str(public_path.parent), "complete": True,
                       "publicTrustInputsHash": D["sha"](D["canonical"](record))}
             files = {D["PUBLIC_TRUST_RECORD"]: record, D["PUBLIC_TRUST_RESULT"]: result}
-            with patch.dict(NAMESPACE, PUBLIC_TRUST_SHA=extra_hash,
-                            private_input=lambda path, **kwargs: D["canonical"](files[path])):
+            def read_receipt(path, *, uid, gid, mode, limit):
+                self.assertEqual((uid, gid, mode), (0, None, 0o600))
+                return D["canonical"](files[path])
+            with patch.dict(NAMESPACE, PUBLIC_TRUST_SHA=extra_hash, private_input=read_receipt):
                 merged, counts = D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
                 self.assertEqual(counts, {"existingCaCount": len(certificates), "providerCaCount": 18,
                                           "mergedCaCount": len(certificates) + 1})
@@ -77,7 +79,26 @@ class CutoverTests(unittest.TestCase):
                 ):
                     with self.subTest(reason=reason), self.assertRaisesRegex(D["CaInventoryHeld"], reason) as raised:
                         D["verified_ca_union"](java_pem, provider_pem, len(extra_store), trust)
-                    self.assertEqual(raised.exception.counts["providerCaCount"], 18)
+                    fields = raised.exception.report_fields
+                    self.assertEqual(fields["providerCaCount"], 18)
+                    if reason == "JAVA_CA_INVENTORY_UNPROVEN":
+                        self.assertEqual(fields, counts)
+                    else:
+                        self.assertEqual(set(fields), set(counts) | {"providerInventoryDetail", "recordCertificateCount"})
+                        self.assertEqual(fields["providerInventoryDetail"], "PUBLIC_TRUST_INVENTORY_MISMATCH")
+                        self.assertEqual(fields["recordCertificateCount"], 18)
+                with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN") as raised:
+                    with patch.dict(result, publicTrustInputsHash="0" * 64):
+                        D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
+                self.assertEqual(raised.exception.report_fields, counts | {
+                    "providerInventoryDetail": "PUBLIC_TRUST_RECEIPT_CHANGED", "recordCertificateCount": 18,
+                })
+                with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN") as raised:
+                    result.pop("scope")
+                    D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
+                self.assertEqual(raised.exception.report_fields, counts | {
+                    "providerInventoryDetail": "KeyError", "recordCertificateCount": 18,
+                })
             path = Path(temp) / "merged.p12"
             path.write_bytes(trust._pkcs12(sorted(merged, key=D["sha"])))
             readback = subprocess.check_output(("keytool", "-list", "-rfc", "-keystore", str(path), "-storetype",
