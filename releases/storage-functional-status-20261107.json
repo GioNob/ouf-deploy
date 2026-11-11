@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Giovanni reruns --plan in his VPS terminal using launcher 8550abc0. The earlier read-only plan held because the historical alias guard did not match the live Semantic endpoint. The revised guard preserves the observed backend DNS names. Review PLAN_READY, then use --apply with that plan hash only after Giovanni's separate yes. Read result.json if the terminal disconnects. Then observe the new Semantic peer (A), admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
+  "nextAction": "Giovanni runs --plan in his VPS terminal using launcher 8866271e. The prior plan passed the alias guard and held at the trust inventory check. The revised controller verifies the count and fingerprints from the prepared trust receipt and preserves the original Java certificates. Review PLAN_READY, then use --apply with that plan hash only after Giovanni's separate yes. Read result.json if the terminal disconnects. Then observe the new Semantic peer (A), admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
