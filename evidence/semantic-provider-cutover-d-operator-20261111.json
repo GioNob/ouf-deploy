@@ -1,0 +1,38 @@
+{
+  "schema": "ouf.semantic-provider-cutover.operator-summary.v1",
+  "evidenceSource": "Giovanni's controller result and Opus's independent read-only VPS verification, supplied in chat",
+  "status": "SEMANTIC_PROVIDER_CUTOVER_READY",
+  "planSha256": "289a1e2d97ac93cce4318d6edf56dcfadfc244a12b02f5e55c2b5ee7139e3afb",
+  "newSemantic": {
+    "containerId": "43a294defebd354b1c357e78d8b8807c2575291e8ec25540a23c901518649d7b",
+    "pid": 83015,
+    "startedAt": "2026-11-11T10:55:25Z",
+    "javaReadyAt": "2026-11-11T10:55:30Z",
+    "restartCount": 0,
+    "ipv4": "172.18.0.6",
+    "mac": "b2:96:a1:e2:c1:8d",
+    "readOnlyBindCount": 7,
+    "livenessHttpStatus": 200,
+    "readinessHttpStatus": 200,
+    "healthHttpStatus": 200
+  },
+  "oldSemantic": {
+    "containerId": "ef35ea78dc8f5116255ce1c12186935451af6612293c95ecacab3165e220598a",
+    "state": "exited",
+    "networksAttached": 0
+  },
+  "stoppedSuccessors": [
+    "85b5302f6dbc3e9a24ace904b8d8a2d43bc5185e340c1bfe5474c723a6b640ef",
+    "34adce783cba238c1954eb33e39c37a641ea4f0db212531951a2fd2b86290c52"
+  ],
+  "trustContextStatus": "STOP_RECONCILE",
+  "southboundIssuerMatch": true,
+  "existingCaCount": 118,
+  "providerCaCount": 151,
+  "mergedCaCount": 161,
+  "providerConfigured": true,
+  "workerEnabled": false,
+  "providerProbes": 0,
+  "credentialValuesEmitted": false,
+  "liveTlsObserved": false
+}
