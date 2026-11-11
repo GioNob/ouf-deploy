@@ -29,9 +29,10 @@ ADDRESS = "172.18.0.6"
 MAC = "b2:96:a1:e2:c1:8d"
 BACKEND_ALIASES = ("790c62742c92", "11d9362c7db4")
 MCP = "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943"
+SOUTHBOUND_SUCCESSOR = "34adce783cba238c1954eb33e39c37a641ea4f0db212531951a2fd2b86290c52"
 SUCCESSORS = (
     "85b5302f6dbc3e9a24ace904b8d8a2d43bc5185e340c1bfe5474c723a6b640ef",
-    "34adce783cba238c1954eb33e39c37a641ea4f0db212531951a2fd2b86290c52",
+    SOUTHBOUND_SUCCESSOR,
 )
 SUCCESSOR_TRANSACTION = "7ff12b95c3f70c5eaebb1d0a12ab931d"
 MATERIAL = Path("/etc/ouf/deploy-snapshots/m2-discovery-material-roles-2d133870-20261029-v1")
@@ -41,6 +42,14 @@ PUBLIC_TRUST = Path("/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9
 PUBLIC_TRUST_SHA = "33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559"
 PUBLIC_TRUST_RECORD = PUBLIC_TRUST.with_name("public-trust-inputs.json")
 PUBLIC_TRUST_RESULT = PUBLIC_TRUST.with_name("result.json")
+SOUTHBOUND_TRUST = Path("/etc/ouf/deploy-snapshots/semantic-provider-v2-trust-vf7B4SM5")
+SOUTHBOUND_BUNDLE = SOUTHBOUND_TRUST / "trust-bundle.pem"
+SOUTHBOUND_LEAF = SOUTHBOUND_TRUST / "southbound/server.crt"
+SOUTHBOUND_ROUTES = Path("/etc/ouf/deploy-snapshots/semantic-provider-v2-inputs-XE7IwlGm/apisix.yaml")
+SOUTHBOUND_ROUTES_TARGET = "/run/ouf-semantic-provider/historical-apisix.yaml"
+SOUTHBOUND_BUNDLE_SHA = "2e3f4bd8bdcefa651718233d2e7e0fb80cadecf69a3ad9deed00e55e85bf8401"
+SOUTHBOUND_LEAF_SHA = "7c8af56e93f6a06ee8cb7de480c797c1008d43ea7b3ae4536f5b1f42e892b9ce"
+SOUTHBOUND_ROUTES_SHA = "dd340bd652bd5c7763ea47fd53573626bc3541b0a2d97415a113c4877e2c7e80"
 WORK = Path("/var/lib/ouf-storage-migration/semantic-provider-cutover-20261111")
 CREDENTIAL_TARGET = "/run/secrets/schema-gov-client-secret"
 TRUST_TARGET = "/run/ouf-discovery-trust/merged-trust.p12"
@@ -206,10 +215,19 @@ def expected_provider_fingerprints(public_size, diagnostics):
     if type(count) is int:
         diagnostics["recordCertificateCount"] = count
     result = json.loads(private_input(PUBLIC_TRUST_RESULT, uid=0, gid=None, mode=0o600, limit=2097152))
+    status = result.get("status") if isinstance(result, dict) else None
+    diagnostics["trustContextStatus"] = status if status in (
+        "STOP_RECONCILE", "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED"
+    ) else "UNRECOGNIZED"
     require(result["schema"] == "ouf.m2-discovery-trust-context-preparation-result.v1"
-            and result["status"] == "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED"
-            and result["complete"] is True and result["scope"] == str(PUBLIC_TRUST.parent)
-            and result["publicTrustInputsHash"] == sha(canonical(record)), "PUBLIC_TRUST_RECEIPT_CHANGED")
+            and status == "STOP_RECONCILE" and result["reasonCode"] == "CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED"
+            and result["complete"] is False and result["scope"] == str(PUBLIC_TRUST.parent)
+            and result["scopeConsumed"] is True and result["partialPublicStorePreserved"] is True
+            and "publicTrustInputsHash" not in result, "PUBLIC_TRUST_RECEIPT_CHANGED")
+    require(all(type(source["counts"][key]) is int and source["counts"][key] == 1
+                for source in (result, record)
+                for key in ("publicTrustStoresPrepared", "publicTrustStoreReadbacks")),
+            "PUBLIC_TRUST_PREPARATION_COUNTS_UNPROVEN")
     store = record["publicStore"]
     require(record["schema"] == "ouf.m2-discovery-prepared-public-trust.v1"
             and proposal["schema"] == "ouf.discovery-bound-public-trust-proposal.v1"
@@ -220,10 +238,31 @@ def expected_provider_fingerprints(public_size, diagnostics):
             and all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) for value in fingerprints)
             and fingerprints == sorted(set(proposal["iamCaFingerprints"]) | {proposal["providerCaFingerprint"]}),
             "PUBLIC_TRUST_RECEIPT_INVENTORY_UNPROVEN")
-    return fingerprints
+    return fingerprints, proposal["providerCaFingerprint"]
 
 
-def verified_ca_union(stock, provider, public_size, trust):
+def verify_southbound_issuer(deadline, fingerprint, trust):
+    bundle = private_input(SOUTHBOUND_BUNDLE, uid=0, gid=0, mode=0o644, limit=1048576)
+    leaf = private_input(SOUTHBOUND_LEAF, uid=636, gid=636, mode=0o600, limit=65536)
+    routes = private_input(SOUTHBOUND_ROUTES, uid=636, gid=636, mode=0o600, limit=1048576)
+    require(sha(bundle) == SOUTHBOUND_BUNDLE_SHA and sha(leaf) == SOUTHBOUND_LEAF_SHA
+            and sha(routes) == SOUTHBOUND_ROUTES_SHA, "SOUTHBOUND_TLS_ARTIFACT_CHANGED")
+    anchors = [pem for pem in trust.PEM.findall(bundle)
+               if sha(ssl.PEM_cert_to_DER_cert(pem.decode("ascii"))) == fingerprint]
+    require(len(anchors) == 1, "PROVIDER_CA_NOT_SOUTHBOUND_ISSUER")
+    with os.fdopen(os.memfd_create("ouf-southbound-issuer", os.MFD_CLOEXEC), "w+b") as anchor:
+        anchor.write(anchors[0] + b"\n")
+        anchor.flush()
+        anchor.seek(0)
+        fd = anchor.fileno()
+        verified = subprocess.run(("/usr/bin/openssl", "verify", "-trusted", f"/proc/self/fd/{fd}",
+                                   "-verify_depth", "0", "-purpose", "sslserver", "-verify_hostname",
+                                   "ouf-semantic-southbound-v2", "/dev/stdin"),
+                                  input=leaf, capture_output=True, pass_fds=(fd,), timeout=remaining(deadline, 10))
+    require(verified.returncode == 0, "PROVIDER_CA_NOT_SOUTHBOUND_ISSUER")
+
+
+def verified_ca_union(deadline, stock, provider, public_size, trust):
     stock_pems = trust.PEM.findall(stock)
     provider_pems = trust.PEM.findall(provider)
     existing, additional = ({ssl.PEM_cert_to_DER_cert(pem.decode("ascii")) for pem in pems}
@@ -235,15 +274,19 @@ def verified_ca_union(stock, provider, public_size, trust):
     if (len(totals) != 1 or int(totals[0]) != len(stock_pems)
             or types != [b"trustedCertEntry"] * len(stock_pems)):
         raise CaInventoryHeld("JAVA_CA_INVENTORY_UNPROVEN", counts)
-    diagnostics = {}
+    diagnostics = {"southboundIssuerMatch": False}
     try:
-        expected = expected_provider_fingerprints(public_size, diagnostics)
+        expected, issuer = expected_provider_fingerprints(public_size, diagnostics)
         require(len(provider_pems) == len(expected) and sorted(sha(cert) for cert in additional) == expected,
                 "PUBLIC_TRUST_INVENTORY_MISMATCH")
-    except (RuntimeError, OSError, ValueError, TypeError, KeyError) as error:
-        diagnostics["providerInventoryDetail"] = code(error) if type(error) is Held else type(error).__name__
+        verify_southbound_issuer(deadline, issuer, trust)
+    except (RuntimeError, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
+        detail = code(error) if type(error) is Held else type(error).__name__
+        if detail == "PROVIDER_CA_NOT_SOUTHBOUND_ISSUER":
+            raise CaInventoryHeld(detail, counts | diagnostics) from error
+        diagnostics["providerInventoryDetail"] = detail
         raise CaInventoryHeld("PROVIDER_CA_INVENTORY_UNPROVEN", counts | diagnostics) from error
-    return merged, counts
+    return merged, counts | {"trustContextStatus": diagnostics["trustContextStatus"], "southboundIssuerMatch": True}
 
 
 def prepare_material(deadline, old, trust):
@@ -278,7 +321,7 @@ def prepare_material(deadline, old, trust):
     extra = subprocess.run(("/usr/bin/openssl", "pkcs12", "-nokeys", "-passin", "pass:changeit"),
                            input=public, capture_output=True, timeout=remaining(deadline, 10))
     require(extra.returncode == 0 and len(extra.stdout) <= 1048576, "PUBLIC_TRUSTSTORE_UNREADABLE")
-    certificates, counts = verified_ca_union(stock, extra.stdout, len(public), trust)
+    certificates, counts = verified_ca_union(deadline, stock, extra.stdout, len(public), trust)
     merged = trust._pkcs12(sorted(certificates, key=sha))
     require(len(merged) <= trust.MAX_STORE, "MERGED_TRUSTSTORE_TOO_LARGE")
     args = (f"-Djavax.net.ssl.trustStore={TRUST_TARGET}\n-Djavax.net.ssl.trustStoreType=PKCS12\n"
@@ -364,6 +407,10 @@ def plan(rollout, mac, trust):
                 and state["StartedAt"].startswith("0001-") and doc["HostConfig"]["RestartPolicy"]["Name"] == "no"
                 and not any(e.get("EndpointID") or e.get("IPAddress") for e in doc["NetworkSettings"]["Networks"].values()),
                 "SUCCESSOR_NOT_STOPPED")
+        if cid == SOUTHBOUND_SUCCESSOR:
+            routes = [m for m in doc["Mounts"] if m["Destination"] == SOUTHBOUND_ROUTES_TARGET]
+            require(len(routes) == 1 and routes[0]["Type"] == "bind" and routes[0]["RW"] is False
+                    and routes[0]["Source"] == str(SOUTHBOUND_ROUTES), "SOUTHBOUND_CERTIFICATE_BINDING_UNPROVEN")
     service_probes(deadline, OLD, gateway)
     merged, args, ca_counts, credential_digest = prepare_material(deadline, old, trust)
     request = rollout.request(old, IMAGE)
@@ -395,6 +442,7 @@ def plan(rollout, mac, trust):
         "observedGateway": gateway, "observedMcp": MCP, "stoppedSuccessors": list(SUCCESSORS),
         "inputFiles": [str(MATERIAL / "prepared-inputs.private.json"), str(CREDENTIAL), str(PUBLIC_TRUST),
                        str(PUBLIC_TRUST_RECORD), str(PUBLIC_TRUST_RESULT),
+                       str(SOUTHBOUND_BUNDLE), str(SOUTHBOUND_LEAF), str(SOUTHBOUND_ROUTES),
                        f"/proc/{old['State']['Pid']}/cmdline", str(cacerts)],
         "privateDirectory": str(WORK), "filesCreatedUnderPrivateDirectory": list(JOURNAL_FILES),
         "readOnlyBinds": [{"host": str(source), "target": target, "uid": 0, "gid": 10001, "mode": "0440"}
@@ -610,6 +658,9 @@ def main():
         rollout, mac, trust = load_helpers()
         planned = plan(rollout, mac, trust)
         report.update(manifest=planned[0], planSha256=planned[1])
+        if "trustContextStatus" in planned[0]:
+            report.update(trustContextStatus=planned[0]["trustContextStatus"],
+                          southboundIssuerMatch=planned[0]["southboundIssuerMatch"])
         if args.plan:
             report["status"] = "PLAN_READY"
         else:
