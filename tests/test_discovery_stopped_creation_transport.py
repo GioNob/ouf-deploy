@@ -18,6 +18,7 @@ from unittest.mock import patch
 
 
 SOURCE = Path(__file__).resolve().parents[1] / "scripts/create-discovery-stopped-candidates-20261111.py"
+PREFLIGHT_SOURCE = SOURCE.with_name("read-discovery-stopped-creation-preflight-20261110.py")
 CONTROLLER = runpy.run_path(str(SOURCE))
 GLOBALS = CONTROLLER["engine"].__globals__
 CID = "a" * 64
@@ -194,6 +195,10 @@ class StoppedCreationTransportTests(unittest.TestCase):
         first, second = report["plannedRequests"]
         self.assertEqual(first["name"], CONTROLLER["ADAPTER"] + "-successor")
         self.assertEqual(second["name"], CONTROLLER["SOUTHBOUND"] + "-successor")
+        self.assertEqual(first["networkMode"], "ouf-semantic-provider-internal")
+        self.assertEqual(second["networkMode"], "ouf-backend")
+        self.assertEqual(set(first["networks"]), {"ouf-semantic-provider-internal", "ouf-semantic-provider-egress"})
+        self.assertEqual(set(second["networks"]), set(first["networks"]) | {"ouf-backend"})
         self.assertEqual(second["networks"]["ouf-backend"]["requestedIPv4"], "172.18.0.14")
         for private in ("fixture-env-value", "fixture-oidc", "fixture-hmac", "/ouf-plan-", "client_secret"):
             self.assertNotIn(private, json.dumps(report))
@@ -214,6 +219,57 @@ class StoppedCreationTransportTests(unittest.TestCase):
         self.assertEqual(report["reason"], "PLAN_DIGEST_CHANGED")
         self.assertEqual(report["createRequests"], 0)
         self.assertEqual(self.server.requests, paths)
+
+    def stopped_adapter_readback(self, *, mixed_keys):
+        preflight = CONTROLLER["load_reader"](PREFLIGHT_SOURCE, CONTROLLER["PREFLIGHT_SHA"])
+        name = CONTROLLER["ADAPTER"]
+        transaction = "f" * 32
+        host = {"Runtime": "ouf-test-runtime", "RestartPolicy": {"Name": "no"},
+                "NetworkMode": "ouf-semantic-provider-internal", "Mounts": []}
+        request = {"Image": "sha256:" + "c" * 64, "Env": [], "HostConfig": host}
+        networks = {}
+        for network, (ip, mac) in CONTROLLER["ENDPOINTS"][name].items():
+            key = preflight.NETWORKS[network][0] if mixed_keys and network.endswith("-egress") else network
+            networks[key] = {"IPAMConfig": {"IPv4Address": ip}, "Aliases": [name], "MacAddress": mac,
+                             "NetworkID": "", "EndpointID": "", "IPAddress": ""}
+        row = {"id": CID, "name": f"/{name}-successor", "networks": networks}
+        doc = {"Id": CID, "Name": row["name"], "Image": request["Image"],
+               "Config": {"Env": [], "Labels": {CONTROLLER["OWNER_LABEL"]: transaction}},
+               "State": {"Status": "created", "Running": False, "Pid": 0, "StartedAt": "0001-01-01T00:00:00Z"},
+               "HostConfig": host, "RestartCount": 0, "Mounts": [], "NetworkSettings": {"Networks": networks}}
+        self.server.responses.append((200, json.dumps(doc).encode()))
+
+        rows = [{"id": cid, "name": "/" + role, "state": state, "pid": 0, "running": False,
+                 "restartPolicy": "no", "composeProject": None, "composeService": None, "networks": {}}
+                for role, (cid, state) in preflight.HISTORICAL.items()]
+        docker_networks = [
+            {"Name": network, "Id": network_id, "Driver": "bridge", "Scope": "local", "Containers": {},
+             "IPAM": {"Driver": "default", "Config": [{"Subnet": next(iter(targets)).rsplit(".", 1)[0] + ".0/24"}]}}
+            for network, (network_id, targets) in preflight.NETWORKS.items()
+        ]
+        self.enterContext(patch.object(preflight, "containers", side_effect=lambda: rows))
+        self.enterContext(patch.object(preflight, "command", return_value=json.dumps(docker_networks)))
+        self.enterContext(patch.object(preflight, "boot_units", return_value=({"docker": True}, True, True, True)))
+        self.enterContext(patch.object(preflight, "service_references", return_value=([], [])))
+        baseline = preflight.read_docker()
+        self.assertEqual(baseline["blockers"], [])
+        self.enterContext(patch.dict(GLOBALS, DOCKER_READBACK_SHA=CONTROLLER["sha"](CONTROLLER["canonical"](baseline))))
+        rows.append(row)
+        return preflight, request, transaction
+
+    def test_mixed_network_keys_rejected_by_inspect_and_second_guard(self):
+        preflight, request, transaction = self.stopped_adapter_readback(mixed_keys=True)
+        with self.assertRaisesRegex(CONTROLLER["Held"], "^CANDIDATE_NETWORK_SET_CHANGED$"):
+            CONTROLLER["inspect_created"](CID, CONTROLLER["ADAPTER"], request, transaction)
+        with self.assertRaisesRegex(CONTROLLER["Held"], "^FIRST_CANDIDATE_NETWORK_STATE_CHANGED$"):
+            CONTROLLER["guard"](preflight, {"id": CID, "name": CONTROLLER["ADAPTER"] + "-successor"})
+
+    def test_named_network_keys_keep_egress_reservation_visible_to_second_guard(self):
+        preflight, request, transaction = self.stopped_adapter_readback(mixed_keys=False)
+        candidate = CONTROLLER["inspect_created"](CID, CONTROLLER["ADAPTER"], request, transaction)
+        egress = preflight.read_docker()["networks"]["ouf-semantic-provider-egress"]
+        self.assertEqual([claim["id"] for claim in egress["targets"]["172.22.0.3"]["containerClaims"]], [CID])
+        CONTROLLER["guard"](preflight, candidate)
 
     def test_subprocess_failure_after_first_create_retains_id(self):
         runtime = "ouf-test-runtime"
