@@ -1,4 +1,5 @@
 """Run D restoration against disposable Docker containers on the hosted runner."""
+import os
 from pathlib import Path
 import re
 import runpy
@@ -14,6 +15,7 @@ import uuid
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 D = runpy.run_path(str(SCRIPTS / "cutover-semantic-provider-20261111.py"))
 NAMESPACE = D["restore"].__globals__
+DOCKER_HOST = os.environ.get("DOCKER_HOST", "unix:///run/docker.sock")
 
 
 def cli(*args):
@@ -61,11 +63,18 @@ class CutoverTests(unittest.TestCase):
         self.assertEqual(report["reason"], "OLD_STOP_FRAME_CHANGED")
 
     def test_restore_existing_cid_after_never_started_replacement(self):
+        self.assertTrue(DOCKER_HOST.startswith("unix://"))
+        socket = DOCKER_HOST.removeprefix("unix://")
+        docker_socket = patch.dict(NAMESPACE, DOCKER_SOCKET=socket)
+        docker_socket.start()
+        self.addCleanup(docker_socket.stop)
+        version = D["engine"](time.monotonic() + 5, "GET", "/version", api=D["RECONNECT_API"])
+        self.assertEqual(version["Version"], "29.8.1")
         prefix = "ouf-d-ci-" + uuid.uuid4().hex[:10]
         name = prefix + "-semantic"
         retained = name + "-before"
         failed = name + "-failed"
-        ip, mac = "172.29.218.6", "02:42:ac:1d:da:06"
+        ip, mac = "172.29.218.6", "b2:96:a1:e2:c1:8d"
         network = cli("network", "create", "--subnet", "172.29.218.0/24", prefix)
         cids = []
         def cleanup():
