@@ -7,27 +7,27 @@ delivery=$(mktemp -d "${HOME}/ouf-admin-operational-grants-publish-delivery.XXXX
 chmod 0700 "$delivery"
 delivery_log="$delivery/bootstrap.log"
 trap 'delivery_exit=$?; trap - EXIT; printf "DeliveryExit=%s\nDeliveryDirectory=%s\nDeliveryLog=%s\n" "$delivery_exit" "$delivery" "$delivery_log" | tee -a "$delivery_log"; exit "$delivery_exit"' EXIT
-code_commit=__PIN_COMMIT__
-code_sha=__PIN_SHA256__
+code_commit=be5febdb4db690a2e2d08f4a669fc3083aba2068
+code_sha=0330a397a72ed516ac6bc7570d54da70910a9c6084635434f09b96f1db6fbaab
 # Claude pins all placeholders after the reviewed publisher commit (D-001).
 if [[ ! $code_commit =~ ^[a-f0-9]{40}$ || ! $code_sha =~ ^[a-f0-9]{64}$ ]]; then
   printf '%s\n' 'STOP: PUBLICATION_DELIVERY_PINS_REQUIRED (commit e SHA-256 da fissare dopo review).'
   exit 2
 fi
-code_root=/usr/local/lib/ouf-admin-operational-grants-publish-__PIN_SHA256_PREFIX16__
+code_root=/usr/local/lib/ouf-admin-operational-grants-publish-0330a397a72ed516
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-redirs 3 --connect-timeout 15 --max-time 60 --max-filesize 65536 \
   "https://raw.githubusercontent.com/GioNob/ouf-deploy/${code_commit}/scripts/publish-ouf-admin-operational-grants-20261111.py" -o "$delivery/publish.py"
 printf '%s  %s\n' "$code_sha" "$delivery/publish.py" | sha256sum -c - | tee -a "$delivery_log"
 sudo /usr/bin/python3 -I -S -B - "$delivery/publish.py" "$operator_uid" <<'PY' 2>&1 | tee -a "$delivery_log"
 import hashlib,os,pwd,stat,sys
 from pathlib import Path
-source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='__PIN_SHA256__'
+source=Path(sys.argv[1]);owner=int(sys.argv[2]);expected='0330a397a72ed516ac6bc7570d54da70910a9c6084635434f09b96f1db6fbaab'
 def require(ok,code):
     if not ok:raise SystemExit(code)
 require(os.geteuid()==os.getegid()==0 and owner>0 and owner==pwd.getpwnam('oufadmin').pw_uid,'ROOT_DESCRIPTOR_PUBLISHER_COPY_REQUIRED')
 scope=Path('/etc/ouf/deploy-snapshots/ouf-admin-operational-grants-policy69-20261111-v1')
 require(not os.path.lexists(scope),'DESCRIPTOR_PUBLICATION_SCOPE_CONSUMED_NO_REPLAY')
-target=Path('/usr/local/lib/ouf-admin-operational-grants-publish-__PIN_SHA256_PREFIX16__')
+target=Path('/usr/local/lib/ouf-admin-operational-grants-publish-0330a397a72ed516')
 for parent in(target.parent,*target.parent.parents):
     s=parent.lstat();require(stat.S_ISDIR(s.st_mode)and s.st_uid==s.st_gid==0 and not s.st_mode&0o022,'ROOT_PUBLISHER_ANCESTRY_REQUIRED')
 require(not os.path.lexists(target),'PUBLISHER_DELIVERY_CONSUMED_NO_REPLAY')
