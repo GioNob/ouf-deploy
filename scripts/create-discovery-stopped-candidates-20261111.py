@@ -15,6 +15,7 @@ import types
 
 
 PREFLIGHT_SHA = "90524a905926e37fce9445adfab6928ada42989093f9b66d80abcb8de6a4b3f7"
+IMAGE_REVIEW_SHA = "f557cf37dcc4b5b7d0a4cf65927204b9a135d146d3d8f06099544f52c0394a5e"
 DOCKER_READBACK_SHA = "32e8d5251c68f2d4c0b4b1f0ffe03d550f28bb0d34c50c5da6794486706f1105"
 FRAME_FIELDS = ("Id", "Image", "Config", "HostConfig", "Mounts", "Path", "Args", "NetworkSettings")
 STATE_FIELDS = ("Running", "Restarting", "Paused", "Status", "Pid", "StartedAt", "FinishedAt")
@@ -90,22 +91,23 @@ class LocalEngine(http.client.HTTPConnection):
 
 def engine(method, path, payload=None):
     require((method == "GET" and (path == "/info" or re.fullmatch(r"/(?:containers|images)/[0-9a-f:]+/json", path)))
-            or (method == "POST" and path in {f"/containers/create?name={name}-successor" for name in ENDPOINTS}),
+            or (method == "POST" and path in {f"/containers/create?name={name}-successor" for name in ENDPOINTS})
+            or (method == "DELETE" and re.fullmatch(r"/containers/[0-9a-f]{64}", path)),
             "ENGINE_OPERATION_OUT_OF_SCOPE")
     with LocalEngine("localhost", timeout=25) as conn:
         conn.request(method, "/v1.44" + path, body=None if payload is None else canonical(payload),
                      headers={"Content-Type": "application/json"})
         response = conn.getresponse()
         raw = response.read(2_097_153)
-        require(response.status == (201 if method == "POST" else 200) and len(raw) <= 2_097_152,
+        require(response.status == {"GET": 200, "POST": 201, "DELETE": 204}[method] and len(raw) <= 2_097_152,
                 "ENGINE_RESPONSE_UNPROVEN")
-        return json.loads(raw)
+        return None if method == "DELETE" else json.loads(raw)
 
 
-def load_preflight(path):
+def load_reader(path, expected_hash):
     raw = path.read_bytes()
-    require(sha(raw) == PREFLIGHT_SHA, "PREFLIGHT_SOURCE_CHANGED")
-    module = types.ModuleType("reviewed_preflight")
+    require(sha(raw) == expected_hash, "READER_SOURCE_CHANGED")
+    module = types.ModuleType("reviewed_reader")
     exec(compile(raw, str(path), "exec"), module.__dict__)
     return module
 
@@ -142,7 +144,17 @@ def verify_routes(path, local_config):
     require(json.loads(doc.replace(SECRET_FIELD, b"")) == original, "OIDC_REMOVAL_CHANGED_ROUTE")
 
 
-def build_request(preflight, name, transaction):
+def environment_map(entries):
+    result = {}
+    for entry in entries:
+        name, sep, value = entry.partition("=")
+        require(sep and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) and name not in result,
+                "ENV_NAME_INVALID_OR_DUPLICATE")
+        result[name] = value
+    return result
+
+
+def build_request(preflight, name, transaction, noswap):
     historical_cid, _ = preflight.HISTORICAL[name]
     old = engine("GET", f"/containers/{historical_cid}/json")
     frame = {key: old.get(key) for key in FRAME_FIELDS}
@@ -158,6 +170,12 @@ def build_request(preflight, name, transaction):
                     for row in env), "IMAGE_ENV_REQUIRES_REVIEW")
     require(not config.get("Volumes"), "UNEXPECTED_IMAGE_VOLUME")
     old_config = old["Config"]
+    historical_env = environment_map(old_config.get("Env") or [])
+    image_env = environment_map(env)
+    removed = {OIDC_ENV, HMAC_ENV} if name == SOUTHBOUND else set()
+    require(set(historical_env) == image_env.keys() | removed
+            and all(historical_env[key] == value for key, value in image_env.items()),
+            "HISTORICAL_ENV_DELTA_REQUIRES_REVIEW")
     host = copy.deepcopy(old["HostConfig"])
     require(host["RestartPolicy"]["Name"] == "no" and not host["Privileged"]
             and host["CapDrop"] == ["ALL"] and not host.get("CapAdd")
@@ -185,7 +203,8 @@ def build_request(preflight, name, transaction):
         protected_file(HMAC_SOURCE, (636, 636, 0o600))
         mounts.append({"Type": "bind", "Source": str(HMAC_SOURCE), "Target": HMAC_TARGET, "ReadOnly": True})
         require(not host.get("Tmpfs"), "UNEXPECTED_HISTORICAL_TMPFS")
-        host["Tmpfs"] = {RUNTIME_DIRECTORY: "rw,noexec,nosuid,nodev,noswap,uid=636,gid=636,mode=0700,size=1m"}
+        flags = "rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m"
+        host["Tmpfs"] = {RUNTIME_DIRECTORY: flags + (",noswap" if noswap else "")}
         request.update(Entrypoint=["/bin/sh", "-c"], Cmd=[SOUTHBOUND_STARTUP])
 
     host["Binds"] = None
@@ -254,21 +273,57 @@ def guard(preflight, created=None):
             "IP_OR_ALIAS_READBACK_CHANGED")
 
 
+def remove_first(preflight, cid, transaction):
+    require(re.fullmatch(r"[0-9a-f]{64}", cid) and re.fullmatch(r"[0-9a-f]{32}", transaction)
+            and cid not in {row[0] for row in preflight.HISTORICAL.values()}, "CLEANUP_IDENTITY_INVALID")
+    doc = engine("GET", f"/containers/{cid}/json")
+    state = doc["State"]
+    require(doc["Id"] == cid and doc["Name"] == f"/{ADAPTER}-successor"
+            and doc["Config"]["Labels"].get(OWNER_LABEL) == transaction
+            and state["Status"] == "created" and state["Running"] is False and state["Pid"] == 0
+            and state["StartedAt"].startswith("0001-") and doc["RestartCount"] == 0
+            and doc["HostConfig"]["RestartPolicy"]["Name"] == "no"
+            and all(not endpoint.get("EndpointID") and not endpoint.get("IPAddress")
+                    for endpoint in doc["NetworkSettings"]["Networks"].values()), "CLEANUP_OWNERSHIP_UNPROVEN")
+    require(all(row["name"] != f"/{SOUTHBOUND}-successor" for row in preflight.containers()),
+            "SECOND_CANDIDATE_PRESENT_REVIEW_REQUIRED")
+    engine("DELETE", f"/containers/{cid}")
+    require(all(row["id"] != cid for row in preflight.containers()), "FIRST_CANDIDATE_REMOVAL_UNPROVEN")
+    return cid
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preflight", required=True, type=Path)
-    parser.add_argument("--apply", action="store_true", help="create the approved stopped candidates")
+    parser.add_argument("--image-review", type=Path)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--apply", action="store_true", help="create the approved stopped candidates")
+    mode.add_argument("--remove-first", nargs=2, metavar=("CID", "TRANSACTION"),
+                      help="remove only the separately approved, never-started first candidate")
     args = parser.parse_args()
     report = {"schema": "ouf.discovery-stopped-creation.v1", "status": "HELD", "createRequests": 0,
               "containerStarts": 0, "nftWrites": 0, "semanticChanged": False, "credentialValuesEmitted": False,
               "candidates": []}
     try:
         require(os.geteuid() == 0, "ROOT_REQUIRED")
-        require(args.apply, "DRAFT_CREATION_REQUIRES_EXPLICIT_APPLY")
-        preflight = load_preflight(args.preflight)
+        preflight = load_reader(args.preflight, PREFLIGHT_SHA)
+        if args.remove_first:
+            report["removedCandidate"] = remove_first(preflight, *args.remove_first)
+            report["status"] = "FIRST_STOPPED_CANDIDATE_REMOVED"
+            print(json.dumps(report, sort_keys=True))
+            return 0
+        require(args.image_review is not None, "IMAGE_REVIEW_READER_REQUIRED")
+        reviewer = load_reader(args.image_review, IMAGE_REVIEW_SHA)
+        image = reviewer.image_review()
+        require(image["checkSchemaAllowsBearerJwksWithoutSecret"]
+                and image["uid636WriteSearchOnRetainedRootfs"], "SOUTHBOUND_IMAGE_REVIEW_UNPROVEN")
+        kernel = reviewer.kernel_review()
+        report["southboundImage"] = image
+        report["kernel"] = kernel
         transaction = os.urandom(16).hex()
         report["transaction"] = transaction
-        requests = {name: build_request(preflight, name, transaction) for name in ENDPOINTS}
+        requests = {name: build_request(preflight, name, transaction, kernel["noswapByKernelVersion"])
+                    for name in ENDPOINTS}
         runtimes = engine("GET", "/info")["Runtimes"]
         require(all(request["HostConfig"]["Runtime"] not in ("", "runc", "io.containerd.runc.v2")
                     and request["HostConfig"]["Runtime"] in runtimes for request in requests.values()),
