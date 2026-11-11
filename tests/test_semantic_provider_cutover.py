@@ -50,25 +50,35 @@ class CutoverTests(unittest.TestCase):
                                        input=extra_store, capture_output=True, check=True, timeout=10).stdout
             public_path = D["PUBLIC_TRUST"]
             extra_hash = D["sha"](extra_store)
+            staged_counts = {"publicTrustStoresPrepared": 1, "publicTrustStoreReadbacks": 1}
             record = {"schema": "ouf.m2-discovery-prepared-public-trust.v1",
                       "publicStore": {"path": str(public_path), "sha256": extra_hash},
+                      "counts": staged_counts.copy(),
                       "proposal": {"schema": "ouf.discovery-bound-public-trust-proposal.v1",
                                    "sha256": extra_hash, "bytes": len(extra_store), "certificateCount": len(extra),
                                    "allCaFingerprints": sorted(map(D["sha"], extra)),
                                    "iamCaFingerprints": sorted(map(D["sha"], iam)),
                                    "providerCaFingerprint": D["sha"](added)}}
             result = {"schema": "ouf.m2-discovery-trust-context-preparation-result.v1",
-                      "status": "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED",
-                      "scope": str(public_path.parent), "complete": True,
-                      "publicTrustInputsHash": D["sha"](D["canonical"](record))}
+                      "status": "STOP_RECONCILE", "reasonCode": "CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED",
+                      "scope": str(public_path.parent), "complete": False, "scopeConsumed": True,
+                      "partialPublicStorePreserved": True, "counts": staged_counts.copy()}
             files = {D["PUBLIC_TRUST_RECORD"]: record, D["PUBLIC_TRUST_RESULT"]: result}
             def read_receipt(path, *, uid, gid, mode, limit):
                 self.assertEqual((uid, gid, mode), (0, None, 0o600))
                 return D["canonical"](files[path])
-            with patch.dict(NAMESPACE, PUBLIC_TRUST_SHA=extra_hash, private_input=read_receipt):
-                merged, counts = D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
-                self.assertEqual(counts, {"existingCaCount": len(certificates), "providerCaCount": 18,
-                                          "mergedCaCount": len(certificates) + 1})
+            def verify_issuer(deadline, fingerprint, provider_trust):
+                self.assertEqual(fingerprint, D["sha"](added))
+            def merge(java_pem=stock, provider_pem=extra_pem):
+                return D["verified_ca_union"](time.monotonic() + 10, java_pem, provider_pem, len(extra_store), trust)
+            with patch.dict(NAMESPACE, PUBLIC_TRUST_SHA=extra_hash, private_input=read_receipt,
+                            verify_southbound_issuer=verify_issuer):
+                merged, fields = merge()
+                counts = {"existingCaCount": len(certificates), "providerCaCount": 18,
+                          "mergedCaCount": len(certificates) + 1}
+                self.assertEqual(fields, counts | {"trustContextStatus": "STOP_RECONCILE", "southboundIssuerMatch": True})
+                diagnostics = {"trustContextStatus": "STOP_RECONCILE", "southboundIssuerMatch": False,
+                               "recordCertificateCount": 18}
                 wrong_stock = re.sub(rb"Your keystore contains \d+ entries", b"Your keystore contains 1 entry", stock)
                 # Keep the same size of the inventory and replace one fingerprint.
                 other_ca = D["ssl"].DER_cert_to_PEM_cert(min(certificates - extra, key=D["sha"]))
@@ -78,26 +88,42 @@ class CutoverTests(unittest.TestCase):
                     (stock, wrong_provider, "PROVIDER_CA_INVENTORY_UNPROVEN"),
                 ):
                     with self.subTest(reason=reason), self.assertRaisesRegex(D["CaInventoryHeld"], reason) as raised:
-                        D["verified_ca_union"](java_pem, provider_pem, len(extra_store), trust)
+                        merge(java_pem, provider_pem)
                     fields = raised.exception.report_fields
                     self.assertEqual(fields["providerCaCount"], 18)
                     if reason == "JAVA_CA_INVENTORY_UNPROVEN":
                         self.assertEqual(fields, counts)
                     else:
-                        self.assertEqual(set(fields), set(counts) | {"providerInventoryDetail", "recordCertificateCount"})
+                        self.assertEqual(set(fields), set(counts) | set(diagnostics) | {"providerInventoryDetail"})
                         self.assertEqual(fields["providerInventoryDetail"], "PUBLIC_TRUST_INVENTORY_MISMATCH")
                         self.assertEqual(fields["recordCertificateCount"], 18)
-                with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN") as raised:
-                    with patch.dict(result, publicTrustInputsHash="0" * 64):
-                        D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
-                self.assertEqual(raised.exception.report_fields, counts | {
-                    "providerInventoryDetail": "PUBLIC_TRUST_RECEIPT_CHANGED", "recordCertificateCount": 18,
-                })
+                for delta, detail in (
+                    ({"reasonCode": "UNRELATED_FAILURE"}, "PUBLIC_TRUST_RECEIPT_CHANGED"),
+                    ({"complete": True}, "PUBLIC_TRUST_RECEIPT_CHANGED"),
+                    ({"counts": staged_counts | {"publicTrustStoreReadbacks": 0}},
+                     "PUBLIC_TRUST_PREPARATION_COUNTS_UNPROVEN"),
+                    ({"partialPublicStorePreserved": False}, "PUBLIC_TRUST_RECEIPT_CHANGED"),
+                ):
+                    with self.subTest(delta=delta), patch.dict(result, delta):
+                        with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN") as raised:
+                            merge()
+                        self.assertEqual(raised.exception.report_fields, counts | diagnostics | {
+                            "providerInventoryDetail": detail,
+                        })
+                with patch.dict(result, status="PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED"):
+                    with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN"):
+                        merge()
+                def reject_issuer(*args):
+                    raise D["Held"]("PROVIDER_CA_NOT_SOUTHBOUND_ISSUER")
+                with patch.dict(NAMESPACE, verify_southbound_issuer=reject_issuer):
+                    with self.assertRaisesRegex(D["CaInventoryHeld"], "^PROVIDER_CA_NOT_SOUTHBOUND_ISSUER$") as raised:
+                        merge()
+                    self.assertEqual(raised.exception.report_fields, counts | diagnostics)
                 with self.assertRaisesRegex(D["CaInventoryHeld"], "PROVIDER_CA_INVENTORY_UNPROVEN") as raised:
                     result.pop("scope")
-                    D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
-                self.assertEqual(raised.exception.report_fields, counts | {
-                    "providerInventoryDetail": "KeyError", "recordCertificateCount": 18,
+                    merge()
+                self.assertEqual(raised.exception.report_fields, counts | diagnostics | {
+                    "providerInventoryDetail": "KeyError",
                 })
             path = Path(temp) / "merged.p12"
             path.write_bytes(trust._pkcs12(sorted(merged, key=D["sha"])))
@@ -105,6 +131,38 @@ class CutoverTests(unittest.TestCase):
                                               "PKCS12", "-storepass", "changeit"), timeout=20)
         readback_certs = {D["ssl"].PEM_cert_to_DER_cert(value.decode()) for value in trust.PEM.findall(readback)}
         self.assertEqual(readback_certs, certificates | extra)
+
+    def test_only_the_recorded_ca_may_verify_the_southbound_leaf(self):
+        _, _, trust = D["load_helpers"]()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            def openssl(*args):
+                subprocess.run(("/usr/bin/openssl", *args), cwd=root, capture_output=True, check=True, timeout=10)
+            for name in ("issuer", "decoy"):
+                openssl("req", "-new", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:P-256", "-nodes", "-x509",
+                        "-days", "1", "-subj", "/CN=fixture-ca", "-addext", "basicConstraints=critical,CA:TRUE",
+                        "-keyout", name + ".key", "-out", name + ".crt")
+            host = "ouf-semantic-southbound-v2"
+            openssl("req", "-new", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:P-256", "-nodes",
+                    "-subj", "/CN=" + host, "-keyout", "server.key", "-out", "server.csr")
+            (root / "server.ext").write_text("basicConstraints=critical,CA:FALSE\nextendedKeyUsage=serverAuth\n"
+                                             "subjectAltName=DNS:" + host + "\n")
+            openssl("x509", "-req", "-in", "server.csr", "-CA", "issuer.crt", "-CAkey", "issuer.key",
+                    "-set_serial", "17", "-days", "1", "-extfile", "server.ext", "-out", "server.crt")
+            issuer, decoy = ((root / (name + ".crt")).read_bytes() for name in ("issuer", "decoy"))
+            files = {D["SOUTHBOUND_BUNDLE"]: decoy + issuer,
+                     D["SOUTHBOUND_LEAF"]: (root / "server.crt").read_bytes(),
+                     D["SOUTHBOUND_ROUTES"]: b"pinned routes fixture"}
+            pins = {name + "_SHA": D["sha"](files[D[name]])
+                    for name in ("SOUTHBOUND_BUNDLE", "SOUTHBOUND_LEAF", "SOUTHBOUND_ROUTES")}
+            with patch.dict(NAMESPACE, pins | {"private_input": lambda path, **kwargs: files[path]}):
+                for pem, valid in ((issuer, True), (decoy, False)):
+                    fingerprint = D["sha"](D["ssl"].PEM_cert_to_DER_cert(pem.decode()))
+                    if valid:
+                        D["verify_southbound_issuer"](time.monotonic() + 10, fingerprint, trust)
+                    else:
+                        with self.assertRaisesRegex(D["Held"], "^PROVIDER_CA_NOT_SOUTHBOUND_ISSUER$"):
+                            D["verify_southbound_issuer"](time.monotonic() + 10, fingerprint, trust)
 
     def test_interrupted_terminal_during_apply_preserves_receipt(self):
         fixture = textwrap.dedent("""\
