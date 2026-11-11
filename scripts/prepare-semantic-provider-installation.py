@@ -2,14 +2,17 @@
 """Discover and publish the stable parameters of one existing OUF installation."""
 
 import argparse
+import grp
 import hashlib
 import http.client
 import ipaddress
 import json
 import os
 from pathlib import Path
+import pwd
 import re
 import secrets
+import shlex
 import shutil
 import socket
 import stat
@@ -82,7 +85,7 @@ class Reader:
         require(value > 0, "PROFILE_READ_DEADLINE_EXCEEDED")
         return value
 
-    def read(self, name, expected=None, *, uid=0, gid=0, mode=0o600, minimum=1, maximum=2097152):
+    def read(self, name, expected=None, *, uid=0, gid=0, mode=0o600, minimum=1, maximum=2097152, hash_only=False):
         path = absolute(name)
         for parent in path.parents:
             directory(parent)
@@ -91,10 +94,18 @@ class Reader:
             require(stat.S_ISREG(info.st_mode) and info.st_uid == uid and info.st_gid == gid
                     and info.st_nlink == 1 and minimum <= info.st_size <= maximum
                     and stat.S_IMODE(info.st_mode) == mode, "FILE_CUSTODY_UNPROVEN")
-            raw = stream.read(maximum + 1)
-            require(len(raw) == info.st_size and identity(info) == identity(os.fstat(stream.fileno()))
+            if hash_only:
+                hasher, size = hashlib.sha256(), 0
+                while chunk := stream.read(1048576):
+                    size += len(chunk)
+                    require(size <= maximum, "FILE_CHANGED_DURING_PROFILE_READ")
+                    hasher.update(chunk)
+                raw, pin = None, hasher.hexdigest()
+            else:
+                raw = stream.read(maximum + 1)
+                size, pin = len(raw), digest(raw)
+            require(size == info.st_size and identity(info) == identity(os.fstat(stream.fileno()))
                     == identity(path.lstat()), "FILE_CHANGED_DURING_PROFILE_READ")
-        pin = digest(raw)
         require(expected is None or pin == expected, "BOUND_INPUT_HASH_CHANGED")
         observed = (identity(info), pin)
         require(path not in self.inputs or self.inputs[path] == observed, "PROFILE_INPUT_CHANGED_DURING_READ")
@@ -104,18 +115,21 @@ class Reader:
     def document(self, path, expected=None, **options):
         return decode(self.read(path, expected, **options))
 
-    def binary(self, name, expected=None):
+    def binary(self, name, expected=None, *, maximum=67108864):
         path = absolute(name).resolve(strict=True)
         mode = stat.S_IMODE(path.lstat().st_mode)
         require(mode in (0o555, 0o755), "EXECUTABLE_CUSTODY_UNPROVEN")
-        self.read(path, expected, mode=mode, maximum=67108864)
+        self.read(path, expected, mode=mode, maximum=maximum, hash_only=True)
         return str(path)
 
     def command_json(self, executable, *args):
+        return decode(self.command(executable, *args))
+
+    def command(self, executable, *args):
         run = subprocess.run((executable, *args), capture_output=True, stdin=subprocess.DEVNULL,
                              timeout=self.remaining(), env=ENV)
         require(run.returncode == 0 and 0 < len(run.stdout) <= 2097152, "NATIVE_READ_UNPROVEN")
-        return decode(run.stdout)
+        return run.stdout
 
     def verify(self):
         require(all(identity(path.lstat()) == value[0] for path, value in self.inputs.items()),
@@ -123,26 +137,127 @@ class Reader:
         return {str(path): value[1] for path, value in self.inputs.items()}
 
 
+def systemd_properties(reader, executable, unit, names):
+    raw = reader.command(executable, "show", "--all", "--no-pager", "--property=" + ",".join(names), "--", unit)
+    result = {}
+    for line in raw.decode("utf-8").splitlines():
+        key, separator, value = line.partition("=")
+        require(separator and key in names and key not in result, "DOCKER_SYSTEMD_PROPERTIES_UNPROVEN")
+        result[key] = value
+    require(set(result) == set(names), "DOCKER_SYSTEMD_PROPERTIES_UNPROVEN")
+    return result
+
+
+def listener_inode(proc, path):
+    with (proc / "net/unix").open("rb") as stream:
+        raw = stream.read(2097153)
+    require(0 < len(raw) <= 2097152, "DOCKER_LISTENER_TABLE_UNPROVEN")
+    matches = []
+    for line in raw.splitlines()[1:]:
+        row = line.split(None, 7)
+        if len(row) == 8 and row[7] == os.fsencode(path) and row[4] == b"0001" and int(row[3], 16) & 0x10000:
+            require(re.fullmatch(rb"[1-9][0-9]*", row[6]), "DOCKER_LISTENER_INODE_UNPROVEN")
+            matches.append(int(row[6]))
+    require(len(matches) == 1, "DOCKER_LISTENER_INODE_UNPROVEN")
+    return matches[0]
+
+
+def require_listener_fd(proc, path):
+    inode = listener_inode(proc, path)
+    found = False
+    for entry in (proc / "fd").iterdir():
+        try:
+            target = os.readlink(entry)
+        except FileNotFoundError:
+            continue
+        if target == f"socket:[{inode}]":
+            found = True
+            break
+    require(found and listener_inode(proc, path) == inode, "DOCKER_LISTENER_FD_UNPROVEN")
+    return inode
+
+
 class Docker:
-    def __init__(self, reader, path):
-        self.reader, self.path = reader, absolute(path)
+    def __init__(self, reader, args, systemctl):
+        self.reader, self.path, self.systemctl = reader, absolute(args.docker_socket), systemctl
+        self.activation = args.docker_socket_activation
+        self.unit, self.service = args.docker_socket_unit, args.docker_service_unit
+        require(REF.fullmatch(self.unit) and REF.fullmatch(self.service) and self.service.endswith(".service")
+                and ((self.activation == "systemd-socket" and self.unit.endswith(".socket"))
+                     or (self.activation == "daemon" and self.unit == self.service)), "DOCKER_UNIT_BINDING_UNPROVEN")
+        require(re.fullmatch(r"0[0-7]{3}", args.docker_socket_mode), "DOCKER_SOCKET_MODE_UNPROVEN")
+        uid = pwd.getpwnam(args.docker_socket_owner).pw_uid
+        gid = grp.getgrnam(args.docker_socket_group).gr_gid
+        mode = int(args.docker_socket_mode, 8)
         for parent in self.path.parents:
             directory(parent)
         info = self.path.lstat()
-        require(stat.S_ISSOCK(info.st_mode) and info.st_uid == 0, "DOCKER_SOCKET_UNPROVEN")
+        require(stat.S_ISSOCK(info.st_mode) and uid == 0
+                and (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) == (uid, gid, mode),
+                "DOCKER_SOCKET_CUSTODY_UNPROVEN")
         self.identity = identity(info)
+        self.executable = Path(reader.binary(args.dockerd, maximum=268435456))
+        self.executable_identity, self.executable_hash = reader.inputs[self.executable]
+        self.profile = {"dockerSocketActivation": self.activation, "dockerSocketUnit": self.unit,
+                        "dockerServiceUnit": self.service,
+                        "dockerSocketOwnership": {"owner": args.docker_socket_owner, "uid": uid,
+                                                   "group": args.docker_socket_group, "gid": gid,
+                                                   "mode": args.docker_socket_mode},
+                        "dockerdExecutable": {"path": str(self.executable), "sha256": self.executable_hash}}
+        self.proof = None
+
+    def process(self, pid):
+        require(type(pid) is int and pid > 1, "DOCKER_MAIN_PID_UNPROVEN")
+        proc = Path("/proc", str(pid))
+        with (proc / "stat").open("rb") as stream:
+            raw = stream.read(8193)
+        require(0 < len(raw) <= 8192 and raw.startswith(f"{pid} (".encode()) and b") " in raw,
+                "DOCKER_PROCESS_GENERATION_UNPROVEN")
+        ticks = int(raw.rsplit(b") ", 1)[1].split()[19])
+        exe = proc / "exe"
+        require(ticks > 0 and exe.resolve(strict=True) == self.executable
+                and identity(exe.stat()) == self.executable_identity, "DOCKER_EXECUTABLE_UNPROVEN")
+        return {"pid": pid, "startTicks": ticks}
+
+    def socket_activation(self):
+        def show(unit, keys):
+            return systemd_properties(self.reader, self.systemctl, unit, keys)
+        sock = show(self.unit, ("Listen", "ActiveState", "Triggers"))
+        require(sock["ActiveState"] == "active" and sock["Listen"] == f"{self.path} (Stream)"
+                and sock["Triggers"].split() == [self.service], "DOCKER_SOCKET_UNIT_UNPROVEN")
+        service = show(self.service, ("ActiveState", "MainPID", "TriggeredBy", "ExecStart"))
+        require(service["ActiveState"] == "active" and service["TriggeredBy"].split() == [self.unit]
+                and re.fullmatch(r"[1-9][0-9]*", service["MainPID"]), "DOCKER_SERVICE_UNIT_UNPROVEN")
+        launch = re.fullmatch(r"\{ path=([^;{}]+?) ; argv\[\]=([^;{}]+?) ; [^{}]+\}", service["ExecStart"])
+        require(launch is not None, "DOCKER_EXECSTART_UNPROVEN")
+        argv = shlex.split(launch[2])
+        require(argv and absolute(launch[1]).resolve(strict=True) == self.executable
+                and absolute(argv[0]).resolve(strict=True) == self.executable
+                and any(arg in ("-H=fd://", "--host=fd://") or (arg in ("-H", "--host") and argv[index + 1:index + 2] == ["fd://"])
+                        for index, arg in enumerate(argv[1:], 1)), "DOCKER_EXECSTART_UNPROVEN")
+        pid = int(service["MainPID"])
+        process = self.process(pid)
+        inode = require_listener_fd(Path("/proc", str(pid)), self.path)
+        require(self.process(pid) == process, "DOCKER_PROCESS_GENERATION_CHANGED")
+        return process | {"listenerInode": inode}
 
     def get(self, resource):
         require(resource == "/info" or re.fullmatch(r"/containers/[0-9a-f]{64}/json|/networks/[a-zA-Z0-9_.%~-]+", resource),
                 "READ_ONLY_DOCKER_SCOPE_REQUIRED")
         path = self.path
+        activation = self.socket_activation() if self.activation == "systemd-socket" else None
+        require(activation is None or self.proof is None or activation == self.proof, "DOCKER_ACTIVATION_CHANGED")
+        process = None
         class Connection(http.client.HTTPConnection):
             def connect(connection):
+                nonlocal process
                 connection.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 connection.sock.settimeout(connection.timeout)
                 connection.sock.connect(str(path))
-                peer = struct.unpack("3i", connection.sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
-                require(peer[0] > 1 and peer[1] == 0, "DOCKER_PEER_UNPROVEN")
+                pid, uid, _ = struct.unpack("3i", connection.sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+                require(uid == 0 and (pid == 1 if activation is not None else pid > 1), "DOCKER_PEER_UNPROVEN")
+                process = activation if activation is not None else self.process(pid)
+                require(self.proof is None or process == self.proof, "DOCKER_PEER_CHANGED")
         require(identity(path.lstat()) == self.identity, "DOCKER_SOCKET_CHANGED")
         connection = Connection("localhost", timeout=self.reader.remaining())
         try:
@@ -153,6 +268,9 @@ class Docker:
         finally:
             connection.close()
         require(identity(path.lstat()) == self.identity, "DOCKER_SOCKET_CHANGED")
+        current = self.socket_activation() if activation is not None else self.process(process["pid"])
+        require(current == process, "DOCKER_PEER_CHANGED_DURING_READ")
+        self.proof = current
         return decode(raw)
 
     def inspect(self, cid):
@@ -466,7 +584,10 @@ def observe(args):
     adapter_tools = templates["adapter"]["commands"]
     ip = reader.binary(adapter_tools["ip"], templates["adapter"]["commandHashes"]["ip"])
     nft = reader.binary(owner["nftPath"], owner["nftSha256"])
-    docker = Docker(reader, args.docker_socket)
+    systemctl_path = shutil.which("systemctl", path=ENV["PATH"])
+    require(systemctl_path is not None, "REQUIRED_EXECUTABLE_MISSING")
+    systemctl = reader.binary(systemctl_path)
+    docker = Docker(reader, args, systemctl)
     engine = docker.get("/info")
     docs = read_roles(docker, peer, successors)
     verify_peer(reader, ip, peer, docs["semantic"])
@@ -487,14 +608,14 @@ def observe(args):
     require(len(set(tables.values())) == 3 and all(re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_-]{0,31}", name)
                                                 for name in tables.values()), "NFT_TABLE_SCOPE_UNPROVEN")
     empty_nft(reader, nft, owner["kernel"])
-    commands = {"nft": nft, "ip": ip}
+    commands = {"nft": nft, "ip": ip, "systemctl": systemctl}
     for name in ("nsenter", "unshare", "mount", "umount"):
         commands[name] = reader.binary(adapter_tools[name], templates["adapter"]["commandHashes"][name])
-    for name in ("docker", "openssl", "systemctl"):
+    for name in ("docker", "openssl"):
         path = shutil.which(name, path=ENV["PATH"])
         require(path is not None, "REQUIRED_EXECUTABLE_MISSING")
         commands[name] = reader.binary(path)
-    profile = {"schema": SCHEMA, "installationRef": args.installation_ref, "entityRef": entity,
+    profile = {"schema": SCHEMA, "installationRef": args.installation_ref, "entityRef": entity, **docker.profile,
                "networks": {name: details for name, (_, details) in networks.items()}, "roles": roles,
                "ports": ports, "externalEndpoints": endpoints, "nftTables": tables, "runtime": runtime_profile,
                "paths": {"snapshotRoot": guard.pop("snapshotRoot"), "stateRoot": str(absolute(args.a_root).parent),
@@ -510,6 +631,7 @@ def observe(args):
     raw = canonical(profile) + b"\n"
     result = {"profile": profile, "profileSha256": digest(raw), "writes": writes}
     plan = {"projection": result, "inputHashes": reader.verify(), "aPlanSha256": args.a_plan_sha256,
+            "dockerPeerProof": docker.proof,
             "networkIds": {name: item[0] for name, item in networks.items()}}
     return result | {"planSha256": digest(canonical(plan))}
 
@@ -553,8 +675,11 @@ def main():
     mode.add_argument("--plan", action="store_true")
     mode.add_argument("--apply", action="store_true")
     parser.add_argument("--plan-sha256")
+    parser.add_argument("--docker-socket-activation", choices=("systemd-socket", "daemon"), required=True)
     for name in ("installation-ref", "installation-root", "a-root", "a-plan-sha256", "guard-pointer",
-                 "docker-socket", "generation-receipt", "generation-receipt-sha256", "authority-profile",
+                 "docker-socket", "docker-socket-unit", "docker-service-unit", "docker-socket-owner",
+                 "docker-socket-group", "docker-socket-mode", "dockerd",
+                 "generation-receipt", "generation-receipt-sha256", "authority-profile",
                  "authority-sha256", "trust-policy", "trust-policy-sha256"):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args()
