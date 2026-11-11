@@ -322,6 +322,9 @@ def plan(rollout, mac, trust):
         "privateDirectory": str(WORK), "filesCreatedUnderPrivateDirectory": list(JOURNAL_FILES),
         "readOnlyBinds": [{"host": str(source), "target": target, "uid": 0, "gid": 10001, "mode": "0440"}
                           for source, target in mounts],
+        "retainedReadOnlyBinds": [{"host": m["Source"], "target": m["Destination"]}
+                                  for m in rollout.mounts(old)],
+        "workerEnabled": False,
         "environmentNamesChanged": ["JDK_JAVA_OPTIONS", "MANAGEMENT_ENDPOINT_HEALTH_GROUP_CUTOVER_INCLUDE",
                                     "OUF_SCHEMA_GOV_ENABLED", "SPRING_FLYWAY_ENABLED"],
         "existingCaCount": existing_count, "mergedCaCount": merged_count,
