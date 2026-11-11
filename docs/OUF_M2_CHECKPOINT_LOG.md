@@ -664,3 +664,9 @@ Controller A `799350fb`, launcher `87dea4a3`. A lega il peer alla ricevuta D e o
 Giovanni riporta `SEMANTIC_PROVIDER_PREPARATION_A_STAGED`, piano `17de05e7d9b9610e58919a5b22697f28865ea0b076327d0b477fbae03d22daa8`, quattro JSON privati e zero oggetti runtime modificati. Opus conferma il veth reciproco di Semantic, `veth823719e`, ifindex 168, iflink 2. Il certificato configurato del southbound coincide in DER. I dati di transazione di A restano separati dal nuovo profilo.
 
 Controller P `10bb8dba`, launcher `18c671c1`. Il piano in sola lettura stampa tutto il profilo stabile, con SHA-256 del file canonico più LF e hash del piano. L’apply vincolato al piano pubblica il file root:root 0600 solo se assente. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43022084617/job/130527496813). Rilevamento sul VPS e revisione Opus pendenti. B1/B2 non implementati.
+
+## 11 novembre 2026 — P verifica il socket Docker attivato da systemd
+
+Il primo `--plan` è terminato con `DOCKER_PEER_UNPROVEN`. Opus ha verificato le unità e la proprietà di `/run/docker.sock`. La modalità systemd verifica il listener tra i descriptor di `dockerd` prima di collegarsi. La modalità daemon verifica il PID del peer e il suo eseguibile.
+
+Controller `f846940c`, launcher `2a73a13f`. [Otto test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43024793348/job/130536665105). Sul VPS sono ancora da eseguire il nuovo piano P e la revisione del profilo completo da parte di Opus.
