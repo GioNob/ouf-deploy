@@ -2,7 +2,7 @@
 """Plan or perform D, the same-image Semantic cutover with bounded restoration."""
 
 import argparse
-from contextlib import closing
+from contextlib import closing, suppress
 import copy
 import hashlib
 import http.client
@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import socket
 import ssl
 import stat
@@ -51,7 +52,7 @@ START_SECONDS = 155
 HEALTH_SECONDS = 100
 RESTORE_SECONDS = 130
 JOURNAL_FILES = ("manifest.json", "merged-trust.p12", "java.args", "created.json",
-                 "creation-request.private.json", "complete.json", "restored.json")
+                 "creation-request.private.json", "complete.json", "restored.json", "result.json")
 
 
 class Held(RuntimeError):
@@ -438,8 +439,23 @@ def restore(rollout, old, manifest, digest, new_id):
 
 
 def apply(rollout, mac, planned, report):
-    manifest, digest, old, request, merged, args, credential_digest = planned
+    # This single-shot process keeps these dispositions through the final receipt.
+    for signum in (signal.SIGHUP, signal.SIGINT, signal.SIGTERM):
+        signal.signal(signum, signal.SIG_IGN)
     WORK.mkdir(mode=0o700)
+    try:
+        perform_cutover(rollout, mac, planned, report)
+    except Exception as error:
+        report.update(status="HELD", reason=code(error))
+    finally:
+        try:
+            save("result.json", canonical(report) + b"\n")
+        except OSError as error:
+            report.update(status="HELD", receiptWriteReason=code(error))
+
+
+def perform_cutover(rollout, mac, planned, report):
+    manifest, digest, old, request, merged, args, credential_digest = planned
     save("manifest.json", canonical({"planSha256": digest, "manifest": manifest}))
     save("merged-trust.p12", merged, group=10001, mode=0o440)
     save("java.args", args, group=10001, mode=0o440)
@@ -480,16 +496,14 @@ def apply(rollout, mac, planned, report):
         rollout.detached(mac, old, inspect(deadline, OLD), "/" + manifest["retainedName"])
         save("complete.json", canonical({"containerId": new_id, "oldContainerId": OLD, "planSha256": digest}))
         report["status"] = "SEMANTIC_PROVIDER_CUTOVER_READY"
-    except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
-            http.client.HTTPException) as error:
+    except Exception as error:
         report["reason"] = code(error)
         try:
             restore(rollout, old, manifest, digest, new_id)
             report["status"] = "SEMANTIC_PREVIOUS_CONTAINER_RESTORED"
             save("restored.json", canonical({"restoredContainerId": OLD, "reason": report["reason"],
                                              "planSha256": digest}))
-        except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
-                http.client.HTTPException) as restore_error:
+        except Exception as restore_error:
             report["status"] = "HELD"
             report["restoreReason"] = code(restore_error)
 
@@ -517,11 +531,24 @@ def main():
             report["status"] = "PLAN_READY"
         else:
             require(args.plan_sha256 == planned[1], "PLAN_DIGEST_CHANGED")
+            # Leave sudo's terminal process group before claiming WORK or stopping Semantic.
+            pid = os.fork()
+            if pid:
+                try:
+                    status = os.waitstatus_to_exitcode(os.waitpid(pid, 0)[1])
+                    return status if status >= 0 else 128 - status
+                except KeyboardInterrupt:
+                    return 130
+            os.setsid()
             apply(rollout, mac, planned, report)
     except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
             http.client.HTTPException) as error:
         report["reason"] = code(error)
-    print(json.dumps(report, sort_keys=True))
+    # Use an unbuffered descriptor so Python has nothing to flush after a hangup.
+    remaining_output = memoryview(canonical(report) + b"\n")
+    with suppress(OSError):
+        while remaining_output:
+            remaining_output = remaining_output[os.write(1, remaining_output):]
     return 0 if report["status"] in ("PLAN_READY", "SEMANTIC_PROVIDER_CUTOVER_READY") else 1
 
 
