@@ -6,12 +6,15 @@ import json
 import os
 from pathlib import Path
 import runpy
+import select
 import stat
+import subprocess
 import sys
 import tempfile
 import types
 import unittest
 from unittest.mock import patch
+import uuid
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/prepare-semantic-provider-installation.py"
@@ -119,10 +122,11 @@ class ProfileTests(unittest.TestCase):
         proposal = {"profile": profile, "profileSha256": P["digest"](P["canonical"](profile) + b"\n"),
                     "planSha256": "a" * 64, "writes": {}}
         flags = {"installation-ref": "test", **{name: "/fixture" for name in (
-            "installation-root", "a-root", "guard-pointer", "docker-socket", "generation-receipt", "authority-profile", "trust-policy"
+            "installation-root", "a-root", "guard-pointer", "docker-socket", "generation-receipt", "authority-profile", "trust-policy",
+            "dockerd", "docker-socket-unit", "docker-service-unit", "docker-socket-owner", "docker-socket-group", "docker-socket-mode"
         )}, **{name: "a" * 64 for name in (
             "a-plan-sha256", "generation-receipt-sha256", "authority-sha256", "trust-policy-sha256"
-        )}}
+        )}, "docker-socket-activation": "daemon"}
         common = [part for name, value in flags.items() for part in ("--" + name, value)]
         def forbidden(*args):
             self.fail("publication was attempted")
@@ -140,3 +144,123 @@ class ProfileTests(unittest.TestCase):
                 self.assertEqual(report["status"], expected)
                 self.assertEqual(report["profile"], profile)
                 self.assertEqual(stdout.getvalue().encode(), P["canonical"](report) + b"\n")
+
+    def test_listener_requires_the_exact_listening_inode_among_dockerd_fds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            proc = Path(directory)
+            (proc / "net").mkdir()
+            (proc / "fd").mkdir()
+            path = "/run/fixture.sock"
+            (proc / "net/unix").write_text("Num RefCount Protocol Flags Type St Inode Path\n"
+                                          f"0: 00000002 00000000 00010000 0001 01 431 {path}\n"
+                                          f"0: 00000003 00000000 00000000 0001 03 432 {path}\n")
+            (proc / "fd/3").symlink_to("socket:[432]")
+            with self.assertRaisesRegex(P["Held"], "^DOCKER_LISTENER_FD_UNPROVEN$"):
+                P["require_listener_fd"](proc, path)
+            (proc / "fd/4").symlink_to("socket:[431]")
+            self.assertEqual(P["require_listener_fd"](proc, path), 431)
+
+
+@unittest.skipUnless(os.environ.get("OUF_P_NATIVE") == "1", "requires hosted root and systemd")
+class NativeDockerPeerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        work = tempfile.TemporaryDirectory(prefix="ouf-p-peer-", dir="/run")
+        cls.addClassCleanup(work.cleanup)
+        cls.root = Path(work.name)
+        cls.dockerd = cls.root / "dockerd"
+        source = cls.root / "fixture.c"
+        source.write_text(r'''
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <unistd.h>
+
+int main(int argc, char **argv) {
+    int listener = 3;
+    if (argc == 2) {
+        struct sockaddr_un address = {.sun_family = AF_UNIX};
+        if (strlen(argv[1]) >= sizeof(address.sun_path)) return 2;
+        strcpy(address.sun_path, argv[1]);
+        listener = socket(AF_UNIX, SOCK_STREAM, 0);
+        if (listener < 0 || bind(listener, (struct sockaddr *)&address, sizeof(address)) < 0 ||
+            chmod(argv[1], 0660) < 0 || listen(listener, 8) < 0) return 3;
+    }
+    signal(SIGPIPE, SIG_IGN);
+    puts("ready");
+    fflush(stdout);
+    for (;;) {
+        int client = accept(listener, NULL, NULL);
+        if (client < 0) return 4;
+        char request[4096];
+        const char body[] = "{\"peerFixture\":true}";
+        if (read(client, request, sizeof(request)) > 0) {
+            dprintf(client, "HTTP/1.1 200 OK\r\nContent-Length: %zu\r\nConnection: close\r\n\r\n%s",
+                    sizeof(body) - 1, body);
+        }
+        close(client);
+    }
+}
+''')
+        subprocess.run(("cc", "-O2", "-o", str(cls.dockerd), str(source)), check=True, capture_output=True, timeout=15)
+        cls.dockerd.chmod(0o755)
+
+    def args(self, path, mode, unit, service):
+        return types.SimpleNamespace(docker_socket=str(path), docker_socket_activation=mode,
+                                     docker_socket_unit=unit, docker_service_unit=service,
+                                     docker_socket_owner="root", docker_socket_group="root",
+                                     docker_socket_mode="0660", dockerd=str(self.dockerd))
+
+    def test_direct_daemon_checks_kernel_peer_executable_and_socket_custody(self):
+        path = self.root / "direct.sock"
+        with subprocess.Popen((str(self.dockerd), str(path)), stdout=subprocess.PIPE) as proc:
+            try:
+                self.assertTrue(select.select([proc.stdout], [], [], 5)[0])
+                self.assertEqual(proc.stdout.readline(), b"ready\n")
+                args = self.args(path, "daemon", "fixture.service", "fixture.service")
+                docker = P["Docker"](P["Reader"](), args, None)
+                self.assertEqual(docker.get("/info"), {"peerFixture": True})
+                self.assertEqual(docker.proof["pid"], proc.pid)
+                self.assertEqual(docker.profile["dockerdExecutable"]["sha256"], P["digest"](self.dockerd.read_bytes()))
+                self.assertEqual(docker.profile["dockerSocketOwnership"]["mode"], "0660")
+                args.docker_socket_mode = "0600"
+                with self.assertRaisesRegex(P["Held"], "^DOCKER_SOCKET_CUSTODY_UNPROVEN$"):
+                    P["Docker"](P["Reader"](), args, None)
+                args.docker_socket_mode = "0660"
+                args.dockerd = sys.executable
+                with self.assertRaisesRegex(P["Held"], "^DOCKER_EXECUTABLE_UNPROVEN$"):
+                    P["Docker"](P["Reader"](), args, None).get("/info")
+            finally:
+                proc.terminate()
+
+    def test_systemd_activation_requires_active_unit_and_owned_listener(self):
+        prefix = "ouf-p-peer-" + uuid.uuid4().hex[:10]
+        socket_unit, service = prefix + ".socket", prefix + ".service"
+        inactive = prefix + "-inactive.socket"
+        path = self.root / "activated.sock"
+        def systemctl(*args, check=True):
+            return subprocess.run(("systemctl", *args), capture_output=True, check=check, timeout=12)
+        units = Path("/run/systemd/system")
+        def cleanup():
+            systemctl("stop", socket_unit, service, inactive, check=False)
+            for name in (socket_unit, service, inactive):
+                (units / name).unlink(missing_ok=True)
+            systemctl("daemon-reload")
+        self.addCleanup(cleanup)
+        socket_definition = f"[Socket]\nListenStream={path}\nSocketUser=root\nSocketGroup=root\nSocketMode=0660\n"
+        (units / socket_unit).write_text(socket_definition)
+        (units / inactive).write_text(socket_definition + f"Service={service}\n")
+        (units / service).write_text(f"[Service]\nType=exec\nExecStart={self.dockerd} -H fd://\n")
+        systemctl("daemon-reload")
+        systemctl("start", socket_unit, service)
+        args = self.args(path, "systemd-socket", socket_unit, service)
+        docker = P["Docker"](P["Reader"](), args, "/usr/bin/systemctl")
+        self.assertEqual(docker.get("/info"), {"peerFixture": True})
+        self.assertGreater(docker.proof["pid"], 1)
+        self.assertNotEqual(docker.proof["listenerInode"], path.stat().st_ino)
+        args.docker_socket_unit = inactive
+        with self.assertRaisesRegex(P["Held"], "^DOCKER_SOCKET_UNIT_UNPROVEN$"):
+            P["Docker"](P["Reader"](), args, "/usr/bin/systemctl").get("/info")
