@@ -146,7 +146,7 @@ def image_receipt():
     return receipt
 
 
-def image_review(result=None):
+def image_review(result=None, *, check_uid_access=True):
     if result is None:
         result = {}
     receipt = image_receipt()
@@ -171,7 +171,8 @@ def image_review(result=None):
     result["configDirectoryOwner"] = [directory.st_uid, directory.st_gid]
     result["configDirectoryMode"] = oct(stat.S_IMODE(directory.st_mode))
     result["symlinkCreated"] = False
-    result["uid636WriteSearchOnRetainedRootfs"] = directory_access_as_636(ROOTFS)
+    if check_uid_access:
+        result["uid636WriteSearchOnRetainedRootfs"] = directory_access_as_636(ROOTFS)
     return result
 
 
