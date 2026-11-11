@@ -65,7 +65,9 @@ Teatri, senza nuovo upload o profilo:
   Il [lettore in sola lettura](../scripts/read-discovery-stopped-image-review-20261111.py) dell’11 novembre ha confermato le variabili Env attese e il kernel 6.12.107 con `noswap` e senza swap attivo. Il controllo dell’immagine si è fermato con `HELD` e motivo `ValueError`.
   La nuova ricevuta conferma APISIX 3.18.0, plugin OIDC uguale all’upstream e directory `conf` di proprietà 636 con modo `0775`. Il `stat` con UID 636 fallisce nella copia offline.
   Su indicazione dell’owner, la creazione usa i metadati dell’immagine. Il link viene verificato al futuro avvio. Se fallisce, lo startup restituisce `OUF_SOUTHBOUND_APISIX_CONFIG_LINK_FAILED`.
-  Il [comando per la revisione Opus](../scripts/deliver-discovery-stopped-candidates-20261111.sh) contiene le modalità di creazione e rimozione parziale. Test locali passati. Ciascuna operazione sul VPS richiede il sì dell’owner.
+  Il primo tentativo dell’11 novembre si è fermato con `HELD` prima della prima richiesta Docker. `createRequests` è zero e il controllo di Opus conferma che non ci sono candidati.
+  Il controller ora chiude esplicitamente `HTTPConnection` e conserva la ricevuta se un comando del preflight fallisce. [Cinque test su socket Unix locale con Python 3.12](https://github.com/GioNob/ouf-deploy/actions/runs/42987989925/job/130413676928) passati sul runner GitHub ospitato.
+  Il [launcher aggiornato per Opus](../scripts/deliver-discovery-stopped-candidates-20261111.sh) punta al controller corretto. La revisione precede il sì dell’owner per la creazione sul VPS.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
