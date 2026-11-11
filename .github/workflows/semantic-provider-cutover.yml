@@ -1,0 +1,23 @@
+name: Semantic provider cutover rehearsal
+on:
+  pull_request:
+    paths:
+      - scripts/cutover-semantic-provider-20261111.py
+      - tests/test_semantic_provider_cutover.py
+      - .github/workflows/semantic-provider-cutover.yml
+permissions: {contents: read}
+jobs:
+  restoration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Stage reviewed dependencies
+        run: |
+          cp tools/acquisition_read_native/retained_mac.py scripts/
+          cp tools/m2_discovery_installation_profile/{audit,public_truststore}.py scripts/
+      - name: Exercise restoration on a disposable network
+        run: |
+          docker pull busybox:1.37.0
+          python3 -I -B -m unittest discover -s tests -p test_semantic_provider_cutover.py -v
