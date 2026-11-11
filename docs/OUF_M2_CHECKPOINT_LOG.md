@@ -622,3 +622,9 @@ Pronto [il pacchetto di sola lettura](OUF_RETAINED_SEMANTIC_PEER_20261109.md), n
 ## 10 novembre 2026 — Lettura del peer Semantic conclusa
 
 Ricevuta operatore delle 13:29:10 CET, `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORIZED` / `COMPLETE`. La richiesta pre-CREATE è stata ricostruita e la configurazione OCI coincide interamente con l'aspettativa indipendente. Dichiarazione e osservazione del peer concordano. Cinque GET Engine, sei comandi nativi di lettura e cinque file di metadati stabili. Provider e worker ancora disabilitati. Prossimo passo: preparare creazione, sigilli e ammissione della nuova coppia. [Runbook](OUF_RETAINED_SEMANTIC_PEER_20261109.md).
+
+## 11 novembre 2026 — Cutover Semantic resistente alla perdita del terminale
+
+Opus ha verificato la consegna precedente e segnalato il rischio di interruzione dopo lo stop. Il controller `08566c6c` isola il processo di applicazione dal terminale, ignora SIGHUP, SIGINT e SIGTERM fino alla fine e salva `result.json` in WORK, root:root, modo 0600. Il [launcher aggiornato](../scripts/deliver-semantic-provider-cutover-20261111.sh) è `58313b1d`.
+
+[Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145). Segnali reali e stdout chiuso dopo lo stop simulato lasciano una ricevuta sia per il ripristino sia per HELD. La prova nativa separata ripristina lo stesso CID e il MAC su Docker 29.8.1. Giovanni esegue il nuovo `--plan` nel suo terminale. Nessuna prova di cutover o modifica sul VPS.
