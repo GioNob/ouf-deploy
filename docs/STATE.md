@@ -63,8 +63,9 @@ Teatri, senza nuovo upload o profilo:
   La bozza ripete il controllo IP e alias prima di ciascun CREATE. Le prove locali con dati sintetici coprono la trasformazione delle route, il lancio e il rifiuto di un conflitto IPAM.
   La revisione ha aggiunto il confronto delle variabili storiche con l’immagine, la scelta di `noswap` in base al kernel e la rimozione separata del solo primo candidato. I test locali usano dati sintetici.
   Il [lettore in sola lettura](../scripts/read-discovery-stopped-image-review-20261111.py) dell’11 novembre ha confermato le variabili Env attese e il kernel 6.12.107 con `noswap` e senza swap attivo. Il controllo dell’immagine si è fermato con `HELD` e motivo `ValueError`.
-  Il lettore ora riporta codici distinti per ricevuta, file APISIX e controllo del UID 636. Attesa la nuova ricevuta in sola lettura.
-  Il comando di creazione e l’eventuale rimozione del primo candidato richiedono ciascuno il sì dell’owner.
+  La nuova ricevuta conferma APISIX 3.18.0, plugin OIDC uguale all’upstream e directory `conf` di proprietà 636 con modo `0775`. Il `stat` con UID 636 fallisce nella copia offline.
+  Su indicazione dell’owner, la creazione usa i metadati dell’immagine. Il link viene verificato al futuro avvio. Se fallisce, lo startup restituisce `OUF_SOUTHBOUND_APISIX_CONFIG_LINK_FAILED`.
+  Il [comando per la revisione Opus](../scripts/deliver-discovery-stopped-candidates-20261111.sh) contiene le modalità di creazione e rimozione parziale. Test locali passati. Ciascuna operazione sul VPS richiede il sì dell’owner.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
