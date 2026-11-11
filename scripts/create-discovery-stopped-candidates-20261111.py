@@ -95,7 +95,9 @@ class LocalEngine(http.client.HTTPConnection):
 
 
 def engine(method, path, payload=None):
-    require((method == "GET" and (path == "/info" or re.fullmatch(r"/(?:containers|images)/[0-9a-f:]+/json", path)))
+    require((method == "GET" and (
+                path == "/info" or re.fullmatch(r"/containers/[0-9a-f]{64}/json", path)
+                or re.fullmatch(r"/images/sha256:[0-9a-f]{64}/json", path)))
             or (method == "POST" and path in {f"/containers/create?name={name}-successor" for name in ENDPOINTS})
             or (method == "DELETE" and re.fullmatch(r"/containers/[0-9a-f]{64}", path)),
             "ENGINE_OPERATION_OUT_OF_SCOPE")
@@ -162,7 +164,7 @@ def environment_map(entries):
     return result
 
 
-def build_request(preflight, name, transaction, noswap):
+def build_request(preflight, name, noswap):
     historical_cid, _ = preflight.HISTORICAL[name]
     old = engine("GET", f"/containers/{historical_cid}/json")
     frame = {key: old.get(key) for key in FRAME_FIELDS}
@@ -202,7 +204,7 @@ def build_request(preflight, name, transaction, noswap):
                        "BindOptions": {"Propagation": mount["Propagation"] or "rprivate"}})
     request = {key: old_config[key] for key in ("User", "WorkingDir", "Entrypoint", "Cmd", "Healthcheck")
                if key in old_config}
-    request.update(Image=image["Id"], Env=env, Labels={OWNER_LABEL: transaction}, HostConfig=host)
+    request.update(Image=image["Id"], Env=env, HostConfig=host)
     if name == SOUTHBOUND:
         require(old_config["User"] == "636:636" and old_config["Entrypoint"] == ["/docker-entrypoint.sh"]
                 and old_config["Cmd"] == ["docker-start"] and not host["ReadonlyRootfs"],
@@ -223,6 +225,22 @@ def build_request(preflight, name, transaction, noswap):
         for network, (ip, mac) in ENDPOINTS[name].items()
     }}
     return request
+
+
+def summarize_request(preflight, name, request):
+    endpoints = request["NetworkingConfig"]["EndpointsConfig"]
+    networks = {}
+    for network in ENDPOINTS[name]:
+        endpoint = endpoints[preflight.NETWORKS[network][0]]
+        networks[network] = {
+            "requestedIPv4": endpoint["IPAMConfig"]["IPv4Address"],
+            "requestedMacAddress": endpoint["MacAddress"],
+            "aliases": endpoint["Aliases"],
+        }
+    return {"name": name + "-successor", "imageId": request["Image"],
+            "runtime": request["HostConfig"]["Runtime"], "networks": networks,
+            "bindMountCount": len(request["HostConfig"]["Mounts"]),
+            "environmentVariableCount": len(request["Env"])}
 
 
 def inspect_created(cid, name, request, transaction):
@@ -304,11 +322,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--image-review", type=Path)
+    parser.add_argument("--plan-sha256", help="planSha256 from the PLAN_READY receipt")
     mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--plan", action="store_true", help="prepare and check both requests without sending them")
     mode.add_argument("--apply", action="store_true", help="create the approved stopped candidates")
     mode.add_argument("--remove-first", nargs=2, metavar=("CID", "TRANSACTION"),
                       help="remove only the separately approved, never-started first candidate")
     args = parser.parse_args()
+    if args.apply and not re.fullmatch(r"[0-9a-f]{64}", args.plan_sha256 or ""):
+        parser.error("--apply requires --plan-sha256 from PLAN_READY")
+    if not args.apply and args.plan_sha256 is not None:
+        parser.error("--plan-sha256 is only accepted with --apply")
     report = {"schema": "ouf.discovery-stopped-creation.v1", "status": "HELD", "createRequests": 0,
               "containerStarts": 0, "nftWrites": 0, "semanticChanged": False, "credentialValuesEmitted": False,
               "candidates": []}
@@ -331,21 +355,33 @@ def main():
         image["uid636LinkCheck"] = "AT_STARTUP"
         report["southboundImage"] = image
         report["kernel"] = kernel
-        transaction = os.urandom(16).hex()
-        report["transaction"] = transaction
-        requests = {name: build_request(preflight, name, transaction, kernel["noswapByKernelVersion"])
+        requests = {name: build_request(preflight, name, kernel["noswapByKernelVersion"])
                     for name in ENDPOINTS}
         runtimes = engine("GET", "/info")["Runtimes"]
         require(all(request["HostConfig"]["Runtime"] not in ("", "runc", "io.containerd.runc.v2")
                     and request["HostConfig"]["Runtime"] in runtimes for request in requests.values()),
                 "GOVERNED_RUNTIME_MISSING")
+        plan_sha = sha(canonical(requests))
+        if args.plan:
+            guard(preflight)
+            report["planSha256"] = plan_sha
+            report["plannedRequests"] = [summarize_request(preflight, name, request)
+                                         for name, request in requests.items()]
+            report["status"] = "PLAN_READY"
+            print(json.dumps(report, sort_keys=True))
+            return 0
+        require(args.plan_sha256 == plan_sha, "PLAN_DIGEST_CHANGED")
+        report["planSha256"] = plan_sha
+        transaction = os.urandom(16).hex()
+        report["transaction"] = transaction
         for name, request in requests.items():
             first = report["candidates"][0] if report["candidates"] else None
             if first:
                 inspect_created(first["id"], ADAPTER, requests[ADAPTER], transaction)
             guard(preflight, first)
             report["createRequests"] += 1
-            response = engine("POST", f"/containers/create?name={name}-successor", request)
+            response = engine("POST", f"/containers/create?name={name}-successor",
+                              request | {"Labels": {OWNER_LABEL: transaction}})
             cid = response["Id"]
             require(re.fullmatch(r"[a-f0-9]{64}", cid), "CREATED_ID_UNPROVEN")
             row = {"id": cid, "name": name + "-successor", "state": "unverified"}
