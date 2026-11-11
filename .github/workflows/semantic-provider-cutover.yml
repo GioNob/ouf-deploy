@@ -21,14 +21,14 @@ jobs:
         run: |
           dind_dir=$(mktemp -d)
           docker run --privileged -d --name ouf-cutover-dind \
-            -e DOCKER_TLS_CERTDIR= -v "$dind_dir:/ouf-ci" docker:29.8.1-dind \
+            -e DOCKER_TLS_CERTDIR= -v "$dind_dir:/ouf-ci" docker:29.8.1-dind@sha256:3f3c01aaaebf7cce837356b688b7c059a4749f10bd7660dec7c58fc454a283f0 \
             --host=unix:///ouf-ci/docker.sock
           trap 'docker -H unix:///run/docker.sock rm -f -v ouf-cutover-dind' EXIT
-          export DOCKER_HOST="unix://$dind_dir/docker.sock"
+          dind_host="unix://$dind_dir/docker.sock"
           for i in {1..30}; do
-            if docker info >/dev/null 2>&1; then break; fi
+            if sudo docker -H "$dind_host" info >/dev/null 2>&1; then break; fi
             sleep 1
           done
-          docker version
-          docker pull busybox:1.37.0
-          python3 -I -B -m unittest discover -s tests -p test_semantic_provider_cutover.py -v
+          sudo docker -H "$dind_host" version
+          sudo docker -H "$dind_host" pull busybox:1.37.0
+          sudo env DOCKER_HOST="$dind_host" /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_cutover.py -v
