@@ -11,12 +11,14 @@ from pathlib import Path
 import re
 import socket
 import stat
+import subprocess
 import types
 
 
 PREFLIGHT_SHA = "90524a905926e37fce9445adfab6928ada42989093f9b66d80abcb8de6a4b3f7"
 IMAGE_REVIEW_SHA = "ee38a75f4b2e5d715816fa75a93bf5f390020e27e82ea4b37fb4c8444b823ce0"
 DOCKER_READBACK_SHA = "32e8d5251c68f2d4c0b4b1f0ffe03d550f28bb0d34c50c5da6794486706f1105"
+DOCKER_SOCKET = "/var/run/docker.sock"
 FRAME_FIELDS = ("Id", "Image", "Config", "HostConfig", "Mounts", "Path", "Args", "NetworkSettings")
 STATE_FIELDS = ("Running", "Restarting", "Paused", "Status", "Pid", "StartedAt", "FinishedAt")
 ADAPTER = "ouf-semantic-provider-v2"
@@ -88,8 +90,8 @@ def sha(raw):
 class LocalEngine(http.client.HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.settimeout(25)
-        self.sock.connect("/var/run/docker.sock")
+        self.sock.settimeout(self.timeout)
+        self.sock.connect(DOCKER_SOCKET)
 
 
 def engine(method, path, payload=None):
@@ -97,14 +99,17 @@ def engine(method, path, payload=None):
             or (method == "POST" and path in {f"/containers/create?name={name}-successor" for name in ENDPOINTS})
             or (method == "DELETE" and re.fullmatch(r"/containers/[0-9a-f]{64}", path)),
             "ENGINE_OPERATION_OUT_OF_SCOPE")
-    with LocalEngine("localhost", timeout=25) as conn:
+    conn = LocalEngine("localhost", timeout=25)
+    try:
         conn.request(method, "/v1.44" + path, body=None if payload is None else canonical(payload),
                      headers={"Content-Type": "application/json"})
-        response = conn.getresponse()
-        raw = response.read(2_097_153)
-        require(response.status == {"GET": 200, "POST": 201, "DELETE": 204}[method] and len(raw) <= 2_097_152,
-                "ENGINE_RESPONSE_UNPROVEN")
+        with conn.getresponse() as response:
+            raw = response.read(2_097_153)
+            require(response.status == {"GET": 200, "POST": 201, "DELETE": 204}[method] and len(raw) <= 2_097_152,
+                    "ENGINE_RESPONSE_UNPROVEN")
         return None if method == "DELETE" else json.loads(raw)
+    finally:
+        conn.close()
 
 
 def load_reader(path, expected_hash):
@@ -347,7 +352,8 @@ def main():
             report["candidates"].append(row)
             row.update(inspect_created(cid, name, request, transaction))
         report["status"] = "DISCOVERY_CANDIDATES_CREATED_STOPPED"
-    except (Held, OSError, ValueError, KeyError, TypeError, http.client.HTTPException) as error:
+    except (Held, OSError, ValueError, KeyError, TypeError, http.client.HTTPException,
+            subprocess.SubprocessError) as error:
         report["reason"] = str(error) if type(error) is Held else type(error).__name__
         report["replayAllowed"] = False
     print(json.dumps(report, sort_keys=True))
