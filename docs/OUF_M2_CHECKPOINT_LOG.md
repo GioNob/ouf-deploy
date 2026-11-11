@@ -652,3 +652,9 @@ Controller `f23d5f6c`, launcher `68954ea2`. Il confronto con il writer `8cc42b0d
 Giovanni ha letto `STOP_RECONCILE`, `complete: false` e `CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED` nel `result.json` del 29 ottobre. Il controllo nativo sul vecchio southbound avveniva dopo scrittura, rilettura e registrazione del truststore. Il conteggio osservato del provider resta 151 e l’unione resta 161.
 
 Controller `9b6c0112`, launcher `8c9bad62`. D richiede i contatori `publicTrustStoresPrepared=1` e `publicTrustStoreReadbacks=1` e la conservazione del file, confronta il PKCS#12 con l’inventario completo e verifica offline la firma del certificato southbound con la sola CA registrata. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43006571849/job/130475418120), compreso il rifiuto di un’altra CA con lo stesso nome. Nessun cutover eseguito.
+
+## 11 novembre 2026 — D completato e consegna della preparazione A
+
+[Giovanni e Opus](../evidence/semantic-provider-cutover-d-operator-20261111.json) attestano `SEMANTIC_PROVIDER_CUTOVER_READY`. Semantic `43a294de…`, PID 83015, Java pronto alle 11:55:30 CET, HTTP 200, sette bind RO. Predecessore fermo e staccato. Successor ancora `created`, worker spento. CA 118/151/161, confronto issuer offline positivo.
+
+Controller A `799350fb`, launcher `87dea4a3`. A lega il peer alla ricevuta D e osserva generazione e veth reciproco. Verifica in DER il certificato server e l’SNI del bind APISIX, con il campo key escluso dal controllo. `--apply` con hash crea solo il pacchetto privato di quattro JSON. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43008901347/job/130483231760), incluso veth reale su rete isolata. A resta da eseguire sul VPS.
