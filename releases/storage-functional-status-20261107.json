@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "D is complete, with new Semantic CID 43a294de and the stopped successors preserved. Giovanni runs preparation A --plan in his terminal using launcher 87dea4a3. A reads the new process generation and reciprocal veth, verifies the configured APISIX server certificate, and proposes a private four-file package. Review PLAN_READY and use --apply only after Giovanni's separate yes, bound to the A plan hash. Then admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
+  "nextAction": "D and A are complete. Giovanni runs profile P --plan with launcher 18c671c1 and shares the complete canonical JSON with Opus for field-by-field review. After separate approval publish the stable ouf-lab-netcup-01 profile with the P plan hash. Then prepare B1 inert runtime switch and B2 time-limited admission as separately reviewed plans. C remains the JWT/TLS probe with a temporary lease.",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
