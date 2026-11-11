@@ -1,10 +1,15 @@
 """Run D restoration against disposable Docker containers on the hosted runner."""
+import json
 import os
 from pathlib import Path
 import re
 import runpy
+import signal
+import stat
 import subprocess
+import sys
 import tempfile
+import textwrap
 import time
 from types import SimpleNamespace
 import unittest
@@ -42,25 +47,80 @@ class CutoverTests(unittest.TestCase):
                                               "PKCS12", "-storepass", "changeit"), timeout=20)
         self.assertEqual(result.count(b"trustedCertEntry"), len(certificates) + 1)
 
-    def test_bounded_failure_dispatches_restore_and_preserves_receipt(self):
-        old = {"Id": D["OLD"]}
-        manifest = {"retainedName": "retained-fixture", "newContainer": {"name": "fixture"}}
-        request = {"Labels": {}}
-        with tempfile.TemporaryDirectory() as temp:
-            work = Path(temp) / "journal"
+    def test_interrupted_terminal_during_apply_preserves_receipt(self):
+        fixture = textwrap.dedent("""\
+            from contextlib import nullcontext
+            import os, runpy, signal, sys
+            from pathlib import Path
+            from unittest.mock import patch
+
+            source, work, scenario = sys.argv[1:]
+            d = runpy.run_path(source)
+            namespace = d["main"].__globals__
+            supervisor_group = os.getpgrp()
+            signals = (signal.SIGHUP, signal.SIGINT, signal.SIGTERM)
+            for signum in signals:
+                signal.signal(signum, signal.SIG_DFL)
+            old = {"Id": d["OLD"]}
             stopped = {"State": {"Running": True, "Pid": 50}}
-            with patch.dict(NAMESPACE, WORK=work):
-                with patch.dict(NAMESPACE, inspect=lambda *args, **kwargs: old,
-                                save=lambda *args, **kwargs: None,
-                                action=lambda *args: None,
-                                restore=lambda *args: None):
-                    # Inject a failure at the first post-stop readback.
-                    reads = iter((old, stopped))
-                    with patch.dict(NAMESPACE, inspect=lambda *args, **kwargs: next(reads)):
-                        report = {}
-                        D["apply"](None, None, (manifest, "a" * 64, old, request, b"", b"", "b" * 64), report)
-        self.assertEqual(report["status"], "SEMANTIC_PREVIOUS_CONTAINER_RESTORED")
-        self.assertEqual(report["reason"], "OLD_STOP_FRAME_CHANGED")
+            reads = iter((old, stopped))
+            actions = []
+
+            def action(deadline, cid, operation):
+                assert operation == "stop?t=15" and cid == old["Id"]
+                assert os.getsid(0) == os.getpid() and os.getpgrp() != supervisor_group
+                actions.append(operation)
+                for signum in signals:
+                    os.kill(os.getpid(), signum)
+                if scenario == "supervisor_killed":
+                    os.killpg(supervisor_group, signal.SIGKILL)
+
+            def restore(*args):
+                assert actions == ["stop?t=15"]
+                for signum in signals:
+                    os.kill(os.getpid(), signum)
+                if scenario == "held":
+                    raise d["Held"]("FIXTURE_RESTORE_FAILED")
+
+            digest = "a" * 64
+            manifest = {"filesCreatedUnderPrivateDirectory": list(d["JOURNAL_FILES"])}
+            planned = (manifest, digest, old, {"Labels": {}}, b"", b"", "b" * 64)
+            sys.argv = [source, "--apply", "--plan-sha256", digest]
+            ownership = nullcontext() if os.geteuid() == 0 else patch.object(os, "fchown")
+            with ownership, patch.object(os, "geteuid", return_value=0), patch.dict(
+                namespace, WORK=Path(work), load_helpers=lambda: (None, None, None),
+                plan=lambda *args: planned, inspect=lambda *args: next(reads), action=action, restore=restore,
+            ):
+                raise SystemExit(d["main"]())
+            """)
+        for scenario in ("restored", "held", "supervisor_killed"):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as temp:
+                work = Path(temp) / "journal"
+                reader, writer = os.pipe()
+                os.close(reader)
+                with os.fdopen(writer, "wb") as broken_stdout:
+                    child = subprocess.Popen(
+                        (sys.executable, "-I", "-B", "-c", fixture,
+                         str(SCRIPTS / "cutover-semantic-provider-20261111.py"), str(work), scenario),
+                        stdout=broken_stdout, stderr=subprocess.PIPE, start_new_session=True,
+                    )
+                _, stderr = child.communicate(timeout=10)
+                self.assertEqual(stderr, b"")
+                self.assertEqual(child.returncode, -signal.SIGKILL if scenario == "supervisor_killed" else 1)
+                path = work / "result.json"
+                receipt = json.loads(path.read_bytes())
+                self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+                self.assertEqual(path.stat().st_uid, os.geteuid())
+                if os.geteuid() == 0:
+                    self.assertEqual(path.stat().st_gid, 0)
+                self.assertIn("result.json", receipt["manifest"]["filesCreatedUnderPrivateDirectory"])
+                self.assertEqual(receipt["reason"], "OLD_STOP_FRAME_CHANGED")
+                if scenario == "held":
+                    self.assertEqual(receipt["status"], "HELD")
+                    self.assertEqual(receipt["restoreReason"], "FIXTURE_RESTORE_FAILED")
+                else:
+                    self.assertEqual(receipt["status"], "SEMANTIC_PREVIOUS_CONTAINER_RESTORED")
+                    self.assertTrue((work / "restored.json").exists())
 
     def test_restore_existing_cid_after_never_started_replacement(self):
         self.assertTrue(DOCKER_HOST.startswith("unix://"))
