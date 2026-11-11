@@ -6,11 +6,11 @@ case "${1-}:$#" in
   *) printf '%s\n' 'Uso: --apply oppure --remove-first CID TRANSACTION' >&2; exit 2 ;;
 esac
 
-ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/157edad1bdb9bbff45e2a59fd5cdc1c0280520b3/scripts'
+ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/03a4b36a493109c7be0a40f365381979dd79e0b5/scripts'
 ouf_creator='create-discovery-stopped-candidates-20261111.py'
 ouf_preflight='read-discovery-stopped-creation-preflight-20261110.py'
 ouf_image='read-discovery-stopped-image-review-20261111.py'
-ouf_creator_hash='8bd581f6cdcbfb9bd9da3c851549f884678b38913f46d170864418af6dbe8024'
+ouf_creator_hash='347219614499d09d7ad3de468f8cc77508f7669d7434d1d25bcbbe73d0a2711d'
 ouf_preflight_hash='90524a905926e37fce9445adfab6928ada42989093f9b66d80abcb8de6a4b3f7'
 ouf_image_hash='ee38a75f4b2e5d715816fa75a93bf5f390020e27e82ea4b37fb4c8444b823ce0'
 ouf_work=$(mktemp -d "${TMPDIR:-/tmp}/ouf-discovery-stopped.XXXXXXXX")
