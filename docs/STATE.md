@@ -59,7 +59,9 @@ Teatri, senza nuovo upload o profilo:
   Il 10 novembre alle 13:54:15 CET, il [controllo in sola lettura](../scripts/read-discovery-stopped-creation-preflight-20261110.py) ha restituito `PREFLIGHT_PASSED`, senza scritture. Hash del readback Docker `32e8d5251c68f2d4c0b4b1f0ffe03d550f28bb0d34c50c5da6794486706f1105`.
   Gli IP previsti non hanno endpoint attivi o riserve IPAM visibili. I tre container storici sono fermi, con riavvio Docker disabilitato e senza riferimenti di avvio systemd o Compose rilevati.
   Creazione sospesa prima di qualsiasi scrittura. La ricetta storica del southbound inserisce credenziali nelle variabili Docker, che Docker conserva nei metadati della nuova istanza.
-  Prossimo passo: verificare il passaggio delle credenziali al solo processo in avvio da materiale già protetto, poi consegnare un comando che ripeta il controllo IP e alias prima del primo CREATE.
+  L’11 novembre è stata preparata la [bozza del comando](../scripts/create-discovery-stopped-candidates-20261111.py). Elimina il segreto OIDC di APISIX dalla ricetta JWT/JWKS e legge la chiave HMAC dal file protetto all’avvio.
+  La bozza ripete il controllo IP e alias prima di ciascun CREATE. Le prove locali con dati sintetici coprono la trasformazione delle route, il lancio e il rifiuto di un conflitto IPAM.
+  Prossimo passo: qualificare la bozza su Docker e sull’immagine APISIX effettiva prima della consegna operativa. La creazione sul VPS richiede il sì dell’owner.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
