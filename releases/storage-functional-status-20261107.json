@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Giovanni runs --plan in his VPS terminal using launcher 8866271e. The prior plan passed the alias guard and held at the trust inventory check. The revised controller verifies the count and fingerprints from the prepared trust receipt and preserves the original Java certificates. Review PLAN_READY, then use --apply with that plan hash only after Giovanni's separate yes. Read result.json if the terminal disconnects. Then observe the new Semantic peer (A), admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
+  "nextAction": "Giovanni runs --plan in his VPS terminal using launcher 68954ea2. The prior plan held at the provider trust inventory check with 118 Java certificates, 151 provider certificates and 161 distinct combined certificates. The new controller reports the internal validation code and the recorded count when available. Review PLAN_READY, then use --apply with that plan hash only after Giovanni's separate yes. Read result.json if the terminal disconnects. Then observe the new Semantic peer (A), admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
