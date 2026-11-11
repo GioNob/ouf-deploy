@@ -95,6 +95,126 @@ class StoppedCreationTransportTests(unittest.TestCase):
             CONTROLLER["engine"]("GET", "/info")
         self.assertTrue(self.server.connection_closed.wait(2))
 
+    def test_get_only_accepts_full_container_and_image_ids(self):
+        for path in (f"/containers/sha256:{CID}/json", f"/images/{CID}/json",
+                     "/containers/abc/json", "/images/sha256:abc/json"):
+            with self.subTest(path=path), self.assertRaisesRegex(CONTROLLER["Held"], "ENGINE_OPERATION_OUT_OF_SCOPE"):
+                CONTROLLER["engine"]("GET", path)
+        self.assertEqual(self.server.requests, [])
+
+    def prepare_plan_fixtures(self):
+        adapter = CONTROLLER["ADAPTER"]
+        southbound = CONTROLLER["SOUTHBOUND"]
+        runtime = "ouf-test-runtime"
+        namespaces = ("ouf-backend", "ouf-semantic-provider-internal", "ouf-semantic-provider-egress")
+        networks = {name: (str(index) * 64,) for index, name in enumerate(namespaces, start=1)}
+        paths = []
+        frames = {}
+        historical = {}
+        work = tempfile.TemporaryDirectory(prefix="ouf-plan-")
+        self.addCleanup(work.cleanup)
+        routes = Path(work.name) / "apisix.yaml"
+        local_config = Path(work.name) / "config.yaml"
+        route = {"plugins": {"openid-connect": {
+            "client_secret": "$ENV://" + CONTROLLER["OIDC_ENV"], "bearer_only": True,
+            "use_jwks": True, "ssl_verify": True, "unauth_action": "deny",
+        }}}
+        routes.write_bytes(CONTROLLER["canonical"]({"routes": [route, route]}) + b"#END\n")
+        local_config.write_bytes(b'{"fixture":true}\n')
+
+        def reply(path, body):
+            paths.append(("GET", "/v1.44" + path, b""))
+            self.server.responses.append((200, json.dumps(body).encode()))
+
+        for name, cid, digest in ((adapter, "a" * 64, "c" * 64), (southbound, "b" * 64, "d" * 64)):
+            historical[name] = (cid, "exited")
+            image_id = "sha256:" + digest
+            env = ["PATH=/fixture-path", "NORMAL_SETTING=fixture-env-value"]
+            config = {"Env": env, "User": "10006:10006", "Entrypoint": ["/fixture"], "Cmd": []}
+            host = {"RestartPolicy": {"Name": "no"}, "Runtime": runtime, "Privileged": False,
+                    "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges:true"], "ReadonlyRootfs": False}
+            old = {"Id": cid, "Image": image_id, "Config": config, "HostConfig": host,
+                   "Mounts": [], "State": {"Status": "exited"}}
+            if name == southbound:
+                config.update(User="636:636", Entrypoint=["/docker-entrypoint.sh"], Cmd=["docker-start"],
+                              Env=env + [CONTROLLER["OIDC_ENV"] + "=fixture-oidc",
+                                         CONTROLLER["HMAC_ENV"] + "=fixture-hmac"])
+                old["Mounts"] = [{"Source": str(file), "Destination": dest, "Type": "bind", "RW": False,
+                                  "Propagation": "rprivate"} for file, dest in (
+                    (routes, CONTROLLER["ROUTES"]), (local_config, "/usr/local/apisix/conf/config.yaml")
+                )]
+            frame = {key: old.get(key) for key in CONTROLLER["FRAME_FIELDS"]}
+            frame["State"] = {key: old["State"].get(key) for key in CONTROLLER["STATE_FIELDS"]}
+            frames[name] = CONTROLLER["sha"](CONTROLLER["canonical"](frame) + b"\n")
+            reply(f"/containers/{cid}/json", old)
+            reply(f"/images/{image_id}/json", {"Id": image_id, "Config": {"Env": env}})
+        reply("/info", {"Runtimes": {runtime: {}}})
+
+        observed = {"blockers": []}
+        guard_reads = []
+
+        def read_docker():
+            guard_reads.append(True)
+            return observed
+
+        preflight = SimpleNamespace(
+            HISTORICAL=historical, NETWORKS=networks, boot_units=lambda: ({"docker": True}, True, True, True),
+            service_references=lambda: ([], []), read_docker=read_docker,
+        )
+        review = SimpleNamespace(
+            image_review=lambda **kwargs: {"checkSchemaAllowsBearerJwksWithoutSecret": True},
+            kernel_review=lambda: {"noswapByKernelVersion": True},
+        )
+        self.enterContext(patch.dict(
+            GLOBALS, HISTORICAL_FRAMES=frames, protected_file=lambda *_: None,
+            ROUTES_SHA=CONTROLLER["sha"](routes.read_bytes()),
+            CONFIG_SHA=CONTROLLER["sha"](local_config.read_bytes()),
+            DOCKER_READBACK_SHA=CONTROLLER["sha"](CONTROLLER["canonical"](observed)),
+            load_reader=lambda _, digest: preflight if digest == CONTROLLER["PREFLIGHT_SHA"] else review,
+        ))
+        return paths, guard_reads, observed
+
+    def run_controller(self, *mode):
+        argv = [str(SOURCE), "--preflight", "fixture", "--image-review", "fixture", *mode]
+        with patch.object(GLOBALS["os"], "geteuid", return_value=0), patch.object(sys, "argv", argv):
+            with redirect_stdout(io.StringIO()) as output:
+                exit_code = CONTROLLER["main"]()
+        return exit_code, json.loads(output.getvalue())
+
+    def test_plan_reads_both_images_builds_requests_and_runs_guard(self):
+        paths, guard_reads, _ = self.prepare_plan_fixtures()
+        exit_code, report = self.run_controller("--plan")
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["status"], "PLAN_READY")
+        self.assertRegex(report["planSha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(report["createRequests"], 0)
+        self.assertEqual(report["candidates"], [])
+        self.assertEqual(self.server.requests, paths)
+        self.assertEqual(len(guard_reads), 1)
+        first, second = report["plannedRequests"]
+        self.assertEqual(first["name"], CONTROLLER["ADAPTER"] + "-successor")
+        self.assertEqual(second["name"], CONTROLLER["SOUTHBOUND"] + "-successor")
+        self.assertEqual(second["networks"]["ouf-backend"]["requestedIPv4"], "172.18.0.14")
+        for private in ("fixture-env-value", "fixture-oidc", "fixture-hmac", "/ouf-plan-", "client_secret"):
+            self.assertNotIn(private, json.dumps(report))
+
+    def test_plan_stops_on_guard_drift_without_writes(self):
+        paths, guard_reads, observed = self.prepare_plan_fixtures()
+        observed["blockers"].append("fixture-drift")
+        exit_code, report = self.run_controller("--plan")
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(report["reason"], "IP_OR_ALIAS_READBACK_CHANGED")
+        self.assertEqual(self.server.requests, paths)
+        self.assertEqual(len(guard_reads), 1)
+
+    def test_apply_rejects_changed_plan_without_writes(self):
+        paths, _, _ = self.prepare_plan_fixtures()
+        exit_code, report = self.run_controller("--apply", "--plan-sha256", "0" * 64)
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(report["reason"], "PLAN_DIGEST_CHANGED")
+        self.assertEqual(report["createRequests"], 0)
+        self.assertEqual(self.server.requests, paths)
+
     def test_subprocess_failure_after_first_create_retains_id(self):
         runtime = "ouf-test-runtime"
         self.server.responses.extend((
@@ -111,14 +231,15 @@ class StoppedCreationTransportTests(unittest.TestCase):
                 subprocess.run([sys.executable, "-I", "-B", "-c", "raise SystemExit(7)"],
                                check=True, capture_output=True)
 
+        request = {"HostConfig": {"Runtime": runtime}}
+        plan_sha = CONTROLLER["sha"](CONTROLLER["canonical"](
+            {name: request for name in CONTROLLER["ENDPOINTS"]}
+        ))
         with patch.dict(GLOBALS, load_reader=lambda *_: review, guard=guard,
-                        build_request=lambda *_: {"HostConfig": {"Runtime": runtime}},
+                        build_request=lambda *_: request,
                         inspect_created=lambda *_: {"state": "created", "neverStarted": True}):
-            argv = [str(SOURCE), "--preflight", "fixture", "--image-review", "fixture", "--apply"]
-            with patch.object(GLOBALS["os"], "geteuid", return_value=0), patch.object(sys, "argv", argv):
-                with redirect_stdout(io.StringIO()) as output:
-                    self.assertEqual(CONTROLLER["main"](), 1)
-        report = json.loads(output.getvalue())
+            exit_code, report = self.run_controller("--apply", "--plan-sha256", plan_sha)
+        self.assertEqual(exit_code, 1)
         self.assertEqual(report["status"], "HELD")
         self.assertEqual(report["reason"], "CalledProcessError")
         self.assertEqual(report["createRequests"], 1)
