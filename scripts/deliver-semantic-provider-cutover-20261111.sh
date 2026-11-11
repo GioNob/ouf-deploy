@@ -10,9 +10,9 @@ if [[ "$1" == --apply && ( "$2" != --plan-sha256 || ! "$3" =~ ^[0-9a-f]{64}$ ) ]
   exit 2
 fi
 
-ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/7f1506fa4742ac853c8e39ffd89a69c3480fc28b'
+ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/08566c6c5c4e3f61b3383382a263757bc11daa9f'
 ouf_cutover='cutover-semantic-provider-20261111.py'
-ouf_cutover_sha='1d34c20d5e06909f8d81389f3eed971c56492d93f55244dd90a3edd417c79096'
+ouf_cutover_sha='b72c657bf667b57901c47b9b0d23e65555044f600c7c58c421fbf8dd98f8a03e'
 ouf_work=$(mktemp -d "${TMPDIR:-/tmp}/ouf-semantic-provider-cutover.XXXXXXXX")
 trap 'rm -rf -- "$ouf_work"' EXIT
 
