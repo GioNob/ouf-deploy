@@ -72,6 +72,10 @@ Teatri, senza nuovo upload o profilo:
   Il piano `cc121972…` ha portato a una sola CREATE. L’inspect del candidato adapter aveva una chiave rete per nome e una per ID. Il controller si è fermato prima di creare il southbound.
   La rimozione autorizzata dell’adapter ha restituito `FIRST_STOPPED_CANDIDATE_REMOVED`. Opus ha verificato che non ci sono candidati, i provider storici sono spenti e Semantic è in servizio.
   La nuova consegna invia i nomi delle reti. [Undici test su socket Unix](https://github.com/GioNob/ouf-deploy/actions/runs/42990554876/job/130422110846) passati, inclusi il rifiuto delle chiavi miste e la lettura della prenotazione egress. Dopo la revisione Opus, eseguire un nuovo `--plan`.
+  Creazione conclusa con piano `52cfc4fb…`: adapter `85b5302f…` e southbound `34adce78…` sono `created`, PID zero, con IP richiesti e senza endpoint attivi. Opus ha verificato gli inspect.
+  Sequenza concordata D → A → B → C. D cambia Semantic, A osserva la nuova generazione, B ammette definitivamente la coppia, C prova JWT e TLS con una lease temporanea.
+  D è consegnato per revisione con [launcher](../scripts/deliver-semantic-provider-cutover-20261111.sh) e [controller](../scripts/cutover-semantic-provider-20261111.py). [Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42996229056/job/130440899432), incluso il ripristino dello stesso CID e del MAC su Docker 29.8.1 con un container di prova.
+  Prossimo passo: revisione Opus, `--plan` in sola lettura sul VPS e sì separato di Giovanni per `--apply` con l’hash. D, A, B e C restano da eseguire.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
