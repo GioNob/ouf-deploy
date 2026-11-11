@@ -2,15 +2,19 @@
 set -euo pipefail
 
 case "${1-}:$#" in
-  --apply:1|--remove-first:3) ;;
-  *) printf '%s\n' 'Uso: --apply oppure --remove-first CID TRANSACTION' >&2; exit 2 ;;
+  --plan:1|--apply:3|--remove-first:3) ;;
+  *) printf '%s\n' 'Uso: --plan, --apply --plan-sha256 HASH oppure --remove-first CID TRANSACTION' >&2; exit 2 ;;
 esac
+if [[ "$1" == --apply && ( "$2" != --plan-sha256 || ! "$3" =~ ^[0-9a-f]{64}$ ) ]]; then
+  printf '%s\n' 'Per --apply serve il planSha256 della ricevuta PLAN_READY.' >&2
+  exit 2
+fi
 
-ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/03a4b36a493109c7be0a40f365381979dd79e0b5/scripts'
+ouf_source='https://raw.githubusercontent.com/GioNob/ouf-deploy/ed320955f0dc04870336f916a6494c8edae8ceaf/scripts'
 ouf_creator='create-discovery-stopped-candidates-20261111.py'
 ouf_preflight='read-discovery-stopped-creation-preflight-20261110.py'
 ouf_image='read-discovery-stopped-image-review-20261111.py'
-ouf_creator_hash='347219614499d09d7ad3de468f8cc77508f7669d7434d1d25bcbbe73d0a2711d'
+ouf_creator_hash='74f7b1cbf5d43f39cd7485bee8dc7a8c2ef461d5d22ef48c495764bc186183f3'
 ouf_preflight_hash='90524a905926e37fce9445adfab6928ada42989093f9b66d80abcb8de6a4b3f7'
 ouf_image_hash='ee38a75f4b2e5d715816fa75a93bf5f390020e27e82ea4b37fb4c8444b823ce0'
 ouf_work=$(mktemp -d "${TMPDIR:-/tmp}/ouf-discovery-stopped.XXXXXXXX")
