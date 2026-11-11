@@ -15,7 +15,7 @@ import types
 
 
 PREFLIGHT_SHA = "90524a905926e37fce9445adfab6928ada42989093f9b66d80abcb8de6a4b3f7"
-IMAGE_REVIEW_SHA = "f557cf37dcc4b5b7d0a4cf65927204b9a135d146d3d8f06099544f52c0394a5e"
+IMAGE_REVIEW_SHA = "e09bfb1a91a15775192895813ee7f57db4a55105327a9581a77fb878bf36bc3a"
 DOCKER_READBACK_SHA = "32e8d5251c68f2d4c0b4b1f0ffe03d550f28bb0d34c50c5da6794486706f1105"
 FRAME_FIELDS = ("Id", "Image", "Config", "HostConfig", "Mounts", "Path", "Args", "NetworkSettings")
 STATE_FIELDS = ("Running", "Restarting", "Paused", "Status", "Pid", "StartedAt", "FinishedAt")
@@ -314,10 +314,13 @@ def main():
             return 0
         require(args.image_review is not None, "IMAGE_REVIEW_READER_REQUIRED")
         reviewer = load_reader(args.image_review, IMAGE_REVIEW_SHA)
-        image = reviewer.image_review()
+        try:
+            image = reviewer.image_review()
+            kernel = reviewer.kernel_review()
+        except reviewer.ReviewError as error:
+            raise Held(error.code) from None
         require(image["checkSchemaAllowsBearerJwksWithoutSecret"]
                 and image["uid636WriteSearchOnRetainedRootfs"], "SOUTHBOUND_IMAGE_REVIEW_UNPROVEN")
-        kernel = reviewer.kernel_review()
         report["southboundImage"] = image
         report["kernel"] = kernel
         transaction = os.urandom(16).hex()
