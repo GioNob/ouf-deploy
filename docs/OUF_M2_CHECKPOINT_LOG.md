@@ -658,3 +658,9 @@ Controller `9b6c0112`, launcher `8c9bad62`. D richiede i contatori `publicTrustS
 [Giovanni e Opus](../evidence/semantic-provider-cutover-d-operator-20261111.json) attestano `SEMANTIC_PROVIDER_CUTOVER_READY`. Semantic `43a294de…`, PID 83015, Java pronto alle 11:55:30 CET, HTTP 200, sette bind RO. Predecessore fermo e staccato. Successor ancora `created`, worker spento. CA 118/151/161, confronto issuer offline positivo.
 
 Controller A `799350fb`, launcher `87dea4a3`. A lega il peer alla ricevuta D e osserva generazione e veth reciproco. Verifica in DER il certificato server e l’SNI del bind APISIX, con il campo key escluso dal controllo. `--apply` con hash crea solo il pacchetto privato di quattro JSON. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43008901347/job/130483231760), incluso veth reale su rete isolata. A resta da eseguire sul VPS.
+
+## 11 novembre 2026 — A completato e profilo di installazione P
+
+Giovanni riporta `SEMANTIC_PROVIDER_PREPARATION_A_STAGED`, piano `17de05e7d9b9610e58919a5b22697f28865ea0b076327d0b477fbae03d22daa8`, quattro JSON privati e zero oggetti runtime modificati. Opus conferma il veth reciproco di Semantic, `veth823719e`, ifindex 168, iflink 2. Il certificato configurato del southbound coincide in DER. I dati di transazione di A restano separati dal nuovo profilo.
+
+Controller P `10bb8dba`, launcher `18c671c1`. Il piano in sola lettura stampa tutto il profilo stabile, con SHA-256 del file canonico più LF e hash del piano. L’apply vincolato al piano pubblica il file root:root 0600 solo se assente. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43022084617/job/130527496813). Rilevamento sul VPS e revisione Opus pendenti. B1/B2 non implementati.
