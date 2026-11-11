@@ -31,8 +31,9 @@ def cli(*args):
 class CutoverTests(unittest.TestCase):
     def test_merge_loadable_by_java_with_default_and_provider_anchors(self):
         _, _, trust = D["load_helpers"]()
-        stock = subprocess.check_output(("keytool", "-J-XX:-UsePerfData", "-list", "-rfc", "-cacerts",
-                                        "-storepass", "changeit"), stderr=subprocess.DEVNULL, timeout=20)
+        stock = subprocess.check_output(("keytool", "-J-XX:-UsePerfData", "-J-Duser.language=en",
+                                        "-J-Duser.country=US", "-list", "-rfc", "-cacerts", "-storepass", "changeit"),
+                                       stderr=subprocess.DEVNULL, timeout=20)
         certificates = {D["ssl"].PEM_cert_to_DER_cert(value.decode()) for value in trust.PEM.findall(stock)}
         self.assertGreater(len(certificates), 50)
         with tempfile.TemporaryDirectory() as temp:
@@ -42,11 +43,47 @@ class CutoverTests(unittest.TestCase):
                             "-out", str(cert)), check=True, capture_output=True, timeout=10)
             added = D["ssl"].PEM_cert_to_DER_cert(cert.read_text())
             self.assertNotIn(added, certificates)
+            iam = set(sorted(certificates, key=D["sha"])[:17])
+            extra = iam | {added}
+            extra_store = trust._pkcs12(sorted(extra, key=D["sha"]))
+            extra_pem = subprocess.run(("openssl", "pkcs12", "-nokeys", "-passin", "pass:changeit"),
+                                       input=extra_store, capture_output=True, check=True, timeout=10).stdout
+            public_path = D["PUBLIC_TRUST"]
+            extra_hash = D["sha"](extra_store)
+            record = {"schema": "ouf.m2-discovery-prepared-public-trust.v1",
+                      "publicStore": {"path": str(public_path), "sha256": extra_hash},
+                      "proposal": {"schema": "ouf.discovery-bound-public-trust-proposal.v1",
+                                   "sha256": extra_hash, "bytes": len(extra_store), "certificateCount": len(extra),
+                                   "allCaFingerprints": sorted(map(D["sha"], extra)),
+                                   "iamCaFingerprints": sorted(map(D["sha"], iam)),
+                                   "providerCaFingerprint": D["sha"](added)}}
+            result = {"schema": "ouf.m2-discovery-trust-context-preparation-result.v1",
+                      "status": "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED",
+                      "scope": str(public_path.parent), "complete": True,
+                      "publicTrustInputsHash": D["sha"](D["canonical"](record))}
+            files = {D["PUBLIC_TRUST_RECORD"]: record, D["PUBLIC_TRUST_RESULT"]: result}
+            with patch.dict(NAMESPACE, PUBLIC_TRUST_SHA=extra_hash,
+                            private_input=lambda path, **kwargs: D["canonical"](files[path])):
+                merged, counts = D["verified_ca_union"](stock, extra_pem, len(extra_store), trust)
+                self.assertEqual(counts, {"existingCaCount": len(certificates), "providerCaCount": 18,
+                                          "mergedCaCount": len(certificates) + 1})
+                wrong_stock = re.sub(rb"Your keystore contains \d+ entries", b"Your keystore contains 1 entry", stock)
+                # Keep the same size of the inventory and replace one fingerprint.
+                other_ca = D["ssl"].DER_cert_to_PEM_cert(min(certificates - extra, key=D["sha"]))
+                wrong_provider = trust.PEM.sub(other_ca.encode().strip(), extra_pem, count=1)
+                for java_pem, provider_pem, reason in (
+                    (wrong_stock, extra_pem, "JAVA_CA_INVENTORY_UNPROVEN"),
+                    (stock, wrong_provider, "PROVIDER_CA_INVENTORY_UNPROVEN"),
+                ):
+                    with self.subTest(reason=reason), self.assertRaisesRegex(D["CaInventoryHeld"], reason) as raised:
+                        D["verified_ca_union"](java_pem, provider_pem, len(extra_store), trust)
+                    self.assertEqual(raised.exception.counts["providerCaCount"], 18)
             path = Path(temp) / "merged.p12"
-            path.write_bytes(trust._pkcs12(sorted(certificates | {added}, key=D["sha"])))
-            result = subprocess.check_output(("keytool", "-list", "-keystore", str(path), "-storetype",
+            path.write_bytes(trust._pkcs12(sorted(merged, key=D["sha"])))
+            readback = subprocess.check_output(("keytool", "-list", "-rfc", "-keystore", str(path), "-storetype",
                                               "PKCS12", "-storepass", "changeit"), timeout=20)
-        self.assertEqual(result.count(b"trustedCertEntry"), len(certificates) + 1)
+        readback_certs = {D["ssl"].PEM_cert_to_DER_cert(value.decode()) for value in trust.PEM.findall(readback)}
+        self.assertEqual(readback_certs, certificates | extra)
 
     def test_interrupted_terminal_during_apply_preserves_receipt(self):
         fixture = textwrap.dedent("""\
