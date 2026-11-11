@@ -659,7 +659,7 @@
       "evidence": []
     }
   ],
-  "nextAction": "Giovanni runs --plan in his VPS terminal using launcher 8c9bad62. The previous read-only plan held because the October trust context was STOP_RECONCILE after truststore preparation. The revised plan requires that exact historical failure, verifies the full trust inventory and checks the recorded issuer against the pinned southbound leaf and APISIX bind. Review PLAN_READY, then use --apply with that plan hash only after Giovanni's separate yes. Read result.json if the terminal disconnects. Then observe the new Semantic peer (A), admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
+  "nextAction": "D is complete, with new Semantic CID 43a294de and the stopped successors preserved. Giovanni runs preparation A --plan in his terminal using launcher 87dea4a3. A reads the new process generation and reciprocal veth, verifies the configured APISIX server certificate, and proposes a private four-file package. Review PLAN_READY and use --apply only after Giovanni's separate yes, bound to the A plan hash. Then admit the stopped successors definitively (B), and test JWT and TLS with a temporary lease (C).",
   "deferred": [
     "DR_RPO_RTO",
     "HA_HOST_LOSS",
