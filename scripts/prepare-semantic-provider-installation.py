@@ -115,10 +115,10 @@ class Reader:
     def document(self, path, expected=None, **options):
         return decode(self.read(path, expected, **options))
 
-    def binary(self, name, expected=None, *, maximum=67108864):
+    def binary(self, name, expected=None, *, allowed_modes=frozenset({0o555, 0o755}), maximum=67108864):
         path = absolute(name).resolve(strict=True)
         mode = stat.S_IMODE(path.lstat().st_mode)
-        require(mode in (0o555, 0o755), "EXECUTABLE_CUSTODY_UNPROVEN")
+        require(mode in allowed_modes, "EXECUTABLE_CUSTODY_UNPROVEN")
         self.read(path, expected, mode=mode, maximum=maximum, hash_only=True)
         return str(path)
 
@@ -203,7 +203,7 @@ class Docker:
                         "dockerSocketOwnership": {"owner": args.docker_socket_owner, "uid": uid,
                                                    "group": args.docker_socket_group, "gid": gid,
                                                    "mode": args.docker_socket_mode},
-                        "dockerdExecutable": {"path": str(self.executable), "sha256": self.executable_hash}}
+                        "dockerdExecutable": {"path": str(self.executable)}}
         self.proof = None
 
     def process(self, pid):
@@ -610,7 +610,8 @@ def observe(args):
     empty_nft(reader, nft, owner["kernel"])
     commands = {"nft": nft, "ip": ip, "systemctl": systemctl}
     for name in ("nsenter", "unshare", "mount", "umount"):
-        commands[name] = reader.binary(adapter_tools[name], templates["adapter"]["commandHashes"][name])
+        modes = {"allowed_modes": {0o555, 0o755, 0o4755, 0o4555}} if name in ("mount", "umount") else {}
+        commands[name] = reader.binary(adapter_tools[name], templates["adapter"]["commandHashes"][name], **modes)
     for name in ("docker", "openssl"):
         path = shutil.which(name, path=ENV["PATH"])
         require(path is not None, "REQUIRED_EXECUTABLE_MISSING")

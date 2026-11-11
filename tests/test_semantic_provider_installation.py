@@ -13,7 +13,7 @@ import sys
 import tempfile
 import types
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import uuid
 
 
@@ -25,6 +25,113 @@ MODULE = P["main"].__globals__
 
 
 class ProfileTests(unittest.TestCase):
+    def test_binary_default_rejects_privileged_and_writable_modes(self):
+        reader = P["Reader"]()
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "executable"
+            path.write_bytes(b"fixture")
+            with patch.object(Path, "lstat") as lstat, patch.object(reader, "read") as read:
+                for mode in (0o4755, 0o4555, 0o2755, 0o1755, 0o775, 0o777):
+                    with self.subTest(mode=oct(mode)):
+                        lstat.return_value = types.SimpleNamespace(st_mode=stat.S_IFREG | mode)
+                        with self.assertRaisesRegex(P["Held"], "^EXECUTABLE_CUSTODY_UNPROVEN$"):
+                            reader.binary(str(path))
+                read.assert_not_called()
+
+    def test_binary_mount_modes_are_exact_and_preserve_read_bindings(self):
+        reader = P["Reader"]()
+        allowed_modes = {0o555, 0o755, 0o4755, 0o4555}
+        with tempfile.TemporaryDirectory() as temp:
+            path = (Path(temp) / "executable").resolve()
+            path.write_bytes(b"fixture")
+            with patch.object(Path, "lstat") as lstat, patch.object(reader, "read") as read:
+                for mode in sorted(allowed_modes):
+                    with self.subTest(mode=oct(mode)):
+                        lstat.return_value = types.SimpleNamespace(st_mode=stat.S_IFREG | mode)
+                        self.assertEqual(reader.binary(str(path), "a" * 64, allowed_modes=allowed_modes,
+                                                       maximum=4096), str(path))
+                        read.assert_called_with(path, "a" * 64, mode=mode, maximum=4096, hash_only=True)
+                read.reset_mock()
+                for mode in (0o4775, 0o4777, 0o6755, 0o2755, 0o1755):
+                    with self.subTest(mode=oct(mode)):
+                        lstat.return_value = types.SimpleNamespace(st_mode=stat.S_IFREG | mode)
+                        with self.assertRaisesRegex(P["Held"], "^EXECUTABLE_CUSTODY_UNPROVEN$"):
+                            reader.binary(str(path), allowed_modes=allowed_modes)
+                read.assert_not_called()
+
+    def test_observe_scopes_mount_modes_and_binds_dockerd_hash_only_in_plan(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            commands = {name: str(root / name) for name in
+                        ("ip", "nft", "systemctl", "nsenter", "unshare", "mount", "umount", "docker", "openssl", "dockerd")}
+            for name, path in commands.items():
+                Path(path).write_bytes(name.encode())
+                Path(path).chmod(0o755)
+            reader = P["Reader"]()
+            binary = Mock(wraps=reader.binary)
+            # Simulate root-owned executable reads; binary() and verify() remain real.
+            def read(path, expected=None, **options):
+                info = path.lstat()
+                pin = P["digest"](path.read_bytes())
+                self.assertTrue(expected is None or expected == pin)
+                reader.inputs[path] = (P["identity"](info), pin)
+            hashes = {name: P["digest"](Path(path).read_bytes()) for name, path in commands.items()}
+            args = types.SimpleNamespace(installation_ref="fixture", a_root=str(root / "a"), a_plan_sha256="a" * 64,
+                                         authority_profile=str(root / "authority.json"), trust_policy=str(root / "trust.json"),
+                                         docker_socket=str(root / "docker.sock"), docker_socket_activation="daemon",
+                                         docker_socket_unit="fixture.service", docker_service_unit="fixture.service",
+                                         docker_socket_owner="root", docker_socket_group="root", docker_socket_mode="0660",
+                                         dockerd=commands["dockerd"])
+            socket_info = types.SimpleNamespace(st_mode=stat.S_IFSOCK | 0o660, st_uid=0, st_gid=0, st_nlink=1,
+                                                st_dev=1, st_ino=2, st_size=0, st_mtime_ns=0, st_ctime_ns=0)
+            lstat = Path.lstat
+            def observed_stat(path):
+                return socket_info if str(path) == args.docker_socket else lstat(path)
+            templates = {role: {"commands": commands, "commandHashes": hashes,
+                                "candidate": {"networkBindings": [], "tableName": role}}
+                         for role in ("adapter", "southbound")}
+            owner = {"nftPath": commands["nft"], "nftSha256": hashes["nft"], "kernel": {"tableName": "guard"}}
+            docs = {role: {} for role in ("semantic", "adapter", "southbound")}
+            roles = {role: {"networks": {}} for role in docs}
+            guard = {"snapshotRoot": str(root)}
+            plans = []
+            canonical = P["canonical"]
+            def capture_plan(value):
+                if "inputHashes" in value:
+                    plans.append(value)
+                return canonical(value)
+            with patch.dict(MODULE, Reader=lambda: reader, directory=lambda _: None,
+                            output_plan=lambda _: (root / "profile.json", []), authority=lambda *_: ("entity", {}),
+                            receipt_a=lambda *_: ({}, {"southboundCertificate": {"sni": "gate"}}),
+                            boot_guard=lambda *_: (owner, {}, guard.copy()), historical_templates=lambda *_: templates,
+                            read_roles=lambda *_: docs, verify_peer=lambda *_: None, observed_networks=lambda *_: {},
+                            role_profiles=lambda *_: roles, mounted_configuration=lambda *_: {"apisix": {"ssl": {"listen": [{}]}}},
+                            stable_transport=lambda *_: ({}, {}), runtime=lambda *_: {}, empty_nft=lambda *_: None,
+                            canonical=capture_plan), patch.object(reader, "binary", binary), patch.object(
+                reader, "read", side_effect=read
+            ), patch.object(Path, "lstat", observed_stat), patch.object(
+                P["shutil"], "which", side_effect=lambda name, **_: commands[name]
+            ), patch.object(P["Docker"], "get", return_value={}):
+                result = P["observe"](args)
+                self.assertEqual(result["profile"]["dockerdExecutable"], {"path": commands["dockerd"]})
+                self.assertEqual(plans[0]["inputHashes"][commands["dockerd"]], hashes["dockerd"])
+                self.assertEqual(result["planSha256"], P["digest"](canonical(plans[0])))
+                original = result
+                Path(commands["dockerd"]).write_bytes(b"updated dockerd")
+                reader.inputs.clear()
+                result = P["observe"](args)
+                self.assertEqual(result["profileSha256"], original["profileSha256"])
+                self.assertNotEqual(result["planSha256"], original["planSha256"])
+                self.assertEqual(plans[1]["inputHashes"][commands["dockerd"]], P["digest"](b"updated dockerd"))
+            self.assertEqual([call.args[0] for call in binary.call_args_list], [commands[name] for name in (
+                "ip", "nft", "systemctl", "dockerd", "nsenter", "unshare", "mount", "umount", "docker", "openssl"
+            )] * 2)
+            for call in binary.call_args_list:
+                expected = {"allowed_modes": {0o555, 0o755, 0o4755, 0o4555}} if call.args[0] in (
+                    commands["mount"], commands["umount"]
+                ) else ({"maximum": 268435456} if call.args[0] == commands["dockerd"] else {})
+                self.assertEqual(call.kwargs, expected)
+
     def test_role_projection_excludes_engine_identifiers_and_aliases(self):
         network_id = "a" * 64
         networks = {"back": (network_id, {"bridge": "ouf-test", "internal": False, "subnets": ["10.15.0.0/24"]})}
@@ -221,10 +328,12 @@ int main(int argc, char **argv) {
                 self.assertTrue(select.select([proc.stdout], [], [], 5)[0])
                 self.assertEqual(proc.stdout.readline(), b"ready\n")
                 args = self.args(path, "daemon", "fixture.service", "fixture.service")
-                docker = P["Docker"](P["Reader"](), args, None)
+                reader = P["Reader"]()
+                docker = P["Docker"](reader, args, None)
                 self.assertEqual(docker.get("/info"), {"peerFixture": True})
                 self.assertEqual(docker.proof["pid"], proc.pid)
-                self.assertEqual(docker.profile["dockerdExecutable"]["sha256"], P["digest"](self.dockerd.read_bytes()))
+                self.assertEqual(docker.profile["dockerdExecutable"], {"path": str(self.dockerd)})
+                self.assertEqual(reader.verify()[str(self.dockerd)], P["digest"](self.dockerd.read_bytes()))
                 self.assertEqual(docker.profile["dockerSocketOwnership"]["mode"], "0660")
                 args.docker_socket_mode = "0600"
                 with self.assertRaisesRegex(P["Held"], "^DOCKER_SOCKET_CUSTODY_UNPROVEN$"):
