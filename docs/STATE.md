@@ -82,6 +82,8 @@ Teatri, senza nuovo upload o profilo:
   [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099). La prova Java rilegge tutti i certificati del truststore unito, con un inventario di prova che supera il precedente limite 16.
   Il piano si è fermato su `PROVIDER_CA_INVENTORY_UNPROVEN`. Misure di Opus confermate dal piano: 118 CA Java, 151 nel truststore provider, 161 nell’unione. Il bundle provider rimane integrale.
   Il [controller](../scripts/cutover-semantic-provider-20261111.py) ora riporta il codice interno e, se letto, il conteggio dichiarato. Per i due JSON richiede UID 0 e modo 0600, come il writer del 29 ottobre che lascia ereditare il GID. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890).
+  Giovanni ha verificato che il contesto del 29 ottobre è `STOP_RECONCILE` per `CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED`. Il PKCS#12 era già stato preparato e riletto, prima del controllo sul vecchio southbound.
+  D richiede quell’esito esatto, i contatori di preparazione e rilettura e l’inventario completo del PKCS#12. Verifica anche che la sola CA registrata firmi il certificato del southbound del bind APISIX atteso. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43006571849/job/130475418120).
   Giovanni esegue il nuovo `--plan` in sola lettura nel suo terminale. Per `--apply` servono il suo sì separato e l’hash del nuovo piano. D, A, B e C restano da eseguire.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
