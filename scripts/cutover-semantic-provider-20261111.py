@@ -64,9 +64,9 @@ class Held(RuntimeError):
 
 
 class CaInventoryHeld(Held):
-    def __init__(self, reason, counts):
+    def __init__(self, reason, report_fields):
         super().__init__(reason)
-        self.counts = counts
+        self.report_fields = report_fields
 
 
 def require(ok, code):
@@ -175,7 +175,8 @@ def private_input(path, *, uid, gid, mode, limit):
     with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as stream:
         before = os.fstat(stream.fileno())
         require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and 0 < before.st_size <= limit
-                and (before.st_uid, before.st_gid, stat.S_IMODE(before.st_mode)) == (uid, gid, mode),
+                and before.st_uid == uid and (gid is None or before.st_gid == gid)
+                and stat.S_IMODE(before.st_mode) == mode,
                 "MATERIAL_METADATA_CHANGED")
         raw = stream.read(limit + 1)
         require(len(raw) == before.st_size and identity(before) == identity(os.fstat(stream.fileno()))
@@ -197,21 +198,25 @@ def env_map(config, *, check_secret_names=True):
     return result
 
 
-def expected_provider_fingerprints(public_size):
-    record = json.loads(private_input(PUBLIC_TRUST_RECORD, uid=0, gid=0, mode=0o600, limit=2097152))
-    result = json.loads(private_input(PUBLIC_TRUST_RESULT, uid=0, gid=0, mode=0o600, limit=2097152))
+def expected_provider_fingerprints(public_size, diagnostics):
+    # Capture.put() leaves the group inherited, with access restricted to UID 0.
+    record = json.loads(private_input(PUBLIC_TRUST_RECORD, uid=0, gid=None, mode=0o600, limit=2097152))
+    proposal = record["proposal"]
+    count = proposal.get("certificateCount") if isinstance(proposal, dict) else None
+    if type(count) is int:
+        diagnostics["recordCertificateCount"] = count
+    result = json.loads(private_input(PUBLIC_TRUST_RESULT, uid=0, gid=None, mode=0o600, limit=2097152))
     require(result["schema"] == "ouf.m2-discovery-trust-context-preparation-result.v1"
             and result["status"] == "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED"
             and result["complete"] is True and result["scope"] == str(PUBLIC_TRUST.parent)
             and result["publicTrustInputsHash"] == sha(canonical(record)), "PUBLIC_TRUST_RECEIPT_CHANGED")
-    proposal, store = record["proposal"], record["publicStore"]
+    store = record["publicStore"]
     require(record["schema"] == "ouf.m2-discovery-prepared-public-trust.v1"
             and proposal["schema"] == "ouf.discovery-bound-public-trust-proposal.v1"
             and store["path"] == str(PUBLIC_TRUST) and store["sha256"] == proposal["sha256"] == PUBLIC_TRUST_SHA
             and proposal["bytes"] == public_size, "PUBLIC_TRUST_RECEIPT_STORE_MISMATCH")
     fingerprints = proposal["allCaFingerprints"]
-    require(type(proposal["certificateCount"]) is int and type(fingerprints) is list
-            and 0 < proposal["certificateCount"] == len(fingerprints)
+    require(type(count) is int and type(fingerprints) is list and 0 < count == len(fingerprints)
             and all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) for value in fingerprints)
             and fingerprints == sorted(set(proposal["iamCaFingerprints"]) | {proposal["providerCaFingerprint"]}),
             "PUBLIC_TRUST_RECEIPT_INVENTORY_UNPROVEN")
@@ -230,12 +235,14 @@ def verified_ca_union(stock, provider, public_size, trust):
     if (len(totals) != 1 or int(totals[0]) != len(stock_pems)
             or types != [b"trustedCertEntry"] * len(stock_pems)):
         raise CaInventoryHeld("JAVA_CA_INVENTORY_UNPROVEN", counts)
+    diagnostics = {}
     try:
-        expected = expected_provider_fingerprints(public_size)
+        expected = expected_provider_fingerprints(public_size, diagnostics)
         require(len(provider_pems) == len(expected) and sorted(sha(cert) for cert in additional) == expected,
                 "PUBLIC_TRUST_INVENTORY_MISMATCH")
     except (RuntimeError, OSError, ValueError, TypeError, KeyError) as error:
-        raise CaInventoryHeld("PROVIDER_CA_INVENTORY_UNPROVEN", counts) from error
+        diagnostics["providerInventoryDetail"] = code(error) if type(error) is Held else type(error).__name__
+        raise CaInventoryHeld("PROVIDER_CA_INVENTORY_UNPROVEN", counts | diagnostics) from error
     return merged, counts
 
 
@@ -618,7 +625,7 @@ def main():
             os.setsid()
             apply(rollout, mac, planned, report)
     except CaInventoryHeld as error:
-        report.update(error.counts, reason=str(error))
+        report.update(error.report_fields, reason=str(error))
     except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
             http.client.HTTPException) as error:
         report["reason"] = code(error)
