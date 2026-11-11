@@ -418,12 +418,15 @@ def restore(rollout, old, manifest, digest, new_id):
     expected_config = copy.deepcopy(old["Config"])
     if "MacAddress" not in config:
         expected_config.pop("MacAddress", None)
+    require(config == expected_config, "RESTORE_FINAL_CONFIG_CHANGED")
+    require(live["Name"] == "/" + name, "RESTORE_FINAL_NAME_CHANGED")
+    require(set(live["NetworkSettings"]["Networks"]) == {NETWORK}, "RESTORE_FINAL_NETWORK_CHANGED")
     endpoint = live["NetworkSettings"]["Networks"][NETWORK]
-    require(config == expected_config and live["Name"] == "/" + name
-            and set(live["NetworkSettings"]["Networks"]) == {NETWORK}
-            and (endpoint["IPAddress"], endpoint["MacAddress"]) == (ADDRESS, MAC)
-            and set(endpoint["Aliases"]) == set(old["NetworkSettings"]["Networks"][NETWORK]["Aliases"])
-            and endpoint["EndpointID"], "RESTORE_FINAL_BINDING_UNPROVEN")
+    require(endpoint["IPAddress"] == ADDRESS, "RESTORE_FINAL_IP_CHANGED")
+    require(endpoint["MacAddress"] == MAC, "RESTORE_FINAL_MAC_CHANGED")
+    require(set(endpoint["Aliases"]) == set(old["NetworkSettings"]["Networks"][NETWORK]["Aliases"]),
+            "RESTORE_FINAL_ALIASES_CHANGED")
+    require(endpoint["EndpointID"], "RESTORE_FINAL_ENDPOINT_MISSING")
 
 
 def apply(rollout, mac, planned, report):
