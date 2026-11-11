@@ -640,3 +640,9 @@ Controller `65635c79`, launcher `8550abc0`. [Quattro test passati](https://githu
 Il piano di Giovanni ha superato il controllo alias ed è uscito `HELD` su `CA_INVENTORY_UNPROVEN`, in sola lettura. La ricevuta GitHub del 9 novembre conferma il confronto dei byte e la dimensione del truststore, ma il totale atteso è in `public-trust-inputs.json` sul VPS.
 
 Controller `063de27f`, launcher `8866271e`. Il controller confronta conteggio e impronte con la ricevuta preparata e separa `JAVA_CA_INVENTORY_UNPROVEN` da `PROVIDER_CA_INVENTORY_UNPROVEN`, riportando i soli conteggi. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099), inclusa la rilettura Java di ogni certificato dopo l’unione con 18 CA di prova. Nessun cutover eseguito.
+
+## 11 novembre 2026 — Diagnosi del record di trust del provider per D
+
+Il piano di Giovanni è uscito `HELD` con `PROVIDER_CA_INVENTORY_UNPROVEN`. Ha rilevato 118 CA Java, 151 nel truststore provider e 161 nell’unione. Il bundle provider resta integrale.
+
+Controller `f23d5f6c`, launcher `68954ea2`. Il confronto con il writer `8cc42b0d` conferma schema, stato, campi SHA-256 del DER e hash canonico. I JSON sono UID 0, modo 0600, con GID ereditato. Il report provider aggiunge il solo codice interno e il conteggio dichiarato, se disponibile. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890). Causa VPS da confermare, nessun cutover eseguito.
