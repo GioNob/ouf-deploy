@@ -39,6 +39,8 @@ MATERIAL_SHA = "68daa9c9af2e3d5b41aceff988405e78a6fd3cb90a8c71f922816dd85964d392
 CREDENTIAL = MATERIAL / "schema-gov-client-secret"
 PUBLIC_TRUST = Path("/etc/ouf/deploy-snapshots/m2-discovery-trust-context-68daa9c9-20261029-v1/provider-trust.p12")
 PUBLIC_TRUST_SHA = "33418234a5428623b3f82e4219b1c29e014a14de1a537452366d9e54878c9559"
+PUBLIC_TRUST_RECORD = PUBLIC_TRUST.with_name("public-trust-inputs.json")
+PUBLIC_TRUST_RESULT = PUBLIC_TRUST.with_name("result.json")
 WORK = Path("/var/lib/ouf-storage-migration/semantic-provider-cutover-20261111")
 CREDENTIAL_TARGET = "/run/secrets/schema-gov-client-secret"
 TRUST_TARGET = "/run/ouf-discovery-trust/merged-trust.p12"
@@ -59,6 +61,12 @@ JOURNAL_FILES = ("manifest.json", "merged-trust.p12", "java.args", "created.json
 
 class Held(RuntimeError):
     pass
+
+
+class CaInventoryHeld(Held):
+    def __init__(self, reason, counts):
+        super().__init__(reason)
+        self.counts = counts
 
 
 def require(ok, code):
@@ -189,6 +197,48 @@ def env_map(config, *, check_secret_names=True):
     return result
 
 
+def expected_provider_fingerprints(public_size):
+    record = json.loads(private_input(PUBLIC_TRUST_RECORD, uid=0, gid=0, mode=0o600, limit=2097152))
+    result = json.loads(private_input(PUBLIC_TRUST_RESULT, uid=0, gid=0, mode=0o600, limit=2097152))
+    require(result["schema"] == "ouf.m2-discovery-trust-context-preparation-result.v1"
+            and result["status"] == "PUBLIC_TRUST_AND_NATIVE_CONTEXT_PREPARED_NOT_ADMITTED"
+            and result["complete"] is True and result["scope"] == str(PUBLIC_TRUST.parent)
+            and result["publicTrustInputsHash"] == sha(canonical(record)), "PUBLIC_TRUST_RECEIPT_CHANGED")
+    proposal, store = record["proposal"], record["publicStore"]
+    require(record["schema"] == "ouf.m2-discovery-prepared-public-trust.v1"
+            and proposal["schema"] == "ouf.discovery-bound-public-trust-proposal.v1"
+            and store["path"] == str(PUBLIC_TRUST) and store["sha256"] == proposal["sha256"] == PUBLIC_TRUST_SHA
+            and proposal["bytes"] == public_size, "PUBLIC_TRUST_RECEIPT_STORE_MISMATCH")
+    fingerprints = proposal["allCaFingerprints"]
+    require(type(proposal["certificateCount"]) is int and type(fingerprints) is list
+            and 0 < proposal["certificateCount"] == len(fingerprints)
+            and all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) for value in fingerprints)
+            and fingerprints == sorted(set(proposal["iamCaFingerprints"]) | {proposal["providerCaFingerprint"]}),
+            "PUBLIC_TRUST_RECEIPT_INVENTORY_UNPROVEN")
+    return fingerprints
+
+
+def verified_ca_union(stock, provider, public_size, trust):
+    stock_pems = trust.PEM.findall(stock)
+    provider_pems = trust.PEM.findall(provider)
+    existing, additional = ({ssl.PEM_cert_to_DER_cert(pem.decode("ascii")) for pem in pems}
+                            for pems in (stock_pems, provider_pems))
+    merged = existing | additional
+    counts = {"existingCaCount": len(existing), "providerCaCount": len(additional), "mergedCaCount": len(merged)}
+    totals = re.findall(rb"^Your keystore contains ([1-9][0-9]*) entr(?:y|ies)\r?$", stock, re.MULTILINE)
+    types = re.findall(rb"^Entry type: ([^\r\n]+)\r?$", stock, re.MULTILINE)
+    if (len(totals) != 1 or int(totals[0]) != len(stock_pems)
+            or types != [b"trustedCertEntry"] * len(stock_pems)):
+        raise CaInventoryHeld("JAVA_CA_INVENTORY_UNPROVEN", counts)
+    try:
+        expected = expected_provider_fingerprints(public_size)
+        require(len(provider_pems) == len(expected) and sorted(sha(cert) for cert in additional) == expected,
+                "PUBLIC_TRUST_INVENTORY_MISMATCH")
+    except (RuntimeError, OSError, ValueError, TypeError, KeyError) as error:
+        raise CaInventoryHeld("PROVIDER_CA_INVENTORY_UNPROVEN", counts) from error
+    return merged, counts
+
+
 def prepare_material(deadline, old, trust):
     receipt_path = MATERIAL / "prepared-inputs.private.json"
     receipt = json.loads(private_input(receipt_path, uid=0, gid=0, mode=0o600, limit=4194304))
@@ -215,20 +265,18 @@ def prepare_material(deadline, old, trust):
     require(re.fullmatch(r"/[a-zA-Z0-9_/.-]{1,160}", home) and ".." not in Path(home).parts, "JAVA_HOME_INVALID")
     stock = namespace_read(deadline, OLD, "mount", "/bin/sh", "-c",
                            'test ! -e "$1/lib/security/jssecacerts" && '
-                           'exec "$1/bin/keytool" -J-XX:-UsePerfData -list -rfc -cacerts -storepass changeit',
+                           'exec "$1/bin/keytool" -J-XX:-UsePerfData -J-Duser.language=en -J-Duser.country=US '
+                           '-list -rfc -cacerts -storepass changeit',
                            "ouf-read-trust", home, maximum=12)
     extra = subprocess.run(("/usr/bin/openssl", "pkcs12", "-nokeys", "-passin", "pass:changeit"),
                            input=public, capture_output=True, timeout=remaining(deadline, 10))
     require(extra.returncode == 0 and len(extra.stdout) <= 1048576, "PUBLIC_TRUSTSTORE_UNREADABLE")
-    def certificates(pem):
-        return {ssl.PEM_cert_to_DER_cert(match.decode("ascii")) for match in trust.PEM.findall(pem)}
-    existing, additional = certificates(stock), certificates(extra.stdout)
-    require(50 <= len(existing) <= 512 and 1 <= len(additional) <= 16, "CA_INVENTORY_UNPROVEN")
-    merged = trust._pkcs12(sorted(existing | additional, key=sha))
+    certificates, counts = verified_ca_union(stock, extra.stdout, len(public), trust)
+    merged = trust._pkcs12(sorted(certificates, key=sha))
     require(len(merged) <= trust.MAX_STORE, "MERGED_TRUSTSTORE_TOO_LARGE")
     args = (f"-Djavax.net.ssl.trustStore={TRUST_TARGET}\n-Djavax.net.ssl.trustStoreType=PKCS12\n"
             "-Djavax.net.ssl.trustStorePassword=changeit\n").encode()
-    return merged, args, len(existing), len(existing | additional), sha(credential)
+    return merged, args, counts, sha(credential)
 
 
 def http_health(deadline, cid, host="127.0.0.1", paths=SEMANTIC_HEALTH):
@@ -310,7 +358,7 @@ def plan(rollout, mac, trust):
                 and not any(e.get("EndpointID") or e.get("IPAddress") for e in doc["NetworkSettings"]["Networks"].values()),
                 "SUCCESSOR_NOT_STOPPED")
     service_probes(deadline, OLD, gateway)
-    merged, args, existing_count, merged_count, credential_digest = prepare_material(deadline, old, trust)
+    merged, args, ca_counts, credential_digest = prepare_material(deadline, old, trust)
     request = rollout.request(old, IMAGE)
     request["Labels"] = dict(old["Config"].get("Labels") or {})
     require(LABEL not in request["Labels"], "CUTOVER_LABEL_COLLISION")
@@ -339,6 +387,7 @@ def plan(rollout, mac, trust):
              "aliases": endpoint["Aliases"], "dnsNames": endpoint["DNSNames"]},
         "observedGateway": gateway, "observedMcp": MCP, "stoppedSuccessors": list(SUCCESSORS),
         "inputFiles": [str(MATERIAL / "prepared-inputs.private.json"), str(CREDENTIAL), str(PUBLIC_TRUST),
+                       str(PUBLIC_TRUST_RECORD), str(PUBLIC_TRUST_RESULT),
                        f"/proc/{old['State']['Pid']}/cmdline", str(cacerts)],
         "privateDirectory": str(WORK), "filesCreatedUnderPrivateDirectory": list(JOURNAL_FILES),
         "readOnlyBinds": [{"host": str(source), "target": target, "uid": 0, "gid": 10001, "mode": "0440"}
@@ -348,7 +397,7 @@ def plan(rollout, mac, trust):
         "workerEnabled": False,
         "environmentNamesChanged": ["JDK_JAVA_OPTIONS", "MANAGEMENT_ENDPOINT_HEALTH_GROUP_CUTOVER_INCLUDE",
                                     "OUF_SCHEMA_GOV_ENABLED", "SPRING_FLYWAY_ENABLED"],
-        "existingCaCount": existing_count, "mergedCaCount": merged_count,
+        **ca_counts,
         "health": {"currentAndRestoredSemantic": list(SEMANTIC_HEALTH), "newSemantic": CUTOVER_HEALTH,
                    "gatewayBackend": READINESS, "mcp": "/health/ready"},
         "limitsSeconds": {"forward": START_SECONDS, "health": HEALTH_SECONDS, "automaticRestore": RESTORE_SECONDS},
@@ -568,6 +617,8 @@ def main():
                     return 130
             os.setsid()
             apply(rollout, mac, planned, report)
+    except CaInventoryHeld as error:
+        report.update(error.counts, reason=str(error))
     except (RuntimeError, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
             http.client.HTTPException) as error:
         report["reason"] = code(error)
