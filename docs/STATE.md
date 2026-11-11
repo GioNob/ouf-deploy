@@ -80,6 +80,8 @@ Teatri, senza nuovo upload o profilo:
   Il nuovo controller verifica gli alias configurati e i nomi DNS, preserva tutti i nomi correnti e ripristina gli alias originali in caso di rollback. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), incluso il ciclo con Docker 29.8.1.
   Il piano successivo ha superato il controllo alias e si è fermato su `CA_INVENTORY_UNPROVEN`. Il controller ora confronta il truststore con conteggio e impronte della ricevuta sul VPS e distingue gli errori Java e provider.
   [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099). La prova Java rilegge tutti i certificati del truststore unito, con un inventario di prova che supera il precedente limite 16.
+  Il piano si è fermato su `PROVIDER_CA_INVENTORY_UNPROVEN`. Misure di Opus confermate dal piano: 118 CA Java, 151 nel truststore provider, 161 nell’unione. Il bundle provider rimane integrale.
+  Il [controller](../scripts/cutover-semantic-provider-20261111.py) ora riporta il codice interno e, se letto, il conteggio dichiarato. Per i due JSON richiede UID 0 e modo 0600, come il writer del 29 ottobre che lascia ereditare il GID. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890).
   Giovanni esegue il nuovo `--plan` in sola lettura nel suo terminale. Per `--apply` servono il suo sì separato e l’hash del nuovo piano. D, A, B e C restano da eseguire.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
