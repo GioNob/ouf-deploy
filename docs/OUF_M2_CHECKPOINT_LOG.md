@@ -628,3 +628,9 @@ Ricevuta operatore delle 13:29:10 CET, `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORI
 Opus ha verificato la consegna precedente e segnalato il rischio di interruzione dopo lo stop. Il controller `08566c6c` isola il processo di applicazione dal terminale, ignora SIGHUP, SIGINT e SIGTERM fino alla fine e salva `result.json` in WORK, root:root, modo 0600. Il [launcher aggiornato](../scripts/deliver-semantic-provider-cutover-20261111.sh) è `58313b1d`.
 
 [Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145). Segnali reali e stdout chiuso dopo lo stop simulato lasciano una ricevuta sia per il ripristino sia per HELD. La prova nativa separata ripristina lo stesso CID e il MAC su Docker 29.8.1. Giovanni esegue il nuovo `--plan` nel suo terminale. Nessuna prova di cutover o modifica sul VPS.
+
+## 11 novembre 2026 — Verifica dei nomi DNS di Semantic per D
+
+Il piano di Giovanni è uscito `HELD` su `BACKEND_PEER_CHANGED`, in sola lettura. L’inspect di Opus conferma `172.18.0.6`, MAC `b2:96:a1:e2:c1:8d`, alias configurati `790c62742c92` e `11d9362c7db4`. `ouf-semantic-registry` compare nella ricetta APISIX storica. Gli upstream attivi e gli URL dei singoli client restano da osservare sul VPS.
+
+Controller `65635c79`, launcher `8550abc0`. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), con rifiuto di una variazione nascosta dalla vista di compatibilità e ciclo nativo su Docker 29.8.1. Il sostituto conserva i nomi DNS effettivi e aggiunge il proprio CID breve. Il ripristino conserva gli alias configurati originali. Nessun cutover eseguito.
