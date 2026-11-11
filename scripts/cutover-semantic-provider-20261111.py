@@ -27,6 +27,7 @@ NETWORK = "ouf-backend"
 NETWORK_ID = "113b5f0a3c53059b087a2ce997d2670cc057e88c0c17d4291b3b41a51ce26ba3"
 ADDRESS = "172.18.0.6"
 MAC = "b2:96:a1:e2:c1:8d"
+BACKEND_ALIASES = ("790c62742c92", "11d9362c7db4")
 MCP = "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943"
 SUCCESSORS = (
     "85b5302f6dbc3e9a24ace904b8d8a2d43bc5185e340c1bfe5474c723a6b640ef",
@@ -44,6 +45,7 @@ TRUST_TARGET = "/run/ouf-discovery-trust/merged-trust.p12"
 ARGS_TARGET = "/run/ouf-discovery-trust/java.args"
 LABEL = "ouf.semantic.provider-cutover.plan"
 DOCKER_SOCKET = "/run/docker.sock"
+ALIAS_INSPECT_API = "1.45"
 RECONNECT_API = "1.54"
 READINESS = "/actuator/health/readiness"
 SEMANTIC_HEALTH = ("/actuator/health/liveness", READINESS, "/actuator/health")
@@ -130,9 +132,9 @@ def engine(deadline, method, resource, body=None, *, allow_absent=False, api="1.
     return json.loads(raw) if raw else None
 
 
-def inspect(deadline, name, *, allow_absent=False):
+def inspect(deadline, name, *, allow_absent=False, api="1.44"):
     require(re.fullmatch(r"[a-zA-Z0-9_.-]{1,200}", name), "CONTAINER_SELECTOR_INVALID")
-    return engine(deadline, "GET", f"/containers/{name}/json", allow_absent=allow_absent)
+    return engine(deadline, "GET", f"/containers/{name}/json", allow_absent=allow_absent, api=api)
 
 
 def action(deadline, cid, operation, body=None):
@@ -253,6 +255,23 @@ def process(deadline, doc):
     return Path("/proc", str(pid), "cmdline").read_bytes().rstrip(b"\0").decode().split("\0")
 
 
+def verify_backend_names(deadline, doc, expected_aliases):
+    # API 1.44 appends the short CID and hostname to Aliases for compatibility.
+    native = inspect(deadline, doc["Id"], api=ALIAS_INSPECT_API)
+    endpoint = doc["NetworkSettings"]["Networks"][NETWORK]
+    native_endpoint = native["NetworkSettings"]["Networks"][NETWORK]
+    require(native["Id"] == doc["Id"] and native["Name"] == doc["Name"]
+            and native["State"] == doc["State"]
+            and (native_endpoint | {"Aliases": endpoint["Aliases"]}) == endpoint,
+            "BACKEND_ALIAS_OBSERVATION_CHANGED")
+    compatibility_aliases = set(expected_aliases) | {doc["Id"][:12], doc["Config"]["Hostname"]}
+    dns_names = compatibility_aliases | {doc["Name"].lstrip("/")}
+    require(set(native_endpoint.get("Aliases") or ()) == set(expected_aliases)
+            and set(endpoint.get("Aliases") or ()) == compatibility_aliases
+            and set(endpoint.get("DNSNames") or ()) == dns_names, "BACKEND_ALIAS_SET_CHANGED")
+    return native_endpoint["Aliases"]
+
+
 def plan(rollout, mac, trust):
     deadline = time.monotonic() + 65
     require(not os.path.lexists(WORK), "CUTOVER_ATTEMPT_EXISTS")
@@ -276,9 +295,9 @@ def plan(rollout, mac, trust):
     require(net["Name"] == NETWORK and net["Id"] == NETWORK_ID and net["Driver"] == "bridge"
             and (endpoint["IPAddress"], endpoint["MacAddress"]) == (ADDRESS, MAC)
             and not endpoint.get("GlobalIPv6Address")
-            and "ouf-semantic-registry" in endpoint["Aliases"]
             and [cid for cid, row in net["Containers"].items() if row["IPv4Address"].split("/")[0] == ADDRESS] == [OLD],
             "BACKEND_PEER_CHANGED")
+    configured_aliases = verify_backend_names(deadline, old, BACKEND_ALIASES)
     gateways = [cid for cid, row in net["Containers"].items() if re.fullmatch(r"ouf-apisix(?:-[a-zA-Z0-9]+)*", row["Name"])]
     require(len(gateways) == 1, "ONE_CURRENT_APISIX_REQUIRED")
     gateway = gateways[0]
@@ -316,7 +335,8 @@ def plan(rollout, mac, trust):
     manifest = {
         "oldContainer": OLD, "newContainer": {"name": name, "image": IMAGE, "idAssignedByEngine": True},
         "retainedName": retained, "failureName": failed, "network": {"name": NETWORK, "id": NETWORK_ID,
-             "ipv4": ADDRESS, "mac": MAC, "aliases": endpoint["Aliases"]},
+             "ipv4": ADDRESS, "mac": MAC, "configuredAliases": configured_aliases,
+             "aliases": endpoint["Aliases"], "dnsNames": endpoint["DNSNames"]},
         "observedGateway": gateway, "observedMcp": MCP, "stoppedSuccessors": list(SUCCESSORS),
         "inputFiles": [str(MATERIAL / "prepared-inputs.private.json"), str(CREDENTIAL), str(PUBLIC_TRUST),
                        f"/proc/{old['State']['Pid']}/cmdline", str(cacerts)],
@@ -368,6 +388,12 @@ def await_health(deadline, cid, gateway, rollout):
     raise Held("SEMANTIC_READINESS_TIMEOUT")
 
 
+def verify_replacement_dns(old, actual):
+    old_names = old["NetworkSettings"]["Networks"][NETWORK]["DNSNames"]
+    names = actual["NetworkSettings"]["Networks"][NETWORK]["DNSNames"]
+    require(set(names) == set(old_names) | {actual["Id"][:12]}, "NEW_BACKEND_DNS_NAMES_CHANGED")
+
+
 def verify_new(rollout, old, request, actual, started):
     expected = copy.deepcopy(old)
     retained = {m["Destination"] for m in old["Mounts"]}
@@ -378,6 +404,8 @@ def verify_new(rollout, old, request, actual, started):
             and {(m["Source"], m["Destination"]) for m in extra} == sources, "NEW_READONLY_BIND_SET_CHANGED")
     expected["Mounts"] += extra
     rollout.verify_replacement(expected, request, actual, started)
+    if started:
+        verify_replacement_dns(old, actual)
 
 
 def restore(rollout, old, manifest, digest, new_id):
@@ -408,7 +436,7 @@ def restore(rollout, old, manifest, digest, new_id):
         if not actual["NetworkSettings"]["Networks"]:
             original = old["NetworkSettings"]["Networks"][NETWORK]
             settings = {"IPAMConfig": {"IPv4Address": ADDRESS}, "MacAddress": MAC,
-                        "Aliases": original["Aliases"]}
+                        "Aliases": manifest["network"]["configuredAliases"]}
             for field in ("Links", "DriverOpts"):
                 if original.get(field):
                     settings[field] = original[field]
@@ -433,9 +461,8 @@ def restore(rollout, old, manifest, digest, new_id):
     endpoint = live["NetworkSettings"]["Networks"][NETWORK]
     require(endpoint["IPAddress"] == ADDRESS, "RESTORE_FINAL_IP_CHANGED")
     require(endpoint["MacAddress"] == MAC, "RESTORE_FINAL_MAC_CHANGED")
-    require(set(endpoint["Aliases"]) == set(old["NetworkSettings"]["Networks"][NETWORK]["Aliases"]),
-            "RESTORE_FINAL_ALIASES_CHANGED")
     require(endpoint["EndpointID"], "RESTORE_FINAL_ENDPOINT_MISSING")
+    verify_backend_names(deadline, live, manifest["network"]["configuredAliases"])
 
 
 def apply(rollout, mac, planned, report):
