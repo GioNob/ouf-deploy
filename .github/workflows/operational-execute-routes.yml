@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: 98d01f4
+          ref: 98d01f460d488c6322199f2202bc3195ee7538da
           path: .gateway-reference
           persist-credentials: false
       - name: Unit tests and required gateway equivalence
