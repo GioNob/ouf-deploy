@@ -76,7 +76,9 @@ Teatri, senza nuovo upload o profilo:
   Sequenza concordata D → A → B → C. D cambia Semantic, A osserva la nuova generazione, B ammette definitivamente la coppia, C prova JWT e TLS con una lease temporanea.
   D è aggiornato dopo la revisione di Opus. Il [launcher](../scripts/deliver-semantic-provider-cutover-20261111.sh) avvia il controller di `--apply` in una sessione separata. La ricevuta finale resta in `/var/lib/ouf-storage-migration/semantic-provider-cutover-20261111/result.json`, anche se si perde il terminale.
   [Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145), inclusi segnali reali e stdout chiuso dopo lo stop simulato, esito HELD su disco e ripristino di CID e MAC su Docker 29.8.1.
-  Giovanni esegue `--plan` in sola lettura nel suo terminale. Per `--apply` servono il suo sì separato e l’hash del nuovo piano. D, A, B e C restano da eseguire.
+  Il primo `--plan` è uscito `HELD` su `BACKEND_PEER_CHANGED` perché il controller cercava l’alias storico `ouf-semantic-registry`. La lettura di Opus ha confermato IP, MAC e i due alias effettivi.
+  Il nuovo controller verifica gli alias configurati e i nomi DNS, preserva tutti i nomi correnti e ripristina gli alias originali in caso di rollback. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), incluso il ciclo con Docker 29.8.1.
+  Giovanni esegue il nuovo `--plan` in sola lettura nel suo terminale. Per `--apply` servono il suo sì separato e l’hash del nuovo piano. D, A, B e C restano da eseguire.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
