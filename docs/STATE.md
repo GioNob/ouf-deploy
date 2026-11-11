@@ -69,7 +69,9 @@ Teatri, senza nuovo upload o profilo:
   Il controller ora chiude esplicitamente `HTTPConnection` e conserva la ricevuta se un comando del preflight fallisce. [Cinque test su socket Unix locale con Python 3.12](https://github.com/GioNob/ouf-deploy/actions/runs/42987989925/job/130413676928) passati sul runner GitHub ospitato.
   Il secondo tentativo si è fermato a zero CREATE. Il filtro HTTP rifiutava il digest `sha256:` della prima immagine. Opus ha confermato l’assenza dei due candidati.
   Il controller distingue gli ID container dai digest immagine. Il [launcher per Opus](../scripts/deliver-discovery-stopped-candidates-20261111.sh) supporta `--plan` e richiede per `--apply` l’hash della ricevuta `PLAN_READY`.
-  [Nove test su socket Unix](https://github.com/GioNob/ouf-deploy/actions/runs/42989536972/job/130418729204) passati. Il prossimo passo sul VPS è il piano in sola lettura. La creazione segue la revisione e il sì dell’owner.
+  Il piano `cc121972…` ha portato a una sola CREATE. L’inspect del candidato adapter aveva una chiave rete per nome e una per ID. Il controller si è fermato prima di creare il southbound.
+  La rimozione autorizzata dell’adapter ha restituito `FIRST_STOPPED_CANDIDATE_REMOVED`. Opus ha verificato che non ci sono candidati, i provider storici sono spenti e Semantic è in servizio.
+  La nuova consegna invia i nomi delle reti. [Undici test su socket Unix](https://github.com/GioNob/ouf-deploy/actions/runs/42990554876/job/130422110846) passati, inclusi il rifiuto delle chiavi miste e la lettura della prenotazione egress. Dopo la revisione Opus, eseguire un nuovo `--plan`.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
 - **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
