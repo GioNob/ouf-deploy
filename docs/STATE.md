@@ -78,6 +78,8 @@ Teatri, senza nuovo upload o profilo:
   [Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145), inclusi segnali reali e stdout chiuso dopo lo stop simulato, esito HELD su disco e ripristino di CID e MAC su Docker 29.8.1.
   Il primo `--plan` è uscito `HELD` su `BACKEND_PEER_CHANGED` perché il controller cercava l’alias storico `ouf-semantic-registry`. La lettura di Opus ha confermato IP, MAC e i due alias effettivi.
   Il nuovo controller verifica gli alias configurati e i nomi DNS, preserva tutti i nomi correnti e ripristina gli alias originali in caso di rollback. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), incluso il ciclo con Docker 29.8.1.
+  Il piano successivo ha superato il controllo alias e si è fermato su `CA_INVENTORY_UNPROVEN`. Il controller ora confronta il truststore con conteggio e impronte della ricevuta sul VPS e distingue gli errori Java e provider.
+  [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099). La prova Java rilegge tutti i certificati del truststore unito, con un inventario di prova che supera il precedente limite 16.
   Giovanni esegue il nuovo `--plan` in sola lettura nel suo terminale. Per `--apply` servono il suo sì separato e l’hash del nuovo piano. D, A, B e C restano da eseguire.
 - **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
 - **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
