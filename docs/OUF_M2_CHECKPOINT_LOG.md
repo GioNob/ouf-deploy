@@ -646,3 +646,9 @@ Controller `063de27f`, launcher `8866271e`. Il controller confronta conteggio e 
 Il piano di Giovanni è uscito `HELD` con `PROVIDER_CA_INVENTORY_UNPROVEN`. Ha rilevato 118 CA Java, 151 nel truststore provider e 161 nell’unione. Il bundle provider resta integrale.
 
 Controller `f23d5f6c`, launcher `68954ea2`. Il confronto con il writer `8cc42b0d` conferma schema, stato, campi SHA-256 del DER e hash canonico. I JSON sono UID 0, modo 0600, con GID ereditato. Il report provider aggiunge il solo codice interno e il conteggio dichiarato, se disponibile. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890). Causa VPS da confermare, nessun cutover eseguito.
+
+## 11 novembre 2026 — Truststore conservato e CA del southbound
+
+Giovanni ha letto `STOP_RECONCILE`, `complete: false` e `CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED` nel `result.json` del 29 ottobre. Il controllo nativo sul vecchio southbound avveniva dopo scrittura, rilettura e registrazione del truststore. Il conteggio osservato del provider resta 151 e l’unione resta 161.
+
+Controller `9b6c0112`, launcher `8c9bad62`. D richiede i contatori `publicTrustStoresPrepared=1` e `publicTrustStoreReadbacks=1` e la conservazione del file, confronta il PKCS#12 con l’inventario completo e verifica offline la firma del certificato southbound con la sola CA registrata. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43006571849/job/130475418120), compreso il rifiuto di un’altra CA con lo stesso nome. Nessun cutover eseguito.
