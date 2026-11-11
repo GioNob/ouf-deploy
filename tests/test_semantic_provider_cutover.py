@@ -1,4 +1,5 @@
 """Run D restoration against disposable Docker containers on the hosted runner."""
+import copy
 import json
 import os
 from pathlib import Path
@@ -122,7 +123,28 @@ class CutoverTests(unittest.TestCase):
                     self.assertEqual(receipt["status"], "SEMANTIC_PREVIOUS_CONTAINER_RESTORED")
                     self.assertTrue((work / "restored.json").exists())
 
-    def test_restore_existing_cid_after_never_started_replacement(self):
+    def test_alias_guard_rejects_changes_hidden_by_compatibility_view(self):
+        aliases = list(D["BACKEND_ALIASES"])
+        cid, net = D["OLD"], D["NETWORK"]
+        name = "ouf-semantic-cutover-fixture"
+        old = {"Id": cid, "Name": "/" + name, "State": {"Pid": 100}, "Config": {"Hostname": aliases[-1]},
+               "NetworkSettings": {"Networks": {net: {
+                   "Aliases": aliases + [cid[:12]], "DNSNames": [name, *aliases, cid[:12]], "EndpointID": "fixture",
+               }}}}
+        native = copy.deepcopy(old)
+        native_endpoint = native["NetworkSettings"]["Networks"][net]
+        native_endpoint["Aliases"] = aliases.copy()
+        with patch.dict(NAMESPACE, inspect=lambda *args, **kwargs: native):
+            self.assertEqual(D["verify_backend_names"](time.monotonic() + 5, old, aliases), aliases)
+            native_endpoint["Aliases"].append(cid[:12])
+            with self.assertRaisesRegex(D["Held"], "^BACKEND_ALIAS_SET_CHANGED$"):
+                D["verify_backend_names"](time.monotonic() + 5, old, aliases)
+            native_endpoint["Aliases"].pop()
+            native_endpoint["DNSNames"].remove(name)
+            with self.assertRaisesRegex(D["Held"], "^BACKEND_ALIAS_OBSERVATION_CHANGED$"):
+                D["verify_backend_names"](time.monotonic() + 5, old, aliases)
+
+    def test_replacement_and_restore_preserve_backend_dns(self):
         self.assertTrue(DOCKER_HOST.startswith("unix://"))
         socket = DOCKER_HOST.removeprefix("unix://")
         docker_socket = patch.dict(NAMESPACE, DOCKER_SOCKET=socket)
@@ -135,6 +157,7 @@ class CutoverTests(unittest.TestCase):
         retained = name + "-before"
         failed = name + "-failed"
         ip, mac = "172.29.218.6", "b2:96:a1:e2:c1:8d"
+        aliases = list(D["BACKEND_ALIASES"])
         network = cli("network", "create", "--subnet", "172.29.218.0/24", prefix)
         cids = []
         def cleanup():
@@ -143,26 +166,41 @@ class CutoverTests(unittest.TestCase):
             cli("network", "rm", network)
         self.addCleanup(cleanup)
         image = cli("image", "inspect", "busybox:1.37.0", "--format", "{{.Id}}")
-        base = {"Image": image, "Cmd": ["/bin/sh", "-c",
+        base = {"Image": image, "Hostname": aliases[-1], "Cmd": ["/bin/sh", "-c",
                 "trap ':' USR1; touch /tmp/fixture-ready; while :; do sleep 1; done"],
                 "HostConfig": {"NetworkMode": prefix, "RestartPolicy": {"Name": "no"}},
                 "NetworkingConfig": {"EndpointsConfig": {prefix: {
-                    "IPAMConfig": {"IPv4Address": ip}, "MacAddress": mac, "Aliases": [name],
+                    "IPAMConfig": {"IPv4Address": ip}, "MacAddress": mac, "Aliases": aliases,
                 }}}}
         deadline = time.monotonic() + 60
-        def create(labels):
-            result = D["engine"](deadline, "POST", "/containers/create?name=" + name, base | {"Labels": labels})
+        def create(request, labels):
+            result = D["engine"](deadline, "POST", "/containers/create?name=" + name, request | {"Labels": labels})
             cids.append(result["Id"])
             return result["Id"]
-        cid = create({})
+        cid = create(base, {})
         D["action"](deadline, cid, "start")
         old = D["inspect"](deadline, cid)
-        self.assertEqual(old["NetworkSettings"]["Networks"][prefix]["MacAddress"], mac)
+        old_endpoint = old["NetworkSettings"]["Networks"][prefix]
+        self.assertEqual(old["Config"]["MacAddress"], mac)
+        self.assertEqual(old_endpoint["MacAddress"], mac)
+        self.assertEqual(set(old_endpoint["DNSNames"]), {name, cid[:12], *aliases})
+        with patch.dict(NAMESPACE, NETWORK=prefix):
+            configured = D["verify_backend_names"](deadline, old, aliases)
         D["action"](deadline, cid, "stop?t=2")
         D["engine"](deadline, "POST", f"/networks/{network}/disconnect", {"Container": cid, "Force": False})
         D["action"](deadline, cid, "rename?name=" + retained)
+        retained_old = D["inspect"](deadline, cid)
+        self.assertNotIn("MacAddress", retained_old["Config"])
+        self.assertEqual(retained_old["NetworkSettings"]["Networks"], {})
         digest = "c" * 64
-        candidate = create({D["LABEL"]: digest})
+        request = copy.deepcopy(base)
+        request["NetworkingConfig"]["EndpointsConfig"][prefix]["Aliases"] = old_endpoint["Aliases"]
+        candidate = create(request, {D["LABEL"]: digest})
+        D["action"](deadline, candidate, "start")
+        new = D["inspect"](deadline, candidate)
+        self.assertEqual(new["NetworkSettings"]["Networks"][prefix]["MacAddress"], mac)
+        with patch.dict(NAMESPACE, NETWORK=prefix):
+            D["verify_replacement_dns"](old, new)
         def ready(doc):
             for _ in range(30):
                 status = subprocess.run(("docker", "exec", doc["Id"], "cat", "/proc/1/status"),
@@ -174,13 +212,14 @@ class CutoverTests(unittest.TestCase):
             self.fail("Fixture gate did not start")
         rollout = SimpleNamespace(mounts=lambda doc: doc["Mounts"], gate_running=ready)
         manifest = {"newContainer": {"name": name}, "retainedName": retained, "failureName": failed,
-                    "observedGateway": "fixture"}
+                    "observedGateway": "fixture", "network": {"configuredAliases": configured}}
         with patch.dict(NAMESPACE, OLD=cid, NETWORK=prefix, NETWORK_ID=network, IMAGE=image, ADDRESS=ip, MAC=mac,
                         await_health=lambda *_: ready(D["inspect"](time.monotonic() + 5, cid))):
             D["restore"](rollout, old, manifest, digest, candidate)
         actual = D["inspect"](time.monotonic() + 5, cid)
         self.assertTrue(actual["State"]["Running"])
         self.assertEqual(actual["Name"], "/" + name)
+        self.assertEqual(set(actual["NetworkSettings"]["Networks"][prefix]["DNSNames"]), set(old_endpoint["DNSNames"]))
         replacement = D["inspect"](time.monotonic() + 5, candidate)
         self.assertEqual(replacement["Name"], "/" + failed)
         self.assertFalse(replacement["State"]["Running"])
