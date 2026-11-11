@@ -14,5 +14,5 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
-      - name: Verify projection, sealed guard and root-owned publication
-        run: sudo -n /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_installation.py -v
+      - name: Verify profile publication and both native Docker peer modes
+        run: sudo -n env OUF_P_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_installation.py -v
