@@ -634,3 +634,9 @@ Opus ha verificato la consegna precedente e segnalato il rischio di interruzione
 Il piano di Giovanni è uscito `HELD` su `BACKEND_PEER_CHANGED`, in sola lettura. L’inspect di Opus conferma `172.18.0.6`, MAC `b2:96:a1:e2:c1:8d`, alias configurati `790c62742c92` e `11d9362c7db4`. `ouf-semantic-registry` compare nella ricetta APISIX storica. Gli upstream attivi e gli URL dei singoli client restano da osservare sul VPS.
 
 Controller `65635c79`, launcher `8550abc0`. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), con rifiuto di una variazione nascosta dalla vista di compatibilità e ciclo nativo su Docker 29.8.1. Il sostituto conserva i nomi DNS effettivi e aggiunge il proprio CID breve. Il ripristino conserva gli alias configurati originali. Nessun cutover eseguito.
+
+## 11 novembre 2026 — Inventario dei certificati per D
+
+Il piano di Giovanni ha superato il controllo alias ed è uscito `HELD` su `CA_INVENTORY_UNPROVEN`, in sola lettura. La ricevuta GitHub del 9 novembre conferma il confronto dei byte e la dimensione del truststore, ma il totale atteso è in `public-trust-inputs.json` sul VPS.
+
+Controller `063de27f`, launcher `8866271e`. Il controller confronta conteggio e impronte con la ricevuta preparata e separa `JAVA_CA_INVENTORY_UNPROVEN` da `PROVIDER_CA_INVENTORY_UNPROVEN`, riportando i soli conteggi. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099), inclusa la rilettura Java di ogni certificato dopo l’unione con 18 CA di prova. Nessun cutover eseguito.
