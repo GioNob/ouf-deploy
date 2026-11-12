@@ -1,0 +1,26 @@
+name: Semantic runtime v5 arming
+on:
+  pull_request:
+    paths:
+      - tools/semantic_runtime_v5/**
+      - tools/semantic_b1b2_authority/**
+      - scripts/prepare-semantic-provider-b1b2-trust-policy.py
+      - scripts/deliver-semantic-provider-b1b2-trust-policy.sh
+      - tests/test_runtime_v5_arming.py
+      - tests/test_semantic_b1b2_authority.py
+      - .github/workflows/semantic-runtime-v5-arming.yml
+      - docs/OUF_SEMANTIC_RUNTIME_V5_ARMING_20261112.md
+permissions: {contents: read}
+jobs:
+  arming:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Runtime v5, native custody and real isolated arming verification
+        run: sudo -n env OUF_RUNTIME_V5_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_runtime_v5_arming.py -v
+      - name: Recheck task-14 trust policy and signatures natively
+        run: sudo -n env OUF_B1B2_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1b2_authority.py -v
+      - name: Check task-14 delivery launcher syntax
+        run: bash -n scripts/deliver-semantic-provider-b1b2-trust-policy.sh
