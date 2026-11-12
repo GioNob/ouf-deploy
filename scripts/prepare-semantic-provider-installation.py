@@ -32,7 +32,9 @@ ENV = {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"}
 
 
 class Held(RuntimeError):
-    pass
+    def __init__(self, reason, **details):
+        super().__init__(reason)
+        self.details = details
 
 
 def require(value, reason):
@@ -85,14 +87,14 @@ class Reader:
         require(value > 0, "PROFILE_READ_DEADLINE_EXCEEDED")
         return value
 
-    def read(self, name, expected=None, *, uid=0, gid=0, mode=0o600, minimum=1, maximum=2097152, hash_only=False):
+    def read(self, name, expected=None, *, uid=0, gid=0, mode=0o600, nlink=1, minimum=1, maximum=2097152, hash_only=False):
         path = absolute(name)
         for parent in path.parents:
             directory(parent)
         with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as stream:
             info = os.fstat(stream.fileno())
             require(stat.S_ISREG(info.st_mode) and info.st_uid == uid and info.st_gid == gid
-                    and info.st_nlink == 1 and minimum <= info.st_size <= maximum
+                    and info.st_nlink == nlink and minimum <= info.st_size <= maximum
                     and stat.S_IMODE(info.st_mode) == mode, "FILE_CUSTODY_UNPROVEN")
             if hash_only:
                 hasher, size = hashlib.sha256(), 0
@@ -441,6 +443,38 @@ def boot_guard(reader, args):
                          "snapshotRoot": str(stage.parent)}
 
 
+def guard_units(reader, args, systemctl):
+    require(REF.fullmatch(args.guard_service_unit) and args.guard_service_unit.endswith(".service")
+            and args.guard_service_unit != ".service", "GUARD_UNIT_UNPROVEN")
+    try:
+        unit = systemd_properties(reader, systemctl, args.guard_service_unit,
+                                  ("LoadState", "Type", "FragmentPath", "RequiredBy", "Before"))
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+        raise Held("GUARD_UNIT_UNPROVEN") from error
+    require(unit["LoadState"] == "loaded" and unit["Type"] == "oneshot"
+            and args.docker_service_unit in unit["RequiredBy"].split()
+            and args.docker_service_unit in unit["Before"].split(), "GUARD_UNIT_UNPROVEN")
+    require(unit["FragmentPath"] == args.guard_service_file, "GUARD_UNIT_FILE_UNPROVEN")
+    try:
+        docker = systemd_properties(reader, systemctl, args.docker_service_unit,
+                                    ("DropInPaths", "Requires", "After"))
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+        raise Held("DOCKER_DROP_IN_UNPROVEN") from error
+    require(args.docker_drop_in_file in docker["DropInPaths"].split()
+            and args.guard_service_unit in docker["Requires"].split()
+            and args.guard_service_unit in docker["After"].split(), "DOCKER_DROP_IN_UNPROVEN")
+    files = {}
+    for key, name, reason in (("guardService", args.guard_service_file, "GUARD_UNIT_FILE_UNPROVEN"),
+                              ("dockerDropIn", args.docker_drop_in_file, "DOCKER_DROP_IN_UNPROVEN")):
+        try:
+            path = absolute(name)
+            reader.read(path)
+        except (OSError, RuntimeError, ValueError) as error:
+            raise Held(reason) from error
+        files[key] = str(path)
+    return files
+
+
 def historical_templates(reader, args, owner):
     receipt = reader.document(args.generation_receipt, args.generation_receipt_sha256)
     require(receipt["status"] == "DISCOVERY_GENERATION_INPUTS_PREPARED" and receipt["phase"] == "COMPLETE"
@@ -556,37 +590,89 @@ def mounted_configuration(reader, doc, filename, uid):
     return reader.document(rows[0]["Source"], uid=uid, gid=uid)
 
 
+def revision_base(destination, expected, *, nlink=1):
+    try:
+        reader = Reader()
+        raw = reader.read(destination, expected, nlink=nlink)
+        info = destination.lstat()
+        reader.verify()
+        value = decode(raw)
+        require(isinstance(value, dict), "REVISION_BASE_PROFILE_UNPROVEN")
+        return value, {"previousProfileSha256": digest(raw), "previousProfileIdentity": {
+            "dev": info.st_dev, "inode": info.st_ino, "size": info.st_size, "mtime_ns": info.st_mtime_ns}}
+    except (OSError, RuntimeError, ValueError, TypeError) as error:
+        raise Held("REVISION_BASE_PROFILE_UNPROVEN") from error
+
+
+def profile_diff(previous, current, path=""):
+    # JSON Pointer paths keep keys containing dots, slashes or tildes unambiguous.
+    def child(key):
+        return path + "/" + key.replace("~", "~0").replace("/", "~1")
+
+    def leaves(value, prefix, change):
+        if isinstance(value, dict) and value:
+            return [row for key in sorted(value) for row in leaves(value[key],
+                    prefix + "/" + key.replace("~", "~0").replace("/", "~1"), change)]
+        return [{"path": prefix, "change": change}]
+
+    if isinstance(previous, dict) and isinstance(current, dict):
+        rows = []
+        for key in sorted(previous.keys() | current.keys()):
+            if key not in previous:
+                rows.extend(leaves(current[key], child(key), "added"))
+            elif key not in current:
+                rows.extend(leaves(previous[key], child(key), "removed"))
+            else:
+                rows.extend(profile_diff(previous[key], current[key], child(key)))
+        return rows
+    return [] if type(previous) is type(current) and canonical(previous) == canonical(current) else [
+        {"path": path, "change": "changed"}]
+
+
+def revision_plan(previous, profile, binding):
+    delta = profile_diff(previous, profile)
+    allowed = {"/guardServiceUnit", "/paths/guard/unitFiles/guardService", "/paths/guard/unitFiles/dockerDropIn"}
+    if len(delta) != 3 or {row["path"] for row in delta} != allowed or any(
+            row["change"] != "added" for row in delta):
+        raise Held("PROFILE_REVISION_UNEXPECTED_DELTA", profileDiff=[row["path"] for row in delta])
+    return binding | {"profileDiff": delta}
+
+
 def output_plan(args):
     base = absolute(args.installation_root)
     require(REF.fullmatch(args.installation_ref) and args.installation_ref not in (".", ".."),
             "INSTALLATION_REFERENCE_UNPROVEN")
+    parent = base / args.installation_ref
+    destination = parent / "semantic-provider.json"
+    if args.revise_from_sha256 is not None:
+        previous, binding = revision_base(destination, args.revise_from_sha256)
+        return destination, [], (previous, binding)
     for path in base.parents:
         directory(path)
-    parent = base / args.installation_ref
     absent = []
     for path in (base, parent):
         if os.path.lexists(path):
             directory(path)
         else:
             absent.append(str(path))
-    destination = parent / "semantic-provider.json"
     require(not os.path.lexists(destination), "INSTALLATION_PROFILE_ALREADY_EXISTS")
-    return destination, absent
+    return destination, absent, None
 
 
 def observe(args):
-    destination, absent = output_plan(args)
+    destination, absent, revision = output_plan(args)
     reader = Reader()
     entity, keys = authority(reader, args)
     peer, successors = receipt_a(reader, args.a_root, args.a_plan_sha256)
     owner, boot, guard = boot_guard(reader, args)
+    systemctl_path = shutil.which("systemctl", path=ENV["PATH"])
+    require(systemctl_path is not None, "REQUIRED_EXECUTABLE_MISSING")
+    systemctl = reader.binary(systemctl_path)
+    guard["unitFiles"] = guard_units(reader, args, systemctl)
     templates = historical_templates(reader, args, owner)
     adapter_tools = templates["adapter"]["commands"]
     ip = reader.binary(adapter_tools["ip"], templates["adapter"]["commandHashes"]["ip"])
     nft = reader.binary(owner["nftPath"], owner["nftSha256"])
-    systemctl_path = shutil.which("systemctl", path=ENV["PATH"])
-    require(systemctl_path is not None, "REQUIRED_EXECUTABLE_MISSING")
-    systemctl = reader.binary(systemctl_path)
     docker = Docker(reader, args, systemctl)
     engine = docker.get("/info")
     docs = read_roles(docker, peer, successors)
@@ -617,6 +703,7 @@ def observe(args):
         require(path is not None, "REQUIRED_EXECUTABLE_MISSING")
         commands[name] = reader.binary(path)
     profile = {"schema": SCHEMA, "installationRef": args.installation_ref, "entityRef": entity, **docker.profile,
+               "guardServiceUnit": args.guard_service_unit,
                "networks": {name: details for name, (_, details) in networks.items()}, "roles": roles,
                "ports": ports, "externalEndpoints": endpoints, "nftTables": tables, "runtime": runtime_profile,
                "paths": {"snapshotRoot": guard.pop("snapshotRoot"), "stateRoot": str(absolute(args.a_root).parent),
@@ -625,12 +712,16 @@ def observe(args):
                "keyPaths": keys}
     current = read_roles(docker, peer, successors)
     verify_peer(reader, ip, peer, current["semantic"])
-    require(observed_networks(reader, docker, ip, current) == networks and output_plan(args) == (destination, absent),
+    require(observed_networks(reader, docker, ip, current) == networks
+            and output_plan(args) == (destination, absent, revision),
             "PROFILE_OBSERVATION_CHANGED_DURING_READ")
     empty_nft(reader, nft, owner["kernel"])
     writes = {"profileFile": str(destination), "owner": "root:root", "mode": "0600", "directoriesIfMissing": absent}
     raw = canonical(profile) + b"\n"
     result = {"profile": profile, "profileSha256": digest(raw), "writes": writes}
+    if revision is not None:
+        previous, binding = revision
+        result.update(revision_plan(previous, profile, binding))
     plan = {"projection": result, "inputHashes": reader.verify(), "aPlanSha256": args.a_plan_sha256,
             "dockerPeerProof": docker.proof,
             "networkIds": {name: item[0] for name, item in networks.items()}}
@@ -670,15 +761,76 @@ def publish(writes, raw):
             os.close(fd)
 
 
+def revise(proposal, raw, outcome):
+    destination = absolute(proposal["writes"]["profileFile"])
+    previous = proposal["previousProfileSha256"]
+    superseded = destination.with_name(destination.name + ".superseded-" + previous)
+    outcome.update(supersededFile=str(superseded), supersededLinked=False, renamed=False,
+                   directorySynced=False, readbackVerified=False, temporaryFile=None)
+    for parent in destination.parents:
+        directory(parent)
+
+    def check(path, nlink=1):
+        _, binding = revision_base(path, previous, nlink=nlink)
+        require(binding["previousProfileIdentity"] == proposal["previousProfileIdentity"],
+                "REVISION_BASE_PROFILE_UNPROVEN")
+
+    check(destination)
+    require(not os.path.lexists(superseded), "REVISION_SUPERSEDED_ALREADY_EXISTS")
+    fd = os.open(destination.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    tmp = ".semantic-provider-" + secrets.token_hex(16)
+    created = False
+    try:
+        # The exclusive hard link also arbitrates competing revisions of this base.
+        check(destination)
+        try:
+            os.link(destination.name, superseded.name, src_dir_fd=fd, dst_dir_fd=fd, follow_symlinks=False)
+        except FileExistsError as error:
+            raise Held("REVISION_SUPERSEDED_ALREADY_EXISTS") from error
+        outcome["supersededLinked"] = True
+        check(superseded, nlink=2)
+        os.fsync(fd)
+        with os.fdopen(os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=fd), "wb") as out:
+            created = True
+            outcome["temporaryFile"] = str(destination.parent / tmp)
+            os.fchown(out.fileno(), 0, 0)
+            os.fchmod(out.fileno(), 0o600)
+            out.write(raw)
+            out.flush()
+            os.fsync(out.fileno())
+        check(destination, nlink=2)
+        os.rename(tmp, destination.name, src_dir_fd=fd, dst_dir_fd=fd)
+        created = False
+        outcome.update(renamed=True, temporaryFile=None)
+        os.fsync(fd)
+        outcome["directorySynced"] = True
+        reader = Reader()
+        require(reader.read(destination, proposal["profileSha256"]) == raw, "REVISION_READBACK_UNPROVEN")
+        reader.verify()
+        check(superseded)
+        outcome["readbackVerified"] = True
+    finally:
+        try:
+            if created:
+                os.unlink(tmp, dir_fd=fd)
+                outcome["temporaryFile"] = None
+                os.fsync(fd)
+        finally:
+            os.close(fd)
+    return str(superseded)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--plan", action="store_true")
     mode.add_argument("--apply", action="store_true")
     parser.add_argument("--plan-sha256")
+    parser.add_argument("--revise-from-sha256")
     parser.add_argument("--docker-socket-activation", choices=("systemd-socket", "daemon"), required=True)
     for name in ("installation-ref", "installation-root", "a-root", "a-plan-sha256", "guard-pointer",
                  "docker-socket", "docker-socket-unit", "docker-service-unit", "docker-socket-owner",
+                 "guard-service-unit", "guard-service-file", "docker-drop-in-file",
                  "docker-socket-group", "docker-socket-mode", "dockerd",
                  "generation-receipt", "generation-receipt-sha256", "authority-profile",
                  "authority-sha256", "trust-policy", "trust-policy-sha256"):
@@ -686,7 +838,8 @@ def main():
     args = parser.parse_args()
     require_hashes = (args.a_plan_sha256, args.generation_receipt_sha256, args.authority_sha256, args.trust_policy_sha256)
     if any(not HEX.fullmatch(value) for value in require_hashes) or (
-            args.apply and not HEX.fullmatch(args.plan_sha256 or "")) or (args.plan and args.plan_sha256 is not None):
+            args.apply and not HEX.fullmatch(args.plan_sha256 or "")) or (args.plan and args.plan_sha256 is not None) or (
+            args.revise_from_sha256 is not None and not HEX.fullmatch(args.revise_from_sha256)):
         parser.error("expected exact lowercase SHA-256 bindings")
     report = {"schema": "ouf.semantic-provider-installation.plan.v1", "status": "HELD", "privateKeysRead": 0}
     try:
@@ -698,12 +851,22 @@ def main():
             report["status"] = "PLAN_READY"
         else:
             require(args.plan_sha256 == proposal["planSha256"], "PLAN_DIGEST_CHANGED")
-            publish(proposal["writes"], canonical(proposal["profile"]) + b"\n")
-            report["status"] = "SEMANTIC_PROVIDER_INSTALLATION_PROFILE_PUBLISHED"
+            raw = canonical(proposal["profile"]) + b"\n"
+            if args.revise_from_sha256 is None:
+                publish(proposal["writes"], raw)
+                report["status"] = "SEMANTIC_PROVIDER_INSTALLATION_PROFILE_PUBLISHED"
+            else:
+                report["revisionOutcome"] = {}
+                report["supersededFile"] = revise(proposal, raw, report["revisionOutcome"])
+                report["status"] = "SEMANTIC_PROVIDER_INSTALLATION_PROFILE_REVISED"
     except (OSError, RuntimeError, ValueError, KeyError, TypeError, IndexError, AttributeError,
             subprocess.SubprocessError, http.client.HTTPException) as error:
         reason = str(error) if isinstance(error, Held) else type(error).__name__
         report.update(status="HELD", reason=reason)
+        if isinstance(error, Held):
+            report.update(error.details)
+        elif "revisionOutcome" in report:
+            report.update(errorType=type(error).__name__, errno=getattr(error, "errno", None))
     print(canonical(report).decode(), flush=True)
     return 0 if report["status"] != "HELD" else 1
 
