@@ -87,7 +87,7 @@ def check_units(args, collector, probe):
              words.count('--container') == 1, 'EXACT_SHARED_STORE_COMMAND_REQUIRED')
         need(observed['ExecStart'] == {'path': words[0], 'argv': expected, 'ignoreErrors': 'no'},
              'EXEC_START_MISMATCH')
-    need(collector['Type'] == 'simple' and collector['Restart'] == 'on-failure' and
+    need(collector['Type'] == 'simple' and collector['Restart'] == args.collector_restart and
          collector['ActiveState'] == 'active' and collector['SubState'] == 'running',
          'COLLECTOR_ACTIVE_SIMPLE_REQUIRED')
     need(probe['Type'] == 'oneshot', 'PROBE_ONESHOT_REQUIRED')
@@ -239,7 +239,7 @@ def arguments(argv):
     for key in ('checkout', 'candidate-file', 'store', 'journal-root'):
         p.add_argument('--' + key, type=Path, required=True)
     for key in ('collector-unit', 'probe-unit', 'collector-exec-start', 'probe-exec-start',
-                'expected-commit', 'systemctl-bin', 'git-bin'):
+                'expected-commit', 'systemctl-bin', 'git-bin', 'collector-restart'):
         p.add_argument('--' + key, required=True)
     p.add_argument('--timeout', type=int, required=True)
     a = p.parse_args(argv)
@@ -248,6 +248,7 @@ def arguments(argv):
     need(all(getattr(a, k).is_absolute() for k in ('checkout', 'candidate_file', 'store', 'journal_root')) and
          all(Path(getattr(a, k)).is_absolute() for k in ('systemctl_bin', 'git_bin')) and
          1 <= a.timeout <= 300 and a.collector_unit != a.probe_unit and
+         a.collector_restart in ('no', 'on-success', 'on-failure', 'on-abnormal', 'on-watchdog', 'on-abort', 'always') and
          all(re.fullmatch(r'[A-Za-z0-9_.@-]+\.service', n) for n in (a.collector_unit, a.probe_unit)),
          'BOUNDED_ABSOLUTE_PARAMETERS_REQUIRED')
     return a

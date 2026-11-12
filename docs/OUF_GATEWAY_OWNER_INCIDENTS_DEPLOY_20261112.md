@@ -56,7 +56,7 @@ unità, non gli EnvironmentFile referenziati. I comandi systemd sono confrontati
 integralmente (path, argv, ignore_errors=no), esclusi solo i contatori/timestamp
 di esecuzione. Un formato non riconosciuto o più ExecStart produce HELD.
 Root esplicito, NeedDaemonReload=no, WorkingDirectory comune, servizio simple
-active/running con Restart=on-failure e probe oneshot sono obbligatori.
+active/running con Restart uguale a `--collector-restart` (sul VPS il 2026-11-12: `always`) e probe oneshot sono obbligatori.
 
 Ogni apply ricalcola il piano, richiede il suo hash e lo ricontrolla prima del
 primo effetto. Il journal padre deve esistere root:0700. `apply-HASH` esclusivo

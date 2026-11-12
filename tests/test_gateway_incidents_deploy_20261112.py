@@ -261,14 +261,14 @@ class CollectorGuards(unittest.TestCase):
         self.candidate.write_bytes(self.after)
         self.args = SimpleNamespace(plan=True, apply=False, plan_sha256=None, checkout=root, candidate_file=self.candidate,
                                     store=root / 'store.db', journal_root=root / 'journal', expected_commit=a.BASE_SOURCE,
-                                    git_bin='/usr/bin/git', systemctl_bin='/usr/bin/systemctl', timeout=2,
+                                    git_bin='/usr/bin/git', systemctl_bin='/usr/bin/systemctl', timeout=2, collector_restart='always',
                                     collector_unit='fixture-collector.service', probe_unit='fixture-probe.service',
                                     collector_exec_start='/usr/bin/python3 -m tools.gateway_operational_collector apisix --store ' + (root / 'store.db').as_posix() + ' --container fixture-api',
                                     probe_exec_start='/usr/bin/python3 -m tools.gateway_operational_collector etcd --store ' + (root / 'store.db').as_posix() + ' --container fixture-etcd')
         self.units = {}
         for name, command, kind in ((self.args.collector_unit, self.args.collector_exec_start, 'simple'),
                                     (self.args.probe_unit, self.args.probe_exec_start, 'oneshot')):
-            self.units[name] = {'Id': name, 'WorkingDirectory': str(root), 'Type': kind, 'Restart': 'on-failure',
+            self.units[name] = {'Id': name, 'WorkingDirectory': str(root), 'Type': kind, 'Restart': 'always' if kind == 'simple' else 'no',
                                 'ExecStart': {'path': '/usr/bin/python3', 'argv': command, 'ignoreErrors': 'no'},
                                 'ActiveState': 'active', 'SubState': 'running', 'InvocationID': 'old-invocation'}
 
@@ -288,6 +288,11 @@ class CollectorGuards(unittest.TestCase):
         self.assertEqual(a.digest(plan), a.digest(self.collect()))
         with self.assertRaisesRegex(RuntimeError, 'DIRTY_CHECKOUT'):
             self.collect(dirty=True)
+        # The installed restart policy is an installation parameter bound to the plan.
+        self.args.collector_restart = 'on-failure'
+        with self.assertRaisesRegex(RuntimeError, 'COLLECTOR_ACTIVE_SIMPLE_REQUIRED'):
+            self.collect()
+        self.args.collector_restart = 'always'
         with self.assertRaisesRegex(RuntimeError, 'CHECKOUT_COMMIT_MISMATCH'):
             self.collect(commit='a' * 40)
         self.candidate.write_bytes(b'wrong')
