@@ -24,7 +24,7 @@ def docker(*args, timeout=90):
 
 
 class NativeQualification(unittest.TestCase):
-    def test_actual_cli_plan_then_six_puts_with_exact_readback(self):
+    def test_legacy_cli_plan_then_six_puts_with_exact_readback(self):
         self.assertEqual(os.geteuid(), 0, 'namespace transport requires root')
         prefix = 'operational-fixture-' + str(os.getpid())
         with tempfile.TemporaryDirectory() as temp:
@@ -88,7 +88,7 @@ class NativeQualification(unittest.TestCase):
                 runtime_plan=runtime, runtime_plan_sha256=runtime_sha,
                 apisix_config_target=target, admin_key_file=root / 'unused-key')
             admin = p.make_admin(args, fixture.report(), engine)
-            before = fixture.fixture()
+            before = fixture.fixture(installed_format='legacy-execute-summary')
             # Foreign routes use valid APISIX HTTP configuration as well.
             for row in before.values():
                 ack = admin.put(row['id'], row)
@@ -112,6 +112,8 @@ class NativeQualification(unittest.TestCase):
             self.assertEqual((code, planned['status'], planned['adminPutAttempts']),
                              (0, 'OPERATIONAL_ROUTES_PLANNED', 0), planned['reason'])
             self.assertFalse(planned['runtimeChanged'])
+            self.assertEqual(planned['installedFormat'], 'legacy-execute-summary')
+            self.assertEqual(sum(c.get('producerReceipt', False) for c in planned['changes']), 2)
             self.assertEqual(admin.routes(), before)
             code, applied = cli('--apply', '--plan-sha256', planned['planSha256'])
             self.assertEqual((code, applied['status']), (0, 'OPERATIONAL_ROUTES_APPLIED'), applied['reason'])
@@ -125,6 +127,12 @@ class NativeQualification(unittest.TestCase):
             private_plan = p.decode(p.read(Path(planned['privateEvidenceDirectory']) / 'plan.private.json'))
             for change in private_plan['changes']:
                 self.assertEqual(after[change['id']], change['desired'])
+                cap = change['id'].removeprefix('execute-')
+                fn = after[change['id']]['plugins']['serverless-post-function']['functions'][0]
+                if fixture.A.capabilities[cap][0] == 'gateway':
+                    self.assertIn('local RECEIPT_KEY_ENV = ' + json.dumps(fixture.CONSTANTS['GATEWAY_RECEIPT_KEY_ENV']) + '\n', fn)
+                else:
+                    self.assertNotIn('RECEIPT_KEY_ENV', fn)
             journal = Path(applied['privateEvidenceDirectory'])
             self.assertEqual(journal.stat().st_mode & 0o777, 0o700)
             self.assertTrue(all(f.stat().st_mode & 0o777 == 0o600 for f in journal.iterdir()))

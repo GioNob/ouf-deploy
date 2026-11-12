@@ -28,14 +28,14 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: GioNob/ouf-api-gateway
-          ref: 98d01f460d488c6322199f2202bc3195ee7538da
+          ref: 8383cfe7946199badc5fcbb1bb3ac25160567541
           path: .gateway-reference
           persist-credentials: false
       - name: Unit tests and required gateway equivalence
         env:
           OUF_OPERATIONAL_GATEWAY_SOURCE: ${{ github.workspace }}/.gateway-reference
         run: |
-          test "$(git -C .gateway-reference rev-parse --short=7 HEAD)" = 98d01f4
+          test "$(git -C .gateway-reference rev-parse HEAD)" = 8383cfe7946199badc5fcbb1bb3ac25160567541
           python3 -I -B -m unittest discover -s tests -p test_operational_execute_routes.py -v
       - name: Actual APISIX with etcd, production namespace transport and six writes
         run: sudo "$(command -v python3)" -I -B tests/qualify_operational_execute_routes_native.py -v

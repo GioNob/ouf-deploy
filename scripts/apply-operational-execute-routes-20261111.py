@@ -22,7 +22,7 @@ from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'releases/operational-execute-assets-20261111.json'
-ASSETS_SHA = '9e09dfb851ddb45d1bb9bbdc57bbbb644527537584fc763f50ced26450cef69a'
+ASSETS_SHA = 'c23fec2ec408556c958ef330c21d06d0efa815690598cf4e0df099520c10432f'
 HELPERS = {
     'read-discovery-contract-20261108.py': '468660ed73a24c7b8a842f5b99a9c268890c99bb4206ca2e4719865326b27277',
     'read-analysis-discovery-runtime-20261107.py': 'ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4',
@@ -30,6 +30,7 @@ HELPERS = {
 }
 IAM_KEYS = ('DELEGATION_KEY_ENV', 'ISSUER', 'AUDIENCE', 'MCP_WORKLOAD')
 OP_KEYS = ('CAPABILITY', 'OWNER', 'REQUIRED_SCOPE')
+RECEIPT_KEYS = ('INGESTION_RECEIPT_KEY_ENV', 'GATEWAY_RECEIPT_KEY_ENV')
 PREFIX = '/internal/capabilities/v1/execute/'
 CHANGED_FIELDS = ('plugins.request-validation.body_schema',
                   'plugins.serverless-post-function.functions',
@@ -107,7 +108,7 @@ def load_assets(path=ASSETS):
     raw = read(path)
     need(hashlib.sha256(raw).hexdigest() == ASSETS_SHA, 'SOURCE_ASSET_HASH_MISMATCH')
     a = decode(raw)
-    need(a['gatewayCommit'] == '98d01f4', 'PINNED_GATEWAY_REQUIRED')
+    need(a['gatewayCommit'] == '8383cfe7946199badc5fcbb1bb3ac25160567541', 'PINNED_GATEWAY_REQUIRED')
     files = a['files']
     for record in files.values():
         need(hashlib.sha256(record['content'].encode()).hexdigest() == record['sha256'], 'ASSET_MEMBER_HASH_MISMATCH')
@@ -177,19 +178,42 @@ def installed_constants(route, capability, a):
     need(post.get('phase') == 'access' and len(post.get('functions', [])) == 1, 'ONE_OWNER_FUNCTION_REQUIRED')
     lines = post['functions'][0].split('\n')
     need(lines[0] == 'return function(conf, ctx)', 'KNOWN_OWNER_HEADER_REQUIRED')
+    # Read the contiguous uppercase constant header, never search the Lua body.
+    # The body may start directly with lower-case locals (e.g. local cjson).
+    # Unknown, extra, missing and reordered constants all fail.
+    header = []
+    for line in lines[1:]:
+        match = re.fullmatch(r'local\s+([A-Z][A-Z0-9_]*)\s*=\s*(.*)', line)
+        if match is None:
+            need(not re.match(r'\s*local\s+[A-Z_]', line), 'KNOWN_OWNER_CONSTANTS_REQUIRED')
+            break
+        header.append((match[1], line))
+    keys = tuple(key for key, _ in header)
+    if keys == IAM_KEYS + OP_KEYS:
+        installed_format = 'current'
+    elif keys == IAM_KEYS + RECEIPT_KEYS:
+        installed_format = 'legacy-execute-summary'
+    else:
+        need(False, 'KNOWN_OWNER_CONSTANTS_REQUIRED')
     values = {}
-    for key, line in zip(IAM_KEYS + OP_KEYS, lines[1:8]):
+    for key, line in header:
         prefix = 'local ' + key + ' = '
         need(line.startswith(prefix), 'KNOWN_OWNER_CONSTANTS_REQUIRED')
-        value = decode(line[len(prefix):])
+        try:
+            value = decode(line[len(prefix):])
+        except (ValueError, RuntimeError):
+            need(False, 'CLOSED_OWNER_CONSTANT_REQUIRED')
         need(isinstance(value, str) and 0 < len(value) <= 2048, 'CLOSED_OWNER_CONSTANT_REQUIRED')
         values[key] = value
-    need(set(values) == set(IAM_KEYS + OP_KEYS), 'COMPLETE_OWNER_CONSTANTS_REQUIRED')
-    owner, _, _, _, scope, _ = a.capabilities[capability]
-    need((values['CAPABILITY'], values['OWNER'], values['REQUIRED_SCOPE']) == (capability, owner, scope),
-         'INSTALLED_OPERATIONAL_CONSTANTS_DIVERGE')
-    need(re.fullmatch(r'[A-Z][A-Z0-9_]{0,127}', values['DELEGATION_KEY_ENV']), 'EXISTING_KEY_REFERENCE_REQUIRED')
-    return {k: values[k] for k in IAM_KEYS}
+    if installed_format == 'current':
+        owner, _, _, _, scope, _ = a.capabilities[capability]
+        need((values['CAPABILITY'], values['OWNER'], values['REQUIRED_SCOPE']) == (capability, owner, scope),
+             'INSTALLED_OPERATIONAL_CONSTANTS_DIVERGE')
+    key_refs = ('DELEGATION_KEY_ENV',) + (RECEIPT_KEYS if installed_format == 'legacy-execute-summary' else ())
+    need(all(re.fullmatch(r'[A-Z][A-Z0-9_]{0,127}', values[k]) for k in key_refs),
+         'EXISTING_KEY_REFERENCE_REQUIRED')
+    need(len({values[k] for k in key_refs}) == len(key_refs), 'DISTINCT_INSTALLED_KEY_REFERENCES_REQUIRED')
+    return installed_format, {k: values[k] for k in IAM_KEYS + RECEIPT_KEYS if k in values}
 
 
 def function_source(a, capability, constants):
@@ -198,6 +222,7 @@ def function_source(a, capability, constants):
                         mcpServiceIdentity=constants['MCP_WORKLOAD'])
     need(installation['issuerUrl'] == installation['issuerUrl'].rstrip('/'), 'CANONICAL_INSTALLED_ISSUER_REQUIRED')
     return a.function('execute_operational', installation, constants['DELEGATION_KEY_ENV'],
+                      owner_key_env=constants.get('GATEWAY_RECEIPT_KEY_ENV') if c[0] == 'gateway' else None,
                       operational_binding={'capability': capability, 'owner': c[0], 'scope': c[4]})
 
 
@@ -221,7 +246,21 @@ def compile_plan(rows, a, bindings, observation):
     # The source count is observed, not pinned: the complete route map is bound
     # into the plan hash ('before') and shown to the human in the public plan.
     need(3 <= len(rows) <= 509, 'BOUNDED_SOURCE_ROUTE_COUNT_REQUIRED')
-    changes, blockers, common = [], [], None
+    changes, blockers, common, installed_format = [], [], None, None
+    # Qualify all installed headers before rendering any desired route.
+    for capability in a.capabilities:
+        if not capability.endswith('.summary'):
+            continue
+        rid = 'execute-' + capability
+        need(rid in rows and rows[rid].get('id') == rid and rows[rid].get('uri') == PREFIX + capability,
+             'EXACT_INSTALLED_SUMMARY_REQUIRED')
+        fmt, constants = installed_constants(rows[rid], capability, a)
+        need(installed_format is None or installed_format == fmt, 'INSTALLED_FORMATS_DIVERGE')
+        need(common is None or all(common[k] == constants[k] for k in IAM_KEYS), 'INSTALLED_IAM_CONSTANTS_DIVERGE')
+        need(common is None or common == constants, 'INSTALLED_RECEIPT_KEY_REFERENCES_DIVERGE')
+        installed_format, common = fmt, constants
+    need(common is not None and 'GATEWAY_RECEIPT_KEY_ENV' in common,
+         'INSTALLED_GATEWAY_RECEIPT_KEY_REFERENCE_REQUIRED')
     for capability, (owner, service, port, path, scope, seconds) in a.capabilities.items():
         if not capability.endswith('.summary'):
             continue
@@ -231,9 +270,7 @@ def compile_plan(rows, a, bindings, observation):
         old = rows[rid]
         need(old.get('methods') == ['POST'] and not (set(old) & {'upstream_id', 'service_id', 'uris'}),
              'CLOSED_INLINE_SUMMARY_ROUTE_REQUIRED')
-        constants = installed_constants(old, capability, a)
-        need(common is None or common == constants, 'INSTALLED_IAM_CONSTANTS_DIVERGE')
-        common = constants
+        constants = common
         plugins = old['plugins']
         need(set(plugins) == {'limit-count', 'openid-connect', 'proxy-rewrite', 'request-validation',
                               'serverless-pre-function', 'serverless-post-function'}, 'KNOWN_SIX_PLUGINS_REQUIRED')
@@ -279,6 +316,7 @@ def compile_plan(rows, a, bindings, observation):
     changes.sort(key=lambda c: (c['operation'] == 'ADD', c['id']))
     need(len(changes) == 6 and len({c['id'] for c in changes}) == 6, 'EXACT_SIX_CHANGES_REQUIRED')
     return {'schema': 'ouf.operational-execute-plan.v1', 'assetsSha256': ASSETS_SHA,
+            'installedFormat': installed_format,
             'bindings': bindings, 'bindingObservation': observation, 'before': rows,
             'changes': changes, 'unsupportedDifferences': blockers}
 
@@ -292,6 +330,8 @@ def public_plan(plan):
                'upstream': new['upstream'], 'ownerPath': new['plugins']['proxy-rewrite']['uri'],
                'aggregateMarkerPresent': "'X-OUF-Delegation-Verified', 'mcp-operational-aggregate-v1'" in
                                          new['plugins']['serverless-post-function']['functions'][0]}
+        if new['id'] in ('execute-ouf.gateway.operations.summary', 'execute-ouf.gateway.operations.incidents'):
+            row['producerReceipt'] = True
         if old:
             row['beforeAggregateMarkerPresent'] = "'X-OUF-Delegation-Verified', 'mcp-operational-aggregate-v1'" in \
                 old['plugins']['serverless-post-function']['functions'][0]
@@ -300,6 +340,7 @@ def public_plan(plan):
                                     for p in CHANGED_FIELDS if field(old, p) != field(new, p)]
         changes.append(row)
     public = {'planSha256': digest(plan), 'bindings': plan['bindings'],
+            'installedFormat': plan['installedFormat'],
             'bindingObservationSha256': digest(plan['bindingObservation']),
             'sourceRouteCount': len(plan['before']), 'desiredRouteCount': len(plan['before']) + 3,
             'unchangedRoutes': len(plan['before']) - 3,

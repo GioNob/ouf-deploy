@@ -1,6 +1,7 @@
 # Sei route operative — proposta e applicazione
 
-Controller fuori sprint, sorgente gateway `98d01f4`. Aggiorna sul posto le tre
+Controller fuori sprint, sorgente gateway
+`8383cfe7946199badc5fcbb1bb3ac25160567541`. Aggiorna sul posto le tre
 summary e clona ciascuna per incidents: N → N+3 route, N−3 invariate, con N
 osservato dalla lista Admin e vincolato all'hash del piano (sul VPS il
 2026-11-12: 87 → 90, 84 invariate; etcd `--keys-only` conta anche la chiave
@@ -20,6 +21,35 @@ hash è SHA-256 dei byte del file, distinto dal digest canonico `planSha256`.
 La chiave Admin viene selezionata dal bind read-only della configurazione come
 nel modello; `admin-key-file` è letto soltanto se la lista `admin_key` è vuota.
 Nessuna chiave di delega viene letta o generata.
+
+Le intestazioni installate ammesse sono soltanto due, dopo la riga esatta
+`return function(conf, ctx)`, con assegnazioni `local NOME = <stringa JSON>`:
+
+- `current`: `DELEGATION_KEY_ENV`, `ISSUER`, `AUDIENCE`, `MCP_WORKLOAD`,
+  `CAPABILITY`, `OWNER`, `REQUIRED_SCOPE`, in questo ordine. Gli ultimi tre
+  valori devono coincidere con la capability della route e il profilo fissato;
+  resta il blocco `INSTALLED_OPERATIONAL_CONSTANTS_DIVERGE`.
+- `legacy-execute-summary`: `DELEGATION_KEY_ENV`, `ISSUER`, `AUDIENCE`,
+  `MCP_WORKLOAD`, `INGESTION_RECEIPT_KEY_ENV`, `GATEWAY_RECEIPT_KEY_ENV`, in
+  questo ordine. È il formato condiviso di settembre, che sceglie il produttore
+  da `CapabilityID`: l'identità della summary è verificata tramite id e uri.
+
+Intestazioni ibride, riordinate, incomplete o con costanti aggiuntive sono
+`HELD` / `KNOWN_OWNER_CONSTANTS_REQUIRED`; valori diversi da stringhe JSON
+chiuse sono `CLOSED_OWNER_CONSTANT_REQUIRED`. I riferimenti alle chiavi devono
+rispettare `[A-Z][A-Z0-9_]{0,127}` ed essere distinti. Le tre summary devono
+avere lo stesso formato, le stesse costanti IAM e gli stessi riferimenti alle
+chiavi ricevuta; ogni divergenza blocca il piano prima delle PUT.
+
+Solo le due route desired con owner `gateway` ricevono `owner_key_env`, ricavato
+da `GATEWAY_RECEIPT_KEY_ENV` installato: il Lua reso contiene `RECEIPT_KEY_ENV`
+e firma `X-OUF-Operational-Receipt`. Nessun nome di chiave è fissato nel
+controller e nessun parametro CLI può sostituirlo. Il formato `current` è
+riconosciuto, ma non fornisce questo riferimento: il piano termina `HELD` /
+`INSTALLED_GATEWAY_RECEIPT_KEY_REFERENCE_REQUIRED`, senza default.
+`INGESTION_RECEIPT_KEY_ENV` viene validato e confrontato, ma non usato per la
+resa: il produttore ingestion in esecuzione non richiede la ricevuta. Le route
+MCP e ingestion sono rese senza ricevuta.
 
 ```sh
 git rev-parse HEAD  # deve essere __PIN_COMMIT__
@@ -76,7 +106,11 @@ Nessuna sostituzione testuale di scope in codice ignoto.
 Gli ID/label installati e gli altri plugin vengono conservati intenzionalmente;
 l'equivalenza CI riguarda schema, Lua, path e upstream, come richiesto.
 
-Il JSON pubblico contiene solo digest dei valori privati. La proposta completa,
+Il JSON pubblico contiene solo digest dei valori privati, incluso il nome della
+chiave ricevuta gateway. Espone `installedFormat` (`current` oppure
+`legacy-execute-summary`) e `producerReceipt: true` sulle sole route gateway;
+un'installazione `current` senza riferimento ricevuta resta comunque `HELD`
+prima di produrre un piano. La proposta completa,
 le immagini prima, gli intenti e gli ACK possono contenere segreti: restano nella
 directory privata, non allegarli al report. La modalità plan scrive soltanto
 evidenze locali, senza PUT. `runtimeChanged=null` significa che una PUT è stata
@@ -90,15 +124,21 @@ attivare provider.
 Qualifica prevista sul runner GitHub `ubuntu-24.04`:
 
 ```sh
-OUF_OPERATIONAL_GATEWAY_SOURCE='<checkout-98d01f4>' python3 -I -B -m unittest discover -s tests -p test_operational_execute_routes.py -v
+OUF_OPERATIONAL_GATEWAY_SOURCE='<checkout-8383cfe7946199badc5fcbb1bb3ac25160567541>' python3 -I -B -m unittest discover -s tests -p test_operational_execute_routes.py -v
 sudo python3 -I -B tests/qualify_operational_execute_routes_native.py -v
 ```
 
-Il primo verifica i sei asset byte per byte contro il checkout e invoca il vero
-`materialize` operativo completo, con un runtime interamente sintetico e senza
-mock delle funzioni gateway. Il secondo
-crea APISIX/etcd e tre peer effimeri, prepara 88 route sintetiche, esegue la CLI
+Il primo verifica i sei membri del manifest byte per byte contro il checkout e
+invoca il vero `materialize` operativo completo, sia senza parametro ricevuta
+sia con `producer_receipt_key_envs={'gateway': <nome sintetico>}`. Confronta le
+funzioni del controller byte per byte in entrambi i casi, oltre a schema, path
+e upstream, con un runtime interamente sintetico e senza mock delle funzioni
+gateway. Il caso senza ricevuta qualifica solo la compatibilità del renderer:
+non autorizza un piano privo del riferimento installato.
+Il secondo crea APISIX/etcd e tre peer effimeri, prepara 88 route sintetiche
+con le tre summary nel formato condiviso di settembre, esegue la CLI
 plan/apply, verifica sei PUT, 91 route e le 85 estranee invariate. Non prova
-autenticazione applicativa o l'E2E operativo. Python non è disponibile nella
+autenticazione applicativa, la verifica della firma da parte del produttore o
+l'E2E operativo. Python non è disponibile nel PATH della
 postazione locale di implementazione: esecuzioni e risultati CI restano da
 acquisire prima dell'uso operativo.

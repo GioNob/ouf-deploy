@@ -18,14 +18,31 @@ spec = importlib.util.spec_from_file_location('operational_controller', ROOT / '
 p = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(p)
 A = p.load_assets()
-SECRETS = ('synthetic-oidc-secret-DO-NOT-PRINT', 'synthetic-issuer-private', 'SYNTHETIC_PRIVATE_KEY_REFERENCE')
+SECRETS = ('synthetic-oidc-secret-DO-NOT-PRINT', 'synthetic-issuer-private', 'SYNTHETIC_PRIVATE_KEY_REFERENCE',
+           'SYNTHETIC_INGESTION_RECEIPT_REFERENCE', 'SYNTHETIC_GATEWAY_RECEIPT_REFERENCE')
 CONSTANTS = {'DELEGATION_KEY_ENV': SECRETS[2], 'ISSUER': 'https://' + SECRETS[1] + '.example.test',
-             'AUDIENCE': 'synthetic-private-audience', 'MCP_WORKLOAD': 'synthetic-private-workload'}
+             'AUDIENCE': 'synthetic-private-audience', 'MCP_WORKLOAD': 'synthetic-private-workload',
+             'INGESTION_RECEIPT_KEY_ENV': SECRETS[3], 'GATEWAY_RECEIPT_KEY_ENV': SECRETS[4]}
 BINDINGS = {service: 'fixture-peer-' + str(i) for i, service in
             enumerate(sorted({c[1] for c in A.capabilities.values()}))}
 
 
-def fixture(foreign=85):
+def legacy_function():
+    # Synthetic September profile: six constants and one function shared by
+    # all summaries, selecting its producer by CapabilityID rather than OWNER.
+    constants = '\n'.join('local ' + k + ' = ' + json.dumps(CONSTANTS[k]) for k in p.IAM_KEYS + p.RECEIPT_KEYS)
+    owners = ',\n'.join('  [' + json.dumps(cap) + '] = ' + json.dumps(c[0])
+                        for cap, c in A.capabilities.items() if cap.endswith('.summary'))
+    return ('return function(conf, ctx)\n' + constants + '\n'
+            'local cjson = require("cjson.safe")\n'
+            'local producers = {\n' + owners + '\n}\n'
+            'ngx.req.read_body()\n'
+            'local envelope = cjson.decode(ngx.req.get_body_data() or "")\n'
+            'if type(envelope) ~= "table" or not producers[envelope.CapabilityID] then\n'
+            '  return ngx.exit(403)\nend\nend')
+
+
+def fixture(foreign=85, installed_format='legacy-execute-summary'):
     rows = {'foreign-' + str(i): {'id': 'foreign-' + str(i), 'uri': '/foreign/' + str(i),
                                 'methods': ['GET'], 'plugins': {'proxy-rewrite': {'headers': {'X-Fake': SECRETS[0]}}},
                                 'upstream': {'type': 'roundrobin', 'nodes': {'fixture-old:8000': 1}}}
@@ -34,8 +51,12 @@ def fixture(foreign=85):
         if not capability.endswith('.summary'):
             continue
         rid = 'execute-' + capability
-        old_function = p.function_source(A, capability, CONSTANTS).replace(
-            "    ngx.req.set_header('X-OUF-Delegation-Verified', 'mcp-operational-aggregate-v1')\n", '')
+        if installed_format == 'legacy-execute-summary':
+            old_function = legacy_function()
+        else:
+            assert installed_format == 'current'
+            old_function = p.function_source(A, capability, {k: CONSTANTS[k] for k in p.IAM_KEYS}).replace(
+                "    ngx.req.set_header('X-OUF-Delegation-Verified', 'mcp-operational-aggregate-v1')\n", '')
         rows[rid] = {'id': rid, 'uri': p.PREFIX + capability, 'methods': ['POST'],
                      'labels': {'owner': c[0]}, 'name': 'synthetic-' + c[0], 'priority': 10,
                      'plugins': {
@@ -87,6 +108,110 @@ class MemoryAdmin:
 
 
 class OperationalTests(unittest.TestCase):
+    def test_legacy_shared_function_and_gateway_receipt_only(self):
+        proposal = plan()
+        self.assertEqual(proposal['installedFormat'], 'legacy-execute-summary')
+        functions = {r['plugins']['serverless-post-function']['functions'][0]
+                     for rid, r in proposal['before'].items() if rid.startswith('execute-')}
+        self.assertEqual(functions, {legacy_function()})
+        public = p.public_plan(proposal)
+        self.assertEqual(public['installedFormat'], 'legacy-execute-summary')
+        for change, visible in zip(proposal['changes'], public['changes']):
+            cap = change['id'].removeprefix('execute-')
+            fn = change['desired']['plugins']['serverless-post-function']['functions'][0]
+            if A.capabilities[cap][0] == 'gateway':
+                self.assertIn('local RECEIPT_KEY_ENV = ' + json.dumps(CONSTANTS['GATEWAY_RECEIPT_KEY_ENV']) + '\n', fn)
+                self.assertIn("'X-OUF-Operational-Receipt'", fn)
+                self.assertTrue(visible['producerReceipt'])
+            else:
+                self.assertNotIn('RECEIPT_KEY_ENV', fn)
+                self.assertNotIn("'X-OUF-Operational-Receipt'", fn)
+                self.assertNotIn('producerReceipt', visible)
+            self.assertNotIn(CONSTANTS['INGESTION_RECEIPT_KEY_ENV'], fn)
+
+    def test_current_header_is_recognized_but_missing_gateway_reference_is_held(self):
+        rows = fixture(installed_format='current')
+        for cap in A.capabilities:
+            if cap.endswith('.summary'):
+                self.assertEqual(p.installed_constants(rows['execute-' + cap], cap, A),
+                                 ('current', {k: CONSTANTS[k] for k in p.IAM_KEYS}))
+        with self.assertRaisesRegex(RuntimeError, '^INSTALLED_GATEWAY_RECEIPT_KEY_REFERENCE_REQUIRED$'):
+            plan(rows)
+
+    def test_current_operational_identity_check_is_unchanged(self):
+        for key in p.OP_KEYS:
+            rows = fixture(installed_format='current')
+            route = next(r for k, r in rows.items() if k.startswith('execute-'))
+            lines = route['plugins']['serverless-post-function']['functions'][0].split('\n')
+            index = 1 + (p.IAM_KEYS + p.OP_KEYS).index(key)
+            lines[index] = 'local ' + key + ' = "synthetic-wrong-identity"'
+            route['plugins']['serverless-post-function']['functions'] = ['\n'.join(lines)]
+            with self.subTest(key=key), self.assertRaisesRegex(RuntimeError, '^INSTALLED_OPERATIONAL_CONSTANTS_DIVERGE$'):
+                plan(rows)
+
+    def test_only_two_closed_ordered_headers_are_accepted(self):
+        for fmt, keys in (('current', p.IAM_KEYS + p.OP_KEYS),
+                          ('legacy-execute-summary', p.IAM_KEYS + p.RECEIPT_KEYS)):
+            base_rows = fixture(installed_format=fmt)
+            rid = next(k for k in base_rows if k.startswith('execute-'))
+            original = base_rows[rid]['plugins']['serverless-post-function']['functions'][0].split('\n')
+            variants = []
+            for index in range(1, len(keys) + 1):
+                variants.append(('missing-' + str(index), original[:index] + original[index + 1:]))
+                for value in ('null', '42', 'true', '{}', '[]', '""', '"x" -- Lua comment', '"x" "y"'):
+                    lines = original.copy(); lines[index] = 'local ' + keys[index - 1] + ' = ' + value
+                    variants.append(('value-' + str(index) + '-' + value, lines))
+            for index in range(1, len(keys)):
+                lines = original.copy(); lines[index], lines[index + 1] = lines[index + 1], lines[index]
+                variants.append(('reordered-' + str(index), lines))
+            for extra in ('EXTRA', 'RECEIPT_KEY_ENV', 'CAPABILITY', 'GATEWAY_RECEIPT_KEY_ENV'):
+                variants.append(('extra-' + extra, original[:len(keys) + 1] +
+                                 ['local ' + extra + ' = "SYNTHETIC_EXTRA"'] + original[len(keys) + 1:]))
+            variants.append(('malformed-extra', original[:len(keys) + 1] +
+                             ['local EXTRA'] + original[len(keys) + 1:]))
+            lines = original.copy(); lines[0] += ' '
+            variants.append(('nonexact-first-line', lines))
+            lines = original.copy(); lines[5] = ('local CAPABILITY = "synthetic-hybrid"' if fmt != 'current'
+                                                else 'local INGESTION_RECEIPT_KEY_ENV = "SYNTHETIC_HYBRID"')
+            variants.append(('hybrid', lines))
+            for name, lines in variants:
+                rows = copy.deepcopy(base_rows)
+                rows[rid]['plugins']['serverless-post-function']['functions'] = ['\n'.join(lines)]
+                with self.subTest(format=fmt, mutation=name), self.assertRaisesRegex(
+                        RuntimeError, '^(KNOWN_OWNER_HEADER_REQUIRED|KNOWN_OWNER_CONSTANTS_REQUIRED|CLOSED_OWNER_CONSTANT_REQUIRED)$'):
+                    plan(rows)
+
+    def test_key_references_are_valid_distinct_and_consistent(self):
+        for key in ('DELEGATION_KEY_ENV',) + p.RECEIPT_KEYS:
+            for invalid in ('lowercase', '_START', 'A-B', 'A' * 129, 'A\nB'):
+                rows = fixture()
+                route = next(r for k, r in rows.items() if k.startswith('execute-'))
+                post = route['plugins']['serverless-post-function']
+                post['functions'][0] = post['functions'][0].replace(json.dumps(CONSTANTS[key]), json.dumps(invalid))
+                with self.subTest(key=key, invalid=invalid), self.assertRaisesRegex(RuntimeError, '^EXISTING_KEY_REFERENCE_REQUIRED$'):
+                    plan(rows)
+        for first, second in ((p.IAM_KEYS[0], p.RECEIPT_KEYS[0]), (p.IAM_KEYS[0], p.RECEIPT_KEYS[1]), p.RECEIPT_KEYS):
+            rows = fixture()
+            route = next(r for k, r in rows.items() if k.startswith('execute-'))
+            post = route['plugins']['serverless-post-function']
+            post['functions'][0] = post['functions'][0].replace(CONSTANTS[first], CONSTANTS[second])
+            with self.assertRaisesRegex(RuntimeError, '^DISTINCT_INSTALLED_KEY_REFERENCES_REQUIRED$'):
+                plan(rows)
+        for key in p.RECEIPT_KEYS:
+            rows = fixture()
+            route = next(r for k, r in rows.items() if k.startswith('execute-'))
+            post = route['plugins']['serverless-post-function']
+            post['functions'][0] = post['functions'][0].replace(CONSTANTS[key], 'SYNTHETIC_DIVERGENT_REFERENCE')
+            with self.assertRaisesRegex(RuntimeError, '^INSTALLED_RECEIPT_KEY_REFERENCES_DIVERGE$'):
+                plan(rows)
+
+    def test_mixed_installed_formats_are_held(self):
+        rows = fixture()
+        rid = next(k for k in rows if k.startswith('execute-'))
+        rows[rid] = fixture(installed_format='current')[rid]
+        with self.assertRaisesRegex(RuntimeError, '^INSTALLED_FORMATS_DIVERGE$'):
+            plan(rows)
+
     def test_exact_delta_and_same_owner_cloning(self):
         proposal = plan()
         self.assertFalse(proposal['unsupportedDifferences'])
@@ -284,6 +409,17 @@ class OperationalTests(unittest.TestCase):
                     for secret in SECRETS:
                         self.assertNotIn(secret, output.getvalue())
                     return result
+                rows = fixture(installed_format='current')
+                held = run()
+                self.assertEqual((held['status'], held['reason'], held['adminPutAttempts']),
+                                 ('HELD', 'INSTALLED_GATEWAY_RECEIPT_KEY_REFERENCE_REQUIRED', 0))
+                rows = fixture()
+                post = next(r for k, r in rows.items() if k.startswith('execute-'))['plugins']['serverless-post-function']
+                post['functions'][0] = post['functions'][0].replace('local ISSUER = ', 'local UNKNOWN = ')
+                held = run()
+                self.assertEqual((held['status'], held['reason'], held['adminPutAttempts']),
+                                 ('HELD', 'KNOWN_OWNER_CONSTANTS_REQUIRED', 0))
+                rows = fixture()
                 first = run()
                 self.assertEqual(first['status'], 'OPERATIONAL_ROUTES_PLANNED')
                 with patch.object(p, 'observe_bindings', side_effect=RuntimeError('BINDING_UNRESOLVED_OR_AMBIGUOUS')):
@@ -400,13 +536,22 @@ class GatewayEquivalence(unittest.TestCase):
         ])
         # Exercise the complete gateway materializer, including ingress/status
         # construction. No gateway function or source read is mocked.
-        materialized = m.materialize({'x-ouf-installation': installation, 'routes': bindings},
-                                    '$ENV://SYNTHETIC_OIDC', CONSTANTS['DELEGATION_KEY_ENV'])
-        actual = {r['uri']: r for r in materialized['routes']}
-        for change in plan()['changes']:
-            expected = change['desired']; route = actual[expected['uri']]
-            for path in p.CHANGED_FIELDS:
-                self.assertEqual(p.field(expected, path), p.field(route, path), (expected['uri'], path))
+        for receipt_keys in (None, {'gateway': CONSTANTS['GATEWAY_RECEIPT_KEY_ENV']}):
+            with self.subTest(producerReceipt=receipt_keys is not None):
+                kwargs = {} if receipt_keys is None else {'producer_receipt_key_envs': receipt_keys}
+                materialized = m.materialize({'x-ouf-installation': installation, 'routes': bindings},
+                                            '$ENV://SYNTHETIC_OIDC', CONSTANTS['DELEGATION_KEY_ENV'], **kwargs)
+                actual = {r['uri']: r for r in materialized['routes']}
+                for change in plan()['changes']:
+                    expected = copy.deepcopy(change['desired']); route = actual[expected['uri']]
+                    if receipt_keys is None:
+                        # Renderer compatibility only: a no-receipt installation
+                        # is recognized but cannot be admitted by compile_plan.
+                        cap = expected['id'].removeprefix('execute-')
+                        expected['plugins']['serverless-post-function']['functions'] = [
+                            p.function_source(A, cap, {k: CONSTANTS[k] for k in p.IAM_KEYS})]
+                    for path in p.CHANGED_FIELDS:
+                        self.assertEqual(p.field(expected, path), p.field(route, path), (expected['uri'], path))
 
 
 if __name__ == '__main__':
