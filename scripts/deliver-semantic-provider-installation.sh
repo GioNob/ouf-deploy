@@ -3,8 +3,8 @@ set -euo pipefail
 umask 077
 
 controller='prepare-semantic-provider-installation.py'
-controller_sha='9255dbf738e11a25a92fd29eb0a460965af7cbf7eeec32ba39b7459cfbfca444'
-source_root='https://raw.githubusercontent.com/GioNob/ouf-deploy/692a0595375e740ba1db16c463c3c06180a92282/scripts'
+controller_sha='5143b99a67ac22ebb6eb27e94093740d446010553c41d08320010be7e516a236'
+source_root='https://raw.githubusercontent.com/GioNob/ouf-deploy/d5a421e3b8103680986c3d0ffac97151f9cb0d71/scripts'
 work=$(mktemp -d "${TMPDIR:-/tmp}/ouf-semantic-installation-p.XXXXXXXX")
 trap 'rm -rf -- "$work"' EXIT
 
