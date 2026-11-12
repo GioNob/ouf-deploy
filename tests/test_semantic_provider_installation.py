@@ -102,7 +102,7 @@ class ProfileTests(unittest.TestCase):
             plans = []
             canonical = P["canonical"]
             def capture_plan(value):
-                if "inputHashes" in value:
+                if isinstance(value, dict) and "inputHashes" in value:
                     plans.append(value)
                 return canonical(value)
             with patch.dict(MODULE, Reader=lambda: reader, directory=lambda _: None,
