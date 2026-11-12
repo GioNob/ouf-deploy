@@ -482,7 +482,7 @@ class RealWAL(unittest.TestCase):
                     self.assertFalse(b.episode_index_present(path))
                     with self.assertRaisesRegex(RuntimeError, 'EPISODE_DEDUP_INDEX_MISSING'):
                         a.store_counts(path, schema)
-                    upgraded.db.execute('create index gateway_incident_transition_dedup on gateway_incident_transition(dedup_key)')
+                    upgraded.db.execute("create index gateway_incident_transition_dedup on gateway_incident_transition(json_extract(projection,'$.dedup_key'), sequence_id desc)")
                     upgraded.db.execute('create trigger fixture_change after insert on gateway_incident_transition begin select 1; end')
                     upgraded.db.commit()
                     with self.assertRaisesRegex(RuntimeError, 'TABLE_OR_TRIGGER_CHANGED'):
