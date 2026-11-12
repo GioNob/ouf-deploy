@@ -446,6 +446,7 @@ class VerifierTests(Fixture):
             if writing or mutating:
                 path = args[0]
                 if isinstance(path, (str,bytes,os.PathLike)):
+                    if writing and os.fsdecode(path) == '/dev/null': return
                     path = Path(os.fsdecode(path))
                     if not path.is_absolute() and event in ('os.remove','os.rmdir','os.mkdir','os.chmod'):
                         directory_fd = args[-1]
