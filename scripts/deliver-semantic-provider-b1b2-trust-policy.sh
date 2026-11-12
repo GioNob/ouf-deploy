@@ -3,9 +3,9 @@ set -euo pipefail
 umask 077
 
 # Claude replaces all three pins after review and commit; never use a branch URL.
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_SHA256__'
-authority_sha='__PIN_AUTHORITY_SHA256__'
+commit='fa81424bf208d0f10f754eda2cc0f4ffa96941a8'
+controller_sha='2b6f2c1d164e98bfc797031a44de70b0d25f33a3b68486fa81af14d2ed3321bb'
+authority_sha='04510e275622cde812da86599e5a191a0f7575650b32aa3208d1b6d47768c728'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ && "$authority_sha" =~ ^[0-9a-f]{64}$ ]] || {
   printf '%s\n' 'B1B2_SOURCE_PINS_REQUIRED' >&2
   exit 1
