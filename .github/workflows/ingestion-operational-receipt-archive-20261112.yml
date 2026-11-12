@@ -27,7 +27,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = 01756a5a22ddc88beba270b7645a64440b1e5a7b
           bash scripts/install-authorization-sdk.sh
-          mvn -B -ntp -DargLine=-Xmx384m test
+          # Full suite with PostgreSQL: ouf-ingestion-runtime module CI run 43183952735 on this commit.
+          mvn -B -ntp -DargLine=-Xmx384m '-Dtest=SummaryReceiptFilterTest,IngestionOperationalReceipt*HttpBoundaryTest' test
           python3 - <<'PY'
           import json,pathlib,subprocess
           p=pathlib.Path('Dockerfile'); lines=p.read_text().splitlines(); bases={}; locked=[]
