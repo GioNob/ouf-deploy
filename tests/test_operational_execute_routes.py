@@ -182,7 +182,10 @@ class OperationalTests(unittest.TestCase):
             self.assertEqual(len(admin.rows), 90)
             self.assertEqual((counters['finalRouteCount'], counters['unchangedRoutesVerified']), (90, 84))
         with self.assertRaisesRegex(RuntimeError, 'EXACT_INSTALLED_SUMMARY_REQUIRED'):
-            plan({k: v for k, v in fixture(0).items() if k != next(iter(fixture(0)))})
+            rows = fixture(5); rows.pop(next(k for k in rows if k.startswith('execute-')))
+            plan(rows)
+        with self.assertRaisesRegex(RuntimeError, 'BOUNDED_SOURCE_ROUTE_COUNT_REQUIRED'):
+            plan(dict(list(fixture(0).items())[:2]))
 
     def test_six_writes_and_85_unchanged_with_private_journal(self):
         proposal = plan(); counters = report()
