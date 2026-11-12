@@ -1,7 +1,10 @@
 # Sei route operative — proposta e applicazione
 
 Controller fuori sprint, sorgente gateway `98d01f4`. Aggiorna sul posto le tre
-summary e clona ciascuna per incidents: 88 → 91 route, 85 invariate. Nessuna
+summary e clona ciascuna per incidents: N → N+3 route, N−3 invariate, con N
+osservato dalla lista Admin e vincolato all'hash del piano (sul VPS il
+2026-11-12: 87 → 90, 84 invariate; etcd `--keys-only` conta anche la chiave
+cartella `/apisix/routes/`). Nessuna
 prova locale o CI equivale a un'installazione sul VPS. Nessun deploy nel workflow.
 
 Claude fissa `__PIN_COMMIT__` e `__PIN_SHA256__` dopo la review D-001. Il secondo
