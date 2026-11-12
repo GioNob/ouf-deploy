@@ -25,11 +25,11 @@ BINDINGS = {service: 'fixture-peer-' + str(i) for i, service in
             enumerate(sorted({c[1] for c in A.capabilities.values()}))}
 
 
-def fixture():
+def fixture(foreign=85):
     rows = {'foreign-' + str(i): {'id': 'foreign-' + str(i), 'uri': '/foreign/' + str(i),
                                 'methods': ['GET'], 'plugins': {'proxy-rewrite': {'headers': {'X-Fake': SECRETS[0]}}},
                                 'upstream': {'type': 'roundrobin', 'nodes': {'fixture-old:8000': 1}}}
-            for i in range(85)}
+            for i in range(foreign)}
     for capability, c in A.capabilities.items():
         if not capability.endswith('.summary'):
             continue
@@ -170,6 +170,19 @@ class OperationalTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'SUMMARY_PLUGIN_REVIEW_REQUIRED'):
                 p.publish(proposal, admin, Path(temp), counters, lambda: None)
             self.assertEqual(admin.puts, 0)
+
+    def test_counts_follow_observed_source_routes(self):
+        # Installed VPS shape: 84 foreign routes + 3 summary routes = 87.
+        proposal = plan(fixture(84)); counters = report()
+        public = p.public_plan(proposal)
+        self.assertEqual((public['sourceRouteCount'], public['desiredRouteCount'], public['unchangedRoutes']), (87, 90, 84))
+        with tempfile.TemporaryDirectory() as temp:
+            work = Path(temp); admin = MemoryAdmin(proposal['before'], work, counters)
+            p.publish(proposal, admin, work, counters, lambda: None)
+            self.assertEqual(len(admin.rows), 90)
+            self.assertEqual((counters['finalRouteCount'], counters['unchangedRoutesVerified']), (90, 84))
+        with self.assertRaisesRegex(RuntimeError, 'EXACT_INSTALLED_SUMMARY_REQUIRED'):
+            plan({k: v for k, v in fixture(0).items() if k != next(iter(fixture(0)))})
 
     def test_six_writes_and_85_unchanged_with_private_journal(self):
         proposal = plan(); counters = report()

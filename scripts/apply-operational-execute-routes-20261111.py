@@ -218,7 +218,9 @@ def contains_scope(value, scope):
 
 
 def compile_plan(rows, a, bindings, observation):
-    need(len(rows) == 88, 'EXACT_88_SOURCE_ROUTES_REQUIRED')
+    # The source count is observed, not pinned: the complete route map is bound
+    # into the plan hash ('before') and shown to the human in the public plan.
+    need(3 <= len(rows) <= 509, 'BOUNDED_SOURCE_ROUTE_COUNT_REQUIRED')
     changes, blockers, common = [], [], None
     for capability, (owner, service, port, path, scope, seconds) in a.capabilities.items():
         if not capability.endswith('.summary'):
@@ -299,7 +301,8 @@ def public_plan(plan):
         changes.append(row)
     public = {'planSha256': digest(plan), 'bindings': plan['bindings'],
             'bindingObservationSha256': digest(plan['bindingObservation']),
-            'sourceRouteCount': 88, 'desiredRouteCount': 91, 'unchangedRoutes': 85,
+            'sourceRouteCount': len(plan['before']), 'desiredRouteCount': len(plan['before']) + 3,
+            'unchangedRoutes': len(plan['before']) - 3,
             'updates': 3, 'additions': 3, 'changes': changes,
             'unsupportedDifferences': plan['unsupportedDifferences']}
     if plan['unsupportedDifferences']:
@@ -429,9 +432,9 @@ def publish(plan, admin, work, report, binding_guard):
         private(work, f'{ordinal:02d}-verified.private.json', {'mapSha256': digest(expected)})
         report['routeWritesVerified'] += 1
         report['runtimeChanged'] = True
-    need(len(expected) == 91, 'FINAL_ROUTE_COUNT_MISMATCH')
+    need(len(expected) == len(plan['before']) + 3, 'FINAL_ROUTE_COUNT_MISMATCH')
     admin.guard()
-    report.update(finalRouteCount=91, unchangedRoutesVerified=85)
+    report.update(finalRouteCount=len(expected), unchangedRoutesVerified=len(plan['before']) - 3)
 
 
 class JsonParser(argparse.ArgumentParser):
