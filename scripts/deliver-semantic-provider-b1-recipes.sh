@@ -3,9 +3,9 @@ set -euo pipefail
 umask 077
 
 # D-001: fill only after review/commit. Each new file has a distinct pin.
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_CONTROLLER_SHA256__'
-launch_sha='__PIN_LAUNCH_SHA256__'
+commit='6ba770bee8c1d5f2d1d0f7c266654df78d7dabcc'
+controller_sha='2bf24f9f91248f5d1443ea6a9090f543745d72f633adb8f02d991f865b8b3801'
+launch_sha='1a81298dce02b95d5209f26e309129576dd3b41b90f366dcd977121009b96bfd'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ && "$launch_sha" =~ ^[0-9a-f]{64}$ ]]
 python_sha='889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
 printf '%s  %s\n' "$python_sha" /usr/bin/python3.13 | sudo sha256sum --check --status
