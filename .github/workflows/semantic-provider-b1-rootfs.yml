@@ -1,0 +1,29 @@
+name: Semantic provider B1 rootfs evidence
+on:
+  pull_request:
+    paths:
+      - scripts/prepare-semantic-provider-b1-rootfs.py
+      - scripts/deliver-semantic-provider-b1-rootfs.sh
+      - tests/test_semantic_provider_b1_rootfs.py
+      - docs/OUF_SEMANTIC_PROVIDER_B1_ROOTFS_20261113.md
+      - .github/workflows/semantic-provider-b1-rootfs.yml
+      - tools/semantic_image_rootfs/prepare_provider_image_rootfs.py
+      - tools/semantic_stopped_rootfs/stopped_rootfs_comparison.py
+      - tools/semantic_stopped_rootfs/rootfs_difference_report.py
+      - tools/semantic_stopped_rootfs/rootfs_image_equivalence.py
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - tools/semantic_b1_acceptance/acceptance.py
+      - tools/semantic_b1b2_authority/**
+      - tests/test_semantic_b1_acceptance.py
+permissions: {contents: read}
+jobs:
+  rootfs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Check launcher syntax
+        run: bash -n scripts/deliver-semantic-provider-b1-rootfs.sh
+      - name: Test plan and injected apply with native root custody
+        run: sudo -n env OUF_B1_ROOTFS_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b1_rootfs.py -v
