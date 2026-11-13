@@ -3,8 +3,8 @@ set -euo pipefail
 umask 077
 
 # Claude fills these pins after review and commit (D-001).
-ouf_commit='__PIN_COMMIT__'
-ouf_controller_sha='__PIN_CONTROLLER_SHA256__'
+ouf_commit='0324c25082c106b9405b072d830e089f70016b8a'
+ouf_controller_sha='7046b6e9a09d2e7ff0667ab15f5a8208445d6a8ead9161e5f8800677f2b3ba68'
 if [[ ! "$ouf_commit" =~ ^[0-9a-f]{40}$ || ! "$ouf_controller_sha" =~ ^[0-9a-f]{64}$ ]]; then
   printf '%s\n' 'Pin commit/controller A2 non compilati: consegna non eseguibile.' >&2
   exit 2
