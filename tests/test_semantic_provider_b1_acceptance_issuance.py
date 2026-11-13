@@ -272,9 +272,19 @@ class PlanTests(unittest.TestCase):
         for name, digest in rows:
             raw = subprocess.check_output(["git", "show", "HEAD:" + name], cwd=ROOT)
             self.assertEqual(sha(raw), digest, name)
-        self.assertIn("__PIN_COMMIT__", source)
-        self.assertIn("__PIN_CONTROLLER_SHA256__", source)
-        self.assertIn("__PIN_SIGNER_SHA256__", source)
+        placeholders = ("__PIN_COMMIT__", "__PIN_CONTROLLER_SHA256__", "__PIN_SIGNER_SHA256__")
+        if all(pin in source for pin in placeholders):
+            for name, pin in zip(("commit", "controller_sha", "signer_sha"), placeholders):
+                self.assertEqual(re.findall(r"^" + name + r"=(.*)$", source, re.M), ["'" + pin + "'"])
+        else:
+            self.assertNotIn("__PIN_", source)
+            commits = re.findall(r"^commit=(.*)$", source, re.M)
+            self.assertEqual(len(commits), 1)
+            self.assertRegex(commits[0], r"^'[0-9a-f]{40}'$")
+            for name, path in (("controller_sha", "scripts/issue-semantic-provider-b1-acceptance.py"),
+                               ("signer_sha", "tools/semantic_b1b2_authority/signer.py")):
+                raw = subprocess.check_output(["git", "show", "HEAD:" + path], cwd=ROOT)
+                self.assertEqual(re.findall(r"^" + name + r"=(.*)$", source, re.M), ["'" + sha(raw) + "'"])
         self.assertTrue(m.CLOSURE.issubset({name for name, _ in rows}))
 
 
