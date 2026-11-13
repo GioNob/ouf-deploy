@@ -3,8 +3,8 @@ set -euo pipefail
 umask 077
 
 # Claude fills both pins after review/commit. Refuse an unpinned launcher.
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_CONTROLLER_SHA256__'
+commit='c3413608f6adfefedf34499b6a76e1ace77f9dfa'
+controller_sha='8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ ]]
 python_sha='889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
 printf '%s  %s\n' "$python_sha" /usr/bin/python3.13 | sudo sha256sum --check --status
