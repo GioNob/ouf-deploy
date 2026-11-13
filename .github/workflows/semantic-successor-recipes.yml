@@ -1,0 +1,54 @@
+name: Semantic successor southbound tmpfs recipe
+on:
+  pull_request:
+    paths:
+      - 'tools/semantic_successor_recipes/**'
+      - 'tests/test_semantic_successor_recipes.py'
+      - '.github/workflows/semantic-successor-recipes.yml'
+      - 'docs/OUF_SEMANTIC_SUCCESSOR_TMPFS_BASELINE_20261113.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+      - name: Verify tmpfs builder ordering, unchanged OCI options and rejection contracts
+        run: python3 -B -m unittest discover -v -s tests -p test_semantic_successor_recipes.py
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+      - name: Load target-version Engine only in disposable hosted CI
+        run: |
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 180 https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output engine.tgz
+          printf '%s\n' 'd8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70  engine.tgz' | sha256sum -c -
+          mkdir engine-bin
+          tar -xzf engine.tgz --strip-components=1 -C engine-bin
+          ./engine-bin/docker --version
+          ./engine-bin/dockerd --version
+      - name: Capture two refused candidates and compare the complete unnormalized OCI
+        run: |
+          fixture=/root/ouf-successor-recipes-src/tools
+          sudo install -d -m 700 "$fixture/semantic_frame_compiler" "$fixture/semantic_successor_recipes"
+          sudo install -m 600 tools/semantic_frame_compiler/build_role_frame_template.py tools/semantic_frame_compiler/compile_creation_frame_policy.py "$fixture/semantic_frame_compiler/"
+          sudo install -m 600 tools/semantic_successor_recipes/*.py "$fixture/semantic_successor_recipes/"
+          baseline=tools/semantic_successor_recipes/containerd-overlayfs-southbound-tmpfs.json
+          if [ -f "$baseline" ]; then
+            sudo install -m 600 "$baseline" "$fixture/semantic_successor_recipes/"
+          fi
+          sudo env PATH="${{ github.workspace }}/engine-bin:/usr/sbin:/usr/bin:/sbin:/bin" OUF_FRAME_COMPILER_ENGINE_VERSION=29.8.1 OUF_FRAME_COMPILER_BACKEND=containerd-overlayfs OUF_FRAME_COMPILER_NETWORK=bridge OUF_FRAME_COMPILER_EXPORT_DIRECTORY="${{ github.workspace }}/frame-baselines" /usr/bin/python3 -I -B "$fixture/semantic_successor_recipes/test_southbound_tmpfs_baseline_native.py"
+      - name: Retain the generated synthetic baseline
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: frame-baseline-containerd-overlayfs-southbound-tmpfs
+          path: frame-baselines/containerd-overlayfs-southbound-tmpfs.json
+          if-no-files-found: error
+          retention-days: 30
