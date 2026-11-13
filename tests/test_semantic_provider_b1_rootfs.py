@@ -54,8 +54,21 @@ class PublicContract(unittest.TestCase):
             raw = subprocess.check_output(['git', 'show', 'HEAD:' + path], cwd=ROOT)
             self.assertEqual(hashlib.sha256(raw).hexdigest(), digest)
             self.assertIn('fetch ' + path + ' ' + digest, launcher)
-        self.assertIn('__PIN_COMMIT__', launcher)
-        self.assertIn('__PIN_CONTROLLER_SHA256__', launcher)
+        placeholders = ('__PIN_COMMIT__' in launcher,
+                        '__PIN_CONTROLLER_SHA256__' in launcher)
+        self.assertIn(placeholders, ((True, True), (False, False)))
+        if not any(placeholders):
+            import re
+            self.assertNotIn('__PIN_', launcher)
+            self.assertEqual(len(re.findall(r"^commit='[0-9a-f]{40}'$",
+                                            launcher, re.MULTILINE)), 1)
+            controller_pins = re.findall(r"^controller_sha='([0-9a-f]{64})'$",
+                                         launcher, re.MULTILINE)
+            self.assertEqual(len(controller_pins), 1)
+            raw = subprocess.check_output(
+                ['git', 'show', 'HEAD:scripts/prepare-semantic-provider-b1-rootfs.py'],
+                cwd=ROOT)
+            self.assertEqual(controller_pins[0], hashlib.sha256(raw).hexdigest())
         self.assertIn('sudo /usr/bin/python3.13 -I -B', launcher)
 
     def test_effective_seal_is_exact_and_validated(self):
