@@ -13,7 +13,7 @@ import re
 from tools.semantic_b1b2_authority import authority as A
 
 
-SCHEMA = "ouf.semantic-provider-b1-artifact-acceptance.v1"
+SCHEMA = "ouf.semantic-provider-b1-artifact-acceptance.v2"
 SEAL_SCHEMA = "ouf.semantic-rootfs-seal.v1"
 MAX_PAYLOAD_BYTES = 131072  # Task-14's signed-payload bound.
 ROLES = ("adapter", "southbound")
@@ -23,7 +23,7 @@ FIELDS = {"schema", "installationRef", "entityRef", "generation", "profile",
           "preparationA", "creation", "roles", "softwareClosure", "trustPolicy",
           "startAuthorized", "leaseAuthorized", "issuedAt"}
 EXPECTED_FIELDS = {"installationRef", "entityRef", "issuerRef", "profileSha256",
-                   "preparationA", "roles", "trustPolicy", "minimumGeneration"}
+                   "preparationA", "transactions", "recreation", "roles", "trustPolicy", "minimumGeneration"}
 
 
 class AcceptanceDenied(RuntimeError):
@@ -58,6 +58,10 @@ def integer(value, minimum, code):
     require(type(value) is int and value >= minimum, code)
 
 
+def transaction(value, code):
+    require(type(value) is str and re.fullmatch(r"[0-9a-fA-F]{32}", value), code)
+
+
 def validate_acceptance(value):
     """Validate a closed manifest without opening/following any artifact path.
 
@@ -78,14 +82,19 @@ def validate_acceptance(value):
     for item in prep["files"].values():
         binding(item)
     creation = value["creation"]
-    exact(creation, {"transactionRef", "evidence", "declaredGaps"}, "ACCEPTANCE_CREATION_FIELDS_REQUIRED")
-    require(A.identity(creation["transactionRef"]), "ACCEPTANCE_TRANSACTION_REQUIRED")
-    require(creation["evidence"] == "PREPARATION_A_ONLY", "ACCEPTANCE_CREATION_EVIDENCE_REQUIRED")
+    exact(creation, {"roles", "recreation", "evidence", "declaredGaps"}, "ACCEPTANCE_CREATION_FIELDS_REQUIRED")
+    require(creation["evidence"] == "PREPARATION_A2", "ACCEPTANCE_CREATION_EVIDENCE_REQUIRED")
+    exact(creation["roles"], ROLES, "ACCEPTANCE_CREATION_ROLES_REQUIRED")
+    for row in creation["roles"].values():
+        exact(row, {"transactionRef"}, "ACCEPTANCE_CREATION_ROLE_FIELDS_REQUIRED")
+        transaction(row["transactionRef"], "ACCEPTANCE_TRANSACTION_REQUIRED")
+    if creation["recreation"] is not None:
+        binding(creation["recreation"])
     gaps = creation["declaredGaps"]
-    require(type(gaps) is list and all(type(code) is str
-            and re.fullmatch(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*", code) for code in gaps),
+    require(type(gaps) is list and len(gaps) <= 16 and all(type(code) is str
+            and re.fullmatch(r"[A-Z][A-Z0-9_]{2,63}", code) for code in gaps),
             "ACCEPTANCE_GAP_CODES_REQUIRED")
-    require(len(gaps) == len(set(gaps)), "ACCEPTANCE_GAP_CODES_REQUIRED")
+    require(gaps == sorted(set(gaps)), "ACCEPTANCE_GAP_CODES_REQUIRED")
     exact(value["roles"], ROLES, "ACCEPTANCE_ROLES_REQUIRED")
     for role in ROLES:
         row = value["roles"][role]
@@ -164,6 +173,11 @@ def validate_expected(expected):
     for field in ("installationRef", "entityRef", "issuerRef"):
         require(A.identity(expected[field]), "ACCEPTANCE_EXPECTED_IDENTITY_REQUIRED")
     require(A.hashed(expected["profileSha256"]), "ACCEPTANCE_EXPECTED_SHA256_REQUIRED")
+    exact(expected["transactions"], ROLES, "ACCEPTANCE_EXPECTED_TRANSACTIONS_REQUIRED")
+    for value in expected["transactions"].values():
+        transaction(value, "ACCEPTANCE_EXPECTED_TRANSACTION_REQUIRED")
+    if expected["recreation"] is not None:
+        binding(expected["recreation"])
     prep = expected["preparationA"]
     exact(prep, {"planSha256", "files"}, "ACCEPTANCE_EXPECTED_PREPARATION_REQUIRED")
     exact(prep["files"], A_FILES, "ACCEPTANCE_EXPECTED_PREPARATION_FILES_REQUIRED")
@@ -206,9 +220,12 @@ def verify_acceptance(manifest_raw, signature_raw, *, expected, authenticator):
         require(manifest["preparationA"]["files"][field]["sha256"] == pins["preparationA"]["files"][field],
                 "ACCEPTANCE_A_" + label + "_MISMATCH")
     for role in ROLES:
+        require(manifest["creation"]["roles"][role]["transactionRef"] == pins["transactions"][role],
+                "ACCEPTANCE_TRANSACTION_MISMATCH")
         require(manifest["roles"][role]["containerId"] == pins["roles"][role]["containerId"],
                 "ACCEPTANCE_CID_MISMATCH")
         require(manifest["roles"][role]["imageId"] == pins["roles"][role]["imageId"],
                 "ACCEPTANCE_IMAGE_MISMATCH")
+    require(manifest["creation"]["recreation"] == pins["recreation"], "ACCEPTANCE_RECREATION_MISMATCH")
     require(manifest["generation"] >= pins["minimumGeneration"], "ACCEPTANCE_GENERATION_MISMATCH")
     return {"payloadSha256": hashlib.sha256(manifest_raw).hexdigest(), "manifest": manifest}

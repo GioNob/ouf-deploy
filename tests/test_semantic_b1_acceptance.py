@@ -33,12 +33,12 @@ def synthetic_binding(path):
 
 
 def fixture():
-    root = "/var/lib/ouf-storage-migration/semantic-provider-preparation-a-20261111"
+    root = "/var/lib/ouf-storage-migration/semantic-provider-preparation-a2-20261113"
     roles = {}
     identities = {
         "adapter": ("85b5302f6dbc3e9a24ace904b8d8a2d43bc5185e340c1bfe5474c723a6b640ef",
                     "sha256:277dcefd4744c244f4f6f23f8969f3d0acd64369e2ff1bd67594955c4ca7fbbc"),
-        "southbound": ("34adce783cba238c1954eb33e39c37a641ea4f0db212531951a2fd2b86290c52",
+        "southbound": ("622a150067244ae8dbb4ac0f1889bc9e4b9823ed761820495f5c0849738dbc0d",
                        "sha256:c15541037a08276e36715a3c3798c2d07fe6faabf5547d3885a66cd10575e366")}
     for role, (cid, image) in identities.items():
         base = "/fixture-future-b1/" + role
@@ -49,29 +49,39 @@ def fixture():
                                   for field in ("offlineImageReceipt", "offlineDockerReceipt", "comparison")}}
         roles[role]["rootfs"]["effectiveSeal"] = {
             "schema": B.SEAL_SCHEMA, "sha256": sha(("SYNTHETIC-SEAL:" + role).encode()), "entries": 12, "bytes": 34}
-    return {"schema": B.SCHEMA, "installationRef": "ouf-lab-netcup-01", "entityRef": "fixture-semantic-provider",
+    value = {"schema": B.SCHEMA, "installationRef": "ouf-lab-netcup-01", "entityRef": "fixture-semantic-provider",
             "generation": 1,
             "profile": {"path": "/etc/ouf/installations/ouf-lab-netcup-01/semantic-provider.json",
                         "sha256": "5d8500161bfc5f57d7ed94a93868e3fba5e26bfcde781ee1d38354b04dbee76d"},
             "preparationA": {"root": root,
-                             "planSha256": "17de05e7d9b9610e58919a5b22697f28865ea0b076327d0b477fbae03d22daa8",
+                             "planSha256": sha(b"SYNTHETIC:A2-PLAN-NOT-DOCUMENTED"),
                              "files": {key: synthetic_binding(root + "/" + name) for key, name in
                                        (("manifest", "manifest.json"), ("result", "result.json"),
                                         ("semanticPeer", "semantic-peer.json"), ("successors", "successors.json"))}},
-            "creation": {"transactionRef": "7ff12b95c3f70c5eaebb1d0a12ab931d", "evidence": "PREPARATION_A_ONLY",
-                         "declaredGaps": ["PRE_CREATE_REQUEST_NOT_RETAINED", "CREATION_RECEIPT_NOT_RETAINED"]},
+            "creation": {"evidence": "PREPARATION_A2",
+                         "roles": {"adapter": {"transactionRef": "7ff12b95c3f70c5eaebb1d0a12ab931d"},
+                                   "southbound": {"transactionRef": "864a28dbbd5ccc402f9406e500359123"}},
+                         "recreation": {"path": "/etc/ouf/deploy-snapshots/southbound-recreate-20261113-d022-v1/result.json",
+                                        "sha256": "56528cb24df9ce1d48f18ee67ac8105d308db8ee1602dd604a9573b08b22b79c"},
+                         "declaredGaps": ["ADAPTER_CREATION_PLAN_DIGEST_RECONSTRUCTED",
+                                          "ADAPTER_CREATION_RECEIPT_NOT_RETAINED"]},
             "roles": roles, "softwareClosure": {"sourceCommit": "a" * 40,
                                                 "files": {"tools/fixture.py": "b" * 64}},
             "trustPolicy": {
                 "path": "/etc/ouf/deploy-snapshots/semantic-provider-b1b2-trust-policy-20261112/trust-policy.json",
                 "sha256": "6ef247ee727484777557cdb5adb05428e6d020da1e2e49773a84eedc56be4f95"},
             "startAuthorized": False, "leaseAuthorized": False, "issuedAt": 2000000000}
+    value["preparationA"]["files"]["successors"]["sha256"] = (
+        "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb")
+    return value
 
 
 def expected_for(value):
     """Test convenience only; production callers must obtain independent pins."""
     return {"installationRef": value["installationRef"], "entityRef": value["entityRef"],
             "issuerRef": "fixture-installer", "profileSha256": value["profile"]["sha256"],
+            "transactions": {role: row["transactionRef"] for role, row in value["creation"]["roles"].items()},
+            "recreation": copy.deepcopy(value["creation"]["recreation"]),
             "preparationA": {"planSha256": value["preparationA"]["planSha256"],
                              "files": {key: row["sha256"] for key, row in value["preparationA"]["files"].items()}},
             "roles": {role: {key: row[key] for key in ("containerId", "imageId")}
@@ -86,6 +96,46 @@ def at(value, parts):
 
 
 class SchemaTests(unittest.TestCase):
+    def test_v1_is_rejected_before_creation_validation(self):
+        value = fixture()
+        value["schema"] = "ouf.semantic-provider-b1-artifact-acceptance.v1"
+        value["creation"] = {"transactionRef": "7ff12b95c3f70c5eaebb1d0a12ab931d",
+                             "evidence": "PREPARATION_A_ONLY", "declaredGaps": []}
+        with self.assertRaisesRegex(B.AcceptanceDenied, "^ACCEPTANCE_SCHEMA_REQUIRED$"):
+            B.decode_manifest(A.canonical(value))
+
+    def test_documented_successors_and_a2_recreation_bindings(self):
+        # Real documented references, not an issued acceptance. Unpublished A2
+        # hashes, rootfs/recipe evidence, closure and issuer remain synthetic.
+        value = fixture()
+        self.assertEqual(B.SCHEMA, "ouf.semantic-provider-b1-artifact-acceptance.v2")
+        self.assertEqual(B.decode_manifest(B.build_acceptance(**value)), value)
+        self.assertEqual(value["creation"]["roles"], {
+            "adapter": {"transactionRef": "7ff12b95c3f70c5eaebb1d0a12ab931d"},
+            "southbound": {"transactionRef": "864a28dbbd5ccc402f9406e500359123"}})
+        self.assertEqual(value["preparationA"]["files"]["successors"]["sha256"],
+                         "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb")
+
+    def test_creation_transaction_syntax_and_general_no_recreation_case(self):
+        for role in B.ROLES:
+            for wrong in ("g" * 32, "a" * 31, "a" * 33, "installer", 32, None):
+                with self.subTest(role=role, wrong=wrong):
+                    self.denied(("creation", "roles", role, "transactionRef"), wrong,
+                                "ACCEPTANCE_TRANSACTION_REQUIRED")
+        self.denied(("creation", "recreation", "path"), "relative/result.json",
+                    "ACCEPTANCE_ABSOLUTE_PATH_REQUIRED")
+        value = fixture()
+        value["creation"]["roles"]["southbound"] = copy.deepcopy(value["creation"]["roles"]["adapter"])
+        value["creation"]["recreation"] = None
+        value["creation"]["declaredGaps"] = []
+        B.build_acceptance(**value)
+        B.validate_expected(expected_for(value))
+        # The specified gap grammar permits consecutive/trailing underscores.
+        value["creation"]["declaredGaps"] = ["A__", "B" * 64]
+        B.build_acceptance(**value)
+        value["creation"]["declaredGaps"] = ["GAP_%02d" % i for i in range(16)]
+        B.build_acceptance(**value)
+
     def denied(self, parts, replacement, code):
         value = fixture()
         at(value, parts[:-1])[parts[-1]] = replacement
@@ -140,6 +190,8 @@ class SchemaTests(unittest.TestCase):
             with self.subTest(parts=parts, extra=True), self.assertRaises(B.AcceptanceDenied):
                 B.validate_acceptance(changed)
             for wrong in (None, [], "object", 1, True):
+                if parts == ("creation", "recreation") and wrong is None:
+                    continue  # Explicitly nullable binding in v2.
                 changed = copy.deepcopy(value)
                 if parts:
                     at(changed, parts[:-1])[parts[-1]] = wrong
@@ -158,7 +210,7 @@ class SchemaTests(unittest.TestCase):
                  (("leaseAuthorized",), True, "ACCEPTANCE_LEASE_FORBIDDEN"),
                  (("leaseAuthorized",), 0, "ACCEPTANCE_LEASE_FORBIDDEN"),
                  (("creation", "evidence"), "CREATION_RECEIPT", "ACCEPTANCE_CREATION_EVIDENCE_REQUIRED"),
-                 (("creation", "transactionRef"), "", "ACCEPTANCE_TRANSACTION_REQUIRED"),
+                 (("creation", "roles", "adapter", "transactionRef"), "", "ACCEPTANCE_TRANSACTION_REQUIRED"),
                  (("roles", "adapter", "containerId"), "a" * 63, "ACCEPTANCE_CID_REQUIRED"),
                  (("roles", "southbound", "imageId"), "a" * 64, "ACCEPTANCE_IMAGE_ID_REQUIRED"),
                  (("roles", "adapter", "rootfs", "effectiveSeal", "schema"), "other", "ACCEPTANCE_SEAL_SCHEMA_REQUIRED"),
@@ -193,7 +245,9 @@ class SchemaTests(unittest.TestCase):
             self.denied(("profile", "path"), wrong, "ACCEPTANCE_ABSOLUTE_PATH_REQUIRED")
         for wrong in ("A" * 64, "a" * 63, "g" * 64, "sha256:" + "a" * 64, 64, None):
             self.denied(("profile", "sha256"), wrong, "ACCEPTANCE_SHA256_REQUIRED")
-        for wrong in (None, {}, "GAP", ["lower_case"], ["CODE", "CODE"], [1], [[]], ["_CODE"], ["CODE__GAP"]):
+        for wrong in (None, {}, "GAP", ["lower_case"], ["CODE", "CODE"], [1], [[]],
+                      ["_CODE"], ["ZZZ", "AAA"], ["AB"], ["A" * 65],
+                      ["GAP_%02d" % i for i in range(17)]):
             self.denied(("creation", "declaredGaps"), wrong, "ACCEPTANCE_GAP_CODES_REQUIRED")
         for name in ("/absolute.py", "../file", "a/../file", "a//b", "a/./b", "C:/file", ".", ""):
             self.denied(("softwareClosure", "files"), {name: "b" * 64}, "ACCEPTANCE_RELATIVE_PATH_REQUIRED")
@@ -218,6 +272,33 @@ class SchemaTests(unittest.TestCase):
 
 
 class ExpectedSchemaTests(unittest.TestCase):
+    def test_new_pins_match_exactly_after_authentication(self):
+        # Portable pin comparisons only; real Ed25519 remains in the native suite.
+        value = fixture()
+        raw = B.build_acceptance(**value)
+        original = expected_for(value)
+        authenticator = object.__new__(A.B1B2Authenticator)
+        authenticator.policy_binding = copy.deepcopy(value["trustPolicy"])
+        cases = [(("transactions", role), "0" * 32, "ACCEPTANCE_TRANSACTION_MISMATCH")
+                 for role in B.ROLES]
+        cases += [(("recreation",), None, "ACCEPTANCE_RECREATION_MISMATCH"),
+                  (("recreation", "path"), "/other/result.json", "ACCEPTANCE_RECREATION_MISMATCH"),
+                  (("recreation", "sha256"), "0" * 64, "ACCEPTANCE_RECREATION_MISMATCH")]
+        with patch.object(A.B1B2Authenticator, "verify_b1b2_detached", return_value=True) as verify:
+            result = B.verify_acceptance(raw, b"test-only", expected=original, authenticator=authenticator)
+            self.assertEqual(result["manifest"], value)
+            self.assertEqual(verify.call_args.args[2], "ARTIFACT_ACCEPTANCE")
+            for parts, wrong, code in cases:
+                expected = copy.deepcopy(original)
+                at(expected, parts[:-1])[parts[-1]] = wrong
+                with self.subTest(parts=parts), self.assertRaisesRegex(B.AcceptanceDenied, "^" + code + "$"):
+                    B.verify_acceptance(raw, b"test-only", expected=expected, authenticator=authenticator)
+            value["creation"]["recreation"] = None
+            raw = B.build_acceptance(**value)
+            B.verify_acceptance(raw, b"test-only", expected=expected_for(value), authenticator=authenticator)
+            with self.assertRaisesRegex(B.AcceptanceDenied, "^ACCEPTANCE_RECREATION_MISMATCH$"):
+                B.verify_acceptance(raw, b"test-only", expected=original, authenticator=authenticator)
+
     def test_expected_contract_is_closed_and_rejects_malformed_pins(self):
         original = expected_for(fixture())
         self.assertEqual(B.validate_expected(original), original)
@@ -230,6 +311,9 @@ class ExpectedSchemaTests(unittest.TestCase):
             B.validate_expected(original | {"extra": True})
         cases = [(("issuerRef",), "bad/issuer", "ACCEPTANCE_EXPECTED_IDENTITY_REQUIRED"),
                  (("profileSha256",), "G" * 64, "ACCEPTANCE_EXPECTED_SHA256_REQUIRED"),
+                 (("transactions",), {}, "ACCEPTANCE_EXPECTED_TRANSACTIONS_REQUIRED"),
+                 (("transactions", "adapter"), "g" * 32, "ACCEPTANCE_EXPECTED_TRANSACTION_REQUIRED"),
+                 (("recreation", "path"), "relative", "ACCEPTANCE_ABSOLUTE_PATH_REQUIRED"),
                  (("preparationA",), {}, "ACCEPTANCE_EXPECTED_PREPARATION_REQUIRED"),
                  (("preparationA", "files"), {}, "ACCEPTANCE_EXPECTED_PREPARATION_FILES_REQUIRED"),
                  (("preparationA", "files", "manifest"), None, "ACCEPTANCE_EXPECTED_SHA256_REQUIRED"),
@@ -365,7 +449,12 @@ class NativeVerificationTests(unittest.TestCase):
                  (("preparationA", "planSha256"), "0" * 64, "ACCEPTANCE_A_PLAN_MISMATCH"),
                  (("trustPolicy", "path"), "/other/policy.json", "ACCEPTANCE_TRUST_POLICY_MISMATCH"),
                  (("trustPolicy", "sha256"), "0" * 64, "ACCEPTANCE_TRUST_POLICY_MISMATCH"),
-                 (("minimumGeneration",), 2, "ACCEPTANCE_GENERATION_MISMATCH")]
+                 (("minimumGeneration",), 2, "ACCEPTANCE_GENERATION_MISMATCH"),
+                 (("transactions", "adapter"), "0" * 32, "ACCEPTANCE_TRANSACTION_MISMATCH"),
+                 (("transactions", "southbound"), "0" * 32, "ACCEPTANCE_TRANSACTION_MISMATCH"),
+                 (("recreation",), None, "ACCEPTANCE_RECREATION_MISMATCH"),
+                 (("recreation", "path"), "/other/result.json", "ACCEPTANCE_RECREATION_MISMATCH"),
+                 (("recreation", "sha256"), "0" * 64, "ACCEPTANCE_RECREATION_MISMATCH")]
         for key, label in (("manifest", "MANIFEST"), ("result", "RESULT"),
                            ("semanticPeer", "SEMANTIC_PEER"), ("successors", "SUCCESSORS")):
             cases.append((("preparationA", "files", key), "0" * 64, "ACCEPTANCE_A_" + label + "_MISMATCH"))
