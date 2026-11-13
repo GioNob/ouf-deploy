@@ -304,12 +304,30 @@ def derive_request(original):
     return updated
 
 
-def check_networks(allowed_id):
+def check_networks(allowed_id, historical_southbound_id):
     """Network inspect alone omits stopped requested IP/alias reservations.
 
     Inspect every listed container too, and the union of network peers. Never
-    infer an empty array from a missing Containers/Networks field.
+    infer an empty array from a missing Containers/Networks field. The sole
+    co-reservation admitted by r3 (VPS observation 2026-11-13) belongs to the
+    CLI-bound historical southbound, stopped and without active endpoints.
     """
+    historical = engine("GET", f"/containers/{historical_southbound_id}/json")
+    reason = "SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED"
+    require(historical is not None and historical["Id"] == historical_southbound_id
+            and historical["State"]["Running"] is False
+            and historical["State"]["Status"] in {"exited", "created"}
+            and historical["State"]["Pid"] == 0, reason)
+    for network, (ip, _) in ENDPOINTS[SOUTHBOUND].items():
+        endpoint = historical["NetworkSettings"]["Networks"].get(network)
+        require(isinstance(endpoint, dict), reason)
+        ipam = endpoint.get("IPAMConfig") or {}
+        require(endpoint.get("EndpointID") == "" and endpoint.get("IPAddress") == ""
+                and endpoint.get("MacAddress", "") == ""
+                and ("IPv4Address" not in ipam or ipam["IPv4Address"] == ip)
+                and all(isinstance(endpoint.get(field), list)
+                        and set(endpoint[field]) <= {SOUTHBOUND, historical_southbound_id[:12]}
+                        for field in ("Aliases", "DNSNames")), reason)
     networks = {}
     peers = set()
     for network, (ip, mac) in ENDPOINTS[SOUTHBOUND].items():
@@ -321,6 +339,11 @@ def check_networks(allowed_id):
             peers.add(cid)
             if cid == allowed_id:
                 continue
+            if cid == historical_southbound_id:
+                # Network readback must not contradict the inactive inspect.
+                require(endpoint["IPv4Address"] == "" and endpoint["MacAddress"] == ""
+                        and not endpoint.get("EndpointID"), reason)
+                continue
             require(endpoint["IPv4Address"].split("/")[0] != ip
                     and endpoint["MacAddress"].lower() != mac
                     and endpoint["Name"] not in {SOUTHBOUND, SOUTHBOUND + "-successor"},
@@ -330,7 +353,7 @@ def check_networks(allowed_id):
     peers.update(row["Id"] for row in listed)
     for cid in sorted(peers):
         require(re.fullmatch(r"[0-9a-f]{64}", cid), "NETWORK_PEER_ID_UNPROVEN")
-        if cid == allowed_id:
+        if cid == allowed_id or cid == historical_southbound_id:
             continue
         doc = engine("GET", f"/containers/{cid}/json")
         require(doc is not None, "NETWORK_PEER_DISAPPEARED")
@@ -378,7 +401,7 @@ def observe(args):
     except (Held, KeyError, TypeError, ValueError) as error:
         detail = str(error) if isinstance(error, Held) else type(error).__name__
         raise Held("CURRENT_SUCCESSOR_REQUEST_MISMATCH:" + detail) from None
-    network_digest = check_networks(args.current_southbound_id)
+    network_digest = check_networks(args.current_southbound_id, args.historical_southbound_id)
     new_request = derive_request(requests[SOUTHBOUND])
     plan = {
         "schema": "ouf.semantic-southbound-successor-recreation-plan.v1",
@@ -444,7 +467,8 @@ def run(args):
             latest = inspect_created(cid, name, requests[name], args.creation_transaction,
                                      args.expected_runtime)
             require(frame_digest(latest) == frame_digest(current[name]), "LAST_FRAME_CHANGED")
-        require(check_networks(args.current_southbound_id) == plan["networkReadbackSha256"],
+        require(check_networks(args.current_southbound_id, args.historical_southbound_id)
+                == plan["networkReadbackSha256"],
                 "LAST_NETWORK_READBACK_CHANGED")
         transaction = os.urandom(16).hex()
         request = copy.deepcopy(plan["newSouthboundRequest"])
@@ -456,7 +480,7 @@ def run(args):
         engine("DELETE", f"/containers/{args.current_southbound_id}")
         report["oldRemoved"] = engine("GET", f"/containers/{args.current_southbound_id}/json") is None
         require(report["oldRemoved"], "OLD_REMOVAL_UNPROVEN")
-        check_networks(None)
+        check_networks(None, args.historical_southbound_id)
         report["createRequests"] = 1
         response = engine("POST", f"/containers/create?name={SOUTHBOUND}-successor", request)
         report["newCreated"] = True
@@ -470,7 +494,7 @@ def run(args):
                               args.expected_runtime)
         require(mac_profile(new, SOUTHBOUND) == mac_profile(current[SOUTHBOUND], SOUTHBOUND),
                 "NEW_LEGACY_MAC_PROFILE_CHANGED")
-        check_networks(cid)
+        check_networks(cid, args.historical_southbound_id)
         report.update(status="SOUTHBOUND_RECREATED_STOPPED", newFrameSha256=frame_digest(new))
     except (Exception, KeyboardInterrupt) as error:
         report["reason"] = str(error) if isinstance(error, Held) else type(error).__name__

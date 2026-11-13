@@ -79,8 +79,24 @@ possono omettere le prenotazioni dei container fermi: integra quindi
 `GET /containers/json?all=1` e gli inspect dell'unione dei container elencati e
 dei peer di rete. Un terzo container con IP assegnato o richiesto, MAC o alias
 del southbound impedisce l'operazione, anche se fermo. Nessuna assenza viene
-dedotta da campi obbligatori omessi. Dopo DELETE ripete il controllo senza
-escludere alcun CID; dopo CREATE esclude solo il nuovo CID.
+dedotta da campi obbligatori omessi.
+
+R3 ammette come unico co-prenotante il CID esatto passato con
+`--historical-southbound-id`, secondo la verifica operatore del 2026-11-13.
+A ogni controllo lo storico deve avere `Running: false`, stato `exited` o
+`created`, PID 0. Su **ciascuna** delle tre reti deve avere `EndpointID` e
+`IPAddress` vuoti, `MacAddress` vuoto o assente; `IPAMConfig.IPv4Address`, se
+presente, deve coincidere con l'IP del successor su quella rete. Le liste
+`Aliases` e `DNSNames` possono contenere solo `ouf-semantic-southbound-v2` e
+lo short ID dello storico. Un readback di rete con risorse attive dello
+storico contraddice questa condizione e viene rifiutato. Qualunque violazione
+resta `SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED`.
+
+La stessa verifica vale prima della DELETE, dopo la DELETE (unico prenotante
+ammesso: lo storico fermo) e dopo la CREATE (oltre al nuovo successor).
+Nessun altro CID beneficia dell'eccezione: anche `/ouf-semantic-southbound`
+resta soggetto ai controlli ordinari su IP, MAC e alias, senza esclusioni per
+somiglianza del nome. Lo storico non viene modificato né avviato.
 
 `--plan` non crea directory/ricevute e non invia mutazioni. Stampa `PLAN_READY`,
 `plan` e `planSha256 = sha256(canonical(plan))`, senza newline nel payload hash.
@@ -205,6 +221,10 @@ finale, successo e ricevuta, errori dopo DELETE, nuovo readback non conforme,
 adapter modificato, diff completo tmpfs, metadati HMAC e allowlist senza start
 o DELETE forzate. Include Config legacy MAC presente/coerente e negativi senza
 normalizzazioni. Le fixture e gli hash storici della suite sono sintetici.
+I test r3 riproducono la prenotazione identica dello storico fermo e verificano
+il rifiuto di storico running, PID/stato non ammessi, IP/endpoint/MAC attivi,
+IP prenotato diverso, alias/DNS estranei e conflitti di terzi. I controlli
+sono esercitati anche dopo la rimozione simulata del vecchio successor.
 
 In questa working tree Windows Python non è disponibile nel PATH e non è stato
 trovato nei percorsi locali verificati; WSL rifiuta l'enumerazione con accesso

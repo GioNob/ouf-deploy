@@ -51,7 +51,12 @@ def historical(name, cid):
     return {"Id": cid, "Name": "/historical-" + name, "Image": "sha256:" + "f" * 64,
             "Config": config, "HostConfig": host, "Mounts": mounts,
             "Path": "/docker-entrypoint.sh", "Args": ["docker-start"],
-            "NetworkSettings": {"Networks": {}}, "RestartCount": 0,
+            "NetworkSettings": {"Networks": {
+                network: {"IPAMConfig": {"IPv4Address": ip}, "IPAddress": "",
+                          "EndpointID": "", "MacAddress": "", "Aliases": [name],
+                          "DNSNames": [name, cid[:12]]}
+                for network, (ip, _) in m.ENDPOINTS[name].items()
+            } if name == m.SOUTHBOUND else {}}, "RestartCount": 0,
             "State": {"Running": False, "Restarting": False, "Paused": False,
                       "Status": "exited", "Pid": 0, "StartedAt": "2026-10-18T00:00:00Z",
                       "FinishedAt": "2026-10-18T01:00:00Z"}}
@@ -273,6 +278,86 @@ class RecreateTests(unittest.TestCase):
                     self.assertEqual(report["status"], "HELD")
                     self.assertEqual(report["reason"], "SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED")
                     self.assertEqual(self.fake.writes(), [])
+
+    def test_historical_stopped_identical_reservation_accepted_before_and_after_delete(self):
+        for status in ("exited", "created"):
+            for include_mac in (False, True):
+                with self.subTest(status=status, include_mac=include_mac):
+                    self.fake.docs[HS]["State"]["Status"] = status
+                    for endpoint in self.fake.docs[HS]["NetworkSettings"]["Networks"].values():
+                        endpoint.pop("MacAddress", None)
+                        if include_mac:
+                            endpoint["MacAddress"] = ""
+                    m.check_networks(CS, HS)
+                    current = self.fake.docs.pop(CS)
+                    try:
+                        m.check_networks(None, HS)
+                    finally:
+                        self.fake.docs[CS] = current
+        self.assertEqual(self.fake.writes(), [])
+
+    def test_historical_invalid_reservation_rejected_before_and_after_delete(self):
+        mutations = [lambda d: d["State"].update(Running=True),
+                     lambda d: d["State"].update(Status="running"),
+                     lambda d: d["State"].update(Pid=42)]
+        for network in m.ENDPOINTS[m.SOUTHBOUND]:
+            for field, value in (("IPAddress", "172.18.0.14"),
+                                 ("EndpointID", "active"),
+                                 ("MacAddress", "02:42:ac:12:00:0e"),
+                                 ("IPAMConfig", {"IPv4Address": "172.18.0.99"}),
+                                 ("Aliases", [m.SOUTHBOUND + "-successor"]),
+                                 ("DNSNames", ["unexpected"])):
+                mutations.append(lambda d, n=network, k=field, v=value:
+                                 d["NetworkSettings"]["Networks"][n].update({k: v}))
+        saved = copy.deepcopy(self.fake.docs[HS])
+        for mutation in mutations:
+            for after_delete in (False, True):
+                with self.subTest(mutation=mutation, after_delete=after_delete):
+                    self.fake.docs[HS] = copy.deepcopy(saved)
+                    mutation(self.fake.docs[HS])
+                    current = self.fake.docs.pop(CS) if after_delete else None
+                    try:
+                        with self.assertRaisesRegex(m.Held, "SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED"):
+                            m.check_networks(None if after_delete else CS, HS)
+                    finally:
+                        if after_delete:
+                            self.fake.docs[CS] = current
+        self.assertEqual(self.fake.writes(), [])
+
+    def test_historical_exception_does_not_allow_third_container_reservation(self):
+        self.fake.docs[THIRD] = copy.deepcopy(self.fake.docs[HS])
+        self.fake.docs[THIRD].update(Id=THIRD, Name="/ouf-semantic-southbound")
+        for after_delete in (False, True):
+            with self.subTest(after_delete=after_delete):
+                current = self.fake.docs.pop(CS) if after_delete else None
+                try:
+                    with self.assertRaisesRegex(m.Held, "SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED"):
+                        m.check_networks(None if after_delete else CS, HS)
+                finally:
+                    if after_delete:
+                        self.fake.docs[CS] = current
+        self.assertEqual(self.fake.writes(), [])
+
+    def test_similar_third_container_name_without_conflicts_accepted(self):
+        self.fake.docs[THIRD] = {"Name": "/ouf-semantic-southbound",
+                                 "NetworkSettings": {"Networks": {}}}
+        m.check_networks(CS, HS)
+        self.assertEqual(self.fake.writes(), [])
+
+    def test_historical_becomes_active_after_delete_blocks_create(self):
+        def engine(method, path, payload=None):
+            result = self.fake(method, path, payload)
+            if method == "DELETE":
+                self.fake.docs[HS]["State"].update(Running=True, Pid=42, Status="running")
+            return result
+
+        with patch.object(m, "engine", side_effect=engine):
+            report = self.apply()
+        self.assertEqual(report["status"], "PARTIAL")
+        self.assertEqual(report["reason"], "SOUTHBOUND_NETWORK_RESOURCE_OCCUPIED")
+        self.assertTrue(report["oldRemoved"])
+        self.assertTrue(report["doNotRerunApply"])
+        self.assertEqual([call[0] for call in self.fake.writes()], ["DELETE"])
 
     def test_apply_wrong_digest_has_no_mutation_or_output(self):
         self.args.plan, self.args.apply, self.args.plan_sha256 = False, True, "0" * 64
