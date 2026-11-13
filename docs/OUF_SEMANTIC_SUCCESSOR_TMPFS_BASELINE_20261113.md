@@ -1,6 +1,6 @@
 # B1 ricette, parte 1: baseline CI southbound con tmpfs
 
-Task `sprint-01/task-19`, decisioni D-020 e D-021. Implementazione confinata a
+Task `sprint-01/task-19`, decisioni D-020, D-021 e D-022. Implementazione confinata a
 `ouf-deploy`, branch `sprint-01/task-19-southbound-tmpfs-baseline`.
 Questa consegna prepara il workflow; non attesta un esito CI o un nuovo stato VPS.
 La baseline JSON è intenzionalmente **assente**, fino alla prima run verde.
@@ -13,10 +13,14 @@ Rispetto alla ricetta storica aggiunge il tmpfs
 `/run/ouf-southbound-runtime`, avvia `/bin/sh -c <script>` e monta un ulteriore
 file RO per la chiave HMAC. La richiesta è costruita da
 [`build_request`](../scripts/create-discovery-stopped-candidates-20261111.py).
-Le opzioni richieste, mantenute letteralmente, sono:
+La prima run nativa `43394688283` del giro 1 (`3398cfb`) fallisce con
+`invalid tmpfs option "noswap"`: Docker 29.8.1 rifiuta l'opzione prima della
+cattura OCI. Secondo D-022 il southbound viene ricreato senza `noswap`;
+questa modifica non attesta che la ricreazione VPS sia già avvenuta.
+Le opzioni richieste per la nuova forma, mantenute letteralmente, sono:
 
 ```text
-rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m,noswap
+rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m
 ```
 
 La baseline storica southbound non contiene questo tmpfs. Quella adapter resta
@@ -32,10 +36,15 @@ runtime di cattura. Il runtime salva il `config.json` OCI al `create` e termina
 con 77 prima di chiamare runc; rifiuta anche `start` con 78. Entrambi i candidati
 restano con PID 0 e `StartedAt` nullo. Nessuno script del candidato viene eseguito.
 
-Prima della cattura si prova il mount con tutte le opzioni richieste in un
-namespace mount privato. Il fixture controlla anche `noswap` in
-`/proc/self/mounts`. Un kernel incompatibile o una probe fallita produce
-`TMPFS_NOSWAP_KERNEL_REQUIRED`, senza skip o rimozione dell'opzione.
+La probe kernel per `noswap` è rimossa: il limite osservato è nel parsing
+Docker, prima del runtime. Il fixture verifica che `noswap` non compaia nelle
+opzioni del tmpfs dell'OCI catturata di entrambi i candidati
+(`OCI_TMPFS_NOSWAP_FORBIDDEN`). Un terzo `docker create` conserva invece la
+vecchia riga con `,noswap`: il successivo `docker start` deve fallire con
+stderr contenente `invalid tmpfs option "noswap"` e senza alcun file di
+cattura per quel CID. Il candidato viene poi rimosso, anche se un'asserzione
+fallisce. Il marker `CI_TMPFS_NOSWAP_REJECTED_BEFORE_CAPTURE=true` attesta
+questo caso negativo nella run verde.
 
 Il candidato 1 è creato con due bind RO, uno per configurazione sintetica e uno
 per HMAC sintetico, `--entrypoint /bin/sh` e comando `-c <script breve>`.
@@ -61,8 +70,8 @@ Questo prova la compatibilità della forma sintetica e la compilazione prima
 della generazione dell'OCI del secondo candidato. Non prova approvazione del
 template target, autenticazione degli input/context, applicazione kernel dei
 vincoli del candidato, contenuto rootfs, TLS/IAM, accettazione, E2E o avvio VPS.
-Il mount di probe prova il supporto kernel di `noswap`, non l'enforcement di un
-candidato che il runtime ha deliberatamente rifiutato.
+Il caso negativo prova il rifiuto Docker della vecchia richiesta con `noswap`;
+non verifica il supporto kernel di tale opzione.
 
 ## Builder e qualificazione
 
@@ -84,7 +93,7 @@ il reviewer deve allora eliminare l'estensione e usare quello storico, prima
 di qualificare la baseline. Nessuna scelta viene adattata osservando OCI2.
 
 `launch.manifest.tmpfs` dichiara la stessa mappa della baseline. Una differenza
-di destinazione o stringa di opzioni, compresa la rimozione di `noswap`, viene
+di destinazione o stringa di opzioni, compresa l'aggiunta di `noswap`, viene
 rifiutata con `TMPFS_LAUNCH_DRIFT`. Una dichiarazione baseline mancante viene
 rifiutata con `TMPFS_BASELINE_DECLARATION_REQUIRED`; un record OCI baseline
 assente, duplicato o di tipo/sorgente diverso con `TMPFS_BASELINE_MOUNT_REQUIRED`.
@@ -119,7 +128,8 @@ eseguita per risolvere i tag.
 Claude deve acquisire la baseline soltanto dopo review e prima run verde di
 **entrambi** i job, associata al commit revisionato:
 
-1. Leggere nel log nativo `SOUTHBOUND_TMPFS_NATIVE=PASS`, la scelta del builder
+1. Leggere nel log nativo `SOUTHBOUND_TMPFS_NATIVE=PASS`,
+   `CI_TMPFS_NOSWAP_REJECTED_BEFORE_CAPTURE=true`, la scelta del builder
    e `CI_FRAME_BASELINE_EXPORT={"file": ..., "sha256": ...}`. Conservare run ID,
    commit della run e digest esatto. Nessun digest viene anticipato qui.
 2. Scaricare l'artifact `frame-baseline-containerd-overlayfs-southbound-tmpfs`
@@ -128,7 +138,7 @@ Claude deve acquisire la baseline soltanto dopo review e prima run verde di
 3. Calcolare SHA-256 sui byte del file scaricato e confrontarlo con il campo
    `sha256` stampato da `CI_FRAME_BASELINE_EXPORT=`. Controllare schema
    `ouf.semantic-ci-engine-frame-baseline.v1`, ruolo southbound, versione Engine,
-   `mountOrdering`, mappa `tmpfs` e flag `syntheticFixture: true`,
+   `mountOrdering`, mappa `tmpfs` con la riga D-022 senza `noswap` e flag `syntheticFixture: true`,
    `targetTemplateApproved: false`, `acceptanceGranted: false`,
    `startAuthorized: false`.
 4. Copiare gli stessi byte in
@@ -151,7 +161,7 @@ che cambi il documento deve fallire, non aggiornare automaticamente il JSON.
 
 ## Stato di verifica e task successivo
 
-Controllati localmente branch, HEAD, working tree e sorgenti storici. I sei
+Nel giro 1 sono stati controllati branch, HEAD, working tree e sorgenti storici. I sei
 file nuovi superano il controllo whitespace; gli script shell del workflow
 superano `bash -n` e tutte le azioni sono fissate a SHA. `git diff --exit-code`
 conferma l'assenza di modifiche ai file tracciati. Il builder storico conserva
@@ -161,10 +171,12 @@ il compilatore conserva
 I byte CRLF della working tree Windows sono anch'essi invariati.
 Python
 non è disponibile nel PATH Windows e WSL è inaccessibile: i test Python non
-sono stati eseguiti qui. CI non avviata, nessun accesso VPS, servizi esterni o
-segreti. Nessun file preesistente viene modificato, compresi STATE e registro
-funzionale, secondo il perimetro esplicito di task-19. La qualifica nativa e il
-commit della baseline rimangono affidati a Claude come sopra.
+sono stati eseguiti qui. La CI del giro 1 è successivamente fallita come
+riportato sopra. Il giro r2 modifica solo fixture, test unitari e questo documento
+per D-022; builder, compilatore e workflow restano invariati. Nessun accesso VPS,
+servizi esterni o segreti, nessun avvio CI locale. STATE e registro funzionale
+restano invariati secondo il perimetro esplicito di task-19. La qualifica nativa
+del giro r2 e il commit della baseline rimangono affidati a Claude come sopra.
 
 Il task successivo costruirà il controller ricette sul VPS: ricostruzione
 della richiesta di creazione e verifica contro il piano `52cfc4fb…`, launch

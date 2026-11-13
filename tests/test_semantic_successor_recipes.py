@@ -13,7 +13,7 @@ from build_role_frame_template import build_role_template as build_historical
 from compile_creation_frame_policy import Denied, compile_policy
 
 TARGET = '/run/ouf-southbound-runtime'
-OPTIONS = 'rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m,noswap'
+OPTIONS = 'rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m'
 
 
 class SouthboundTmpfsBuilderTests(unittest.TestCase):
@@ -76,7 +76,7 @@ class SouthboundTmpfsBuilderTests(unittest.TestCase):
         self.assertEqual(launch, original)
 
     def test_changed_or_missing_tmpfs_declarations_are_rejected_with_specific_code(self):
-        for declaration in (None, {}, {'/foreign': OPTIONS}, {TARGET: OPTIONS.replace(',noswap', '')},
+        for declaration in (None, {}, {'/foreign': OPTIONS}, {TARGET: OPTIONS + ',noswap'},
                             {TARGET: OPTIONS + ',ro'}, {TARGET: OPTIONS, '/extra': OPTIONS}):
             with self.subTest(declaration=declaration):
                 launch = copy.deepcopy(self.launch)
@@ -107,7 +107,7 @@ class SouthboundTmpfsBuilderTests(unittest.TestCase):
 
     def test_baseline_oci_options_are_never_reconstructed_from_request_string(self):
         mount = next(m for m in self.template['expectedOci']['mounts'] if m['destination'] == TARGET)
-        mount['options'] = ['size=1024k', 'noswap', 'mode=700', 'uid=636', 'gid=636', 'nodev', 'nosuid', 'noexec']
+        mount['options'] = ['size=1024k', 'mode=700', 'uid=636', 'gid=636', 'nodev', 'nosuid', 'noexec']
         self.assertEqual(next(m for m in self.build()['expectedOci']['mounts'] if m['destination'] == TARGET), mount)
 
     def test_bind_cannot_shadow_role_tmpfs(self):

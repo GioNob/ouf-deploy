@@ -24,7 +24,7 @@ from build_role_frame_template_tmpfs import build_role_template
 from compile_creation_frame_policy import canonical, compile_policy
 
 TMPFS_TARGET = '/run/ouf-southbound-runtime'
-TMPFS_OPTIONS = 'rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m,noswap'
+TMPFS_OPTIONS = 'rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m'
 TMPFS = {TMPFS_TARGET: TMPFS_OPTIONS}
 BASELINE_NAME = 'containerd-overlayfs-southbound-tmpfs.json'
 IMAGE = 'busybox:1.37.0'
@@ -37,7 +37,7 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
     def test_second_candidate_exact_oci_with_unchanged_tmpfs(self):
         self.assertEqual(sys.platform, 'linux', 'NATIVE_LINUX_RUNNER_REQUIRED')
         self.assertEqual(os.geteuid(), 0, 'NATIVE_ROOT_REQUIRED')
-        for binary in ('docker', 'dockerd', 'runc', 'unshare', 'mount', 'umount'):
+        for binary in ('docker', 'dockerd', 'runc'):
             self.assertIsNotNone(shutil.which(binary), 'NATIVE_TOOL_REQUIRED: ' + binary)
         self.assertEqual(os.environ.get('OUF_FRAME_COMPILER_ENGINE_VERSION', '29.8.1'), '29.8.1')
         self.assertEqual(os.environ.get('OUF_FRAME_COMPILER_BACKEND', 'containerd-overlayfs'), 'containerd-overlayfs')
@@ -47,21 +47,6 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
         root = Path('/root/ouf-southbound-tmpfs-native')
         root.mkdir(mode=0o700, exist_ok=False)
         self.addCleanup(shutil.rmtree, root)
-        probe = root / 'noswap-probe'
-        probe.mkdir(mode=0o700)
-        # The refusing runtime never mounts tmpfs. Probe the real kernel in a
-        # private mount namespace, otherwise an unsupported noswap could pass.
-        support = subprocess.run([
-            'unshare', '--mount', '--propagation', 'private', '/bin/sh', '-ec',
-            'mount -t tmpfs -o "$1" tmpfs "$2"; '
-            'trap \'umount "$2"\' EXIT; '
-            'awk -v target="$2" \'$2 == target && $3 == "tmpfs" && '
-            '$4 ~ /(^|,)noswap(,|$)/ {found=1} END {exit !found}\' /proc/self/mounts',
-            'ouf-noswap-probe', TMPFS_OPTIONS, str(probe)], capture_output=True, timeout=30)
-        self.assertEqual(support.returncode, 0,
-                         'TMPFS_NOSWAP_KERNEL_REQUIRED: mount/probe failed; noswap must not be removed: '
-                         + support.stderr.decode(errors='replace'))
-
         runtime = root / 'capture-runtime'
         runtime.write_text('#!/usr/bin/python3\n' +
             'import json,os,pathlib,subprocess,sys\n' +
@@ -126,7 +111,7 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
         self.assertFalse(any(row.startswith('HOSTNAME=') for row in image_env))
         environment = [*image_env, 'HOSTNAME=$OUF_HOSTNAME']
         checked('network', 'create', '--subnet', '198.19.250.0/24', 'ouf-ci-tmpfs-bridge')
-        self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'candidate2'))
+        self.addCleanup(lambda: docker('rm', '-f', 'candidate', 'candidate2', 'candidate3'))
 
         def inputs(number):
             sources = []
@@ -149,14 +134,14 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
                                 'args': ['/bin/sh', '-c', script], 'env': list(environment)},
                     'sources': sources}
 
-        def create(name, launch):
+        def create(name, launch, tmpfs_options=TMPFS_OPTIONS):
             mounts = [arg for m in launch['manifest']['mounts'] for arg in (
                 '--mount', 'type=bind,source=' + m['source'] + ',target=' + m['target'] + ',readonly')]
             cid = checked('create', '--name', name, '--runtime', 'ouf-ci-capture',
                           '--network', 'ouf-ci-tmpfs-bridge', '--user', '636:636',
                           '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                           '--memory', '512m', '--memory-swap', '512m', '--pids-limit', '128',
-                          '--no-healthcheck', '--tmpfs', TMPFS_TARGET + ':' + TMPFS_OPTIONS,
+                          '--no-healthcheck', '--tmpfs', TMPFS_TARGET + ':' + tmpfs_options,
                           *mounts, '--entrypoint', '/bin/sh', IMAGE, '-c', launch['startup']['args'][2]).decode().strip()
             self.assertRegex(cid, r'^[0-9a-f]{64}$')
             return cid
@@ -166,7 +151,7 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, 'CAPTURE_RUNTIME_MUST_REFUSE_CREATE')
             captured_path = root / ('capture-' + cid + '.json')
             self.assertTrue(captured_path.is_file(),
-                            'CAPTURE_NOT_REACHED (including possible tmpfs/noswap rejection): '
+                            'CAPTURE_NOT_REACHED: '
                             + result.stderr.decode(errors='replace'))
             captured = json.loads(captured_path.read_bytes())
             self.assertEqual(captured['cid'], cid)
@@ -175,6 +160,10 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
             self.assertFalse(state['Running'])
             self.assertEqual(state['Pid'], 0)
             self.assertTrue(state['StartedAt'].startswith('0001-01-01'))
+            self.assertFalse(any('noswap' in option
+                                 for mount in captured['oci']['mounts']
+                                 if mount['destination'] == TMPFS_TARGET
+                                 for option in mount['options']), 'OCI_TMPFS_NOSWAP_FORBIDDEN')
             return captured
 
         launch = inputs(1)
@@ -188,7 +177,6 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
         tmpfs_mounts = [m for m in actual['mounts'] if m['destination'] == TMPFS_TARGET]
         self.assertEqual(len(tmpfs_mounts), 1)
         self.assertEqual(tmpfs_mounts[0]['type'], 'tmpfs')
-        self.assertIn('noswap', tmpfs_mounts[0]['options'], 'OCI_TMPFS_NOSWAP_REQUIRED')
         template_oci = copy.deepcopy(actual)
         template_oci['root']['path'] = '$OUF_ROOTFS'
         template_oci['hostname'] = '$OUF_HOSTNAME'
@@ -247,6 +235,19 @@ class SouthboundTmpfsNativeTests(unittest.TestCase):
         self.assertEqual(policy_path.read_bytes(), sealed2, 'SEALED_SECOND_POLICY_CHANGED')
         self.assertEqual(policy2['expectedOci'], actual2, 'SECOND_CANDIDATE_FULL_UNNORMALIZED_OCI_DRIFT')
         self.assertEqual([m for m in actual2['mounts'] if m['destination'] == TMPFS_TARGET], tmpfs_mounts)
+
+        # D-022: Docker rejects the former request before invoking the runtime,
+        # independently of kernel support. Keep this as an explicit regression.
+        cid3 = create('candidate3', launch2, tmpfs_options=TMPFS_OPTIONS + ',noswap')
+        try:
+            result = docker('start', cid3)
+            self.assertNotEqual(result.returncode, 0, 'DOCKER_TMPFS_NOSWAP_MUST_FAIL')
+            self.assertIn('invalid tmpfs option "noswap"', result.stderr.decode(errors='replace'))
+            self.assertFalse((root / ('capture-' + cid3 + '.json')).exists(),
+                             'DOCKER_TMPFS_NOSWAP_MUST_FAIL_BEFORE_CAPTURE')
+        finally:
+            checked('rm', '-f', cid3)
+        print('CI_TMPFS_NOSWAP_REJECTED_BEFORE_CAPTURE=true', flush=True)
 
         baseline = {'schema': 'ouf.semantic-ci-engine-frame-baseline.v1', 'template': template,
                     'launch': launch, 'approvedUser': approved_user,
