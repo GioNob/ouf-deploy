@@ -3,9 +3,9 @@ set -euo pipefail
 umask 077
 
 # D-001: fill these three pins after review and commit; never infer a moving ref.
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_CONTROLLER_SHA256__'
-signer_sha='__PIN_SIGNER_SHA256__'
+commit='1cd6ea7c9c1da35a745cfd2c0d3755d99dfc7efd'
+controller_sha='f054e92e4b4ebca0f62fec7a94014b445de08bb74331c1623f0ea949537f81c6'
+signer_sha='84c3fb7a1986f1608481b9906f3794214311f8db875f04211f1b863e3c17306f'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ && "$signer_sha" =~ ^[0-9a-f]{64}$ ]]
 
 # The declared closure provenance must be the very commit delivered here.
