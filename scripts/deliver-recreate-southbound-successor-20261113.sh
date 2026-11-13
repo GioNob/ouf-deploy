@@ -3,8 +3,8 @@ set -euo pipefail
 umask 077
 
 # Claude replaces these two pins after review and commit (D-001).
-commit='e43a661d37f0b6528e5bf5ac018fee251fb9e699'
-controller_sha='658feaa9a4d7af27c4378db89982a4a93a3c911a2fa2dc6cc0facb6faea61e15'
+commit='b1e3afedd5a8fca7ea4f20176338d9225ff6852a'
+controller_sha='13fe99b68e6e81af7976cf3b8a4c2e3b1d3ccfc0cb3896be0fd8665cf6390bcb'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ ]]
 python_sha='889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
 printf '%s  %s\n' "$python_sha" /usr/bin/python3.13 | sudo sha256sum --check --status
