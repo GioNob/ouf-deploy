@@ -259,12 +259,13 @@ def inspect_created(cid, name, request, transaction, expected_runtime):
             and all(config.get(key) == request.get(key) for key in
                     ("User", "WorkingDir", "Entrypoint", "Cmd", "Healthcheck")),
             "CANDIDATE_PROCESS_CONFIGURATION_CHANGED")
-    # NO HostConfig normalization is admitted. The compiler copied the complete
-    # historical HostConfig, then changed explicit fields. No engine-added delta
-    # has been demonstrated for this lifecycle/API. Compare field presence AND
-    # canonical values (including nested fields, null vs absent and list order).
+    # Engine normalization observed on the VPS on 2026-11-13 for both roles:
+    # requested OomKillDisable=null becomes false in create readback. Admit only
+    # that direction/value; keep the POST request unchanged. All other fields,
+    # presence, nested values and list order must match exactly.
     require(set(host) == set(request["HostConfig"])
-            and all(canonical(host[key]) == canonical(value)
+            and all((host[key] is False if key == "OomKillDisable" and value is None
+                     else canonical(host[key]) == canonical(value))
                     for key, value in request["HostConfig"].items()),
             "CANDIDATE_FULL_HOSTCONFIG_CHANGED")
     expected_mounts = sorted((m["Source"], m["Target"], m["Type"], m["ReadOnly"],

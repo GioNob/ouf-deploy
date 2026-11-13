@@ -40,9 +40,14 @@ script `create-discovery-stopped-candidates-20261111.py`, lasciato invariato:
 4. Per questo applica anche `inspect_created` adattato a entrambi i successor
    correnti: identità, transazione, mai avviati, processo, healthcheck, bind,
    IP/MAC/alias richiesti e assenza di endpoint attivi. Confronta **tutto**
-   `HostConfig`, presenza dei campi e valori annidati compresi. Non è ammessa
-   alcuna normalizzazione: non ci sono delta aggiunti dall'engine dimostrati
-   per questo caso. Un campo aggiunto, omesso o diverso produce `HELD`, senza
+   `HostConfig`, presenza dei campi e valori annidati compresi. È ammessa solo
+   la normalizzazione dell'engine osservata sul VPS il 2026-11-13 per entrambi
+   i ruoli: `OomKillDisable: null` nella richiesta deve risultare `false` nel
+   readback. Vale per i successor correnti e per il nuovo container; la richiesta
+   inviata in POST conserva `OomKillDisable: null`. `true`, la direzione inversa
+   (`false` → `null`) e differenze in altri campi (anche `ShmSize`) restano
+   `CANDIDATE_FULL_HOSTCONFIG_CHANGED`. Un campo aggiunto, omesso o diverso
+   fuori da questa unica normalizzazione produce `HELD`, senza
    ignorarlo automaticamente. La prova di identità usa prefisso **e** readback
    completo del `HostConfig` richiesto; non pretende di recuperare il digest
    storico mancante da una fonte indipendente.
@@ -207,4 +212,5 @@ negato. I test Python non sono stati eseguiti localmente. Il launcher supera
 `bash -n`; il PASS della CI resta da acquisire dopo la pubblicazione a cura di
 Claude. Nessun risultato CI o VPS viene attestato da questa consegna. La suite
 simulata non qualifica un lifecycle Docker nativo e non dimostra normalizzazioni
-engine: qualsiasi mismatch reale rimane `HELD`.
+engine oltre all'unica eccezione documentata per `OomKillDisable`: qualsiasi
+altro mismatch reale rimane `HELD`.

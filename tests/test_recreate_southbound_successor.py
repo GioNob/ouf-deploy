@@ -36,7 +36,8 @@ def historical(name, cid):
             "SecurityOpt": ["no-new-privileges:true"], "PortBindings": {},
             "PublishAllPorts": False, "VolumesFrom": None, "AutoRemove": False,
             "ReadonlyRootfs": False, "Runtime": RUNTIME, "Memory": 536870912,
-            "PidsLimit": 128, "Binds": ["synthetic:old:ro"], "NetworkMode": "old"}
+            "PidsLimit": 128, "Binds": ["synthetic:old:ro"], "NetworkMode": "old",
+            "OomKillDisable": None, "ShmSize": 67108864}
     env = ["PATH=/usr/bin:/bin"]
     config = {"Env": env.copy(), "User": "636:636", "WorkingDir": "/work",
               "Entrypoint": ["/docker-entrypoint.sh"], "Cmd": ["docker-start"],
@@ -69,8 +70,11 @@ def created(name, cid, request, transaction, legacy=False):
     networks = copy.deepcopy(request["NetworkingConfig"]["EndpointsConfig"])
     for endpoint in networks.values():
         endpoint.update(EndpointID="", IPAddress="", GlobalIPv6Address="")
+    host = copy.deepcopy(request["HostConfig"])
+    if host.get("OomKillDisable") is None and "OomKillDisable" in host:
+        host["OomKillDisable"] = False
     return {"Id": cid, "Name": f"/{name}-successor", "Image": request["Image"],
-            "Config": config, "HostConfig": copy.deepcopy(request["HostConfig"]),
+            "Config": config, "HostConfig": host,
             "Mounts": mounts, "Path": request["Entrypoint"][0], "Args": request["Cmd"],
             "NetworkSettings": {"Networks": networks}, "RestartCount": 0,
             "State": {"Running": False, "Restarting": False, "Paused": False,
@@ -199,6 +203,35 @@ class RecreateTests(unittest.TestCase):
     def test_historical_frame_mismatch_held(self):
         self.fake.docs[HS]["HostConfig"]["Memory"] += 1
         self.assertEqual(m.run(self.args)["reason"], "HISTORICAL_FRAME_CHANGED")
+        self.assertEqual(self.fake.writes(), [])
+
+    def test_oom_null_to_false_accepted_current_and_new_without_changing_post(self):
+        for name, cid in ((m.ADAPTER, CA), (m.SOUTHBOUND, CS)):
+            self.assertIsNone(self.requests[name]["HostConfig"]["OomKillDisable"])
+            self.assertIs(self.fake.docs[cid]["HostConfig"]["OomKillDisable"], False)
+        report = self.apply()
+        self.assertEqual(report["status"], "SOUTHBOUND_RECREATED_STOPPED", report)
+        post = next(payload for method, _, payload in self.fake.writes() if method == "POST")
+        self.assertIsNone(post["HostConfig"]["OomKillDisable"])
+        self.assertIs(self.fake.docs[NEW]["HostConfig"]["OomKillDisable"], False)
+
+    def test_oom_null_to_true_rejected(self):
+        self.assert_hostconfig_mismatch("OomKillDisable", None, True)
+
+    def test_oom_false_to_null_rejected(self):
+        self.assert_hostconfig_mismatch("OomKillDisable", False, None)
+
+    def test_other_hostconfig_normalization_rejected(self):
+        self.assert_hostconfig_mismatch("ShmSize", 0, 67108864)
+
+    def assert_hostconfig_mismatch(self, key, requested, observed):
+        for name, cid in ((m.ADAPTER, CA), (m.SOUTHBOUND, CS)):
+            with self.subTest(role=name):
+                request = copy.deepcopy(self.requests[name])
+                request["HostConfig"][key] = requested
+                self.fake.docs[cid]["HostConfig"][key] = observed
+                with self.assertRaisesRegex(m.Held, "CANDIDATE_FULL_HOSTCONFIG_CHANGED"):
+                    m.inspect_created(cid, name, request, TRANSACTION, RUNTIME)
         self.assertEqual(self.fake.writes(), [])
 
     def test_candidate_guards_both_roles(self):
