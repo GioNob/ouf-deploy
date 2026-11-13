@@ -491,6 +491,52 @@ def historical_templates(reader, args, owner):
     return templates
 
 
+RUNTIME_V5_SCHEMA = "ouf.semantic-docker-runtime-adapter.v5"
+RUNTIME_V5_CONFIG_FIELDS = {
+    "schema", "sourceHash", "runtimePath", "runtimeSha256", "pythonPath", "pythonSha256",
+    "driverPath", "driverSha256", "admissionPath", "admissionSha256", "registryRoot", "runtimeStateRoot",
+    "acceptance", "b1b2TrustPolicy", "armingRoot", "candidates", "armingVerifierPath", "armingVerifierSha256",
+    "b1b2AuthorityModule", "opensslBinding", "armingIssuerRef",
+}
+
+
+def runtime_v5_configuration(config, python, docs):
+    reason = "RUNTIME_V5_CONFIGURATION_UNPROVEN"
+
+    def hashed(value):
+        return type(value) is str and HEX.fullmatch(value) is not None
+
+    def path(value):
+        return (type(value) is str and Path(value).is_absolute() and ".." not in Path(value).parts
+                and str(Path(value)) == value)
+
+    def binding(value):
+        return (type(value) is dict and set(value) == {"path", "sha256"}
+                and path(value["path"]) and hashed(value["sha256"]))
+
+    require(set(config) == RUNTIME_V5_CONFIG_FIELDS and config["pythonPath"] == python, reason)
+    require(all(hashed(config[key]) for key in (
+        "sourceHash", "runtimeSha256", "pythonSha256", "driverSha256", "admissionSha256", "armingVerifierSha256")), reason)
+    require(all(path(config[key]) for key in (
+        "runtimePath", "pythonPath", "driverPath", "admissionPath", "registryRoot", "runtimeStateRoot",
+        "armingRoot", "armingVerifierPath")), reason)
+    require(all(binding(config[key]) for key in ("acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule")), reason)
+    ssl = config["opensslBinding"]
+    require(type(ssl) is dict and set(ssl) == {"path", "sha256", "version"}
+            and binding({key: ssl[key] for key in ("path", "sha256")})
+            and type(ssl["version"]) is str and re.fullmatch(r"[0-9]+[.][0-9]+[.][0-9]+[a-z]?", ssl["version"]), reason)
+    require(type(config["armingIssuerRef"]) is str
+            and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", config["armingIssuerRef"]), reason)
+    candidates = config["candidates"]
+    reason = "RUNTIME_V5_CANDIDATES_MISMATCH"
+    require(type(candidates) is dict and len(candidates) == 2 and all(hashed(cid) for cid in candidates)
+            and set(candidates) == {docs[role]["Id"] for role in ("adapter", "southbound")}, reason)
+    for entry in candidates.values():
+        require(type(entry) is dict and set(entry) == {"phase", "bundleParents"} and entry["phase"] == "INACTIVE"
+                and type(entry["bundleParents"]) is list and 1 <= len(entry["bundleParents"]) <= 4
+                and all(path(parent) for parent in entry["bundleParents"]), reason)
+
+
 def runtime(reader, info, docs):
     name = docs["southbound"]["HostConfig"]["Runtime"]
     require(REF.fullmatch(name) and docs["adapter"]["HostConfig"]["Runtime"] == name,
@@ -501,13 +547,26 @@ def runtime(reader, info, docs):
     require(match is not None, "RUNTIME_WRAPPER_SHAPE_UNPROVEN")
     python, source, config_path = (part.decode("ascii") for part in match.groups())
     config = reader.document(config_path)
-    require(config["schema"] == "ouf.semantic-docker-runtime-adapter.v4" and config["pythonPath"] == python,
+    require(type(config) is dict and config.get("schema") in (
+        "ouf.semantic-docker-runtime-adapter.v4", RUNTIME_V5_SCHEMA),
             "RUNTIME_CONFIGURATION_UNPROVEN")
-    source_mode = stat.S_IMODE(absolute(source).lstat().st_mode)
-    require(source_mode in (0o600, 0o644, 0o755), "RUNTIME_SOURCE_CUSTODY_UNPROVEN")
-    reader.read(source, config["sourceHash"], mode=source_mode)
-    reader.binary(python, config["pythonSha256"])
-    reader.binary(config["runtimePath"], config["runtimeSha256"])
+    if config["schema"] == RUNTIME_V5_SCHEMA:
+        runtime_v5_configuration(config, python, docs)
+        reader.read(source, config["sourceHash"], maximum=131072)
+        for prefix in ("driver", "admission", "armingVerifier"):
+            reader.read(config[prefix + "Path"], config[prefix + "Sha256"], maximum=131072)
+        for key in ("acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule"):
+            reader.read(config[key]["path"], config[key]["sha256"], maximum=131072)
+        for prefix in ("python", "runtime"):
+            reader.binary(config[prefix + "Path"], config[prefix + "Sha256"], maximum=64000000)
+        reader.binary(config["opensslBinding"]["path"], config["opensslBinding"]["sha256"], maximum=64000000)
+    else:
+        require(config["pythonPath"] == python, "RUNTIME_CONFIGURATION_UNPROVEN")
+        source_mode = stat.S_IMODE(absolute(source).lstat().st_mode)
+        require(source_mode in (0o600, 0o644, 0o755), "RUNTIME_SOURCE_CUSTODY_UNPROVEN")
+        reader.read(source, config["sourceHash"], mode=source_mode)
+        reader.binary(python, config["pythonSha256"])
+        reader.binary(config["runtimePath"], config["runtimeSha256"])
     return {"name": name, "wrapper": str(wrapper), "runtimeStateRoot": str(absolute(config["runtimeStateRoot"])),
             "runtimeExecutable": config["runtimePath"], "pythonExecutable": python,
             "dockerDataRoot": str(absolute(info["DockerRootDir"]))}

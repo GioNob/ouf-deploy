@@ -25,6 +25,186 @@ P = runpy.run_path(str(SCRIPT))
 MODULE = P["main"].__globals__
 
 
+class RuntimeV5ContractTests(unittest.TestCase):
+    def test_local_v5_contract_matches_runtime_module(self):
+        import importlib.util
+        source = SCRIPT.parent.parent / "tools/semantic_runtime_v5/semantic_provider_docker_runtime_v5.py"
+        spec = importlib.util.spec_from_file_location("p_runtime_v5_contract", source)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertEqual(P["RUNTIME_V5_CONFIG_FIELDS"], module.CONFIG_FIELDS)
+        self.assertEqual(P["RUNTIME_V5_SCHEMA"], module.SCHEMA)
+
+
+@unittest.skipUnless(os.environ.get("OUF_P_NATIVE") == "1", "requires native root custody")
+class RuntimeReaderNativeTests(unittest.TestCase):
+    def setUp(self):
+        work = tempfile.TemporaryDirectory(prefix="ouf-p-runtime-", dir="/run")
+        self.addCleanup(work.cleanup)
+        self.root = Path(work.name)
+        self.files = {}
+        for name in ("source", "python", "runtime", "driver", "admission", "armingVerifier",
+                     "acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule", "openssl"):
+            path = self.root / name
+            path.write_bytes((name + " fixture\n").encode())
+            path.chmod(0o755 if name in ("python", "runtime", "openssl") else 0o600)
+            self.files[name] = {"path": str(path), "sha256": P["digest"](path.read_bytes())}
+        self.config_path = self.root / "configuration.json"
+        self.wrapper = self.root / "wrapper"
+        self.wrapper.write_bytes((f'#!/bin/sh\nexec {self.files["python"]["path"]} -I -B '
+                                  f'{self.files["source"]["path"]} --configuration {self.config_path} "$@"\n').encode())
+        self.wrapper.chmod(0o755)
+        self.docs = {role: {"Id": cid * 64, "HostConfig": {"Runtime": "ouf-fixture"}}
+                     for role, cid in (("adapter", "a"), ("southbound", "b"))}
+        self.info = {"Runtimes": {"ouf-fixture": {"path": str(self.wrapper)}},
+                     "DockerRootDir": str(self.root / "docker")}
+        self.config = {"schema": P["RUNTIME_V5_SCHEMA"], "sourceHash": self.files["source"]["sha256"],
+                       "registryRoot": str(self.root / "registry"), "runtimeStateRoot": str(self.root / "state"),
+                       "armingRoot": str(self.root / "absent-arming"), "armingIssuerRef": "fixture:issuer",
+                       "candidates": {doc["Id"]: {"phase": "INACTIVE", "bundleParents": [str(self.root / "bundles")]}
+                                      for doc in self.docs.values()}}
+        for prefix in ("python", "runtime", "driver", "admission", "armingVerifier"):
+            self.config[prefix + "Path"] = self.files[prefix]["path"]
+            self.config[prefix + "Sha256"] = self.files[prefix]["sha256"]
+        for key in ("acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule"):
+            self.config[key] = self.files[key].copy()
+        self.config["opensslBinding"] = {**self.files["openssl"], "version": "3.0.13"}
+        self.expected = {"name": "ouf-fixture", "wrapper": str(self.wrapper),
+                         "runtimeStateRoot": self.config["runtimeStateRoot"],
+                         "runtimeExecutable": self.config["runtimePath"],
+                         "pythonExecutable": self.config["pythonPath"], "dockerDataRoot": self.info["DockerRootDir"]}
+
+    def read_runtime(self, config=None):
+        self.config_path.write_bytes(P["canonical"](self.config if config is None else config))
+        self.config_path.chmod(0o600)
+        reader = P["Reader"]()
+        result = P["runtime"](reader, self.info, self.docs)
+        return result, reader
+
+    def test_v4_and_v5_have_identical_profile_and_only_plan_hashes_change(self):
+        v4 = {key: self.config[key] for key in ("sourceHash", "pythonPath", "pythonSha256",
+                                               "runtimePath", "runtimeSha256", "runtimeStateRoot")}
+        v4["schema"] = "ouf.semantic-docker-runtime-adapter.v4"
+        previous, old_reader = self.read_runtime(v4)
+        old_hashes = old_reader.verify()
+        current, reader = self.read_runtime()
+        hashes = reader.verify()  # observe() publishes this map as inputHashes.
+        self.assertEqual(previous, self.expected)
+        self.assertEqual(current, previous)
+        self.assertEqual(P["canonical"](current), P["canonical"](previous))
+        self.assertNotEqual(hashes, old_hashes)
+        expected_paths = {str(self.wrapper), str(self.config_path)} | {v["path"] for v in self.files.values()}
+        self.assertEqual(set(hashes), expected_paths)
+        self.assertEqual({str(path) for path in reader.inputs}, expected_paths)
+        for name in expected_paths:
+            self.assertEqual(hashes[name], P["digest"](Path(name).read_bytes()))
+        self.assertEqual(set(old_hashes), {str(self.wrapper), str(self.config_path)}
+                         | {self.files[name]["path"] for name in ("source", "python", "runtime")})
+
+    def test_v4_retains_source_modes_and_python_mismatch_code(self):
+        config = copy.deepcopy(self.config)
+        config["schema"] = "ouf.semantic-docker-runtime-adapter.v4"
+        for mode in (0o600, 0o644, 0o755):
+            with self.subTest(mode=oct(mode)):
+                Path(self.files["source"]["path"]).chmod(mode)
+                self.assertEqual(self.read_runtime(config)[0], self.expected)
+        config["pythonPath"] = str(self.root / "other-python")
+        with self.assertRaisesRegex(P["Held"], "^RUNTIME_CONFIGURATION_UNPROVEN$"):
+            self.read_runtime(config)
+
+    def test_v5_rejects_configuration_shape_paths_hashes_and_bindings(self):
+        mutations = [lambda c: c.update(extra=True), lambda c: c.pop("driverPath"),
+                     lambda c: c.update(pythonPath=str(self.root / "other-python")),
+                     lambda c: c.update(sourceHash="bad"), lambda c: c.update(registryRoot="relative"),
+                     lambda c: c["acceptance"].update(sha256="BAD"),
+                     lambda c: c["opensslBinding"].update(version="bad"),
+                     lambda c: c.update(armingIssuerRef="invalid issuer")]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(case=index):
+                config = copy.deepcopy(self.config)
+                mutate(config)
+                with self.assertRaisesRegex(P["Held"], "^RUNTIME_V5_CONFIGURATION_UNPROVEN$"):
+                    self.read_runtime(config)
+
+    def test_v5_rejects_candidate_mismatch_and_malformed_entries(self):
+        mutations = [lambda c: c.update({"c" * 64: c.pop("a" * 64)}), lambda c: c.pop("a" * 64),
+                     lambda c: c["a" * 64].update(phase="ACTIVE"),
+                     lambda c: c["a" * 64].update(extra=True), lambda c: c["a" * 64].pop("phase"),
+                     lambda c: c["a" * 64].update(bundleParents=[]),
+                     lambda c: c["a" * 64].update(bundleParents=["relative"])]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(case=index):
+                config = copy.deepcopy(self.config)
+                mutate(config["candidates"])
+                with self.assertRaisesRegex(P["Held"], "^RUNTIME_V5_CANDIDATES_MISMATCH$"):
+                    self.read_runtime(config)
+
+    def test_v5_bound_hash_changes_keep_reader_code(self):
+        for name in ("source", "python", "runtime", "driver", "admission", "armingVerifier",
+                     "acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule", "openssl"):
+            with self.subTest(file=name):
+                config = copy.deepcopy(self.config)
+                if name == "source":
+                    config["sourceHash"] = "0" * 64
+                elif name in ("acceptance", "b1b2TrustPolicy", "b1b2AuthorityModule", "openssl"):
+                    config["opensslBinding" if name == "openssl" else name]["sha256"] = "0" * 64
+                else:
+                    config[name + "Sha256"] = "0" * 64
+                with self.assertRaisesRegex(P["Held"], "^BOUND_INPUT_HASH_CHANGED$"):
+                    self.read_runtime(config)
+
+    def test_v5_private_file_custody_keeps_reader_code(self):
+        for name in ("source", "driver", "admission", "armingVerifier", "acceptance",
+                     "b1b2TrustPolicy", "b1b2AuthorityModule"):
+            with self.subTest(file=name):
+                path = Path(self.files[name]["path"])
+                path.chmod(0o644)
+                try:
+                    with self.assertRaisesRegex(P["Held"], "^FILE_CUSTODY_UNPROVEN$"):
+                        self.read_runtime()
+                finally:
+                    path.chmod(0o600)
+
+    def test_v5_executable_custody_keeps_reader_code(self):
+        for name in ("python", "runtime", "openssl"):
+            with self.subTest(file=name):
+                path = Path(self.files[name]["path"])
+                path.chmod(0o644)
+                try:
+                    with self.assertRaisesRegex(P["Held"], "^EXECUTABLE_CUSTODY_UNPROVEN$"):
+                        self.read_runtime()
+                finally:
+                    path.chmod(0o755)
+
+    def test_unknown_schema_is_held(self):
+        config = copy.deepcopy(self.config)
+        config["schema"] = "ouf.semantic-docker-runtime-adapter.v6"
+        with self.assertRaisesRegex(P["Held"], "^RUNTIME_CONFIGURATION_UNPROVEN$"):
+            self.read_runtime(config)
+
+    def test_v5_never_opens_arming_root_or_its_contents(self):
+        arming = Path(self.config["armingRoot"])
+        self.assertFalse(arming.exists())
+        self.assertEqual(self.read_runtime()[0], self.expected)
+        arming.mkdir(mode=0o700)
+        (arming / "1.json").write_bytes(b"unread payload")
+        (arming / ("1." + "a" * 64 + ".consumed")).write_bytes(b"unread marker")
+        arming.chmod(0)
+        self.addCleanup(arming.chmod, 0o700)
+        lstat, open_file = Path.lstat, os.open
+        def checked_lstat(path, *args, **kwargs):
+            self.assertFalse(path == arming or arming in path.parents)
+            return lstat(path, *args, **kwargs)
+        def checked_open(path, *args, **kwargs):
+            target = Path(path)
+            self.assertFalse(target == arming or arming in target.parents)
+            return open_file(path, *args, **kwargs)
+        with patch.object(Path, "lstat", checked_lstat), patch.object(os, "open", checked_open):
+            result, reader = self.read_runtime()
+            self.assertEqual(result, self.expected)
+            self.assertTrue(all(arming != path and arming not in path.parents for path in reader.inputs))
+
+
 class ProfileTests(unittest.TestCase):
     def test_binary_default_rejects_privileged_and_writable_modes(self):
         reader = P["Reader"]()
