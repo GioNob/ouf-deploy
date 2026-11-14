@@ -4,8 +4,8 @@ set -euo pipefail
 umask 077
 
 # Claude fills both pins after review and commit (D-001).
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_CONTROLLER_SHA256__'
+commit='07cdb5a5084dcd5b250228207cb808d779ec316f'
+controller_sha='53a9fc96fd0e7fdf650aa626b2ddb08eda3e9c822b0c6d5318cb90683383714c'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ ]]
 
 python_sha='889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9'
