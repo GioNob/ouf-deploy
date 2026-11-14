@@ -6,12 +6,13 @@
 set -euo pipefail
 umask 077
 
-mode=${1:-}
+mode=$(printf %s "${1:-}" | tr -d "[:space:]")
+hash=$(printf %s "${2:-}" | tr -d "[:space:]")
 case "$mode" in
   plan) extra=(--plan) ;;
   apply)
-    [[ "${2:-}" =~ ^[0-9a-f]{64}$ ]] || { echo 'uso: apply <planSha256>' >&2; exit 2; }
-    extra=(--apply --plan-sha256 "$2") ;;
+    [[ "$hash" =~ ^[0-9a-f]{64}$ ]] || { echo "uso: apply <planSha256> (ricevuti ${#hash} caratteri)" >&2; exit 2; }
+    extra=(--apply --plan-sha256 "$hash") ;;
   *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
 esac
 
