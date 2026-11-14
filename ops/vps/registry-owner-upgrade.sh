@@ -27,7 +27,7 @@ esac
 
 # Claude fills C and the input hashes after review and commit (D-001).
 # Every input is pinned; gzip output depends on zlib, so the capsule bytes are not.
-C=d6086f7571a8a4a6869f9b50e7c9bdf05e7d633a
+C=62fda363f0e3ca8fdc9013b540f96e565163e69d
 B=98e8541d332df997c4c144e57e4fa4a5ccb46f9c1add9bdb064e0e42d43d6d92
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
@@ -62,7 +62,7 @@ get 5507e3e67bf8b6248cd2875217176bc887703fe051d8d42d875743b514f32cb7 "$O/durable
 get 4424a2437b90f6142823e2024e362f35068896cdfe4b4459243e3448124558d9 "$O/adapter.py"
 get 5b52217bea987b58a09e8841c02875e45f798a267f76cd7099c671d2236f20b1 "$O/service.py"
 get 1e66136d9e36e072a8eaeb824000f32b4f29043ad00def403b6d13aaf64bf996 "$O/installation.py"
-get 13a5492f8d3a2338280e6aaf61c120b12324e85113e0a7dd2d451c7a98e59c19 "$O/upgrade.py"
+get dec2bdc27964e3708fe9c70e3339b25c41fe08ff0a69948441e13308290694f9 "$O/upgrade.py"
 get 6cb118b045b295893fd18b83246b51114288aa58c24acb547b8c69691933a509 "$O/entry.py"
 
 # Deterministic payload; the capsule bootstrap re-verifies payload and sources.
