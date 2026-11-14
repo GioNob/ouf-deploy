@@ -157,12 +157,13 @@ def observe(args, S, *, after_rename=False):
 
 def plan(args, S):
     out = absolute(args.output_root)
+    require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,95}", args.output_name), "RESTRICTED_OUTPUT_NAME_REQUIRED")
+    # Observe first: an already restored wrapper reports NOTHING_TO_RESTORE, the useful verdict.
+    state = observe(args, S)
     for ancestor in (out, *out.parents):
         S.directory(ancestor)
-    require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,95}", args.output_name), "RESTRICTED_OUTPUT_NAME_REQUIRED")
     require(not os.path.lexists(out / args.output_name), "RESTORE_OUTPUT_ALREADY_EXISTS")
     require(out / args.output_name != absolute(args.b1_root) / "switch", "NEW_CLAIM_ROOT_REQUIRED")
-    state = observe(args, S)
     state["planSha256"] = sha(encoded(state))
     return state
 
