@@ -78,6 +78,16 @@ class Upgrade(unittest.TestCase):
         self.c1_path = f.write(self.v1root / 'configuration.json', core.encoded(self.c1))
         self.c1_sha = hashlib.sha256(self.c1_path.read_bytes()).hexdigest()
         f.write(unit_path, ('ExecStart=:/usr/bin/python3 capsule.py worker --configuration-sha256 ' + self.c1_sha + '\n').encode(), 0o644)
+        # The October network projection: a persistent set-property drop-in of the v1 unit.
+        self.control = f.root / 'system.control'
+        dropins = self.control / (unit_path.name + '.d')
+        dropins.mkdir(mode=0o755, parents=True)
+        self.control.chmod(0o755)
+        peer = f.config['ownerInputs']['iamProfile']['peer_addresses'][0]
+        self.dropin = f.write(dropins / '50-IPAddressAllow.conf', (
+            '# This is a drop-in unit file extension, created via "systemctl set-property"\n'
+            '# or an equivalent operation. Do not edit.\n[Service]\nIPAddressAllow=\n'
+            'IPAddressAllow=172.19.0.2/32\nIPAddressAllow=' + peer + '/32\n').encode(), 0o644)
         f.write(self.v1root / 'fence/fence.json', core.encoded(fence_value))
         (f.root / 'global').mkdir(mode=0o700)
         self.global_fence = f.write(f.root / 'global/fence.json', core.encoded(fence_value))
@@ -113,7 +123,7 @@ class Upgrade(unittest.TestCase):
 
     def review(self, attempt=1):
         f = self.f
-        pred = upgrade.predecessor(str(self.c1_path), self.c1_sha, str(self.global_fence))
+        pred = upgrade.predecessor(str(self.c1_path), self.c1_sha, str(self.global_fence), str(self.control))
         public = {'executables': {'python': {k: f.config['sources'][0][k] for k in ('path', 'sha256')},
                                   'openssl': f.config['verification']['openssl'],
                                   'systemctl': {'path': '/usr/bin/systemctl', 'sha256': '0' * 64}},
@@ -156,6 +166,39 @@ class Upgrade(unittest.TestCase):
 
     def test_v1_guard_is_valid_before_the_upgrade(self):
         self.assertIsNotNone(self.v1_guard())
+
+    def test_v2_unit_reproduces_the_v1_ip_projection_exactly(self):
+        review = self.review()
+        body = review['serviceUnit']['body']
+        self.assertIn('\nIPAddressAllow=172.19.0.2/32\n', body)
+        self.assertEqual(review['predecessor']['ipProjection']['extra'], ['172.19.0.2/32'])
+        self.assertEqual(review['predecessor']['ipProjection']['sha256'], self.f.binding(self.dropin)['sha256'])
+        lines = body.split('\n')
+        allow = [i for i, line in enumerate(lines) if line.startswith('IPAddressAllow=')]
+        self.assertEqual(allow, list(range(allow[0], allow[0] + len(allow))))
+        self.assertTrue(lines[allow[0] - 1].startswith('IPAddressDeny='))
+        # A changed projection between prepare and install stops before any effect.
+        raw = self.dropin.read_bytes().replace(b'172.19.0.2/32', b'172.19.0.3/32')
+        self.dropin.unlink()
+        self.f.write(self.dropin, raw, 0o644)
+        authority, attestor = self.authority(review)
+        with self.assertRaises(core.Denied):
+            upgrade.install(review, authority, attestor, runner=self.manager, sleep=lambda _: None)
+        self.assertFalse(Path(review['configuration']['destinations']['installationRoot']).exists())
+        # A projection that widens beyond single hosts is refused.
+        self.dropin.unlink()
+        self.f.write(self.dropin, b'[Service]\nIPAddressAllow=172.19.0.0/16\n', 0o644)
+        with self.assertRaises(core.Denied):
+            self.review()
+
+    def test_rollback_plan_is_stable_while_v2_keeps_counting(self):
+        review, _, _ = self.install()
+        state = installation.read_object(Path(review['configuration']['destinations']['ledgerRoot']) / 'state.json')
+        first = upgrade.rollback_plan(review, reader=lambda: dict(state, state='RETRY_WAIT', attempts=3,
+                                                                   cumulativeAttempts=state['cumulativeAttempts'] + 3))
+        second = upgrade.rollback_plan(review, reader=lambda: dict(state, state='RETRY_WAIT', attempts=4,
+                                                                    cumulativeAttempts=state['cumulativeAttempts'] + 4))
+        self.assertEqual(core.digest(first), core.digest(second))
 
     def test_complete_upgrade_keeps_counter_fences_v1_and_activates_v2(self):
         review, authority, result = self.install()

@@ -29,6 +29,51 @@ CONFIG_KEYS = ('schema', 'proposalHash', 'sourceManifest', 'sources', 'ownerInpu
                'priorControlledAttempts', 'predecessorInputsHash', 'fenceBinding', 'commonLockIdentity',
                'verification', 'tlsCa', 'serviceUnitPath', 'hostBootIdPath')
 ENV = {'PATH': '/usr/bin:/bin', 'LC_ALL': 'C'}
+CONTROL_ROOT = '/etc/systemd/system.control'
+PROJECTION_DROPIN = '50-IPAddressAllow.conf'
+
+
+def projection_allowlist(unit_path, profile_peers, control_root=CONTROL_ROOT):
+    """The v1 unit's persistent IPAddressAllow projection (October repair), bound by hash.
+
+    Returns {'path', 'sha256', 'extra'}: the extra single-host networks beyond the
+    profile peers, or None when v1 has no projection drop-in. The upgrade must
+    reproduce exactly these egress permissions, never widen them.
+    """
+    import ipaddress
+    from .guard import protected_file
+    path = Path(control_root) / (Path(unit_path).name + '.d') / PROJECTION_DROPIN
+    if not os.path.lexists(path):
+        return None
+    raw = protected_file(path, 4096, modes=(0o644, 0o600, 0o400))
+    lines = [line.strip() for line in raw.decode('ascii').splitlines() if line.strip() and not line.startswith('#')]
+    require(lines[:1] == ['[Service]'] and len(lines) >= 2, 'EXACT_V1_IP_PROJECTION_REQUIRED')
+    networks = []
+    for line in lines[1:]:
+        require(line.startswith('IPAddressAllow='), 'EXACT_V1_IP_PROJECTION_REQUIRED')
+        for word in line.split('=', 1)[1].split():
+            try:
+                network = ipaddress.ip_network(word, strict=True)
+            except ValueError:
+                require(False, 'EXACT_V1_IP_PROJECTION_REQUIRED')
+            require(network.prefixlen == network.max_prefixlen, 'SINGLE_HOST_V1_IP_PROJECTION_REQUIRED')
+            networks.append(str(network))
+    peers = {str(ipaddress.ip_network(ip + '/' + str(ipaddress.ip_address(ip).max_prefixlen))) for ip in profile_peers}
+    extra = sorted(set(networks) - peers)
+    require(set(networks) >= peers and 1 <= len(extra) <= 4, 'BOUNDED_V1_IP_PROJECTION_REQUIRED')
+    return {'path': str(path), 'sha256': hashlib.sha256(raw).hexdigest(), 'extra': extra}
+
+
+def projected_unit(c, review_executables, projection):
+    """v2 unit body: the reviewed service unit plus v1's exact IP projection."""
+    from .installation import service_unit
+    body = service_unit(c, digest(c), review_executables['python']['path'], c['destinations']['installationRoot'] + '/capsule.py')
+    if projection is None:
+        return body
+    lines = body.decode('ascii').split('\n')
+    last = max(i for i, line in enumerate(lines) if line.startswith('IPAddressAllow='))
+    lines[last + 1:last + 1] = ['IPAddressAllow=' + network for network in projection['extra']]
+    return '\n'.join(lines).encode('ascii')
 
 
 def systemctl(review, args, runner=subprocess.run, check=True, timeout=60):
@@ -51,7 +96,7 @@ def unit_state(review, unit, runner=subprocess.run):
 
 # --- predecessor binding --------------------------------------------------------
 
-def predecessor(v1_configuration_path, v1_configuration_sha256, global_fence_path):
+def predecessor(v1_configuration_path, v1_configuration_sha256, global_fence_path, control_root=CONTROL_ROOT):
     """Bind the live v1 installation by hash. Read only."""
     from .installation import read_object
     from .guard import protected_file
@@ -83,7 +128,9 @@ def predecessor(v1_configuration_path, v1_configuration_sha256, global_fence_pat
     require(read_object(global_fence_path) == fence['value'], 'GLOBAL_FENCE_NAMES_V1_REQUIRED')
     require(list(file_identity(Path(c1['destinations']['commonInvocationLock']).lstat())) == c1['commonLockIdentity'],
             'SAME_LOGICAL_OWNER_COMMON_LOCK_REQUIRED')
+    projection = projection_allowlist(c1['serviceUnitPath'], c1['ownerInputs']['iamProfile']['peer_addresses'], control_root)
     return {'configuration': c1, 'configurationPath': str(v1_configuration_path), 'configurationSha256': v1_configuration_sha256,
+            'ipProjection': projection, 'controlRoot': str(control_root),
             'receiptSha256': hashlib.sha256(receipt_raw).hexdigest(),
             'unit': {'path': c1['serviceUnitPath'], 'sha256': receipt['serviceUnitHash']},
             'fence': copy.deepcopy(fence), 'globalFence': {'path': str(global_fence_path), 'value': copy.deepcopy(fence['value'])}}
@@ -126,8 +173,7 @@ def compose(pred, manifest, capsule_source, authority_inputs, *, attempt, unit_p
           'tlsCa': {'path': root + '/iam-ca.pem', 'sha256': c1['tlsCa']['sha256']},
           'serviceUnitPath': unit_parent + '/ouf-registry-token-v2-' + str(attempt) + '-' + logical[:24] + '.service',
           'hostBootIdPath': c1['hostBootIdPath']}
-    python = authority_inputs['executables']['python']['path']
-    body = service_unit(c2, digest(c2), python, root + '/capsule.py')
+    body = projected_unit(c2, authority_inputs['executables'], pred['ipProjection'])
     public = {k: v for k, v in pred.items() if k != 'configuration'}
     review = {'schema': UPGRADE_REVIEW_SCHEMA, 'predecessor': public, 'proposal': proposal, 'configuration': c2,
               'serviceUnit': {'path': c2['serviceUnitPath'], 'sha256': hashlib.sha256(body).hexdigest(),
@@ -158,8 +204,7 @@ def upgrade_scope(review):
             and review['releaseAcceptance'] is False and review['verification'] == c['verification'],
             'EXACT_COMPLETE_UPGRADE_REVIEW_BINDINGS_REQUIRED')
     require(unit['path'] == c['serviceUnitPath'] and unit['sha256'] == hashlib.sha256(unit['body'].encode('ascii')).hexdigest()
-            and unit['body'].encode('ascii') == service_unit(c, digest(c), review['executables']['python']['path'],
-                                                             c['destinations']['installationRoot'] + '/capsule.py'),
+            and unit['body'].encode('ascii') == projected_unit(c, review['executables'], pred['ipProjection']),
             'EXACT_RECOMPILED_UPGRADE_SERVICE_UNIT_REQUIRED')
     return {'schema': 'ouf.registry-operational-installation-scope.v1', 'reviewHash': digest(review),
             'configurationHash': digest(c), 'sourceManifestHash': digest(c['sourceManifest']),
@@ -173,7 +218,7 @@ def upgrade_scope(review):
 def rebind(review):
     """Recompose the review from the live predecessor; any drift stops."""
     pred = predecessor(review['predecessor']['configurationPath'], review['predecessor']['configurationSha256'],
-                       review['predecessor']['globalFence']['path'])
+                       review['predecessor']['globalFence']['path'], review['predecessor']['controlRoot'])
     authority_inputs = {'executables': review['executables'], 'authorityProfile': review['authorityProfile'],
                         'stdlibHash': review['stdlibHash'], 'stdlibFileCount': review['stdlibFileCount']}
     expected = compose(pred, review['configuration']['sourceManifest'], review['capsuleSource'], authority_inputs,
@@ -370,9 +415,9 @@ def rollback_plan(review, reader=None):
         else:
             require(current == original, 'UNEXPECTED_FENCE_STATE_RECONCILE_MANUALLY')
             steps.append({'fence': name, 'path': path, 'restore': False})
-    return {'schema': ROLLBACK_PLAN_SCHEMA, 'reviewHash': digest(review), 'v2Ledger': None if row is None else
-            {'state': row['state'], 'publications': row['publications'], 'cumulativeAttempts': row['cumulativeAttempts']},
-            'steps': steps, 'v1Unit': pred['unit']['path'], 'v2Unit': c['serviceUnitPath']}
+    # Only stable facts are approved: a running v2 keeps counting failed attempts.
+    return {'schema': ROLLBACK_PLAN_SCHEMA, 'reviewHash': digest(review), 'v2LedgerPresent': row is not None,
+            'v2NeverPublished': True, 'steps': steps, 'v1Unit': pred['unit']['path'], 'v2Unit': c['serviceUnitPath']}
 
 
 def rollback_apply(review, approved, runner=subprocess.run, reader=None):
