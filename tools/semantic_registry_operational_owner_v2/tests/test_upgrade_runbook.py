@@ -23,6 +23,13 @@ class Runbook(unittest.TestCase):
         self.assertEqual(pins['V1'], '0b72275fcc2c51be0929ca0ba454de932ae4863af1b2410dd67bef61bf81e91a')
         if set(pins['C']) != {'0'}:
             self.assertEqual(pins['B'], hashlib.sha256(BUILDER.read_bytes()).hexdigest())
+            # The capsule built from these sources at the pinned commit is exactly K.
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('upgrade_runbook_builder', BUILDER)
+            builder = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(builder)
+            raw, _ = builder.build(pins['C'])
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), pins['K'])
         for module in ('core', 'store', 'contract', 'guard', 'durable', 'adapter', 'service', 'installation', 'upgrade',
                        'entry'):
             self.assertIn(' ' + module, text.split('for m in', 1)[1].split(';', 1)[0])
