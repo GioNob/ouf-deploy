@@ -240,6 +240,11 @@ def main(argv=None):
         reason = str(error) if isinstance(error, Held) or type(error).__name__ == "TransactionDenied" \
             else type(error).__name__
         report.update(diagnosis, status="HELD", reason=diagnosis.get("reason", reason))
+        if not isinstance(error, Held):
+            import traceback
+            # Function names and line numbers only: no paths, values or exception text.
+            report["callChain"] = [{"function": f.name, "line": f.lineno}
+                                   for f in traceback.extract_tb(error.__traceback__)[-5:]]
         report.update(COUNTERS)
         if report.get("outputCreated") and S is not None:
             report["doNotRerunApply"] = True
