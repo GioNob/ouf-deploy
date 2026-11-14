@@ -299,9 +299,9 @@ class Native(unittest.TestCase):
         self.assertEqual((code, report["status"]), (0, "PLAN_READY"), report)
         return report
 
-    def assert_untouched(self):
+    def assert_untouched(self, wrapper=None):
         self.assertFalse((self.out / "v51").exists())
-        self.assertEqual(self.wrapper.read_bytes(), self.b1_wrapper)
+        self.assertEqual(self.wrapper.read_bytes(), wrapper or self.b1_wrapper)
         self.assertEqual(list((self.b1 / "switch").iterdir()), [])
 
     # --- tests -----------------------------------------------------------
@@ -370,11 +370,12 @@ class Native(unittest.TestCase):
             with self.subTest(reason=reason):
                 self.setUp()
                 mutate()
+                before = self.wrapper.read_bytes()
                 code, report = self.install("--plan")
                 self.assertEqual((code, report["status"], report["reason"]), (1, "HELD", reason), report)
                 if reason == "ACCEPTANCE_V51_CONTEXT_DRIFT":
                     self.assertEqual(report["diagnosis"], {"differingFields": ["creation"]})
-                self.assert_untouched()
+                self.assert_untouched(before)
 
     def test_ledger_invalid_between_plan_and_apply_is_held_before_any_write(self):
         report = self.planned(self.install)
