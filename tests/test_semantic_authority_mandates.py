@@ -544,10 +544,20 @@ class AuthenticatorTests(Fixture):
         opened = []
         keys = {str(path) for path in self.keys.values()}
 
+        def path_like(value):
+            return isinstance(value, (str, bytes, os.PathLike))
+
+        active = [True]
+        self.addCleanup(active.__setitem__, 0, False)
+
         def audit(event, args):
-            if event == "open" and os.fsdecode(args[0]) in keys:
+            # Audit hooks are process-wide and permanent: inert after this test, never raising.
+            if not active[0]:
+                return
+            if event == "open" and path_like(args[0]) and os.fsdecode(args[0]) in keys:
                 opened.append(event)
-            if event == "subprocess.Popen" and any(str(k) in map(os.fsdecode, args[1]) for k in keys):
+            if event == "subprocess.Popen" and isinstance(args[1], (list, tuple)) and any(
+                    path_like(item) and os.fsdecode(item) in keys for item in args[1]):
                 opened.append(event)
 
         sys.addaudithook(audit)
