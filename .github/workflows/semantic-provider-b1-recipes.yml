@@ -1,0 +1,32 @@
+name: Semantic provider B1 successor recipes
+on:
+  pull_request:
+    paths:
+      - 'scripts/prepare-semantic-provider-b1-recipes.py'
+      - 'scripts/deliver-semantic-provider-b1-recipes.sh'
+      - 'scripts/recreate-southbound-successor-20261113.py'
+      - 'tools/semantic_successor_recipes/**'
+      - 'tools/semantic_frame_compiler/**'
+      - 'tools/semantic_b1_acceptance/**'
+      - 'tools/semantic_b1b2_authority/**'
+      - 'tests/test_semantic_provider_b1_recipes.py'
+      - 'tests/test_semantic_b1_acceptance.py'
+      - '.github/workflows/semantic-provider-b1-recipes.yml'
+      - 'docs/OUF_SEMANTIC_PROVIDER_B1_RECIPES_20261113.md'
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Unit contracts, real baselines, private POSIX publication and secret exclusion
+        run: sudo "$(command -v python3)" -I -B -m unittest discover -s tests -p test_semantic_provider_b1_recipes.py -v
+      - name: Launcher syntax
+        run: bash -n scripts/deliver-semantic-provider-b1-recipes.sh

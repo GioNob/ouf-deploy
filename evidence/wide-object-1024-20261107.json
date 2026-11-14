@@ -1,0 +1,163 @@
+{
+  "schema": "ouf.wide-object-1024-qualification.v1",
+  "date": "2026-11-07",
+  "status": "SOURCE_CANDIDATES_QUALIFIED_DYNAMIC_ANALYSIS_OPEN",
+  "requirement": {
+    "maxColumns": 1024,
+    "example": "SUE instance with 300–400 fields",
+    "oneLogicalObjectPreserved": true
+  },
+  "live": {
+    "vpsChanged": false,
+    "policyChanged": false,
+    "storageChanged": false,
+    "newUpload": false,
+    "newProfile": false,
+    "newBusinessDraft": false,
+    "newAcquisition": false,
+    "wideEndToEndProven": false
+  },
+  "candidates": [
+    {
+      "module": "onboarding",
+      "repository": "GioNob/ouf-source-onboarding",
+      "commit": "cc6c7869b308c695460d8491a121084893a3c323",
+      "pr": 55,
+      "branch": "feat/managed-profile-1024-20261107",
+      "targetedRun": 42416934338,
+      "fullRun": 42416934327,
+      "fullStatus": "success",
+      "moduleTests": 383,
+      "allTestsPassed": true,
+      "imageScanPassed": true,
+      "containerBootPassed": true,
+      "imageArtifact": {
+        "id": 13592211485,
+        "archiveSha256": "0894eceebb12bb8e81aceb6293713374ce6a3f2e6cdf50bb1be36f6b478bd0d0",
+        "archiveDigestIsDockerImageId": false
+      },
+      "targetedTests": 55
+    },
+    {
+      "module": "mcp",
+      "repository": "GioNob/ouf-mcp-server",
+      "commit": "872e49b9cd22e045cd208a8404e923694bca7ac2",
+      "pr": 82,
+      "branch": "fix/semantic-read-window-20261107",
+      "targetedRun": 42417106064,
+      "postgresRun": 42417106127,
+      "fullRun": 42417106160,
+      "fullStatus": "success",
+      "postgresSchemaPagesPersisted": true
+    },
+    {
+      "module": "gateway",
+      "repository": "GioNob/ouf-api-gateway",
+      "commit": "560fbf6e769c7639a0bc0ddb09380811a4e324e4",
+      "pr": 86,
+      "branch": "feat/managed-profile-1024-20261107",
+      "baseCandidate": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+      "fullRun": 42417102228,
+      "fullStatus": "success",
+      "nativeApisixPassed": true,
+      "contractTests": {
+        "passed": 594,
+        "skipped": 3,
+        "separateNativeApisixGate": "success"
+      }
+    },
+    {
+      "module": "ingestion",
+      "repository": "GioNob/ouf-ingestion-runtime",
+      "commit": "c85d9fd3be215e518dc6e7d075797720b5afbd91",
+      "pr": 48,
+      "branch": "feat/managed-profile-1024-20261107",
+      "targetedRun": 42416624703,
+      "fullRun": 42416624781,
+      "fullStatus": "success"
+    },
+    {
+      "module": "udp",
+      "repository": "GioNob/ouf-udp-object-resolution",
+      "commit": "c0cf1702b2eb971718996a959414caee004af494",
+      "pr": 49,
+      "branch": "feat/managed-profile-1024-20261107",
+      "targetedRun": 42416490648,
+      "fullRun": 42416490615,
+      "fullStatus": "success"
+    }
+  ],
+  "limits": {
+    "columns": 1024,
+    "columnNameJavaChars": 256,
+    "columnPage": 128,
+    "createAndReviewArgumentsBytes": 2097152,
+    "managedEnvelopeBytes": 3145728,
+    "mcpIngressBytes": 4194304,
+    "legacyPreviewResultBytes": 1048576,
+    "schemaPageReadsPerMinute": 24,
+    "createPreviewSeconds": 10,
+    "mcpWriteSeconds": 15,
+    "gatewayMcpSeconds": 30,
+    "profileInputBytes": 10485760,
+    "profileRows": 10000,
+    "profileSamples": 5,
+    "profileJobDeadlineSeconds": 900
+  },
+  "syntheticMeasurements": {
+    "heapBytes": 402653184,
+    "initialCsvRowMaterialization": "OUT_OF_MEMORY",
+    "sparseProfiler": {
+      "columns": 1024,
+      "rows": 10000,
+      "inputBytes": 10250154,
+      "elapsedMs": 711,
+      "sourceRun": 42416934338
+    },
+    "denseProfiler": {
+      "columns": 1024,
+      "rows": 2000,
+      "inputBytes": 9113514,
+      "elapsedMs": 1638,
+      "sourceRun": 42416934338
+    },
+    "streamingIngestion": {
+      "columns": 1024,
+      "rows": 10000,
+      "elapsedMs": 2346,
+      "sourceRun": 42416624703
+    },
+    "vpsPerformanceMeasured": false
+  },
+  "security": {
+    "initialImageScanFailed": true,
+    "initialRun": 42416237112,
+    "reportArtifact": 13591637547,
+    "cve": "CVE-2026-109518",
+    "packages": [
+      "apt",
+      "libapt-pkg7.0"
+    ],
+    "observedVersion": "3.2.0",
+    "fixedVersion": "3.2.1ubuntu0.1",
+    "advisory": "https://ubuntu.com/security/notices/USN-8996-1",
+    "scanBypassAdded": false
+  },
+  "dynamicAnalysis": {
+    "implemented": false,
+    "fixedSemanticRatePerMinute": 60,
+    "profileBoundAnalysis": false,
+    "durablePerColumnProgress": false,
+    "automaticWaitResumeProven": false
+  },
+  "remaining": [
+    "Dynamic profile-bound total semantic work budget and durable per-column progress",
+    "Authenticated cross-module composition and coherent VPS rollout",
+    "CSV real E2E through normal UDP SeaweedFS lake operation and repeat",
+    "Wide XLSX maximum memory qualification",
+    "Long name/URI configurations may hit independent payload limits",
+    "External controlled-vocabulary discovery not currently exposed in MCP connection"
+  ],
+  "sourceArtifactsDoNotProveDeployment": true,
+  "allFiveModuleCiPassed": true
+}

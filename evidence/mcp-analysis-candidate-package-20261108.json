@@ -1,0 +1,52 @@
+{
+  "schema": "ouf.mcp-analysis-candidate-package.v1",
+  "status": "ARCHIVE_VERIFIED_NOT_INSTALLED",
+  "repository": "GioNob/ouf-mcp-server",
+  "pullRequest": 83,
+  "candidateHead": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+  "publisherSourceCommit": "e2a474ea09bf9c3cb130103ca142f1a128942a80",
+  "publisherAndCandidateTree": "3354e594938fc0c9131b1532a93ae7b5105b832d",
+  "publisherTreeEqualsCandidateTree": true,
+  "runId": 42420569963,
+  "jobId": 128547884806,
+  "jobConclusion": "success",
+  "artifactId": 13593930449,
+  "artifactName": "acquisition-mcp-image-42420569963",
+  "archiveBytes": 9904278,
+  "archiveSha256": "2eae47d8c90b00b992bc916e5ce5a5bd32d9e724abe27d2838bd5d08ebc68d5e",
+  "payloadChecksumsVerified": {
+    "image.tar.gz": "5ea15eeff97021e90eedfc74ea0b3fc53bb29dbf5a14f4f21ada564d40e88d02",
+    "image-id.txt": "610254d8ef6f3828289af0ae76ee6801212a9a69926a0bd5ae56dff73335646a",
+    "image-config.json": "50383fe787daaa8fd0527da57aa9cd7347a2175af6d39d2c90de086c0eddc5aa",
+    "source-commit.txt": "2b98d310000b40a4cabf46078e4601ada5a538414fdee3b807597706c27d5f6d",
+    "capabilities.json": "3a7ec508309f622d6cdef78e95326f943d44c25ab8a3acdc5113261d3441a6dd"
+  },
+  "ociBlobChecksumsVerified": 10,
+  "index": {
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "manifests": [
+      {
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "digest": "sha256:d76fda00f9340dcea62ed1be58b1db3ebfb4d64d4be5449ffc07ab2c845254ff",
+        "size": 857,
+        "annotations": {
+          "io.containerd.image.name": "docker.io/library/ouf-mcp:ci",
+          "org.opencontainers.image.ref.name": "ci"
+        }
+      }
+    ]
+  },
+  "imageConfigId": "sha256:8696d3e172a15cbffb9b1ed47c8837f5cb6e6ba0b1a9b6c0aa66c5e5df5c188f",
+  "binarySha256": "11f9bb088b6f86d2f82c945728cb904c46d8c43a866b4df4cec2a6531e10605a",
+  "binaryBytes": 14360736,
+  "manifestMatchesCandidateGitBlob": true,
+  "exactManifestBytesPresentInBinary": true,
+  "binaryPresenceIsNotBehavioralProof": true,
+  "localContainerExecution": false,
+  "targetInstalled": false,
+  "targetMigrationDispatched": false,
+  "toolsActivated": false,
+  "nextMissingTargetEvidence": "Current startup file bindings, reprocessing deployment metadata and application-role migration14 prerequisites; lifecycle installer remains to be qualified.",
+  "publisherJobLogRelevantStepsRead": true
+}

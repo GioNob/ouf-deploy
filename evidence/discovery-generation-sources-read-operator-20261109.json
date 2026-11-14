@@ -1,0 +1,265 @@
+{
+  "activeInstallationPointerChanged": false,
+  "automaticReplayAllowed": false,
+  "businessRequestsIssued": 0,
+  "containerCreates": 0,
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "currentSemanticPeerStillRequiresIndependentReview": true,
+  "daemonReloads": 0,
+  "databaseRequests": 0,
+  "dnsQueries": 0,
+  "engineRequests": 0,
+  "historicalJournalWrites": 0,
+  "historicalRootfsSealsAreNotNewGenerationExpectations": true,
+  "leaseAuthorized": false,
+  "metadataFilesRead": 25,
+  "mountSourceContentsRead": 0,
+  "newGenerationAdmitted": false,
+  "nftWrites": 0,
+  "observedAt": "2026-11-09T11:25:29.477919+00:00",
+  "phase": "COMPLETE",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-generation-sources-b57yoer0",
+  "providerReady": false,
+  "providerRequests": 0,
+  "roles": {
+    "adapter": {
+      "historicalAuthorityReused": false,
+      "historicalAuthorizationSha256": "91e4eec51518afc6e7ed10f13a8db52f48fc928a12268b54a2a83199f72cfce5",
+      "historicalContainerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+      "historicalRootfsSeal": {
+        "bytes": 46079786,
+        "entries": 3396,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "92c26698ef0899e909a503f5db856f55a1cc0cf44c8f6648ba4d498a6c2533c4"
+      },
+      "independentRecipeRecompiled": true,
+      "installedApplicationHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+      "installedPolicyBinding": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67/frame-policy.json",
+        "sha256": "e8047e92e8b3938abe67dc8e57f385fced9de1218db348b4723eb3c6d34867fd"
+      },
+      "launchSourceCount": 5,
+      "mountSourceContentsRead": 0,
+      "networkBindings": [
+        {
+          "bindingRef": "adapter-internal",
+          "bridge": "oufsp-int",
+          "interface": "oufint0",
+          "ipv4": "172.21.0.3",
+          "leaseGuard": {
+            "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+            "tableName": "ouf_sem_provider"
+          },
+          "mac": "02:42:ac:15:00:03",
+          "workloadRef": "ouf-semantic-adapter-v2"
+        },
+        {
+          "bindingRef": "adapter-egress",
+          "bridge": "oufsp-egress",
+          "interface": "oufeg0",
+          "ipv4": "172.22.0.3",
+          "leaseGuard": {
+            "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+            "tableName": "ouf_sem_provider"
+          },
+          "mac": "02:42:ac:16:00:03",
+          "workloadRef": "ouf-semantic-adapter-v2"
+        }
+      ],
+      "originalDraftDifferencePaths": [],
+      "originalDraftMatchesInstalledPolicy": true,
+      "peers": [
+        {
+          "applicationHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+          "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+          "networkBindings": [
+            {
+              "bindingRef": "southbound-backend",
+              "bridge": "br-113b5f0a3c53",
+              "interface": "oufback0",
+              "ipv4": "172.18.0.14",
+              "mac": "02:42:ac:12:00:0e",
+              "workloadRef": "ouf-semantic-southbound-v2"
+            },
+            {
+              "bindingRef": "southbound-internal",
+              "bridge": "oufsp-int",
+              "interface": "oufint0",
+              "ipv4": "172.21.0.2",
+              "leaseGuard": {
+                "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+                "tableName": "ouf_sem_provider"
+              },
+              "mac": "02:42:ac:15:00:02",
+              "workloadRef": "ouf-semantic-southbound-v2"
+            },
+            {
+              "bindingRef": "southbound-egress",
+              "bridge": "oufsp-egress",
+              "interface": "oufeg0",
+              "ipv4": "172.22.0.2",
+              "leaseGuard": {
+                "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+                "tableName": "ouf_sem_provider"
+              },
+              "mac": "02:42:ac:16:00:02",
+              "workloadRef": "ouf-semantic-southbound-v2"
+            }
+          ]
+        }
+      ],
+      "signaturesVerified": false,
+      "tableName": "ouf_v2_adapter",
+      "transport": [
+        {
+          "destination": "172.21.0.3",
+          "peerIngress": {
+            "bindingRef": "southbound-internal",
+            "containerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+            "kind": "CREATED_CANDIDATE"
+          },
+          "port": 9443,
+          "protocol": "tcp",
+          "purpose": "GATEWAY_ADAPTER",
+          "source": "172.21.0.2"
+        }
+      ],
+      "transportKinds": {
+        "CREATED_CANDIDATE": 1
+      },
+      "transportSha256": "5a0f77d86f6ba0dd2e11db45a2322b711d9f3f3f03372c795c161baff30b457c"
+    },
+    "southbound": {
+      "historicalAuthorityReused": false,
+      "historicalAuthorizationSha256": "a738a9cbac3704d545f024af924843f400f0e078f84cb0f5290ede38912f5316",
+      "historicalContainerId": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916",
+      "historicalRootfsSeal": {
+        "bytes": 255900260,
+        "entries": 7461,
+        "schema": "ouf.semantic-rootfs-seal.v1",
+        "sha256": "4236ebc8a571b5f177f2365ccfed78ba3b0bd43fce2ea75c1e34c0b90f7a844d"
+      },
+      "independentRecipeRecompiled": true,
+      "installedApplicationHash": "fc99be8319b210322292a6f468121de97f764800f5e4fb9717e9ac85a9293322",
+      "installedPolicyBinding": {
+        "path": "/etc/ouf/deploy-snapshots/semantic-provider-v2-transaction-mf9x0eqd/registry/1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916/frame-policy.json",
+        "sha256": "f49155fa412bb76d529713cb4ac2c253105884e9e72f7d2d74dfc5ccf9c5c822"
+      },
+      "launchSourceCount": 3,
+      "mountSourceContentsRead": 0,
+      "networkBindings": [
+        {
+          "bindingRef": "southbound-backend",
+          "bridge": "br-113b5f0a3c53",
+          "interface": "oufback0",
+          "ipv4": "172.18.0.14",
+          "mac": "02:42:ac:12:00:0e",
+          "workloadRef": "ouf-semantic-southbound-v2"
+        },
+        {
+          "bindingRef": "southbound-internal",
+          "bridge": "oufsp-int",
+          "interface": "oufint0",
+          "ipv4": "172.21.0.2",
+          "leaseGuard": {
+            "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+            "tableName": "ouf_sem_provider"
+          },
+          "mac": "02:42:ac:15:00:02",
+          "workloadRef": "ouf-semantic-southbound-v2"
+        },
+        {
+          "bindingRef": "southbound-egress",
+          "bridge": "oufsp-egress",
+          "interface": "oufeg0",
+          "ipv4": "172.22.0.2",
+          "leaseGuard": {
+            "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+            "tableName": "ouf_sem_provider"
+          },
+          "mac": "02:42:ac:16:00:02",
+          "workloadRef": "ouf-semantic-southbound-v2"
+        }
+      ],
+      "originalDraftDifferencePaths": [],
+      "originalDraftMatchesInstalledPolicy": true,
+      "peers": [
+        {
+          "applicationHash": "816cdcc143d99047151c337eefefe3df29d5ea8a999d50597f1d0b899cd295f4",
+          "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+          "networkBindings": [
+            {
+              "bindingRef": "adapter-internal",
+              "bridge": "oufsp-int",
+              "interface": "oufint0",
+              "ipv4": "172.21.0.3",
+              "leaseGuard": {
+                "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+                "tableName": "ouf_sem_provider"
+              },
+              "mac": "02:42:ac:15:00:03",
+              "workloadRef": "ouf-semantic-adapter-v2"
+            },
+            {
+              "bindingRef": "adapter-egress",
+              "bridge": "oufsp-egress",
+              "interface": "oufeg0",
+              "ipv4": "172.22.0.3",
+              "leaseGuard": {
+                "configurationHash": "0a646e6109d2dc32aabdbbe26436784de8a83bdeb023a36c5b2712315666f5b5",
+                "tableName": "ouf_sem_provider"
+              },
+              "mac": "02:42:ac:16:00:03",
+              "workloadRef": "ouf-semantic-adapter-v2"
+            }
+          ]
+        }
+      ],
+      "signaturesVerified": false,
+      "tableName": "ouf_v2_southbound",
+      "transport": [
+        {
+          "destination": "172.21.0.3",
+          "peerIngress": {
+            "bindingRef": "adapter-internal",
+            "containerId": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+            "kind": "CREATED_CANDIDATE"
+          },
+          "port": 9443,
+          "protocol": "tcp",
+          "purpose": "GATEWAY_ADAPTER",
+          "source": "172.21.0.2"
+        },
+        {
+          "destination": "172.18.0.14",
+          "peerIngress": {
+            "ifindex": 1377,
+            "kind": "BRIDGE_PORT"
+          },
+          "port": 10443,
+          "protocol": "tcp",
+          "purpose": "WORKLOAD_GATEWAY",
+          "source": "172.18.0.6"
+        }
+      ],
+      "transportKinds": {
+        "BRIDGE_PORT": 1,
+        "CREATED_CANDIDATE": 1
+      },
+      "transportSha256": "c216a052a55891c00adcdc70bd97365fc32aa3f7641ed18f5bebccb7707268dc"
+    }
+  },
+  "runtimeObserved": false,
+  "runtimeWrapperChanged": false,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-generation-source-read.v1",
+  "serviceStarts": 0,
+  "serviceStops": 0,
+  "signaturesProduced": 0,
+  "snapshotAtomic": false,
+  "sourceFilesStableDuringRead": true,
+  "startAuthorized": false,
+  "status": "DISCOVERY_GENERATION_SOURCES_READ",
+  "tokenRequests": 0
+}

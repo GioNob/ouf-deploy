@@ -1,0 +1,61 @@
+name: Archive exact UDP wide candidate
+on:
+  pull_request:
+    paths:
+      - tools/udp_wide_20261108/archive.py
+      - .github/workflows/udp-wide-archive.yml
+permissions: {contents: read}
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: c0cf1702b2eb971718996a959414caee004af494
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven, cache-dependency-path: candidate/pom.xml}
+      - name: Reuse bounded identity tests and build exact source
+        working-directory: candidate
+        run: |
+          test "$(git rev-parse HEAD)" = c0cf1702b2eb971718996a959414caee004af494
+          bash scripts/install-authorization-sdk.sh
+          mvn -B -ntp -DargLine=-Xmx384m -Dtest=PublishedIdentityPolicyTest,GovernedIdentityEngineTest,GovernedIdentitySubjectMapperTest test
+          docker build --label org.opencontainers.image.revision=c0cf1702b2eb971718996a959414caee004af494 \
+            -t ouf-udp:c0cf1702b2eb971718996a959414caee004af494 .
+      - name: Verify non-root image and extract exact JAR
+        working-directory: candidate
+        run: |
+          test "$(docker image inspect ouf-udp:c0cf1702b2eb971718996a959414caee004af494 --format '{{.Config.User}}')" = '10004:10004'
+          ouf_probe=$(docker create ouf-udp:c0cf1702b2eb971718996a959414caee004af494)
+          docker cp "$ouf_probe:/app/app.jar" target/candidate.jar
+          docker rm "$ouf_probe"
+      - name: Scan image under existing module policy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-udp:c0cf1702b2eb971718996a959414caee004af494
+          format: json
+          output: candidate/target/trivy-image.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+      - name: Archive image and resource provenance
+        run: python3 tools/udp_wide_20261108/archive.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: udp-wide-image-${{ github.run_id }}
+          path: udp-wide-artifact/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: udp-wide-archive-evidence-${{ github.run_id }}
+          path: |
+            candidate/target/surefire-reports/
+            candidate/target/trivy-image.json
+          retention-days: 30

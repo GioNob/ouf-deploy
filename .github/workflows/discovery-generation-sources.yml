@@ -1,0 +1,19 @@
+name: Discovery generation recipe sources
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - scripts/read-discovery-generation-sources-20261109.py
+      - tests/test_discovery_generation_sources.py
+      - evidence/discovery-generation-inputs-prepared-operator-20261109.json
+      - .github/workflows/discovery-generation-sources.yml
+permissions: {contents: read}
+jobs:
+  source-lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Pinned receipts, independent compilation, lineage and redaction
+        run: python3 -I -B -m unittest discover -s tests -p test_discovery_generation_sources.py -v

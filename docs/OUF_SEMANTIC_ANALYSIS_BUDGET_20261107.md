@@ -1,50 +1,63 @@
-# Budget dell'analisi semantica proporzionato al profilo
+# Budget dell'analisi semantica proporzionato al lavoro
 
-Decisione dell'owner, 7 novembre 2026: il lavoro deve poter trattare oggetti di 50, 100, 200 colonne e oltre. Il budget dell'analisi deve seguire le dimensioni effettive. Stato: requisito acquisito; implementazione dinamica non ancora presente.
+Aggiornamento del 7 novembre 2026. Requisito: oggetti fino a 1024 colonne, compresi casi SUE da 300–400 campi. Candidato [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83), sorgente `907ace32100d44a0fcf1fcbda5d713ee7bd8fd94`. Il pacchetto è installato sul VPS con migrazione 14 verificata e readiness HTTP 204 ([ricevuta delle 20:26 CET dell'8 novembre](../evidence/mcp-analysis-ready-operator-20261108.json)); i nuovi strumenti restano INACTIVE e l'analisi funzionale resta da provare.
 
-## Fatti verificati
+## Implementazione disponibile nel candidato
 
-Nel sorgente MCP conservato `d2454f3c`, il limite corrente è una finestra di un minuto con capacità predefinita di tre chiamate, oltre a byte e unità oggetto/debito. Non è un budget totale già associato all'analisi di un file. La risposta generica dell'ultima ricerca Cinema non identifica quale dimensione abbia esaurito quella finestra.
-
-La preview Onboarding già acquisita espone `metadata.columns=20`, venti descrittori di colonna, assetId, profileId e profileVersion. Non occorre un nuovo upload o una nuova profilazione.
-
-I contratti attuali di `semantic.search` e `semantic.get` non contengono un riferimento al profilo sorgente. L'ammissione corrente conosce identità, capacità e finestra, ma non l'oggetto che si sta mappando. Il collegamento profilo→analisi→lettura è quindi da implementare: non basta rendere variabile una costante.
-
-## Decisione operativa
-
-Separare tre quantità:
-
-| Quantità | Criterio |
+| Strumento | Comportamento |
 | --- | --- |
-| Lavoro complessivo dell'analisi | Dimensionato dal profilo effettivo e dalle operazioni pianificate per le colonne; tener conto delle alternative necessarie e del riuso di definizioni già lette. |
-| Ritmo e concorrenza delle richieste | Proteggono MCP e dipendenze; un oggetto grande attraversa più finestre se necessario. Nessuna equivalenza automatica tra 200 colonne e 200 richieste simultanee. |
-| Tentativi equivalenti dopo un errore | Restano distinti dal lavoro utile su colonne diverse. Un budget maggiore per l'oggetto non autorizza un ciclo di retry senza fine. |
+| `source.analysis.plan` | Legge il profilo posseduto da Onboarding, conserva asset/profilo/versione/hash/conteggio autorevoli e aggiunge attività con revisione attesa. Le aggiunte successive riusano quel profilo immutabile. |
+| `source.analysis.read` | Mostra consumi, attività e copertura delle colonne, con pagine da 128 attività e senza esporre i corpi delle risposte nella lista. |
+| `source.analysis.step` | Esegue una sola attività tramite autorizzazione/ammissione/Gateway esistenti; conserva risposta e progresso. Un'attività riuscita viene riletta dopo nuova autorizzazione senza ripetere la chiamata. |
 
-Il numero di colonne è l'ingresso iniziale, non una misura completa della complessità semantica. Una lettura di ontologia può coprire più colonne; una colonna ambigua può richiedere più ricerche. La funzione iniziale sarà deterministica e configurata dal servizio, con una quota comune e una quota per colonna; coefficienti, eventuali fasce e riserva per approfondimenti non sono ancora scelti né qualificati. Non spacciare una formula arbitraria per dimensionamento misurato.
+Attività ammesse: ricerca e lettura semantica, richiesta/stato/candidati della discovery. Argomenti controllati con gli schemi reali del manifest; nessun URL libero o SPARQL. La discovery rimane INACTIVE e viene rifiutata finché il percorso composto non è attivato.
 
-Il conteggio proviene dal profilo autorevole autorizzato, non da un `columnCount` libero inviato dal chatbot. L'identità dell'analisi deve conservare tenant, soggetto, asset e profilo/versione verificati; il contratto deve definire come legare uno schema immutabile e riconoscere un profilo cambiato. La stessa analisi ripresa conserva consumo, risposte e avanzamento. Un nuovo correlation ID o un riavvio non deve duplicare la quota né ripetere colonne completate.
+Il conteggio delle colonne non è un parametro del chatbot. Le colonne delle attività sono ordinali validati sul profilo verificato. L'identità persistente comprende servizio, soggetto, tenant, asset e profilo; nuova chat, correlation ID o riavvio non creano un budget nuovo. Una variazione del profilo o del manifest blocca il riuso.
 
-Alla saturazione della sola finestra temporale, il lavoro resta in attesa con motivo e tempo di ripresa. L'attesa non trattiene transazioni/lock condivisi. La ripresa ricontrolla l'autorizzazione. Esaurimento del lavoro pianificato, errore permanente e ambiguità restano condizioni diverse ed esplicite.
+## Dimensionamento, senza coefficienti inventati
 
-## Due interventi verificabili
+Il lavoro utile disponibile coincide con le attività uniche pianificate. Le durate massime delle singole chiamate e i massimi byte derivano dai contratti delle capacità e vengono sommati. Una ricerca identica riutilizzata da più colonne conta una volta; una nuova verifica necessaria aggiunge lavoro esplicito mantenendo la storia.
 
-1. **Profilo e dimensionamento:** associare le letture a una specifica analisi del profilo posseduto; calcolare la quota dal numero reale di colonne e dal piano; conservare identità e consumo. Verificare 20, 50, 100 e 200 colonne, conteggi alterati, profilo non posseduto, cambio di versione e ripresa della stessa analisi. Non riaprire l'intero programma di industrializzazione.
-2. **Avanzamento e ripresa:** conservare per colonna stato, riferimenti semantici esatti già letti e motivo degli irrisolti; attendere la successiva finestra senza nuovi tentativi equivalenti inutili. Provare interruzione/ripresa e completamento dell'oggetto di 200 colonne attraverso più finestre. Stato finale: colonne risolte oppure irrisolte con motivo, mai completamento silenzioso di una parte.
+Esempio aritmetico: 400 ricerche distinte e 70 letture di riferimenti sono 470 chiamate utili. Se quelle attività coprono 1024 colonne, restano 470; non si moltiplica automaticamente tutto per 1024. Non è un benchmark e non implica che siano sufficienti per un oggetto reale.
 
-Il primo intervento richiede definire il collegamento applicativo oggi assente; non viene dichiarato già implementato da questa nota. Il secondo non è dimostrato dai test del limite fisso.
+Il budget di tempo è la somma degli inviluppi delle chiamate pianificate, non una promessa sul tempo totale dell'analisi. Attese, tempi del provider, approfondimenti e retry restano visibili e distinti. Il primo controllo del profilo è un costo di preparazione ammesso dalla quota pagine, separato dalle attività semantiche.
 
-## Candidato già prodotto, non da distribuire come soluzione finale
+## Attesa, ripresa e limiti dichiarati
 
-[MCP PR82](https://github.com/GioNob/ouf-mcp-server/pull/82), commit `cdfb850b26d8d2e1c1481071c8a281a55a553bac`, separa le letture semantiche e porta la finestra a 60 chiamate/minuto. Introduce errore esplicito con dimensione e tempo di ripresa. Questo è un limite fisso, quindi **non soddisfa il requisito dinamico dell'owner**. Nessun rollout di questa soluzione fissa.
+La finestra a 60 letture semantiche/minuto continua a proteggere la dipendenza. Un rifiuto di finestra prima dell'invio diventa WAITING con `notBefore`, senza chiamata al proprietario e senza consumo di un retry dell'attività. Le altre quote, i controlli di query equivalenti e la capacità dei comandi non sono aggirati.
 
-[Qualifica mirata](https://github.com/GioNob/ouf-mcp-server/actions/runs/42413075158) e [CI esistente completa](https://github.com/GioNob/ouf-mcp-server/actions/runs/42413075174) riuscite: test Go/race e PostgreSQL, build immagine, staticcheck, govulncheck. Nove sorgenti Go coincidono con il readback gofmt nativo. La prima versione falliva solo la formattazione, corretta prima di questi run. Artefatto immagine `13590830257`, digest archivio `070020326c9125c615cf42055a945fe47ce776d8d4039c0968e374703676c14e`; il digest dell'archivio non è l'ID dell'immagine Docker.
+Per READ con HTTP 429/503: attesa progressiva 5/15/60/300/900 secondi, jitter positivo fino al 20%, rispetto di Retry-After e massimo persistito di 128 tentativi/24 ore per attività. I guard preesistenti possono fermare prima. Errori ignoti, comandi ambigui e processi interrotti dopo la prenotazione restano HELD: nessun replay alla cieca.
 
-Riusare diagnostica e verifiche pertinenti nella soluzione proporzionale. Non confondere questi pass con prove su 50/100/200 colonne o con aggiornamento VPS. Il lettore runtime `scripts/ouf-mcp-budget-runtime-read-20261107.py` è stato conservato nel commit deploy `51125a9b719c1f6952680af19b691712f862893b` prima della precisazione; non eseguito e non richiesto ora all'operatore.
+La ripresa avviene chiamando nuovamente `step` con un'identità attualmente autorizzata. Non è uno scheduler in background; nessun token delegato viene salvato. Una prenotazione transazionale impedisce doppie esecuzioni e risultati tardivi. Nessun lock viene mantenuto durante una chiamata remota o un'attesa.
 
-## Continuità del percorso SeaweedFS → E2E
+Limiti di capacità espliciti: 16.384 attività uniche per analisi, 128 per aggiunta/pagina, 8 KiB di argomenti in ingresso per attività (più la chiave server per la discovery), 256 KiB per risposta e 64 MiB di risposte contabilizzate per analisi, comprese le prenotazioni in corso. Esaurimento conservato e visibile, senza cancellazioni automatiche. Sono protezioni finite; la loro saturazione completa e il carico concorrente multiutente sul VPS non sono qualificati dalle prove a 1024 attività.
 
-F1 resta riuscito. File, profilo e mapping OPEN sono conservati. Nessun cambiamento VPS, policy, storage, SQL reset, upload o Ingestion in questo intervento.
+## Discovery delle proprietà delle colonne
 
-La discovery esterna OntoPiA/schema.gov.it non esposta nella connessione resta distinta: più budget non aggiunge strumenti mancanti. Dopo collegamento e dimensionamento, riprendere i candidati esistenti e il mapping delle proprietà delle colonne, quindi bozza/review THS/Ingestion→UDP→grafo. Non introdurre la classificazione dei singoli valori come nuovo requisito.
+Il flusso resta: ricerca di riferimenti OUF pubblicati → lettura esatta → eventuale discovery esterna PROPERTY/RELATIONSHIP con contesto → verifica dei candidati → normale adozione/validazione/pubblicazione.
 
-[Evidenza e limiti](../evidence/semantic-analysis-budget-review-20261107.json).
+Per `tipologia` si cerca la proprietà che esprime quel significato nel contesto dell'oggetto, verificando definizione, dominio e range. Un'etichetta uguale o un vocabolario di valori non dimostrano equivalenza della proprietà. URI assenti o corrispondenze ambigue restano irrisolti, senza inventare riferimenti.
+
+La richiesta di discovery ha una chiave stabile generata dal coordinatore. Gli aggiornamenti di stato sono attività esplicite numerate, sequenziali e distanziate almeno 31 secondi. Un HTTP riuscito con stato PENDING non chiude la discovery. `columnsWithCompletedPlannedWork` indica soltanto chiamate pianificate terminate: non dichiara mapping corretto, pubblicazione o classificazione OPEN.
+
+Le risposte conservate sono evidenza storica con data: prima dell'adozione va verificato lo stato corrente presso il proprietario. Nessuna nuova associazione OntoPiA alle colonne Teatri è stata attestata in questo intervento.
+
+## Prove e prossime azioni
+
+[Evidenza del candidato e CI](../evidence/profile-analysis-discovery-20261107.json). Prove native Go/race, SDK MCP e PostgreSQL: 20/50/100/200/300/400/1024 colonne; otto blocchi a 1024 attività con una sola lettura autorevole; deduplicazione, riconnessione, autorizzazione revocata, fencing, rifiuto della 61ª lettura, attesa dopo 503, storia retry e capacità delle risposte in corso. I servizi remoti delle prove di coordinamento sono fixture: non equivalgono a un test del provider OntoPiA o del VPS.
+
+Ordine residuo:
+
+1. Gateway applicato e verificato; Semantic c2dae77b è pronto con V12 dopo la correzione della chiave. MCP PR83 è installato con migrazione 14 verificata e readiness 204: [ricevuta](../evidence/mcp-analysis-ready-operator-20261108.json). Prossimo passo la [lettura Onboarding](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md), poi i candidati 1024 degli altri moduli, conservando i binding SeaweedFS. Non distribuire PR82 da solo come soluzione dinamica.
+2. Verificare sul target provider/worker, pubblicazione delle capacità e grant correnti. La connessione non espone discovery; una lettura del catalogo CAPABILITIES ha restituito HTTP 400, quindi i grant attuali non sono stati verificati e la causa non è attribuita.
+3. Prima discovery reale di proprietà sul profilo Teatri conservato; motivare associazioni e irrisolti per ogni colonna.
+4. Bozza/review THS e Ingestion→UDP→grafo; normale operazione lake su SeaweedFS e seconda esecuzione riuscita.
+
+F1 rimane acquisito; F2–F6 sono aperti. Non ripetere upload, profilazione, pubblicazione Teatri o ripristino del produttore token. OPEN vale per Teatri, non automaticamente per SUE. Nessun DR/RPO/RTO aggiunto.
+
+La precedente correzione della sola finestra e le sue prove restano nello [storico](../evidence/semantic-analysis-budget-review-20261107.json). [Descrizione tecnica del candidato](https://github.com/GioNob/ouf-mcp-server/blob/907ace32100d44a0fcf1fcbda5d713ee7bd8fd94/docs/PROFILE_ANALYSIS_20261107.md).
+
+
+## Attivazione — verifica del 9 novembre
+
+L'installazione PR83 è riuscita, ma i sei strumenti sono INACTIVE nel manifesto incorporato. `manifest.Load()` legge l'embed e il kernel registra soltanto strumenti ACTIVE: policy/ENV da sole non li espongono. Occorre la build con manifesto aggiornato insieme alle dipendenze e ai grant. [Lettura mirata pronta e fonti](OUF_DISCOVERY_ACTIVATION_BINDINGS_20261109.md). Non ripetere migrazione14, upload o profiling, non resettare il budget e non usare modifiche dirette al DB come pubblicazione del manifesto.

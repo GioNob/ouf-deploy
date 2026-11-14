@@ -1,0 +1,35 @@
+{
+  "schema": "ouf.discovery-activation-bindings-qualification.v1",
+  "date": "2026-11-09",
+  "scripts": {
+    "scripts/read-discovery-activation-bindings-20261109.py": "7f9232b3c2832a57769f0271003b1ce0f2ea57b7e6b0ba266e02dbf6549cc8a7",
+    "tests/test_discovery_activation_bindings.py": "e0b62900e819a9f98b804c06729fa0a2c36e2aebf82706001f5f33d06005b9f4"
+  },
+  "scope": "LOCAL_UNIT_FIXTURES_NOT_TARGET_OR_NATIVE_DOCKER",
+  "tests": 9,
+  "failures": 0,
+  "skips": 0,
+  "helperHashesVerified": true,
+  "checks": [
+    "current application image mismatch rejected",
+    "missing named dependencies returned without readiness assertion",
+    "selected inspect credentials absent from public summary",
+    "credential mount metadata never reads contents",
+    "Docker transport uses GET and bounded identifiers only",
+    "same Docker API frame drift including MAC rejected",
+    "URL userinfo/query redacted",
+    "process and listener parser fixture",
+    "unavailable proc metadata explicit"
+  ],
+  "localNativeProcProbe": {
+    "status": "UNAVAILABLE",
+    "reason": "FileNotFoundError",
+    "countsAsSuccessfulNativeTest": false
+  },
+  "targetExecuted": false,
+  "providerRequests": 0,
+  "tokenRequests": 0,
+  "databaseRequests": 0,
+  "businessRequestsIssued": 0,
+  "serviceChanges": false
+}

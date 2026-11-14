@@ -1,0 +1,41 @@
+name: Semantic provider B1 installation
+on:
+  pull_request:
+    paths:
+      - scripts/install-semantic-provider-b1.py
+      - scripts/deliver-semantic-provider-b1-install.sh
+      - scripts/prepare-semantic-provider-installation.py
+      - tools/semantic_transaction_profiles/**
+      - tools/semantic_frame_compiler/**
+      - tools/semantic_cohort_admission/cohort-draft/tools/**
+      - tools/semantic_b1_acceptance/**
+      - tools/semantic_b1b2_authority/**
+      - tools/semantic_runtime_v5/**
+      - tests/test_semantic_provider_b1_install.py
+      - tests/test_semantic_provider_installation.py
+      - .github/workflows/semantic-provider-b1-install.yml
+      - docs/OUF_SEMANTIC_PROVIDER_B1_INSTALL_20261114.md
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  native-installation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: B1 native apply, custody, flock, real signatures and inactive v5
+        run: >-
+          sudo -n env OUF_B1_INSTALL_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_b1_install.py -v
+      - name: Existing P regression including native custody and publication
+        run: >-
+          sudo -n env OUF_P_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_installation.py -v
+      - name: Unchanged low-level switch regression
+        run: >-
+          sudo -n env OUF_TRANSACTION_TEST_ROOT=/run /usr/bin/python3 -I -B
+          -m unittest discover -s tools/semantic_transaction_profiles
+          -p test_guarded_runtime_switch.py -v
+      - name: Delivery syntax
+        run: bash -n scripts/deliver-semantic-provider-b1-install.sh

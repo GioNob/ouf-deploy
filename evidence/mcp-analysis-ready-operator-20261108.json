@@ -1,0 +1,210 @@
+{
+  "analysisFunctionalTested": false,
+  "applicationStartDispatched": true,
+  "applicationStartupMayRequestTokensAndAccessDatabase": true,
+  "automaticRollback": false,
+  "backendAddressAliasesPreserved": true,
+  "businessRequestsIssued": 0,
+  "candidateImageId": "sha256:d76fda00f9340dcea62ed1be58b1db3ebfb4d64d4be5449ffc07ab2c845254ff",
+  "credentialFileWrites": 0,
+  "credentialValuesEmitted": false,
+  "databaseBefore": {
+    "analysisTablePresent": false,
+    "analysisTaskTablePresent": false,
+    "applicationRole": {
+      "canCreateInSchema": true,
+      "canReadMigrationHistory": true,
+      "canRecordMigration": true,
+      "canUseSchema": true,
+      "superuser": false
+    },
+    "databaseOid": "21560",
+    "migrations": [
+      {
+        "checksum": "a70a2389352f5f8387f96b6051becf97f64f1e922aba9c353545449e0fa0b225",
+        "version": 1,
+        "appliedAt": "2026-09-17T17:12:36.644915+00:00"
+      },
+      {
+        "checksum": "138614ca67d9365e7525c0d56313ab1514e3ea9f1fe32b5095a3d85e3ecbb74d",
+        "version": 2,
+        "appliedAt": "2026-09-17T17:12:36.673991+00:00"
+      },
+      {
+        "checksum": "044d5d6fe3fdd5f77179a4f677885aa3ca4f72ca1bc52f6f10c44b57306bfb3e",
+        "version": 3,
+        "appliedAt": "2026-09-17T17:12:36.699095+00:00"
+      },
+      {
+        "checksum": "9bae68eb83dabf8bd80fcfdf38189c54cced1228b3b22a7128c4c5cda3b7c72c",
+        "version": 4,
+        "appliedAt": "2026-09-17T17:13:37.564806+00:00"
+      },
+      {
+        "checksum": "3dc65eeee6668444e77e3a08982a71a1412fda53c3e8b90cbddd7d6959e5ad54",
+        "version": 5,
+        "appliedAt": "2026-09-17T17:13:37.625717+00:00"
+      },
+      {
+        "checksum": "8973286df97ef30dd7281dfaf5bfb251ca078d4a2862de235b6988bc5e5eb375",
+        "version": 6,
+        "appliedAt": "2026-09-17T17:13:37.628793+00:00"
+      },
+      {
+        "checksum": "ad1e6b93b10ae2b6e407015f4bfb5026f2cd633a8565d30584fddd98e274f174",
+        "version": 7,
+        "appliedAt": "2026-09-17T17:13:37.632569+00:00"
+      },
+      {
+        "checksum": "2e279669f11a1b4949c93e17522d127003aa7c3f54cd2af0461500676f2bef28",
+        "version": 8,
+        "appliedAt": "2026-09-22T06:24:30.162297+00:00"
+      },
+      {
+        "checksum": "798ec17290d8952a6824871739d4b352bc3984f4e600fda9c704d6784d704dd2",
+        "version": 9,
+        "appliedAt": "2026-09-22T06:24:30.169288+00:00"
+      },
+      {
+        "checksum": "64b586222b534976c379dbec667e4bcb3f7c58087b436b02f79f588e3bb9b0a5",
+        "version": 10,
+        "appliedAt": "2026-10-16T02:28:24.562315+00:00"
+      },
+      {
+        "checksum": "d6393214c1b83da875015018e5e50833fe6fe4ea0571adf98d5f34fbe390995e",
+        "version": 11,
+        "appliedAt": "2026-10-16T02:28:24.583261+00:00"
+      },
+      {
+        "checksum": "de64bdcfa45b1e373807d07e603cd1940defe056cec4a21e0db4c7667330cc68",
+        "version": 12,
+        "appliedAt": "2026-10-16T02:28:24.591132+00:00"
+      },
+      {
+        "checksum": "fe9ab352cbf649efecc708b08a9f61ff3c9aadb358211ebd763011ee9fd695b5",
+        "version": 13,
+        "appliedAt": "2026-10-17T06:17:40.207981+00:00"
+      }
+    ],
+    "readOnly": true
+  },
+  "existingEnvironmentPreserved": true,
+  "existingMountsPreserved": true,
+  "expiredReprocessingFilesUnchanged": true,
+  "gatewayWrites": 0,
+  "imageImported": true,
+  "migration14Verified": true,
+  "migrationDispatched": true,
+  "migrationLog": {
+    "knownStartupMessages": [
+      "database migrations applied"
+    ],
+    "otherMessagesOmitted": 0,
+    "rawLogsEmitted": false
+  },
+  "newToolsRemainInactive": true,
+  "observedAt": "2026-11-08T19:26:58.755239+00:00",
+  "oldMacTransition": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+  "oldRetainedStopped": true,
+  "oldStopDispatched": true,
+  "permissionChanges": 0,
+  "priorMigrationHistoryPreserved": true,
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/mcp-analysis-upgrade-20261108",
+  "privilegedMigrationDispatched": false,
+  "publicReprocessingMetadataFilesRead": 12,
+  "readOnlyDatabaseSessionsAttempted": 3,
+  "readinessHttpStatus": 204,
+  "readinessUp": true,
+  "replacementContainerId": "41c1e01dfd86535d75d2db6d7bd0f9e3eae27c24684af0b149d6b51c54d90943",
+  "replacementGateStarted": true,
+  "s3Requests": 0,
+  "schema": "ouf.mcp-analysis-upgrade.v1",
+  "startupBefore": {
+    "credentialContentsRead": false,
+    "declaredNonempty": {
+      "MCP_AUTHORIZATION_BUNDLE_ENDPOINT": true,
+      "MCP_DATABASE_URL": true,
+      "MCP_FINGERPRINT_KEY": false,
+      "MCP_GATEWAY_ENDPOINT": true,
+      "MCP_HOST_FILE_ORIGINS": false,
+      "MCP_MANAGED_FILE_PICKER_URL": true,
+      "MCP_OIDC_CLIENT_ID": true,
+      "MCP_OIDC_TOKEN_ENDPOINT": true,
+      "MCP_REPROCESSING_KEY_PROFILE_SHA256": true,
+      "MCP_WORKLOAD_TOKEN": false
+    },
+    "fileBindings": {
+      "MCP_FINGERPRINT_KEY_FILE": {
+        "contentsRead": false,
+        "declared": true,
+        "gid": 10005,
+        "modeOctal": "0600",
+        "nonempty": true,
+        "readOnlyMount": true,
+        "sameAsHostSource": true,
+        "status": "MOUNTED_REGULAR_FILE",
+        "uid": 10005
+      },
+      "MCP_OIDC_CLIENT_SECRET_FILE": {
+        "contentsRead": false,
+        "declared": true,
+        "gid": 10005,
+        "modeOctal": "0600",
+        "nonempty": true,
+        "readOnlyMount": true,
+        "sameAsHostSource": true,
+        "status": "MOUNTED_REGULAR_FILE",
+        "uid": 10005
+      },
+      "MCP_REPROCESSING_EXISTING_POLICY_FILE": {
+        "contentsRead": false,
+        "declared": true,
+        "gid": 10005,
+        "modeOctal": "0440",
+        "nonempty": true,
+        "readOnlyMount": true,
+        "sameAsHostSource": true,
+        "status": "MOUNTED_REGULAR_FILE",
+        "uid": 0
+      },
+      "MCP_REPROCESSING_KEY_PROFILE_FILE": {
+        "contentsRead": false,
+        "declared": true,
+        "gid": 10005,
+        "modeOctal": "0440",
+        "nonempty": true,
+        "readOnlyMount": true,
+        "sameAsHostSource": true,
+        "status": "MOUNTED_REGULAR_FILE",
+        "uid": 0
+      },
+      "MCP_REPROCESSING_PERMIT_FILE": {
+        "contentsRead": false,
+        "declared": true,
+        "gid": 10005,
+        "modeOctal": "0440",
+        "nonempty": true,
+        "readOnlyMount": true,
+        "sameAsHostSource": true,
+        "status": "MOUNTED_REGULAR_FILE",
+        "uid": 0
+      }
+    },
+    "installedBinaryBytes": 13811874,
+    "installedBinarySha256": "e1d77aecd4c7fa2c6deb7128392d12b7c651382bac6eff3b81bdbc2790758860",
+    "managedUploadMode": "picker",
+    "processIsMcpServer": true,
+    "reprocessing": {
+      "allFourInputsPresent": true,
+      "configured": true,
+      "expiredAtRead": true,
+      "meaning": "PUBLIC_DEPLOYMENT_METADATA_ONLY_NOT_AUTHORITY",
+      "notYetValidAtRead": false,
+      "permitOrBudgetChanged": false,
+      "profileHashMatchesDeclaration": true,
+      "signatureVerifiedByReader": false
+    },
+    "scope": "DECLARED_ENV_AND_FILE_METADATA_NOT_CANDIDATE_STARTUP"
+  },
+  "status": "MCP_ANALYSIS_V14_READY"
+}

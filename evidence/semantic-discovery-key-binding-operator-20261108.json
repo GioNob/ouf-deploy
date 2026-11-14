@@ -1,0 +1,230 @@
+{
+  "adminCredentialConfigurationsRead": 1,
+  "adminRouteGetAttempts": 1,
+  "businessRequestsIssued": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "externalAdminKeyFilesRead": 1,
+  "failedLogRead": true,
+  "gateway": {
+    "allSelectedRoutesUseSameOwnerKeyEnvironment": true,
+    "frameUnchangedDuringRead": true,
+    "imageMatchesRetained": true,
+    "keyBytesComparedWithSemanticFile": false,
+    "otherDiscoveryKeyEnvironmentNames": [],
+    "routeConfigurationOnlyNotFunctionalAuthorization": true,
+    "routes": {
+      "/internal/capabilities/v1/execute/semantic/discovery/candidates": {
+        "declaredSemanticMatches": {
+          "ouf.iam.audience": [
+            true
+          ],
+          "ouf.iam.issuer": [
+            true
+          ],
+          "ouf.semantic.discovery-delegation.workload": [
+            true
+          ]
+        },
+        "distinctEnvironmentFromMcpDelegation": true,
+        "matchingRouteCount": 1,
+        "ownerKeyEnvironmentName": "OUF_SEMANTIC_READ_OWNER_KEY",
+        "ownerKeyEnvironmentPresent": true,
+        "ownerKeyFormatValid": true,
+        "postFunctionSha256": "1d1c62ed4bc50337493f9198a11ce7cc23aaa69acde9e9be0f7e550eefec1dbd"
+      },
+      "/internal/capabilities/v1/execute/semantic/discovery/request": {
+        "declaredSemanticMatches": {
+          "ouf.iam.audience": [
+            true
+          ],
+          "ouf.iam.issuer": [
+            true
+          ],
+          "ouf.semantic.discovery-delegation.workload": [
+            true
+          ]
+        },
+        "distinctEnvironmentFromMcpDelegation": true,
+        "matchingRouteCount": 1,
+        "ownerKeyEnvironmentName": "OUF_SEMANTIC_READ_OWNER_KEY",
+        "ownerKeyEnvironmentPresent": true,
+        "ownerKeyFormatValid": true,
+        "postFunctionSha256": "1d1c62ed4bc50337493f9198a11ce7cc23aaa69acde9e9be0f7e550eefec1dbd"
+      },
+      "/internal/capabilities/v1/execute/semantic/discovery/status": {
+        "declaredSemanticMatches": {
+          "ouf.iam.audience": [
+            true
+          ],
+          "ouf.iam.issuer": [
+            true
+          ],
+          "ouf.semantic.discovery-delegation.workload": [
+            true
+          ]
+        },
+        "distinctEnvironmentFromMcpDelegation": true,
+        "matchingRouteCount": 1,
+        "ownerKeyEnvironmentName": "OUF_SEMANTIC_READ_OWNER_KEY",
+        "ownerKeyEnvironmentPresent": true,
+        "ownerKeyFormatValid": true,
+        "postFunctionSha256": "1d1c62ed4bc50337493f9198a11ce7cc23aaa69acde9e9be0f7e550eefec1dbd"
+      },
+      "/internal/capabilities/v1/execute/semantic/search": {
+        "declaredSemanticMatches": {
+          "ouf.iam.audience": [
+            true
+          ],
+          "ouf.iam.issuer": [
+            true
+          ],
+          "ouf.semantic.discovery-delegation.workload": [
+            true
+          ]
+        },
+        "distinctEnvironmentFromMcpDelegation": true,
+        "matchingRouteCount": 1,
+        "ownerKeyEnvironmentName": "OUF_SEMANTIC_READ_OWNER_KEY",
+        "ownerKeyEnvironmentPresent": true,
+        "ownerKeyFormatValid": true,
+        "postFunctionSha256": "9a1575414108ef7255b100632561e1278f83408bdd4fa6bed07d5b09c8c18b6e"
+      }
+    }
+  },
+  "gatewayWrites": 0,
+  "keyFileContentsRead": 0,
+  "migrationDispatched": false,
+  "missingPathsFromFailedLog": [
+    "/run/secrets/semantic-discovery-owner.key"
+  ],
+  "observedAt": "2026-11-08T18:40:25.225715+00:00",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/semantic-key-binding-m9oddh4s",
+  "rawLogsEmitted": false,
+  "s3Requests": 0,
+  "schema": "ouf.semantic-discovery-key-binding-read.v1",
+  "semantic": {
+    "configurationScope": "DECLARATIONS_NOT_EFFECTIVE_SPRING_CONFIGURATION",
+    "containerId": "11d9362c7db484a2204266062fd54b5c08fbf1da7382076fb2a164bc1a9dd070",
+    "declarations": {
+      "ouf.iam.audience": [
+        {
+          "nonempty": true,
+          "origin": "ENV"
+        }
+      ],
+      "ouf.iam.issuer": [
+        {
+          "nonempty": true,
+          "origin": "ENV"
+        }
+      ],
+      "ouf.semantic.delegation.key-file": [
+        {
+          "matchesFailedLogPath": false,
+          "mount": {
+            "containerFilesystemInspected": false,
+            "destination": "/run/secrets/semantic-read-owner.key",
+            "hostSource": {
+              "directory": false,
+              "gid": 10001,
+              "modeOctal": "0400",
+              "nonempty": true,
+              "regular": true,
+              "status": "HOST_METADATA_READ",
+              "symlink": false,
+              "uid": 10001
+            },
+            "metadataScope": "CURRENT_HOST_SOURCE_ONLY_CONTAINER_STOPPED",
+            "readOnly": true,
+            "status": "DECLARED_MOUNT",
+            "type": "bind"
+          },
+          "nonempty": true,
+          "origin": "ENV",
+          "path": "/run/secrets/semantic-read-owner.key"
+        }
+      ],
+      "ouf.semantic.delegation.workload": [
+        {
+          "nonempty": true,
+          "origin": "ENV"
+        }
+      ],
+      "ouf.semantic.discovery-delegation.key-file": [
+        {
+          "matchesFailedLogPath": true,
+          "mount": {
+            "containerFilesystemInspected": false,
+            "status": "NO_DECLARED_MOUNT"
+          },
+          "nonempty": true,
+          "origin": "ENV",
+          "path": "/run/secrets/semantic-discovery-owner.key"
+        }
+      ],
+      "ouf.semantic.discovery-delegation.workload": [
+        {
+          "nonempty": true,
+          "origin": "ENV"
+        }
+      ],
+      "ouf.semantic.proposal-receipt.key-file": [
+        {
+          "matchesFailedLogPath": false,
+          "mount": {
+            "containerFilesystemInspected": false,
+            "destination": "/run/ouf/proposal.key",
+            "hostSource": {
+              "directory": false,
+              "gid": 10001,
+              "modeOctal": "0440",
+              "nonempty": true,
+              "regular": true,
+              "status": "HOST_METADATA_READ",
+              "symlink": false,
+              "uid": 0
+            },
+            "metadataScope": "CURRENT_HOST_SOURCE_ONLY_CONTAINER_STOPPED",
+            "readOnly": true,
+            "status": "DECLARED_MOUNT",
+            "type": "bind"
+          },
+          "nonempty": true,
+          "origin": "ENV",
+          "path": "/run/ouf/proposal.key"
+        }
+      ]
+    },
+    "imageMatchesCandidate": true,
+    "mounts": [
+      {
+        "destination": "/run/ouf-semantic-auth",
+        "readOnly": true,
+        "type": "bind"
+      },
+      {
+        "destination": "/run/ouf-semantic-db",
+        "readOnly": true,
+        "type": "bind"
+      },
+      {
+        "destination": "/run/ouf/proposal.key",
+        "readOnly": true,
+        "type": "bind"
+      },
+      {
+        "destination": "/run/secrets/semantic-read-owner.key",
+        "readOnly": true,
+        "type": "bind"
+      }
+    ],
+    "running": false,
+    "springConfigImportPresent": true
+  },
+  "semanticFrameUnchangedDuringRead": true,
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "SEMANTIC_DISCOVERY_KEY_BINDING_READ"
+}

@@ -1,0 +1,21 @@
+name: Semantic provider B1 artifact acceptance
+on:
+  pull_request:
+    paths:
+      - tools/semantic_b1_acceptance/**
+      - tools/semantic_b1b2_authority/**
+      - tests/test_semantic_b1_acceptance.py
+      - .github/workflows/semantic-provider-b1-acceptance.yml
+      - docs/OUF_SEMANTIC_PROVIDER_B1_ACCEPTANCE_20261112.md
+permissions: {contents: read}
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Verify B1 schema and signatures with native root custody
+        run: sudo -n env OUF_B1_ACCEPTANCE_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1_acceptance.py -v
+      - name: Recheck task-14 authority contract natively
+        run: sudo -n env OUF_B1B2_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1b2_authority.py -v

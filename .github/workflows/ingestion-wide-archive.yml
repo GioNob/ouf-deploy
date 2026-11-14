@@ -1,0 +1,68 @@
+name: Archive exact Ingestion wide candidate
+on:
+  pull_request:
+    paths:
+      - tools/ingestion_wide_20261108/archive.py
+      - .github/workflows/ingestion-wide-archive.yml
+permissions: {contents: read}
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: c85d9fd3be215e518dc6e7d075797720b5afbd91
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven, cache-dependency-path: candidate/pom.xml}
+      - name: Reuse bounded wide CSV tests and build the pinned source
+        working-directory: candidate
+        run: |
+          test "$(git rev-parse HEAD)" = c85d9fd3be215e518dc6e7d075797720b5afbd91
+          bash scripts/install-authorization-sdk.sh
+          mvn -B -ntp -DargLine=-Xmx384m -Dtest=ManagedTabularAdapterTest test
+          docker build --label org.opencontainers.image.revision=c85d9fd3be215e518dc6e7d075797720b5afbd91 \
+            -t ouf-ingestion:c85d9fd3be215e518dc6e7d075797720b5afbd91 .
+      - name: Verify non-root image and existing SQLite XLSX probe
+        working-directory: candidate
+        run: |
+          test "$(docker image inspect ouf-ingestion:c85d9fd3be215e518dc6e7d075797720b5afbd91 --format '{{.Config.User}}')" = '10002:10002'
+          mkdir -p target/runtime-image-libs
+          ouf_probe=$(docker create ouf-ingestion:c85d9fd3be215e518dc6e7d075797720b5afbd91)
+          docker cp "$ouf_probe:/app/app.jar" target/candidate.jar
+          docker rm "$ouf_probe"
+          unzip -j target/candidate.jar 'BOOT-INF/lib/*' -d target/runtime-image-libs >/dev/null
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,exec,nosuid,nodev,size=64m -v "$PWD/target/test-classes:/probe:ro" \
+            -v "$PWD/target/runtime-image-libs:/dependencies:ro" --entrypoint java \
+            ouf-ingestion:c85d9fd3be215e518dc6e7d075797720b5afbd91 -Djava.awt.headless=true \
+            -cp '/probe:/dependencies/*' it.comune.trieste.ouf.ingestion.RuntimeImageFormatProbe
+      - name: Scan the newly built image under the existing module policy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-ingestion:c85d9fd3be215e518dc6e7d075797720b5afbd91
+          format: json
+          output: candidate/target/trivy-image.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+      - name: Archive image and resource provenance
+        run: python3 tools/ingestion_wide_20261108/archive.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ingestion-wide-image-${{ github.run_id }}
+          path: ingestion-wide-artifact/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ingestion-wide-archive-evidence-${{ github.run_id }}
+          path: |
+            candidate/target/surefire-reports/
+            candidate/target/trivy-image.json
+          retention-days: 30

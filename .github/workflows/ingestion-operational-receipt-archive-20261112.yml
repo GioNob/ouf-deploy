@@ -1,0 +1,82 @@
+name: Archive Ingestion operational receipt candidate 20261112
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/ingestion-operational-receipt-archive-20261112.yml
+      - scripts/*ingestion-operational-receipt*20261112*
+permissions: {contents: read}
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-ingestion-runtime
+          ref: 01756a5a22ddc88beba270b7645a64440b1e5a7b
+          path: candidate
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21', cache: maven, cache-dependency-path: candidate/pom.xml}
+      - name: Test fixed source and lock resolved base image digests
+        working-directory: candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 01756a5a22ddc88beba270b7645a64440b1e5a7b
+          bash scripts/install-authorization-sdk.sh
+          # Full suite with PostgreSQL: ouf-ingestion-runtime module CI run 43183952735 on this commit.
+          mvn -B -ntp -DargLine=-Xmx384m '-Dtest=SummaryReceiptFilterTest,IngestionOperationalReceipt*HttpBoundaryTest' test
+          python3 - <<'PY'
+          import json,pathlib,subprocess
+          p=pathlib.Path('Dockerfile'); lines=p.read_text().splitlines(); bases={}; locked=[]
+          for line in lines:
+              if line.startswith('FROM '):
+                  parts=line.split(); tag=parts[1]
+                  subprocess.run(['docker','pull',tag],check=True)
+                  doc=json.loads(subprocess.check_output(['docker','image','inspect',tag]))[0]
+                  resolved=doc['RepoDigests'][0]; bases[tag]=resolved; parts[1]=resolved
+                  line=' '.join(parts)
+              locked.append(line)
+          pathlib.Path('Dockerfile.receipt-locked').write_text('\n'.join(locked)+'\n')
+          pathlib.Path('target/base-images.json').write_text(json.dumps(bases,sort_keys=True)+'\n')
+          PY
+          docker build --platform linux/amd64 -f Dockerfile.receipt-locked \
+            --label org.opencontainers.image.revision=01756a5a22ddc88beba270b7645a64440b1e5a7b \
+            -t ouf-ingestion:01756a5a22ddc88beba270b7645a64440b1e5a7b .
+          ouf_probe=$(docker create ouf-ingestion:01756a5a22ddc88beba270b7645a64440b1e5a7b)
+          docker cp "$ouf_probe:/app/app.jar" target/candidate.jar
+          docker rm "$ouf_probe"
+      - name: Apply existing image vulnerability policy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-ingestion:01756a5a22ddc88beba270b7645a64440b1e5a7b
+          format: json
+          output: candidate/target/trivy-image.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+      - name: Archive exact bytes and deployment bundle
+        run: |
+          python3 scripts/archive-ingestion-operational-receipt-20261112.py \
+            --source-dir candidate --output-dir ingestion-operational-receipt-artifact \
+            --image-tag ouf-ingestion:01756a5a22ddc88beba270b7645a64440b1e5a7b | tee archive-result.json
+          (cd ingestion-operational-receipt-artifact && sha256sum --check SHA256SUMS)
+          cat archive-result.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ingestion-operational-receipt-image-${{ github.run_id }}
+          path: ingestion-operational-receipt-artifact/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ingestion-operational-receipt-build-evidence-${{ github.run_id }}
+          path: |
+            archive-result.json
+            candidate/target/surefire-reports/
+            candidate/target/trivy-image.json
+            candidate/target/base-images.json
+          retention-days: 30

@@ -1,0 +1,43 @@
+name: Semantic V11 V12 installed Flyway upgrade
+on:
+  pull_request:
+    paths:
+      - scripts/upgrade-semantic-v11-v12-20261108.py
+      - tools/semantic_upgrade_20261108/**
+      - tests/test_semantic_upgrade_native.py
+      - releases/semantic-migration-source-20261108.json
+      - .github/workflows/semantic-v11-v12-upgrade.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-semantic-registry
+          ref: c2dae77b42f1811b704465f6ab813c91d808ade4
+          path: semantic-source
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build exact retained source and installed-library helper
+        run: |
+          mvn -B -ntp -f semantic-source/vendor/authorization-sdk/pom.xml -DskipTests install
+          mvn -B -ntp -f semantic-source/pom.xml -DskipTests package
+          python3 tools/semantic_upgrade_20261108/package_helper.py
+      - name: Qualify migration through JRE container, configtree and packaged Flyway
+        run: sudo env QUALIFIED_JAVA="$JAVA_HOME/bin/java" python3 -I -B tests/test_semantic_upgrade_native.py
+      - name: Retain exact qualified public helper bytes
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          print('OUF_QUALIFIED_MIGRATION_HELPER '+json.dumps(json.loads(pathlib.Path('native-package/helper.json').read_text()),sort_keys=True))
+          PY

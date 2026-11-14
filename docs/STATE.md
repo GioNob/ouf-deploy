@@ -1,55 +1,104 @@
 # Stato corrente OUF
 
-Aggiornato il **7 novembre 2026**, Europe/Rome. Priorità: **SeaweedFS funzionante, poi E2E ripetibile; industrializzazione dopo**. Esecuzione sequenziale del solo agente principale.
+10 novembre 2026, Europe/Rome. Priorità operativa **discovery OntoPiA live su schema.gov.it dal chatbot**, senza fallback locale. Agente principale, esecuzione sequenziale. Per ogni effetto sul VPS e per ogni merge serve un sì esplicito di Giovanni.
 
-## Risultato corrente
+## Risultato e blocco attuale
 
-**F1 PASS. Onboarding e UDP collegati a SeaweedFS. Il produttore del token Semantic è ripristinato: servizio active/enabled, nuovo token montato e GET policy :61 HTTP 200. Le successive chiamate MCP di ricerca e lettura della revisione Teatri riescono. F2–F6 restano aperti.**
+**F1 PASS; F2–F6 aperti nel registro funzionale.** Onboarding e UDP sono collegati a SeaweedFS. Il [caso Teatri v4](https://github.com/GioNob/ouf-deploy/pull/56) è concluso fino alla ricerca MCP. I 13 teatri sono stati ricondotti agli UUID storici. Preservare i dati e il kit di quella PR.
 
-- **Upload e lettura riusciti:** handoff `2de7b988-da47-4231-8443-0e5043214c42` → asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94` STAGED → job `f460d4d5-c6f7-4b65-b305-08091e9849cf` SUCCEEDED → profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`. CSV UTF-8, separatore `;`, 13 righe e 20 colonne. Preview riletta dopo il ripristino Semantic. Il codice installato controlla dimensione/hash prima di salvare il profilo; il valore hash non è esposto dalla preview. [Evidenza F1](../evidence/onboarding-seaweedfs-profile-success-20261107.json).
-- **Policy :61 già pubblicata e verificata:** nessun nuovo permesso modificato per recuperare Semantic. Proposta `66ecf0fb-04e8-476b-9ce5-4fdc1dd496fa` PUBLISHED. Il GET host del ripristino legge proprio la :61; la versione caricata in memoria dalla JVM non è letta direttamente.
-- **Semantic applicativo riuscito:** `semantic.search(q=teatro)` e `q=Theatre` restituiscono liste vuote; `q=Teatri` restituisce l'ontologia ACTIVE 1.0.0. `semantic.get` con revisione e publication set esatti restituisce lo snapshot completo di 105 statement. Il precedente 403 non si presenta in queste chiamate. [Evidenza MCP](../evidence/semantic-recovery-functional-read-20261107.json).
+**Collegamento al boot completato alle 11:42:59 CET.** La [ricevuta operatore](../evidence/discovery-successor-boot-bound-operator-20261109.json) riporta `DISCOVERY_SUCCESSOR_BOOT_BOUND`: puntatore attivo aggiornato, comandi systemd caricati verificati, daemon-reload effettuato, osservatore installato superato e PID Docker invariato. Aggiunta la sola directory staged a ReadWritePaths del guard. Frame container, contesti storici e staging conservati; nessun avvio/stop, restart Docker, scrittura nft o richiesta applicativa. È l'esito dell'invocazione osservata, non una verifica live successiva.
 
-## Prossimo passo concreto
+Il coordinatore selezionato dal boot è **QUIESCED**, con lease/start false. La configurazione e i journal runtime storici restano invariati. Nuova generazione provider non ammessa e provider non pronto. BOOT_BOUND non prova reboot reale, discovery o E2E. **Non ripetere staging, diagnosi o collegamento boot: l'intento di attivazione è presente e il passo è concluso.** [Runbook completato](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md).
 
-**Budget proporzionato all'oggetto:** l'owner richiede dimensionamento dinamico per 50/100/200 colonne e oltre. La preview contiene già il numero reale di colonne; i contratti semantic.search/get non portano però un riferimento al profilo. Il candidato [MCP PR82](https://github.com/GioNob/ouf-mcp-server/pull/82), 60 letture/minuto, ha superato qualifica mirata e CI completa ma resta draft e **non va distribuito come soluzione del requisito dinamico**. Nessun aggiornamento VPS. Prossimo intervento: collegare analisi e profilo verificato, dimensionare il lavoro complessivo e conservare l'avanzamento; ritmo per finestra e tentativi equivalenti restano separati. [Decisione e due interventi verificabili](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md).
+**Input della nuova generazione preparati alle 11:55:17 CET.** La [ricevuta operatore](../evidence/discovery-generation-inputs-prepared-operator-20261109.json) conferma entrambi i ruoli e tre file con hash verificati in `/etc/ouf/deploy-snapshots/discovery-generation-inputs-99d46y_j`. Template storici e selezione del nuovo coordinatore sono separati. Quattro percorsi di riferimento a identità storiche per ruolo; nessuna nuova identità o autorità emessa. Coordinatore QUIESCED, puntatore/wrapper/journal invariati, zero CREATE, firme, avvii e richieste applicative. **Preparazione conclusa: non ripetere il comando.** [Runbook](OUF_DISCOVERY_GENERATION_INPUTS_20261109.md).
 
-**Scelta OPEN acquisita per tutte le 20 colonne.** L'owner richiede l'associazione delle colonne a proprietà semantiche condivise (URI stabili) per confronti tra oggetti diversi; non chiede vocabolari per enumerare i valori. [Tabella completa delle 20 colonne](OUF_TEATRI_COLUMN_SEMANTIC_REFERENCES_20261107.md).
+**Lettura delle ricette conclusa alle 12:25:29 CET.** La [ricevuta](../evidence/discovery-generation-sources-read-operator-20261109.json) conferma 25 metadata stabili: entrambe le ricette OCI indipendenti coincidono con le policy installate, senza differenze. Adapter a due reti e southbound a tre, peer reciproci coerenti. L'ingresso Semantic resta il BRIDGE_PORT storico 1377 per 172.18.0.6→172.18.0.14:10443/tcp. Runtime non osservato, zero CREATE/firme/richieste Engine o applicative. **Non ripetere il lettore.** Il sigillo rootfs storico non diventa l'aspettativa del nuovo container.
 
-La nuova lettura MCP della revisione Teatri conferma 105 statement: due termini schema.org (`name` e il candidato `additionalType`), 18 proprietà locali con dominio PerformingArtsTheater e range string. La presenza di una proprietà locale non chiude la scelta di un riferimento generale. Le ricerche per `nome`, `indirizzo` e `coordinate` sono vuote; non dimostrano assenza dei termini dentro gli snapshot.
+**Composizione della coppia implementata e qualificata in 11 test CI.** Il [compilatore](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md) conserva NIC/MAC, flussi e ricette indipendenti; richiede CID/transazioni distinti, ricompila i frame e collega i due nuovi peer reciproci. Sostituisce 1377 con una dichiarazione Semantic completa, senza inventare un nuovo indice. Produce soltanto una proposta non firmata, non un runtime ammesso.
 
-**Impedimento:** la connessione non espone discovery.request/status/candidates per OntoPiA/schema.gov.it. Esistono candidati in MCP PR81, Gateway PR84 e Registry PR41, ancora aperti/non merged; non dedurre installazione dal codice. Dopo il collegamento dell'analisi al profilo e il dimensionamento del lavoro, riconciliare i binding della discovery e completare questo percorso funzionale conservando file/SeaweedFS. Non inventare URI o sostituire la richiesta con ricerca web/import manuali.
+**Peer Semantic verificato il 10 novembre alle 13:29:10 CET.** La ricevuta operatore riporta `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORIZED`.
+La ricetta indipendente coincide con l'intera configurazione OCI e il collegamento di rete coincide con la dichiarazione.
+La lettura ha scritto una directory di evidenza privata e non ha ammesso o avviato la nuova generazione. Il controllo vale per il Semantic osservato.
+**Prossimo passo:** preparare la creazione governata della coppia e i nuovi sigilli. Il lettore è concluso. [Runbook](OUF_RETAINED_SEMANTIC_PEER_20261109.md).
 
-L'ultima ricerca `Cinema` ha risposto `orchestration budget exhausted`, `retryable:false`: esito conservato, nessun retry, reset o cambio account. [Evidenza](../evidence/teatri-column-semantic-reference-review-20261107.json).
+Gli input preparati non sono profili runtime e non attestano ammissione, provider pronto, TLS/issuer o discovery. Non reimpostare DELETED/DELETING e non riavviare i vecchi CID.
 
-Il [payload OPEN](../releases/TEATRI_SEAWEEDFS_MAPPING_REVIEW_20261107.json) è aggiornato come proposta di lavoro; mantiene temporaneamente i riferimenti precedenti e **non è ancora la scelta finale dei termini condivisi**. Nessuna bozza applicativa o Ingestion inviata. Dopo il mapping: bozza idempotente, review THS, Ingestion→UDP→grafo e normale operazione lake su SeaweedFS.
+Segnaposto nativo, confronto nft, staging e boot sono conclusi; le precedenti ricevute HELD restano nello [storico](OUF_M2_CHECKPOINT_LOG.md). Non riaprire quei passi per preparare la nuova generazione.
 
-Non ricaricare o riprofilare, non ripubblicare Teatri e non riavviare il produttore token già ripristinato. La sorgente storica `teatri-csv-6609b245` è invariata; la proposta riguarda `teatri-seaweedfs-c51745c5`. Coordinate originali conservate senza conversioni.
+**Altre dipendenze già identificate:** Semantic è running ma provider/worker restano dichiarati disabilitati; credenziale e truststore preparati sono coerenti ma non installati. Certificati validi per data/nome, TLS/issuer non provati. Legacy provider fermo e scollegato, da conservare. MCP PR84 ha qualificato codice e immagine con sei descrittori ACTIVE; non è installata, il VPS resta PR83/INACTIVE. [Stato del controllo di avvio concluso](OUF_DISCOVERY_STARTUP_READ_20261109.md).
 
-## Ripristino Semantic acquisito
+## Componenti già aggiornati
 
-[Ricevuta operatore delle 21:07:05 CET](../evidence/semantic-operational-owner-active-operator-20261107.json): rimosso solo l'esatto override di cattura, conservato nel backup privato; altri drop-in invariati. Un avvio del servizio `ouf-registry-token-7cb59501000058b5dc5030ad.service`, ora active/running/enabled, Restart=on-failure. Pubblicazioni 6468→6469, registro ACTIVE, token montato cambiato, GET policy200. Applicazione Semantic invariata; zero cambi di permessi, zero SQL/S3/richieste business emesse dallo script.
-
-Le unità legacy `ouf-policy-token@semantic.service/.timer` restano masked. Le precedenti diagnosi HELD sono storiche. Il [runbook](OUF_SEMANTIC_TOKEN_RENEWAL_20261107.md) conserva il comando eseguito, non una nuova azione da ripetere. Un secondo ciclo di rinnovo automatico non è ancora dimostrato.
-
-## Binding storage acquisiti
-
-| Servizio | Risultato documentato | Limite |
+| Componente | Esito dell'ultima ricevuta | Prova |
 | --- | --- | --- |
-| Onboarding | Stessa immagine `7b9d3e91…`, endpoint `https://ouf-seaweedfs-stage:9002`, bucket `ouf-managed-files`. 12 oggetti/40.709 byte coincidenti a writer fermo; readiness/TLS, 118 certificati JDK più CA. Vecchio container conservato spento. Upload/profilazione applicativi riusciti. | Non riavviare il vecchio writer MinIO dopo le nuove scritture. |
-| UDP | Stessa immagine `ae78f604…`, stesso endpoint HTTPS, bucket `ouf-udp`. 110 oggetti/181.364 byte coincidenti a writer fermo; zero copie/sovrascritture; diagnostico rimosso; readiness/TLS e certificati verificati. Vecchio container spento. | `applicationHttpLakeOperationTested=false`: la normale operazione lake resta da provare. |
+| Gateway | 87 route; otto modifiche verificate, 79 conservate | [Ricevuta](../evidence/gateway-analysis-applied-operator-20261108.json) |
+| Semantic | V12, readiness 200; corretta la chiave discovery esistente | [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json) |
+| MCP | PR83/schema 14, readiness 204; strumenti nuovi ancora INACTIVE | [Ricevuta](../evidence/mcp-analysis-ready-operator-20261108.json) |
+| Onboarding | 1024, readiness 200; storia e righe Teatri conservate | [Ricevuta](../evidence/onboarding-wide-ready-operator-20261108.json) |
+| Ingestion | 1024, readiness 200; storia, sei tabelle e campi stabili delle pianificazioni conservati | [Ricevuta](../evidence/ingestion-wide-ready-operator-20261108.json) |
+| UDP | 1024, readiness 200; storia e 59 tabelle conservate, entrambe le reti e truststore preservati | [Ricevuta](../evidence/udp-wide-ready-operator-20261109.json) |
 
-[Ricevuta Onboarding](../evidence/onboarding-seaweedfs-ready-operator-20261107.json) · [Ricevuta UDP](../evidence/udp-seaweedfs-ready-operator-20261107.json). I confronti curl/Java Onboarding e PUT/HEAD/GET dell'adapter UDP originale hanno avuto successo nei rispettivi ambiti: non ripeterli. La causa del vecchio 502 in una diversa configurazione resta non provata.
+**Non ripetere gli installer completati.** I predecessori e i vecchi writer MinIO restano spenti secondo le ricevute. Onboarding e UDP usano `https://ouf-seaweedfs-stage:9002`. Readiness e CI non dimostrano il percorso funzionale completo a 1024 colonne o E2E. CID, immagini e dettagli sono nel [registro](../releases/storage-functional-status-20261107.json).
 
-## Problemi ancora aperti
+## Dati da conservare
 
-- **Riavvio generale e MAC:** vedere la [regola permanente](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md) e il [caso del 25 ottobre](handoffs/OUF_ACQUISITION_MAC_LESSON_AND_RETAINED_STATE_20261025.md). Il riferimento è in AGENTS. La primitiva storica copre il vecchio container dopo STOP/DETACH, non automaticamente i sostituti running. Onboarding e UDP differiscono soltanto per `Config.MacAddress` nel confronto osservato; immagini, ambiente, argomenti e mount coincidono. Non è stata applicata normalizzazione e le impronte attese non sono cambiate. Il modo generale `e2e` può ancora fermarsi; mancano presenza/tipo prima-dopo del campo legacy e corrispondenza con gli endpoint per rete. L'avviatore generale omette inoltre il produttore continuo ora ripristinato: integrare consapevolmente il suo lifecycle, senza inventare un timer.
-- **F2–F6:** normale operazione lake UDP, nuovo CSV fino al grafo, seconda esecuzione e ripresa da altra sessione. Il blocco della ricerca Semantic è superato per le chiamate osservate; nessun E2E completo dichiarato.
-- **Stato Ingestion:** `ouf.ingestion.status(limit=10)` era negato; nessun grant di quella capability nel catalogo letto. Lettura non ripetuta né permessi ampliati per aggirarla.
-- **Riuso vecchio selettore Farmacie→Teatri:** HTTP_500, handoff `1d3c1a27-5a57-4e81-bbbc-2f6bc606c6ce` conserva asset `8061fad3-1a8b-4f65-9e4a-bfead7974cb7`. Rifiuto di riassociare il medesimo handoff riprodotto sul codice; manca l'eccezione live e resta da riconciliare la possibile seconda persistenza. Nessuna cancellazione. [Evidenza](../evidence/ths-upload-reuse-storage-next-20261107.json).
+Teatri, senza nuovo upload o profilo:
 
-Non distribuire il vecchio commit diagnostico Onboarding `380e8dcb`: parte 20 commit prima del sorgente conservato `73498c17` e la build è fallita a Trivy. Conservare l'installazione funzionante. MCP HEALTHY non dimostra l'E2E.
+- asset `c51745c5-1fc0-4d36-bdcf-1e9a8a049c94`;
+- profilo `da3f17a2-5cbc-4d7d-9ed8-7f4b39a00342`, 13 righe e 20 colonne, UTF-8, separatore `;`;
+- tutte le 20 colonne OPEN per decisione owner; questa scelta non si estende automaticamente ai dati SUE;
+- associazione dei nomi/concetti delle colonne a proprietà con URI condivisi, non enumerazioni dei valori;
+- policy :61 nell'ultima lettura; produttore token Semantic ripristinato. Ricerca/lettura locale Teatri via MCP riuscite, 105 statement. Discovery esterna ancora da provare.
 
-## Riferimenti operativi
+## Sequenza rimanente
 
-[MiniPET funzionale](OUF_STORAGE_MINIPET.md) · [Registro funzionale](../releases/storage-functional-status-20261107.json) · [Log cronologico](OUF_M2_CHECKPOINT_LOG.md). Non dichiarare produzione pronta o E2E concluso.
+- **1 — Lettura del peer Semantic.** Conclusa con ricevuta operatore riconciliata. Conservare la dichiarazione per la generazione osservata.
+- **2 — Nuova generazione provider/runtime, in preparazione.** Separare la creazione dei due container fermi dall'ammissione. La prima operazione deve produrre due nuovi ID, mantenere gli alias DNS usati da TLS e verificare due reti per l'adapter e tre per il southbound. [Precedente di creazione a container fermi](../releases/PROVIDER_V2_STOPPED_CREATION.md).
+  Il controller storico della creazione è vincolato al runtime vuoto di ottobre. L'owner di installazione successivo richiede una sola rete e un Registry creato nella propria finestra. Usare il compilatore già qualificato per la coppia e mantenere i controlli di custodia e proprietà della creazione.
+  Prima di ammettere la coppia, associare il peer alla generazione Semantic che monta la credenziale e il truststore. Se cambia la generazione, serve una dichiarazione indipendente e un'osservazione nuova. Verificare credenziale e TLS lungo il percorso verso schema.gov.it prima del passo 3.
+  Il 10 novembre alle 13:54:15 CET, il [controllo in sola lettura](../scripts/read-discovery-stopped-creation-preflight-20261110.py) ha restituito `PREFLIGHT_PASSED`, senza scritture. Hash del readback Docker `32e8d5251c68f2d4c0b4b1f0ffe03d550f28bb0d34c50c5da6794486706f1105`.
+  Gli IP previsti non hanno endpoint attivi o riserve IPAM visibili. I tre container storici sono fermi, con riavvio Docker disabilitato e senza riferimenti di avvio systemd o Compose rilevati.
+  Creazione sospesa prima di qualsiasi scrittura. La ricetta storica del southbound inserisce credenziali nelle variabili Docker, che Docker conserva nei metadati della nuova istanza.
+  L’11 novembre è stata preparata la [bozza del comando](../scripts/create-discovery-stopped-candidates-20261111.py). Elimina il segreto OIDC di APISIX dalla ricetta JWT/JWKS e legge la chiave HMAC dal file protetto all’avvio.
+  La bozza ripete il controllo IP e alias prima di ciascun CREATE. Le prove locali con dati sintetici coprono la trasformazione delle route, il lancio e il rifiuto di un conflitto IPAM.
+  La revisione ha aggiunto il confronto delle variabili storiche con l’immagine, la scelta di `noswap` in base al kernel e la rimozione separata del solo primo candidato. I test locali usano dati sintetici.
+  Il [lettore in sola lettura](../scripts/read-discovery-stopped-image-review-20261111.py) dell’11 novembre ha confermato le variabili Env attese e il kernel 6.12.107 con `noswap` e senza swap attivo. Il controllo dell’immagine si è fermato con `HELD` e motivo `ValueError`.
+  La nuova ricevuta conferma APISIX 3.18.0, plugin OIDC uguale all’upstream e directory `conf` di proprietà 636 con modo `0775`. Il `stat` con UID 636 fallisce nella copia offline.
+  Su indicazione dell’owner, la creazione usa i metadati dell’immagine. Il link viene verificato al futuro avvio. Se fallisce, lo startup restituisce `OUF_SOUTHBOUND_APISIX_CONFIG_LINK_FAILED`.
+  Il primo tentativo dell’11 novembre si è fermato con `HELD` prima della prima richiesta Docker. `createRequests` è zero e il controllo di Opus conferma che non ci sono candidati.
+  Il controller ora chiude esplicitamente `HTTPConnection` e conserva la ricevuta se un comando del preflight fallisce. [Cinque test su socket Unix locale con Python 3.12](https://github.com/GioNob/ouf-deploy/actions/runs/42987989925/job/130413676928) passati sul runner GitHub ospitato.
+  Il secondo tentativo si è fermato a zero CREATE. Il filtro HTTP rifiutava il digest `sha256:` della prima immagine. Opus ha confermato l’assenza dei due candidati.
+  Il controller distingue gli ID container dai digest immagine. Il [launcher per Opus](../scripts/deliver-discovery-stopped-candidates-20261111.sh) supporta `--plan` e richiede per `--apply` l’hash della ricevuta `PLAN_READY`.
+  Il piano `cc121972…` ha portato a una sola CREATE. L’inspect del candidato adapter aveva una chiave rete per nome e una per ID. Il controller si è fermato prima di creare il southbound.
+  La rimozione autorizzata dell’adapter ha restituito `FIRST_STOPPED_CANDIDATE_REMOVED`. Opus ha verificato che non ci sono candidati, i provider storici sono spenti e Semantic è in servizio.
+  La nuova consegna invia i nomi delle reti. [Undici test su socket Unix](https://github.com/GioNob/ouf-deploy/actions/runs/42990554876/job/130422110846) passati, inclusi il rifiuto delle chiavi miste e la lettura della prenotazione egress. Dopo la revisione Opus, eseguire un nuovo `--plan`.
+  Creazione conclusa con piano `52cfc4fb…`: adapter `85b5302f…` e southbound `34adce78…` sono `created`, PID zero, con IP richiesti e senza endpoint attivi. Opus ha verificato gli inspect.
+  Sequenza concordata D → A → B → C. D cambia Semantic, A osserva la nuova generazione, B ammette definitivamente la coppia, C prova JWT e TLS con una lease temporanea.
+  D è aggiornato dopo la revisione di Opus. Il [launcher](../scripts/deliver-semantic-provider-cutover-20261111.sh) avvia il controller di `--apply` in una sessione separata. La ricevuta finale resta in `/var/lib/ouf-storage-migration/semantic-provider-cutover-20261111/result.json`, anche se si perde il terminale.
+  [Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145), inclusi segnali reali e stdout chiuso dopo lo stop simulato, esito HELD su disco e ripristino di CID e MAC su Docker 29.8.1.
+  Il primo `--plan` è uscito `HELD` su `BACKEND_PEER_CHANGED` perché il controller cercava l’alias storico `ouf-semantic-registry`. La lettura di Opus ha confermato IP, MAC e i due alias effettivi.
+  Il nuovo controller verifica gli alias configurati e i nomi DNS, preserva tutti i nomi correnti e ripristina gli alias originali in caso di rollback. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), incluso il ciclo con Docker 29.8.1.
+  Il piano successivo ha superato il controllo alias e si è fermato su `CA_INVENTORY_UNPROVEN`. Il controller ora confronta il truststore con conteggio e impronte della ricevuta sul VPS e distingue gli errori Java e provider.
+  [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099). La prova Java rilegge tutti i certificati del truststore unito, con un inventario di prova che supera il precedente limite 16.
+  Il piano si è fermato su `PROVIDER_CA_INVENTORY_UNPROVEN`. Misure di Opus confermate dal piano: 118 CA Java, 151 nel truststore provider, 161 nell’unione. Il bundle provider rimane integrale.
+  Il [controller](../scripts/cutover-semantic-provider-20261111.py) ora riporta il codice interno e, se letto, il conteggio dichiarato. Per i due JSON richiede UID 0 e modo 0600, come il writer del 29 ottobre che lascia ereditare il GID. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890).
+  Giovanni ha verificato che il contesto del 29 ottobre è `STOP_RECONCILE` per `CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED`. Il PKCS#12 era già stato preparato e riletto, prima del controllo sul vecchio southbound.
+  D richiede quell’esito esatto, i contatori di preparazione e rilettura e l’inventario completo del PKCS#12. Verifica anche che la sola CA registrata firmi il certificato del southbound del bind APISIX atteso. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43006571849/job/130475418120).
+  **D completato.** [Ricevuta Giovanni e verifica Opus](../evidence/semantic-provider-cutover-d-operator-20261111.json): Semantic `43a294de…` attivo, Java pronto alle 11:55:30 CET, salute HTTP 200, vecchio `ef35ea78…` fermo e staccato. Entrambi i successor sono ancora `created`. Worker spento.
+  A è consegnato con [launcher](../scripts/deliver-semantic-provider-preparation-a-20261111.sh) e [controller](../scripts/prepare-semantic-provider-a-20261111.py). Legge generazione e veth reciproco del nuovo Semantic, verifica il certificato e SNI del bind APISIX, e prepara solo quattro file privati. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43008901347/job/130483231760).
+  **A completato.** Ricevuta Giovanni `17de05e7…`, stato `SEMANTIC_PROVIDER_PREPARATION_A_STAGED`. Opus conferma `veth823719e`, ifindex 168, iflink 2, bridge `br-113b5f0a3c53`. Il certificato configurato coincide in DER e il southbound non è stato avviato.
+  Il primo piano P si è fermato con `DOCKER_PEER_UNPROVEN`. Opus ha verificato che `/run/docker.sock` è attivato da systemd e che le credenziali del peer indicano PID 1.
+  Il controller P `f846940c` controlla le unità, il binario `dockerd` e il listener aperto dal suo PID. [Otto test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43024793348/job/130536665105), inclusi entrambi i modi di avvio e il rifiuto con socket inattivo.
+  Prossimo passo P. Giovanni esegue il solo `--plan` con il [launcher `2a73a13f`](../scripts/deliver-semantic-provider-installation.sh) e passa profilo e hash a Opus. L’apply pubblica il file root-owned per `ouf-lab-netcup-01` dopo il sì separato.
+  B1 e B2 seguono la revisione di Opus, con piani e autorizzazioni distinti. B1 prepara il wrapper e la configurazione inattiva. B2 emette i mandati a scadenza e ammette la coppia. C resta la prova JWT/TLS.
+- **3 — Worker.** Verificare trasporto, identità e backlog, poi abilitare il worker.
+- **4 — MCP e accesso.** Installare MCP PR84 con i sei descrittori ACTIVE e predisporre i grant coerenti per ouf-admin con scope `ouf.semantic.discovery`.
+- **4-bis — Revisione semantica HUMAN.** La prova live ha restituito il solo riferimento `ths://` e il link costruito a mano ha dato 404. Nel codice Onboarding esiste un ramo semantico di `workflow-review` e il backend `SemanticTrustedHumanApi` espone scheda, decisione e pubblicazione.
+  - Rendere raggiungibile e completare la pagina THS con scheda, differenze, approvazione, rifiuto e pubblicazione. Rinnovare la sessione lato server e provare la ripresa dopo la scadenza del token durante una revisione lunga. Verificare separatamente la durata e la ripresa della challenge.
+  - Esporre le route northbound Gateway per scheda, decisione e pubblicazione verso l'API esistente, con le rispettive autorizzazioni HUMAN.
+  - Restituire da `semantic.review.prepare` l'URL HTTPS diretto generato da OUF per la challenge. Il chatbot usa l'URL restituito dal servizio.
+- **5 — Prova applicativa.** In una chat nuova, con ouf-admin, eseguire una discovery MCP reale e leggere stato e candidati OntoPiA con IRI, etichette e versione. Aprire dal link OUF una review, approvare e pubblicare il riferimento, poi provare che `source.onboarding.create` lo accetta in una bozza di prova separata. Mappare anche il profilo Teatri esistente senza creare nuove versioni della fonte.
+
+Ogni passo richiede un risultato applicativo osservato. Nessuna data finale attendibile è ancora dimostrata. [MiniPET](OUF_STORAGE_MINIPET.md), [budget](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md), [contratti 1024](OUF_WIDE_OBJECTS_1024_20261107.md), [cronologia](OUF_M2_CHECKPOINT_LOG.md).
+
+Prima di confrontare o modificare container consultare la [regola MAC](OUF_LEARNED_CONTAINER_MAC_INVARIANTS.md); nessuna esclusione globale di MacAddress.

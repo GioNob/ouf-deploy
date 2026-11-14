@@ -1,0 +1,55 @@
+{
+  "schema": "ouf.udp-wide-upgrade-qualification.v1",
+  "status": "QUALIFIED_NOT_TARGET_EXECUTED",
+  "sourceCommit": "2a9e90cfb4a18d8a221ece1cde1019257684bdf5",
+  "candidateSource": "c0cf1702b2eb971718996a959414caee004af494",
+  "artifactId": 13635797332,
+  "ciRun": 42568440028,
+  "jobs": [
+    {
+      "id": 129000019768,
+      "store": "classic"
+    },
+    {
+      "id": 129000019662,
+      "store": "containerd"
+    }
+  ],
+  "engine": "Docker29.8.1",
+  "primaryApi": "1.44",
+  "guardTestsPerBackend": 7,
+  "nativeCyclesPerBackend": 2,
+  "skips": 0,
+  "logsRead": true,
+  "profile": "TWO_NETWORK_BACKEND_LEGACY_MAC_DETACH_LAST_V1",
+  "legacyPresentInitiallyBothProfiles": true,
+  "legacyPresentAfterPrivateDetach": true,
+  "legacyAbsentAfterBackendDetach": true,
+  "bothNetworksIpMacAliasesPreserved": true,
+  "exactArchivedJarStarted": true,
+  "readinessHttpStatus": 200,
+  "jvmPrivateCaTlsVerified": true,
+  "databaseVersion": 36,
+  "retainedTableCount": 59,
+  "historyAndSyntheticRowsUnchanged": true,
+  "ordinaryApplicationRole": true,
+  "springJsonAndProcessArgumentsPreserved": true,
+  "materializationRecoveryEnabled": true,
+  "maintenanceShadowIdlePollingConfigured": true,
+  "activeMaintenanceCycleProven": false,
+  "deliveryFilesReadBack": 8,
+  "targetExecuted": false,
+  "businessRequestsIssuedToTarget": 0,
+  "targetChanged": false,
+  "limitations": [
+    "Native predecessor uses candidate image, not retained VPS old image; old VPS image/frame/JAR are pinned separately.",
+    "CI credentials, CA and database rows are synthetic; TLS probe is not S3 PUT/GET or normal lake operation.",
+    "Top-level VPS run is not executed by CI; exact lifecycle, request, data query/guards and archived startup are exercised.",
+    "Readiness and prior identity tests are not functional1024 or CSV-to-graph E2E."
+  ],
+  "previousFailedQualification": {
+    "run": 42568313188,
+    "reason": "Disposable PostGIS preparation accepted Unix socket before final TCP listener; fixture corrected to pg_isready -h 127.0.0.1",
+    "targetChanged": false
+  }
+}

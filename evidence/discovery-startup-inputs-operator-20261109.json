@@ -1,0 +1,149 @@
+{
+  "businessRequestsIssued": 0,
+  "configuration": {
+    "adapterCertificate": {
+      "chainVerified": false,
+      "hostnameMatches": true,
+      "notAfter": "2027-01-05T21:57:43+00:00",
+      "notBefore": "2026-10-07T21:57:43+00:00",
+      "tlsHandshakeTested": false,
+      "validAtRead": true
+    },
+    "adapterFetchPathMatchesSemantic": true,
+    "adapterKeyMountsDeclared": true,
+    "adapterLaunchMatchesHistoricalSource": true,
+    "adapterListenPort": 9443,
+    "adapterScopeMatchesSemantic": true,
+    "adapterSearchPathMatchesSemantic": true,
+    "adapterWorkloadMatchesSemanticClient": true,
+    "nginxDeclaredProxySslVerify": [
+      "on"
+    ],
+    "routes": [
+      {
+        "audienceMatchesAdapter": true,
+        "bearerOnly": true,
+        "matchingRoutes": 1,
+        "methodMatches": true,
+        "oidcTlsVerify": true,
+        "operation": "search",
+        "requiredScopesMatchSemantic": true,
+        "secretEnvironmentReferencePresent": true,
+        "upstreamHostMatchesAdapter": true,
+        "upstreamHttps": true
+      },
+      {
+        "audienceMatchesAdapter": true,
+        "bearerOnly": true,
+        "matchingRoutes": 1,
+        "methodMatches": true,
+        "oidcTlsVerify": true,
+        "operation": "fetch",
+        "requiredScopesMatchSemantic": true,
+        "secretEnvironmentReferencePresent": true,
+        "upstreamHostMatchesAdapter": true,
+        "upstreamHttps": true
+      }
+    ],
+    "scope": "CURRENT_HOST_SOURCES_OF_STOPPED_MOUNTS_NOT_APPLICATION_VIEW",
+    "southboundAdminEnabled": false,
+    "southboundCertificate": {
+      "chainVerified": false,
+      "hostnameMatches": true,
+      "notAfter": "2027-01-05T21:57:43+00:00",
+      "notBefore": "2026-10-07T21:57:43+00:00",
+      "tlsHandshakeTested": false,
+      "validAtRead": true
+    },
+    "southboundLaunchMatchesHistoricalSource": true,
+    "southboundSniMatches": true,
+    "southboundTlsEnabled": true
+  },
+  "credentialValuesEmitted": false,
+  "currentRuntimeCodeExecuted": false,
+  "databaseRequests": 0,
+  "embeddedPrivateTlsKeyMayBeRead": true,
+  "fileReads": {
+    "applicationConfig": 2,
+    "applicationConfigWithEmbeddedTlsKey": 1,
+    "preparedCredential": 1,
+    "preparedPublicTruststore": 1,
+    "publicCertificate": 1,
+    "retainedPreparationMetadata": 1,
+    "runtimeMetadata": 8,
+    "runtimeSource": 2
+  },
+  "historicalAuthorityReused": false,
+  "hostFileBytesRead": 394766,
+  "legacyProviderTouched": false,
+  "observedAt": "2026-11-09T06:51:46.827194+00:00",
+  "preparedMaterial": {
+    "credentialAcceptedCustody": true,
+    "credentialBytesMatchRetained": true,
+    "credentialIdentityDeclarationsMatchRetained": {
+      "OUF_SCHEMA_GOV_CLIENT_ID": true,
+      "OUF_SCHEMA_GOV_TOKEN_ENDPOINT": true,
+      "OUF_SCHEMA_GOV_WORKLOAD_SCOPE": true
+    },
+    "credentialInstalled": false,
+    "credentialMetadata": {
+      "bytes": 86,
+      "gid": 10001,
+      "links": 1,
+      "modeOctal": "0440",
+      "uid": 0
+    },
+    "credentialValidityAtIssuerTested": false,
+    "preparedPublicTruststoreMatchesRetained": true,
+    "preparedPublicTruststoreMetadata": {
+      "bytes": 194305,
+      "gid": 10001,
+      "links": 1,
+      "modeOctal": "0440",
+      "uid": 0
+    },
+    "status": "PREPARED_MATERIAL_READ_NOT_INSTALLED",
+    "truststoreInstalled": false
+  },
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-startup-inputs-te5d6tiq",
+  "providerRequests": 0,
+  "rawConfigurationEmitted": false,
+  "runtime": {
+    "adapter": {
+      "adapterSchema": "ouf.semantic-docker-runtime-adapter.v4",
+      "brokerHashMatchesConfiguration": true,
+      "brokerSchemaRecognized": true,
+      "candidateCount": 2,
+      "candidatePresent": true,
+      "classification": "OUF_CUSTOM_RUNTIME",
+      "configurationSha256": "7462e41e6b40a3bb1ac23760f223a34a958bcd34151ce165f6f4625d942740c5",
+      "historicalAuthorityReused": false,
+      "journalState": "DELETED",
+      "sourceMatchesConfiguration": true,
+      "startAdmitted": false,
+      "wrapperSha256": "55de41662098c1059a03d06ffb77bc965e5b033b9c3529dcfc7143808324efdd"
+    },
+    "southbound": {
+      "adapterSchema": "ouf.semantic-docker-runtime-adapter.v4",
+      "brokerHashMatchesConfiguration": true,
+      "brokerSchemaRecognized": true,
+      "candidateCount": 2,
+      "candidatePresent": true,
+      "classification": "OUF_CUSTOM_RUNTIME",
+      "configurationSha256": "7462e41e6b40a3bb1ac23760f223a34a958bcd34151ce165f6f4625d942740c5",
+      "historicalAuthorityReused": false,
+      "journalState": "DELETING",
+      "sourceMatchesConfiguration": true,
+      "startAdmitted": false,
+      "wrapperSha256": "55de41662098c1059a03d06ffb77bc965e5b033b9c3529dcfc7143808324efdd"
+    }
+  },
+  "runtimeUnchangedDuringRead": true,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-startup-inputs.v1",
+  "serviceConfigurationChanged": false,
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "status": "DISCOVERY_STARTUP_INPUTS_READ",
+  "tokenRequests": 0
+}

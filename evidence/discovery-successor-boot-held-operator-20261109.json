@@ -1,0 +1,48 @@
+{
+  "activeInstallationPointerChanged": false,
+  "automaticReplayAllowed": false,
+  "automaticRollback": false,
+  "businessRequestsIssued": 0,
+  "credentialFileContentsRead": 0,
+  "credentialValuesEmitted": false,
+  "databaseRequests": 0,
+  "dnsQueries": 0,
+  "dockerRestartDispatched": false,
+  "errorLocation": [
+    {
+      "file": "activate-discovery-coordinator-boot-20261109.py",
+      "function": "main",
+      "line": 291
+    },
+    {
+      "file": "activate-discovery-coordinator-boot-20261109.py",
+      "function": "loaded",
+      "line": 170
+    },
+    {
+      "file": "activate-discovery-coordinator-boot-20261109.py",
+      "function": "need",
+      "line": 38
+    }
+  ],
+  "leaseAuthorized": false,
+  "newGenerationAdmitted": false,
+  "nftWrites": 0,
+  "observedAt": "2026-11-09T10:24:44.524755+00:00",
+  "oldRuntimeConfigurationChanged": false,
+  "oldRuntimeJournalWrites": 0,
+  "operationIntentPresent": false,
+  "phase": "VERIFY_NATIVE_AND_LOADED_BOOT_BINDINGS",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-boot-activation-a2tzafec",
+  "providerReady": false,
+  "providerRequests": 0,
+  "publicationAttempted": false,
+  "reason": "SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED",
+  "s3Requests": 0,
+  "schema": "ouf.discovery-successor-boot-activation.v1",
+  "serviceStartDispatched": false,
+  "serviceStops": 0,
+  "startAuthorized": false,
+  "status": "HELD",
+  "tokenRequests": 0
+}

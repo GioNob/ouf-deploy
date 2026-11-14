@@ -1,0 +1,37 @@
+name: Current discovery coordinator quiescence
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - scripts/quiesce-discovery-coordinator-20261109.py
+      - tests/test_discovery_quiesce.py
+      - tests/native_discovery_quiesce.py
+      - .github/workflows/discovery-coordinator-quiesce.yml
+  pull_request:
+    paths:
+      - scripts/quiesce-discovery-coordinator-20261109.py
+      - tests/test_discovery_quiesce.py
+      - tests/native_discovery_quiesce.py
+      - .github/workflows/discovery-coordinator-quiesce.yml
+permissions: {contents: read}
+jobs:
+  coordinator-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Stage unmodified repository core
+        run: |
+          mkdir -p scripts/core
+          for name in materialize_southbound_kernel semantic_provider_dns materialize_southbound_lease_refresh semantic_provider_lease_nft semantic_provider_lease_owner semantic_provider_lease_coordination; do
+            cp "tools/semantic_cohort_admission/cohort-draft/tools/$name.py" "scripts/core/$name.py"
+          done
+      - name: Coordinator and write boundary regressions
+        run: sudo python3 -I -B -m unittest discover -s tests -p test_discovery_quiesce.py -v
+      - name: Install nft CLI for disposable fixture
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nftables
+      - name: Real nft quiescence and foreign-structure refusal
+        run: sudo unshare --mount --net --propagation private python3 -I -B tests/native_discovery_quiesce.py

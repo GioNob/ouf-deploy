@@ -1,0 +1,39 @@
+{
+  "schema": "ouf.gateway-analysis-baseline-fix-qualification.v1",
+  "sourceCommit": "8a12592fdbf7b321a8b3c564081a1ab90b5b8c80",
+  "scriptSha256": "51807cf46bd1ffb300f6da4c37ac7b22aaa578eb3eaeab9dd04f606d1e13eeeb",
+  "assetsSha256": "abc984168e6942e58ab2f3536a874c69a0233f41e4a8412eee56d927345958df",
+  "operatorFailureReceipt": "evidence/gateway-analysis-preparation-held-operator-20261108.json",
+  "errorOrigin": "PREPARER_BASELINE_SELECTION",
+  "baselineManagedSource": "75733a974798c40d23e3201112a83f217f6fe1d8",
+  "baselineReviewSource": "4b0017fa3c507ae9a549f9274a41e8a7e9f9a25e",
+  "baselineLuaSource": "c666c0f0080b8802fc71daa27c32a0af2ed98544",
+  "candidateSource": "560fbf6e769c7639a0bc0ddb09380811a4e324e4",
+  "independentObservedSchemaHashesMatched": 4,
+  "reviewMetadataProjection": "REMOVE_ONLY_KNOWN_NESTED_ID_WITHOUT_REFERENCES",
+  "schemaValidationConstraintsPreserved": true,
+  "sourceBlobHashesVerified": true,
+  "previousTestsUsedSameGeneratorAsExpectedFixture": true,
+  "ci": {
+    "run": 42465156653,
+    "job": 128682843439,
+    "tests": 13,
+    "skips": 0,
+    "logsRead": true,
+    "conclusion": "success"
+  },
+  "local": {
+    "passed": 12,
+    "skipped": 1
+  },
+  "targetCorrectionExecuted": false,
+  "proposalApplied": false,
+  "runtimeChanged": false,
+  "liveApisixApplyTested": false,
+  "semanticDatabase": {
+    "retainedErrorHint": "MISSING_COLUMN",
+    "knownMissingColumnObserved": false,
+    "specificMissingMigrationProven": false,
+    "extraQueries": 0
+  }
+}

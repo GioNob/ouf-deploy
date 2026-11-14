@@ -1,0 +1,37 @@
+name: UDP wide installed preflight read
+on:
+  pull_request:
+    paths:
+      - scripts/read-udp-wide-preflight-20261108.py
+      - scripts/udp-wide-source-resources-20261108.json
+      - tests/test_udp_wide_preflight.py
+      - .github/workflows/udp-wide-preflight.yml
+permissions: {contents: read}
+jobs:
+  read-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5-alpine
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: synthetic-ci, POSTGRES_DB: fixture}
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d fixture" --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      OUF_NATIVE_UDP_PREFLIGHT: '1'
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci
+      PGDATABASE: fixture
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-udp-object-resolution
+          ref: c0cf1702b2eb971718996a959414caee004af494
+          path: candidate
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_udp_wide_preflight.py -v

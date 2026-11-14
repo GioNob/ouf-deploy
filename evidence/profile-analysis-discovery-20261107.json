@@ -1,0 +1,261 @@
+{
+  "schema": "ouf.profile-analysis-discovery-qualification.v1",
+  "observedDate": "2026-11-07",
+  "status": "SOURCE_CANDIDATE_QUALIFIED_NOT_DEPLOYED",
+  "source": {
+    "repository": "GioNob/ouf-mcp-server",
+    "commit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94",
+    "branch": "feat/profile-analysis-discovery-20261107",
+    "pullRequest": 83,
+    "tree": "3354e594938fc0c9131b1532a93ae7b5105b832d",
+    "wideBaseline": "872e49b9cd22e045cd208a8404e923694bca7ac2",
+    "discoveryParent": "9539cbb40e09d10a76fb4b72368438f9772c7690",
+    "compositionCommit": "81fd275b85d9b8a20bb71f6357dbf7314db1a881"
+  },
+  "capabilities": {
+    "analysis": [
+      "source.analysis.plan",
+      "source.analysis.read",
+      "source.analysis.step"
+    ],
+    "discovery": [
+      "semantic.discovery.request",
+      "semantic.discovery.status",
+      "semantic.discovery.candidates"
+    ],
+    "publicationState": "INACTIVE",
+    "advertisedOnCurrentConnection": false
+  },
+  "implemented": {
+    "authoritativeOwnedProfile": true,
+    "serverColumnCount": true,
+    "profileVersionAndSchemaHash": true,
+    "stableActorProfileAnalysisIdentity": true,
+    "uniquePlannedTasksDetermineUsefulCallBudget": true,
+    "manifestDerivedTimeAndByteEnvelopes": true,
+    "sharedQueriesDeduplicated": true,
+    "expectedRevisionPlanExtensions": true,
+    "durableTaskProgressAndResponses": true,
+    "perColumnPlannedWorkCoverage": true,
+    "executionUsesExistingGovernedService": true,
+    "admissionWindowWaitPersisted": true,
+    "authorizationRecheckedOnResume": true,
+    "retriesDistinctFromUsefulWork": true,
+    "concurrentClaimAndLateWorkerFencing": true,
+    "discoveryOwnerKeyStable": true,
+    "statusObservationPacing": true
+  },
+  "limits": {
+    "maxColumns": 1024,
+    "maxTasks": 16384,
+    "maxPlanBatch": 128,
+    "maxTaskInputArgumentsBytes": 8192,
+    "discoveryOwnerKeyAddedByServer": true,
+    "maxResponseBytes": 262144,
+    "maxRetainedResponseAccountingBytes": 67108864,
+    "readRetryAttempts": 128,
+    "readRetryElapsedHours": 24,
+    "statusObservationCount": 128,
+    "statusObservationMinIntervalSeconds": 31,
+    "existingAdmissionAndEquivalentGuardsPreserved": true,
+    "backgroundScheduler": false
+  },
+  "qualifiedCases": [
+    "20/50/100/200/300/400/1024-column plans in native Go and PostgreSQL",
+    "1024 unique tasks planned in eight batches using one owned-profile read",
+    "deduplicated shared queries and stable discovery idempotency",
+    "SDK rejects caller-supplied columnCount before Gateway dispatch",
+    "PostgreSQL reconnect retains consumption and responses",
+    "actor isolation and retained profile mismatch refusal",
+    "fresh authorization denies cached reads and paused execution after revocation",
+    "concurrent claims and expired-worker fencing",
+    "61st semantic read waits before dispatch and without consuming a task retry",
+    "READ 503 honors Retry-After; no immediate busy-loop call",
+    "128 attempts/25-hour persisted history held without reset",
+    "in-flight response reservations prevent retained-capacity overcommit",
+    "discovery is refused while INACTIVE; explicit fixture activation exercises request reuse and paced observations",
+    "historical migration checksums retained; privileged 12-to-13 transition does not execute migration14; ordinary role applies14; reprocessing cancellation/privilege fixtures retained"
+  ],
+  "ci": {
+    "target": {
+      "runId": 42420569961,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "full": {
+      "runId": 42420569963,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "all23WorkflowsPassed": true,
+    "workflows": [
+      {
+        "id": 42420570169,
+        "name": "Wide managed schema contracts",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570135,
+        "name": "Operational incident cursor HTTP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570068,
+        "name": "Publication HTTP and MCP tool qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570029,
+        "name": "Private operational audit capture qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570101,
+        "name": "CSV durable recovery owner contracts",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570088,
+        "name": "Acquisition denial safe diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570125,
+        "name": "Permission catalogue real SDK regression",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570190,
+        "name": "M2 governed discovery composition",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570205,
+        "name": "Chatbot dispatch Gateway schemas",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570230,
+        "name": "Authorization Java Go conformance",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570087,
+        "name": "Incident priority resilience v3",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570049,
+        "name": "Semantic proposal channel qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570026,
+        "name": "Bounded acquisition read MCP binding",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570043,
+        "name": "Generic source revision MCP qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570118,
+        "name": "Operational control budget PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570015,
+        "name": "Persistent publication vector PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570161,
+        "name": "Bounded publication composition qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570091,
+        "name": "Operational aggregate delegated context qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570053,
+        "name": "Operational cursor metadata PostgreSQL qualification",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420570251,
+        "name": "Semantic read window budget",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420569993,
+        "name": "Explicit semantic reprocessing session",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420569961,
+        "name": "Durable profile analysis budget",
+        "conclusion": "success"
+      },
+      {
+        "id": 42420569963,
+        "name": "MCP evidence and late recovery",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "liveRead": {
+    "tool": "authorization.permissions.read",
+    "view": "CAPABILITIES",
+    "httpStatus": 400,
+    "currentDiscoveryGrantsVerified": false,
+    "cause": "UNATTRIBUTED",
+    "policyChanges": 0
+  },
+  "effects": {
+    "runtimeConfigurationChanged": false,
+    "permissionChanges": false,
+    "directTargetSql": false,
+    "providerDiscoveryRequests": 0,
+    "newColumnMappings": 0,
+    "newSourceDrafts": 0,
+    "newUploadsOrProfiles": 0,
+    "ingestionCommands": 0,
+    "mergePerformed": false
+  },
+  "limitations": [
+    "No target deployment or provider query",
+    "Remote owner responses in coordinator tests are fixtures",
+    "Completed planned calls are not semantic resolution, adoption or publication",
+    "Saved responses are historical; owner state must be current before use",
+    "Unknown outcomes and exhausted histories remain held; no new HUMAN recovery/incident administration was added",
+    "No background caller/token persistence; waits require a fresh authorized step",
+    "16384-task saturation and multi-tenant VPS throughput not qualified",
+    "Retained Teatri E2E and application UDP lake operation remain open"
+  ],
+  "correctionsDuringQualification": [
+    "Native gofmt and keyed cross-package fixture literals",
+    "Native Onboarding schemaHash has sha256: prefix",
+    "Simulated PostgreSQL timestamps use JSON date encoding",
+    "Repeated plan batches reuse owned immutable metadata instead of reissuing equivalent preview queries",
+    "Privileged migration 12-to-13 remains exact even with packaged ordinary migration14; historical SQL bytes unchanged"
+  ],
+  "artifacts": [
+    {
+      "id": 13594085020,
+      "name": "mcp-release-evidence-42420569963",
+      "archiveDigest": "sha256:fb7ba390e5bedd84acfd38b7f0025254be8f740876d482dc409e2fce5765a996",
+      "archiveDigestIsDockerImageID": false,
+      "sourceCommit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94"
+    },
+    {
+      "id": 13593930449,
+      "name": "acquisition-mcp-image-42420569963",
+      "archiveDigest": "sha256:2eae47d8c90b00b992bc916e5ce5a5bd32d9e724abe27d2838bd5d08ebc68d5e",
+      "archiveDigestIsDockerImageID": false,
+      "sourceCommit": "907ace32100d44a0fcf1fcbda5d713ee7bd8fd94"
+    }
+  ]
+}

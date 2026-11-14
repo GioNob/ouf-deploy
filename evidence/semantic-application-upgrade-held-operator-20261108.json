@@ -1,0 +1,110 @@
+{
+  "applicationStartDispatched": true,
+  "automaticRollback": false,
+  "before": {
+    "databaseOid": "21558",
+    "discoveryStates": [],
+    "identifiersOrIntentsRead": false,
+    "migrationAppliedByScript": false,
+    "migrations": [
+      {
+        "checksum": null,
+        "success": true,
+        "version": null
+      },
+      {
+        "checksum": -229176171,
+        "success": true,
+        "version": "1"
+      },
+      {
+        "checksum": -370046820,
+        "success": true,
+        "version": "2"
+      },
+      {
+        "checksum": 1421470298,
+        "success": true,
+        "version": "3"
+      },
+      {
+        "checksum": -1092036175,
+        "success": true,
+        "version": "4"
+      },
+      {
+        "checksum": 1905797703,
+        "success": true,
+        "version": "5"
+      },
+      {
+        "checksum": 648864672,
+        "success": true,
+        "version": "6"
+      },
+      {
+        "checksum": 1546537302,
+        "success": true,
+        "version": "7"
+      },
+      {
+        "checksum": -319796023,
+        "success": true,
+        "version": "8"
+      },
+      {
+        "checksum": 521654427,
+        "success": true,
+        "version": "9"
+      },
+      {
+        "checksum": 1273060826,
+        "success": true,
+        "version": "10"
+      }
+    ],
+    "readOnly": true,
+    "recoveryColumnPresent": false,
+    "sourceV12IntroducesRecoveryState": true,
+    "status": "SEMANTIC_METADATA_READ",
+    "v12RecordedSuccessful": false
+  },
+  "businessRequestsIssued": 0,
+  "candidateImageId": "sha256:89e84f7a6208afa74039de7057c46ad5c9981fb283b22d9b93fa014e92d1b048",
+  "candidatePackage": {
+    "applicationYamlMatchesSource": true,
+    "libraries": [
+      "flyway-core-11.14.1.jar",
+      "flyway-database-postgresql-11.14.1.jar",
+      "postgresql-42.7.12.jar"
+    ],
+    "migrationBytesMatchSource": true,
+    "migrationCount": 12
+  },
+  "credentialValuesEmitted": false,
+  "gatewayWrites": 0,
+  "imageImported": true,
+  "javaMigrationDispatched": true,
+  "migrationDispatched": true,
+  "migrationResult": {
+    "migrationsExecuted": 2,
+    "priorHistoryPreserved": true,
+    "providerStarted": false,
+    "recoveryColumnPresent": true,
+    "springApplicationStarted": false,
+    "status": "SEMANTIC_V11_V12_MIGRATED_VALIDATED"
+  },
+  "observedAt": "2026-11-08T18:09:49.673944+00:00",
+  "oldMacTransition": "LEGACY_CONFIG_MAC_ABSENT_ONLY_AFTER_PROVEN_STOP_AND_DETACH_V1",
+  "oldStopDispatched": true,
+  "permissionChanges": 0,
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/semantic-application-upgrade-20261108",
+  "providerEnableDispatched": false,
+  "readOnlyDatabaseSessionsAttempted": 1,
+  "reason": "APPLICATION_EXITED",
+  "replacementContainerId": "11d9362c7db484a2204266062fd54b5c08fbf1da7382076fb2a164bc1a9dd070",
+  "replacementGateStarted": true,
+  "s3Requests": 0,
+  "schema": "ouf.semantic-application-upgrade.v1",
+  "status": "HELD"
+}

@@ -1,0 +1,31 @@
+name: Semantic mandate renewal
+on:
+  pull_request:
+    paths:
+      - tools/semantic_mandate_renewal/**
+      - tools/semantic_authority_mandates/**
+      - tests/test_semantic_mandate_renewal.py
+      - ops/systemd/ouf-authority-mandate-renewal.service
+      - ops/systemd/ouf-authority-mandate-renewal.timer
+      - ops/vps/mandate-renewal-install.sh
+      - ops/vps/mandate-renewal-incident-close.sh
+      - docs/OUF_SEMANTIC_MANDATE_RENEWAL_20261114.md
+      - .github/workflows/semantic-mandate-renewal.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  renewal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Renewal job, installation and incident closure natively
+        run: sudo -n env OUF_MANDATE_RENEWAL_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_mandate_renewal.py -v
+      - name: Non-regression, mandate ledger
+        run: sudo -n env OUF_MANDATES_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_authority_mandates.py -v
+      - name: Runbook syntax and ShellCheck
+        run: |
+          bash -n ops/vps/mandate-renewal-install.sh
+          bash -n ops/vps/mandate-renewal-incident-close.sh
+          shellcheck -S warning ops/vps/mandate-renewal-install.sh ops/vps/mandate-renewal-incident-close.sh

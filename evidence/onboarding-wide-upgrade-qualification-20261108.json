@@ -1,0 +1,77 @@
+{
+  "schema": "ouf.onboarding-wide-upgrade-qualification.v1",
+  "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+  "sourceCommit": "e5bec2eed1a061f2b640ca281288a05b83425c0b",
+  "controllerSha256": "bdedeba016f27b63c21f5892e9eb11bd1afe41aaa322060c6cae5fe9ceba6c68",
+  "script": "scripts/upgrade-onboarding-wide-20261108.py",
+  "deliveryScript": "scripts/install-onboarding-wide-public-archive-20261108.sh",
+  "deliverySha256": "bc2e5318f33737be0fd8e0d28559b5ea24293340259938b2705955cd89cb1dd1",
+  "candidateSource": "cc6c7869b308c695460d8491a121084893a3c323",
+  "candidatePackage": "scripts/onboarding-wide-candidate-package-20261108.json",
+  "ciRun": 42518570091,
+  "ciUrl": "https://github.com/GioNob/ouf-deploy/actions/runs/42518570091",
+  "jobs": [
+    {
+      "id": 128846853225,
+      "store": "classic",
+      "unitTests": 4,
+      "nativeTests": 2,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    },
+    {
+      "id": 128846853003,
+      "store": "containerd",
+      "unitTests": 4,
+      "nativeTests": 2,
+      "skips": 0,
+      "conclusion": "success",
+      "logsRead": true
+    }
+  ],
+  "dockerVersion": "29.8.1",
+  "macProfile": "TWO_NETWORK_BACKEND_LEGACY_MAC_DETACH_LAST_V1",
+  "nativeProfiles": [
+    "EXPLICIT_LEGACY_CONFIG",
+    "ENDPOINT_ONLY_COMPAT_CONFIG"
+  ],
+  "legacyInitiallyPresentRequired": true,
+  "legacyAfterPrivateDetach": "UNCHANGED",
+  "legacyAfterBackendDetach": "ABSENT",
+  "oldImageMountsGenerationHostConfigPreserved": true,
+  "bothNetworkIpMacAliasesPreserved": true,
+  "exactArchivedJarStarted": true,
+  "readinessHttpStatus": 200,
+  "jvmPrivateCaTlsVerified": true,
+  "v38HistoryAndSyntheticRetainedRowsUnchanged": true,
+  "applicationRoleSuperuserDuringStartup": false,
+  "fixtureBaselinePrivileges": "DISPOSABLE_ROLE_SUPERUSER_ONLY_FOR_BASELINE_V1_TO_V38_THEN_REVOKED_BEFORE_BOTH_STARTUPS",
+  "priorCi": {
+    "run": 42518460282,
+    "conclusion": "failure",
+    "phase": "NATIVE_FIXTURE_SETUP",
+    "nativeTestsExecuted": 0,
+    "reason": "INTERNAL_NETWORK_PUBLISHED_POSTGRES_PORT_ABSENT",
+    "fix": "HOST_BASELINE_JAVA_USES_OBSERVED_INTERNAL_POSTGRES_IP",
+    "controllerChanged": false
+  },
+  "operatorPreflightReceipt": "evidence/onboarding-wide-preflight-operator-20261108.json",
+  "publicArchiveDownload": {
+    "url": "https://nightly.link/GioNob/ouf-source-onboarding/actions/artifacts/13592211485.zip",
+    "fullBytesDownloaded": true,
+    "bytes": 215181269,
+    "sha256": "0894eceebb12bb8e81aceb6293713374ce6a3f2e6cdf50bb1be36f6b478bd0d0",
+    "matchesOriginalArtifact": true
+  },
+  "deliveryBashSyntax": "PASS",
+  "targetExecuted": false,
+  "serviceChangesByQualification": false,
+  "limitations": [
+    "CI predecessor uses the same candidate image; the old VPS image is checked by retained frame and installed JAR digest, not executed in this CI.",
+    "Synthetic PostgreSQL rows, credentials and CA; this does not prove target IAM, S3 transfer, provider discovery or business E2E.",
+    "Native data-preservation check compares complete fixture rows/history; the target controller additionally takes private read-only row fingerprints.",
+    "Target normal application startup may access its database and existing jobs; no explicit migration or business request is sent by the controller.",
+    "No target startup, wide-profile functional test or production acceptance claimed."
+  ]
+}

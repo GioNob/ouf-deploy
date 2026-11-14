@@ -1,0 +1,177 @@
+name: Archive Gateway owner incidents candidate 20261112
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/gateway-owner-incidents-archive-20261112.yml
+      - .github/workflows/gateway-owner-incidents-qualify-20261112.yml
+      - scripts/*gateway*incidents*20261112*
+      - tests/*gateway_incidents*20261112.py
+      - docs/OUF_GATEWAY_OWNER_INCIDENTS_DEPLOY_20261112.md
+permissions: {contents: read}
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: GioNob/ouf-api-gateway
+          ref: 2a760ca90cf860a6dcae3eef536e87524aa0fa04
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: |
+            candidate/vendor/authorization-sdk/pom.xml
+            candidate/operational-owner/pom.xml
+      - name: Test exact source, verify collector bytes and lock resolved base
+        working-directory: candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 2a760ca90cf860a6dcae3eef536e87524aa0fa04
+          printf '%s  tools/operational_incidents.py\n' cbc6ee191a85289efe57b8f0cd8c1d57c16bc3d9bd1910b7eeb8717581292854 | sha256sum --check -
+          git show f60391301cd82465107d0884ec1ada67b78429d3:tools/operational_incidents.py | cmp - tools/operational_incidents.py
+          mvn -B -ntp -f vendor/authorization-sdk/pom.xml install
+          mvn -B -ntp -f operational-owner/pom.xml verify
+          python3 - <<'PY'
+          import json,pathlib,subprocess
+          root=pathlib.Path('operational-owner'); lines=[]; bases={}
+          for line in (root/'Dockerfile').read_text().splitlines():
+              if line.startswith('FROM '):
+                  words=line.split(); tag=words[1]
+                  subprocess.run(['docker','pull','--platform','linux/amd64',tag],check=True)
+                  image=json.loads(subprocess.check_output(['docker','image','inspect',tag]))[0]
+                  words[1]=image['RepoDigests'][0]; bases[tag]=words[1]; line=' '.join(words)
+              lines.append(line)
+          (root/'Dockerfile.incidents-locked').write_text('\n'.join(lines)+'\n')
+          (root/'target/base-images.json').write_text(json.dumps(bases,sort_keys=True)+'\n')
+          PY
+          # No revision label: predecessor has none; a new image label would add
+          # a Config default and violate the Image-only contract. Provenance is
+          # bound by the reviewed manifest and exact imported image ID instead.
+          docker build --platform linux/amd64 -f operational-owner/Dockerfile.incidents-locked \
+            -t ouf-gateway-operational-owner:2a760ca90cf860a6dcae3eef536e87524aa0fa04 operational-owner
+          ouf_probe=$(docker create ouf-gateway-operational-owner:2a760ca90cf860a6dcae3eef536e87524aa0fa04)
+          docker cp "$ouf_probe:/app/owner.jar" operational-owner/target/archived-owner.jar
+          docker rm "$ouf_probe"
+          cmp operational-owner/target/archived-owner.jar operational-owner/target/gateway-operational-owner-1.0.0-SNAPSHOT.jar
+      - name: Scan every HIGH and CRITICAL finding, including unfixed
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ouf-gateway-operational-owner:2a760ca90cf860a6dcae3eef536e87524aa0fa04
+          format: json
+          output: candidate/operational-owner/target/trivy-image.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+      - name: Save exact image and public deployment bundle
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' | tee archive-result.json
+          import gzip,hashlib,json,pathlib,shutil,subprocess,tarfile,zipfile
+          root=pathlib.Path('candidate'); out=pathlib.Path('gateway-owner-incidents-artifact'); out.mkdir()
+          source='2a760ca90cf860a6dcae3eef536e87524aa0fa04'
+          tag='ouf-gateway-operational-owner:'+source
+          def command(*args):return subprocess.check_output(args,text=True).strip()
+          def sha(path):
+              h=hashlib.sha256()
+              with pathlib.Path(path).open('rb') as f:
+                  for raw in iter(lambda:f.read(1048576),b''):h.update(raw)
+              return h.hexdigest()
+          assert command('git','-C',str(root),'rev-parse','HEAD')==source
+          image=json.loads(command('docker','image','inspect',tag))[0]
+          assert image['Config']['User']=='10001:10001'
+          assert image['Config']['Entrypoint']==['java','-jar','/app/owner.jar']
+          assert not (image['Config'].get('Labels') or {}).get('org.opencontainers.image.revision')
+          jar=root/'operational-owner/target/archived-owner.jar'
+          with zipfile.ZipFile(jar) as z:
+              names=z.namelist()
+              for suffix in ('/GatewayIncidents.class','/SummaryReceiptFilter.class'):
+                  assert any(n.endswith(suffix) for n in names)
+              assert any('/spring-boot-actuator-' in n for n in names)
+          archive=out/'image.tar.gz'
+          with archive.open('wb') as raw:
+              with gzip.GzipFile(filename='',fileobj=raw,mode='wb',mtime=0) as compressed:
+                  save=subprocess.Popen(['docker','save',tag],stdout=subprocess.PIPE)
+                  try:shutil.copyfileobj(save.stdout,compressed)
+                  finally:save.stdout.close()
+                  assert save.wait()==0
+          # Match classic config IDs and OCI manifests when crossing Docker stores.
+          ids={image['Id']}
+          with tarfile.open(archive,'r:gz') as saved:
+              def blob(d):
+                  raw=saved.extractfile('blobs/sha256/'+d.split(':')[1]).read()
+                  assert hashlib.sha256(raw).hexdigest()==d.split(':')[1]
+                  return json.loads(raw)
+              def visit(desc):
+                  node=blob(desc['digest'])
+                  if 'manifests' in node:
+                      for child in node['manifests']:visit(child)
+                  elif 'config' in node:
+                      config=blob(node['config']['digest'])
+                      if (config.get('architecture')==image['Architecture'] and config.get('os')==image['Os']
+                          and (config.get('rootfs') or {}).get('diff_ids')==image['RootFS']['Layers']
+                          and all((config.get('config') or {}).get(k)==image['Config'].get(k)
+                                  for k in ('User','Entrypoint','Cmd','Env','Labels','ExposedPorts','WorkingDir'))):
+                          ids.update((desc['digest'],node['config']['digest']))
+              if 'index.json' in saved.getnames():
+                  for descriptor in json.load(saved.extractfile('index.json'))['manifests']:visit(descriptor)
+          files={}
+          paths=['scripts/apply-gateway-collector-incidents-20261112.py',
+                 'scripts/apply-gateway-owner-incidents-20261112.py',
+                 'scripts/apply-ingestion-operational-receipt-20261112.py',
+                 'scripts/launch-gateway-collector-incidents-20261112.sh',
+                 'scripts/launch-gateway-owner-incidents-20261112.sh',
+                 'scripts/install-gateway-owner-incidents-public-archive-20261112.sh',
+                 'tools/acquisition_read_native/retained_mac.py',
+                 'docs/OUF_GATEWAY_OWNER_INCIDENTS_DEPLOY_20261112.md']
+          for name in paths:
+              target=out/name; target.parent.mkdir(parents=True,exist_ok=True)
+              shutil.copyfile(name,target); files[name]=sha(target)
+          target=out/'collector/operational_incidents.py'; target.parent.mkdir()
+          shutil.copyfile(root/'tools/operational_incidents.py',target)
+          assert sha(target)=='cbc6ee191a85289efe57b8f0cd8c1d57c16bc3d9bd1910b7eeb8717581292854'
+          files[target.relative_to(out).as_posix()]=sha(target)
+          assert files['scripts/apply-ingestion-operational-receipt-20261112.py']=='487798d53ae88ed0a0f31f4c62ed608a2403b4427a236efd61330bc2d93909eb'
+          assert files['tools/acquisition_read_native/retained_mac.py']=='cb5dbbee4a80ce71860dfe5d32362a662d98898c58fd82009e69c5eb6ac1f7ce'
+          locked=root/'operational-owner/Dockerfile.incidents-locked'
+          shutil.copyfile(locked,out/'Dockerfile.incidents-locked')
+          manifest={'schema':'ouf.gateway-owner-incidents-archive.v1','sourceCommit':source,
+                    'sourceTree':command('git','-C',str(root),'rev-parse','HEAD^{tree}'),
+                    'collectorSourceCommit':'f60391301cd82465107d0884ec1ada67b78429d3',
+                    'deployCommit':command('git','rev-parse','HEAD'), 'imageIds':sorted(ids),
+                    'buildImageId':image['Id'],'archiveSha256':sha(archive),'archiveBytes':archive.stat().st_size,
+                    'jarSha256':sha(jar),'files':files,
+                    'buildInputs':{'baseImages':json.loads((root/'operational-owner/target/base-images.json').read_text()),
+                                   'lockedDockerfileSha256':sha(locked)},
+                    'targetAccessed':False,'targetInstalled':False}
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          (out/'SHA256SUMS').write_text(''.join(sha(p)+'  '+p.relative_to(out).as_posix()+'\n' for p in sorted(out.rglob('*')) if p.is_file()))
+          print(json.dumps({'manifestSha256':sha(out/'manifest.json'),'imageIds':sorted(ids),'archiveSha256':sha(archive),'sourceCommit':source}))
+          PY
+          (cd gateway-owner-incidents-artifact && sha256sum --check SHA256SUMS)
+          cat archive-result.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gateway-owner-incidents-image-${{ github.run_id }}
+          path: gateway-owner-incidents-artifact/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gateway-owner-incidents-build-evidence-${{ github.run_id }}
+          path: |
+            archive-result.json
+            candidate/operational-owner/target/surefire-reports/
+            candidate/vendor/authorization-sdk/target/surefire-reports/
+            candidate/operational-owner/target/trivy-image.json
+            candidate/operational-owner/target/base-images.json
+            candidate/operational-owner/target/bom.json
+          retention-days: 30

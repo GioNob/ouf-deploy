@@ -1,0 +1,43 @@
+{
+  "activeCoordinationState": "QUIESCED",
+  "activeInstallationPointerChanged": false,
+  "automaticReplayAllowed": false,
+  "businessRequestsIssued": 0,
+  "containerCreates": 0,
+  "credentialFileContentsRead": 0,
+  "daemonReloads": 0,
+  "databaseRequests": 0,
+  "dnsQueries": 0,
+  "fileHashes": {
+    "adapter-inputs.private.json": "896117c1df0cff8e89eb46a38f380770127752766032cb76862b7234232f3ed1",
+    "generation-plan.private.json": "53a6f06a58133779654eebb9fbfd302d2ce4160f5262e0fb0e8d37610c7394fb",
+    "southbound-inputs.private.json": "a4024aaf0e8ae89ee35fdd0a7aae244fde4611ae22b79611432e7a59647ed98d"
+  },
+  "historicalIdentityReferenceCounts": {
+    "adapter": 4,
+    "southbound": 4
+  },
+  "historicalJournalWrites": 0,
+  "inputsAreNotRuntimeProfiles": true,
+  "leaseAuthorized": false,
+  "newGenerationAdmitted": false,
+  "nftWrites": 0,
+  "observedAt": "2026-11-09T10:55:17.366273+00:00",
+  "operationIntentPresent": true,
+  "pendingFreshIdentityAndAuthority": true,
+  "phase": "COMPLETE",
+  "preparationDirectory": "/etc/ouf/deploy-snapshots/discovery-generation-inputs-99d46y_j",
+  "privateEvidenceDirectory": "/var/lib/ouf-storage-migration/discovery-generation-inputs-cv_hy837",
+  "providerReady": false,
+  "providerRequests": 0,
+  "rolesPrepared": 2,
+  "runtimeWrapperChanged": false,
+  "s3Requests": 0,
+  "schema": "ouf.discovery-generation-input-preparation.v1",
+  "serviceStarts": 0,
+  "serviceStops": 0,
+  "signaturesProduced": 0,
+  "startAuthorized": false,
+  "status": "DISCOVERY_GENERATION_INPUTS_PREPARED",
+  "tokenRequests": 0
+}

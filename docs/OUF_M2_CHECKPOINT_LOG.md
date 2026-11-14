@@ -244,3 +244,429 @@ Il sorgente MCP conservato d2454f3c applica una finestra di un minuto, capacità
 Giovanni precisa che gli oggetti possono avere 50/100/200 colonne e il budget deve seguire la dimensione reale. Requisito acquisito: il valore fisso non è la soluzione finale e la PR resta draft. La preview ha già conteggio e descrittori, ma search/get non hanno riferimento al profilo. Distinguere budget totale dell'analisi, ritmo delle richieste e guard dei tentativi equivalenti. Due interventi: collegamento al profilo/dimensionamento/conservazione del consumo; poi avanzamento per colonna e attesa/ripresa attraverso finestre, con prove 20/50/100/200. Funzione quantitativa e implementazione dinamica non ancora qualificate.
 
 Il lettore runtime MCP è conservato nel commit deploy 51125a9b; compilazione Python riuscita, nessuna esecuzione sul VPS e nessuna richiesta attuale all'operatore. Nessun cambio runtime, grant, SQL reset, storage, upload, profilo o Ingestion. Discovery esterna resta un problema distinto. [Decisione](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md) · [Evidenza](../evidence/semantic-analysis-budget-review-20261107.json).
+
+
+## 7 novembre 2026 — Oggetti SUE fino a 1024 colonne: primo incremento
+
+L'owner ha richiesto 1024 colonne e adeguamento dei limiti correlati, spiegando il caso di una pratica SUE da 300–400 campi. Il lavoro ha trovato e corretto anche i limiti a 32 proprietà/segnali, il body Gateway da 64 KiB e la memoria CSV. La prima prova 1024×10000 ha esaurito 384 MiB; la versione progressiva passa nello stesso heap, così come il caso 1024×2000 valori distinti e l'Ingestion completa 1024×10000. Native SDK/APISIX, draft PostgreSQL e decisione UDP hanno prove mirate. PR Onboarding55/MCP82/Gateway86/Ingestion48/UDP49; [evidenze](../evidence/wide-object-1024-20261107.json).
+
+La CI immagine Onboarding inizialmente rifiutata per CVE-2026-109518 in APT è stata corretta tramite pacchetti ufficiali e base fissata, senza esenzione; scan e boot passano. Nessuna modifica VPS, policy o dati reali. Budget dinamico e avanzamento semantico durevole non ancora implementati; F2–F6 restano aperti. [Sequenza e rischi](OUF_WIDE_OBJECTS_1024_20261107.md).
+
+
+## 7 novembre 2026 — analisi proporzionata al lavoro e composizione OntoPiA
+
+Su richiesta dell'owner, proseguito il supporto a 1024 colonne con un piano di attività effettive e progressi persistenti. [MCP PR83](https://github.com/GioNob/ouf-mcp-server/pull/83), sorgente `907ace32100d44a0fcf1fcbda5d713ee7bd8fd94`, compone la discovery precedente e aggiunge `source.analysis.plan/read/step`. Profilo autorevole, ricerche condivise deduplicate, consumo/risposte per attività, copertura colonne, attesa delle finestre, controlli correnti di autorizzazione e fencing. Una chiamata terminata non dichiara corretta l'associazione semantica. Nessuno scheduler o nuovo potere HUMAN.
+
+Qualifica [mirata Go/SDK/PostgreSQL](https://github.com/GioNob/ouf-mcp-server/actions/runs/42420569961) e [CI completa](https://github.com/GioNob/ouf-mcp-server/actions/runs/42420569963) riuscite; tutti i 23 workflow del commit verdi. Casi 20–1024 colonne, otto blocchi con una sola lettura di profilo, riconnessione, revoca, concorrenza, 61ª lettura in attesa, READ503, limiti retry/storage e discovery simulata. La CI completa ha rilevato e fatto correggere la convivenza fra la primitiva privilegiata 12→13 e la nuova migrazione ordinaria14; SQL storici invariati, privilegi temporanei non conservati.
+
+I sei nuovi strumenti analisi/discovery restano INACTIVE. Una lettura live del catalogo CAPABILITIES ha restituito400: causa non attribuita e grant discovery correnti non verificati. Nessuna query al provider OntoPiA, nuova associazione alle colonne, upload/profilazione, bozza sorgente, Ingestion o modifica VPS/permessi. [Evidenza](../evidence/profile-analysis-discovery-20261107.json) e [prossimi passi](OUF_SEMANTIC_ANALYSIS_BUDGET_20261107.md). F1 conservato, F2–F6 aperti.
+
+## 7 novembre 2026 — sequenza di rilascio analisi/discovery e lettura target
+
+Verificati i source-lock correnti prima del rollout: Registry `c2dae77b` discende di tre commit dall'applicazione discovery `4f8fb581` e preserva la correzione di custodia/rotazione credenziali; non installare il vecchio artefatto PR41. Gateway `81fdf7a5` e PR86 `560fbf6e` divergono (71/33): conservare l'owner operativo e riconciliare soltanto il delta necessario.
+
+Preparato `scripts/read-analysis-discovery-runtime-20261107.py`, sorgente `7bdf0e107b534e9db90aabe5e0388c627b7150b8`, SHA256 `ef8dc8c4887122f2b2d76c05eaff7a8850c31004fcd661de2b3e49f51d6cc1b4`. Dieci prove locali e CI [42422417213](https://github.com/GioNob/ouf-deploy/actions/runs/42422417213) riuscite, log job 128553489638 letti. Fixture Docker inspect simulata, nessuna prova VPS/lifecycle native. [Unico comando corrente e interpretazione](OUF_ANALYSIS_DISCOVERY_ROLLOUT_20261107.md). Nessun effetto runtime, nuova discovery o mapping; F1 acquisito, F2–F6 aperti. Prossimo input: JSON dell'inventario target.
+
+## 8 novembre 2026 — inventario acquisito, dipendenze discovery
+
+Ricevuta delle 09:11:33 CET: sette immagini attese, nessun cambio durante la lettura, vecchi writer spenti. Onboarding/UDP conservano Config, HostConfig, mount e NetworkSettings dei sostituti; nessun delta MAC corrente. Altri cinque servizi: legacy ABSENT→STRING coerente con un endpoint; nessuna normalizzazione o modifica del guard. Registry trattiene il sorgente più recente ma ENV provider/worker=false; MCP ancora vecchio. [Ricevuta](../evidence/analysis-discovery-runtime-operator-20261108.json).
+
+Preparato il lettore mirato `870b5e0cab438de2ed33936c97da28a6930da263`: un GET Admin route, metadata del mount credenziale provider senza contenuto, due sessioni SQL READ ONLY per migrazioni MCP/Semantic e conteggi discovery. Nessuna migrazione, grant, richiesta token/provider o stop/start. Dieci prove CI riuscite, zero skip, inclusa PostgreSQL17 isolata con ruoli fixture non amministrativi: [42463068093](https://github.com/GioNob/ouf-deploy/actions/runs/42463068093), log job128676349535 letti. Nove prove locali; quella PostgreSQL eseguita in CI. Route e mount-view fixture, nessuna prova VPS/provider. [Unico comando corrente](OUF_DISCOVERY_CONTRACT_READ_20261108.md). F1 conservato, F2–F6 aperti; atteso JSON del lettore mirato.
+
+## 8 novembre 2026 — dipendenze acquisite, delta Gateway concreto
+
+Ricevuta operatore delle 09:31:53 CET, READ_PARTIAL, runtime invariato: migrazioni MCP1–13 coincidono, resta soltanto14; tabelle analisi assenti. APISIX84 route, create256 campi/review32 segnali, tre route discovery assenti. Credenziale workload provider senza mount dichiarato, ENV provider/worker=false. Semantic DB non letto: causa e backlog ignoti. Zero modifiche e richieste token/provider/business/S3. [Sintesi normalizzata della ricevuta](../evidence/discovery-contract-operator-summary-20261108.json), non copia byte per byte del messaggio originale.
+
+Il provider punta a un distinto gateway southbound; l'assenza dei path nell'APISIX letto non autorizza a considerarli assenti là. Non ripetere i lettori, non applicare di nuovo MCP12→13 e non accendere il worker senza riconciliare dipendenze/lavori pendenti.
+
+Preparatore offline `5a8449b1a145a9607c5b9af537bd53d790c18aaf`: da route e stderr già conservati compone cinque aggiornamenti e tre aggiunte, conserva79 route e i binding IAM esistenti; nessuna sostituzione dell'owner Gateway, nessuna route provider creata. Script senza HTTP/Docker/SQL, applicazione non implementata, risultato target atteso. [Unico comando corrente](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md).
+
+[CI42464333835](https://github.com/GioNob/ouf-deploy/actions/runs/42464333835), job128680226233:9 PASS/0 skip, log letti, validatore JSON Schema reale1024/1025 e fixture di composizione/conservazione, non prova live APISIX. Gli altri due workflow PR dello stesso commit sono success. STATE, MiniPET2.10 e registro allineati. F1 conservato; F2–F6, installazione/attivazione budget dinamico, discovery e mapping restano aperti.
+
+## 8 novembre 2026 — correzione della baseline del preparatore Gateway
+
+[Ricevuta delle 09:53:25 CET](../evidence/gateway-analysis-preparation-held-operator-20261108.json): PREPARATION_INCOMPLETE/INSTALLED_MANAGED_SCHEMA_NOT_QUALIFIED_BASELINE; zero effetti runtime, query e richieste Admin/provider. Lo stderr già conservato indica MISSING_COLUMN; nome e migrazione non dimostrati.
+
+Errore nel preparatore, non nuovo guasto SeaweedFS. Il suo schema preview includeva ASSETS non ancora installato. Review installata coincide con lo schema lessicale storico dopo la proiezione del solo identificatore annidato, già qualificata/documentata il 16 ottobre. Ricostruite tutte e quattro le impronte esatte da sorgenti, senza normalizzare lo schema target o allentare il confronto. Il candidato review conserva la stessa proiezione in assenza di riferimenti, mantenendo tutti i vincoli. Il controllo stretto è preservato.
+
+Sorgente corretto `8a12592fdbf7b321a8b3c564081a1ab90b5b8c80`. [CI 42465156653](https://github.com/GioNob/ouf-deploy/actions/runs/42465156653), job128682843439: 13 PASS, zero skip, log letti; dodici locali, validatore JSON Schema in CI. La nuova regressione usa le impronte della ricevuta, indipendenti dal generatore. I nove test precedenti non coprivano questa divergenza e non provavano compatibilità target.
+
+[Comando corrente aggiornato](OUF_GATEWAY_ANALYSIS_DELTA_20261108.md): stessi file privati, preparazione soltanto; può esporre dallo stderr esclusivamente i nomi della query pubblica già nota. Non riesegue SQL, non installa route, non riavvia servizi. Risultato della correzione atteso; F1 conservato, F2–F6 aperti.
+
+
+## 8 novembre 2026 — proposta Gateway acquisita, applicazione qualificata
+
+[Ricevuta operatore delle 17:32:01 CET](../evidence/gateway-analysis-prepared-operator-20261108.json): GATEWAY_DELTA_PREPARED_NOT_APPLIED, proposta `2876c0c3a892f0dce8accb08f5cbac523cfc541c43a264dfcb5944cd003c8f19`. Cinque aggiornamenti/tre aggiunte,79 route conservate; nessun effetto runtime. Stderr identifica recovery_state, introdotta nel sorgente Semantic V12; non dedotta la storia Flyway corrente.
+
+Implementato l'applicatore `57647000a4d66ce4bc659ed54631e44ea8959978`: proposta/impronte esatte, confronto fresco dell'intera mappa, massimo8 PUT con intento durevole/ACK/rilettura, nessun retry/rollback automatico. Directory unica impedisce una ripetizione cieca. Nessun lifecycle container, owner sostituito, token/provider/S3/business. Una sessione SQL READ ONLY legge migrazioni, colonna effettiva e conteggi per stato senza identificativi o payload.
+
+[CI42501682255](https://github.com/GioNob/ouf-deploy/actions/runs/42501682255), job128795585765:10 PASS/0 skip, log letti; APISIX reale con etcd e PostgreSQL17. Le prime prove native hanno trovato una fixture YAML errata e poi variazioni dell'ordine Mounts. Verificata uguaglianza dei record completi:28 variazioni d'ordine osservate nella prova riuscita. Il confronto ordina soltanto per Destination univoca, mantiene ogni campo mount e Config/MAC esatti, verifica prima gli hash originali della cattura. Gli errori e i limiti sono registrati nella [qualifica](../evidence/gateway-analysis-apply-qualification-20261108.json). Tutti e quattro i workflow PR del sorgente sono success.
+
+[Unico comando corrente](OUF_GATEWAY_ANALYSIS_APPLY_20261108.md) pronto per l'operatore; applicazione sul VPS ancora attesa. Aggiornati STATE, MiniPET2.12 e registro. F1 conservato; F2–F6 e rollout completo1024/budget/discovery restano aperti.
+
+
+## 8 novembre 2026 — Gateway applicato, Semantic V10 verificato e migrazione pronta
+
+[Ricevuta operatore delle 17:56:09 CET](../evidence/gateway-analysis-applied-operator-20261108.json): otto PUT con ACK/rilettura, cinque aggiornamenti/tre aggiunte,87 route totali e79 conservate. Owner e container invariati; nessuna richiesta provider/token/S3/business. Semantic DB OID21558: V1–V10 riuscite, recovery_state assente, zero richieste discovery. Dieci checksum confrontati con il sorgente trattenuto: coincidono. Restano V11/V12; il comando Gateway è concluso e non va ripetuto.
+
+Preparato il [comando Semantic](OUF_SEMANTIC_V11_V12_UPGRADE_20261108.md): immagine e librerie correnti, verifica dei file di migrazione nel JAR, configurazione ricostruita con configtree e binding/OID esatti, provider/worker disabilitati, due migrazioni Flyway raggruppate con limiti di lock/statement. Nessun repair, clean, inserimento manuale nella storia o riavvio; nessun dato di discovery prodotto. Un helper pubblico temporaneo in /tmp, rimosso al termine, con journal privato conservato. Esito incerto senza replay automatico.
+
+Sorgente `33c54cf4b57a7577b9b9a8221e82d6c476976ffa`, consegna `03d2e7acf11ee3bc1f4b4a7ef164364896273831`. [CI42503772280](https://github.com/GioNob/ouf-deploy/actions/runs/42503772280), job128801887169:6 PASS/0 skip, log letti. UID10001 e ruolo DB non amministratore verificati; JRE/PropertiesLauncher/configtree/Flyway reali, storia e ricevuta sintetica preservate. Controlli negativi su checksum, descrizione Flyway, backlog, OID, package/configurazione e ripetizione. Prima prova fermata alla validazione pending; corretta soltanto la fase preliminare dopo verifica esatta delle due versioni. Fixture non amministrativa corretta usando un ruolo distinto dal bootstrap superuser. [Esiti e limiti](../evidence/semantic-v11-v12-upgrade-qualification-20261108.json).
+
+STATE, MiniPET2.13 e registro allineati. Migrazione VPS ancora da eseguire; MCP14, rollout1024/budget, provider/grant/attivazione e mapping restano aperti. F1 conservato, F2–F6 non dichiarati conclusi.
+
+
+## 8 novembre 2026 — package Semantic diverso, migrazione non partita
+
+[Ricevuta delle 18:16:23 CET](../evidence/semantic-v11-v12-held-operator-20261108.json): HELD/INSTALLED_MIGRATIONS_DIFFER_FROM_SOURCE. Zero sessioni DB, esecuzioni Java, migrazioni, helper nel container o stop. Tentativo conservato in /var/lib/ouf-storage-migration/semantic-v11-v12-20261108; nessun replay.
+
+Errore della ricostruzione dell'assistente: il source-lock del candidato, che dichiara allRuntimeArtifactMembershipProven=false, non prova il sorgente del JAR corrente. La corrispondenza imageId con la cattura trattenuta non colma questa lacuna. Ritirata l'affermazione “Registry già versione più recente”. I sei test nativi del migratore restano prove sul JAR ricostruito, non del package VPS. Non è ancora noto se la differenza riguardi file mancanti, aggiuntivi o byte cambiati.
+
+Preparato il [lettore mirato](OUF_SEMANTIC_INSTALLED_PACKAGE_READ_20261108.md), sorgente `f636440dac4df2469e97d919c44fd64693b1fcea`: due GET Docker, JAR del processo corrente, hash e metadati selezionati, nessun exec/Java/SQL o effetto applicativo. Confronto preciso delle migrazioni e presenza/hash delle classi discovery; label/presenza non dichiarate prove di comportamento o provenienza. Tentativo precedente invariato, nuovo resoconto separato.
+
+[CI42504819787](https://github.com/GioNob/ouf-deploy/actions/runs/42504819787), job128805066674:6 test riusciti/zero skip, log letti; sei locali. Fixture archivi e redazione, non JAR target. [Qualifica](../evidence/semantic-installed-package-read-qualification-20261108.json). STATE, MiniPET2.14, registro e runbook corretti. Risultato target della lettura atteso; prima riconciliare applicazione/schema, poi scegliere l'intervento. Gateway e F1 conservati.
+
+
+## 8 novembre2026 — package corrente identificato; sostituzione coerente qualificata
+
+Ricevuta operatore18:29 CET: JAR e runtime invariati, sole V1–V10 identiche al prefisso candidato, V11/V12 e tre classi discovery assenti; label eccef11a. Il vecchio tentativo rimane solo pre-dispatch. Salvato un estratto esplicito della ricevuta, non presentato come copia integrale.
+
+Scaricato l'artefatto originale13066396654: ZIP203.419.418byte/hash coincidente, otto payload,221 blob Git del sorgente c2dae77b, dodici SQL/YAML e JAR nel layer verificati. Il sorgente dichiarato dal vecchio container ha YAML coincidente, senza dedurre l'identità dell'intero pacchetto. Serve applicazione+schema, non SQL aggiunto al vecchio JAR.
+
+Controller c52804a, CI42506812587: job128811107718 containerd e128811107823 classic PASS; ciascuno2 cicli nativi e6 negativi MAC, zero skip, log letti. Artefatto originale, UID10001/configtree, DB owner nonadmin, V10→V12, history e ricevuta preservate, avvio Java e readiness. Conservati fallimenti CI su identificativo OCI e default Engine OOM/alias; correzioni puntuali, nessuna omissione globale di MAC. Fixture precedente in attesa, IAM/provider sintetici, nessun risultato VPS/E2E dedotto.
+
+Consegna b2ef4a4d343716b40ae35a409c6a910a63f88721 con downloader pinned e alternativa ZIP locale. Disponibilità gh/accesso/ZIP sul VPS non osservata. Stato e MiniPET2.15 ripuliti: prossimo passo sostituzione Registry qualificata, poi MCP14/1024, provider/delega/grant e mapping Teatri→Ingestion→UDP. Nessun nuovo consenso generico, nessun merge, replay Gateway/vecchio migratore o modifica target effettuata dall'agente.
+
+
+## 8 novembre2026 — consegna senza gh, archivio pubblico verificato
+
+Ricevuta operatore: DELIVERY_INCOMPLETE/GITHUB_CLI_OR_LOCAL_CANDIDATE_ZIP_REQUIRED, serviceChanges:false. Il ramo della shell esce prima del controller; non è un fallimento della sostituzione applicativa o della migrazione.
+
+Scaricato l'intero artifact13066396654 via nightly.link (redirect pubblico allo storage GitHub):203.419.418byte, SHA256 1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba coincidente. Nessuna credenziale. Una connessione precedente scaduta, successivo GET range0–203419417 riuscito. URL firmato non pubblicato. Verifica dall'ambiente assistente, non dal VPS.
+
+Consegna 5e61cc23259a9bae3b18e76ea147c0c9bcaf6ff7: script shell verificato con bash -n, ZIP e installer interno pinned con hash; passa OUF_SEMANTIC_CANDIDATE_ZIP al medesimo installer b2ef4a4. Nessun cambiamento al controller c52804a o alla sua qualifica nativa. Non installa gh e non configura account. MiniPET2.16 e registro aggiornati. Applicazione/schema sul VPS ancora in attesa; niente replay dei comandi storici.
+
+
+## 8 novembre 2026, 19:09 CET — V11/V12 riuscite; avvio Semantic terminato
+
+[Ricevuta operatore](../evidence/semantic-application-upgrade-held-operator-20261108.json): archivio importato, replacement 11d9362c7db484a2204266062fd54b5c08fbf1da7382076fb2a164bc1a9dd070, dodici migrazioni del JAR coincidenti col sorgente. Vecchio processo fermato e scollegato con transizione MAC riconosciuta. Flyway: due migrazioni eseguite/validate, storia precedente preservata, recovery_state presente. Dopo il segnale di avvio Java il container è uscito: HELD/APPLICATION_EXITED. Nessun rollback automatico, S3, Gateway o attivazione provider. Non presentare questo risultato come readiness o E2E.
+
+Causa dell'uscita ancora ignota: la ricevuta non include il log. Preparato lettore standalone 7271dcce93e2ab35c575d2b32f038425a5a05ba3, senza dipendenze GitHub CLI: tre inspect e un logs sul CID esatto, nessun exec/start o query DB. Log completi privati root; report per simboli ammessi ricavati da sorgente/JAR candidati e segnali statici. Tre prove locali di redazione/estrazione PASS e compilazione Python riuscita; nessuna nuova prova CI/runtime affermata. Esecuzione diagnostica target attesa. Stato, MiniPET 2.17 e registro aggiornati; vecchi comandi di installazione dichiarati storici da non ripetere.
+
+
+## 8 novembre 2026, 19:25 CET — causa d'avvio identificata: chiave discovery non trovata
+
+[Ricevuta operatore](../evidence/semantic-application-exit-operator-20261108.json): lettura completata, frame di stato invariato; 85 righe stdout, nessuna troncatura. Bean semanticDiscoveryDelegation, codice SEM_DISCOVERY_DELEGATION_KEY_UNAVAILABLE, causa NoSuchFileException. Replacement fermo con ExitCode 1, senza OOM; vecchio container ancora fermo. Nessun avvio, query DB o migrazione in questa lettura. V11/V12 già migrate restano acquisite.
+
+Il costruttore candidato legge la chiave se il parametro è non vuoto. La fixture nativa precedente non configurava quel parametro: questo limite spiega perché il PASS d'avvio non aveva coperto il difetto di binding reale. Non dedurre dal solo NoSuchFileException se manchi il mount, la sorgente o sia errato il percorso.
+
+Preparato lettore d5ac065cd92f6f2b21b313009fc5c703b8a98547: dichiarazioni selezionate/errore conservato/metadata del mount host e GET corrente route APISIX; riferimenti del firmatario senza valori di chiavi. Nessuna correzione o ripartenza ancora eseguita. Tre prove locali mirate PASS e compilazione Python riuscita, senza nuova prova runtime dichiarata. STATE, MiniPET 2.18, registro e runbook aggiornati. Prossimo passo correzione del binding nominativo, prova con chiave configurata, avvio del sostituto a schema V12.
+
+
+## 8 novembre 2026 — binding identificato; correzione chiave qualificata
+
+Ricevuta operatore delle 19:40 CET: path discovery senza mount, file read-owner già montato read-only UID/GID 10001 modo 0400. Tutte e quattro le route selezionate usano OUF_SEMANTIC_READ_OWNER_KEY, distinta dal riferimento MCP; issuer/audience/workload dichiarati coincidenti. Byte ancora non confrontati. Nessun effetto della lettura.
+
+Correzione bece4c5b3dbaf20dcec05b19b4352284a23cc92e: confronto fresco file/firmatario, un solo ENV modificato nel sostituto, stessa immagine/mount/endpoint, vecchio V10 e V12 fallito conservati spenti. Nessuna chiave scritta, import immagine, routePUT o migratore. Letture DB prima/dopo richiedono V12 e storia invariata; nuovo journal distinto. Log pubblicabili raccolti automaticamente se il nuovo avvio fallisce.
+
+CI42511861759, job128826450209 classic e128826450480 containerd PASS: ciascuno 5 test mirati, 6 negativi MAC e 2 native, zero skip, log letti. Artefatto originale, parametro chiave non vuoto: errore mancante riprodotto, correzione/readiness riuscite, storia V12 e ricevuta sintetica preservate. Due profili legacy inizialmente presenti, processo terminato prima del detach, MAC endpoint preservata. La lacuna precedente è coperta per questo binding; IAM/policy/provider target non qualificati dalla fixture.
+
+Consegna 7b67732a23fa8cdb7fcdcdd784bfb5f4026d93e4, SHA shell c3c741a73f3f98db400665875eaae786fa070d937065b78c763f20c1c34beae7. Sintassi shell e pin delle dipendenze verificati. STATE, MiniPET2.19 e registro aggiornati. Esecuzione VPS della correzione ancora attesa; nessuna readiness/E2E target affermata.
+
+
+## 8 novembre 2026, 19:59 CET — Semantic V12 pronto; pacchetto MCP verificato
+
+Ricevuta operatore `SEMANTIC_DISCOVERY_KEY_REPAIRED_V12_READY`: chiave esistente uguale al firmatario Gateway, cambio del solo parametro discovery, sostituto ef35ea78 con stessa immagine/mount/indirizzi/alias. StoriaV12 invariata, nessuna migrazione esplicita o scrittura chiave/route; V10 e V12 fallito trattenuti spenti. Provider e worker rimangono disabilitati. [Ricevuta](../evidence/semantic-discovery-key-repaired-operator-20261108.json). Correzione conclusa, non ripetere.
+
+MCP PR83 ancora non installato: verificato l'archivio originale13593930449/run42420569963, cinque payload, dieci blob OCI e manifest nel binario. Il merge CI e la testa candidata hanno lo stesso albero Git. [Pacchetto](../evidence/mcp-analysis-candidate-package-20261108.json). Preparato lettore mirato fd55b273 per binding avvio/metadata reprocessing/permessi ordinari14: CI42513291665, sei nuovi test PASS inclusa query PostgreSQL; nove helper PASS e un helper native storico saltato in questo job. Nessun effetto VPS dell'assistente; [comando corrente](OUF_MCP_ANALYSIS_PREFLIGHT_20261108.md). F1 resta PASS; F2–F6, discovery reale e mapping restano aperti.
+
+
+## 8 novembre 2026, 20:09 CET — Preflight MCP positivo; sostituzione qualificata
+
+[Ricevuta operatore](../evidence/mcp-analysis-preflight-operator-20261108.json): stesso MCP/binary, schema OID21560 con checksum1–13 esatti; CREATE/USAGE schema e SELECT/INSERT storia presenti, ruolo non superuser. Cinque file montati coerenti con host, credenziali non lette. I tre metadata pubblici indicano permesso storico scaduto e hash profilo coincidente; la lettura non verifica firme, non rinnova autorità o budget.
+
+Controller fcd06cd5, SHA256 5f6739852c1a0d4318d6427c229409882a0f66ab1ad7110ed3c599300fa24758: archivio originale PR83, ENV/mount e endpoint conservati, vecchio MCP fermato/trattenuto, migrazione ordinaria14 sotto UID10005, controllo storia completa e readiness204. Nessun reset, nuovo grant, provider o strumento attivato. [Installazione](OUF_MCP_ANALYSIS_UPGRADE_20261108.md).
+
+CI42514478247 PASS su classic/containerd, log letti, zero skip: quattro unit, sei negativi MAC, due native e fixture firmata scaduta per backend. Storia e sessione sintetica conservate, file firmati invariati, token/policy su TLS. Il predecessore CI usa lo stesso candidato su schema13: il vecchio binario VPS è verificato dal digest osservato ma non eseguito in CI. Il primo run42514286601 è fallito sul path del picker della fixture, corretto senza cambiare il controller. Delivery e330ea6805a07f6df4f7eec7eb3ca28b5389faf4; nessun effetto VPS ancora attestato.
+
+
+## 8 novembre 2026, 20:26 CET — MCP PR83 e migrazione 14 pronti sul VPS
+
+[Ricevuta operatore](../evidence/mcp-analysis-ready-operator-20261108.json): `MCP_ANALYSIS_V14_READY`, nuovo container 41c1e01d, immagine archiviata d76fda00, migrazione ordinaria 14 verificata e readiness HTTP 204. Storia 1–13 inclusi timestamp, ENV, mount, endpoint/alias e file del permesso storico scaduto invariati. Vecchio MCP conservato spento. Nessun migratore privilegiato, scrittura credenziale, grant, route, S3 o richiesta business; strumenti ancora INACTIVE. L'avvio normale può accedere a token/policy/database. Non rigiocare l'installer.
+
+Prossimo componente Onboarding cc6c7869: sorgente discendente del 73498c17 installato, nessun delta alle migrazioni. Archivio originale verificato (24 blob OCI, JAR e risorse V1–V38). Il sostituto SeaweedFS ha due reti; preparata lettura mirata di pacchetto/storia/binding prima di qualificare la sostituzione. F1 resta acquisito; F2–F6, analisi/discovery e mapping restano aperti.
+
+Qualifica lettore Onboarding completata: CI42516065460/job128839231269, cinque test PASS/zero skip, log letti, inclusa query PostgreSQL 17 con ruolo SELECT-only e storia invariata. Source 91568e8d, delivery e0377f5c. [Comando corrente](OUF_ONBOARDING_WIDE_PREFLIGHT_20261108.md); esecuzione VPS attesa, nessuna prova di sostituzione container attribuita al lettore.
+
+
+## 8 novembre 2026, 20:58 CET — Onboarding V38 coerente; sostituzione 1024 qualificata
+
+[Ricevuta operatore](../evidence/onboarding-wide-preflight-operator-20261108.json): container d4f22ff3, JAR installato, 38 migrazioni e YAML confrontati; storia V38 esatta, OID21552, ruolo non superuser. Endpoint, file credenziale montati e truststore SeaweedFS coincidono con lo switch; due reti, vecchio writer MinIO spento. Nessuna modifica.
+
+Controller d62a1707 invariato alla qualifica e5bec2ee: archivio originale cc6c7869, stop/detach privato poi backend, vecchio trattenuto spento, nuovo avvio con entrambi gli IP/MAC/alias e mount/argomenti conservati. Nessun migratore esplicito. Controllo storia V38 e impronte private delle due righe Teatri prima/dopo; nessun nuovo upload/profilo.
+
+CI42518570091/job128846853225 classic e128846853003 containerd PASS: quattro unit e due native ciascuno, zero skip, log letti. Legacy inizialmente presente in entrambe le fixture, conservato al primo detach e assente al secondo; JAR archiviato avviato, readiness200, CA privata JVM verificata, storia/righe sintetiche invariate. Primo run42518460282 fallito nel setup PostgreSQL su rete interna prima dei native; corretto soltanto l'indirizzo della fixture. Predecessore CI con lo stesso candidato e dati/IAM/S3 sintetici: nessuna prova target aggiuntiva.
+
+Consegna a924345385c863246fc597bbe1321965e4f93173, shell SHA256 bc2e5318f33737be0fd8e0d28559b5ea24293340259938b2705955cd89cb1dd1; download pubblico completo, pin di sette dipendenze e sintassi shell verificati. [Comando corrente](OUF_ONBOARDING_WIDE_UPGRADE_20261108.md). STATE/MiniPET2.23/registro aggiornati. Esecuzione VPS attesa; F1 resta PASS, F2–F6 e analisi/discovery/mapping aperti.
+
+
+## 8 novembre 2026, 21:16 CET — Onboarding 1024 pronto sul VPS
+
+[Ricevuta operatore](../evidence/onboarding-wide-ready-operator-20261108.json): `ONBOARDING_WIDE_1024_READY`, nuovo container d0b9ff84, immagine archiviata containerd880bbf92, readiness200. StoriaV38 e righe Teatri invariate; entrambe le reti/IP/MAC/alias e mount/truststore/argomentiJava conservati. Profilo MAC a due reti riuscito. Predecessore SeaweedFS trattenuto spento e vecchio writerMinIO sempre spento; nessun migratore esplicito, grant, route, credenziale o richiesta S3/business da script. Non ripetere l'installer. La profilazione funzionale1024 resta aperta.
+
+Ingestion c85d9fd3: un commit sull'installato4165b9e1, soltanto adapterCSV e test; V1–V18 e YAML invariati. CI42416624781 riuscita ma non archivia il binario/immagine; viene preparata una nuova build dell'esatto commit con archivio e qualifiche pertinenti. Lettore read-only mirato in preparazione: pacchetto installato, storia e conteggi attività, senza payload/identificativi/checkpoint. Nessun nuovo effetto VPS. STATE/MiniPET2.24/registro aggiornati.
+
+
+Qualifica lettore Ingestion completata: CI42519952141/job128851048745, cinque test PASS/zero skip, query esatta PostgreSQL17 con ruoloUSAGE/SELECT, storia e attività sintetiche invariate. Source4a58cd82, delivery4302953411eaa1f359f2c8fd1757eb421cebaf56, shell SHA2563f665f50627d46e731ed55fa269822ba93ebcd33d31954f17be49b35f9166321. [Comando corrente](OUF_INGESTION_WIDE_PREFLIGHT_20261108.md). Target read atteso; build archivio42519952111 ancora in corso, non dichiarata qualificata.
+
+
+Archivio Ingestion completato in CI42519952111/job128851048633: nove testCSV384MiB PASS, probeSQLite/XLSX PASS e scansione senzaHIGH/CRITICAL. Nuova build dell'esatto c85d9fd3, non immagine storica recuperata. Artifact13633320899/ZIP83e15e24, scaricato e verificato; 18blobOCI, JARd0e2acc4 e migrazioni/YAML corrispondenti al sorgente. Immagineclassic ac7936d6; manifestOCI562e4c6e non ancora importato/provato concontainerd native. Nessun avvio applicativo o cambioVPS. [Pacchetto](../evidence/ingestion-wide-candidate-package-20261108.json).
+
+
+## 8 novembre 2026 — Ingestion preflight acquisito, installer1024 qualificato
+
+Ricevuta operatore21:43CET: INGESTION_WIDE_PREFLIGHT_READ, CIDd69c3f76/image d173aa8b, frame1a7e2cf5; JAR54424047 ancora precedente. Migrazioni e YAML coincidono col candidato, storia V1–V18 esatta sul DB21554 con ruolo non superuser; tre run SUCCEEDED,34 handoff ACKED, zero lease non scadute alla lettura. Nessun effetto runtime. Estratto esplicitamente parziale in evidence/ingestion-wide-preflight-operator-extract-20261108.json; dettagli completi nella ricevuta dell’operatore e prove private ux56chih.
+
+Controller5d926783, CI42522348023: job128858382810 containerd e128858383044 classic PASS,6 test guard e2 cicli nativi ciascuno, zero skip, log letti. Stesso archivio13633320899/JARd0e2acc4, PostgreSQL17/V18, ruolo ordinario, Flywayfalse, configurazione esterna/execution beans/Gateway-read key sintetici. Entrambi i profili legacy inizialmente presenti e poi assenti solo dopo STOP/DETACH, sostituto IP/MAC/alias preservati, HTTP200 e storia/righe confrontate invariate. Il predecessore CI è il candidato, non una copia del vecchio JAR VPS; non è E2E.
+
+Consegna e1bf9e3a9194992feeceed88d67167509903b916, wrapperSHA d1d3b916401add3f7e3740379e1cf4fe1872c414fe6008bafba5e697c8cd2bc7. Otto file letti nuovamente da GitHub/hash verificati, ZIP già verificato integralmente, shell syntax e readback wrapper esatti. Un solo intervento; nessun replay/rollback automatico. Stato e sette tabelle confrontati prima, dopo stop e dopo avvio; nessun migratore esplicito. Target ancora invariato secondo ultima ricevuta: installer da eseguire, non installazione già riuscita. STATE/MiniPET2.25/registro aggiornati; prossima azione in docs/OUF_INGESTION_WIDE_UPGRADE_20261108.md.
+
+
+## 8 novembre 2026 — seconda lettura Ingestion, installazione ancora da attestare
+
+Ricevuta operatore22:11CET: schema ouf.ingestion-wide-preflight.v1/status INGESTION_WIDE_PREFLIGHT_READ. Stessi CID d69c3f76, immagine d173aa8b, frame1a7e2cf5 e JAR54424047 della lettura21:43CET; storia V18 esatta, tre run SUCCEEDED,34 handoff ACKED,zero lease non scadute. Nuova directory privata ingestion-wide-preflight-8t473zuc; nessuno stop/import/cambio configurazione o migrazione. Estratto esplicito in evidence/ingestion-wide-preflight-repeat-operator-extract-20261108.json. La ricevuta è ancora del lettore e non dimostra l’esecuzione dell’installer. Nessun nuovo controller o test: consegna e1bf9e3a9194992feeceed88d67167509903b916/SHA d1d3b916401add3f7e3740379e1cf4fe1872c414fe6008bafba5e697c8cd2bc7 invariata. Il controller resta ancorato alla cattura originaria verificata; le nuove letture non sostituiscono né riscrivono quel binding. STATE e registro aggiornati; attesa ricevuta INGESTION_WIDE_1024_READY oppure HELD, senza replay automatico.
+
+
+## 8 novembre 2026 — Ingestion HELD dopo stop, differenza DB da classificare
+
+Ricevuta operatore 22:14:33 CET conservata integralmente in evidence/ingestion-wide-upgrade-held-operator-20261108.json: candidato 562e4c6e importato, oldStopDispatched=true, applicationStartDispatched=false, due letture SQL, motivo RETAINED_DATABASE_STATE_CHANGED. Prima dello stop: tre run SUCCEEDED,34 handoff ACKED,zero lease non scadute. Dal percorso del controller qualificato il fallimento avviene dopo la conferma STOP e prima di detach/rename/create; nessun sostituto è riportato. Non dedurre la sezione cambiata o la causa dal solo codice di errore.
+
+Lettore standalone 1aa15097ce855a069c18b72899c44bb49795f8f6, SHA d04eb75ec6aafec7fe82c6a7bf91e88814bd47e7fee829a32eeb83e4a6e7fb8c: quattro file privati già salvati, confronto preciso delle tre sezioni e sette tabelle, un inspect nominativo corrente; nessun SQL o effetto. Cinque test locali PASS/zero skip con fixture sintetiche; nessun risultato target del lettore ancora disponibile. Controller originale e journal invariati. STATE/MiniPET2.26/AGENTS/registro aggiornati: non ripetere l’installer, prossimo passo lettura delta. La qualifica nativa precedente non prova l’invarianza dello stato applicativo reale. Nessun nuovo import, stop, start o intervento su altri servizi eseguito dall’assistente.
+
+
+## 8 novembre 2026 — delta limitato allo scheduler; confronto Docker da uniformare
+
+Ricevuta22:20:55CET conservata integralmente in evidence/ingestion-wide-held-state-operator-20261108.json. Solo ing_schedule cambia impronta, due righe in entrambi i lati; storia e sei altre tabelle invariate. Vecchio fermo/PID0/exit143/nonOOM, stessa generazione/nome/HostConfig/mount/args; journal senza detach/create/start. I false su Config/rete sono prodotti confrontando API1.44 con CLI senza pin API: non bastano a provare mutazione. Non autorizzano un’eccezione MAC.
+
+Sorgenti ActivationLoop/ActivationRepository/RunStateRepository c85d9fd3 letti: polling e riconciliazione aggiornano discovery_verified_at/lock_version anche sulla stessa pubblicazione. Il guard completo dello scheduler e la fixture senza questo polling sono una lacuna dell’implementazione precedente. Causa VPS non provata; vecchie impronte non recuperano colonne storicamente cambiate.
+
+Lettore combinato e22ef8e3758b216789c20c0d2aa5b5d717126c41, consegna cd143d9df586d1a9f76d71cc48cb82994d157ab3/SHA 2c5ea6d606eb97e87ea067f1e3b6647405fe651963ec35b38c1e31cdd6c25548. CI42525366640/job128867703808, sette PASS/zero skip/log letti: SQL PostgreSQL17 SELECT-only, righe conservate, riproduzione drift due campi e controllo checksum diverso; viste Docker sintetiche. Quattro file readback/hash verificati e shell syntax valida. Un’unica sessione READ ONLY, API1.44 omogenea più CLI, nuove prove private separate; nessun effetto sui servizi. STATE/MiniPET2.27/AGENTS/registro aggiornati. Ricevuta del nuovo lettore attesa; nessuna continuazione runtime ancora consegnata.
+
+
+## 8 novembre 2026 — Ingestion: prefisso fermo verificato e continuazione residua qualificata
+
+Ricevuta integrale22:32CET acquisita in evidence/ingestion-resume-prerequisites-operator-20261108.json: Config/rete API1.44 esatti rispetto al post-stop, CLI con rappresentazione differente; database identico al post-stop, due pianificazioni DISABLED/consumate/senza lease. VecchioCID fermo/PID0, nessun detach/create. La causa esatta dei campi cambiati prima/dopo stop resta non ricostruibile dalle vecchie impronte.
+
+Controller9f1dfd3af254606afc28b85d4eef5c9d54d35b3a, CI42526435616 classic/containerd, job128870984249/128870984118: sei guard precedenti, sette nuovi e due cicli nativi per backend, zero skip/log letti. Archivio candidato esatto e ActivationLoop reale con polling ripetuto di pubblicazioni consumate; sei tabelle/storia immutate, soli due metadata polling avanzati. Due profili legacy realmente presenti, trasferimento endpoint conservato, nessun import/stop nel percorso residuo. Fixture sintetica; predecessore CI candidato, non storicoVPS. Nessuna prova E2E o della causa storica.
+
+Delivery468fb612447f14d7dd022cdbd7d138cc69012fe7: scripts/deliver-ingestion-wide-resume-20261108.sh SHA25651a207cc40479be8b88e43e9621210d6657c3777269a393a5a58be7eb36ddf41; otto file riletti/hash verificati e moduli importati senza main. Nuovo journal esclusivo ingestion-wide-resume-20261108, tre letture READ ONLY, prefisso immutato e richiestaCREATE esatta; solo detach/rename/create/gate/start residui. Nessun replay/rollback/migratore esplicito. Risultato VPS ancora atteso; comando in OUF_INGESTION_WIDE_UPGRADE_20261108.md. STATE, MiniPET2.28, AGENTS, regolaMAC e registro aggiornati. Restano UDP1024, provider/strumenti, mapping Teatri conservato ed E2E. Nessun merge.
+
+
+## 8 novembre 2026 — Ingestion 1024 pronto; lettura UDP qualificata e archivio candidato
+
+Ricevuta operatore21:48:59UTC/22:48CET: INGESTION_WIDE_1024_READY, readiness200, nuovoCID a1bec344c54493232e52117d7e515c4f465ff0e9136eecc67dd86efa6aae9020. Storia, sei tabelle e campi stabili scheduler invariati, due pianificazioni DISABLED/consumate/senza lease; endpoint/mount/ENV/argomenti conservati, vecchio spento. Nessun nuovo stop/import/migratore, tre letture READ ONLY. schedulePollMetadataChanged=false: nessun ciclo periodico VPS provato da questa finestra. Ingestione ampia funzionale non provata. Ricevuta integrale in evidence/ingestion-wide-ready-operator-20261108.json. Non ripetere installer o continuazione.
+
+UDP PR49 sourcec0cf1702 modifica soltanto il decoder d’identità, test e workflow: nessuna migrazione. Lettore read-udp-wide-preflight-20261108.py qualificato su commitb5a0a7b7, CI42527648147/job128874710706: sei PASS, zero skip, query su PostgreSQL17/PostGIS3.5 dopo36script in fixture, SELECT-only e righe invariate. API1.44, JAR/storia e conteggi attività, dichiarazioni SeaweedFS e metadata credenziale/hash truststore; zero stop/migrazioni/S3/token. Target non eseguito. Delivery73d98958ca93a38cbb34ecf14c9e4b3651fcac4d, wrapperSHA3840a8899299cb961c205e26aff80fb1d54f4a68d696730fc6edacff975b2c6f, cinque file riletti e verificati. Comando in OUF_UDP_WIDE_UPGRADE_20261108.md.
+
+Archivio UDP nuovo dal sorgente esatto: CI42527648108/job128874710495 SUCCESS,19test identità/zero skip, immagine10004:10004 e scanHIGH/CRITICALPASS. Artifact13635797332/ZIPf0f55c74…,113722451byte. SQL36/YAML estratti coincidono col sorgente in CI; JAR7690ad46…. Log letti, byte scaricati non ancora verificati indipendentemente e nessun avvio candidato. Non chiamarlo immagine storica o installazione. Registry/STATE/MiniPET2.29/AGENTS e documenti aggiornati; prossimo passo preflight UDP, poi qualifica sostituzione e discovery/E2E. Nessun merge.
+
+## 9 novembre 2026 — UDP preflight acquisito e installer qualificato
+
+Ricevuta06:27CET UDP_WIDE_PREFLIGHT_READ: V36 esatta,34 handoff PROCESSED/34 job SUCCEEDED/110 lake VERIFIED,nessuna lease non scaduta e manutenzione non dovuta alla lettura, due reti SeaweedFS e truststore invariati. [Ricevuta integrale](../evidence/udp-wide-preflight-operator-20261109.json).
+
+Scaricato artifact13635797332 e verificati ZIP/gzip/blob/JAR/resources; il link pubblico per run/nome restituisce gli stessi byte. Factory/adapter S3 e motore identità selezionati uguali all'installato; classe PublishedIdentityPolicy diversa. Nessuna equivalenza totale del vecchio pacchetto dichiarata.
+
+CI42568440028 source 2a9e90cfb4a18d8a221ece1cde1019257684bdf5: classic/containerd,7 guard+2 cicli nativi ciascuno,zero skip,log letti. V36/59 tabelle sintetiche preservate,ruolo ordinario,due reti e legacy MAC corretti,JVM TLS con CA privata. Il precedente CI42568313188 falliva prima dell'avvio UDP per attesa PostGIS socket anziché TCP; fixture corretta. [Qualifica](../evidence/udp-wide-upgrade-qualification-20261109.json).
+
+Delivery b9fa2199e22dadfd75957f773d5324228e1da4ff,8 file riletti/hash verificati,wrapper riletto e Bash verificato. [Comando](OUF_UDP_WIDE_UPGRADE_20261108.md). Esecuzione VPS attesa, nessun effetto target dell'agente; Ingestion/Onboarding/MCP/Semantic già pronti non toccati. F1 PASS,F2–F6 aperti. Nessun merge/E2E dichiarato.
+
+
+## 9 novembre 2026 — UDP1024 installato, discovery ancora da attivare
+
+**UDP 1024 è installato e pronto.** La [ricevuta delle 06:58 CET del 9 novembre](../evidence/udp-wide-ready-operator-20261109.json) conferma `UDP_WIDE_1024_READY`: nuovo container `ab8549a93e83ecf43dfb2d7d89e469405736c39bed3815fa9d15d7f8b92005e7`, immagine `sha256:c99b53016a1928e1536ab2cdae316b48e441e7ee80f41f0b10581afc324bbdec`, readiness HTTP 200. Storia delle migrazioni e 59 tabelle conservate, entrambe le reti/IP/MAC/alias, mount, truststore e argomenti Java preservati; vecchio UDP e vecchio writer MinIO spenti. Tre letture DB READ ONLY, nessun migratore esplicito o richiesta business/S3 dello script. Il normale avvio può accedere a DB e S3. **Non ripetere l'installer.** La prova funzionale1024 e la normale operazione lake restano aperte.
+
+STATE/MiniPET2.31/AGENTS/registro/runbook aggiornati dalla ricevuta dell'operatore. Installazione dei componenti completata, non prova funzionale1024. Prossimo intervento: lettura mirata dei binding provider/southbound e attivazione MCP, preservando Teatri e la priorità SeaweedFS→E2E. F1 PASS; F2–F6 aperti. Nessun merge o nuova modifica target dell'agente.
+
+
+## 9 novembre 2026 — attivazione MCP e lettura dipendenze pronta
+
+Il sorgente MCP installato incorpora il manifesto con sei strumenti INACTIVE; main e kernel leggono l'embed, il kernel registra soltanto ACTIVE. Policy/ENV da sole non li espongono. Nessun cambio pubblicazione eseguito. Reader source 73bb41e5d6165ec704b06cb45c3a198669ebc6e1, delivery 08e179dbf5cefc415f2eb469d9bbfba2c00cef00, tre file e wrapper riletti, nove test locali PASS/zero skip e sintassi Bash verificata. Il probe /proc locale non disponibile non è contato come prova nativa. Massimo13GET Docker, metadata dei mount e namespace; zero DB/token/business/credenziali lette, nessuna modifica servizi. Target ancora non eseguito. [Comando e limiti](OUF_DISCOVERY_ACTIVATION_BINDINGS_20261109.md). STATE/MiniPET2.32/registro aggiornati; asset/profilo Teatri invariati, nessun merge.
+
+
+## 9 novembre 2026 — discovery: provider v2 e southbound v2 fermi
+
+Ricevuta operatore 07:24 CET DISCOVERY_ACTIVATION_BINDINGS_READ: Semantic ef35ea78 Java con listener8080, MCP41c1e01d running, immagini attese. Provider v2 f3d59af9 e southbound v2 1fc5ae6a exited; reti condivise configurate ma connettività non testata. Semantic dichiara provider/worker false e credenziale senza mount. Legacy10a62374 created/senza reti, da mantenere fermo. Zero DB/token/business/config/credential contents o modifiche. [Ricevuta](../evidence/discovery-activation-bindings-operator-20261109.json). I container v2 corrispondono agli ID storici della creazione/avvio con runtime personalizzato; il runtime corrente deve essere letto prima di un nuovo start. Nessun riavvio o riuso di scope consumati effettuato.
+
+
+## 9 novembre 2026 — controllo avvio provider v2 pronto
+
+Preparato il reader di runtime registrato, configurazione APISIX/adapter, certificati e materiale esistente del 29 ottobre, vincolato ai tre frame correnti. Nessun target code eseguito, broker/start/DB/token/provider invocato. Confronto di una credenziale preparata e lettura della configurazione con TLS key incorporata senza emissione di valori o hash della credenziale. Source 066168fafad38c0f722541e710fb46ce2ac370de, delivery 8d44de9007487e312514d42dbfc5a0a0beadeccf, due file e wrapper riletti. Dieci test locali PASS/zero skip, incluso OpenSSL reale su certificato temporaneo; nessuna prova Docker nativa o esecuzione VPS del nuovo reader. [Comando](OUF_DISCOVERY_STARTUP_READ_20261109.md). STATE reso più compatto, MiniPET2.33/AGENTS/registro aggiornati. Nessun merge o ripristino runtime dichiarato.
+
+
+## 9 novembre 2026 — controlli avvio conclusi, ripristino provider ancora da completare
+
+Ricevuta operatore07:51CET DISCOVERY_STARTUP_INPUTS_READ: configurazione search/fetch, scope/audience/workload e TLS dichiarato coerenti; certificati validi per data/nome. Credenziale/truststore preparati corrispondono ai riferimenti conservati ma non sono installati. Nessun handshake, token, richiesta provider/DB o modifica runtime. Runtime v4 con adapter DELETED e southbound DELETING; `startAdmitted:false` è un valore del reader, non esito di un tentativo. Task/handle nativi residui e causa DELETING non provati. [Ricevuta](../evidence/discovery-startup-inputs-operator-20261109.json).
+
+Revisione del codice e degli handoff: prove native provider/worker disponibili, avviatore completo per lo stato corrente non ancora qualificato. Serve riconciliazione della pulizia e nuova generazione ammessa; journal storici conservati, nessun reset/replay o cambio runtime per eludere admission. Nessun nuovo comando VPS consegnato. [MCP PR84](https://github.com/GioNob/ouf-mcp-server/pull/84) prepara separatamente il requisito manifesto ACTIVE dei sei strumenti: test tramite factory normali/picker e dinieghi prima di Gateway/store. CI in corso; VPS PR83/INACTIVE invariato. Primo controllo formato fallito per newline finale del test, corretto nel successore. Stato e MiniPET2.34 aggiornati; F1 acquisito, F2–F6 e prova funzionale1024 restano aperti.
+
+La prima CI di PR84 passa analisi/kernel/manifest con race, ma segnala il test PostgreSQL che assumeva implicitamente discovery INACTIVE. La fixture ora imposta INACTIVE prima di creare il piano: conserva il diniego indipendentemente dal catalogo di rilascio. Le descrizioni dei tre strumenti analisi sono allineate alla pubblicazione. Successore 6bbe1b587dfa6eee8ef503f11e846731c5ebd80e in qualifica; nessun controllo produttivo allentato.
+
+Qualifica aggiuntiva: PostgreSQL/race/build sul codice eeba36ed PASS (42577858718/job129029527599); impostazione e registrazione esplicita del manifesto fixture corrette. Il successore225e625a modifica soltanto il workflow di composizione per includere i nuovi nomi dei test: pairwise SDK/schemi Gateway PASS42578075637/job129030205026, test nuovi effettivamente eseguiti e log letti. Il package httpclient non ha test corrispondenti a quel filtro, quindi non è dichiarato coperto da questo job. Suite completa/immagine corrente ancora in corso. Nessuna prova provider live o installazione VPS.
+
+
+## 9 novembre 2026 — MCP pubblicazione strumenti: codice e immagine qualificati
+
+PR84, source225e625a63536dabd4fc0ebdbb90d8b7be7ccfb8: fullCI42578075516/job129030204635 PASS, log letti. Suite normale/race con PostgreSQL, controlli staticcheck/nilness e govulncheck (nessuna vulnerabilità rilevata), build e archivio immagine completati. Artefatto13656651066,9.905.775byte,digest API sha256:6c8d62c22d7e7de33825d8db3590a2e27bdfcd188683cc210a76288e2e8721e9; archivio non ancora scaricato/verificato indipendentemente. Pairwise nuovi test SDK/Gateway PASS42578075637;10file sorgenti letti/confrontati. [Evidenza](../evidence/mcp-analysis-discovery-publication-20261109.json).
+
+Sei publicationState ACTIVE, tre descrizioni analisi aggiornate e versione manifesto1.10.0; nessun codice esecutivo, binding autorizzativo o budget produttivo modificato. L'immagine sul VPS resta PR83 e gli strumenti INACTIVE. Nessun merge/installazione/grant/replay e nessuna nuova prova provider/E2E. Ripresa: lifecycle southbound e nuova generazione provider, poi credenziale/TLS, backlog/grant e installazione coordinata MCP. Non ripetere i reader già conclusi o gli installer1024.
+
+## 9 novembre 2026 — Lettore dei residui provider pronto per il VPS
+
+Sorgente789a2e131abda301424f7d011b545e4607a5703b: nuovo controllo circoscritto a provider v2 e southbound v2, frame API1.44, wrapper/configurazione osservati. Letture runc/containerd/processi/journal/netns/nft, senza invocare il runtime personalizzato o cleanup/avvio. Consultati gli esecutori terminali storici soltanto come sorgente: nessuna approvazione scaduta riusata. Il binding adapter è per candidato, distinto dal digest dell'intero file; null runc e assenza metadata containerd sono gestiti da letture riuscite, mai dai messaggi d'errore.
+
+CI42580864748/job129038979362 PASS:16 test nuovi più10 helper, zero skip, log letti. Tre sorgenti riletti esatti; Bash verificato. Esecuzione VPS pendente, snapshot sequenziale e nessuna qualifica cleanup/start dedotta. [Runbook](OUF_DISCOVERY_LIFECYCLE_READ_20261109.md). STATE, MiniPET2.35 e registro aggiornati; nessun avanzamento funzionale F2–F6 dichiarato.
+
+## 9 novembre 2026 — Residuo southbound circoscritto, rimozione condizionata qualificata
+
+Ricevuta operatore07:46:05 UTC, directory discovery-lifecycle-rman5rz0: adapter senza residui; southbound senza processi/task/shim/runc/regole proprie, metadata containerd presenti e percorso netns inode 4040196 diverso dal namespace registrato. Coordinatore BLOCKED, leaseAuthorized=false, due set per famiglia vuoti. Tutti i frame/journal invariati durante la lettura sequenziale. [Ricevuta integrale](../evidence/discovery-lifecycle-operator-20261109.json).
+
+Sorgente633aecc9ca6585ef3684f560125f64652d115c87: recupero circoscritto all'eventuale segnaposto root 0600 con byte `{}`. Preflight corrente sotto lock esistenti; verifica nsfs, mountinfo, mountID e inode, copia prima dell'unlink, secondo controllo dopo intento. Nessun umount, runtime journal reset, scrittura nft, container start/stop o accesso applicativo. Coordinatore resta BLOCKED, nuova generazione non ammessa. CI 42582681407/job 129044958878 PASS: 9 unitari e 2 nativi Linux, zero skip, log letti; nsfs e bind ordinario montati realmente e preservati, originale rimosso solo dopo smontaggio della fixture. Intero controller/VPS ancora da eseguire. [Runbook](OUF_DISCOVERY_PLACEHOLDER_RECOVERY_20261109.md). MiniPET 2.36 e stato aggiornati; F2–F6 restano aperti.
+
+## 9 novembre 2026 — Segnaposto rimosso, quiescenza qualificata
+
+Ricevuta operatore delle 08:06:55 UTC: SOUTHBOUND_UNMOUNTED_PLACEHOLDER_REMOVED, nessun umount, frame e journal conservati; coordinatore ancora BLOCKED e set vuoti sotto lock. Metadata containerd conservati. Provider non pronto, nuova generazione non ammessa. [Ricevuta](../evidence/discovery-placeholder-removed-operator-20261109.json). Comando completato, da non ripetere.
+
+Sorgente 3c961d3e897d3573e6c7af2abe49cac8f53c9f45: invoca Coordinator.quiesce del repository, con moduli originali fissati per hash e trasporto nft limitato a un solo batch di flush dei quattro set posseduti. Preflight sotto i lock esistenti, journal QUIESCING → QUIESCED, lease/start sempre false, readback della struttura e dei vecchi journal. Nessun reset o riuso di ammissione storica. CI 42585264317, job 129053446029: 7 test unitari e 2 prove con nftables reale, zero skip, log letti. Test native sul confine nft/journal, non sull'intero controller VPS; esecuzione VPS pendente. [Consegna e limiti](OUF_DISCOVERY_COORDINATOR_QUIESCENCE_20261109.md). MiniPET 2.37; F2–F6 invariati.
+
+## 9 novembre 2026 — Quiescenza fermata prima delle modifiche, confronto nft mirato
+
+Ricevuta operatore delle 08:31:42 UTC: HELD / NFT_INSTALLATION_STRUCTURE_DRIFT nel controllo di proprietà, due letture nft, nessun intento, nessun flush o transizione. [Ricevuta](../evidence/discovery-coordinator-quiescence-held-operator-20261109.json). Quiescenza non completata, non rilanciare. L'impronta del proprietario include handle e metainfo; la prova precedente non confrontava l'impronta storica VPS con lo stato attuale.
+
+Sorgente fcc4b80ade8a5d16e44c3e6b60d6305990beec76: lettore mirato delle tabelle conservate/correnti e dei metadata di boot, sotto i lock esistenti, con otto letture nft. Non cambia regole, journal, impronte o autorizzazioni. CI 42587680408, job 129061314739: 8 test unitari e 2 prove native, zero skip, log letti. Ricreazione nft reale riproduce impronta esatta diversa a footprint di boot invariato; causa storica VPS non provata. [Consegna](OUF_DISCOVERY_NFT_DRIFT_READ_20261109.md), esecuzione VPS pendente. MiniPET 2.38, F2–F6 invariati.
+
+## 9 novembre 2026 — Footprint di boot coincidente, coordinatore successore preparato nel codice
+
+Ricevuta delle 08:48:07 UTC: BOOT_FOOTPRINT_MATCHES_EXACT_DRIVER_HASH_DIFFERS. Driver e proprietario installato coincidono; formato ordinario stabile e coerente col footprint di boot, vecchia impronta esatta diversa. Quattro set vuoti. Nessuna modifica e causa storica non provata. [Ricevuta](../evidence/discovery-nft-drift-operator-20261109.json). Il percorso boot originale richiede esplicita riconciliazione della generazione nativa; una semplice modifica dello stato non risolve il controllo esatto.
+
+Sorgente 140eaae6c6b4012c1d88b84ce33a761f442598e3: prepara un nuovo contesto separato con binding corrente e nuova transazione, journal QUIESCED/unauthorized, cinque file di profilo e dieci sorgenti originali verificati. Nessuna pubblicazione sul puntatore attivo, modifica del vecchio owner/driver/journal o nft. CI 42590320335, job 129070074610: 6 test unitari e 2 nativi, zero skip, log letti; comando owner originale eseguito sulle tabelle ricreate, modifica estranea rifiutata. [Consegna](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md). VPS pendente, attivo ancora BLOCKED; integrazione boot e nuova generazione provider da qualificare. MiniPET 2.39 e F2–F6 invariati.
+
+## 9 novembre 2026 — correzione del pin della ricevuta discovery
+
+Alle 10:46 CET il primo staging si è fermato su EXACT_DRIFT_RECEIPT_REQUIRED, prima di intento o modifiche: [ricevuta](../evidence/discovery-coordinator-stage-held-operator-20261109.json). La copia della ricevuta drift usata dall'agente ometteva installedBoot.retainedPreflightFootprintMatches=false. Rimosso dalla ricevuta completa, quel campo riproduce esattamente il pin errato; ripristinato, il produttore originale serializza 3.128 byte con SHA fcea4316cd6daa153c454c6ddab59feedf61ff57ffc5f921eac6eb4e6ac8eeb3.
+
+Sorgente [c73bcf94](https://github.com/GioNob/ouf-deploy/commit/c73bcf94e305b1e812088753b38d1a2f176d9724): copia Git e pin corretti, controllo esatto preservato, hash osservato riportato in caso di nuovo diniego. CI [42596438560](https://github.com/GioNob/ouf-deploy/actions/runs/42596438560), job 129090107145: 11 test unitari e 2 nativi PASS, zero skip, log letti; ingresso main e contratto produttore/consumatore coperti. Tredici sorgenti consegnati riletti e verificati, wrapper Bash verificato. Versione corretta sul VPS pendente. Coordinatore attivo BLOCKED, provider fermo; F1 PASS, F2–F6 aperti. [Runbook](OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md).
+
+## 9 novembre 2026 — Ripresa chat: staging concluso e consegna boot
+
+La ricevuta operatore delle 10:56 CET coincide con `evidence/discovery-coordinator-staged-operator-20261109.json` già salvata al commit cf2de72e: DISCOVERY_COORDINATOR_SUCCESSOR_STAGED_QUIESCED, contesto separato QUIESCED senza lease/avvio, attivo storico BLOCKED, puntatore/servizi/nft invariati. Non ripetere lo staging. STATE, AGENTS e MiniPET erano rimasti al comando precedente e sono riconciliati.
+
+Il lavoro successivo della chat precedente è il controller di collegamento boot in cf2de72e. CI push 42599093020/job129098851349: 9 unitari e 3 nativi PASS/0skip, log letti; CI PR42599102979 SUCCESS. Unitari rieseguiti in questa sessione. Completato wrapper con 14 sorgenti verificati, sintassi Bash e routing provato con curl/sudo simulati. Il controller rimane byte-identico a quello qualificato.
+
+[Runbook corrente](OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md): due comandi systemd, daemon-reload e puntatore, senza restart Docker/provider. systemd è simulato in CI; VPS pendente, nuova generazione e reboot reale non provati. F1 PASS, F2–F6 aperti; nessuna osservazione live nuova, merge, grant o attivazione di dominio.
+
+## 9 novembre 2026 — Boot HELD prima della pubblicazione, diagnosi systemd mirata
+
+Ricevuta operatore 10:24:44 UTC / 11:24:44 CET: SETTLED_LOADED_SYSTEMD_UNITS_REQUIRED nella verifica delle unità caricate. Intento e pubblicazione false; nessun restart/start o cambio puntatore. [Ricevuta](../evidence/discovery-successor-boot-held-operator-20261109.json). Non ripetere il controller.
+
+Il lettore mirato confronta le proprietà restituite per le due unità con/senza --all e separa i quattro predicati della riga 170. Verifica locale simulata PASS, VPS pendente. Nessuna correzione del controllo esatto o del controller effettuata: systemd v252 mostra già valori vuoti con --property; la causa concreta va osservata. STATE e registro aggiornati, F2–F6 invariati.
+
+## 9 novembre 2026 — ExecStartPre omesso: correzione verificata con systemd reale
+
+La [lettura operatore delle 11:33 CET](../evidence/discovery-boot-systemd-operator-20261109.json) omette solo ExecStartPre del guard con/senza --all. Docker supera i predicati, PID26930; NeedDaemonReload=no e ControlPID=0 per entrambe le unità. Nessun effetto runtime.
+
+Sorgente 6f378f07921baefd092b0b20b7f6368c0d10dd09: prova busctl del valore tipizzato esatto a(sasbttttuii) 0 solo per il campo omesso. Gli altri campi restano obbligatori; comandi, metadata e PID restano verificati. Ricevuta HELD originale vincolata a 1195 byte/SHA865ee49a, nessun intento esistente riutilizzato. CI42602163458/job129109035198 SUCCESS, log letti: 14 unitari, 1 test reale systemd che riproduce omissione e rifiuta array popolato, 3 native pubblicazione/nft. [Qualifica](../evidence/discovery-boot-empty-prestart-qualification-20261109.json). Continuazione VPS pendente, wrapper aggiornato al sorgente qualificato. Nessun restart Docker/provider; F2–F6 aperti.
+
+## 9 novembre 2026 — Successore collegato al boot sul VPS
+
+La [ricevuta operatore delle 11:42:59 CET](../evidence/discovery-successor-boot-bound-operator-20261109.json) conclude DISCOVERY_SUCCESSOR_BOOT_BOUND: intento e pubblicazione completati, puntatore attivo cambiato, comandi caricati verificati, daemon-reload e osservatore riusciti. Aggiunta la directory di scrittura prevista al guard. PID Docker/frame/staging e contesti storici conservati; niente restart/start/stop, nft, DB, S3, DNS, token o richieste provider. Ricevuta completa 43 campi, 1.434 byte nella serializzazione originale, SHAffd4362f54b766a25c7afa0dc9f62129284a72b616cfdf518c39a79f64fea585.
+
+Coordinatore selezionato QUIESCED; lease/start false, provider non pronto, generazione non ammessa. Vecchia configurazione e journal runtime invariati. Non ripetere staging, diagnosi o boot. Prossimo sviluppo: comporre nuova creazione, profili, ammissione e switch runtime con gli owner esistenti di m2_discovery_installation_profile; il loro codice richiede binding/autorità correnti e non è un installer target già pronto. Nessun nuovo comando VPS consegnato. F1 PASS, F2–F6 aperti; nessuna prova di reboot/E2E aggiunta.
+
+## 9 novembre 2026 — Input della nuova generazione preparati nel codice
+
+Source b088b1f84b70e2203aa2f5c7463e37f4b988ca07 collega i template storici di adapter/southbound alla selezione del coordinatore di boot, in file privati separati e non eseguibili dal runtime. Ricevuta boot completa, pointer/guard/metadata correnti e sorgenti hash-bound verificati; nessuna credenziale, firma, CREATE, switch, avvio o modifica nft. Nuovi CID/transazioni, peer/OCI indipendenti e autorità restano da preparare.
+
+CI42604343907/job129116339541 SUCCESS,8test/0skip e log letti. Prove pure e file reali0600, parziali e replay rifiutati;15sorgenti riletti, wrapper sintatticamente valido e dispatch simulato al solo preparatore. [Runbook](OUF_DISCOVERY_GENERATION_INPUTS_20261109.md), VPS pendente. Boot non ripetibile; F2–F6 restano aperti.
+
+## 9 novembre 2026 — Input privati della nuova generazione completati sul VPS
+
+[Ricevuta delle 11:55:17 CET](../evidence/discovery-generation-inputs-prepared-operator-20261109.json): DISCOVERY_GENERATION_INPUTS_PREPARED, due ruoli e tre hash verificati, directory discovery-generation-inputs-99d46y_j. Quattro percorsi storici di identità per ruolo; nessuna nuova identità o autorità. Coordinatore QUIESCED, wrapper/puntatore/journal invariati, zero CREATE/firme/avvii/reload/nft/richieste applicative. Intento presente: non ripetere il preparatore. Ricevuta originale34campi/1.383byte, SHA8c6d8eb8ae5dd47b9a12d304f53d02ad1e09afad61dfa28282ccda482182af15.
+
+Prossimo sviluppo: consumare gli input esatti per il profilo di creazione e i binding del peer Semantic corrente, con aspettative OCI/rootfs indipendenti e nuove identità/autorità. Firma, ammissione, switch e avvio non sono effettuati; nessun nuovo comando VPS consegnato. F1 PASS, F2–F6 aperti.
+
+
+## 9 novembre 2026 — Lettore delle ricette della nuova generazione qualificato
+
+Sorgente a14e6b61c2efe56f838507990850812d694407d1; CI42608238333/job129129595875 PASS,11test/0skip, log diretti letti. Consuma la ricevuta e i tre input delle11:55:17CET; ricompila i draft OCI indipendenti e confronta le policy installate, esponendo soltanto percorsi delle differenze, NIC/peer e sigilli storici. Nessuna autenticazione o riemissione di autorità; gli indici peer e i sigilli storici non diventano correnti. Il componente recente a una rete/Registry nuovo non è già un installer per la coppia a più reti con Semantic esistente.
+
+Consegna a17hash verificata con dispatch simulato unico e pulizia download; sorgente/compilatore riletti da GitHub. Nessuna invocazione VPS eseguita dall'agente: ricevuta attesa. Nessuna chiusura F2–F6. [Runbook](OUF_DISCOVERY_GENERATION_SOURCES_20261109.md), [qualifica](../evidence/discovery-generation-source-read-qualification-20261109.json). Non ripetere staging, boot o preparatore già conclusi.
+
+
+## 9 novembre 2026 — Fonti lette e composizione della coppia qualificata
+
+Ricevuta operatore delle 12:25:29 CET: DISCOVERY_GENERATION_SOURCES_READ, 25 metadata stabili, entrambe le ricette OCI indipendenti coincidenti con le policy installate. Adapter a due NIC e southbound a tre, dichiarazioni reciproche coerenti. Il flusso WORKLOAD_GATEWAY conserva il BRIDGE_PORT storico 1377: nessuna osservazione del Semantic corrente. Zero CREATE, firme, letture dei file credenziali/mount, richieste Engine o applicative. Ricevuta completa conservata, 7.224 byte nel formato produttore, SHA256 8a0ed83e6cbbcd4f46802d610c5382a57605381242896a0145174f7fe2a31d3d. Non ripetere il lettore.
+
+Sorgente 33f05f1159da7a04396ded70be0d60f6b26dc2a1: nuova composizione pura della coppia. Ricompila i frame con CID distinti, conserva NIC/MAC e flussi, collega i peer reciproci e richiede una dichiarazione Semantic completa al posto di 1377. Seleziona lo stesso coordinatore successore senza cambiare kernel/DNS/lock. Nessuna firma, proprietà CREATE, aspettativa rootfs o ammissione ricavata dai dati storici. CI 42610077499, job 129135939384: 11 test PASS, zero skip, log diretti letti. Topologia operatore e baseline indipendenti, documenti/identità sintetici: non prova native VPS.
+
+[Composizione e prossimo lavoro](OUF_DISCOVERY_SUCCESSOR_COHORT_20261109.md): aspettativa Semantic indipendente dai documenti pre-CREATE conservati, da verificare e integrare con nuove creazioni/sigilli/mandati e owner esistenti. Nessun nuovo comando VPS qualificato; F2–F6 aperti.
+
+
+## 9 novembre 2026 — Ricetta indipendente del peer Semantic e lettore qualificato
+
+Sorgente 8f99ad0a91e7276cf479b65b24d646a227328fc6, CI 42620047391, job 129169531485: 13 test unitari e 2 nativi PASS, nessun test saltato, log diretti letti. Immagine archiviata esatta verificata anche tramite attestazione del produttore. Due richieste complete ereditate da un predecessore isolato, con Binds/Mounts e hostname conservato: intera OCI derivata dalla baseline indipendente coincidente e collegamenti reciproci osservati. Java non avviato; nessuna richiesta applicativa.
+
+La prima esecuzione CI si era fermata sulla custodia dell'eseguibile sotto /opt del runner, corretta spostando la copia runc di fixture sotto /usr/sbin. La seconda ha distinto il bundle OCI containerd 0644 dalle ricevute private 0600: lettore dedicato root-owned e stabile, senza modificare il controllo dei documenti privati; test negativo sul file scrivibile da altri. Entrambi gli esiti restano nella [qualifica](../evidence/retained-semantic-peer-qualification-20261109.json).
+
+Pronto [il pacchetto di sola lettura](OUF_RETAINED_SEMANTIC_PEER_20261109.md), nove sorgenti vincolati a commit e SHA256. VPS non ancora osservato, nessuna ammissione o autorità. La dichiarazione del Semantic corrente non è riusabile automaticamente dopo la futura sostituzione per credenziale/provider. Attendere e riconciliare il JSON operatore, poi collegare creazione governata della coppia, nuovi sigilli e mandati. F2–F6 restano aperti.
+
+## 10 novembre 2026 — Lettura del peer Semantic conclusa
+
+Ricevuta operatore delle 13:29:10 CET, `SEMANTIC_PEER_RECIPE_MATCHED_NOT_AUTHORIZED` / `COMPLETE`. La richiesta pre-CREATE è stata ricostruita e la configurazione OCI coincide interamente con l'aspettativa indipendente. Dichiarazione e osservazione del peer concordano. Cinque GET Engine, sei comandi nativi di lettura e cinque file di metadati stabili. Provider e worker ancora disabilitati. Prossimo passo: preparare creazione, sigilli e ammissione della nuova coppia. [Runbook](OUF_RETAINED_SEMANTIC_PEER_20261109.md).
+
+## 11 novembre 2026 — Cutover Semantic resistente alla perdita del terminale
+
+Opus ha verificato la consegna precedente e segnalato il rischio di interruzione dopo lo stop. Il controller `08566c6c` isola il processo di applicazione dal terminale, ignora SIGHUP, SIGINT e SIGTERM fino alla fine e salva `result.json` in WORK, root:root, modo 0600. Il [launcher aggiornato](../scripts/deliver-semantic-provider-cutover-20261111.sh) è `58313b1d`.
+
+[Tre test passati](https://github.com/GioNob/ouf-deploy/actions/runs/42998753504/job/130449311145). Segnali reali e stdout chiuso dopo lo stop simulato lasciano una ricevuta sia per il ripristino sia per HELD. La prova nativa separata ripristina lo stesso CID e il MAC su Docker 29.8.1. Giovanni esegue il nuovo `--plan` nel suo terminale. Nessuna prova di cutover o modifica sul VPS.
+
+## 11 novembre 2026 — Verifica dei nomi DNS di Semantic per D
+
+Il piano di Giovanni è uscito `HELD` su `BACKEND_PEER_CHANGED`, in sola lettura. L’inspect di Opus conferma `172.18.0.6`, MAC `b2:96:a1:e2:c1:8d`, alias configurati `790c62742c92` e `11d9362c7db4`. `ouf-semantic-registry` compare nella ricetta APISIX storica. Gli upstream attivi e gli URL dei singoli client restano da osservare sul VPS.
+
+Controller `65635c79`, launcher `8550abc0`. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43000184485/job/130454096945), con rifiuto di una variazione nascosta dalla vista di compatibilità e ciclo nativo su Docker 29.8.1. Il sostituto conserva i nomi DNS effettivi e aggiunge il proprio CID breve. Il ripristino conserva gli alias configurati originali. Nessun cutover eseguito.
+
+## 11 novembre 2026 — Inventario dei certificati per D
+
+Il piano di Giovanni ha superato il controllo alias ed è uscito `HELD` su `CA_INVENTORY_UNPROVEN`, in sola lettura. La ricevuta GitHub del 9 novembre conferma il confronto dei byte e la dimensione del truststore, ma il totale atteso è in `public-trust-inputs.json` sul VPS.
+
+Controller `063de27f`, launcher `8866271e`. Il controller confronta conteggio e impronte con la ricevuta preparata e separa `JAVA_CA_INVENTORY_UNPROVEN` da `PROVIDER_CA_INVENTORY_UNPROVEN`, riportando i soli conteggi. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43002211123/job/130460838099), inclusa la rilettura Java di ogni certificato dopo l’unione con 18 CA di prova. Nessun cutover eseguito.
+
+## 11 novembre 2026 — Diagnosi del record di trust del provider per D
+
+Il piano di Giovanni è uscito `HELD` con `PROVIDER_CA_INVENTORY_UNPROVEN`. Ha rilevato 118 CA Java, 151 nel truststore provider e 161 nell’unione. Il bundle provider resta integrale.
+
+Controller `f23d5f6c`, launcher `68954ea2`. Il confronto con il writer `8cc42b0d` conferma schema, stato, campi SHA-256 del DER e hash canonico. I JSON sono UID 0, modo 0600, con GID ereditato. Il report provider aggiunge il solo codice interno e il conteggio dichiarato, se disponibile. [Quattro test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43004474173/job/130468406890). Causa VPS da confermare, nessun cutover eseguito.
+
+## 11 novembre 2026 — Truststore conservato e CA del southbound
+
+Giovanni ha letto `STOP_RECONCILE`, `complete: false` e `CURRENT_RETAINED_PROVIDER_IDENTITY_CHANGED` nel `result.json` del 29 ottobre. Il controllo nativo sul vecchio southbound avveniva dopo scrittura, rilettura e registrazione del truststore. Il conteggio osservato del provider resta 151 e l’unione resta 161.
+
+Controller `9b6c0112`, launcher `8c9bad62`. D richiede i contatori `publicTrustStoresPrepared=1` e `publicTrustStoreReadbacks=1` e la conservazione del file, confronta il PKCS#12 con l’inventario completo e verifica offline la firma del certificato southbound con la sola CA registrata. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43006571849/job/130475418120), compreso il rifiuto di un’altra CA con lo stesso nome. Nessun cutover eseguito.
+
+## 11 novembre 2026 — D completato e consegna della preparazione A
+
+[Giovanni e Opus](../evidence/semantic-provider-cutover-d-operator-20261111.json) attestano `SEMANTIC_PROVIDER_CUTOVER_READY`. Semantic `43a294de…`, PID 83015, Java pronto alle 11:55:30 CET, HTTP 200, sette bind RO. Predecessore fermo e staccato. Successor ancora `created`, worker spento. CA 118/151/161, confronto issuer offline positivo.
+
+Controller A `799350fb`, launcher `87dea4a3`. A lega il peer alla ricevuta D e osserva generazione e veth reciproco. Verifica in DER il certificato server e l’SNI del bind APISIX, con il campo key escluso dal controllo. `--apply` con hash crea solo il pacchetto privato di quattro JSON. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43008901347/job/130483231760), incluso veth reale su rete isolata. A resta da eseguire sul VPS.
+
+## 11 novembre 2026 — A completato e profilo di installazione P
+
+Giovanni riporta `SEMANTIC_PROVIDER_PREPARATION_A_STAGED`, piano `17de05e7d9b9610e58919a5b22697f28865ea0b076327d0b477fbae03d22daa8`, quattro JSON privati e zero oggetti runtime modificati. Opus conferma il veth reciproco di Semantic, `veth823719e`, ifindex 168, iflink 2. Il certificato configurato del southbound coincide in DER. I dati di transazione di A restano separati dal nuovo profilo.
+
+Controller P `10bb8dba`, launcher `18c671c1`. Il piano in sola lettura stampa tutto il profilo stabile, con SHA-256 del file canonico più LF e hash del piano. L’apply vincolato al piano pubblica il file root:root 0600 solo se assente. [Cinque test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43022084617/job/130527496813). Rilevamento sul VPS e revisione Opus pendenti. B1/B2 non implementati.
+
+## 11 novembre 2026 — P verifica il socket Docker attivato da systemd
+
+Il primo `--plan` è terminato con `DOCKER_PEER_UNPROVEN`. Opus ha verificato le unità e la proprietà di `/run/docker.sock`. La modalità systemd verifica il listener tra i descriptor di `dockerd` prima di collegarsi. La modalità daemon verifica il PID del peer e il suo eseguibile.
+
+Controller `f846940c`, launcher `2a73a13f`. [Otto test passati](https://github.com/GioNob/ouf-deploy/actions/runs/43024793348/job/130536665105). Sul VPS sono ancora da eseguire il nuovo piano P e la revisione del profilo completo da parte di Opus.

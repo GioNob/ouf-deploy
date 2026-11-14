@@ -1,0 +1,73 @@
+{
+  "schema": "ouf.semantic-application-upgrade-qualification.v1",
+  "status": "QUALIFIED_TARGET_EXECUTION_AWAITED",
+  "sourceCommit": "c52804add2b26f5f9dad6e84073844cdc75aa880",
+  "script": "scripts/upgrade-semantic-application-20261108.py",
+  "scriptSha256": "2e7e7e42367b3329f6ebd441bba665f974ea43871049d863415524610138efb1",
+  "candidate": {
+    "sourceCommit": "c2dae77b42f1811b704465f6ab813c91d808ade4",
+    "artifactId": 13066396654,
+    "artifactRun": 41263544004,
+    "zipSha256": "1a7045ffb39486f2579fb342d7fd881f5a123f74a0810d353bce3c755bfc76ba",
+    "zipBytes": 203419418,
+    "jarSha256": "e69f961a06fa37d019f4015d98dd5419ee9da1fa1387b5b0edaac4214a0cb016",
+    "allEightPayloadHashesVerified": true,
+    "archivedSourceGitBlobsVerified": 221,
+    "sourceTreeMatched": true,
+    "jarMatchesImageLayer": true,
+    "allTwelveMigrationBytesMatchSource": true,
+    "yamlMatchesSource": true,
+    "publisherVerifiedByCi": true
+  },
+  "ci": {
+    "run": 42506812587,
+    "jobs": [
+      {
+        "id": 128811107718,
+        "backend": "containerd",
+        "conclusion": "success",
+        "nativeTests": 2,
+        "macNegativeTests": 6,
+        "skips": 0,
+        "logsRead": true
+      },
+      {
+        "id": 128811107823,
+        "backend": "classic",
+        "conclusion": "success",
+        "nativeTests": 2,
+        "macNegativeTests": 6,
+        "skips": 0,
+        "logsRead": true
+      }
+    ],
+    "engine": "29.8.1",
+    "applicationRebuilt": false
+  },
+  "targetExecuted": false,
+  "containerReplacementProvenOnTarget": false,
+  "databaseMigrationProvenOnTarget": false,
+  "e2eProven": false,
+  "earlierFailures": [
+    {
+      "run": 42506231540,
+      "reason": "WRONG_CONTAINERD_IMAGE_ID_AND_CREATE_HOST_DEFAULT"
+    },
+    {
+      "run": 42506408287,
+      "reason": "CREATE_OOM_DEFAULT_AND_GENERATED_CID_ALIAS_OBSERVED"
+    },
+    {
+      "run": 42506596270,
+      "reason": "START_RESTORES_NULL_OOM_DEFAULT"
+    }
+  ],
+  "limitations": [
+    "Synthetic old process waiting behind gate, V10 database and non-admin owner; not concurrent requests against old production application",
+    "Actual archived candidate starts after packaged Flyway V11/V12; history and one receipt preserved",
+    "CI IAM/provider configuration synthetic; target policy transport, discovery delegation, grants and external provider remain unproven",
+    "MCP14 and 1024-column service changes are not installed by this script",
+    "No target GitHub CLI or archive availability observed; delivery accepts explicit local archive or uses existing gh authentication",
+    "No automatic rollback or replay; interrupted target operation requires retained journal reconciliation"
+  ]
+}

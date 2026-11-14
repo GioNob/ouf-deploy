@@ -1,0 +1,36 @@
+{
+  "schema": "ouf.discovery-startup-reader-qualification.v1",
+  "dateLocal": "2026-11-09",
+  "timezone": "Europe/Rome",
+  "sourceFiles": {
+    "scripts/read-discovery-startup-20261109.py": "0df0567b786f6d5317951c838062e166a4d5037a07d95a3c145b578949372a89",
+    "tests/test_discovery_startup.py": "a22786653f5c3bc7524a168b65018fbfb65688ba31ff00a81e46496416cd1c14"
+  },
+  "tests": 10,
+  "failures": 0,
+  "skips": 0,
+  "scope": "LOCAL_UNIT_FIXTURES_AND_REAL_OPENSSL_NOT_NATIVE_DOCKER_OR_TARGET",
+  "nativeOpenSsl": {
+    "certificateGeneratedInTemporaryFixture": true,
+    "validDateAndHostnamePassed": true,
+    "differentHostnameRejected": true,
+    "privateKeyInputRejected": true,
+    "fixtureRemoved": true
+  },
+  "controls": [
+    "exact application frame mismatch before config reads",
+    "bounded read-only mount resolution",
+    "traversal and unrelated root rejection",
+    "standard runtime not restart authorization",
+    "custom runtime read only; target Python not executed",
+    "missing candidate avoids historical journal",
+    "DELETED journal reported without replay",
+    "embedded private TLS key and OIDC values absent from public summary",
+    "prepared credential compared without exposing value/hash",
+    "changed prepared metadata stops before credential read"
+  ],
+  "targetExecuted": false,
+  "serviceChanges": false,
+  "credentialValidityAtIssuerTested": false,
+  "tlsChainVerified": false
+}

@@ -1,0 +1,27 @@
+name: Current discovery placeholder recovery
+on:
+  push:
+    branches: [docs/storage-functional-reset-20261107]
+    paths:
+      - scripts/reconcile-discovery-placeholder-20261109.py
+      - tests/test_discovery_placeholder.py
+      - tests/native_discovery_placeholder.py
+      - .github/workflows/discovery-placeholder-recovery.yml
+  pull_request:
+    paths:
+      - scripts/reconcile-discovery-placeholder-20261109.py
+      - tests/test_discovery_placeholder.py
+      - tests/native_discovery_placeholder.py
+      - .github/workflows/discovery-placeholder-recovery.yml
+permissions: {contents: read}
+jobs:
+  closed-placeholder-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Exact receipt and destructive boundary regressions
+        run: sudo python3 -I -B -m unittest discover -s tests -p test_discovery_placeholder.py -v
+      - name: Real nsfs and regular bind mounts in disposable namespaces
+        run: sudo unshare --mount --net --propagation private python3 -I -B tests/native_discovery_placeholder.py

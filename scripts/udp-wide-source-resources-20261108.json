@@ -1,0 +1,190 @@
+{
+  "schema": "ouf.udp-wide-source-resources.v1",
+  "sourceCommit": "c0cf1702b2eb971718996a959414caee004af494",
+  "migrations": [
+    {
+      "name": "V10__lake_object_lifecycle.sql",
+      "sha256": "fba0dcc22de4cd98e51f46f9667d7283bba8c42e9addf10727d453233a52a24b",
+      "flywayStyleCrc32Utf8": 491818960
+    },
+    {
+      "name": "V11__handoff_raw_lake_reference.sql",
+      "sha256": "5fcaa3ac5aa5db81c2bdcad955cbedc7a5cd1894e9782b3cf0a46747c802ab32",
+      "flywayStyleCrc32Utf8": -1824633093
+    },
+    {
+      "name": "V12__lake_maintenance_scheduler.sql",
+      "sha256": "7ed3f5ba9431176918dc328e2193546665a1323a07a4c8e870ea343af268ab28",
+      "flywayStyleCrc32Utf8": 908347656
+    },
+    {
+      "name": "V13__lake_shadow_rebuild.sql",
+      "sha256": "5c9d5efe92076880e83a32fe8f2c4e8e483ca3df4f95e0e2ceffd27ea1689b80",
+      "flywayStyleCrc32Utf8": 739027995
+    },
+    {
+      "name": "V14__shadow_rebuild_fencing_and_rollback.sql",
+      "sha256": "dad5e2f33b70177f87f4919e1508e7eb2f69e96c112575465654905f9aaa820d",
+      "flywayStyleCrc32Utf8": 61207461
+    },
+    {
+      "name": "V15__historical_reproduce.sql",
+      "sha256": "ee3fee6101ee2547fac4403d98958caeda3796f3543f0517066f13bd0d44c5c9",
+      "flywayStyleCrc32Utf8": -1718975492
+    },
+    {
+      "name": "V16__materialization_reference_integrity.sql",
+      "sha256": "bf4c02fe476be49ace79a0e71ec50202c9ea3fe99d9388617e00028ac95949e9",
+      "flywayStyleCrc32Utf8": -969460423
+    },
+    {
+      "name": "V17__selective_bitemporal_delta_history.sql",
+      "sha256": "5f5e6fb2da7f5770b9fa6ca8ac2ba76b9d322b1a362eb3e0ace8d81224896814",
+      "flywayStyleCrc32Utf8": 490009295
+    },
+    {
+      "name": "V18__capability_retry_guard.sql",
+      "sha256": "f83874c5277783e3b7c182579dcc8f4f562810e4a682a47701ed6f1b6ce6a251",
+      "flywayStyleCrc32Utf8": -1000976960
+    },
+    {
+      "name": "V19__source_raw_handoff_reference.sql",
+      "sha256": "6736643837d0cbc43acf99b5c1cc65163b5ee0bc4698883d50d43fd0209f0e82",
+      "flywayStyleCrc32Utf8": 169180654
+    },
+    {
+      "name": "V1__handoff_and_resolution_core.sql",
+      "sha256": "1b5ea3387b9a964ab58f5da4a8439f8ae2652f2d799effd115076859a7ebc314",
+      "flywayStyleCrc32Utf8": -52230585
+    },
+    {
+      "name": "V20__governed_coordinate_transformations.sql",
+      "sha256": "716157ae957f9cf55214f00f6e17f8c2d1c702ecdc5c2c51f88ecdd75084f478",
+      "flywayStyleCrc32Utf8": 26228480
+    },
+    {
+      "name": "V21__pinned_relationship_reconciliation.sql",
+      "sha256": "2855fdecff9ca4038d746e67fa057568b6b05d1dcf03b620b846dbb85706bdde",
+      "flywayStyleCrc32Utf8": 672268981
+    },
+    {
+      "name": "V22__weighted_identity_evidence.sql",
+      "sha256": "543ee9a5461139b3698edef4c01dae33026e61a11fc1514ae7b31699bc9d69fc",
+      "flywayStyleCrc32Utf8": -252379595
+    },
+    {
+      "name": "V23__geometry_authority_conflict.sql",
+      "sha256": "fecc2f227b1ce6895f9d2a55f6c8ea524fd9cbcd869e876d7efaa6a0cb69445b",
+      "flywayStyleCrc32Utf8": 561679179
+    },
+    {
+      "name": "V24__human_geometry_decisions.sql",
+      "sha256": "b4e2f023335a16ba9b424dfcc3f18f200712fae324de9da128b441161f5c2ed8",
+      "flywayStyleCrc32Utf8": -835784960
+    },
+    {
+      "name": "V25__human_property_decisions.sql",
+      "sha256": "1e432653d62c82dd3c1ed3c5c9d9a27682b835d40479d873183d44fb1252c44f",
+      "flywayStyleCrc32Utf8": -1491487699
+    },
+    {
+      "name": "V26__geometry_roles_and_validity.sql",
+      "sha256": "53e84a127549f91d3520e6f8afeaedc88bfeffe1da2186873659064e91e4700e",
+      "flywayStyleCrc32Utf8": -369310849
+    },
+    {
+      "name": "V27__identity_scope_serialization.sql",
+      "sha256": "cd1b07587c8f24e204c20fd5125e8575c77a7a262d3f0f1d9ae81b1a5362aabe",
+      "flywayStyleCrc32Utf8": -971238326
+    },
+    {
+      "name": "V28__identity_value_lookup.sql",
+      "sha256": "324a69e64ff1faf20627bf2519d9ee069807c8649aa12c6b7ddb12b3d1be5652",
+      "flywayStyleCrc32Utf8": 1298756818
+    },
+    {
+      "name": "V29__identity_field_shape_catalog.sql",
+      "sha256": "17fe08e0cbd8df76d30babadb2124a2d0aa3019904728bf94159f97c76914859",
+      "flywayStyleCrc32Utf8": 2068388741
+    },
+    {
+      "name": "V2__canonical_revision_authority.sql",
+      "sha256": "fa450cbe250ea4391d71418028f55503e08159c9b4aac1e7c30ca5996a54bb5f",
+      "flywayStyleCrc32Utf8": -744760032
+    },
+    {
+      "name": "V30__resolution_review_package.sql",
+      "sha256": "f64538ba09fd526b84926f91bf0188d754e22e5a9e3fcc176e4e64c1f9e193f8",
+      "flywayStyleCrc32Utf8": -419854425
+    },
+    {
+      "name": "V31__serialize_identity_coverage_invalidation.sql",
+      "sha256": "e600eb4818afd4a60f1a4dc90f1215410cb12a3cf9bf510bc1a4aa0fe06906c0",
+      "flywayStyleCrc32Utf8": 80452861
+    },
+    {
+      "name": "V32__governed_identity_preactivation_attestation.sql",
+      "sha256": "070c29c16b43d49f6aa2827f407373d5a0d5e2628e6225dfd9a9b3c55a048313",
+      "flywayStyleCrc32Utf8": 909978875
+    },
+    {
+      "name": "V33__human_new_identity_decision.sql",
+      "sha256": "8a1f8049781ea13aef864cc4d35f0a379bba1960fe9916c99d5eaaf095b2ee91",
+      "flywayStyleCrc32Utf8": -819055726
+    },
+    {
+      "name": "V34__repeat_human_review_after_stale_coverage.sql",
+      "sha256": "13735a76f1cba075d5f7a600cc9a9676c823c9c398f59d6de2aa8a13dc1672ac",
+      "flywayStyleCrc32Utf8": 592479726
+    },
+    {
+      "name": "V35__linked_property_reconciliation.sql",
+      "sha256": "d9937d14b53471ea718ea3ec91c8fc729a48f4e9fbe9bfd23f9673e718705c1f",
+      "flywayStyleCrc32Utf8": -376865285
+    },
+    {
+      "name": "V36__publication_dependency_recovery.sql",
+      "sha256": "9e9c045383561a333c177e7582abc718f84b02b9820388df80a7e5d8e8601c24",
+      "flywayStyleCrc32Utf8": -1335086670
+    },
+    {
+      "name": "V3__relationship_resolution.sql",
+      "sha256": "f535e17a08b7b570333cd7ed42132ceeb23f01b0002c8f0292c84dd1790eb660",
+      "flywayStyleCrc32Utf8": 647181559
+    },
+    {
+      "name": "V4__spatial_resolution.sql",
+      "sha256": "7a95b46d260e9767f25d0dd9cd69139f6992f0bde1df518b180e9d4bc7329173",
+      "flywayStyleCrc32Utf8": -1155247595
+    },
+    {
+      "name": "V5__human_resolution_merge_split.sql",
+      "sha256": "3c1e3381e6b9fe955e3d7dd20245ed96aba246b6e18c9cc1db38a6130465257f",
+      "flywayStyleCrc32Utf8": -1800875911
+    },
+    {
+      "name": "V6__merge_repoint_and_contribution_links.sql",
+      "sha256": "b55c6fbaa460ac6035613b5c22e27b5a0439711481747a22060f95a216165d7c",
+      "flywayStyleCrc32Utf8": 887404116
+    },
+    {
+      "name": "V7__governed_serving.sql",
+      "sha256": "bf8a874226296a72d57471d3655f11f1643a4040e9cb1bb38dcfec38a3438739",
+      "flywayStyleCrc32Utf8": -1523353946
+    },
+    {
+      "name": "V8__query_complexity_budget.sql",
+      "sha256": "c416c4be18099730eb4c6cd7525623d60d906212429115a36fa06829de2b7b31",
+      "flywayStyleCrc32Utf8": 518442206
+    },
+    {
+      "name": "V9__spatial_query_budget.sql",
+      "sha256": "ce7122f87f83a35df8a004011b09cd27fdbc3fbbfae647d1dfb38dae88c10389",
+      "flywayStyleCrc32Utf8": -199210382
+    }
+  ],
+  "applicationYaml": {
+    "sha256": "aabfb583f5158bda988f7773cfbb9a52728f34bdd0ebf7f21fb17cc55df44182"
+  },
+  "selectedClasses": {}
+}
