@@ -238,7 +238,7 @@ def collect(layout, candidate, host):
             'collectorUnit': {k: collector[k] for k in COLLECTOR_KEYS if k != 'InvocationID'},
             'etcdUnits': ETCD_UNITS, 'probeUnits': {n: sha(raw) for n, raw in probe_units(layout).items()},
             'authorityIncidentsBefore': store['authorityIncidents'],
-            'layout': layout, 'candidateFile': str(candidate)}
+            'layout': layout}
 
 
 def replace_file(target, raw, frame):

@@ -144,6 +144,17 @@ class PlanTests(Fixture):
         self.assertEqual((code, report['status']), (0, 'GATEWAY_AUTHORITY_PROBE_PLANNED'))
         self.assertEqual(report['planSha256'], self.a.digest(first))
 
+    def test_plan_independent_of_candidate_delivery_path(self):
+        # The runbook downloads the candidate into a fresh mktemp directory on every run.
+        first = self.a.digest(self.plan())
+        moved = Path(self.temp.name) / 'other-delivery.XXXX'
+        moved.mkdir()
+        self.candidate = moved / 'gateway_operational_collector.py'
+        self.candidate.write_bytes(self.new)
+        self.assertEqual(self.a.digest(self.plan()), first)
+        code, report = self.main('--apply', '--plan-sha256', first)
+        self.assertEqual((code, report['status']), (0, 'GATEWAY_AUTHORITY_PROBE_READY'), report)
+
     def test_drift_holds(self):
         cases = [('commit', lambda: setattr(self, 'commit', '0' * 40), 'CHECKOUT_COMMIT_MISMATCH'),
                  ('porcelain', lambda: setattr(self, 'porcelain', ' M tools/x.py'), 'CHECKOUT_STATUS_MISMATCH'),
