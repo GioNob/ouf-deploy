@@ -29,25 +29,25 @@ class Early(base.Fixture):
         self.t = load_tool()
         self.now = base.END - 49 * DAY  # far beyond T-30: the daily job would NOOP
 
-    def job(self, digest=None):
+    def early_job(self, digest=None):
         return self.t.installed_job(str(self.config_path), digest or base.sha(self.config_path.read_bytes()), self.clock)
 
     def test_daily_job_noops_but_early_plan_renews_both(self):
         self.assertEqual(self.execute(), ('NOOP', None, False))
-        module, job = self.job()
+        module, job = self.early_job()
         first = self.t.plan(module, job, self.now)
         self.assertEqual(first['renew'], ['b1b2', 'base'])
         self.assertEqual(first['thresholdSeconds'], 7776000 - 86400)
-        self.assertEqual(self.t.digest(first), self.t.digest(self.t.plan(*self.job(), self.now)))
+        self.assertEqual(self.t.digest(first), self.t.digest(self.t.plan(*self.early_job(), self.now)))
         self.assertEqual(self.names(self.ledgers / 'base'), [])
 
     def test_apply_renews_once_then_nothing_to_renew(self):
-        module, job = self.job()
+        module, job = self.early_job()
         approved = self.t.digest(self.t.plan(module, job, self.now))
         with self.assertRaises(self.t.Held):
-            self.t.apply(*self.job(), '0' * 64, self.now)
+            self.t.apply(*self.early_job(), '0' * 64, self.now)
         self.assertEqual(self.names(self.ledgers / 'b1b2'), [])
-        result = self.t.apply(*self.job(), approved, self.now)
+        result = self.t.apply(*self.early_job(), approved, self.now)
         self.assertEqual((result['status'], result['outcome']), ('EARLY_RENEWAL_APPLIED', 'RENEWED'))
         for name in ('b1b2', 'base'):
             record = json.loads((self.ledgers / name / '1.json').read_bytes())
@@ -55,7 +55,7 @@ class Early(base.Fixture):
         self.assertEqual(self.names(self.ledgers / 'base-versioned'), ['1.json'])
         self.assertFalse(result['openIncident'])
         with self.assertRaises(self.t.Held) as caught:
-            self.t.plan(*self.job(), self.now + 60)
+            self.t.plan(*self.early_job(), self.now + 60)
         self.assertEqual(str(caught.exception), 'NOTHING_TO_RENEW_EARLY')
         # The installed daily job sees a fresh 90-day window: NOOP.
         self.now += 60
@@ -65,13 +65,13 @@ class Early(base.Fixture):
         (self.state / 'incidents').mkdir(mode=0o700)
         self.write(self.state / 'incidents/open.json', {'reasonCode': 'FIRST', 'firstSeenAt': 1, 'evidenceSha256': None})
         with self.assertRaises(self.t.Held) as caught:
-            self.t.plan(*self.job(), self.now)
+            self.t.plan(*self.early_job(), self.now)
         self.assertEqual(str(caught.exception), 'OPEN_INCIDENT_PRESENT')
         with self.assertRaises(self.t.Held):
-            self.job('0' * 64)
+            self.early_job('0' * 64)
 
     def test_threshold_is_lowered_only_after_configuration_validation(self):
-        module, _ = self.job()
+        module, _ = self.early_job()
         self.assertEqual(module.RENEW_BEFORE_SECONDS, 7776000 - 86400)
         fresh = base.load(self.renewal_path, 'renewal_untouched')
         self.assertEqual(fresh.RENEW_BEFORE_SECONDS, 2592000)
