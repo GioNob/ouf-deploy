@@ -718,9 +718,13 @@ def output_plan(args):
     return destination, absent, None
 
 
-def observe(args):
-    destination, absent, revision = output_plan(args)
-    reader = Reader()
+def observe_profile(args, reader=None):
+    """Read the stable profile without selecting or publishing an output file.
+
+    The optional reader lets read-only consumers enforce additional input custody.
+    No publication mode, claim or lock acquisition belongs to this observation.
+    """
+    reader = Reader() if reader is None else reader
     entity, keys = authority(reader, args)
     peer, successors = receipt_a(reader, args.a_root, args.a_plan_sha256)
     owner, boot, guard = boot_guard(reader, args)
@@ -771,19 +775,27 @@ def observe(args):
                "keyPaths": keys}
     current = read_roles(docker, peer, successors)
     verify_peer(reader, ip, peer, current["semantic"])
-    require(observed_networks(reader, docker, ip, current) == networks
-            and output_plan(args) == (destination, absent, revision),
+    require(observed_networks(reader, docker, ip, current) == networks,
             "PROFILE_OBSERVATION_CHANGED_DURING_READ")
     empty_nft(reader, nft, owner["kernel"])
+    return {"profile": profile, "profileBytes": canonical(profile) + b"\n",
+            "inputHashes": reader.verify(), "dockerPeerProof": docker.proof,
+            "networkIds": {name: item[0] for name, item in networks.items()}}
+
+
+def observe(args):
+    destination, absent, revision = output_plan(args)
+    observation = observe_profile(args)
+    require(output_plan(args) == (destination, absent, revision),
+            "PROFILE_OBSERVATION_CHANGED_DURING_READ")
+    profile, raw = observation["profile"], observation["profileBytes"]
     writes = {"profileFile": str(destination), "owner": "root:root", "mode": "0600", "directoriesIfMissing": absent}
-    raw = canonical(profile) + b"\n"
     result = {"profile": profile, "profileSha256": digest(raw), "writes": writes}
     if revision is not None:
         previous, binding = revision
         result.update(revision_plan(previous, profile, binding))
-    plan = {"projection": result, "inputHashes": reader.verify(), "aPlanSha256": args.a_plan_sha256,
-            "dockerPeerProof": docker.proof,
-            "networkIds": {name: item[0] for name, item in networks.items()}}
+    plan = {"projection": result, "inputHashes": observation["inputHashes"], "aPlanSha256": args.a_plan_sha256,
+            "dockerPeerProof": observation["dockerPeerProof"], "networkIds": observation["networkIds"]}
     return result | {"planSha256": digest(canonical(plan))}
 
 
