@@ -1,0 +1,17 @@
+[Unit]
+Description=OUF authority mandate renewal (D-018, D-028, D-030)
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/bin/python3.13 -I -B /etc/ouf/authority-mandate-renewal/renewal.py run --configuration /etc/ouf/authority-mandate-renewal/configuration.json --configuration-sha256 @CONFIGURATION_SHA256@
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateNetwork=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/etc/ouf/authority-mandate-renewal
+ReadWritePaths=/var/lib/ouf-authority-mandates /var/lib/ouf-authority-mandate-renewal
