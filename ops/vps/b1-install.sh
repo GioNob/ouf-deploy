@@ -20,8 +20,8 @@ L=5b778fac3d7e267725feb2f4709650358d9fbc13614609845889aec5f9ca65e9
 S=/etc/ouf/deploy-snapshots
 SD=/etc/systemd/system
 ST=/var/lib/ouf-storage-migration
-AC=$S/semantic-provider-b1-acceptance-20261113-v1
-PL=74b860dd0f4d8b5c609fd5e688bc89772ef6d6ef29e6548574bfb2c031976753
+AC=$S/semantic-provider-b1-acceptance-20261114-v2
+PL=65abb93002808a987ce2d8bbef266de68dc89ae569a28a89b0e87f16034c4803
 
 work=$(mktemp -d)
 curl --fail --silent --show-error --proto '=https' --tlsv1.2 -o "$work/deliver.sh" \
@@ -55,14 +55,14 @@ args=(
   --acceptance-manifest "$AC/manifest.json"
   --acceptance-manifest-sha256 "$PL"
   --acceptance-signature "$AC/$PL.ARTIFACT_ACCEPTANCE.json"
-  --acceptance-signature-sha256 8da24a058748be9b9d4eef84e49a8c5ed47ebe000d53bf3a181e3051d0d7530e
+  --acceptance-signature-sha256 786d265e360a2e02fb6dc612c4e894418be02cc50fb2f3a941c67091ba0a8a87
   --b1b2-trust-policy "$S/semantic-provider-b1b2-trust-policy-20261112/trust-policy.json"
   --b1b2-trust-policy-sha256 6ef247ee727484777557cdb5adb05428e6d020da1e2e49773a84eedc56be4f95
   --openssl /usr/bin/openssl
   --openssl-sha256 acc10176d038aeb7b2a77d9ec972ac2985857a7191f7aecb7c54ef0e2c7e9549
   --openssl-version 3.5.7
   --arming-issuer-ref ouf-lab-infrastructure-installer
-  --bundle-parent /run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby
+  --bundle-parent /run/containerd/io.containerd.runtime.v2.task/moby
   --output-root "$S"
   --output-name semantic-provider-b1-install-20261114-v1
 )
