@@ -3,8 +3,8 @@ set -euo pipefail
 umask 077
 
 # D-001: fill these two pins only after review and commit.
-commit='__PIN_COMMIT__'
-controller_sha='__PIN_CONTROLLER_SHA256__'
+commit='4cf85adadb6fcb41893fd71d8c868400d355c829'
+controller_sha='0e5ce618740000700b62189683dda9368f268ff509529ae281cf3d4163c1d3bf'
 closure_commit='1cd6ea7c9c1da35a745cfd2c0d3755d99dfc7efd'
 [[ "$commit" =~ ^[0-9a-f]{40}$ && "$controller_sha" =~ ^[0-9a-f]{64}$ ]]
 
