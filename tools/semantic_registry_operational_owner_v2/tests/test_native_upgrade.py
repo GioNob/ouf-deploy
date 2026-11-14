@@ -165,7 +165,8 @@ class Upgrade(unittest.TestCase):
         self.assertEqual(owner.prior, 330)
         self.assertEqual(installation.read_object(self.global_fence), c2['fenceBinding']['value'])
         self.assertFalse(installation.read_object(self.v1root / 'fence/fence.json')['active'])
-        with self.assertRaises(core.Denied) as caught:
+        from tools.semantic_registry_operational_owner import core as v1_core
+        with self.assertRaises(v1_core.Denied) as caught:
             self.v1_guard()
         self.assertEqual(str(caught.exception), 'OPERATIONAL_OWNER_FENCE_CHANGED')
         self.assertIn(['stop', 'ouf-registry-token-' + LOGICAL[:24] + '.service'], self.manager.calls)

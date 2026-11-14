@@ -6,6 +6,8 @@ on:
       - tools/semantic_authority_mandates/mandates.py
       - scripts/build-registry-operational-owner-v2-capsule.py
       - docs/OUF_REGISTRY_OPERATIONAL_OWNER_V2_20261114.md
+      - docs/OUF_REGISTRY_OPERATIONAL_OWNER_V2_UPGRADE_20261114.md
+      - ops/vps/registry-owner-upgrade.sh
       - .github/workflows/semantic-registry-operational-owner-v2.yml
   workflow_dispatch:
 permissions:
@@ -55,3 +57,7 @@ jobs:
           assert checked > 0
           print('V1_OWNER_PINS_UNCHANGED', checked)
           PIN
+      - name: Upgrade runbook syntax and ShellCheck
+        run: |
+          bash -n ops/vps/registry-owner-upgrade.sh
+          shellcheck -S warning ops/vps/registry-owner-upgrade.sh
