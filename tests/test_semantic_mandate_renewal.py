@@ -135,7 +135,7 @@ class Fixture(unittest.TestCase):
     def job(self, digest=None):
         return self.r.Job(str(self.config_path), digest or sha(self.config_path.read_bytes()), self.clock)
 
-    def run(self, dry_run=False):
+    def execute(self, dry_run=False):
         return self.job().run(dry_run)
 
     def status(self):
@@ -149,7 +149,7 @@ class Fixture(unittest.TestCase):
         return json.loads(path.read_bytes()) if path.exists() else None
 
     def blocked(self, code):
-        outcome, reason, _ = self.run()
+        outcome, reason, _ = self.execute()
         self.assertEqual((outcome, reason), ("BLOCKED", code))
         self.assertEqual(self.status()["reasonCode"], code)
         return reason
@@ -162,7 +162,7 @@ class Fixture(unittest.TestCase):
 
 class RenewalTests(Fixture):
     def test_noop_beyond_t30(self):
-        self.assertEqual(self.run(), ("NOOP", None, False))
+        self.assertEqual(self.execute(), ("NOOP", None, False))
         self.no_generations()
         status = self.status()
         self.assertEqual(status["ledgers"]["b1b2"], {"generation": 0, "headSha256": None, "earliestExpiresAt": END})
@@ -172,7 +172,7 @@ class RenewalTests(Fixture):
 
     def test_renewed_at_t30_then_idempotent(self):
         self.now = END - 30 * DAY
-        self.assertEqual(self.run()[0], "RENEWED")
+        self.assertEqual(self.execute()[0], "RENEWED")
         for name, refs in (("b1b2", ["b1b2-key"]), ("base", ["att-key", "inst-key"])):
             record = json.loads((self.ledgers / name / "1.json").read_bytes())
             self.assertEqual(record["previousSha256"], None)
@@ -196,15 +196,15 @@ class RenewalTests(Fixture):
         status = self.status()
         self.assertEqual(status["versionedBase"], {"generation": 1, "sha256": sha(versioned)})
         self.assertEqual(status["ledgers"]["base"]["earliestExpiresAt"], self.now + 90 * DAY)
-        self.assertEqual(self.run()[0], "NOOP")
+        self.assertEqual(self.execute()[0], "NOOP")
         self.assertEqual(self.names(self.ledgers / "base"), ["1.json"])
 
     def test_inside_t30_and_chain_across_renewals(self):
         self.now = END - 10 * DAY
-        self.assertEqual(self.run()[0], "RENEWED")
+        self.assertEqual(self.execute()[0], "RENEWED")
         first = self.now
         self.now = first + 61 * DAY  # 29 days before the renewed expiry
-        self.assertEqual(self.run()[0], "RENEWED")
+        self.assertEqual(self.execute()[0], "RENEWED")
         second = json.loads((self.ledgers / "base/2.json").read_bytes())
         self.assertEqual(second["previousSha256"], sha((self.ledgers / "base/1.json").read_bytes()))
         self.assertEqual(self.names(self.ledgers / "base-versioned"), ["1.json", "2.json"])
@@ -213,11 +213,11 @@ class RenewalTests(Fixture):
 
     def test_dry_run_writes_only_status(self):
         self.now = END - 30 * DAY
-        self.assertEqual(self.run(dry_run=True), ("NOOP", None, True))
+        self.assertEqual(self.execute(dry_run=True), ("NOOP", None, True))
         self.no_generations()
         self.assertEqual(self.names(self.state), ["status.json"])
         self.now = END
-        self.assertEqual(self.run(dry_run=True)[:2], ("BLOCKED", "MANDATE_EXPIRED_WITHOUT_RENEWAL"))
+        self.assertEqual(self.execute(dry_run=True)[:2], ("BLOCKED", "MANDATE_EXPIRED_WITHOUT_RENEWAL"))
         self.assertIsNone(self.incident())
 
     def test_expired_is_blocked_without_writes(self):
@@ -308,7 +308,7 @@ class RenewalTests(Fixture):
             change(value)
             self.save_config(value)
             with self.subTest(change=change):
-                outcome, reason, _ = self.run()
+                outcome, reason, _ = self.execute()
                 self.assertEqual(outcome, "BLOCKED")
                 self.assertIn(reason, ("AUTHORITY_COHERENCE_UNPROVEN", "PRECONDITION_CUSTODY_INTACT_UNMET"))
             self.no_generations()
@@ -326,11 +326,11 @@ class RenewalTests(Fixture):
         self.now = END - 30 * DAY
         with patch.object(self.r, "publish_linked", side_effect=Crash()):
             with self.assertRaises(Crash):
-                self.run()
+                self.execute()
         self.assertEqual(self.names(self.ledgers / "base"), ["1.json"])
         self.assertEqual(self.names(self.ledgers / "base-versioned"), [])
         self.assertIsNone(self.incident())
-        self.assertEqual(self.run()[0], "NOOP")
+        self.assertEqual(self.execute()[0], "NOOP")
         self.assertEqual(self.names(self.ledgers / "base-versioned"), ["1.json"])
         self.write(self.ledgers / "base-versioned/1.json", b'{"tampered":true}')
         self.blocked("VERSIONED_BASE_DRIFT")
@@ -390,7 +390,7 @@ class RenewalTests(Fixture):
 
     def test_status_schema_custody_and_no_paths(self):
         self.now = END - 30 * DAY
-        self.run()
+        self.execute()
         path = self.state / "status.json"
         info = path.stat()
         self.assertEqual((info.st_mode & 0o777, info.st_uid, info.st_gid, info.st_nlink), (0o600, 0, 0, 1))
@@ -409,7 +409,7 @@ class RenewalTests(Fixture):
         self.addCleanup(os.close, fd)
         fcntl.flock(fd, fcntl.LOCK_EX)
         with self.assertRaises(self.r.Blocked) as caught:
-            self.run()
+            self.execute()
         self.assertEqual(str(caught.exception), "RENEWAL_ALREADY_RUNNING")
 
     def test_no_private_key_path_access(self):
@@ -426,7 +426,7 @@ class RenewalTests(Fixture):
                 touched.append(event)
 
         sys.addaudithook(audit)
-        self.assertEqual(self.run()[0], "RENEWED")
+        self.assertEqual(self.execute()[0], "RENEWED")
         self.assertEqual(touched, [])
 
 
@@ -531,7 +531,7 @@ class GovernedOperationTests(Fixture):
         self.assertIsNone(self.incident())
         self.assertEqual(len(list((self.state / "incidents/closed").iterdir())), 1)
         self.assertEqual(calls, [["systemctl", "start", "ouf-authority-mandate-renewal.service"]])
-        self.assertEqual(self.run()[0], "RENEWED")
+        self.assertEqual(self.execute()[0], "RENEWED")
         args.apply = False
         with self.assertRaises(self.r.Blocked) as caught:
             self.r.incident_close(args, runner, source)
