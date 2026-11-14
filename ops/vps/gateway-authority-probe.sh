@@ -16,8 +16,8 @@ case "$mode" in
 esac
 
 # Claude fills C and L after review and commit (D-001).
-C=fd8d3d3edd878004d455b05a963aa20b8aadd764
-L=1ee0da84a18f4572eee22f362f6bce258a760c84774eb1ac64789fe6c0fbd510
+C=6cda240fa9e4845a7955cc0fc1bdb4e579bc6956
+L=ed2c3e15ca1953c54cea69828094245a6198d5c562588ba0755bc6a09f8722c8
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 G=5b93e56748034ec678d732cfd40ca915695fefb5
