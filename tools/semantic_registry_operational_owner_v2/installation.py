@@ -160,6 +160,9 @@ DECISION='APPROVE_EXACT_INSTALLATION_AND_REVIEWED_NORMAL_RENEWAL'
 
 
 def review_scope(review):
+    if type(review) is dict and review.get('schema')=='ouf.registry-operational-upgrade-review.v1':
+        from .upgrade import upgrade_scope
+        return upgrade_scope(review)
     require(type(review) is dict and review.get('schema')==REVIEW_SCHEMA,
             'COMPLETE_OPERATIONAL_INSTALLATION_REVIEW_REQUIRED')
     c=review['configuration'];proposal=review['proposal'];unit=review['serviceUnit']
@@ -629,6 +632,9 @@ def operator(delivery, argv, capsule_path):
     from tools.semantic_policy_token_owner.iam_governance_intake import executable
     from tools.semantic_policy_token_owner.iam_owner_action import stdlib_binding
     from tools.semantic_policy_token_owner.iam_admission import IamProfile
+    if argv and argv[0].startswith('upgrade-'):
+        from .upgrade import operator as upgrade_operator
+        return upgrade_operator(delivery,argv,capsule_path)
     require(len(argv) in(1,3) and argv[0] in('deploy','prepare','issue','install','start','status'),'ONE_EXACT_OPERATIONAL_INSTALLATION_ACTION_REQUIRED')
     if argv[0]=='deploy':
         require(len(argv)==1,'NO_DEPLOYMENT_OVERRIDE_ALLOWED')

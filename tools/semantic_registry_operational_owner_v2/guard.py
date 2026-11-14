@@ -73,7 +73,7 @@ class InstalledGuard:
                          'priorControlledAttempts','predecessorInputsHash','fenceBinding','commonLockIdentity','verification','tlsCa','serviceUnitPath','hostBootIdPath'}
                 and c['schema']=='ouf.registry-operational-token-configuration.v1'
                 and c['priorControlledAttempts']==321, 'EXACT_INSTALLED_OPERATIONAL_CONFIGURATION_REQUIRED')
-        self.fd=None;self.pid=None
+        self.fd=None;self.pid=None;self.prior=None
         from tools.semantic_provider_deployment_authentication import DetachedAuthenticator
         v=c['verification']
         require(type(v) is dict and set(v)=={'trustPolicy','openssl','context','mandateLedgerRoot'}
@@ -94,7 +94,12 @@ class InstalledGuard:
                 and receipt.get('proposalHash')==c['proposalHash']
                 and receipt.get('sourceManifestHash')==digest(c['sourceManifest'])
                 and receipt.get('operationalRenewalInstalled') is True
-                and receipt.get('priorControlledAttempts')==321, 'COMPLETED_OPERATIONAL_INSTALLATION_REQUIRED')
+                and type(receipt.get('priorControlledAttempts')) is int
+                and 321<=receipt['priorControlledAttempts']<=1000000000, 'COMPLETED_OPERATIONAL_INSTALLATION_REQUIRED')
+        # The retained counter is signed in the dated receipt (task-30b): the
+        # configuration keeps the logical owner's 321 baseline, never the live count.
+        require(self.prior in(None,receipt['priorControlledAttempts']),'SIGNED_RETAINED_COUNTER_CHANGED')
+        self.prior=receipt['priorControlledAttempts']
         from .durable import verify_receipt
         require(verify_receipt(encoded(receipt),receipt['attestedAt'],c['verification'],
                                self.path.parent/'receipt-signatures',self.verifier) is True,

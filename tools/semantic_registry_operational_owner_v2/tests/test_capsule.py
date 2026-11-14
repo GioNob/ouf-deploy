@@ -41,7 +41,7 @@ class Capsule(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'ROOT_BOOTSTRAP_INPUT_ANCESTRY'):reader(str(path),1024,expected)
             root.chmod(0o700)
 
-    def test_reproducible_capsule_binds_all_ten_sources_and_unchanged_142_dependencies(self):
+    def test_reproducible_capsule_binds_all_eleven_sources_and_unchanged_142_dependencies(self):
         raw,delivery=builder.build('a'*40)
         self.assertEqual(builder.build('a'*40),(raw,delivery))
         values={n.targets[0].id:ast.literal_eval(n.value) for n in ast.parse(raw).body
@@ -50,7 +50,7 @@ class Capsule(unittest.TestCase):
         payload=gzip.decompress(base64.b64decode(values['PACKED'],validate=True))
         self.assertEqual(hashlib.sha256(payload).hexdigest(),delivery['payloadHash'])
         parsed=json.loads(payload);self.assertEqual(len(parsed['dependency']['sources']),142)
-        self.assertEqual(len(parsed['sources']),10)
+        self.assertEqual(len(parsed['sources']),11)
         self.assertEqual(parsed['sources']['tools.semantic_authority_mandates.mandates'].encode(),
                          (ROOT/'tools/semantic_authority_mandates/mandates.py').read_bytes())
         from tools.semantic_registry_operational_owner_v2 import contract

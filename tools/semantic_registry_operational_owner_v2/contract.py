@@ -14,7 +14,7 @@ SCOPE='semanticRegistryOperationalTokenOwnerInstallation'
 INPUT_SCHEMA='ouf.semantic-registry-running-policy-repair-inputs.v1'
 MANDATES_SOURCE='tools.semantic_authority_mandates.mandates'
 SOURCE_NAMES=frozenset({MANDATES_SOURCE,*('tools.semantic_registry_operational_owner_v2.'+name for name in
-                       ('core','store','contract','guard','durable','adapter','service','installation','entry'))})
+                       ('core','store','contract','guard','durable','adapter','service','installation','upgrade','entry'))})
 
 
 def absolute(value):

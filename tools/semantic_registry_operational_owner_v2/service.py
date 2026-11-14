@@ -49,7 +49,7 @@ def run(configuration_path,configuration_hash,emit=print):
     try:
         with guard.invocation(),store.invocation():
             adapter=NativeAdapter(guard,store,clock)
-            worker=Worker(store,adapter,policy,configuration_hash,c['predecessorInputsHash'],c['priorControlledAttempts'],clock)
+            worker=Worker(store,adapter,policy,configuration_hash,c['predecessorInputsHash'],guard.prior,clock)
             worker.start();notify('READY=1\nSTATUS=Credential worker running; application health unproven')
             while not stop.is_set():
                 try:

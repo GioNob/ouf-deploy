@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 
 ROOT=Path(__file__).resolve().parents[1]
-NAMES=('core','store','contract','guard','durable','adapter','service','installation','entry')
+NAMES=('core','store','contract','guard','durable','adapter','service','installation','upgrade','entry')
 MANDATES='tools.semantic_authority_mandates.mandates'
 DEPENDENCY_HASH='f7d5c566dc3bab63873970ed781682d65f18f10aa69b01b74c037c9e1780cb57'
 DEPENDENCY_CLOSURE='e78fca8785b3424271e9edbb1900a78944f68d2bd512417f093360b772195200'
@@ -57,7 +57,7 @@ mode=None
 try:
  require(os.geteuid()==os.getegid()==0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,'ISOLATED_ROOT_OPERATIONAL_CAPSULE_REQUIRED')
  require(hashlib.sha256(BOOTSTRAP.encode()).hexdigest()==DELIVERY['sourceManifest']['bootstrapHash'] and hashlib.sha256(encoded(DELIVERY)).hexdigest()==DELIVERY_HASH,'OPERATIONAL_DELIVERY_DECLARATION_CHANGED')
- require(len(sys.argv)>1 and sys.argv[1] in ('worker','deploy','prepare','issue','install','start','status'),'ONE_OPERATIONAL_MODE_REQUIRED')
+ require(len(sys.argv)>1 and sys.argv[1] in ('worker','deploy','prepare','issue','install','start','status','upgrade-prepare','upgrade-issue','upgrade-install','upgrade-start','upgrade-rollback'),'ONE_OPERATIONAL_MODE_REQUIRED')
  mode=sys.argv[1]
  if mode!='worker':
   binding=DELIVERY['case']['inputs'];raw=bound_input(binding['path'],8388608,binding['sha256']);retained=json.loads(raw,object_pairs_hook=unique)
@@ -80,8 +80,8 @@ try:
  _,observed=namespace['load_entry'](declaration['sourceCommit'],sources,loader,hashlib.sha256(encoded(declaration)).hexdigest(),declaration['sourcePins'])
  require(observed==declaration,'OPERATIONAL_DEPENDENCY_DECLARATION_CHANGED')
  manifest=DELIVERY['sourceManifest'];new=payload['sources']
- leaves=('tools.semantic_authority_mandates.mandates',*('tools.semantic_registry_operational_owner_v2.'+leaf for leaf in ('core','store','contract','guard','durable','adapter','service','installation','entry')))
- require(set(new)==set(manifest['sourceHashes'])==set(leaves) and len(new)==10,'COMPLETE_OPERATIONAL_SOURCE_SET_REQUIRED')
+ leaves=('tools.semantic_authority_mandates.mandates',*('tools.semantic_registry_operational_owner_v2.'+leaf for leaf in ('core','store','contract','guard','durable','adapter','service','installation','upgrade','entry')))
+ require(set(new)==set(manifest['sourceHashes'])==set(leaves) and len(new)==11,'COMPLETE_OPERATIONAL_SOURCE_SET_REQUIRED')
  require(all(hashlib.sha256(v.encode()).hexdigest()==manifest['sourceHashes'][k]for k,v in new.items()),'OPERATIONAL_SOURCE_BYTES_CHANGED')
  package='tools.semantic_registry_operational_owner_v2'
  for name in ('tools','tools.semantic_authority_mandates',package):
