@@ -279,7 +279,9 @@ def main(argv=None):
             apply(args, d, proposal, report)
     except Exception as error:
         known = type(error).__name__ in PUBLIC_ERRORS
-        reason = str(error) if isinstance(error, PermissionError) else (
+        own = isinstance(error, PermissionError) and str(error) in ("ROOT_CUSTODY_REQUIRED", "ISOLATED_PYTHON_REQUIRED")
+        known = known or own
+        reason = str(error) if own else (
             d.C.public_reason(error) if d is not None and known else type(error).__name__)
         report.update(status="HELD", reason=reason, **COUNTERS)
         if getattr(error, "details", None):
@@ -289,6 +291,8 @@ def main(argv=None):
             report["primitive"] = {k: primitive[k] for k in ("stage", "switchOutcome", "wrapperReplaced",
                                                              "renameAttempted", "errorType") if k in primitive}
             report["switchOutcome"] = primitive.get("switchOutcome", report["switchOutcome"])
+        if isinstance(error, OSError) and not own:
+            report["errno"] = error.errno
         if not known:
             import traceback
             # Function names and line numbers only: no paths, values or exception text.

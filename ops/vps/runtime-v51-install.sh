@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=d81dbd9eea19b86fcf502f0551baf9b49b368e94
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -37,7 +37,7 @@ fetch() {
 
 delivery() {
   # BEGIN DELIVERY
-  fetch scripts/install-semantic-runtime-v51.py 780316798ab8e6b9bc1f821dc8a94aede83381c6c10d3c1cfdfbcd343195a38f
+  fetch scripts/install-semantic-runtime-v51.py 5340345fba1507eae2ab97ea82c2b7d0e083f5aea9e9e5931d796b687eee7227
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_b1_acceptance/__init__.py b1cddc8e0de31b27e96120f5a55079f238ac683eddd31eb602d23a80a8f6880d
