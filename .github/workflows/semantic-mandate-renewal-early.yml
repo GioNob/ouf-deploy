@@ -1,0 +1,25 @@
+name: Semantic mandate early renewal
+on:
+  pull_request:
+    paths:
+      - scripts/renew-mandates-early.py
+      - ops/vps/mandate-renewal-early.sh
+      - tests/test_mandate_renewal_early.py
+      - .github/workflows/semantic-mandate-renewal-early.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  early:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Early renewal with the installed job, natively
+        run: sudo -n env OUF_MANDATE_RENEWAL_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_mandate_renewal_early.py -v
+      - name: Non-regression, renewal job
+        run: sudo -n env OUF_MANDATE_RENEWAL_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_mandate_renewal.py -v
+      - name: Runbook syntax and ShellCheck
+        run: |
+          bash -n ops/vps/mandate-renewal-early.sh
+          shellcheck -S warning ops/vps/mandate-renewal-early.sh
