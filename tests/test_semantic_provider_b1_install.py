@@ -71,7 +71,8 @@ class Contract(unittest.TestCase):
 
     def test_closure_pins_are_exact_git_blobs(self):
         for name, pin in C.CLOSURE.items():
-            raw = subprocess.check_output(["git", "show", C.CLOSURE_COMMIT + ":" + name], cwd=ROOT)
+            # CI checkouts are shallow: HEAD carries the same closure bytes.
+            raw = subprocess.check_output(["git", "show", "HEAD:" + name], cwd=ROOT)
             self.assertEqual(C.sha(raw), pin)
 
     def test_launcher_pins_and_paths_match_delivery(self):
@@ -94,7 +95,7 @@ class Contract(unittest.TestCase):
             elif name == "scripts/prepare-semantic-provider-installation.py":
                 self.assertEqual(pin, C.sha((ROOT / name).read_bytes().replace(b"\r\n", b"\n")))
             else:
-                revision = C.CLOSURE_COMMIT if name in C.CLOSURE else "HEAD"
+                revision = "HEAD"  # shallow CI checkout; closure bytes are unchanged at HEAD
                 self.assertEqual(pin, C.sha(subprocess.check_output(["git", "show", revision + ":" + name], cwd=ROOT)))
             self.assertEqual(commit, '"$closure_commit"' if name in C.CLOSURE else '"$commit"')
 
@@ -260,7 +261,10 @@ class Native(unittest.TestCase):
                            ("semanticPeer", "semantic-peer.json"), ("successors", "successors.json"))}}
         dummy = {"path": str(self.root / "public-synthetic-rootfs-evidence.json"), "sha256": "e" * 64}
         roles = {role: {"containerId": self.docs[role]["Id"], "imageId": self.docs[role]["Image"],
-                       "recipe": {part: dummy for part in self.b.RECIPE_PARTS},
+                       # Acceptance requires distinct recipe sets per role.
+                       "recipe": {part: {"path": str(self.root / f"public-synthetic-{role}-{part}.json"),
+                                         "sha256": ("a" if role == "adapter" else "b") * 64}
+                                  for part in self.b.RECIPE_PARTS},
                        "rootfs": {**{field: dummy for field in ("offlineImageReceipt", "offlineDockerReceipt", "comparison")},
                                   "effectiveSeal": {"schema": self.b.SEAL_SCHEMA, "sha256": "d" * 64, "entries": 1, "bytes": 1}}}
                  for role in ("adapter", "southbound")}
