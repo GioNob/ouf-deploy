@@ -172,7 +172,10 @@ class LedgerTests(Fixture):
         self.assertEqual(ledger.snapshot()["headSha256"], results[-1]["sha256"])
         # A key not named by any generation keeps its generation-0 window.
         self.assertEqual(ledger.at("key-b", 1950)["generation"], 0)
-        self.denied("ACTIVE_MANDATE_REQUIRED", ledger.current, "key-b", "ARTIFACT_ACCEPTANCE")
+        self.assertEqual(ledger.current("key-b", "ARTIFACT_ACCEPTANCE")["generation"], 0)
+        # At 2000 the generation-0 window of key-b ends, while key-a stays renewed.
+        self.denied("ACTIVE_MANDATE_REQUIRED", ledger.current, "key-b", "ARTIFACT_ACCEPTANCE", 2000)
+        self.assertEqual(ledger.current("key-a", "RUNTIME_ARMING", 2000)["generation"], 3)
         record = json.loads((self.ledger_root / "2.json").read_bytes())
         self.assertEqual(record["previousSha256"], results[0]["sha256"])
         self.assertEqual(record["preconditions"], {**OK, "evidenceSha256": EVIDENCE})
