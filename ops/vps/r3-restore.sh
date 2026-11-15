@@ -15,13 +15,14 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=da03cf35b2bc7e1d72ce5f5a6e98853a7f5855ad
+C=771736509a952ad61f32bd017fb05399674cd8da
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
 STATE=$HOME/.ouf-r3-state
+NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
 PROFILE_SHA=7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18
@@ -48,13 +49,14 @@ delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py 75956dde0bf423832b205f616ed0954254afa60dc52c4fd03d2a8726936016ad
+  fetch scripts/issue-semantic-provider-operation-authorization.py 23a44e96da5a86fbfb6cbcc07ee6dca88608e1db020140b87ddc4c22bf888216
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py d353b4e844db395fdf45628f220d42702ca0796d6b7a0c02c5fd193d536c3553
   fetch scripts/semantic-provider-deployment-broker-v2.py 7d732e261ee6c4215724d2e5e9d85347b261c9646d02cdc041dc90ae2f494983
   fetch scripts/semantic-provider-lease-supervisor-v2.py 0311cd4c3515a68530605ee201ccb7cbbc46d5ab989427efd174e6a647826ec5
   fetch scripts/semantic-provider-preexec-hook-v2.py a30e7b0a0b9c7d75398f7ec923f681800f0e1e71f0a6b7ac62c4e4fc85bc2bee
+  fetch scripts/upgrade-semantic-provider-r3.py d36753cd23b2c993a43e2b6b04062304b575567a13267a1d3247602df5b11639
   fetch tools/semantic_acceptance_v51/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_acceptance_v51/issuance.py d019d4558c529add5fb3a7b052df3d8b92843167d6093f966b0b9b02265a3cd4
   fetch tools/semantic_authority_mandates/mandates.py 86e70b8cc043c6b5b44b186601d098e71c46130039fe9d35d3c1529adfc09a79
@@ -104,9 +106,10 @@ delivery() {
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py 8877b60c4572219265da100da9167935425969ec47f353df2d1d86a1f34c1e68
-  fetch tools/semantic_provider_r3/install_common.py 73e3f06194bfc96fe11369e964cef1f8970fda69e505ecd178043a24509287c4
-  fetch tools/semantic_provider_r3/operate.py f020e2b22e71988c60075d2b79a886d829618b2dcd5e7b2ba94b95795584cf30
+  fetch tools/semantic_provider_r3/compose.py 52cfe46c437549b699ddee6e255d1c6303f626c66f7aabace9ba6f6097db3bc8
+  fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
+  fetch tools/semantic_provider_r3/operate.py ce46380a34a36e8e15c5fd22ba50a1390da0756b634221f29e3983c79d714c7a
+  fetch tools/semantic_provider_r3/upgrade.py 46b50151f65e0f83910e6b8f6b7c60651961f54d6e41d5c355ef08a2a6c9be52
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py eee5655dd729d978ced77de0b2f5a443e5881393a163cf9644a095741b3fc195
@@ -151,7 +154,6 @@ for role in ("adapter", "southbound"):
     for part in ("template", "launch", "context", "policy"):
         files[role + "/" + part] = REC + "/" + role + "/" + part + ".json"
 PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd970dd8df",
-        "coordinationJournal": "25e6a88e2984ea0b53a29454a094a466d4c569092897e7feb4546505b3c6e438",
         "a2Manifest": "817e178b8615766569a4278a3288a4774fc940217667eeeb79b97fa09440f777",
         "successors": "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb",
         "rootfs": "0a542c899013a657415c838ad0856a6c4ba14a54504e4eba324a6472f6f4cbda",
