@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {persist-credentials: false}
+        with: {persist-credentials: false, fetch-depth: 0}
       - name: Fixtures, sentinels, custody, closure blobs and runbook pin
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b2_inventory_v2.py -v
       - name: Runbook syntax and ShellCheck
