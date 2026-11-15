@@ -670,14 +670,28 @@ class NativeClosure(unittest.TestCase):
         for change, code in (
             (lambda h: h.pop(s.SELF), b"EXACT_SUPERVISOR_SOURCE_SET_REQUIRED\n"),
             (lambda h: h.update({"extra.py": "a" * 64}), b"EXACT_SUPERVISOR_SOURCE_SET_REQUIRED\n"),
-            (lambda h: h.update({next(iter(s.RECOVERY_SOURCES)): "0" * 64}),
-             b"SUPERVISOR_RECOVERY_PIN_MISMATCH\n"),
         ):
             self.cfg["sourceHashes"] = dict(hashes)
             change(self.cfg["sourceHashes"])
             self.bind_configuration()
             result = self.launch()
             self.assertEqual((result.returncode, result.stdout, result.stderr), (1, b"", code))
+        # A recovery library replaced together with a matching configuration hash passes the
+        # bootstrap's file check; only the reviewed PINS can stop it.
+        relative = sorted(s.RECOVERY_SOURCES)[0]
+        path = Path(self.cfg["sourceRoot"]) / relative
+        tampered = self.sources[relative] + b"\n# tampered library\n"
+        try:
+            self.write(path, tampered)
+            self.cfg["sourceHashes"] = {**hashes, relative: s.sha(tampered)}
+            self.bind_configuration()
+            result = self.launch()
+            self.assertEqual((result.returncode, result.stdout, result.stderr),
+                             (1, b"", b"SUPERVISOR_RECOVERY_PIN_MISMATCH\n"))
+        finally:
+            self.write(path, self.sources[relative])
+            self.cfg["sourceHashes"] = dict(hashes)
+            self.bind_configuration()
 
     def test_native_source_custody_root_mode_links_and_ancestors(self):
         root = Path(self.cfg["sourceRoot"])
