@@ -502,7 +502,9 @@ class NativeTests(unittest.TestCase):
     def test_real_docker_create_overlay_and_node_observation_in_private_namespace(self):
         for name in ('docker', 'dockerd', 'runc', 'mount', 'umount', 'unshare', 'ip', 'nsenter', 'sleep', 'ldd'):
             self.assertIsNotNone(shutil.which(name), name)
-        result = subprocess.run(['unshare', '--mount', '--fork', sys.executable, '-I', '-B', str(Path(__file__).resolve()), '--native-child'],
+        # Like the VPS and the R3 cohort fixture: host mount/net/PID views and the
+        # host containerd, so shims and runtime see the daemon's rootfs mounts.
+        result = subprocess.run([sys.executable, '-I', '-B', str(Path(__file__).resolve()), '--native-child'],
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=150)
         self.assertEqual(result.returncode, 0, result.stdout.decode(errors='replace'))
         self.assertIn(b'NODE_OBSERVE_POST_CREATE_EQUAL', result.stdout)
@@ -516,7 +518,6 @@ def native_child():
     never invokes create/start/delete. No downloads or application credentials.
     """
     os.umask(0o077)
-    subprocess.run(['mount', '--make-rprivate', '/'], check=True)
     with tempfile.TemporaryDirectory(prefix='ouf-rootfs-v2-', dir='/var/lib') as tmp:
         root = Path(tmp); root.chmod(0o700)
         source = root / 'source'

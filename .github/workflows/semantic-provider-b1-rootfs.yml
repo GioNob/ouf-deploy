@@ -37,7 +37,7 @@ jobs:
         run: sudo -n env OUF_ACCEPTANCE_V51_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_acceptance_v51.py -v
       - name: B1 and R3 portable non-regression
         run: |
-          /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_semantic_provider_b1*.py' -v
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_prepare_semantic_provider_b1_rootfs*.py' -v
           /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_semantic_provider_r3*.py' -v
           /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1_acceptance.py -v
       - name: Compile reseal tool and tests
