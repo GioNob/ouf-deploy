@@ -686,7 +686,7 @@ class NativeTests(part_a.NativeTests):
                 str(self.source / relative), "--configuration", configuration, "--mode", mode],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
             self.assertEqual(result.returncode, 1)
-            suffix = "" if relative == b.ENTRYPOINTS[0] else " BROKER_SOURCE_PACKAGE_DRIFT"
+            suffix = " BROKER_SOURCE_PACKAGE_DRIFT"  # task-44: the broker prints its code too
             self.assertEqual(result.stderr, (code + "=DENIED" + suffix + "\n").encode())
             self.assertEqual(result.stdout, b"")
             self.assertFalse(marker.exists())

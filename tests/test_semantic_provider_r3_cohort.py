@@ -290,6 +290,17 @@ class CohortFixture(F.NativeTests):
             path = folder / "broker-denial-cohort-ready.json"
             print("COHORT_BROKER_DENIAL_" + role.upper() + "=" +
                   (path.read_text() if path.exists() else "MISSING"), flush=True)
+            state = self.engine("inspect", "-f", "{{json .State}}", cid, check=False)
+            print("COHORT_DOCKER_STATE_" + role.upper() + "=" + state.stdout.decode("utf-8", "replace").strip()
+                  + state.stderr.decode("utf-8", "replace").strip(), flush=True)
+        summary = {k: result.get(k) for k in ("status", "reason", "requestErrors", "observationError")}
+        summary["candidates"] = {r: {k: v.get(k) for k in ("epoch", "previousEpoch", "denials")}
+                                 for r, v in (result.get("lastObservation") or {}).get("candidates", {}).items()}
+        print("COHORT_OPERATE_RESULT=" + json.dumps(summary, sort_keys=True), flush=True)
+        log = self.root / "dockerd.log"
+        if log.exists():
+            lines = [l for l in log.read_text(errors="replace").splitlines() if "level=error" in l or "BLOCKED" in l]
+            print("COHORT_DOCKERD_ERRORS=" + json.dumps(lines[-20:]), flush=True)
         self.assertEqual(code, 1, result)
         self.assertEqual(result["status"], "HELD")
         observation = result["lastObservation"]
