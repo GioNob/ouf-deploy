@@ -45,7 +45,7 @@ class Fixture(unittest.TestCase):
         self.addCleanup(sys.modules.pop, "authorization", None)
         self.e = load(PACKAGE / "epochs.py", "epochs_fixture")
         self.addCleanup(os.umask, os.umask(0o077))
-        self.temp = tempfile.TemporaryDirectory(prefix="ouf-operation-", dir="/run")
+        self.temp = tempfile.TemporaryDirectory(prefix="ouf-operation-", dir="/var/lib")  # /run is noexec on some CI runners
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.openssl = Path("/usr/bin/openssl").resolve(strict=True)
