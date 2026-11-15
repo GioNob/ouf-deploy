@@ -141,7 +141,12 @@ jobs:
           printf '%s  %s\n' "$DOCKER_29_SHA256" "$archive" | sha256sum --check --strict -
           # Root-owned binaries are executed by the private fixture daemon only.
           sudo -n mkdir -p /opt/ouf-r3-docker-29
-          sudo -n tar -xzf "$archive" --strip-components=1 -C /opt/ouf-r3-docker-29
+          sudo -n tar -xzf "$archive" --strip-components=1 --no-same-owner -C /opt/ouf-r3-docker-29
+          # The runtime trusts only root-owned, non-writable ancestors and binaries.
+          sudo -n chown -R root:root /opt/ouf-r3-docker-29
+          sudo -n chmod 0755 /opt/ouf-r3-docker-29
+          sudo -n chmod -R go-w /opt/ouf-r3-docker-29
+          ls -ld /opt /opt/ouf-r3-docker-29 && ls -l /opt/ouf-r3-docker-29
           /opt/ouf-r3-docker-29/docker --version
           /opt/ouf-r3-docker-29/dockerd --version
       - name: Native cohort with Docker 29.8.1 and its containerd and shims

@@ -637,6 +637,11 @@ class CohortFixture(F.NativeTests):
             finally:
                 self.print_tracebacks()
                 self.print_network_views()
+                for role, cid in self.ids.items():
+                    state = self.engine("inspect", "-f", "{{json .State}}", cid, check=False)
+                    print("COHORT_DOCKER_STATE_" + role.upper() + "=" + state.stdout.decode("utf-8", "replace").strip(), flush=True)
+                    for log in (self.root / "docker-exec").rglob(cid + "/log.json"):
+                        print("COHORT_SHIM_LOG_" + role.upper() + "=" + log.read_text(errors="replace")[-1500:], flush=True)
             self.assertEqual(p.stderr, b"")
             return p.returncode, json.loads(p.stdout)
         attempt = 1
