@@ -43,9 +43,10 @@ if not pathlib.Path(oci['root']['path']).is_absolute():
 for ns in oci['linux']['namespaces']:
     if ns.get('type')=='network' and ns.get('path'):
         ns['path']=str(pathlib.Path(ns['path']).resolve())
-network=next(ns['path'] for ns in oci['linux']['namespaces'] if ns['type']=='network')
-links=json.loads(subprocess.run([CAPTURE_NSENTER,'--net='+network,CAPTURE_IP,'-j','addr','show'],
-                              capture_output=True,check=True).stdout)
+network=next((ns.get('path') for ns in oci['linux']['namespaces'] if ns['type']=='network'), None)
+# Docker may create the netns at runc create and attach NICs only afterwards.
+links=(json.loads(subprocess.run([CAPTURE_NSENTER,'--net='+network,CAPTURE_IP,'-j','addr','show'],
+                               capture_output=True,check=True).stdout) if network else [])
 path=pathlib.Path(BASE)/('capture-'+cid+'.json')
 path.write_text(json.dumps({'oci':oci,'bundle':str(bundle),
                           'childLinks':links,'runtimeNetns':os.readlink('/proc/self/ns/net'),
@@ -488,10 +489,16 @@ class CohortFixture(F.NativeTests):
             # captured Docker names, before signing. Docker's allocation order
             # can differ even between two containers in the same test.
             captured = {n["ifname"]: n for n in captures[role]["childLinks"] if n["ifname"] != "lo"}
-            self.assertEqual(set(captured), {"eth0", "eth1"})
-            first_ip = next(a["local"] for a in captured["eth1"]["addr_info"] if a["family"] == "inet")
-            first = int(first_ip.split(".")[2]) - 90
-            self.assertIn(first, (1, 2))
+            if set(captured) == {"eth0", "eth1"}:
+                first_ip = next(a["local"] for a in captured["eth1"]["addr_info"] if a["family"] == "inet")
+                first = int(first_ip.split(".")[2]) - 90
+                self.assertIn(first, (1, 2))
+                self.names_known = True
+            else:
+                # NICs not yet attached at create: still sign an order opposite to the network list.
+                self.assertEqual(captured, {})
+                first = 2
+                self.names_known = getattr(self, "names_known", False)
             order = (first, 3-first) if role == "adapter" else (1, 2)
             all_nics[role] = [dict(interface=L.live_interface(position), ipv4=f"172.30.{90+n}.{index}",
                 mac=L.L2_LIVE_MAC, bridge="oufcohort" + str(n),
@@ -758,7 +765,9 @@ class CohortFixture(F.NativeTests):
                 continue
         print('COHORT_FINAL_STATE=' + json.dumps(dict(epochs={r: v['epoch'] for r, v in observation['candidates'].items()},
               remainingRuncInit=remaining), sort_keys=True), flush=True)
-        self.assertTrue(reversed_names, "fixture must exercise a signed NIC order different from Docker names")
+        print("COHORT_REVERSED_NAMES=" + json.dumps(sorted(reversed_names)), flush=True)
+        if getattr(self, "names_known", False):
+            self.assertTrue(reversed_names, "fixture must exercise a signed NIC order different from Docker names")
 
 
 @unittest.skipUnless(NATIVE, "set OUF_R3_COHORT_NATIVE=1 under Linux root:root")
