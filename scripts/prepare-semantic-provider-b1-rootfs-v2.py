@@ -183,7 +183,7 @@ def compare_entries(image, actual, upper, mounts, source_kind):
             continue
         require(name in copied and name in image and image[name]['kind'] == value['kind'] == 'directory',
                 'POST_CREATE_UPPER_ENTRY_TYPE_DENIED')
-        require(value.get('xattrs') == image[name].get('xattrs'), 'POST_CREATE_XATTR_DENIED')
+        require(physical(value).get('xattrs') == image[name].get('xattrs'), 'POST_CREATE_XATTR_DENIED')
         require(all(value[k] == image[name][k] for k in ('mode', 'uid', 'gid')),
                 'POST_CREATE_COPYUP_METADATA_DRIFT')
         children = sum(v['kind'] == 'directory' and
