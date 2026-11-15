@@ -1,0 +1,234 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034  # the R3 runbooks share one constant block; each uses a subset
+# Runbook R3 (task-43): emissione dell'autorizzazione 4 (supersedes 3) per la versione 4 della chiusura.
+# Uso:  bash r3-issue-v4.sh plan               (sola lettura, nessuna chiave)
+#       bash r3-issue-v4.sh apply <planSha256> (firma con la chiave installer, pubblica 4.json/4.signature.json)
+set -euo pipefail
+umask 077
+
+mode=$(printf %s "${1:-}" | tr -d "[:space:]")
+hash=$(printf %s "${2:-}" | tr -d "[:space:]")
+case "$mode" in
+  plan) ;;
+  apply) [[ "$hash" =~ ^[0-9a-f]{64}$ ]] || { echo "uso: apply <planSha256> (ricevuti ${#hash} caratteri)" >&2; exit 2; } ;;
+  *) echo 'uso: plan | apply <planSha256>' >&2; exit 2 ;;
+esac
+
+# Claude fills this pin after review and commit (D-001).
+C=85a0790c7e02c992026919ae8194464826d9c51d
+[[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
+  || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
+P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
+S=/etc/ouf/deploy-snapshots
+INSTALL=$S/semantic-provider-r3-install-v1
+STATE=$HOME/.ouf-r3-v4-state
+NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
+TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
+PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
+PROFILE_SHA=7fb7880d58e43ab40f9f53dac07a5dbad462d12e3a96f3b1287c6763b1d7ce18
+DOCKER_SHA=7f5b38163f9c5367f4b42d905c0505877eafa4c20abe49430c85a770aefacf40
+V51_WRAPPER_SHA=e5080250d55dbf59e37c53c8137e8b9fea05bf0625a93e2e61c906ee9641af5d
+V51=$S/semantic-runtime-v51-install-20261114-v1
+WRAPPER=/usr/local/sbin/ouf-semantic-admitted-v2
+LOCK=/run/ouf-semantic-boot-guard/guard.lock
+D=
+DOWNLOAD=0
+
+fetch() {
+  local path=$1 expected=$2
+  if [[ $DOWNLOAD == 1 ]]; then
+    sudo mkdir -p -m 0700 "$D/$(dirname "$path")"
+    sudo curl --fail --silent --show-error --max-time 30 --proto '=https' --tlsv1.2 \
+      "https://raw.githubusercontent.com/GioNob/ouf-deploy/$C/$path" -o "$D/$path"
+    sudo chmod 0600 "$D/$path"
+  fi
+  printf '%s  %s\n' "$expected" "$D/$path" | sudo sha256sum --check --status
+}
+
+delivery() {
+  # BEGIN DELIVERY
+  fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
+  fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
+  fetch scripts/issue-semantic-provider-operation-authorization.py 23a44e96da5a86fbfb6cbcc07ee6dca88608e1db020140b87ddc4c22bf888216
+  fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
+  fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
+  fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
+  fetch scripts/semantic-provider-deployment-broker-v2.py 6e97807d5fa010ec7bc670a49533a031dc8f1d5e2472d8569368adfdc15b2d7c
+  fetch scripts/semantic-provider-lease-supervisor-v2.py 0311cd4c3515a68530605ee201ccb7cbbc46d5ab989427efd174e6a647826ec5
+  fetch scripts/semantic-provider-preexec-hook-v2.py 834b5b6ae60d0cd37269d2592b31db7dcca2c02639f774a169e030548767df03
+  fetch scripts/upgrade-semantic-provider-r3.py d36753cd23b2c993a43e2b6b04062304b575567a13267a1d3247602df5b11639
+  fetch tools/semantic_acceptance_v51/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  fetch tools/semantic_acceptance_v51/issuance.py d019d4558c529add5fb3a7b052df3d8b92843167d6093f966b0b9b02265a3cd4
+  fetch tools/semantic_authority_mandates/mandates.py 86e70b8cc043c6b5b44b186601d098e71c46130039fe9d35d3c1529adfc09a79
+  fetch tools/semantic_b1_acceptance/__init__.py b1cddc8e0de31b27e96120f5a55079f238ac683eddd31eb602d23a80a8f6880d
+  fetch tools/semantic_b1_acceptance/acceptance.py 5179cf466af5e823a75caf68d3e3f772c3e3cc44d5f57f875e848ba02cd25708
+  fetch tools/semantic_b1b2_authority/__init__.py 19342edb368bf1c6bf439c615fc2c2452c16a1742f858311a2d65fe9d752a8a7
+  fetch tools/semantic_b1b2_authority/authority.py 04510e275622cde812da86599e5a191a0f7575650b32aa3208d1b6d47768c728
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/materialize_semantic_shared_faces.py 66986436206e9448e0bad58b651f4802a53e54eb179327c7050d963c22f33b62
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_kernel.py 98e3004300226fecd509a46c009585df14021927f20d4e5c82d8ff7a8a8180de
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/materialize_southbound_lease_refresh.py 1c0d7f1243752fe216ef62eefbc2e3253b8f2503b518fafe11277e4d7721a084
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_admission.py fccde9a325939b400a95dc5e8714755727ed57b476b01c82019a15ffac8f8df4
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_authentication.py 29e1942733abc74e8eb21eb927427c3e6e39806b06492f1dc614bd0805e53013
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_consumption.py 053e2e5031cd51adf957388296a808cd8ba824dbc2ab671143e756312d050aef
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_producer.py 582371358c769f7724fb76bb17fd5e11530a09ab06c19a3a66351fc77d984776
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_deployment_protocol.py 53f5629c3a57de622e51a05f9bf86b29f34328bf5756857afa458fb738f24e15
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_dns.py c466172113d1ffe850bf2c69762113b55fbc65d9091c96dca98a74548fddf930
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_coordination.py e267e0f86637191b9830895930daa35afc10fec733b6957f427ab8a0ccddf587
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_nft.py 7a5f2b21c096228a3e4d298674e380f667c3004dd6d8ec19934a2302844c0f93
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner.py 92736eebeccf344e565186bce94d29c65ffe1d50638d57eae81486e7b26e884d
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_node_observation.py 5a355a9904b6fc4bf665bb79c438e1cb9f3d11f8c2505b16df9834c046fde9c2
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_peer_bindings.py 4d99b60459d7122b5126d8424fb6233a9f3de15858219cd9061131b23f45af8b
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec.py 53eb9b79efcdca0ffe93bb0c80a582a285caf9126fd97e930fa503b6106eb797
+  fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528
+  fetch tools/semantic_frame_compiler/compile_creation_frame_policy.py 36ee627e524415002a98fede8d7e61ad22ae95b6fec6b6686c1e01d878be570d
+  fetch tools/semantic_frame_compiler/frame-observer.py 122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc
+  fetch tools/semantic_lease_recovery/activation_core.py 06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a
+  fetch tools/semantic_lease_recovery/adaptive_supervisor.py 08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c
+  fetch tools/semantic_lease_recovery/bounded_recovery.py ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd
+  fetch tools/semantic_lease_recovery/continuous_supervisor.py 8084748c0ffb5e009e8e59c4c5ecaaf08451fb2cc35540135e2db9a55d12ae0e
+  fetch tools/semantic_lease_recovery/deadline_backend.py 9918af051a94e1a345a1cb6b73069444e73fdec0918b5494f79b52f8bb2537a2
+  fetch tools/semantic_lease_recovery/dns.py f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f
+  fetch tools/semantic_lease_recovery/lease_recovery_budget.py c4a70c54823934e8d0ede9a5dff52ec93e896826b36445f21048c9519e2aeedf
+  fetch tools/semantic_lease_recovery/nft_seconds_backend.py 04cd115c756158ce2c04f32608380d7a40f4577d85785dfe46571825876545c1
+  fetch tools/semantic_lease_recovery/readback_margin_compiler.py 814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d
+  fetch tools/semantic_lease_recovery/recovery_journal.py 43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d
+  fetch tools/semantic_lease_recovery/resilient_lease_adapter.py beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683
+  fetch tools/semantic_provider_admission_v2/__init__.py bbae3553c950479a55a26ac71f7a4d79e32f69402967b0b39064cfadd4e41b31
+  fetch tools/semantic_provider_admission_v2/broker_v2.py af91097503d9179419e24af479848bfff48f09b1149f076213ee6fd6f859f0f1
+  fetch tools/semantic_provider_admission_v2/consumption_v2.py 44a6ef8de7e7bafd6881104fe148fb984a2acc595685c3095530155bd82c22e4
+  fetch tools/semantic_provider_admission_v2/driver_v7.py 27a3b0ec3c4d21a1faec9b15b1e5a5b7526472eddcf35f3462c77bcba8f8af58
+  fetch tools/semantic_provider_admission_v2/evidence_v2.py d6f7c659f87705d164c1abdb5589586103abcfebd12bc65f88668130d010d723
+  fetch tools/semantic_provider_admission_v2/l2_binding.py 27ecff88f1abe0dc08022770c6dbb2ed030908f2c8c20ed1b78ef5d3215cbaa7
+  fetch tools/semantic_provider_admission_v2/locking.py 1a92011a1948ab82498fcc2fc92ee17b7cbf11f1858cbe7edc1dac606de0b564
+  fetch tools/semantic_provider_admission_v2/preparer_v2.py 7d2d5c7af46ffac8d3007e765ed73765d7409faf25cfc56c3a8ca728fe09a447
+  fetch tools/semantic_provider_admission_v2/reauthorization_v2.py 53fb58772280116845a47351bdbce802dfd26169175cb36e3e9c11421df6b39c
+  fetch tools/semantic_provider_operation/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  fetch tools/semantic_provider_operation/authorization.py 8f5dd2fd86efb7add1bdb5325b6428db41cc539b7b00a3b33efa4d692ab958fc
+  fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
+  fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
+  fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
+  fetch tools/semantic_provider_r3/compose.py 3b614db734ac2c5bb95dcb66fb4e2639576bc8ede51cb0652bcee432ea78b02e
+  fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
+  fetch tools/semantic_provider_r3/operate.py f9c4dfb45065938858e9dc505c6f18043deca33d92fe64a74b2db38de009f45b
+  fetch tools/semantic_provider_r3/upgrade.py 46b50151f65e0f83910e6b8f6b7c60651961f54d6e41d5c355ef08a2a6c9be52
+  fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
+  fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 84324cbba844dd736303b985b9fc6c4a7c20bcfe8ef6fcc1f8c90b0fe9d0cb1e
+  fetch tools/semantic_transaction_profiles/assemble_provider_profiles.py 890dff15e3826175ef01467a812cdd523e8ea5d50a306ad8727f866475ab9734
+  fetch tools/semantic_transaction_profiles/authenticate_provider_transaction.py b47e245abab2bb55ccd172c5e3f8da2a0b167e89c588811159f87cc4d929f258
+  fetch tools/semantic_transaction_profiles/guarded_runtime_switch.py 1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd
+  fetch tools/semantic_transaction_profiles/publish_provider_transaction.py 7777f33432bbfadd56f89fd2ed0122ce1c14e41d797498d94fa7bdb3324d0080
+  # END DELIVERY
+}
+
+saved_state() {
+  [[ -f $STATE ]] || { echo "stato dell'emissione assente: eseguire prima r3-issue.sh plan" >&2; exit 2; }
+  read -r D ISSUED_AT < "$STATE"
+  [[ $D == "$S"/semantic-provider-r3-source.* && $ISSUED_AT =~ ^[0-9]+$ ]] \
+    || { echo 'stato dell emissione non valido' >&2; exit 2; }
+  delivery
+}
+
+# Builds $D/inputs.json (canonical, root 0600) from the delivered settings and the VPS
+# inputs; known inputs are checked against their pinned hashes before use.
+inputs() {
+  INPUTS_SHA=$(sudo /usr/bin/python3.13 -I -B - "$D" <<'PY'
+import hashlib, json, pathlib, sys
+D = pathlib.Path(sys.argv[1]); sys.path.insert(0, str(D))
+from tools.semantic_provider_r3 import compose as C
+S, M = "/etc/ouf/deploy-snapshots", "/var/lib/ouf-storage-migration"
+CO = S + "/discovery-coordinator-successor-20261109-uz9gw5ny"
+A2 = M + "/semantic-provider-preparation-a2-20261113"
+REC = S + "/semantic-provider-b1-recipes-20261114-v2"
+REG = S + "/semantic-provider-v2-transaction-mf9x0eqd/registry"
+OLD = {"adapter": "f3d59af93fc90162681cee3a7562bdff3bf2af8c05cbdb7e270d1508fff18f67",
+       "southbound": "1fc5ae6a0db4600e0124bb1f9d2998780d533fd2b4de7cb086d8675b6afb5916"}
+files = {"settings": str(D / "ops/vps/r3-settings.json"),
+         "coordinator": CO + "/coordinated-configuration.json",
+         "coordinationJournal": CO + "/coordination-journal.json",
+         "a2Manifest": A2 + "/manifest.json", "successors": A2 + "/successors.json",
+         "semanticPeer": A2 + "/semantic-peer.json",
+         "rootfs": M + "/semantic-provider-b1-rootfs-20261113-a2/result.json",
+         "acceptance": S + "/semantic-provider-acceptance-v51-g3/manifest.json"}
+for role in ("adapter", "southbound"):
+    files[role + "/historicalTemplate"] = REG + "/" + OLD[role] + "/preparer-template.json"
+    for part in ("template", "launch", "context", "policy"):
+        files[role + "/" + part] = REC + "/" + role + "/" + part + ".json"
+PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd970dd8df",
+        "a2Manifest": "817e178b8615766569a4278a3288a4774fc940217667eeeb79b97fa09440f777",
+        "successors": "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb",
+        "rootfs": "0a542c899013a657415c838ad0856a6c4ba14a54504e4eba324a6472f6f4cbda",
+        "adapter/historicalTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
+        "southbound/historicalTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
+        "adapter/template": "b5b7c915588c29141f77cab2526cf65d601a3c2f03fe5c0813db6673eb3d3067",
+        "adapter/launch": "061e2bd245d45d7e435ff86e07a6897413ae6c164d2d2c9ade2d455d80846943",
+        "adapter/context": "d6a76226bc5626ad4e5bcf87c21005063caaca41b747a4ae074511e8d4037b99",
+        "adapter/policy": "42677046162cf340080c4062321be2c5881fbe0ef299b869ce812569c8a634f3",
+        "southbound/template": "02e6d4253b36c2744aec542d831d62929210d691c2848868e9a78c8309531f05",
+        "southbound/launch": "f066a65cffc7766bbf77b9de15fe9d527ce8ca68a9bb0d74cadfe8370c6ad63b",
+        "southbound/context": "18a1df8d45fbe0914514478910041d3a49ecf402b8c78a06c8148cf95c06a1c9",
+        "southbound/policy": "e489068bc8a86f226dadfa5a3870dc05aaae65437d638a8b9ce56c4c42e218a8"}
+assert set(files) == C.DATA_INPUTS, "R3_INPUT_SET_DRIFT"
+def sha(path):
+    return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+bound = {}
+for name, path in sorted(files.items()):
+    digest = sha(path)
+    if name in PINS and PINS[name] != digest:
+        sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
+    bound[name] = {"path": path, "sha256": digest}
+sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(C.SOURCE_INPUTS)}
+raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
+                 sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
+target = D / "inputs.json"
+if target.exists() and target.read_bytes() != raw:
+    sys.stderr.write("R3_INPUTS_CHANGED_SINCE_PLAN\n"); raise SystemExit(3)
+target.write_bytes(raw); target.chmod(0o600)
+print(hashlib.sha256(raw).hexdigest())
+PY
+)
+}
+
+printf '%s  %s\n' "$P" /usr/bin/python3.13 | sudo sha256sum --check --status
+
+keys() {
+  printf '%s  %s\n' "$PROFILE_SHA" "$PROFILE" | sudo sha256sum --check --status
+  mapfile -t KEY_PATHS < <(sudo /usr/bin/python3.13 -I -B -c \
+    'import json,sys; [print(v["path"]) for v in json.load(open(sys.argv[1]))["keyBindings"].values()]' "$PROFILE")
+  KEY_ARGS=()
+  for k in "${KEY_PATHS[@]}"; do KEY_ARGS+=(--private-key-path "$k"); done
+}
+
+case "$mode" in
+  plan)
+    if sudo test -e "$INSTALL/authorization/4.json"; then
+      echo "autorizzazione 4 gia' presente: non rieseguire" >&2; exit 2
+    fi
+    D=$(sudo mktemp -d "$S/semantic-provider-r3-source.XXXXXXXX")
+    sudo chmod 0700 "$D"
+    DOWNLOAD=1
+    delivery
+    ISSUED_AT=$(date +%s)
+    printf '%s %s\n' "$D" "$ISSUED_AT" > "$STATE"
+    echo "consegna e issuedAt salvati: $D $ISSUED_AT"
+    ;;
+  apply) saved_state ;;
+esac
+inputs
+keys
+args=(
+  --supersede
+  --inputs "$D/inputs.json" --inputs-sha256 "$INPUTS_SHA"
+  --authority-profile "$PROFILE" --authority-profile-sha256 "$PROFILE_SHA"
+  --install-root "$INSTALL"
+  --output-directory "$S/semantic-provider-r3-issuance-v4"
+  --issued-at "$ISSUED_AT"
+  --table-name "${TABLES[@]}"
+  "${KEY_ARGS[@]}"
+)
+if [[ $mode == plan ]]; then
+  sudo /usr/bin/python3.13 -I -B "$D/scripts/issue-semantic-provider-operation-authorization.py" --plan "${args[@]}"
+else
+  sudo /usr/bin/python3.13 -I -B "$D/scripts/issue-semantic-provider-operation-authorization.py" \
+    --apply --plan-sha256 "$hash" "${args[@]}"
+fi
