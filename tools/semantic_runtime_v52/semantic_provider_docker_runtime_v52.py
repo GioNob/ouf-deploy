@@ -397,6 +397,100 @@ def public(error):
     return code if isinstance(error, RuntimeError) and re.fullmatch('[A-Z0-9_]{1,80}', code) else 'DOCKER_RUNTIME_OPERATION_UNPROVEN'
 
 
+def failed_runtime_state(config, cid, root, folder, record, epochs):
+    """Prove ownership before forwarding terminal-epoch Docker cleanup."""
+    require(record['runtimeRoot'] == str(root), 'EPOCH_RUNTIME_ROOT_DRIFT')
+    with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:
+        result = subprocess.run([config['runtimePath'], '--root', str(root), 'state', cid],
+            stdin=subprocess.DEVNULL, stdout=output, stderr=errors, timeout=10, env=ENV)
+        output.seek(0); raw = output.read(16385); errors.seek(0); error = errors.read(16385)
+    require(len(raw) <= 16384 and len(error) <= 16384, 'INACTIVE_RUNTIME_STATE_UNPROVEN')
+    if result.returncode != 0:
+        missing = error.strip() == b'container does not exist' or re.fullmatch(
+            rb'time="[^"\r\n]+" level=(?:error|fatal) msg="container does not exist"', error.strip())
+        require(result.returncode == 1 and missing, 'INACTIVE_RUNTIME_ABSENCE_UNPROVEN')
+        return None
+    state = parse(raw)
+    statuses = ('created', 'stopped') if record['driverHash'] is None else ('created', 'stopped', 'running')
+    require(type(state) is dict and state.get('id') == cid and state.get('bundle') == str(folder/'bundle')
+            and state.get('status') in statuses, 'FAILED_EPOCH_RUNTIME_STATE_UNPROVEN')
+    pid = state.get('pid')
+    require(type(pid) is int and 0 <= pid < 2**22 and pid != 1, 'FAILED_EPOCH_GENERATION_UNPROVEN')
+    ticks = epochs.start_ticks(pid) if pid > 1 else None
+    if ticks is not None:
+        path = folder/'deployment.json'
+        if os.path.lexists(path):
+            consumed = parse(read(path))
+            require(consumed['schema'] == 'ouf.semantic-deployment-consumption.v2'
+                    and consumed['containerId'] == cid and consumed['epoch'] == record['epoch']
+                    and consumed['authorizationSha256'] == record['authorizationSha256'],
+                    'FAILED_EPOCH_CONSUMPTION_DRIFT')
+            generation = consumed['generation']
+            if generation is not None:
+                require(type(generation) is dict and type(generation.get('pid')) is int
+                        and type(generation.get('startTicks')) is int
+                        and generation['pid'] == pid and generation['startTicks'] == ticks,
+                        'FAILED_EPOCH_GENERATION_UNPROVEN')
+        if record['generation'] is not None:
+            require(record['generation'] == {'pid': pid, 'startTicks': ticks}, 'FAILED_EPOCH_GENERATION_UNPROVEN')
+    return state
+
+
+def cleanup_receipt(folder, record, status, write=False):
+    """Exclusive, durable receipt; a denial or a partial rollback is never success."""
+    path = folder/'runtime-cleanup.json'
+    if os.path.lexists(path):
+        value = parse(read(path))
+        require(type(value) is dict and set(value) == {'schema', 'epoch', 'operation', 'at', 'runcStatusBefore'}
+                and value['schema'] == 'ouf.semantic-docker-runtime-cleanup.v1'
+                and type(value['epoch']) is int and value['epoch'] == record['epoch'] and value['operation'] == 'delete'
+                and type(value['at']) is int and value['at'] > 0
+                and value['runcStatusBefore'] in ('created', 'stopped', 'running', 'absent'),
+                'FAILED_EPOCH_CLEANUP_RECEIPT_DRIFT')
+        return value
+    if write:
+        exclusive(path, canonical({'schema': 'ouf.semantic-docker-runtime-cleanup.v1', 'epoch': record['epoch'],
+            'operation': 'delete', 'at': int(time.time()), 'runcStatusBefore': status}))
+    return None
+
+
+def prepared_cleanup_ready(config, original, cid, root, folder, record, auth):
+    """Check the ordinary rollback's sealed inputs before deleting a task.
+
+    Driver and broker retain their own common-lock/kernel checks. Their errors
+    (including partial rollback) require recovery, never a cleanup receipt.
+    """
+    require(record['configurationHash'] == sha(original), 'EPOCH_CONFIGURATION_DRIFT')
+    head = authorization_head(config, original, cid, auth)
+    require(head['sha256'] == record['authorizationSha256'], 'EPOCH_AUTHORIZATION_DRIFT')
+    raw = read(folder/'driver.json')
+    require(sha(raw) == record['driverHash'], 'SEALED_ADMISSION_DRIVER_DRIFT')
+    validator, broker_cfg = driver_validator(config, cid)
+    grant = validator.validate(raw)
+    binding = {'authorizationSha256': record['authorizationSha256'], 'containerId': cid,
+               'epoch': record['epoch'], 'configurationHash': config['admissionConfigurations'][cid]['sha256']}
+    require(grant['operationBinding'] == binding
+            and grant['operation'] == {**config['operation'], 'opensslBinding': config['opensslBinding']}
+            and grant['sourceRoot'] == broker_cfg['sourceRoot'] and grant['sourceHashes'] == broker_cfg['sourceHashes']
+            and grant['profile']['bundlePath'] == str(folder/'bundle')
+            and grant['profile']['bundleHash'] == record['bundleHash']
+            and grant['runtimeBinding'] == {'path': config['runtimePath'], 'sha256': config['runtimeSha256'], 'root': str(root)},
+            'FAILED_EPOCH_DRIVER_BINDING_DRIFT')
+    broker = parse(read(folder/'broker-state.json')); consumed = parse(read(folder/'deployment.json'))
+    expected = {**binding, **{k: config['operation'][k] for k in ('installationRef', 'entityRef')}}
+    require(broker['schema'] == 'ouf.semantic-deployment-broker-journal.v2' and broker['state'] == 'PROTECTED'
+            and consumed['schema'] == 'ouf.semantic-deployment-consumption.v2'
+            and consumed['state'] in ('READY', 'STARTING', 'STARTED')
+            and all(broker[k] == consumed[k] == v for k, v in expected.items())
+            and broker['runtimeRoot'] == str(root)
+            and broker['bundleHash'] == consumed['bundleHash'] == record['bundleHash']
+            and broker['driverHash'] == consumed['driverHash'] == record['driverHash'],
+            'FAILED_EPOCH_BROKER_BINDING_DRIFT')
+    # Reuse the actual rollback journal validator, without invoking the driver.
+    gate, _ = validator.components(grant)
+    require(gate.record()['state'] in ('INSTALLING', 'PROTECTED', 'REMOVING'), 'OWNED_ROLLBACK_REQUIRED')
+
+
 def operate(config_path, argv):
     config_path = Path(config_path); config, original = load_configuration(config_path); verify_files(config)
     operation, cid, options = arguments(argv)
@@ -420,7 +514,9 @@ def operate(config_path, argv):
         auth, epochs = operation_modules(config)
         record = epochs.current(config['registryRoot'], cid)
         boot = epochs.boot_id()
-        if operation in ('state', 'delete') and (record is None or record['state'] in epochs.TERMINAL):
+        failed = (record is not None and record['state'] == 'FAILED' and record['bootId'] == boot
+                  and operation in ('state', 'kill', 'delete'))
+        if not failed and operation in ('state', 'delete') and (record is None or record['state'] in epochs.TERMINAL):
             return inactive(config, cid, operation, root, argv)
         owned = False
         try:
@@ -461,16 +557,17 @@ def operate(config_path, argv):
                 owned = True
                 replace_cas(base/'current', pointer, canonical({'epoch': number, 'journalSha256': sha(raw)}))
             else:
-                require(record is not None and record['state'] not in epochs.TERMINAL, 'RUNTIME_PHASE_INACTIVE')
+                require(failed or (record is not None and record['state'] not in epochs.TERMINAL), 'RUNTIME_PHASE_INACTIVE')
                 require(record['bootId'] == boot, 'EPOCH_BOOT_DRIFT')
-                require(record['configurationHash'] == sha(original), 'EPOCH_CONFIGURATION_DRIFT')
-                require(record['runtimeRoot'] in (None, str(root)), 'EPOCH_RUNTIME_ROOT_DRIFT')
+                if not failed:
+                    require(record['configurationHash'] == sha(original), 'EPOCH_CONFIGURATION_DRIFT')
+                    require(record['runtimeRoot'] in (None, str(root)), 'EPOCH_RUNTIME_ROOT_DRIFT')
                 if operation == 'start':
                     require(record['state'] == 'CREATED', 'OWNED_CREATED_RUNTIME_REQUIRED')
                     owned = True
                     head = authorization_head(config, original, cid, auth)
                     require(record['authorizationSha256'] == head['sha256'], 'EPOCH_AUTHORIZATION_DRIFT')
-                elif operation in ('delete', 'state', 'kill'): owned = True
+                elif operation in ('delete', 'state', 'kill'): owned = not failed
             folder = base/'epochs'/str(record['epoch']); shadow = folder/'bundle'; driver = folder/'driver.json'
             python = [config['pythonPath'], '-I', '-B']; entry = config['candidates'][cid]
             stable = config['admissionConfigurations'][cid]
@@ -504,6 +601,41 @@ def operate(config_path, argv):
                     require(result.returncode == 0, 'OCI_ADMISSION_GATE_DENIED')
                 stable_files()
                 require(sha(read(driver)) == record['driverHash'], 'SEALED_ADMISSION_DRIVER_DRIFT')
+
+            if failed:
+                terminal = record
+                prepared = record['driverHash'] is not None
+                try:
+                    state = failed_runtime_state(config, cid, root, folder, record, epochs)
+                    receipt = cleanup_receipt(folder, record, None)
+                    require(receipt is None or state is None, 'FAILED_EPOCH_CONTAINER_AFTER_CLEANUP')
+                    if state is None:
+                        require(operation in ('state', 'delete'), 'RUNTIME_PHASE_INACTIVE')
+                    if prepared and operation == 'delete' and receipt is None:
+                        prepared_cleanup_ready(config, original, cid, root, folder, record, auth)
+                    stable_files()
+                    if prepared and operation == 'delete' and receipt is None:
+                        # The existing broker requires DELETING. Restore the
+                        # original FAILED journal even on a partial rollback.
+                        publish('DELETING', failure=None)
+                    result = subprocess.run([config['runtimePath'], *argv], stderr=subprocess.DEVNULL, env=ENV, timeout=10)
+                    if operation == 'delete':
+                        require(result.returncode == 0, 'RUNTIME_DELETE_DENIED')
+                        if prepared and receipt is None:
+                            quiesce(config); driver_call('rollback'); broker_phase('cleanup')
+                            publish_epoch(base, record, terminal, epochs); record = terminal
+                        cleanup_receipt(folder, terminal, state['status'] if state else 'absent', write=True)
+                    elif state is not None:
+                        require(result.returncode == 0, 'RUNTIME_STATE_DENIED' if operation == 'state' else 'RUNTIME_KILL_DENIED')
+                    return result.returncode
+                except Exception:
+                    try:
+                        if record != terminal:
+                            publish_epoch(base, record, terminal, epochs); record = terminal
+                    finally:
+                        if prepared:
+                            raise Denied('FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY') from None
+                    raise
 
             if operation == 'create':
                 bundle = Path(options.get('--bundle', options.get('-b'))).resolve()
@@ -561,13 +693,18 @@ def operate(config_path, argv):
                     require(type(ticks) is int and ticks > 0, 'STARTED_PROCESS_GENERATION_UNPROVEN')
                     publish('STARTED', generation={'pid': started['pid'], 'startTicks': ticks}); return 0
             stable_files()
+            unprepared_state = None
+            if operation == 'delete' and record['driverHash'] is None:
+                unprepared_state = failed_runtime_state(config, cid, root, folder, record, epochs)
             if operation == 'delete': publish('DELETING')
             result = subprocess.run([config['runtimePath'], *argv], stderr=subprocess.DEVNULL, env=ENV, timeout=10)
             if operation == 'delete':
                 require(result.returncode == 0, 'RUNTIME_DELETE_DENIED')
-                quiesce(config)
-                require(record['driverHash'] is not None, 'UNPREPARED_DELETE_REQUIRES_RECOVERY')
-                driver_call('rollback'); broker_phase('cleanup'); publish('DELETED')
+                if record['driverHash'] is None:
+                    cleanup_receipt(folder, record, unprepared_state['status'] if unprepared_state else 'absent', write=True)
+                else:
+                    quiesce(config); driver_call('rollback'); broker_phase('cleanup')
+                publish('DELETED')
             else:
                 require(result.returncode == 0, 'RUNTIME_STATE_DENIED' if operation == 'state' else 'RUNTIME_KILL_DENIED')
             return result.returncode

@@ -13,10 +13,11 @@ from pathlib import Path
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 import types
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import call, patch, Mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT/'tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py'
@@ -139,6 +140,233 @@ class PortableContracts(unittest.TestCase):
             files[str(root/'tools/semantic_provider_admission_v2/driver_v7.py')] += b'\nraise AssertionError("UNVERIFIED")\n'
             with self.assertRaisesRegex(RuntimeError, 'BROKER_SOURCE_PACKAGE_DRIFT'):
                 runtime.driver_validator(config, CID)
+
+
+class PortableFailedCleanup(unittest.TestCase):
+    """Fake runc with real operate dispatch; only Linux custody IO is stubbed."""
+    def setUp(self):
+        self.r = PortableContracts().runtime()
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.registry = self.root/'registry'; self.base = self.registry/CID
+        self.folder = self.base/'epochs/1'; self.runtime_root = self.root/'runc/moby'
+        self.config_path = self.root/'runtime.json'; self.original = b'current configuration'
+        self.cfg = dict(runtimePath='/runc', pythonPath='/python', runtimeStateRoot=str(self.root/'runc'),
+            runtimeSha256='e'*64, registryRoot=str(self.registry), candidates={CID: {}}, admissionPath='/broker',
+            admissionConfigurations={CID: dict(path='/admission', sha256='c'*64)}, driverPath='/driver',
+            operation=dict(installationRef='installation', entityRef='entity'), opensslBinding={})
+        self.record = dict(epoch=1, state='FAILED', bootId='current-boot', runtimeRoot=str(self.runtime_root),
+            configurationHash=sha(self.original), driverHash=None, authorizationSha256='a'*64, bundleHash='b'*64,
+            generation=None, failure='TWO_PHASE_BROKER_DENIED')
+        self.before = copy.deepcopy(self.record)
+        self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status='created', pid=42)
+        self.files = {str(self.base/'operation.lock'): b'', str(self.config_path): self.original}
+        self.calls = []; self.transitions = []; self.absence = b'container does not exist\n'
+        self.probe_code = 1; self.forward_code = 0
+        self.fail_phase = None
+        self.epochs = types.SimpleNamespace(TERMINAL={'FAILED', 'DELETED', 'ABANDONED'},
+            current=lambda *a: self.record, boot_id=lambda: 'current-boot', start_ticks=lambda pid: 123)
+        self.quiesce = Mock(); self.validator = Mock()
+        self.validator.components.return_value = (types.SimpleNamespace(record=lambda: {'state': 'PROTECTED'}), None)
+
+    def simulate(self, args, **kw):
+        self.calls.append(args)
+        if args[:1] == ['/runc'] and args[-2:] == ['state', CID] and 'stdout' in kw:
+            raw, error, code = (encoded(self.state), b'', 0) if self.state is not None else (b'', self.absence, self.probe_code)
+            kw['stdout'].write(raw); kw['stderr'].write(error)
+        else:
+            code = 1 if args[-1] == self.fail_phase else self.forward_code
+            if args[:1] == ['/runc'] and 'delete' in args and code == 0: self.state = None
+        return subprocess.CompletedProcess(args, code)
+
+    def run_op(self, mode):
+        # No Linux custody claims are made by these portable tests.
+        info = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o600, st_uid=0, st_gid=0, st_nlink=1, st_dev=1, st_ino=2)
+        native_open, native_close, native_fstat, native_lstat = os.open, os.close, os.fstat, Path.lstat
+        lock = self.base/'operation.lock'
+        def publish(base, old, value, epochs):
+            self.assertEqual(old, self.record); self.record = value; self.transitions.append(value['state'])
+        def exclusive(path, raw):
+            self.assertNotIn(str(path), self.files); self.files[str(path)] = raw
+        with patch.object(self.r, 'load_configuration', return_value=(self.cfg, self.original)), \
+                patch.object(self.r, 'verify_files'), patch.object(self.r, 'private_directory'), \
+                patch.object(self.r, 'operation_modules', return_value=(None, self.epochs)), \
+                patch.object(self.r, 'read', side_effect=lambda p: self.files[str(p)]), \
+                patch.object(self.r, 'exclusive', side_effect=exclusive), \
+                patch.object(self.r, 'publish_epoch', side_effect=publish), \
+                patch.object(self.r, 'quiesce', self.quiesce), \
+                patch.object(self.r, 'authorization_head', return_value={'sha256': 'a'*64}), \
+                patch.object(self.r, 'driver_validator', return_value=(self.validator, dict(sourceRoot='/source', sourceHashes={}))), \
+                patch.object(self.r.os.path, 'lexists', side_effect=lambda p: str(p) == str(self.base) or str(p) in self.files), \
+                patch.object(self.r.os, 'O_NOFOLLOW', 0, create=True), \
+                patch.object(self.r.os, 'O_NONBLOCK', 0, create=True), \
+                patch.object(self.r.os, 'open', side_effect=lambda p, *a, **kw: 9999 if p == lock else native_open(p, *a, **kw)), \
+                patch.object(self.r.os, 'close', side_effect=lambda fd: None if fd == 9999 else native_close(fd)), \
+                patch.object(self.r.os, 'fstat', side_effect=lambda fd: info if fd == 9999 else native_fstat(fd)), \
+                patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else native_lstat(p, *a, **kw)), \
+                patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)), \
+                patch.object(self.r.subprocess, 'run', side_effect=self.simulate):
+            return self.r.operate(self.config_path, ['--root', str(self.runtime_root), mode, CID] + (['SIGTERM'] if mode == 'kill' else []))
+
+    def denied(self, mode, code):
+        with self.assertRaisesRegex(self.r.Denied, '^'+code+'$'): self.run_op(mode)
+
+    def consumed(self):
+        return dict(schema='ouf.semantic-deployment-consumption.v2', containerId=CID, epoch=1,
+            authorizationSha256='a'*64, generation=dict(pid=42, startTicks=123, namespaceInode=456))
+
+    def prepared(self):
+        raw = b'sealed driver'; self.record['driverHash'] = sha(raw)
+        self.files[str(self.folder/'driver.json')] = raw
+        binding = dict(authorizationSha256='a'*64, containerId=CID, epoch=1, configurationHash='c'*64)
+        self.validator.validate.return_value = dict(operationBinding=binding, operation={**self.cfg['operation'], 'opensslBinding': {}},
+            sourceRoot='/source', sourceHashes={}, profile=dict(bundlePath=str(self.folder/'bundle'), bundleHash='b'*64),
+            runtimeBinding=dict(path='/runc', sha256='e'*64, root=str(self.runtime_root)))
+        common = {**binding, **self.cfg['operation'], 'driverHash': sha(raw), 'bundleHash': 'b'*64}
+        self.files[str(self.folder/'broker-state.json')] = encoded(dict(common,
+            schema='ouf.semantic-deployment-broker-journal.v2', state='PROTECTED', runtimeRoot=str(self.runtime_root)))
+        self.files[str(self.folder/'deployment.json')] = encoded({**self.consumed(), **common, 'state': 'READY'})
+        self.before = copy.deepcopy(self.record)
+
+    def test_unprepared_created_and_stopped_cleanup_and_terminal_preserved(self):
+        for status, pid in (('created', 42), ('stopped', 42), ('stopped', 0)):
+            with self.subTest(status=status, pid=pid):
+                self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status=status, pid=pid)
+                self.files.pop(str(self.folder/'runtime-cleanup.json'), None)
+                self.assertEqual(self.run_op('state'), 0)
+                self.assertEqual(self.run_op('kill'), 0); self.assertEqual(self.run_op('delete'), 0)
+                self.assertEqual(self.record, self.before); self.assertEqual(self.transitions, [])
+                receipt = json.loads(self.files[str(self.folder/'runtime-cleanup.json')])
+                self.assertEqual((receipt['operation'], receipt['runcStatusBefore'], receipt['epoch']), ('delete', status, 1))
+        self.quiesce.assert_not_called(); self.validator.validate.assert_not_called()
+        self.assertTrue(all(args[0] == '/runc' for args in self.calls))
+
+    def test_running_foreign_id_bundle_root_or_generation_denies_before_forward(self):
+        for change in ({'status': 'running'}, {'bundle': str(self.base/'epochs/2/bundle')}, {'id': PEER}):
+            for mode in ('state', 'kill', 'delete'):
+                with self.subTest(change=change, mode=mode):
+                    saved = self.state.copy(); self.state.update(change); self.calls.clear()
+                    self.denied(mode, 'FAILED_EPOCH_RUNTIME_STATE_UNPROVEN'); self.assertEqual(len(self.calls), 1)
+                    self.state = saved
+        self.record['runtimeRoot'] = '/foreign'
+        self.denied('delete', 'EPOCH_RUNTIME_ROOT_DRIFT')
+        self.record['runtimeRoot'] = str(self.runtime_root)
+        consumed = self.consumed(); consumed['generation']['startTicks'] += 1
+        self.files[str(self.folder/'deployment.json')] = encoded(consumed)
+        self.denied('delete', 'FAILED_EPOCH_GENERATION_UNPROVEN')
+        self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+
+    def test_consumption_generation_matches_or_pid_is_gone(self):
+        self.files[str(self.folder/'deployment.json')] = encoded(self.consumed())
+        self.assertEqual(self.run_op('kill'), 0)
+        self.epochs.start_ticks = lambda pid: None
+        self.assertEqual(self.run_op('delete'), 0)
+
+    def test_old_configuration_is_accepted_but_old_boot_keeps_inactive_protocol(self):
+        self.record['configurationHash'] = 'f'*64
+        self.assertEqual(self.run_op('kill'), 0); self.assertEqual(self.run_op('delete'), 0)
+        self.record['bootId'] = 'old-boot'
+        self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status='created', pid=42)
+        self.denied('delete', 'RUNTIME_PHASE_INACTIVE_UNEXPECTED_CONTAINER')
+        self.denied('kill', 'RUNTIME_PHASE_INACTIVE')
+
+    def test_absent_state_delete_forward_and_receipt_is_idempotent(self):
+        self.state = None; self.forward_code = 1
+        self.assertEqual(self.run_op('state'), 1)
+        self.denied('delete', 'RUNTIME_DELETE_DENIED')
+        self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+        self.forward_code = 0
+        self.assertEqual(self.run_op('delete'), 0)
+        receipt = self.files[str(self.folder/'runtime-cleanup.json')]
+        self.assertEqual(json.loads(receipt)['runcStatusBefore'], 'absent')
+        self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual(self.files[str(self.folder/'runtime-cleanup.json')], receipt)
+        self.denied('kill', 'RUNTIME_PHASE_INACTIVE')
+        for error, code in ((b'permission denied', 1), (b'container does not exist', 2), (b'prefix container does not exist', 1)):
+            self.absence, self.probe_code = error, code
+            self.denied('delete', 'INACTIVE_RUNTIME_ABSENCE_UNPROVEN')
+        self.absence, self.probe_code = b'time="now" level=error msg="container does not exist"\n', 1
+        self.assertEqual(self.run_op('delete'), 0)
+
+    def test_unprepared_nonterminal_delete_uses_same_safe_checks_without_quiescence(self):
+        self.record.update(state='CREATED', failure=None)
+        self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual(self.record['state'], 'DELETED'); self.quiesce.assert_not_called()
+
+    def test_prepared_ordinary_rollback_and_repeated_delete(self):
+        self.prepared()
+        self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual(self.transitions, ['DELETING', 'FAILED']); self.assertEqual(self.record, self.before)
+        self.quiesce.assert_called_once_with(self.cfg)
+        phases = [args[-1] for args in self.calls if args[0] == '/python']
+        self.assertEqual(phases, ['rollback', 'cleanup'])
+        self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual(self.quiesce.call_count, 1)
+
+    def test_prepared_inconsistent_or_partial_rollback_requires_recovery(self):
+        self.prepared(); path = str(self.folder/'broker-state.json'); good = self.files[path]
+        self.files[path] = good.replace(b'PROTECTED', b'PREPARING')
+        self.denied('delete', 'FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY')
+        self.assertFalse(any('delete' in args for args in self.calls))
+        self.files[path] = good; self.quiesce.side_effect = self.r.Denied('LEASE_QUIESCENCE_UNPROVEN')
+        self.denied('delete', 'FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY')
+        self.assertEqual(self.record, self.before)
+        self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+
+    def test_prepared_driver_drift_and_old_configuration_require_recovery(self):
+        self.prepared(); driver = str(self.folder/'driver.json'); raw = self.files[driver]
+        for change in ('driver', 'configuration', 'preexec'):
+            with self.subTest(change=change):
+                self.files[driver] = raw; self.record['configurationHash'] = sha(self.original)
+                self.validator.components.return_value[0].record = lambda: {'state': 'PROTECTED'}
+                if change == 'driver': self.files[driver] += b'drift'
+                if change == 'configuration': self.record['configurationHash'] = 'f'*64
+                if change == 'preexec': self.validator.components.return_value[0].record = lambda: {'state': 'REMOVED'}
+                self.calls.clear()
+                self.denied('delete', 'FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY')
+                self.assertFalse(any('delete' in args for args in self.calls))
+        self.quiesce.assert_not_called()
+
+    def test_runc_delete_failure_is_never_recorded_as_cleanup(self):
+        for prepared in (False, True):
+            with self.subTest(prepared=prepared):
+                if prepared: self.prepared()
+                self.forward_code = 1
+                self.denied('delete', 'FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY' if prepared else 'RUNTIME_DELETE_DENIED')
+                self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+                self.assertEqual(self.record, self.before)
+        self.quiesce.assert_not_called()
+
+    def test_driver_or_broker_failure_requires_recovery_without_receipt(self):
+        self.prepared()
+        for phase in ('rollback', 'cleanup'):
+            with self.subTest(phase=phase):
+                self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status='stopped', pid=0)
+                self.fail_phase = phase; self.calls.clear()
+                self.denied('delete', 'FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY')
+                self.assertEqual(self.record, self.before)
+                self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+                if phase == 'rollback': self.assertFalse(any('cleanup' in args for args in self.calls))
+
+    def test_existing_receipt_never_authorizes_a_reappeared_container(self):
+        self.assertEqual(self.run_op('delete'), 0)
+        self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status='created', pid=42)
+        self.denied('kill', 'FAILED_EPOCH_CONTAINER_AFTER_CLEANUP')
+
+    def test_cleanup_exclusive_creation_is_private_and_synced(self):
+        runtime = self.r; stream = Mock()
+        # Verify the real persistence primitive independently of custody stubs.
+        stream.__enter__ = Mock(return_value=stream); stream.__exit__ = Mock(return_value=False)
+        with patch.object(runtime.os, 'O_NOFOLLOW', 0, create=True), \
+                patch.object(runtime.os, 'open', return_value=99) as opened, \
+                patch.object(runtime.os, 'fchmod', create=True) as chmod, \
+                patch.object(runtime.os, 'fdopen', return_value=stream), \
+                patch.object(runtime.os, 'fsync') as synced, patch.object(runtime.os, 'close'), \
+                patch.object(runtime, 'sync_directory') as directory:
+            runtime.exclusive(self.folder/'runtime-cleanup.json', b'{}')
+        self.assertEqual(opened.call_args.args[1], os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+        self.assertEqual(opened.call_args.args[2], 0o600); chmod.assert_called_once_with(99, 0o600)
+        synced.assert_called_once_with(99); directory.assert_called_once_with(self.folder)
 
 
 class NativeEpochs(operation_fixture.Fixture):
@@ -399,6 +627,20 @@ class NativeEpochs(operation_fixture.Fixture):
         self.assertEqual(self.row()['state'], 'FAILED')
         self.exists = False; self.authorize(3); self.run_op('create'); self.authorize(4)
         self.denied('start', 'EPOCH_AUTHORIZATION_DRIFT'); self.assertEqual(self.row()['state'], 'FAILED')
+
+    def test_denied_first_start_docker_cleanup_then_epoch_two(self):
+        self.run_op('create'); self.broker_ok = False
+        self.denied('start', 'TWO_PHASE_BROKER_DENIED')
+        self.assertIsNone(self.row()['driverHash']); before = (self.folder()/'adapter.json').read_bytes()
+        calls = len(self.calls)
+        self.assertEqual(self.run_op('kill'), 0); self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual((self.folder()/'adapter.json').read_bytes(), before)
+        self.assertEqual(stat.S_IMODE((self.folder()/'runtime-cleanup.json').stat().st_mode), 0o600)
+        self.assertFalse(any(str(self.quiescer) in argv or str(self.broker) in argv or str(self.driver) in argv
+                             for argv, _ in self.calls[calls:]))
+        self.broker_ok = True
+        self.assertEqual(self.run_op('create'), 0); self.assertEqual(self.row()['epoch'], 2)
+        self.assertEqual(self.run_op('start'), 0); self.assertEqual(self.row()['state'], 'STARTED')
 
     def test_broker_error_after_opening_is_failed(self):
         self.broker_ok = False; self.denied('create', 'TWO_PHASE_BROKER_DENIED')

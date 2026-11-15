@@ -117,6 +117,17 @@ def trace(frame,event,arg):
             pass # Diagnostics must not change the runtime's exit/output protocol.
     return trace
 exec(compile(runtime_path.read_bytes(),str(runtime_path),'exec'),runtime.__dict__)
+if DENY_FIRST_EPOCH:
+    # Explicit fixture veto after real runc create/record-created. This never
+    # changes installed runtime/broker bytes, hashes or signed expectations.
+    native_run=runtime.subprocess.run
+    def deny_first_cohort(args,**kwargs):
+        if ('--mode' in args and args[args.index('--mode')+1]=='cohort-ready'
+                and '--epoch' in args and args[args.index('--epoch')+1]=='1'):
+            print('COHORT_FIXTURE_FIRST_START_DENIED epoch=1',file=sys.stderr,flush=True)
+            return runtime.subprocess.CompletedProcess(args,1)
+        return native_run(args,**kwargs)
+    runtime.subprocess.run=deny_first_cohort
 sys.settrace(trace)
 try:
     raise SystemExit(runtime.main())
@@ -125,9 +136,9 @@ finally:
 '''
 
 
-def diagnostic_source(runtime_path, configuration, trace_root):
+def diagnostic_source(runtime_path, configuration, trace_root, deny_first_epoch=False):
     return (f'RUNTIME={str(runtime_path)!r}\nCONFIGURATION={str(configuration)!r}\n'
-            f'TRACE_ROOT={str(trace_root)!r}\n' + DIAGNOSTIC)
+            f'TRACE_ROOT={str(trace_root)!r}\nDENY_FIRST_EPOCH={deny_first_epoch!r}\n' + DIAGNOSTIC)
 
 
 def initialize_registry(registry, cids):
@@ -471,7 +482,7 @@ class CohortFixture(F.NativeTests):
         self.wrapper.chmod(0o755)
         diagnostic = self.root / "runtime-diagnostic.py"
         self.write(diagnostic, diagnostic_source(self.code / "source" / C.RUNTIME,
-                   self.code / "runtime-configuration.json", self.trace_root).encode())
+                   self.code / "runtime-configuration.json", self.trace_root, deny_first_epoch=True).encode())
         self.write(self.runtime_wrapper, (f'#!/bin/sh\nexec {self.python} -I -B {diagnostic} "$@"\n').encode())
         self.runtime_wrapper.chmod(0o755)
 
@@ -510,7 +521,7 @@ class CohortFixture(F.NativeTests):
             result = [mode, "--action", "start", "--install-root", str(self.install), "--wrapper", str(self.wrapper),
                 "--wrapper-sha256", A.sha(self.wrapper.read_bytes()), "--docker", str(self.docker_binary),
                 "--docker-sha256", A.sha(self.docker_binary.read_bytes()), "--docker-socket", self.socket,
-                "--timeout-seconds", "45", "--output-directory", str(self.root / "operate-result")]
+                "--timeout-seconds", "45", "--output-directory", str(self.root / ("operate-result-" + str(attempt)))]
             for name, path in (("systemctl", self.root / "systemctl"), ("nft", self.real_nft)):
                 result.extend(["--" + name, str(path), "--" + name + "-sha256", A.sha(path.read_bytes())])
             return result + (["--plan-sha256", digest] if digest else [])
@@ -522,12 +533,33 @@ class CohortFixture(F.NativeTests):
                 self.print_tracebacks()
             self.assertEqual(p.stderr, b"")
             return p.returncode, json.loads(p.stdout)
+        attempt = 1
         code, plan = operate(argv())
         self.assertEqual(code, 0, plan)
         code, result = operate(argv("--apply", plan["planSha256"]))
-        # Print both diagnostics before asserting, even if one side is missing.
+        print("COHORT_START_ATTEMPT_1=" + json.dumps(dict(exitCode=code, result=result), sort_keys=True), flush=True)
+        self.assertEqual(code, 1, result)
+        old_generations = {}
         for role, cid in self.ids.items():
             folder = self.install / "registry" / cid / "epochs/1"
+            row = json.loads((folder / "adapter.json").read_bytes())
+            self.assertEqual(row["state"], "FAILED", row)
+            self.assertIsNone(row["driverHash"], row)
+            self.assertEqual(row["failure"], "TWO_PHASE_BROKER_DENIED", row)
+            self.assertFalse((folder / "driver.json").exists())
+            consumed = json.loads((folder / "deployment.json").read_bytes())
+            self.assertEqual(consumed["state"], "CREATED", consumed)
+            old_generations[cid] = consumed["generation"]
+        # Docker owns stale containerd task cleanup. Do not issue an out-of-band
+        # runc delete, kill a PID or reset any journal between the two starts.
+        attempt = 2
+        code, plan = operate(argv())
+        self.assertEqual(code, 0, plan)
+        code, result = operate(argv("--apply", plan["planSha256"]))
+        print("COHORT_START_ATTEMPT_2=" + json.dumps(dict(exitCode=code, result=result), sort_keys=True), flush=True)
+        # Print both diagnostics before asserting, even if one side is missing.
+        for role, cid in self.ids.items():
+            folder = self.install / "registry" / cid / "epochs/2"
             path = folder / "broker-denial-cohort-ready.json"
             print("COHORT_BROKER_DENIAL_" + role.upper() + "=" +
                   (path.read_text() if path.exists() else "MISSING"), flush=True)
@@ -553,7 +585,20 @@ class CohortFixture(F.NativeTests):
         self.assertEqual(observation["lease"], {"state": "QUIESCED", "leaseAuthorized": False})
         for role, cid in self.ids.items():
             row = observation["candidates"][role]
-            folder = self.install / "registry" / cid / "epochs/1"
+            folder = self.install / "registry" / cid / "epochs/2"
+            self.assertEqual(row["epoch"]["epoch"], 2, row)
+            old_folder = self.install / "registry" / cid / "epochs/1"
+            old_row = json.loads((old_folder / "adapter.json").read_bytes())
+            self.assertEqual(old_row["state"], "FAILED")
+            receipt = json.loads((old_folder / "runtime-cleanup.json").read_bytes())
+            self.assertEqual(receipt["schema"], "ouf.semantic-docker-runtime-cleanup.v1")
+            self.assertEqual((receipt["epoch"], receipt["operation"]), (1, "delete"))
+            self.assertEqual((old_folder / "runtime-cleanup.json").stat().st_mode & 0o777, 0o600)
+            previous = old_generations[cid]
+            old_stat = Path('/proc') / str(previous['pid']) / 'stat'
+            if old_stat.exists():
+                self.assertNotEqual(int(old_stat.read_text().rsplit(')', 1)[1].split()[19]), previous['startTicks'],
+                                    'epoch 1 runc init survived the second start')
             self.assertFalse((folder / "broker-denial-cohort-ready.json").exists(), row["denials"])
             binding_path = folder / "l2-binding.json"
             self.assertEqual(binding_path.stat().st_mode & 0o777, 0o600)
@@ -583,6 +628,31 @@ class CohortFixture(F.NativeTests):
             nft = subprocess.run([str(self.real_nft), "list", "table", "bridge", table], capture_output=True, check=True).stdout.decode()
             for nic in binding["containers"][cid]["bindings"]:
                 self.assertIn(nic["mac"], nft)
+        # Check all runc init processes rooted in either candidate's rootfs,
+        # not just Docker's current PID. Only a new-epoch generation is allowed.
+        generations = [json.loads((self.install / 'registry' / cid / 'epochs/2/adapter.json').read_bytes())['generation']
+                       for cid in self.ids.values()]
+        allowed = {g['pid']: g['startTicks'] for g in generations}
+        roots = {str(Path(json.loads((self.root / ('capture-' + cid + '.json')).read_bytes())['oci']['root']['path']).resolve())
+                 for cid in self.ids.values()}
+        remaining = []
+        for proc in Path('/proc').iterdir():
+            if not proc.name.isdigit():
+                continue
+            try:
+                cmdline = (proc / 'cmdline').read_bytes()
+                comm = (proc / 'comm').read_text()
+                if not ((b'runc' in cmdline and b'init' in cmdline) or ('runc' in comm and 'INIT' in comm)):
+                    continue
+                if str((proc / 'root').resolve()) not in roots:
+                    continue
+                ticks = int((proc / 'stat').read_text().rsplit(')', 1)[1].split()[19])
+                remaining.append(dict(pid=int(proc.name), startTicks=ticks))
+                self.assertEqual(allowed.get(int(proc.name)), ticks, 'stale candidate runc init')
+            except (FileNotFoundError, ProcessLookupError):
+                continue
+        print('COHORT_FINAL_STATE=' + json.dumps(dict(epochs={r: v['epoch'] for r, v in observation['candidates'].items()},
+              remainingRuncInit=remaining), sort_keys=True), flush=True)
 
 
 @unittest.skipUnless(NATIVE, "set OUF_R3_COHORT_NATIVE=1 under Linux root:root")

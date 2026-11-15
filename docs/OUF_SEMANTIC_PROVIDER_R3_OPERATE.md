@@ -239,3 +239,85 @@ Eseguire il gate soltanto in CI Linux root:root con i prerequisiti nativi;
 su Windows si eseguono le suite portabili. Restano necessari anche i gate
 `OUF_R3_OPERATE_NATIVE` e `OUF_R3_UPGRADE_NATIVE`: l'aggiornamento del fixture
 non è un PASS nativo né una prova VPS.
+
+## Pulizia delle epoche fallite
+
+Il runtime v5.2 nella chiusura v4 accetta `state`, `kill` e `delete` per
+un'epoca `FAILED` del boot corrente, sotto il medesimo `operation.lock`.
+La pulizia non apre epoche né ripete `create` o l'autorizzazione iniziale.
+Il percorso delle epoche di boot precedenti rimane invariato.
+
+Per un'epoca mai preparata (`driverHash` nullo), prima di inoltrare ogni
+operazione il runtime interroga `runc --root <root> state <cid>` e richiede
+CID esatto, `runtimeRoot` esatto e bundle ombra `epochs/<epoca>/bundle`.
+Sono ammessi soltanto `created` e `stopped`; `running` è sempre negato.
+Se il PID è vivo e il giornale `deployment.json` contiene una generazione,
+PID e start ticks devono coincidere. Il giornale di consumo, quando letto,
+deve appartenere allo stesso CID, epoca e autorizzazione. Anche una generazione
+presente nell'adapter deve coincidere. Non è richiesta l'uguaglianza del
+`configurationHash` storico con quello corrente: una configurazione precedente
+può aver lasciato il task da rimuovere. La configurazione e gli eseguibili
+correnti restano verificati. Non vengono invocati broker, preparer, driver o
+quiescer. Anche il `delete` ordinario senza driver usa queste prove e non
+richiede un rollback inesistente.
+
+L'assenza deve essere provata con lo stesso protocollo rigoroso di `inactive()`:
+exit 1 e messaggio esatto `container does not exist`, anche nella forma JSON-log
+testuale di runc già ammessa da `inactive()`. Timeout, errore di permessi o
+messaggio soltanto simile non dimostrano assenza. In questo caso soltanto
+`state` e `delete` vengono inoltrati, preservando l'exit code di `state`;
+`kill` resta negato. Un `delete` non riuscito non prova la pulizia.
+
+Dopo `delete` riuscito viene creato esclusivamente, con modo 0600 e fsync del
+file e della directory, `epochs/<epoca>/runtime-cleanup.json`:
+
+```json
+{"schema":"ouf.semantic-docker-runtime-cleanup.v1","epoch":1,"operation":"delete","at":1794740400,"runcStatusBefore":"created"}
+```
+
+`at` è un timestamp Unix in secondi; l'esempio è illustrativo.
+`runcStatusBefore` può essere `created`, `stopped`, `running` (solo epoche
+preparate) o `absent`. Il file esistente viene validato e conservato byte per
+byte: i successivi delete verificano ancora l'assenza con runc e inoltrano la
+richiesta, senza ripetere il rollback. Un container ricomparso dopo una ricevuta
+è negato. Un diniego non produce mai la ricevuta. Per le epoche senza driver
+`adapter.json` e il puntatore `current` restano invariati e terminali; la normale
+apertura successiva può quindi assegnare l'epoca seguente.
+
+### R-012 — epoca FAILED già preparata
+
+Con `driverHash` valorizzato il delete richiede i binding sigillati ordinari:
+configurazione corrente e autorizzazione dell'epoca, hash e binding del driver,
+broker `PROTECTED`, consumo `READY`/`STARTING`/`STARTED` coerente e journal preexec
+ammesso al rollback (`INSTALLING`, `PROTECTED`, `REMOVING`). Lo stato runc deve
+ancora appartenere al CID, bundle, root e generazione dell'epoca; in questo
+percorso è ammesso anche `running`, e runc resta responsabile di accettare o
+rifiutare il delete richiesto da Docker.
+
+Il broker esistente richiede l'adapter in `DELETING`: il runtime pubblica
+transitoriamente quello stato mediante CAS, quindi esegue nell'ordine runc
+delete, quiesce, `driver_call('rollback')`, `broker_phase('cleanup')`. Driver e
+broker conservano tutti i propri controlli su lock comune, footprint e richieste
+sigillate. Alla fine viene ripristinato via CAS l'esatto giornale `FAILED`
+originario, compreso il motivo del primo diniego, e registrata la ricevuta.
+Non sono introdotti nuovi stati né modifiche al validatore delle epoche.
+
+Prerequisiti mancanti, configurazione storica preparata incompatibile, rollback
+non consentito o un errore in qualsiasi fase restituiscono
+`FAILED_PREPARED_EPOCH_REQUIRES_RECOVERY`, senza ricevuta di successo. Anche in
+caso di errore viene tentato il ripristino CAS del `FAILED` originale; un errore
+CAS resta un diniego. Una caduta del processo durante `DELETING` o un rollback
+parziale richiedono riconciliazione governata; non vengono dichiarati puliti
+né ripetuti automaticamente i passi già consumati.
+
+Il test portabile usa runc simulato e verifica sia i dinieghi sia la sequenza
+di rollback. `OUF_R3_COHORT_NATIVE=1` aggiunge un veto esplicito della fixture
+su `cohort-ready` dell'epoca 1, dopo la creazione reale. Stampa entrambi gli
+start e lo stato finale; il secondo start deve far eseguire a Docker la pulizia
+del task obsoleto e aprire l'epoca 2, superando `cohort-ready` con i MAC osservati.
+Verifica ricevute, vecchie generazioni terminate e assenza di `runc init`
+residui dei candidati salvo le generazioni della nuova epoca. Non intervengono
+delete runc manuali, reset di journal o kill diretti fra i tentativi.
+La lease della fixture resta QUIESCED e `operate` resta HELD per il supervisore
+WAITING, come nel gate precedente. Queste asserzioni native richiedono CI Linux;
+la modifica del test non ne attesta il superamento.
