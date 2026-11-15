@@ -12,7 +12,7 @@ import time
 import types
 
 from tools.semantic_provider_operation import authorization
-from . import broker_v2 as broker, evidence_v2
+from . import broker_v2 as broker, evidence_v2, l2_binding
 from .consumption_v2 import EpochConsumption, hashed, operating_role, require
 from .reauthorization_v2 import sealed_authorizer_v2
 from .locking import wait_common_lock
@@ -35,7 +35,7 @@ def correlation(binding):
 
 def validate(raw):
     value = authorization.decode(raw)
-    require(set(value) in (BASE, BASE | {"peerBinding"}) and value["schema"] == SCHEMA,
+    require(BASE <= set(value) <= BASE | {"peerBinding", "l2Binding"} and value["schema"] == SCHEMA,
             "EXACT_DRIVER_CONFIGURATION_REQUIRED")
     sealed = value["operationBinding"]
     require(type(sealed) is dict and set(sealed) == {"authorizationSha256", "epoch", "containerId", "configurationHash"}
@@ -93,6 +93,15 @@ def validate(raw):
                 and type(peer["commandBindings"]) is dict and set(peer["commandBindings"]) == {"ip", "nsenter"}
                 and all(broker.binding(b) and b["path"] == value["commands"][k]
                         for k, b in peer["commandBindings"].items()), "EXACT_DRIVER_PEERS_REQUIRED")
+    if "l2Binding" in value:
+        l2 = value["l2Binding"]
+        require(type(l2) is dict and set(l2) == {"signedTransport", "commandBindings"}
+                and type(l2["signedTransport"]) is dict
+                and set(l2["signedTransport"]) == {"networkBindings", "transport", "tableName"}
+                and l2_binding.enabled(l2["signedTransport"])
+                and type(l2["commandBindings"]) is dict and set(l2["commandBindings"]) == {"ip", "nsenter"}
+                and all(broker.binding(b) and b["path"] == value["commands"][k]
+                        for k, b in l2["commandBindings"].items()), "EXACT_DRIVER_L2_REQUIRED")
     return value
 
 
@@ -149,10 +158,30 @@ class Operation:
                     and role["tableName"] == value["profile"]["policy"]["tableName"], "DRIVER_OPERATION_SCOPE_DRIFT")
             from tools.semantic_provider_node_observation import NodeObservation
             run = NodeObservation({}, self.budget).run
+            effective_hash = role["transportSha256"]
+            if "l2Binding" in value:
+                effective_policy = verify_l2(value, role["transportSha256"], self.budget, run)
+                effective_hash = authorization.sha(authorization.canonical(effective_policy))
             if "peerBinding" in value:
-                verify_peers(value, role["transportSha256"], self.budget, run)
+                verify_peers(value, effective_hash, self.budget, run)
             return True
         return authorize
+
+
+def verify_l2(value, signed_hash, budget, run):
+    l2 = value["l2Binding"]
+    signed = l2["signedTransport"]
+    require(authorization.sha(authorization.canonical(signed)) == signed_hash, "PEER_DRIVER_TRANSPORT_SCOPE_DRIFT")
+    policy = l2_binding.bound(signed, value["profile"]["containerId"], Path(value["consumptionJournal"]).parent,
+        value["runtimeBinding"], l2["commandBindings"], budget, run=run)
+    if "peerBinding" in value:
+        require(policy == value["peerBinding"]["declaredPolicy"], "L2_SIGNED_FIELD_DRIFT")
+    # Own attachments must also reflect the effective approved MAC, IP and bridge.
+    attachments = value["profile"]["policy"]["attachments"]
+    require(len(attachments) == len(policy["networkBindings"])
+            and all(all(a.get(k) == n[k] for k in ("mac", "ipv4", "bridge", "workloadRef", "bindingRef"))
+                    for a, n in zip(attachments, policy["networkBindings"])), "L2_SIGNED_FIELD_DRIFT")
+    return policy
 
 
 def verify_peers(value, transport_hash, budget, run):

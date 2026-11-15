@@ -33,6 +33,8 @@ on:
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
       - tests/test_semantic_provider_broker_denials.py
+      - tests/test_semantic_provider_l2_binding.py
+      - tools/semantic_provider_admission_v2/**
       - tests/fixtures/r3-v2-document-hashes.json
       - tests/test_semantic_provider_lease_supervisor.py
       - tests/test_semantic_runtime_v51_install.py
@@ -80,6 +82,9 @@ jobs:
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
+      - name: L2 binding (observed successor MACs)
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_l2_binding.py -v
       - name: R3 real Docker cohort on two bridges without configured MACs
         if: ${{ !cancelled() }}
         run: >-

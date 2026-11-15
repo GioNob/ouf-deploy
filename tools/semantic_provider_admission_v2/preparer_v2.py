@@ -10,7 +10,7 @@ import tempfile
 import time
 
 from tools.semantic_provider_operation import authorization
-from . import broker_v2 as broker, driver_v7 as driver, evidence_v2
+from . import broker_v2 as broker, driver_v7 as driver, evidence_v2, l2_binding
 from .consumption_v2 import EpochConsumption, operating_role, require
 
 class Worker:
@@ -130,6 +130,15 @@ class Worker:
                 and receipt["generation"] == evidence["generation"]
                 and (generation is None or generation == receipt["generation"]), "CONSUMPTION_PREPARATION_CUSTODY_DRIFT")
 
+    def effective_candidate(self, candidate, role, docs):
+        signed = evidence_v2.documents(role, docs)["transport"]
+        require({k: candidate[k] for k in ("networkBindings", "transport", "tableName")} == signed,
+                "PREPARER_TRANSPORT_DRIFT")
+        effective = l2_binding.bound(signed, candidate["containerId"], self.root,
+            candidate["runtimeBinding"], {k: self.command(k) for k in ("ip", "nsenter")}, self.budget)
+        candidate.update(effective)
+        return signed, effective
+
     def prepare(self, state):
         from tools.semantic_provider_deployment_admission import application_hash, live_profile, mirrors
         from tools.semantic_provider_preexec import digest
@@ -166,8 +175,7 @@ class Worker:
             role = operating_role(operation.head(), r["binding"])
             docs = {k: broker.read_binding(self.cfg[k + "Binding"]) for k in evidence_v2.DOCUMENTS}
             evidence_v2.verify(evidence, role, docs)
-            require({k: candidate[k] for k in ("networkBindings", "transport", "tableName")}
-                    == evidence_v2.documents(role, docs)["transport"], "PREPARER_TRANSPORT_DRIFT")
+            signed_transport, effective_transport = self.effective_candidate(candidate, role, docs)
             self.receipt_ready(evidence)
             require(not any(os.path.lexists(self.root / p) for p in ("admission.json", "preexec.json", "driver.json")),
                     "EXPLICIT_RECOVERY_NO_REPLAY")
@@ -230,6 +238,10 @@ class Worker:
         if peer_declarations:
             grant["peerBinding"] = {"declaredPolicy": {k: candidate[k] for k in ("networkBindings", "transport", "tableName")},
                                     "observations": observations, "commandBindings": peer_commands}
+        if l2_binding.enabled(signed_transport):
+            grant["l2Binding"] = {"signedTransport": signed_transport, "commandBindings": peer_commands}
+            require(l2_binding.bound(signed_transport, candidate["containerId"], self.root,
+                candidate["runtimeBinding"], peer_commands, self.budget) == effective_transport, "L2_BINDING_CHANGED")
         driver.validate(authorization.canonical(grant))
         gate, _ = driver.components(grant)
         with self.lock():

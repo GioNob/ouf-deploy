@@ -134,9 +134,13 @@ class ComposeTests(unittest.TestCase):
         inputs = fixture()
         # Versioned releases retain their original source INPUTS. Current
         # sources belong to the new closure, never to a rewritten old oracle.
+        previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
+        for path, packed in previous.items():
+            inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
         retained = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())["retainedSources"]
         for path, packed in retained.items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
+        inputs["sources"].pop(C.L2_SOURCE)
         current = C.compose(inputs, version=1)
         # Every input and every output is pinned, including source copies,
         # registry lock bytes and authorization; no dynamically computed oracle.
@@ -144,19 +148,52 @@ class ComposeTests(unittest.TestCase):
         self.assertEqual(current["hashes"], baseline["hashes"])
         self.assertEqual(current, C.compose(inputs))
 
-    def test_version_two_fixed_inputs_and_version_three_current_closure(self):
+    def test_version_two_fixed_inputs_and_version_four_current_closure(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())
         inputs = fixture()
+        previous = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())["retainedSources"]
+        for path, packed in previous.items():
+            inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
         for path, packed in baseline["retainedSources"].items():
             inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
+        inputs["sources"].pop(C.L2_SOURCE)
         old = C.compose(inputs, 2, sequence=2, supersedes="a"*64)
         self.assertEqual(old["inputHashes"], baseline["inputHashes"])
         self.assertEqual(old["hashes"], baseline["hashes"])
         current = fixture()
-        new = C.compose(current, 3, sequence=3, supersedes=A.sha(old["authorization"]))
+        new = C.compose(current, 4, sequence=4, supersedes=A.sha(old["authorization"]))
         for path in ("tools/semantic_provider_admission_v2/broker_v2.py", B.ENTRYPOINTS[0]):
-            self.assertEqual(new["documents"]["versions/3/source/" + path], current["sources"][path])
+            self.assertEqual(new["documents"]["versions/4/source/" + path], current["sources"][path])
             self.assertNotEqual(A.sha(current["sources"][path]), baseline["inputHashes"]["repository/" + path])
+
+    def test_version_three_retained_bytes(self):
+        baseline = json.loads((ROOT / "tests/fixtures/r3-v3-document-hashes.json").read_bytes())
+        inputs = fixture()
+        inputs["sources"].pop(C.L2_SOURCE)
+        for path, packed in baseline["retainedSources"].items():
+            inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
+        result = C.compose(inputs, 3, sequence=3, supersedes="a" * 64)
+        self.assertEqual(result["inputHashes"], baseline["inputHashes"])
+        self.assertEqual(result["hashes"], baseline["hashes"])
+
+    def test_version_four_changes_only_successor_mac_fields(self):
+        from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC
+        inputs = fixture()
+        v3 = C.compose(inputs, 3, sequence=3, supersedes="a" * 64)
+        v4 = C.compose(inputs, 4, sequence=4, supersedes="a" * 64)
+        def placeholders(value):
+            if type(value) is list:
+                return [placeholders(v) for v in value]
+            if type(value) is dict:
+                return {k: L2_LIVE_MAC if k == "mac" else placeholders(v) for k, v in value.items()}
+            return value
+        for role in C.ROLES:
+            for name in ("transport.json", "preparer-template.json"):
+                suffix = "documents/" + role + "/" + name
+                self.assertEqual(json.loads(v4["documents"]["versions/4/" + suffix]),
+                                 placeholders(json.loads(v3["documents"]["versions/3/" + suffix])))
+        peer = json.loads(v4["documents"]["versions/4/documents/southbound/transport.json"])["transport"][1]["peerIngress"]
+        self.assertEqual(peer, {"kind": "BRIDGE_PORT", "ifindex": 1450})
 
     def test_versions_keep_state_shared_and_payload_chain_explicit(self):
         inputs = fixture()

@@ -1,7 +1,7 @@
 """Opt-in offline Docker cohort: real Engine, runc, broker, epochs and operate.
 
-Only the WAITING systemd observer, empty nft observer and quiescer are fixture
-programs. They never publish ACTIVE or grant a lease. A private Docker daemon
+The WAITING systemd/frame observers and quiescer are explicit fixture programs.
+They never publish ACTIVE or grant a lease. nft, ip and nsenter are real. A private Docker daemon
 and locally imported rootfs avoid registry access and host Docker changes.
 """
 import ast
@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_semantic_provider_operation_issuance as F
 from tools.semantic_provider_r3 import operate as O
 from tools.semantic_provider_admission_v2 import broker_v2 as B
+from tools.semantic_provider_admission_v2 import l2_binding as L
 
 ROOT, A, C = F.ROOT, F.A, F.C
 NATIVE = os.environ.get("OUF_R3_COHORT_NATIVE") == "1"
@@ -65,7 +66,34 @@ if hashlib.sha256(raw).hexdigest()!=args.configuration_sha256:
 config=json.loads(raw)
 journal=json.loads(pathlib.Path(config['coordinator']['journalPath']).read_bytes())
 # The isolated fixture can only prove existing quiescence; it cannot activate.
-raise SystemExit(0 if journal==dict(state='QUIESCED',leaseAuthorized=False,startAuthorized=False) else 1)
+raise SystemExit(0 if all(journal.get(k)==v for k,v in
+    dict(state='QUIESCED',leaseAuthorized=False,startAuthorized=False).items()) else 1)
+'''
+
+# This fixture has no admitted source file mounts. It checks the captured full
+# OCI and real process generation, exercising the existing frame wire contract.
+# It is not the production source/mount acceptance observer.
+FRAME = r'''
+import argparse,hashlib,json,os,pathlib,sys
+p=argparse.ArgumentParser();p.add_argument('--configuration',required=True);a=p.parse_args()
+r=json.load(sys.stdin);policy=json.loads(pathlib.Path(a.configuration).read_bytes())
+def digest(v): return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+raw=pathlib.Path(r['bundlePath']).read_bytes();bundle=json.loads(raw)
+assert digest(bundle)==r['applicationHash']==digest(policy['expectedOci'])
+assert hashlib.sha256(pathlib.Path(a.configuration).read_bytes()).hexdigest()==r['policyHash']
+def gen():
+    proc=pathlib.Path('/proc')/str(r['pid'])
+    return dict(pid=r['pid'],startTicks=int((proc/'stat').read_text().rsplit(')',1)[1].split()[19]),
+                namespaceInode=(proc/'ns/net').stat().st_ino)
+assert gen()==r['generation']
+v={'schema':'ouf.semantic-configured-created-frame.v1',
+   'configuredPolicy':{'configuredPolicyConforms':True,'applicationHash':r['applicationHash']},
+   'sourceMountFrame':{'sourceByteHashesMatchExpected':True,'stableAcrossReads':True,'privateMaterialSpooled':False,
+                       'mountObservation':{'effectiveReadOnlyFileBindingsObserved':True}},
+   'policyAuthenticationProven':False,'rootfsSealProven':False,'imagePublisherProvenanceVerified':False,
+   'completeCreationAccepted':False,'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
+assert gen()==r['generation'] and pathlib.Path(r['bundlePath']).read_bytes()==raw
+print(json.dumps(v))
 '''
 
 DIAGNOSTIC = r'''
@@ -126,7 +154,7 @@ def collect_codes():
 
 class PortableTests(unittest.TestCase):
     def test_fixture_programs_compile_and_collect_codes_are_real(self):
-        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC):
+        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, FRAME):
             compile(source, "<cohort-fixture>", "exec")
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
 
@@ -226,6 +254,7 @@ class CohortFixture(F.NativeTests):
         self.trace_root = self.root / "runtime-tracebacks"
         self.trace_root.mkdir(mode=0o700)
         self.real_runc = Path(shutil.which("runc")).resolve()
+        self.real_nft = Path(shutil.which("nft")).resolve()
         self.docker_binary = Path(shutil.which("docker")).resolve()
         self.socket = "unix://" + str(self.root / "docker.sock")
         self.script(self.runtime_wrapper, CAPTURE.replace("RUNC", repr(str(self.real_runc))).replace("BASE", repr(str(self.root))))
@@ -313,8 +342,8 @@ class CohortFixture(F.NativeTests):
         # Use the real composed closure as a skeleton. Fixture-only bindings
         # below describe the independently captured Docker candidates; they are
         # signed afterwards with the existing native authority fixture keys.
-        result = C.compose(self.inputs, 3, sequence=3, supersedes="a" * 64)
-        self.code = self.install / "versions/3"
+        result = C.compose(self.inputs, 4, sequence=4, supersedes="a" * 64)
+        self.code = self.install / "versions/4"
         docs = copy.deepcopy(result["documents"])
         original = json.loads(result["authorization"])
         old_ids = {r: original["roles"][r]["containerId"] for r in O.ROLES}
@@ -344,7 +373,6 @@ class CohortFixture(F.NativeTests):
             self.write(path, A.canonical(value))
             return {"path": str(path), "sha256": A.sha(path.read_bytes())}
         self.script(self.root / "systemctl", SYSTEMCTL)
-        self.script(self.root / "nft", NFT)
         quiescer = self.root / "quiesce.py"
         self.write(quiescer, QUIESCE.encode())
         qbinding = {"path": str(quiescer), "sha256": A.sha(quiescer.read_bytes())}
@@ -352,6 +380,26 @@ class CohortFixture(F.NativeTests):
         captures = {r: json.loads((self.root / ("capture-" + cid + ".json")).read_bytes()) for r, cid in self.ids.items()}
         real = {"path": str(self.real_runc), "sha256": A.sha(self.real_runc.read_bytes())}
         python = {"path": str(self.python), "sha256": A.sha(self.python.read_bytes())}
+        # Install an empty, quiescent lease footprint inside this test's netns.
+        # No resolver is queried and no lease is activated.
+        kernel = dict(tableName="ouf_cohort_lease", guardedInterfaces=["oufcohort2"], existingInterfaces=[], staticFlows=[],
+            providerFlows=[dict(endpointRef="fixture", endpoint="https://provider.example", source="172.30.92.2",
+                addresses=[], leaseSeconds=60, resolutionEvidenceRef="fixture_dns", allowedPrivateAddresses=[])])
+        with F.fixtures.grant_fixture.part_a.libraries():
+            from tools.materialize_southbound_kernel import materialize
+            from tools.semantic_provider_lease_nft import structure_hash
+            rules = materialize(kernel, empty_provider_sets=True)["nftRules"]
+            subprocess.run([str(self.real_nft), "-f", "-"], input=rules.encode(), capture_output=True, check=True)
+            tables = {f: json.loads(subprocess.run([str(self.real_nft), "-j", "list", "table", f, kernel["tableName"]],
+                capture_output=True, check=True).stdout) for f in ("inet", "bridge")}
+            coordination = dict(transactionId="c" * 64, configurationHash=A.sha(A.canonical(kernel)),
+                                leaseStructureHash=structure_hash(tables))
+        lease_journal = {"schema": "ouf.semantic-lease-coordination.v1", **coordination,
+            "state": "QUIESCED", "leaseAuthorized": False, "startAuthorized": False, "leaseAddresses": [[]]}
+        self.write(self.root / "lease.json", A.canonical(lease_journal))
+        frame_path = self.root / "fixture-frame.py"
+        self.write(frame_path, FRAME.encode())
+        frame_binding = {"path": str(frame_path), "sha256": A.sha(frame_path.read_bytes())}
         self.assertEqual(len({v["root"] for v in captures.values()}), 1)
         runtime.update(runtimePath=real["path"], runtimeSha256=real["sha256"],
                        pythonPath=python["path"], pythonSha256=python["sha256"],
@@ -359,7 +407,7 @@ class CohortFixture(F.NativeTests):
         all_nics = {}
         for index, role in enumerate(O.ROLES, 2):
             all_nics[role] = [dict(interface="eth" + str(n-1), ipv4=f"172.30.{90+n}.{index}",
-                mac=f"02:42:ac:1e:{90+n:02x}:{index:02x}", bridge="oufcohort" + str(n),
+                mac=L.L2_LIVE_MAC, bridge="oufcohort" + str(n),
                 bindingRef=role + "_" + str(n), workloadRef=role) for n in (1, 2)]
         for role in O.ROLES:
             cid = self.ids[role]
@@ -367,14 +415,18 @@ class CohortFixture(F.NativeTests):
             cfg = json.loads((self.code / "broker" / (role + ".json")).read_bytes())
             template = json.loads(Path(cfg["preparerTemplate"]["path"]).read_bytes())
             template.update(pythonPath=python["path"], pythonHash=python["sha256"])
+            template.update(kernel=kernel, coordinationBinding=coordination, coordinationJournal=str(self.root / "lease.json"),
+                hostNetworkNamespace=os.stat("/proc/self/ns/net").st_ino,
+                dns=dict(resolvers=["172.30.92.1"], resolverPort=53, timeoutSeconds=1, maxLeaseSeconds=60, applyBudgetSeconds=1))
             cfg["creationFrameObserverBinding"]["python"] = python
+            cfg["creationFrameObserverBinding"]["source"] = frame_binding
             flow = dict(purpose="GATEWAY_ADAPTER", authorityRef="provider", protocol="tcp", port=9443,
                 source=all_nics[role][0]["ipv4"], destination=all_nics[other][0]["ipv4"], peerIngress={
                     "kind": "CREATED_CANDIDATE", "bindingRef": all_nics[other][0]["bindingRef"], "declaration": {
                         "containerId": self.ids[other], "applicationHash": A.sha(A.canonical(captures[other]["oci"])),
                         "networkBindings": all_nics[other]}})
             template["candidate"].update(networkBindings=all_nics[role], transport=[flow], runtimeBinding=real)
-            for name in ("ip", "nsenter"):
+            for name in ("ip", "nsenter", "nft", "mount", "umount", "unshare"):
                 path = Path(shutil.which(name)).resolve()
                 template["commands"][name], template["commandHashes"][name] = str(path), A.sha(path.read_bytes())
             lock = self.root / "common.lock"
@@ -386,6 +438,11 @@ class CohortFixture(F.NativeTests):
             policy["expectedOci"] = captures[role]["oci"]
             cfg["framePolicyBinding"] = document("documents/" + role + "/frame-policy.json", policy)
             cfg["creationFrameObserverBinding"]["configuration"] = cfg["framePolicyBinding"]
+            with F.fixtures.grant_fixture.part_a.libraries():
+                from tools.semantic_provider_node_observation import rootfs_seal
+                from tools.semantic_provider_deployment_authentication import VerificationBudget
+                seal = rootfs_seal(Path(captures[role]["oci"]["root"]["path"]), cfg["rootfsLimits"], VerificationBudget(18))
+            cfg["rootfsSealBinding"] = document("documents/" + role + "/rootfs-seal.json", seal)
             cfg["transportBinding"] = document("documents/" + role + "/transport.json",
                 {k: template["candidate"][k] for k in ("networkBindings", "transport", "tableName")})
             bound = document("broker/" + role + ".json", cfg)
@@ -393,12 +450,12 @@ class CohortFixture(F.NativeTests):
             runtime["admissionConfigurations"][cid] = bound
             runtime["candidates"][cid]["bundleParents"] = [str(Path(captures[role]["bundle"]).parent)]
             original["roles"][role].update(containerId=cid, admissionConfigurationSha256=bound["sha256"],
-                framePolicySha256=cfg["framePolicyBinding"]["sha256"], transportSha256=cfg["transportBinding"]["sha256"])
+                framePolicySha256=cfg["framePolicyBinding"]["sha256"], transportSha256=cfg["transportBinding"]["sha256"],
+                rootfsSealSha256=cfg["rootfsSealBinding"]["sha256"])
         sup = {"registryRoot": str(self.install / "registry"), "authorizationRoot": str(self.chain),
                "statusPath": str(self.code / "supervisor/status.json"),
                "coordinator": {"journalPath": str(self.root / "lease.json")}}
         supbinding = document("supervisor/configuration.json", sup)
-        self.write(self.root / "lease.json", A.canonical(dict(state="QUIESCED", leaseAuthorized=False, startAuthorized=False)))
         self.write(Path(sup["statusPath"]), A.canonical(dict(schema="ouf.semantic-provider-lease-supervisor-status.v1",
             state="WAITING", reason="EPOCH_NOT_LIVE", epochs=dict.fromkeys(O.ROLES), activationsLastHour=0,
             authorizationSequence=1)))
@@ -454,8 +511,8 @@ class CohortFixture(F.NativeTests):
                 "--wrapper-sha256", A.sha(self.wrapper.read_bytes()), "--docker", str(self.docker_binary),
                 "--docker-sha256", A.sha(self.docker_binary.read_bytes()), "--docker-socket", self.socket,
                 "--timeout-seconds", "45", "--output-directory", str(self.root / "operate-result")]
-            for name in ("systemctl", "nft"):
-                result.extend(["--" + name, str(self.root / name), "--" + name + "-sha256", A.sha((self.root / name).read_bytes())])
+            for name, path in (("systemctl", self.root / "systemctl"), ("nft", self.real_nft)):
+                result.extend(["--" + name, str(path), "--" + name + "-sha256", A.sha(path.read_bytes())])
             return result + (["--plan-sha256", digest] if digest else [])
         def operate(args):
             try:
@@ -468,14 +525,15 @@ class CohortFixture(F.NativeTests):
         code, plan = operate(argv())
         self.assertEqual(code, 0, plan)
         code, result = operate(argv("--apply", plan["planSha256"]))
-        allowed = collect_codes() | {"COHORT_PEER_WAIT_TIMEOUT", "COHORT_PEER_STATE_DENIED",
-            "COHORT_RUNTIME_IDENTITY_AMBIGUOUS", "BOUNDED_COHORT_RUNTIME_INVENTORY_REQUIRED", "COHORT_RUNTIME_ROW_INVALID"}
         # Print both diagnostics before asserting, even if one side is missing.
         for role, cid in self.ids.items():
             folder = self.install / "registry" / cid / "epochs/1"
             path = folder / "broker-denial-cohort-ready.json"
             print("COHORT_BROKER_DENIAL_" + role.upper() + "=" +
                   (path.read_text() if path.exists() else "MISSING"), flush=True)
+            binding = folder / "l2-binding.json"
+            print("COHORT_L2_BINDING_" + role.upper() + "=" +
+                  (binding.read_text() if binding.exists() else "MISSING"), flush=True)
             state = self.engine("inspect", "-f", "{{json .State}}", cid, check=False)
             print("COHORT_DOCKER_STATE_" + role.upper() + "=" + state.stdout.decode("utf-8", "replace").strip()
                   + state.stderr.decode("utf-8", "replace").strip(), flush=True)
@@ -489,25 +547,48 @@ class CohortFixture(F.NativeTests):
             print("COHORT_DOCKERD_ERRORS=" + json.dumps(lines[-20:]), flush=True)
         self.assertEqual(code, 1, result)
         self.assertEqual(result["status"], "HELD")
+        self.assertEqual(result["reason"], "R3_READBACK_TIMEOUT")
+        self.assertEqual(result["requestErrors"], [])
         observation = result["lastObservation"]
         self.assertEqual(observation["lease"], {"state": "QUIESCED", "leaseAuthorized": False})
         for role, cid in self.ids.items():
             row = observation["candidates"][role]
-            self.assertEqual(row["epoch"]["state"], "FAILED")
-            self.assertFalse(row["docker"]["Running"])
-            path = self.install / "registry" / cid / "epochs/1/broker-denial-cohort-ready.json"
-            value = B.validate_denial(path.read_bytes(), cid, 1, "cohort-ready")
-            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
-            self.assertIn(value["reason"], allowed)
-            self.assertIsNotNone(value["cohort"])
-            self.assertIn(value, row["denials"])
-            self.assertFalse((path.parent / "evidence.json").exists())
+            folder = self.install / "registry" / cid / "epochs/1"
+            self.assertFalse((folder / "broker-denial-cohort-ready.json").exists(), row["denials"])
+            binding_path = folder / "l2-binding.json"
+            self.assertEqual(binding_path.stat().st_mode & 0o777, 0o600)
+            binding = json.loads(binding_path.read_bytes())
+            self.assertEqual(binding["schema"], L.SCHEMA)
+            self.assertEqual(set(binding["containers"]), set(self.ids.values()))
+            for member, bound in binding["containers"].items():
+                frame = json.loads(self.engine("inspect", member).stdout)[0]
+                expected = {n["IPAddress"]: n["MacAddress"] for n in frame["NetworkSettings"]["Networks"].values()}
+                self.assertEqual({n["ipv4"]: n["mac"] for n in bound["bindings"]}, expected)
+                self.assertEqual(bound["generation"]["pid"], frame["State"]["Pid"])
+                proc = Path("/proc") / str(frame["State"]["Pid"])
+                self.assertEqual(bound["generation"]["namespaceInode"], (proc / "ns/net").stat().st_ino)
+                self.assertEqual(bound["generation"]["startTicks"], int((proc / "stat").read_text().rsplit(")", 1)[1].split()[19]))
+                self.assertNotIn(L.L2_LIVE_MAC, expected.values())
+            for denial in row["denials"]:
+                self.assertNotIn(denial.get("reason"), {"PEER_MAC_IP_DRIFT", "APPROVED_MAC_IP_BINDING_DRIFT",
+                                                      "NAMESPACE_PORT_BINDING_DRIFT"})
+            self.assertEqual(row["epoch"]["state"], "STARTED", row)
+            self.assertTrue(row["docker"]["Running"])
+            self.assertEqual(json.loads((folder / "deployment.json").read_bytes())["state"], "STARTED")
+            grant = json.loads((folder / "driver.json").read_bytes())
+            self.assertEqual(grant["l2Binding"]["signedTransport"]["networkBindings"][0]["mac"], L.L2_LIVE_MAC)
+            self.assertEqual({n["mac"] for n in grant["profile"]["policy"]["attachments"]},
+                             {n["mac"] for n in binding["containers"][cid]["bindings"]})
+            table = grant["profile"]["policy"]["tableName"]
+            nft = subprocess.run([str(self.real_nft), "list", "table", "bridge", table], capture_output=True, check=True).stdout.decode()
+            for nic in binding["containers"][cid]["bindings"]:
+                self.assertIn(nic["mac"], nft)
 
 
 @unittest.skipUnless(NATIVE, "set OUF_R3_COHORT_NATIVE=1 under Linux root:root")
 class NativeTests(unittest.TestCase):
-    def test_real_docker_cohort_denials(self):
-        for name in ("docker", "dockerd", "runc", "unshare", "mount", "ip", "nsenter", "openssl", "ldd", "sleep"):
+    def test_real_docker_random_macs_through_started(self):
+        for name in ("docker", "dockerd", "runc", "unshare", "mount", "ip", "nsenter", "nft", "openssl", "ldd", "sleep"):
             self.assertIsNotNone(shutil.which(name), "native prerequisite: " + name)
         result = subprocess.run([shutil.which("unshare"), "--mount", "--net", "--fork", sys.executable,
             "-I", "-B", str(Path(__file__).resolve()), "--native-child"], capture_output=True, timeout=360)

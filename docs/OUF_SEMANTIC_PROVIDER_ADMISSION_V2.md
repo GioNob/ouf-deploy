@@ -299,4 +299,47 @@ collect reale con comandi finti, le ricevute in tutte le modalità e la
 lettura diagnostica di operate. Il nuovo gate Docker è descritto nel
 [runbook di esercizio](OUF_SEMANTIC_PROVIDER_R3_OPERATE.md#dinieghi-registrati).
 Le librerie storiche della coorte e i controlli di ammissione non cambiano;
-non viene applicata alcuna correzione o tolleranza MAC.
+in v3 non viene applicata alcuna correzione o tolleranza MAC.
+
+## L2 osservato
+
+R3 v4 applica D-037 opzione (a). I documenti firmati conservano i MAC dei
+successori come segnaposto `02:00:00:00:00:00` (`L2_LIVE_MAC`). IP, interfacce,
+bridge, porte, direzioni e aspettative OCI rimangono firmati. Il peer Semantic
+`BRIDGE_PORT`, incluso il suo ifindex, rimane invariato: la sua evoluzione
+appartiene al task-46b.
+
+`l2_binding.py` legge due volte le NIC del namespace del processo con i comandi
+vincolati del template. Richiede IPv4 esatto, assenza di IPv6, interfacce
+approvate e reciprocità degli indici child/host con master sul bridge approvato.
+Il MAC deve essere unicast, diverso da zero e dal segnaposto. PID, start ticks
+e inode del namespace vengono verificati prima e dopo le letture.
+
+Solo `cohort-ready`, dopo l'osservazione completa, pubblica con creazione
+esclusiva e modo 0600 `<epochRoot>/l2-binding.json`, schema
+`ouf.semantic-provider-l2-binding.v1`. `containers` indicizza per CID il
+candidato e ciascun peer `CREATED_CANDIDATE`; ogni voce contiene `containerId`,
+`generation` (`pid`, `startTicks`, `namespaceInode`) e `bindings` con NIC,
+MAC, `childIfindex`, `hostIfindex` e `hostInterface`. Una seconda scrittura
+nega con `L2_BINDING_EXISTS`; una nuova epoca usa una nuova directory.
+
+Evidence, preparer e autorizzatore del driver riosservano l'intera coorte e
+richiedono uguaglianza esatta con il file; variazioni negano con
+`L2_BINDING_CHANGED`. Questo controllo precede plan, apply, verify, hook e
+start tramite l'autorizzatore storico. Rollback e cleanup conservano i loro
+contratti, indipendenti dall'autorità di avvio.
+
+Ogni chiamante verifica prima i byte e l'hash firmati. La proiezione effettiva
+sostituisce esclusivamente i campi MAC con segnaposto; differenze negli altri
+campi NIC negano con `L2_SIGNED_FIELD_DRIFT`, osservazioni mancanti con
+`L2_OBSERVATION_REQUIRED`. Le librerie storiche ricevono il documento effettivo
+e il suo hash. Evidence conserva invece `transportSha256` firmato; il driver
+conserva anche `l2Binding.signedTransport` e ne verifica l'hash contro il ruolo
+autorizzato prima di controllare il trasporto effettivo di `peerBinding`.
+`attachments`, regole nft anti-spoofing, footprint e driver usano i MAC osservati.
+Nessuna copia storica, supervisore o lease è modificata.
+
+I dinieghi L2 del broker usano `reason`; gli snapshot pubblici dei peer restano
+nel formato del task-44. I test portabili sono in
+`tests/test_semantic_provider_l2_binding.py`; il gate Docker/nft v4 e i suoi
+limiti sono descritti nel [runbook](OUF_SEMANTIC_PROVIDER_R3_OPERATE.md#l2-osservato).

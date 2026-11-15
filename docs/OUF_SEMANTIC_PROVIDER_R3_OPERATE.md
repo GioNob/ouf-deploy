@@ -179,7 +179,7 @@ Ambiente, argv, bundle, indirizzi IPv6 e credenziali non sono riportati.
 Per IPv6 compare soltanto il conteggio. Un MAC osservato diverso da quello
 dichiarato continua a negare l'ammissione: questa versione non configura MAC.
 
-Il gate `OUF_R3_COHORT_NATIVE=1` in `test_semantic_provider_r3_cohort.py` usa
+Il gate originario v3 (storico) `OUF_R3_COHORT_NATIVE=1` usava
 un daemon Docker isolato in namespace mount/rete privati, dati/eseguibili
 sotto `/var/lib` e un'immagine importata da sleep/librerie locali, senza pull.
 Due container sono collegati a due bridge con IPv4 statici, senza opzioni
@@ -194,8 +194,48 @@ creazione restano dinieghi di collect osservabili. Systemd, nft e quiescer
 sono simulatori espliciti, sempre WAITING/QUIESCED: non provano il servizio
 o il rilascio del lease. L'esito nativo è demandato alla CI.
 
-Il compositore resta invariato. Le regressioni v1/v2 riusano i rispettivi
+Nella chiusura v3 il compositore restava invariato. Le regressioni v1/v2 riusano i rispettivi
 input storici: la fixture v2 conserva hash e due sorgenti compressi dal
 commit `e5db56dfafa8823ffa3a9a81c563c50df1ed0d17`, così la prova funziona
 anche con checkout shallow. La mappa hash v1 originale non viene riscritta;
 la composizione v3 verifica invece i nuovi byte e binding della chiusura.
+
+## L2 osservato
+
+R3 v4 usa il MAC osservato per epoca secondo D-037(a). `transport.json`,
+`preparer-template.json` e le dichiarazioni `CREATED_CANDIDATE` contengono il
+segnaposto `02:00:00:00:00:00`; non configurano un MAC Docker. Il peer Semantic
+`BRIDGE_PORT` e il suo indice firmato non cambiano (task-46b fuori perimetro).
+Le regressioni v1, v2 e v3 confrontano tutti gli hash con fixture fisse e
+`retainedSources`; la nuova fixture v3 conserva i byte precedenti di questo
+task senza richiedere la storia Git completa.
+
+Il broker pubblica una sola volta `registry/<cid>/epochs/<epoca>/l2-binding.json`
+quando tutta la coorte è osservata. Il file 0600 lega candidato e peer a CID,
+PID, start ticks, inode netns, MAC e indici reciproci delle NIC. Tutte le fasi
+di ammissione successive richiedono nuove osservazioni uguali. Non riusare o
+riscrivere il file per superare un diniego: una variazione richiede una nuova
+epoca secondo il lifecycle esistente. IP, interfaccia, bridge, reciprocità,
+assenza di IPv6 e stabilità restano obbligatori. Le regole `ether saddr` e
+`arp saddr ether` sono materializzate con il MAC osservato.
+
+Il gate aggiornato `OUF_R3_COHORT_NATIVE=1` usa Docker e runc reali, due reti
+con IP statici e MAC assegnati dal daemon, oltre a nft, ip e nsenter reali
+nel namespace isolato. L'immagine è importata da file locali, senza pull.
+Le aspettative OCI sono catturate prima della firma e il sigillo rootfs è
+calcolato indipendentemente. L'osservatore frame della fixture verifica OCI
+completo e generazione reale, esercitando il protocollo frame; non qualifica
+l'osservatore produttivo di mount/sorgenti. Systemd e quiescer restano fixture
+esplicite WAITING/QUIESCED; nessuna lease viene attivata e nessun DNS interrogato.
+
+Il test richiede `cohort-ready` superato e processi/consumo `STARTED`, verifica
+il file L2 contro MAC e PID reali di Docker e le regole nft contro i MAC del
+binding. Stampa versione Docker, binding, dinieghi e traceback. Non accetta
+`PEER_MAC_IP_DRIFT`, `APPROVED_MAC_IP_BINDING_DRIFT` o
+`NAMESPACE_PORT_BINDING_DRIFT`. `operate` resta HELD per la mancata attivazione
+del supervisore simulato, distinta dal successo di ammissione e avvio.
+
+Eseguire il gate soltanto in CI Linux root:root con i prerequisiti nativi;
+su Windows si eseguono le suite portabili. Restano necessari anche i gate
+`OUF_R3_OPERATE_NATIVE` e `OUF_R3_UPGRADE_NATIVE`: l'aggiornamento del fixture
+non è un PASS nativo né una prova VPS.

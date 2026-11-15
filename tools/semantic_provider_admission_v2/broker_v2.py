@@ -16,7 +16,7 @@ from typing import Protocol
 
 from tools.semantic_provider_operation import authorization
 from .consumption_v2 import EpochConsumption, hashed, operating_role, require
-from . import evidence_v2
+from . import evidence_v2, l2_binding
 from .locking import wait_common_lock
 
 SCHEMA = "ouf.semantic-deployment-broker.v2"
@@ -34,7 +34,7 @@ MODULES = ("materialize_southbound_kernel", "materialize_southbound_lease_refres
 ENTRYPOINTS = ("scripts/semantic-provider-deployment-broker-v2.py",
               "scripts/semantic-provider-admission-preparer-v2.py",
               "scripts/semantic-provider-preexec-hook-v2.py")
-V2_MODULES = ("__init__", "locking", "consumption_v2", "evidence_v2", "reauthorization_v2",
+V2_MODULES = ("__init__", "locking", "consumption_v2", "l2_binding", "evidence_v2", "reauthorization_v2",
               "broker_v2", "driver_v7", "preparer_v2")
 SOURCES = ({"tools/" + name + ".py" for name in MODULES} | set(ENTRYPOINTS)
            | {"tools/semantic_provider_admission_v2/" + name + ".py" for name in V2_MODULES}
@@ -133,7 +133,7 @@ def binding(value, extra=()):
             and absolute(value["path"]) and hashed(value["sha256"]))
 
 
-def validate(raw):
+def validate(raw, *, source_set=None):
     cfg = authorization.decode(raw)
     require(set(cfg) == FIELDS and cfg["schema"] == SCHEMA, "EXACT_BROKER_CONFIGURATION_REQUIRED")
     require(type(cfg["authorities"]) is dict and set(cfg["authorities"]) == {"installationRef", "entityRef", "issuerRef"}
@@ -148,7 +148,7 @@ def validate(raw):
     require(cfg["role"] in ("adapter", "southbound") and hashed(cfg["containerId"]), "EXACT_BROKER_ROLE_REQUIRED")
     require(all(absolute(cfg[k]) for k in ("sourceRoot", "registryRoot", "runtimeRootParent")),
             "EXPLICIT_BROKER_PATH_REQUIRED")
-    require(type(cfg["sourceHashes"]) is dict and set(cfg["sourceHashes"]) == SOURCES
+    require(type(cfg["sourceHashes"]) is dict and set(cfg["sourceHashes"]) == (SOURCES if source_set is None else source_set)
             and all(hashed(v) for v in cfg["sourceHashes"].values()), "EXACT_BROKER_SOURCE_SET_REQUIRED")
     require(all(binding(cfg[k]) for k in ("framePolicyBinding", "rootfsSealBinding", "transportBinding", "preparerTemplate")),
             "EXACT_BROKER_BINDINGS_REQUIRED")
@@ -447,10 +447,11 @@ class Broker:
         require(old["state"] == created["state"] == "CREATED" and old["bundleHash"] == created["bundleHash"] == app
                 and created["generation"] == live, "BROKER_COHORT_CREATED_STATE_REQUIRED")
         peers = declarations(self.template["candidate"]["transport"], self.cid)
-        if not peers:
+        use_l2 = l2_binding.enabled(self.template["candidate"])
+        if not peers and not use_l2:
             self.stable()
             return
-        require(type(peers) is list and 1 <= len(peers) <= 8, "BOUNDED_PEER_COHORT_REQUIRED")
+        require(type(peers) is list and len(peers) <= 8, "BOUNDED_PEER_COHORT_REQUIRED")
         diagnostics = {p["containerId"]: {"containerId": p["containerId"], "lastReason": None, "attempts": 0,
             "runc": None, "networkBindings": [{k: n[k] for k in ("interface", "ipv4", "mac", "bridge")}
                                             for n in p["networkBindings"]]} for p in peers}
@@ -486,10 +487,15 @@ class Broker:
                     raise PeerNotReady("PEER_STOPPED_SIBLING_CREATING")
             require(matches[0].get("status") in ("created", "running"), "COHORT_PEER_STATE_DENIED")
             try:
+                if use_l2:
+                    observed = l2_binding.observe(peer["containerId"], NativeBackend.generation(None, matches[0]["pid"]),
+                        {**self.template["candidate"]["runtimeBinding"], "root": self.args.runtime_root},
+                        self.commands(), self.budget, network_bindings=peer["networkBindings"], run=run)
+                    peer = l2_binding.effective(peer, {peer["containerId"]: observed})
                 return collect(peer, self.args.runtime_root, self.template["candidate"]["runtimeBinding"],
                                self.commands(), run, lambda p: private(Path(p)),
                                lambda pid: NativeBackend.generation(None, pid), self.budget)
-            except ValueError as error:
+            except (ValueError, authorization.OperationDenied) as error:
                 if str(error) in ("PEER_INTERFACES_NOT_READY", "PEER_ADDRESSES_NOT_READY", "PEER_INTERFACE_MISSING"):
                     raise PeerNotReady(str(error)) from None
                 raise
@@ -512,16 +518,25 @@ class Broker:
                 except PeerNotReady:
                     time.sleep(self.budget.remaining(0.1))
                     continue
+                if use_l2:
+                    observations = l2_binding.cohort(self.template["candidate"], self.cid,
+                        {**self.template["candidate"]["runtimeBinding"], "root": self.args.runtime_root},
+                        self.commands(), self.budget, run=run)
                 self.budget.check()
                 break
         except (ValueError, authorization.OperationDenied):
-            self.cohort = {"peers": list(diagnostics.values())}
+            self.cohort = {"peers": list(diagnostics.values())} if diagnostics else None
             for diagnostic in diagnostics.values():
                 self.peer_snapshot(diagnostic)
             raise
         require(self.runtime(state) == (app, live) and self.record() == old and self.gate.record() == created,
                 "BROKER_COHORT_CHANGED_DURING_WAIT")
         self.stable()
+        if use_l2:
+            with self.lock():
+                self.stable()
+                require(self.runtime(state) == (app, live), "L2_BINDING_CHANGED")
+                l2_binding.write_exclusive(self.root, observations)
 
     @staticmethod
     def public_runtime_row(row):

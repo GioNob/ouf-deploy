@@ -11,6 +11,7 @@ import types
 
 from tools.semantic_provider_operation import authorization as A
 from tools.semantic_provider_admission_v2 import broker_v2 as B, evidence_v2 as E
+from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC
 from tools.semantic_frame_compiler.compile_creation_frame_policy import compile_policy
 from tools.semantic_b1_acceptance import acceptance as ACCEPT
 
@@ -33,6 +34,7 @@ for _name in B.MODULES:
 # Preserve repository-relative originals as well as the aliases expected by v2.
 SOURCE_MAP.update({p: p for p in list(SOURCE_MAP.values())})
 SOURCE_INPUTS = frozenset(SOURCE_MAP.values())
+L2_SOURCE = "tools/semantic_provider_admission_v2/l2_binding.py"
 DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "successors", "semanticPeer",
                "rootfs", "acceptance"} | {r + "/" + p for r in ROLES for p in
                                             ("historicalTemplate", "template", "launch", "context", "policy")}
@@ -99,7 +101,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    require(set(files) == DATA_INPUTS and set(sources) == SOURCE_INPUTS
+    require(set(files) == DATA_INPUTS and (set(sources) == SOURCE_INPUTS
+            or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
     data = {k: document(v, "RECIPE_POLICY_NOT_CANONICAL_PLUS_LF" if k.endswith("/policy")
@@ -150,8 +153,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     require(accepted["preparationA"]["planSha256"] == manifest["planSha256"], "ACCEPTANCE_A2_DRIFT")
     rootfs = data["rootfs"]
     require(rootfs["aSuccessors"]["sha256"] == sha(files["successors"]), "ROOTFS_A2_DRIFT")
-    docs = {"source/" + target: sources[original] for target, original in SOURCE_MAP.items()}
-    hashes = {target: sha(sources[original]) for target, original in SOURCE_MAP.items()}
+    source_map = {target: original for target, original in SOURCE_MAP.items() if original in sources}
+    broker_sources = B.SOURCES & source_map.keys()
+    docs = {"source/" + target: sources[original] for target, original in source_map.items()}
+    hashes = {target: sha(sources[original]) for target, original in source_map.items()}
 
     def put(path, value):
         docs[path] = canonical(value)
@@ -210,6 +215,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                                          "coordinator": owner["binding"]})))
         require(candidate["tableName"] != owner["kernel"]["tableName"], "CANDIDATE_TABLE_COLLISION")
         for nic in candidate["networkBindings"]:
+            if version >= 4:
+                nic["mac"] = L2_LIVE_MAC
             if "leaseGuard" in nic:
                 nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
         other = "southbound" if role == "adapter" else "adapter"
@@ -228,6 +235,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                     "networkBindings": copy.deepcopy(templates[other]["candidate"]["networkBindings"])}
                 # Do not depend on role iteration order when rebinding leaseGuard.
                 for nic in peer["declaration"]["networkBindings"]:
+                    if version >= 4:
+                        nic["mac"] = L2_LIVE_MAC
                     if "leaseGuard" in nic:
                         nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
                 sibling += 1
@@ -250,7 +259,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
         seal = put(prefix + "rootfs-seal.json", rootfs["roles"][role]["effectiveSeal"])
         transport = put(prefix + "transport.json", {k: candidate[k] for k in ("networkBindings", "transport", "tableName")})
         preparer = put(prefix + "preparer-template.json", t)
-        cfg = {"schema": B.SCHEMA, "sourceRoot": code_root + "/source", "sourceHashes": {p: hashes[p] for p in B.SOURCES},
+        cfg = {"schema": B.SCHEMA, "sourceRoot": code_root + "/source", "sourceHashes": {p: hashes[p] for p in broker_sources},
             "authorities": scope, "operation": common, "role": role, "containerId": rows[role]["containerId"],
             "registryRoot": root + "/registry", "framePolicyBinding": frame, "rootfsSealBinding": seal,
             "transportBinding": transport, "preparerTemplate": preparer, "runtimeRootParent": s["runtimeRootParent"],
@@ -258,7 +267,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 "python": {"path": t["pythonPath"], "sha256": t["pythonHash"]},
                 "source": source(OBSERVER), "configuration": frame}}
         broker = put("broker/" + role + ".json", cfg)
-        B.validate(docs["broker/" + role + ".json"])
+        # Pure replay may use retained pre-v4 source INPUTS. Native v2 loading
+        # always validates its complete current package, without this override.
+        B.validate(docs["broker/" + role + ".json"], source_set=broker_sources)
         operation_roles[role] = {"containerId": rows[role]["containerId"], "imageManifestDigest": rows[role]["image"],
             "framePolicySha256": frame["sha256"], "admissionConfigurationSha256": broker["sha256"],
             "rootfsSealSha256": seal["sha256"], "transportSha256": transport["sha256"], "tableName": candidate["tableName"]}

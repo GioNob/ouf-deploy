@@ -26,7 +26,7 @@ MODULES = ("materialize_southbound_kernel", "materialize_southbound_lease_refres
            "semantic_provider_deployment_protocol", "semantic_provider_deployment_consumption",
            "semantic_provider_deployment_authentication", "semantic_provider_deployment_producer",
            "semantic_provider_node_observation")
-V2_MODULES = ("__init__", "locking", "consumption_v2", "evidence_v2", "reauthorization_v2",
+V2_MODULES = ("__init__", "locking", "consumption_v2", "l2_binding", "evidence_v2", "reauthorization_v2",
               "broker_v2", "driver_v7", "preparer_v2")
 SOURCES = ({"tools/" + name + ".py" for name in MODULES} | set(ENTRYPOINTS)
            | {"tools/semantic_provider_admission_v2/" + name + ".py" for name in V2_MODULES}

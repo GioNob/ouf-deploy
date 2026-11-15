@@ -6,6 +6,7 @@ import time
 
 from tools.semantic_provider_operation import authorization
 from .consumption_v2 import generation, hashed, require
+from . import l2_binding
 
 SCHEMA = "ouf.semantic-provider-epoch-evidence.v1"
 FIELDS = {"schema", "containerId", "epoch", "authorizationSha256", "generation", "bundleHash",
@@ -87,13 +88,17 @@ def observe(*, container_id, epoch, authorization_sha256, authorization_role, bo
     require(state.get("id") == container_id and state.get("bundle") == str(bundle)
             and state.get("status") == "created", "EVIDENCE_CREATED_STATE_DRIFT")
     live_generation = NativeBackend.generation(None, state.get("pid"))
+    effective_transport = l2_binding.bound(expected["transport"], container_id, bundle.parent,
+        {**runtime_binding, "root": runtime_root}, commands, budget, run=observer.run)
+    observer.cfg["candidate"] = effective_transport
     # transactionId is an internal correlation field of live_profile, not an authority.
     correlation = authorization.sha(authorization.canonical({"containerId": container_id, "epoch": epoch,
                                                             "authorizationSha256": authorization_sha256}))
-    candidate = {**expected["transport"], "containerId": container_id, "transactionId": correlation}
+    candidate = {**effective_transport, "containerId": container_id, "transactionId": correlation}
     request = {"containerId": container_id, "transactionId": correlation, "applicationHash": app,
                "generation": live_generation, "transportHash": transport_hash(candidate)}
-    require(request["transportHash"] == authorization_role["transportSha256"], "EVIDENCE_TRANSPORT_DRIFT")
+    require(request["transportHash"] == authorization.sha(authorization.canonical(effective_transport)),
+            "EVIDENCE_TRANSPORT_DRIFT")
     observed = observer.observe(request, {"runtimeRoot": runtime_root, "bundleHash": app}, private_bytes)
     require(observed["bundle"] == str(bundle) and observed["state"] == state, "EVIDENCE_CREATED_STATE_DRIFT")
     frame = CreatedFrameObserver(creation_frame_observer_binding, budget)
@@ -103,6 +108,9 @@ def observe(*, container_id, epoch, authorization_sha256, authorization_role, bo
             and private_bytes(bundle / "config.json") == raw, "EVIDENCE_GENERATION_DRIFT")
     for path, content in inputs.items():
         require(private_bytes(path) == content, "EVIDENCE_FRAME_INPUT_DRIFT")
+    require(l2_binding.bound(expected["transport"], container_id, bundle.parent,
+        {**runtime_binding, "root": runtime_root}, commands, budget, run=observer.run) == effective_transport,
+        "L2_BINDING_CHANGED")
     value = {"schema": SCHEMA, "containerId": container_id, "epoch": epoch,
              "authorizationSha256": authorization_sha256, "generation": live_generation, "bundleHash": app,
              "applicationHash": app, "creationFrameHash": frame_hash, "rootfsSeal": observed["rootfsSeal"],

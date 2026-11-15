@@ -18,6 +18,8 @@ on:
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
       - tests/test_semantic_provider_broker_denials.py
+      - tests/test_semantic_provider_l2_binding.py
+      - tools/semantic_provider_admission_v2/**
       - tests/test_semantic_provider_lease_supervisor.py
       - tests/test_runtime_v52_epochs.py
       - .github/workflows/semantic-provider-r3-integration.yml
@@ -40,6 +42,9 @@ jobs:
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
+      - name: L2 binding (observed successor MACs)
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_l2_binding.py -v
       - name: Non-regression native issuance
         if: ${{ !cancelled() }}
         run: >-
