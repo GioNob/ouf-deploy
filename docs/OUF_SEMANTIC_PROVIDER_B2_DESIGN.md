@@ -308,3 +308,22 @@ Il codice citato in questa sezione sta sotto `CD`, salvo dove è indicato `tools
 | 42 | Primo start, RestartPolicy `unless-stopped`, readback; prova di riavvio di un ruolo; stop compensativo | primo start |
 
 La quiescenza del coordinatore storico esce dal perimetro.
+
+## 14. Esito del lettore B2 v2 (2026-11-15, eseguito dall'umano)
+Runbook `ops/vps/b2-read-v2.sh` (PR #95). `READ`, `sectionErrors=[]`, contatori a 0.
+
+- **Coordinatore successore** `uz9gw5ny`:
+  - journal `QUIESCED`, `leaseAuthorized=false` (conferma il §13.1);
+  - configurazione del proprietario `coordinated-configuration.json` `5deb7479…`, `binding` = {transactionId `90323380…`, configurationHash `44ef757d…`, leaseStructureHash `1eddee4c…`} = `expectedStructureHash`;
+  - lock `/run/ouf-semantic-boot-guard/guard.lock`; nft `/usr/sbin/nft` `57bdb96c…`;
+  - DNS: resolver `46.38.225.230` e `46.38.252.230`, porta 53;
+  - flussi `schema-gov` e `ouf-oidc`, 30 s ciascuno; il secondo endpoint del §13.2 è quindi `ouf-oidc`.
+- **Template storici** (CID vecchi): legati al coordinatore **storico** (`e4repg0a`, binding `335cfc19…`/`8ed160b9…`/`0ae74914…`). I nuovi candidati vanno legati al successore, con `tableName` diversi da `ouf_v2_adapter`/`ouf_v2_southbound`.
+  - Comandi e hash (`ip`, `mount`, `nft`, `nsenter`, `umount`, `unshare`) e Python `889c603f…` sono riusabili.
+  - NIC dei template = NIC dei nuovi successori: IP e **MAC uguali**, verificato con `docker inspect` il 2026-11-15.
+- **Sigilli rootfs** (effectiveSeal A2): adapter `87447240…` (3390 voci); southbound `52e06f47…` (7458 voci). Immagini `277dcefd…` e `c1554103…`, uguali ad A2.
+- **Ricette v2:** policy adapter `42677046…` (expectedOci `db13ad20…`); southbound `e489068b…` (expectedOci `4e22e245…`).
+- **Sorgenti v1 installati** (`mf9x0eqd/source`) rispetto al cohort-draft del repository:
+  - uguali: i moduli `tools/` riusati dalla v2, tranne `semantic_provider_deployment_producer.py`;
+  - diversi: `semantic_provider_deployment_producer.py` e i 5 script v1. La v2 non usa gli script installati e consegna la propria chiusura, verificata per hash dal blob del repository (provato in CI), quindi la differenza non blocca.
+- **Campo `imageManifestDigest` dell'autorizzazione:** si riempie con l'ID immagine Docker (`.Image`, `sha256:…`), come in A2. Il nome resta per compatibilità con lo schema già implementato; la semantica è documentata qui (cfr. B1 §11 punto 10).
