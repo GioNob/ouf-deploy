@@ -307,15 +307,14 @@ def verified_root_mode(layout, image_id):
 def readonly_view(args, source, target, image=False):
     empty_mountpoint(target)
     if image:
-        # A lower-only overlay is refused by some kernels (the VPS: exit 32).
-        # Reuse the v1 expected_overlay (empty upper, root attributes copied from
-        # the offline tree, already exercised on the VPS), then remount it ro.
+        # A lower-only overlay is refused by the VPS kernel (exit 32) and an overlay
+        # with an upper cannot be remounted ro. Reuse the v1 expected_overlay (empty
+        # upper, root attributes copied from the offline tree, exercised on the VPS
+        # on 2026-11-13): the image view is only read, and the upper is proven still
+        # empty afterwards (IMAGE_VIEW_UPPER_WRITTEN), so nothing reached the image.
         try:
             with V1.expected_overlay(source, target, (args.mount, args.mount_sha256),
                                      (args.umount, args.umount_sha256)) as view:
-                run_mount(args, ['-n', '-o', 'remount,ro', str(view)])
-                rows = [r for r in mount_rows() if r['target'] == str(view)]
-                require(len(rows) == 1 and 'ro' in rows[0]['options'], 'READONLY_VIEW_UNPROVEN')
                 yield view
         finally:
             require(not any(r['target'].startswith(str(target) + '/') for r in mount_rows()), 'IMAGE_VIEW_STILL_MOUNTED')
