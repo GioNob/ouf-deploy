@@ -7,7 +7,8 @@ import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-restore.sh")]
+RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-restore.sh",
+                                         "r3-issue-v2.sh", "r3-upgrade-v2.sh", "r3-operate.sh")]
 FETCH = re.compile(r"^  fetch (\S+) ([0-9a-f]{64})$", re.M)
 PIN = re.compile(r"^C=([0-9a-f]{40})$", re.M)
 # Import closure of the issuer/installer/restore entrypoints (traced with the real interpreter,
@@ -53,8 +54,8 @@ class R3Runbooks(unittest.TestCase):
 
     def test_same_delivery_in_all_three(self):
         self.assertTrue(self.deliveries[0])
-        self.assertEqual(self.deliveries[0], self.deliveries[1])
-        self.assertEqual(self.deliveries[0], self.deliveries[2])
+        for other in self.deliveries[1:]:
+            self.assertEqual(self.deliveries[0], other)
 
     def test_delivery_is_exact_closure(self):
         sys.path.insert(0, str(ROOT))
