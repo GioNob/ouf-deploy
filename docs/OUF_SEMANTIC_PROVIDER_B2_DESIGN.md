@@ -174,11 +174,7 @@ Runbook `ops/vps/b2-read.sh` (PR #90, `1f7501c6`). `status=READ`, `sectionErrors
   - Southbound storico: broker e preexec `PROTECTED`, deployment `STARTED`, cleanup mai eseguito (cutover dell'11/11). Le sue tabelle candidate non risultano tra le tabelle nft. È uno stato storico da non toccare, ma il `tableName` dei nuovi candidati deve essere diverso.
 - **Base versionata:** solo la generazione 1, `c135861b…`, valida dal 2026-11-14 al 2027-02-12T21:23:13Z (1802467393).
 - **nft:** tabelle `inet` e `bridge ouf_sem_provider`, con set `provider_0` e `provider_1` vuoti. È la tabella del lease (`kernelTableName`).
-- **Lease: journal di coordinamento `BLOCKED`**, `leaseAuthorized=false` (`semantic-coordinated-boot-install-v2-e4repg0a/coordination-journal.json`).
-  - **Bloccante per lo start:** il driver richiede `QUIESCED` (CD`tools/semantic_provider_preexec.py:102-108`).
-  - `BLOCKED` è lo stato dopo un refresh fallito (CD`tools/semantic_provider_lease_coordination.py:226-229`).
-  - `quiesce()` riporta a `QUIESCED` revocando i set (`:231-242`), già vuoti. Il precedente governato è `scripts/quiesce-discovery-coordinator-20261109.py`.
-  - Serve quindi un passo preliminare: quiescenza governata del coordinatore, con plan e apply.
+- **Lease: il journal letto (`BLOCKED`) è quello del coordinatore storico** `semantic-coordinated-boot-install-v2-e4repg0a`, legato ai driver v4 dei CID storici. Non vale per i nuovi candidati (corretto nel task-36, §13.1): dal 2026-11-09 il boot seleziona il coordinatore successore `discovery-coordinator-successor-20261109-uz9gw5ny` (`QUIESCED` allo staging), installazione `semantic-coordinated-boot-install-successor-b3c3uwwt` (`docs/OUF_DISCOVERY_COORDINATOR_SUCCESSOR_20261109.md`, `docs/OUF_DISCOVERY_SUCCESSOR_BOOT_20261109.md`). Il suo stato attuale non è ancora stato letto.
 - **Ingresso A2:** `BRIDGE_PORT` 172.18.0.6 → 172.18.0.14:10443/tcp, `ifindex` 168, uguale in `manifest.json`, `result.json` e `semantic-peer.json`. L'`ifindex` è volatile: va riosservato a ogni start.
 - **Ricette v2:** template, launch, context e policy per ruolo, più `result.json` `fe2f77d4…`, come attese.
 
@@ -244,3 +240,71 @@ Invariati e riusati: preexec, nft nativo, lease nft, peer binding, DNS, compilat
 
   Raccomandato (a).
 - **D7 — Sostituzione.** Un cambio di immagine o di configurazione emette una nuova autorizzazione con `supersedes`; il runtime accetta solo l'ultima della catena.
+
+## 13. Lease ed epoche (task-36)
+
+Il codice citato in questa sezione sta sotto `CD`, salvo dove è indicato `tools/` o `scripts/`.
+
+### 13.1 Correzione: i coordinatori sono due
+- **Storico** `semantic-coordinated-boot-install-v2-e4repg0a`: `BLOCKED` dopo i rinnovi falliti di ottobre (R8: `DNS_OBSERVATION_EXPIRED_OR_NONCACHEABLE`, poi `REFRESH_FAILED_GATE_BLOCKED`; `releases/DISCOVERY_APPLICATION_CONTINUATION_AFTER_R8_20261009.md:151`). La quiescenza del 9/11 si era fermata `HELD` su `NFT_INSTALLATION_STRUCTURE_DRIFT` (`docs/OUF_DISCOVERY_COORDINATOR_QUIESCENCE_20261109.md:3`). Resta storico e non si tocca.
+- **Successore** `discovery-coordinator-successor-20261109-uz9gw5ny`: creato `QUIESCED` con l'impronta nft corrente e collegato al boot il 9/11 alle 11:42:59 (installazione `semantic-coordinated-boot-install-successor-b3c3uwwt`). È quello che usa il boot guard di oggi: `systemctl show ouf-semantic-boot-guard.service` → `…-uz9gw5ny/boot-profile.json` (§8).
+- **Conseguenza:**
+  - le grant dei nuovi driver si legano al successore;
+  - la quiescenza governata del §11 non serve, **se** il successore è ancora `QUIESCED`;
+  - il plan di installazione (task-41) lo deve verificare in lettura;
+  - anche le tabelle `ouf_sem_provider` lette (set vuoti) sono condivise con il successore (`evidence/discovery-generation-sources-read-operator-20261109.json:52`).
+
+### 13.2 Macchina a stati del lease (`tools/semantic_provider_lease_coordination.py`)
+- **Journal** (`:117-137`): `schema`, `transactionId`, `configurationHash`, `leaseStructureHash` (legati alla configurazione del proprietario, `:102-106`), `state`, `leaseAuthorized`, `startAuthorized` (sempre false) e `leaseAddresses` (una lista per flusso, al massimo 32 indirizzi).
+- **Transizioni:**
+  - `refresh` e `fresh_start`: solo da `LEASE_READY` autorizzato, e vanno in `LEASE_READY` passando per `LEASE_UPDATING`. Se qualcosa fallisce: revoca dei set, poi `BLOCKED` (`:199-229`).
+  - `quiesce`: da qualsiasi stato a `QUIESCED`, passando per `QUIESCING`, con i set svuotati (`:231-242`).
+  - Da `BLOCKED` si esce solo con `quiesce()`.
+- **Prima autorizzazione:** il coordinatore non si autorizza mai da solo (`:191-197`). Oggi la danno:
+  - `tools/semantic_lease_recovery/activation_core.py:146-168` (`authorize_once`), con un'approvazione umana a tempo (al massimo 7200 s, `activate_finite_r10.py:83-87`);
+  - gli adattatori di recupero (`tools/semantic_lease_recovery/resilient_lease_adapter.py:77-115`, `continuous_supervisor.py:66-110`).
+
+  Gli installer scrivono solo `QUIESCED`.
+- **Proprietario** (`tools/semantic_provider_lease_owner.py`):
+  - `refresh` interroga il DNS degli endpoint dei flussi con i resolver fissati (`46.38.225.230`, `46.38.252.230`, timeout 2 s, `maxLeaseSeconds` 30; `tools/semantic_lease_recovery/activate_resilient_r12.py:272-274`);
+  - scrive gli elementi con un timeout limitato dal TTL DNS e da `leaseSeconds` (`materialize_southbound_lease_refresh.py:42,54-55`), poi rilegge;
+  - `revoke` svuota i set (`:35-44`).
+- **Flussi:** due, uno adapter e uno southbound, `leaseSeconds` 30, solo HTTPS. Per esempio `https://schema.gov.it/sparql:443` dall'adapter 172.22.0.3 (`evidence/provider-v2-network-integration-progress-20261008.json:120-132`). L'endpoint del secondo flusso è **da leggere** dalla configurazione del successore.
+- **Avvii storici:** i worker del lease erano unità transitorie `systemd-run`, con `Restart=no` e mai abilitate al boot (`activation_core.py:218-227`). Partivano solo dopo lo start dei due ruoli, verificandone i PID (`activate_finite_r10.py:42-46,90-97`).
+
+### 13.3 Contratto del lease per R3
+- **Supervisore del lease v2**, nuovo e versionato (deriva da `continuous_supervisor`), come **servizio systemd abilitato** (`BindsTo=docker.service`, `Restart=always`, nessun segreto). Cicla in quattro fasi:
+  1. **Attende** che entrambi i ruoli siano in un'epoca `STARTED` (§13.4) con PID vivi e coerenti con i journal.
+  2. **Autorizza** con l'autorizzazione d'esercizio (verifica durevole, §12.2), che fissa per hash flussi, endpoint, profilo DNS e configurazione del proprietario. Con questo **sostituisce** l'approvazione umana a tempo di `authorize_once`: `QUIESCED` → `LEASE_READY` autorizzato, legato a (epoche, PID).
+  3. **Rinnova** con il ritmo del TTL del kernel, come R11/R12.
+  4. **Allo stop o all'uscita** di un ruolo, oppure se le epoche cambiano: `quiesce()`. Dopo un refresh fallito (`BLOCKED`) fa `quiesce()` e riparte dalla fase 1, entro un limite di tentativi (proposta: 6 per ora). Superato il limite si ferma in `QUIESCED` e apre un incidente.
+- **Ordine con lo start:** il driver vuole `QUIESCED` allo start (preexec `:102-108`). Se un ruolo riparte mentre il lease è attivo, il supervisore deve prima tornare a `QUIESCED`. Per questo l'epoca v5.2 apre il `create` solo sotto il lock comune, e il supervisore quiesce appena un'epoca nuova appare, anche prima dello start. Questo ordine va provato con la fixture nativa (task-38/39).
+- **Stato pubblicato per l'operational awareness:** stato del lease, numero di tentativi e motivo dell'ultimo blocco, tutto a schema chiuso.
+
+### 13.4 Epoche del runtime v5.2 e della catena v2
+- **Path:** `<registryRoot>/<cid>/epochs/<e>/`, con `e` intero crescente. Contiene `adapter.json` (journal del runtime) e le directory e i file della catena v2 (broker, deployment, admission, preexec, driver). Tutto è creato con `O_EXCL`, 0700/0600. `<registryRoot>/<cid>/current` è un file 0600 che contiene `{epoch, sha256 del journal}`, aggiornato con CAS (scrittura temporanea, fsync, rename).
+- **Journal del runtime** (`ouf.semantic-docker-runtime-journal.v2`):
+  - campi: `containerId`, `epoch`, `bootId` (`/proc/sys/kernel/random/boot_id`), `authorizationSha256`, `configurationHash` (legame v5.2), `state`, `runtimeRoot`, `bundleHash`, `driverHash`, `openedAt`, `failure` (codice pubblico o null);
+  - stati: `OPENING` → `PREPARING` → `CREATING` → `CREATED` → `ADMITTED` → `STARTING` → `STARTED` → `DELETING` → `DELETED`; più `FAILED` e `ABANDONED`, terminali.
+- **Apertura** (solo su `create`), sotto `operation.lock` del CID:
+  - l'epoca corrente deve essere terminale (`DELETED`, `FAILED`, `ABANDONED`) oppure assente;
+  - un'epoca non terminale con `bootId` diverso dal boot corrente viene prima chiusa come `ABANDONED`. Dopo un reboot `/run` (tmpfs) non ha più lo stato di runc, e le tabelle candidate e il namespace non esistono più, quindi va controllato in lettura, senza rollback. Una non terminale con lo stesso `bootId` dà invece diniego (`EPOCH_STILL_OPEN`).
+  - Prima di aprire: verifica dell'autorizzazione d'esercizio e della catena `supersedes` (D7), con la testa unica (un fork dà diniego), e verifica di revoca.
+  - **Limite anti-ciclo:** al massimo 6 epoche aperte per CID in 3600 s, letto dai journal. Oltre, diniego `EPOCH_RATE_EXCEEDED` e incidente.
+- **Transizioni:** le stesse del v5.1 (V51`:491-560`), ma dentro l'epoca. La catena v2 non firma: al posto di intent e approvazione verifica l'autorizzazione d'esercizio. Lo start ripete tutti i controlli vivi.
+- **Chiusura:**
+  - `delete` porta a `DELETED`, con il rollback del driver e il cleanup del broker come nel v1;
+  - un errore porta a `FAILED` con il codice pubblico, sempre dopo un rollback consentito dallo stato (generazione morta).
+- **Docker:** il `create` a ogni ripartenza usa lo stesso CID e lo stesso parent del bundle. **Da verificare con una prova reale** (task-42 o una prova in CI con Docker e un runtime finto): se Docker ritenta con `unless-stopped` quando è il `create` del runtime a fallire al boot, o se ritenta solo dopo un'uscita. Se non ritenta, il supervisore del lease (che è già un servizio) può richiedere `docker start` in modo governato, con lo stesso limite anti-ciclo.
+
+### 13.5 Scomposizione aggiornata (sostituisce il §12.5)
+| Task | Contenuto | Effetti sul VPS |
+|---|---|---|
+| 37 | Supervisore del lease v2 (§13.3) con fixture nativa | nessuno |
+| 38 | Catena di ammissione v2 per epoca, senza firme allo start | nessuno |
+| 39 | Runtime v5.2 (epoche, `bootId`, anti-ciclo, verifica durevole, `supersedes`) | nessuno |
+| 40 | Emissione dell'autorizzazione d'esercizio (`RUNTIME_ARMING`, dominio separato; D-034) | una firma |
+| 41 | Installazione del v5.2 e del supervisore (modello 29b), configurazioni v2; il plan legge il coordinatore successore | switch del wrapper; unità systemd |
+| 42 | Primo start, RestartPolicy `unless-stopped`, readback; prova di riavvio di un ruolo; stop compensativo | primo start |
+
+La quiescenza del coordinatore storico esce dal perimetro.
