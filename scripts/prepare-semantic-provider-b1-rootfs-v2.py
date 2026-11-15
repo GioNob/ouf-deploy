@@ -200,6 +200,9 @@ def mount_rows(raw=None):
     return rows
 
 
+SYSTEM_CONTAINERD_SNAPSHOTS = Path('/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots')
+
+
 def overlay_binding(root, docker_root):
     rows = mount_rows(); root = str(root)
     selected = [r for r in rows if r['target'] == root]
@@ -211,14 +214,20 @@ def overlay_binding(root, docker_root):
         require(key not in opts, 'OVERLAY_OPTION_DUPLICATE')
         opts[key] = value if sep else True
     require(all(k in opts for k in ('upperdir', 'lowerdir', 'workdir')), 'CONTAINERD_SNAPSHOT_MOUNT_REQUIRED')
-    base = docker_root / 'containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots'
+    # Docker-managed containerd keeps snapshots under the Docker root; a host
+    # (system) containerd, as on the VPS with Docker 29, under /var/lib/containerd.
+    bases = (docker_root / 'containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots',
+             SYSTEM_CONTAINERD_SNAPSHOTS)
     paths = [opts['upperdir'], opts['workdir'], *opts['lowerdir'].split(':')]
     require(3 <= len(paths) <= 258 and len(set(paths)) == len(paths), 'SNAPSHOT_LAYERS_REQUIRED')
+    used = set()
     for value in paths:
         path = V1.absolute(value); ancestors(path)
-        require(path.parent.parent == base and path.parent.name.isdecimal()
+        require(path.parent.parent in bases and path.parent.name.isdecimal()
                 and path.name in ('fs', 'work') and path.is_dir() and not path.is_symlink(),
                 'CONTAINERD_SNAPSHOT_PATH_REQUIRED')
+        used.add(path.parent.parent)
+    require(len(used) == 1, 'CONTAINERD_SNAPSHOT_ROOT_MIXED')
     require(Path(opts['upperdir']).name == 'fs' and Path(opts['workdir']).name == 'work'
             and Path(opts['upperdir']).parent == Path(opts['workdir']).parent
             and all(Path(p).name == 'fs' for p in opts['lowerdir'].split(':')), 'SNAPSHOT_LAYOUT_REQUIRED')
