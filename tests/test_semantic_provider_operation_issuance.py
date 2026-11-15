@@ -22,6 +22,21 @@ if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0
 
 
 class PortableTests(unittest.TestCase):
+    def test_supersede_composes_next_version_and_denies_stop_or_time_regression(self):
+        inputs = fixtures.fixture()
+        initial = C.compose(inputs)
+        payload = A.validate(initial["authorization"])
+        head = {"sequence": 1, "decision": "OPERATE", "sha256": A.sha(initial["authorization"]),
+                "authorization": payload}
+        result = issue.compose_next(inputs, head, payload["issuedAt"])
+        proposed = A.validate(result["authorization"])
+        self.assertEqual((proposed["sequence"], proposed["supersedes"]), (2, head["sha256"]))
+        self.assertIn("versions/2/runtime-configuration.json", result["documents"])
+        with self.assertRaisesRegex(A.OperationDenied, "SUPERSEDE_REQUIRES_OPERATE_HEAD"):
+            issue.compose_next(inputs, {**head, "decision": "STOP"}, payload["issuedAt"])
+        with self.assertRaisesRegex(A.OperationDenied, "OPERATION_CHAIN_TIME_REGRESSED"):
+            issue.compose_next(inputs, head, payload["issuedAt"]-1)
+
     def test_cli_argument_error_is_public_code_only(self):
         output, errors = io.StringIO(), io.StringIO()
         with redirect_stdout(output), redirect_stderr(errors):
@@ -112,6 +127,29 @@ class NativeTests(operation.Fixture):
     def execute(self, mode="--plan", digest=None, progress=None):
         return issue.execute(issue.arguments(self.argv(mode, digest)),
                              progress if progress is not None else issue.progress_initial(), self.clock)
+
+    def test_supersede_cli_keeps_previous_pair_and_authenticates_next_head(self):
+        def cli(args, code=0):
+            result = subprocess.run([sys.executable, "-I", "-B", str(ROOT / "scripts/issue-semantic-provider-operation-authorization.py"),
+                                     *args], capture_output=True, timeout=40)
+            self.assertEqual(result.returncode, code, result.stdout.decode()+result.stderr.decode())
+            self.assertEqual(result.stderr, b"")
+            return json.loads(result.stdout)
+        first = cli(self.argv())
+        cli(self.argv("--apply", first["planSha256"]))
+        retained = {p.name: p.read_bytes() for p in self.chain.iterdir()}
+        self.output = self.root / "superseded"
+        plan = cli([*self.argv(), "--supersede"])
+        self.assertEqual(plan["privateKeysRead"], 0)
+        self.assertEqual(plan["payload"]["sequence"], 2)
+        self.assertEqual(plan["payload"]["supersedes"], A.sha(retained["1.json"]))
+        result = cli([*self.argv("--apply", plan["planSha256"]), "--supersede"])
+        self.assertEqual((result["sequence"], result["privateKeysRead"], result["signaturesIssued"]), (2, 1, 1))
+        for name, raw in retained.items(): self.assertEqual((self.chain/name).read_bytes(), raw)
+        M = issue.load_mandates(self.inputs["sources"][C.MANDATES], A.sha(self.inputs["sources"][C.MANDATES]), C.MANDATES)
+        head = issue.authorization_head(issue.arguments([*self.argv(), "--supersede"]), M, self.settings, self.clock)
+        self.assertEqual((head["sequence"], head["sha256"]), (2, result["payloadSha256"]))
+        self.assertFalse((self.install / "versions").exists())
 
     def test_plan_apply_head_and_no_installation_publication(self):
         # Observe the original installer key through the single dedicated reader.

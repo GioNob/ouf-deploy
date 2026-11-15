@@ -95,23 +95,41 @@ def docker_fields(raw, cid):
             "RestartCount": row["RestartCount"], "Runtime": host["Runtime"], "RestartPolicy": policy}
 
 
+def terminal_binding(runtime, cfg, head, row):
+    """Terminal history keeps its original configuration and authenticated entry."""
+    require(row["state"] in TERMINAL, "R3_EPOCH_AUTHORIZATION_DRIFT")
+    for sequence in range(1, head["sequence"] + 1):
+        raw = runtime.read(Path(cfg["operation"]["authorizationRoot"]) / f"{sequence}.json")
+        if sha(raw) == row["authorizationSha256"]:
+            payload = A.validate(raw)
+            require(payload["decision"] == "OPERATE" and payload["runtimeConfigurationSha256"] == row["configurationHash"],
+                    "R3_EPOCH_AUTHORIZATION_DRIFT")
+            return
+    require(False, "R3_EPOCH_AUTHORIZATION_DRIFT")
+
+
 def observe(args, *, output_exists=False, deadline=None):
     """Read only. Compile the installed, hash-verified v5.2 and use its loaders."""
     S = I.native_switch()
     root = V.absolute(args.install_root)
     V.private_directory(root)
     I.output_directory(args.output_directory, root, S, absent=not output_exists)
-    runtime_path = root / "source" / C.RUNTIME
+    wrapper = S.custody(args.wrapper, 0o755)[0]
+    require(sha(wrapper) == args.wrapper_sha256, "R3_WRAPPER_DRIFT")
+    code_root = I.wrapper_code_root(root, wrapper)
+    if code_root != root:
+        V.private_directory(root / "versions")
+        V.private_directory(code_root)
+    runtime_path = code_root / "source" / C.RUNTIME
     runtime = I.compiled(S.custody(runtime_path, 0o600)[0], runtime_path,
                          "r3_operate_installed_runtime", sha((I.ROOT / C.RUNTIME).read_bytes()))
-    cfg, raw = runtime.load_configuration(root / "runtime-configuration.json")
+    cfg, raw = runtime.load_configuration(code_root / "runtime-configuration.json")
     runtime.verify_files(cfg)
     require(cfg["registryRoot"] == str(root / "registry")
             and cfg["operation"]["authorizationRoot"] == str(root / "authorization"),
             "R3_INSTALLED_ROOT_DRIFT")
-    wrapper = S.custody(args.wrapper, 0o755)[0]
     require(sha(wrapper) == args.wrapper_sha256
-            and wrapper == I.wrapper_bytes(cfg["pythonPath"], root), "R3_WRAPPER_DRIFT")
+            and wrapper == I.wrapper_bytes(cfg["pythonPath"], code_root), "R3_WRAPPER_DRIFT")
     auth, epochs = runtime.operation_modules(cfg)
     heads = [runtime.authorization_head(cfg, raw, cid, auth) for cid in sorted(cfg["candidates"])]
     require(heads[0] == heads[1], "R3_AUTHORIZATION_CHANGED_DURING_OBSERVATION")
@@ -131,9 +149,12 @@ def observe(args, *, output_exists=False, deadline=None):
         row = epochs.current(cfg["registryRoot"], cid)
         epoch = None
         if row is not None:
-            require(row["bootId"] == boot, "R3_EPOCH_BOOT_DRIFT")
-            require(row["authorizationSha256"] == head["sha256"]
-                    and row["configurationHash"] == sha(raw), "R3_EPOCH_AUTHORIZATION_DRIFT")
+            if row["state"] in TERMINAL:
+                terminal_binding(runtime, cfg, head, row)
+            else:
+                require(row["bootId"] == boot, "R3_EPOCH_BOOT_DRIFT")
+                require(row["authorizationSha256"] == head["sha256"]
+                        and row["configurationHash"] == sha(raw), "R3_EPOCH_AUTHORIZATION_DRIFT")
             epoch = {k: row[k] for k in ("epoch", "state", "bootId", "failure")}
             epoch["live"] = epochs.live(row, boot)
         # Historical journal is read with the installed validator, never rewritten.
@@ -142,7 +163,7 @@ def observe(args, *, output_exists=False, deadline=None):
             number = row["epoch"] - 1
             old = epochs.validate_journal(runtime.read(Path(cfg["registryRoot"]) / cid /
                         "epochs" / str(number) / "adapter.json"), cid, number)
-            require(old["authorizationSha256"] == head["sha256"], "R3_PREVIOUS_AUTHORIZATION_DRIFT")
+            terminal_binding(runtime, cfg, head, old)
             previous = {k: old[k] for k in ("epoch", "state")}
         frame = docker_fields(docker(args, "inspect", cid, timeout=remaining()), cid)
         if row is not None and row["state"] == "STARTED" and frame["Running"]:

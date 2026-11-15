@@ -127,6 +127,53 @@ def fixture():
 
 
 class ComposeTests(unittest.TestCase):
+    def test_version_one_fixed_fixture_has_identical_document_bytes(self):
+        baseline = json.loads((ROOT / "tests/fixtures/r3-v1-document-hashes.json").read_bytes())
+        inputs = fixture()
+        current = C.compose(inputs, version=1)
+        # Every input and every output is pinned, including source copies,
+        # registry lock bytes and authorization; no dynamically computed oracle.
+        self.assertEqual(current["inputHashes"], baseline["inputHashes"])
+        self.assertEqual(current["hashes"], baseline["hashes"])
+        self.assertEqual(current, C.compose(inputs))
+
+    def test_versions_keep_state_shared_and_payload_chain_explicit(self):
+        inputs = fixture()
+        original = copy.deepcopy(inputs)
+        for version in (2, 3):
+            composed = C.compose(inputs, version, sequence=version, supersedes="a"*64)
+            prefix = f"versions/{version}/"
+            root = json.loads(inputs["files"]["settings"])["installRoot"]
+            cfg = json.loads(composed["documents"][prefix+"runtime-configuration.json"])
+            sup = json.loads(composed["documents"][prefix+"supervisor/configuration.json"])
+            payload = A.validate(composed["authorization"])
+            self.assertTrue(all(p.startswith(prefix) for p in composed["documents"]))
+            self.assertEqual(cfg["registryRoot"], root+"/registry")
+            self.assertEqual(sup["statusPath"], root+"/supervisor/state/status.json")
+            self.assertEqual(sup["recoveryJournalRoot"], root+"/supervisor/state/recovery")
+            self.assertEqual(sup["authorizationRoot"], root+"/authorization")
+            self.assertEqual(sup["sourceRoot"], root+"/"+prefix+"source")
+            self.assertEqual(payload["sequence"], version)
+            self.assertEqual(payload["supersedes"], "a"*64)
+            self.assertEqual(payload["runtimeConfigurationSha256"], A.sha(composed["documents"][prefix+"runtime-configuration.json"]))
+            for role in C.ROLES:
+                broker = json.loads(composed["documents"][prefix+"broker/"+role+".json"])
+                B.validate(A.canonical(broker))
+                self.assertEqual(broker["registryRoot"], root+"/registry")
+                self.assertEqual(broker["sourceRoot"], root+"/"+prefix+"source")
+                self.assertTrue(broker["preparerTemplate"]["path"].startswith(root+"/"+prefix))
+                self.assertEqual(payload["roles"][role]["admissionConfigurationSha256"],
+                                 A.sha(composed["documents"][prefix+"broker/"+role+".json"]))
+        self.assertEqual(inputs, original)
+
+    def test_invalid_versions_and_missing_successor_metadata_are_denied(self):
+        for version in (True, 0, -1, "2", 2.0):
+            with self.subTest(version=version), self.assertRaisesRegex(A.OperationDenied, "R3_VERSION_REQUIRED"):
+                C.compose(fixture(), version)
+        for params in ({}, {"sequence": 1, "supersedes": "a"*64}, {"sequence": 2, "supersedes": None}):
+            with self.subTest(params=params), self.assertRaisesRegex(A.OperationDenied, "R3_SUCCESSOR_CHAIN_REQUIRED"):
+                C.compose(fixture(), 2, **params)
+
     def test_determinism_input_change_and_no_mutation(self):
         inputs = fixture()
         original = copy.deepcopy(inputs)

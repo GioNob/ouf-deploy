@@ -23,11 +23,13 @@ on:
       - scripts/install-semantic-provider-r3.py
       - scripts/restore-semantic-provider-r3.py
       - scripts/operate-semantic-provider-r3.py
+      - scripts/upgrade-semantic-provider-r3.py
       - scripts/install-semantic-runtime-v51.py
       - scripts/restore-semantic-runtime-v51-wrapper.py
       - scripts/issue-semantic-provider-operation-authorization.py
       - scripts/semantic-provider-*-v2.py
       - tests/test_semantic_provider_r3*.py
+      - tests/fixtures/r3-v1-document-hashes.json
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
       - tests/test_semantic_provider_lease_supervisor.py
@@ -35,6 +37,7 @@ on:
       - tests/test_runtime_v52_epochs.py
       - docs/OUF_SEMANTIC_PROVIDER_R3_INSTALL.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_OPERATE.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_UPGRADE.md
       - .github/workflows/semantic-provider-r3-install.yml
   workflow_dispatch:
 permissions: {contents: read}
@@ -68,6 +71,10 @@ jobs:
         run: >-
           sudo -n env OUF_R3_OPERATE_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_operate.py -v
+      - name: R3 stopped-provider upgrade N+1 and retained registry lifecycle
+        run: >-
+          sudo -n env OUF_R3_UPGRADE_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_upgrade.py -v
       - name: Unchanged guarded switch
         run: >-
           sudo -n env OUF_TRANSACTION_TEST_ROOT=/run /usr/bin/python3 -I -B
@@ -96,3 +103,5 @@ jobs:
           tests/test_semantic_provider_r3_install.py
           tools/semantic_provider_r3/operate.py scripts/operate-semantic-provider-r3.py
           tests/test_semantic_provider_r3_operate.py
+          tools/semantic_provider_r3/upgrade.py scripts/upgrade-semantic-provider-r3.py
+          tests/test_semantic_provider_r3_upgrade.py

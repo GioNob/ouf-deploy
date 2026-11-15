@@ -84,12 +84,19 @@ def contract_module(raw, name):
     return result
 
 
-def compose(inputs):
+def compose(inputs, version=1, *, sequence=None, supersedes=None):
     """Return documents (bytes), authorization (bytes), hashes and audit metadata.
 
     inputs = {"files": {logical name: bytes}, "sources": {repository path: bytes}}.
     The caller authenticates custody and expected input hashes before calling.
     """
+    require(type(version) is int and version >= 1, "R3_VERSION_REQUIRED")
+    if version == 1:
+        require(sequence in (None, 1) and supersedes is None, "R3_VERSION_ONE_CHAIN_REQUIRED")
+        sequence = 1
+    else:
+        require(type(sequence) is int and sequence >= 2 and type(supersedes) is str
+                and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
     require(set(files) == DATA_INPUTS and set(sources) == SOURCE_INPUTS
@@ -104,6 +111,8 @@ def compose(inputs):
     require(set(s) == SETTINGS, "EXACT_R3_SETTINGS_REQUIRED")
     root = s["installRoot"]
     require(B.absolute(root) and root != "/", "EXPLICIT_INSTALL_ROOT_REQUIRED")
+    version_prefix = "" if version == 1 else "versions/" + str(version) + "/"
+    code_root = root + ("/" + version_prefix[:-1] if version_prefix else "")
     for k in ("runtimeBinding", "anchorBinding", "coordinatorBinding"):
         require(B.binding(s[k]), "EXACT_R3_BINDING_REQUIRED")
     require(B.binding(s["opensslBinding"], ("version",)), "EXACT_R3_BINDING_REQUIRED")
@@ -146,10 +155,10 @@ def compose(inputs):
 
     def put(path, value):
         docs[path] = canonical(value)
-        return {"path": root + "/" + path, "sha256": sha(docs[path])}
+        return {"path": code_root + "/" + path, "sha256": sha(docs[path])}
 
     def source(path):
-        return {"path": root + "/source/" + path, "sha256": hashes[path]}
+        return {"path": code_root + "/source/" + path, "sha256": hashes[path]}
 
     common = {"authorizationRoot": root + "/authorization", "anchorBinding": s["anchorBinding"],
               "mandateRoot": s["mandateRoot"], "opensslBinding": s["opensslBinding"], "mandatesModule": source(MANDATES)}
@@ -241,7 +250,7 @@ def compose(inputs):
         seal = put(prefix + "rootfs-seal.json", rootfs["roles"][role]["effectiveSeal"])
         transport = put(prefix + "transport.json", {k: candidate[k] for k in ("networkBindings", "transport", "tableName")})
         preparer = put(prefix + "preparer-template.json", t)
-        cfg = {"schema": B.SCHEMA, "sourceRoot": root + "/source", "sourceHashes": {p: hashes[p] for p in B.SOURCES},
+        cfg = {"schema": B.SCHEMA, "sourceRoot": code_root + "/source", "sourceHashes": {p: hashes[p] for p in B.SOURCES},
             "authorities": scope, "operation": common, "role": role, "containerId": rows[role]["containerId"],
             "registryRoot": root + "/registry", "framePolicyBinding": frame, "rootfsSealBinding": seal,
             "transportBinding": transport, "preparerTemplate": preparer, "runtimeRootParent": s["runtimeRootParent"],
@@ -263,7 +272,7 @@ def compose(inputs):
             "originalTransportFragmentSha256": sha(canonical({k: data[role + "/historicalTemplate"]["candidate"][k]
                 for k in ("networkBindings", "transport", "tableName")}))}
     dns = put("supervisor/dns-profile.json", owner["dns"])
-    supervisor = {"schema": "ouf.semantic-provider-lease-supervisor.v1", "sourceRoot": root + "/source",
+    supervisor = {"schema": "ouf.semantic-provider-lease-supervisor.v1", "sourceRoot": code_root + "/source",
         "sourceHashes": {p: hashes[p] for p in SUPERVISOR_SOURCES}, **scope, **common,
         "registryRoot": root + "/registry", "coordinator": {"ownerConfiguration": s["coordinatorBinding"],
             "journalPath": owner["journalFile"], "commonLockPath": owner["commonLockFile"], "dnsProfile": dns,
@@ -277,7 +286,7 @@ def compose(inputs):
         "pythonPath": templates["adapter"]["pythonPath"], "pythonSha256": templates["adapter"]["pythonHash"],
         "registryRoot": root + "/registry", "runtimeStateRoot": s["runtimeRootParent"], "opensslBinding": s["opensslBinding"],
         "candidates": {rows[r]["containerId"]: {"role": r, "bundleParents": [data[r + "/context"]["bundleParent"]]} for r in ROLES},
-        "admissionConfigurations": {rows[r]["containerId"]: {"path": root + "/broker/" + r + ".json",
+        "admissionConfigurations": {rows[r]["containerId"]: {"path": code_root + "/broker/" + r + ".json",
             "sha256": operation_roles[r]["admissionConfigurationSha256"]} for r in ROLES},
         "operation": {k: v for k, v in {**common, **scope}.items() if k != "opensslBinding"},
         "leaseQuiesce": {"entrypoint": source("scripts/semantic-provider-lease-supervisor-v2.py"), "configuration": sup},
@@ -290,22 +299,24 @@ def compose(inputs):
     module = contract_module(sources[RUNTIME], "runtime")
     module.read = lambda path: docs["runtime-configuration.json"]
     module.load_configuration(PurePosixPath(rt["path"]))
-    payload = canonical({"schema": A.SCHEMA, **scope, "sequence": 1, "supersedes": None,
+    payload = canonical({"schema": A.SCHEMA, **scope, "sequence": sequence, "supersedes": supersedes,
         "issuedAt": s["issuedAt"], "decision": "OPERATE", "runtimeConfigurationSha256": rt["sha256"],
         "acceptanceSha256": sha(files["acceptance"]), "roles": operation_roles,
         "lease": {"ownerConfigurationSha256": sha(files["coordinator"]),
                   "leaseStructureHash": owner["binding"]["leaseStructureHash"], "dnsProfileSha256": dns["sha256"]}})
     A.validate(payload)
-    directories = {"source", "registry", "authorization", "supervisor/state", "supervisor/state/recovery"}
+    docs = {version_prefix + path: raw for path, raw in docs.items()}
+    directories = {version_prefix + "source", "registry", "authorization", "supervisor/state", "supervisor/state/recovery"}
     for role in ROLES:
         cid_root = "registry/" + rows[role]["containerId"]
         directories.update({cid_root, cid_root + "/epochs"})
-        docs[cid_root + "/operation.lock"] = b""
+        if version == 1:
+            docs[cid_root + "/operation.lock"] = b""
     for path in docs:
         directories.update(str(p) for p in PurePosixPath(path).parents if str(p) != ".")
     return {"documents": docs, "authorization": payload,
-        "hashes": {**{p: sha(raw) for p, raw in sorted(docs.items())}, "authorization/1.json": sha(payload)},
+        "hashes": {**{p: sha(raw) for p, raw in sorted(docs.items())}, f"authorization/{sequence}.json": sha(payload)},
         "inputHashes": {**{k: sha(v) for k, v in sorted(files.items())},
                         **{"repository/" + k: sha(v) for k, v in sorted(sources.items())}},
         "audit": audit, "layout": {"installRoot": root, "directories0700": sorted(directories),
-            "files0600": sorted([*docs, "authorization/1.json", "authorization/1.signature.json"])}}
+            "files0600": sorted([*docs, f"authorization/{sequence}.json", f"authorization/{sequence}.signature.json"])}}

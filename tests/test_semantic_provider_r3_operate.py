@@ -81,6 +81,30 @@ def successful(action, before):
 
 
 class PortableTests(unittest.TestCase):
+    def test_terminal_history_binds_to_authenticated_original_entry(self):
+        from test_semantic_provider_r3_compose import fixture
+        initial = O.C.compose(fixture())
+        payload = O.A.validate(initial["authorization"])
+        cfg = {"operation": {"authorizationRoot": "/install/authorization"}}
+        runtime = SimpleNamespace(read=lambda _: initial["authorization"])
+        head = {"sequence": 2}
+        row = {"state": "DELETED", "authorizationSha256": O.sha(initial["authorization"]),
+               "configurationHash": payload["runtimeConfigurationSha256"]}
+        O.terminal_binding(runtime, cfg, head, row)
+        for change in ({"state": "STARTED"}, {"configurationHash": "0"*64}, {"authorizationSha256": "0"*64}):
+            with self.subTest(change=change), self.assertRaisesRegex(O.A.OperationDenied, "R3_EPOCH_AUTHORIZATION_DRIFT"):
+                O.terminal_binding(runtime, cfg, head, {**row, **change})
+
+    def test_wrapper_selects_only_root_or_numeric_versions(self):
+        from pathlib import PurePosixPath
+        root = PurePosixPath("/install")
+        for suffix in ("", "/versions/2", "/versions/12"):
+            code_root = PurePosixPath(str(root)+suffix)
+            self.assertEqual(O.I.wrapper_code_root(root, O.I.wrapper_bytes("/usr/bin/python3", code_root)), code_root)
+        for suffix in ("/versions/1", "/versions/02", "/versions/current", "/elsewhere", "/versions/2/extra"):
+            with self.subTest(suffix=suffix), self.assertRaisesRegex(O.A.OperationDenied, "R3_WRAPPER_DRIFT"):
+                O.I.wrapper_code_root(root, O.I.wrapper_bytes("/usr/bin/python3", PurePosixPath(str(root)+suffix)))
+
     def test_each_precondition_success_and_violation(self):
         for action in O.SUCCESS:
             args = arguments(action)
@@ -360,6 +384,7 @@ class PortableTests(unittest.TestCase):
                     patch.object(O.V,"absolute",side_effect=Path), patch.object(O.V,"private_directory"), \
                     patch.object(O.I,"output_directory"), patch.object(O.I,"compiled",return_value=runtime) as load, \
                     patch.object(O.I,"wrapper_bytes",return_value=b"wrapper"), \
+                    patch.object(O.I,"wrapper_code_root",return_value=root), \
                     patch.object(O,"docker",side_effect=fake_docker), patch.object(O,"command",side_effect=fake_command):
                 result = O.observe(args)
                 self.assertEqual(result["authorization"], observation()["authorization"])

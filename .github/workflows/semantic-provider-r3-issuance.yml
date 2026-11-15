@@ -17,6 +17,7 @@ on:
       - scripts/issue-semantic-provider-operation-authorization.py
       - scripts/semantic-provider-*-v2.py
       - tests/test_semantic_provider_r3_compose.py
+      - tests/fixtures/r3-v1-document-hashes.json
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_b1_acceptance.py
       - tests/test_semantic_provider_admission_v2*.py

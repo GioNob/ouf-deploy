@@ -6,7 +6,7 @@ The unchanged task-29b custody and switch primitives remain the native boundary.
 import argparse
 from contextlib import contextmanager
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import stat
 import subprocess
@@ -120,18 +120,19 @@ def payload_match(composed, head, raw):
             "payloadByteMatch": True}
 
 
-def unit_bytes(root, config, supervisor):
+def unit_bytes(root, config, supervisor, code_root=None):
+    code_root = root if code_root is None else code_root
     writable = sorted({str(root / "supervisor/state"),
                        str(Path(supervisor["coordinator"]["journalPath"]).parent),
                        supervisor["coordinator"]["commonLockPath"]})
     paths = (config["pythonPath"], str(root), *writable)
     require(all(re.fullmatch(r"/[A-Za-z0-9_./-]+", p) for p in paths), "R3_CLOSED_SERVICE_PATH_REQUIRED")
-    supervisor = root / "supervisor/configuration.json"
+    supervisor = code_root / "supervisor/configuration.json"
     digest = config["leaseQuiesce"]["configuration"]["sha256"]
     return ("[Unit]\nDescription=OUF semantic lease supervisor v2\n"
             "After=docker.service ouf-semantic-boot-guard.service\nBindsTo=docker.service\n\n"
             "[Service]\nType=simple\nUser=root\nGroup=root\nUMask=0077\n"
-            f"ExecStart={config['pythonPath']} -I -B {root}/source/scripts/semantic-provider-lease-supervisor-v2.py "
+            f"ExecStart={config['pythonPath']} -I -B {code_root}/source/scripts/semantic-provider-lease-supervisor-v2.py "
             f"--configuration {supervisor} --configuration-sha256 {digest}\n"
             "Restart=always\nRestartSec=2\nNoNewPrivileges=yes\nProtectSystem=full\n"
             f"ReadWritePaths={' '.join(writable)}\n"
@@ -147,6 +148,21 @@ def wrapper_bytes(python, root, runtime=C.RUNTIME):
            f'--configuration {root}/runtime-configuration.json "$@"\n').encode("ascii")
     V.wrapper_targets(raw)
     return raw
+
+
+def wrapper_code_root(root, wrapper):
+    """Select only the canonical root or a numeric R3 version from wrapper bytes."""
+    python, runtime, configuration = V.wrapper_targets(wrapper)
+    logical_root = PurePosixPath(root.as_posix())
+    code_root = PurePosixPath(configuration).parent
+    relative = code_root.relative_to(logical_root) if code_root.is_relative_to(logical_root) else None
+    require(relative is not None and (str(relative) == "." or len(relative.parts) == 2
+            and relative.parts[0] == "versions" and re.fullmatch(r"[2-9]|[1-9][0-9]+", relative.parts[1])),
+            "R3_WRAPPER_DRIFT")
+    require(configuration == str(code_root / "runtime-configuration.json")
+            and runtime == str(code_root / "source" / C.RUNTIME)
+            and wrapper == wrapper_bytes(python, code_root), "R3_WRAPPER_DRIFT")
+    return root.joinpath(*relative.parts)
 
 
 def v51_state(args, S):
@@ -306,17 +322,19 @@ def operation_locks(root, cids):
             os.close(fd)
 
 
-def verify_publication(root, result):
+def verify_publication(root, result, *, code_root=None, require_no_epochs=True):
     """Execute the installed loaders, with all imported application bytes sealed first."""
     S = native_switch()
+    code_root = root if code_root is None else code_root
+    prefix = "" if code_root == root else str(code_root.relative_to(root)) + "/"
     for relative in result["layout"]["directories0700"]:
         V.private_directory(root / relative)
     for relative, raw in result["documents"].items():
         require(S.custody(root / relative, 0o600)[0] == raw, "R3_PUBLICATION_DRIFT")
     with module_scope():
         def load(relative, name, package=None):
-            raw = result["documents"]["source/" + relative]
-            return compiled(S.custody(root / "source" / relative, 0o600)[0], root / "source" / relative,
+            raw = result["documents"][prefix + "source/" + relative]
+            return compiled(S.custody(code_root / "source" / relative, 0o600)[0], code_root / "source" / relative,
                             name, sha(raw), package)
         # Explicit packages prevent imports from falling back to the delivery tree.
         for name in ("tools", "tools.semantic_provider_operation", "tools.semantic_provider_admission_v2"):
@@ -336,18 +354,31 @@ def verify_publication(root, result):
             setattr(sys.modules["tools.semantic_provider_admission_v2"], name, module)
         broker = module
         for role in A.ROLES:
-            broker.load(root / "broker" / (role + ".json"))
+            broker.load(code_root / "broker" / (role + ".json"))
+        if code_root != root:
+            # Compile the real v7 driver and its v2 dependencies from the
+            # published closure; no driver grant/epoch is fabricated to load it.
+            for name in ("locking", "reauthorization_v2", "driver_v7"):
+                module = load("tools/semantic_provider_admission_v2/" + name + ".py",
+                              "tools.semantic_provider_admission_v2." + name)
+                setattr(sys.modules["tools.semantic_provider_admission_v2"], name, module)
+            for role in A.ROLES:
+                # driver.load uses this exact source verifier. A stopped
+                # provider has no new driver grant to load; never manufacture
+                # an epoch/profile merely to exercise the grant decoder.
+                module.broker.verify_sources(C.document(result["documents"][prefix + "broker/" + role + ".json"]))
         runtime = load(C.RUNTIME, "r3_installed_runtime_v52")
-        cfg, raw = runtime.load_configuration(root / "runtime-configuration.json")
+        cfg, raw = runtime.load_configuration(code_root / "runtime-configuration.json")
         runtime.verify_files(cfg)
-        require(sha(raw) == sha(result["documents"]["runtime-configuration.json"]), "R3_CONFIGURATION_DRIFT")
+        require(sha(raw) == sha(result["documents"][prefix + "runtime-configuration.json"]), "R3_CONFIGURATION_DRIFT")
         supervisor = load(C.SUPERVISOR, "r3_installed_supervisor")
-        path = root / "supervisor/configuration.json"
-        configuration = supervisor.Configuration(path, sha(result["documents"]["supervisor/configuration.json"]))
+        path = code_root / "supervisor/configuration.json"
+        configuration = supervisor.Configuration(path, sha(result["documents"][prefix + "supervisor/configuration.json"]))
         configuration.custody()
         # Compose the real retained owner/recovery closure without running Service.
         supervisor.runtime(configuration)
-    no_epochs(root, cfg["candidates"])
+    if require_no_epochs:
+        no_epochs(root, cfg["candidates"])
     return cfg
 
 
@@ -363,7 +394,7 @@ def systemctl(args, *argv):
     return command(args.systemctl, args.systemctl_sha256, list(argv), "R3_SYSTEMCTL_FAILED")
 
 
-def service_readback(args, state, cfg=None, sequence=None):
+def service_readback(args, state, cfg=None, sequence=None, *, retained_history=False):
     deadline = time.monotonic() + 30
     while True:
         properties = systemctl(args, "show", UNIT, "--property=ActiveState", "--property=SubState",
@@ -388,7 +419,9 @@ def service_readback(args, state, cfg=None, sequence=None):
                 ok = ok and row.get("schema") == "ouf.semantic-provider-lease-supervisor-status.v1"
                 ok = ok and row.get("state") == "WAITING" and row.get("reason") == "EPOCH_NOT_LIVE"
                 ok = ok and row.get("epochs") == dict.fromkeys(A.ROLES) and row.get("renewals") == 0
-                ok = ok and row.get("authorizationSequence") == sequence and row.get("activationsLastHour") == 0
+                count = row.get("activationsLastHour")
+                history_ok = (type(count) is int and count >= 0) if retained_history else count == 0
+                ok = ok and row.get("authorizationSequence") == sequence and history_ok
             else:
                 ok = False
         if ok:

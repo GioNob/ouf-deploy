@@ -121,15 +121,25 @@ def observe(args, clock):
     version = native(verifier, ["version"], 256)
     match = re.match(rb"OpenSSL ([0-9]+[.][0-9]+[.][0-9]+[a-z]?)\b", version)
     require(match is not None and match[1].decode() == ssl["version"], "DETACHED_OPENSSL_VERSION_UNPROVEN")
-    composed = C.compose({"files": files, "sources": sources})
+    previous = authorization_head(args, M, settings, clock) if args.supersede else None
+    composed = compose_next({"files": files, "sources": sources}, previous, args.issued_at)
     reader.verify()
     plan = {"schema": SCHEMA, "payload": A.validate(composed["authorization"]),
         "payloadSha256": sha(composed["authorization"]), "documentHashes": composed["hashes"],
         "layout": composed["layout"], "audit": composed["audit"], "inputHashes": reader.hashes.copy(),
         "compositionInputHashes": composed["inputHashes"], "ledger": ledger.snapshot(),
         "keyRef": key_ref, "privateKeysRead": 0,
-        "outputDirectory": args.output_directory}
+        "outputDirectory": args.output_directory, "previousHead": previous}
     return plan, composed, reader, M, ledger, verifier, profile["keyBindings"]["installer"], key_ref, settings
+
+
+def compose_next(inputs, previous, issued_at):
+    if previous is not None:
+        require(previous["decision"] == "OPERATE", "SUPERSEDE_REQUIRES_OPERATE_HEAD")
+        require(issued_at >= previous["authorization"]["issuedAt"], "OPERATION_CHAIN_TIME_REGRESSED")
+    number = previous["sequence"] + 1 if previous else 1
+    return C.compose(inputs, version=number, sequence=number,
+                     supersedes=previous["sha256"] if previous else None)
 
 
 def native(verifier, argv, limit):
@@ -156,6 +166,12 @@ def directory(path, absent=False):
     return AUTH.attributes(info)
 
 
+def authorization_head(args, M, settings, clock):
+    return A.head(M, settings["anchorBinding"], settings["mandateRoot"], settings["opensslBinding"],
+                  str(AUTH.absolute(args.install_root) / "authorization"), settings["installationRef"],
+                  settings["entityRef"], settings["issuerRef"], clock)
+
+
 def destinations(args):
     out = AUTH.absolute(args.output_directory)
     require(directory(out, absent=True) is None, "OUTPUT_ALREADY_EXISTS")
@@ -163,7 +179,10 @@ def destinations(args):
     install_identity = directory(install, absent=True)
     chain = install / "authorization"
     identity = directory(chain, absent=True) if install_identity is not None else None
-    require(identity is None or not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
+    if args.supersede:
+        require(identity is not None, "SUPERSEDE_REQUIRES_EXISTING_CHAIN")
+    else:
+        require(identity is None or not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
     require(not out.is_relative_to(install) and not install.is_relative_to(out), "OUTPUT_LAYOUT_COLLISION")
     return out, chain, identity, install_identity
 
@@ -222,12 +241,19 @@ def execute(args, progress, clock=time.time):
                 os.fsync(parent)
             finally:
                 os.close(parent)
-        require(not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
+        if not args.supersede:
+            require(not os.listdir(chain), "AUTHORIZATION_ROOT_NOT_EMPTY")
         chain_fd = os.open(chain, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         directory(chain)
         import fcntl
         fcntl.flock(chain_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        require(not os.listdir(chain_fd), "AUTHORIZATION_ROOT_NOT_EMPTY")
+        def chain_unchanged():
+            if args.supersede:
+                require(authorization_head(args, M, s, clock) == plan["previousHead"],
+                        "OPERATION_CHAIN_CHANGED_DURING_ISSUANCE")
+            else:
+                require(not os.listdir(chain_fd), "AUTHORIZATION_ROOT_NOT_EMPTY")
+        chain_unchanged()
         reader.verify()
         # A fresh verifier gives issuance its own bounded verification budget.
         verifier = M.MandateAuthenticator(s["anchorBinding"], s["mandateRoot"], s["opensslBinding"], clock)
@@ -262,19 +288,20 @@ def execute(args, progress, clock=time.time):
                 "SIGNING_MANDATE_CHANGED_OR_EXPIRED")
         A.verify_entry(M, ledger, verifier, raw, envelope, (s["installationRef"], s["entityRef"], s["issuerRef"]))
         reader.verify()
-        require(not os.listdir(chain_fd) and AUTH.attributes(os.fstat(chain_fd)) == directory(chain),
-                "AUTHORIZATION_ROOT_CHANGED")
-        write_once(chain_fd, "1.json", raw)
-        progress["writtenFiles"].append("1.json")
-        write_once(chain_fd, "1.signature.json", envelope)
-        progress["writtenFiles"].append("1.signature.json")
+        chain_unchanged()
+        require(AUTH.attributes(os.fstat(chain_fd)) == directory(chain), "AUTHORIZATION_ROOT_CHANGED")
+        number = plan["payload"]["sequence"]
+        write_once(chain_fd, f"{number}.json", raw)
+        progress["writtenFiles"].append(f"{number}.json")
+        write_once(chain_fd, f"{number}.signature.json", envelope)
+        progress["writtenFiles"].append(f"{number}.signature.json")
         progress["phase"] = "READBACK"
         head = A.head(M, s["anchorBinding"], s["mandateRoot"], s["opensslBinding"], str(chain),
                       s["installationRef"], s["entityRef"], s["issuerRef"], clock)
-        require((head["sequence"], head["decision"], head["sha256"]) == (1, "OPERATE", sha(raw)),
+        require((head["sequence"], head["decision"], head["sha256"]) == (number, "OPERATE", sha(raw)),
                 "OPERATION_READBACK_DRIFT")
         result = {"schema": SCHEMA, "status": "SEMANTIC_PROVIDER_OPERATION_AUTHORIZATION_ISSUED",
-            "planSha256": digest, "payloadSha256": sha(raw), "sequence": 1, "decision": "OPERATE",
+            "planSha256": digest, "payloadSha256": sha(raw), "sequence": number, "decision": "OPERATE",
             "authorizationRoot": str(chain), "privateKeysRead": 1, "signaturesIssued": 1,
             "doNotRerunApply": True, "installationDocumentsPublished": 0, "runtimeActions": 0}
         write_once(output_fd, "result.json", canonical(result))
@@ -295,6 +322,7 @@ def arguments(argv=None):
     mode.add_argument("--plan", action="store_true")
     mode.add_argument("--apply", action="store_true")
     parser.add_argument("--plan-sha256")
+    parser.add_argument("--supersede", action="store_true")
     for field in ("inputs", "authority-profile"):
         parser.add_argument("--" + field, required=True)
         parser.add_argument("--" + field + "-sha256", required=True)
