@@ -121,7 +121,8 @@ def mount_targets(mounts, image, source_kind):
 
 
 
-OVERLAY_BOOKKEEPING_XATTRS = frozenset({'trusted.overlay.origin', 'trusted.overlay.impure', 'trusted.overlay.nlink'})
+OVERLAY_BOOKKEEPING_XATTRS = frozenset({'trusted.overlay.origin', 'trusted.overlay.impure', 'trusted.overlay.nlink',
+                                        'trusted.overlay.uuid'})
 
 
 def physical(entry, new=False):
