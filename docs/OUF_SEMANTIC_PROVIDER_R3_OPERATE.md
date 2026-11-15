@@ -202,9 +202,12 @@ la composizione v3 verifica invece i nuovi byte e binding della chiusura.
 
 ## L2 osservato
 
-R3 v4 usa il MAC osservato per epoca secondo D-037(a). `transport.json`,
+R3 v4 usa nome di interfaccia e MAC osservati per epoca secondo D-037 esteso.
+`transport.json`,
 `preparer-template.json` e le dichiarazioni `CREATED_CANDIDATE` contengono il
-segnaposto `02:00:00:00:00:00`; non configurano un MAC Docker. Il peer Semantic
+segnaposto MAC `02:00:00:00:00:00` e nomi `l2live0`, `l2live1`, eccetera,
+univoci nell'ordine firmato di ogni lista NIC; non configurano nomi o MAC Docker.
+Il peer Semantic
 `BRIDGE_PORT` e il suo indice firmato non cambiano (task-46b fuori perimetro).
 Le regressioni v1, v2 e v3 confrontano tutti gli hash con fixture fisse e
 `retainedSources`; la nuova fixture v3 conserva i byte precedenti di questo
@@ -212,16 +215,32 @@ task senza richiedere la storia Git completa.
 
 Il broker pubblica una sola volta `registry/<cid>/epochs/<epoca>/l2-binding.json`
 quando tutta la coorte è osservata. Il file 0600 lega candidato e peer a CID,
-PID, start ticks, inode netns, MAC e indici reciproci delle NIC. Tutte le fasi
+PID, start ticks, inode netns, nome reale, MAC e indici reciproci delle NIC. Tutte le fasi
 di ammissione successive richiedono nuove osservazioni uguali. Non riusare o
 riscrivere il file per superare un diniego: una variazione richiede una nuova
-epoca secondo il lifecycle esistente. IP, interfaccia, bridge, reciprocità,
+epoca secondo il lifecycle esistente. IPv4, bridge, workloadRef, bindingRef,
+ordine e numero delle NIC, reciprocità,
 assenza di IPv6 e stabilità restano obbligatori. Le regole `ether saddr` e
 `arp saddr ether` sono materializzate con il MAC osservato.
+
+`l2_binding.observe` associa ciascun IPv4 firmato a una sola NIC reale e verifica
+che il veth host reciproco appartenga al bridge firmato. Il nome reale deve
+rispettare `[A-Za-z0-9_.-]{1,15}`. IP duplicati, nomi/indici ambigui, NIC aggiuntive
+o indirizzi estranei e bridge diversi sono dinieghi definitivi. Solo l'assenza
+di una NIC con l'IPv4 atteso resta `PEER_INTERFACE_MISSING`, quindi riprovabile.
+`effective` sostituisce esclusivamente i due segnaposto espliciti nella stessa
+posizione; ogni altro campo diverso produce `L2_SIGNED_FIELD_DRIFT`. Un cambio
+del nome osservato dopo la pubblicazione produce `L2_BINDING_CHANGED`.
+Broker, evidenza, preparer e driver v2 mantengono lo strato del task-46a:
+le librerie storiche ricevono copie effettive, i documenti firmati restano intatti.
 
 Il gate aggiornato `OUF_R3_COHORT_NATIVE=1` usa Docker e runc reali, due reti
 con IP statici e MAC assegnati dal daemon, oltre a nft, ip e nsenter reali
 nel namespace isolato. L'immagine è importata da file locali, senza pull.
+Gli endpoint non hanno `DriverOpts` per il nome: le NIC reali sono `eth0`/`eth1`,
+le dichiarazioni v4 usano `l2live0`/`l2live1`. Il fixture cattura gli IPv4 reali
+prima della firma e sceglie per adapter un ordine firmato opposto ai nomi Docker;
+non dipende dall'ordine di allocazione di un altro container.
 Le aspettative OCI sono catturate prima della firma e il sigillo rootfs è
 calcolato indipendentemente. L'osservatore frame della fixture verifica OCI
 completo e generazione reale, esercitando il protocollo frame; non qualifica
@@ -229,11 +248,40 @@ l'osservatore produttivo di mount/sorgenti. Systemd e quiescer restano fixture
 esplicite WAITING/QUIESCED; nessuna lease viene attivata e nessun DNS interrogato.
 
 Il test richiede `cohort-ready` superato e processi/consumo `STARTED`, verifica
-il file L2 contro MAC e PID reali di Docker e le regole nft contro i MAC del
+il file L2 contro nomi, MAC e PID reali di Docker e le regole nft contro i MAC del
 binding. Stampa versione Docker, binding, dinieghi e traceback. Non accetta
 `PEER_MAC_IP_DRIFT`, `APPROVED_MAC_IP_BINDING_DRIFT` o
 `NAMESPACE_PORT_BINDING_DRIFT`. `operate` resta HELD per la mancata attivazione
 del supervisore simulato, distinta dal successo di ammissione e avvio.
+
+### Netns del fixture e Docker 29.8.1 (task-46d)
+
+Il vecchio `unshare --mount --net --fork` lasciava `/proc/1/ns/net` del runner
+visibile nel nuovo host di test. Questo è un disallineamento concreto del
+fixture; che spieghi il `L2_HOST_LINK_INVALID` della PR104 va confermato nel
+prossimo CI. Il fixture ora aggiunge `--pid --mount-proc` e richiede che PID1,
+fixture e bridge Docker condividano il netns host. Il daemon usa configurazione
+vuota esplicita, data/exec root privati e il proprio containerd, senza importare
+configurazioni del runner. Non cambia il risolutore host nel codice produttivo.
+
+Il log stampa `COHORT_PROCESS_NETNS` per dockerd, containerd e shim,
+`COHORT_FIXTURE_HOST_LINKS` e `COHORT_BROKER_HOST_LINKS`. Questi ultimi sono letti
+da un proxy diagnostico della sola fixture che esegue il vero `ip`, preservando
+stdout/stderr/exit code e registrando netns e antenati del processo del broker.
+Entrambe le viste includono `ip -j link show` e `ip -j -d link show`: il codice
+di ammissione continua a usare la prima, senza mascherare un veth mancante.
+`link_index` è verificato nel netns host con reciprocità e master firmato;
+`link_netnsid` non è un ifindex sostitutivo e non autorizza la ricerca in netns
+estranei. Su VPS senza unshare restano gli stessi controlli host.
+
+Il workflow `semantic-provider-r3-install.yml` conserva il job col Docker del
+runner e aggiunge `cohort-docker-29`. Solo in CI scarica l'archivio statico
+ufficiale `https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz`,
+stampa lo SHA256 calcolato e lo confronta con `DOCKER_29_SHA256`:
+`d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70`.
+Il pin proviene dalla qualifica MAC conservata del 25 ottobre, già nel repository;
+nessun download locale. Il PATH esplicito seleziona docker, dockerd, containerd,
+shim e runc di quell'archivio solo per il daemon privato del fixture.
 
 Eseguire il gate soltanto in CI Linux root:root con i prerequisiti nativi;
 su Windows si eseguono le suite portabili. Restano necessari anche i gate

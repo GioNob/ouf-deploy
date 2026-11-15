@@ -31,7 +31,7 @@ if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0
     raise RuntimeError("OUF_R3_COHORT_NATIVE requires Linux root:root; refusing to skip")
 
 CAPTURE = r'''
-import json,pathlib,subprocess,sys
+import json,os,pathlib,subprocess,sys
 args=sys.argv[1:]
 if 'create' not in args:
     raise SystemExit(subprocess.run([RUNC,*args]).returncode)
@@ -43,8 +43,12 @@ if not pathlib.Path(oci['root']['path']).is_absolute():
 for ns in oci['linux']['namespaces']:
     if ns.get('type')=='network' and ns.get('path'):
         ns['path']=str(pathlib.Path(ns['path']).resolve())
+network=next(ns['path'] for ns in oci['linux']['namespaces'] if ns['type']=='network')
+links=json.loads(subprocess.run([CAPTURE_NSENTER,'--net='+network,CAPTURE_IP,'-j','addr','show'],
+                              capture_output=True,check=True).stdout)
 path=pathlib.Path(BASE)/('capture-'+cid+'.json')
 path.write_text(json.dumps({'oci':oci,'bundle':str(bundle),
+                          'childLinks':links,'runtimeNetns':os.readlink('/proc/self/ns/net'),
                           'root':str(pathlib.Path(args[args.index('--root')+1]).resolve()),'argv':args},
                           sort_keys=True,separators=(',',':')))
 path.chmod(0o600)
@@ -124,6 +128,40 @@ finally:
     sys.settrace(None)
 '''
 
+# Source-bound fixture proxy: execute the real ip unchanged and retain the
+# namespace/host lists seen by the broker's command process (also under nsenter).
+# In particular -d must not be used to hide a missing ordinary link listing.
+IP_DIAGNOSTIC = r'''
+import json,os,pathlib,subprocess,sys
+args=sys.argv[1:]
+result=subprocess.run([REAL_IP,*args],capture_output=True)
+if args==['-j','link','show']:
+    try:
+        ancestors=[];pid=os.getppid()
+        for _ in range(12):
+            proc=pathlib.Path('/proc')/str(pid)
+            scripts=[pathlib.Path(a).name for a in (proc/'cmdline').read_bytes().decode().split('\0') if a.endswith('.py')]
+            ancestors.append(dict(pid=pid,comm=(proc/'comm').read_text().strip(),scripts=scripts,netns=os.readlink(proc/'ns/net')))
+            if pid==1: break
+            pid=int((proc/'stat').read_text().rsplit(')',1)[1].split()[1])
+        detail=subprocess.run([REAL_IP,'-j','-d','link','show'],capture_output=True,check=True)
+        row=dict(netns=os.readlink('/proc/self/ns/net'),ancestors=ancestors,
+                 links=json.loads(result.stdout),detailedLinks=json.loads(detail.stdout))
+        (pathlib.Path(TRACE_ROOT)/('broker-links-'+str(os.getpid())+'.json')).write_text(json.dumps(row,sort_keys=True))
+    except Exception:
+        pass # Diagnostic failures never change the real command's protocol.
+sys.stdout.buffer.write(result.stdout);sys.stderr.buffer.write(result.stderr)
+raise SystemExit(result.returncode)
+'''
+
+
+def native_child_argv():
+    # Docker/libnetwork may resolve the initial namespace via /proc/1/ns/net.
+    # Give dockerd, its private containerd/shims and the broker one consistent
+    # host view, including PID 1. Never expose the runner's proc inside this netns.
+    return [shutil.which("unshare"), "--mount", "--net", "--pid", "--fork", "--mount-proc",
+            sys.executable, "-I", "-B", str(Path(__file__).resolve()), "--native-child"]
+
 
 def diagnostic_source(runtime_path, configuration, trace_root):
     return (f'RUNTIME={str(runtime_path)!r}\nCONFIGURATION={str(configuration)!r}\n'
@@ -154,9 +192,13 @@ def collect_codes():
 
 class PortableTests(unittest.TestCase):
     def test_fixture_programs_compile_and_collect_codes_are_real(self):
-        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, FRAME):
+        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, IP_DIAGNOSTIC, FRAME):
             compile(source, "<cohort-fixture>", "exec")
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
+
+    def test_native_child_isolates_pid_and_proc_with_the_host_network(self):
+        args = native_child_argv()
+        self.assertEqual(args[1:6], ["--mount", "--net", "--pid", "--fork", "--mount-proc"])
 
     def test_fresh_v3_registry_has_locks_and_never_replaces_them(self):
         result = C.compose(F.fixtures.fixture(), 3, sequence=3, supersedes="a" * 64)
@@ -253,14 +295,22 @@ class CohortFixture(F.NativeTests):
         self.runtime_wrapper = self.root / "diagnostic-runtime"
         self.trace_root = self.root / "runtime-tracebacks"
         self.trace_root.mkdir(mode=0o700)
+        self.real_ip = Path(shutil.which("ip")).resolve()
+        self.ip_probe = self.root / "diagnostic-ip"
+        self.script(self.ip_probe, f'REAL_IP={str(self.real_ip)!r}\nTRACE_ROOT={str(self.trace_root)!r}\n' + IP_DIAGNOSTIC)
         self.real_runc = Path(shutil.which("runc")).resolve()
         self.real_nft = Path(shutil.which("nft")).resolve()
         self.docker_binary = Path(shutil.which("docker")).resolve()
         self.socket = "unix://" + str(self.root / "docker.sock")
-        self.script(self.runtime_wrapper, CAPTURE.replace("RUNC", repr(str(self.real_runc))).replace("BASE", repr(str(self.root))))
+        self.script(self.runtime_wrapper,
+            f'CAPTURE_IP={str(self.real_ip)!r}\nCAPTURE_NSENTER={str(Path(shutil.which("nsenter")).resolve())!r}\n' +
+            CAPTURE.replace("RUNC", repr(str(self.real_runc))).replace("BASE", repr(str(self.root))))
         log = (self.root / "dockerd.log").open("wb")
         self.addCleanup(log.close)
-        daemon = subprocess.Popen([shutil.which("dockerd"), "--host=" + self.socket,
+        # Do not inherit /etc/docker/daemon.json or a runner containerd address.
+        daemon_config = self.root / "dockerd.json"
+        self.write(daemon_config, b"{}")
+        daemon = subprocess.Popen([shutil.which("dockerd"), "--config-file=" + str(daemon_config), "--host=" + self.socket,
             "--data-root=" + str(self.root / "docker-data"), "--exec-root=" + str(self.root / "docker-exec"),
             "--pidfile=" + str(self.root / "dockerd.pid"), "--storage-driver=vfs", "--bridge=none",
             "--iptables=false", "--ip6tables=false", "--ip-forward=false", "--ip-masq=false",
@@ -283,6 +333,7 @@ class CohortFixture(F.NativeTests):
             self.assertLess(time.monotonic(), end, "isolated dockerd readiness timeout")
             time.sleep(.1)
         print("COHORT_DOCKER_VERSION=" + self.engine("version", "--format", "{{json .}}").stdout.decode(), flush=True)
+        self.assertEqual(os.readlink("/proc/1/ns/net"), os.readlink("/proc/self/ns/net"))
         self.import_image()
         self.ids = {}
         self.networks = []
@@ -291,6 +342,11 @@ class CohortFixture(F.NativeTests):
             self.engine("network", "create", "--driver", "bridge", "--internal", "--subnet", f"172.30.{90+n}.0/24",
                         "--opt", "com.docker.network.bridge.name=oufcohort" + str(n), name)
             self.networks.append(name)
+        self.print_network_views()
+        host_links = json.loads(subprocess.run([str(self.real_ip), "-j", "link", "show"],
+                                               capture_output=True, check=True).stdout)
+        self.assertTrue({"oufcohort1", "oufcohort2"} <= {n["ifname"] for n in host_links},
+                        "Docker bridges must be in the fixture/broker host netns")
         for index, role in enumerate(O.ROLES, 2):
             cid = self.engine("create", "--runtime", "ouf-semantic-admitted-v2", "--read-only", "--restart=no",
                 "--network", self.networks[0], "--ip", f"172.30.91.{index}", "--entrypoint", "/sleep",
@@ -305,6 +361,7 @@ class CohortFixture(F.NativeTests):
             self.assertEqual(set(endpoints), set(self.networks))
             for n, name in enumerate(self.networks, 91):
                 self.assertEqual(endpoints[name]["IPAMConfig"]["IPv4Address"], f"172.30.{n}.{index}")
+                self.assertFalse(endpoints[name].get("DriverOpts"))
             # Capture independent full OCI expectations before signing. This
             # runtime intentionally denies create, so no epoch/application runs.
             self.assertNotEqual(self.engine("start", cid, check=False).returncode, 0)
@@ -378,6 +435,9 @@ class CohortFixture(F.NativeTests):
         qbinding = {"path": str(quiescer), "sha256": A.sha(quiescer.read_bytes())}
         runtime = json.loads((self.code / "runtime-configuration.json").read_bytes())
         captures = {r: json.loads((self.root / ("capture-" + cid + ".json")).read_bytes()) for r, cid in self.ids.items()}
+        for role, capture in captures.items():
+            print("COHORT_CAPTURE_LINKS=" + json.dumps(dict(role=role, runtimeNetns=capture["runtimeNetns"],
+                                                          links=capture["childLinks"]), sort_keys=True), flush=True)
         real = {"path": str(self.real_runc), "sha256": A.sha(self.real_runc.read_bytes())}
         python = {"path": str(self.python), "sha256": A.sha(self.python.read_bytes())}
         # Install an empty, quiescent lease footprint inside this test's netns.
@@ -406,9 +466,18 @@ class CohortFixture(F.NativeTests):
                        runtimeStateRoot=str(Path(captures["adapter"]["root"]).parent))
         all_nics = {}
         for index, role in enumerate(O.ROLES, 2):
-            all_nics[role] = [dict(interface="eth" + str(n-1), ipv4=f"172.30.{90+n}.{index}",
+            # Choose the adapter's signed order opposite to independently
+            # captured Docker names, before signing. Docker's allocation order
+            # can differ even between two containers in the same test.
+            captured = {n["ifname"]: n for n in captures[role]["childLinks"] if n["ifname"] != "lo"}
+            self.assertEqual(set(captured), {"eth0", "eth1"})
+            first_ip = next(a["local"] for a in captured["eth1"]["addr_info"] if a["family"] == "inet")
+            first = int(first_ip.split(".")[2]) - 90
+            self.assertIn(first, (1, 2))
+            order = (first, 3-first) if role == "adapter" else (1, 2)
+            all_nics[role] = [dict(interface=L.live_interface(position), ipv4=f"172.30.{90+n}.{index}",
                 mac=L.L2_LIVE_MAC, bridge="oufcohort" + str(n),
-                bindingRef=role + "_" + str(n), workloadRef=role) for n in (1, 2)]
+                bindingRef=role + "_" + str(n), workloadRef=role) for position, n in enumerate(order)]
         for role in O.ROLES:
             cid = self.ids[role]
             other = next(r for r in O.ROLES if r != role)
@@ -420,14 +489,16 @@ class CohortFixture(F.NativeTests):
                 dns=dict(resolvers=["172.30.92.1"], resolverPort=53, timeoutSeconds=1, maxLeaseSeconds=60, applyBudgetSeconds=1))
             cfg["creationFrameObserverBinding"]["python"] = python
             cfg["creationFrameObserverBinding"]["source"] = frame_binding
+            own = next(n for n in all_nics[role] if n["bridge"] == "oufcohort1")
+            peer = next(n for n in all_nics[other] if n["bridge"] == "oufcohort1")
             flow = dict(purpose="GATEWAY_ADAPTER", authorityRef="provider", protocol="tcp", port=9443,
-                source=all_nics[role][0]["ipv4"], destination=all_nics[other][0]["ipv4"], peerIngress={
-                    "kind": "CREATED_CANDIDATE", "bindingRef": all_nics[other][0]["bindingRef"], "declaration": {
+                source=own["ipv4"], destination=peer["ipv4"], peerIngress={
+                    "kind": "CREATED_CANDIDATE", "bindingRef": peer["bindingRef"], "declaration": {
                         "containerId": self.ids[other], "applicationHash": A.sha(A.canonical(captures[other]["oci"])),
                         "networkBindings": all_nics[other]}})
             template["candidate"].update(networkBindings=all_nics[role], transport=[flow], runtimeBinding=real)
             for name in ("ip", "nsenter", "nft", "mount", "umount", "unshare"):
-                path = Path(shutil.which(name)).resolve()
+                path = self.ip_probe if name == "ip" else Path(shutil.which(name)).resolve()
                 template["commands"][name], template["commandHashes"][name] = str(path), A.sha(path.read_bytes())
             lock = self.root / "common.lock"
             self.write(lock, b"")
@@ -505,6 +576,26 @@ class CohortFixture(F.NativeTests):
             print("COHORT_RUNTIME_TRACEBACK=" + json.dumps(
                 {"file": path.name, "traceback": path.read_text(encoding="utf-8", errors="replace")}), flush=True)
 
+    def print_network_views(self):
+        for detailed in (False, True):
+            args = [str(self.real_ip), "-j", *(["-d"] if detailed else []), "link", "show"]
+            links = json.loads(subprocess.run(args, capture_output=True, check=True).stdout)
+            print("COHORT_FIXTURE_HOST_LINKS=" + json.dumps(dict(detailed=detailed,
+                netns=os.readlink("/proc/self/ns/net"), links=links), sort_keys=True), flush=True)
+        processes = []
+        for proc in Path("/proc").iterdir():
+            if not proc.name.isdecimal():
+                continue
+            try:
+                comm = (proc / "comm").read_text().strip()
+                if comm.startswith(("dockerd", "containerd", "runc")):
+                    processes.append(dict(pid=int(proc.name), comm=comm, netns=os.readlink(proc / "ns/net")))
+            except (FileNotFoundError, ProcessLookupError):
+                pass
+        print("COHORT_PROCESS_NETNS=" + json.dumps(processes, sort_keys=True), flush=True)
+        for path in sorted(self.trace_root.glob("broker-links-*.json")):
+            print("COHORT_BROKER_HOST_LINKS=" + path.read_text(), flush=True)
+
     def scenario(self):
         def argv(mode="--plan", digest=None):
             result = [mode, "--action", "start", "--install-root", str(self.install), "--wrapper", str(self.wrapper),
@@ -520,6 +611,7 @@ class CohortFixture(F.NativeTests):
                                    capture_output=True, timeout=150)
             finally:
                 self.print_tracebacks()
+                self.print_network_views()
             self.assertEqual(p.stderr, b"")
             return p.returncode, json.loads(p.stdout)
         code, plan = operate(argv())
@@ -551,6 +643,7 @@ class CohortFixture(F.NativeTests):
         self.assertEqual(result["requestErrors"], [])
         observation = result["lastObservation"]
         self.assertEqual(observation["lease"], {"state": "QUIESCED", "leaseAuthorized": False})
+        reversed_names = set()
         for role, cid in self.ids.items():
             row = observation["candidates"][role]
             folder = self.install / "registry" / cid / "epochs/1"
@@ -569,6 +662,9 @@ class CohortFixture(F.NativeTests):
                 self.assertEqual(bound["generation"]["namespaceInode"], (proc / "ns/net").stat().st_ino)
                 self.assertEqual(bound["generation"]["startTicks"], int((proc / "stat").read_text().rsplit(")", 1)[1].split()[19]))
                 self.assertNotIn(L.L2_LIVE_MAC, expected.values())
+                self.assertEqual({n["interface"] for n in bound["bindings"]}, {"eth0", "eth1"})
+                if bound["bindings"][0]["interface"] == "eth1":
+                    reversed_names.add(member)
             for denial in row["denials"]:
                 self.assertNotIn(denial.get("reason"), {"PEER_MAC_IP_DRIFT", "APPROVED_MAC_IP_BINDING_DRIFT",
                                                       "NAMESPACE_PORT_BINDING_DRIFT"})
@@ -577,12 +673,15 @@ class CohortFixture(F.NativeTests):
             self.assertEqual(json.loads((folder / "deployment.json").read_bytes())["state"], "STARTED")
             grant = json.loads((folder / "driver.json").read_bytes())
             self.assertEqual(grant["l2Binding"]["signedTransport"]["networkBindings"][0]["mac"], L.L2_LIVE_MAC)
+            self.assertEqual([n["interface"] for n in grant["l2Binding"]["signedTransport"]["networkBindings"]],
+                             [L.live_interface(i) for i in range(2)])
             self.assertEqual({n["mac"] for n in grant["profile"]["policy"]["attachments"]},
                              {n["mac"] for n in binding["containers"][cid]["bindings"]})
             table = grant["profile"]["policy"]["tableName"]
             nft = subprocess.run([str(self.real_nft), "list", "table", "bridge", table], capture_output=True, check=True).stdout.decode()
             for nic in binding["containers"][cid]["bindings"]:
                 self.assertIn(nic["mac"], nft)
+        self.assertTrue(reversed_names, "fixture must exercise a signed NIC order different from Docker names")
 
 
 @unittest.skipUnless(NATIVE, "set OUF_R3_COHORT_NATIVE=1 under Linux root:root")
@@ -590,8 +689,7 @@ class NativeTests(unittest.TestCase):
     def test_real_docker_random_macs_through_started(self):
         for name in ("docker", "dockerd", "runc", "unshare", "mount", "ip", "nsenter", "nft", "openssl", "ldd", "sleep"):
             self.assertIsNotNone(shutil.which(name), "native prerequisite: " + name)
-        result = subprocess.run([shutil.which("unshare"), "--mount", "--net", "--fork", sys.executable,
-            "-I", "-B", str(Path(__file__).resolve()), "--native-child"], capture_output=True, timeout=360)
+        result = subprocess.run(native_child_argv(), capture_output=True, timeout=360)
         print(result.stdout.decode("utf-8", "replace"), flush=True)
         self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
 
