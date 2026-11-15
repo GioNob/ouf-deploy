@@ -1,0 +1,63 @@
+name: Semantic provider R3 composition and issuance
+on:
+  pull_request:
+    paths:
+      - tools/semantic_provider_r3/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_provider_admission_v2/**
+      - tools/semantic_runtime_v52/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_acceptance_v51/**
+      - tools/semantic_b1_acceptance/**
+      - tools/semantic_b1b2_authority/**
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - tools/semantic_lease_recovery/**
+      - tools/semantic_frame_compiler/**
+      - tools/semantic_successor_recipes/**
+      - scripts/issue-semantic-provider-operation-authorization.py
+      - scripts/semantic-provider-*-v2.py
+      - tests/test_semantic_provider_r3_compose.py
+      - tests/test_semantic_provider_operation*.py
+      - tests/test_semantic_b1_acceptance.py
+      - tests/test_semantic_provider_admission_v2*.py
+      - tests/test_semantic_provider_lease_supervisor.py
+      - tests/test_runtime_v52_epochs.py
+      - docs/OUF_SEMANTIC_PROVIDER_R3_COMPOSE_AND_ISSUE.md
+      - .github/workflows/semantic-provider-r3-issuance.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  r3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Pure composition, real validators and frame observer contract
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+      - name: Native issuance with ephemeral Ed25519 key, custody and actual CLI
+        run: >-
+          sudo -n env OUF_OPERATION_ISSUANCE_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation_issuance.py -v
+      - name: Non-regression native operation authorization and epochs
+        run: >-
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation.py -v
+      - name: Non-regression admission v2 and preparer v7
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p 'test_semantic_provider_admission_v2*.py' -v
+      - name: Non-regression native runtime v5.2
+        run: >-
+          sudo -n env OUF_RUNTIME_V52_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_runtime_v52_epochs.py -v
+      - name: Non-regression lease supervisor
+        run: >-
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Compile task-40b Python
+        run: >-
+          /usr/bin/python3 -I -m py_compile
+          tools/semantic_provider_r3/__init__.py tools/semantic_provider_r3/compose.py
+          scripts/issue-semantic-provider-operation-authorization.py
+          tests/test_semantic_provider_r3_compose.py tests/test_semantic_provider_operation_issuance.py
