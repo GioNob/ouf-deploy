@@ -124,14 +124,17 @@ def mount_targets(mounts, image, source_kind):
 OVERLAY_BOOKKEEPING_XATTRS = frozenset({'trusted.overlay.origin', 'trusted.overlay.impure', 'trusted.overlay.nlink'})
 
 
-def physical(entry):
+def physical(entry, new=False):
     """The upper layer carries overlayfs bookkeeping xattrs hidden by the merged view."""
     # Only copy-up bookkeeping is tolerated. opaque/redirect/metacopy could hide
     # or redirect image content and are always denied.
+    # A brand-new directory (absent from the image) may be marked opaque: there is
+    # nothing below it to hide. On a copied-up image directory opaque is denied.
     xattrs = entry.get('xattrs') or {}
-    if not set(xattrs) <= OVERLAY_BOOKKEEPING_XATTRS:
+    tolerated = OVERLAY_BOOKKEEPING_XATTRS | ({'trusted.overlay.opaque'} if new and entry.get('kind') == 'directory' else set())
+    if not set(xattrs) <= tolerated:
         print('POST_CREATE_UPPER_XATTR_NAMES ' + json.dumps(sorted(xattrs)), file=sys.stderr)  # names only
-    require(set(xattrs) <= OVERLAY_BOOKKEEPING_XATTRS, 'POST_CREATE_XATTR_DENIED')
+    require(set(xattrs) <= tolerated, 'POST_CREATE_XATTR_DENIED')
     return {**entry, 'xattrs': {}} if 'xattrs' in entry else entry
 
 def compare_entries(image, actual, upper, mounts, source_kind):
@@ -167,7 +170,7 @@ def compare_entries(image, actual, upper, mounts, source_kind):
                 children = sum(v['kind'] == 'directory' and str(PurePosixPath(p).parent) == name
                                for p, v in actual.items())
                 require(value['links'] == 2 + children, 'POST_CREATE_DIRECTORY_LINKS_DENIED')
-            seen = physical(upper[name])
+            seen = physical(upper[name], new=True)
             if seen != value:  # metadata only (never contents): kind, mode, owner, size, links, xattr names
                 print('POST_CREATE_UPPER_VIEW_DIFF ' + json.dumps({'path': name, 'fields': sorted(
                     k for k in set(seen) | set(value) if seen.get(k) != value.get(k))}), file=sys.stderr)
