@@ -171,7 +171,9 @@ def native_child_argv():
     # Docker/libnetwork may resolve the initial namespace via /proc/1/ns/net.
     # Give dockerd, its private containerd/shims and the broker one consistent
     # host view, including PID 1. Never expose the runner's proc inside this netns.
-    return [shutil.which("unshare"), "--mount", "--net", "--pid", "--fork", "--mount-proc",
+    # Like the VPS: host network and host PID view. Only a private mount namespace,
+    # used to hide the runner's containerd so dockerd manages its own (same views).
+    return [shutil.which("unshare"), "--mount", "--fork",
             sys.executable, "-I", "-B", str(Path(__file__).resolve()), "--native-child"]
 
 
@@ -208,9 +210,11 @@ class PortableTests(unittest.TestCase):
             compile(source, "<cohort-fixture>", "exec")
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
 
-    def test_native_child_isolates_pid_and_proc_with_the_host_network(self):
+    def test_native_child_uses_host_network_and_pid_views(self):
         args = native_child_argv()
-        self.assertEqual(args[1:6], ["--mount", "--net", "--pid", "--fork", "--mount-proc"])
+        self.assertEqual(args[1:3], ["--mount", "--fork"])
+        self.assertNotIn("--net", args)
+        self.assertNotIn("--pid", args)
 
     def test_fresh_v3_registry_has_locks_and_never_replaces_them(self):
         result = C.compose(F.fixtures.fixture(), 3, sequence=3, supersedes="a" * 64)
