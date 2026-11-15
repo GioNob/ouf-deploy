@@ -4,6 +4,7 @@ Only ephemeral test authorization signatures are produced. No Docker, network,
 nft, installed configuration or production key is used.
 """
 import ast
+import contextlib
 import copy
 import hashlib
 import importlib.util
@@ -214,30 +215,28 @@ class PortableFailedCleanup(unittest.TestCase):
             self.assertEqual(old, self.record); self.record = value; self.transitions.append(value['state'])
         def exclusive(path, raw):
             self.assertNotIn(str(path), self.files); self.files[str(path)] = raw
-        with patch.object(self.r, 'load_configuration', return_value=(self.cfg, self.original)), \
-                patch.object(self.r, 'verify_files'), patch.object(self.r, 'private_directory'), \
-                patch.object(self.r, 'ancestors'), \
-                patch.object(self.r, 'operation_modules', return_value=(None, self.epochs)), \
-                patch.object(self.r, 'read', side_effect=lambda p: self.files[str(p)]), \
-                patch.object(self.r, 'exclusive', side_effect=exclusive), \
-                patch.object(self.r, 'publish_epoch', side_effect=publish), \
-                patch.object(self.r, 'quiesce', self.quiesce), \
-                patch.object(self.r, 'authorization_head', return_value={'sha256': 'a'*64}), \
-                patch.object(self.r, 'driver_validator', return_value=(self.validator, dict(sourceRoot='/source', sourceHashes={}))), \
-                patch.object(self.r.os.path, 'lexists', side_effect=lambda p: str(p) == str(self.base) or str(p) in self.files), \
-                patch.object(self.r.os, 'O_NOFOLLOW', 0, create=True), \
-                patch.object(self.r.os, 'O_NONBLOCK', 0, create=True), \
-                patch.object(self.r.os, 'O_DIRECTORY', 0, create=True), \
-                patch.object(self.r.os, 'open', side_effect=lambda p, *a, **kw: 9999 if p == lock else
-                             9998 if p == self.registry else native_open(p, *a, **kw)), \
-                patch.object(self.r.os, 'close', side_effect=lambda fd: self.closed_locks.append(fd)
-                             if fd in (9998, 9999) else native_close(fd)), \
-                patch.object(self.r.os, 'fstat', side_effect=lambda fd: info if fd == 9999 else
-                             directory if fd == 9998 else native_fstat(fd)), \
-                patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else
-                             directory if p == self.registry else native_lstat(p, *a, **kw)), \
-                patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)), \
-                patch.object(self.r.subprocess, 'run', side_effect=self.simulate):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(patch.object(self.r, 'load_configuration', return_value=(self.cfg, self.original)))
+            stack.enter_context(patch.object(self.r, 'verify_files'))
+            stack.enter_context(patch.object(self.r, 'private_directory'))
+            stack.enter_context(patch.object(self.r, 'ancestors'))
+            stack.enter_context(patch.object(self.r, 'operation_modules', return_value=(None, self.epochs)))
+            stack.enter_context(patch.object(self.r, 'read', side_effect=lambda p: self.files[str(p)]))
+            stack.enter_context(patch.object(self.r, 'exclusive', side_effect=exclusive))
+            stack.enter_context(patch.object(self.r, 'publish_epoch', side_effect=publish))
+            stack.enter_context(patch.object(self.r, 'quiesce', self.quiesce))
+            stack.enter_context(patch.object(self.r, 'authorization_head', return_value={'sha256': 'a'*64}))
+            stack.enter_context(patch.object(self.r, 'driver_validator', return_value=(self.validator, dict(sourceRoot='/source', sourceHashes={}))))
+            stack.enter_context(patch.object(self.r.os.path, 'lexists', side_effect=lambda p: str(p) == str(self.base) or str(p) in self.files))
+            stack.enter_context(patch.object(self.r.os, 'O_NOFOLLOW', 0, create=True))
+            stack.enter_context(patch.object(self.r.os, 'O_NONBLOCK', 0, create=True))
+            stack.enter_context(patch.object(self.r.os, 'O_DIRECTORY', 0, create=True))
+            stack.enter_context(patch.object(self.r.os, 'open', side_effect=lambda p, *a, **kw: 9999 if p == lock else 9998 if p == self.registry else native_open(p, *a, **kw)))
+            stack.enter_context(patch.object(self.r.os, 'close', side_effect=lambda fd: self.closed_locks.append(fd) if fd in (9998, 9999) else native_close(fd)))
+            stack.enter_context(patch.object(self.r.os, 'fstat', side_effect=lambda fd: info if fd == 9999 else directory if fd == 9998 else native_fstat(fd)))
+            stack.enter_context(patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else directory if p == self.registry else native_lstat(p, *a, **kw)))
+            stack.enter_context(patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)))
+            stack.enter_context(patch.object(self.r.subprocess, 'run', side_effect=self.simulate))
             return self.r.operate(self.config_path, ['--root', str(self.runtime_root), mode, CID] + (['SIGTERM'] if mode == 'kill' else []))
 
     def denied(self, mode, code):
