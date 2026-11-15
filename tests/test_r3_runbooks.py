@@ -14,7 +14,8 @@ RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-r
                                          "r3-upgrade-v5.sh", "r3-issue-v6.sh",
                                          "r3-upgrade-v6.sh", "r3-issue-v7.sh",
                                          "r3-upgrade-v7.sh", "r3-issue-v8.sh",
-                                         "r3-upgrade-v8.sh", "r3-operate.sh")]
+                                         "r3-upgrade-v8.sh", "r3-issue-v9.sh",
+                                         "r3-upgrade-v9.sh", "r3-operate.sh")]
 FETCH = re.compile(r"^  fetch (\S+) ([0-9a-f]{64})$", re.M)
 PIN = re.compile(r"^C=([0-9a-f]{40})$", re.M)
 # Import closure of the issuer/installer/restore entrypoints (traced with the real interpreter,

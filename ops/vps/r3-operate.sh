@@ -4,7 +4,7 @@
 # Uso:  AZIONE=start bash r3-operate.sh plan               (sola lettura)
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
-# L'apply riusa la consegna della v8 e la root di output salvata dal plan della stessa azione.
+# L'apply riusa la consegna della v9 e la root di output salvata dal plan della stessa azione.
 set -euo pipefail
 umask 077
 
@@ -17,13 +17,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=a1a59168cba532d5a6cd54fad3e2be6b842e726c
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v8-state
+STATE=$HOME/.ouf-r3-v9-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -110,7 +110,7 @@ delivery() {
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py a1863ffcc9c2e91afd9d3e17371ac226bc1c4ab43786d823f15453542d3ebcb6
+  fetch tools/semantic_provider_r3/compose.py 00c93631aaffdba140c242d5f7579ace331667cb95cdc75ee6b61d7e443b402d
   fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
   fetch tools/semantic_provider_r3/operate.py f9c4dfb45065938858e9dc505c6f18043deca33d92fe64a74b2db38de009f45b
   fetch tools/semantic_provider_r3/upgrade.py 5d87221f5644ce2d143a88b1d2f10fe6e421e78d6e5ccff0103c2857da7ea638
@@ -181,7 +181,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = C.SOURCE_INPUTS_V6 if 8 >= 6 else C.SOURCE_INPUTS
+SOURCE_SET = C.SOURCE_INPUTS_V6 if 9 >= 6 else C.SOURCE_INPUTS
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
@@ -209,7 +209,7 @@ if [[ $ACTION == restart-one ]]; then
   esac
 fi
 OPSTATE=$HOME/.ouf-r3-operate-$ACTION
-[[ -f $STATE ]] || { echo "stato della consegna v8 assente: eseguire prima r3-issue-v8.sh" >&2; exit 2; }
+[[ -f $STATE ]] || { echo "stato della consegna v9 assente: eseguire prima r3-issue-v9.sh" >&2; exit 2; }
 read -r D _ < "$STATE"
 [[ $D == "$S"/semantic-provider-r3-source.* ]] || { echo 'stato della consegna non valido' >&2; exit 2; }
 delivery
