@@ -399,12 +399,13 @@ raise SystemExit(1)
                 self.assertEqual(rows[0]['returncode'], None if mode == 'timeout' else 1)
                 self.assertNotIn('PRIVATE', json.dumps(rows))
 
-    def admission_timeline(self, holder_seconds):
+    def admission_timeline(self, holder_seconds, waiter_timeout=None):
         """Real scheduler, virtual clock/POSIX IO; owner completion is an event.
 
         The holder's work can legally take e.g. prepare=17s, hook=2s,
-        start/readback=2s. None exceeds its own subprocess deadline, but the
-        waiter gets only 20s for the WHOLE protected section. No Docker/root.
+        start/readback=2s. None exceeds its own subprocess deadline. Exercise
+        the runtime's default wait, or an explicit short negative-case wait.
+        No Docker/root.
         """
         runtime = C.contract_module((ROOT / C.RUNTIME).read_bytes(), 'cohort_schedule')
         now, owner, descriptors = [0.0], [None], iter((1, 2))
@@ -436,7 +437,8 @@ raise SystemExit(1)
             holder.__enter__()
             entered, failure = False, None
             try:
-                with runtime.admission_schedule(registry):
+                with runtime.admission_schedule(registry, **({} if waiter_timeout is None else
+                                                            {'timeout': waiter_timeout})):
                     entered = True
             except runtime.Denied as error:
                 if str(error) != 'ADMISSION_SCHEDULE_TIMEOUT':
@@ -454,18 +456,17 @@ raise SystemExit(1)
         self.assertIsNone(outcome['failure'])
         self.assertLess(outcome['elapsed'], 20)
 
-    @unittest.expectedFailure
     def test_admission_schedule_admits_both_roles_when_legal_phases_total_21_seconds(self):
-        # Desired liveness property; v5.2 currently times out the waiting role.
-        # Keep this failure visible instead of extending deadlines in the fixture.
         outcome = self.admission_timeline(21)
         self.assertTrue(outcome['waiterEntered'], outcome)
+        self.assertIsNone(outcome['failure'])
+        self.assertGreaterEqual(outcome['elapsed'], 21)
 
     def test_timed_out_peer_cleanup_invalidates_prepared_driver_l2_reauthorization(self):
         # Model Docker cleanup after the sibling's scheduler denial. The real
         # driver's L2 reauthorization must fail closed; this proves the cascade
         # is reachable, not that the retained logs expose its private cause.
-        self.assertEqual(self.admission_timeline(21)['failure'], 'ADMISSION_SCHEDULE_TIMEOUT')
+        self.assertEqual(self.admission_timeline(21, waiter_timeout=20)['failure'], 'ADMISSION_SCHEDULE_TIMEOUT')
         from test_semantic_provider_admission_v2 import libraries
         from tools.semantic_provider_admission_v2 import driver_v7 as driver
         cid, peer = 'a' * 64, 'b' * 64

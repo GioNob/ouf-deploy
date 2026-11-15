@@ -70,6 +70,31 @@ class PortableContracts(unittest.TestCase):
         self.assertEqual(runtime.public(ValueError('/private/sentinel')), 'DOCKER_RUNTIME_OPERATION_UNPROVEN')
         self.assertEqual(runtime.public(runtime.Denied('EPOCH_STILL_OPEN')), 'EPOCH_STILL_OPEN')
 
+    def test_admission_wait_exceeds_section_and_margin_inside_r3_default(self):
+        runtime = self.runtime()
+        budget = runtime.ADMISSION_SECTION_BUDGET_SECONDS
+        wait = runtime.ADMISSION_SCHEDULE_TIMEOUT_SECONDS
+        self.assertEqual(budget, 20 + 10 + 20 + 10)
+        self.assertGreater(wait, budget + runtime.ADMISSION_SCHEDULE_MARGIN_SECONDS)
+        # Read the actual parser default without invoking native observation.
+        tree = ast.parse((ROOT/'tools/semantic_provider_r3/operate.py').read_bytes())
+        timeout = next(n for n in ast.walk(tree) if isinstance(n, ast.Call)
+            and isinstance(n.func, ast.Attribute) and n.func.attr == 'add_argument'
+            and n.args and isinstance(n.args[0], ast.Constant) and n.args[0].value == '--timeout-seconds')
+        outer = next(k.value.value for k in timeout.keywords if k.arg == 'default')
+        self.assertEqual(outer, 180)
+        self.assertLess(wait + budget + 20 + 20, outer)
+
+    def test_admission_subprocess_cap_uses_residue_and_denies_at_deadline(self):
+        runtime = self.runtime()
+        with patch.object(runtime.time, 'monotonic', return_value=100):
+            self.assertEqual(runtime.admission_remaining(160), 20)
+            self.assertEqual(runtime.admission_remaining(160, 10), 10)
+            self.assertEqual(runtime.admission_remaining(103, 10), 3)
+            for deadline in (100, 99):
+                with self.assertRaisesRegex(runtime.Denied, '^ADMISSION_SECTION_DEADLINE_EXCEEDED$'):
+                    runtime.admission_remaining(deadline)
+
     def test_quiescence_failure_is_redacted_and_bindings_are_rechecked(self):
         runtime = self.runtime()
         cfg = {'pythonPath': '/python', 'leaseQuiesce': {
@@ -161,7 +186,7 @@ class PortableFailedCleanup(unittest.TestCase):
         self.before = copy.deepcopy(self.record)
         self.state = dict(id=CID, bundle=str(self.folder/'bundle'), status='created', pid=42)
         self.files = {str(self.base/'operation.lock'): b'', str(self.config_path): self.original}
-        self.calls = []; self.transitions = []; self.absence = b'container does not exist\n'
+        self.calls = []; self.transitions = []; self.closed_locks = []; self.absence = b'container does not exist\n'
         self.probe_code = 1; self.forward_code = 0
         self.fail_phase = None
         self.epochs = types.SimpleNamespace(TERMINAL={'FAILED', 'DELETED', 'ABANDONED'},
@@ -182,6 +207,7 @@ class PortableFailedCleanup(unittest.TestCase):
     def run_op(self, mode):
         # No Linux custody claims are made by these portable tests.
         info = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o600, st_uid=0, st_gid=0, st_nlink=1, st_dev=1, st_ino=2)
+        directory = types.SimpleNamespace(st_mode=stat.S_IFDIR | 0o700, st_uid=0, st_gid=0, st_dev=1, st_ino=3)
         native_open, native_close, native_fstat, native_lstat = os.open, os.close, os.fstat, Path.lstat
         lock = self.base/'operation.lock'
         def publish(base, old, value, epochs):
@@ -190,6 +216,7 @@ class PortableFailedCleanup(unittest.TestCase):
             self.assertNotIn(str(path), self.files); self.files[str(path)] = raw
         with patch.object(self.r, 'load_configuration', return_value=(self.cfg, self.original)), \
                 patch.object(self.r, 'verify_files'), patch.object(self.r, 'private_directory'), \
+                patch.object(self.r, 'ancestors'), \
                 patch.object(self.r, 'operation_modules', return_value=(None, self.epochs)), \
                 patch.object(self.r, 'read', side_effect=lambda p: self.files[str(p)]), \
                 patch.object(self.r, 'exclusive', side_effect=exclusive), \
@@ -200,10 +227,15 @@ class PortableFailedCleanup(unittest.TestCase):
                 patch.object(self.r.os.path, 'lexists', side_effect=lambda p: str(p) == str(self.base) or str(p) in self.files), \
                 patch.object(self.r.os, 'O_NOFOLLOW', 0, create=True), \
                 patch.object(self.r.os, 'O_NONBLOCK', 0, create=True), \
-                patch.object(self.r.os, 'open', side_effect=lambda p, *a, **kw: 9999 if p == lock else native_open(p, *a, **kw)), \
-                patch.object(self.r.os, 'close', side_effect=lambda fd: None if fd == 9999 else native_close(fd)), \
-                patch.object(self.r.os, 'fstat', side_effect=lambda fd: info if fd == 9999 else native_fstat(fd)), \
-                patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else native_lstat(p, *a, **kw)), \
+                patch.object(self.r.os, 'O_DIRECTORY', 0, create=True), \
+                patch.object(self.r.os, 'open', side_effect=lambda p, *a, **kw: 9999 if p == lock else
+                             9998 if p == self.registry else native_open(p, *a, **kw)), \
+                patch.object(self.r.os, 'close', side_effect=lambda fd: self.closed_locks.append(fd)
+                             if fd in (9998, 9999) else native_close(fd)), \
+                patch.object(self.r.os, 'fstat', side_effect=lambda fd: info if fd == 9999 else
+                             directory if fd == 9998 else native_fstat(fd)), \
+                patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else
+                             directory if p == self.registry else native_lstat(p, *a, **kw)), \
                 patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)), \
                 patch.object(self.r.subprocess, 'run', side_effect=self.simulate):
             return self.r.operate(self.config_path, ['--root', str(self.runtime_root), mode, CID] + (['SIGTERM'] if mode == 'kill' else []))
@@ -367,6 +399,128 @@ class PortableFailedCleanup(unittest.TestCase):
         self.assertEqual(opened.call_args.args[1], os.O_WRONLY | os.O_CREAT | os.O_EXCL)
         self.assertEqual(opened.call_args.args[2], 0o600); chmod.assert_called_once_with(99, 0o600)
         synced.assert_called_once_with(99); directory.assert_called_once_with(self.folder)
+
+
+class PortableAdmissionSection(unittest.TestCase):
+    """Real start dispatch/scheduler; virtual time and synthetic child/custody IO."""
+    run_op = PortableFailedCleanup.run_op
+    denied = PortableFailedCleanup.denied
+
+    def setUp(self):
+        PortableFailedCleanup.setUp(self)
+        self.record.update(state='CREATED', failure=None)
+        self.oci = {'root': {'path': '/synthetic/rootfs'}}
+        self.record['bundleHash'] = self.r.digest(self.oci)
+        self.files[str(self.folder/'bundle/config.json')] = encoded(self.oci)
+        self.driver_raw = b'synthetic sealed driver'
+        self.files[str(self.folder/'driver.json')] = self.driver_raw
+        binding = dict(authorizationSha256='a'*64, containerId=CID, epoch=1, configurationHash='c'*64)
+        self.validator.validate.return_value = dict(operationBinding=binding,
+            operation={**self.cfg['operation'], 'opensslBinding': {}}, sourceRoot='/source', sourceHashes={},
+            profile=dict(bundlePath=str(self.folder/'bundle'), containerId=CID, bundleHash=self.record['bundleHash']),
+            runtimeBinding=dict(path='/runc', sha256='e'*64, root=str(self.runtime_root)))
+        self.now = 0
+        self.durations = {}
+        self.timeouts = []
+        self.clock = patch.object(self.r, 'time', types.SimpleNamespace(monotonic=lambda: self.now))
+        self.clock.start(); self.addCleanup(self.clock.stop)
+
+    def simulate(self, args, **kw):
+        self.calls.append(args)
+        phase = args[-1] if '--mode' in args else 'state'
+        self.timeouts.append((phase, kw['timeout']))
+        self.now += self.durations.get(phase, 0)
+        if phase == 'start': self.state['status'] = 'running'
+        if phase == 'state': kw['stdout'].write(encoded(self.state))
+        return subprocess.CompletedProcess(args, 0)
+
+    def test_start_keeps_revalidations_and_existing_child_caps(self):
+        self.durations = {'prepare': 17, 'hook': 2, 'start': 2}
+        self.assertEqual(self.run_op('start'), 0)
+        self.assertEqual(self.record['state'], 'STARTED')
+        self.assertEqual(self.timeouts, [('state', 20), ('cohort-ready', 20), ('state', 20),
+                                        ('prepare', 20), ('hook', 10), ('start', 20), ('state', 20)])
+        self.assertEqual(self.closed_locks, [9998, 9999])
+
+    def overrun(self, phase, absent=None):
+        # Deliberately unhealthy boundary returning after its allotted time.
+        self.durations = {phase: self.r.ADMISSION_SECTION_BUDGET_SECONDS + 1}
+        self.denied('start', 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertEqual(self.record['state'], 'FAILED')
+        self.assertEqual(self.record['failure'], 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        if absent:
+            self.assertFalse(any('--mode' in args and args[-1] == absent for args in self.calls))
+        self.assertEqual(self.closed_locks, [9998, 9999])
+
+    def test_expired_state_denies_prepare_and_releases_lock(self):
+        self.overrun('state', 'prepare')
+
+    def test_expired_prepare_denies_hook_and_releases_lock(self):
+        self.overrun('prepare', 'hook')
+
+    def test_expired_hook_denies_start_and_releases_lock(self):
+        self.overrun('hook', 'start')
+
+    def test_expired_start_denies_running_readback_and_releases_lock(self):
+        self.overrun('start')
+        self.assertEqual(sum(phase == 'state' for phase, _ in self.timeouts), 2)
+
+    def test_late_start_is_capped_to_remaining_section(self):
+        # Full legal prepare plus local validation leaves less than the old cap.
+        self.durations = {'prepare': 20}
+        grant = self.validator.validate.return_value
+        def validate(raw):
+            self.now += 25
+            return grant
+        self.validator.validate.side_effect = validate
+        self.assertEqual(self.run_op('start'), 0)
+        self.assertIn(('hook', 10), self.timeouts)
+        self.assertIn(('start', 15), self.timeouts)
+        self.assertIn(('state', 15), self.timeouts)
+
+    def test_expired_driver_validation_denies_hook_and_releases_lock(self):
+        grant = self.validator.validate.return_value
+        def validate(raw):
+            self.now += self.r.ADMISSION_SECTION_BUDGET_SECONDS
+            return grant
+        self.validator.validate.side_effect = validate
+        self.denied('start', 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertFalse(any('--mode' in args and args[-1] == 'hook' for args in self.calls))
+        self.assertEqual(self.record['state'], 'FAILED')
+        self.assertEqual(self.closed_locks, [9998, 9999])
+
+    def test_expired_generation_read_denies_started_and_releases_lock(self):
+        def ticks(pid):
+            self.now += self.r.ADMISSION_SECTION_BUDGET_SECONDS
+            return 123
+        self.epochs.start_ticks = ticks
+        self.denied('start', 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertNotIn('STARTED', self.transitions)
+        self.assertEqual(self.record['failure'], 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertEqual(self.closed_locks, [9998, 9999])
+
+    def test_subprocess_timeout_at_section_deadline_uses_section_code(self):
+        original = self.simulate
+        def simulate(args, **kw):
+            if args[-1] == 'prepare':
+                self.now = self.r.ADMISSION_SECTION_BUDGET_SECONDS
+                raise subprocess.TimeoutExpired('synthetic', kw['timeout'])
+            return original(args, **kw)
+        self.simulate = simulate
+        self.denied('start', 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertEqual(self.record['failure'], 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+        self.assertEqual(self.closed_locks, [9998, 9999])
+
+    def test_early_child_timeout_keeps_existing_redaction(self):
+        original = self.simulate
+        def simulate(args, **kw):
+            if args[-1] == 'prepare':
+                self.now = 20
+                raise subprocess.TimeoutExpired('synthetic', kw['timeout'])
+            return original(args, **kw)
+        self.simulate = simulate
+        self.denied('start', 'DOCKER_RUNTIME_OPERATION_UNPROVEN')
+        self.assertEqual(self.closed_locks, [9998, 9999])
 
 
 class NativeEpochs(operation_fixture.Fixture):

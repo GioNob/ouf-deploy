@@ -131,8 +131,36 @@ def inactive(config, cid, operation, root, argv):
     return subprocess.run([config['runtimePath'], *argv], stderr=subprocess.DEVNULL, env=ENV, timeout=10).returncode
 
 
+# Shared section budget: prepare 20s + hook 10s + start 20s + 10s shared
+# by BOTH state reads and in-process custody/driver validation/publication.
+# This deliberately does not grant every child its maximum simultaneously:
+# all children retain their old caps (20/10s), reduced to the section residue.
+# Summing all five full caps would give 90s: wait + section + margin would
+# already exceed R3's 180s, hence the shared 10s allowance instead.
+ADMISSION_SECTION_BUDGET_SECONDS = 20 + 10 + 20 + 10
+# Allow 5s for release/failure publication and another 5s for polling/scheduling.
+# Strictly greater than section + release margin, including at the boundary.
+ADMISSION_SCHEDULE_MARGIN_SECONDS = 5
+ADMISSION_SCHEDULE_TIMEOUT_SECONDS = ADMISSION_SECTION_BUDGET_SECONDS + ADMISSION_SCHEDULE_MARGIN_SECONDS + 5
+# External code checked: semantic_provider_r3/operate.py docker()/command()
+# passes timeout_seconds (default/plan 180s) to the Docker CLI subprocess.
+# Wait + own section = 130s; initial state + cohort-ready add at most 40s
+# in this start invocation, leaving 10s for local work. OCI create is separate
+# and remains concurrent; this is not a bound on the whole Docker lifecycle.
+# Neither that caller nor this wrapper configures a dockerd/containerd runtime
+# timeout. Their upstream implementation/configuration is not vendored here;
+# daemon-internal limits cannot be certified by this offline source check.
+
+
+def admission_remaining(deadline, timeout=20):
+    if deadline is None: return timeout
+    remaining = deadline-time.monotonic()
+    require(remaining > 0, 'ADMISSION_SECTION_DEADLINE_EXCEEDED')
+    return min(timeout, remaining)
+
+
 @contextmanager
-def admission_schedule(registry, timeout=20):
+def admission_schedule(registry, timeout=ADMISSION_SCHEDULE_TIMEOUT_SECONDS):
     """Serialize admission/start on the existing sealed registry directory.
 
     This is a separate scheduling inode, not the guard/lease lock borrowed by
@@ -151,11 +179,21 @@ def admission_schedule(registry, timeout=20):
             except BlockingIOError:
                 require(time.monotonic() < deadline, 'ADMISSION_SCHEDULE_TIMEOUT')
                 time.sleep(min(0.05, max(0, deadline-time.monotonic())))
+        section_deadline = time.monotonic()+ADMISSION_SECTION_BUDGET_SECONDS
         current = registry.lstat()
         require((current.st_dev,current.st_ino,current.st_mode,current.st_uid,current.st_gid)
                 == (before.st_dev,before.st_ino,before.st_mode,before.st_uid,before.st_gid),
                 'ADMISSION_REGISTRY_DRIFT')
-        yield
+        try:
+            admission_remaining(section_deadline)
+            # No expiry check after a completed section: once STARTED is
+            # published, a late check would report failure for a live start.
+            yield section_deadline
+        except subprocess.TimeoutExpired:
+            # A child capped by the section residue uses the same public
+            # failure path as expiry between substeps; preserve earlier timeouts.
+            admission_remaining(section_deadline)
+            raise
     finally: os.close(fd)
 
 
@@ -577,12 +615,14 @@ def operate(config_path, argv):
             def stable_files():
                 require(read(config_path) == original, 'ADAPTER_CONFIGURATION_DRIFT'); verify_files(config)
 
-            def broker_phase(mode, state=None):
+            def broker_phase(mode, state=None, deadline=None):
+                admission_remaining(deadline)
                 stable_files()
                 with tempfile.TemporaryFile() as output:
                     result = subprocess.run([*admission, '--mode', mode],
                         **({'stdin': subprocess.DEVNULL} if state is None else {'input': canonical(state)}),
-                        stdout=output, stderr=subprocess.DEVNULL, timeout=20, env=ENV)
+                        stdout=output, stderr=subprocess.DEVNULL, timeout=admission_remaining(deadline), env=ENV)
+                admission_remaining(deadline)
                 require(result.returncode == 0, 'TWO_PHASE_BROKER_DENIED'); stable_files()
 
             def publish(state, **extra):
@@ -590,15 +630,18 @@ def operate(config_path, argv):
                 value = {**record, 'state': state, **extra}
                 publish_epoch(base, record, value, epochs); record = value
 
-            def driver_call(mode, state=None):
+            def driver_call(mode, state=None, deadline=None):
+                admission_remaining(deadline)
                 stable_files()
                 require(sha(read(driver)) == record['driverHash'], 'SEALED_ADMISSION_DRIVER_DRIFT')
                 args = [*python, config['driverPath'], '--configuration', str(driver), '--mode', mode]
-                if state is None: capture(args)
+                if state is None: capture(args, timeout=admission_remaining(deadline))
                 else:
                     result = subprocess.run(args, input=canonical(state), stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL, timeout=10, env=ENV)
+                        stderr=subprocess.DEVNULL, timeout=admission_remaining(deadline, 10), env=ENV)
+                    admission_remaining(deadline)
                     require(result.returncode == 0, 'OCI_ADMISSION_GATE_DENIED')
+                admission_remaining(deadline)
                 stable_files()
                 require(sha(read(driver)) == record['driverHash'], 'SEALED_ADMISSION_DRIVER_DRIFT')
 
@@ -665,15 +708,22 @@ def operate(config_path, argv):
             if operation == 'start':
                 state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
                 broker_phase('cohort-ready', state)
-                with admission_schedule(Path(config['registryRoot'])):
-                    stable_files(); state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
+                with admission_schedule(Path(config['registryRoot'])) as deadline:
+                    admission_remaining(deadline); stable_files()
+                    state = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid],
+                                          timeout=admission_remaining(deadline)))
+                    admission_remaining(deadline)
                     require(state['bundle'] == str(shadow) and state['id'] == cid and state['status'] == 'created'
                             and type(state['pid']) is int and state['pid'] > 1, 'EXCLUSIVE_OCI_ADMISSION_REQUIRED')
-                    publish('PREPARING'); oci = parse(read(shadow/'config.json'))
+                    admission_remaining(deadline); publish('PREPARING')
+                    admission_remaining(deadline); oci = parse(read(shadow/'config.json'))
                     require(digest(oci) == record['bundleHash'], 'OCI_SHADOW_BUNDLE_DRIFT')
-                    broker_phase('prepare', state)
+                    broker_phase('prepare', state, deadline=deadline)
+                    admission_remaining(deadline)
                     grant_raw = read(driver); validator, broker_cfg = driver_validator(config, cid)
+                    admission_remaining(deadline)
                     grant = validator.validate(grant_raw)
+                    admission_remaining(deadline)
                     require(grant['operationBinding'] == {'authorizationSha256': record['authorizationSha256'],
                         'epoch': record['epoch'], 'containerId': cid, 'configurationHash': stable['sha256']},
                         'DRIVER_OPERATION_BINDING_DRIFT')
@@ -684,13 +734,19 @@ def operate(config_path, argv):
                             and grant['profile']['bundleHash'] == digest(oci)
                             and grant['runtimeBinding'] == {'path': config['runtimePath'], 'sha256': config['runtimeSha256'],
                                                           'root': str(root)}, 'DRIVER_OCI_BINDING_DRIFT')
-                    publish('PREPARING', driverHash=sha(grant_raw)); driver_call('hook', state)
-                    publish('ADMITTED'); publish('STARTING'); driver_call('start')
-                    started = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid]))
+                    admission_remaining(deadline); publish('PREPARING', driverHash=sha(grant_raw))
+                    driver_call('hook', state, deadline=deadline)
+                    admission_remaining(deadline); publish('ADMITTED')
+                    admission_remaining(deadline); publish('STARTING')
+                    driver_call('start', deadline=deadline)
+                    started = parse(capture([config['runtimePath'], '--root', str(root), 'state', cid],
+                                            timeout=admission_remaining(deadline)))
+                    admission_remaining(deadline)
                     require(started['id'] == cid and started['bundle'] == str(shadow) and started['status'] == 'running'
                             and started['pid'] == state['pid'], 'STARTED_PROCESS_GENERATION_UNPROVEN')
-                    ticks = epochs.start_ticks(started['pid'])
+                    admission_remaining(deadline); ticks = epochs.start_ticks(started['pid'])
                     require(type(ticks) is int and ticks > 0, 'STARTED_PROCESS_GENERATION_UNPROVEN')
+                    admission_remaining(deadline)
                     publish('STARTED', generation={'pid': started['pid'], 'startTicks': ticks}); return 0
             stable_files()
             unprepared_state = None
