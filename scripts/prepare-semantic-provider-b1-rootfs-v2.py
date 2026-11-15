@@ -95,14 +95,18 @@ def mount_targets(mounts, image, source_kind):
     for mount in mounts:
         dest = relative_destination(mount['destination'])
         require(dest not in seen, 'DUPLICATE_OCI_MOUNT_DESTINATION')
-        seen.add(dest)
         parts = PurePosixPath(dest).parts
-        for i in range(1, len(parts)):
-            parent = '/'.join(parts[:i])
+        ancestors_ = ['/'.join(parts[:i]) for i in range(1, len(parts))]
+        nested = any(a in seen for a in ancestors_)
+        seen.add(dest)
+        if nested:
+            # runc creates it inside an earlier mount (/dev tmpfs, /sys, ...), never in the rootfs.
+            continue
+        for parent in ancestors_:
             require(parent not in image or image[parent]['kind'] == 'directory', 'OCI_MOUNT_ANCESTOR_NOT_DIRECTORY')
         if dest in image:
             continue
-        if mount['type'] == 'tmpfs':
+        if mount['type'] in ('tmpfs', 'proc', 'sysfs', 'devpts', 'mqueue', 'cgroup', 'cgroup2'):
             kind = 'directory'
         else:
             require(mount['type'] == 'bind', 'ABSENT_OCI_MOUNT_TYPE_UNSUPPORTED')
