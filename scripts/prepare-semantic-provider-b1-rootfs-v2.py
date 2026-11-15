@@ -121,12 +121,17 @@ def mount_targets(mounts, image, source_kind):
 
 
 
+OVERLAY_BOOKKEEPING_XATTRS = frozenset({'trusted.overlay.origin', 'trusted.overlay.impure', 'trusted.overlay.nlink'})
+
+
 def physical(entry):
     """The upper layer carries overlayfs bookkeeping xattrs hidden by the merged view."""
+    # Only copy-up bookkeeping is tolerated. opaque/redirect/metacopy could hide
+    # or redirect image content and are always denied.
     xattrs = entry.get('xattrs') or {}
-    if not all(k.startswith('trusted.overlay.') for k in xattrs):
+    if not set(xattrs) <= OVERLAY_BOOKKEEPING_XATTRS:
         print('POST_CREATE_UPPER_XATTR_NAMES ' + json.dumps(sorted(xattrs)), file=sys.stderr)  # names only
-    require(all(k.startswith('trusted.overlay.') for k in xattrs), 'POST_CREATE_XATTR_DENIED')
+    require(set(xattrs) <= OVERLAY_BOOKKEEPING_XATTRS, 'POST_CREATE_XATTR_DENIED')
     return {**entry, 'xattrs': {}} if 'xattrs' in entry else entry
 
 def compare_entries(image, actual, upper, mounts, source_kind):
