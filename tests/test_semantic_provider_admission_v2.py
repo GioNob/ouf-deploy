@@ -317,7 +317,10 @@ class NativeTests(operation_tests.Fixture):
         self.source = self.root / "source"
         (self.source / "tools").mkdir(parents=True, mode=0o700)
         for relative in b.SOURCES:
-            self.write(self.source / relative, (SOURCE / relative).read_bytes())
+            target = self.source / relative
+            target.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
+            origin = SOURCE if relative in {"tools/" + name + ".py" for name in b.MODULES} else ROOT
+            self.write(target, (origin / relative).read_bytes())
         self.cfg["sourceRoot"] = str(self.source)
         self.cfg["sourceHashes"] = {p: a.sha((self.source / p).read_bytes()) for p in b.SOURCES}
         self.rootfs = self.root / "rootfs"
@@ -535,7 +538,7 @@ print(json.dumps(v))
             ev.write(self.epoch_root / "evidence.json", value)
         path = self.source / next(iter(b.SOURCES))
         self.write(path, path.read_bytes() + b"\n")
-        with self.assertRaisesRegex(a.OperationDenied, "BROKER_BOUND_FILE_DRIFT"):
+        with self.assertRaisesRegex(a.OperationDenied, "BROKER_SOURCE_PACKAGE_DRIFT"):
             self.broker("prepare")
 
     def test_initial_pair_and_partial_are_never_repaired(self):

@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 import re
 import stat
+import subprocess
 import sys
+import tempfile
 import time
 import types
 from typing import Protocol
@@ -26,7 +28,14 @@ MODULES = ("materialize_southbound_kernel", "materialize_southbound_lease_refres
            "semantic_provider_deployment_protocol", "semantic_provider_deployment_consumption",
            "semantic_provider_deployment_authentication", "semantic_provider_deployment_producer",
            "semantic_provider_node_observation")
-SOURCES = {"tools/" + name + ".py" for name in MODULES}
+ENTRYPOINTS = ("scripts/semantic-provider-deployment-broker-v2.py",
+              "scripts/semantic-provider-admission-preparer-v2.py",
+              "scripts/semantic-provider-preexec-hook-v2.py")
+V2_MODULES = ("__init__", "consumption_v2", "evidence_v2", "reauthorization_v2",
+              "broker_v2", "driver_v7", "preparer_v2")
+SOURCES = ({"tools/" + name + ".py" for name in MODULES} | set(ENTRYPOINTS)
+           | {"tools/semantic_provider_admission_v2/" + name + ".py" for name in V2_MODULES}
+           | {"tools/semantic_provider_operation/authorization.py", "tools/semantic_provider_operation/epochs.py"})
 MODES = {"authorize-create": "OPENING", "record-created": "CREATING", "cohort-ready": "CREATED",
          "prepare": "PREPARING", "cleanup": "DELETING"}
 
@@ -108,10 +117,7 @@ def load(path):
     raw = private(path)
     cfg = validate(raw)
     root = Path(cfg["sourceRoot"])
-    info = root.lstat()
-    require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
-            and stat.S_IMODE(info.st_mode) == 0o700, "PRIVATE_SOURCE_ROOT_REQUIRED")
-    verified = {p: read_binding({"path": str(root / p), "sha256": cfg["sourceHashes"][p]}) for p in SOURCES}
+    verified = verify_sources(cfg)
     import tools as package
     for name in MODULES:
         full = "tools." + name
@@ -122,6 +128,20 @@ def load(path):
         exec(compile(verified["tools/" + name + ".py"], module.__file__, "exec"), module.__dict__)
     require(private(path) == raw, "BROKER_CONFIGURATION_DRIFT")
     return cfg, raw
+
+
+def verify_sources(cfg):
+    """Recheck the entire closed package, including the running entrypoints."""
+    require(type(cfg["sourceHashes"]) is dict and set(cfg["sourceHashes"]) == SOURCES
+            and all(hashed(h) for h in cfg["sourceHashes"].values()), "EXACT_BROKER_SOURCE_SET_REQUIRED")
+    root = Path(cfg["sourceRoot"])
+    info = root.lstat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
+            and stat.S_IMODE(info.st_mode) == 0o700, "PRIVATE_SOURCE_ROOT_REQUIRED")
+    verified = {p: private(root / p) for p in SOURCES}
+    require(all(authorization.sha(raw) == cfg["sourceHashes"][p] for p, raw in verified.items()),
+            "BROKER_SOURCE_PACKAGE_DRIFT")
+    return verified
 
 
 def epoch_module():
@@ -150,6 +170,49 @@ class UnavailablePreparer:
         require(False, "PREPARER_V2_UNAVAILABLE")
 
 
+class SubprocessPreparer:
+    """Fixed local v2 entrypoint; request bytes are already sealed by the broker."""
+    def invoke(self, request, mode, state=None):
+        from tools.semantic_provider_deployment_authentication import VerificationBudget
+        from tools.semantic_provider_deployment_producer import program
+        path = Path(request["epochRoot"]) / "preparer.json"
+        require(private(path) == authorization.canonical(request), "SUBPROCESS_PREPARER_REQUEST_DRIFT")
+        template = request["template"]
+        budget = VerificationBudget(18)
+        python = {"path": template["pythonPath"], "sha256": template["pythonHash"]}
+        executable = program(python, budget)
+        cfg = validate(read_binding(request["configurationBinding"]))
+        verify_sources(cfg)
+        entry = Path(cfg["sourceRoot"]) / ENTRYPOINTS[1]
+        with tempfile.TemporaryFile() as output:
+            result = subprocess.run([executable, "-I", "-B", str(entry), "--configuration", path.as_posix(), "--mode", mode],
+                input=authorization.canonical(state) if state is not None else None,
+                stdin=subprocess.DEVNULL if state is None else None, stdout=output, stderr=subprocess.DEVNULL,
+                timeout=budget.remaining(18), env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
+            output.seek(0)
+            raw = output.read(131073)
+        require(result.returncode == 0 and len(raw) <= 131072, "SUBPROCESS_PREPARER_DENIED")
+        program(python, budget)
+        verify_sources(cfg)
+        require(private(path) == authorization.canonical(request), "SUBPROCESS_PREPARER_REQUEST_DRIFT")
+        # Worker prints a single canonical object followed by exactly one newline.
+        require(raw.endswith(b"\n"), "SUBPROCESS_PREPARER_RESULT_DRIFT")
+        value = authorization.decode(raw[:-1])
+        if mode == "cleanup":
+            require(value == {"state": "CLEANED"}, "SUBPROCESS_PREPARER_RESULT_DRIFT")
+        else:
+            require(set(value) == {"binding", "evidenceHash", "driverHash"} and value["binding"] == request["binding"]
+                    and value["evidenceHash"] == request["evidenceBinding"]["sha256"] and hashed(value["driverHash"]),
+                    "SUBPROCESS_PREPARER_RESULT_DRIFT")
+        return value
+
+    def prepare(self, request, state):
+        return self.invoke(request, "prepare", state)
+
+    def cleanup(self, request):
+        return self.invoke(request, "cleanup")
+
+
 class Broker:
     def __init__(self, cfg, raw, configuration_path, args, preparer=None, clock=time.time):
         from tools.semantic_provider_deployment_authentication import VerificationBudget, decode
@@ -157,7 +220,7 @@ class Broker:
         require(validate(raw) == cfg, "BROKER_CONFIGURATION_DRIFT")
         self.cfg, self.raw, self.path, self.args, self.clock = cfg, raw, configuration_path, args, clock
         self.budget = VerificationBudget(18)
-        self.preparer = preparer if preparer is not None else UnavailablePreparer()
+        self.preparer = preparer if preparer is not None else SubprocessPreparer()
         self.cid = cfg["containerId"]
         require(args.container_id == self.cid and type(args.epoch) is int and 1 <= args.epoch <= 10 ** 9
                 and args.mode in MODES, "BROKER_INVOCATION_DRIFT")
@@ -224,9 +287,7 @@ class Broker:
                 "BROKER_INPUT_CHANGED")
         for name, raw in self.bound.items():
             require(read_binding(self.cfg[name + "Binding"]) == raw, "BROKER_BOUND_DOCUMENT_DRIFT")
-        for path, expected in self.cfg["sourceHashes"].items():
-            require(authorization.sha(private(Path(self.cfg["sourceRoot"]) / path)) == expected,
-                    "BROKER_SOURCE_PACKAGE_DRIFT")
+        verify_sources(self.cfg)
         head = self.head()
         require(operating_role(head, self.binding) == self.role, "BROKER_OPERATION_ROLE_DRIFT")
         self.check_epoch(head)

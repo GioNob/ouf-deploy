@@ -7,7 +7,10 @@ on:
       - tools/semantic_authority_mandates/**
       - tools/semantic_cohort_admission/cohort-draft/**
       - scripts/semantic-provider-deployment-broker-v2.py
+      - scripts/semantic-provider-admission-preparer-v2.py
+      - scripts/semantic-provider-preexec-hook-v2.py
       - tests/test_semantic_provider_admission_v2.py
+      - tests/test_semantic_provider_admission_v2_preparer.py
       - tests/test_semantic_provider_operation.py
       - tests/test_semantic_provider_lease_supervisor.py
       - .github/workflows/semantic-provider-admission-v2.yml
@@ -26,6 +29,12 @@ jobs:
         run: >-
           sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_admission_v2.py -v
+      - name: Portable v7 grant, closed source package and subprocess contracts
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_admission_v2_preparer.py -v
+      - name: Native v2 preparer and v7 start rollback cleanup
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_admission_v2_preparer.py -v
       - name: Non-regression operation authorization and epochs
         run: >-
           sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
@@ -38,3 +47,5 @@ jobs:
         run: >-
           /usr/bin/python3 -I -m py_compile tools/semantic_provider_admission_v2/*.py
           scripts/semantic-provider-deployment-broker-v2.py tests/test_semantic_provider_admission_v2.py
+          scripts/semantic-provider-admission-preparer-v2.py scripts/semantic-provider-preexec-hook-v2.py
+          tests/test_semantic_provider_admission_v2_preparer.py

@@ -56,7 +56,7 @@ nella stessa directory con O_EXCL/0600. Restituisce esattamente
 del driver e generazione, poi chiama `seal_driver_locked`. `cleanup(request)`
 deve provare la rimozione del footprint prima di restituire. Il task-38a non
 definisce il contenuto del grant v7: questa validazione appartiene alla porta.
-La porta predefinita nega con `PREPARER_V2_UNAVAILABLE`; non esiste un selettore
+Nella sola parte A la porta predefinita nega con `PREPARER_V2_UNAVAILABLE`; non esiste un selettore
 di plugin in configurazione. Il test inietta una porta sintetica, che non
 costituisce un grant utilizzabile dal runtime.
 
@@ -66,3 +66,152 @@ reale del task-37, epoche reali e comandi runc/rete/osservatore sintetici:
 nessun container, rete o servizio viene modificato. Il workflow aggiunge le
 non regressioni di operation e lease supervisor sotto sudo. Questa prova non
 attesta installazione, readiness applicativa o E2E.
+
+## Parte B — preparer v2, driver v7, hook v2 (task-38b)
+
+La porta predefinita del broker è ora `SubprocessPreparer`; `UnavailablePreparer`
+resta disponibile per i test. La porta verifica i byte esatti di `preparer.json`,
+invoca l'entrypoint di `sourceRoot` verificato con Python verificato, `-I -B`, stato OCI su
+stdin e timeout condiviso, e accetta un solo oggetto canonico seguito da LF.
+Per prepare l'esito è esattamente `{binding,evidenceHash,driverHash}`, per
+cleanup `{state:"CLEANED"}`. Return code, dimensione, campi o binding diversi
+negano l'operazione. Nessun selettore di plugin o nuovo parametro del broker.
+
+Il grant canonico chiuso `ouf.semantic-preexec-driver.v7` mantiene i campi base
+v6 e `peerBinding` quando il trasporto contiene peer dichiarati. I nuovi campi
+di primo livello sono:
+
+- `operationBinding`: esattamente authorizationSha256, epoch, containerId,
+  configurationHash;
+- `evidenceBinding`: path e sha256 di `evidence.json` dell'epoca;
+- `consumptionJournal`: percorso del `deployment.json` della stessa epoca;
+- `operation`: authorizationRoot, anchorBinding, mandateRoot, opensslBinding,
+  mandatesModule, installationRef, entityRef, issuerRef. Sono gli input durevoli
+  di `authorization.head`; clock e budget sono forniti dal processo;
+- `creationFrameObserverBinding`: python, source e configuration vincolati.
+
+`authorityBinding`, `authorityScope`, `consumptionBinding` e
+`authenticationBinding` sono rifiutati, anche se gli altri campi sono corretti.
+La validazione lega CID/epoca ai percorsi, al profilo v2 e alla transactionId
+derivata con la stessa correlazione della parte A. I contratti nft, lease e
+profilo restano verificati anche dai rispettivi componenti v1 invariati.
+
+`preparer_v2.Worker` rilegge configurazione e template sigillati e carica i
+moduli v1 dai byte privati verificati con `broker_v2.load`. Richiede il template
+nativo completo: sei comandi nft/ip/nsenter/unshare/mount/umount con hash,
+Python verificato, budget nativo 1–5 secondi e inode intero del namespace host.
+Il template sintetico minimale dei test della parte A non è un input nativo.
+Il binding runtime del candidato viene completato con il runtimeRoot
+dell'epoca. Nessun dato o profilo preesistente viene riscritto per adattarlo.
+
+Prima delle modifiche verifica la lease QUIESCED con set vuoti,
+`sealed_authorizer_v2`, documenti della testa e consumo READY con evidenceHash
+e generazione corrispondenti. Crea `admission.json` STAGED con O_EXCL/0600;
+qualunque parziale o replay resta conservato e negato. Riusa la sequenza v1:
+namespace OCI o preparato, journal PREPARING, osservazioni NIC e peer,
+`live_profile`, runtime indipendente e template in un nuovo namespace con
+`isolated_template`. Scrive `preexec.json` e `driver.json` con O_EXCL/0600,
+porta admission a PREPARED, invoca il driver plan/apply/verify e conclude
+PROTECTED. Solo il broker, al ritorno della porta, sigilla driverHash nel
+consumo dell'epoca.
+
+L'entrypoint hook v2 carica lo stesso insieme ordinato di moduli v1 soltanto
+dopo aver verificato tutti gli hash. `Preexec.before_process` conserva lock
+comune, lease quiescente, footprint e generazione. `start` usa
+`EpochConsumption.consume_locked`, con riautorizzazione prima e dopo STARTING,
+e chiama il runtime sotto lo stesso lock. `hook` verifica senza consumare lo
+start, come la v1. `rollback` non costruisce né chiama l'autorizzatore.
+Cleanup richiede rollback indipendente già concluso, tabelle assenti,
+generazione morta e inode del namespace posseduto corrispondente; solo allora
+smonta il namespace e porta admission a CLEANED. Non termina processi e non
+concede lease.
+
+### Riutilizzo e differenze puntuali dalla v1
+
+`cohort-draft/tools/semantic_provider_preexec.py:34` e
+`cohort-draft/tools/semantic_provider_preexec_native.py:33` ricevono profilo e
+backend/comandi; nessuna dipendenza diretta dai campi v3–v5 del grant.
+`cohort-draft/scripts/semantic_provider_preexec_hook.py:121` invece lega
+`verify_peers` a `authorityScope.transportHash`: quella funzione non è
+riusabile letteralmente. La copia versionata `driver_v7.verify_peers` confronta
+la stessa policy con `transportSha256` del ruolo letto dalla testa durevole;
+raccolta, confronto osservazioni e risoluzione dei peer restano gli stessi.
+Il loader dello script v1 (`semantic_provider_preexec_hook.py:59`) ammette
+soltanto gli schemi precedenti: viene sostituito dal loader v7, senza cambiare
+il cohort-draft. Le chiamate authority/Consumption nei due script v1 sono
+sostituite dalle funzioni v2, non adattate inventando vecchi binding.
+Dal modulo storico producer si riusano soltanto gli helper puri già ammessi
+dalla parte A, direttamente `program` e transitivamente dagli osservatori;
+nessun producer, firma o chiave viene creato allo start o in preparazione.
+
+### Correzione run 2: chiusura completa dei sorgenti
+
+`sourceHashes` contiene ora esattamente 28 path relativi a `sourceRoot`:
+i tre entrypoint v2, i sette file Python del pacchetto
+`tools/semantic_provider_admission_v2/` (compreso `__init__.py`),
+`tools/semantic_provider_operation/authorization.py` ed `epochs.py`, e i
+sedici moduli v1 già elencati in `broker_v2.MODULES`. I moduli v1 conservano
+i path di consegna `tools/<nome>.py`; gli altri mantengono i path del repository.
+File aggiuntivi, mancanti o hash non validi nella mappa sono negati. Lo stesso
+insieme chiuso è richiesto dalla configurazione broker e dal grant v7; il
+preparer lo acquisisce dalla configurazione broker legata per path e hash
+in `preparer.json`.
+
+Ciascun entrypoint contiene il proprio bootstrap, fissato dall'hash usato dal
+runtime. Prima di eseguire codice applicativo controlla JSON canonico,
+custodia privata, insieme esatto, `Path(__file__).absolute() == sourceRoot/SELF`,
+hash del proprio script e poi hash di ogni altro sorgente. Il preparer verifica
+anche il binding della configurazione broker. Dopo aver raccolto tutti i byte,
+rilegge le configurazioni per escludere cambiamenti durante la lettura. Solo
+allora crea pacchetti sintetici con percorsi di ricerca vuoti e compila i byte
+verificati mediante `types.ModuleType` ed `exec(compile(...))`. Non importa
+moduli applicativi da filesystem e non modifica i percorsi di ricerca Python.
+L'alias storico `authorization` usato da `epochs.py` punta al modulo verificato.
+Il bootstrap è duplicato nei tre script perché deve precedere l'esecuzione di
+qualunque helper del pacchetto; i test controllano i manifest e il comportamento
+di tutti e tre.
+
+`SubprocessPreparer` rilegge la configurazione legata e verifica l'intera
+chiusura prima e dopo il sottoprocesso. Invoca
+`sourceRoot/scripts/semantic-provider-admission-preparer-v2.py`; il worker usa
+lo stesso root per il template isolato e per l'hook. Non deriva questi percorsi
+dalla posizione del modulo importato. Broker, worker e driver ricontrollano
+gli hash prima delle rispettive operazioni, compreso rollback; l'indipendenza
+di rollback dall'autorizzazione d'esercizio resta invariata.
+
+La fixture nativa della parte A copia anche i nuovi sorgenti vincolati e attende
+il codice pubblico `BROKER_SOURCE_PACKAGE_DRIFT` per una modifica del pacchetto.
+È il solo adeguamento ai suoi test. I test portabili della parte B alterano a
+turno ciascuno dei 28 file dopo la lettura della configurazione, per ciascun
+entrypoint, e verificano il diniego prima di qualunque esecuzione applicativa.
+Coprono inoltre mappe incomplete/eccedenti, percorso dello script errato,
+compilazione dello snapshot e ricontrollo successivo al caricamento. I test
+nativi aggiunti attraversano i tre entrypoint in processi separati e verificano
+con una sentinella su disco che un modulo alterato non venga eseguito.
+
+### Prove e limiti
+
+`tests/test_semantic_provider_admission_v2_preparer.py` copre schema chiuso,
+binding, protocollo esatto del sottoprocesso, consumo sotto lock, replay,
+rollback senza autorità, ricollezione peer e sentinelle contro le vecchie
+chiamate. Il gate `OUF_ADMISSION_V2_NATIVE=1` richiede Linux root:root e gli
+strumenti mount/umount/unshare, più un'interfaccia host con indice >1 (solo
+osservata per nome/indice). Usa il broker e il preparer reali, un processo
+disponibile in /proc, il mount del suo namespace, il template isolato e il
+runtime sintetico; include start/cleanup, revoca e cambiamento del frame.
+Le sole firme della fixture sono quelle iniziali dell'autorizzazione durevole
+del task-37; sentinelle nel pacchetto temporaneo vincolato per hash impediscono
+producer e vecchio authority anche nei sottoprocessi.
+
+Non è stato trovato un eseguibile nft finto riusabile in
+`tools/semantic_transaction_profiles/` o nei test preexec presenti. Il test
+include quindi `FAKE_NFT`: storage per inode del namespace, tabelle e set
+timeout vuoti, testo delle regole conservato nel readback per verificare
+footprint e proprietà. Non esegue nft/ip né dimostra la semantica del kernel.
+Il mount e unshare sono reali; le NIC osservate e il runtime sono simulati.
+Il workflow esegue separatamente suite portabile e gate nativo, mantenendo le
+non regressioni della parte A, operation e lease supervisor.
+
+In questa working tree i test portabili sono eseguiti su Windows; il gate
+nativo e le non regressioni native restano da eseguire in CI. Nessuna prova
+locale attesta completamento nativo, installazione o effetti sul VPS.
