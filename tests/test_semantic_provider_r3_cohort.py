@@ -375,8 +375,15 @@ class CohortFixture(F.NativeTests):
                 self.assertFalse(endpoints[name].get("DriverOpts"))
             # Capture independent full OCI expectations before signing. This
             # runtime intentionally denies create, so no epoch/application runs.
-            self.assertNotEqual(self.engine("start", cid, check=False).returncode, 0)
-            self.assertTrue((self.root / ("capture-" + cid + ".json")).exists())
+            started = self.engine("start", cid, check=False)
+            self.assertNotEqual(started.returncode, 0)
+            captured = (self.root / ("capture-" + cid + ".json")).exists()
+            if not captured:
+                log = self.root / "dockerd.log"
+                tail = log.read_text(errors="replace").splitlines()[-40:] if log.exists() else []
+                print("COHORT_CAPTURE_START_STDERR=" + started.stderr.decode("utf-8", "replace").strip(), flush=True)
+                print("COHORT_CAPTURE_DOCKERD_TAIL=" + json.dumps(tail), flush=True)
+            self.assertTrue(captured)
         self.publish_runtime()
 
     def script(self, path, body):
