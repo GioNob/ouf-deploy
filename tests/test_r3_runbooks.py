@@ -11,7 +11,8 @@ RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-r
                                          "r3-issue-v2.sh", "r3-upgrade-v2.sh", "r3-issue-v3.sh",
                                          "r3-upgrade-v3.sh", "r3-issue-v4.sh",
                                          "r3-upgrade-v4.sh", "r3-issue-v5.sh",
-                                         "r3-upgrade-v5.sh", "r3-operate.sh")]
+                                         "r3-upgrade-v5.sh", "r3-issue-v6.sh",
+                                         "r3-upgrade-v6.sh", "r3-operate.sh")]
 FETCH = re.compile(r"^  fetch (\S+) ([0-9a-f]{64})$", re.M)
 PIN = re.compile(r"^C=([0-9a-f]{40})$", re.M)
 # Import closure of the issuer/installer/restore entrypoints (traced with the real interpreter,
@@ -67,7 +68,8 @@ class R3Runbooks(unittest.TestCase):
         finally:
             sys.path.remove(str(ROOT))
         paths = {p for p, _ in self.deliveries[0]}
-        self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS))
+        # One delivery serves v1-5 (observer v1) and v6 (observer v2).
+        self.assertEqual(paths, CLOSURE | set(C.SOURCE_INPUTS) | set(C.SOURCE_INPUTS_V6))
 
     def test_hashes_are_lf_blobs_at_head(self):
         for path, digest in self.deliveries[0]:
