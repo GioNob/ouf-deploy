@@ -46,10 +46,11 @@ PINS = {
     "readback_margin_compiler": "814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d",
 }
 SELF = "scripts/semantic-provider-lease-supervisor-v2.py"
+LOCKING = "tools/semantic_provider_admission_v2/locking.py"
 OPERATION_SOURCES = {"tools/semantic_provider_operation/" + name + ".py"
                      for name in ("authorization", "epochs", "lease_supervisor")}
 RECOVERY_SOURCES = {"tools/semantic_lease_recovery/" + name + ".py": digest for name, digest in PINS.items()}
-SOURCES = {SELF} | OPERATION_SOURCES | set(RECOVERY_SOURCES)
+SOURCES = {SELF, LOCKING} | OPERATION_SOURCES | set(RECOVERY_SOURCES)
 
 
 class Denied(RuntimeError):
@@ -69,6 +70,8 @@ canonical = authorization.canonical
 
 
 def public(error):
+    if type(error).__name__ == "CommonLockTimeout" and str(error) == "COMMON_LOCK_TIMEOUT":
+        return "COMMON_LOCK_TIMEOUT"
     if isinstance(error, (Denied, authorization.OperationDenied)) and CODE.fullmatch(str(error)):
         return str(error)
     return "LOCAL_STATE_UNPROVEN"
@@ -504,8 +507,10 @@ def runtime(configuration):
     owner_object = installed["semantic_provider_lease_owner"].LeaseOwner(owner["kernel"], owner["dns"], backend)
     coordination = installed["semantic_provider_lease_coordination"]
     journal = coordination.PrivateJournal(Path(c["journalPath"]))
+    locking = compiled(verified[LOCKING], root / LOCKING, "semantic_common_lock_v2", cfg["sourceHashes"][LOCKING])
     coordinator = coordination.Coordinator(owner_object, owner["binding"],
-        lambda: coordination.hold_common_lock(Path(c["commonLockPath"])), journal.read, journal.write)
+        lambda: locking.wait_common_lock(Path(c["commonLockPath"]), time.monotonic() + 20),
+        journal.read, journal.write)
     item = cfg["mandatesModule"]
     mandates = compiled(read_file(item["path"], item["sha256"]), item["path"], "lease_mandates_v2", item["sha256"])
 

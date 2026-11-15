@@ -14,7 +14,8 @@ OPERATION_MODULES = ("authorization", "epochs", "lease_supervisor")
 RECOVERY_MODULES = ("activation_core", "bounded_recovery", "recovery_journal", "lease_recovery_budget",
                     "resilient_lease_adapter", "adaptive_supervisor", "nft_seconds_backend", "deadline_backend",
                     "continuous_supervisor", "dns", "readback_margin_compiler")
-SOURCES = ({SELF} | {"tools/semantic_provider_operation/" + name + ".py" for name in OPERATION_MODULES}
+SOURCES = ({SELF, "tools/semantic_provider_admission_v2/locking.py"}
+           | {"tools/semantic_provider_operation/" + name + ".py" for name in OPERATION_MODULES}
            | {"tools/semantic_lease_recovery/" + name + ".py" for name in RECOVERY_MODULES})
 
 

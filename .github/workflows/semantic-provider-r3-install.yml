@@ -80,6 +80,11 @@ jobs:
         run: >-
           sudo -n env OUF_RUNTIME_V52_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_runtime_v52_epochs.py -v
+      - name: Native common lock contention and admission v2 budgets
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p 'test_semantic_provider_admission_v2*.py' -v
       - name: Non-regression composition and supervisor
         run: |
           /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v

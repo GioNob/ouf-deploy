@@ -23,6 +23,7 @@ RECOVERY = ("activation_core", "bounded_recovery", "recovery_journal", "lease_re
             "resilient_lease_adapter", "adaptive_supervisor", "nft_seconds_backend", "deadline_backend",
             "continuous_supervisor", "dns", "readback_margin_compiler")
 SUPERVISOR_SOURCES = {SUPERVISOR, "scripts/semantic-provider-lease-supervisor-v2.py",
+    "tools/semantic_provider_admission_v2/locking.py",
     "tools/semantic_provider_operation/authorization.py", "tools/semantic_provider_operation/epochs.py",
     *("tools/semantic_lease_recovery/" + n + ".py" for n in RECOVERY)}
 # target relative to sourceRoot -> original repository blob path.

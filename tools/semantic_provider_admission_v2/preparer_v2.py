@@ -43,7 +43,8 @@ class Worker:
                 and Path(request["runtimeRoot"]).is_relative_to(Path(cfg["runtimeRootParent"]))
                 and request["runtimeRoot"] != cfg["runtimeRootParent"], "PREPARER_EPOCH_REQUEST_DRIFT")
         broker.epoch_module().directory(self.root)
-        from tools.semantic_provider_lease_coordination import PrivateJournal, hold_common_lock
+        from tools.semantic_provider_lease_coordination import PrivateJournal
+        from .locking import wait_common_lock
         from tools.semantic_provider_deployment_authentication import VerificationBudget
         from tools.semantic_provider_deployment_producer import program
         t = self.template
@@ -59,7 +60,7 @@ class Worker:
         program(self.python, self.budget)
         for key in t["commands"]:
             program(self.command(key), self.budget)
-        self.lock = lambda: hold_common_lock(Path(t["lockFile"]))
+        self.lock = lambda: wait_common_lock(Path(t["lockFile"]), self.budget.deadline)
         self.consumption = EpochConsumption(request["binding"], PrivateJournal(self.root / "deployment.json"), self.lock)
         self.journal = PrivateJournal(self.root / "admission.json")
         self.clock = clock

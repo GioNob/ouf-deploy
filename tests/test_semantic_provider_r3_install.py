@@ -33,26 +33,31 @@ print(json.dumps([json.loads((base/'docker-state.json').read_bytes())[args[3]]])
 '''
 
 SYSTEMCTL = r'''
-import json,pathlib,sys
+import json,pathlib,shlex,sys
 base=pathlib.Path(BASE); args=sys.argv[1:]; unit='ouf-semantic-lease-supervisor-v2.service'
 with (base/'systemctl.jsonl').open('a') as stream: stream.write(json.dumps(args)+'\n')
 state=base/'unit-active'
-if args==['daemon-reload']: pass
+unitpath=pathlib.Path('/etc/systemd/system')/unit
+loaded=base/'unit-load-state'
+if args==['daemon-reload']: loaded.write_text('loaded' if unitpath.exists() else 'not-found')
 elif args==['enable','--now',unit]:
     if (base/'enable-fail').exists(): raise SystemExit(1)
     state.write_text('active')
-    cfg=json.loads((base/'install/supervisor/configuration.json').read_bytes())
+    command=shlex.split(next(line for line in unitpath.read_text().splitlines() if line.startswith('ExecStart=')).split('=',1)[1])
+    cfg=json.loads(pathlib.Path(command[command.index('--configuration')+1]).read_bytes())
     status={'schema':'ouf.semantic-provider-lease-supervisor-status.v1','state':'WAITING',
         'reason':'EPOCH_NOT_LIVE','activationsLastHour':0,'renewals':0,
-        'authorizationSequence':len(list((base/'install/authorization').glob('*.signature.json'))),
+        'authorizationSequence':len(list(pathlib.Path(cfg['authorizationRoot']).glob('*.signature.json'))),
         'epochs':{'adapter':None,'southbound':None},'updatedAt':0}
     path=pathlib.Path(cfg['statusPath']); path.write_text(json.dumps(status,sort_keys=True,separators=(',',':')))
     path.chmod(0o600)
 elif args==['disable','--now',unit]: state.write_text('inactive')
 elif args[:2]==['show',unit]:
     active=state.read_text() if state.exists() else 'inactive'
+    load=loaded.read_text() if loaded.exists() else ('loaded' if unitpath.exists() else 'not-found')
     print('ActiveState='+active+'\nSubState='+('running' if active=='active' else 'dead')+
-        '\nFragmentPath=/etc/systemd/system/'+unit+'\nNeedDaemonReload=no\nDropInPaths=')
+        '\nFragmentPath='+(str(unitpath) if load=='loaded' else '')+
+        '\nNeedDaemonReload=no\nDropInPaths=\nLoadState='+load)
 else: raise SystemExit(2)
 '''
 
@@ -343,7 +348,48 @@ class InstallFixture(F.IntegrationFixture):
         self.assertEqual(result['status'], 'SEMANTIC_PROVIDER_R3_RESTORED_V51')
         self.assertEqual(self.wrapper.read_bytes(), self.old_wrapper)
         self.assertEqual((self.root / 'unit-active').read_text(), 'inactive')
+        self.assertFalse(I.UNIT_PATH.exists())
+        self.assertEqual(result['unitLoadState'], 'not-found')
+        archived = self.restore_output / I.UNIT
+        self.assertEqual(A.sha(archived.read_bytes()), plan['unitSha256'])
+        self.assertEqual(result['retiredUnit'], {'path': str(archived), 'sha256': plan['unitSha256']})
+        calls = [json.loads(line) for line in (self.root / 'systemctl.jsonl').read_text().splitlines()]
+        disable = calls.index(['disable', '--now', I.UNIT])
+        self.assertEqual(calls[disable+1][0], 'show')
+        self.assertEqual(calls[disable+2], ['daemon-reload'])
+        self.assertEqual(calls[disable+3][0], 'show')
         self.assertEqual(installation, {str(p.relative_to(self.install)): p.read_bytes() for p in self.install.rglob('*') if p.is_file()})
+
+    def scenario_restore_reinstall_new_root(self):
+        self.scenario_install_restore()
+        old_chain = self.chain
+        old_authority = {p.name: p.read_bytes() for p in old_chain.iterdir()}
+        archived = (self.restore_output / I.UNIT).read_bytes()
+        self.install = self.root / 'semantic-provider-r3-install-v2'
+        self.install.mkdir(mode=0o700)
+        self.chain = self.install / 'authorization'
+        self.output = self.root / 'issued-v2'
+        self.install_output = self.root / 'installed-v2'
+        settings = json.loads(self.inputs['files']['settings'])
+        settings['installRoot'] = str(self.install)
+        self.inputs['files']['settings'] = A.canonical(settings)
+        self.publish_inputs()
+        self.composed = C.compose(self.inputs)
+        plan = self.issuer_cli(self.argv())
+        self.issuer_cli(self.argv('--apply', plan['planSha256']))
+        new_authority = {p.name: p.read_bytes() for p in self.chain.iterdir()}
+        self.assertNotEqual(new_authority['1.json'], old_authority['1.json'])
+        self.assertEqual(json.loads(new_authority['1.json'])['sequence'], 1)
+        plan = self.cli(self.install_args())
+        result = self.cli(self.install_args('--apply', plan['planSha256']))
+        self.assertEqual(result['status'], 'SEMANTIC_PROVIDER_R3_INSTALLED_WAITING')
+        self.assertEqual(result['installRoot'], str(self.install))
+        self.assertEqual(self.wrapper.read_bytes(), plan['wrapperProposed']['text'].encode())
+        self.assertEqual(I.UNIT_PATH.read_bytes(), plan['unit']['text'].encode())
+        self.assertIn(str(self.install).encode(), I.UNIT_PATH.read_bytes())
+        self.assertEqual({p.name: p.read_bytes() for p in old_chain.iterdir()}, old_authority)
+        self.assertEqual({p.name: p.read_bytes() for p in self.chain.iterdir()}, new_authority)
+        self.assertEqual((self.restore_output / I.UNIT).read_bytes(), archived)
 
     def scenario_drift(self):
         plan = self.cli(self.install_args())
@@ -435,7 +481,7 @@ class InstallFixture(F.IntegrationFixture):
         self.assertEqual(self.cli(self.restore_args(), restore=True, code=1)['reason'], 'R3_EPOCH_PRESENT_RESTORE_DENIED')
 
 
-SCENARIOS = ('scenario_install_restore', 'scenario_drift', 'scenario_head_two', 'scenario_payload_mismatch_and_stop',
+SCENARIOS = ('scenario_install_restore', 'scenario_restore_reinstall_new_root', 'scenario_drift', 'scenario_head_two', 'scenario_payload_mismatch_and_stop',
              'scenario_epoch_denies_restore', 'scenario_partial_claim', 'scenario_wrapper_create_reaches_real_broker')
 
 

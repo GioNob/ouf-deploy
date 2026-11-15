@@ -15,6 +15,7 @@ from tools.semantic_provider_operation import authorization
 from . import broker_v2 as broker, evidence_v2
 from .consumption_v2 import EpochConsumption, hashed, operating_role, require
 from .reauthorization_v2 import sealed_authorizer_v2
+from .locking import wait_common_lock
 
 SCHEMA = "ouf.semantic-preexec-driver.v7"
 BASE = {"schema", "sourceRoot", "sourceHashes", "profile", "kernel", "dns", "coordinationBinding",
@@ -173,23 +174,25 @@ def verify_peers(value, transport_hash, budget, run):
     budget.check()
 
 
-def coordinator(value):
-    from tools.semantic_provider_lease_coordination import Coordinator, PrivateJournal, hold_common_lock
+def coordinator(value, deadline=None):
+    from tools.semantic_provider_lease_coordination import Coordinator, PrivateJournal
     from tools.semantic_provider_lease_nft import NftBackend
     from tools.semantic_provider_lease_owner import LeaseOwner
     lease = NftBackend([value["commands"]["nft"]], value["kernel"],
                        value["coordinationBinding"]["leaseStructureHash"], value["budgetSeconds"])
     journal = PrivateJournal(Path(value["coordinationJournal"]))
+    if deadline is None:
+        deadline = time.monotonic() + value["budgetSeconds"]
     return Coordinator(LeaseOwner(value["kernel"], value["dns"], lease), value["coordinationBinding"],
-                       lambda: hold_common_lock(Path(value["lockFile"])), journal.read, journal.write)
+                       lambda: wait_common_lock(Path(value["lockFile"]), deadline), journal.read, journal.write)
 
 
 def components(value):
     from tools.semantic_provider_lease_coordination import PrivateJournal
     from tools.semantic_provider_preexec import Preexec
     from tools.semantic_provider_preexec_native import NativeBackend
-    coord = coordinator(value)
     backend = NativeBackend(value["profile"], value["commands"], value["budgetSeconds"])
+    coord = coordinator(value, backend.deadline)
     return Preexec(value["profile"], backend, coord, PrivateJournal(Path(value["preexecJournal"]))), backend
 
 

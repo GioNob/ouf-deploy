@@ -30,10 +30,9 @@ SOURCE_CACHE = None
 def fixture():
     global SOURCE_CACHE
     if SOURCE_CACHE is None:
-        # Read actual Git blobs. In particular the pinned recovery bytes are LF,
-        # even when Windows core.autocrlf has converted the checkout to CRLF.
-        SOURCE_CACHE = {p: subprocess.run(["git", "-c", "safe.directory=" + str(ROOT), "show", "HEAD:" + p], cwd=ROOT, check=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout for p in C.SOURCE_INPUTS}
+        # Exercise the current implementation, including uncommitted modules.
+        # Delivery is LF; preserve the fixed recovery pins on CRLF checkouts.
+        SOURCE_CACHE = {p: (ROOT / p).read_bytes().replace(b"\r\n", b"\n") for p in C.SOURCE_INPUTS}
     files = {}
     def put(name, value):
         files[name] = A.canonical(value) + b"\n"

@@ -367,7 +367,8 @@ def service_readback(args, state, cfg=None, sequence=None):
     deadline = time.monotonic() + 30
     while True:
         properties = systemctl(args, "show", UNIT, "--property=ActiveState", "--property=SubState",
-                               "--property=FragmentPath", "--property=NeedDaemonReload", "--property=DropInPaths")
+                               "--property=FragmentPath", "--property=NeedDaemonReload", "--property=DropInPaths",
+                               "--property=LoadState")
         try:
             rows = dict(line.split("=", 1) for line in properties.decode("ascii").splitlines())
         except (UnicodeError, ValueError):
@@ -375,6 +376,10 @@ def service_readback(args, state, cfg=None, sequence=None):
         ok = rows.get("ActiveState") == state and rows.get("FragmentPath") == str(UNIT_PATH)
         ok = ok and rows.get("NeedDaemonReload") == "no"
         ok = ok and rows.get("DropInPaths") == ""
+        if state == "not-found":
+            ok = (rows.get("LoadState") == "not-found" and rows.get("ActiveState") == "inactive"
+                  and rows.get("SubState") == "dead" and rows.get("FragmentPath") == ""
+                  and rows.get("NeedDaemonReload") == "no" and rows.get("DropInPaths") == "")
         if state == "active":
             ok = ok and rows.get("SubState") == "running"
             path = Path(cfg["statusPath"])
@@ -483,7 +488,7 @@ def apply_install(args, proposal, result, report):
     write_once(output / "result.json", canonical(report), report)
 
 
-def restore_observe(args, *, after=False, output_exists=False):
+def restore_observe(args, *, after=False, output_exists=False, unit_retired=False):
     S = native_switch()
     root = V.absolute(args.install_root)
     V.private_directory(root)
@@ -521,7 +526,9 @@ def restore_observe(args, *, after=False, output_exists=False):
     lock = V.guard_lock(S, args.lock)
     supervisor = C.document(S.custody(root / "supervisor/configuration.json", 0o600)[0])
     unit = unit_bytes(root, cfg, supervisor)
-    require(S.custody(UNIT_PATH, 0o600)[0] == unit, "R3_UNIT_DRIFT")
+    unit_path = Path(args.output_directory) / UNIT if unit_retired else UNIT_PATH
+    require(S.custody(unit_path, 0o600)[0] == unit, "R3_UNIT_DRIFT")
+    require(not unit_retired or not os.path.lexists(UNIT_PATH), "R3_UNIT_RETIREMENT_UNPROVEN")
     V.executable_hash(args.systemctl, args.systemctl_sha256)
     return {"schema": SCHEMA, "installRoot": str(root), "outputDirectory": args.output_directory,
             "installationOutputDirectory": str(claim), "receiptSha256": sha(receipt_raw), "v51": v51,
@@ -551,7 +558,8 @@ def restore_locked(args, proposal, prior, report):
         report.update(outputCreated=True, planSha256=proposal["planSha256"])
 
     def verify_locked(fd, phase):
-        current, _ = restore_observe(args, after=phase == "AFTER_RENAME", output_exists=True)
+        current, _ = restore_observe(args, after=phase in ("AFTER_RENAME", "AFTER_RETIRE"),
+                                     output_exists=True, unit_retired=phase == "AFTER_RETIRE")
         require(digest_plan(current) == proposal and (os.fstat(fd).st_dev, os.fstat(fd).st_ino)
                 == tuple(proposal["lock"]["identity"][:2]), "R3_OBSERVATION_DRIFT")
 
@@ -562,9 +570,25 @@ def restore_locked(args, proposal, prior, report):
     service_readback(args, "inactive")
     with guard(args, proposal["lock"]) as fd:
         verify_locked(fd, "AFTER_RENAME")
+        report.update(phase="RETIRE_SUPERVISOR_UNIT")
+        unit, identity = S.custody(UNIT_PATH, 0o600)
+        require(sha(unit) == proposal["unitSha256"], "R3_UNIT_DRIFT")
+        retired = output / UNIT
+        # Copy exclusively, fsync and verify before unlinking. This also works
+        # when the evidence root and /etc/systemd/system are different mounts.
+        write_once(retired, unit, report)
+        require(S.custody(retired, 0o600)[0] == unit, "R3_RETIRED_UNIT_HASH_DRIFT")
+        require(S.custody(UNIT_PATH, 0o600) == (unit, identity), "R3_UNIT_DRIFT")
+        UNIT_PATH.unlink()
+        S.sync(UNIT_PATH.parent)
+        report.update(retiredUnit={"path": str(retired), "sha256": sha(unit)}, phase="RELOAD_SUPERVISOR_UNIT")
+    systemctl(args, "daemon-reload")
+    service_readback(args, "not-found")
+    with guard(args, proposal["lock"]) as fd:
+        verify_locked(fd, "AFTER_RETIRE")
     require(S.custody(args.wrapper, 0o755)[0] == prior, "R3_RESTORED_WRAPPER_READBACK_DRIFT")
     report.update(status="SEMANTIC_PROVIDER_R3_RESTORED_V51", phase="COMPLETE",
-                  wrapperAfter=sha(prior), wrapperBefore=args.current_wrapper_sha256)
+                  wrapperAfter=sha(prior), wrapperBefore=args.current_wrapper_sha256, unitLoadState="not-found")
     write_once(output / "result.json", canonical(report), report)
 
 

@@ -15,6 +15,7 @@ from typing import Protocol
 from tools.semantic_provider_operation import authorization
 from .consumption_v2 import EpochConsumption, hashed, operating_role, require
 from . import evidence_v2
+from .locking import wait_common_lock
 
 SCHEMA = "ouf.semantic-deployment-broker.v2"
 JOURNAL_SCHEMA = "ouf.semantic-deployment-broker-journal.v2"
@@ -31,7 +32,7 @@ MODULES = ("materialize_southbound_kernel", "materialize_southbound_lease_refres
 ENTRYPOINTS = ("scripts/semantic-provider-deployment-broker-v2.py",
               "scripts/semantic-provider-admission-preparer-v2.py",
               "scripts/semantic-provider-preexec-hook-v2.py")
-V2_MODULES = ("__init__", "consumption_v2", "evidence_v2", "reauthorization_v2",
+V2_MODULES = ("__init__", "locking", "consumption_v2", "evidence_v2", "reauthorization_v2",
               "broker_v2", "driver_v7", "preparer_v2")
 SOURCES = ({"tools/" + name + ".py" for name in MODULES} | set(ENTRYPOINTS)
            | {"tools/semantic_provider_admission_v2/" + name + ".py" for name in V2_MODULES}
@@ -216,7 +217,7 @@ class SubprocessPreparer:
 class Broker:
     def __init__(self, cfg, raw, configuration_path, args, preparer=None, clock=time.time):
         from tools.semantic_provider_deployment_authentication import VerificationBudget, decode
-        from tools.semantic_provider_lease_coordination import PrivateJournal, hold_common_lock
+        from tools.semantic_provider_lease_coordination import PrivateJournal
         require(validate(raw) == cfg, "BROKER_CONFIGURATION_DRIFT")
         self.cfg, self.raw, self.path, self.args, self.clock = cfg, raw, configuration_path, args, clock
         self.budget = VerificationBudget(18)
@@ -256,7 +257,7 @@ class Broker:
                 and all(k in self.template["commands"] and k in self.template["commandHashes"]
                         and binding({"path": self.template["commands"][k], "sha256": self.template["commandHashes"][k]})
                         for k in ("ip", "nsenter")), "EXACT_BROKER_CANDIDATE_TEMPLATE_REQUIRED")
-        self.lock = lambda: hold_common_lock(Path(self.template["lockFile"]))
+        self.lock = lambda: wait_common_lock(Path(self.template["lockFile"]), self.budget.deadline)
         self.gate = EpochConsumption(self.binding, PrivateJournal(self.root / "deployment.json"), self.lock)
         self.journal = PrivateJournal(self.root / "broker-state.json")
         self.bound = {k: read_binding(cfg[k + "Binding"]) for k in evidence_v2.DOCUMENTS}

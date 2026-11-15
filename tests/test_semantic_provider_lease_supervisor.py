@@ -545,7 +545,7 @@ class SourceClosureTests(unittest.TestCase):
 
     def test_exact_source_set_and_fixed_recovery_pins(self):
         self.assertEqual(bootstrap.SOURCES, s.SOURCES)
-        self.assertEqual(len(s.SOURCES), 15)
+        self.assertEqual(len(s.SOURCES), 16)
         changes = (
             (lambda cfg: cfg["sourceHashes"].pop(s.SELF), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED"),
             (lambda cfg: cfg["sourceHashes"].update({"extra.py": "a" * 64}), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED"),
