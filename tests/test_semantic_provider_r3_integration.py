@@ -499,7 +499,8 @@ class IntegrationFixture(issuance.NativeTests):
             for mode in modes:
                 self.assertTrue(any(argv[2].endswith(entry) and argv[-2:] == ['--mode', mode]
                                     for argv in invoked), (entry, mode, self.diagnostic()))
-        self.assertEqual(len((self.root / 'quiesce.jsonl').read_text().splitlines()), 6)
+        # 3 create rounds x 2 roles + 1 delete round x 2 roles (task-42c: delete quiesces before rollback).
+        self.assertEqual(len((self.root / 'quiesce.jsonl').read_text().splitlines()), 8)
         self.assertEqual(sum(argv[-2:] == ['--mode', 'rollback'] for argv in invoked), 2)
 
     def scenario_stop(self):

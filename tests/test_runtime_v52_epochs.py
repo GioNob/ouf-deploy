@@ -301,7 +301,9 @@ class NativeEpochs(operation_fixture.Fixture):
                 self.assertEqual(kw['timeout'], 40); self.assertNotIn('stderr', kw)
                 self.exists = self.create_ok; code = 0 if self.create_ok else 1
             elif 'delete' in argv:
-                self.assertEqual(self.row()['state'], 'DELETING')
+                row = self.row()  # absent or terminal epochs take the inactive protocol
+                if row is not None and row['state'] not in self.e.TERMINAL:
+                    self.assertEqual(row['state'], 'DELETING')
                 if self.delete_ok: self.exists, self.running = False, False
                 else: code = 1
             elif 'kill' in argv: code = 0 if self.kill_ok else 1
