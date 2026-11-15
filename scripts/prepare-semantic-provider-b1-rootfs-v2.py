@@ -14,7 +14,9 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import stat
+import shutil
 import subprocess
+import tempfile
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -534,9 +536,18 @@ def main(argv=None):
         args.output_root = OUTPUT_PARENT
         args.output_name = 'semantic-provider-b1-rootfs-' + args.date + '-post-create'
         docker = V1.Docker(args)
-        plan = observe(args, docker)
-        result = ({'status': 'SEMANTIC_PROVIDER_B1_ROOTFS_PLAN', 'plan': plan, 'planSha256': sha(canonical(plan))}
-                  if args.plan else apply_plan(args, docker, plan, progress))
+        # The v1 plan never exported; v2 compares (and so exports) in plan too.
+        # Point the Docker CLI at an absent leaf inside a fresh private 0700
+        # directory beside the views, so no operator config/plugins are read.
+        scratch = Path(tempfile.mkdtemp(prefix='docker-config.', dir=str(args.adapter_image_view.parent)))
+        try:
+            os.chmod(scratch, 0o700)
+            docker.config = scratch / 'config'
+            plan = observe(args, docker)
+            result = ({'status': 'SEMANTIC_PROVIDER_B1_ROOTFS_PLAN', 'plan': plan, 'planSha256': sha(canonical(plan))}
+                      if args.plan else apply_plan(args, docker, plan, progress))
+        finally:
+            shutil.rmtree(scratch, ignore_errors=False)
         print(canonical(result).decode(), flush=True)
         return 0
     except Exception as error:
