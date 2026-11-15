@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=eeb5cb104f8be64b94a0c5a6da2787a3760a8bc9
+C=da03cf35b2bc7e1d72ce5f5a6e98853a7f5855ad
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -109,7 +109,7 @@ delivery() {
   fetch tools/semantic_provider_r3/operate.py f020e2b22e71988c60075d2b79a886d829618b2dcd5e7b2ba94b95795584cf30
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
-  fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 3b0a506654bca8a8e16da856d0a39795d004907181d8bcb55acd0949bd6063d3
+  fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py eee5655dd729d978ced77de0b2f5a443e5881393a163cf9644a095741b3fc195
   fetch tools/semantic_transaction_profiles/assemble_provider_profiles.py 890dff15e3826175ef01467a812cdd523e8ea5d50a306ad8727f866475ab9734
   fetch tools/semantic_transaction_profiles/authenticate_provider_transaction.py b47e245abab2bb55ccd172c5e3f8da2a0b167e89c588811159f87cc4d929f258
   fetch tools/semantic_transaction_profiles/guarded_runtime_switch.py 1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd
