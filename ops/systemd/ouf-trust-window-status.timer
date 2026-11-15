@@ -1,0 +1,10 @@
+[Unit]
+Description=OUF daily trust window inventory
+
+[Timer]
+OnCalendar=daily
+Persistent=yes
+Unit=ouf-trust-window-status.service
+
+[Install]
+WantedBy=timers.target

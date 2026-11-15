@@ -1,0 +1,43 @@
+name: Operational signal producers
+on:
+  pull_request:
+    paths:
+      - tools/operational_signals/**
+      - tools/semantic_provider_r3/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_runtime_v52/**
+      - tools/semantic_provider_admission_v2/**
+      - scripts/semantic-provider-r3-health.py
+      - scripts/trust-window-status.py
+      - ops/systemd/ouf-semantic-provider-r3-health.*
+      - ops/systemd/ouf-trust-window-status.*
+      - tests/test_operational_signals*.py
+      - tests/test_semantic_provider_r3*.py
+      - docs/OUF_OPERATIONAL_SIGNALS.md
+      - .github/workflows/operational-signals.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  producers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false, fetch-depth: 0}
+      - name: Portable producers and native root custody
+        run: sudo -n /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_operational_signals*.py' -v
+      - name: R3 operate portable non-regression
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_operate.py -v
+      - name: R3 upgrade portable non-regression
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_upgrade.py -v
+      - name: Installed runtime start-stop health with writer locks held
+        run: >-
+          sudo -n env OUF_R3_HEALTH_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_operational_signals_r3_health.py -v
+      - name: Compile producers and tests
+        run: >-
+          /usr/bin/python3 -I -m py_compile tools/operational_signals/__init__.py
+          tools/operational_signals/r3_health.py tools/operational_signals/trust_windows.py
+          scripts/semantic-provider-r3-health.py scripts/trust-window-status.py
+          tests/test_operational_signals_r3_health.py tests/test_operational_signals_trust_windows.py
