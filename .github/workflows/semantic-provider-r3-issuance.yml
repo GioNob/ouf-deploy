@@ -33,6 +33,15 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Diagnose native fixture execution mounts and identity
+        run: |
+          id
+          sudo -n id
+          findmnt -no TARGET,OPTIONS /run /tmp || true
+          findmnt -T /run -no TARGET,OPTIONS
+          findmnt -T /tmp -no TARGET,OPTIONS
+          findmnt -T /var/lib -no TARGET,OPTIONS
+          # Tests also print findmnt -T for their actual temporary directory.
       - name: Pure composition, real validators and frame observer contract
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
       - name: Native issuance with ephemeral Ed25519 key, custody and actual CLI

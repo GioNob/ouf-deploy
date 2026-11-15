@@ -40,6 +40,15 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
+      - name: Diagnose native fixture execution mounts and identity
+        run: |
+          id
+          sudo -n id
+          findmnt -no TARGET,OPTIONS /run /tmp || true
+          findmnt -T /run -no TARGET,OPTIONS
+          findmnt -T /tmp -no TARGET,OPTIONS
+          findmnt -T /var/lib -no TARGET,OPTIONS
+          # Tests also print findmnt -T for their actual temporary directory.
       - name: R3 native CLI, real composition/issuance and wrapper broker create
         run: >-
           sudo -n env OUF_R3_INSTALL_NATIVE=1 /usr/bin/python3 -I -B

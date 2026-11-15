@@ -1,15 +1,17 @@
 """Portable admission tests and gated Linux root integration with real authority/epochs."""
 import ast
 import copy
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr
 import importlib.util
 import io
 import json
 import os
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 from unittest.mock import patch, Mock
@@ -27,6 +29,58 @@ if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0
 CID = "a" * 64
 GEN = {"pid": 42, "startTicks": 123, "namespaceInode": 456}
 SOURCE = ROOT / "tools/semantic_cohort_admission/cohort-draft"
+
+
+# Test-only shared helpers, also used by the R3 installation fixture. Keep the
+# real executable/hash/argv contract: do not replace execve with an interpreter
+# or relax custody checks when /run is mounted noexec on a runner.
+_native_run = subprocess.run
+EXEC_PROBE = 'import sys\nif sys.argv[1:] == ["--fixture-exec-probe"]: raise SystemExit(0)\n'
+
+
+def executable_fixture_directory(*, prefix, dir):
+    if dir != "/run":
+        raise AssertionError("unexpected inherited fixture directory")
+    return tempfile.TemporaryDirectory(prefix=prefix, dir="/var/lib")
+
+
+def execution_diagnostic(path, error=None):
+    """Only fixture executable paths/metadata; no argv, documents or key bytes."""
+    path = Path(path)
+    value = {"fixtureExecutable": str(path), "errno": getattr(error, "errno", None),
+             "timeout": isinstance(error, subprocess.TimeoutExpired), "ancestors": []}
+    for parent in (path, *path.parents):
+        try:
+            info = parent.stat()
+            value["ancestors"].append({"path": str(parent), "mode": oct(info.st_mode & 0o7777),
+                                       "uid": info.st_uid, "gid": info.st_gid})
+        except OSError as failure:
+            value["ancestors"].append({"path": str(parent), "errno": failure.errno})
+    try:
+        with path.open("rb") as stream:
+            shebang = stream.read(256).split(b"\n", 1)[0]
+        if shebang.startswith(b"#!"):
+            value["shebang"] = shebang.decode("utf-8", "replace")
+    except OSError:
+        pass
+    findmnt = shutil.which("findmnt")
+    if findmnt:
+        try:
+            result = _native_run([findmnt, "-T", str(path), "-no", "TARGET,OPTIONS"],
+                                 capture_output=True, timeout=5, env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"})
+            value["mount"] = result.stdout.decode("utf-8", "replace").strip()
+            value["findmntReturncode"] = result.returncode
+        except (OSError, subprocess.TimeoutExpired) as failure:
+            value["findmntErrno"] = getattr(failure, "errno", None)
+    print("FIXTURE_EXEC_DIAGNOSTIC=" + json.dumps(value, sort_keys=True), file=sys.stderr)
+
+
+def diagnostic_run(argv, **kwargs):
+    try:
+        return _native_run(argv, **kwargs)
+    except (OSError, subprocess.TimeoutExpired) as failure:
+        execution_diagnostic(argv[0], failure)
+        raise
 
 
 @contextmanager
@@ -244,6 +298,31 @@ def configuration():
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_fixture_exec_diagnostic_preserves_error_and_argv_without_retry(self):
+        # The production caller must still receive the very same exception;
+        # logs retain errno/path but never private exception text or argv.
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "runc"
+            path.write_bytes(b"#!/usr/bin/python3\n# PRIVATE_SENTINEL\n")
+            argv = [str(path), "PRIVATE_SENTINEL"]
+            for failure in (PermissionError(13, "PRIVATE_SENTINEL"),
+                            OSError(26, "PRIVATE_SENTINEL"),
+                            subprocess.TimeoutExpired(argv, 2, stderr=b"PRIVATE_SENTINEL")):
+                output = io.StringIO()
+                run = Mock(side_effect=failure)
+                with patch.dict(diagnostic_run.__globals__, {"_native_run": run}), \
+                        patch.object(shutil, "which", return_value=None), redirect_stderr(output):
+                    with self.assertRaises(type(failure)) as caught:
+                        diagnostic_run(argv, timeout=2, env={"LC_ALL": "C"})
+                self.assertIs(caught.exception, failure)
+                run.assert_called_once_with(argv, timeout=2, env={"LC_ALL": "C"})
+                record = json.loads(output.getvalue().split("=", 1)[1])
+                self.assertEqual(record["fixtureExecutable"], str(path))
+                self.assertEqual(record["errno"], getattr(failure, "errno", None))
+                self.assertEqual(record["timeout"], isinstance(failure, subprocess.TimeoutExpired))
+                self.assertEqual(record["shebang"], "#!/usr/bin/python3")
+                self.assertNotIn("PRIVATE_SENTINEL", output.getvalue())
+
     def test_closed_configuration_and_nested_fields(self):
         cfg = configuration()
         self.assertEqual(b.validate(a.canonical(cfg)), cfg)
@@ -302,7 +381,15 @@ class NativeTests(operation_tests.Fixture):
     __unittest_skip_why__ = "set OUF_ADMISSION_V2_NATIVE=1 under native Linux root"
 
     def setUp(self):
-        super().setUp()
+        # Change only this fixture's factory binding, not tempfile globally or
+        # the task-37 fixture. /var/lib has trusted root-owned ancestors.
+        with patch.object(operation_tests, "tempfile", types.SimpleNamespace(
+                TemporaryDirectory=executable_fixture_directory)):
+            super().setUp()
+        execution_diagnostic(self.root)
+        diagnostic = patch.object(subprocess, "run", diagnostic_run)
+        diagnostic.start()
+        self.addCleanup(diagnostic.stop)
         self.lib = libraries()
         self.lib.__enter__()
         self.addCleanup(self.lib.__exit__, None, None, None)
@@ -424,8 +511,13 @@ print(json.dumps(v))
         return {"path": str(path), "sha256": a.sha(raw)}
 
     def script(self, name, body):
-        result = self.document(name, ("#!/usr/bin/python3\n" + body).encode())
+        result = self.document(name, ("#!/usr/bin/python3\n" + EXEC_PROBE + body).encode())
         Path(result["path"]).chmod(0o700)
+        # Execute the actual inode/shebang after closing the writer. This must
+        # fail (with errno/path diagnostics), never skip or retry, on noexec.
+        probe = diagnostic_run([result["path"], "--fixture-exec-probe"],
+            capture_output=True, timeout=5, env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"})
+        self.assertEqual(probe.returncode, 0, probe.stderr.decode("utf-8", "replace"))
         return result
 
     def publish_epoch(self, state, **changes):

@@ -194,3 +194,36 @@ regressioni 29b, switch invariata, integrazione 41a, runtime v5.2, compositore,
 supervisore e py_compile. Sul Windows locale WSL risponde E_ACCESSDENIED:
 i test nativi restano **da eseguire in CI**, non sono dichiarati passati.
 Non sono stati contattati VPS, reti, servizi esterni o segreti reali.
+
+### Correzione fixture e diagnostica CI (run 3)
+
+Il run 2 si è fermato sul primo plan con errno 13 all'esecuzione del docker
+finto; l'ammissione parte A ha inoltre riportato `NODE_OBSERVATION_UNPROVEN`.
+Questi esiti non dimostrano la causa: `/run` con `noexec`, permessi degli
+antenati e interprete dello shebang devono essere verificati sul runner.
+I writer delle fixture chiudono il file prima di eseguirlo.
+
+Le sole fixture installatore R3 e ammissione parte A (anche quando ereditata
+dal preparer) ora creano la propria directory temporanea 0700 sotto
+`/var/lib`, con antenati root non scrivibili da altri. Il cambio della factory
+è limitato al binding della fixture base durante il setup: il task-37 e la
+fixture 41a restano invariati. Tutti i file della fixture, incluso il wrapper
+e la chiusura installata, condividono quel filesystem. Non si usa `/tmp`, che
+non soddisfa i controlli reali sugli antenati, e non si rimonta il filesystem.
+
+Ogni script finto eseguibile ha una sonda esplicita `--fixture-exec-probe`
+che termina prima della logica della fixture e della registrazione argv.
+Il setup esegue direttamente lo stesso inode e shebang, dopo la chiusura del
+writer, con ambiente minimo: un diniego resta un fallimento, senza retry né
+fallback a un interprete esplicito. Hash, argv applicativi e caricatori reali
+restano verificati. La sonda non compare nei contatori docker/systemctl/runc.
+
+I workflow `install` e `r3` stampano identità, mount di `/run`, `/tmp` e
+`/var/lib`; i test stampano il mount della directory temporanea effettiva.
+La diagnostica di esecuzione riporta path della fixture, errno/timeout,
+shebang e modo/UID/GID degli antenati, senza argv, documenti o chiavi.
+Nella parte A l'eccezione originale viene rilanciata prima della normale
+sanificazione di produzione; per la CLI R3, un esito inatteso aggiunge i path
+dei programmi finti e una sonda diagnostica. Nessun controllo di produzione,
+codice pubblico, timeout o budget è modificato. La conferma della causa e
+l'esito nativo della correzione richiedono il nuovo run CI.

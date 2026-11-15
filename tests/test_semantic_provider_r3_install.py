@@ -18,6 +18,7 @@ from tools.semantic_provider_r3 import install_common as I
 import test_semantic_provider_r3_integration as F
 
 A, C, ROOT, V = I.A, I.C, I.ROOT, I.V
+execution_fixture = F.admission_fixture.part_a
 NATIVE = os.environ.get("OUF_R3_INSTALL_NATIVE") == "1"
 if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0):
     raise RuntimeError("OUF_R3_INSTALL_NATIVE requires Linux root:root; refusing to skip")
@@ -123,7 +124,7 @@ class PortableTests(unittest.TestCase):
 
     def test_fake_native_programs_compile(self):
         for raw in (DOCKER, SYSTEMCTL):
-            compile(F.render(raw, BASE='/run/fixture'), '<fake-command>', 'exec')
+            compile(F.render(execution_fixture.EXEC_PROBE + raw, BASE='/var/lib/fixture'), '<fake-command>', 'exec')
 
     def test_switch_import_resolves_unchanged_legacy_contracts_from_delivery(self):
         # Only import resolution is portable; no flock or custody is simulated.
@@ -154,11 +155,15 @@ class InstallFixture(F.IntegrationFixture):
 
     def setUp(self):
         F.issuance.fixtures.SOURCE_CACHE = {p: (ROOT / p).read_bytes() for p in C.SOURCE_INPUTS}
-        F.issuance.NativeTests.setUp(self)
+        with patch.object(F.issuance.operation, 'tempfile', SimpleNamespace(
+                TemporaryDirectory=execution_fixture.executable_fixture_directory)):
+            F.issuance.NativeTests.setUp(self)
+        execution_fixture.execution_diagnostic(self.root)
         self.assertNotEqual(os.stat('/proc/self/ns/mnt').st_ino, os.stat('/proc/1/ns/mnt').st_ino)
         self.python = Path(sys.executable).resolve(strict=True)
         self.commands = {k: str(Path(shutil.which(k)).resolve(strict=True)) for k in ('mount', 'umount', 'unshare', 'ip')}
         subprocess.run([self.commands['mount'], '--make-rprivate', '/'], check=True)
+        self.registry = self.install / 'registry'  # cleanup also works if the first exec probe fails
         self.addCleanup(self.cleanup_native)
         self.trace_python = self.script('python-trace', F.PYTHON_TRACE)
         self.script('container.py', F.CONTAINER, executable=False)
@@ -166,7 +171,6 @@ class InstallFixture(F.IntegrationFixture):
         self.runtime_root = self.root / 'runtime/owned'
         self.runtime_root.mkdir(parents=True, mode=0o700)
         (self.root / 'runtime').chmod(0o700)
-        self.registry = self.install / 'registry'
         self.ids = {r: json.loads(self.inputs['files']['acceptance'])['roles'][r]['containerId'] for r in C.ROLES}
         self.bundles = self.root / 'bundles'
         self.bundles.mkdir(mode=0o700)
@@ -200,6 +204,15 @@ class InstallFixture(F.IntegrationFixture):
         self.native_command('mount', '--bind', str(units), '/etc/systemd/system')
         self.install_output = self.root / 'installed'
         self.restore_output = self.root / 'restored'
+
+    def script(self, name, source, executable=True, **values):
+        item = super().script(name, execution_fixture.EXEC_PROBE + source if executable else source,
+                              executable=executable, **values)
+        if executable:
+            probe = execution_fixture.diagnostic_run([item['path'], '--fixture-exec-probe'],
+                capture_output=True, timeout=5, env=V.ENV)
+            self.assertEqual(probe.returncode, 0, probe.stderr.decode('utf-8', 'replace'))
+        return item
 
     def owner_closure(self):
         owner = json.loads(self.inputs['files']['coordinator'])
@@ -285,6 +298,19 @@ class InstallFixture(F.IntegrationFixture):
         script = 'restore-semantic-provider-r3.py' if restore else 'install-semantic-provider-r3.py'
         result = subprocess.run([str(self.python), '-I', '-B', str(ROOT / 'scripts' / script), *args],
                                 capture_output=True, timeout=150)
+        if result.returncode != code:
+            # The CLI sanitizes exceptions in its own process. Correlate its
+            # public errno/callChain with these fixture executable paths; probe
+            # directly to retain a kernel errno if execution is still denied.
+            for item in (self.docker, self.systemctl, self.runtime, self.trace_python):
+                execution_fixture.execution_diagnostic(item['path'])
+                try:
+                    execution_fixture.diagnostic_run([item['path'], '--fixture-exec-probe'],
+                        capture_output=True, timeout=5, env=V.ENV)
+                except (OSError, subprocess.TimeoutExpired):
+                    # Already logged; keep the original CLI report in the
+                    # assertion below, including its public errno/callChain.
+                    pass
         self.assertEqual(result.returncode, code, result.stdout.decode()+result.stderr.decode())
         self.assertEqual(result.stderr, b'')
         return json.loads(result.stdout)
@@ -420,6 +446,11 @@ class NativeTests(unittest.TestCase):
             self.assertIsNotNone(shutil.which(command), 'required native fixture command: '+command)
         result = subprocess.run([shutil.which('unshare'), '--mount', '--net', '--fork', sys.executable,
             '-I', '-B', str(Path(__file__).resolve()), '--native-child', name], capture_output=True, timeout=300)
+        # Successful child output is otherwise hidden by unittest; always show
+        # the actual temporary-directory mount in CI, not just /var/lib's mount.
+        for line in result.stderr.decode('utf-8', 'replace').splitlines():
+            if line.startswith('FIXTURE_EXEC_DIAGNOSTIC='):
+                print(line, file=sys.stderr)
         self.assertEqual(result.returncode, 0, result.stdout.decode()+result.stderr.decode())
 
 
