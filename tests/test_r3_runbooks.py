@@ -27,6 +27,7 @@ CLOSURE = {
     "tools/semantic_provider_operation/__init__.py", "tools/semantic_provider_operation/authorization.py",
     "tools/semantic_provider_r3/__init__.py", "tools/semantic_provider_r3/compose.py",
     "tools/semantic_provider_r3/install_common.py",
+    "tools/semantic_provider_r3/operate.py", "scripts/operate-semantic-provider-r3.py",
     "tools/semantic_runtime_v51_install/__init__.py", "tools/semantic_runtime_v51_install/common.py",
     "tools/semantic_transaction_profiles/guarded_runtime_switch.py",
     "tools/semantic_transaction_profiles/authenticate_provider_transaction.py",
