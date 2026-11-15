@@ -306,16 +306,35 @@ def verified_root_mode(layout, image_id):
 @contextmanager
 def readonly_view(args, source, target, image=False):
     empty_mountpoint(target)
+    if image:
+        # A lower-only overlay is refused by some kernels (the VPS: exit 32).
+        # Reuse the v1 expected_overlay (empty upper, root attributes copied from
+        # the offline tree, already exercised on the VPS), then remount it ro.
+        try:
+            with V1.expected_overlay(source, target, (args.mount, args.mount_sha256),
+                                     (args.umount, args.umount_sha256)) as view:
+                run_mount(args, ['-n', '-o', 'remount,ro', str(view)])
+                rows = [r for r in mount_rows() if r['target'] == str(view)]
+                require(len(rows) == 1 and 'ro' in rows[0]['options'], 'READONLY_VIEW_UNPROVEN')
+                yield view
+        finally:
+            require(not any(r['target'].startswith(str(target) + '/') for r in mount_rows()), 'IMAGE_VIEW_STILL_MOUNTED')
+            upper = target / 'upper'
+            require(not upper.exists() or not list(upper.iterdir()), 'IMAGE_VIEW_UPPER_WRITTEN')
+            for name in ('view', 'upper', 'work'):
+                path = target / name
+                if path.exists():
+                    for child in sorted(path.rglob('*'), key=lambda c: len(c.parts), reverse=True):
+                        require(child.is_dir() and not child.is_symlink(), 'IMAGE_VIEW_SCRATCH_UNEXPECTED')
+                        child.rmdir()
+                    path.rmdir()
+            empty_mountpoint(target)
+        return
     mounted = False
     try:
-        if image:
-            require(not any(c in str(source) for c in ',:\\\n'), 'OVERLAY_PATH_UNSUPPORTED')
-            run_mount(args, ['-n', '-t', 'overlay', 'overlay', '-o', 'ro,lowerdir=' + str(source), str(target)])
-        else:
-            run_mount(args, ['-n', '--bind', str(source), str(target)])
+        run_mount(args, ['-n', '--bind', str(source), str(target)])
         mounted = True
-        if not image:
-            run_mount(args, ['-n', '-o', 'remount,bind,ro', str(target)])
+        run_mount(args, ['-n', '-o', 'remount,bind,ro', str(target)])
         rows = [r for r in mount_rows() if r['target'] == str(target)]
         require(len(rows) == 1 and 'ro' in rows[0]['options'], 'READONLY_VIEW_UNPROVEN')
         yield target
