@@ -532,6 +532,7 @@ def native_child():
         wrapper = '''
 import hashlib,importlib.util,json,os,pathlib,subprocess,sys
 from unittest.mock import patch
+os.umask(0o077)  # like runtime v5.2 main(): runc creates mountpoints 0600/0700
 args=sys.argv[1:]
 if 'create' not in args: raise SystemExit(subprocess.run([RUNC,*args]).returncode)
 created=False
