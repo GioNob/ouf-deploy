@@ -4,7 +4,7 @@
 #       bash b1-rootfs-v2.sh apply <planSha256> (scrive solo il nuovo risultato sotto /var/lib/ouf-storage-migration)
 # Nessuna operazione sui container (niente create/start/rm), nessuna firma, nessun segreto letto.
 set -euo pipefail
-C=6806fa54fca33297607709f6b552b3a54bc0bbc0
+C=0d9aa53c0c472a55dd19df76bf63d5c3b213a48d
 B=https://raw.githubusercontent.com/GioNob/ouf-deploy/$C
 S=/etc/ouf/deploy-snapshots
 M=/var/lib/ouf-storage-migration
@@ -76,4 +76,20 @@ args=(
   --southbound-image-view "$V/southbound-image" --southbound-container-view "$V/southbound-container"
 )
 X=(sudo /usr/bin/python3.13 -I -B "$D/scripts/prepare-semantic-provider-b1-rootfs-v2.py")
-if [[ $mode == plan ]]; then "${X[@]}" --plan "${args[@]}"; else "${X[@]}" --apply --plan-sha256 "$hash" "${args[@]}"; fi
+if [[ $mode == plan && ${DIAG:-0} == 1 ]]; then
+  # Read-only plan with a traceback of the first unexpected error (code paths only, never contents).
+  sudo /usr/bin/python3.13 -I -B - "$D/scripts/prepare-semantic-provider-b1-rootfs-v2.py" --plan "${args[@]}" <<'PY'
+import importlib.util, sys, traceback
+path = sys.argv[1]; sys.argv = [path, *sys.argv[2:]]
+spec = importlib.util.spec_from_file_location("reseal", path); m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+original = m.observe
+def observe(*a, **k):
+    try:
+        return original(*a, **k)
+    except Exception:
+        traceback.print_exc(file=sys.stderr); raise
+m.observe = observe
+raise SystemExit(m.main())
+PY
+elif [[ $mode == plan ]]; then "${X[@]}" --plan "${args[@]}"; else "${X[@]}" --apply --plan-sha256 "$hash" "${args[@]}"; fi
