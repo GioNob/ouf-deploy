@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034  # the three R3 runbooks share one constant block; each uses a subset
 # Runbook R3 (task-41b): installazione (v5.2, catena di ammissione v2, supervisore del lease, wrapper).
 # Prerequisito: r3-issue.sh apply eseguito (autorizzazione in $INSTALL/authorization).
 # Uso:  bash r3-install.sh plan               (sola lettura)
@@ -20,7 +21,6 @@ C=639b844aaaed82a5a405bb9ddc4289043820be1e
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
-M=/var/lib/ouf-storage-migration
 INSTALL=$S/semantic-provider-r3-install-v1
 STATE=$HOME/.ouf-r3-state
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)

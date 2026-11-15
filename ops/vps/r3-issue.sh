@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034  # the three R3 runbooks share one constant block; each uses a subset
 # Runbook R3 (task-40b): emissione dell'autorizzazione d'esercizio, l'UNICA firma umana di R3.
 # Uso:  bash r3-issue.sh plan               (sola lettura, nessuna chiave: compone e stampa il payload)
 #       bash r3-issue.sh apply <planSha256> (firma con la chiave installer e pubblica 1.json/1.signature.json)
@@ -20,7 +21,6 @@ C=639b844aaaed82a5a405bb9ddc4289043820be1e
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
-M=/var/lib/ouf-storage-migration
 INSTALL=$S/semantic-provider-r3-install-v1
 STATE=$HOME/.ouf-r3-state
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
