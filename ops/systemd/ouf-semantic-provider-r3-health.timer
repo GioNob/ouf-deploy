@@ -1,0 +1,11 @@
+[Unit]
+Description=OUF R3 health every five minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+AccuracySec=1s
+Unit=ouf-semantic-provider-r3-health.service
+
+[Install]
+WantedBy=timers.target
