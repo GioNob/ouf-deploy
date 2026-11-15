@@ -171,8 +171,7 @@ def native_child_argv():
     # Docker/libnetwork may resolve the initial namespace via /proc/1/ns/net.
     # Give dockerd, its private containerd/shims and the broker one consistent
     # host view, including PID 1. Never expose the runner's proc inside this netns.
-    # Like the VPS: host network and host PID view. Only a private mount namespace,
-    # used to hide the runner's containerd so dockerd manages its own (same views).
+    # Like the VPS: host network, host PID view and the host's containerd.
     return [shutil.which("unshare"), "--mount", "--fork",
             sys.executable, "-I", "-B", str(Path(__file__).resolve()), "--native-child"]
 
@@ -798,11 +797,8 @@ if __name__ == "__main__":
         if not NATIVE:
             raise RuntimeError("disabled native scenario")
         subprocess.run([shutil.which("mount"), "--make-rprivate", "/"], check=True)
-        # Hide the runner's system containerd in this private mount namespace:
-        # dockerd must start its own managed containerd, so shims, runtime and
-        # broker share the fixture's PID/net/proc view (like a real host does).
-        if Path("/run/containerd").is_dir():
-            subprocess.run([shutil.which("mount"), "-t", "tmpfs", "-o", "mode=0711", "tmpfs", "/run/containerd"], check=True)
+        # Like the VPS: host net/PID views and the host's system containerd, so
+        # shims, runtime and broker see the same links, processes and bundles.
         suite = unittest.TestSuite([CohortFixture("scenario")])
         result = unittest.TextTestRunner(verbosity=2).run(suite)
         raise SystemExit(0 if result.wasSuccessful() else 1)
