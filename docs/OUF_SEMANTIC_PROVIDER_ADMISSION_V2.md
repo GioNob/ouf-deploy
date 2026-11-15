@@ -256,3 +256,47 @@ non regressioni della parte A, operation e lease supervisor.
 In questa working tree i test portabili sono eseguiti su Windows; il gate
 nativo e le non regressioni native restano da eseguire in CI. Nessuna prova
 locale attesta completamento nativo, installazione o effetti sul VPS.
+
+## Dinieghi registrati
+
+La chiusura R3 v3 conserva i dinieghi del broker v2 dopo che la directory
+privata dell'epoca è stata identificata e verificata. Il documento
+`<epochRoot>/broker-denial-<mode>.json`, schema
+`ouf.semantic-deployment-broker-denial.v1`, contiene esattamente `schema`,
+`containerId`, `epoch`, `mode`, `reason`, `at` e `cohort` (oggetto oppure null).
+`reason` ammette soltanto `[A-Z0-9_]{1,80}`, altrimenti `INTERNAL_ERROR`;
+`at` è espresso in secondi Unix. La creazione è esclusiva, 0600, fino a
+64 KiB, senza sovrascrittura. Scrittura fallita o file preesistente non
+mascherano l'errore originale. Nessun file viene creato prima della verifica
+dell'epoca privata. Lo stderr del bootstrap e del broker aggiunge il codice
+a `SEMANTIC_DEPLOYMENT_BROKER=DENIED`.
+
+L'attesa della coorte è ora interna al broker, con le stesse regole e la
+stessa scadenza monotona: massimo otto peer, inventory runc limitata,
+`budget.check()` e pause `budget.remaining(0.1)`. Con meno di 3 secondi
+residui termina con `COHORT_PEER_WAIT_TIMEOUT`. Per ciascun peer conserva
+`lastReason` e `attempts`; i motivi transitori sono `PEER_NOT_LISTED`,
+`PEER_CREATING`, `PEER_STOPPED_SIBLING_CREATING`,
+`PEER_INTERFACES_NOT_READY`, `PEER_ADDRESSES_NOT_READY` e
+`PEER_INTERFACE_MISSING`. Gli altri errori di probe/collect, compreso
+`PEER_MAC_IP_DRIFT`, negano subito senza essere convertiti in attesa.
+
+Su timeout o errore di probe/collect, `cohort.peers` contiene per ogni peer:
+CID, ultimo motivo, tentativi, `runc` con status/PID oppure null,
+`networkBindings` dichiarati (interface/ipv4/mac/bridge), e quando possibile
+`snapshot` con `interfaces` e `hosts`. I comandi sono quelli vincolati dal
+template, eseguiti con `self.observer().run`: `nsenter
+--net=/proc/<pid>/ns/net ip -j addr show` e `ip -j link show` lato host.
+Si escludono lo, ambiente, argv e contenuti OCI; si riportano nomi, indici,
+MAC, IPv4 e conteggio IPv6. Ogni link_index osservato è associato a ifname e
+master host. L'osservazione è best effort nel budget originale: un errore
+aggiunge solo `snapshotError`, conservando il diniego e gli eventuali dati
+già raccolti. Snapshot oltre 4 KiB per peer vengono omessi con codice;
+interfacce, indirizzi e inventory host sono limitati anche nel parsing.
+
+I test portabili in `test_semantic_provider_broker_denials.py` esercitano
+collect reale con comandi finti, le ricevute in tutte le modalità e la
+lettura diagnostica di operate. Il nuovo gate Docker è descritto nel
+[runbook di esercizio](OUF_SEMANTIC_PROVIDER_R3_OPERATE.md#dinieghi-registrati).
+Le librerie storiche della coorte e i controlli di ammissione non cambiano;
+non viene applicata alcuna correzione o tolleranza MAC.

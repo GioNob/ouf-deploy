@@ -303,6 +303,15 @@ class SourceClosureTests(unittest.TestCase):
             self.assertEqual(entry.MODULES, b.MODULES)
             self.assertEqual(entry.V2_MODULES, b.V2_MODULES)
             tree = ast.parse((ROOT / relative).read_bytes())
+            # Task-44 changes only the broker's public denial suffix. The
+            # preparer/hook already include it; their historical bytes stay pinned.
+            if relative == b.ENTRYPOINTS[0]:
+                class OriginalSuffix(ast.NodeTransformer):
+                    def visit_Assign(self, node):
+                        if any(isinstance(t, ast.Name) and t.id == "suffix" for t in node.targets):
+                            node.value = ast.parse('"" if SELF == ENTRYPOINTS[0] else " " + code', mode="eval").body
+                        return node
+                tree = OriginalSuffix().visit(tree)
             tree.body = [node for node in tree.body if not (isinstance(node, ast.Assign)
                          and any(isinstance(target, ast.Name) and target.id in {"SELF", "TARGET"}
                                  for target in node.targets))]

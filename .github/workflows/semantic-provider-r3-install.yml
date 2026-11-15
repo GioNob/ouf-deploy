@@ -32,6 +32,8 @@ on:
       - tests/fixtures/r3-v1-document-hashes.json
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
+      - tests/test_semantic_provider_broker_denials.py
+      - tests/fixtures/r3-v2-document-hashes.json
       - tests/test_semantic_provider_lease_supervisor.py
       - tests/test_semantic_runtime_v51_install.py
       - tests/test_runtime_v52_epochs.py
@@ -75,6 +77,14 @@ jobs:
         run: >-
           sudo -n env OUF_R3_UPGRADE_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_upgrade.py -v
+      - name: Broker denial receipts and portable cohort diagnostics
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
+      - name: R3 real Docker cohort on two bridges without configured MACs
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_R3_COHORT_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_cohort.py -v
       - name: Unchanged guarded switch
         run: >-
           sudo -n env OUF_TRANSACTION_TEST_ROOT=/run /usr/bin/python3 -I -B
@@ -105,3 +115,4 @@ jobs:
           tests/test_semantic_provider_r3_operate.py
           tools/semantic_provider_r3/upgrade.py scripts/upgrade-semantic-provider-r3.py
           tests/test_semantic_provider_r3_upgrade.py
+          tests/test_semantic_provider_r3_cohort.py tests/test_semantic_provider_broker_denials.py

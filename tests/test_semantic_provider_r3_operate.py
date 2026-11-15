@@ -370,7 +370,14 @@ class PortableTests(unittest.TestCase):
                 "state":"LEASE_READY","leaseAuthorized":True,"private":"PRIVATE"})}.get(str(path), b"wrapper"), ())
             runtime = SimpleNamespace(load_configuration=lambda _:(cfg,b"cfg"), verify_files=lambda _:None,
                 operation_modules=lambda _:(object(),readers), authorization_head=lambda *_:head,
-                bound_bytes=lambda _:O.canonical(sup))
+                bound_bytes=lambda _:O.canonical(sup), read=lambda p:p.read_bytes())
+            for cid in cfg["candidates"]:
+                folder = root / "registry" / cid / "epochs/1"
+                folder.mkdir(parents=True)
+                (folder / "broker-denial-prepare.json").write_bytes(O.canonical(dict(
+                    schema=O.C.B.DENIAL_SCHEMA, containerId=cid, epoch=1, mode="prepare",
+                    reason="PEER_MAC_IP_DRIFT", at=1500, cohort=None)))
+                (folder / "broker-denial-cleanup.json").write_bytes(b"PRIVATE")
             inspect = json.dumps([{"Id":"1"*64,"State":{"Status":"running","Running":True,"Pid":42,
                 "StartedAt":"2026-11-15T00:00:00Z"},"RestartCount":0,"HostConfig":{
                 "Runtime":"ouf-semantic-admitted-v2","RestartPolicy":{"Name":"no"}},"private":"PRIVATE"}]).encode()
@@ -389,6 +396,8 @@ class PortableTests(unittest.TestCase):
                 result = O.observe(args)
                 self.assertEqual(result["authorization"], observation()["authorization"])
                 self.assertTrue(result["candidates"]["adapter"]["epoch"]["live"])
+                self.assertEqual(result["candidates"]["adapter"]["denials"][0], {"invalid":"BROKER_DENIAL_INVALID"})
+                self.assertEqual(result["candidates"]["adapter"]["denials"][1]["reason"], "PEER_MAC_IP_DRIFT")
                 self.assertNotIn("PRIVATE", O.canonical(result).decode())
                 self.assertEqual(load.call_args.args[3], O.sha((O.I.ROOT/O.C.RUNTIME).read_bytes()))
                 epoch["authorizationSha256"] = "0"*64

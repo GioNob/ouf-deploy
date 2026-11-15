@@ -363,11 +363,11 @@ class ConfigurationTests(unittest.TestCase):
         with patch.object(b, "load", side_effect=RuntimeError("/private/secret")), patch("sys.stderr", output):
             self.assertEqual(b.main(["--configuration", "/cfg", "--container-id", CID, "--epoch", "1",
                                      "--bundle", "/bundle", "--runtime-root", "/runtime", "--mode", "prepare"]), 1)
-        self.assertEqual(output.getvalue(), "SEMANTIC_DEPLOYMENT_BROKER=DENIED\n")
+        self.assertEqual(output.getvalue(), "SEMANTIC_DEPLOYMENT_BROKER=DENIED INTERNAL_ERROR\n")
         output = io.StringIO()
         with patch("sys.stderr", output):
             self.assertEqual(b.main(["--epoch", "invalid"]), 1)
-        self.assertEqual(output.getvalue(), "SEMANTIC_DEPLOYMENT_BROKER=DENIED\n")
+        self.assertEqual(output.getvalue(), "SEMANTIC_DEPLOYMENT_BROKER=DENIED EXACT_BROKER_ARGUMENTS_REQUIRED\n")
 
 
 # Reuse the actual task-37 fixture; no second authority implementation.

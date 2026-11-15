@@ -1,11 +1,13 @@
 """Synthetic section-14 structure, real repository blobs and component validators."""
 import copy
+import base64
 import importlib.util
 import json
 from pathlib import Path, PurePosixPath
 import subprocess
 import sys
 import unittest
+import zlib
 from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -130,12 +132,31 @@ class ComposeTests(unittest.TestCase):
     def test_version_one_fixed_fixture_has_identical_document_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v1-document-hashes.json").read_bytes())
         inputs = fixture()
+        # Versioned releases retain their original source INPUTS. Current
+        # sources belong to the new closure, never to a rewritten old oracle.
+        retained = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())["retainedSources"]
+        for path, packed in retained.items():
+            inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
         current = C.compose(inputs, version=1)
         # Every input and every output is pinned, including source copies,
         # registry lock bytes and authorization; no dynamically computed oracle.
         self.assertEqual(current["inputHashes"], baseline["inputHashes"])
         self.assertEqual(current["hashes"], baseline["hashes"])
         self.assertEqual(current, C.compose(inputs))
+
+    def test_version_two_fixed_inputs_and_version_three_current_closure(self):
+        baseline = json.loads((ROOT / "tests/fixtures/r3-v2-document-hashes.json").read_bytes())
+        inputs = fixture()
+        for path, packed in baseline["retainedSources"].items():
+            inputs["sources"][path] = zlib.decompress(base64.b64decode(packed))
+        old = C.compose(inputs, 2, sequence=2, supersedes="a"*64)
+        self.assertEqual(old["inputHashes"], baseline["inputHashes"])
+        self.assertEqual(old["hashes"], baseline["hashes"])
+        current = fixture()
+        new = C.compose(current, 3, sequence=3, supersedes=A.sha(old["authorization"]))
+        for path in ("tools/semantic_provider_admission_v2/broker_v2.py", B.ENTRYPOINTS[0]):
+            self.assertEqual(new["documents"]["versions/3/source/" + path], current["sources"][path])
+            self.assertNotEqual(A.sha(current["sources"][path]), baseline["inputHashes"]["repository/" + path])
 
     def test_versions_keep_state_shared_and_payload_chain_explicit(self):
         inputs = fixture()

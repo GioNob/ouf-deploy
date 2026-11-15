@@ -1,6 +1,8 @@
 """Source-pinned epoch broker. Native IO is Linux root-only; policy is portable."""
 import argparse
 import copy
+import ipaddress
+import json
 import os
 from pathlib import Path
 import re
@@ -39,6 +41,86 @@ SOURCES = ({"tools/" + name + ".py" for name in MODULES} | set(ENTRYPOINTS)
            | {"tools/semantic_provider_operation/authorization.py", "tools/semantic_provider_operation/epochs.py"})
 MODES = {"authorize-create": "OPENING", "record-created": "CREATING", "cohort-ready": "CREATED",
          "prepare": "PREPARING", "cleanup": "DELETING"}
+DENIAL_SCHEMA = "ouf.semantic-deployment-broker-denial.v1"
+
+
+def denial_code(error):
+    try:
+        code = str(error)
+    except Exception:
+        return "INTERNAL_ERROR"
+    return code if re.fullmatch(r"[A-Z0-9_]{1,80}", code) else "INTERNAL_ERROR"
+
+
+def validate_denial(raw, cid, epoch, mode):
+    """Closed public receipt, including every nested diagnostic field."""
+    def check(ok):
+        require(ok, "BROKER_DENIAL_INVALID")
+
+    def code(value):
+        return type(value) is str and re.fullmatch(r"[A-Z0-9_]{1,80}", value) is not None
+
+    def name(value):
+        return type(value) is str and re.fullmatch(r"[A-Za-z0-9_.:@-]{1,64}", value) is not None
+
+    def mac(value):
+        return type(value) is str and re.fullmatch(r"[0-9a-f]{2}(:[0-9a-f]{2}){5}", value) is not None
+
+    def ipv4(value):
+        check(type(value) is str)
+        check(str(ipaddress.IPv4Address(value)) == value)
+
+    check(type(raw) is bytes and 0 < len(raw) <= 65536)
+    value = authorization.decode(raw)
+    check(set(value) == {"schema", "containerId", "epoch", "mode", "reason", "at", "cohort"}
+          and value["schema"] == DENIAL_SCHEMA and hashed(value["containerId"]) and value["containerId"] == cid
+          and type(value["epoch"]) is int and 1 <= value["epoch"] <= 10 ** 9 and value["epoch"] == epoch
+          and type(value["mode"]) is str and value["mode"] in MODES and value["mode"] == mode
+          and code(value["reason"]) and type(value["at"]) is int and 0 < value["at"] < 2 ** 53)
+    cohort = value["cohort"]
+    if cohort is None:
+        return value
+    check(type(cohort) is dict and set(cohort) == {"peers"} and type(cohort["peers"]) is list
+          and 1 <= len(cohort["peers"]) <= 8)
+    seen = set()
+    for peer in cohort["peers"]:
+        fields = {"containerId", "lastReason", "attempts", "runc", "networkBindings"}
+        check(type(peer) is dict and fields <= set(peer) <= fields | {"snapshot", "snapshotError"}
+              and hashed(peer["containerId"]) and peer["containerId"] not in seen and peer["containerId"] != cid
+              and (peer["lastReason"] is None or code(peer["lastReason"]))
+              and type(peer["attempts"]) is int and 0 <= peer["attempts"] < 2 ** 53)
+        seen.add(peer["containerId"])
+        if peer["runc"] is not None:
+            check(type(peer["runc"]) is dict and set(peer["runc"]) == {"status", "pid"})
+            Broker.public_runtime_row(peer["runc"])
+        check(type(peer["networkBindings"]) is list and 1 <= len(peer["networkBindings"]) <= 8)
+        for nic in peer["networkBindings"]:
+            check(type(nic) is dict and set(nic) == {"interface", "ipv4", "mac", "bridge"}
+                  and name(nic["interface"]) and name(nic["bridge"]) and mac(nic["mac"]))
+            ipv4(nic["ipv4"])
+        if "snapshotError" in peer:
+            check(code(peer["snapshotError"]))
+        if "snapshot" not in peer:
+            continue
+        snapshot = peer["snapshot"]
+        check(type(snapshot) is dict and set(snapshot) == {"interfaces", "hosts"}
+              and all(type(snapshot[k]) is list and len(snapshot[k]) <= 32 for k in snapshot)
+              and len(authorization.canonical(snapshot)) <= 4096)
+        for nic in snapshot["interfaces"]:
+            check(type(nic) is dict and set(nic) == {"ifname", "ifindex", "link_index", "address", "ipv4", "ipv6Count"}
+                  and name(nic["ifname"]) and nic["ifname"] != "lo"
+                  and type(nic["ifindex"]) is int and nic["ifindex"] > 0
+                  and (nic["link_index"] is None or type(nic["link_index"]) is int and nic["link_index"] > 0)
+                  and (nic["address"] is None or mac(nic["address"]))
+                  and type(nic["ipv4"]) is list and len(nic["ipv4"]) <= 32
+                  and type(nic["ipv6Count"]) is int and 0 <= nic["ipv6Count"] <= 32)
+            for address in nic["ipv4"]:
+                ipv4(address)
+        for host in snapshot["hosts"]:
+            check(type(host) is dict and set(host) == {"link_index", "ifname", "master"}
+                  and type(host["link_index"]) is int and host["link_index"] > 0
+                  and all(host[k] is None or name(host[k]) for k in ("ifname", "master")))
+    return value
 
 
 def absolute(value):
@@ -232,6 +314,8 @@ class Broker:
                 and runtime != parent and runtime.is_relative_to(parent), "BROKER_RUNTIME_ROOT_DRIFT")
         self.epochs = epoch_module()
         self.epochs.directory(self.root)
+        self.denial_root = self.root
+        self.cohort = None
         op = cfg["operation"]
         self.mandates_raw = read_binding(op["mandatesModule"])
         self.mandates = types.ModuleType("admission_v2_verified_mandates")
@@ -356,7 +440,7 @@ class Broker:
         return app, NativeBackend.generation(None, actual["pid"])
 
     def cohort_ready(self, state):
-        from tools.semantic_provider_peer_bindings import declarations, collect, await_peers, PeerNotReady
+        from tools.semantic_provider_peer_bindings import declarations, collect, PeerNotReady
         from tools.semantic_provider_preexec_native import NativeBackend
         app, live = self.runtime(state)
         old, created = self.record(), self.gate.record()
@@ -366,25 +450,40 @@ class Broker:
         if not peers:
             self.stable()
             return
+        require(type(peers) is list and 1 <= len(peers) <= 8, "BOUNDED_PEER_COHORT_REQUIRED")
+        diagnostics = {p["containerId"]: {"containerId": p["containerId"], "lastReason": None, "attempts": 0,
+            "runc": None, "networkBindings": [{k: n[k] for k in ("interface", "ipv4", "mac", "bridge")}
+                                            for n in p["networkBindings"]]} for p in peers}
         run = self.observer().run
 
         def probe(peer):
             # Lists have a different JSON shape from the bounded object decoder.
-            import json
             rows = json.loads(run(self.template["candidate"]["runtimeBinding"],
                                   ["--root", self.args.runtime_root, "list", "--format", "json"]))
-            require(type(rows) is list and len(rows) <= 1024, "BOUNDED_COHORT_RUNTIME_INVENTORY_REQUIRED")
+            require(type(rows) is list and len(rows) <= 1024 and all(type(r) is dict for r in rows),
+                    "BOUNDED_COHORT_RUNTIME_INVENTORY_REQUIRED")
+            for cid, diagnostic in diagnostics.items():
+                listed = [r for r in rows if r.get("id") == cid]
+                diagnostic["runc"] = None
+                if len(listed) == 1:
+                    try:
+                        diagnostic["runc"] = self.public_runtime_row(listed[0])
+                    except authorization.OperationDenied:
+                        # Diagnostic validation cannot alter the readiness probe.
+                        diagnostic["snapshotError"] = "COHORT_RUNTIME_ROW_INVALID"
             matches = [r for r in rows if r.get("id") == peer["containerId"]]
             require(len(matches) <= 1, "COHORT_RUNTIME_IDENTITY_AMBIGUOUS")
-            if not matches or matches[0].get("status") == "creating":
-                raise PeerNotReady()
+            if not matches:
+                raise PeerNotReady("PEER_NOT_LISTED")
+            if matches[0].get("status") == "creating":
+                raise PeerNotReady("PEER_CREATING")
             if matches[0].get("status") == "stopped" and matches[0].get("pid") == 0:
                 sibling = self.epochs.current(self.cfg["registryRoot"], peer["containerId"])
                 if (sibling is not None and sibling["bootId"] == self.epochs.boot_id()
                         and sibling["authorizationSha256"] == self.binding["authorizationSha256"]
                         and sibling["runtimeRoot"] == self.args.runtime_root and sibling["state"] == "CREATING"
                         and sibling["bundleHash"] == peer["applicationHash"] and sibling["driverHash"] is None):
-                    raise PeerNotReady()
+                    raise PeerNotReady("PEER_STOPPED_SIBLING_CREATING")
             require(matches[0].get("status") in ("created", "running"), "COHORT_PEER_STATE_DENIED")
             try:
                 return collect(peer, self.args.runtime_root, self.template["candidate"]["runtimeBinding"],
@@ -392,13 +491,116 @@ class Broker:
                                lambda pid: NativeBackend.generation(None, pid), self.budget)
             except ValueError as error:
                 if str(error) in ("PEER_INTERFACES_NOT_READY", "PEER_ADDRESSES_NOT_READY", "PEER_INTERFACE_MISSING"):
-                    raise PeerNotReady() from None
+                    raise PeerNotReady(str(error)) from None
                 raise
 
-        await_peers(peers, probe, self.budget)
+        try:
+            while True:
+                self.budget.check()
+                require(self.budget.remaining(18) >= 3, "COHORT_PEER_WAIT_TIMEOUT")
+                try:
+                    for peer in peers:
+                        diagnostic = diagnostics[peer["containerId"]]
+                        self.budget.check()
+                        require(self.budget.remaining(18) >= 3, "COHORT_PEER_WAIT_TIMEOUT")
+                        diagnostic["attempts"] += 1
+                        try:
+                            probe(peer)
+                        except (PeerNotReady, ValueError, authorization.OperationDenied) as error:
+                            diagnostic["lastReason"] = denial_code(error)
+                            raise
+                except PeerNotReady:
+                    time.sleep(self.budget.remaining(0.1))
+                    continue
+                self.budget.check()
+                break
+        except (ValueError, authorization.OperationDenied):
+            self.cohort = {"peers": list(diagnostics.values())}
+            for diagnostic in diagnostics.values():
+                self.peer_snapshot(diagnostic)
+            raise
         require(self.runtime(state) == (app, live) and self.record() == old and self.gate.record() == created,
                 "BROKER_COHORT_CHANGED_DURING_WAIT")
         self.stable()
+
+    @staticmethod
+    def public_runtime_row(row):
+        require(row.get("status") in ("creating", "created", "running", "stopped", "paused")
+                and type(row.get("pid")) is int and 0 <= row["pid"] < 2 ** 22, "COHORT_RUNTIME_ROW_INVALID")
+        return {k: row[k] for k in ("status", "pid")}
+
+    def peer_snapshot(self, diagnostic):
+        """Read only, bounded, source-bound commands; never replace the original denial."""
+        try:
+            self.budget.check()
+            row = diagnostic["runc"]
+            require(row is not None and row["pid"] > 1, "COHORT_SNAPSHOT_PID_UNAVAILABLE")
+            commands, run = self.commands(), self.observer().run
+            # Verify ip too: nsenter executes this path rather than run(ip, ...).
+            from tools.semantic_provider_deployment_producer import program
+            program(commands["ip"], self.budget)
+            children = json.loads(run(commands["nsenter"], ["--net=/proc/" + str(row["pid"]) + "/ns/net",
+                                      commands["ip"]["path"], "-j", "addr", "show"], 131072))
+            program(commands["ip"], self.budget)
+            require(type(children) is list and len(children) <= 32, "COHORT_SNAPSHOT_INTERFACES_UNBOUNDED")
+            snapshot = {"interfaces": [], "hosts": []}
+            diagnostic["snapshot"] = snapshot
+            for child in children:
+                require(type(child) is dict, "COHORT_SNAPSHOT_INTERFACE_INVALID")
+                if child.get("ifname") == "lo":
+                    continue
+                name = child.get("ifname")
+                require(type(name) is str and re.fullmatch(r"[A-Za-z0-9_.:@-]{1,64}", name),
+                        "COHORT_SNAPSHOT_INTERFACE_INVALID")
+                indexes = {k: child.get(k) for k in ("ifindex", "link_index")}
+                require(type(indexes["ifindex"]) is int and indexes["ifindex"] > 0
+                        and (indexes["link_index"] is None or type(indexes["link_index"]) is int
+                             and indexes["link_index"] > 0), "COHORT_SNAPSHOT_INDEX_INVALID")
+                mac = child.get("address")
+                require(mac is None or type(mac) is str and re.fullmatch(r"[0-9a-f]{2}(:[0-9a-f]{2}){5}", mac),
+                        "COHORT_SNAPSHOT_MAC_INVALID")
+                addresses = child.get("addr_info", [])
+                require(type(addresses) is list and len(addresses) <= 32 and all(type(a) is dict for a in addresses),
+                        "COHORT_SNAPSHOT_ADDRESSES_UNBOUNDED")
+                ipv4 = [str(ipaddress.IPv4Address(a["local"])) for a in addresses if a.get("family") == "inet"]
+                snapshot["interfaces"].append({"ifname": name, **indexes, "address": mac, "ipv4": ipv4,
+                    "ipv6Count": sum(a.get("family") == "inet6" for a in addresses)})
+            indexes = sorted({c["link_index"] for c in snapshot["interfaces"] if c["link_index"] is not None})
+            if indexes:
+                hosts = json.loads(run(commands["ip"], ["-j", "link", "show"], 131072))
+                require(type(hosts) is list and len(hosts) <= 1024 and all(type(h) is dict for h in hosts),
+                        "COHORT_SNAPSHOT_HOSTS_UNBOUNDED")
+                for index in indexes:
+                    found = [h for h in hosts if h.get("ifindex") == index]
+                    require(len(found) == 1, "COHORT_SNAPSHOT_HOST_MISSING")
+                    host = found[0]
+                    require(all(host.get(k) is None or type(host[k]) is str
+                                and re.fullmatch(r"[A-Za-z0-9_.:@-]{1,64}", host[k]) for k in ("ifname", "master")),
+                            "COHORT_SNAPSHOT_HOST_INVALID")
+                    snapshot["hosts"].append({"link_index": index, **{k: host.get(k) for k in ("ifname", "master")}})
+        except Exception as error:
+            diagnostic["snapshotError"] = denial_code(error)
+        finally:
+            if len(authorization.canonical(diagnostic.get("snapshot"))) > 4096:
+                diagnostic.pop("snapshot", None)
+                diagnostic["snapshotError"] = "COHORT_SNAPSHOT_UNBOUNDED"
+
+    def record_denial(self, error):
+        """Exclusive best-effort receipt only after establishing a private epoch."""
+        try:
+            root = self.denial_root
+            self.epochs.directory(root)
+            for parent in root.parents:
+                info = parent.lstat()
+                require(stat.S_ISDIR(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022,
+                        "PRIVATE_ANCESTOR_REQUIRED")
+            value = {"schema": DENIAL_SCHEMA, "containerId": self.cid, "epoch": self.args.epoch,
+                     "mode": self.args.mode, "reason": denial_code(error), "at": int(self.clock()),
+                     "cohort": self.cohort}
+            validate_denial(authorization.canonical(value), self.cid, self.args.epoch, self.args.mode)
+            evidence_v2.write_exclusive(root / ("broker-denial-" + self.args.mode + ".json"), value)
+        except Exception:
+            pass
 
     def prepare(self, state):
         with self.lock():
@@ -492,6 +694,7 @@ class Arguments(argparse.ArgumentParser):
 
 
 def main(argv=None):
+    broker = None
     parser = Arguments()
     for key in ("configuration", "container-id", "bundle", "runtime-root", "mode"):
         parser.add_argument("--" + key, required=True)
@@ -499,11 +702,15 @@ def main(argv=None):
     try:
         args = parser.parse_args(argv)
         cfg, raw = load(args.configuration)
+        broker = Broker.__new__(Broker)
+        broker.__init__(cfg, raw, args.configuration, args)
         from tools.semantic_provider_deployment_authentication import decode
         state = {} if args.mode == "cleanup" else decode(sys.stdin.buffer.read(16385), 16384)
-        Broker(cfg, raw, args.configuration, args).operate(state)
+        broker.operate(state)
         print("SEMANTIC_DEPLOYMENT_BROKER=PASS MODE=" + args.mode)
         return 0
-    except Exception:
-        print("SEMANTIC_DEPLOYMENT_BROKER=DENIED", file=sys.stderr)
+    except Exception as error:
+        if broker is not None:
+            broker.record_denial(error)
+        print("SEMANTIC_DEPLOYMENT_BROKER=DENIED " + denial_code(error), file=sys.stderr)
         return 1

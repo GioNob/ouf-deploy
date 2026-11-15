@@ -108,6 +108,28 @@ def terminal_binding(runtime, cfg, head, row):
     require(False, "R3_EPOCH_AUTHORIZATION_DRIFT")
 
 
+def broker_denials(runtime, registry, cid, current):
+    """Untrusted diagnostic files never alter the lifecycle outcome."""
+    found = []
+    if current is None:
+        return found
+    for number in (current, current - 1) if current > 1 else (current,):
+        root = Path(registry) / cid / "epochs" / str(number)
+        try:
+            paths = sorted(root.glob("broker-denial-*.json"))
+        except Exception:
+            found.append({"invalid": "BROKER_DENIAL_LIST_FAILED"})
+            continue
+        for path in paths:
+            try:
+                raw = runtime.read(path)
+                mode = path.name[len("broker-denial-"):-len(".json")]
+                found.append(C.B.validate_denial(raw, cid, number, mode))
+            except Exception:
+                found.append({"invalid": "BROKER_DENIAL_INVALID"})
+    return found
+
+
 def observe(args, *, output_exists=False, deadline=None):
     """Read only. Compile the installed, hash-verified v5.2 and use its loaders."""
     S = I.native_switch()
@@ -168,7 +190,8 @@ def observe(args, *, output_exists=False, deadline=None):
         frame = docker_fields(docker(args, "inspect", cid, timeout=remaining()), cid)
         if row is not None and row["state"] == "STARTED" and frame["Running"]:
             require(frame["Pid"] == row["generation"]["pid"], "R3_EPOCH_DOCKER_PID_DRIFT")
-        candidates[item["role"]] = {"cid": cid, "epoch": epoch, "previousEpoch": previous, "docker": frame}
+        candidates[item["role"]] = {"cid": cid, "epoch": epoch, "previousEpoch": previous, "docker": frame,
+            "denials": broker_denials(runtime, cfg["registryRoot"], cid, row["epoch"] if row else None)}
 
     sup = C.document(runtime.bound_bytes(cfg["leaseQuiesce"]["configuration"]))
     require(sup["registryRoot"] == cfg["registryRoot"]

@@ -149,3 +149,53 @@ rimangono da eseguire in CI: `wsl --status` locale restituisce
 `Wsl/EnumerateDistros/Service/E_ACCESSDENIED`. La presenza del workflow non è
 un PASS attestato.
 Nessun accesso VPS, rete, servizio esterno o segreto reale è richiesto.
+
+## Dinieghi registrati
+
+La chiusura R3 v3 include l'osservabilità del broker v2. Dopo la verifica
+della directory privata dell'epoca, un'invocazione negata tenta di creare
+`registry/<cid>/epochs/<epoca>/broker-denial-<modalità>.json`, schema
+`ouf.semantic-deployment-broker-denial.v1`. Il file è esclusivo, 0600 e
+limitato a 64 KiB: non viene sovrascritto e un errore di scrittura non cambia
+il diniego. Lo stderr riporta `SEMANTIC_DEPLOYMENT_BROKER=DENIED <codice>`.
+Prima che l'epoca sia verificata non viene scritto alcun file.
+
+Ogni candidato di `lastObservation.candidates` contiene `denials`, una lista
+dei documenti dell'epoca corrente e, se presente, della precedente. Ogni
+documento conserva `containerId`, `epoch`, `mode`, `reason`, `at` (secondi
+Unix) e `cohort`. I file sono letti tramite `runtime.read`; dimensione,
+custodia, schema chiuso e binding a CID/epoca/modalità sono verificati.
+Un file non valido diventa `{"invalid":"BROKER_DENIAL_INVALID"}`; un errore
+di elenco diventa `{"invalid":"BROKER_DENIAL_LIST_FAILED"}`. Questi campi
+sono soltanto osservazioni: non autorizzano azioni e non aggiungono dinieghi
+all'operate. I documenti diagnostici non sono attestazioni firmate.
+
+In `cohort-ready`, `cohort.peers` riporta dichiarazioni di rete, ultimo motivo
+non pronto, numero dei tentativi, stato/PID runc e snapshot di rete in sola
+lettura. `COHORT_PEER_WAIT_TIMEOUT` interrompe l'attesa quando rimangono meno
+di 3 secondi del budget originale di 18; i secondi residui servono alla
+diagnosi. `snapshotError` indica un'osservazione fallita o senza budget.
+Ambiente, argv, bundle, indirizzi IPv6 e credenziali non sono riportati.
+Per IPv6 compare soltanto il conteggio. Un MAC osservato diverso da quello
+dichiarato continua a negare l'ammissione: questa versione non configura MAC.
+
+Il gate `OUF_R3_COHORT_NATIVE=1` in `test_semantic_provider_r3_cohort.py` usa
+un daemon Docker isolato in namespace mount/rete privati, dati/eseguibili
+sotto `/var/lib` e un'immagine importata da sleep/librerie locali, senza pull.
+Due container sono collegati a due bridge con IPv4 statici, senza opzioni
+MAC. Una fase iniziale ne cattura le aspettative OCI negando la creazione;
+poi trasporti reciproci `CREATED_CANDIDATE` con MAC derivati dagli IP sono
+vincolati all'autorizzazione firmata dalle chiavi della fixture. `operate`
+esegue plan/apply start concorrente tramite Engine, wrapper, runc e broker
+reali. Il test stampa versione Docker e i due dinieghi, verifica epoche
+FAILED, container fermi, lease QUIESCED e presenza dei `denials` nell'output.
+Non impone un particolare codice: anche differenze OCI fra cattura e nuova
+creazione restano dinieghi di collect osservabili. Systemd, nft e quiescer
+sono simulatori espliciti, sempre WAITING/QUIESCED: non provano il servizio
+o il rilascio del lease. L'esito nativo è demandato alla CI.
+
+Il compositore resta invariato. Le regressioni v1/v2 riusano i rispettivi
+input storici: la fixture v2 conserva hash e due sorgenti compressi dal
+commit `e5db56dfafa8823ffa3a9a81c563c50df1ed0d17`, così la prova funziona
+anche con checkout shallow. La mappa hash v1 originale non viene riscritta;
+la composizione v3 verifica invece i nuovi byte e binding della chiusura.

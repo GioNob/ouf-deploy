@@ -169,7 +169,7 @@ def main(argv=None):
         code = str(error)
         if re.fullmatch(r"[A-Z0-9_]{1,80}", code) is None:
             code = "INTERNAL_ERROR"
-        suffix = "" if SELF == ENTRYPOINTS[0] else " " + code
+        suffix = " " + code
         print(prefix + "=DENIED" + suffix, file=sys.stderr)
         return 1
 
