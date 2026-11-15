@@ -5,6 +5,7 @@ for the input map and the intentionally different repository/installed paths.
 """
 import builtins
 import copy
+import hashlib
 import json
 from pathlib import PurePosixPath
 import types
@@ -89,6 +90,27 @@ def contract_module(raw, name):
     exec(compile(raw, "<r3-repository-contract>", "exec"), result.__dict__)
     result.Path = PurePosixPath
     return result
+
+
+
+def lease_guard_hash(kernel):
+    """Exactly the digest validate_global_guard() compares (historical library).
+
+    The coordinator binding's configurationHash digests the whole owner
+    document, not the kernel: using it here can never pass on a real
+    coordinator (sprint-01 v8 start, GLOBAL_LEASE_GUARD_SCOPE_DRIFT).
+    """
+    return hashlib.sha256(json.dumps(kernel, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def check_lease_guard(nic, kernel):
+    """Fail at composition, not at start, if the historical guard would deny."""
+    guard = nic["leaseGuard"]
+    governed = {f["source"] for f in kernel["providerFlows"]}
+    governed.update(f[k] for f in kernel["staticFlows"] for k in ("source", "destination"))
+    require(guard["tableName"] == kernel["tableName"] and nic["bridge"] in kernel["guardedInterfaces"]
+            and nic["bridge"] not in kernel["existingInterfaces"], "R3_LEASE_GUARD_SCOPE_DRIFT")
+    require(nic["ipv4"] in governed, "R3_LEASE_GUARD_SOURCE_UNBOUND")
 
 
 def compose(inputs, version=1, *, sequence=None, supersedes=None):
@@ -226,7 +248,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 nic["mac"] = L2_LIVE_MAC
                 nic["interface"] = live_interface(index)
             if "leaseGuard" in nic:
-                nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
+                nic["leaseGuard"]["configurationHash"] = (lease_guard_hash(owner["kernel"]) if version >= 9
+                                                          else owner["binding"]["configurationHash"])
+                if version >= 9:
+                    check_lease_guard(nic, owner["kernel"])
         other = "southbound" if role == "adapter" else "adapter"
         sibling, ingress = 0, 0
         for flow in candidate["transport"]:
@@ -247,7 +272,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                         nic["mac"] = L2_LIVE_MAC
                         nic["interface"] = live_interface(index)
                     if "leaseGuard" in nic:
-                        nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
+                        nic["leaseGuard"]["configurationHash"] = (lease_guard_hash(owner["kernel"]) if version >= 9
+                                                                  else owner["binding"]["configurationHash"])
                 sibling += 1
             else:
                 p = data["semanticPeer"]["proposedIngress"]

@@ -49,6 +49,12 @@ def fixture(version=1):
         "kernel": {"tableName": "ouf_sem_provider", "flows": [
             {"id": "schema-gov", "leaseSeconds": 30}, {"id": "ouf-oidc", "leaseSeconds": 30}]},
         "dns": {"resolvers": [{"address": "46.38.225.230", "port": 53}, {"address": "46.38.252.230", "port": 53}]}}
+    if version >= 9:
+        # Shape of the real 2026-11-09 coordinator kernel (VPS diagnostic), names only.
+        owner["kernel"].update(guardedInterfaces=["oufsp-int", "oufsp-egress"],
+            existingInterfaces=["br-backend", "docker0"],
+            providerFlows=[{"source": "172.22.0.2"}, {"source": "172.22.0.3"}],
+            staticFlows=[{"source": "172.21.0.3", "destination": "172.21.0.2"}])
     put("coordinator", owner)
     put("coordinationJournal", {"schema": "ouf.semantic-lease-coordination.v1", **owner["binding"],
         "state": "QUIESCED", "leaseAuthorized": False, "startAuthorized": False, "leaseAddresses": [[], []]})
@@ -134,6 +140,40 @@ def fixture(version=1):
 
 
 class ComposeTests(unittest.TestCase):
+    def test_v9_lease_guard_binds_kernel_digest_and_v8_is_unchanged(self):
+        def guards(result, version):
+            prefix = "versions/%d/" % version
+            values = []
+            for role in C.ROLES:
+                doc = json.loads(result["documents"][prefix + "documents/" + role + "/transport.json"])
+                values += [n["leaseGuard"] for n in doc["networkBindings"] if "leaseGuard" in n]
+                for flow in doc["transport"]:
+                    if flow["peerIngress"]["kind"] == "CREATED_CANDIDATE":
+                        values += [n["leaseGuard"] for n in flow["peerIngress"]["declaration"]["networkBindings"]
+                                   if "leaseGuard" in n]
+            return values
+        inputs = fixture(9)
+        owner = json.loads(inputs["files"]["coordinator"])
+        kernel_hash = C.lease_guard_hash(owner["kernel"])
+        v9 = C.compose(inputs, 9, sequence=9, supersedes="a" * 64)
+        found = guards(v9, 9)
+        self.assertTrue(found)
+        self.assertEqual({g["configurationHash"] for g in found}, {kernel_hash})
+        v8 = C.compose(inputs, 8, sequence=8, supersedes="a" * 64)
+        binding_hash = owner["binding"]["configurationHash"]
+        self.assertEqual({g["configurationHash"] for g in guards(v8, 8)}, {binding_hash})
+
+    def test_v9_rejects_lease_guard_outside_kernel_scope_at_composition(self):
+        kernel = {"tableName": "t", "guardedInterfaces": ["g0"], "existingInterfaces": ["e0"],
+                  "providerFlows": [{"source": "10.0.0.2"}], "staticFlows": [{"source": "10.0.0.3", "destination": "10.0.0.4"}]}
+        ok = {"bridge": "g0", "ipv4": "10.0.0.4", "leaseGuard": {"tableName": "t", "configurationHash": "0" * 64}}
+        C.check_lease_guard(ok, kernel)
+        for change, code in (({"bridge": "e0"}, "R3_LEASE_GUARD_SCOPE_DRIFT"), ({"bridge": "x0"}, "R3_LEASE_GUARD_SCOPE_DRIFT"),
+                             ({"leaseGuard": {"tableName": "u", "configurationHash": "0" * 64}}, "R3_LEASE_GUARD_SCOPE_DRIFT"),
+                             ({"ipv4": "10.9.9.9"}, "R3_LEASE_GUARD_SOURCE_UNBOUND")):
+            with self.subTest(code=code, change=change), self.assertRaisesRegex(Exception, code):
+                C.check_lease_guard({**ok, **change}, kernel)
+
     def test_v6_selects_source_sealed_observer_v2_and_keeps_broker_source_set(self):
         inputs = fixture(6)
         original = copy.deepcopy(inputs)

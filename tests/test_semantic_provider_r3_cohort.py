@@ -662,8 +662,8 @@ class CohortFixture(F.NativeTests):
         inputs = copy.deepcopy(self.inputs)
         inputs['sources'].pop(C.OBSERVER)
         inputs['sources'][C.OBSERVER_V2] = FRAME_PATH.read_bytes()
-        result = C.compose(inputs, 6, sequence=6, supersedes="a" * 64)
-        self.code = self.install / "versions/6"
+        result = C.compose(inputs, 9, sequence=9, supersedes="a" * 64)
+        self.code = self.install / "versions/9"
         docs = copy.deepcopy(result["documents"])
         original = json.loads(result["authorization"])
         old_ids = {r: original["roles"][r]["containerId"] for r in O.ROLES}
@@ -715,7 +715,7 @@ class CohortFixture(F.NativeTests):
             subprocess.run([str(self.real_nft), "-f", "-"], input=rules.encode(), capture_output=True, check=True)
             tables = {f: json.loads(subprocess.run([str(self.real_nft), "-j", "list", "table", f, kernel["tableName"]],
                 capture_output=True, check=True).stdout) for f in ("inet", "bridge")}
-            coordination = dict(transactionId="c" * 64, configurationHash=A.sha(A.canonical(kernel)),
+            coordination = dict(transactionId="c" * 64, configurationHash=A.sha(A.canonical({"ownerDocument": kernel})),
                                 leaseStructureHash=structure_hash(tables))
         lease_journal = {"schema": "ouf.semantic-lease-coordination.v1", **coordination,
             "state": "QUIESCED", "leaseAuthorized": False, "startAuthorized": False, "leaseAddresses": [[]]}
