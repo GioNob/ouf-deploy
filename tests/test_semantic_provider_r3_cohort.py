@@ -780,6 +780,11 @@ if __name__ == "__main__":
         if not NATIVE:
             raise RuntimeError("disabled native scenario")
         subprocess.run([shutil.which("mount"), "--make-rprivate", "/"], check=True)
+        # Hide the runner's system containerd in this private mount namespace:
+        # dockerd must start its own managed containerd, so shims, runtime and
+        # broker share the fixture's PID/net/proc view (like a real host does).
+        if Path("/run/containerd").is_dir():
+            subprocess.run([shutil.which("mount"), "-t", "tmpfs", "-o", "mode=0711", "tmpfs", "/run/containerd"], check=True)
         suite = unittest.TestSuite([CohortFixture("scenario")])
         result = unittest.TextTestRunner(verbosity=2).run(suite)
         raise SystemExit(0 if result.wasSuccessful() else 1)
