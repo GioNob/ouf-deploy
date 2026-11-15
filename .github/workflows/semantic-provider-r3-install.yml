@@ -1,0 +1,71 @@
+name: Semantic provider R3 installation and restore
+on:
+  pull_request:
+    paths:
+      - tools/semantic_provider_r3/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_provider_admission_v2/**
+      - tools/semantic_runtime_v52/**
+      - tools/semantic_runtime_v51/**
+      - tools/semantic_runtime_v51_install/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_transaction_profiles/**
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - tools/semantic_lease_recovery/**
+      - tools/semantic_frame_compiler/**
+      - tools/semantic_acceptance_v51/**
+      - tools/semantic_b1_acceptance/**
+      - tools/semantic_b1b2_authority/**
+      - tools/semantic_successor_recipes/**
+      - scripts/install-semantic-provider-r3.py
+      - scripts/restore-semantic-provider-r3.py
+      - scripts/install-semantic-runtime-v51.py
+      - scripts/restore-semantic-runtime-v51-wrapper.py
+      - scripts/issue-semantic-provider-operation-authorization.py
+      - scripts/semantic-provider-*-v2.py
+      - tests/test_semantic_provider_r3*.py
+      - tests/test_semantic_provider_operation*.py
+      - tests/test_semantic_provider_admission_v2*.py
+      - tests/test_semantic_provider_lease_supervisor.py
+      - tests/test_semantic_runtime_v51_install.py
+      - tests/test_runtime_v52_epochs.py
+      - docs/OUF_SEMANTIC_PROVIDER_R3_INSTALL.md
+      - .github/workflows/semantic-provider-r3-install.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: R3 native CLI, real composition/issuance and wrapper broker create
+        run: >-
+          sudo -n env OUF_R3_INSTALL_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_install.py -v
+      - name: Non-regression task-29b
+        run: >-
+          sudo -n env OUF_RUNTIME_V51_INSTALL_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_runtime_v51_install.py -v
+      - name: Unchanged guarded switch
+        run: >-
+          sudo -n env OUF_TRANSACTION_TEST_ROOT=/run /usr/bin/python3 -I -B
+          -m unittest discover -s tools/semantic_transaction_profiles -p test_guarded_runtime_switch.py -v
+      - name: Non-regression task-41a integration
+        run: >-
+          sudo -n env OUF_R3_INTEGRATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_integration.py -v
+      - name: Non-regression runtime v5.2
+        run: >-
+          sudo -n env OUF_RUNTIME_V52_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_runtime_v52_epochs.py -v
+      - name: Non-regression composition and supervisor
+        run: |
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Compile task-41b
+        run: >-
+          /usr/bin/python3 -I -m py_compile tools/semantic_provider_r3/install_common.py
+          scripts/install-semantic-provider-r3.py scripts/restore-semantic-provider-r3.py
+          tests/test_semantic_provider_r3_install.py
