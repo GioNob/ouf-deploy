@@ -16,7 +16,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=589cb143aa1a09259c9a9f9c105287d1d6d0de1d
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -96,13 +96,13 @@ delivery() {
   fetch tools/semantic_lease_recovery/recovery_journal.py 43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d
   fetch tools/semantic_lease_recovery/resilient_lease_adapter.py beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683
   fetch tools/semantic_provider_admission_v2/__init__.py bbae3553c950479a55a26ac71f7a4d79e32f69402967b0b39064cfadd4e41b31
-  fetch tools/semantic_provider_admission_v2/broker_v2.py af91097503d9179419e24af479848bfff48f09b1149f076213ee6fd6f859f0f1
+  fetch tools/semantic_provider_admission_v2/broker_v2.py a87d1eda988736e6a8467edd96d343f627a3662acdaed06f539135a34afb1c37
   fetch tools/semantic_provider_admission_v2/consumption_v2.py 44a6ef8de7e7bafd6881104fe148fb984a2acc595685c3095530155bd82c22e4
   fetch tools/semantic_provider_admission_v2/driver_v7.py 27a3b0ec3c4d21a1faec9b15b1e5a5b7526472eddcf35f3462c77bcba8f8af58
   fetch tools/semantic_provider_admission_v2/evidence_v2.py d6f7c659f87705d164c1abdb5589586103abcfebd12bc65f88668130d010d723
   fetch tools/semantic_provider_admission_v2/l2_binding.py 27ecff88f1abe0dc08022770c6dbb2ed030908f2c8c20ed1b78ef5d3215cbaa7
   fetch tools/semantic_provider_admission_v2/locking.py 1a92011a1948ab82498fcc2fc92ee17b7cbf11f1858cbe7edc1dac606de0b564
-  fetch tools/semantic_provider_admission_v2/preparer_v2.py 7d2d5c7af46ffac8d3007e765ed73765d7409faf25cfc56c3a8ca728fe09a447
+  fetch tools/semantic_provider_admission_v2/preparer_v2.py c417cd74f4a1712b93e19b145df959ac85d1e42a07484c729cfd18182dd579c7
   fetch tools/semantic_provider_admission_v2/reauthorization_v2.py 53fb58772280116845a47351bdbce802dfd26169175cb36e3e9c11421df6b39c
   fetch tools/semantic_provider_operation/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_provider_operation/authorization.py 8f5dd2fd86efb7add1bdb5325b6428db41cc539b7b00a3b33efa4d692ab958fc
@@ -115,7 +115,7 @@ delivery() {
   fetch tools/semantic_provider_r3/upgrade.py 5d87221f5644ce2d143a88b1d2f10fe6e421e78d6e5ccff0103c2857da7ea638
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
-  fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 99bcb90fe047b42c7bec9c9757c4bcf59c6b98db84d353ee3b97932e9a76697b
+  fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 117c9c86bb173742e4da7051d18bdef68526d3a8172cf231c41a27d2ea815911
   fetch tools/semantic_transaction_profiles/assemble_provider_profiles.py 890dff15e3826175ef01467a812cdd523e8ea5d50a306ad8727f866475ab9734
   fetch tools/semantic_transaction_profiles/authenticate_provider_transaction.py b47e245abab2bb55ccd172c5e3f8da2a0b167e89c588811159f87cc4d929f258
   fetch tools/semantic_transaction_profiles/guarded_runtime_switch.py 1492237e1c1ce85da5c9220ea3f6f024b24dc4d217ff5bf6e5b43c14fff225bd
