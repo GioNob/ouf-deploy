@@ -1,13 +1,16 @@
 """R3: real recovery loop with in-memory native boundaries; root-only scope fixture."""
 import copy
-from contextlib import nullcontext
+from contextlib import ExitStack, contextmanager, nullcontext
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import signal
+import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -20,6 +23,10 @@ from continuous_supervisor import Supervisor
 from lease_recovery_budget import LeaseRecovery
 import continuous_supervisor
 
+bootstrap_spec = importlib.util.spec_from_file_location("lease_supervisor_bootstrap", ROOT / s.SELF)
+bootstrap = importlib.util.module_from_spec(bootstrap_spec)
+bootstrap_spec.loader.exec_module(bootstrap)
+
 NATIVE = os.environ.get("OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE") == "1"
 if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0):
     raise RuntimeError("OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE requires Linux root:root")
@@ -28,6 +35,8 @@ if NATIVE and (sys.platform != "linux" or os.geteuid() != 0 or os.getegid() != 0
 def configuration():
     bind = lambda name, digest="a": {"path": "/run/fixture/" + name, "sha256": digest * 64}
     return {"schema": s.SCHEMA, "installationRef": "inst", "entityRef": "ent", "issuerRef": "installer",
+            "sourceRoot": "/run/fixture/source",
+            "sourceHashes": {**dict.fromkeys(s.SOURCES, "a" * 64), **s.RECOVERY_SOURCES},
             "authorizationRoot": "/run/fixture/operation", "anchorBinding": bind("anchor"),
             "mandateRoot": "/run/fixture/ledger", "opensslBinding": {**bind("openssl"), "version": "3.0.0"},
             "mandatesModule": bind("mandates.py"), "registryRoot": "/run/fixture/registry",
@@ -36,6 +45,13 @@ def configuration():
                             "nftBinding": bind("nft")},
             "recoveryJournalRoot": "/run/fixture/recoveries", "statusPath": "/run/fixture/status",
             "limits": {"maxActivationsPerHour": 6, "heartbeatSeconds": 1, "pollSeconds": 15}}
+
+
+def source_fixture(cfg):
+    # Prepare LF delivery, without modifying the checkout or normalizing in a loader.
+    sources = {relative: (ROOT / relative).read_bytes().replace(b"\r\n", b"\n") for relative in s.SOURCES}
+    cfg["sourceHashes"] = {relative: s.sha(raw) for relative, raw in sources.items()}
+    return sources
 
 
 class Config:
@@ -348,16 +364,22 @@ class Tests(unittest.TestCase):
             s.validate(raw + b"\n")
 
     def test_configuration_custody_rechecks_all_required_bindings(self):
-        raw = s.canonical(configuration())
+        cfg = configuration()
+        sources = source_fixture(cfg)
+        raw = s.canonical(cfg)
         calls = []
         def reader(path, expected, **kw):
             calls.append((path, expected, kw))
-            return raw
-        c = s.Configuration("/run/fixture/config", s.sha(raw), reader)
-        c.custody()
-        self.assertEqual([v[0] for v in calls[1:]], ["/run/fixture/config", "/run/fixture/owner",
+            relative = Path(path).relative_to(cfg["sourceRoot"]).as_posix() if isinstance(path, Path) else None
+            return sources[relative] if relative else raw
+        directories = []
+        c = s.Configuration("/run/fixture/config", s.sha(raw), reader, directories.append)
+        self.assertEqual(c.custody(), sources)
+        self.assertEqual([v[0] for v in calls[1:6]], ["/run/fixture/config", "/run/fixture/owner",
                          "/run/fixture/dns", "/run/fixture/nft", "/run/fixture/mandates.py"])
-        self.assertTrue(calls[-2][2]["executable"])
+        self.assertTrue(calls[4][2]["executable"])
+        self.assertEqual(directories, [Path(cfg["sourceRoot"])])
+        self.assertEqual({Path(v[0]).relative_to(cfg["sourceRoot"]).as_posix() for v in calls[6:]}, s.SOURCES)
 
     def test_reviewed_library_pins_match_repository_lf_delivery(self):
         for name, expected in s.PINS.items():
@@ -418,9 +440,278 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.new_store().count(self.clock()), 1)
 
 
+class SourceClosureTests(unittest.TestCase):
+    def setUp(self):
+        self.cfg = configuration()
+        self.sources = source_fixture(self.cfg)
+        self.path = "/run/fixture/configuration.json"
+        self.files = {Path(self.cfg["sourceRoot"]) / p: raw for p, raw in self.sources.items()}
+        self.bind_configuration()
+
+    def bind_configuration(self):
+        self.raw = s.canonical(self.cfg)
+        self.files[Path(self.path)] = self.raw
+
+    def read(self, path, expected, **kwargs):
+        raw = self.files[Path(path)]
+        s.require(s.sha(raw) == expected, "SUPERVISOR_BINDING_HASH_MISMATCH")
+        return raw
+
+    @contextmanager
+    def boot_boundary(self):
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(bootstrap, "private", side_effect=self.read))
+            stack.enter_context(patch.object(bootstrap, "private_root"))
+            stack.enter_context(patch.object(bootstrap, "__file__", self.cfg["sourceRoot"] + "/" + s.SELF))
+            # POSIX custody is exercised by NativeClosure; retain lexical POSIX paths on Windows here.
+            stack.enter_context(patch.object(Path, "absolute", lambda path: path))
+            stack.enter_context(patch.object(bootstrap.os, "geteuid", return_value=0, create=True))
+            stack.enter_context(patch.object(bootstrap.os, "getegid", return_value=0, create=True))
+            stack.enter_context(patch.object(bootstrap.sys, "flags", SimpleNamespace(isolated=1)))
+            stack.enter_context(patch.object(bootstrap.sys, "dont_write_bytecode", True))
+            yield
+
+    def boot_args(self):
+        return ["--configuration", self.path, "--configuration-sha256", s.sha(self.raw)]
+
+    def test_exact_source_set_and_fixed_recovery_pins(self):
+        self.assertEqual(bootstrap.SOURCES, s.SOURCES)
+        self.assertEqual(len(s.SOURCES), 15)
+        changes = (
+            (lambda cfg: cfg["sourceHashes"].pop(s.SELF), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED"),
+            (lambda cfg: cfg["sourceHashes"].update({"extra.py": "a" * 64}), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED"),
+            (lambda cfg: cfg["sourceHashes"].update({s.SELF: "A" * 64}), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED"),
+            (lambda cfg: cfg["sourceHashes"].update({next(iter(s.RECOVERY_SOURCES)): "0" * 64}),
+             "SUPERVISOR_RECOVERY_PIN_MISMATCH"),
+            (lambda cfg: cfg.update(sourceRoot="relative"), "ABSOLUTE_SOURCE_ROOT_REQUIRED"),
+            (lambda cfg: cfg.update(sourceRoot="/run/../source"), "ABSOLUTE_SOURCE_ROOT_REQUIRED"),
+        )
+        for change, code in changes:
+            with self.subTest(code=code, change=change):
+                cfg = copy.deepcopy(self.cfg)
+                change(cfg)
+                with self.assertRaisesRegex(s.Denied, code):
+                    s.validate(s.canonical(cfg))
+
+    def test_startup_rejects_each_tampered_source_before_any_exec(self):
+        for relative in sorted(s.SOURCES):
+            with self.subTest(relative=relative):
+                path = Path(self.cfg["sourceRoot"]) / relative
+                self.files[path] += b"\nraise RuntimeError('SENTINEL_PRIVATE_ADDRESS')\n"
+                try:
+                    stderr = io.StringIO()
+                    with self.boot_boundary(), patch.object(bootstrap, "execute") as execute, \
+                            patch.object(sys, "stderr", stderr):
+                        self.assertEqual(bootstrap.main(self.boot_args()), 1)
+                    execute.assert_not_called()
+                    self.assertEqual(stderr.getvalue(), "SUPERVISOR_BINDING_HASH_MISMATCH\n")
+                finally:
+                    self.files[path] = self.sources[relative]
+
+    def test_bootstrap_binds_configuration_and_own_path(self):
+        with self.boot_boundary(), patch.object(bootstrap, "execute") as execute:
+            root, verified = bootstrap.load_sources(self.path, s.sha(self.raw))
+            self.assertEqual((root, verified), (Path(self.cfg["sourceRoot"]), self.sources))
+            with self.assertRaisesRegex(s.Denied, "SUPERVISOR_BINDING_HASH_MISMATCH"):
+                bootstrap.load_sources(self.path, "0" * 64)
+            with patch.object(bootstrap, "__file__", "/run/fixture/elsewhere.py"):
+                with self.assertRaisesRegex(RuntimeError, "SUPERVISOR_ENTRYPOINT_PATH_DRIFT"):
+                    bootstrap.load_sources(self.path, s.sha(self.raw))
+            execute.assert_not_called()
+
+    def test_bootstrap_rejects_extra_or_missing_source_before_exec(self):
+        for missing in (True, False):
+            with self.subTest(missing=missing):
+                hashes = dict(self.cfg["sourceHashes"])
+                if missing:
+                    self.cfg["sourceHashes"].pop(s.SELF)
+                else:
+                    self.cfg["sourceHashes"]["extra.py"] = "a" * 64
+                self.bind_configuration()
+                stderr = io.StringIO()
+                with self.boot_boundary(), patch.object(bootstrap, "execute") as execute, \
+                        patch.object(sys, "stderr", stderr):
+                    self.assertEqual(bootstrap.main(self.boot_args()), 1)
+                execute.assert_not_called()
+                self.assertEqual(stderr.getvalue(), "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED\n")
+                self.cfg["sourceHashes"] = hashes
+
+    def test_compiles_retained_bytes_and_registers_dependencies_in_order(self):
+        verified = dict(self.sources)
+        for relative in s.OPERATION_SOURCES:
+            self.files[Path(self.cfg["sourceRoot"]) / relative] = b"raise RuntimeError('must not read again')"
+        with patch.dict(sys.modules):
+            module = bootstrap.execute(Path(self.cfg["sourceRoot"]), verified)
+            self.assertIs(module.authorization, sys.modules["authorization"])
+            self.assertIs(module.epochs, sys.modules["epochs"])
+            self.assertIs(module.epochs.OperationDenied, module.authorization.OperationDenied)
+            self.assertEqual(module.validate(self.raw), self.cfg)
+
+    def test_next_guard_detects_each_changed_source(self):
+        # All unrelated bindings remain valid; only one member of the closure changes.
+        for item in [self.cfg["mandatesModule"], *[self.cfg["coordinator"][name]
+                     for name in ("ownerConfiguration", "dnsProfile", "nftBinding")]]:
+            item["sha256"] = s.sha(b"binding")
+            self.files[Path(item["path"])] = b"binding"
+        self.bind_configuration()
+        cfg = s.Configuration(self.path, s.sha(self.raw), self.read, lambda path: None)
+        guards = s.Guards(cfg, None, "9" * 64, Permanent)
+        guards.custody_guard()
+        for relative in sorted(s.SOURCES):
+            with self.subTest(relative=relative):
+                path = Path(self.cfg["sourceRoot"]) / relative
+                self.files[path] += b"# changed\n"
+                try:
+                    with self.assertRaises(Permanent) as caught:
+                        guards.custody_guard()
+                    self.assertEqual(caught.exception.code, "CONFIGURATION_DRIFT")
+                    self.assertEqual(guards.reason, "SUPERVISOR_BINDING_HASH_MISMATCH")
+                finally:
+                    self.files[path] = self.sources[relative]
+
+    def test_runtime_compiles_recovery_from_verified_source_root(self):
+        cfg = SimpleNamespace(value=self.cfg, custody=lambda: self.sources)
+        with patch.object(s, "__file__", "/unrelated/not-the-source-root.py"), \
+                patch.object(s, "compiled", side_effect=RuntimeError("STOP_AFTER_CORE")) as compiled:
+            with self.assertRaisesRegex(RuntimeError, "STOP_AFTER_CORE"):
+                s.runtime(cfg)
+        relative = "tools/semantic_lease_recovery/activation_core.py"
+        compiled.assert_called_once_with(self.sources[relative], Path(self.cfg["sourceRoot"]) / relative,
+                                         "lease_activation_core_v2", s.PINS["activation_core"])
+        self.cfg["sourceHashes"][relative] = "0" * 64
+        with patch.object(s, "compiled") as compiled:
+            with self.assertRaisesRegex(s.Denied, "SUPERVISOR_RECOVERY_PIN_MISMATCH"):
+                s.runtime(cfg)
+            compiled.assert_not_called()
+
+    def test_no_source_search_path_mutation(self):
+        for relative in (s.SELF, "tools/semantic_provider_operation/lease_supervisor.py"):
+            self.assertNotIn("sys.path", (ROOT / relative).read_text(encoding="utf-8"), relative)
+
+
 spec = importlib.util.spec_from_file_location("operation_scope_fixture", ROOT / "tests/test_semantic_provider_operation.py")
 fixture_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixture_module)
+
+
+@unittest.skipUnless(NATIVE, "set OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 under Linux root")
+class NativeClosure(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="ouf-supervisor-closure-", dir="/run")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.cfg = configuration()
+        self.cfg["sourceRoot"] = str(self.root / "source")
+        Path(self.cfg["sourceRoot"]).mkdir(mode=0o700)
+        self.sources = source_fixture(self.cfg)
+        for relative, raw in self.sources.items():
+            path = Path(self.cfg["sourceRoot"]) / relative
+            path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            self.write(path, raw)
+        for name in ("ownerConfiguration", "dnsProfile", "nftBinding"):
+            path = self.root / name
+            self.write(path, b"binding", 0o700 if name == "nftBinding" else 0o600)
+            self.cfg["coordinator"][name] = {"path": str(path), "sha256": s.sha(b"binding")}
+        path = self.root / "mandates.py"
+        self.write(path, b"binding")
+        self.cfg["mandatesModule"] = {"path": str(path), "sha256": s.sha(b"binding")}
+        self.path = self.root / "configuration.json"
+        self.bind_configuration()
+
+    def write(self, path, raw, mode=0o600):
+        Path(path).write_bytes(raw)
+        Path(path).chmod(mode)
+
+    def bind_configuration(self):
+        self.raw = s.canonical(self.cfg)
+        self.write(self.path, self.raw)
+
+    def launch(self, entrypoint=None, digest=None):
+        return subprocess.run([sys.executable, "-I", "-B", str(entrypoint or Path(self.cfg["sourceRoot"]) / s.SELF),
+            "--configuration", str(self.path), "--configuration-sha256", digest or s.sha(self.raw)],
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+
+    def test_native_verified_bootstrap_and_next_guard_for_each_source(self):
+        entrypoint = Path(self.cfg["sourceRoot"]) / s.SELF
+        # Probe the bootstrap through its real private file reader, without starting a service.
+        probe = ("import runpy,sys; b=runpy.run_path(sys.argv[1],run_name='probe'); "
+                 "root,raw=b['load_sources'](sys.argv[2],sys.argv[3]); "
+                 "m=b['execute'](root,raw); m.validate(open(sys.argv[2],'rb').read()); print('VERIFIED')")
+        result = subprocess.run([sys.executable, "-I", "-B", "-c", probe, str(entrypoint),
+            str(self.path), s.sha(self.raw)], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, timeout=10)
+        self.assertEqual((result.returncode, result.stdout, result.stderr), (0, b"VERIFIED\n", b""))
+        configuration_ = s.Configuration(self.path, s.sha(self.raw))
+        guards = s.Guards(configuration_, None, "9" * 64, Permanent)
+        guards.custody_guard()
+        for relative in sorted(s.SOURCES):
+            with self.subTest(relative=relative):
+                path = Path(self.cfg["sourceRoot"]) / relative
+                self.write(path, self.sources[relative] + b"\n# changed after startup\n")
+                try:
+                    with self.assertRaises(Permanent) as caught:
+                        guards.custody_guard()
+                    self.assertEqual(caught.exception.code, "CONFIGURATION_DRIFT")
+                    self.assertEqual(guards.reason, "SUPERVISOR_BINDING_HASH_MISMATCH")
+                    result = self.launch()
+                    self.assertEqual((result.returncode, result.stdout, result.stderr),
+                                     (1, b"", b"SUPERVISOR_BINDING_HASH_MISMATCH\n"))
+                finally:
+                    self.write(path, self.sources[relative])
+
+    def test_native_configuration_source_set_pins_and_entrypoint_path(self):
+        result = self.launch(digest="0" * 64)
+        self.assertEqual((result.returncode, result.stderr), (1, b"SUPERVISOR_BINDING_HASH_MISMATCH\n"))
+        copied = self.root / "copied-entrypoint.py"
+        self.write(copied, self.sources[s.SELF])
+        result = self.launch(copied)
+        self.assertEqual((result.returncode, result.stderr), (1, b"SUPERVISOR_ENTRYPOINT_PATH_DRIFT\n"))
+        hashes = dict(self.cfg["sourceHashes"])
+        for change, code in (
+            (lambda h: h.pop(s.SELF), b"EXACT_SUPERVISOR_SOURCE_SET_REQUIRED\n"),
+            (lambda h: h.update({"extra.py": "a" * 64}), b"EXACT_SUPERVISOR_SOURCE_SET_REQUIRED\n"),
+            (lambda h: h.update({next(iter(s.RECOVERY_SOURCES)): "0" * 64}),
+             b"SUPERVISOR_RECOVERY_PIN_MISMATCH\n"),
+        ):
+            self.cfg["sourceHashes"] = dict(hashes)
+            change(self.cfg["sourceHashes"])
+            self.bind_configuration()
+            result = self.launch()
+            self.assertEqual((result.returncode, result.stdout, result.stderr), (1, b"", code))
+
+    def test_native_source_custody_root_mode_links_and_ancestors(self):
+        root = Path(self.cfg["sourceRoot"])
+        path = root / "tools/semantic_provider_operation/authorization.py"
+        configuration_ = s.Configuration(self.path, s.sha(self.raw))
+        guards = s.Guards(configuration_, None, "9" * 64, Permanent)
+
+        def denied(code):
+            with self.assertRaises(Permanent) as caught:
+                guards.custody_guard()
+            self.assertEqual(caught.exception.code, "CONFIGURATION_DRIFT")
+            result = self.launch()
+            self.assertEqual((result.returncode, result.stderr), (1, code + b"\n"))
+
+        root.chmod(0o755)
+        denied(b"SUPERVISOR_PRIVATE_DIRECTORY_REQUIRED")
+        root.chmod(0o700)
+        path.chmod(0o644)
+        denied(b"SUPERVISOR_FILE_CUSTODY_REQUIRED")
+        path.chmod(0o600)
+        hardlink = self.root / "hardlink.py"
+        os.link(path, hardlink)
+        denied(b"SUPERVISOR_FILE_CUSTODY_REQUIRED")
+        hardlink.unlink()
+        path.parent.chmod(0o777)
+        denied(b"SUPERVISOR_ANCESTOR_CUSTODY_REQUIRED")
+        path.parent.chmod(0o700)
+        retained = self.root / "retained.py"
+        path.rename(retained)
+        path.symlink_to(retained)
+        denied(b"LOCAL_STATE_UNPROVEN")
+        path.unlink()
+        retained.rename(path)
+        guards.custody_guard()
 
 
 class NativeScope(fixture_module.Fixture):

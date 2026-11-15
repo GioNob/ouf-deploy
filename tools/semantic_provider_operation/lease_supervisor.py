@@ -27,7 +27,7 @@ STATUS_SCHEMA = "ouf.semantic-provider-lease-supervisor-status.v1"
 RATE_SCHEMA = "ouf.semantic-provider-lease-activations.v1"
 ROLES = ("adapter", "southbound")
 CODE = re.compile(r"[A-Z0-9_]{1,80}")
-FIELDS = {"schema", "installationRef", "entityRef", "issuerRef", "authorizationRoot", "anchorBinding",
+FIELDS = {"schema", "sourceRoot", "sourceHashes", "installationRef", "entityRef", "issuerRef", "authorizationRoot", "anchorBinding",
           "mandateRoot", "opensslBinding", "mandatesModule", "registryRoot", "coordinator",
           "recoveryJournalRoot", "statusPath", "limits"}
 COORDINATOR_FIELDS = {"ownerConfiguration", "journalPath", "commonLockPath", "dnsProfile", "nftBinding"}
@@ -45,6 +45,11 @@ PINS = {
     "dns": "f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f",
     "readback_margin_compiler": "814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d",
 }
+SELF = "scripts/semantic-provider-lease-supervisor-v2.py"
+OPERATION_SOURCES = {"tools/semantic_provider_operation/" + name + ".py"
+                     for name in ("authorization", "epochs", "lease_supervisor")}
+RECOVERY_SOURCES = {"tools/semantic_lease_recovery/" + name + ".py": digest for name, digest in PINS.items()}
+SOURCES = {SELF} | OPERATION_SOURCES | set(RECOVERY_SOURCES)
 
 
 class Denied(RuntimeError):
@@ -80,9 +85,20 @@ def binding(value, extra=()):
             and authorization.HEX64.fullmatch(value["sha256"]) is not None)
 
 
+def source_bindings(value):
+    require(absolute(value["sourceRoot"]), "ABSOLUTE_SOURCE_ROOT_REQUIRED")
+    hashes = value["sourceHashes"]
+    require(type(hashes) is dict and set(hashes) == SOURCES
+            and all(type(h) is str and authorization.HEX64.fullmatch(h) for h in hashes.values()),
+            "EXACT_SUPERVISOR_SOURCE_SET_REQUIRED")
+    require(all(hashes[path] == digest for path, digest in RECOVERY_SOURCES.items()),
+            "SUPERVISOR_RECOVERY_PIN_MISMATCH")
+
+
 def validate(raw):
     value = authorization.decode(raw)
     require(set(value) == FIELDS and value["schema"] == SCHEMA, "EXACT_SUPERVISOR_CONFIGURATION_REQUIRED")
+    source_bindings(value)
     require(all(authorization.identity(value[k]) for k in ("installationRef", "entityRef", "issuerRef")),
             "SUPERVISOR_IDENTITY_REQUIRED")
     require(all(absolute(value[k]) for k in ("authorizationRoot", "mandateRoot", "registryRoot",
@@ -139,6 +155,19 @@ def private_directory(path):
             and stat.S_IMODE(info.st_mode) == 0o700, "SUPERVISOR_PRIVATE_DIRECTORY_REQUIRED")
 
 
+def verify_sources(cfg, reader=read_file, directory=private_directory):
+    """Return only verified bytes; recheck the closed set and the fixed R12 pins."""
+    source_bindings(cfg)
+    root = Path(cfg["sourceRoot"])
+    directory(root)
+    verified = {}
+    for relative in sorted(SOURCES):
+        raw = reader(root / relative, cfg["sourceHashes"][relative])
+        require(sha(raw) == cfg["sourceHashes"][relative], "SUPERVISOR_BINDING_HASH_MISMATCH")
+        verified[relative] = raw
+    return verified
+
+
 def sync_directory(path):
     fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
@@ -175,9 +204,10 @@ def compiled(raw, path, name, expected):
 
 
 class Configuration:
-    def __init__(self, path, expected, reader=read_file):
+    def __init__(self, path, expected, reader=read_file, directory=private_directory):
         require(type(expected) is str and authorization.HEX64.fullmatch(expected), "CONFIGURATION_SHA256_REQUIRED")
         self.path, self.expected, self.reader = path, expected, reader
+        self.directory = directory
         self.value = validate(reader(path, expected))
 
     def custody(self):
@@ -189,6 +219,7 @@ class Configuration:
                 self.reader(item["path"], item["sha256"], executable=name == "nftBinding")
             item = self.value["mandatesModule"]
             self.reader(item["path"], item["sha256"])
+            return verify_sources(self.value, self.reader, self.directory)
         except OSError:
             raise Denied("CONFIGURATION_CUSTODY_CHANGED") from None
 
@@ -435,10 +466,16 @@ def lifetime_lock(status_path):
 def runtime(configuration):
     """Compose the installed owner closure and the unchanged pinned R12 recovery."""
     cfg = configuration.value
-    configuration.custody()
-    root = Path(__file__).resolve().parents[1] / "semantic_lease_recovery"
-    core = compiled(read_file(root / "activation_core.py", PINS["activation_core"]),
-                    root / "activation_core.py", "lease_activation_core_v2", PINS["activation_core"])
+    verified = configuration.custody()
+    root = Path(cfg["sourceRoot"])
+
+    def recovery(name, module_name=None):
+        relative = "tools/semantic_lease_recovery/" + name + ".py"
+        expected = cfg["sourceHashes"][relative]
+        require(expected == PINS[name], "SUPERVISOR_RECOVERY_PIN_MISMATCH")
+        return compiled(verified[relative], root / relative, module_name or name, expected)
+
+    core = recovery("activation_core", "lease_activation_core_v2")
     binding_ = cfg["coordinator"]["ownerConfiguration"]
     owner = json.loads(read_file(binding_["path"], binding_["sha256"]))
     source = Path(binding_["path"]).parent / "source"
@@ -447,8 +484,7 @@ def runtime(configuration):
     for name in PINS:
         if name == "activation_core":
             continue
-        path = root / (name + ".py")
-        loaded[name] = compiled(read_file(path, PINS[name]), path, name, PINS[name])
+        loaded[name] = recovery(name)
     c = cfg["coordinator"]
     require(owner["journalFile"] == c["journalPath"] and owner["commonLockFile"] == c["commonLockPath"]
             and owner["nftPath"] == c["nftBinding"]["path"] and owner["nftSha256"] == c["nftBinding"]["sha256"]
@@ -476,8 +512,6 @@ def runtime(configuration):
     def custody():
         for name, raw in retained.items():
             read_file(source / name, sha(raw))
-        for name, expected in PINS.items():
-            read_file(root / (name + ".py"), expected)
 
     guards = Guards(configuration, mandates, owner["expectedStructureHash"], loaded["bounded_recovery"].Permanent,
                     retained=custody)

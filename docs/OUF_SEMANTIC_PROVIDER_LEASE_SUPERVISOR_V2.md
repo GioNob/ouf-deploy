@@ -9,7 +9,7 @@ passano dal coordinatore e dalla recovery R12 esistente, senza modifiche.
 Avvio previsto su Linux root:root:
 
 ```sh
-/usr/bin/python3 -I -B /opt/ouf/scripts/semantic-provider-lease-supervisor-v2.py \
+/usr/bin/python3 -I -B /opt/ouf/lease-supervisor/source/scripts/semantic-provider-lease-supervisor-v2.py \
   --configuration /etc/ouf/lease-v2/configuration.json \
   --configuration-sha256 <sha256-dei-byte-canonici>
 ```
@@ -22,12 +22,43 @@ gli errori di quiescenza danno `FAILED` e uscita 1.
 
 La configurazione canonica ha schema chiuso
 `ouf.semantic-provider-lease-supervisor.v1`: `installationRef`, `entityRef`,
-`issuerRef`, `authorizationRoot`, `anchorBinding`, `mandateRoot`,
+`issuerRef`, `sourceRoot`, `sourceHashes`, `authorizationRoot`, `anchorBinding`, `mandateRoot`,
 `opensslBinding`, `mandatesModule`, `registryRoot`, `coordinator`,
 `recoveryJournalRoot`, `statusPath`, `limits`, oltre a `schema`.
 I binding sono `{path, sha256}`; OpenSSL aggiunge `version`.
 Tutti i percorsi sono assoluti, senza traversal. `limits` contiene esattamente
 `maxActivationsPerHour: 6`, `heartbeatSeconds: 1..30`, `pollSeconds: 1..300`.
+
+`sourceRoot` è una directory assoluta root:root 0700 (nell'esempio,
+`/opt/ouf/lease-supervisor/source`). `sourceHashes` è una mappa chiusa di
+esattamente 15 percorsi relativi a quella directory verso SHA-256 esadecimali
+minuscoli di 64 caratteri:
+
+- `scripts/semantic-provider-lease-supervisor-v2.py`;
+- `tools/semantic_provider_operation/lease_supervisor.py`, `authorization.py`
+  ed `epochs.py` (tutti nella stessa directory);
+- `tools/semantic_lease_recovery/<nome>.py`, per gli 11 nomi
+  `activation_core`, `bounded_recovery`, `recovery_journal`,
+  `lease_recovery_budget`, `resilient_lease_adapter`, `adaptive_supervisor`,
+  `nft_seconds_backend`, `deadline_backend`, `continuous_supervisor`, `dns`,
+  `readback_margin_compiler`.
+
+Gli hash delle 11 librerie devono coincidere anche con `PINS` nel supervisore.
+Un percorso aggiunto o mancante viene rifiutato con
+`EXACT_SUPERVISOR_SOURCE_SET_REQUIRED`; una divergenza dai pin R12 con
+`SUPERVISOR_RECOVERY_PIN_MISMATCH`. Lo schema resta v1 perché la configurazione
+non è ancora installata.
+
+L'entrypoint richiede root:root, `-I -B` e verifica prima i byte canonici della
+configurazione contro `--configuration-sha256`, poi la directory sorgente,
+il proprio percorso esatto sotto `sourceRoot` e il proprio hash, infine tutta
+la chiusura con custodia e hash. Rilegge la configurazione prima di eseguire
+moduli. Compila i byte conservati con `ModuleType` ed `exec(compile(...))`;
+registra `authorization` ed `epochs` in `sys.modules` prima di
+`lease_supervisor`, senza aggiungere percorsi di ricerca o importare sorgenti
+dal filesystem. Un avvio con hash divergente termina con uscita 1 e il solo
+codice pubblico `SUPERVISOR_BINDING_HASH_MISMATCH`; il percorso dell'entrypoint
+diverso da quello fissato dà `SUPERVISOR_ENTRYPOINT_PATH_DRIFT`.
 
 `coordinator` contiene esattamente:
 
@@ -46,9 +77,14 @@ alla configurazione. Viene caricata da byte verificati con `load_installed`,
 senza eseguire i vecchi avviatori. Anche `mandates.py` viene compilato solo dai
 byte verificati. Le librerie recovery hanno i pin LF R12 nel nuovo modulo:
 la consegna deve preservare esattamente quei byte, senza conversione CRLF.
+`runtime()` le compila dalla chiusura verificata sotto `sourceRoot`, usando
+`sourceHashes` e ricontrollando l'uguaglianza con `PINS`; la posizione del
+modulo caricato non determina più la directory delle librerie.
 
 Configurazione, profili, moduli consegnati e journal sono file root:root 0600,
 regolari e senza link; gli antenati devono essere root e non scrivibili da altri.
+Questo vincolo copre anche tutti i 15 file sorgenti, incluso l'entrypoint
+invocato tramite Python (0600, non richiede il bit eseguibile).
 Il binario nft è root:root, eseguibile e non scrivibile da altri. I genitori
 dello stato e della recovery sono directory preesistenti root:root 0700.
 Il modulo non crea tabelle, lock comuni o journal di coordinamento.
@@ -76,6 +112,11 @@ con `GENERATION_CHANGED` verso la recovery. Le eccezioni sconosciute diventano
 `LOCAL_STATE_UNPROVEN`. Il binding nft è ricontrollato anche prima/dopo ogni
 comando del backend, compresa la revoca. Se la custodia non permette una
 revoca sicura, il servizio fallisce senza dichiarare quiescenza provata.
+Ogni `custody_guard` ricontrolla anche directory sorgente, insieme esatto,
+pin e byte dei 15 file, oltre ai binding già presenti e ai sorgenti del
+coordinatore trattenuti. La modifica di un sorgente dopo l'avvio revoca lo
+scope con `CONFIGURATION_DRIFT` alla guardia successiva; per un hash diverso
+il motivo dettagliato è `SUPERVISOR_BINDING_HASH_MISMATCH`.
 
 Lo stato `ouf.semantic-provider-lease-supervisor-status.v1` contiene soltanto
 `state`, `reason`, `activationsLastHour`, `renewals`, `authorizationSequence`,
@@ -89,3 +130,8 @@ Il gate `OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1` richiede Linux root:root e usa
 la fixture di `test_semantic_provider_operation.py` sotto `/run`: testa firmata,
 OpenSSL, registro e processi reali. È cablato nel workflow dedicato; non richiede
 DNS, nft, Docker o servizi esterni. Su Windows questi test restano saltati.
+La fixture nativa di chiusura consegna file temporanei 0600 sotto `/run`,
+prova il bootstrap verificato in un interprete `-I -B` e, per ogni sorgente,
+la manomissione all'avvio e alla guardia successiva. Copre inoltre hash della
+configurazione, percorso dell'entrypoint, insieme chiuso, pin divergenti,
+permessi, hardlink, symlink e custodia degli antenati. Non avvia servizi.
