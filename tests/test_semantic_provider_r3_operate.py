@@ -455,7 +455,7 @@ assert hashlib.sha256(raw).hexdigest()==sys.argv[4]
 if (base/'quiesce-fail').exists(): raise SystemExit(1)
 cfg=json.loads(raw); path=pathlib.Path(cfg['coordinator']['journalPath'])
 row=json.loads(path.read_bytes()); row.update(state='QUIESCED',leaseAuthorized=False,startAuthorized=False)
-# Serialize concurrent create quiescence in the fixture as the real common lock does.
+# Serialize concurrent create/delete quiescence as the real common lock does.
 import fcntl
 with open(base/'common.lock','r+') as lock:
     fcntl.flock(lock,fcntl.LOCK_EX)
@@ -514,9 +514,22 @@ class OperateFixture(F.InstallFixture):
             if action == 'start':
                 for role in O.ROLES:
                     self.assertEqual((self.row(role)['state'],self.row(role)['epoch']), ('STARTED',1))
+                self.assertEqual(result['lastObservation']['lease']['state'], 'LEASE_READY')
+                self.assertEqual(result['lastObservation']['supervisor']['state'], 'ACTIVE')
             if action == 'restart-one':
                 self.assertEqual((self.row()['state'],self.row()['epoch']), ('STARTED',2))
                 self.assertEqual(json.loads((self.folder(epoch=1)/'adapter.json').read_bytes())['state'], 'DELETED')
+                self.assertEqual((self.row('southbound')['state'],self.row('southbound')['epoch']), ('STARTED',1))
+            if action in ('start', 'restart-one'):
+                for role in O.ROLES:
+                    self.assertTrue(result['lastObservation']['tables'][role]['inet'])
+                    self.assertTrue(result['lastObservation']['tables'][role]['bridge'])
+            if action == 'stop':
+                self.assertEqual(result['lastObservation']['lease']['state'], 'QUIESCED')
+                self.assertFalse(result['lastObservation']['lease']['leaseAuthorized'])
+                for role in O.ROLES:
+                    self.assertFalse(result['lastObservation']['tables'][role]['inet'])
+                    self.assertFalse(result['lastObservation']['tables'][role]['bridge'])
         for role in O.ROLES: self.assertEqual(self.row(role)['state'], 'DELETED')
 
 

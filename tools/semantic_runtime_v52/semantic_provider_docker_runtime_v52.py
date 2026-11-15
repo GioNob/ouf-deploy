@@ -565,6 +565,7 @@ def operate(config_path, argv):
             result = subprocess.run([config['runtimePath'], *argv], stderr=subprocess.DEVNULL, env=ENV, timeout=10)
             if operation == 'delete':
                 require(result.returncode == 0, 'RUNTIME_DELETE_DENIED')
+                quiesce(config)
                 require(record['driverHash'] is not None, 'UNPREPARED_DELETE_REQUIRES_RECOVERY')
                 driver_call('rollback'); broker_phase('cleanup'); publish('DELETED')
             else:

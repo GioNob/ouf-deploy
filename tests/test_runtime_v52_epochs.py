@@ -16,7 +16,7 @@ import sys
 import time
 import types
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT/'tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py'
@@ -68,6 +68,22 @@ class PortableContracts(unittest.TestCase):
         runtime = self.runtime()
         self.assertEqual(runtime.public(ValueError('/private/sentinel')), 'DOCKER_RUNTIME_OPERATION_UNPROVEN')
         self.assertEqual(runtime.public(runtime.Denied('EPOCH_STILL_OPEN')), 'EPOCH_STILL_OPEN')
+
+    def test_quiescence_failure_is_redacted_and_bindings_are_rechecked(self):
+        runtime = self.runtime()
+        cfg = {'pythonPath': '/python', 'leaseQuiesce': {
+            'entrypoint': {'path': '/supervisor.py'},
+            'configuration': {'path': '/supervisor.json', 'sha256': 'a'*64}}}
+        for error in (runtime.Denied('ADMISSION_OR_DRIVER_FAILED'),
+                      subprocess.TimeoutExpired('/private/sentinel', 20)):
+            with self.subTest(error=type(error).__name__), \
+                    patch.object(runtime, 'verify_files') as verify, \
+                    patch.object(runtime, 'capture', side_effect=error) as capture, \
+                    self.assertRaisesRegex(runtime.Denied, '^LEASE_QUIESCENCE_UNPROVEN$'):
+                runtime.quiesce(cfg)
+            self.assertEqual(verify.call_args_list, [call(cfg), call(cfg)])
+            capture.assert_called_once_with(['/python', '-I', '-B', '/supervisor.py', '--configuration',
+                '/supervisor.json', '--configuration-sha256', 'a'*64, '--quiesce-only'])
 
     def test_both_operation_modules_are_verified_before_compilation(self):
         runtime = self.runtime()
@@ -238,6 +254,9 @@ class NativeEpochs(operation_fixture.Fixture):
         self.assertEqual(kw['env'], self.r.ENV)
         code, output, error = 0, b'', b''
         if str(self.quiescer) in argv:
+            row = self.row()
+            if row and row['state'] == 'DELETING':
+                self.assertFalse(self.exists); self.assertFalse(self.running)
             self.assertEqual(argv, [str(self.python), '-I', '-B', str(self.quiescer), '--configuration', str(self.qcfg),
                 '--configuration-sha256', self.cfg['leaseQuiesce']['configuration']['sha256'], '--quiesce-only'])
             self.assertEqual(kw['stdin'], subprocess.DEVNULL); self.assertNotIn('input', kw)
@@ -282,6 +301,7 @@ class NativeEpochs(operation_fixture.Fixture):
                 self.assertEqual(kw['timeout'], 40); self.assertNotIn('stderr', kw)
                 self.exists = self.create_ok; code = 0 if self.create_ok else 1
             elif 'delete' in argv:
+                self.assertEqual(self.row()['state'], 'DELETING')
                 if self.delete_ok: self.exists, self.running = False, False
                 else: code = 1
             elif 'kill' in argv: code = 0 if self.kill_ok else 1
@@ -322,7 +342,7 @@ class NativeEpochs(operation_fixture.Fixture):
             self.assertEqual(row['generation'], {'pid': self.process.pid, 'startTicks': self.e.start_ticks(self.process.pid)})
             self.assertEqual(self.run_op('state'), 0); self.assertEqual(self.run_op('kill'), 0)
             self.assertEqual(self.run_op('delete'), 0); self.assertEqual(self.row()['state'], 'DELETED')
-        self.assertEqual(sum(str(self.quiescer) in argv for argv, _ in self.calls), 2)
+        self.assertEqual(sum(str(self.quiescer) in argv for argv, _ in self.calls), 4)
         for path in (self.registry/CID/'current', self.folder()/'adapter.json', self.folder()/'bundle/config.json'):
             info = path.stat(); self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (0, 0, 0o600))
         self.assertEqual(stat.S_IMODE(self.folder().stat().st_mode), 0o700)
@@ -421,6 +441,37 @@ class NativeEpochs(operation_fixture.Fixture):
         self.denied('delete', 'RUNTIME_DELETE_DENIED')
         self.assertEqual(self.row()['state'], 'FAILED')
         self.assertFalse(any(str(self.driver) in argv for argv, _ in self.calls[before:]))
+        self.assertFalse(any(str(self.quiescer) in argv for argv, _ in self.calls[before:]))
+
+    def test_delete_quiesces_after_runc_before_rollback_and_cleanup(self):
+        self.run_op('create'); self.run_op('start'); before = len(self.calls)
+        generation = self.row()['generation']
+        with patch.object(self.r, 'publish_epoch', wraps=self.r.publish_epoch) as publish:
+            self.assertEqual(self.run_op('delete'), 0)
+        self.assertEqual([call.args[2]['state'] for call in publish.call_args_list], ['DELETING', 'DELETED'])
+        calls = [argv for argv, _ in self.calls[before:]]
+        self.assertEqual(len(calls), 4)
+        self.assertEqual(calls[0], [str(self.runtime), *self.args('delete')])
+        self.assertIn(str(self.quiescer), calls[1]); self.assertEqual(calls[1][-1], '--quiesce-only')
+        self.assertIn(str(self.driver), calls[2]); self.assertEqual(calls[2][-2:], ['--mode', 'rollback'])
+        self.assertIn(str(self.broker), calls[3]); self.assertEqual(calls[3][-2:], ['--mode', 'cleanup'])
+        self.assertEqual((self.row()['state'], self.row()['failure']), ('DELETED', None))
+        self.assertEqual(self.row()['generation'], generation)
+
+    def test_delete_quiescence_failure_marks_failed_without_rollback_or_cleanup(self):
+        self.run_op('create'); self.run_op('start'); before = len(self.calls)
+        generation = self.row()['generation']; self.quiesce_ok = False
+        with patch.object(self.r, 'publish_epoch', wraps=self.r.publish_epoch) as publish:
+            self.denied('delete', 'LEASE_QUIESCENCE_UNPROVEN')
+        self.assertEqual([call.args[2]['state'] for call in publish.call_args_list], ['DELETING', 'FAILED'])
+        self.assertEqual((self.row()['state'], self.row()['failure']), ('FAILED', 'LEASE_QUIESCENCE_UNPROVEN'))
+        self.assertEqual(self.row()['generation'], generation)
+        self.assertFalse(self.exists)
+        calls = [argv for argv, _ in self.calls[before:]]
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0], [str(self.runtime), *self.args('delete')])
+        self.assertIn(str(self.quiescer), calls[1])
+        self.assertFalse(any(str(self.driver) in argv or str(self.broker) in argv for argv in calls))
 
     def test_failed_cas_does_not_overwrite_journal(self):
         self.run_op('create'); old = self.row(); path = self.folder()/'adapter.json'; before = path.read_bytes()

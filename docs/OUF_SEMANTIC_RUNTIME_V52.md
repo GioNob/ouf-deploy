@@ -93,9 +93,16 @@ e `prepare` ricevono lo stato OCI. `cleanup` ha stdin chiuso. L'hook riceve
 lo stato OCI; driver start e rollback hanno stdin chiuso. Tutti usano `-I -B`
 e l'ambiente ridotto del v5.1, senza credenziali.
 
-`delete` esegue `DELETING`, runc delete, rollback del driver, cleanup del
-broker nell'epoca, poi `DELETED`. `state` e `kill` con epoca viva usano runc;
-senza epoca o con epoca terminale, `state`/`delete` richiedono l'esatta prova
+`delete` esegue `DELETING`, runc delete, `quiesce(config)` tramite lo stesso
+supervisore `--quiesce-only` del create, rollback del driver, cleanup del
+broker nell'epoca, poi `DELETED`. La revoca precede il rollback anche quando
+l'altro ruolo è ancora vivo e il supervisore non ha ancora reagito al delete.
+Se la quiescenza fallisce, l'epoca diventa `FAILED` con
+`LEASE_QUIESCENCE_UNPROVEN`, senza rollback né cleanup. La verifica della
+generazione morta nel driver resta invariata.
+`state` e `kill` con epoca viva usano runc; `kill` non quiesce: il lease resta
+legato alle epoche vive e il supervisore lo ritira.
+Senza epoca o con epoca terminale, `state`/`delete` richiedono l'esatta prova
 di assenza del v5.1. Un delete non preparato richiede recupero come nel v5.1.
 Gli errori del percorso aperto diventano `FAILED` con codice pubblico,
 con CAS best effort: se fallisce, nessun journal concorrente viene sovrascritto.
@@ -110,7 +117,15 @@ processo reale per `startTicks`, runc/broker/hook/quiescenza finti con controllo
 esatto di argv, stdin, fasi e ambiente. Copre due cicli sulla stessa autorità,
 abbandono, epoca ancora aperta, limite orario, quiescenza fallita, STOP/revoca,
 hash e ruoli divergenti, grant legacy o con binding errato, FAILED e CAS fallito.
-I test portabili verificano il contratto v7 e la redazione dei codici pubblici.
+I test portabili verificano il contratto v7, la redazione dei codici pubblici
+e la normalizzazione degli errori di quiescenza con ricontrollo dei binding.
+I nativi verificano anche l'ordine delete → quiescenza → rollback → cleanup,
+il fallimento della quiescenza senza rollback/cleanup e due revoche per ciclo
+(create e delete). Il caso R3 `test_real_wrapper_start_restart_stop` verifica
+start, restart del solo adapter (epoca 1 `DELETED`, epoca 2 `STARTED`, tabelle
+ricreate senza nuove firme), poi stop con entrambi `DELETED`, lease `QUIESCED`
+e tabelle assenti. La sua verifica nativa è affidata alla CI Linux root;
+l'esecuzione locale delle suite portabili non la attesta.
 
 Il workflow `semantic-runtime-v52.yml` esegue i nativi e le regressioni v5.1,
 authorization/epochs, supervisore e tutto `test_semantic_provider_admission_v2*.py`,
