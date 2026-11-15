@@ -68,7 +68,7 @@ for row in oci['mounts']:
     target=root/row['destination'].lstrip('/')
     run('--bind',row['source'],target)
     run('-o','remount,bind,ro',target)
-if oci['root']['readonly']: run('-o','remount,bind,ro',root)
+if oci['root'].get('readonly'): run('-o','remount,bind,ro',root)
 pathlib.Path(ready).write_text(str(os.getpid()))
 os.chroot(root); os.chdir('/')
 while True: time.sleep(1)
