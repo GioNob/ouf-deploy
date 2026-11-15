@@ -258,8 +258,8 @@ def nft_section(nft, tables):
             if f"{family} {name}" not in out["tables"]:
                 continue
             sets = [item["set"] for item in run("list", "table", family, name) if "set" in item]
-            out["detail"][f"{family} {name}"] = sorted(
-                (s["name"], len(s.get("elem", []))) for s in sets)
+            out["detail"][f"{family} {name}"] = [
+                {"set": s["name"], "elements": len(s.get("elem", []))} for s in sorted(sets, key=lambda s: s["name"])]
     return out
 
 

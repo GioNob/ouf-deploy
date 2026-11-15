@@ -139,7 +139,7 @@ class Inventory(unittest.TestCase):
         self.assertEqual(old["broker-state.json"]["state"], "CLEANED")
         self.assertEqual(report["versionedBase"]["generations"], [1, 2])
         self.assertEqual(report["versionedBase"]["latest"]["sha256"], self.latest["sha256"])
-        self.assertEqual(report["nft"]["detail"], {"inet ouf_lease": [["provider_1", 0]]})
+        self.assertEqual(report["nft"]["detail"], {"inet ouf_lease": [{"set": "provider_1", "elements": 0}]})
         self.assertEqual(report["a2Ingress"][0]["proposedIngress"]["destinationPort"], 10443)
         for name in ("writes", "containerOperations", "nftWrites", "privateKeysRead", "signaturesIssued"):
             self.assertEqual(report[name], 0)
