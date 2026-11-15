@@ -186,6 +186,11 @@ def compare_entries(image, actual, upper, mounts, source_kind):
                                 'before': None, 'after': value})
         elif value != old:
             fields = {k for k in set(old) | set(value) if old.get(k) != value.get(k)}
+            if not (name in copied and old['kind'] == value['kind'] == 'directory' and fields == {'links'} and name in upper):
+                # Metadata field names and small scalar values only; never file contents or xattr values.
+                small = {k: (old.get(k), value.get(k)) for k in fields if k in ('kind', 'mode', 'uid', 'gid', 'links', 'size')}
+                print('POST_CREATE_IMAGE_DIFF ' + json.dumps({'path': name, 'fields': sorted(fields), 'values': small,
+                      'copied': name in copied, 'inUpper': name in upper}), file=sys.stderr)
             require(name in copied and old['kind'] == value['kind'] == 'directory'
                     and fields == {'links'} and name in upper, 'POST_CREATE_IMAGE_METADATA_OR_CONTENT_DRIFT')
             children = sum(v['kind'] == 'directory' and
