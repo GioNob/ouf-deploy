@@ -186,6 +186,12 @@ def compare_entries(image, actual, upper, mounts, source_kind):
                                 'before': None, 'after': value})
         elif value != old:
             fields = {k for k in set(old) | set(value) if old.get(k) != value.get(k)}
+            if (fields == {'links'} and old['kind'] == value['kind'] == 'directory'
+                    and value['links'] == 1 and name not in upper):
+                # overlayfs reports nlink 1 for a directory merged from several image
+                # layers; the single-lower expected view reports the real count. Every
+                # child entry is still compared one by one, so no content can hide here.
+                continue
             if not (name in copied and old['kind'] == value['kind'] == 'directory' and fields == {'links'} and name in upper):
                 # Metadata field names and small scalar values only; never file contents or xattr values.
                 small = {k: (old.get(k), value.get(k)) for k in fields if k in ('kind', 'mode', 'uid', 'gid', 'links', 'size')}

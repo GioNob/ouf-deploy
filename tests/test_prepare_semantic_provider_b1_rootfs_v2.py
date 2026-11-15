@@ -142,6 +142,16 @@ class DifferenceTests(unittest.TestCase):
         self.setUp(); self.upper['run']['links'] = 99
         self.denied('POST_CREATE_UPPER_DIRECTORY_LINKS_DENIED')
 
+    def test_multilayer_merged_image_directory_reports_one_link(self):
+        self.image['app'] = entry('app', mode=0o755, links=3)
+        self.actual['app'] = dict(self.image['app'], links=1)
+        C.compare_entries(self.image, self.actual, self.upper, self.mounts, lambda _: 'file')
+        self.actual['app'] = dict(self.image['app'], links=1, mode=0o700)
+        self.denied('POST_CREATE_IMAGE_METADATA_OR_CONTENT_DRIFT')
+        self.setUp(); self.image['app'] = entry('app', mode=0o755, links=3)
+        self.actual['app'] = dict(self.image['app'], links=5)
+        self.denied('POST_CREATE_IMAGE_METADATA_OR_CONTENT_DRIFT')
+
     def test_existing_destinations_remain_exact_and_symlink_ancestors_are_denied(self):
         self.mounts.append({'destination': '/payload', 'type': 'bind', 'source': '/unused'})
         self.compare()
