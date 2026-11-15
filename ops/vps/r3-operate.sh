@@ -4,7 +4,7 @@
 # Uso:  AZIONE=start bash r3-operate.sh plan               (sola lettura)
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
-# L'apply riusa la consegna della v2 e la root di output salvata dal plan della stessa azione.
+# L'apply riusa la consegna della v3 e la root di output salvata dal plan della stessa azione.
 set -euo pipefail
 umask 077
 
@@ -17,13 +17,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=771736509a952ad61f32bd017fb05399674cd8da
+C=731e0f91165a962c6e204df919436fcf65f98662
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v2-state
+STATE=$HOME/.ouf-r3-v3-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -55,7 +55,7 @@ delivery() {
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py d353b4e844db395fdf45628f220d42702ca0796d6b7a0c02c5fd193d536c3553
-  fetch scripts/semantic-provider-deployment-broker-v2.py 7d732e261ee6c4215724d2e5e9d85347b261c9646d02cdc041dc90ae2f494983
+  fetch scripts/semantic-provider-deployment-broker-v2.py b92dfc23dbc9b402ec2666da9895e711ae6f719976767108d682933019da5f2e
   fetch scripts/semantic-provider-lease-supervisor-v2.py 0311cd4c3515a68530605ee201ccb7cbbc46d5ab989427efd174e6a647826ec5
   fetch scripts/semantic-provider-preexec-hook-v2.py a30e7b0a0b9c7d75398f7ec923f681800f0e1e71f0a6b7ac62c4e4fc85bc2bee
   fetch scripts/upgrade-semantic-provider-r3.py d36753cd23b2c993a43e2b6b04062304b575567a13267a1d3247602df5b11639
@@ -96,7 +96,7 @@ delivery() {
   fetch tools/semantic_lease_recovery/recovery_journal.py 43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d
   fetch tools/semantic_lease_recovery/resilient_lease_adapter.py beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683
   fetch tools/semantic_provider_admission_v2/__init__.py bbae3553c950479a55a26ac71f7a4d79e32f69402967b0b39064cfadd4e41b31
-  fetch tools/semantic_provider_admission_v2/broker_v2.py 475d76c1f8a8af92c476a115e30d27b57baa977131de09c770dcd68a30c36ce8
+  fetch tools/semantic_provider_admission_v2/broker_v2.py d09cce3dcfab2da074785d69b7b62016192c52a88e327b88500db4523cbb73b6
   fetch tools/semantic_provider_admission_v2/consumption_v2.py 44a6ef8de7e7bafd6881104fe148fb984a2acc595685c3095530155bd82c22e4
   fetch tools/semantic_provider_admission_v2/driver_v7.py 7a337664aea860226716b2ad016a5367a1de42b1acd916a735cfae9efc2da2e3
   fetch tools/semantic_provider_admission_v2/evidence_v2.py 046fc5ffe0238675b2e06063f52bfdea2ecc07aa6e39e6fe26a8c1ef30dd739b
@@ -110,7 +110,7 @@ delivery() {
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
   fetch tools/semantic_provider_r3/compose.py 52cfe46c437549b699ddee6e255d1c6303f626c66f7aabace9ba6f6097db3bc8
   fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
-  fetch tools/semantic_provider_r3/operate.py ce46380a34a36e8e15c5fd22ba50a1390da0756b634221f29e3983c79d714c7a
+  fetch tools/semantic_provider_r3/operate.py f9c4dfb45065938858e9dc505c6f18043deca33d92fe64a74b2db38de009f45b
   fetch tools/semantic_provider_r3/upgrade.py 46b50151f65e0f83910e6b8f6b7c60651961f54d6e41d5c355ef08a2a6c9be52
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
@@ -205,7 +205,7 @@ if [[ $ACTION == restart-one ]]; then
   esac
 fi
 OPSTATE=$HOME/.ouf-r3-operate-$ACTION
-[[ -f $STATE ]] || { echo "stato della consegna v2 assente: eseguire prima r3-issue-v2.sh" >&2; exit 2; }
+[[ -f $STATE ]] || { echo "stato della consegna v3 assente: eseguire prima r3-issue-v3.sh" >&2; exit 2; }
 read -r D _ < "$STATE"
 [[ $D == "$S"/semantic-provider-r3-source.* ]] || { echo 'stato della consegna non valido' >&2; exit 2; }
 delivery
