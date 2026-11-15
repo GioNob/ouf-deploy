@@ -1,0 +1,40 @@
+name: Semantic provider admission v2
+on:
+  pull_request:
+    paths:
+      - tools/semantic_provider_admission_v2/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - scripts/semantic-provider-deployment-broker-v2.py
+      - tests/test_semantic_provider_admission_v2.py
+      - tests/test_semantic_provider_operation.py
+      - tests/test_semantic_provider_lease_supervisor.py
+      - .github/workflows/semantic-provider-admission-v2.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  admission:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Portable policy and state machine tests
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_admission_v2.py -v
+      - name: Native broker with real operation authorization and epoch custody
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_admission_v2.py -v
+      - name: Non-regression operation authorization and epochs
+        run: >-
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation.py -v
+      - name: Non-regression lease supervisor
+        run: >-
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Compile new Python sources
+        run: >-
+          /usr/bin/python3 -I -m py_compile tools/semantic_provider_admission_v2/*.py
+          scripts/semantic-provider-deployment-broker-v2.py tests/test_semantic_provider_admission_v2.py
