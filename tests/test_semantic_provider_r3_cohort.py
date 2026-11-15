@@ -13,12 +13,15 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_semantic_provider_operation_issuance as F
@@ -98,7 +101,7 @@ def frame_policy(oci, role, source):
                      uid=636, gid=636, umask=None), approvedHooks=copy.deepcopy(oci.get('hooks') or {}))
 
 DIAGNOSTIC = r'''
-import os,pathlib,sys,traceback,types
+import json,os,pathlib,re,sys,tempfile,time,traceback,types
 runtime_path=pathlib.Path(RUNTIME)
 runtime=types.ModuleType('cohort_installed_runtime')
 runtime.__file__=str(runtime_path)
@@ -118,50 +121,53 @@ def trace(frame,event,arg):
             pass # Diagnostics must not change the runtime's exit/output protocol.
     return trace
 exec(compile(runtime_path.read_bytes(),str(runtime_path),'exec'),runtime.__dict__)
-if DENY_FIRST_EPOCH:
-    # Explicit fixture veto after real runc create/record-created. This never
-    # changes installed runtime/broker bytes, hashes or signed expectations.
-    native_run=runtime.subprocess.run
-    def deny_first_cohort(args,**kwargs):
-        if ('--mode' in args and args[args.index('--mode')+1]=='cohort-ready'
-                and '--epoch' in args and args[args.index('--epoch')+1]=='1'):
-            print('COHORT_FIXTURE_FIRST_START_DENIED epoch=1',file=sys.stderr,flush=True)
-            return runtime.subprocess.CompletedProcess(args,1)
+native_run=runtime.subprocess.run
+def diagnostic_run(args,**kwargs):
+    programs={'semantic-provider-deployment-broker-v2.py','semantic-provider-preexec-hook-v2.py'}
+    if '--mode' not in args or not any(pathlib.Path(a).name in programs for a in args):
         return native_run(args,**kwargs)
-    runtime.subprocess.run=deny_first_cohort
+    mode=args[args.index('--mode')+1]
+    if (DENY_FIRST_EPOCH and mode=='cohort-ready' and '--epoch' in args
+            and args[args.index('--epoch')+1]=='1'):
+        # A deliberate negative input at the broker boundary, after real create.
+        # Execute the REAL broker: it must reject the mismatched live PID and
+        # publish its own validated receipt. Never fabricate a process result.
+        state=json.loads(kwargs['input']);state['pid']=0
+        kwargs={**kwargs,'input':runtime.canonical(state)}
+    if kwargs.get('stderr')!=runtime.subprocess.DEVNULL:
+        return native_run(args,**kwargs)
+    started=time.monotonic();result=None;failure=None
+    with tempfile.TemporaryFile() as errors:
+        try:
+            result=native_run(args,**{**kwargs,'stderr':errors})
+            return result
+        except Exception as error:
+            failure=type(error).__name__
+            raise
+        finally:
+            elapsed=time.monotonic()-started
+            try:
+                errors.seek(0);raw=errors.read(16385)
+                # Only closed public codes; never log private argv/config/data.
+                codes=re.findall(rb'(?:SEMANTIC_DEPLOYMENT_BROKER|SEMANTIC_PREEXEC_HOOK)=DENIED ([A-Z0-9_]{1,80})(?:\r?\n|$)',raw)
+                output=kwargs.get('stdout')
+                output_bytes=(os.fstat(output.fileno()).st_size if hasattr(output,'fileno') else
+                              len(result.stdout) if result is not None and isinstance(result.stdout,bytes) else None)
+                row=dict(runtimePid=os.getpid(),mode=mode,epoch=args[args.index('--epoch')+1] if '--epoch' in args else None,
+                         elapsedSeconds=elapsed,returncode=result.returncode if result is not None else None,
+                         stdoutBytes=output_bytes,exception=failure,codes=[c.decode('ascii') for c in codes])
+                path=pathlib.Path(TRACE_ROOT)/('command-'+str(os.getpid())+'.jsonl')
+                with path.open('a',encoding='utf-8') as stream:
+                    stream.write(json.dumps(row,sort_keys=True)+'\n')
+            except OSError:
+                pass # Preserve the original return/exception and suppressed stderr.
+runtime.subprocess.run=diagnostic_run
 sys.settrace(trace)
 try:
     raise SystemExit(runtime.main())
 finally:
     sys.settrace(None)
 '''
-
-# Source-bound fixture proxy: execute the real ip unchanged and retain the
-# namespace/host lists seen by the broker's command process (also under nsenter).
-# In particular -d must not be used to hide a missing ordinary link listing.
-IP_DIAGNOSTIC = r'''
-import json,os,pathlib,subprocess,sys
-args=sys.argv[1:]
-result=subprocess.run([REAL_IP,*args],capture_output=True)
-if args==['-j','link','show']:
-    try:
-        ancestors=[];pid=os.getppid()
-        for _ in range(12):
-            proc=pathlib.Path('/proc')/str(pid)
-            scripts=[pathlib.Path(a).name for a in (proc/'cmdline').read_bytes().decode().split('\0') if a.endswith('.py')]
-            ancestors.append(dict(pid=pid,comm=(proc/'comm').read_text().strip(),scripts=scripts,netns=os.readlink(proc/'ns/net')))
-            if pid==1: break
-            pid=int((proc/'stat').read_text().rsplit(')',1)[1].split()[1])
-        detail=subprocess.run([REAL_IP,'-j','-d','link','show'],capture_output=True,check=True)
-        row=dict(netns=os.readlink('/proc/self/ns/net'),ancestors=ancestors,
-                 links=json.loads(result.stdout),detailedLinks=json.loads(detail.stdout))
-        (pathlib.Path(TRACE_ROOT)/('broker-links-'+str(os.getpid())+'.json')).write_text(json.dumps(row,sort_keys=True))
-    except Exception:
-        pass # Diagnostic failures never change the real command's protocol.
-sys.stdout.buffer.write(result.stdout);sys.stderr.buffer.write(result.stderr)
-raise SystemExit(result.returncode)
-'''
-
 
 def native_child_argv():
     # Docker/libnetwork may resolve the initial namespace via /proc/1/ns/net.
@@ -201,7 +207,7 @@ def collect_codes():
 
 class PortableTests(unittest.TestCase):
     def test_fixture_programs_compile_and_collect_codes_are_real(self):
-        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, IP_DIAGNOSTIC):
+        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC):
             compile(source, "<cohort-fixture>", "exec")
         compile(FRAME_PATH.read_bytes(), str(FRAME_PATH), 'exec')
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
@@ -254,7 +260,7 @@ class PortableTests(unittest.TestCase):
 
     def test_diagnostic_preserves_protocol_and_captures_suppressed_exception(self):
         source = '''
-import sys
+import subprocess,sys
 def operate():
     if sys.argv[-1]=='unmasked':
         raise FileNotFoundError('operation.lock')
@@ -299,6 +305,199 @@ if __name__=='__main__': raise SystemExit(main())
                         if mode == 'redacted':
                             self.assertIn('DOCKER_RUNTIME_OPERATION_UNPROVEN', trace)
 
+    def test_first_epoch_negative_input_executes_broker_and_keeps_public_diagnostics(self):
+        source = '''
+import json,subprocess,sys
+def canonical(value): return json.dumps(value).encode()
+def main():
+    broker,epoch=sys.argv[-2:]
+    result=subprocess.run([sys.executable,'-I','-B',broker,'--mode','cohort-ready','--epoch',epoch],
+        input=canonical(dict(pid=42)),stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=20)
+    sys.stdout.buffer.write(result.stdout)
+    return result.returncode
+'''
+        broker_source = '''
+import json,sys
+state=json.load(sys.stdin)
+print(json.dumps(state))
+print('PRIVATE/path/never-report',file=sys.stderr)
+if state['pid']==0:
+    print('SEMANTIC_DEPLOYMENT_BROKER=DENIED BROKER_LIVE_CREATED_STATE_DRIFT',file=sys.stderr)
+    raise SystemExit(1)
+'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            runtime, diagnostic = root / 'runtime.py', root / 'diagnostic.py'
+            broker = root / 'semantic-provider-deployment-broker-v2.py'
+            runtime.write_text(source)
+            broker.write_text(broker_source)
+            for deny, epoch in ((False, '1'), (True, '1'), (True, '2')):
+                traces = root / (str(deny) + epoch)
+                traces.mkdir()
+                diagnostic.write_text(diagnostic_source(runtime, 'fixture.json', traces, deny))
+                result = subprocess.run([sys.executable, '-I', '-B', str(diagnostic), str(broker), epoch],
+                                        capture_output=True)
+                rejected = deny and epoch == '1'
+                self.assertEqual(result.returncode, int(rejected))
+                # This stdout can only come from the child; no CompletedProcess stub.
+                self.assertEqual(json.loads(result.stdout), dict(pid=0 if rejected else 42))
+                self.assertEqual(result.stderr, b'')
+                rows = [json.loads(line) for p in traces.glob('command-*.jsonl')
+                        for line in p.read_text().splitlines()]
+                self.assertEqual(len(rows), 1)
+                row = rows[0]
+                self.assertEqual((row['mode'], row['epoch'], row['returncode']),
+                                 ('cohort-ready', epoch, result.returncode))
+                self.assertIsNone(row['exception'])
+                self.assertGreaterEqual(row['elapsedSeconds'], 0)
+                self.assertEqual(row['stdoutBytes'], len(result.stdout))
+                self.assertEqual(row['codes'], ['BROKER_LIVE_CREATED_STATE_DRIFT'] if rejected else [])
+                self.assertNotIn('PRIVATE', json.dumps(rows))
+
+    def test_driver_diagnostics_preserve_failure_and_timeout_protocol(self):
+        source = '''
+import subprocess,sys
+def main():
+    driver,mode=sys.argv[-2:]
+    try:
+        return subprocess.run([sys.executable,'-I','-B',driver,'--mode',mode],
+            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=.1 if mode=='timeout' else 20).returncode
+    except subprocess.TimeoutExpired:
+        print('TIMEOUT_REDACTED')
+        return 7
+if __name__=='__main__': raise SystemExit(main())
+'''
+        driver_source = '''
+import sys,time
+if sys.argv[-1]=='timeout': time.sleep(10)
+print('SEMANTIC_PREEXEC_HOOK=DENIED L2_BINDING_CHANGED',file=sys.stderr)
+print('PRIVATE/path/never-report',file=sys.stderr)
+raise SystemExit(1)
+'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            runtime, diagnostic = root / 'runtime.py', root / 'diagnostic.py'
+            driver = root / 'semantic-provider-preexec-hook-v2.py'
+            runtime.write_text(source)
+            driver.write_text(driver_source)
+            for mode in ('start', 'rollback', 'timeout'):
+                traces = root / mode
+                traces.mkdir()
+                diagnostic.write_text(diagnostic_source(runtime, 'fixture.json', traces))
+                args = [str(driver), mode]
+                canonical = subprocess.run([sys.executable, '-I', '-B', str(runtime), *args], capture_output=True)
+                wrapped = subprocess.run([sys.executable, '-I', '-B', str(diagnostic), *args], capture_output=True)
+                self.assertEqual((wrapped.returncode, wrapped.stdout, wrapped.stderr),
+                                 (canonical.returncode, canonical.stdout, canonical.stderr))
+                rows = [json.loads(line) for p in traces.glob('command-*.jsonl')
+                        for line in p.read_text().splitlines()]
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]['mode'], mode)
+                self.assertIsNone(rows[0]['epoch'])
+                self.assertEqual(rows[0]['codes'], [] if mode == 'timeout' else ['L2_BINDING_CHANGED'])
+                self.assertEqual(rows[0]['exception'], 'TimeoutExpired' if mode == 'timeout' else None)
+                self.assertEqual(rows[0]['returncode'], None if mode == 'timeout' else 1)
+                self.assertNotIn('PRIVATE', json.dumps(rows))
+
+    def admission_timeline(self, holder_seconds):
+        """Real scheduler, virtual clock/POSIX IO; owner completion is an event.
+
+        The holder's work can legally take e.g. prepare=17s, hook=2s,
+        start/readback=2s. None exceeds its own subprocess deadline, but the
+        waiter gets only 20s for the WHOLE protected section. No Docker/root.
+        """
+        runtime = C.contract_module((ROOT / C.RUNTIME).read_bytes(), 'cohort_schedule')
+        now, owner, descriptors = [0.0], [None], iter((1, 2))
+        closed = []
+        info = SimpleNamespace(st_mode=stat.S_IFDIR | 0o700, st_uid=0, st_gid=0, st_dev=1, st_ino=2)
+        class Registry:
+            def __truediv__(self, name): return '/registry/' + name
+            def lstat(self): return info
+        registry = Registry()
+        def flock(fd, flags):
+            if owner[0] is not None:
+                raise BlockingIOError()
+            owner[0] = fd
+        def close(fd):
+            closed.append(fd)
+            if owner[0] == fd:
+                owner[0] = None
+        holder = None
+        def sleep(seconds):
+            now[0] += seconds
+            if holder is not None and owner[0] == 1 and now[0] >= holder_seconds:
+                holder.__exit__(None, None, None)
+        io = SimpleNamespace(O_RDONLY=0, O_DIRECTORY=0, O_NOFOLLOW=0,
+                             open=lambda *_: next(descriptors), fstat=lambda _: info, close=close)
+        with patch.object(runtime, 'ancestors'), patch.object(runtime, 'os', io), \
+                patch.object(runtime, 'fcntl', SimpleNamespace(flock=flock, LOCK_EX=1, LOCK_NB=2)), \
+                patch.object(runtime, 'time', SimpleNamespace(monotonic=lambda: now[0], sleep=sleep)):
+            holder = runtime.admission_schedule(registry)
+            holder.__enter__()
+            entered, failure = False, None
+            try:
+                with runtime.admission_schedule(registry):
+                    entered = True
+            except runtime.Denied as error:
+                if str(error) != 'ADMISSION_SCHEDULE_TIMEOUT':
+                    raise
+                failure = str(error)
+            finally:
+                if owner[0] == 1:
+                    holder.__exit__(None, None, None)
+        self.assertCountEqual(closed, [1, 2])
+        return dict(waiterEntered=entered, failure=failure, elapsed=now[0])
+
+    def test_admission_schedule_waits_for_a_holder_inside_its_deadline(self):
+        outcome = self.admission_timeline(19)
+        self.assertTrue(outcome['waiterEntered'])
+        self.assertIsNone(outcome['failure'])
+        self.assertLess(outcome['elapsed'], 20)
+
+    @unittest.expectedFailure
+    def test_admission_schedule_admits_both_roles_when_legal_phases_total_21_seconds(self):
+        # Desired liveness property; v5.2 currently times out the waiting role.
+        # Keep this failure visible instead of extending deadlines in the fixture.
+        outcome = self.admission_timeline(21)
+        self.assertTrue(outcome['waiterEntered'], outcome)
+
+    def test_timed_out_peer_cleanup_invalidates_prepared_driver_l2_reauthorization(self):
+        # Model Docker cleanup after the sibling's scheduler denial. The real
+        # driver's L2 reauthorization must fail closed; this proves the cascade
+        # is reachable, not that the retained logs expose its private cause.
+        self.assertEqual(self.admission_timeline(21)['failure'], 'ADMISSION_SCHEDULE_TIMEOUT')
+        from test_semantic_provider_admission_v2 import libraries
+        from tools.semantic_provider_admission_v2 import driver_v7 as driver
+        cid, peer = 'a' * 64, 'b' * 64
+        nic = dict(interface=L.live_interface(0), mac=L.L2_LIVE_MAC, ipv4='10.10.0.2',
+                   bridge='br_test', workloadRef='provider', bindingRef='provider_nic')
+        peer_nic = {**nic, 'ipv4': '10.10.0.3', 'bindingRef': 'peer_nic'}
+        signed = dict(networkBindings=[nic], transport=[dict(peerIngress=dict(kind='CREATED_CANDIDATE',
+            bindingRef='peer_nic', declaration=dict(containerId=peer, applicationHash='c' * 64,
+                                                   networkBindings=[peer_nic])))])
+        states = {cid: dict(id=cid, status='created', pid=42), peer: dict(id=peer, status='created', pid=43)}
+        def generation(pid): return dict(pid=pid, startTicks=123, namespaceInode=456 + pid)
+        def observed(member, gen, *args, network_bindings, **kwargs):
+            return dict(containerId=member, generation=gen, bindings=[{**network_bindings[0],
+                'interface': 'eth0', 'mac': '62:a3:21:47:8b:96', 'childIfindex': 12, 'hostIfindex': 13,
+                'hostInterface': 'veth_test'}])
+        rows = {member: observed(member, generation(state['pid']), network_bindings=[nic if member == cid else peer_nic])
+                for member, state in states.items()}
+        value = dict(l2Binding=dict(signedTransport=signed, commandBindings={}), consumptionJournal='/epoch/deployment.json',
+            runtimeBinding=dict(path='/runc', sha256='d' * 64, root='/runtime'),
+            profile=dict(containerId=cid, policy=dict(attachments=rows[cid]['bindings'])))
+        raw = A.canonical(dict(schema=L.SCHEMA, containers=rows))
+        run = lambda binding, args, limit: A.canonical(states[args[-1]])
+        with libraries():
+            from tools.semantic_provider_preexec_native import NativeBackend
+            with patch.object(NativeBackend, 'generation', side_effect=lambda self, pid: generation(pid)), \
+                    patch.object(L, 'observe', side_effect=observed), patch.object(B, 'private', return_value=raw):
+                digest = A.sha(A.canonical(signed))
+                self.assertEqual(driver.verify_l2(value, digest, SimpleNamespace(), run), L.effective(signed, rows, container_id=cid))
+                states[peer] = dict(id=peer, status='stopped', pid=0)
+                with self.assertRaisesRegex(A.OperationDenied, '^L2_BINDING_CHANGED$'):
+                    driver.verify_l2(value, digest, SimpleNamespace(), run)
+
     def test_quiescer_requires_bound_configuration_and_existing_quiescence(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -331,8 +530,6 @@ class CohortFixture(F.NativeTests):
         self.trace_root = self.root / "runtime-tracebacks"
         self.trace_root.mkdir(mode=0o700)
         self.real_ip = Path(shutil.which("ip")).resolve()
-        self.ip_probe = self.root / "diagnostic-ip"
-        self.script(self.ip_probe, f'REAL_IP={str(self.real_ip)!r}\nTRACE_ROOT={str(self.trace_root)!r}\n' + IP_DIAGNOSTIC)
         self.real_runc = Path(shutil.which("runc")).resolve()
         self.real_nft = Path(shutil.which("nft")).resolve()
         self.docker_binary = Path(shutil.which("docker")).resolve()
@@ -569,7 +766,10 @@ class CohortFixture(F.NativeTests):
                         "networkBindings": all_nics[other]}})
             template["candidate"].update(networkBindings=all_nics[role], transport=[flow], runtimeBinding=real)
             for name in ("ip", "nsenter", "nft", "mount", "umount", "unshare"):
-                path = self.ip_probe if name == "ip" else Path(shutil.which(name)).resolve()
+                # Run the source-bound native binary directly. The old Python
+                # proxy added /proc walks, a second ip and JSON IO to EVERY
+                # observation inside the broker/driver's 18s/5s deadlines.
+                path = Path(shutil.which(name)).resolve()
                 template["commands"][name], template["commandHashes"][name] = str(path), A.sha(path.read_bytes())
             lock = self.root / "common.lock"
             self.write(lock, b"")
@@ -654,6 +854,9 @@ class CohortFixture(F.NativeTests):
         for path in paths:
             print("COHORT_RUNTIME_TRACEBACK=" + json.dumps(
                 {"file": path.name, "traceback": path.read_text(encoding="utf-8", errors="replace")}), flush=True)
+        for path in sorted(self.trace_root.glob("command-*.jsonl")):
+            for line in path.read_text(encoding="utf-8").splitlines():
+                print("COHORT_RUNTIME_COMMAND=" + line, flush=True)
 
     def print_network_views(self):
         for detailed in (False, True):
@@ -672,8 +875,6 @@ class CohortFixture(F.NativeTests):
             except (FileNotFoundError, ProcessLookupError):
                 pass
         print("COHORT_PROCESS_NETNS=" + json.dumps(processes, sort_keys=True), flush=True)
-        for path in sorted(self.trace_root.glob("broker-links-*.json")):
-            print("COHORT_BROKER_HOST_LINKS=" + path.read_text(), flush=True)
 
     def scenario(self):
         def argv(mode="--plan", digest=None):
@@ -704,7 +905,7 @@ class CohortFixture(F.NativeTests):
         code, result = operate(argv("--apply", plan["planSha256"]))
         print("COHORT_START_ATTEMPT_1=" + json.dumps(dict(exitCode=code, result=result), sort_keys=True), flush=True)
         self.assertEqual(code, 1, result)
-        old_generations = {}
+        old_generations, first_denials = {}, {}
         for role, cid in self.ids.items():
             folder = self.install / "registry" / cid / "epochs/1"
             row = json.loads((folder / "adapter.json").read_bytes())
@@ -715,6 +916,11 @@ class CohortFixture(F.NativeTests):
             consumed = json.loads((folder / "deployment.json").read_bytes())
             self.assertEqual(consumed["state"], "CREATED", consumed)
             old_generations[cid] = consumed["generation"]
+            denial = folder / "broker-denial-cohort-ready.json"
+            first_denials[cid] = B.validate_denial(denial.read_bytes(), cid, 1, "cohort-ready")
+            self.assertEqual(first_denials[cid]["reason"], "BROKER_LIVE_CREATED_STATE_DRIFT")
+            self.assertEqual(denial.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(result["lastObservation"]["candidates"][role]["denials"], [first_denials[cid]])
         # Docker owns stale containerd task cleanup. Do not issue an out-of-band
         # runc delete, kill a PID or reset any journal between the two starts.
         attempt = 2
@@ -766,6 +972,7 @@ class CohortFixture(F.NativeTests):
                 self.assertNotEqual(int(old_stat.read_text().rsplit(')', 1)[1].split()[19]), previous['startTicks'],
                                     'epoch 1 runc init survived the second start')
             self.assertFalse((folder / "broker-denial-cohort-ready.json").exists(), row["denials"])
+            self.assertEqual(row["denials"], [first_denials[cid]])
             binding_path = folder / "l2-binding.json"
             self.assertEqual(binding_path.stat().st_mode & 0o777, 0o600)
             binding = json.loads(binding_path.read_bytes())
