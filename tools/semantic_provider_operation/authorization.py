@@ -173,7 +173,7 @@ def verify_entry(mandates, ledger, authenticator, raw, signature_raw, expected):
     record = decode(signature_raw)
     require(set(record) == HEADER_FIELDS | {"signature"} and record["schema"] == SIGNATURE_SCHEMA
             and record["algorithm"] == "Ed25519" and record["role"] == ROLE and identity(record["keyRef"])
-            and (record["issuerRef"], record["installationRef"], record["entityRef"]) == expected
+            and (record["installationRef"], record["entityRef"], record["issuerRef"]) == expected
             and record["payloadHash"] == sha(raw)
             and type(record["signature"]) is str and re.fullmatch(r"[0-9a-f]{128}", record["signature"]),
             "EXACT_OPERATION_SIGNATURE_REQUIRED")
