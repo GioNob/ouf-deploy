@@ -157,3 +157,90 @@ Non rimuove i container: la rimozione distruggerebbe l'identità A2.
 | 38 | **Controller della cerimonia B2** (§2): plan senza chiavi, apply atomico con budget di tempo, readback e ricevuta. Fixture nativa CI: catena reale broker, preparer e driver su runc finto e nft simulato, come nel task-25 | firme, start, tabelle nft (dal driver) | ogni drift del §2; budget superato; generazione ambigua |
 
 **Ordine:** 35 → (review con l'umano di D1-D3) → 36 → 37 → 38 → plan di 37 e plan di 38 → apply di 38 entro metà dicembre (D-032).
+
+## 11. Esito del lettore B2 (2026-11-15, eseguito dall'umano)
+Runbook `ops/vps/b2-read.sh` (PR #90, `1f7501c6`). `status=READ`, `sectionErrors=[]`, tutti i contatori a 0.
+
+- **v5.1** `de1e6dd7…a53f`, wrapper `e5080250…`, `arming/` vuota (0700).
+  - Nessuna directory per i nuovi CID sotto `registryRoot`.
+  - `registryRoot` è la **registry storica** `semantic-provider-v2-transaction-mf9x0eqd/registry`, che contiene le directory dei CID storici `f3d59af9…` e `1fc5ae6a…`.
+  - Broker (`3069c3db…`) e driver (`65c0d5af…`) sono le copie storiche di `mf9x0eqd/source`. `runtimeStateRoot` = `/run/docker`.
+  - Conseguenza: lo staging dei nuovi CID va in quella registry, accanto ai CID storici, e il broker e il driver sono quelli già installati e fissati per hash nella configurazione.
+- **Catena v4 storica** (dal backup del wrapper `55de4166…`; configurazione `7462e41e…`):
+  - broker `ouf.semantic-deployment-broker.v1` con 19 sorgenti (`6880e5e9…`);
+  - `policyBinding` = policy **originale** `21122630…`, chiavi installer e attestor con `expiresAt` 1798908417 (2027-01-02T16:46:57Z);
+  - producer `ouf.semantic-installer-approval-producer.v1` e `ouf.semantic-node-attestor.v4`, ciascuno con il **proprio** `policyBinding` e un `signingKeyBinding`. Firmano da soli allo start con le chiavi installer e attestor, e anche la loro configurazione va legata alla base versionata.
+  - Adapter storico: broker `CLEANED`, preexec `ROLLED_BACK`, deployment `STARTED`.
+  - Southbound storico: broker e preexec `PROTECTED`, deployment `STARTED`, cleanup mai eseguito (cutover dell'11/11). Le sue tabelle candidate non risultano tra le tabelle nft. È uno stato storico da non toccare, ma il `tableName` dei nuovi candidati deve essere diverso.
+- **Base versionata:** solo la generazione 1, `c135861b…`, valida dal 2026-11-14 al 2027-02-12T21:23:13Z (1802467393).
+- **nft:** tabelle `inet` e `bridge ouf_sem_provider`, con set `provider_0` e `provider_1` vuoti. È la tabella del lease (`kernelTableName`).
+- **Lease: journal di coordinamento `BLOCKED`**, `leaseAuthorized=false` (`semantic-coordinated-boot-install-v2-e4repg0a/coordination-journal.json`).
+  - **Bloccante per lo start:** il driver richiede `QUIESCED` (CD`tools/semantic_provider_preexec.py:102-108`).
+  - `BLOCKED` è lo stato dopo un refresh fallito (CD`tools/semantic_provider_lease_coordination.py:226-229`).
+  - `quiesce()` riporta a `QUIESCED` revocando i set (`:231-242`), già vuoti. Il precedente governato è `scripts/quiesce-discovery-coordinator-20261109.py`.
+  - Serve quindi un passo preliminare: quiescenza governata del coordinatore, con plan e apply.
+- **Ingresso A2:** `BRIDGE_PORT` 172.18.0.6 → 172.18.0.14:10443/tcp, `ifindex` 168, uguale in `manifest.json`, `result.json` e `semantic-peer.json`. L'`ifindex` è volatile: va riosservato a ogni start.
+- **Ricette v2:** template, launch, context e policy per ruolo, più `result.json` `fe2f77d4…`, come attese.
+
+## 12. Appendice R3 (D-033): autorizzazione d'esercizio durevole (task-34b)
+
+### 12.1 Che cosa firma davvero un umano oggi
+Gli anelli a scadenza breve della catena (§1) sono di due tipi:
+- **firmati da un umano** tramite il mandato root: review, intent, autorizzazione live e mandato finale, tutti con una durata massima di 300 s;
+- **firmati dalla macchina** allo start: attestazione di creazione e approvazione finale, emesse dai producer con le chiavi attestor e installer già presenti sul VPS (§11).
+
+La sicurezza aggiunta dai record a 300 s è la presenza umana. I controlli che proteggono davvero il nodo sono quelli vivi: frame OCI uguale alla ricetta, rootfs, rete e peer, nft, lease, generazione del processo e namespace.
+
+### 12.2 Contratto proposto
+- **Autorizzazione d'esercizio** (`ouf.semantic-provider-operation-authorization.v1`):
+  - firmata **una volta** con la chiave installer;
+  - lega per hash: installazione ed entità; CID e immagini dei due ruoli; ricette v2; accettazione gen 3; configurazione del runtime; configurazioni del broker v2; trasporto, ingresso e `tableName`; sigillo rootfs; flussi del lease;
+  - contiene un `issuedAt` firmato.
+- **Verifica durevole** (D-029): firma valida, mandato `ACTIVE` in `at(issuedAt)` del registro b1b2 (`tools/semantic_authority_mandates/mandates.py:393`) e chiave mai revocata (`:398`). Nessuna scadenza propria: la ferma una revoca, oppure un'autorizzazione successiva che la sostituisce (D7).
+- **Epoche di esercizio per CID**, al posto delle generazioni monouso.
+  - A ogni `create` (primo avvio, crash, riavvio) il runtime v5.2 apre l'epoca `e+1`: journal nuovi in `epochs/<e>`, creati con `O_EXCL`.
+  - Le epoche vanno solo avanti, e un'epoca non si riapre.
+- **Nessuna firma allo start.** Broker e driver v2 verificano l'autorizzazione d'esercizio e ripetono tutti i controlli vivi del v1. L'attestazione e l'approvazione dei producer spariscono, perché una firma della macchina su un'osservazione della stessa macchina non aggiunge garanzie. Le chiavi escono dal percorso di start: è meno superficie di oggi.
+- **Ripartenza:** RestartPolicy `unless-stopped`. Al reboot il boot guard parte prima di Docker (`Before=docker.service`, `RequiredBy=docker.service`, letto con `systemctl show`), poi Docker chiama il runtime, che apre un'epoca nuova.
+- **Errori:** un controllo fallito nega il `create` o lo start, registra l'epoca come fallita e pubblica uno stato a schema chiuso. Il collector del gateway (come nel task-31) lo trasforma in incidente. Nessun tentativo nella stessa epoca; Docker riprova con il suo backoff, ogni volta con un'epoca nuova.
+- **Stop voluto:** `docker stop` mette fine all'epoca, e con `unless-stopped` Docker non riavvia il container. Lo stop compensativo governato resta.
+
+### 12.3 Lease
+Senza lease il provider parte, ma non raggiunge gli upstream: i set `provider_N` sono le uscite DNS autorizzate. Il coordinatore si autorizza da sé solo partendo da `LEASE_READY` (`fresh_start`, CD`tools/semantic_provider_lease_coordination.py:191-229`).
+
+Proposta: l'autorizzazione d'esercizio copre anche il lease. Il supervisore adattivo (`tools/semantic_lease_recovery/adaptive_supervisor.py`) porta il coordinatore a `LEASE_READY` dopo lo start dell'epoca e lo riporta a `QUIESCED` allo stop. Il dettaglio va analizzato nel task-36 (D2).
+
+### 12.4 Moduli (nuovi e versionati: i v1 restano fissati per hash)
+| Modulo nuovo | Deriva da | Cambia |
+|---|---|---|
+| `tools/semantic_runtime_v52/` (runtime e verificatore) | v5.1 | autorizzazione d'esercizio al posto dell'armatura monouso; epoche |
+| broker v2 | `scripts/semantic_provider_deployment_broker.py` | autorizzazione durevole al posto dell'intent; niente producer |
+| consumo v2 | `semantic_provider_deployment_consumption.py` | journal per epoca |
+| riautorizzazione v2 | `semantic_provider_deployment_reauthorization.py` | verifica durevole al posto dei 300 s; controlli vivi invariati |
+| driver e preparer v2 (grant `ouf.semantic-preexec-driver.v7`) | hook e preparer v1 | binding all'autorizzazione e all'epoca |
+| emissione dell'autorizzazione d'esercizio | issuer dell'accettazione 29a | nuovo documento |
+| installazione del v5.2 | 29b | switch del wrapper e ripristino al v5.1 |
+| quiescenza del coordinatore | `scripts/quiesce-discovery-coordinator-20261109.py` | da `BLOCKED` a `QUIESCED`, plan/apply |
+
+Invariati e riusati: preexec, nft nativo, lease nft, peer binding, DNS, compilatore dei frame e tutte le letture vive.
+
+### 12.5 Scomposizione R3 (sostituisce il §10)
+| Task | Contenuto | Effetti sul VPS |
+|---|---|---|
+| 36 | Analisi del lease (D2) e contratto dei journal per epoca; documento | nessuno |
+| 37 | Quiescenza governata del coordinatore (`BLOCKED` → `QUIESCED`) | journal del lease |
+| 38 | Catena di ammissione v2 con fixture nativa | nessuno |
+| 39 | Runtime v5.2 (epoche, verifica durevole) e test con restart simulato | nessuno |
+| 40 | Emissione dell'autorizzazione d'esercizio (D6) | una firma |
+| 41 | Installazione del v5.2 (modello 29b), configurazioni del broker v2, staging | switch del wrapper |
+| 42 | Primo start, RestartPolicy, readback; stop compensativo | primo start |
+
+**Avvio di prova anticipato (D-033).** La cerimonia v1 del §2 resta possibile come prova. Però consuma generazioni e journal dei CID A2 senza poterli riaprire: se si usa, meglio su CID di prova separati.
+
+### 12.6 Decisioni nuove
+- **D6 — Ruolo di firma.** L'ancora b1b2 `6ef247ee…` ha `ARTIFACT_ACCEPTANCE` e `RUNTIME_ARMING`. Le alternative sono due:
+  - (a) `RUNTIME_ARMING` con un dominio di firma separato per l'autorizzazione d'esercizio;
+  - (b) un'ancora nuova con il ruolo `PROVIDER_OPERATION`, che comporta una nuova configurazione e una nuova accettazione.
+
+  Raccomandato (a).
+- **D7 — Sostituzione.** Un cambio di immagine o di configurazione emette una nuova autorizzazione con `supersedes`; il runtime accetta solo l'ultima della catena.
