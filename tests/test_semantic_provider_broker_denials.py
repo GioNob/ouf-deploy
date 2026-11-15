@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import stat
 import sys
+import subprocess
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -27,6 +28,85 @@ def receipt(mode="cohort-ready", epoch=1):
 
 
 class DenialTests(unittest.TestCase):
+    def test_template_worker_through_preparer_broker_receipt_and_r3_reader(self):
+        # Real stderr pipes at both subprocess boundaries; only custody/load and
+        # receipt directory primitives are adapted to this portable fixture.
+        with F.libraries(), tempfile.TemporaryDirectory() as folder:
+            from tools import semantic_provider_deployment_producer as producer
+            root = Path(folder).resolve()
+            entry = root / b.ENTRYPOINTS[1]; entry.parent.mkdir()
+            packet = root / "stderr.bin"
+            script = '''import sys
+from pathlib import Path
+from types import SimpleNamespace
+sys.path.insert(0, REPOSITORY)
+from tools.semantic_provider_admission_v2 import preparer_v2 as p
+worker = p.Worker.__new__(p.Worker)
+worker.budget = SimpleNamespace(remaining=lambda _: 5)
+worker.prepare_failed = lambda error: None
+def template(state):
+    argv = [sys.executable, '-I', '-B', '-c',
+            'import sys; sys.stderr.buffer.write(sys.stdin.buffer.read()); sys.exit(1)']
+    return worker.invoke_result(argv, Path(PACKET).read_bytes())
+worker._prepare = template
+p.Worker = lambda path: worker
+p.os.geteuid = lambda: 0
+raise SystemExit(p.main())
+'''.replace('REPOSITORY', repr(str(F.ROOT))).replace('PACKET', repr(str(packet)))
+            entry.write_text(script, encoding="utf-8")
+            request = dict(epochRoot=str(root), template=dict(pythonPath=sys.executable, pythonHash="a"*64),
+                           configurationBinding=dict(path="/cfg", sha256="b"*64))
+            broker = b.Broker.__new__(b.Broker)
+            broker.cid, broker.clock, broker.cohort = CID, lambda: 1500, None
+            broker.args = SimpleNamespace(epoch=1, mode="prepare")
+            broker.denial_root = root
+            broker.epochs = SimpleNamespace(directory=lambda _: None)
+            info = SimpleNamespace(st_mode=stat.S_IFDIR | 0o700, st_uid=0)
+            runtime = SimpleNamespace(read=lambda path: path.read_bytes())
+            cfg = F.configuration(); cfg["sourceRoot"] = str(root)
+            # Record with exclusive creation, without claiming POSIX directory IO.
+            def write(path, value):
+                with path.open("xb") as stream: stream.write(a.canonical(value))
+            for raw, code in ((b"PRIVATE/path\nWORKER=DENIED INDEPENDENT_TEMPLATE_BINDING_DRIFT\n",
+                               "PREPARER_TEMPLATE_DENIED_INDEPENDENT_TEMPLATE_BINDING_DRIFT"),
+                              (b"WORKER=DENIED " + b"A"*80 + b"\n", ("PREPARER_TEMPLATE_DENIED_" + "A"*80)[:80]),
+                              (b"PRIVATE/path\nWORKER=DENIED bad-code\n", "PREPARER_SEALED_WORKER_OR_DRIVER_DENIED"),
+                              (b"PRIVATE/path\n", "PREPARER_SEALED_WORKER_OR_DRIVER_DENIED")):
+                packet.write_bytes(raw)
+                with patch.object(b, "private", return_value=a.canonical(request)), \
+                        patch.object(b, "read_binding", return_value=a.canonical(cfg)), \
+                        patch.object(b, "validate", return_value=cfg), \
+                        patch.object(b, "verify_sources"), patch.object(producer, "program", return_value=sys.executable), \
+                        self.assertRaises(a.OperationDenied) as caught:
+                    b.SubprocessPreparer().prepare(request, {})
+                self.assertEqual(str(caught.exception), code)
+                with patch.object(Path, "lstat", return_value=info), patch.object(b.evidence_v2, "write_exclusive", side_effect=write):
+                    broker.record_denial(caught.exception)
+                value = b.validate_denial((root / "broker-denial-prepare.json").read_bytes(), CID, 1, "prepare")
+                self.assertEqual(value["reason"], code)
+                self.assertNotIn("PRIVATE", a.canonical(value).decode())
+                # R3 delegates validation to the same closed v1 reader.
+                with patch.object(O.Path, "glob", return_value=[root / "broker-denial-prepare.json"]):
+                    self.assertEqual(O.broker_denials(runtime, root, CID, 1), [value])
+                (root / "broker-denial-prepare.json").unlink()
+
+    def test_subprocess_without_valid_code_keeps_generic_denial(self):
+        with F.libraries():
+            from tools import semantic_provider_deployment_producer as producer
+            request = dict(epochRoot="/epoch", template=dict(pythonPath="/python", pythonHash="a"*64),
+                           configurationBinding=dict(path="/cfg", sha256="b"*64))
+            for raw in (b"PRIVATE/path", b"W=DENIED bad-code\n", b"W=DENIED " + b"A"*81 + b"\n",
+                        b"W=DENIED GOOD PRIVATE\n", b"X"*4096 + b"\nW=DENIED OUTSIDE_WINDOW\n"):
+                def run(argv, **kw):
+                    kw['stderr'].write(raw)
+                    return subprocess.CompletedProcess(argv, 1)
+                with patch.object(b, "private", return_value=a.canonical(request)), \
+                        patch.object(b, "read_binding", return_value=a.canonical(F.configuration())), \
+                        patch.object(b, "verify_sources"), patch.object(producer, "program", return_value="/python"), \
+                        patch.object(b.subprocess, "run", side_effect=run), \
+                        self.assertRaisesRegex(a.OperationDenied, '^SUBPROCESS_PREPARER_DENIED$'):
+                    b.SubprocessPreparer().prepare(request, {})
+
     def test_invocation_each_mode_exclusive_and_write_failure(self):
         with F.libraries(), tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

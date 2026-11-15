@@ -529,6 +529,94 @@ def prepared_cleanup_ready(config, original, cid, root, folder, record, auth):
     require(gate.record()['state'] in ('INSTALLING', 'PROTECTED', 'REMOVING'), 'OWNED_ROLLBACK_REQUIRED')
 
 
+def failed_namespace_cleanup(config, cid, root, folder, record):
+    """Only unmount a proven owned nsfs from an unprepared current-boot failure.
+
+    No unlink, rollback, nft, link or runtime operation. The companion receipt is
+    exclusive; existing task-46c runtime-cleanup.v1 receipts stay valid.
+    """
+    require(record['state'] == 'FAILED' and record['driverHash'] is None, 'FAILED_EPOCH_NAMESPACE_SCOPE_DRIFT')
+    path = folder/'admission.json'
+    if not os.path.lexists(path):
+        return
+    admission_raw = read(path); admission = parse(admission_raw)
+    fields = {'schema', 'transactionId', 'configurationHash', 'state', 'driverHash',
+              'namespaceOwned', 'namespaceInode', 'containerGeneration'}
+    require(type(admission) is dict and set(admission) == fields | (
+            {'failure', 'namespaceCleanup'} if admission.get('state') == 'FAILED' else set())
+            and admission['schema'] == 'ouf.semantic-admission-journal.v1'
+            and type(admission['namespaceOwned']) is bool
+            and (admission['state'] != 'FAILED' or all(type(admission[k]) is str
+                 and re.fullmatch('[A-Z0-9_]{1,80}', admission[k]) for k in ('failure', 'namespaceCleanup'))),
+            'FAILED_EPOCH_ADMISSION_DRIFT')
+    if not admission['namespaceOwned']:
+        return
+    require(record['runtimeRoot'] == str(root), 'FAILED_EPOCH_NAMESPACE_SCOPE_DRIFT')
+    validator, cfg = driver_validator(config, cid)
+    broker = validator.broker
+    namespace = folder/'netns'; receipt_path = folder/'runtime-netns-cleanup.json'
+    inode = admission['namespaceInode']
+    proof = broker.owned_namespace_mount(namespace, inode)
+    if os.path.lexists(receipt_path):
+        receipt = parse(read(receipt_path))
+        require(type(receipt) is dict and set(receipt) == {'schema', 'epoch', 'operation', 'at', 'mount'}
+                and receipt['schema'] == 'ouf.semantic-docker-runtime-netns-cleanup.v1'
+                and type(receipt['epoch']) is int and receipt['epoch'] == record['epoch']
+                and receipt['operation'] == 'umount' and type(receipt['at']) is int and receipt['at'] > 0
+                and type(receipt['mount']) is dict
+                and set(receipt['mount']) == {'namespaceInode', 'namespaceDevice', 'mountId'}
+                and all(type(v) is int and v > 0 for v in receipt['mount'].values())
+                and receipt['mount']['namespaceInode'] == inode and proof is None,
+                'FAILED_EPOCH_NAMESPACE_RECEIPT_DRIFT')
+        return
+    if proof is None:
+        return
+    require(admission['state'] in ('PREPARING', 'FAILED') and admission['driverHash'] is None
+            and not any(os.path.lexists(folder/name) for name in ('preexec.json', 'driver.json')),
+            'FAILED_EPOCH_NAMESPACE_REQUIRES_RECOVERY')
+    request_raw = read(folder/'preparer.json'); request = parse(request_raw)
+    require(set(request) == {'epochRoot', 'epoch', 'binding', 'bundle', 'runtimeRoot', 'template',
+                             'configurationBinding', 'evidenceBinding'}
+            and broker.binding(request['configurationBinding']), 'FAILED_EPOCH_NAMESPACE_BINDING_DRIFT')
+    # Like task-46c Docker cleanup, recovery may follow a configuration upgrade.
+    # Use the failed preparer's own hash-bound configuration/template, executing
+    # no historical source and requiring no renewed operation authority.
+    bound = request['configurationBinding']
+    if bound != config['admissionConfigurations'][cid]:
+        cfg_raw = read(Path(bound['path']))
+        require(sha(cfg_raw) == bound['sha256'], 'FAILED_EPOCH_NAMESPACE_BINDING_DRIFT')
+        cfg = broker.validate(cfg_raw)
+    binding = {**{k: cfg['authorities'][k] for k in ('installationRef', 'entityRef')},
+               'containerId': cid, 'epoch': record['epoch'], 'configurationHash': bound['sha256'],
+               'authorizationSha256': record['authorizationSha256']}
+    template_raw = read(Path(cfg['preparerTemplate']['path'])); template = parse(template_raw)
+    require(cfg['containerId'] == cid and Path(cfg['registryRoot'])/cid/'epochs'/str(record['epoch']) == folder
+            and sha(template_raw) == cfg['preparerTemplate']['sha256']
+            and request['binding'] == binding and type(request['epoch']) is int and request['epoch'] == record['epoch']
+            and request['epochRoot'] == str(folder) and request['runtimeRoot'] == str(root)
+            and request['bundle'] == str(folder/'bundle') and request['template'] == template
+            and type(request['evidenceBinding']) is dict and set(request['evidenceBinding']) == {'path', 'sha256'}
+            and request['evidenceBinding']['path'] == str(folder/'evidence.json') and hashed(request['evidenceBinding']['sha256'])
+            and admission['configurationHash'] == sha(request_raw)
+            and admission['transactionId'] == validator.correlation(binding), 'FAILED_EPOCH_NAMESPACE_BINDING_DRIFT')
+    with validator.wait_common_lock(Path(template['lockFile']), time.monotonic() + 5):
+        command = template['commands']['umount']; expected = template['commandHashes']['umount']
+        executable(command, expected)
+        # Recheck inputs under both operation.lock and the preparer's common lock.
+        verify_files(config)
+        require(read(path) == admission_raw and read(folder/'preparer.json') == request_raw
+                and read(Path(cfg['preparerTemplate']['path'])) == template_raw
+                and sha(read(Path(bound['path']))) == bound['sha256']
+                and broker.owned_namespace_mount(namespace, inode) == proof, 'FAILED_EPOCH_NAMESPACE_BINDING_DRIFT')
+        result = subprocess.run([command, str(namespace)], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL, timeout=5, env=ENV)
+        executable(command, expected)
+        require(result.returncode == 0 and broker.owned_namespace_mount(namespace, inode) is None,
+                'FAILED_EPOCH_NAMESPACE_UNMOUNT_UNPROVEN')
+        exclusive(receipt_path, canonical({'schema': 'ouf.semantic-docker-runtime-netns-cleanup.v1',
+            'epoch': record['epoch'], 'operation': 'umount', 'at': int(time.time()), 'mount': proof}))
+
+
 def operate(config_path, argv):
     config_path = Path(config_path); config, original = load_configuration(config_path); verify_files(config)
     operation, cid, options = arguments(argv)
@@ -575,6 +663,8 @@ def operate(config_path, argv):
                         'EPOCH_RATE_EXCEEDED')
                 number = (record['epoch'] if record else 0)+1
                 require(number <= epochs.MAX_EPOCH, 'EPOCH_NUMBER_EXHAUSTED')
+                if record and record['state'] == 'FAILED' and record['bootId'] == boot and record['driverHash'] is None:
+                    failed_namespace_cleanup(config, cid, root, base/'epochs'/str(record['epoch']), record)
                 quiesce(config)
                 require(read(config_path) == original, 'ADAPTER_CONFIGURATION_DRIFT')
                 # Revocation/replacement during the child revocation is denied
@@ -667,6 +757,8 @@ def operate(config_path, argv):
                         if prepared and receipt is None:
                             quiesce(config); driver_call('rollback'); broker_phase('cleanup')
                             publish_epoch(base, record, terminal, epochs); record = terminal
+                        if not prepared:
+                            failed_namespace_cleanup(config, cid, root, folder, terminal)
                         cleanup_receipt(folder, terminal, state['status'] if state else 'absent', write=True)
                     elif state is not None:
                         require(result.returncode == 0, 'RUNTIME_STATE_DENIED' if operation == 'state' else 'RUNTIME_KILL_DENIED')

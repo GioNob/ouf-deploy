@@ -12,6 +12,8 @@ import sys
 import tempfile
 import time
 import types
+import threading
+from contextlib import contextmanager
 from typing import Protocol
 
 from tools.semantic_provider_operation import authorization
@@ -50,6 +52,76 @@ def denial_code(error):
     except Exception:
         return "INTERNAL_ERROR"
     return code if re.fullmatch(r"[A-Z0-9_]{1,80}", code) else "INTERNAL_ERROR"
+
+
+def child_denial(raw, truncated=False):
+    """Only complete denial lines in the first 4 KiB are public protocol."""
+    # A cut line is never a valid (possibly truncated) code.
+    if len(raw) > 4096 or truncated:
+        raw = raw[:4096].rsplit(b"\n", 1)[0] if b"\n" in raw[:4096] else b""
+    codes = {m.group(1).decode("ascii") for line in raw.splitlines()
+             if (m := re.fullmatch(rb"[^\r\n]*=DENIED ([A-Z0-9_]{1,80})", line))}
+    return codes.pop() if len(codes) == 1 else None
+
+
+@contextmanager
+def bounded_stderr():
+    """Drain the pipe without deadlocks or retaining arbitrary child stderr.
+
+    Only the first 4096 bytes and an overflow marker are kept in memory. Nothing
+    is written to disk or forwarded. Daemon/short join also bounds a stray child
+    holding the pipe open after its parent exits.
+    """
+    reader, writer = os.pipe()
+    captured = bytearray()
+    state = {"code": None}
+    overflow = False
+    def drain():
+        nonlocal overflow
+        try:
+            while chunk := os.read(reader, 4096):
+                remaining = 4096 - len(captured)
+                overflow |= len(chunk) > remaining
+                captured.extend(chunk[:remaining])
+        finally:
+            os.close(reader)
+    thread = threading.Thread(target=drain, daemon=True)
+    thread.start()
+    try:
+        with os.fdopen(writer, "wb", buffering=0) as stream:
+            yield stream, state
+    finally:
+        thread.join(timeout=1)
+        if not thread.is_alive():
+            state["code"] = child_denial(bytes(captured), overflow)
+            captured.clear()
+
+
+def owned_namespace_mount(namespace, inode):
+    """Prove an exact nsfs mount, including its device and network inode."""
+    namespace = Path(namespace)
+    with open("/proc/self/mountinfo", "rb") as stream:
+        raw = stream.read(2097153)
+    require(len(raw) <= 2097152, "NAMESPACE_MOUNTINFO_UNBOUNDED")
+    def unescape(value):
+        return re.sub(rb"\\([0-7]{3})", lambda m: bytes([int(m[1], 8)]), value)
+    matches = []
+    for line in raw.splitlines():
+        fields = line.split()
+        require(len(fields) >= 10 and b"-" in fields, "NAMESPACE_MOUNTINFO_INVALID")
+        if unescape(fields[4]) == os.fsencode(namespace):
+            matches.append(fields)
+    require(len(matches) <= 1, "OWNED_NAMESPACE_MOUNT_AMBIGUOUS")
+    if not matches:
+        return None
+    fields = matches[0]
+    info = namespace.lstat()
+    require(type(inode) is int and inode > 0 and stat.S_ISREG(info.st_mode)
+            and fields[fields.index(b"-") + 1] == b"nsfs"
+            and info.st_ino == inode and fields[3] == ("net:[" + str(inode) + "]").encode()
+            and fields[2] == (str(os.major(info.st_dev)) + ":" + str(os.minor(info.st_dev))).encode(),
+            "OWNED_NAMESPACE_DRIFT")
+    return {"namespaceInode": inode, "namespaceDevice": info.st_dev, "mountId": int(fields[0])}
 
 
 def validate_denial(raw, cid, epoch, mode):
@@ -267,14 +339,17 @@ class SubprocessPreparer:
         cfg = validate(read_binding(request["configurationBinding"]))
         verify_sources(cfg)
         entry = Path(cfg["sourceRoot"]) / ENTRYPOINTS[1]
-        with tempfile.TemporaryFile() as output:
+        with tempfile.TemporaryFile() as output, bounded_stderr() as (errors, captured):
             result = subprocess.run([executable, "-I", "-B", str(entry), "--configuration", path.as_posix(), "--mode", mode],
                 input=authorization.canonical(state) if state is not None else None,
-                stdin=subprocess.DEVNULL if state is None else None, stdout=output, stderr=subprocess.DEVNULL,
+                stdin=subprocess.DEVNULL if state is None else None, stdout=output, stderr=errors,
                 timeout=budget.remaining(18), env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
             output.seek(0)
             raw = output.read(131073)
-        require(result.returncode == 0 and len(raw) <= 131072, "SUBPROCESS_PREPARER_DENIED")
+        code = captured["code"] if result.returncode != 0 else None
+        # Keep the v1 receipt's exact keys and its existing bounded reason grammar.
+        require(result.returncode == 0 and len(raw) <= 131072,
+                ("PREPARER_" + code)[:80] if code else "SUBPROCESS_PREPARER_DENIED")
         program(python, budget)
         verify_sources(cfg)
         require(private(path) == authorization.canonical(request), "SUBPROCESS_PREPARER_REQUEST_DRIFT")

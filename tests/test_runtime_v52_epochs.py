@@ -193,6 +193,9 @@ class PortableFailedCleanup(unittest.TestCase):
         self.epochs = types.SimpleNamespace(TERMINAL={'FAILED', 'DELETED', 'ABANDONED'},
             current=lambda *a: self.record, boot_id=lambda: 'current-boot', start_ticks=lambda pid: 123)
         self.quiesce = Mock(); self.validator = Mock()
+        self.validator.broker = grant_fixture.b
+        self.validator.correlation = grant_fixture.d.correlation
+        self.validator.wait_common_lock = lambda *_: contextlib.nullcontext()
         self.validator.components.return_value = (types.SimpleNamespace(record=lambda: {'state': 'PROTECTED'}), None)
 
     def simulate(self, args, **kw):
@@ -226,7 +229,8 @@ class PortableFailedCleanup(unittest.TestCase):
             stack.enter_context(patch.object(self.r, 'publish_epoch', side_effect=publish))
             stack.enter_context(patch.object(self.r, 'quiesce', self.quiesce))
             stack.enter_context(patch.object(self.r, 'authorization_head', return_value={'sha256': 'a'*64}))
-            stack.enter_context(patch.object(self.r, 'driver_validator', return_value=(self.validator, dict(sourceRoot='/source', sourceHashes={}))))
+            stack.enter_context(patch.object(self.r, 'driver_validator', return_value=(self.validator,
+                getattr(self, 'validator_cfg_for_run', dict(sourceRoot='/source', sourceHashes={})))))
             stack.enter_context(patch.object(self.r.os.path, 'lexists', side_effect=lambda p: str(p) == str(self.base) or str(p) in self.files))
             stack.enter_context(patch.object(self.r.os, 'O_NOFOLLOW', 0, create=True))
             stack.enter_context(patch.object(self.r.os, 'O_NONBLOCK', 0, create=True))
@@ -237,7 +241,9 @@ class PortableFailedCleanup(unittest.TestCase):
             stack.enter_context(patch.object(Path, 'lstat', lambda p, *a, **kw: info if p == lock else directory if p == self.registry else native_lstat(p, *a, **kw)))
             stack.enter_context(patch.object(self.r, 'fcntl', types.SimpleNamespace(flock=Mock(), LOCK_EX=1, LOCK_NB=2)))
             stack.enter_context(patch.object(self.r.subprocess, 'run', side_effect=self.simulate))
-            return self.r.operate(self.config_path, ['--root', str(self.runtime_root), mode, CID] + (['SIGTERM'] if mode == 'kill' else []))
+            argv = ['--root', str(self.runtime_root), mode]
+            if mode == 'create': argv += ['--bundle', str(self.root/'oci'/CID)]
+            return self.r.operate(self.config_path, argv + [CID] + (['SIGTERM'] if mode == 'kill' else []))
 
     def denied(self, mode, code):
         with self.assertRaisesRegex(self.r.Denied, '^'+code+'$'): self.run_op(mode)
@@ -398,6 +404,134 @@ class PortableFailedCleanup(unittest.TestCase):
         self.assertEqual(opened.call_args.args[1], os.O_WRONLY | os.O_CREAT | os.O_EXCL)
         self.assertEqual(opened.call_args.args[2], 0o600); chmod.assert_called_once_with(99, 0o600)
         synced.assert_called_once_with(99); directory.assert_called_once_with(self.folder)
+
+    def namespace_fixture(self, state='PREPARING'):
+        template = dict(commands={'umount': '/umount'}, commandHashes={'umount': 'f'*64}, lockFile='/common.lock')
+        self.validator_cfg = dict(containerId=CID, registryRoot=str(self.registry),
+            authorities=dict(installationRef='installation', entityRef='entity'),
+            preparerTemplate=dict(path='/template.json', sha256=sha(encoded(template))))
+        cfg_raw = encoded(self.validator_cfg)
+        self.files[str(Path('/admission'))] = cfg_raw
+        self.cfg['admissionConfigurations'][CID] = dict(path='/admission', sha256=sha(cfg_raw))
+        binding = dict(installationRef='installation', entityRef='entity', containerId=CID, epoch=1,
+                       configurationHash=sha(cfg_raw), authorizationSha256='a'*64)
+        request = dict(binding=binding, epoch=1, epochRoot=str(self.folder), bundle=str(self.folder/'bundle'),
+            runtimeRoot=str(self.runtime_root), template=template, configurationBinding=self.cfg['admissionConfigurations'][CID],
+            evidenceBinding=dict(path=str(self.folder/'evidence.json'), sha256='e'*64))
+        raw = encoded(request)
+        admission = dict(schema='ouf.semantic-admission-journal.v1', transactionId=grant_fixture.d.correlation(binding),
+            configurationHash=sha(raw), state=state, driverHash=None, namespaceOwned=True,
+            namespaceInode=456, containerGeneration=dict(pid=42, startTicks=123, namespaceInode=456))
+        if state == 'FAILED': admission.update(failure='TEMPLATE_DENIED_CODE', namespaceCleanup='OWNED_NAMESPACE_DRIFT')
+        self.files[str(self.folder/'admission.json')] = encoded(admission)
+        self.files[str(self.folder/'preparer.json')] = raw
+        self.files[str(Path('/template.json'))] = encoded(template)
+        return dict(namespaceInode=456, namespaceDevice=4, mountId=90)
+
+    def test_owned_residual_namespace_cleanup_before_receipt_and_new_epoch(self):
+        for state in ('PREPARING', 'FAILED'):
+            with self.subTest(state=state):
+                self.calls.clear()
+                proof = self.namespace_fixture(state)
+                self.state = None
+                self.files.pop(str(self.folder/'runtime-netns-cleanup.json'), None)
+                with patch.object(self.r, 'executable') as executable, \
+                        patch.object(grant_fixture.b, 'owned_namespace_mount', side_effect=[proof, proof, None, None]):
+                    # run_op supplies the validator binding, preserving all dispatch.
+                    self.validator_cfg_for_run = self.validator_cfg
+                    self.assertEqual(self.run_op('delete'), 0)
+                    receipt_raw = self.files[str(self.folder/'runtime-netns-cleanup.json')]
+                    receipt = json.loads(receipt_raw)
+                    self.assertEqual(receipt['mount'], proof)
+                    self.assertEqual(receipt['operation'], 'umount')
+                    self.assertEqual(self.run_op('delete'), 0)
+                    self.assertEqual(self.files[str(self.folder/'runtime-netns-cleanup.json')], receipt_raw)
+                self.assertEqual(executable.call_args_list, [call('/umount', 'f'*64)] * 2)
+                self.assertEqual(self.record, self.before)
+                self.assertEqual([args for args in self.calls if args[0] == '/umount'], [['/umount', str(self.folder/'netns')]])
+        # A direct next create recovers the old mount before opening a new epoch.
+        proof = self.namespace_fixture()
+        self.files.pop(str(self.folder/'runtime-netns-cleanup.json'))
+        self.cfg['limits'] = {'maxEpochsPerHour': 10}
+        self.epochs.MAX_EPOCH = 10
+        self.quiesce.side_effect = self.r.Denied('STOP_AFTER_CLEANUP')
+        with patch.object(self.r, 'epoch_inventory', return_value=[]), \
+                patch.object(self.r, 'executable'), \
+                patch.object(grant_fixture.b, 'owned_namespace_mount', side_effect=[proof, proof, None]):
+            self.denied('create', 'STOP_AFTER_CLEANUP')
+        self.assertIn(str(self.folder/'runtime-netns-cleanup.json'), self.files)
+        self.assertEqual(self.record, self.before)
+
+    def test_owned_namespace_drift_prepared_artifacts_and_umount_failure_fail_closed(self):
+        for failure in ('inode', 'driver', 'preexec', 'binding', 'command', 'umount', 'still-mounted'):
+            with self.subTest(failure=failure):
+                self.calls.clear(); self.files.pop(str(self.folder/'runtime-cleanup.json'), None)
+                proof = self.namespace_fixture()
+                self.validator_cfg_for_run = self.validator_cfg
+                self.state = None
+                if failure in ('driver', 'preexec'): self.files[str(self.folder/(failure+'.json'))] = b'{}'
+                if failure == 'binding':
+                    path = str(self.folder/'admission.json')
+                    value = json.loads(self.files[path]); value['configurationHash'] = 'e'*64
+                    self.files[path] = encoded(value)
+                mounted = grant_fixture.a.OperationDenied('OWNED_NAMESPACE_DRIFT') if failure == 'inode' else \
+                    [proof, proof, proof if failure == 'still-mounted' else None]
+                self.fail_phase = str(self.folder/'netns') if failure == 'umount' else None
+                code = ('OWNED_NAMESPACE_DRIFT' if failure == 'inode' else
+                        'FAILED_EPOCH_NAMESPACE_REQUIRES_RECOVERY' if failure in ('driver', 'preexec') else
+                        'FAILED_EPOCH_NAMESPACE_BINDING_DRIFT' if failure == 'binding' else
+                        'ADAPTER_EXECUTABLE_DRIFT' if failure == 'command' else 'FAILED_EPOCH_NAMESPACE_UNMOUNT_UNPROVEN')
+                with patch.object(grant_fixture.b, 'owned_namespace_mount', side_effect=mounted), \
+                        patch.object(self.r, 'executable', side_effect=self.r.Denied(code) if failure == 'command' else None), \
+                        self.assertRaisesRegex(RuntimeError, '^'+code+'$'):
+                    self.run_op('delete')
+                if failure not in ('umount', 'still-mounted'):
+                    self.assertFalse(any(args[0] == '/umount' for args in self.calls))
+                self.assertNotIn(str(self.folder/'runtime-cleanup.json'), self.files)
+                self.assertNotIn(str(self.folder/'runtime-netns-cleanup.json'), self.files)
+                for name in ('driver.json', 'preexec.json'): self.files.pop(str(self.folder/name), None)
+
+    def test_namespace_cleanup_noop_and_reappeared_mount_is_denied(self):
+        proof = self.namespace_fixture()
+        self.validator_cfg_for_run = self.validator_cfg
+        self.state = None
+        with patch.object(self.r, 'executable') as executable, \
+                patch.object(grant_fixture.b, 'owned_namespace_mount', return_value=None):
+            self.assertEqual(self.run_op('delete'), 0)
+            executable.assert_not_called()
+        self.assertNotIn(str(self.folder/'runtime-netns-cleanup.json'), self.files)
+        path = str(self.folder/'admission.json'); admission = json.loads(self.files[path])
+        admission['namespaceOwned'] = False; self.files[path] = encoded(admission)
+        with patch.object(grant_fixture.b, 'owned_namespace_mount') as mounted:
+            self.assertEqual(self.run_op('delete'), 0)
+            mounted.assert_not_called()
+        self.namespace_fixture()
+        with patch.object(self.r, 'executable'), \
+                patch.object(grant_fixture.b, 'owned_namespace_mount', side_effect=[proof, proof, None]):
+            self.assertEqual(self.run_op('delete'), 0)
+        saved = self.files[str(self.folder/'runtime-netns-cleanup.json')]
+        with patch.object(grant_fixture.b, 'owned_namespace_mount', return_value=proof):
+            self.denied('delete', 'FAILED_EPOCH_NAMESPACE_RECEIPT_DRIFT')
+        self.assertEqual(self.files[str(self.folder/'runtime-netns-cleanup.json')], saved)
+
+    def test_failed_before_runtime_root_or_admission_does_not_block_next_cleanup(self):
+        self.record['runtimeRoot'] = None
+        # Failed create can precede both runtimeRoot publication and admission.
+        self.r.failed_namespace_cleanup(self.cfg, CID, self.runtime_root, self.folder, self.record)
+
+    def test_namespace_cleanup_after_upgrade_uses_historical_bound_template(self):
+        proof = self.namespace_fixture()
+        old_cfg = copy.deepcopy(self.validator_cfg)
+        self.cfg['admissionConfigurations'][CID] = dict(path='/new-admission', sha256='d'*64)
+        self.validator_cfg_for_run = dict(preparerTemplate=dict(path='/new-template', sha256='e'*64))
+        self.state = None
+        with patch.object(grant_fixture.b, 'validate', return_value=old_cfg) as validate, \
+                patch.object(grant_fixture.b, 'owned_namespace_mount', side_effect=[proof, proof, None]), \
+                patch.object(self.r, 'executable') as executable:
+            self.assertEqual(self.run_op('delete'), 0)
+        validate.assert_called_once_with(encoded(old_cfg))
+        self.assertEqual(executable.call_args_list, [call('/umount', 'f'*64)] * 2)
+        self.assertEqual(self.record, self.before)
 
 
 class PortableAdmissionSection(unittest.TestCase):

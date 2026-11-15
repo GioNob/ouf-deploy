@@ -1,7 +1,7 @@
 """v7 contracts plus gated root-native broker/preparer/hook integration."""
 import ast
 import copy
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import importlib.util
 import io
 import json
@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -196,7 +197,7 @@ class ContractTests(unittest.TestCase):
                     self.assertEqual(Path(argv[3]), Path(cfg["sourceRoot"]) / b.ENTRYPOINTS[1])
                     self.assertEqual(argv[-4:], ["--configuration", "/epoch/preparer.json", "--mode", "prepare"])
                     self.assertEqual(kwargs["input"], a.canonical(state))
-                    self.assertEqual(kwargs["stderr"], subprocess.DEVNULL)
+                    self.assertTrue(kwargs["stderr"].writable())
                     self.assertEqual(kwargs["env"], {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
                     self.assertEqual(b.private("/epoch/preparer.json"), a.canonical(request))
                     kwargs["stdout"].write(a.canonical(response) + b"\n")
@@ -233,6 +234,105 @@ class ContractTests(unittest.TestCase):
                     self.assertRaisesRegex(a.OperationDenied, "BROKER_SOURCE_PACKAGE_DRIFT"):
                 b.SubprocessPreparer().prepare(request, state)
             denied.assert_not_called()
+
+    def test_bounded_worker_denial_protocol_and_real_stderr_pipe(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.budget = Mock()
+        worker.budget.remaining.return_value = 5
+        cases = [(b"SECRET/path\nWORKER=DENIED INDEPENDENT_TEMPLATE_BINDING_DRIFT\n", "INDEPENDENT_TEMPLATE_BINDING_DRIFT"),
+                 (b"WORKER=DENIED " + b"A" * 80 + b"\n", "A" * 80),
+                 (b"SECRET/path", None), (b"WORKER=DENIED bad-code\n", None),
+                 (b"WORKER=DENIED CODE SECRET\n", None), (b"WORKER=DENIED " + b"A" * 81 + b"\n", None),
+                 (b"WORKER=DENIED CODE\xff\n", None), (b"WORKER=DENIED GOOD\r\n", "GOOD"),
+                 (b"WORKER=DENIED GOOD\nWORKER=DENIED OTHER\n", None),
+                 (b"x" * 4096 + b"\nWORKER=DENIED TOO_LATE\n", None),
+                 (b"x\n" * 2040 + b"W=DENIED TOO_LONG_FOR_WINDOW\n", None),
+                 (b"W=DENIED EARLY\n" + b"x" * 1000000, "EARLY")]
+        for stderr, code in cases:
+            for prefix in ("TEMPLATE_DENIED_", "HOOK_APPLY_DENIED_"):
+                # Keep argv bounded for the large-output case on Windows.
+                argv = [sys.executable, "-I", "-B", "-c",
+                        "import sys; sys.stderr.buffer.write(sys.stdin.buffer.read()); sys.exit(1)"]
+                expected = (prefix + code)[:80] if code else "SEALED_WORKER_OR_DRIVER_DENIED"
+                with self.subTest(code=code, length=len(stderr), prefix=prefix), \
+                        self.assertRaisesRegex(a.OperationDenied, "^" + expected + "$"):
+                    worker.invoke(argv, stderr, denial_prefix=prefix)
+
+    def test_prepare_failure_unmounts_owned_inode_and_preserves_original_code(self):
+        from tools.semantic_provider_admission_v2 import locking
+        with part_a.libraries():
+            from tools import semantic_provider_deployment_producer as producer
+            for owned, outcome in ((True, "UNMOUNTED"), (False, "NOT_OWNED"),
+                                    (True, "OWNED_NAMESPACE_DRIFT"), (True, "OWNED_NAMESPACE_UNMOUNT_UNPROVEN")):
+                worker = p.Worker.__new__(p.Worker)
+                worker.root, worker.path, worker.raw = Path("/epoch"), Path("/epoch/preparer.json"), b"{}"
+                worker.cfg = {}
+                worker.budget = Mock()
+                worker.budget.remaining.side_effect = a.OperationDenied("AUTHENTICATION_DEADLINE_MISSED")
+                worker.request = {"binding": part_a.fixture()[0]}
+                worker.template = {"lockFile": "/common.lock", "commands": {"umount": "/bin/umount"},
+                                   "commandHashes": {"umount": "a" * 64}}
+                worker.journal = part_a.MemoryJournal()
+                worker.journal.value = {**worker.initial(), "state": "PREPARING", "namespaceOwned": owned,
+                                        "namespaceInode": 456, "containerGeneration": part_a.GEN}
+                error = a.OperationDenied("TEMPLATE_DENIED_INDEPENDENT_TEMPLATE_BINDING_DRIFT")
+                proof = {"namespaceInode": 456, "namespaceDevice": 4, "mountId": 90}
+                probe = [proof, proof, None] if outcome == "UNMOUNTED" else \
+                    a.OperationDenied(outcome) if outcome == "OWNED_NAMESPACE_DRIFT" else [proof, proof]
+                with self.subTest(owned=owned, outcome=outcome), \
+                        patch.object(worker, "_prepare", side_effect=error), \
+                        patch.object(locking, "wait_common_lock", return_value=nullcontext()), \
+                        patch.object(b, "private", return_value=worker.raw), patch.object(b, "verify_sources"), \
+                        patch.object(b, "owned_namespace_mount", side_effect=probe) as mounted, \
+                        patch.object(producer, "program", return_value="/bin/umount") as program, \
+                        patch.object(p.subprocess, "run", return_value=types.SimpleNamespace(
+                            returncode=1 if outcome == "OWNED_NAMESPACE_UNMOUNT_UNPROVEN" else 0)) as run, \
+                        self.assertRaises(a.OperationDenied) as denied:
+                    worker.prepare({})
+                self.assertIs(denied.exception, error)
+                self.assertEqual(worker.record()["state"], "FAILED")
+                self.assertEqual(worker.record()["failure"], str(error))
+                self.assertEqual(worker.record()["namespaceCleanup"], outcome)
+                if outcome in ("UNMOUNTED", "OWNED_NAMESPACE_UNMOUNT_UNPROVEN"):
+                    self.assertEqual(run.call_args.args[0], ["/bin/umount", str(worker.root / "netns")])
+                    self.assertEqual(program.call_count, 2)
+                else:
+                    run.assert_not_called()
+                if not owned:
+                    mounted.assert_not_called()
+
+    def test_failed_cleanup_journal_or_lock_error_never_masks_original(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.template = {}  # Even a failure before the journal exists is safe.
+        error = a.OperationDenied("ORIGINAL_DENIAL")
+        with patch.object(worker, "_prepare", side_effect=error), self.assertRaises(a.OperationDenied) as caught:
+            worker.prepare({})
+        self.assertIs(caught.exception, error)
+
+    def test_owned_mount_proof_requires_nsfs_device_inode_and_exact_target(self):
+        namespace = Path("/epoch/net ns")
+        escaped = os.fsencode(namespace).replace(b"\\", b"\\134").replace(b" ", b"\\040")
+        line = b"90 40 0:4 net:[456] " + escaped + b" rw - nsfs nsfs rw\n"
+        info = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o444, st_dev=4, st_ino=456)
+        proof = {"namespaceInode": 456, "namespaceDevice": 4, "mountId": 90}
+        with patch.object(b.os, "major", return_value=0, create=True), \
+                patch.object(b.os, "minor", return_value=4, create=True), \
+                patch.object(Path, "lstat", return_value=info):
+            with patch("builtins.open", return_value=io.BytesIO(line)):
+                self.assertEqual(b.owned_namespace_mount(namespace, 456), proof)
+            for raw in (line.replace(b"nsfs nsfs", b"tmpfs tmpfs"), line.replace(b"0:4", b"0:5"),
+                        line.replace(b"net:[456]", b"net:[457]"), line + line):
+                with self.subTest(raw=raw), patch("builtins.open", return_value=io.BytesIO(raw)), \
+                        self.assertRaises(a.OperationDenied):
+                    b.owned_namespace_mount(namespace, 456)
+            for inode in (457, True, None):
+                with patch("builtins.open", return_value=io.BytesIO(line)), self.assertRaises(a.OperationDenied):
+                    b.owned_namespace_mount(namespace, inode)
+            info.st_mode = stat.S_IFLNK | 0o777
+            with patch("builtins.open", return_value=io.BytesIO(line)), self.assertRaises(a.OperationDenied):
+                b.owned_namespace_mount(namespace, 456)
+            with patch("builtins.open", return_value=io.BytesIO(line.replace(escaped, b"/foreign/netns"))):
+                self.assertIsNone(b.owned_namespace_mount(namespace, 456))
 
     def test_no_issuance_and_public_cli_errors(self):
         forbidden = {"LocalEvidenceProducer", "ExistingEd25519Signer", "InstallerApproval", "NodeAttestor"}

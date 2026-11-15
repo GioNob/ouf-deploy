@@ -75,13 +75,15 @@ class Worker:
                 and broker.read_binding(self.request["configurationBinding"]) == authorization.canonical(self.cfg)
                 and broker.read_binding(self.cfg["preparerTemplate"]) == self.template_raw, "PREPARER_INPUT_DRIFT")
 
-    def invoke(self, argv, raw=None, limit=131072):
-        with tempfile.TemporaryFile() as out:
-            result = subprocess.run(argv, input=raw, stdout=out, stderr=subprocess.DEVNULL,
+    def invoke(self, argv, raw=None, limit=131072, denial_prefix=None):
+        with tempfile.TemporaryFile() as out, broker.bounded_stderr() as (errors, captured):
+            result = subprocess.run(argv, input=raw, stdout=out, stderr=errors,
                 timeout=self.budget.remaining(18), env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
             out.seek(0)
             content = out.read(limit + 1)
-        require(result.returncode == 0 and len(content) <= limit, "SEALED_WORKER_OR_DRIVER_DENIED")
+        code = captured["code"] if result.returncode != 0 else None
+        require(result.returncode == 0 and len(content) <= limit,
+                (denial_prefix + code)[:80] if code and denial_prefix else "SEALED_WORKER_OR_DRIVER_DENIED")
         return content
 
     def run(self, name, argv, raw=None):
@@ -93,7 +95,7 @@ class Worker:
         return result.decode()
 
     def invoke_result(self, argv, raw):
-        content = self.invoke(argv, raw)
+        content = self.invoke(argv, raw, denial_prefix="TEMPLATE_DENIED_")
         require(content.endswith(b"\n"), "SEALED_WORKER_RESULT_DRIFT")
         # The worker protocol is one canonical object followed by exactly LF.
         return authorization.decode(content[:-1])
@@ -109,8 +111,12 @@ class Worker:
 
     def record(self):
         value, initial = self.journal.read(), self.initial()
-        require(set(value) == set(initial) and all(value[k] == initial[k] for k in ("schema", "transactionId", "configurationHash"))
-                and value["state"] in ("STAGED", "PREPARING", "PREPARED", "PROTECTED", "CLEANED"),
+        failed = value.get("state") == "FAILED"
+        require(set(value) == set(initial) | ({"failure", "namespaceCleanup"} if failed else set())
+                and all(value[k] == initial[k] for k in ("schema", "transactionId", "configurationHash"))
+                and value["state"] in ("STAGED", "PREPARING", "PREPARED", "PROTECTED", "CLEANED", "FAILED")
+                and (not failed or all(type(value[k]) is str and re.fullmatch(r"[A-Z0-9_]{1,80}", value[k])
+                                       for k in ("failure", "namespaceCleanup"))),
                 "ADMISSION_JOURNAL_BINDING_DRIFT")
         return value
 
@@ -140,6 +146,54 @@ class Worker:
         return signed, effective
 
     def prepare(self, state):
+        try:
+            return self._prepare(state)
+        except Exception as error:
+            self.prepare_failed(error)
+            raise
+
+    def prepare_failed(self, error):
+        """Best effort under the common lock; never replace the original denial.
+
+        Cleanup has its own bounded verification window so an exhausted prepare
+        deadline cannot strand an owned mount. No rollback/kernel action occurs.
+        """
+        try:
+            from tools.semantic_provider_deployment_authentication import VerificationBudget
+            from tools.semantic_provider_deployment_producer import program
+            from .locking import wait_common_lock
+            budget = VerificationBudget(5)
+            with wait_common_lock(Path(self.template["lockFile"]), budget.deadline):
+                broker.verify_sources(self.cfg)
+                require(broker.private(self.path) == self.raw, "PREPARER_INPUT_DRIFT")
+                record = self.record()
+                require(record["state"] in ("STAGED", "PREPARING", "PREPARED"), "OWNED_FAILURE_REQUIRED")
+                cleanup = "NOT_OWNED"
+                try:
+                    if record["namespaceOwned"]:
+                        namespace = self.root / "netns"
+                        proof = broker.owned_namespace_mount(namespace, record["namespaceInode"])
+                        cleanup = "NOT_MOUNTED"
+                        if proof is not None:
+                            item = self.command("umount")
+                            executable = program(item, budget)
+                            require(broker.owned_namespace_mount(namespace, record["namespaceInode"]) == proof,
+                                    "OWNED_NAMESPACE_DRIFT")
+                            result = subprocess.run([executable, str(namespace)], stdin=subprocess.DEVNULL,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=budget.remaining(5),
+                                env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
+                            program(item, budget)
+                            require(result.returncode == 0 and broker.owned_namespace_mount(namespace, record["namespaceInode"]) is None,
+                                    "OWNED_NAMESPACE_UNMOUNT_UNPROVEN")
+                            cleanup = "UNMOUNTED"
+                except Exception as cleanup_error:
+                    cleanup = broker.denial_code(cleanup_error)
+                self.journal.write(record, {**record, "state": "FAILED", "failure": broker.denial_code(error),
+                                            "namespaceCleanup": cleanup})
+        except Exception:
+            pass
+
+    def _prepare(self, state):
         from tools.semantic_provider_deployment_admission import application_hash, live_profile, mirrors
         from tools.semantic_provider_preexec import digest
         from tools.semantic_provider_preexec_native import NativeBackend
@@ -194,8 +248,14 @@ class Worker:
         if owned:
             namespace = str(self.root / "netns")
             evidence_v2.write_exclusive(Path(namespace), {})
-            self.run("mount", ["--bind", "/proc/" + str(state["pid"]) + "/ns/net", namespace])
+            source = "/proc/" + str(state["pid"]) + "/ns/net"
+            # Journal ownership before the command, including a mount succeeding
+            # just before a timeout or post-command hash verification failure.
+            inode = os.stat(source).st_ino
+            record = self.publish(record, namespaceOwned=True, namespaceInode=inode)
+            self.run("mount", ["--bind", source, namespace])
         inode = os.stat(namespace).st_ino
+        require(not owned or inode == record["namespaceInode"], "OWNED_NAMESPACE_DRIFT")
         record = self.publish(record, namespaceOwned=owned, namespaceInode=inode)
         # Array output is intentionally parsed separately from canonical objects.
         import json
@@ -255,7 +315,8 @@ class Worker:
             driver_hash = evidence_v2.write_exclusive(self.root / "driver.json", grant)
         record = self.publish(record, state="PREPARED", driverHash=driver_hash)
         for mode in ("plan", "apply", "verify"):
-            self.invoke([*self.python_argv(), str(self.hook), "--configuration", str(self.root / "driver.json"), "--mode", mode])
+            self.invoke([*self.python_argv(), str(self.hook), "--configuration", str(self.root / "driver.json"), "--mode", mode],
+                        denial_prefix="HOOK_" + mode.upper() + "_DENIED_")
         self.publish(record, state="PROTECTED")
         return {"binding": r["binding"], "evidenceHash": r["evidenceBinding"]["sha256"], "driverHash": driver_hash}
 
