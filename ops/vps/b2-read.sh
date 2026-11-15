@@ -6,8 +6,8 @@ set -euo pipefail
 umask 077
 
 # Claude fills these pins after review and commit (D-001).
-C=fbda7d27613a53c994efe09ea167be8760130835
-R=bf992cd6c04d8581fb7d674326f67770cc9b75d355eaff89502173545b5180e5
+C=d4aaacded205d5fe417f3560b71d1e3462cded4c
+R=1ac9761c927250722f59eff2299b3febed3f05be6ed4c6d6269d1fdad6e293ba
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
