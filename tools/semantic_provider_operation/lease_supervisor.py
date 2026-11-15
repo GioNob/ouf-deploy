@@ -536,13 +536,25 @@ def runtime(configuration):
     return coordinator, guards, factory
 
 
+def quiesce_only(configuration):
+    """One revocation, verified under the coordinator lock; no service lifetime."""
+    coordinator, _, _ = runtime(configuration)
+    coordinator.quiesce()
+    Service.verify_quiesced(types.SimpleNamespace(c=coordinator))
+    configuration.custody()
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Semantic provider lease supervisor v2")
     parser.add_argument("--configuration", required=True)
     parser.add_argument("--configuration-sha256", required=True)
+    parser.add_argument("--quiesce-only", action="store_true")
     args = parser.parse_args(argv)
     try:
         configuration = Configuration(args.configuration, args.configuration_sha256)
+        if args.quiesce_only:
+            return quiesce_only(configuration)
         cfg = configuration.value
         # Install the handler before loading native bindings or acquiring the worker lock.
         stop = threading.Event()

@@ -17,6 +17,28 @@ Avvio previsto su Linux root:root:
 L'installazione systemd appartiene al task-41: `BindsTo=docker.service`,
 `Restart=always`, abilitazione al boot e directory di stato persistente.
 Questo task prepara il processo, senza installare o avviare servizi.
+Il runtime v5.2 usa inoltre la modalità di sola revoca del task-39:
+
+```sh
+/usr/bin/python3 -I -B /opt/ouf/lease-supervisor/source/scripts/semantic-provider-lease-supervisor-v2.py \
+  --configuration /etc/ouf/lease-v2/configuration.json \
+  --configuration-sha256 <sha256-dei-byte-canonici> --quiesce-only
+```
+
+Il flag è unico e finale nell'argv del bootstrap. La modalità verifica la stessa
+configurazione e chiusura del servizio, costruisce il coordinatore con `runtime()`,
+esegue una sola `coordinator.quiesce()` e prova sotto il lock comune stato
+`QUIESCED`, lease/start false e set vuoti (`verify_quiesced`). Ricontrolla la
+custodia dopo la revoca. Esce 0 solo a verifica riuscita, altrimenti 1 con codice
+pubblico. Non acquisisce il lock di vita del servizio, non installa handler,
+non pubblica stato o rinnovi e non avvia il ciclo di recovery. Non chiama
+`fresh_start`, `refresh`, `publish` o `publish_renewal`: può soltanto restringere.
+I test statici e dinamici includono sentinelle su queste chiamate e sul lock
+di vita, oltre a revoca fallita e drift della chiusura prima dell'esecuzione.
+Gli hash di entrypoint e modulo modificati devono essere ricomposti nella
+configurazione del futuro installatore; nessuna configurazione installata viene
+aggiornata da questa modifica.
+
 `SIGTERM` segnala al ciclo di quiescere, pubblicare `STOPPED` e uscire con 0;
 gli errori di quiescenza danno `FAILED` e uscita 1.
 

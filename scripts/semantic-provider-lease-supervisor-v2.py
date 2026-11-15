@@ -103,13 +103,14 @@ def main(argv=None):
     try:
         require(os.geteuid() == os.getegid() == 0 and sys.flags.isolated and sys.dont_write_bytecode,
                 "ROOT_ISOLATED_NO_BYTECODE_REQUIRED")
-        require(len(args) == 4 and args.count("--configuration") == args.count("--configuration-sha256") == 1,
+        options = args[:-1] if args and args[-1] == "--quiesce-only" else args
+        require(len(options) == 4 and options.count("--configuration") == options.count("--configuration-sha256") == 1,
                 "EXACT_BOOTSTRAP_ARGUMENTS_REQUIRED")
         values = {}
         for index in (0, 2):
-            require(args[index] in {"--configuration", "--configuration-sha256"},
+            require(options[index] in {"--configuration", "--configuration-sha256"},
                     "EXACT_BOOTSTRAP_ARGUMENTS_REQUIRED")
-            values[args[index]] = args[index + 1]
+            values[options[index]] = options[index + 1]
         root, verified = load_sources(values["--configuration"], values["--configuration-sha256"])
         return execute(root, verified).main(args)
     except Exception as error:

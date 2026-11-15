@@ -1,4 +1,5 @@
 """R3: real recovery loop with in-memory native boundaries; root-only scope fixture."""
+import ast
 import copy
 from contextlib import ExitStack, contextmanager, nullcontext
 import importlib.util
@@ -440,6 +441,61 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.new_store().count(self.clock()), 1)
 
 
+class QuiesceOnlyTests(unittest.TestCase):
+    def test_static_revocation_path_has_no_activation_publication_or_service_lock(self):
+        tree = ast.parse((ROOT / 'tools/semantic_provider_operation/lease_supervisor.py').read_text())
+        function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'quiesce_only')
+        calls = {n.func.attr if isinstance(n.func, ast.Attribute) else n.func.id
+                 for n in ast.walk(function) if isinstance(n, ast.Call)
+                 and isinstance(n.func, (ast.Attribute, ast.Name))}
+        self.assertFalse(calls & {'fresh_start', 'refresh', 'publish', 'publish_renewal', 'lifetime_lock',
+                                  'run', 'run_scope', 'factory', 'atomic', 'status'})
+        self.assertTrue({'runtime', 'quiesce', 'verify_quiesced', 'custody'} <= calls)
+        main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main')
+        body = next(n for n in main.body if isinstance(n, ast.Try)).body
+        branch = next(n for n in body if isinstance(n, ast.If))
+        self.assertEqual(ast.unparse(branch.test), 'args.quiesce_only')
+        self.assertIsInstance(branch.body[0], ast.Return)
+
+    def invoke(self, coordinator, configuration=None):
+        config = configuration or Config()
+        def forbidden(*args, **kwargs):
+            raise AssertionError('ACTIVATION_OR_SERVICE_LIFETIME_FORBIDDEN')
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(s, 'Configuration', return_value=config))
+            stack.enter_context(patch.object(s, 'runtime', return_value=(coordinator, None, forbidden)))
+            for name in ('atomic', 'lifetime_lock'):
+                stack.enter_context(patch.object(s, name, side_effect=forbidden))
+            stack.enter_context(patch.object(s.Service, 'run', side_effect=forbidden))
+            stack.enter_context(patch.object(s.signal, 'signal', side_effect=forbidden))
+            for name in ('fresh_start', 'refresh', 'publish', 'publish_renewal'):
+                stack.enter_context(patch.object(coordinator, name, side_effect=forbidden, create=True))
+            stderr = stack.enter_context(patch.object(sys, 'stderr', io.StringIO()))
+            result = s.main(['--configuration', '/run/config', '--configuration-sha256', 'a'*64, '--quiesce-only'])
+        return result, stderr.getvalue()
+
+    def test_dynamic_one_revocation_no_activation_publication_or_lifetime_lock(self):
+        coordinator = Coordinator()
+        self.assertEqual(self.invoke(coordinator), (0, ''))
+        self.assertEqual(coordinator.calls, ['quiesce'])
+        self.assertEqual(coordinator.journal(), {'state': 'QUIESCED', 'leaseAuthorized': False, 'startAuthorized': False})
+        self.assertFalse(any(coordinator.sets()))
+
+    def test_failed_revocation_or_verification_returns_one_without_status(self):
+        coordinator = Coordinator()
+        def bad_quiesce():
+            coordinator.calls.append('quiesce')
+        coordinator.quiesce = bad_quiesce
+        self.assertEqual(self.invoke(coordinator), (1, 'QUIESCENCE_UNPROVEN\n'))
+        self.assertEqual(coordinator.calls, ['quiesce'])
+
+    def test_custody_rechecked_after_revocation(self):
+        config = Config(); config.error = s.Denied('CONFIGURATION_CUSTODY_CHANGED')
+        coordinator = Coordinator()
+        self.assertEqual(self.invoke(coordinator, config), (1, 'CONFIGURATION_CUSTODY_CHANGED\n'))
+        self.assertEqual(coordinator.calls, ['quiesce'])
+
+
 class SourceClosureTests(unittest.TestCase):
     def setUp(self):
         self.cfg = configuration()
@@ -473,6 +529,19 @@ class SourceClosureTests(unittest.TestCase):
 
     def boot_args(self):
         return ["--configuration", self.path, "--configuration-sha256", s.sha(self.raw)]
+
+    def test_quiesce_only_bootstrap_verifies_closure_and_forwards_exact_args(self):
+        args = self.boot_args() + ['--quiesce-only']
+        target = SimpleNamespace(main=lambda received: 0 if received == args else 7)
+        with self.boot_boundary(), patch.object(bootstrap, 'execute', return_value=target) as execute:
+            self.assertEqual(bootstrap.main(args), 0)
+            self.assertEqual(execute.call_args.args, (Path(self.cfg['sourceRoot']), self.sources))
+        relative = 'tools/semantic_provider_operation/epochs.py'
+        self.files[Path(self.cfg['sourceRoot'])/relative] += b'\nchanged'
+        with self.boot_boundary(), patch.object(bootstrap, 'execute') as execute, \
+                patch.object(sys, 'stderr', io.StringIO()):
+            self.assertEqual(bootstrap.main(args), 1)
+            execute.assert_not_called()
 
     def test_exact_source_set_and_fixed_recovery_pins(self):
         self.assertEqual(bootstrap.SOURCES, s.SOURCES)
