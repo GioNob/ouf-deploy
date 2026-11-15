@@ -2,6 +2,7 @@
 import copy
 import os
 from pathlib import Path
+import re
 import socket
 import subprocess
 import sys
@@ -89,6 +90,12 @@ class Worker:
         result = self.invoke([path, *argv], raw.encode() if raw is not None else None, 2000000)
         program(item, self.budget)
         return result.decode()
+
+    def invoke_result(self, argv, raw):
+        content = self.invoke(argv, raw)
+        require(content.endswith(b"\n"), "SEALED_WORKER_RESULT_DRIFT")
+        # The worker protocol is one canonical object followed by exactly LF.
+        return authorization.decode(content[:-1])
 
     def python_argv(self):
         from tools.semantic_provider_deployment_producer import program
@@ -209,8 +216,8 @@ class Worker:
         generation = backend.bindings(profile, state)
         record = self.publish(record, containerGeneration=generation)
         packet = {"profile": profile, "mirrors": mirrors(profile, hosts), "parentNamespace": t["hostNetworkNamespace"]}
-        result = authorization.decode(self.invoke([t["commands"]["unshare"], "--net", "--fork", *self.python_argv(), str(self.entry),
-            "--configuration", str(self.path), "--mode", "template"], authorization.canonical(packet)))
+        result = self.invoke_result([t["commands"]["unshare"], "--net", "--fork", *self.python_argv(), str(self.entry),
+            "--configuration", str(self.path), "--mode", "template"], authorization.canonical(packet))
         require(result["isolated"] is True and result["profileHash"] == digest(profile), "INDEPENDENT_TEMPLATE_BINDING_DRIFT")
         profile["expectedFootprint"] = result["footprint"]
         grant = {"schema": driver.SCHEMA, "sourceRoot": self.cfg["sourceRoot"], "sourceHashes": self.cfg["sourceHashes"],
@@ -287,6 +294,9 @@ def main(argv=None):
                                        os.stat("/proc/self/ns/net").st_ino, worker.run)
         print(authorization.canonical(result).decode())
         return 0
-    except Exception:
-        print("SEMANTIC_ADMISSION_PREPARER=DENIED", file=sys.stderr)
+    except Exception as error:
+        code = str(error)
+        if re.fullmatch(r"[A-Z0-9_]{1,80}", code) is None:
+            code = "INTERNAL_ERROR"
+        print("SEMANTIC_ADMISSION_PREPARER=DENIED " + code, file=sys.stderr)
         return 1

@@ -163,10 +163,14 @@ def main(argv=None):
         index = args.index("--configuration")
         require(index + 1 < len(args), "EXACT_BOOTSTRAP_ARGUMENTS_REQUIRED")
         return bootstrap(args[index + 1]).main(args)
-    except Exception:
-        code = {ENTRYPOINTS[0]: "SEMANTIC_DEPLOYMENT_BROKER", ENTRYPOINTS[1]: "SEMANTIC_ADMISSION_PREPARER",
-                ENTRYPOINTS[2]: "SEMANTIC_PREEXEC"}[SELF]
-        print(code + "=DENIED", file=sys.stderr)
+    except Exception as error:
+        prefix = {ENTRYPOINTS[0]: "SEMANTIC_DEPLOYMENT_BROKER", ENTRYPOINTS[1]: "SEMANTIC_ADMISSION_PREPARER",
+                  ENTRYPOINTS[2]: "SEMANTIC_PREEXEC_HOOK"}[SELF]
+        code = str(error)
+        if re.fullmatch(r"[A-Z0-9_]{1,80}", code) is None:
+            code = "INTERNAL_ERROR"
+        suffix = "" if SELF == ENTRYPOINTS[0] else " " + code
+        print(prefix + "=DENIED" + suffix, file=sys.stderr)
         return 1
 
 

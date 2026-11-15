@@ -189,6 +189,47 @@ compilazione dello snapshot e ricontrollo successivo al caricamento. I test
 nativi aggiunti attraversano i tre entrypoint in processi separati e verificano
 con una sentinella su disco che un modulo alterato non venga eseguito.
 
+### Correzione run 3: protocollo template e diagnostica pubblica
+
+Nel run 2 `Worker.prepare` passava l'output del sottoprocesso `template`
+direttamente ad `authorization.decode`. Il worker termina la propria unica
+riga canonica con LF; `authorization.decode` richiede invece il solo documento
+canonico. Questo percorso rifiutava quindi una risposta corretta con
+`CANONICAL_OPERATION_JSON_REQUIRED`, poi nascosto da `SubprocessPreparer`.
+`Worker.invoke_result` ora richiede il LF e decodifica tutti i byte precedenti:
+LF assente, doppio LF, CRLF, oggetti multipli e JSON non canonico sono negati.
+Il test portabile attraversa un vero sottoprocesso Python e il confine
+stdin/stdout; non richiede namespace o privilegi Linux. È un difetto accertato
+del protocollo, non una prova dell'intero esito nativo del run 3.
+
+Preparer e hook, sia nel bootstrap sia nelle main applicative, emettono su
+stderr una sola riga `SEMANTIC_ADMISSION_PREPARER=DENIED <CODICE>` oppure
+`SEMANTIC_PREEXEC_HOOK=DENIED <CODICE>`. Il codice deve corrispondere a
+`[A-Z0-9_]{1,80}`; qualunque altro errore diventa `INTERNAL_ERROR`, senza
+messaggi, path o traceback. Il bootstrap resta identico nei tre entrypoint
+eccetto SELF/TARGET; il broker conserva il proprio esito pubblico precedente.
+La porta di produzione continua a scartare stderr.
+
+Nella suite nativa il primo sottoprocesso del preparer è osservato con cattura
+di stderr esclusivamente nel test: un diniego chiama `self.fail(stderr)`.
+Non si ritenta una preparazione parziale, che maschererebbe la causa originale
+con un diniego di replay. Un ulteriore caso invoca direttamente il preparer
+reale su un'epoca indipendente, con gli stessi byte di richiesta/stdin,
+interprete, ambiente minimo e timeout della porta. Verifica il risultato
+canonico con LF, il broker PROTECTED e il consumo STARTED dopo l'hook.
+La fixture controlla esplicitamente custodia root:root 0600/nlink 1 di tutti
+i sorgenti, directory sorgenti 0700, hash, SELF, interprete e
+configurationBinding. Il controllo statico non ha individuato difetti in
+questi binding della fixture; non sono stati allentati controlli nativi.
+Revoca, frame modificato e replay richiedono ora i rispettivi codici pubblici.
+
+Verifica locale run 3 su Windows/Python 3.12.12: parte B 11 test superati e
+6 nativi saltati; parte A 11 superati e 6 nativi saltati; lease supervisor
+16 superati e 5 nativi saltati; operation 11 nativi saltati. Il gate Linux
+root resta da eseguire nel workflow già presente. WSL non è utilizzabile
+in questa sessione (`Wsl/EnumerateDistros/Service/E_ACCESSDENIED`): nessun
+risultato locale attesta che la CI nativa sia diventata verde.
+
 ### Prove e limiti
 
 `tests/test_semantic_provider_admission_v2_preparer.py` copre schema chiuso,

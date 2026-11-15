@@ -50,6 +50,21 @@ def grant():
 
 
 class ContractTests(unittest.TestCase):
+    def test_template_worker_canonical_line_protocol(self):
+        worker = p.Worker.__new__(p.Worker)
+        worker.budget = Mock()
+        worker.budget.remaining.return_value = 5
+        # Exercise the actual pipe/print boundary, including its final LF.
+        argv = [sys.executable, "-I", "-B", "-c",
+                r"import json,sys; sys.stdout.reconfigure(newline='\n'); print(json.dumps(json.load(sys.stdin),sort_keys=True,separators=(',',':')))"]
+        packet = {"footprint": "a" * 64, "isolated": True}
+        self.assertEqual(worker.invoke_result(argv, a.canonical(packet)), packet)
+        for raw in (a.canonical(packet), a.canonical(packet) + b"\n\n",
+                    a.canonical(packet) + b"\r\n", b"{}\n{}\n", b'{"extra": true}\n'):
+            with self.subTest(raw=raw), patch.object(worker, "invoke", return_value=raw), \
+                    self.assertRaises(a.OperationDenied):
+                worker.invoke_result(argv, b"{}")
+
     def test_driver_consumes_under_common_lock_and_rollback_skips_authority(self):
         value = grant()
         binding, head, _, _, evidence = part_a.fixture()
@@ -181,6 +196,8 @@ class ContractTests(unittest.TestCase):
                     self.assertEqual(Path(argv[3]), Path(cfg["sourceRoot"]) / b.ENTRYPOINTS[1])
                     self.assertEqual(argv[-4:], ["--configuration", "/epoch/preparer.json", "--mode", "prepare"])
                     self.assertEqual(kwargs["input"], a.canonical(state))
+                    self.assertEqual(kwargs["stderr"], subprocess.DEVNULL)
+                    self.assertEqual(kwargs["env"], {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
                     self.assertEqual(b.private("/epoch/preparer.json"), a.canonical(request))
                     kwargs["stdout"].write(a.canonical(response) + b"\n")
                     return types.SimpleNamespace(returncode=0)
@@ -234,8 +251,31 @@ class ContractTests(unittest.TestCase):
             output = io.StringIO()
             with patch("sys.stderr", output), patch.object(module.os, "geteuid", return_value=1, create=True):
                 self.assertEqual(module.main(["--configuration", "/SECRET", "--mode", "prepare" if module is p else "start"]), 1)
-            self.assertIn("=DENIED", output.getvalue())
+            prefix = "SEMANTIC_ADMISSION_PREPARER" if module is p else "SEMANTIC_PREEXEC_HOOK"
+            self.assertEqual(output.getvalue(), prefix + "=DENIED ROOT_ISOLATED_NO_BYTECODE_REQUIRED\n")
             self.assertNotIn("SECRET", output.getvalue())
+
+    def test_application_and_bootstrap_errors_only_expose_public_codes(self):
+        entries = SourceClosureTests()
+        for module, mode, loader, prefix in (
+                (p, "prepare", "Worker", "SEMANTIC_ADMISSION_PREPARER"),
+                (d, "start", "load", "SEMANTIC_PREEXEC_HOOK"),
+                (entries.entry(b.ENTRYPOINTS[1]), "prepare", "bootstrap", "SEMANTIC_ADMISSION_PREPARER"),
+                (entries.entry(b.ENTRYPOINTS[2]), "start", "bootstrap", "SEMANTIC_PREEXEC_HOOK")):
+            for message, expected in (("BROKER_SOURCE_PACKAGE_DRIFT", "BROKER_SOURCE_PACKAGE_DRIFT"),
+                                      ("/SECRET/path", "INTERNAL_ERROR"), ("SECRET\nSECOND_LINE", "INTERNAL_ERROR"),
+                                      ("A" * 81, "INTERNAL_ERROR"), ("", "INTERNAL_ERROR")):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with self.subTest(module=module.__name__, message=message), \
+                        patch("sys.stdout", stdout), patch("sys.stderr", stderr), \
+                        patch.object(module.os, "geteuid", return_value=0, create=True), \
+                        patch.object(module.os, "getegid", return_value=0, create=True), \
+                        patch.object(sys, "flags", types.SimpleNamespace(isolated=1)), \
+                        patch.object(sys, "dont_write_bytecode", True), \
+                        patch.object(module, loader, side_effect=RuntimeError(message)):
+                    self.assertEqual(module.main(["--configuration", "/SECRET", "--mode", mode]), 1)
+                self.assertEqual(stdout.getvalue(), "")
+                self.assertEqual(stderr.getvalue(), prefix + "=DENIED " + expected + "\n")
 
 
 class SourceClosureTests(unittest.TestCase):
@@ -480,6 +520,56 @@ class NativeTests(part_a.NativeTests):
         self.preparer = b.SubprocessPreparer()
         self.publish_epoch("OPENING")
         self.addCleanup(self.unmount_retained)
+        # Include every run-2 source addition in the native custody assertions.
+        self.assertEqual(self.source.stat().st_mode & 0o777, 0o700)
+        for relative in b.SOURCES:
+            path = self.source / relative
+            info = path.lstat()
+            self.assertEqual((info.st_uid, info.st_gid, info.st_nlink, info.st_mode & 0o777), (0, 0, 1, 0o600))
+            self.assertEqual(a.sha(path.read_bytes()), self.cfg["sourceHashes"][relative])
+            for directory in path.parents:
+                if directory == self.source.parent:
+                    break
+                self.assertEqual((directory.stat().st_uid, directory.stat().st_gid,
+                                  directory.stat().st_mode & 0o777), (0, 0, 0o700))
+        for relative in b.ENTRYPOINTS:
+            entry = SourceClosureTests().entry(relative)
+            self.assertEqual(self.source / entry.SELF, self.source / relative)
+        self.assertEqual(template["pythonPath"], str(Path("/usr/bin/python3").resolve(strict=True)))
+        self.assertEqual(template["pythonHash"], a.sha(Path(template["pythonPath"]).read_bytes()))
+
+    def through_prepare(self):
+        # Observe the original subprocess denial on the FIRST attempt. Retrying
+        # after a partial prepare would obscure its cause with a replay denial.
+        run = subprocess.run
+        def diagnostic_run(argv, **kwargs):
+            if len(argv) > 3 and argv[3] == str(self.source / b.ENTRYPOINTS[1]) \
+                    and kwargs.get("stderr") == subprocess.DEVNULL:
+                kwargs["stderr"] = subprocess.PIPE  # test-only; production still discards it
+                result = run(argv, **kwargs)
+                if result.returncode:
+                    self.fail(result.stderr.decode())
+                self.assertEqual(result.stderr, b"")
+                return result
+            return run(argv, **kwargs)
+        with patch.object(b.subprocess, "run", side_effect=diagnostic_run):
+            return super().through_prepare()
+
+    def direct_prepare(self, request, state):
+        # Independent direct CLI invocation with the SAME request, interpreter,
+        # stdin, environment and timeout as SubprocessPreparer, without replay.
+        self.assertEqual((self.epoch_root / "preparer.json").read_bytes(), a.canonical(request))
+        self.assertEqual(request["configurationBinding"],
+                         {"path": str(self.configuration_path), "sha256": a.sha(self.raw)})
+        result = subprocess.run([request["template"]["pythonPath"], "-I", "-B",
+            str(self.source / b.ENTRYPOINTS[1]), "--configuration", str(self.epoch_root / "preparer.json"),
+            "--mode", "prepare"], input=a.canonical(state), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            timeout=18, env={"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LC_ALL": "C"})
+        if result.returncode:
+            self.fail(result.stderr.decode())
+        self.assertEqual(result.stderr, b"")
+        self.assertTrue(result.stdout.endswith(b"\n"))
+        return a.decode(result.stdout[:-1])
 
     def publish_epoch(self, state, **changes):
         super().publish_epoch(state, **changes)
@@ -498,12 +588,15 @@ class NativeTests(part_a.NativeTests):
             subprocess.run([str(Path(shutil.which("umount")).resolve()), str(path)], check=True, timeout=3,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def hook(self, mode, good=True):
+    def hook(self, mode, good=True, denied_code=None):
         result = subprocess.run([str(Path("/usr/bin/python3").resolve()), "-I", "-B",
             str(self.source / b.ENTRYPOINTS[2]), "--configuration", str(self.epoch_root / "driver.json"),
             "--mode", mode], input=a.canonical(self.state) if mode == "hook" else None,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8)
         self.assertEqual(result.returncode, 0 if good else 1, result.stderr.decode())
+        if denied_code is not None:
+            self.assertEqual(result.stderr, ("SEMANTIC_PREEXEC_HOOK=DENIED " + denied_code + "\n").encode())
+            self.assertEqual(result.stdout, b"")
         return result
 
     def test_real_preparation_start_replay_rollback_cleanup(self):
@@ -516,7 +609,7 @@ class NativeTests(part_a.NativeTests):
         self.hook("start")
         self.assertEqual(gate.gate.record()["state"], "STARTED")
         self.assertTrue(self.started.exists())
-        self.hook("start", good=False)
+        self.hook("start", good=False, denied_code="DO_NOT_REPLAY_DEPLOYMENT_START")
         self.stop_generation()
         self.hook("rollback")
         self.publish_epoch("DELETING")
@@ -524,10 +617,17 @@ class NativeTests(part_a.NativeTests):
         self.assertEqual(json.loads((self.epoch_root / "admission.json").read_bytes())["state"], "CLEANED")
         self.assertFalse((self.epoch_root / "netns").exists())
 
+    def test_direct_preparer_same_request_and_environment(self):
+        self.preparer = types.SimpleNamespace(prepare=self.direct_prepare)
+        gate = self.through_prepare()
+        self.assertEqual(gate.record()["state"], "PROTECTED")
+        self.hook("start")
+        self.assertEqual(gate.gate.record()["state"], "STARTED")
+
     def test_revocation_between_prepare_and_start(self):
         gate = self.through_prepare()
         self.append([{"keyRef": "key-a", "notBefore": 1900, "expiresAt": 1900 + 60 * part_a.operation_tests.DAY, "state": "REVOKED"}])
-        self.hook("start", good=False)
+        self.hook("start", good=False, denied_code="OPERATION_KEY_REVOKED")
         self.assertFalse(self.started.exists())
         self.assertEqual(gate.gate.record()["state"], "READY")
         self.stop_generation()
@@ -536,7 +636,7 @@ class NativeTests(part_a.NativeTests):
     def test_frame_changed_before_start(self):
         gate = self.through_prepare()
         self.write(self.frame_marker, b"changed")
-        self.hook("start", good=False)
+        self.hook("start", good=False, denied_code="LATE_CREATED_FRAME_DRIFT")
         self.assertFalse(self.started.exists())
         self.assertEqual(gate.gate.record()["state"], "READY")
 
@@ -572,12 +672,13 @@ class NativeTests(part_a.NativeTests):
         for relative, configuration, mode, code in (
                 (b.ENTRYPOINTS[0], str(self.configuration_path), "authorize-create", "SEMANTIC_DEPLOYMENT_BROKER"),
                 (b.ENTRYPOINTS[1], request["path"], "prepare", "SEMANTIC_ADMISSION_PREPARER"),
-                (b.ENTRYPOINTS[2], driver["path"], "start", "SEMANTIC_PREEXEC")):
+                (b.ENTRYPOINTS[2], driver["path"], "start", "SEMANTIC_PREEXEC_HOOK")):
             result = subprocess.run([str(Path("/usr/bin/python3").resolve()), "-I", "-B",
                 str(self.source / relative), "--configuration", configuration, "--mode", mode],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
             self.assertEqual(result.returncode, 1)
-            self.assertEqual(result.stderr, (code + "=DENIED\n").encode())
+            suffix = "" if relative == b.ENTRYPOINTS[0] else " BROKER_SOURCE_PACKAGE_DRIFT"
+            self.assertEqual(result.stderr, (code + "=DENIED" + suffix + "\n").encode())
             self.assertEqual(result.stdout, b"")
             self.assertFalse(marker.exists())
 

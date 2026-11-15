@@ -6,6 +6,7 @@ Only admission and consumption are replaced here.
 import copy
 import os
 from pathlib import Path, PurePosixPath
+import re
 import sys
 import time
 import types
@@ -229,6 +230,9 @@ def main(argv=None):
         result = operate(value, raw, args.configuration, args.mode, state)
         print(authorization.canonical({"result": result}).decode())
         return 0
-    except Exception:
-        print("SEMANTIC_PREEXEC=DENIED", file=sys.stderr)
+    except Exception as error:
+        code = str(error)
+        if re.fullmatch(r"[A-Z0-9_]{1,80}", code) is None:
+            code = "INTERNAL_ERROR"
+        print("SEMANTIC_PREEXEC_HOOK=DENIED " + code, file=sys.stderr)
         return 1
