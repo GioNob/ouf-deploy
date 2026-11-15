@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 import unittest
 
@@ -42,7 +43,8 @@ for ns in oci['linux']['namespaces']:
     if ns.get('type')=='network' and ns.get('path'):
         ns['path']=str(pathlib.Path(ns['path']).resolve())
 path=pathlib.Path(BASE)/('capture-'+cid+'.json')
-path.write_text(json.dumps({'oci':oci,'bundle':str(bundle),'root':args[args.index('--root')+1]},
+path.write_text(json.dumps({'oci':oci,'bundle':str(bundle),
+                          'root':str(pathlib.Path(args[args.index('--root')+1]).resolve()),'argv':args},
                           sort_keys=True,separators=(',',':')))
 path.chmod(0o600)
 raise SystemExit(1) # read-only qualification: never create/start an application
@@ -50,7 +52,66 @@ raise SystemExit(1) # read-only qualification: never create/start an application
 
 SYSTEMCTL = "print('ActiveState=active\\nSubState=running\\nNRestarts=0')\n"
 NFT = "print('{\"nftables\":[]}')\n"
-QUIESCE = "# Isolated fixture is permanently QUIESCED; no activation implementation.\n"
+QUIESCE = r'''
+import argparse,hashlib,json,pathlib
+parser=argparse.ArgumentParser()
+parser.add_argument('--configuration',required=True)
+parser.add_argument('--configuration-sha256',required=True)
+parser.add_argument('--quiesce-only',action='store_true',required=True)
+args=parser.parse_args()
+raw=pathlib.Path(args.configuration).read_bytes()
+if hashlib.sha256(raw).hexdigest()!=args.configuration_sha256:
+    raise SystemExit(1)
+config=json.loads(raw)
+journal=json.loads(pathlib.Path(config['coordinator']['journalPath']).read_bytes())
+# The isolated fixture can only prove existing quiescence; it cannot activate.
+raise SystemExit(0 if journal==dict(state='QUIESCED',leaseAuthorized=False,startAuthorized=False) else 1)
+'''
+
+DIAGNOSTIC = r'''
+import os,pathlib,sys,traceback,types
+runtime_path=pathlib.Path(RUNTIME)
+runtime=types.ModuleType('cohort_installed_runtime')
+runtime.__file__=str(runtime_path)
+sys.argv=[str(runtime_path),'--configuration',CONFIGURATION,*sys.argv[1:]]
+def trace(frame,event,arg):
+    # Observe exceptions before operate/quiesce/main redact or suppress them.
+    # Execute the installed bytes unchanged, including main's runc JSON output.
+    if (frame.f_code.co_filename!=str(runtime_path)
+            or frame.f_code.co_name not in ('operate','quiesce','main')):
+        return None
+    if event=='exception':
+        try:
+            path=pathlib.Path(TRACE_ROOT)/('runtime-'+str(os.getpid())+'.log')
+            with path.open('a',encoding='utf-8') as stream:
+                stream.write(''.join(traceback.format_exception(*arg)))
+        except OSError:
+            pass # Diagnostics must not change the runtime's exit/output protocol.
+    return trace
+exec(compile(runtime_path.read_bytes(),str(runtime_path),'exec'),runtime.__dict__)
+sys.settrace(trace)
+try:
+    raise SystemExit(runtime.main())
+finally:
+    sys.settrace(None)
+'''
+
+
+def diagnostic_source(runtime_path, configuration, trace_root):
+    return (f'RUNTIME={str(runtime_path)!r}\nCONFIGURATION={str(configuration)!r}\n'
+            f'TRACE_ROOT={str(trace_root)!r}\n' + DIAGNOSTIC)
+
+
+def initialize_registry(registry, cids):
+    """A fresh fixture needs the initial-install locks omitted by compose v3."""
+    for cid in cids:
+        base = registry / cid
+        base.mkdir(mode=0o700, exist_ok=True)
+        (base / 'epochs').mkdir(mode=0o700, exist_ok=True)
+        lock = base / 'operation.lock'
+        with lock.open('xb'):
+            pass
+        lock.chmod(0o600)
 
 
 def collect_codes():
@@ -65,9 +126,91 @@ def collect_codes():
 
 class PortableTests(unittest.TestCase):
     def test_fixture_programs_compile_and_collect_codes_are_real(self):
-        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE):
+        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC):
             compile(source, "<cohort-fixture>", "exec")
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
+
+    def test_fresh_v3_registry_has_locks_and_never_replaces_them(self):
+        result = C.compose(F.fixtures.fixture(), 3, sequence=3, supersedes="a" * 64)
+        cids = [v['containerId'] for v in json.loads(result['authorization'])['roles'].values()]
+        self.assertFalse(any(p.endswith('/operation.lock') for p in result['documents']))
+        with tempfile.TemporaryDirectory() as folder:
+            registry = Path(folder)
+            initialize_registry(registry, cids)
+            for cid in cids:
+                self.assertEqual((registry / cid / 'operation.lock').read_bytes(), b'')
+                self.assertEqual(list((registry / cid / 'epochs').iterdir()), [])
+                self.assertFalse((registry / cid / 'current').exists())
+            retained = registry / cids[0] / 'operation.lock'
+            retained.write_bytes(b'retained')
+            with self.assertRaises(FileExistsError):
+                initialize_registry(registry, cids)
+            self.assertEqual(retained.read_bytes(), b'retained')
+
+    def test_diagnostic_preserves_protocol_and_captures_suppressed_exception(self):
+        source = '''
+import sys
+def operate():
+    if sys.argv[-1]=='unmasked':
+        raise FileNotFoundError('operation.lock')
+    if sys.argv[-1]=='success':
+        return 0
+    try:
+        raise KeyError('missing-fixture-lock')
+    except Exception:
+        raise RuntimeError('DOCKER_RUNTIME_OPERATION_UNPROVEN') from None
+def main():
+    assert sys.flags.isolated and sys.dont_write_bytecode
+    assert sys.argv[1:-1]==['--configuration','fixture.json','create']
+    try:
+        return operate()
+    except Exception as error:
+        print('SEMANTIC_DOCKER_RUNTIME=BLOCKED REASON='+str(error),file=sys.stderr)
+        return 1
+if __name__=='__main__': raise SystemExit(main())
+'''
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            runtime, diagnostic = root / 'runtime.py', root / 'diagnostic.py'
+            runtime.write_text(source)
+            for mode in ('unmasked', 'redacted', 'success'):
+                with self.subTest(mode=mode):
+                    traces = root / mode
+                    traces.mkdir()
+                    diagnostic.write_text(diagnostic_source(runtime, 'fixture.json', traces))
+                    args = ['--configuration', 'fixture.json', 'create', mode]
+                    canonical = subprocess.run([sys.executable, '-I', '-B', str(runtime), *args], capture_output=True)
+                    wrapped = subprocess.run([sys.executable, '-I', '-B', str(diagnostic), *args[2:]], capture_output=True)
+                    self.assertEqual((wrapped.returncode, wrapped.stdout, wrapped.stderr),
+                                     (canonical.returncode, canonical.stdout, canonical.stderr))
+                    self.assertEqual(wrapped.returncode, 0 if mode == 'success' else 1)
+                    trace = ''.join(p.read_text(encoding='utf-8') for p in traces.glob('runtime-*.log'))
+                    if mode == 'success':
+                        self.assertEqual(trace, '')
+                    else:
+                        self.assertIn('Traceback (most recent call last):', trace)
+                        self.assertIn('FileNotFoundError: operation.lock' if mode == 'unmasked'
+                                      else "KeyError: 'missing-fixture-lock'", trace)
+                        if mode == 'redacted':
+                            self.assertIn('DOCKER_RUNTIME_OPERATION_UNPROVEN', trace)
+
+    def test_quiescer_requires_bound_configuration_and_existing_quiescence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            script, config, journal = [root / name for name in ('quiesce.py', 'config.json', 'lease.json')]
+            script.write_text(QUIESCE)
+            raw = A.canonical({'coordinator': {'journalPath': str(journal)}})
+            config.write_bytes(raw)
+            args = [sys.executable, '-I', '-B', str(script), '--configuration', str(config),
+                    '--configuration-sha256', A.sha(raw), '--quiesce-only']
+            journal.write_bytes(A.canonical(dict(state='QUIESCED', leaseAuthorized=False, startAuthorized=False)))
+            self.assertEqual(subprocess.run(args, capture_output=True).returncode, 0)
+            journal.write_bytes(A.canonical(dict(state='QUIESCED', leaseAuthorized=False, startAuthorized=True)))
+            retained = journal.read_bytes()
+            self.assertEqual(subprocess.run(args, capture_output=True).returncode, 1)
+            self.assertEqual(journal.read_bytes(), retained)
+            config.write_bytes(raw + b'\n')
+            self.assertEqual(subprocess.run(args, capture_output=True).returncode, 1)
 
 
 class CohortFixture(F.NativeTests):
@@ -79,17 +222,20 @@ class CohortFixture(F.NativeTests):
         self.assertTrue(str(self.root).startswith("/var/lib/"))
         self.python = Path(sys.executable).resolve()
         self.wrapper = self.root / "admitted-runtime"
+        self.runtime_wrapper = self.root / "diagnostic-runtime"
+        self.trace_root = self.root / "runtime-tracebacks"
+        self.trace_root.mkdir(mode=0o700)
         self.real_runc = Path(shutil.which("runc")).resolve()
         self.docker_binary = Path(shutil.which("docker")).resolve()
         self.socket = "unix://" + str(self.root / "docker.sock")
-        self.script(self.wrapper, CAPTURE.replace("RUNC", repr(str(self.real_runc))).replace("BASE", repr(str(self.root))))
+        self.script(self.runtime_wrapper, CAPTURE.replace("RUNC", repr(str(self.real_runc))).replace("BASE", repr(str(self.root))))
         log = (self.root / "dockerd.log").open("wb")
         self.addCleanup(log.close)
         daemon = subprocess.Popen([shutil.which("dockerd"), "--host=" + self.socket,
             "--data-root=" + str(self.root / "docker-data"), "--exec-root=" + str(self.root / "docker-exec"),
             "--pidfile=" + str(self.root / "dockerd.pid"), "--storage-driver=vfs", "--bridge=none",
             "--iptables=false", "--ip6tables=false", "--ip-forward=false", "--ip-masq=false",
-            "--add-runtime=ouf-semantic-admitted-v2=" + str(self.wrapper)],
+            "--add-runtime=ouf-semantic-admitted-v2=" + str(self.runtime_wrapper)],
             stdin=subprocess.DEVNULL, stdout=log, stderr=log)
         def stop_daemon():
             daemon.terminate()
@@ -192,6 +338,7 @@ class CohortFixture(F.NativeTests):
             path = self.install / substitute(name)
             path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
             self.write(path, raw)
+        initialize_registry(self.install / "registry", self.ids.values())
         def document(relative, value):
             path = self.code / relative
             self.write(path, A.canonical(value))
@@ -260,10 +407,46 @@ class CohortFixture(F.NativeTests):
         original.update(sequence=1, supersedes=None, runtimeConfigurationSha256=runtimebinding["sha256"])
         self.chain.mkdir(mode=0o700, exist_ok=True)
         self.put(1, A.canonical(original))
-        # Switch the test daemon's runtime entrypoint only after signing. This
-        # does not change any production wrapper or host daemon configuration.
+        self.verify_pre_epoch(runtime, captures)
+        # Operate checks the exact canonical wrapper; only this private daemon
+        # executes the diagnostic wrapper, with the same isolated main/argv.
         self.write(self.wrapper, O.I.wrapper_bytes(str(self.python), self.code))
         self.wrapper.chmod(0o755)
+        diagnostic = self.root / "runtime-diagnostic.py"
+        self.write(diagnostic, diagnostic_source(self.code / "source" / C.RUNTIME,
+                   self.code / "runtime-configuration.json", self.trace_root).encode())
+        self.write(self.runtime_wrapper, (f'#!/bin/sh\nexec {self.python} -I -B {diagnostic} "$@"\n').encode())
+        self.runtime_wrapper.chmod(0o755)
+
+    def verify_pre_epoch(self, expected, captures):
+        path = self.code / "source" / C.RUNTIME
+        runtime = O.I.compiled(path.read_bytes(), path, "cohort_pre_epoch_runtime", expected["sourceHash"])
+        cfg, raw = runtime.load_configuration(self.code / "runtime-configuration.json")
+        self.assertEqual(cfg, expected)
+        runtime.verify_files(cfg)
+        auth, epochs = runtime.operation_modules(cfg)
+        epochs.boot_id()
+        for role, cid in self.ids.items():
+            operation, captured_cid, options = runtime.arguments(captures[role]["argv"])
+            self.assertEqual((operation, captured_cid), ("create", cid))
+            root, parent = Path(options["--root"]).resolve(), Path(cfg["runtimeStateRoot"])
+            self.assertTrue(root.is_relative_to(parent) and root != parent)
+            self.assertEqual(root, Path(captures[role]["root"]))
+            base = Path(cfg["registryRoot"]) / cid
+            runtime.private_directory(base)
+            self.assertEqual(runtime.read(base / "operation.lock"), b"")
+            self.assertIsNone(epochs.current(cfg["registryRoot"], cid))
+            self.assertEqual(runtime.epoch_inventory(base, epochs, None), [])
+            self.assertEqual(runtime.authorization_head(cfg, raw, cid, auth), self.head())
+        runtime.quiesce(cfg)
+
+    def print_tracebacks(self):
+        paths = sorted(self.trace_root.glob("runtime-*.log"))
+        if not paths:
+            print("COHORT_RUNTIME_TRACEBACK=[]", flush=True)
+        for path in paths:
+            print("COHORT_RUNTIME_TRACEBACK=" + json.dumps(
+                {"file": path.name, "traceback": path.read_text(encoding="utf-8", errors="replace")}), flush=True)
 
     def scenario(self):
         def argv(mode="--plan", digest=None):
@@ -275,8 +458,11 @@ class CohortFixture(F.NativeTests):
                 result.extend(["--" + name, str(self.root / name), "--" + name + "-sha256", A.sha((self.root / name).read_bytes())])
             return result + (["--plan-sha256", digest] if digest else [])
         def operate(args):
-            p = subprocess.run([str(self.python), "-I", "-B", str(ROOT / "scripts/operate-semantic-provider-r3.py"), *args],
-                               capture_output=True, timeout=150)
+            try:
+                p = subprocess.run([str(self.python), "-I", "-B", str(ROOT / "scripts/operate-semantic-provider-r3.py"), *args],
+                                   capture_output=True, timeout=150)
+            finally:
+                self.print_tracebacks()
             self.assertEqual(p.stderr, b"")
             return p.returncode, json.loads(p.stdout)
         code, plan = operate(argv())
