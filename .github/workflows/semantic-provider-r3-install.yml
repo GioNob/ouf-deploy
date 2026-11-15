@@ -2,6 +2,9 @@ name: Semantic provider R3 installation and restore
 on:
   pull_request:
     paths:
+      - ops/vps/r3-*.sh
+      - ops/vps/r3-settings.json
+      - tests/test_r3_runbooks.py
       - tools/semantic_provider_r3/**
       - tools/semantic_provider_operation/**
       - tools/semantic_provider_admission_v2/**
@@ -39,7 +42,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with: {persist-credentials: false}
+        with: {persist-credentials: false, fetch-depth: 0}
+      - name: R3 runbooks, single delivery of LF blobs and exact closure
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_runbooks.py -v
       - name: Diagnose native fixture execution mounts and identity
         run: |
           id
