@@ -161,7 +161,7 @@ class DifferenceTests(unittest.TestCase):
         with self.assertRaisesRegex(C.Denied, 'DUPLICATE_OCI_MOUNT_DESTINATION'):
             C.mount_targets(self.mounts * 2, self.image, lambda _: 'file')
         with self.assertRaisesRegex(C.Denied, 'ABSENT_OCI_MOUNT_TYPE_UNSUPPORTED'):
-            C.mount_targets([dict(self.mounts[0], type='proc')], self.image, lambda _: 'file')
+            C.mount_targets([dict(self.mounts[0], type='nfs')], self.image, lambda _: 'file')
 
 
 class Fixture:
