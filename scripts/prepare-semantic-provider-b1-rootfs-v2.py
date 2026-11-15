@@ -9,6 +9,7 @@ import argparse
 from contextlib import contextmanager
 from datetime import datetime
 import importlib.util
+import json
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -123,7 +124,9 @@ def mount_targets(mounts, image, source_kind):
 def physical(entry):
     """The upper layer carries overlayfs bookkeeping xattrs hidden by the merged view."""
     xattrs = entry.get('xattrs') or {}
-    require(all(k.startswith('trusted.overlay.') for k in xattrs) or xattrs == {}, 'POST_CREATE_XATTR_DENIED')
+    if not all(k.startswith('trusted.overlay.') for k in xattrs):
+        print('POST_CREATE_UPPER_XATTR_NAMES ' + json.dumps(sorted(xattrs)), file=sys.stderr)  # names only
+    require(all(k.startswith('trusted.overlay.') for k in xattrs), 'POST_CREATE_XATTR_DENIED')
     return {**entry, 'xattrs': {}} if 'xattrs' in entry else entry
 
 def compare_entries(image, actual, upper, mounts, source_kind):
