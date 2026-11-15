@@ -39,7 +39,7 @@ EXEC_PROBE = 'import sys\nif sys.argv[1:] == ["--fixture-exec-probe"]: raise Sys
 
 
 def executable_fixture_directory(*, prefix, dir):
-    if dir != "/run":
+    if dir not in ("/run", "/var/lib"):
         raise AssertionError("unexpected inherited fixture directory")
     return tempfile.TemporaryDirectory(prefix=prefix, dir="/var/lib")
 
