@@ -119,6 +119,13 @@ def mount_targets(mounts, image, source_kind):
     return targets, allowed, copied
 
 
+
+def physical(entry):
+    """The upper layer carries overlayfs bookkeeping xattrs hidden by the merged view."""
+    xattrs = entry.get('xattrs') or {}
+    require(all(k.startswith('trusted.overlay.') for k in xattrs) or xattrs == {}, 'POST_CREATE_XATTR_DENIED')
+    return {**entry, 'xattrs': {}} if 'xattrs' in entry else entry
+
 def compare_entries(image, actual, upper, mounts, source_kind):
     """Exact sealed records, plus raw upper: no invisible replacement/whiteout.
 
@@ -149,7 +156,11 @@ def compare_entries(image, actual, upper, mounts, source_kind):
                 children = sum(v['kind'] == 'directory' and str(PurePosixPath(p).parent) == name
                                for p, v in actual.items())
                 require(value['links'] == 2 + children, 'POST_CREATE_DIRECTORY_LINKS_DENIED')
-            require(upper[name] == value, 'POST_CREATE_UPPER_VIEW_DRIFT')
+            seen = physical(upper[name])
+            if seen != value:  # metadata only (never contents): kind, mode, owner, size, links, xattr names
+                print('POST_CREATE_UPPER_VIEW_DIFF ' + json.dumps({'path': name, 'fields': sorted(
+                    k for k in set(seen) | set(value) if seen.get(k) != value.get(k))}), file=sys.stderr)
+            require(seen == value, 'POST_CREATE_UPPER_VIEW_DRIFT')
             differences.append({'path': name, 'change': 'mountpoint' if name in targets else 'ancestor',
                                 'before': None, 'after': value})
         elif value != old:
