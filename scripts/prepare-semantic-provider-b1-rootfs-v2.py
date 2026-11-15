@@ -149,6 +149,9 @@ def compare_entries(image, actual, upper, mounts, source_kind):
         if old is None:
             kind = allowed[name]
             require(value['kind'] == kind, 'POST_CREATE_ENTRY_TYPE_DENIED')
+            if value.get('xattrs') != {}:
+                print('POST_CREATE_VIEW_XATTR_NAMES ' + json.dumps({'path': name, 'names': sorted(value.get('xattrs') or {})}),
+                      file=sys.stderr)  # names only, never values
             require(value.get('xattrs') == {}, 'POST_CREATE_XATTR_DENIED')
             require(value['uid'] == value['gid'] == 0, 'POST_CREATE_OWNER_DENIED')
             require(value['mode'] == (0o600 if kind == 'file' else 0o700), 'POST_CREATE_MODE_DENIED')
