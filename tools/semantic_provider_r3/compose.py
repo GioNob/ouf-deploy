@@ -11,7 +11,7 @@ import types
 
 from tools.semantic_provider_operation import authorization as A
 from tools.semantic_provider_admission_v2 import broker_v2 as B, evidence_v2 as E
-from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC
+from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC, live_interface
 from tools.semantic_frame_compiler.compile_creation_frame_policy import compile_policy
 from tools.semantic_b1_acceptance import acceptance as ACCEPT
 
@@ -214,9 +214,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             transactionId=sha(canonical({"role": role, "containerId": rows[role]["containerId"],
                                          "coordinator": owner["binding"]})))
         require(candidate["tableName"] != owner["kernel"]["tableName"], "CANDIDATE_TABLE_COLLISION")
-        for nic in candidate["networkBindings"]:
+        for index, nic in enumerate(candidate["networkBindings"]):
             if version >= 4:
                 nic["mac"] = L2_LIVE_MAC
+                nic["interface"] = live_interface(index)
             if "leaseGuard" in nic:
                 nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
         other = "southbound" if role == "adapter" else "adapter"
@@ -234,9 +235,10 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                     "applicationHash": sha(canonical(policies[other]["expectedOci"])),
                     "networkBindings": copy.deepcopy(templates[other]["candidate"]["networkBindings"])}
                 # Do not depend on role iteration order when rebinding leaseGuard.
-                for nic in peer["declaration"]["networkBindings"]:
+                for index, nic in enumerate(peer["declaration"]["networkBindings"]):
                     if version >= 4:
                         nic["mac"] = L2_LIVE_MAC
+                        nic["interface"] = live_interface(index)
                     if "leaseGuard" in nic:
                         nic["leaseGuard"]["configurationHash"] = owner["binding"]["configurationHash"]
                 sibling += 1

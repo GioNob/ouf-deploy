@@ -58,8 +58,102 @@ class L2Tests(unittest.TestCase):
         return json.dumps(self.state if binding["path"] == "/runc" else
                           self.children if binding["path"] == "/nsenter" else self.hosts).encode()
 
-    def observe(self):
-        return L.observe(CID, GEN, RUNTIME, COMMANDS, self.budget, network_bindings=[NIC], run=self.run)
+    def observe(self, nics=None):
+        return L.observe(CID, GEN, RUNTIME, COMMANDS, self.budget, network_bindings=nics or [NIC], run=self.run)
+
+    def test_association_by_ipv4_and_bridge_with_reversed_real_names(self):
+        nics = [{**NIC, "interface": L.live_interface(0)},
+                {**NIC, "interface": L.live_interface(1), "ipv4": "10.20.0.2",
+                 "bridge": "br_other", "bindingRef": "second_nic"}]
+        self.children[1]["ifname"] = "eth1"
+        self.children.insert(1, {**self.children[1], "ifname": "eth0", "ifindex": 14, "link_index": 15,
+                                 "addr_info": [{"family": "inet", "local": nics[1]["ipv4"]}]})
+        self.hosts.append({**self.hosts[0], "ifindex": 15, "link_index": 14,
+                           "ifname": "veth_other", "master": "br_other"})
+        row = self.observe(nics)
+        self.assertEqual([n["interface"] for n in row["bindings"]], ["eth1", "eth0"])
+        doc = {**policy(), "networkBindings": nics}
+        effective = L.effective(doc, {CID: row})
+        for signed, observed, actual in zip(nics, row["bindings"], effective["networkBindings"]):
+            self.assertEqual(actual, {**signed, "interface": observed["interface"], "mac": observed["mac"]})
+        self.assertEqual(doc["networkBindings"], nics)
+
+    def test_missing_ipv4_is_retryable_but_unapproved_nic_is_denied(self):
+        self.children.pop()
+        with self.assertRaisesRegex(A.OperationDenied, "^PEER_INTERFACE_MISSING$"):
+            self.observe()
+        self.children.append({"ifname": "eth0", "addr_info": []})
+        with self.assertRaisesRegex(A.OperationDenied, "^PEER_INTERFACE_MISSING$"):
+            self.observe()
+        self.children.append({"ifname": "eth1", "addr_info": []})
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_UNAPPROVED_INTERFACE$"):
+            self.observe()
+
+    def test_renamed_interface_cannot_change_the_published_epoch_binding(self):
+        doc = policy()
+        doc["networkBindings"][0]["interface"] = L.live_interface(0)
+        rows = L.cohort(doc, CID, RUNTIME, COMMANDS, self.budget, run=self.run)
+        raw = A.canonical({"schema": L.SCHEMA, "containers": rows})
+        with patch.object(B, "private", return_value=raw):
+            self.assertEqual(L.bound(doc, CID, "/epoch", RUNTIME, COMMANDS, self.budget,
+                                     run=self.run)["networkBindings"][0]["interface"], "eth0")
+            self.children[1]["ifname"] = "eth1"
+            with self.assertRaisesRegex(A.OperationDenied, "^L2_BINDING_CHANGED$"):
+                L.bound(doc, CID, "/epoch", RUNTIME, COMMANDS, self.budget, run=self.run)
+
+    def test_placeholder_does_not_relax_other_signed_fields_or_nic_order(self):
+        signed = {**NIC, "interface": L.live_interface(0),
+                  "leaseGuard": {"configurationHash": "c" * 64, "tableName": "ouf_lease"}}
+        doc = {"networkBindings": [signed]}
+        row = observation(nic={**signed, "interface": "eth1"})
+        for key in set(signed) - {"interface", "mac"}:
+            changed = copy.deepcopy(row)
+            changed["bindings"][0][key] = "drift"
+            with self.subTest(key=key), self.assertRaisesRegex(A.OperationDenied, "^L2_SIGNED_FIELD_DRIFT$"):
+                L.effective(doc, {CID: changed})
+        # Even another valid placeholder is not interchangeable with this slot.
+        doc["networkBindings"][0]["interface"] = L.live_interface(1)
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_SIGNED_FIELD_DRIFT$"):
+            L.effective(doc, {CID: row})
+
+    def test_host_index_collision_and_duplicate_host_rows_are_denied(self):
+        self.hosts.append(copy.deepcopy(self.hosts[0]))
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_HOST_LINK_INVALID$"):
+            self.observe()
+        self.hosts.pop()
+        second = {**NIC, "interface": "eth1", "ipv4": "10.20.0.2"}
+        self.children.append({**self.children[1], "ifname": "eth1", "ifindex": 14,
+                              "addr_info": [{"family": "inet", "local": second["ipv4"]}]})
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_INTERFACE_AMBIGUOUS$"):
+            self.observe([NIC, second])
+
+    def test_duplicate_ipv4_and_ambiguous_interfaces_are_denied(self):
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_IPV4_DUPLICATE$"):
+            self.observe([NIC, {**NIC, "interface": "l2live1"}])
+        extra = copy.deepcopy(self.children[1])
+        extra.update(ifname="eth1", ifindex=14, link_index=15)
+        self.children.append(extra)
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_IPV4_DUPLICATE$"):
+            self.observe()
+        extra["addr_info"] = [{"family": "inet", "local": "10.20.0.2"}]
+        second = {**NIC, "interface": "eth1", "ipv4": "10.20.0.2"}
+        extra["ifname"] = "eth0"
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_INTERFACE_AMBIGUOUS$"):
+            self.observe([NIC, second])
+        extra["ifname"], extra["ifindex"] = "eth1", 12
+        with self.assertRaisesRegex(A.OperationDenied, "^L2_INTERFACE_AMBIGUOUS$"):
+            self.observe([NIC, second])
+
+    def test_observed_interface_name_syntax(self):
+        signed = {**NIC, "interface": L.live_interface(0)}
+        for name in ("eth1", "oufint0", "1.dot-name_", "a" * 15):
+            self.children[1]["ifname"] = name
+            row = self.observe([signed])
+            self.assertEqual(L.effective({"networkBindings": [signed]}, {CID: row})["networkBindings"][0]["interface"], name)
+        for name in (None, "", "a" * 16, "eth0@if3", "eth/0", "eth 0"):
+            self.children[1]["ifname"] = name
+            with self.subTest(name=name), self.assertRaisesRegex(A.OperationDenied, "^L2_INTERFACE_INVALID$"):
+                self.observe([signed])
 
     def test_double_read_and_effective_copy(self):
         doc = policy()
@@ -94,8 +188,8 @@ class L2Tests(unittest.TestCase):
                 self.observe()
 
     def test_no_other_network_condition_relaxes(self):
-        mutations = [("child", "addr_info", [{"family": "inet", "local": "10.10.0.99"}], "L2_IP_DRIFT"),
-                     ("child", "ifname", "eth1", "PEER_INTERFACE_MISSING"),
+        mutations = [("child", "addr_info", [{"family": "inet", "local": "10.10.0.99"}], "L2_UNAPPROVED_INTERFACE"),
+                     ("child", "ifname", "eth1", "L2_SIGNED_FIELD_DRIFT"),
                      ("host", "master", "br_other", "L2_RECIPROCAL_BRIDGE_DRIFT"),
                      ("host", "link_index", 99, "L2_RECIPROCAL_BRIDGE_DRIFT"),
                      ("child", "addr_info", [{"family": "inet", "local": NIC["ipv4"]},
@@ -139,10 +233,12 @@ class L2Tests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), raw)
             with patch.object(B, "private", side_effect=lambda p: Path(p).read_bytes()):
                 L.check(folder, rows)
-                for key in ("mac", "generation"):
+                for key in ("mac", "interface", "generation"):
                     changed = copy.deepcopy(rows)
                     if key == "mac":
                         changed[CID]["bindings"][0]["mac"] = "02:11:22:33:44:55"
+                    elif key == "interface":
+                        changed[CID]["bindings"][0]["interface"] = "eth1"
                     else:
                         changed[CID]["generation"]["namespaceInode"] += 1
                     with self.subTest(key=key), self.assertRaisesRegex(A.OperationDenied, "^L2_BINDING_CHANGED$"):

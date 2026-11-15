@@ -82,7 +82,7 @@ jobs:
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
-      - name: L2 binding (observed successor MACs)
+      - name: L2 binding (observed successor names and MACs)
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_l2_binding.py -v
       - name: R3 real Docker cohort on two bridges without configured MACs
@@ -121,3 +121,31 @@ jobs:
           tools/semantic_provider_r3/upgrade.py scripts/upgrade-semantic-provider-r3.py
           tests/test_semantic_provider_r3_upgrade.py
           tests/test_semantic_provider_r3_cohort.py tests/test_semantic_provider_broker_denials.py
+  cohort-docker-29:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      # Same official archive already pinned by the retained MAC qualification.
+      DOCKER_29_SHA256: d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Download and verify official Docker 29.8.1 static binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/docker-29.8.1.tgz"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output "$archive"
+          sha256sum "$archive"
+          printf '%s  %s\n' "$DOCKER_29_SHA256" "$archive" | sha256sum --check --strict -
+          # Root-owned binaries are executed by the private fixture daemon only.
+          sudo -n mkdir -p /opt/ouf-r3-docker-29
+          sudo -n tar -xzf "$archive" --strip-components=1 -C /opt/ouf-r3-docker-29
+          /opt/ouf-r3-docker-29/docker --version
+          /opt/ouf-r3-docker-29/dockerd --version
+      - name: Native cohort with Docker 29.8.1 and its containerd and shims
+        run: >-
+          sudo -n env PATH=/opt/ouf-r3-docker-29:/usr/sbin:/usr/bin:/sbin:/bin
+          OUF_R3_COHORT_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_cohort.py -v

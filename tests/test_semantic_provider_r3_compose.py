@@ -176,8 +176,8 @@ class ComposeTests(unittest.TestCase):
         self.assertEqual(result["inputHashes"], baseline["inputHashes"])
         self.assertEqual(result["hashes"], baseline["hashes"])
 
-    def test_version_four_changes_only_successor_mac_fields(self):
-        from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC
+    def test_version_four_changes_only_successor_interface_and_mac_fields(self):
+        from tools.semantic_provider_admission_v2.l2_binding import L2_LIVE_MAC, live_interface
         inputs = fixture()
         v3 = C.compose(inputs, 3, sequence=3, supersedes="a" * 64)
         v4 = C.compose(inputs, 4, sequence=4, supersedes="a" * 64)
@@ -185,7 +185,9 @@ class ComposeTests(unittest.TestCase):
             if type(value) is list:
                 return [placeholders(v) for v in value]
             if type(value) is dict:
-                return {k: L2_LIVE_MAC if k == "mac" else placeholders(v) for k, v in value.items()}
+                return {k: [{**nic, "interface": live_interface(i), "mac": L2_LIVE_MAC}
+                            for i, nic in enumerate(v)] if k == "networkBindings" else placeholders(v)
+                        for k, v in value.items()}
             return value
         for role in C.ROLES:
             for name in ("transport.json", "preparer-template.json"):

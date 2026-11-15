@@ -1,6 +1,6 @@
-"""Epoch-local L2 observations. Only successor MAC placeholders are effective data.
+"""Epoch-local L2 observations of successor interface and MAC placeholders.
 
-Signed IPs, interfaces, bridges and complete peer declarations remain authority.
+Signed IPs, bridges, NIC order and complete peer declarations remain authority.
 The historical admission libraries receive copies; signed bytes are never rewritten.
 """
 import copy
@@ -16,6 +16,16 @@ L2_LIVE_MAC = "02:00:00:00:00:00"
 SCHEMA = "ouf.semantic-provider-l2-binding.v1"
 NIC_FIELDS = {"interface", "bridge", "mac", "ipv4", "workloadRef", "bindingRef"}
 LIVE_FIELDS = {"childIfindex", "hostIfindex", "hostInterface"}
+IFNAME = re.compile(r"[A-Za-z0-9_.-]{1,15}")
+
+
+def live_interface(index):
+    return "l2live" + str(index)
+
+
+def interface_name(value):
+    require(type(value) is str and IFNAME.fullmatch(value), "L2_INTERFACE_INVALID")
+    return value
 
 
 def live_mac(value):
@@ -32,7 +42,7 @@ def enabled(document):
 
 
 def effective(signed_doc, observations, *, container_id=None):
-    """Project observations onto approved NICs, refusing every non-MAC difference."""
+    """Replace only the two explicit placeholders, preserving every signed field."""
     if container_id is None and len(observations) == 1:
         container_id = next(iter(observations))
     def visit(value, cid):
@@ -50,13 +60,17 @@ def effective(signed_doc, observations, *, container_id=None):
                 require(row["containerId"] == cid, "L2_SIGNED_FIELD_DRIFT")
                 approved, actual = value["networkBindings"], row["bindings"]
                 require(len(approved) == len(actual), "L2_SIGNED_FIELD_DRIFT")
-                for signed, observed in zip(approved, actual):
+                for index, (signed, observed) in enumerate(zip(approved, actual)):
                     require(set(signed) in (NIC_FIELDS, NIC_FIELDS | {"leaseGuard"})
                             and set(observed) == set(signed) | LIVE_FIELDS
                             and all(observed.get(k) == v for k, v in signed.items()
-                                    if k != "mac" or v != L2_LIVE_MAC), "L2_SIGNED_FIELD_DRIFT")
+                                    if not (k == "mac" and v == L2_LIVE_MAC
+                                            or k == "interface" and v == live_interface(index))),
+                            "L2_SIGNED_FIELD_DRIFT")
                     live_mac(observed["mac"])
-                result["networkBindings"] = [{**n, "mac": a["mac"]} for n, a in zip(approved, actual)]
+                    interface_name(observed["interface"])
+                result["networkBindings"] = [{**n, "interface": a["interface"], "mac": a["mac"]}
+                                             for n, a in zip(approved, actual)]
         for key in value.keys() - {"networkBindings"}:
             result[key] = visit(value[key], cid)
         return result
@@ -81,6 +95,8 @@ def observe(cid, generation, runtime_binding, commands, budget, *, network_bindi
     from tools.semantic_provider_deployment_producer import program
     valid_generation(generation)
     require(type(network_bindings) is list and 1 <= len(network_bindings) <= 32, "L2_INTERFACE_INVALID")
+    approved_ips = {n["ipv4"] for n in network_bindings}
+    require(len(approved_ips) == len(network_bindings), "L2_IPV4_DUPLICATE")
     runtime = {k: runtime_binding[k] for k in ("path", "sha256")}
 
     def state():
@@ -100,33 +116,50 @@ def observe(cid, generation, runtime_binding, commands, budget, *, network_bindi
         program(commands["ip"], budget)
         require(type(children) is list and len(children) <= 33, "L2_INTERFACE_INVALID")
         children = [n for n in children if n.get("ifname") != "lo"]
+        addresses = []
+        for child in children:
+            interface_name(child.get("ifname"))
+            addresses.extend(a["local"] for a in child.get("addr_info", []) if a.get("family") == "inet")
+        require(len(addresses) == len(set(addresses)), "L2_IPV4_DUPLICATE")
+        require(all(ip in approved_ips for ip in addresses), "L2_UNAPPROVED_INTERFACE")
         require(len(children) <= len(network_bindings), "L2_UNAPPROVED_INTERFACE")
-        require(len(children) == len(network_bindings), "PEER_INTERFACES_NOT_READY")
+        require(len({n["ifname"] for n in children}) == len(children), "L2_INTERFACE_AMBIGUOUS")
         hosts = json.loads(run(commands["ip"], ["-j", "link", "show"], 131072))
         require(type(hosts) is list and len(hosts) <= 1024, "L2_HOST_LINK_INVALID")
         result = []
-        for nic in network_bindings:
-            found = [n for n in children if n.get("ifname") == nic["interface"]]
-            require(len(found) == 1, "PEER_INTERFACE_MISSING")
+        used_children, used_hosts = set(), set()
+        for position, nic in enumerate(network_bindings):
+            found = [n for n in children if any(a.get("family") == "inet" and a.get("local") == nic["ipv4"]
+                                              for a in n.get("addr_info", []))]
+            if not found:
+                continue # Check every present NIC for drift before waiting.
+            require(len(found) == 1, "L2_INTERFACE_AMBIGUOUS")
             child = found[0]
             addresses = [a["local"] for a in child.get("addr_info", []) if a.get("family") == "inet"]
             require(bool(addresses), "PEER_ADDRESSES_NOT_READY")
             require(addresses == [nic["ipv4"]], "L2_IP_DRIFT")
             require(not any(a.get("family") == "inet6" for a in child.get("addr_info", [])), "L2_IPV6_UNAPPROVED")
             mac = live_mac(child.get("address"))
-            require(nic["mac"] in (L2_LIVE_MAC, mac), "L2_SIGNED_FIELD_DRIFT")
+            require(nic["mac"] in (L2_LIVE_MAC, mac)
+                    and nic["interface"] in (live_interface(position), child["ifname"]), "L2_SIGNED_FIELD_DRIFT")
             index, child_index = child.get("link_index"), child.get("ifindex")
             require(type(index) is int and index > 1 and type(child_index) is int and child_index > 1,
                     "L2_HOST_INDEX_INVALID")
+            require(child_index not in used_children and index not in used_hosts, "L2_INTERFACE_AMBIGUOUS")
+            used_children.add(child_index)
+            used_hosts.add(index)
             found = [h for h in hosts if h.get("ifindex") == index]
+            # link_netnsid is relative to the observer's netns, not an ifindex.
+            # Never replace the host lookup or reciprocal bridge proof with it.
             require(len(found) == 1, "L2_HOST_LINK_INVALID")
             host = found[0]
             require(host.get("link_index") == child_index and host.get("master") == nic["bridge"]
                     and type(host.get("ifname")) is str
                     and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,14}", host["ifname"]),
                     "L2_RECIPROCAL_BRIDGE_DRIFT")
-            result.append({**nic, "mac": mac, "childIfindex": child_index,
+            result.append({**nic, "interface": child["ifname"], "mac": mac, "childIfindex": child_index,
                            "hostIfindex": index, "hostInterface": host["ifname"]})
+        require(len(result) == len(network_bindings), "PEER_INTERFACE_MISSING")
         return result
 
     before = state()
