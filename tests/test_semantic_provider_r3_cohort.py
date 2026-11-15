@@ -662,8 +662,10 @@ class CohortFixture(F.NativeTests):
         inputs = copy.deepcopy(self.inputs)
         inputs['sources'].pop(C.OBSERVER)
         inputs['sources'][C.OBSERVER_V2] = FRAME_PATH.read_bytes()
-        result = C.compose(inputs, 9, sequence=9, supersedes="a" * 64)
-        self.code = self.install / "versions/9"
+        # Skeleton only: fixture NICs carry no leaseGuard, so v8 and v9 runtime
+        # documents are equivalent here; v9 guard binding is covered by compose tests.
+        result = C.compose(inputs, 8, sequence=8, supersedes="a" * 64)
+        self.code = self.install / "versions/8"
         docs = copy.deepcopy(result["documents"])
         original = json.loads(result["authorization"])
         old_ids = {r: original["roles"][r]["containerId"] for r in O.ROLES}
