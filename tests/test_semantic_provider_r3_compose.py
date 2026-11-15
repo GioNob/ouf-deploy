@@ -6,6 +6,7 @@ import json
 from pathlib import Path, PurePosixPath
 import subprocess
 import sys
+from types import SimpleNamespace
 import unittest
 import zlib
 from unittest.mock import Mock, patch
@@ -29,7 +30,7 @@ grant_fixture = load("tests/test_semantic_provider_admission_v2_preparer.py", "r
 SOURCE_CACHE = None
 
 
-def fixture():
+def fixture(version=1):
     global SOURCE_CACHE
     if SOURCE_CACHE is None:
         # Exercise the current implementation, including uncommitted modules.
@@ -125,10 +126,82 @@ def fixture():
         accepted["preparationA"]["files"][field]["sha256"] = A.sha(files[k])
     put("rootfs", {"roles": seals, "aSuccessors": accepted["preparationA"]["files"]["successors"]})
     files["acceptance"] = C.ACCEPT.build_acceptance(**accepted)
-    return {"files": files, "sources": SOURCE_CACHE.copy()}
+    sources = SOURCE_CACHE.copy()
+    if version >= 6:
+        sources.pop(C.OBSERVER)
+        sources[C.OBSERVER_V2] = (ROOT / C.OBSERVER_V2).read_bytes().replace(b'\r\n', b'\n')
+    return {"files": files, "sources": sources}
 
 
 class ComposeTests(unittest.TestCase):
+    def test_v6_selects_source_sealed_observer_v2_and_keeps_broker_source_set(self):
+        inputs = fixture(6)
+        original = copy.deepcopy(inputs)
+        for version in (6, 7):
+            result = C.compose(inputs, version, sequence=version, supersedes='a' * 64)
+            self.assertEqual(result, C.compose(inputs, version, sequence=version, supersedes='a' * 64))
+            prefix = f'versions/{version}/'
+            self.assertNotIn(prefix + 'source/' + C.OBSERVER, result['documents'])
+            self.assertEqual(result['documents'][prefix + 'source/' + C.OBSERVER_V2], inputs['sources'][C.OBSERVER_V2])
+            for role in C.ROLES:
+                cfg = B.validate(result['documents'][prefix + 'broker/' + role + '.json'])
+                source = cfg['creationFrameObserverBinding']['source']
+                self.assertTrue(source['path'].endswith('/source/' + C.OBSERVER_V2))
+                self.assertEqual(source['sha256'], A.sha(inputs['sources'][C.OBSERVER_V2]))
+                self.assertEqual(set(cfg['sourceHashes']), B.SOURCES)
+        self.assertEqual(inputs, original)
+        for version, wrong in ((5, fixture(6)), (6, fixture())):
+            with self.subTest(version=version), self.assertRaisesRegex(A.OperationDenied, 'EXACT_R3_INPUT_SET_REQUIRED'):
+                C.compose(wrong, version, sequence=version, supersedes='a' * 64)
+
+    def test_v1_through_v5_keep_the_legacy_observer_closure(self):
+        inputs = fixture()
+        for version in range(1, 6):
+            result = C.compose(inputs, version, **({} if version == 1 else dict(sequence=version, supersedes='a' * 64)))
+            prefix = '' if version == 1 else f'versions/{version}/'
+            self.assertNotIn(prefix + 'source/' + C.OBSERVER_V2, result['documents'])
+            self.assertEqual(result['documents'][prefix + 'source/' + C.OBSERVER], inputs['sources'][C.OBSERVER])
+            for role in C.ROLES:
+                cfg = B.validate(result['documents'][prefix + 'broker/' + role + '.json'])
+                self.assertTrue(cfg['creationFrameObserverBinding']['source']['path'].endswith('/source/' + C.OBSERVER))
+
+    def test_v6_issuance_and_upgrade_readers_accept_only_closed_source_sets(self):
+        from tools.semantic_provider_r3 import upgrade
+        issuer = load('scripts/issue-semantic-provider-operation-authorization.py', 'v6_input_reader_issuer')
+        for version in (5, 6):
+            inputs = fixture(version)
+            index = dict(schema='ouf.semantic-provider-r3-inputs.v1',
+                         files=dict.fromkeys(inputs['files'], 'file'), sources=dict.fromkeys(inputs['sources'], 'source'))
+            args = SimpleNamespace(inputs='/inputs', inputs_sha256='a' * 64, install_root='/install', issued_at=1794736801,
+                                   table_name=['adapter=ouf_r3_adapter', 'southbound=ouf_r3_southbound'],
+                                   private_key_path=[], authority_profile='/profile', authority_profile_sha256='b' * 64)
+            profile = dict(schema='ouf.semantic-existing-installation-authority-bindings.v1', keyBindings={})
+            for extra in (False, True):
+                candidate = copy.deepcopy(index)
+                if extra:
+                    candidate['sources']['unreviewed.py'] = 'source'
+                reader = Mock()
+                reader.read.return_value = A.canonical(candidate)
+                reader.bound.side_effect = RuntimeError('TEST_INPUTS_ACCEPTED')
+                with patch.object(upgrade.I, 'Reader', return_value=reader):
+                    with self.assertRaisesRegex(RuntimeError, 'R3_EXACT_INPUT_MANIFEST_REQUIRED' if extra else 'TEST_INPUTS_ACCEPTED'):
+                        upgrade.read_inputs(args)
+                if extra:
+                    reader.bound.assert_not_called()
+                reader = Mock(private_paths=set())
+                reader.read.side_effect = [A.canonical(profile), A.canonical(candidate)]
+                reader.bound.side_effect = RuntimeError('TEST_INPUTS_ACCEPTED')
+                with patch.object(issuer, 'Reader', return_value=reader):
+                    with self.assertRaisesRegex(RuntimeError, 'EXACT_R3_INPUT_MANIFEST_REQUIRED' if extra else 'TEST_INPUTS_ACCEPTED'):
+                        issuer.observe(args, lambda: args.issued_at)
+                if extra:
+                    reader.bound.assert_not_called()
+        v5 = C.compose(fixture(), 5, sequence=5, supersedes='a' * 64)
+        head = dict(sequence=5, decision='OPERATE', sha256=A.sha(v5['authorization']), authorization=json.loads(v5['authorization']))
+        v6 = issuer.compose_next(fixture(6), head, head['authorization']['issuedAt'])
+        self.assertEqual(json.loads(v6['authorization'])['sequence'], 6)
+        self.assertIn('versions/6/source/' + C.OBSERVER_V2, v6['documents'])
+
     def test_version_one_fixed_fixture_has_identical_document_bytes(self):
         baseline = json.loads((ROOT / "tests/fixtures/r3-v1-document-hashes.json").read_bytes())
         inputs = fixture()

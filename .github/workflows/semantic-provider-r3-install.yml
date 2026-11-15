@@ -29,6 +29,7 @@ on:
       - scripts/issue-semantic-provider-operation-authorization.py
       - scripts/semantic-provider-*-v2.py
       - tests/test_semantic_provider_r3*.py
+      - tests/test_frame_observer_v2.py
       - tests/fixtures/r3-v1-document-hashes.json
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
@@ -110,6 +111,7 @@ jobs:
       - name: Non-regression composition and supervisor
         run: |
           /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p test_frame_observer_v2.py -v
           sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
       - name: Compile task-41b
         run: >-
@@ -121,6 +123,8 @@ jobs:
           tools/semantic_provider_r3/upgrade.py scripts/upgrade-semantic-provider-r3.py
           tests/test_semantic_provider_r3_upgrade.py
           tests/test_semantic_provider_r3_cohort.py tests/test_semantic_provider_broker_denials.py
+          tests/test_frame_observer_v2.py tools/semantic_frame_compiler/frame-observer-v2.py
+          tools/semantic_frame_compiler/build_frame_observer_v2.py
   cohort-docker-29:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

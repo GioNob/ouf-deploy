@@ -1,6 +1,7 @@
 """Opt-in offline Docker cohort: real Engine, runc, broker, epochs and operate.
 
-The WAITING systemd/frame observers and quiescer are explicit fixture programs.
+The WAITING systemd observer and quiescer are explicit fixture programs.
+The creation frame observer is the real source-sealed v2, without fixture hooks.
 They never publish ACTIVE or grant a lease. nft, ip and nsenter are real. A private Docker daemon
 and locally imported rootfs avoid registry access and host Docker changes.
 """
@@ -75,31 +76,26 @@ raise SystemExit(0 if all(journal.get(k)==v for k,v in
     dict(state='QUIESCED',leaseAuthorized=False,startAuthorized=False).items()) else 1)
 '''
 
-# This fixture has no admitted source file mounts. It checks the captured full
-# OCI and real process generation, exercising the existing frame wire contract.
-# It is not the production source/mount acceptance observer.
-FRAME = r'''
-import argparse,hashlib,json,os,pathlib,sys
-p=argparse.ArgumentParser();p.add_argument('--configuration',required=True);a=p.parse_args()
-r=json.load(sys.stdin);policy=json.loads(pathlib.Path(a.configuration).read_bytes())
-def digest(v): return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':')).encode()).hexdigest()
-raw=pathlib.Path(r['bundlePath']).read_bytes();bundle=json.loads(raw)
-assert digest(bundle)==r['applicationHash']==digest(policy['expectedOci'])
-assert hashlib.sha256(pathlib.Path(a.configuration).read_bytes()).hexdigest()==r['policyHash']
-def gen():
-    proc=pathlib.Path('/proc')/str(r['pid'])
-    return dict(pid=r['pid'],startTicks=int((proc/'stat').read_text().rsplit(')',1)[1].split()[19]),
-                namespaceInode=(proc/'ns/net').stat().st_ino)
-assert gen()==r['generation']
-v={'schema':'ouf.semantic-configured-created-frame.v1',
-   'configuredPolicy':{'configuredPolicyConforms':True,'applicationHash':r['applicationHash']},
-   'sourceMountFrame':{'sourceByteHashesMatchExpected':True,'stableAcrossReads':True,'privateMaterialSpooled':False,
-                       'mountObservation':{'effectiveReadOnlyFileBindingsObserved':True}},
-   'policyAuthenticationProven':False,'rootfsSealProven':False,'imagePublisherProvenanceVerified':False,
-   'completeCreationAccepted':False,'acceptanceGranted':False,'signaturesIssued':0,'startAuthorized':False}
-assert gen()==r['generation'] and pathlib.Path(r['bundlePath']).read_bytes()==raw
-print(json.dumps(v))
-'''
+FRAME_TARGET = '/run/role.json'
+TMPFS_TARGET = '/run/ouf-southbound-runtime'
+TMPFS_OPTIONS = 'rw,noexec,nosuid,nodev,uid=636,gid=636,mode=0700,size=1m'
+FRAME_PATH = ROOT / C.OBSERVER_V2
+FIXTURE_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+
+def frame_policy(oci, role, source):
+    """Synthetic expectations fixed by create argv/source, before authority signs.
+
+    Only full OCI/hooks are independently captured by the refusing runtime.
+    Startup, source custody/hash and tmpfs declaration are not copied from OCI.
+    """
+    binding = dict(source=str(source), target=FRAME_TARGET, readOnly=True)
+    return dict(schema='ouf.semantic-configured-creation-frame-policy.v1', expectedOci=oci,
+        manifest=dict(user='636:636', readOnlyRoot=True, memoryBytes=268435456, pidsLimit=128,
+                      mounts=[binding], tmpfs={TMPFS_TARGET: TMPFS_OPTIONS} if role == 'southbound' else {}),
+        sources=[dict(**binding, uid=0, gid=0, mode=0o644, sha256=A.sha(source.read_bytes()), maxBytes=1024)],
+        startup=dict(args=['/sleep', '300'], cwd='/', env=['PATH=' + FIXTURE_PATH, 'HOSTNAME=cohort-' + role],
+                     uid=636, gid=636, umask=None), approvedHooks=copy.deepcopy(oci.get('hooks') or {}))
 
 DIAGNOSTIC = r'''
 import os,pathlib,sys,traceback,types
@@ -205,9 +201,33 @@ def collect_codes():
 
 class PortableTests(unittest.TestCase):
     def test_fixture_programs_compile_and_collect_codes_are_real(self):
-        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, IP_DIAGNOSTIC, FRAME):
+        for source in (CAPTURE, SYSTEMCTL, NFT, QUIESCE, DIAGNOSTIC, IP_DIAGNOSTIC):
             compile(source, "<cohort-fixture>", "exec")
+        compile(FRAME_PATH.read_bytes(), str(FRAME_PATH), 'exec')
         self.assertIn("PEER_MAC_IP_DRIFT", collect_codes())
+
+    def test_cohort_policy_satisfies_real_embedded_reviewer_for_both_roles(self):
+        from test_frame_observer_v2 import reviewer, policy
+        module, schema = reviewer()
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'role.json'
+            source.write_bytes(b'{"fixture":true}')
+            for role in O.ROLES:
+                oci = copy.deepcopy(policy(role)['expectedOci'])
+                # Portable POSIX source; native path comes from /var/lib.
+                p = frame_policy(oci, role, source)
+                p['sources'][0]['source'] = p['manifest']['mounts'][0]['source'] = '/fixture/role.json'
+                original_bind = next(m for m in oci['mounts'] if m['type'] == 'bind'
+                                     and m['destination'] not in ('/etc/hosts', '/etc/hostname', '/etc/resolv.conf'))
+                oci['mounts'] = [m for m in oci['mounts'] if m['type'] != 'bind'
+                    or m['destination'] in ('/etc/hosts', '/etc/hostname', '/etc/resolv.conf')]
+                oci['mounts'].append(dict(original_bind, destination=FRAME_TARGET, source='/fixture/role.json'))
+                oci['process'].update(args=p['startup']['args'], cwd='/', env=p['startup']['env'])
+                oci['process']['user'] = dict(uid=636, gid=636, additionalGids=[636])
+                oci['root']['readonly'] = True
+                oci['linux']['resources'].update(memory=dict(limit=268435456, swap=268435456), pids=dict(limit=128))
+                self.assertTrue(module.configured_profile(oci, oci, p['manifest'], p['startup'],
+                                                         p['approvedHooks'], schema)['configuredPolicyConforms'])
 
     def test_native_child_uses_host_network_and_pid_views(self):
         args = native_child_argv()
@@ -362,8 +382,19 @@ class CohortFixture(F.NativeTests):
                                                capture_output=True, check=True).stdout)
         self.assertTrue({"oufcohort1", "oufcohort2"} <= {n["ifname"] for n in host_links},
                         "Docker bridges must be in the fixture/broker host netns")
+        self.frame_sources = {}
         for index, role in enumerate(O.ROLES, 2):
+            source = self.root / (role + '-source.json')
+            self.write(source, A.canonical(dict(role=role, fixture=True)))
+            source.chmod(0o644)
+            self.assertEqual((source.stat().st_uid, source.stat().st_gid, source.stat().st_nlink), (0, 0, 1))
+            self.frame_sources[role] = source
+            tmpfs = ['--tmpfs', TMPFS_TARGET + ':' + TMPFS_OPTIONS] if role == 'southbound' else []
             cid = self.engine("create", "--runtime", "ouf-semantic-admitted-v2", "--read-only", "--restart=no",
+                '--user', '636:636', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                '--memory', '256m', '--memory-swap', '256m', '--pids-limit', '128',
+                '--hostname', 'cohort-' + role, '--env', 'PATH=' + FIXTURE_PATH,
+                '--mount', 'type=bind,src=' + str(source) + ',dst=' + FRAME_TARGET + ',readonly', *tmpfs,
                 "--network", self.networks[0], "--ip", f"172.30.91.{index}", "--entrypoint", "/sleep",
                 "cohort-local:fixture", "300").stdout.decode().strip()
             self.assertRegex(cid, r"^[0-9a-f]{64}$")
@@ -409,6 +440,15 @@ class CohortFixture(F.NativeTests):
         archive = self.root / "rootfs.tar"
         with tarfile.open(archive, "w") as tar:
             tar.add(sleep, arcname="sleep")
+            # Pre-existing mountpoints keep runc create from altering the
+            # independently sealed rootfs. No seal is re-baselined after create.
+            for directory in ('run', TMPFS_TARGET.lstrip('/')):
+                info = tarfile.TarInfo(directory)
+                info.type, info.mode = tarfile.DIRTYPE, 0o755
+                tar.addfile(info)
+            info = tarfile.TarInfo(FRAME_TARGET.lstrip('/'))
+            info.size, info.mode = 0, 0o644
+            tar.addfile(info, io.BytesIO(b''))
             for path in sorted(dependencies):
                 # Dereference host symlinks so no link escapes the image.
                 raw = Path(path).read_bytes()
@@ -421,8 +461,11 @@ class CohortFixture(F.NativeTests):
         # Use the real composed closure as a skeleton. Fixture-only bindings
         # below describe the independently captured Docker candidates; they are
         # signed afterwards with the existing native authority fixture keys.
-        result = C.compose(self.inputs, 4, sequence=4, supersedes="a" * 64)
-        self.code = self.install / "versions/4"
+        inputs = copy.deepcopy(self.inputs)
+        inputs['sources'].pop(C.OBSERVER)
+        inputs['sources'][C.OBSERVER_V2] = FRAME_PATH.read_bytes()
+        result = C.compose(inputs, 6, sequence=6, supersedes="a" * 64)
+        self.code = self.install / "versions/6"
         docs = copy.deepcopy(result["documents"])
         original = json.loads(result["authorization"])
         old_ids = {r: original["roles"][r]["containerId"] for r in O.ROLES}
@@ -479,8 +522,8 @@ class CohortFixture(F.NativeTests):
         lease_journal = {"schema": "ouf.semantic-lease-coordination.v1", **coordination,
             "state": "QUIESCED", "leaseAuthorized": False, "startAuthorized": False, "leaseAddresses": [[]]}
         self.write(self.root / "lease.json", A.canonical(lease_journal))
-        frame_path = self.root / "fixture-frame.py"
-        self.write(frame_path, FRAME.encode())
+        frame_path = self.code / 'source' / C.OBSERVER_V2
+        self.assertEqual(frame_path.read_bytes(), FRAME_PATH.read_bytes())
         frame_binding = {"path": str(frame_path), "sha256": A.sha(frame_path.read_bytes())}
         self.assertEqual(len({v["root"] for v in captures.values()}), 1)
         runtime.update(runtimePath=real["path"], runtimeSha256=real["sha256"],
@@ -533,9 +576,17 @@ class CohortFixture(F.NativeTests):
             template["lockFile"] = str(lock)
             cfg.update(preparerTemplate=document("documents/" + role + "/preparer-template.json", template),
                 runtimeRootParent=runtime["runtimeStateRoot"])
-            policy = json.loads(Path(cfg["framePolicyBinding"]["path"]).read_bytes())
-            policy["expectedOci"] = captures[role]["oci"]
+            policy = frame_policy(captures[role]['oci'], role, self.frame_sources[role])
+            from test_frame_observer_v2 import reviewer
+            review, schema = reviewer()
+            self.assertTrue(review.configured_profile(policy['expectedOci'], policy['expectedOci'], policy['manifest'],
+                policy['startup'], policy['approvedHooks'], schema)['configuredPolicyConforms'])
             cfg["framePolicyBinding"] = document("documents/" + role + "/frame-policy.json", policy)
+            policy_path = Path(cfg['framePolicyBinding']['path'])
+            self.assertEqual((policy_path.parent.stat().st_uid, policy_path.parent.stat().st_gid,
+                              policy_path.parent.stat().st_mode & 0o777), (0, 0, 0o700))
+            self.assertEqual((policy_path.stat().st_uid, policy_path.stat().st_gid, policy_path.stat().st_nlink,
+                              policy_path.stat().st_mode & 0o777), (0, 0, 1, 0o600))
             cfg["creationFrameObserverBinding"]["configuration"] = cfg["framePolicyBinding"]
             with F.fixtures.grant_fixture.part_a.libraries():
                 from tools.semantic_provider_node_observation import rootfs_seal
@@ -738,6 +789,11 @@ class CohortFixture(F.NativeTests):
             self.assertEqual(row["epoch"]["state"], "STARTED", row)
             self.assertTrue(row["docker"]["Running"])
             self.assertEqual(json.loads((folder / "deployment.json").read_bytes())["state"], "STARTED")
+            evidence = json.loads((folder / 'evidence.json').read_bytes())
+            self.assertRegex(evidence['creationFrameHash'], r'^[0-9a-f]{64}$')
+            cfg = json.loads((self.code / 'broker' / (role + '.json')).read_bytes())
+            self.assertEqual(Path(cfg['creationFrameObserverBinding']['source']['path']).read_bytes(), FRAME_PATH.read_bytes())
+            self.assertEqual(evidence['rootfsSeal'], json.loads(Path(cfg['rootfsSealBinding']['path']).read_bytes()))
             grant = json.loads((folder / "driver.json").read_bytes())
             self.assertEqual(grant["l2Binding"]["signedTransport"]["networkBindings"][0]["mac"], L.L2_LIVE_MAC)
             self.assertEqual([n["interface"] for n in grant["l2Binding"]["signedTransport"]["networkBindings"]],

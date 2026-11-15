@@ -85,7 +85,8 @@ def observe(args, clock):
     require(key_paths == reader.private_paths, "EXACT_PRIVATE_KEY_PATH_EXCLUSIONS_REQUIRED")
     bundle = C.document(reader.read(args.inputs, args.inputs_sha256))
     require(set(bundle) == {"schema", "files", "sources"} and bundle["schema"] == "ouf.semantic-provider-r3-inputs.v1"
-            and set(bundle["files"]) == C.DATA_INPUTS and set(bundle["sources"]) == C.SOURCE_INPUTS,
+            and set(bundle["files"]) == C.DATA_INPUTS
+            and set(bundle["sources"]) in (C.SOURCE_INPUTS, C.SOURCE_INPUTS_V6),
             "EXACT_R3_INPUT_MANIFEST_REQUIRED")
     files = {k: reader.bound(v) for k, v in bundle["files"].items()}
     sources = {k: reader.bound(v) for k, v in bundle["sources"].items()}

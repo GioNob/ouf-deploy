@@ -20,6 +20,7 @@ RUNTIME = "tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py"
 SUPERVISOR = "tools/semantic_provider_operation/lease_supervisor.py"
 MANDATES = "tools/semantic_authority_mandates/mandates.py"
 OBSERVER = "tools/semantic_frame_compiler/frame-observer.py"
+OBSERVER_V2 = "tools/semantic_frame_compiler/frame-observer-v2.py"
 RECOVERY = ("activation_core", "bounded_recovery", "recovery_journal", "lease_recovery_budget",
             "resilient_lease_adapter", "adaptive_supervisor", "nft_seconds_backend", "deadline_backend",
             "continuous_supervisor", "dns", "readback_margin_compiler")
@@ -34,6 +35,10 @@ for _name in B.MODULES:
 # Preserve repository-relative originals as well as the aliases expected by v2.
 SOURCE_MAP.update({p: p for p in list(SOURCE_MAP.values())})
 SOURCE_INPUTS = frozenset(SOURCE_MAP.values())
+# Keep the historical closure exact: no v2 blob in releases 1--5.
+SOURCE_MAP_V6 = {p: v for p, v in SOURCE_MAP.items() if p != OBSERVER}
+SOURCE_MAP_V6[OBSERVER_V2] = OBSERVER_V2
+SOURCE_INPUTS_V6 = frozenset(SOURCE_MAP_V6.values())
 L2_SOURCE = "tools/semantic_provider_admission_v2/l2_binding.py"
 DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "successors", "semanticPeer",
                "rootfs", "acceptance"} | {r + "/" + p for r in ROLES for p in
@@ -101,7 +106,9 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    require(set(files) == DATA_INPUTS and (set(sources) == SOURCE_INPUTS
+    selected_map = SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
+    selected_inputs = SOURCE_INPUTS_V6 if version >= 6 else SOURCE_INPUTS
+    require(set(files) == DATA_INPUTS and (set(sources) == selected_inputs
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
             "EXACT_R3_INPUT_SET_REQUIRED")
@@ -153,7 +160,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
     require(accepted["preparationA"]["planSha256"] == manifest["planSha256"], "ACCEPTANCE_A2_DRIFT")
     rootfs = data["rootfs"]
     require(rootfs["aSuccessors"]["sha256"] == sha(files["successors"]), "ROOTFS_A2_DRIFT")
-    source_map = {target: original for target, original in SOURCE_MAP.items() if original in sources}
+    source_map = {target: original for target, original in selected_map.items() if original in sources}
     broker_sources = B.SOURCES & source_map.keys()
     docs = {"source/" + target: sources[original] for target, original in source_map.items()}
     hashes = {target: sha(sources[original]) for target, original in source_map.items()}
@@ -267,7 +274,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             "transportBinding": transport, "preparerTemplate": preparer, "runtimeRootParent": s["runtimeRootParent"],
             "rootfsLimits": s["rootfsLimits"], "creationFrameObserverBinding": {
                 "python": {"path": t["pythonPath"], "sha256": t["pythonHash"]},
-                "source": source(OBSERVER), "configuration": frame}}
+                "source": source(OBSERVER_V2 if version >= 6 else OBSERVER), "configuration": frame}}
         broker = put("broker/" + role + ".json", cfg)
         # Pure replay may use retained pre-v4 source INPUTS. Native v2 loading
         # always validates its complete current package, without this override.
