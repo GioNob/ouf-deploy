@@ -4,7 +4,7 @@
 #       bash b1-rootfs-v2.sh apply <planSha256> (scrive solo il nuovo risultato sotto /var/lib/ouf-storage-migration)
 # Nessuna operazione sui container (niente create/start/rm), nessuna firma, nessun segreto letto.
 set -euo pipefail
-C=f9cbbacb53d64b3bd94e9f7812f3186c6c9b76f3
+C=82e93db5fcd7ea6528075117faca37b1deb98cc9
 B=https://raw.githubusercontent.com/GioNob/ouf-deploy/$C
 S=/etc/ouf/deploy-snapshots
 M=/var/lib/ouf-storage-migration
@@ -39,7 +39,7 @@ if [[ $mode == plan ]]; then
   D=$(sudo mktemp -d "$S/semantic-provider-reseal-source.XXXXXXXX")
   sudo chmod 0700 "$D"
   printf '%s\n' "$D" > "$STATE"
-  fetch scripts/prepare-semantic-provider-b1-rootfs-v2.py 71e8a8a739917773ba39ea0b6e4e5f36f6cf9d788da030b685bb83870416fcca
+  fetch scripts/prepare-semantic-provider-b1-rootfs-v2.py 04e04db56717afd87067872b51e7a38c7ddf93395ff9717542ee855bd103229c
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
   fetch tools/semantic_image_rootfs/prepare_provider_image_rootfs.py cc2e238c37650f9fa77a2b3319160ef09aa61e1a5bd673e624ad5a9f0106eb32
   fetch tools/semantic_stopped_rootfs/stopped_rootfs_comparison.py fbdf94a8946a2de0504055586a00e25cf6cad0dacd9fa214cc405e49e276e3e5
