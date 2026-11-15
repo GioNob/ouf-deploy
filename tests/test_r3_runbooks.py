@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNBOOKS = [ROOT / "ops/vps" / n for n in ("r3-issue.sh", "r3-install.sh", "r3-restore.sh",
                                          "r3-issue-v2.sh", "r3-upgrade-v2.sh", "r3-issue-v3.sh",
                                          "r3-upgrade-v3.sh", "r3-issue-v4.sh",
-                                         "r3-upgrade-v4.sh", "r3-operate.sh")]
+                                         "r3-upgrade-v4.sh", "r3-issue-v5.sh",
+                                         "r3-upgrade-v5.sh", "r3-operate.sh")]
 FETCH = re.compile(r"^  fetch (\S+) ([0-9a-f]{64})$", re.M)
 PIN = re.compile(r"^C=([0-9a-f]{40})$", re.M)
 # Import closure of the issuer/installer/restore entrypoints (traced with the real interpreter,
