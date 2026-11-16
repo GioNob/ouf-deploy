@@ -141,6 +141,12 @@ def native_child():
             output = base / "evidence"
             args = type("Args", (), dict(output_directory=str(output), docker=runc,
                         docker_sha256=binding("runc")["sha256"], docker_socket="unix:///fixture"))()
+            with view():
+                current = H.overlay_binding(root, docker_root)
+            if current != snapshot:
+                print("R3_VOLATILE_NATIVE_BINDING_DIFF=" + json.dumps(
+                    {k: [snapshot.get(k), current.get(k)] for k in set(snapshot) | set(current)
+                     if snapshot.get(k) != current.get(k)}, sort_keys=True), flush=True)
             with patch.object(H.V1, "stopped_export_view", side_effect=view):
                 V.confirm_snapshot(args, context)
             seal, records = V.inspect_upper(context)
