@@ -46,7 +46,7 @@ class Readers(unittest.TestCase):
 
     def test_arguments(self):
         cases = {
-            'r3-status.py': [['extra']], 'r3-supervisor-journal.py': [['extra']],
+            'r3-status.py': [['extra']], 'r3-supervisor-journal.py': [['extra']], 'r3-upper-delta.py': [['extra']],
             'r3-watch.py': [[], ['both'], ['other'], ['adapter', 'extra']],
             'r3-epoch-timeline.py': [[], ['other', '1'], ['adapter', 'x'], ['both', '0'],
                                      ['adapter', '-1'], ['adapter', '1', 'extra'], ['adapter', '1 2']],
@@ -59,7 +59,7 @@ class Readers(unittest.TestCase):
             for args in cases_for_name:
                 with self.subTest(name=name, args=args), patch.object(sys, 'argv', [name, *args]):
                     with redirect_stdout(io.StringIO()), patch('sys.stderr', io.StringIO()):
-                        if name.endswith('-diag.py'):
+                        if name.endswith('-diag.py') or name == 'r3-upper-delta.py':
                             self.assertEqual(ns['main'](), 2)
                         else:
                             self.assertEqual(ns['entry'](ns['main']), 2)
@@ -78,7 +78,7 @@ class Readers(unittest.TestCase):
         self.assertRegex(text, r'(?m)^C=[0-9a-f]{40} ')  # zero before review, then the reviewed commit
         sudo = (READERS / '91-ouf-r3-readers').read_text()
         commands = [line for line in sudo.splitlines() if line and not line.startswith('#')]
-        self.assertEqual(len(commands), 12)
+        self.assertEqual(len(commands), 13)
         for line in commands:
             self.assertTrue(line.startswith('oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/'))
             if '*' in line:

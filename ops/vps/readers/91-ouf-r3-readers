@@ -3,6 +3,7 @@
 # Nessun permesso sul modulo r3_common.py o sugli installer.
 oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-status.py
 oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-supervisor-journal.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-upper-delta.py
 oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-diag.py
 oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-diag.py *
 oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-frame-diag.py
