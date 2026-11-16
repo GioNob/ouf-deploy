@@ -57,15 +57,12 @@ def observation(live=False, policy="no"):
 def successful(action, before):
     after = copy.deepcopy(before)
     if action == "start":
-        after = observation(True, "unless-stopped")
+        after = observation(True)
         for r in O.ROLES:
             old = before["candidates"][r]["epoch"]
             number = old["epoch"] + 1 if old else 1
             after["candidates"][r]["epoch"]["epoch"] = number
             after["supervisor"]["epochs"][r] = number
-    elif action == "restart-policy":
-        for r in O.ROLES:
-            after["candidates"][r]["docker"]["RestartPolicy"] = "unless-stopped"
     elif action == "restart-one":
         row = after["candidates"]["adapter"]
         row["epoch"]["epoch"] += 1
@@ -110,11 +107,11 @@ class PortableTests(unittest.TestCase):
                 O.I.wrapper_code_root(root, O.I.wrapper_bytes("/usr/bin/python3", PurePosixPath(str(root)+suffix)))
 
     def test_each_precondition_success_and_violation(self):
-        for action in O.SUCCESS:
+        for action in ("start", "stop", "restart-one"):
             args = arguments(action)
-            good = observation(action not in {"start", "restart-policy"})
+            good = observation(action != "start")
             O.preconditions(args, good)
-            bad = observation(action in {"start", "restart-policy"})
+            bad = observation(action == "start")
             with self.subTest(action=action), self.assertRaises(O.A.OperationDenied):
                 O.preconditions(args, bad)
 
@@ -150,10 +147,8 @@ class PortableTests(unittest.TestCase):
             O.preconditions(arguments("restart-one"), before)
 
     def test_all_readbacks_and_negative_deltas(self):
-        for action in O.SUCCESS:
-            before = observation(action not in {"start", "restart-policy"})
-            if action == "restart-policy":
-                before["candidates"]["adapter"]["epoch"] = {"epoch": 1, "state": "DELETED"}
+        for action in ("start", "stop", "restart-one"):
+            before = observation(action != "start")
             after = successful(action, before)
             args = arguments(action)
             self.assertTrue(O.reached(args, before, after), action)
@@ -166,8 +161,6 @@ class PortableTests(unittest.TestCase):
             bad = copy.deepcopy(after)
             if action == "stop":
                 bad["tables"]["southbound"]["bridge"] = True
-            elif action == "restart-policy":
-                bad["candidates"]["adapter"]["epoch"]["epoch"] += 1
             else:
                 bad["supervisor"]["epochs"]["adapter"] += 1
             self.assertFalse(O.reached(args, before, bad))
@@ -184,17 +177,9 @@ class PortableTests(unittest.TestCase):
             if kind == "tables": bad["tables"]["adapter"]["inet"] = False
             self.assertFalse(O.reached(arguments("restart-one"), before, bad), kind)
 
-    def test_restart_policy_proves_no_restart(self):
-        before = observation()
-        for field in ("Pid", "StartedAt", "RestartCount"):
-            after = successful("restart-policy", before)
-            after["candidates"]["adapter"]["docker"][field] = "changed" if field == "StartedAt" else 200
-            self.assertFalse(O.reached(arguments("restart-policy"), before, after))
-
     def test_parallel_start_and_stop_and_all_apply_successes(self):
-        for action in O.SUCCESS:
-            before = observation(action not in {"start", "restart-policy"}, "unless-stopped"
-                                 if action in {"stop", "restart-one"} else "no")
+        for action in ("start", "stop", "restart-one"):
+            before = observation(action != "start")
             after = successful(action, before)
             barrier = threading.Barrier(2)
             calls = []
@@ -208,8 +193,7 @@ class PortableTests(unittest.TestCase):
                 plan = O.proposal(args, before)
                 args.plan_sha256 = plan["planSha256"]
                 report = {"status": "HELD", "doNotRerunApply": False, **O.COUNTERS}
-                prepared = successful("restart-policy", before)
-                observations = [before, prepared, after] if action == "start" else [before, after]
+                observations = [before, after]
                 with patch.object(O, "observe", side_effect=observations), \
                         patch.object(O, "docker", side_effect=fake_docker), \
                         patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)), \
@@ -219,17 +203,17 @@ class PortableTests(unittest.TestCase):
                 self.assertTrue(report["doNotRerunApply"])
                 self.assertEqual(report["lastObservation"], after)
                 counter = {"start":"dockerStartRequests", "stop":"dockerStopRequests",
-                           "restart-policy":"dockerUpdateRequests", "restart-one":"dockerRestartRequests"}[action]
+                           "restart-one":"dockerRestartRequests"}[action]
                 self.assertEqual(report[counter], 1 if action == "restart-one" else 2)
                 self.assertEqual(sum(report[k] for k in O.COUNTERS if k.startswith("docker")), len(calls))
                 if action == "start":
-                    self.assertEqual(report["dockerUpdateRequests"], 2)
-                    self.assertEqual([c[0] for c in calls], ["update", "update", "start", "start"])
+                    self.assertEqual(report["dockerUpdateRequests"], 0)
+                    self.assertEqual([c[0] for c in calls], ["start", "start"])
                 self.assertEqual((report["signaturesIssued"], report["privateKeysRead"]), (0, 0))
                 if action != "stop": self.assertFalse(any(c[0] == "stop" for c in calls))
 
     def test_timeout_preserves_latest_complete_observation_for_each_action(self):
-        for action in O.SUCCESS:
+        for action in ("start", "stop", "restart-one"):
             before = observation(action != "start")
             latest = copy.deepcopy(before)
             latest["candidates"]["adapter"]["epoch"] = {
@@ -246,90 +230,73 @@ class PortableTests(unittest.TestCase):
         self.assertEqual(report["lastObservation"], latest)
         self.assertEqual(report["observationError"]["reason"], "EPOCH_POINTER_JOURNAL_DRIFT")
 
-    def test_start_policy_failure_or_bad_readback_never_starts(self):
-        for failure in ("update", "policy", "running", "identity", "observe"):
-            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as folder:
-                before = observation()
-                latest = successful("restart-policy", before)
-                if failure in {"update", "policy"}:
-                    latest["candidates"]["southbound"]["docker"]["RestartPolicy"] = "no"
-                if failure == "running":
-                    latest["candidates"]["adapter"]["docker"].update(Status="running", Running=True, Pid=42)
-                if failure == "identity":
-                    latest["candidates"]["adapter"]["cid"] = "0"*64
-                args = arguments(output=str(Path(folder)/"out"))
-                plan = O.proposal(args, before)
-                args.plan_sha256 = plan["planSha256"]
-                report = {"status": "HELD", **O.COUNTERS}
-                def fake_docker(args, *argv):
-                    if failure == "update" and argv[-1] == "2"*64:
-                        raise O.A.OperationDenied("R3_COMMAND_FAILED")
-                readback = O.A.OperationDenied("R3_COMMAND_FAILED") if failure == "observe" else latest
-                with patch.object(O, "observe", side_effect=[before, readback]), \
-                        patch.object(O, "docker", side_effect=fake_docker) as docker, \
-                        patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)), \
-                        patch.object(O.I, "write_once"):
-                    code = "R3_RESTART_POLICY_UPDATE_FAILED" if failure == "update" else "R3_RESTART_POLICY_READBACK_FAILED"
-                    with self.assertRaisesRegex(O.A.OperationDenied, code):
-                        O.apply(args, plan, report)
-                self.assertEqual(report["status"], "HELD")
-                self.assertEqual(report["dockerStartRequests"], 0)
-                self.assertEqual(report["dockerUpdateRequests"], 2)
-                self.assertTrue(all(c.args[1] == "update" for c in docker.call_args_list))
-                self.assertTrue(report["doNotRerunApply"])
-                if failure != "observe":
-                    self.assertEqual(report["lastObservation"], latest)
-
-    def test_already_set_policy_is_verified_without_update(self):
-        for action in ("start", "restart-policy"):
-            with self.subTest(action=action), tempfile.TemporaryDirectory() as folder:
-                before = observation(policy="unless-stopped")
-                args = arguments(action, str(Path(folder)/"out"))
-                plan = O.proposal(args, before)
-                args.plan_sha256 = plan["planSha256"]
-                report = {"status": "HELD", **O.COUNTERS}
-                reads = [before, before, successful("start", before)] if action == "start" else [before, before]
-                with patch.object(O, "observe", side_effect=reads) as observe, \
-                        patch.object(O, "docker", return_value=b"") as docker, \
-                        patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)), \
-                        patch.object(O.I, "write_once"):
-                    O.apply(args, plan, report)
-                self.assertEqual(report["dockerUpdateRequests"], 0)
-                self.assertEqual(report["status"], O.SUCCESS[action])
-                self.assertEqual(observe.call_count, len(reads))
-                self.assertTrue(all(c.args[1] == "start" for c in docker.call_args_list))
+    def test_start_policy_denied_in_plan_and_before_effects(self):
+        for role in O.ROLES:
+            for policy in ("unless-stopped", "always", "on-failure"):
+                with self.subTest(role=role, policy=policy), tempfile.TemporaryDirectory() as folder:
+                    args = arguments(output=str(Path(folder)/"out"))
+                    before = observation()
+                    plan = O.proposal(args, before)
+                    args.plan_sha256 = plan["planSha256"]
+                    bad = copy.deepcopy(before)
+                    bad["candidates"][role]["docker"]["RestartPolicy"] = policy
+                    report = {**O.COUNTERS}
+                    with patch.object(O, "observe", return_value=bad), \
+                            patch.object(O, "docker") as docker, patch.object(O.I, "write_once") as write:
+                        with self.assertRaisesRegex(O.A.OperationDenied, "R3_RESTART_POLICY_MUST_BE_NO"):
+                            O.proposal(args, bad)
+                        with self.assertRaisesRegex(O.A.OperationDenied, "R3_RESTART_POLICY_MUST_BE_NO"):
+                            O.apply(args, plan, report)
+                    docker.assert_not_called()
+                    write.assert_not_called()
+                    self.assertFalse(Path(args.output_directory).exists())
+                    self.assertEqual({k: report[k] for k in O.COUNTERS}, O.COUNTERS)
 
     def test_final_start_readback_requires_policy_on_both_roles(self):
         before = observation()
         for role in O.ROLES:
             after = successful("start", before)
-            after["candidates"][role]["docker"]["RestartPolicy"] = "no"
+            after["candidates"][role]["docker"]["RestartPolicy"] = "unless-stopped"
             self.assertFalse(O.reached(arguments(), before, after))
 
-    def test_restart_policy_plan_denies_either_running_or_nonidle_role(self):
-        for role in O.ROLES:
-            for status, live, pid in (("running", True, 42), ("paused", True, 42),
-                                      ("created", False, 42), ("dead", False, 0)):
-                before = observation()
-                before["candidates"][role]["docker"].update(Status=status, Running=live, Pid=pid)
-                with patch.object(O, "docker") as docker, self.assertRaisesRegex(
-                        O.A.OperationDenied, "R3_RESTART_POLICY_REQUIRES_STOPPED"):
-                    O.proposal(arguments("restart-policy"), before)
-                docker.assert_not_called()
+    def test_restart_policy_always_denied_without_effects(self):
+        for status, live, pid in (("created", False, 0), ("exited", False, 0),
+                                  ("running", True, 42), ("paused", True, 42),
+                                  ("restarting", True, 42), ("removing", False, 0), ("dead", False, 0)):
+            for policy in ("no", "unless-stopped", "always", "on-failure"):
+                with self.subTest(status=status, policy=policy), tempfile.TemporaryDirectory() as folder:
+                    args = arguments("restart-policy", str(Path(folder)/"out"), plan_sha256="0"*64)
+                    before = observation(live, policy)
+                    for row in before["candidates"].values():
+                        row["docker"].update(Status=status, Running=live, Pid=pid)
+                    report = {**O.COUNTERS}
+                    with patch.object(O, "observe", return_value=before), \
+                            patch.object(O, "docker") as docker, patch.object(O.I, "write_once") as write:
+                        with self.assertRaisesRegex(O.A.OperationDenied, "R3_RESTART_POLICY_DISABLED_D045"):
+                            O.proposal(args, before)
+                        with self.assertRaisesRegex(O.A.OperationDenied, "R3_RESTART_POLICY_DISABLED_D045"):
+                            O.apply(args, {"planSha256": "0"*64}, report)
+                    docker.assert_not_called()
+                    write.assert_not_called()
+                    self.assertFalse(Path(args.output_directory).exists())
+                    self.assertEqual(report["dockerUpdateRequests"], 0)
+                    self.assertFalse(O.reached(args, before, before))
 
-    def test_stop_and_restart_one_observe_and_readback_accept_unless_stopped(self):
+    def test_stop_and_restart_one_observe_and_readback_accept_policies(self):
         for action in ("stop", "restart-one"):
-            before = observation(True, "unless-stopped")
-            O.preconditions(arguments(action), before)
-            self.assertTrue(O.reached(arguments(action), before, successful(action, before)))
-            for role, row in before["candidates"].items():
-                d = row["docker"]
-                raw = json.dumps([{"Id": row["cid"], "State": d, "RestartCount": d["RestartCount"],
-                    "HostConfig": {"Runtime": d["Runtime"], "RestartPolicy": {"Name": d["RestartPolicy"]}}}])
-                self.assertEqual(O.docker_fields(raw, row["cid"])["RestartPolicy"], "unless-stopped")
+            for policy in ("no", "unless-stopped"):
+                with self.subTest(action=action, policy=policy):
+                    before = observation(True, policy)
+                    O.preconditions(arguments(action), before)
+                    self.assertTrue(O.reached(arguments(action), before, successful(action, before)))
+                    for row in before["candidates"].values():
+                        d = row["docker"]
+                        raw = json.dumps([{"Id": row["cid"], "State": d, "RestartCount": d["RestartCount"],
+                            "HostConfig": {"Runtime": d["Runtime"], "RestartPolicy": {"Name": policy}}}])
+                        self.assertEqual(O.docker_fields(raw, row["cid"])["RestartPolicy"], policy)
 
     def test_failed_start_never_stops_and_retains_failure(self):
-        before = observation(policy="unless-stopped")
+        before = observation()
         latest = successful("start", before)
         latest["candidates"]["adapter"]["epoch"].update(state="FAILED", live=False, failure="ADMISSION_OR_DRIVER_FAILED")
         with tempfile.TemporaryDirectory() as folder:
@@ -337,7 +304,7 @@ class PortableTests(unittest.TestCase):
             plan = O.proposal(args, before)
             args.plan_sha256 = plan["planSha256"]
             report = {"doNotRerunApply": False, **O.COUNTERS}
-            with patch.object(O, "observe", side_effect=[before, before, latest]), \
+            with patch.object(O, "observe", side_effect=[before, latest]), \
                     patch.object(O, "docker", side_effect=subprocess.TimeoutExpired("PRIVATE", 1)) as docker, \
                     patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)), \
                     patch.object(O.I, "write_once"), patch.object(O.time, "monotonic", side_effect=[0, 2]):
@@ -380,6 +347,9 @@ class PortableTests(unittest.TestCase):
         for extra in (["--timeout-seconds", "601"], ["--timeout-seconds", "0"], ["--role", "adapter"],
                       ["--plan-sha256", "0"*64]):
             with self.assertRaises(O.A.OperationDenied): O.arguments(base+extra)
+        disabled = base.copy()
+        disabled[disabled.index("start")] = "restart-policy"
+        self.assertEqual(O.arguments(disabled).action, "restart-policy")
         restart = base.copy()
         restart[restart.index("start")] = "restart-one"
         with self.assertRaises(O.A.OperationDenied): O.arguments(restart)
@@ -531,10 +501,6 @@ if mode=='inspect':
         'HostConfig':{'Runtime':'ouf-semantic-admitted-v2','RestartPolicy':{'Name':entry['restart']}}}]))
 elif mode=='start':
     assert args[2:]==['start',cid]; start()
-elif mode=='update':
-    assert args[2:]==['update','--restart','unless-stopped',cid]
-    assert entry['status'] in ('created','exited')
-    entry['restart']='unless-stopped'; save()
 elif mode=='restart':
     assert args[2:]==['restart','--time','30',cid]
     wrapper('delete','--force'); entry['count']+=1; start()
@@ -631,7 +597,7 @@ class OperateFixture(F.InstallFixture):
         self.installed()
         self.docker = self.script('docker', DOCKER)
         self.systemctl = self.script('systemctl', SYSTEMCTL)
-        for action in ('start','restart-one','stop','restart-policy'):
+        for action in ('start','restart-one','stop'):
             plan = self.operate_cli(self.operate_args(action))
             self.assertEqual(plan, self.operate_cli(self.operate_args(action)))
             result = self.operate_cli(self.operate_args(action,'--apply',plan['planSha256']))
@@ -640,6 +606,9 @@ class OperateFixture(F.InstallFixture):
             self.assertEqual((result['signaturesIssued'],result['privateKeysRead']), (0,0))
             self.assertEqual(json.loads((self.root/('operate-'+action)/'result.json').read_bytes()), result)
             self.assertEqual({p.name:p.read_bytes() for p in self.chain.iterdir()}, self.authority_bytes)
+            self.assertEqual(result['dockerUpdateRequests'], 0)
+            for row in result['lastObservation']['candidates'].values():
+                self.assertEqual(row['docker']['RestartPolicy'], 'no')
             if action == 'start':
                 for role in O.ROLES:
                     self.assertEqual((self.row(role)['state'],self.row(role)['epoch']), ('STARTED',1))
@@ -674,6 +643,7 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout.decode()+result.stderr.decode())
 
 
+# Historical Engine behavior evidence retained under D-045; operate never updates policy.
 @unittest.skipUnless(DOCKER_NATIVE, 'set OUF_R3_RESTART_POLICY_DOCKER_NATIVE=1 under Linux root:root')
 class DockerRestartPolicyTests(unittest.TestCase):
     def test_stopped_update_bypasses_runtime_but_running_update_is_rejected(self):

@@ -80,7 +80,7 @@ jobs:
         run: >-
           sudo -n env OUF_R3_UPGRADE_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_upgrade.py -v
-      - name: D-044 real runner Docker stopped versus running restart-policy gate
+      - name: Historical Docker restart-policy behavior evidence (retained under D-045)
         if: ${{ !cancelled() }}
         run: >-
           sudo -n env OUF_R3_RESTART_POLICY_DOCKER_NATIVE=1 /usr/bin/python3 -I -B

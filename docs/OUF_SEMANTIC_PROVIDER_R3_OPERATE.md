@@ -77,13 +77,12 @@ copiati nelle ricevute. PID e boot sono osservazioni pubbliche selezionate.
 
 | Azione | Precondizioni | Effetti diretti e readback |
 | --- | --- | --- |
-| `start` | Due CID created/exited, Running false/PID 0, epoca assente o terminale; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Prima imposta e verifica `unless-stopped` su entrambi i CID fermi; poi due `docker start` concorrenti, ciascuno con timeout. Entrambi running con policy `unless-stopped`, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
-| `restart-policy` | Entrambi i CID created/exited, Running false/PID 0; altrimenti plan negato con `R3_RESTART_POLICY_REQUIRES_STOPPED` | `docker update --restart unless-stopped` per ogni CID con policy diversa; readback di entrambi ancora fermi, policy `unless-stopped`, stessa epoca/precedente/Status/PID/StartedAt/RestartCount/runtime. |
+| `start` | Due CID created/exited, Running false/PID 0, RestartPolicy `no` su entrambi, epoca assente o terminale; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Due `docker start` concorrenti, ciascuno con timeout, senza `docker update`. Entrambi running con policy ancora `no`, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
+| `restart-policy` | Disattivata da D-045: plan sempre negato con `R3_RESTART_POLICY_DISABLED_D045`, qualunque sia lo stato dei CID | Nessun effetto, nessun update. L'argomento resta disponibile per rendere esplicito il diniego. |
 | `restart-one` | Due CID running, epoche STARTED vive; supervisore ACTIVE sulle stesse epoche e sequenza | `docker restart --time 30 CID` del solo ruolo. Nuova epoca esattamente +1 STARTED viva, precedente DELETED, testa invariata, altro ruolo con stessa epoca/PID; supervisore nuovamente ACTIVE, lease pronto e tabelle presenti. |
 | `stop` | Almeno un CID running | `docker stop --time 30 CID` dei soli ruoli running, in parallelo. Entrambi exited/PID 0, epoche terminali, supervisore attivo WAITING, lease QUIESCED/non autorizzato e quattro tabelle assenti. |
 
 Esiti: `SEMANTIC_PROVIDER_R3_STARTED`,
-`SEMANTIC_PROVIDER_R3_RESTART_POLICY_SET`,
 `SEMANTIC_PROVIDER_R3_RESTARTED_WITHOUT_SIGNATURE`,
 `SEMANTIC_PROVIDER_R3_STOPPED`. Gli stati terminali sono DELETED, FAILED,
 ABANDONED. Per restart-one è richiesto specificamente DELETED del precedente.
@@ -122,27 +121,29 @@ non sovrascrivono eventuali ricevute preesistenti. Errori con soli codici
 pubblici, errno per OSError e callChain funzione/linea per eccezioni sconosciute.
 Un errore nel salvataggio è dichiarato `diagnosisSaved=false` su stdout.
 
-## Politica di restart (D-044, R-023)
+## Politica di restart (D-045, sostituisce D-044)
 
-Il runtime OCI R3 v5.2 accetta create/start/state/delete/kill e rifiuta
-`update`. Su un container running, dockerd inoltra `docker update --restart`
-al runtime: il comando fallisce. A container fermo dockerd aggiorna invece
-la propria configurazione senza invocare l'operazione OCI update. Per questo
-la policy viene impostata nello start, dopo i controlli e il claim, prima
-di qualsiasi avvio, con entrambi i CID created/exited, Running false e PID 0.
+Docker deve mantenere `RestartPolicy: no` su entrambi i container. Con
+`unless-stopped`, la coorte nativa ha mostrato riavvii autonomi dopo uno start
+negato o compensato da R3: container running fuori dal lease (`EPOCH_NOT_LIVE`)
+e secondo start negato con `R3_START_CANDIDATES_NOT_IDLE`. Questo viola il
+principio R3 di nessun riavvio automatico dopo un fallimento.
 
-La fase preliminare tenta una sola update per ciascuna policy diversa da
-`unless-stopped`; se entrambe sono diverse esegue due update. Una policy
-già corretta evita la scrittura ma non il readback di entrambi i candidati.
-La lettura verifica identità, configurazione/autorizzazione, epoche e frame
-Docker invariati salvo la policy, poi ricontrolla le precondizioni di start.
-Un errore di update produce `HELD/R3_RESTART_POLICY_UPDATE_FAILED`; un
-readback fallito o diverso produce `HELD/R3_RESTART_POLICY_READBACK_FAILED`.
-In entrambi i casi vengono eseguiti zero start: i container restano fermi,
-senza rollback delle policy eventualmente già aggiornate. L'ultima osservazione,
-gli errori e `dockerUpdateRequests` conservano il parziale nel report consumato.
-Il readback finale dello start richiede ancora `unless-stopped` su entrambi.
-Stop e restart-one conservano i propri controlli e accettano questa policy.
+Lo start richiede `no` nel plan e di nuovo nell'osservazione prima degli effetti;
+una policy diversa su uno dei ruoli produce `R3_RESTART_POLICY_MUST_BE_NO`.
+Esegue soltanto i due start e il readback finale richiede ancora `no` su entrambi.
+Non corregge automaticamente policy preesistenti. `restart-policy` è disattivata:
+il plan la nega sempre con `R3_RESTART_POLICY_DISABLED_D045`, senza effetti.
+Stop e restart-one mantengono il comportamento esistente e accettano `no`.
+
+L'avvio al boot sarà affidato a un'unità systemd con tentativi limitati, in un
+task separato, fuori dal perimetro di questa modifica.
+
+Il gate Docker nativo del task-58 resta una prova documentale del comportamento
+Engine: su un container fermo `docker update --restart` aggiorna la configurazione
+senza passare dal runtime OCI, mentre su uno running raggiunge il runtime R3,
+che rifiuta `update`. Questo risultato non giustifica l'impostazione di una
+politica di restart e non è usato dal percorso operativo.
 
 Il plan è uno snapshot: non impedisce interventi concorrenti esterni. Non
 trattenere lock runtime durante le chiamate Docker e non rigiocare un apply
