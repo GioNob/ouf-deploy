@@ -40,6 +40,22 @@ SOURCE_INPUTS = frozenset(SOURCE_MAP.values())
 SOURCE_MAP_V6 = {p: v for p, v in SOURCE_MAP.items() if p != OBSERVER}
 SOURCE_MAP_V6[OBSERVER_V2] = OBSERVER_V2
 SOURCE_INPUTS_V6 = frozenset(SOURCE_MAP_V6.values())
+# No replacement bytes enter historical closures, including repository aliases.
+REPLACEMENTS_V11 = {
+    'tools/semantic_lease_recovery/' + n + '.py': 'tools/semantic_lease_recovery/' + n + '_v2.py'
+    for n in ('activation_core', 'resilient_lease_adapter', 'adaptive_supervisor', 'continuous_supervisor', 'dns')}
+REPLACEMENTS_V11.update({
+    SUPERVISOR: 'tools/semantic_provider_operation/lease_supervisor_v2.py',
+    'scripts/semantic-provider-lease-supervisor-v2.py': 'scripts/semantic-provider-lease-supervisor-v3.py',
+    'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner.py':
+        'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner_v2.py',
+    'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_dns.py':
+        'tools/semantic_lease_recovery/dns_v2.py'})
+SOURCE_MAP_V11 = {p: REPLACEMENTS_V11.get(v, v) for p, v in SOURCE_MAP_V6.items()}
+SOURCE_INPUTS_V11 = frozenset(SOURCE_MAP_V11.values())
+SUPERVISOR_SOURCES_V11 = SUPERVISOR_SOURCES | {
+    'tools/semantic_provider_dns.py', 'tools/semantic_provider_lease_owner.py'}
+
 L2_SOURCE = "tools/semantic_provider_admission_v2/l2_binding.py"
 DATA_INPUTS = {"settings", "coordinator", "coordinationJournal", "a2Manifest", "successors", "semanticPeer",
                "rootfs", "acceptance"} | {r + "/" + p for r in ROLES for p in
@@ -128,8 +144,8 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and A.HEX64.fullmatch(supersedes), "R3_SUCCESSOR_CHAIN_REQUIRED")
     require(type(inputs) is dict and set(inputs) == {"files", "sources"}, "EXACT_R3_INPUTS_REQUIRED")
     files, sources = inputs["files"], inputs["sources"]
-    selected_map = SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
-    selected_inputs = SOURCE_INPUTS_V6 if version >= 6 else SOURCE_INPUTS
+    selected_map = SOURCE_MAP_V11 if version >= 11 else SOURCE_MAP_V6 if version >= 6 else SOURCE_MAP
+    selected_inputs = frozenset(selected_map.values())
     require(set(files) == DATA_INPUTS and (set(sources) == selected_inputs
             or version <= 3 and set(sources) == SOURCE_INPUTS - {L2_SOURCE})
             and all(type(v) is bytes and 0 < len(v) <= 131072 for v in sources.values()),
@@ -196,6 +212,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
 
     common = {"authorizationRoot": root + "/authorization", "anchorBinding": s["anchorBinding"],
               "mandateRoot": s["mandateRoot"], "opensslBinding": s["opensslBinding"], "mandatesModule": source(MANDATES)}
+    dns_profile = {**owner["dns"], "timeoutSeconds": 10} if version >= 11 else owner["dns"]
     rows, policies, templates = {}, {}, {}
     for role in ROLES:
         recipe = {k: data[role + "/" + k] for k in ACCEPT.RECIPE_PARTS}
@@ -232,7 +249,7 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
                 and type(t["budgetSeconds"]) is int and 1 <= t["budgetSeconds"] <= 5
                 and type(t["hostNetworkNamespace"]) is int and t["hostNetworkNamespace"] > 0,
                 "EXACT_NATIVE_PREPARER_TEMPLATE_REQUIRED")
-        t.update(kernel=copy.deepcopy(owner["kernel"]), dns=copy.deepcopy(owner["dns"]),
+        t.update(kernel=copy.deepcopy(owner["kernel"]), dns=copy.deepcopy(dns_profile),
                  coordinationBinding=copy.deepcopy(owner["binding"]), coordinationJournal=owner["journalFile"],
                  lockFile=owner["commonLockFile"])
         candidate = t["candidate"]
@@ -317,16 +334,16 @@ def compose(inputs, version=1, *, sequence=None, supersedes=None):
             "originalSealFragmentSha256": sha(canonical(rootfs["roles"][role]["effectiveSeal"])),
             "originalTransportFragmentSha256": sha(canonical({k: data[role + "/historicalTemplate"]["candidate"][k]
                 for k in ("networkBindings", "transport", "tableName")}))}
-    dns = put("supervisor/dns-profile.json", owner["dns"])
+    dns = put("supervisor/dns-profile.json", dns_profile)
     supervisor = {"schema": "ouf.semantic-provider-lease-supervisor.v1", "sourceRoot": code_root + "/source",
-        "sourceHashes": {p: hashes[p] for p in SUPERVISOR_SOURCES}, **scope, **common,
+        "sourceHashes": {p: hashes[p] for p in (SUPERVISOR_SOURCES_V11 if version >= 11 else SUPERVISOR_SOURCES)}, **scope, **common,
         "registryRoot": root + "/registry", "coordinator": {"ownerConfiguration": s["coordinatorBinding"],
             "journalPath": owner["journalFile"], "commonLockPath": owner["commonLockFile"], "dnsProfile": dns,
             "nftBinding": {"path": owner["nftPath"], "sha256": owner["nftSha256"]}},
         "recoveryJournalRoot": root + "/supervisor/state/recovery", "statusPath": root + "/supervisor/state/status.json",
         "limits": s["supervisorLimits"]}
     sup = put("supervisor/configuration.json", supervisor)
-    contract_module(sources[SUPERVISOR], "supervisor").validate(docs["supervisor/configuration.json"])
+    contract_module(sources[selected_map[SUPERVISOR]], "supervisor").validate(docs["supervisor/configuration.json"])
     runtime = {"schema": "ouf.semantic-docker-runtime-adapter.v5.2", "sourceHash": hashes[RUNTIME],
         "runtimePath": s["runtimeBinding"]["path"], "runtimeSha256": s["runtimeBinding"]["sha256"],
         "pythonPath": templates["adapter"]["pythonPath"], "pythonSha256": templates["adapter"]["pythonHash"],

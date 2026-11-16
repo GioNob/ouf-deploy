@@ -55,7 +55,7 @@ def read_inputs(args):
     require(set(index) == {"schema", "files", "sources"}
             and index["schema"] == "ouf.semantic-provider-r3-inputs.v1"
             and set(index["files"]) == C.DATA_INPUTS
-            and set(index["sources"]) in (C.SOURCE_INPUTS, C.SOURCE_INPUTS_V6),
+            and set(index["sources"]) in (C.SOURCE_INPUTS, C.SOURCE_INPUTS_V6, C.SOURCE_INPUTS_V11),
             "R3_EXACT_INPUT_MANIFEST_REQUIRED")
     files = {k: reader.bound(v) for k, v in index["files"].items()}
     sources = {k: reader.bound(v) for k, v in index["sources"].items()}
