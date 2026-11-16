@@ -75,7 +75,7 @@ class Readers(unittest.TestCase):
             raw = (READERS / name).read_bytes()
             self.assertNotIn(b'\r', raw)
             self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
-        self.assertIn('C=' + '0' * 40, text)
+        self.assertRegex(text, r'(?m)^C=[0-9a-f]{40} ')  # zero before review, then the reviewed commit
         sudo = (READERS / '91-ouf-r3-readers').read_text()
         commands = [line for line in sudo.splitlines() if line and not line.startswith('#')]
         self.assertEqual(len(commands), 12)
