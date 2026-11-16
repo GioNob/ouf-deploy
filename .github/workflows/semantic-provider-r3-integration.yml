@@ -1,0 +1,104 @@
+name: Semantic provider R3 native integration
+on:
+  pull_request:
+    paths:
+      - tools/semantic_runtime_v52/**
+      - tools/semantic_provider_admission_v2/**
+      - tools/semantic_provider_r3/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - tools/semantic_lease_recovery/**
+      - tools/semantic_frame_compiler/**
+      - tools/semantic_successor_recipes/**
+      - tools/semantic_b1_acceptance/**
+      - scripts/semantic-provider-*-v2.py
+      - scripts/semantic-provider-lease-supervisor-v3.py
+      - scripts/issue-semantic-provider-operation-authorization.py
+      - tests/test_semantic_provider_r3*.py
+      - tests/test_frame_observer_v2.py
+      - tests/test_semantic_provider_operation*.py
+      - tests/test_semantic_provider_admission_v2*.py
+      - tests/test_semantic_provider_broker_denials.py
+      - tests/test_semantic_provider_l2_binding.py
+      - tools/semantic_provider_admission_v2/**
+      - tests/test_semantic_provider_lease_supervisor.py
+      - tests/test_semantic_lease_dns_tolerance.py
+      - tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json
+      - tests/test_semantic_b1_acceptance.py
+      - tests/test_runtime_v52_epochs.py
+      - .github/workflows/semantic-provider-r3-integration.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  r3-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Integrated real runtime, broker, preparer and hook with composed authority
+        run: >-
+          sudo -n env OUF_R3_INTEGRATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_integration.py -v
+      - name: D-043 DNS tolerance, sealed v11 paths and renewal planning (portable)
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_lease_dns_tolerance.py -v
+      - name: Lease recovery unit regression (Linux flock boundary)
+        if: ${{ !cancelled() }}
+        run: >-
+          env PYTHONPATH=tools/semantic_lease_recovery /usr/bin/python3 -B -m unittest
+          test_bounded_recovery test_continuous_supervisor test_adaptive_supervisor
+          test_readback_margin_compiler test_nft_seconds_backend -v
+      - name: Acceptance portable regression
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1_acceptance.py -v
+      - name: Non-regression composition and real validators
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+      - name: Sealed frame observer v2 portable policy and closure checks
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_frame_observer_v2.py -v
+      - name: Broker denial receipts and portable cohort diagnostics
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
+      - name: L2 binding (observed successor MACs)
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_l2_binding.py -v
+      - name: Non-regression native issuance
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_OPERATION_ISSUANCE_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation_issuance.py -v
+      - name: Non-regression admission v2 and preparer v7
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p 'test_semantic_provider_admission_v2*.py' -v
+      - name: Non-regression native runtime v5.2
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_RUNTIME_V52_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_runtime_v52_epochs.py -v
+      - name: Non-regression native operation and epochs
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation.py -v
+      - name: Non-regression native lease supervisor
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Compile R3 integration and v11 closure
+        if: ${{ !cancelled() }}
+        run: >-
+          /usr/bin/python3 -I -m py_compile tests/test_semantic_provider_r3_integration.py
+          tests/test_semantic_lease_dns_tolerance.py tools/semantic_lease_recovery/dns_v2.py
+          tools/semantic_lease_recovery/resilient_lease_adapter_v2.py
+          tools/semantic_lease_recovery/adaptive_supervisor_v2.py
+          tools/semantic_lease_recovery/continuous_supervisor_v2.py
+          tools/semantic_lease_recovery/activation_core_v2.py
+          tools/semantic_provider_operation/lease_supervisor_v2.py
+          tools/semantic_lease_recovery/lease_owner_v2.py
+          scripts/semantic-provider-lease-supervisor-v3.py

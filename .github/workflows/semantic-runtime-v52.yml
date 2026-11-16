@@ -1,0 +1,59 @@
+name: Semantic OCI runtime v5.2 epochs
+on:
+  pull_request:
+    paths:
+      - tools/semantic_runtime_v52/**
+      - tools/semantic_runtime_v51/**
+      - tools/semantic_provider_operation/**
+      - tools/semantic_provider_admission_v2/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_cohort_admission/**
+      - tools/semantic_lease_recovery/**
+      - scripts/semantic-provider-lease-supervisor-v2.py
+      - scripts/semantic-provider-deployment-broker-v2.py
+      - scripts/semantic-provider-admission-preparer-v2.py
+      - scripts/semantic-provider-preexec-hook-v2.py
+      - tests/test_runtime_v52_epochs.py
+      - tests/test_runtime_v51_arming.py
+      - tests/test_semantic_provider_operation.py
+      - tests/test_semantic_provider_lease_supervisor.py
+      - tests/test_semantic_provider_admission_v2*.py
+      - docs/OUF_SEMANTIC_RUNTIME_V52.md
+      - docs/OUF_SEMANTIC_PROVIDER_LEASE_SUPERVISOR_V2.md
+      - .github/workflows/semantic-runtime-v52.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Native v5.2 epochs, durable authority and exact subprocess contracts
+        run: >-
+          sudo -n env OUF_RUNTIME_V52_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_runtime_v52_epochs.py -v
+      - name: Non-regression v5.1 arming
+        run: >-
+          sudo -n env OUF_RUNTIME_V51_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_runtime_v51_arming.py -v
+      - name: Non-regression durable authorization and epochs
+        run: >-
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation.py -v
+      - name: Lease service and quiesce-only, portable and native
+        run: >-
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Non-regression real broker v2, preparer and hook v7
+        run: >-
+          sudo -n env OUF_ADMISSION_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p 'test_semantic_provider_admission_v2*.py' -v
+      - name: Compile scoped Python files
+        run: >-
+          /usr/bin/python3 -I -m py_compile
+          tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py
+          tools/semantic_provider_operation/lease_supervisor.py
+          scripts/semantic-provider-lease-supervisor-v2.py
+          tests/test_runtime_v52_epochs.py tests/test_semantic_provider_lease_supervisor.py

@@ -3,8 +3,16 @@ on:
   pull_request:
     paths:
       - scripts/prepare-semantic-provider-b1-rootfs.py
+      - scripts/prepare-semantic-provider-b1-rootfs-v2.py
+      - scripts/prepare-semantic-provider-b1-rootfs-v3.py
+      - ops/vps/b1-rootfs-v3.sh
+      - ops/vps/acceptance-v51-g5.sh
+      - docs/OUF_SEMANTIC_PROVIDER_MOUNTPOINT_0711.md
       - scripts/deliver-semantic-provider-b1-rootfs.sh
       - tests/test_semantic_provider_b1_rootfs.py
+      - tests/test_prepare_semantic_provider_b1_rootfs_v2.py
+      - tests/test_prepare_semantic_provider_b1_rootfs_v3.py
+      - docs/OUF_SEMANTIC_PROVIDER_ROOTFS_RESEAL.md
       - docs/OUF_SEMANTIC_PROVIDER_B1_ROOTFS_20261113.md
       - .github/workflows/semantic-provider-b1-rootfs.yml
       - tools/semantic_image_rootfs/prepare_provider_image_rootfs.py
@@ -15,6 +23,7 @@ on:
       - tools/semantic_b1_acceptance/acceptance.py
       - tools/semantic_b1b2_authority/**
       - tests/test_semantic_b1_acceptance.py
+  workflow_dispatch:
 permissions: {contents: read}
 jobs:
   rootfs:
@@ -24,6 +33,51 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with: {persist-credentials: false}
       - name: Check launcher syntax
-        run: bash -n scripts/deliver-semantic-provider-b1-rootfs.sh
+        run: |
+          for f in scripts/deliver-semantic-provider-b1-rootfs.sh ops/vps/b1-rootfs-v3.sh ops/vps/acceptance-v51-g5.sh; do
+            bash -n "$f"
+          done
       - name: Test plan and injected apply with native root custody
         run: sudo -n env OUF_B1_ROOTFS_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b1_rootfs.py -v
+      - name: Portable post-create reseal and generation four compatibility
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_prepare_semantic_provider_b1_rootfs_v2.py -v
+      - name: Acceptance v5.1 non-regression with native custody
+        run: sudo -n env OUF_ACCEPTANCE_V51_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_acceptance_v51.py -v
+      - name: D-042, generation five, composition ten and B1/R3 portable non-regression
+        run: |
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_prepare_semantic_provider_b1_rootfs*.py' -v
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p 'test_semantic_provider_r3*.py' -v
+          /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_b1_acceptance.py -v
+      - name: Compile reseal tool and tests
+        run: /usr/bin/python3 -I -m py_compile scripts/prepare-semantic-provider-b1-rootfs-v2.py tests/test_prepare_semantic_provider_b1_rootfs_v2.py scripts/prepare-semantic-provider-b1-rootfs-v3.py tests/test_prepare_semantic_provider_b1_rootfs_v3.py
+  post-create-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      DOCKER_29_SHA256: d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Use the same pinned Docker 29.8.1 archive as R3 cohort qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/docker-29.8.1.tgz"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz --output "$archive"
+          printf '%s  %s\n' "$DOCKER_29_SHA256" "$archive" | sha256sum --check --strict -
+          sudo -n mkdir -p /usr/local/lib/ouf-rootfs-v2-docker-29
+          sudo -n tar -xzf "$archive" --strip-components=1 --no-same-owner -C /usr/local/lib/ouf-rootfs-v2-docker-29
+          sudo -n chown -R root:root /usr/local/lib/ouf-rootfs-v2-docker-29
+          sudo -n chmod 0755 /usr/local/lib/ouf-rootfs-v2-docker-29
+          sudo -n chmod -R go-w /usr/local/lib/ouf-rootfs-v2-docker-29
+      - name: Real create, NodeObservation.observe and read-only export comparison
+        run: >-
+          sudo -n env PATH=/usr/local/lib/ouf-rootfs-v2-docker-29:/usr/sbin:/usr/bin:/sbin:/bin
+          OUF_B1_ROOTFS_V2_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_prepare_semantic_provider_b1_rootfs_v2.py -v
+      - name: D-042 real umask 077 create, EACCES then uid read and Node seal equality
+        run: >-
+          sudo -n env PATH=/usr/local/lib/ouf-rootfs-v2-docker-29:/usr/sbin:/usr/bin:/sbin:/bin
+          OUF_B1_ROOTFS_V3_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_prepare_semantic_provider_b1_rootfs_v3.py -v

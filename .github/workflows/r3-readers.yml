@@ -1,0 +1,27 @@
+name: R3 fixed readonly readers
+on:
+  pull_request:
+    paths:
+      - 'ops/vps/readers/**'
+      - 'ops/vps/r3-readers-install.sh'
+      - 'tests/test_r3_readers.py'
+      - '.github/workflows/r3-readers.yml'
+  push:
+    paths:
+      - 'ops/vps/readers/**'
+      - 'ops/vps/r3-readers-install.sh'
+      - 'tests/test_r3_readers.py'
+      - '.github/workflows/r3-readers.yml'
+permissions:
+  contents: read
+jobs:
+  readers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -B -m unittest discover -s tests -p test_r3_readers.py -v
+      - run: bash -n ops/vps/r3-readers-install.sh
+      - run: sudo /usr/sbin/visudo -cf ops/vps/readers/91-ouf-r3-readers

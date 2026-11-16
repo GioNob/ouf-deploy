@@ -119,7 +119,7 @@ class Contract(unittest.TestCase):
 @unittest.skipUnless(NATIVE, "set OUF_RUNTIME_V51_INSTALL_NATIVE=1 under native Linux root")
 class Native(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(dir="/run", prefix="ouf-v51-install-")
+        self.temp = tempfile.TemporaryDirectory(dir="/var/lib", prefix="ouf-v51-install-")  # /run is noexec on some CI runners
         self.addCleanup(self.temp.cleanup)
         t = self.t = Path(self.temp.name)
         os.chmod(t, 0o755)

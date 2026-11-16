@@ -43,7 +43,7 @@ def module(path, name):
 @unittest.skipUnless(NATIVE, 'set OUF_RUNTIME_V51_NATIVE=1 under native Linux root')
 class Fixture(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='ouf-runtime-v51-', dir='/run')
+        self.temp = tempfile.TemporaryDirectory(prefix='ouf-runtime-v51-', dir='/var/lib')  # /run is noexec on some CI runners
         self.addCleanup(self.temp.cleanup); self.root = Path(self.temp.name)
         self.addCleanup(os.umask, os.umask(0o077))
         self.runtime_source = self.root/'semantic_provider_docker_runtime_v51.py'

@@ -1,0 +1,36 @@
+name: Semantic provider operation authorization
+on:
+  pull_request:
+    paths:
+      - tools/semantic_provider_operation/**
+      - tools/semantic_authority_mandates/**
+      - tools/semantic_lease_recovery/**
+      - scripts/semantic-provider-lease-supervisor-v2.py
+      - tests/test_semantic_provider_operation.py
+      - tests/test_semantic_provider_lease_supervisor.py
+      - .github/workflows/semantic-provider-operation.yml
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  provider-operation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false}
+      - name: Operation authorization and epochs natively (root custody, OpenSSL, mandate ledger)
+        run: >-
+          sudo -n env OUF_PROVIDER_OPERATION_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_operation.py -v
+      - name: Lease supervisor v2, unit lifecycle and native operation scope
+        run: >-
+          sudo -n env OUF_PROVIDER_LEASE_SUPERVISOR_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_lease_supervisor.py -v
+      - name: Non-regression, pinned lease recovery libraries
+        run: >-
+          /usr/bin/python3 -I -B -m unittest discover
+          -s tools/semantic_lease_recovery -p 'test_*.py' -v
+      - name: Non-regression, mandate ledger
+        run: >-
+          sudo -n env OUF_MANDATES_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_authority_mandates.py -v
