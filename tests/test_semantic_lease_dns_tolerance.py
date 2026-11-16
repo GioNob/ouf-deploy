@@ -276,7 +276,7 @@ def owner_modules():
         compiler = load('tools/semantic_lease_recovery/readback_margin_compiler.py', 'v11_compiler')
         with patch.dict(sys.modules, {'tools.materialize_southbound_lease_refresh': compiler,
                                      'tools.semantic_provider_dns': dns}):
-            owner = load('tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner_v2.py', 'v11_owner')
+            owner = load('tools/semantic_lease_recovery/lease_owner_v2.py', 'v11_owner')
     return compiler, owner
 
 

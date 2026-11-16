@@ -48,7 +48,7 @@ REPLACEMENTS_V11.update({
     SUPERVISOR: 'tools/semantic_provider_operation/lease_supervisor_v2.py',
     'scripts/semantic-provider-lease-supervisor-v2.py': 'scripts/semantic-provider-lease-supervisor-v3.py',
     'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner.py':
-        'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner_v2.py',
+        'tools/semantic_lease_recovery/lease_owner_v2.py',
     'tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_dns.py':
         'tools/semantic_lease_recovery/dns_v2.py'})
 SOURCE_MAP_V11 = {p: REPLACEMENTS_V11.get(v, v) for p, v in SOURCE_MAP_V6.items()}

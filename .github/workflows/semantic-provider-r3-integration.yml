@@ -100,5 +100,5 @@ jobs:
           tools/semantic_lease_recovery/continuous_supervisor_v2.py
           tools/semantic_lease_recovery/activation_core_v2.py
           tools/semantic_provider_operation/lease_supervisor_v2.py
-          tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_lease_owner_v2.py
+          tools/semantic_lease_recovery/lease_owner_v2.py
           scripts/semantic-provider-lease-supervisor-v3.py
