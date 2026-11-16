@@ -122,6 +122,11 @@ def native_child():
                 if created: run(runc, "--root", runtime_root, "delete", "--force", cid)
 
         try:
+            # The kernel reports uuid=on only on the first mount of a brand-new upper. On the VPS
+            # the D-042 snapshot was taken from an upper already mounted by earlier epochs:
+            # prime the fixture the same way so both bindings describe a reused upper.
+            with view():
+                pass
             with view():
                 baseline = node_observe()  # post-create, same sealer and actual created runc task
                 assert baseline == sealer(root, limits, H.Budget())
