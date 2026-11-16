@@ -11,6 +11,7 @@ import time
 import traceback
 
 from tools.semantic_provider_r3 import install_common as I
+from tools.semantic_provider_r3 import volatile_restore as VR
 
 A, C, V = I.A, I.C, I.V
 require, canonical, sha = I.require, I.canonical, I.sha
@@ -18,7 +19,7 @@ SCHEMA = "ouf.semantic-provider-r3-operate.v1"
 ROLES = ("adapter", "southbound")
 TERMINAL = {"DELETED", "FAILED", "ABANDONED"}
 COUNTERS = dict(dockerStartRequests=0, dockerStopRequests=0, dockerUpdateRequests=0,
-                dockerRestartRequests=0, signaturesIssued=0, privateKeysRead=0)
+                dockerRestartRequests=0, signaturesIssued=0, privateKeysRead=0, volatileEntriesRemoved=0)
 SUCCESS = {"start": "SEMANTIC_PROVIDER_R3_STARTED",
            # Retained CLI choice; preconditions always deny it under D-045.
            "restart-policy": "SEMANTIC_PROVIDER_R3_RESTART_POLICY_SET",
@@ -264,7 +265,7 @@ def preconditions(args, observation):
     if args.action == "start":
         require(all(rows[r]["docker"]["RestartPolicy"] == "no" for r in ROLES),
                 "R3_RESTART_POLICY_MUST_BE_NO")
-        require(all((v["epoch"] is None or v["epoch"]["state"] in TERMINAL)
+        require(all((v["epoch"] is None or v["epoch"]["state"] in TERMINAL and not v["epoch"]["live"])
                     and v["docker"]["Status"] in {"created", "exited"}
                     and v["docker"]["Running"] is False and v["docker"]["Pid"] == 0
                     for v in rows.values()), "R3_START_CANDIDATES_NOT_IDLE")
@@ -288,6 +289,8 @@ def proposal(args, observation):
              "bindings": {k: getattr(args, k) for k in ("wrapper", "wrapper_sha256", "docker",
                  "docker_sha256", "docker_socket", "systemctl", "systemctl_sha256", "nft", "nft_sha256")},
              **COUNTERS}
+    if args.action == "start":
+        state["volatileRestore"] = VR.plan(args, observation)
     return I.digest_plan(state)
 
 
@@ -363,6 +366,9 @@ def apply(args, plan, report):
     report.update(outputCreated=True, doNotRerunApply=True, planSha256=plan["planSha256"])
     I.native_switch().sync(output.parent)
     I.write_once(output / "operate-claim.json", canonical(plan), report)
+    if args.action == "start":
+        VR.apply(args, before, plan["volatileRestore"], report,
+                 lambda: observe(args, output_exists=True))
     calls = requests(args, before)
     counter = {"start": "dockerStartRequests", "stop": "dockerStopRequests",
                "restart-one": "dockerRestartRequests"}[args.action]
@@ -409,6 +415,8 @@ def arguments(argv=None):
     parser.add_argument("--action", required=True, choices=tuple(SUCCESS))
     parser.add_argument("--role", choices=ROLES)
     parser.add_argument("--timeout-seconds", type=int, default=180)
+    for name in ("volatile-rootfs-result", "volatile-rootfs-result-sha256", "volatile-source"):
+        parser.add_argument("--" + name)
     for name in ("install-root", "wrapper", "wrapper-sha256", "docker", "docker-sha256", "docker-socket",
                  "systemctl", "systemctl-sha256", "nft", "nft-sha256", "output-directory"):
         parser.add_argument("--" + name, required=True)

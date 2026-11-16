@@ -21,6 +21,7 @@ Argomenti obbligatori comuni:
 --nft PATH --nft-sha256 SHA
 --output-directory PATH_NUOVO
 [--timeout-seconds 180]
+[--volatile-rootfs-result PATH --volatile-rootfs-result-sha256 SHA --volatile-source PATH]
 ```
 
 `restart-one` richiede anche `--role adapter|southbound`; le altre azioni
@@ -28,6 +29,18 @@ rifiutano `--role`. Timeout intero fra 1 e 600 secondi, default 180. Tutti i
 binari sono espliciti, con hash verificati prima e dopo ogni chiamata anche
 in caso di errore. Stdin chiuso, stderr scartato, output letto con limite;
 ambiente minimo PATH/LC_ALL/OPENSSL_CONF come nell'installatore.
+
+Da D-047, `start` richiede i tre argomenti `--volatile-*` sopra riportati:
+risultato rootfs v3 D-042 e suo hash, sorgente storico vincolato dal manifest
+del risultato. Il plan include `volatileRestore` nel corpo canonico.
+Prima dei due start ripristina soltanto i volatili APISIX dichiarati nell'upper
+southbound e verifica con il sealer storico upper e vista unita contro i
+sigilli originali. Qualunque errore dà HELD e zero start; il contatore
+`volatileEntriesRemoved` e le evidenze parziali restano nel report.
+L'adapter viene soltanto verificato. Input, allowlist, lock e gate overlay
+sono descritti nel [contratto D-047](OUF_SEMANTIC_PROVIDER_R3_VOLATILE_RESTORE.md).
+Il runbook deve consegnare il modulo di operate e le dipendenze storiche;
+closure installata e versione R3 restano invariate.
 
 Il plan è di sola lettura: nessuna directory o claim viene creato. Osservazione,
 argomenti, binding, destinazione e timeout fanno parte del corpo canonico del

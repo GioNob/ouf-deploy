@@ -82,6 +82,49 @@ def successful(action, before):
 
 
 class PortableTests(unittest.TestCase):
+    def setUp(self):
+        # This suite isolates lifecycle orchestration. The separate D-047 suite
+        # tests the real planner, descriptor removals and real-overlay gate.
+        self.enterContext(patch.object(O.VR, "plan", return_value={"fixture": "volatile-plan"}))
+        self.enterContext(patch.object(O.VR, "apply"))
+
+    def test_volatile_restore_is_bound_and_precedes_both_starts(self):
+        before = observation()
+        with tempfile.TemporaryDirectory() as folder:
+            args = arguments(output=str(Path(folder)/"out"))
+            plan = O.proposal(args, before)
+            self.assertEqual(plan["volatileRestore"], {"fixture": "volatile-plan"})
+            args.plan_sha256 = plan["planSha256"]
+            events = []
+            def restore(*argv):
+                events.append("restore")
+                argv[3]["volatileEntriesRemoved"] = 24
+            with patch.object(O.VR, "apply", side_effect=restore), \
+                    patch.object(O, "observe", side_effect=[before, successful("start", before)]), \
+                    patch.object(O, "docker", side_effect=lambda *_: events.append("start")), \
+                    patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)), \
+                    patch.object(O.I, "write_once"):
+                report = {"status": "HELD", **O.COUNTERS}
+                O.apply(args, plan, report)
+            self.assertEqual(events, ["restore", "start", "start"])
+            self.assertEqual(report["volatileEntriesRemoved"], 24)
+
+    def test_volatile_failure_is_held_with_zero_start_and_partial_evidence(self):
+        before = observation()
+        with tempfile.TemporaryDirectory() as folder:
+            args = arguments(output=str(Path(folder)/"out"))
+            plan = O.proposal(args, before); args.plan_sha256 = plan["planSha256"]
+            def restore(*argv):
+                argv[3].update(volatileEntriesRemoved=1, volatileRemovals=[dict(path="usr/local/apisix/conf/nginx.conf", kind="file")])
+                raise O.A.OperationDenied(O.VR.MISMATCH)
+            report = {"status": "HELD", **O.COUNTERS}
+            with patch.object(O.VR, "apply", side_effect=restore), patch.object(O, "observe", return_value=before), \
+                    patch.object(O, "docker") as docker, patch.object(O.I, "write_once"), \
+                    patch.object(O.I, "native_switch", return_value=SimpleNamespace(sync=lambda _: None)):
+                with self.assertRaisesRegex(O.A.OperationDenied, O.VR.MISMATCH): O.apply(args, plan, report)
+            self.assertEqual(report["status"], "HELD"); self.assertEqual(report["dockerStartRequests"], 0)
+            self.assertEqual(report["volatileEntriesRemoved"], 1); docker.assert_not_called()
+
     def test_terminal_history_binds_to_authenticated_original_entry(self):
         from test_semantic_provider_r3_compose import fixture
         initial = O.C.compose(fixture())
@@ -586,11 +629,15 @@ class OperateFixture(F.InstallFixture):
         return args + (['--plan-sha256', digest] if digest else [])
 
     def operate_cli(self, args):
-        result = subprocess.run([str(self.python), '-I', '-B', str(O.I.ROOT/'scripts/operate-semantic-provider-r3.py'),
-            *args], capture_output=True, timeout=330)
-        self.assertEqual(result.returncode, 0, result.stdout.decode()+result.stderr.decode()+self.diagnostic())
-        self.assertEqual(result.stderr, b'')
-        return json.loads(result.stdout)
+        # This inherited Engine simulator has no overlay snapshot. Keep the
+        # existing real wrapper/broker lifecycle proof; D-047 has its own native
+        # overlay gate. No bypass is exposed by the production CLI.
+        out = io.StringIO()
+        with O.I.module_scope(), patch.object(O.VR, "plan", return_value={"fixture": "no-overlay"}), \
+                patch.object(O.VR, "apply"), redirect_stdout(out):
+            code = O.main(args)
+        self.assertEqual(code, 0, out.getvalue()+self.diagnostic())
+        return json.loads(out.getvalue())
 
     def scenario_operate(self):
         self.assertTrue(str(self.root).startswith('/var/lib/'))
