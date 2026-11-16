@@ -16,7 +16,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=9ee92252d190aa0b6869829207083d98e613b878
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -150,8 +150,8 @@ files = {"settings": str(D / "ops/vps/r3-settings.json"),
          "coordinationJournal": CO + "/coordination-journal.json",
          "a2Manifest": A2 + "/manifest.json", "successors": A2 + "/successors.json",
          "semanticPeer": A2 + "/semantic-peer.json",
-         "rootfs": M + "/semantic-provider-b1-rootfs-20261115-post-create/result.json",
-         "acceptance": S + "/semantic-provider-acceptance-v51-g4/manifest.json"}
+         "rootfs": M + "/semantic-provider-b1-rootfs-20261116-mountpoint-0711/result.json",
+         "acceptance": S + "/semantic-provider-acceptance-v51-g5/manifest.json"}
 for role in ("adapter", "southbound"):
     files[role + "/historicalTemplate"] = REG + "/" + OLD[role] + "/preparer-template.json"
     for part in ("template", "launch", "context", "policy"):
@@ -159,8 +159,8 @@ for role in ("adapter", "southbound"):
 PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd970dd8df",
         "a2Manifest": "817e178b8615766569a4278a3288a4774fc940217667eeeb79b97fa09440f777",
         "successors": "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb",
-        "rootfs": "6f42e319a8c9ba3fe1385b6b2ea814aa40df77ce814b3b4ae60c6afb430905f9",
-        "acceptance": "91aec9c23cdde345fd6abcf25a6d7c92df795c379b2f49fffec9be181d6965f4",
+        "rootfs": "49a82a05f7f935e63b76cfacdda742f928c112a1de2a61353436ef1cdac3f2b8",
+        "acceptance": "a7c394bce12ffa6f0114401e83cee434f47532c9db4be99c49e29739b1eac320",
         "adapter/historicalTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
         "southbound/historicalTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
         "adapter/template": "b5b7c915588c29141f77cab2526cf65d601a3c2f03fe5c0813db6673eb3d3067",

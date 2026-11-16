@@ -4,7 +4,7 @@
 # Uso:  AZIONE=start bash r3-operate.sh plan               (sola lettura)
 #       AZIONE=start bash r3-operate.sh apply <planSha256>
 #       per restart-one aggiungere RUOLO=adapter oppure RUOLO=southbound
-# L'apply riusa la consegna della v9 e la root di output salvata dal plan della stessa azione.
+# L'apply riusa la consegna della v10 e la root di output salvata dal plan della stessa azione.
 set -euo pipefail
 umask 077
 
@@ -17,13 +17,13 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=9ee92252d190aa0b6869829207083d98e613b878
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
 S=/etc/ouf/deploy-snapshots
 INSTALL=$S/semantic-provider-r3-install-v1
-STATE=$HOME/.ouf-r3-v9-state
+STATE=$HOME/.ouf-r3-v10-state
 NFT_SHA=57bdb96c8a48844ddd6dd469c267cda951b9a466be93d254c928891ed8c3b7f0
 TABLES=(adapter=ouf_r3_adapter southbound=ouf_r3_southbound)
 PROFILE=$S/semantic-creation-issuer-install-USjonf22/installation-authority-profile.json
@@ -151,8 +151,8 @@ files = {"settings": str(D / "ops/vps/r3-settings.json"),
          "coordinationJournal": CO + "/coordination-journal.json",
          "a2Manifest": A2 + "/manifest.json", "successors": A2 + "/successors.json",
          "semanticPeer": A2 + "/semantic-peer.json",
-         "rootfs": M + "/semantic-provider-b1-rootfs-20261115-post-create/result.json",
-         "acceptance": S + "/semantic-provider-acceptance-v51-g4/manifest.json"}
+         "rootfs": M + "/semantic-provider-b1-rootfs-20261116-mountpoint-0711/result.json",
+         "acceptance": S + "/semantic-provider-acceptance-v51-g5/manifest.json"}
 for role in ("adapter", "southbound"):
     files[role + "/historicalTemplate"] = REG + "/" + OLD[role] + "/preparer-template.json"
     for part in ("template", "launch", "context", "policy"):
@@ -160,8 +160,8 @@ for role in ("adapter", "southbound"):
 PINS = {"coordinator": "5deb74791d7d3e20b1f91285320a5d48a15b7d99af2d14f03c063bdd970dd8df",
         "a2Manifest": "817e178b8615766569a4278a3288a4774fc940217667eeeb79b97fa09440f777",
         "successors": "394562b4162e8d1b615a6b61897446c8316b37e7a438fa99b389dbb5f119dfdb",
-        "rootfs": "6f42e319a8c9ba3fe1385b6b2ea814aa40df77ce814b3b4ae60c6afb430905f9",
-        "acceptance": "91aec9c23cdde345fd6abcf25a6d7c92df795c379b2f49fffec9be181d6965f4",
+        "rootfs": "49a82a05f7f935e63b76cfacdda742f928c112a1de2a61353436ef1cdac3f2b8",
+        "acceptance": "a7c394bce12ffa6f0114401e83cee434f47532c9db4be99c49e29739b1eac320",
         "adapter/historicalTemplate": "0a9a12a36b9f28eca2edcb3a2ad2c3d741559abb5d3699029bcc105c287dab53",
         "southbound/historicalTemplate": "7ac15676ff00e38e1ac5bf5bd2356e42c34dbe9b485a5ba38d562380dcb1a894",
         "adapter/template": "b5b7c915588c29141f77cab2526cf65d601a3c2f03fe5c0813db6673eb3d3067",
@@ -181,7 +181,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = C.SOURCE_INPUTS_V6 if 9 >= 6 else C.SOURCE_INPUTS
+SOURCE_SET = C.SOURCE_INPUTS_V6 if 10 >= 6 else C.SOURCE_INPUTS
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
@@ -209,7 +209,7 @@ if [[ $ACTION == restart-one ]]; then
   esac
 fi
 OPSTATE=$HOME/.ouf-r3-operate-$ACTION
-[[ -f $STATE ]] || { echo "stato della consegna v9 assente: eseguire prima r3-issue-v9.sh" >&2; exit 2; }
+[[ -f $STATE ]] || { echo "stato della consegna v10 assente: eseguire prima r3-issue-v10.sh" >&2; exit 2; }
 read -r D _ < "$STATE"
 [[ $D == "$S"/semantic-provider-r3-source.* ]] || { echo 'stato della consegna non valido' >&2; exit 2; }
 delivery
