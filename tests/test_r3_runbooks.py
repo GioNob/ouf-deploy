@@ -36,6 +36,13 @@ CLOSURE = {
     "tools/semantic_provider_r3/__init__.py", "tools/semantic_provider_r3/compose.py",
     "tools/semantic_provider_r3/install_common.py",
     "tools/semantic_provider_r3/operate.py", "scripts/operate-semantic-provider-r3.py",
+    # D-047 (task-59): volatile restore before start, plus the unchanged rootfs v3 modules it imports.
+    "tools/semantic_provider_r3/volatile_restore.py",
+    "scripts/prepare-semantic-provider-b1-rootfs-v3.py", "scripts/prepare-semantic-provider-b1-rootfs.py",
+    "tools/semantic_image_rootfs/prepare_provider_image_rootfs.py",
+    "tools/semantic_stopped_rootfs/stopped_rootfs_comparison.py",
+    "tools/semantic_stopped_rootfs/rootfs_difference_report.py",
+    "tools/semantic_stopped_rootfs/rootfs_image_equivalence.py",
     "tools/semantic_provider_r3/upgrade.py", "scripts/upgrade-semantic-provider-r3.py",
     "tools/semantic_runtime_v51_install/__init__.py", "tools/semantic_runtime_v51_install/common.py",
     "tools/semantic_transaction_profiles/guarded_runtime_switch.py",
