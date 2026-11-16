@@ -136,10 +136,65 @@ def fixture(version=1):
     if version >= 6:
         sources.pop(C.OBSERVER)
         sources[C.OBSERVER_V2] = (ROOT / C.OBSERVER_V2).read_bytes().replace(b'\r\n', b'\n')
+    if version >= 11:
+        owner['dns'] = {'resolvers': ['46.38.225.230', '46.38.252.230'], 'resolverPort': 53,
+                        'timeoutSeconds': 2, 'maxLeaseSeconds': 30, 'applyBudgetSeconds': 1}
+        put('coordinator', owner)
+        settings['coordinatorBinding']['sha256'] = A.sha(files['coordinator'])
+        put('settings', settings)
+        sources = {p: (ROOT / p).read_bytes().replace(b'\r\n', b'\n') for p in C.SOURCE_INPUTS_V11}
     return {"files": files, "sources": sources}
 
 
 class ComposeTests(unittest.TestCase):
+    def test_dns_v11_preserves_every_v1_to_v10_document_and_authorization(self):
+        expected = json.loads((ROOT / 'tests/fixtures/r3-v1-v10-dns-tolerance-hashes.json').read_bytes())
+        for version in range(1, 11):
+            kw = {} if version == 1 else {'sequence': version, 'supersedes': 'a'*64}
+            result = C.compose(fixture(version), version, **kw)
+            self.assertEqual(A.sha(A.canonical(result['hashes'])), expected[str(version)])
+
+    def test_v11_profile_source_aliases_and_authorization_hashes(self):
+        inputs = fixture(11)
+        original = copy.deepcopy(inputs)
+        result = C.compose(inputs, 11, sequence=11, supersedes='a'*64)
+        self.assertEqual(inputs, original)
+        prefix = 'versions/11/'
+        docs = result['documents']
+        supervisor = json.loads(docs[prefix + 'supervisor/configuration.json'])
+        owner = json.loads(inputs['files']['coordinator'])
+        profile = json.loads(docs[prefix + 'supervisor/dns-profile.json'])
+        self.assertEqual(profile, {**owner['dns'], 'timeoutSeconds': 10})
+        auth = A.validate(result['authorization'])
+        self.assertEqual(auth['lease']['ownerConfigurationSha256'], A.sha(inputs['files']['coordinator']))
+        self.assertEqual(auth['lease']['dnsProfileSha256'], A.sha(A.canonical(profile)))
+        self.assertEqual(supervisor['coordinator']['ownerConfiguration'],
+                         json.loads(inputs['files']['settings'])['coordinatorBinding'])
+        for role in C.ROLES:
+            template = json.loads(docs[prefix + 'documents/' + role + '/preparer-template.json'])
+            self.assertEqual(template['dns'], profile)
+        for target, original in C.SOURCE_MAP_V11.items():
+            raw = docs[prefix + 'source/' + target]
+            self.assertEqual(raw, inputs['sources'][original])
+            if target in supervisor['sourceHashes']:
+                self.assertEqual(supervisor['sourceHashes'][target], A.sha(raw))
+        module = C.contract_module(inputs['sources'][C.SOURCE_MAP_V11[C.SUPERVISOR]], 'v11_supervisor')
+        self.assertEqual(module.validate(A.canonical(supervisor)), supervisor)
+        for name, digest in module.PINS.items():
+            self.assertEqual(A.sha(docs[prefix + 'source/tools/semantic_lease_recovery/' + name + '.py']), digest)
+        self.assertEqual(module.SOURCES, C.SUPERVISOR_SOURCES_V11)
+        bootstrap_path = 'scripts/semantic-provider-lease-supervisor-v2.py'
+        bootstrap = C.contract_module(inputs['sources'][C.SOURCE_MAP_V11[bootstrap_path]], 'v11_bootstrap')
+        self.assertEqual(bootstrap.SOURCES, module.SOURCES)
+        self.assertEqual(docs[prefix + 'source/tools/semantic_provider_dns.py'],
+                         docs[prefix + 'source/tools/semantic_lease_recovery/dns.py'])
+
+    def test_v11_rejects_old_or_mixed_closure(self):
+        with self.assertRaisesRegex(A.OperationDenied, 'EXACT_R3_INPUT_SET_REQUIRED'):
+            C.compose(fixture(10), 11, sequence=11, supersedes='a'*64)
+        with self.assertRaisesRegex(A.OperationDenied, 'EXACT_R3_INPUT_SET_REQUIRED'):
+            C.compose(fixture(11), 10, sequence=10, supersedes='a'*64)
+
     def test_v9_lease_guard_binds_kernel_digest_and_v8_is_unchanged(self):
         def guards(result, version):
             prefix = "versions/%d/" % version
