@@ -15,6 +15,7 @@ on:
       - scripts/semantic-provider-*-v2.py
       - scripts/issue-semantic-provider-operation-authorization.py
       - tests/test_semantic_provider_r3*.py
+      - tests/test_frame_observer_v2.py
       - tests/test_semantic_provider_operation*.py
       - tests/test_semantic_provider_admission_v2*.py
       - tests/test_semantic_provider_broker_denials.py
@@ -39,6 +40,9 @@ jobs:
       - name: Non-regression composition and real validators
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_compose.py -v
+      - name: Sealed frame observer v2 portable policy and closure checks
+        if: ${{ !cancelled() }}
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_frame_observer_v2.py -v
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v

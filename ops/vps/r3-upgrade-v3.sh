@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=3abcc556fa72bec0f4c8c14c7d4dba3720577b8f
+C=39867f1736d861eff7c4a4894afa1242c16fe57a
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -49,7 +49,7 @@ delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py 23a44e96da5a86fbfb6cbcc07ee6dca88608e1db020140b87ddc4c22bf888216
+  fetch scripts/issue-semantic-provider-operation-authorization.py bbfdcae214fdac39404127fccfd1ae823ffaf2f60deed94dabd830e7e727a94d
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
@@ -81,6 +81,7 @@ delivery() {
   fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec.py 53eb9b79efcdca0ffe93bb0c80a582a285caf9126fd97e930fa503b6106eb797
   fetch tools/semantic_cohort_admission/cohort-draft/tools/semantic_provider_preexec_native.py ef0b98c96879933480a26418edc2b971b21a116509ac87cbc39e3b2062e7a528
   fetch tools/semantic_frame_compiler/compile_creation_frame_policy.py 36ee627e524415002a98fede8d7e61ad22ae95b6fec6b6686c1e01d878be570d
+  fetch tools/semantic_frame_compiler/frame-observer-v2.py 59368071f27a27be5d2501bf1128c617102133f5e0e670dc61f7c8a8f697e08a
   fetch tools/semantic_frame_compiler/frame-observer.py 122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc
   fetch tools/semantic_lease_recovery/activation_core.py 06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a
   fetch tools/semantic_lease_recovery/adaptive_supervisor.py 08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c
@@ -107,10 +108,10 @@ delivery() {
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py 3b614db734ac2c5bb95dcb66fb4e2639576bc8ede51cb0652bcee432ea78b02e
+  fetch tools/semantic_provider_r3/compose.py a1863ffcc9c2e91afd9d3e17371ac226bc1c4ab43786d823f15453542d3ebcb6
   fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
   fetch tools/semantic_provider_r3/operate.py f9c4dfb45065938858e9dc505c6f18043deca33d92fe64a74b2db38de009f45b
-  fetch tools/semantic_provider_r3/upgrade.py 46b50151f65e0f83910e6b8f6b7c60651961f54d6e41d5c355ef08a2a6c9be52
+  fetch tools/semantic_provider_r3/upgrade.py 5d87221f5644ce2d143a88b1d2f10fe6e421e78d6e5ccff0103c2857da7ea638
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 84324cbba844dd736303b985b9fc6c4a7c20bcfe8ef6fcc1f8c90b0fe9d0cb1e
@@ -178,7 +179,8 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(C.SOURCE_INPUTS)}
+SOURCE_SET = C.SOURCE_INPUTS_V6 if 3 >= 6 else C.SOURCE_INPUTS
+sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
 target = D / "inputs.json"
