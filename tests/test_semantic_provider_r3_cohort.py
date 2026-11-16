@@ -890,7 +890,16 @@ class CohortFixture(F.NativeTests):
             return result + (["--plan-sha256", digest] if digest else [])
         def operate(args):
             try:
-                p = subprocess.run([str(self.python), "-I", "-B", str(ROOT / "scripts/operate-semantic-provider-r3.py"), *args],
+                # D-047: the cohort fixture has no D-042 rootfs result/historical source.
+                # The volatile restore is qualified by its own native overlay gate; here only
+                # its two entry points are replaced, the rest of operate start runs unchanged.
+                launcher = ("import sys; sys.path.insert(0, %r); "
+                            "from tools.semantic_provider_r3 import operate as O; "
+                            "O.VR.plan = lambda args, observation: {'rule': 'D-047', 'cohortFixture': True}; "
+                            "O.VR.apply = lambda *a, **k: None; "
+                            "sys.argv = ['operate-semantic-provider-r3.py', *sys.argv[1:]]; "
+                            "raise SystemExit(O.main())") % str(ROOT)
+                p = subprocess.run([str(self.python), "-I", "-B", "-c", launcher, *args],
                                    capture_output=True, timeout=150)
             finally:
                 self.print_tracebacks()

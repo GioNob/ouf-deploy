@@ -31,6 +31,16 @@ def run(*argv):
                           check=True, timeout=30).stdout
 
 
+def run_detached(*argv):
+    """runc create: the container init inherits stdio, so pipes would never reach EOF."""
+    with tempfile.TemporaryFile() as err:
+        p = subprocess.run([str(a) for a in argv], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                           stderr=err, timeout=30)
+        if p.returncode:
+            err.seek(0)
+            raise RuntimeError("runc create failed: " + err.read().decode("utf-8", "replace")[-2000:])
+
+
 def native_child():
     os.umask(0o077)
     run("mount", "--make-rprivate", "/")
@@ -92,7 +102,7 @@ def native_child():
         def node_observe():
             created = False
             try:
-                run(runc, "--root", runtime_root, "create", "--bundle", bundle, cid); created = True
+                run_detached(runc, "--root", runtime_root, "create", "--bundle", bundle, cid); created = True
                 state = json.loads(run(runc, "--root", runtime_root, "state", cid))
                 generation = node.NativeBackend.generation(None, state["pid"])
                 application = node.application_hash(oci)
