@@ -1,0 +1,25 @@
+name: Semantic provider B2 inventory v2
+on:
+  pull_request:
+    paths:
+      - scripts/read-semantic-provider-b2-inputs-v2.py
+      - tests/test_semantic_provider_b2_inventory_v2.py
+      - ops/vps/b2-read-v2.sh
+      - .github/workflows/semantic-provider-b2-inventory-v2.yml
+      - tools/semantic_cohort_admission/cohort-draft/**
+      - evidence/discovery-generation-sources-read-operator-20261109.json
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  b2-inventory-v2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with: {persist-credentials: false, fetch-depth: 0}
+      - name: Fixtures, sentinels, custody, closure blobs and runbook pin
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b2_inventory_v2.py -v
+      - name: Runbook syntax and ShellCheck
+        run: |
+          bash -n ops/vps/b2-read-v2.sh
+          shellcheck -S warning ops/vps/b2-read-v2.sh
