@@ -4,6 +4,9 @@ on:
     paths:
       - ops/vps/r3-*.sh
       - ops/vps/r3-settings.json
+      - ops/vps/systemd/ouf-semantic-r3-autostart.service
+      - scripts/autostart-semantic-provider-r3.py
+      - docs/OUF_SEMANTIC_PROVIDER_R3_AUTOSTART.md
       - tests/test_r3_runbooks.py
       - tools/semantic_provider_r3/**
       - tools/semantic_provider_operation/**
@@ -59,6 +62,10 @@ jobs:
         with: {persist-credentials: false, fetch-depth: 0}
       - name: R3 runbooks, single delivery of LF blobs and exact closure
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_runbooks.py -v
+      - name: D-045 bounded offline boot autostart (portable)
+        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_r3_autostart.py -v
+      - name: D-045 installer shell syntax
+        run: bash -n ops/vps/r3-autostart-install.sh
       - name: Diagnose native fixture execution mounts and identity
         run: |
           id
