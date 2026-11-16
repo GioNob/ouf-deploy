@@ -1,0 +1,15 @@
+# D-046(a): comandi esatti. Il * compare solo dove lo script valida gli argomenti come interi >= 1
+# in numero massimo fisso (timeline: 1 intero; epoch-diag: <= 2 interi; guard-diag: <= 1 intero).
+# Nessun permesso sul modulo r3_common.py o sugli installer.
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-status.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-supervisor-journal.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-diag.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-diag.py *
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-frame-diag.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-guard-diag.py
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-guard-diag.py *
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-watch.py adapter
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-watch.py southbound
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-timeline.py adapter *
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-timeline.py southbound *
+oufadmin ALL=(root) NOPASSWD: /usr/bin/python3.13 -I -B /usr/local/libexec/ouf-readers/r3/r3-epoch-timeline.py both *
