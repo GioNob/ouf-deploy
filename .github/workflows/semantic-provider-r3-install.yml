@@ -42,6 +42,10 @@ on:
       - tests/test_runtime_v52_epochs.py
       - docs/OUF_SEMANTIC_PROVIDER_R3_INSTALL.md
       - docs/OUF_SEMANTIC_PROVIDER_R3_OPERATE.md
+      - docs/OUF_SEMANTIC_PROVIDER_R3_VOLATILE_RESTORE.md
+      - scripts/prepare-semantic-provider-b1-rootfs*.py
+      - tools/semantic_image_rootfs/**
+      - tools/semantic_stopped_rootfs/**
       - docs/OUF_SEMANTIC_PROVIDER_R3_UPGRADE.md
       - .github/workflows/semantic-provider-r3-install.yml
   workflow_dispatch:
@@ -88,6 +92,11 @@ jobs:
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v
+      - name: D-047 portable volatile restore and real overlay with recreated runc NodeObservation
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_R3_VOLATILE_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p 'test_semantic_provider_r3_volatile_restore*.py' -v
       - name: L2 binding (observed successor names and MACs)
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_l2_binding.py -v
@@ -125,6 +134,9 @@ jobs:
           tests/test_semantic_provider_r3_install.py
           tools/semantic_provider_r3/operate.py scripts/operate-semantic-provider-r3.py
           tests/test_semantic_provider_r3_operate.py
+          tools/semantic_provider_r3/volatile_restore.py
+          tests/test_semantic_provider_r3_volatile_restore.py
+          tests/test_semantic_provider_r3_volatile_restore_native.py
           tools/semantic_provider_r3/upgrade.py scripts/upgrade-semantic-provider-r3.py
           tests/test_semantic_provider_r3_upgrade.py
           tests/test_semantic_provider_r3_cohort.py tests/test_semantic_provider_broker_denials.py
