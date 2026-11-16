@@ -112,6 +112,10 @@ class Tree:
              patch.object(V.os, "listdir", side_effect=lambda fd: [PurePosixPath(p).name for p in self.records
                  if p and str(PurePosixPath(p).parent) == (self.fd_paths[fd] or ".")]), \
              patch.object(V.os, "rmdir", side_effect=self.remove), patch.object(V.os, "unlink", side_effect=self.remove), \
+             patch.object(V.os, "listxattr", side_effect=lambda fd: list(self.records[self.fd_paths[fd]]["xattrs"]),
+                          create=True), \
+             patch.object(V.os, "removexattr", side_effect=lambda fd, name: self.records[self.fd_paths[fd]]["xattrs"].pop(name),
+                          create=True), \
              patch.object(V.os, "fsync"):
             yield
 
@@ -185,6 +189,23 @@ class PortableTests(unittest.TestCase):
         self.assertEqual(write.call_count, len(rows))
         for call in write.call_args_list:
             self.assertEqual(set(O.decode(call.args[1])), {"path", "kind"})
+
+    def test_copy_up_impure_marker_cleared_only_without_remaining_origin(self):
+        # Copy-up of usr marks the upper root impure (kernel bookkeeping, hidden in the merged view).
+        tree = Tree(); tree.records[""]["xattrs"] = {V.IMPURE: "79"}
+        tree.context["beforeSeal"] = tree.read()[0]
+        rows = tree.plan()
+        self.assertEqual(rows[-1], {"path": "", "kind": V.IMPURE_ROW})
+        report = dict(volatileEntriesRemoved=0)
+        with tree.descriptors(), patch.object(V.I, "write_once"):
+            V.remove(tree.context, rows, Path("/output"), report)
+        self.assertEqual(tree.read()[0], tree.expected)
+        self.assertEqual(report["volatileEntriesRemoved"], len(rows))
+        # A remaining copied-up child keeps the marker legitimate: no clearing, exact proof denies.
+        tree = Tree(); tree.records[""]["xattrs"] = {V.IMPURE: "79"}
+        tree.records["run"]["xattrs"] = {"trusted.overlay.origin": "00"}
+        with self.assertRaisesRegex(O.A.OperationDenied, V.DENIED):
+            tree.plan()
 
     def test_already_sealed_zero_removals(self):
         tree = Tree(False)

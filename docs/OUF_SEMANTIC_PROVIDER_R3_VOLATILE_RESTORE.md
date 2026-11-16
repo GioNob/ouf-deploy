@@ -76,6 +76,7 @@ Solo nell'upper southbound:
 | `usr/local/apisix/conf/{nginx.conf,apisix.uid}` | File regolari, nlink 1, massimo 1 MiB ciascuno. |
 | `usr/local/apisix/conf/apisix.yaml` | Symlink, nlink 1, destinazione esattamente `/run/ouf-southbound-runtime/apisix.yaml`. |
 | `usr`, `usr/local`, `usr/local/apisix`, `usr/local/apisix/conf` | Copy-up con modo, uid, gid e xattr normalizzati identici all'immagine. Rimozione soltanto quando vuoti. |
+| xattr `trusted.overlay.impure` delle directory padre degli elementi rimossi | Marcatore che il kernel imposta sul padre di un copy-up, invisibile nella vista unita. Viene rimosso solo se nessun figlio rimasto porta `trusted.overlay.origin`; la previsione esatta del sigillo continua a decidere. Riga di evidenza `kind = overlay-impure-xattr`. Emerso dal gate nativo: la copia di `usr` marca la radice dell'upper. |
 
 Volatili e discendenti devono appartenere all'utente OCI e avere
 `mode & 0o7000 == 0`. Si applica esattamente `physical(..., new=True)` v3:

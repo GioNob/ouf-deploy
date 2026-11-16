@@ -27,6 +27,13 @@ LINK = "usr/local/apisix/conf/apisix.yaml"
 TARGET = "/run/ouf-southbound-runtime/apisix.yaml"
 COPYUPS = ("usr", "usr/local", "usr/local/apisix", "usr/local/apisix/conf")
 MAX_ENTRIES, MAX_BYTES, MAX_DEPTH = 10000, 256 * 1024 * 1024, 8
+IMPURE, ORIGIN = "trusted.overlay.impure", "trusted.overlay.origin"
+IMPURE_ROW = "overlay-impure-xattr"
+
+
+def parent_of(path):
+    parent = str(PurePosixPath(path).parent)
+    return "" if parent == "." else parent
 
 
 def historical():
@@ -140,9 +147,22 @@ def removals(upper, image, user, expected, encoder, physical):
     for path, entry in projected.items():
         if entry["kind"] == "directory":
             entry["links"] -= removed_children[path or "."]
+    # Copy-up into an upper directory makes the kernel mark that parent impure.
+    # Once the copied-up children are gone, the marker is cleared only where no
+    # remaining child carries an origin: the exact seal proof below still decides.
+    cleared = []
+    for parent in sorted({parent_of(p) for p in selected} - selected):
+        entry = projected.get(parent)
+        if entry is None or entry["kind"] != "directory" or IMPURE not in entry["xattrs"]:
+            continue
+        if any(ORIGIN in projected[c]["xattrs"] for c in projected if c and parent_of(c) == parent):
+            continue
+        del entry["xattrs"][IMPURE]
+        cleared.append(parent)
     require(predicted_seal(projected, encoder) == expected, DENIED)
     return [{"path": p, "kind": upper[p]["kind"]} for p in
-            sorted(selected, key=lambda p: (-len(PurePosixPath(p).parts), p))]
+            sorted(selected, key=lambda p: (-len(PurePosixPath(p).parts), p))] + \
+           [{"path": p, "kind": IMPURE_ROW} for p in cleared]
 
 
 @contextmanager
@@ -320,6 +340,17 @@ def remove(context, rows, output, report):
         unmounted(snapshot, H.mount_rows())
         unlinked = {}
         for row in rows:
+            if row["kind"] == IMPURE_ROW:
+                # Pinned directory descriptor; only the kernel bookkeeping marker is removed.
+                fd = held[row["path"]][0]
+                require(fd is not None and IMPURE in os.listxattr(fd), DENIED)
+                os.removexattr(fd, IMPURE)
+                report["volatileEntriesRemoved"] += 1
+                report.setdefault("volatileRemovals", []).append(row)
+                I.write_once(output / ("volatile-removal-%05d.json" % report["volatileEntriesRemoved"]),
+                             canonical(row), report)
+                os.fsync(fd)
+                continue
             path = PurePosixPath(row["path"])
             parent = "" if str(path.parent) == "." else str(path.parent)
             fd = held[parent][0]
