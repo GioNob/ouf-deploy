@@ -51,7 +51,7 @@ verify() {
 fetch() {
   local path=$1 expected=$2
   if [[ $DOWNLOAD == 1 ]]; then
-    mkdir -p -m 0700 "$D/$(dirname "$path")"
+    mkdir -p "$D/$(dirname "$path")"  # umask 077: 0700 on every created level
     curl --fail --silent --show-error --max-time 30 --proto '=https' --tlsv1.2 \
       "https://raw.githubusercontent.com/GioNob/ouf-deploy/$C/$path" -o "$D/$path"
     chmod 0600 "$D/$path"
