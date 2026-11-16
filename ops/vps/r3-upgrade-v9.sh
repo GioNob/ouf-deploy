@@ -15,7 +15,7 @@ case "$mode" in
 esac
 
 # Claude fills this pin after review and commit (D-001).
-C=98c27843596dabae9d84cf20e3f6bdaa4f74dee4
+C=0000000000000000000000000000000000000000
 [[ "$C" =~ ^[0-9a-f]{40}$ && "$C" != 0000000000000000000000000000000000000000 ]] \
   || { echo 'runbook non ancora fissato a un commit' >&2; exit 2; }
 P=889c603f0d17cb54060951bcf4c4f9b8c9ebd9e52b392c70209bbb9755d797d9
@@ -49,12 +49,13 @@ delivery() {
   # BEGIN DELIVERY
   fetch ops/vps/r3-settings.json e4040d9428f055362b500cd4d6042ccda117baba48c89d37101988999c923a37
   fetch scripts/install-semantic-provider-r3.py d8c49b543bc73f1ea3b85f41d7196fea3ee614b934f1514d8488fcc8edfa0d76
-  fetch scripts/issue-semantic-provider-operation-authorization.py bbfdcae214fdac39404127fccfd1ae823ffaf2f60deed94dabd830e7e727a94d
+  fetch scripts/issue-semantic-provider-operation-authorization.py d3d77cf1cfc0073d8ce2072ef1ec77640765db40cc63f35c8b1a1f077e080a58
   fetch scripts/operate-semantic-provider-r3.py f1f1dca6447a2c69d4b7d08fe765cb10012da36e9dc07aff7c224a2db0d76926
   fetch scripts/restore-semantic-provider-r3.py 1be4b6cd69f0c70959627f87502de307488ebca1862928b984b653e290e3fdd8
   fetch scripts/semantic-provider-admission-preparer-v2.py 7e041ddf4e7668861cc5ae111f6069f73eeda32be065622ee51381129a4f9b57
   fetch scripts/semantic-provider-deployment-broker-v2.py 6e97807d5fa010ec7bc670a49533a031dc8f1d5e2472d8569368adfdc15b2d7c
   fetch scripts/semantic-provider-lease-supervisor-v2.py 0311cd4c3515a68530605ee201ccb7cbbc46d5ab989427efd174e6a647826ec5
+  fetch scripts/semantic-provider-lease-supervisor-v3.py 3cb4c858935df6538cb1c9934def0f40cc9ea7fc393931aeb38ab63633bbaf8b
   fetch scripts/semantic-provider-preexec-hook-v2.py 834b5b6ae60d0cd37269d2592b31db7dcca2c02639f774a169e030548767df03
   fetch scripts/upgrade-semantic-provider-r3.py d36753cd23b2c993a43e2b6b04062304b575567a13267a1d3247602df5b11639
   fetch tools/semantic_acceptance_v51/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -84,16 +85,22 @@ delivery() {
   fetch tools/semantic_frame_compiler/frame-observer-v2.py 59368071f27a27be5d2501bf1128c617102133f5e0e670dc61f7c8a8f697e08a
   fetch tools/semantic_frame_compiler/frame-observer.py 122a1a44705892ba577d2e83467f39870627ffc16685f886757828611063b3fc
   fetch tools/semantic_lease_recovery/activation_core.py 06d14a340db6d35a795115fd921f901e1cd0de74c06174562107270b08fc7c2a
+  fetch tools/semantic_lease_recovery/activation_core_v2.py c8c7a6841b1427f677349a889e6cb4502ce5bb5a28f6a5b65d5e72fbc2ae1aeb
   fetch tools/semantic_lease_recovery/adaptive_supervisor.py 08a354cfbea6a31ed1ea21dd80ddab0d0f983e3a0143a6f656124cf843d5635c
+  fetch tools/semantic_lease_recovery/adaptive_supervisor_v2.py 7a6be86794002e32b79a4c9c4ac0a0913eebe3f5585e9b24dcd62fe5613449ae
   fetch tools/semantic_lease_recovery/bounded_recovery.py ed126f33b17581ae784c82ce3f0ec8b16c266d5ad78481a1890385736bd61dfd
   fetch tools/semantic_lease_recovery/continuous_supervisor.py 8084748c0ffb5e009e8e59c4c5ecaaf08451fb2cc35540135e2db9a55d12ae0e
+  fetch tools/semantic_lease_recovery/continuous_supervisor_v2.py c68a10ea6d340a29bf27098bd3b36afe4259fd6520898bde1182e4f5aff55c4e
   fetch tools/semantic_lease_recovery/deadline_backend.py 9918af051a94e1a345a1cb6b73069444e73fdec0918b5494f79b52f8bb2537a2
   fetch tools/semantic_lease_recovery/dns.py f1491cca148c488bbee8089dabcada0361781962d7b2858ad2fc4549cea3696f
+  fetch tools/semantic_lease_recovery/dns_v2.py a0cb8191b0561b76128f5b12851e249d03a1c7d480576c7dbc85f981af01be70
+  fetch tools/semantic_lease_recovery/lease_owner_v2.py ad95bd8766caaa644b4475cc092739eb767b047275fffa0f1dcf0756d6c93e6d
   fetch tools/semantic_lease_recovery/lease_recovery_budget.py c4a70c54823934e8d0ede9a5dff52ec93e896826b36445f21048c9519e2aeedf
   fetch tools/semantic_lease_recovery/nft_seconds_backend.py 04cd115c756158ce2c04f32608380d7a40f4577d85785dfe46571825876545c1
   fetch tools/semantic_lease_recovery/readback_margin_compiler.py 814b5321a5fe5772562f50aa17c34c99c2be741b6e2a9d26110a6b8991bdbf1d
   fetch tools/semantic_lease_recovery/recovery_journal.py 43a293ab9b4075401cfc139a6531f30fdae7277cbe096f10c0d460cd26ed291d
   fetch tools/semantic_lease_recovery/resilient_lease_adapter.py beb09ee948ac2f5a39777b7a10339d6085bae09a90d94e8d95ec3ef940ac1683
+  fetch tools/semantic_lease_recovery/resilient_lease_adapter_v2.py 38e070b3638bf0736d2788f36cac51d3ca922f6878abf2f57b8cdf0bfa65b7eb
   fetch tools/semantic_provider_admission_v2/__init__.py bbae3553c950479a55a26ac71f7a4d79e32f69402967b0b39064cfadd4e41b31
   fetch tools/semantic_provider_admission_v2/broker_v2.py a87d1eda988736e6a8467edd96d343f627a3662acdaed06f539135a34afb1c37
   fetch tools/semantic_provider_admission_v2/consumption_v2.py 44a6ef8de7e7bafd6881104fe148fb984a2acc595685c3095530155bd82c22e4
@@ -107,11 +114,12 @@ delivery() {
   fetch tools/semantic_provider_operation/authorization.py 8f5dd2fd86efb7add1bdb5325b6428db41cc539b7b00a3b33efa4d692ab958fc
   fetch tools/semantic_provider_operation/epochs.py b5188406c935079b35f2a81ba670df9578d6ef97a5d7308cbb9cf502a72635bb
   fetch tools/semantic_provider_operation/lease_supervisor.py 71e477e4acaa6a3b49e9d1ff58752d045538426cd415f2edccfd3987a0b7d966
+  fetch tools/semantic_provider_operation/lease_supervisor_v2.py 06f7fb2744a1ac3d4b94ef20aa04801e9625f9ca920dfe8fcd421e11456d0de4
   fetch tools/semantic_provider_r3/__init__.py 44f7a91396fbd53e601cc981747063d61ac3c8733fd69595808694d9250a61e6
-  fetch tools/semantic_provider_r3/compose.py 00c93631aaffdba140c242d5f7579ace331667cb95cdc75ee6b61d7e443b402d
+  fetch tools/semantic_provider_r3/compose.py e577a99329b24d2b814f448d747f59a9ed4846baa02a9044a9d8038df5d45f1e
   fetch tools/semantic_provider_r3/install_common.py 55fd4e7745b290ad36195f07ae6b49d3360c430c8a3a77aee9d02226155e4b33
-  fetch tools/semantic_provider_r3/operate.py f9c4dfb45065938858e9dc505c6f18043deca33d92fe64a74b2db38de009f45b
-  fetch tools/semantic_provider_r3/upgrade.py 5d87221f5644ce2d143a88b1d2f10fe6e421e78d6e5ccff0103c2857da7ea638
+  fetch tools/semantic_provider_r3/operate.py 8f44a4204e8807f427165c0e08264a22c6d1058b50e98d9bd5233788f92ff5a2
+  fetch tools/semantic_provider_r3/upgrade.py 690c22cd19b4781754bb64259b0a3b96e8467fdc00b8694138721782a563ed54
   fetch tools/semantic_runtime_v51_install/__init__.py e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
   fetch tools/semantic_runtime_v51_install/common.py f2351bec00dbb4234b28ce5de79d000600cc1adba95cce4fc1d1a11484aa22bb
   fetch tools/semantic_runtime_v52/semantic_provider_docker_runtime_v52.py 117c9c86bb173742e4da7051d18bdef68526d3a8172cf231c41a27d2ea815911
@@ -179,7 +187,7 @@ for name, path in sorted(files.items()):
     if name in PINS and PINS[name] != digest:
         sys.stderr.write("R3_INPUT_PIN_MISMATCH " + name + "\n"); raise SystemExit(3)
     bound[name] = {"path": path, "sha256": digest}
-SOURCE_SET = C.SOURCE_INPUTS_V6 if 9 >= 6 else C.SOURCE_INPUTS
+SOURCE_SET = C.SOURCE_INPUTS_V11 if 9 >= 11 else C.SOURCE_INPUTS_V6 if 9 >= 6 else C.SOURCE_INPUTS
 sources = {p: {"path": str(D / p), "sha256": sha(D / p)} for p in sorted(SOURCE_SET)}
 raw = json.dumps({"schema": "ouf.semantic-provider-r3-inputs.v1", "files": bound, "sources": sources},
                  sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
