@@ -80,6 +80,11 @@ jobs:
         run: >-
           sudo -n env OUF_R3_UPGRADE_NATIVE=1 /usr/bin/python3 -I -B
           -m unittest discover -s tests -p test_semantic_provider_r3_upgrade.py -v
+      - name: D-044 real runner Docker stopped versus running restart-policy gate
+        if: ${{ !cancelled() }}
+        run: >-
+          sudo -n env OUF_R3_RESTART_POLICY_DOCKER_NATIVE=1 /usr/bin/python3 -I -B
+          -m unittest discover -s tests -p test_semantic_provider_r3_operate.py -v
       - name: Broker denial receipts and portable cohort diagnostics
         if: ${{ !cancelled() }}
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_broker_denials.py -v

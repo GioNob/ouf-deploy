@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import traceback
+from types import SimpleNamespace
 
 from tools.semantic_provider_r3 import install_common as I
 
@@ -241,6 +242,11 @@ def running(row):
             and e is not None and e["state"] == "STARTED" and e["live"])
 
 
+def stopped(row):
+    d = row["docker"]
+    return d["Status"] in {"created", "exited"} and d["Running"] is False and d["Pid"] == 0
+
+
 def service_active(observation):
     unit = observation["supervisor"]["unit"]
     return unit["ActiveState"] == "active" and unit["SubState"] == "running"
@@ -268,10 +274,11 @@ def preconditions(args, observation):
                 and sup["authorizationSequence"] == observation["authorization"]["sequence"],
                 "R3_START_SUPERVISOR_NOT_WAITING")
         require(quiesced(observation), "R3_START_LEASE_NOT_QUIESCED")
-    elif args.action in {"restart-policy", "restart-one"}:
+    elif args.action == "restart-policy":
+        require(all(stopped(v) for v in rows.values()), "R3_RESTART_POLICY_REQUIRES_STOPPED")
+    elif args.action == "restart-one":
         require(all(running(v) for v in rows.values()), "R3_RUNNING_EPOCHS_REQUIRED")
-        if args.action == "restart-one":
-            require(active(observation), "R3_RESTART_SUPERVISOR_NOT_ACTIVE")
+        require(active(observation), "R3_RESTART_SUPERVISOR_NOT_ACTIVE")
     else:
         require(any(v["docker"]["Running"] and v["docker"]["Status"] == "running"
                     for v in rows.values()), "R3_STOP_NO_RUNNING_CANDIDATE")
@@ -300,13 +307,18 @@ def reached(args, before, after):
                     and v["epoch"]["state"] in TERMINAL for v in rows.values())
                 and service_active(after) and after["supervisor"]["state"] == "WAITING" and quiesced(after)
                 and all(not t[f] for t in after["tables"].values() for f in ("inet", "bridge")))
+    if args.action == "restart-policy":
+        return all(stopped(v) and v["docker"]["RestartPolicy"] == "unless-stopped"
+                   and v["epoch"] == before["candidates"][r]["epoch"]
+                   and v["previousEpoch"] == before["candidates"][r]["previousEpoch"]
+                   and all(v["docker"][k] == before["candidates"][r]["docker"][k]
+                           for k in ("Status", "Running", "Pid", "StartedAt", "RestartCount", "Runtime"))
+                   for r, v in rows.items())
     if not all(running(v) for v in rows.values()):
         return False
-    if args.action == "restart-policy":
-        return all(v["docker"]["RestartPolicy"] == "unless-stopped"
-                   and v["epoch"] == before["candidates"][r]["epoch"]
-                   and all(v["docker"][k] == before["candidates"][r]["docker"][k]
-                           for k in ("Pid", "StartedAt", "RestartCount")) for r, v in rows.items())
+    if args.action == "start" and not all(v["docker"]["RestartPolicy"] == "unless-stopped"
+                                          for v in rows.values()):
+        return False
     if not active(after):
         return False
     for role in ROLES:
@@ -360,6 +372,11 @@ def apply(args, plan, report):
     report.update(outputCreated=True, doNotRerunApply=True, planSha256=plan["planSha256"])
     I.native_switch().sync(output.parent)
     I.write_once(output / "operate-claim.json", canonical(plan), report)
+    if args.action in {"start", "restart-policy"}:
+        set_restart_policy(args, before, report)
+    if args.action == "restart-policy":
+        report.update(status=SUCCESS[args.action])
+        return
     calls = requests(args, before)
     counter = {"start": "dockerStartRequests", "stop": "dockerStopRequests",
                "restart-policy": "dockerUpdateRequests", "restart-one": "dockerRestartRequests"}[args.action]
@@ -395,6 +412,36 @@ def apply(args, plan, report):
     poll(args, before, report)
     require(not errors, "R3_DOCKER_REQUEST_FAILED")
     report.update(status=SUCCESS[args.action])
+
+
+def set_restart_policy(args, before, report):
+    """Dockerd can update policy without OCI update only while both CIDs are stopped."""
+    require(all(stopped(v) for v in before["candidates"].values()),
+            "R3_RESTART_POLICY_REQUIRES_STOPPED")
+    errors = []
+    for role in ROLES:
+        row = before["candidates"][role]
+        if row["docker"]["RestartPolicy"] == "unless-stopped":
+            continue
+        report["dockerUpdateRequests"] += 1
+        try:
+            docker(args, "update", "--restart", "unless-stopped", row["cid"])
+        except Exception as error:
+            errors.append({"role": role, **error_fields(error)})
+    report["requestErrors"] = errors
+    try:
+        latest = observe(args, output_exists=True)
+        report["lastObservation"] = latest
+    except Exception as error:
+        report["observationError"] = error_fields(error)
+        require(not errors, "R3_RESTART_POLICY_UPDATE_FAILED")
+        require(False, "R3_RESTART_POLICY_READBACK_FAILED")
+    require(not errors, "R3_RESTART_POLICY_UPDATE_FAILED")
+    # Reuse the stopped-policy readback, including identity and generation stability.
+    require(reached(SimpleNamespace(action="restart-policy"), before, latest),
+            "R3_RESTART_POLICY_READBACK_FAILED")
+    if args.action == "start":
+        preconditions(args, latest)
 
 
 def arguments(argv=None):

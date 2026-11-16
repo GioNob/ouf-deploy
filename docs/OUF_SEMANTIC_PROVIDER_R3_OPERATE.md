@@ -77,8 +77,8 @@ copiati nelle ricevute. PID e boot sono osservazioni pubbliche selezionate.
 
 | Azione | Precondizioni | Effetti diretti e readback |
 | --- | --- | --- |
-| `start` | Due CID created/exited, Running false/PID 0, epoca assente o terminale; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Due `docker start` concorrenti, ciascuno con timeout. Entrambi running, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
-| `restart-policy` | Due CID running, epoche STARTED vive | Due `docker update --restart unless-stopped`; running, policy unless-stopped, stessa epoca/PID/StartedAt/RestartCount. |
+| `start` | Due CID created/exited, Running false/PID 0, epoca assente o terminale; servizio attivo WAITING sulla sequenza corrente; lease QUIESCED/non autorizzato | Prima imposta e verifica `unless-stopped` su entrambi i CID fermi; poi due `docker start` concorrenti, ciascuno con timeout. Entrambi running con policy `unless-stopped`, epoche STARTED vive incrementate esattamente di 1 (assente = 0), supervisore ACTIVE sulle stesse epoche, lease LEASE_READY/autorizzato, quattro tabelle presenti. |
+| `restart-policy` | Entrambi i CID created/exited, Running false/PID 0; altrimenti plan negato con `R3_RESTART_POLICY_REQUIRES_STOPPED` | `docker update --restart unless-stopped` per ogni CID con policy diversa; readback di entrambi ancora fermi, policy `unless-stopped`, stessa epoca/precedente/Status/PID/StartedAt/RestartCount/runtime. |
 | `restart-one` | Due CID running, epoche STARTED vive; supervisore ACTIVE sulle stesse epoche e sequenza | `docker restart --time 30 CID` del solo ruolo. Nuova epoca esattamente +1 STARTED viva, precedente DELETED, testa invariata, altro ruolo con stessa epoca/PID; supervisore nuovamente ACTIVE, lease pronto e tabelle presenti. |
 | `stop` | Almeno un CID running | `docker stop --time 30 CID` dei soli ruoli running, in parallelo. Entrambi exited/PID 0, epoche terminali, supervisore attivo WAITING, lease QUIESCED/non autorizzato e quattro tabelle assenti. |
 
@@ -122,6 +122,32 @@ non sovrascrivono eventuali ricevute preesistenti. Errori con soli codici
 pubblici, errno per OSError e callChain funzione/linea per eccezioni sconosciute.
 Un errore nel salvataggio è dichiarato `diagnosisSaved=false` su stdout.
 
+## Politica di restart (D-044, R-023)
+
+Il runtime OCI R3 v5.2 accetta create/start/state/delete/kill e rifiuta
+`update`. Su un container running, dockerd inoltra `docker update --restart`
+al runtime: il comando fallisce. A container fermo dockerd aggiorna invece
+la propria configurazione senza invocare l'operazione OCI update. Per questo
+la policy viene impostata nello start, dopo i controlli e il claim, prima
+di qualsiasi avvio, con entrambi i CID created/exited, Running false e PID 0.
+
+La fase preliminare tenta una sola update per ciascuna policy diversa da
+`unless-stopped`; se entrambe sono diverse esegue due update. Una policy
+già corretta evita la scrittura ma non il readback di entrambi i candidati.
+La lettura verifica identità, configurazione/autorizzazione, epoche e frame
+Docker invariati salvo la policy, poi ricontrolla le precondizioni di start.
+Un errore di update produce `HELD/R3_RESTART_POLICY_UPDATE_FAILED`; un
+readback fallito o diverso produce `HELD/R3_RESTART_POLICY_READBACK_FAILED`.
+In entrambi i casi vengono eseguiti zero start: i container restano fermi,
+senza rollback delle policy eventualmente già aggiornate. L'ultima osservazione,
+gli errori e `dockerUpdateRequests` conservano il parziale nel report consumato.
+Il readback finale dello start richiede ancora `unless-stopped` su entrambi.
+Stop e restart-one conservano i propri controlli e accettano questa policy.
+
+Il plan è uno snapshot: non impedisce interventi concorrenti esterni. Non
+trattenere lock runtime durante le chiamate Docker e non rigiocare un apply
+consumato per correggere un parziale.
+
 ## Verifica e limiti
 
 `tests/test_semantic_provider_r3_operate.py` include contratti portabili per
@@ -140,8 +166,19 @@ Systemctl, pubblicazione ACTIVE/WAITING, quiescenza e stato del lease sono simul
 espliciti della fixture; non provano il servizio o l'attivazione del lease.
 Nft è il modello del 41a, realmente chiamato dal driver; un lock solo della
 fixture serializza il suo file di stato durante rollback concorrenti.
-Non sono provati Docker Engine reale, politica di reboot o supervisore reale.
+Questo ciclo non prova Docker Engine reale, politica di reboot o supervisore reale.
 Il gate nativo su piattaforma/utente errati fallisce esplicitamente.
+
+Il gate distinto `OUF_R3_RESTART_POLICY_DOCKER_NATIVE=1`, nel workflow
+installazione R3, richiede Linux root:root e Docker/runc reali del runner.
+Avvia un daemon con socket, configurazione, data/exec root privati, bridge
+e iptables disabilitati; importa sleep e librerie locali senza pull. Registra
+un runtime di prova che traccia gli argv, rifiuta update con exit 42 e delega
+le altre operazioni a runc. Verifica update riuscita in created ed exited
+senza invocazione OCI update, e la stessa richiesta fallita in running con
+una invocazione update registrata. Il gate abilitato fallisce se mancano i
+prerequisiti; senza gate il test è esplicitamente skipped. La presenza del
+test non attesta un PASS CI né il funzionamento al reboot o sul VPS.
 
 Il workflow installazione R3 esegue il nuovo test con gate/root, le regressioni
 41a/41b/runtime v5.2 già presenti e py_compile. Su Windows locale i nativi
