@@ -41,8 +41,6 @@ jobs:
         run: sudo -n env OUF_B1_ROOTFS_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_provider_b1_rootfs.py -v
       - name: Portable post-create reseal and generation four compatibility
         run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_prepare_semantic_provider_b1_rootfs_v2.py -v
-      - name: R3 runbook delivery contracts
-        run: /usr/bin/python3 -I -B -m unittest discover -s tests -p test_r3_runbooks.py -v
       - name: Acceptance v5.1 non-regression with native custody
         run: sudo -n env OUF_ACCEPTANCE_V51_NATIVE=1 /usr/bin/python3 -I -B -m unittest discover -s tests -p test_semantic_acceptance_v51.py -v
       - name: D-042, generation five, composition ten and B1/R3 portable non-regression

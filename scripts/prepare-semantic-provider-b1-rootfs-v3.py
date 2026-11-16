@@ -177,7 +177,7 @@ def compare_entries(image, actual, upper, mounts, source_kind):
             require(value['mode'] == (0o711 if name not in targets else 0o600 if kind == 'file' else 0o700),
                     'POST_CREATE_MODE_DENIED')
             if name not in targets:
-                require(upper[name].get('xattrs') == {}, 'ANCESTOR_XATTR_DENIED')
+                physical(upper[name], new=True)  # only overlay bookkeeping xattrs, as in v2
             if kind == 'file':
                 require(value['size'] == 0 and value['sha256'] == EMPTY_SHA, 'POST_CREATE_NONEMPTY_FILE')
                 require(value['links'] == 1, 'POST_CREATE_HARDLINK_DENIED')
@@ -236,10 +236,12 @@ def correction(image, actual, upper, mounts, kind):
     projected = copy.deepcopy(actual); projected_upper = copy.deepcopy(upper)
     for name in sorted(set(allowed) - set(targets)):
         require(name in upper and name in actual, 'POST_CREATE_MOUNTPOINT_NOT_IN_UPPER')
-        value = upper[name]
+        # The upper layer carries overlayfs bookkeeping xattrs hidden by the merged
+        # view: tolerate exactly the v2 set, then compare the normalized entry.
+        value = physical(upper[name], new=True)
         require(value['kind'] == actual[name]['kind'] == 'directory', 'ANCESTOR_DIRECTORY_REQUIRED')
         require(value['uid'] == value['gid'] == 0, 'ANCESTOR_OWNER_DENIED')
-        require(value.get('xattrs') == {}, 'ANCESTOR_XATTR_DENIED')
+        require(actual[name].get('xattrs') == {}, 'ANCESTOR_XATTR_DENIED')
         require(value['mode'] in (0o700, 0o711), 'ANCESTOR_MODE_DENIED')
         require(actual[name] == value, 'POST_CREATE_UPPER_VIEW_DRIFT')
         rows.append({'path': name, 'currentMode': value['mode'], 'expectedMode': 0o711})
@@ -305,7 +307,8 @@ def check_ancestor_fd(fd, row, differences):
     require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0, 'ANCESTOR_OWNER_DENIED')
     require(stat.S_IMODE(info.st_mode) == row['currentMode'] and row['currentMode'] in (0o700, 0o711),
             'ANCESTOR_MODE_DENIED')
-    require(not os.listxattr(fd), 'ANCESTOR_XATTR_DENIED')
+    tolerated = OVERLAY_BOOKKEEPING_XATTRS | {'trusted.overlay.opaque'}  # names only, as physical(new=True)
+    require(set(os.listxattr(fd)) <= tolerated, 'ANCESTOR_XATTR_DENIED')
     # The full difference proof has already excluded undeclared descendants;
     # recheck the immediate names through the held descriptor before fchmod.
     children = {PurePosixPath(d['path']).name for d in differences

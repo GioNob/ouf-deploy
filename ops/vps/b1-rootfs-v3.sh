@@ -41,7 +41,7 @@ if [[ $mode == plan ]]; then
   D=$(sudo mktemp -d "$S/semantic-provider-mountpoint-0711-source.XXXXXXXX")
   sudo chmod 0700 "$D"
   printf '%s\n' "$D" > "$STATE"
-  fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py d3c0dffb0073248960f0905237c0ab25c3e94bcd186428e03265bbe257850147
+  fetch scripts/prepare-semantic-provider-b1-rootfs-v3.py 29899e5ee25aa9e772f21fb62fb473706cdf2b8f921034efeccb3b284d350397
   fetch scripts/prepare-semantic-provider-b1-rootfs.py 8107d055fe0bfd8fe363506f39ffa006f157a292a54bbcbf4de11b011816178d
   fetch tools/semantic_image_rootfs/prepare_provider_image_rootfs.py cc2e238c37650f9fa77a2b3319160ef09aa61e1a5bd673e624ad5a9f0106eb32
   fetch tools/semantic_stopped_rootfs/stopped_rootfs_comparison.py fbdf94a8946a2de0504055586a00e25cf6cad0dacd9fa214cc405e49e276e3e5
