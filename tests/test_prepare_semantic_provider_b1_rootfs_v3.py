@@ -394,7 +394,8 @@ class CompositionTests(unittest.TestCase):
 class RunbookTests(unittest.TestCase):
     def test_b1_zero_pin_and_delivery_hashes_match_lf_source(self):
         text = (ROOT / 'ops/vps/b1-rootfs-v3.sh').read_text()
-        self.assertIn('C='+'0'*40, text)
+        # Zero before review (D-001), then the reviewed commit that serves these blobs.
+        self.assertRegex(text, r'(?m)^C=[0-9a-f]{40}$')
         deliveries = re.findall(r'^  fetch (\S+) ([0-9a-f]{64})$', text, re.M)
         self.assertEqual(len(deliveries), 6)
         for path, digest in deliveries:

@@ -5,7 +5,7 @@
 # Nessuna operazione sui container (niente create/start/rm), nessuna firma, nessun segreto letto.
 set -euo pipefail
 umask 077
-C=0000000000000000000000000000000000000000
+C=bad45365ef03dce6804de5d8520bee2c4b90a67b
 [[ $C != 0000000000000000000000000000000000000000 ]] || { echo 'pin commit da impostare dopo review D-001' >&2; exit 2; }
 B=https://raw.githubusercontent.com/GioNob/ouf-deploy/$C
 S=/etc/ouf/deploy-snapshots
